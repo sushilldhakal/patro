@@ -1,5 +1,8 @@
 """Nepali Holiday & Panchanga Patro API — stable contract v1."""
 
+import asyncio
+import logging
+from contextlib import asynccontextmanager
 from datetime import date
 
 from fastapi import FastAPI, HTTPException, Query
@@ -13,11 +16,28 @@ from service.holiday_generator import (
     precompute_bs_year,
 )
 from service.patro_generator import generate_bs_month_patro, generate_patro
+from service.startup import warm_holiday_cache
+
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    loop = asyncio.get_running_loop()
+    try:
+        warmed = await loop.run_in_executor(None, warm_holiday_cache)
+        app.state.precomputed_bs_years = warmed
+    except Exception:
+        logger.exception("Startup holiday precompute failed")
+        app.state.precomputed_bs_years = []
+    yield
+
 
 app = FastAPI(
     title="Nepali Panchanga Patro API",
     description="Festival dates + daily panchanga + BS Patro generation",
     version="1.1.0",
+    lifespan=lifespan,
 )
 
 
@@ -30,7 +50,11 @@ def _location(lat, lon, timezone):
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    warmed = getattr(app.state, "precomputed_bs_years", None)
+    return {
+        "status": "ok",
+        "precomputed_bs_years": warmed,
+    }
 
 
 # --- Holidays (BS year, cache-backed) ---

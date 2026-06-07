@@ -184,6 +184,23 @@ def precompute_bs_year(
     return payload
 
 
+def precompute_bs_range(
+    start_bs_year: int,
+    end_bs_year: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    skip_existing: bool = True,
+) -> list[int]:
+    """Pre-generate BS-year cache files; returns BS years that were written."""
+    generated: list[int] = []
+    for bs_year in range(start_bs_year, end_bs_year + 1):
+        if skip_existing and load_bs_cached(bs_year, location):
+            continue
+        precompute_bs_year(bs_year, location)
+        generated.append(bs_year)
+    return generated
+
+
 def get_bs_holidays(
     bs_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
