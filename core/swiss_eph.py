@@ -12,9 +12,26 @@ ALT_KATHMANDU = 1400.0
 
 SUN = swe.SUN
 MOON = swe.MOON
+MERCURY = swe.MERCURY
+VENUS = swe.VENUS
+MARS = swe.MARS
+JUPITER = swe.JUPITER
+SATURN = swe.SATURN
+MEAN_NODE = swe.MEAN_NODE
 SIDEREAL_FLAGS = swe.FLG_SIDEREAL | swe.FLG_SPEED
 TROPICAL_FLAGS = swe.FLG_SPEED
 AYANAMSA_LAHIRI = swe.SIDM_LAHIRI
+
+PLANET_IDS = {
+    "sun": SUN,
+    "moon": MOON,
+    "mercury": MERCURY,
+    "venus": VENUS,
+    "mars": MARS,
+    "jupiter": JUPITER,
+    "saturn": SATURN,
+    "rahu": MEAN_NODE,
+}
 
 _initialized = False
 
@@ -144,3 +161,120 @@ def calculate_sunset(
         return julian_day_to_datetime(result[1][0])
     except (swe.Error, IndexError, TypeError, ValueError) as exc:
         raise EphemerisError(f"Sunset calculation failed for {date_val}: {exc}") from exc
+
+
+def _calculate_rise_set(
+    date_val: date,
+    body: int,
+    calc_flag: int,
+    *,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    _ensure_initialized()
+    observer_tz = resolve_observer_timezone(timezone_name)
+    local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
+    jd_start = get_julian_day(local_midnight.astimezone(timezone.utc))
+    try:
+        result = swe.rise_trans(
+            jd_start,
+            body,
+            calc_flag,
+            (longitude, latitude, altitude),
+            0.0,
+            0.0,
+        )
+        if result[0] < 0:
+            return None
+        return julian_day_to_datetime(result[1][0])
+    except (swe.Error, IndexError, TypeError, ValueError) as exc:
+        raise EphemerisError(f"Rise/set calculation failed for {date_val}: {exc}") from exc
+
+
+def calculate_moonrise(
+    date_val: date,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    return _calculate_rise_set(
+        date_val,
+        MOON,
+        swe.CALC_RISE,
+        latitude=latitude,
+        longitude=longitude,
+        altitude=altitude,
+        timezone_name=timezone_name,
+    )
+
+
+def calculate_moonset(
+    date_val: date,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    return _calculate_rise_set(
+        date_val,
+        MOON,
+        swe.CALC_SET,
+        latitude=latitude,
+        longitude=longitude,
+        altitude=altitude,
+        timezone_name=timezone_name,
+    )
+
+
+def get_ayanamsa(dt: datetime, ayanamsa: int = AYANAMSA_LAHIRI) -> float:
+    """Lahiri ayanamsa in degrees at the given instant."""
+    _ensure_initialized()
+    swe.set_sid_mode(ayanamsa)
+    jd = get_julian_day(dt)
+    return swe.get_ayanamsa_ut(jd)
+
+
+def get_planet_position(dt: datetime, planet_id: int, *, sidereal: bool = True) -> dict:
+    """Sidereal longitude (degrees), speed, and rashi for one body."""
+    _ensure_initialized()
+    jd = get_julian_day(dt)
+    if sidereal:
+        swe.set_sid_mode(AYANAMSA_LAHIRI)
+    flags = SIDEREAL_FLAGS if sidereal else TROPICAL_FLAGS
+    try:
+        values = swe.calc_ut(jd, planet_id, flags)[0]
+        longitude = values[0] % 360
+        speed = values[3]
+        rashi = int(longitude / 30) % 12
+        return {
+            "longitude": round(longitude, 6),
+            "speed": round(speed, 6),
+            "rashi": rashi + 1,
+        }
+    except (swe.Error, IndexError, TypeError, ValueError) as exc:
+        raise EphemerisError(f"Failed to calculate planet {planet_id}: {exc}") from exc
+
+
+def get_all_planetary_positions(dt: datetime, *, sidereal: bool = True) -> dict:
+    """Sun, Moon, grahas, and Rahu/Ketu at the given instant."""
+    from panchanga.sankranti import RASHI_NAMES
+
+    positions: dict = {}
+    for name, planet_id in PLANET_IDS.items():
+        pos = get_planet_position(dt, planet_id, sidereal=sidereal)
+        pos["rashi_name"] = RASHI_NAMES[pos["rashi"] - 1]
+        positions[name] = pos
+
+    rahu_long = positions["rahu"]["longitude"]
+    ketu_long = (rahu_long + 180.0) % 360
+    ketu_rashi = int(ketu_long / 30) % 12
+    positions["ketu"] = {
+        "longitude": round(ketu_long, 6),
+        "speed": round(-positions["rahu"]["speed"], 6),
+        "rashi": ketu_rashi + 1,
+        "rashi_name": RASHI_NAMES[ketu_rashi],
+    }
+    return positions

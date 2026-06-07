@@ -39,6 +39,25 @@ VAARA_ENGLISH = [
     "Thursday", "Friday", "Saturday",
 ]
 
+RASHI_NAMES = [
+    "Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
+    "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena",
+]
+
+RASHI_NAMES_NE = [
+    "मेष", "वृष", "मिथुन", "कर्कट", "सिंह", "कन्या",
+    "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन",
+]
+
+RITU_DATA = [
+    {"number": 1, "name": "Vasanta", "name_sanskrit": "Vasanta", "name_ne": "वसन्त", "season": "Spring"},
+    {"number": 2, "name": "Grishma", "name_sanskrit": "Grishma", "name_ne": "ग्रीष्म", "season": "Summer"},
+    {"number": 3, "name": "Varsha", "name_sanskrit": "Varsha", "name_ne": "वर्षा", "season": "Monsoon"},
+    {"number": 4, "name": "Sharad", "name_sanskrit": "Sharad", "name_ne": "शरद", "season": "Autumn"},
+    {"number": 5, "name": "Hemanta", "name_sanskrit": "Hemanta", "name_ne": "हेमन्त", "season": "Pre-winter"},
+    {"number": 6, "name": "Shishira", "name_sanskrit": "Shishira", "name_ne": "शिशिर", "season": "Winter"},
+]
+
 
 def get_tithi_angle(dt: datetime) -> float:
     sun_long, moon_long = get_sun_moon_positions(dt)
@@ -101,3 +120,69 @@ def get_vaara(dt: datetime, timezone_name: str = "Asia/Kathmandu") -> tuple[int,
     weekday = local_dt.weekday()
     vaara_index = (weekday + 1) % 7
     return vaara_index, VAARA_NAMES[vaara_index], VAARA_ENGLISH[vaara_index]
+
+
+def get_chandra_rashi(dt: datetime) -> dict:
+    moon_long = get_moon_longitude(dt)
+    rashi_index = int(moon_long / 30) % 12
+    progress = (moon_long % 30) / 30
+    return {
+        "number": rashi_index + 1,
+        "name": RASHI_NAMES[rashi_index],
+        "name_ne": RASHI_NAMES_NE[rashi_index],
+        "longitude": round(moon_long, 6),
+        "progress": round(progress, 4),
+    }
+
+
+def get_surya_rashi(dt: datetime) -> dict:
+    sun_long = get_sun_longitude(dt)
+    rashi_index = int(sun_long / 30) % 12
+    progress = (sun_long % 30) / 30
+    return {
+        "number": rashi_index + 1,
+        "name": RASHI_NAMES[rashi_index],
+        "name_ne": RASHI_NAMES_NE[rashi_index],
+        "longitude": round(sun_long, 6),
+        "progress": round(progress, 4),
+    }
+
+
+def _sun_rashi_index(dt: datetime, *, sidereal: bool = True) -> int:
+    sun_long = get_sun_longitude(dt, sidereal=sidereal)
+    return int(sun_long / 30) % 12
+
+
+def get_ritu(dt: datetime, *, sidereal: bool = False) -> dict:
+    """Season — tropical sun signs match common Nepali Panchang apps."""
+    rashi_index = _sun_rashi_index(dt, sidereal=sidereal)
+    ritu = RITU_DATA[rashi_index // 2]
+    return {
+        "number": ritu["number"],
+        "name": ritu["name"],
+        "name_sanskrit": ritu["name_sanskrit"],
+        "name_ne": ritu["name_ne"],
+        "season": ritu["season"],
+        "sun_rashi": rashi_index + 1,
+        "basis": "tropical" if not sidereal else "sidereal",
+    }
+
+
+def get_aayan(dt: datetime, *, sidereal: bool = True) -> dict:
+    """Uttarayana / Dakshinayana from sun's rashi (Makara→Mithuna = Uttarayana)."""
+    rashi_index = _sun_rashi_index(dt, sidereal=sidereal)
+    if rashi_index in (9, 10, 11, 0, 1, 2):
+        return {
+            "name": "Uttarayana",
+            "name_ne": "उत्तरायण",
+            "name_sanskrit": "Uttarayana",
+            "sun_rashi": rashi_index + 1,
+            "basis": "sidereal" if sidereal else "tropical",
+        }
+    return {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": rashi_index + 1,
+        "basis": "sidereal" if sidereal else "tropical",
+    }

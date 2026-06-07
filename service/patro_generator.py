@@ -75,15 +75,25 @@ def generate_bs_month_patro(
         if include_panchanga:
             panchanga = build_daily_panchanga(greg, location)
             entry["panchanga"] = {
+                "display": panchanga["display"],
                 "vaara": panchanga["vaara"],
                 "tithi": panchanga["tithi"],
                 "nakshatra": panchanga["nakshatra"],
                 "yoga": panchanga["yoga"],
                 "karana": panchanga["karana"],
+                "paksha": panchanga["paksha"],
+                "chandra_rashi": panchanga["chandra_rashi"],
+                "surya_rashi": panchanga["surya_rashi"],
+                "ritu": panchanga["ritu"],
+                "aayan": panchanga["aayan"],
+                "dinamaan": panchanga["dinamaan"],
                 "lunar_month": panchanga["lunar_month"],
+                "ns_date": panchanga["ns_date"],
                 "markers": panchanga["markers"],
                 "sunrise": panchanga["sunrise"],
                 "sunset": panchanga["sunset"],
+                "moonrise": panchanga["moonrise"],
+                "moonset": panchanga["moonset"],
             }
         days.append(entry)
 

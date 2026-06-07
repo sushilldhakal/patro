@@ -128,7 +128,7 @@ def panchanga_day(
     timezone: str | None = Query(None),
     festivals: bool = Query(True, description="Include active festivals on this day"),
 ):
-    """Full daily panchanga: tithi, nakshatra, yoga, karana, sunrise/sunset."""
+    """Full daily panchanga: tithi, nakshatra, yoga, karana, vaara, rashi, ritu, ayanamsa, sun/moon times, planets."""
     location = _location(lat, lon, timezone)
     return build_daily_panchanga(target_date, location, include_festivals=festivals)
 

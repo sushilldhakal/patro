@@ -209,7 +209,7 @@ curl https://patro.onrender.com/day/2026-10-20
 
 #### `GET /panchanga/{target_date}`
 
-Full daily panchanga at sunrise (udaya): tithi, nakshatra, yoga, karana, vaara, lunar month, sunrise/sunset, and optional festivals.
+Full daily panchanga at sunrise (udaya) in Nepali Patro style: BS/NS/Gregorian display headers, tithi/nakshatra/yoga/karana with end times and उपरान्त (next element), adhik paksha labels, dinamaan (घडी/पला), Uttarayana/Dakshinayana, chandra/surya rashi, ritu, Lahiri ayanamsa, sun/moon times, planetary positions, and optional festivals.
 
 | Path param     | Type | Format       |
 |---------------|------|--------------|
@@ -227,28 +227,50 @@ Full daily panchanga at sunrise (udaya): tithi, nakshatra, yoga, karana, vaara, 
 ```json
 {
   "date": "2026-06-07",
-  "bs_date": { "year": 2083, "month": 2, "day": 24 },
-  "location": { "lat": 27.7172, "lon": 85.324, "timezone": "Asia/Kathmandu", "name": "Kathmandu" },
-  "sunrise": { "utc": "...", "local": "...", "local_time": "05:08:12" },
-  "sunset": { "utc": "...", "local": "...", "local_time": "18:55:03" },
-  "vaara": { "number": 0, "name_sanskrit": "Ravivara", "name_english": "Sunday" },
+  "display": {
+    "bs_ne": "वि.सं. २०८३ जेठ २४ आइतवार",
+    "gregorian_en": "2026 Jun 7, Sunday",
+    "ns_ne": "ने.सं. ११४६ अनालागा सप्तमी - 22"
+  },
+  "bs_date": { "year": 2083, "month": 2, "day": 24, "month_name_ne": "जेठ" },
+  "ns_date": {
+    "year": 1146,
+    "label_ne": "अनालागा सप्तमी - 22",
+    "paksha_ne": "अनालागा",
+    "tithi_absolute": 22
+  },
+  "sunrise": { "local_time_short": "05:08" },
+  "sunset": { "local_time_short": "18:58" },
+  "moonrise": { "local_time_short": "00:00" },
+  "moonset": { "local_time_short": "11:02" },
+  "dinamaan": { "ghadi": 34, "pala": 35, "label_ne": "34 घडी 35 पला", "label_en": "13hr 50min" },
+  "aayan": { "name": "Uttarayana", "name_ne": "उत्तरायण" },
+  "lahiri_ayanamsa": { "name": "Lahiri", "degrees": 24.226308 },
+  "paksha": { "label_ne": "अधिक जेठ कृष्ण पक्ष", "is_adhik": true },
   "tithi": {
-    "number": 7,
-    "display_number": 7,
-    "name": "Saptami",
-    "paksha": "krishna",
-    "progress": 0.42,
-    "end_time": "2026-06-07T12:30:00+00:00"
+    "name_ne": "सप्तमी",
+    "end_ghati_clock": "56:21:35",
+    "end_hours_clock": "22:32:38",
+    "next": { "name_ne": "अष्टमी" }
   },
-  "nakshatra": { "number": 12, "name": "Uttara Phalguni", "progress": 0.15 },
-  "yoga": { "number": 5, "name": "Priti", "progress": 0.33 },
-  "karana": { "number": 1, "name": "Bava" },
-  "lunar_month": { "name": "Jyeshtha", "is_adhik": false },
-  "markers": {
-    "is_purnima": false,
-    "is_amavasya": false,
-    "is_ekadashi": false
+  "nakshatra": {
+    "name_ne": "धनिष्ठा",
+    "end_ghati_clock": "3:03:41",
+    "next": { "name_ne": "शतभिषा" }
   },
+  "yoga": {
+    "name_ne": "वैधृति",
+    "end_ghati_clock": "5:09:22",
+    "next": { "name_ne": "विष्कुम्भ" }
+  },
+  "karana": {
+    "name_ne": "विष्टि",
+    "end_ghati_clock": "10:16:06",
+    "next": { "name_ne": "बव", "end_ghati_clock": "56:21:35" }
+  },
+  "chandra_rashi": { "name_ne": "कुम्भ" },
+  "ritu": { "name_ne": "ग्रीष्म", "season": "Summer" },
+  "planets": { "sun": {}, "moon": {}, "mars": {} },
   "festivals": []
 }
 ```
