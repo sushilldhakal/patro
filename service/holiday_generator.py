@@ -24,6 +24,7 @@ class HolidayCacheMissError(LookupError):
     """Raised when a BS-year holiday cache file has not been precomputed."""
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
+OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"
 CACHE_DIR = Path(__file__).resolve().parent.parent / "cache"
 
 
@@ -32,6 +33,15 @@ def load_rules() -> dict[str, dict[str, Any]]:
     with open(RULES_PATH, encoding="utf-8") as f:
         data = json.load(f)
     return data["festivals"]
+
+
+@lru_cache(maxsize=4)
+def load_holiday_overrides() -> dict[str, dict[str, dict[str, Any]]]:
+    if not OVERRIDES_PATH.exists():
+        return {}
+    with open(OVERRIDES_PATH, encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("bs_years", {})
 
 
 def _build_holiday_entry(
@@ -148,6 +158,28 @@ def _merge_bs_year_holidays(
     return sorted(merged.values(), key=lambda h: h["start_date"])
 
 
+def _apply_bs_year_overrides(
+    bs_year: int,
+    holidays: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    overrides = load_holiday_overrides().get(str(bs_year), {})
+    if not overrides:
+        return holidays
+
+    merged = {holiday["id"]: holiday for holiday in holidays}
+    for festival_id, override in overrides.items():
+        start_date = date.fromisoformat(override["start_date"])
+        end_date = date.fromisoformat(override["end_date"])
+        merged[festival_id] = _build_holiday_entry(
+            festival_id,
+            override,
+            start_date,
+            end_date,
+        )
+
+    return sorted(merged.values(), key=lambda h: h["start_date"])
+
+
 def generate_bs_holidays(
     bs_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
@@ -160,7 +192,10 @@ def generate_bs_holidays(
     for payload in gregorian_payloads:
         save_cache(payload, location)
 
-    holidays = _merge_bs_year_holidays(bs_year, gregorian_payloads)
+    holidays = _apply_bs_year_overrides(
+        bs_year,
+        _merge_bs_year_holidays(bs_year, gregorian_payloads),
+    )
     payload = {
         "bs_year": bs_year,
         "gregorian_range": {

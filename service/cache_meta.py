@@ -9,13 +9,19 @@ from pathlib import Path
 from typing import Any
 
 RULE_VERSION = "v3"
-ENGINE_VERSION = "1.0.2"
+ENGINE_VERSION = "1.0.3"
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
+OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"
 
 
 def rules_file_hash() -> str:
-    return hashlib.sha256(RULES_PATH.read_bytes()).hexdigest()[:12]
+    digest = hashlib.sha256()
+    for path in (RULES_PATH, OVERRIDES_PATH):
+        if path.exists():
+            digest.update(path.name.encode())
+            digest.update(path.read_bytes())
+    return digest.hexdigest()[:12]
 
 
 def payload_hash(payload: dict[str, Any]) -> str:
