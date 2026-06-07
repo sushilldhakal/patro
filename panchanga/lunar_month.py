@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Literal, Optional
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.adhik_maas import find_amavasya, find_purnima, is_adhik_maas
+from panchanga.adhik_maas import find_amavasya, find_purnima
 from panchanga.sankranti import BS_MONTH_NAMES, find_sankranti, get_sun_rashi_at_time
 from panchanga.tithi import get_udaya_tithi
 from panchanga.tithi_boundaries import find_next_tithi
@@ -36,7 +36,41 @@ class LunarYear:
     adhik_month_name: Optional[str] = None
 
 
+def _lunar_month_name_for_sankranti(target_rashi: int) -> str:
+    # A lunar month is named for the solar month that begins at the sankranti
+    # inside it; e.g. Tula sankranti falls in Ashwin lunar month.
+    return BS_MONTH_NAMES[(target_rashi - 1) % 12]
+
+
+def _find_sankranti_in_window(
+    start_amavasya: datetime,
+    end_amavasya: datetime,
+) -> tuple[int, datetime] | tuple[None, None]:
+    for target_rashi in range(12):
+        candidate = find_sankranti(target_rashi, start_amavasya, max_days=35)
+        if candidate and start_amavasya <= candidate < end_amavasya:
+            return target_rashi, candidate
+    return None, None
+
+
+def _find_next_sankranti(after: datetime, max_days: int = 40) -> tuple[int, datetime] | tuple[None, None]:
+    search_end = after + timedelta(days=max_days)
+    for target_rashi in range(12):
+        candidate = find_sankranti(target_rashi, after, max_days=max_days)
+        if candidate and after <= candidate < search_end:
+            return target_rashi, candidate
+    return None, None
+
+
 def name_lunar_month(start_amavasya: datetime, end_amavasya: datetime) -> str:
+    sankranti_rashi, _ = _find_sankranti_in_window(start_amavasya, end_amavasya)
+    if sankranti_rashi is not None:
+        return _lunar_month_name_for_sankranti(sankranti_rashi)
+
+    next_rashi, _ = _find_next_sankranti(end_amavasya)
+    if next_rashi is not None:
+        return _lunar_month_name_for_sankranti(next_rashi)
+
     search_start = start_amavasya + timedelta(days=2)
     purnima = find_purnima(search_start)
     if purnima is None or purnima >= end_amavasya:
@@ -56,22 +90,20 @@ def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
         raise ValueError(f"Could not find Amavasya after {purnima}")
 
     sun_rashi = get_sun_rashi_at_time(purnima)
-    month_name = name_lunar_month(start_amavasya, next_amavasya)
-    is_adhik = is_adhik_maas(start_amavasya, next_amavasya)
-
-    sankranti = None
-    for target_rashi in range(12):
-        candidate = find_sankranti(target_rashi, start_amavasya, max_days=35)
-        if candidate and start_amavasya <= candidate < next_amavasya:
-            sankranti = candidate
-            break
+    sankranti_rashi, sankranti = _find_sankranti_in_window(start_amavasya, next_amavasya)
+    month_name = (
+        _lunar_month_name_for_sankranti(sankranti_rashi)
+        if sankranti_rashi is not None
+        else name_lunar_month(start_amavasya, next_amavasya)
+    )
+    is_adhik = sankranti is None
 
     return LunarMonth(
         start_amavasya=start_amavasya,
         end_purnima=purnima,
         end_amavasya=next_amavasya,
         month_name=month_name,
-        month_index=(sun_rashi + 1) if sun_rashi < 12 else 1,
+        month_index=BS_MONTH_NAMES.index(month_name) + 1,
         is_adhik=is_adhik,
         sun_rashi_at_purnima=sun_rashi,
         sankranti_date=sankranti,
