@@ -19,7 +19,6 @@ from panchanga.bikram_sambat import (
     shaka_year,
 )
 from panchanga.daily import build_daily_panchanga
-from panchanga.lunar_month import get_lunar_month_for_date
 from service.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
@@ -149,13 +148,21 @@ def build_month_calendar(
         calendar.append(row)
 
     month_start = get_bs_month_start(bs_year, bs_month)
+    month_length = get_bs_month_length(bs_year, bs_month)
+    mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_length))
+    mid_panchanga = build_daily_panchanga(mid_greg, location)
+    lunar = mid_panchanga["lunar_month"]
     return {
         "year_bs": bs_year,
         "month_bs": bs_month,
         "month_name": bs_month_name(bs_month),
         "month_name_ne": bs_month_name(bs_month, nepali=True),
         "month_start_ad": month_start.isoformat(),
-        "month_length": get_bs_month_length(bs_year, bs_month),
+        "month_length": month_length,
+        "lunar_month": lunar.get("name"),
+        "lunar_month_full": lunar.get("full_name"),
+        "lunar_month_is_adhik": lunar.get("is_adhik", False),
+        "lunar_month_type": lunar.get("type"),
         "location": location.as_dict(),
         "calendar": calendar,
     }
@@ -168,9 +175,9 @@ def build_calendar_header(
 ) -> dict[str, Any]:
     """Multi-era header for a BS month."""
     month_start = get_bs_month_start(bs_year, bs_month)
-    lunar = get_lunar_month_for_date(month_start)
     mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, get_bs_month_length(bs_year, bs_month)))
     mid_panchanga = build_daily_panchanga(mid_greg, location)
+    lunar = mid_panchanga["lunar_month"]
     ns = mid_panchanga["ns_date"]
 
     greg_label = month_start.strftime("%B %Y")
@@ -191,6 +198,8 @@ def build_calendar_header(
         },
         "lunar_month": lunar.get("name"),
         "lunar_month_full": lunar.get("full_name"),
+        "lunar_month_is_adhik": lunar.get("is_adhik", False),
+        "lunar_month_type": lunar.get("type"),
         "shaka_sambat": str(shaka_year(month_start)),
         "nepal_sambat": ns_label,
         "nepal_sambat_detail": ns,

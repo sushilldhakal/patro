@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
@@ -63,7 +63,10 @@ def generate_bs_month_patro(
 
     month_start = get_bs_month_start(bs_year, bs_month)
     month_length = get_bs_month_length(bs_year, bs_month)
+    month_mid = month_start + timedelta(days=min(14, month_length - 1))
     festivals = _collect_bs_year_festivals(bs_year, location)
+    mid_panchanga = build_daily_panchanga(month_mid, location)
+    lunar = mid_panchanga["lunar_month"]
 
     days: list[dict[str, Any]] = []
     for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
@@ -104,6 +107,10 @@ def generate_bs_month_patro(
         "bs_month_name_ne": bs_month_name(bs_month, nepali=True),
         "month_start": month_start.isoformat(),
         "month_length": month_length,
+        "lunar_month": lunar.get("name"),
+        "lunar_month_full": lunar.get("full_name"),
+        "lunar_month_is_adhik": lunar.get("is_adhik", False),
+        "lunar_month_type": lunar.get("type"),
         "location": location.as_dict(),
         "days": days,
     }
