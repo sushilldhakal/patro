@@ -15,7 +15,7 @@ from panchanga.bikram_sambat import (
 )
 from panchanga.daily import build_daily_panchanga
 from service.cache_meta import stamp_payload
-from service.holiday_generator import get_holidays
+from service.holiday_generator import get_bs_holidays, get_holidays
 
 
 def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
@@ -29,6 +29,12 @@ def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
 
 
 def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
+    try:
+        payload = get_bs_holidays(bs_year, location, cache_only=True)
+        return payload["holidays"]
+    except LookupError:
+        pass
+
     year_start, year_end = bs_year_date_range(bs_year)
     gregorian_years = {year_start.year, year_end.year}
     merged: dict[str, dict] = {}

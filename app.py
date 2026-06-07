@@ -6,7 +6,12 @@ from fastapi import FastAPI, HTTPException, Query
 
 from core.location import resolve_location
 from panchanga.daily import build_daily_panchanga
-from service.holiday_generator import get_holidays, holidays_on_date
+from service.holiday_generator import (
+    HolidayCacheMissError,
+    get_bs_holidays,
+    holidays_on_date,
+    precompute_bs_year,
+)
 from service.patro_generator import generate_bs_month_patro, generate_patro
 
 app = FastAPI(
@@ -28,22 +33,53 @@ def health():
     return {"status": "ok"}
 
 
-# --- Holidays (existing contract) ---
+# --- Holidays (BS year, cache-backed) ---
+
+
+def _validate_bs_year(year: int) -> None:
+    if not 2000 <= year <= 2200:
+        raise HTTPException(status_code=400, detail="year must be a BS year between 2000 and 2200")
+
+
+@app.post("/generate/{year}")
+def generate_year(
+    year: int,
+    lat: float | None = Query(None),
+    lon: float | None = Query(None),
+    timezone: str | None = Query(None),
+):
+    """Precompute holiday cache for a BS year (runs Swiss Ephemeris once)."""
+    _validate_bs_year(year)
+    location = _location(lat, lon, timezone)
+    payload = precompute_bs_year(year, location)
+    return {
+        "status": "generated",
+        "bs_year": payload["bs_year"],
+        "gregorian_range": payload["gregorian_range"],
+        "count": payload["count"],
+        "cache_key": location.cache_key(),
+        "generated_at": payload["generated_at"],
+    }
 
 
 @app.get("/holidays/{year}")
 def holidays(
     year: int,
-    month: int | None = Query(None, ge=1, le=12),
+    month: int | None = Query(None, ge=1, le=12, description="Bikram Sambat month (1–12)"),
     lat: float | None = Query(None),
     lon: float | None = Query(None),
     timezone: str | None = Query(None),
-    cache: bool = Query(True),
 ):
-    if year < 1900 or year > 2100:
-        raise HTTPException(status_code=400, detail="year must be between 1900 and 2100")
+    """Return precomputed BS-year holidays (instant; no runtime ephemeris)."""
+    _validate_bs_year(year)
     location = _location(lat, lon, timezone)
-    return get_holidays(year, location, use_cache=cache, month=month)
+    try:
+        return get_bs_holidays(year, location, cache_only=True, bs_month=month)
+    except HolidayCacheMissError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc),
+        ) from exc
 
 
 @app.get("/day/{target_date}")
@@ -118,3 +154,5 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)
+
+
