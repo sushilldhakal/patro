@@ -2,11 +2,13 @@
 
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 from datetime import date
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 from core.location import resolve_location
 from service.holiday_generator import (
@@ -28,6 +30,14 @@ from service.startup import warm_holiday_cache
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_CORS_ORIGINS = (
+    "https://sushilldhakal.github.io",
+    "http://localhost:5173",
+    "http://localhost:5175",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5175",
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -46,6 +56,23 @@ app = FastAPI(
     description="Panchanga computation engine — daily state, month calendar, festivals, kundali",
     version="2.0.0",
     lifespan=lifespan,
+)
+
+
+def _cors_origins() -> list[str]:
+    configured = os.getenv("CORS_ALLOW_ORIGINS")
+    if not configured:
+        return list(DEFAULT_CORS_ORIGINS)
+
+    origins = [origin.strip() for origin in configured.split(",") if origin.strip()]
+    return origins or list(DEFAULT_CORS_ORIGINS)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins(),
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 
