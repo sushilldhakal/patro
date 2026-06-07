@@ -21,6 +21,7 @@ def compute_lunar_festival(
         paksha=rule["paksha"],
         gregorian_year=gregorian_year,
         adhik_policy=rule.get("adhik_policy", "skip"),
+        date_selection=rule.get("date_selection", "udaya"),
         location=location,
     )
 

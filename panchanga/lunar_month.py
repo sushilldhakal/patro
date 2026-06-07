@@ -20,11 +20,21 @@ class LunarMonth:
     month_index: int
     is_adhik: bool
     sun_rashi_at_purnima: int
+    krishna_month_name: Optional[str] = None
     sankranti_date: Optional[datetime] = None
 
     @property
     def full_name(self) -> str:
         return f"Adhik {self.month_name}" if self.is_adhik else self.month_name
+
+    def name_for_paksha(self, paksha: str) -> str:
+        if self.is_adhik or paksha == "shukla":
+            return self.month_name
+        return self.krishna_month_name or self.month_name
+
+    def full_name_for_paksha(self, paksha: str) -> str:
+        name = self.name_for_paksha(paksha)
+        return f"Adhik {name}" if self.is_adhik else name
 
 
 @dataclass
@@ -91,12 +101,13 @@ def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
 
     sun_rashi = get_sun_rashi_at_time(purnima)
     sankranti_rashi, sankranti = _find_sankranti_in_window(start_amavasya, next_amavasya)
-    month_name = (
-        _lunar_month_name_for_sankranti(sankranti_rashi)
-        if sankranti_rashi is not None
-        else name_lunar_month(start_amavasya, next_amavasya)
-    )
     is_adhik = sankranti is None
+    if sankranti_rashi is not None:
+        month_name = _lunar_month_name_for_sankranti(sankranti_rashi)
+        krishna_month_name = BS_MONTH_NAMES[sankranti_rashi]
+    else:
+        month_name = name_lunar_month(start_amavasya, next_amavasya)
+        krishna_month_name = month_name
 
     return LunarMonth(
         start_amavasya=start_amavasya,
@@ -106,6 +117,7 @@ def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
         month_index=BS_MONTH_NAMES.index(month_name) + 1,
         is_adhik=is_adhik,
         sun_rashi_at_purnima=sun_rashi,
+        krishna_month_name=krishna_month_name,
         sankranti_date=sankranti,
     )
 
@@ -159,11 +171,16 @@ def get_lunar_month_for_date(target: date) -> dict:
         lunar_year = get_lunar_year(gregorian_year)
         for month in lunar_year.months:
             if month.start_amavasya <= check < month.end_amavasya:
+                paksha = "shukla" if check < month.end_purnima else "krishna"
+                month_name = month.name_for_paksha(paksha)
                 return {
-                    "name": month.month_name,
-                    "full_name": month.full_name,
+                    "name": month_name,
+                    "full_name": month.full_name_for_paksha(paksha),
                     "is_adhik": month.is_adhik,
                     "type": "adhik" if month.is_adhik else "nija",
+                    "paksha_model": "purnimanta",
+                    "shukla_month": month.month_name,
+                    "krishna_month": month.krishna_month_name or month.month_name,
                 }
     return {"name": None, "full_name": None, "is_adhik": False, "type": "unknown"}
 
@@ -174,13 +191,16 @@ def find_festival_in_lunar_month(
     paksha: str,
     gregorian_year: int,
     adhik_policy: Literal["skip", "use_adhik", "both"] = "skip",
+    date_selection: Literal["udaya", "boundary"] = "udaya",
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> Optional[date]:
     candidates: list[tuple[date, bool]] = []
 
     for search_year in (gregorian_year - 1, gregorian_year):
         lunar_year = get_lunar_year(search_year)
-        matching_months = [m for m in lunar_year.months if m.month_name == lunar_month_name]
+        matching_months = [
+            m for m in lunar_year.months if m.name_for_paksha(paksha) == lunar_month_name
+        ]
 
         for month in matching_months:
             if adhik_policy == "skip" and month.is_adhik:
@@ -188,6 +208,12 @@ def find_festival_in_lunar_month(
             if adhik_policy == "use_adhik" and not month.is_adhik:
                 if any(m.is_adhik for m in matching_months):
                     continue
+
+            if date_selection == "boundary":
+                boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
+                if boundary:
+                    candidates.append((boundary, False))
+                continue
 
             exact = _search_tithi_in_month(month, tithi, paksha, location)
             if exact:
