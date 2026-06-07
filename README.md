@@ -1,6 +1,8 @@
-# Nepali Panchanga Patro API
+# Surya Panchanga API
 
-REST API for **Nepali festival dates**, **daily panchanga**, and **Bikram Sambat (BS) Patro** calendars. Calculations use Swiss Ephemeris (Lahiri ayanamsa) with Kathmandu as the default observer location.
+**Panchanga computation engine as a service** — structured astronomical time-state JSON for any client (web, mobile, print). Not a UI or PDF generator.
+
+Swiss Ephemeris (Lahiri ayanamsa), Kathmandu default observer.
 
 **Production:** https://patro.onrender.com  
 **Interactive docs:** https://patro.onrender.com/docs
@@ -38,7 +40,161 @@ GET /holidays/2083?lat=28.2&lon=83.9&timezone=Asia/Kathmandu
 
 ---
 
-## API endpoints
+## API architecture
+
+```
+FastAPI
+├── GET  /panchanga/{date}           → daily time-state (BS date by default)
+├── GET  /panchanga/{year}/{month}   → month calendar array
+├── GET  /festivals/{date}           → festivals on a date
+├── GET  /holidays/{year}            → BS-year festival index (cached)
+├── GET  /calendar/header/{y}/{m}    → multi-era header
+├── GET  /kundali/{date}             → planetary positions at sunrise
+└── POST /generate/{year}            → warm holiday cache
+```
+
+Dates use `YYYY-MM-DD`. Default era is **Bikram Sambat** (`2083-02-24`). Pass `?era=ad` for Gregorian (`2026-06-07`).
+
+---
+
+## Core endpoints
+
+### `GET /panchanga/{date}` — daily state
+
+One day = one grid row as JSON.
+
+```bash
+curl "http://localhost:8080/panchanga/2083-02-24"
+curl "http://localhost:8080/panchanga/2026-06-07?era=ad&festivals=true"
+```
+
+```json
+{
+  "date_bs": "2083-02-24",
+  "date_ad": "2026-06-07",
+  "weekday": "आइतवार",
+  "sun": { "sunrise": "05:07", "sunset": "18:57" },
+  "moon": { "rise": "23:58", "set": "10:54" },
+  "tithi": {
+    "name": "Saptami",
+    "name_ne": "सप्तमी",
+    "start": "2026-06-07 02:56",
+    "end": "2026-06-08 03:40",
+    "next": "Ashtami",
+    "next_ne": "अष्टमी"
+  },
+  "nakshatra": { "name": "Dhanishta", "start": "...", "end": "...", "next": "Shatabhisha" },
+  "yoga": { "name": "Vaidhriti", "start": "...", "end": "...", "next": "Vishkumbha" },
+  "karana": { "name": "Vishti", "start": "...", "end": "...", "next": "Bava" },
+  "paksha_ne": "अधिक जेठ कृष्ण पक्ष",
+  "chandra_rashi_ne": "कुम्भ",
+  "ritu_ne": "ग्रीष्म",
+  "aayan_ne": "उत्तरायण",
+  "dinamaan": "13hr 49min",
+  "detail": { }
+}
+```
+
+| Query       | Default | Description                          |
+|------------|---------|--------------------------------------|
+| `era`      | `bs`    | `bs` or `ad` date interpretation     |
+| `festivals`| `false` | Attach festival list                 |
+| `detail`   | `true`  | Full computation block under `detail`|
+
+---
+
+### `GET /panchanga/{year}/{month}` — month calendar
+
+Patro grid as a `calendar[]` array.
+
+```bash
+curl "http://localhost:8080/panchanga/2083/2"
+curl "http://localhost:8080/panchanga/2083/10?full=true"
+```
+
+```json
+{
+  "year_bs": 2083,
+  "month_bs": 2,
+  "month_name": "Jestha",
+  "calendar": [
+    {
+      "day": 1,
+      "date_ad": "2026-05-15",
+      "weekday": "शुक्रवार",
+      "tithi": "Trayodashi",
+      "tithi_ne": "त्रयोदशी",
+      "nakshatra": "Ashwini",
+      "sunrise": "05:15",
+      "sunset": "18:45",
+      "festivals": []
+    }
+  ]
+}
+```
+
+---
+
+### `GET /festivals/{date}`
+
+```bash
+curl "http://localhost:8080/festivals/2083-10-12"
+```
+
+```json
+{
+  "date_bs": "2083-10-12",
+  "date_ad": "2027-01-25",
+  "festivals": [
+    { "id": "shree_panchami", "name": "Shree Panchami", "type": "religious" }
+  ]
+}
+```
+
+---
+
+### `GET /calendar/header/{year}/{month}`
+
+```bash
+curl "http://localhost:8080/calendar/header/2083/10"
+```
+
+```json
+{
+  "bikram_sambat": "2083",
+  "bikram_sambat_month": "Magh",
+  "gregorian": "January 2027",
+  "lunar_month": "Magh",
+  "shaka_sambat": "1948",
+  "nepal_sambat": "1146 (पोहेलागा)"
+}
+```
+
+---
+
+### `GET /kundali/{date}`
+
+Planetary snapshot at sunrise (udaya).
+
+```bash
+curl "http://localhost:8080/kundali/2083-02-24"
+```
+
+```json
+{
+  "date_bs": "2083-02-24",
+  "planets": {
+    "sun": "Vrishabha 22.0°",
+    "moon": "Kumbha 5.1°",
+    "mars": "Karka 18.2°"
+  },
+  "planets_detail": { }
+}
+```
+
+---
+
+## Festival cache
 
 ### Health
 
@@ -375,15 +531,18 @@ curl "https://patro.onrender.com/patro/2083?panchanga=false"
 
 ## Endpoint summary
 
-| Method | Path                         | Description                              |
-|--------|------------------------------|------------------------------------------|
-| `GET`  | `/health`                    | Health check                             |
-| `POST` | `/generate/{year}`           | Precompute BS-year holiday cache         |
-| `GET`  | `/holidays/{year}`           | BS-year festivals (cache-only)           |
-| `GET`  | `/day/{target_date}`         | Festivals + tithi for one Gregorian day  |
-| `GET`  | `/panchanga/{target_date}`   | Full daily panchanga                     |
-| `GET`  | `/patro/{bs_year}/{bs_month}`| BS month Patro grid                      |
-| `GET`  | `/patro/{bs_year}`           | Full BS year Patro                       |
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/panchanga/{date}` | Daily astronomical state |
+| `GET` | `/panchanga/{year}/{month}` | Month calendar array |
+| `GET` | `/festivals/{date}` | Festivals on a date |
+| `GET` | `/holidays/{year}` | BS-year festival index (cached) |
+| `GET` | `/calendar/header/{year}/{month}` | Multi-era header |
+| `GET` | `/kundali/{date}` | Planetary positions |
+| `POST` | `/generate/{year}` | Precompute holiday cache |
+| `GET` | `/health` | Health check |
+
+**Legacy v1** (still supported): `/patro/{year}/{month}`, `/patro/{year}`, `/day/{ad_date}`
 
 ---
 
@@ -408,13 +567,13 @@ python scripts/precompute.py --start 2026 --years 10
 ## Project layout
 
 ```
-app.py                 # FastAPI routes
-core/                  # Ephemeris, location, time utilities
-panchanga/             # Tithi, BS calendar, daily panchanga
-rules/                 # Festival rule engine + festival_rules_v3.json
-service/               # Holiday cache, Patro generation, startup warm
-scripts/precompute.py  # Offline cache generation
-cache/                 # Generated JSON (gitignored, created at runtime)
+app.py                      # FastAPI routes (v2 panchanga API)
+service/panchanga_api.py    # Time-state response builders
+core/                       # Ephemeris, location, time utilities
+panchanga/                  # Tithi, BS calendar, daily computation
+rules/                      # Festival rule engine
+service/                    # Holiday cache, startup warm
+cache/                      # Generated JSON (gitignored)
 ```
 
 ---

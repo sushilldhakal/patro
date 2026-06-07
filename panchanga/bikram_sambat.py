@@ -79,3 +79,38 @@ def bs_year_date_range(bs_year: int) -> tuple[date, date]:
 def bs_month_name(bs_month: int, nepali: bool = False) -> str:
     names = BS_MONTH_NAMES_NEPALI if nepali else BS_MONTH_NAMES
     return names[bs_month - 1]
+
+
+def bs_to_gregorian(bs_year: int, bs_month: int, bs_day: int) -> date:
+    """Convert Bikram Sambat (year, month, day) to Gregorian civil date."""
+    if not 2000 <= bs_year <= 2200:
+        raise ValueError("bs_year out of supported range")
+    if not 1 <= bs_month <= 12:
+        raise ValueError("bs_month must be 1..12")
+
+    month_length = get_bs_month_length(bs_year, bs_month)
+    if not 1 <= bs_day <= month_length:
+        raise ValueError(f"bs_day must be 1..{month_length} for BS {bs_year}/{bs_month}")
+
+    return get_bs_month_start(bs_year, bs_month) + timedelta(days=bs_day - 1)
+
+
+def format_bs_date(bs_year: int, bs_month: int, bs_day: int) -> str:
+    return f"{bs_year}-{bs_month:02d}-{bs_day:02d}"
+
+
+def parse_bs_date(value: str) -> tuple[int, int, int]:
+    """Parse ``2083-10-12`` into (year, month, day)."""
+    parts = value.strip().split("-")
+    if len(parts) != 3:
+        raise ValueError(f"Invalid BS date: {value}")
+    try:
+        bs_year, bs_month, bs_day = (int(p) for p in parts)
+    except ValueError as exc:
+        raise ValueError(f"Invalid BS date: {value}") from exc
+    return bs_year, bs_month, bs_day
+
+
+def shaka_year(greg: date) -> int:
+    """Shaka Sambat year for a Gregorian date."""
+    return greg.year - 78 if greg.month >= 4 else greg.year - 79
