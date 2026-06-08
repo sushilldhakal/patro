@@ -61,10 +61,15 @@ app = FastAPI(
 
 
 def _cors_origins() -> list[str]:
-    configured = config.cors_origins()
-    if configured is None:
-        return list(DEFAULT_CORS_ORIGINS)
-    return configured or list(DEFAULT_CORS_ORIGINS)
+    """Merge env-configured origins with defaults so local dev ports stay allowed."""
+    configured = config.cors_origins() or []
+    merged: list[str] = []
+    seen: set[str] = set()
+    for origin in (*DEFAULT_CORS_ORIGINS, *configured):
+        if origin not in seen:
+            seen.add(origin)
+            merged.append(origin)
+    return merged
 
 
 app.add_middleware(
