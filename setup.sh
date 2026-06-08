@@ -40,10 +40,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable "${SERVICE_NAME}"
 sudo systemctl restart "${SERVICE_NAME}"
 
-echo "==> Opening port 8000"
+echo "==> Opening port 8000 (UFW + OCI host iptables)"
 if command -v ufw >/dev/null 2>&1; then
   sudo ufw allow 8000/tcp comment "Nepali Holiday API" || true
 fi
+bash scripts/oci-firewall.sh
 
 echo "==> Service status"
 sudo systemctl --no-pager status "${SERVICE_NAME}"
