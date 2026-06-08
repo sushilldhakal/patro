@@ -19,7 +19,7 @@ from panchanga.bikram_sambat import (
     shaka_year,
 )
 from panchanga.daily import build_daily_panchanga
-from service.patro_generator import _collect_bs_year_festivals, _festivals_for_day
+from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
 def _local_stamp(iso_dt: str | None, timezone_name: str) -> str | None:

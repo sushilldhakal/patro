@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 from datetime import date
 from typing import Literal
@@ -10,14 +9,15 @@ from typing import Literal
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import config
 from core.location import resolve_location
-from service.holiday_generator import (
+from services.holiday_generator import (
     HolidayCacheMissError,
     get_bs_holidays,
     holidays_on_date,
     precompute_bs_year,
 )
-from service.panchanga_api import (
+from services.panchanga_api import (
     build_calendar_header,
     build_daily_state,
     build_festivals_for_date,
@@ -25,9 +25,10 @@ from service.panchanga_api import (
     build_month_calendar,
     resolve_panchanga_date,
 )
-from service.patro_generator import generate_bs_month_patro, generate_patro
-from service.startup import warm_holiday_cache
+from services.patro_generator import generate_bs_month_patro, generate_patro
+from services.startup import warm_holiday_cache
 
+logging.basicConfig(level=config.log_level())
 logger = logging.getLogger(__name__)
 
 DEFAULT_CORS_ORIGINS = (
@@ -60,12 +61,10 @@ app = FastAPI(
 
 
 def _cors_origins() -> list[str]:
-    configured = os.getenv("CORS_ALLOW_ORIGINS")
-    if not configured:
+    configured = config.cors_origins()
+    if configured is None:
         return list(DEFAULT_CORS_ORIGINS)
-
-    origins = [origin.strip() for origin in configured.split(",") if origin.strip()]
-    return origins or list(DEFAULT_CORS_ORIGINS)
+    return configured or list(DEFAULT_CORS_ORIGINS)
 
 
 app.add_middleware(
@@ -93,16 +92,10 @@ def _validate_bs_month(month: int) -> None:
         raise HTTPException(status_code=400, detail="month must be 1..12")
 
 
-# --- Health ---
-
-
 @app.get("/health")
 def health():
     warmed = getattr(app.state, "precomputed_bs_years", None)
     return {"status": "ok", "precomputed_bs_years": warmed}
-
-
-# --- Core Panchanga ---
 
 
 @app.get("/panchanga/{bs_year}/{bs_month}")
@@ -148,9 +141,6 @@ def panchanga_day(
     )
 
 
-# --- Festivals ---
-
-
 @app.get("/festivals/bs/{bs_year}")
 def festivals_bs_year(
     bs_year: int,
@@ -163,7 +153,7 @@ def festivals_bs_year(
     _validate_bs_year(bs_year)
     location = _location(lat, lon, timezone)
     try:
-        from service.holiday_generator import FestivalCacheMissError, get_bs_festivals
+        from services.holiday_generator import FestivalCacheMissError, get_bs_festivals
 
         return get_bs_festivals(bs_year, location, cache_only=True, bs_month=month)
     except FestivalCacheMissError as exc:
@@ -224,9 +214,6 @@ def generate_year(
     }
 
 
-# --- Calendar header ---
-
-
 @app.get("/calendar/header/{bs_year}/{bs_month}")
 def calendar_header(
     bs_year: int,
@@ -245,9 +232,6 @@ def calendar_header(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
-# --- Kundali ---
-
-
 @app.get("/kundali/{date_key}")
 def kundali(
     date_key: str,
@@ -262,9 +246,6 @@ def kundali(
         return build_kundali(date_key, location, era=era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-
-# --- Legacy aliases (v1) ---
 
 
 @app.get("/day/{target_date}")
@@ -310,9 +291,3 @@ def patro_year_legacy(
         return generate_patro(bs_year, location, include_panchanga=panchanga)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run("app:app", host="0.0.0.0", port=8080, reload=True)

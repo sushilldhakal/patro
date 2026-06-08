@@ -8,7 +8,7 @@ from datetime import date
 
 from core.location import DEFAULT_LOCATION
 from panchanga.bikram_sambat import gregorian_to_bs
-from service.holiday_generator import precompute_bs_range
+from services.holiday_generator import precompute_bs_range
 
 logger = logging.getLogger(__name__)
 

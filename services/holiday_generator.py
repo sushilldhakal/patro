@@ -17,7 +17,7 @@ from panchanga.bikram_sambat import (
 )
 from panchanga.tithi import get_udaya_tithi
 from rules.engine import bs_year_for_gregorian, compute_festival_dates
-from service.cache_meta import cache_is_valid, stamp_payload
+from services.cache_meta import cache_is_valid, stamp_payload
 
 
 class HolidayCacheMissError(LookupError):

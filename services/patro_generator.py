@@ -14,8 +14,8 @@ from panchanga.bikram_sambat import (
     iter_bs_month_days,
 )
 from panchanga.daily import build_daily_panchanga
-from service.cache_meta import stamp_payload
-from service.holiday_generator import get_bs_festivals, get_festivals
+from services.cache_meta import stamp_payload
+from services.holiday_generator import get_bs_festivals, get_festivals
 
 
 def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:

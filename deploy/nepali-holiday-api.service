@@ -1,0 +1,24 @@
+[Unit]
+Description=Nepali Holiday API (FastAPI + Uvicorn)
+Documentation=https://github.com/sushilldhakal/patro
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/patro
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/home/ubuntu/patro/.env
+ExecStart=/home/ubuntu/patro/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nepali-holiday-api
+
+[Install]
+WantedBy=multi-user.target
