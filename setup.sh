@@ -49,5 +49,10 @@ bash scripts/oci-firewall.sh
 echo "==> Service status"
 sudo systemctl --no-pager status "${SERVICE_NAME}"
 
+PUBLIC_IP="$(curl -sf ifconfig.me 2>/dev/null || echo 'YOUR_VM_IP')"
 echo ""
-echo "Setup complete. API should be reachable at http://$(curl -s ifconfig.me 2>/dev/null || echo 'YOUR_VM_IP'):8000/health"
+echo "Setup complete. API: http://${PUBLIC_IP}:8000/health"
+echo ""
+echo "Next: enable HTTPS (required for GitHub Pages demo):"
+echo "  bash scripts/setup-ssl.sh"
+echo "  # or: PATRO_API_DOMAIN=api.yourdomain.com bash scripts/setup-ssl.sh"
