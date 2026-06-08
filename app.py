@@ -151,6 +151,25 @@ def panchanga_day(
 # --- Festivals ---
 
 
+@app.get("/festivals/bs/{bs_year}")
+def festivals_bs_year(
+    bs_year: int,
+    month: int | None = Query(None, ge=1, le=12, description="Bikram Sambat month (1–12)"),
+    lat: float | None = Query(None),
+    lon: float | None = Query(None),
+    timezone: str | None = Query(None),
+):
+    """All festivals/observances for a BS year (includes regional events)."""
+    _validate_bs_year(bs_year)
+    location = _location(lat, lon, timezone)
+    try:
+        from service.holiday_generator import FestivalCacheMissError, get_bs_festivals
+
+        return get_bs_festivals(bs_year, location, cache_only=True, bs_month=month)
+    except FestivalCacheMissError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @app.get("/festivals/{date_key}")
 def festivals_day(
     date_key: str,
@@ -175,7 +194,7 @@ def holidays(
     lon: float | None = Query(None),
     timezone: str | None = Query(None),
 ):
-    """BS-year festival list (cache-backed)."""
+    """BS-year public holiday list (cache-backed; festivals are on /festivals)."""
     _validate_bs_year(year)
     location = _location(lat, lon, timezone)
     try:

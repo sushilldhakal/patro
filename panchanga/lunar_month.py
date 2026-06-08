@@ -1,11 +1,13 @@
-"""Lunar month windows and festival date lookup (Amavasya→Amavasya model)."""
+"""Lunar month windows and festival date lookup (Project Parva compatible)."""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from typing import Literal, Optional
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.adhik_maas import find_amavasya, find_purnima
+from panchanga.adhik_maas import find_amavasya, find_purnima, is_adhik_maas
 from panchanga.sankranti import BS_MONTH_NAMES, find_sankranti, get_sun_rashi_at_time
 from panchanga.tithi import get_udaya_tithi
 from panchanga.tithi_boundaries import find_next_tithi
@@ -20,21 +22,11 @@ class LunarMonth:
     month_index: int
     is_adhik: bool
     sun_rashi_at_purnima: int
-    krishna_month_name: Optional[str] = None
     sankranti_date: Optional[datetime] = None
 
     @property
     def full_name(self) -> str:
         return f"Adhik {self.month_name}" if self.is_adhik else self.month_name
-
-    def name_for_paksha(self, paksha: str) -> str:
-        if self.is_adhik or paksha == "shukla":
-            return self.month_name
-        return self.krishna_month_name or self.month_name
-
-    def full_name_for_paksha(self, paksha: str) -> str:
-        name = self.name_for_paksha(paksha)
-        return f"Adhik {name}" if self.is_adhik else name
 
 
 @dataclass
@@ -46,46 +38,14 @@ class LunarYear:
     adhik_month_name: Optional[str] = None
 
 
-def _lunar_month_name_for_sankranti(target_rashi: int) -> str:
-    # A lunar month is named for the solar month that begins at the sankranti
-    # inside it; e.g. Tula sankranti falls in Ashwin lunar month.
-    return BS_MONTH_NAMES[(target_rashi - 1) % 12]
-
-
-def _find_sankranti_in_window(
-    start_amavasya: datetime,
-    end_amavasya: datetime,
-) -> tuple[int, datetime] | tuple[None, None]:
-    for target_rashi in range(12):
-        candidate = find_sankranti(target_rashi, start_amavasya, max_days=35)
-        if candidate and start_amavasya <= candidate < end_amavasya:
-            return target_rashi, candidate
-    return None, None
-
-
-def _find_next_sankranti(after: datetime, max_days: int = 40) -> tuple[int, datetime] | tuple[None, None]:
-    search_end = after + timedelta(days=max_days)
-    for target_rashi in range(12):
-        candidate = find_sankranti(target_rashi, after, max_days=max_days)
-        if candidate and after <= candidate < search_end:
-            return target_rashi, candidate
-    return None, None
-
-
 def name_lunar_month(start_amavasya: datetime, end_amavasya: datetime) -> str:
-    sankranti_rashi, _ = _find_sankranti_in_window(start_amavasya, end_amavasya)
-    if sankranti_rashi is not None:
-        return _lunar_month_name_for_sankranti(sankranti_rashi)
-
-    next_rashi, _ = _find_next_sankranti(end_amavasya)
-    if next_rashi is not None:
-        return _lunar_month_name_for_sankranti(next_rashi)
-
+    """Name a lunar month using Sun's rashi at the month's Purnima."""
     search_start = start_amavasya + timedelta(days=2)
     purnima = find_purnima(search_start)
     if purnima is None or purnima >= end_amavasya:
         midpoint = start_amavasya + (end_amavasya - start_amavasya) / 2
         purnima = find_purnima(midpoint - timedelta(days=3)) or midpoint
+
     sun_rashi = get_sun_rashi_at_time(purnima)
     return BS_MONTH_NAMES[sun_rashi]
 
@@ -100,24 +60,24 @@ def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
         raise ValueError(f"Could not find Amavasya after {purnima}")
 
     sun_rashi = get_sun_rashi_at_time(purnima)
-    sankranti_rashi, sankranti = _find_sankranti_in_window(start_amavasya, next_amavasya)
-    is_adhik = sankranti is None
-    if sankranti_rashi is not None:
-        month_name = _lunar_month_name_for_sankranti(sankranti_rashi)
-        krishna_month_name = BS_MONTH_NAMES[sankranti_rashi]
-    else:
-        month_name = name_lunar_month(start_amavasya, next_amavasya)
-        krishna_month_name = month_name
+    month_name = name_lunar_month(start_amavasya, next_amavasya)
+    is_adhik = is_adhik_maas(start_amavasya, next_amavasya)
+
+    sankranti = None
+    for target_rashi in range(12):
+        candidate = find_sankranti(target_rashi, start_amavasya, max_days=35)
+        if candidate and start_amavasya <= candidate < next_amavasya:
+            sankranti = candidate
+            break
 
     return LunarMonth(
         start_amavasya=start_amavasya,
         end_purnima=purnima,
         end_amavasya=next_amavasya,
         month_name=month_name,
-        month_index=BS_MONTH_NAMES.index(month_name) + 1,
+        month_index=(sun_rashi + 1) if sun_rashi < 12 else 1,
         is_adhik=is_adhik,
         sun_rashi_at_purnima=sun_rashi,
-        krishna_month_name=krishna_month_name,
         sankranti_date=sankranti,
     )
 
@@ -164,23 +124,17 @@ def get_lunar_year(gregorian_year: int) -> LunarYear:
 
 def get_lunar_month_for_date(target: date) -> dict:
     """Return lunar month identity for a Gregorian civil date."""
-    from datetime import datetime, timezone
-
     check = datetime.combine(target, datetime.min.time().replace(hour=12), tzinfo=timezone.utc)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         for month in lunar_year.months:
             if month.start_amavasya <= check < month.end_amavasya:
-                paksha = "shukla" if check < month.end_purnima else "krishna"
-                month_name = month.name_for_paksha(paksha)
                 return {
-                    "name": month_name,
-                    "full_name": month.full_name_for_paksha(paksha),
+                    "name": month.month_name,
+                    "full_name": month.full_name,
                     "is_adhik": month.is_adhik,
                     "type": "adhik" if month.is_adhik else "nija",
-                    "paksha_model": "purnimanta",
-                    "shukla_month": month.month_name,
-                    "krishna_month": month.krishna_month_name or month.month_name,
+                    "paksha_model": "amanta",
                 }
     return {"name": None, "full_name": None, "is_adhik": False, "type": "unknown"}
 
@@ -198,9 +152,7 @@ def find_festival_in_lunar_month(
 
     for search_year in (gregorian_year - 1, gregorian_year):
         lunar_year = get_lunar_year(search_year)
-        matching_months = [
-            m for m in lunar_year.months if m.name_for_paksha(paksha) == lunar_month_name
-        ]
+        matching_months = [m for m in lunar_year.months if m.month_name == lunar_month_name]
 
         for month in matching_months:
             if adhik_policy == "skip" and month.is_adhik:

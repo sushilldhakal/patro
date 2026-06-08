@@ -15,7 +15,7 @@ from panchanga.bikram_sambat import (
 )
 from panchanga.daily import build_daily_panchanga
 from service.cache_meta import stamp_payload
-from service.holiday_generator import get_bs_holidays, get_holidays
+from service.holiday_generator import get_bs_festivals, get_festivals
 
 
 def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
@@ -30,8 +30,8 @@ def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
 
 def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
     try:
-        payload = get_bs_holidays(bs_year, location, cache_only=True)
-        return payload["holidays"]
+        payload = get_bs_festivals(bs_year, location, cache_only=True)
+        return payload["festivals"]
     except LookupError:
         pass
 
@@ -40,12 +40,12 @@ def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list
     merged: dict[str, dict] = {}
 
     for greg_year in sorted(gregorian_years):
-        payload = get_holidays(greg_year, location)
-        for holiday in payload["holidays"]:
-            start = date.fromisoformat(holiday["start_date"])
-            end = date.fromisoformat(holiday["end_date"])
+        payload = get_festivals(greg_year, location)
+        for festival in payload["festivals"]:
+            start = date.fromisoformat(festival["start_date"])
+            end = date.fromisoformat(festival["end_date"])
             if start <= year_end and end >= year_start:
-                merged[holiday["id"]] = holiday
+                merged[festival["id"]] = festival
 
     return sorted(merged.values(), key=lambda h: h["start_date"])
 

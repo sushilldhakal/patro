@@ -210,9 +210,9 @@ def build_daily_panchanga(
     payload["ayanamsa"] = payload["lahiri_ayanamsa"]
 
     if include_festivals:
-        from service.holiday_generator import holidays_on_date
+        from service.holiday_generator import festivals_on_date
 
-        day_holidays = holidays_on_date(target, location)
-        payload["festivals"] = day_holidays["holidays"]
+        day_festivals = festivals_on_date(target, location)
+        payload["festivals"] = day_festivals["festivals"]
 
     return payload

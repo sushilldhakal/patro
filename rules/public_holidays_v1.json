@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Nepal public / government holidays — a strict subset of computed festivals.",
+    "source": "aligned with festivals.json is_national_holiday",
+    "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
+  },
+  "holiday_ids": [
+    "bs-new-year",
+    "maghe-sankranti",
+    "buddha-jayanti",
+    "janai-purnima",
+    "teej",
+    "krishna-janmashtami",
+    "dashain",
+    "chhath",
+    "tihar",
+    "saraswati-puja",
+    "holi",
+    "shivaratri"
+  ]
+}

@@ -1,230 +1,154 @@
 {
   "_meta": {
-    "version": "1.0.0",
-    "description": "Authority date overrides for published BS-year festival defaults.",
-    "source": "public festival authority snapshot supplied for BS 2083"
+    "version": "1.1.0",
+    "description": "Authority overrides for public holidays only (subset of festivals).",
+    "source": "computed from festival_rules_v3 + Parva-compatible lunar/BS calendar"
   },
   "bs_years": {
     "2083": {
-      "dashain": {
-        "name_en": "Dashain",
-        "name_ne": "दशैं",
-        "start_date": "2026-10-11",
-        "end_date": "2026-10-25",
-        "duration_days": 15,
-        "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Nepal's greatest festival celebrating the eternal victory of good over evil"
-      },
-      "tihar": {
-        "name_en": "Tihar",
-        "name_ne": "तिहार",
-        "start_date": "2026-11-08",
-        "end_date": "2026-11-12",
-        "duration_days": 5,
-        "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Festival of lights honoring the sacred bond between humans, animals, and the divine"
-      },
-      "indra-jatra": {
-        "name_en": "Indra Jatra",
-        "name_ne": "इन्द्र जात्रा",
-        "start_date": "2026-09-25",
-        "end_date": "2026-10-02",
-        "duration_days": 8,
-        "type": "lunar",
-        "category": "newari",
-        "importance": "regional",
-        "notes": "Kathmandu's grandest street festival with the Living Goddess"
-      },
-      "shivaratri": {
-        "name_en": "Maha Shivaratri",
-        "name_ne": "महाशिवरात्री",
-        "start_date": "2027-03-06",
-        "end_date": "2027-03-06",
+      "bs-new-year": {
+        "id": "bs-new-year",
+        "name_en": "Nepali New Year",
+        "name_ne": "नयाँ वर्ष",
+        "start_date": "2026-04-14",
+        "end_date": "2026-04-14",
         "duration_days": 1,
-        "type": "lunar",
+        "type": "solar",
         "category": "national",
         "importance": "national",
-        "notes": "Night of Lord Shiva with all-night vigils at Pashupatinath"
-      },
-      "rato-machhindranath": {
-        "name_en": "Rato Machhindranath Jatra",
-        "name_ne": "रातो मच्छिन्द्रनाथ जात्रा",
-        "start_date": "2027-04-09",
-        "end_date": "2027-05-08",
-        "duration_days": 30,
-        "type": "lunar",
-        "category": "newari",
-        "importance": "regional",
-        "notes": "Nepal's longest chariot festival in Patan"
-      },
-      "vijaya-dashami": {
-        "name_en": "Vijaya Dashami",
-        "name_ne": "विजया दशमी",
-        "start_date": "2026-10-19",
-        "end_date": "2026-10-19",
-        "duration_days": 1,
-        "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Main day of Dashain - tika and jamara blessings from elders"
-      },
-      "holi": {
-        "name_en": "Holi",
-        "name_ne": "होली",
-        "start_date": "2027-03-22",
-        "end_date": "2027-03-23",
-        "duration_days": 2,
-        "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Festival of colors celebrating spring and love"
-      },
-      "teej": {
-        "name_en": "Teej",
-        "name_ne": "तीज",
-        "start_date": "2026-09-14",
-        "end_date": "2026-09-16",
-        "duration_days": 3,
-        "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Women's festival of fasting, dancing, and devotion"
+        "notes": "Mesh Sankranti, Baishakh 1"
       },
       "buddha-jayanti": {
+        "id": "buddha-jayanti",
         "name_en": "Buddha Jayanti",
         "name_ne": "बुद्ध जयन्ती",
-        "start_date": "2027-04-20",
-        "end_date": "2027-04-20",
+        "start_date": "2026-05-01",
+        "end_date": "2026-05-01",
         "duration_days": 1,
         "type": "lunar",
         "category": "buddhist",
         "importance": "national",
-        "notes": "Celebrating Buddha's birth, enlightenment, and passing"
+        "notes": "Baisakh Purnima, Buddha's birth"
       },
-      "gai-jatra": {
-        "name_en": "Gai Jatra",
-        "name_ne": "गाईजात्रा",
-        "start_date": "2026-08-29",
-        "end_date": "2026-08-29",
+      "janai-purnima": {
+        "id": "janai-purnima",
+        "name_en": "Janai Purnima",
+        "name_ne": "जनै पूर्णिमा",
+        "start_date": "2026-07-29",
+        "end_date": "2026-07-29",
         "duration_days": 1,
         "type": "lunar",
-        "category": "newari",
-        "importance": "regional",
-        "notes": "Festival of cows honoring the deceased with humor and satire"
-      },
-      "mha-puja": {
-        "name_en": "Mha Puja",
-        "name_ne": "म्ह पूजा",
-        "start_date": "2026-11-11",
-        "end_date": "2026-11-11",
-        "duration_days": 1,
-        "type": "lunar",
-        "category": "newari",
-        "importance": "regional",
-        "notes": "Worship of self and Nepal Sambat New Year"
-      },
-      "bs-new-year": {
-        "name_en": "Nepali New Year",
-        "name_ne": "नयाँ वर्ष",
-        "start_date": "2027-04-14",
-        "end_date": "2027-04-14",
-        "duration_days": 1,
-        "type": "solar",
-        "category": "national",
+        "category": "hindu",
         "importance": "national",
-        "notes": "Beginning of the Bikram Sambat calendar year"
+        "notes": "Sacred thread ceremony"
       },
-      "bisket-jatra": {
-        "name_en": "Bisket Jatra",
-        "name_ne": "बिस्केट जात्रा",
-        "start_date": "2027-04-08",
-        "end_date": "2027-04-16",
-        "duration_days": 9,
-        "type": "solar",
-        "category": "newari",
-        "importance": "regional",
-        "notes": "Bhaktapur's dramatic New Year chariot festival"
-      },
-      "chhath": {
-        "name_en": "Chhath Parva",
-        "name_ne": "छठ पर्व",
-        "start_date": "2026-11-15",
-        "end_date": "2026-11-18",
-        "duration_days": 4,
+      "teej": {
+        "id": "teej",
+        "name_en": "Haritalika Teej",
+        "name_ne": "हरितालिका तीज",
+        "start_date": "2026-08-15",
+        "end_date": "2026-08-17",
+        "duration_days": 3,
         "type": "lunar",
-        "category": "national",
+        "category": "hindu",
         "importance": "national",
-        "notes": "Ancient sun worship festival at riverbanks"
+        "notes": "Dar Khane Din to Rishi Panchami"
       },
       "krishna-janmashtami": {
+        "id": "krishna-janmashtami",
         "name_en": "Krishna Janmashtami",
         "name_ne": "कृष्ण जन्माष्टमी",
         "start_date": "2026-09-04",
         "end_date": "2026-09-04",
         "duration_days": 1,
         "type": "lunar",
-        "category": "national",
+        "category": "hindu",
         "importance": "national",
-        "notes": "Birthday celebration of Lord Krishna"
+        "notes": "Krishna's birthday"
       },
-      "bhai-tika": {
-        "name_en": "Bhai Tika",
-        "name_ne": "भाइ टीका",
-        "start_date": "2026-11-12",
-        "end_date": "2026-11-12",
-        "duration_days": 1,
+      "dashain": {
+        "id": "dashain",
+        "name_en": "Dashain",
+        "name_ne": "दशैं",
+        "start_date": "2026-09-12",
+        "end_date": "2026-09-26",
+        "duration_days": 15,
         "type": "lunar",
-        "category": "national",
+        "category": "hindu",
         "importance": "national",
-        "notes": "Sisters bless brothers with tika and flower garlands"
+        "notes": "Ghatasthapana to Kojagrat Purnima"
       },
-      "maghi": {
-        "name_en": "Maghi",
-        "name_ne": "माघी",
-        "start_date": "2027-01-15",
-        "end_date": "2027-01-15",
-        "duration_days": 1,
-        "type": "solar",
-        "category": "regional",
-        "importance": "national",
-        "notes": "Tharu New Year and harvest festival"
-      },
-      "janai-purnima": {
-        "name_en": "Janai Purnima",
-        "name_ne": "जनैपूर्णिमा",
-        "start_date": "2026-08-28",
-        "end_date": "2026-08-28",
-        "duration_days": 1,
+      "chhath": {
+        "id": "chhath",
+        "name_en": "Chhath Puja",
+        "name_ne": "छठ पूजा",
+        "start_date": "2026-10-16",
+        "end_date": "2026-10-19",
+        "duration_days": 4,
         "type": "lunar",
-        "category": "national",
-        "importance": "national",
-        "notes": "Sacred thread ceremony and Raksha Bandhan"
-      },
-      "yomari-punhi": {
-        "name_en": "Yomari Punhi",
-        "name_ne": "योमरी पुन्ही",
-        "start_date": "2026-12-25",
-        "end_date": "2026-12-25",
-        "duration_days": 1,
-        "type": "lunar",
-        "category": "newari",
+        "category": "hindu",
         "importance": "regional",
-        "notes": "Newari harvest festival with sweet rice dumplings"
+        "notes": "Sun worship, Terai region"
+      },
+      "tihar": {
+        "id": "tihar",
+        "name_en": "Tihar",
+        "name_ne": "तिहार",
+        "start_date": "2026-11-08",
+        "end_date": "2026-11-12",
+        "duration_days": 5,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "Kaag Tihar to Bhai Tika"
+      },
+      "saraswati-puja": {
+        "id": "saraswati-puja",
+        "name_en": "Saraswati Puja",
+        "name_ne": "सरस्वती पूजा",
+        "start_date": "2027-01-13",
+        "end_date": "2027-01-13",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "Basant Panchami"
       },
       "maghe-sankranti": {
+        "id": "maghe-sankranti",
         "name_en": "Maghe Sankranti",
         "name_ne": "माघे संक्रान्ति",
         "start_date": "2027-01-14",
         "end_date": "2027-01-14",
         "duration_days": 1,
         "type": "solar",
-        "category": "national",
+        "category": "hindu",
         "importance": "national",
-        "notes": "Winter solstice celebration with special foods and holy baths"
+        "notes": "Sun enters Makara"
+      },
+      "holi": {
+        "id": "holi",
+        "name_en": "Holi",
+        "name_ne": "होली",
+        "start_date": "2027-02-20",
+        "end_date": "2027-02-21",
+        "duration_days": 2,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "Falgun Purnima"
+      },
+      "shivaratri": {
+        "id": "shivaratri",
+        "name_en": "Maha Shivaratri",
+        "name_ne": "महाशिवरात्री",
+        "start_date": "2027-03-07",
+        "end_date": "2027-03-07",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "Pashupatinath vigil"
       }
     }
   }

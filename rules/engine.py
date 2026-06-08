@@ -6,7 +6,8 @@ from datetime import date, timedelta
 from typing import Any, Optional
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.lunar_month import find_festival_in_lunar_month, get_lunar_year
+from panchanga.bs_year import bs_solar_year_for_gregorian_year
+from panchanga.lunar_month import find_festival_in_lunar_month
 from panchanga.sankranti import find_makara_sankranti, find_mesh_sankranti
 
 
@@ -67,4 +68,5 @@ def compute_festival_dates(
 
 
 def bs_year_for_gregorian(gregorian_year: int) -> int:
-    return get_lunar_year(gregorian_year).bs_year
+    """Approximate BS year label for a Gregorian calendar year."""
+    return bs_solar_year_for_gregorian_year(gregorian_year, 1)

@@ -210,7 +210,6 @@
             "tithi": 10,
             "paksha": "shukla",
             "adhik_policy": "skip",
-            "date_selection": "boundary",
             "duration_days": 1,
             "notes": "Main day of Dashain",
             "importance": "national",

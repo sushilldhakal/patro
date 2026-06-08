@@ -47,7 +47,8 @@ FastAPI
 ├── GET  /panchanga/{date}           → daily time-state (BS date by default)
 ├── GET  /panchanga/{year}/{month}   → month calendar array
 ├── GET  /festivals/{date}           → festivals on a date
-├── GET  /holidays/{year}            → BS-year festival index (cached)
+├── GET  /festivals/bs/{year}        → all festivals for a BS year (cached)
+├── GET  /holidays/{year}            → public holidays for a BS year (cached subset)
 ├── GET  /calendar/header/{y}/{m}    → multi-era header
 ├── GET  /kundali/{date}             → planetary positions at sunrise
 └── POST /generate/{year}            → warm holiday cache
@@ -251,9 +252,13 @@ curl -X POST https://patro.onrender.com/generate/2083
 
 ---
 
+#### `GET /festivals/bs/{year}`
+
+Return **all** computed festivals and observances for a BS year (includes regional jatras and sub-days). Same cache as `/patro` festival markers.
+
 #### `GET /holidays/{year}`
 
-Return festivals for a BS year from cache (instant).
+Return **public / national holidays** for a BS year from cache (instant). This is a filtered subset of festivals — see `rules/public_holidays_v1.json` (aligned with Project Parva `is_national_holiday`).
 
 | Path param | Type | Range        | Description   |
 |-----------|------|--------------|---------------|
@@ -281,7 +286,7 @@ Return festivals for a BS year from cache (instant).
     "timezone": "Asia/Kathmandu",
     "name": "Kathmandu"
   },
-  "count": 20,
+  "count": 12,
   "holidays": [
     {
       "id": "bs-new-year",
@@ -293,6 +298,7 @@ Return festivals for a BS year from cache (instant).
       "type": "solar",
       "category": "national",
       "importance": "national",
+      "is_public_holiday": true,
       "notes": "Mesh Sankranti, Baishakh 1"
     }
   ],
@@ -536,7 +542,8 @@ curl "https://patro.onrender.com/patro/2083?panchanga=false"
 | `GET` | `/panchanga/{date}` | Daily astronomical state |
 | `GET` | `/panchanga/{year}/{month}` | Month calendar array |
 | `GET` | `/festivals/{date}` | Festivals on a date |
-| `GET` | `/holidays/{year}` | BS-year festival index (cached) |
+| `GET` | `/festivals/bs/{year}` | All festivals for a BS year (cached) |
+| `GET` | `/holidays/{year}` | Public holidays for a BS year (cached subset) |
 | `GET` | `/calendar/header/{year}/{month}` | Multi-era header |
 | `GET` | `/kundali/{date}` | Planetary positions |
 | `POST` | `/generate/{year}` | Precompute holiday cache |
