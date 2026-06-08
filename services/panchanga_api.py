@@ -94,6 +94,8 @@ def build_daily_state(
         "aayan_ne": raw["aayan"]["name_ne"],
         "dinamaan": raw["dinamaan"]["label_en"],
         "location": raw["location"],
+        "lunar_calendar": raw.get("lunar_calendar"),
+        "bs_date": raw["bs_date"],
     }
 
     if include_festivals and "festivals" in raw:

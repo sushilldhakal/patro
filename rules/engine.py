@@ -16,6 +16,7 @@ def compute_lunar_festival(
     gregorian_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> Optional[date]:
+    month_model = rule.get("month_model", "festival")
     return find_festival_in_lunar_month(
         lunar_month_name=rule["lunar_month"],
         tithi=int(rule["tithi"]),
@@ -24,6 +25,7 @@ def compute_lunar_festival(
         adhik_policy=rule.get("adhik_policy", "skip"),
         date_selection=rule.get("date_selection", "udaya"),
         location=location,
+        month_model=month_model,
     )
 
 

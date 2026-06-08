@@ -371,7 +371,9 @@ curl https://patro.onrender.com/day/2026-10-20
 
 #### `GET /panchanga/{target_date}`
 
-Full daily panchanga at sunrise (udaya) in Nepali Patro style: BS/NS/Gregorian display headers, tithi/nakshatra/yoga/karana with end times and उपरान्त (next element), adhik paksha labels, dinamaan (घडी/पला), Uttarayana/Dakshinayana, chandra/surya rashi, ritu, Lahiri ayanamsa, sun/moon times, planetary positions, and optional festivals.
+Full daily panchanga at sunrise (udaya) in Nepali Patro style: BS/NS/Gregorian display headers, tithi/nakshatra/yoga/karana with end times and उपरान्त (next element), adhik paksha labels, dinamaan (घडी/पला), Uttarayana/Dakshinayana, chandra/surya rashi, ritu, Lahiri ayanamsa, sun/moon times, planetary positions, optional festivals, and **`lunar_calendar`** (three layers: `amanta`, `purnimant`, `festival_masa` + `adhik_maas`).
+
+Festival dates use `month_model: festival` by default — Purnimant windows with Adhik lag, plus MoHA-style civil BS Purnima resolution for Shrawan Purnima (जनै पूर्णिमा). Public holidays still honor `rules/holiday_overrides_v1.json` when precomputed.
 
 | Path param     | Type | Format       |
 |---------------|------|--------------|

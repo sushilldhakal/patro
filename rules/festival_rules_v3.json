@@ -4,7 +4,7 @@
         "description": "Festival rules using LUNAR MONTH NAMES (correct Adhik Maas model)",
         "date_updated": "2026-02-06",
         "model": "lunar_month_based",
-        "notes": "Uses lunar_month instead of bs_month for correct Adhik handling"
+        "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays"
     },
     "festivals": {
         "dashain": {
@@ -93,8 +93,9 @@
             "tithi": 15,
             "paksha": "shukla",
             "adhik_policy": "skip",
+            "month_model": "festival",
             "duration_days": 1,
-            "notes": "Sacred thread ceremony",
+            "notes": "Sacred thread ceremony; Purnimant Shrawan Purnima with Adhik/BS civil lag",
             "importance": "national",
             "category": "hindu"
         },

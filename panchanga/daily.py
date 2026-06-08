@@ -23,7 +23,7 @@ from panchanga.element_boundaries import (
     build_yoga_block,
 )
 from panchanga.ghati_time import compute_dinamaan
-from panchanga.lunar_month import get_lunar_month_for_date
+from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
 from panchanga.names_ne import (
     PAKSHA_NAMES_NE,
     TITHI_NAMES_NE,
@@ -198,6 +198,7 @@ def build_daily_panchanga(
         "surya_rashi": get_surya_rashi(sunrise_utc),
         "ritu": get_ritu(sunrise_utc),
         "lunar_month": lunar,
+        "lunar_calendar": get_lunar_calendar_layers(target),
         "planets": get_all_planetary_positions(sunrise_utc),
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,

@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.1.0",
-    "description": "Authority overrides for public holidays only (subset of festivals).",
-    "source": "computed from festival_rules_v3 + Parva-compatible lunar/BS calendar"
+    "version": "1.2.0",
+    "description": "Authority overrides for public holidays (and festival calendar placement).",
+    "source": "MoHA Public Holidays BS 2083 + festival_rules_v3"
   },
   "bs_years": {
     "2083": {
@@ -34,25 +34,49 @@
         "id": "janai-purnima",
         "name_en": "Janai Purnima",
         "name_ne": "जनै पूर्णिमा",
-        "start_date": "2026-07-29",
-        "end_date": "2026-07-29",
+        "start_date": "2026-08-28",
+        "end_date": "2026-08-28",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Sacred thread ceremony"
+        "notes": "MoHA BS 2083-05-12 (भदौ १२) रक्षाबन्धन / ऋषितर्पणी"
+      },
+      "gai-jatra": {
+        "id": "gai-jatra",
+        "name_en": "Gai Jatra",
+        "name_ne": "गाई जात्रा",
+        "start_date": "2026-08-29",
+        "end_date": "2026-08-29",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-05-13 (भदौ १३) day after Janai Purnima"
       },
       "teej": {
         "id": "teej",
         "name_en": "Haritalika Teej",
         "name_ne": "हरितालिका तीज",
-        "start_date": "2026-08-15",
-        "end_date": "2026-08-17",
-        "duration_days": 3,
+        "start_date": "2026-09-14",
+        "end_date": "2026-09-14",
+        "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Dar Khane Din to Rishi Panchami"
+        "notes": "MoHA BS 2083-05-29 (भदौ २९) हरितालिका (तीज) व्रत"
+      },
+      "indra-jatra": {
+        "id": "indra-jatra",
+        "name_en": "Indra Jatra",
+        "name_ne": "इन्द्र जात्रा",
+        "start_date": "2026-09-25",
+        "end_date": "2026-09-25",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-06-09 (असोज ९)"
       },
       "krishna-janmashtami": {
         "id": "krishna-janmashtami",
@@ -70,25 +94,25 @@
         "id": "dashain",
         "name_en": "Dashain",
         "name_ne": "दशैं",
-        "start_date": "2026-09-12",
-        "end_date": "2026-09-26",
+        "start_date": "2026-10-11",
+        "end_date": "2026-10-25",
         "duration_days": 15,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Ghatasthapana to Kojagrat Purnima"
+        "notes": "MoHA BS 2083-06-25 (असोज २५) घटस्थापना to Kojagrat Purnima"
       },
       "chhath": {
         "id": "chhath",
         "name_en": "Chhath Puja",
         "name_ne": "छठ पूजा",
-        "start_date": "2026-10-16",
-        "end_date": "2026-10-19",
+        "start_date": "2026-11-15",
+        "end_date": "2026-11-18",
         "duration_days": 4,
         "type": "lunar",
         "category": "hindu",
         "importance": "regional",
-        "notes": "Sun worship, Terai region"
+        "notes": "MoHA BS 2083-07-29 (कात्तिक २९) छठ पर्व"
       },
       "tihar": {
         "id": "tihar",
@@ -106,25 +130,25 @@
         "id": "saraswati-puja",
         "name_en": "Saraswati Puja",
         "name_ne": "सरस्वती पूजा",
-        "start_date": "2027-01-13",
-        "end_date": "2027-01-13",
+        "start_date": "2027-03-12",
+        "end_date": "2027-03-12",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Basant Panchami"
+        "notes": "MoHA BS 2083-11-28 (माघ २८) वसन्त पञ्चमी"
       },
       "maghe-sankranti": {
         "id": "maghe-sankranti",
         "name_en": "Maghe Sankranti",
         "name_ne": "माघे संक्रान्ति",
-        "start_date": "2027-01-14",
-        "end_date": "2027-01-14",
+        "start_date": "2027-01-15",
+        "end_date": "2027-01-15",
         "duration_days": 1,
         "type": "solar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Sun enters Makara"
+        "notes": "Sun enters Makara (BS Magh 1)"
       },
       "holi": {
         "id": "holi",
@@ -142,13 +166,13 @@
         "id": "shivaratri",
         "name_en": "Maha Shivaratri",
         "name_ne": "महाशिवरात्री",
-        "start_date": "2027-03-07",
-        "end_date": "2027-03-07",
+        "start_date": "2027-03-06",
+        "end_date": "2027-03-06",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Pashupatinath vigil"
+        "notes": "MoHA BS 2083-11-22 (फागुन २२) महाशिवरात्री"
       }
     }
   }
