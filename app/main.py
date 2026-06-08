@@ -40,8 +40,8 @@ DEFAULT_CORS_ORIGINS = (
 )
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
+async def _warm_holiday_cache_background(app: FastAPI) -> None:
+    """Precompute caches without blocking /health during deploy restarts."""
     loop = asyncio.get_running_loop()
     try:
         warmed = await loop.run_in_executor(None, warm_holiday_cache)
@@ -49,7 +49,18 @@ async def lifespan(app: FastAPI):
     except Exception:
         logger.exception("Startup holiday precompute failed")
         app.state.precomputed_bs_years = []
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.precomputed_bs_years = []
+    warm_task = asyncio.create_task(_warm_holiday_cache_background(app))
     yield
+    warm_task.cancel()
+    try:
+        await warm_task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(
