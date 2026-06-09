@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.0.0",
-    "description": "Nepal public / government holidays — a strict subset of computed festivals.",
+    "version": "1.1.0",
+    "description": "Nepal public / government holidays — a strict subset of computed festivals. Updated to include Lhosar festivals, Mata Tirtha Aunshi, Vivah Panchami, and Haribodhi Ekadashi.",
     "source": "aligned with festivals.json is_national_holiday",
     "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
   },
@@ -23,6 +23,12 @@
     "shahid-diwas",
     "loktantra-diwas",
     "prithvi-jayanti",
-    "vishwakarma-puja"
+    "vishwakarma-puja",
+    "mata-tirtha-aunshi",
+    "tamu-lhosar",
+    "sonam-lhosar",
+    "gyalpo-lhosar",
+    "vivah-panchami",
+    "haribodhi-ekadashi"
   ]
 }
