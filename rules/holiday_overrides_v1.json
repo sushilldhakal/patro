@@ -1,10 +1,399 @@
 {
   "_meta": {
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "Authority overrides for public holidays (and festival calendar placement).",
-    "source": "MoHA Public Holidays BS 2083 + festival_rules_v3"
+    "source": "MoHA Public Holidays BS 2081 / 2082 / 2083 PDF + festival_rules_v3",
+    "notes": "start/end dates are authoritative; duration_days is informational only."
   },
   "bs_years": {
+    "2081": {
+      "maghe-sankranti": {
+        "id": "maghe-sankranti",
+        "name_en": "Maghe Sankranti",
+        "name_ne": "माघे संक्रान्ति",
+        "start_date": "2025-01-14",
+        "end_date": "2025-01-14",
+        "duration_days": 1,
+        "type": "solar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2081-10-01 (माघ १) Sun enters Makara"
+      },
+      "shahid-diwas": {
+        "id": "shahid-diwas",
+        "name_en": "Martyrs' Day",
+        "name_ne": "शहीद दिवस",
+        "start_date": "2025-01-29",
+        "end_date": "2025-01-29",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2081-10-16 (माघ १६)"
+      },
+      "saraswati-puja": {
+        "id": "saraswati-puja",
+        "name_en": "Saraswati Puja",
+        "name_ne": "सरस्वती पूजा",
+        "start_date": "2025-02-04",
+        "end_date": "2025-02-04",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2081-10-21 (माघ २१) वसन्त पञ्चमी"
+      },
+      "loktantra-diwas": {
+        "id": "loktantra-diwas",
+        "name_en": "Democracy Day",
+        "name_ne": "लोकतन्त्र दिवस",
+        "start_date": "2025-02-19",
+        "end_date": "2025-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2081-11-07 (फागुन ७)"
+      },
+      "shivaratri": {
+        "id": "shivaratri",
+        "name_en": "Maha Shivaratri",
+        "name_ne": "महाशिवरात्री",
+        "start_date": "2025-02-26",
+        "end_date": "2025-02-26",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2081-11-14 (फागुन १४) महाशिवरात्री"
+      },
+      "ghode-jatra": {
+        "id": "ghode-jatra",
+        "name_en": "Ghode Jatra",
+        "name_ne": "घोडे जात्रा",
+        "start_date": "2025-03-30",
+        "end_date": "2025-03-30",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2081-12-16 (चैत १६) घोडेजात्रा"
+      }
+    },
+    "2082": {
+      "bs-new-year": {
+        "id": "bs-new-year",
+        "name_en": "Nepali New Year",
+        "name_ne": "नयाँ वर्ष",
+        "start_date": "2025-04-14",
+        "end_date": "2025-04-14",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "MoHA BS 2082-01-01 (वैशाख १) नव वर्ष"
+      },
+      "buddha-jayanti": {
+        "id": "buddha-jayanti",
+        "name_en": "Buddha Jayanti",
+        "name_ne": "बुद्ध जयन्ती",
+        "start_date": "2025-05-12",
+        "end_date": "2025-05-12",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "buddhist",
+        "importance": "national",
+        "notes": "MoHA BS 2082-01-29 (वैशाख २९) बुद्ध जयन्ती"
+      },
+      "ganatantra-diwas": {
+        "id": "ganatantra-diwas",
+        "name_en": "Republic Day",
+        "name_ne": "गणतन्त्र दिवस",
+        "start_date": "2025-05-29",
+        "end_date": "2025-05-29",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-02-15 (जेठ १५) गणतन्त्र दिवस"
+      },
+      "gai-jatra": {
+        "id": "gai-jatra",
+        "name_en": "Gai Jatra",
+        "name_ne": "गाई जात्रा",
+        "start_date": "2025-07-18",
+        "end_date": "2025-07-18",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-04-02 (साउन २) गाईजात्रा — adhik Shrawan year"
+      },
+      "janai-purnima": {
+        "id": "janai-purnima",
+        "name_en": "Janai Purnima",
+        "name_ne": "जनै पूर्णिमा",
+        "start_date": "2025-08-09",
+        "end_date": "2025-08-09",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-04-24 (साउन २४) रक्षाबन्धन"
+      },
+      "krishna-janmashtami": {
+        "id": "krishna-janmashtami",
+        "name_en": "Krishna Janmashtami",
+        "name_ne": "कृष्ण जन्माष्टमी",
+        "start_date": "2025-08-16",
+        "end_date": "2025-08-16",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-04-31 (साउन ३१) श्रीकृष्ण जन्माष्टमी"
+      },
+      "teej": {
+        "id": "teej",
+        "name_en": "Haritalika Teej",
+        "name_ne": "हरितालिका तीज",
+        "start_date": "2025-08-27",
+        "end_date": "2025-08-27",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-05-10 (भदौ १०) हरितालिका (तीज) व्रत — public holiday is main day only"
+      },
+      "vishwakarma-puja": {
+        "id": "vishwakarma-puja",
+        "name_en": "Vishwakarma Puja",
+        "name_ne": "विश्वकर्मा पूजा",
+        "start_date": "2025-09-02",
+        "end_date": "2025-09-02",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2082-05-17 (भदौ १७) विश्वकर्मा पूजा"
+      },
+      "indra-jatra": {
+        "id": "indra-jatra",
+        "name_en": "Indra Jatra",
+        "name_ne": "इन्द्र जात्रा",
+        "start_date": "2025-09-07",
+        "end_date": "2025-09-14",
+        "duration_days": 8,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-05-21 (भदौ २१) इन्द्रजात्रा"
+      },
+      "sambidhan-diwas": {
+        "id": "sambidhan-diwas",
+        "name_en": "Constitution Day",
+        "name_ne": "संविधान दिवस",
+        "start_date": "2025-09-19",
+        "end_date": "2025-09-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-06-03 (असोज ३) संविधान दिवस"
+      },
+      "dashain": {
+        "id": "dashain",
+        "name_en": "Dashain",
+        "name_ne": "दशैं",
+        "start_date": "2025-09-23",
+        "end_date": "2025-10-07",
+        "duration_days": 15,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-06-06 (असोज ६) घटस्थापना to Kojagrat Purnima"
+      },
+      "tihar": {
+        "id": "tihar",
+        "name_en": "Tihar",
+        "name_ne": "तिहार",
+        "start_date": "2025-10-20",
+        "end_date": "2025-10-24",
+        "duration_days": 5,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-07-03 (कात्तिक ३) तिहार बिदा — Kaag Tihar to Bhai Tika"
+      },
+      "chhath": {
+        "id": "chhath",
+        "name_en": "Chhath Puja",
+        "name_ne": "छठ पूजा",
+        "start_date": "2025-10-27",
+        "end_date": "2025-10-30",
+        "duration_days": 4,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-07-10 (कात्तिक १०) छठ पर्व"
+      },
+      "yomari-punhi": {
+        "id": "yomari-punhi",
+        "name_en": "Yomari Punhi",
+        "name_ne": "योमरी पुन्ही",
+        "start_date": "2025-12-04",
+        "end_date": "2025-12-04",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "BS 2082 Poush Purnima"
+      },
+      "tamu-lhosar": {
+        "id": "tamu-lhosar",
+        "name_en": "Tamu Lhosar",
+        "name_ne": "तमू ल्होछार",
+        "start_date": "2025-12-30",
+        "end_date": "2025-12-30",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-09-15 (पुस १५) तमू ल्होछार"
+      },
+      "prithvi-jayanti": {
+        "id": "prithvi-jayanti",
+        "name_en": "Prithvi Jayanti",
+        "name_ne": "पृथ्वी जयन्ती",
+        "start_date": "2026-01-11",
+        "end_date": "2026-01-11",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-09-27 (पुस २७) पृथ्वी जयन्ती"
+      },
+      "maghe-sankranti": {
+        "id": "maghe-sankranti",
+        "name_en": "Maghe Sankranti",
+        "name_ne": "माघे संक्रान्ति",
+        "start_date": "2026-01-14",
+        "end_date": "2026-01-14",
+        "duration_days": 1,
+        "type": "solar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2082-10-01 (माघ १) Sun enters Makara"
+      },
+      "sonam-lhosar": {
+        "id": "sonam-lhosar",
+        "name_en": "Sonam Lhosar",
+        "name_ne": "सोनम ल्होसार",
+        "start_date": "2026-01-18",
+        "end_date": "2026-01-18",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-10-05 (माघ ५) सोनम ल्होसार"
+      },
+      "shahid-diwas": {
+        "id": "shahid-diwas",
+        "name_en": "Martyrs' Day",
+        "name_ne": "शहीद दिवस",
+        "start_date": "2026-01-29",
+        "end_date": "2026-01-29",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-10-16 (माघ १६)"
+      },
+      "saraswati-puja": {
+        "id": "saraswati-puja",
+        "name_en": "Saraswati Puja",
+        "name_ne": "सरस्वती पूजा",
+        "start_date": "2026-01-22",
+        "end_date": "2026-01-22",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-10-09 (माघ ९) वसन्त पञ्चमी"
+      },
+      "shivaratri": {
+        "id": "shivaratri",
+        "name_en": "Maha Shivaratri",
+        "name_ne": "महाशिवरात्री",
+        "start_date": "2026-02-14",
+        "end_date": "2026-02-14",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-11-03 (फागुन ३) महाशिवरात्री"
+      },
+      "gyalpo-lhosar": {
+        "id": "gyalpo-lhosar",
+        "name_en": "Gyalpo Lhosar",
+        "name_ne": "ग्याल्पो ल्होसार",
+        "start_date": "2026-02-17",
+        "end_date": "2026-02-17",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-11-06 (फागुन ६) ग्याल्पो ल्होसार"
+      },
+      "loktantra-diwas": {
+        "id": "loktantra-diwas",
+        "name_en": "Democracy Day",
+        "name_ne": "लोकतन्त्र दिवस",
+        "start_date": "2026-02-19",
+        "end_date": "2026-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-11-07 (फागुन ७)"
+      },
+      "holi": {
+        "id": "holi",
+        "name_en": "Holi",
+        "name_ne": "होली",
+        "start_date": "2026-03-03",
+        "end_date": "2026-03-04",
+        "duration_days": 2,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2082 Falgun Purnima"
+      },
+      "ghode-jatra": {
+        "id": "ghode-jatra",
+        "name_en": "Ghode Jatra",
+        "name_ne": "घोडे जात्रा",
+        "start_date": "2026-03-17",
+        "end_date": "2026-03-17",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2082-12-04 (चैत ४) घोडेजात्रा"
+      },
+      "ram-navami": {
+        "id": "ram-navami",
+        "name_en": "Ram Navami",
+        "name_ne": "राम नवमी",
+        "start_date": "2026-03-26",
+        "end_date": "2026-03-26",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-12-13 (चैत १३) रामनवमी"
+      }
+    },
     "2083": {
       "bs-new-year": {
         "id": "bs-new-year",
@@ -130,13 +519,13 @@
         "id": "saraswati-puja",
         "name_en": "Saraswati Puja",
         "name_ne": "सरस्वती पूजा",
-        "start_date": "2027-03-12",
-        "end_date": "2027-03-12",
+        "start_date": "2027-02-11",
+        "end_date": "2027-02-11",
         "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "MoHA BS 2083-11-28 (माघ २८) वसन्त पञ्चमी"
+        "notes": "MoHA BS 2083-10-28 (माघ २८) वसन्त पञ्चमी"
       },
       "maghe-sankranti": {
         "id": "maghe-sankranti",
@@ -148,19 +537,31 @@
         "type": "solar",
         "category": "hindu",
         "importance": "national",
-        "notes": "Sun enters Makara (BS Magh 1)"
+        "notes": "BS 2083-10-01 (माघ १) Sun enters Makara"
       },
-      "holi": {
-        "id": "holi",
-        "name_en": "Holi",
-        "name_ne": "होली",
-        "start_date": "2027-02-20",
-        "end_date": "2027-02-21",
-        "duration_days": 2,
+      "sonam-lhosar": {
+        "id": "sonam-lhosar",
+        "name_en": "Sonam Lhosar",
+        "name_ne": "सोनम ल्होसार",
+        "start_date": "2027-02-07",
+        "end_date": "2027-02-07",
+        "duration_days": 1,
         "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "Falgun Purnima"
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-10-24 (माघ २४) सोनम ल्होसार"
+      },
+      "gyalpo-lhosar": {
+        "id": "gyalpo-lhosar",
+        "name_en": "Gyalpo Lhosar",
+        "name_ne": "ग्याल्पो ल्होसार",
+        "start_date": "2027-03-09",
+        "end_date": "2027-03-09",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-11-25 (फागुन २५) ग्याल्पो ल्होसार"
       },
       "shivaratri": {
         "id": "shivaratri",
@@ -173,6 +574,30 @@
         "category": "hindu",
         "importance": "national",
         "notes": "MoHA BS 2083-11-22 (फागुन २२) महाशिवरात्री"
+      },
+      "ghode-jatra": {
+        "id": "ghode-jatra",
+        "name_en": "Ghode Jatra",
+        "name_ne": "घोडे जात्रा",
+        "start_date": "2027-04-06",
+        "end_date": "2027-04-06",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-12-23 (चैत २३) घोडेजात्रा"
+      },
+      "tamu-lhosar": {
+        "id": "tamu-lhosar",
+        "name_en": "Tamu Lhosar",
+        "name_ne": "तमू ल्होछार",
+        "start_date": "2026-12-30",
+        "end_date": "2026-12-30",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2083-09-15 (पुस १५) तमू ल्होसार"
       }
     }
   }
