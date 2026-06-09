@@ -628,3 +628,51 @@ def precompute_range(
         save_cache(generate_holidays(year, location), location)
         written.append(cache_path(year, location.cache_key()))
     return written
+
+
+def get_special_months_for_bs_year(
+    bs_year: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Return Adhik Maas and Kshaya Maas info for a Bikram Sambat year.
+
+    A BS year typically spans two Gregorian years (e.g. BS 2082 = mid-2025
+    to mid-2026). We scan both Gregorian years to find any special months
+    whose dates fall within the BS year range.
+    """
+    from rules.engine import get_special_months_for_gregorian_year
+    from panchanga.bikram_sambat import bs_year_date_range
+
+    year_start, year_end = bs_year_date_range(bs_year)
+    gregorian_years = sorted({year_start.year, year_end.year})
+
+    adhik_result: dict[str, Any] = {"has_adhik_maas": False}
+    kshaya_result: dict[str, Any] = {"is_kshaya": False}
+
+    for g_year in gregorian_years:
+        special = get_special_months_for_gregorian_year(g_year)
+
+        adhik = special.get("adhik_maas", {})
+        if adhik.get("has_adhik_maas"):
+            from datetime import date as _date
+            start = _date.fromisoformat(adhik["start_date"])
+            if year_start <= start <= year_end:
+                adhik_result = adhik
+
+        kshaya = special.get("kshaya_maas", {})
+        if kshaya.get("is_kshaya"):
+            from datetime import date as _date
+            start = _date.fromisoformat(kshaya["start_date"])
+            if year_start <= start <= year_end:
+                kshaya_result = kshaya
+
+    return {
+        "bs_year": bs_year,
+        "gregorian_range": {
+            "start": year_start.isoformat(),
+            "end": year_end.isoformat(),
+        },
+        "location": location.as_dict(),
+        "adhik_maas": adhik_result,
+        "kshaya_maas": kshaya_result,
+    }

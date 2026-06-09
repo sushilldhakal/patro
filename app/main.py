@@ -627,6 +627,33 @@ def patro_month_legacy(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@app.get("/nepal/special-months/{bs_year}")
+def nepal_special_months(
+    bs_year: int,
+    lat: float | None = Query(None),
+    lon: float | None = Query(None),
+    timezone: str | None = Query(None),
+):
+    """
+    Adhik Maas (Mala Maas) and Kshaya Maas info for a BS year.
+
+    Adhik Maas is the intercalary extra lunar month (no Sankranti) that
+    occurs every ~32–33 months to reconcile the lunar and solar calendars.
+    Also called Mala Maas or Purushottam Maas.
+
+    Kshaya Maas is an extremely rare lost month (two Sankrantis in one lunar
+    month) — last in BS 2020 (1963 CE). Returned as is_kshaya: false in
+    most years.
+    """
+    _validate_bs_year(bs_year)
+    location = _location(lat, lon, timezone)
+    from services.holiday_generator import get_special_months_for_bs_year
+    try:
+        return get_special_months_for_bs_year(bs_year, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/patro/{bs_year}")
 def patro_year_legacy(
     bs_year: int,

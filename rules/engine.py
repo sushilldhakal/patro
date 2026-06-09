@@ -94,3 +94,40 @@ def compute_festival_dates(
 def bs_year_for_gregorian(gregorian_year: int) -> int:
     """Approximate BS year label for a Gregorian calendar year."""
     return bs_solar_year_for_gregorian_year(gregorian_year, 1)
+
+
+def get_special_months_for_gregorian_year(
+    gregorian_year: int,
+) -> dict[str, Any]:
+    """Return Adhik Maas and Kshaya Maas metadata for a Gregorian year.
+
+    Adhik Maas (Mala Maas / Purushottam Maas): extra intercalary lunar month
+    with no Sankranti — occurs roughly every 32–33 months.
+
+    Kshaya Maas: extremely rare lost month with two Sankrantis — last in
+    BS 2020 (1963 CE), next predicted ~BS 2198 (2141 CE).
+    """
+    from panchanga.adhik_maas import find_adhik_maas_for_gregorian_year
+    from panchanga.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
+    from panchanga.lunar_month import get_lunar_year
+
+    adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
+
+    # Scan lunar months for Kshaya
+    kshaya: Optional[dict[str, Any]] = None
+    lunar_year = get_lunar_year(gregorian_year)
+    for month in lunar_year.months:
+        if is_kshaya_maas(month.start_amavasya, month.end_amavasya):
+            info = get_kshaya_maas_info(month.start_amavasya, month.end_amavasya)
+            if info:
+                info["start_date"] = month.start_amavasya.date().isoformat()
+                info["end_date"] = (month.end_amavasya - timedelta(days=1)).date().isoformat()
+                kshaya = info
+                break
+
+    return {
+        "gregorian_year": gregorian_year,
+        "bs_year": bs_year_for_gregorian(gregorian_year),
+        "adhik_maas": adhik or {"has_adhik_maas": False},
+        "kshaya_maas": kshaya or {"is_kshaya": False},
+    }

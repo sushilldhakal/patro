@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "version": "1.3.0",
+    "version": "1.4.0",
     "description": "Authority overrides for public holidays (and festival calendar placement).",
-    "source": "MoHA Public Holidays BS 2081 / 2082 / 2083 PDF + festival_rules_v3",
-    "notes": "start/end dates are authoritative; duration_days is informational only."
+    "source": "MoHA Public Holidays BS 2081 / 2082 / 2083 PDF + festival_rules_v3; Lhosar dates from official announcements",
+    "notes": "start/end dates are authoritative; duration_days is informational only. New festivals added: Lhosar series, Mata Tirtha Aunshi, Haribodhi Ekadashi."
   },
   "bs_years": {
     "2081": {
@@ -146,10 +146,46 @@
         "start_date": "2024-12-30",
         "end_date": "2024-12-30",
         "duration_days": 1,
-        "type": "lunar",
+        "type": "bs_fixed",
         "category": "cultural",
         "importance": "regional",
         "notes": "MoHA BS 2081-09-15 (पुस १५) तमू ल्होसार"
+      },
+      "sonam-lhosar": {
+        "id": "sonam-lhosar",
+        "name_en": "Sonam Lhosar",
+        "name_ne": "सोनम ल्होसार",
+        "start_date": "2025-01-29",
+        "end_date": "2025-01-29",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2081-10-15 (माघ १५) सोनम ल्होसार — Tamang New Year 2082"
+      },
+      "gyalpo-lhosar": {
+        "id": "gyalpo-lhosar",
+        "name_en": "Gyalpo Lhosar",
+        "name_ne": "ग्याल्पो ल्होसार",
+        "start_date": "2025-02-28",
+        "end_date": "2025-02-28",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "regional",
+        "notes": "MoHA BS 2081-11-17 (फागुन १७) ग्याल्पो ल्होसार — Tibetan New Year 2152 (Wood Snake)"
+      },
+      "mata-tirtha-aunshi": {
+        "id": "mata-tirtha-aunshi",
+        "name_en": "Mata Tirtha Aunshi",
+        "name_ne": "मातातीर्थ औंसी",
+        "start_date": "2024-05-07",
+        "end_date": "2024-05-07",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "national",
+        "notes": "MoHA BS 2081-01-25 (वैशाख २५) मातातीर्थ औंसी — Mother's Day Nepal"
       },
       "maghe-sankranti": {
         "id": "maghe-sankranti",
@@ -222,6 +258,18 @@
         "category": "newari",
         "importance": "regional",
         "notes": "MoHA BS 2081-12-16 (चैत १६) घोडेजात्रा"
+      },
+      "haribodhi-ekadashi": {
+        "id": "haribodhi-ekadashi",
+        "name_en": "Hari Bodhi Ekadashi",
+        "name_ne": "हरिबोधिनी एकादशी",
+        "start_date": "2024-11-12",
+        "end_date": "2024-11-12",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2081-07-27 (कात्तिक २७) हरिबोधिनी एकादशी"
       }
     },
     "2082": {
@@ -236,6 +284,18 @@
         "category": "national",
         "importance": "national",
         "notes": "MoHA BS 2082-01-01 (वैशाख १) नव वर्ष"
+      },
+      "mata-tirtha-aunshi": {
+        "id": "mata-tirtha-aunshi",
+        "name_en": "Mata Tirtha Aunshi",
+        "name_ne": "मातातीर्थ औंसी",
+        "start_date": "2025-04-27",
+        "end_date": "2025-04-27",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "national",
+        "notes": "MoHA BS 2082-01-14 (वैशाख १४) मातातीर्थ औंसी — Mother's Day Nepal"
       },
       "buddha-jayanti": {
         "id": "buddha-jayanti",
@@ -380,6 +440,18 @@
         "category": "hindu",
         "importance": "regional",
         "notes": "MoHA BS 2082-07-10 (कात्तिक १०) छठ पर्व"
+      },
+      "haribodhi-ekadashi": {
+        "id": "haribodhi-ekadashi",
+        "name_en": "Hari Bodhi Ekadashi",
+        "name_ne": "हरिबोधिनी एकादशी",
+        "start_date": "2025-11-01",
+        "end_date": "2025-11-01",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2082-07-15 (कात्तिक १५) हरिबोधिनी एकादशी"
       },
       "yomari-punhi": {
         "id": "yomari-punhi",
@@ -550,6 +622,18 @@
         "category": "national",
         "importance": "national",
         "notes": "Mesh Sankranti, Baishakh 1"
+      },
+      "mata-tirtha-aunshi": {
+        "id": "mata-tirtha-aunshi",
+        "name_en": "Mata Tirtha Aunshi",
+        "name_ne": "मातातीर्थ औंसी",
+        "start_date": "2026-04-17",
+        "end_date": "2026-04-17",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "cultural",
+        "importance": "national",
+        "notes": "MoHA BS 2083-01-04 (वैशाख ४) मातातीर्थ औंसी — Mother's Day Nepal"
       },
       "buddha-jayanti": {
         "id": "buddha-jayanti",
@@ -738,10 +822,22 @@
         "start_date": "2026-12-30",
         "end_date": "2026-12-30",
         "duration_days": 1,
-        "type": "lunar",
+        "type": "bs_fixed",
         "category": "cultural",
         "importance": "regional",
         "notes": "MoHA BS 2083-09-15 (पुस १५) तमू ल्होसार"
+      },
+      "haribodhi-ekadashi": {
+        "id": "haribodhi-ekadashi",
+        "name_en": "Hari Bodhi Ekadashi",
+        "name_ne": "हरिबोधिनी एकादशी",
+        "start_date": "2026-11-22",
+        "end_date": "2026-11-22",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "MoHA BS 2083-08-06 (मंसिर ६) हरिबोधिनी एकादशी"
       }
     }
   }
