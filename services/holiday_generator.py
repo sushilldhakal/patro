@@ -89,6 +89,26 @@ def _filter_public_holidays(entries: list[dict[str, Any]]) -> list[dict[str, Any
     return [entry for entry in entries if is_public_holiday(entry["id"])]
 
 
+def _apply_gregorian_year_overrides(
+    gregorian_year: int,
+    festivals: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Apply BS-year authority overrides to a Gregorian-year festival list."""
+    overrides_data = load_holiday_overrides()
+    merged = {festival["id"]: festival for festival in festivals}
+    rules = load_rules()
+
+    for bs_year_key in (str(gregorian_year + 56), str(gregorian_year + 57)):
+        for festival_id, override in overrides_data.get(bs_year_key, {}).items():
+            start = date.fromisoformat(override["start_date"])
+            end = date.fromisoformat(override["end_date"])
+            if start.year == gregorian_year or end.year == gregorian_year:
+                rule = {**rules.get(festival_id, {}), **override}
+                merged[festival_id] = _build_festival_entry(festival_id, rule, start, end)
+
+    return sorted(merged.values(), key=lambda item: item["start_date"])
+
+
 def generate_festivals(
     gregorian_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
@@ -108,6 +128,7 @@ def generate_festivals(
 
         festivals.append(_build_festival_entry(festival_id, rule, start_date, end_date))
 
+    festivals = _apply_gregorian_year_overrides(gregorian_year, festivals)
     festivals.sort(key=lambda item: item["start_date"])
 
     payload = {
