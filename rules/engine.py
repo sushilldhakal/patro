@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from typing import Any, Optional
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
+from panchanga.bikram_sambat import bs_to_gregorian
 from panchanga.bs_year import bs_solar_year_for_gregorian_year
 from panchanga.lunar_month import find_festival_in_lunar_month
 from panchanga.sankranti import find_makara_sankranti, find_mesh_sankranti
@@ -45,6 +46,25 @@ def compute_solar_festival(
     return sankranti_dt.date()
 
 
+def compute_bs_fixed_festival(
+    rule: dict[str, Any],
+    gregorian_year: int,
+) -> Optional[date]:
+    """Festival on a fixed BS month + day — authoritative lookup-table result."""
+    bs_month = rule.get("bs_month")
+    bs_day = rule.get("bs_day", 1)
+    if not bs_month:
+        return None
+    for bs_year in (gregorian_year + 56, gregorian_year + 57):
+        try:
+            greg = bs_to_gregorian(bs_year, bs_month, bs_day)
+            if greg.year == gregorian_year:
+                return greg
+        except ValueError:
+            continue
+    return None
+
+
 def compute_festival_dates(
     festival_id: str,
     rule: dict[str, Any],
@@ -59,6 +79,8 @@ def compute_festival_dates(
         start = compute_lunar_festival(rule, gregorian_year, location)
     elif rule_type == "solar":
         start = compute_solar_festival(festival_id, rule, gregorian_year)
+    elif rule_type == "bs_fixed":
+        start = compute_bs_fixed_festival(rule, gregorian_year)
     else:
         return None
 

@@ -269,13 +269,92 @@
         "bs-new-year": {
             "name_en": "Nepali New Year",
             "name_ne": "नयाँ वर्ष",
-            "type": "solar",
+            "type": "bs_fixed",
             "bs_month": 1,
-            "solar_day": 1,
+            "bs_day": 1,
             "duration_days": 1,
-            "notes": "Mesh Sankranti, Baishakh 1",
+            "notes": "Baishakh 1 — official BS calendar first day",
             "importance": "national",
             "category": "national"
+        },
+        "ganatantra-diwas": {
+            "name_en": "Republic Day",
+            "name_ne": "गणतन्त्र दिवस",
+            "type": "bs_fixed",
+            "bs_month": 2,
+            "bs_day": 15,
+            "duration_days": 1,
+            "notes": "Jestha 15 — Nepal became a republic on this day in BS 2065",
+            "importance": "national",
+            "category": "national"
+        },
+        "sambidhan-diwas": {
+            "name_en": "Constitution Day",
+            "name_ne": "संविधान दिवस",
+            "type": "bs_fixed",
+            "bs_month": 6,
+            "bs_day": 3,
+            "duration_days": 1,
+            "notes": "Asoj 3 — Nepal's constitution promulgated BS 2072",
+            "importance": "national",
+            "category": "national"
+        },
+        "shahid-diwas": {
+            "name_en": "Martyrs' Day",
+            "name_ne": "शहीद दिवस",
+            "type": "bs_fixed",
+            "bs_month": 10,
+            "bs_day": 16,
+            "duration_days": 1,
+            "notes": "Magh 16 — martyrs of the democracy movement",
+            "importance": "national",
+            "category": "national"
+        },
+        "loktantra-diwas": {
+            "name_en": "Democracy Day",
+            "name_ne": "लोकतन्त्र दिवस",
+            "type": "bs_fixed",
+            "bs_month": 11,
+            "bs_day": 7,
+            "duration_days": 1,
+            "notes": "Falgun 7 — people's movement of BS 2062/63",
+            "importance": "national",
+            "category": "national"
+        },
+        "prithvi-jayanti": {
+            "name_en": "Prithvi Jayanti",
+            "name_ne": "पृथ्वी जयन्ती",
+            "type": "bs_fixed",
+            "bs_month": 9,
+            "bs_day": 27,
+            "duration_days": 1,
+            "notes": "Poush 27 — birth anniversary of Prithvi Narayan Shah",
+            "importance": "national",
+            "category": "national"
+        },
+        "vishwakarma-puja": {
+            "name_en": "Vishwakarma Puja",
+            "name_ne": "विश्वकर्मा पूजा",
+            "type": "bs_fixed",
+            "bs_month": 5,
+            "bs_day": 17,
+            "duration_days": 1,
+            "notes": "Bhadra 17 — craftsmen and artisans festival",
+            "importance": "national",
+            "category": "hindu"
+        },
+        "ram-navami": {
+            "name_en": "Ram Navami",
+            "name_ne": "राम नवमी",
+            "type": "lunar",
+            "lunar_month": "Chaitra",
+            "tithi": 9,
+            "paksha": "shukla",
+            "adhik_policy": "skip",
+            "duration_days": 1,
+            "notes": "Chaitra Shukla 9 — birth of Lord Ram",
+            "importance": "national",
+            "category": "hindu"
         }
     }
 }

@@ -362,10 +362,20 @@ def _resolve_shrawan_purnima_by_bs_civil(
 
 
 def _purnimant_month_to_lunar_month(window: PurnimantMonth) -> LunarMonth:
-    """Adapter so purnimant windows reuse amanta tithi search helpers."""
+    """Adapter so purnimant windows reuse amanta tithi search helpers.
+
+    In a purnimant month the Krishna Paksha runs from the window start (day
+    after the previous Purnima) through to the Amavasya, and the Shukla
+    Paksha runs from the Amavasya to the current Purnima.
+
+    _boundary_tithi_date_in_month uses end_purnima as the krishna-search
+    start and start_amavasya as the shukla-search start.  Both need to point
+    to the *beginning* of the purnimant window so that Krishna-paksha tithis
+    (which precede the Purnima) are found within the correct 35-day scan.
+    """
     return LunarMonth(
         start_amavasya=window.start_dt,
-        end_purnima=window.end_dt,
+        end_purnima=window.start_dt,           # krishna search starts at window open
         end_amavasya=window.end_dt + timedelta(days=1),
         month_name=window.festival_masa,
         month_index=1,
