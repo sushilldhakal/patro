@@ -71,11 +71,64 @@ async def lifespan(app: FastAPI):
         pass
 
 
+_DESCRIPTION = """
+## Surya Panchanga API
+
+Computation engine for daily celestial time-state (panchanga), Nepal festival and holiday
+calendars, and Bikram Sambat / Gregorian date conversion.
+
+---
+
+### Calculation Methodology
+
+Surya Panchanga calculations utilise the ancient **Surya Siddhanta** framework, updated with
+modern *drik* (precise) mathematical algorithms to determine daily celestial positions.
+The five key elements — **Tithi**, **Nakshatra**, **Yoga**, **Karana**, and **Vaara** — are
+computed daily by analysing the angular separation of the Sun and Moon, adjusted for local
+latitude, longitude, and sunrise times.
+
+The methodology involves calculating true sidereal longitudes for the Sun and Moon using the
+**Swiss Ephemeris** (pyswisseph), then applying specific division formulas based on the local
+sidereal day:
+
+| Anga      | Division | Description |
+|-----------|----------|-------------|
+| Tithi     | 12°      | Lunar day — 1/30th of a synodic month |
+| Nakshatra | 13°20′   | Lunar mansion — 1/27th of the ecliptic |
+| Yoga      | 13°20′   | Sum of Sun + Moon longitudes divided by 27 |
+| Karana    | 6°       | Half-tithi — 1/60th of a synodic month |
+| Vaara     | —        | Day of the week from local sunrise |
+
+**Udaya Tithi** (the tithi at local sunrise) is used for festival date assignment, following
+traditional Nepali panchanga practice. **Adhik Maas** (intercalary extra month with no
+Sankranti) and the extremely rare **Kshaya Maas** (lost month with two Sankrantis) are
+detected via Swiss Ephemeris solar longitude tracking.
+
+---
+
+### Key Endpoints
+
+- `GET /nepal/panchanga/{date}` — combined daily panchanga + festivals
+- `GET /nepal/festivals` — festivals for a BS or AD year
+- `GET /nepal/holidays` — public holidays for a BS or AD year
+- `GET /nepal/special-months/{bs_year}` — Adhik Maas / Kshaya Maas detection
+- `GET /nepal/patro/{bs_year}/{bs_month}` — full patro grid for a BS month
+- `GET /convert/ad-to-bs/{ad_date}` — Gregorian → Bikram Sambat
+- `GET /about` — methodology, references, and version metadata
+"""
+
 app = FastAPI(
     title="Surya Panchanga API",
-    description="Panchanga computation engine — daily state, month calendar, festivals, kundali",
-    version="2.0.0",
+    description=_DESCRIPTION,
+    version="2.1.0",
     lifespan=lifespan,
+    contact={
+        "name": "Surya Panchanga",
+        "url": "https://github.com/sushilldhakal/patro",
+    },
+    license_info={
+        "name": "MIT",
+    },
 )
 
 
@@ -156,6 +209,142 @@ def _nepal_holidays_for_ad_year(
 def health():
     warmed = getattr(app.state, "precomputed_bs_years", None)
     return {"status": "ok", "precomputed_bs_years": warmed}
+
+
+@app.get("/about", tags=["meta"])
+def about():
+    """
+    Methodology, references, and version metadata for the Surya Panchanga API.
+
+    Returns a structured description of the calculation engine, the five panchanga
+    angas, Adhik/Kshaya Maas detection, and numbered academic references.
+    """
+    return {
+        "name": "Surya Panchanga API",
+        "version": "2.1.0",
+        "repository": "https://github.com/sushilldhakal/patro",
+        "calculation_engine": {
+            "framework": "Surya Siddhanta (ancient) + drik (modern precise) algorithms",
+            "ephemeris": "Swiss Ephemeris (pyswisseph) — true sidereal Sun/Moon longitudes",
+            "ayanamsa": "Lahiri (Chitrapaksha) — standard for Nepali panchanga",
+            "sunrise_model": "Geometric horizon, atmospheric refraction 0.5667°",
+            "udaya_tithi": (
+                "Tithi at local sunrise is used for festival assignment "
+                "(traditional Nepali panchanga practice)"
+            ),
+        },
+        "panchangas": [
+            {
+                "name": "Tithi",
+                "name_ne": "तिथि",
+                "division": "12°",
+                "description": (
+                    "Lunar day — the angular separation between Moon and Sun divided by 12°. "
+                    "One synodic month = 30 tithis."
+                ),
+            },
+            {
+                "name": "Nakshatra",
+                "name_ne": "नक्षत्र",
+                "division": "13°20′",
+                "description": (
+                    "Lunar mansion — the ecliptic divided into 27 equal segments of 13°20′ "
+                    "each. Determined by the Moon's sidereal longitude."
+                ),
+            },
+            {
+                "name": "Yoga",
+                "name_ne": "योग",
+                "division": "13°20′",
+                "description": (
+                    "Sum of the Sun's and Moon's sidereal longitudes divided into 27 equal "
+                    "segments of 13°20′. Indicates auspiciousness of the day."
+                ),
+            },
+            {
+                "name": "Karana",
+                "name_ne": "करण",
+                "division": "6°",
+                "description": (
+                    "Half-tithi — the angular separation divided by 6°. "
+                    "Two karanas make one tithi; 60 karanas in a synodic month."
+                ),
+            },
+            {
+                "name": "Vaara",
+                "name_ne": "वार",
+                "division": None,
+                "description": (
+                    "Day of the week counted from local sunrise. "
+                    "The Vaara changes at sunrise, not midnight."
+                ),
+            },
+        ],
+        "special_months": {
+            "adhik_maas": {
+                "also_known_as": ["Mala Maas", "Purushottam Maas"],
+                "description": (
+                    "Extra intercalary lunar month that occurs every ~32–33 months when "
+                    "NO Sankranti (solar ingress into a new rashi) falls within a lunar month. "
+                    "Detected by scanning Swiss Ephemeris solar longitudes across the month."
+                ),
+                "frequency": "Every 32–33 months (roughly 7 times per 19 years)",
+                "next_known": "Adhik Jestha 2026 (BS 2083)",
+            },
+            "kshaya_maas": {
+                "description": (
+                    "Extremely rare 'lost' lunar month when TWO Sankrantis fall within a "
+                    "single lunar month. The month name is considered to 'disappear'. "
+                    "Always preceded and followed by an Adhik Maas in the same year."
+                ),
+                "frequency": "Approximately once every 141 years",
+                "last_occurrence": "BS 2020 (1963 CE)",
+                "next_predicted": "BS 2198 (2141 CE)",
+            },
+        },
+        "references": [
+            {
+                "id": 1,
+                "title": "The Vedic Calendar — ISKCON South Africa",
+                "url": "https://iskconza.com/community-programs/holy-days/the-vedic-calendar/",
+            },
+            {
+                "id": 2,
+                "title": "Panchanga Computation — Indian Journal of Science and Technology",
+                "url": "https://indjst.org/download-article.php?Article_Unique_Id=INDJST12627&Full_Text_Pdf_Download=True",
+            },
+            {
+                "id": 3,
+                "title": "Mirror of Sky: The Panchang — Kalya Shastra",
+                "url": "https://kalyashastra.com/blogs/knowledge-learning-experiences/mirror-of-sky-the-panchang",
+            },
+            {
+                "id": 4,
+                "title": "Panchang — Academia.edu",
+                "url": "https://www.academia.edu/41679668/Panchang",
+            },
+            {
+                "id": 5,
+                "title": "Decoding Indian Calendar — ResearchGate",
+                "url": "https://www.researchgate.net/publication/352877999_Decoding_Indian_Calendar",
+            },
+            {
+                "id": 6,
+                "title": "Panchanga Index — NAMA",
+                "url": "https://nama.co.in/index_panchanga.php",
+            },
+            {
+                "id": 7,
+                "title": "Personal Panchang Library — Komilla Sutton",
+                "url": "https://komilla.com/lib-personal-panchang.html",
+            },
+            {
+                "id": 8,
+                "title": "Panchang Implementation Gist — prajwalkpatil (GitHub)",
+                "url": "https://gist.github.com/prajwalkpatil/865d54b9453a6902f55800e43280da7c",
+            },
+        ],
+    }
 
 
 @app.get("/panchanga/{bs_year}/{bs_month}")
