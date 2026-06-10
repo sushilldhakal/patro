@@ -93,6 +93,7 @@ def build_daily_state(
         "aayan": raw["aayan"]["name"],
         "aayan_ne": raw["aayan"]["name_ne"],
         "dinamaan": raw["dinamaan"]["label_en"],
+        "muhurta":  raw.get("muhurta"),
         "location": raw["location"],
         "lunar_calendar": raw.get("lunar_calendar"),
         "bs_date": raw["bs_date"],

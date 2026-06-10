@@ -24,6 +24,7 @@ from panchanga.element_boundaries import (
 )
 from panchanga.ghati_time import compute_dinamaan
 from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
+from panchanga.muhurta import build_muhurta_block
 from panchanga.names_ne import (
     PAKSHA_NAMES_NE,
     TITHI_NAMES_NE,
@@ -161,6 +162,8 @@ def build_daily_panchanga(
     lahiri_ayanamsa = get_ayanamsa(sunrise_utc)
     dinamaan = compute_dinamaan(sunrise_utc, sunset_utc)
 
+    muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, location.timezone)
+
     payload: dict[str, Any] = {
         "date": target.isoformat(),
         "display": _display_headers(target, bs_year, bs_month, bs_day, vaara_english, ns_date),
@@ -200,6 +203,7 @@ def build_daily_panchanga(
         "lunar_month": lunar,
         "lunar_calendar": get_lunar_calendar_layers(target),
         "planets": get_all_planetary_positions(sunrise_utc),
+        "muhurta": muhurta,
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,
             "is_amavasya": paksha == "krishna" and display_tithi == 15,
