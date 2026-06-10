@@ -108,7 +108,9 @@ detected via Swiss Ephemeris solar longitude tracking.
 
 ### Key Endpoints
 
-- `GET /nepal/panchanga/{date}` — combined daily panchanga + festivals
+- `GET /nepal/panchanga/{date}` — daily panchanga: tithi, nakshatra, yoga, karana, vaara, muhurta, planets
+- `GET /nepal/panchanga/year/{bs_year}` — full BS year grid with muhurta windows
+- `GET /nepal/gochar/{date}` — planetary transit (Gochar) table + next rashi entries
 - `GET /nepal/festivals` — festivals for a BS or AD year
 - `GET /nepal/holidays` — public holidays for a BS or AD year
 - `GET /nepal/special-months/{bs_year}` — Adhik Maas / Kshaya Maas detection
@@ -120,7 +122,7 @@ detected via Swiss Ephemeris solar longitude tracking.
 app = FastAPI(
     title="Surya Panchanga API",
     description=_DESCRIPTION,
-    version="2.1.0",
+    version="2.2.0",
     lifespan=lifespan,
     contact={
         "name": "Surya Panchanga",
@@ -221,7 +223,7 @@ def about():
     """
     return {
         "name": "Surya Panchanga API",
-        "version": "2.1.0",
+        "version": "2.2.0",
         "repository": "https://github.com/sushilldhakal/patro",
         "calculation_engine": {
             "framework": "Surya Siddhanta (ancient) + drik (modern precise) algorithms",
@@ -301,6 +303,40 @@ def about():
                 "last_occurrence": "BS 2020 (1963 CE)",
                 "next_predicted": "BS 2198 (2141 CE)",
             },
+        },
+        "muhurta": {
+            "description": (
+                "Inauspicious time windows derived by dividing the daytime "
+                "(sunrise to sunset) into 8 equal Hora Kalas. Each weekday "
+                "assigns a different Hora to Rahu Kalam, Yamaganda, and Gulika."
+            ),
+            "rahu_kalam": {
+                "lord": "Rahu",
+                "period_by_vaara": "Sun→8, Mon→2, Tue→7, Wed→5, Thu→6, Fri→4, Sat→3",
+                "avoid": "Starting new ventures, travel, important decisions",
+            },
+            "yamaganda": {
+                "lord": "Yama",
+                "period_by_vaara": "Sun→5, Mon→4, Tue→3, Wed→2, Thu→1, Fri→8, Sat→7",
+            },
+            "gulika": {
+                "lord": "Gulika (Manda-putra / son of Saturn)",
+                "period_by_vaara": "Sun→7, Mon→6, Tue→5, Wed→4, Thu→3, Fri→2, Sat→1",
+            },
+            "abhijit": {
+                "description": (
+                    "Most auspicious window — 8th of 15 daytime muhurtas, "
+                    "centred on local solar noon. Duration ≈ (day_length / 15) minutes."
+                ),
+            },
+        },
+        "gochar": {
+            "description": (
+                "Current planetary positions (Gochar) in rashi format at local sunrise. "
+                "Includes retrograde (Vakri) status and next rashi-entry time via bisection."
+            ),
+            "planets": "Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu",
+            "endpoint": "GET /nepal/gochar/{date}?upcoming=true for slow-graha yearly transits",
         },
         "references": [
             {
@@ -814,6 +850,109 @@ def patro_month_legacy(
         return generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/nepal/gochar/{date_key}")
+def nepal_gochar(
+    date_key: str,
+    lat: float | None = Query(None),
+    lon: float | None = Query(None),
+    timezone: str | None = Query(None),
+    era: Literal["bs", "ad"] = Query("bs", description="Date era"),
+    upcoming: bool = Query(False, description="Include upcoming transits for slow grahas (Jupiter, Saturn, Rahu, Ketu)"),
+):
+    """
+    Gochar (planetary transit) table for a date.
+
+    Returns the current sidereal position of all 9 grahas (Sun, Moon, Mars,
+    Mercury, Jupiter, Venus, Saturn, Rahu, Ketu) in rashi format at local
+    sunrise, plus the next rashi-entry time for each graha.
+
+    Set ?upcoming=true to also receive the next 3 rashi entries for the
+    slow-moving grahas — useful for a yearly transit summary panel.
+    """
+    location = _location(lat, lon, timezone)
+    try:
+        greg = resolve_panchanga_date(date_key, era=era)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    from panchanga.gochar import build_gochar_response
+    return build_gochar_response(
+        greg, location,
+        include_next_entry=True,
+        include_upcoming=upcoming,
+    )
+
+
+@app.get("/nepal/panchanga/year/{bs_year}")
+def nepal_panchanga_year(
+    bs_year: int,
+    lat: float | None = Query(None),
+    lon: float | None = Query(None),
+    timezone: str | None = Query(None),
+):
+    """
+    Full-year Panchanga summary for a BS year.
+
+    Returns one entry per day with tithi, nakshatra, yoga, karana, vaara,
+    sunrise/sunset, muhurta windows, and festival markers — structured for
+    calendar grid rendering or year-level caching.
+
+    Computationally intensive (~365 days × full panchanga). Recommended to
+    call this once and cache the result; the /generate endpoint pre-warms
+    the holiday cache separately.
+    """
+    _validate_bs_year(bs_year)
+    location = _location(lat, lon, timezone)
+
+    from panchanga.bikram_sambat import (
+        iter_bs_month_days,
+        format_bs_date,
+        gregorian_to_bs,
+    )
+    from panchanga.daily import build_daily_panchanga
+
+    all_greg_days: list[date] = []
+    for month in range(1, 13):
+        all_greg_days.extend(greg for _, greg in iter_bs_month_days(bs_year, month))
+
+    days = []
+    for greg in all_greg_days:
+        p = build_daily_panchanga(greg, location)
+        bs = p["bs_date"]
+        m  = p.get("muhurta", {})
+        days.append({
+            "date_bs":     format_bs_date(bs["year"], bs["month"], bs["day"]),
+            "date_ad":     greg.isoformat(),
+            "weekday":     p["vaara"]["name_ne"],
+            "weekday_en":  p["vaara"]["name_english"],
+            "tithi":       p["tithi"]["name"],
+            "tithi_ne":    p["tithi"]["name_ne"],
+            "nakshatra":   p["nakshatra"]["name"],
+            "paksha":      p["paksha"]["label_en"],
+            "sunrise":     p["sunrise"]["local_time_short"],
+            "sunset":      p["sunset"]["local_time_short"],
+            "rahu_kalam": {
+                "start": (m.get("rahu_kalam") or {}).get("start_time"),
+                "end":   (m.get("rahu_kalam") or {}).get("end_time"),
+            },
+            "abhijit": {
+                "start": (m.get("abhijit") or {}).get("start_time"),
+                "end":   (m.get("abhijit") or {}).get("end_time"),
+            },
+            "is_public_holiday": False,  # filled by festival overlay if needed
+        })
+
+    from panchanga.bikram_sambat import get_bs_month_start, get_bs_month_length, bs_to_gregorian
+    yr_start = get_bs_month_start(bs_year, 1)
+    yr_end   = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
+    return {
+        "bs_year":          bs_year,
+        "gregorian_range":  {"start": yr_start.isoformat(), "end": yr_end.isoformat()},
+        "location":         location.as_dict(),
+        "count":            len(days),
+        "days":             days,
+    }
 
 
 @app.get("/nepal/special-months/{bs_year}")
