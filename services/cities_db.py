@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import sqlite3
+import urllib.request
+import zipfile
 from pathlib import Path
 from typing import Any
 
 from core.paths import cities_db_path, cities_source_path
+
+GEONAMES_CITIES_URL = "https://download.geonames.org/export/dump/cities15000.zip"
 
 POPULAR_CITY_IDS = (
     1283240,   # Kathmandu, NP
@@ -104,6 +108,34 @@ def get_popular_cities() -> list[dict[str, Any]]:
     return [_row_to_dict(row) for row in rows]
 
 
+def ensure_cities_source(source_path: Path | None = None) -> Path:
+    """
+    Ensure GeoNames cities15000.txt exists, downloading from geonames.org if needed.
+
+    The source file is not committed to git (~3 MB); deploy and setup fetch it on demand.
+    """
+    source_path = source_path or cities_source_path()
+    if source_path.is_file():
+        return source_path
+
+    source_path.parent.mkdir(parents=True, exist_ok=True)
+    zip_path = source_path.with_suffix(".zip")
+
+    print(f"Downloading GeoNames cities15000 from {GEONAMES_CITIES_URL} ...")
+    urllib.request.urlretrieve(GEONAMES_CITIES_URL, zip_path)
+
+    with zipfile.ZipFile(zip_path) as archive:
+        names = archive.namelist()
+        if "cities15000.txt" not in names:
+            raise RuntimeError(f"Expected cities15000.txt in {GEONAMES_CITIES_URL}, got: {names}")
+        archive.extract("cities15000.txt", path=source_path.parent)
+
+    zip_path.unlink(missing_ok=True)
+    if not source_path.is_file():
+        raise FileNotFoundError(f"GeoNames extract failed: {source_path}")
+    return source_path
+
+
 def import_cities(
     *,
     db_path: Path | None = None,
@@ -111,9 +143,7 @@ def import_cities(
 ) -> int:
     """Build cities.db from GeoNames cities15000.txt. Returns row count."""
     db_path = db_path or cities_db_path()
-    source_path = source_path or cities_source_path()
-    if not source_path.is_file():
-        raise FileNotFoundError(f"GeoNames source not found: {source_path}")
+    source_path = ensure_cities_source(source_path)
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)

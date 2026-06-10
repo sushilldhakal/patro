@@ -39,6 +39,8 @@ env/
 # --- Runtime / generated data ---
 cache/
 data/cities.db
+data/cities15000.txt
+data/cities15000.zip
 data/panchanga.db
 
 # --- Testing & coverage ---

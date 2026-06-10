@@ -17,7 +17,8 @@ pip install --upgrade pip -q
 pip install -r requirements.txt -q
 
 if [[ ! -f data/cities.db ]]; then
-  echo "==> Building cities.db"
+  echo "==> Building cities.db (downloads GeoNames cities15000 if missing)"
+  mkdir -p data
   python scripts/import_cities.py
 fi
 

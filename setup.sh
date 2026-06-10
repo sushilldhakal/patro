@@ -34,7 +34,7 @@ if [[ ! -f .env ]]; then
 fi
 mkdir -p cache data
 if [[ ! -f data/cities.db ]]; then
-  echo "==> Building cities.db from GeoNames data"
+  echo "==> Building cities.db (downloads GeoNames cities15000 if missing)"
   python scripts/import_cities.py
 fi
 
