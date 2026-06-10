@@ -166,7 +166,12 @@ def build_month_calendar(
             "festivals": [f.get("name_en") or f.get("name") for f in day_festivals],
         }
         if full:
-            row["panchanga"] = build_daily_state(greg, location, include_detail=False)
+            row["panchanga"] = build_daily_state(
+                greg,
+                location,
+                include_festivals=True,
+                include_detail=False,
+            )
         calendar.append(row)
 
     month_start = get_bs_month_start(bs_year, bs_month)

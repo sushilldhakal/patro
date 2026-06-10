@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import date
 from typing import Annotated, Any, Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import config
@@ -122,7 +122,8 @@ detected via Swiss Ephemeris solar longitude tracking.
 - `GET /nepal/cities/search` — GeoNames city lookup (lat/lon/timezone)
 - `GET /nepal/cities/popular` — frequently used cities
 - `GET /nepal/sankranti/year/{ad_year}` — exact solar ingress timestamps
-- `GET /nepal/panchanga/{date}?format=surya|toyanath` — presentation layer
+- `GET /nepal/panchanga/{date}?format=surya|toyanath|dayblock` — presentation layer
+- `GET /nepal/patro/{bs_year}/{bs_month}?format=dayblock` — linear print-ready Panchanga stream
 - `GET /about` — methodology, references, and version metadata
 
 Pass `?city=kathmandu` (or `?city_id=1283240`) on any panchanga endpoint instead of lat/lon.
@@ -678,13 +679,18 @@ def nepal_panchanga_day(
     date_key: str,
     location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
-    format: Literal["raw", "surya", "toyanath", "canonical", "patro"] = Query(
+    format: Literal["raw", "surya", "toyanath", "canonical", "patro", "dayblock"] = Query(
         "surya",
-        description="Surya canonical (default), toyanath patro, raw engine, or patro alias",
+        description="Surya canonical (default), toyanath patro, dayblock text, raw engine, or patro alias",
     ),
     variant: Literal["default", "nepal_official", "toyanath", "surya"] = Query(
         "default",
         description="Cultural rule variant (interpretation layer, not astronomy)",
+    ),
+    locale: Literal["en", "ne"] = Query("en", description="dayblock locale: en or ne (Devanagari labels)"),
+    output: Literal["json", "text"] = Query(
+        "json",
+        description="For format=dayblock: json wraps text field; text returns plain text/plain",
     ),
 ):
     """
@@ -694,8 +700,9 @@ def nepal_panchanga_day(
     festivals/observances active on the day — in a single call.
     Accepts both BS (era=bs, default) and AD (era=ad) date formats.
 
-    Use `format=toyanath` for printed-patro style Devanagari layout, or
-    `format=surya` for structured web/mobile grid rows.
+    Use `format=toyanath` for printed-patro style Devanagari layout,
+    `format=surya` for structured web/mobile grid rows, or
+    `format=dayblock&output=text` for Surya/Toyanath-style printable day narrative.
     """
     try:
         greg = resolve_panchanga_date(date_key, era=era)
@@ -714,7 +721,10 @@ def nepal_panchanga_day(
 
     if format == "raw":
         return state
-    return render_panchanga(state, style=format, variant=variant)
+    payload = render_panchanga(state, style=format, variant=variant, locale=locale)
+    if format == "dayblock" and output == "text":
+        return Response(content=payload.get("text", ""), media_type="text/plain; charset=utf-8")
+    return payload
 
 
 @app.get("/nepal/panchanga/month/{bs_year}/{bs_month}")
@@ -722,23 +732,35 @@ def nepal_panchanga_month_formatted(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
-    format: Literal["raw", "surya", "toyanath", "canonical", "patro"] = Query("patro"),
+    format: Literal["raw", "surya", "toyanath", "canonical", "patro", "dayblock"] = Query("patro"),
     variant: Literal["default", "nepal_official", "toyanath", "surya"] = Query("default"),
-    full: bool = Query(False, description="Include full daily state per day"),
+    full: bool = Query(False, description="Include full daily state per day (auto-enabled for dayblock)"),
+    locale: Literal["en", "ne"] = Query("en", description="dayblock locale: en or ne"),
+    output: Literal["json", "text"] = Query("json", description="For format=dayblock: json or plain text"),
 ):
-    """BS month printable Patro grid (Surya canonical month view)."""
+    """BS month printable Patro grid or linear dayblock stream (Surya canonical month view)."""
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
     try:
         if format == "patro":
             return build_patro_month(bs_year, bs_month, location)
-        month_payload = build_month_calendar(bs_year, bs_month, location, full=full)
+        include_full = full or format == "dayblock"
+        month_payload = build_month_calendar(bs_year, bs_month, location, full=include_full)
         header = build_calendar_header(bs_year, bs_month, location)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     if format == "raw":
         return month_payload
-    return render_panchanga_month(month_payload, style=format, variant=variant, header=header)
+    payload = render_panchanga_month(
+        month_payload,
+        style=format,
+        variant=variant,
+        header=header,
+        locale=locale,
+    )
+    if format == "dayblock" and output == "text":
+        return Response(content=payload.get("text", ""), media_type="text/plain; charset=utf-8")
+    return payload
 
 
 @app.get("/nepal/sankranti/year/{ad_year}", tags=["sankranti"])
@@ -794,17 +816,36 @@ def nepal_patro_grid(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
+    format: Literal["patro", "dayblock", "surya", "toyanath", "canonical"] = Query(
+        "patro",
+        description="patro grid (default) or dayblock linear Panchanga stream",
+    ),
+    locale: Literal["en", "ne"] = Query("en", description="dayblock locale: en or ne"),
+    output: Literal["json", "text"] = Query("json", description="For format=dayblock: json or plain text"),
 ):
     """
-    Printable Surya-style monthly Patro grid — canonical month response.
+    Printable Surya-style monthly Patro grid or linear dayblock stream.
 
     Each day row comes from panchanga cache (city + date). Header includes
-    Shaka, Nepal Sambat, and AD month labels.
+    Shaka, Nepal Sambat, and AD month labels. Use `format=dayblock` for a
+    Surya/Toyanath-style vertical Panchanga page (concatenated day blocks).
     """
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
     try:
-        return build_patro_month(bs_year, bs_month, location)
+        if format == "patro":
+            return build_patro_month(bs_year, bs_month, location)
+        month_payload = build_month_calendar(bs_year, bs_month, location, full=format == "dayblock")
+        header = build_calendar_header(bs_year, bs_month, location)
+        payload = render_panchanga_month(
+            month_payload,
+            style=format,
+            header=header,
+            locale=locale,
+        )
+        if format == "dayblock" and output == "text":
+            return Response(content=payload.get("text", ""), media_type="text/plain; charset=utf-8")
+        return payload
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
