@@ -4,13 +4,14 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 from datetime import date
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import config
-from core.location import resolve_location
+from core.location import ObserverLocation, resolve_location_from_query
+from services.cities_db import get_popular_cities, search_cities
 from panchanga.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
@@ -31,8 +32,10 @@ from services.panchanga_api import (
     build_festivals_for_date,
     build_kundali,
     build_month_calendar,
+    build_patro_month,
     resolve_panchanga_date,
 )
+from services.presentation import render_panchanga, render_panchanga_month
 from services.patro_generator import generate_bs_month_patro, generate_patro
 from services.startup import warm_holiday_cache
 
@@ -116,7 +119,13 @@ detected via Swiss Ephemeris solar longitude tracking.
 - `GET /nepal/special-months/{bs_year}` — Adhik Maas / Kshaya Maas detection
 - `GET /nepal/patro/{bs_year}/{bs_month}` — full patro grid for a BS month
 - `GET /convert/ad-to-bs/{ad_date}` — Gregorian → Bikram Sambat
+- `GET /nepal/cities/search` — GeoNames city lookup (lat/lon/timezone)
+- `GET /nepal/cities/popular` — frequently used cities
+- `GET /nepal/sankranti/year/{ad_year}` — exact solar ingress timestamps
+- `GET /nepal/panchanga/{date}?format=surya|toyanath` — presentation layer
 - `GET /about` — methodology, references, and version metadata
+
+Pass `?city=kathmandu` (or `?city_id=1283240`) on any panchanga endpoint instead of lat/lon.
 """
 
 app = FastAPI(
@@ -154,11 +163,31 @@ app.add_middleware(
 )
 
 
-def _location(lat, lon, timezone):
+def location_params(
+    lat: float | None = Query(None, description="Observer latitude (−90 to 90)"),
+    lon: float | None = Query(None, description="Observer longitude (−180 to 180)"),
+    timezone: str | None = Query(None, description="IANA timezone (e.g. Asia/Kathmandu)"),
+    city: str | None = Query(
+        None,
+        description="City name — resolves lat/lon/timezone from GeoNames SQLite DB",
+    ),
+    city_id: int | None = Query(None, description="GeoNames city id (overrides city name)"),
+) -> ObserverLocation:
     try:
-        return resolve_location(lat=lat, lon=lon, timezone=timezone)
+        return resolve_location_from_query(
+            lat=lat,
+            lon=lon,
+            timezone=timezone,
+            city=city,
+            city_id=city_id,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+LocationDep = Annotated[ObserverLocation, Depends(location_params)]
 
 
 def _validate_bs_year(year: int) -> None:
@@ -210,7 +239,40 @@ def _nepal_holidays_for_ad_year(
 @app.get("/health")
 def health():
     warmed = getattr(app.state, "precomputed_bs_years", None)
-    return {"status": "ok", "precomputed_bs_years": warmed}
+    from core.paths import cities_db_path
+    from services.panchanga_cache import cache_stats
+
+    return {
+        "status": "ok",
+        "precomputed_bs_years": warmed,
+        "cities_db": cities_db_path().is_file(),
+        "panchanga_cache": cache_stats(),
+    }
+
+
+@app.get("/nepal/cities/search", tags=["cities"])
+@app.get("/cities/search", tags=["cities"])
+def cities_search(
+    q: str = Query(..., min_length=1, description="City name prefix or substring"),
+    country: str | None = Query(None, min_length=2, max_length=2, description="ISO country code"),
+    limit: int = Query(10, ge=1, le=50),
+):
+    """Search GeoNames cities — returns lat, lon, timezone for panchanga lookups."""
+    try:
+        results = search_cities(q, limit=limit, country=country)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"query": q, "count": len(results), "cities": results}
+
+
+@app.get("/nepal/cities/popular", tags=["cities"])
+@app.get("/cities/popular", tags=["cities"])
+def cities_popular():
+    """Frequently used cities (Kathmandu, Delhi, Sydney, etc.)."""
+    try:
+        return {"count": len(get_popular_cities()), "cities": get_popular_cities()}
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @app.get("/about", tags=["meta"])
@@ -387,15 +449,12 @@ def about():
 def panchanga_month(
     bs_year: int,
     bs_month: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     full: bool = Query(False, description="Include full daily state per day"),
 ):
     """BS month calendar — Patro grid as structured JSON."""
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    location = _location(lat, lon, timezone)
     try:
         return build_month_calendar(bs_year, bs_month, location, full=full)
     except ValueError as exc:
@@ -405,15 +464,12 @@ def panchanga_month(
 @app.get("/panchanga/{date_key}")
 def panchanga_day(
     date_key: str,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
     festivals: bool = Query(False, description="Include festivals on this day"),
     detail: bool = Query(True, description="Include full computation detail block"),
 ):
     """Daily panchanga — single-day astronomical time-state."""
-    location = _location(lat, lon, timezone)
     try:
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
@@ -429,14 +485,11 @@ def panchanga_day(
 @app.get("/festivals/bs/{bs_year}")
 def festivals_bs_year(
     bs_year: int,
+    location: LocationDep,
     month: int | None = Query(None, ge=1, le=12, description="Bikram Sambat month (1–12)"),
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
 ):
     """All festivals/observances for a BS year (includes regional events)."""
     _validate_bs_year(bs_year)
-    location = _location(lat, lon, timezone)
     try:
         from services.holiday_generator import FestivalCacheMissError, get_bs_festivals
 
@@ -448,13 +501,10 @@ def festivals_bs_year(
 @app.get("/festivals/{date_key}")
 def festivals_day(
     date_key: str,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs"),
 ):
     """Festivals active on a BS or AD date."""
-    location = _location(lat, lon, timezone)
     try:
         return build_festivals_for_date(date_key, location, era=era)
     except ValueError as exc:
@@ -464,14 +514,11 @@ def festivals_day(
 @app.get("/holidays/{year}")
 def holidays(
     year: int,
+    location: LocationDep,
     month: int | None = Query(None, ge=1, le=12, description="Bikram Sambat month (1–12)"),
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
 ):
     """BS-year public holiday list (cache-backed; festivals are on /festivals)."""
     _validate_bs_year(year)
-    location = _location(lat, lon, timezone)
     try:
         return get_bs_holidays(year, location, cache_only=True, bs_month=month)
     except HolidayCacheMissError as exc:
@@ -519,12 +566,10 @@ def convert_bs_to_ad(bs_date: str):
 
 @app.get("/nepal/holidays")
 def nepal_holidays(
+    location: LocationDep,
     year: int = Query(..., description="Year to query"),
     era: Literal["bs", "ad"] = Query("bs", description="Calendar era for the year param (bs or ad)"),
     month: int | None = Query(None, ge=1, le=12, description="Month filter (1–12 in the given era)"),
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
 ):
     """
     Nepal public holidays with both BS and AD dates for every entry.
@@ -533,8 +578,6 @@ def nepal_holidays(
     Pass era=bs to query by Bikram Sambat year (e.g. year=2082&era=bs, the default).
     Each holiday entry includes start_date / end_date (AD) plus bs_start_date / bs_end_date.
     """
-    location = _location(lat, lon, timezone)
-
     if era == "ad":
         holidays = _nepal_holidays_for_ad_year(year, location)
         if month is not None:
@@ -578,20 +621,16 @@ def nepal_holidays(
 
 @app.get("/nepal/festivals")
 def nepal_festivals(
+    location: LocationDep,
     year: int = Query(..., description="Year to query"),
     era: Literal["bs", "ad"] = Query("bs", description="Calendar era for the year param"),
     month: int | None = Query(None, ge=1, le=12, description="Month filter"),
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
 ):
     """
     All Nepal festivals (including regional) with both BS and AD dates.
 
     Supports era=ad or era=bs for the year parameter.
     """
-    location = _location(lat, lon, timezone)
-
     if era == "ad":
         # Collect festivals from the two overlapping BS years
         from services.holiday_generator import get_bs_festivals
@@ -637,10 +676,16 @@ def nepal_festivals(
 @app.get("/nepal/panchanga/{date_key}")
 def nepal_panchanga_day(
     date_key: str,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
+    format: Literal["raw", "surya", "toyanath", "canonical", "patro"] = Query(
+        "surya",
+        description="Surya canonical (default), toyanath patro, raw engine, or patro alias",
+    ),
+    variant: Literal["default", "nepal_official", "toyanath", "surya"] = Query(
+        "default",
+        description="Cultural rule variant (interpretation layer, not astronomy)",
+    ),
 ):
     """
     Combined daily panchanga + festivals + public holiday status.
@@ -648,8 +693,10 @@ def nepal_panchanga_day(
     Returns tithi, nakshatra, yoga, karana, sunrise/sunset, and all
     festivals/observances active on the day — in a single call.
     Accepts both BS (era=bs, default) and AD (era=ad) date formats.
+
+    Use `format=toyanath` for printed-patro style Devanagari layout, or
+    `format=surya` for structured web/mobile grid rows.
     """
-    location = _location(lat, lon, timezone)
     try:
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
@@ -657,7 +704,6 @@ def nepal_panchanga_day(
 
     state = build_daily_state(greg, location, include_festivals=True, include_detail=False)
 
-    # Add public holiday flag for each festival
     from services.holiday_generator import is_public_holiday
     festivals = state.get("festivals", [])
     for f in festivals:
@@ -665,16 +711,109 @@ def nepal_panchanga_day(
 
     state["is_public_holiday"] = any(f.get("is_public_holiday") for f in festivals)
     state.pop("detail", None)
-    return state
+
+    if format == "raw":
+        return state
+    return render_panchanga(state, style=format, variant=variant)
+
+
+@app.get("/nepal/panchanga/month/{bs_year}/{bs_month}")
+def nepal_panchanga_month_formatted(
+    bs_year: int,
+    bs_month: int,
+    location: LocationDep,
+    format: Literal["raw", "surya", "toyanath", "canonical", "patro"] = Query("patro"),
+    variant: Literal["default", "nepal_official", "toyanath", "surya"] = Query("default"),
+    full: bool = Query(False, description="Include full daily state per day"),
+):
+    """BS month printable Patro grid (Surya canonical month view)."""
+    _validate_bs_year(bs_year)
+    _validate_bs_month(bs_month)
+    try:
+        if format == "patro":
+            return build_patro_month(bs_year, bs_month, location)
+        month_payload = build_month_calendar(bs_year, bs_month, location, full=full)
+        header = build_calendar_header(bs_year, bs_month, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if format == "raw":
+        return month_payload
+    return render_panchanga_month(month_payload, style=format, variant=variant, header=header)
+
+
+@app.get("/nepal/sankranti/year/{ad_year}", tags=["sankranti"])
+def nepal_sankranti_year(
+    ad_year: int,
+    location: LocationDep,
+):
+    """
+    All Sankrantis (solar ingresses) in a Gregorian year with exact timestamps.
+
+    Critical for BS month boundaries, Maghe/Mesh Sankranti festivals, and
+    Adhik/Kshaya Maas detection.
+    """
+    from panchanga.sankranti_calendar import build_sankranti_year_response
+
+    return build_sankranti_year_response(ad_year, location)
+
+
+@app.get("/nepal/sankranti/{date_key}", tags=["sankranti"])
+def nepal_sankranti_day(
+    date_key: str,
+    location: LocationDep,
+    era: Literal["bs", "ad"] = Query("bs"),
+):
+    """Sankrantis occurring on or near a given date."""
+    from panchanga.sankranti_calendar import build_sankranti_day_response
+
+    try:
+        greg = resolve_panchanga_date(date_key, era=era)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return build_sankranti_day_response(greg, location)
+
+
+@app.get("/nepal/gochar/year/{bs_year}")
+def nepal_gochar_year(
+    bs_year: int,
+    location: LocationDep,
+):
+    """
+    Yearly Gochar summary — slow-graha transit timeline + monthly rashi snapshots.
+
+    Useful for transit charts and yearly planetary overview panels.
+    """
+    _validate_bs_year(bs_year)
+    from panchanga.gochar import build_gochar_year_summary
+
+    return build_gochar_year_summary(bs_year, location)
 
 
 @app.get("/nepal/patro/{bs_year}/{bs_month}")
+def nepal_patro_grid(
+    bs_year: int,
+    bs_month: int,
+    location: LocationDep,
+):
+    """
+    Printable Surya-style monthly Patro grid — canonical month response.
+
+    Each day row comes from panchanga cache (city + date). Header includes
+    Shaka, Nepal Sambat, and AD month labels.
+    """
+    _validate_bs_year(bs_year)
+    _validate_bs_month(bs_month)
+    try:
+        return build_patro_month(bs_year, bs_month, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/nepal/patro/{bs_year}/{bs_month}/legacy")
 def nepal_patro_bs(
     bs_year: int,
     bs_month: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """
     Festival panchanga (patro) for a BS month — every day's tithi, nakshatra,
@@ -682,7 +821,6 @@ def nepal_patro_bs(
     """
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    location = _location(lat, lon, timezone)
     try:
         return generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=True)
     except ValueError as exc:
@@ -693,9 +831,7 @@ def nepal_patro_bs(
 def nepal_patro_ad(
     ad_year: int,
     ad_month: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """
     Festival panchanga (patro) for an AD (Gregorian) month.
@@ -704,10 +840,9 @@ def nepal_patro_ad(
     """
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
-    location = _location(lat, lon, timezone)
     import calendar as _cal
     from panchanga.bikram_sambat import iter_bs_month_days
-    from panchanga.daily import build_daily_panchanga
+    from panchanga.daily import get_daily_panchanga
     from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
     last_day = _cal.monthrange(ad_year, ad_month)[1]
@@ -732,7 +867,7 @@ def nepal_patro_ad(
     current = month_start_ad
     while current <= month_end_ad:
         bs_year_d, bs_month_d, bs_day_d = gregorian_to_bs(current)
-        panchanga = build_daily_panchanga(current, location)
+        panchanga = get_daily_panchanga(current, location)
         day_festivals = _festivals_for_day(all_festivals, current)
         days.append({
             "date_ad": current.isoformat(),
@@ -768,16 +903,79 @@ def nepal_patro_ad(
     }
 
 
+@app.post("/generate/panchanga/popular/{bs_year}")
+def generate_panchanga_popular_cities(
+    bs_year: int,
+    force: bool = Query(False),
+):
+    """Precompute panchanga cache for all popular cities (Kathmandu, Delhi, Sydney, …)."""
+    _validate_bs_year(bs_year)
+    from core.location import resolve_location_from_query
+    from panchanga.bikram_sambat import iter_bs_month_days
+    from services.cities_db import POPULAR_CITY_IDS
+    from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+
+    dates = [
+        greg
+        for month in range(1, 13)
+        for _, greg in iter_bs_month_days(bs_year, month)
+    ]
+    results = []
+    total_written = 0
+    for city_id in POPULAR_CITY_IDS:
+        loc = resolve_location_from_query(city_id=city_id)
+        key, _ = resolve_cache_keys(loc)
+        written = precompute_range(loc, dates, skip_existing=not force)
+        total_written += written
+        results.append({"city_id": city_id, "location_key": key, "days_written": written})
+
+    return {
+        "status": "generated",
+        "bs_year": bs_year,
+        "cities": len(POPULAR_CITY_IDS),
+        "days_total_per_city": len(dates),
+        "total_rows_written": total_written,
+        "results": results,
+        "cache": cache_stats(),
+    }
+
+
+@app.post("/generate/panchanga/{bs_year}")
+def generate_panchanga_year(
+    bs_year: int,
+    location: LocationDep,
+    force: bool = Query(False, description="Recompute days already in cache"),
+):
+    """Precompute panchanga SQLite cache for every day in a BS year at this location."""
+    _validate_bs_year(bs_year)
+    from panchanga.bikram_sambat import iter_bs_month_days
+    from services.panchanga_cache import cache_stats, precompute_range, resolve_cache_keys
+
+    dates = [
+        greg
+        for month in range(1, 13)
+        for _, greg in iter_bs_month_days(bs_year, month)
+    ]
+    location_key, city_id = resolve_cache_keys(location)
+    written = precompute_range(location, dates, skip_existing=not force)
+    return {
+        "status": "generated",
+        "bs_year": bs_year,
+        "location_key": location_key,
+        "city_id": city_id,
+        "days_written": written,
+        "days_total": len(dates),
+        "cache": cache_stats(),
+    }
+
+
 @app.post("/generate/{year}")
 def generate_year(
     year: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """Precompute holiday cache for a BS year."""
     _validate_bs_year(year)
-    location = _location(lat, lon, timezone)
     payload = precompute_bs_year(year, location)
     return {
         "status": "generated",
@@ -793,14 +991,11 @@ def generate_year(
 def calendar_header(
     bs_year: int,
     bs_month: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """Multi-era calendar header (BS, AD, lunar, Shaka, Nepal Sambat)."""
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    location = _location(lat, lon, timezone)
     try:
         return build_calendar_header(bs_year, bs_month, location)
     except ValueError as exc:
@@ -810,13 +1005,10 @@ def calendar_header(
 @app.get("/kundali/{date_key}")
 def kundali(
     date_key: str,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs"),
 ):
     """Planetary positions at sunrise (udaya)."""
-    location = _location(lat, lon, timezone)
     try:
         return build_kundali(date_key, location, era=era)
     except ValueError as exc:
@@ -826,11 +1018,8 @@ def kundali(
 @app.get("/day/{target_date}")
 def day_view_legacy(
     target_date: date,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
-    location = _location(lat, lon, timezone)
     return holidays_on_date(target_date, location)
 
 
@@ -838,14 +1027,11 @@ def day_view_legacy(
 def patro_month_legacy(
     bs_year: int,
     bs_month: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     panchanga: bool = Query(True),
 ):
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    location = _location(lat, lon, timezone)
     try:
         return generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga)
     except ValueError as exc:
@@ -855,9 +1041,7 @@ def patro_month_legacy(
 @app.get("/nepal/gochar/{date_key}")
 def nepal_gochar(
     date_key: str,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     era: Literal["bs", "ad"] = Query("bs", description="Date era"),
     upcoming: bool = Query(False, description="Include upcoming transits for slow grahas (Jupiter, Saturn, Rahu, Ketu)"),
 ):
@@ -871,7 +1055,6 @@ def nepal_gochar(
     Set ?upcoming=true to also receive the next 3 rashi entries for the
     slow-moving grahas — useful for a yearly transit summary panel.
     """
-    location = _location(lat, lon, timezone)
     try:
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
@@ -887,9 +1070,7 @@ def nepal_gochar(
 @app.get("/nepal/panchanga/year/{bs_year}")
 def nepal_panchanga_year(
     bs_year: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """
     Full-year Panchanga summary for a BS year.
@@ -903,14 +1084,12 @@ def nepal_panchanga_year(
     the holiday cache separately.
     """
     _validate_bs_year(bs_year)
-    location = _location(lat, lon, timezone)
-
     from panchanga.bikram_sambat import (
         iter_bs_month_days,
         format_bs_date,
         gregorian_to_bs,
     )
-    from panchanga.daily import build_daily_panchanga
+    from panchanga.daily import get_daily_panchanga
 
     all_greg_days: list[date] = []
     for month in range(1, 13):
@@ -918,7 +1097,7 @@ def nepal_panchanga_year(
 
     days = []
     for greg in all_greg_days:
-        p = build_daily_panchanga(greg, location)
+        p = get_daily_panchanga(greg, location)
         bs = p["bs_date"]
         m  = p.get("muhurta", {})
         days.append({
@@ -958,9 +1137,7 @@ def nepal_panchanga_year(
 @app.get("/nepal/special-months/{bs_year}")
 def nepal_special_months(
     bs_year: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
 ):
     """
     Adhik Maas (Mala Maas) and Kshaya Maas info for a BS year.
@@ -974,7 +1151,6 @@ def nepal_special_months(
     most years.
     """
     _validate_bs_year(bs_year)
-    location = _location(lat, lon, timezone)
     from services.holiday_generator import get_special_months_for_bs_year
     try:
         return get_special_months_for_bs_year(bs_year, location)
@@ -985,13 +1161,10 @@ def nepal_special_months(
 @app.get("/patro/{bs_year}")
 def patro_year_legacy(
     bs_year: int,
-    lat: float | None = Query(None),
-    lon: float | None = Query(None),
-    timezone: str | None = Query(None),
+    location: LocationDep,
     panchanga: bool = Query(True),
 ):
     _validate_bs_year(bs_year)
-    location = _location(lat, lon, timezone)
     try:
         return generate_patro(bs_year, location, include_panchanga=panchanga)
     except ValueError as exc:

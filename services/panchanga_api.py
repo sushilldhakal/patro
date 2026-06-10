@@ -18,7 +18,7 @@ from panchanga.bikram_sambat import (
     parse_bs_date,
     shaka_year,
 )
-from panchanga.daily import build_daily_panchanga
+from panchanga.daily import get_daily_panchanga
 from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
@@ -63,7 +63,8 @@ def build_daily_state(
     include_detail: bool = True,
 ) -> dict[str, Any]:
     """Single-day astronomical state — the grid row as JSON."""
-    raw = build_daily_panchanga(greg, location, include_festivals=include_festivals)
+    raw = get_daily_panchanga(greg, location, include_festivals=include_festivals)
+    from_cache = bool(raw.pop("_from_cache", False))
     bs = raw["bs_date"]
     tz = location.timezone
 
@@ -75,6 +76,7 @@ def build_daily_state(
         "sun": {
             "sunrise": raw["sunrise"]["local_time_short"],
             "sunset": raw["sunset"]["local_time_short"],
+            "noon": (raw.get("muhurta") or {}).get("abhijit", {}).get("solar_noon"),
         },
         "moon": {
             "rise": (raw["moonrise"] or {}).get("local_time_short"),
@@ -88,6 +90,8 @@ def build_daily_state(
         "paksha_ne": raw["paksha"]["label_ne"],
         "chandra_rashi": raw["chandra_rashi"]["name"],
         "chandra_rashi_ne": raw["chandra_rashi"]["name_ne"],
+        "surya_rashi": raw["surya_rashi"]["name"],
+        "surya_rashi_ne": raw["surya_rashi"]["name_ne"],
         "ritu": raw["ritu"]["name"],
         "ritu_ne": raw["ritu"]["name_ne"],
         "aayan": raw["aayan"]["name"],
@@ -96,7 +100,9 @@ def build_daily_state(
         "muhurta":  raw.get("muhurta"),
         "location": raw["location"],
         "lunar_calendar": raw.get("lunar_calendar"),
+        "lunar_month": raw.get("lunar_month"),
         "bs_date": raw["bs_date"],
+        "from_cache": from_cache,
     }
 
     if include_festivals and "festivals" in raw:
@@ -117,6 +123,19 @@ def build_daily_state(
     return payload
 
 
+def build_patro_month(
+    bs_year: int,
+    bs_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Printable Surya-style monthly Patro grid (canonical month view)."""
+    from services.presentation.patro import to_patro_month
+
+    month_payload = build_month_calendar(bs_year, bs_month, location)
+    header = build_calendar_header(bs_year, bs_month, location)
+    return to_patro_month(month_payload, header=header)
+
+
 def build_month_calendar(
     bs_year: int,
     bs_month: int,
@@ -133,7 +152,7 @@ def build_month_calendar(
 
     for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
         day_festivals = _festivals_for_day(festivals, greg)
-        panchanga = build_daily_panchanga(greg, location)
+        panchanga = get_daily_panchanga(greg, location)
         row: dict[str, Any] = {
             "day": bs_day,
             "date_ad": greg.isoformat(),
@@ -153,7 +172,7 @@ def build_month_calendar(
     month_start = get_bs_month_start(bs_year, bs_month)
     month_length = get_bs_month_length(bs_year, bs_month)
     mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_length))
-    mid_panchanga = build_daily_panchanga(mid_greg, location)
+    mid_panchanga = get_daily_panchanga(mid_greg, location)
     lunar = mid_panchanga["lunar_month"]
     return {
         "year_bs": bs_year,
@@ -179,7 +198,7 @@ def build_calendar_header(
     """Multi-era header for a BS month."""
     month_start = get_bs_month_start(bs_year, bs_month)
     mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, get_bs_month_length(bs_year, bs_month)))
-    mid_panchanga = build_daily_panchanga(mid_greg, location)
+    mid_panchanga = get_daily_panchanga(mid_greg, location)
     lunar = mid_panchanga["lunar_month"]
     ns = mid_panchanga["ns_date"]
 
@@ -245,7 +264,7 @@ def build_kundali(
 ) -> dict[str, Any]:
     """Planetary positions at sunrise — API-only kundali snapshot."""
     greg = resolve_panchanga_date(date_key, era=era)
-    raw = build_daily_panchanga(greg, location)
+    raw = get_daily_panchanga(greg, location)
     bs = raw["bs_date"]
     planets: dict[str, str] = {}
 

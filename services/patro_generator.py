@@ -13,7 +13,7 @@ from panchanga.bikram_sambat import (
     get_bs_month_start,
     iter_bs_month_days,
 )
-from panchanga.daily import build_daily_panchanga
+from panchanga.daily import get_daily_panchanga
 from services.cache_meta import stamp_payload
 from services.holiday_generator import get_bs_festivals, get_festivals
 
@@ -65,7 +65,7 @@ def generate_bs_month_patro(
     month_length = get_bs_month_length(bs_year, bs_month)
     month_mid = month_start + timedelta(days=min(14, month_length - 1))
     festivals = _collect_bs_year_festivals(bs_year, location)
-    mid_panchanga = build_daily_panchanga(month_mid, location)
+    mid_panchanga = get_daily_panchanga(month_mid, location)
     lunar = mid_panchanga["lunar_month"]
 
     days: list[dict[str, Any]] = []
@@ -76,7 +76,7 @@ def generate_bs_month_patro(
             "festivals": _festivals_for_day(festivals, greg),
         }
         if include_panchanga:
-            panchanga = build_daily_panchanga(greg, location)
+            panchanga = get_daily_panchanga(greg, location)
             entry["panchanga"] = {
                 "display": panchanga["display"],
                 "vaara": panchanga["vaara"],

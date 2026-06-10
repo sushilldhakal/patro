@@ -16,6 +16,11 @@ source .venv/bin/activate
 pip install --upgrade pip -q
 pip install -r requirements.txt -q
 
+if [[ ! -f data/cities.db ]]; then
+  echo "==> Building cities.db"
+  python scripts/import_cities.py
+fi
+
 echo "==> Restarting service"
 sudo systemctl restart "${SERVICE_NAME}"
 

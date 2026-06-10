@@ -32,7 +32,11 @@ if [[ ! -f .env ]]; then
   cp .env.example .env
   echo "    Created .env from .env.example — review ${APP_DIR}/.env"
 fi
-mkdir -p cache
+mkdir -p cache data
+if [[ ! -f data/cities.db ]]; then
+  echo "==> Building cities.db from GeoNames data"
+  python scripts/import_cities.py
+fi
 
 echo "==> Installing systemd service"
 sudo cp deploy/nepali-holiday-api.service /etc/systemd/system/

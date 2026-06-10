@@ -292,3 +292,73 @@ def build_gochar_response(
         )
 
     return result
+
+
+def build_gochar_year_summary(
+    bs_year: int,
+    location: Any,
+    *,
+    slow_grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Yearly Gochar — slow-graha rashi transitions + monthly snapshot table."""
+    from panchanga.bikram_sambat import (
+        bs_to_gregorian,
+        format_bs_date,
+        get_bs_month_length,
+        get_bs_month_start,
+    )
+
+    if slow_grahas is None:
+        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
+
+    year_start = get_bs_month_start(bs_year, 1)
+    year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
+
+    from core.swiss_eph import calculate_sunrise
+
+    init_ephemeris()
+    sunrise_utc = calculate_sunrise(
+        year_start,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    upcoming = find_upcoming_rashi_entries(
+        sunrise_utc,
+        slow_grahas,
+        max_results_per_graha=4,
+    )
+
+    monthly_snapshots: list[dict[str, Any]] = []
+    for bs_month in range(1, 13):
+        month_len = get_bs_month_length(bs_year, bs_month)
+        mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_len))
+        mid_sunrise = calculate_sunrise(
+            mid_greg,
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
+        table = get_gochar_table(mid_sunrise)
+        monthly_snapshots.append({
+            "bs_month": bs_month,
+            "snapshot_date_ad": mid_greg.isoformat(),
+            "snapshot_date_bs": format_bs_date(bs_year, bs_month, min(15, month_len)),
+            "gochar": {
+                graha: {
+                    "rashi": table[graha]["rashi"],
+                    "deg_in_rashi": table[graha].get("deg_in_rashi"),
+                    "motion": table[graha].get("motion"),
+                    "vakri": table[graha].get("is_retrograde", False),
+                }
+                for graha in GRAHA_ORDER
+            },
+        })
+
+    return {
+        "bs_year": bs_year,
+        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        "location": location.as_dict(),
+        "upcoming_transits": upcoming,
+        "monthly_snapshots": monthly_snapshots,
+    }

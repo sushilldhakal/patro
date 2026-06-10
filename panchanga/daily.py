@@ -221,3 +221,36 @@ def build_daily_panchanga(
         payload["festivals"] = day_festivals["festivals"]
 
     return payload
+
+
+def get_daily_panchanga(
+    target: date,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    include_festivals: bool = False,
+) -> dict[str, Any]:
+    """
+    Daily panchanga with SQLite cache-aside.
+
+    Cache hit → instant return (no Swiss Ephemeris).
+    Cache miss → compute, store, return.
+    """
+    from services.panchanga_cache import get_cached_panchanga, store_panchanga_cache
+
+    cached = get_cached_panchanga(target, location)
+    if cached is not None:
+        payload = dict(cached)
+        payload.pop("_from_cache", None)
+        payload["_from_cache"] = True
+    else:
+        payload = build_daily_panchanga(target, location)
+        store_panchanga_cache(target, location, payload)
+        payload["_from_cache"] = False
+
+    if include_festivals:
+        from services.holiday_generator import festivals_on_date
+
+        day_festivals = festivals_on_date(target, location)
+        payload = {**payload, "festivals": day_festivals["festivals"]}
+
+    return payload
