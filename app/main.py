@@ -43,12 +43,16 @@ logging.basicConfig(level=config.log_level())
 logger = logging.getLogger(__name__)
 
 DEFAULT_CORS_ORIGINS = (
+    "https://dpatro.vercel.app",
     "https://sushilldhakal.github.io",
     "http://localhost:5173",
     "http://localhost:5175",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5175",
 )
+
+# Vercel preview deployments (e.g. dpato-git-main-*.vercel.app)
+VERCEL_PREVIEW_ORIGIN_REGEX = r"https://.*\.vercel\.app"
 
 
 async def _warm_holiday_cache_background(app: FastAPI) -> None:
@@ -159,6 +163,7 @@ def _cors_origins() -> list[str]:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins(),
+    allow_origin_regex=VERCEL_PREVIEW_ORIGIN_REGEX,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
