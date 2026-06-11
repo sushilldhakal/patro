@@ -193,6 +193,34 @@ def _calculate_rise_set(
         raise EphemerisError(f"Rise/set calculation failed for {date_val}: {exc}") from exc
 
 
+def _calculate_rise_set_after(
+    after_dt: datetime,
+    body: int,
+    calc_flag: int,
+    *,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+) -> datetime | None:
+    """Next rise/set for body at or after the given instant (panchanga day = sunrise to sunrise)."""
+    _ensure_initialized()
+    jd_start = get_julian_day(after_dt.astimezone(timezone.utc))
+    try:
+        result = swe.rise_trans(
+            jd_start,
+            body,
+            calc_flag,
+            (longitude, latitude, altitude),
+            0.0,
+            0.0,
+        )
+        if result[0] < 0:
+            return None
+        return julian_day_to_datetime(result[1][0])
+    except (swe.Error, IndexError, TypeError, ValueError) as exc:
+        raise EphemerisError(f"Rise/set calculation failed after {after_dt}: {exc}") from exc
+
+
 def calculate_moonrise(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
@@ -226,6 +254,40 @@ def calculate_moonset(
         longitude=longitude,
         altitude=altitude,
         timezone_name=timezone_name,
+    )
+
+
+def calculate_moonrise_after(
+    after_dt: datetime,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    return _calculate_rise_set_after(
+        after_dt,
+        MOON,
+        swe.CALC_RISE,
+        latitude=latitude,
+        longitude=longitude,
+        altitude=altitude,
+    )
+
+
+def calculate_moonset_after(
+    after_dt: datetime,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float = ALT_KATHMANDU,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    return _calculate_rise_set_after(
+        after_dt,
+        MOON,
+        swe.CALC_SET,
+        latitude=latitude,
+        longitude=longitude,
+        altitude=altitude,
     )
 
 

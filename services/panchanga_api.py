@@ -161,6 +161,8 @@ def build_month_calendar(
             "weekday_ne": panchanga["vaara"]["name_ne"],
             "tithi": panchanga["tithi"]["name"],
             "tithi_ne": panchanga["tithi"]["name_ne"],
+            "paksha": panchanga["paksha"]["name"],
+            "paksha_ne": panchanga["paksha"].get("name_ne"),
             "nakshatra": panchanga["nakshatra"]["name"],
             "nakshatra_ne": panchanga["nakshatra"].get("name_ne"),
             "yoga": panchanga["yoga"]["name"],
@@ -169,6 +171,10 @@ def build_month_calendar(
             "karana_ne": panchanga["karana"].get("name_ne"),
             "sunrise": panchanga["sunrise"]["local_time_short"],
             "sunset": panchanga["sunset"]["local_time_short"],
+            "moonrise": (panchanga.get("moonrise") or {}).get("local_time_short"),
+            "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
+            "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),
+            "moonset_local": (panchanga.get("moonset") or {}).get("local"),
             "festivals": [f.get("name_en") or f.get("name") for f in day_festivals],
         }
         if full:

@@ -7,8 +7,8 @@ from typing import Any
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
 from core.swiss_eph import (
-    calculate_moonrise,
-    calculate_moonset,
+    calculate_moonrise_after,
+    calculate_moonset_after,
     calculate_sunrise,
     calculate_sunset,
     get_all_planetary_positions,
@@ -124,14 +124,14 @@ def build_daily_panchanga(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
-    moonrise_utc = calculate_moonrise(
-        target,
+    moonrise_utc = calculate_moonrise_after(
+        sunrise_utc,
         latitude=location.lat,
         longitude=location.lon,
         timezone_name=location.timezone,
     )
-    moonset_utc = calculate_moonset(
-        target,
+    moonset_utc = calculate_moonset_after(
+        sunrise_utc,
         latitude=location.lat,
         longitude=location.lon,
         timezone_name=location.timezone,
