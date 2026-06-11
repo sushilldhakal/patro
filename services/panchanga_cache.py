@@ -15,6 +15,19 @@ from core.time_utils import resolve_observer_timezone
 
 logger = logging.getLogger(__name__)
 
+# Bump when cached payload_json shape changes; stale rows are treated as cache misses.
+CACHE_PAYLOAD_VERSION = 2
+
+_REQUIRED_PAYLOAD_KEYS = (
+    "lagna",
+    "ritu",
+    "planets",
+    "tithi",
+    "nakshatra",
+    "yoga",
+    "karana",
+)
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS panchanga_cache (
     city_id INTEGER NOT NULL DEFAULT 0,
@@ -140,9 +153,29 @@ def _row_from_panchanga(
         "gulika": _muhurta_json(muhurta.get("gulika")),
         "abhijit": _muhurta_json(muhurta.get("abhijit")),
         "festivals": json.dumps(raw.get("festivals", []), ensure_ascii=False),
-        "payload_json": json.dumps(raw, ensure_ascii=False),
+        "payload_json": json.dumps(
+            {**raw, "_cache_version": CACHE_PAYLOAD_VERSION},
+            ensure_ascii=False,
+        ),
         "computed_at": datetime.now(timezone.utc).isoformat(),
     }
+
+
+def _payload_cache_valid(payload: dict[str, Any]) -> bool:
+    if payload.get("_cache_version", 1) < CACHE_PAYLOAD_VERSION:
+        return False
+    for key in _REQUIRED_PAYLOAD_KEYS:
+        if key not in payload:
+            return False
+    for element in ("tithi", "nakshatra", "yoga", "karana"):
+        block = payload.get(element)
+        if not isinstance(block, dict):
+            return False
+        nxt = block.get("next")
+        if not isinstance(nxt, dict) or "name" not in nxt:
+            return False
+    lagna = payload.get("lagna")
+    return isinstance(lagna, dict) and "name_ne" in lagna
 
 
 def get_cached_panchanga(
@@ -167,7 +200,15 @@ def get_cached_panchanga(
     if row is None:
         return None
 
-    return json.loads(row["payload_json"])
+    payload = json.loads(row["payload_json"])
+    if not _payload_cache_valid(payload):
+        logger.debug(
+            "Stale panchanga cache for %s @ %s — recomputing",
+            greg.isoformat(),
+            location_key,
+        )
+        return None
+    return payload
 
 
 def store_panchanga_cache(

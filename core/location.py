@@ -51,6 +51,10 @@ def resolve_location(
     if not (-180 <= resolved_lon <= 180):
         raise ValueError("lon must be between -180 and 180")
 
+    # Match cache_key precision (~11 m) so geolocation coords don't fragment cache rows.
+    resolved_lat = round(resolved_lat, 4)
+    resolved_lon = round(resolved_lon, 4)
+
     resolved_name = name or DEFAULT_LOCATION.name
     if name is None and (
         lat is not None or lon is not None or (timezone is not None and timezone != DEFAULT_LOCATION.timezone)
