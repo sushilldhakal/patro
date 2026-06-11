@@ -36,6 +36,7 @@ from panchanga.tithi import calculate_tithi
 from core.positions import (
     get_aayan,
     get_chandra_rashi,
+    get_lagna,
     get_ritu,
     get_surya_rashi,
     get_vaara,
@@ -199,10 +200,15 @@ def build_daily_panchanga(
         "paksha": _paksha_block(lunar, paksha),
         "chandra_rashi": get_chandra_rashi(sunrise_utc),
         "surya_rashi": get_surya_rashi(sunrise_utc),
-        "ritu": get_ritu(sunrise_utc),
+        "ritu": get_ritu(
+            sunrise_utc,
+            lat=location.lat,
+            timezone_name=location.timezone,
+        ),
         "lunar_month": lunar,
         "lunar_calendar": get_lunar_calendar_layers(target),
         "planets": get_all_planetary_positions(sunrise_utc),
+        "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
         "muhurta": muhurta,
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,
