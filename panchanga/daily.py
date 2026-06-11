@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
@@ -23,6 +23,7 @@ from panchanga.element_boundaries import (
     build_yoga_block,
 )
 from panchanga.ghati_time import compute_dinamaan
+from panchanga.lagna_spans import build_lagna_spans
 from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
 from panchanga.muhurta import build_muhurta_block
 from panchanga.names_ne import (
@@ -164,6 +165,18 @@ def build_daily_panchanga(
     dinamaan = compute_dinamaan(sunrise_utc, sunset_utc)
 
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, location.timezone)
+    next_sunrise_utc = calculate_sunrise(
+        target + timedelta(days=1),
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    lagna_spans = build_lagna_spans(
+        sunrise_utc,
+        next_sunrise_utc,
+        lat=location.lat,
+        lon=location.lon,
+    )
 
     payload: dict[str, Any] = {
         "date": target.isoformat(),
@@ -209,6 +222,7 @@ def build_daily_panchanga(
         "lunar_calendar": get_lunar_calendar_layers(target),
         "planets": get_all_planetary_positions(sunrise_utc),
         "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
+        "lagna_spans": lagna_spans,
         "muhurta": muhurta,
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,

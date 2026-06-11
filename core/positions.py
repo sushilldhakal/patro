@@ -144,14 +144,43 @@ def get_chandra_rashi(dt: datetime) -> dict:
     }
 
 
-def get_lagna(dt: datetime, *, lat: float, lon: float) -> dict:
-    """Sidereal ascendant (lagna) at the given instant and observer — udaya lagna at sunrise."""
+def get_sidereal_asc_longitude(dt: datetime, *, lat: float, lon: float) -> float:
+    """Sidereal ascendant longitude (0–360°) at dt for the observer."""
     _ensure_initialized()
     swe.set_sid_mode(AYANAMSA_LAHIRI)
     jd = get_julian_day(dt)
     _, ascmc = swe.houses(jd, lat, lon, b"P")
     tropical_asc = ascmc[0]
-    sidereal_asc = (tropical_asc - swe.get_ayanamsa_ut(jd)) % 360
+    return (tropical_asc - swe.get_ayanamsa_ut(jd)) % 360
+
+
+def _lagna_rashi_index(dt: datetime, *, lat: float, lon: float) -> int:
+    return int(get_sidereal_asc_longitude(dt, lat=lat, lon=lon) / 30) % 12
+
+
+def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
+    """When the ascendant next enters the following rashi after dt."""
+    from datetime import timedelta
+
+    current = _lagna_rashi_index(dt, lat=lat, lon=lon)
+    start_dt = dt
+    end_dt = dt + timedelta(hours=4)
+    tolerance = timedelta(seconds=30)
+
+    for _ in range(50):
+        if end_dt - start_dt < tolerance:
+            return end_dt
+        mid_dt = start_dt + (end_dt - start_dt) / 2
+        if _lagna_rashi_index(mid_dt, lat=lat, lon=lon) == current:
+            start_dt = mid_dt
+        else:
+            end_dt = mid_dt
+    return end_dt
+
+
+def get_lagna(dt: datetime, *, lat: float, lon: float) -> dict:
+    """Sidereal ascendant (lagna) at the given instant and observer."""
+    sidereal_asc = get_sidereal_asc_longitude(dt, lat=lat, lon=lon)
     rashi_index = int(sidereal_asc / 30) % 12
     return {
         "number": rashi_index + 1,

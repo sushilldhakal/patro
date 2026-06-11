@@ -16,10 +16,11 @@ from core.time_utils import resolve_observer_timezone
 logger = logging.getLogger(__name__)
 
 # Bump when cached payload_json shape changes; stale rows are treated as cache misses.
-CACHE_PAYLOAD_VERSION = 2
+CACHE_PAYLOAD_VERSION = 3
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
+    "lagna_spans",
     "ritu",
     "planets",
     "tithi",
@@ -175,7 +176,13 @@ def _payload_cache_valid(payload: dict[str, Any]) -> bool:
         if not isinstance(nxt, dict) or "name" not in nxt:
             return False
     lagna = payload.get("lagna")
-    return isinstance(lagna, dict) and "name_ne" in lagna
+    spans = payload.get("lagna_spans")
+    return (
+        isinstance(lagna, dict)
+        and "name_ne" in lagna
+        and isinstance(spans, list)
+        and len(spans) == 12
+    )
 
 
 def get_cached_panchanga(
