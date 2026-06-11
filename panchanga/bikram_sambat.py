@@ -13,10 +13,12 @@ from core.swiss_eph import calculate_sunrise
 from core.time_utils import to_nepal_time
 from panchanga.constants import (
     BS_CALENDAR_DATA,
+    BS_ESTIMATED_MIN_YEAR,
     BS_MAX_YEAR,
     BS_MIN_YEAR,
     BS_MONTH_NAMES,
     BS_MONTH_NAMES_NEPALI,
+    BS_SUPPORTED_MAX_YEAR,
     get_bs_year_data,
 )
 from panchanga.sankranti import find_mesh_sankranti, find_sankranti
@@ -80,7 +82,7 @@ def _sankranti_start_date(sankranti_utc: datetime) -> date:
 
 
 def is_valid_bs_date(year: int, month: int, day: int) -> bool:
-    if year < BS_MIN_YEAR or year > BS_MAX_YEAR:
+    if year < BS_ESTIMATED_MIN_YEAR or year > BS_SUPPORTED_MAX_YEAR:
         return False
     if not 1 <= month <= 12 or day < 1:
         return False

@@ -197,8 +197,13 @@ LocationDep = Annotated[ObserverLocation, Depends(location_params)]
 
 
 def _validate_bs_year(year: int) -> None:
-    if not 2000 <= year <= 2200:
-        raise HTTPException(status_code=400, detail="year must be a BS year between 2000 and 2200")
+    from panchanga.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
+
+    if not BS_ESTIMATED_MIN_YEAR <= year <= BS_SUPPORTED_MAX_YEAR:
+        raise HTTPException(
+            status_code=400,
+            detail=f"year must be a BS year between {BS_ESTIMATED_MIN_YEAR} and {BS_SUPPORTED_MAX_YEAR}",
+        )
 
 
 def _validate_bs_month(month: int) -> None:
