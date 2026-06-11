@@ -98,6 +98,7 @@ def build_daily_state(
         "aayan_ne": raw["aayan"]["name_ne"],
         "lagna": raw["lagna"]["name"],
         "lagna_ne": raw["lagna"]["name_ne"],
+        "lagna_spans": raw.get("lagna_spans") or [],
         "dinamaan": raw["dinamaan"]["label_en"],
         "muhurta":  raw.get("muhurta"),
         "location": raw["location"],
