@@ -13,7 +13,6 @@ from core.swiss_eph import (
     calculate_sunset,
     get_all_planetary_positions,
     get_ayanamsa,
-    graha_spashta_datetime,
 )
 from core.time_utils import resolve_observer_timezone
 from panchanga.bikram_sambat import BS_MONTH_NAMES_NEPALI, bs_month_name, gregorian_to_bs
@@ -24,6 +23,7 @@ from panchanga.element_boundaries import (
     build_yoga_block,
 )
 from panchanga.ghati_time import compute_dinamaan
+from panchanga.solar_corrections import build_solar_corrections
 from panchanga.lagna_spans import build_lagna_spans
 from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
 from panchanga.muhurta import build_muhurta_block
@@ -178,7 +178,13 @@ def build_daily_panchanga(
         lat=location.lat,
         lon=location.lon,
     )
-    graha_dt_local = graha_spashta_datetime(target, location.timezone)
+    sunrise_block = _time_block(sunrise_utc, location.timezone)
+    solar_corrections = build_solar_corrections(
+        target,
+        local_longitude=location.lon,
+        timezone_name=location.timezone,
+        at=sunrise_utc,
+    )
 
     payload: dict[str, Any] = {
         "date": target.isoformat(),
@@ -192,8 +198,9 @@ def build_daily_panchanga(
         },
         "ns_date": ns_date,
         "location": location.as_dict(),
-        "sunrise": _time_block(sunrise_utc, location.timezone),
+        "sunrise": sunrise_block,
         "sunset": _time_block(sunset_utc, location.timezone),
+        "solar_corrections": solar_corrections,
         "moonrise": _time_block(moonrise_utc, location.timezone),
         "moonset": _time_block(moonset_utc, location.timezone),
         "dinamaan": dinamaan,
@@ -222,12 +229,12 @@ def build_daily_panchanga(
         ),
         "lunar_month": lunar,
         "lunar_calendar": get_lunar_calendar_layers(target),
-        "planets": get_all_planetary_positions(graha_dt_local),
+        "planets": get_all_planetary_positions(sunrise_utc),
         "planets_anchor": {
-            "type": "local_6am",
-            "local_time": "06:00",
-            "label_ne": "स्थानीय समय ६ बजे",
-            "label_en": "6:00 AM local",
+            "type": "udayakal",
+            "local_time": sunrise_block.get("local_time_short"),
+            "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
+            "label_en": "Udayakalika Spashtagraha (sunrise)",
         },
         "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
         "lagna_spans": lagna_spans,

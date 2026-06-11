@@ -16,7 +16,7 @@ from core.time_utils import resolve_observer_timezone
 logger = logging.getLogger(__name__)
 
 # Bump when cached payload_json shape changes; stale rows are treated as cache misses.
-CACHE_PAYLOAD_VERSION = 4
+CACHE_PAYLOAD_VERSION = 6
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

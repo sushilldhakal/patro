@@ -333,7 +333,7 @@ def _enrich_planet_position(pos: dict[str, Any], *, rashi_names: list[str], rash
 
 
 def graha_spashta_datetime(target: date, timezone_name: str) -> datetime:
-    """Local 06:00 — standard Nepali patro time for ग्रह स्पष्ट."""
+    """Local 06:00 — some published patros (e.g. Toyanath); Surya uses Udayakal (sunrise)."""
     observer_tz = resolve_observer_timezone(timezone_name)
     return datetime.combine(target, time(6, 0), tzinfo=observer_tz)
 

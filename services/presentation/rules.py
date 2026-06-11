@@ -36,7 +36,7 @@ def _nepal_official(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _toyanath(payload: dict[str, Any]) -> dict[str, Any]:
-    """Toyanath Panchanga Patro — graha spashta at 06:00 local when detail present."""
+    """Toyanath Panchanga Patro — may use 06:00 local for graha in published tables."""
     meta = {**payload.get("meta", {}), "graha_anchor": "06:00_local", "publisher": "toyanath"}
     return {**payload, "meta": meta}
 
