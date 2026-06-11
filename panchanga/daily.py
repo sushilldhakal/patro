@@ -13,6 +13,7 @@ from core.swiss_eph import (
     calculate_sunset,
     get_all_planetary_positions,
     get_ayanamsa,
+    graha_spashta_datetime,
 )
 from core.time_utils import resolve_observer_timezone
 from panchanga.bikram_sambat import BS_MONTH_NAMES_NEPALI, bs_month_name, gregorian_to_bs
@@ -177,6 +178,7 @@ def build_daily_panchanga(
         lat=location.lat,
         lon=location.lon,
     )
+    graha_dt_local = graha_spashta_datetime(target, location.timezone)
 
     payload: dict[str, Any] = {
         "date": target.isoformat(),
@@ -220,7 +222,13 @@ def build_daily_panchanga(
         ),
         "lunar_month": lunar,
         "lunar_calendar": get_lunar_calendar_layers(target),
-        "planets": get_all_planetary_positions(sunrise_utc),
+        "planets": get_all_planetary_positions(graha_dt_local),
+        "planets_anchor": {
+            "type": "local_6am",
+            "local_time": "06:00",
+            "label_ne": "स्थानीय समय ६ बजे",
+            "label_en": "6:00 AM local",
+        },
         "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
         "lagna_spans": lagna_spans,
         "muhurta": muhurta,

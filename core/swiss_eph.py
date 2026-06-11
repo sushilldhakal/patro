@@ -1,6 +1,7 @@
 """Swiss Ephemeris wrapper (Lahiri sidereal, built-in Moshier ephemeris)."""
 
 from datetime import date, datetime, time, timedelta, timezone
+from typing import Any
 
 import swisseph as swe
 
@@ -299,6 +300,44 @@ def get_ayanamsa(dt: datetime, ayanamsa: int = AYANAMSA_LAHIRI) -> float:
     return swe.get_ayanamsa_ut(jd)
 
 
+def _dms_in_sign(longitude: float) -> str:
+    """Degree-minute-second within the current rashi (0–30°), patro style."""
+    deg_in_sign = longitude % 30.0
+    d = int(deg_in_sign)
+    m_frac = (deg_in_sign - d) * 60.0
+    m = int(m_frac)
+    s = round((m_frac - m) * 60.0)
+    if s >= 60:
+        s -= 60
+        m += 1
+    if m >= 60:
+        m -= 60
+        d += 1
+    return f'{d:02d}°{m:02d}\'{s:02d}"'
+
+
+def _enrich_planet_position(pos: dict[str, Any], *, rashi_names: list[str], rashi_names_ne: list[str]) -> dict[str, Any]:
+    longitude = float(pos["longitude"])
+    rashi_idx = int(longitude / 30) % 12
+    speed = float(pos.get("speed", 0.0))
+    enriched = {
+        **pos,
+        "rashi": rashi_idx + 1,
+        "rashi_name": rashi_names[rashi_idx],
+        "rashi_ne": rashi_names_ne[rashi_idx],
+        "deg_in_rashi": round(longitude % 30.0, 6),
+        "dms_in_rashi": _dms_in_sign(longitude),
+        "is_retrograde": speed < 0,
+    }
+    return enriched
+
+
+def graha_spashta_datetime(target: date, timezone_name: str) -> datetime:
+    """Local 06:00 — standard Nepali patro time for ग्रह स्पष्ट."""
+    observer_tz = resolve_observer_timezone(timezone_name)
+    return datetime.combine(target, time(6, 0), tzinfo=observer_tz)
+
+
 def get_planet_position(dt: datetime, planet_id: int, *, sidereal: bool = True) -> dict:
     """Sidereal longitude (degrees), speed, and rashi for one body."""
     _ensure_initialized()
@@ -322,21 +361,27 @@ def get_planet_position(dt: datetime, planet_id: int, *, sidereal: bool = True) 
 
 def get_all_planetary_positions(dt: datetime, *, sidereal: bool = True) -> dict:
     """Sun, Moon, grahas, and Rahu/Ketu at the given instant."""
-    from panchanga.sankranti import RASHI_NAMES
+    from core.positions import RASHI_NAMES, RASHI_NAMES_NE
 
-    positions: dict = {}
+    positions: dict[str, dict[str, Any]] = {}
     for name, planet_id in PLANET_IDS.items():
         pos = get_planet_position(dt, planet_id, sidereal=sidereal)
-        pos["rashi_name"] = RASHI_NAMES[pos["rashi"] - 1]
-        positions[name] = pos
+        positions[name] = _enrich_planet_position(
+            pos,
+            rashi_names=RASHI_NAMES,
+            rashi_names_ne=RASHI_NAMES_NE,
+        )
 
     rahu_long = positions["rahu"]["longitude"]
     ketu_long = (rahu_long + 180.0) % 360
     ketu_rashi = int(ketu_long / 30) % 12
-    positions["ketu"] = {
-        "longitude": round(ketu_long, 6),
-        "speed": round(-positions["rahu"]["speed"], 6),
-        "rashi": ketu_rashi + 1,
-        "rashi_name": RASHI_NAMES[ketu_rashi],
-    }
+    positions["ketu"] = _enrich_planet_position(
+        {
+            "longitude": round(ketu_long, 6),
+            "speed": round(-positions["rahu"]["speed"], 6),
+            "rashi": ketu_rashi + 1,
+        },
+        rashi_names=RASHI_NAMES,
+        rashi_names_ne=RASHI_NAMES_NE,
+    )
     return positions
