@@ -76,8 +76,21 @@ def _rashi_index_for(graha: str, dt: datetime) -> int:
     return int(get_planet_position(dt, PLANET_IDS[graha])["longitude"] / 30) % 12
 
 
-def _dms_from_longitude(lon: float) -> str:
-    """Convert decimal longitude to D°M'S" within its sign (0–30°)."""
+def _dms_absolute(lon: float) -> str:
+    """Absolute zodiac position as D°M'S" (0–360°), e.g. '348°52\'10\"' for Saturn in Meena."""
+    d = int(lon)
+    m_frac = (lon - d) * 60
+    m = int(m_frac)
+    s = round((m_frac - m) * 60)
+    if s >= 60:
+        s -= 60; m += 1
+    if m >= 60:
+        m -= 60; d += 1
+    return f'{d:03d}°{m:02d}\'{s:02d}"'
+
+
+def _dms_in_sign(lon: float) -> str:
+    """Degree-minute-second within the current rashi (0–30°)."""
     deg_in_sign = lon % 30.0
     d = int(deg_in_sign)
     m_frac = (deg_in_sign - d) * 60
@@ -112,19 +125,21 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
         lon  = pos.get("longitude", 0.0)
         spd  = pos.get("speed", 0.0)
         rashi_idx = (pos.get("rashi", 1) - 1) % 12  # stored 1-based in raw
+        # Ketu always moves retrograde by Vedic convention (shadow node opposite Rahu)
+        is_vakri = spd < 0 or graha == "ketu"
         table[graha] = {
             "name_vedic":    meta["vedic"],
             "name_ne":       meta["ne"],
             "symbol":        meta["symbol"],
             "longitude":     round(lon, 4),
-            "dms_absolute":  _dms_from_longitude(lon),     # degree within sign
+            "dms_absolute":  _dms_absolute(lon),
             "rashi_no":      rashi_idx + 1,
             "rashi":         RASHI_NAMES[rashi_idx],
             "deg_in_rashi":  round(lon % 30.0, 4),
-            "dms_in_rashi":  _dms_from_longitude(lon),
+            "dms_in_rashi":  _dms_in_sign(lon),
             "speed_deg_day": round(spd, 4),
-            "is_retrograde": spd < 0,
-            "motion":        "Vakri" if spd < 0 else "Margi",
+            "is_retrograde": is_vakri,
+            "motion":        "Vakri" if is_vakri else "Margi",
         }
     return table
 

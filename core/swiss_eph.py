@@ -300,6 +300,21 @@ def get_ayanamsa(dt: datetime, ayanamsa: int = AYANAMSA_LAHIRI) -> float:
     return swe.get_ayanamsa_ut(jd)
 
 
+def _dms_absolute(longitude: float) -> str:
+    """Absolute zodiac position as D°M'S" (0–360°), e.g. '348°52\'10\"' for Saturn."""
+    d = int(longitude)
+    m_frac = (longitude - d) * 60.0
+    m = int(m_frac)
+    s = round((m_frac - m) * 60.0)
+    if s >= 60:
+        s -= 60
+        m += 1
+    if m >= 60:
+        m -= 60
+        d += 1
+    return f'{d:03d}°{m:02d}\'{s:02d}"'
+
+
 def _dms_in_sign(longitude: float) -> str:
     """Degree-minute-second within the current rashi (0–30°), patro style."""
     deg_in_sign = longitude % 30.0
@@ -325,6 +340,7 @@ def _enrich_planet_position(pos: dict[str, Any], *, rashi_names: list[str], rash
         "rashi": rashi_idx + 1,
         "rashi_name": rashi_names[rashi_idx],
         "rashi_ne": rashi_names_ne[rashi_idx],
+        "dms": _dms_absolute(longitude),
         "deg_in_rashi": round(longitude % 30.0, 6),
         "dms_in_rashi": _dms_in_sign(longitude),
         "is_retrograde": speed < 0,
@@ -375,7 +391,7 @@ def get_all_planetary_positions(dt: datetime, *, sidereal: bool = True) -> dict:
     rahu_long = positions["rahu"]["longitude"]
     ketu_long = (rahu_long + 180.0) % 360
     ketu_rashi = int(ketu_long / 30) % 12
-    positions["ketu"] = _enrich_planet_position(
+    ketu_pos = _enrich_planet_position(
         {
             "longitude": round(ketu_long, 6),
             "speed": round(-positions["rahu"]["speed"], 6),
@@ -384,4 +400,7 @@ def get_all_planetary_positions(dt: datetime, *, sidereal: bool = True) -> dict:
         rashi_names=RASHI_NAMES,
         rashi_names_ne=RASHI_NAMES_NE,
     )
+    # Ketu is always Vakri (retrograde) by Vedic convention — shadow node opposite Rahu
+    ketu_pos["is_retrograde"] = True
+    positions["ketu"] = ketu_pos
     return positions
