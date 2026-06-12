@@ -32,6 +32,7 @@ from services.panchanga_api import (
     build_festivals_for_date,
     build_kundali,
     build_month_calendar,
+    build_month_calendar_at_clock,
     build_patro_month,
     resolve_panchanga_date,
 )
@@ -456,17 +457,73 @@ def about():
     }
 
 
+@app.get("/panchanga/at-time")
+def panchanga_at_time(
+    location: LocationDep,
+    datetime: str | None = Query(
+        None,
+        alias="datetime",
+        description="ISO local or offset datetime; naive uses observer TZ; omit for now",
+    ),
+):
+    """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
+    from panchanga.at_time import build_panchanga_at_time, parse_query_datetime
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        return build_panchanga_at_time(instant, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/planetary/positions")
+def planetary_positions(
+    location: LocationDep,
+    datetime: str | None = Query(
+        None,
+        alias="datetime",
+        description="ISO datetime; naive uses observer TZ; omit for now",
+    ),
+):
+    """Nine grahas + lagna at an instant."""
+    from datetime import timezone
+
+    from panchanga.at_time import build_planetary_snapshot, parse_query_datetime
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        return {
+            **build_planetary_snapshot(
+                instant.astimezone(timezone.utc),
+                lat=location.lat,
+                lon=location.lon,
+            ),
+            "location": location.as_dict(),
+            "query_instant": instant.isoformat(),
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/panchanga/{bs_year}/{bs_month}")
 def panchanga_month(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
     full: bool = Query(False, description="Include full daily state per day"),
+    clock: str | None = Query(
+        None,
+        description="HH:MM civil clock — ephemeris mode for each day in the month",
+    ),
 ):
     """BS month calendar — Patro grid as structured JSON."""
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
     try:
+        if clock:
+            return build_month_calendar_at_clock(
+                bs_year, bs_month, location, clock, full=full
+            )
         return build_month_calendar(bs_year, bs_month, location, full=full)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -139,6 +139,54 @@ def build_patro_month(
     return to_patro_month(month_payload, header=header)
 
 
+def build_month_calendar_at_clock(
+    bs_year: int,
+    bs_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    clock: str = "12:00",
+    *,
+    full: bool = False,
+) -> dict[str, Any]:
+    """BS month grid with ephemeris-mode panchanga at a fixed civil clock each day."""
+    from panchanga.at_time import instant_row_from_date
+
+    if not 1 <= bs_month <= 12:
+        raise ValueError("bs_month must be 1..12")
+
+    festivals = _collect_bs_year_festivals(bs_year, location)
+    calendar: list[dict[str, Any]] = []
+
+    for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
+        day_festivals = _festivals_for_day(festivals, greg)
+        row = instant_row_from_date(greg, clock, location)
+        row["festivals"] = [f.get("name_en") or f.get("name") for f in day_festivals]
+        if not full:
+            row.pop("panchanga", None)
+        calendar.append(row)
+
+    month_start = get_bs_month_start(bs_year, bs_month)
+    month_length = get_bs_month_length(bs_year, bs_month)
+    mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_length))
+    mid_panchanga = get_daily_panchanga(mid_greg, location)
+    lunar = mid_panchanga["lunar_month"]
+    return {
+        "year_bs": bs_year,
+        "month_bs": bs_month,
+        "month_name": bs_month_name(bs_month),
+        "month_name_ne": bs_month_name(bs_month, nepali=True),
+        "month_start_ad": month_start.isoformat(),
+        "month_length": month_length,
+        "lunar_month": lunar.get("name"),
+        "lunar_month_full": lunar.get("full_name"),
+        "lunar_month_is_adhik": lunar.get("is_adhik", False),
+        "lunar_month_type": lunar.get("type"),
+        "location": location.as_dict(),
+        "mode": "ephemeris",
+        "clock": clock,
+        "calendar": calendar,
+    }
+
+
 def build_month_calendar(
     bs_year: int,
     bs_month: int,

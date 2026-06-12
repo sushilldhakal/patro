@@ -1,0 +1,264 @@
+"""Ephemeris-mode panchanga at an arbitrary civil instant."""
+
+from __future__ import annotations
+
+from datetime import date, datetime, time, timedelta, timezone
+from typing import Any
+from zoneinfo import ZoneInfo
+
+from core.location import ObserverLocation
+from core.positions import get_lagna, get_vaara
+from core.swiss_eph import (
+    calculate_sunrise,
+    calculate_sunset,
+    get_all_planetary_positions,
+)
+from core.time_utils import resolve_observer_timezone
+from panchanga.bikram_sambat import format_bs_date, gregorian_to_bs
+from panchanga.daily import _time_block
+from panchanga.element_boundaries import (
+    build_karana_block,
+    build_nakshatra_block,
+    build_tithi_block,
+    build_yoga_block,
+)
+from panchanga.muhurta import (
+    build_muhurta_block,
+    compute_abhijit_muhurta,
+    compute_gulika,
+    compute_rahu_kalam,
+    compute_yamaganda,
+)
+from panchanga.names_ne import VAARA_NAMES_NE
+from panchanga.tithi import calculate_tithi
+
+
+def parse_query_datetime(
+    raw: str | None,
+    *,
+    timezone_name: str,
+) -> datetime:
+    """Parse ISO datetime; naive values use the observer timezone; omit for now."""
+    tz = resolve_observer_timezone(timezone_name)
+    if not raw:
+        return datetime.now(tz)
+    text = raw.strip()
+    if text.endswith("Z"):
+        text = f"{text[:-1]}+00:00"
+    dt = datetime.fromisoformat(text)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=tz)
+    return dt.astimezone(tz)
+
+
+def parse_clock_on_date(clock: str, greg: date, *, timezone_name: str) -> datetime:
+    """Apply HH:MM (or HH:MM:SS) on a civil date in the observer timezone."""
+    tz = resolve_observer_timezone(timezone_name)
+    parts = clock.strip().split(":")
+    if len(parts) < 2:
+        raise ValueError("clock must be HH:MM or HH:MM:SS")
+    hour = int(parts[0])
+    minute = int(parts[1])
+    second = int(parts[2]) if len(parts) > 2 else 0
+    return datetime.combine(greg, time(hour, minute, second), tzinfo=tz)
+
+
+def resolve_vedic_day_anchor(
+    instant_local: datetime,
+    location: ObserverLocation,
+) -> tuple[date, datetime, datetime, datetime]:
+    """
+    Panchanga day = sunrise → next sunrise.
+
+    Instants before today's sunrise belong to the previous vedic day.
+    Returns (anchor_date, sunrise_utc, sunset_utc, next_sunrise_utc).
+    """
+    tz = resolve_observer_timezone(location.timezone)
+    local = instant_local.astimezone(tz)
+    civil = local.date()
+    sunrise_today = calculate_sunrise(
+        civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    ).astimezone(tz)
+
+    if local < sunrise_today:
+        anchor = civil - timedelta(days=1)
+    else:
+        anchor = civil
+
+    sunrise_utc = calculate_sunrise(
+        anchor,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    sunset_utc = calculate_sunset(
+        anchor,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    next_sunrise_utc = calculate_sunrise(
+        anchor + timedelta(days=1),
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    return anchor, sunrise_utc, sunset_utc, next_sunrise_utc
+
+
+def _parse_window_bounds(block: dict[str, Any], tz: ZoneInfo) -> tuple[datetime, datetime]:
+    start = datetime.fromisoformat(block["start_local"].replace("Z", "+00:00"))
+    end = datetime.fromisoformat(block["end_local"].replace("Z", "+00:00"))
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=tz)
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=tz)
+    return start, end
+
+
+def compute_muhurta_now(
+    instant_local: datetime,
+    sunrise_utc: datetime,
+    sunset_utc: datetime,
+    vaara_num: int,
+    timezone_name: str,
+) -> dict[str, Any]:
+    """Whether Rahu Kalam / Yamaganda / Gulika / Abhijit is active at instant."""
+    tz = resolve_observer_timezone(timezone_name)
+    local = instant_local.astimezone(tz)
+
+    windows = {
+        "rahu_kalam": compute_rahu_kalam(sunrise_utc, sunset_utc, vaara_num, timezone_name),
+        "yamaganda": compute_yamaganda(sunrise_utc, sunset_utc, vaara_num, timezone_name),
+        "gulika": compute_gulika(sunrise_utc, sunset_utc, vaara_num, timezone_name),
+        "abhijit": compute_abhijit_muhurta(sunrise_utc, sunset_utc, timezone_name),
+    }
+
+    result: dict[str, Any] = {}
+    for key, block in windows.items():
+        start, end = _parse_window_bounds(block, tz)
+        result[key] = {
+            **block,
+            "active": start <= local < end,
+        }
+    return result
+
+
+def build_instant_anga_snapshot(
+    instant_utc: datetime,
+    sunrise_utc: datetime,
+) -> dict[str, Any]:
+    """Tithi / nakshatra / yoga / karana running at instant with span boundaries."""
+    tithi_info = calculate_tithi(instant_utc)
+    return {
+        "tithi": build_tithi_block(instant_utc, sunrise_utc, tithi_info),
+        "nakshatra": build_nakshatra_block(instant_utc, sunrise_utc),
+        "yoga": build_yoga_block(instant_utc, sunrise_utc),
+        "karana": build_karana_block(instant_utc, sunrise_utc),
+    }
+
+
+def build_planetary_snapshot(
+    instant_utc: datetime,
+    *,
+    lat: float,
+    lon: float,
+) -> dict[str, Any]:
+    planets = get_all_planetary_positions(instant_utc)
+    lagna = get_lagna(instant_utc, lat=lat, lon=lon)
+    return {
+        "planets": planets,
+        "lagna": {**lagna, "anchor": "instant"},
+        "computed_at": instant_utc.isoformat(),
+    }
+
+
+def build_panchanga_at_time(
+    instant_local: datetime,
+    location: ObserverLocation,
+) -> dict[str, Any]:
+    """Full ephemeris-mode panchanga for one instant."""
+    anchor, sunrise_utc, sunset_utc, next_sunrise_utc = resolve_vedic_day_anchor(
+        instant_local, location
+    )
+    instant_utc = instant_local.astimezone(timezone.utc)
+    tz = location.timezone
+
+    vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, tz)
+    angas = build_instant_anga_snapshot(instant_utc, sunrise_utc)
+    bs_year, bs_month, bs_day = gregorian_to_bs(anchor)
+    muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, tz)
+
+    return {
+        "mode": "ephemeris",
+        "query_instant": instant_local.isoformat(),
+        "query_instant_local": instant_local.strftime("%Y-%m-%d %H:%M:%S"),
+        "panchanga_date_ad": anchor.isoformat(),
+        "date_ad": anchor.isoformat(),
+        "date_bs": format_bs_date(bs_year, bs_month, bs_day),
+        "bs_date": {
+            "year": bs_year,
+            "month": bs_month,
+            "day": bs_day,
+        },
+        "before_sunrise_of_civil_day": instant_local.date() > anchor,
+        "location": location.as_dict(),
+        "sunrise": _time_block(sunrise_utc, tz),
+        "sunset": _time_block(sunset_utc, tz),
+        "next_sunrise": _time_block(next_sunrise_utc, tz),
+        "vaara": {
+            "number": vaara_num,
+            "name_sanskrit": vaara_sanskrit,
+            "name_english": vaara_english,
+            "name_ne": VAARA_NAMES_NE[vaara_num],
+        },
+        "weekday": VAARA_NAMES_NE[vaara_num],
+        "weekday_en": vaara_english,
+        **angas,
+        "planets": get_all_planetary_positions(instant_utc),
+        "lagna": get_lagna(instant_utc, lat=location.lat, lon=location.lon),
+        "muhurta": muhurta,
+        "muhurta_now": compute_muhurta_now(
+            instant_local, sunrise_utc, sunset_utc, vaara_num, tz
+        ),
+        "planets_anchor": {
+            "type": "instant",
+            "local_time": instant_local.strftime("%H:%M"),
+            "label_ne": "क्षणिक स्पष्टग्रह",
+            "label_en": "Instantaneous positions",
+        },
+    }
+
+
+def instant_row_from_date(
+    greg: date,
+    clock: str,
+    location: ObserverLocation,
+) -> dict[str, Any]:
+    """One month-grid row: panchanga elements at clock on greg."""
+    instant = parse_clock_on_date(clock, greg, timezone_name=location.timezone)
+    snap = build_panchanga_at_time(instant, location)
+    bs_day = gregorian_to_bs(greg)[2]
+    return {
+        "day": bs_day,
+        "date_ad": greg.isoformat(),
+        "weekday": snap["vaara"]["name_ne"],
+        "weekday_ne": snap["vaara"]["name_ne"],
+        "weekday_en": snap["vaara"]["name_english"],
+        "tithi": snap["tithi"]["name"],
+        "tithi_ne": snap["tithi"].get("name_ne"),
+        "nakshatra": snap["nakshatra"]["name"],
+        "nakshatra_ne": snap["nakshatra"].get("name_ne"),
+        "yoga": snap["yoga"]["name"],
+        "yoga_ne": snap["yoga"].get("name_ne"),
+        "karana": snap["karana"]["name"],
+        "karana_ne": snap["karana"].get("name_ne"),
+        "sunrise": snap["sunrise"]["local_time_short"],
+        "sunset": snap["sunset"]["local_time_short"],
+        "mode": "ephemeris",
+        "query_instant": snap["query_instant"],
+        "panchanga": snap,
+    }
