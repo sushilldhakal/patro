@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.4.0",
-    "description": "Authority overrides for public holidays (and festival calendar placement).",
+    "version": "1.5.0",
+    "description": "Authority overrides for public holidays (and festival calendar placement). Updated BS 2083: fixed Dashain end date (13 days), Chhath reduced to 1 day; added Prithvi Jayanti, Shahid Diwas, Loktantra Diwas, Yomari Punhi, Udhauli Parwa, Maghi Parwa, Women's Day, Pahadma Holi, Terai Holi, Ram Navami, Vishwakarma Puja, Ganatantra Diwas, Sambidhan Diwas.",
     "source": "MoHA Public Holidays BS 2081 / 2082 / 2083 PDF + festival_rules_v3; Lhosar dates from official announcements",
     "notes": "start/end dates are authoritative; duration_days is informational only. New festivals added: Lhosar series, Mata Tirtha Aunshi, Haribodhi Ekadashi."
   },
@@ -712,24 +712,24 @@
         "name_en": "Dashain",
         "name_ne": "दशैं",
         "start_date": "2026-10-11",
-        "end_date": "2026-10-25",
-        "duration_days": 15,
+        "end_date": "2026-10-23",
+        "duration_days": 13,
         "type": "lunar",
         "category": "hindu",
         "importance": "national",
-        "notes": "MoHA BS 2083-06-25 (असोज २५) घटस्थापना to Kojagrat Purnima"
+        "notes": "Ghatasthapana (Ashoj 25) → Dashain Holiday (Kartik 6). Key days: Ghatasthapana Oct 11, Fulpati Oct 17, Mahashtami Oct 18, Mahanawami Oct 20, Vijaya Dashami Oct 21, holiday Oct 22–23."
       },
       "chhath": {
         "id": "chhath",
         "name_en": "Chhath Puja",
         "name_ne": "छठ पूजा",
         "start_date": "2026-11-15",
-        "end_date": "2026-11-18",
-        "duration_days": 4,
+        "end_date": "2026-11-15",
+        "duration_days": 1,
         "type": "lunar",
         "category": "hindu",
         "importance": "regional",
-        "notes": "MoHA BS 2083-07-29 (कात्तिक २९) छठ पर्व"
+        "notes": "MoHA BS 2083-07-29 (कात्तिक २९) — 1 day public holiday"
       },
       "tihar": {
         "id": "tihar",
@@ -838,6 +838,162 @@
         "category": "hindu",
         "importance": "national",
         "notes": "MoHA BS 2083-08-06 (मंसिर ६) हरिबोधिनी एकादशी"
+      },
+      "prithvi-jayanti": {
+        "id": "prithvi-jayanti",
+        "name_en": "Prithvi Jayanti / National Unity Day",
+        "name_ne": "पृथ्वी जयन्ती / राष्ट्रिय एकता दिवस",
+        "start_date": "2027-01-11",
+        "end_date": "2027-01-11",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-09-27 (पुस २७) पृथ्वी जयन्ती"
+      },
+      "shahid-diwas": {
+        "id": "shahid-diwas",
+        "name_en": "Martyrs' Day",
+        "name_ne": "शहीद दिवस",
+        "start_date": "2027-01-30",
+        "end_date": "2027-01-30",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-10-16 (माघ १६) शहीद दिवस"
+      },
+      "loktantra-diwas": {
+        "id": "loktantra-diwas",
+        "name_en": "Democracy Day",
+        "name_ne": "लोकतन्त्र दिवस",
+        "start_date": "2027-02-19",
+        "end_date": "2027-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-11-07 (फागुन ७)"
+      },
+      "yomari-punhi": {
+        "id": "yomari-punhi",
+        "name_en": "Yomari Punhi",
+        "name_ne": "योमरी पुन्ही",
+        "start_date": "2026-12-24",
+        "end_date": "2026-12-24",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "newari",
+        "importance": "regional",
+        "notes": "BS 2083-09-09 (पुस ९)"
+      },
+      "udhauli-parwa": {
+        "id": "udhauli-parwa",
+        "name_en": "Udhauli Parwa",
+        "name_ne": "उधौली पर्व",
+        "start_date": "2026-12-24",
+        "end_date": "2026-12-24",
+        "duration_days": 1,
+        "type": "cultural",
+        "category": "cultural",
+        "importance": "national",
+        "notes": "BS 2083-09-09 (पुस ९) — Kirat community harvest festival"
+      },
+      "maghi-parwa": {
+        "id": "maghi-parwa",
+        "name_en": "Maghi Parwa",
+        "name_ne": "माघी पर्व",
+        "start_date": "2027-01-15",
+        "end_date": "2027-01-15",
+        "duration_days": 1,
+        "type": "solar",
+        "category": "cultural",
+        "importance": "national",
+        "notes": "BS 2083-10-01 (माघ १) — Tharu/Magar/Chhantyaala New Year (coincides with Maghe Sankranti)"
+      },
+      "womens-day": {
+        "id": "womens-day",
+        "name_en": "International Women's Day",
+        "name_ne": "अन्तर्राष्ट्रिय महिला दिवस",
+        "start_date": "2027-03-08",
+        "end_date": "2027-03-08",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-11-24 (फागुन २४)"
+      },
+      "pahadma-holi": {
+        "id": "pahadma-holi",
+        "name_en": "Pahadma Holi",
+        "name_ne": "पहाडमा होली",
+        "start_date": "2027-03-21",
+        "end_date": "2027-03-21",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-12-07 (चैत ७) Falgun Purnima — Hills Holi"
+      },
+      "terai-holi": {
+        "id": "terai-holi",
+        "name_en": "Terai Holi",
+        "name_ne": "तराई होली",
+        "start_date": "2027-03-22",
+        "end_date": "2027-03-22",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-12-08 (चैत ८) — Terai Holi, day after Pahadma Holi"
+      },
+      "ram-navami": {
+        "id": "ram-navami",
+        "name_en": "Ram Navami / Public Holiday",
+        "name_ne": "राम नवमी",
+        "start_date": "2027-04-11",
+        "end_date": "2027-04-11",
+        "duration_days": 1,
+        "type": "lunar",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-12-28 (चैत २८) — public holiday"
+      },
+      "vishwakarma-puja": {
+        "id": "vishwakarma-puja",
+        "name_en": "Vishwakarma Puja",
+        "name_ne": "विश्वकर्मा पूजा",
+        "start_date": "2026-09-02",
+        "end_date": "2026-09-02",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "hindu",
+        "importance": "national",
+        "notes": "BS 2083-05-17 (भदौ १७) विश्वकर्मा पूजा"
+      },
+      "ganatantra-diwas": {
+        "id": "ganatantra-diwas",
+        "name_en": "Republic Day",
+        "name_ne": "गणतन्त्र दिवस",
+        "start_date": "2026-05-28",
+        "end_date": "2026-05-28",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-02-15 (जेठ १५)"
+      },
+      "sambidhan-diwas": {
+        "id": "sambidhan-diwas",
+        "name_en": "Constitution Day",
+        "name_ne": "संविधान दिवस",
+        "start_date": "2026-09-18",
+        "end_date": "2026-09-18",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-06-03 (असोज ३) संविधान दिवस"
       }
     }
   }

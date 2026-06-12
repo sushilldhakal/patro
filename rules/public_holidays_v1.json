@@ -1,34 +1,35 @@
 {
   "_meta": {
     "version": "1.1.0",
-    "description": "Nepal public / government holidays — a strict subset of computed festivals. Updated to include Lhosar festivals, Mata Tirtha Aunshi, Vivah Panchami, and Haribodhi Ekadashi.",
+    "description": "Nepal public / government holidays — corrected per MoHA schedule. Removed: Mata Tirtha Aunshi (not govt holiday), Teej (women's observance only), Haribodhi Ekadashi, Vivah Panchami, Saraswati Puja (education institutes only). Split Holi into Pahadma/Terai. Added Maghi Parwa, Women's Day, Udhauli Parwa, Christmas.",
     "source": "aligned with festivals.json is_national_holiday",
     "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
   },
   "holiday_ids": [
     "bs-new-year",
     "maghe-sankranti",
+    "maghi-parwa",
     "buddha-jayanti",
     "janai-purnima",
-    "teej",
     "krishna-janmashtami",
-    "dashain",
-    "chhath",
-    "tihar",
-    "saraswati-puja",
-    "holi",
-    "shivaratri",
+    "vishwakarma-puja",
     "ganatantra-diwas",
     "sambidhan-diwas",
     "shahid-diwas",
     "loktantra-diwas",
     "prithvi-jayanti",
-    "vishwakarma-puja",
-    "mata-tirtha-aunshi",
+    "dashain",
+    "tihar",
+    "chhath",
+    "pahadma-holi",
+    "terai-holi",
+    "shivaratri",
     "tamu-lhosar",
     "sonam-lhosar",
     "gyalpo-lhosar",
-    "vivah-panchami",
-    "haribodhi-ekadashi"
+    "ram-navami",
+    "udhauli-parwa",
+    "christmas",
+    "womens-day"
   ]
 }
