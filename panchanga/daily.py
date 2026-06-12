@@ -25,6 +25,17 @@ from panchanga.element_boundaries import (
 from panchanga.ghati_time import compute_dinamaan
 from panchanga.solar_corrections import build_solar_corrections
 from panchanga.lagna_spans import build_lagna_spans
+from panchanga.balam_panchaka import (
+    build_chandrabalam,
+    build_panchaka_rahita,
+    build_tarabalam,
+    build_udaya_lagna,
+)
+from panchanga.rashi_spans import (
+    build_chandra_rashi_spans,
+    build_nakshatra_pada_spans,
+    get_surya_nakshatra,
+)
 from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
 from panchanga.muhurta import build_muhurta_block
 from panchanga.names_ne import (
@@ -178,6 +189,14 @@ def build_daily_panchanga(
         lat=location.lat,
         lon=location.lon,
     )
+    chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc)
+    nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc)
+    surya_nakshatra = get_surya_nakshatra(sunrise_utc)
+    nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
+    chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans)
+    tarabalam = build_tarabalam(sunrise_utc, nakshatra_block)
+    panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num)
+    udaya_lagna = build_udaya_lagna(lagna_spans)
     sunrise_block = _time_block(sunrise_utc, location.timezone)
     solar_corrections = build_solar_corrections(
         target,
@@ -221,7 +240,10 @@ def build_daily_panchanga(
         "karana": build_karana_block(sunrise_utc, sunrise_utc),
         "paksha": _paksha_block(lunar, paksha),
         "chandra_rashi": get_chandra_rashi(sunrise_utc),
+        "chandra_rashi_spans": chandra_rashi_spans,
+        "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": get_surya_rashi(sunrise_utc),
+        "surya_nakshatra": surya_nakshatra,
         "ritu": get_ritu(
             sunrise_utc,
             lat=location.lat,
@@ -238,6 +260,10 @@ def build_daily_panchanga(
         },
         "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
         "lagna_spans": lagna_spans,
+        "udaya_lagna": udaya_lagna,
+        "chandrabalam": chandrabalam,
+        "tarabalam": tarabalam,
+        "panchaka_rahita": panchaka_rahita,
         "muhurta": muhurta,
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,

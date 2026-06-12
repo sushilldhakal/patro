@@ -13,10 +13,13 @@ from core.positions import (
     YOGA_NAMES,
     YOGA_SPAN,
     get_karana,
+    get_moon_longitude,
     get_nakshatra,
     get_tithi_angle,
     get_yoga,
 )
+
+PADA_SPAN = NAKSHATRA_SPAN / 4
 from panchanga.tithi import calculate_tithi
 from panchanga.tithi_boundaries import find_tithi_end, find_tithi_start
 
@@ -128,6 +131,41 @@ def _enrich_next_anga(
         "end_local_time": third_end_info["local_time"],
     }
     return block
+
+
+def _moon_rashi_index(dt: datetime) -> int:
+    moon_long = get_moon_longitude(dt)
+    return int(moon_long / 30) % 12
+
+
+def _moon_pada_index(dt: datetime) -> int:
+    moon_long = get_moon_longitude(dt)
+    nak_num = int(moon_long / NAKSHATRA_SPAN) + 1
+    if nak_num > 27:
+        nak_num = 1
+    pos_in_nak = moon_long % NAKSHATRA_SPAN
+    pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
+    return (nak_num - 1) * 4 + (pada - 1)
+
+
+def find_moon_rashi_end(dt: datetime) -> datetime:
+    return _find_span_end(
+        dt,
+        _moon_rashi_index,
+        30.0,
+        get_moon_longitude,
+        max_hours=60,
+    )
+
+
+def find_moon_pada_end(dt: datetime) -> datetime:
+    return _find_span_end(
+        dt,
+        _moon_pada_index,
+        PADA_SPAN,
+        get_moon_longitude,
+        max_hours=8,
+    )
 
 
 def find_nakshatra_end(dt: datetime) -> datetime:
