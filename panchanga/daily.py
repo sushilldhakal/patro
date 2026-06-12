@@ -188,6 +188,7 @@ def build_daily_panchanga(
         next_sunrise_utc,
         lat=location.lat,
         lon=location.lon,
+        timezone_name=location.timezone,
     )
     chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc)
     nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc)

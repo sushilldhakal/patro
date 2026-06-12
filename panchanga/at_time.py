@@ -180,7 +180,9 @@ def build_panchanga_at_time(
     instant_local: datetime,
     location: ObserverLocation,
 ) -> dict[str, Any]:
-    """Full ephemeris-mode panchanga for one instant."""
+    """Ephemeris-mode panchanga: full udaya day layout + instant angas/planets."""
+    from services.panchanga_api import build_daily_state
+
     anchor, sunrise_utc, sunset_utc, next_sunrise_utc = resolve_vedic_day_anchor(
         instant_local, location
     )
@@ -189,48 +191,63 @@ def build_panchanga_at_time(
 
     vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, tz)
     angas = build_instant_anga_snapshot(instant_utc, sunrise_utc)
-    bs_year, bs_month, bs_day = gregorian_to_bs(anchor)
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, tz)
+    instant_planets = get_all_planetary_positions(instant_utc)
+    instant_lagna = get_lagna(instant_utc, lat=location.lat, lon=location.lon)
+    instant_lagna["anchor"] = "instant"
+    muhurta_now = compute_muhurta_now(
+        instant_local, sunrise_utc, sunset_utc, vaara_num, tz
+    )
+    from panchanga.lagna_spans import build_lagna_spans
 
-    return {
-        "mode": "ephemeris",
-        "query_instant": instant_local.isoformat(),
-        "query_instant_local": instant_local.strftime("%Y-%m-%d %H:%M:%S"),
-        "panchanga_date_ad": anchor.isoformat(),
-        "date_ad": anchor.isoformat(),
-        "date_bs": format_bs_date(bs_year, bs_month, bs_day),
-        "bs_date": {
-            "year": bs_year,
-            "month": bs_month,
-            "day": bs_day,
-        },
-        "before_sunrise_of_civil_day": instant_local.date() > anchor,
-        "location": location.as_dict(),
-        "sunrise": _time_block(sunrise_utc, tz),
-        "sunset": _time_block(sunset_utc, tz),
-        "next_sunrise": _time_block(next_sunrise_utc, tz),
-        "vaara": {
-            "number": vaara_num,
-            "name_sanskrit": vaara_sanskrit,
-            "name_english": vaara_english,
-            "name_ne": VAARA_NAMES_NE[vaara_num],
-        },
-        "weekday": VAARA_NAMES_NE[vaara_num],
-        "weekday_en": vaara_english,
-        **angas,
-        "planets": get_all_planetary_positions(instant_utc),
-        "lagna": get_lagna(instant_utc, lat=location.lat, lon=location.lon),
-        "muhurta": muhurta,
-        "muhurta_now": compute_muhurta_now(
-            instant_local, sunrise_utc, sunset_utc, vaara_num, tz
-        ),
-        "planets_anchor": {
-            "type": "instant",
-            "local_time": instant_local.strftime("%H:%M"),
-            "label_ne": "क्षणिक स्पष्टग्रह",
-            "label_en": "Instantaneous positions",
-        },
+    lagna_spans = build_lagna_spans(
+        sunrise_utc,
+        next_sunrise_utc,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+    )
+    planets_anchor = {
+        "type": "instant",
+        "local_time": instant_local.strftime("%H:%M"),
+        "label_ne": "क्षणिक स्पष्टग्रह",
+        "label_en": "Instantaneous positions",
     }
+
+    # Full udaya day state for timeline, rashi spans, balam, festivals, etc.
+    state = build_daily_state(
+        anchor, location, include_festivals=True, include_detail=True
+    )
+    detail = dict(state.get("detail") or {})
+
+    # Instant overlays for cards + graha row; keep daily spans in detail for chart tracks.
+    detail["planets"] = instant_planets
+    detail["planets_anchor"] = planets_anchor
+    detail["muhurta_now"] = muhurta_now
+    detail["instant_lagna"] = instant_lagna
+    detail["lagna_spans"] = lagna_spans
+
+    state.update(
+        {
+            "mode": "ephemeris",
+            "query_instant": instant_local.isoformat(),
+            "query_instant_local": instant_local.strftime("%Y-%m-%d %H:%M:%S"),
+            "panchanga_date_ad": anchor.isoformat(),
+            "before_sunrise_of_civil_day": instant_local.date() > anchor,
+            "lagna_spans": lagna_spans,
+            "tithi": angas["tithi"],
+            "nakshatra": angas["nakshatra"],
+            "yoga": angas["yoga"],
+            "karana": angas["karana"],
+            "lagna": instant_lagna.get("name") or state.get("lagna"),
+            "lagna_ne": instant_lagna.get("name_ne") or state.get("lagna_ne"),
+            "muhurta": muhurta,
+            "planets_anchor": planets_anchor,
+            "muhurta_now": muhurta_now,
+            "detail": detail,
+        }
+    )
+    return state
 
 
 def instant_row_from_date(

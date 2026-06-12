@@ -15,8 +15,12 @@ def build_lagna_spans(
     *,
     lat: float,
     lon: float,
+    timezone_name: str = "Asia/Kathmandu",
 ) -> list[dict[str, Any]]:
     """Twelve lagna periods across one vedic day (sunrise → sunrise)."""
+    from core.time_utils import resolve_observer_timezone
+
+    tz = resolve_observer_timezone(timezone_name)
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt
 
@@ -28,6 +32,8 @@ def build_lagna_spans(
 
         start_info = time_from_sunrise(cursor, sunrise_dt)
         end_info = time_from_sunrise(end_dt, sunrise_dt)
+        start_local = cursor.astimezone(tz)
+        end_local = end_dt.astimezone(tz)
 
         spans.append(
             {
@@ -39,11 +45,11 @@ def build_lagna_spans(
                 "start_time": cursor.isoformat(),
                 "start_ghati_clock": start_info["ghati_clock"],
                 "start_hours_clock": start_info["hours_clock"],
-                "start_local_time": start_info["local_time"],
+                "start_local_time": start_local.strftime("%H:%M:%S"),
                 "end_time": end_dt.isoformat(),
                 "end_ghati_clock": end_info["ghati_clock"],
                 "end_hours_clock": end_info["hours_clock"],
-                "end_local_time": end_info["local_time"],
+                "end_local_time": end_local.strftime("%H:%M:%S"),
             }
         )
         cursor = end_dt
