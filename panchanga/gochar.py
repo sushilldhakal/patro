@@ -76,8 +76,21 @@ def _rashi_index_for(graha: str, dt: datetime) -> int:
     return int(get_planet_position(dt, PLANET_IDS[graha])["longitude"] / 30) % 12
 
 
-def _dms_from_longitude(lon: float) -> str:
-    """Convert decimal longitude to D°M'S" within its sign (0–30°)."""
+def _dms_absolute(lon: float) -> str:
+    """Absolute zodiac position as D°M'S" (0–360°), e.g. '348°52\'10\"' for Saturn in Meena."""
+    d = int(lon)
+    m_frac = (lon - d) * 60
+    m = int(m_frac)
+    s = round((m_frac - m) * 60)
+    if s >= 60:
+        s -= 60; m += 1
+    if m >= 60:
+        m -= 60; d += 1
+    return f'{d:03d}°{m:02d}\'{s:02d}"'
+
+
+def _dms_in_sign(lon: float) -> str:
+    """Degree-minute-second within the current rashi (0–30°)."""
     deg_in_sign = lon % 30.0
     d = int(deg_in_sign)
     m_frac = (deg_in_sign - d) * 60
@@ -112,19 +125,21 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
         lon  = pos.get("longitude", 0.0)
         spd  = pos.get("speed", 0.0)
         rashi_idx = (pos.get("rashi", 1) - 1) % 12  # stored 1-based in raw
+        # Ketu always moves retrograde by Vedic convention (shadow node opposite Rahu)
+        is_vakri = spd < 0 or graha == "ketu"
         table[graha] = {
             "name_vedic":    meta["vedic"],
             "name_ne":       meta["ne"],
             "symbol":        meta["symbol"],
             "longitude":     round(lon, 4),
-            "dms_absolute":  _dms_from_longitude(lon),     # degree within sign
+            "dms_absolute":  _dms_absolute(lon),
             "rashi_no":      rashi_idx + 1,
             "rashi":         RASHI_NAMES[rashi_idx],
             "deg_in_rashi":  round(lon % 30.0, 4),
-            "dms_in_rashi":  _dms_from_longitude(lon),
+            "dms_in_rashi":  _dms_in_sign(lon),
             "speed_deg_day": round(spd, 4),
-            "is_retrograde": spd < 0,
-            "motion":        "Vakri" if spd < 0 else "Margi",
+            "is_retrograde": is_vakri,
+            "motion":        "Vakri" if is_vakri else "Margi",
         }
     return table
 
@@ -292,3 +307,73 @@ def build_gochar_response(
         )
 
     return result
+
+
+def build_gochar_year_summary(
+    bs_year: int,
+    location: Any,
+    *,
+    slow_grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Yearly Gochar — slow-graha rashi transitions + monthly snapshot table."""
+    from panchanga.bikram_sambat import (
+        bs_to_gregorian,
+        format_bs_date,
+        get_bs_month_length,
+        get_bs_month_start,
+    )
+
+    if slow_grahas is None:
+        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
+
+    year_start = get_bs_month_start(bs_year, 1)
+    year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
+
+    from core.swiss_eph import calculate_sunrise
+
+    init_ephemeris()
+    sunrise_utc = calculate_sunrise(
+        year_start,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    upcoming = find_upcoming_rashi_entries(
+        sunrise_utc,
+        slow_grahas,
+        max_results_per_graha=4,
+    )
+
+    monthly_snapshots: list[dict[str, Any]] = []
+    for bs_month in range(1, 13):
+        month_len = get_bs_month_length(bs_year, bs_month)
+        mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_len))
+        mid_sunrise = calculate_sunrise(
+            mid_greg,
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
+        table = get_gochar_table(mid_sunrise)
+        monthly_snapshots.append({
+            "bs_month": bs_month,
+            "snapshot_date_ad": mid_greg.isoformat(),
+            "snapshot_date_bs": format_bs_date(bs_year, bs_month, min(15, month_len)),
+            "gochar": {
+                graha: {
+                    "rashi": table[graha]["rashi"],
+                    "deg_in_rashi": table[graha].get("deg_in_rashi"),
+                    "motion": table[graha].get("motion"),
+                    "vakri": table[graha].get("is_retrograde", False),
+                }
+                for graha in GRAHA_ORDER
+            },
+        })
+
+    return {
+        "bs_year": bs_year,
+        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        "location": location.as_dict(),
+        "upcoming_transits": upcoming,
+        "monthly_snapshots": monthly_snapshots,
+    }

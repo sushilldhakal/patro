@@ -85,6 +85,51 @@ def _next_cyclic(current: int, size: int) -> int:
     return 1 if current >= size else current + 1
 
 
+def _enrich_next_anga(
+    block: dict,
+    sunrise_dt: datetime,
+    find_end_fn: Callable[[datetime], datetime],
+    cycle_size: int,
+    names: list[str],
+    names_ne: list[str],
+) -> dict:
+    """Attach end_* to block['next'] and a third anga on block['next']['next'] when needed."""
+    from panchanga.ghati_time import time_from_sunrise as _tfs
+
+    if "end_time" not in block or "next" not in block:
+        return block
+
+    current_end = datetime.fromisoformat(block["end_time"].replace("Z", "+00:00"))
+    next_end_dt = find_end_fn(current_end + timedelta(seconds=90))
+    next_end_info = _tfs(next_end_dt, sunrise_dt)
+    block["next"].update(
+        {
+            "end_time": next_end_dt.isoformat(),
+            "end_ghati_clock": next_end_info["ghati_clock"],
+            "end_hours_clock": next_end_info["hours_clock"],
+            "end_local_time": next_end_info["local_time"],
+        }
+    )
+
+    seconds_in_day = 60 * 24 * 60
+    if next_end_info["seconds_from_sunrise"] >= seconds_in_day:
+        return block
+
+    third_num = _next_cyclic(block["next"]["number"], cycle_size)
+    third_end_dt = find_end_fn(next_end_dt + timedelta(seconds=90))
+    third_end_info = _tfs(third_end_dt, sunrise_dt)
+    block["next"]["next"] = {
+        "number": third_num,
+        "name": names[third_num - 1],
+        "name_ne": names_ne[third_num - 1],
+        "end_time": third_end_dt.isoformat(),
+        "end_ghati_clock": third_end_info["ghati_clock"],
+        "end_hours_clock": third_end_info["hours_clock"],
+        "end_local_time": third_end_info["local_time"],
+    }
+    return block
+
+
 def find_nakshatra_end(dt: datetime) -> datetime:
     def get_index(moment: datetime) -> int:
         return get_nakshatra(moment)[0]
@@ -200,7 +245,7 @@ def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
     start_dt = find_nakshatra_start(dt)
     end_dt = find_nakshatra_end(dt)
     next_num = _next_cyclic(number, 27)
-    return _element_with_span(
+    block = _element_with_span(
         sunrise_dt,
         number=number,
         name=name,
@@ -212,6 +257,14 @@ def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
         next_name_ne=NAKSHATRA_NAMES_NE[next_num - 1],
         progress=round(progress, 4),
     )
+    return _enrich_next_anga(
+        block,
+        sunrise_dt,
+        find_nakshatra_end,
+        27,
+        NAKSHATRA_NAMES,
+        NAKSHATRA_NAMES_NE,
+    )
 
 
 def build_yoga_block(dt: datetime, sunrise_dt: datetime) -> dict:
@@ -221,7 +274,7 @@ def build_yoga_block(dt: datetime, sunrise_dt: datetime) -> dict:
     start_dt = find_yoga_start(dt)
     end_dt = find_yoga_end(dt)
     next_num = _next_cyclic(number, 27)
-    return _element_with_span(
+    block = _element_with_span(
         sunrise_dt,
         number=number,
         name=name,
@@ -232,6 +285,14 @@ def build_yoga_block(dt: datetime, sunrise_dt: datetime) -> dict:
         next_name=YOGA_NAMES[next_num - 1],
         next_name_ne=YOGA_NAMES_NE[next_num - 1],
         progress=round(progress, 4),
+    )
+    return _enrich_next_anga(
+        block,
+        sunrise_dt,
+        find_yoga_end,
+        27,
+        YOGA_NAMES,
+        YOGA_NAMES_NE,
     )
 
 

@@ -2,7 +2,16 @@
 
 from datetime import datetime, timezone
 
-from core.swiss_eph import get_moon_longitude, get_sun_longitude, get_sun_moon_positions
+import swisseph as swe
+
+from core.swiss_eph import (
+    AYANAMSA_LAHIRI,
+    _ensure_initialized,
+    get_julian_day,
+    get_moon_longitude,
+    get_sun_longitude,
+    get_sun_moon_positions,
+)
 from core.time_utils import resolve_observer_timezone
 
 TITHI_SPAN = 12.0
@@ -135,6 +144,54 @@ def get_chandra_rashi(dt: datetime) -> dict:
     }
 
 
+def get_sidereal_asc_longitude(dt: datetime, *, lat: float, lon: float) -> float:
+    """Sidereal ascendant longitude (0–360°) at dt for the observer."""
+    _ensure_initialized()
+    swe.set_sid_mode(AYANAMSA_LAHIRI)
+    jd = get_julian_day(dt)
+    _, ascmc = swe.houses(jd, lat, lon, b"P")
+    tropical_asc = ascmc[0]
+    return (tropical_asc - swe.get_ayanamsa_ut(jd)) % 360
+
+
+def _lagna_rashi_index(dt: datetime, *, lat: float, lon: float) -> int:
+    return int(get_sidereal_asc_longitude(dt, lat=lat, lon=lon) / 30) % 12
+
+
+def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
+    """When the ascendant next enters the following rashi after dt."""
+    from datetime import timedelta
+
+    current = _lagna_rashi_index(dt, lat=lat, lon=lon)
+    start_dt = dt
+    end_dt = dt + timedelta(hours=4)
+    tolerance = timedelta(seconds=30)
+
+    for _ in range(50):
+        if end_dt - start_dt < tolerance:
+            return end_dt
+        mid_dt = start_dt + (end_dt - start_dt) / 2
+        if _lagna_rashi_index(mid_dt, lat=lat, lon=lon) == current:
+            start_dt = mid_dt
+        else:
+            end_dt = mid_dt
+    return end_dt
+
+
+def get_lagna(dt: datetime, *, lat: float, lon: float) -> dict:
+    """Sidereal ascendant (lagna) at the given instant and observer."""
+    sidereal_asc = get_sidereal_asc_longitude(dt, lat=lat, lon=lon)
+    rashi_index = int(sidereal_asc / 30) % 12
+    return {
+        "number": rashi_index + 1,
+        "name": RASHI_NAMES[rashi_index],
+        "name_ne": RASHI_NAMES_NE[rashi_index],
+        "longitude": round(sidereal_asc, 6),
+        "degree_in_rashi": round(sidereal_asc % 30, 4),
+        "anchor": "sunrise",
+    }
+
+
 def get_surya_rashi(dt: datetime) -> dict:
     sun_long = get_sun_longitude(dt)
     rashi_index = int(sun_long / 30) % 12
@@ -153,8 +210,24 @@ def _sun_rashi_index(dt: datetime, *, sidereal: bool = True) -> int:
     return int(sun_long / 30) % 12
 
 
-def get_ritu(dt: datetime, *, sidereal: bool = False) -> dict:
-    """Season — tropical sun signs match common Nepali Panchang apps."""
+# Southern-hemisphere civil month → ritu (inverted meteorological seasons).
+_SOUTHERN_MONTH_RITU: dict[int, int] = {
+    1: 2,
+    2: 2,
+    12: 2,  # Dec–Feb summer
+    3: 4,
+    4: 4,
+    5: 4,  # Mar–May autumn
+    6: 6,
+    7: 6,
+    8: 6,  # Jun–Aug winter
+    9: 1,
+    10: 1,
+    11: 1,  # Sep–Nov spring
+}
+
+
+def _ritu_from_sun(dt: datetime, *, sidereal: bool) -> dict:
     rashi_index = _sun_rashi_index(dt, sidereal=sidereal)
     ritu = RITU_DATA[rashi_index // 2]
     return {
@@ -166,6 +239,38 @@ def get_ritu(dt: datetime, *, sidereal: bool = False) -> dict:
         "sun_rashi": rashi_index + 1,
         "basis": "tropical" if not sidereal else "sidereal",
     }
+
+
+def _ritu_from_southern_month(dt: datetime, timezone_name: str) -> dict:
+    local_tz = resolve_observer_timezone(timezone_name)
+    if dt.tzinfo is not None:
+        local_dt = dt.astimezone(local_tz)
+    else:
+        local_dt = dt.replace(tzinfo=timezone.utc).astimezone(local_tz)
+    ritu_num = _SOUTHERN_MONTH_RITU[local_dt.month]
+    ritu = RITU_DATA[ritu_num - 1]
+    return {
+        "number": ritu["number"],
+        "name": ritu["name"],
+        "name_sanskrit": ritu["name_sanskrit"],
+        "name_ne": ritu["name_ne"],
+        "season": ritu["season"],
+        "sun_rashi": _sun_rashi_index(dt, sidereal=False) + 1,
+        "basis": "southern_local",
+    }
+
+
+def get_ritu(
+    dt: datetime,
+    *,
+    sidereal: bool = False,
+    lat: float | None = None,
+    timezone_name: str = "Asia/Kathmandu",
+) -> dict:
+    """Season — sun-sign ritu in the north; local civil-season ritu south of the equator."""
+    if lat is not None and lat < 0:
+        return _ritu_from_southern_month(dt, timezone_name)
+    return _ritu_from_sun(dt, sidereal=sidereal)
 
 
 def get_aayan(dt: datetime, *, sidereal: bool = True) -> dict:

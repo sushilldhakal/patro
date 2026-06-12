@@ -9,7 +9,7 @@ The Bikram Sambat calendar is Nepal's official calendar. It is a solar
 calendar but with month lengths that vary by year in a non-formulaic way.
 Therefore, we use a lookup table approach for accurate conversion.
 
-Coverage: 2000-2099 BS (1943-2043 AD) static lookup table.
+Coverage: 2000-2099 BS official lookup; 1700-1999 and 2100-2200 sankranti estimated.
 
 Important: static lookup coverage is not the same as structured official
 provenance. See app.calendar.provenance for the source-backed ranges.
@@ -178,9 +178,13 @@ BS_MONTH_LENGTHS: dict[int, list[int]] = {
     2099: [31, 31, 32, 31, 31, 31, 30, 29, 29, 30, 30, 31],
 }
 
-# Minimum and maximum supported years
+# Official static lookup table range (2000–2099 BS)
 BS_MIN_YEAR = min(BS_MONTH_LENGTHS.keys())
 BS_MAX_YEAR = max(BS_MONTH_LENGTHS.keys())
+
+# Full supported range: sankranti estimation outside official lookup
+BS_ESTIMATED_MIN_YEAR = 1700
+BS_SUPPORTED_MAX_YEAR = 2200
 
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD
 BS_REFERENCE_START = date(2025, 4, 14)
