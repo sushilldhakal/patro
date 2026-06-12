@@ -483,6 +483,78 @@
             "notes": "Chaitra Shukla 1–9 spring Navaratri; Durga Ashtami on day 8, Ram Navami on day 9",
             "importance": "national",
             "category": "hindu"
+        },
+        "pahadma-holi": {
+            "name_en": "Pahadma Holi",
+            "name_ne": "पहाडमा होली",
+            "type": "lunar",
+            "lunar_month": "Falgun",
+            "tithi": 15,
+            "paksha": "shukla",
+            "adhik_policy": "skip",
+            "duration_days": 1,
+            "notes": "Hills Holi — Falgun Purnima",
+            "importance": "national",
+            "category": "hindu"
+        },
+        "terai-holi": {
+            "name_en": "Terai Holi",
+            "name_ne": "तराई होली",
+            "type": "lunar",
+            "lunar_month": "Chaitra",
+            "tithi": 1,
+            "paksha": "shukla",
+            "adhik_policy": "skip",
+            "duration_days": 1,
+            "notes": "Terai Holi — day after Falgun Purnima (Chaitra Shukla 1)",
+            "importance": "national",
+            "category": "hindu"
+        },
+        "udhauli-parwa": {
+            "name_en": "Udhauli Parwa",
+            "name_ne": "उधौली पर्व",
+            "type": "lunar",
+            "lunar_month": "Mangsir",
+            "tithi": 15,
+            "paksha": "shukla",
+            "adhik_policy": "skip",
+            "duration_days": 1,
+            "notes": "Kirat/Rai/Limbu harvest festival — Mangsir Purnima",
+            "importance": "national",
+            "category": "cultural"
+        },
+        "christmas": {
+            "name_en": "Christmas",
+            "name_ne": "क्रिसमस",
+            "type": "bs_fixed",
+            "bs_month": 9,
+            "bs_day": 10,
+            "duration_days": 1,
+            "notes": "Christian holiday — Poush 10 BS (approx. Dec 25)",
+            "importance": "national",
+            "category": "christian"
+        },
+        "womens-day": {
+            "name_en": "International Women's Day",
+            "name_ne": "अन्तर्राष्ट्रिय महिला दिवस",
+            "type": "bs_fixed",
+            "bs_month": 11,
+            "bs_day": 24,
+            "duration_days": 1,
+            "notes": "March 8 — Falgun 24 BS",
+            "importance": "national",
+            "category": "national"
+        },
+        "maghi-parwa": {
+            "name_en": "Maghi Parwa",
+            "name_ne": "माघी पर्व",
+            "type": "solar",
+            "bs_month": 10,
+            "solar_day": 1,
+            "duration_days": 1,
+            "notes": "Tharu/Magar/Chhantyaala New Year — Magh 1, coincides with Makara Sankranti",
+            "importance": "national",
+            "category": "cultural"
         }
     }
 }
