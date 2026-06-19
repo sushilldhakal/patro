@@ -505,6 +505,38 @@ def planetary_positions(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@app.get("/shadbala")
+def shadbala(
+    location: LocationDep,
+    datetime: str | None = Query(
+        None,
+        alias="datetime",
+        description="ISO datetime; naive uses observer TZ; omit for now",
+    ),
+):
+    """Sixfold planetary strength (Shadbala) in Virupas at an instant."""
+    from datetime import timezone
+
+    from panchanga.at_time import parse_query_datetime
+    from panchanga.shadbala import compute_shadbala
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        result = compute_shadbala(
+            instant.astimezone(timezone.utc),
+            lat=location.lat,
+            lon=location.lon,
+            timezone_name=location.timezone,
+        )
+        return {
+            **result,
+            "location": location.as_dict(),
+            "query_instant": instant.isoformat(),
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/panchanga/{bs_year}/{bs_month}")
 def panchanga_month(
     bs_year: int,
