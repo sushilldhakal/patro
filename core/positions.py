@@ -144,18 +144,32 @@ def get_chandra_rashi(dt: datetime) -> dict:
     }
 
 
-def get_sidereal_asc_longitude(dt: datetime, *, lat: float, lon: float) -> float:
+def get_sidereal_asc_longitude(
+    dt: datetime,
+    *,
+    lat: float,
+    lon: float,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> float:
     """Sidereal ascendant longitude (0–360°) at dt for the observer."""
     _ensure_initialized()
-    swe.set_sid_mode(AYANAMSA_LAHIRI)
+    swe.set_sid_mode(ayanamsa)
     jd = get_julian_day(dt)
     _, ascmc = swe.houses(jd, lat, lon, b"P")
     tropical_asc = ascmc[0]
     return (tropical_asc - swe.get_ayanamsa_ut(jd)) % 360
 
 
-def _lagna_rashi_index(dt: datetime, *, lat: float, lon: float) -> int:
-    return int(get_sidereal_asc_longitude(dt, lat=lat, lon=lon) / 30) % 12
+def _lagna_rashi_index(
+    dt: datetime,
+    *,
+    lat: float,
+    lon: float,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> int:
+    return int(
+        get_sidereal_asc_longitude(dt, lat=lat, lon=lon, ayanamsa=ayanamsa) / 30
+    ) % 12
 
 
 def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
@@ -178,9 +192,17 @@ def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
     return end_dt
 
 
-def get_lagna(dt: datetime, *, lat: float, lon: float) -> dict:
+def get_lagna(
+    dt: datetime,
+    *,
+    lat: float,
+    lon: float,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> dict:
     """Sidereal ascendant (lagna) at the given instant and observer."""
-    sidereal_asc = get_sidereal_asc_longitude(dt, lat=lat, lon=lon)
+    sidereal_asc = get_sidereal_asc_longitude(
+        dt, lat=lat, lon=lon, ayanamsa=ayanamsa
+    )
     rashi_index = int(sidereal_asc / 30) % 12
     return {
         "number": rashi_index + 1,

@@ -166,9 +166,13 @@ def build_planetary_snapshot(
     *,
     lat: float,
     lon: float,
+    ayanamsa: int | None = None,
 ) -> dict[str, Any]:
-    planets = get_all_planetary_positions(instant_utc)
-    lagna = get_lagna(instant_utc, lat=lat, lon=lon)
+    from core.swiss_eph import AYANAMSA_LAHIRI
+
+    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
+    lagna = get_lagna(instant_utc, lat=lat, lon=lon, ayanamsa=mode)
     return {
         "planets": planets,
         "lagna": {**lagna, "anchor": "instant"},
@@ -179,8 +183,13 @@ def build_planetary_snapshot(
 def build_panchanga_at_time(
     instant_local: datetime,
     location: ObserverLocation,
+    *,
+    ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Ephemeris-mode panchanga: full udaya day layout + instant angas/planets."""
+    from core.swiss_eph import AYANAMSA_LAHIRI
+
+    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
     from services.panchanga_api import build_daily_state
 
     anchor, sunrise_utc, sunset_utc, next_sunrise_utc = resolve_vedic_day_anchor(
@@ -192,8 +201,10 @@ def build_panchanga_at_time(
     vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, tz)
     angas = build_instant_anga_snapshot(instant_utc, sunrise_utc)
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, tz)
-    instant_planets = get_all_planetary_positions(instant_utc)
-    instant_lagna = get_lagna(instant_utc, lat=location.lat, lon=location.lon)
+    instant_planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
+    instant_lagna = get_lagna(
+        instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode
+    )
     instant_lagna["anchor"] = "instant"
     muhurta_now = compute_muhurta_now(
         instant_local, sunrise_utc, sunset_utc, vaara_num, tz

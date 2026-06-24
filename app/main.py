@@ -465,13 +465,19 @@ def panchanga_at_time(
         alias="datetime",
         description="ISO local or offset datetime; naive uses observer TZ; omit for now",
     ),
+    ayanamsha: str | None = Query(
+        None,
+        description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+    ),
 ):
     """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
+    from core.ayanamsha_modes import resolve_ayanamsha_mode
     from panchanga.at_time import build_panchanga_at_time, parse_query_datetime
 
     try:
         instant = parse_query_datetime(datetime, timezone_name=location.timezone)
-        return build_panchanga_at_time(instant, location)
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        return build_panchanga_at_time(instant, location, ayanamsa=mode_id)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -484,22 +490,86 @@ def planetary_positions(
         alias="datetime",
         description="ISO datetime; naive uses observer TZ; omit for now",
     ),
+    ayanamsha: str | None = Query(
+        None,
+        description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+    ),
 ):
     """Nine grahas + lagna at an instant."""
     from datetime import timezone
 
+    from core.ayanamsha_modes import resolve_ayanamsha_mode
     from panchanga.at_time import build_planetary_snapshot, parse_query_datetime
 
     try:
         instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         return {
             **build_planetary_snapshot(
                 instant.astimezone(timezone.utc),
                 lat=location.lat,
                 lon=location.lon,
+                ayanamsa=mode_id,
             ),
+            "ayanamsha": ayanamsha or "lahiri",
             "location": location.as_dict(),
             "query_instant": instant.isoformat(),
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/seasons/tropical")
+def tropical_seasons(location: LocationDep):
+    """Six sāyana ऋतु boundaries anchored at equinoxes/solstices."""
+    from panchanga.tropical_seasons import build_tropical_seasons_response
+
+    return build_tropical_seasons_response(
+        lat=location.lat,
+        timezone_name=location.timezone,
+    )
+
+
+@app.get("/kundali/vimshottari")
+def kundali_vimshottari(
+    location: LocationDep,
+    datetime: str | None = Query(
+        None,
+        alias="datetime",
+        description="Birth instant (ISO); naive uses observer TZ",
+    ),
+    ayanamsha: str | None = Query(
+        None,
+        description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+    ),
+    cycles: int = Query(1, ge=1, le=3, description="Full 120-year cycles after birth dasha"),
+):
+    """Vimshottari Mahadasha from Moon sidereal longitude at birth."""
+    from datetime import timezone
+
+    from core.ayanamsha_modes import resolve_ayanamsha_mode
+    from core.swiss_eph import get_all_planetary_positions
+    from panchanga.at_time import parse_query_datetime
+    from panchanga.vimshottari import vimshottari_dasha
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        planets = get_all_planetary_positions(
+            instant.astimezone(timezone.utc), ayanamsa=mode_id
+        )
+        moon_lon = planets["moon"]["longitude"]
+        dasha = vimshottari_dasha(
+            moon_lon,
+            instant.astimezone(timezone.utc),
+            cycles=cycles,
+        )
+        return {
+            "ayanamsha": ayanamsha or "lahiri",
+            "moon_longitude": moon_lon,
+            "location": location.as_dict(),
+            "query_instant": instant.isoformat(),
+            **dasha,
         }
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

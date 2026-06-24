@@ -45,6 +45,7 @@ from panchanga.names_ne import (
     to_nepali_digits,
 )
 from panchanga.nepal_sambat import gregorian_to_ns
+from panchanga.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from panchanga.tithi import calculate_tithi
 from core.positions import (
     get_aayan,
@@ -199,6 +200,16 @@ def build_daily_panchanga(
     panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num)
     udaya_lagna = build_udaya_lagna(lagna_spans)
     sunrise_block = _time_block(sunrise_utc, location.timezone)
+    sunset_block = _time_block(sunset_utc, location.timezone)
+    day_ghati = day_ghati_from_sun_times(
+        sunrise_block.get("local_time_short"),
+        sunset_block.get("local_time_short"),
+    )
+    choghadiya = (
+        build_choghadiya(day_ghati, vaara_num)
+        if day_ghati is not None
+        else []
+    )
     solar_corrections = build_solar_corrections(
         target,
         local_longitude=location.lon,
@@ -219,7 +230,9 @@ def build_daily_panchanga(
         "ns_date": ns_date,
         "location": location.as_dict(),
         "sunrise": sunrise_block,
-        "sunset": _time_block(sunset_utc, location.timezone),
+        "sunset": sunset_block,
+        "day_ghati": day_ghati,
+        "choghadiya": choghadiya,
         "solar_corrections": solar_corrections,
         "moonrise": _time_block(moonrise_utc, location.timezone),
         "moonset": _time_block(moonset_utc, location.timezone),

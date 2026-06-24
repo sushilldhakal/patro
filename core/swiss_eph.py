@@ -72,11 +72,16 @@ def julian_day_to_datetime(jd: float) -> datetime:
     return datetime(year, month, day, hours, minutes, seconds, tzinfo=timezone.utc)
 
 
-def get_sun_longitude(dt: datetime, sidereal: bool = True) -> float:
+def get_sun_longitude(
+    dt: datetime,
+    sidereal: bool = True,
+    *,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> float:
     _ensure_initialized()
     jd = get_julian_day(dt)
     if sidereal:
-        swe.set_sid_mode(AYANAMSA_LAHIRI)
+        swe.set_sid_mode(ayanamsa)
     flags = SIDEREAL_FLAGS if sidereal else TROPICAL_FLAGS
     try:
         return swe.calc_ut(jd, SUN, flags)[0][0] % 360
@@ -354,12 +359,18 @@ def graha_spashta_datetime(target: date, timezone_name: str) -> datetime:
     return datetime.combine(target, time(6, 0), tzinfo=observer_tz)
 
 
-def get_planet_position(dt: datetime, planet_id: int, *, sidereal: bool = True) -> dict:
+def get_planet_position(
+    dt: datetime,
+    planet_id: int,
+    *,
+    sidereal: bool = True,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> dict:
     """Sidereal longitude (degrees), speed, and rashi for one body."""
     _ensure_initialized()
     jd = get_julian_day(dt)
     if sidereal:
-        swe.set_sid_mode(AYANAMSA_LAHIRI)
+        swe.set_sid_mode(ayanamsa)
     flags = SIDEREAL_FLAGS if sidereal else TROPICAL_FLAGS
     try:
         values = swe.calc_ut(jd, planet_id, flags)[0]
@@ -375,13 +386,20 @@ def get_planet_position(dt: datetime, planet_id: int, *, sidereal: bool = True) 
         raise EphemerisError(f"Failed to calculate planet {planet_id}: {exc}") from exc
 
 
-def get_all_planetary_positions(dt: datetime, *, sidereal: bool = True) -> dict:
+def get_all_planetary_positions(
+    dt: datetime,
+    *,
+    sidereal: bool = True,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> dict:
     """Sun, Moon, grahas, and Rahu/Ketu at the given instant."""
     from core.positions import RASHI_NAMES, RASHI_NAMES_NE
 
     positions: dict[str, dict[str, Any]] = {}
     for name, planet_id in PLANET_IDS.items():
-        pos = get_planet_position(dt, planet_id, sidereal=sidereal)
+        pos = get_planet_position(
+            dt, planet_id, sidereal=sidereal, ayanamsa=ayanamsa
+        )
         positions[name] = _enrich_planet_position(
             pos,
             rashi_names=RASHI_NAMES,
