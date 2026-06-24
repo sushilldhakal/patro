@@ -6,6 +6,7 @@ from datetime import date
 from typing import Any, Literal
 
 from core.location import DEFAULT_LOCATION, ObserverLocation
+from core.positions import ayana_kranti_mark
 from core.time_utils import resolve_observer_timezone
 from panchanga.bikram_sambat import (
     bs_month_name,
@@ -96,6 +97,7 @@ def build_daily_state(
         "ritu_ne": raw["ritu"]["name_ne"],
         "aayan": raw["aayan"]["name"],
         "aayan_ne": raw["aayan"]["name_ne"],
+        "ayana_mark": ayana_kranti_mark(raw["aayan"]),
         "lagna": raw["lagna"]["name"],
         "lagna_ne": raw["lagna"]["name_ne"],
         "lagna_spans": raw.get("lagna_spans") or [],
@@ -222,6 +224,9 @@ def build_month_calendar(
             "karana_ne": panchanga["karana"].get("name_ne"),
             "sunrise": panchanga["sunrise"]["local_time_short"],
             "sunset": panchanga["sunset"]["local_time_short"],
+            "aayan": panchanga["aayan"]["name"],
+            "aayan_ne": panchanga["aayan"]["name_ne"],
+            "ayana_mark": ayana_kranti_mark(panchanga["aayan"]),
             "moonrise": (panchanga.get("moonrise") or {}).get("local_time_short"),
             "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
             "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),

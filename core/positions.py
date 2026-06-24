@@ -273,6 +273,19 @@ def get_ritu(
     return _ritu_from_sun(dt, sidereal=sidereal)
 
 
+def ayana_kranti_mark(aayan: dict) -> str:
+    """उ / द mark for Suryakranti — works with fresh and cached aayan dicts."""
+    mark = aayan.get("kranti_mark")
+    if mark in ("उ", "द"):
+        return mark
+    if aayan.get("name") == "Uttarayana":
+        return "उ"
+    name_ne = aayan.get("name_ne") or ""
+    if "उत्तर" in name_ne:
+        return "उ"
+    return "द"
+
+
 def get_aayan(dt: datetime, *, sidereal: bool = True) -> dict:
     """Uttarayana / Dakshinayana from sun's rashi (Makara→Mithuna = Uttarayana)."""
     rashi_index = _sun_rashi_index(dt, sidereal=sidereal)
@@ -283,6 +296,7 @@ def get_aayan(dt: datetime, *, sidereal: bool = True) -> dict:
             "name_sanskrit": "Uttarayana",
             "sun_rashi": rashi_index + 1,
             "basis": "sidereal" if sidereal else "tropical",
+            "kranti_mark": "उ",
         }
     return {
         "name": "Dakshinayana",
@@ -290,4 +304,5 @@ def get_aayan(dt: datetime, *, sidereal: bool = True) -> dict:
         "name_sanskrit": "Dakshinayana",
         "sun_rashi": rashi_index + 1,
         "basis": "sidereal" if sidereal else "tropical",
+        "kranti_mark": "द",
     }
