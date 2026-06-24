@@ -1248,6 +1248,53 @@ def patro_month_legacy(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@app.get("/nepal/gochar/ingress")
+def nepal_gochar_ingress(
+    location: LocationDep,
+    from_date: date = Query(..., alias="from", description="Start date (AD or BS per era)"),
+    to_date: date = Query(..., alias="to", description="End date (AD or BS per era)"),
+    era: Literal["bs", "ad"] = Query("ad", description="Date era for from/to"),
+    level: Literal["pada", "nakshatra", "rashi"] = Query(
+        "pada",
+        description="Ingress granularity: pada (3°20′), nakshatra (13°20′), or rashi (30°)",
+    ),
+    grahas: str | None = Query(
+        None,
+        description="Comma-separated graha keys (default: all except moon)",
+    ),
+):
+    """
+    Planetary ingress timeline between two dates.
+
+    Pada level yields labels like भरणी ३ मा — the destination nakshatra and pada
+    a graha enters, with local entry time.
+    """
+    from panchanga.gochar import GRAHA_ORDER, build_gochar_ingress_range
+
+    try:
+        if era == "bs":
+            from_greg = resolve_panchanga_date(from_date.isoformat(), era="bs")
+            to_greg = resolve_panchanga_date(to_date.isoformat(), era="bs")
+        else:
+            from_greg = from_date
+            to_greg = to_date
+        graha_list = None
+        if grahas:
+            graha_list = [g.strip() for g in grahas.split(",") if g.strip()]
+            unknown = [g for g in graha_list if g not in GRAHA_ORDER]
+            if unknown:
+                raise ValueError(f"Unknown graha(s): {', '.join(unknown)}")
+        return build_gochar_ingress_range(
+            from_greg,
+            to_greg,
+            location,
+            level=level,
+            grahas=graha_list,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/nepal/gochar/{date_key}")
 def nepal_gochar(
     date_key: str,

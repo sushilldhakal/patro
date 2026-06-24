@@ -22,7 +22,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from core.positions import RASHI_NAMES
+from core.positions import RASHI_NAMES, NAKSHATRA_NAMES
 from core.swiss_eph import (
     PLANET_IDS,
     SIDEREAL_FLAGS,
@@ -61,19 +61,131 @@ _RASHI_CHANGE_MAX_DAYS: dict[str, int] = {
     "ketu":    200,   # same as Rahu
 }
 
+from panchanga.names_ne import NAKSHATRA_NAMES_NE, to_nepali_digits
+
+NAKSHATRA_SPAN = 360.0 / 27.0
+PADA_SPAN = NAKSHATRA_SPAN / 4.0  # 3°20′
+
+# Search window (days) for the next nakshatra / pada change per graha.
+_NAKSHATRA_CHANGE_MAX_DAYS: dict[str, float] = {
+    "sun": 15,
+    "moon": 1.5,
+    "mars": 15,
+    "mercury": 1.5,
+    "jupiter": 30,
+    "venus": 2,
+    "saturn": 15,
+    "rahu": 25,
+    "ketu": 25,
+}
+
+_PADA_CHANGE_MAX_DAYS: dict[str, float] = {
+    "sun": 4,
+    "moon": 0.5,
+    "mars": 4,
+    "mercury": 0.5,
+    "jupiter": 8,
+    "venus": 1,
+    "saturn": 4,
+    "rahu": 7,
+    "ketu": 7,
+}
+
 # Graha display order (traditional Vedic: Surya first, Rahu/Ketu last)
 GRAHA_ORDER: list[str] = [
     "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
 ]
 
 
-def _rashi_index_for(graha: str, dt: datetime) -> int:
-    """Return the 0-based rashi index (0=Mesha … 11=Meena) for a graha at dt."""
+def _longitude_for(graha: str, dt: datetime) -> float:
     init_ephemeris()
     if graha == "ketu":
         rahu_pos = get_planet_position(dt, PLANET_IDS["rahu"])
-        return int(((rahu_pos["longitude"] + 180.0) % 360.0) / 30) % 12
-    return int(get_planet_position(dt, PLANET_IDS[graha])["longitude"] / 30) % 12
+        return (rahu_pos["longitude"] + 180.0) % 360.0
+    return float(get_planet_position(dt, PLANET_IDS[graha])["longitude"])
+
+
+def _rashi_index_for(graha: str, dt: datetime) -> int:
+    """Return the 0-based rashi index (0=Mesha … 11=Meena) for a graha at dt."""
+    return int(_longitude_for(graha, dt) / 30) % 12
+
+
+def _nakshatra_index_for(graha: str, dt: datetime) -> int:
+    """0-based nakshatra index (0=Ashvini … 26=Revati)."""
+    return int(_longitude_for(graha, dt) / NAKSHATRA_SPAN) % 27
+
+
+def _pada_tuple_for(graha: str, dt: datetime) -> tuple[int, int]:
+    """(0-based nakshatra index, pada 1–4)."""
+    lon = _longitude_for(graha, dt)
+    nak = int(lon / NAKSHATRA_SPAN) % 27
+    pos_in_nak = lon % NAKSHATRA_SPAN
+    pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
+    return nak, pada
+
+
+def _pada_flat_for(graha: str, dt: datetime) -> int:
+    """Flat pada slot 0–107 across the ecliptic."""
+    nak, pada = _pada_tuple_for(graha, dt)
+    return nak * 4 + (pada - 1)
+
+
+def _nakshatra_labels(nak_idx: int) -> dict[str, str]:
+    name = NAKSHATRA_NAMES[nak_idx]
+    return {
+        "nakshatra": name,
+        "nakshatra_ne": NAKSHATRA_NAMES_NE[nak_idx],
+    }
+
+
+def _pada_labels(nak_idx: int, pada: int) -> dict[str, Any]:
+    base = _nakshatra_labels(nak_idx)
+    pada_ne = to_nepali_digits(pada)
+    return {
+        **base,
+        "pada": pada,
+        "pada_ne": pada_ne,
+        "label_ne": f"{base['nakshatra_ne']} {pada_ne} मा",
+    }
+
+
+def _attach_local_time(
+    entry: dict[str, Any],
+    tz,
+) -> dict[str, Any]:
+    entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
+    entry["entry_time_local"] = entry_local.strftime("%Y-%m-%d %H:%M")
+    entry["entry_time_local_short"] = entry_local.strftime("%H:%M")
+    entry["entry_date_ad"] = entry_local.date().isoformat()
+    return entry
+
+
+def _bisect_index_change(
+    graha: str,
+    from_dt: datetime,
+    *,
+    get_index,
+    max_days: float,
+    tolerance_hours: float = 0.25,
+) -> datetime | None:
+    """Return UTC instant when `get_index(graha, dt)` first changes after from_dt."""
+    current = get_index(graha, from_dt)
+    t_lo = from_dt
+    t_hi = from_dt + timedelta(days=max_days)
+    if get_index(graha, t_hi) == current:
+        return None
+    tolerance = timedelta(hours=tolerance_hours)
+    for _ in range(60):
+        if t_hi - t_lo < tolerance:
+            break
+        t_mid = t_lo + (t_hi - t_lo) / 2
+        if get_index(graha, t_mid) == current:
+            t_lo = t_mid
+        else:
+            t_hi = t_mid
+    if get_index(graha, t_hi) == current:
+        return None
+    return t_hi
 
 
 def _dms_absolute(lon: float) -> str:
@@ -233,6 +345,172 @@ def find_upcoming_rashi_entries(
     return entries
 
 
+# ─── Next nakshatra / pada entry finders ─────────────────────────────────────
+
+def find_next_nakshatra_entry(
+    graha: str,
+    from_dt: datetime,
+    *,
+    tolerance_hours: float = 0.25,
+) -> dict[str, Any] | None:
+    """Next nakshatra ingress (13°20′ step) for a graha after from_dt."""
+    if graha not in GRAHA_META:
+        raise ValueError(f"Unknown graha: {graha!r}")
+
+    current_idx = _nakshatra_index_for(graha, from_dt)
+    crossing = _bisect_index_change(
+        graha,
+        from_dt,
+        get_index=_nakshatra_index_for,
+        max_days=_NAKSHATRA_CHANGE_MAX_DAYS[graha],
+        tolerance_hours=tolerance_hours,
+    )
+    if crossing is None:
+        return None
+
+    new_idx = _nakshatra_index_for(graha, crossing)
+    meta = GRAHA_META[graha]
+    from_labels = _nakshatra_labels(current_idx)
+    to_labels = _nakshatra_labels(new_idx)
+    return {
+        "graha": graha,
+        "graha_vedic": meta["vedic"],
+        "graha_ne": meta["ne"],
+        "level": "nakshatra",
+        "from_nakshatra": from_labels["nakshatra"],
+        "from_nakshatra_ne": from_labels["nakshatra_ne"],
+        "to_nakshatra": to_labels["nakshatra"],
+        "to_nakshatra_ne": to_labels["nakshatra_ne"],
+        "label_ne": f"{to_labels['nakshatra_ne']} मा",
+        "entry_time_utc": crossing.isoformat(),
+    }
+
+
+def find_next_pada_entry(
+    graha: str,
+    from_dt: datetime,
+    *,
+    tolerance_hours: float = 0.25,
+) -> dict[str, Any] | None:
+    """Next nakshatra-pada ingress (3°20′ step) for a graha after from_dt."""
+    if graha not in GRAHA_META:
+        raise ValueError(f"Unknown graha: {graha!r}")
+
+    from_nak, from_pada = _pada_tuple_for(graha, from_dt)
+    crossing = _bisect_index_change(
+        graha,
+        from_dt,
+        get_index=_pada_flat_for,
+        max_days=_PADA_CHANGE_MAX_DAYS[graha],
+        tolerance_hours=tolerance_hours,
+    )
+    if crossing is None:
+        return None
+
+    to_nak, to_pada = _pada_tuple_for(graha, crossing)
+    meta = GRAHA_META[graha]
+    from_labels = _pada_labels(from_nak, from_pada)
+    to_labels = _pada_labels(to_nak, to_pada)
+    return {
+        "graha": graha,
+        "graha_vedic": meta["vedic"],
+        "graha_ne": meta["ne"],
+        "level": "pada",
+        "from_nakshatra": from_labels["nakshatra"],
+        "from_nakshatra_ne": from_labels["nakshatra_ne"],
+        "from_pada": from_pada,
+        "from_pada_ne": from_labels["pada_ne"],
+        "to_nakshatra": to_labels["nakshatra"],
+        "to_nakshatra_ne": to_labels["nakshatra_ne"],
+        "to_pada": to_pada,
+        "to_pada_ne": to_labels["pada_ne"],
+        "label_ne": to_labels["label_ne"],
+        "entry_time_utc": crossing.isoformat(),
+    }
+
+
+def find_ingress_entries_in_range(
+    from_dt: datetime,
+    until_dt: datetime,
+    *,
+    level: str = "pada",
+    grahas: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """
+    All ingress events of the given level between from_dt (exclusive advance)
+    and until_dt (inclusive).
+    """
+    if level not in {"pada", "nakshatra", "rashi"}:
+        raise ValueError("level must be pada, nakshatra, or rashi")
+    if grahas is None:
+        grahas = [g for g in GRAHA_ORDER if g != "moon"]
+
+    finder = {
+        "pada": find_next_pada_entry,
+        "nakshatra": find_next_nakshatra_entry,
+        "rashi": find_next_rashi_entry,
+    }[level]
+
+    entries: list[dict[str, Any]] = []
+    for graha in grahas:
+        cursor = from_dt
+        while cursor < until_dt:
+            entry = finder(graha, cursor)
+            if entry is None:
+                break
+            entry_utc = datetime.fromisoformat(entry["entry_time_utc"])
+            if entry_utc > until_dt:
+                break
+            entries.append(entry)
+            cursor = entry_utc + timedelta(seconds=90)
+    entries.sort(key=lambda e: e["entry_time_utc"])
+    return entries
+
+
+def build_gochar_ingress_range(
+    from_date: date,
+    to_date: date,
+    location: Any,
+    *,
+    level: str = "pada",
+    grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Ingress timeline between two civil dates (inclusive end), anchored at sunrise."""
+    from core.swiss_eph import calculate_sunrise
+
+    if to_date < from_date:
+        raise ValueError("to_date must be on or after from_date")
+
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = calculate_sunrise(
+        from_date,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    until_sunrise = calculate_sunrise(
+        to_date + timedelta(days=1),
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    raw = find_ingress_entries_in_range(
+        from_sunrise,
+        until_sunrise,
+        level=level,
+        grahas=grahas,
+    )
+    events = [_attach_local_time(dict(e), tz) for e in raw]
+    return {
+        "from_date_ad": from_date.isoformat(),
+        "to_date_ad": to_date.isoformat(),
+        "level": level,
+        "location": location.as_dict(),
+        "events": events,
+    }
+
+
 # ─── Formatted gochar response ────────────────────────────────────────────────
 
 def build_gochar_response(
@@ -274,19 +552,49 @@ def build_gochar_response(
 
     gochar = get_gochar_table(sunrise_utc)
 
-    # Enrich with next rashi entry
+    # Enrich with next rashi / nakshatra / pada entries
     if include_next_entry:
         for graha in GRAHA_ORDER:
-            entry = find_next_rashi_entry(graha, sunrise_utc)
-            if entry:
-                entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
+            rashi_entry = find_next_rashi_entry(graha, sunrise_utc)
+            if rashi_entry:
+                rashi_entry = _attach_local_time(dict(rashi_entry), tz)
                 gochar[graha]["next_rashi_entry"] = {
-                    "to_rashi":         entry["to_rashi"],
-                    "entry_time_local": entry_local.strftime("%Y-%m-%d %H:%M"),
-                    "entry_time_utc":   entry["entry_time_utc"],
+                    "to_rashi": rashi_entry["to_rashi"],
+                    "entry_time_local": rashi_entry["entry_time_local"],
+                    "entry_time_utc": rashi_entry["entry_time_utc"],
                 }
             else:
                 gochar[graha]["next_rashi_entry"] = None
+
+            nak_entry = find_next_nakshatra_entry(graha, sunrise_utc)
+            if nak_entry:
+                nak_entry = _attach_local_time(dict(nak_entry), tz)
+                gochar[graha]["next_nakshatra_entry"] = {
+                    "to_nakshatra": nak_entry["to_nakshatra"],
+                    "to_nakshatra_ne": nak_entry["to_nakshatra_ne"],
+                    "label_ne": nak_entry["label_ne"],
+                    "entry_time_local": nak_entry["entry_time_local"],
+                    "entry_time_local_short": nak_entry["entry_time_local_short"],
+                    "entry_time_utc": nak_entry["entry_time_utc"],
+                }
+            else:
+                gochar[graha]["next_nakshatra_entry"] = None
+
+            pada_entry = find_next_pada_entry(graha, sunrise_utc)
+            if pada_entry:
+                pada_entry = _attach_local_time(dict(pada_entry), tz)
+                gochar[graha]["next_pada_entry"] = {
+                    "to_nakshatra": pada_entry["to_nakshatra"],
+                    "to_nakshatra_ne": pada_entry["to_nakshatra_ne"],
+                    "to_pada": pada_entry["to_pada"],
+                    "to_pada_ne": pada_entry["to_pada_ne"],
+                    "label_ne": pada_entry["label_ne"],
+                    "entry_time_local": pada_entry["entry_time_local"],
+                    "entry_time_local_short": pada_entry["entry_time_local_short"],
+                    "entry_time_utc": pada_entry["entry_time_utc"],
+                }
+            else:
+                gochar[graha]["next_pada_entry"] = None
 
     result: dict[str, Any] = {
         "date_bs":   format_bs_date(bs_year, bs_month, bs_day),
