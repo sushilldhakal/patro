@@ -83,14 +83,17 @@ _NAKSHATRA_CHANGE_MAX_DAYS: dict[str, float] = {
 _PADA_CHANGE_MAX_DAYS: dict[str, float] = {
     "sun": 5,
     "moon": 0.5,
-    "mars": 12,
+    "mars": 28,
     "mercury": 20,
-    "jupiter": 20,
+    "jupiter": 25,
     "venus": 6,
     "saturn": 30,
     "rahu": 20,
     "ketu": 20,
 }
+
+# Grahas that get वक्री/मार्गी rows in the patro table.
+_MOTION_PATRO_GRAHAS = ["mars", "mercury", "jupiter", "venus", "saturn"]
 
 # Graha display order (traditional Vedic: Surya first, Rahu/Ketu last)
 GRAHA_ORDER: list[str] = [
@@ -153,11 +156,20 @@ def _pada_labels(nak_idx: int, pada: int) -> dict[str, Any]:
 def _attach_local_time(
     entry: dict[str, Any],
     tz,
+    *,
+    sunrise_local: datetime | None = None,
 ) -> dict[str, Any]:
     entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
     entry["entry_time_local"] = entry_local.strftime("%Y-%m-%d %H:%M")
     entry["entry_time_local_short"] = entry_local.strftime("%H:%M")
     entry["entry_date_ad"] = entry_local.date().isoformat()
+    if sunrise_local is not None:
+        entry_mins = entry_local.hour * 60 + entry_local.minute
+        sunrise_mins = sunrise_local.hour * 60 + sunrise_local.minute
+        vedic_date = entry_local.date()
+        if entry_mins < sunrise_mins:
+            vedic_date = vedic_date - timedelta(days=1)
+        entry["entry_vedic_date_ad"] = vedic_date.isoformat()
     return entry
 
 
@@ -451,6 +463,78 @@ def find_next_pada_entry(
     }
 
 
+def _is_retrograde(graha: str, dt: datetime) -> bool:
+    speed = float(get_planet_position(dt, PLANET_IDS[graha])["speed"])
+    return speed < 0.0
+
+
+def _bisect_retrograde_change(
+    graha: str,
+    t_lo: datetime,
+    t_hi: datetime,
+    *,
+    target_retrograde: bool,
+) -> datetime:
+    tolerance = timedelta(minutes=5)
+    for _ in range(50):
+        if t_hi - t_lo < tolerance:
+            break
+        t_mid = t_lo + (t_hi - t_lo) / 2
+        if _is_retrograde(graha, t_mid) == target_retrograde:
+            t_hi = t_mid
+        else:
+            t_lo = t_mid
+    return t_hi
+
+
+def find_motion_stations_in_range(
+    from_dt: datetime,
+    until_dt: datetime,
+    *,
+    grahas: list[str] | None = None,
+) -> list[dict[str, Any]]:
+    """वक्री / मार्गी stations (speed sign change) for patro notation."""
+    if grahas is None:
+        grahas = list(_MOTION_PATRO_GRAHAS)
+
+    init_ephemeris()
+    events: list[dict[str, Any]] = []
+    scan = timedelta(hours=3)
+
+    for graha in grahas:
+        if graha not in GRAHA_META:
+            continue
+        cursor = from_dt
+        was_retro = _is_retrograde(graha, cursor)
+        while cursor < until_dt:
+            probe = min(cursor + scan, until_dt)
+            now_retro = _is_retrograde(graha, probe)
+            if now_retro == was_retro:
+                cursor = probe
+                continue
+            crossing = _bisect_retrograde_change(
+                graha, cursor, probe, target_retrograde=now_retro,
+            )
+            if crossing > until_dt:
+                break
+            meta = GRAHA_META[graha]
+            events.append({
+                "graha": graha,
+                "graha_vedic": meta["vedic"],
+                "graha_ne": meta["ne"],
+                "level": "motion",
+                "motion": "Vakri" if now_retro else "Margi",
+                "is_retrograde": now_retro,
+                "label_ne": "वक्री" if now_retro else "मार्गी",
+                "entry_time_utc": crossing.isoformat(),
+            })
+            was_retro = now_retro
+            cursor = crossing + timedelta(seconds=90)
+
+    events.sort(key=lambda e: e["entry_time_utc"])
+    return events
+
+
 def find_ingress_entries_in_range(
     from_dt: datetime,
     until_dt: datetime,
@@ -484,7 +568,8 @@ def find_ingress_entries_in_range(
             from_dt, until_dt, level="rashi", grahas=rashi_grahas,
         )
         udayast = find_udayast_events_in_range(from_dt, until_dt)
-        merged = pada + rashi + udayast
+        motion = find_motion_stations_in_range(from_dt, until_dt)
+        merged = pada + rashi + udayast + motion
         merged.sort(key=lambda e: e["entry_time_utc"])
         return merged
 
@@ -544,7 +629,17 @@ def build_gochar_ingress_range(
         level=level,
         grahas=grahas,
     )
-    events = [_attach_local_time(dict(e), tz) for e in raw]
+    events: list[dict[str, Any]] = []
+    for e in raw:
+        entry = dict(e)
+        entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
+        sunrise_local = calculate_sunrise(
+            entry_local.date(),
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        ).astimezone(tz)
+        events.append(_attach_local_time(entry, tz, sunrise_local=sunrise_local))
     return {
         "from_date_ad": from_date.isoformat(),
         "to_date_ad": to_date.isoformat(),

@@ -24,7 +24,18 @@ def test_mercury_western_asta_ashar_2083():
     assert any(20 <= d <= 22 for d in bs_days)
 
 
-def test_patro_includes_udayast():
+def test_patro_includes_udayast_and_motion():
+    payload = build_gochar_ingress_range(
+        date(2027, 1, 15),
+        date(2027, 2, 12),
+        DEFAULT_LOCATION,
+        level="patro",
+    )
+    mars = [e for e in payload["events"] if e["graha"] == "mars" and e["level"] == "pada"]
+    assert len(mars) >= 1
+    motion = [e for e in payload["events"] if e["level"] == "motion"]
+    assert any(e["graha"] == "mercury" and e["label_ne"] == "वक्री" for e in motion)
+    assert all("entry_vedic_date_ad" in e for e in payload["events"])
     payload = build_gochar_ingress_range(
         date(2026, 6, 15),
         date(2026, 7, 16),
@@ -33,6 +44,7 @@ def test_patro_includes_udayast():
     )
     levels = {e["level"] for e in payload["events"]}
     assert "udayast" in levels
+    assert "motion" in levels
     assert "pada" in levels
     assert "rashi" in levels
 
