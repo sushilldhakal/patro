@@ -156,11 +156,12 @@ def build_daily_panchanga(
     vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, location.timezone)
 
     bs_year, bs_month, bs_day = gregorian_to_bs(target)
-    lunar = merge_lunar_month_for_day(target)
 
     display_tithi = tithi_info["display_number"]
     paksha = tithi_info["paksha"]
     tithi_name_ne = _tithi_name_ne(display_tithi, paksha)
+
+    lunar = merge_lunar_month_for_day(target, paksha)
 
     ns_date = gregorian_to_ns(
         target,
@@ -264,7 +265,7 @@ def build_daily_panchanga(
             timezone_name=location.timezone,
         ),
         "lunar_month": lunar,
-        "lunar_calendar": get_lunar_calendar_layers(target),
+        "lunar_calendar": get_lunar_calendar_layers(target, paksha),
         "planets": get_all_planetary_positions(sunrise_utc),
         "planets_anchor": {
             "type": "udayakal",

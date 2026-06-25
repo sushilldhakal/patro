@@ -90,16 +90,26 @@ def test_janai_purnima_recent_moha_years(bs_year: int, expected: date):
 def test_merge_lunar_month_purnimanta_adhik_jestha_2026():
     from panchanga.lunar_month import merge_lunar_month_for_day
 
-    adhik = merge_lunar_month_for_day(date(2026, 5, 15))
+    # Pūrṇimānta splits the Adhik Maas at paksha granularity:
+    #   शुद्ध ज्येष्ठ कृष्ण → अधिक ज्येष्ठ शुक्ल → अधिक ज्येष्ठ कृष्ण → शुद्ध ज्येष्ठ शुक्ल
+    # 2026-05-15 is the Krishna paksha *before* Adhik Jestha → शुद्ध (nija).
+    shuddha_krishna = merge_lunar_month_for_day(date(2026, 5, 15), "krishna")
+    assert shuddha_krishna["purnimanta_name"] == "Jestha"
+    assert shuddha_krishna["purnimanta_is_adhik"] is False
+    assert shuddha_krishna["purnimanta_type"] == "nija"
+    assert shuddha_krishna["purnimanta_name_ne"] == "ज्येष्ठ"
+
+    # 2026-06-10 falls inside the Adhik Jestha amanta month itself → अधिक.
+    adhik = merge_lunar_month_for_day(date(2026, 6, 10), "krishna")
     assert adhik["purnimanta_name"] == "Jestha"
     assert adhik["purnimanta_is_adhik"] is True
     assert adhik["purnimanta_type"] == "adhik"
-    assert adhik["purnimanta_name_ne"] == "ज्येष्ठ"
 
-    shuddha = merge_lunar_month_for_day(date(2026, 6, 10))
-    assert shuddha["purnimanta_name"] == "Jestha"
-    assert shuddha["purnimanta_is_adhik"] is False
-    assert shuddha["purnimanta_type"] == "nija"
+    # The Shukla paksha after Adhik Jestha closes the शुद्ध Jestha month.
+    shuddha_shukla = merge_lunar_month_for_day(date(2026, 6, 20), "shukla")
+    assert shuddha_shukla["purnimanta_name"] == "Jestha"
+    assert shuddha_shukla["purnimanta_is_adhik"] is False
+    assert shuddha_shukla["purnimanta_type"] == "nija"
 
 
 def test_merge_lunar_month_normal_month():
