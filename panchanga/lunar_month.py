@@ -302,21 +302,28 @@ def _next_masa_name(name: str) -> str:
     return BS_MONTH_NAMES[(BS_MONTH_NAMES.index(name) + 1) % 12]
 
 
-def _amanta_month_and_adhik_before(target: date) -> tuple[Optional[LunarMonth], int]:
-    """The amanta lunar month covering ``target`` plus the count of adhik months
-    that precede it in the same lunar year (for the festival-masa name lag)."""
+def _amanta_context(
+    target: date,
+) -> tuple[Optional[LunarMonth], int, Optional[LunarMonth], int]:
+    """The amanta month covering ``target`` (with its preceding-adhik count) plus
+    the previous month and its count — used to attribute the junction Amavasya to
+    the month it closes rather than the one it opens."""
     check = datetime.combine(
         target, datetime.min.time().replace(hour=12), tzinfo=timezone.utc
     )
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         adhik_before = 0
+        prev: Optional[LunarMonth] = None
+        prev_adhik_before = 0
         for month in lunar_year.months:
             if month.start_amavasya <= check < month.end_amavasya:
-                return month, adhik_before
+                return month, adhik_before, prev, prev_adhik_before
+            prev = month
+            prev_adhik_before = adhik_before
             if month.is_adhik:
                 adhik_before += 1
-    return None, 0
+    return None, 0, None, 0
 
 
 def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dict:
@@ -333,7 +340,7 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
       * Krishna paksha (nija) → the *next* month's name (the krishna paksha
         precedes the shukla that names the pūrṇimānta month).
     """
-    month, adhik_before = _amanta_month_and_adhik_before(target)
+    month, adhik_before, prev_month, prev_adhik_before = _amanta_context(target)
     if month is None:
         return _lunar_month_payload(None, month_type="unknown", paksha_model="purnimant")
 
@@ -342,6 +349,16 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
             paksha = get_udaya_tithi(target, DEFAULT_LOCATION)["paksha"]
         except (RuntimeError, TypeError, ValueError, KeyError):
             paksha = "shukla"
+
+    # The junction Amavasya (an amanta month's opening boundary) is a Krishna day
+    # that *closes* the previous month — attribute it there so each Krishna paksha
+    # stays contiguous (no one-day blip at month boundaries).
+    if (
+        paksha == "krishna"
+        and prev_month is not None
+        and target == month.start_amavasya.date()
+    ):
+        month, adhik_before = prev_month, prev_adhik_before
 
     if month.is_adhik:
         name = month.month_name
