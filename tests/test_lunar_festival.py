@@ -87,6 +87,38 @@ def test_janai_purnima_recent_moha_years(bs_year: int, expected: date):
     assert found == expected
 
 
+def test_merge_lunar_month_purnimanta_adhik_jestha_2026():
+    from panchanga.lunar_month import merge_lunar_month_for_day
+
+    adhik = merge_lunar_month_for_day(date(2026, 5, 15))
+    assert adhik["purnimanta_name"] == "Jestha"
+    assert adhik["purnimanta_is_adhik"] is True
+    assert adhik["purnimanta_type"] == "adhik"
+    assert adhik["purnimanta_name_ne"] == "ज्येष्ठ"
+
+    shuddha = merge_lunar_month_for_day(date(2026, 6, 10))
+    assert shuddha["purnimanta_name"] == "Jestha"
+    assert shuddha["purnimanta_is_adhik"] is False
+    assert shuddha["purnimanta_type"] == "nija"
+
+
+def test_merge_lunar_month_normal_month():
+    from panchanga.lunar_month import merge_lunar_month_for_day
+
+    normal = merge_lunar_month_for_day(date(2026, 7, 15))
+    assert normal["purnimanta_name"] == "Ashadh"
+    assert normal["purnimanta_is_adhik"] is False
+
+
+def test_daily_panchanga_includes_purnimanta_fields():
+    from panchanga.daily import build_daily_panchanga
+
+    payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+    lunar = payload["lunar_month"]
+    assert lunar["purnimanta_name"] == "Jestha"
+    assert lunar["purnimanta_name_ne"] == "ज्येष्ठ"
+
+
 def test_lunar_calendar_layers_on_janai_day():
     layers = get_lunar_calendar_layers(date(2026, 8, 28))
     assert layers["adhik_maas"]["year_has_adhik"] is True

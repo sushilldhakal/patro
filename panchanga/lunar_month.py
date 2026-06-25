@@ -16,6 +16,7 @@ from panchanga.bikram_sambat import (
 from panchanga.bs_year import bs_solar_year_for_gregorian_year
 from panchanga.constants import BS_MONTH_NAMES
 from panchanga.sankranti import find_sankranti, get_sun_rashi_at_time
+from panchanga.names_ne import lunar_masa_name_ne
 from panchanga.tithi import get_udaya_tithi
 from panchanga.tithi_boundaries import find_next_tithi
 
@@ -222,9 +223,12 @@ def _lunar_month_payload(
     window_end: date | None = None,
     solar_name: str | None = None,
     festival_masa: str | None = None,
+    name_ne: str | None = None,
 ) -> dict:
+    resolved_ne = name_ne or lunar_masa_name_ne(name)
     return {
         "name": name,
+        "name_ne": resolved_ne,
         "full_name": full_name or name,
         "is_adhik": is_adhik,
         "type": month_type,
@@ -289,6 +293,39 @@ def get_lunar_month_for_date(
     if month_model == "purnimant":
         return _find_purnimant_month_for_date(target, festival_masa=False)
     return _find_purnimant_month_for_date(target, festival_masa=True)
+
+
+def merge_lunar_month_for_day(target: date) -> dict:
+    """
+  Per-day lunar month for Patro / Chandra Kranti.
+
+  Exposes amanta ``name`` plus purnimant fields used for paksha segment labels
+  (अधिक / शुद्ध ज्येष्ठ शुक्लपक्ष). ``purnimanta_name`` follows the
+  festival-masa label when adhik lag applies (e.g. nija Ashadh window still
+  labelled Jestha after Adhik Jestha).
+    """
+    amanta = get_lunar_month_for_date(target, month_model="amanta")
+    purnim = get_lunar_month_for_date(target, month_model="purnimant")
+    festival = get_lunar_month_for_date(target, month_model="festival")
+
+    patro_masa = festival.get("name") or purnim.get("festival_masa") or purnim.get("name")
+    patro_ne = lunar_masa_name_ne(patro_masa)
+    purnim_is_adhik = bool(purnim.get("is_adhik"))
+    purnim_type = purnim.get("type") or "nija"
+    purnim_full = f"Adhik {patro_masa}" if purnim_is_adhik and patro_masa else patro_masa
+
+    return {
+        **amanta,
+        "purnimanta_name": patro_masa,
+        "purnimanta_name_ne": patro_ne,
+        "purnimanta_full_name": (
+            f"Adhik {patro_masa}" if purnim_is_adhik and patro_masa else purnim_full
+        ),
+        "purnimanta_is_adhik": purnim_is_adhik,
+        "purnimanta_type": purnim_type,
+        "purnimanta_solar_name": purnim.get("solar_name"),
+        "purnimanta_festival_masa": festival.get("name"),
+    }
 
 
 def get_lunar_calendar_layers(target: date) -> dict:

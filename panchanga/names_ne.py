@@ -36,7 +36,29 @@ PAKSHA_NAMES_NE = {
     "krishna": "कृष्ण पक्ष",
 }
 
+# Purnimant / chāndra masa labels (Sanskrit-Nepali), keyed by API English masa name.
+LUNAR_MASA_NE: dict[str, str] = {
+    "Baishakh": "वैशाख",
+    "Jestha": "ज्येष्ठ",
+    "Ashadh": "आषाढ",
+    "Shrawan": "श्रावण",
+    "Bhadra": "भाद्रपद",
+    "Ashwin": "आश्विन",
+    "Kartik": "कार्तिक",
+    "Mangsir": "मार्गशीर्ष",
+    "Poush": "पौष",
+    "Magh": "माघ",
+    "Falgun": "फाल्गुन",
+    "Chaitra": "चैत्र",
+}
+
 NEPALI_DIGITS = str.maketrans("0123456789", "०१२३४५६७८९")
+
+
+def lunar_masa_name_ne(name: str | None) -> str | None:
+    if not name:
+        return None
+    return LUNAR_MASA_NE.get(name, name)
 
 
 def to_nepali_digits(value: int | str) -> str:

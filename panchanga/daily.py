@@ -36,7 +36,7 @@ from panchanga.rashi_spans import (
     build_nakshatra_pada_spans,
     get_surya_nakshatra,
 )
-from panchanga.lunar_month import get_lunar_calendar_layers, get_lunar_month_for_date
+from panchanga.lunar_month import get_lunar_calendar_layers, merge_lunar_month_for_day
 from panchanga.muhurta import build_muhurta_block
 from panchanga.names_ne import (
     PAKSHA_NAMES_NE,
@@ -156,7 +156,7 @@ def build_daily_panchanga(
     vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, location.timezone)
 
     bs_year, bs_month, bs_day = gregorian_to_bs(target)
-    lunar = get_lunar_month_for_date(target)
+    lunar = merge_lunar_month_for_day(target)
 
     display_tithi = tithi_info["display_number"]
     paksha = tithi_info["paksha"]
