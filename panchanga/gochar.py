@@ -22,7 +22,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from core.positions import RASHI_NAMES, NAKSHATRA_NAMES
+from core.positions import RASHI_NAMES, NAKSHATRA_NAMES, RASHI_NAMES_NE
 from core.swiss_eph import (
     PLANET_IDS,
     SIDEREAL_FLAGS,
@@ -67,28 +67,29 @@ NAKSHATRA_SPAN = 360.0 / 27.0
 PADA_SPAN = NAKSHATRA_SPAN / 4.0  # 3°20′
 
 # Search window (days) for the next nakshatra / pada change per graha.
+# Must exceed the longest dwell time in a month (incl. retrograde loops).
 _NAKSHATRA_CHANGE_MAX_DAYS: dict[str, float] = {
     "sun": 15,
     "moon": 1.5,
-    "mars": 15,
-    "mercury": 1.5,
-    "jupiter": 30,
-    "venus": 2,
-    "saturn": 15,
-    "rahu": 25,
-    "ketu": 25,
+    "mars": 30,
+    "mercury": 40,
+    "jupiter": 45,
+    "venus": 12,
+    "saturn": 45,
+    "rahu": 45,
+    "ketu": 45,
 }
 
 _PADA_CHANGE_MAX_DAYS: dict[str, float] = {
-    "sun": 4,
+    "sun": 5,
     "moon": 0.5,
-    "mars": 4,
-    "mercury": 0.5,
-    "jupiter": 8,
-    "venus": 1,
-    "saturn": 4,
-    "rahu": 7,
-    "ketu": 7,
+    "mars": 12,
+    "mercury": 20,
+    "jupiter": 20,
+    "venus": 6,
+    "saturn": 30,
+    "rahu": 20,
+    "ketu": 20,
 }
 
 # Graha display order (traditional Vedic: Surya first, Rahu/Ketu last)
@@ -170,10 +171,24 @@ def _bisect_index_change(
 ) -> datetime | None:
     """Return UTC instant when `get_index(graha, dt)` first changes after from_dt."""
     current = get_index(graha, from_dt)
+    t_limit = from_dt + timedelta(days=max_days)
+
+    # Coarse scan — retrograde grahas can leave and re-enter the same index
+    # within max_days, so endpoint-only checks miss real crossings.
+    scan_step = timedelta(hours=3)
     t_lo = from_dt
-    t_hi = from_dt + timedelta(days=max_days)
-    if get_index(graha, t_hi) == current:
+    t_hi: datetime | None = None
+    cursor = from_dt
+    while cursor < t_limit:
+        cursor_next = min(cursor + scan_step, t_limit)
+        if get_index(graha, cursor_next) != current:
+            t_lo = cursor
+            t_hi = cursor_next
+            break
+        cursor = cursor_next
+    if t_hi is None:
         return None
+
     tolerance = timedelta(hours=tolerance_hours)
     for _ in range(60):
         if t_hi - t_lo < tolerance:
@@ -247,6 +262,7 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
             "dms_absolute":  _dms_absolute(lon),
             "rashi_no":      rashi_idx + 1,
             "rashi":         RASHI_NAMES[rashi_idx],
+            "rashi_ne":      RASHI_NAMES_NE[rashi_idx],
             "deg_in_rashi":  round(lon % 30.0, 4),
             "dms_in_rashi":  _dms_in_sign(lon),
             "speed_deg_day": round(spd, 4),
@@ -258,6 +274,19 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
 
 # ─── Next rashi-entry finder ──────────────────────────────────────────────────
 
+def _rashi_again_prefix(graha: str, from_dt: datetime, to_idx: int) -> str:
+    """पुनः prefix when a graha re-enters a rashi it occupied earlier (retrograde loop)."""
+    lookback = min(_RASHI_CHANGE_MAX_DAYS.get(graha, 35), 120)
+    step = timedelta(days=1)
+    cursor = from_dt - step
+    end = from_dt - timedelta(days=lookback)
+    while cursor >= end:
+        if _rashi_index_for(graha, cursor) == to_idx:
+            return "पुनः"
+        cursor -= step
+    return ""
+
+
 def find_next_rashi_entry(
     graha: str,
     from_dt: datetime,
@@ -266,9 +295,6 @@ def find_next_rashi_entry(
 ) -> dict[str, Any] | None:
     """
     Find the next moment a graha enters a new rashi after from_dt.
-
-    Uses bisection: the rashi index function changes exactly once in any
-    interval shorter than the graha's rashi dwell time.
 
     Parameters
     ----------
@@ -285,36 +311,32 @@ def find_next_rashi_entry(
     if graha not in GRAHA_META:
         raise ValueError(f"Unknown graha: {graha!r}")
 
-    max_days    = _RASHI_CHANGE_MAX_DAYS[graha]
     current_idx = _rashi_index_for(graha, from_dt)
+    crossing = _bisect_index_change(
+        graha,
+        from_dt,
+        get_index=_rashi_index_for,
+        max_days=_RASHI_CHANGE_MAX_DAYS[graha],
+        tolerance_hours=tolerance_hours,
+    )
+    if crossing is None:
+        return None
 
-    t_lo = from_dt
-    t_hi = from_dt + timedelta(days=max_days)
-
-    # Quick check: does it change at all in the window?
-    if _rashi_index_for(graha, t_hi) == current_idx:
-        return None    # No rashi change in the search window
-
-    # Bisect to find the exact crossing moment
-    tolerance = timedelta(hours=tolerance_hours)
-    for _ in range(60):
-        if t_hi - t_lo < tolerance:
-            break
-        t_mid = t_lo + (t_hi - t_lo) / 2
-        if _rashi_index_for(graha, t_mid) == current_idx:
-            t_lo = t_mid
-        else:
-            t_hi = t_mid
-
-    new_idx  = _rashi_index_for(graha, t_hi)
-    meta     = GRAHA_META[graha]
+    to_idx = _rashi_index_for(graha, crossing) % 12
+    meta = GRAHA_META[graha]
+    again = _rashi_again_prefix(graha, from_dt, to_idx)
+    to_ne = RASHI_NAMES_NE[to_idx]
     return {
         "graha":          graha,
         "graha_vedic":    meta["vedic"],
         "graha_ne":       meta["ne"],
+        "level":          "rashi",
         "from_rashi":     RASHI_NAMES[current_idx],
-        "to_rashi":       RASHI_NAMES[new_idx % 12],
-        "entry_time_utc": t_hi.isoformat(),
+        "from_rashi_ne":  RASHI_NAMES_NE[current_idx],
+        "to_rashi":       RASHI_NAMES[to_idx],
+        "to_rashi_ne":    to_ne,
+        "label_ne":       f"{again}{to_ne}मा",
+        "entry_time_utc": crossing.isoformat(),
     }
 
 
@@ -440,10 +462,31 @@ def find_ingress_entries_in_range(
     All ingress events of the given level between from_dt (exclusive advance)
     and until_dt (inclusive).
     """
-    if level not in {"pada", "nakshatra", "rashi"}:
-        raise ValueError("level must be pada, nakshatra, or rashi")
+    if level not in {"pada", "nakshatra", "rashi", "patro", "udayast"}:
+        raise ValueError("level must be pada, nakshatra, rashi, patro, or udayast")
     if grahas is None:
         grahas = [g for g in GRAHA_ORDER if g != "moon"]
+
+    if level == "udayast":
+        from panchanga.udayast import find_udayast_events_in_range
+
+        return find_udayast_events_in_range(from_dt, until_dt, grahas=grahas)
+
+    if level == "patro":
+        from panchanga.udayast import find_udayast_events_in_range
+
+        pada = find_ingress_entries_in_range(
+            from_dt, until_dt, level="pada", grahas=grahas,
+        )
+        # Sun rashi is already in the सूर्य राशि column — keep only pada for sun.
+        rashi_grahas = [g for g in grahas if g not in {"sun", "moon"}]
+        rashi = find_ingress_entries_in_range(
+            from_dt, until_dt, level="rashi", grahas=rashi_grahas,
+        )
+        udayast = find_udayast_events_in_range(from_dt, until_dt)
+        merged = pada + rashi + udayast
+        merged.sort(key=lambda e: e["entry_time_utc"])
+        return merged
 
     finder = {
         "pada": find_next_pada_entry,
@@ -560,6 +603,7 @@ def build_gochar_response(
                 rashi_entry = _attach_local_time(dict(rashi_entry), tz)
                 gochar[graha]["next_rashi_entry"] = {
                     "to_rashi": rashi_entry["to_rashi"],
+                    "to_rashi_ne": rashi_entry.get("to_rashi_ne"),
                     "entry_time_local": rashi_entry["entry_time_local"],
                     "entry_time_utc": rashi_entry["entry_time_utc"],
                 }

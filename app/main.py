@@ -1254,9 +1254,9 @@ def nepal_gochar_ingress(
     from_date: date = Query(..., alias="from", description="Start date (AD or BS per era)"),
     to_date: date = Query(..., alias="to", description="End date (AD or BS per era)"),
     era: Literal["bs", "ad"] = Query("ad", description="Date era for from/to"),
-    level: Literal["pada", "nakshatra", "rashi"] = Query(
+    level: Literal["pada", "nakshatra", "rashi", "patro", "udayast"] = Query(
         "pada",
-        description="Ingress granularity: pada (3°20′), nakshatra (13°20′), or rashi (30°)",
+        description="Ingress granularity: pada, nakshatra, rashi, patro (pada+rashi+udayast), or udayast",
     ),
     grahas: str | None = Query(
         None,
