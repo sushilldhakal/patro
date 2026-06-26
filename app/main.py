@@ -1,6 +1,7 @@
 """Surya Panchanga computation API — structured time-state service."""
 
 import asyncio
+import json
 import logging
 from contextlib import asynccontextmanager
 from datetime import date
@@ -8,6 +9,7 @@ from typing import Annotated, Any, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 from app import config
 from core.location import ObserverLocation, resolve_location_from_query
@@ -573,6 +575,80 @@ def kundali_vimshottari(
         }
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/kundali/report")
+def kundali_report(
+    location: LocationDep,
+    datetime: str | None = Query(
+        None,
+        alias="datetime",
+        description="Birth instant (ISO); naive uses observer TZ",
+    ),
+    ayanamsha: str | None = Query(
+        None,
+        description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra",
+    ),
+):
+    """Deterministic Vedic interpretation of the birth chart, streamed as NDJSON.
+
+    Gathers D1 positions + lagna, Shadbala, and the Vimshottari dasha, then runs
+    the rule-based interpretation engine. Each line of the response is one JSON
+    record: a ``meta`` record first, then one ``section`` per report section,
+    and a final ``done`` record. Every section carries a confidence grade and
+    the factors behind it. No LLM is involved — output is reproducible.
+    """
+    from datetime import datetime as _dt
+    from datetime import timezone as _tz
+
+    from core.ayanamsha_modes import resolve_ayanamsha_mode
+    from panchanga.at_time import build_planetary_snapshot, parse_query_datetime
+    from panchanga.interpretation import iter_report
+    from panchanga.shadbala import compute_shadbala
+    from panchanga.vimshottari import vimshottari_dasha
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        instant_utc = instant.astimezone(_tz.utc)
+
+        snapshot = build_planetary_snapshot(
+            instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode_id
+        )
+        planets = snapshot["planets"]
+        lagna = snapshot["lagna"]
+        moon_lon = planets["moon"]["longitude"]
+        dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
+        shadbala = compute_shadbala(
+            instant_utc,
+            lat=location.lat,
+            lon=location.lon,
+            timezone_name=location.timezone,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Compute records eagerly (fast, no I/O) but stream them one JSON line at a
+    # time so the client can render sections progressively.
+    records = list(
+        iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc))
+    )
+    header = {
+        "ayanamsha": ayanamsha or "lahiri",
+        "location": location.as_dict(),
+        "birth_instant": instant.isoformat(),
+    }
+
+    def _stream():
+        yield json.dumps({"kind": "header", **header}, ensure_ascii=False) + "\n"
+        for record in records:
+            yield json.dumps(record, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(
+        _stream(),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.get("/shadbala")
