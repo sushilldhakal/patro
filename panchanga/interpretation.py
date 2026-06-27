@@ -188,6 +188,57 @@ def navamsa_sign(longitude: float) -> int:
     return int(_norm(longitude) / (10.0 / 3.0)) % 12
 
 
+NAKSHATRA_EN = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
+    "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha",
+    "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana",
+    "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati",
+]
+NAKSHATRA_NE = [
+    "अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु",
+    "पुष्य", "आश्लेषा", "मघा", "पूर्वाफाल्गुनी", "उत्तराफाल्गुनी", "हस्त",
+    "चित्रा", "स्वाती", "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढा",
+    "उत्तराषाढा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वाभाद्रपदा",
+    "उत्तराभाद्रपदा", "रेवती",
+]
+# Vimshottari ruling planet of each nakshatra (drives the dasha at birth).
+NAK_LORD = [
+    "ketu", "venus", "sun", "moon", "mars", "rahu", "jupiter", "saturn", "mercury",
+] * 3
+
+
+def nakshatra_of(longitude: float) -> tuple[int, int]:
+    """0-based nakshatra index and 1-based pada for an ecliptic longitude."""
+    span = 360.0 / 27.0
+    lon = _norm(longitude)
+    idx = int(lon / span) % 27
+    pada = int((lon % span) / (span / 4.0)) + 1
+    return idx, pada
+
+
+# Classical combustion orbs (degrees from the Sun) — a planet within this arc of
+# the Sun is "combust" (astangata) and its significations are said to weaken.
+COMBUST_ORB = {
+    "moon": 12.0, "mars": 17.0, "mercury": 14.0,
+    "jupiter": 11.0, "venus": 10.0, "saturn": 15.0,
+}
+
+
+def _angular_sep(a: float, b: float) -> float:
+    d = abs(_norm(a) - _norm(b)) % 360.0
+    return min(d, 360.0 - d)
+
+
+def _fmt_date(dt: datetime) -> str:
+    """Human date like '12 Jun 2027' (cross-platform, no %-d)."""
+    return f"{dt.day} {dt:%b %Y}"
+
+
+def _fmt_month(dt: datetime) -> str:
+    return f"{dt:%b %Y}"
+
+
 def house_of(planet_sign: int, lagna_sign: int) -> int:
     """1-based whole-sign house of a planet relative to the lagna."""
     return ((planet_sign - lagna_sign) % 12) + 1
@@ -324,8 +375,24 @@ class PlanetFact:
     dignity: Optional[str]
     navamsa: int
     vargottama: bool
+    deg_in_sign: float = 0.0
+    nakshatra: int = 0
+    pada: int = 1
+    combust: bool = False
     shadbala_status: Optional[str] = None
     shadbala_ratio: Optional[float] = None
+
+    def position_label(self) -> str:
+        """Precise placement, e.g. 'Tula 12°34′, Swati pada 2, house 1'."""
+        deg = int(self.deg_in_sign)
+        minute = int(round((self.deg_in_sign - deg) * 60))
+        if minute == 60:
+            deg, minute = deg + 1, 0
+        return (
+            f"{RASHI_EN[self.sign]} {deg}°{minute:02d}′, "
+            f"{NAKSHATRA_EN[self.nakshatra]} pada {self.pada}, "
+            f"house {self.house}"
+        )
 
 
 @dataclass
@@ -343,6 +410,9 @@ class Chart:
     maha_lord: Optional[str] = None
     antar_lord: Optional[str] = None
     maha_window: Optional[tuple[str, str]] = None
+    dasha: Optional[dict[str, Any]] = None
+    lagna_nak: tuple[int, int] = (0, 1)
+    moon_nak: tuple[int, int] = (0, 1)
 
     def planet(self, key: str) -> Optional[PlanetFact]:
         return self.planets.get(key)
@@ -366,43 +436,65 @@ def _shadbala_index(shadbala: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return out
 
 
-def _current_dasha(sequence: list[dict[str, Any]], now: datetime) -> tuple[
-    Optional[str], Optional[str], Optional[tuple[str, str]]
-]:
-    """Running mahadasha lord, current antardasha (bhukti) lord, and window.
+def _dasha_detail(sequence: list[dict[str, Any]], now: datetime) -> Optional[dict[str, Any]]:
+    """Precise running dasha: mahadasha window, the antardasha (bhukti) schedule
+    with real dates, the current bhukti, and the next mahadasha transitions.
 
-    The antardasha is derived by mapping ``now`` onto the standard bhukti
-    proportions of the mahadasha. This works for full mahadashas and for the
-    shorter birth-balance period (we align the proportion to the period's end).
+    Bhukti dates are reconstructed from the mahadasha's theoretical full span
+    (``maha_end − full_length``), so they stay exact for full periods and for the
+    shorter birth-balance period alike.
     """
-    for period in sequence:
-        start = _parse_iso(period["start"])
-        end = _parse_iso(period["end"])
-        if start <= now < end:
-            maha_lord = period["lord"]
-            full = timedelta(days=DASHA_YEARS[maha_lord] * DAYS_PER_YEAR)
-            visible = end - start
-            # Fraction of a full mahadasha that this (possibly partial) window
-            # represents; the visible window is its tail.
-            f0 = max(0.0, 1.0 - (visible / full if full else 1.0))
-            frac = f0 + (now - start) / full if full else 0.0
-            antar = _bhukti_lord(maha_lord, frac)
-            return maha_lord, antar, (period["start"], period["end"])
-    return None, None, None
+    current = None
+    index = -1
+    for i, period in enumerate(sequence):
+        if _parse_iso(period["start"]) <= now < _parse_iso(period["end"]):
+            current, index = period, i
+            break
+    if current is None:
+        return None
 
+    maha_lord = current["lord"]
+    maha_start = _parse_iso(current["start"])
+    maha_end = _parse_iso(current["end"])
+    full = timedelta(days=DASHA_YEARS[maha_lord] * DAYS_PER_YEAR)
+    theo_start = maha_end - full
 
-def _bhukti_lord(maha_lord: str, frac: float) -> str:
-    """Bhukti lord at fractional position ``frac`` (0..1) of the mahadasha."""
-    frac = min(max(frac, 0.0), 0.999999)
+    bhuktis: list[dict[str, Any]] = []
+    cursor = theo_start
     start_idx = DASHA_ORDER.index(maha_lord)
-    cumulative = 0.0
     for step in range(len(DASHA_ORDER)):
         lord = DASHA_ORDER[(start_idx + step) % len(DASHA_ORDER)]
-        span = DASHA_YEARS[lord] / 120.0
-        if cumulative <= frac < cumulative + span:
-            return lord
-        cumulative += span
-    return maha_lord
+        dur = timedelta(
+            days=DASHA_YEARS[lord] * DASHA_YEARS[maha_lord] / 120.0 * DAYS_PER_YEAR
+        )
+        b_start, b_end = cursor, cursor + dur
+        cursor = b_end
+        if b_end <= maha_start:
+            continue  # consumed before birth (balance period)
+        bhuktis.append({"lord": lord, "start": b_start, "end": b_end})
+
+    cur_bhukti = next(
+        (b for b in bhuktis if b["start"] <= now < b["end"]),
+        bhuktis[0] if bhuktis else None,
+    )
+    upcoming_maha = [
+        {
+            "lord": q["lord"],
+            "start": _parse_iso(q["start"]),
+            "end": _parse_iso(q["end"]),
+        }
+        for q in sequence[index + 1: index + 4]
+    ]
+    return {
+        "maha_lord": maha_lord,
+        "maha_start": maha_start,
+        "maha_end": maha_end,
+        "antar_lord": cur_bhukti["lord"] if cur_bhukti else maha_lord,
+        "antar_start": cur_bhukti["start"] if cur_bhukti else maha_start,
+        "antar_end": cur_bhukti["end"] if cur_bhukti else maha_end,
+        "bhuktis": bhuktis,
+        "upcoming_maha": upcoming_maha,
+    }
 
 
 def _detect_yogas(chart_planets: dict[str, PlanetFact], lagna_sign: int,
@@ -539,6 +631,8 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
     lagna_sign = sign_of(lagna_lon)
     sb_index = _shadbala_index(shadbala_raw)
 
+    sun_lon = float(planets_raw["sun"]["longitude"]) if planets_raw.get("sun") else None
+
     planets: dict[str, PlanetFact] = {}
     house_occupants: dict[int, list[str]] = {h: [] for h in range(1, 13)}
     for key in PLANET_KEYS:
@@ -549,7 +643,13 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
         sign = sign_of(lon)
         house = house_of(sign, lagna_sign)
         d9 = navamsa_sign(lon)
+        nak, pada = nakshatra_of(lon)
         sb = sb_index.get(key)
+        combust = (
+            key in COMBUST_ORB
+            and sun_lon is not None
+            and _angular_sep(lon, sun_lon) < COMBUST_ORB[key]
+        )
         planets[key] = PlanetFact(
             key=key,
             longitude=lon,
@@ -559,6 +659,10 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
             dignity=_dignity(key, lon),
             navamsa=d9,
             vargottama=(sign == d9),
+            deg_in_sign=_norm(lon) % 30.0,
+            nakshatra=nak,
+            pada=pada,
+            combust=combust,
             shadbala_status=sb["status"] if sb else None,
             shadbala_ratio=sb["ratio"] if sb else None,
         )
@@ -566,6 +670,8 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
 
     moon_sign = planets["moon"].sign if "moon" in planets else lagna_sign
     sun_sign = planets["sun"].sign if "sun" in planets else lagna_sign
+    moon_nak = (planets["moon"].nakshatra, planets["moon"].pada) if "moon" in planets else (0, 1)
+    lagna_nak = nakshatra_of(lagna_lon)
 
     house_lord: dict[int, str] = {}
     house_lord_house: dict[int, int] = {}
@@ -578,8 +684,13 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
 
     yogas = _detect_yogas(planets, lagna_sign, moon_sign)
 
-    maha_lord, antar_lord, maha_window = _current_dasha(
-        dasha_raw.get("sequence", []), now
+    dasha = _dasha_detail(dasha_raw.get("sequence", []), now)
+    maha_lord = dasha["maha_lord"] if dasha else None
+    antar_lord = dasha["antar_lord"] if dasha else None
+    maha_window = (
+        (dasha["maha_start"].isoformat(), dasha["maha_end"].isoformat())
+        if dasha
+        else None
     )
 
     chart = Chart(
@@ -596,6 +707,9 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
         maha_lord=maha_lord,
         antar_lord=antar_lord,
         maha_window=maha_window,
+        dasha=dasha,
+        lagna_nak=lagna_nak,
+        moon_nak=moon_nak,
     )
     chart.yogas = yogas + _detect_raja_dhana(chart)
     return chart
@@ -698,14 +812,21 @@ def _planet_line(chart: Chart, key: str) -> str:
     pf = chart.planet(key)
     if not pf:
         return ""
-    bits = [f"{PLANET_EN[key]} ({PLANET_NE[key]}) is in {RASHI_EN[pf.sign]}, "
-            f"in the {_ord(pf.house)} house"]
+    deg = int(pf.deg_in_sign)
+    minute = int(round((pf.deg_in_sign - deg) * 60)) % 60
+    bits = [
+        f"{PLANET_EN[key]} ({PLANET_NE[key]}) is at {RASHI_EN[pf.sign]} "
+        f"{deg}°{minute:02d}′ in {NAKSHATRA_EN[pf.nakshatra]} nakshatra "
+        f"(pada {pf.pada}), occupying the {_ord(pf.house)} house"
+    ]
     if pf.dignity:
         bits.append(DIGNITY_PHRASE.get(pf.dignity, pf.dignity))
     if pf.retrograde and key not in {"rahu", "ketu"}:
         bits.append("retrograde (its themes turn inward and are revisited)")
+    if pf.combust:
+        bits.append("combust — close to the Sun, so its outer results need extra effort")
     if pf.vargottama:
-        bits.append("vargottama")
+        bits.append("vargottama (same sign in D1 and D9 — notably reinforced)")
     return ", ".join(bits) + "."
 
 
@@ -759,22 +880,31 @@ def build_sections(chart: Chart, *, now: datetime) -> list[dict[str, Any]]:
     benefic_yogas = [y for y in chart.yogas if y["polarity"] == "benefic"]
     if benefic_yogas:
         summary_conf.support(f"Yogas: {len(benefic_yogas)} supportive combination(s)")
+    nak_i, nak_p = chart.moon_nak
     summary_body = [
-        f"This is a {RASHI_EN[chart.lagna_sign]} lagna chart with the Moon in "
-        f"{RASHI_EN[chart.moon_sign]} and the Sun in {RASHI_EN[chart.sun_sign]}. "
-        f"Read the rising sign for how you meet the world, the Moon for your inner "
-        f"emotional climate, and the Sun for your core sense of self.",
+        f"{RASHI_EN[chart.lagna_sign]} ascendant; the Moon (the mind) is in "
+        f"{RASHI_EN[chart.moon_sign]} in {NAKSHATRA_EN[nak_i]} nakshatra, pada {nak_p} "
+        f"— your janma nakshatra — and the Sun is in {RASHI_EN[chart.sun_sign]}. "
+        f"The rising sign shows how you meet the world, the Moon your inner climate, "
+        f"the Sun your core self.",
         f"The ascendant lord {PLANET_EN[lagna_lord]} is "
         + (DIGNITY_PHRASE.get(ll.dignity, "placed") if ll else "placed")
         + (f" in the {_ord(ll.house)} house" if ll else "")
-        + ". Overall the chart shows "
+        + ", so the chart rests on "
         + _strength_word(summary_conf.level)
-        + " foundation; the sections below weigh each life area on its own evidence "
-        "and flag where signals agree or pull in different directions.",
+        + " foundation.",
     ]
+    if chart.dasha:
+        d = chart.dasha
+        summary_body.append(
+            f"Timing now: the {PLANET_EN[d['maha_lord']]} mahadasha runs until "
+            f"{_fmt_date(d['maha_end'])}, and within it the {PLANET_EN[d['antar_lord']]} "
+            f"antardasha runs {_fmt_date(d['antar_start'])} – {_fmt_date(d['antar_end'])}. "
+            f"The Dasha timeline section gives the full schedule with dates."
+        )
     if benefic_yogas:
         summary_body.append(
-            "Notable supportive patterns: "
+            "Supportive patterns active: "
             + ", ".join(y["name"] for y in benefic_yogas) + "."
         )
     sections.append(_section(
@@ -979,49 +1109,103 @@ def build_sections(chart: Chart, *, now: datetime) -> list[dict[str, Any]]:
     # 12 — Current life phase ---------------------------------------------------
     phase_conf = Confidence()
     phase_body = []
-    if chart.maha_lord:
-        phase_conf = _planet_confidence(chart, chart.maha_lord)
-        ml = chart.planet(chart.maha_lord)
-        owns = [h for h, lord in chart.house_lord.items() if lord == chart.maha_lord]
+    d = chart.dasha
+    if d:
+        phase_conf = _planet_confidence(chart, d["maha_lord"])
+        ml = chart.planet(d["maha_lord"])
+        al = chart.planet(d["antar_lord"])
+        owns = [h for h, lord in chart.house_lord.items() if lord == d["maha_lord"]]
         phase_body.append(
-            f"You are currently in the {PLANET_EN[chart.maha_lord]} mahadasha"
-            + (f" with {PLANET_EN[chart.antar_lord]} antardasha" if chart.antar_lord else "")
-            + f". This phase emphasises {DASHA_THEME[chart.maha_lord]}.")
+            f"You are running the {PLANET_EN[d['maha_lord']]} mahadasha (until "
+            f"{_fmt_date(d['maha_end'])}), and within it the {PLANET_EN[d['antar_lord']]} "
+            f"antardasha from {_fmt_date(d['antar_start'])} to {_fmt_date(d['antar_end'])}. "
+            f"This phase emphasises {DASHA_THEME[d['maha_lord']]}.")
         if ml:
+            owns_txt = (
+                f" and rules your {', '.join(_ord(h) for h in owns)} house"
+                + ("s" if len(owns) > 1 else "")
+                if owns else ""
+            )
+            firm = (
+                "These results tend to arrive readily"
+                if DIGNITY_SCORE.get(ml.dignity, 0) >= 1
+                or ml.shadbala_status in {"Strong", "Exceptional"}
+                else "These results reward patience and steady effort"
+            )
             phase_body.append(
-                f"Because {PLANET_EN[chart.maha_lord]} sits in your {_ord(ml.house)} house"
-                + (f" and rules your {', '.join(_ord(h) for h in owns)} house(s)" if owns else "")
-                + f", the period channels into {HOUSE_THEME[ml.house].split(',')[0]} and "
-                f"related matters. Its dignity ({DIGNITY_PHRASE.get(ml.dignity,'placed')}) "
-                "indicates how smoothly those results arrive.")
-        if chart.antar_lord and chart.antar_lord != chart.maha_lord:
+                f"{PLANET_EN[d['maha_lord']]} sits in your {_ord(ml.house)} house"
+                f"{owns_txt}, so the period concentrates on "
+                f"{HOUSE_THEME[ml.house].split(',')[0]} and the houses it rules. "
+                f"It is {DIGNITY_PHRASE.get(ml.dignity, 'placed')} — {firm}.")
+        if al and d["antar_lord"] != d["maha_lord"]:
             phase_body.append(
-                f"The {PLANET_EN[chart.antar_lord]} antardasha adds a sub-theme of "
-                f"{DASHA_THEME[chart.antar_lord].split(',')[0]} within the larger period.")
+                f"The {PLANET_EN[d['antar_lord']]} antardasha sharpens the sub-theme of "
+                f"{DASHA_THEME[d['antar_lord']].split(',')[0]} (it holds your "
+                f"{_ord(al.house)} house) until {_fmt_date(d['antar_end'])}.")
     else:
         phase_body.append("Dasha timing could not be resolved for the current date.")
     sections.append(_section("current_life_phase", "Current life phase",
                              "वर्तमान दशा", phase_body, phase_conf))
 
-    # 13 — 12-month outlook -----------------------------------------------------
+    # 13 — Dasha timeline (precise dates) ---------------------------------------
+    if d:
+        horizon = now + timedelta(days=420)
+        timeline_items: list[dict[str, Any]] = []
+        for b in d["bhuktis"]:
+            if b["end"] < now or b["start"] > horizon:
+                continue
+            lf = chart.planet(b["lord"])
+            running = b["start"] <= now < b["end"]
+            house_txt = f" — touches your {_ord(lf.house)} house" if lf else ""
+            timeline_items.append({
+                "label": f"{PLANET_EN[b['lord']]} antardasha"
+                         + (" · running now" if running else ""),
+                "confidence": _planet_confidence(chart, b["lord"]).level if lf else "tentative",
+                "text": f"{_fmt_date(b['start'])} → {_fmt_date(b['end'])}: "
+                        f"{DASHA_THEME[b['lord']].split(',')[0]}{house_txt}.",
+            })
+        for m in d["upcoming_maha"]:
+            timeline_items.append({
+                "label": f"{PLANET_EN[m['lord']]} mahadasha (next major period)",
+                "confidence": "moderate",
+                "text": f"Begins {_fmt_date(m['start'])}, lasting to {_fmt_date(m['end'])} "
+                        f"({DASHA_YEARS[m['lord']]} yrs): a {DASHA_THEME[m['lord']].split(',')[0]} chapter.",
+            })
+        timeline_body = [
+            f"Antardasha schedule inside the running {PLANET_EN[d['maha_lord']]} mahadasha, "
+            f"then the mahadashas that follow — the chart's most precise timing layer.",
+        ]
+        sections.append(_section("dasha_timeline", "Dasha timeline (dated)",
+                                 "दशा तालिका", timeline_body, items=timeline_items))
+
+    # 14 — 12-month outlook -----------------------------------------------------
     out_conf = phase_conf
     outlook_body = []
-    if chart.maha_lord:
-        lead = chart.antar_lord or chart.maha_lord
+    if d:
+        year_end = now + timedelta(days=365)
+        upcoming = [
+            b for b in d["bhuktis"]
+            if b["start"] > now and b["start"] <= year_end
+        ]
+        lead = d["antar_lord"]
         lf = chart.planet(lead)
         outlook_body.append(
-            f"Over the next 12 months the {PLANET_EN[lead]} sub-period leads. Favourable "
-            f"focus areas: {DASHA_THEME[lead]}.")
+            f"The {PLANET_EN[lead]} antardasha leads the year (through "
+            f"{_fmt_date(d['antar_end'])}), foregrounding {DASHA_THEME[lead]}.")
         if lf:
             good = DIGNITY_SCORE.get(lf.dignity, 0) >= 1 or lf.shadbala_status in {"Strong", "Exceptional"}
             outlook_body.append(
-                ("Because this planet is well placed, initiatives in its areas are "
-                 "more likely to flow." if good else
-                 "Because this planet is under some pressure, pace efforts and avoid "
-                 "over-commitment in its areas; preparation beats haste.")
-                + f" It touches your {_ord(lf.house)} house themes ({HOUSE_THEME[lf.house].split(',')[0]}).")
-        outlook_body.append("Outlook describes probabilities and timing tendencies — your "
-                           "choices remain the deciding factor.")
+                (f"It is well placed (in your {_ord(lf.house)} house), so initiatives in "
+                 "its areas are favoured — a good window to push forward."
+                 if good else
+                 f"It is under some pressure (in your {_ord(lf.house)} house), so pace "
+                 "efforts and prepare rather than force outcomes in its areas."))
+        if upcoming:
+            nxt = upcoming[0]
+            outlook_body.append(
+                f"A shift to come: the {PLANET_EN[nxt['lord']]} sub-period opens "
+                f"{_fmt_date(nxt['start'])}, bringing {DASHA_THEME[nxt['lord']].split(',')[0]} "
+                "to the foreground.")
     else:
         outlook_body.append("A precise dasha-based outlook needs a resolvable timeline for today's date.")
     sections.append(_section("outlook_12_months", "Outlook — next 12 months",
@@ -1225,10 +1409,21 @@ def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
                       "name_ne": RASHI_NE[chart.moon_sign]},
         "sun_sign": {"sign": chart.sun_sign + 1, "name_en": RASHI_EN[chart.sun_sign],
                      "name_ne": RASHI_NE[chart.sun_sign]},
-        "mahadasha": chart.maha_lord and {
-            "lord": chart.maha_lord, "lord_en": PLANET_EN[chart.maha_lord],
-            "lord_ne": PLANET_NE[chart.maha_lord],
-            "antardasha": chart.antar_lord, "window": chart.maha_window,
+        "nakshatra": {
+            "name_en": NAKSHATRA_EN[chart.moon_nak[0]],
+            "name_ne": NAKSHATRA_NE[chart.moon_nak[0]],
+            "pada": chart.moon_nak[1],
+            "lord_en": PLANET_EN[NAK_LORD[chart.moon_nak[0]]],
+        },
+        "mahadasha": chart.dasha and {
+            "lord": chart.dasha["maha_lord"],
+            "lord_en": PLANET_EN[chart.dasha["maha_lord"]],
+            "lord_ne": PLANET_NE[chart.dasha["maha_lord"]],
+            "ends": _fmt_date(chart.dasha["maha_end"]),
+            "antardasha": chart.dasha["antar_lord"],
+            "antardasha_en": PLANET_EN[chart.dasha["antar_lord"]],
+            "antardasha_ends": _fmt_date(chart.dasha["antar_end"]),
+            "window": chart.maha_window,
         },
         "yoga_count": len(chart.yogas),
         "generated_at": now.isoformat(),
