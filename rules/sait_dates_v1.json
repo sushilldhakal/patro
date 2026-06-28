@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Auspicious dates (साइत) by BS year and ceremony type. Month keys are BS month numbers 1–12.",
+    "source": "Nepal Panchanga Nirnayak Samiti / patro sait listings"
+  },
+  "categories": {
+    "vivah": { "label_ne": "विवाह" },
+    "bratabandha": { "label_ne": "ब्रतबन्ध" },
+    "griha-aarambha": { "label_ne": "गृह आराम्भ" },
+    "griha-pravesh": { "label_ne": "गृह प्रवेश" },
+    "byaparik-pratisthan": { "label_ne": "व्यापारिक प्रतिष्ठान" },
+    "rudri-jurne": { "label_ne": "रुद्री जुर्ने" },
+    "agni-jurne": { "label_ne": "अग्नि जुर्ने" },
+    "annaprasan": { "label_ne": "अन्नप्रासन" }
+  },
+  "years": {
+    "2080": {
+      "vivah": {
+        "1": [7, 8, 22, 23, 24, 25, 30, 31],
+        "3": [9, 13, 14, 15, 17, 18, 23],
+        "8": [9, 10, 16, 17, 19, 24, 25, 26],
+        "10": [4, 12, 15, 19, 20, 27],
+        "11": [3, 4, 11, 12, 15, 16, 17, 18, 20, 25, 26, 30]
+      }
+    },
+    "2083": {
+      "vivah": {
+        "1": [20, 21, 23],
+        "3": [10],
+        "10": [25],
+        "11": [10, 13, 26],
+        "12": [3, 4, 10, 25, 28]
+      }
+    }
+  }
+}

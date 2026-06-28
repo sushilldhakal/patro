@@ -884,6 +884,34 @@ def nepal_holidays(
     }
 
 
+@app.get("/nepal/sait/categories", tags=["sait"])
+def nepal_sait_categories():
+    """Ceremony types available for sait listings (विवाह, ब्रतबन्ध, …)."""
+    from services.sait_api import list_sait_categories
+
+    return {"categories": list_sait_categories()}
+
+
+@app.get("/nepal/sait/years", tags=["sait"])
+def nepal_sait_years():
+    """BS years that have at least one sait entry in the rules file."""
+    from services.sait_api import list_sait_years
+
+    return {"years": list_sait_years()}
+
+
+@app.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])
+def nepal_sait_for_category(bs_year: int, category: str):
+    """Auspicious BS month/day listings for one ceremony type and year."""
+    _validate_bs_year(bs_year)
+    from services.sait_api import get_sait_month_entries
+
+    try:
+        return get_sait_month_entries(bs_year, category)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/nepal/festivals")
 def nepal_festivals(
     location: LocationDep,
