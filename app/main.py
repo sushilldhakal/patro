@@ -72,6 +72,14 @@ async def _warm_holiday_cache_background(app: FastAPI) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.precomputed_bs_years = []
+    if config.database_url():
+        from app.db import init_db
+
+        try:
+            init_db()
+            logger.info("Auth database ready")
+        except Exception:
+            logger.exception("Failed to initialise auth database")
     warm_task = asyncio.create_task(_warm_holiday_cache_background(app))
     yield
     warm_task.cancel()
@@ -167,9 +175,20 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins(),
     allow_origin_regex=VERCEL_PREVIEW_ORIGIN_REGEX,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+# ─── Auth / profile routes (only when a database is configured) ─────────────────
+if config.database_url():
+    from app.routers import auth as auth_router
+    from app.routers import profiles as profiles_router
+
+    app.include_router(auth_router.router)
+    app.include_router(profiles_router.router)
+else:
+    logger.warning("DATABASE_URL not set — auth/profile routes are disabled")
 
 
 def location_params(
