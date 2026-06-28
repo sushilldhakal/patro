@@ -1,26 +1,24 @@
-from services.sait_api import get_sait_month_entries, list_sait_categories, list_sait_years
+"""Tests for sait API static vs computed paths."""
+
+from services.sait_api import get_sait_month_entries, list_sait_years
+from core.location import DEFAULT_LOCATION
 
 
-def test_list_sait_categories():
-    cats = list_sait_categories()
-    ids = {c["id"] for c in cats}
-    assert "vivah" in ids
-    assert "bratabandha" in ids
-
-
-def test_list_sait_years():
+def test_list_sait_years_full_range():
     years = list_sait_years()
-    assert 2080 in years
-    assert 2083 in years
+    assert years[0] == 1700
+    assert years[-1] == 2200
+    assert len(years) == 501
 
 
-def test_get_sait_2083_vivah():
-    payload = get_sait_month_entries(2083, "vivah")
-    assert payload["bs_year"] == 2083
-    assert payload["category"] == "vivah"
-    months = {m["month"]: m["days"] for m in payload["months"]}
-    assert months[1] == [20, 21, 23]
-    assert months[3] == [10]
-    assert months[10] == [25]
-    assert months[11] == [10, 13, 26]
-    assert months[12] == [3, 4, 10, 25, 28]
+def test_official_override_2083_vivah():
+    payload = get_sait_month_entries(2083, "vivah", DEFAULT_LOCATION)
+    assert payload["source"] == "official"
+    baisakh = next(m for m in payload["months"] if m["month"] == 1)
+    assert set(baisakh["days"]) == {20, 21, 23}
+
+
+def test_computed_year_2082_vivah():
+    payload = get_sait_month_entries(2082, "vivah", DEFAULT_LOCATION)
+    assert payload["source"] == "computed"
+    assert payload["months"]

@@ -900,20 +900,20 @@ def nepal_sait_categories():
 
 @app.get("/nepal/sait/years", tags=["sait"])
 def nepal_sait_years():
-    """BS years that have at least one sait entry in the rules file."""
+    """BS years available for sait (1700–2200, computed from Swiss Ephemeris)."""
     from services.sait_api import list_sait_years
 
     return {"years": list_sait_years()}
 
 
 @app.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])
-def nepal_sait_for_category(bs_year: int, category: str):
+def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""
     _validate_bs_year(bs_year)
     from services.sait_api import get_sait_month_entries
 
     try:
-        return get_sait_month_entries(bs_year, category)
+        return get_sait_month_entries(bs_year, category, location)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
