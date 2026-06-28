@@ -93,3 +93,6 @@ Desktop.ini
 
 # --- Local tooling ---
 .python-version
+data/NP.txt
+data/NP.zip
+data/*.zip

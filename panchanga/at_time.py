@@ -218,6 +218,14 @@ def build_panchanga_at_time(
         lon=location.lon,
         timezone_name=location.timezone,
     )
+    from panchanga.pushkara_navamsha import enrich_lagna_spans_with_pushkara
+
+    lagna_spans = enrich_lagna_spans_with_pushkara(
+        lagna_spans,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+    )
     planets_anchor = {
         "type": "instant",
         "local_time": instant_local.strftime("%H:%M"),

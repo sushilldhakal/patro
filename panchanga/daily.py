@@ -192,6 +192,14 @@ def build_daily_panchanga(
         lon=location.lon,
         timezone_name=location.timezone,
     )
+    from panchanga.pushkara_navamsha import enrich_lagna_spans_with_pushkara
+
+    lagna_spans = enrich_lagna_spans_with_pushkara(
+        lagna_spans,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+    )
     chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc)
     nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc)
     surya_nakshatra = get_surya_nakshatra(sunrise_utc)

@@ -202,6 +202,7 @@ def build_udaya_lagna(lagna_spans: list[dict[str, Any]]) -> list[dict[str, Any]]
                 "end_local_time_short": end_short,
                 "start_hours_clock": span.get("start_hours_clock"),
                 "end_hours_clock": span.get("end_hours_clock"),
+                "pushkara_navamsha": span.get("pushkara_navamsha") or [],
             }
         )
     return rows

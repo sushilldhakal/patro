@@ -12,6 +12,15 @@ from core.paths import cities_db_path, cities_source_path
 
 GEONAMES_CITIES_URL = "https://download.geonames.org/export/dump/cities15000.zip"
 
+# Per-country GeoNames dumps give full coverage (every village/town), unlike the
+# global cities15000 file (population ≥ 15,000 only). We pull complete populated-
+# place data for these countries — Nepal first, since the app targets Nepali users.
+GEONAMES_COUNTRY_URL = "https://download.geonames.org/export/dump/{cc}.zip"
+FULL_COVERAGE_COUNTRIES = ("NP",)
+
+# GeoNames feature class "P" = populated places (city, town, village, …).
+_POPULATED_PLACE_CLASS = "P"
+
 POPULAR_CITY_IDS = (
     1283240,   # Kathmandu, NP
     1275339,   # Mumbai, IN
@@ -42,34 +51,53 @@ def search_cities(
     *,
     limit: int = 10,
     country: str | None = None,
+    prioritize_country: str | None = "NP",
 ) -> list[dict[str, Any]]:
-    """Search cities by name; results ordered by relevance then population."""
+    """Search cities by name; results ordered by relevance, then the prioritized
+    country (Nepal by default, since the app targets Nepali users), then population.
+    """
     q = query.strip()
     if not q:
         return []
 
     like = f"%{q}%"
     exact = q.casefold()
-    params: list[Any] = [like, like, exact, exact]
-    country_clause = ""
-    if country:
-        country_clause = "AND country = ?"
-        params.append(country.upper())
 
-    params.append(limit)
+    # Build WHERE and ORDER BY params in textual placeholder order.
+    where = "(ascii_name LIKE ? OR name LIKE ?)"
+    where_params: list[Any] = [like, like]
+    if country:
+        where += " AND country = ?"
+        where_params.append(country.upper())
+
+    order_params: list[Any] = [exact, exact]
+    priority_clause = ""
+    if prioritize_country:
+        priority_clause = "CASE WHEN country = ? THEN 0 ELSE 1 END,"
+        order_params.append(prioritize_country.upper())
+
+    # Collapse same-name duplicates within a country (GeoNames has several ids for
+    # one place) to the most populous, so autocomplete shows each place once.
     sql = f"""
         SELECT id, name, ascii_name, lat, lon, country, population, timezone
-        FROM cities
-        WHERE (ascii_name LIKE ? OR name LIKE ?) {country_clause}
+        FROM (
+            SELECT id, name, ascii_name, lat, lon, country,
+                   MAX(population) AS population, timezone
+            FROM cities
+            WHERE {where}
+            GROUP BY lower(ascii_name), country
+        )
         ORDER BY
             CASE
                 WHEN lower(ascii_name) = ? THEN 0
                 WHEN lower(name) = ? THEN 1
                 ELSE 2
             END,
+            {priority_clause}
             population DESC
         LIMIT ?
     """
+    params = [*where_params, *order_params, limit]
     with _connect() as conn:
         rows = conn.execute(sql, params).fetchall()
     return [_row_to_dict(row) for row in rows]
@@ -136,12 +164,72 @@ def ensure_cities_source(source_path: Path | None = None) -> Path:
     return source_path
 
 
+def ensure_country_source(country_code: str, data_dir: Path | None = None) -> Path:
+    """Ensure GeoNames <CC>.txt (all features for a country) exists, downloading if needed."""
+    cc = country_code.upper()
+    data_dir = data_dir or cities_source_path().parent
+    txt_path = data_dir / f"{cc}.txt"
+    if txt_path.is_file():
+        return txt_path
+
+    data_dir.mkdir(parents=True, exist_ok=True)
+    zip_path = data_dir / f"{cc}.zip"
+    url = GEONAMES_COUNTRY_URL.format(cc=cc)
+
+    print(f"Downloading GeoNames {cc} dump from {url} ...")
+    urllib.request.urlretrieve(url, zip_path)
+    with zipfile.ZipFile(zip_path) as archive:
+        if f"{cc}.txt" not in archive.namelist():
+            raise RuntimeError(f"Expected {cc}.txt in {url}, got: {archive.namelist()}")
+        archive.extract(f"{cc}.txt", path=data_dir)
+    zip_path.unlink(missing_ok=True)
+    return txt_path
+
+
+def _iter_geonames_rows(
+    path: Path,
+    *,
+    feature_class: str | None = None,
+):
+    """Yield (id, name, ascii_name, lat, lon, country, population, timezone) tuples.
+
+    GeoNames columns: 0=id 1=name 2=ascii 4=lat 5=lon 6=fclass 8=country 14=pop 17=tz.
+    When feature_class is set, only rows of that class are yielded.
+    """
+    with path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) < 15:
+                continue
+            if feature_class is not None and parts[6] != feature_class:
+                continue
+            try:
+                yield (
+                    int(parts[0]),
+                    parts[1],
+                    parts[2],
+                    float(parts[4]),
+                    float(parts[5]),
+                    parts[8],
+                    int(parts[14]) if parts[14] else 0,
+                    parts[17] if len(parts) > 17 and parts[17] else None,
+                )
+            except (ValueError, IndexError):
+                continue
+
+
 def import_cities(
     *,
     db_path: Path | None = None,
     source_path: Path | None = None,
+    full_coverage_countries: tuple[str, ...] = FULL_COVERAGE_COUNTRIES,
 ) -> int:
-    """Build cities.db from GeoNames cities15000.txt. Returns row count."""
+    """Build cities.db from GeoNames data. Returns row count.
+
+    Sources, merged (deduped by GeoNames id):
+      * cities15000 — global cities with population ≥ 15,000.
+      * full per-country dumps (e.g. Nepal) — every populated place (village/town).
+    """
     db_path = db_path or cities_db_path()
     source_path = ensure_cities_source(source_path)
 
@@ -168,30 +256,23 @@ def import_cities(
         """
     )
 
-    count = 0
-    with source_path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            parts = line.rstrip("\n").split("\t")
-            if len(parts) < 15:
-                continue
-            city_id = int(parts[0])
-            name = parts[1]
-            ascii_name = parts[2]
-            lat = float(parts[4])
-            lon = float(parts[5])
-            country = parts[8]
-            population = int(parts[14]) if parts[14] else 0
-            timezone = parts[17] if len(parts) > 17 and parts[17] else None
-            cur.execute(
-                """
-                INSERT OR IGNORE INTO cities
-                (id, name, ascii_name, lat, lon, country, population, timezone)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (city_id, name, ascii_name, lat, lon, country, population, timezone),
-            )
-            count += 1
+    insert_sql = """
+        INSERT OR IGNORE INTO cities
+        (id, name, ascii_name, lat, lon, country, population, timezone)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """
 
+    # Global cities first (best population data for the big places), then the full
+    # per-country populated places. INSERT OR IGNORE dedupes by GeoNames id.
+    cur.executemany(insert_sql, _iter_geonames_rows(source_path))
+    for cc in full_coverage_countries:
+        country_path = ensure_country_source(cc, data_dir=source_path.parent)
+        cur.executemany(
+            insert_sql,
+            _iter_geonames_rows(country_path, feature_class=_POPULATED_PLACE_CLASS),
+        )
+
+    count = cur.execute("SELECT COUNT(*) FROM cities").fetchone()[0]
     conn.commit()
     conn.close()
     return count
