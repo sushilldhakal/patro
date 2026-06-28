@@ -51,6 +51,12 @@ if [[ "${health_ok}" -ne 1 ]]; then
   exit 1
 fi
 
+if [[ -f .env ]] && grep -qE '^DATABASE_URL=' .env; then
+  if ! grep -qE '^GOOGLE_CLIENT_ID=' .env; then
+    echo "WARNING: DATABASE_URL is set but GOOGLE_CLIENT_ID is missing — /auth/google returns 503" >&2
+  fi
+fi
+
 if systemctl is-active --quiet nginx 2>/dev/null; then
   sudo nginx -t
   sudo systemctl reload nginx

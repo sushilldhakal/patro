@@ -93,6 +93,7 @@ http→https redirect.
 In `/home/ubuntu/patro/.env`:
 ```ini
 FRONTEND_URL=https://vedicpatro.com
+GOOGLE_CLIENT_ID=<same Web client ID as VITE_GOOGLE_CLIENT_ID in dhakal-patro/.env>
 ```
 CORS is no longer needed (same origin), so you can drop `CORS_ALLOW_ORIGINS`.
 Then restart:

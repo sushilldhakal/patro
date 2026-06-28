@@ -70,6 +70,25 @@ SMTP_FROM_NAME=Dhakal Patro
 > free transactional tier (Brevo, Mailgun, Resend-via-SMTP, etc.). All are
 > drop-in via the `SMTP_*` vars above.
 
+### Google Sign-In
+
+Add the **Web client ID** from [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+to the same `.env` file:
+
+```ini
+GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
+```
+
+This must match `VITE_GOOGLE_CLIENT_ID` in the dhakal-patro frontend build. In Google
+Cloud, add these **Authorized JavaScript origins**:
+
+- `https://vedicpatro.com`
+- `https://www.vedicpatro.com`
+
+If `GOOGLE_CLIENT_ID` is missing, `POST /auth/google` returns **503** with
+`"Google sign-in is not configured"`. After setting it, restart the API and look for
+**`Google sign-in enabled`** in the journal.
+
 ## 5. Restart the API
 
 ```bash
@@ -110,6 +129,7 @@ A single nightly dump is enough at this scale:
 |--------|----------------------------|------|---------------------------------|
 | POST   | `/auth/signup`             | —    | Create account → token pair     |
 | POST   | `/auth/login`              | —    | Email + password → token pair   |
+| POST   | `/auth/google`             | —    | Google ID token → token pair    |
 | POST   | `/auth/refresh`            | —    | Rotate refresh → new token pair |
 | POST   | `/auth/logout`             | —    | Revoke a refresh token          |
 | GET    | `/auth/me`                 | ✓    | Current user                    |

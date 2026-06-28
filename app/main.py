@@ -78,6 +78,12 @@ async def lifespan(app: FastAPI):
         try:
             init_db()
             logger.info("Auth database ready")
+            if config.google_client_id():
+                logger.info("Google sign-in enabled")
+            else:
+                logger.warning(
+                    "GOOGLE_CLIENT_ID is not set — POST /auth/google will return 503"
+                )
         except Exception:
             logger.exception("Failed to initialise auth database")
     warm_task = asyncio.create_task(_warm_holiday_cache_background(app))
