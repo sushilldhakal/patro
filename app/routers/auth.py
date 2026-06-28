@@ -17,9 +17,11 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from sqlalchemy import select
 
 from app import config, emailer
+from app.google_auth import GoogleAuthError, verify_google_id_token
 from app.models import EmailToken, RefreshToken, User
 from app.schemas import (
     ForgotPasswordRequest,
+    GoogleAuthRequest,
     LoginRequest,
     MessageResponse,
     RefreshRequest,
@@ -109,6 +111,43 @@ def login(body: LoginRequest, db: DbSession) -> TokenPair:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
+    return _issue_tokens(db, user)
+
+
+@router.post("/google", response_model=TokenPair)
+def google_auth(body: GoogleAuthRequest, db: DbSession) -> TokenPair:
+    """Sign in (or sign up) with a Google ID token from the GIS button."""
+    try:
+        claims = verify_google_id_token(body.id_token)
+    except GoogleAuthError as exc:
+        # 503 when the feature simply isn't configured, 401 for bad tokens.
+        not_configured = "not configured" in str(exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
+            if not_configured
+            else status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+
+    email = claims["email"].lower()
+    user = db.scalar(select(User).where(User.email == email))
+    if user is None:
+        # New account — Google has already verified the email. Give it an unusable
+        # random password; the user can set one later via "forgot password".
+        user = User(
+            email=email,
+            password_hash=hash_password(generate_opaque_token()),
+            is_verified=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    elif not user.is_verified:
+        user.is_verified = True
+        db.commit()
+
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
     return _issue_tokens(db, user)

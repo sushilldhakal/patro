@@ -27,6 +27,8 @@ def _send(to_addr: str, subject: str, text_body: str, html_body: str) -> None:
     msg["Subject"] = subject
     msg["From"] = f"{smtp['from_name']} <{smtp['from_addr']}>"
     msg["To"] = to_addr
+    if smtp.get("reply_to"):
+        msg["Reply-To"] = str(smtp["reply_to"])
     msg.set_content(text_body)
     msg.add_alternative(html_body, subtype="html")
 
@@ -44,15 +46,15 @@ def _send(to_addr: str, subject: str, text_body: str, html_body: str) -> None:
 
 def send_verification_email(to_addr: str, token: str) -> None:
     link = f"{config.frontend_url()}/verify-email?token={token}"
-    subject = "Verify your Dhakal Patro account"
+    subject = "Verify your Vedic Patro account"
     text = (
-        "Welcome to Dhakal Patro!\n\n"
+        "Welcome to Vedic Patro!\n\n"
         f"Please verify your email by opening this link:\n{link}\n\n"
         "This link expires in 24 hours. If you didn't sign up, ignore this email."
     )
     html = _wrap(
         "Verify your email",
-        "Welcome to Dhakal Patro! Confirm your email address to finish setting up your account.",
+        "Welcome to Vedic Patro! Confirm your email address to finish setting up your account.",
         "Verify email",
         link,
         "This link expires in 24 hours.",
@@ -62,7 +64,7 @@ def send_verification_email(to_addr: str, token: str) -> None:
 
 def send_password_reset_email(to_addr: str, token: str) -> None:
     link = f"{config.frontend_url()}/reset-password?token={token}"
-    subject = "Reset your Dhakal Patro password"
+    subject = "Reset your Vedic Patro password"
     text = (
         "We received a request to reset your password.\n\n"
         f"Reset it here:\n{link}\n\n"

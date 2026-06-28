@@ -39,6 +39,12 @@ def jwt_secret() -> str:
     return os.getenv("JWT_SECRET", "dev-insecure-change-me")
 
 
+def google_client_id() -> str | None:
+    """Google OAuth Web client ID. Used as the audience when verifying ID tokens.
+    When unset, the /auth/google route returns 503."""
+    return (os.getenv("GOOGLE_CLIENT_ID") or "").strip() or None
+
+
 def access_token_ttl_minutes() -> int:
     return int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "30"))
 
@@ -65,7 +71,8 @@ def smtp_config() -> dict[str, object] | None:
         "port": int(os.getenv("SMTP_PORT", "587")),
         "user": os.getenv("SMTP_USER", ""),
         "password": os.getenv("SMTP_PASSWORD", ""),
-        "from_addr": os.getenv("SMTP_FROM", os.getenv("SMTP_USER", "no-reply@dpatro.app")),
-        "from_name": os.getenv("SMTP_FROM_NAME", "Dhakal Patro"),
+        "from_addr": os.getenv("SMTP_FROM", os.getenv("SMTP_USER", "noreply@vedicpatro.com")),
+        "from_name": os.getenv("SMTP_FROM_NAME", "Vedic Patro"),
+        "reply_to": os.getenv("SMTP_REPLY_TO", "").strip(),
         "use_tls": os.getenv("SMTP_USE_TLS", "true").lower() == "true",
     }
