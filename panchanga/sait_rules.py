@@ -8,12 +8,28 @@ conservative and traditionally defensible (exclude what the shastra clearly
 forbids) rather than to reproduce the Panchang Nirnayak Samiti list exactly,
 which is partly hand-curated and cannot be derived algorithmically.
 
+Every category is vetted through the core muhurta layers where they apply:
+
+    1. Month gate — lunar (festival masa) for saṃskāra, or the Sun-sign /
+       solar month where the shastra fixes it (e.g. Griha Aarambha / Pravesh).
+    2. Tithi (lunar day) elimination — rikta, Amavasya, etc.
+    3. Nakshatra suitability.
+    4. Yoga / Karana / Vaara / Aayan vetoes.
+    5. Planetary combustion (Tara Dubeko) and kendra checks.
+
 Key exclusions applied across the saṃskāra categories:
   * Adhik Maas (मलमास)        — no auspicious saṃskāra in an intercalary month.
   * Kharmas / Dhanurmas       — Sun in Dhanu or late Meena (मलमास-तुल्य).
   * Chaturmas (चातुर्मास)     — Vishnu's sleep; marriages/saṃskāra paused.
   * Tara-ast (गुरु/शुक्र अस्त) — Jupiter/Venus combust (vivah, vrata, vyapar).
   * Rikta tithi & Amavasya    — inauspicious lunar days.
+
+Nakshatra indices are 1-based (Ashwini = 1 … Revati = 27).
+Sun rashi (solar month) indices are 1-based:
+    1 Mesha=Baisakh, 2 Vrishabha=Jeth, 3 Mithuna=Ashadh, 4 Karka=Shrawan,
+    5 Simha=Bhadra, 6 Kanya=Ashwin, 7 Tula=Kartik, 8 Vrishchika=Marga,
+    9 Dhanu=Poush, 10 Makara=Magh, 11 Kumbha=Falgun, 12 Meena=Chaitra.
+Vaara: Sunday = 1 … Saturday = 7.
 """
 
 from __future__ import annotations
@@ -54,28 +70,30 @@ def is_kharmas(sun_longitude: float) -> bool:
     return (240.0 <= sun_longitude < 270.0) or (330.0 <= sun_longitude < 360.0)
 
 
-def is_chaturmas_solar(sun_rashi: int) -> bool:
-    """Approximation: Sun in Karka through Tula (monsoon quarter)."""
-    return sun_rashi in (4, 5, 6, 7)
-
-
 def is_rikta_tithi(display_tithi: int) -> bool:
+    """Rikta tithis — 4 (Chaturthi), 9 (Navami), 14 (Chaturdashi)."""
     return display_tithi in (4, 9, 14)
 
 
-def agni_on_earth(tithi_absolute: int, vaara_number: int) -> bool:
-    """Agni Vas — remainder 0 or 3 means Agni on Earth."""
-    value = (tithi_absolute + vaara_number) + 1
-    return value % 4 in (0, 3)
+def agni_on_earth(tithi: int, vaara_number: int) -> bool:
+    """Agni Vas — (tithi + vaara + 1) % 4.
+
+    Remainder 1 or 2 → Agni on Earth / Patala (auspicious for havan).
+    Remainder 3 or 0 → Agni in the sky / consuming (inauspicious).
+    """
+    return (((tithi + vaara_number) + 1) % 4) in (1, 2)
 
 
-def rudra_on_earth(tithi_absolute: int, vaara_number: int) -> bool:
-    """Rudra Vas — remainder 1 or 6 means Shiva accessible on Earth."""
-    value = (tithi_absolute * 3) + vaara_number
-    return value % 7 in (1, 6)
+def rudra_on_earth(tithi: int) -> bool:
+    """Shiva Vas — (tithi * 3 + 1) % 7.
+
+    Remainder 1 (Kailash) or 2 (with Parvati) → Shiva accessible (auspicious).
+    Remainder 3, 4, 5, 6, 0 → trance / burning ground / angry (inauspicious).
+    """
+    return (((tithi * 3) + 1) % 7) in (1, 2)
 
 
-# Lunar (festival masa) month names — see panchanga.constants.BS_MONTH_NAMES.
+# --- Lunar (festival masa) month sets ----------------------------------------
 # Chaturmas: the four lunar months between Devshayani (Ashadh Shukla 11) and
 # Haribodhini (Kartik Shukla 11) Ekadashi, during which Vishnu sleeps and
 # marriages / saṃskāra are paused.
@@ -88,26 +106,49 @@ VIVAH_LUNAR_MONTHS = frozenset(
 BRATABANDHA_LUNAR_MONTHS = frozenset(
     {"Mangsir", "Magh", "Falgun", "Baishakh", "Jestha"}
 )
-GRIHA_LUNAR_MONTHS = frozenset(
-    {"Mangsir", "Magh", "Falgun", "Baishakh", "Jestha", "Ashadh"}
+
+# --- Solar months (Sun rashi) where the shastra fixes the Sun-sign -----------
+# Griha Aarambha — Vastu Purusha facing: Aries, Cancer, Scorpio, Capricorn.
+GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 4, 8, 10})
+# Griha Pravesh — Vaishakh, Jeth, Magh, Falgun.
+GRIHA_PRAVESH_SUN_RASHIS = frozenset({1, 2, 10, 11})
+
+# --- Nakshatra sets (1-based) ------------------------------------------------
+# Rohini, Mrigashira, Magha, U.Phalguni, Hasta, Swati, Anuradha, Mula,
+# P.Ashadha, U.Ashadha, U.Bhadrapada, Revati
+MARRIAGE_NAKSHATRAS = frozenset({4, 5, 10, 12, 13, 15, 17, 19, 20, 21, 26, 27})
+# Ashwini, Rohini, Mrigashira, Punarvasu, Pushya, U.Phalguni, Hasta, Chitra,
+# Swati, Anuradha, U.Ashadha, Shravana, Dhanishta, Shatabhisha, U.Bhadrapada, Revati
+BRATABANDHA_NAKSHATRAS = frozenset(
+    {1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27}
 )
-
-# Nakshatra indices are 1-based (Ashwini = 1).
-MARRIAGE_NAKSHATRAS = frozenset({4, 5, 12, 13, 14, 15, 18, 22, 23, 24, 27})
-BRATABANDHA_NAKSHATRAS = frozenset({1, 5, 7, 8, 12, 13, 14, 15, 19, 22, 23, 24, 27})
-GRIHA_AARAMBHA_NAKSHATRAS = frozenset({4, 5, 12, 13, 14, 17, 18, 22, 27})
+# Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Swati, Anuradha,
+# U.Ashadha, Shravana, Dhanishta, U.Bhadrapada
+GRIHA_AARAMBHA_NAKSHATRAS = frozenset({4, 5, 8, 12, 13, 14, 15, 17, 21, 22, 23, 26})
+# Mrigashira, Rohini, Hasta, Chitra, Swati, Anuradha, Shravana, Dhanishta,
+# Shatabhisha, U.Bhadrapada, Revati (+ Mithuna/Ashadha for stability)
 GRIHA_PRAVESH_NAKSHATRAS = frozenset({3, 4, 5, 13, 14, 15, 17, 22, 23, 24, 27})
-BUSINESS_NAKSHATRAS = frozenset({1, 8, 14, 18, 23, 27})  # Ashwini, Pushya, Chitra, Anuradha, Shravana, Revati
-ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 18, 23, 24, 27})
+# Ashwini, Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Anuradha,
+# U.Ashadha, Shravana, Dhanishta, Revati
+BUSINESS_NAKSHATRAS = frozenset({1, 4, 5, 8, 12, 13, 14, 17, 21, 22, 23, 27})
+# Ashwini, Mrigashira, Punarvasu, Pushya, Hasta, Chitra, Swati, Anuradha,
+# Shravana, Dhanishta, Shatabhisha, Revati
+ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 
-# Weekdays (Sunday = 1 … Saturday = 7).
+# --- Tithi sets --------------------------------------------------------------
+# Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
+BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
+# Shukla growth tithis for Griha Pravesh.
+GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+# Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
+BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+
+# --- Weekdays (Sunday = 1 … Saturday = 7) ------------------------------------
 VIVAH_VAARA = frozenset({1, 2, 4, 5, 6})  # avoid Tue, Sat
 BRATABANDHA_VAARA = frozenset({2, 4, 5, 6})  # Mon, Wed, Thu, Fri
 GRIHA_VAARA = frozenset({2, 4, 5, 6})  # Mon, Wed, Thu, Fri
-BUSINESS_VAARA = frozenset({1, 4, 5, 6})  # Sun, Wed, Thu, Fri
+BUSINESS_VAARA = frozenset({2, 4, 5, 6})  # Mon, Wed, Thu, Fri — avoid Tue, Sat
 ANNAPRASAN_VAARA = frozenset({2, 4, 5, 6})  # Mon, Wed, Thu, Fri
-
-GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({1, 2, 3, 5, 7, 10, 11, 12, 13})
 
 
 @dataclass(frozen=True)
@@ -193,6 +234,10 @@ def _is_amavasya(day: DayPanchanga) -> bool:
     return day.tithi_absolute == 30
 
 
+def _is_krishna_pratipada(day: DayPanchanga) -> bool:
+    return day.paksha == "krishna" and day.tithi_display == 1
+
+
 def _auspicious_tithi(day: DayPanchanga) -> bool:
     """Exclude the universally inauspicious lunar days: rikta and Amavasya."""
     return not is_rikta_tithi(day.tithi_display) and not _is_amavasya(day)
@@ -213,6 +258,7 @@ def _samskara_base_ok(day: DayPanchanga) -> bool:
 
 # ── Category checks ──────────────────────────────────────────────────────────
 
+# 1. विवाह (Marriage)
 def check_vivah(day: DayPanchanga) -> bool:
     if not _samskara_base_ok(day):
         return False
@@ -226,9 +272,12 @@ def check_vivah(day: DayPanchanga) -> bool:
         return False
     if day.vaara not in VIVAH_VAARA:
         return False
+    if _is_krishna_pratipada(day):
+        return False
     return True
 
 
+# 2. व्रतबन्ध (Upanayana / Sacred Thread)
 def check_bratabandha(day: DayPanchanga) -> bool:
     if not _samskara_base_ok(day):
         return False
@@ -246,13 +295,20 @@ def check_bratabandha(day: DayPanchanga) -> bool:
     # Shukla paksha is strongly preferred for vrata-bandha.
     if day.paksha != "shukla":
         return False
+    if day.tithi_display not in BRATABANDHA_TITHIS:
+        return False
     return True
 
 
+# 3. गृह आरम्भ (Foundation Laying / Bhumi Pujan)
+# Sun-sign fixed (Vastu Purusha): Aries, Cancer, Scorpio, Capricorn —
+# which naturally excludes Ashar (Mithuna) and Chaitra (Meena).
 def check_griha_aarambha(day: DayPanchanga) -> bool:
-    if not _samskara_base_ok(day):
+    if day.is_adhik_maas:
         return False
-    if _in_chaturmas(day) or day.lunar_month not in GRIHA_LUNAR_MONTHS:
+    if not _auspicious_tithi(day):
+        return False
+    if day.sun_rashi not in GRIHA_AARAMBHA_SUN_RASHIS:
         return False
     if day.nakshatra not in GRIHA_AARAMBHA_NAKSHATRAS:
         return False
@@ -261,12 +317,11 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
     return True
 
 
+# 4. गृह प्रवेश (House Warming)
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
     if not _samskara_base_ok(day):
         return False
-    if _in_chaturmas(day) or is_chaturmas_solar(day.sun_rashi):
-        return False
-    if day.lunar_month not in GRIHA_LUNAR_MONTHS:
+    if day.sun_rashi not in GRIHA_PRAVESH_SUN_RASHIS:
         return False
     if day.paksha != "shukla":
         return False
@@ -276,11 +331,12 @@ def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
         return False
     if day.vaara not in GRIHA_VAARA:
         return False
-    if apurva and day.tithi_display == 4:
+    if _is_amavasya(day):
         return False
     return True
 
 
+# 5. व्यापारिक प्रतिष्ठान (Business / Shop Inauguration)
 def check_byaparik_pratisthan(day: DayPanchanga) -> bool:
     if day.is_adhik_maas or not _not_kharmas(day):
         return False
@@ -292,43 +348,40 @@ def check_byaparik_pratisthan(day: DayPanchanga) -> bool:
         return False
     if not (day.mercury_quadrant or day.jupiter_quadrant):
         return False
+    if day.vaara not in BUSINESS_VAARA:
+        return False
     if day.nakshatra not in BUSINESS_NAKSHATRAS:
         return False
-    if day.vaara not in BUSINESS_VAARA:
+    if day.paksha != "shukla":
+        return False
+    if day.tithi_display not in BUSINESS_SHUKLA_TITHIS:
         return False
     return True
 
 
-def check_agni_jurne(day: DayPanchanga) -> bool:
-    # Agni Vas on Earth, further restricted to clean, non-Kharmas days.
-    if not agni_on_earth(day.tithi_absolute, day.vaara):
-        return False
-    if day.is_adhik_maas or not _not_kharmas(day):
-        return False
-    return _auspicious_tithi(day)
-
-
+# 6. रुद्री जुर्ने (Rudra Abhishekam / Shiva Puja)
 def check_rudri_jurne(day: DayPanchanga) -> bool:
-    # Rudra Vas on Earth, further restricted to clean, non-Kharmas days.
-    if not rudra_on_earth(day.tithi_absolute, day.vaara):
-        return False
-    if day.is_adhik_maas or not _not_kharmas(day):
-        return False
-    return _auspicious_tithi(day)
+    return rudra_on_earth(day.tithi_display)
 
 
+# 7. अग्नि जुर्ने (Agni Vas / Havan)
+def check_agni_jurne(day: DayPanchanga) -> bool:
+    return agni_on_earth(day.tithi_display, day.vaara)
+
+
+# 8. अन्नप्रासन (First Rice Feeding) — nakshatra/tithi/vaara day filter;
+# the 5/6-month age window needs the child's birth date (handled at the API).
 def check_annaprasan(day: DayPanchanga) -> bool:
-    """Nakshatra/tithi/vaara day filter; the 5–8 month age window needs the
-    child's birth date (see services.sait_api)."""
     if day.is_adhik_maas or not _not_kharmas(day):
         return False
-    if not _auspicious_tithi(day):
+    if not _auspicious_tithi(day):  # rikta + Amavasya
+        return False
+    if day.tithi_display == 8:  # Ashtami
         return False
     if day.nakshatra not in ANNAPRASAN_NAKSHATRAS:
         return False
     if day.vaara not in ANNAPRASAN_VAARA:
         return False
-    # Anna-prashana is a Shukla-paksha saṃskāra.
     if day.paksha != "shukla":
         return False
     return True
