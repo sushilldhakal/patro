@@ -1,15 +1,44 @@
 """Tests for rule-based sait generation."""
 
+from datetime import date
+
 from panchanga.bikram_sambat import bs_to_gregorian
 from panchanga.sait_rules import (
+    DayPanchanga,
     agni_on_earth,
     build_day_panchanga,
+    check_bratabandha,
+    check_vivah,
     is_kharmas,
     is_rikta_tithi,
     rudra_on_earth,
 )
 from core.location import DEFAULT_LOCATION
 from services.sait_generator import generate_sait_year_category
+
+
+def _day(**overrides) -> DayPanchanga:
+    """A clean, marriage-eligible day; override single fields per test."""
+    base = dict(
+        gregorian=date(2026, 2, 1),
+        tithi_absolute=5,
+        tithi_display=5,
+        paksha="shukla",
+        nakshatra=13,  # Hasta — a marriage nakshatra
+        vaara=5,  # Thursday
+        sun_rashi=11,
+        sun_longitude=315.0,  # Kumbha — not Kharmas
+        jupiter_combust=False,
+        venus_combust=False,
+        mercury_combust=False,
+        lunar_month="Magh",  # a recognised vivah month
+        is_adhik_maas=False,
+        aayan="Uttarayana",
+        mercury_quadrant=True,
+        jupiter_quadrant=True,
+    )
+    base.update(overrides)
+    return DayPanchanga(**base)
 
 
 def test_rikta_tithis():
@@ -50,3 +79,43 @@ def test_generate_agni_jurne_has_entries():
     for key, days in by_month.items():
         assert key.isdigit()
         assert days
+
+
+def test_vivah_accepts_clean_day():
+    assert check_vivah(_day())
+
+
+def test_vivah_rejects_adhik_maas():
+    assert not check_vivah(_day(is_adhik_maas=True))
+
+
+def test_vivah_rejects_chaturmas():
+    # Shrawan is a Chaturmas lunar month — no marriages.
+    assert not check_vivah(_day(lunar_month="Shrawan"))
+
+
+def test_vivah_rejects_non_vivah_month():
+    # Poush (Kharmas-adjacent) is not a recognised vivah month.
+    assert not check_vivah(_day(lunar_month="Poush"))
+
+
+def test_vivah_rejects_combust_guru_or_shukra():
+    assert not check_vivah(_day(jupiter_combust=True))
+    assert not check_vivah(_day(venus_combust=True))
+
+
+def test_vivah_rejects_tuesday_and_rikta():
+    assert not check_vivah(_day(vaara=3))  # Tuesday
+    assert not check_vivah(_day(tithi_display=4))  # Rikta
+
+
+def test_bratabandha_requires_uttarayana_and_shukla():
+    assert check_bratabandha(_day(nakshatra=8))  # Pushya, Thursday, shukla
+    assert not check_bratabandha(_day(nakshatra=8, aayan="Dakshinayana"))
+    assert not check_bratabandha(_day(nakshatra=8, paksha="krishna"))
+
+
+def test_engine_version_bumped():
+    from services.sait_generator import SAIT_ENGINE_VERSION
+
+    assert SAIT_ENGINE_VERSION == "2.0.0"

@@ -14,7 +14,7 @@ from panchanga.sait_rules import CATEGORY_CHECKS, build_day_panchanga
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "1.0.0"
+SAIT_ENGINE_VERSION = "2.0.0"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
