@@ -16,7 +16,8 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from sqlalchemy import select
 
-from app import config, emailer
+import config
+from app import emailer
 from app.google_auth import GoogleAuthError, verify_google_id_token
 from database.models import EmailToken, RefreshToken, User
 from database.schemas import (
