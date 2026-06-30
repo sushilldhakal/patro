@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from panchanga.vimshottari import vimshottari_dasha
+from engine.vedic.vimshottari import vimshottari_dasha
 
 
 def test_vimshottari_balance_and_sequence():

@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-from core.paths import cities_db_path, cities_source_path
+from engine.astronomy.paths import cities_db_path, cities_source_path
 
 GEONAMES_CITIES_URL = "https://download.geonames.org/export/dump/cities15000.zip"
 

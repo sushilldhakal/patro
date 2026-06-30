@@ -11,7 +11,7 @@ from typing import Any
 import jwt
 from jwt import PyJWKClient
 
-from app import config
+import config
 
 _GOOGLE_CERTS_URL = "https://www.googleapis.com/oauth2/v3/certs"
 _ALLOWED_ISSUERS = {"https://accounts.google.com", "accounts.google.com"}

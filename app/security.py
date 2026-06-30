@@ -14,8 +14,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app import config
-from app.db import get_db
-from app.models import User
+from database.db import get_db
+from database.models import User
 
 ALGORITHM = "HS256"
 _bearer = HTTPBearer(auto_error=False)

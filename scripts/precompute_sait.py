@@ -10,8 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from core.location import DEFAULT_LOCATION  # noqa: E402
-from panchanga.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
+from engine.astronomy.location import DEFAULT_LOCATION  # noqa: E402
+from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
 from services.sait_generator import precompute_sait_range  # noqa: E402
 
 

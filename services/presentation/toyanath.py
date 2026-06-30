@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from panchanga.names_ne import to_nepali_digits
+from engine.vedic.names_ne import to_nepali_digits
 from services.presentation.canonical import to_canonical
 
 

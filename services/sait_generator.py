@@ -7,10 +7,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.bikram_sambat import get_bs_month_length, iter_bs_month_days
-from panchanga.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
-from panchanga.sait_rules import CATEGORY_CHECKS, build_day_panchanga
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic.bikram_sambat import get_bs_month_length, iter_bs_month_days
+from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
+from engine.vedic.sait_rules import CATEGORY_CHECKS, build_day_panchanga
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"

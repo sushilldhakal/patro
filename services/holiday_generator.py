@@ -9,13 +9,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.bikram_sambat import (
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic.bikram_sambat import (
     bs_year_date_range,
     get_bs_month_length,
     get_bs_month_start,
 )
-from panchanga.tithi import get_udaya_tithi
+from engine.vedic.tithi import get_udaya_tithi
 from rules.engine import bs_year_for_gregorian, compute_festival_dates
 from services.cache_meta import cache_is_valid, stamp_payload
 
@@ -641,7 +641,7 @@ def get_special_months_for_bs_year(
     whose dates fall within the BS year range.
     """
     from rules.engine import get_special_months_for_gregorian_year
-    from panchanga.bikram_sambat import bs_year_date_range
+    from engine.vedic.bikram_sambat import bs_year_date_range
 
     year_start, year_end = bs_year_date_range(bs_year)
     gregorian_years = sorted({year_start.year, year_end.year})

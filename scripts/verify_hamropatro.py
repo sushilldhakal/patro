@@ -146,7 +146,7 @@ def fetch_server_festivals(bs_year: int, server_base: str) -> list[dict[str, Any
 
 def compute_festivals_locally(bs_year: int) -> list[dict[str, Any]]:
     """Compute festivals directly using local engine (no server required)."""
-    from core.location import DEFAULT_LOCATION
+    from engine.astronomy.location import DEFAULT_LOCATION
     from services.holiday_generator import generate_bs_festivals
 
     payload = generate_bs_festivals(bs_year, DEFAULT_LOCATION)
@@ -159,7 +159,7 @@ def compute_festivals_locally(bs_year: int) -> list[dict[str, Any]]:
 
 def _bs_to_ad(bs_year: int, bs_month: int, bs_day: int) -> date | None:
     try:
-        from panchanga.bikram_sambat import bs_to_gregorian
+        from engine.vedic.bikram_sambat import bs_to_gregorian
         return bs_to_gregorian(bs_year, bs_month, bs_day)
     except (ValueError, ImportError):
         return None

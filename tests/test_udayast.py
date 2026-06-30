@@ -1,10 +1,10 @@
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from panchanga.bikram_sambat import gregorian_to_bs
-from panchanga.gochar import build_gochar_ingress_range
-from panchanga.udayast import build_udayast_range, find_udayast_events_in_range
-from core.swiss_eph import calculate_sunrise
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.bikram_sambat import gregorian_to_bs
+from engine.vedic.gochar import build_gochar_ingress_range
+from engine.vedic.udayast import build_udayast_range, find_udayast_events_in_range
+from engine.astronomy.swiss_eph import calculate_sunrise
 
 
 def test_mercury_western_asta_ashar_2083():

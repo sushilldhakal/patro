@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from panchanga.names_ne import to_nepali_digits
+from engine.vedic.names_ne import to_nepali_digits
 from services.presentation.canonical import to_canonical
 from services.presentation.helpers import ENGINE_VERSION, primary_festival
 

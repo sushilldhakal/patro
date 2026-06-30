@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from panchanga.bikram_sambat import bs_to_gregorian
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.bikram_sambat import bs_to_gregorian
 from services.panchanga_api import build_month_calendar
 
 

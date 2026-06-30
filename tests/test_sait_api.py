@@ -1,7 +1,7 @@
 """Tests for sait API static vs computed paths."""
 
 from services.sait_api import get_sait_month_entries, list_sait_years
-from core.location import DEFAULT_LOCATION
+from engine.astronomy.location import DEFAULT_LOCATION
 
 
 def test_list_sait_years_full_range():

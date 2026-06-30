@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from core.swiss_eph import calculate_sunrise, get_all_planetary_positions
-from panchanga.bikram_sambat import bs_to_gregorian
-from panchanga.daily import build_daily_panchanga
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.astronomy.swiss_eph import calculate_sunrise, get_all_planetary_positions
+from engine.vedic.bikram_sambat import bs_to_gregorian
+from engine.vedic.daily import build_daily_panchanga
 
 
 def test_planets_at_udayakal_sunrise():

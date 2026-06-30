@@ -5,11 +5,11 @@ from __future__ import annotations
 from datetime import date, timedelta
 from typing import Any, Optional
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.bikram_sambat import bs_to_gregorian
-from panchanga.bs_year import bs_solar_year_for_gregorian_year
-from panchanga.lunar_month import find_festival_in_lunar_month
-from panchanga.sankranti import find_makara_sankranti, find_mesh_sankranti
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic.bikram_sambat import bs_to_gregorian
+from engine.vedic.bs_year import bs_solar_year_for_gregorian_year
+from engine.vedic.lunar_month import find_festival_in_lunar_month
+from engine.vedic.sankranti import find_makara_sankranti, find_mesh_sankranti
 
 
 def compute_lunar_festival(
@@ -107,9 +107,9 @@ def get_special_months_for_gregorian_year(
     Kshaya Maas: extremely rare lost month with two Sankrantis — last in
     BS 2020 (1963 CE), next predicted ~BS 2198 (2141 CE).
     """
-    from panchanga.adhik_maas import find_adhik_maas_for_gregorian_year
-    from panchanga.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
-    from panchanga.lunar_month import get_lunar_year
+    from engine.vedic.adhik_maas import find_adhik_maas_for_gregorian_year
+    from engine.vedic.kshaya_maas import get_kshaya_maas_info, is_kshaya_maas
+    from engine.vedic.lunar_month import get_lunar_year
 
     adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
 

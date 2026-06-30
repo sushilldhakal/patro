@@ -146,15 +146,15 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 try:
-    from core.location import ObserverLocation
-    from core.positions import (
+    from engine.astronomy.location import ObserverLocation
+    from engine.astronomy.positions import (
         NAKSHATRA_NAMES,
         RASHI_NAMES,
         VAARA_ENGLISH,
         VAARA_NAMES,
         YOGA_NAMES,
     )
-    from core.swiss_eph import (
+    from engine.astronomy.swiss_eph import (
         calculate_sunrise,
         calculate_sunset,
         get_ayanamsa,
@@ -162,8 +162,8 @@ try:
         get_sun_moon_positions,
         init_ephemeris,
     )
-    from core.time_utils import resolve_observer_timezone
-    from panchanga.bikram_sambat import bs_month_name, bs_to_gregorian, gregorian_to_bs
+    from engine.astronomy.timescale import resolve_observer_timezone
+    from engine.vedic.bikram_sambat import bs_month_name, bs_to_gregorian, gregorian_to_bs
 except ImportError as exc:
     print(
         f"ERROR: Could not import patro project modules: {exc}\n"

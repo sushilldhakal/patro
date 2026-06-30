@@ -1,4 +1,4 @@
-from panchanga.choghadiya import build_choghadiya, day_ghati_from_sun_times
+from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 
 
 def test_day_ghati_from_sun_times():

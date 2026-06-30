@@ -5,8 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select, update
 
-from app.models import Profile
-from app.schemas import ProfileCreate, ProfileOut, ProfileUpdate
+from database.models import Profile
+from database.schemas import ProfileCreate, ProfileOut, ProfileUpdate
 from app.security import CurrentUser, DbSession
 
 router = APIRouter(prefix="/profiles", tags=["profiles"])

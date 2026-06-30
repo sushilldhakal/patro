@@ -7,8 +7,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
 from services.sait_generator import get_generated_sait
 
 ROOT = Path(__file__).resolve().parents[1]

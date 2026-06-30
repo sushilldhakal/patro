@@ -5,15 +5,15 @@ from __future__ import annotations
 from datetime import date, timedelta
 from typing import Any
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from panchanga.bikram_sambat import (
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic.bikram_sambat import (
     bs_month_name,
     bs_year_date_range,
     get_bs_month_length,
     get_bs_month_start,
     iter_bs_month_days,
 )
-from panchanga.daily import get_daily_panchanga
+from engine.vedic.daily import get_daily_panchanga
 from services.cache_meta import stamp_payload
 from services.holiday_generator import get_bs_festivals, get_festivals
 

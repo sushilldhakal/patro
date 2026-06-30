@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from core.location import DEFAULT_LOCATION, resolve_location
+from engine.astronomy.location import DEFAULT_LOCATION, resolve_location
 from services.holiday_generator import precompute_range
 
 

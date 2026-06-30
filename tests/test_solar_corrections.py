@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from panchanga.daily import build_daily_panchanga
-from panchanga.solar_corrections import (
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.daily import build_daily_panchanga
+from engine.vedic.solar_corrections import (
     build_solar_corrections,
     compute_belaantar,
     compute_deshaantar,
@@ -30,7 +30,7 @@ def test_deshaantar_kathmandu_positive_dhan():
 def test_belaantar_has_sign_and_labels():
     from datetime import datetime, time
 
-    from core.time_utils import resolve_observer_timezone
+    from engine.astronomy.timescale import resolve_observer_timezone
 
     tz = resolve_observer_timezone("Asia/Kathmandu")
     dt = datetime.combine(date(2026, 6, 11), time(5, 8), tzinfo=tz)

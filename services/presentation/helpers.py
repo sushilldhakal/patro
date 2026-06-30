@@ -69,7 +69,7 @@ def build_special_block(
     location_timezone: str,
     lunar_month: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    from panchanga.sankranti_calendar import sankrantis_on_date
+    from engine.vedic.sankranti_calendar import sankrantis_on_date
 
     is_adhik = bool(lunar_month and lunar_month.get("is_adhik"))
     is_kshaya = bool(lunar_month and lunar_month.get("type") == "kshaya")

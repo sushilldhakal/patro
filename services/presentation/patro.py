@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-from panchanga.bikram_sambat import bs_month_name, get_bs_month_length, shaka_year
+from engine.vedic.bikram_sambat import bs_month_name, get_bs_month_length, shaka_year
 from services.presentation.helpers import primary_festival, tithi_display_name
 
 

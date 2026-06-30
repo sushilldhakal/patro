@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from core.location import DEFAULT_LOCATION
+from engine.astronomy.location import DEFAULT_LOCATION
 from services.panchanga_api import build_daily_state, build_month_calendar
 
 
 def test_daily_state_includes_patro_table_fields() -> None:
-    from panchanga.bikram_sambat import bs_to_gregorian
+    from engine.vedic.bikram_sambat import bs_to_gregorian
 
     greg = bs_to_gregorian(2083, 1, 1)
     state = build_daily_state(greg, DEFAULT_LOCATION, include_detail=False)

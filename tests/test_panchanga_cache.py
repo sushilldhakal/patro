@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from core.location import DEFAULT_LOCATION
-from panchanga.daily import get_daily_panchanga
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.daily import get_daily_panchanga
 from services import panchanga_cache
 
 

@@ -9,9 +9,9 @@ import sqlite3
 from datetime import date, datetime, timezone
 from typing import Any
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from core.paths import KATHMANDU_CITY_ID, panchanga_db_path
-from core.time_utils import resolve_observer_timezone
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
+from engine.astronomy.timescale import resolve_observer_timezone
 
 logger = logging.getLogger(__name__)
 
@@ -295,7 +295,7 @@ def precompute_range(
     skip_existing: bool = True,
 ) -> int:
     """Compute and store panchanga for many dates. Returns rows written."""
-    from panchanga.daily import build_daily_panchanga
+    from engine.vedic.daily import build_daily_panchanga
 
     location_key, _ = resolve_cache_keys(location)
     ensure_schema()

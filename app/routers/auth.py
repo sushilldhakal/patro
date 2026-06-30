@@ -18,8 +18,8 @@ from sqlalchemy import select
 
 from app import config, emailer
 from app.google_auth import GoogleAuthError, verify_google_id_token
-from app.models import EmailToken, RefreshToken, User
-from app.schemas import (
+from database.models import EmailToken, RefreshToken, User
+from database.schemas import (
     ForgotPasswordRequest,
     GoogleAuthRequest,
     LoginRequest,

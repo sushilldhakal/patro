@@ -2,8 +2,8 @@
 
 from datetime import date
 
-from panchanga.bikram_sambat import bs_to_gregorian
-from panchanga.sait_rules import (
+from engine.vedic.bikram_sambat import bs_to_gregorian
+from engine.vedic.sait_rules import (
     DayPanchanga,
     agni_on_earth,
     build_day_panchanga,
@@ -13,7 +13,7 @@ from panchanga.sait_rules import (
     is_rikta_tithi,
     rudra_on_earth,
 )
-from core.location import DEFAULT_LOCATION
+from engine.astronomy.location import DEFAULT_LOCATION
 from services.sait_generator import generate_sait_year_category
 
 

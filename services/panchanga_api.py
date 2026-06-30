@@ -5,10 +5,10 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Literal
 
-from core.location import DEFAULT_LOCATION, ObserverLocation
-from core.positions import ayana_kranti_mark
-from core.time_utils import resolve_observer_timezone
-from panchanga.bikram_sambat import (
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.positions import ayana_kranti_mark
+from engine.astronomy.timescale import resolve_observer_timezone
+from engine.vedic.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
     format_bs_date,
@@ -19,7 +19,7 @@ from panchanga.bikram_sambat import (
     parse_bs_date,
     shaka_year,
 )
-from panchanga.daily import get_daily_panchanga
+from engine.vedic.daily import get_daily_panchanga
 from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
@@ -154,7 +154,7 @@ def build_month_calendar_at_clock(
     full: bool = False,
 ) -> dict[str, Any]:
     """BS month grid with ephemeris-mode panchanga at a fixed civil clock each day."""
-    from panchanga.at_time import instant_row_from_date
+    from engine.vedic.at_time import instant_row_from_date
 
     if not 1 <= bs_month <= 12:
         raise ValueError("bs_month must be 1..12")

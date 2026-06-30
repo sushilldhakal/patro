@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from panchanga.tropical_seasons import solar_apparent_longitude, tropical_season_cycle
+from engine.vedic.tropical_seasons import solar_apparent_longitude, tropical_season_cycle
 
 
 def test_solar_longitude_in_range():

@@ -1,8 +1,8 @@
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from panchanga.daily import build_daily_panchanga
-from panchanga.pushkara_navamsha import pushkara_degrees_for_rashi, rashi_element
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.daily import build_daily_panchanga
+from engine.vedic.pushkara_navamsha import pushkara_degrees_for_rashi, rashi_element
 
 
 def test_rashi_element_and_degrees():

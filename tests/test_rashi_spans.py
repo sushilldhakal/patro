@@ -2,9 +2,9 @@
 
 from datetime import date
 
-from core.location import DEFAULT_LOCATION
-from panchanga.daily import build_daily_panchanga
-from panchanga.rashi_spans import get_surya_nakshatra
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.vedic.daily import build_daily_panchanga
+from engine.vedic.rashi_spans import get_surya_nakshatra
 
 
 def test_daily_payload_includes_rashi_card_fields():
@@ -40,7 +40,7 @@ def test_daily_payload_includes_balam_and_panchaka():
 
 
 def test_surya_nakshatra_matches_sun_longitude():
-    from core.swiss_eph import calculate_sunrise
+    from engine.astronomy.swiss_eph import calculate_sunrise
 
     sunrise = calculate_sunrise(
         date(2026, 6, 12),

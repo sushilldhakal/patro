@@ -1,8 +1,8 @@
 from datetime import date, datetime, timezone
 
-from core.location import DEFAULT_LOCATION
-from core.swiss_eph import calculate_sunrise
-from panchanga.gochar import (
+from engine.astronomy.location import DEFAULT_LOCATION
+from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.vedic.gochar import (
     find_next_nakshatra_entry,
     find_next_pada_entry,
     find_next_rashi_entry,
