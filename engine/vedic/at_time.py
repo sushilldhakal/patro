@@ -161,6 +161,32 @@ def build_instant_anga_snapshot(
     }
 
 
+def enrich_snapshot_astro(
+    planets: dict[str, Any],
+    lagna: dict[str, Any] | None,
+    instant_utc: datetime,
+    *,
+    lat: float,
+    lon: float,
+) -> None:
+    """Attach shara / right ascension / kranti (and lagna speed) in place.
+
+    These are ayanamsha-independent equatorial values used by the graha
+    details table; failures leave the snapshot without the extra fields.
+    """
+    from engine.astronomy.engine import EphemerisError, default_engine
+
+    try:
+        jd = default_engine.julian_day(instant_utc)
+        for name, pos in planets.items():
+            if isinstance(pos, dict):
+                pos.update(default_engine.planet_astro_extras(jd, name))
+        if lagna is not None:
+            lagna.update(default_engine.ascendant_astro_extras(jd, lat, lon))
+    except EphemerisError:
+        pass
+
+
 def build_planetary_snapshot(
     instant_utc: datetime,
     *,
@@ -173,6 +199,7 @@ def build_planetary_snapshot(
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
     planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
     lagna = get_lagna(instant_utc, lat=lat, lon=lon, ayanamsa=mode)
+    enrich_snapshot_astro(planets, lagna, instant_utc, lat=lat, lon=lon)
     return {
         "planets": planets,
         "lagna": {**lagna, "anchor": "instant"},
@@ -206,6 +233,9 @@ def build_panchanga_at_time(
         instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode
     )
     instant_lagna["anchor"] = "instant"
+    enrich_snapshot_astro(
+        instant_planets, instant_lagna, instant_utc, lat=location.lat, lon=location.lon
+    )
     muhurta_now = compute_muhurta_now(
         instant_local, sunrise_utc, sunset_utc, vaara_num, tz
     )
