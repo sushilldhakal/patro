@@ -3,7 +3,7 @@ from datetime import date
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 
 from api.deps import (
     LocationDep,
@@ -39,6 +39,10 @@ from services.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
 
+# Panchanga for a fixed BS year + location is immutable until engine/rules change.
+# Browsers and Cloudflare (when proxied) may cache this response.
+_YEAR_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
+
 
 @router.get("/panchanga/year/{bs_year}")
 def panchanga_year(
@@ -49,7 +53,8 @@ def panchanga_year(
     """Full BS year calendar — all months in one response."""
     _validate_bs_year(bs_year)
     try:
-        return build_year_calendar(bs_year, location, full=full)
+        payload = build_year_calendar(bs_year, location, full=full)
+        return JSONResponse(content=payload, headers={"Cache-Control": _YEAR_CACHE_CONTROL})
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
