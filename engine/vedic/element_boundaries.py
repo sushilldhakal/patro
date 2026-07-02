@@ -280,6 +280,9 @@ def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
     from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 
     number, name, progress = get_nakshatra(dt)
+    moon_long = get_moon_longitude(dt)
+    pos_in_nak = moon_long % NAKSHATRA_SPAN
+    pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
     start_dt = find_nakshatra_start(dt)
     end_dt = find_nakshatra_end(dt)
     next_num = _next_cyclic(number, 27)
@@ -295,6 +298,7 @@ def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
         next_name_ne=NAKSHATRA_NAMES_NE[next_num - 1],
         progress=round(progress, 4),
     )
+    block["pada"] = pada
     return _enrich_next_anga(
         block,
         sunrise_dt,
