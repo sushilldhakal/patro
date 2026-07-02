@@ -219,6 +219,83 @@ class AstronomyEngine:
             for name in PLANET_KEYS
         }
 
+    # ── equatorial / astro extras ────────────────────────────────────────────
+
+    def _obliquity(self, jd: float) -> float:
+        """True obliquity of the ecliptic (degrees)."""
+        try:
+            return swe.calc_ut(jd, _ECL_NUT, 0)[0][0]
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"obliquity failed: {exc}") from exc
+
+    def equatorial_from_ecliptic(
+        self, jd: float, tropical_lon: float, ecl_lat: float = 0.0
+    ) -> tuple[float, float]:
+        """(right ascension, declination) in degrees from tropical ecliptic coords."""
+        eps = self._obliquity(jd)
+        try:
+            ra, dec, _ = swe.cotrans((tropical_lon, ecl_lat, 1.0), -eps)
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"cotrans failed: {exc}") from exc
+        return ra % 360, dec
+
+    def planet_astro_extras(self, jd: float, planet: str) -> dict[str, Any]:
+        """Ecliptic latitude (shara), right ascension and declination (kranti).
+
+        Equatorial values are ayanamsha-independent. 'ketu' is derived from the
+        node axis: opposite tropical longitude, mirrored latitude.
+        """
+        if planet == "ketu":
+            ecl = self._calc_raw(_BODY_MAP["rahu"], jd)
+            lon = (ecl[0] + 180.0) % 360
+            lat = -ecl[1]
+            ra, dec = self.equatorial_from_ecliptic(jd, lon, lat)
+            return {
+                "latitude": round(lat, 4),
+                "right_ascension": round(ra, 4),
+                "declination": round(dec, 4),
+            }
+        body = _BODY_MAP.get(planet)
+        if body is None:
+            raise EphemerisError(f"Unknown planet: {planet!r}")
+        ecl = self._calc_raw(body, jd)
+        equ = self._calc_raw(body, jd, equatorial=True)
+        return {
+            "latitude": round(ecl[1], 4),
+            "right_ascension": round(equ[0] % 360, 4),
+            "declination": round(equ[1], 4),
+        }
+
+    def _calc_raw(
+        self, body: int, jd: float, *, equatorial: bool = False
+    ) -> tuple[float, ...]:
+        """Uncached tropical calc — (lon/RA, lat/dec, dist, speeds…)."""
+        flags = _TROPICAL_SPEED | (swe.FLG_EQUATORIAL if equatorial else 0)
+        try:
+            return swe.calc_ut(jd, body, flags)[0]
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"calc_ut failed for body {body}: {exc}") from exc
+
+    def ascendant_astro_extras(
+        self, jd: float, lat: float, lon: float
+    ) -> dict[str, Any]:
+        """Lagna shara (0 by definition), RA, kranti and speed in °/day."""
+        try:
+            _, ascmc = swe.houses(jd, lat, lon, b"P")
+            tropical_asc = ascmc[0]
+            step_days = 60.0 / 86400.0
+            _, ascmc_next = swe.houses(jd + step_days, lat, lon, b"P")
+        except (swe.Error, IndexError, TypeError, ValueError) as exc:
+            raise EphemerisError(f"houses failed: {exc}") from exc
+        speed = (((ascmc_next[0] - tropical_asc + 540.0) % 360.0) - 180.0) / step_days
+        ra, dec = self.equatorial_from_ecliptic(jd, tropical_asc, 0.0)
+        return {
+            "latitude": 0.0,
+            "right_ascension": round(ra, 4),
+            "declination": round(dec, 4),
+            "speed": round(speed, 4),
+        }
+
     # ── ascendant ────────────────────────────────────────────────────────────
 
     def ascendant(
