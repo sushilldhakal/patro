@@ -32,11 +32,26 @@ from services.panchanga_api import (
     build_month_calendar,
     build_month_calendar_at_clock,
     build_patro_month,
+    build_year_calendar,
     resolve_panchanga_date,
 )
 from services.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
+
+
+@router.get("/panchanga/year/{bs_year}")
+def panchanga_year(
+    bs_year: int,
+    location: LocationDep,
+    full: bool = Query(False, description="Include full daily state per day"),
+):
+    """Full BS year calendar — all months in one response."""
+    _validate_bs_year(bs_year)
+    try:
+        return build_year_calendar(bs_year, location, full=full)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/panchanga/{bs_year}/{bs_month}")

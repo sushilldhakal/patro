@@ -267,6 +267,32 @@ def build_month_calendar(
     }
 
 
+def build_year_calendar(
+    bs_year: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    full: bool = False,
+) -> dict[str, Any]:
+    """Full BS year — all month grids in one payload for year scrubbers."""
+    months: list[dict[str, Any]] = []
+    calendar: list[dict[str, Any]] = []
+    year_length = 0
+
+    for bs_month in range(1, 13):
+        month_payload = build_month_calendar(bs_year, bs_month, location, full=full)
+        months.append(month_payload)
+        calendar.extend(month_payload["calendar"])
+        year_length += month_payload["month_length"]
+
+    return {
+        "year_bs": bs_year,
+        "year_length": year_length,
+        "location": location.as_dict(),
+        "months": months,
+        "calendar": calendar,
+    }
+
+
 def build_calendar_header(
     bs_year: int,
     bs_month: int,

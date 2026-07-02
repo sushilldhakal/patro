@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from services.panchanga_api import build_daily_state, build_month_calendar
+from services.panchanga_api import build_daily_state, build_month_calendar, build_year_calendar
 
 
 def test_daily_state_includes_patro_table_fields() -> None:
@@ -30,3 +30,14 @@ def test_month_calendar_full_embeds_patro_fields() -> None:
     assert p.get("lagna_spans")
     assert p.get("planets")
     assert p.get("solar_corrections")
+
+
+def test_year_calendar_full_has_all_months_and_days() -> None:
+    year = build_year_calendar(2083, DEFAULT_LOCATION, full=True)
+    assert year["year_bs"] == 2083
+    assert len(year["months"]) == 12
+    assert year["year_length"] == len(year["calendar"])
+    assert year["year_length"] >= 365
+    assert year["calendar"][0]["panchanga"].get("planets")
+    assert year["months"][0]["month_bs"] == 1
+    assert year["months"][-1]["month_bs"] == 12
