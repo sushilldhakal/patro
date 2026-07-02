@@ -59,6 +59,18 @@ LON_KATHMANDU = 85.3240
 ALT_KATHMANDU = 1400.0
 
 
+def _default_altitude(latitude: float, longitude: float) -> float:
+    """Observer altitude when the caller didn't supply one.
+
+    The Kathmandu valley keeps its ~1400 m elevation so published Nepali patro
+    times stay unchanged; everywhere else uses sea level like standard
+    rise/set tables, instead of inheriting Kathmandu's altitude.
+    """
+    if abs(latitude - LAT_KATHMANDU) < 0.15 and abs(longitude - LON_KATHMANDU) < 0.15:
+        return ALT_KATHMANDU
+    return 0.0
+
+
 def init_ephemeris(ayanamsa: int = SIDM_LAHIRI) -> None:
     """No-op — AstronomyEngine initialises on import."""
 
@@ -86,22 +98,26 @@ def get_sun_longitude(
     ayanamsa: int = SIDM_LAHIRI,
 ) -> float:
     jd = default_engine.julian_day(dt)
-    return default_engine.sun_longitude(jd, sidereal=sidereal)
+    return default_engine.sun_longitude(jd, sidereal=sidereal, ayanamsa=ayanamsa)
 
 
-def get_moon_longitude(dt: datetime, sidereal: bool = True) -> float:
+def get_moon_longitude(
+    dt: datetime, sidereal: bool = True, *, ayanamsa: int = SIDM_LAHIRI
+) -> float:
     jd = default_engine.julian_day(dt)
-    return default_engine.moon_longitude(jd, sidereal=sidereal)
+    return default_engine.moon_longitude(jd, sidereal=sidereal, ayanamsa=ayanamsa)
 
 
-def get_sun_moon_positions(dt: datetime, sidereal: bool = True) -> tuple[float, float]:
+def get_sun_moon_positions(
+    dt: datetime, sidereal: bool = True, *, ayanamsa: int = SIDM_LAHIRI
+) -> tuple[float, float]:
     jd = default_engine.julian_day(dt)
-    return default_engine.sun_moon_longitudes(jd, sidereal=sidereal)
+    return default_engine.sun_moon_longitudes(jd, sidereal=sidereal, ayanamsa=ayanamsa)
 
 
 def get_ayanamsa(dt: datetime, ayanamsa: int = SIDM_LAHIRI) -> float:
     jd = default_engine.julian_day(dt)
-    return default_engine.ayanamsa(jd)
+    return default_engine.ayanamsa(jd, mode=ayanamsa)
 
 
 # ── planets ──────────────────────────────────────────────────────────────────
@@ -115,7 +131,7 @@ def get_planet_position(
 ) -> dict[str, Any]:
     """planet is a string name ('sun', 'moon', …) matching PLANET_IDS keys."""
     jd = default_engine.julian_day(dt)
-    return default_engine.planet_position(jd, planet, sidereal=sidereal)
+    return default_engine.planet_position(jd, planet, sidereal=sidereal, ayanamsa=ayanamsa)
 
 
 def _dms_absolute(longitude: float) -> str:
@@ -170,13 +186,17 @@ def get_all_planetary_positions(
     from engine.astronomy.positions import RASHI_NAMES, RASHI_NAMES_NE
 
     jd = default_engine.julian_day(dt)
-    raw = default_engine.all_planet_positions(jd, sidereal=sidereal)
+    raw = default_engine.all_planet_positions(jd, sidereal=sidereal, ayanamsa=ayanamsa)
 
     positions: dict[str, Any] = {}
     for name in PLANET_IDS:
         positions[name] = _enrich_planet_position(
             raw[name], rashi_names=RASHI_NAMES, rashi_names_ne=RASHI_NAMES_NE
         )
+
+    # Nodes are displayed वक्री by convention; the true node's instantaneous
+    # speed oscillates and would otherwise flicker between direct/retrograde.
+    positions["rahu"]["is_retrograde"] = True
 
     rahu_long = positions["rahu"]["longitude"]
     ketu_long = (rahu_long + 180.0) % 360
@@ -200,9 +220,11 @@ def calculate_sunrise(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     result = default_engine.rise(
         date_val, "sun", latitude, longitude, altitude, timezone_name=timezone_name
     )
@@ -215,9 +237,11 @@ def calculate_sunset(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     result = default_engine.set(
         date_val, "sun", latitude, longitude, altitude, timezone_name=timezone_name
     )
@@ -230,9 +254,11 @@ def calculate_moonrise(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime | None:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     return default_engine.rise(
         date_val, "moon", latitude, longitude, altitude, timezone_name=timezone_name
     )
@@ -242,9 +268,11 @@ def calculate_moonset(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime | None:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     return default_engine.set(
         date_val, "moon", latitude, longitude, altitude, timezone_name=timezone_name
     )
@@ -254,9 +282,11 @@ def calculate_moonrise_after(
     after_dt: datetime,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime | None:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     return default_engine.rise_after(after_dt, "moon", latitude, longitude, altitude)
 
 
@@ -264,9 +294,11 @@ def calculate_moonset_after(
     after_dt: datetime,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
-    altitude: float = ALT_KATHMANDU,
+    altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime | None:
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
     return default_engine.set_after(after_dt, "moon", latitude, longitude, altitude)
 
 

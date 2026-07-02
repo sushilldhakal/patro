@@ -16,17 +16,24 @@ def build_lagna_spans(
     lat: float,
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
+    ayanamsa: int | None = None,
 ) -> list[dict[str, Any]]:
     """Twelve lagna periods across one vedic day (sunrise → sunrise)."""
+    from engine.astronomy.engine import SIDM_LAHIRI
     from engine.astronomy.timescale import resolve_observer_timezone
 
+    mode = SIDM_LAHIRI if ayanamsa is None else ayanamsa
     tz = resolve_observer_timezone(timezone_name)
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt
 
     for index in range(12):
-        lagna = get_lagna(cursor, lat=lat, lon=lon)
-        end_dt = next_sunrise_dt if index == 11 else find_lagna_end(cursor, lat=lat, lon=lon)
+        lagna = get_lagna(cursor, lat=lat, lon=lon, ayanamsa=mode)
+        end_dt = (
+            next_sunrise_dt
+            if index == 11
+            else find_lagna_end(cursor, lat=lat, lon=lon, ayanamsa=mode)
+        )
         if end_dt <= cursor:
             end_dt = cursor + timedelta(seconds=60)
 

@@ -16,6 +16,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
+from engine.astronomy.engine import SIDM_LAHIRI
 from engine.astronomy.positions import get_sidereal_asc_longitude
 from engine.astronomy.timescale import resolve_observer_timezone
 
@@ -41,8 +42,10 @@ def pushkara_degrees_for_rashi(rashi_number: int) -> tuple[float, float]:
     return (a - 1) * _NAVAMSHA_DEG, (b - 1) * _NAVAMSHA_DEG
 
 
-def _degree_in_rashi(dt: datetime, *, lat: float, lon: float) -> float:
-    return get_sidereal_asc_longitude(dt, lat=lat, lon=lon) % 30.0
+def _degree_in_rashi(
+    dt: datetime, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
+) -> float:
+    return get_sidereal_asc_longitude(dt, lat=lat, lon=lon, ayanamsa=ayanamsa) % 30.0
 
 
 def find_lagna_degree_crossing(
@@ -53,13 +56,14 @@ def find_lagna_degree_crossing(
     lat: float,
     lon: float,
     tolerance_seconds: float = 2.0,
+    ayanamsa: int = SIDM_LAHIRI,
 ) -> datetime | None:
     """When ascendant longitude (mod 30°) reaches target_deg during [start, end]."""
     if end_dt <= start_dt:
         return None
 
-    d_start = _degree_in_rashi(start_dt, lat=lat, lon=lon)
-    d_end = _degree_in_rashi(end_dt, lat=lat, lon=lon)
+    d_start = _degree_in_rashi(start_dt, lat=lat, lon=lon, ayanamsa=ayanamsa)
+    d_end = _degree_in_rashi(end_dt, lat=lat, lon=lon, ayanamsa=ayanamsa)
 
     # Ascendant moves forward through the sign during a single-rashi span.
     if d_end < d_start:
@@ -77,7 +81,7 @@ def find_lagna_degree_crossing(
         if (hi - lo).total_seconds() <= tolerance_seconds:
             return lo + (hi - lo) / 2
         mid = lo + (hi - lo) / 2
-        if _degree_in_rashi(mid, lat=lat, lon=lon) < target_deg - 1e-6:
+        if _degree_in_rashi(mid, lat=lat, lon=lon, ayanamsa=ayanamsa) < target_deg - 1e-6:
             lo = mid
         else:
             hi = mid
@@ -99,6 +103,7 @@ def pushkara_times_for_span(
     lat: float,
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
+    ayanamsa: int = SIDM_LAHIRI,
 ) -> list[dict[str, Any]]:
     """Pushkara Navamsha clock times falling inside one lagna span."""
     start_raw = span.get("start_time")
@@ -112,7 +117,9 @@ def pushkara_times_for_span(
 
     hits: list[dict[str, Any]] = []
     for deg in pushkara_degrees_for_rashi(rashi_num):
-        cross = find_lagna_degree_crossing(start_dt, end_dt, deg, lat=lat, lon=lon)
+        cross = find_lagna_degree_crossing(
+            start_dt, end_dt, deg, lat=lat, lon=lon, ayanamsa=ayanamsa
+        )
         if cross is None:
             continue
         times = _format_local_time(cross, timezone_name)
@@ -132,13 +139,14 @@ def enrich_lagna_spans_with_pushkara(
     lat: float,
     lon: float,
     timezone_name: str = "Asia/Kathmandu",
+    ayanamsa: int = SIDM_LAHIRI,
 ) -> list[dict[str, Any]]:
     """Attach pushkara_navamsha times to each lagna span (mutates copies)."""
     enriched: list[dict[str, Any]] = []
     for span in spans:
         row = dict(span)
         row["pushkara_navamsha"] = pushkara_times_for_span(
-            span, lat=lat, lon=lon, timezone_name=timezone_name
+            span, lat=lat, lon=lon, timezone_name=timezone_name, ayanamsa=ayanamsa
         )
         enriched.append(row)
     return enriched

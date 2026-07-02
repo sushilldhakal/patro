@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 # Bump when cached payload_json shape changes; stale rows are treated as cache misses.
 # 7: paksha-resolved pūrṇimānta layer (adhik/शुद्ध month split in lunar_calendar).
-CACHE_PAYLOAD_VERSION = 7
+# 8: Rahu/Ketu switched from mean to true node; non-Kathmandu rise/set no longer
+#    computed with Kathmandu's 1400 m altitude.
+CACHE_PAYLOAD_VERSION = 8
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

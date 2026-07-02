@@ -217,6 +217,7 @@ def build_panchanga_at_time(
         lat=location.lat,
         lon=location.lon,
         timezone_name=location.timezone,
+        ayanamsa=mode,
     )
     from engine.vedic.pushkara_navamsha import enrich_lagna_spans_with_pushkara
 
@@ -225,6 +226,7 @@ def build_panchanga_at_time(
         lat=location.lat,
         lon=location.lon,
         timezone_name=location.timezone,
+        ayanamsa=mode,
     )
     planets_anchor = {
         "type": "instant",

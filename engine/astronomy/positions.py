@@ -156,7 +156,7 @@ def get_sidereal_asc_longitude(
 ) -> float:
     """Sidereal ascendant longitude (0–360°) at dt for the observer."""
     jd = default_engine.julian_day(dt)
-    return default_engine.ascendant(jd, lat, lon)
+    return default_engine.ascendant(jd, lat, lon, ayanamsa=ayanamsa)
 
 
 def _lagna_rashi_index(
@@ -171,11 +171,17 @@ def _lagna_rashi_index(
     ) % 12
 
 
-def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
+def find_lagna_end(
+    dt: datetime,
+    *,
+    lat: float,
+    lon: float,
+    ayanamsa: int = AYANAMSA_LAHIRI,
+) -> datetime:
     """When the ascendant next enters the following rashi after dt."""
     from datetime import timedelta
 
-    current = _lagna_rashi_index(dt, lat=lat, lon=lon)
+    current = _lagna_rashi_index(dt, lat=lat, lon=lon, ayanamsa=ayanamsa)
     start_dt = dt
     end_dt = dt + timedelta(hours=4)
     tolerance = timedelta(seconds=30)
@@ -184,7 +190,7 @@ def find_lagna_end(dt: datetime, *, lat: float, lon: float) -> datetime:
         if end_dt - start_dt < tolerance:
             return end_dt
         mid_dt = start_dt + (end_dt - start_dt) / 2
-        if _lagna_rashi_index(mid_dt, lat=lat, lon=lon) == current:
+        if _lagna_rashi_index(mid_dt, lat=lat, lon=lon, ayanamsa=ayanamsa) == current:
             start_dt = mid_dt
         else:
             end_dt = mid_dt
