@@ -456,6 +456,29 @@ def _find_bs_civil_purnima(
     return None
 
 
+def _find_bs_civil_amavasya(
+    bs_year: int,
+    bs_month: int,
+    location: ObserverLocation,
+) -> Optional[date]:
+    """Udaya-confirmed Krishna Amavasya within a Bikram Sambat civil month."""
+    try:
+        month_start = get_bs_month_start(bs_year, bs_month)
+        month_length = get_bs_month_length(bs_year, bs_month)
+    except ValueError:
+        return None
+
+    for offset in range(month_length):
+        candidate = month_start + timedelta(days=offset)
+        try:
+            udaya = get_udaya_tithi(candidate, location)
+        except (RuntimeError, TypeError, ValueError):
+            continue
+        if udaya["tithi"] == 15 and udaya["paksha"] == "krishna":
+            return candidate
+    return None
+
+
 def _resolve_shrawan_purnima_by_bs_civil(
     gregorian_year: int,
     location: ObserverLocation,
@@ -474,6 +497,21 @@ def _resolve_shrawan_purnima_by_bs_civil(
             return shrawan
     if bhadau is not None and bhadau.year == gregorian_year:
         return bhadau
+    return None
+
+
+def _resolve_baishakh_amavasya_by_bs_civil(
+    gregorian_year: int,
+    location: ObserverLocation,
+) -> Optional[date]:
+    """
+    MoHA-style Baishakh Aunshi: Krishna Amavasya within civil Baishakh month.
+    Printed patro ties Mata Tirtha to civil वैशाख औंसी, not purnimant masa alone.
+    """
+    bs_year = bs_solar_year_for_gregorian_year(gregorian_year, 1)
+    civil = _find_bs_civil_amavasya(bs_year, 1, location)
+    if civil is not None and civil.year == gregorian_year:
+        return civil
     return None
 
 
@@ -517,6 +555,16 @@ def find_festival_in_lunar_month(
         and paksha == "shukla"
     ):
         civil = _resolve_shrawan_purnima_by_bs_civil(gregorian_year, location)
+        if civil is not None:
+            return civil
+
+    if (
+        month_model == "festival"
+        and lunar_month_name == "Baishakh"
+        and tithi == 15
+        and paksha == "krishna"
+    ):
+        civil = _resolve_baishakh_amavasya_by_bs_civil(gregorian_year, location)
         if civil is not None:
             return civil
 

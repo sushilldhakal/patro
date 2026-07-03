@@ -54,6 +54,16 @@ def test_dashain_2084_predicted_from_lunar_rules():
     pytest.fail("Dashain not found in BS 2084")
 
 
+def test_mata_tirtha_aunshi_bs_2084_civil_baishakh():
+    payload = generate_bs_festivals(2084, DEFAULT_LOCATION)
+    mata = next(f for f in payload["festivals"] if f["id"] == "mata-tirtha-aunshi")
+    assert mata["start_date"] == "2027-05-06"
+    bs_year, bs_month, bs_day = gregorian_to_bs(__import__("datetime").date.fromisoformat(mata["start_date"]))
+    assert bs_year == 2084
+    assert bs_month == 1
+    assert bs_day == 23
+
+
 def test_get_bs_festivals_computes_without_preexisting_cache(tmp_path, monkeypatch):
     import services.holiday_generator as hg
 
