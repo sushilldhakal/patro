@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "months": [
+      { "bs_month": 11, "name_ne": "फागुन" },
+      { "bs_month": 12, "name_ne": "चैत" }
+    ],
+    "description": "Falgun & Chaitra festival catalog BS 2083",
+    "source": "User-provided patro list (2026-07-03)"
+  }
+}

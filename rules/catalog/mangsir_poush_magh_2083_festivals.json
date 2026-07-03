@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "months": [
+      { "bs_month": 8, "name_ne": "मंसिर" },
+      { "bs_month": 9, "name_ne": "पुष" },
+      { "bs_month": 10, "name_ne": "माघ" }
+    ],
+    "description": "Mangsir, Poush & Magh festival catalog BS 2083",
+    "source": "User-provided patro list (2026-07-03)"
+  }
+}

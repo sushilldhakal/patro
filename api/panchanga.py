@@ -104,7 +104,7 @@ def festivals_bs_year(
     _validate_bs_year(bs_year)
     try:
         from services.holiday_generator import get_bs_festivals
-        return get_bs_festivals(bs_year, location, cache_only=True, bs_month=month)
+        return get_bs_festivals(bs_year, location, bs_month=month)
     except FestivalCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -131,7 +131,7 @@ def holidays(
     """BS-year public holiday list (cache-backed; festivals are on /festivals)."""
     _validate_bs_year(year)
     try:
-        return get_bs_holidays(year, location, cache_only=True, bs_month=month)
+        return get_bs_holidays(year, location, bs_month=month)
     except HolidayCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -195,7 +195,7 @@ def nepal_holidays(
     _validate_bs_year(year)
     try:
         from services.holiday_generator import filter_holidays_by_bs_month
-        payload = get_bs_holidays(year, location, cache_only=True)
+        payload = get_bs_holidays(year, location)
     except HolidayCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
@@ -250,7 +250,7 @@ def nepal_festivals(
         seen: dict[str, Any] = {}
         for bs_year in (year + 56, year + 57):
             try:
-                payload = get_bs_festivals(bs_year, location, cache_only=True)
+                payload = get_bs_festivals(bs_year, location)
                 for f in payload["festivals"]:
                     start = date.fromisoformat(f["start_date"])
                     end = date.fromisoformat(f["end_date"])
@@ -271,7 +271,7 @@ def nepal_festivals(
     _validate_bs_year(year)
     from services.holiday_generator import get_bs_festivals
     try:
-        payload = get_bs_festivals(year, location, cache_only=True, bs_month=month)
+        payload = get_bs_festivals(year, location, bs_month=month)
     except FestivalCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     enriched = _enrich_holiday_bs_dates(payload["festivals"])
@@ -304,7 +304,7 @@ def nepal_upcoming_festivals(
     seen: dict[str, Any] = {}
     for bs_year in (start.year + 56, start.year + 57, start.year + 58):
         try:
-            payload = get_bs_festivals(bs_year, location, cache_only=True)
+            payload = get_bs_festivals(bs_year, location)
         except FestivalCacheMissError:
             continue
         for f in payload["festivals"]:

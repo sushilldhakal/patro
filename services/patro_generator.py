@@ -15,7 +15,7 @@ from engine.vedic.bikram_sambat import (
 )
 from engine.vedic.daily import get_daily_panchanga
 from services.cache_meta import stamp_payload
-from services.holiday_generator import get_bs_festivals, get_festivals
+from services.holiday_generator import get_bs_festivals
 
 
 def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
@@ -29,25 +29,8 @@ def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
 
 
 def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
-    try:
-        payload = get_bs_festivals(bs_year, location, cache_only=True)
-        return payload["festivals"]
-    except LookupError:
-        pass
-
-    year_start, year_end = bs_year_date_range(bs_year)
-    gregorian_years = {year_start.year, year_end.year}
-    merged: dict[str, dict] = {}
-
-    for greg_year in sorted(gregorian_years):
-        payload = get_festivals(greg_year, location)
-        for festival in payload["festivals"]:
-            start = date.fromisoformat(festival["start_date"])
-            end = date.fromisoformat(festival["end_date"])
-            if start <= year_end and end >= year_start:
-                merged[festival["id"]] = festival
-
-    return sorted(merged.values(), key=lambda h: h["start_date"])
+    payload = get_bs_festivals(bs_year, location)
+    return payload["festivals"]
 
 
 def generate_bs_month_patro(

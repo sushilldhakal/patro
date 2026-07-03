@@ -60,7 +60,7 @@ def _nepal_holidays_for_ad_year(
     ad_year: int,
     location: ObserverLocation,
     *,
-    cache_only: bool = True,
+    cache_only: bool = False,
 ) -> list[dict[str, Any]]:
     from services.holiday_generator import HolidayCacheMissError, get_bs_holidays
     seen: dict[str, dict[str, Any]] = {}
