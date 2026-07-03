@@ -261,7 +261,9 @@ def _merge_bs_year_festivals(
             start = date.fromisoformat(festival["start_date"])
             end = date.fromisoformat(festival["end_date"])
             if start <= year_end and end >= year_start:
-                merged[festival["id"]] = festival
+                existing = merged.get(festival["id"])
+                if existing is None or start < date.fromisoformat(existing["start_date"]):
+                    merged[festival["id"]] = festival
 
     return sorted(merged.values(), key=lambda item: item["start_date"])
 

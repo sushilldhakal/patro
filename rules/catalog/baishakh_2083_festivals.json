@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "bs_month": 1,
+    "month_name_ne": "वैशाख",
+    "description": "Manual festival catalog for Baishakh 2083 — solar vs lunar vs civil (bs_fixed) vs Gregorian (ad_fixed). Lunar rows use festival masa (Purnimant); dates shift by BS civil day each year.",
+    "source": "User-provided patro list (2026-06-30)",
+    "rule_types": {
+      "solar": "Sankranti calendar — same BS solar month/day every year (e.g. Baishakh 1 = Mesh Sankranti)",
+      "lunar": "Tithi in named lunar month — date moves on the BS civil calendar",
+      "bs_fixed": "Fixed Bikram Sambat civil date (bs_month + bs_day)",
+      "ad_fixed": "Fixed Gregorian date (ad_month + ad_day) — may fall in different BS months each year"
+    }
+  },
+  "solar": [
+    {
+      "bs_day": 1,
+      "festivals": [
+        { "id": "mesh-sankranti", "name_en": "Mesh Sankranti", "name_ne": "मेष संक्रान्ति", "notes": "Sun enters Aries; start of Baishakh solar month" },
+        { "id": "bs-new-year", "name_en": "Nepali New Year", "name_ne": "नयाँ वर्ष", "notes": "Baishakh 1 — overlaps Mesh Sankranti" },
+        { "id": "biska-jatra", "name_en": "Biska Jatra", "name_ne": "बिस्काः जात्रा", "notes": "Bhaktapur new year festival — Baishakh 1 vicinity" }
+      ]
+    }
+  ],
+  "lunar_baishakh": [
+    { "bs_day": 4, "tithi_ne": "वैशाख कृष्ण औंसी", "tithi": 15, "paksha": "krishna", "festivals": [
+      { "id": "mata-tirtha-aunshi", "name_en": "Mata Tirtha Aunshi", "name_ne": "मातातीर्थ औंसी" }
+    ]},
+    { "bs_day": 5, "tithi_ne": "वैशाख शुक्ल प्रतिपदा", "tithi": 1, "paksha": "shukla", "festivals": [
+      { "id": "rato-machhindranath-ratharohan", "name_en": "Rato Machhindranath Ratharohan", "name_ne": "रातो मच्छिन्द्रनाथ रथारोहण" }
+    ]},
+    { "bs_day": 6, "tithi_ne": "वैशाख शुक्ल द्वितीया", "tithi": 2, "paksha": "shukla", "festivals": [
+      { "id": "parshuram-jayanti", "name_en": "Parshuram Jayanti", "name_ne": "परशुराम जयन्ती" }
+    ]},
+    { "bs_day": 7, "tithi_ne": "वैशाख शुक्ल तृतिया", "tithi": 3, "paksha": "shukla", "festivals": [
+      { "id": "akshaya-tritiya", "name_en": "Akshaya Tritiya", "name_ne": "अक्षय तृतीया" },
+      { "id": "shiv-parvati-vivaha", "name_en": "Shiv Parvati Vivaha Mahotsav", "name_ne": "शिव पार्वती विवाह महोत्सव" }
+    ]},
+    { "bs_day": 8, "tithi_ne": "वैशाख शुक्ल चतुर्थी", "tithi": 4, "paksha": "shukla", "festivals": [
+      { "id": "bungadyo-matsyendranath-yatra", "name_en": "Bungadyo Rato Matsyendranath Rath Yatra", "name_ne": "बुँगाद्यो रातो मत्स्येन्द्रनाथ रथ यात्रा प्रारम्भ" }
+    ]},
+    { "bs_day": 9, "tithi_ne": "वैशाख शुक्ल पञ्चमी", "tithi": 5, "paksha": "shukla", "festivals": [
+      { "id": "ramanujacharya-jayanti", "name_en": "Ramanujacharya Jayanti", "name_ne": "रामानुजाचार्य जयन्ती" }
+    ]},
+    { "bs_day": 10, "tithi_ne": "वैशाख शुक्ल सप्तमी", "tithi": 7, "paksha": "shukla", "festivals": [
+      { "id": "ganga-saptami", "name_en": "Ganga Saptami Vrata", "name_ne": "गंगा सप्तमी व्रत" }
+    ]},
+    { "bs_day": 11, "tithi_ne": "वैशाख शुक्ल अष्टमी", "tithi": 8, "paksha": "shukla", "festivals": [
+      { "id": "gorakhkali-puja", "name_en": "Gorakhkali Puja", "name_ne": "गोरखकाली पूजा" }
+    ]},
+    { "bs_day": 12, "tithi_ne": "वैशाख शुक्ल नवमी", "tithi": 9, "paksha": "shukla", "festivals": [
+      { "id": "sita-jayanti", "name_en": "Sita Jayanti Vrata", "name_ne": "सीता जयन्ती व्रत" }
+    ]},
+    { "bs_day": 14, "tithi_ne": "वैशाख शुक्ल एकादशी", "tithi": 11, "paksha": "shukla", "festivals": [
+      { "id": "mohini-ekadashi", "name_en": "Mohini Ekadashi Vrata", "name_ne": "मोहिनी एकादशी व्रत" }
+    ]},
+    { "bs_day": 16, "tithi_ne": "वैशाख शुक्ल त्रयोदशी", "tithi": 13, "paksha": "shukla", "festivals": [
+      { "id": "pradosh-vrata-shukla", "name_en": "Pradosh Vrata", "name_ne": "प्रदोष व्रत", "notes": "Shukla Triyodashi — repeats monthly" }
+    ]},
+    { "bs_day": 17, "tithi_ne": "वैशाख शुक्ल चतुर्दशी", "tithi": 14, "paksha": "shukla", "festivals": [
+      { "id": "narsingh-jayanti", "name_en": "Narsingh Jayanti", "name_ne": "नरसिंह जयन्ती" }
+    ]},
+    { "bs_day": 18, "tithi_ne": "वैशाख शुक्ल पूर्णिमा", "tithi": 15, "paksha": "shukla", "festivals": [
+      { "id": "chandi-purnima", "name_en": "Chandi Poornima", "name_ne": "चण्डी पूर्णिमा" },
+      { "id": "buddha-jayanti", "name_en": "Buddha Jayanti", "name_ne": "बुद्ध जयन्ती" },
+      { "id": "ubhauli-parwa", "name_en": "Ubhauli Parwa", "name_ne": "उभौली पर्व" },
+      { "id": "chandeshwari-jatra", "name_en": "Chandeshwari Jatra", "name_ne": "चण्डेश्वरी जात्रा" },
+      { "id": "gorakhnath-jayanti", "name_en": "Gorakhnath Jayanti", "name_ne": "गोरखनाथ जयन्ती" },
+      { "id": "kurma-jayanti", "name_en": "Kurma Jayanti", "name_ne": "कूर्म जयन्ती" },
+      { "id": "baisakh-snan-samapti", "name_en": "Baisakh Snan Samapti", "name_ne": "बैशाख स्नान समाप्ति" }
+    ]},
+    { "bs_day": 2, "tithi_ne": "वैशाख कृष्ण त्रयोदशी", "tithi": 13, "paksha": "krishna", "festivals": [
+      { "id": "pradosh-vrata-krishna", "name_en": "Pradosh Vrata", "name_ne": "प्रदोष व्रत", "notes": "Krishna Triyodashi" }
+    ]},
+    { "bs_day": 30, "tithi_ne": "जेठ कृष्ण एकादशी", "tithi": 11, "paksha": "krishna", "lunar_month": "Jestha", "festivals": [
+      { "id": "apara-ekadashi", "name_en": "Apara Ekadashi Vrata", "name_ne": "अपरा एकादशी व्रत" }
+    ]}
+  ],
+  "bs_fixed": [
+    { "bs_day": 11, "festivals": [
+      { "id": "loktantra-diwas", "name_en": "Loktantra Diwas", "name_ne": "लोकतन्त्र दिवस" }
+    ]},
+    { "bs_day": 12, "festivals": [
+      { "id": "earthquake-remembrance-2072", "name_en": "2072 Earthquake Remembrance Day", "name_ne": "२०७२ भूकम्प स्मरण दिवस" }
+    ]},
+    { "bs_day": 24, "festivals": [
+      { "id": "kirat-samaj-sudhar-diwas", "name_en": "Kirat Samaj Sudhar Diwas", "name_ne": "किरात समाज सुधार दिवस" }
+    ]}
+  ],
+  "ad_fixed_in_baishakh_2083": [
+    { "ad_date": "2026-04-15", "festivals": [{ "id": "world-art-day", "name_en": "World Art Day", "name_ne": "विश्व कला दिवस" }] },
+    { "ad_date": "2026-04-18", "festivals": [{ "id": "international-wellness-day", "name_en": "International Wellness Day", "name_ne": "अन्तर्राष्ट्रिय स्वास्थ्य दिवस" }] },
+    { "ad_date": "2026-04-22", "festivals": [{ "id": "world-earth-day", "name_en": "World Earth Day", "name_ne": "पृथ्वी दिवस" }] },
+    { "ad_date": "2026-04-23", "festivals": [{ "id": "world-book-day", "name_en": "World Book and Copyright Day", "name_ne": "विश्व पुस्तक दिवस" }] },
+    { "ad_date": "2026-04-25", "festivals": [{ "id": "world-malaria-day", "name_en": "World Malaria Day", "name_ne": "विश्व मलेरिया दिवस" }] },
+    { "ad_date": "2026-04-26", "festivals": [{ "id": "world-ip-day", "name_en": "World Intellectual Property Day", "name_ne": "विश्व बौद्धिक सम्पदा दिवस" }] },
+    { "ad_date": "2026-04-28", "festivals": [{ "id": "world-safety-day", "name_en": "World Day for Safety and Health at Work", "name_ne": "विश्व श्रम सुरक्षा दिवस" }] },
+    { "ad_date": "2026-04-29", "festivals": [{ "id": "international-dance-day", "name_en": "International Dance Day", "name_ne": "अन्तर्राष्ट्रिय नृत्य दिवस" }] },
+    { "ad_date": "2026-05-01", "festivals": [{ "id": "labour-day", "name_en": "International Labour Day", "name_ne": "अन्तर्राष्ट्रिय श्रमिक दिवस" }] },
+    { "ad_date": "2026-05-03", "festivals": [{ "id": "world-press-freedom-day", "name_en": "World Press Freedom Day", "name_ne": "विश्व प्रेस स्वतन्त्रता दिवस" }] },
+    { "ad_date": "2026-05-08", "festivals": [{ "id": "world-red-cross-day", "name_en": "World Red Cross Day", "name_ne": "विश्व रेडक्रस दिवस" }] },
+    { "ad_date": "2026-05-12", "festivals": [{ "id": "international-nurses-day", "name_en": "International Nurses Day", "name_ne": "अन्तर्राष्ट्रिय नर्स दिवस" }] }
+  ]
+}
