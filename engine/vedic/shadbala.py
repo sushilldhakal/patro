@@ -435,25 +435,39 @@ def compute_shadbala(
     rows: list[dict[str, Any]] = []
     for p in PLANETS:
         lp = lons[p]
-        sthana = (
-            _uchcha(p, lp)
-            + _saptavargaja(p, lp, d1_signs)
-            + _oja(p, lp)
-            + _kendradi(d1_signs[p], lagna_sign)
-            + _drekkana(p, lp)
-        )
+        uchcha = _uchcha(p, lp)
+        saptavargaja = _saptavargaja(p, lp, d1_signs)
+        oja = _oja(p, lp)
+        kendradi = _kendradi(d1_signs[p], lagna_sign)
+        drekkana = _drekkana(p, lp)
+        sthana = uchcha + saptavargaja + oja + kendradi + drekkana
+
         dig = _dig(p, lp, lagna_lon)
+
+        nathonnatha = _nathonnatha(p, birth_min, noon_min)
+        paksha = _paksha(p, lons["sun"], lons["moon"])
+        tribhaga = _tribhaga(p, birth_min, sunrise_min, sunset_min)
+        varadhipati = 45.0 if VARA_LORD[weekday] == p else 0.0
+        masadhipati = 30.0 if VARA_LORD[masa_lord_wd] == p else 0.0
+        varshadhipati = 15.0 if VARA_LORD[varsha_lord_wd] == p else 0.0
+        hora = _hora(p, birth_min, sunrise_min, weekday)
+        ayana = _ayana(p, lp, ayanamsa, obliquity)
+        # Graha yuddha adjustment not modelled — exposed as 0 for table parity.
+        yuddha = 0.0
         kala = (
-            _nathonnatha(p, birth_min, noon_min)
-            + _paksha(p, lons["sun"], lons["moon"])
-            + _tribhaga(p, birth_min, sunrise_min, sunset_min)
-            + (45.0 if VARA_LORD[weekday] == p else 0.0)
-            + (30.0 if VARA_LORD[masa_lord_wd] == p else 0.0)
-            + (15.0 if VARA_LORD[varsha_lord_wd] == p else 0.0)
-            + _hora(p, birth_min, sunrise_min, weekday)
-            + _ayana(p, lp, ayanamsa, obliquity)
+            nathonnatha + paksha + tribhaga
+            + varadhipati + masadhipati + varshadhipati
+            + hora + ayana + yuddha
         )
-        cheshta = _cheshta(p, speeds)
+
+        # BPHS: the Sun's Cheshta bala is its (undoubled) Ayana bala; the
+        # Moon's is its (undoubled) Paksha bala.
+        if p == "sun":
+            cheshta = min(60.0, ayana / 2.0)
+        elif p == "moon":
+            cheshta = paksha / 2.0
+        else:
+            cheshta = _cheshta(p, speeds)
         naisargika = NAISARGIKA[p]
         drik = _drik(p, lons)
 
@@ -471,6 +485,13 @@ def compute_shadbala(
         top = max(breakdown, key=breakdown.get)
         weakest = min(breakdown, key=breakdown.get)
         name, name_ne = PLANET_NAMES[p]
+
+        # Ishta / Kashta phala from Uchcha and Cheshta (virupas, 0–60 each).
+        u = max(0.0, min(60.0, uchcha))
+        c = max(0.0, min(60.0, cheshta))
+        ishta = math.sqrt(u * c)
+        kashta = math.sqrt((60.0 - u) * (60.0 - c))
+
         rows.append({
             "key": p,
             "name": name,
@@ -478,11 +499,33 @@ def compute_shadbala(
             "total_virupas": round(total, 2),
             "rupas": round(total / 60.0, 2),
             "required": required,
-            "ratio": round(ratio, 2),
+            "ratio": round(ratio, 4),
             "status": _status(ratio),
             "top_bala": BALA_LABELS[top],
             "weakest_bala": BALA_LABELS[weakest],
             "breakdown": breakdown,
+            "ishta_phala": round(ishta, 2),
+            "kashta_phala": round(kashta, 2),
+            "sub_balas": {
+                "sthana": {
+                    "uchcha": round(uchcha, 2),
+                    "saptavargaja": round(saptavargaja, 2),
+                    "oja_yugma": round(oja, 2),
+                    "kendradi": round(kendradi, 2),
+                    "drekkana": round(drekkana, 2),
+                },
+                "kala": {
+                    "nathonnatha": round(nathonnatha, 2),
+                    "paksha": round(paksha, 2),
+                    "tribhaga": round(tribhaga, 2),
+                    "varshadhipati": round(varshadhipati, 2),
+                    "masadhipati": round(masadhipati, 2),
+                    "varadhipati": round(varadhipati, 2),
+                    "horadhipati": round(hora, 2),
+                    "ayana": round(ayana, 2),
+                    "yuddha": round(yuddha, 2),
+                },
+            },
         })
 
     rows.sort(key=lambda r: r["ratio"], reverse=True)
