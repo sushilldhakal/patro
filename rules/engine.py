@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Optional
+from zoneinfo import ZoneInfo
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.bs_year import bs_solar_year_for_gregorian_year
 from engine.vedic.lunar_month import find_festival_in_lunar_month
-from engine.vedic.sankranti import find_makara_sankranti, find_mesh_sankranti
+from engine.vedic.sankranti import find_sankranti
 
 
 def compute_lunar_festival(
@@ -35,15 +36,43 @@ def compute_solar_festival(
     rule: dict[str, Any],
     gregorian_year: int,
 ) -> Optional[date]:
-    sankranti_dt = None
-    if festival_id == "maghe-sankranti" or rule.get("bs_month") == 10:
-        sankranti_dt = find_makara_sankranti(gregorian_year)
-    elif festival_id == "bs-new-year" or rule.get("bs_month") == 1:
-        sankranti_dt = find_mesh_sankranti(gregorian_year)
+    """Festival anchored to the solar (sankranti) calendar.
 
+    BS month N begins on the sankranti into rashi N, so the authoritative
+    lookup-table month start is the sankranti day the printed patro shows.
+    Falls back to the astronomical sankranti outside table coverage.
+    """
+    bs_month = rule.get("bs_month")
+    if not bs_month:
+        return None
+    solar_day = int(rule.get("solar_day", 1))
+
+    for bs_year in (gregorian_year + 56, gregorian_year + 57):
+        try:
+            greg = bs_to_gregorian(bs_year, bs_month, solar_day)
+        except ValueError:
+            continue
+        if greg.year == gregorian_year:
+            return greg
+
+    sankranti_dt = find_sankranti(
+        bs_month - 1, datetime(gregorian_year, 1, 1, tzinfo=timezone.utc)
+    )
     if sankranti_dt is None:
         return None
-    return sankranti_dt.date()
+    local_day = sankranti_dt.astimezone(ZoneInfo("Asia/Kathmandu")).date()
+    return local_day + timedelta(days=solar_day - 1)
+
+
+def compute_ad_fixed_festival(
+    rule: dict[str, Any],
+    gregorian_year: int,
+) -> Optional[date]:
+    """Festival on a fixed Gregorian month + day (Dec 25, May 1, …)."""
+    try:
+        return date(gregorian_year, int(rule["ad_month"]), int(rule["ad_day"]))
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 def compute_bs_fixed_festival(
@@ -81,6 +110,8 @@ def compute_festival_dates(
         start = compute_solar_festival(festival_id, rule, gregorian_year)
     elif rule_type == "bs_fixed":
         start = compute_bs_fixed_festival(rule, gregorian_year)
+    elif rule_type == "ad_fixed":
+        start = compute_ad_fixed_festival(rule, gregorian_year)
     else:
         return None
 

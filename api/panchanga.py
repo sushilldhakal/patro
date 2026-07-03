@@ -1,5 +1,5 @@
 import calendar as _cal
-from datetime import date
+from datetime import date, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException, Query
@@ -276,6 +276,55 @@ def nepal_festivals(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     enriched = _enrich_holiday_bs_dates(payload["festivals"])
     return {**payload, "era": "bs", "count": len(enriched), "festivals": enriched}
+
+
+@router.get("/nepal/festivals/upcoming")
+def nepal_upcoming_festivals(
+    location: LocationDep,
+    from_date: str | None = Query(None, alias="from", description="ISO AD date; default today (observer TZ)"),
+    days: int = Query(90, ge=1, le=366, description="Look-ahead window in days"),
+    limit: int = Query(15, ge=1, le=60),
+    holidays_only: bool = Query(False, description="Only public holidays"),
+):
+    """Next festivals on/after a date, spanning the BS-year boundary."""
+    from zoneinfo import ZoneInfo
+
+    from services.holiday_generator import get_bs_festivals
+
+    if from_date is not None:
+        try:
+            start = date.fromisoformat(from_date)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+    else:
+        from datetime import datetime as _dt
+        start = _dt.now(ZoneInfo(location.timezone)).date()
+    window_end = start + timedelta(days=days)
+
+    seen: dict[str, Any] = {}
+    for bs_year in (start.year + 56, start.year + 57, start.year + 58):
+        try:
+            payload = get_bs_festivals(bs_year, location, cache_only=True)
+        except FestivalCacheMissError:
+            continue
+        for f in payload["festivals"]:
+            f_start = date.fromisoformat(f["start_date"])
+            f_end = date.fromisoformat(f["end_date"])
+            if f_end < start or f_start > window_end:
+                continue
+            if holidays_only and not f.get("is_public_holiday"):
+                continue
+            key = f["id"] + f["start_date"]
+            seen[key] = {**f, "days_until": (f_start - start).days}
+
+    festivals = sorted(seen.values(), key=lambda f: f["start_date"])[:limit]
+    enriched = _enrich_holiday_bs_dates(festivals)
+    return {
+        "from": start.isoformat(),
+        "days": days,
+        "count": len(enriched),
+        "festivals": enriched,
+    }
 
 
 @router.get("/nepal/panchanga/{date_key}")

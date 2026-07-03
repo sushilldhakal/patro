@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.1.0",
-    "description": "Nepal public / government holidays — corrected per MoHA schedule. Removed: Mata Tirtha Aunshi (not govt holiday), Teej (women's observance only), Haribodhi Ekadashi, Vivah Panchami, Saraswati Puja (education institutes only). Split Holi into Pahadma/Terai. Added Maghi Parwa, Women's Day, Udhauli Parwa, Christmas.",
+    "version": "1.2.0",
+    "description": "Nepal public / government holidays — corrected per MoHA schedule. Removed: Mata Tirtha Aunshi (not govt holiday), Teej (women's observance only), Haribodhi Ekadashi, Vivah Panchami, Saraswati Puja (education institutes only). Split Holi into Pahadma/Terai. Added Maghi Parwa, Women's Day, Udhauli Parwa, Christmas. v1.2: Added Labour Day (May 1).",
     "source": "aligned with festivals.json is_national_holiday",
     "notes": "Regional jatras and sub-days already covered by Dashain/Tihar ranges are excluded."
   },
@@ -16,7 +16,7 @@
     "ganatantra-diwas",
     "sambidhan-diwas",
     "shahid-diwas",
-    "loktantra-diwas",
+    "prajatantra-diwas",
     "prithvi-jayanti",
     "dashain",
     "tihar",
@@ -30,6 +30,7 @@
     "ram-navami",
     "udhauli-parwa",
     "christmas",
-    "womens-day"
+    "womens-day",
+    "labour-day"
   ]
 }

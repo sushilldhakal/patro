@@ -223,18 +223,6 @@
         "importance": "national",
         "notes": "MoHA BS 2081-10-21 (माघ २१) वसन्त पञ्चमी"
       },
-      "loktantra-diwas": {
-        "id": "loktantra-diwas",
-        "name_en": "Democracy Day",
-        "name_ne": "लोकतन्त्र दिवस",
-        "start_date": "2025-02-19",
-        "end_date": "2025-02-19",
-        "duration_days": 1,
-        "type": "bs_fixed",
-        "category": "national",
-        "importance": "national",
-        "notes": "BS 2081-11-07 (फागुन ७)"
-      },
       "shivaratri": {
         "id": "shivaratri",
         "name_en": "Maha Shivaratri",
@@ -270,6 +258,18 @@
         "category": "hindu",
         "importance": "national",
         "notes": "MoHA BS 2081-07-27 (कात्तिक २७) हरिबोधिनी एकादशी"
+      },
+      "prajatantra-diwas": {
+        "id": "prajatantra-diwas",
+        "name_en": "Prajatantra Diwas (Democracy Day)",
+        "name_ne": "प्रजातन्त्र दिवस",
+        "start_date": "2025-02-19",
+        "end_date": "2025-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2081-11-07 (फागुन ७)"
       }
     },
     "2082": {
@@ -561,18 +561,6 @@
         "importance": "regional",
         "notes": "MoHA BS 2082-11-06 (फागुन ६) ग्याल्पो ल्होसार"
       },
-      "loktantra-diwas": {
-        "id": "loktantra-diwas",
-        "name_en": "Democracy Day",
-        "name_ne": "लोकतन्त्र दिवस",
-        "start_date": "2026-02-19",
-        "end_date": "2026-02-19",
-        "duration_days": 1,
-        "type": "bs_fixed",
-        "category": "national",
-        "importance": "national",
-        "notes": "BS 2082-11-07 (फागुन ७)"
-      },
       "holi": {
         "id": "holi",
         "name_en": "Holi",
@@ -608,6 +596,18 @@
         "category": "hindu",
         "importance": "national",
         "notes": "MoHA BS 2082-12-13 (चैत १३) रामनवमी"
+      },
+      "prajatantra-diwas": {
+        "id": "prajatantra-diwas",
+        "name_en": "Prajatantra Diwas (Democracy Day)",
+        "name_ne": "प्रजातन्त्र दिवस",
+        "start_date": "2026-02-19",
+        "end_date": "2026-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2082-11-07 (फागुन ७)"
       }
     },
     "2083": {
@@ -863,18 +863,6 @@
         "importance": "national",
         "notes": "BS 2083-10-16 (माघ १६) शहीद दिवस"
       },
-      "loktantra-diwas": {
-        "id": "loktantra-diwas",
-        "name_en": "Democracy Day",
-        "name_ne": "लोकतन्त्र दिवस",
-        "start_date": "2027-02-19",
-        "end_date": "2027-02-19",
-        "duration_days": 1,
-        "type": "bs_fixed",
-        "category": "national",
-        "importance": "national",
-        "notes": "BS 2083-11-07 (फागुन ७)"
-      },
       "yomari-punhi": {
         "id": "yomari-punhi",
         "name_en": "Yomari Punhi",
@@ -994,6 +982,18 @@
         "category": "national",
         "importance": "national",
         "notes": "BS 2083-06-03 (असोज ३) संविधान दिवस"
+      },
+      "prajatantra-diwas": {
+        "id": "prajatantra-diwas",
+        "name_en": "Prajatantra Diwas (Democracy Day)",
+        "name_ne": "प्रजातन्त्र दिवस",
+        "start_date": "2027-02-19",
+        "end_date": "2027-02-19",
+        "duration_days": 1,
+        "type": "bs_fixed",
+        "category": "national",
+        "importance": "national",
+        "notes": "BS 2083-11-07 (फागुन ७)"
       }
     }
   }
