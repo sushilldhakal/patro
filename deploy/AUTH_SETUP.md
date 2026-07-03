@@ -114,8 +114,10 @@ permission in the dashboard. This is not a code bug.
 4. If the app was created with **Facebook Login for Business**, switch to standard
    **Facebook Login** (Business login uses different use-case permissions).
 5. **Facebook Login → Settings**:
+   - **Login with the JavaScript SDK**: set to **Yes** (required — without this you get
+     *"JSSDK Option is Not Toggled"*)
    - **Valid OAuth Redirect URIs**: `http://localhost:5173/`, `https://vedicpatro.com/`, `https://dpatro.vercel.app/`
-   - **Allowed domains**: `localhost`, `vedicpatro.com`, `dpatro.vercel.app`
+   - **Allowed domains** (or **App domains**): `localhost`, `vedicpatro.com`, `dpatro.vercel.app`
 6. While the app is in **Development** mode, only **Roles** users (admins/developers/testers)
    can log in. Add your Facebook account under **App roles → Test users** or as a Developer.
 
