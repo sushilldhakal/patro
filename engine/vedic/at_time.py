@@ -236,6 +236,19 @@ def build_panchanga_at_time(
     enrich_snapshot_astro(
         instant_planets, instant_lagna, instant_utc, lat=location.lat, lon=location.lon
     )
+    from engine.vedic.upagraha import build_upagraha_block
+
+    upagrahas = build_upagraha_block(
+        instant_utc,
+        sunrise_utc,
+        sunset_utc,
+        next_sunrise_utc,
+        vaara_num,
+        instant_planets["sun"]["longitude"],
+        lat=location.lat,
+        lon=location.lon,
+        ayanamsa=mode,
+    )
     muhurta_now = compute_muhurta_now(
         instant_local, sunrise_utc, sunset_utc, vaara_num, tz
     )
@@ -277,6 +290,8 @@ def build_panchanga_at_time(
     detail["muhurta_now"] = muhurta_now
     detail["instant_lagna"] = instant_lagna
     detail["lagna_spans"] = lagna_spans
+    if upagrahas is not None:
+        detail["upagrahas"] = upagrahas
 
     state.update(
         {
