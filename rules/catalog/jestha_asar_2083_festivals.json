@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "months": [
+      { "bs_month": 2, "name_ne": "जेठ" },
+      { "bs_month": 3, "name_ne": "असार" }
+    ],
+    "description": "Jestha & Asar festival catalog BS 2083 — solar, lunar, bs_fixed, ad_fixed",
+    "source": "User-provided patro list (2026-06-30)"
+  },
+  "solar": [
+    {
+      "bs_month": 2,
+      "bs_day": 1,
+      "festivals": [
+        { "id": "vrish-sankranti", "name_ne": "वृष संक्रान्ति" }
+      ]
+    },
+    {
+      "bs_month": 3,
+      "bs_day": 1,
+      "festivals": [
+        { "id": "mithun-sankranti", "name_ne": "मिथुन संक्रान्ति" }
+      ]
+    }
+  ],
+  "lunar_jestha": [
+    { "tithi": 13, "paksha": "krishna", "festivals": [{ "id": "sithi-chahre", "name_ne": "सिथि चःह्रे" }] },
+    { "tithi": 15, "paksha": "krishna", "festivals": [
+      { "id": "sani-jayanti", "name_ne": "शनि जयन्ती" },
+      { "id": "batsavitri-vrata", "name_ne": "बटसावित्री व्रत" },
+      { "id": "matsyanarayan-mela-end", "name_ne": "मत्स्यनारायण मेला समाप्ति" },
+      { "id": "sombare-aunshi", "name_ne": "सोमबारे औंसी" }
+    ]},
+    { "tithi": 1, "paksha": "shukla", "festivals": [
+      { "id": "gosainkunda-snan-arambha", "name_ne": "गोसाइकुण्ड स्नान आरम्भ" },
+      { "id": "matsyanarayan-mela-start", "name_ne": "मत्स्यनारायण मेला शुरू" }
+    ]},
+    { "tithi": 7, "paksha": "shukla", "festivals": [{ "id": "siddhicharan-jayanti", "name_ne": "युगकवि सिद्धिचरण श्रेष्ठ जन्मजयन्ती" }] },
+    { "tithi": 8, "paksha": "shukla", "festivals": [{ "id": "gorakhkali-puja-jestha", "name_ne": "गोरखकाली पूजा" }] },
+    { "tithi": 10, "paksha": "shukla", "festivals": [
+      { "id": "ganga-dashahara", "name_ne": "गङ्गादशहरा व्रत" },
+      { "id": "gosainkunda-snan-samapti", "name_ne": "गोसाइकुण्ड स्नान समाप्ति" }
+    ]},
+    { "tithi": 11, "paksha": "shukla", "festivals": [
+      { "id": "padmini-ekadashi", "name_ne": "पद्मिनी एकादशी व्रत" },
+      { "id": "nirjala-ekadashi", "name_ne": "निर्जला एकादशी व्रत" },
+      { "id": "tulsi-dal-rakhne", "name_ne": "तुलसीको दल राख्ने दिन" },
+      { "id": "bhumi-puja", "name_ne": "भूमी पूजा" }
+    ]},
+    { "tithi": 7, "paksha": "krishna", "festivals": [{ "id": "ravi-saptami", "name_ne": "रविसप्तमी व्रत" }] },
+    { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "parama-ekadashi", "name_ne": "परमा एकादशी व्रत" }] },
+    { "tithi": 15, "paksha": "shukla", "festivals": [
+      { "id": "dahi-chiura-khane-din", "name_ne": "दहीचिउरा खाने दिन" },
+      { "id": "kabir-jayanti", "name_ne": "कवीर जयन्ती" },
+      { "id": "jya-punhi", "name_ne": "ज्या: पुन्हि" }
+    ]}
+  ],
+  "lunar_asadh": [
+    { "tithi": 6, "paksha": "shukla", "festivals": [
+      { "id": "sithi-nakha", "name_ne": "सिथि नख:" },
+      { "id": "bhoto-jatra", "name_ne": "भोटो जात्रा" }
+    ]},
+    { "tithi": 8, "paksha": "shukla", "festivals": [
+      { "id": "vayu-ashtami", "name_ne": "वायु अष्टमी" },
+      { "id": "gorakhkali-puja-asadh", "name_ne": "गोरखकाली पूजा" }
+    ]},
+    { "tithi": 8, "paksha": "krishna", "festivals": [{ "id": "budh-ashtami", "name_ne": "बुधाष्टमी व्रत" }] },
+    { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "yogini-ekadashi-smarta", "name_ne": "योगिनी एकादशी (स्मार्त)" }] },
+    { "tithi": 12, "paksha": "krishna", "festivals": [{ "id": "yogini-ekadashi-vaishnava", "name_ne": "योगिनी एकादशी (वैष्णव)" }] }
+  ],
+  "bs_fixed": [
+    { "bs_month": 2, "bs_day": 15, "festivals": [{ "id": "ganatantra-diwas", "name_ne": "गणतन्त्र दिवस" }] },
+    { "bs_month": 3, "bs_day": 15, "festivals": [{ "id": "dhan-diwas", "name_ne": "राष्ट्रिय धान दिवस" }] },
+    { "bs_month": 3, "bs_day": 29, "festivals": [{ "id": "bhanu-jayanti", "name_ne": "भानु जयन्ती" }] }
+  ]
+}
