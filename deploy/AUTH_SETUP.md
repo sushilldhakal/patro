@@ -89,6 +89,38 @@ If `GOOGLE_CLIENT_ID` is missing, `POST /auth/google` returns **503** with
 `"Google sign-in is not configured"`. After setting it, restart the API and look for
 **`Google sign-in enabled`** in the journal.
 
+### Facebook Sign-In
+
+Add to the same `.env` file:
+
+```ini
+FACEBOOK_APP_ID=your-app-id
+FACEBOOK_APP_SECRET=your-app-secret
+```
+
+`FACEBOOK_APP_ID` must match `VITE_FACEBOOK_APP_ID` in the dhakal-patro frontend build.
+**Never** put `FACEBOOK_APP_SECRET` in the frontend — only on this server.
+
+#### Meta Developer Console (required)
+
+If login shows **"Invalid Scopes: email"**, the app has not enabled the `email`
+permission in the dashboard. This is not a code bug.
+
+1. Open [Meta for Developers](https://developers.facebook.com/apps) → your app.
+2. **Use cases** → **Authentication and account creation** → **Customize** (or Edit).
+3. Under **Permissions**, click **Add** next to **`email`** so it shows **Ready for testing**
+   alongside **`public_profile`**.  
+   See [Facebook Login permissions](https://developers.facebook.com/docs/facebook-login/permissions).
+4. If the app was created with **Facebook Login for Business**, switch to standard
+   **Facebook Login** (Business login uses different use-case permissions).
+5. **Facebook Login → Settings**:
+   - **Valid OAuth Redirect URIs**: `http://localhost:5173/`, `https://vedicpatro.com/`, `https://dpatro.vercel.app/`
+   - **Allowed domains**: `localhost`, `vedicpatro.com`, `dpatro.vercel.app`
+6. While the app is in **Development** mode, only **Roles** users (admins/developers/testers)
+   can log in. Add your Facebook account under **App roles → Test users** or as a Developer.
+
+After setting env vars, restart the API and look for **`Facebook sign-in enabled`** in the journal.
+
 ## 5. Restart the API
 
 ```bash
@@ -130,6 +162,7 @@ A single nightly dump is enough at this scale:
 | POST   | `/auth/signup`             | —    | Create account → token pair     |
 | POST   | `/auth/login`              | —    | Email + password → token pair   |
 | POST   | `/auth/google`             | —    | Google ID token → token pair    |
+| POST   | `/auth/facebook`           | —    | Facebook access token → pair    |
 | POST   | `/auth/refresh`            | —    | Rotate refresh → new token pair |
 | POST   | `/auth/logout`             | —    | Revoke a refresh token          |
 | GET    | `/auth/me`                 | ✓    | Current user                    |

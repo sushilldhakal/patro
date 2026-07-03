@@ -10,7 +10,7 @@ from typing import Any
 
 import config
 
-_GRAPH_VERSION = "v21.0"
+_GRAPH_VERSION = "v25.0"
 
 
 class FacebookAuthError(Exception):
