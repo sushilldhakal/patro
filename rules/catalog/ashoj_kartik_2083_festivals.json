@@ -1,0 +1,11 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "months": [
+      { "bs_month": 6, "name_ne": "असोज" },
+      { "bs_month": 7, "name_ne": "कार्तिक" }
+    ],
+    "description": "Ashoj & Kartik festival catalog BS 2083",
+    "source": "User-provided patro list (2026-07-03)"
+  }
+}
