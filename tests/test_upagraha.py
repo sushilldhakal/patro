@@ -32,9 +32,9 @@ def test_at_time_snapshot_includes_upagrahas():
         assert 1 <= row["rashi"] <= 12
 
     # Daytime birth on a Wednesday: portions run Me Ju Ve Sa Su Mo Ma —
-    # Ardha Prahara (Mercury) opens the day and Gulika sits at the middle
-    # of Saturn's portion, after Mandi at its start.
+    # Ardha Prahara (Mercury) opens the day; Gulika rises at the start of
+    # Saturn's portion and Mandi at its middle (JHora convention).
     assert rows["ardha_prahara"]["at_utc"] < rows["yama_ghantaka"]["at_utc"]
-    assert rows["mandi"]["at_utc"] < rows["gulika"]["at_utc"]
-    assert rows["gulika"]["at_utc"] < rows["kala"]["at_utc"]
+    assert rows["gulika"]["at_utc"] < rows["mandi"]["at_utc"]
+    assert rows["mandi"]["at_utc"] < rows["kala"]["at_utc"]
     assert rows["kala"]["at_utc"] < rows["mrityu"]["at_utc"]

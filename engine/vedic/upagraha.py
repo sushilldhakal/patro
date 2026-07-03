@@ -7,9 +7,10 @@ Two families:
   the day. Day (sunrise→sunset) or night (sunset→next sunrise) is split
   into eight equal portions; portions are ruled by the weekday lords in
   order starting from the day lord (day birth) or from the fifth lord
-  after it (night birth), the eighth portion being lordless. Each
-  upagraha is the ascendant at the START of its lord's portion; Gulika
-  uses the MIDDLE of Saturn's portion (Mandi takes the start).
+  after it (night birth), the eighth portion being lordless. Kala,
+  Mrityu, Ardha Prahara, Yama Ghantaka and Mandi rise at the MIDDLE of
+  their lord's portion; Gulika rises at the START of Saturn's portion
+  (JHora convention).
 
 * Sun-based upagrahas (Dhuma, Vyatipata, Parivesha, Indra Chapa,
   Upaketu) — fixed arcs from the Sun's sidereal longitude.
@@ -29,12 +30,12 @@ _WEEKDAY_LORDS = ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"
 # Order here is the display order.
 _KALA_VELA: tuple[tuple[str, str, bool], ...] = (
     # (key, portion lord, use middle of portion)
-    ("gulika", "saturn", True),
-    ("mandi", "saturn", False),
-    ("kala", "sun", False),
-    ("mrityu", "mars", False),
-    ("ardha_prahara", "mercury", False),
-    ("yama_ghantaka", "jupiter", False),
+    ("gulika", "saturn", False),
+    ("mandi", "saturn", True),
+    ("kala", "sun", True),
+    ("mrityu", "mars", True),
+    ("ardha_prahara", "mercury", True),
+    ("yama_ghantaka", "jupiter", True),
 )
 
 UPAGRAHA_NAMES: dict[str, dict[str, str]] = {
