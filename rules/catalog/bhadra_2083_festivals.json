@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "bs_month": 5,
+    "name_ne": "भदौ",
+    "description": "Bhadra festival catalog BS 2083",
+    "source": "User-provided patro list (2026-07-03)"
+  },
+  "solar_bs5_day1": [
+    { "id": "simha-sankranti", "name_ne": "सिंह संक्रान्ति" },
+    { "id": "tharu-guriya-parwa", "name_ne": "थारु गुरिया पर्व" },
+    { "id": "nag-panchami", "name_ne": "नाग पञ्चमी व्रत" }
+  ],
+  "lunar_shrawan_in_bhadra": [
+    { "tithi": 6, "paksha": "shukla", "festivals": [{ "id": "kalki-jayanti", "name_ne": "कल्कि जयन्ती" }] },
+    { "tithi": 7, "paksha": "shukla", "festivals": [{ "id": "tulsidas-jayanti", "name_ne": "तुलसीदास जयन्ती" }] },
+    { "tithi": 8, "paksha": "shukla", "festivals": [{ "id": "gorakhkali-puja-shrawan-shukla", "name_ne": "गोरखकाली पूजा" }] },
+    { "tithi": 11, "paksha": "shukla", "festivals": [{ "id": "putrada-ekadashi", "name_ne": "पुत्रदा एकादशी व्रत" }] },
+    { "tithi": 15, "paksha": "shukla", "festivals": [
+      { "id": "janai-purnima", "name_ne": "जनै पूर्णिमा" },
+      { "id": "raksha-bandhan", "name_ne": "रक्षा बन्धन" },
+      { "id": "kwati-khane-din", "name_ne": "क्वाति खाने दिन" },
+      { "id": "sanskrit-diwas", "name_ne": "संस्कृत दिवस" },
+      { "id": "purnima-vrata-shrawan", "name_ne": "पूर्णिमा व्रत" },
+      { "id": "rishitarpani", "name_ne": "ऋषितर्पणी" }
+    ]}
+  ],
+  "lunar_bhadra": [
+    { "tithi": 1, "paksha": "krishna", "festivals": [{ "id": "gai-jatra", "name_ne": "गाईजात्रा" }] },
+    { "tithi": 2, "paksha": "krishna", "festivals": [{ "id": "ropai-jatra", "name_ne": "रोपाईं जात्रा" }] },
+    { "tithi": 4, "paksha": "krishna", "festivals": [{ "id": "mangal-chauthi", "name_ne": "मंगलचौथी व्रत" }] },
+    { "tithi": 7, "paksha": "krishna", "festivals": [{ "id": "gaura-saptami", "name_ne": "गौरा सप्तमी" }] },
+    { "tithi": 8, "paksha": "krishna", "festivals": [
+      { "id": "krishna-janmashtami", "name_ne": "श्रीकृष्ण जन्माष्टमी" },
+      { "id": "gaura-parwa", "name_ne": "गौरा पर्व" },
+      { "id": "durvashtami", "name_ne": "दुर्वाष्टमी" },
+      { "id": "gorakhkali-puja-bhadra", "name_ne": "गोरखकाली पूजा" }
+    ]},
+    { "tithi": 9, "paksha": "krishna", "festivals": [
+      { "id": "guga-navami", "name_ne": "गूङा नवमी" },
+      { "id": "radha-krishna-rath-yatra-biratnagar", "name_ne": "राधाकृष्ण रथयात्रा" }
+    ]},
+    { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "aja-ekadashi", "name_ne": "अजा एकादशी व्रत" }] },
+    { "tithi": 15, "paksha": "krishna", "festivals": [
+      { "id": "kushe-aunshi", "name_ne": "कुशे औंसी" },
+      { "id": "motiram-bhatt-jayanti", "name_ne": "मोतीराम भट्ट जन्मजयन्ती" }
+    ]},
+    { "tithi": 1, "paksha": "shukla", "festivals": [{ "id": "gunla-parva-samapti", "name_ne": "गुंला पर्व समाप्ति" }] },
+    { "tithi": 2, "paksha": "shukla", "festivals": [{ "id": "dar-khane-din", "name_ne": "दर खाने दिन" }] },
+    { "tithi": 3, "paksha": "shukla", "festivals": [
+      { "id": "teej", "name_ne": "हरितालिका तीज" },
+      { "id": "ganesh-chaturthi-vrata", "name_ne": "गणेश चतुर्थी व्रत" }
+    ]},
+    { "tithi": 4, "paksha": "shukla", "festivals": [{ "id": "ganesh-chaturthi", "name_ne": "गणेश चतुर्थी" }] }
+  ]
+}

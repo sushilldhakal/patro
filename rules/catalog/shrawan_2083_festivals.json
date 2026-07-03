@@ -1,0 +1,44 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "bs_month": 4,
+    "name_ne": "साउन",
+    "description": "Shrawan festival catalog BS 2083 — solar, lunar, bs_fixed, ad_fixed",
+    "source": "User-provided patro list (2026-07-03)"
+  },
+  "solar_bs4_day1": [
+    { "id": "saune-sankranti", "name_ne": "साउने सङ्क्रान्ति" },
+    { "id": "dakshinayan-arambha", "name_ne": "दक्षिणायन आरम्भ" },
+    { "id": "luto-falne-din", "name_ne": "लुतो फाल्ने दिन" }
+  ],
+  "lunar_ashadh_in_shrawan": [
+    { "tithi": 7, "paksha": "shukla", "festivals": [{ "id": "surya-puja", "name_ne": "सूर्य पूजा" }] },
+    { "tithi": 8, "paksha": "shukla", "festivals": [
+      { "id": "budh-ashtami", "name_ne": "बुधाष्टमी व्रत" },
+      { "id": "gorakhkali-puja-asadh", "name_ne": "गोरखकाली पूजा" }
+    ]},
+    { "tithi": 11, "paksha": "shukla", "festivals": [
+      { "id": "harishayani-ekadashi", "name_ne": "हरिशयनी एकादशी व्रत (तुलसी रोप्ने)" },
+      { "id": "chaturmas-vrata-arambha", "name_ne": "चतुर्मास व्रत आरम्भ" }
+    ]},
+    { "tithi": 15, "paksha": "shukla", "festivals": [
+      { "id": "vyas-jayanti", "name_ne": "व्यास जयन्ती" },
+      { "id": "guru-purnima", "name_ne": "गुरु पूर्णिमा" },
+      { "id": "guru-purnima-vrata", "name_ne": "गुरु पुर्णिमा व्रत" },
+      { "id": "purnima-vrata-ashadh", "name_ne": "पूर्णिमा व्रत" }
+    ]}
+  ],
+  "lunar_shrawan": [
+    { "tithi": 2, "paksha": "krishna", "festivals": [{ "id": "kheer-khane-din", "name_ne": "खीर खाने दिन" }] },
+    { "tithi": 5, "paksha": "krishna", "festivals": [{ "id": "bitak-katha-arambha", "name_ne": "बीतक कथा प्रारम्भ" }] },
+    { "tithi": 8, "paksha": "krishna", "festivals": [{ "id": "gorakhkali-puja-shrawan", "name_ne": "गोरखकाली पूजा" }] },
+    { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "kamika-ekadashi", "name_ne": "कामिका एकादशी व्रत" }] },
+    { "tithi": 14, "paksha": "krishna", "festivals": [{ "id": "ghantakarna-chaturdashi", "name_ne": "गथांमुगः चःह्रे" }] },
+    { "tithi": 1, "paksha": "shukla", "festivals": [{ "id": "gunla-parva-arambha", "name_ne": "गुंला पर्व आरम्भ" }] },
+    { "tithi": 3, "paksha": "shukla", "festivals": [{ "id": "varah-jayanti", "name_ne": "वराह जयन्ती" }] }
+  ],
+  "bs_fixed": [
+    { "bs_day": 23, "festivals": [{ "id": "national-soil-conservation-day", "name_ne": "राष्ट्रिय भू संरक्षण दिवस" }] },
+    { "bs_day": 28, "festivals": [{ "id": "world-calligraphy-day", "name_ne": "विश्व सुलेखन दिवस" }] }
+  ]
+}
