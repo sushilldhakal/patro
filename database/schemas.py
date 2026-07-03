@@ -29,6 +29,10 @@ class GoogleAuthRequest(BaseModel):
     id_token: str
 
 
+class FacebookAuthRequest(BaseModel):
+    access_token: str
+
+
 class TokenPair(BaseModel):
     access_token: str
     refresh_token: str

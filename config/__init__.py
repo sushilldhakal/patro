@@ -45,6 +45,16 @@ def google_client_id() -> str | None:
     return (os.getenv("GOOGLE_CLIENT_ID") or "").strip() or None
 
 
+def facebook_app_id() -> str | None:
+    """Facebook app ID. When unset, POST /auth/facebook returns 503."""
+    return (os.getenv("FACEBOOK_APP_ID") or "").strip() or None
+
+
+def facebook_app_secret() -> str | None:
+    """Facebook app secret — server-only, used to verify access tokens."""
+    return (os.getenv("FACEBOOK_APP_SECRET") or "").strip() or None
+
+
 def access_token_ttl_minutes() -> int:
     return int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "30"))
 

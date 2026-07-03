@@ -18,11 +18,13 @@ from sqlalchemy import select
 
 import config
 from app import emailer
+from app.facebook_auth import FacebookAuthError, verify_facebook_access_token
 from app.google_auth import GoogleAuthError, verify_google_id_token
 from database.models import EmailToken, RefreshToken, User
 from database.schemas import (
     ForgotPasswordRequest,
     GoogleAuthRequest,
+    FacebookAuthRequest,
     LoginRequest,
     MessageResponse,
     RefreshRequest,
@@ -68,6 +70,28 @@ def _issue_tokens(db, user: User) -> TokenPair:
         refresh_token=raw_refresh,
         expires_in=config.access_token_ttl_minutes() * 60,
     )
+
+
+def _oauth_user(db: DbSession, email: str) -> User:
+    """Find or create a user after an OAuth provider has verified their email."""
+    normalized = email.lower()
+    user = db.scalar(select(User).where(User.email == normalized))
+    if user is None:
+        user = User(
+            email=normalized,
+            password_hash=hash_password(generate_opaque_token()),
+            is_verified=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    elif not user.is_verified:
+        user.is_verified = True
+        db.commit()
+
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
+    return user
 
 
 def _create_email_token(db, user: User, kind: str, ttl: timedelta) -> str:
@@ -132,25 +156,25 @@ def google_auth(body: GoogleAuthRequest, db: DbSession) -> TokenPair:
             detail=str(exc),
         ) from exc
 
-    email = claims["email"].lower()
-    user = db.scalar(select(User).where(User.email == email))
-    if user is None:
-        # New account — Google has already verified the email. Give it an unusable
-        # random password; the user can set one later via "forgot password".
-        user = User(
-            email=email,
-            password_hash=hash_password(generate_opaque_token()),
-            is_verified=True,
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    elif not user.is_verified:
-        user.is_verified = True
-        db.commit()
+    user = _oauth_user(db, claims["email"])
+    return _issue_tokens(db, user)
 
-    if not user.is_active:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
+
+@router.post("/facebook", response_model=TokenPair)
+def facebook_auth(body: FacebookAuthRequest, db: DbSession) -> TokenPair:
+    """Sign in (or sign up) with a Facebook access token from the JS SDK."""
+    try:
+        profile = verify_facebook_access_token(body.access_token)
+    except FacebookAuthError as exc:
+        not_configured = "not configured" in str(exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
+            if not_configured
+            else status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+
+    user = _oauth_user(db, profile["email"])
     return _issue_tokens(db, user)
 
 

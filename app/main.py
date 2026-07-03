@@ -46,6 +46,12 @@ async def lifespan(app: FastAPI):
                 logger.info("Google sign-in enabled")
             else:
                 logger.warning("GOOGLE_CLIENT_ID is not set — POST /auth/google will return 503")
+            if config.facebook_app_id() and config.facebook_app_secret():
+                logger.info("Facebook sign-in enabled")
+            else:
+                logger.warning(
+                    "FACEBOOK_APP_ID / FACEBOOK_APP_SECRET not set — POST /auth/facebook will return 503"
+                )
         except Exception:
             logger.exception("Failed to initialise auth database")
     warm_task = asyncio.create_task(_warm_holiday_cache_background(app))
