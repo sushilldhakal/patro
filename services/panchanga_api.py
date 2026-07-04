@@ -41,6 +41,9 @@ def _element_state(block: dict, timezone_name: str) -> dict[str, Any]:
         "end": _local_stamp(block.get("end_time"), timezone_name),
         "next": block["next"]["name"],
         "next_ne": block["next"].get("name_ne"),
+        "end_ghati_clock": block.get("end_ghati_clock"),
+        "end_hours_clock": block.get("end_hours_clock"),
+        "progress": block.get("progress"),
     }
 
 
