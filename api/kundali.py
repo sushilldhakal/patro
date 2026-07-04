@@ -63,6 +63,118 @@ def tropical_seasons(location: LocationDep):
     return build_tropical_seasons_response(lat=location.lat, timezone_name=location.timezone)
 
 
+@router.get("/kundali/detail")
+def kundali_detail(
+    location: LocationDep,
+    datetime: str | None = Query(None, alias="datetime",
+                                  description="Birth instant (ISO); naive uses observer TZ"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+):
+    """Complete computed kundali: panchanga, shadbala, dasha tree, yuddha,
+    bhava bala, ashtakavarga, yogas, all varga charts, avakahada and birth
+    meta — clients render this without any jyotish math of their own."""
+    from engine.astronomy.sidereal import resolve_ayanamsha_mode
+    from engine.vedic.at_time import parse_query_datetime
+    from services.kundali_detail import build_kundali_detail
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        return build_kundali_detail(
+            instant,
+            location,
+            ayanamsa_mode_id=mode_id,
+            ayanamsha_label=ayanamsha or "lahiri",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/kundali/dasha/expand")
+def kundali_dasha_expand(
+    lord: str = Query(..., description="Dasha lord key (ketu, venus, sun, …)"),
+    start: str = Query(..., description="Span start (ISO datetime)"),
+    end: str = Query(..., description="Span end (ISO datetime)"),
+):
+    """Nine Vimshottari sub-periods of a span (antar → pratyantar → sukshma → prana)."""
+    from datetime import datetime as _dt
+
+    from engine.vedic.vimshottari import subdivide_span
+
+    try:
+        start_dt = _dt.fromisoformat(start.replace("Z", "+00:00"))
+        end_dt = _dt.fromisoformat(end.replace("Z", "+00:00"))
+        if end_dt <= start_dt:
+            raise ValueError("end must be after start")
+        return {"lord": lord, "children": subdivide_span(lord.lower(), start_dt, end_dt)}
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/kundali/milan")
+def kundali_milan(
+    boy_datetime: str = Query(..., description="Boy's birth instant (ISO; naive uses boy TZ)"),
+    girl_datetime: str = Query(..., description="Girl's birth instant (ISO; naive uses girl TZ)"),
+    boy_lat: float | None = Query(None),
+    boy_lon: float | None = Query(None),
+    boy_timezone: str | None = Query(None),
+    girl_lat: float | None = Query(None),
+    girl_lon: float | None = Query(None),
+    girl_timezone: str | None = Query(None),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    lang: str | None = Query(None, description="Value language: ne (default) or en"),
+):
+    """Ashtakuta (36-guna) kundali milan computed from the two birth moments."""
+    from datetime import timezone as _tz2
+
+    from engine.astronomy.location import resolve_location_from_query
+    from engine.astronomy.positions import NAKSHATRA_NAMES, RASHI_NAMES
+    from engine.astronomy.sidereal import resolve_ayanamsha_mode
+    from engine.vedic.ashtakuta import compute_ashtakuta
+    from engine.vedic.at_time import build_planetary_snapshot, parse_query_datetime
+    from engine.vedic.graha_details import nakshatra_pada_from_longitude, rashi_from_longitude
+    from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
+    from engine.astronomy.positions import RASHI_NAMES_NE
+
+    def person(raw_datetime: str, lat: float | None, lon: float | None, tz: str | None):
+        location = resolve_location_from_query(lat=lat, lon=lon, timezone=tz, city=None, city_id=None)
+        instant = parse_query_datetime(raw_datetime, timezone_name=location.timezone)
+        snapshot = build_planetary_snapshot(
+            instant.astimezone(_tz2.utc), lat=location.lat, lon=location.lon, ayanamsa=mode_id
+        )
+        moon_lon = snapshot["planets"]["moon"]["longitude"]
+        rashi_num = rashi_from_longitude(moon_lon)
+        nak_index, pada = nakshatra_pada_from_longitude(moon_lon)
+        return {
+            "moonLongitude": moon_lon,
+            "moonRashiNum": rashi_num,
+            "moonRashiNe": RASHI_NAMES_NE[rashi_num - 1],
+            "moonRashiEn": RASHI_NAMES[rashi_num - 1],
+            "nakshatraIndex": nak_index,
+            "nakshatraNe": NAKSHATRA_NAMES_NE[nak_index],
+            "nakshatraEn": NAKSHATRA_NAMES[nak_index],
+            "pada": pada,
+            "birth_instant": instant.isoformat(),
+            "location": location.as_dict(),
+        }
+
+    try:
+        _, mode_id = resolve_ayanamsha_mode(ayanamsha)
+        boy = person(boy_datetime, boy_lat, boy_lon, boy_timezone)
+        girl = person(girl_datetime, girl_lat, girl_lon, girl_timezone)
+        result = compute_ashtakuta(boy, girl, lang=lang)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return {
+        "result": result,
+        "boy": boy,
+        "girl": girl,
+        "ayanamsha": ayanamsha or "lahiri",
+        "lang": (lang or "ne"),
+    }
+
+
 @router.get("/kundali/vimshottari")
 def kundali_vimshottari(
     location: LocationDep,

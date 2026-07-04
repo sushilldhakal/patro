@@ -219,6 +219,17 @@ def build_daily_panchanga(
         if day_ghati is not None
         else []
     )
+    from engine.vedic.hora import build_hora_schedule
+    from engine.vedic.navatara import build_navatara_block
+
+    hora = build_hora_schedule(
+        sunrise_utc, sunset_utc, next_sunrise_utc, vaara_num, location.timezone
+    )
+    chandra_rashi_block = get_chandra_rashi(sunrise_utc)
+    navatara = build_navatara_block(
+        nakshatra_block.get("number"),
+        chandra_rashi_block.get("number"),
+    )
     solar_corrections = build_solar_corrections(
         target,
         local_longitude=location.lon,
@@ -242,6 +253,8 @@ def build_daily_panchanga(
         "sunset": sunset_block,
         "day_ghati": day_ghati,
         "choghadiya": choghadiya,
+        "hora": hora,
+        "navatara": navatara,
         "solar_corrections": solar_corrections,
         "moonrise": _time_block(moonrise_utc, location.timezone),
         "moonset": _time_block(moonset_utc, location.timezone),
@@ -262,7 +275,7 @@ def build_daily_panchanga(
         "yoga": build_yoga_block(sunrise_utc, sunrise_utc),
         "karana": build_karana_block(sunrise_utc, sunrise_utc),
         "paksha": _paksha_block(lunar, paksha),
-        "chandra_rashi": get_chandra_rashi(sunrise_utc),
+        "chandra_rashi": chandra_rashi_block,
         "chandra_rashi_spans": chandra_rashi_spans,
         "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": get_surya_rashi(sunrise_utc),
@@ -322,6 +335,14 @@ def get_daily_panchanga(
     from services.panchanga_cache import get_cached_panchanga, store_panchanga_cache
 
     cached = get_cached_panchanga(target, location)
+    # Entries cached before the hora/navatara blocks and per-planet nakshatra
+    # existed must be rebuilt once so clients always receive the full payload.
+    if cached is not None and (
+        "hora" not in cached
+        or "navatara" not in cached
+        or "nakshatra" not in ((cached.get("planets") or {}).get("sun") or {})
+    ):
+        cached = None
     if cached is not None:
         payload = dict(cached)
         payload.pop("_from_cache", None)

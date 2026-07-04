@@ -133,3 +133,74 @@ def vimshottari_dasha(
         "balance_label": _format_years_label(balance_years),
         "sequence": sequence,
     }
+
+
+def subdivide_span(lord: str, start: datetime, end: datetime) -> list[dict[str, Any]]:
+    """Nine sub-periods of a Vimshottari span, proportional to the dasha years,
+    starting from the span's own lord. Works at every level (maha→antar→…)."""
+    if lord not in DASHA_YEARS:
+        raise ValueError(f"unknown dasha lord: {lord}")
+    total = (end - start).total_seconds()
+    start_idx = DASHA_SEQUENCE.index(lord)
+    children: list[dict[str, Any]] = []
+    cursor = start
+    for i in range(len(DASHA_SEQUENCE)):
+        child_lord = DASHA_SEQUENCE[(start_idx + i) % len(DASHA_SEQUENCE)]
+        span = timedelta(seconds=total * DASHA_YEARS[child_lord] / 120.0)
+        child_end = cursor + span
+        children.append(
+            {
+                "lord": child_lord,
+                "lord_ne": DASHA_LORD_NE[child_lord],
+                "start": cursor.isoformat(),
+                "end": child_end.isoformat(),
+            }
+        )
+        cursor = child_end
+    return children
+
+
+def vimshottari_tree(
+    moon_sidereal_lon_deg: float,
+    birth_instant: datetime,
+    *,
+    cycles: int = 1,
+    depth: int = 2,
+) -> dict[str, Any]:
+    """Vimshottari result plus a nested span tree.
+
+    Mahadasha spans carry their true start (the birth mahadasha begins before
+    birth) so sub-periods subdivide from the real beginning; `depth` levels of
+    children are embedded (1 = antar, 2 = pratyantar). Deeper levels are served
+    on demand via subdivide_span.
+    """
+    base = vimshottari_dasha(moon_sidereal_lon_deg, birth_instant, cycles=cycles)
+
+    def expand(node: dict[str, Any], level: int) -> dict[str, Any]:
+        if level >= depth:
+            return node
+        children = subdivide_span(
+            node["lord"],
+            datetime.fromisoformat(node["start"]),
+            datetime.fromisoformat(node["end"]),
+        )
+        node["children"] = [expand(child, level + 1) for child in children]
+        return node
+
+    tree: list[dict[str, Any]] = []
+    for i, period in enumerate(base["sequence"]):
+        end = datetime.fromisoformat(period["end"])
+        if i == 0:
+            # Restore the full birth-mahadasha span for subdivision.
+            start = end - timedelta(days=DASHA_YEARS[period["lord"]] * YEAR_DAYS)
+        else:
+            start = datetime.fromisoformat(period["start"])
+        node = {
+            "lord": period["lord"],
+            "lord_ne": period["lord_ne"],
+            "start": start.isoformat(),
+            "end": end.isoformat(),
+        }
+        tree.append(expand(node, 0))
+
+    return {**base, "tree": tree, "tree_depth": depth}

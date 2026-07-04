@@ -159,6 +159,27 @@ def _dms_in_sign(longitude: float) -> str:
     return f'{d:02d}°{m:02d}\'{s:02d}"'
 
 
+_VIMSHOTTARI_LORDS = [
+    "ketu", "venus", "sun", "moon", "mars", "rahu", "jupiter", "saturn", "mercury",
+]
+
+
+def _planet_nakshatra_block(longitude: float) -> dict[str, Any]:
+    from engine.astronomy.positions import NAKSHATRA_NAMES
+    from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
+
+    span = 360.0 / 27.0
+    idx = min(int((longitude % 360.0) // span), 26)
+    pada = min(int(((longitude % 360.0) - idx * span) // (span / 4)) + 1, 4)
+    return {
+        "number": idx + 1,
+        "name": NAKSHATRA_NAMES[idx],
+        "name_ne": NAKSHATRA_NAMES_NE[idx],
+        "pada": pada,
+        "lord": _VIMSHOTTARI_LORDS[idx % 9],
+    }
+
+
 def _enrich_planet_position(
     pos: dict[str, Any], *, rashi_names: list[str], rashi_names_ne: list[str]
 ) -> dict[str, Any]:
@@ -174,6 +195,7 @@ def _enrich_planet_position(
         "deg_in_rashi": round(longitude % 30.0, 6),
         "dms_in_rashi": _dms_in_sign(longitude),
         "is_retrograde": speed < 0,
+        "nakshatra": _planet_nakshatra_block(longitude),
     }
 
 
