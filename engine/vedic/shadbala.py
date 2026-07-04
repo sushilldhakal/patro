@@ -407,17 +407,20 @@ def compute_shadbala(
     lat: float,
     lon: float,
     timezone_name: str,
+    ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Full sixfold strength of the seven planets at an instant."""
+    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
+
+    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
     jd = get_julian_day(instant_utc)
-    ayanamsa = default_engine.ayanamsa(jd)
     obliquity = default_engine.obliquity(jd)
 
-    positions = get_all_planetary_positions(instant_utc)
+    positions = get_all_planetary_positions(instant_utc, ayanamsa=mode)
     lons = {p: float(positions[p]["longitude"]) for p in PLANETS}
     speeds = {p: float(positions[p]["speed"]) for p in PLANETS}
     d1_signs = {p: _sign(lons[p]) for p in PLANETS}
-    lagna_lon = get_sidereal_asc_longitude(instant_utc, lat=lat, lon=lon)
+    lagna_lon = get_sidereal_asc_longitude(instant_utc, lat=lat, lon=lon, ayanamsa=mode)
     lagna_sign = _sign(lagna_lon)
 
     # Day frame: sunrise / sunset / weekday in the observer's timezone.

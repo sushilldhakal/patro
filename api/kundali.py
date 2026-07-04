@@ -162,6 +162,48 @@ def shadbala(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/kundali/detail")
+def kundali_detail(
+    location: LocationDep,
+    datetime: str | None = Query(None, alias="datetime",
+                                  description="Birth instant (ISO); naive uses observer TZ"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+):
+    """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
+    from engine.vedic.at_time import parse_query_datetime
+    from engine.vedic.kundali_detail import build_kundali_detail
+
+    try:
+        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        return build_kundali_detail(instant, location, ayanamsha=ayanamsha)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/kundali/dasha/expand")
+def kundali_dasha_expand(
+    lord: str = Query(..., description="Dasha lord key, e.g. jupiter"),
+    start: str = Query(..., description="Period start ISO datetime"),
+    end: str = Query(..., description="Period end ISO datetime"),
+):
+    """Expand one dasha span into its nine Vimshottari antardashas."""
+    from engine.vedic.kundali_detail import subdivide_dasha_period
+
+    try:
+        from datetime import datetime as dt_cls, timezone as tz
+
+        def _parse(value: str) -> dt_cls:
+            dt = dt_cls.fromisoformat(value.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=tz.utc)
+            return dt
+
+        children = subdivide_dasha_period(lord, _parse(start), _parse(end))
+        return {"lord": lord, "children": children}
+    except (ValueError, KeyError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/kundali/{date_key}")
 def kundali(
     date_key: str,
