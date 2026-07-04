@@ -47,6 +47,7 @@ from engine.vedic.names_ne import (
 from engine.vedic.nepal_sambat import gregorian_to_ns
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.hora import build_hora
+from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
 from engine.vedic.tithi import calculate_tithi
 from engine.astronomy.positions import (
     get_aayan,
@@ -207,6 +208,9 @@ def build_daily_panchanga(
     nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
     chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans)
     tarabalam = build_tarabalam(sunrise_utc, nakshatra_block)
+    chandra_rashi = get_chandra_rashi(sunrise_utc)
+    tarabala_table = build_tarabala_table(nakshatra_block)
+    chandrabala_table = build_chandrabalam_table(chandra_rashi)
     panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num)
     udaya_lagna = build_udaya_lagna(lagna_spans)
     sunrise_block = _time_block(sunrise_utc, location.timezone)
@@ -273,7 +277,7 @@ def build_daily_panchanga(
         "yoga": build_yoga_block(sunrise_utc, sunrise_utc),
         "karana": build_karana_block(sunrise_utc, sunrise_utc),
         "paksha": _paksha_block(lunar, paksha),
-        "chandra_rashi": get_chandra_rashi(sunrise_utc),
+        "chandra_rashi": chandra_rashi,
         "chandra_rashi_spans": chandra_rashi_spans,
         "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": get_surya_rashi(sunrise_utc),
@@ -297,6 +301,8 @@ def build_daily_panchanga(
         "udaya_lagna": udaya_lagna,
         "chandrabalam": chandrabalam,
         "tarabalam": tarabalam,
+        "tarabala_table": tarabala_table,
+        "chandrabala_table": chandrabala_table,
         "panchaka_rahita": panchaka_rahita,
         "muhurta": muhurta,
         "markers": {

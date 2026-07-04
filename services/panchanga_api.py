@@ -129,6 +129,13 @@ def build_daily_state(
     if include_detail:
         payload["detail"] = raw
 
+    hora = raw.get("hora") or []
+    payload["hora"] = hora
+    payload["hora_day"] = [slot for slot in hora if slot.get("phase") == "day"]
+    payload["choghadiya"] = raw.get("choghadiya") or []
+    payload["tarabala_table"] = raw.get("tarabala_table")
+    payload["chandrabala_table"] = raw.get("chandrabala_table")
+
     return payload
 
 

@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 # 7: paksha-resolved pūrṇimānta layer (adhik/शुद्ध month split in lunar_calendar).
 # 8: Rahu/Ketu switched from mean to true node; non-Kathmandu rise/set no longer
 #    computed with Kathmandu's 1400 m altitude.
-CACHE_PAYLOAD_VERSION = 8
+# 9: hora (24 slots), tarabala_table, chandrabala_table in payload_json.
+CACHE_PAYLOAD_VERSION = 9
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
@@ -30,6 +31,10 @@ _REQUIRED_PAYLOAD_KEYS = (
     "nakshatra",
     "yoga",
     "karana",
+    "hora",
+    "choghadiya",
+    "tarabala_table",
+    "chandrabala_table",
 )
 
 _SCHEMA = """
@@ -180,11 +185,25 @@ def _payload_cache_valid(payload: dict[str, Any]) -> bool:
             return False
     lagna = payload.get("lagna")
     spans = payload.get("lagna_spans")
+    hora = payload.get("hora")
+    choghadiya = payload.get("choghadiya")
+    tarabala_table = payload.get("tarabala_table")
+    chandrabala_table = payload.get("chandrabala_table")
     return (
         isinstance(lagna, dict)
         and "name_ne" in lagna
         and isinstance(spans, list)
         and len(spans) == 12
+        and isinstance(hora, list)
+        and len(hora) >= 24
+        and isinstance(choghadiya, list)
+        and len(choghadiya) >= 16
+        and isinstance(tarabala_table, dict)
+        and isinstance(tarabala_table.get("rows"), list)
+        and len(tarabala_table["rows"]) == 27
+        and isinstance(chandrabala_table, dict)
+        and isinstance(chandrabala_table.get("rows"), list)
+        and len(chandrabala_table["rows"]) == 12
     )
 
 
