@@ -104,6 +104,34 @@ def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
         assert row["descEn"]
 
 
+def test_graha_yuddha_detects_a_real_planetary_war():
+    """Two tara grahas within 1deg of longitude must be reported as a war,
+    not silently left empty — /kundali/detail previously always returned
+    yuddha: {wars: [], byPlanet: {}} regardless of the actual chart."""
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1982-01-10T06:00:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="lahiri")
+
+    yuddha = payload["yuddha"]
+    assert yuddha["wars"], "expected a detected planetary war for this chart"
+    war = yuddha["wars"][0]
+    assert war["separationDeg"] < 1.0
+    assert {war["winner"], war["loser"]} <= {"mars", "mercury", "jupiter", "venus", "saturn"}
+    assert yuddha["byPlanet"][war["winner"]] > 0
+    assert yuddha["byPlanet"][war["loser"]] < 0
+
+
+def test_graha_yuddha_empty_when_no_war_in_chart():
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1993-06-12T10:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+    assert payload["yuddha"] == {"wars": [], "byPlanet": {}}
+
+
 def test_kundali_report_streams_ndjson():
     """Regression: the report endpoint previously crashed on the ayanamsa arg."""
     client = TestClient(app)

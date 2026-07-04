@@ -11,6 +11,7 @@ from engine.vedic.ashtakavarga import compute_ashtakavarga
 from engine.vedic.bhava_bala import compute_bhava_bala
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
+from engine.vedic.graha_yuddha import compute_yuddha_bala
 from engine.vedic.interpretation import (
     COMBUST_ORB,
     DASHA_ORDER,
@@ -547,6 +548,7 @@ def build_kundali_detail(
     }
     ashtakavarga = compute_ashtakavarga(planet_lons, lagna_lon)
     bhava_bala = compute_bhava_bala(lagna_rashi, planet_lons, shadbala)
+    yuddha = compute_yuddha_bala(shadbala.get("planets") or [], planet_lons)
 
     combustion: dict[str, bool | None] = {}
     for key in PLANET_KEYS:
@@ -565,7 +567,7 @@ def build_kundali_detail(
         "panchanga": panchanga,
         "shadbala": shadbala,
         "dasha": dasha_tree,
-        "yuddha": {"wars": [], "byPlanet": {}},
+        "yuddha": yuddha,
         "bhavaBala": bhava_bala,
         "ashtakavarga": ashtakavarga,
         "yogas": _yogas_to_api(full_yoga_catalog(chart)),
