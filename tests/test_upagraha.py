@@ -18,6 +18,18 @@ def test_sun_based_upagrahas_classical_arcs():
     assert abs((rows["parivesha"] + rows["indra_chapa"]) % 360) < 1e-6
 
 
+def test_at_time_top_level_planets_match_detail():
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu"
+    )
+    instant = parse_query_datetime("2026-07-04T10:20:00", timezone_name=loc.timezone)
+    state = build_panchanga_at_time(instant, loc)
+    top_sun = state["planets"]["sun"]["longitude"]
+    detail_sun = state["detail"]["planets"]["sun"]["longitude"]
+    assert top_sun == detail_sun
+    assert state["planets_anchor"]["type"] == "instant"
+
+
 def test_at_time_snapshot_includes_upagrahas():
     loc = ObserverLocation(
         name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu"

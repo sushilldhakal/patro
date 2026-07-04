@@ -308,6 +308,7 @@ def build_panchanga_at_time(
             "lagna": instant_lagna.get("name") or state.get("lagna"),
             "lagna_ne": instant_lagna.get("name_ne") or state.get("lagna_ne"),
             "muhurta": muhurta,
+            "planets": instant_planets,
             "planets_anchor": planets_anchor,
             "muhurta_now": muhurta_now,
             "detail": detail,
