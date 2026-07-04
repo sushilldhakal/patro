@@ -82,6 +82,28 @@ def test_ashtakavarga_and_bhava_bala_present():
     assert bb["strongest"]["totalPinda"] >= bb["weakest"]["totalPinda"]
 
 
+def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
+    """The Kundali Yoga table shows the full checklist, present or absent —
+    it must not silently drop rows for yogas that aren't formed in this chart."""
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1993-06-12T10:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+
+    yogas = payload["yogas"]
+    keys = [y["key"] for y in yogas]
+    assert len(keys) == len(set(keys))  # no duplicate rows
+    assert any(not y["present"] for y in yogas), "expected at least one absent yoga"
+    assert {"gajakesari", "budhaditya", "chandra_mangala", "kemadruma", "dhana_2_11"} <= set(keys)
+    for planet in ("mars", "mercury", "jupiter", "venus", "saturn"):
+        assert f"mahapurusha_{planet}" in keys
+    for row in yogas:
+        assert isinstance(row["present"], bool)
+        assert row["nameEn"] and row["nameNe"]
+        assert row["descEn"]
+
+
 def test_kundali_report_streams_ndjson():
     """Regression: the report endpoint previously crashed on the ayanamsa arg."""
     client = TestClient(app)

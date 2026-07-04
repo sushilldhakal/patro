@@ -623,6 +623,135 @@ def _detect_raja_dhana(chart: "Chart") -> list[dict[str, Any]]:
     return yogas
 
 
+def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
+    """Every fixed-identity yoga this app checks for, present or not.
+
+    ``chart.yogas`` (built by ``_detect_yogas``/``_detect_raja_dhana`` above)
+    only ever contains *formed* yogas — it feeds the narrative report, where
+    an absent yoga simply has nothing to say. The Kundali Yoga table needs
+    the opposite: a fixed checklist a reader can scan in full, each row
+    carrying an explicit ``present`` flag, so this walks the same classical
+    rules unconditionally instead of appending only on a match.
+    """
+    P = chart.planets
+    moon_sign = chart.moon_sign
+    catalog: list[dict[str, Any]] = []
+
+    def house_from_moon(key: str) -> int:
+        return house_from(P[key].sign, moon_sign) if key in P else -1
+
+    catalog.append({
+        "key": "gajakesari", "name": "Gaja-Kesari Yoga", "polarity": "benefic",
+        "present": "jupiter" in P and "moon" in P and house_from_moon("jupiter") in KENDRA,
+        "text": "Formed when Jupiter sits in an angle (kendra) from the Moon — a classic "
+                "combination for good judgement, respect and steady fortune that tends to "
+                "ripen with maturity.",
+    })
+    catalog.append({
+        "key": "budhaditya", "name": "Budha-Aditya Yoga", "polarity": "benefic",
+        "present": "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign,
+        "text": "Formed when the Sun and Mercury share a sign, favouring intelligence, "
+                "clear expression and analytical or administrative ability (strongest "
+                "when Mercury is not too close/combust).",
+    })
+    catalog.append({
+        "key": "chandra_mangala", "name": "Chandra-Mangala Yoga", "polarity": "mixed",
+        "present": "moon" in P and "mars" in P and P["moon"].sign == P["mars"].sign,
+        "text": "Formed when the Moon and Mars share a sign, giving enterprise and "
+                "earning drive; the same energy benefits from a calm outlet so "
+                "initiative doesn't turn into impatience.",
+    })
+
+    mahapurusha = {
+        "mars": "Ruchaka", "mercury": "Bhadra", "jupiter": "Hamsa",
+        "venus": "Malavya", "saturn": "Sasa",
+    }
+    for key, name in mahapurusha.items():
+        pf = P.get(key)
+        present = bool(pf and pf.house in KENDRA and pf.dignity in {"exalted", "own", "moolatrikona"})
+        catalog.append({
+            "key": f"mahapurusha_{key}", "name": f"{name} Mahapurusha Yoga",
+            "polarity": "benefic", "present": present,
+            "text": f"Formed when {PLANET_EN[key]} is dignified (own sign or exalted) in "
+                    f"an angle — a signature of strong character traits tied to "
+                    f"{KARAKA[key].split(',')[0]}.",
+        })
+
+    second_moon = (moon_sign + 1) % 12
+    twelfth_moon = (moon_sign - 1) % 12
+    neighbours = [
+        k for k, pf in P.items()
+        if k != "moon" and pf.sign in {second_moon, twelfth_moon}
+    ]
+    catalog.append({
+        "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
+        "present": "moon" in P and not neighbours,
+        "text": "Formed when the Moon has no planets flanking it, which classically "
+                "points to needing self-built emotional support structures. It is widely "
+                "considered softened by a strong Moon, benefic aspects, or planets in "
+                "angles — so treat it as a reminder to nurture stable routines and "
+                "relationships, not as a verdict.",
+    })
+
+    for key in DIGNITY_PLANETS:
+        pf = P.get(key)
+        debilitated = bool(pf and pf.dignity == "debilitated")
+        cancelled = False
+        if debilitated:
+            dispositor = SIGN_LORD[pf.sign]
+            exalt_lord = SIGN_LORD[EXALT_SIGN[key]] if key in EXALT_SIGN else None
+            cancellers = {dispositor, exalt_lord} - {None}
+            cancelled = any(P[c].house in KENDRA for c in cancellers if c in P)
+        catalog.append({
+            "key": f"neechabhanga_{key}", "name": f"Neecha-Bhanga ({PLANET_EN[key]})",
+            "polarity": "benefic", "present": debilitated and cancelled,
+            "text": f"Formed when {PLANET_EN[key]} is debilitated but its strength is "
+                    f"classically restored (neecha-bhanga) because a related lord — its "
+                    f"sign dispositor or exaltation-lord — holds an angle. Early friction "
+                    f"in this area then tends to convert into notable later strength.",
+        })
+
+    kendra_lords = {chart.house_lord[h] for h in KENDRA if h in chart.house_lord}
+    trikona_lords = {chart.house_lord[h] for h in TRIKONA if h in chart.house_lord}
+    seen: set[frozenset] = set()
+    for kl in sorted(kendra_lords):
+        for tl in sorted(trikona_lords):
+            if kl == tl:
+                continue
+            pair = frozenset({kl, tl})
+            if pair in seen:
+                continue
+            seen.add(pair)
+            present = bool(
+                kl in chart.planets and tl in chart.planets
+                and chart.planets[kl].house == chart.planets[tl].house
+            )
+            catalog.append({
+                "key": "raja_" + "_".join(sorted(pair)), "name": "Raja Yoga",
+                "polarity": "benefic", "present": present,
+                "text": f"Formed when the angular lord ({PLANET_EN[kl]}) and the trine "
+                        f"lord ({PLANET_EN[tl]}) join in one house — a Raja-yoga pattern "
+                        f"supporting rise in status, provided the planets involved are "
+                        f"reasonably strong.",
+            })
+
+    l2 = chart.house_lord.get(2)
+    l11 = chart.house_lord.get(11)
+    dhana_present = bool(
+        l2 and l11 and l2 in chart.planets and l11 in chart.planets
+        and chart.planets[l2].house == chart.planets[l11].house
+    )
+    catalog.append({
+        "key": "dhana_2_11", "name": "Dhana Yoga", "polarity": "benefic",
+        "present": dhana_present,
+        "text": "Formed when the lords of income (2nd) and gains (11th) combine in one "
+                "house — a wealth-forming pattern that rewards consistent earning and "
+                "saving habits.",
+    })
+
+    return catalog
+
+
 def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
                 shadbala_raw: dict[str, Any], dasha_raw: dict[str, Any],
                 now: datetime) -> Chart:

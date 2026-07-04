@@ -24,6 +24,7 @@ from engine.vedic.interpretation import (
     _angular_sep,
     _dignity,
     build_chart,
+    full_yoga_catalog,
     nakshatra_of,
     sign_of,
 )
@@ -354,7 +355,7 @@ def _yogas_to_api(chart_yogas: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "nameEn": name_en,
             "nameNe": name_ne,
             "nature": nature,
-            "present": True,
+            "present": y["present"],
             "descEn": text,
             "descNe": text,
         })
@@ -567,7 +568,7 @@ def build_kundali_detail(
         "yuddha": {"wars": [], "byPlanet": {}},
         "bhavaBala": bhava_bala,
         "ashtakavarga": ashtakavarga,
-        "yogas": _yogas_to_api(chart.yogas),
+        "yogas": _yogas_to_api(full_yoga_catalog(chart)),
         "vargaCharts": varga_charts,
         "upagrahas": upagrahas,
         "avakahada": _build_avakahada(moon_lon, sign_of(moon_lon) + 1, lagna_rashi),
