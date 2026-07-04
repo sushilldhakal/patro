@@ -46,6 +46,7 @@ from engine.vedic.names_ne import (
 )
 from engine.vedic.nepal_sambat import gregorian_to_ns
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
+from engine.vedic.hora import build_hora
 from engine.vedic.tithi import calculate_tithi
 from engine.astronomy.positions import (
     get_aayan,
@@ -219,6 +220,15 @@ def build_daily_panchanga(
         if day_ghati is not None
         else []
     )
+    hora = build_hora(
+        sunrise_utc,
+        sunset_utc,
+        next_sunrise_utc,
+        vaara_num,
+        location.timezone,
+        sunrise_short=sunrise_block.get("local_time_short"),
+        sunset_short=sunset_block.get("local_time_short"),
+    )
     solar_corrections = build_solar_corrections(
         target,
         local_longitude=location.lon,
@@ -242,6 +252,7 @@ def build_daily_panchanga(
         "sunset": sunset_block,
         "day_ghati": day_ghati,
         "choghadiya": choghadiya,
+        "hora": hora,
         "solar_corrections": solar_corrections,
         "moonrise": _time_block(moonrise_utc, location.timezone),
         "moonset": _time_block(moonset_utc, location.timezone),
