@@ -454,7 +454,7 @@ def compute_shadbala(
         masadhipati = 30.0 if VARA_LORD[masa_lord_wd] == p else 0.0
         varshadhipati = 15.0 if VARA_LORD[varsha_lord_wd] == p else 0.0
         hora = _hora(p, birth_min, sunrise_min, weekday)
-        ayana = _ayana(p, lp, ayanamsa, obliquity)
+        ayana = _ayana(p, lp, mode, obliquity)
         # Graha yuddha adjustment not modelled — exposed as 0 for table parity.
         yuddha = 0.0
         kala = (

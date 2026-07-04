@@ -122,7 +122,8 @@ def kundali_report(
         lagna = snapshot["lagna"]
         moon_lon = planets["moon"]["longitude"]
         dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
-        shadbala = compute_shadbala(instant_utc, lat=location.lat, lon=location.lon, timezone_name=location.timezone)
+        shadbala = compute_shadbala(instant_utc, lat=location.lat, lon=location.lon,
+                                    timezone_name=location.timezone, ayanamsa=mode_id)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

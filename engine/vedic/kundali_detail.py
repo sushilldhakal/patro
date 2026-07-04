@@ -7,6 +7,8 @@ from typing import Any
 
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
+from engine.vedic.ashtakavarga import compute_ashtakavarga
+from engine.vedic.bhava_bala import compute_bhava_bala
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.interpretation import (
@@ -537,6 +539,14 @@ def build_kundali_detail(
     except Exception:
         pass
 
+    planet_lons = {
+        key: float(planets[key]["longitude"])
+        for key in ("sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn")
+        if planets.get(key)
+    }
+    ashtakavarga = compute_ashtakavarga(planet_lons, lagna_lon)
+    bhava_bala = compute_bhava_bala(lagna_rashi, planet_lons, shadbala)
+
     combustion: dict[str, bool | None] = {}
     for key in PLANET_KEYS:
         if key not in COMBUST_ORB:
@@ -555,8 +565,8 @@ def build_kundali_detail(
         "shadbala": shadbala,
         "dasha": dasha_tree,
         "yuddha": {"wars": [], "byPlanet": {}},
-        "bhavaBala": None,
-        "ashtakavarga": None,
+        "bhavaBala": bhava_bala,
+        "ashtakavarga": ashtakavarga,
         "yogas": _yogas_to_api(chart.yogas),
         "vargaCharts": varga_charts,
         "upagrahas": upagrahas,
