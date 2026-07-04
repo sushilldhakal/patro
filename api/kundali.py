@@ -205,6 +205,38 @@ def kundali_dasha_expand(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/kundali/milan")
+def kundali_milan(
+    boy_datetime: str = Query(..., description="Groom birth instant (ISO); naive uses boy_timezone"),
+    girl_datetime: str = Query(..., description="Bride birth instant (ISO); naive uses girl_timezone"),
+    boy_lat: float | None = Query(None),
+    boy_lon: float | None = Query(None),
+    boy_timezone: str | None = Query(None, description="IANA tz for the groom's birthplace"),
+    girl_lat: float | None = Query(None),
+    girl_lon: float | None = Query(None),
+    girl_timezone: str | None = Query(None, description="IANA tz for the bride's birthplace"),
+    ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    lang: str = Query("ne", description="Response language for kuta values: ne or en"),
+):
+    """Ashtakoota (Guna Milan) compatibility, computed entirely server-side."""
+    from engine.vedic.at_time import parse_query_datetime
+    from engine.vedic.milan import build_kundali_milan
+
+    default_tz = "Asia/Kathmandu"
+    try:
+        boy_instant = parse_query_datetime(boy_datetime, timezone_name=boy_timezone or default_tz)
+        girl_instant = parse_query_datetime(girl_datetime, timezone_name=girl_timezone or default_tz)
+        boy_location = {"lat": boy_lat, "lon": boy_lon, "timezone": boy_timezone or default_tz}
+        girl_location = {"lat": girl_lat, "lon": girl_lon, "timezone": girl_timezone or default_tz}
+        return build_kundali_milan(
+            boy_instant, girl_instant,
+            boy_location=boy_location, girl_location=girl_location,
+            ayanamsha=ayanamsha, lang=lang,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/kundali/{date_key}")
 def kundali(
     date_key: str,
