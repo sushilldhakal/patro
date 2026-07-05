@@ -529,7 +529,10 @@ def build_kundali_detail(
 
     moon_nak_idx, moon_pada = nakshatra_of(moon_lon)
     yoga_block = panchanga.get("yoga") or {}
-    yoga_index = int(yoga_block.get("index", 0))
+    # The yoga block carries a 1-based "number" (no "index" key), so this
+    # must be derived from it — reading a nonexistent "index" key silently
+    # defaulted to 0 (Vishkambha) for every single chart.
+    yoga_index = int(yoga_block.get("number", 1)) - 1
 
     sun_lon = float(planets["sun"]["longitude"])
     is_day = None

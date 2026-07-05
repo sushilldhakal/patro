@@ -47,12 +47,12 @@ def _find_span_start(
     return end_dt
 
 
-def find_nakshatra_start(dt: datetime) -> datetime:
-    return _find_span_start(dt, lambda moment: get_nakshatra(moment)[0])
+def find_nakshatra_start(dt: datetime, ayanamsa: int | None = None) -> datetime:
+    return _find_span_start(dt, lambda moment: get_nakshatra(moment, ayanamsa=ayanamsa)[0])
 
 
-def find_yoga_start(dt: datetime) -> datetime:
-    return _find_span_start(dt, lambda moment: get_yoga(moment)[0])
+def find_yoga_start(dt: datetime, ayanamsa: int | None = None) -> datetime:
+    return _find_span_start(dt, lambda moment: get_yoga(moment, ayanamsa=ayanamsa)[0])
 
 
 def find_karana_start(dt: datetime) -> datetime:
@@ -168,9 +168,9 @@ def find_moon_pada_end(dt: datetime) -> datetime:
     )
 
 
-def find_nakshatra_end(dt: datetime) -> datetime:
+def find_nakshatra_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
     def get_index(moment: datetime) -> int:
-        return get_nakshatra(moment)[0]
+        return get_nakshatra(moment, ayanamsa=ayanamsa)[0]
 
     def get_value(moment: datetime) -> float:
         from engine.astronomy.swiss_eph import get_moon_longitude
@@ -180,9 +180,9 @@ def find_nakshatra_end(dt: datetime) -> datetime:
     return _find_span_end(dt, get_index, NAKSHATRA_SPAN, get_value)
 
 
-def find_yoga_end(dt: datetime) -> datetime:
+def find_yoga_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
     def get_index(moment: datetime) -> int:
-        return get_yoga(moment)[0]
+        return get_yoga(moment, ayanamsa=ayanamsa)[0]
 
     def get_value(moment: datetime) -> float:
         from engine.astronomy.swiss_eph import get_sun_moon_positions
@@ -276,15 +276,15 @@ def build_tithi_block(dt: datetime, sunrise_dt: datetime, tithi_info: dict) -> d
     )
 
 
-def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
+def build_nakshatra_block(dt: datetime, sunrise_dt: datetime, ayanamsa: int | None = None) -> dict:
     from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 
-    number, name, progress = get_nakshatra(dt)
-    moon_long = get_moon_longitude(dt)
+    number, name, progress = get_nakshatra(dt, ayanamsa=ayanamsa)
+    moon_long = get_moon_longitude(dt, ayanamsa=ayanamsa)
     pos_in_nak = moon_long % NAKSHATRA_SPAN
     pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
-    start_dt = find_nakshatra_start(dt)
-    end_dt = find_nakshatra_end(dt)
+    start_dt = find_nakshatra_start(dt, ayanamsa=ayanamsa)
+    end_dt = find_nakshatra_end(dt, ayanamsa=ayanamsa)
     next_num = _next_cyclic(number, 27)
     block = _element_with_span(
         sunrise_dt,
@@ -302,19 +302,19 @@ def build_nakshatra_block(dt: datetime, sunrise_dt: datetime) -> dict:
     return _enrich_next_anga(
         block,
         sunrise_dt,
-        find_nakshatra_end,
+        lambda moment: find_nakshatra_end(moment, ayanamsa=ayanamsa),
         27,
         NAKSHATRA_NAMES,
         NAKSHATRA_NAMES_NE,
     )
 
 
-def build_yoga_block(dt: datetime, sunrise_dt: datetime) -> dict:
+def build_yoga_block(dt: datetime, sunrise_dt: datetime, ayanamsa: int | None = None) -> dict:
     from engine.vedic.names_ne import YOGA_NAMES_NE
 
-    number, name, progress = get_yoga(dt)
-    start_dt = find_yoga_start(dt)
-    end_dt = find_yoga_end(dt)
+    number, name, progress = get_yoga(dt, ayanamsa=ayanamsa)
+    start_dt = find_yoga_start(dt, ayanamsa=ayanamsa)
+    end_dt = find_yoga_end(dt, ayanamsa=ayanamsa)
     next_num = _next_cyclic(number, 27)
     block = _element_with_span(
         sunrise_dt,
@@ -331,7 +331,7 @@ def build_yoga_block(dt: datetime, sunrise_dt: datetime) -> dict:
     return _enrich_next_anga(
         block,
         sunrise_dt,
-        find_yoga_end,
+        lambda moment: find_yoga_end(moment, ayanamsa=ayanamsa),
         27,
         YOGA_NAMES,
         YOGA_NAMES_NE,

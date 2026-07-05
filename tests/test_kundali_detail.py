@@ -104,6 +104,46 @@ def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
         assert row["descEn"]
 
 
+def test_panchanga_yoga_and_nakshatra_respect_the_chosen_ayanamsha():
+    """/kundali/detail's tithi/nakshatra/yoga must use the same ayanamsha as
+    the rest of the chart (planets, lagna) — previously nakshatra and yoga
+    were silently always computed under Lahiri regardless of what the
+    request asked for, so switching ayanamsha left them inconsistent with
+    the D1 chart and moon-nakshatra shown on the same page."""
+    from engine.astronomy.engine import AstronomyEngine
+
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("2000-01-10T15:00:00", timezone_name=loc.timezone)
+
+    lahiri = build_kundali_detail(instant, loc, ayanamsha="lahiri")
+    raman = build_kundali_detail(instant, loc, ayanamsha="raman")
+
+    lahiri_panchanga = lahiri["panchanga"]
+    raman_panchanga = raman["panchanga"]
+
+    # Yoga and nakshatra depend on absolute sidereal longitude — must shift
+    # with the ayanamsha, matching the D1 chart's own moon position.
+    assert lahiri_panchanga["yoga"]["number"] != raman_panchanga["yoga"]["number"]
+    assert lahiri_panchanga["nakshatra"]["number"] != raman_panchanga["nakshatra"]["number"]
+    assert lahiri["birthMeta"]["yoga"]["index"] != raman["birthMeta"]["yoga"]["index"]
+
+    # Tithi depends only on the Sun-Moon elongation, which cancels the
+    # ayanamsha offset — must stay identical across ayanamshas.
+    assert lahiri_panchanga["tithi"]["number"] == raman_panchanga["tithi"]["number"]
+
+    # birthMeta.yoga must always agree with panchanga.yoga (same request) —
+    # previously birthMeta.yoga read a nonexistent "index" key and silently
+    # defaulted to 0 (Vishkambha) for every single chart.
+    assert lahiri["birthMeta"]["yoga"]["number"] == lahiri_panchanga["yoga"]["number"]
+    assert raman["birthMeta"]["yoga"]["number"] == raman_panchanga["yoga"]["number"]
+    assert lahiri["birthMeta"]["yoga"]["index"] == lahiri_panchanga["yoga"]["number"] - 1
+    assert raman["birthMeta"]["yoga"]["index"] == raman_panchanga["yoga"]["number"] - 1
+
+    assert AstronomyEngine.LAHIRI != AstronomyEngine.RAMAN  # sanity: modes are distinct
+
+
 def test_graha_yuddha_detects_a_real_planetary_war():
     """Two tara grahas within 1deg of longitude must be reported as a war,
     not silently left empty — /kundali/detail previously always returned

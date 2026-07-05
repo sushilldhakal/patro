@@ -8,14 +8,14 @@ from engine.astronomy.timescale import resolve_observer_timezone
 def get_julian_day(dt: datetime) -> float:
     return default_engine.julian_day(dt)
 
-def get_sun_longitude(dt: datetime, sidereal: bool = True) -> float:
-    return default_engine.sun_longitude(default_engine.julian_day(dt), sidereal=sidereal)
+def get_sun_longitude(dt: datetime, sidereal: bool = True, ayanamsa: int | None = None) -> float:
+    return default_engine.sun_longitude(default_engine.julian_day(dt), sidereal=sidereal, ayanamsa=ayanamsa)
 
-def get_moon_longitude(dt: datetime, sidereal: bool = True) -> float:
-    return default_engine.moon_longitude(default_engine.julian_day(dt), sidereal=sidereal)
+def get_moon_longitude(dt: datetime, sidereal: bool = True, ayanamsa: int | None = None) -> float:
+    return default_engine.moon_longitude(default_engine.julian_day(dt), sidereal=sidereal, ayanamsa=ayanamsa)
 
-def get_sun_moon_positions(dt: datetime, sidereal: bool = True) -> tuple[float, float]:
-    return default_engine.sun_moon_longitudes(default_engine.julian_day(dt), sidereal=sidereal)
+def get_sun_moon_positions(dt: datetime, sidereal: bool = True, ayanamsa: int | None = None) -> tuple[float, float]:
+    return default_engine.sun_moon_longitudes(default_engine.julian_day(dt), sidereal=sidereal, ayanamsa=ayanamsa)
 
 TITHI_SPAN = 12.0
 NAKSHATRA_SPAN = 360.0 / 27.0
@@ -92,8 +92,8 @@ def get_tithi_progress(elongation: float) -> float:
     return (elongation % TITHI_SPAN) / TITHI_SPAN
 
 
-def get_nakshatra(dt: datetime) -> tuple[int, str, float]:
-    moon_long = get_moon_longitude(dt)
+def get_nakshatra(dt: datetime, ayanamsa: int | None = None) -> tuple[int, str, float]:
+    moon_long = get_moon_longitude(dt, ayanamsa=ayanamsa)
     nakshatra_float = moon_long / NAKSHATRA_SPAN
     nakshatra_num = int(nakshatra_float) + 1
     if nakshatra_num > 27:
@@ -101,8 +101,8 @@ def get_nakshatra(dt: datetime) -> tuple[int, str, float]:
     return nakshatra_num, NAKSHATRA_NAMES[nakshatra_num - 1], nakshatra_float % 1
 
 
-def get_yoga(dt: datetime) -> tuple[int, str, float]:
-    sun_long, moon_long = get_sun_moon_positions(dt)
+def get_yoga(dt: datetime, ayanamsa: int | None = None) -> tuple[int, str, float]:
+    sun_long, moon_long = get_sun_moon_positions(dt, ayanamsa=ayanamsa)
     total_long = (sun_long + moon_long) % 360
     yoga_float = total_long / YOGA_SPAN
     yoga_num = int(yoga_float) + 1
