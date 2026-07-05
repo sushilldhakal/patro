@@ -181,6 +181,35 @@ def test_kala_sarpa_and_amala_use_whole_sign_reference_points():
     assert present["parvata"] is False
 
 
+def test_rahu_ketu_use_mean_node_matching_drikpanchang():
+    """Real chart regression: 1945-12-28 11:30 Kathmandu (Lahiri).
+
+    Rahu/Ketu previously used the true (osculating) node, with a comment
+    claiming this matches Drik Panchang. Verified against Drik Panchang's
+    published longitude for this exact chart that the claim was backwards:
+    the mean node landed within the same ~40 arcsecond ayanamsha-formula
+    tolerance seen on every other graha (Drik shows 6 deg 34' 04" Mithuna;
+    mean node here is 6 deg 34' 29"), while the true node was off by a full
+    16.7 arcminutes (6 deg 50' 48")."""
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1945-12-28T11:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="lahiri")
+
+    d1 = payload["vargaCharts"]["entries"]["1"]
+    rahu = next(r for r in d1 if r["key"] == "rahu")
+    ketu = next(r for r in d1 if r["key"] == "ketu")
+
+    assert rahu["dms"]["rashiNum"] == 3  # Mithuna
+    assert rahu["dms"]["deg"] == 6
+    assert rahu["dms"]["min"] == 34
+    # Ketu is always exactly opposite Rahu.
+    assert ketu["dms"]["rashiNum"] == 9  # Dhanu
+    assert ketu["dms"]["deg"] == rahu["dms"]["deg"]
+    assert ketu["dms"]["min"] == rahu["dms"]["min"]
+
+
 def test_graha_yuddha_detects_a_real_planetary_war():
     """Two tara grahas within 1deg of longitude must be reported as a war,
     not silently left empty — /kundali/detail previously always returned

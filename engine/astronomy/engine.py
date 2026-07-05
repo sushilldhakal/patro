@@ -31,9 +31,13 @@ _TROPICAL_SPEED = swe.FLG_SPEED
 
 PLANET_KEYS = ("sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "rahu")
 
-# Rahu uses the true (osculating) node — matches Drik Panchang and most modern
-# jyotish software. Mean node differs by up to ~1.75° and can shift the rashi,
-# nakshatra, and house near boundaries.
+# Rahu uses the mean node — matches Drik Panchang (verified against its
+# published longitude for a real chart: mean node landed within the same
+# ~40 arcsecond ayanamsha-formula tolerance seen on every other graha, while
+# the true/osculating node was off by ~16.7 arcminutes). True node can differ
+# from mean by up to ~1.75° and shift the rashi, nakshatra, or house near
+# boundaries — some KP-style software prefers it, but it is not what
+# Drik Panchang uses.
 _BODY_MAP: dict[str, int] = {
     "sun": _SUN,
     "moon": _MOON,
@@ -42,7 +46,7 @@ _BODY_MAP: dict[str, int] = {
     "mars": _MARS,
     "jupiter": _JUPITER,
     "saturn": _SATURN,
-    "rahu": _TRUE_NODE,
+    "rahu": _MEAN_NODE,
 }
 
 SIDM_LAHIRI = swe.SIDM_LAHIRI
