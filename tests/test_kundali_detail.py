@@ -1,5 +1,7 @@
 """Tests for /kundali/detail and kundali detail builder."""
 
+import json
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -177,6 +179,44 @@ def test_kundali_report_served_from_cache_on_repeat(tmp_path, monkeypatch):
     assert second.status_code == 200
     assert second.headers.get("X-Report-Cache") == "hit"
     assert second.text == first.text
+
+
+def test_kundali_report_nepali_localization():
+    """Nepali lang should translate planets, rashis, and meta disclaimer."""
+    client = TestClient(app)
+    resp = client.get(
+        "/kundali/report",
+        params={
+            "datetime": "1993-06-12T10:30:00",
+            "ayanamsha": "nepal",
+            "lang": "ne",
+            "force": "true",
+            "lat": 27.70169,
+            "lon": 85.3206,
+            "timezone": "Asia/Kathmandu",
+        },
+    )
+    assert resp.status_code == 200
+    lines = [json.loads(line) for line in resp.text.splitlines() if line.strip()]
+    meta = next(r for r in lines if r.get("kind") == "meta")
+    assert meta["disclaimer"] == (
+        "चिन्तन र सांस्कृतिक अन्तर्दृष्टिका लागि। प्रवृत्ति र सम्भावना देखाउँछ, "
+        "निश्चितता होइन; व्यावसायिक सल्लाहको विकल्प होइन।"
+    )
+    sections = [r for r in lines if r.get("kind") == "section"]
+    assert sections
+    joined = " ".join(
+        p
+        for s in sections
+        for p in (s.get("body") or [])
+    ) + " ".join(
+        it.get("text", "")
+        for s in sections
+        for it in (s.get("items") or [])
+    )
+    assert "Sun" not in joined
+    assert "Mesha" not in joined
+    assert "सूर्य" in joined or "मेष" in joined
 
 
 def test_kundali_report_force_bypasses_cache(tmp_path, monkeypatch):

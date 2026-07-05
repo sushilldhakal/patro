@@ -134,7 +134,7 @@ def kundali_report(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    report_lang = lang or "en"
+    report_lang = "en" if str(lang or "ne").startswith("en") else "ne"
     ayanamsha_id = ayanamsha or "lahiri"
     birth_instant = instant.isoformat()
     header = {"ayanamsha": ayanamsha_id, "location": location.as_dict(), "birth_instant": birth_instant}

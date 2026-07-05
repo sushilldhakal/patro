@@ -170,6 +170,30 @@ DASHA_THEME = {
     "ketu": "detachment, specialisation, inner work and spiritual turns",
 }
 
+KARAKA_NE = {
+    "sun": "आत्मा, जीवन शक्ति, पिता, अधिकार र आत्मविश्वास",
+    "moon": "मन, भावना, माता, आराम र जनसम्पर्क",
+    "mars": "ऊर्जा, साहस, प्रेरणा, भाइबहिनी र सम्पत्ति",
+    "mercury": "बुद्धि, संचार, व्यापार र शिक्षा",
+    "jupiter": "ज्ञान, नैतिकता, धन, गुरु, सन्तान र कृपा",
+    "venus": "प्रेम, साझेदारी, सौन्दर्य, आराम र कला",
+    "saturn": "अनुशासन, धैर्य, कर्म, सेवा र दीर्घायु",
+    "rahu": "महत्वाकांक्षा, विदेश/अपरम्परागत मार्ग, आसक्ति",
+    "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र मोक्ष",
+}
+
+DASHA_THEME_NE = {
+    "sun": "नेतृत्व, मान्यता, अधिकार सम्बन्ध र पितासँग सम्बन्धित विषय",
+    "moon": "भावनात्मक जीवन, घर, जनसम्पर्क र हेरचाह",
+    "mars": "प्रेरणा, सम्पत्ति, प्राविधिक/प्रतिस्पर्धात्मक प्रयास र साहसिक पहल",
+    "mercury": "अध्ययन, संचार, व्यापार, लेखन र विश्लेषणात्मक काम",
+    "jupiter": "वृद्धि, ज्ञान, शिक्षण, वित्त, सन्तान र उत्तम सल्लाह",
+    "venus": "सम्बन्ध, आराम, सिर्जनशीलता, कला र भौतिक सुविधा",
+    "saturn": "अनुशासन, कडा परिश्रम, जिम्मेवारी, संरचना र धैर्य",
+    "rahu": "महत्वाकांक्षा, अपरम्परागत/विदेशी मार्ग र द्रुत परिवर्तन",
+    "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
+}
+
 DAYS_PER_YEAR = 365.2425
 
 
@@ -1518,6 +1542,7 @@ def iter_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
                 shadbala_raw: dict[str, Any], dasha_raw: dict[str, Any],
                 *, now: Optional[datetime] = None, lang: str = "en") -> Iterator[dict[str, Any]]:
     """Yield a ``meta`` record, then one record per section — for streaming."""
+    lang = "en" if str(lang).startswith("en") else "ne"
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
@@ -1542,7 +1567,7 @@ DISCLAIMER_NE = (
 HOUSE_THEME_NE = {
     1: "आत्म, शरीर, जीवन शक्ति र समग्र जीवन दिशा",
     2: "धन, वाणी, वंश र पोषण",
-    3: "साहस, परिश्रम, दाजुभाइबहini, संचार र सीप",
+    3: "साहस, परिश्रम, भाइबहिनी, संचार र सीप",
     4: "घर, माता, आन्तरिक शान्ति, सम्पत्ति र शिक्षा",
     5: "बुद्धि, सिर्जनशीलता, सन्तान र पुण्य",
     6: "कर्म, सेवा, स्वास्थ्य, प्रतिस्पर्धा र बाधा",
@@ -1550,7 +1575,7 @@ HOUSE_THEME_NE = {
     8: "परिवर्तन, साझा सम्पत्ति, अनुसन्धान र दीर्घायु",
     9: "भाग्य, धर्म, उच्च शिक्षा, गुरु र पिता",
     10: "करियर, स्थिति, सार्वजनिक भूमिका र कर्म",
-    11: "लाभ, सञ्जाल, आकांक्षा र ठूला भाइबहini",
+    11: "लाभ, सञ्जाल, आकांक्षा र ठूला भाइबहिनी",
     12: "मोचन, खर्च, एकान्त, विदेश र मुक्ति",
 }
 
@@ -1579,12 +1604,253 @@ def _build_ne_replacements() -> list[tuple[str, str]]:
         pairs.append((en, NAKSHATRA_NE[i]))
     for h, en in HOUSE_THEME.items():
         pairs.append((en, HOUSE_THEME_NE[h]))
+    for key, en in KARAKA.items():
+        pairs.append((en, KARAKA_NE[key]))
+    for key, en in DASHA_THEME.items():
+        pairs.append((en, DASHA_THEME_NE[key]))
     for en, ne in DIGNITY_PHRASE.items():
         pairs.append((en, DIGNITY_PHRASE_NE.get(en, en)))
     for en, ne in DIGNITY_PHRASE_NE.items():
         if en not in DIGNITY_PHRASE:
             pairs.append((en, ne))
     phrase_map = {
+        # Meta / labels
+        "Deterministic Parashari interpretation with confidence weighting": METHOD_NE,
+        "For reflection and cultural insight. Describes tendencies and "
+        "probabilities, not certainties; not a substitute for professional advice.": DISCLAIMER_NE,
+        # Yoga names
+        "Gaja-Kesari Yoga": "गजकेसरी योग",
+        "Budha-Aditya Yoga": "बुधादित्य योग",
+        "Chandra-Mangala Yoga": "चन्द्रमंगल योग",
+        "Ruchaka Mahapurusha Yoga": "रुचक महापुरुष योग",
+        "Bhadra Mahapurusha Yoga": "भद्र महापुरुष योग",
+        "Hamsa Mahapurusha Yoga": "हंस महापुरुष योग",
+        "Malavya Mahapurusha Yoga": "मालव्य महापुरुष योग",
+        "Sasa Mahapurusha Yoga": "शश महापुरुष योग",
+        "Kemadruma (isolated Moon)": "केमद्रुम (एकान्त चन्द्र)",
+        "Raja Yoga": "राज योग",
+        "Dhana Yoga": "धन योग",
+        "Neecha-Bhanga": "नीचभंग",
+        # Executive summary & core phrases
+        " ascendant; the Moon (the mind) is in ": " लग्न; मन (चन्द्र) ",
+        " in ": " मा ",
+        " nakshatra, pada ": " नक्षत्र, चरण ",
+        " — your janma nakshatra — and the Sun is in ": " — जन्म नक्षत्र — र सूर्य ",
+        " मा ": " मा ",
+        ". The rising sign shows how you meet the world, the Moon your inner climate, "
+        "the Sun your core self.": "। लग्नले संसारसँग कसरी भेट्नुहुन्छ, चन्द्रले भित्री मन, सूर्यले मूल स्व भन्छ।",
+        "The ascendant lord ": "लग्नका स्वामी ",
+        " is ": " ",
+        " in the ": " ",
+        " house": " औं भावमा",
+        ", so the chart rests on ": ", यसैले कुण्डली ",
+        " foundation.": " आधारमा टिकेको छ।",
+        "a strong, well-supported": "बलियो, राम्रोसँग समर्थित",
+        "a moderately supported": "मध्यम रूपमा समर्थित",
+        "a mixed, conditional": "मिश्रित, सशर्त",
+        "a tentative": "अनिश्चित",
+        "Timing now: the ": "समय अहिले: ",
+        " mahadasha runs until ": " महादशा ",
+        " सम्म चलिरहेको छ, र यसभitr ": " सम्म; यसभित्र ",
+        " antardasha runs ": " अन्तर्दशा ",
+        " – ": " – ",
+        ". The Dasha timeline section gives the full schedule with dates.": "। दशा तालिका खण्डमा पूर्ण मिति सहित तालिका छ।",
+        "Supportive patterns active: ": "सहायक योग सक्रिय: ",
+        "Your outward personality is coloured by a ": "बाह्य व्यक्तित्व ",
+        " ascendant and shaped most by its ruler ": " लग्नले र यसका स्वामी ",
+        "The Sun in ": "सूर्य ",
+        " (house ": " (",
+        ") describes the will and self-image you grow into — themes of ": " औं भावमा) इच्छाशक्ति र आत्म-छवि — ",
+        ".": "।",
+        "Mercury in ": "बुध ",
+        " shapes how you think and communicate; placed in the ": "ले सोच र संचारलाई आकार दिन्छ; ",
+        " औं भावमा, ": " औं भावमा, ",
+        " it leans toward ": " यसले ",
+        "With the Moon in the ": "चन्द्र ",
+        " house, your emotional security is tied to ": " औं भावमा भएकाले भावनात्मक सुरक्षा ",
+        "A dignified Moon supports natural steadiness of mind.": "गरिमामान चन्द्रले मनको स्वाभाविक स्थिरता समर्थन गर्छ।",
+        "Because the Moon is under some pressure here, deliberate rest, "
+        "routine and supportive company pay off noticeably.": "यहाँ चन्द्र केही दबाबमा भएकाले, विचारपूर्वक विश्राम, दिनचर्या र सहयोगी साथीहरू स्पष्ट रूपमा फलदायी हुन्छन्।",
+        "Benefic aspect(s) from ": "शुभ दृष्टि — ",
+        " lend the mind extra protection and optimism.": " — ले मनलाई अतिरिक्त सुरक्षा र आशावाद दिन्छ।",
+        " is a strong asset — ": " बलियो सम्पत्ति हो — ",
+        " comes more easily (": " सजिलै आउँछ (",
+        ", ": ", ",
+        " in Shadbala": " षड्बलमा",
+        ").": ")।",
+        "No planet is classically exalted, but several are workable; "
+        "your strengths build through effort rather than arriving ready-made.": "कुनै ग्रह उच्च छैन, तर धेरै कार्ययोग्य छन्; बल परिश्रमबाट बन्दै जान्छ।",
+        " needs conscious support — ": " ले सचेत सहयोग चाहिन्छ — ",
+        " can feel effortful (": " प्रयासपूर्ण लाग्न सक्छ (",
+        " Encouragingly, a neecha-bhanga pattern tends to convert this into later strength.": " उत्साहजनक रूपमा, नीचभंग ढाँचाले पछि बलमा बदल्न सक्छ।",
+        "No planet is severely afflicted — challenges are likely "
+        "situational rather than deep-seated.": "कुनै ग्रह गम्भीर रूपमा पीडित छैन — चुनौतीहरू प्रायः परिस्थितिजन्य हुन्।",
+        "Treat these as growth edges: areas that reward patience and "
+        "skill-building, not fixed limitations.": "यिनलाई विकासका क्षेत्रका रूपमा हेर्नुहोस् — धैर्य र सीपले फल दिन्छन्।",
+        "Career direction follows the 10th lord ": "करियर दिशा १० औं भावका स्वामी ",
+        " into the ": " ",
+        " — blending public work with ": " औं भावमा — सार्वजनिक काम ",
+        "Sun and Saturn together describe the balance between authority/visibility "
+        "and disciplined service in your work life.": "सूर्य र शनि मिलेर काममा अधिकार/दृश्यता र अनुशासित सेवाको सन्तुलन देखाउँछन्।",
+        "The running ": "चलिरहेको ",
+        " mahadasha currently colours career with ": " महादशाले करियरलाई ",
+        ".": "।",
+        "Jupiter (natural significator of wealth and grace) is in ": "बृहस्पति (धन र कृपाको कारक) ",
+        ", house ": ", ",
+        " औं भाव — ": " औं भाव — ",
+        "A wealth-forming Dhana yoga supports accumulation through "
+        "steady earning and saving habits.": "धन योगले नियमित कमाइ र बचतबाट संचय समर्थन गर्छ।",
+        "Finances respond best to systematic saving; the chart describes "
+        "tendencies, while habits decide outcomes.": "वित्तमा व्यवस्थित बचत राम्रो; कुण्डली प्रवृत्ति, बानी नतिजा तय गर्छ।",
+        "Venus, the significator of love and partnership, is in ": "शुक्र, प्रेम र साझेदारीका कारक, ",
+        " — ": " — ",
+        "It describes what you value and seek in closeness.": "नजिकको सम्बन्धमा के महत्व दिन्छ भन्छ।",
+        "Malefic aspect to the partnership house suggests relationships "
+        "mature through some testing — communication and shared values "
+        "smooth the path. This is a tendency, not a fixed outcome.": "साझेदारी भावमा पाप ग्रहको दृष्टिले सम्बन्ध परीक्षाबाट परिपक्व हुन्छ — संचार र साझा मूल्यहरूले बाटो सजिलो बनाउँछन्।",
+        "The 4th reflects mother and home, the 9th the father and elders, "
+        "the 2nd the wider family, and the 3rd siblings.": "४ औं माता/घर, ९ औं पिता/ज्येष्ठ, २ औं परिवार, ३ औं भाइबहिनी देखाउँछ।",
+        "In Jyotisha, vitality is read from the lagna, its lord, and the Moon; the "
+        "6th house describes illness, recovery and daily regimen.": "ज्योतिषमा जीवन शक्ति लग्न, स्वामी र चन्द्रबाट; ६ औं भाव रोग, निको र दैनिक दिनचर्या।",
+        "supports robust constitution and quick recovery.": "बलियो स्वास्थ्य र छिटो निको समर्थन गर्छ।",
+        "asks for proactive self-care — regular sleep, movement and stress "
+        "management have outsized benefit.": "सचेत आत्म-हेरचाह चाहिन्छ — नियमित निद्रा, चाल र तनाव व्यवस्थापन अत्यन्त फलदायी।",
+        "This is wellbeing guidance from chart tendencies, not medical "
+        "advice; consult a qualified professional for any concern.": "यो कुण्डली प्रवृत्तिको मार्गदर्शन हो, चिकित्सा सल्लाह होइन।",
+        "Jupiter in house ": "बृहस्पति ",
+        " points to where wisdom, ethics and mentorship naturally develop.": " औं भावमा ज्ञान, नैतिकता र गुरुत्व विकास हुन्छ।",
+        "Ketu in house ": "केतु ",
+        " (": " (",
+        ") shows where you carry instinctive mastery and a pull toward detachment.": ") ले वैराग्य र अन्तर्ज्ञानको क्षेत्र देखाउँछ।",
+        "You are running the ": "तपाईं ",
+        " mahadasha (until ": " महादशामा हुनुहुन्छ (",
+        "), and within it the ": " सम्म), र यसभित्र ",
+        " antardasha from ": " अन्तर्दशा ",
+        " to ": " देखि ",
+        ". This phase emphasises ": " सम्म। यो चरण ",
+        " emphasises ": " मा जोड दिन्छ। ",
+        " and rules your ": " र तपाईंको ",
+        " house": " औं भाव",
+        "s": "हरू",
+        "These results tend to arrive readily": "नतिजा सजिलै आउँछ",
+        "These results reward patience and steady effort": "नतिजाले धैर्य र निरन्तर प्रयास माग्छ",
+        " sits in your ": " तपाईंको ",
+        ", so the period concentrates on ": " औं भावमा, अवधि ",
+        " and the houses it rules. ": " र शासित भावहरूमा केन्द्रित। ",
+        "It is ": "",
+        " — ": " — ",
+        ".": "।",
+        "The ": "",
+        " antardasha sharpens the sub-theme of ": " अन्तर्दशाले ",
+        " (it holds your ": " (तपाईंको ",
+        " house) until ": " औं भाव) ",
+        " सम्म।": " सम्म।",
+        "Dasha timing could not be resolved for the current date.": "हालको मितिका लागि दशा समय निकाल्न सकिएन।",
+        " antardasha": " अन्तर्दशा",
+        " · running now": " · अहिले चलिरहेको",
+        " — touches your ": " — तपाईंको ",
+        " mahadasha (next major period)": " महादशा (अर्को प्रमुख अवधि)",
+        "Begins ": "सुरु ",
+        ", lasting to ": ", ",
+        " सम्म (": " सम्म (",
+        " yrs): a ": " वर्ष): ",
+        " chapter.": " अध्याय।",
+        "Antardasha schedule inside the running ": "चलिरहेको ",
+        " mahadasha, then the mahadashas that follow — the chart's most precise timing layer.": " महादशाभित्र अन्तर्दशा, त्यसपछि आउने महादशा — कुण्डलीको सबैभन्दा सटीक समय तह।",
+        " antardasha leads the year (through ": " अन्तर्दशाले वर्ष नेतृत्व (",
+        "), foregrounding ": " सम्म), ",
+        "It is well placed (in your ": "राम्रो स्थित (",
+        " house), so initiatives in its areas are favoured — a good window to push forward.": " औं भाव), यसका क्षेत्रमा पहल सफल — अगाडि बढ्न राम्रो समय।",
+        "It is under some pressure (in your ": "केही दबाब (",
+        " house), so pace efforts and prepare rather than force outcomes in its areas.": " औं भाव), बलजुती नगरी तयारी र गति राख्नुहोस्।",
+        "A shift to come: the ": "आउने परिवर्तन: ",
+        " sub-period opens ": " उप-अवधि सुरु ",
+        ", bringing ": ", ",
+        " to the foreground.": " अगाडि।",
+        "A precise dasha-based outlook needs a resolvable timeline for today's date.": "सटीक दशा-आधारित दृष्टिकोणका लागि आजको मिति चाहिन्छ।",
+        " — a natural area to invest energy.": " — ऊर्जा लगाउने प्राकृतिक क्षेत्र।",
+        "Opportunities are built incrementally here; consistency in your "
+        "strongest planet's domain compounds well.": "अवसर बिस्तारै बन्दै जान्छ; बलियो ग्रहको क्षेत्रमा निरन्तरता राम्रो फल दिन्छ।",
+        "Keep a steady hand with ": "",
+        " (the ": " (",
+        " house) — manage rather than force.": " औं भाव) — व्यवस्थापन, बलजुती होइन।",
+        "None of these are predictions of misfortune — they are areas where "
+        "awareness and moderation protect your progress.": "यी दुर्भाग्यको भविष्यवाणी होइन — सचेतता र संयमले प्रगति जोगाउँछ।",
+        "Lean into ": "",
+        " themes — that is where momentum is cheapest to build.": " का विषय — यहाँ गति सजिलै बन्दै जान्छ।",
+        "Give structure to ": "",
+        " themes through routine and small, repeated effort rather than waiting to feel ready.": " का विषयमा दिनचर्या र सानो नियमित प्रयास।",
+        "Align major moves with the supportive sub-periods noted in the outlook.": "ठूला कदमहरू दृष्टिकोणमा उल्लेखित सहायक उप-अवधिसँग मिलाउनुहोस्।",
+        "Track one concrete habit per priority below for the next quarter.": "अर्को त्रैमासिकका लागि प्रत्येक प्राथमिकतामा एउटा बानी ट्र्याक गर्नुहोस्।",
+        "These are traditional, faith-based remedies offered as optional support — "
+        "they are cultural practices, not requirements or guarantees.": "यी पारम्परिक, विश्वास-आधारित वैकल्पिक उपाय हुन् — संस्कृति हो, ग्यारेन्टी होइन।",
+        "For strengthening ": "",
+        " themes, classical texts suggest its weekday observance, charity associated with ": " बलियो बनाउन, शास्त्रले वार व्रत, दान ",
+        ", and respectful, calm conduct in that life area.": " र शान्त आचरण सुझाउँछ।",
+        "Gratitude practices around ": "",
+        " themes help you make the most of an existing strength.": " का क्षेत्रमा कृतज्ञताले बलको पूर्ण उपयोग गर्छ।",
+        "Above all, ethical action (sadachara) and steadiness are the "
+        "remedies every tradition agrees on.": "सबै परम्परा सदाचार र स्थिरतालाई उपाय मान्छन्।",
+        " It signifies ": " यसले संकेत गर्छ ",
+        " Shadbala grades it ": " षड्बल ",
+        ".": "।",
+        "No major classical yoga from the curated set is active; "
+        "the chart reads through planet and house placements above.": "मुख्य शास्त्रीय योग सक्रिय छैन; माथिका ग्रह/भाव placements बाट पढिन्छ।",
+        " — this is your fastest leverage.": " — यो सबैभन्दा छिटो leverage हो।",
+        " so they stop being a drag.": " ताकि बोझ नबन्न।",
+        "3. Work with the current ": "३. हालको ",
+        " period — favour ": " अवधिसँग — ",
+        " for major initiatives.": " ठूला कदमका लागि।",
+        "3. Time major initiatives with your supportive sub-periods.": "३. ठूला कदम सहायक उप-अवधिमा।",
+        "4. For career, develop the 10th-house path led by ": "४. करियर, १० औं भावका स्वामी ",
+        " with consistent, visible work.": " को नेतृत्वमा निरन्तर, देखिने काम।",
+        "5. Keep an ethical, steady daily rhythm — the one remedy that "
+        "strengthens every area of the chart.": "५. नैतिक, स्थिर दैनिक दिनचर्या — सबै क्षेत्र बलियो बनाउने उपाय।",
+        # Planet / house lines
+        " is at ": " ",
+        "°": "°",
+        "′ in ": "′ ",
+        " nakshatra (pada ": " नक्षत्र (चरण ",
+        "), occupying the ": "), ",
+        " house": " औं भावमा",
+        "retrograde (its themes turn inward and are revisited)": "वक्री (विषय भित्र मोडिन्छ)",
+        "combust — close to the Sun, so its outer results need extra effort": "अस्त — सूर्य नजिक, बाह्य फलमा अतिरिक्त प्रयास",
+        "vargottama (same sign in D1 and D9 — notably reinforced)": "वर्गोत्तम (D1 र D9 एउटै राशि — बलियो)",
+        "The ": "",
+        " house (": " ",
+        ") governs ": " औं भाव (",
+        ").": ") ले शासन गर्छ ",
+        "Its lord ": "स्वामी ",
+        " sits in the ": " ",
+        ", and is graded ": " औं भावमा, ",
+        " in Shadbala": " षड्बलमा",
+        "Occupied by ": "मा बसेका: ",
+        # Confidence factors
+        " in a friendly sign": " मित्र राशिमा",
+        " in an enemy sign": " शत्रु राशिमा",
+        "dignified in navamsa": "नवांशमा गरिमामान",
+        "weak in navamsa": "नवांशमा कमजोर",
+        "vargottama (same sign in navamsa — reinforced)": "वर्गोत्तम (नवांशमा पनि — बलियो)",
+        " runs the current mahadasha": " हालको महादशा चलाउँछ",
+        " runs the current antardasha": " हालको अन्तर्दशा चलाउँछ",
+        " lord ": " स्वामी ",
+        " well dignified": " राम्रो गरिमामान",
+        " lord falls in the ": " स्वामी ",
+        " (a difficult house)": " (कठिन भाव)",
+        " lord in a strong angle/trine (the ": " स्वामी बलियो केन्द्र/त्रिकोण (",
+        ")": ")",
+        "natural benefic(s) present — ": "प्राकृतिक शुभ ग्रह — ",
+        "natural malefic(s) present — ": "प्राकृतिक पाप ग्रह — ",
+        "malefic(s) in an upachaya house (strengthening here) — ": "उपचय भावमा पाप ग्रह (यहाँ बलियो) — ",
+        "supportive combination(s)": "सहायक योग(हरू)",
+        "Yoga: Dhana yoga present": "योग: धन योग उपस्थित",
+        "lagna lord ": "लग्न स्वामी ",
+        "lagna lord strong": "लग्न स्वामी बलियो",
+        "lagna lord weak": "लग्न स्वामी कमजोर",
+        "debilitated": "नीच",
+        "weak/debilitated": "कमजोर/नीच",
+        "dignified/strong": "गरिमामान/बलियो",
+        # Terms
         "ascendant": "लग्न",
         "mahadasha": "महादशा",
         "antardasha": "अन्तर्दशा",
@@ -1598,18 +1864,19 @@ def _build_ne_replacements() -> list[tuple[str, str]]:
         "Weak": "कमजोर",
         "Borderline": "सीमान्त",
         "house": "भाव",
-        "Timing now: the ": "समय अहिले: ",
-        "Supportive patterns active: ": "सहायक योग सक्रिय: ",
-        "Your outward personality is coloured by a ": "बाह्य व्यक्तित्व ",
-        " ascendant and shaped most by its ruler ": " लग्नले र यसका स्वामी ",
-        "Deterministic Parashari interpretation with confidence weighting": METHOD_NE,
-        "For reflection and cultural insight. Describes tendencies and "
-        "probabilities, not certainties; not a substitute for professional advice.": DISCLAIMER_NE,
+        "Dasha:": "दशा:",
+        "Yogas:": "योग:",
         "D1:": "D1:",
         "D9:": "D9:",
-        "Yogas:": "योग:",
+        "→": "→",
+        "running now": "अहिले चलिरहेको",
+        "well placed": "राम्रो स्थित",
+        "placed": "स्थित",
+        "the mind": "मन",
+        "the Sun": "सूर्य",
+        "the Moon": "चन्द्र",
     }
-    pairs.extend(phrase_map.items())
+    pairs.extend((en, ne) for en, ne in phrase_map.items() if ne)
     pairs.sort(key=lambda x: len(x[0]), reverse=True)
     return pairs
 
@@ -1624,18 +1891,40 @@ def _ne_replacements() -> list[tuple[str, str]]:
     return _NE_REPLACEMENTS
 
 
+_EN_MONTH_NE = {
+    "Jan": "जन", "Feb": "फेब", "Mar": "मार्च", "Apr": "अप्र", "May": "मे",
+    "Jun": "जुन", "Jul": "जुल", "Aug": "अग", "Sep": "सेप", "Oct": "अक्ट",
+    "Nov": "नोभ", "Dec": "डिस",
+}
+
+
+def _apply_ne_regex(text: str) -> str:
+    out = text
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) house\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\bHouse (\d+)\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) lord\b", r"\1 औं भावका स्वामी", out, flags=re.I)
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", r"\1 औं", out, flags=re.I)
+    out = re.sub(r"\bpada (\d+)\b", r"चरण \1", out, flags=re.I)
+    out = re.sub(r"\bis at\b", "मा अवस्थित छ", out, flags=re.I)
+    out = re.sub(r"\boccupying the\b", "", out, flags=re.I)
+    out = re.sub(r"\bhouse (\d+)\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\bin the\b", "मा", out, flags=re.I)
+    out = re.sub(r"\band the Sun is in\b", "र सूर्य", out, flags=re.I)
+    out = re.sub(r"\bto the foreground\b", "अगाडि", out, flags=re.I)
+    out = re.sub(r"\bwith dates\b", "मिति सहित", out, flags=re.I)
+    for en, ne in _EN_MONTH_NE.items():
+        out = re.sub(rf"\b{en}\b", ne, out)
+    out = out.replace("भitr", "भित्र").replace("यसभitr", "यसभित्र")
+    out = re.sub(r"\s+", " ", out).strip()
+    return out
+
+
 def _localize_text_ne(text: str) -> str:
     out = text
     for en, ne in _ne_replacements():
         if en and en in out:
             out = out.replace(en, ne)
-    # Ordinal houses: "1st house" → "१ औं भाव"
-    def _house_ord(m: re.Match[str]) -> str:
-        n = m.group(1)
-        return f"{n} औं भाव"
-    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) house\b", _house_ord, out, flags=re.I)
-    out = re.sub(r"\bHouse (\d+)\b", lambda m: f"{m.group(1)} औं भाव", out)
-    return out
+    return _apply_ne_regex(out)
 
 
 def _localize_item_label_ne(label: str) -> str:

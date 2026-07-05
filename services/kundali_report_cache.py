@@ -20,7 +20,7 @@ from services.panchanga_cache import resolve_cache_keys
 logger = logging.getLogger(__name__)
 
 # Bump when cached record shape or report algorithm changes.
-CACHE_PAYLOAD_VERSION = 1
+CACHE_PAYLOAD_VERSION = 2
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (
