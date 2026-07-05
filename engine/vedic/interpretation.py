@@ -648,6 +648,83 @@ def _detect_raja_dhana(chart: "Chart") -> list[dict[str, Any]]:
     return yogas
 
 
+# ── Extended yoga catalog helpers ─────────────────────────────────────────────
+
+MANGALIK_HOUSES = {1, 2, 4, 7, 8, 12}
+CHANDRA_FLANK_SKIP = frozenset({"sun", "moon"})
+SURYA_FLANK_SKIP = frozenset({"sun"})
+YOGA_BENEFICS = frozenset({"jupiter", "venus", "mercury", "moon"})
+
+
+def _lon_in_arc(lon: float, start: float, end: float) -> bool:
+    lon, start, end = _norm(lon), _norm(start), _norm(end)
+    if start <= end:
+        return start <= lon <= end
+    return lon >= start or lon <= end
+
+
+def _kala_sarpa_present(P: dict[str, PlanetFact]) -> bool:
+    if "rahu" not in P:
+        return False
+    rahu = P["rahu"].longitude
+    ketu = P["ketu"].longitude if "ketu" in P else _norm(rahu + 180.0)
+    lons = [P[k].longitude for k in DIGNITY_PLANETS if k in P]
+    if not lons:
+        return False
+    return (
+        all(_lon_in_arc(l, rahu, ketu) for l in lons)
+        or all(_lon_in_arc(l, ketu, rahu) for l in lons)
+    )
+
+
+def _planets_in_house_from_sign(
+    ref_sign: int,
+    house_num: int,
+    P: dict[str, PlanetFact],
+    skip: frozenset[str] = frozenset(),
+) -> list[str]:
+    target_sign = (ref_sign + house_num - 1) % 12
+    return [k for k, pf in P.items() if k not in skip and pf.sign == target_sign]
+
+
+def _chandra_flank(moon_sign: int, P: dict[str, PlanetFact]) -> tuple[list[str], list[str]]:
+    second = _planets_in_house_from_sign(moon_sign, 2, P, CHANDRA_FLANK_SKIP)
+    twelfth = _planets_in_house_from_sign(moon_sign, 12, P, CHANDRA_FLANK_SKIP)
+    return second, twelfth
+
+
+def _surya_flank(sun_sign: int, P: dict[str, PlanetFact]) -> tuple[list[str], list[str]]:
+    second = _planets_in_house_from_sign(sun_sign, 2, P, SURYA_FLANK_SKIP)
+    twelfth = _planets_in_house_from_sign(sun_sign, 12, P, SURYA_FLANK_SKIP)
+    return second, twelfth
+
+
+def _mangala_dosha_present(
+    P: dict[str, PlanetFact], lagna_sign: int, moon_sign: int,
+) -> bool:
+    if "mars" not in P:
+        return False
+    mars_sign = P["mars"].sign
+    refs = [lagna_sign, moon_sign]
+    if "venus" in P:
+        refs.append(P["venus"].sign)
+    return any(house_from(mars_sign, ref) in MANGALIK_HOUSES for ref in refs)
+
+
+def _mallika_present(P: dict[str, PlanetFact]) -> bool:
+    if not all(k in P for k in DIGNITY_PLANETS):
+        return False
+    for start in range(1, 14):
+        block = {(start + i - 1) % 12 + 1 for i in range(7)}
+        if all(P[k].house in block for k in DIGNITY_PLANETS):
+            return True
+    return False
+
+
+def _same_sign_parity(a: int, b: int, c: int) -> bool:
+    return (a % 2) == (b % 2) == (c % 2)
+
+
 def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     """Every fixed-identity yoga this app checks for, present or not.
 
@@ -660,11 +737,43 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     """
     P = chart.planets
     moon_sign = chart.moon_sign
+    sun_sign = chart.sun_sign
+    lagna_sign = chart.lagna_sign
     catalog: list[dict[str, Any]] = []
 
     def house_from_moon(key: str) -> int:
         return house_from(P[key].sign, moon_sign) if key in P else -1
 
+    lagnesh = chart.house_lord.get(1)
+    lagnesh_pf = P.get(lagnesh) if lagnesh else None
+
+    chandra_2, chandra_12 = _chandra_flank(moon_sign, P)
+    surya_2, surya_12 = _surya_flank(sun_sign, P)
+
+    # ── Dosha & major patterns ────────────────────────────────────────────────
+    catalog.append({
+        "key": "mangala_dosha", "name": "Mangala Dosha", "polarity": "caution",
+        "present": _mangala_dosha_present(P, lagna_sign, moon_sign),
+        "text": "Mars occupies the 1st, 2nd, 4th, 7th, 8th or 12th house from "
+                "the lagna, Moon or Venus — a classical Manglik pattern for which "
+                "marriage matching and remedial timing are traditionally considered.",
+    })
+    catalog.append({
+        "key": "kala_sarpa", "name": "Kala Sarpa Yoga", "polarity": "caution",
+        "present": _kala_sarpa_present(P),
+        "text": "All seven tara grahas fall on one side of the Rahu–Ketu axis with "
+                "none breaking out of the nodal hemisphere — a pattern associated "
+                "with karmic intensity and sudden reversals in life direction.",
+    })
+    catalog.append({
+        "key": "lagna_mallika", "name": "Lagna Mallika Yoga", "polarity": "benefic",
+        "present": _mallika_present(P),
+        "text": "All seven tara grahas occupy seven consecutive whole-sign houses — "
+                "a Mallika pattern supporting steady rise when the involved planets "
+                "are reasonably strong.",
+    })
+
+    # ── Moon-based (Chandra) yogas ────────────────────────────────────────────
     catalog.append({
         "key": "gajakesari", "name": "Gaja-Kesari Yoga", "polarity": "benefic",
         "present": "jupiter" in P and "moon" in P and house_from_moon("jupiter") in KENDRA,
@@ -673,11 +782,33 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                 "ripen with maturity.",
     })
     catalog.append({
-        "key": "budhaditya", "name": "Budha-Aditya Yoga", "polarity": "benefic",
-        "present": "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign,
-        "text": "Formed when the Sun and Mercury share a sign, favouring intelligence, "
-                "clear expression and analytical or administrative ability (strongest "
-                "when Mercury is not too close/combust).",
+        "key": "sunapha", "name": "Sunapha Yoga", "polarity": "benefic",
+        "present": bool(chandra_2) and not chandra_12,
+        "text": "Planets (other than the Sun) occupy the 2nd house from the Moon while "
+                "the 12th from the Moon is empty — a Chandra yoga for self-made prosperity "
+                "and reputation built through personal effort.",
+    })
+    catalog.append({
+        "key": "anapha", "name": "Anapha Yoga", "polarity": "benefic",
+        "present": bool(chandra_12) and not chandra_2,
+        "text": "Planets occupy the 12th house from the Moon while the 2nd from the Moon "
+                "is empty — a Chandra yoga for refinement, comfort and graceful conduct "
+                "that attracts support from others.",
+    })
+    catalog.append({
+        "key": "durdhara", "name": "Durdhara Yoga", "polarity": "benefic",
+        "present": bool(chandra_2) and bool(chandra_12),
+        "text": "Planets flank the Moon on both the 2nd and 12th sides — a strong Chandra "
+                "yoga for wealth, vehicles and a life supported by resources on every side.",
+    })
+    catalog.append({
+        "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
+        "present": "moon" in P and not chandra_2 and not chandra_12,
+        "text": "Formed when the Moon has no planets flanking it, which classically "
+                "points to needing self-built emotional support structures. It is widely "
+                "considered softened by a strong Moon, benefic aspects, or planets in "
+                "angles — so treat it as a reminder to nurture stable routines and "
+                "relationships, not as a verdict.",
     })
     catalog.append({
         "key": "chandra_mangala", "name": "Chandra-Mangala Yoga", "polarity": "mixed",
@@ -686,7 +817,122 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                 "earning drive; the same energy benefits from a calm outlet so "
                 "initiative doesn't turn into impatience.",
     })
+    catalog.append({
+        "key": "adhi", "name": "Adhi Yoga", "polarity": "benefic",
+        "present": {6, 7, 8} <= {
+            house_from_moon(k) for k in ("mercury", "jupiter", "venus") if k in P
+        },
+        "text": "Mercury, Jupiter and Venus each occupy one of the 6th, 7th and 8th "
+                "houses from the Moon — a leadership yoga for authority, command and "
+                "respect in public life.",
+    })
+    catalog.append({
+        "key": "chatussagara", "name": "Chatussagara Yoga", "polarity": "benefic",
+        "present": all(chart.house_occupants.get(h) for h in KENDRA),
+        "text": "All four angular houses (1, 4, 7, 10) contain at least one planet — "
+                "a pattern for fame, stability and success across the four pillars of life.",
+    })
+    catalog.append({
+        "key": "vasumati", "name": "Vasumati Yoga", "polarity": "benefic",
+        "present": {3, 6, 10, 11} <= {
+            house_from_moon(k) for k in YOGA_BENEFICS if k in P
+        },
+        "text": "Natural benefics occupy all four upachaya houses (3, 6, 10, 11) from "
+                "the Moon — a wealth yoga that grows through effort, skill and expanding "
+                "networks over time.",
+    })
+    catalog.append({
+        "key": "rajalakshana", "name": "Rajalakshana Yoga", "polarity": "benefic",
+        "present": (
+            "mercury" in P and P["mercury"].house in KENDRA
+            and "venus" in P and P["venus"].house in KENDRA
+        ),
+        "text": "Mercury and Venus both occupy angular houses — a royal bearing yoga "
+                "for charm, eloquence and dignified public presence.",
+    })
+    catalog.append({
+        "key": "vanchana_chora_bheeti", "name": "Vanchana Chora Bheeti Yoga",
+        "polarity": "caution",
+        "present": bool(
+            lagnesh_pf and lagnesh_pf.house in DUSTHANA
+            and any(
+                house_from_moon(m) in {2, 6, 8, 12}
+                for m in ("mars", "saturn", "rahu", "ketu") if m in P
+            ),
+        ),
+        "text": "The lagna lord sits in a dusthana (6, 8 or 12) while malefics afflict "
+                "the Moon — a caution yoga classically linked to anxiety about deception, "
+                "theft or hidden enemies; remedial calm and clear boundaries help.",
+    })
+    catalog.append({
+        "key": "shakata", "name": "Shakata Yoga", "polarity": "caution",
+        "present": (
+            "jupiter" in P and "moon" in P
+            and house_from(P["moon"].sign, P["jupiter"].sign) in {6, 8, 12}
+        ),
+        "text": "The Moon occupies the 6th, 8th or 12th house from Jupiter — a pattern "
+                "of fluctuating fortune where gains may be followed by setbacks unless "
+                "Jupiter and the Moon are otherwise strengthened.",
+    })
+    catalog.append({
+        "key": "amala", "name": "Amala Yoga", "polarity": "benefic",
+        "present": any(
+            house_from_moon(k) == 10 for k in ("jupiter", "venus", "mercury") if k in P
+        ),
+        "text": "A natural benefic occupies the 10th house from the Moon — a spotless "
+                "(amala) reputation yoga for ethical conduct and lasting public respect.",
+    })
+    catalog.append({
+        "key": "parvata", "name": "Parvata Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and P.get(chart.house_lord.get(12))
+            and lagnesh_pf.house in KENDRA
+            and P[chart.house_lord[12]].house in KENDRA
+        ),
+        "text": "The lagna lord and the 12th lord both occupy angular houses — a Parvata "
+                "yoga for generosity, prosperity and a life that rises like a mountain "
+                "despite obstacles.",
+    })
+    catalog.append({
+        "key": "kahala", "name": "Kahala Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and P.get(chart.house_lord.get(4))
+            and P.get("jupiter")
+            and P[chart.house_lord[4]].house in KENDRA
+            and P["jupiter"].house in KENDRA
+        ),
+        "text": "The lagna lord is dignified while the 4th lord and Jupiter both hold "
+                "angles — a bold, commanding yoga for property, vehicles and decisive "
+                "leadership in one's community.",
+    })
 
+    # ── Sun-based (Surya) yogas ───────────────────────────────────────────────
+    catalog.append({
+        "key": "veshi", "name": "Veshi Yoga", "polarity": "benefic",
+        "present": bool(surya_2) and not surya_12,
+        "text": "Planets occupy the 2nd house from the Sun while the 12th from the Sun "
+                "is empty — a Surya yoga for truthful speech, integrity and recognition "
+                "through principled action.",
+    })
+    catalog.append({
+        "key": "vasi", "name": "Vasi Yoga", "polarity": "benefic",
+        "present": bool(surya_12) and not surya_2,
+        "text": "Planets occupy the 12th house from the Sun while the 2nd from the Sun "
+                "is empty — a Surya yoga for charity, spiritual merit and influence "
+                "through selfless service.",
+    })
+    catalog.append({
+        "key": "ubhayachari", "name": "Ubhayachari Yoga", "polarity": "benefic",
+        "present": bool(surya_2) and bool(surya_12),
+        "text": "Planets flank the Sun on both the 2nd and 12th sides — a balanced Surya "
+                "yoga for all-round ability, balanced temperament and success in both "
+                "worldly and dharmic pursuits.",
+    })
+
+    # ── Pancha Mahapurusha ────────────────────────────────────────────────────
     mahapurusha = {
         "mars": "Ruchaka", "mercury": "Bhadra", "jupiter": "Hamsa",
         "venus": "Malavya", "saturn": "Sasa",
@@ -702,22 +948,121 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                     f"{KARAKA[key].split(',')[0]}.",
         })
 
-    second_moon = (moon_sign + 1) % 12
-    twelfth_moon = (moon_sign - 1) % 12
-    neighbours = [
-        k for k, pf in P.items()
-        if k != "moon" and pf.sign in {second_moon, twelfth_moon}
-    ]
     catalog.append({
-        "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
-        "present": "moon" in P and not neighbours,
-        "text": "Formed when the Moon has no planets flanking it, which classically "
-                "points to needing self-built emotional support structures. It is widely "
-                "considered softened by a strong Moon, benefic aspects, or planets in "
-                "angles — so treat it as a reminder to nurture stable routines and "
-                "relationships, not as a verdict.",
+        "key": "budhaditya", "name": "Budha-Aditya Yoga", "polarity": "benefic",
+        "present": "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign,
+        "text": "Formed when the Sun and Mercury share a sign, favouring intelligence, "
+                "clear expression and analytical or administrative ability (strongest "
+                "when Mercury is not too close/combust).",
+    })
+    catalog.append({
+        "key": "mahabhagya", "name": "Mahabhagya Yoga", "polarity": "benefic",
+        "present": _same_sign_parity(lagna_sign, sun_sign, moon_sign),
+        "text": "The lagna, Sun and Moon all fall in signs of the same parity (all odd "
+                "or all even) — a great-fortune yoga for overall luck, health and "
+                "supportive circumstances through life.",
+    })
+    catalog.append({
+        "key": "pushkala", "name": "Pushkala Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh and lagnesh in P and "moon" in P
+            and P[lagnesh].sign == P["moon"].sign
+        ),
+        "text": "The lagna lord and the Moon share a sign — a Pushkala yoga for fame, "
+                "popularity and a personality that draws people and opportunities.",
     })
 
+    l9 = chart.house_lord.get(9)
+    l9_pf = P.get(l9) if l9 else None
+    l2 = chart.house_lord.get(2)
+    l5 = chart.house_lord.get(5)
+    l6 = chart.house_lord.get(6)
+
+    catalog.append({
+        "key": "lakshmi", "name": "Lakshmi Yoga", "polarity": "benefic",
+        "present": bool(
+            l9_pf
+            and l9_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and l9_pf.house in KENDRA | TRIKONA
+        ),
+        "text": "The 9th lord is dignified in an angle or trine — a Lakshmi yoga for "
+                "wealth, grace and the blessings of fortune through righteous action.",
+    })
+    catalog.append({
+        "key": "gauri", "name": "Gauri Yoga", "polarity": "benefic",
+        "present": bool(
+            "venus" in P and P["venus"].dignity in {"own", "exalted", "moolatrikona"}
+            and "moon" in P and P["moon"].house in KENDRA
+        ),
+        "text": "Venus is dignified while the Moon occupies an angle — a Gauri yoga for "
+                "beauty, marital happiness and refined enjoyment of life's comforts.",
+    })
+    catalog.append({
+        "key": "bharati", "name": "Bharati Yoga", "polarity": "benefic",
+        "present": bool(
+            l2 and P.get(l2) and P[l2].house in KENDRA
+            and P.get("jupiter")
+            and P["jupiter"].dignity in {"own", "exalted", "moolatrikona"}
+        ),
+        "text": "The 2nd lord occupies an angle while Jupiter is dignified — a Bharati "
+                "yoga for scholarship, eloquence and mastery of language or learning.",
+    })
+    catalog.append({
+        "key": "chapa", "name": "Chapa Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and (disp_pf := P.get(SIGN_LORD[lagnesh_pf.sign]))
+            and house_from(disp_pf.sign, moon_sign) in KENDRA
+        ),
+        "text": "The lagna lord is dignified and its dispositor occupies an angle from "
+                "the Moon — a Chapa yoga for royal favour, authority and command over "
+                "resources.",
+    })
+    catalog.append({
+        "key": "shrinatha", "name": "Shrinatha Yoga", "polarity": "benefic",
+        "present": bool(
+            l9 and l5 and P.get(l9) and P.get(l5)
+            and P[l9].house == 5 and P[l5].house == 9
+        ),
+        "text": "The 9th lord sits in the 5th house and the 5th lord in the 9th — a "
+                "Shrinatha yoga linking dharma and merit (punya) for wisdom, children "
+                "and spiritual fortune.",
+    })
+    catalog.append({
+        "key": "shankha", "name": "Shankha Yoga", "polarity": "benefic",
+        "present": bool(
+            l5 and l6 and P.get(l5) and P.get(l6)
+            and P[l5].house == 6 and P[l6].house == 12
+        ),
+        "text": "The 5th lord occupies the 6th and the 6th lord the 12th — a Shankha "
+                "yoga for longevity, righteous living and prosperity through disciplined "
+                "service.",
+    })
+    catalog.append({
+        "key": "bheri", "name": "Bheri Yoga", "polarity": "benefic",
+        "present": all(
+            P.get(k) and P[k].house in KENDRA
+            for k in (lagnesh, "jupiter", "venus") if k
+        ),
+        "text": "The lagna lord, Jupiter and Venus all occupy angular houses — a Bheri "
+                "yoga for a rich, harmonious life with wealth, wisdom and partnership "
+                "blessings combined.",
+    })
+    catalog.append({
+        "key": "parijata", "name": "Parijata Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and (disp_pf := P.get(SIGN_LORD[lagnesh_pf.sign]))
+            and disp_pf.house in KENDRA | TRIKONA
+        ),
+        "text": "The lagna lord is dignified and its dispositor occupies an angle or "
+                "trine — a Parijata yoga for recovery from adversity and eventual "
+                "prosperity like the celestial tree that blooms after hardship.",
+    })
+
+    # ── Neecha-bhanga (per planet) ────────────────────────────────────────────
     for key in DIGNITY_PLANETS:
         pf = P.get(key)
         debilitated = bool(pf and pf.dignity == "debilitated")
@@ -736,6 +1081,7 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                     f"in this area then tends to convert into notable later strength.",
         })
 
+    # ── Raja & Dhana yogas ────────────────────────────────────────────────────
     kendra_lords = {chart.house_lord[h] for h in KENDRA if h in chart.house_lord}
     trikona_lords = {chart.house_lord[h] for h in TRIKONA if h in chart.house_lord}
     seen: set[frozenset] = set()

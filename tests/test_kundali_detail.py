@@ -98,6 +98,13 @@ def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
     assert len(keys) == len(set(keys))  # no duplicate rows
     assert any(not y["present"] for y in yogas), "expected at least one absent yoga"
     assert {"gajakesari", "budhaditya", "chandra_mangala", "kemadruma", "dhana_2_11"} <= set(keys)
+    extended = {
+        "mangala_dosha", "kala_sarpa", "lagna_mallika", "sunapha", "anapha",
+        "durdhara", "adhi", "chatussagara", "vasumati", "amala", "parijata",
+        "veshi", "vasi", "ubhayachari", "mahabhagya", "lakshmi", "shrinatha",
+    }
+    assert extended <= set(keys), f"missing extended yogas: {extended - set(keys)}"
+    assert len(yogas) >= 50, f"expected a broad catalog, got {len(yogas)}"
     for planet in ("mars", "mercury", "jupiter", "venus", "saturn"):
         assert f"mahapurusha_{planet}" in keys
     for row in yogas:
