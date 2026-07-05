@@ -149,3 +149,53 @@ def test_kundali_report_streams_ndjson():
     assert resp.headers["content-type"].startswith("application/x-ndjson")
     lines = [line for line in resp.text.splitlines() if line.strip()]
     assert len(lines) > 1
+
+
+def test_kundali_report_served_from_cache_on_repeat(tmp_path, monkeypatch):
+    """Same birth inputs should hit SQLite cache on the second request."""
+    import services.kundali_report_cache as report_cache
+
+    db_path = tmp_path / "kundali.db"
+    monkeypatch.setattr(report_cache, "kundali_db_path", lambda: db_path)
+    monkeypatch.setattr(report_cache, "cache_enabled", lambda: True)
+
+    params = {
+        "datetime": "1993-06-12T10:30:00",
+        "ayanamsha": "nepal",
+        "lang": "en",
+        "lat": 27.70169,
+        "lon": 85.3206,
+        "timezone": "Asia/Kathmandu",
+    }
+    client = TestClient(app)
+
+    first = client.get("/kundali/report", params=params)
+    assert first.status_code == 200
+    assert first.headers.get("X-Report-Cache") == "miss"
+
+    second = client.get("/kundali/report", params=params)
+    assert second.status_code == 200
+    assert second.headers.get("X-Report-Cache") == "hit"
+    assert second.text == first.text
+
+
+def test_kundali_report_force_bypasses_cache(tmp_path, monkeypatch):
+    import services.kundali_report_cache as report_cache
+
+    db_path = tmp_path / "kundali.db"
+    monkeypatch.setattr(report_cache, "kundali_db_path", lambda: db_path)
+    monkeypatch.setattr(report_cache, "cache_enabled", lambda: True)
+
+    params = {
+        "datetime": "1993-06-12T10:30:00",
+        "ayanamsha": "nepal",
+        "lang": "en",
+        "lat": 27.70169,
+        "lon": 85.3206,
+        "timezone": "Asia/Kathmandu",
+    }
+    client = TestClient(app)
+    client.get("/kundali/report", params=params)
+    forced = client.get("/kundali/report", params={**params, "force": "true"})
+    assert forced.status_code == 200
+    assert forced.headers.get("X-Report-Cache") == "miss"
