@@ -20,5 +20,9 @@ def panchanga_db_path() -> Path:
     return DATA_DIR / "panchanga.db"
 
 
+def kundali_db_path() -> Path:
+    return DATA_DIR / "kundali.db"
+
+
 # GeoNames id for Kathmandu — default observer city
 KATHMANDU_CITY_ID = 1283240

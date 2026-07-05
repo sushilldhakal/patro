@@ -28,6 +28,7 @@ dependency.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Iterator, Optional
@@ -167,6 +168,30 @@ DASHA_THEME = {
     "saturn": "discipline, hard work, responsibility, structure and patience",
     "rahu": "ambition, unconventional or foreign avenues and rapid change",
     "ketu": "detachment, specialisation, inner work and spiritual turns",
+}
+
+KARAKA_NE = {
+    "sun": "आत्मा, जीवन शक्ति, पिता, अधिकार र आत्मविश्वास",
+    "moon": "मन, भावना, माता, आराम र जनसम्पर्क",
+    "mars": "ऊर्जा, साहस, प्रेरणा, भाइबहिनी र सम्पत्ति",
+    "mercury": "बुद्धि, संचार, व्यापार र शिक्षा",
+    "jupiter": "ज्ञान, नैतिकता, धन, गुरु, सन्तान र कृपा",
+    "venus": "प्रेम, साझेदारी, सौन्दर्य, आराम र कला",
+    "saturn": "अनुशासन, धैर्य, कर्म, सेवा र दीर्घायु",
+    "rahu": "महत्वाकांक्षा, विदेश/अपरम्परागत मार्ग, आसक्ति",
+    "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र मोक्ष",
+}
+
+DASHA_THEME_NE = {
+    "sun": "नेतृत्व, मान्यता, अधिकार सम्बन्ध र पितासँग सम्बन्धित विषय",
+    "moon": "भावनात्मक जीवन, घर, जनसम्पर्क र हेरचाह",
+    "mars": "प्रेरणा, सम्पत्ति, प्राविधिक/प्रतिस्पर्धात्मक प्रयास र साहसिक पहल",
+    "mercury": "अध्ययन, संचार, व्यापार, लेखन र विश्लेषणात्मक काम",
+    "jupiter": "वृद्धि, ज्ञान, शिक्षण, वित्त, सन्तान र उत्तम सल्लाह",
+    "venus": "सम्बन्ध, आराम, सिर्जनशीलता, कला र भौतिक सुविधा",
+    "saturn": "अनुशासन, कडा परिश्रम, जिम्मेवारी, संरचना र धैर्य",
+    "rahu": "महत्वाकांक्षा, अपरम्परागत/विदेशी मार्ग र द्रुत परिवर्तन",
+    "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
 }
 
 DAYS_PER_YEAR = 365.2425
@@ -623,6 +648,83 @@ def _detect_raja_dhana(chart: "Chart") -> list[dict[str, Any]]:
     return yogas
 
 
+# ── Extended yoga catalog helpers ─────────────────────────────────────────────
+
+MANGALIK_HOUSES = {1, 2, 4, 7, 8, 12}
+CHANDRA_FLANK_SKIP = frozenset({"sun", "moon"})
+SURYA_FLANK_SKIP = frozenset({"sun"})
+YOGA_BENEFICS = frozenset({"jupiter", "venus", "mercury", "moon"})
+
+
+def _lon_in_arc(lon: float, start: float, end: float) -> bool:
+    lon, start, end = _norm(lon), _norm(start), _norm(end)
+    if start <= end:
+        return start <= lon <= end
+    return lon >= start or lon <= end
+
+
+def _kala_sarpa_present(P: dict[str, PlanetFact]) -> bool:
+    if "rahu" not in P:
+        return False
+    rahu = P["rahu"].longitude
+    ketu = P["ketu"].longitude if "ketu" in P else _norm(rahu + 180.0)
+    lons = [P[k].longitude for k in DIGNITY_PLANETS if k in P]
+    if not lons:
+        return False
+    return (
+        all(_lon_in_arc(l, rahu, ketu) for l in lons)
+        or all(_lon_in_arc(l, ketu, rahu) for l in lons)
+    )
+
+
+def _planets_in_house_from_sign(
+    ref_sign: int,
+    house_num: int,
+    P: dict[str, PlanetFact],
+    skip: frozenset[str] = frozenset(),
+) -> list[str]:
+    target_sign = (ref_sign + house_num - 1) % 12
+    return [k for k, pf in P.items() if k not in skip and pf.sign == target_sign]
+
+
+def _chandra_flank(moon_sign: int, P: dict[str, PlanetFact]) -> tuple[list[str], list[str]]:
+    second = _planets_in_house_from_sign(moon_sign, 2, P, CHANDRA_FLANK_SKIP)
+    twelfth = _planets_in_house_from_sign(moon_sign, 12, P, CHANDRA_FLANK_SKIP)
+    return second, twelfth
+
+
+def _surya_flank(sun_sign: int, P: dict[str, PlanetFact]) -> tuple[list[str], list[str]]:
+    second = _planets_in_house_from_sign(sun_sign, 2, P, SURYA_FLANK_SKIP)
+    twelfth = _planets_in_house_from_sign(sun_sign, 12, P, SURYA_FLANK_SKIP)
+    return second, twelfth
+
+
+def _mangala_dosha_present(
+    P: dict[str, PlanetFact], lagna_sign: int, moon_sign: int,
+) -> bool:
+    if "mars" not in P:
+        return False
+    mars_sign = P["mars"].sign
+    refs = [lagna_sign, moon_sign]
+    if "venus" in P:
+        refs.append(P["venus"].sign)
+    return any(house_from(mars_sign, ref) in MANGALIK_HOUSES for ref in refs)
+
+
+def _mallika_present(P: dict[str, PlanetFact]) -> bool:
+    if not all(k in P for k in DIGNITY_PLANETS):
+        return False
+    for start in range(1, 14):
+        block = {(start + i - 1) % 12 + 1 for i in range(7)}
+        if all(P[k].house in block for k in DIGNITY_PLANETS):
+            return True
+    return False
+
+
+def _same_sign_parity(a: int, b: int, c: int) -> bool:
+    return (a % 2) == (b % 2) == (c % 2)
+
+
 def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     """Every fixed-identity yoga this app checks for, present or not.
 
@@ -635,11 +737,43 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     """
     P = chart.planets
     moon_sign = chart.moon_sign
+    sun_sign = chart.sun_sign
+    lagna_sign = chart.lagna_sign
     catalog: list[dict[str, Any]] = []
 
     def house_from_moon(key: str) -> int:
         return house_from(P[key].sign, moon_sign) if key in P else -1
 
+    lagnesh = chart.house_lord.get(1)
+    lagnesh_pf = P.get(lagnesh) if lagnesh else None
+
+    chandra_2, chandra_12 = _chandra_flank(moon_sign, P)
+    surya_2, surya_12 = _surya_flank(sun_sign, P)
+
+    # ── Dosha & major patterns ────────────────────────────────────────────────
+    catalog.append({
+        "key": "mangala_dosha", "name": "Mangala Dosha", "polarity": "caution",
+        "present": _mangala_dosha_present(P, lagna_sign, moon_sign),
+        "text": "Mars occupies the 1st, 2nd, 4th, 7th, 8th or 12th house from "
+                "the lagna, Moon or Venus — a classical Manglik pattern for which "
+                "marriage matching and remedial timing are traditionally considered.",
+    })
+    catalog.append({
+        "key": "kala_sarpa", "name": "Kala Sarpa Yoga", "polarity": "caution",
+        "present": _kala_sarpa_present(P),
+        "text": "All seven tara grahas fall on one side of the Rahu–Ketu axis with "
+                "none breaking out of the nodal hemisphere — a pattern associated "
+                "with karmic intensity and sudden reversals in life direction.",
+    })
+    catalog.append({
+        "key": "lagna_mallika", "name": "Lagna Mallika Yoga", "polarity": "benefic",
+        "present": _mallika_present(P),
+        "text": "All seven tara grahas occupy seven consecutive whole-sign houses — "
+                "a Mallika pattern supporting steady rise when the involved planets "
+                "are reasonably strong.",
+    })
+
+    # ── Moon-based (Chandra) yogas ────────────────────────────────────────────
     catalog.append({
         "key": "gajakesari", "name": "Gaja-Kesari Yoga", "polarity": "benefic",
         "present": "jupiter" in P and "moon" in P and house_from_moon("jupiter") in KENDRA,
@@ -648,11 +782,33 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                 "ripen with maturity.",
     })
     catalog.append({
-        "key": "budhaditya", "name": "Budha-Aditya Yoga", "polarity": "benefic",
-        "present": "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign,
-        "text": "Formed when the Sun and Mercury share a sign, favouring intelligence, "
-                "clear expression and analytical or administrative ability (strongest "
-                "when Mercury is not too close/combust).",
+        "key": "sunapha", "name": "Sunapha Yoga", "polarity": "benefic",
+        "present": bool(chandra_2) and not chandra_12,
+        "text": "Planets (other than the Sun) occupy the 2nd house from the Moon while "
+                "the 12th from the Moon is empty — a Chandra yoga for self-made prosperity "
+                "and reputation built through personal effort.",
+    })
+    catalog.append({
+        "key": "anapha", "name": "Anapha Yoga", "polarity": "benefic",
+        "present": bool(chandra_12) and not chandra_2,
+        "text": "Planets occupy the 12th house from the Moon while the 2nd from the Moon "
+                "is empty — a Chandra yoga for refinement, comfort and graceful conduct "
+                "that attracts support from others.",
+    })
+    catalog.append({
+        "key": "durdhara", "name": "Durdhara Yoga", "polarity": "benefic",
+        "present": bool(chandra_2) and bool(chandra_12),
+        "text": "Planets flank the Moon on both the 2nd and 12th sides — a strong Chandra "
+                "yoga for wealth, vehicles and a life supported by resources on every side.",
+    })
+    catalog.append({
+        "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
+        "present": "moon" in P and not chandra_2 and not chandra_12,
+        "text": "Formed when the Moon has no planets flanking it, which classically "
+                "points to needing self-built emotional support structures. It is widely "
+                "considered softened by a strong Moon, benefic aspects, or planets in "
+                "angles — so treat it as a reminder to nurture stable routines and "
+                "relationships, not as a verdict.",
     })
     catalog.append({
         "key": "chandra_mangala", "name": "Chandra-Mangala Yoga", "polarity": "mixed",
@@ -661,7 +817,122 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                 "earning drive; the same energy benefits from a calm outlet so "
                 "initiative doesn't turn into impatience.",
     })
+    catalog.append({
+        "key": "adhi", "name": "Adhi Yoga", "polarity": "benefic",
+        "present": {6, 7, 8} <= {
+            house_from_moon(k) for k in ("mercury", "jupiter", "venus") if k in P
+        },
+        "text": "Mercury, Jupiter and Venus each occupy one of the 6th, 7th and 8th "
+                "houses from the Moon — a leadership yoga for authority, command and "
+                "respect in public life.",
+    })
+    catalog.append({
+        "key": "chatussagara", "name": "Chatussagara Yoga", "polarity": "benefic",
+        "present": all(chart.house_occupants.get(h) for h in KENDRA),
+        "text": "All four angular houses (1, 4, 7, 10) contain at least one planet — "
+                "a pattern for fame, stability and success across the four pillars of life.",
+    })
+    catalog.append({
+        "key": "vasumati", "name": "Vasumati Yoga", "polarity": "benefic",
+        "present": {3, 6, 10, 11} <= {
+            house_from_moon(k) for k in YOGA_BENEFICS if k in P
+        },
+        "text": "Natural benefics occupy all four upachaya houses (3, 6, 10, 11) from "
+                "the Moon — a wealth yoga that grows through effort, skill and expanding "
+                "networks over time.",
+    })
+    catalog.append({
+        "key": "rajalakshana", "name": "Rajalakshana Yoga", "polarity": "benefic",
+        "present": (
+            "mercury" in P and P["mercury"].house in KENDRA
+            and "venus" in P and P["venus"].house in KENDRA
+        ),
+        "text": "Mercury and Venus both occupy angular houses — a royal bearing yoga "
+                "for charm, eloquence and dignified public presence.",
+    })
+    catalog.append({
+        "key": "vanchana_chora_bheeti", "name": "Vanchana Chora Bheeti Yoga",
+        "polarity": "caution",
+        "present": bool(
+            lagnesh_pf and lagnesh_pf.house in DUSTHANA
+            and any(
+                house_from_moon(m) in {2, 6, 8, 12}
+                for m in ("mars", "saturn", "rahu", "ketu") if m in P
+            ),
+        ),
+        "text": "The lagna lord sits in a dusthana (6, 8 or 12) while malefics afflict "
+                "the Moon — a caution yoga classically linked to anxiety about deception, "
+                "theft or hidden enemies; remedial calm and clear boundaries help.",
+    })
+    catalog.append({
+        "key": "shakata", "name": "Shakata Yoga", "polarity": "caution",
+        "present": (
+            "jupiter" in P and "moon" in P
+            and house_from(P["moon"].sign, P["jupiter"].sign) in {6, 8, 12}
+        ),
+        "text": "The Moon occupies the 6th, 8th or 12th house from Jupiter — a pattern "
+                "of fluctuating fortune where gains may be followed by setbacks unless "
+                "Jupiter and the Moon are otherwise strengthened.",
+    })
+    catalog.append({
+        "key": "amala", "name": "Amala Yoga", "polarity": "benefic",
+        "present": any(
+            house_from_moon(k) == 10 for k in ("jupiter", "venus", "mercury") if k in P
+        ),
+        "text": "A natural benefic occupies the 10th house from the Moon — a spotless "
+                "(amala) reputation yoga for ethical conduct and lasting public respect.",
+    })
+    catalog.append({
+        "key": "parvata", "name": "Parvata Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and P.get(chart.house_lord.get(12))
+            and lagnesh_pf.house in KENDRA
+            and P[chart.house_lord[12]].house in KENDRA
+        ),
+        "text": "The lagna lord and the 12th lord both occupy angular houses — a Parvata "
+                "yoga for generosity, prosperity and a life that rises like a mountain "
+                "despite obstacles.",
+    })
+    catalog.append({
+        "key": "kahala", "name": "Kahala Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and P.get(chart.house_lord.get(4))
+            and P.get("jupiter")
+            and P[chart.house_lord[4]].house in KENDRA
+            and P["jupiter"].house in KENDRA
+        ),
+        "text": "The lagna lord is dignified while the 4th lord and Jupiter both hold "
+                "angles — a bold, commanding yoga for property, vehicles and decisive "
+                "leadership in one's community.",
+    })
 
+    # ── Sun-based (Surya) yogas ───────────────────────────────────────────────
+    catalog.append({
+        "key": "veshi", "name": "Veshi Yoga", "polarity": "benefic",
+        "present": bool(surya_2) and not surya_12,
+        "text": "Planets occupy the 2nd house from the Sun while the 12th from the Sun "
+                "is empty — a Surya yoga for truthful speech, integrity and recognition "
+                "through principled action.",
+    })
+    catalog.append({
+        "key": "vasi", "name": "Vasi Yoga", "polarity": "benefic",
+        "present": bool(surya_12) and not surya_2,
+        "text": "Planets occupy the 12th house from the Sun while the 2nd from the Sun "
+                "is empty — a Surya yoga for charity, spiritual merit and influence "
+                "through selfless service.",
+    })
+    catalog.append({
+        "key": "ubhayachari", "name": "Ubhayachari Yoga", "polarity": "benefic",
+        "present": bool(surya_2) and bool(surya_12),
+        "text": "Planets flank the Sun on both the 2nd and 12th sides — a balanced Surya "
+                "yoga for all-round ability, balanced temperament and success in both "
+                "worldly and dharmic pursuits.",
+    })
+
+    # ── Pancha Mahapurusha ────────────────────────────────────────────────────
     mahapurusha = {
         "mars": "Ruchaka", "mercury": "Bhadra", "jupiter": "Hamsa",
         "venus": "Malavya", "saturn": "Sasa",
@@ -677,22 +948,121 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                     f"{KARAKA[key].split(',')[0]}.",
         })
 
-    second_moon = (moon_sign + 1) % 12
-    twelfth_moon = (moon_sign - 1) % 12
-    neighbours = [
-        k for k, pf in P.items()
-        if k != "moon" and pf.sign in {second_moon, twelfth_moon}
-    ]
     catalog.append({
-        "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
-        "present": "moon" in P and not neighbours,
-        "text": "Formed when the Moon has no planets flanking it, which classically "
-                "points to needing self-built emotional support structures. It is widely "
-                "considered softened by a strong Moon, benefic aspects, or planets in "
-                "angles — so treat it as a reminder to nurture stable routines and "
-                "relationships, not as a verdict.",
+        "key": "budhaditya", "name": "Budha-Aditya Yoga", "polarity": "benefic",
+        "present": "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign,
+        "text": "Formed when the Sun and Mercury share a sign, favouring intelligence, "
+                "clear expression and analytical or administrative ability (strongest "
+                "when Mercury is not too close/combust).",
+    })
+    catalog.append({
+        "key": "mahabhagya", "name": "Mahabhagya Yoga", "polarity": "benefic",
+        "present": _same_sign_parity(lagna_sign, sun_sign, moon_sign),
+        "text": "The lagna, Sun and Moon all fall in signs of the same parity (all odd "
+                "or all even) — a great-fortune yoga for overall luck, health and "
+                "supportive circumstances through life.",
+    })
+    catalog.append({
+        "key": "pushkala", "name": "Pushkala Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh and lagnesh in P and "moon" in P
+            and P[lagnesh].sign == P["moon"].sign
+        ),
+        "text": "The lagna lord and the Moon share a sign — a Pushkala yoga for fame, "
+                "popularity and a personality that draws people and opportunities.",
     })
 
+    l9 = chart.house_lord.get(9)
+    l9_pf = P.get(l9) if l9 else None
+    l2 = chart.house_lord.get(2)
+    l5 = chart.house_lord.get(5)
+    l6 = chart.house_lord.get(6)
+
+    catalog.append({
+        "key": "lakshmi", "name": "Lakshmi Yoga", "polarity": "benefic",
+        "present": bool(
+            l9_pf
+            and l9_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and l9_pf.house in KENDRA | TRIKONA
+        ),
+        "text": "The 9th lord is dignified in an angle or trine — a Lakshmi yoga for "
+                "wealth, grace and the blessings of fortune through righteous action.",
+    })
+    catalog.append({
+        "key": "gauri", "name": "Gauri Yoga", "polarity": "benefic",
+        "present": bool(
+            "venus" in P and P["venus"].dignity in {"own", "exalted", "moolatrikona"}
+            and "moon" in P and P["moon"].house in KENDRA
+        ),
+        "text": "Venus is dignified while the Moon occupies an angle — a Gauri yoga for "
+                "beauty, marital happiness and refined enjoyment of life's comforts.",
+    })
+    catalog.append({
+        "key": "bharati", "name": "Bharati Yoga", "polarity": "benefic",
+        "present": bool(
+            l2 and P.get(l2) and P[l2].house in KENDRA
+            and P.get("jupiter")
+            and P["jupiter"].dignity in {"own", "exalted", "moolatrikona"}
+        ),
+        "text": "The 2nd lord occupies an angle while Jupiter is dignified — a Bharati "
+                "yoga for scholarship, eloquence and mastery of language or learning.",
+    })
+    catalog.append({
+        "key": "chapa", "name": "Chapa Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and (disp_pf := P.get(SIGN_LORD[lagnesh_pf.sign]))
+            and house_from(disp_pf.sign, moon_sign) in KENDRA
+        ),
+        "text": "The lagna lord is dignified and its dispositor occupies an angle from "
+                "the Moon — a Chapa yoga for royal favour, authority and command over "
+                "resources.",
+    })
+    catalog.append({
+        "key": "shrinatha", "name": "Shrinatha Yoga", "polarity": "benefic",
+        "present": bool(
+            l9 and l5 and P.get(l9) and P.get(l5)
+            and P[l9].house == 5 and P[l5].house == 9
+        ),
+        "text": "The 9th lord sits in the 5th house and the 5th lord in the 9th — a "
+                "Shrinatha yoga linking dharma and merit (punya) for wisdom, children "
+                "and spiritual fortune.",
+    })
+    catalog.append({
+        "key": "shankha", "name": "Shankha Yoga", "polarity": "benefic",
+        "present": bool(
+            l5 and l6 and P.get(l5) and P.get(l6)
+            and P[l5].house == 6 and P[l6].house == 12
+        ),
+        "text": "The 5th lord occupies the 6th and the 6th lord the 12th — a Shankha "
+                "yoga for longevity, righteous living and prosperity through disciplined "
+                "service.",
+    })
+    catalog.append({
+        "key": "bheri", "name": "Bheri Yoga", "polarity": "benefic",
+        "present": all(
+            P.get(k) and P[k].house in KENDRA
+            for k in (lagnesh, "jupiter", "venus") if k
+        ),
+        "text": "The lagna lord, Jupiter and Venus all occupy angular houses — a Bheri "
+                "yoga for a rich, harmonious life with wealth, wisdom and partnership "
+                "blessings combined.",
+    })
+    catalog.append({
+        "key": "parijata", "name": "Parijata Yoga", "polarity": "benefic",
+        "present": bool(
+            lagnesh_pf
+            and lagnesh_pf.dignity in {"own", "exalted", "moolatrikona"}
+            and (disp_pf := P.get(SIGN_LORD[lagnesh_pf.sign]))
+            and disp_pf.house in KENDRA | TRIKONA
+        ),
+        "text": "The lagna lord is dignified and its dispositor occupies an angle or "
+                "trine — a Parijata yoga for recovery from adversity and eventual "
+                "prosperity like the celestial tree that blooms after hardship.",
+    })
+
+    # ── Neecha-bhanga (per planet) ────────────────────────────────────────────
     for key in DIGNITY_PLANETS:
         pf = P.get(key)
         debilitated = bool(pf and pf.dignity == "debilitated")
@@ -711,6 +1081,7 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
                     f"in this area then tends to convert into notable later strength.",
         })
 
+    # ── Raja & Dhana yogas ────────────────────────────────────────────────────
     kendra_lords = {chart.house_lord[h] for h in KENDRA if h in chart.house_lord}
     trikona_lords = {chart.house_lord[h] for h in TRIKONA if h in chart.house_lord}
     seen: set[frozenset] = set()
@@ -1515,19 +1886,430 @@ def build_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
 
 def iter_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
                 shadbala_raw: dict[str, Any], dasha_raw: dict[str, Any],
-                *, now: Optional[datetime] = None) -> Iterator[dict[str, Any]]:
+                *, now: Optional[datetime] = None, lang: str = "en") -> Iterator[dict[str, Any]]:
     """Yield a ``meta`` record, then one record per section — for streaming."""
+    lang = "en" if str(lang).startswith("en") else "ne"
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     chart = build_chart(planets_raw, lagna_raw, shadbala_raw, dasha_raw, now)
-    meta = _meta(chart, now)
+    meta = _localize_meta(_meta(chart, now), lang)
     yield {"kind": "meta", **meta}
     sections = build_sections(chart, now=now)
     total = len(sections)
     for i, section in enumerate(sections):
-        yield {"kind": "section", "index": i, "total": total, **section}
+        yield {"kind": "section", "index": i, "total": total, **_localize_section(section, lang)}
     yield {"kind": "done", "total": total}
+
+
+# ── Nepali localization (term replacement for streamed report text) ───────────
+
+METHOD_NE = "पराशरी नियममा आधारित निष्कर्ष — विश्वास स्तर सहित"
+DISCLAIMER_NE = (
+    "चिन्तन र सांस्कृतिक अन्तर्दृष्टिका लागि। प्रवृत्ति र सम्भावना देखाउँछ, "
+    "निश्चितता होइन; व्यावसायिक सल्लाहको विकल्प होइन।"
+)
+
+HOUSE_THEME_NE = {
+    1: "आत्म, शरीर, जीवन शक्ति र समग्र जीवन दिशा",
+    2: "धन, वाणी, वंश र पोषण",
+    3: "साहस, परिश्रम, भाइबहिनी, संचार र सीप",
+    4: "घर, माता, आन्तरिक शान्ति, सम्पत्ति र शिक्षा",
+    5: "बुद्धि, सिर्जनशीलता, सन्तान र पुण्य",
+    6: "कर्म, सेवा, स्वास्थ्य, प्रतिस्पर्धा र बाधा",
+    7: "साझेदारी, विवाह, व्यापार र सार्वजनिक सम्बन्ध",
+    8: "परिवर्तन, साझा सम्पत्ति, अनुसन्धान र दीर्घायु",
+    9: "भाग्य, धर्म, उच्च शिक्षा, गुरु र पिता",
+    10: "करियर, स्थिति, सार्वजनिक भूमिका र कर्म",
+    11: "लाभ, सञ्जाल, आकांक्षा र ठूला भाइबहिनी",
+    12: "मोचन, खर्च, एकान्त, विदेश र मुक्ति",
+}
+
+DIGNITY_PHRASE_NE = {
+    "exalted": "उच्च (गहिरो गरिमा)",
+    "moolatrikona": "मूलत्रिकोणमा (अत्यन्त सहज)",
+    "own": "स्वराशिमा (स्थिर र आत्मविश्वासी)",
+    "friend": "मित्र राशिमा (समर्थित)",
+    "neutral": "सम राशिमा",
+    "enemy": "शत्रु राशिमा (केही तनाव)",
+    "debilitated": "नीच (दबाब, सचेत प्रयास चाहिन्छ)",
+    "placed": "स्थित",
+    "well placed": "राम्रो स्थित",
+    "under pressure": "दबाबमा",
+}
+
+
+def _build_ne_replacements() -> list[tuple[str, str]]:
+    """Longest-first English → Nepali replacements for report prose."""
+    pairs: list[tuple[str, str]] = []
+    for key, en in PLANET_EN.items():
+        pairs.append((en, PLANET_NE[key]))
+    for i, en in enumerate(RASHI_EN):
+        pairs.append((en, RASHI_NE[i]))
+    for i, en in enumerate(NAKSHATRA_EN):
+        pairs.append((en, NAKSHATRA_NE[i]))
+    for h, en in HOUSE_THEME.items():
+        pairs.append((en, HOUSE_THEME_NE[h]))
+    for key, en in KARAKA.items():
+        pairs.append((en, KARAKA_NE[key]))
+    for key, en in DASHA_THEME.items():
+        pairs.append((en, DASHA_THEME_NE[key]))
+    for en, ne in DIGNITY_PHRASE.items():
+        pairs.append((en, DIGNITY_PHRASE_NE.get(en, en)))
+    for en, ne in DIGNITY_PHRASE_NE.items():
+        if en not in DIGNITY_PHRASE:
+            pairs.append((en, ne))
+    phrase_map = {
+        # Meta / labels
+        "Deterministic Parashari interpretation with confidence weighting": METHOD_NE,
+        "For reflection and cultural insight. Describes tendencies and "
+        "probabilities, not certainties; not a substitute for professional advice.": DISCLAIMER_NE,
+        # Yoga names
+        "Gaja-Kesari Yoga": "गजकेसरी योग",
+        "Budha-Aditya Yoga": "बुधादित्य योग",
+        "Chandra-Mangala Yoga": "चन्द्रमंगल योग",
+        "Ruchaka Mahapurusha Yoga": "रुचक महापुरुष योग",
+        "Bhadra Mahapurusha Yoga": "भद्र महापुरुष योग",
+        "Hamsa Mahapurusha Yoga": "हंस महापुरुष योग",
+        "Malavya Mahapurusha Yoga": "मालव्य महापुरुष योग",
+        "Sasa Mahapurusha Yoga": "शश महापुरुष योग",
+        "Kemadruma (isolated Moon)": "केमद्रुम (एकान्त चन्द्र)",
+        "Raja Yoga": "राज योग",
+        "Dhana Yoga": "धन योग",
+        "Neecha-Bhanga": "नीचभंग",
+        # Executive summary & core phrases
+        " ascendant; the Moon (the mind) is in ": " लग्न; मन (चन्द्र) ",
+        " in ": " मा ",
+        " nakshatra, pada ": " नक्षत्र, चरण ",
+        " — your janma nakshatra — and the Sun is in ": " — जन्म नक्षत्र — र सूर्य ",
+        " मा ": " मा ",
+        ". The rising sign shows how you meet the world, the Moon your inner climate, "
+        "the Sun your core self.": "। लग्नले संसारसँग कसरी भेट्नुहुन्छ, चन्द्रले भित्री मन, सूर्यले मूल स्व भन्छ।",
+        "The ascendant lord ": "लग्नका स्वामी ",
+        " is ": " ",
+        " in the ": " ",
+        " house": " औं भावमा",
+        ", so the chart rests on ": ", यसैले कुण्डली ",
+        " foundation.": " आधारमा टिकेको छ।",
+        "a strong, well-supported": "बलियो, राम्रोसँग समर्थित",
+        "a moderately supported": "मध्यम रूपमा समर्थित",
+        "a mixed, conditional": "मिश्रित, सशर्त",
+        "a tentative": "अनिश्चित",
+        "Timing now: the ": "समय अहिले: ",
+        " mahadasha runs until ": " महादशा ",
+        " सम्म चलिरहेको छ, र यसभitr ": " सम्म; यसभित्र ",
+        " antardasha runs ": " अन्तर्दशा ",
+        " – ": " – ",
+        ". The Dasha timeline section gives the full schedule with dates.": "। दशा तालिका खण्डमा पूर्ण मिति सहित तालिका छ।",
+        "Supportive patterns active: ": "सहायक योग सक्रिय: ",
+        "Your outward personality is coloured by a ": "बाह्य व्यक्तित्व ",
+        " ascendant and shaped most by its ruler ": " लग्नले र यसका स्वामी ",
+        "The Sun in ": "सूर्य ",
+        " (house ": " (",
+        ") describes the will and self-image you grow into — themes of ": " औं भावमा) इच्छाशक्ति र आत्म-छवि — ",
+        ".": "।",
+        "Mercury in ": "बुध ",
+        " shapes how you think and communicate; placed in the ": "ले सोच र संचारलाई आकार दिन्छ; ",
+        " औं भावमा, ": " औं भावमा, ",
+        " it leans toward ": " यसले ",
+        "With the Moon in the ": "चन्द्र ",
+        " house, your emotional security is tied to ": " औं भावमा भएकाले भावनात्मक सुरक्षा ",
+        "A dignified Moon supports natural steadiness of mind.": "गरिमामान चन्द्रले मनको स्वाभाविक स्थिरता समर्थन गर्छ।",
+        "Because the Moon is under some pressure here, deliberate rest, "
+        "routine and supportive company pay off noticeably.": "यहाँ चन्द्र केही दबाबमा भएकाले, विचारपूर्वक विश्राम, दिनचर्या र सहयोगी साथीहरू स्पष्ट रूपमा फलदायी हुन्छन्।",
+        "Benefic aspect(s) from ": "शुभ दृष्टि — ",
+        " lend the mind extra protection and optimism.": " — ले मनलाई अतिरिक्त सुरक्षा र आशावाद दिन्छ।",
+        " is a strong asset — ": " बलियो सम्पत्ति हो — ",
+        " comes more easily (": " सजिलै आउँछ (",
+        ", ": ", ",
+        " in Shadbala": " षड्बलमा",
+        ").": ")।",
+        "No planet is classically exalted, but several are workable; "
+        "your strengths build through effort rather than arriving ready-made.": "कुनै ग्रह उच्च छैन, तर धेरै कार्ययोग्य छन्; बल परिश्रमबाट बन्दै जान्छ।",
+        " needs conscious support — ": " ले सचेत सहयोग चाहिन्छ — ",
+        " can feel effortful (": " प्रयासपूर्ण लाग्न सक्छ (",
+        " Encouragingly, a neecha-bhanga pattern tends to convert this into later strength.": " उत्साहजनक रूपमा, नीचभंग ढाँचाले पछि बलमा बदल्न सक्छ।",
+        "No planet is severely afflicted — challenges are likely "
+        "situational rather than deep-seated.": "कुनै ग्रह गम्भीर रूपमा पीडित छैन — चुनौतीहरू प्रायः परिस्थितिजन्य हुन्।",
+        "Treat these as growth edges: areas that reward patience and "
+        "skill-building, not fixed limitations.": "यिनलाई विकासका क्षेत्रका रूपमा हेर्नुहोस् — धैर्य र सीपले फल दिन्छन्।",
+        "Career direction follows the 10th lord ": "करियर दिशा १० औं भावका स्वामी ",
+        " into the ": " ",
+        " — blending public work with ": " औं भावमा — सार्वजनिक काम ",
+        "Sun and Saturn together describe the balance between authority/visibility "
+        "and disciplined service in your work life.": "सूर्य र शनि मिलेर काममा अधिकार/दृश्यता र अनुशासित सेवाको सन्तुलन देखाउँछन्।",
+        "The running ": "चलिरहेको ",
+        " mahadasha currently colours career with ": " महादशाले करियरलाई ",
+        ".": "।",
+        "Jupiter (natural significator of wealth and grace) is in ": "बृहस्पति (धन र कृपाको कारक) ",
+        ", house ": ", ",
+        " औं भाव — ": " औं भाव — ",
+        "A wealth-forming Dhana yoga supports accumulation through "
+        "steady earning and saving habits.": "धन योगले नियमित कमाइ र बचतबाट संचय समर्थन गर्छ।",
+        "Finances respond best to systematic saving; the chart describes "
+        "tendencies, while habits decide outcomes.": "वित्तमा व्यवस्थित बचत राम्रो; कुण्डली प्रवृत्ति, बानी नतिजा तय गर्छ।",
+        "Venus, the significator of love and partnership, is in ": "शुक्र, प्रेम र साझेदारीका कारक, ",
+        " — ": " — ",
+        "It describes what you value and seek in closeness.": "नजिकको सम्बन्धमा के महत्व दिन्छ भन्छ।",
+        "Malefic aspect to the partnership house suggests relationships "
+        "mature through some testing — communication and shared values "
+        "smooth the path. This is a tendency, not a fixed outcome.": "साझेदारी भावमा पाप ग्रहको दृष्टिले सम्बन्ध परीक्षाबाट परिपक्व हुन्छ — संचार र साझा मूल्यहरूले बाटो सजिलो बनाउँछन्।",
+        "The 4th reflects mother and home, the 9th the father and elders, "
+        "the 2nd the wider family, and the 3rd siblings.": "४ औं माता/घर, ९ औं पिता/ज्येष्ठ, २ औं परिवार, ३ औं भाइबहिनी देखाउँछ।",
+        "In Jyotisha, vitality is read from the lagna, its lord, and the Moon; the "
+        "6th house describes illness, recovery and daily regimen.": "ज्योतिषमा जीवन शक्ति लग्न, स्वामी र चन्द्रबाट; ६ औं भाव रोग, निको र दैनिक दिनचर्या।",
+        "supports robust constitution and quick recovery.": "बलियो स्वास्थ्य र छिटो निको समर्थन गर्छ।",
+        "asks for proactive self-care — regular sleep, movement and stress "
+        "management have outsized benefit.": "सचेत आत्म-हेरचाह चाहिन्छ — नियमित निद्रा, चाल र तनाव व्यवस्थापन अत्यन्त फलदायी।",
+        "This is wellbeing guidance from chart tendencies, not medical "
+        "advice; consult a qualified professional for any concern.": "यो कुण्डली प्रवृत्तिको मार्गदर्शन हो, चिकित्सा सल्लाह होइन।",
+        "Jupiter in house ": "बृहस्पति ",
+        " points to where wisdom, ethics and mentorship naturally develop.": " औं भावमा ज्ञान, नैतिकता र गुरुत्व विकास हुन्छ।",
+        "Ketu in house ": "केतु ",
+        " (": " (",
+        ") shows where you carry instinctive mastery and a pull toward detachment.": ") ले वैराग्य र अन्तर्ज्ञानको क्षेत्र देखाउँछ।",
+        "You are running the ": "तपाईं ",
+        " mahadasha (until ": " महादशामा हुनुहुन्छ (",
+        "), and within it the ": " सम्म), र यसभित्र ",
+        " antardasha from ": " अन्तर्दशा ",
+        " to ": " देखि ",
+        ". This phase emphasises ": " सम्म। यो चरण ",
+        " emphasises ": " मा जोड दिन्छ। ",
+        " and rules your ": " र तपाईंको ",
+        " house": " औं भाव",
+        "s": "हरू",
+        "These results tend to arrive readily": "नतिजा सजिलै आउँछ",
+        "These results reward patience and steady effort": "नतिजाले धैर्य र निरन्तर प्रयास माग्छ",
+        " sits in your ": " तपाईंको ",
+        ", so the period concentrates on ": " औं भावमा, अवधि ",
+        " and the houses it rules. ": " र शासित भावहरूमा केन्द्रित। ",
+        "It is ": "",
+        " — ": " — ",
+        ".": "।",
+        "The ": "",
+        " antardasha sharpens the sub-theme of ": " अन्तर्दशाले ",
+        " (it holds your ": " (तपाईंको ",
+        " house) until ": " औं भाव) ",
+        " सम्म।": " सम्म।",
+        "Dasha timing could not be resolved for the current date.": "हालको मितिका लागि दशा समय निकाल्न सकिएन।",
+        " antardasha": " अन्तर्दशा",
+        " · running now": " · अहिले चलिरहेको",
+        " — touches your ": " — तपाईंको ",
+        " mahadasha (next major period)": " महादशा (अर्को प्रमुख अवधि)",
+        "Begins ": "सुरु ",
+        ", lasting to ": ", ",
+        " सम्म (": " सम्म (",
+        " yrs): a ": " वर्ष): ",
+        " chapter.": " अध्याय।",
+        "Antardasha schedule inside the running ": "चलिरहेको ",
+        " mahadasha, then the mahadashas that follow — the chart's most precise timing layer.": " महादशाभित्र अन्तर्दशा, त्यसपछि आउने महादशा — कुण्डलीको सबैभन्दा सटीक समय तह।",
+        " antardasha leads the year (through ": " अन्तर्दशाले वर्ष नेतृत्व (",
+        "), foregrounding ": " सम्म), ",
+        "It is well placed (in your ": "राम्रो स्थित (",
+        " house), so initiatives in its areas are favoured — a good window to push forward.": " औं भाव), यसका क्षेत्रमा पहल सफल — अगाडि बढ्न राम्रो समय।",
+        "It is under some pressure (in your ": "केही दबाब (",
+        " house), so pace efforts and prepare rather than force outcomes in its areas.": " औं भाव), बलजुती नगरी तयारी र गति राख्नुहोस्।",
+        "A shift to come: the ": "आउने परिवर्तन: ",
+        " sub-period opens ": " उप-अवधि सुरु ",
+        ", bringing ": ", ",
+        " to the foreground.": " अगाडि।",
+        "A precise dasha-based outlook needs a resolvable timeline for today's date.": "सटीक दशा-आधारित दृष्टिकोणका लागि आजको मिति चाहिन्छ।",
+        " — a natural area to invest energy.": " — ऊर्जा लगाउने प्राकृतिक क्षेत्र।",
+        "Opportunities are built incrementally here; consistency in your "
+        "strongest planet's domain compounds well.": "अवसर बिस्तारै बन्दै जान्छ; बलियो ग्रहको क्षेत्रमा निरन्तरता राम्रो फल दिन्छ।",
+        "Keep a steady hand with ": "",
+        " (the ": " (",
+        " house) — manage rather than force.": " औं भाव) — व्यवस्थापन, बलजुती होइन।",
+        "None of these are predictions of misfortune — they are areas where "
+        "awareness and moderation protect your progress.": "यी दुर्भाग्यको भविष्यवाणी होइन — सचेतता र संयमले प्रगति जोगाउँछ।",
+        "Lean into ": "",
+        " themes — that is where momentum is cheapest to build.": " का विषय — यहाँ गति सजिलै बन्दै जान्छ।",
+        "Give structure to ": "",
+        " themes through routine and small, repeated effort rather than waiting to feel ready.": " का विषयमा दिनचर्या र सानो नियमित प्रयास।",
+        "Align major moves with the supportive sub-periods noted in the outlook.": "ठूला कदमहरू दृष्टिकोणमा उल्लेखित सहायक उप-अवधिसँग मिलाउनुहोस्।",
+        "Track one concrete habit per priority below for the next quarter.": "अर्को त्रैमासिकका लागि प्रत्येक प्राथमिकतामा एउटा बानी ट्र्याक गर्नुहोस्।",
+        "These are traditional, faith-based remedies offered as optional support — "
+        "they are cultural practices, not requirements or guarantees.": "यी पारम्परिक, विश्वास-आधारित वैकल्पिक उपाय हुन् — संस्कृति हो, ग्यारेन्टी होइन।",
+        "For strengthening ": "",
+        " themes, classical texts suggest its weekday observance, charity associated with ": " बलियो बनाउन, शास्त्रले वार व्रत, दान ",
+        ", and respectful, calm conduct in that life area.": " र शान्त आचरण सुझाउँछ।",
+        "Gratitude practices around ": "",
+        " themes help you make the most of an existing strength.": " का क्षेत्रमा कृतज्ञताले बलको पूर्ण उपयोग गर्छ।",
+        "Above all, ethical action (sadachara) and steadiness are the "
+        "remedies every tradition agrees on.": "सबै परम्परा सदाचार र स्थिरतालाई उपाय मान्छन्।",
+        " It signifies ": " यसले संकेत गर्छ ",
+        " Shadbala grades it ": " षड्बल ",
+        ".": "।",
+        "No major classical yoga from the curated set is active; "
+        "the chart reads through planet and house placements above.": "मुख्य शास्त्रीय योग सक्रिय छैन; माथिका ग्रह/भाव placements बाट पढिन्छ।",
+        " — this is your fastest leverage.": " — यो सबैभन्दा छिटो leverage हो।",
+        " so they stop being a drag.": " ताकि बोझ नबन्न।",
+        "3. Work with the current ": "३. हालको ",
+        " period — favour ": " अवधिसँग — ",
+        " for major initiatives.": " ठूला कदमका लागि।",
+        "3. Time major initiatives with your supportive sub-periods.": "३. ठूला कदम सहायक उप-अवधिमा।",
+        "4. For career, develop the 10th-house path led by ": "४. करियर, १० औं भावका स्वामी ",
+        " with consistent, visible work.": " को नेतृत्वमा निरन्तर, देखिने काम।",
+        "5. Keep an ethical, steady daily rhythm — the one remedy that "
+        "strengthens every area of the chart.": "५. नैतिक, स्थिर दैनिक दिनचर्या — सबै क्षेत्र बलियो बनाउने उपाय।",
+        # Planet / house lines
+        " is at ": " ",
+        "°": "°",
+        "′ in ": "′ ",
+        " nakshatra (pada ": " नक्षत्र (चरण ",
+        "), occupying the ": "), ",
+        " house": " औं भावमा",
+        "retrograde (its themes turn inward and are revisited)": "वक्री (विषय भित्र मोडिन्छ)",
+        "combust — close to the Sun, so its outer results need extra effort": "अस्त — सूर्य नजिक, बाह्य फलमा अतिरिक्त प्रयास",
+        "vargottama (same sign in D1 and D9 — notably reinforced)": "वर्गोत्तम (D1 र D9 एउटै राशि — बलियो)",
+        "The ": "",
+        " house (": " ",
+        ") governs ": " औं भाव (",
+        ").": ") ले शासन गर्छ ",
+        "Its lord ": "स्वामी ",
+        " sits in the ": " ",
+        ", and is graded ": " औं भावमा, ",
+        " in Shadbala": " षड्बलमा",
+        "Occupied by ": "मा बसेका: ",
+        # Confidence factors
+        " in a friendly sign": " मित्र राशिमा",
+        " in an enemy sign": " शत्रु राशिमा",
+        "dignified in navamsa": "नवांशमा गरिमामान",
+        "weak in navamsa": "नवांशमा कमजोर",
+        "vargottama (same sign in navamsa — reinforced)": "वर्गोत्तम (नवांशमा पनि — बलियो)",
+        " runs the current mahadasha": " हालको महादशा चलाउँछ",
+        " runs the current antardasha": " हालको अन्तर्दशा चलाउँछ",
+        " lord ": " स्वामी ",
+        " well dignified": " राम्रो गरिमामान",
+        " lord falls in the ": " स्वामी ",
+        " (a difficult house)": " (कठिन भाव)",
+        " lord in a strong angle/trine (the ": " स्वामी बलियो केन्द्र/त्रिकोण (",
+        ")": ")",
+        "natural benefic(s) present — ": "प्राकृतिक शुभ ग्रह — ",
+        "natural malefic(s) present — ": "प्राकृतिक पाप ग्रह — ",
+        "malefic(s) in an upachaya house (strengthening here) — ": "उपचय भावमा पाप ग्रह (यहाँ बलियो) — ",
+        "supportive combination(s)": "सहायक योग(हरू)",
+        "Yoga: Dhana yoga present": "योग: धन योग उपस्थित",
+        "lagna lord ": "लग्न स्वामी ",
+        "lagna lord strong": "लग्न स्वामी बलियो",
+        "lagna lord weak": "लग्न स्वामी कमजोर",
+        "debilitated": "नीच",
+        "weak/debilitated": "कमजोर/नीच",
+        "dignified/strong": "गरिमामान/बलियो",
+        # Terms
+        "ascendant": "लग्न",
+        "mahadasha": "महादशा",
+        "antardasha": "अन्तर्दशा",
+        "nakshatra": "नक्षत्र",
+        "retrograde": "वक्री",
+        "combust": "अस्त",
+        "vargottama": "वर्गोत्तम",
+        "Shadbala": "षड्बल",
+        "Strong": "बलियो",
+        "Exceptional": "अत्यन्त बलियो",
+        "Weak": "कमजोर",
+        "Borderline": "सीमान्त",
+        "house": "भाव",
+        "Dasha:": "दशा:",
+        "Yogas:": "योग:",
+        "D1:": "D1:",
+        "D9:": "D9:",
+        "→": "→",
+        "running now": "अहिले चलिरहेको",
+        "well placed": "राम्रो स्थित",
+        "placed": "स्थित",
+        "the mind": "मन",
+        "the Sun": "सूर्य",
+        "the Moon": "चन्द्र",
+    }
+    pairs.extend((en, ne) for en, ne in phrase_map.items() if ne)
+    pairs.sort(key=lambda x: len(x[0]), reverse=True)
+    return pairs
+
+
+_NE_REPLACEMENTS: list[tuple[str, str]] | None = None
+
+
+def _ne_replacements() -> list[tuple[str, str]]:
+    global _NE_REPLACEMENTS
+    if _NE_REPLACEMENTS is None:
+        _NE_REPLACEMENTS = _build_ne_replacements()
+    return _NE_REPLACEMENTS
+
+
+_EN_MONTH_NE = {
+    "Jan": "जन", "Feb": "फेब", "Mar": "मार्च", "Apr": "अप्र", "May": "मे",
+    "Jun": "जुन", "Jul": "जुल", "Aug": "अग", "Sep": "सेप", "Oct": "अक्ट",
+    "Nov": "नोभ", "Dec": "डिस",
+}
+
+
+def _apply_ne_regex(text: str) -> str:
+    out = text
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) house\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\bHouse (\d+)\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) lord\b", r"\1 औं भावका स्वामी", out, flags=re.I)
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th)\b", r"\1 औं", out, flags=re.I)
+    out = re.sub(r"\bpada (\d+)\b", r"चरण \1", out, flags=re.I)
+    out = re.sub(r"\bis at\b", "मा अवस्थित छ", out, flags=re.I)
+    out = re.sub(r"\boccupying the\b", "", out, flags=re.I)
+    out = re.sub(r"\bhouse (\d+)\b", r"\1 औं भाव", out, flags=re.I)
+    out = re.sub(r"\bin the\b", "मा", out, flags=re.I)
+    out = re.sub(r"\band the Sun is in\b", "र सूर्य", out, flags=re.I)
+    out = re.sub(r"\bto the foreground\b", "अगाडि", out, flags=re.I)
+    out = re.sub(r"\bwith dates\b", "मिति सहित", out, flags=re.I)
+    for en, ne in _EN_MONTH_NE.items():
+        out = re.sub(rf"\b{en}\b", ne, out)
+    out = out.replace("भitr", "भित्र").replace("यसभitr", "यसभित्र")
+    out = re.sub(r"\s+", " ", out).strip()
+    return out
+
+
+def _localize_text_ne(text: str) -> str:
+    out = text
+    for en, ne in _ne_replacements():
+        if en and en in out:
+            out = out.replace(en, ne)
+    return _apply_ne_regex(out)
+
+
+def _localize_item_label_ne(label: str) -> str:
+    paired = re.match(r"^(.+?) \((.+)\)$", label)
+    if paired:
+        return paired.group(2).strip()
+    house = re.match(r"^House (\d+) \((.+)\)$", label, re.I)
+    if house:
+        return f"{house.group(2)} भाव"
+    return _localize_text_ne(label)
+
+
+def _localize_section(section: dict[str, Any], lang: str) -> dict[str, Any]:
+    if lang != "ne":
+        return section
+    out = dict(section)
+    out["body"] = [_localize_text_ne(p) for p in section.get("body", [])]
+    if section.get("factors"):
+        out["factors"] = [_localize_text_ne(f) for f in section["factors"]]
+    if section.get("items"):
+        items = []
+        for it in section["items"]:
+            item = dict(it)
+            item["text"] = _localize_text_ne(it["text"])
+            item["label"] = _localize_item_label_ne(it["label"])
+            if it.get("factors"):
+                item["factors"] = [_localize_text_ne(f) for f in it["factors"]]
+            items.append(item)
+        out["items"] = items
+    return out
+
+
+def _localize_meta(meta: dict[str, Any], lang: str) -> dict[str, Any]:
+    if lang != "ne":
+        return meta
+    out = dict(meta)
+    out["method"] = METHOD_NE
+    out["disclaimer"] = DISCLAIMER_NE
+    return out
 
 
 def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
@@ -1551,6 +2333,7 @@ def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
             "ends": _fmt_date(chart.dasha["maha_end"]),
             "antardasha": chart.dasha["antar_lord"],
             "antardasha_en": PLANET_EN[chart.dasha["antar_lord"]],
+            "antardasha_ne": PLANET_NE[chart.dasha["antar_lord"]],
             "antardasha_ends": _fmt_date(chart.dasha["antar_end"]),
             "window": chart.maha_window,
         },

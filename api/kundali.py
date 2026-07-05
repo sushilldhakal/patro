@@ -102,6 +102,8 @@ def kundali_report(
     datetime: str | None = Query(None, alias="datetime",
                                   description="Birth instant (ISO); naive uses observer TZ"),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    lang: str | None = Query(None, description="Report language: en or ne"),
+    force: bool = Query(False, description="Bypass cache and regenerate the report"),
 ):
     """Deterministic Vedic interpretation of the birth chart, streamed as NDJSON."""
     from datetime import datetime as _dt
@@ -112,6 +114,11 @@ def kundali_report(
     from engine.vedic.interpretation import iter_report
     from engine.vedic.shadbala import compute_shadbala
     from engine.vedic.vimshottari import vimshottari_dasha
+    from services.kundali_report_cache import (
+        get_cached_report,
+        make_cache_key,
+        store_report_cache,
+    )
 
     try:
         instant = parse_query_datetime(datetime, timezone_name=location.timezone)
@@ -127,18 +134,45 @@ def kundali_report(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    records = list(iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc)))
-    header = {"ayanamsha": ayanamsha or "lahiri", "location": location.as_dict(), "birth_instant": instant.isoformat()}
+    report_lang = "en" if str(lang or "ne").startswith("en") else "ne"
+    ayanamsha_id = ayanamsha or "lahiri"
+    birth_instant = instant.isoformat()
+    header = {"ayanamsha": ayanamsha_id, "location": location.as_dict(), "birth_instant": birth_instant}
+    cache_key = make_cache_key(birth_instant, location, ayanamsha_id, report_lang)
+    cache_status = "miss"
+
+    cached_records: list[dict] | None = None
+    if not force:
+        cached_records = get_cached_report(cache_key)
+        if cached_records is not None:
+            cache_status = "hit"
+
+    if cached_records is None:
+        cached_records = list(
+            iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc), lang=report_lang)
+        )
+        store_report_cache(
+            cache_key,
+            birth_instant=birth_instant,
+            location=location,
+            ayanamsha=ayanamsha_id,
+            lang=report_lang,
+            records=cached_records,
+        )
 
     def _stream():
         yield json.dumps({"kind": "header", **header}, ensure_ascii=False) + "\n"
-        for record in records:
+        for record in cached_records:
             yield json.dumps(record, ensure_ascii=False) + "\n"
 
     return StreamingResponse(
         _stream(),
         media_type="application/x-ndjson",
-        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        headers={
+            "Cache-Control": "no-store",
+            "X-Accel-Buffering": "no",
+            "X-Report-Cache": cache_status,
+        },
     )
 
 
