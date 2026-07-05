@@ -21,6 +21,8 @@ from engine.vedic.interpretation import (
     NAK_LORD,
     OWN_SIGNS,
     PLANET_KEYS,
+    PLANET_EN,
+    PLANET_NE,
     SIGN_LORD,
     _angular_sep,
     _dignity,
@@ -129,6 +131,91 @@ YOGA_NAME_NE = {
     "kemadruma": "केमद्रुम योग",
     "dhana_2_11": "धन योग",
 }
+
+YOGA_DESC_NE: dict[str, str] = {
+    "gajakesari": (
+        "चन्द्रबाट केन्द्र (१, ४, ७, १०) मा बृहस्पति हुँदा बन्छ — "
+        "विवेक, सम्मान र स्थिर सौभाग्यका लागि परम्परागत योग; परिपक्व उमेरमा फल दिन्छ।"
+    ),
+    "budhaditya": (
+        "सूर्य र बुध एउटै राशिमा हुँदा बन्छ — बुद्धि, स्पष्ट अभिव्यक्ति र "
+        "विश्लेषणात्मक/प्रशासनिक क्षमताका लागि शुभ (बुध अत्यन्त नजिक/combust नभएमा बलियो)।"
+    ),
+    "chandra_mangala": (
+        "चन्द्र र मंगल एउटै राशिमा हुँदा बन्छ — उद्यमशीलता र कमाइको ऊर्जा; "
+        "शान्त आउटलेट भए उत्तम, नभए अधीरता हुन सक्छ।"
+    ),
+    "kemadruma": (
+        "चन्द्रका छेउमा कुनै ग्रह नभएमा बन्छ — भावनात्मक सहारा आफैं निर्माण "
+        "गर्नुपर्ने संकेत। बलियो चन्द्र, शुभ दृष्टि वा केन्द्रमा ग्रहले यसलाई "
+        "कमजोर पार्छ; नियमित दिनचarya र सम्बन्ध दृढ गर्नुहोस्।"
+    ),
+    "dhana_2_11": (
+        "आय (२) र लाभ (११) का स्वामी एक भावमा मिल्दा बन्छ — "
+        "नियमित कमाइ र बचत गर्ने बानीले धन योग फल दिन्छ।"
+    ),
+}
+
+KARAKA_NE = {
+    "sun": "आत्मा, जीवनशक्ति, पिता, अधिकार",
+    "moon": "मन, भावना, माता, सार्वजनिक सम्बन्ध",
+    "mars": "ऊर्जा, साहस, भाइबहini, सम्पत्ति",
+    "mercury": "बुद्धि, संचार, व्यापार, शिक्षा",
+    "jupiter": "ज्ञान, नैतिकता, धन, गुरु, सन्तान",
+    "venus": "प्रेम, विवाह, सौन्दary, कला",
+    "saturn": "अनुशासन, धैर्य, कर्म, दीर्घायu",
+}
+
+MAHAPURUSHA_NE = {
+    "mars": "रुचक",
+    "mercury": "भद्र",
+    "jupiter": "हंस",
+    "venus": "मालavya",
+    "saturn": "शश",
+}
+
+
+def _yoga_desc_ne(y: dict[str, Any]) -> str:
+    key = y["key"]
+    if key in YOGA_DESC_NE:
+        return YOGA_DESC_NE[key]
+    if key.startswith("mahapurusha_"):
+        planet_key = key.split("_", 1)[1]
+        pn = PLANET_NE.get(planet_key, planet_key)
+        karaka = KARAKA_NE.get(planet_key, "")
+        return (
+            f"{pn} स्वकीय/उच्च राशिमा केन्द्रमा हुँदा {MAHAPURUSHA_NE.get(planet_key, '')} "
+            f"महापुरुष योग — {karaka} सम्बन्धी बलियो गुणको संकेत।"
+        )
+    if key.startswith("neechabhanga_"):
+        planet_key = key.split("_", 1)[1]
+        pn = PLANET_NE.get(planet_key, planet_key)
+        return (
+            f"{pn} नीचमा भए पनि शास्त्रीय नीचभङ्गले शक्ति फर्काउँछ — "
+            f"सम्बन्धित स्वामी वा उच्च स्वामी केन्द्रमा भएमा प्रारम्भिक कठिनाइ "
+            f"पछि उल्लेखनीय बल देखिन्छ।"
+        )
+    if key.startswith("raja_"):
+        parts = key[len("raja_"):].split("_")
+        if len(parts) == 2:
+            kl, tl = parts
+            return (
+                f"केन्द्र स्वामी ({PLANET_NE.get(kl, kl)}) र त्रिकोण स्वामी "
+                f"({PLANET_NE.get(tl, tl)}) एक भावमा मिल्दा राज योग — "
+                f"ग्रहहरू पर्याप्त बलियो भए उन्नति र प्रतिष्ठाका लागि शुभ।"
+            )
+        return "केन्द्र र त्रिकोण स्वामी एक भावमा मिल्दा राज योग — उन्नति का लागि शुभ।"
+    return y.get("text", "")
+
+
+def _yoga_nature(polarity: str | None) -> str:
+    if polarity == "benefic":
+        return "auspicious"
+    if polarity == "mixed":
+        return "mixed"
+    if polarity == "caution":
+        return "caution"
+    return "inauspicious"
 
 
 def _bi(ne: str, en: str) -> dict[str, str]:
@@ -349,7 +436,7 @@ def _yogas_to_api(chart_yogas: list[dict[str, Any]]) -> list[dict[str, Any]]:
             name_ne = "राज योग"
         else:
             name_ne = name_ne or name_en
-        nature = "auspicious" if y.get("polarity") == "benefic" else "inauspicious"
+        nature = _yoga_nature(y.get("polarity"))
         text = y.get("text", "")
         out.append({
             "key": key,
@@ -358,7 +445,7 @@ def _yogas_to_api(chart_yogas: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "nature": nature,
             "present": y["present"],
             "descEn": text,
-            "descNe": text,
+            "descNe": _yoga_desc_ne(y),
         })
     return out
 
