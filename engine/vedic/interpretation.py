@@ -656,24 +656,33 @@ SURYA_FLANK_SKIP = frozenset({"sun"})
 YOGA_BENEFICS = frozenset({"jupiter", "venus", "mercury", "moon"})
 
 
-def _lon_in_arc(lon: float, start: float, end: float) -> bool:
-    lon, start, end = _norm(lon), _norm(start), _norm(end)
-    if start <= end:
-        return start <= lon <= end
-    return lon >= start or lon <= end
+def _sign_in_arc(sign: int, start_sign: int, end_sign: int) -> bool:
+    """Whole-sign hemisphere containment, inclusive of both boundary signs."""
+    if start_sign <= end_sign:
+        return start_sign <= sign <= end_sign
+    return sign >= start_sign or sign <= end_sign
 
 
 def _kala_sarpa_present(P: dict[str, PlanetFact]) -> bool:
+    """All seven tara grahas confined to one side of the Rahu-Ketu axis.
+
+    Classical practice judges this by rashi (whole sign), not exact degree —
+    a planet sharing Rahu's or Ketu's own sign is still standing at the node,
+    not breaking out of the hemisphere. An exact-degree check would call the
+    yoga broken by a planet that's merely a couple of degrees past the node
+    while still in the very same sign as it — far stricter than how this
+    yoga is judged in practice.
+    """
     if "rahu" not in P:
         return False
-    rahu = P["rahu"].longitude
-    ketu = P["ketu"].longitude if "ketu" in P else _norm(rahu + 180.0)
-    lons = [P[k].longitude for k in DIGNITY_PLANETS if k in P]
-    if not lons:
+    rahu_sign = P["rahu"].sign
+    ketu_sign = P["ketu"].sign if "ketu" in P else (rahu_sign + 6) % 12
+    signs = [P[k].sign for k in DIGNITY_PLANETS if k in P]
+    if not signs:
         return False
     return (
-        all(_lon_in_arc(l, rahu, ketu) for l in lons)
-        or all(_lon_in_arc(l, ketu, rahu) for l in lons)
+        all(_sign_in_arc(s, rahu_sign, ketu_sign) for s in signs)
+        or all(_sign_in_arc(s, ketu_sign, rahu_sign) for s in signs)
     )
 
 
@@ -743,6 +752,9 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
 
     def house_from_moon(key: str) -> int:
         return house_from(P[key].sign, moon_sign) if key in P else -1
+
+    def house_from_lagna(key: str) -> int:
+        return house_from(P[key].sign, lagna_sign) if key in P else -1
 
     lagnesh = chart.house_lord.get(1)
     lagnesh_pf = P.get(lagnesh) if lagnesh else None
@@ -877,10 +889,12 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     catalog.append({
         "key": "amala", "name": "Amala Yoga", "polarity": "benefic",
         "present": any(
-            house_from_moon(k) == 10 for k in ("jupiter", "venus", "mercury") if k in P
+            house_from_lagna(k) == 10 or house_from_moon(k) == 10
+            for k in ("jupiter", "venus", "mercury") if k in P
         ),
-        "text": "A natural benefic occupies the 10th house from the Moon — a spotless "
-                "(amala) reputation yoga for ethical conduct and lasting public respect.",
+        "text": "A natural benefic occupies the 10th house from the Lagna or the Moon — "
+                "a spotless (amala) reputation yoga for ethical conduct and lasting "
+                "public respect.",
     })
     catalog.append({
         "key": "parvata", "name": "Parvata Yoga", "polarity": "benefic",

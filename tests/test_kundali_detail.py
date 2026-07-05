@@ -153,6 +153,34 @@ def test_panchanga_yoga_and_nakshatra_respect_the_chosen_ayanamsha():
     assert AstronomyEngine.LAHIRI != AstronomyEngine.RAMAN  # sanity: modes are distinct
 
 
+def test_kala_sarpa_and_amala_use_whole_sign_reference_points():
+    """Real chart regression: 1945-12-28 11:30 Kathmandu (Lahiri).
+
+    Kala Sarpa previously used an exact-degree arc between Rahu and Ketu, so
+    a planet sharing Ketu's own sign but a few degrees past it (here, the
+    Sun at 253.04 deg vs Ketu at 246.85 deg, both in Dhanu) was judged to
+    have "broken out" of the hemisphere — stricter than how this yoga is
+    judged classically (by rashi, not exact degree). Amala previously only
+    checked the 10th house from the Moon, missing the equally standard
+    10th-from-Lagna reference point that this chart actually satisfies
+    (Mercury in Vrishchika = 10th from the Meena lagna)."""
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1945-12-28T11:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="lahiri")
+
+    present = {y["key"]: y["present"] for y in payload["yogas"]}
+    assert present["kala_sarpa"] is True
+    assert present["gajakesari"] is True
+    assert present["sunapha"] is True
+    assert present["amala"] is True
+    assert present["vasi"] is True
+    # Genuinely absent for this chart: the lagna lord (Jupiter) sits in
+    # house 8 (not a kendra), so Parvata's angular-lord condition fails.
+    assert present["parvata"] is False
+
+
 def test_graha_yuddha_detects_a_real_planetary_war():
     """Two tara grahas within 1deg of longitude must be reported as a war,
     not silently left empty — /kundali/detail previously always returned
