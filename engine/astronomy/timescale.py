@@ -1,11 +1,16 @@
 """Observer timezone helpers for sunrise/tithi calculations."""
 
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+# Nepal's *current* civil offset — kept only as a label/reference; do not use
+# for date arithmetic. Nepal was UTC+5:30 before 1986-01-01 (per IANA tzdata),
+# so a fixed +5:45 offset silently mis-times every pre-1986 instant by 15
+# minutes. NEPAL_TZ below is the historically-aware zone that gets this right
+# for any date, while still resolving to +5:45 for modern dates.
 NEPAL_UTC_OFFSET_HOURS = 5
 NEPAL_UTC_OFFSET_MINUTES = 45
-NEPAL_TZ = timezone(timedelta(hours=5, minutes=45))
+NEPAL_TZ = ZoneInfo("Asia/Kathmandu")
 DEFAULT_OBSERVER_TIMEZONE = "Asia/Kathmandu"
 
 
