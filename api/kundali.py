@@ -102,6 +102,7 @@ def kundali_report(
     datetime: str | None = Query(None, alias="datetime",
                                   description="Birth instant (ISO); naive uses observer TZ"),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
+    lang: str | None = Query(None, description="Report language: en or ne"),
 ):
     """Deterministic Vedic interpretation of the birth chart, streamed as NDJSON."""
     from datetime import datetime as _dt
@@ -127,7 +128,7 @@ def kundali_report(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    records = list(iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc)))
+    records = list(iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc), lang=lang or "en"))
     header = {"ayanamsha": ayanamsha or "lahiri", "location": location.as_dict(), "birth_instant": instant.isoformat()}
 
     def _stream():

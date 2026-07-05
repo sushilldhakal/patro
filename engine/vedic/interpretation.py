@@ -28,6 +28,7 @@ dependency.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Iterator, Optional
@@ -1515,19 +1516,165 @@ def build_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
 
 def iter_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
                 shadbala_raw: dict[str, Any], dasha_raw: dict[str, Any],
-                *, now: Optional[datetime] = None) -> Iterator[dict[str, Any]]:
+                *, now: Optional[datetime] = None, lang: str = "en") -> Iterator[dict[str, Any]]:
     """Yield a ``meta`` record, then one record per section — for streaming."""
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     chart = build_chart(planets_raw, lagna_raw, shadbala_raw, dasha_raw, now)
-    meta = _meta(chart, now)
+    meta = _localize_meta(_meta(chart, now), lang)
     yield {"kind": "meta", **meta}
     sections = build_sections(chart, now=now)
     total = len(sections)
     for i, section in enumerate(sections):
-        yield {"kind": "section", "index": i, "total": total, **section}
+        yield {"kind": "section", "index": i, "total": total, **_localize_section(section, lang)}
     yield {"kind": "done", "total": total}
+
+
+# ── Nepali localization (term replacement for streamed report text) ───────────
+
+METHOD_NE = "पराशरी नियममा आधारित निष्कर्ष — विश्वास स्तर सहित"
+DISCLAIMER_NE = (
+    "चिन्तन र सांस्कृतिक अन्तर्दृष्टिका लागि। प्रवृत्ति र सम्भावना देखाउँछ, "
+    "निश्चितता होइन; व्यावसायिक सल्लाहको विकल्प होइन।"
+)
+
+HOUSE_THEME_NE = {
+    1: "आत्म, शरीर, जीवन शक्ति र समग्र जीवन दिशा",
+    2: "धन, वाणी, वंश र पोषण",
+    3: "साहस, परिश्रम, दाजुभाइबहini, संचार र सीप",
+    4: "घर, माता, आन्तरिक शान्ति, सम्पत्ति र शिक्षा",
+    5: "बुद्धि, सिर्जनशीलता, सन्तान र पुण्य",
+    6: "कर्म, सेवा, स्वास्थ्य, प्रतिस्पर्धा र बाधा",
+    7: "साझेदारी, विवाह, व्यापार र सार्वजनिक सम्बन्ध",
+    8: "परिवर्तन, साझा सम्पत्ति, अनुसन्धान र दीर्घायु",
+    9: "भाग्य, धर्म, उच्च शिक्षा, गुरु र पिता",
+    10: "करियर, स्थिति, सार्वजनिक भूमिका र कर्म",
+    11: "लाभ, सञ्जाल, आकांक्षा र ठूला भाइबहini",
+    12: "मोचन, खर्च, एकान्त, विदेश र मुक्ति",
+}
+
+DIGNITY_PHRASE_NE = {
+    "exalted": "उच्च (गहिरो गरिमा)",
+    "moolatrikona": "मूलत्रिकोणमा (अत्यन्त सहज)",
+    "own": "स्वराशिमा (स्थिर र आत्मविश्वासी)",
+    "friend": "मित्र राशिमा (समर्थित)",
+    "neutral": "सम राशिमा",
+    "enemy": "शत्रु राशिमा (केही तनाव)",
+    "debilitated": "नीच (दबाब, सचेत प्रयास चाहिन्छ)",
+    "placed": "स्थित",
+    "well placed": "राम्रो स्थित",
+    "under pressure": "दबाबमा",
+}
+
+
+def _build_ne_replacements() -> list[tuple[str, str]]:
+    """Longest-first English → Nepali replacements for report prose."""
+    pairs: list[tuple[str, str]] = []
+    for key, en in PLANET_EN.items():
+        pairs.append((en, PLANET_NE[key]))
+    for i, en in enumerate(RASHI_EN):
+        pairs.append((en, RASHI_NE[i]))
+    for i, en in enumerate(NAKSHATRA_EN):
+        pairs.append((en, NAKSHATRA_NE[i]))
+    for h, en in HOUSE_THEME.items():
+        pairs.append((en, HOUSE_THEME_NE[h]))
+    for en, ne in DIGNITY_PHRASE.items():
+        pairs.append((en, DIGNITY_PHRASE_NE.get(en, en)))
+    for en, ne in DIGNITY_PHRASE_NE.items():
+        if en not in DIGNITY_PHRASE:
+            pairs.append((en, ne))
+    phrase_map = {
+        "ascendant": "लग्न",
+        "mahadasha": "महादशा",
+        "antardasha": "अन्तर्दशा",
+        "nakshatra": "नक्षत्र",
+        "retrograde": "वक्री",
+        "combust": "अस्त",
+        "vargottama": "वर्गोत्तम",
+        "Shadbala": "षड्बल",
+        "Strong": "बलियो",
+        "Exceptional": "अत्यन्त बलियो",
+        "Weak": "कमजोर",
+        "Borderline": "सीमान्त",
+        "house": "भाव",
+        "Timing now: the ": "समय अहिले: ",
+        "Supportive patterns active: ": "सहायक योग सक्रिय: ",
+        "Your outward personality is coloured by a ": "बाह्य व्यक्तित्व ",
+        " ascendant and shaped most by its ruler ": " लग्नले र यसका स्वामी ",
+        "Deterministic Parashari interpretation with confidence weighting": METHOD_NE,
+        "For reflection and cultural insight. Describes tendencies and "
+        "probabilities, not certainties; not a substitute for professional advice.": DISCLAIMER_NE,
+        "D1:": "D1:",
+        "D9:": "D9:",
+        "Yogas:": "योग:",
+    }
+    pairs.extend(phrase_map.items())
+    pairs.sort(key=lambda x: len(x[0]), reverse=True)
+    return pairs
+
+
+_NE_REPLACEMENTS: list[tuple[str, str]] | None = None
+
+
+def _ne_replacements() -> list[tuple[str, str]]:
+    global _NE_REPLACEMENTS
+    if _NE_REPLACEMENTS is None:
+        _NE_REPLACEMENTS = _build_ne_replacements()
+    return _NE_REPLACEMENTS
+
+
+def _localize_text_ne(text: str) -> str:
+    out = text
+    for en, ne in _ne_replacements():
+        if en and en in out:
+            out = out.replace(en, ne)
+    # Ordinal houses: "1st house" → "१ औं भाव"
+    def _house_ord(m: re.Match[str]) -> str:
+        n = m.group(1)
+        return f"{n} औं भाव"
+    out = re.sub(r"\b(\d+)(?:st|nd|rd|th) house\b", _house_ord, out, flags=re.I)
+    out = re.sub(r"\bHouse (\d+)\b", lambda m: f"{m.group(1)} औं भाव", out)
+    return out
+
+
+def _localize_item_label_ne(label: str) -> str:
+    paired = re.match(r"^(.+?) \((.+)\)$", label)
+    if paired:
+        return paired.group(2).strip()
+    house = re.match(r"^House (\d+) \((.+)\)$", label, re.I)
+    if house:
+        return f"{house.group(2)} भाव"
+    return _localize_text_ne(label)
+
+
+def _localize_section(section: dict[str, Any], lang: str) -> dict[str, Any]:
+    if lang != "ne":
+        return section
+    out = dict(section)
+    out["body"] = [_localize_text_ne(p) for p in section.get("body", [])]
+    if section.get("factors"):
+        out["factors"] = [_localize_text_ne(f) for f in section["factors"]]
+    if section.get("items"):
+        items = []
+        for it in section["items"]:
+            item = dict(it)
+            item["text"] = _localize_text_ne(it["text"])
+            item["label"] = _localize_item_label_ne(it["label"])
+            if it.get("factors"):
+                item["factors"] = [_localize_text_ne(f) for f in it["factors"]]
+            items.append(item)
+        out["items"] = items
+    return out
+
+
+def _localize_meta(meta: dict[str, Any], lang: str) -> dict[str, Any]:
+    if lang != "ne":
+        return meta
+    out = dict(meta)
+    out["method"] = METHOD_NE
+    out["disclaimer"] = DISCLAIMER_NE
+    return out
 
 
 def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
@@ -1551,6 +1698,7 @@ def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
             "ends": _fmt_date(chart.dasha["maha_end"]),
             "antardasha": chart.dasha["antar_lord"],
             "antardasha_en": PLANET_EN[chart.dasha["antar_lord"]],
+            "antardasha_ne": PLANET_NE[chart.dasha["antar_lord"]],
             "antardasha_ends": _fmt_date(chart.dasha["antar_end"]),
             "window": chart.maha_window,
         },
