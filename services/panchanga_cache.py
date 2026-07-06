@@ -28,10 +28,8 @@ logger = logging.getLogger(__name__)
 #     Also: pre-1986 Nepal dates now use the historically correct UTC+5:30
 #     (was hardcoded to today's +5:45 for every date, mis-timing sunrise/
 #     sunset and every ephemeris value by 15 minutes for historical charts).
-# 12: Nepal observers always resolve through Asia/Kathmandu with the full
-#     three-era history (KMT +05:41:16, IST +05:30, NPT +05:45); coordinates
-#     inside Nepal force the zone even when a wrong IANA label was stored.
-CACHE_PAYLOAD_VERSION = 12
+# 13: solar_corrections.timezone_era label (KMT/IST/NPT) in cached payloads.
+CACHE_PAYLOAD_VERSION = 13
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

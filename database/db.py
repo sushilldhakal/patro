@@ -38,7 +38,7 @@ def _session_factory() -> sessionmaker[Session]:
 def init_db() -> None:
     """Create tables if they don't exist. Safe to call on every startup."""
     # Import models so they register on Base.metadata before create_all.
-    from app import models  # noqa: F401
+    from database import models  # noqa: F401
 
     Base.metadata.create_all(bind=get_engine())
 
