@@ -7,14 +7,23 @@ from typing import Any, Literal
 
 from engine.astronomy.swiss_eph import _ensure_initialized, get_julian_day, init_ephemeris
 from engine.astronomy.engine import default_engine
-from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.timescale import is_nepal_observer, nepal_timezone_era, resolve_observer_timezone
 
 SignKind = Literal["dhan", "rin"]
 
 
-def standard_meridian_longitude(timezone_name: str, *, on_date: date | None = None) -> float:
+def standard_meridian_longitude(
+    timezone_name: str,
+    *,
+    on_date: date | None = None,
+    lat: float | None = None,
+    lon: float | None = None,
+    country: str | None = None,
+) -> float:
     """Degrees east for the zone's mean solar meridian (UTC offset × 15°)."""
-    tz = resolve_observer_timezone(timezone_name)
+    tz = resolve_observer_timezone(
+        timezone_name, lat=lat, lon=lon, country=country,
+    )
     probe = datetime.combine(on_date or date(2020, 6, 15), time(12, 0), tzinfo=tz)
     offset = tz.utcoffset(probe)
     if offset is None:
@@ -89,11 +98,21 @@ def build_solar_corrections(
     local_longitude: float,
     timezone_name: str,
     at: datetime | None = None,
+    lat: float | None = None,
+    country: str | None = None,
 ) -> dict[str, Any]:
     """Daily Belaantar + Deshaantar for patro tables and advanced calculations."""
-    tz = resolve_observer_timezone(timezone_name)
+    tz = resolve_observer_timezone(
+        timezone_name, lat=lat, lon=local_longitude, country=country,
+    )
     anchor = at or datetime.combine(target, time(6, 0), tzinfo=tz)
-    meridian = standard_meridian_longitude(timezone_name, on_date=target)
+    meridian = standard_meridian_longitude(
+        timezone_name,
+        on_date=target,
+        lat=lat,
+        lon=local_longitude,
+        country=country,
+    )
     belaantar = compute_belaantar(anchor)
     deshaantar = compute_deshaantar(local_longitude, meridian)
 
@@ -103,6 +122,9 @@ def build_solar_corrections(
         "standard_meridian_longitude": meridian,
         "computed_at_local": anchor.astimezone(tz).isoformat(),
         "sunrise_includes_corrections": True,
+        "timezone_era": nepal_timezone_era(target)
+        if is_nepal_observer(lat, local_longitude, country=country)
+        else None,
         "ishtakaal_note_ne": (
             "सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन् — "
             "इष्टकाल गणनामा पुनः बेलान्तर थप्नु/pर्नु पर्दैन।"

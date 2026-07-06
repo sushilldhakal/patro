@@ -22,7 +22,12 @@ def panchanga_at_time(
     from engine.vedic.at_time import build_panchanga_at_time, parse_query_datetime
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         return build_panchanga_at_time(instant, location, ayanamsa=mode_id)
     except ValueError as exc:
@@ -43,7 +48,12 @@ def planetary_positions(
     from engine.vedic.at_time import build_planetary_snapshot, parse_query_datetime
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         return {
             **build_planetary_snapshot(instant.astimezone(timezone.utc),
@@ -80,7 +90,12 @@ def kundali_vimshottari(
     from engine.vedic.vimshottari import vimshottari_dasha
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         planets = get_all_planetary_positions(instant.astimezone(timezone.utc), ayanamsa=mode_id)
         moon_lon = planets["moon"]["longitude"]
@@ -121,7 +136,12 @@ def kundali_report(
     )
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         instant_utc = instant.astimezone(_tz.utc)
         snapshot = build_planetary_snapshot(instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode_id)
@@ -189,7 +209,12 @@ def shadbala(
     from engine.vedic.shadbala import compute_shadbala
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         result = compute_shadbala(instant.astimezone(timezone.utc),
                                   lat=location.lat, lon=location.lon, timezone_name=location.timezone)
         return {**result, "location": location.as_dict(), "query_instant": instant.isoformat()}
@@ -209,7 +234,12 @@ def kundali_detail(
     from engine.vedic.kundali_detail import build_kundali_detail
 
     try:
-        instant = parse_query_datetime(datetime, timezone_name=location.timezone)
+        instant = parse_query_datetime(
+            datetime,
+            timezone_name=location.timezone,
+            lat=location.lat,
+            lon=location.lon,
+        )
         return build_kundali_detail(instant, location, ayanamsha=ayanamsha)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -258,8 +288,18 @@ def kundali_milan(
 
     default_tz = "Asia/Kathmandu"
     try:
-        boy_instant = parse_query_datetime(boy_datetime, timezone_name=boy_timezone or default_tz)
-        girl_instant = parse_query_datetime(girl_datetime, timezone_name=girl_timezone or default_tz)
+        boy_instant = parse_query_datetime(
+            boy_datetime,
+            timezone_name=boy_timezone or default_tz,
+            lat=boy_lat,
+            lon=boy_lon,
+        )
+        girl_instant = parse_query_datetime(
+            girl_datetime,
+            timezone_name=girl_timezone or default_tz,
+            lat=girl_lat,
+            lon=girl_lon,
+        )
         boy_location = {"lat": boy_lat, "lon": boy_lon, "timezone": boy_timezone or default_tz}
         girl_location = {"lat": girl_lat, "lon": girl_lon, "timezone": girl_timezone or default_tz}
         return build_kundali_milan(

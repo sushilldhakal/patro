@@ -429,7 +429,7 @@ class AstronomyEngine:
         body_id = _BODY_MAP.get(body)
         if body_id is None:
             raise EphemerisError(f"Unknown body: {body!r}")
-        observer_tz = resolve_observer_timezone(timezone_name)
+        observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
         local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
         jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
         try:

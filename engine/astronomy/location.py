@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from engine.astronomy.timescale import normalize_observer_timezone
+
 
 @dataclass(frozen=True)
 class ObserverLocation:
@@ -37,6 +39,7 @@ def resolve_location(
     timezone: str | None = None,
     *,
     name: str | None = None,
+    country: str | None = None,
 ) -> ObserverLocation:
     """Build observer location; omitted fields fall back to Kathmandu defaults."""
     if lat is None and lon is None and timezone is None and name is None:
@@ -54,6 +57,9 @@ def resolve_location(
     # Match cache_key precision (~11 m) so geolocation coords don't fragment cache rows.
     resolved_lat = round(resolved_lat, 4)
     resolved_lon = round(resolved_lon, 4)
+    resolved_tz = normalize_observer_timezone(
+        resolved_tz, lat=resolved_lat, lon=resolved_lon, country=country,
+    )
 
     resolved_name = name or DEFAULT_LOCATION.name
     if name is None and (
@@ -103,6 +109,9 @@ def resolve_location_from_query(
         if timezone is None:
             base_tz = row.get("timezone") or DEFAULT_LOCATION.timezone
         base_name = row["ascii_name"] or row["name"]
+        country = row.get("country")
+    else:
+        country = None
 
     if base_lat is None and base_lon is None and base_tz is None:
         return DEFAULT_LOCATION
@@ -112,6 +121,7 @@ def resolve_location_from_query(
         lon=base_lon,
         timezone=base_tz,
         name=base_name,
+        country=country,
     )
     if resolved_city_id is not None:
         return ObserverLocation(

@@ -238,6 +238,7 @@ def build_daily_panchanga(
         local_longitude=location.lon,
         timezone_name=location.timezone,
         at=sunrise_utc,
+        lat=location.lat,
     )
 
     payload: dict[str, Any] = {

@@ -28,12 +28,10 @@ logger = logging.getLogger(__name__)
 #     Also: pre-1986 Nepal dates now use the historically correct UTC+5:30
 #     (was hardcoded to today's +5:45 for every date, mis-timing sunrise/
 #     sunset and every ephemeris value by 15 minutes for historical charts).
-# 11: sunrise/sunset now apply Kathmandu's elevation as a real geometric
-#     horizon dip (rise_trans_true_hor) instead of only feeding it into
-#     swe.rise_trans's auto-pressure calculation, which never actually
-#     shifted the rise/set moment. Was ~6-8 minutes off Drik Panchang;
-#     now within a minute.
-CACHE_PAYLOAD_VERSION = 11
+# 12: Nepal observers always resolve through Asia/Kathmandu with the full
+#     three-era history (KMT +05:41:16, IST +05:30, NPT +05:45); coordinates
+#     inside Nepal force the zone even when a wrong IANA label was stored.
+CACHE_PAYLOAD_VERSION = 12
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

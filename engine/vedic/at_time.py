@@ -37,9 +37,14 @@ def parse_query_datetime(
     raw: str | None,
     *,
     timezone_name: str,
+    lat: float | None = None,
+    lon: float | None = None,
+    country: str | None = None,
 ) -> datetime:
     """Parse ISO datetime; naive values use the observer timezone; omit for now."""
-    tz = resolve_observer_timezone(timezone_name)
+    tz = resolve_observer_timezone(
+        timezone_name, lat=lat, lon=lon, country=country,
+    )
     if not raw:
         return datetime.now(tz)
     text = raw.strip()
@@ -51,9 +56,19 @@ def parse_query_datetime(
     return dt.astimezone(tz)
 
 
-def parse_clock_on_date(clock: str, greg: date, *, timezone_name: str) -> datetime:
+def parse_clock_on_date(
+    clock: str,
+    greg: date,
+    *,
+    timezone_name: str,
+    lat: float | None = None,
+    lon: float | None = None,
+    country: str | None = None,
+) -> datetime:
     """Apply HH:MM (or HH:MM:SS) on a civil date in the observer timezone."""
-    tz = resolve_observer_timezone(timezone_name)
+    tz = resolve_observer_timezone(
+        timezone_name, lat=lat, lon=lon, country=country,
+    )
     parts = clock.strip().split(":")
     if len(parts) < 2:
         raise ValueError("clock must be HH:MM or HH:MM:SS")
@@ -73,7 +88,7 @@ def resolve_vedic_day_anchor(
     Instants before today's sunrise belong to the previous vedic day.
     Returns (anchor_date, sunrise_utc, sunset_utc, next_sunrise_utc).
     """
-    tz = resolve_observer_timezone(location.timezone)
+    tz = resolve_observer_timezone(location.timezone, lat=location.lat, lon=location.lon)
     local = instant_local.astimezone(tz)
     civil = local.date()
     sunrise_today = calculate_sunrise(
@@ -331,7 +346,9 @@ def instant_row_from_date(
     location: ObserverLocation,
 ) -> dict[str, Any]:
     """One month-grid row: panchanga elements at clock on greg."""
-    instant = parse_clock_on_date(clock, greg, timezone_name=location.timezone)
+    instant = parse_clock_on_date(
+        clock, greg, timezone_name=location.timezone, lat=location.lat, lon=location.lon,
+    )
     snap = build_panchanga_at_time(instant, location)
     bs_day = gregorian_to_bs(greg)[2]
     return {
