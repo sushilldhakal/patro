@@ -84,6 +84,31 @@ def test_ashtakavarga_and_bhava_bala_present():
     assert bb["strongest"]["totalPinda"] >= bb["weakest"]["totalPinda"]
 
 
+def test_birth_meta_ishta_kala_present():
+    """Ishta Kala and Ahoratri Ishta Kala must be computed from sunrise anchor."""
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1993-06-12T10:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+    meta = payload["birthMeta"]
+    assert meta["ishtaKala"] is not None
+    assert meta["ahoratriIshtaKala"] is not None
+    for key in ("ishtaKala", "ahoratriIshtaKala"):
+        block = meta[key]
+        assert set(block) == {"ghadi", "pala", "vipala"}
+        assert block["ghadi"] >= 0
+        assert 0 <= block["pala"] < 60
+        assert 0 <= block["vipala"] < 60
+    # Corrected (ahoratri) is never greater than uncorrected (ishta) when correction is positive.
+    ishta_min = meta["ishtaKala"]["ghadi"] * 24 * 60 + meta["ishtaKala"]["pala"] * 24 / 60
+    ahoratri_min = (
+        meta["ahoratriIshtaKala"]["ghadi"] * 24 * 60
+        + meta["ahoratriIshtaKala"]["pala"] * 24 / 60
+    )
+    assert ahoratri_min <= ishta_min + 0.5
+
+
 def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
     """The Kundali Yoga table shows the full checklist, present or absent —
     it must not silently drop rows for yogas that aren't formed in this chart."""

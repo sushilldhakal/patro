@@ -11,6 +11,7 @@ from engine.vedic.ashtakavarga import compute_ashtakavarga
 from engine.vedic.bhava_bala import compute_bhava_bala
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
+from engine.vedic.ghati_time import seconds_to_ghadi_pala
 from engine.vedic.graha_yuddha import compute_yuddha_bala
 from engine.vedic.interpretation import (
     COMBUST_ORB,
@@ -462,9 +463,63 @@ def _owned_rashis() -> dict[str, list[int]]:
     return owned
 
 
+def _sunrise_sunset_short(panchanga: dict[str, Any]) -> tuple[str | None, str | None]:
+    """HH:MM sunrise/sunset from ephemeris (`sun.*`) or embedded daily `detail`."""
+    sun = panchanga.get("sun") or {}
+    if sun.get("sunrise"):
+        return sun.get("sunrise"), sun.get("sunset")
+
+    detail = panchanga.get("detail") or {}
+    sr_block = detail.get("sunrise") or panchanga.get("sunrise")
+    ss_block = detail.get("sunset") or panchanga.get("sunset")
+    sunrise = sr_block.get("local_time_short") if isinstance(sr_block, dict) else None
+    sunset = ss_block.get("local_time_short") if isinstance(ss_block, dict) else None
+    return sunrise, sunset
+
+
+def _solar_corrections_block(panchanga: dict[str, Any]) -> dict[str, Any]:
+    detail = panchanga.get("detail") or {}
+    sc = detail.get("solar_corrections") or panchanga.get("solar_corrections")
+    return sc if isinstance(sc, dict) else {}
+
+
+def _ghadi_from_seconds(total_seconds: float) -> dict[str, int]:
+    g = seconds_to_ghadi_pala(total_seconds)
+    return {"ghadi": g["ghadi"], "pala": g["pala"], "vipala": g["vipala"]}
+
+
+def _compute_ishta_kalas(
+    instant_local: datetime,
+    location: ObserverLocation,
+    panchanga: dict[str, Any],
+) -> tuple[dict[str, int] | None, dict[str, int] | None]:
+    """Return (ishtaKala, ahoratriIshtaKala) in ghadi/pala/vipala.
+
+    Ishta Kala — elapsed time from sunrise to birth (civil clock).
+    Ahoratri Ishta Kala — same interval adjusted by Belaantar and Deshaantar.
+    """
+    from engine.vedic.at_time import resolve_vedic_day_anchor
+
+    _, sunrise_utc, _, _ = resolve_vedic_day_anchor(instant_local, location)
+    sunrise_local = sunrise_utc.astimezone(instant_local.tzinfo)
+    delta_sec = (instant_local - sunrise_local).total_seconds()
+    if delta_sec < 0:
+        delta_sec += 86400.0
+
+    solar = _solar_corrections_block(panchanga)
+    correction_min = _signed_solar_minutes(solar.get("belaantar")) + _signed_solar_minutes(
+        solar.get("deshaantar")
+    )
+    corrected_sec = max(0.0, delta_sec - correction_min * 60.0)
+
+    # Field names match the kundali overview labels used in Nepali patro software.
+    ishta = _ghadi_from_seconds(delta_sec)
+    ahoratri = _ghadi_from_seconds(corrected_sec)
+    return ishta, ahoratri
+
+
 def _choghadiya_at_birth(panchanga: dict[str, Any], birth_clock: str) -> dict[str, Any] | None:
-    sunrise = panchanga.get("sunrise", {}).get("local_time_short")
-    sunset = panchanga.get("sunset", {}).get("local_time_short")
+    sunrise, sunset = _sunrise_sunset_short(panchanga)
     sunrise_min = _parse_clock_minutes(sunrise)
     birth_min = _parse_clock_minutes(birth_clock)
     if sunrise_min is None or birth_min is None:
@@ -738,21 +793,11 @@ def build_kundali_detail(
     upagrahas = _format_upagrahas(detail.get("upagrahas") or [])
 
     birth_clock = instant_local.strftime("%H:%M")
-    sunrise_short = (panchanga.get("sunrise") or {}).get("local_time_short")
-    sunrise_min = _parse_clock_minutes(sunrise_short)
-    birth_min = _parse_clock_minutes(birth_clock)
-    solar = detail.get("solar_corrections") or {}
+    ishta, ahoratri_ishta = _compute_ishta_kalas(instant_local, location, panchanga)
+    solar = _solar_corrections_block(panchanga)
     correction_min = _signed_solar_minutes(solar.get("belaantar")) + _signed_solar_minutes(
         solar.get("deshaantar")
     )
-    ishta = None
-    ahoratri_ishta = None
-    if sunrise_min is not None and birth_min is not None:
-        delta = birth_min - sunrise_min
-        if delta < 0:
-            delta += 24 * 60
-        ahoratri_ishta = _ghadi_pala_vipala(delta)
-        ishta = _ghadi_pala_vipala(max(0.0, delta - correction_min))
 
     moon_nak_idx, moon_pada = nakshatra_of(moon_lon)
     yoga_block = panchanga.get("yoga") or {}
