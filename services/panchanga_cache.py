@@ -15,12 +15,20 @@ from engine.astronomy.timescale import resolve_observer_timezone
 
 logger = logging.getLogger(__name__)
 
-# Bump when cached payload_json shape changes; stale rows are treated as cache misses.
+# Bump when cached payload_json shape changes OR when the underlying
+# calculation logic changes — a code fix alone does NOT invalidate rows
+# already sitting in this (git-committed) SQLite cache; only a version bump
+# forces recomputation.
 # 7: paksha-resolved pūrṇimānta layer (adhik/शुद्ध month split in lunar_calendar).
 # 8: Rahu/Ketu switched from mean to true node; non-Kathmandu rise/set no longer
 #    computed with Kathmandu's 1400 m altitude.
 # 9: hora (24 slots), tarabala_table, chandrabala_table in payload_json.
-CACHE_PAYLOAD_VERSION = 9
+# 10: reverted #8 — verified against real Drik Panchang data that #8's premise
+#     was backwards; mean node matches Drik (true node was off by ~16.7').
+#     Also: pre-1986 Nepal dates now use the historically correct UTC+5:30
+#     (was hardcoded to today's +5:45 for every date, mis-timing sunrise/
+#     sunset and every ephemeris value by 15 minutes for historical charts).
+CACHE_PAYLOAD_VERSION = 10
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

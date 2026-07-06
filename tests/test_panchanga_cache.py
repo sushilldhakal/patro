@@ -78,3 +78,44 @@ def test_stale_cache_without_lagna_is_ignored(temp_panchanga_db):
     assert fresh["_from_cache"] is False
     assert "lagna" in fresh
     assert fresh["lagna"]["name_ne"]
+
+
+def test_row_from_a_prior_cache_version_is_treated_as_stale(temp_panchanga_db):
+    """A cached row does not automatically pick up a fixed calculation just
+    because the code was redeployed — the cache is a git-committed SQLite
+    file, so it survives deploys. Only a CACHE_PAYLOAD_VERSION bump forces
+    recomputation; this guards against silently shipping a logic fix (e.g.
+    a corrected timezone or node convention) that never reaches production
+    because the stale row was never invalidated."""
+    import json
+    from datetime import datetime, timezone
+
+    target = date(2026, 6, 10)
+    first = get_daily_panchanga(target, DEFAULT_LOCATION)
+    assert first["_from_cache"] is False
+
+    location_key, city_id = panchanga_cache.resolve_cache_keys(DEFAULT_LOCATION)
+    with panchanga_cache._connect() as conn:
+        row = conn.execute(
+            "SELECT payload_json FROM panchanga_cache WHERE location_key = ? AND date = ?",
+            (location_key, target.isoformat()),
+        ).fetchone()
+        payload = json.loads(row["payload_json"])
+        payload["_cache_version"] = panchanga_cache.CACHE_PAYLOAD_VERSION - 1
+        conn.execute(
+            """
+            UPDATE panchanga_cache SET payload_json = ?, computed_at = ?
+            WHERE location_key = ? AND date = ?
+            """,
+            (
+                json.dumps(payload),
+                datetime.now(timezone.utc).isoformat(),
+                location_key,
+                target.isoformat(),
+            ),
+        )
+        conn.commit()
+
+    assert panchanga_cache.get_cached_panchanga(target, DEFAULT_LOCATION) is None
+    second = get_daily_panchanga(target, DEFAULT_LOCATION)
+    assert second["_from_cache"] is False
