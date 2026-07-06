@@ -6,6 +6,7 @@ To swap backends (e.g. DE431, VSOP87) replace this class; callers stay unchanged
 
 from __future__ import annotations
 
+import math
 from collections import OrderedDict
 from datetime import date, datetime, time, timezone
 from typing import Any
@@ -13,6 +14,23 @@ from typing import Any
 import swisseph as swe
 
 from engine.astronomy.timescale import resolve_observer_timezone
+
+
+def _horizon_dip_degrees(altitude_m: float) -> float:
+    """Geometric dip of the visible horizon for an observer elevated
+    ``altitude_m`` above sea level, in degrees (negative — the horizon sits
+    below the astronomical horizontal plane, so rise comes earlier and set
+    comes later). Standard geodetic approximation: dip = 1.76 * sqrt(h).
+
+    ``swe.rise_trans``'s ``geopos`` altitude only feeds the auto-computed
+    atmospheric pressure (thinner air -> less refraction) — it does *not*
+    add this geometric dip. Only ``rise_trans_true_hor``'s explicit
+    ``horhgt`` parameter does, which is what an elevated city like Kathmandu
+    (~1400 m) needs to match published rise/set tables.
+    """
+    if altitude_m <= 0:
+        return 0.0
+    return -1.76 * math.sqrt(altitude_m) / 60.0
 
 # ── body identifiers exposed as class attributes so callers never touch swe ──
 _SUN = swe.SUN
@@ -415,7 +433,9 @@ class AstronomyEngine:
         local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
         jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
         try:
-            result = swe.rise_trans(jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0)
+            result = swe.rise_trans_true_hor(
+                jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
+            )
             if result[0] < 0:
                 return None
             return self.datetime_from_jd(result[1][0])
@@ -436,7 +456,9 @@ class AstronomyEngine:
             raise EphemerisError(f"Unknown body: {body!r}")
         jd_start = self.julian_day(after_dt.astimezone(timezone.utc))
         try:
-            result = swe.rise_trans(jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0)
+            result = swe.rise_trans_true_hor(
+                jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
+            )
             if result[0] < 0:
                 return None
             return self.datetime_from_jd(result[1][0])
