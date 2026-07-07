@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from datetime import datetime, timezone
 from typing import Any
 
@@ -36,7 +37,13 @@ from engine.vedic.shadbala import compute_shadbala
 from engine.vedic.vargas import VARGA_DIVISIONS, varga_rashi_from_longitude
 from engine.vedic.tribhagi import tribhagi_dasha
 from engine.vedic.vimshottari import DASHA_LORD_NE, vimshottari_dasha
-from engine.vedic.yogini import YOGINI_LORD_NE, YOGINI_SEQUENCE, YOGINI_YEARS, yogini_dasha
+from engine.vedic.yogini import (
+    YOGINI_CYCLE_YEARS,
+    YOGINI_LORD_NE,
+    YOGINI_SEQUENCE,
+    YOGINI_YEARS,
+    yogini_dasha,
+)
 
 CHOGHADIYA_EN = {
     "उद्वेग": "Udvega",
@@ -733,6 +740,41 @@ def _tree_node(
     return node
 
 
+def _cycles_for_horizon(birth_instant: datetime, cycle_years: float, horizon_years: float = 10.0) -> int:
+    """How many dasha cycles to generate so the sequence still covers 'now'.
+
+    A single cycle (e.g. Yogini's 36 years, Tribhagi's 40) only spans that
+    many years from birth — for anyone older than that, "now" falls outside
+    every generated period and no mahadasha is ever found "running". Compute
+    enough cycles to reach the current real-world moment plus a margin.
+    """
+    now = datetime.now(timezone.utc)
+    if birth_instant.tzinfo is None:
+        birth_instant = birth_instant.replace(tzinfo=timezone.utc)
+    elapsed_years = max(0.0, (now - birth_instant).total_seconds() / (365.2425 * 86400))
+    needed_years = elapsed_years + horizon_years
+    return max(1, math.ceil(needed_years / cycle_years))
+
+
+def _dasha_window(sequence: list[dict[str, Any]], maha_count: int) -> list[dict[str, Any]]:
+    """Pick which `maha_count` consecutive mahadashas to surface.
+
+    Rather than always the first N from birth (which silently excludes
+    "now" once someone is older than N mahadashas' combined span), center
+    the window on whichever period is currently running so the tree the
+    frontend receives always contains the "running" one.
+    """
+    now = datetime.now(timezone.utc)
+    current_idx = next(
+        (i for i, p in enumerate(sequence) if _parse_iso(p["start"]) <= now < _parse_iso(p["end"])),
+        None,
+    )
+    if current_idx is None:
+        return sequence[:maha_count]
+    start_idx = max(0, min(current_idx - 1, len(sequence) - maha_count))
+    return sequence[start_idx : start_idx + maha_count]
+
+
 def _build_dasha_tree(
     dasha: dict[str, Any],
     *,
@@ -742,7 +784,7 @@ def _build_dasha_tree(
     lord_ne_map: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     tree: list[dict[str, Any]] = []
-    for period in dasha["sequence"][:maha_count]:
+    for period in _dasha_window(dasha["sequence"], maha_count):
         start = _parse_iso(period["start"])
         end = _parse_iso(period["end"])
         tree.append(
@@ -825,11 +867,19 @@ def build_kundali_detail(
     )
 
     moon_lon = float(planets["moon"]["longitude"])
-    dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
+    vimshottari_cycle_years = sum(DASHA_YEARS.values())
+    tribhagi_cycle_years = vimshottari_cycle_years / 3
+    dasha = vimshottari_dasha(
+        moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, vimshottari_cycle_years)
+    )
     dasha_tree = _build_dasha_tree(dasha, tree_depth=3, maha_count=3)
-    tribhagi = tribhagi_dasha(moon_lon, instant_utc, cycles=1)
+    tribhagi = tribhagi_dasha(
+        moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, tribhagi_cycle_years)
+    )
     tribhagi_tree = _build_dasha_tree(tribhagi, tree_depth=3, maha_count=3)
-    yogini = yogini_dasha(moon_lon, instant_utc, cycles=1)
+    yogini = yogini_dasha(
+        moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, YOGINI_CYCLE_YEARS)
+    )
     yogini_tree = _build_dasha_tree(
         yogini,
         tree_depth=2,

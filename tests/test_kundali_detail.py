@@ -110,6 +110,28 @@ def test_kundali_detail_includes_tribhagi_and_yogini_dasha():
     }
 
 
+def test_tribhagi_and_yogini_show_a_currently_running_mahadasha_for_an_old_chart():
+    """Regression: Tribhagi's full cycle is 40 years, Yogini's is 36 — for
+    anyone older than that, a single cycle from birth never reaches "now",
+    so no mahadasha was ever found "running" (the tree only covered the
+    first 3 short-cycle periods from birth). Vimshottari's cycle is 120
+    years so it rarely hit this, but tribhagi/yogini hit it for almost
+    every adult chart."""
+    from datetime import datetime, timezone
+
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1945-12-28T11:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+
+    now = datetime.now(timezone.utc).isoformat()
+    for key in ("dasha", "tribhagiDasha", "yoginiDasha"):
+        tree = payload[key]["tree"]
+        running = [n for n in tree if n["start"] <= now < n["end"]]
+        assert running, f"{key} has no mahadasha covering 'now' — tree={tree}"
+
+
 def test_subdivide_yogini_period_returns_eight_children():
     from datetime import datetime, timezone
 
