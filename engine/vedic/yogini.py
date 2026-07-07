@@ -55,8 +55,20 @@ YOGINI_CYCLE_YEARS = sum(YOGINI_YEARS.values())
 
 
 def _yogini_index_for_nakshatra(nakshatra_index: int) -> int:
-    """Map nakshatra (0–26) to starting yogini (groups of three nakshatras)."""
-    return (nakshatra_index // 3) % len(YOGINI_SEQUENCE)
+    """Map nakshatra (0-based, 0-26) to the starting Yogini.
+
+    Classical rule: add 3 to the 1-based birth nakshatra number and divide
+    by 8; the remainder (1-8, counting Mangala as 1) gives the starting
+    Yogini. In 0-based terms that's `(nakshatra_index + 3) % 8`.
+
+    The previous `(nakshatra_index // 3) % 8` grouped every 3 consecutive
+    nakshatras onto the same starting Yogini, which doesn't match this
+    rule at all and was verified wrong against an independent reference
+    for a real chart (Purva Bhadrapada, index 24): that formula gave
+    Mangala; the correct starting Yogini is Bhramari, which is what this
+    formula returns.
+    """
+    return (nakshatra_index + 3) % len(YOGINI_SEQUENCE)
 
 
 def yogini_dasha(

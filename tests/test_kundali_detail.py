@@ -132,6 +132,28 @@ def test_tribhagi_and_yogini_show_a_currently_running_mahadasha_for_an_old_chart
         assert running, f"{key} has no mahadasha covering 'now' — tree={tree}"
 
 
+def test_yogini_starting_lord_uses_the_classical_plus_three_mod_eight_rule():
+    """Regression: verified against an independent reference for a real
+    chart (1993-06-12 11:30 Kathmandu, Moon in Purva Bhadrapada, nakshatra
+    index 24). The old `(nakshatra_index // 3) % 8` formula gave Mangala;
+    the reference's currently-running mahadasha (Dhanya, ~2024-2027) only
+    lines up if the birth mahadasha is Bhramari — matching the classical
+    "add 3 to the 1-based nakshatra number, mod 8" rule, i.e.
+    `(nakshatra_index + 3) % 8` in 0-based terms."""
+    from engine.vedic.yogini import _yogini_index_for_nakshatra, YOGINI_SEQUENCE
+
+    assert YOGINI_SEQUENCE[_yogini_index_for_nakshatra(24)] == "bhramari"
+
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1993-06-12T11:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+    yogini = payload["yoginiDasha"]
+    assert yogini["nakshatra_index"] == 24
+    assert yogini["mahadasha_lord"] == "bhramari"
+
+
 def test_subdivide_yogini_period_returns_eight_children():
     from datetime import datetime, timezone
 
