@@ -250,9 +250,13 @@ def kundali_dasha_expand(
     lord: str = Query(..., description="Dasha lord key, e.g. jupiter"),
     start: str = Query(..., description="Period start ISO datetime"),
     end: str = Query(..., description="Period end ISO datetime"),
+    system: str = Query(
+        "vimshottari",
+        description="Dasha system: vimshottari, tribhagi, or yogini",
+    ),
 ):
-    """Expand one dasha span into its nine Vimshottari antardashas."""
-    from engine.vedic.kundali_detail import subdivide_dasha_period
+    """Expand one dasha span into its antardashas."""
+    from engine.vedic.kundali_detail import subdivide_dasha_period, subdivide_yogini_period
 
     try:
         from datetime import datetime as dt_cls, timezone as tz
@@ -263,8 +267,9 @@ def kundali_dasha_expand(
                 dt = dt.replace(tzinfo=tz.utc)
             return dt
 
-        children = subdivide_dasha_period(lord, _parse(start), _parse(end))
-        return {"lord": lord, "children": children}
+        subdivide = subdivide_yogini_period if system == "yogini" else subdivide_dasha_period
+        children = subdivide(lord, _parse(start), _parse(end))
+        return {"lord": lord, "system": system, "children": children}
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

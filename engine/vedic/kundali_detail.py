@@ -34,7 +34,9 @@ from engine.vedic.interpretation import (
 )
 from engine.vedic.shadbala import compute_shadbala
 from engine.vedic.vargas import VARGA_DIVISIONS, varga_rashi_from_longitude
+from engine.vedic.tribhagi import tribhagi_dasha
 from engine.vedic.vimshottari import DASHA_LORD_NE, vimshottari_dasha
+from engine.vedic.yogini import YOGINI_LORD_NE, YOGINI_SEQUENCE, YOGINI_YEARS, yogini_dasha
 
 CHOGHADIYA_EN = {
     "उद्वेग": "Udvega",
@@ -652,6 +654,30 @@ def _parse_iso(value: str) -> datetime:
     return dt
 
 
+def subdivide_yogini_period(lord: str, start: datetime, end: datetime) -> list[dict[str, Any]]:
+    """Yogini antardasha children proportional to the 36-year yogini cycle."""
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=timezone.utc)
+    total = end - start
+    start_idx = YOGINI_SEQUENCE.index(lord)
+    cursor = start
+    children: list[dict[str, Any]] = []
+    for step in range(len(YOGINI_SEQUENCE)):
+        sub_lord = YOGINI_SEQUENCE[(start_idx + step) % len(YOGINI_SEQUENCE)]
+        frac = YOGINI_YEARS[sub_lord] / float(sum(YOGINI_YEARS.values()))
+        sub_end = end if step == len(YOGINI_SEQUENCE) - 1 else cursor + total * frac
+        children.append({
+            "lord": sub_lord,
+            "lord_ne": YOGINI_LORD_NE[sub_lord],
+            "start": cursor.isoformat(),
+            "end": sub_end.isoformat(),
+        })
+        cursor = sub_end
+    return children
+
+
 def subdivide_dasha_period(lord: str, start: datetime, end: datetime) -> list[dict[str, Any]]:
     """Antardasha children proportional to Vimshottari within [start, end)."""
     if start.tzinfo is None:
@@ -676,10 +702,19 @@ def subdivide_dasha_period(lord: str, start: datetime, end: datetime) -> list[di
     return children
 
 
-def _tree_node(lord: str, start: datetime, end: datetime, depth: int) -> dict[str, Any]:
+def _tree_node(
+    lord: str,
+    start: datetime,
+    end: datetime,
+    depth: int,
+    *,
+    subdivide_fn=subdivide_dasha_period,
+    lord_ne_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    ne_map = lord_ne_map or DASHA_LORD_NE
     node = {
         "lord": lord,
-        "lord_ne": DASHA_LORD_NE[lord],
+        "lord_ne": ne_map.get(lord, lord),
         "start": start.isoformat(),
         "end": end.isoformat(),
     }
@@ -690,18 +725,36 @@ def _tree_node(lord: str, start: datetime, end: datetime, depth: int) -> dict[st
                 _parse_iso(child["start"]),
                 _parse_iso(child["end"]),
                 depth - 1,
+                subdivide_fn=subdivide_fn,
+                lord_ne_map=lord_ne_map,
             )
-            for child in subdivide_dasha_period(lord, start, end)
+            for child in subdivide_fn(lord, start, end)
         ]
     return node
 
 
-def _build_dasha_tree(dasha: dict[str, Any], *, tree_depth: int = 3, maha_count: int = 3) -> dict[str, Any]:
+def _build_dasha_tree(
+    dasha: dict[str, Any],
+    *,
+    tree_depth: int = 3,
+    maha_count: int = 3,
+    subdivide_fn=subdivide_dasha_period,
+    lord_ne_map: dict[str, str] | None = None,
+) -> dict[str, Any]:
     tree: list[dict[str, Any]] = []
     for period in dasha["sequence"][:maha_count]:
         start = _parse_iso(period["start"])
         end = _parse_iso(period["end"])
-        tree.append(_tree_node(period["lord"], start, end, tree_depth))
+        tree.append(
+            _tree_node(
+                period["lord"],
+                start,
+                end,
+                tree_depth,
+                subdivide_fn=subdivide_fn,
+                lord_ne_map=lord_ne_map,
+            )
+        )
     return {**dasha, "tree": tree, "tree_depth": tree_depth}
 
 
@@ -774,6 +827,16 @@ def build_kundali_detail(
     moon_lon = float(planets["moon"]["longitude"])
     dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
     dasha_tree = _build_dasha_tree(dasha, tree_depth=3, maha_count=3)
+    tribhagi = tribhagi_dasha(moon_lon, instant_utc, cycles=1)
+    tribhagi_tree = _build_dasha_tree(tribhagi, tree_depth=3, maha_count=3)
+    yogini = yogini_dasha(moon_lon, instant_utc, cycles=1)
+    yogini_tree = _build_dasha_tree(
+        yogini,
+        tree_depth=2,
+        maha_count=3,
+        subdivide_fn=subdivide_yogini_period,
+        lord_ne_map=YOGINI_LORD_NE,
+    )
 
     chart = build_chart(planets, lagna, shadbala, dasha, datetime.now(timezone.utc))
 
@@ -842,6 +905,8 @@ def build_kundali_detail(
         "panchanga": panchanga,
         "shadbala": shadbala,
         "dasha": dasha_tree,
+        "tribhagiDasha": tribhagi_tree,
+        "yoginiDasha": yogini_tree,
         "yuddha": yuddha,
         "bhavaBala": bhava_bala,
         "ashtakavarga": ashtakavarga,

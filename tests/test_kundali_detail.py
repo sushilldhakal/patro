@@ -84,6 +84,45 @@ def test_ashtakavarga_and_bhava_bala_present():
     assert bb["strongest"]["totalPinda"] >= bb["weakest"]["totalPinda"]
 
 
+def test_kundali_detail_includes_tribhagi_and_yogini_dasha():
+    loc = ObserverLocation(
+        name="Kathmandu", lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu",
+    )
+    instant = parse_query_datetime("1993-06-12T10:30:00", timezone_name=loc.timezone)
+    payload = build_kundali_detail(instant, loc, ayanamsha="nepal")
+
+    tribhagi = payload["tribhagiDasha"]
+    yogini = payload["yoginiDasha"]
+    assert tribhagi is not None
+    assert yogini is not None
+    assert tribhagi["system"] == "tribhagi"
+    assert yogini["system"] == "yogini"
+    assert len(tribhagi["tree"]) == 3
+    assert len(yogini["tree"]) == 3
+    assert tribhagi["tree"][0]["children"]
+    assert yogini["tree"][0]["children"]
+    assert len(yogini["tree"][0]["children"]) == 8
+    assert tribhagi["mahadasha_lord"] in {
+        "ketu", "venus", "sun", "moon", "mars", "rahu", "jupiter", "saturn", "mercury",
+    }
+    assert yogini["mahadasha_lord"] in {
+        "mangala", "pingala", "dhanya", "bhramari", "bhadrika", "ulka", "siddha", "sankata",
+    }
+
+
+def test_subdivide_yogini_period_returns_eight_children():
+    from datetime import datetime, timezone
+
+    from engine.vedic.kundali_detail import subdivide_yogini_period
+
+    start = datetime(2024, 1, 1, tzinfo=timezone.utc)
+    end = datetime(2027, 1, 1, tzinfo=timezone.utc)
+    children = subdivide_yogini_period("dhanya", start, end)
+    assert len(children) == 8
+    assert children[0]["lord"] == "dhanya"
+    assert children[-1]["end"] == end.isoformat()
+
+
 def test_birth_meta_ishta_kala_present():
     """Ishta Kala and Ahoratri Ishta Kala must be computed from sunrise anchor."""
     loc = ObserverLocation(
