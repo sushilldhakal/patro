@@ -64,7 +64,6 @@ async def lifespan(app: FastAPI):
 
 
 _prefix = config.api_public_prefix()
-_openapi_url = f"{_prefix}/openapi.json" if _prefix else "/openapi.json"
 
 app = FastAPI(
     title="Surya Panchanga API",
@@ -72,8 +71,9 @@ app = FastAPI(
     lifespan=lifespan,
     contact={"name": "Surya Panchanga", "url": "https://github.com/sushilldhakal/patro"},
     license_info={"name": "MIT"},
+    # root_path is prepended to openapi_url in Swagger UI (/api + /openapi.json).
     root_path=_prefix,
-    openapi_url=_openapi_url,
+    openapi_url="/openapi.json",
 )
 
 
