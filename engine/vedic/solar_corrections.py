@@ -126,11 +126,12 @@ def build_solar_corrections(
         if is_nepal_observer(lat, local_longitude, country=country)
         else None,
         "ishtakaal_note_ne": (
-            "सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन् — "
-            "इष्टकाल गणनामा पुनः बेलान्तर थप्नु/pर्नु पर्दैन।"
+            "सूचीबद्ध सूर्योदय/अस्तमा देशान्तर (गौरीशंकर ८६° १५′ केन्द्र) समायोजित छ — "
+            "इष्टकाल गणनामा पुनः देशान्तर थप्नु/pर्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
         ),
         "ishtakaal_note_en": (
-            "Listed sunrise/sunset already include Belaantar and Deshaantar; "
-            "do not apply them again when computing Ishtakaal from the printed time."
+            "Listed sunrise/sunset already include Deshaantar from the Gaurishankar "
+            "meridian (86°15′ E); do not apply Deshaantar again for Ishtakaal. "
+            "Belaantar is shown for reference only."
         ),
     }

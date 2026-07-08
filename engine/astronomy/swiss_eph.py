@@ -15,6 +15,10 @@ from engine.astronomy.engine import (
     SIDM_LAHIRI,
     default_engine,
 )
+from engine.astronomy.nepal_patro_sun import (
+    nepal_patro_solar_event,
+    should_use_nepal_patro_sun,
+)
 from engine.astronomy.timescale import resolve_observer_timezone
 
 __all__ = [
@@ -223,6 +227,10 @@ def calculate_sunrise(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
+    if should_use_nepal_patro_sun(latitude, longitude, altitude=altitude):
+        return nepal_patro_solar_event(
+            date_val, latitude, longitude, rise=True, timezone_name=timezone_name,
+        )
     if altitude is None:
         altitude = _default_altitude(latitude, longitude)
     result = default_engine.rise(
@@ -240,6 +248,10 @@ def calculate_sunset(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
+    if should_use_nepal_patro_sun(latitude, longitude, altitude=altitude):
+        return nepal_patro_solar_event(
+            date_val, latitude, longitude, rise=False, timezone_name=timezone_name,
+        )
     if altitude is None:
         altitude = _default_altitude(latitude, longitude)
     result = default_engine.set(
