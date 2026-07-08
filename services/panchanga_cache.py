@@ -29,7 +29,9 @@ logger = logging.getLogger(__name__)
 #     (was hardcoded to today's +5:45 for every date, mis-timing sunrise/
 #     sunset and every ephemeris value by 15 minutes for historical charts).
 # 13: solar_corrections.timezone_era label (KMT/IST/NPT) in cached payloads.
-CACHE_PAYLOAD_VERSION = 13
+# 14: Nepal patro sunrise/sunset — गौरीशंकर meridian (86°15′) + देशान्तर;
+#     fixes east/west ordering (e.g. Siraha before Kathmandu).
+CACHE_PAYLOAD_VERSION = 14
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

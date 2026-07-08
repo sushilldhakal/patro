@@ -5,8 +5,10 @@ from __future__ import annotations
 from datetime import date
 from zoneinfo import ZoneInfo
 
+from engine.astronomy.location import ObserverLocation
 from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset
 from engine.vedic.bikram_sambat import iter_bs_month_days
+from services.panchanga_api import build_year_sun_times
 
 KTM_TZ = ZoneInfo("Asia/Kathmandu")
 
@@ -40,6 +42,29 @@ def test_nepal_patro_kathmandu_matches_drik_1945():
     sunset = calculate_sunset(d, *KTM, timezone_name="Asia/Kathmandu").astimezone(KTM_TZ)
     assert sunrise.strftime("%H:%M") in {"06:31", "06:32", "06:33"}
     assert sunset.strftime("%H:%M") in {"17:07", "17:08", "17:09"}
+
+
+def test_year_sun_times_api_siraha_before_kathmandu():
+    """End-to-end year sun payload — the सूर्यक्रान्ति grid path."""
+    siraha = ObserverLocation(
+        lat=26.65422, lon=86.20795, timezone="Asia/Kathmandu", name="Siraha",
+    )
+    ktm = ObserverLocation(
+        lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu", name="Kathmandu",
+    )
+    siraha_payload = build_year_sun_times(2083, siraha)
+    ktm_payload = build_year_sun_times(2083, ktm)
+    ashadh = next(m for m in siraha_payload["months"] if m["month_bs"] == 3)
+    day_s = next(d for d in ashadh["calendar"] if d["day"] == 24)
+    day_k = next(
+        d for m in ktm_payload["months"] if m["month_bs"] == 3
+        for d in m["calendar"] if d["day"] == 24
+    )
+    assert day_s["sunrise"] < day_k["sunrise"], (
+        f"Siraha {day_s['sunrise']} should be before Kathmandu {day_k['sunrise']}"
+    )
+    assert day_s["sunrise"] == "05:06"
+    assert day_k["sunrise"] == "05:07"
 
 
 def test_east_west_ordering_across_nepal_2083_ashadh_24():
