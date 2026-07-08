@@ -46,29 +46,28 @@ router = APIRouter()
 _YEAR_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
 
 
-@router.get("/panchanga/year/{bs_year}")
-def panchanga_year(
+def _cached_year_response(
     bs_year: int,
-    location: LocationDep,
+    location,
     request: Request,
-    full: bool = Query(False, description="Include full daily state per day"),
-):
-    """Full BS year calendar — all months in one response.
+    *,
+    variant: str,
+    build,
+) -> Response:
+    """Serve a year payload from the gzipped disk cache, computing it once.
 
-    The serialized, gzipped response is cached on disk per (year, location,
-    variant): the first request computes (~30 s for an uncached year), every
-    later one streams the bytes back in milliseconds.
+    First request per (year, location, variant) computes and persists; every
+    later one streams the pre-compressed bytes back in milliseconds.
     """
     from services.year_cache import read_year_cache, write_year_cache
 
-    _validate_bs_year(bs_year)
-    compressed = read_year_cache(bs_year, location, full=full)
+    compressed = read_year_cache(bs_year, location, variant=variant)
     if compressed is None:
         try:
-            payload = build_year_calendar(bs_year, location, full=full)
+            payload = build()
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        compressed = write_year_cache(bs_year, location, payload, full=full)
+        compressed = write_year_cache(bs_year, location, payload, variant=variant)
 
     headers = {"Cache-Control": _YEAR_CACHE_CONTROL, "Vary": "Accept-Encoding"}
     if "gzip" in request.headers.get("accept-encoding", "").lower():
@@ -80,6 +79,43 @@ def panchanga_year(
         content=gzip.decompress(compressed),
         media_type="application/json",
         headers=headers,
+    )
+
+
+@router.get("/panchanga/year/{bs_year}/sun")
+def panchanga_year_sun_times(bs_year: int, location: LocationDep, request: Request):
+    """Sunrise/sunset/ayana for every day of a BS year — सूर्यक्रान्ति grid.
+
+    Purpose-built slim payload: a cold year computes in ~1 s (vs ~30 s for the
+    full year build); cached responses return in milliseconds.
+    """
+    from services.panchanga_api import build_year_sun_times
+
+    _validate_bs_year(bs_year)
+    return _cached_year_response(
+        bs_year,
+        location,
+        request,
+        variant="sun",
+        build=lambda: build_year_sun_times(bs_year, location),
+    )
+
+
+@router.get("/panchanga/year/{bs_year}")
+def panchanga_year(
+    bs_year: int,
+    location: LocationDep,
+    request: Request,
+    full: bool = Query(False, description="Include full daily state per day"),
+):
+    """Full BS year calendar — all months in one response."""
+    _validate_bs_year(bs_year)
+    return _cached_year_response(
+        bs_year,
+        location,
+        request,
+        variant="full" if full else "lite",
+        build=lambda: build_year_calendar(bs_year, location, full=full),
     )
 
 

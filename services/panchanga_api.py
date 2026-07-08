@@ -277,6 +277,65 @@ def build_month_calendar(
     }
 
 
+def build_year_sun_times(
+    bs_year: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Sunrise/sunset/ayana per day for a whole BS year.
+
+    The सूर्यक्रान्ति grid needs only these three facts per day, so this skips
+    the full panchanga build entirely: two rise/set searches plus one solar
+    longitude per day (~2 ms) instead of ~80 ms — a cold year computes in
+    about a second instead of ~30 s.
+    """
+    from engine.astronomy.positions import get_aayan
+    from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset
+    from engine.vedic.bikram_sambat import BS_MONTH_NAMES_NEPALI
+
+    tz = resolve_observer_timezone(location.timezone)
+    months: list[dict[str, Any]] = []
+
+    for bs_month in range(1, 13):
+        calendar: list[dict[str, Any]] = []
+        for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
+            sunrise_utc = calculate_sunrise(
+                greg, latitude=location.lat, longitude=location.lon,
+                timezone_name=location.timezone,
+            )
+            sunset_utc = calculate_sunset(
+                greg, latitude=location.lat, longitude=location.lon,
+                timezone_name=location.timezone,
+            )
+            aayan = get_aayan(sunrise_utc)
+            calendar.append(
+                {
+                    "day": bs_day,
+                    "date_ad": greg.isoformat(),
+                    "sunrise": sunrise_utc.astimezone(tz).strftime("%H:%M"),
+                    "sunset": sunset_utc.astimezone(tz).strftime("%H:%M"),
+                    "aayan": aayan.get("name"),
+                    "aayan_ne": aayan.get("name_ne"),
+                    "ayana_mark": ayana_kranti_mark(aayan),
+                }
+            )
+        months.append(
+            {
+                "month_bs": bs_month,
+                "month_name": bs_month_name(bs_month),
+                "month_name_ne": BS_MONTH_NAMES_NEPALI[bs_month - 1],
+                "month_start_ad": get_bs_month_start(bs_year, bs_month).isoformat(),
+                "month_length": get_bs_month_length(bs_year, bs_month),
+                "calendar": calendar,
+            }
+        )
+
+    return {
+        "year_bs": bs_year,
+        "location": location.as_dict(),
+        "months": months,
+    }
+
+
 def build_year_calendar(
     bs_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,

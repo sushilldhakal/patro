@@ -64,18 +64,23 @@ def _warm_year_response_cache() -> None:
     exists; without this warm, the first visitor after a deploy (or an engine
     version bump) would pay the ~30 s year build.
     """
-    from services.panchanga_api import build_year_calendar
+    from services.panchanga_api import build_year_calendar, build_year_sun_times
     from services.year_cache import read_year_cache, write_year_cache
 
     current_bs_year, _, _ = gregorian_to_bs(date.today())
-    for full in (True, False):
-        if read_year_cache(current_bs_year, DEFAULT_LOCATION, full=full) is not None:
+    builders = {
+        "full": lambda: build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=True),
+        "lite": lambda: build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=False),
+        "sun": lambda: build_year_sun_times(current_bs_year, DEFAULT_LOCATION),
+    }
+    for variant, build in builders.items():
+        if read_year_cache(current_bs_year, DEFAULT_LOCATION, variant=variant) is not None:
             continue
         try:
-            payload = build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=full)
-            write_year_cache(current_bs_year, DEFAULT_LOCATION, payload, full=full)
+            payload = build()
+            write_year_cache(current_bs_year, DEFAULT_LOCATION, payload, variant=variant)
             logger.info(
-                "Warmed year response cache for BS %s (full=%s)", current_bs_year, full
+                "Warmed year response cache for BS %s (%s)", current_bs_year, variant
             )
         except Exception:  # noqa: BLE001 — warm failure must not block startup
             logger.exception("Year response cache warm failed for BS %s", current_bs_year)

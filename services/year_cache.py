@@ -23,18 +23,18 @@ from services.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 YEAR_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "year"
 
 
-def year_cache_path(bs_year: int, location: ObserverLocation, *, full: bool) -> Path:
+def year_cache_path(bs_year: int, location: ObserverLocation, *, variant: str) -> Path:
+    """``variant`` names the payload shape: "full", "lite", "sun", ..."""
     location_key, _ = resolve_cache_keys(location)
     safe_key = location_key.replace("/", "_").replace(":", "_")
-    variant = "full" if full else "lite"
     return YEAR_CACHE_DIR / (
         f"year_v{CACHE_PAYLOAD_VERSION}_{bs_year}_{variant}_{safe_key}.json.gz"
     )
 
 
-def read_year_cache(bs_year: int, location: ObserverLocation, *, full: bool) -> bytes | None:
+def read_year_cache(bs_year: int, location: ObserverLocation, *, variant: str) -> bytes | None:
     """Gzipped JSON bytes for the year, or None when not yet computed."""
-    path = year_cache_path(bs_year, location, full=full)
+    path = year_cache_path(bs_year, location, variant=variant)
     try:
         return path.read_bytes()
     except FileNotFoundError:
@@ -46,10 +46,10 @@ def write_year_cache(
     location: ObserverLocation,
     payload: dict[str, Any],
     *,
-    full: bool,
+    variant: str,
 ) -> bytes:
     """Serialize + gzip the payload, persist atomically, return the bytes."""
-    path = year_cache_path(bs_year, location, full=full)
+    path = year_cache_path(bs_year, location, variant=variant)
     path.parent.mkdir(parents=True, exist_ok=True)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     compressed = gzip.compress(raw, compresslevel=6)
