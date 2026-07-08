@@ -16,8 +16,8 @@ source .venv/bin/activate
 pip install --upgrade pip -q
 pip install -r requirements.txt -q
 
-if [[ ! -f data/cities.db ]]; then
-  echo "==> Building cities.db (downloads GeoNames cities15000 if missing)"
+if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
+  echo "==> Building cities.db (GeoNames global + full Nepal coverage)"
   mkdir -p data
   python scripts/import_cities.py
 fi

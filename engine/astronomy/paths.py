@@ -16,6 +16,10 @@ def cities_source_path() -> Path:
     return DATA_DIR / "cities15000.txt"
 
 
+def cities_db_version_path() -> Path:
+    return DATA_DIR / "cities_db_version"
+
+
 def panchanga_db_path() -> Path:
     return DATA_DIR / "panchanga.db"
 

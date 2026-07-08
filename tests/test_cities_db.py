@@ -22,10 +22,22 @@ def test_resolve_kathmandu():
 
 
 def test_search_orders_by_population():
-    results = search_cities("Sydney", limit=5)
+    results = search_cities("Sydney", limit=5, country="AU")
     assert results
     assert results[0]["ascii_name"] == "Sydney"
     assert results[0]["country"] == "AU"
+
+
+def test_nepal_has_broad_city_coverage():
+    from services.cities_db import count_cities
+
+    assert count_cities(country="NP") >= 1000
+
+
+def test_search_nepal_village_by_name():
+    results = search_cities("Lamjung", limit=5, country="NP")
+    assert results
+    assert all(city["country"] == "NP" for city in results)
 
 
 def test_popular_cities_include_kathmandu():
