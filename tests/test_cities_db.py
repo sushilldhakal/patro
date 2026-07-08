@@ -87,3 +87,39 @@ def test_legacy_cities_schema_without_admin_columns(tmp_path, monkeypatch):
 
     results = cities_db.search_cities("Kath", country="NP", limit=3)
     assert results and results[0]["ascii_name"] == "Kathmandu"
+
+
+def test_kanchanpur_search_prefers_bhimdatta_sudurpashchim():
+    """'Kanchanpur' must not resolve to inland GeoNames villages near 81–87°E."""
+    results = search_cities("Kanchanpur", limit=5, country="NP")
+    assert results
+    top = results[0]
+    assert top["id"] == 1283095
+    assert abs(top["lon"] - 80.17715) < 0.01
+    assert "Bhimdatta" in top["ascii_name"]
+
+
+def test_kanyam_to_kanchanpur_deshaantar_is_about_31_minutes():
+    """Classical 4 min/° from Kanyam Jhapa (~88.09°) to Bhimdatta (~80.18°) ≈ 31.5 min."""
+    from zoneinfo import ZoneInfo
+
+    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.vedic.bikram_sambat import iter_bs_month_days
+
+    ktm = ZoneInfo("Asia/Kathmandu")
+    greg = next(g for d, g in iter_bs_month_days(2083, 3) if d == 24)
+    kanyam = resolve_city("Kanyam", country="NP")
+    kanchanpur = resolve_city("Kanchanpur", country="NP")
+    assert kanyam is not None and kanchanpur is not None
+    assert kanchanpur["id"] == 1283095
+
+    east = calculate_sunrise(
+        greg, kanyam["lat"], kanyam["lon"], timezone_name="Asia/Kathmandu",
+    ).astimezone(ktm)
+    west = calculate_sunrise(
+        greg, kanchanpur["lat"], kanchanpur["lon"], timezone_name="Asia/Kathmandu",
+    ).astimezone(ktm)
+    delta_min = (west - east).total_seconds() / 60.0
+    expected = (kanyam["lon"] - kanchanpur["lon"]) * 4.0
+    assert abs(delta_min - expected) < 0.05
+    assert 31.0 <= delta_min <= 32.5

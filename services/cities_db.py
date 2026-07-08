@@ -39,11 +39,33 @@ POPULAR_CITY_IDS = (
     1283621,   # Butwal, NP
     1283628,   # Nepalgunj, NP
     1283678,   # Lalitpur, NP
+    1283095,   # Bhimdatta (Kanchanpur HQ / Mahendranagar), Sudurpashchim
     1275339,   # Mumbai, IN
     1273294,   # Delhi, IN
     2147714,   # Sydney, AU
     5128581,   # New York, US
 )
+
+# GeoNames labels several small inland places "Kanchanpur", but Nepal users
+# almost always mean the far-western district HQ (Bhimdatta / Mahendranagar).
+# Wrong villages (~81–87°E) shrink देशान्तर from Jhapa to ~28 min instead of ~31.5.
+CITY_SEARCH_ALIASES: dict[str, tuple[str, ...]] = {
+    "kanchanpur": ("bhimdatta", "mahendranagar"),
+    "kañchanpur": ("bhimdatta", "mahendranagar"),
+    "कञ्चनपुर": ("bhimdatta", "mahendranagar"),
+    "mahendranagar": ("bhimdatta",),
+    "महेन्द्रनगर": ("bhimdatta",),
+}
+
+PREFERRED_CITY_IDS_BY_QUERY: dict[str, int] = {
+    "kanchanpur": 1283095,   # Bhimdatta, Sudurpashchim
+    "kañchanpur": 1283095,
+    "कञ्चनपुर": 1283095,
+    "mahendranagar": 1283095,
+    "महेन्द्रनगर": 1283095,
+    "bhimdatta": 1283095,
+    "भिमदत्त": 1283095,
+}
 
 _BASE_CITY_COLS = "id, name, ascii_name, lat, lon, country, population, timezone"
 
@@ -122,6 +144,7 @@ def search_cities(
     like = f"%{q}%"
     prefix = f"{q}%"
     exact = q.casefold()
+    preferred_id = PREFERRED_CITY_IDS_BY_QUERY.get(exact) or PREFERRED_CITY_IDS_BY_QUERY.get(q)
 
     where = "(ascii_name LIKE ? OR name LIKE ?)"
     where_params: list[Any] = [like, like]
@@ -161,7 +184,81 @@ def search_cities(
         """
         params = [*where_params, *order_params, limit]
         rows = conn.execute(sql, params).fetchall()
-    return [_row_to_dict(row) for row in rows]
+
+    results = [_row_to_dict(row) for row in rows]
+    results = _inject_alias_matches(results, query=q, country=country, limit=limit)
+    return _prefer_canonical_city(results, query=q, preferred_id=preferred_id, country=country)[:limit]
+
+
+def _inject_alias_matches(
+    results: list[dict[str, Any]],
+    *,
+    query: str,
+    country: str | None,
+    limit: int,
+) -> list[dict[str, Any]]:
+    exact = query.strip().casefold()
+    aliases = CITY_SEARCH_ALIASES.get(exact) or CITY_SEARCH_ALIASES.get(query.strip())
+    if not aliases:
+        return results
+
+    seen = {row["id"] for row in results}
+    extras: list[dict[str, Any]] = []
+    for alias in aliases:
+        like = f"%{alias}%"
+        with _connect() as conn:
+            select_cols = _city_select_sql(conn)
+            where = "(ascii_name LIKE ? OR name LIKE ? OR lower(ascii_name) = ?)"
+            params: list[Any] = [like, like, alias.casefold()]
+            if country:
+                where += " AND country = ?"
+                params.append(country.upper())
+            rows = conn.execute(
+                f"""
+                SELECT {select_cols}
+                FROM cities
+                WHERE {where}
+                ORDER BY population DESC
+                LIMIT 3
+                """,
+                params,
+            ).fetchall()
+        for row in rows:
+            item = _row_to_dict(row)
+            if item["id"] in seen:
+                continue
+            seen.add(item["id"])
+            extras.append(item)
+    if not extras:
+        return results
+    return extras + results
+
+
+def _prefer_canonical_city(
+    results: list[dict[str, Any]],
+    *,
+    query: str,
+    preferred_id: int | None,
+    country: str | None,
+) -> list[dict[str, Any]]:
+    if preferred_id is None:
+        return results
+    preferred = get_city_by_id(preferred_id)
+    if preferred is None:
+        return results
+    if country is not None and preferred["country"] != country.upper():
+        return results
+
+    exact = query.strip().casefold()
+    display = dict(preferred)
+    if exact in {"kanchanpur", "kañchanpur"} or query.strip() in {"कञ्चनपुर"}:
+        display["name"] = "कञ्चनपुर (भिमदत्त)"
+        display["ascii_name"] = "Kanchanpur (Bhimdatta)"
+    elif exact in {"mahendranagar"} or query.strip() in {"महेन्द्रनगर"}:
+        display["name"] = "महेन्द्रनगर (भिमदत्त)"
+        display["ascii_name"] = "Mahendranagar (Bhimdatta)"
+
+    return [display] + [row for row in results if row["id"] != preferred_id]
 
 
 def get_city_by_id(city_id: int) -> dict[str, Any] | None:
