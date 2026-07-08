@@ -31,7 +31,9 @@ logger = logging.getLogger(__name__)
 # 13: solar_corrections.timezone_era label (KMT/IST/NPT) in cached payloads.
 # 14: Nepal patro sunrise/sunset — गौरीशंकर meridian (86°15′) + देशान्तर;
 #     fixes east/west ordering (e.g. Siraha before Kathmandu).
-CACHE_PAYLOAD_VERSION = 14
+# 15: देशान्तर is longitude-only (fixed national latitude) so Jhapa→Kanchanpur
+#     spans ~31.5 min, not a latitude-compressed ~23 min.
+CACHE_PAYLOAD_VERSION = 15
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

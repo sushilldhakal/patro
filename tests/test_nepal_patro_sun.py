@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from zoneinfo import ZoneInfo
 
 from engine.astronomy.location import ObserverLocation
@@ -14,6 +14,10 @@ KTM_TZ = ZoneInfo("Asia/Kathmandu")
 
 KTM = (27.7172, 85.3240)
 SIRAHA = (26.6520, 86.2060)
+
+# झापा (चन्द्रगढी) २६°३५' / ८८°४' — कञ्चनपुर २८°५७' / ८०°११'
+JHAPA = (26 + 35 / 60, 88 + 4 / 60)
+KANCHANPUR = (28 + 57 / 60, 80 + 11 / 60)
 
 
 def _bs_gregorian(bs_year: int, bs_month: int, bs_day: int) -> date:
@@ -63,7 +67,8 @@ def test_year_sun_times_api_siraha_before_kathmandu():
     assert day_s["sunrise"] < day_k["sunrise"], (
         f"Siraha {day_s['sunrise']} should be before Kathmandu {day_k['sunrise']}"
     )
-    assert day_s["sunrise"] == "05:06"
+    # Siraha (~86.21°E) is slightly east of गौरीशंकर → a few minutes before Kathmandu.
+    assert day_s["sunrise"] == "05:04"
     assert day_k["sunrise"] == "05:07"
 
 
@@ -77,3 +82,18 @@ def test_east_west_ordering_across_nepal_2083_ashadh_24():
         greg, 28.7, 80.59, timezone_name="Asia/Kathmandu",
     ).astimezone(KTM_TZ)
     assert biratnagar < ktm < dhangadhi
+
+
+def test_jhapa_kanchanpur_deshaantar_gap_matches_longitude():
+    """Classical 4 min/° — झापा ८८°४' vs कञ्चनपुर ८०°११' ≈ 31.5 minutes."""
+    greg = _bs_gregorian(2083, 3, 24)
+    jhapa = calculate_sunrise(greg, *JHAPA, timezone_name="Asia/Kathmandu")
+    kanch = calculate_sunrise(greg, *KANCHANPUR, timezone_name="Asia/Kathmandu")
+    delta_min = (kanch - jhapa).total_seconds() / 60.0
+    expected = (JHAPA[1] - KANCHANPUR[1]) * 4.0
+    assert abs(delta_min - expected) < 0.05, (
+        f"gap {delta_min:.2f} min ≠ longitude×4 {expected:.2f} min "
+        f"(Jhapa {jhapa.astimezone(KTM_TZ).strftime('%H:%M')}, "
+        f"Kanchanpur {kanch.astimezone(KTM_TZ).strftime('%H:%M')})"
+    )
+    assert 31.0 <= delta_min <= 32.0
