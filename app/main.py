@@ -63,12 +63,17 @@ async def lifespan(app: FastAPI):
         pass
 
 
+_prefix = config.api_public_prefix()
+_openapi_url = f"{_prefix}/openapi.json" if _prefix else "/openapi.json"
+
 app = FastAPI(
     title="Surya Panchanga API",
     version="2.2.0",
     lifespan=lifespan,
     contact={"name": "Surya Panchanga", "url": "https://github.com/sushilldhakal/patro"},
     license_info={"name": "MIT"},
+    root_path=_prefix,
+    openapi_url=_openapi_url,
 )
 
 

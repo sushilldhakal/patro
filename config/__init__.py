@@ -22,6 +22,18 @@ def log_level() -> str:
     return os.getenv("LOG_LEVEL", "INFO").upper()
 
 
+def api_public_prefix() -> str:
+    """Browser-visible URL prefix when nginx proxies /api/* to this app.
+
+    Example: API_PUBLIC_PREFIX=/api so Swagger at /api/docs fetches /api/openapi.json
+    instead of /openapi.json (which the SPA would answer with index.html).
+    """
+    raw = (os.getenv("API_PUBLIC_PREFIX") or "").strip().rstrip("/")
+    if not raw:
+        return ""
+    return raw if raw.startswith("/") else f"/{raw}"
+
+
 # ─── Auth / database ───────────────────────────────────────────────────────────
 
 
