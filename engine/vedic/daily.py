@@ -45,6 +45,7 @@ from engine.vedic.names_ne import (
     to_nepali_digits,
 )
 from engine.vedic.nepal_sambat import gregorian_to_ns
+from engine.vedic.samvatsara import samvatsara_payload_for_bs_year
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.hora import build_hora
 from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
@@ -251,6 +252,7 @@ def build_daily_panchanga(
             "month_name": bs_month_name(bs_month),
             "month_name_ne": BS_MONTH_NAMES_NEPALI[bs_month - 1],
         },
+        "samvatsara": samvatsara_payload_for_bs_year(bs_year),
         "ns_date": ns_date,
         "location": location.as_dict(),
         "sunrise": sunrise_block,

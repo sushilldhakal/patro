@@ -19,6 +19,7 @@ from engine.vedic.bikram_sambat import (
     parse_bs_date,
     shaka_year,
 )
+from engine.vedic.samvatsara import samvatsara_payload_for_bs_year
 from engine.vedic.daily import get_daily_panchanga
 from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
@@ -395,6 +396,7 @@ def build_calendar_header(
         "lunar_month_is_adhik": lunar.get("is_adhik", False),
         "lunar_month_type": lunar.get("type"),
         "shaka_sambat": str(shaka_year(month_start)),
+        "samvatsara": samvatsara_payload_for_bs_year(bs_year),
         "nepal_sambat": ns_label,
         "nepal_sambat_detail": ns,
         "location": location.as_dict(),
