@@ -43,3 +43,47 @@ def test_search_nepal_village_by_name():
 def test_popular_cities_include_kathmandu():
     names = {c["ascii_name"] for c in get_popular_cities()}
     assert "Kathmandu" in names
+
+
+def test_legacy_cities_schema_without_admin_columns(tmp_path, monkeypatch):
+    """Older cities.db files must not break city_id lookups after a code deploy."""
+    import sqlite3
+
+    from engine.astronomy import paths
+    from services import cities_db
+
+    db_path = tmp_path / "cities.db"
+    conn = sqlite3.connect(db_path)
+    conn.execute(
+        """
+        CREATE TABLE cities (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            ascii_name TEXT NOT NULL,
+            lat REAL NOT NULL,
+            lon REAL NOT NULL,
+            country TEXT NOT NULL,
+            population INTEGER NOT NULL DEFAULT 0,
+            timezone TEXT
+        )
+        """
+    )
+    conn.execute(
+        """
+        INSERT INTO cities (id, name, ascii_name, lat, lon, country, population, timezone)
+        VALUES (1283240, 'Kathmandu', 'Kathmandu', 27.70169, 85.3206, 'NP', 1440000, 'Asia/Kathmandu')
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(paths, "cities_db_path", lambda: db_path)
+    monkeypatch.setattr(cities_db, "cities_db_path", lambda: db_path)
+
+    city = cities_db.get_city_by_id(1283240)
+    assert city is not None
+    assert city["timezone"] == "Asia/Kathmandu"
+    assert city["admin1"] is None
+
+    results = cities_db.search_cities("Kath", country="NP", limit=3)
+    assert results and results[0]["ascii_name"] == "Kathmandu"

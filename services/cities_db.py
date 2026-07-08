@@ -45,6 +45,29 @@ POPULAR_CITY_IDS = (
     5128581,   # New York, US
 )
 
+_BASE_CITY_COLS = "id, name, ascii_name, lat, lon, country, population, timezone"
+
+
+def _table_columns(conn: sqlite3.Connection) -> set[str]:
+    return {row[1] for row in conn.execute("PRAGMA table_info(cities)")}
+
+
+def _has_admin_columns(conn: sqlite3.Connection) -> bool:
+    cols = _table_columns(conn)
+    return "admin1" in cols and "admin1_name" in cols
+
+
+def _city_select_sql(conn: sqlite3.Connection) -> str:
+    if _has_admin_columns(conn):
+        return f"{_BASE_CITY_COLS}, admin1, admin1_name"
+    return _BASE_CITY_COLS
+
+
+def _search_group_by_sql(conn: sqlite3.Connection) -> str:
+    if _has_admin_columns(conn):
+        return "GROUP BY lower(ascii_name), country, COALESCE(admin1, '')"
+    return "GROUP BY lower(ascii_name), country"
+
 
 def _connect() -> sqlite3.Connection:
     db_path = cities_db_path()
@@ -68,6 +91,12 @@ def _geonames_urlretrieve(url: str, dest: Path) -> None:
 def needs_cities_reimport() -> bool:
     """True when cities.db is missing or built with an older import version."""
     if not cities_db_path().is_file():
+        return True
+    try:
+        with _connect() as conn:
+            if not _has_admin_columns(conn):
+                return True
+    except sqlite3.Error:
         return True
     version_path = cities_db_version_path()
     if not version_path.is_file():
@@ -106,43 +135,40 @@ def search_cities(
         priority_clause = "CASE WHEN country = ? THEN 0 ELSE 1 END,"
         order_params.append(prioritize_country.upper())
 
-    sql = f"""
-        SELECT id, name, ascii_name, lat, lon, country, population, timezone,
-               admin1, admin1_name
-        FROM (
-            SELECT id, name, ascii_name, lat, lon, country,
-                   MAX(population) AS population, timezone,
-                   admin1, admin1_name
-            FROM cities
-            WHERE {where}
-            GROUP BY lower(ascii_name), country, COALESCE(admin1, '')
-        )
-        ORDER BY
-            CASE
-                WHEN lower(ascii_name) = ? THEN 0
-                WHEN lower(name) = ? THEN 1
-                WHEN lower(ascii_name) LIKE ? THEN 2
-                WHEN lower(name) LIKE ? THEN 3
-                ELSE 4
-            END,
-            {priority_clause}
-            population DESC
-        LIMIT ?
-    """
-    params = [*where_params, *order_params, limit]
     with _connect() as conn:
+        select_cols = _city_select_sql(conn)
+        inner_cols = select_cols.replace("population", "MAX(population) AS population", 1)
+        group_by = _search_group_by_sql(conn)
+        sql = f"""
+            SELECT {select_cols}
+            FROM (
+                SELECT {inner_cols}
+                FROM cities
+                WHERE {where}
+                {group_by}
+            )
+            ORDER BY
+                CASE
+                    WHEN lower(ascii_name) = ? THEN 0
+                    WHEN lower(name) = ? THEN 1
+                    WHEN lower(ascii_name) LIKE ? THEN 2
+                    WHEN lower(name) LIKE ? THEN 3
+                    ELSE 4
+                END,
+                {priority_clause}
+                population DESC
+            LIMIT ?
+        """
+        params = [*where_params, *order_params, limit]
         rows = conn.execute(sql, params).fetchall()
     return [_row_to_dict(row) for row in rows]
 
 
 def get_city_by_id(city_id: int) -> dict[str, Any] | None:
     with _connect() as conn:
+        select_cols = _city_select_sql(conn)
         row = conn.execute(
-            """
-            SELECT id, name, ascii_name, lat, lon, country, population, timezone,
-                   admin1, admin1_name
-            FROM cities WHERE id = ?
-            """,
+            f"SELECT {select_cols} FROM cities WHERE id = ?",
             (city_id,),
         ).fetchone()
     return _row_to_dict(row) if row else None
@@ -157,10 +183,10 @@ def resolve_city(name: str, *, country: str | None = None) -> dict[str, Any] | N
 def get_popular_cities() -> list[dict[str, Any]]:
     placeholders = ",".join("?" for _ in POPULAR_CITY_IDS)
     with _connect() as conn:
+        select_cols = _city_select_sql(conn)
         rows = conn.execute(
             f"""
-            SELECT id, name, ascii_name, lat, lon, country, population, timezone,
-                   admin1, admin1_name
+            SELECT {select_cols}
             FROM cities
             WHERE id IN ({placeholders})
             ORDER BY population DESC
@@ -364,6 +390,7 @@ def import_cities(
 
 
 def _row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
+    keys = row.keys()
     return {
         "id": row["id"],
         "name": row["name"],
@@ -373,6 +400,6 @@ def _row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
         "country": row["country"],
         "population": row["population"],
         "timezone": row["timezone"],
-        "admin1": row["admin1"],
-        "admin1_name": row["admin1_name"],
+        "admin1": row["admin1"] if "admin1" in keys else None,
+        "admin1_name": row["admin1_name"] if "admin1_name" in keys else None,
     }
