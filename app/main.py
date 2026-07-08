@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 import config
 from services.startup import warm_holiday_cache
@@ -95,6 +96,10 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# JSON here compresses ~10×+ (full month: 1.17 MB → ~100 KB over the wire).
+# Skips responses that already set Content-Encoding (pre-gzipped year cache).
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 # ── routers ───────────────────────────────────────────────────────────────────
 

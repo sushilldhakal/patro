@@ -2,7 +2,9 @@ import calendar as _cal
 from datetime import date, timedelta
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException, Query
+import gzip
+
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
 
 from api.deps import (
@@ -48,15 +50,37 @@ _YEAR_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
 def panchanga_year(
     bs_year: int,
     location: LocationDep,
+    request: Request,
     full: bool = Query(False, description="Include full daily state per day"),
 ):
-    """Full BS year calendar — all months in one response."""
+    """Full BS year calendar — all months in one response.
+
+    The serialized, gzipped response is cached on disk per (year, location,
+    variant): the first request computes (~30 s for an uncached year), every
+    later one streams the bytes back in milliseconds.
+    """
+    from services.year_cache import read_year_cache, write_year_cache
+
     _validate_bs_year(bs_year)
-    try:
-        payload = build_year_calendar(bs_year, location, full=full)
-        return JSONResponse(content=payload, headers={"Cache-Control": _YEAR_CACHE_CONTROL})
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    compressed = read_year_cache(bs_year, location, full=full)
+    if compressed is None:
+        try:
+            payload = build_year_calendar(bs_year, location, full=full)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        compressed = write_year_cache(bs_year, location, payload, full=full)
+
+    headers = {"Cache-Control": _YEAR_CACHE_CONTROL, "Vary": "Accept-Encoding"}
+    if "gzip" in request.headers.get("accept-encoding", "").lower():
+        # Pre-compressed bytes straight from disk; GZipMiddleware skips
+        # responses that already carry Content-Encoding.
+        headers["Content-Encoding"] = "gzip"
+        return Response(content=compressed, media_type="application/json", headers=headers)
+    return Response(
+        content=gzip.decompress(compressed),
+        media_type="application/json",
+        headers=headers,
+    )
 
 
 @router.get("/panchanga/{bs_year}/{bs_month}")

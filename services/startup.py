@@ -53,4 +53,29 @@ def warm_holiday_cache() -> list[int]:
             start_year,
             end_year,
         )
+    _warm_year_response_cache()
     return generated
+
+
+def _warm_year_response_cache() -> None:
+    """Pre-build the year-page payload for the current BS year (Kathmandu).
+
+    /panchanga/year serves cached gzipped bytes in milliseconds once the file
+    exists; without this warm, the first visitor after a deploy (or an engine
+    version bump) would pay the ~30 s year build.
+    """
+    from services.panchanga_api import build_year_calendar
+    from services.year_cache import read_year_cache, write_year_cache
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    for full in (True, False):
+        if read_year_cache(current_bs_year, DEFAULT_LOCATION, full=full) is not None:
+            continue
+        try:
+            payload = build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=full)
+            write_year_cache(current_bs_year, DEFAULT_LOCATION, payload, full=full)
+            logger.info(
+                "Warmed year response cache for BS %s (full=%s)", current_bs_year, full
+            )
+        except Exception:  # noqa: BLE001 — warm failure must not block startup
+            logger.exception("Year response cache warm failed for BS %s", current_bs_year)
