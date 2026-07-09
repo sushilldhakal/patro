@@ -125,6 +125,7 @@ def build_daily_state(
         "solar_corrections": raw.get("solar_corrections"),
         "dinamaan": raw["dinamaan"]["label_en"],
         "muhurta":  raw.get("muhurta"),
+        "nivas_shool": raw.get("nivas_shool"),
         "location": raw["location"],
         "lunar_calendar": raw.get("lunar_calendar"),
         "lunar_month": raw.get("lunar_month"),

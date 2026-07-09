@@ -37,7 +37,8 @@ logger = logging.getLogger(__name__)
 #     days) so a skipped tithi's ending shows on the panchanga page.
 # 17: tithi/nakshatra/yoga/karana `*_local_time` are the observer's LOCAL wall
 #     clock (were UTC) — end times now render correctly on the panchanga page.
-CACHE_PAYLOAD_VERSION = 17
+# 18: nivas_shool block (homahuti, disha shool, agnivasa, etc.).
+CACHE_PAYLOAD_VERSION = 18
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
@@ -52,6 +53,7 @@ _REQUIRED_PAYLOAD_KEYS = (
     "choghadiya",
     "tarabala_table",
     "chandrabala_table",
+    "nivas_shool",
     # Rows cached before the samvatsara feature lack this key; requiring it
     # forces them to recompute so modern dates get their samvatsara label
     # (value may be None for pre-BS 1855 — the key must still be present).
