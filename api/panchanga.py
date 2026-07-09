@@ -161,11 +161,20 @@ def panchanga_day(
     detail: bool = Query(True, description="Include full computation detail block"),
 ):
     """Daily panchanga — single-day astronomical time-state."""
+    from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
+
     try:
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    return build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
+    payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
+            "CDN-Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
+        },
+    )
 
 
 @router.get("/festivals/bs/{bs_year}")

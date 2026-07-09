@@ -2,10 +2,11 @@ import json
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from api.deps import LocationDep
 from services.panchanga_api import build_kundali
+from services.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
 
 router = APIRouter(tags=["kundali"])
 
@@ -29,7 +30,14 @@ def panchanga_at_time(
             lon=location.lon,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
-        return build_panchanga_at_time(instant, location, ayanamsa=mode_id)
+        payload = build_panchanga_at_time(instant, location, ayanamsa=mode_id)
+        return JSONResponse(
+            content=payload,
+            headers={
+                "Cache-Control": AT_TIME_PANCHANGA_CACHE_CONTROL,
+                "CDN-Cache-Control": AT_TIME_PANCHANGA_CACHE_CONTROL,
+            },
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

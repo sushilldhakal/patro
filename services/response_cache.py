@@ -42,6 +42,16 @@ RESPONSE_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "respons
 # for up to the s-maxage window.
 DEFAULT_CACHE_CONTROL = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
 _LIVE_CACHE_CONTROL = "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+# Daily / at-time panchanga — short edge TTL so engine field additions (e.g. nivas_shool)
+# reach browsers within an hour without a manual Cloudflare purge.
+DAILY_PANCHANGA_CACHE_CONTROL = (
+    "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400"
+)
+_AT_TIME_PANCHANGA_CACHE_CONTROL = (
+    "public, max-age=60, s-maxage=300, stale-while-revalidate=3600"
+)
+# Public alias for API routes
+AT_TIME_PANCHANGA_CACHE_CONTROL = _AT_TIME_PANCHANGA_CACHE_CONTROL
 _IMMUTABLE_CACHE_CONTROL = (
     "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable"
 )
