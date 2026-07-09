@@ -21,8 +21,9 @@ from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.rashi_spans import get_surya_nakshatra
 from engine.vedic.tithi import calculate_tithi
 
-# Python weekday (Mon=0 … Sun=6) → disha shool index (0=E, 1=W, 2=N, 3=S)
-_DISHA_SHOOLA_MAP = [0, 3, 2, 3, 1, 0, 1]
+# Python weekday (Mon=0 … Sun=6) → disha shool index (0=E, 1=W, 2=N, 3=S).
+# Mon=E, Tue=N, Wed=N, Thu=S, Fri=W, Sat=E, Sun=W (DrikPanchang convention).
+_DISHA_SHOOLA_MAP = [0, 2, 2, 3, 1, 0, 1]
 
 # Python weekday → Vedic vaara (1=Ravi … 7=Shani) for Agnivasa
 _PY_TO_VAARA = {6: 1, 0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7}
@@ -33,6 +34,24 @@ _DIRECTIONS = (
     {"key": "N", "name_en": "North", "name_ne": "उत्तर"},
     {"key": "S", "name_en": "South", "name_ne": "दक्षिण"},
 )
+
+# Rahu Vasa is a distinct 8-direction weekday cycle (NOT the Disha Shool set):
+# starting Sunday = North it rotates N → NW → W → SW → S → SE → E across the
+# week, using intercardinal points too (DrikPanchang / Muhurta convention).
+# Keyed by Python weekday (Mon=0 … Sun=6).
+_RAHU_VASA_BY_PY_WEEKDAY = {
+    0: {"direction_key": "NW", "name_en": "North-West", "name_ne": "वायव्य"},   # Monday
+    1: {"direction_key": "W", "name_en": "West", "name_ne": "पश्चिम"},          # Tuesday
+    2: {"direction_key": "SW", "name_en": "South-West", "name_ne": "नैऋत्य"},   # Wednesday
+    3: {"direction_key": "S", "name_en": "South", "name_ne": "दक्षिण"},         # Thursday
+    4: {"direction_key": "SE", "name_en": "South-East", "name_ne": "आग्नेय"},   # Friday
+    5: {"direction_key": "E", "name_en": "East", "name_ne": "पूर्व"},           # Saturday
+    6: {"direction_key": "N", "name_en": "North", "name_ne": "उत्तर"},          # Sunday
+}
+
+
+def _rahu_vasa(weekday_py: int) -> dict[str, Any]:
+    return dict(_RAHU_VASA_BY_PY_WEEKDAY[weekday_py % 7])
 
 _AGNIVASA = (
     {"name_en": "Prithvi", "name_ne": "पृथ्वी", "subtitle_en": "Earth", "subtitle_ne": "भूमि", "is_auspicious": True},
@@ -367,7 +386,7 @@ def build_nivas_shool_block(
             "segments": homahuti_segments,
         },
         "disha_shool": disha,
-        "rahu_vasa": _direction(_DISHA_SHOOLA_MAP[weekday_py % 7]),
+        "rahu_vasa": _rahu_vasa(weekday_py),
         "agnivasa": {
             "current": agnivasa_segments[0] if agnivasa_segments else agni_at(sunrise_dt),
             "segments": agnivasa_segments,

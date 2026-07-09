@@ -38,7 +38,10 @@ logger = logging.getLogger(__name__)
 # 17: tithi/nakshatra/yoga/karana `*_local_time` are the observer's LOCAL wall
 #     clock (were UTC) — end times now render correctly on the panchanga page.
 # 18: nivas_shool block (homahuti, disha shool, agnivasa, etc.).
-CACHE_PAYLOAD_VERSION = 18
+# 19: fix disha shool (Tue=North) + Rahu Vasa now a distinct 8-direction weekday
+#     cycle (was mistakenly a copy of disha shool).
+# 20: extended muhurta timings (amrit kalam, varjyam, sandhya, dur muhurtam, etc.).
+CACHE_PAYLOAD_VERSION = 20
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

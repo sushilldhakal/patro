@@ -15,6 +15,7 @@ from engine.astronomy.positions import (
     get_karana,
     get_moon_longitude,
     get_nakshatra,
+    get_sun_longitude,
     get_tithi_angle,
     get_yoga,
 )
@@ -179,6 +180,15 @@ def find_nakshatra_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
         return get_moon_longitude(moment)
 
     return _find_span_end(dt, get_index, NAKSHATRA_SPAN, get_value)
+
+
+def find_sun_nakshatra_end(dt: datetime) -> datetime:
+    def get_index(moment: datetime) -> int:
+        sun_long = get_sun_longitude(moment)
+        nak_num = int(sun_long / NAKSHATRA_SPAN) + 1
+        return 1 if nak_num > 27 else nak_num
+
+    return _find_span_end(dt, get_index, NAKSHATRA_SPAN, get_sun_longitude)
 
 
 def find_yoga_end(dt: datetime, ayanamsa: int | None = None) -> datetime:

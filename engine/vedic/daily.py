@@ -38,6 +38,7 @@ from engine.vedic.rashi_spans import (
 )
 from engine.vedic.lunar_month import get_lunar_calendar_layers, merge_lunar_month_for_day
 from engine.vedic.muhurta import build_muhurta_block
+from engine.vedic.muhurta_timings import enrich_muhurta_block
 from engine.vedic.nivas_shool import build_nivas_shool_block
 from engine.vedic.names_ne import (
     PAKSHA_NAMES_NE,
@@ -189,6 +190,17 @@ def build_daily_panchanga(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
+    weekday_py = sunrise_utc.astimezone(resolve_observer_timezone(location.timezone)).weekday()
+    muhurta = enrich_muhurta_block(
+        muhurta,
+        sunrise_utc=sunrise_utc,
+        sunset_utc=sunset_utc,
+        next_sunrise_utc=next_sunrise_utc,
+        vaara_index=vaara_num,
+        weekday_py=weekday_py,
+        timezone_name=location.timezone,
+        tithi_info=tithi_info,
+    )
     ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
     ritu_pauranik = get_ritu(
         sunrise_utc,
@@ -230,7 +242,6 @@ def build_daily_panchanga(
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
     panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num)
     udaya_lagna = build_udaya_lagna(lagna_spans)
-    weekday_py = sunrise_utc.astimezone(resolve_observer_timezone(location.timezone)).weekday()
     nivas_shool = build_nivas_shool_block(
         sunrise_utc,
         next_sunrise_utc,

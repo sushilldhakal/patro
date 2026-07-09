@@ -48,3 +48,34 @@ def test_nivas_shool_jul_9_2026_kathmandu():
     assert bhadra["active"] is True
     assert bhadra["segments"][0]["loka"] == "swarga"
     assert bhadra["segments"][0]["start_local_time_short"].startswith("21:")
+
+
+# DrikPanchang (Kathmandu) weekday tables. Disha Shool and Rahu Vasa are distinct:
+# Rahu Vasa is an 8-direction cycle and only coincides with Disha Shool on Thursday.
+_WEEK = {
+    date(2026, 7, 6): ("Monday", "E", "NW"),
+    date(2026, 7, 7): ("Tuesday", "N", "W"),
+    date(2026, 7, 8): ("Wednesday", "N", "SW"),
+    date(2026, 7, 9): ("Thursday", "S", "S"),
+    date(2026, 7, 10): ("Friday", "W", "SE"),
+    date(2026, 7, 11): ("Saturday", "E", "E"),
+    date(2026, 7, 12): ("Sunday", "W", "N"),
+}
+
+
+def test_disha_shool_and_rahu_vasa_weekday_tables():
+    for day, (label, disha_key, rahu_key) in _WEEK.items():
+        ns = build_daily_panchanga(day, DEFAULT_LOCATION)["nivas_shool"]
+        assert ns["disha_shool"]["direction_key"] == disha_key, f"disha shool {label}"
+        assert ns["rahu_vasa"]["direction_key"] == rahu_key, f"rahu vasa {label}"
+
+
+def test_rahu_vasa_is_not_a_copy_of_disha_shool():
+    # Regression guard: the two were once identical (Rahu Vasa reused the Disha
+    # Shool map). They must differ on at least the non-Thursday weekdays.
+    differ = 0
+    for day in _WEEK:
+        ns = build_daily_panchanga(day, DEFAULT_LOCATION)["nivas_shool"]
+        if ns["disha_shool"]["direction_key"] != ns["rahu_vasa"]["direction_key"]:
+            differ += 1
+    assert differ >= 5
