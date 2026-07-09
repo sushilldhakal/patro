@@ -28,8 +28,37 @@ from services.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 RESPONSE_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "response"
 
 # Deterministic panchanga for a fixed input is immutable until the engine
-# changes; let browsers/Cloudflare cache it too.
-DEFAULT_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
+# changes; let browsers (max-age) and shared/CDN caches (s-maxage) hold it too.
+#
+# Two profiles:
+#   * LIVE     — current & future BS years; edge holds 1 day so tweaks and the
+#                current day's data propagate quickly.
+#   * IMMUTABLE — past BS years; the payload never changes for a given URL until
+#                the engine version bumps, so the edge may hold it for a year.
+#
+# IMPORTANT: cache keys embed CACHE_PAYLOAD_VERSION but the *URL* does not, so an
+# engine bump does NOT change the public URL. Purge the CDN (Cloudflare) cache on
+# deploys that bump the engine, otherwise the edge keeps serving pre-bump JSON
+# for up to the s-maxage window.
+DEFAULT_CACHE_CONTROL = "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800"
+_LIVE_CACHE_CONTROL = "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+_IMMUTABLE_CACHE_CONTROL = (
+    "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable"
+)
+
+
+def bs_year_cache_control(bs_year: int) -> str:
+    """Edge cache directive tuned to whether ``bs_year`` is historical or live.
+
+    Past years are immutable (long CDN TTL); the current and future years get a
+    shorter edge TTL so refinements and the live day surface within a day.
+    """
+    from datetime import date
+
+    from engine.vedic.bikram_sambat import gregorian_to_bs
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    return _IMMUTABLE_CACHE_CONTROL if bs_year < current_bs_year else _LIVE_CACHE_CONTROL
 
 
 def location_cache_key(location: ObserverLocation) -> str:
@@ -76,7 +105,13 @@ def serve_cached_json(
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         compressed = write_cached_bytes(cache_key, payload)
 
-    headers = {"Cache-Control": cache_control, "Vary": "Accept-Encoding"}
+    headers = {
+        "Cache-Control": cache_control,
+        # Cloudflare and other CDNs honour CDN-Cache-Control over Cache-Control,
+        # letting the edge cache aggressively while browsers follow max-age.
+        "CDN-Cache-Control": cache_control,
+        "Vary": "Accept-Encoding",
+    }
     if "gzip" in request.headers.get("accept-encoding", "").lower():
         # Pre-compressed bytes straight from disk; GZipMiddleware skips
         # responses that already carry Content-Encoding.

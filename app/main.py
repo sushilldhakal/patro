@@ -101,15 +101,36 @@ app.add_middleware(
 # Skips responses that already set Content-Encoding (pre-gzipped year cache).
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 
+# User-specific routes must never be cached by a shared/CDN cache (Cloudflare),
+# even if a broad cache rule is applied to /api/*. Public panchanga endpoints opt
+# in explicitly via their own Cache-Control; everything under these prefixes is
+# forced private so tokens and per-user data can't leak from the edge.
+_PRIVATE_CACHE_MARKERS = ("/auth", "/profiles")
+
+
+@app.middleware("http")
+async def _guard_private_cache(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if any(marker in path for marker in _PRIVATE_CACHE_MARKERS):
+        response.headers["Cache-Control"] = "private, no-store"
+        response.headers["CDN-Cache-Control"] = "private, no-store"
+    return response
+
 # ── routers ───────────────────────────────────────────────────────────────────
 
 from api import cities, kundali, meta, panchanga, patro  # noqa: E402
 
+# Public data routes are versioned (…/api/v1/…) so an engine bump can rev the
+# version and the CDN treats it as a fresh object — no purge. /health and /about
+# stay unversioned so uptime/load-balancer probes keep hitting /api/health.
+_version_prefix = f"/{config.api_version()}"
+
 app.include_router(meta.router)
-app.include_router(cities.router)
-app.include_router(kundali.router)
-app.include_router(panchanga.router)
-app.include_router(patro.router)
+app.include_router(cities.router, prefix=_version_prefix)
+app.include_router(kundali.router, prefix=_version_prefix)
+app.include_router(panchanga.router, prefix=_version_prefix)
+app.include_router(patro.router, prefix=_version_prefix)
 
 if config.database_url():
     from app.routers import auth as auth_router

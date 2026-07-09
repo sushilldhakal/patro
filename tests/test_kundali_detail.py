@@ -13,7 +13,7 @@ from engine.vedic.kundali_detail import build_kundali_detail
 def test_kundali_detail_endpoint():
     client = TestClient(app)
     resp = client.get(
-        "/kundali/detail",
+        "/v1/kundali/detail",
         params={
             "datetime": "1993-06-12T10:30:00",
             "ayanamsha": "nepal",
@@ -359,7 +359,7 @@ def test_kundali_report_streams_ndjson():
     """Regression: the report endpoint previously crashed on the ayanamsa arg."""
     client = TestClient(app)
     resp = client.get(
-        "/kundali/report",
+        "/v1/kundali/report",
         params={
             "datetime": "1993-06-12T10:30:00",
             "ayanamsha": "nepal",
@@ -392,11 +392,11 @@ def test_kundali_report_served_from_cache_on_repeat(tmp_path, monkeypatch):
     }
     client = TestClient(app)
 
-    first = client.get("/kundali/report", params=params)
+    first = client.get("/v1/kundali/report", params=params)
     assert first.status_code == 200
     assert first.headers.get("X-Report-Cache") == "miss"
 
-    second = client.get("/kundali/report", params=params)
+    second = client.get("/v1/kundali/report", params=params)
     assert second.status_code == 200
     assert second.headers.get("X-Report-Cache") == "hit"
     assert second.text == first.text
@@ -406,7 +406,7 @@ def test_kundali_report_nepali_localization():
     """Nepali lang should translate planets, rashis, and meta disclaimer."""
     client = TestClient(app)
     resp = client.get(
-        "/kundali/report",
+        "/v1/kundali/report",
         params={
             "datetime": "1993-06-12T10:30:00",
             "ayanamsha": "nepal",
@@ -456,7 +456,7 @@ def test_kundali_report_force_bypasses_cache(tmp_path, monkeypatch):
         "timezone": "Asia/Kathmandu",
     }
     client = TestClient(app)
-    client.get("/kundali/report", params=params)
-    forced = client.get("/kundali/report", params={**params, "force": "true"})
+    client.get("/v1/kundali/report", params=params)
+    forced = client.get("/v1/kundali/report", params={**params, "force": "true"})
     assert forced.status_code == 200
     assert forced.headers.get("X-Report-Cache") == "miss"

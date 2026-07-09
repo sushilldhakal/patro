@@ -34,6 +34,18 @@ def api_public_prefix() -> str:
     return raw if raw.startswith("/") else f"/{raw}"
 
 
+def api_version() -> str:
+    """URL version segment for public, cacheable data endpoints (default "v1").
+
+    Public data routes are mounted under this segment (…/api/v1/panchanga/…) so a
+    backend engine change can bump the version (v1 → v2), which the CDN sees as a
+    brand-new object — no Cloudflare purge needed. Auth/profile routes stay
+    unversioned and are never edge-cached.
+    """
+    raw = (os.getenv("API_VERSION") or "v1").strip().strip("/")
+    return raw or "v1"
+
+
 # ─── Auth / database ───────────────────────────────────────────────────────────
 
 

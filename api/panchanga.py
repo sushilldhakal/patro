@@ -41,10 +41,6 @@ from services.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
 
-# Panchanga for a fixed BS year + location is immutable until engine/rules change.
-# Browsers and Cloudflare (when proxied) may cache this response.
-_YEAR_CACHE_CONTROL = "public, max-age=86400, stale-while-revalidate=604800"
-
 
 def _cached_year_response(
     bs_year: int,
@@ -57,8 +53,10 @@ def _cached_year_response(
     """Serve a year payload from the gzipped disk cache, computing it once.
 
     First request per (year, location, variant) computes and persists; every
-    later one streams the pre-compressed bytes back in milliseconds.
+    later one streams the pre-compressed bytes back in milliseconds. Past years
+    are served with an immutable long CDN TTL; the live year gets a short one.
     """
+    from services.response_cache import bs_year_cache_control
     from services.year_cache import read_year_cache, write_year_cache
 
     compressed = read_year_cache(bs_year, location, variant=variant)
@@ -69,7 +67,12 @@ def _cached_year_response(
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         compressed = write_year_cache(bs_year, location, payload, variant=variant)
 
-    headers = {"Cache-Control": _YEAR_CACHE_CONTROL, "Vary": "Accept-Encoding"}
+    cache_control = bs_year_cache_control(bs_year)
+    headers = {
+        "Cache-Control": cache_control,
+        "CDN-Cache-Control": cache_control,
+        "Vary": "Accept-Encoding",
+    }
     if "gzip" in request.headers.get("accept-encoding", "").lower():
         # Pre-compressed bytes straight from disk; GZipMiddleware skips
         # responses that already carry Content-Encoding.
@@ -134,7 +137,7 @@ def panchanga_month(
     gzip response cache; the first request computes (~0.8 s cold), later ones
     stream back in milliseconds.
     """
-    from services.response_cache import location_cache_key, serve_cached_json
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
@@ -146,7 +149,7 @@ def panchanga_month(
             return build_month_calendar_at_clock(bs_year, bs_month, location, clock, full=full)
         return build_month_calendar(bs_year, bs_month, location, full=full)
 
-    return serve_cached_json(request, key, build)
+    return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_year))
 
 
 @router.get("/panchanga/{date_key}")

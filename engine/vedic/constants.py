@@ -9,7 +9,7 @@ The Bikram Sambat calendar is Nepal's official calendar. It is a solar
 calendar but with month lengths that vary by year in a non-formulaic way.
 Therefore, we use a lookup table approach for accurate conversion.
 
-Coverage: 2000-2099 BS official lookup; 1700-1999 and 2100-2200 sankranti estimated.
+Coverage: 2000-2099 BS official lookup; BS 60-1999 and 2100-3000 sankranti estimated.
 
 Important: static lookup coverage is not the same as structured official
 provenance. See app.calendar.provenance for the source-backed ranges.
@@ -182,9 +182,21 @@ BS_MONTH_LENGTHS: dict[int, list[int]] = {
 BS_MIN_YEAR = min(BS_MONTH_LENGTHS.keys())
 BS_MAX_YEAR = max(BS_MONTH_LENGTHS.keys())
 
-# Full supported range: sankranti estimation outside official lookup
-BS_ESTIMATED_MIN_YEAR = 1700
-BS_SUPPORTED_MAX_YEAR = 2200
+# Full supported range: sankranti estimation outside the official lookup table.
+# The engine computes any year on-demand via Swiss Ephemeris; the disk cache
+# keeps repeat requests in the millisecond range, so a wide range is cheap.
+#
+# Floor is BS 60, not 0: the estimator maps a BS month to Gregorian year
+# ``bs_year - 57`` and searches a window ~15 days earlier, so BS < 60 would
+# cross into Gregorian year 0, which Python's ``datetime`` (min year 1) cannot
+# represent. BS 60 (≈ 3 CE) is the lowest year that reliably computes a full
+# year. Ceiling is BS 3000 (≈ 2943 CE), well inside Swiss Ephemeris' range.
+#
+# Caveat for very old dates: before ~1582 CE the Julian/Gregorian split and the
+# absence of modern time zones make local-solar reckoning approximate; treat
+# pre-1582 output as best-effort historical estimation, not civil record.
+BS_ESTIMATED_MIN_YEAR = 60
+BS_SUPPORTED_MAX_YEAR = 3000
 
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD
 BS_REFERENCE_START = date(2025, 4, 14)

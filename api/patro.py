@@ -16,14 +16,15 @@ router = APIRouter()
 @router.get("/nepal/gochar/year/{bs_year}")
 def nepal_gochar_year(bs_year: int, location: LocationDep, request: Request):
     """Yearly Gochar summary — slow-graha transit timeline + monthly rashi snapshots."""
-    from services.response_cache import location_cache_key, serve_cached_json
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     from engine.vedic.gochar import build_gochar_year_summary
 
     key = f"gocharyear_{bs_year}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_gochar_year_summary(bs_year, location)
+        request, key, lambda: build_gochar_year_summary(bs_year, location),
+        cache_control=bs_year_cache_control(bs_year),
     )
 
 
@@ -38,7 +39,7 @@ def nepal_patro_grid(
     output: Literal["json", "text"] = Query("json"),
 ):
     """Printable Surya-style monthly Patro grid or linear dayblock stream."""
-    from services.response_cache import location_cache_key, serve_cached_json
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
@@ -61,7 +62,7 @@ def nepal_patro_grid(
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     key = f"npatro_{bs_year}_{bs_month}_{format}_{locale}_{location_cache_key(location)}"
-    return serve_cached_json(request, key, build_payload)
+    return serve_cached_json(request, key, build_payload, cache_control=bs_year_cache_control(bs_year))
 
 
 @router.get("/nepal/patro/{bs_year}/{bs_month}/legacy")
@@ -226,7 +227,7 @@ def nepal_gochar(
 def patro_month_legacy(
     bs_year: int, bs_month: int, location: LocationDep, request: Request, panchanga: bool = Query(True)
 ):
-    from services.response_cache import location_cache_key, serve_cached_json
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
@@ -235,15 +236,17 @@ def patro_month_legacy(
         request,
         key,
         lambda: generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga),
+        cache_control=bs_year_cache_control(bs_year),
     )
 
 
 @router.get("/patro/{bs_year}")
 def patro_year_legacy(bs_year: int, location: LocationDep, request: Request, panchanga: bool = Query(True)):
-    from services.response_cache import location_cache_key, serve_cached_json
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     key = f"patroyear_{bs_year}_{int(panchanga)}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: generate_patro(bs_year, location, include_panchanga=panchanga)
+        request, key, lambda: generate_patro(bs_year, location, include_panchanga=panchanga),
+        cache_control=bs_year_cache_control(bs_year),
     )

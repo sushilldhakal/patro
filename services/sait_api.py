@@ -8,11 +8,16 @@ from pathlib import Path
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
 from services.sait_generator import get_generated_sait
 
 ROOT = Path(__file__).resolve().parents[1]
 SAIT_RULES_PATH = ROOT / "rules" / "sait_dates_v1.json"
+
+# Sait (auspicious-date) listings drive a year picker for ceremony planning, so
+# they keep a practical window rather than the full engine range (BS 60–3000).
+# Individual years outside this window still compute on /nepal/sait/{year}/....
+SAIT_LIST_MIN_YEAR = 1700
+SAIT_LIST_MAX_YEAR = 2200
 
 BS_MONTHS_NE = [
     "वैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज",
@@ -47,8 +52,8 @@ def list_sait_categories() -> list[dict[str, str | bool]]:
 
 
 def list_sait_years() -> list[int]:
-    """All BS years supported by the computed engine (1700–2200)."""
-    return list(range(BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR + 1))
+    """Practical BS-year window for the sait picker (1700–2200)."""
+    return list(range(SAIT_LIST_MIN_YEAR, SAIT_LIST_MAX_YEAR + 1))
 
 
 def _static_month_entries(bs_year: int, category: str) -> dict[str, list[int]] | None:

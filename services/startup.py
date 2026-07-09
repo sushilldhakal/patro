@@ -29,7 +29,9 @@ def resolve_precompute_years() -> tuple[int, int]:
         return years[0], years[-1]
 
     current_bs_year, _, _ = gregorian_to_bs(date.today())
-    span = max(int(os.environ.get("PRECOMPUTE_BS_SPAN", "1")), 0)
+    # ±3 → 7 popular years (last few + next few): previous-year lookups, wedding
+    # planning, festival research, next-year calendar — without a heavy cold start.
+    span = max(int(os.environ.get("PRECOMPUTE_BS_SPAN", "3")), 0)
     return current_bs_year - span, current_bs_year + span
 
 
@@ -58,29 +60,32 @@ def warm_holiday_cache() -> list[int]:
 
 
 def _warm_year_response_cache() -> None:
-    """Pre-build the year-page payload for the current BS year (Kathmandu).
+    """Pre-build the year-page payloads for the popular BS years (Kathmandu).
 
     /panchanga/year serves cached gzipped bytes in milliseconds once the file
     exists; without this warm, the first visitor after a deploy (or an engine
-    version bump) would pay the ~30 s year build.
+    version bump) would pay the ~30 s year build. We only pre-warm the popular
+    window (current year ± PRECOMPUTE_BS_SPAN) — every other year is computed
+    on-demand and cached on first request. Skip-existing keeps this cheap on
+    persistent hosts (warmed once) while ephemeral hosts should keep the span
+    small to avoid a heavy cold start.
     """
     from services.panchanga_api import build_year_calendar, build_year_sun_times
     from services.year_cache import read_year_cache, write_year_cache
 
-    current_bs_year, _, _ = gregorian_to_bs(date.today())
-    builders = {
-        "full": lambda: build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=True),
-        "lite": lambda: build_year_calendar(current_bs_year, DEFAULT_LOCATION, full=False),
-        "sun": lambda: build_year_sun_times(current_bs_year, DEFAULT_LOCATION),
-    }
-    for variant, build in builders.items():
-        if read_year_cache(current_bs_year, DEFAULT_LOCATION, variant=variant) is not None:
-            continue
-        try:
-            payload = build()
-            write_year_cache(current_bs_year, DEFAULT_LOCATION, payload, variant=variant)
-            logger.info(
-                "Warmed year response cache for BS %s (%s)", current_bs_year, variant
-            )
-        except Exception:  # noqa: BLE001 — warm failure must not block startup
-            logger.exception("Year response cache warm failed for BS %s", current_bs_year)
+    start_year, end_year = resolve_precompute_years()
+    for bs_year in range(start_year, end_year + 1):
+        builders = {
+            "full": lambda y=bs_year: build_year_calendar(y, DEFAULT_LOCATION, full=True),
+            "lite": lambda y=bs_year: build_year_calendar(y, DEFAULT_LOCATION, full=False),
+            "sun": lambda y=bs_year: build_year_sun_times(y, DEFAULT_LOCATION),
+        }
+        for variant, build in builders.items():
+            if read_year_cache(bs_year, DEFAULT_LOCATION, variant=variant) is not None:
+                continue
+            try:
+                payload = build()
+                write_year_cache(bs_year, DEFAULT_LOCATION, payload, variant=variant)
+                logger.info("Warmed year response cache for BS %s (%s)", bs_year, variant)
+            except Exception:  # noqa: BLE001 — warm failure must not block startup
+                logger.exception("Year response cache warm failed for BS %s", bs_year)
