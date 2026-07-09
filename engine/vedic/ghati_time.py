@@ -13,15 +13,19 @@ def seconds_to_ghadi_pala(total_seconds: float) -> dict:
     vipala = int((remaining % 24) * (60 / 24))
     hours = int(total_seconds // 3600)
     minutes = int((total_seconds % 3600) // 60)
+    seconds = int(total_seconds % 60)
     return {
         "ghadi": ghadi,
         "pala": pala,
         "vipala": vipala,
         "hours": hours,
         "minutes": minutes,
+        "seconds": seconds,
         "total_minutes": round(total_seconds / 60),
         "label_ne": f"{ghadi} घडी {pala} पला",
         "label_en": f"{hours}hr {minutes}min",
+        "label_en_full": f"{hours} Hours {minutes} Mins {seconds:02d} Secs",
+        "label_ne_full": f"{hours} घण्टा {minutes} मिनेट {seconds:02d} सेकेन्ड",
     }
 
 

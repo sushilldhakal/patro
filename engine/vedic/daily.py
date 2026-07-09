@@ -188,6 +188,21 @@ def build_daily_panchanga(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
+    ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
+    ritu_pauranik = get_ritu(
+        sunrise_utc,
+        sidereal=True,
+        lat=location.lat,
+        timezone_name=location.timezone,
+    )
+    ritu_vedic = get_ritu(
+        sunrise_utc,
+        sidereal=False,
+        lat=location.lat,
+        timezone_name=location.timezone,
+    )
+    aayan_pauranik = get_aayan(sunrise_utc, sidereal=True)
+    aayan_vedic = get_aayan(sunrise_utc, sidereal=False)
     lagna_spans = build_lagna_spans(
         sunrise_utc,
         next_sunrise_utc,
@@ -264,11 +279,18 @@ def build_daily_panchanga(
         "moonrise": _time_block(moonrise_utc, location.timezone),
         "moonset": _time_block(moonset_utc, location.timezone),
         "dinamaan": dinamaan,
+        "ratrimana": ratrimana,
+        "madhyahna": _time_block(
+            sunrise_utc + (sunset_utc - sunrise_utc) / 2,
+            location.timezone,
+        ),
         "lahiri_ayanamsa": {
             "name": "Lahiri",
             "degrees": round(lahiri_ayanamsa, 6),
         },
-        "aayan": get_aayan(sunrise_utc),
+        "aayan": aayan_pauranik,
+        "aayan_pauranik": aayan_pauranik,
+        "aayan_vedic": aayan_vedic,
         "vaara": {
             "number": vaara_num,
             "name_sanskrit": vaara_sanskrit,
@@ -285,11 +307,9 @@ def build_daily_panchanga(
         "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": get_surya_rashi(sunrise_utc),
         "surya_nakshatra": surya_nakshatra,
-        "ritu": get_ritu(
-            sunrise_utc,
-            lat=location.lat,
-            timezone_name=location.timezone,
-        ),
+        "ritu": ritu_pauranik,
+        "ritu_pauranik": ritu_pauranik,
+        "ritu_vedic": ritu_vedic,
         "lunar_month": lunar,
         "lunar_calendar": get_lunar_calendar_layers(target, paksha),
         "planets": get_all_planetary_positions(sunrise_utc),
