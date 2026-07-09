@@ -25,8 +25,17 @@ def seconds_to_ghadi_pala(total_seconds: float) -> dict:
     }
 
 
-def time_from_sunrise(end_dt: datetime, sunrise_dt: datetime) -> dict:
-    """Time elapsed from sunrise in ghati:pala:vipala and extended-hour clocks."""
+def time_from_sunrise(
+    end_dt: datetime,
+    sunrise_dt: datetime,
+    timezone_name: str | None = None,
+) -> dict:
+    """Time elapsed from sunrise in ghati:pala:vipala and extended-hour clocks.
+
+    ``local_time``/``local_iso`` are the observer's wall clock when
+    ``timezone_name`` is given; without it they fall back to ``end_dt`` as-is
+    (historically UTC — kept for callers that don't localize).
+    """
     delta = (end_dt - sunrise_dt).total_seconds()
     if delta < 0:
         delta += 86400
@@ -40,12 +49,18 @@ def time_from_sunrise(end_dt: datetime, sunrise_dt: datetime) -> dict:
     minutes = int((delta % 3600) // 60)
     seconds = int(delta % 60)
 
+    local_dt = end_dt
+    if timezone_name is not None:
+        from engine.astronomy.timescale import resolve_observer_timezone
+
+        local_dt = end_dt.astimezone(resolve_observer_timezone(timezone_name))
+
     return {
         "seconds_from_sunrise": round(delta),
         "ghati_clock": f"{ghati}:{pala:02d}:{vipala:02d}",
         "hours_clock": f"{hours}:{minutes:02d}:{seconds:02d}",
-        "local_time": end_dt.strftime("%H:%M:%S"),
-        "local_iso": end_dt.isoformat(),
+        "local_time": local_dt.strftime("%H:%M:%S"),
+        "local_iso": local_dt.isoformat(),
     }
 
 

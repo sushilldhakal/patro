@@ -35,17 +35,31 @@ def _local_stamp(iso_dt: str | None, timezone_name: str) -> str | None:
 
 
 def _element_state(block: dict, timezone_name: str) -> dict[str, Any]:
-    return {
+    nxt = block.get("next") or {}
+    state = {
         "name": block["name"],
         "name_ne": block.get("name_ne"),
         "start": _local_stamp(block.get("start_time"), timezone_name),
         "end": _local_stamp(block.get("end_time"), timezone_name),
-        "next": block["next"]["name"],
-        "next_ne": block["next"].get("name_ne"),
+        "next": nxt.get("name"),
+        "next_ne": nxt.get("name_ne"),
         "end_ghati_clock": block.get("end_ghati_clock"),
         "end_hours_clock": block.get("end_hours_clock"),
         "progress": block.get("progress"),
     }
+    # Carry the next anga's end + any third anga (kshaya days) so the client can
+    # render a skipped tithi's ending rather than dropping it.
+    if nxt.get("end_time"):
+        state["next_end"] = _local_stamp(nxt.get("end_time"), timezone_name)
+        state["next_end_ghati_clock"] = nxt.get("end_ghati_clock")
+        state["next_end_hours_clock"] = nxt.get("end_hours_clock")
+    third = nxt.get("next")
+    if third:
+        state["next_next"] = third.get("name")
+        state["next_next_ne"] = third.get("name_ne")
+        state["next_next_end_ghati_clock"] = third.get("end_ghati_clock")
+        state["next_next_end_hours_clock"] = third.get("end_hours_clock")
+    return state
 
 
 def resolve_panchanga_date(

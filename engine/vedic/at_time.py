@@ -167,6 +167,7 @@ def build_instant_anga_snapshot(
     sunrise_utc: datetime,
     *,
     ayanamsa: int | None = None,
+    timezone_name: str | None = None,
 ) -> dict[str, Any]:
     """Tithi / nakshatra / yoga / karana running at instant with span boundaries.
 
@@ -177,10 +178,14 @@ def build_instant_anga_snapshot(
     """
     tithi_info = calculate_tithi(instant_utc)
     return {
-        "tithi": build_tithi_block(instant_utc, sunrise_utc, tithi_info),
-        "nakshatra": build_nakshatra_block(instant_utc, sunrise_utc, ayanamsa=ayanamsa),
-        "yoga": build_yoga_block(instant_utc, sunrise_utc, ayanamsa=ayanamsa),
-        "karana": build_karana_block(instant_utc, sunrise_utc),
+        "tithi": build_tithi_block(instant_utc, sunrise_utc, tithi_info, timezone_name),
+        "nakshatra": build_nakshatra_block(
+            instant_utc, sunrise_utc, ayanamsa=ayanamsa, timezone_name=timezone_name
+        ),
+        "yoga": build_yoga_block(
+            instant_utc, sunrise_utc, ayanamsa=ayanamsa, timezone_name=timezone_name
+        ),
+        "karana": build_karana_block(instant_utc, sunrise_utc, timezone_name),
     }
 
 
@@ -249,7 +254,9 @@ def build_panchanga_at_time(
     tz = location.timezone
 
     vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, tz)
-    angas = build_instant_anga_snapshot(instant_utc, sunrise_utc, ayanamsa=mode)
+    angas = build_instant_anga_snapshot(
+        instant_utc, sunrise_utc, ayanamsa=mode, timezone_name=location.timezone
+    )
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, tz)
     instant_planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
     instant_lagna = get_lagna(

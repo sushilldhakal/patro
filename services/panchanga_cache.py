@@ -33,7 +33,11 @@ logger = logging.getLogger(__name__)
 #     fixes east/west ordering (e.g. Siraha before Kathmandu).
 # 15: देशान्तर is longitude-only (fixed national latitude) so Jhapa→Kanchanpur
 #     spans ~31.5 min, not a latitude-compressed ~23 min.
-CACHE_PAYLOAD_VERSION = 15
+# 16: tithi block's `next` now carries end times (+ a `next.next` on kshaya-tithi
+#     days) so a skipped tithi's ending shows on the panchanga page.
+# 17: tithi/nakshatra/yoga/karana `*_local_time` are the observer's LOCAL wall
+#     clock (were UTC) — end times now render correctly on the panchanga page.
+CACHE_PAYLOAD_VERSION = 17
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
