@@ -48,6 +48,10 @@ _REQUIRED_PAYLOAD_KEYS = (
     "choghadiya",
     "tarabala_table",
     "chandrabala_table",
+    # Rows cached before the samvatsara feature lack this key; requiring it
+    # forces them to recompute so modern dates get their samvatsara label
+    # (value may be None for pre-BS 1855 — the key must still be present).
+    "samvatsara",
 )
 
 _SCHEMA = """

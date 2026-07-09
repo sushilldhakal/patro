@@ -112,8 +112,41 @@ def _advance_samvatsara_index(prev_idx: int, prev_lon: float, cur_lon: float) ->
     return delta
 
 
-@lru_cache(maxsize=256)
+def _rashi_ingress_delta(prev_lon: float, cur_lon: float) -> int:
+    """Plain Jupiter rashi advance (0/1/2…) between two Mesh Sankrantis.
+
+    The astronomical fallback for years below the tuned range: monotonic,
+    always invertible, and independent of the previous samvatsara index.
+    """
+    return (int(cur_lon / 30) - int(prev_lon / 30)) % 12
+
+
+def _backward_samvatsara_step(idx_next: int, year: int) -> int | None:
+    """Resolve samvatsara index of ``year`` given ``year+1``'s index.
+
+    Inverts the forward step; returns ``None`` when the tuned kshaya/spanning
+    corrections leave no self-consistent predecessor (happens below ~BS 1855),
+    signalling the caller to switch to the plain-astronomy continuation.
+    """
+    prev_lon = _jupiter_longitude_at_bs_new_year(year)
+    cur_lon = _jupiter_longitude_at_bs_new_year(year + 1)
+    for advance in range(13):
+        candidate = (idx_next - advance) % 60
+        if _advance_samvatsara_index(candidate, prev_lon, cur_lon) == advance:
+            return candidate
+    return None
+
+
+@lru_cache(maxsize=1024)
 def samvatsara_index_for_bs_year(bs_year: int) -> int:
+    """Samvatsara index (0–59) for a BS year.
+
+    At/above the anchor the tuned forward walk (with Nepal's kshaya/spanning
+    corrections) is authoritative. Below it we invert the walk year by year;
+    once its corrections stop yielding a consistent predecessor (below ~BS
+    1855, where no published almanac exists to tune against), we continue with
+    plain Jupiter-rashi progression so any historical year still resolves.
+    """
     if bs_year == ANCHOR_BS_YEAR:
         return ANCHOR_INDEX
     if bs_year > ANCHOR_BS_YEAR:
@@ -131,20 +164,16 @@ def samvatsara_index_for_bs_year(bs_year: int) -> int:
 
     idx = ANCHOR_INDEX
     for year in range(ANCHOR_BS_YEAR - 1, bs_year - 1, -1):
-        for advance in range(13):
-            candidate = (idx - advance) % 60
-            if (
-                _advance_samvatsara_index(
-                    candidate,
+        step = _backward_samvatsara_step(idx, year)
+        if step is None:
+            step = (
+                idx
+                - _rashi_ingress_delta(
                     _jupiter_longitude_at_bs_new_year(year),
                     _jupiter_longitude_at_bs_new_year(year + 1),
                 )
-                == advance
-            ):
-                idx = candidate
-                break
-        else:
-            raise ValueError(f"BS year {bs_year} outside supported samvatsara range")
+            ) % 60
+        idx = step
     return idx
 
 
@@ -155,8 +184,19 @@ def samvatsara_for_bs_year(bs_year: int) -> dict[str, str | int]:
     return entry
 
 
-def samvatsara_payload_for_bs_year(bs_year: int) -> dict[str, str | int]:
-    data = samvatsara_for_bs_year(bs_year)
+def samvatsara_payload_for_bs_year(bs_year: int) -> dict[str, str | int] | None:
+    """Samvatsara name for a BS year, or ``None`` when unresolvable.
+
+    The Jovian-cycle name is a decorative label; the true-Jupiter walk cannot
+    resolve years far below the anchor (pre-BS 1855). Returning ``None`` there
+    keeps the whole panchanga/kundali usable for historical dates instead of
+    failing the request over a single missing chip — clients already treat a
+    missing samvatsara as "don't show it".
+    """
+    try:
+        data = samvatsara_for_bs_year(bs_year)
+    except ValueError:
+        return None
     return {
         "key": data["key"],
         "name_en": data["name_en"],
