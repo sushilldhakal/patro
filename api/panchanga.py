@@ -124,18 +124,29 @@ def panchanga_month(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
+    request: Request,
     full: bool = Query(False, description="Include full daily state per day"),
     clock: str | None = Query(None, description="HH:MM civil clock — ephemeris mode for each day in the month"),
 ):
-    """BS month calendar — Patro grid as structured JSON."""
+    """BS month calendar — Patro grid as structured JSON.
+
+    Deterministic per (year, month, location, full, clock) → served from the
+    gzip response cache; the first request computes (~0.8 s cold), later ones
+    stream back in milliseconds.
+    """
+    from services.response_cache import location_cache_key, serve_cached_json
+
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    try:
+    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}"
+    key = f"month_{bs_year}_{bs_month}_{variant}_{location_cache_key(location)}"
+
+    def build():
         if clock:
             return build_month_calendar_at_clock(bs_year, bs_month, location, clock, full=full)
         return build_month_calendar(bs_year, bs_month, location, full=full)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return serve_cached_json(request, key, build)
 
 
 @router.get("/panchanga/{date_key}")

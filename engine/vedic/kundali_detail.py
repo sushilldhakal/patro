@@ -201,16 +201,16 @@ YOGA_DESC_NE: dict[str, str] = {
     ),
     "budhaditya": (
         "सूर्य र बुध एउटै राशिमा हुँदा बन्छ — बुद्धि, स्पष्ट अभिव्यक्ति र "
-        "विश्लेषणात्मक/प्रशासनिक क्षमताका लागि शुभ (बुध अत्यन्त नजिक/combust नभएमा बलियो)।"
+        "विश्लेषणात्मक/प्रशासनिक क्षमताका लागि शुभ (बुध अत्यन्त नजिक/दग्ध नभएमा बलियो)।"
     ),
     "chandra_mangala": (
         "चन्द्र र मंगल एउटै राशिमा हुँदा बन्छ — उद्यमशीलता र कमाइको ऊर्जा; "
-        "शान्त आउटलेट भए उत्तम, नभए अधीरता हुन सक्छ।"
+        "शान्त मार्ग भए उत्तम, नभए अधीरता हुन सक्छ।"
     ),
     "kemadruma": (
         "चन्द्रका छेउमा (२ र १२) कुनै ग्रह नभएमा बन्छ — भावनात्मक सहारा आफैं निर्माण "
         "गर्नुपर्ने संकेत। बलियो चन्द्र, शुभ दृष्टि वा केन्द्रमा ग्रहले यसलाई "
-        "कमजोर पार्छ; नियमित दिनचarya र सम्बन्ध दृढ गर्नुहोस्।"
+        "कमजोर पार्छ; नियमित दिनचर्या र सम्बन्ध दृढ गर्नुहोस्।"
     ),
     "adhi": (
         "चन्द्रबाट ६, ७, ८ मा बुध, बृहस्पति र शुक्र (प्रत्येक भावमा) — "
@@ -309,18 +309,18 @@ YOGA_DESC_NE: dict[str, str] = {
 KARAKA_NE = {
     "sun": "आत्मा, जीवनशक्ति, पिता, अधिकार",
     "moon": "मन, भावना, माता, सार्वजनिक सम्बन्ध",
-    "mars": "ऊर्जा, साहस, भाइबहini, सम्पत्ति",
+    "mars": "ऊर्जा, साहस, भाइबहिनी, सम्पत्ति",
     "mercury": "बुद्धि, संचार, व्यापार, शिक्षा",
     "jupiter": "ज्ञान, नैतिकता, धन, गुरु, सन्तान",
-    "venus": "प्रेम, विवाह, सौन्दary, कला",
-    "saturn": "अनुशासन, धैर्य, कर्म, दीर्घायu",
+    "venus": "प्रेम, विवाह, सौन्दर्य, कला",
+    "saturn": "अनुशासन, धैर्य, कर्म, दीर्घायु",
 }
 
 MAHAPURUSHA_NE = {
     "mars": "रुचक",
     "mercury": "भद्र",
     "jupiter": "हंस",
-    "venus": "मालavya",
+    "venus": "मालव्य",
     "saturn": "शश",
 }
 
@@ -626,20 +626,28 @@ def _build_avakahada(moon_lon: float, moon_rashi: int, lagna_rashi: int) -> dict
     }
 
 
+def _yoga_name_ne(key: str, name_en: str) -> str:
+    if key in YOGA_NAME_NE:
+        return YOGA_NAME_NE[key]
+    if key.startswith("mahapurusha_"):
+        planet_key = key.split("_", 1)[1]
+        mp = MAHAPURUSHA_NE.get(planet_key, "")
+        return f"{mp} महापुरुष योग" if mp else name_en
+    if key.startswith("neechabhanga_"):
+        planet_key = key.split("_", 1)[1]
+        pn = PLANET_NE.get(planet_key, planet_key)
+        return f"नीचभङ्ग ({pn})"
+    if key.startswith("raja_"):
+        return "राज योग"
+    return name_en
+
+
 def _yogas_to_api(chart_yogas: list[dict[str, Any]]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for y in chart_yogas:
         key = y["key"]
         name_en = y["name"]
-        name_ne = YOGA_NAME_NE.get(key)
-        if name_ne is None and key.startswith("mahapurusha_"):
-            name_ne = f"{name_en} (महापुरुष)"
-        elif name_ne is None and key.startswith("neechabhanga_"):
-            name_ne = name_en.replace("Neecha-Bhanga", "नीचभङ्ग")
-        elif name_ne is None and key.startswith("raja_"):
-            name_ne = "राज योग"
-        else:
-            name_ne = name_ne or name_en
+        name_ne = _yoga_name_ne(key, name_en)
         nature = _yoga_nature(y.get("polarity"))
         text = y.get("text", "")
         out.append({

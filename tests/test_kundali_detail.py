@@ -219,6 +219,15 @@ def test_yogas_list_all_fixed_yogas_not_just_formed_ones():
         assert isinstance(row["present"], bool)
         assert row["nameEn"] and row["nameNe"]
         assert row["descEn"]
+        assert row["descNe"], f"missing Nepali description for {row['key']}"
+
+    mp = {y["key"]: y for y in yogas if y["key"].startswith("mahapurusha_")}
+    assert mp["mahapurusha_mars"]["nameNe"] == "रुचक महापुरुष योग"
+    assert mp["mahapurusha_venus"]["nameNe"] == "मालव्य महापुरुष योग"
+    nb = next(y for y in yogas if y["key"] == "neechabhanga_sun")
+    assert nb["nameNe"] == "नीचभङ्ग (सूर्य)"
+    assert "combust" not in next(y for y in yogas if y["key"] == "budhaditya")["descNe"]
+    assert "दिनचर्या" in next(y for y in yogas if y["key"] == "kemadruma")["descNe"]
 
 
 def test_panchanga_yoga_and_nakshatra_respect_the_chosen_ayanamsha():

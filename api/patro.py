@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import Response
 
 from api.deps import LocationDep, _validate_bs_month, _validate_bs_year
@@ -14,11 +14,17 @@ router = APIRouter()
 
 
 @router.get("/nepal/gochar/year/{bs_year}")
-def nepal_gochar_year(bs_year: int, location: LocationDep):
+def nepal_gochar_year(bs_year: int, location: LocationDep, request: Request):
     """Yearly Gochar summary — slow-graha transit timeline + monthly rashi snapshots."""
+    from services.response_cache import location_cache_key, serve_cached_json
+
     _validate_bs_year(bs_year)
     from engine.vedic.gochar import build_gochar_year_summary
-    return build_gochar_year_summary(bs_year, location)
+
+    key = f"gocharyear_{bs_year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_gochar_year_summary(bs_year, location)
+    )
 
 
 @router.get("/nepal/patro/{bs_year}/{bs_month}")
@@ -26,24 +32,36 @@ def nepal_patro_grid(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
+    request: Request,
     format: Literal["patro", "dayblock", "surya", "toyanath", "canonical"] = Query("patro"),
     locale: Literal["en", "ne"] = Query("en"),
     output: Literal["json", "text"] = Query("json"),
 ):
     """Printable Surya-style monthly Patro grid or linear dayblock stream."""
+    from services.response_cache import location_cache_key, serve_cached_json
+
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    try:
+
+    def build_payload():
         if format == "patro":
             return build_patro_month(bs_year, bs_month, location)
         month_payload = build_month_calendar(bs_year, bs_month, location, full=format == "dayblock")
         header = build_calendar_header(bs_year, bs_month, location)
-        payload = render_panchanga_month(month_payload, style=format, header=header, locale=locale)
-        if format == "dayblock" and output == "text":
-            return Response(content=payload.get("text", ""), media_type="text/plain; charset=utf-8")
-        return payload
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        return render_panchanga_month(month_payload, style=format, header=header, locale=locale)
+
+    # Text output streams raw text; JSON variants are deterministic → cached.
+    if format == "dayblock" and output == "text":
+        try:
+            return Response(
+                content=build_payload().get("text", ""),
+                media_type="text/plain; charset=utf-8",
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    key = f"npatro_{bs_year}_{bs_month}_{format}_{locale}_{location_cache_key(location)}"
+    return serve_cached_json(request, key, build_payload)
 
 
 @router.get("/nepal/patro/{bs_year}/{bs_month}/legacy")
@@ -205,19 +223,27 @@ def nepal_gochar(
 
 
 @router.get("/patro/{bs_year}/{bs_month}")
-def patro_month_legacy(bs_year: int, bs_month: int, location: LocationDep, panchanga: bool = Query(True)):
+def patro_month_legacy(
+    bs_year: int, bs_month: int, location: LocationDep, request: Request, panchanga: bool = Query(True)
+):
+    from services.response_cache import location_cache_key, serve_cached_json
+
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    try:
-        return generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    key = f"patromon_{bs_year}_{bs_month}_{int(panchanga)}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request,
+        key,
+        lambda: generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga),
+    )
 
 
 @router.get("/patro/{bs_year}")
-def patro_year_legacy(bs_year: int, location: LocationDep, panchanga: bool = Query(True)):
+def patro_year_legacy(bs_year: int, location: LocationDep, request: Request, panchanga: bool = Query(True)):
+    from services.response_cache import location_cache_key, serve_cached_json
+
     _validate_bs_year(bs_year)
-    try:
-        return generate_patro(bs_year, location, include_panchanga=panchanga)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    key = f"patroyear_{bs_year}_{int(panchanga)}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: generate_patro(bs_year, location, include_panchanga=panchanga)
+    )
