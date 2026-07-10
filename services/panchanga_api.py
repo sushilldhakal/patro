@@ -352,22 +352,68 @@ def build_year_sun_times(
     }
 
 
+# Per-day state blocks the panchanga *wheel* never reads. The year view renders
+# only the wheel (no day-timeline / muhurta / hora panels), so for its bulk
+# payload these blocks are dead weight — dropping them shrinks each embedded day
+# from ~50 KB to ~11 KB. `lagna_spans` is deliberately kept (the wheel animates
+# the lagna ring from it). Full per-day state is still available from the daily
+# and month endpoints for the pages that actually show it.
+_WHEEL_DAY_DROP_KEYS = frozenset(
+    {
+        "muhurta",
+        "hora",
+        "hora_day",
+        "nivas_shool",
+        "udaya_lagna",
+        "tarabala_table",
+        "chandrabala_table",
+        "choghadiya",
+        "solar_corrections",
+        "lunar_calendar",
+        "planets_anchor",
+    }
+)
+
+
+def _slim_day_for_wheel(day: dict[str, Any]) -> dict[str, Any]:
+    """Copy a calendar day with its embedded state trimmed to wheel-only keys."""
+    embed = day.get("panchanga")
+    if not isinstance(embed, dict):
+        return day
+    trimmed = {k: v for k, v in embed.items() if k not in _WHEEL_DAY_DROP_KEYS}
+    return {**day, "panchanga": trimmed}
+
+
 def build_year_calendar(
     bs_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
     full: bool = False,
+    shape: str = "full",
 ) -> dict[str, Any]:
-    """Full BS year — all month grids in one payload for year scrubbers."""
+    """BS year — all month grids in one payload for year scrubbers.
+
+    ``shape="wheel"`` returns a slimmed payload for the year *wheel*: every day
+    lives once in the flat ``calendar`` (with wheel-only per-day state), and
+    ``months`` carries month metadata only — no duplicated per-day grids. The
+    default ``shape="full"`` keeps the legacy shape (days in both ``months`` and
+    ``calendar``) for any consumer that needs the complete state.
+    """
+    wheel = shape == "wheel"
     months: list[dict[str, Any]] = []
     calendar: list[dict[str, Any]] = []
     year_length = 0
 
     for bs_month in range(1, 13):
         month_payload = build_month_calendar(bs_year, bs_month, location, full=full)
-        months.append(month_payload)
-        calendar.extend(month_payload["calendar"])
         year_length += month_payload["month_length"]
+        if wheel:
+            calendar.extend(_slim_day_for_wheel(d) for d in month_payload["calendar"])
+            # Metadata only — the heavy per-day grid is already in `calendar`.
+            months.append({k: v for k, v in month_payload.items() if k != "calendar"})
+        else:
+            months.append(month_payload)
+            calendar.extend(month_payload["calendar"])
 
     return {
         "year_bs": bs_year,
