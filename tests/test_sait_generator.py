@@ -55,12 +55,13 @@ def test_kharmas_sun_longitude():
 
 
 def test_agni_rudra_vas_formulas():
-    # Agni Vas: (tithi + vaara + 1) % 4 in {1, 2} -> Earth/Patala (auspicious)
-    assert agni_on_earth(2, 2)  # (2+2+1)=5, 5%4=1 -> Earth
-    assert not agni_on_earth(5, 1)  # (5+1+1)=7, 7%4=3 -> sky (inauspicious)
-    # Rudra Vas: (tithi * 3 + 1) % 7 in {1, 2} -> Shiva accessible (auspicious)
-    assert rudra_on_earth(5)  # (5*3+1)=16, 16%7=2 -> with Parvati
-    assert not rudra_on_earth(2)  # (2*3+1)=7, 7%7=0 -> inauspicious
+    # Agni Vas on the absolute tithi (1-30): (tithi + vaara) % 4 in {2, 3} -> Earth.
+    assert agni_on_earth(2, 4)  # (2+4)=6, 6%4=2 -> Earth (auspicious)
+    assert not agni_on_earth(2, 3)  # (2+3)=5, 5%4=1 -> not Earth
+    # Rudra Vas on the absolute tithi: (2*tithi + 5) % 7 in {1, 2, 3, 5}.
+    assert rudra_on_earth(5)  # (10+5)=15, 15%7=1 -> Kailasa (auspicious)
+    assert not rudra_on_earth(1)  # (2+5)=7, 7%7=0 -> Shmashana (inauspicious)
+    assert not rudra_on_earth(30)  # Amavasya is always excluded
 
 
 def test_build_day_panchanga_bs2083_sample():
@@ -122,4 +123,4 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "2.0.0"
+    assert SAIT_ENGINE_VERSION == "2.1.0"
