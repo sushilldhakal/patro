@@ -110,15 +110,26 @@ def panchanga_year(
     location: LocationDep,
     request: Request,
     full: bool = Query(False, description="Include full daily state per day"),
+    wheel: bool = Query(
+        False,
+        description="Slim payload for the year wheel: days once in `calendar` "
+        "with wheel-only state, `months` metadata only",
+    ),
 ):
     """Full BS year calendar — all months in one response."""
     _validate_bs_year(bs_year)
+    if wheel:
+        variant = "wheel"
+        build = lambda: build_year_calendar(bs_year, location, full=True, shape="wheel")
+    else:
+        variant = "full" if full else "lite"
+        build = lambda: build_year_calendar(bs_year, location, full=full)
     return _cached_year_response(
         bs_year,
         location,
         request,
-        variant="full" if full else "lite",
-        build=lambda: build_year_calendar(bs_year, location, full=full),
+        variant=variant,
+        build=build,
     )
 
 
