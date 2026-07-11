@@ -123,4 +123,4 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "2.1.0"
+    assert SAIT_ENGINE_VERSION == "3.0.0"
