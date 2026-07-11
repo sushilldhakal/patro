@@ -12,6 +12,7 @@ from engine.vedic.bikram_sambat import get_bs_month_length, iter_bs_month_days
 from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
 from engine.vedic.muhurta_engine import MUHURTA_CATEGORIES, has_muhurta
 from engine.vedic.sait_rules import CATEGORY_CHECKS, build_day_panchanga
+from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
@@ -97,8 +98,14 @@ def get_generated_sait(
             f"bs_year must be between {BS_ESTIMATED_MIN_YEAR} and {BS_SUPPORTED_MAX_YEAR}"
         )
 
+    # Shared Postgres is the primary store (persists across serverless
+    # instances and users); the on-disk file cache is the local-dev fallback
+    # when DATABASE_URL is unset.
     if use_cache:
-        cached = load_sait_cached(bs_year, category, location)
+        if db_available():
+            cached = load_sait_db(bs_year, category, location, SAIT_ENGINE_VERSION)
+        else:
+            cached = load_sait_cached(bs_year, category, location)
         if cached is not None:
             return cached
 
@@ -112,7 +119,10 @@ def get_generated_sait(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": "computed",
     }
-    save_sait_cache(payload, location)
+    if db_available():
+        save_sait_db(payload, location, SAIT_ENGINE_VERSION)
+    else:
+        save_sait_cache(payload, location)
     return payload
 
 
