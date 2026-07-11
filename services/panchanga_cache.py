@@ -43,7 +43,11 @@ logger = logging.getLogger(__name__)
 # 20: extended muhurta timings (amrit kalam, varjyam, sandhya, dur muhurtam, etc.).
 # 21: sunrise/sunset at sea-level horizon (dropped unphysical ~1.1° valley dip
 #     that made rise ~7 min early / set ~7 min late, a flat 14h00m day).
-CACHE_PAYLOAD_VERSION = 21
+# 22: Dashain festival refactor — removed the 15-day "दशैं" span that painted
+#     every day; individual day festivals (घटस्थापना/फूलपाती/महाअष्टमी/
+#     महानवमी/विजया दशमी) now surface. Invalidates stale month/year response
+#     cache that had the span baked in.
+CACHE_PAYLOAD_VERSION = 22
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
