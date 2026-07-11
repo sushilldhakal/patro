@@ -39,12 +39,9 @@ from engine.astronomy.positions import (
     get_paksha,
     get_yoga,
 )
-from engine.astronomy.swiss_eph import calculate_sunrise, get_planet_position
+from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset, get_planet_position
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
-    BRATABANDHA_LUNAR_MONTHS,
-    BRATABANDHA_NAKSHATRAS,
-    BRATABANDHA_TITHIS,
     BUSINESS_NAKSHATRAS,
     BUSINESS_SHUKLA_TITHIS,
     CHATURMAS_LUNAR_MONTHS,
@@ -75,6 +72,21 @@ GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS = frozenset({1, 4, 7, 8, 9, 10, 11})
 GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({1, 2, 3, 5, 7, 10, 11, 12, 13})
 GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = GRIHA_AARAMBHA_NAKSHATRAS | frozenset({24, 27})
 
+# Upanayana (ब्रतबन्ध / व्रतबन्ध) per Muhūrta Chintāmaṇi & Dharmasindhu:
+#   * Sun in an Uttarāyaṇa rāśi (Makara→Mithuna = 10,11,12,1,2,3), avoiding
+#     Hariśayana/Chaturmāsa; Guru & Śukra both udaya; no Adhik-māsa.
+#   * All auspicious nakṣatras (fixed/movable/gentle/short + the Chintāmaṇi
+#     additions) — i.e. every nakṣatra except Bharaṇī 2, Kṛttikā 3, Maghā 10,
+#     Viśākhā 16, Jyeṣṭhā 18.
+#   * Avoid Tuesday & Saturday; daytime only (sunrise→sunset).
+#   * Tithi: śukla 2,3,5,10,11,12 or kṛṣṇa 2,3,5.
+# The advanced Lagna/Navāṁśa/Tri-Bala/Varṇeśa-Śākheśa shuddhi is person- and
+# caste-specific and can't be applied to a general year listing.
+BRATABANDHA_MUHURTA_SUN_RASHIS = frozenset({1, 2, 3, 10, 11, 12})
+BRATABANDHA_MUHURTA_NAKSHATRAS = frozenset(range(1, 28)) - frozenset({2, 3, 10, 16, 18})
+BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
+BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
+
 
 def _rashi(longitude: float) -> int:
     return int(longitude / 30.0) % 12 + 1
@@ -94,8 +106,14 @@ class CeremonyRule:
     require_uttarayana: bool = False
     # Window layer.
     tithis: frozenset[int] = frozenset()  # display 1-15; empty ⇒ any non-rikta
+    # Pakṣa-specific tithi sets (display 1-15). When either is set they override
+    # `tithis`: a window is allowed only if its tithi is in the set for its pakṣa.
+    shukla_tithis: frozenset[int] = frozenset()
+    krishna_tithis: frozenset[int] = frozenset()
     nakshatras: frozenset[int] = frozenset()
     shukla_only: bool = False
+    avoid_varas: frozenset[int] = frozenset()  # 1=Sun … 7=Sat to exclude
+    daytime_only: bool = False  # scan sunrise→sunset only (e.g. Upanayana)
     # Chart layer (houses counted whole-sign from the lagna).
     lagnas: frozenset[int] = frozenset()
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
@@ -113,16 +131,17 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
     ),
-    # Calibrated against the official BS 2082-2083 bratabandha lists (21 days):
-    # every day is Uttarāyaṇa (kept), but a third fall in kṛṣṇa pakṣa — so the
-    # old śukla-only assumption was wrong and is dropped. recall 52% -> 67%.
     "bratabandha": CeremonyRule(
         key="bratabandha",
-        lunar_months=BRATABANDHA_LUNAR_MONTHS,
+        sun_rashis=BRATABANDHA_MUHURTA_SUN_RASHIS,
+        block_chaturmas=True,
         require_guru_udaya=True,
-        require_uttarayana=True,
-        tithis=BRATABANDHA_TITHIS,
-        nakshatras=BRATABANDHA_NAKSHATRAS,
+        require_shukra_udaya=True,
+        nakshatras=BRATABANDHA_MUHURTA_NAKSHATRAS,
+        avoid_varas=frozenset({3, 7}),  # avoid Tuesday & Saturday
+        shukla_tithis=BRATABANDHA_SHUKLA_TITHIS,
+        krishna_tithis=BRATABANDHA_KRISHNA_TITHIS,
+        daytime_only=True,
     ),
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
@@ -199,6 +218,8 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         return _DayGate(False)
     if rule.require_uttarayana and dp.aayan != "Uttarayana":
         return _DayGate(False)
+    if rule.avoid_varas and dp.vaara in rule.avoid_varas:
+        return _DayGate(False)
     return _DayGate(True)
 
 
@@ -211,12 +232,17 @@ def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
 
 def _window_ok(rule: CeremonyRule, dt: datetime, planet_rashis, location) -> tuple[bool, int, int, int]:
     """Evaluate the window + chart layer at instant ``dt``."""
-    tithi = get_display_tithi(get_tithi_number(get_tithi_angle(dt)))
+    tnum = get_tithi_number(get_tithi_angle(dt))
+    tithi = get_display_tithi(tnum)
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
-    if rule.tithis and tithi not in rule.tithis:
+    if rule.shukla_tithis or rule.krishna_tithis:
+        allowed = rule.shukla_tithis if get_paksha(tnum) == "shukla" else rule.krishna_tithis
+        if tithi not in allowed:
+            return (False, 0, 0, 0)
+    elif rule.tithis and tithi not in rule.tithis:
         return (False, 0, 0, 0)
-    if rule.shukla_only and get_paksha(get_tithi_number(get_tithi_angle(dt))) != "shukla":
+    if rule.shukla_only and get_paksha(tnum) != "shukla":
         return (False, 0, 0, 0)
     nak = get_nakshatra(dt)[0]
     if rule.nakshatras and nak not in rule.nakshatras:
@@ -251,26 +277,39 @@ def muhurta_windows(
     sunrise = calculate_sunrise(
         greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
     )
+    # Upanayana and similar day-only rites are valid in daylight only; everything
+    # else spans the vedic day (sunrise → next sunrise).
+    if rule.daytime_only:
+        end = calculate_sunset(
+            greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
+        )
+    else:
+        end = sunrise + timedelta(hours=_SCAN_HOURS)
+
     windows: list[MuhurtaWindow] = []
     run_start = None
     last = None
-    steps = int(_SCAN_HOURS * 60 / (_STEP.seconds // 60)) + 1
-    for i in range(steps):
-        dt = sunrise + _STEP * i
+    dt = sunrise
+
+    def _close(run, last_dt):
+        if run is None or last_dt is None:
+            return
+        stop = min(last_dt + _STEP, end)
+        if stop - run[0] >= MIN_WINDOW:
+            s, ti, nk, lg = run
+            windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
+
+    while dt <= end:
         ok, tithi, nak, lagna = _window_ok(rule, dt, planet_rashis, location)
         if ok:
             if run_start is None:
                 run_start = (dt, tithi, nak, lagna)
             last = dt
         elif run_start is not None:
-            s, ti, nk, lg = run_start
-            if last + _STEP - s >= MIN_WINDOW:
-                windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
+            _close(run_start, last)
             run_start = None
-    if run_start is not None:
-        s, ti, nk, lg = run_start
-        if last + _STEP - s >= MIN_WINDOW:
-            windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
+        dt = dt + _STEP
+    _close(run_start, last)
     return windows
 
 
