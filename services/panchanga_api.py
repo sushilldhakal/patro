@@ -252,6 +252,8 @@ def build_month_calendar(
             "yoga_ne": panchanga["yoga"].get("name_ne"),
             "karana": panchanga["karana"]["name"],
             "karana_ne": panchanga["karana"].get("name_ne"),
+            "chandra_rashi": panchanga["chandra_rashi"]["name"],
+            "chandra_rashi_ne": panchanga["chandra_rashi"].get("name_ne"),
             "sunrise": panchanga["sunrise"]["local_time_short"],
             "sunset": panchanga["sunset"]["local_time_short"],
             "aayan": panchanga["aayan"]["name"],
