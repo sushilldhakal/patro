@@ -110,6 +110,13 @@ class AstronomyEngine:
         self._calc_cache: "OrderedDict[tuple[int, float, bool], tuple[float, float]]" = OrderedDict()
         self._cache_hits = 0
         self._cache_misses = 0
+        # Rise/set memo: a given (body, date, lat, lon, flag, alt, tz) is
+        # deterministic, yet a single daily build asks for the same sunrise
+        # ~11× (tithi, muhurta, hora, spans, nepal-sambat, …). Each miss is a
+        # swe.rise_trans_true_hor search (~1 ms), so memoizing collapses a
+        # whole-year build's rise/set cost several-fold. Location-independent
+        # correctness is preserved — the key includes every geometry input.
+        self._rise_cache: "OrderedDict[tuple, datetime | None]" = OrderedDict()
 
     def _calc(
         self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
@@ -430,17 +437,28 @@ class AstronomyEngine:
         if body_id is None:
             raise EphemerisError(f"Unknown body: {body!r}")
         observer_tz = resolve_observer_timezone(timezone_name, lat=lat, lon=lon)
+        cache_key = (
+            body_id, calc_flag, date_val,
+            round(lat, 6), round(lon, 6), round(alt, 3),
+            str(observer_tz),
+        )
+        cached = self._rise_cache.get(cache_key)
+        if cached is not None or cache_key in self._rise_cache:
+            self._rise_cache.move_to_end(cache_key)
+            return cached
         local_midnight = datetime.combine(date_val, time(0, 0), tzinfo=observer_tz)
         jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
         try:
             result = swe.rise_trans_true_hor(
                 jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
             )
-            if result[0] < 0:
-                return None
-            return self.datetime_from_jd(result[1][0])
+            value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Rise/set failed for {body!r} on {date_val}: {exc}") from exc
+        self._rise_cache[cache_key] = value
+        if len(self._rise_cache) > self._CACHE_MAX:
+            self._rise_cache.popitem(last=False)
+        return value
 
     def _rise_set_after(
         self,

@@ -45,6 +45,37 @@ def test_popular_cities_include_kathmandu():
     assert "Kathmandu" in names
 
 
+def test_popular_city_ids_resolve_to_expected_cities():
+    """Guard against id drift: each curated id must resolve to its intended city.
+
+    GeoNames ids are globally stable, so a mismatch means a wrong id was pasted
+    (this caught 6 stale ids, e.g. 1282951 pointing at 'Palun' not 'Pokhara')."""
+    from services.cities_db import POPULAR_CITY_IDS, get_city_by_id
+
+    # (id, expected ascii_name, expected country)
+    expected = [
+        (1283240, "Kathmandu", "NP"),
+        (1282898, "Pokhara", "NP"),
+        (1283613, "Bharatpur", "NP"),
+        (1282931, "Patan", "NP"),        # Lalitpur — filed under Patan in GeoNames
+        (1283582, "Biratnagar", "NP"),
+        (1283562, "Butwal", "NP"),
+        (1283460, "Dharan", "NP"),
+        (6941099, "Nepalgunj", "NP"),
+        (1283095, "Bhimdatta", "NP"),
+        (1275339, "Mumbai", "IN"),
+        (1273294, "Delhi", "IN"),
+        (2147714, "Sydney", "AU"),
+        (5128581, "New York City", "US"),
+    ]
+    assert list(POPULAR_CITY_IDS) == [e[0] for e in expected]
+    for city_id, name, country in expected:
+        row = get_city_by_id(city_id)
+        assert row is not None, f"{city_id} missing from cities.db"
+        assert row["ascii_name"] == name, f"{city_id} -> {row['ascii_name']}, expected {name}"
+        assert row["country"] == country
+
+
 def test_legacy_cities_schema_without_admin_columns(tmp_path, monkeypatch):
     """Older cities.db files must not break city_id lookups after a code deploy."""
     import sqlite3

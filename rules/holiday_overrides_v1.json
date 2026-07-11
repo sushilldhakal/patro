@@ -103,18 +103,6 @@
         "importance": "regional",
         "notes": "MoHA BS 2081-06-01 (असोज १) इन्द्रजात्रा"
       },
-      "dashain": {
-        "id": "dashain",
-        "name_en": "Dashain",
-        "name_ne": "दशैं",
-        "start_date": "2024-10-04",
-        "end_date": "2024-10-18",
-        "duration_days": 15,
-        "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "MoHA BS 2081-06-17 (असोज १७) घटस्थापना to Kojagrat Purnima"
-      },
       "tihar": {
         "id": "tihar",
         "name_en": "Tihar",
@@ -405,18 +393,6 @@
         "importance": "national",
         "notes": "BS 2082-06-03 (असोज ३) संविधान दिवस"
       },
-      "dashain": {
-        "id": "dashain",
-        "name_en": "Dashain",
-        "name_ne": "दशैं",
-        "start_date": "2025-09-23",
-        "end_date": "2025-10-07",
-        "duration_days": 15,
-        "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "MoHA BS 2082-06-06 (असोज ६) घटस्थापना to Kojagrat Purnima"
-      },
       "tihar": {
         "id": "tihar",
         "name_en": "Tihar",
@@ -706,18 +682,6 @@
         "category": "hindu",
         "importance": "national",
         "notes": "Krishna's birthday"
-      },
-      "dashain": {
-        "id": "dashain",
-        "name_en": "Dashain",
-        "name_ne": "दशैं",
-        "start_date": "2026-10-11",
-        "end_date": "2026-10-23",
-        "duration_days": 13,
-        "type": "lunar",
-        "category": "hindu",
-        "importance": "national",
-        "notes": "Ghatasthapana (Ashoj 25) → Dashain Holiday (Kartik 6). Key days: Ghatasthapana Oct 11, Fulpati Oct 17, Mahashtami Oct 18, Mahanawami Oct 20, Vijaya Dashami Oct 21, holiday Oct 22–23."
       },
       "chhath": {
         "id": "chhath",

@@ -56,7 +56,71 @@ def warm_holiday_cache() -> list[int]:
             end_year,
         )
     _warm_year_response_cache()
+    _warm_popular_city_caches()
     return generated
+
+
+def _warm_popular_cities_enabled() -> bool:
+    return os.environ.get("WARM_POPULAR_CITIES", "true").lower() not in {"0", "false", "no"}
+
+
+def _popular_warm_city_ids() -> list[int]:
+    """City ids to pre-warm. Defaults to the most populous Nepali cities (the
+    towns snapping collapses traffic to); override with a comma-separated
+    WARM_CITY_IDS list. Empty WARM_CITY_IDS disables the city warm."""
+    if "WARM_CITY_IDS" in os.environ:
+        explicit = os.environ["WARM_CITY_IDS"].strip()
+        return [int(part) for part in explicit.split(",") if part.strip()]
+
+    from services.cities_db import top_cities_by_population
+
+    limit = max(int(os.environ.get("WARM_CITY_COUNT", "20")), 0)
+    return [row["id"] for row in top_cities_by_population(limit, country="NP")]
+
+
+def _warm_popular_city_caches() -> None:
+    """Pre-build the current-year sun-times + lite calendar for popular cities.
+
+    After nearest-city snapping, virtually all real traffic lands on one of a
+    small set of city ids. Warming their location-varying year payloads (sun
+    rise/set + lite grid) for the current BS year means a visitor switching to
+    Pokhara or Biratnagar gets a millisecond cache hit instead of the ~30 s cold
+    build. Kept to the current year only to bound the startup cost; gate off with
+    WARM_POPULAR_CITIES=false on light/ephemeral hosts.
+    """
+    if not _warm_popular_cities_enabled():
+        return
+
+    from engine.astronomy.location import resolve_location_from_query
+    from services.cities_db import get_city_by_id
+    from services.panchanga_api import build_year_calendar, build_year_sun_times
+    from services.year_cache import read_year_cache, write_year_cache
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    seen_keys: set[int | None] = set()
+    for seed_id in _popular_warm_city_ids():
+        row = get_city_by_id(seed_id)
+        if row is None:
+            continue
+        # Resolve the city's own centre through the same path real requests take,
+        # so the warmed key is exactly the city:<id> that snapped traffic hits
+        # (GeoNames has duplicate rows for some towns — snapping canonicalizes).
+        location = resolve_location_from_query(lat=row["lat"], lon=row["lon"])
+        if location.city_id in seen_keys:
+            continue
+        seen_keys.add(location.city_id)
+        builders = {
+            "sun": lambda loc=location: build_year_sun_times(current_bs_year, loc),
+            "lite": lambda loc=location: build_year_calendar(current_bs_year, loc, full=False),
+        }
+        for variant, build in builders.items():
+            if read_year_cache(current_bs_year, location, variant=variant) is not None:
+                continue
+            try:
+                write_year_cache(current_bs_year, location, build(), variant=variant)
+                logger.info("Warmed %s cache for %s (BS %s)", variant, location.name, current_bs_year)
+            except Exception:  # noqa: BLE001 — a warm failure must not block startup
+                logger.exception("City warm failed for %s (%s)", location.name, variant)
 
 
 def _warm_year_response_cache() -> None:

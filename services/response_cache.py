@@ -16,6 +16,7 @@ from __future__ import annotations
 import gzip
 import json
 import os
+import threading
 from pathlib import Path
 from typing import Any, Callable
 
@@ -99,6 +100,26 @@ def write_cached_bytes(cache_key: str, payload: Any) -> bytes:
     return compressed
 
 
+# Per-key build locks collapse a cold-cache stampede: when N requests race for
+# the same missing key (common right after a deploy that bumps the cache version,
+# when every visitor asks for the current year at once), only the first computes
+# the 0.8–30 s payload; the rest wait and then read the freshly written bytes.
+# The keyspace is bounded (cities × years × variants), so retaining a lock per
+# key seen is negligible memory. Single-process only — with multiple workers each
+# still collapses its own stampede, cutting duplicate computes N-fold per worker.
+_build_locks: dict[str, threading.Lock] = {}
+_build_locks_guard = threading.Lock()
+
+
+def _build_lock(cache_key: str) -> threading.Lock:
+    with _build_locks_guard:
+        lock = _build_locks.get(cache_key)
+        if lock is None:
+            lock = threading.Lock()
+            _build_locks[cache_key] = lock
+        return lock
+
+
 def serve_cached_json(
     request: Request,
     cache_key: str,
@@ -109,11 +130,16 @@ def serve_cached_json(
     """Serve a deterministic payload from the gzip disk cache, computing once."""
     compressed = read_cached_bytes(cache_key)
     if compressed is None:
-        try:
-            payload = build()
-        except ValueError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-        compressed = write_cached_bytes(cache_key, payload)
+        with _build_lock(cache_key):
+            # Re-check under the lock: a racing request may have built it while
+            # we waited, turning our expensive compute into a cheap disk read.
+            compressed = read_cached_bytes(cache_key)
+            if compressed is None:
+                try:
+                    payload = build()
+                except ValueError as exc:
+                    raise HTTPException(status_code=400, detail=str(exc)) from exc
+                compressed = write_cached_bytes(cache_key, payload)
 
     headers = {
         "Cache-Control": cache_control,

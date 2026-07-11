@@ -33,6 +33,12 @@ class ObserverLocation:
 DEFAULT_LOCATION = ObserverLocation()
 
 
+def _snap_to_nearest_city_enabled() -> bool:
+    import os
+
+    return os.environ.get("SNAP_TO_NEAREST_CITY", "true").lower() not in {"0", "false", "no"}
+
+
 def resolve_location(
     lat: float | None = None,
     lon: float | None = None,
@@ -54,9 +60,13 @@ def resolve_location(
     if not (-180 <= resolved_lon <= 180):
         raise ValueError("lon must be between -180 and 180")
 
-    # Match cache_key precision (~11 m) so geolocation coords don't fragment cache rows.
-    resolved_lat = round(resolved_lat, 4)
-    resolved_lon = round(resolved_lon, 4)
+    # Snap raw coordinates to a ~1.1 km grid (2 decimals) so many phones in one
+    # spot collapse to a single cache bucket. This is the coarse fallback for
+    # coordinates with no nearby town; requests near a town are snapped to that
+    # town's id upstream (see resolve_location_from_query). 0.01° of longitude is
+    # ~2.4 s of solar time, so grid-snapping shifts sunrise by only a few seconds.
+    resolved_lat = round(resolved_lat, 2)
+    resolved_lon = round(resolved_lon, 2)
     resolved_tz = normalize_observer_timezone(
         resolved_tz, lat=resolved_lat, lon=resolved_lon, country=country,
     )
@@ -112,6 +122,22 @@ def resolve_location_from_query(
         country = row.get("country")
     else:
         country = None
+        # Raw phone GPS: snap to the nearest town so everyone standing in that
+        # town shares one cached computation (cache key becomes city:<id>). A
+        # town's coordinates replace the metre-precise ones; coordinates with no
+        # town in range fall through to resolve_location's coarse grid snap.
+        if _snap_to_nearest_city_enabled() and lat is not None and lon is not None:
+            from services.cities_db import nearest_city
+
+            snapped = nearest_city(lat, lon)
+            if snapped is not None:
+                resolved_city_id = snapped["id"]
+                base_lat = snapped["lat"]
+                base_lon = snapped["lon"]
+                if timezone is None:
+                    base_tz = snapped.get("timezone") or DEFAULT_LOCATION.timezone
+                base_name = snapped["ascii_name"] or snapped["name"]
+                country = snapped.get("country")
 
     if base_lat is None and base_lon is None and base_tz is None:
         return DEFAULT_LOCATION

@@ -7,19 +7,6 @@
         "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha."
     },
     "festivals": {
-        "dashain": {
-            "name_en": "Dashain",
-            "name_ne": "दशैं",
-            "type": "lunar",
-            "lunar_month": "Ashwin",
-            "tithi": 1,
-            "paksha": "shukla",
-            "adhik_policy": "skip",
-            "duration_days": 15,
-            "notes": "Ghatasthapana to Kojagrat Purnima",
-            "importance": "national",
-            "category": "hindu"
-        },
         "tihar": {
             "name_en": "Tihar",
             "name_ne": "तिहार",
@@ -584,7 +571,7 @@
         },
         "maha-ashtami": {
             "name_en": "Maha Ashtami",
-            "name_ne": "महाअष्टमी व्रत",
+            "name_ne": "महाअष्टमी",
             "type": "lunar",
             "lunar_month": "Ashwin",
             "tithi": 8,
@@ -597,7 +584,7 @@
         },
         "maha-navami": {
             "name_en": "Maha Navami",
-            "name_ne": "महानवमी व्रत",
+            "name_ne": "महानवमी",
             "type": "lunar",
             "lunar_month": "Ashwin",
             "tithi": 9,

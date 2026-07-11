@@ -34,16 +34,17 @@ def test_generate_bs_festivals_for_future_years(bs_year: int):
     assert payload["bs_year"] == bs_year
     assert payload["count"] > 100
     ids = {f["id"] for f in payload["festivals"]}
-    assert "dashain" in ids
+    assert "vijaya-dashami" in ids
+    assert "ghatasthapana" in ids
     assert "tihar" in ids
     assert "holi" in ids
 
 
 def test_dashain_2084_predicted_from_lunar_rules():
     rules = load_rules()
-    dashain = rules["dashain"]
+    dashain = rules["vijaya-dashami"]
     for gregorian_year in (2027, 2028):
-        dates = compute_festival_dates("dashain", dashain, gregorian_year, DEFAULT_LOCATION)
+        dates = compute_festival_dates("vijaya-dashami", dashain, gregorian_year, DEFAULT_LOCATION)
         if dates is None:
             continue
         start, _end = dates

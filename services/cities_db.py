@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import math
+import os
 import sqlite3
 import ssl
 import urllib.request
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -30,20 +33,24 @@ CITIES_DB_VERSION = 2
 # GeoNames feature class "P" = populated places (city, town, village, …).
 _POPULATED_PLACE_CLASS = "P"
 
+# GeoNames ids are globally stable; these are verified against data/cities.db
+# (name + population) — see test_popular_city_ids. The curated set is NP cities
+# plus a few diaspora hubs. Note: GeoNames has no populated "Lalitpur" record —
+# the city is filed under its historic name "Patan" (1282931).
 POPULAR_CITY_IDS = (
-    1283240,   # Kathmandu, NP
-    1282951,   # Pokhara, NP
-    1283582,   # Biratnagar, NP
-    1283467,   # Dharan, NP
-    1283368,   # Bharatpur, NP
-    1283621,   # Butwal, NP
-    1283628,   # Nepalgunj, NP
-    1283678,   # Lalitpur, NP
-    1283095,   # Bhimdatta (Kanchanpur HQ / Mahendranagar), Sudurpashchim
-    1275339,   # Mumbai, IN
-    1273294,   # Delhi, IN
-    2147714,   # Sydney, AU
-    5128581,   # New York, US
+    1283240,   # Kathmandu, NP        pop 1,442,271
+    1282898,   # Pokhara, NP         pop 600,051   (was 1282951 = Palun)
+    1283613,   # Bharatpur, NP       pop 369,377   (was 1283368 = Gulariya)
+    1282931,   # Lalitpur / Patan, NP pop 299,283  (was 1283678 = Baneswar)
+    1283582,   # Biratnagar, NP      pop 244,750
+    1283562,   # Butwal, NP          pop 195,054   (was 1283621 = Siddharthanagar)
+    1283460,   # Dharan, NP          pop 173,096   (was 1283467 = Dhangadhi)
+    6941099,   # Nepalgunj, NP       pop 166,258   (was 1283628 = Bhadrapur)
+    1283095,   # Bhimdatta (Kanchanpur HQ / Mahendranagar), NP  pop 88,381
+    1275339,   # Mumbai, IN          pop 12,691,836
+    1273294,   # Delhi, IN           pop 11,034,555
+    2147714,   # Sydney, AU          pop 5,557,233
+    5128581,   # New York City, US   pop 8,804,190
 )
 
 # GeoNames labels several small inland places "Kanchanpur", but Nepal users
@@ -277,6 +284,110 @@ def resolve_city(name: str, *, country: str | None = None) -> dict[str, Any] | N
     return matches[0] if matches else None
 
 
+# --- Nearest-city snapping (cache bucketing) --------------------------------
+#
+# Raw phone GPS is metre-precise and never repeats, so caching panchanga per
+# exact coordinate would recompute for every user even when they stand in the
+# same town. Instead we snap arbitrary (lat, lon) to the nearest *populated*
+# city and cache under that city's stable id — everyone in a town then shares
+# one computation. A patro's sunrise/sunset is a town-level figure anyway, so
+# collapsing sub-town coordinates to the town centre is also culturally correct.
+#
+# GeoNames sets a population only on real towns (in Nepal, ~84 of ~88k places);
+# the other 88k are pop=0 villages/wards. Filtering to population >= floor thus
+# snaps to genuine towns/district HQs and skips the noise that would otherwise
+# re-fragment the cache. Coordinates with no town within MAX_KM (remote hills)
+# fall back to the caller's coarse grid snap instead of a far-away city.
+NEAREST_CITY_MIN_POPULATION = int(os.environ.get("NEAREST_CITY_MIN_POPULATION", "1"))
+NEAREST_CITY_MAX_KM = float(os.environ.get("NEAREST_CITY_MAX_KM", "60"))
+
+_geo_index_ready = False
+
+
+def _ensure_geo_index(conn: sqlite3.Connection) -> None:
+    """Lazily add a latitude index so bounding-box snaps stay fast."""
+    global _geo_index_ready
+    if _geo_index_ready:
+        return
+    try:
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_cities_lat ON cities(lat)")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass  # read-only filesystem — the bounding-box scan still works
+    _geo_index_ready = True
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371.0088
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * r * math.asin(math.sqrt(a))
+
+
+@lru_cache(maxsize=8192)
+def _nearest_city_cached(
+    lat_q: float,
+    lon_q: float,
+    min_population: int,
+    max_km: float,
+    country: str | None,
+) -> dict[str, Any] | None:
+    # Bounding box (a few km of slack) prefilters candidates cheaply; haversine
+    # then picks the true nearest among the handful inside the box.
+    dlat = max_km / 111.0
+    dlon = max_km / max(111.0 * math.cos(math.radians(lat_q)), 1e-6)
+
+    where = "population >= ? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?"
+    params: list[Any] = [
+        min_population,
+        lat_q - dlat,
+        lat_q + dlat,
+        lon_q - dlon,
+        lon_q + dlon,
+    ]
+    if country:
+        where += " AND country = ?"
+        params.append(country.upper())
+
+    with _connect() as conn:
+        _ensure_geo_index(conn)
+        select_cols = _city_select_sql(conn)
+        rows = conn.execute(
+            f"SELECT {select_cols} FROM cities WHERE {where}",
+            params,
+        ).fetchall()
+
+    best: dict[str, Any] | None = None
+    best_km = max_km
+    for row in rows:
+        km = _haversine_km(lat_q, lon_q, row["lat"], row["lon"])
+        if km <= best_km:
+            best_km = km
+            best = _row_to_dict(row)
+    return best
+
+
+def nearest_city(
+    lat: float,
+    lon: float,
+    *,
+    min_population: int = NEAREST_CITY_MIN_POPULATION,
+    max_km: float = NEAREST_CITY_MAX_KM,
+    country: str | None = None,
+) -> dict[str, Any] | None:
+    """Nearest populated city to (lat, lon) within ``max_km``, else ``None``.
+
+    Coordinates are rounded (~110 m) before the memoized lookup so GPS jitter
+    from many phones in one spot collapses to a single cached result. The
+    returned dict is shared — treat it as read-only.
+    """
+    return _nearest_city_cached(
+        round(lat, 3), round(lon, 3), min_population, max_km, country
+    )
+
+
 def get_popular_cities() -> list[dict[str, Any]]:
     placeholders = ",".join("?" for _ in POPULAR_CITY_IDS)
     with _connect() as conn:
@@ -289,6 +400,27 @@ def get_popular_cities() -> list[dict[str, Any]]:
             ORDER BY population DESC
             """,
             POPULAR_CITY_IDS,
+        ).fetchall()
+    return [_row_to_dict(row) for row in rows]
+
+
+def top_cities_by_population(
+    limit: int = 20, *, country: str | None = "NP"
+) -> list[dict[str, Any]]:
+    """Most populous cities (default Nepal) — the natural cache warm-up set,
+    since these are exactly the towns nearest-city snapping collapses traffic to."""
+    with _connect() as conn:
+        select_cols = _city_select_sql(conn)
+        where = "population > 0"
+        params: list[Any] = []
+        if country:
+            where += " AND country = ?"
+            params.append(country.upper())
+        params.append(limit)
+        rows = conn.execute(
+            f"SELECT {select_cols} FROM cities WHERE {where} "
+            f"ORDER BY population DESC LIMIT ?",
+            params,
         ).fetchall()
     return [_row_to_dict(row) for row in rows]
 
