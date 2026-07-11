@@ -20,16 +20,13 @@ def test_dip_matches_standard_geodetic_formula_for_kathmandu():
     assert abs(_horizon_dip_degrees(1400.0) - (-1.0976)) < 1e-3
 
 
-def test_kathmandu_sunrise_sunset_match_drik_panchang():
-    """Regression: 1945-12-28, Kathmandu (lat 27.7172, lon 85.3240, 1400 m).
+def test_kathmandu_default_sunrise_is_sea_level_national():
+    """1945-12-28 Kathmandu — default (national) times use the sea-level horizon.
 
-    swe.rise_trans's geopos altitude only feeds the auto-computed
-    atmospheric pressure (thinner air -> less refraction); it does not add
-    the geometric dip an elevated observer actually sees. Using it alone
-    gave sunrise 06:38 / sunset 17:02 — Drik Panchang (and every serious
-    Vedic panchanga source) shows 06:32 / 17:09 for this exact chart.
-    Switching to rise_trans_true_hor with an explicit dip computed from
-    Kathmandu's elevation closes the gap to within a minute.
+    The Kathmandu valley is ringed by hills that sit *above* the astronomical
+    horizon, so the ~1.1° sea-cliff dip from a 1400 m elevation is unphysical
+    here and made every day a flat 14h. Published Nepali panchang (गौरीशंकर
+    meridian) uses the sea-level horizon, giving ~06:38 / 17:02 for this chart.
     """
     d = date(1945, 12, 28)
     sunrise = calculate_sunrise(d, 27.7172, 85.3240, timezone_name="Asia/Kathmandu")
@@ -38,8 +35,24 @@ def test_kathmandu_sunrise_sunset_match_drik_panchang():
     sunrise_local = sunrise.astimezone(KTM_TZ)
     sunset_local = sunset.astimezone(KTM_TZ)
 
-    assert sunrise_local.strftime("%H:%M") in {"06:31", "06:32", "06:33"}
-    assert sunset_local.strftime("%H:%M") in {"17:07", "17:08", "17:09"}
+    assert sunrise_local.strftime("%H:%M") in {"06:37", "06:38", "06:39"}
+    assert sunset_local.strftime("%H:%M") in {"17:01", "17:02", "17:03"}
+
+
+def test_explicit_altitude_dip_still_matches_drik_panchang():
+    """The elevation-dip path still works when a caller passes an explicit
+    altitude: 1400 m reproduces Drik Panchang's 06:32 / 17:09 for this chart.
+    This is opt-in (altitude=...) and is not the Nepali national default."""
+    d = date(1945, 12, 28)
+    sunrise = calculate_sunrise(
+        d, 27.7172, 85.3240, altitude=1400.0, timezone_name="Asia/Kathmandu"
+    )
+    sunset = calculate_sunset(
+        d, 27.7172, 85.3240, altitude=1400.0, timezone_name="Asia/Kathmandu"
+    )
+
+    assert sunrise.astimezone(KTM_TZ).strftime("%H:%M") in {"06:31", "06:32", "06:33"}
+    assert sunset.astimezone(KTM_TZ).strftime("%H:%M") in {"17:07", "17:08", "17:09"}
 
 
 def test_sea_level_location_unaffected():

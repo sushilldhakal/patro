@@ -66,12 +66,12 @@ ALT_KATHMANDU = 1400.0
 def _default_altitude(latitude: float, longitude: float) -> float:
     """Observer altitude when the caller didn't supply one.
 
-    The Kathmandu valley keeps its ~1400 m elevation so published Nepali patro
-    times stay unchanged; everywhere else uses sea level like standard
-    rise/set tables, instead of inheriting Kathmandu's altitude.
+    Sea level everywhere. Feeding Kathmandu's ~1400 m elevation produced a
+    ~1.1° geometric horizon dip that advanced sunrise / delayed sunset by
+    ~7 min each (a flat 14h00m day). The valley's real horizon is the
+    surrounding hills (above the astronomical horizon), so the sea-cliff dip
+    is unphysical here; sea level matches standard published panchang times.
     """
-    if abs(latitude - LAT_KATHMANDU) < 0.15 and abs(longitude - LON_KATHMANDU) < 0.15:
-        return ALT_KATHMANDU
     return 0.0
 
 

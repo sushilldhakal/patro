@@ -39,13 +39,18 @@ def test_siraha_sunrise_earlier_than_kathmandu_2083_ashadh_24():
     )
 
 
-def test_nepal_patro_kathmandu_matches_drik_1945():
-    """Regression: IST-era Kathmandu vs Drik Panchang (horizon dip at ref. altitude)."""
+def test_nepal_patro_kathmandu_sea_level_1945():
+    """IST-era Kathmandu at the sea-level national horizon (गौरीशंकर meridian).
+
+    Sea level (no valley dip) gives ~06:38 / 17:02 — the published Nepali
+    panchang convention. (Drik Panchang's elevation-adjusted 06:32 / 17:09 is
+    reproducible via the explicit-altitude path; see test_horizon_dip.py.)
+    """
     d = date(1945, 12, 28)
     sunrise = calculate_sunrise(d, *KTM, timezone_name="Asia/Kathmandu").astimezone(KTM_TZ)
     sunset = calculate_sunset(d, *KTM, timezone_name="Asia/Kathmandu").astimezone(KTM_TZ)
-    assert sunrise.strftime("%H:%M") in {"06:31", "06:32", "06:33"}
-    assert sunset.strftime("%H:%M") in {"17:07", "17:08", "17:09"}
+    assert sunrise.strftime("%H:%M") in {"06:37", "06:38", "06:39"}
+    assert sunset.strftime("%H:%M") in {"17:01", "17:02", "17:03"}
 
 
 def test_year_sun_times_api_siraha_before_kathmandu():
@@ -68,8 +73,8 @@ def test_year_sun_times_api_siraha_before_kathmandu():
         f"Siraha {day_s['sunrise']} should be before Kathmandu {day_k['sunrise']}"
     )
     # Siraha (~86.21°E) is slightly east of गौरीशंकर → a few minutes before Kathmandu.
-    assert day_s["sunrise"] == "05:04"
-    assert day_k["sunrise"] == "05:07"
+    assert day_s["sunrise"] == "05:10"
+    assert day_k["sunrise"] == "05:14"
 
 
 def test_east_west_ordering_across_nepal_2083_ashadh_24():

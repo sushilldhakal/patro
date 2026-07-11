@@ -23,8 +23,14 @@ from engine.astronomy.timescale import (
 
 # गौरीशंकर / NPT mean meridian in today's Asia/Kathmandu offset.
 # Reference observer for national tables (Kathmandu valley).
+#
+# Altitude is kept at sea level: the Kathmandu valley is ringed by hills that
+# sit *above* the astronomical horizon, so the ~1400 m sea-cliff "horizon dip"
+# (≈1.1°) does not apply — using it made rise ~7 min early and set ~7 min late,
+# stretching every Nepali day to a flat 14h00m. Standard published Nepali
+# panchang times use the sea-level horizon, which this matches.
 NEPAL_PATRO_REFERENCE_LATITUDE = 27.7172
-NEPAL_PATRO_REFERENCE_ALTITUDE_M = 1400.0
+NEPAL_PATRO_REFERENCE_ALTITUDE_M = 0.0
 
 
 def nepal_patro_solar_event(

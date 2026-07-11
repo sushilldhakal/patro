@@ -41,7 +41,9 @@ logger = logging.getLogger(__name__)
 # 19: fix disha shool (Tue=North) + Rahu Vasa now a distinct 8-direction weekday
 #     cycle (was mistakenly a copy of disha shool).
 # 20: extended muhurta timings (amrit kalam, varjyam, sandhya, dur muhurtam, etc.).
-CACHE_PAYLOAD_VERSION = 20
+# 21: sunrise/sunset at sea-level horizon (dropped unphysical ~1.1° valley dip
+#     that made rise ~7 min early / set ~7 min late, a flat 14h00m day).
+CACHE_PAYLOAD_VERSION = 21
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
