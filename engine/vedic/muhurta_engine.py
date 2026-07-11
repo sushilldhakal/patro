@@ -131,12 +131,18 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
     ),
+    # Panchāṅga Śuddhi (Muhūrta Chintāmaṇi / Dharmasindhu): entry into a new home
+    # is forbidden while Śukra Tārā or Guru Tārā are ast (combust), and in a
+    # leaped (Adhik) lunar month — so both must be udaya and the day non-adhik.
+    # The old śukla-only assumption was wrong (both official 2083 days are
+    # kṛṣṇa), so it is dropped.
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
         sun_rashis=GRIHA_PRAVESH_SUN_RASHIS,
+        require_guru_udaya=True,
+        require_shukra_udaya=True,
         tithis=GRIHA_PRAVESH_SHUKLA_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
-        shukla_only=True,
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
@@ -152,10 +158,13 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
 # keep their own day-level rules in ``sait_rules``.
 MUHURTA_CATEGORIES = frozenset(CEREMONY_RULES)
 
-# Scan window: sunrise → +18h, stepped. 30 min keeps a full-year build tractable
-# while resolving windows finely enough for a day-level listing.
-_SCAN_HOURS = 18.0
+# Muhūrtas are computed sunrise → next sunrise (the vedic day, per Panchāṅga
+# Śuddhi). 30-min steps keep a full-year build tractable while resolving windows
+# finely enough for a day-level listing; windows shorter than MIN_WINDOW are
+# discarded (the classical "at least 5 minutes" rule).
+_SCAN_HOURS = 24.0
 _STEP = timedelta(minutes=30)
+MIN_WINDOW = timedelta(minutes=5)
 
 
 @dataclass(frozen=True)
@@ -255,11 +264,13 @@ def muhurta_windows(
             last = dt
         elif run_start is not None:
             s, ti, nk, lg = run_start
-            windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
+            if last + _STEP - s >= MIN_WINDOW:
+                windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
             run_start = None
     if run_start is not None:
         s, ti, nk, lg = run_start
-        windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
+        if last + _STEP - s >= MIN_WINDOW:
+            windows.append(MuhurtaWindow(s, last + _STEP, ti, nk, lg))
     return windows
 
 
