@@ -33,6 +33,7 @@ from engine.astronomy.positions import (
     get_moon_longitude,
     get_nakshatra,
     get_sidereal_asc_longitude,
+    get_surya_rashi,
     get_tithi_angle,
     get_tithi_number,
     get_display_tithi,
@@ -42,8 +43,6 @@ from engine.astronomy.positions import (
 from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset, get_planet_position
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
-    BUSINESS_NAKSHATRAS,
-    BUSINESS_SHUKLA_TITHIS,
     CHATURMAS_LUNAR_MONTHS,
     GRIHA_AARAMBHA_NAKSHATRAS,
     GRIHA_PRAVESH_NAKSHATRAS,
@@ -96,6 +95,15 @@ ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
 ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
 ANNAPRASAN_LAGNAS = frozenset(range(1, 13)) - frozenset({1, 8, 12})
 
+# Byāpārik Pratiṣṭhān (shop / business opening): all 12 months (only Adhik-māsa
+# removed); Mon/Wed/Thu/Fri only; 16 approved nakṣatras (Sthira/Chara/Mṛdu-
+# Kṣipra); tithis śukla 2,3,5,7,10,11,13,15 or kṛṣṇa 2,3,5,7,10,11,13; Guru &
+# Śukra udaya; Sankranti excluded; muhūrta is the daytime Abhijit window.
+# (Eclipse ±3 days are also traditionally removed; not yet computed here.)
+BYAPARIK_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
+BYAPARIK_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13, 15})
+BYAPARIK_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+
 
 def _rashi(longitude: float) -> int:
     return int(longitude / 30.0) % 12 + 1
@@ -110,6 +118,7 @@ class CeremonyRule:
     lunar_months: frozenset[str] = frozenset()
     sun_rashis: frozenset[int] = frozenset()
     block_chaturmas: bool = True
+    block_sankranti: bool = False         # exclude solar sign-change days
     require_guru_udaya: bool = False      # Jupiter not combust
     require_shukra_udaya: bool = False    # Venus not combust
     require_uttarayana: bool = False
@@ -174,10 +183,15 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
+        block_chaturmas=False,  # all 12 lunar months kept (only Adhik-maas out)
+        block_sankranti=True,
         require_guru_udaya=True,
-        tithis=BUSINESS_SHUKLA_TITHIS,
-        nakshatras=BUSINESS_NAKSHATRAS,
-        shukla_only=True,
+        require_shukra_udaya=True,
+        nakshatras=BYAPARIK_MUHURTA_NAKSHATRAS,
+        shukla_tithis=BYAPARIK_SHUKLA_TITHIS,
+        krishna_tithis=BYAPARIK_KRISHNA_TITHIS,
+        avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        daytime_only=True,
     ),
     "annaprasan": CeremonyRule(
         key="annaprasan",
@@ -225,6 +239,12 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
     dp = build_day_panchanga(greg, location)
     if dp.is_adhik_maas:
         return _DayGate(False)
+    if rule.block_sankranti:
+        # Sankranti = the Sun changes sidereal rāśi within the vedic day.
+        tz = resolve_observer_timezone(location.timezone)
+        noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
+        if get_surya_rashi(noon)["number"] != get_surya_rashi(noon + timedelta(days=1))["number"]:
+            return _DayGate(False)
     if rule.lunar_months and dp.lunar_month not in rule.lunar_months:
         return _DayGate(False)
     if rule.sun_rashis and dp.sun_rashi not in rule.sun_rashis:
