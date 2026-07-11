@@ -381,11 +381,15 @@ def build_year_sun_times(
 # Per-day state blocks the panchanga *wheel* never reads. The year view renders
 # only the wheel (no day-timeline / muhurta / hora panels), so for its bulk
 # payload these blocks are dead weight — dropping them shrinks each embedded day
-# from ~50 KB to ~11 KB. `lagna_spans` is deliberately kept (the wheel animates
-# the lagna ring from it). Full per-day state is still available from the daily
-# and month endpoints for the pages that actually show it.
+# from ~50 KB to ~5 KB. `lagna_spans` (~6.6 KB/day, half the whole payload) is the
+# biggest: the wheel renderer reads the single `lagna` object, never the 12-span
+# array (verified in the client's wheel-data buildWheelDetail/buildWheelMarkers —
+# lagna_spans is only used by the daily-detail, timeline and month-patro pages,
+# which fetch their own full payloads). Full per-day state is still available from
+# the daily and month endpoints for the pages that actually show it.
 _WHEEL_DAY_DROP_KEYS = frozenset(
     {
+        "lagna_spans",
         "muhurta",
         "hora",
         "hora_day",
@@ -401,13 +405,22 @@ _WHEEL_DAY_DROP_KEYS = frozenset(
 )
 
 
+# Flat top-level per-day keys the wheel actually needs. The client seeds the wheel
+# from the nested `panchanga` block and only falls back to these three flat fields
+# (date_ad + sunrise/sunset) when the nested copy lacks them; the ~20 other flat
+# fields (tithi/nakshatra/yoga/karana/moon/aayan/… ) merely duplicate the nested
+# block and are pure transfer weight for the wheel, so they are dropped here.
+_WHEEL_DAY_KEEP_FLAT = frozenset({"day", "date_ad", "sunrise", "sunset"})
+
+
 def _slim_day_for_wheel(day: dict[str, Any]) -> dict[str, Any]:
-    """Copy a calendar day with its embedded state trimmed to wheel-only keys."""
+    """Copy a calendar day trimmed to wheel-only keys (flat + embedded)."""
     embed = day.get("panchanga")
     if not isinstance(embed, dict):
         return day
-    trimmed = {k: v for k, v in embed.items() if k not in _WHEEL_DAY_DROP_KEYS}
-    return {**day, "panchanga": trimmed}
+    slim = {k: v for k, v in day.items() if k in _WHEEL_DAY_KEEP_FLAT}
+    slim["panchanga"] = {k: v for k, v in embed.items() if k not in _WHEEL_DAY_DROP_KEYS}
+    return slim
 
 
 def build_year_calendar(

@@ -119,7 +119,12 @@ def panchanga_year(
     """Full BS year calendar — all months in one response."""
     _validate_bs_year(bs_year)
     if wheel:
-        variant = "wheel"
+        # Bump the variant suffix (not the global CACHE_PAYLOAD_VERSION) to rebuild
+        # only the wheel year caches when the slimmed payload shape changes — the
+        # daily/month/lite/sun caches stay warm. v2: dropped lagna_spans (~half the
+        # payload). v3: also dropped the ~20 duplicated flat per-day fields the
+        # wheel never reads.
+        variant = "wheel3"
         build = lambda: build_year_calendar(bs_year, location, full=True, shape="wheel")
     else:
         variant = "full" if full else "lite"
