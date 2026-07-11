@@ -158,6 +158,28 @@ def build_daily_state(
     return payload
 
 
+def _day_festival_names(
+    day_festivals: list[dict[str, Any]],
+    *,
+    exclude_international: bool = False,
+) -> list[str]:
+    """Festival display names for a calendar day — Nepali-first.
+
+    The month grid renders these strings directly, so we emit ``name_ne`` (the
+    Nepali label) and fall back to English only when a Nepali name is missing.
+    ``exclude_international`` drops "international"-category observances (World
+    days) — used by the panchanga month grid where they add noise.
+    """
+    names: list[str] = []
+    for f in day_festivals:
+        if exclude_international and f.get("category") == "international":
+            continue
+        name = f.get("name_ne") or f.get("name_en") or f.get("name")
+        if name:
+            names.append(name)
+    return names
+
+
 def build_patro_month(
     bs_year: int,
     bs_month: int,
@@ -178,6 +200,7 @@ def build_month_calendar_at_clock(
     clock: str = "12:00",
     *,
     full: bool = False,
+    exclude_international: bool = False,
 ) -> dict[str, Any]:
     """BS month grid with ephemeris-mode panchanga at a fixed civil clock each day."""
     from engine.vedic.at_time import instant_row_from_date
@@ -191,7 +214,7 @@ def build_month_calendar_at_clock(
     for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
         day_festivals = _festivals_for_day(festivals, greg)
         row = instant_row_from_date(greg, clock, location)
-        row["festivals"] = [f.get("name_en") or f.get("name") for f in day_festivals]
+        row["festivals"] = _day_festival_names(day_festivals, exclude_international=exclude_international)
         if not full:
             row.pop("panchanga", None)
         calendar.append(row)
@@ -225,6 +248,7 @@ def build_month_calendar(
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
     full: bool = False,
+    exclude_international: bool = False,
 ) -> dict[str, Any]:
     """BS month as a calendar array — the Patro grid as JSON."""
     if not 1 <= bs_month <= 12:
@@ -263,7 +287,7 @@ def build_month_calendar(
             "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
             "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),
             "moonset_local": (panchanga.get("moonset") or {}).get("local"),
-            "festivals": [f.get("name_en") or f.get("name") for f in day_festivals],
+            "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
         }
         if full:
             row["panchanga"] = build_daily_state(

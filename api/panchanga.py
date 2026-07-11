@@ -141,24 +141,34 @@ def panchanga_month(
     request: Request,
     full: bool = Query(False, description="Include full daily state per day"),
     clock: str | None = Query(None, description="HH:MM civil clock — ephemeris mode for each day in the month"),
+    exclude_international: bool = Query(
+        False,
+        description="Drop international 'World day' observances (panchanga month grid)",
+    ),
 ):
     """BS month calendar — Patro grid as structured JSON.
 
-    Deterministic per (year, month, location, full, clock) → served from the
-    gzip response cache; the first request computes (~0.8 s cold), later ones
-    stream back in milliseconds.
+    Deterministic per (year, month, location, full, clock, exclude_international)
+    → served from the gzip response cache; the first request computes (~0.8 s
+    cold), later ones stream back in milliseconds.
     """
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     _validate_bs_year(bs_year)
     _validate_bs_month(bs_month)
-    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}"
+    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}"
     key = f"month_{bs_year}_{bs_month}_{variant}_{location_cache_key(location)}"
 
     def build():
         if clock:
-            return build_month_calendar_at_clock(bs_year, bs_month, location, clock, full=full)
-        return build_month_calendar(bs_year, bs_month, location, full=full)
+            return build_month_calendar_at_clock(
+                bs_year, bs_month, location, clock, full=full,
+                exclude_international=exclude_international,
+            )
+        return build_month_calendar(
+            bs_year, bs_month, location, full=full,
+            exclude_international=exclude_international,
+        )
 
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_year))
 

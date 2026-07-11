@@ -45,8 +45,10 @@ logger = logging.getLogger(__name__)
 #     that made rise ~7 min early / set ~7 min late, a flat 14h00m day).
 # 22: Dashain festival refactor — removed the 15-day "दशैं" span that painted
 #     every day; individual day festivals (घटस्थापना/फूलपाती/महाअष्टमी/
-#     महानवमी/विजया दशमी) now surface. Invalidates stale month/year response
-#     cache that had the span baked in.
+#     महानवमी/विजया दशमी) now surface. Month grid now emits Nepali festival
+#     names (name_ne) instead of English, and supports exclude_international
+#     to drop "World day" observances from the panchanga grid. Invalidates
+#     stale month/year response cache that had the span / English names baked in.
 CACHE_PAYLOAD_VERSION = 22
 
 _REQUIRED_PAYLOAD_KEYS = (
