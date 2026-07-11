@@ -104,6 +104,9 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
     ),
+    # Calibrated against the official BS 2082-2083 bratabandha lists (21 days):
+    # every day is Uttarāyaṇa (kept), but a third fall in kṛṣṇa pakṣa — so the
+    # old śukla-only assumption was wrong and is dropped. recall 52% -> 67%.
     "bratabandha": CeremonyRule(
         key="bratabandha",
         lunar_months=BRATABANDHA_LUNAR_MONTHS,
@@ -111,7 +114,6 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_uttarayana=True,
         tithis=BRATABANDHA_TITHIS,
         nakshatras=BRATABANDHA_NAKSHATRAS,
-        shukla_only=True,
     ),
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
