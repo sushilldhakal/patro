@@ -16,7 +16,7 @@ from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "3.5.0"
+SAIT_ENGINE_VERSION = "3.6.0"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
@@ -58,10 +58,10 @@ def generate_sait_year_category(
     category: str,
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, list[int]]:
-    # Lagna-based saṃskāra (vivah / bratabandha / gṛha / vyāpāra) are decided by
-    # a time-resolved muhūrta window, not the sunrise panchanga, so they run
-    # through the muhūrta engine. The deterministic Vās categories (rudri/agni)
-    # and birth-anchored annaprasan keep their day-level sunrise rules.
+    # Lagna-based saṃskāra (vivah / bratabandha / gṛha / vyāpāra / annaprasan)
+    # are decided by a time-resolved muhūrta window, not the sunrise panchanga,
+    # so they run through the muhūrta engine. Only the deterministic Vās
+    # categories (rudri / agni) keep their day-level sunrise rules.
     use_muhurta = category in MUHURTA_CATEGORIES
     checker = None if use_muhurta else CATEGORY_CHECKS.get(category)
     if not use_muhurta and checker is None:
