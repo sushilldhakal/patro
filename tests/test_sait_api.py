@@ -25,7 +25,8 @@ def test_official_override_2083_bratabandha():
     assert set(baisakh["days"]) == {20, 21, 23}
 
 
-def test_computed_year_2082_vivah():
-    payload = get_sait_month_entries(2082, "vivah", DEFAULT_LOCATION)
+def test_computed_year_uncurated_vivah():
+    # 2085 has no official listing, so it falls back to the muhurta engine.
+    payload = get_sait_month_entries(2085, "vivah", DEFAULT_LOCATION)
     assert payload["source"] == "computed"
     assert payload["months"]

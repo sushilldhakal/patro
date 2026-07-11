@@ -91,20 +91,23 @@ def agni_on_earth(tithi_absolute: int, vaara_number: int) -> bool:
 
 
 def rudra_on_earth(tithi_absolute: int) -> bool:
-    """Shiva Vas — Shiva accessible (auspicious for Rudri / रुद्री जुर्ने).
+    """Śiva Vāsa — Rudra Abhiṣeka is auspicious only where Śiva resides well.
 
     Classic Śiva-vāsa shloka on the *absolute* tithi (1–30):
 
-        (2 × tithi + 5) mod 7 ∈ {1, 2, 3, 5}
+        (2 × tithi + 5) mod 7 →
+            1 Kailāsa · 2 Gaurī · 3 Vṛṣabha (Nandi)   → auspicious
+            4 Sabhā · 5 Bhojana · 6 Krīḍā · 0 Śmaśāna → avoid
 
-    (Kailāsa / Gaurī / Vṛṣa / Bhojana), excluding Amāvasyā (30). Fitted
-    against the official Nepal Panchanga listing for BS 2083 (recall ≈ 0.94).
-    The earlier form used the 1–15 display tithi and remainders {1, 2},
-    matching only ~37% of the official days.
+    Per Muhūrta Chintāmaṇi only Kailāsa/Gaurī/Nandi (remainders {1,2,3}) are
+    auspicious; Amāvasyā (30) is excluded. (Note: this is stricter than the
+    Nepal Samiti's own published rudri list, which also lists Bhojana days —
+    by explicit choice we follow the shastra rule for computed years, while
+    curated official data still takes precedence where it exists.)
     """
     if tithi_absolute == 30:  # Amavasya
         return False
-    return (((2 * tithi_absolute) + 5) % 7) in (1, 2, 3, 5)
+    return (((2 * tithi_absolute) + 5) % 7) in (1, 2, 3)
 
 
 # --- Lunar (festival masa) month sets ----------------------------------------

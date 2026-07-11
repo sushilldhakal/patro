@@ -8,6 +8,7 @@ DATABASE_URL is unset (auth routes are simply not registered in that case).
 from __future__ import annotations
 
 from collections.abc import Iterator
+from contextlib import contextmanager
 from functools import lru_cache
 
 from sqlalchemy import create_engine
@@ -48,5 +49,23 @@ def get_db() -> Iterator[Session]:
     session = _session_factory()()
     try:
         yield session
+    finally:
+        session.close()
+
+
+@contextmanager
+def db_session() -> Iterator[Session]:
+    """Session context manager for background/non-request code.
+
+    Commits on success, rolls back on error, always closes. Use for caches and
+    other work that runs outside a FastAPI request (where ``get_db`` applies).
+    """
+    session = _session_factory()()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
     finally:
         session.close()

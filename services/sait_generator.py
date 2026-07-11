@@ -10,11 +10,13 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.vedic.bikram_sambat import get_bs_month_length, iter_bs_month_days
 from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
+from engine.vedic.muhurta_engine import MUHURTA_CATEGORIES, has_muhurta
 from engine.vedic.sait_rules import CATEGORY_CHECKS, build_day_panchanga
+from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "2.1.0"
+SAIT_ENGINE_VERSION = "3.6.0"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
@@ -56,8 +58,13 @@ def generate_sait_year_category(
     category: str,
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, list[int]]:
-    checker = CATEGORY_CHECKS.get(category)
-    if checker is None:
+    # Lagna-based saṃskāra (vivah / bratabandha / gṛha / vyāpāra / annaprasan)
+    # are decided by a time-resolved muhūrta window, not the sunrise panchanga,
+    # so they run through the muhūrta engine. Only the deterministic Vās
+    # categories (rudri / agni) keep their day-level sunrise rules.
+    use_muhurta = category in MUHURTA_CATEGORIES
+    checker = None if use_muhurta else CATEGORY_CHECKS.get(category)
+    if not use_muhurta and checker is None:
         raise ValueError(f"Unknown sait category: {category}")
 
     by_month: dict[str, list[int]] = {}
@@ -67,8 +74,11 @@ def generate_sait_year_category(
             continue
         matching_days: list[int] = []
         for bs_day, greg_date in iter_bs_month_days(bs_year, bs_month):
-            day_ctx = build_day_panchanga(greg_date, location)
-            if checker(day_ctx):
+            if use_muhurta:
+                match = has_muhurta(category, greg_date, location)
+            else:
+                match = checker(build_day_panchanga(greg_date, location))
+            if match:
                 matching_days.append(bs_day)
         if matching_days:
             by_month[str(bs_month)] = matching_days
@@ -88,8 +98,14 @@ def get_generated_sait(
             f"bs_year must be between {BS_ESTIMATED_MIN_YEAR} and {BS_SUPPORTED_MAX_YEAR}"
         )
 
+    # Shared Postgres is the primary store (persists across serverless
+    # instances and users); the on-disk file cache is the local-dev fallback
+    # when DATABASE_URL is unset.
     if use_cache:
-        cached = load_sait_cached(bs_year, category, location)
+        if db_available():
+            cached = load_sait_db(bs_year, category, location, SAIT_ENGINE_VERSION)
+        else:
+            cached = load_sait_cached(bs_year, category, location)
         if cached is not None:
             return cached
 
@@ -103,7 +119,10 @@ def get_generated_sait(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": "computed",
     }
-    save_sait_cache(payload, location)
+    if db_available():
+        save_sait_db(payload, location, SAIT_ENGINE_VERSION)
+    else:
+        save_sait_cache(payload, location)
     return payload
 
 
