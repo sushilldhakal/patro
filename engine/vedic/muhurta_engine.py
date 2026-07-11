@@ -87,6 +87,15 @@ BRATABANDHA_MUHURTA_NAKSHATRAS = frozenset(range(1, 28)) - frozenset({2, 3, 10, 
 BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
 BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
 
+# Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi: fixed/movable/gentle/short
+# nakṣatras; śukla 2,3,5,7,10,13,15 or kṛṣṇa 2,3,5,7,10,13 tithis; Mon/Wed/Thu/
+# Fri only; any lagna except Meṣa/Vṛśchika/Mīna. (The exact date also needs the
+# child's 5-8 month age window; the year listing shows the suitable days.)
+ANNAPRASAN_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
+ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
+ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
+ANNAPRASAN_LAGNAS = frozenset(range(1, 13)) - frozenset({1, 8, 12})
+
 
 def _rashi(longitude: float) -> int:
     return int(longitude / 30.0) % 12 + 1
@@ -170,11 +179,21 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         nakshatras=BUSINESS_NAKSHATRAS,
         shukla_only=True,
     ),
+    "annaprasan": CeremonyRule(
+        key="annaprasan",
+        block_chaturmas=False,
+        nakshatras=ANNAPRASAN_MUHURTA_NAKSHATRAS,
+        shukla_tithis=ANNAPRASAN_SHUKLA_TITHIS,
+        krishna_tithis=ANNAPRASAN_KRISHNA_TITHIS,
+        avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        lagnas=ANNAPRASAN_LAGNAS,
+        daytime_only=True,
+    ),
 }
 
 # Ceremonies whose auspicious days are found by this engine (lagna-based). The
-# deterministic Vās categories (rudri/agni) and the birth-anchored annaprasan
-# keep their own day-level rules in ``sait_rules``.
+# deterministic Vās categories (rudri/agni) keep their day-level rules in
+# ``sait_rules``.
 MUHURTA_CATEGORIES = frozenset(CEREMONY_RULES)
 
 # Muhūrtas are computed sunrise → next sunrise (the vedic day, per Panchāṅga
