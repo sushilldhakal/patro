@@ -49,7 +49,6 @@ from engine.vedic.sait_rules import (
     BUSINESS_SHUKLA_TITHIS,
     CHATURMAS_LUNAR_MONTHS,
     GRIHA_AARAMBHA_NAKSHATRAS,
-    GRIHA_AARAMBHA_SUN_RASHIS,
     GRIHA_PRAVESH_NAKSHATRAS,
     GRIHA_PRAVESH_SHUKLA_TITHIS,
     GRIHA_PRAVESH_SUN_RASHIS,
@@ -65,6 +64,16 @@ _RIKTA = frozenset({4, 9, 14})
 # Chitra, Dhanishta) — these carry real vivāha muhūrtas in the official lists.
 VIVAH_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 10, 12, 13, 14, 15, 17, 19, 20, 21, 23, 26, 27})
 VIVAH_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+
+# Gṛha-ārambha, calibrated against official BS 2081-2083 (18 days): the old
+# Sun-sign set {1,4,8,10} was wrong — the samiti's foundation days sit mainly in
+# Vṛśchika/Dhanu/Kumbha (8/9/11), and 2 fall in Chaturmāsa (construction, unlike
+# vivāha, is not paused). Also allow Pratipadā (tithi 1). NOTE: even so this
+# floods (~5% precision) — gṛha-ārambha is too sparse to compute usefully, so
+# curated official data is what makes it accurate.
+GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS = frozenset({1, 4, 7, 8, 9, 10, 11})
+GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({1, 2, 3, 5, 7, 10, 11, 12, 13})
+GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = GRIHA_AARAMBHA_NAKSHATRAS | frozenset({24, 27})
 
 
 def _rashi(longitude: float) -> int:
@@ -117,9 +126,10 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     ),
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
-        sun_rashis=GRIHA_AARAMBHA_SUN_RASHIS,
-        tithis=GRIHA_PRAVESH_SHUKLA_TITHIS,
-        nakshatras=GRIHA_AARAMBHA_NAKSHATRAS,
+        sun_rashis=GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS,
+        block_chaturmas=False,
+        tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
+        nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
     ),
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
