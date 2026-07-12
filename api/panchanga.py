@@ -343,6 +343,23 @@ def nepal_sait_years():
     return {"years": list_sait_years()}
 
 
+@router.get("/nepal/sait/about", tags=["sait"])
+def nepal_sait_about_all():
+    """Explanation metadata for every ceremony type — powers the standalone pages."""
+    from services.sait_api import get_sait_about_all
+    return get_sait_about_all()
+
+
+@router.get("/nepal/sait/{category}/about", tags=["sait"])
+def nepal_sait_about(category: str):
+    """Explanation / how-it's-sourced metadata for one ceremony type."""
+    from services.sait_api import get_sait_about
+    try:
+        return get_sait_about(category)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
 @router.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])
 def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""

@@ -12,6 +12,7 @@ from services.sait_generator import get_generated_sait
 
 ROOT = Path(__file__).resolve().parents[1]
 SAIT_RULES_PATH = ROOT / "rules" / "sait_dates_v1.json"
+SAIT_ABOUT_PATH = ROOT / "rules" / "sait_about.json"
 
 # Sait (auspicious-date) listings drive a year picker for ceremony planning, so
 # they keep a practical window rather than the full engine range (BS 60–3000).
@@ -54,6 +55,41 @@ def list_sait_categories() -> list[dict[str, str | bool]]:
 def list_sait_years() -> list[int]:
     """Practical BS-year window for the sait picker (1700–2200)."""
     return list(range(SAIT_LIST_MIN_YEAR, SAIT_LIST_MAX_YEAR + 1))
+
+
+@lru_cache(maxsize=1)
+def _load_about() -> dict[str, Any]:
+    with SAIT_ABOUT_PATH.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def get_sait_about_all() -> dict[str, Any]:
+    """Explanation metadata for every ceremony type (for the individual pages)."""
+    about = _load_about()
+    return {
+        "method": {
+            "ne": about["_meta"].get("method_ne"),
+            "en": about["_meta"].get("method_en"),
+        },
+        "source": about["_meta"].get("source"),
+        "categories": [
+            {"id": cat_id, **meta} for cat_id, meta in (about.get("categories") or {}).items()
+        ],
+    }
+
+
+def get_sait_about(category: str) -> dict[str, Any]:
+    """Explanation metadata for one ceremony type."""
+    about = _load_about()
+    meta = (about.get("categories") or {}).get(category)
+    if meta is None:
+        raise ValueError(f"Unknown sait category '{category}'.")
+    return {
+        "id": category,
+        "source": about["_meta"].get("source"),
+        "method": {"ne": about["_meta"].get("method_ne"), "en": about["_meta"].get("method_en")},
+        **meta,
+    }
 
 
 def _static_month_entries(bs_year: int, category: str) -> dict[str, list[int]] | None:
