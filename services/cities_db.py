@@ -388,6 +388,73 @@ def nearest_city(
     )
 
 
+# Widening bounding boxes tried before a full-table scan. Ordered so the common
+# case (a town within ~60 km) resolves on the cheap first box, while far-flung
+# coordinates keep expanding until a city is found.
+_NEAREST_GLOBAL_RADII_KM = (60.0, 250.0, 1000.0)
+
+
+@lru_cache(maxsize=4096)
+def _nearest_city_fullscan(
+    lat_q: float,
+    lon_q: float,
+    min_population: int,
+    country: str | None,
+) -> dict[str, Any] | None:
+    """Globally nearest populated city via a full-table haversine scan.
+
+    Last-resort fallback for coordinates with no city inside the widest bounding
+    box (e.g. mid-ocean or polar points). Populated places in the DB number only
+    tens of thousands, so a single scan is cheap; the result is memoized on the
+    rounded coordinate like the bounding-box path.
+    """
+    where = "population >= ?"
+    params: list[Any] = [min_population]
+    if country:
+        where += " AND country = ?"
+        params.append(country.upper())
+
+    with _connect() as conn:
+        select_cols = _city_select_sql(conn)
+        rows = conn.execute(
+            f"SELECT {select_cols} FROM cities WHERE {where}",
+            params,
+        ).fetchall()
+
+    best: dict[str, Any] | None = None
+    best_km = float("inf")
+    for row in rows:
+        km = _haversine_km(lat_q, lon_q, row["lat"], row["lon"])
+        if km < best_km:
+            best_km = km
+            best = _row_to_dict(row)
+    return best
+
+
+def nearest_city_global(
+    lat: float,
+    lon: float,
+    *,
+    min_population: int = NEAREST_CITY_MIN_POPULATION,
+    country: str | None = None,
+) -> dict[str, Any] | None:
+    """Nearest populated city to (lat, lon) with no distance limit.
+
+    Unlike :func:`nearest_city`, this never gives up: it widens the search box
+    and finally scans the whole table, so "use my location" always resolves to a
+    named city — even one hundreds of km away — rather than falling back to raw
+    coordinates. Returns ``None`` only when the DB has no matching city at all.
+    The returned dict is shared — treat it as read-only.
+    """
+    for max_km in _NEAREST_GLOBAL_RADII_KM:
+        hit = nearest_city(
+            lat, lon, min_population=min_population, max_km=max_km, country=country
+        )
+        if hit is not None:
+            return hit
+    return _nearest_city_fullscan(round(lat, 3), round(lon, 3), min_population, country)
+
+
 def get_popular_cities() -> list[dict[str, Any]]:
     placeholders = ",".join("?" for _ in POPULAR_CITY_IDS)
     with _connect() as conn:

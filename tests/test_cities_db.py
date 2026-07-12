@@ -76,6 +76,27 @@ def test_popular_city_ids_resolve_to_expected_cities():
         assert row["country"] == country
 
 
+def test_nearest_city_global_snaps_far_point_to_a_city():
+    """A point with no town nearby must still resolve to a named city, not None."""
+    from services.cities_db import nearest_city_global
+
+    # Mid-Bay-of-Bengal: no populated place for hundreds of km. The unbounded
+    # resolver must still return the nearest coastal city rather than giving up.
+    city = nearest_city_global(15.0, 88.0)
+    assert city is not None
+    assert city["ascii_name"]
+    assert city["population"] >= 1
+
+
+def test_nearest_city_global_returns_kathmandu_for_ktm_coords():
+    from services.cities_db import nearest_city_global
+
+    city = nearest_city_global(27.7017, 85.3206, country="NP")
+    assert city is not None
+    assert city["country"] == "NP"
+    assert city["ascii_name"] == "Kathmandu"
+
+
 def test_legacy_cities_schema_without_admin_columns(tmp_path, monkeypatch):
     """Older cities.db files must not break city_id lookups after a code deploy."""
     import sqlite3
