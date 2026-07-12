@@ -17,6 +17,7 @@ from engine.astronomy.positions import (
     get_paksha,
     get_tithi_angle,
     get_tithi_number,
+    get_yoga,
 )
 from engine.astronomy.swiss_eph import get_sun_longitude
 from engine.astronomy.timescale import resolve_observer_timezone
@@ -28,6 +29,8 @@ from engine.vedic.element_boundaries import (
     find_nakshatra_end,
     find_nakshatra_start,
     find_sun_nakshatra_end,
+    find_yoga_end,
+    find_yoga_start,
 )
 from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
 
@@ -317,6 +320,27 @@ _DAGDHA_TITHI_BY_VAARA = {0: 12, 1: 11, 2: 5, 3: 3, 4: 6, 5: 8, 6: 9}
 _TITHI_RANDHRA_GHATIS = {1: 5, 4: 8, 6: 9, 8: 14, 9: 25, 12: 10}
 _GHATI_SECONDS = 24 * 60
 
+# Visha Ghati of the Tithi — a 4-ghati (1/15 of span) poison window offset from
+# the tithi's start, keyed by *display* tithi (1–15, same in both pakshas;
+# 15 = Purnima/Amavasya, poison in the opening 4 ghatis). Offsets are ghatis of
+# the tithi's true span (Tithi Visha Ghatika table).
+_TITHI_VISHA_GHATI = {
+    1: 15, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 14,
+    9: 16, 10: 18, 11: 20, 12: 20, 13: 10, 14: 14, 15: 0,
+}
+
+# Visha Ghati of the Nitya Yoga — the toxic opening N ghatis of these yogas
+# (1-based yoga number). Vyatipata (17) is malefic for its entire span (None).
+_YOGA_VISHA_GHATIS: dict[int, int | None] = {
+    1: 5,      # Vishkumbha
+    6: 6,      # Atiganda
+    9: 5,      # Shula
+    10: 6,     # Ganda
+    13: 9,     # Vyaghata
+    15: 3,     # Vajra
+    17: None,  # Vyatipata — entire duration
+}
+
 
 def _tithi_is_malefic(display: int, paksha: str, vaara_index: int) -> bool:
     if display in _RIKTA_TITHIS:
@@ -375,6 +399,32 @@ def _collect_sun_nakshatra_intervals(
         if nak_end >= scope_end:
             break
         cursor = nak_end + timedelta(seconds=90)
+    return intervals
+
+
+def _collect_yoga_intervals(
+    scope_start: datetime,
+    scope_end: datetime,
+) -> list[dict[str, Any]]:
+    intervals: list[dict[str, Any]] = []
+    cursor = scope_start
+    for _ in range(40):
+        if cursor >= scope_end:
+            break
+        num, name, _ = get_yoga(cursor)
+        y_start = find_yoga_start(cursor)
+        y_end = find_yoga_end(cursor)
+        intervals.append(
+            {
+                "number": num,
+                "name": name,
+                "start_dt": y_start,
+                "end_dt": y_end,
+            }
+        )
+        if y_end >= scope_end:
+            break
+        cursor = y_end + timedelta(seconds=90)
     return intervals
 
 
@@ -697,6 +747,7 @@ def build_extended_muhurta_timings(
     tithi_intervals = _collect_tithi_intervals(scope_start, scope_end)
     bad_tithi_segments: list[dict[str, Any]] = []
     randhra_segments: list[dict[str, Any]] = []
+    visha_tithi_segments: list[dict[str, Any]] = []
     for t in tithi_intervals:
         if _tithi_is_malefic(t["display"], t["paksha"], vaara_index):
             seg = _clip_segment(
@@ -712,6 +763,17 @@ def build_extended_muhurta_timings(
             )
             if seg:
                 randhra_segments.append(seg)
+        # Visha Ghati of the tithi — 4 ghatis of its true span from the offset.
+        v_off = _TITHI_VISHA_GHATI.get(t["display"])
+        if v_off is not None:
+            t_dur = (t["end_dt"] - t["start_dt"]).total_seconds()
+            v_start = _add_seconds(t["start_dt"], t_dur * v_off / 60.0)
+            v_end = _add_seconds(v_start, t_dur * PERIOD_GHATIS / 60.0)
+            seg = _clip_segment(
+                v_start, v_end, scope_start, scope_end, sunrise_utc, timezone_name
+            )
+            if seg:
+                visha_tithi_segments.append(seg)
     if bad_tithi_segments:
         inauspicious.append(
             _timing_entry("tithi", "Tithi", "तिथि", bad_tithi_segments, is_auspicious=False)
@@ -720,6 +782,36 @@ def build_extended_muhurta_timings(
         inauspicious.append(
             _timing_entry(
                 "tithi_randhra", "Tithi Randhra", "तिथि रन्ध्र", randhra_segments, is_auspicious=False
+            )
+        )
+    if visha_tithi_segments:
+        inauspicious.append(
+            _timing_entry(
+                "visha_tithi", "Tithi Visha", "तिथि विष", visha_tithi_segments, is_auspicious=False
+            )
+        )
+
+    # Visha Ghati of the Nitya Yoga — toxic opening ghatis of malefic yogas.
+    visha_yoga_segments: list[dict[str, Any]] = []
+    for y in _collect_yoga_intervals(scope_start, scope_end):
+        if y["number"] not in _YOGA_VISHA_GHATIS:
+            continue
+        y_ghatis = _YOGA_VISHA_GHATIS[y["number"]]
+        if y_ghatis is None:
+            # Vyatipata — malefic for its whole span.
+            y_end = y["end_dt"]
+        else:
+            y_dur = (y["end_dt"] - y["start_dt"]).total_seconds()
+            y_end = _add_seconds(y["start_dt"], y_dur * y_ghatis / 60.0)
+        seg = _clip_segment(
+            y["start_dt"], y_end, scope_start, scope_end, sunrise_utc, timezone_name
+        )
+        if seg:
+            visha_yoga_segments.append(seg)
+    if visha_yoga_segments:
+        inauspicious.append(
+            _timing_entry(
+                "visha_yoga", "Yoga Visha", "योग विष", visha_yoga_segments, is_auspicious=False
             )
         )
 

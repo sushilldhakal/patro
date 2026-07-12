@@ -52,7 +52,11 @@ logger = logging.getLogger(__name__)
 # 23: corrected Varjyam (नक्षत्र विष) start ghati for Rohini (40→4), Ardra
 #     (21→11), Mula (21→20), and swapped Purva/Uttara Ashadha (24/20→20/24) to
 #     match the Vish Ghatika table. Shifts the plotted अशुभ window on those days.
-CACHE_PAYLOAD_VERSION = 23
+# 24: added Visha Ghati of the Tithi (visha_tithi, तिथि विष — 4-ghati window per
+#     tithi) and Visha Ghati of the Nitya Yoga (visha_yoga, योग विष — toxic
+#     opening ghatis of Vishkumbha/Atiganda/Shula/Ganda/Vyaghata/Vajra, whole
+#     span for Vyatipata) to the inauspicious timings.
+CACHE_PAYLOAD_VERSION = 24
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
