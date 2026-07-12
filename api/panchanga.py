@@ -185,6 +185,10 @@ def panchanga_day(
     era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
     festivals: bool = Query(False, description="Include festivals on this day"),
     detail: bool = Query(True, description="Include full computation detail block"),
+    civil: bool = Query(
+        False,
+        description="Attach a civil-day (midnight→midnight) timeline stitched from the previous + current day",
+    ),
 ):
     """Daily panchanga — single-day astronomical time-state."""
     from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
@@ -194,6 +198,10 @@ def panchanga_day(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
+    if civil:
+        from services.civil_timeline import build_civil_timeline
+
+        payload["civil_timeline"] = build_civil_timeline(greg, location)
     return JSONResponse(
         content=payload,
         headers={
