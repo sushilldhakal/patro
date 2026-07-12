@@ -35,14 +35,16 @@ GHATIKA_SECONDS = 24 * 60
 PERIOD_GHATIS = 4  # Amrit / Varjyam window = 4 ghatis of nakshatra duration
 SANDHYA_NIGHT_GHATIKAS = 3.0
 
-# Amrit / Varjyam offset in ghatis (0–60) for a 60-ghati nakshatra span — panchang-core table.
+# Amrit / Varjyam offset in ghatis (0–60) for a 60-ghati nakshatra span.
+# Second column (Varjyam / नक्षत्र विष) follows the classical Vish Ghatika table;
+# the poison window runs offset → offset+4 ghatis of that day's true nakshatra span.
 _NAKSHATRA_AMRITA_VARJYAM: list[tuple[list[int], list[int]]] = [
     ([42], [50]),   # Ashwini
     ([48], [24]),   # Bharani
     ([54], [30]),   # Krittika
-    ([52], [40]),   # Rohini
+    ([52], [4]),    # Rohini
     ([38], [14]),   # Mrigashira
-    ([35], [21]),   # Ardra
+    ([35], [11]),   # Ardra
     ([54], [30]),   # Punarvasu
     ([44], [20]),   # Pushya
     ([56], [32]),   # Ashlesha
@@ -55,9 +57,9 @@ _NAKSHATRA_AMRITA_VARJYAM: list[tuple[list[int], list[int]]] = [
     ([38], [14]),   # Vishakha
     ([34], [10]),   # Anuradha
     ([38], [14]),   # Jyeshtha
-    ([44], [21]),   # Mula
-    ([48], [24]),   # Purva Ashadha
-    ([44], [20]),   # Uttara Ashadha
+    ([44], [20]),   # Mula
+    ([48], [20]),   # Purva Ashadha
+    ([44], [24]),   # Uttara Ashadha
     ([34], [10]),   # Shravana
     ([34], [10]),   # Dhanishta
     ([42], [18]),   # Shatabhisha

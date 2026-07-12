@@ -49,7 +49,10 @@ logger = logging.getLogger(__name__)
 #     names (name_ne) instead of English, and supports exclude_international
 #     to drop "World day" observances from the panchanga grid. Invalidates
 #     stale month/year response cache that had the span / English names baked in.
-CACHE_PAYLOAD_VERSION = 22
+# 23: corrected Varjyam (नक्षत्र विष) start ghati for Rohini (40→4), Ardra
+#     (21→11), Mula (21→20), and swapped Purva/Uttara Ashadha (24/20→20/24) to
+#     match the Vish Ghatika table. Shifts the plotted अशुभ window on those days.
+CACHE_PAYLOAD_VERSION = 23
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
