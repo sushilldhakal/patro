@@ -125,4 +125,36 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.7.0"
+    assert SAIT_ENGINE_VERSION == "3.8.0"
+
+
+def test_shuddha_jestha_krishna_not_flagged_adhik_bs2083():
+    """Regression: BS 2083 has an Adhik Jestha, but the Śuddha Jestha kṛṣṇa days
+    that spill into Baiśākh 19–31 must NOT be tagged adhik (they carry the
+    Samiti's vivāha dates). The true Adhik Jestha (śukla + its kṛṣṇa) stays adhik."""
+    shuddha = build_day_panchanga(date(2026, 5, 5), DEFAULT_LOCATION)   # Jestha kṛṣṇa 3
+    assert shuddha.lunar_month == "Jestha"
+    assert shuddha.is_adhik_maas is False
+
+    adhik = build_day_panchanga(date(2026, 5, 20), DEFAULT_LOCATION)    # Adhik Jestha śukla
+    assert adhik.is_adhik_maas is True
+
+
+def test_griha_pravesh_four_step_rule():
+    from engine.vedic.sait_rules import check_griha_pravesh
+
+    # A clean śuddha day: Baishakh, śukla Panchami, Rohini(4), Guru & Śukra udaya.
+    ok = _day(lunar_month="Baishakh", paksha="shukla", tithi_display=5, nakshatra=4)
+    assert check_griha_pravesh(ok)
+    # Step 1 — Chaturmas / Poush / Adhik months rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Shrawan", nakshatra=4))
+    assert not check_griha_pravesh(_day(lunar_month="Poush", nakshatra=4))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, is_adhik_maas=True))
+    # Step 2 — kṛṣṇa pakṣa, rikta, and Dwadashi(12) rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, paksha="krishna"))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=12))
+    # Step 3 — a non-fixed/gentle nakshatra (Hasta 13) rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=13, tithi_display=5))
+    # Step 4 — Guru or Śukra combust rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_combust=True))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_combust=True))

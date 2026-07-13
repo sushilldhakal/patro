@@ -45,9 +45,9 @@ from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
     CHATURMAS_LUNAR_MONTHS,
     GRIHA_AARAMBHA_NAKSHATRAS,
+    GRIHA_PRAVESH_LUNAR_MONTHS,
     GRIHA_PRAVESH_NAKSHATRAS,
     GRIHA_PRAVESH_SHUKLA_TITHIS,
-    GRIHA_PRAVESH_SUN_RASHIS,
     VIVAH_LUNAR_MONTHS,
     build_day_panchanga,
 )
@@ -168,16 +168,22 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
     ),
-    # Panchāṅga Śuddhi (Muhūrta Chintāmaṇi / Dharmasindhu): entry into a new home
-    # is forbidden while Śukra Tārā or Guru Tārā are ast (combust), and in a
-    # leaped (Adhik) lunar month — so both must be udaya and the day non-adhik.
-    # The old śukla-only assumption was wrong (both official 2083 days are
-    # kṛṣṇa), so it is dropped.
+    # Gṛha Praveśa — four-step shastra filter (see sait_rules.check_griha_pravesh):
+    #   1. Lunar month ∈ {Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir};
+    #      Adhik Māsa / Chaturmāsa excluded (adhik via the pakṣa-resolved layer).
+    #   2. Śukla-pakṣa growth tithis only (2,3,5,7,10,11,13).
+    #   3. Sthira/Mṛdu nakṣatras only.
+    #   4. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
+    # NOTE: this śukla-only rule intentionally diverges from the Nepal Samiti's
+    # two BS-2083 gṛha-praveśa days, which are both kṛṣṇa (apūrva entry). To match
+    # those instead, add a `krishna_tithis=GRIHA_PRAVESH_SHUKLA_TITHIS` and drop
+    # `shukla_only`.
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
-        sun_rashis=GRIHA_PRAVESH_SUN_RASHIS,
+        lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
         require_guru_udaya=True,
         require_shukra_udaya=True,
+        shukla_only=True,
         tithis=GRIHA_PRAVESH_SHUKLA_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
     ),

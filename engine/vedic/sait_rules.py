@@ -123,12 +123,19 @@ VIVAH_LUNAR_MONTHS = frozenset(
 BRATABANDHA_LUNAR_MONTHS = frozenset(
     {"Mangsir", "Magh", "Falgun", "Baishakh", "Jestha"}
 )
+# Griha Pravesh (house-warming) — the six lunar months the shastra permits:
+# Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir. This discards Chaturmas
+# (Ashadh/Shrawan/Bhadra/Ashwin), Poush, Kartik, and — via the adhik gate — any
+# intercalary (Adhik) month, keeping only the śuddha (nija) reckoning.
+GRIHA_PRAVESH_LUNAR_MONTHS = frozenset(
+    {"Magh", "Falgun", "Chaitra", "Baishakh", "Jestha", "Mangsir"}
+)
 
 # --- Solar months (Sun rashi) where the shastra fixes the Sun-sign -----------
 # Griha Aarambha — Vastu Purusha facing: Aries, Cancer, Scorpio, Capricorn.
 GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 4, 8, 10})
-# Griha Pravesh — Vaishakh, Jeth, Magh, Falgun.
-GRIHA_PRAVESH_SUN_RASHIS = frozenset({1, 2, 10, 11})
+# (Griha Pravesh is gated by lunar month, not Sun-sign — see
+# GRIHA_PRAVESH_LUNAR_MONTHS above.)
 
 # --- Nakshatra sets (1-based) ------------------------------------------------
 # Rohini, Mrigashira, Magha, U.Phalguni, Hasta, Swati, Anuradha, Mula,
@@ -142,9 +149,10 @@ BRATABANDHA_NAKSHATRAS = frozenset(
 # Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Swati, Anuradha,
 # U.Ashadha, Shravana, Dhanishta, U.Bhadrapada
 GRIHA_AARAMBHA_NAKSHATRAS = frozenset({4, 5, 8, 12, 13, 14, 15, 17, 21, 22, 23, 26})
-# Mrigashira, Rohini, Hasta, Chitra, Swati, Anuradha, Shravana, Dhanishta,
-# Shatabhisha, U.Bhadrapada, Revati (+ Mithuna/Ashadha for stability)
-GRIHA_PRAVESH_NAKSHATRAS = frozenset({3, 4, 5, 13, 14, 15, 17, 22, 23, 24, 27})
+# Griha Pravesh — Sthira (fixed) + Chara/Mridu (gentle) nakshatras only:
+# Rohini(4), Mrigashira(5), U.Phalguni(12), Chitra(14), Anuradha(17),
+# U.Ashadha(21), U.Bhadrapada(26), Revati(27).
+GRIHA_PRAVESH_NAKSHATRAS = frozenset({4, 5, 12, 14, 17, 21, 26, 27})
 # Ashwini, Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Anuradha,
 # U.Ashadha, Shravana, Dhanishta, Revati
 BUSINESS_NAKSHATRAS = frozenset({1, 4, 5, 8, 12, 13, 14, 17, 21, 22, 23, 27})
@@ -155,8 +163,9 @@ ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
 BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
-# Shukla growth tithis for Griha Pravesh.
-GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+# Shukla growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and
+# Amavasya excluded; Dwadashi 12 dropped per the waxing-growth rule).
+GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 # Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
 BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 
@@ -216,10 +225,15 @@ def build_day_panchanga(
     jupiter_rashi = int(jupiter / 30) % 12 + 1
     mercury_rashi = int(mercury / 30) % 12 + 1
 
-    lunar_layers = get_lunar_calendar_layers(target)
-    festival_masa = lunar_layers.get("festival_masa") or {}
-    lunar_month = festival_masa.get("name")
-    is_adhik_maas = bool(festival_masa.get("is_adhik"))
+    # Use the pakṣa-resolved pūrṇimānta layer, not the coarse `festival_masa`
+    # one: only this layer splits an Adhik Māsa correctly. Without it the śuddha
+    # (nija) pakṣa of an adhik year — e.g. Śuddha Jyeṣṭha kṛṣṇa in BS 2083, which
+    # spills into Baiśākh 19–31 — is wrongly tagged adhik and every saṃskāra there
+    # gets dropped. On non-adhik years the two layers are identical.
+    lunar_layers = get_lunar_calendar_layers(target, tithi_info["paksha"])
+    purnimanta = lunar_layers.get("purnimant") or {}
+    lunar_month = purnimanta.get("name")
+    is_adhik_maas = bool(purnimanta.get("is_adhik"))
 
     return DayPanchanga(
         gregorian=target,
@@ -334,21 +348,28 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
     return True
 
 
-# 4. गृह प्रवेश (House Warming)
+# 4. गृह प्रवेश (House Warming) — four-step shastra filter:
+#   1. Month: only the six permitted lunar months; never Adhik Maas / Chaturmas.
+#   2. Tithi: waxing (shukla) growth tithis only; rikta + Amavasya excluded.
+#   3. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
+#   4. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
-    if not _samskara_base_ok(day):
+    # Step 1 — month alignment (śuddha months only; the adhik flag now comes from
+    # the pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
+    if day.is_adhik_maas:
         return False
-    if day.sun_rashi not in GRIHA_PRAVESH_SUN_RASHIS:
+    if day.lunar_month not in GRIHA_PRAVESH_LUNAR_MONTHS:
         return False
+    # Step 2 — waxing moon, growth tithis (the set already omits rikta/Amavasya).
     if day.paksha != "shukla":
         return False
     if day.tithi_display not in GRIHA_PRAVESH_SHUKLA_TITHIS:
         return False
+    # Step 3 — fixed / gentle nakshatra.
     if day.nakshatra not in GRIHA_PRAVESH_NAKSHATRAS:
         return False
-    if day.vaara not in GRIHA_VAARA:
-        return False
-    if _is_amavasya(day):
+    # Step 4 — Guru / Shukra must not be combust.
+    if day.jupiter_combust or day.venus_combust:
         return False
     return True
 
