@@ -163,9 +163,11 @@ ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
 BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
-# Shukla growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and
-# Amavasya excluded; Dwadashi 12 dropped per the waxing-growth rule).
-GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 in EITHER paksha (rikta
+# 4/9/14 and Amavasya excluded; Dwadashi 12 dropped per the growth rule).
+# Applied to both shukla and krishna so an apurva (first) entry on a waning
+# growth tithi — as the Nepal Samiti lists — is allowed.
+GRIHA_PRAVESH_GROWTH_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 # Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
 BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 
@@ -350,7 +352,7 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
 
 # 4. गृह प्रवेश (House Warming) — four-step shastra filter:
 #   1. Month: only the six permitted lunar months; never Adhik Maas / Chaturmas.
-#   2. Tithi: waxing (shukla) growth tithis only; rikta + Amavasya excluded.
+#   2. Tithi: growth tithis (either paksha); rikta + Amavasya excluded.
 #   3. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
 #   4. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
@@ -360,10 +362,10 @@ def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
         return False
     if day.lunar_month not in GRIHA_PRAVESH_LUNAR_MONTHS:
         return False
-    # Step 2 — waxing moon, growth tithis (the set already omits rikta/Amavasya).
-    if day.paksha != "shukla":
-        return False
-    if day.tithi_display not in GRIHA_PRAVESH_SHUKLA_TITHIS:
+    # Step 2 — growth tithis in either paksha (the set already omits rikta/Amavasya)
+    # so an apurva entry on a waning growth tithi (e.g. the Samiti's kṛṣṇa days)
+    # is allowed.
+    if day.tithi_display not in GRIHA_PRAVESH_GROWTH_TITHIS:
         return False
     # Step 3 — fixed / gentle nakshatra.
     if day.nakshatra not in GRIHA_PRAVESH_NAKSHATRAS:
