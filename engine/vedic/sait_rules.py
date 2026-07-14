@@ -123,12 +123,22 @@ VIVAH_LUNAR_MONTHS = frozenset(
 BRATABANDHA_LUNAR_MONTHS = frozenset(
     {"Mangsir", "Magh", "Falgun", "Baishakh", "Jestha"}
 )
+# Griha Pravesh (house-warming) — the six lunar months the shastra permits:
+# Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir. This discards Chaturmas
+# (Ashadh/Shrawan/Bhadra/Ashwin), Poush, Kartik, and — via the adhik gate — any
+# intercalary (Adhik) month, keeping only the śuddha (nija) reckoning.
+GRIHA_PRAVESH_LUNAR_MONTHS = frozenset(
+    {"Magh", "Falgun", "Chaitra", "Baishakh", "Jestha", "Mangsir"}
+)
 
 # --- Solar months (Sun rashi) where the shastra fixes the Sun-sign -----------
 # Griha Aarambha — Vastu Purusha facing: Aries, Cancer, Scorpio, Capricorn.
 GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 4, 8, 10})
-# Griha Pravesh — Vaishakh, Jeth, Magh, Falgun.
-GRIHA_PRAVESH_SUN_RASHIS = frozenset({1, 2, 10, 11})
+# (Griha Pravesh is gated by lunar month, not Sun-sign — see
+# GRIHA_PRAVESH_LUNAR_MONTHS above.)
+# Surya Bala — Griha Pravesh is banned when the Sun (a Malamas/Kharmas-like
+# weakness) is in Mithuna (3), Vrishchika (8), or Meena (12).
+GRIHA_PRAVESH_MALAMAS_RASHIS = frozenset({3, 8, 12})
 
 # --- Nakshatra sets (1-based) ------------------------------------------------
 # Rohini, Mrigashira, Magha, U.Phalguni, Hasta, Swati, Anuradha, Mula,
@@ -142,9 +152,10 @@ BRATABANDHA_NAKSHATRAS = frozenset(
 # Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Swati, Anuradha,
 # U.Ashadha, Shravana, Dhanishta, U.Bhadrapada
 GRIHA_AARAMBHA_NAKSHATRAS = frozenset({4, 5, 8, 12, 13, 14, 15, 17, 21, 22, 23, 26})
-# Mrigashira, Rohini, Hasta, Chitra, Swati, Anuradha, Shravana, Dhanishta,
-# Shatabhisha, U.Bhadrapada, Revati (+ Mithuna/Ashadha for stability)
-GRIHA_PRAVESH_NAKSHATRAS = frozenset({3, 4, 5, 13, 14, 15, 17, 22, 23, 24, 27})
+# Griha Pravesh — Sthira (fixed) + Chara/Mridu (gentle) nakshatras only:
+# Rohini(4), Mrigashira(5), U.Phalguni(12), Chitra(14), Anuradha(17),
+# U.Ashadha(21), U.Bhadrapada(26), Revati(27).
+GRIHA_PRAVESH_NAKSHATRAS = frozenset({4, 5, 12, 14, 17, 21, 26, 27})
 # Ashwini, Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Anuradha,
 # U.Ashadha, Shravana, Dhanishta, Revati
 BUSINESS_NAKSHATRAS = frozenset({1, 4, 5, 8, 12, 13, 14, 17, 21, 22, 23, 27})
@@ -155,10 +166,47 @@ ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
 BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
-# Shukla growth tithis for Griha Pravesh.
-GRIHA_PRAVESH_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and Amavasya
+# excluded; Dwadashi 12 dropped per the growth rule). Combined with the rule's
+# shukla-only gate, only waxing growth tithis qualify.
+GRIHA_PRAVESH_GROWTH_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 # Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
 BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+
+# --- Dagdha & Shunya tithis --------------------------------------------------
+# Dagdha ("burnt") — a weekday × display-tithi clash that scorches the day. Vaara
+# is Sunday = 1 … Saturday = 7; the tithi is the display number (1–15), and the
+# clash applies identically in both Shukla and Krishna paksha.
+DAGDHA_TITHI_BY_VAARA: dict[int, int] = {
+    1: 12,  # Sunday    — Dwadashi
+    2: 11,  # Monday    — Ekadashi
+    3: 5,   # Tuesday   — Panchami
+    4: 3,   # Wednesday — Tritiya
+    5: 6,   # Thursday  — Shashthi
+    6: 8,   # Friday    — Ashtami
+    7: 9,   # Saturday  — Navami
+}
+
+
+def is_dagdha(vaara: int, display_tithi: int) -> bool:
+    """True when the weekday × tithi combination is a burnt (Dagdha) day."""
+    return DAGDHA_TITHI_BY_VAARA.get(vaara) == display_tithi
+
+
+# Shunya ("empty/void") — a display tithi drains specific rashis of their light.
+# If the Moon's transit rashi (or the house's ruling sign) falls in the drained
+# set, the day is void. Rashis are 1-based: Mesha = 1 … Meena = 12.
+SHUNYA_TITHI_RASHIS: dict[int, frozenset[int]] = {
+    1:  frozenset({7, 10}),   # Pratipada  — Tula, Makara
+    2:  frozenset({9, 12}),   # Dwitiya    — Dhanu, Meena
+    3:  frozenset({5, 10}),   # Tritiya    — Simha, Makara
+    5:  frozenset({3, 6}),    # Panchami   — Mithuna, Kanya
+    7:  frozenset({4, 9}),    # Saptami    — Karka, Dhanu
+    9:  frozenset({4, 5}),    # Navami     — Karka, Simha
+    11: frozenset({9, 12}),   # Ekadashi   — Dhanu, Meena
+    13: frozenset({2, 12}),   # Trayodashi — Vrishabha, Meena
+}
+
 
 # --- Weekdays (Sunday = 1 … Saturday = 7) ------------------------------------
 VIVAH_VAARA = frozenset({1, 2, 4, 5, 6})  # avoid Tue, Sat
@@ -216,10 +264,15 @@ def build_day_panchanga(
     jupiter_rashi = int(jupiter / 30) % 12 + 1
     mercury_rashi = int(mercury / 30) % 12 + 1
 
-    lunar_layers = get_lunar_calendar_layers(target)
-    festival_masa = lunar_layers.get("festival_masa") or {}
-    lunar_month = festival_masa.get("name")
-    is_adhik_maas = bool(festival_masa.get("is_adhik"))
+    # Use the pakṣa-resolved pūrṇimānta layer, not the coarse `festival_masa`
+    # one: only this layer splits an Adhik Māsa correctly. Without it the śuddha
+    # (nija) pakṣa of an adhik year — e.g. Śuddha Jyeṣṭha kṛṣṇa in BS 2083, which
+    # spills into Baiśākh 19–31 — is wrongly tagged adhik and every saṃskāra there
+    # gets dropped. On non-adhik years the two layers are identical.
+    lunar_layers = get_lunar_calendar_layers(target, tithi_info["paksha"])
+    purnimanta = lunar_layers.get("purnimant") or {}
+    lunar_month = purnimanta.get("name")
+    is_adhik_maas = bool(purnimanta.get("is_adhik"))
 
     return DayPanchanga(
         gregorian=target,
@@ -334,21 +387,40 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
     return True
 
 
-# 4. गृह प्रवेश (House Warming)
+# 4. गृह प्रवेश (House Warming) — shastra filter:
+#   1. Month: only the six permitted lunar months; never Adhik Maas / Chaturmas.
+#   2. Surya Bala: Sun not in Mithuna/Vrishchika/Meena (Malamas).
+#   3. Chandra Bala: waxing (Shukla) growth tithis only — 2,3,5,7,10,11,13.
+#   4. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
+#   5. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
+#   6. Dagdha: reject a burnt weekday × tithi clash.
+# (The Moon-house side of Chandra Bala, Graha Vedha, and the Shunya-tithi veto are
+# time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
-    if not _samskara_base_ok(day):
+    # Step 1 — month alignment (śuddha months only; the adhik flag comes from the
+    # pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
+    if day.is_adhik_maas:
         return False
-    if day.sun_rashi not in GRIHA_PRAVESH_SUN_RASHIS:
+    if day.lunar_month not in GRIHA_PRAVESH_LUNAR_MONTHS:
         return False
+    # Step 2 — Surya Bala.
+    if day.sun_rashi in GRIHA_PRAVESH_MALAMAS_RASHIS:
+        return False
+    # Step 3 — Chandra Bala: strictly Shukla paksha, growth tithis only (the set
+    # already omits rikta 4/9/14 and Amavasya).
     if day.paksha != "shukla":
         return False
-    if day.tithi_display not in GRIHA_PRAVESH_SHUKLA_TITHIS:
+    if day.tithi_display not in GRIHA_PRAVESH_GROWTH_TITHIS:
         return False
+    # Step 4 — fixed / gentle nakshatra.
     if day.nakshatra not in GRIHA_PRAVESH_NAKSHATRAS:
         return False
-    if day.vaara not in GRIHA_VAARA:
+    # Step 5 — Guru / Shukra must not be combust.
+    if day.jupiter_combust or day.venus_combust:
         return False
-    if _is_amavasya(day):
+    # Step 6 — Dagdha: reject a burnt weekday × tithi clash. (Shunya — which needs
+    # the Moon's rashi — is applied in the time-resolved muhūrta engine.)
+    if is_dagdha(day.vaara, day.tithi_display):
         return False
     return True
 

@@ -45,11 +45,14 @@ from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
     CHATURMAS_LUNAR_MONTHS,
     GRIHA_AARAMBHA_NAKSHATRAS,
+    GRIHA_PRAVESH_GROWTH_TITHIS,
+    GRIHA_PRAVESH_LUNAR_MONTHS,
+    GRIHA_PRAVESH_MALAMAS_RASHIS,
     GRIHA_PRAVESH_NAKSHATRAS,
-    GRIHA_PRAVESH_SHUKLA_TITHIS,
-    GRIHA_PRAVESH_SUN_RASHIS,
+    SHUNYA_TITHI_RASHIS,
     VIVAH_LUNAR_MONTHS,
     build_day_panchanga,
+    is_dagdha,
 )
 
 # Rikta tithis (Chaturthi/Navami/Chaturdashi) and Amavasya are excluded for all
@@ -117,6 +120,7 @@ class CeremonyRule:
     # Day gate — one of lunar_months / sun_rashis fixes the season.
     lunar_months: frozenset[str] = frozenset()
     sun_rashis: frozenset[int] = frozenset()
+    avoid_sun_rashis: frozenset[int] = frozenset()  # Surya Bala — banned solar signs
     block_chaturmas: bool = True
     block_sankranti: bool = False         # exclude solar sign-change days
     require_guru_udaya: bool = False      # Jupiter not combust
@@ -136,11 +140,20 @@ class CeremonyRule:
     lagnas: frozenset[int] = frozenset()
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
     avoid_malefic_houses: frozenset[int] = field(default_factory=frozenset)
+    graha_vedha_planets: frozenset[str] = frozenset()  # planets whose Latta ray vetoes the day's nakshatra
+    check_dagdha: bool = False       # reject burnt weekday × tithi clashes
+    check_shunya: bool = False       # reject when the tithi drains the Moon's rashi
 
 
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
 
 CEREMONY_RULES: dict[str, CeremonyRule] = {
+    # Dagdha & Shunya tithis are major doshas for marriage (they attack the
+    # union's longevity/stability), so both are vetoed. NOTE: the Godhuli-muhurta
+    # override that can neutralise them is not yet modelled — these are hard
+    # vetoes for now. Graha Vedha: Saturn or Mars Latta on the marriage nakshatra
+    # scrubs the day. (The full Sarvatobhadra 4-angle geometry reduces to the
+    # Latta count for these two malefics here.)
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
@@ -148,6 +161,9 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_shukra_udaya=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
+        graha_vedha_planets=frozenset({"mars", "saturn"}),
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "bratabandha": CeremonyRule(
         key="bratabandha",
@@ -160,6 +176,14 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         shukla_tithis=BRATABANDHA_SHUKLA_TITHIS,
         krishna_tithis=BRATABANDHA_KRISHNA_TITHIS,
         daytime_only=True,
+        # Dagdha harms discipline/guru-bond, Shunya harms intellect/memory — both
+        # vetoed. NOTE: the Purvahna + strong-Lagna (Jupiter in the 1st) shield
+        # that can offset Shunya is not yet modelled. Graha Vedha: Mars (anger/
+        # injury) or Rahu (mental confusion/memory) Latta on the day's nakshatra
+        # scrubs it.
+        graha_vedha_planets=frozenset({"mars", "rahu"}),
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
@@ -168,18 +192,32 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
     ),
-    # Panchāṅga Śuddhi (Muhūrta Chintāmaṇi / Dharmasindhu): entry into a new home
-    # is forbidden while Śukra Tārā or Guru Tārā are ast (combust), and in a
-    # leaped (Adhik) lunar month — so both must be udaya and the day non-adhik.
-    # The old śukla-only assumption was wrong (both official 2083 days are
-    # kṛṣṇa), so it is dropped.
+    # Gṛha Praveśa — four-step shastra filter (see sait_rules.check_griha_pravesh):
+    #   1. Lunar month ∈ {Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir};
+    #      Adhik Māsa / Chaturmāsa excluded (adhik via the pakṣa-resolved layer).
+    #   2. Surya Bala — Sun not in Mithuna/Vrishchika/Meena (Malamas).
+    #   3. Chandra Bala — waxing Moon: strictly Śukla-pakṣa growth tithis
+    #      (2,3,5,7,10,11,13), and the Moon in a friendly house (1,3,6,7,10,11)
+    #      from the muhūrta lagna (i.e. never the 2/4/5/8/9/12).
+    #   4. Sthira/Mṛdu nakṣatras only.
+    #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
+    #   6. Graha Vedha — reject if a malefic's Latta ray strikes the day's
+    #      nakṣatra (Sun/Mars/Saturn/Rāhu/Ketu; see latta_pierced_nakshatras).
+    #   7. Dagdha — reject a burnt weekday × tithi clash.
+    #   8. Shunya — reject when the tithi drains the Moon's transit rashi.
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
-        sun_rashis=GRIHA_PRAVESH_SUN_RASHIS,
+        lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
+        avoid_sun_rashis=GRIHA_PRAVESH_MALAMAS_RASHIS,
         require_guru_udaya=True,
         require_shukra_udaya=True,
-        tithis=GRIHA_PRAVESH_SHUKLA_TITHIS,
+        shukla_only=True,
+        tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
+        avoid_moon_houses=frozenset({2, 4, 5, 8, 9, 12}),
+        graha_vedha_planets=frozenset({"sun", "mars", "saturn", "rahu", "ketu"}),
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
@@ -232,6 +270,7 @@ class MuhurtaWindow:
 class _DayGate:
     ok: bool
     planet_rashis: dict[str, int] = field(default_factory=dict)
+    vaara: int = 0  # Sunday = 1 … Saturday = 7 (for the Dagdha check)
 
 
 def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
@@ -249,6 +288,8 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         return _DayGate(False)
     if rule.sun_rashis and dp.sun_rashi not in rule.sun_rashis:
         return _DayGate(False)
+    if rule.avoid_sun_rashis and dp.sun_rashi in rule.avoid_sun_rashis:
+        return _DayGate(False)
     if rule.block_chaturmas and dp.lunar_month in CHATURMAS_LUNAR_MONTHS:
         return _DayGate(False)
     if rule.require_guru_udaya and dp.jupiter_combust:
@@ -259,7 +300,7 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         return _DayGate(False)
     if rule.avoid_varas and dp.vaara in rule.avoid_varas:
         return _DayGate(False)
-    return _DayGate(True)
+    return _DayGate(True, vaara=dp.vaara)
 
 
 def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
@@ -269,12 +310,70 @@ def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
     return {p: _rashi(get_planet_position(noon, p)["longitude"]) for p in _MALEFICS}
 
 
-def _window_ok(rule: CeremonyRule, dt: datetime, planet_rashis, location) -> tuple[bool, int, int, int]:
+# Graha Vedha (Latta): each planet "pierces" the Nth nakṣatra counting its own as
+# the 1st, so the signed offset is (N − 1) positions — forward (+) or backward (−).
+# Only malefic latta is a veto here; benefic (Amṛta) latta is not scored as a bonus.
+#   Sun → 12th forward, Mars → 3rd forward, Saturn → 8th forward,
+#   Rāhu / Ketu → 9th backward.  Validated: Sun in Aśvinī(1) → U.Phalgunī(12).
+_MALEFIC_LATTA: dict[str, int] = {
+    "sun": 11,     # 12th forward
+    "mars": 2,     # 3rd forward
+    "saturn": 7,   # 8th forward
+    "rahu": -8,    # 9th backward
+    "ketu": -8,    # 9th backward
+}
+
+
+def _nakshatra_of(longitude: float) -> int:
+    """1-based nakṣatra (Aśvinī = 1 … Revatī = 27) for a sidereal longitude."""
+    return int(longitude / (360.0 / 27.0)) % 27 + 1
+
+
+def _latta_target(planet_nakshatra: int, offset: int) -> int:
+    """Nakṣatra pierced by a planet in ``planet_nakshatra`` given its signed Latta offset."""
+    return (planet_nakshatra - 1 + offset) % 27 + 1
+
+
+def latta_pierced_nakshatras(
+    greg,
+    location: ObserverLocation,
+    planets: frozenset[str] = frozenset(_MALEFIC_LATTA),
+) -> frozenset[int]:
+    """Nakṣatras struck by the Latta ray of ``planets`` on ``greg`` (evaluated at
+    local noon — the planets barely move within a day). Defaults to all malefics;
+    pass a subset per ceremony (e.g. {mars, saturn} for vivāha)."""
+    tz = resolve_observer_timezone(location.timezone)
+    noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
+    rahu_lon: float | None = None
+    pierced: set[int] = set()
+    for planet in planets:
+        offset = _MALEFIC_LATTA.get(planet)
+        if offset is None:
+            continue
+        if planet in ("rahu", "ketu"):
+            if rahu_lon is None:
+                rahu_lon = get_planet_position(noon, "rahu")["longitude"]
+            lon = rahu_lon if planet == "rahu" else (rahu_lon + 180.0) % 360.0
+        else:
+            lon = get_planet_position(noon, planet)["longitude"]
+        pierced.add(_latta_target(_nakshatra_of(lon), offset))
+    return frozenset(pierced)
+
+
+def _window_ok(
+    rule: CeremonyRule, dt: datetime, planet_rashis, pierced_naks, day_vaara, location
+) -> tuple[bool, int, int, int]:
     """Evaluate the window + chart layer at instant ``dt``."""
     tnum = get_tithi_number(get_tithi_angle(dt))
     tithi = get_display_tithi(tnum)
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
+    if rule.check_dagdha and is_dagdha(day_vaara, tithi):  # burnt weekday × tithi
+        return (False, 0, 0, 0)
+    if rule.check_shunya:  # tithi drains the Moon's transit rashi
+        drained = SHUNYA_TITHI_RASHIS.get(tithi)
+        if drained and _rashi(get_moon_longitude(dt)) in drained:
+            return (False, 0, 0, 0)
     if rule.shukla_tithis or rule.krishna_tithis:
         allowed = rule.shukla_tithis if get_paksha(tnum) == "shukla" else rule.krishna_tithis
         if tithi not in allowed:
@@ -285,6 +384,8 @@ def _window_ok(rule: CeremonyRule, dt: datetime, planet_rashis, location) -> tup
         return (False, 0, 0, 0)
     nak = get_nakshatra(dt)[0]
     if rule.nakshatras and nak not in rule.nakshatras:
+        return (False, 0, 0, 0)
+    if pierced_naks and nak in pierced_naks:  # Graha Vedha — malefic Latta strike
         return (False, 0, 0, 0)
     lagna = _rashi(get_sidereal_asc_longitude(dt, lat=location.lat, lon=location.lon))
     if rule.lagnas and lagna not in rule.lagnas:
@@ -312,6 +413,11 @@ def muhurta_windows(
     if not gate.ok:
         return []
     planet_rashis = _planet_rashis(greg, location) if rule.avoid_malefic_houses else {}
+    pierced_naks = (
+        latta_pierced_nakshatras(greg, location, rule.graha_vedha_planets)
+        if rule.graha_vedha_planets
+        else frozenset()
+    )
 
     sunrise = calculate_sunrise(
         greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
@@ -339,7 +445,9 @@ def muhurta_windows(
             windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
 
     while dt <= end:
-        ok, tithi, nak, lagna = _window_ok(rule, dt, planet_rashis, location)
+        ok, tithi, nak, lagna = _window_ok(
+            rule, dt, planet_rashis, pierced_naks, gate.vaara, location
+        )
         if ok:
             if run_start is None:
                 run_start = (dt, tithi, nak, lagna)

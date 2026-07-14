@@ -125,4 +125,74 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.7.0"
+    assert SAIT_ENGINE_VERSION == "3.14.0"
+
+
+def test_dagdha_tithi_table():
+    from engine.vedic.sait_rules import is_dagdha
+
+    # Each weekday (Sun=1 … Sat=7) has one burnt tithi.
+    for vaara, tithi in ((1, 12), (2, 11), (3, 5), (4, 3), (5, 6), (6, 8), (7, 9)):
+        assert is_dagdha(vaara, tithi)
+        assert not is_dagdha(vaara, tithi + 1)  # any other tithi is fine
+
+
+def test_shunya_tithi_table():
+    from engine.vedic.sait_rules import SHUNYA_TITHI_RASHIS
+
+    # Pratipada drains Tula(7)+Makara(10); Trayodashi drains Vrishabha(2)+Meena(12).
+    assert SHUNYA_TITHI_RASHIS[1] == frozenset({7, 10})
+    assert SHUNYA_TITHI_RASHIS[13] == frozenset({2, 12})
+    # Tithis with no Shunya rule are absent (e.g. Dashami).
+    assert 10 not in SHUNYA_TITHI_RASHIS
+
+
+def test_latta_graha_vedha_counts():
+    """Latta count rule — validated by the classic worked example."""
+    from engine.vedic.muhurta_engine import _MALEFIC_LATTA, _latta_target
+
+    # Sun in Ashwini(1) pierces the 12th nakshatra forward → Uttara Phalguni(12).
+    assert _latta_target(1, _MALEFIC_LATTA["sun"]) == 12
+    # Mars 3rd forward, Saturn 8th forward (inclusive count from the planet's star).
+    assert _latta_target(1, _MALEFIC_LATTA["mars"]) == 3
+    assert _latta_target(1, _MALEFIC_LATTA["saturn"]) == 8
+    # Rahu/Ketu 9th backward wrap correctly (from Ashwini → Purva Ashadha 20).
+    assert _latta_target(1, _MALEFIC_LATTA["rahu"]) == 20
+    assert _latta_target(10, _MALEFIC_LATTA["sun"]) == 21  # forward wrap check
+
+
+def test_shuddha_jestha_krishna_not_flagged_adhik_bs2083():
+    """Regression: BS 2083 has an Adhik Jestha, but the Śuddha Jestha kṛṣṇa days
+    that spill into Baiśākh 19–31 must NOT be tagged adhik (they carry the
+    Samiti's vivāha dates). The true Adhik Jestha (śukla + its kṛṣṇa) stays adhik."""
+    shuddha = build_day_panchanga(date(2026, 5, 5), DEFAULT_LOCATION)   # Jestha kṛṣṇa 3
+    assert shuddha.lunar_month == "Jestha"
+    assert shuddha.is_adhik_maas is False
+
+    adhik = build_day_panchanga(date(2026, 5, 20), DEFAULT_LOCATION)    # Adhik Jestha śukla
+    assert adhik.is_adhik_maas is True
+
+
+def test_griha_pravesh_four_step_rule():
+    from engine.vedic.sait_rules import check_griha_pravesh
+
+    # A clean śuddha day: Baishakh, śukla Panchami, Rohini(4), Guru & Śukra udaya.
+    ok = _day(lunar_month="Baishakh", paksha="shukla", tithi_display=5, nakshatra=4)
+    assert check_griha_pravesh(ok)
+    # Step 1 — Chaturmas / Poush / Adhik months rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Shrawan", nakshatra=4))
+    assert not check_griha_pravesh(_day(lunar_month="Poush", nakshatra=4))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, is_adhik_maas=True))
+    # Surya Bala — Sun in Mithuna(3)/Vrishchika(8)/Meena(12) rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=5, sun_rashi=8))
+    # Chandra Bala — strictly Shukla; krishna, rikta, and Dwadashi(12) all rejected.
+    assert not check_griha_pravesh(
+        _day(lunar_month="Baishakh", nakshatra=4, tithi_display=11, paksha="krishna")
+    )
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=4))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=12))
+    # Nakshatra — a non-fixed/gentle nakshatra (Hasta 13) rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=13, tithi_display=5))
+    # Asta Shuddhi — Guru or Śukra combust rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_combust=True))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_combust=True))
