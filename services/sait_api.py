@@ -92,16 +92,6 @@ def get_sait_about(category: str) -> dict[str, Any]:
     }
 
 
-def _static_month_entries(bs_year: int, category: str) -> dict[str, list[int]] | None:
-    rules = _load_rules()
-    year_key = str(bs_year)
-    years = rules.get("years") or {}
-    by_month = ((years.get(year_key) or {}).get(category) or {})
-    if not by_month:
-        return None
-    return {str(k): list(v) for k, v in by_month.items()}
-
-
 def _format_month_entries(by_month: dict[str, list[int]]) -> list[dict[str, Any]]:
     months: list[dict[str, Any]] = []
     for month_key, days in sorted(by_month.items(), key=lambda item: int(item[0])):
@@ -129,14 +119,12 @@ def get_sait_month_entries(
     if category not in categories:
         raise ValueError(f"Unknown sait category: {category}")
 
-    static = _static_month_entries(bs_year, category)
-    if static is not None:
-        source = "official"
-        by_month = static
-    else:
-        generated = get_generated_sait(bs_year, category, location)
-        source = generated.get("source", "computed")
-        by_month = generated.get("months") or {}
+    # Always serve our own ephemeris-computed listing (the curated Nepal Samiti
+    # dates in sait_dates_v1.json are kept only for regression benchmarking — the
+    # app shows computed sait for every year and category).
+    generated = get_generated_sait(bs_year, category, location)
+    source = generated.get("source", "computed")
+    by_month = generated.get("months") or {}
 
     payload: dict[str, Any] = {
         "bs_year": bs_year,
@@ -145,6 +133,6 @@ def get_sait_month_entries(
         "months": _format_month_entries(by_month),
         "source": source,
     }
-    if category == "annaprasan" and source == "computed":
+    if category == "annaprasan":
         payload["note"] = ANNAPRASAN_NOTE
     return payload
