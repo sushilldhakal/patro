@@ -261,3 +261,16 @@ def test_bratabandha_strict_classical_filters():
     assert rule.eclipse_pad_days == 3
     # Dur-muhurta must stay slot-only for Upanayana (no whole-day kill).
     assert not rule.day_kill_on_major_dosha
+
+
+def test_griha_aarambha_strict_vastu_filters():
+    """Griha-aarambha follows the strict classical Vastu-muhurta config."""
+    rule = CEREMONY_RULES["griha-aarambha"]
+    assert rule.tithis == frozenset({2, 3, 5, 7, 10, 11, 12})  # no Pratipada/Trayodashi
+    assert rule.nakshatras == frozenset({4, 5, 7, 12, 13, 14, 15, 17, 21, 22, 23, 26, 27})
+    assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual only
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
+    assert rule.eclipse_pad_days == 1
