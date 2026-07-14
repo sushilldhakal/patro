@@ -185,6 +185,10 @@ def panchanga_day(
     era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
     festivals: bool = Query(False, description="Include festivals on this day"),
     detail: bool = Query(True, description="Include full computation detail block"),
+    civil: bool = Query(
+        False,
+        description="Attach a civil-day (midnight→midnight) timeline stitched from the previous + current day",
+    ),
 ):
     """Daily panchanga — single-day astronomical time-state."""
     from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
@@ -194,6 +198,10 @@ def panchanga_day(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
+    if civil:
+        from services.civil_timeline import build_civil_timeline
+
+        payload["civil_timeline"] = build_civil_timeline(greg, location)
     return JSONResponse(
         content=payload,
         headers={
@@ -333,6 +341,23 @@ def nepal_sait_years():
     """BS years available for sait (1700–2200, computed from Swiss Ephemeris)."""
     from services.sait_api import list_sait_years
     return {"years": list_sait_years()}
+
+
+@router.get("/nepal/sait/about", tags=["sait"])
+def nepal_sait_about_all():
+    """Explanation metadata for every ceremony type — powers the standalone pages."""
+    from services.sait_api import get_sait_about_all
+    return get_sait_about_all()
+
+
+@router.get("/nepal/sait/{category}/about", tags=["sait"])
+def nepal_sait_about(category: str):
+    """Explanation / how-it's-sourced metadata for one ceremony type."""
+    from services.sait_api import get_sait_about
+    try:
+        return get_sait_about(category)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @router.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])

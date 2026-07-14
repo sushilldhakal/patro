@@ -10,29 +10,44 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.positions import get_karana, get_nakshatra
+from engine.astronomy.positions import (
+    get_display_tithi,
+    get_karana,
+    get_nakshatra,
+    get_paksha,
+    get_tithi_angle,
+    get_tithi_number,
+    get_yoga,
+)
+from engine.astronomy.swiss_eph import get_sun_longitude
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.rashi_spans import get_surya_nakshatra
 from engine.vedic.element_boundaries import (
+    _find_span_end,
     find_karana_end,
     find_nakshatra_end,
     find_nakshatra_start,
     find_sun_nakshatra_end,
+    find_yoga_end,
+    find_yoga_start,
 )
+from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
 
 GHATIKA_SECONDS = 24 * 60
 PERIOD_GHATIS = 4  # Amrit / Varjyam window = 4 ghatis of nakshatra duration
 SANDHYA_NIGHT_GHATIKAS = 3.0
 
-# Amrit / Varjyam offset in ghatis (0–60) for a 60-ghati nakshatra span — panchang-core table.
+# Amrit / Varjyam offset in ghatis (0–60) for a 60-ghati nakshatra span.
+# Second column (Varjyam / नक्षत्र विष) follows the classical Vish Ghatika table;
+# the poison window runs offset → offset+4 ghatis of that day's true nakshatra span.
 _NAKSHATRA_AMRITA_VARJYAM: list[tuple[list[int], list[int]]] = [
     ([42], [50]),   # Ashwini
     ([48], [24]),   # Bharani
     ([54], [30]),   # Krittika
-    ([52], [40]),   # Rohini
+    ([52], [4]),    # Rohini
     ([38], [14]),   # Mrigashira
-    ([35], [21]),   # Ardra
+    ([35], [11]),   # Ardra
     ([54], [30]),   # Punarvasu
     ([44], [20]),   # Pushya
     ([56], [32]),   # Ashlesha
@@ -45,9 +60,9 @@ _NAKSHATRA_AMRITA_VARJYAM: list[tuple[list[int], list[int]]] = [
     ([38], [14]),   # Vishakha
     ([34], [10]),   # Anuradha
     ([38], [14]),   # Jyeshtha
-    ([44], [21]),   # Mula
-    ([48], [24]),   # Purva Ashadha
-    ([44], [20]),   # Uttara Ashadha
+    ([44], [20]),   # Mula
+    ([48], [20]),   # Purva Ashadha
+    ([44], [24]),   # Uttara Ashadha
     ([34], [10]),   # Shravana
     ([34], [10]),   # Dhanishta
     ([42], [18]),   # Shatabhisha
@@ -83,16 +98,22 @@ _DUR_MUHURTA_INDEXES: dict[int, list[int]] = {
     6: [1, 15],
 }
 
-# Sun→Sat seven baana types across equal daytime segments (North-Indian patro convention).
-_BAANA_BY_WEEKDAY: list[list[str]] = [
-    ["roga", "raja", "agni", "mrityu", "chora", "roga", "raja"],
-    ["agni", "mrityu", "chora", "roga", "raja", "agni", "mrityu"],
-    ["mrityu", "chora", "roga", "raja", "agni", "mrityu", "chora"],
-    ["chora", "roga", "raja", "agni", "mrityu", "chora", "roga"],
-    ["roga", "raja", "agni", "mrityu", "chora", "roga", "raja"],
-    ["raja", "agni", "mrityu", "chora", "roga", "raja", "agni"],
-    ["agni", "mrityu", "chora", "roga", "raja", "agni", "mrityu"],
-]
+# Baana (बाण) is decided by the Sun's degree *within its zodiac sign* (0–30°).
+# The N-th degree spans [N-1°, N°); when the Sun occupies one of the degrees below,
+# the matching baana is active for as long as the Sun stays in that 1° band. Because
+# the Sun advances ~1°/day, a day carries at most one or two baana windows (a window
+# that runs past sunset into the night is reported as "until full night").
+_BAANA_DEGREE: dict[int, str] = {}
+for _deg in (1, 10, 19, 28):
+    _BAANA_DEGREE[_deg] = "mrityu"
+for _deg in (2, 11, 20, 29):
+    _BAANA_DEGREE[_deg] = "agni"
+for _deg in (4, 13, 21):
+    _BAANA_DEGREE[_deg] = "raja"
+for _deg in (6, 15, 24):
+    _BAANA_DEGREE[_deg] = "chora"
+for _deg in (8, 17, 26):
+    _BAANA_DEGREE[_deg] = "roga"
 
 _BAANA_META: dict[str, dict[str, Any]] = {
     "raja": {"name_en": "Raja", "name_ne": "राज", "is_auspicious": False},
@@ -247,6 +268,116 @@ def _find_sun_nakshatra_end(dt: datetime) -> datetime:
     return find_sun_nakshatra_end(dt)
 
 
+def _sun_degree_band(dt: datetime) -> int:
+    """0-based whole-degree band of the Sun within its sign (0 → 1st degree)."""
+    return int(get_sun_longitude(dt) % 30.0)
+
+
+def _find_sun_degree_end(dt: datetime) -> datetime:
+    """Instant the Sun leaves its current 1° band (crosses to the next degree)."""
+    return _find_span_end(dt, _sun_degree_band, 1.0, get_sun_longitude, max_hours=36)
+
+
+def _collect_baana_segments(
+    scope_start: datetime,
+    scope_end: datetime,
+    sunrise_utc: datetime,
+    timezone_name: str,
+) -> list[dict[str, Any]]:
+    """Baana windows for the day, driven by the Sun's degree-in-sign."""
+    segments: list[dict[str, Any]] = []
+    cursor = scope_start
+    for _ in range(48):  # safety bound; the Sun crosses ≤2 degrees per day
+        if cursor >= scope_end:
+            break
+        degree_number = _sun_degree_band(cursor) + 1  # 1..30
+        band_end = _find_sun_degree_end(cursor)
+        key = _BAANA_DEGREE.get(degree_number)
+        if key:
+            seg = _clip_segment(
+                cursor, band_end, scope_start, scope_end, sunrise_utc, timezone_name
+            )
+            if seg:
+                meta = _BAANA_META[key]
+                seg["subtitle_en"] = meta["name_en"]
+                seg["subtitle_ne"] = meta["name_ne"]
+                seg["is_auspicious"] = False
+                segments.append(seg)
+        if band_end >= scope_end:
+            break
+        cursor = band_end + timedelta(seconds=30)
+    return segments
+
+
+# --- Tithi doshas (Panchang Shuddhi) ---------------------------------------
+# Malefic tithi by *display* number (1–15, same in both pakshas):
+#   Rikta ("empty") tithis — 4th, 9th, 14th.
+_RIKTA_TITHIS = frozenset({4, 9, 14})
+# Dagdha ("burnt") tithi by weekday (vaara_index 0=Sunday … 6=Saturday).
+_DAGDHA_TITHI_BY_VAARA = {0: 12, 1: 11, 2: 5, 3: 3, 4: 6, 5: 8, 6: 9}
+# Tithi Randhra — avoid the first N ghatis (1 ghati = 24 min) of these tithis.
+# 4→3h12m, 6→3h36m, 8→5h36m, 9→10h, 12→4h, 1→2h  (Muhurta Chintamani).
+_TITHI_RANDHRA_GHATIS = {1: 5, 4: 8, 6: 9, 8: 14, 9: 25, 12: 10}
+_GHATI_SECONDS = 24 * 60
+
+# Visha Ghati of the Tithi — a 4-ghati (1/15 of span) poison window offset from
+# the tithi's start, keyed by *display* tithi (1–15, same in both pakshas;
+# 15 = Purnima/Amavasya, poison in the opening 4 ghatis). Offsets are ghatis of
+# the tithi's true span (Tithi Visha Ghatika table).
+_TITHI_VISHA_GHATI = {
+    1: 15, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 14,
+    9: 16, 10: 18, 11: 20, 12: 20, 13: 10, 14: 14, 15: 0,
+}
+
+# Visha Ghati of the Nitya Yoga — the toxic opening N ghatis of these yogas
+# (1-based yoga number). Vyatipata (17) is malefic for its entire span (None).
+_YOGA_VISHA_GHATIS: dict[int, int | None] = {
+    1: 5,      # Vishkumbha
+    6: 6,      # Atiganda
+    9: 5,      # Shula
+    10: 6,     # Ganda
+    13: 9,     # Vyaghata
+    15: 3,     # Vajra
+    17: None,  # Vyatipata — entire duration
+}
+
+
+def _tithi_is_malefic(display: int, paksha: str, vaara_index: int) -> bool:
+    if display in _RIKTA_TITHIS:
+        return True
+    if display == 15 and paksha == "krishna":  # Amavasya
+        return True
+    if _DAGDHA_TITHI_BY_VAARA.get(vaara_index % 7) == display:
+        return True
+    return False
+
+
+def _collect_tithi_intervals(
+    scope_start: datetime,
+    scope_end: datetime,
+) -> list[dict[str, Any]]:
+    intervals: list[dict[str, Any]] = []
+    cursor = scope_start
+    for _ in range(40):
+        if cursor >= scope_end:
+            break
+        num = get_tithi_number(get_tithi_angle(cursor))  # 1..30
+        intervals.append(
+            {
+                "number": num,
+                "display": get_display_tithi(num),  # 1..15
+                "paksha": get_paksha(num),
+                "start_dt": find_tithi_start(cursor),
+                "end_dt": find_tithi_end(cursor),
+            }
+        )
+        end_dt = intervals[-1]["end_dt"]
+        if end_dt >= scope_end:
+            break
+        cursor = end_dt + timedelta(seconds=90)
+    return intervals
+
+
 def _collect_sun_nakshatra_intervals(
     scope_start: datetime,
     scope_end: datetime,
@@ -268,6 +399,32 @@ def _collect_sun_nakshatra_intervals(
         if nak_end >= scope_end:
             break
         cursor = nak_end + timedelta(seconds=90)
+    return intervals
+
+
+def _collect_yoga_intervals(
+    scope_start: datetime,
+    scope_end: datetime,
+) -> list[dict[str, Any]]:
+    intervals: list[dict[str, Any]] = []
+    cursor = scope_start
+    for _ in range(40):
+        if cursor >= scope_end:
+            break
+        num, name, _ = get_yoga(cursor)
+        y_start = find_yoga_start(cursor)
+        y_end = find_yoga_end(cursor)
+        intervals.append(
+            {
+                "number": num,
+                "name": name,
+                "start_dt": y_start,
+                "end_dt": y_end,
+            }
+        )
+        if y_end >= scope_end:
+            break
+        cursor = y_end + timedelta(seconds=90)
     return intervals
 
 
@@ -571,24 +728,10 @@ def build_extended_muhurta_timings(
             _timing_entry("vidaal_yoga", "Vidaal Yoga", "विडाल योग", vidaal_segments, is_auspicious=False)
         )
 
-    # Baana — seven equal daytime segments by weekday.
-    baana_seq = _BAANA_BY_WEEKDAY[vaara_index % 7]
-    day_seventh = day_s / 7.0
-    baana_segments: list[dict[str, Any]] = []
-    for i, key in enumerate(baana_seq):
-        meta = _BAANA_META[key]
-        b_start = _add_seconds(sunrise_utc, i * day_seventh)
-        b_end = _add_seconds(sunrise_utc, (i + 1) * day_seventh)
-        seg = _clip_segment(b_start, b_end, scope_start, scope_end, sunrise_utc, timezone_name)
-        if seg:
-            seg.update(
-                {
-                    "subtitle_en": meta["name_en"],
-                    "subtitle_ne": meta["name_ne"],
-                    "is_auspicious": meta["is_auspicious"],
-                }
-            )
-            baana_segments.append(seg)
+    # Baana — decided by the Sun's degree within its sign (see _BAANA_DEGREE).
+    baana_segments = _collect_baana_segments(
+        scope_start, scope_end, sunrise_utc, timezone_name
+    )
     if baana_segments:
         inauspicious.append(
             _timing_entry(
@@ -597,6 +740,78 @@ def build_extended_muhurta_timings(
                 "बाण",
                 baana_segments,
                 is_auspicious=False,
+            )
+        )
+
+    # Tithi doshas — malefic (bad) tithi span + Tithi Randhra (Panchang Shuddhi).
+    tithi_intervals = _collect_tithi_intervals(scope_start, scope_end)
+    bad_tithi_segments: list[dict[str, Any]] = []
+    randhra_segments: list[dict[str, Any]] = []
+    visha_tithi_segments: list[dict[str, Any]] = []
+    for t in tithi_intervals:
+        if _tithi_is_malefic(t["display"], t["paksha"], vaara_index):
+            seg = _clip_segment(
+                t["start_dt"], t["end_dt"], scope_start, scope_end, sunrise_utc, timezone_name
+            )
+            if seg:
+                bad_tithi_segments.append(seg)
+        ghatis = _TITHI_RANDHRA_GHATIS.get(t["display"])
+        if ghatis:
+            r_end = _add_seconds(t["start_dt"], ghatis * _GHATI_SECONDS)
+            seg = _clip_segment(
+                t["start_dt"], r_end, scope_start, scope_end, sunrise_utc, timezone_name
+            )
+            if seg:
+                randhra_segments.append(seg)
+        # Visha Ghati of the tithi — 4 ghatis of its true span from the offset.
+        v_off = _TITHI_VISHA_GHATI.get(t["display"])
+        if v_off is not None:
+            t_dur = (t["end_dt"] - t["start_dt"]).total_seconds()
+            v_start = _add_seconds(t["start_dt"], t_dur * v_off / 60.0)
+            v_end = _add_seconds(v_start, t_dur * PERIOD_GHATIS / 60.0)
+            seg = _clip_segment(
+                v_start, v_end, scope_start, scope_end, sunrise_utc, timezone_name
+            )
+            if seg:
+                visha_tithi_segments.append(seg)
+    if bad_tithi_segments:
+        inauspicious.append(
+            _timing_entry("tithi", "Tithi", "तिथि", bad_tithi_segments, is_auspicious=False)
+        )
+    if randhra_segments:
+        inauspicious.append(
+            _timing_entry(
+                "tithi_randhra", "Tithi Randhra", "तिथि रन्ध्र", randhra_segments, is_auspicious=False
+            )
+        )
+    if visha_tithi_segments:
+        inauspicious.append(
+            _timing_entry(
+                "visha_tithi", "Tithi Visha", "तिथि विष", visha_tithi_segments, is_auspicious=False
+            )
+        )
+
+    # Visha Ghati of the Nitya Yoga — toxic opening ghatis of malefic yogas.
+    visha_yoga_segments: list[dict[str, Any]] = []
+    for y in _collect_yoga_intervals(scope_start, scope_end):
+        if y["number"] not in _YOGA_VISHA_GHATIS:
+            continue
+        y_ghatis = _YOGA_VISHA_GHATIS[y["number"]]
+        if y_ghatis is None:
+            # Vyatipata — malefic for its whole span.
+            y_end = y["end_dt"]
+        else:
+            y_dur = (y["end_dt"] - y["start_dt"]).total_seconds()
+            y_end = _add_seconds(y["start_dt"], y_dur * y_ghatis / 60.0)
+        seg = _clip_segment(
+            y["start_dt"], y_end, scope_start, scope_end, sunrise_utc, timezone_name
+        )
+        if seg:
+            visha_yoga_segments.append(seg)
+    if visha_yoga_segments:
+        inauspicious.append(
+            _timing_entry(
+                "visha_yoga", "Yoga Visha", "योग विष", visha_yoga_segments, is_auspicious=False
             )
         )
 

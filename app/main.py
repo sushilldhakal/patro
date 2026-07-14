@@ -119,7 +119,7 @@ async def _guard_private_cache(request, call_next):
 
 # ── routers ───────────────────────────────────────────────────────────────────
 
-from api import cities, kundali, meta, panchanga, patro  # noqa: E402
+from api import cities, elements, kundali, meta, panchanga, patro  # noqa: E402
 
 # Public data routes are versioned (…/api/v1/…) so an engine bump can rev the
 # version and the CDN treats it as a fresh object — no purge. /health and /about
@@ -129,6 +129,9 @@ _version_prefix = f"/{config.api_version()}"
 app.include_router(meta.router)
 app.include_router(cities.router, prefix=_version_prefix)
 app.include_router(kundali.router, prefix=_version_prefix)
+# Element routes are registered before panchanga so the static /panchanga/element(s)
+# paths resolve ahead of the catch-all /panchanga/{date_key}.
+app.include_router(elements.router, prefix=_version_prefix)
 app.include_router(panchanga.router, prefix=_version_prefix)
 app.include_router(patro.router, prefix=_version_prefix)
 

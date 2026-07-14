@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "source": "Nepal Panchanga Nirnayak Samiti / patro sait listings",
+    "method_ne": "यी साइत मितिहरू नेपाल पञ्चाङ्ग निर्णायक समितिद्वारा प्रकाशित मुहूर्त सूचीमा आधारित छन्। प्रत्येक मितिलाई सोही दिनको पञ्चाङ्ग (तिथि, नक्षत्र, योग, करण र लग्न) सँगै प्रस्तुत गरिन्छ, ताकि प्रयोगकर्ताले शुभ दिनको खगोलीय आधार पनि हेर्न सकून्।",
+    "method_en": "These auspicious dates are taken from the muhurta listings published by the Nepal Panchanga Nirnayak Samiti. Each date is shown alongside that day's computed panchanga (tithi, nakshatra, yoga, karana and lagna) so the astronomical basis of the chosen day is visible."
+  },
+  "categories": {
+    "vivah": {
+      "label_ne": "विवाह",
+      "label_en": "Marriage",
+      "description_ne": "विवाह संस्कारका लागि शुभ साइत। वैवाहिक जीवनको मंगलमय आरम्भका लागि शुभ तिथि, नक्षत्र र लग्न विचार गरी मिति छानिन्छ।",
+      "description_en": "Auspicious dates for the marriage ceremony, chosen on favourable tithi, nakshatra and lagna for an auspicious start to married life."
+    },
+    "bratabandha": {
+      "label_ne": "ब्रतबन्ध",
+      "label_en": "Bratabandha (sacred-thread ceremony)",
+      "description_ne": "उपनयन (ब्रतबन्ध) संस्कारका लागि शुभ मिति। बालकको विद्यारम्भ र यज्ञोपवीत धारणका लागि शुभ मानिने दिनहरू।",
+      "description_en": "Auspicious dates for the Upanayana (Bratabandha) sacred-thread rite marking the start of a boy's formal study."
+    },
+    "griha-aarambha": {
+      "label_ne": "गृह आराम्भ",
+      "label_en": "House foundation",
+      "description_ne": "घर निर्माण आरम्भ (जग हाल्ने) का लागि शुभ मिति। भवन निर्माणको मंगलमय शुरुवातका लागि छानिएका दिनहरू।",
+      "description_en": "Auspicious dates to begin house construction (laying the foundation)."
+    },
+    "griha-pravesh": {
+      "label_ne": "गृह प्रवेश",
+      "label_en": "Housewarming (house entry)",
+      "description_ne": "नयाँ घरमा प्रवेश (गृह प्रवेश) का लागि शुभ मिति। सपरिवार नयाँ निवासमा बसाइँ सर्ने शुभ दिनहरू।",
+      "description_en": "Auspicious dates for entering and settling into a new home."
+    },
+    "byaparik-pratisthan": {
+      "label_ne": "व्यापारिक प्रतिष्ठान",
+      "label_en": "Business opening",
+      "description_ne": "नयाँ व्यापार, पसल वा प्रतिष्ठान उद्घाटनका लागि शुभ मिति। व्यावसायिक शुभारम्भका लागि छानिएका दिनहरू।",
+      "description_en": "Auspicious dates for opening a new business, shop or establishment."
+    },
+    "rudri-jurne": {
+      "label_ne": "रुद्री जुर्ने",
+      "label_en": "Rudri homa",
+      "description_ne": "रुद्री पाठ तथा हवनका लागि शुभ मिति। शिव आराधनासम्बन्धी अनुष्ठानका लागि मानिने शुभ दिनहरू।",
+      "description_en": "Auspicious dates for the Rudri recitation and homa (fire offering) in worship of Shiva."
+    },
+    "agni-jurne": {
+      "label_ne": "अग्नि जुर्ने",
+      "label_en": "Agni homa",
+      "description_ne": "यज्ञ/हवनका लागि अग्नि स्थापना गर्ने शुभ मिति। धार्मिक अनुष्ठानमा अग्निकार्य आरम्भका शुभ दिनहरू।",
+      "description_en": "Auspicious dates for establishing the sacred fire (Agni) to begin a yajna or homa."
+    },
+    "annaprasan": {
+      "label_ne": "अन्नप्रासन",
+      "label_en": "Annaprasan (first rice-feeding)",
+      "requires_birth_date": true,
+      "description_ne": "शिशुलाई पहिलो पटक अन्न ख्वाउने (अन्नप्रासन) संस्कारका लागि शुभ मिति। यसका लागि शिशुको जन्म मिति आवश्यक पर्दछ।",
+      "description_en": "Auspicious dates for a baby's first feeding of solid food (Annaprasan). Requires the child's birth date."
+    }
+  }
+}
