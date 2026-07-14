@@ -11,22 +11,15 @@ def test_list_sait_years_full_range():
     assert len(years) == 501
 
 
-def test_official_override_2083_vivah():
+def test_curated_year_now_served_computed():
+    # Even a year present in the curated Samiti JSON (2083) is served from our
+    # own computed engine now — never the official override.
     payload = get_sait_month_entries(2083, "vivah", DEFAULT_LOCATION)
-    assert payload["source"] == "official"
-    baisakh = next(m for m in payload["months"] if m["month"] == 1)
-    assert set(baisakh["days"]) == {7, 8, 22, 23, 24, 25, 30, 31}
-
-
-def test_official_override_2083_bratabandha():
-    payload = get_sait_month_entries(2083, "bratabandha", DEFAULT_LOCATION)
-    assert payload["source"] == "official"
-    baisakh = next(m for m in payload["months"] if m["month"] == 1)
-    assert set(baisakh["days"]) == {20, 21, 23}
+    assert payload["source"] != "official"
+    assert payload["months"]
 
 
 def test_computed_year_uncurated_vivah():
-    # 2085 has no official listing, so it falls back to the muhurta engine.
     payload = get_sait_month_entries(2085, "vivah", DEFAULT_LOCATION)
-    assert payload["source"] == "computed"
+    assert payload["source"] != "official"
     assert payload["months"]
