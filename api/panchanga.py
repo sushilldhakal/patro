@@ -360,6 +360,18 @@ def nepal_sait_about(category: str):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.get("/nepal/sait/{bs_year}/{category}/detail", tags=["sait"])
+def nepal_sait_detail(bs_year: int, category: str, location: LocationDep):
+    """Per-day muhūrta reasons (tithi/nakṣatra/yoga/karaṇa/vāra/lagna window)
+    explaining why each listed day qualifies. Muhūrta categories only."""
+    _validate_bs_year(bs_year)
+    from services.sait_api import get_sait_detail
+    try:
+        return get_sait_detail(bs_year, category, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])
 def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""

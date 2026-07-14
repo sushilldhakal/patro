@@ -125,7 +125,7 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.17.0"
+    assert SAIT_ENGINE_VERSION == "4.0.0"
 
 
 def test_dagdha_tithi_table():

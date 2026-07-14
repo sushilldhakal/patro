@@ -17,15 +17,17 @@ the auspicious windows for a ceremony, evaluating the classical layers:
   3. Chart layer   — lagna rāśi, Moon/​malefic house doṣas from the lagna.
 
 Godhūli muhūrta (first night-ghati after sunset) can neutralise Dagdha and
-Shunya for ceremonies that opt in (currently vivāha).
+Shunya for ceremonies that opt in via ``godhuli_overrides_dagdha_shunya`` — the
+strict vivāha rule deliberately does NOT opt in (Dagdha/Shunya scrub the day).
 
-IMPORTANT — accuracy: validated against the official Nepal Panchanga Nirnayak
-Samiti vivāha lists for BS 2080–2083, this reproduces ~55–60% of the official
-days at ~30% precision. That is an inherent ceiling: the Samiti hand-selects a
-subset of astronomically-equivalent muhūrtas, and the astronomy cannot tell
-those apart. Curated official data therefore always takes precedence (see
-``services.sait_api``); this engine is the computed fallback for years/locations
-with no official listing, and it returns *candidate* auspicious windows.
+IMPORTANT — philosophy: the vivāha rule follows the classical śāstra strictly
+rather than tracking the Nepal Panchāṅga Nirṇāyak Samiti's curated list. We
+compared the two exhaustively (BS 2080–2083): the Samiti's published days do not
+follow a derivable rule — they are a hand-curated subset that both *omits*
+astronomically-clean days and *includes* days a strict reading forbids (Dagdha,
+Śūnya, Bhadrā, Tue/Sat). So the engine no longer chases that list; it returns a
+sparse set of muhūrtas the śāstra cannot fault. Where an official listing exists,
+curated data still takes precedence at the API layer (see ``services.sait_api``).
 """
 
 from __future__ import annotations
@@ -79,6 +81,15 @@ _RIKTA = frozenset({4, 9, 14})
 _YOGA_VYATIPATA = 17
 _YOGA_VAIDHRITI = 27
 
+# The nine aśubha (inauspicious) nitya-yogas of classical muhūrta — Viṣkambha,
+# Atigaṇḍa, Śūla, Gaṇḍa, Vyāghāta, Vajra, Vyatīpāta, Parigha, Vaidhṛti. A strict
+# (śāstra) vivāha muhūrta rejects the whole span of any of these.
+ASHUBHA_YOGAS = frozenset({1, 6, 9, 10, 13, 15, 17, 19, 27})
+
+# The four sthira (fixed) karaṇas — Śakuni, Catuṣpāda, Nāga, Kiṃstughna — plus
+# Viṣṭi (Bhadrā) are all forbidden for auspicious saṃskāra.
+FORBIDDEN_KARANAS = frozenset({"Vishti", "Shakuni", "Chatushpada", "Naga", "Kimstughna"})
+
 # Nārada weekday Dur Muhūrta — 0-based index in the 30-muhūrta day
 # (0–14 daytime from sunrise, 15–29 nighttime from sunset). Keyed Sunday=0.
 _DUR_MUHURTA_INDEXES: dict[int, list[int]] = {
@@ -91,10 +102,13 @@ _DUR_MUHURTA_INDEXES: dict[int, list[int]] = {
     6: [1, 15],
 }
 
-# Marriage nakshatras, slightly widened from the sunrise-rule set (adds Ashwini,
-# Chitra, Dhanishta) — these carry real vivāha muhūrtas in the official lists.
-VIVAH_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 10, 12, 13, 14, 15, 17, 19, 20, 21, 23, 26, 27})
-VIVAH_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+# Strict śāstra vivāha nakṣatras — the classical set: Rohiṇī, Mṛgaśira, Maghā,
+# U.Phalgunī, Hasta, Svātī, Anurādhā, Mūla, U.Aṣāḍhā, U.Bhādrapada, Revatī.
+# (No committee-driven widening — Aśvinī/Chitrā/Dhaniṣṭhā/P.Aṣāḍhā are dropped.)
+VIVAH_MUHURTA_NAKSHATRAS = frozenset({4, 5, 10, 12, 13, 15, 17, 19, 21, 26, 27})
+# Strict śubha tithis: Dwitiyā, Tṛtīyā, Pañcamī, Saptamī, Daśamī, Ekādaśī,
+# Trayodaśī — rikta (4/9/14), Aṣṭamī, Ṣaṣṭhī, Dwādaśī, Pūrṇimā, Amāvasyā out.
+VIVAH_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 
 # Sankranti veto pads (hours). Majors — Mesha / Makara (and cardinality Karka /
 # Tula as ayanas) — get the wider guard; ordinary ingresses get a short guard.
@@ -200,15 +214,14 @@ class CeremonyRule:
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
 
 CEREMONY_RULES: dict[str, CeremonyRule] = {
-    # Vishti (Bhadra), Vyatipāta / Vaidhṛti, Sankranti pads, eclipse proximity,
-    # and Śūnya are vetoed for vivāha. Godhūli can still rescue a Dagdha/Shunya
-    # clash for that muhūrta — and if a major daytime doṣa (Bhadra, Vyatipāta/
-    # Vaidhṛti, Sankranti, Latta, Shunya outside Godhūli) touches sunrise→sunset,
-    # the whole day is scrubbed.
-    # Vāra-doṣa and Dagdha are NOT day-kills: the Nepal Panchāṅga Nirṇāyak Samiti
-    # lists Tuesday/Saturday and Dagdha vivāha days (vāra-śuddhi is offset by
-    # tithi/nakṣatra/lagna/graha-bala). So no weekday veto, and Dagdha — like
-    # Dur-muhūrta — only voids its own slot, it does not scrub the day.
+    # STRICT śāstra vivāha — no committee accommodation. Every classical doṣa is a
+    # hard veto: only the strict śubha tithis / nakṣatras; all nine aśubha yogas;
+    # Viṣṭi (Bhadrā) + the four sthira karaṇas; Tuesday & Saturday barred; Dagdha,
+    # Śūnya, and malefic Latta (Sun/Mars/Saturn/Rāhu/Ketu) all scrub the whole day
+    # with NO Godhūli rescue; Sankranti pads; eclipse ±3 days; Guru/Śukra must be
+    # udaya. No chart (lagna-śuddhi) layer here — the general year-list stays at the
+    # anga level; saptama-śuddhi / Chandra-bala belong to a per-couple picker. What
+    # survives is a muhūrta the śāstra cannot fault on the angas — deliberately sparse.
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
@@ -216,18 +229,19 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_shukra_udaya=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
-        avoid_karanas=frozenset({"Vishti"}),
-        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_varas=frozenset({3, 7}),  # Tuesday & Saturday barred
+        avoid_karanas=FORBIDDEN_KARANAS,
+        avoid_yogas=ASHUBHA_YOGAS,
         block_dur_muhurta=True,
         sankranti_buffer_hours=_SANKRANTI_BUFFER_HOURS,
         major_sankranti_buffer_hours=_MAJOR_SANKRANTI_BUFFER_HOURS,
         major_sankranti_rashis=_MAJOR_SANKRANTI_RASHIS,
-        eclipse_pad_days=1,
+        eclipse_pad_days=3,
         day_kill_on_major_dosha=True,
-        graha_vedha_planets=frozenset({"mars", "saturn"}),
+        graha_vedha_planets=frozenset({"sun", "mars", "saturn", "rahu", "ketu"}),
         check_dagdha=True,
         check_shunya=True,
-        godhuli_overrides_dagdha_shunya=True,
+        godhuli_overrides_dagdha_shunya=False,
     ),
     "bratabandha": CeremonyRule(
         key="bratabandha",
@@ -457,13 +471,13 @@ def _major_dosha_at(
 ) -> bool:
     """True when a listing-level major doṣa is active at ``dt``.
 
-    Covers Vishti (Bhadra), Vyatipāta/Vaidhṛti, Sankranti pads, Shunya
-    (Godhūli may shield Dagdha/Shunya), and Graha-Vedha Latta on the current
-    nakṣatra. Soft filters (wrong tithi / nakṣatra / lagna) are *not* major
-    doṣas — they only remove that instant as a candidate window.
+    Covers Vishti (Bhadra), Vyatipāta/Vaidhṛti, Sankranti pads, Dagdha/Shunya,
+    and Graha-Vedha Latta on the current nakṣatra. Soft filters (wrong tithi /
+    nakṣatra / lagna) are *not* major doṣas — they only remove that instant as a
+    candidate window.
 
-    Dur-muhūrta and Dagdha are slot-local: they void their own interval but do
-    **not** scrub the whole day when ``for_day_kill`` is set.
+    Dur-muhūrta is slot-local: it voids that interval but does **not** scrub the
+    whole day when ``for_day_kill`` is set.
     """
     if in_sankranti:
         return True
@@ -483,9 +497,7 @@ def _major_dosha_at(
     shielded = in_godhuli and rule.godhuli_overrides_dagdha_shunya
     if not shielded:
         tithi = get_display_tithi(get_tithi_number(get_tithi_angle(dt)))
-        # Dagdha is slot-local (like Dur-muhūrta): it voids its own window in
-        # ``_window_ok`` but never scrubs the whole day.
-        if rule.check_dagdha and is_dagdha(day_vaara, tithi) and not for_day_kill:
+        if rule.check_dagdha and is_dagdha(day_vaara, tithi):
             return True
         if rule.check_shunya:
             drained = SHUNYA_TITHI_RASHIS.get(tithi)

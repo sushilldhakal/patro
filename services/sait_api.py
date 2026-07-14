@@ -109,6 +109,110 @@ def _format_month_entries(by_month: dict[str, list[int]]) -> list[dict[str, Any]
     return months
 
 
+def get_sait_detail(
+    bs_year: int,
+    category: str,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Per-day *reasons* for a muhūrta listing: the panchāṅga (tithi, nakṣatra,
+    yoga, karaṇa, vāra, lagna) of the representative window that made each day
+    qualify. Powers the "Marriage Saait" explanation page. Muhūrta categories
+    (vivāha, bratabandha, …) only — the deterministic Vās categories have no
+    lagna window."""
+    from datetime import date
+
+    from engine.astronomy.positions import (
+        KARANA_NAMES, NAKSHATRA_NAMES, RASHI_NAMES, YOGA_NAMES,
+        get_display_tithi, get_karana, get_nakshatra, get_paksha,
+        get_tithi_angle, get_tithi_number, get_yoga,
+    )
+    from engine.astronomy.timescale import resolve_observer_timezone
+    from engine.vedic.bikram_sambat import bs_to_gregorian
+    from engine.vedic.muhurta_engine import MUHURTA_CATEGORIES, muhurta_windows
+    from engine.vedic.names_ne import (
+        KARANA_NAMES_NE, NAKSHATRA_NAMES_NE, PAKSHA_NAMES_NE, TITHI_NAMES_NE,
+        VAARA_NAMES_NE, YOGA_NAMES_NE, lunar_masa_name_ne,
+    )
+    from engine.vedic.sait_rules import build_day_panchanga
+
+    rules = _load_rules()
+    categories = rules.get("categories") or {}
+    if category not in categories:
+        raise ValueError(f"Unknown sait category: {category}")
+    if category not in MUHURTA_CATEGORIES:
+        raise ValueError(f"Category '{category}' has no muhūrta-window detail.")
+
+    tz = resolve_observer_timezone(location.timezone)
+    generated = get_generated_sait(bs_year, category, location)
+    by_month = generated.get("months") or {}
+
+    days_out: list[dict[str, Any]] = []
+    for month_key, day_nums in sorted(by_month.items(), key=lambda kv: int(kv[0])):
+        month = int(month_key)
+        for bs_day in sorted(int(d) for d in (day_nums or [])):
+            greg: date = bs_to_gregorian(bs_year, month, bs_day)
+            windows = muhurta_windows(category, greg, location)
+            if not windows:
+                continue
+            # Representative = the longest clean window of the day.
+            win = max(windows, key=lambda w: w.end - w.start)
+            dp = build_day_panchanga(greg, location)
+            start_local = win.start.astimezone(tz)
+            end_local = win.end.astimezone(tz)
+            tnum = get_tithi_number(get_tithi_angle(win.start))
+            tdisp = get_display_tithi(tnum)
+            paksha = get_paksha(tnum)
+            nak = get_nakshatra(win.start)[0]
+            yoga = get_yoga(win.start)[0]
+            _, karana = get_karana(win.start)
+            vaara0 = dp.vaara - 1  # 0=Sunday
+            lagna = win.lagna
+            days_out.append(
+                {
+                    "bs_month": month,
+                    "bs_day": bs_day,
+                    "bs_month_name_ne": BS_MONTHS_NE[month - 1],
+                    "gregorian": greg.isoformat(),
+                    "weekday_en": ["Sunday", "Monday", "Tuesday", "Wednesday",
+                                   "Thursday", "Friday", "Saturday"][vaara0],
+                    "weekday_ne": VAARA_NAMES_NE[vaara0],
+                    "window_start": start_local.strftime("%H:%M"),
+                    "window_end": end_local.strftime("%H:%M"),
+                    "tithi_num": tdisp,
+                    "tithi_en": _TITHI_EN[tdisp - 1],
+                    "tithi_ne": TITHI_NAMES_NE[tdisp - 1],
+                    "paksha": paksha,
+                    "paksha_ne": PAKSHA_NAMES_NE.get(paksha, paksha),
+                    "nakshatra_num": nak,
+                    "nakshatra_en": NAKSHATRA_NAMES[nak - 1],
+                    "nakshatra_ne": NAKSHATRA_NAMES_NE[nak - 1],
+                    "yoga_en": YOGA_NAMES[yoga - 1],
+                    "yoga_ne": YOGA_NAMES_NE[yoga - 1],
+                    "karana_en": karana,
+                    "karana_ne": KARANA_NAMES_NE[KARANA_NAMES.index(karana)]
+                    if karana in KARANA_NAMES else karana,
+                    "lagna_en": RASHI_NAMES[lagna - 1],
+                    "lunar_month_en": dp.lunar_month,
+                    "lunar_month_ne": lunar_masa_name_ne(dp.lunar_month),
+                }
+            )
+
+    return {
+        "bs_year": bs_year,
+        "category": category,
+        "category_label_ne": categories[category].get("label_ne", category),
+        "engine_version": generated.get("engine_version"),
+        "days": days_out,
+    }
+
+
+_TITHI_EN = [
+    "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi",
+    "Saptami", "Ashtami", "Navami", "Dashami", "Ekadashi", "Dwadashi",
+    "Trayodashi", "Chaturdashi", "Purnima",
+]
+
+
 def get_sait_month_entries(
     bs_year: int,
     category: str,

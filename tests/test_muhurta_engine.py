@@ -42,15 +42,19 @@ def test_off_season_has_no_vivah():
 def test_vivah_rule_has_classical_vetoes():
     rule = CEREMONY_RULES["vivah"]
     assert "Vishti" in rule.avoid_karanas
-    assert {17, 27} <= rule.avoid_yogas  # Vyatipata, Vaidhriti
-    # Vāra-doṣa is NOT a day-kill for vivāha — the Samiti lists Tue/Sat days.
-    assert not rule.avoid_varas
+    # STRICT śāstra: all nine aśubha yogas, Tue/Sat barred, no Godhūli rescue.
+    assert {1, 6, 9, 10, 13, 15, 17, 19, 27} <= rule.avoid_yogas
+    assert {3, 7} <= rule.avoid_varas  # Tuesday & Saturday
     assert rule.block_dur_muhurta
-    assert rule.eclipse_pad_days == 1
+    assert rule.eclipse_pad_days == 3
     assert rule.sankranti_buffer_hours > 0
     assert rule.major_sankranti_buffer_hours > rule.sankranti_buffer_hours
-    assert rule.godhuli_overrides_dagdha_shunya
+    assert not rule.godhuli_overrides_dagdha_shunya
     assert rule.day_kill_on_major_dosha
+    assert rule.check_dagdha and rule.check_shunya
+    # General year-list stays at the anga level — no chart (lagna-śuddhi) layer.
+    assert not rule.avoid_malefic_houses
+    assert not rule.avoid_moon_houses
 
 
 def test_day_kill_when_vishti_touches_practical_window():
@@ -142,17 +146,16 @@ def test_dur_muhurta_does_not_day_kill():
             sankranti_intervals=[],
         )
 
-def test_vivah_weekday_is_not_a_day_kill():
-    # Vāra-doṣa is soft for vivāha: the Samiti lists Tue/Sat days. BS 2083
-    # Ashadh 13 is an official Samiti vivāha day that falls on a Saturday
-    # (Anurādhā, Śukla Trayodaśī, no Dagdha/Shunya) — the engine must find it.
+def test_vivah_rejects_saturday():
+    # STRICT śāstra bars Tuesday & Saturday for vivāha. BS 2083 Ashadh 13 is a
+    # Saturday in the vivāha season — the weekday veto must reject the whole day.
     greg = bs_to_gregorian(2083, 3, 13)
     assert build_day_panchanga(greg).vaara == 7  # Saturday
-    assert has_muhurta("vivah", greg)
+    assert not has_muhurta("vivah", greg)
 
 
-def test_dagdha_does_not_day_kill():
-    """Dagdha, like Dur-muhūrta, voids its slot but must not scrub the whole day."""
+def test_dagdha_day_kills():
+    """STRICT: a Dagdha slice touching sunrise→sunset scrubs the whole day."""
     from engine.vedic.muhurta_engine import _major_dosha_touches_practical_window
 
     rule = CeremonyRule(
@@ -164,13 +167,13 @@ def test_dagdha_does_not_day_kill():
     sunset = datetime(2026, 2, 1, 12, 0, tzinfo=timezone.utc)
     next_sunrise = datetime(2026, 2, 2, 1, 0, tzinfo=timezone.utc)
 
-    # Sunday (vaara=1) × Dwadashi (12) is Dagdha all day; must NOT day-kill.
+    # Sunday (vaara=1) × Dwadashi (12) is Dagdha all day; must day-kill.
     with (
         patch("engine.vedic.muhurta_engine.get_tithi_angle", return_value=150.0),
         patch("engine.vedic.muhurta_engine.get_tithi_number", return_value=12),
         patch("engine.vedic.muhurta_engine.get_display_tithi", return_value=12),
     ):
-        assert not _major_dosha_touches_practical_window(
+        assert _major_dosha_touches_practical_window(
             rule,
             sunrise=sunrise,
             sunset=sunset,
