@@ -37,6 +37,8 @@
         { "ne": "नक्षत्र — भरणी, कृत्तिका, मघा, विशाखा र ज्येष्ठा बाहेक सबै शुभ नक्षत्र।", "en": "Nakshatra — all except Bharani, Krittika, Magha, Vishakha, Jyeshtha." },
         { "ne": "वार — मंगलबार र शनिबार वर्जित; दिनको समय (सूर्योदय–सूर्यास्त) मात्र।", "en": "Vaara — Tuesday & Saturday barred; daytime only (sunrise to sunset)." },
         { "ne": "ग्रह — गुरु र शुक्र अस्त हुनुहुँदैन।", "en": "Graha — Jupiter & Venus must be udaya (not combust)." },
+        { "ne": "योग/करण — व्यतीपात र वैधृति योग तथा विष्टि (भद्रा) करण वर्जित।", "en": "Yoga/Karana — Vyatipata & Vaidhriti yoga and Vishti (Bhadra) karana barred." },
+        { "ne": "संक्रान्ति र ग्रहण (±३ दिन) वर्जित; दुर्मुहूर्त परेको अवधि मात्र छाडिन्छ (पूरै दिन होइन)।", "en": "Sankranti and eclipse (+-3 days) barred; Dur-muhurta skips only the affected period (not the whole day)." },
         { "ne": "दोष — दग्धा, शून्य र मंगल/राहुको लत्ता परेको दिन वर्जित।", "en": "Dosha — Dagdha, Shunya, and Mars/Rahu Latta days excluded." }
       ]
     },

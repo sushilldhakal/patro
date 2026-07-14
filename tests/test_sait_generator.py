@@ -125,7 +125,10 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "4.0.0"
+    # Bumped to 4.1.0 when the Upanayana (bratabandha) rule was tightened to
+    # reject Vishti/Bhadra karana, Vyatipata & Vaidhriti yoga, Sankranti,
+    # eclipse ±3 days, and Dur-muhurta (slot-only).
+    assert SAIT_ENGINE_VERSION == "4.1.0"
 
 
 def test_dagdha_tithi_table():
