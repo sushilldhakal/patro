@@ -140,7 +140,7 @@ class CeremonyRule:
     lagnas: frozenset[int] = frozenset()
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
     avoid_malefic_houses: frozenset[int] = field(default_factory=frozenset)
-    check_graha_vedha: bool = False  # reject if a malefic's Latta pierces the day's nakshatra
+    graha_vedha_planets: frozenset[str] = frozenset()  # planets whose Latta ray vetoes the day's nakshatra
     check_dagdha: bool = False       # reject burnt weekday × tithi clashes
     check_shunya: bool = False       # reject when the tithi drains the Moon's rashi
 
@@ -151,7 +151,9 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     # Dagdha & Shunya tithis are major doshas for marriage (they attack the
     # union's longevity/stability), so both are vetoed. NOTE: the Godhuli-muhurta
     # override that can neutralise them is not yet modelled — these are hard
-    # vetoes for now.
+    # vetoes for now. Graha Vedha: Saturn or Mars Latta on the marriage nakshatra
+    # scrubs the day. (The full Sarvatobhadra 4-angle geometry reduces to the
+    # Latta count for these two malefics here.)
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
@@ -159,6 +161,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_shukra_udaya=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
+        graha_vedha_planets=frozenset({"mars", "saturn"}),
         check_dagdha=True,
         check_shunya=True,
     ),
@@ -175,7 +178,10 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         daytime_only=True,
         # Dagdha harms discipline/guru-bond, Shunya harms intellect/memory — both
         # vetoed. NOTE: the Purvahna + strong-Lagna (Jupiter in the 1st) shield
-        # that can offset Shunya is not yet modelled.
+        # that can offset Shunya is not yet modelled. Graha Vedha: Mars (anger/
+        # injury) or Rahu (mental confusion/memory) Latta on the day's nakshatra
+        # scrubs it.
+        graha_vedha_planets=frozenset({"mars", "rahu"}),
         check_dagdha=True,
         check_shunya=True,
     ),
@@ -209,7 +215,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
         avoid_moon_houses=frozenset({2, 4, 5, 8, 9, 12}),
-        check_graha_vedha=True,
+        graha_vedha_planets=frozenset({"sun", "mars", "saturn", "rahu", "ketu"}),
         check_dagdha=True,
         check_shunya=True,
     ),
@@ -328,23 +334,30 @@ def _latta_target(planet_nakshatra: int, offset: int) -> int:
     return (planet_nakshatra - 1 + offset) % 27 + 1
 
 
-def latta_pierced_nakshatras(greg, location: ObserverLocation) -> frozenset[int]:
-    """Nakṣatras struck by a malefic's Latta ray on ``greg`` (evaluated at local
-    noon — the malefics barely move within a day)."""
+def latta_pierced_nakshatras(
+    greg,
+    location: ObserverLocation,
+    planets: frozenset[str] = frozenset(_MALEFIC_LATTA),
+) -> frozenset[int]:
+    """Nakṣatras struck by the Latta ray of ``planets`` on ``greg`` (evaluated at
+    local noon — the planets barely move within a day). Defaults to all malefics;
+    pass a subset per ceremony (e.g. {mars, saturn} for vivāha)."""
     tz = resolve_observer_timezone(location.timezone)
     noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
-    rahu_lon = get_planet_position(noon, "rahu")["longitude"]
-    lons = {
-        "sun": get_planet_position(noon, "sun")["longitude"],
-        "mars": get_planet_position(noon, "mars")["longitude"],
-        "saturn": get_planet_position(noon, "saturn")["longitude"],
-        "rahu": rahu_lon,
-        "ketu": (rahu_lon + 180.0) % 360.0,
-    }
-    return frozenset(
-        _latta_target(_nakshatra_of(lons[planet]), offset)
-        for planet, offset in _MALEFIC_LATTA.items()
-    )
+    rahu_lon: float | None = None
+    pierced: set[int] = set()
+    for planet in planets:
+        offset = _MALEFIC_LATTA.get(planet)
+        if offset is None:
+            continue
+        if planet in ("rahu", "ketu"):
+            if rahu_lon is None:
+                rahu_lon = get_planet_position(noon, "rahu")["longitude"]
+            lon = rahu_lon if planet == "rahu" else (rahu_lon + 180.0) % 360.0
+        else:
+            lon = get_planet_position(noon, planet)["longitude"]
+        pierced.add(_latta_target(_nakshatra_of(lon), offset))
+    return frozenset(pierced)
 
 
 def _window_ok(
@@ -401,7 +414,9 @@ def muhurta_windows(
         return []
     planet_rashis = _planet_rashis(greg, location) if rule.avoid_malefic_houses else {}
     pierced_naks = (
-        latta_pierced_nakshatras(greg, location) if rule.check_graha_vedha else frozenset()
+        latta_pierced_nakshatras(greg, location, rule.graha_vedha_planets)
+        if rule.graha_vedha_planets
+        else frozenset()
     )
 
     sunrise = calculate_sunrise(
