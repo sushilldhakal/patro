@@ -40,6 +40,8 @@ __all__ = [
     "calculate_moonset",
     "calculate_moonrise_after",
     "calculate_moonset_after",
+    "next_solar_eclipse_max",
+    "next_lunar_eclipse_max",
     "graha_spashta_datetime",
 ]
 
@@ -312,6 +314,16 @@ def calculate_moonset_after(
     if altitude is None:
         altitude = _default_altitude(latitude, longitude)
     return default_engine.set_after(after_dt, "moon", latitude, longitude, altitude)
+
+
+def next_solar_eclipse_max(jd: float, *, backward: bool = False) -> float | None:
+    """JD of the next (or previous) global solar-eclipse maximum."""
+    return default_engine.next_solar_eclipse_max(jd, backward=backward)
+
+
+def next_lunar_eclipse_max(jd: float, *, backward: bool = False) -> float | None:
+    """JD of the next (or previous) lunar-eclipse maximum."""
+    return default_engine.next_lunar_eclipse_max(jd, backward=backward)
 
 
 def graha_spashta_datetime(target: date, timezone_name: str) -> datetime:

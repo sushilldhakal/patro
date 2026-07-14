@@ -365,6 +365,28 @@ class AstronomyEngine:
         except (swe.Error, TypeError, ValueError) as exc:
             raise EphemerisError(f"Equation of time failed: {exc}") from exc
 
+    # ── eclipses ─────────────────────────────────────────────────────────────
+
+    def next_solar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        """JD of the next (or previous) global solar-eclipse maximum."""
+        try:
+            _retflag, tret = swe.sol_eclipse_when_glob(
+                jd, swe.FLG_SWIEPH, 0, backward
+            )
+            return float(tret[0])
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return None
+
+    def next_lunar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
+        """JD of the next (or previous) lunar-eclipse maximum."""
+        try:
+            _retflag, tret = swe.lun_eclipse_when(
+                jd, swe.FLG_SWIEPH, 0, backward
+            )
+            return float(tret[0])
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return None
+
     # ── rise / set ───────────────────────────────────────────────────────────
 
     def rise(

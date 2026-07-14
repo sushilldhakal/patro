@@ -10,9 +10,14 @@ This module scans each civil day (sunrise-anchored) at a fixed step and returns
 the auspicious windows for a ceremony, evaluating the classical layers:
 
   1. Day gate      — festival-masa (or Sun-sign) month, no Adhik-māsa /
-                     Chaturmāsa, Guru/Śukra not combust (ast), ayana where fixed.
-  2. Window layer  — tithi (not rikta/Amāvasyā), nakṣatra, yoga, pakṣa.
+                     Chaturmāsa, Guru/Śukra not combust (ast), ayana where fixed,
+                     weekday bans, eclipse proximity.
+  2. Window layer  — tithi (not rikta/Amāvasyā), nakṣatra, yoga, karana
+                     (Vishti/Bhadra), Dur-muhūrta, Sankranti buffers, pakṣa.
   3. Chart layer   — lagna rāśi, Moon/​malefic house doṣas from the lagna.
+
+Godhūli muhūrta (first night-ghati after sunset) can neutralise Dagdha and
+Shunya for ceremonies that opt in (currently vivāha).
 
 IMPORTANT — accuracy: validated against the official Nepal Panchanga Nirnayak
 Samiti vivāha lists for BS 2080–2083, this reproduces ~55–60% of the official
@@ -26,10 +31,12 @@ with no official listing, and it returns *candidate* auspicious windows.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.positions import (
+    get_karana,
     get_moon_longitude,
     get_nakshatra,
     get_sidereal_asc_longitude,
@@ -40,7 +47,15 @@ from engine.astronomy.positions import (
     get_paksha,
     get_yoga,
 )
-from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset, get_planet_position
+from engine.astronomy.swiss_eph import (
+    calculate_sunrise,
+    calculate_sunset,
+    get_julian_day,
+    get_planet_position,
+    julian_day_to_datetime,
+    next_lunar_eclipse_max,
+    next_solar_eclipse_max,
+)
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
     CHATURMAS_LUNAR_MONTHS,
@@ -54,15 +69,38 @@ from engine.vedic.sait_rules import (
     build_day_panchanga,
     is_dagdha,
 )
+from engine.vedic.sankranti import find_sankranti_brent
 
 # Rikta tithis (Chaturthi/Navami/Chaturdashi) and Amavasya are excluded for all
 # saṃskāra muhūrtas.
 _RIKTA = frozenset({4, 9, 14})
 
+# Malefic nitya yogas universally rejected for saṃskāra muhūrtas.
+_YOGA_VYATIPATA = 17
+_YOGA_VAIDHRITI = 27
+
+# Nārada weekday Dur Muhūrta — 0-based index in the 30-muhūrta day
+# (0–14 daytime from sunrise, 15–29 nighttime from sunset). Keyed Sunday=0.
+_DUR_MUHURTA_INDEXES: dict[int, list[int]] = {
+    0: [13],
+    1: [11, 8],
+    2: [3, 21],
+    3: [7],
+    4: [11, 5],
+    5: [8, 3],
+    6: [1, 15],
+}
+
 # Marriage nakshatras, slightly widened from the sunrise-rule set (adds Ashwini,
 # Chitra, Dhanishta) — these carry real vivāha muhūrtas in the official lists.
 VIVAH_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 10, 12, 13, 14, 15, 17, 19, 20, 21, 23, 26, 27})
 VIVAH_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12, 13})
+
+# Sankranti veto pads (hours). Majors — Mesha / Makara (and cardinality Karka /
+# Tula as ayanas) — get the wider guard; ordinary ingresses get a short guard.
+_MAJOR_SANKRANTI_RASHIS = frozenset({1, 4, 7, 10})  # Mesha, Karka, Tula, Makara
+_SANKRANTI_BUFFER_HOURS = 6.0
+_MAJOR_SANKRANTI_BUFFER_HOURS = 16.0
 
 # Gṛha-ārambha, calibrated against official BS 2081-2083 (18 days): the old
 # Sun-sign set {1,4,8,10} was wrong — the samiti's foundation days sit mainly in
@@ -122,7 +160,7 @@ class CeremonyRule:
     sun_rashis: frozenset[int] = frozenset()
     avoid_sun_rashis: frozenset[int] = frozenset()  # Surya Bala — banned solar signs
     block_chaturmas: bool = True
-    block_sankranti: bool = False         # exclude solar sign-change days
+    block_sankranti: bool = False         # exclude solar sign-change days (whole day)
     require_guru_udaya: bool = False      # Jupiter not combust
     require_shukra_udaya: bool = False    # Venus not combust
     require_uttarayana: bool = False
@@ -136,6 +174,18 @@ class CeremonyRule:
     shukla_only: bool = False
     avoid_varas: frozenset[int] = frozenset()  # 1=Sun … 7=Sat to exclude
     daytime_only: bool = False  # scan sunrise→sunset only (e.g. Upanayana)
+    avoid_karanas: frozenset[str] = frozenset()  # e.g. {"Vishti"} → Bhadra
+    avoid_yogas: frozenset[int] = frozenset()  # 1-based nitya yoga numbers
+    block_dur_muhurta: bool = False
+    # Hours before/after solar ingress to veto; majors use the wider pad.
+    sankranti_buffer_hours: float = 0.0
+    major_sankranti_buffer_hours: float = 0.0
+    major_sankranti_rashis: frozenset[int] = frozenset()
+    # Reject days within ±N civil days of a solar/lunar eclipse maximum.
+    eclipse_pad_days: int = 0
+    # If True: any major doṣa overlapping sunrise→sunset scrubs the entire civil
+    # day (no leftover late-night windows). Used for vivāha date listings.
+    day_kill_on_major_dosha: bool = False
     # Chart layer (houses counted whole-sign from the lagna).
     lagnas: frozenset[int] = frozenset()
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
@@ -143,17 +193,22 @@ class CeremonyRule:
     graha_vedha_planets: frozenset[str] = frozenset()  # planets whose Latta ray vetoes the day's nakshatra
     check_dagdha: bool = False       # reject burnt weekday × tithi clashes
     check_shunya: bool = False       # reject when the tithi drains the Moon's rashi
+    # Godhūli (first night-ghati after sunset) can neutralise Dagdha / Shunya.
+    godhuli_overrides_dagdha_shunya: bool = False
 
 
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
 
 CEREMONY_RULES: dict[str, CeremonyRule] = {
-    # Dagdha & Shunya tithis are major doshas for marriage (they attack the
-    # union's longevity/stability), so both are vetoed. NOTE: the Godhuli-muhurta
-    # override that can neutralise them is not yet modelled — these are hard
-    # vetoes for now. Graha Vedha: Saturn or Mars Latta on the marriage nakshatra
-    # scrubs the day. (The full Sarvatobhadra 4-angle geometry reduces to the
-    # Latta count for these two malefics here.)
+    # Vishti (Bhadra), Vyatipāta / Vaidhṛti, Sankranti pads, eclipse proximity,
+    # and Śūnya are vetoed for vivāha. Godhūli can still rescue a Dagdha/Shunya
+    # clash for that muhūrta — and if a major daytime doṣa (Bhadra, Vyatipāta/
+    # Vaidhṛti, Sankranti, Latta, Shunya outside Godhūli) touches sunrise→sunset,
+    # the whole day is scrubbed.
+    # Vāra-doṣa and Dagdha are NOT day-kills: the Nepal Panchāṅga Nirṇāyak Samiti
+    # lists Tuesday/Saturday and Dagdha vivāha days (vāra-śuddhi is offset by
+    # tithi/nakṣatra/lagna/graha-bala). So no weekday veto, and Dagdha — like
+    # Dur-muhūrta — only voids its own slot, it does not scrub the day.
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
@@ -161,9 +216,18 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_shukra_udaya=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
+        avoid_karanas=frozenset({"Vishti"}),
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        block_dur_muhurta=True,
+        sankranti_buffer_hours=_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_buffer_hours=_MAJOR_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_rashis=_MAJOR_SANKRANTI_RASHIS,
+        eclipse_pad_days=1,
+        day_kill_on_major_dosha=True,
         graha_vedha_planets=frozenset({"mars", "saturn"}),
         check_dagdha=True,
         check_shunya=True,
+        godhuli_overrides_dagdha_shunya=True,
     ),
     "bratabandha": CeremonyRule(
         key="bratabandha",
@@ -230,6 +294,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         krishna_tithis=BYAPARIK_KRISHNA_TITHIS,
         avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
         daytime_only=True,
+        eclipse_pad_days=3,
     ),
     "annaprasan": CeremonyRule(
         key="annaprasan",
@@ -273,10 +338,204 @@ class _DayGate:
     vaara: int = 0  # Sunday = 1 … Saturday = 7 (for the Dagdha check)
 
 
+def _eclipse_near(greg: date, pad_days: int) -> bool:
+    """True when a solar or lunar eclipse maximum falls within ±pad_days of ``greg``."""
+    if pad_days <= 0:
+        return False
+    noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=timezone.utc)
+    jd = get_julian_day(noon)
+    maxima: list[float] = []
+    for finder in (next_solar_eclipse_max, next_lunar_eclipse_max):
+        for backward in (False, True):
+            tmax = finder(jd, backward=backward)
+            if tmax is not None:
+                maxima.append(tmax)
+    for tmax in maxima:
+        ecl_date = julian_day_to_datetime(tmax).date()
+        if abs((ecl_date - greg).days) <= pad_days:
+            return True
+    return False
+
+
+@lru_cache(maxsize=512)
+def _sankranti_moment_between(start_iso: str, end_iso: str) -> str | None:
+    """Cached exact solar-ingress ISO between two UTC timestamps, or None."""
+    start = datetime.fromisoformat(start_iso)
+    end = datetime.fromisoformat(end_iso)
+    r0 = get_surya_rashi(start)["number"]
+    r1 = get_surya_rashi(end)["number"]
+    if r0 == r1:
+        return None
+    target_degree = (r1 - 1) * 30
+    moment = find_sankranti_brent(target_degree, start, end, tolerance_seconds=30)
+    return moment.isoformat()
+
+
+def _sankranti_vetoes(
+    rule: CeremonyRule, sunrise: datetime, end: datetime
+) -> list[tuple[datetime, datetime]]:
+    """Closed intervals around solar ingresses that must be avoided."""
+    if rule.sankranti_buffer_hours <= 0 and rule.major_sankranti_buffer_hours <= 0:
+        return []
+    # Search a little past the muhūrta span so an ingress just after sunrise of
+    # the next day still casts its post-buffer into this vedic day.
+    pad = timedelta(hours=max(rule.sankranti_buffer_hours, rule.major_sankranti_buffer_hours))
+    search_start = sunrise - pad
+    search_end = end + pad
+    moment_iso = _sankranti_moment_between(search_start.isoformat(), search_end.isoformat())
+    if moment_iso is None:
+        return []
+    moment = datetime.fromisoformat(moment_iso)
+    incoming = get_surya_rashi(moment + timedelta(minutes=1))["number"]
+    hours = (
+        rule.major_sankranti_buffer_hours
+        if incoming in rule.major_sankranti_rashis
+        else rule.sankranti_buffer_hours
+    )
+    if hours <= 0:
+        return []
+    delta = timedelta(hours=hours)
+    return [(moment - delta, moment + delta)]
+
+
+def _in_any_interval(dt: datetime, intervals: list[tuple[datetime, datetime]]) -> bool:
+    return any(start <= dt < end for start, end in intervals)
+
+
+def _dur_muhurta_intervals(
+    sunrise: datetime, sunset: datetime, next_sunrise: datetime, vaara: int
+) -> list[tuple[datetime, datetime]]:
+    """Nārada Dur-muhūrta windows for the weekday (vaara Sunday=1 … Saturday=7)."""
+    day_s = (sunset - sunrise).total_seconds()
+    night_s = (next_sunrise - sunset).total_seconds()
+    if day_s <= 0 or night_s <= 0:
+        return []
+    day_part = day_s / 15.0
+    night_part = night_s / 15.0
+    out: list[tuple[datetime, datetime]] = []
+    for idx in _DUR_MUHURTA_INDEXES.get((vaara - 1) % 7, []):
+        if idx < 15:
+            start = sunrise + timedelta(seconds=idx * day_part)
+            end = sunrise + timedelta(seconds=(idx + 1) * day_part)
+        else:
+            ni = idx - 15
+            start = sunset + timedelta(seconds=ni * night_part)
+            end = sunset + timedelta(seconds=(ni + 1) * night_part)
+        out.append((start, end))
+    return out
+
+
+def _godhuli_window(sunset: datetime, next_sunrise: datetime) -> tuple[datetime, datetime]:
+    """First night-ghati after sunset (= 1/30 of the night)."""
+    night_s = (next_sunrise - sunset).total_seconds()
+    return (sunset, sunset + timedelta(seconds=night_s / 30.0))
+
+
+def _practical_marriage_window(
+    sunrise: datetime, sunset: datetime, next_sunrise: datetime
+) -> tuple[datetime, datetime]:
+    """Daytime span (sunrise→sunset) used for whole-day doṣa scrubbing.
+
+    Godhūli remains available as a short evening muhūrta and can still shield
+    Dagdha/Shunya, but a major daytime doṣa (Bhadra, Vyatipāta, …) rejects the
+    entire civil day from the sait listing.
+    """
+    del next_sunrise  # practical window is daytime-only
+    return (sunrise, sunset)
+
+
+def _major_dosha_at(
+    rule: CeremonyRule,
+    dt: datetime,
+    day_vaara: int,
+    pierced_naks: frozenset[int],
+    *,
+    in_godhuli: bool,
+    in_dur_muhurta: bool,
+    in_sankranti: bool,
+    for_day_kill: bool = False,
+) -> bool:
+    """True when a listing-level major doṣa is active at ``dt``.
+
+    Covers Vishti (Bhadra), Vyatipāta/Vaidhṛti, Sankranti pads, Shunya
+    (Godhūli may shield Dagdha/Shunya), and Graha-Vedha Latta on the current
+    nakṣatra. Soft filters (wrong tithi / nakṣatra / lagna) are *not* major
+    doṣas — they only remove that instant as a candidate window.
+
+    Dur-muhūrta and Dagdha are slot-local: they void their own interval but do
+    **not** scrub the whole day when ``for_day_kill`` is set.
+    """
+    if in_sankranti:
+        return True
+    if rule.block_dur_muhurta and in_dur_muhurta and not for_day_kill:
+        return True
+
+    if rule.avoid_yogas:
+        yoga_num, _, _ = get_yoga(dt)
+        if yoga_num in rule.avoid_yogas:
+            return True
+
+    if rule.avoid_karanas:
+        _, karana_name = get_karana(dt)
+        if karana_name in rule.avoid_karanas:
+            return True
+
+    shielded = in_godhuli and rule.godhuli_overrides_dagdha_shunya
+    if not shielded:
+        tithi = get_display_tithi(get_tithi_number(get_tithi_angle(dt)))
+        # Dagdha is slot-local (like Dur-muhūrta): it voids its own window in
+        # ``_window_ok`` but never scrubs the whole day.
+        if rule.check_dagdha and is_dagdha(day_vaara, tithi) and not for_day_kill:
+            return True
+        if rule.check_shunya:
+            drained = SHUNYA_TITHI_RASHIS.get(tithi)
+            if drained and _rashi(get_moon_longitude(dt)) in drained:
+                return True
+
+    if pierced_naks:
+        nak = get_nakshatra(dt)[0]
+        if nak in pierced_naks:
+            return True
+    return False
+
+
+def _major_dosha_touches_practical_window(
+    rule: CeremonyRule,
+    *,
+    sunrise: datetime,
+    sunset: datetime,
+    next_sunrise: datetime,
+    day_vaara: int,
+    pierced_naks: frozenset[int],
+    dur_intervals: list[tuple[datetime, datetime]],
+    sankranti_intervals: list[tuple[datetime, datetime]],
+) -> bool:
+    """Scan sunrise→sunset; any major daytime doṣa hitch scrubs the whole day."""
+    win_start, win_end = _practical_marriage_window(sunrise, sunset, next_sunrise)
+    godhuli = _godhuli_window(sunset, next_sunrise)
+    dt = win_start
+    while dt < win_end:
+        if _major_dosha_at(
+            rule,
+            dt,
+            day_vaara,
+            pierced_naks,
+            in_godhuli=godhuli[0] <= dt < godhuli[1],
+            in_dur_muhurta=_in_any_interval(dt, dur_intervals),
+            in_sankranti=_in_any_interval(dt, sankranti_intervals),
+            for_day_kill=True,
+        ):
+            return True
+        dt = dt + _STEP
+    return False
+
+
 def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
-    """Season / ast / ayana gate evaluated once per day from the sunrise chart."""
+    """Season / ast / ayana / eclipse / weekday gate from the sunrise chart."""
     dp = build_day_panchanga(greg, location)
     if dp.is_adhik_maas:
+        return _DayGate(False)
+    if rule.eclipse_pad_days and _eclipse_near(greg, rule.eclipse_pad_days):
         return _DayGate(False)
     if rule.block_sankranti:
         # Sankranti = the Sun changes sidereal rāśi within the vedic day.
@@ -361,19 +620,38 @@ def latta_pierced_nakshatras(
 
 
 def _window_ok(
-    rule: CeremonyRule, dt: datetime, planet_rashis, pierced_naks, day_vaara, location
+    rule: CeremonyRule,
+    dt: datetime,
+    planet_rashis,
+    pierced_naks,
+    day_vaara,
+    location,
+    *,
+    in_godhuli: bool = False,
+    in_dur_muhurta: bool = False,
+    in_sankranti: bool = False,
 ) -> tuple[bool, int, int, int]:
     """Evaluate the window + chart layer at instant ``dt``."""
+    if in_sankranti:
+        return (False, 0, 0, 0)
+    if rule.block_dur_muhurta and in_dur_muhurta:
+        return (False, 0, 0, 0)
+
     tnum = get_tithi_number(get_tithi_angle(dt))
     tithi = get_display_tithi(tnum)
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
-    if rule.check_dagdha and is_dagdha(day_vaara, tithi):  # burnt weekday × tithi
-        return (False, 0, 0, 0)
-    if rule.check_shunya:  # tithi drains the Moon's transit rashi
-        drained = SHUNYA_TITHI_RASHIS.get(tithi)
-        if drained and _rashi(get_moon_longitude(dt)) in drained:
+
+    # Dagdha / Shunya — Godhūli can neutralise these for opted-in ceremonies.
+    shielded = in_godhuli and rule.godhuli_overrides_dagdha_shunya
+    if not shielded:
+        if rule.check_dagdha and is_dagdha(day_vaara, tithi):
             return (False, 0, 0, 0)
+        if rule.check_shunya:
+            drained = SHUNYA_TITHI_RASHIS.get(tithi)
+            if drained and _rashi(get_moon_longitude(dt)) in drained:
+                return (False, 0, 0, 0)
+
     if rule.shukla_tithis or rule.krishna_tithis:
         allowed = rule.shukla_tithis if get_paksha(tnum) == "shukla" else rule.krishna_tithis
         if tithi not in allowed:
@@ -382,6 +660,17 @@ def _window_ok(
         return (False, 0, 0, 0)
     if rule.shukla_only and get_paksha(tnum) != "shukla":
         return (False, 0, 0, 0)
+
+    if rule.avoid_yogas:
+        yoga_num, _, _ = get_yoga(dt)
+        if yoga_num in rule.avoid_yogas:
+            return (False, 0, 0, 0)
+
+    if rule.avoid_karanas:
+        _, karana_name = get_karana(dt)
+        if karana_name in rule.avoid_karanas:
+            return (False, 0, 0, 0)
+
     nak = get_nakshatra(dt)[0]
     if rule.nakshatras and nak not in rule.nakshatras:
         return (False, 0, 0, 0)
@@ -422,14 +711,44 @@ def muhurta_windows(
     sunrise = calculate_sunrise(
         greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
     )
+    sunset = calculate_sunset(
+        greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
+    )
+    # For Dur-muhūrta / Godhūli we always need the true next sunrise.
+    true_next_sunrise = calculate_sunrise(
+        greg + timedelta(days=1),
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
     # Upanayana and similar day-only rites are valid in daylight only; everything
     # else spans the vedic day (sunrise → next sunrise).
-    if rule.daytime_only:
-        end = calculate_sunset(
-            greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
-        )
-    else:
-        end = sunrise + timedelta(hours=_SCAN_HOURS)
+    end = sunset if rule.daytime_only else true_next_sunrise
+    dur_intervals = (
+        _dur_muhurta_intervals(sunrise, sunset, true_next_sunrise, gate.vaara)
+        if rule.block_dur_muhurta
+        else []
+    )
+    godhuli = (
+        _godhuli_window(sunset, true_next_sunrise)
+        if rule.godhuli_overrides_dagdha_shunya or rule.day_kill_on_major_dosha
+        else None
+    )
+    sankranti_intervals = _sankranti_vetoes(rule, sunrise, end)
+
+    # Vivāha: a major daytime doṣa (sunrise→sunset) rejects the entire civil day
+    # — leftover clean slices after dusk are not listed as a sait day.
+    if rule.day_kill_on_major_dosha and _major_dosha_touches_practical_window(
+        rule,
+        sunrise=sunrise,
+        sunset=sunset,
+        next_sunrise=true_next_sunrise,
+        day_vaara=gate.vaara,
+        pierced_naks=pierced_naks,
+        dur_intervals=dur_intervals,
+        sankranti_intervals=sankranti_intervals,
+    ):
+        return []
 
     windows: list[MuhurtaWindow] = []
     run_start = None
@@ -445,8 +764,17 @@ def muhurta_windows(
             windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
 
     while dt <= end:
+        in_godhuli = bool(godhuli and godhuli[0] <= dt < godhuli[1])
         ok, tithi, nak, lagna = _window_ok(
-            rule, dt, planet_rashis, pierced_naks, gate.vaara, location
+            rule,
+            dt,
+            planet_rashis,
+            pierced_naks,
+            gate.vaara,
+            location,
+            in_godhuli=in_godhuli,
+            in_dur_muhurta=_in_any_interval(dt, dur_intervals),
+            in_sankranti=_in_any_interval(dt, sankranti_intervals),
         )
         if ok:
             if run_start is None:
