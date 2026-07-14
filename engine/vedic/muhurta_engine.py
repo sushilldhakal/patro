@@ -247,6 +247,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         key="bratabandha",
         sun_rashis=BRATABANDHA_MUHURTA_SUN_RASHIS,
         block_chaturmas=True,
+        block_sankranti=True,           # Sankranti day barred for the saṃskāra
         require_guru_udaya=True,
         require_shukra_udaya=True,
         nakshatras=BRATABANDHA_MUHURTA_NAKSHATRAS,
@@ -254,6 +255,13 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         shukla_tithis=BRATABANDHA_SHUKLA_TITHIS,
         krishna_tithis=BRATABANDHA_KRISHNA_TITHIS,
         daytime_only=True,
+        # Stricter classical Upanayana filter: reject Viṣṭi (Bhadrā) karaṇa,
+        # Vyatīpāta & Vaidhṛti yoga (whole span), eclipse ±3 days, and Dur-muhūrta
+        # (only the affected slot, not the whole day).
+        avoid_karanas=frozenset({"Vishti"}),
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        block_dur_muhurta=True,
+        eclipse_pad_days=3,
         # Dagdha harms discipline/guru-bond, Shunya harms intellect/memory — both
         # vetoed. NOTE: the Purvahna + strong-Lagna (Jupiter in the 1st) shield
         # that can offset Shunya is not yet modelled. Graha Vedha: Mars (anger/

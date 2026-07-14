@@ -248,3 +248,16 @@ def test_vishti_and_vaidhriti_rejected():
     ):
         ok, *_ = _window_ok(rule, dt, {}, frozenset(), 5, DEFAULT_LOCATION)
         assert not ok
+
+
+def test_bratabandha_strict_classical_filters():
+    """Upanayana opts into the stricter classical vetoes: Vishti (Bhadra),
+    Vyatipata & Vaidhriti yoga, Sankranti, eclipse, and slot-only Dur-muhurta."""
+    rule = CEREMONY_RULES["bratabandha"]
+    assert "Vishti" in rule.avoid_karanas
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata=17, Vaidhriti=27
+    assert rule.block_sankranti
+    assert rule.block_dur_muhurta
+    assert rule.eclipse_pad_days == 3
+    # Dur-muhurta must stay slot-only for Upanayana (no whole-day kill).
+    assert not rule.day_kill_on_major_dosha
