@@ -63,6 +63,14 @@ def _load_about() -> dict[str, Any]:
         return json.load(fh)
 
 
+def _category_method(meta: dict[str, Any], about: dict[str, Any]) -> dict[str, str | None]:
+    """The 'how it is calculated' intro — the ceremony's own text if present,
+    else the shared computed method from ``_meta``."""
+    if meta.get("method_ne") or meta.get("method_en"):
+        return {"ne": meta.get("method_ne"), "en": meta.get("method_en")}
+    return {"ne": about["_meta"].get("method_ne"), "en": about["_meta"].get("method_en")}
+
+
 def get_sait_about_all() -> dict[str, Any]:
     """Explanation metadata for every ceremony type (for the individual pages)."""
     about = _load_about()
@@ -73,22 +81,30 @@ def get_sait_about_all() -> dict[str, Any]:
         },
         "source": about["_meta"].get("source"),
         "categories": [
-            {"id": cat_id, **meta} for cat_id, meta in (about.get("categories") or {}).items()
+            {
+                "id": cat_id,
+                **meta,
+                "method": _category_method(meta, about),
+                "rules": meta.get("rules", []),
+            }
+            for cat_id, meta in (about.get("categories") or {}).items()
         ],
     }
 
 
 def get_sait_about(category: str) -> dict[str, Any]:
-    """Explanation metadata for one ceremony type."""
+    """Explanation metadata for one ceremony type — includes the per-ceremony
+    calculation method and the classical rule list applied by the engine."""
     about = _load_about()
     meta = (about.get("categories") or {}).get(category)
     if meta is None:
         raise ValueError(f"Unknown sait category '{category}'.")
     return {
         "id": category,
-        "source": about["_meta"].get("source"),
-        "method": {"ne": about["_meta"].get("method_ne"), "en": about["_meta"].get("method_en")},
         **meta,
+        "source": about["_meta"].get("source"),
+        "method": _category_method(meta, about),
+        "rules": meta.get("rules", []),
     }
 
 
