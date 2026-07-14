@@ -138,6 +138,7 @@ class CeremonyRule:
     lagnas: frozenset[int] = frozenset()
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
     avoid_malefic_houses: frozenset[int] = field(default_factory=frozenset)
+    check_graha_vedha: bool = False  # reject if a malefic's Latta pierces the day's nakshatra
 
 
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
@@ -179,8 +180,9 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     #      from the muhūrta lagna (i.e. never the 2/4/5/8/9/12).
     #   4. Sthira/Mṛdu nakṣatras only.
     #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
-    # (Graha Vedha and Dagdha/Śūnya-tithi vetoes are not yet encoded — they need a
-    # fixed classical table; see the note in the review summary.)
+    #   6. Graha Vedha — reject if a malefic's Latta ray strikes the day's
+    #      nakṣatra (Sun/Mars/Saturn/Rāhu/Ketu; see latta_pierced_nakshatras).
+    # (Dagdha/Śūnya-tithi vetoes still need a fixed classical table — deferred.)
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
         lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
@@ -191,6 +193,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
         avoid_moon_houses=frozenset({2, 4, 5, 8, 9, 12}),
+        check_graha_vedha=True,
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
@@ -282,7 +285,52 @@ def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
     return {p: _rashi(get_planet_position(noon, p)["longitude"]) for p in _MALEFICS}
 
 
-def _window_ok(rule: CeremonyRule, dt: datetime, planet_rashis, location) -> tuple[bool, int, int, int]:
+# Graha Vedha (Latta): each planet "pierces" the Nth nakṣatra counting its own as
+# the 1st, so the signed offset is (N − 1) positions — forward (+) or backward (−).
+# Only malefic latta is a veto here; benefic (Amṛta) latta is not scored as a bonus.
+#   Sun → 12th forward, Mars → 3rd forward, Saturn → 8th forward,
+#   Rāhu / Ketu → 9th backward.  Validated: Sun in Aśvinī(1) → U.Phalgunī(12).
+_MALEFIC_LATTA: dict[str, int] = {
+    "sun": 11,     # 12th forward
+    "mars": 2,     # 3rd forward
+    "saturn": 7,   # 8th forward
+    "rahu": -8,    # 9th backward
+    "ketu": -8,    # 9th backward
+}
+
+
+def _nakshatra_of(longitude: float) -> int:
+    """1-based nakṣatra (Aśvinī = 1 … Revatī = 27) for a sidereal longitude."""
+    return int(longitude / (360.0 / 27.0)) % 27 + 1
+
+
+def _latta_target(planet_nakshatra: int, offset: int) -> int:
+    """Nakṣatra pierced by a planet in ``planet_nakshatra`` given its signed Latta offset."""
+    return (planet_nakshatra - 1 + offset) % 27 + 1
+
+
+def latta_pierced_nakshatras(greg, location: ObserverLocation) -> frozenset[int]:
+    """Nakṣatras struck by a malefic's Latta ray on ``greg`` (evaluated at local
+    noon — the malefics barely move within a day)."""
+    tz = resolve_observer_timezone(location.timezone)
+    noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
+    rahu_lon = get_planet_position(noon, "rahu")["longitude"]
+    lons = {
+        "sun": get_planet_position(noon, "sun")["longitude"],
+        "mars": get_planet_position(noon, "mars")["longitude"],
+        "saturn": get_planet_position(noon, "saturn")["longitude"],
+        "rahu": rahu_lon,
+        "ketu": (rahu_lon + 180.0) % 360.0,
+    }
+    return frozenset(
+        _latta_target(_nakshatra_of(lons[planet]), offset)
+        for planet, offset in _MALEFIC_LATTA.items()
+    )
+
+
+def _window_ok(
+    rule: CeremonyRule, dt: datetime, planet_rashis, pierced_naks, location
+) -> tuple[bool, int, int, int]:
     """Evaluate the window + chart layer at instant ``dt``."""
     tnum = get_tithi_number(get_tithi_angle(dt))
     tithi = get_display_tithi(tnum)
@@ -298,6 +346,8 @@ def _window_ok(rule: CeremonyRule, dt: datetime, planet_rashis, location) -> tup
         return (False, 0, 0, 0)
     nak = get_nakshatra(dt)[0]
     if rule.nakshatras and nak not in rule.nakshatras:
+        return (False, 0, 0, 0)
+    if pierced_naks and nak in pierced_naks:  # Graha Vedha — malefic Latta strike
         return (False, 0, 0, 0)
     lagna = _rashi(get_sidereal_asc_longitude(dt, lat=location.lat, lon=location.lon))
     if rule.lagnas and lagna not in rule.lagnas:
@@ -325,6 +375,9 @@ def muhurta_windows(
     if not gate.ok:
         return []
     planet_rashis = _planet_rashis(greg, location) if rule.avoid_malefic_houses else {}
+    pierced_naks = (
+        latta_pierced_nakshatras(greg, location) if rule.check_graha_vedha else frozenset()
+    )
 
     sunrise = calculate_sunrise(
         greg, latitude=location.lat, longitude=location.lon, timezone_name=location.timezone
@@ -352,7 +405,7 @@ def muhurta_windows(
             windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
 
     while dt <= end:
-        ok, tithi, nak, lagna = _window_ok(rule, dt, planet_rashis, location)
+        ok, tithi, nak, lagna = _window_ok(rule, dt, planet_rashis, pierced_naks, location)
         if ok:
             if run_start is None:
                 run_start = (dt, tithi, nak, lagna)

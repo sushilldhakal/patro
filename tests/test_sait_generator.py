@@ -125,7 +125,21 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.10.0"
+    assert SAIT_ENGINE_VERSION == "3.11.0"
+
+
+def test_latta_graha_vedha_counts():
+    """Latta count rule — validated by the classic worked example."""
+    from engine.vedic.muhurta_engine import _MALEFIC_LATTA, _latta_target
+
+    # Sun in Ashwini(1) pierces the 12th nakshatra forward → Uttara Phalguni(12).
+    assert _latta_target(1, _MALEFIC_LATTA["sun"]) == 12
+    # Mars 3rd forward, Saturn 8th forward (inclusive count from the planet's star).
+    assert _latta_target(1, _MALEFIC_LATTA["mars"]) == 3
+    assert _latta_target(1, _MALEFIC_LATTA["saturn"]) == 8
+    # Rahu/Ketu 9th backward wrap correctly (from Ashwini → Purva Ashadha 20).
+    assert _latta_target(1, _MALEFIC_LATTA["rahu"]) == 20
+    assert _latta_target(10, _MALEFIC_LATTA["sun"]) == 21  # forward wrap check
 
 
 def test_shuddha_jestha_krishna_not_flagged_adhik_bs2083():
