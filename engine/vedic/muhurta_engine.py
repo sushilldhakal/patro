@@ -61,7 +61,6 @@ from engine.astronomy.swiss_eph import (
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.sait_rules import (
     CHATURMAS_LUNAR_MONTHS,
-    GRIHA_AARAMBHA_NAKSHATRAS,
     GRIHA_PRAVESH_GROWTH_TITHIS,
     GRIHA_PRAVESH_LUNAR_MONTHS,
     GRIHA_PRAVESH_MALAMAS_RASHIS,
@@ -116,15 +115,23 @@ _MAJOR_SANKRANTI_RASHIS = frozenset({1, 4, 7, 10})  # Mesha, Karka, Tula, Makara
 _SANKRANTI_BUFFER_HOURS = 6.0
 _MAJOR_SANKRANTI_BUFFER_HOURS = 16.0
 
-# Gṛha-ārambha, calibrated against official BS 2081-2083 (18 days): the old
-# Sun-sign set {1,4,8,10} was wrong — the samiti's foundation days sit mainly in
-# Vṛśchika/Dhanu/Kumbha (8/9/11), and 2 fall in Chaturmāsa (construction, unlike
-# vivāha, is not paused). Also allow Pratipadā (tithi 1). NOTE: even so this
-# floods (~5% precision) — gṛha-ārambha is too sparse to compute usefully, so
-# curated official data is what makes it accurate.
+# Gṛha-ārambha (foundation / bhūmi-pūjan) — strict classical Vāstu-muhūrta.
+# Sun-sign: Meṣa, Karka, Tulā, Vṛśchika, Dhanu, Makara, Kumbha (1,4,7,8,9,10,11);
+# construction, unlike vivāha, is NOT paused in Chaturmāsa. Tithi tightened to the
+# śubha growth set 2,3,5,7,10,11,12 (Pratipadā 1 and Trayodaśī 13 dropped). Only
+# the classical Vāstu nakṣatras (explicit list): Rohiṇī, Mṛgaśira, Punarvasu,
+# U.Phalgunī, Hasta, Chitrā, Svātī, Anurādhā, U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā,
+# U.Bhādrapada, Revatī. Lagna: fixed (sthira) preferred, dual (dvisvabhāva)
+# accepted, movable (chara: Meṣa/Karka/Tulā/Makara) rejected — a building on a
+# sthira lagna is held to be stable. Plus Vyatīpāta/Vaidhṛti yoga, Viṣṭi (Bhadrā)
+# karaṇa, Dur-muhūrta (slot-only), Sankranti pads and eclipse are all vetoed.
 GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS = frozenset({1, 4, 7, 8, 9, 10, 11})
-GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({1, 2, 3, 5, 7, 10, 11, 12, 13})
-GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = GRIHA_AARAMBHA_NAKSHATRAS | frozenset({24, 27})
+GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
+GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = frozenset(
+    {4, 5, 7, 12, 13, 14, 15, 17, 21, 22, 23, 26, 27}
+)
+# Fixed (2,5,8,11) + dual (3,6,9,12) lagnas; movable signs excluded.
+GRIHA_AARAMBHA_MUHURTA_LAGNAS = frozenset({2, 3, 5, 6, 8, 9, 11, 12})
 
 # Upanayana (ब्रतबन्ध / व्रतबन्ध) per Muhūrta Chintāmaṇi & Dharmasindhu:
 #   * Sun in an Uttarāyaṇa rāśi (Makara→Mithuna = 10,11,12,1,2,3), avoiding
@@ -277,6 +284,16 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         block_chaturmas=False,
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
+        # Stricter Vāstu-muhūrta vetoes.
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,
+        sankranti_buffer_hours=_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_buffer_hours=_MAJOR_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_rashis=_MAJOR_SANKRANTI_RASHIS,
+        eclipse_pad_days=1,  # reject the eclipse day
+        # Fixed lagna preferred, dual accepted (sthira/dvisvabhāva); movable out.
+        lagnas=GRIHA_AARAMBHA_MUHURTA_LAGNAS,
     ),
     # Gṛha Praveśa — four-step shastra filter (see sait_rules.check_griha_pravesh):
     #   1. Lunar month ∈ {Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir};
