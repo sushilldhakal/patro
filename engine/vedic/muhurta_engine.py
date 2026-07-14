@@ -49,8 +49,10 @@ from engine.vedic.sait_rules import (
     GRIHA_PRAVESH_LUNAR_MONTHS,
     GRIHA_PRAVESH_MALAMAS_RASHIS,
     GRIHA_PRAVESH_NAKSHATRAS,
+    SHUNYA_TITHI_RASHIS,
     VIVAH_LUNAR_MONTHS,
     build_day_panchanga,
+    is_dagdha,
 )
 
 # Rikta tithis (Chaturthi/Navami/Chaturdashi) and Amavasya are excluded for all
@@ -139,6 +141,8 @@ class CeremonyRule:
     avoid_moon_houses: frozenset[int] = field(default_factory=frozenset)
     avoid_malefic_houses: frozenset[int] = field(default_factory=frozenset)
     check_graha_vedha: bool = False  # reject if a malefic's Latta pierces the day's nakshatra
+    check_dagdha: bool = False       # reject burnt weekday × tithi clashes
+    check_shunya: bool = False       # reject when the tithi drains the Moon's rashi
 
 
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
@@ -182,7 +186,8 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
     #   6. Graha Vedha — reject if a malefic's Latta ray strikes the day's
     #      nakṣatra (Sun/Mars/Saturn/Rāhu/Ketu; see latta_pierced_nakshatras).
-    # (Dagdha/Śūnya-tithi vetoes still need a fixed classical table — deferred.)
+    #   7. Dagdha — reject a burnt weekday × tithi clash.
+    #   8. Shunya — reject when the tithi drains the Moon's transit rashi.
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
         lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
@@ -194,6 +199,8 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
         avoid_moon_houses=frozenset({2, 4, 5, 8, 9, 12}),
         check_graha_vedha=True,
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
@@ -246,6 +253,7 @@ class MuhurtaWindow:
 class _DayGate:
     ok: bool
     planet_rashis: dict[str, int] = field(default_factory=dict)
+    vaara: int = 0  # Sunday = 1 … Saturday = 7 (for the Dagdha check)
 
 
 def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
@@ -275,7 +283,7 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         return _DayGate(False)
     if rule.avoid_varas and dp.vaara in rule.avoid_varas:
         return _DayGate(False)
-    return _DayGate(True)
+    return _DayGate(True, vaara=dp.vaara)
 
 
 def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
@@ -329,13 +337,19 @@ def latta_pierced_nakshatras(greg, location: ObserverLocation) -> frozenset[int]
 
 
 def _window_ok(
-    rule: CeremonyRule, dt: datetime, planet_rashis, pierced_naks, location
+    rule: CeremonyRule, dt: datetime, planet_rashis, pierced_naks, day_vaara, location
 ) -> tuple[bool, int, int, int]:
     """Evaluate the window + chart layer at instant ``dt``."""
     tnum = get_tithi_number(get_tithi_angle(dt))
     tithi = get_display_tithi(tnum)
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
+    if rule.check_dagdha and is_dagdha(day_vaara, tithi):  # burnt weekday × tithi
+        return (False, 0, 0, 0)
+    if rule.check_shunya:  # tithi drains the Moon's transit rashi
+        drained = SHUNYA_TITHI_RASHIS.get(tithi)
+        if drained and _rashi(get_moon_longitude(dt)) in drained:
+            return (False, 0, 0, 0)
     if rule.shukla_tithis or rule.krishna_tithis:
         allowed = rule.shukla_tithis if get_paksha(tnum) == "shukla" else rule.krishna_tithis
         if tithi not in allowed:
@@ -405,7 +419,9 @@ def muhurta_windows(
             windows.append(MuhurtaWindow(s, stop, ti, nk, lg))
 
     while dt <= end:
-        ok, tithi, nak, lagna = _window_ok(rule, dt, planet_rashis, pierced_naks, location)
+        ok, tithi, nak, lagna = _window_ok(
+            rule, dt, planet_rashis, pierced_naks, gate.vaara, location
+        )
         if ok:
             if run_start is None:
                 run_start = (dt, tithi, nak, lagna)

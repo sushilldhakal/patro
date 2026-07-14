@@ -125,7 +125,26 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.11.0"
+    assert SAIT_ENGINE_VERSION == "3.12.0"
+
+
+def test_dagdha_tithi_table():
+    from engine.vedic.sait_rules import is_dagdha
+
+    # Each weekday (Sun=1 … Sat=7) has one burnt tithi.
+    for vaara, tithi in ((1, 12), (2, 11), (3, 5), (4, 3), (5, 6), (6, 8), (7, 9)):
+        assert is_dagdha(vaara, tithi)
+        assert not is_dagdha(vaara, tithi + 1)  # any other tithi is fine
+
+
+def test_shunya_tithi_table():
+    from engine.vedic.sait_rules import SHUNYA_TITHI_RASHIS
+
+    # Pratipada drains Tula(7)+Makara(10); Trayodashi drains Vrishabha(2)+Meena(12).
+    assert SHUNYA_TITHI_RASHIS[1] == frozenset({7, 10})
+    assert SHUNYA_TITHI_RASHIS[13] == frozenset({2, 12})
+    # Tithis with no Shunya rule are absent (e.g. Dashami).
+    assert 10 not in SHUNYA_TITHI_RASHIS
 
 
 def test_latta_graha_vedha_counts():

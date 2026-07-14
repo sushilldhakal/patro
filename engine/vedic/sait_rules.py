@@ -166,13 +166,47 @@ ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
 BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
-# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 in EITHER paksha (rikta
-# 4/9/14 and Amavasya excluded; Dwadashi 12 dropped per the growth rule).
-# Applied to both shukla and krishna so an apurva (first) entry on a waning
-# growth tithi — as the Nepal Samiti lists — is allowed.
+# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and Amavasya
+# excluded; Dwadashi 12 dropped per the growth rule). Combined with the rule's
+# shukla-only gate, only waxing growth tithis qualify.
 GRIHA_PRAVESH_GROWTH_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 # Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
 BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+
+# --- Dagdha & Shunya tithis --------------------------------------------------
+# Dagdha ("burnt") — a weekday × display-tithi clash that scorches the day. Vaara
+# is Sunday = 1 … Saturday = 7; the tithi is the display number (1–15), and the
+# clash applies identically in both Shukla and Krishna paksha.
+DAGDHA_TITHI_BY_VAARA: dict[int, int] = {
+    1: 12,  # Sunday    — Dwadashi
+    2: 11,  # Monday    — Ekadashi
+    3: 5,   # Tuesday   — Panchami
+    4: 3,   # Wednesday — Tritiya
+    5: 6,   # Thursday  — Shashthi
+    6: 8,   # Friday    — Ashtami
+    7: 9,   # Saturday  — Navami
+}
+
+
+def is_dagdha(vaara: int, display_tithi: int) -> bool:
+    """True when the weekday × tithi combination is a burnt (Dagdha) day."""
+    return DAGDHA_TITHI_BY_VAARA.get(vaara) == display_tithi
+
+
+# Shunya ("empty/void") — a display tithi drains specific rashis of their light.
+# If the Moon's transit rashi (or the house's ruling sign) falls in the drained
+# set, the day is void. Rashis are 1-based: Mesha = 1 … Meena = 12.
+SHUNYA_TITHI_RASHIS: dict[int, frozenset[int]] = {
+    1:  frozenset({7, 10}),   # Pratipada  — Tula, Makara
+    2:  frozenset({9, 12}),   # Dwitiya    — Dhanu, Meena
+    3:  frozenset({5, 10}),   # Tritiya    — Simha, Makara
+    5:  frozenset({3, 6}),    # Panchami   — Mithuna, Kanya
+    7:  frozenset({4, 9}),    # Saptami    — Karka, Dhanu
+    9:  frozenset({4, 5}),    # Navami     — Karka, Simha
+    11: frozenset({9, 12}),   # Ekadashi   — Dhanu, Meena
+    13: frozenset({2, 12}),   # Trayodashi — Vrishabha, Meena
+}
+
 
 # --- Weekdays (Sunday = 1 … Saturday = 7) ------------------------------------
 VIVAH_VAARA = frozenset({1, 2, 4, 5, 6})  # avoid Tue, Sat
@@ -359,8 +393,9 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
 #   3. Chandra Bala: waxing (Shukla) growth tithis only — 2,3,5,7,10,11,13.
 #   4. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
 #   5. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
-# (The Moon-house side of Chandra Bala, plus Graha Vedha and Dagdha-tithi vetoes,
-# are time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
+#   6. Dagdha: reject a burnt weekday × tithi clash.
+# (The Moon-house side of Chandra Bala, Graha Vedha, and the Shunya-tithi veto are
+# time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
     # Step 1 — month alignment (śuddha months only; the adhik flag comes from the
     # pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
@@ -382,6 +417,10 @@ def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
         return False
     # Step 5 — Guru / Shukra must not be combust.
     if day.jupiter_combust or day.venus_combust:
+        return False
+    # Step 6 — Dagdha: reject a burnt weekday × tithi clash. (Shunya — which needs
+    # the Moon's rashi — is applied in the time-resolved muhūrta engine.)
+    if is_dagdha(day.vaara, day.tithi_display):
         return False
     return True
 
