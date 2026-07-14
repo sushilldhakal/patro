@@ -148,6 +148,10 @@ class CeremonyRule:
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
 
 CEREMONY_RULES: dict[str, CeremonyRule] = {
+    # Dagdha & Shunya tithis are major doshas for marriage (they attack the
+    # union's longevity/stability), so both are vetoed. NOTE: the Godhuli-muhurta
+    # override that can neutralise them is not yet modelled — these are hard
+    # vetoes for now.
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
@@ -155,6 +159,8 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         require_shukra_udaya=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "bratabandha": CeremonyRule(
         key="bratabandha",
@@ -167,6 +173,11 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         shukla_tithis=BRATABANDHA_SHUKLA_TITHIS,
         krishna_tithis=BRATABANDHA_KRISHNA_TITHIS,
         daytime_only=True,
+        # Dagdha harms discipline/guru-bond, Shunya harms intellect/memory — both
+        # vetoed. NOTE: the Purvahna + strong-Lagna (Jupiter in the 1st) shield
+        # that can offset Shunya is not yet modelled.
+        check_dagdha=True,
+        check_shunya=True,
     ),
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
