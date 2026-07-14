@@ -136,6 +136,9 @@ GRIHA_PRAVESH_LUNAR_MONTHS = frozenset(
 GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 4, 8, 10})
 # (Griha Pravesh is gated by lunar month, not Sun-sign — see
 # GRIHA_PRAVESH_LUNAR_MONTHS above.)
+# Surya Bala — Griha Pravesh is banned when the Sun (a Malamas/Kharmas-like
+# weakness) is in Mithuna (3), Vrishchika (8), or Meena (12).
+GRIHA_PRAVESH_MALAMAS_RASHIS = frozenset({3, 8, 12})
 
 # --- Nakshatra sets (1-based) ------------------------------------------------
 # Rohini, Mrigashira, Magha, U.Phalguni, Hasta, Swati, Anuradha, Mula,
@@ -350,27 +353,34 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
     return True
 
 
-# 4. गृह प्रवेश (House Warming) — four-step shastra filter:
+# 4. गृह प्रवेश (House Warming) — shastra filter:
 #   1. Month: only the six permitted lunar months; never Adhik Maas / Chaturmas.
-#   2. Tithi: growth tithis (either paksha); rikta + Amavasya excluded.
-#   3. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
-#   4. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
+#   2. Surya Bala: Sun not in Mithuna/Vrishchika/Meena (Malamas).
+#   3. Chandra Bala: waxing (Shukla) growth tithis only — 2,3,5,7,10,11,13.
+#   4. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
+#   5. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
+# (The Moon-house side of Chandra Bala, plus Graha Vedha and Dagdha-tithi vetoes,
+# are time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
 def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
-    # Step 1 — month alignment (śuddha months only; the adhik flag now comes from
-    # the pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
+    # Step 1 — month alignment (śuddha months only; the adhik flag comes from the
+    # pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
     if day.is_adhik_maas:
         return False
     if day.lunar_month not in GRIHA_PRAVESH_LUNAR_MONTHS:
         return False
-    # Step 2 — growth tithis in either paksha (the set already omits rikta/Amavasya)
-    # so an apurva entry on a waning growth tithi (e.g. the Samiti's kṛṣṇa days)
-    # is allowed.
+    # Step 2 — Surya Bala.
+    if day.sun_rashi in GRIHA_PRAVESH_MALAMAS_RASHIS:
+        return False
+    # Step 3 — Chandra Bala: strictly Shukla paksha, growth tithis only (the set
+    # already omits rikta 4/9/14 and Amavasya).
+    if day.paksha != "shukla":
+        return False
     if day.tithi_display not in GRIHA_PRAVESH_GROWTH_TITHIS:
         return False
-    # Step 3 — fixed / gentle nakshatra.
+    # Step 4 — fixed / gentle nakshatra.
     if day.nakshatra not in GRIHA_PRAVESH_NAKSHATRAS:
         return False
-    # Step 4 — Guru / Shukra must not be combust.
+    # Step 5 — Guru / Shukra must not be combust.
     if day.jupiter_combust or day.venus_combust:
         return False
     return True

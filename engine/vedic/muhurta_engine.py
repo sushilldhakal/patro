@@ -47,6 +47,7 @@ from engine.vedic.sait_rules import (
     GRIHA_AARAMBHA_NAKSHATRAS,
     GRIHA_PRAVESH_GROWTH_TITHIS,
     GRIHA_PRAVESH_LUNAR_MONTHS,
+    GRIHA_PRAVESH_MALAMAS_RASHIS,
     GRIHA_PRAVESH_NAKSHATRAS,
     VIVAH_LUNAR_MONTHS,
     build_day_panchanga,
@@ -117,6 +118,7 @@ class CeremonyRule:
     # Day gate — one of lunar_months / sun_rashis fixes the season.
     lunar_months: frozenset[str] = frozenset()
     sun_rashis: frozenset[int] = frozenset()
+    avoid_sun_rashis: frozenset[int] = frozenset()  # Surya Bala — banned solar signs
     block_chaturmas: bool = True
     block_sankranti: bool = False         # exclude solar sign-change days
     require_guru_udaya: bool = False      # Jupiter not combust
@@ -171,19 +173,24 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     # Gṛha Praveśa — four-step shastra filter (see sait_rules.check_griha_pravesh):
     #   1. Lunar month ∈ {Magh, Falgun, Chaitra, Baishakh, Jestha, Mangsir};
     #      Adhik Māsa / Chaturmāsa excluded (adhik via the pakṣa-resolved layer).
-    #   2. Growth tithis (2,3,5,7,10,11,13) in EITHER paksha — apurva (first)
-    #      entry is allowed on a waning growth tithi, matching the Nepal Samiti's
-    #      kṛṣṇa gṛha-praveśa days.
-    #   3. Sthira/Mṛdu nakṣatras only.
-    #   4. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
+    #   2. Surya Bala — Sun not in Mithuna/Vrishchika/Meena (Malamas).
+    #   3. Chandra Bala — waxing Moon: strictly Śukla-pakṣa growth tithis
+    #      (2,3,5,7,10,11,13), and the Moon in a friendly house (1,3,6,7,10,11)
+    #      from the muhūrta lagna (i.e. never the 2/4/5/8/9/12).
+    #   4. Sthira/Mṛdu nakṣatras only.
+    #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
+    # (Graha Vedha and Dagdha/Śūnya-tithi vetoes are not yet encoded — they need a
+    # fixed classical table; see the note in the review summary.)
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
         lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
+        avoid_sun_rashis=GRIHA_PRAVESH_MALAMAS_RASHIS,
         require_guru_udaya=True,
         require_shukra_udaya=True,
-        shukla_tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
-        krishna_tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
+        shukla_only=True,
+        tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
+        avoid_moon_houses=frozenset({2, 4, 5, 8, 9, 12}),
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
@@ -252,6 +259,8 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
     if rule.lunar_months and dp.lunar_month not in rule.lunar_months:
         return _DayGate(False)
     if rule.sun_rashis and dp.sun_rashi not in rule.sun_rashis:
+        return _DayGate(False)
+    if rule.avoid_sun_rashis and dp.sun_rashi in rule.avoid_sun_rashis:
         return _DayGate(False)
     if rule.block_chaturmas and dp.lunar_month in CHATURMAS_LUNAR_MONTHS:
         return _DayGate(False)

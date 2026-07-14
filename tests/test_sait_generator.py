@@ -125,7 +125,7 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 def test_engine_version_bumped():
     from services.sait_generator import SAIT_ENGINE_VERSION
 
-    assert SAIT_ENGINE_VERSION == "3.9.0"
+    assert SAIT_ENGINE_VERSION == "3.10.0"
 
 
 def test_shuddha_jestha_krishna_not_flagged_adhik_bs2083():
@@ -150,15 +150,16 @@ def test_griha_pravesh_four_step_rule():
     assert not check_griha_pravesh(_day(lunar_month="Shrawan", nakshatra=4))
     assert not check_griha_pravesh(_day(lunar_month="Poush", nakshatra=4))
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, is_adhik_maas=True))
-    # Step 2 — growth tithis allowed in either paksha (apurva entry); rikta and
-    # Dwadashi(12) still rejected regardless of paksha.
-    assert check_griha_pravesh(
+    # Surya Bala — Sun in Mithuna(3)/Vrishchika(8)/Meena(12) rejected.
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=5, sun_rashi=8))
+    # Chandra Bala — strictly Shukla; krishna, rikta, and Dwadashi(12) all rejected.
+    assert not check_griha_pravesh(
         _day(lunar_month="Baishakh", nakshatra=4, tithi_display=11, paksha="krishna")
     )
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=4))
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=12))
-    # Step 3 — a non-fixed/gentle nakshatra (Hasta 13) rejected.
+    # Nakshatra — a non-fixed/gentle nakshatra (Hasta 13) rejected.
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=13, tithi_display=5))
-    # Step 4 — Guru or Śukra combust rejected.
+    # Asta Shuddhi — Guru or Śukra combust rejected.
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_combust=True))
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_combust=True))
