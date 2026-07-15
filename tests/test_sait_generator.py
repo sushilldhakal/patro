@@ -132,7 +132,9 @@ def test_engine_version_bumped():
     # yoga & Vishti karana vetoed, Dur-muhurta (slot-only), Sankranti pads,
     # eclipse, and fixed+dual lagna only.
     # 4.3.0 — Griha-aarambha made daytime-only (foundation is a daytime rite).
-    assert SAIT_ENGINE_VERSION == "4.3.0"
+    # 4.4.0 — Griha-pravesh tightened (Vyatipata/Vaidhriti, Vishti, Dur-muhurta,
+    # Sankranti, eclipse, fixed+dual lagna) + adaptive nakshatra fallback.
+    assert SAIT_ENGINE_VERSION == "4.4.0"
 
 
 def test_dagdha_tithi_table():
@@ -203,3 +205,26 @@ def test_griha_pravesh_four_step_rule():
     # Asta Shuddhi — Guru or Śukra combust rejected.
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_combust=True))
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_combust=True))
+
+
+def test_griha_pravesh_nakshatra_fallback_adds_dates():
+    """A scarce griha-pravesh year triggers the widened nakshatra set, which
+    yields at least as many days as the strict set."""
+    from dataclasses import replace
+
+    from engine.vedic.muhurta_engine import CEREMONY_RULES, has_muhurta
+    from engine.vedic.bikram_sambat import iter_bs_month_days
+    from services.sait_generator import generate_sait_months
+
+    by_month, fallback = generate_sait_months(2081, "griha-pravesh", DEFAULT_LOCATION)
+    widened_total = sum(len(v) for v in by_month.values())
+    assert fallback is True  # BS 2081 is scarce (< 12 days)
+
+    base = CEREMONY_RULES["griha-pravesh"]
+    strict_total = sum(
+        1
+        for m in range(1, 13)
+        for _bs, greg in iter_bs_month_days(2081, m)
+        if has_muhurta("griha-pravesh", greg, DEFAULT_LOCATION, rule=base)
+    )
+    assert widened_total >= strict_total

@@ -275,3 +275,19 @@ def test_griha_aarambha_strict_vastu_filters():
     assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
     assert rule.eclipse_pad_days == 1
     assert rule.daytime_only  # foundation is a daytime rite
+
+
+def test_griha_pravesh_strict_filters_and_fallback():
+    """Griha-pravesh adds the classical vetoes, a fixed+dual lagna policy, and
+    an adaptive nakshatra fallback for scarce years."""
+    rule = CEREMONY_RULES["griha-pravesh"]
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
+    assert rule.eclipse_pad_days == 1
+    assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual
+    # Fallback widens the 8-star set to also admit Hasta(13)/Svati(15)/
+    # Shravana(22)/Dhanishtha(23) when a year has < 12 days.
+    assert rule.fallback_min_days == 12
+    assert rule.fallback_nakshatras == rule.nakshatras | frozenset({13, 15, 22, 23})
