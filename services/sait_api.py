@@ -143,8 +143,12 @@ def get_sait_detail(
         get_tithi_angle, get_tithi_number, get_yoga,
     )
     from engine.astronomy.timescale import resolve_observer_timezone
+    from dataclasses import replace
+
     from engine.vedic.bikram_sambat import bs_to_gregorian
-    from engine.vedic.muhurta_engine import MUHURTA_CATEGORIES, muhurta_windows
+    from engine.vedic.muhurta_engine import (
+        CEREMONY_RULES, MUHURTA_CATEGORIES, muhurta_windows,
+    )
     from engine.vedic.names_ne import (
         KARANA_NAMES_NE, NAKSHATRA_NAMES_NE, PAKSHA_NAMES_NE, TITHI_NAMES_NE,
         VAARA_NAMES_NE, YOGA_NAMES_NE, lunar_masa_name_ne,
@@ -162,12 +166,22 @@ def get_sait_detail(
     generated = get_generated_sait(bs_year, category, location)
     by_month = generated.get("months") or {}
 
+    # Reproduce each day's window with the SAME rule the listing was built with:
+    # if the year used the widened nakṣatra fallback, the detail must too, else
+    # the fallback-only days would yield no window and drop out of the page.
+    base_rule = CEREMONY_RULES[category]
+    detail_rule = (
+        replace(base_rule, nakshatras=base_rule.fallback_nakshatras)
+        if generated.get("nakshatra_fallback") and base_rule.fallback_nakshatras
+        else base_rule
+    )
+
     days_out: list[dict[str, Any]] = []
     for month_key, day_nums in sorted(by_month.items(), key=lambda kv: int(kv[0])):
         month = int(month_key)
         for bs_day in sorted(int(d) for d in (day_nums or [])):
             greg: date = bs_to_gregorian(bs_year, month, bs_day)
-            windows = muhurta_windows(category, greg, location)
+            windows = muhurta_windows(category, greg, location, rule=detail_rule)
             if not windows:
                 continue
             # Representative = the longest clean window of the day.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -10,13 +11,13 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.vedic.bikram_sambat import get_bs_month_length, iter_bs_month_days
 from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
-from engine.vedic.muhurta_engine import MUHURTA_CATEGORIES, has_muhurta
+from engine.vedic.muhurta_engine import CEREMONY_RULES, MUHURTA_CATEGORIES, has_muhurta
 from engine.vedic.sait_rules import CATEGORY_CHECKS, build_day_panchanga
 from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "4.2.0"
+SAIT_ENGINE_VERSION = "4.6.0"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
@@ -53,37 +54,72 @@ def save_sait_cache(payload: dict[str, Any], location: ObserverLocation) -> None
         json.dump(payload, fh, ensure_ascii=False, indent=2)
 
 
-def generate_sait_year_category(
-    bs_year: int,
-    category: str,
-    location: ObserverLocation = DEFAULT_LOCATION,
-) -> dict[str, list[int]]:
-    # Lagna-based saṃskāra (vivah / bratabandha / gṛha / vyāpāra / annaprasan)
-    # are decided by a time-resolved muhūrta window, not the sunrise panchanga,
-    # so they run through the muhūrta engine. Only the deterministic Vās
-    # categories (rudri / agni) keep their day-level sunrise rules.
-    use_muhurta = category in MUHURTA_CATEGORIES
-    checker = None if use_muhurta else CATEGORY_CHECKS.get(category)
-    if not use_muhurta and checker is None:
-        raise ValueError(f"Unknown sait category: {category}")
-
+def _scan_year(bs_year, category, location, *, use_muhurta, checker, rule) -> dict[str, list[int]]:
+    """Days in each BS month that qualify, under an explicit muhūrta ``rule``
+    (or the sunrise ``checker`` for the deterministic Vās categories)."""
     by_month: dict[str, list[int]] = {}
     for bs_month in range(1, 13):
-        month_len = get_bs_month_length(bs_year, bs_month)
-        if month_len <= 0:
+        if get_bs_month_length(bs_year, bs_month) <= 0:
             continue
         matching_days: list[int] = []
         for bs_day, greg_date in iter_bs_month_days(bs_year, bs_month):
             if use_muhurta:
-                match = has_muhurta(category, greg_date, location)
+                match = has_muhurta(category, greg_date, location, rule=rule)
             else:
                 match = checker(build_day_panchanga(greg_date, location))
             if match:
                 matching_days.append(bs_day)
         if matching_days:
             by_month[str(bs_month)] = matching_days
-
     return by_month
+
+
+def _day_total(by_month: dict[str, list[int]]) -> int:
+    return sum(len(days) for days in by_month.values())
+
+
+def generate_sait_months(
+    bs_year: int,
+    category: str,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> tuple[dict[str, list[int]], bool]:
+    """Return ``(by_month, nakshatra_fallback)`` for a year/category.
+
+    Lagna-based saṃskāra (vivah / bratabandha / gṛha / vyāpāra / annaprasan) run
+    through the time-resolved muhūrta engine; the deterministic Vās categories
+    (rudri / agni) keep their day-level sunrise rules. If a rule declares an
+    adaptive nakṣatra fallback and the strict pass yields fewer than
+    ``fallback_min_days`` days, the year is recomputed with the widened set and
+    the flag is returned so the detail endpoint can stay consistent.
+    """
+    use_muhurta = category in MUHURTA_CATEGORIES
+    checker = None if use_muhurta else CATEGORY_CHECKS.get(category)
+    if not use_muhurta and checker is None:
+        raise ValueError(f"Unknown sait category: {category}")
+
+    rule = CEREMONY_RULES.get(category) if use_muhurta else None
+    by_month = _scan_year(
+        bs_year, category, location, use_muhurta=use_muhurta, checker=checker, rule=rule
+    )
+    if (
+        rule is not None
+        and rule.fallback_nakshatras
+        and _day_total(by_month) < rule.fallback_min_days
+    ):
+        widened = replace(rule, nakshatras=rule.fallback_nakshatras)
+        by_month = _scan_year(
+            bs_year, category, location, use_muhurta=True, checker=None, rule=widened
+        )
+        return by_month, True
+    return by_month, False
+
+
+def generate_sait_year_category(
+    bs_year: int,
+    category: str,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, list[int]]:
+    return generate_sait_months(bs_year, category, location)[0]
 
 
 def get_generated_sait(
@@ -109,7 +145,7 @@ def get_generated_sait(
         if cached is not None:
             return cached
 
-    by_month = generate_sait_year_category(bs_year, category, location)
+    by_month, nakshatra_fallback = generate_sait_months(bs_year, category, location)
     payload = {
         "bs_year": bs_year,
         "category": category,
@@ -118,6 +154,9 @@ def get_generated_sait(
         "location_key": location.cache_key(),
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source": "computed",
+        # True when a scarce year was recomputed with the widened nakṣatra set;
+        # the detail endpoint reads this so its per-day windows stay consistent.
+        "nakshatra_fallback": nakshatra_fallback,
     }
     if db_available():
         save_sait_db(payload, location, SAIT_ENGINE_VERSION)

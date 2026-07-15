@@ -130,8 +130,15 @@ GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
 GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = frozenset(
     {4, 5, 7, 12, 13, 14, 15, 17, 21, 22, 23, 26, 27}
 )
-# Fixed (2,5,8,11) + dual (3,6,9,12) lagnas; movable signs excluded.
-GRIHA_AARAMBHA_MUHURTA_LAGNAS = frozenset({2, 3, 5, 6, 8, 9, 11, 12})
+# Fixed (2,5,8,11) + dual (3,6,9,12) lagnas; movable signs excluded. Shared by
+# the gṛha ceremonies — a building on a sthira/dvisvabhāva lagna is held stable.
+_FIXED_DUAL_LAGNAS = frozenset({2, 3, 5, 6, 8, 9, 11, 12})
+GRIHA_AARAMBHA_MUHURTA_LAGNAS = _FIXED_DUAL_LAGNAS
+
+# Gṛha Praveśa nakṣatras — the conservative 8-star set (imported) is the default;
+# a scarce year (< 12 days) widens to also admit Hasta(13), Svātī(15),
+# Śravaṇa(22) and Dhaniṣṭhā(23) so a usable set of dates still surfaces.
+GRIHA_PRAVESH_NAKSHATRAS_EXTENDED = GRIHA_PRAVESH_NAKSHATRAS | frozenset({13, 15, 22, 23})
 
 # Upanayana (ब्रतबन्ध / व्रतबन्ध) per Muhūrta Chintāmaṇi & Dharmasindhu:
 #   * Sun in an Uttarāyaṇa rāśi (Makara→Mithuna = 10,11,12,1,2,3), avoiding
@@ -148,20 +155,30 @@ BRATABANDHA_MUHURTA_NAKSHATRAS = frozenset(range(1, 28)) - frozenset({2, 3, 10, 
 BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
 BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
 
-# Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi: fixed/movable/gentle/short
-# nakṣatras; śukla 2,3,5,7,10,13,15 or kṛṣṇa 2,3,5,7,10,13 tithis; Mon/Wed/Thu/
-# Fri only; any lagna except Meṣa/Vṛśchika/Mīna. (The exact date also needs the
-# child's 5-8 month age window; the year listing shows the suitable days.)
+# Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi — moderately strict (a saṃskāra,
+# but not as planet-restricted as vivāha). Explicit nakṣatra list: Aśvinī, Rohiṇī,
+# Mṛgaśira, Punarvasu, Puṣya, U.Phalgunī, Hasta, Chitrā, Svātī, Anurādhā,
+# U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā, Śatabhiṣā, U.Bhādrapada, Revatī. Tithi śukla
+# 2,3,5,7,10,13,15 or kṛṣṇa 2,3,5,7,10,13 (Aṣṭamī out); Mon/Wed/Thu/Fri only; any
+# lagna except Meṣa/Vṛśchika/Mīna (kept broad — the age window already thins the
+# set). Plus the universal doṣa vetoes: Viṣṭi karaṇa, Vyatīpāta/Vaidhṛti yoga,
+# Dur-muhūrta (slot-only) and the eclipse day; daytime only. (The exact date also
+# needs the child's 5-8 month age window; the year listing shows the candidates.)
 ANNAPRASAN_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
 ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
 ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
 ANNAPRASAN_LAGNAS = frozenset(range(1, 13)) - frozenset({1, 8, 12})
 
-# Byāpārik Pratiṣṭhān (shop / business opening): all 12 months (only Adhik-māsa
-# removed); Mon/Wed/Thu/Fri only; 16 approved nakṣatras (Sthira/Chara/Mṛdu-
-# Kṣipra); tithis śukla 2,3,5,7,10,11,13,15 or kṛṣṇa 2,3,5,7,10,11,13; Guru &
-# Śukra udaya; Sankranti excluded; muhūrta is the daytime Abhijit window.
-# (Eclipse ±3 days are also traditionally removed; not yet computed here.)
+# Byāpārik Pratiṣṭhān (shop / business opening) — deliberately LESS restrictive
+# than vivāha / gṛha praveśa: all 12 lunar months (Chaturmāsa allowed, only
+# Adhik-māsa removed); Mon/Wed/Thu/Fri only; the explicit 16 trade nakṣatras
+# below (Sthira/Chara/Mṛdu-Kṣipra); tithis śukla 2,3,5,7,10,11,13 + Pūrṇimā or
+# kṛṣṇa 2,3,5,7,10,11,13; fixed/dual lagna; Vyatīpāta/Vaidhṛti yoga, Viṣṭi
+# karaṇa and Dur-muhūrta excluded; Sankranti day and the eclipse day barred;
+# daytime only. Guru/Śukra udaya is NOT required (unlike marriage/house entry).
+# Explicit list: Aśvinī, Rohiṇī, Mṛgaśira, Punarvasu, Puṣya, U.Phalgunī, Hasta,
+# Chitrā, Svātī, Anurādhā, U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā, Śatabhiṣā,
+# U.Bhādrapada, Revatī.
 BYAPARIK_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
 BYAPARIK_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13, 15})
 BYAPARIK_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
@@ -216,6 +233,12 @@ class CeremonyRule:
     check_shunya: bool = False       # reject when the tithi drains the Moon's rashi
     # Godhūli (first night-ghati after sunset) can neutralise Dagdha / Shunya.
     godhuli_overrides_dagdha_shunya: bool = False
+    # Adaptive nakṣatra widening: if a strict year yields fewer than
+    # `fallback_min_days` days, the year is recomputed with `fallback_nakshatras`
+    # so a scarce year still offers a usable set of dates. Applied at the
+    # year-listing layer (services.sait_generator), not per-day.
+    fallback_nakshatras: frozenset[int] = frozenset()
+    fallback_min_days: int = 0
 
 
 _MALEFICS = ("sun", "mars", "saturn", "rahu")
@@ -284,6 +307,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         block_chaturmas=False,
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
+        daytime_only=True,  # शिलान्यास is a daytime rite (sunrise→sunset)
         # Stricter Vāstu-muhūrta vetoes.
         avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
         avoid_karanas=frozenset({"Vishti"}),
@@ -308,6 +332,11 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     #      nakṣatra (Sun/Mars/Saturn/Rāhu/Ketu; see latta_pierced_nakshatras).
     #   7. Dagdha — reject a burnt weekday × tithi clash.
     #   8. Shunya — reject when the tithi drains the Moon's transit rashi.
+    #   9. Yoga/Karaṇa — Vyatīpāta & Vaidhṛti yoga and Viṣṭi (Bhadrā) karaṇa out.
+    #  10. Dur-muhūrta (slot-only), Sankranti pads and the eclipse day excluded.
+    #  11. Lagna — fixed (sthira) + dual (dvisvabhāva) ascendants only.
+    #  Adaptive nakṣatra: the conservative 8-nakṣatra set is used; if a year
+    #  yields < 12 days it widens to also admit Hasta/Svātī/Śravaṇa/Dhaniṣṭhā.
     "griha-pravesh": CeremonyRule(
         key="griha-pravesh",
         lunar_months=GRIHA_PRAVESH_LUNAR_MONTHS,
@@ -321,19 +350,34 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         graha_vedha_planets=frozenset({"sun", "mars", "saturn", "rahu", "ketu"}),
         check_dagdha=True,
         check_shunya=True,
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,
+        sankranti_buffer_hours=_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_buffer_hours=_MAJOR_SANKRANTI_BUFFER_HOURS,
+        major_sankranti_rashis=_MAJOR_SANKRANTI_RASHIS,
+        eclipse_pad_days=1,  # reject the eclipse day
+        lagnas=_FIXED_DUAL_LAGNAS,  # fixed + dual ascendants only
+        fallback_nakshatras=GRIHA_PRAVESH_NAKSHATRAS_EXTENDED,
+        fallback_min_days=12,
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
-        block_chaturmas=False,  # all 12 lunar months kept (only Adhik-maas out)
-        block_sankranti=True,
-        require_guru_udaya=True,
-        require_shukra_udaya=True,
+        block_chaturmas=False,  # all 12 lunar months kept (Chaturmasa allowed)
+        block_sankranti=True,   # only the Sankranti day itself is barred
+        # Guru/Śukra udaya deliberately NOT required — business opening is more
+        # lenient than marriage / house entry, and requiring visibility would
+        # scrub too many practical dates.
         nakshatras=BYAPARIK_MUHURTA_NAKSHATRAS,
         shukla_tithis=BYAPARIK_SHUKLA_TITHIS,
         krishna_tithis=BYAPARIK_KRISHNA_TITHIS,
         avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,           # window-only
+        lagnas=_FIXED_DUAL_LAGNAS,        # fixed + dual ascendants only
         daytime_only=True,
-        eclipse_pad_days=3,
+        eclipse_pad_days=1,               # eclipse day only (lenient rite)
     ),
     "annaprasan": CeremonyRule(
         key="annaprasan",
@@ -342,7 +386,14 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         shukla_tithis=ANNAPRASAN_SHUKLA_TITHIS,
         krishna_tithis=ANNAPRASAN_KRISHNA_TITHIS,
         avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        # Lagna kept broad (any except Meṣa/Vṛśchika/Mīna) — the child's 5-8 month
+        # age window already thins the practical set.
         lagnas=ANNAPRASAN_LAGNAS,
+        # Universal saṃskāra doṣa vetoes.
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,
+        eclipse_pad_days=1,  # reject the eclipse day
         daytime_only=True,
     ),
 }
@@ -728,10 +779,20 @@ def _window_ok(
 
 
 def muhurta_windows(
-    category: str, greg, location: ObserverLocation = DEFAULT_LOCATION
+    category: str,
+    greg,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    rule: CeremonyRule | None = None,
 ) -> list[MuhurtaWindow]:
-    """Auspicious muhūrta windows for ``category`` on the civil day ``greg``."""
-    rule = CEREMONY_RULES.get(category)
+    """Auspicious muhūrta windows for ``category`` on the civil day ``greg``.
+
+    ``rule`` overrides the default ``CEREMONY_RULES[category]`` — used by the
+    year-listing layer to apply an adaptive variant (e.g. the widened gṛha-
+    praveśa nakṣatra set) while keeping ``category`` for messages/caching.
+    """
+    if rule is None:
+        rule = CEREMONY_RULES.get(category)
     if rule is None:
         raise ValueError(f"No muhurta rule for category: {category}")
 
@@ -826,7 +887,11 @@ def muhurta_windows(
 
 
 def has_muhurta(
-    category: str, greg, location: ObserverLocation = DEFAULT_LOCATION
+    category: str,
+    greg,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    rule: CeremonyRule | None = None,
 ) -> bool:
     """True when ``category`` has at least one auspicious window on ``greg``."""
-    return bool(muhurta_windows(category, greg, location))
+    return bool(muhurta_windows(category, greg, location, rule=rule))

@@ -274,3 +274,51 @@ def test_griha_aarambha_strict_vastu_filters():
     assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
     assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
     assert rule.eclipse_pad_days == 1
+    assert rule.daytime_only  # foundation is a daytime rite
+
+
+def test_griha_pravesh_strict_filters_and_fallback():
+    """Griha-pravesh adds the classical vetoes, a fixed+dual lagna policy, and
+    an adaptive nakshatra fallback for scarce years."""
+    rule = CEREMONY_RULES["griha-pravesh"]
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
+    assert rule.eclipse_pad_days == 1
+    assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual
+    # Fallback widens the 8-star set to also admit Hasta(13)/Svati(15)/
+    # Shravana(22)/Dhanishtha(23) when a year has < 12 days.
+    assert rule.fallback_min_days == 12
+    assert rule.fallback_nakshatras == rule.nakshatras | frozenset({13, 15, 22, 23})
+
+
+def test_byaparik_business_opening_is_lenient_but_filtered():
+    """Business opening: lenient (no Guru/Shukra udaya, Chaturmasa allowed,
+    eclipse day only) but still filtered (yoga/karana/lagna/dur-muhurta)."""
+    rule = CEREMONY_RULES["byaparik-pratisthan"]
+    # Lenient side
+    assert not rule.require_guru_udaya and not rule.require_shukra_udaya
+    assert not rule.block_chaturmas
+    assert rule.eclipse_pad_days == 1  # eclipse day only, not +-3
+    # Still filtered
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual
+    assert rule.block_sankranti and rule.daytime_only
+    assert rule.avoid_varas == frozenset({1, 3, 7})  # Mon/Wed/Thu/Fri only
+
+
+def test_annaprasan_adds_universal_dosha_filters():
+    """Annaprasan gains the standard doshas but keeps a broad lagna (age window
+    already thins the practical set)."""
+    rule = CEREMONY_RULES["annaprasan"]
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.eclipse_pad_days == 1
+    assert rule.daytime_only
+    assert rule.avoid_varas == frozenset({1, 3, 7})  # Mon/Wed/Thu/Fri only
+    # Lagna kept broad: any except Mesha(1)/Vrishchika(8)/Mina(12).
+    assert rule.lagnas == frozenset({2, 3, 4, 5, 6, 7, 9, 10, 11})
