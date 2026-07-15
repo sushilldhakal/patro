@@ -134,7 +134,10 @@ def test_engine_version_bumped():
     # 4.3.0 — Griha-aarambha made daytime-only (foundation is a daytime rite).
     # 4.4.0 — Griha-pravesh tightened (Vyatipata/Vaidhriti, Vishti, Dur-muhurta,
     # Sankranti, eclipse, fixed+dual lagna) + adaptive nakshatra fallback.
-    assert SAIT_ENGINE_VERSION == "4.4.0"
+    # 4.5.0 — Byaparik (business opening) rebalanced: Guru/Shukra udaya no longer
+    # required, eclipse pad 3->1; added Vyatipata/Vaidhriti, Vishti, Dur-muhurta
+    # and fixed+dual lagna.
+    assert SAIT_ENGINE_VERSION == "4.5.0"
 
 
 def test_dagdha_tithi_table():

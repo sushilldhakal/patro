@@ -164,11 +164,16 @@ ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
 ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
 ANNAPRASAN_LAGNAS = frozenset(range(1, 13)) - frozenset({1, 8, 12})
 
-# Byāpārik Pratiṣṭhān (shop / business opening): all 12 months (only Adhik-māsa
-# removed); Mon/Wed/Thu/Fri only; 16 approved nakṣatras (Sthira/Chara/Mṛdu-
-# Kṣipra); tithis śukla 2,3,5,7,10,11,13,15 or kṛṣṇa 2,3,5,7,10,11,13; Guru &
-# Śukra udaya; Sankranti excluded; muhūrta is the daytime Abhijit window.
-# (Eclipse ±3 days are also traditionally removed; not yet computed here.)
+# Byāpārik Pratiṣṭhān (shop / business opening) — deliberately LESS restrictive
+# than vivāha / gṛha praveśa: all 12 lunar months (Chaturmāsa allowed, only
+# Adhik-māsa removed); Mon/Wed/Thu/Fri only; the explicit 16 trade nakṣatras
+# below (Sthira/Chara/Mṛdu-Kṣipra); tithis śukla 2,3,5,7,10,11,13 + Pūrṇimā or
+# kṛṣṇa 2,3,5,7,10,11,13; fixed/dual lagna; Vyatīpāta/Vaidhṛti yoga, Viṣṭi
+# karaṇa and Dur-muhūrta excluded; Sankranti day and the eclipse day barred;
+# daytime only. Guru/Śukra udaya is NOT required (unlike marriage/house entry).
+# Explicit list: Aśvinī, Rohiṇī, Mṛgaśira, Punarvasu, Puṣya, U.Phalgunī, Hasta,
+# Chitrā, Svātī, Anurādhā, U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā, Śatabhiṣā,
+# U.Bhādrapada, Revatī.
 BYAPARIK_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
 BYAPARIK_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13, 15})
 BYAPARIK_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
@@ -353,16 +358,21 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     ),
     "byaparik-pratisthan": CeremonyRule(
         key="byaparik-pratisthan",
-        block_chaturmas=False,  # all 12 lunar months kept (only Adhik-maas out)
-        block_sankranti=True,
-        require_guru_udaya=True,
-        require_shukra_udaya=True,
+        block_chaturmas=False,  # all 12 lunar months kept (Chaturmasa allowed)
+        block_sankranti=True,   # only the Sankranti day itself is barred
+        # Guru/Śukra udaya deliberately NOT required — business opening is more
+        # lenient than marriage / house entry, and requiring visibility would
+        # scrub too many practical dates.
         nakshatras=BYAPARIK_MUHURTA_NAKSHATRAS,
         shukla_tithis=BYAPARIK_SHUKLA_TITHIS,
         krishna_tithis=BYAPARIK_KRISHNA_TITHIS,
         avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,           # window-only
+        lagnas=_FIXED_DUAL_LAGNAS,        # fixed + dual ascendants only
         daytime_only=True,
-        eclipse_pad_days=3,
+        eclipse_pad_days=1,               # eclipse day only (lenient rite)
     ),
     "annaprasan": CeremonyRule(
         key="annaprasan",
