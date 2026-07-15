@@ -308,3 +308,17 @@ def test_byaparik_business_opening_is_lenient_but_filtered():
     assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual
     assert rule.block_sankranti and rule.daytime_only
     assert rule.avoid_varas == frozenset({1, 3, 7})  # Mon/Wed/Thu/Fri only
+
+
+def test_annaprasan_adds_universal_dosha_filters():
+    """Annaprasan gains the standard doshas but keeps a broad lagna (age window
+    already thins the practical set)."""
+    rule = CEREMONY_RULES["annaprasan"]
+    assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
+    assert "Vishti" in rule.avoid_karanas
+    assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
+    assert rule.eclipse_pad_days == 1
+    assert rule.daytime_only
+    assert rule.avoid_varas == frozenset({1, 3, 7})  # Mon/Wed/Thu/Fri only
+    # Lagna kept broad: any except Mesha(1)/Vrishchika(8)/Mina(12).
+    assert rule.lagnas == frozenset({2, 3, 4, 5, 6, 7, 9, 10, 11})

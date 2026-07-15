@@ -137,7 +137,9 @@ def test_engine_version_bumped():
     # 4.5.0 — Byaparik (business opening) rebalanced: Guru/Shukra udaya no longer
     # required, eclipse pad 3->1; added Vyatipata/Vaidhriti, Vishti, Dur-muhurta
     # and fixed+dual lagna.
-    assert SAIT_ENGINE_VERSION == "4.5.0"
+    # 4.6.0 — Annaprasan: added Vyatipata/Vaidhriti yoga, Vishti karana,
+    # Dur-muhurta (slot-only) and the eclipse day (lagna kept broad).
+    assert SAIT_ENGINE_VERSION == "4.6.0"
 
 
 def test_dagdha_tithi_table():

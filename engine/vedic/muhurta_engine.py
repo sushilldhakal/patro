@@ -155,10 +155,15 @@ BRATABANDHA_MUHURTA_NAKSHATRAS = frozenset(range(1, 28)) - frozenset({2, 3, 10, 
 BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
 BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
 
-# Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi: fixed/movable/gentle/short
-# nakṣatras; śukla 2,3,5,7,10,13,15 or kṛṣṇa 2,3,5,7,10,13 tithis; Mon/Wed/Thu/
-# Fri only; any lagna except Meṣa/Vṛśchika/Mīna. (The exact date also needs the
-# child's 5-8 month age window; the year listing shows the suitable days.)
+# Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi — moderately strict (a saṃskāra,
+# but not as planet-restricted as vivāha). Explicit nakṣatra list: Aśvinī, Rohiṇī,
+# Mṛgaśira, Punarvasu, Puṣya, U.Phalgunī, Hasta, Chitrā, Svātī, Anurādhā,
+# U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā, Śatabhiṣā, U.Bhādrapada, Revatī. Tithi śukla
+# 2,3,5,7,10,13,15 or kṛṣṇa 2,3,5,7,10,13 (Aṣṭamī out); Mon/Wed/Thu/Fri only; any
+# lagna except Meṣa/Vṛśchika/Mīna (kept broad — the age window already thins the
+# set). Plus the universal doṣa vetoes: Viṣṭi karaṇa, Vyatīpāta/Vaidhṛti yoga,
+# Dur-muhūrta (slot-only) and the eclipse day; daytime only. (The exact date also
+# needs the child's 5-8 month age window; the year listing shows the candidates.)
 ANNAPRASAN_MUHURTA_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
 ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
 ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
@@ -381,7 +386,14 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         shukla_tithis=ANNAPRASAN_SHUKLA_TITHIS,
         krishna_tithis=ANNAPRASAN_KRISHNA_TITHIS,
         avoid_varas=frozenset({1, 3, 7}),  # only Mon/Wed/Thu/Fri
+        # Lagna kept broad (any except Meṣa/Vṛśchika/Mīna) — the child's 5-8 month
+        # age window already thins the practical set.
         lagnas=ANNAPRASAN_LAGNAS,
+        # Universal saṃskāra doṣa vetoes.
+        avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
+        avoid_karanas=frozenset({"Vishti"}),
+        block_dur_muhurta=True,
+        eclipse_pad_days=1,  # reject the eclipse day
         daytime_only=True,
     ),
 }
