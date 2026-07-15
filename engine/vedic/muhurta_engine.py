@@ -284,6 +284,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         block_chaturmas=False,
         tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
+        daytime_only=True,  # शिलान्यास is a daytime rite (sunrise→sunset)
         # Stricter Vāstu-muhūrta vetoes.
         avoid_yogas=frozenset({_YOGA_VYATIPATA, _YOGA_VAIDHRITI}),
         avoid_karanas=frozenset({"Vishti"}),

@@ -47,9 +47,10 @@
       "label_en": "House foundation",
       "description_ne": "घर निर्माण आरम्भ (जग हाल्ने) का लागि शुभ मिति। भवन निर्माणको मंगलमय शुरुवातका लागि छानिएका दिनहरू।",
       "description_en": "Auspicious dates to begin house construction (laying the foundation).",
-      "method_ne": "प्रत्येक दिनको सूर्योदयदेखि अर्को सूर्योदयसम्म पञ्चाङ्ग गणना गरी तलका वास्तु नियमहरू लगाइन्छ। शुद्ध मुहूर्त भेटिए दिन प्रकाशित हुन्छ।",
-      "method_en": "For each day the engine computes the panchanga from sunrise to the next sunrise, then applies the Vastu rules below. A day is published when a clean muhurta survives.",
+      "method_ne": "प्रत्येक दिनको सूर्योदयदेखि सूर्यास्तसम्म पञ्चाङ्ग गणना गरी तलका वास्तु नियमहरू लगाइन्छ। दिनको शुद्ध मुहूर्त भेटिए मात्र दिन प्रकाशित हुन्छ।",
+      "method_en": "For each day the engine computes the panchanga from sunrise to sunset, then applies the Vastu rules below. A day is published only if a clean daytime muhurta survives.",
       "rules": [
+        { "ne": "समय — शिलान्यास (जग हाल्ने) दिनको समयमा मात्र (सूर्योदय–सूर्यास्त)।", "en": "Time — foundation-laying is a daytime rite (sunrise to sunset only)." },
         { "ne": "सूर्य राशि — मेष, कर्कट, तुला, वृश्चिक, धनु, मकर, कुम्भ (वास्तु अनुकूल); अधिकमास वर्जित।", "en": "Sun-sign — Mesha, Karka, Tula, Vrishchika, Dhanu, Makara, Kumbha (Vastu-facing); Adhik-masa barred." },
         { "ne": "तिथि — २,३,५,७,१०,११,१२ मात्र; प्रतिपदा, त्रयोदशी, रिक्ता (४,९,१४) र अमावस्या वर्जित।", "en": "Tithi — only 2,3,5,7,10,11,12; Pratipada, Trayodashi, rikta (4,9,14) and Amavasya out." },
         { "ne": "नक्षत्र — शास्त्रसम्मत निर्माण नक्षत्रहरूको निश्चित सूची: रोहिणी, मृगशिरा, पुनर्वसु, उत्तराफाल्गुनी, हस्त, चित्रा, स्वाती, अनुराधा, उत्तराषाढा, श्रवण, धनिष्ठा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — a fixed list of the shastra-sanctioned construction nakshatras: Rohini, Mrigashira, Punarvasu, U.Phalguni, Hasta, Chitra, Svati, Anuradha, U.Ashadha, Shravana, Dhanishtha, U.Bhadrapada, Revati." },

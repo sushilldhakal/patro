@@ -274,3 +274,4 @@ def test_griha_aarambha_strict_vastu_filters():
     assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
     assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
     assert rule.eclipse_pad_days == 1
+    assert rule.daytime_only  # foundation is a daytime rite

@@ -131,7 +131,8 @@ def test_engine_version_bumped():
     # {2,3,5,7,10,11,12}, explicit Vastu nakshatra list, Vyatipata/Vaidhriti
     # yoga & Vishti karana vetoed, Dur-muhurta (slot-only), Sankranti pads,
     # eclipse, and fixed+dual lagna only.
-    assert SAIT_ENGINE_VERSION == "4.2.0"
+    # 4.3.0 — Griha-aarambha made daytime-only (foundation is a daytime rite).
+    assert SAIT_ENGINE_VERSION == "4.3.0"
 
 
 def test_dagdha_tithi_table():
