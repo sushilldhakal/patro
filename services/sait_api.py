@@ -243,6 +243,33 @@ _TITHI_EN = [
 ]
 
 
+def get_sait_month_all(
+    bs_year: int,
+    bs_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Auspicious days for EVERY ceremony type in one BS month (home-page list).
+    Computes just that month rather than the full year, for all categories in one
+    call so the aside can render a row per ceremony."""
+    from services.sait_generator import generate_sait_month_days
+
+    rules = _load_rules()
+    categories = rules.get("categories") or {}
+    if not 1 <= bs_month <= 12:
+        raise ValueError(f"bs_month must be 1–12, got {bs_month}")
+
+    by_category = {
+        cat_id: generate_sait_month_days(bs_year, bs_month, cat_id, location)
+        for cat_id in categories
+    }
+    return {
+        "bs_year": bs_year,
+        "bs_month": bs_month,
+        "month_name_ne": BS_MONTHS_NE[bs_month - 1],
+        "categories": by_category,
+    }
+
+
 def get_sait_month_entries(
     bs_year: int,
     category: str,

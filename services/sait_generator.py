@@ -122,6 +122,32 @@ def generate_sait_year_category(
     return generate_sait_months(bs_year, category, location)[0]
 
 
+def generate_sait_month_days(
+    bs_year: int,
+    bs_month: int,
+    category: str,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> list[int]:
+    """Auspicious BS days for a SINGLE month — computes only that month (≈30 days)
+    instead of the whole year, so the home-page month view is cheap to serve."""
+    use_muhurta = category in MUHURTA_CATEGORIES
+    checker = None if use_muhurta else CATEGORY_CHECKS.get(category)
+    if not use_muhurta and checker is None:
+        raise ValueError(f"Unknown sait category: {category}")
+    if not 1 <= bs_month <= 12:
+        raise ValueError(f"bs_month must be 1–12, got {bs_month}")
+
+    days: list[int] = []
+    for bs_day, greg_date in iter_bs_month_days(bs_year, bs_month):
+        if use_muhurta:
+            match = has_muhurta(category, greg_date, location)
+        else:
+            match = checker(build_day_panchanga(greg_date, location))
+        if match:
+            days.append(bs_day)
+    return days
+
+
 def get_generated_sait(
     bs_year: int,
     category: str,

@@ -360,6 +360,18 @@ def nepal_sait_about(category: str):
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.get("/nepal/sait/{bs_year}/month/{bs_month}", tags=["sait"])
+def nepal_sait_month_all(bs_year: int, bs_month: int, location: LocationDep):
+    """Auspicious days for ALL ceremony types in ONE BS month (home-page list).
+    Computes only the requested month rather than the whole year."""
+    _validate_bs_year(bs_year)
+    from services.sait_api import get_sait_month_all
+    try:
+        return get_sait_month_all(bs_year, bs_month, location)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/nepal/sait/{bs_year}/{category}/detail", tags=["sait"])
 def nepal_sait_detail(bs_year: int, category: str, location: LocationDep):
     """Per-day muhūrta reasons (tithi/nakṣatra/yoga/karaṇa/vāra/lagna window)
