@@ -104,11 +104,14 @@
       "label_en": "Rudri homa",
       "description_ne": "रुद्री पाठ तथा हवनका लागि शुभ मिति। शिव आराधनासम्बन्धी अनुष्ठानका लागि मानिने शुभ दिनहरू।",
       "description_en": "Auspicious dates for the Rudri recitation and homa (fire offering) in worship of Shiva.",
-      "method_ne": "यो साइत लग्नमा आधारित होइन — दिनको तिथिबाट शिववास सूत्र लगाएर शुभ दिन निकालिन्छ। प्रत्येक दिनको सूर्योदयको तिथि लिइन्छ।",
-      "method_en": "This sait is not lagna-based — the day is decided by the Shiva-vasa formula on the tithi. The tithi at each day's sunrise is used.",
+      "method_ne": "यो साइत लग्नमा आधारित होइन — रुद्री हवनसहित हुने भएकाले दिनको तिथिबाट शिववास र तिथि-वारबाट अग्निवास दुवै हेरी शुभ दिन निकालिन्छ। प्रत्येक दिनको सूर्योदयको पञ्चाङ्ग लिइन्छ।",
+      "method_en": "This sait is not lagna-based — since Rudri includes a homa, the day is decided by BOTH the Shiva-vasa formula (deity's abode) and the Agni-vasa formula (fire's abode). Each day's sunrise panchanga is used.",
       "rules": [
         { "ne": "शिववास सूत्र — पूर्ण तिथि (१–३०) मा (२×तिथि+५) लाई ७ ले भाग गर्दा शेष १/२/३ (कैलाश/गौरी/नन्दी) भए शुभ।", "en": "Shiva-vasa — on the absolute tithi (1-30), (2*tithi+5) mod 7 gives 1/2/3 (Kailasa/Gauri/Nandi) as auspicious." },
         { "ne": "सभा, भोजन, क्रीडा, श्मशान (शेष ४/५/६/०) वर्जित; अमावस्या वर्जित।", "en": "Sabha, Bhojana, Krida, Shmashana (remainders 4/5/6/0) avoided; Aausi excluded." },
+        { "ne": "अग्निवास सूत्र — हवनका लागि अग्नि पृथ्वीमा हुनुपर्छ: (तिथि+वार) लाई ४ ले भाग गर्दा शेष २/३ भए शुभ।", "en": "Agni-vasa — for the homa the fire must be on Earth: (tithi+vaara) mod 4 ∈ {2,3} is auspicious." },
+        { "ne": "योग/करण — व्यतीपात र वैधृति योग तथा विष्टि (भद्रा) करण वर्जित।", "en": "Yoga/Karana — Vyatipata & Vaidhriti yoga and Vishti (Bhadra) karana barred." },
+        { "ne": "अष्टमी/चतुर्दशी तिथि र श्रावण/कार्तिक महिना विशेष उत्तम (वरीयता मात्र, अनिवार्य होइन); चन्द्र/तारा बल जातक-सापेक्ष।", "en": "Ashtami/Chaturdashi tithi and the Shravana/Kartika months are especially favoured (a preference, not a gate); Chandra/Tara Bala is native-specific." },
         { "ne": "यो दिनको सूर्योदय पञ्चाङ्गमा गणना हुन्छ — लग्न विण्डो आवश्यक पर्दैन।", "en": "Evaluated on the day's sunrise panchanga — no lagna window is needed." }
       ]
     },

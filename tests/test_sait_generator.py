@@ -66,6 +66,46 @@ def test_agni_rudra_vas_formulas():
     assert not rudra_on_earth(30)  # Aausi is always excluded
 
 
+def test_check_rudri_jurne_full_filter():
+    from engine.vedic.sait_rules import check_rudri_jurne
+
+    def _rudri_day(**overrides) -> DayPanchanga:
+        # tithi 5 on Thursday (vaara=5): Śiva-vāsa (2*5+5)%7=1 (Kailāsa, ok) and
+        # Agni-vāsa (5+5)%4=2 (Earth, ok); clean yoga/karaṇa.
+        base = dict(
+            gregorian=date(2026, 2, 1),
+            tithi_absolute=5,
+            tithi_display=5,
+            paksha="shukla",
+            nakshatra=13,
+            vaara=5,
+            sun_rashi=11,
+            sun_longitude=315.0,
+            jupiter_combust=False,
+            venus_combust=False,
+            mercury_combust=False,
+            lunar_month="Magh",
+            is_adhik_maas=False,
+            aayan="Uttarayana",
+            mercury_quadrant=True,
+            jupiter_quadrant=True,
+            yoga=1,
+            karana="Bava",
+        )
+        base.update(overrides)
+        return DayPanchanga(**base)
+
+    assert check_rudri_jurne(_rudri_day())
+    # Agni not on Earth: tithi 5 on Wednesday (vaara=4) → (5+4)%4=1.
+    assert not check_rudri_jurne(_rudri_day(vaara=4))
+    # Śiva-vāsa fails: tithi 1 → (2+5)%7=0 (Śmaśāna).
+    assert not check_rudri_jurne(_rudri_day(tithi_absolute=1))
+    # Barred yogas and karaṇa.
+    assert not check_rudri_jurne(_rudri_day(yoga=17))  # Vyatipata
+    assert not check_rudri_jurne(_rudri_day(yoga=27))  # Vaidhriti
+    assert not check_rudri_jurne(_rudri_day(karana="Vishti"))
+
+
 def test_build_day_panchanga_bs2083_sample():
     greg = bs_to_gregorian(2083, 1, 20)
     day = build_day_panchanga(greg, DEFAULT_LOCATION)
@@ -168,7 +208,10 @@ def test_engine_version_bumped():
     # 4.9.0 — Griha-aarambha: corrected Sun-sign set to Muhūrta Chintāmaṇi
     # (Meṣa/Vṛṣabha/Siṃha/Vṛśchika/Makara/Kumbha), lenient tithi gate (bar only
     # Pratipadā/rikta + Amāvasyā), and added Guru/Śukra ast + bāla/vṛddha bar.
-    assert SAIT_ENGINE_VERSION == "4.9.0"
+    # 4.10.0 — Rudri (rudri-jurne): tightened beyond Śiva-vāsa alone — now also
+    # requires Agni-vāsa (fire on Earth/Pātāla for the homa) and scrubs the
+    # universal sacrificial doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi/Bhadrā karaṇa).
+    assert SAIT_ENGINE_VERSION == "4.10.0"
 
 
 def test_dagdha_tithi_table():

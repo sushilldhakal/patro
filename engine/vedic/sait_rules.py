@@ -40,10 +40,12 @@ from datetime import date
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.positions import (
     get_aayan,
+    get_karana,
     get_nakshatra,
     get_sidereal_asc_longitude,
     get_surya_rashi,
     get_vaara,
+    get_yoga,
 )
 from engine.astronomy.swiss_eph import calculate_sunrise, get_planet_position
 from engine.vedic.lunar_month import get_lunar_calendar_layers
@@ -124,6 +126,16 @@ def agni_on_earth(tithi_absolute: int, vaara_number: int) -> bool:
     pakṣa and matched only ~25% of the official days.
     """
     return ((tithi_absolute + vaara_number) % 4) in (2, 3)
+
+
+# The two great inauspicious yogas (Muhūrta Chintāmaṇi 1.34) and the malefic
+# Viṣṭi (Bhadrā) karaṇa, all barred for sacrificial rites such as a homa.
+# Yoga numbers are 1-based (Vyatipata = 17, Vaidhriti = 27); Viṣṭi is the 7th
+# of the repeating movable karaṇas.
+VYATIPATA_YOGA = 17
+VAIDHRITI_YOGA = 27
+SACRIFICIAL_AVOID_YOGAS = frozenset({VYATIPATA_YOGA, VAIDHRITI_YOGA})
+VISHTI_KARANA = "Vishti"
 
 
 def rudra_on_earth(tithi_absolute: int) -> bool:
@@ -275,6 +287,8 @@ class DayPanchanga:
     jupiter_rashi: int = 0  # 1-based; used for the Simhastha-guru veto
     jupiter_bala_vriddha: bool = False  # Guru newly-risen / about-to-set (weak)
     venus_bala_vriddha: bool = False  # Śukra newly-risen / about-to-set (weak)
+    yoga: int = 0  # 1-based yoga at sunrise; Vyatipata=17, Vaidhriti=27
+    karana: str = ""  # karaṇa name at sunrise; Viṣṭi (Bhadrā) is barred
 
 
 def build_day_panchanga(
@@ -292,6 +306,8 @@ def build_day_panchanga(
     vaara_num, _, _ = get_vaara(sunrise_utc, location.timezone)
     surya = get_surya_rashi(sunrise_utc)
     aayan = get_aayan(sunrise_utc)
+    yoga_num, _, _ = get_yoga(sunrise_utc)
+    _, karana_name = get_karana(sunrise_utc)
 
     sun_lon = surya["longitude"]
     jupiter = get_planet_position(sunrise_utc, "jupiter")["longitude"]
@@ -339,6 +355,8 @@ def build_day_panchanga(
         venus_bala_vriddha=_is_bala_vriddha(
             venus, sun_lon, VENUS_COMBUST_ORB, VENUS_BALA_VRIDDHA_ORB
         ),
+        yoga=yoga_num,
+        karana=karana_name,
     )
 
 
@@ -518,8 +536,25 @@ def check_byaparik_pratisthan(day: DayPanchanga) -> bool:
 
 
 # 6. रुद्री जुर्ने (Rudra Abhishekam / Shiva Puja)
+# Rudri is a Rudrābhiṣeka + homa, so both the deity's abode (Śiva-vāsa) and the
+# fire's abode (Agni-vāsa) must be favourable, and the universal sacrificial
+# doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi karaṇa) are scrubbed.
+#   1. Śiva-vāsa — (2×tithi+5) mod 7 ∈ {1,2,3} (Kailāsa/Gaurī/Nandi); Amāvasyā out.
+#   2. Agni-vāsa — fire on Earth/Pātāla to receive the oblation ((T+V) mod 4 ∈ {2,3}).
+#   3. Reject Vyatipāta / Vaidhṛti yoga and Viṣṭi (Bhadrā) karaṇa.
+# (Ashtami/Chaturdashi tithi and the Śrāvaṇa/Kārtika months are traditionally
+# *preferred*, and Chandra/Tārā Bala is native-specific — these rank days rather
+# than gate them, so they are not applied to the year-wide listing.)
 def check_rudri_jurne(day: DayPanchanga) -> bool:
-    return rudra_on_earth(day.tithi_absolute)
+    if not rudra_on_earth(day.tithi_absolute):
+        return False
+    if not agni_on_earth(day.tithi_absolute, day.vaara):
+        return False
+    if day.yoga in SACRIFICIAL_AVOID_YOGAS:
+        return False
+    if day.karana == VISHTI_KARANA:
+        return False
+    return True
 
 
 # 7. अग्नि जुर्ने (Agni Vas / Havan)
