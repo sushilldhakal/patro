@@ -57,7 +57,45 @@ def warm_holiday_cache() -> list[int]:
         )
     _warm_year_response_cache()
     _warm_popular_city_caches()
+    _warm_sait_cache()
     return generated
+
+
+def _warm_sait_enabled() -> bool:
+    return os.environ.get("WARM_SAIT", "true").lower() not in {"0", "false", "no"}
+
+
+def _warm_sait_cache() -> None:
+    """Pre-build the current BS year's sāit listings for every ceremony at the
+    default location.
+
+    Sāit dates are ephemeris-computed per day and cached per (year, category,
+    location); without this warm the first visitor to a sāit page after a deploy
+    (or an engine-version bump) pays the ~6 s per-category cold build. We warm
+    the current year (± SAIT_WARM_SPAN, default 0) for the default location only,
+    to bound the background cost; every other year/location is still computed
+    on-demand and cached on first request. Skip-existing (via the generator's own
+    cache check) keeps this cheap on persistent hosts. Gate off with
+    WARM_SAIT=false on light / ephemeral hosts.
+    """
+    if not _precompute_enabled() or not _warm_sait_enabled():
+        return
+
+    from services.sait_api import list_sait_categories
+    from services.sait_generator import get_generated_sait
+
+    current_bs_year, _, _ = gregorian_to_bs(date.today())
+    span = max(int(os.environ.get("SAIT_WARM_SPAN", "0")), 0)
+    category_ids = [c["id"] for c in list_sait_categories()]
+    for bs_year in range(current_bs_year - span, current_bs_year + span + 1):
+        for category in category_ids:
+            try:
+                # use_cache=True: a hit returns instantly; a miss computes and
+                # persists to the shared cache for every later request/instance.
+                get_generated_sait(bs_year, category, DEFAULT_LOCATION)
+                logger.info("Warmed sāit cache for BS %s / %s", bs_year, category)
+            except Exception:  # noqa: BLE001 — a warm failure must not block startup
+                logger.exception("Sāit warm failed for BS %s / %s", bs_year, category)
 
 
 def _warm_popular_cities_enabled() -> bool:
