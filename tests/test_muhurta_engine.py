@@ -9,6 +9,7 @@ from engine.vedic.muhurta_engine import (
     CEREMONY_RULES,
     CeremonyRule,
     MUHURTA_CATEGORIES,
+    TOGGLEABLE_RULE_IDS,
     _eclipse_near,
     _window_ok,
     has_muhurta,
@@ -296,7 +297,8 @@ def test_vishti_and_vaidhriti_rejected():
 
 def test_bratabandha_strict_classical_filters():
     """Upanayana opts into the stricter classical vetoes: Vishti (Bhadra),
-    Vyatipata & Vaidhriti yoga, Sankranti, eclipse, and slot-only Dur-muhurta."""
+    Vyatipata & Vaidhriti yoga, Sankranti, eclipse, slot-only Dur-muhurta,
+    Galagraha, Simhastha, bāla/vṛddha, and sunrise→madhyāhna."""
     rule = CEREMONY_RULES["bratabandha"]
     assert "Vishti" in rule.avoid_karanas
     assert {17, 27} <= rule.avoid_yogas  # Vyatipata=17, Vaidhriti=27
@@ -305,20 +307,67 @@ def test_bratabandha_strict_classical_filters():
     assert rule.eclipse_pad_days == 3
     # Dur-muhurta must stay slot-only for Upanayana (no whole-day kill).
     assert not rule.day_kill_on_major_dosha
+    assert rule.reject_guru_shukra_bala_vriddha
+    assert 5 in rule.avoid_guru_rashis  # Simhastha
+    assert {1, 4, 7, 8, 9, 13, 14, 15} <= rule.avoid_tithis  # Galagraha
+    assert rule.end_at_madhyahna and rule.daytime_only
+    # Classical nakṣatra allow-list (not the broad "all except five").
+    assert 6 not in rule.nakshatras  # Ārdrā excluded
+    assert 10 in rule.nakshatras and 19 in rule.nakshatras  # Maghā + Mūla
+    assert TOGGLEABLE_RULE_IDS["bratabandha"] >= {
+        "nakshatra", "galagraha", "graha", "simhastha", "time-window",
+    }
 
 
-def test_griha_aarambha_strict_vastu_filters():
-    """Griha-aarambha follows the strict classical Vastu-muhurta config."""
+def test_bratabandha_nakshatra_modes():
+    from engine.vedic.muhurta_engine import (
+        BRATABANDHA_NAKSHATRAS_CLASSICAL,
+        BRATABANDHA_NAKSHATRAS_LIBERAL,
+        BRATABANDHA_NAKSHATRAS_NEPALI,
+        apply_nakshatra_mode,
+    )
+
+    base = CEREMONY_RULES["bratabandha"]
+    assert apply_nakshatra_mode(base, "classical").nakshatras == BRATABANDHA_NAKSHATRAS_CLASSICAL
+    nepali = apply_nakshatra_mode(base, "nepali")
+    assert nepali.nakshatras == BRATABANDHA_NAKSHATRAS_NEPALI
+    assert 6 in nepali.nakshatras  # Ārdrā admitted in Nepali mode
+    liberal = apply_nakshatra_mode(base, "liberal")
+    assert liberal.nakshatras == BRATABANDHA_NAKSHATRAS_LIBERAL
+    assert 10 in liberal.nakshatras  # Maghā admitted
+    assert apply_nakshatra_mode(base, "bogus") is base
+
+
+def test_griha_aarambha_classical_vastu_filters():
+    """Griha-aarambha — Muhūrta Chintāmaṇi Sun-sign, lenient tithi, Guru/Śukra
+    ast+bāla/vṛddha bar, Chaturmāsa allowed."""
     rule = CEREMONY_RULES["griha-aarambha"]
-    assert rule.tithis == frozenset({2, 3, 5, 7, 10, 11, 12})  # no Pratipada/Trayodashi
+    # Sun-sign per Muhūrta Chintāmaṇi: Meṣa/Vṛṣabha/Siṃha/Vṛśchika/Makara/Kumbha.
+    assert rule.sun_rashis == frozenset({1, 2, 5, 8, 10, 11})
+    # Lenient tithi: bar only Pratipadā(1)+rikta(4/9/14) both pakṣas + Amāvasyā(15 kṛṣṇa).
+    assert 1 not in rule.shukla_tithis and 1 not in rule.krishna_tithis
+    assert 15 in rule.shukla_tithis  # Pūrṇimā allowed
+    assert 15 not in rule.krishna_tithis  # Amāvasyā barred
+    assert {6, 8, 13} <= rule.shukla_tithis  # broader than the old growth set
+    assert not rule.tithis  # replaced by the pakṣa-split sets
+    # Guru & Śukra: udaya + not bāla/vṛddha (Dharma Sindhu vāstu karma).
+    assert rule.require_guru_udaya and rule.require_shukra_udaya
+    assert rule.reject_guru_shukra_bala_vriddha
+    assert not rule.block_chaturmas  # construction allowed in Chaturmāsa
     assert rule.nakshatras == frozenset({4, 5, 7, 12, 13, 14, 15, 17, 21, 22, 23, 26, 27})
     assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual only
     assert {17, 27} <= rule.avoid_yogas  # Vyatipata & Vaidhriti
     assert "Vishti" in rule.avoid_karanas
     assert rule.block_dur_muhurta and not rule.day_kill_on_major_dosha  # slot-only
-    assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
     assert rule.eclipse_pad_days == 1
     assert rule.daytime_only  # foundation is a daytime rite
+
+
+def test_griha_aarambha_exposes_toggleable_rules():
+    from engine.vedic.muhurta_engine import TOGGLEABLE_RULE_IDS
+
+    ids = TOGGLEABLE_RULE_IDS["griha-aarambha"]
+    assert {"solar-month", "tithi", "nakshatra", "graha", "yoga", "karana", "lagna"} == ids
 
 
 def test_griha_pravesh_strict_filters_and_fallback():
@@ -331,6 +380,8 @@ def test_griha_pravesh_strict_filters_and_fallback():
     assert rule.sankranti_buffer_hours == 6.0 and rule.major_sankranti_buffer_hours == 16.0
     assert rule.eclipse_pad_days == 1
     assert rule.lagnas == frozenset({2, 3, 5, 6, 8, 9, 11, 12})  # fixed + dual
+    assert rule.require_guru_udaya and rule.require_shukra_udaya
+    assert rule.reject_guru_shukra_bala_vriddha
     # Fallback widens the 8-star set to also admit Hasta(13)/Svati(15)/
     # Shravana(22)/Dhanishtha(23) when a year has < 12 days.
     assert rule.fallback_min_days == 12

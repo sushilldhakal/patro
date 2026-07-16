@@ -17,7 +17,7 @@ def apply_variant(payload: dict[str, Any], variant: Variant = "default") -> dict
     """
     Apply cultural / publisher-specific adjustments on top of canonical engine output.
 
-    Astronomy (Swiss Ephemeris) stays fixed; only interpretation labels and
+    Astronomy (JPL — NASA's Jet Propulsion Laboratory) stays fixed; only interpretation labels and
     display conventions may change between Surya, Toyanath, and regional patro.
     """
     if variant == "default" or variant not in _ADJUSTERS:

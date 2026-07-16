@@ -376,7 +376,7 @@ def get_daily_panchanga(
     """
     Daily panchanga with SQLite cache-aside.
 
-    Cache hit → instant return (no Swiss Ephemeris).
+    Cache hit → instant return (no JPL ephemeris work).
     Cache miss → compute, store, return.
     """
     from services.panchanga_cache import get_cached_panchanga, store_panchanga_cache

@@ -6,7 +6,7 @@ Generates a mathematically exact daily Panchanga for the Bikram Sambat year
 2083, replicating the logic of the traditional **Toyanath Panchanga Patro**.
 
 Computation stack:
-  - Swiss Ephemeris (pyswisseph) — true sidereal planetary longitudes
+  - JPL (NASA's Jet Propulsion Laboratory) — true sidereal planetary longitudes
   - Ayanamsa: Lahiri / Chitra Paksha  (SE_SIDM_LAHIRI)
   - Reference frame: Nirayana (sidereal), corrected from tropical
   - Day anchor: Local True Sunrise (Udaya)
@@ -228,7 +228,7 @@ _GRAHA_BODIES: dict[str, int] = {
     "rahu":    swe.MEAN_NODE,
 }
 
-# Swiss Ephemeris flags for sidereal computation with speed
+# JPL ephemeris flags for sidereal computation with speed
 _SIDEREAL_SPEED = swe.FLG_SIDEREAL | swe.FLG_SPEED
 
 
@@ -713,7 +713,7 @@ def build_panchanga_for_date(
     -------
     dict   Fully structured JSON-ready panchanga for the requested date.
     """
-    init_ephemeris()   # Ensures Lahiri ayanamsa is set in Swiss Ephemeris
+    init_ephemeris()   # Ensures Lahiri ayanamsa is set for JPL
 
     lat  = loc["latitude"]
     lon  = loc["longitude"]

@@ -1,4 +1,4 @@
-"""SQLite cache for precomputed daily panchanga — avoids Swiss Ephemeris on repeat lookups."""
+"""SQLite cache for precomputed daily panchanga — avoids JPL work on repeat lookups."""
 
 from __future__ import annotations
 

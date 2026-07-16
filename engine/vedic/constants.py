@@ -183,14 +183,14 @@ BS_MIN_YEAR = min(BS_MONTH_LENGTHS.keys())
 BS_MAX_YEAR = max(BS_MONTH_LENGTHS.keys())
 
 # Full supported range: sankranti estimation outside the official lookup table.
-# The engine computes any year on-demand via Swiss Ephemeris; the disk cache
+# The engine computes any year on-demand via JPL; the disk cache
 # keeps repeat requests in the millisecond range, so a wide range is cheap.
 #
 # Floor is BS 60, not 0: the estimator maps a BS month to Gregorian year
 # ``bs_year - 57`` and searches a window ~15 days earlier, so BS < 60 would
 # cross into Gregorian year 0, which Python's ``datetime`` (min year 1) cannot
 # represent. BS 60 (≈ 3 CE) is the lowest year that reliably computes a full
-# year. Ceiling is BS 3000 (≈ 2943 CE), well inside Swiss Ephemeris' range.
+# year. Ceiling is BS 3000 (≈ 2943 CE), well inside JPL's range.
 #
 # Caveat for very old dates: before ~1582 CE the Julian/Gregorian split and the
 # absence of modern time zones make local-solar reckoning approximate; treat

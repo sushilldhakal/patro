@@ -1,4 +1,4 @@
-"""Generate and cache auspicious-date (साइत) listings from Swiss Ephemeris rules."""
+"""Generate and cache auspicious-date (साइत) listings from JPL (NASA's Jet Propulsion Laboratory) rules."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "4.7.0"
+SAIT_ENGINE_VERSION = "4.9.0"
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:

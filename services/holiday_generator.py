@@ -23,7 +23,7 @@ from services.cache_meta import cache_is_valid, stamp_payload
 # Festival/holiday dates are national: they follow the udaya tithi at the
 # Kathmandu reference, not the observer's city. Per-city sunrise inside Nepal
 # shifts by minutes and never moves a festival's civil date, while regenerating
-# a whole year of festival rules per city costs ~4 s of Swiss Ephemeris sunrise
+# a whole year of festival rules per city costs ~4 s of JPL sunrise
 # searches. `get_festivals`/`get_holidays`/`get_bs_festivals` therefore pin the
 # location to DEFAULT_LOCATION so every city shares one cached calendar.
 #

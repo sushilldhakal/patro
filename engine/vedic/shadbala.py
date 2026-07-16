@@ -1,6 +1,6 @@
 """Shadbala — the sixfold strength of the seven classical planets, in Virupas.
 
-Computed with the live Swiss-Ephemeris positions (sidereal Lahiri longitudes and
+Computed with the live JPL (NASA's Jet Propulsion Laboratory) positions (sidereal Lahiri longitudes and
 true daily speeds) plus the day's sunrise/sunset and weekday, following the
 Parashari method. A handful of components that classically need data the modern
 ephemeris doesn't expose directly (notably the Cheshta seeghra-kendra) use a
@@ -551,7 +551,7 @@ def compute_shadbala(
             "total_planets": len(rows),
             "counts": counts,
         },
-        "method": "Parashari Shadbala (Lahiri sidereal, Swiss Ephemeris)",
+        "method": "Parashari Shadbala (Lahiri sidereal, JPL — NASA's Jet Propulsion Laboratory)",
     }
 
 

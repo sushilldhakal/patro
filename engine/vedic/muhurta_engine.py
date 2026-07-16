@@ -32,7 +32,7 @@ curated data still takes precedence at the API layer (see ``services.sait_api``)
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 
@@ -118,18 +118,24 @@ _MAJOR_SANKRANTI_RASHIS = frozenset({1, 4, 7, 10})  # Mesha, Karka, Tula, Makara
 _SANKRANTI_BUFFER_HOURS = 6.0
 _MAJOR_SANKRANTI_BUFFER_HOURS = 16.0
 
-# Gṛha-ārambha (foundation / bhūmi-pūjan) — strict classical Vāstu-muhūrta.
-# Sun-sign: Meṣa, Karka, Tulā, Vṛśchika, Dhanu, Makara, Kumbha (1,4,7,8,9,10,11);
-# construction, unlike vivāha, is NOT paused in Chaturmāsa. Tithi tightened to the
-# śubha growth set 2,3,5,7,10,11,12 (Pratipadā 1 and Trayodaśī 13 dropped). Only
-# the classical Vāstu nakṣatras (explicit list): Rohiṇī, Mṛgaśira, Punarvasu,
-# U.Phalgunī, Hasta, Chitrā, Svātī, Anurādhā, U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā,
-# U.Bhādrapada, Revatī. Lagna: fixed (sthira) preferred, dual (dvisvabhāva)
-# accepted, movable (chara: Meṣa/Karka/Tulā/Makara) rejected — a building on a
-# sthira lagna is held to be stable. Plus Vyatīpāta/Vaidhṛti yoga, Viṣṭi (Bhadrā)
-# karaṇa, Dur-muhūrta (slot-only), Sankranti pads and eclipse are all vetoed.
-GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS = frozenset({1, 4, 7, 8, 9, 10, 11})
-GRIHA_AARAMBHA_MUHURTA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
+# Gṛha-ārambha (foundation / bhūmi-pūjan) — classical Vāstu-muhūrta.
+# Sun-sign (Muhūrta Chintāmaṇi): Meṣa, Vṛṣabha, Siṃha, Vṛśchika, Makara, Kumbha
+# (1,2,5,8,10,11). Construction, unlike vivāha, is NOT paused in Chaturmāsa.
+# Tithi is lenient (a house-start is not a marriage-grade saṃskāra): only
+# Pratipadā(1), rikta(4/9/14) and Amāvasyā are barred — every other tithi,
+# Pūrṇimā included, is allowed. Only the classical Vāstu nakṣatras (explicit
+# list): Rohiṇī, Mṛgaśira, Punarvasu, U.Phalgunī, Hasta, Chitrā, Svātī, Anurādhā,
+# U.Aṣāḍhā, Śravaṇa, Dhaniṣṭhā, U.Bhādrapada, Revatī. Lagna: fixed (sthira)
+# preferred, dual (dvisvabhāva) accepted, movable (chara: Meṣa/Karka/Tulā/Makara)
+# rejected — a building on a sthira lagna is held stable. Guru & Śukra must be
+# udaya (not combust) and not bāla/vṛddha — Dharma Sindhu applies the ast/bāla/
+# vṛddha bar to vāstu karma. Plus Vyatīpāta/Vaidhṛti yoga, Viṣṭi (Bhadrā) karaṇa,
+# Dur-muhūrta (slot-only), Sankranti pads and eclipse are all vetoed.
+GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS = frozenset({1, 2, 5, 8, 10, 11})
+# Lenient tithi gate: bar Pratipadā(1) + rikta(4/9/14) in both pakṣas and
+# Amāvasyā (kṛṣṇa 15); allow all the rest incl. Pūrṇimā (śukla 15).
+GRIHA_AARAMBHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 15})
+GRIHA_AARAMBHA_KRISHNA_TITHIS = frozenset({2, 3, 5, 6, 7, 8, 10, 11, 12, 13})
 GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS = frozenset(
     {4, 5, 7, 12, 13, 14, 15, 17, 21, 22, 23, 26, 27}
 )
@@ -145,18 +151,38 @@ GRIHA_PRAVESH_NAKSHATRAS_EXTENDED = GRIHA_PRAVESH_NAKSHATRAS | frozenset({13, 15
 
 # Upanayana (ब्रतबन्ध / व्रतबन्ध) per Muhūrta Chintāmaṇi & Dharmasindhu:
 #   * Sun in an Uttarāyaṇa rāśi (Makara→Mithuna = 10,11,12,1,2,3), avoiding
-#     Hariśayana/Chaturmāsa; Guru & Śukra both udaya; no Adhik-māsa.
-#   * All auspicious nakṣatras (fixed/movable/gentle/short + the Chintāmaṇi
-#     additions) — i.e. every nakṣatra except Bharaṇī 2, Kṛttikā 3, Maghā 10,
-#     Viśākhā 16, Jyeṣṭhā 18.
-#   * Avoid Tuesday & Saturday; daytime only (sunrise→sunset).
-#   * Tithi: śukla 2,3,5,10,11,12 or kṛṣṇa 2,3,5.
+#     Hariśayana/Chaturmāsa; Guru & Śukra udaya and not bāla/vṛddha; no Adhik-māsa.
+#   * Nakṣatra modes (see BRATABANDHA_NAKSHATRA_MODES) — default Classical.
+#   * Avoid Tuesday & Saturday; preferential window sunrise→madhyāhna (not aparāhna).
+#   * Tithi: śukla 2,3,5,10,11,12 or kṛṣṇa 2,3,5; Galagraha tithis barred.
 # The advanced Lagna/Navāṁśa/Tri-Bala/Varṇeśa-Śākheśa shuddhi is person- and
 # caste-specific and can't be applied to a general year listing.
 BRATABANDHA_MUHURTA_SUN_RASHIS = frozenset({1, 2, 3, 10, 11, 12})
-BRATABANDHA_MUHURTA_NAKSHATRAS = frozenset(range(1, 28)) - frozenset({2, 3, 10, 16, 18})
+# Classical Upanayana — Kṣipra (Hasta, Aśvinī, Puṣya) + Dhruva (Rohiṇī + 3 Uttarās)
+# + Cara (Svātī, Punarvasu, Śravaṇa, Dhaniṣṭhā, Śatabhiṣā) + Mṛdu (Mṛgaśira, Revatī,
+# Citrā, Anurādhā) + Maghā + Mūla (accepted in many Chintāmaṇi-line traditions).
+BRATABANDHA_NAKSHATRAS_CLASSICAL = frozenset(
+    {1, 4, 5, 7, 8, 10, 12, 13, 14, 15, 17, 19, 21, 22, 23, 24, 26, 27}
+)
+# Nepali panchāṅga phrasing — every star except Bharaṇī, Kṛttikā, Maghā, Viśākhā,
+# Jyeṣṭhā (broader than Classical; admits Ārdrā, Āśleṣā, the three Pūrvās, …).
+BRATABANDHA_NAKSHATRAS_NEPALI = frozenset(range(1, 28)) - frozenset({2, 3, 10, 16, 18})
+# Liberal — only the fiercest exclusions (Bharaṇī, Kṛttikā, Viśākhā, Jyeṣṭhā);
+# Maghā is allowed.
+BRATABANDHA_NAKSHATRAS_LIBERAL = frozenset(range(1, 28)) - frozenset({2, 3, 16, 18})
+BRATABANDHA_NAKSHATRA_MODES: dict[str, frozenset[int]] = {
+    "classical": BRATABANDHA_NAKSHATRAS_CLASSICAL,
+    "nepali": BRATABANDHA_NAKSHATRAS_NEPALI,
+    "liberal": BRATABANDHA_NAKSHATRAS_LIBERAL,
+}
+# Back-compat alias — older code/tests expect this name.
+BRATABANDHA_MUHURTA_NAKSHATRAS = BRATABANDHA_NAKSHATRAS_CLASSICAL
 BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
 BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
+# Galagraha tithis (display 1–15) — classical Upanayana rejects these; rikta
+# 4/9/14 already fall out via the universal rikta bar, and 15 covers both
+# Pūrṇimā and Amāvasyā.
+GALAGRAHA_TITHIS = frozenset({1, 4, 7, 8, 9, 13, 14, 15})
 
 # Annaprāśana (अन्नप्रासन) per Muhūrta Chintāmaṇi — moderately strict (a saṃskāra,
 # but not as planet-restricted as vivāha). Explicit nakṣatra list: Aśvinī, Rohiṇī,
@@ -216,10 +242,16 @@ class CeremonyRule:
     # `tithis`: a window is allowed only if its tithi is in the set for its pakṣa.
     shukla_tithis: frozenset[int] = frozenset()
     krishna_tithis: frozenset[int] = frozenset()
+    # Absolute veto on display tithis (1–15), applied even when an allow-list is
+    # cleared — used for Galagraha on Upanayana.
+    avoid_tithis: frozenset[int] = frozenset()
     nakshatras: frozenset[int] = frozenset()
     shukla_only: bool = False
     avoid_varas: frozenset[int] = frozenset()  # 1=Sun … 7=Sat to exclude
     daytime_only: bool = False  # scan sunrise→sunset only (e.g. Upanayana)
+    # Stricter daytime bound: end the scan at madhyāhna (solar noon midpoint)
+    # instead of sunset — classical "no Upanayana in aparāhna".
+    end_at_madhyahna: bool = False
     avoid_karanas: frozenset[str] = frozenset()  # e.g. {"Vishti"} → Bhadra
     avoid_yogas: frozenset[int] = frozenset()  # 1-based nitya yoga numbers
     block_dur_muhurta: bool = False
@@ -296,13 +328,19 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         sun_rashis=BRATABANDHA_MUHURTA_SUN_RASHIS,
         block_chaturmas=True,
         block_sankranti=True,           # Sankranti day barred for the saṃskāra
+        # Simhastha Guru — optional in Nepali practice; ON by default, toggleable.
+        avoid_guru_rashis=frozenset({SIMHASTHA_GURU_RASHI}),
         require_guru_udaya=True,
         require_shukra_udaya=True,
-        nakshatras=BRATABANDHA_MUHURTA_NAKSHATRAS,
+        # ...and neither Guru nor Śukra may be bāla / vṛddha (weak near the Sun).
+        reject_guru_shukra_bala_vriddha=True,
+        nakshatras=BRATABANDHA_NAKSHATRAS_CLASSICAL,
         avoid_varas=frozenset({3, 7}),  # avoid Tuesday & Saturday
         shukla_tithis=BRATABANDHA_SHUKLA_TITHIS,
         krishna_tithis=BRATABANDHA_KRISHNA_TITHIS,
+        avoid_tithis=GALAGRAHA_TITHIS,
         daytime_only=True,
+        end_at_madhyahna=True,  # sunrise→madhyāhna; aparāhna rejected
         # Stricter classical Upanayana filter: reject Viṣṭi (Bhadrā) karaṇa,
         # Vyatīpāta & Vaidhṛti yoga (whole span), eclipse ±3 days, and Dur-muhūrta
         # (only the affected slot, not the whole day).
@@ -322,8 +360,14 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     "griha-aarambha": CeremonyRule(
         key="griha-aarambha",
         sun_rashis=GRIHA_AARAMBHA_MUHURTA_SUN_RASHIS,
-        block_chaturmas=False,
-        tithis=GRIHA_AARAMBHA_MUHURTA_TITHIS,
+        block_chaturmas=False,  # construction is not paused in Chaturmāsa
+        # Guru & Śukra must be udaya and not bāla/vṛddha (Dharma Sindhu — vāstu karma).
+        require_guru_udaya=True,
+        require_shukra_udaya=True,
+        reject_guru_shukra_bala_vriddha=True,
+        # Lenient tithi: bar only Pratipadā/rikta (both pakṣas) + Amāvasyā.
+        shukla_tithis=GRIHA_AARAMBHA_SHUKLA_TITHIS,
+        krishna_tithis=GRIHA_AARAMBHA_KRISHNA_TITHIS,
         nakshatras=GRIHA_AARAMBHA_MUHURTA_NAKSHATRAS,
         daytime_only=True,  # शिलान्यास is a daytime rite (sunrise→sunset)
         # Stricter Vāstu-muhūrta vetoes.
@@ -345,7 +389,7 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     #      (2,3,5,7,10,11,13), and the Moon in a friendly house (1,3,6,7,10,11)
     #      from the muhūrta lagna (i.e. never the 2/4/5/8/9/12).
     #   4. Sthira/Mṛdu nakṣatras only.
-    #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust).
+    #   5. Asta Śuddhi — Guru & Śukra must be udaya (not combust, bāla or vṛddha).
     #   6. Graha Vedha — reject if a malefic's Latta ray strikes the day's
     #      nakṣatra (Sun/Mars/Saturn/Rāhu/Ketu; see latta_pierced_nakshatras).
     #   7. Dagdha — reject a burnt weekday × tithi clash.
@@ -361,6 +405,8 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
         avoid_sun_rashis=GRIHA_PRAVESH_MALAMAS_RASHIS,
         require_guru_udaya=True,
         require_shukra_udaya=True,
+        # Dharma Sindhu — same ast/bāla/vṛddha bar as vāstu karma (gṛha-ārambha).
+        reject_guru_shukra_bala_vriddha=True,
         shukla_only=True,
         tithis=GRIHA_PRAVESH_GROWTH_TITHIS,
         nakshatras=GRIHA_PRAVESH_NAKSHATRAS,
@@ -420,6 +466,122 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
 # deterministic Vās categories (rudri/agni) keep their day-level rules in
 # ``sait_rules``.
 MUHURTA_CATEGORIES = frozenset(CEREMONY_RULES)
+
+
+# ── Community rule toggles ────────────────────────────────────────────────────
+# Different communities keep different subsets of the classical rules. Each id
+# maps a *display* rule to the CeremonyRule fields relaxed when the user turns
+# that rule OFF. The ids match the `id` on each rule in the frontend's
+# sait-rules-content.ts, so a UI switch and this map stay in lock-step.
+#
+# Astronomical safeguards are deliberately NOT toggleable and always apply:
+# Adhik-māsa, eclipse proximity, Sankranti buffers, Dur-muhūrta, and the
+# universal rikta-tithi (4/9/14) bar. A community may skip a saṃskāra rule, but
+# these are hazards of the sky, not preferences.
+_RULE_RELAXATIONS: dict[str, dict[str, dict[str, object]]] = {
+    "vivah": {
+        "month": {"lunar_months": frozenset(), "block_chaturmas": False},
+        "solar-month": {"sun_rashis": frozenset()},
+        "tithi": {
+            "tithis": frozenset(),
+            "shukla_tithis": frozenset(),
+            "krishna_tithis": frozenset(),
+            "shukla_only": False,
+        },
+        "nakshatra": {"nakshatras": frozenset()},
+        "yoga": {"avoid_yogas": frozenset()},
+        "karana": {"avoid_karanas": frozenset()},
+        "vara": {"avoid_varas": frozenset()},
+        "dosha": {
+            "check_dagdha": False,
+            "check_shunya": False,
+            "graha_vedha_planets": frozenset(),
+        },
+        "graha": {
+            "require_guru_udaya": False,
+            "require_shukra_udaya": False,
+            "reject_guru_shukra_bala_vriddha": False,
+        },
+        "simhastha": {"avoid_guru_rashis": frozenset()},
+        "kshaya-paksha": {"block_kshaya_paksha": False},
+    },
+    "bratabandha": {
+        # Turning nakṣatra OFF switches Classical → Nepali panchāṅga (all except
+        # five). Use nakshatra_mode=liberal on the API for the widest set.
+        "nakshatra": {"nakshatras": BRATABANDHA_NAKSHATRAS_NEPALI},
+        "tithi": {
+            "tithis": frozenset(),
+            "shukla_tithis": frozenset(),
+            "krishna_tithis": frozenset(),
+            "shukla_only": False,
+        },
+        "galagraha": {"avoid_tithis": frozenset()},
+        "vara": {"avoid_varas": frozenset()},
+        "yoga": {"avoid_yogas": frozenset()},
+        "karana": {"avoid_karanas": frozenset()},
+        "dosha": {
+            "check_dagdha": False,
+            "check_shunya": False,
+            "graha_vedha_planets": frozenset(),
+        },
+        "graha": {
+            "require_guru_udaya": False,
+            "require_shukra_udaya": False,
+            "reject_guru_shukra_bala_vriddha": False,
+        },
+        "simhastha": {"avoid_guru_rashis": frozenset()},
+        "time-window": {"end_at_madhyahna": False},
+    },
+    "griha-aarambha": {
+        "solar-month": {"sun_rashis": frozenset()},
+        "tithi": {
+            "tithis": frozenset(),
+            "shukla_tithis": frozenset(),
+            "krishna_tithis": frozenset(),
+            "shukla_only": False,
+        },
+        "nakshatra": {"nakshatras": frozenset()},
+        "graha": {
+            "require_guru_udaya": False,
+            "require_shukra_udaya": False,
+            "reject_guru_shukra_bala_vriddha": False,
+        },
+        "yoga": {"avoid_yogas": frozenset()},
+        "karana": {"avoid_karanas": frozenset()},
+        "lagna": {"lagnas": frozenset()},
+    },
+}
+
+# The set of rule ids a category exposes as user-toggleable.
+TOGGLEABLE_RULE_IDS: dict[str, frozenset[str]] = {
+    category: frozenset(relaxations)
+    for category, relaxations in _RULE_RELAXATIONS.items()
+}
+
+
+def apply_nakshatra_mode(rule: CeremonyRule, mode: str | None) -> CeremonyRule:
+    """Swap the nakṣatra allow-list for a named tradition mode.
+
+    Only bratabandha currently defines modes (classical / nepali / liberal).
+    Unknown modes and non-bratabandha rules are returned unchanged.
+    """
+    if rule.key != "bratabandha" or not mode:
+        return rule
+    nakshatras = BRATABANDHA_NAKSHATRA_MODES.get(mode.strip().lower())
+    if nakshatras is None:
+        return rule
+    return replace(rule, nakshatras=nakshatras)
+
+
+def relax_rule(category: str, rule: CeremonyRule, disabled_ids) -> CeremonyRule:
+    """Return ``rule`` with the constraints of each disabled community rule
+    cleared. Unknown ids are ignored. An empty/whole-set ``disabled_ids`` that
+    changes nothing returns the original rule unchanged."""
+    relaxations = _RULE_RELAXATIONS.get(category, {})
+    kwargs: dict[str, object] = {}
+    for rid in disabled_ids:
+        kwargs.update(relaxations.get(rid, {}))
+    return replace(rule, **kwargs) if kwargs else rule
 
 # Muhūrtas are computed sunrise → next sunrise (the vedic day, per Panchāṅga
 # Śuddhi). 30-min steps keep a full-year build tractable while resolving windows
@@ -756,6 +918,8 @@ def _window_ok(
     tithi = get_display_tithi(tnum)
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
+    if rule.avoid_tithis and tithi in rule.avoid_tithis:
+        return (False, 0, 0, 0)
 
     # Dagdha / Shunya — Godhūli can neutralise these for opted-in ceremonies.
     shielded = in_godhuli and rule.godhuli_overrides_dagdha_shunya
@@ -847,8 +1011,14 @@ def muhurta_windows(
         timezone_name=location.timezone,
     )
     # Upanayana and similar day-only rites are valid in daylight only; everything
-    # else spans the vedic day (sunrise → next sunrise).
-    end = sunset if rule.daytime_only else true_next_sunrise
+    # else spans the vedic day (sunrise → next sunrise). Classical Upanayana
+    # further truncates at madhyāhna ("no Upanayana in aparāhna").
+    if rule.end_at_madhyahna:
+        end = sunrise + (sunset - sunrise) / 2
+    elif rule.daytime_only:
+        end = sunset
+    else:
+        end = true_next_sunrise
     dur_intervals = (
         _dur_muhurta_intervals(sunrise, sunset, true_next_sunrise, gate.vaara)
         if rule.block_dur_muhurta

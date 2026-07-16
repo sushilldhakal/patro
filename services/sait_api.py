@@ -125,20 +125,61 @@ def _format_month_entries(by_month: dict[str, list[int]]) -> list[dict[str, Any]
     return months
 
 
+@lru_cache(maxsize=256)
+def _custom_year_by_month(
+    bs_year: int,
+    category: str,
+    location: ObserverLocation,
+    exclude: frozenset[str],
+    nakshatra_mode: str = "",
+):
+    """Year scan for a *handpicked* rule subset (some community rules turned off).
+
+    Returns ``(by_month, detail_rule)``. Not persisted to the shared sait cache —
+    the combinations are open-ended — but memoised in-process so repeated toggles
+    of the same subset are instant. The base (nothing excluded) path stays on the
+    normal disk/DB cache via :func:`get_generated_sait`."""
+    from engine.vedic.muhurta_engine import (
+        CEREMONY_RULES,
+        apply_nakshatra_mode,
+        relax_rule,
+    )
+    from services.sait_generator import _scan_year
+
+    detail_rule = relax_rule(category, CEREMONY_RULES[category], exclude)
+    if nakshatra_mode:
+        detail_rule = apply_nakshatra_mode(detail_rule, nakshatra_mode)
+    by_month = _scan_year(
+        bs_year, category, location,
+        use_muhurta=True, checker=None, rule=detail_rule,
+    )
+    return by_month, detail_rule
+
+
 def get_sait_detail(
     bs_year: int,
     category: str,
     location: ObserverLocation = DEFAULT_LOCATION,
+    exclude_rules: frozenset[str] = frozenset(),
+    nakshatra_mode: str | None = None,
 ) -> dict[str, Any]:
     """Per-day *reasons* for a muhūrta listing: the panchāṅga (tithi, nakṣatra,
     yoga, karaṇa, vāra, lagna) of the representative window that made each day
     qualify. Powers the "Marriage Saait" explanation page. Muhūrta categories
     (vivāha, bratabandha, …) only — the deterministic Vās categories have no
-    lagna window."""
+    lagna window.
+
+    ``exclude_rules`` names community rules to drop (see
+    ``muhurta_engine.TOGGLEABLE_RULE_IDS``) so a community that keeps only a
+    handpicked subset can still get a date list. Unknown/non-toggleable ids are
+    ignored; an empty set is the full classical rule.
+
+    ``nakshatra_mode`` (bratabandha only): ``classical`` | ``nepali`` | ``liberal``.
+    """
     from datetime import date
 
     from engine.astronomy.positions import (
-        KARANA_NAMES, NAKSHATRA_NAMES, RASHI_NAMES, YOGA_NAMES,
+        KARANA_NAMES, NAKSHATRA_NAMES, RASHI_NAMES, RASHI_NAMES_NE, YOGA_NAMES,
         get_display_tithi, get_karana, get_nakshatra, get_paksha,
         get_tithi_angle, get_tithi_number, get_yoga,
     )
@@ -147,13 +188,19 @@ def get_sait_detail(
 
     from engine.vedic.bikram_sambat import bs_to_gregorian
     from engine.vedic.muhurta_engine import (
-        CEREMONY_RULES, MUHURTA_CATEGORIES, muhurta_windows,
+        BRATABANDHA_NAKSHATRA_MODES,
+        CEREMONY_RULES,
+        MUHURTA_CATEGORIES,
+        TOGGLEABLE_RULE_IDS,
+        apply_nakshatra_mode,
+        muhurta_windows,
     )
     from engine.vedic.names_ne import (
         KARANA_NAMES_NE, NAKSHATRA_NAMES_NE, PAKSHA_NAMES_NE, TITHI_NAMES_NE,
         VAARA_NAMES_NE, YOGA_NAMES_NE, lunar_masa_name_ne,
     )
     from engine.vedic.sait_rules import build_day_panchanga
+    from services.sait_generator import SAIT_ENGINE_VERSION
 
     rules = _load_rules()
     categories = rules.get("categories") or {}
@@ -162,19 +209,45 @@ def get_sait_detail(
     if category not in MUHURTA_CATEGORIES:
         raise ValueError(f"Category '{category}' has no muhūrta-window detail.")
 
-    tz = resolve_observer_timezone(location.timezone)
-    generated = get_generated_sait(bs_year, category, location)
-    by_month = generated.get("months") or {}
+    mode = (nakshatra_mode or "").strip().lower() or None
+    if mode and mode not in BRATABANDHA_NAKSHATRA_MODES:
+        raise ValueError(
+            f"Unknown nakshatra_mode '{nakshatra_mode}'. "
+            f"Expected one of: {', '.join(sorted(BRATABANDHA_NAKSHATRA_MODES))}."
+        )
+    # Mode only applies to bratabandha; ignore silently for other ceremonies.
+    if category != "bratabandha":
+        mode = None
 
-    # Reproduce each day's window with the SAME rule the listing was built with:
-    # if the year used the widened nakṣatra fallback, the detail must too, else
-    # the fallback-only days would yield no window and drop out of the page.
-    base_rule = CEREMONY_RULES[category]
-    detail_rule = (
-        replace(base_rule, nakshatras=base_rule.fallback_nakshatras)
-        if generated.get("nakshatra_fallback") and base_rule.fallback_nakshatras
-        else base_rule
-    )
+    tz = resolve_observer_timezone(location.timezone)
+
+    # Keep only the ids this category actually exposes; drop the rest silently.
+    exclude = frozenset(exclude_rules) & TOGGLEABLE_RULE_IDS.get(category, frozenset())
+
+    custom = bool(exclude) or bool(mode and mode != "classical")
+    if custom:
+        # Handpicked subset / non-default mode — compute (uncached in the shared
+        # store) with the relaxed rule and use that SAME rule to reproduce each
+        # day's window.
+        by_month, detail_rule = _custom_year_by_month(
+            bs_year, category, location, exclude, mode or "",
+        )
+        engine_version = SAIT_ENGINE_VERSION
+    else:
+        generated = get_generated_sait(bs_year, category, location)
+        by_month = generated.get("months") or {}
+        # Reproduce each day's window with the SAME rule the listing was built
+        # with: if the year used the widened nakṣatra fallback, the detail must
+        # too, else the fallback-only days would yield no window and drop out.
+        base_rule = CEREMONY_RULES[category]
+        detail_rule = (
+            replace(base_rule, nakshatras=base_rule.fallback_nakshatras)
+            if generated.get("nakshatra_fallback") and base_rule.fallback_nakshatras
+            else base_rule
+        )
+        if mode:
+            detail_rule = apply_nakshatra_mode(detail_rule, mode)
+        engine_version = generated.get("engine_version")
 
     days_out: list[dict[str, Any]] = []
     for month_key, day_nums in sorted(by_month.items(), key=lambda kv: int(kv[0])):
@@ -222,6 +295,7 @@ def get_sait_detail(
                     "karana_ne": KARANA_NAMES_NE[KARANA_NAMES.index(karana)]
                     if karana in KARANA_NAMES else karana,
                     "lagna_en": RASHI_NAMES[lagna - 1],
+                    "lagna_ne": RASHI_NAMES_NE[lagna - 1],
                     "lunar_month_en": dp.lunar_month,
                     "lunar_month_ne": lunar_masa_name_ne(dp.lunar_month),
                 }
@@ -231,7 +305,9 @@ def get_sait_detail(
         "bs_year": bs_year,
         "category": category,
         "category_label_ne": categories[category].get("label_ne", category),
-        "engine_version": generated.get("engine_version"),
+        "engine_version": engine_version,
+        "excluded_rules": sorted(exclude),
+        "nakshatra_mode": mode or ("classical" if category == "bratabandha" else None),
         "days": days_out,
     }
 

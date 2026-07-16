@@ -2,7 +2,7 @@
 
 Many endpoints (month/year patro grids, gochar-year, calendar headers) are a
 pure function of (path params, location) and only change when the engine logic
-changes. Rebuilding them per request costs 0.3–15 s of Swiss Ephemeris work
+changes. Rebuilding them per request costs 0.3–15 s of JPL ephemeris work
 plus large JSON serialization. This module caches the serialized, gzip-
 compressed response bytes on disk keyed by a caller-supplied string; the first
 request computes, every later one streams the bytes back in milliseconds.
@@ -55,6 +55,15 @@ _AT_TIME_PANCHANGA_CACHE_CONTROL = (
 AT_TIME_PANCHANGA_CACHE_CONTROL = _AT_TIME_PANCHANGA_CACHE_CONTROL
 _IMMUTABLE_CACHE_CONTROL = (
     "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=2592000, immutable"
+)
+# Handpicked sait rule subsets (the /detail?exclude=… toggles) are an open-ended
+# combinatorial space: each unique subset is a distinct URL. The browser never
+# caches one (max-age=0) so flipping a rule ALWAYS revalidates and the user sees
+# the recomputed dates; the shared edge holds each subset for an hour to absorb
+# repeats and shield the origin. Correct because the URL fully encodes the subset
+# (sorted exclude list + the sv= engine token).
+SAIT_CUSTOM_CACHE_CONTROL = (
+    "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400"
 )
 
 

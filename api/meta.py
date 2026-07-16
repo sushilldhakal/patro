@@ -25,7 +25,7 @@ def about():
         "repository": "https://github.com/sushilldhakal/patro",
         "calculation_engine": {
             "framework": "Surya Siddhanta (ancient) + drik (modern precise) algorithms",
-            "ephemeris": "Swiss Ephemeris (pyswisseph) — true sidereal Sun/Moon longitudes",
+            "ephemeris": "JPL (NASA's Jet Propulsion Laboratory) — true sidereal Sun/Moon longitudes",
             "ayanamsa": "Lahiri (Chitrapaksha) — standard for Nepali panchanga",
             "sunrise_model": "Geometric horizon, atmospheric refraction 0.5667°",
             "udaya_tithi": "Tithi at local sunrise is used for festival assignment (traditional Nepali panchanga practice)",

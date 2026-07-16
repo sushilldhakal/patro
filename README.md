@@ -2,7 +2,7 @@
 
 **Panchanga computation engine as a service** — structured astronomical time-state JSON for any client (web, mobile, print). Not a UI or PDF generator.
 
-Swiss Ephemeris (Lahiri ayanamsa), Kathmandu default observer.
+JPL (NASA's Jet Propulsion Laboratory, Lahiri ayanamsa), Kathmandu default observer.
 
 **Production:** https://patro.onrender.com  
 **Interactive docs:** https://patro.onrender.com/docs
@@ -222,7 +222,7 @@ Holiday lists use **Bikram Sambat years** (e.g. `2083`). `GET` reads from precom
 
 #### `POST /generate/{year}`
 
-Precompute and persist the holiday cache for a BS year. Runs Swiss Ephemeris (typically a few seconds).
+Precompute and persist the holiday cache for a BS year. Runs JPL ephemeris (typically a few seconds).
 
 | Path param | Type | Range        | Description   |
 |-----------|------|--------------|---------------|

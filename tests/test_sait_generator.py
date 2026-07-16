@@ -162,7 +162,13 @@ def test_engine_version_bumped():
     # 4.7.0 — Vivah: added the classical solar-month (Sun-sign) gate, Simhastha
     # Guru veto (Jupiter in Simha), Guru/Shukra bala-vriddha (weak near the Sun)
     # rejection, and the Kshaya-paksha (13-tithi fortnight, two tithis lost) veto.
-    assert SAIT_ENGINE_VERSION == "4.7.0"
+    # 4.8.0 — Bratabandha: Classical Upanayana nakṣatra allow-list (modes:
+    # classical/nepali/liberal), Guru/Śukra bāla-vṛddha, Simhastha Guru,
+    # Galagraha tithis, and sunrise→madhyāhna time window.
+    # 4.9.0 — Griha-aarambha: corrected Sun-sign set to Muhūrta Chintāmaṇi
+    # (Meṣa/Vṛṣabha/Siṃha/Vṛśchika/Makara/Kumbha), lenient tithi gate (bar only
+    # Pratipadā/rikta + Amāvasyā), and added Guru/Śukra ast + bāla/vṛddha bar.
+    assert SAIT_ENGINE_VERSION == "4.9.0"
 
 
 def test_dagdha_tithi_table():
@@ -230,9 +236,11 @@ def test_griha_pravesh_four_step_rule():
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, tithi_display=12))
     # Nakshatra — a non-fixed/gentle nakshatra (Hasta 13) rejected.
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=13, tithi_display=5))
-    # Asta Shuddhi — Guru or Śukra combust rejected.
+    # Asta Shuddhi — Guru or Śukra combust or bāla/vṛddha rejected.
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_combust=True))
     assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_combust=True))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, jupiter_bala_vriddha=True))
+    assert not check_griha_pravesh(_day(lunar_month="Baishakh", nakshatra=4, venus_bala_vriddha=True))
 
 
 def test_griha_pravesh_nakshatra_fallback_adds_dates():

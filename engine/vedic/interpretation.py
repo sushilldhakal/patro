@@ -22,7 +22,7 @@ reasoning rather than trust a flat assertion.
 
 The tables below mirror the classical values also used by
 ``panchanga.shadbala``; they are duplicated here deliberately so this module
-stays importable (and unit-testable) without the Swiss Ephemeris native
+stays importable (and unit-testable) without the JPL ephemeris native
 dependency.
 """
 

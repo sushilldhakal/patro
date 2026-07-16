@@ -338,7 +338,7 @@ def nepal_sait_categories():
 
 @router.get("/nepal/sait/years", tags=["sait"])
 def nepal_sait_years():
-    """BS years available for sait (1700–2200, computed from Swiss Ephemeris)."""
+    """BS years available for sait (1700–2200, computed from JPL)."""
     from services.sait_api import list_sait_years
     return {"years": list_sait_years()}
 
@@ -373,15 +373,54 @@ def nepal_sait_month_all(bs_year: int, bs_month: int, location: LocationDep):
 
 
 @router.get("/nepal/sait/{bs_year}/{category}/detail", tags=["sait"])
-def nepal_sait_detail(bs_year: int, category: str, location: LocationDep):
+def nepal_sait_detail(
+    bs_year: int,
+    category: str,
+    location: LocationDep,
+    exclude: str | None = None,
+    nakshatra_mode: str | None = None,
+):
     """Per-day muhūrta reasons (tithi/nakṣatra/yoga/karaṇa/vāra/lagna window)
-    explaining why each listed day qualifies. Muhūrta categories only."""
+    explaining why each listed day qualifies. Muhūrta categories only.
+
+    ``exclude`` is a comma-separated list of community rule ids to drop (see
+    ``muhurta_engine.TOGGLEABLE_RULE_IDS``), letting a community pull dates that
+    honour only its handpicked subset of the classical rules.
+
+    ``nakshatra_mode`` (bratabandha only): ``classical`` (default) | ``nepali`` |
+    ``liberal`` — switches the nakṣatra tradition without clearing other rules.
+    """
     _validate_bs_year(bs_year)
+    from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
     from services.sait_api import get_sait_detail
+
+    exclude_rules = frozenset(
+        part.strip() for part in (exclude or "").split(",") if part.strip()
+    )
     try:
-        return get_sait_detail(bs_year, category, location)
+        payload = get_sait_detail(
+            bs_year, category, location, exclude_rules, nakshatra_mode=nakshatra_mode,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Query-aware caching: the default (whole-rule) listing is cacheable long like
+    # any year payload; a handpicked subset always revalidates in the browser so a
+    # rule toggle is never masked by a stale cache, but the edge still absorbs it.
+    custom = bool(exclude_rules) or (
+        nakshatra_mode and nakshatra_mode.strip().lower() not in ("", "classical")
+    )
+    cache_control = (
+        SAIT_CUSTOM_CACHE_CONTROL if custom else bs_year_cache_control(bs_year)
+    )
+    return JSONResponse(
+        payload,
+        headers={
+            "Cache-Control": cache_control,
+            "CDN-Cache-Control": cache_control,
+            "Vary": "Accept-Encoding",
+        },
+    )
 
 
 @router.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])

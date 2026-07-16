@@ -168,8 +168,9 @@ GRIHA_PRAVESH_LUNAR_MONTHS = frozenset(
 )
 
 # --- Solar months (Sun rashi) where the shastra fixes the Sun-sign -----------
-# Griha Aarambha — Vastu Purusha facing: Aries, Cancer, Scorpio, Capricorn.
-GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 4, 8, 10})
+# Griha Aarambha (Muhūrta Chintāmaṇi): Meṣa, Vṛṣabha, Siṃha, Vṛśchika, Makara,
+# Kumbha (1,2,5,8,10,11).
+GRIHA_AARAMBHA_SUN_RASHIS = frozenset({1, 2, 5, 8, 10, 11})
 # (Griha Pravesh is gated by lunar month, not Sun-sign — see
 # GRIHA_PRAVESH_LUNAR_MONTHS above.)
 # Surya Bala — Griha Pravesh is banned when the Sun (a Malamas/Kharmas-like
@@ -431,14 +432,19 @@ def check_bratabandha(day: DayPanchanga) -> bool:
 
 
 # 3. गृह आरम्भ (Foundation Laying / Bhumi Pujan)
-# Sun-sign fixed (Vastu Purusha): Aries, Cancer, Scorpio, Capricorn —
-# which naturally excludes Ashar (Mithuna) and Chaitra (Meena).
+# Sun-sign (Muhūrta Chintāmaṇi): Meṣa, Vṛṣabha, Siṃha, Vṛśchika, Makara, Kumbha.
 def check_griha_aarambha(day: DayPanchanga) -> bool:
     if day.is_adhik_maas:
         return False
     if not _auspicious_tithi(day):
         return False
     if day.sun_rashi not in GRIHA_AARAMBHA_SUN_RASHIS:
+        return False
+    # Guru & Śukra must be udaya — neither combust nor bāla/vṛddha (Dharma Sindhu
+    # applies the ast/bāla/vṛddha bar to vāstu karma).
+    if day.jupiter_combust or day.venus_combust:
+        return False
+    if day.jupiter_bala_vriddha or day.venus_bala_vriddha:
         return False
     if day.nakshatra not in GRIHA_AARAMBHA_NAKSHATRAS:
         return False
@@ -452,7 +458,8 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
 #   2. Surya Bala: Sun not in Mithuna/Vrishchika/Meena (Malamas).
 #   3. Chandra Bala: waxing (Shukla) growth tithis only — 2,3,5,7,10,11,13.
 #   4. Nakshatra: Sthira (fixed) + Chara/Mridu (gentle) only.
-#   5. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya (not combust).
+#   5. Asta Shuddhi: Guru (Jupiter) and Shukra (Venus) must be udaya — neither
+#      combust nor bāla/vṛddha (Dharma Sindhu applies this to vāstu karma).
 #   6. Dagdha: reject a burnt weekday × tithi clash.
 # (The Moon-house side of Chandra Bala, Graha Vedha, and the Shunya-tithi veto are
 # time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
@@ -475,8 +482,10 @@ def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
     # Step 4 — fixed / gentle nakshatra.
     if day.nakshatra not in GRIHA_PRAVESH_NAKSHATRAS:
         return False
-    # Step 5 — Guru / Shukra must not be combust.
+    # Step 5 — Guru / Shukra must not be combust, bāla or vṛddha.
     if day.jupiter_combust or day.venus_combust:
+        return False
+    if day.jupiter_bala_vriddha or day.venus_bala_vriddha:
         return False
     # Step 6 — Dagdha: reject a burnt weekday × tithi clash. (Shunya — which needs
     # the Moon's rashi — is applied in the time-resolved muhūrta engine.)
