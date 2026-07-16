@@ -214,9 +214,11 @@ GRIHA_PRAVESH_NAKSHATRAS = frozenset({4, 5, 12, 14, 17, 21, 26, 27})
 # Ashwini, Rohini, Mrigashira, Pushya, U.Phalguni, Hasta, Chitra, Anuradha,
 # U.Ashadha, Shravana, Dhanishta, Revati
 BUSINESS_NAKSHATRAS = frozenset({1, 4, 5, 8, 12, 13, 14, 17, 21, 22, 23, 27})
-# Ashwini, Mrigashira, Punarvasu, Pushya, Hasta, Chitra, Swati, Anuradha,
-# Shravana, Dhanishta, Shatabhisha, Revati
-ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
+# Annaprasan (Muhūrta Chintāmaṇi 5.16) — the 16 Mṛdu/Laghu/Chara/Sthira stars:
+# Ashwini, Rohini, Mrigashira, Punarvasu, Pushya, U.Phalguni, Hasta, Chitra,
+# Swati, Anuradha, U.Ashadha, Shravana, Dhanishta, Shatabhisha, U.Bhadrapada,
+# Revati. (Kept in sync with muhurta_engine.ANNAPRASAN_MUHURTA_NAKSHATRAS.)
+ANNAPRASAN_NAKSHATRAS = frozenset({1, 4, 5, 7, 8, 12, 13, 14, 15, 17, 21, 22, 23, 24, 26, 27})
 
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
@@ -227,6 +229,11 @@ BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
 GRIHA_PRAVESH_GROWTH_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
 # Shukla growth tithis for commerce: 2, 3, 5, 7, 10, 11, 13
 BUSINESS_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
+# Annaprasan śubha tithis (Muhūrta Chintāmaṇi 5.16), by pakṣa. Bars Nanda
+# (1/6/11), rikta (4/9/14), Aṣṭamī and Dvādaśī; Pūrṇimā (śukla 15) is allowed,
+# Amāvasyā (kṛṣṇa 15) is not. (Kept in sync with the muhurta engine's sets.)
+ANNAPRASAN_SHUKLA_TITHIS = frozenset({2, 3, 5, 7, 10, 13, 15})
+ANNAPRASAN_KRISHNA_TITHIS = frozenset({2, 3, 5, 7, 10, 13})
 
 # --- Dagdha & Shunya tithis --------------------------------------------------
 # Dagdha ("burnt") — a weekday × display-tithi clash that scorches the day. Vaara
@@ -568,20 +575,26 @@ def check_agni_jurne(day: DayPanchanga) -> bool:
     return agni_on_earth(day.tithi_absolute, day.vaara)
 
 
-# 8. अन्नप्रासन (First Rice Feeding) — nakshatra/tithi/vaara day filter;
-# the 5/6-month age window needs the child's birth date (handled at the API).
+# 8. अन्नप्रासन (First Rice Feeding) — nakshatra/tithi/vaara day filter per
+# Muhūrta Chintāmaṇi 5.16. The month/age window and full lagna-śuddhi (5.17)
+# need the child's birth date and are handled at the API / muhūrta layer.
+# (Annaprasan is a MUHURTA_CATEGORY, so live generation runs through the
+# muhūrta engine; this sunrise checker is the day-level fallback, kept faithful
+# to the same verse so the two never diverge.)
 def check_annaprasan(day: DayPanchanga) -> bool:
     if day.is_adhik_maas or not _not_kharmas(day):
         return False
-    if not _auspicious_tithi(day):  # rikta + Aausi
-        return False
-    if day.tithi_display == 8:  # Ashtami
+    # MC 5.16 tithi set — bars Nanda (1/6/11), rikta (4/9/14), Aṣṭamī, Dvādaśī
+    # and Amāvasyā; Pūrṇimā allowed in śukla only.
+    allowed_tithis = (
+        ANNAPRASAN_SHUKLA_TITHIS if day.paksha == "shukla"
+        else ANNAPRASAN_KRISHNA_TITHIS
+    )
+    if day.tithi_display not in allowed_tithis:
         return False
     if day.nakshatra not in ANNAPRASAN_NAKSHATRAS:
         return False
     if day.vaara not in ANNAPRASAN_VAARA:
-        return False
-    if day.paksha != "shukla":
         return False
     return True
 
