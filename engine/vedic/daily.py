@@ -350,7 +350,7 @@ def build_daily_panchanga(
         "nivas_shool": nivas_shool,
         "markers": {
             "is_purnima": paksha == "shukla" and display_tithi == 15,
-            "is_amavasya": paksha == "krishna" and display_tithi == 15,
+            "is_Aausi": paksha == "krishna" and display_tithi == 15,
             "is_ekadashi": display_tithi == 11,
         },
     }

@@ -57,6 +57,50 @@ def test_vivah_rule_has_classical_vetoes():
     assert not rule.avoid_moon_houses
 
 
+def test_vivah_rule_has_classical_month_and_planet_gates():
+    """4.7.0 additions: solar-month gate, Simhastha-guru veto, Guru/Śukra
+    bala-vriddha rejection, and the Kṣaya-pakṣa veto."""
+    from engine.vedic.sait_rules import SIMHASTHA_GURU_RASHI, VIVAH_SUN_RASHIS
+
+    rule = CEREMONY_RULES["vivah"]
+    assert rule.sun_rashis == VIVAH_SUN_RASHIS == frozenset({1, 2, 3, 8, 10, 11})
+    assert rule.avoid_guru_rashis == frozenset({SIMHASTHA_GURU_RASHI})  # Simha
+    assert rule.reject_guru_shukra_bala_vriddha
+    assert rule.block_kshaya_paksha
+    # The dual gate keeps the existing lunar-month season constraint too.
+    assert rule.lunar_months and rule.require_guru_udaya and rule.require_shukra_udaya
+
+
+def test_day_gate_rejects_simhastha_and_bala_vriddha():
+    """The vivāha day-gate drops a Simhastha-guru day and a bāla/vṛddha Guru/Śukra
+    day even when the sunrise chart is otherwise in season."""
+    from dataclasses import replace
+
+    from engine.vedic.muhurta_engine import _day_gate
+    from engine.vedic.sait_rules import DayPanchanga
+
+    rule = CEREMONY_RULES["vivah"]
+    clean = DayPanchanga(
+        gregorian=date(2026, 2, 1),
+        tithi_absolute=5, tithi_display=5, paksha="shukla",
+        nakshatra=13, vaara=5, sun_rashi=11, sun_longitude=315.0,
+        jupiter_combust=False, venus_combust=False, mercury_combust=False,
+        lunar_month="Magh", is_adhik_maas=False, aayan="Uttarayana",
+        mercury_quadrant=True, jupiter_quadrant=True, jupiter_rashi=6,
+    )
+    with patch("engine.vedic.muhurta_engine.build_day_panchanga", return_value=clean), \
+         patch("engine.vedic.muhurta_engine.is_kshaya_paksha", return_value=False):
+        assert _day_gate(rule, clean.gregorian, DEFAULT_LOCATION).ok
+    simhastha = replace(clean, jupiter_rashi=5)
+    with patch("engine.vedic.muhurta_engine.build_day_panchanga", return_value=simhastha), \
+         patch("engine.vedic.muhurta_engine.is_kshaya_paksha", return_value=False):
+        assert not _day_gate(rule, simhastha.gregorian, DEFAULT_LOCATION).ok
+    weak = replace(clean, venus_bala_vriddha=True)
+    with patch("engine.vedic.muhurta_engine.build_day_panchanga", return_value=weak), \
+         patch("engine.vedic.muhurta_engine.is_kshaya_paksha", return_value=False):
+        assert not _day_gate(rule, weak.gregorian, DEFAULT_LOCATION).ok
+
+
 def test_day_kill_when_vishti_touches_practical_window():
     """A Vishti slice inside sunrise→sunset must scrub the entire day."""
     from engine.vedic.muhurta_engine import _major_dosha_touches_practical_window

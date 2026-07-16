@@ -38,7 +38,7 @@ def tithi_display_name(tithi_block: dict[str, Any] | None, paksha_en: str | None
     if not paksha_en:
         return name
     paksha_label = "Shukla" if "shukla" in paksha_en.lower() else "Krishna"
-    if name in ("Purnima", "Amavasya"):
+    if name in ("Purnima", "Aausi"):
         return f"{paksha_label} {name}"
     return f"{paksha_label} {name}"
 

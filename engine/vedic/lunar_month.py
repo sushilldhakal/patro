@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Literal, Optional
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.vedic.adhik_maas import find_amavasya, find_purnima, is_adhik_maas
+from engine.vedic.adhik_maas import find_Aausi, find_purnima, is_adhik_maas
 from engine.vedic.bikram_sambat import (
     get_bs_month_length,
     get_bs_month_start,
@@ -29,9 +29,9 @@ _SHRAWAN_CIVIL_PURNIMA_MIN_DAY = 20
 
 @dataclass
 class LunarMonth:
-    start_amavasya: datetime
+    start_Aausi: datetime
     end_purnima: datetime
-    end_amavasya: datetime
+    end_Aausi: datetime
     month_name: str
     month_index: int
     is_adhik: bool
@@ -69,42 +69,42 @@ class LunarYear:
     adhik_month_name: Optional[str] = None
 
 
-def name_lunar_month(start_amavasya: datetime, end_amavasya: datetime) -> str:
+def name_lunar_month(start_Aausi: datetime, end_Aausi: datetime) -> str:
     """Name a lunar month using Sun's rashi at the month's Purnima."""
-    search_start = start_amavasya + timedelta(days=2)
+    search_start = start_Aausi + timedelta(days=2)
     purnima = find_purnima(search_start)
-    if purnima is None or purnima >= end_amavasya:
-        midpoint = start_amavasya + (end_amavasya - start_amavasya) / 2
+    if purnima is None or purnima >= end_Aausi:
+        midpoint = start_Aausi + (end_Aausi - start_Aausi) / 2
         purnima = find_purnima(midpoint - timedelta(days=3)) or midpoint
 
     sun_rashi = get_sun_rashi_at_time(purnima)
     return BS_MONTH_NAMES[sun_rashi]
 
 
-def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
-    purnima = find_purnima(start_amavasya + timedelta(days=2))
+def compute_lunar_month(start_Aausi: datetime) -> LunarMonth:
+    purnima = find_purnima(start_Aausi + timedelta(days=2))
     if purnima is None:
-        raise ValueError(f"Could not find Purnima after {start_amavasya}")
+        raise ValueError(f"Could not find Purnima after {start_Aausi}")
 
-    next_amavasya = find_amavasya(purnima + timedelta(days=2))
-    if next_amavasya is None:
-        raise ValueError(f"Could not find Amavasya after {purnima}")
+    next_Aausi = find_Aausi(purnima + timedelta(days=2))
+    if next_Aausi is None:
+        raise ValueError(f"Could not find Aausi after {purnima}")
 
     sun_rashi = get_sun_rashi_at_time(purnima)
-    month_name = name_lunar_month(start_amavasya, next_amavasya)
-    is_adhik = is_adhik_maas(start_amavasya, next_amavasya)
+    month_name = name_lunar_month(start_Aausi, next_Aausi)
+    is_adhik = is_adhik_maas(start_Aausi, next_Aausi)
 
     sankranti = None
     for target_rashi in range(12):
-        candidate = find_sankranti(target_rashi, start_amavasya, max_days=35)
-        if candidate and start_amavasya <= candidate < next_amavasya:
+        candidate = find_sankranti(target_rashi, start_Aausi, max_days=35)
+        if candidate and start_Aausi <= candidate < next_Aausi:
             sankranti = candidate
             break
 
     return LunarMonth(
-        start_amavasya=start_amavasya,
+        start_Aausi=start_Aausi,
         end_purnima=purnima,
-        end_amavasya=next_amavasya,
+        end_Aausi=next_Aausi,
         month_name=month_name,
         month_index=(sun_rashi + 1) if sun_rashi < 12 else 1,
         is_adhik=is_adhik,
@@ -115,25 +115,25 @@ def compute_lunar_month(start_amavasya: datetime) -> LunarMonth:
 
 def build_lunar_year(gregorian_year: int) -> LunarYear:
     search_start = datetime(gregorian_year, 2, 15, tzinfo=timezone.utc)
-    first_amavasya = find_amavasya(search_start)
-    if first_amavasya is None:
-        raise ValueError(f"Could not find starting Amavasya for {gregorian_year}")
+    first_Aausi = find_Aausi(search_start)
+    if first_Aausi is None:
+        raise ValueError(f"Could not find starting Aausi for {gregorian_year}")
 
     months: list[LunarMonth] = []
-    current_amavasya = first_amavasya
+    current_Aausi = first_Aausi
     for _ in range(14):
         try:
-            month = compute_lunar_month(current_amavasya)
+            month = compute_lunar_month(current_Aausi)
             months.append(month)
-            current_amavasya = month.end_amavasya
-            if current_amavasya.year > gregorian_year + 1:
+            current_Aausi = month.end_Aausi
+            if current_Aausi.year > gregorian_year + 1:
                 break
         except ValueError:
             break
 
     has_adhik = any(m.is_adhik for m in months)
     adhik_name = next((m.month_name for m in months if m.is_adhik), None)
-    bs_year = gregorian_year + 56 if first_amavasya.month < 4 else gregorian_year + 57
+    bs_year = gregorian_year + 56 if first_Aausi.month < 4 else gregorian_year + 57
 
     return LunarYear(
         gregorian_year=gregorian_year,
@@ -178,7 +178,7 @@ def build_purnimant_months(
         start_dt = (
             prev_purnima + timedelta(days=1)
             if prev_purnima is not None
-            else month.start_amavasya
+            else month.start_Aausi
         )
         if month.is_adhik:
             if adhik_policy != "use_adhik":
@@ -245,15 +245,15 @@ def _find_amanta_month_for_date(target: date) -> dict:
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         for month in lunar_year.months:
-            if month.start_amavasya <= check < month.end_amavasya:
+            if month.start_Aausi <= check < month.end_Aausi:
                 return _lunar_month_payload(
                     month.month_name,
                     full_name=month.full_name,
                     is_adhik=month.is_adhik,
                     month_type="adhik" if month.is_adhik else "nija",
                     paksha_model="amanta",
-                    window_start=month.start_amavasya.date(),
-                    window_end=(month.end_amavasya - timedelta(days=1)).date(),
+                    window_start=month.start_Aausi.date(),
+                    window_end=(month.end_Aausi - timedelta(days=1)).date(),
                     solar_name=month.month_name,
                     festival_masa=month.month_name,
                 )
@@ -306,7 +306,7 @@ def _amanta_context(
     target: date,
 ) -> tuple[Optional[LunarMonth], int, Optional[LunarMonth], int]:
     """The amanta month covering ``target`` (with its preceding-adhik count) plus
-    the previous month and its count — used to attribute the junction Amavasya to
+    the previous month and its count — used to attribute the junction Aausi to
     the month it closes rather than the one it opens."""
     check = datetime.combine(
         target, datetime.min.time().replace(hour=12), tzinfo=timezone.utc
@@ -317,7 +317,7 @@ def _amanta_context(
         prev: Optional[LunarMonth] = None
         prev_adhik_before = 0
         for month in lunar_year.months:
-            if month.start_amavasya <= check < month.end_amavasya:
+            if month.start_Aausi <= check < month.end_Aausi:
                 return month, adhik_before, prev, prev_adhik_before
             prev = month
             prev_adhik_before = adhik_before
@@ -350,13 +350,13 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
         except (RuntimeError, TypeError, ValueError, KeyError):
             paksha = "shukla"
 
-    # The junction Amavasya (an amanta month's opening boundary) is a Krishna day
+    # The junction Aausi (an amanta month's opening boundary) is a Krishna day
     # that *closes* the previous month — attribute it there so each Krishna paksha
     # stays contiguous (no one-day blip at month boundaries).
     if (
         paksha == "krishna"
         and prev_month is not None
-        and target == month.start_amavasya.date()
+        and target == month.start_Aausi.date()
     ):
         month, adhik_before = prev_month, prev_adhik_before
 
@@ -377,8 +377,8 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
         is_adhik=is_adhik,
         month_type=month_type,
         paksha_model="purnimant",
-        window_start=month.start_amavasya.date(),
-        window_end=(month.end_amavasya - timedelta(days=1)).date(),
+        window_start=month.start_Aausi.date(),
+        window_end=(month.end_Aausi - timedelta(days=1)).date(),
         solar_name=month.month_name,
         festival_masa=name,
     )
@@ -456,12 +456,12 @@ def _find_bs_civil_purnima(
     return None
 
 
-def _find_bs_civil_amavasya(
+def _find_bs_civil_Aausi(
     bs_year: int,
     bs_month: int,
     location: ObserverLocation,
 ) -> Optional[date]:
-    """Udaya-confirmed Krishna Amavasya within a Bikram Sambat civil month."""
+    """Udaya-confirmed Krishna Aausi within a Bikram Sambat civil month."""
     try:
         month_start = get_bs_month_start(bs_year, bs_month)
         month_length = get_bs_month_length(bs_year, bs_month)
@@ -500,16 +500,16 @@ def _resolve_shrawan_purnima_by_bs_civil(
     return None
 
 
-def _resolve_baishakh_amavasya_by_bs_civil(
+def _resolve_baishakh_Aausi_by_bs_civil(
     gregorian_year: int,
     location: ObserverLocation,
 ) -> Optional[date]:
     """
-    MoHA-style Baishakh Aunshi: Krishna Amavasya within civil Baishakh month.
+    MoHA-style Baishakh Aunshi: Krishna Aausi within civil Baishakh month.
     Printed patro ties Mata Tirtha to civil वैशाख औंसी, not purnimant masa alone.
     """
     bs_year = bs_solar_year_for_gregorian_year(gregorian_year, 1)
-    civil = _find_bs_civil_amavasya(bs_year, 1, location)
+    civil = _find_bs_civil_Aausi(bs_year, 1, location)
     if civil is not None and civil.year == gregorian_year:
         return civil
     return None
@@ -519,18 +519,18 @@ def _purnimant_month_to_lunar_month(window: PurnimantMonth) -> LunarMonth:
     """Adapter so purnimant windows reuse amanta tithi search helpers.
 
     In a purnimant month the Krishna Paksha runs from the window start (day
-    after the previous Purnima) through to the Amavasya, and the Shukla
-    Paksha runs from the Amavasya to the current Purnima.
+    after the previous Purnima) through to the Aausi, and the Shukla
+    Paksha runs from the Aausi to the current Purnima.
 
     _boundary_tithi_date_in_month uses end_purnima as the krishna-search
-    start and start_amavasya as the shukla-search start.  Both need to point
+    start and start_Aausi as the shukla-search start.  Both need to point
     to the *beginning* of the purnimant window so that Krishna-paksha tithis
     (which precede the Purnima) are found within the correct 35-day scan.
     """
     return LunarMonth(
-        start_amavasya=window.start_dt,
+        start_Aausi=window.start_dt,
         end_purnima=window.start_dt,           # krishna search starts at window open
-        end_amavasya=window.end_dt + timedelta(days=1),
+        end_Aausi=window.end_dt + timedelta(days=1),
         month_name=window.festival_masa,
         month_index=1,
         is_adhik=window.is_adhik,
@@ -564,7 +564,7 @@ def find_festival_in_lunar_month(
         and tithi == 15
         and paksha == "krishna"
     ):
-        civil = _resolve_baishakh_amavasya_by_bs_civil(gregorian_year, location)
+        civil = _resolve_baishakh_Aausi_by_bs_civil(gregorian_year, location)
         if civil is not None:
             return civil
 
@@ -696,13 +696,13 @@ def _candidate_rank(gregorian_year: int):
 
 
 def _boundary_tithi_date_in_month(month: LunarMonth, tithi: int, paksha: str) -> Optional[date]:
-    search_start = month.start_amavasya if paksha == "shukla" else month.end_purnima
-    search_end = month.end_amavasya
+    search_start = month.start_Aausi if paksha == "shukla" else month.end_purnima
+    search_end = month.end_Aausi
     tithi_datetime = find_next_tithi(tithi, paksha, search_start, within_days=35)
     if tithi_datetime is None:
         return None
     if paksha == "krishna" and tithi == 15:
-        if not (search_start <= tithi_datetime <= month.end_amavasya + timedelta(hours=24)):
+        if not (search_start <= tithi_datetime <= month.end_Aausi + timedelta(hours=24)):
             return None
     elif not (search_start <= tithi_datetime < search_end):
         return None

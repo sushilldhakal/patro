@@ -28,7 +28,7 @@ and Moon (λ☽), both corrected by the Lahiri ayanamsa (~24°07′).
    Paksha assignment:
        T ∈ {1 … 15} → Shukla Paksha (waxing fortnight)
        T ∈ {16 … 30} → Krishna Paksha (waning; displayed as 1–15)
-   Special names: T=15 Shukla → Purnima; T=30 (=15 Krishna) → Amavasya.
+   Special names: T=15 Shukla → Purnima; T=30 (=15 Krishna) → Aausi.
 
 ────────────────────────────────────────────────────────────────────────────
 2. NAKSHATRA — Lunar Mansion
@@ -55,8 +55,8 @@ and Moon (λ☽), both corrected by the Lahiri ayanamsa (~24°07′).
    Fixed karanas (immovable, occur once per lunar month):
        k = 0  → Kimstughna  (1st half of Shukla Pratipada)
        k = 57 → Shakuni     (2nd half of Krishna Chaturdashi)
-       k = 58 → Chatushpada (1st half of Amavasya)
-       k = 59 → Naga        (2nd half of Amavasya)
+       k = 58 → Chatushpada (1st half of Aausi)
+       k = 59 → Naga        (2nd half of Aausi)
 
    Repeating karanas (7 types cycling for k = 1 … 56):
        Bava, Balava, Kaulava, Taitila, Garija, Vanija, Vishti
@@ -191,7 +191,7 @@ TITHI_NAMES: list[str] = [
     # Krishna Paksha ─────────────────────────────────────────────────────────
     "Pratipada", "Dwitiya",    "Tritiya",     "Chaturthi",   "Panchami",
     "Shashthi",  "Saptami",    "Ashtami",     "Navami",      "Dashami",
-    "Ekadashi",  "Dwadashi",   "Trayodashi",  "Chaturdashi", "Amavasya",
+    "Ekadashi",  "Dwadashi",   "Trayodashi",  "Chaturdashi", "Aausi",
 ]
 
 # Vedic day names (index 0 = Ravivara / Sunday)
@@ -208,8 +208,8 @@ VAARA_NEPALI_NAMES: list[str] = [
 _FIXED_KARANA: dict[int, str] = {
     0:  "Kimstughna",   # 1st half of Shukla Pratipada
     57: "Shakuni",      # 2nd half of Krishna Chaturdashi
-    58: "Chatushpada",  # 1st half of Amavasya
-    59: "Naga",         # 2nd half of Amavasya
+    58: "Chatushpada",  # 1st half of Aausi
+    59: "Naga",         # 2nd half of Aausi
 }
 # 7 repeating karanas (cycle for raw indices 1–56)
 _REPEATING_KARANA: list[str] = [
@@ -409,7 +409,7 @@ def compute_tithi(dt: datetime) -> dict[str, Any]:
     display_num = tithi_num if tithi_num <= 15 else tithi_num - 15
     # Special names for full moon and new moon
     if display_num == 15:
-        name = "Purnima" if paksha == "shukla" else "Amavasya"
+        name = "Purnima" if paksha == "shukla" else "Aausi"
     else:
         name = TITHI_NAMES[tithi_num - 1]
     progress = (elong % TITHI_SPAN) / TITHI_SPAN

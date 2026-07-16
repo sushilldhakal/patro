@@ -63,7 +63,7 @@ def test_agni_rudra_vas_formulas():
     assert rudra_on_earth(5)  # (10+5)=15, 15%7=1 -> Kailasa (auspicious)
     assert not rudra_on_earth(1)  # (2+5)=7, 7%7=0 -> Shmashana (inauspicious)
     assert not rudra_on_earth(7)  # (14+5)=19, 19%7=5 -> Bhojana (now excluded)
-    assert not rudra_on_earth(30)  # Amavasya is always excluded
+    assert not rudra_on_earth(30)  # Aausi is always excluded
 
 
 def test_build_day_panchanga_bs2083_sample():
@@ -116,6 +116,26 @@ def test_vivah_rejects_tuesday_and_rikta():
     assert not check_vivah(_day(tithi_display=4))  # Rikta
 
 
+def test_vivah_solar_month_gate():
+    # Sun in an approved rāśi (Kumbha=11) passes; a disapproved one (Karka=4,
+    # Chaturmas) is rejected even though every other anga is clean.
+    assert check_vivah(_day(sun_rashi=11))
+    assert not check_vivah(_day(sun_rashi=4))
+    assert not check_vivah(_day(sun_rashi=9))  # Dhanu (Kharmas)
+
+
+def test_vivah_rejects_simhastha_guru():
+    # Jupiter transiting Simha (Leo, rāśi 5) bars the whole transit.
+    assert not check_vivah(_day(jupiter_rashi=5))
+    assert check_vivah(_day(jupiter_rashi=6))
+
+
+def test_vivah_rejects_bala_vriddha_guru_or_shukra():
+    # A weak (newly-risen / about-to-set) Guru or Śukra is rejected like combustion.
+    assert not check_vivah(_day(jupiter_bala_vriddha=True))
+    assert not check_vivah(_day(venus_bala_vriddha=True))
+
+
 def test_bratabandha_requires_uttarayana_and_shukla():
     assert check_bratabandha(_day(nakshatra=8))  # Pushya, Thursday, shukla
     assert not check_bratabandha(_day(nakshatra=8, aayan="Dakshinayana"))
@@ -139,7 +159,10 @@ def test_engine_version_bumped():
     # and fixed+dual lagna.
     # 4.6.0 — Annaprasan: added Vyatipata/Vaidhriti yoga, Vishti karana,
     # Dur-muhurta (slot-only) and the eclipse day (lagna kept broad).
-    assert SAIT_ENGINE_VERSION == "4.6.0"
+    # 4.7.0 — Vivah: added the classical solar-month (Sun-sign) gate, Simhastha
+    # Guru veto (Jupiter in Simha), Guru/Shukra bala-vriddha (weak near the Sun)
+    # rejection, and the Kshaya-paksha (13-tithi fortnight, two tithis lost) veto.
+    assert SAIT_ENGINE_VERSION == "4.7.0"
 
 
 def test_dagdha_tithi_table():

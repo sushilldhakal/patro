@@ -15,7 +15,7 @@
       "method_en": "For each day the engine computes tithi, nakshatra, yoga, karana, vaara and lagna at every 30-minute step from sunrise to the next sunrise (Swiss Ephemeris), then applies the classical rules below. A day is published only if at least one clean vivaha lagna window survives.",
       "rules": [
         { "ne": "महिना — विवाहका लागि शास्त्रसम्मत चन्द्रमास मात्र (मार्गशीर्ष, माघ, फाल्गुन, वैशाख, ज्येष्ठ, आषाढ); अधिकमास र चातुर्मास वर्जित।", "en": "Month — only the shastra vivaha lunar months (Margashirsha, Magha, Phalguna, Vaishakha, Jyeshtha, Ashadha); Adhik-masa & Chaturmasa barred." },
-        { "ne": "तिथि — शुभ तिथि मात्र (२,३,५,७,१०,११,१३); रिक्ता (४,९,१४), अष्टमी, षष्ठी, अमावस्या, पूर्णिमा वर्जित।", "en": "Tithi — only shubha tithis (2,3,5,7,10,11,13); rikta (4,9,14), Ashtami, Shashthi, Amavasya, Purnima out." },
+        { "ne": "तिथि — शुभ तिथि मात्र (२,३,५,७,१०,११,१३); रिक्ता (४,९,१४), अष्टमी, षष्ठी, अमावस्या, पूर्णिमा वर्जित।", "en": "Tithi — only shubha tithis (2,3,5,7,10,11,13); rikta (4,9,14), Ashtami, Shashthi, Aausi, Purnima out." },
         { "ne": "नक्षत्र — शास्त्रीय विवाह नक्षत्र मात्र: रोहिणी, मृगशिरा, मघा, उत्तराफाल्गुनी, हस्त, स्वाती, अनुराधा, मूल, उत्तराषाढा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — the classical 11: Rohini, Mrigashira, Magha, U.Phalguni, Hasta, Svati, Anuradha, Mula, U.Ashadha, U.Bhadrapada, Revati." },
         { "ne": "योग — नवै अशुभ योग (विष्कुम्भ, अतिगण्ड, शूल, गण्ड, व्याघात, वज्र, व्यतीपात, परिघ, वैधृति) वर्जित।", "en": "Yoga — all nine ashubha yogas (Vishkambha, Atiganda, Shula, Ganda, Vyaghata, Vajra, Vyatipata, Parigha, Vaidhriti) barred." },
         { "ne": "करण — विष्टि (भद्रा) र चार स्थिर करण (शकुनि, चतुष्पाद, नाग, किंस्तुघ्न) वर्जित।", "en": "Karana — Vishti (Bhadra) and the four fixed karanas (Shakuni, Chatushpada, Naga, Kimstughna) barred." },
@@ -33,7 +33,7 @@
       "method_en": "For each day the engine computes the panchanga at every 30-minute step from sunrise to sunset, then applies the Upanayana rules below. A day is published only if a clean daytime muhurta survives.",
       "rules": [
         { "ne": "काल — गुरु उत्तरायणमा हुनुपर्छ (सूर्य मकरदेखि मिथुनसम्म: माघ–असार); चातुर्मास र अधिकमास वर्जित।", "en": "Season — Sun in an Uttarayana rashi (Makara to Mithuna: Magh to Ashadh); Chaturmasa & Adhik-masa barred." },
-        { "ne": "तिथि — शुक्ल २,३,५,१०,११,१२ वा कृष्ण २,३,५; रिक्ता र अमावस्या वर्जित।", "en": "Tithi — shukla 2,3,5,10,11,12 or krishna 2,3,5; rikta & Amavasya out." },
+        { "ne": "तिथि — शुक्ल २,३,५,१०,११,१२ वा कृष्ण २,३,५; रिक्ता र अमावस्या वर्जित।", "en": "Tithi — shukla 2,3,5,10,11,12 or krishna 2,3,5; rikta & Aausi out." },
         { "ne": "नक्षत्र — भरणी, कृत्तिका, मघा, विशाखा र ज्येष्ठा बाहेक सबै शुभ नक्षत्र।", "en": "Nakshatra — all except Bharani, Krittika, Magha, Vishakha, Jyeshtha." },
         { "ne": "वार — मंगलबार र शनिबार वर्जित; दिनको समय (सूर्योदय–सूर्यास्त) मात्र।", "en": "Vaara — Tuesday & Saturday barred; daytime only (sunrise to sunset)." },
         { "ne": "ग्रह — गुरु र शुक्र अस्त हुनुहुँदैन।", "en": "Graha — Jupiter & Venus must be udaya (not combust)." },
@@ -52,7 +52,7 @@
       "rules": [
         { "ne": "समय — शिलान्यास (जग हाल्ने) दिनको समयमा मात्र (सूर्योदय–सूर्यास्त)।", "en": "Time — foundation-laying is a daytime rite (sunrise to sunset only)." },
         { "ne": "सूर्य राशि — मेष, कर्कट, तुला, वृश्चिक, धनु, मकर, कुम्भ (वास्तु अनुकूल); अधिकमास वर्जित।", "en": "Sun-sign — Mesha, Karka, Tula, Vrishchika, Dhanu, Makara, Kumbha (Vastu-facing); Adhik-masa barred." },
-        { "ne": "तिथि — २,३,५,७,१०,११,१२ मात्र; प्रतिपदा, त्रयोदशी, रिक्ता (४,९,१४) र अमावस्या वर्जित।", "en": "Tithi — only 2,3,5,7,10,11,12; Pratipada, Trayodashi, rikta (4,9,14) and Amavasya out." },
+        { "ne": "तिथि — २,३,५,७,१०,११,१२ मात्र; प्रतिपदा, त्रयोदशी, रिक्ता (४,९,१४) र अमावस्या वर्जित।", "en": "Tithi — only 2,3,5,7,10,11,12; Pratipada, Trayodashi, rikta (4,9,14) and Aausi out." },
         { "ne": "नक्षत्र — शास्त्रसम्मत निर्माण नक्षत्रहरूको निश्चित सूची: रोहिणी, मृगशिरा, पुनर्वसु, उत्तराफाल्गुनी, हस्त, चित्रा, स्वाती, अनुराधा, उत्तराषाढा, श्रवण, धनिष्ठा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — a fixed list of the shastra-sanctioned construction nakshatras: Rohini, Mrigashira, Punarvasu, U.Phalguni, Hasta, Chitra, Svati, Anuradha, U.Ashadha, Shravana, Dhanishtha, U.Bhadrapada, Revati." },
         { "ne": "योग/करण — व्यतीपात र वैधृति योग तथा विष्टि (भद्रा) करण वर्जित।", "en": "Yoga/Karana — Vyatipata & Vaidhriti yoga and Vishti (Bhadra) karana barred." },
         { "ne": "लग्न — स्थिर (वृष, सिंह, वृश्चिक, कुम्भ) प्राथमिकता, द्विस्वभाव स्वीकार्य; चर लग्न वर्जित।", "en": "Lagna — fixed (Vrisha, Simha, Vrishchika, Kumbha) preferred, dual accepted; movable lagnas barred." },
@@ -105,7 +105,7 @@
       "method_en": "This sait is not lagna-based — the day is decided by the Shiva-vasa formula on the tithi. The tithi at each day's sunrise is used.",
       "rules": [
         { "ne": "शिववास सूत्र — पूर्ण तिथि (१–३०) मा (२×तिथि+५) लाई ७ ले भाग गर्दा शेष १/२/३ (कैलाश/गौरी/नन्दी) भए शुभ।", "en": "Shiva-vasa — on the absolute tithi (1-30), (2*tithi+5) mod 7 gives 1/2/3 (Kailasa/Gauri/Nandi) as auspicious." },
-        { "ne": "सभा, भोजन, क्रीडा, श्मशान (शेष ४/५/६/०) वर्जित; अमावस्या वर्जित।", "en": "Sabha, Bhojana, Krida, Shmashana (remainders 4/5/6/0) avoided; Amavasya excluded." },
+        { "ne": "सभा, भोजन, क्रीडा, श्मशान (शेष ४/५/६/०) वर्जित; अमावस्या वर्जित।", "en": "Sabha, Bhojana, Krida, Shmashana (remainders 4/5/6/0) avoided; Aausi excluded." },
         { "ne": "यो दिनको सूर्योदय पञ्चाङ्गमा गणना हुन्छ — लग्न विण्डो आवश्यक पर्दैन।", "en": "Evaluated on the day's sunrise panchanga — no lagna window is needed." }
       ]
     },
@@ -131,7 +131,7 @@
       "method_ne": "प्रत्येक दिनको सूर्योदयदेखि सूर्यास्तसम्म पञ्चाङ्ग गणना गरी तलका नियमहरू लगाइन्छ। सूचीले उपयुक्त दिनहरू देखाउँछ; सटीक मिति शिशुको उमेरमा भर पर्छ।",
       "method_en": "For each day the engine computes the panchanga from sunrise to sunset, then applies the rules below. The list shows the suitable days; the exact date depends on the child's age.",
       "rules": [
-        { "ne": "महिना — अधिकमास बाहेक सबै मास; रिक्ता र अमावस्या वर्जित।", "en": "Month — all months except Adhik-masa; rikta & Amavasya out." },
+        { "ne": "महिना — अधिकमास बाहेक सबै मास; रिक्ता र अमावस्या वर्जित।", "en": "Month — all months except Adhik-masa; rikta & Aausi out." },
         { "ne": "तिथि — शुक्ल २,३,५,७,१०,१३,१५ वा कृष्ण २,३,५,७,१०,१३; अष्टमी वर्जित।", "en": "Tithi — shukla 2,3,5,7,10,13,15 or krishna 2,3,5,7,10,13; Ashtami out." },
         { "ne": "नक्षत्र — निश्चित सूची: अश्विनी, रोहिणी, मृगशिरा, पुनर्वसु, पुष्य, उत्तराफाल्गुनी, हस्त, चित्रा, स्वाती, अनुराधा, उत्तराषाढा, श्रवण, धनिष्ठा, शतभिषा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — the fixed list: Ashwini, Rohini, Mrigashira, Punarvasu, Pushya, U.Phalguni, Hasta, Chitra, Svati, Anuradha, U.Ashadha, Shravana, Dhanishtha, Shatabhisha, U.Bhadrapada, Revati." },
         { "ne": "वार — सोम, बुध, बिहि, शुक्र मात्र; दिनको समय (सूर्योदय–सूर्यास्त) मात्र।", "en": "Vaara — Mon/Wed/Thu/Fri only; daytime (sunrise to sunset) only." },

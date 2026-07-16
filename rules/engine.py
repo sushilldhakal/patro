@@ -148,11 +148,11 @@ def get_special_months_for_gregorian_year(
     kshaya: Optional[dict[str, Any]] = None
     lunar_year = get_lunar_year(gregorian_year)
     for month in lunar_year.months:
-        if is_kshaya_maas(month.start_amavasya, month.end_amavasya):
-            info = get_kshaya_maas_info(month.start_amavasya, month.end_amavasya)
+        if is_kshaya_maas(month.start_Aausi, month.end_Aausi):
+            info = get_kshaya_maas_info(month.start_Aausi, month.end_Aausi)
             if info:
-                info["start_date"] = month.start_amavasya.date().isoformat()
-                info["end_date"] = (month.end_amavasya - timedelta(days=1)).date().isoformat()
+                info["start_date"] = month.start_Aausi.date().isoformat()
+                info["end_date"] = (month.end_Aausi - timedelta(days=1)).date().isoformat()
                 kshaya = info
                 break
 

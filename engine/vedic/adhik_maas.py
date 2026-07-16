@@ -1,4 +1,4 @@
-"""Adhik (Mala) Maas detection, and Amavasya/Purnima boundary helpers.
+"""Adhik (Mala) Maas detection, and Aausi/Purnima boundary helpers.
 
 Adhik Maas (also called Mala Maas or Purushottam Maas) is the intercalary
 extra lunar month that occurs when NO Sankranti (solar ingress to a new
@@ -26,7 +26,7 @@ def find_purnima(after: datetime, max_days: int = 35) -> Optional[datetime]:
     return find_tithi_end(shukla_15_start)
 
 
-def find_amavasya(after: datetime, max_days: int = 35) -> Optional[datetime]:
+def find_Aausi(after: datetime, max_days: int = 35) -> Optional[datetime]:
     krishna_15_start = find_next_tithi(15, "krishna", after, within_days=max_days)
     if krishna_15_start is None:
         return None
@@ -43,15 +43,15 @@ is_mala_maas = is_adhik_maas
 
 
 def get_lunar_month_boundaries(after: datetime) -> tuple[datetime, datetime, datetime]:
-    start = find_amavasya(after)
+    start = find_Aausi(after)
     if start is None:
-        raise EphemerisError(f"Could not find Amavasya after {after}")
+        raise EphemerisError(f"Could not find Aausi after {after}")
     purnima = find_purnima(start, max_days=20)
     if purnima is None:
         raise EphemerisError(f"Could not find Purnima after {start}")
-    end = find_amavasya(purnima, max_days=20)
+    end = find_Aausi(purnima, max_days=20)
     if end is None:
-        raise EphemerisError(f"Could not find ending Amavasya after {purnima}")
+        raise EphemerisError(f"Could not find ending Aausi after {purnima}")
     return start, purnima, end
 
 
@@ -59,7 +59,7 @@ def find_adhik_maas_for_gregorian_year(gregorian_year: int) -> Optional[dict]:
     """Return Adhik (Mala) Maas metadata for the given Gregorian year, or None.
 
     Searches the lunar months that overlap the calendar year and returns
-    metadata for the first Adhik month found whose Amavasya boundaries
+    metadata for the first Adhik month found whose Aausi boundaries
     fall within or near the year.
     """
     from engine.vedic.lunar_month import get_lunar_year
@@ -70,8 +70,8 @@ def find_adhik_maas_for_gregorian_year(gregorian_year: int) -> Optional[dict]:
         return None
 
     m = adhik_months[0]
-    start_date = m.start_amavasya.date()
-    end_date = (m.end_amavasya - timedelta(days=1)).date()
+    start_date = m.start_Aausi.date()
+    end_date = (m.end_Aausi - timedelta(days=1)).date()
     purnima_date = m.end_purnima.date()
 
     return {

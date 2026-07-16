@@ -258,7 +258,7 @@ def _tithi_names(tithi_calc: dict) -> tuple[str, str]:
     display = tithi_calc["display_number"]
     if display == 15:
         shukla = tithi_calc["paksha"] == "shukla"
-        return ("Purnima" if shukla else "Amavasya", "पूर्णिमा" if shukla else "औंसी")
+        return ("Purnima" if shukla else "Aausi", "पूर्णिमा" if shukla else "औंसी")
     return (tithi_calc["name"], TITHI_NAMES_NE[display - 1])
 
 
@@ -319,7 +319,7 @@ def build_tithi_block(
     next_info = calculate_tithi(end_dt + timedelta(seconds=90))
     next_display = next_info["display_number"]
     if next_display == 15:
-        next_name = "Purnima" if next_info["paksha"] == "shukla" else "Amavasya"
+        next_name = "Purnima" if next_info["paksha"] == "shukla" else "Aausi"
         next_name_ne = "पूर्णिमा" if next_info["paksha"] == "shukla" else "औंसी"
     else:
         next_name = next_info["name"]

@@ -1,7 +1,7 @@
 """Kshaya Maas (lost/shrunk month) detection.
 
 A Kshaya month occurs when TWO solar Sankrantis fall within a single
-amanta lunar month (Amavasya to next Amavasya). Astronomically this happens
+amanta lunar month (Aausi to next Aausi). Astronomically this happens
 when the lunar month is shorter than a solar transit through one rashi.
 
 Extremely rare — last occurred in BS 2020 (1963 CE Kartik/Mangsir); the

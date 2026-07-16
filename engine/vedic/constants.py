@@ -296,7 +296,7 @@ TITHI_NAMES = [
     "Dwadashi",  # 12
     "Trayodashi",  # 13
     "Chaturdashi",  # 14
-    "Purnima",  # 15 (Full Moon) / Amavasya (New Moon)
+    "Purnima",  # 15 (Full Moon) / Aausi (New Moon)
 ]
 
 TITHI_NAMES_NEPALI = [
@@ -314,7 +314,7 @@ TITHI_NAMES_NEPALI = [
     "द्वादशी",
     "त्रयोदशी",
     "चतुर्दशी",
-    "पूर्णिमा",  # or औंसी for Amavasya
+    "पूर्णिमा",  # or औंसी for Aausi
 ]
 
 # Paksha (lunar fortnight) names
@@ -326,5 +326,5 @@ PAKSHA_KRISHNA = "krishna"  # Dark/waning fortnight (कृष्ण पक्�
 SYNODIC_MONTH = 29.530588853
 
 # Known new moon date for reference (UTC)
-# January 21, 2023 was a new moon (Amavasya)
+# January 21, 2023 was a new moon (Aausi)
 KNOWN_NEW_MOON = date(2023, 1, 21)

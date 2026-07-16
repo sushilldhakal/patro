@@ -322,7 +322,7 @@ _GHATI_SECONDS = 24 * 60
 
 # Visha Ghati of the Tithi — a 4-ghati (1/15 of span) poison window offset from
 # the tithi's start, keyed by *display* tithi (1–15, same in both pakshas;
-# 15 = Purnima/Amavasya, poison in the opening 4 ghatis). Offsets are ghatis of
+# 15 = Purnima/Aausi, poison in the opening 4 ghatis). Offsets are ghatis of
 # the tithi's true span (Tithi Visha Ghatika table).
 _TITHI_VISHA_GHATI = {
     1: 15, 2: 5, 3: 6, 4: 7, 5: 8, 6: 9, 7: 10, 8: 14,
@@ -345,7 +345,7 @@ _YOGA_VISHA_GHATIS: dict[int, int | None] = {
 def _tithi_is_malefic(display: int, paksha: str, vaara_index: int) -> bool:
     if display in _RIKTA_TITHIS:
         return True
-    if display == 15 and paksha == "krishna":  # Amavasya
+    if display == 15 and paksha == "krishna":  # Aausi
         return True
     if _DAGDHA_TITHI_BY_VAARA.get(vaara_index % 7) == display:
         return True

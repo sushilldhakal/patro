@@ -12,7 +12,7 @@ Every category is vetted through the core muhurta layers where they apply:
 
     1. Month gate — lunar (festival masa) for saṃskāra, or the Sun-sign /
        solar month where the shastra fixes it (e.g. Griha Aarambha / Pravesh).
-    2. Tithi (lunar day) elimination — rikta, Amavasya, etc.
+    2. Tithi (lunar day) elimination — rikta, Aausi, etc.
     3. Nakshatra suitability.
     4. Yoga / Karana / Vaara / Aayan vetoes.
     5. Planetary combustion (Tara Dubeko) and kendra checks.
@@ -22,7 +22,7 @@ Key exclusions applied across the saṃskāra categories:
   * Kharmas / Dhanurmas       — Sun in Dhanu or late Meena (मलमास-तुल्य).
   * Chaturmas (चातुर्मास)     — Vishnu's sleep; marriages/saṃskāra paused.
   * Tara-ast (गुरु/शुक्र अस्त) — Jupiter/Venus combust (vivah, vrata, vyapar).
-  * Rikta tithi & Amavasya    — inauspicious lunar days.
+  * Rikta tithi & Aausi    — inauspicious lunar days.
 
 Nakshatra indices are 1-based (Ashwini = 1 … Revati = 27).
 Sun rashi (solar month) indices are 1-based:
@@ -55,8 +55,44 @@ def _angular_separation(lon_a: float, lon_b: float) -> float:
     return min(diff, 360.0 - diff)
 
 
+# Combustion (अस्त / astaṅgata) orbs — the planet is too close to the Sun to be
+# seen and is treated as set. Guru/Śukra combust bars vivāha, vrata, vyāpāra.
+JUPITER_COMBUST_ORB = 11.0
+VENUS_COMBUST_ORB = 10.0
+MERCURY_COMBUST_ORB = 14.0
+
+# Bālya / Vārdhakya (बाल्य / वृद्ध) — a Guru/Śukra just *outside* combustion is
+# either newly-risen (bāla, "child") after heliacal rising or about-to-set
+# (vṛddha, "old") before heliacal setting: visible but weak, and classically
+# rejected for marriage. The days-based śāstra rule is approximated here by an
+# angular band immediately beyond the combustion orb.
+JUPITER_BALA_VRIDDHA_ORB = 14.0
+VENUS_BALA_VRIDDHA_ORB = 13.0
+
+# Solar months (Sun rāśi, 1-based) in which marriage is permitted — Meṣa,
+# Vṛṣabha, Mithuna, Vṛśchika, Makara, Kumbha. The classical method gates vivāha
+# on the *solar* month first; combined with the lunar VIVAH_LUNAR_MONTHS gate,
+# this drops the boundary days where the two reckonings disagree (e.g. a lunar
+# Baiśākh day whose Sun is still in Mīna, or a lunar Aṣāḍha day whose Sun has
+# already entered Karka and begun Chaturmāsa).
+VIVAH_SUN_RASHIS = frozenset({1, 2, 3, 8, 10, 11})
+
+# Simhastha Guru — Jupiter transiting Siṃha (Leo, rāśi 5). Many traditions bar
+# marriage for the whole of this transit (the Siṃhastha-guru doṣa).
+SIMHASTHA_GURU_RASHI = 5
+
+
 def _is_combust(planet_lon: float, sun_lon: float, orb: float) -> bool:
     return _angular_separation(planet_lon, sun_lon) < orb
+
+
+def _is_bala_vriddha(
+    planet_lon: float, sun_lon: float, combust_orb: float, weak_orb: float
+) -> bool:
+    """True when the planet is outside combustion but still within the weak
+    (bāla / vṛddha) band — i.e. ``combust_orb ≤ separation < weak_orb``."""
+    sep = _angular_separation(planet_lon, sun_lon)
+    return combust_orb <= sep < weak_orb
 
 
 def _planet_in_quadrant(planet_rashi: int, lagna_rashi: int) -> bool:
@@ -105,7 +141,7 @@ def rudra_on_earth(tithi_absolute: int) -> bool:
     by explicit choice we follow the shastra rule for computed years, while
     curated official data still takes precedence where it exists.)
     """
-    if tithi_absolute == 30:  # Amavasya
+    if tithi_absolute == 30:  # Aausi
         return False
     return (((2 * tithi_absolute) + 5) % 7) in (1, 2, 3)
 
@@ -166,7 +202,7 @@ ANNAPRASAN_NAKSHATRAS = frozenset({1, 5, 7, 8, 13, 14, 15, 17, 22, 23, 24, 27})
 # --- Tithi sets --------------------------------------------------------------
 # Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Dwadashi (block 13+)
 BRATABANDHA_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 12})
-# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and Amavasya
+# Growth tithis for Griha Pravesh: 2,3,5,7,10,11,13 (rikta 4/9/14 and Aausi
 # excluded; Dwadashi 12 dropped per the growth rule). Combined with the rule's
 # shukla-only gate, only waxing growth tithis qualify.
 GRIHA_PRAVESH_GROWTH_TITHIS = frozenset({2, 3, 5, 7, 10, 11, 13})
@@ -234,6 +270,10 @@ class DayPanchanga:
     aayan: str
     mercury_quadrant: bool
     jupiter_quadrant: bool
+    # Appended with defaults so existing keyword constructions stay valid.
+    jupiter_rashi: int = 0  # 1-based; used for the Simhastha-guru veto
+    jupiter_bala_vriddha: bool = False  # Guru newly-risen / about-to-set (weak)
+    venus_bala_vriddha: bool = False  # Śukra newly-risen / about-to-set (weak)
 
 
 def build_day_panchanga(
@@ -283,14 +323,21 @@ def build_day_panchanga(
         vaara=vaara_num + 1,  # Sunday = 1 … Saturday = 7
         sun_rashi=surya["number"],
         sun_longitude=sun_lon,
-        jupiter_combust=_is_combust(jupiter, sun_lon, 11.0),
-        venus_combust=_is_combust(venus, sun_lon, 10.0),
-        mercury_combust=_is_combust(mercury, sun_lon, 14.0),
+        jupiter_combust=_is_combust(jupiter, sun_lon, JUPITER_COMBUST_ORB),
+        venus_combust=_is_combust(venus, sun_lon, VENUS_COMBUST_ORB),
+        mercury_combust=_is_combust(mercury, sun_lon, MERCURY_COMBUST_ORB),
         lunar_month=lunar_month,
         is_adhik_maas=is_adhik_maas,
         aayan=aayan["name"],
         mercury_quadrant=_planet_in_quadrant(mercury_rashi, lagna_rashi),
         jupiter_quadrant=_planet_in_quadrant(jupiter_rashi, lagna_rashi),
+        jupiter_rashi=jupiter_rashi,
+        jupiter_bala_vriddha=_is_bala_vriddha(
+            jupiter, sun_lon, JUPITER_COMBUST_ORB, JUPITER_BALA_VRIDDHA_ORB
+        ),
+        venus_bala_vriddha=_is_bala_vriddha(
+            venus, sun_lon, VENUS_COMBUST_ORB, VENUS_BALA_VRIDDHA_ORB
+        ),
     )
 
 
@@ -300,7 +347,7 @@ def _not_kharmas(day: DayPanchanga) -> bool:
     return not is_kharmas(day.sun_longitude)
 
 
-def _is_amavasya(day: DayPanchanga) -> bool:
+def _is_Aausi(day: DayPanchanga) -> bool:
     return day.tithi_absolute == 30
 
 
@@ -309,8 +356,8 @@ def _is_krishna_pratipada(day: DayPanchanga) -> bool:
 
 
 def _auspicious_tithi(day: DayPanchanga) -> bool:
-    """Exclude the universally inauspicious lunar days: rikta and Amavasya."""
-    return not is_rikta_tithi(day.tithi_display) and not _is_amavasya(day)
+    """Exclude the universally inauspicious lunar days: rikta and Aausi."""
+    return not is_rikta_tithi(day.tithi_display) and not _is_Aausi(day)
 
 
 def _in_chaturmas(day: DayPanchanga) -> bool:
@@ -329,11 +376,24 @@ def _samskara_base_ok(day: DayPanchanga) -> bool:
 # ── Category checks ──────────────────────────────────────────────────────────
 
 # 1. विवाह (Marriage)
+# (Kṣaya-pakṣa — a fortnight that loses a tithi — is a whole-fortnight veto that
+# needs the observer + neighbouring days, so it lives in the time-resolved
+# muhūrta engine, not this single-day sunrise gate.)
 def check_vivah(day: DayPanchanga) -> bool:
     if not _samskara_base_ok(day):
         return False
-    # Guru / Shukra must not be combust (तारा अस्त).
+    # Solar-month (Sun-sign) gate — the classical method fixes vivāha on the Sun's
+    # rāśi first (Meṣa/Vṛṣabha/Mithuna/Vṛśchika/Makara/Kumbha).
+    if day.sun_rashi not in VIVAH_SUN_RASHIS:
+        return False
+    # Simhastha Guru — no marriage while Jupiter transits Siṃha (Leo).
+    if day.jupiter_rashi == SIMHASTHA_GURU_RASHI:
+        return False
+    # Guru / Shukra must be udaya — neither combust (तारा अस्त) nor bāla / vṛddha
+    # (newly-risen or about-to-set, and so weak).
     if day.jupiter_combust or day.venus_combust:
+        return False
+    if day.jupiter_bala_vriddha or day.venus_bala_vriddha:
         return False
     # No marriages during Chaturmas, or outside the recognised vivah months.
     if _in_chaturmas(day) or day.lunar_month not in VIVAH_LUNAR_MONTHS:
@@ -407,7 +467,7 @@ def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
     if day.sun_rashi in GRIHA_PRAVESH_MALAMAS_RASHIS:
         return False
     # Step 3 — Chandra Bala: strictly Shukla paksha, growth tithis only (the set
-    # already omits rikta 4/9/14 and Amavasya).
+    # already omits rikta 4/9/14 and Aausi).
     if day.paksha != "shukla":
         return False
     if day.tithi_display not in GRIHA_PRAVESH_GROWTH_TITHIS:
@@ -463,7 +523,7 @@ def check_agni_jurne(day: DayPanchanga) -> bool:
 def check_annaprasan(day: DayPanchanga) -> bool:
     if day.is_adhik_maas or not _not_kharmas(day):
         return False
-    if not _auspicious_tithi(day):  # rikta + Amavasya
+    if not _auspicious_tithi(day):  # rikta + Aausi
         return False
     if day.tithi_display == 8:  # Ashtami
         return False

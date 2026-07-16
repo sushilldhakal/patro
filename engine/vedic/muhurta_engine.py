@@ -66,13 +66,16 @@ from engine.vedic.sait_rules import (
     GRIHA_PRAVESH_MALAMAS_RASHIS,
     GRIHA_PRAVESH_NAKSHATRAS,
     SHUNYA_TITHI_RASHIS,
+    SIMHASTHA_GURU_RASHI,
     VIVAH_LUNAR_MONTHS,
+    VIVAH_SUN_RASHIS,
     build_day_panchanga,
     is_dagdha,
 )
 from engine.vedic.sankranti import find_sankranti_brent
+from engine.vedic.tithi import is_kshaya_paksha
 
-# Rikta tithis (Chaturthi/Navami/Chaturdashi) and Amavasya are excluded for all
+# Rikta tithis (Chaturthi/Navami/Chaturdashi) and Aausi are excluded for all
 # saṃskāra muhūrtas.
 _RIKTA = frozenset({4, 9, 14})
 
@@ -197,10 +200,15 @@ class CeremonyRule:
     lunar_months: frozenset[str] = frozenset()
     sun_rashis: frozenset[int] = frozenset()
     avoid_sun_rashis: frozenset[int] = frozenset()  # Surya Bala — banned solar signs
+    avoid_guru_rashis: frozenset[int] = frozenset()  # e.g. Siṃha (5) — Simhastha Guru
     block_chaturmas: bool = True
     block_sankranti: bool = False         # exclude solar sign-change days (whole day)
+    block_kshaya_paksha: bool = False     # reject a Kṣaya Pakṣa (13-tithi fortnight; two tithis lost)
     require_guru_udaya: bool = False      # Jupiter not combust
     require_shukra_udaya: bool = False    # Venus not combust
+    # Reject a bāla / vṛddha (newly-risen / about-to-set, hence weak) Guru or Śukra —
+    # stricter than mere combustion. Only meaningful with the udaya requirements.
+    reject_guru_shukra_bala_vriddha: bool = False
     require_uttarayana: bool = False
     # Window layer.
     tithis: frozenset[int] = frozenset()  # display 1-15; empty ⇒ any non-rikta
@@ -255,8 +263,18 @@ CEREMONY_RULES: dict[str, CeremonyRule] = {
     "vivah": CeremonyRule(
         key="vivah",
         lunar_months=VIVAH_LUNAR_MONTHS,
+        # Solar-month gate — the classical method checks the Sun-sign first; this
+        # runs alongside the lunar-month gate and drops boundary mismatches.
+        sun_rashis=VIVAH_SUN_RASHIS,
+        # Simhastha Guru — bar the whole Jupiter-in-Siṃha transit.
+        avoid_guru_rashis=frozenset({SIMHASTHA_GURU_RASHI}),
+        # Kṣaya Pakṣa — a 13-tithi fortnight (two tithis lost) is atinindya; it
+        # overrides every other favourable factor and bars the whole period.
+        block_kshaya_paksha=True,
         require_guru_udaya=True,
         require_shukra_udaya=True,
+        # ...and neither Guru nor Śukra may be bāla / vṛddha (weak near the Sun).
+        reject_guru_shukra_bala_vriddha=True,
         tithis=VIVAH_MUHURTA_TITHIS,
         nakshatras=VIVAH_MUHURTA_NAKSHATRAS,
         avoid_varas=frozenset({3, 7}),  # Tuesday & Saturday barred
@@ -637,15 +655,24 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         return _DayGate(False)
     if rule.avoid_sun_rashis and dp.sun_rashi in rule.avoid_sun_rashis:
         return _DayGate(False)
+    if rule.avoid_guru_rashis and dp.jupiter_rashi in rule.avoid_guru_rashis:
+        return _DayGate(False)
     if rule.block_chaturmas and dp.lunar_month in CHATURMAS_LUNAR_MONTHS:
         return _DayGate(False)
     if rule.require_guru_udaya and dp.jupiter_combust:
         return _DayGate(False)
     if rule.require_shukra_udaya and dp.venus_combust:
         return _DayGate(False)
+    if rule.reject_guru_shukra_bala_vriddha and (
+        dp.jupiter_bala_vriddha or dp.venus_bala_vriddha
+    ):
+        return _DayGate(False)
     if rule.require_uttarayana and dp.aayan != "Uttarayana":
         return _DayGate(False)
     if rule.avoid_varas and dp.vaara in rule.avoid_varas:
+        return _DayGate(False)
+    # Kṣaya Pakṣa — evaluated last (it walks the fortnight, the costliest gate).
+    if rule.block_kshaya_paksha and is_kshaya_paksha(greg, location):
         return _DayGate(False)
     return _DayGate(True, vaara=dp.vaara)
 
