@@ -104,11 +104,14 @@
       "label_en": "Rudri homa",
       "description_ne": "रुद्री पाठ तथा हवनका लागि शुभ मिति। शिव आराधनासम्बन्धी अनुष्ठानका लागि मानिने शुभ दिनहरू।",
       "description_en": "Auspicious dates for the Rudri recitation and homa (fire offering) in worship of Shiva.",
-      "method_ne": "यो साइत लग्नमा आधारित होइन — दिनको तिथिबाट शिववास सूत्र लगाएर शुभ दिन निकालिन्छ। प्रत्येक दिनको सूर्योदयको तिथि लिइन्छ।",
-      "method_en": "This sait is not lagna-based — the day is decided by the Shiva-vasa formula on the tithi. The tithi at each day's sunrise is used.",
+      "method_ne": "यो साइत लग्नमा आधारित होइन — रुद्री हवनसहित हुने भएकाले दिनको तिथिबाट शिववास र तिथि-वारबाट अग्निवास दुवै हेरी शुभ दिन निकालिन्छ। प्रत्येक दिनको सूर्योदयको पञ्चाङ्ग लिइन्छ।",
+      "method_en": "This sait is not lagna-based — since Rudri includes a homa, the day is decided by BOTH the Shiva-vasa formula (deity's abode) and the Agni-vasa formula (fire's abode). Each day's sunrise panchanga is used.",
       "rules": [
         { "ne": "शिववास सूत्र — पूर्ण तिथि (१–३०) मा (२×तिथि+५) लाई ७ ले भाग गर्दा शेष १/२/३ (कैलाश/गौरी/नन्दी) भए शुभ।", "en": "Shiva-vasa — on the absolute tithi (1-30), (2*tithi+5) mod 7 gives 1/2/3 (Kailasa/Gauri/Nandi) as auspicious." },
         { "ne": "सभा, भोजन, क्रीडा, श्मशान (शेष ४/५/६/०) वर्जित; अमावस्या वर्जित।", "en": "Sabha, Bhojana, Krida, Shmashana (remainders 4/5/6/0) avoided; Aausi excluded." },
+        { "ne": "अग्निवास सूत्र — हवनका लागि अग्नि पृथ्वीमा हुनुपर्छ: (तिथि + वार + १) लाई ४ ले भाग गर्दा शेष ० वा ३ भए शुभ (शेष १ स्वर्ग, २ पाताल — अशुभ)।", "en": "Agni-vasa — for the homa the fire must be on Earth: (tithi + vaara + 1) mod 4 ∈ {0,3} is auspicious (remainder 1 = Heaven, 2 = Patala — inauspicious)." },
+        { "ne": "योग/करण — व्यतीपात र वैधृति योग तथा विष्टि (भद्रा) करण वर्जित।", "en": "Yoga/Karana — Vyatipata & Vaidhriti yoga and Vishti (Bhadra) karana barred." },
+        { "ne": "अष्टमी/चतुर्दशी तिथि र श्रावण/कार्तिक महिना विशेष उत्तम (वरीयता मात्र, अनिवार्य होइन); चन्द्र/तारा बल जातक-सापेक्ष।", "en": "Ashtami/Chaturdashi tithi and the Shravana/Kartika months are especially favoured (a preference, not a gate); Chandra/Tara Bala is native-specific." },
         { "ne": "यो दिनको सूर्योदय पञ्चाङ्गमा गणना हुन्छ — लग्न विण्डो आवश्यक पर्दैन।", "en": "Evaluated on the day's sunrise panchanga — no lagna window is needed." }
       ]
     },
@@ -120,9 +123,11 @@
       "method_ne": "यो साइत लग्नमा आधारित होइन — दिनको तिथि र वारबाट अग्निवास सूत्र लगाएर शुभ दिन निकालिन्छ।",
       "method_en": "This sait is not lagna-based — the day is decided by the Agni-vasa formula on the tithi and weekday.",
       "rules": [
-        { "ne": "अग्निवास सूत्र — (तिथि+वार) लाई ४ ले भाग गर्दा शेष २ वा ३ भए अग्नि पृथ्वी/पातालमा — हवनका लागि शुभ।", "en": "Agni-vasa — when (tithi+vaara) mod 4 is 2 or 3, Agni resides on Earth/Patala — auspicious for havan." },
+        { "ne": "अग्निवास सूत्र — (तिथि + वार + १) लाई ४ ले भाग गर्दा शेष ० वा ३ आए अग्नि पृथ्वी (भूमि) मा — हवनका लागि शुभ।", "en": "Agni-vasa — (tithi + vaara + 1) mod 4: remainder 0 or 3 means Agni is on Earth (Bhumi) — auspicious for havan." },
+        { "ne": "शेष १ आए अग्नि स्वर्गमा (प्राणनाश) र शेष २ आए पातालमा (धननाश) — दुवै अशुभ।", "en": "Remainder 1 puts Agni in Heaven (loss of life) and remainder 2 in Patala (loss of wealth) — both inauspicious." },
         { "ne": "पूर्ण तिथि (शुक्ल १–१५, कृष्ण १६–३०) र वार (आइत=१ … शनि=७) मा गणना।", "en": "Computed on the absolute tithi (shukla 1-15, krishna 16-30) and vaara (Sun=1 ... Sat=7)." },
-        { "ne": "यो दिनको तिथि–वारमा आधारित छ — लग्न विण्डो आवश्यक पर्दैन।", "en": "Based on the day's tithi-vaara — no lagna window is needed." }
+        { "ne": "नित्य, नैमित्तिक र आब्दिक (वार्षिक) कर्ममा अग्निवासको विचार अनिवार्य छैन — काम्य कर्मका लागि मुख्यतः लागू।", "en": "For Nitya, Naimittika and Abdika (annual) rites the Agni-vasa check is not mandatory — it applies mainly to Kamya (desire-driven) rites." },
+        { "ne": "अग्निवास तिथि र वारबाट मात्र गणना हुन्छ (यो प्रणालीको गणना विधि हो, श्लोकको छुट्टै नियम होइन)।", "en": "Agni-vasa is computed from the tithi and vaara alone (our system's method, not a separate clause of the verse)." }
       ]
     },
     "annaprasan": {
@@ -134,13 +139,15 @@
       "method_ne": "प्रत्येक दिनको सूर्योदयदेखि सूर्यास्तसम्म पञ्चाङ्ग गणना गरी तलका नियमहरू लगाइन्छ। सूचीले उपयुक्त दिनहरू देखाउँछ; सटीक मिति शिशुको उमेरमा भर पर्छ।",
       "method_en": "For each day the engine computes the panchanga from sunrise to sunset, then applies the rules below. The list shows the suitable days; the exact date depends on the child's age.",
       "rules": [
-        { "ne": "महिना — अधिकमास बाहेक सबै मास; रिक्ता र अमावस्या वर्जित।", "en": "Month — all months except Adhik-masa; rikta & Aausi out." },
-        { "ne": "तिथि — शुक्ल २,३,५,७,१०,१३,१५ वा कृष्ण २,३,५,७,१०,१३; अष्टमी वर्जित।", "en": "Tithi — shukla 2,3,5,7,10,13,15 or krishna 2,3,5,7,10,13; Ashtami out." },
-        { "ne": "नक्षत्र — निश्चित सूची: अश्विनी, रोहिणी, मृगशिरा, पुनर्वसु, पुष्य, उत्तराफाल्गुनी, हस्त, चित्रा, स्वाती, अनुराधा, उत्तराषाढा, श्रवण, धनिष्ठा, शतभिषा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — the fixed list: Ashwini, Rohini, Mrigashira, Punarvasu, Pushya, U.Phalguni, Hasta, Chitra, Svati, Anuradha, U.Ashadha, Shravana, Dhanishtha, Shatabhisha, U.Bhadrapada, Revati." },
-        { "ne": "वार — सोम, बुध, बिहि, शुक्र मात्र; दिनको समय (सूर्योदय–सूर्यास्त) मात्र।", "en": "Vaara — Mon/Wed/Thu/Fri only; daytime (sunrise to sunset) only." },
-        { "ne": "लग्न — मेष, वृश्चिक र मीन बाहेक सबै लग्न स्वीकार्य (उमेर विण्डोले पहिले नै सूची घटाउने भएकाले उदार राखिएको)।", "en": "Lagna — all ascendants except Mesha, Vrishchika and Mina (kept broad, since the age window already thins the set)." },
-        { "ne": "दोष — व्यतीपात/वैधृति योग, विष्टि (भद्रा) करण, दुर्मुहूर्त (अवधि मात्र) र ग्रहणको दिन वर्जित।", "en": "Dosha — Vyatipata/Vaidhriti yoga, Vishti (Bhadra) karana, Dur-muhurta (period only) and the eclipse day excluded." },
-        { "ne": "यसको सटीक मिति शिशुको जन्ममितिमा भर पर्छ (५–८ महिनाको उमेर); सूचीले उपयुक्त दिन देखाउँछ।", "en": "The exact date depends on the child's birth (5-8 month window); the list shows suitable days." }
+        { "ne": "महिना/उमेर — मुख्य आधार शिशुको जन्मपछिको चन्द्रमहिना: बालकलाई सम महिना (६,८,१०,१२), बालिकालाई विषम महिना (५,७,९,११)। अधिकमासमा संस्कार नगर्ने परम्परा। (मुहूर्त चिन्तामणि ५.१६)", "en": "Month/age — governed by the child's age in lunar months after birth: even months (6,8,10,12) for a boy, odd months (5,7,9,11) for a girl. Not performed in Adhik-masa by tradition. (Muhurta Chintamani 5.16)" },
+        { "ne": "तिथि — शुभ तिथि २,३,५,७,१०,१३ र पूर्णिमा (शुक्ल १५); नन्द (१,६,११), रिक्ता (४,९,१४), अष्टमी (८), द्वादशी (१२) र अमावस्या वर्ज्य। (मुहूर्त चिन्तामणि ५.१६)", "en": "Tithi — the shubha tithis 2,3,5,7,10,13 and Purnima (shukla 15); Nanda (1,6,11), rikta (4,9,14), Ashtami (8), Dvadashi (12) and Amavasya barred. (Muhurta Chintamani 5.16)" },
+        { "ne": "नक्षत्र — मृदु/लघु/चर/स्थिर वर्गका १६ नक्षत्र: अश्विनी, रोहिणी, मृगशिरा, पुनर्वसु, पुष्य, उत्तराफाल्गुनी, हस्त, चित्रा, स्वाती, अनुराधा, उत्तराषाढा, श्रवण, धनिष्ठा, शतभिषा, उत्तरभाद्रपदा, रेवती।", "en": "Nakshatra — the 16 Mridu/Laghu/Chara/Sthira stars: Ashwini, Rohini, Mrigashira, Punarvasu, Pushya, U.Phalguni, Hasta, Chitra, Svati, Anuradha, U.Ashadha, Shravana, Dhanishtha, Shatabhisha, U.Bhadrapada, Revati." },
+        { "ne": "वार — सोम, बुध, बिहि, शुक्र मात्र (आइत, मंगल, शनि वर्ज्य)।", "en": "Vaara — Mon/Wed/Thu/Fri only (Sun, Tue, Sat barred)." },
+        { "ne": "लग्नशुद्धि — शुभ ग्रह केन्द्र/त्रिकोण/आय, पाप ग्रह उपचय (३,६,११), दशम रिक्त, चन्द्रमा लग्न/षष्ठ/अष्टममा नहोस् — आदर्श (मुहूर्त चिन्तामणि ५.१७)। सामान्य सूचीमा मेष, वृश्चिक र मीन लग्न मात्र वर्ज्य; पूर्ण ग्रह-शुद्धि जातक-सापेक्ष।", "en": "Lagna-shuddhi — benefics in kendra/trikona/aya, malefics in upachaya (3,6,11), 10th empty, Moon not in 1st/6th/8th — the ideal (Muhurta Chintamani 5.17). The general list applies only the sign bar (Mesha, Vrishchika, Mina); full graha-shuddhi is native-specific." },
+        { "ne": "गुरु/शुक्र अस्त — नित्य/काल-सापेक्ष संस्कार भएकाले गुरु वा शुक्र अस्त भए पनि अन्नप्रासन गर्न बाधा छैन। (मुहूर्त चिन्तामणि ५, श्लोक ४६–४७ भाष्य)", "en": "Guru/Shukra asta — as a time-bound (nitya) samskara, annaprasan is not barred by the combustion of Jupiter or Venus. (Muhurta Chintamani 5, comm. on 46-47)" },
+        { "ne": "जन्मतारा — जन्मनक्षत्रबाट १,१०,१९,२५ औं तारा वर्ज्य (जातक-सापेक्ष; सामान्य सूचीमा लागू छैन)।", "en": "Janma-tara — the 1st/10th/19th/25th tara from the birth star are avoided (native-specific; not applied in the general list)." },
+        { "ne": "सुरक्षा दोष — व्यतीपात/वैधृति योग, विष्टि (भद्रा) करण, दुर्मुहूर्त (अवधि मात्र) र ग्रहणको दिन हटाइन्छ (सामान्य मुहूर्त सुरक्षा; उद्धृत श्लोकको अंश होइन)।", "en": "Safeguard doshas — Vyatipata/Vaidhriti yoga, Vishti (Bhadra) karana, Dur-muhurta (period only) and the eclipse day are removed (general muhurta safeguards, not part of the cited verses)." },
+        { "ne": "यसको सटीक मिति शिशुको जन्ममितिमा भर पर्छ (उमेर विण्डो); सूचीले उपयुक्त दिन देखाउँछ।", "en": "The exact date depends on the child's birth (the age window); the list shows suitable days." }
       ]
     }
   }

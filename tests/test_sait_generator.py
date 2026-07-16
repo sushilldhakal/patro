@@ -55,15 +55,56 @@ def test_kharmas_sun_longitude():
 
 
 def test_agni_rudra_vas_formulas():
-    # Agni Vas on the absolute tithi (1-30): (tithi + vaara) % 4 in {2, 3} -> Earth.
-    assert agni_on_earth(2, 4)  # (2+4)=6, 6%4=2 -> Earth (auspicious)
-    assert not agni_on_earth(2, 3)  # (2+3)=5, 5%4=1 -> not Earth
+    # Agni Vas on the absolute tithi (1-30), MC 2.36: (tithi + vaara + 1) % 4
+    # in {0, 3} -> Bhūmi (Earth). 1 -> Svarga, 2 -> Pātāla, both inauspicious.
+    assert agni_on_earth(2, 4)  # (2+4+1)=7, 7%4=3 -> Bhūmi (auspicious)
+    assert not agni_on_earth(2, 3)  # (2+3+1)=6, 6%4=2 -> Pātāla (loss of wealth)
     # Shiva Vas on the absolute tithi: (2*tithi + 5) % 7 in {1, 2, 3}
     # (Kailasa / Gauri / Nandi only — strict Muhurta Chintamani).
     assert rudra_on_earth(5)  # (10+5)=15, 15%7=1 -> Kailasa (auspicious)
     assert not rudra_on_earth(1)  # (2+5)=7, 7%7=0 -> Shmashana (inauspicious)
     assert not rudra_on_earth(7)  # (14+5)=19, 19%7=5 -> Bhojana (now excluded)
     assert not rudra_on_earth(30)  # Aausi is always excluded
+
+
+def test_check_rudri_jurne_full_filter():
+    from engine.vedic.sait_rules import check_rudri_jurne
+
+    def _rudri_day(**overrides) -> DayPanchanga:
+        # tithi 5 on Thursday (vaara=5): Śiva-vāsa (2*5+5)%7=1 (Kailāsa, ok) and
+        # Agni-vāsa (5+5+1)%4=3 (Bhūmi, ok); clean yoga/karaṇa.
+        base = dict(
+            gregorian=date(2026, 2, 1),
+            tithi_absolute=5,
+            tithi_display=5,
+            paksha="shukla",
+            nakshatra=13,
+            vaara=5,
+            sun_rashi=11,
+            sun_longitude=315.0,
+            jupiter_combust=False,
+            venus_combust=False,
+            mercury_combust=False,
+            lunar_month="Magh",
+            is_adhik_maas=False,
+            aayan="Uttarayana",
+            mercury_quadrant=True,
+            jupiter_quadrant=True,
+            yoga=1,
+            karana="Bava",
+        )
+        base.update(overrides)
+        return DayPanchanga(**base)
+
+    assert check_rudri_jurne(_rudri_day())
+    # Agni not on Earth: tithi 5 on Wednesday (vaara=4) → (5+4+1)%4=2 (Pātāla).
+    assert not check_rudri_jurne(_rudri_day(vaara=4))
+    # Śiva-vāsa fails: tithi 1 → (2+5)%7=0 (Śmaśāna).
+    assert not check_rudri_jurne(_rudri_day(tithi_absolute=1))
+    # Barred yogas and karaṇa.
+    assert not check_rudri_jurne(_rudri_day(yoga=17))  # Vyatipata
+    assert not check_rudri_jurne(_rudri_day(yoga=27))  # Vaidhriti
+    assert not check_rudri_jurne(_rudri_day(karana="Vishti"))
 
 
 def test_build_day_panchanga_bs2083_sample():
@@ -168,7 +209,10 @@ def test_engine_version_bumped():
     # 4.9.0 — Griha-aarambha: corrected Sun-sign set to Muhūrta Chintāmaṇi
     # (Meṣa/Vṛṣabha/Siṃha/Vṛśchika/Makara/Kumbha), lenient tithi gate (bar only
     # Pratipadā/rikta + Amāvasyā), and added Guru/Śukra ast + bāla/vṛddha bar.
-    assert SAIT_ENGINE_VERSION == "4.9.0"
+    # 4.10.0 — Rudri (rudri-jurne): tightened beyond Śiva-vāsa alone — now also
+    # requires Agni-vāsa (fire on Earth/Pātāla for the homa) and scrubs the
+    # universal sacrificial doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi/Bhadrā karaṇa).
+    assert SAIT_ENGINE_VERSION == "4.10.0"
 
 
 def test_dagdha_tithi_table():
