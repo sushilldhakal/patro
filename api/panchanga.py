@@ -423,6 +423,57 @@ def nepal_sait_detail(
     )
 
 
+@router.get("/nepal/sait/{bs_year}/{category}/personalize", tags=["sait"])
+def nepal_sait_personalize(
+    bs_year: int,
+    category: str,
+    location: LocationDep,
+    birth: str | None = None,
+    birth_tz: str = "Asia/Kathmandu",
+    janma_nakshatra: int | None = None,
+    janma_rashi: int | None = None,
+):
+    """Native (profile-based) verdict for each generally-auspicious day.
+
+    Overlays a per-day ``favourable`` / ``neutral`` / ``avoid`` verdict on the
+    year's listing using the person's janma Moon: Tārā Bala + Chandra Bala, plus
+    the category-specific native rule (rudri Moon-house, annaprasan Janma-tārā).
+
+    Supply either the janma Moon directly (``janma_nakshatra`` 1–27 and
+    ``janma_rashi`` 1–12) or a naive birth datetime (``birth`` = ``YYYY-MM-DDTHH:MM``
+    interpreted in ``birth_tz``), from which the janma Moon is computed.
+    """
+    _validate_bs_year(bs_year)
+    from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL
+    from services.sait_personalize import compute_janma_points, personalize_sait
+
+    try:
+        if janma_nakshatra is None or janma_rashi is None:
+            if not birth:
+                raise ValueError(
+                    "Provide either janma_nakshatra + janma_rashi, or a birth datetime."
+                )
+            janma = compute_janma_points(birth, birth_tz)
+            janma_nakshatra = janma["nakshatra"]
+            janma_rashi = janma["rashi"]
+        payload = personalize_sait(
+            bs_year, category, janma_nakshatra, janma_rashi, location,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Native to one person — never shared/edge-cached; the browser may keep it
+    # briefly (a profile's verdict for a year is stable).
+    return JSONResponse(
+        payload,
+        headers={
+            "Cache-Control": SAIT_CUSTOM_CACHE_CONTROL,
+            "CDN-Cache-Control": SAIT_CUSTOM_CACHE_CONTROL,
+            "Vary": "Accept-Encoding",
+        },
+    )
+
+
 @router.get("/nepal/sait/{bs_year}/{category}", tags=["sait"])
 def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""

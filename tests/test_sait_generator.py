@@ -308,3 +308,40 @@ def test_griha_pravesh_nakshatra_fallback_adds_dates():
         if has_muhurta("griha-pravesh", greg, DEFAULT_LOCATION, rule=base)
     )
     assert widened_total >= strict_total
+
+
+def test_personalize_sait_annotates_days():
+    """Native (profile-based) overlay tags each general day favourable/neutral/avoid."""
+    from engine.astronomy.location import DEFAULT_LOCATION
+    from services.sait_personalize import compute_janma_points, personalize_sait
+
+    janma = compute_janma_points("1995-05-20T08:30", "Asia/Kathmandu")
+    assert 1 <= janma["nakshatra"] <= 27
+    assert 1 <= janma["rashi"] <= 12
+
+    res = personalize_sait(
+        2083, "rudri-jurne", janma["nakshatra"], janma["rashi"], DEFAULT_LOCATION
+    )
+    # Every generally-auspicious day carries a verdict, and the counts add up.
+    assert res["days"], "expected annotated days"
+    assert sum(res["counts"].values()) == len(res["days"])
+    for d in res["days"]:
+        assert d["suitability"] in {"favourable", "neutral", "avoid"}
+        assert 1 <= d["tara_num"] <= 9
+        assert 1 <= d["moon_house"] <= 12
+    # rudri bars the Moon in the 4/8/12 house from the janma rāśi.
+    for d in res["days"]:
+        if d["moon_house"] in (4, 8, 12):
+            assert d["suitability"] == "avoid"
+
+
+def test_personalize_sait_rejects_bad_janma():
+    from engine.astronomy.location import DEFAULT_LOCATION
+    from services.sait_personalize import personalize_sait
+
+    for nak, rashi in ((0, 5), (28, 5), (10, 0), (10, 13)):
+        try:
+            personalize_sait(2083, "rudri-jurne", nak, rashi, DEFAULT_LOCATION)
+        except ValueError:
+            continue
+        raise AssertionError(f"expected ValueError for janma ({nak},{rashi})")
