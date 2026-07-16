@@ -55,9 +55,10 @@ def test_kharmas_sun_longitude():
 
 
 def test_agni_rudra_vas_formulas():
-    # Agni Vas on the absolute tithi (1-30): (tithi + vaara) % 4 in {2, 3} -> Earth.
-    assert agni_on_earth(2, 4)  # (2+4)=6, 6%4=2 -> Earth (auspicious)
-    assert not agni_on_earth(2, 3)  # (2+3)=5, 5%4=1 -> not Earth
+    # Agni Vas on the absolute tithi (1-30), MC 2.36: (tithi + vaara + 1) % 4
+    # in {0, 3} -> Bhūmi (Earth). 1 -> Svarga, 2 -> Pātāla, both inauspicious.
+    assert agni_on_earth(2, 4)  # (2+4+1)=7, 7%4=3 -> Bhūmi (auspicious)
+    assert not agni_on_earth(2, 3)  # (2+3+1)=6, 6%4=2 -> Pātāla (loss of wealth)
     # Shiva Vas on the absolute tithi: (2*tithi + 5) % 7 in {1, 2, 3}
     # (Kailasa / Gauri / Nandi only — strict Muhurta Chintamani).
     assert rudra_on_earth(5)  # (10+5)=15, 15%7=1 -> Kailasa (auspicious)
@@ -71,7 +72,7 @@ def test_check_rudri_jurne_full_filter():
 
     def _rudri_day(**overrides) -> DayPanchanga:
         # tithi 5 on Thursday (vaara=5): Śiva-vāsa (2*5+5)%7=1 (Kailāsa, ok) and
-        # Agni-vāsa (5+5)%4=2 (Earth, ok); clean yoga/karaṇa.
+        # Agni-vāsa (5+5+1)%4=3 (Bhūmi, ok); clean yoga/karaṇa.
         base = dict(
             gregorian=date(2026, 2, 1),
             tithi_absolute=5,
@@ -96,7 +97,7 @@ def test_check_rudri_jurne_full_filter():
         return DayPanchanga(**base)
 
     assert check_rudri_jurne(_rudri_day())
-    # Agni not on Earth: tithi 5 on Wednesday (vaara=4) → (5+4)%4=1.
+    # Agni not on Earth: tithi 5 on Wednesday (vaara=4) → (5+4+1)%4=2 (Pātāla).
     assert not check_rudri_jurne(_rudri_day(vaara=4))
     # Śiva-vāsa fails: tithi 1 → (2+5)%7=0 (Śmaśāna).
     assert not check_rudri_jurne(_rudri_day(tithi_absolute=1))

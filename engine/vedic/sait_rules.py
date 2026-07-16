@@ -114,18 +114,24 @@ def is_rikta_tithi(display_tithi: int) -> bool:
 
 
 def agni_on_earth(tithi_absolute: int, vaara_number: int) -> bool:
-    """Agni Vas — Agni resides on Earth (auspicious for havan / अग्नि जुर्ने).
+    """Agni Vāsa — True only when Agni resides on Earth (Bhūmi), the sole abode
+    auspicious for a havan / अग्नि जुर्ने.
 
-    Classic Agni-vāsa formula on the *absolute* tithi (1–30: śukla 1–15 then
+    Muhūrta Chintāmaṇi 2.36, on the *absolute* tithi (1–30: śukla 1–15 then
     kṛṣṇa 16–30) and the vāra (Sunday = 1 … Saturday = 7):
 
-        (tithi + vaara) mod 4 ∈ {2, 3}  →  Agni on Earth / Pātāla.
+        (tithi + vāra + 1) mod 4 →
+            0 · Bhūmi  (Earth)  → auspicious (happiness / success)
+            3 · Bhūmi  (Earth)  → auspicious
+            1 · Svarga (Heaven) → avoid (prāṇa-nāśa, loss of life)
+            2 · Pātāla (nether) → avoid (artha-nāśa, loss of wealth)
 
-    Fitted against the official Nepal Panchanga listing for BS 2083 (recall
-    ≈ 0.95). The earlier ``tithi_display``-based form silently dropped the
-    pakṣa and matched only ~25% of the official days.
+    Only the two Bhūmi remainders {0, 3} qualify. This is the exact verse form;
+    it selects the same days as the earlier ``(tithi + vāra) mod 4 ∈ {2, 3}``
+    (algebraically identical, since (T+V+1) shifts the remainder by one) but now
+    labels each abode correctly instead of lumping Pātāla in with Earth.
     """
-    return ((tithi_absolute + vaara_number) % 4) in (2, 3)
+    return ((tithi_absolute + vaara_number + 1) % 4) in (0, 3)
 
 
 # The two great inauspicious yogas (Muhūrta Chintāmaṇi 1.34) and the malefic
@@ -540,7 +546,7 @@ def check_byaparik_pratisthan(day: DayPanchanga) -> bool:
 # fire's abode (Agni-vāsa) must be favourable, and the universal sacrificial
 # doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi karaṇa) are scrubbed.
 #   1. Śiva-vāsa — (2×tithi+5) mod 7 ∈ {1,2,3} (Kailāsa/Gaurī/Nandi); Amāvasyā out.
-#   2. Agni-vāsa — fire on Earth/Pātāla to receive the oblation ((T+V) mod 4 ∈ {2,3}).
+#   2. Agni-vāsa — fire on Earth (Bhūmi) to receive the oblation ((T+V+1) mod 4 ∈ {0,3}).
 #   3. Reject Vyatipāta / Vaidhṛti yoga and Viṣṭi (Bhadrā) karaṇa.
 # (Ashtami/Chaturdashi tithi and the Śrāvaṇa/Kārtika months are traditionally
 # *preferred*, and Chandra/Tārā Bala is native-specific — these rank days rather
