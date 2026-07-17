@@ -38,6 +38,9 @@ if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import need
   python scripts/import_cities.py
 fi
 
+echo "==> Installing Swiss Ephemeris .se1 files (idempotent)"
+python scripts/install_ephemeris.py
+
 echo "==> Installing systemd service"
 sudo cp deploy/nepali-holiday-api.service /etc/systemd/system/
 sudo systemctl daemon-reload

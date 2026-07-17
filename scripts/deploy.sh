@@ -22,6 +22,9 @@ if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import need
   python scripts/import_cities.py
 fi
 
+echo "==> Installing Swiss Ephemeris .se1 files (idempotent)"
+python scripts/install_ephemeris.py
+
 echo "==> Restarting service"
 sudo systemctl restart "${SERVICE_NAME}"
 

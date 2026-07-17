@@ -13,7 +13,48 @@ from typing import Any
 
 import swisseph as swe
 
+from engine.astronomy.paths import ephemeris_path
 from engine.astronomy.timescale import resolve_observer_timezone
+
+
+def _configure_ephemeris() -> bool:
+    """Point swisseph at the bundled ``.se1`` files if they're present.
+
+    The engine never passes an explicit ``FLG_SWIEPH``/``FLG_MOSEPH`` flag, so
+    swisseph uses its default: try the Swiss binary ephemeris, fall back to the
+    built-in Moshier analytical model per-date when a file is missing. Setting
+    the path therefore upgrades in-range dates from Moshier to Swiss precision
+    automatically, with no flag or call-site changes. When the directory has no
+    ``.se1`` files (e.g. a fresh checkout before provisioning) we skip the call
+    and keep the transparent Moshier fallback rather than pointing swisseph at
+    an empty directory.
+
+    Returns True when a populated ephemeris directory was configured.
+    """
+    ephe_dir = ephemeris_path()
+    try:
+        has_files = ephe_dir.is_dir() and any(ephe_dir.glob("*.se1"))
+    except OSError:
+        has_files = False
+    if has_files:
+        swe.set_ephe_path(str(ephe_dir))
+    return has_files
+
+
+EPHEMERIS_CONFIGURED = _configure_ephemeris()
+
+
+def _is_ephe_file_missing(exc: Exception) -> bool:
+    """True when a swisseph error means the required ``.se1`` file is absent.
+
+    Once an ephemeris path is set, swisseph raises (rather than silently using
+    Moshier) for a date outside the installed file range. The supported BS range
+    is fully covered by the shipped files, so this only fires for internal
+    over-steps — e.g. an eclipse or rise/set search that walks just past a file
+    boundary — where a Moshier fallback keeps the old always-return-an-answer
+    behaviour instead of crashing.
+    """
+    return "not found" in str(exc).lower()
 
 
 def _horizon_dip_degrees(altitude_m: float) -> float:
@@ -137,21 +178,30 @@ class AstronomyEngine:
         try:
             values = swe.calc_ut(jd, body, flags)[0]
         except swe.Error as exc:
-            if not sidereal:
+            if _is_ephe_file_missing(exc):
+                # Date outside the installed .se1 range — compute this one date
+                # with the built-in Moshier model rather than crashing. See
+                # _is_ephe_file_missing for why this stays a rare edge path.
+                try:
+                    values = swe.calc_ut(jd, body, flags | swe.FLG_MOSEPH)[0]
+                except (swe.Error, IndexError, TypeError, ValueError) as exc2:
+                    raise EphemerisError(f"calc_ut failed for body {body}: {exc2}") from exc2
+            elif not sidereal:
                 raise EphemerisError(f"calc_ut failed for body {body}: {exc}") from exc
-            # pyswisseph fails on FLG_SIDEREAL for the lunar nodes under
-            # star-anchored sid modes (e.g. SIDM_TRUE_CITRA). Sidereal
-            # longitude = tropical − ayanamsha, so compute it manually.
-            try:
-                tropical = swe.calc_ut(jd, body, _TROPICAL_SPEED)[0]
-                values = (
-                    (tropical[0] - swe.get_ayanamsa_ut(jd)) % 360,
-                    tropical[1],
-                    tropical[2],
-                    tropical[3],
-                )
-            except (swe.Error, IndexError, TypeError, ValueError) as exc2:
-                raise EphemerisError(f"calc_ut failed for body {body}: {exc2}") from exc2
+            else:
+                # pyswisseph fails on FLG_SIDEREAL for the lunar nodes under
+                # star-anchored sid modes (e.g. SIDM_TRUE_CITRA). Sidereal
+                # longitude = tropical − ayanamsha, so compute it manually.
+                try:
+                    tropical = swe.calc_ut(jd, body, _TROPICAL_SPEED)[0]
+                    values = (
+                        (tropical[0] - swe.get_ayanamsa_ut(jd)) % 360,
+                        tropical[1],
+                        tropical[2],
+                        tropical[3],
+                    )
+                except (swe.Error, IndexError, TypeError, ValueError) as exc2:
+                    raise EphemerisError(f"calc_ut failed for body {body}: {exc2}") from exc2
         except (IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"calc_ut failed for body {body}: {exc}") from exc
 

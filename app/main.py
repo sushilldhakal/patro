@@ -38,6 +38,14 @@ async def _warm_holiday_cache_background(app: FastAPI) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.precomputed_bs_years = []
+    from engine.astronomy.engine import EPHEMERIS_CONFIGURED, ephemeris_path
+    if EPHEMERIS_CONFIGURED:
+        logger.info("Swiss Ephemeris (.se1) active from %s", ephemeris_path())
+    else:
+        logger.warning(
+            "Swiss Ephemeris files not found — running on the built-in Moshier model. "
+            "Run `python scripts/install_ephemeris.py` to install them."
+        )
     if config.database_url():
         from database.db import init_db
         try:

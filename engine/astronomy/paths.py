@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -26,6 +27,17 @@ def panchanga_db_path() -> Path:
 
 def kundali_db_path() -> Path:
     return DATA_DIR / "kundali.db"
+
+
+def ephemeris_path() -> Path:
+    """Directory holding the Swiss Ephemeris ``.se1`` binary files.
+
+    Overridable with ``SWISSEPH_EPHE_PATH`` so a deployment can point at a
+    shared/mounted ephemeris directory. Defaults to ``data/ephemeris``.
+    Kept dependency-free (no dotenv) so the engine can import it early.
+    """
+    override = os.environ.get("SWISSEPH_EPHE_PATH", "").strip()
+    return Path(override) if override else DATA_DIR / "ephemeris"
 
 
 # GeoNames id for Kathmandu — default observer city

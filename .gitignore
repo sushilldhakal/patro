@@ -43,6 +43,9 @@ data/cities15000.txt
 data/cities15000.zip
 data/panchanga.db
 
+# Swiss Ephemeris .se1 binaries — provisioned by scripts/install_ephemeris.py
+data/ephemeris/
+
 # --- Testing & coverage ---
 .pytest_cache/
 .coverage
