@@ -12,6 +12,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
     Integer,
+    LargeBinary,
     String,
     Text,
     UniqueConstraint,
@@ -179,4 +180,25 @@ class SaitCache(Base):
         UniqueConstraint(
             "bs_year", "category", "location_key", name="uq_sait_cache_key"
         ),
+    )
+
+
+class BlobCache(Base):
+    """Shared key→bytes cache for computed panchāṅga payloads (year / month / day).
+
+    The panchāṅga year, month grid and single-day responses are deterministic
+    gzip-JSON blobs keyed by a versioned string (year/month/location/variant).
+    On ephemeral hosts a filesystem cache does not survive a cold start, so the
+    first request after every restart pays the ~30 s year build. Persisting the
+    same blobs here (shared Postgres) lets any instance read them back instantly.
+    The versioned key embeds CACHE_PAYLOAD_VERSION, so a payload-shape bump
+    orphans stale rows automatically (they are simply never read again).
+    """
+
+    __tablename__ = "blob_cache"
+
+    cache_key: Mapped[str] = mapped_column(String(255), primary_key=True)
+    data: Mapped[bytes] = mapped_column(LargeBinary, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
     )

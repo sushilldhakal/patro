@@ -186,6 +186,10 @@ Tables are created with `Base.metadata.create_all()` (create-if-missing). That's
 ideal for getting started but does **not** alter existing columns. When the
 schema needs to evolve, introduce Alembic:
 
+> The computed-cache tables (`sait_cache`, `blob_cache`) are also created
+> automatically. If the app's Postgres role lacks `CREATE TABLE`, provision them
+> by hand from `deploy/cache_schema.sql` (as with `deploy/auth_schema.sql`).
+
 ```bash
 .venv/bin/pip install alembic
 alembic init alembic

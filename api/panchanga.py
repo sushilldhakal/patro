@@ -14,6 +14,7 @@ from api.deps import (
     _validate_bs_month,
     _validate_bs_year,
 )
+from engine.astronomy.location import SAIT_REFERENCE_LOCATION
 from engine.vedic.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
@@ -365,6 +366,10 @@ def nepal_sait_month_all(bs_year: int, bs_month: int, location: LocationDep):
     """Auspicious days for ALL ceremony types in ONE BS month (home-page list).
     Computes only the requested month rather than the whole year."""
     _validate_bs_year(bs_year)
+    # Sāit is computed once at the national reference (see SAIT_REFERENCE_LOCATION):
+    # the day-lists are location-invariant across Nepal, so every city shares one
+    # warm cache entry instead of paying a cold per-city build.
+    location = SAIT_REFERENCE_LOCATION
     from services.sait_api import get_sait_month_all
     try:
         return get_sait_month_all(bs_year, bs_month, location)
@@ -391,6 +396,7 @@ def nepal_sait_detail(
     ``liberal`` — switches the nakṣatra tradition without clearing other rules.
     """
     _validate_bs_year(bs_year)
+    location = SAIT_REFERENCE_LOCATION  # national reference — see SAIT_REFERENCE_LOCATION
     from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL, bs_year_cache_control
     from services.sait_api import get_sait_detail
 
@@ -444,6 +450,7 @@ def nepal_sait_personalize(
     interpreted in ``birth_tz``), from which the janma Moon is computed.
     """
     _validate_bs_year(bs_year)
+    location = SAIT_REFERENCE_LOCATION  # national reference — see SAIT_REFERENCE_LOCATION
     from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL
     from services.sait_personalize import compute_janma_points, personalize_sait
 
@@ -478,6 +485,7 @@ def nepal_sait_personalize(
 def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
     """Auspicious BS month/day listings for one ceremony type and year."""
     _validate_bs_year(bs_year)
+    location = SAIT_REFERENCE_LOCATION  # national reference — see SAIT_REFERENCE_LOCATION
     from services.sait_api import get_sait_month_entries
     try:
         return get_sait_month_entries(bs_year, category, location)
