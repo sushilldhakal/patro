@@ -32,21 +32,6 @@ class ObserverLocation:
 
 DEFAULT_LOCATION = ObserverLocation()
 
-# Reference location for the *candidate day-list* of a sāit listing — the days
-# whose geocentric angas (tithi/nakṣatra/yoga/karaṇa, sun/planet rāśis, the lunar
-# month) qualify. Those are the same at a given instant everywhere, and across
-# Nepal's one +5:45 timezone the local-sunrise sampling barely shifts, so the
-# candidate set is effectively city-independent — computing it once here lets
-# every city share one cached list instead of re-scanning 365 days.
-#
-# This does NOT flatten the dates to one city: the muhūrta *lagna windows* are
-# still recomputed at the viewer's own location (see get_sait_detail), and any
-# candidate day that has no clean window there drops out. So the window times —
-# and the resulting per-city date list — remain location-specific; only the
-# expensive geocentric scan is reused. (The deterministic Vās categories — rudri
-# / agni — are purely geocentric, so their lists are identical for every city.)
-SAIT_LIST_LOCATION = DEFAULT_LOCATION
-
 
 def _snap_to_nearest_city_enabled() -> bool:
     import os

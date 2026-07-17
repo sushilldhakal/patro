@@ -7,7 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from engine.astronomy.location import DEFAULT_LOCATION, SAIT_LIST_LOCATION, ObserverLocation
+from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from services.sait_generator import get_generated_sait
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -224,21 +224,17 @@ def get_sait_detail(
     # Keep only the ids this category actually exposes; drop the rest silently.
     exclude = frozenset(exclude_rules) & TOGGLEABLE_RULE_IDS.get(category, frozenset())
 
-    # The candidate day-list is geocentric — computed once at the shared reference
-    # (SAIT_LIST_LOCATION) and reused for every city. Only the lagna windows below
-    # are recomputed at the viewer's own `location`, so a city still gets its own
-    # window times (and any candidate with no clean window there is dropped).
     custom = bool(exclude) or bool(mode and mode != "classical")
     if custom:
         # Handpicked subset / non-default mode — compute (uncached in the shared
         # store) with the relaxed rule and use that SAME rule to reproduce each
         # day's window.
         by_month, detail_rule = _custom_year_by_month(
-            bs_year, category, SAIT_LIST_LOCATION, exclude, mode or "",
+            bs_year, category, location, exclude, mode or "",
         )
         engine_version = SAIT_ENGINE_VERSION
     else:
-        generated = get_generated_sait(bs_year, category, SAIT_LIST_LOCATION)
+        generated = get_generated_sait(bs_year, category, location)
         by_month = generated.get("months") or {}
         # Reproduce each day's window with the SAME rule the listing was built
         # with: if the year used the widened nakṣatra fallback, the detail must
@@ -338,9 +334,8 @@ def get_sait_month_all(
     if not 1 <= bs_month <= 12:
         raise ValueError(f"bs_month must be 1–12, got {bs_month}")
 
-    # Geocentric candidate list — shared across cities (see SAIT_LIST_LOCATION).
     by_category = {
-        cat_id: generate_sait_month_days(bs_year, bs_month, cat_id, SAIT_LIST_LOCATION)
+        cat_id: generate_sait_month_days(bs_year, bs_month, cat_id, location)
         for cat_id in categories
     }
     return {
@@ -363,10 +358,8 @@ def get_sait_month_entries(
 
     # Always serve our own ephemeris-computed listing (the curated Nepal Samiti
     # dates in sait_dates_v1.json are kept only for regression benchmarking — the
-    # app shows computed sait for every year and category). The candidate list is
-    # geocentric, so it is computed once at the shared reference (SAIT_LIST_LOCATION)
-    # — exact for the Vās categories, and the muhūrta detail refines windows per city.
-    generated = get_generated_sait(bs_year, category, SAIT_LIST_LOCATION)
+    # app shows computed sait for every year and category).
+    generated = get_generated_sait(bs_year, category, location)
     source = generated.get("source", "computed")
     by_month = generated.get("months") or {}
 
