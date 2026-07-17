@@ -6,12 +6,15 @@ Validates the RS256 signature against Google's published JWKS, plus the audience
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import jwt
 from jwt import PyJWKClient
 
 import config
+
+logger = logging.getLogger(__name__)
 
 _GOOGLE_CERTS_URL = "https://www.googleapis.com/oauth2/v3/certs"
 _ALLOWED_ISSUERS = {"https://accounts.google.com", "accounts.google.com"}
@@ -38,6 +41,7 @@ def verify_google_id_token(token: str) -> dict[str, Any]:
             audience=client_id,
         )
     except Exception as exc:  # invalid signature, audience, expiry, malformed, etc.
+        logger.warning("Google ID token verification failed: %s: %s", type(exc).__name__, exc)
         raise GoogleAuthError("Invalid or expired Google token") from exc
 
     if claims.get("iss") not in _ALLOWED_ISSUERS:
