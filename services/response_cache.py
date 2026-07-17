@@ -24,6 +24,7 @@ from fastapi import HTTPException, Request
 from fastapi.responses import Response
 
 from engine.astronomy.location import ObserverLocation
+from services.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
 RESPONSE_CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "response"
@@ -92,17 +93,26 @@ def _path(cache_key: str) -> Path:
 
 
 def read_cached_bytes(cache_key: str) -> bytes | None:
+    # Shared Postgres is the primary store (survives cold starts, shared across
+    # instances); the file is the local-dev fallback when DATABASE_URL is unset.
+    # The versioned filename doubles as the DB key.
+    path = _path(cache_key)
+    if db_available():
+        return load_blob(path.name)
     try:
-        return _path(cache_key).read_bytes()
+        return path.read_bytes()
     except FileNotFoundError:
         return None
 
 
 def write_cached_bytes(cache_key: str, payload: Any) -> bytes:
     path = _path(cache_key)
-    path.parent.mkdir(parents=True, exist_ok=True)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     compressed = gzip.compress(raw, compresslevel=6)
+    if db_available():
+        save_blob(path.name, compressed)
+        return compressed
+    path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_bytes(compressed)
     os.replace(tmp, path)  # atomic — concurrent readers never see partial files
