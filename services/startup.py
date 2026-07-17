@@ -76,18 +76,51 @@ def _warm_sait_enabled() -> bool:
     return os.environ.get("WARM_SAIT", "true").lower() not in {"0", "false", "no"}
 
 
+def _sait_warm_locations() -> list:
+    """Locations to pre-warm sāit for: the default plus the top popular cities.
+
+    A sāit day-list is per-city (each city's own sunrise drives its tithi), so
+    the cache is keyed by location and a new city pays a cold build on first
+    view. After nearest-city snapping virtually all traffic lands on a small set
+    of cities, so warming those (SAIT_WARM_CITY_COUNT, default 8) makes the common
+    ones hot right after a deploy. 0 warms the default location only. The list is
+    de-duplicated by cache key (snapping canonicalises duplicate town rows)."""
+    locations = [DEFAULT_LOCATION]
+    count = max(int(os.environ.get("SAIT_WARM_CITY_COUNT", "8")), 0)
+    if count <= 0:
+        return locations
+    try:
+        from engine.astronomy.location import resolve_location_from_query
+        from services.cities_db import get_city_by_id
+
+        seen = {DEFAULT_LOCATION.cache_key()}
+        for city_id in _popular_warm_city_ids()[:count]:
+            row = get_city_by_id(city_id)
+            if row is None:
+                continue
+            loc = resolve_location_from_query(lat=row["lat"], lon=row["lon"])
+            if loc.cache_key() in seen:
+                continue
+            seen.add(loc.cache_key())
+            locations.append(loc)
+    except Exception:  # noqa: BLE001 — resolving warm cities must not block startup
+        logger.exception("Resolving sāit warm cities failed")
+    return locations
+
+
 def _warm_sait_cache() -> None:
-    """Pre-build the current BS year's sāit listings for every ceremony at the
-    default location.
+    """Pre-build the current BS year's sāit listings for every ceremony, at the
+    default location and the top popular cities.
 
     Sāit dates are ephemeris-computed per day and cached per (year, category,
     location); without this warm the first visitor to a sāit page after a deploy
-    (or an engine-version bump) pays the ~6 s per-category cold build. We warm
-    the current year (± SAIT_WARM_SPAN, default 0) for the default location only,
-    to bound the background cost; every other year/location is still computed
+    (or an engine-version bump) pays the ~3 s per-category cold build. We warm the
+    current year (± SAIT_WARM_SPAN, default 0) for the default + popular cities
+    (SAIT_WARM_CITY_COUNT, default 8); every other year/location is still computed
     on-demand and cached on first request. Skip-existing (via the generator's own
-    cache check) keeps this cheap on persistent hosts. Gate off with
-    WARM_SAIT=false on light / ephemeral hosts.
+    cache check) keeps this a no-op once warmed — cheap on persistent hosts. Gate
+    off with WARM_SAIT=false, or SAIT_WARM_CITY_COUNT=0 for the default only, on
+    light / ephemeral hosts.
     """
     if not _precompute_enabled() or not _warm_sait_enabled():
         return
@@ -98,15 +131,22 @@ def _warm_sait_cache() -> None:
     current_bs_year, _, _ = gregorian_to_bs(date.today())
     span = max(int(os.environ.get("SAIT_WARM_SPAN", "0")), 0)
     category_ids = [c["id"] for c in list_sait_categories()]
-    for bs_year in range(current_bs_year - span, current_bs_year + span + 1):
-        for category in category_ids:
-            try:
-                # use_cache=True: a hit returns instantly; a miss computes and
-                # persists to the shared cache for every later request/instance.
-                get_generated_sait(bs_year, category, DEFAULT_LOCATION)
-                logger.info("Warmed sāit cache for BS %s / %s", bs_year, category)
-            except Exception:  # noqa: BLE001 — a warm failure must not block startup
-                logger.exception("Sāit warm failed for BS %s / %s", bs_year, category)
+    for location in _sait_warm_locations():
+        for bs_year in range(current_bs_year - span, current_bs_year + span + 1):
+            for category in category_ids:
+                try:
+                    # use_cache=True: a hit returns instantly; a miss computes and
+                    # persists to the shared cache for every later request/instance.
+                    get_generated_sait(bs_year, category, location)
+                except Exception:  # noqa: BLE001 — a warm failure must not block startup
+                    logger.exception(
+                        "Sāit warm failed for BS %s / %s @ %s",
+                        bs_year, category, location.cache_key(),
+                    )
+        logger.info(
+            "Warmed sāit cache: %d categories × %d year(s) @ %s",
+            len(category_ids), span * 2 + 1, location.name,
+        )
 
 
 def _warm_popular_cities_enabled() -> bool:
