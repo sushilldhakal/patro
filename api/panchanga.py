@@ -717,14 +717,24 @@ def nepal_panchanga_year(bs_year: int, location: LocationDep):
 
 
 @router.get("/nepal/special-months/{bs_year}")
-def nepal_special_months(bs_year: int, location: LocationDep):
+def nepal_special_months(bs_year: int, location: LocationDep, request: Request):
     """Adhik Maas and Kshaya Maas info for a BS year."""
     _validate_bs_year(bs_year)
     from services.holiday_generator import get_special_months_for_bs_year
-    try:
-        return get_special_months_for_bs_year(bs_year, location)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    from services.response_cache import (
+        bs_year_cache_control,
+        location_cache_key,
+        serve_cached_json,
+    )
+
+    # Deterministic per (year, location) — the adhik/kshaya reckoning is fixed
+    # astronomy, so cache + persist rather than recompute the lunar year each view.
+    key = f"specialmonths_{bs_year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key,
+        lambda: get_special_months_for_bs_year(bs_year, location),
+        cache_control=bs_year_cache_control(bs_year),
+    )
 
 
 @router.get("/calendar/header/{bs_year}/{bs_month}")

@@ -182,6 +182,7 @@ def generate_year(year: int, location: LocationDep):
 @router.get("/nepal/gochar/ingress")
 def nepal_gochar_ingress(
     location: LocationDep,
+    request: Request,
     from_date: date = Query(..., alias="from"),
     to_date: date = Query(..., alias="to"),
     era: Literal["bs", "ad"] = Query("ad"),
@@ -190,6 +191,8 @@ def nepal_gochar_ingress(
 ):
     """Planetary ingress timeline between two dates."""
     from engine.vedic.gochar import GRAHA_ORDER, build_gochar_ingress_range
+    from services.response_cache import location_cache_key, serve_cached_json
+
     try:
         if era == "bs":
             from_greg = resolve_panchanga_date(from_date.isoformat(), era="bs")
@@ -202,25 +205,51 @@ def nepal_gochar_ingress(
             unknown = [g for g in graha_list if g not in GRAHA_ORDER]
             if unknown:
                 raise ValueError(f"Unknown graha(s): {', '.join(unknown)}")
-        return build_gochar_ingress_range(from_greg, to_greg, location, level=level, grahas=graha_list)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Deterministic per (range, location, level, grahas) — ingress moments are
+    # fixed astronomy, so cache + persist rather than re-scanning the range.
+    graha_key = ",".join(graha_list) if graha_list else "all"
+    key = (
+        f"gocharingress_{from_greg.isoformat()}_{to_greg.isoformat()}"
+        f"_{level}_{graha_key}_{location_cache_key(location)}"
+    )
+    return serve_cached_json(
+        request, key,
+        lambda: build_gochar_ingress_range(
+            from_greg, to_greg, location, level=level, grahas=graha_list
+        ),
+    )
 
 
 @router.get("/nepal/gochar/{date_key}")
 def nepal_gochar(
     date_key: str,
     location: LocationDep,
+    request: Request,
     era: Literal["bs", "ad"] = Query("bs"),
     upcoming: bool = Query(False),
 ):
     """Gochar (planetary transit) table for a date."""
+    from services.response_cache import location_cache_key, serve_cached_json
+
     try:
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     from engine.vedic.gochar import build_gochar_response
-    return build_gochar_response(greg, location, include_next_entry=True, include_upcoming=upcoming)
+
+    # Deterministic per (date, location, upcoming) — planetary positions for a
+    # given day never change, so cache + persist it (DB-backed) rather than
+    # recomputing the ephemeris on every DainikKranti view.
+    key = f"gochar_{greg.isoformat()}_{int(upcoming)}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key,
+        lambda: build_gochar_response(
+            greg, location, include_next_entry=True, include_upcoming=upcoming
+        ),
+    )
 
 
 @router.get("/patro/{bs_year}/{bs_month}")
