@@ -55,10 +55,21 @@ def warm_holiday_cache() -> list[int]:
             start_year,
             end_year,
         )
+    _prune_stale_blob_cache()
     _warm_year_response_cache()
     _warm_popular_city_caches()
     _warm_sait_cache()
     return generated
+
+
+def _prune_stale_blob_cache() -> None:
+    """Drop DB blob rows left over from a previous payload version (once per
+    startup, before the warm re-populates the current version)."""
+    from services.blob_db_cache import prune_stale_blobs
+
+    removed = prune_stale_blobs()
+    if removed:
+        logger.info("Pruned %d stale blob-cache rows (old payload version)", removed)
 
 
 def _warm_sait_enabled() -> bool:

@@ -31,6 +31,25 @@ def test_blob_roundtrip_and_upsert(tmp_path, monkeypatch):
         _reset_caches()
 
 
+def test_prune_drops_only_stale_versions(tmp_path, monkeypatch):
+    from services.blob_db_cache import prune_stale_blobs
+    from services.panchanga_cache import CACHE_PAYLOAD_VERSION as V
+
+    _use_sqlite(tmp_path, monkeypatch)
+    try:
+        save_blob(f"year_v{V}_2083_full_ktm", b"current")   # current (year scheme)
+        save_blob(f"v{V}_month_2083_1_ktm", b"current2")    # current (response scheme)
+        save_blob("year_v3_2083_full_ktm", b"old")          # stale
+        save_blob("v1_month_2083_1_ktm", b"old2")           # stale
+        assert prune_stale_blobs() == 2
+        # current survives, stale removed, and a second run is a no-op
+        assert load_blob(f"year_v{V}_2083_full_ktm") == b"current"
+        assert load_blob("year_v3_2083_full_ktm") is None
+        assert prune_stale_blobs() == 0
+    finally:
+        _reset_caches()
+
+
 def test_no_db_is_noop(monkeypatch):
     monkeypatch.delenv("DATABASE_URL", raising=False)
     _reset_caches()

@@ -46,6 +46,37 @@ def load_blob(cache_key: str) -> bytes | None:
         return None
 
 
+def prune_stale_blobs() -> int:
+    """Delete blob rows from an older payload version; return the count removed.
+
+    Every key embeds ``v{CACHE_PAYLOAD_VERSION}_`` (both the ``year_v24_…`` and
+    ``v24_…`` schemes), so after a version bump the old rows are never read again
+    — they just take up space. This drops them. Safe to call repeatedly (a no-op
+    once nothing stale remains) and defensive: a failure is logged, not raised.
+    """
+    if not db_available():
+        return 0
+    try:
+        from sqlalchemy import delete, select
+
+        from database.db import db_session
+        from database.models import BlobCache
+        from services.panchanga_cache import CACHE_PAYLOAD_VERSION
+
+        token = f"v{CACHE_PAYLOAD_VERSION}_"
+        with db_session() as session:
+            keys = session.execute(select(BlobCache.cache_key)).scalars().all()
+            stale = [k for k in keys if token not in k]
+            if stale:
+                session.execute(
+                    delete(BlobCache).where(BlobCache.cache_key.in_(stale))
+                )
+            return len(stale)
+    except Exception:  # pragma: no cover - defensive
+        logger.exception("blob cache prune failed")
+        return 0
+
+
 def save_blob(cache_key: str, data: bytes) -> None:
     """Upsert the gzip bytes for ``cache_key`` (no-op without a DB)."""
     if not db_available():
