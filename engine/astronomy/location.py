@@ -32,6 +32,18 @@ class ObserverLocation:
 
 DEFAULT_LOCATION = ObserverLocation()
 
+# Single national reference for all sāit computation. Planetary/panchāṅga angas
+# are geocentric (identical everywhere at a given instant); across Nepal's one
+# +5:45 timezone the local-sunrise shift is only a few minutes, so the auspicious
+# day-lists are effectively the same for every Nepali city. Computing sāit once
+# at this reference — rather than per city — lets every location share one cache
+# entry (a guaranteed hit after warm) instead of paying a cold per-city build.
+# Only muhūrta *window times* are truly location-specific; they are shown for
+# this reference, the panchāṅga convention for a national Nepali patro. Kathmandu
+# sits on the standard NPT meridian (Gauri Shankar ≈ 86.3°E differs by ~4 min of
+# sunrise — immaterial to the day-lists).
+SAIT_REFERENCE_LOCATION = DEFAULT_LOCATION
+
 
 def _snap_to_nearest_city_enabled() -> bool:
     import os
