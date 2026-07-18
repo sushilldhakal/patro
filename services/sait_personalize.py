@@ -15,8 +15,11 @@ navatāra scheme as the rest of the app (:mod:`engine.vedic.navatara`):
 
 Plus a couple of category-specific native rules already discussed:
 
-  * **rudri-jurne** — the Moon should not transit the 4th / 8th / 12th house
-    from the janma rāśi.
+  * **rudri-jurne** — Chandra Bala (the Moon must not transit the 4/8/12 house
+    from the janma rāśi) plus Tārā Bala: the 1/3/5/7 tārās (Janma, Vipat,
+    Pratyak, Nidhana) are avoided — the Janma tārā is barred here, the rest via
+    the shared bad-tone check. (Śiva-vāsa is already the general listing's
+    defining filter.)
   * **annaprasan** — the Janma tārā (navatāra 1) is additionally avoided.
   * **bratabandha** — Guru Śuddhi: Jupiter's house from the native's janma rāśi
     must be favourable (2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti and is
@@ -25,6 +28,13 @@ Plus a couple of category-specific native rules already discussed:
     may sit in the 4/8/12 from the owner's rāśi (a weak planet harms the owner
     or the house — Dharma Sindhu); the owner's own birth star is also avoided
     for the groundbreaking.
+  * **griha-pravesh** — Kumbha Chakra: counting from the Sun's nakṣatra to the
+    entry day's nakṣatra places the day on a limb of the Kumbha; the fire
+    (mukha) and owner-harming (garbha) limbs are vetoed, discomfort/quarrel
+    limbs cautioned, and the wealth / long-life limbs are auspicious.
+  * **byaparik-pratisthan** — Chandra Bala: the transit Moon must avoid the
+    4/8/12 house from the owner's rāśi (3/6/7/10/11 is best for trade); modelled
+    as a single-planet Graha Śuddhi over the Moon.
 
 The Moon's position at birth is geocentric, so janma nakṣatra / rāśi need only
 the birth *instant* (no birth place). Each candidate day's transit Moon is read
@@ -81,6 +91,9 @@ _SHUDDHI_PLANET_META: dict[str, dict[str, Any]] = {
 _SHUDDHI_PLANETS: dict[str, tuple[str, ...]] = {
     "bratabandha": ("guru",),
     "griha-aarambha": ("sun", "moon", "guru", "shukra"),
+    # Business opening — Chandra Bala: the Moon must avoid the 4/8/12 from the
+    # owner's rāśi; 3/6/7/10/11 is auspicious (Muhūrta Chintāmaṇi ch. 2).
+    "byaparik-pratisthan": ("moon",),
 }
 
 
@@ -98,6 +111,49 @@ def _overall_shuddhi_tone(tones: list[str]) -> str:
     if tones and all(t == "good" for t in tones):
         return "good"
     return "shanti"
+
+
+# ── Kumbha Chakra (gṛha-praveśa) ────────────────────────────────────────────
+# Housewarming owner-safety check: count from the nakṣatra the Sun occupies to
+# the entry day's (Moon's) nakṣatra; the resulting "limb" of the Kumbha decides
+# the fortune of the entry (Muhūrta Chintāmaṇi). Fire / harm-to-owner limbs are
+# vetoed; discomfort / quarrel limbs need caution; the rest are auspicious.
+_NAK_SPAN = 360.0 / 27.0
+
+
+def _kumbha_zone(count: int) -> dict[str, str]:
+    if count == 1:
+        z = ("mukha", "मुख", "Mouth", "आगोको भय", "risk of fire", "avoid")
+    elif count <= 5:
+        z = ("purva", "पूर्व", "East", "सुखपूर्वक बस्न कठिन", "hard to live comfortably", "shanti")
+    elif count <= 9:
+        z = ("dakshina", "दक्षिण", "South", "धनलाभ", "brings wealth", "good")
+    elif count <= 13:
+        z = ("paschima", "पश्चिम", "West", "लक्ष्मीलाभ", "gain of Lakṣmī", "good")
+    elif count <= 17:
+        z = ("uttara", "उत्तर", "North", "कलह", "quarrels", "shanti")
+    elif count <= 21:
+        z = ("garbha", "गर्भ", "Womb", "गृहस्वामीको नाश", "harms the owner", "avoid")
+    elif count <= 24:
+        z = ("tala", "तल", "Bottom", "दीर्घायु", "long life", "good")
+    else:
+        z = ("kantha", "कण्ठ", "Throat", "स्थिर वास", "lasting residence", "good")
+    key, ne, en, eff_ne, eff_en, tone = z
+    return {
+        "zone": key,
+        "zone_ne": ne,
+        "zone_en": en,
+        "effect_ne": eff_ne,
+        "effect_en": eff_en,
+        "tone": tone,
+    }
+
+
+def _kumbha_chakra(sunrise_utc, moon_nak: int) -> dict[str, Any]:
+    sun_lon = get_planet_position(sunrise_utc, "sun")["longitude"]
+    sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
+    count = ((moon_nak - sun_nak) % 27) + 1
+    return {"count": count, "sun_nakshatra": sun_nak, **_kumbha_zone(count)}
 
 
 def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
@@ -163,7 +219,10 @@ def _annotate_one(
     moon_house = ((t_rashi - janma_rashi) % 12) + 1
     category_bad = False
     if category == "rudri-jurne":
-        category_bad = moon_house in _RUDRI_BAD_HOUSES
+        # Chandra Bala (Moon not in 4/8/12 from janma) plus the Janma tārā —
+        # rudri avoids the 1/3/5/7 tārās; 3/5/7 fall out via _BAD_TONES, and
+        # the Janma tārā (1, tagged "neutral") is barred here.
+        category_bad = moon_house in _RUDRI_BAD_HOUSES or tara_num == 1
     elif category == "annaprasan":
         # Janma tārā (navatāra 1) is additionally avoided for the first feeding.
         category_bad = tara_num == 1
@@ -173,11 +232,15 @@ def _annotate_one(
 
     # Graha Śuddhi — each relevant planet's house from the janma rāśi.
     shuddhi = _graha_shuddhi(sunrise_utc, janma_rashi, t_rashi, category)
-    shuddhi_tone = shuddhi["tone"] if shuddhi else None
+    # Kumbha Chakra — gṛha-praveśa owner-safety limb (Sun→day nakṣatra count).
+    kumbha = _kumbha_chakra(sunrise_utc, t_nak) if category == "griha-pravesh" else None
+    native_tone = (
+        shuddhi["tone"] if shuddhi else kumbha["tone"] if kumbha else None
+    )
 
     return {
         "suitability": _verdict(
-            tara["tone"], chandra["tone"], category_bad, shuddhi_tone
+            tara["tone"], chandra["tone"], category_bad, native_tone
         ),
         "tara_num": tara_num,
         "tara_tone": tara["tone"],
@@ -186,6 +249,7 @@ def _annotate_one(
         "chandra_tone": chandra["tone"],
         "moon_house": moon_house,
         "shuddhi": shuddhi,
+        "kumbha": kumbha,
         "transit_nakshatra": t_nak,
         "transit_nakshatra_ne": NAKSHATRA_NAMES_NE[t_nak - 1],
         "transit_nakshatra_en": NAKSHATRA_NAMES[t_nak - 1],
