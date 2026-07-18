@@ -15,8 +15,11 @@ navatāra scheme as the rest of the app (:mod:`engine.vedic.navatara`):
 
 Plus a couple of category-specific native rules already discussed:
 
-  * **rudri-jurne** — the Moon should not transit the 4th / 8th / 12th house
-    from the janma rāśi.
+  * **rudri-jurne** — Chandra Bala (the Moon must not transit the 4/8/12 house
+    from the janma rāśi) plus Tārā Bala: the 1/3/5/7 tārās (Janma, Vipat,
+    Pratyak, Nidhana) are avoided — the Janma tārā is barred here, the rest via
+    the shared bad-tone check. (Śiva-vāsa is already the general listing's
+    defining filter.)
   * **annaprasan** — the Janma tārā (navatāra 1) is additionally avoided.
   * **bratabandha** — Guru Śuddhi: Jupiter's house from the native's janma rāśi
     must be favourable (2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti and is
@@ -216,7 +219,10 @@ def _annotate_one(
     moon_house = ((t_rashi - janma_rashi) % 12) + 1
     category_bad = False
     if category == "rudri-jurne":
-        category_bad = moon_house in _RUDRI_BAD_HOUSES
+        # Chandra Bala (Moon not in 4/8/12 from janma) plus the Janma tārā —
+        # rudri avoids the 1/3/5/7 tārās; 3/5/7 fall out via _BAD_TONES, and
+        # the Janma tārā (1, tagged "neutral") is barred here.
+        category_bad = moon_house in _RUDRI_BAD_HOUSES or tara_num == 1
     elif category == "annaprasan":
         # Janma tārā (navatāra 1) is additionally avoided for the first feeding.
         category_bad = tara_num == 1

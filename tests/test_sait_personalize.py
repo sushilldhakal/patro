@@ -95,6 +95,18 @@ def test_non_shuddhi_category_has_no_shuddhi():
         assert d["kumbha"] is None
 
 
+def test_rudri_avoids_janma_tara_and_bad_chandra():
+    res = personalize_sait(2083, "rudri-jurne", 18, 8, DEFAULT_LOCATION)
+    assert res["days"], "expected some Śiva-vāsa days to annotate"
+    for d in res["days"]:
+        # Janma tārā (1) and a 4/8/12 Moon must both force an avoid verdict.
+        if d["tara_num"] == 1 or d["moon_house"] in {4, 8, 12}:
+            assert d["suitability"] == "avoid"
+        # The Janma tārā can never read as favourable for rudri.
+        if d["tara_num"] == 1:
+            assert d["suitability"] != "favourable"
+
+
 def test_kumbha_zone_limbs():
     # Fire (mukha) and owner-harm (garbha) limbs are vetoed.
     assert _kumbha_zone(1)["tone"] == "avoid"      # Mouth — fire
