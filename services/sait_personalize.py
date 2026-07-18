@@ -18,6 +18,10 @@ Plus a couple of category-specific native rules already discussed:
   * **rudri-jurne** — the Moon should not transit the 4th / 8th / 12th house
     from the janma rāśi.
   * **annaprasan** — the Janma tārā (navatāra 1) is additionally avoided.
+  * **bratabandha** — Guru Śuddhi: Jupiter's house from the native's janma rāśi
+    must be favourable. Jupiter in the 2/5/7/9/11 house is auspicious; in the
+    1/3/6/10 house a pacification rite (śānti) is needed, so the day is capped
+    at *neutral*; in the 4/8/12 house it is avoided (Muhūrta Chintāmaṇi).
 
 The Moon's position at birth is geocentric, so janma nakṣatra / rāśi need only
 the birth *instant* (no birth place). Each candidate day's transit Moon is read
@@ -38,7 +42,7 @@ from engine.astronomy.positions import (
     get_chandra_rashi,
     get_nakshatra,
 )
-from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.astronomy.swiss_eph import calculate_sunrise, get_planet_position
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
@@ -51,6 +55,21 @@ _GOOD_TONES = frozenset({"best", "good"})
 
 # Houses (from the janma rāśi) the Moon should avoid for a Rudri homa.
 _RUDRI_BAD_HOUSES = frozenset({4, 8, 12})
+
+# Guru Śuddhi (Upanayana / bratabandha): Jupiter's house from the native's janma
+# rāśi. 2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti (capped at neutral);
+# 4/8/12 avoided.
+_GURU_GOOD_HOUSES = frozenset({2, 5, 7, 9, 11})
+_GURU_SHANTI_HOUSES = frozenset({1, 3, 6, 10})
+_GURU_AVOID_HOUSES = frozenset({4, 8, 12})
+
+
+def _guru_tone(guru_house: int) -> str:
+    if guru_house in _GURU_AVOID_HOUSES:
+        return "avoid"
+    if guru_house in _GURU_SHANTI_HOUSES:
+        return "shanti"
+    return "good"
 
 
 def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
@@ -71,10 +90,22 @@ def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
 
 
 def _verdict(
-    tara_tone: str, chandra_tone: str, category_bad: bool
+    tara_tone: str,
+    chandra_tone: str,
+    category_bad: bool,
+    guru_tone: str | None = None,
 ) -> str:
-    if category_bad or tara_tone in _BAD_TONES or chandra_tone in _BAD_TONES:
+    if (
+        category_bad
+        or tara_tone in _BAD_TONES
+        or chandra_tone in _BAD_TONES
+        or guru_tone == "avoid"
+    ):
         return "avoid"
+    # Guru in a 1/3/6/10 house needs a pacification rite — never fully
+    # favourable, even when the Moon strength is good.
+    if guru_tone == "shanti":
+        return "neutral"
     if tara_tone in _GOOD_TONES and chandra_tone in _GOOD_TONES:
         return "favourable"
     return "neutral"
@@ -109,14 +140,31 @@ def _annotate_one(
         # Janma tārā (navatāra 1) is additionally avoided for the first feeding.
         category_bad = tara_num == 1
 
+    # Guru Śuddhi — bratabandha only: Jupiter's house from the janma rāśi.
+    guru_house: int | None = None
+    guru_tone: str | None = None
+    guru_rashi: int | None = None
+    if category == "bratabandha":
+        jup_lon = get_planet_position(sunrise_utc, "jupiter")["longitude"]
+        guru_rashi = int(jup_lon / 30) % 12 + 1
+        guru_house = ((guru_rashi - janma_rashi) % 12) + 1
+        guru_tone = _guru_tone(guru_house)
+
     return {
-        "suitability": _verdict(tara["tone"], chandra["tone"], category_bad),
+        "suitability": _verdict(
+            tara["tone"], chandra["tone"], category_bad, guru_tone
+        ),
         "tara_num": tara_num,
         "tara_tone": tara["tone"],
         "tara_ne": tara["tara"],
         "chandra_num": chandra_num,
         "chandra_tone": chandra["tone"],
         "moon_house": moon_house,
+        "guru_house": guru_house,
+        "guru_tone": guru_tone,
+        "guru_rashi": guru_rashi,
+        "guru_rashi_ne": RASHI_NAMES_NE[guru_rashi - 1] if guru_rashi else None,
+        "guru_rashi_en": RASHI_NAMES[guru_rashi - 1] if guru_rashi else None,
         "transit_nakshatra": t_nak,
         "transit_nakshatra_ne": NAKSHATRA_NAMES_NE[t_nak - 1],
         "transit_nakshatra_en": NAKSHATRA_NAMES[t_nak - 1],
