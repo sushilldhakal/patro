@@ -1,7 +1,10 @@
 """Tests for profile-based (native) sāit annotation, incl. Graha Śuddhi."""
 
+from datetime import date
+
 from engine.astronomy.location import DEFAULT_LOCATION
 from services.sait_personalize import (
+    _annaprasan_month,
     _kumbha_zone,
     _overall_shuddhi_tone,
     _planet_tone,
@@ -93,6 +96,53 @@ def test_non_shuddhi_category_has_no_shuddhi():
     for d in res["days"]:
         assert d["shuddhi"] is None
         assert d["kumbha"] is None
+
+
+def test_agni_jurne_mukha_and_chandra_bala():
+    res = personalize_sait(2083, "agni-jurne", 18, 8, DEFAULT_LOCATION)
+    assert res["days"], "expected some Agni-vāsa days to annotate"
+    for d in res["days"]:
+        a = d["agni_mukha"]
+        assert a is not None
+        assert 1 <= a["count"] <= 27
+        assert a["planet_ne"]
+        # A malefic mouth or a 4/8/12 Moon must force an avoid verdict.
+        if not a["benefic"] or d["moon_house"] in {4, 8, 12}:
+            assert d["suitability"] == "avoid"
+        assert d["shuddhi"] is None and d["kumbha"] is None
+
+
+def test_annaprasan_month_rule():
+    # Boy born 2083-01-01 (AD ~mid-Apr 2026): even months auspicious.
+    birth = date(2026, 4, 14)
+    # 6 completed months → in the boy's set {6,8,10,12}.
+    m = _annaprasan_month(date(2026, 10, 20), birth, "male")
+    assert m["ordinal_month"] == 6 and m["matches"] and m["tone"] == "good"
+    # 7 completed months → not in the boy's set.
+    m = _annaprasan_month(date(2026, 11, 20), birth, "male")
+    assert m["ordinal_month"] == 7 and not m["matches"] and m["tone"] == "avoid"
+    # Girl: odd months auspicious — 5 completed months is good.
+    m = _annaprasan_month(date(2026, 9, 20), birth, "female")
+    assert m["ordinal_month"] == 5 and m["matches"]
+    # No gender / "other" / no birth date → rule does not apply.
+    assert _annaprasan_month(date(2026, 10, 20), birth, "other") is None
+    assert _annaprasan_month(date(2026, 10, 20), birth, "") is None
+    assert _annaprasan_month(date(2026, 10, 20), None, "male") is None
+
+
+def test_annaprasan_personalize_carries_month():
+    res = personalize_sait(
+        2083, "annaprasan", 18, 8, DEFAULT_LOCATION,
+        birth_date=date(2026, 4, 14), gender="male",
+    )
+    for d in res["days"]:
+        assert d["anna_month"] is not None
+        assert d["anna_month"]["gender"] == "male"
+        if not d["anna_month"]["matches"]:
+            assert d["suitability"] == "avoid"
+    # Without gender the month rule is skipped (annotation is None).
+    res2 = personalize_sait(2083, "annaprasan", 18, 8, DEFAULT_LOCATION)
+    assert all(d["anna_month"] is None for d in res2["days"])
 
 
 def test_rudri_avoids_janma_tara_and_bad_chandra():

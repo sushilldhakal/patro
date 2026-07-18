@@ -20,7 +20,13 @@ Plus a couple of category-specific native rules already discussed:
     Pratyak, Nidhana) are avoided — the Janma tārā is barred here, the rest via
     the shared bad-tone check. (Śiva-vāsa is already the general listing's
     defining filter.)
-  * **annaprasan** — the Janma tārā (navatāra 1) is additionally avoided.
+  * **agni-jurne** — Chandra Bala (4/8/12 barred) and Tārā Bala (3/5/7 via the
+    shared check; the Janma tārā is *not* barred), plus Agni-mukha: the day is
+    fit only when a benefic graha (Budha/Śukra/Candra/Guru) receives the
+    oblation. (Agni-vāsa is already the general listing's defining filter.)
+  * **annaprasan** — the Janma tārā (navatāra 1) is avoided, and — when the
+    profile gives a birth date and gender — the first feeding is timed to the
+    child's age: even months (6/8/10/12) for a boy, odd (5/7/9/11) for a girl.
   * **bratabandha** — Guru Śuddhi: Jupiter's house from the native's janma rāśi
     must be favourable (2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti and is
     capped at *neutral*; 4/8/12 avoided — Muhūrta Chintāmaṇi).
@@ -44,7 +50,7 @@ with the deterministic Vās categories.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
@@ -66,8 +72,9 @@ from services.sait_api import get_sait_month_entries
 _BAD_TONES = frozenset({"bad", "worst"})
 _GOOD_TONES = frozenset({"best", "good"})
 
-# Houses (from the janma rāśi) the Moon should avoid for a Rudri homa.
-_RUDRI_BAD_HOUSES = frozenset({4, 8, 12})
+# Chandra Bala — the Moon should avoid these houses from the janma rāśi
+# (shared by the rudri / agni homa rules).
+_CHANDRA_BALA_BAD_HOUSES = frozenset({4, 8, 12})
 
 # ── Graha Śuddhi ────────────────────────────────────────────────────────────
 # Some saṃskāras additionally require the relevant grahas to transit a strong
@@ -156,6 +163,73 @@ def _kumbha_chakra(sunrise_utc, moon_nak: int) -> dict[str, Any]:
     return {"count": count, "sun_nakshatra": sun_nak, **_kumbha_zone(count)}
 
 
+# ── Agni-mukha (agni-jurne) ─────────────────────────────────────────────────
+# The graha that "receives" the oblation: count from the Sun's nakṣatra to the
+# day's nakṣatra, in groups of three. Only a benefic mouth (Budha, Śukra,
+# Candra, Guru) is fit for a homa; a malefic mouth spoils the rite.
+_AGNI_MUKHA_PLANETS: tuple[tuple[str, str, str, bool], ...] = (
+    ("sun", "सूर्य", "Sun", False),
+    ("mercury", "बुध", "Mercury", True),
+    ("venus", "शुक्र", "Venus", True),
+    ("saturn", "शनि", "Saturn", False),
+    ("moon", "चन्द्र", "Moon", True),
+    ("mars", "मंगल", "Mars", False),
+    ("jupiter", "गुरु", "Jupiter", True),
+    ("rahu", "राहु", "Rahu", False),
+    ("ketu", "केतु", "Ketu", False),
+)
+
+
+def _agni_mukha(sunrise_utc, moon_nak: int) -> dict[str, Any]:
+    sun_lon = get_planet_position(sunrise_utc, "sun")["longitude"]
+    sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
+    count = ((moon_nak - sun_nak) % 27) + 1
+    key, ne, en, benefic = _AGNI_MUKHA_PLANETS[(count - 1) // 3]
+    return {
+        "count": count,
+        "sun_nakshatra": sun_nak,
+        "planet": key,
+        "planet_ne": ne,
+        "planet_en": en,
+        "benefic": benefic,
+        "tone": "good" if benefic else "avoid",
+    }
+
+
+# ── Annaprāśana month (annaprasan) ──────────────────────────────────────────
+# The first feeding is timed to the child's age: even months (6/8/10/12) for a
+# boy, odd months (5/7/9/11) for a girl (Muhūrta Chintāmaṇi). Needs the child's
+# birth date + gender, so it only annotates when the profile supplies both.
+_ANNAPRASAN_MONTHS: dict[str, frozenset[int]] = {
+    "male": frozenset({6, 8, 10, 12}),
+    "female": frozenset({5, 7, 9, 11}),
+}
+
+
+def _annaprasan_month(
+    greg: date, birth_date: date | None, gender: str | None
+) -> dict[str, Any] | None:
+    if birth_date is None or not gender:
+        return None
+    g = gender.strip().lower()
+    sex = "male" if g.startswith("m") else "female" if g.startswith("f") else None
+    if sex is None:  # "other"/unknown — the even/odd rule doesn't apply
+        return None
+    # Completed months of life at the candidate day.
+    months = (greg.year - birth_date.year) * 12 + (greg.month - birth_date.month)
+    if greg.day < birth_date.day:
+        months -= 1
+    matches = months in _ANNAPRASAN_MONTHS[sex]
+    return {
+        "ordinal_month": months,
+        "gender": sex,
+        "matches": matches,
+        # Right age-month → auspicious; any other month is not this child's
+        # annaprāśana window.
+        "tone": "good" if matches else "avoid",
+    }
+
+
 def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
     """Janma (birth) Moon nakṣatra + rāśi from a naive local birth datetime.
 
@@ -201,6 +275,8 @@ def _annotate_one(
     janma_nak: int,
     janma_rashi: int,
     category: str,
+    birth_date: date | None = None,
+    gender: str | None = None,
 ) -> dict[str, Any]:
     sunrise_utc = calculate_sunrise(
         greg,
@@ -222,7 +298,11 @@ def _annotate_one(
         # Chandra Bala (Moon not in 4/8/12 from janma) plus the Janma tārā —
         # rudri avoids the 1/3/5/7 tārās; 3/5/7 fall out via _BAD_TONES, and
         # the Janma tārā (1, tagged "neutral") is barred here.
-        category_bad = moon_house in _RUDRI_BAD_HOUSES or tara_num == 1
+        category_bad = moon_house in _CHANDRA_BALA_BAD_HOUSES or tara_num == 1
+    elif category == "agni-jurne":
+        # Chandra Bala only — agni avoids the 3/5/7 tārās (via _BAD_TONES) but,
+        # unlike rudri, not the Janma tārā.
+        category_bad = moon_house in _CHANDRA_BALA_BAD_HOUSES
     elif category == "annaprasan":
         # Janma tārā (navatāra 1) is additionally avoided for the first feeding.
         category_bad = tara_num == 1
@@ -234,8 +314,16 @@ def _annotate_one(
     shuddhi = _graha_shuddhi(sunrise_utc, janma_rashi, t_rashi, category)
     # Kumbha Chakra — gṛha-praveśa owner-safety limb (Sun→day nakṣatra count).
     kumbha = _kumbha_chakra(sunrise_utc, t_nak) if category == "griha-pravesh" else None
-    native_tone = (
-        shuddhi["tone"] if shuddhi else kumbha["tone"] if kumbha else None
+    # Agni-mukha — the graha that receives the oblation (agni-jurne).
+    agni = _agni_mukha(sunrise_utc, t_nak) if category == "agni-jurne" else None
+    # Annaprāśana age-month — even/odd month by the child's gender.
+    anna = (
+        _annaprasan_month(greg, birth_date, gender)
+        if category == "annaprasan"
+        else None
+    )
+    native_tone = next(
+        (f["tone"] for f in (shuddhi, kumbha, agni, anna) if f), None
     )
 
     return {
@@ -250,6 +338,8 @@ def _annotate_one(
         "moon_house": moon_house,
         "shuddhi": shuddhi,
         "kumbha": kumbha,
+        "agni_mukha": agni,
+        "anna_month": anna,
         "transit_nakshatra": t_nak,
         "transit_nakshatra_ne": NAKSHATRA_NAMES_NE[t_nak - 1],
         "transit_nakshatra_en": NAKSHATRA_NAMES[t_nak - 1],
@@ -300,6 +390,8 @@ def personalize_sait(
     janma_nakshatra: int,
     janma_rashi: int,
     location: ObserverLocation = DEFAULT_LOCATION,
+    birth_date: date | None = None,
+    gender: str | None = None,
 ) -> dict[str, Any]:
     """Annotate every generally-auspicious day of the year with a native verdict.
 
@@ -320,7 +412,13 @@ def personalize_sait(
         for bs_day in month.get("days", []):
             greg = bs_to_gregorian(bs_year, bs_month, bs_day)
             annotation = _annotate_one(
-                greg, location, janma_nakshatra, janma_rashi, category
+                greg,
+                location,
+                janma_nakshatra,
+                janma_rashi,
+                category,
+                birth_date,
+                gender,
             )
             days_out.append(
                 {"bs_month": bs_month, "bs_day": bs_day, **annotation}

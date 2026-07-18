@@ -432,6 +432,7 @@ def nepal_sait_personalize(
     birth_tz: str = "Asia/Kathmandu",
     janma_nakshatra: int | None = None,
     janma_rashi: int | None = None,
+    gender: str | None = None,
 ):
     """Native (profile-based) verdict for each generally-auspicious day.
 
@@ -442,10 +443,21 @@ def nepal_sait_personalize(
     Supply either the janma Moon directly (``janma_nakshatra`` 1–27 and
     ``janma_rashi`` 1–12) or a naive birth datetime (``birth`` = ``YYYY-MM-DDTHH:MM``
     interpreted in ``birth_tz``), from which the janma Moon is computed.
+
+    ``gender`` (with a ``birth`` date) enables the annaprāśana age-month rule.
     """
+    from datetime import date as _date
+
     _validate_bs_year(bs_year)
     from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL
     from services.sait_personalize import compute_janma_points, personalize_sait
+
+    birth_date: _date | None = None
+    if birth:
+        try:
+            birth_date = _date.fromisoformat(birth.split("T")[0])
+        except ValueError:
+            birth_date = None
 
     try:
         if janma_nakshatra is None or janma_rashi is None:
@@ -457,7 +469,13 @@ def nepal_sait_personalize(
             janma_nakshatra = janma["nakshatra"]
             janma_rashi = janma["rashi"]
         payload = personalize_sait(
-            bs_year, category, janma_nakshatra, janma_rashi, location,
+            bs_year,
+            category,
+            janma_nakshatra,
+            janma_rashi,
+            location,
+            birth_date=birth_date,
+            gender=gender,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
