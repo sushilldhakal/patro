@@ -19,9 +19,12 @@ Plus a couple of category-specific native rules already discussed:
     from the janma rāśi.
   * **annaprasan** — the Janma tārā (navatāra 1) is additionally avoided.
   * **bratabandha** — Guru Śuddhi: Jupiter's house from the native's janma rāśi
-    must be favourable. Jupiter in the 2/5/7/9/11 house is auspicious; in the
-    1/3/6/10 house a pacification rite (śānti) is needed, so the day is capped
-    at *neutral*; in the 4/8/12 house it is avoided (Muhūrta Chintāmaṇi).
+    must be favourable (2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti and is
+    capped at *neutral*; 4/8/12 avoided — Muhūrta Chintāmaṇi).
+  * **griha-aarambha** — Graha Śuddhi over Sūrya, Candra, Guru and Śukra: none
+    may sit in the 4/8/12 from the owner's rāśi (a weak planet harms the owner
+    or the house — Dharma Sindhu); the owner's own birth star is also avoided
+    for the groundbreaking.
 
 The Moon's position at birth is geocentric, so janma nakṣatra / rāśi need only
 the birth *instant* (no birth place). Each candidate day's transit Moon is read
@@ -56,20 +59,45 @@ _GOOD_TONES = frozenset({"best", "good"})
 # Houses (from the janma rāśi) the Moon should avoid for a Rudri homa.
 _RUDRI_BAD_HOUSES = frozenset({4, 8, 12})
 
-# Guru Śuddhi (Upanayana / bratabandha): Jupiter's house from the native's janma
-# rāśi. 2/5/7/9/11 auspicious; 1/3/6/10 needs a śānti (capped at neutral);
-# 4/8/12 avoided.
-_GURU_GOOD_HOUSES = frozenset({2, 5, 7, 9, 11})
-_GURU_SHANTI_HOUSES = frozenset({1, 3, 6, 10})
-_GURU_AVOID_HOUSES = frozenset({4, 8, 12})
+# ── Graha Śuddhi ────────────────────────────────────────────────────────────
+# Some saṃskāras additionally require the relevant grahas to transit a strong
+# house from the native's janma rāśi (Muhūrta Chintāmaṇi / Dharma Sindhu). For
+# every such planet: the 4/8/12 house is avoided; its "good" houses are
+# auspicious; anything else needs a śānti (capped at neutral).
+#
+#   bratabandha    — Guru Śuddhi (Jupiter).
+#   griha-aarambha — Sūrya, Candra, Guru, Śukra must all be strong; a planet in
+#                    the 4/8/12 from the owner's rāśi harms the owner / house.
+_SHUDDHI_AVOID_HOUSES = frozenset({4, 8, 12})
+
+_SHUDDHI_PLANET_META: dict[str, dict[str, Any]] = {
+    "sun": {"swe": "sun", "ne": "सूर्य", "en": "Sun", "good": frozenset({3, 6, 10, 11})},
+    "moon": {"swe": "moon", "ne": "चन्द्र", "en": "Moon", "good": frozenset({3, 6, 7, 10, 11})},
+    "guru": {"swe": "jupiter", "ne": "गुरु", "en": "Jupiter", "good": frozenset({2, 5, 7, 9, 11})},
+    "shukra": {"swe": "venus", "ne": "शुक्र", "en": "Venus", "good": frozenset({2, 5, 7, 9, 11})},
+}
+
+# Which planets each ceremony's Graha Śuddhi checks (order = display order).
+_SHUDDHI_PLANETS: dict[str, tuple[str, ...]] = {
+    "bratabandha": ("guru",),
+    "griha-aarambha": ("sun", "moon", "guru", "shukra"),
+}
 
 
-def _guru_tone(guru_house: int) -> str:
-    if guru_house in _GURU_AVOID_HOUSES:
+def _planet_tone(house: int, good_houses: frozenset[int]) -> str:
+    if house in _SHUDDHI_AVOID_HOUSES:
         return "avoid"
-    if guru_house in _GURU_SHANTI_HOUSES:
-        return "shanti"
-    return "good"
+    if house in good_houses:
+        return "good"
+    return "shanti"
+
+
+def _overall_shuddhi_tone(tones: list[str]) -> str:
+    if any(t == "avoid" for t in tones):
+        return "avoid"
+    if tones and all(t == "good" for t in tones):
+        return "good"
+    return "shanti"
 
 
 def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
@@ -93,18 +121,18 @@ def _verdict(
     tara_tone: str,
     chandra_tone: str,
     category_bad: bool,
-    guru_tone: str | None = None,
+    shuddhi_tone: str | None = None,
 ) -> str:
     if (
         category_bad
         or tara_tone in _BAD_TONES
         or chandra_tone in _BAD_TONES
-        or guru_tone == "avoid"
+        or shuddhi_tone == "avoid"
     ):
         return "avoid"
-    # Guru in a 1/3/6/10 house needs a pacification rite — never fully
-    # favourable, even when the Moon strength is good.
-    if guru_tone == "shanti":
+    # A graha needing a pacification rite (śānti) is never fully favourable,
+    # even when the Moon strength is good.
+    if shuddhi_tone == "shanti":
         return "neutral"
     if tara_tone in _GOOD_TONES and chandra_tone in _GOOD_TONES:
         return "favourable"
@@ -139,20 +167,17 @@ def _annotate_one(
     elif category == "annaprasan":
         # Janma tārā (navatāra 1) is additionally avoided for the first feeding.
         category_bad = tara_num == 1
+    elif category == "griha-aarambha":
+        # The owner's own birth star is avoided for the groundbreaking.
+        category_bad = t_nak == janma_nak
 
-    # Guru Śuddhi — bratabandha only: Jupiter's house from the janma rāśi.
-    guru_house: int | None = None
-    guru_tone: str | None = None
-    guru_rashi: int | None = None
-    if category == "bratabandha":
-        jup_lon = get_planet_position(sunrise_utc, "jupiter")["longitude"]
-        guru_rashi = int(jup_lon / 30) % 12 + 1
-        guru_house = ((guru_rashi - janma_rashi) % 12) + 1
-        guru_tone = _guru_tone(guru_house)
+    # Graha Śuddhi — each relevant planet's house from the janma rāśi.
+    shuddhi = _graha_shuddhi(sunrise_utc, janma_rashi, t_rashi, category)
+    shuddhi_tone = shuddhi["tone"] if shuddhi else None
 
     return {
         "suitability": _verdict(
-            tara["tone"], chandra["tone"], category_bad, guru_tone
+            tara["tone"], chandra["tone"], category_bad, shuddhi_tone
         ),
         "tara_num": tara_num,
         "tara_tone": tara["tone"],
@@ -160,16 +185,48 @@ def _annotate_one(
         "chandra_num": chandra_num,
         "chandra_tone": chandra["tone"],
         "moon_house": moon_house,
-        "guru_house": guru_house,
-        "guru_tone": guru_tone,
-        "guru_rashi": guru_rashi,
-        "guru_rashi_ne": RASHI_NAMES_NE[guru_rashi - 1] if guru_rashi else None,
-        "guru_rashi_en": RASHI_NAMES[guru_rashi - 1] if guru_rashi else None,
+        "shuddhi": shuddhi,
         "transit_nakshatra": t_nak,
         "transit_nakshatra_ne": NAKSHATRA_NAMES_NE[t_nak - 1],
         "transit_nakshatra_en": NAKSHATRA_NAMES[t_nak - 1],
         "transit_rashi_ne": RASHI_NAMES_NE[t_rashi - 1],
         "transit_rashi_en": RASHI_NAMES[t_rashi - 1],
+    }
+
+
+def _graha_shuddhi(
+    sunrise_utc, janma_rashi: int, moon_rashi: int, category: str
+) -> dict[str, Any] | None:
+    """Per-planet house (from the janma rāśi) for the ceremony's Graha Śuddhi.
+
+    Returns ``{"tone", "planets": [{"planet", "house", "tone", "rashi_ne",
+    "rashi_en"}]}`` for the ceremonies that require it (bratabandha,
+    griha-aarambha), else ``None``.
+    """
+    planets = _SHUDDHI_PLANETS.get(category)
+    if not planets:
+        return None
+    factors: list[dict[str, Any]] = []
+    for key in planets:
+        meta = _SHUDDHI_PLANET_META[key]
+        if key == "moon":
+            p_rashi = moon_rashi  # already read at this sunrise
+        else:
+            lon = get_planet_position(sunrise_utc, meta["swe"])["longitude"]
+            p_rashi = int(lon / 30) % 12 + 1
+        house = ((p_rashi - janma_rashi) % 12) + 1
+        factors.append(
+            {
+                "planet": key,
+                "house": house,
+                "tone": _planet_tone(house, meta["good"]),
+                "rashi_ne": RASHI_NAMES_NE[p_rashi - 1],
+                "rashi_en": RASHI_NAMES[p_rashi - 1],
+            }
+        )
+    return {
+        "tone": _overall_shuddhi_tone([f["tone"] for f in factors]),
+        "planets": factors,
     }
 
 
