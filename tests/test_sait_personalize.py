@@ -69,6 +69,25 @@ def test_griha_aarambha_checks_four_grahas():
             assert d["suitability"] == "avoid"
 
 
+def test_byaparik_pratisthan_chandra_bala():
+    # Business opening = single-planet (Moon) Graha Śuddhi from the janma rāśi.
+    res = personalize_sait(2083, "byaparik-pratisthan", 18, 8, DEFAULT_LOCATION)
+    assert res["days"], "expected some generally-auspicious days to annotate"
+    for d in res["days"]:
+        sh = d["shuddhi"]
+        assert sh is not None
+        assert [p["planet"] for p in sh["planets"]] == ["moon"]
+        moon = sh["planets"][0]
+        # The Moon's shuddhi house must match the generic moon_house.
+        assert moon["house"] == d["moon_house"]
+        if moon["house"] in {4, 8, 12}:
+            assert moon["tone"] == "avoid"
+            assert d["suitability"] == "avoid"
+        elif moon["house"] in {3, 6, 7, 10, 11}:
+            assert moon["tone"] == "good"
+        assert d["kumbha"] is None
+
+
 def test_non_shuddhi_category_has_no_shuddhi():
     res = personalize_sait(2083, "rudri-jurne", 18, 8, DEFAULT_LOCATION)
     for d in res["days"]:

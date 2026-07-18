@@ -29,6 +29,9 @@ Plus a couple of category-specific native rules already discussed:
     entry day's nakṣatra places the day on a limb of the Kumbha; the fire
     (mukha) and owner-harming (garbha) limbs are vetoed, discomfort/quarrel
     limbs cautioned, and the wealth / long-life limbs are auspicious.
+  * **byaparik-pratisthan** — Chandra Bala: the transit Moon must avoid the
+    4/8/12 house from the owner's rāśi (3/6/7/10/11 is best for trade); modelled
+    as a single-planet Graha Śuddhi over the Moon.
 
 The Moon's position at birth is geocentric, so janma nakṣatra / rāśi need only
 the birth *instant* (no birth place). Each candidate day's transit Moon is read
@@ -85,6 +88,9 @@ _SHUDDHI_PLANET_META: dict[str, dict[str, Any]] = {
 _SHUDDHI_PLANETS: dict[str, tuple[str, ...]] = {
     "bratabandha": ("guru",),
     "griha-aarambha": ("sun", "moon", "guru", "shukra"),
+    # Business opening — Chandra Bala: the Moon must avoid the 4/8/12 from the
+    # owner's rāśi; 3/6/7/10/11 is auspicious (Muhūrta Chintāmaṇi ch. 2).
+    "byaparik-pratisthan": ("moon",),
 }
 
 
