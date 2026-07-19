@@ -33,7 +33,9 @@ logger = logging.getLogger(__name__)
 #     orbs corrected (Mercury 13/12, Venus 9/8) — both read by the report.
 # v9: dasha year length 365.2425→360 (savana year), shifting every dasha date
 #     the report prints; Oja-Yugma Bala now requires both rashi+navamsha parity.
-CACHE_PAYLOAD_VERSION = 9
+# v10: yoga rules aligned to BPHS (Kemadruma now also needs no planet in an
+#      angle from the Lagna, plus catalog-only fixes read by the Kundali page).
+CACHE_PAYLOAD_VERSION = 10
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (
