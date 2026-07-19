@@ -21,7 +21,10 @@ logger = logging.getLogger(__name__)
 
 # Bump when cached record shape or report algorithm changes.
 # v3: added "Life journey" and "What to pursue & when" sections.
-CACHE_PAYLOAD_VERSION = 3
+# v4: full native-Nepali report (every section authored per-language instead
+#     of machine phrase-translation); removed the "s"→"हरू" translator bug that
+#     shredded English letters; yogas, factors and dates now localize cleanly.
+CACHE_PAYLOAD_VERSION = 4
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (
