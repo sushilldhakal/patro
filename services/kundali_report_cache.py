@@ -29,7 +29,9 @@ logger = logging.getLogger(__name__)
 #     shifts Shadbala totals/statuses the report reads from.
 # v7: D30 (Trimshamsha) even-sign Jupiter/Saturn spans corrected, which feeds
 #     the Saptavargaja component of Shadbala.
-CACHE_PAYLOAD_VERSION = 7
+# v8: Sun's required Shadbala 300→390 (shifts Sun's status), and combustion
+#     orbs corrected (Mercury 13/12, Venus 9/8) — both read by the report.
+CACHE_PAYLOAD_VERSION = 8
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

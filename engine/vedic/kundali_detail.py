@@ -950,6 +950,7 @@ def build_kundali_detail(
     vimshopaka_d1_signs = {p: sign_of(lon) for p, lon in planet_lons.items()}
     vimshopaka = compute_vimshopaka(planet_lons, vimshopaka_d1_signs)
 
+    from engine.vedic.interpretation import combust_orb
     combustion: dict[str, bool | None] = {}
     for key in PLANET_KEYS:
         if key not in COMBUST_ORB:
@@ -959,8 +960,10 @@ def build_kundali_detail(
         else:
             raw = planets.get(key)
             lon = float(raw["longitude"]) if raw else None
+            retro = bool(raw.get("is_retrograde", raw.get("retrograde", False))) if raw else False
+            orb = combust_orb(key, retro)
             combustion[key] = (
-                lon is not None and _angular_sep(lon, sun_lon) < COMBUST_ORB[key]
+                lon is not None and orb is not None and _angular_sep(lon, sun_lon) < orb
             )
 
     return {

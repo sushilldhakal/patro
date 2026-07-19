@@ -44,9 +44,11 @@ NAISARGIKA = {
     "mercury": 25.71, "mars": 17.14, "saturn": 8.57,
 }
 
-# Classical minimum required Shadbala, in Virupas (Rupas × 60).
+# Classical minimum required Shadbala, in Virupas (Rupas × 60). Per the
+# reference book: Sun 6.5, Moon 6, Mars 5, Mercury 7, Jupiter 6.5, Venus 5.5,
+# Saturn 5 rupas.
 REQUIRED = {
-    "sun": 300.0, "moon": 360.0, "mars": 300.0, "mercury": 420.0,
+    "sun": 390.0, "moon": 360.0, "mars": 300.0, "mercury": 420.0,
     "jupiter": 390.0, "venus": 330.0, "saturn": 300.0,
 }
 
