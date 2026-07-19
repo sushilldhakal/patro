@@ -283,7 +283,10 @@ def nepal_graha_asta_year(bs_year: int, location: LocationDep, request: Request)
     _validate_bs_year(bs_year)
     from engine.vedic.graha_detail import build_graha_asta_year
 
-    key = f"grahaasta_{bs_year}_{location_cache_key(location)}"
+    # `v2`: response shape changed from loose events → per-graha asta periods
+    # (incl. Moon Tara Asta). Bumping the key orphans stale `events`-shaped
+    # disk/blob cache entries built by the previous deploy.
+    key = f"grahaasta_v2_{bs_year}_{location_cache_key(location)}"
     return serve_cached_json(
         request, key, lambda: build_graha_asta_year(bs_year, location),
         cache_control=bs_year_cache_control(bs_year),
