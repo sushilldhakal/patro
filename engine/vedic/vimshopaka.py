@@ -54,16 +54,33 @@ SAPTAVARGA_DIVS = (1, 2, 3, 7, 9, 12, 30)
 DASHAVARGA_DIVS = (1, 2, 3, 7, 9, 10, 12, 16, 30, 60)
 SHODASHAVARGA_DIVS = (1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
 
-# Swavishwa — the points each division carries within a classification (they sum
-# to 20). Only Shadvarga is filled from the reference book so far; the other
-# three tables are pending the book's exact values and are left as None so those
-# classifications are simply omitted until provided.
+# Swavishwa — the points each division carries within a classification. Values
+# are from the reference book; each column totals exactly 20. Keys are the varga
+# division numbers (D1 = Rashi, D2 = Hora, … D60 = Shastiamsha), in ascending
+# order so the emitted `divisions` list reads naturally.
 SWAVISHWA: dict[str, Optional[dict[int, float]]] = {
-    "shadvarga": {1: 6.0, 9: 5.0, 3: 4.0, 2: 2.0, 12: 2.0, 30: 1.0},
-    "saptavarga": None,       # TODO: fill from book — 7 divisions, sum 20
-    "dashavarga": None,       # TODO: fill from book — 10 divisions, sum 20
-    "shodashavarga": None,    # TODO: fill from book — 16 divisions, sum 20
+    # Rashi 6, Hora 2, Drekkana 4, Navamsha 5, Dwadashamsha 2, Trimshamsha 1.
+    "shadvarga": {1: 6.0, 2: 2.0, 3: 4.0, 9: 5.0, 12: 2.0, 30: 1.0},
+    # Shadvarga split + Saptamsha 1 (Rashi 5, Hora 2, Drekkana 3, Saptamsha 1,
+    # Navamsha 2.5, Dwadashamsha 4.5, Trimshamsha 2).
+    "saptavarga": {1: 5.0, 2: 2.0, 3: 3.0, 7: 1.0, 9: 2.5, 12: 4.5, 30: 2.0},
+    # Rashi 3, Shastiamsha 5, all eight others 1.5 each.
+    "dashavarga": {
+        1: 3.0, 2: 1.5, 3: 1.5, 7: 1.5, 9: 1.5, 10: 1.5,
+        12: 1.5, 16: 1.5, 30: 1.5, 60: 5.0,
+    },
+    # Rashi 3.5, Navamsha 3, Shodashamsha 2, Shastiamsha 4, Hora/Drekkana/
+    # Trimshamsha 1 each, the remaining nine 0.5 each.
+    "shodashavarga": {
+        1: 3.5, 2: 1.0, 3: 1.0, 4: 0.5, 7: 0.5, 9: 3.0, 10: 0.5, 12: 0.5,
+        16: 2.0, 20: 0.5, 24: 0.5, 27: 0.5, 30: 1.0, 40: 0.5, 45: 0.5, 60: 4.0,
+    },
 }
+
+# Guard the book's tables — every classification must total exactly 20 points.
+for _cls, _pts in SWAVISHWA.items():
+    if _pts is not None:
+        assert abs(sum(_pts.values()) - 20.0) < 1e-9, f"{_cls} Swavishwa ≠ 20"
 
 CLASSIFICATIONS = ("shadvarga", "saptavarga", "dashavarga", "shodashavarga")
 

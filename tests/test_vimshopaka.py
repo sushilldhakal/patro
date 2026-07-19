@@ -14,8 +14,10 @@ def _d1_signs(lons):
     return {p: int(l // 30) % 12 for p, l in lons.items()}
 
 
-def test_shadvarga_points_sum_to_20():
-    assert abs(sum(SWAVISHWA["shadvarga"].values()) - 20.0) < 1e-9
+def test_all_classification_points_sum_to_20():
+    for cls, pts in SWAVISHWA.items():
+        assert pts is not None, f"{cls} not defined"
+        assert abs(sum(pts.values()) - 20.0) < 1e-9, f"{cls} ≠ 20"
 
 
 def test_scores_bounded_and_graded():
@@ -25,12 +27,15 @@ def test_scores_bounded_and_graded():
         "jupiter": 330.0, "venus": 48.0, "saturn": 118.0,
     }
     out = compute_vimshopaka(lons, _d1_signs(lons))
-    assert [c["key"] for c in out["classifications"]] == ["shadvarga"]
+    assert [c["key"] for c in out["classifications"]] == [
+        "shadvarga", "saptavarga", "dashavarga", "shodashavarga",
+    ]
     assert out["max_score"] == 20
     for pl in out["planets"]:
-        s = pl["scores"]["shadvarga"]
-        assert 0.0 <= s["score"] <= 20.0
-        assert s["grade"] in {"full", "mediocre", "little", "incapable"}
+        for cls in ("shadvarga", "saptavarga", "dashavarga", "shodashavarga"):
+            s = pl["scores"][cls]
+            assert 0.0 <= s["score"] <= 20.0
+            assert s["grade"] in {"full", "mediocre", "little", "incapable"}
 
 
 def test_own_sign_gives_full_varga_vishwa():
