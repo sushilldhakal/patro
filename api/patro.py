@@ -252,6 +252,79 @@ def nepal_gochar(
     )
 
 
+@router.get("/nepal/graha-sthiti/{date_key}")
+def nepal_graha_sthiti(
+    date_key: str,
+    location: LocationDep,
+    request: Request,
+    era: Literal["bs", "ad"] = Query("ad"),
+):
+    """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
+    from services.response_cache import location_cache_key, serve_cached_json
+
+    try:
+        greg = resolve_panchanga_date(date_key, era=era)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    from engine.vedic.graha_detail import build_graha_sthiti
+
+    key = f"grahasthiti_{greg.isoformat()}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key,
+        lambda: build_graha_sthiti(greg, location),
+    )
+
+
+@router.get("/nepal/graha-asta/year/{bs_year}")
+def nepal_graha_asta_year(bs_year: int, location: LocationDep, request: Request):
+    """Yearly heliacal udaya/asta (rising/setting) timeline for a BS year."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    _validate_bs_year(bs_year)
+    from engine.vedic.graha_detail import build_graha_asta_year
+
+    key = f"grahaasta_{bs_year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_graha_asta_year(bs_year, location),
+        cache_control=bs_year_cache_control(bs_year),
+    )
+
+
+@router.get("/nepal/graha-vakri/year/{bs_year}")
+def nepal_graha_vakri_year(bs_year: int, location: LocationDep, request: Request):
+    """Yearly वक्री/मार्गी (retrograde/direct) station timeline for a BS year."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    _validate_bs_year(bs_year)
+    from engine.vedic.graha_detail import build_graha_vakri_year
+
+    key = f"grahavakri_{bs_year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_graha_vakri_year(bs_year, location),
+        cache_control=bs_year_cache_control(bs_year),
+    )
+
+
+@router.get("/nepal/eclipse/{kind}/year/{bs_year}")
+def nepal_eclipse_year(
+    kind: Literal["solar", "lunar"],
+    bs_year: int,
+    location: LocationDep,
+    request: Request,
+):
+    """Solar or lunar eclipses whose maximum falls within a BS year."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    _validate_bs_year(bs_year)
+    from engine.vedic.graha_detail import build_eclipse_year
+
+    key = f"eclipse_{kind}_{bs_year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_eclipse_year(bs_year, kind, location),
+        cache_control=bs_year_cache_control(bs_year),
+    )
+
+
 @router.get("/patro/{bs_year}/{bs_month}")
 def patro_month_legacy(
     bs_year: int, bs_month: int, location: LocationDep, request: Request, panchanga: bool = Query(True)
