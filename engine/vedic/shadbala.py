@@ -161,8 +161,8 @@ def _d30_lord(lon: float) -> str:
     within = lon % 30
     if s % 2 == 0:  # odd sign
         bounds = [(5, "mars"), (10, "saturn"), (18, "jupiter"), (25, "mercury"), (30, "venus")]
-    else:
-        bounds = [(5, "venus"), (12, "mercury"), (20, "jupiter"), (25, "saturn"), (30, "mars")]
+    else:  # even sign — Jupiter 12–18, Saturn 18–25 (per the reference book)
+        bounds = [(5, "venus"), (12, "mercury"), (18, "jupiter"), (25, "saturn"), (30, "mars")]
     for limit, lord in bounds:
         if within < limit:
             return lord

@@ -27,7 +27,9 @@ logger = logging.getLogger(__name__)
 # v5: Nepali report dates shown in Bikram Sambat (English stays Gregorian AD).
 # v6: Saptavargaja Bala virupas updated to the reference book's values, which
 #     shifts Shadbala totals/statuses the report reads from.
-CACHE_PAYLOAD_VERSION = 6
+# v7: D30 (Trimshamsha) even-sign Jupiter/Saturn spans corrected, which feeds
+#     the Saptavargaja component of Shadbala.
+CACHE_PAYLOAD_VERSION = 7
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

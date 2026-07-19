@@ -58,8 +58,10 @@ def varga_rashi_from_longitude(division: int, longitude: float) -> int:
     if division == 3:
         return drekkana_rashi_from_longitude(lon)
     if division == 4:
+        # Chaturthamsha: the four 7.5° quarters go to the 1st/4th/7th/10th
+        # (kendra) signs from the sign — i.e. s, s+3, s+6, s+9.
         p = int(d // 7.5)
-        return ((s + p) % 12) + 1
+        return ((s + 3 * p) % 12) + 1
     if division == 5:
         p = int(d // 6)
         start = 0 if _is_odd_sign(s) else 6
@@ -104,9 +106,11 @@ def varga_rashi_from_longitude(division: int, longitude: float) -> int:
         start = 4 if _is_odd_sign(s) else 3
         return ((start + p) % 12) + 1
     if division == 27:
+        # Bhamsha: start sign is set by the sign's ELEMENT (tattva), not modality
+        # — Fire→Aries, Earth→Cancer, Air→Libra, Water→Capricorn.
         p = int(math.floor(d / (30 / 27)))
-        mod = _modality(s)
-        start = 0 if mod == 0 else (3 if mod == 1 else 6)
+        element = s % 4  # 0 fire, 1 earth, 2 air, 3 water
+        start = (0, 3, 6, 9)[element]
         return ((start + p) % 12) + 1
     if division == 30:
         if _is_odd_sign(s):
@@ -119,11 +123,13 @@ def varga_rashi_from_longitude(division: int, longitude: float) -> int:
             if d < 25:
                 return 3
             return 7
+        # Even signs — Venus 0–5, Mercury 5–12, Jupiter 12–18, Saturn 18–25,
+        # Mars 25–30 (Jupiter 6° / Saturn 7°, per the reference book).
         if d < 5:
             return 2
         if d < 12:
             return 6
-        if d < 20:
+        if d < 18:
             return 12
         if d < 25:
             return 10
@@ -138,7 +144,8 @@ def varga_rashi_from_longitude(division: int, longitude: float) -> int:
         start = 0 if mod == 0 else (4 if mod == 1 else 8)
         return ((start + p) % 12) + 1
     if division == 60:
+        # Shashtiamsha: (deg × 2) counted from the planet's own sign, for all
+        # signs (no odd/even reversal), per BPHS.
         p = int(d // 0.5)
-        start = s if _is_odd_sign(s) else (s + 6) % 12
-        return ((start + p) % 12) + 1
+        return ((s + p) % 12) + 1
     return s + 1
