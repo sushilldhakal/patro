@@ -50,6 +50,16 @@ def test_exaltation_sign_gives_full_varga_vishwa():
     assert _varga_vishwa("sun", 0, d1) == 20.0
 
 
+def test_debilitation_sign_gives_zero():
+    # Sun debilitates in Libra (index 6, 7th from Aries) — bereft of strength.
+    d1 = {"sun": 6, "venus": 6, "moon": 0, "mars": 0, "mercury": 0,
+          "jupiter": 0, "saturn": 0}
+    assert _varga_vishwa("sun", 6, d1) == 0.0
+    # Moon debilitates in Scorpio (index 7); Mars debilitates in Cancer (3).
+    assert _varga_vishwa("moon", 7, {"moon": 7}) == 0.0
+    assert _varga_vishwa("mars", 3, {"mars": 3}) == 0.0
+
+
 def test_grade_bands():
     assert _grade(20.0) == "full"
     assert _grade(15.0) == "full"

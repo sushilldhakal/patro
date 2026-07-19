@@ -9,12 +9,17 @@ Maitri) scale, and the division's contribution is::
     contribution = Swavishwa (division points) × Varga Vishwa (relationship) / 20
 
 The Varga Vishwa (relationship points, 20-point scale) is:
-    own sign / exaltation  20
-    extreme friend (adhi-mitra)  18
-    friend (mitra)               15
-    neutral (sama)               10
-    enemy (shatru)                7
-    extreme enemy (adhi-shatru)   5
+    exaltation / moolatrikona / own sign  20
+    extreme friend (adhi-mitra)           18
+    friend (mitra)                        15
+    neutral (sama)                        10
+    enemy (shatru)                         7
+    extreme enemy (adhi-shatru)            5
+    debilitation (neecha)                  0   (BPHS Ch. 8: shunya)
+
+A planet in moolatrikona counts as own sign (20); a planet in its
+debilitation sign — the 7th from its exaltation — is bereft of strength (0),
+regardless of that sign lord's friendship.
 
 The four classifications (per the reference book):
     Shadvarga      6 divisions   (Rashi, Hora, Drekkana, Navamsha,
@@ -96,11 +101,22 @@ def _exalt_sign(p: str) -> int:
     return _sign(EXALT_DEG[p])
 
 
+def _debil_sign(p: str) -> int:
+    """Sign of debilitation — the 7th (opposite) from the exaltation sign."""
+    return (_exalt_sign(p) + 6) % 12
+
+
 def _varga_vishwa(p: str, sign: int, d1_signs: dict[str, int]) -> float:
-    """Relationship points (0–20) of planet ``p`` with the varga ``sign``."""
+    """Relationship points (0–20) of planet ``p`` with the varga ``sign``.
+
+    Own sign / moolatrikona / exaltation → 20; debilitation → 0; otherwise the
+    five-fold (Panchadha Maitri) compound friendship of the sign's lord.
+    """
     lord = SIGN_LORD[sign]
     if lord == p or sign == _exalt_sign(p):
         return 20.0
+    if sign == _debil_sign(p):
+        return 0.0
     compound = _natural_rel(p, lord) + _temporal_rel(p, lord, d1_signs)
     return VARGA_VISHWA[compound]
 
