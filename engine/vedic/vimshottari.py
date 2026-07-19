@@ -52,7 +52,9 @@ NE_TO_LORD = {
 }
 
 NAKSHATRA_SPAN_DEG = 360 / 27
-YEAR_DAYS = 365.2425
+# Dasha year length. Per the reference book, "360 days are taken in a year"
+# (savana year). Shared by Vimshottari, Yogini and Tribhagi dashas.
+YEAR_DAYS = 360.0
 
 
 def _add_years(date: datetime, years: float) -> datetime:
@@ -60,11 +62,12 @@ def _add_years(date: datetime, years: float) -> datetime:
 
 
 def _format_years_label(years: float) -> str:
+    # 360-day savana year = 12 months of 30 days each (per the book).
     total_days = round(years * YEAR_DAYS)
     y = total_days // int(YEAR_DAYS)
     rem = total_days - round(y * YEAR_DAYS)
-    m = int(rem // 30.4369)
-    d = round(rem - m * 30.4369)
+    m = int(rem // 30.0)
+    d = round(rem - m * 30.0)
     parts: list[str] = []
     if y > 0:
         parts.append(f"{y} वर्ष")

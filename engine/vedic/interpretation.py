@@ -194,7 +194,9 @@ DASHA_THEME_NE = {
     "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
 }
 
-DAYS_PER_YEAR = 365.2425
+# Dasha year length — 360-day savana year, matching the Vimshottari engine so
+# the report's reconstructed bhukti dates and chapter durations stay aligned.
+DAYS_PER_YEAR = 360.0
 
 
 # ── Small helpers ─────────────────────────────────────────────────────────────
@@ -244,10 +246,20 @@ def nakshatra_of(longitude: float) -> tuple[int, int]:
 
 # Classical combustion orbs (degrees from the Sun) — a planet within this arc of
 # the Sun is "combust" (astangata) and its significations are said to weaken.
+# Combustion (asta) orbs — degrees of separation from the Sun, per the
+# reference book. Mercury and Venus use a tighter orb when retrograde.
 COMBUST_ORB = {
-    "moon": 12.0, "mars": 17.0, "mercury": 14.0,
-    "jupiter": 11.0, "venus": 10.0, "saturn": 15.0,
+    "moon": 12.0, "mars": 17.0, "mercury": 13.0,
+    "jupiter": 11.0, "venus": 9.0, "saturn": 15.0,
 }
+COMBUST_ORB_RETRO = {"mercury": 12.0, "venus": 8.0}
+
+
+def combust_orb(planet: str, retrograde: bool = False) -> float | None:
+    """Combustion orb for a planet, using the retrograde value where it differs."""
+    if retrograde and planet in COMBUST_ORB_RETRO:
+        return COMBUST_ORB_RETRO[planet]
+    return COMBUST_ORB.get(planet)
 
 
 def _angular_sep(a: float, b: float) -> float:
@@ -1213,10 +1225,12 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
         d9 = navamsa_sign(lon)
         nak, pada = nakshatra_of(lon)
         sb = sb_index.get(key)
+        retro = bool(raw.get("is_retrograde", raw.get("retrograde", False)))
+        _orb = combust_orb(key, retro)
         combust = (
-            key in COMBUST_ORB
+            _orb is not None
             and sun_lon is not None
-            and _angular_sep(lon, sun_lon) < COMBUST_ORB[key]
+            and _angular_sep(lon, sun_lon) < _orb
         )
         planets[key] = PlanetFact(
             key=key,

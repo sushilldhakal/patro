@@ -44,9 +44,11 @@ NAISARGIKA = {
     "mercury": 25.71, "mars": 17.14, "saturn": 8.57,
 }
 
-# Classical minimum required Shadbala, in Virupas (Rupas × 60).
+# Classical minimum required Shadbala, in Virupas (Rupas × 60). Per the
+# reference book: Sun 6.5, Moon 6, Mars 5, Mercury 7, Jupiter 6.5, Venus 5.5,
+# Saturn 5 rupas.
 REQUIRED = {
-    "sun": 300.0, "moon": 360.0, "mars": 300.0, "mercury": 420.0,
+    "sun": 390.0, "moon": 360.0, "mars": 300.0, "mercury": 420.0,
     "jupiter": 390.0, "venus": 330.0, "saturn": 300.0,
 }
 
@@ -161,8 +163,8 @@ def _d30_lord(lon: float) -> str:
     within = lon % 30
     if s % 2 == 0:  # odd sign
         bounds = [(5, "mars"), (10, "saturn"), (18, "jupiter"), (25, "mercury"), (30, "venus")]
-    else:
-        bounds = [(5, "venus"), (12, "mercury"), (20, "jupiter"), (25, "saturn"), (30, "mars")]
+    else:  # even sign — Jupiter 12–18, Saturn 18–25 (per the reference book)
+        bounds = [(5, "venus"), (12, "mercury"), (18, "jupiter"), (25, "saturn"), (30, "mars")]
     for limit, lord in bounds:
         if within < limit:
             return lord
@@ -220,12 +222,12 @@ def _uchcha(p: str, lon: float) -> float:
 
 
 def _oja(p: str, lon: float) -> float:
+    # Oja-Yugma Bala: 15 Virupas only when BOTH the rashi and the navamsha carry
+    # the planet's preferred parity (Moon/Venus → even, others → odd); else 0.
     pref_odd = p not in ("moon", "venus")
-    b = 0.0
-    for sign in (_d1(lon), _d9(lon)):
-        if (sign % 2 == 0) == pref_odd:
-            b += 15.0
-    return b
+    rashi_ok = (_d1(lon) % 2 == 0) == pref_odd
+    navamsa_ok = (_d9(lon) % 2 == 0) == pref_odd
+    return 15.0 if (rashi_ok and navamsa_ok) else 0.0
 
 
 def _kendradi(p_sign: int, lagna_sign: int) -> float:
