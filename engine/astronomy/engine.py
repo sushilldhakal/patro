@@ -437,6 +437,119 @@ class AstronomyEngine:
         except (swe.Error, IndexError, TypeError, ValueError):
             return None
 
+    @staticmethod
+    def _solar_eclipse_kind(retflag: int) -> str:
+        """Map a swisseph solar-eclipse retflag to a coarse type key."""
+        if retflag & swe.ECL_TOTAL:
+            return "total"
+        if retflag & swe.ECL_ANNULAR_TOTAL:
+            return "hybrid"
+        if retflag & swe.ECL_ANNULAR:
+            return "annular"
+        if retflag & swe.ECL_PARTIAL:
+            return "partial"
+        return "partial"
+
+    @staticmethod
+    def _lunar_eclipse_kind(retflag: int) -> str:
+        """Map a swisseph lunar-eclipse retflag to a coarse type key."""
+        if retflag & swe.ECL_TOTAL:
+            return "total"
+        if retflag & swe.ECL_PARTIAL:
+            return "partial"
+        if retflag & swe.ECL_PENUMBRAL:
+            return "penumbral"
+        return "penumbral"
+
+    def next_solar_eclipse(
+        self, jd: float, *, backward: bool = False, geopos: tuple[float, float, float] | None = None
+    ) -> dict[str, Any] | None:
+        """Next/previous global solar eclipse with type + optional local visibility.
+
+        ``geopos`` = (lon, lat, altitude). When given, local contact times and a
+        ``visible`` flag are attached (whether the eclipse is seen from that place).
+        """
+        try:
+            retflag, tret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, 0, backward)
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return None
+        max_jd = float(tret[0])
+        out: dict[str, Any] = {
+            "kind": "solar",
+            "type": self._solar_eclipse_kind(int(retflag)),
+            "max_jd": max_jd,
+            "visible": False,
+        }
+        if geopos is not None:
+            out.update(self._solar_eclipse_local(max_jd, geopos))
+        return out
+
+    def next_lunar_eclipse(
+        self, jd: float, *, backward: bool = False, geopos: tuple[float, float, float] | None = None
+    ) -> dict[str, Any] | None:
+        """Next/previous lunar eclipse with type + optional local visibility."""
+        try:
+            retflag, tret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, 0, backward)
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return None
+        max_jd = float(tret[0])
+        out: dict[str, Any] = {
+            "kind": "lunar",
+            "type": self._lunar_eclipse_kind(int(retflag)),
+            "max_jd": max_jd,
+            # tret indices: 0 max, 2 partial begin, 3 partial end,
+            # 4 penumbral begin, 5 penumbral end (total begin/end at 6/7).
+            "partial_begin_jd": float(tret[2]) or None,
+            "partial_end_jd": float(tret[3]) or None,
+            "penumbral_begin_jd": float(tret[4]) or None,
+            "penumbral_end_jd": float(tret[5]) or None,
+            "visible": False,
+        }
+        if geopos is not None:
+            out.update(self._lunar_eclipse_local(max_jd, geopos))
+        return out
+
+    def _solar_eclipse_local(
+        self, near_jd: float, geopos: tuple[float, float, float]
+    ) -> dict[str, Any]:
+        """Local circumstances of the solar eclipse whose maximum is near ``near_jd``."""
+        try:
+            retflag, tret, _attr = swe.sol_eclipse_when_loc(
+                near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
+            )
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return {}
+        local_max = float(tret[0])
+        # The local search may skip to a later eclipse if this one is invisible here.
+        if abs(local_max - near_jd) > 0.75:
+            return {"visible": False}
+        return {
+            "visible": bool(retflag & (swe.ECL_VISIBLE)),
+            "local_type": self._solar_eclipse_kind(int(retflag)),
+            "local_max_jd": local_max,
+            # tret: 0 max, 1 first contact, 4 last contact (partial phase edges).
+            "local_begin_jd": float(tret[1]) or None,
+            "local_end_jd": float(tret[4]) or None,
+        }
+
+    def _lunar_eclipse_local(
+        self, near_jd: float, geopos: tuple[float, float, float]
+    ) -> dict[str, Any]:
+        """Whether the lunar eclipse near ``near_jd`` is above the horizon locally."""
+        try:
+            retflag, tret, _attr = swe.lun_eclipse_when_loc(
+                near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
+            )
+        except (swe.Error, IndexError, TypeError, ValueError):
+            return {}
+        local_max = float(tret[0])
+        if abs(local_max - near_jd) > 0.75:
+            return {"visible": False}
+        return {
+            "visible": bool(retflag & swe.ECL_VISIBLE),
+            "local_max_jd": local_max,
+        }
+
     # ── rise / set ───────────────────────────────────────────────────────────
 
     def rise(
