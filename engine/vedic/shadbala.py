@@ -182,7 +182,10 @@ def _temporal_rel(p: str, other: str, d1_signs: dict[str, int]) -> int:
     return 1 if dist in (2, 3, 4, 10, 11, 12) else -1
 
 
-_COMPOUND = {2: 22.5, 1: 15.0, 0: 7.5, -1: 3.75, -2: 1.875}
+# Saptavargaja Bala virupas by five-fold (Panchadha) compound relationship, per
+# the reference book: Adhi-Mitra 20, Mitra 15, Sama 10, Shatru 4, Adhi-Shatru 2
+# (Moolatrikona 45 and own sign 30 are handled separately in _dignity).
+_COMPOUND = {2: 20.0, 1: 15.0, 0: 10.0, -1: 4.0, -2: 2.0}
 
 
 def _dignity(p: str, lord: str, d1_signs: dict[str, int], *, is_d1: bool, lon: float) -> float:

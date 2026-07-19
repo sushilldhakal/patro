@@ -1467,11 +1467,22 @@ def _strength_word_ne(level: str) -> str:
 
 
 def _fmt_date_ne(dt: datetime) -> str:
-    """Nepali-month date string (digits stay Arabic, month abbrev localized)."""
-    s = _fmt_date(dt)
-    for en, ne in _EN_MONTH_NE.items():
-        s = s.replace(en, ne)
-    return s
+    """Bikram Sambat date string in Nepali — e.g. '17 चैत्र 2083'.
+
+    Falls back to the Gregorian date (with a Nepali month abbrev) if the BS
+    conversion is unavailable for that instant.
+    """
+    try:
+        from engine.vedic.bikram_sambat import gregorian_to_bs
+        from engine.vedic.constants import BS_MONTH_NAMES_NEPALI
+
+        y, m, d = gregorian_to_bs(dt.date())
+        return f"{d} {BS_MONTH_NAMES_NEPALI[m - 1]} {y}"
+    except Exception:
+        s = _fmt_date(dt)
+        for en, ne in _EN_MONTH_NE.items():
+            s = s.replace(en, ne)
+        return s
 
 
 def _date(dt: datetime, ne: bool) -> str:
@@ -2489,7 +2500,7 @@ def iter_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
     chart = build_chart(planets_raw, lagna_raw, shadbala_raw, dasha_raw, now)
-    meta = _localize_meta(_meta(chart, now), lang)
+    meta = _localize_meta(_meta(chart, now, ne=(lang == "ne")), lang)
     yield {"kind": "meta", **meta}
     sections = build_sections(chart, now=now, lang=lang)
     total = len(sections)
@@ -2962,7 +2973,7 @@ def _localize_meta(meta: dict[str, Any], lang: str) -> dict[str, Any]:
     return out
 
 
-def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
+def _meta(chart: Chart, now: datetime, *, ne: bool = False) -> dict[str, Any]:
     return {
         "lagna": {"sign": chart.lagna_sign + 1, "name_en": RASHI_EN[chart.lagna_sign],
                   "name_ne": RASHI_NE[chart.lagna_sign]},
@@ -2980,11 +2991,11 @@ def _meta(chart: Chart, now: datetime) -> dict[str, Any]:
             "lord": chart.dasha["maha_lord"],
             "lord_en": PLANET_EN[chart.dasha["maha_lord"]],
             "lord_ne": PLANET_NE[chart.dasha["maha_lord"]],
-            "ends": _fmt_date(chart.dasha["maha_end"]),
+            "ends": _date(chart.dasha["maha_end"], ne),
             "antardasha": chart.dasha["antar_lord"],
             "antardasha_en": PLANET_EN[chart.dasha["antar_lord"]],
             "antardasha_ne": PLANET_NE[chart.dasha["antar_lord"]],
-            "antardasha_ends": _fmt_date(chart.dasha["antar_end"]),
+            "antardasha_ends": _date(chart.dasha["antar_end"], ne),
             "window": chart.maha_window,
         },
         "yoga_count": len(chart.yogas),
