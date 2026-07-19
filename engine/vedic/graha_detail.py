@@ -40,10 +40,21 @@ from engine.vedic.vimshottari import (
     NAKSHATRA_LORDS_NE,
 )
 
-# Yearly asta/vakri rows cover the classical fast+slow grahas (no Sun/nodes;
-# the Moon is never retrograde and never combust, so it is excluded there — the
-# UI notes this). Order matches the reference patro tables.
+# Vakri (retrograde) rows cover the classical fast+slow grahas — the Moon and
+# the nodes never turn retrograde, so they are excluded there.
 YEARLY_GRAHAS: list[str] = ["mercury", "venus", "mars", "jupiter", "saturn"]
+
+# Asta (combustion) display order — includes the Moon (चन्द्र तारा अस्त). The
+# Moon is combust once every lunation near the new moon; the inner/outer planets
+# use the Surya-Siddhanta heliacal orbs from engine.vedic.udayast.
+ASTA_PLANET_GRAHAS: list[str] = ["mercury", "venus", "mars", "jupiter", "saturn"]
+ASTA_GRAHAS: list[str] = ["mercury", "venus", "moon", "mars", "jupiter", "saturn"]
+
+# Moon Tara Asta combustion orb (Sun–Moon longitudinal elongation, degrees). The
+# Moon counts as combust on any civil day it dips below this; the reported window
+# runs from moonrise of the first such day to moonset of the last. Calibrated to
+# the standard Nepali patro चन्द्र तारा अस्त tables (13°).
+MOON_ASTA_ORB = 13.0
 
 
 # ─── formatting helpers ───────────────────────────────────────────────────────
@@ -231,29 +242,173 @@ def _bs_year_range(bs_year: int) -> tuple[date, date]:
     return year_start, year_end
 
 
+def _bs_label_for(d: date) -> str | None:
+    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+
+    try:
+        y, m, dd = gregorian_to_bs(d)
+        return format_bs_date(y, m, dd)
+    except Exception:
+        return None
+
+
+def _stamp(dt_local: datetime | None) -> dict[str, Any] | None:
+    """Format an aware local datetime as {iso, date_ad, date_bs, time_short}."""
+    if dt_local is None:
+        return None
+    d = dt_local.date()
+    return {
+        "iso": dt_local.isoformat(),
+        "date_ad": d.isoformat(),
+        "date_bs": _bs_label_for(d),
+        "time_short": dt_local.strftime("%H:%M"),
+    }
+
+
+def _duration_days(start: datetime | None, end: datetime | None) -> int | None:
+    if start is None or end is None:
+        return None
+    return (end.date() - start.date()).days + 1
+
+
+def _moon_sun_elongation(dt: datetime) -> float:
+    """Unsigned Sun–Moon longitudinal elongation (0–180°)."""
+    from engine.vedic.gochar import _longitude_for
+
+    diff = (_longitude_for("moon", dt) - _longitude_for("sun", dt)) % 360.0
+    return min(diff, 360.0 - diff)
+
+
+def _moon_tara_asta_periods(
+    from_date: date, to_date: date, location: Any, tz
+) -> list[dict[str, Any]]:
+    """चन्द्र तारा अस्त — combustion windows (moonrise → moonset) each lunation.
+
+    A civil day counts as asta when the Sun–Moon elongation dips below
+    ``MOON_ASTA_ORB`` at any point; consecutive asta days form one period whose
+    start is the first day's moonrise and end is the last day's moonset.
+    """
+    def day_min_elongation(d: date) -> float:
+        noon = datetime(d.year, d.month, d.day, 12, tzinfo=tz).astimezone(timezone.utc)
+        # The Moon moves <15°/day, so a >28° gap at noon can't reach the orb.
+        if _moon_sun_elongation(noon) > 28.0:
+            return 99.0
+        base = datetime(d.year, d.month, d.day, tzinfo=tz)
+        return min(
+            _moon_sun_elongation((base + timedelta(minutes=30 * i)).astimezone(timezone.utc))
+            for i in range(48)
+        )
+
+    # Group consecutive combust days.
+    groups: list[tuple[date, date]] = []
+    cur_start: date | None = None
+    last_day: date | None = None
+    cursor = from_date
+    while cursor <= to_date:
+        if day_min_elongation(cursor) < MOON_ASTA_ORB:
+            if cur_start is None:
+                cur_start = cursor
+            last_day = cursor
+        elif cur_start is not None:
+            groups.append((cur_start, last_day))  # type: ignore[arg-type]
+            cur_start = None
+        cursor += timedelta(days=1)
+    if cur_start is not None:
+        groups.append((cur_start, last_day))  # type: ignore[arg-type]
+
+    periods: list[dict[str, Any]] = []
+    for start_day, end_day in groups:
+        rise = default_engine.rise(
+            start_day, "moon", location.lat, location.lon,
+            timezone_name=location.timezone,
+        )
+        setting = default_engine.set(
+            end_day, "moon", location.lat, location.lon,
+            timezone_name=location.timezone,
+        )
+        rise_local = rise.astimezone(tz) if rise else None
+        set_local = setting.astimezone(tz) if setting else None
+        periods.append({
+            "graha": "moon",
+            "graha_ne": "चन्द्र",
+            "start": _stamp(rise_local),
+            "end": _stamp(set_local),
+            "duration_days": _duration_days(rise_local, set_local),
+            "hemisphere": None,
+        })
+    return periods
+
+
+def _planet_asta_periods(events: list[dict[str, Any]], tz) -> list[dict[str, Any]]:
+    """Pair heliacal asta→udaya events into combustion periods per graha."""
+    by_graha: dict[str, list[dict[str, Any]]] = {}
+    for ev in events:
+        by_graha.setdefault(ev["graha"], []).append(ev)
+
+    periods: list[dict[str, Any]] = []
+    for graha, evs in by_graha.items():
+        evs.sort(key=lambda e: e["entry_time_utc"])
+        open_asta: dict[str, Any] | None = None
+        for ev in evs:
+            if ev.get("event") == "asta":
+                open_asta = ev
+            elif ev.get("event") == "udaya":
+                periods.append(_planet_period(graha, open_asta, ev, tz))
+                open_asta = None
+        if open_asta is not None:
+            periods.append(_planet_period(graha, open_asta, None, tz))
+    return periods
+
+
+def _planet_period(
+    graha: str, asta: dict[str, Any] | None, udaya: dict[str, Any] | None, tz
+) -> dict[str, Any]:
+    from engine.vedic.gochar import GRAHA_META
+
+    def to_local(ev: dict[str, Any] | None) -> datetime | None:
+        if ev is None:
+            return None
+        return datetime.fromisoformat(ev["entry_time_utc"]).astimezone(tz)
+
+    start_local = to_local(asta)
+    end_local = to_local(udaya)
+    return {
+        "graha": graha,
+        "graha_ne": GRAHA_META[graha]["ne"],
+        "start": _stamp(start_local),
+        "end": _stamp(end_local),
+        "duration_days": _duration_days(start_local, end_local),
+        "hemisphere": (asta or udaya or {}).get("hemisphere"),
+    }
+
+
 def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
-    """Yearly heliacal udaya/asta timeline over a BS year (fast + slow grahas)."""
-    from engine.vedic.bikram_sambat import gregorian_to_bs, format_bs_date
+    """Yearly combustion (asta) periods over a BS year — planets + Moon Tara Asta."""
     from engine.vedic.udayast import build_udayast_range
 
     year_start, year_end = _bs_year_range(bs_year)
-    raw = build_udayast_range(year_start, year_end, location, grahas=YEARLY_GRAHAS)
-    events: list[dict[str, Any]] = []
-    for ev in raw["events"]:
-        ad = ev.get("entry_date_ad") or (ev.get("entry_time_utc", "")[:10])
-        bs_label = None
-        try:
-            y, m, d = gregorian_to_bs(date.fromisoformat(ad))
-            bs_label = format_bs_date(y, m, d)
-        except Exception:
-            pass
-        events.append({**ev, "entry_date_ad": ad, "entry_date_bs": bs_label})
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+
+    planet_raw = build_udayast_range(
+        year_start, year_end, location, grahas=ASTA_PLANET_GRAHAS,
+    )
+    periods = _planet_asta_periods(planet_raw["events"], tz)
+    periods.extend(_moon_tara_asta_periods(year_start, year_end, location, tz))
+
+    # Sort chronologically within each graha; group order follows ASTA_GRAHAS.
+    def sort_key(p: dict[str, Any]) -> tuple[int, str]:
+        order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
+        start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
+        return (order, start_iso)
+
+    periods.sort(key=sort_key)
     return {
         "bs_year": bs_year,
         "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
         "location": location.as_dict(),
-        "grahas": YEARLY_GRAHAS,
-        "events": events,
+        "grahas": ASTA_GRAHAS,
+        "periods": periods,
     }
 
 
