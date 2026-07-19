@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 #     of machine phrase-translation); removed the "s"→"हरू" translator bug that
 #     shredded English letters; yogas, factors and dates now localize cleanly.
 # v5: Nepali report dates shown in Bikram Sambat (English stays Gregorian AD).
-CACHE_PAYLOAD_VERSION = 5
+# v6: Saptavargaja Bala virupas updated to the reference book's values, which
+#     shifts Shadbala totals/statuses the report reads from.
+CACHE_PAYLOAD_VERSION = 6
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

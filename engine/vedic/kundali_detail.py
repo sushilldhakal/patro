@@ -946,6 +946,10 @@ def build_kundali_detail(
     bhava_bala = compute_bhava_bala(lagna_rashi, planet_lons, shadbala)
     yuddha = compute_yuddha_bala(shadbala.get("planets") or [], planet_lons)
 
+    from engine.vedic.vimshopaka import compute_vimshopaka
+    vimshopaka_d1_signs = {p: sign_of(lon) for p, lon in planet_lons.items()}
+    vimshopaka = compute_vimshopaka(planet_lons, vimshopaka_d1_signs)
+
     combustion: dict[str, bool | None] = {}
     for key in PLANET_KEYS:
         if key not in COMBUST_ORB:
@@ -967,6 +971,7 @@ def build_kundali_detail(
         "yoginiDasha": yogini_tree,
         "yuddha": yuddha,
         "bhavaBala": bhava_bala,
+        "vimshopaka": vimshopaka,
         "ashtakavarga": ashtakavarga,
         "yogas": _yogas_to_api(full_yoga_catalog(chart)),
         "vargaCharts": varga_charts,
