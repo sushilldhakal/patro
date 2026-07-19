@@ -20,7 +20,8 @@ from services.panchanga_cache import resolve_cache_keys
 logger = logging.getLogger(__name__)
 
 # Bump when cached record shape or report algorithm changes.
-CACHE_PAYLOAD_VERSION = 2
+# v3: added "Life journey" and "What to pursue & when" sections.
+CACHE_PAYLOAD_VERSION = 3
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

@@ -510,15 +510,29 @@ def _dasha_detail(sequence: list[dict[str, Any]], now: datetime) -> Optional[dic
         }
         for q in sequence[index + 1: index + 4]
     ]
+    # Full mahadasha chapters from birth onward — powers the life-journey
+    # timeline (past → present → future). The first entry's start ≈ birth.
+    full_sequence = [
+        {
+            "lord": q["lord"],
+            "start": _parse_iso(q["start"]),
+            "end": _parse_iso(q["end"]),
+        }
+        for q in sequence
+    ]
+    birth = full_sequence[0]["start"] if full_sequence else maha_start
     return {
         "maha_lord": maha_lord,
         "maha_start": maha_start,
         "maha_end": maha_end,
+        "maha_index": index,
         "antar_lord": cur_bhukti["lord"] if cur_bhukti else maha_lord,
         "antar_start": cur_bhukti["start"] if cur_bhukti else maha_start,
         "antar_end": cur_bhukti["end"] if cur_bhukti else maha_end,
         "bhuktis": bhuktis,
         "upcoming_maha": upcoming_maha,
+        "full_sequence": full_sequence,
+        "birth": birth,
     }
 
 
@@ -1370,7 +1384,192 @@ def _strength_word(level: str) -> str:
     }[level]
 
 
-def build_sections(chart: Chart, *, now: datetime) -> list[dict[str, Any]]:
+def _age_at(birth: datetime, when: datetime) -> int:
+    """Whole years from birth to `when` (never negative)."""
+    years = when.year - birth.year - (
+        (when.month, when.day) < (birth.month, birth.day)
+    )
+    return max(0, years)
+
+
+def _next_period_for(
+    dasha: dict[str, Any], lord: str, now: datetime
+) -> Optional[dict[str, Any]]:
+    """Next dated window for a planet: its running/next antardasha inside the
+    current mahadasha, else its next mahadasha. Powers 'pursue X when' timing."""
+    for b in dasha.get("bhuktis", []):
+        if b["lord"] == lord and b["end"] > now:
+            return {
+                "start": b["start"], "end": b["end"],
+                "kind": "antardasha", "running": b["start"] <= now < b["end"],
+            }
+    for m in dasha.get("full_sequence", []):
+        if m["lord"] == lord and m["end"] > now:
+            return {
+                "start": m["start"], "end": m["end"],
+                "kind": "mahadasha", "running": m["start"] <= now < m["end"],
+            }
+    return None
+
+
+def _window_phrase(dasha: Optional[dict[str, Any]], lord: str, now: datetime,
+                   *, ne: bool) -> Optional[str]:
+    """A short 'the upcoming Saturn antardasha (12 Jan 2026 → …)' timing phrase."""
+    if not dasha:
+        return None
+    w = _next_period_for(dasha, lord, now)
+    if not w:
+        return None
+    span = f"{_fmt_date(w['start'])} → {_fmt_date(w['end'])}"
+    if ne:
+        kind = "अन्तर्दशा" if w["kind"] == "antardasha" else "महादशा"
+        when = "हाल चलिरहेको" if w["running"] else "आगामी"
+        return f"{when} {PLANET_NE[lord]} {kind} ({span})"
+    when = "the current" if w["running"] else "the upcoming"
+    return f"{when} {PLANET_EN[lord]} {w['kind']} ({span})"
+
+
+def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[dict[str, Any]]:
+    """Past → present → future mahadasha chapters, with ages, as a life arc."""
+    d = chart.dasha
+    if not d or not d.get("full_sequence"):
+        return None
+    ne = lang == "ne"
+    birth = d["birth"]
+    items: list[dict[str, Any]] = []
+    for idx, m in enumerate(d["full_sequence"]):
+        a0, a1 = _age_at(birth, m["start"]), _age_at(birth, m["end"])
+        if a0 > 100:
+            break
+        lord = m["lord"]
+        past = m["end"] <= now
+        current = m["start"] <= now < m["end"]
+        span = f"{_fmt_date(m['start'])} → {_fmt_date(m['end'])}"
+        # Actual span — the first (birth-balance) chapter is only a fraction of
+        # the lord's nominal length, so never print the full DASHA_YEARS there.
+        span_years = (m["end"] - m["start"]).days / DAYS_PER_YEAR
+        if span_years >= 1.5:
+            dur = f"{round(span_years)} वर्ष" if ne else f"{round(span_years)} yrs"
+        else:
+            dur = f"{round(span_years * 12)} महिना" if ne else f"{round(span_years * 12)} mo"
+        balance = idx == 0 and span_years < DASHA_YEARS[lord] - 0.5
+        if ne:
+            status = "विगत" if past else ("वर्तमान · अहिले यहीँ" if current else "आगामी")
+            theme = DASHA_THEME_NE[lord]
+            if past:
+                gloss = f"यस अवधिले {theme} वरिपरि अनुभव र आधार निर्माण गर्‍यो।"
+            elif current:
+                gloss = f"अहिले तपाईं यही अध्यायमा हुनुहुन्छ — {theme} अघि सारिन्छ।"
+            else:
+                gloss = f"यो आउँदो अध्यायले {theme} लाई अगाडि ल्याउनेछ।"
+            bal_ne = " (जन्मकालीन शेष)" if balance else ""
+            label = f"{PLANET_NE[lord]} महादशा{bal_ne} · उमेर {a0}–{a1} ({status})"
+            text = f"{span} ({dur}): {gloss}"
+        else:
+            status = "past" if past else ("present · you are here" if current else "ahead")
+            theme = DASHA_THEME[lord]
+            if past:
+                gloss = f"This chapter built experience around {theme}."
+            elif current:
+                gloss = f"You are living this chapter now — {theme} is foregrounded."
+            else:
+                gloss = f"This coming chapter brings {theme} to the fore."
+            bal_en = " (balance at birth)" if balance else ""
+            label = f"{PLANET_EN[lord]} mahadasha{bal_en} · age {a0}–{a1} ({status})"
+            text = f"{span} ({dur}): {gloss}"
+        items.append({
+            "label": label,
+            "confidence": _planet_confidence(chart, lord).level,
+            "text": text,
+        })
+    body = ([
+        "तपाईंको जीवन विम्शोत्तरी महादशाका अध्यायहरूमा उघ्रन्छ। तल जन्मदेखि बाँचिसकेका "
+        "विगत अध्याय, हाल चलिरहेको अध्याय र आगामी अध्यायहरू उमेरसहित दिइएको छ — कुन "
+        "कालखण्डले जीवनमा कस्तो जोड दिन्छ भन्ने एकै नजरमा हेर्न।",
+    ] if ne else [
+        "Your life unfolds in Vimshottari mahadasha chapters. Below are the chapters "
+        "you have already lived, the one running now, and the ones ahead — with ages "
+        "— so you can see at a glance which era of life emphasises what.",
+    ])
+    return {
+        "id": "life_journey",
+        "title_en": "Life journey — past, present & future",
+        "title_ne": "जीवन यात्रा — विगत, वर्तमान र भविष्य",
+        "body": body,
+        "items": items,
+        "prelocalized": True,
+    }
+
+
+def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
+    """Actionable 'what to pursue & when' — ties life areas to their dasha windows."""
+    ne = lang == "ne"
+    d = chart.dasha
+    items: list[dict[str, Any]] = []
+
+    def add(area_ne: str, area_en: str, lord: str, pursue_ne: str, pursue_en: str) -> None:
+        if not lord:
+            return
+        conf = _planet_confidence(chart, lord)
+        window = _window_phrase(d, lord, now, ne=ne)
+        if ne:
+            timing = f" सर्वोत्तम समय: {window}।" if window else ""
+            text = f"{pursue_ne} यसको सूत्रधार {PLANET_NE[lord]} हो।{timing}"
+            label = area_ne
+        else:
+            timing = f" Best window: {window}." if window else ""
+            text = f"{pursue_en} Its ruling graha is {PLANET_EN[lord]}.{timing}"
+            label = area_en
+        items.append({"label": label, "confidence": conf.level, "text": text})
+
+    strong = _strongest(chart)
+    add(
+        "मुख्य बल", "Your strongest lever", strong,
+        f"पहिलो प्राथमिकता यही हो — {DASHA_THEME_NE[strong]}; यहीँ गति सबैभन्दा सजिलो बन्छ।",
+        f"Lead with {DASHA_THEME[strong]} — momentum is cheapest to build here.",
+    )
+    # Career (10th), wealth/gains (11th), relationships (7th), learning & dharma (9th).
+    add(
+        "करियर र कर्म", "Career & work", chart.house_lord.get(10, ""),
+        "करियर, स्थिति र सार्वजनिक भूमिकामा ठूला कदम चाल्नुहोस्।",
+        "Make your bigger moves in career, status and public role.",
+    )
+    add(
+        "धन र लाभ", "Wealth & gains", chart.house_lord.get(11, ""),
+        "आम्दानीका स्रोत, सञ्जाल र आकांक्षा विस्तार गर्नुहोस्।",
+        "Expand income streams, networks and aspirations.",
+    )
+    add(
+        "सम्बन्ध र साझेदारी", "Relationships & partnership", chart.house_lord.get(7, ""),
+        "विवाह, साझेदारी वा सार्वजनिक सहकार्यलाई अघि बढाउनुहोस्।",
+        "Advance marriage, partnership or public collaboration.",
+    )
+    add(
+        "शिक्षा, धर्म र मार्गदर्शन", "Learning, dharma & mentors", chart.house_lord.get(9, ""),
+        "उच्च शिक्षा, यात्रा, गुरुसंग र आध्यात्मिक अभ्यासलाई समय दिनुहोस्।",
+        "Invest in higher learning, travel, mentors and spiritual practice.",
+    )
+
+    body = ([
+        "यो खण्डले तपाईंले कुन कुरामा लाग्ने र त्यसका लागि कुन दशा-कालखण्ड सबैभन्दा "
+        "अनुकूल छ भन्ने जोड्छ। तल प्रत्येक जीवन-क्षेत्रको सूत्रधार ग्रह र त्यसको आगामी "
+        "वा हालको दशा-सञ्झ्याल दिइएको छ — ठूला निर्णय ती अनुकूल समयसँग मिलाउनुहोस्।",
+    ] if ne else [
+        "This section ties what to pursue to the dasha window that most favours it. "
+        "For each life area you get its ruling graha and that graha's current or "
+        "upcoming dasha window — align your bigger decisions with those windows.",
+    ])
+    return {
+        "id": "pursue_and_when",
+        "title_en": "What to pursue & when",
+        "title_ne": "के कुरामा लाग्ने र कहिले",
+        "body": body,
+        "items": items,
+        "prelocalized": True,
+    }
+
+
+def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dict[str, Any]]:
     sections: list[dict[str, Any]] = []
     P = chart.planets
     lagna_lord = chart.house_lord[1]
@@ -1661,6 +1860,11 @@ def build_sections(chart: Chart, *, now: datetime) -> list[dict[str, Any]]:
     sections.append(_section("current_life_phase", "Current life phase",
                              "वर्तमान दशा", phase_body, phase_conf))
 
+    # 12b — Life journey (past → present → future chapters) ---------------------
+    journey = _life_journey_section(chart, now, lang)
+    if journey:
+        sections.append(journey)
+
     # 13 — Dasha timeline (precise dates) ---------------------------------------
     if d:
         horizon = now + timedelta(days=420)
@@ -1724,6 +1928,9 @@ def build_sections(chart: Chart, *, now: datetime) -> list[dict[str, Any]]:
         outlook_body.append("A precise dasha-based outlook needs a resolvable timeline for today's date.")
     sections.append(_section("outlook_12_months", "Outlook — next 12 months",
                              "आगामी १२ महिना", outlook_body, out_conf))
+
+    # 14b — What to pursue & when (actionable, dasha-timed) ---------------------
+    sections.append(_pursue_section(chart, now, lang))
 
     # 14 — Opportunities --------------------------------------------------------
     opp = []
@@ -1909,10 +2116,12 @@ def iter_report(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
     chart = build_chart(planets_raw, lagna_raw, shadbala_raw, dasha_raw, now)
     meta = _localize_meta(_meta(chart, now), lang)
     yield {"kind": "meta", **meta}
-    sections = build_sections(chart, now=now)
+    sections = build_sections(chart, now=now, lang=lang)
     total = len(sections)
     for i, section in enumerate(sections):
-        yield {"kind": "section", "index": i, "total": total, **_localize_section(section, lang)}
+        localized = {k: v for k, v in _localize_section(section, lang).items()
+                     if k != "prelocalized"}
+        yield {"kind": "section", "index": i, "total": total, **localized}
     yield {"kind": "done", "total": total}
 
 
@@ -2299,6 +2508,10 @@ def _localize_item_label_ne(label: str) -> str:
 
 def _localize_section(section: dict[str, Any], lang: str) -> dict[str, Any]:
     if lang != "ne":
+        return section
+    # Sections built natively in the requested language skip the phrase
+    # translator entirely — they are already Nepali.
+    if section.get("prelocalized"):
         return section
     out = dict(section)
     out["body"] = [_localize_text_ne(p) for p in section.get("body", [])]
