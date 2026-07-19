@@ -31,7 +31,9 @@ logger = logging.getLogger(__name__)
 #     the Saptavargaja component of Shadbala.
 # v8: Sun's required Shadbala 300→390 (shifts Sun's status), and combustion
 #     orbs corrected (Mercury 13/12, Venus 9/8) — both read by the report.
-CACHE_PAYLOAD_VERSION = 8
+# v9: dasha year length 365.2425→360 (savana year), shifting every dasha date
+#     the report prints; Oja-Yugma Bala now requires both rashi+navamsha parity.
+CACHE_PAYLOAD_VERSION = 9
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

@@ -194,7 +194,9 @@ DASHA_THEME_NE = {
     "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
 }
 
-DAYS_PER_YEAR = 365.2425
+# Dasha year length — 360-day savana year, matching the Vimshottari engine so
+# the report's reconstructed bhukti dates and chapter durations stay aligned.
+DAYS_PER_YEAR = 360.0
 
 
 # ── Small helpers ─────────────────────────────────────────────────────────────

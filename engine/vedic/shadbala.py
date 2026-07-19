@@ -222,12 +222,12 @@ def _uchcha(p: str, lon: float) -> float:
 
 
 def _oja(p: str, lon: float) -> float:
+    # Oja-Yugma Bala: 15 Virupas only when BOTH the rashi and the navamsha carry
+    # the planet's preferred parity (Moon/Venus → even, others → odd); else 0.
     pref_odd = p not in ("moon", "venus")
-    b = 0.0
-    for sign in (_d1(lon), _d9(lon)):
-        if (sign % 2 == 0) == pref_odd:
-            b += 15.0
-    return b
+    rashi_ok = (_d1(lon) % 2 == 0) == pref_odd
+    navamsa_ok = (_d9(lon) % 2 == 0) == pref_odd
+    return 15.0 if (rashi_ok and navamsa_ok) else 0.0
 
 
 def _kendradi(p_sign: int, lagna_sign: int) -> float:
