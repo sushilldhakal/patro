@@ -52,14 +52,33 @@ def test_graha_sthiti_saturn_retrograde_mid_2025():
     assert saturn["speed_deg_day"] < 0.0
 
 
-def test_asta_year_events_are_covered_grahas_only():
+def test_asta_year_has_periods_including_moon():
     payload = build_graha_asta_year(2082, DEFAULT_LOCATION)
-    assert payload["events"], "expected asta events in the year"
-    assert set(payload["grahas"]) == set(YEARLY_GRAHAS)
-    for e in payload["events"]:
-        assert e["graha"] in YEARLY_GRAHAS
-        assert e["event"] in ("udaya", "asta")
-        assert e["entry_date_bs"]
+    assert payload["periods"], "expected asta periods in the year"
+    grahas = {p["graha"] for p in payload["periods"]}
+    # Moon Tara Asta must be present — one window per lunation.
+    assert "moon" in grahas
+    moon = [p for p in payload["periods"] if p["graha"] == "moon"]
+    assert 11 <= len(moon) <= 13, f"expected ~12 lunations, got {len(moon)}"
+    for p in payload["periods"]:
+        if p["start"] and p["end"]:
+            assert p["duration_days"] >= 1
+            assert p["start"]["date_bs"]
+
+
+def test_moon_tara_asta_matches_reference_window():
+    """Jan 2026 Moon Tara Asta: moonrise 17 Jan → moonset 20 Jan (BS 2082)."""
+    payload = build_graha_asta_year(2082, DEFAULT_LOCATION)
+    jan = [
+        p for p in payload["periods"]
+        if p["graha"] == "moon" and p["start"] and p["start"]["date_ad"] == "2026-01-17"
+    ]
+    assert jan, "expected a Moon Tara Asta window starting 2026-01-17"
+    p = jan[0]
+    assert p["start"]["time_short"] == "05:50"
+    assert p["end"]["date_ad"] == "2026-01-20"
+    assert p["end"]["time_short"] == "19:02"
+    assert p["duration_days"] == 4
 
 
 def test_vakri_year_has_stations_with_bs_dates():
