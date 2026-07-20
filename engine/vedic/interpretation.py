@@ -916,10 +916,12 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     })
     catalog.append({
         "key": "chatussagara", "name": "Chatussagara Yoga", "polarity": "benefic",
-        # BPHS: all seven tara grahas occupy the four angles.
-        "present": all(k in P and P[k].house in KENDRA for k in DIGNITY_PLANETS),
-        "text": "All seven planets occupy the four angular houses (1, 4, 7, 10) — "
-                "a pattern for fame, stability and success across the four pillars of life.",
+        # Classical: each of the four angular houses (1, 4, 7, 10) is occupied
+        # by at least one planet.
+        "present": all(chart.house_occupants.get(h) for h in KENDRA),
+        "text": "Every one of the four angular houses (1, 4, 7, 10) is occupied by a "
+                "planet — a pattern for fame, stability and success across the four "
+                "pillars of life.",
     })
     catalog.append({
         "key": "vasumati", "name": "Vasumati Yoga", "polarity": "benefic",
@@ -932,12 +934,13 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     })
     catalog.append({
         "key": "rajalakshana", "name": "Rajalakshana Yoga", "polarity": "benefic",
-        "present": (
-            "mercury" in P and P["mercury"].house in KENDRA
-            and "venus" in P and P["venus"].house in KENDRA
+        # Classical: Jupiter, Venus, Mercury and the Moon all occupy angles.
+        "present": all(
+            k in P and P[k].house in KENDRA
+            for k in ("jupiter", "venus", "mercury", "moon")
         ),
-        "text": "Mercury and Venus both occupy angular houses — a royal bearing yoga "
-                "for charm, eloquence and dignified public presence.",
+        "text": "Jupiter, Venus, Mercury and the Moon all occupy angular houses — a royal "
+                "bearing yoga for charm, eloquence and dignified public presence.",
     })
     catalog.append({
         "key": "vanchana_chora_bheeti", "name": "Vanchana Chora Bheeti Yoga",
@@ -955,10 +958,14 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     })
     catalog.append({
         "key": "shakata", "name": "Shakata Yoga", "polarity": "caution",
-        # BPHS Nabhasa: all seven planets confined to the 1st and 7th houses.
-        "present": all(k in P and P[k].house in {1, 7} for k in DIGNITY_PLANETS),
-        "text": "All seven planets are confined to the 1st and 7th houses — a Nabhasa "
-                "'cart' yoga of fluctuating fortune, where gains and setbacks tend to "
+        # Classical Shakata: the Moon occupies the 6th, 8th or 12th house from
+        # Jupiter (equivalently Jupiter in 6/8/12 from the Moon).
+        "present": (
+            "moon" in P and "jupiter" in P
+            and house_from(P["moon"].sign, P["jupiter"].sign) in {6, 8, 12}
+        ),
+        "text": "The Moon occupies the 6th, 8th or 12th house from Jupiter — a 'cart' "
+                "yoga of fluctuating fortune, where hard-won gains and setbacks tend to "
                 "alternate through life.",
     })
     catalog.append({
