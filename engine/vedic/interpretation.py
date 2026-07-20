@@ -33,6 +33,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Iterator, Optional
 
+from engine.vedic.vargas import varga_rashi_from_longitude
+
 # ── Classical reference tables ────────────────────────────────────────────────
 
 PLANET_KEYS = [
@@ -1738,6 +1740,307 @@ def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
     }
 
 
+# ── Divisional (varga) chart summaries ────────────────────────────────────────
+# The classical life-domain each divisional chart is read for.
+#   division: (en_label, ne_label, en_domain, ne_domain)
+VARGA_DOMAIN: dict[int, tuple[str, str, str, str]] = {
+    2:  ("Hora", "होरा", "wealth, resources and material sustenance",
+         "धन, स्रोत र भौतिक निर्वाह"),
+    3:  ("Drekkana", "द्रेष्काण", "siblings, courage and personal initiative",
+         "भाइबहिनी, साहस र व्यक्तिगत पहल"),
+    4:  ("Chaturthamsa", "चतुर्थांश", "home, land, property and inner contentment",
+         "घर, जग्गा, सम्पत्ति र आन्तरिक सन्तुष्टि"),
+    7:  ("Saptamsa", "सप्तांश", "children, progeny and creative continuity",
+         "सन्तान, वंश र सिर्जनात्मक निरन्तरता"),
+    9:  ("Navamsa", "नवांश",
+         "marriage, dharma, fortune and the inner strength of every planet",
+         "विवाह, धर्म, भाग्य र हरेक ग्रहको भित्री बल"),
+    10: ("Dasamsa", "दशांश", "career, profession, status and public achievement",
+         "करियर, पेशा, प्रतिष्ठा र सार्वजनिक उपलब्धि"),
+    12: ("Dwadashamsa", "द्वादशांश", "parents, lineage and inherited karma",
+         "आमाबुबा, वंश र पैतृक कर्म"),
+    16: ("Shodashamsa", "षोडशांश", "vehicles, comforts and material pleasures",
+         "सवारी, सुविधा र भौतिक सुख"),
+    20: ("Vimsamsa", "विंशांश", "spiritual practice, devotion and religious merit",
+         "आध्यात्मिक साधना, भक्ति र धार्मिक पुण्य"),
+    24: ("Chaturvimsamsa", "चतुर्विंशांश", "education, learning and scholarship",
+         "शिक्षा, विद्या र प्रज्ञा"),
+    27: ("Bhamsa", "सप्तविंशांश", "innate strengths, weaknesses and stamina",
+         "जन्मजात बल, कमजोरी र सहनशीलता"),
+    30: ("Trimsamsa", "त्रिंशांश", "adversity, health risks and moral fibre",
+         "प्रतिकूलता, स्वास्थ्य जोखिम र नैतिक बल"),
+    60: ("Shashtiamsa", "षष्ट्यंश",
+         "the sum of past-life karma standing behind the whole chart",
+         "सम्पूर्ण कुण्डलीभित्रको पूर्वजन्म कर्मको योग"),
+}
+
+# Divisional charts summarised in the report, in reading order. D1 (the rashi
+# chart) is covered by every other section, so it is not repeated here.
+VARGA_REPORT_ORDER: tuple[int, ...] = (9, 10, 7, 4, 12, 24, 2, 3, 16, 20, 27, 30, 60)
+
+
+def _varga_dignity(planet: str, varga_sign: int) -> Optional[str]:
+    """Classical dignity of a graha judged from its sign in a divisional chart.
+
+    Divisional dignity is a sign-level judgement (own / exalted / debilitated),
+    so a representative mid-sign longitude is enough.
+    """
+    return _dignity(planet, varga_sign * 30 + 15)
+
+
+def _divisional_item(chart: Chart, division: int, *, ne: bool) -> dict[str, Any]:
+    """One card: what a D-chart reads for, and how strong it looks here."""
+    en_label, ne_label, en_dom, ne_dom = VARGA_DOMAIN[division]
+    lagna_sign = varga_rashi_from_longitude(division, chart.lagna_lon) - 1
+    lagna_lord = SIGN_LORD[lagna_sign]
+
+    dignified: list[str] = []      # own / exalted / moolatrikona in this varga
+    debilitated: list[str] = []
+    same_sign: list[str] = []      # repeats its rashi sign (vargottama in D9)
+    factors: list[str] = []
+
+    for key in DIGNITY_PLANETS:
+        pf = chart.planet(key)
+        if not pf:
+            continue
+        vsign = varga_rashi_from_longitude(division, pf.longitude) - 1
+        dign = _varga_dignity(key, vsign)
+        repeats = pf.sign == vsign
+        note_bits: list[str] = []
+        if dign in {"exalted", "own", "moolatrikona"}:
+            dignified.append(key)
+            note_bits.append(DIGNITY_PHRASE_NE.get(dign, dign) if ne
+                             else DIGNITY_PHRASE.get(dign, dign))
+        elif dign == "debilitated":
+            debilitated.append(key)
+            note_bits.append(DIGNITY_PHRASE_NE["debilitated"] if ne
+                             else DIGNITY_PHRASE["debilitated"])
+        if repeats:
+            same_sign.append(key)
+            if division == 9:
+                note_bits.append("वर्गोत्तम" if ne else "vargottama")
+            else:
+                note_bits.append("जन्म राशि दोहोर्‍याउँछ" if ne
+                                 else "keeps its natal sign")
+        if note_bits:
+            planet_name = PLANET_NE[key] if ne else PLANET_EN[key]
+            factors.append(f"{planet_name}: {', '.join(note_bits)}")
+
+    strong_ct = len(set(dignified) | set(same_sign))
+    weak_ct = len(debilitated)
+    if strong_ct >= 3 and weak_ct == 0:
+        level = "strong"
+    elif strong_ct - weak_ct >= 2:
+        level = "moderate"
+    elif strong_ct and weak_ct:
+        level = "mixed"
+    elif strong_ct:
+        level = "moderate"
+    else:
+        level = "tentative"
+
+    # Ascendant lord placement within this varga — the chart's key signal.
+    lord_pf = chart.planet(lagna_lord)
+    lord_clause_en = lord_clause_ne = ""
+    if lord_pf:
+        lord_vsign = varga_rashi_from_longitude(division, lord_pf.longitude) - 1
+        lord_dign = _varga_dignity(lagna_lord, lord_vsign)
+        lord_clause_en = (
+            f" Its ascendant lord {PLANET_EN[lagna_lord]} sits in "
+            f"{RASHI_EN[lord_vsign]}"
+            + (f", {DIGNITY_PHRASE[lord_dign]}" if lord_dign in DIGNITY_PHRASE else "")
+            + "."
+        )
+        lord_clause_ne = (
+            f" यसको लग्नेश {PLANET_NE[lagna_lord]} {RASHI_NE[lord_vsign]} राशिमा"
+            + (f", {DIGNITY_PHRASE_NE.get(lord_dign, lord_dign)}"
+               if lord_dign in DIGNITY_PHRASE else "")
+            + " छ।"
+        )
+
+    verdict_en = {
+        "strong": "The chart is well supported here",
+        "moderate": "The chart holds moderate strength here",
+        "mixed": "Strength here is mixed — support alongside friction",
+        "tentative": "This area reads through the placements above rather than "
+                     "any standout strength",
+    }[level]
+    verdict_ne = {
+        "strong": "यस क्षेत्रमा कुण्डली राम्रोसँग समर्थित छ",
+        "moderate": "यहाँ कुण्डलीको बल मध्यम छ",
+        "mixed": "यहाँको बल मिश्रित छ — समर्थनसँगै केही घर्षण",
+        "tentative": "यो क्षेत्र कुनै विशेष बलभन्दा माथिका स्थितिबाट पढिन्छ",
+    }[level]
+
+    if ne:
+        strong_names = ", ".join(PLANET_NE[k] for k in dict.fromkeys(dignified + same_sign))
+        weak_names = ", ".join(PLANET_NE[k] for k in debilitated)
+        text = (
+            f"D{division} ({ne_label}) चक्र {ne_dom} का लागि पढिन्छ। "
+            f"यसको लग्न {RASHI_NE[lagna_sign]} राशिमा, {PLANET_NE[lagna_lord]} द्वारा शासित।"
+            + lord_clause_ne
+        )
+        if strong_names:
+            text += f" यहाँ {strong_names} बलियो देखिन्छन्।"
+        if weak_names:
+            text += f" {weak_names} भने दबाबमा छन्।"
+        text += f" {verdict_ne}।"
+    else:
+        strong_names = ", ".join(PLANET_EN[k] for k in dict.fromkeys(dignified + same_sign))
+        weak_names = ", ".join(PLANET_EN[k] for k in debilitated)
+        text = (
+            f"The D{division} ({en_label}) chart is read for {en_dom}. Its ascendant "
+            f"falls in {RASHI_EN[lagna_sign]}, ruled by {PLANET_EN[lagna_lord]}."
+            + lord_clause_en
+        )
+        if strong_names:
+            text += f" Here {strong_names} look strong."
+        if weak_names:
+            text += f" {weak_names} work under pressure."
+        text += f" {verdict_en}."
+
+    label = f"D{division} — {ne_label}" if ne else f"D{division} — {en_label}"
+    return {
+        "label": label,
+        "confidence": level,
+        "factors": factors,
+        "text": text,
+    }
+
+
+def _divisional_section(chart: Chart, *, ne: bool) -> dict[str, Any]:
+    items = [_divisional_item(chart, d, ne=ne) for d in VARGA_REPORT_ORDER]
+    if ne:
+        body = [
+            "वर्ग (D) चक्रहरू जन्मकुण्डलीको हरेक राशिलाई सूक्ष्म भागमा बाँडेर बनाइन्छन्, "
+            "र प्रत्येकले जीवनको एउटा निश्चित क्षेत्रलाई नजिकबाट हेर्छ। तल प्रत्येक "
+            "प्रमुख वर्ग चक्रले केका लागि पढिन्छ र यस कुण्डलीमा त्यो क्षेत्र कति बलियो "
+            "देखिन्छ भन्ने संक्षिप्त पढाइ दिइएको छ।",
+        ]
+    else:
+        body = [
+            "Divisional (varga) charts subdivide each rashi of the birth chart into "
+            "finer parts, and each one zooms in on a specific area of life. Below is "
+            "a short reading of what every major D-chart is read for and how strong "
+            "that area looks in this chart.",
+        ]
+    return {
+        "id": "divisional_charts",
+        "title_en": "Divisional charts (D-charts) summary",
+        "title_ne": "वर्ग चक्र (D-चार्ट) सारांश",
+        "body": body,
+        "items": items,
+        "prelocalized": True,
+    }
+
+
+# ── Yoga report enrichment ────────────────────────────────────────────────────
+
+def _yoga_involved(chart: Chart, y: dict[str, Any]) -> list[str]:
+    """Grahas that form a detected yoga, derived from its key."""
+    key = y.get("key", "")
+    static = {
+        "gajakesari": ["jupiter", "moon"],
+        "budhaditya": ["sun", "mercury"],
+        "chandra_mangala": ["moon", "mars"],
+        "kemadruma": ["moon"],
+    }
+    if key in static:
+        return static[key]
+    if key.startswith("mahapurusha_") or key.startswith("neechabhanga_"):
+        return [key.split("_", 1)[1]]
+    if key.startswith("raja_"):
+        return [p for p in key.split("_")[1:] if p in PLANET_EN]
+    if key == "dhana_2_11":
+        return [p for p in (chart.house_lord.get(2), chart.house_lord.get(11)) if p]
+    return []
+
+
+def _yoga_report_item(chart: Chart, y: dict[str, Any], *, ne: bool) -> dict[str, Any]:
+    """A yoga card enriched with per-graha strength, dasha activation and a
+    data-driven confidence grade — so the reader sees *how* the yoga sits in
+    this chart, not just its textbook meaning."""
+    involved = _yoga_involved(chart, y)
+    pol = y["polarity"]
+    factors: list[str] = []
+    strong_ct = weak_ct = 0
+
+    for key in involved:
+        pf = chart.planet(key)
+        if not pf:
+            continue
+        dscore = DIGNITY_SCORE.get(pf.dignity, 0)
+        sb = pf.shadbala_status
+        if dscore >= 2 or sb in {"Exceptional", "Strong"} or pf.vargottama:
+            strong_ct += 1
+        if dscore <= -2 or sb in {"Weak", "Borderline"} or pf.combust:
+            weak_ct += 1
+        if ne:
+            bit = f"{PLANET_NE[key]}: {DIGNITY_PHRASE_NE.get(pf.dignity, 'स्थित')}"
+            if sb:
+                bit += f", षड्बल {_SHADBALA_STATUS_NE.get(sb, sb)}"
+            if pf.vargottama:
+                bit += ", वर्गोत्तम"
+            if pf.combust:
+                bit += ", अस्त"
+        else:
+            bit = f"{PLANET_EN[key]}: {DIGNITY_PHRASE.get(pf.dignity, 'placed')}"
+            if sb:
+                bit += f", Shadbala {sb}"
+            if pf.vargottama:
+                bit += ", vargottama"
+            if pf.combust:
+                bit += ", combust"
+        factors.append(bit)
+
+    activated = any(k in {chart.maha_lord, chart.antar_lord} for k in involved)
+    if activated:
+        factors.append("वर्तमान दशाले सक्रिय गरेको" if ne
+                       else "Activated by the current dasha")
+
+    if pol == "caution":
+        level = "mixed" if weak_ct else "tentative"
+    elif pol == "mixed":
+        level = "mixed"
+    else:  # benefic
+        if strong_ct and not weak_ct:
+            level = "strong" if (strong_ct >= 2 or activated) else "moderate"
+        elif strong_ct and weak_ct:
+            level = "mixed"
+        elif weak_ct:
+            level = "mixed"
+        else:
+            level = "moderate"
+
+    parts: list[str] = []
+    if pol != "caution":
+        if strong_ct and not weak_ct:
+            parts.append("यसका ग्रह यहाँ बलिया छन्, त्यसैले फल भरपर्दो छ" if ne
+                         else "Its planets are strong here, so the result is dependable")
+        elif weak_ct and not strong_ct:
+            parts.append("यसका ग्रह कमजोर छन्, त्यसैले फल देखिन थप प्रयास चाहिन्छ" if ne
+                         else "Its planets are on the weaker side, so the result "
+                              "needs extra effort to show")
+        elif strong_ct and weak_ct:
+            parts.append("बल मिश्रित छ — केही समर्थन, केही घर्षण" if ne
+                         else "Strength is mixed — some support, some friction")
+    if activated:
+        parts.append("अहिलेको दशाले यसलाई सक्रिय गरिरहेको छ" if ne
+                     else "the running dasha is activating it now")
+    base_text = _yoga_text(y, ne)
+    if parts:
+        synth = "; ".join(parts)
+        base_text += f" {synth}।" if ne else f" {synth}."
+
+    return {
+        "label": _yoga_name(y, ne),
+        "confidence": level,
+        "polarity": pol,
+        "text": base_text,
+        "factors": factors,
+    }
+
+
 def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dict[str, Any]]:
     sections: list[dict[str, Any]] = []
     ne = lang == "ne"
@@ -2428,21 +2731,26 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     sections.append(_nsec("house_by_house", "House by house",
                           "भाव विश्लेषण", [], items=house_items))
 
-    # 20 — Yogas ----------------------------------------------------------------
+    # 20 — Divisional (D-chart) summary -----------------------------------------
+    sections.append(_divisional_section(chart, ne=ne))
+
+    # 21 — Yogas ----------------------------------------------------------------
     if chart.yogas:
-        yoga_items = []
-        for y in chart.yogas:
-            pol = y["polarity"]
-            conf = "moderate" if pol == "benefic" else "mixed" if pol == "mixed" else "tentative"
-            yoga_items.append({
-                "label": _yoga_name(y, ne),
-                "confidence": conf,
-                "polarity": pol,
-                "text": _yoga_text(y, ne),
-            })
+        yoga_items = [_yoga_report_item(chart, y, ne=ne) for y in chart.yogas]
+        yoga_body = ([
+            "योग भनेको ग्रहहरूको विशेष संयोजन हो जसले जीवनमा निश्चित प्रवृत्ति ल्याउँछ। "
+            "तल तपाईंको कुण्डलीमा बनेका योग, तिनमा संलग्न ग्रहको बल, र हालको दशाले "
+            "तिनलाई सक्रिय गरेको छ कि छैन भन्ने सहित दिइएको छ।",
+        ] if ne else [
+            "A yoga is a specific planetary combination that inclines the chart "
+            "toward a particular tendency. Below are the yogas formed in your chart, "
+            "with the strength of the planets involved and whether the running dasha "
+            "is activating them.",
+        ])
         sections.append({
             "id": "yoga_explanations", "title_en": "Yogas in your chart",
-            "title_ne": "योग", "body": [], "items": yoga_items, "prelocalized": True,
+            "title_ne": "योग", "body": yoga_body, "items": yoga_items,
+            "prelocalized": True,
         })
     else:
         sections.append({
@@ -2456,7 +2764,7 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             ],
         })
 
-    # 21 — Action plan ----------------------------------------------------------
+    # 22 — Action plan ----------------------------------------------------------
     plan = _action_plan(chart, ne=ne)
     sections.append(_nsec("action_plan", "Top 5 priorities", "मुख्य ५ प्राथमिकता", plan))
 
