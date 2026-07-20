@@ -29,6 +29,14 @@ def kundali_db_path() -> Path:
     return DATA_DIR / "kundali.db"
 
 
+def yoga_reference_db_path() -> Path:
+    return DATA_DIR / "yoga_reference.db"
+
+
+def yoga_reference_source_path() -> Path:
+    return DATA_DIR / "yoga_reference.json"
+
+
 def ephemeris_path() -> Path:
     """Directory holding the Swiss Ephemeris ``.se1`` binary files.
 

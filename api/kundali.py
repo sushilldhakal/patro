@@ -230,6 +230,43 @@ def shadbala(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/kundali/yogas/reference")
+def kundali_yoga_reference(
+    id: str | None = Query(None, description="Exact yoga id, e.g. '46' or '75-106'"),
+    q: str | None = Query(None, description="Case-insensitive search over name/definition/result"),
+):
+    """Static catalog of the 162 planetary combinations (Raman, Part I).
+
+    No arguments returns the whole catalog; `id` fetches one combination; `q`
+    searches names, definitions and results.
+    """
+    from services.yoga_reference_db import get_all, get_by_id, search
+    from services.response_cache import DEFAULT_CACHE_CONTROL
+
+    if id:
+        entry = get_by_id(id)
+        if entry is None:
+            raise HTTPException(status_code=404, detail=f"No yoga combination with id {id!r}")
+        combinations = [entry]
+    elif q:
+        combinations = search(q)
+    else:
+        combinations = get_all()
+
+    return JSONResponse(
+        content={
+            "source": "Three Hundred Important Combinations — B. V. Raman",
+            "part": "Part I (combinations 1–162)",
+            "count": len(combinations),
+            "combinations": combinations,
+        },
+        headers={
+            "Cache-Control": DEFAULT_CACHE_CONTROL,
+            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+        },
+    )
+
+
 @router.get("/kundali/detail")
 def kundali_detail(
     location: LocationDep,

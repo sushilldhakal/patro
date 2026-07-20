@@ -99,3 +99,7 @@ Desktop.ini
 data/NP.txt
 data/NP.zip
 data/*.zip
+
+# Generated yoga reference DB (rebuilt from data/yoga_reference.json)
+data/yoga_reference.db
+data/yoga_reference.db-*

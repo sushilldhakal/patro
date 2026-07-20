@@ -168,7 +168,20 @@ def _trikona_shodhana(bav: list[int]) -> list[int]:
 
 
 def _ekadhipatya_shodhana(bav: list[int], occupied: set[int]) -> list[int]:
-    """Reduce the two signs owned by a single graha per BPHS Ch. 70."""
+    """Reduce the two signs owned by a single graha (Jataka Parijata, Adhyaya X).
+
+    Applied to the bindus left after Trikona Shodhana, per single-lord pair:
+      * both signs occupied              -> no reduction (Rule 1)
+      * both empty, equal dots           -> both set to 0 (Rule 3a)
+      * both empty, unequal dots         -> both set to the smaller (Rule 3b)
+      * one occupied with MORE dots than the empty sign
+                                         -> the empty sign set to 0 (Rule 2)
+      * one occupied with FEWER dots than the empty sign
+                                         -> the empty sign made equal to the
+                                            occupied sign (Rule 4)
+    In every one-occupied case only the empty sign changes; the occupied sign
+    keeps its figure, and a tie is treated as Rule 2 (empty sign -> 0).
+    """
     out = list(bav)
     for a, b in _EKADHIPATYA_PAIRS:
         va, vb = out[a], out[b]
@@ -176,14 +189,11 @@ def _ekadhipatya_shodhana(bav: list[int], occupied: set[int]) -> list[int]:
         if pa and pb:
             continue  # both tenanted — no reduction
         if not pa and not pb:
-            if va == vb:
-                out[a] = out[b] = 0
-            else:
-                out[a] = out[b] = min(va, vb)
-        elif pa:  # A tenanted, B empty
-            out[b] = vb - va if vb > va else 0
-        else:  # B tenanted, A empty
-            out[a] = va - vb if va > vb else 0
+            out[a] = out[b] = 0 if va == vb else min(va, vb)
+        elif pa:  # A occupied, B empty — reduce only B
+            out[b] = va if va < vb else 0
+        else:  # B occupied, A empty — reduce only A
+            out[a] = vb if vb < va else 0
     return out
 
 
