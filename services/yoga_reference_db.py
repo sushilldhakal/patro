@@ -44,6 +44,25 @@ CREATE TABLE IF NOT EXISTS yoga_reference_meta (
 _seed_lock = threading.Lock()
 _seeded = False
 
+# Columns required by the current INSERT / SELECT paths. If an older deploy
+# created the table without these, CREATE TABLE IF NOT EXISTS is a no-op and
+# reseeding crashes with OperationalError — which is the live 500 on
+# /kundali/yogas/reference after the v2 Nepali-field schema landed.
+_REQUIRED_COLUMNS = frozenset(
+    {
+        "yoga_id",
+        "sort_order",
+        "name",
+        "name_ne",
+        "definition",
+        "definition_ne",
+        "result",
+        "result_ne",
+        "source",
+        "part",
+    }
+)
+
 
 def _connect() -> sqlite3.Connection:
     db_path = yoga_reference_db_path()
@@ -55,15 +74,33 @@ def _connect() -> sqlite3.Connection:
 
 
 def _load_source() -> dict[str, Any]:
-    with open(yoga_reference_source_path(), encoding="utf-8") as fh:
+    source = yoga_reference_source_path()
+    if not source.is_file():
+        raise FileNotFoundError(
+            f"Yoga reference source missing: {source}. "
+            "Commit data/yoga_reference.json and redeploy."
+        )
+    with open(source, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def _table_columns(conn: sqlite3.Connection, table: str) -> set[str]:
+    rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    return {r["name"] for r in rows}
+
+
+def _schema_outdated(conn: sqlite3.Connection) -> bool:
+    cols = _table_columns(conn, "yoga_combinations")
+    if not cols:
+        return False  # table missing — CREATE TABLE will handle it
+    return not _REQUIRED_COLUMNS.issubset(cols)
 
 
 def ensure_seeded() -> None:
     """Create the table and (re)seed it whenever the JSON version advances.
 
-    Idempotent and cheap: on a matching version it does nothing but a single
-    metadata read, so it is safe to call before every lookup.
+    Also rebuilds when an older SQLite schema is present (CREATE TABLE IF NOT
+    EXISTS does not add columns). Idempotent and cheap on a matching version.
     """
     global _seeded
     if _seeded:
@@ -75,12 +112,21 @@ def ensure_seeded() -> None:
         version = str(data.get("version", 0))
         with _connect() as conn:
             conn.executescript(_SCHEMA)
+            outdated = _schema_outdated(conn)
             current = conn.execute(
                 "SELECT value FROM yoga_reference_meta WHERE key = 'version'"
             ).fetchone()
-            if current is not None and current["value"] == version:
+            if (
+                not outdated
+                and current is not None
+                and current["value"] == version
+            ):
                 _seeded = True
                 return
+            if outdated:
+                # Drop so CREATE TABLE rebuilds with the current columns.
+                conn.execute("DROP TABLE IF EXISTS yoga_combinations")
+                conn.executescript(_SCHEMA)
             conn.execute("DELETE FROM yoga_combinations")
             conn.executemany(
                 """

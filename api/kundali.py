@@ -239,19 +239,31 @@ def kundali_yoga_reference(
 
     No arguments returns the whole catalog; `id` fetches one combination; `q`
     searches names, definitions and results.
+
+    The SQLite catalog is rebuilt on demand from ``data/yoga_reference.json``
+    (the ``.db`` is gitignored). Stale schemas from older deploys are dropped
+    and recreated automatically.
     """
     from services.yoga_reference_db import get_all, get_by_id, search
     from services.response_cache import DEFAULT_CACHE_CONTROL
 
-    if id:
-        entry = get_by_id(id)
-        if entry is None:
-            raise HTTPException(status_code=404, detail=f"No yoga combination with id {id!r}")
-        combinations = [entry]
-    elif q:
-        combinations = search(q)
-    else:
-        combinations = get_all()
+    try:
+        if id:
+            entry = get_by_id(id)
+            if entry is None:
+                raise HTTPException(status_code=404, detail=f"No yoga combination with id {id!r}")
+            combinations = [entry]
+        elif q:
+            combinations = search(q)
+        else:
+            combinations = get_all()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Yoga reference catalog failed to load: {exc}",
+        ) from exc
 
     return JSONResponse(
         content={
