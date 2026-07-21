@@ -196,6 +196,38 @@ DASHA_THEME_NE = {
     "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
 }
 
+# Plain-language life themes for each planet — everyday words a reader with no
+# astrology background understands, used in place of bare planet names in the
+# advice sections ("lean into Saturn" → "lean into discipline and steady work").
+PLAIN_THEME_EN = {
+    "sun": "confidence and leadership",
+    "moon": "your emotional calm and home life",
+    "mars": "energy, courage and taking action",
+    "mercury": "clear thinking, communication and learning",
+    "jupiter": "learning, good judgement and steady growth",
+    "venus": "relationships, comfort and enjoying life",
+    "saturn": "discipline, patience and steady hard work",
+    "rahu": "ambition and trying new or unconventional paths",
+    "ketu": "focus, letting go and inner work",
+}
+PLAIN_THEME_NE = {
+    "sun": "आत्मविश्वास र नेतृत्व",
+    "moon": "मनको शान्ति र घरजीवन",
+    "mars": "जोश, साहस र काम गर्ने हिम्मत",
+    "mercury": "स्पष्ट सोच, सञ्चार र सिकाइ",
+    "jupiter": "ज्ञान, असल निर्णय र क्रमिक प्रगति",
+    "venus": "सम्बन्ध, सुखसुविधा र जीवनको आनन्द",
+    "saturn": "अनुशासन, धैर्य र लगनशील परिश्रम",
+    "rahu": "महत्वाकांक्षा र नयाँ/फरक बाटो",
+    "ketu": "एकाग्रता, त्याग र भित्री साधना",
+}
+
+
+def _plain_theme(key: str, ne: bool) -> str:
+    """Everyday-language meaning of a planet, e.g. 'discipline and steady work'."""
+    return PLAIN_THEME_NE.get(key, key) if ne else PLAIN_THEME_EN.get(key, key)
+
+
 # Dasha year length — 360-day savana year, matching the Vimshottari engine so
 # the report's reconstructed bhukti dates and chapter durations stay aligned.
 DAYS_PER_YEAR = 360.0
@@ -1593,11 +1625,10 @@ def _window_phrase(dasha: Optional[dict[str, Any]], lord: str, now: datetime,
         return None
     span = f"{_date(w['start'], ne)} → {_date(w['end'], ne)}"
     if ne:
-        kind = "अन्तर्दशा" if w["kind"] == "antardasha" else "महादशा"
-        when = "हाल चलिरहेको" if w["running"] else "आगामी"
-        return f"{when} {PLANET_NE[lord]} {kind} ({span})"
-    when = "the current" if w["running"] else "the upcoming"
-    return f"{when} {PLANET_EN[lord]} {w['kind']} ({span})"
+        when = "हाल चलिरहेको अनुकूल समय" if w["running"] else "आगामी अनुकूल समय"
+        return f"{when} ({span})"
+    when = "a good period running now" if w["running"] else "an upcoming good period"
+    return f"{when} ({span})"
 
 
 def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[dict[str, Any]]:
@@ -1684,20 +1715,22 @@ def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
         conf = _planet_confidence(chart, lord)
         window = _window_phrase(d, lord, now, ne=ne)
         if ne:
-            timing = f" सर्वोत्तम समय: {window}।" if window else ""
-            text = f"{pursue_ne} यसको सूत्रधार {PLANET_NE[lord]} हो।{timing}"
+            timing = f" सबैभन्दा राम्रो समय: {window}।" if window else ""
+            text = f"{pursue_ne}{timing}"
             label = area_ne
         else:
-            timing = f" Best window: {window}." if window else ""
-            text = f"{pursue_en} Its ruling graha is {PLANET_EN[lord]}.{timing}"
+            timing = f" Best time for this: {window}." if window else ""
+            text = f"{pursue_en}{timing}"
             label = area_en
         items.append({"label": label, "confidence": conf.level, "text": text})
 
     strong = _strongest(chart)
     add(
-        "मुख्य बल", "Your strongest lever", strong,
-        f"पहिलो प्राथमिकता यही हो — {DASHA_THEME_NE[strong]}; यहीँ गति सबैभन्दा सजिलो बन्छ।",
-        f"Lead with {DASHA_THEME[strong]} — momentum is cheapest to build here.",
+        "तपाईंको सबैभन्दा बलियो पक्ष", "Your strongest area", strong,
+        f"तपाईं स्वाभाविक रूपमा {_plain_theme(strong, True)} मा राम्रो हुनुहुन्छ — यहीँ "
+        "मिहिनेत सबैभन्दा छिटो फल दिन्छ, त्यसैले यसमै सबैभन्दा बढी लगानी गर्नुहोस्।",
+        f"You are naturally good at {_plain_theme(strong, False)} — effort pays off "
+        "fastest here, so put most of your energy into it.",
     )
     # Career (10th), wealth/gains (11th), relationships (7th), learning & dharma (9th).
     add(
@@ -1722,13 +1755,13 @@ def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
     )
 
     body = ([
-        "यो खण्डले तपाईंले कुन कुरामा लाग्ने र त्यसका लागि कुन दशा-कालखण्ड सबैभन्दा "
-        "अनुकूल छ भन्ने जोड्छ। तल प्रत्येक जीवन-क्षेत्रको सूत्रधार ग्रह र त्यसको आगामी "
-        "वा हालको दशा-सञ्झ्याल दिइएको छ — ठूला निर्णय ती अनुकूल समयसँग मिलाउनुहोस्।",
+        "यो खण्डले तपाईंले कुन कुरामा ध्यान दिने र त्यसका लागि कुन समय सबैभन्दा राम्रो "
+        "छ भन्ने देखाउँछ। तल हरेक जीवन-क्षेत्रसँगै त्यसका लागि अनुकूल समय दिइएको छ — "
+        "ठूला निर्णय ती समयसँग मिलाउनुहोस्।",
     ] if ne else [
-        "This section ties what to pursue to the dasha window that most favours it. "
-        "For each life area you get its ruling graha and that graha's current or "
-        "upcoming dasha window — align your bigger decisions with those windows.",
+        "This section shows what to focus on and the best time for each one. Every "
+        "life area below comes with the period that most favours it — try to line up "
+        "your bigger decisions with those good times.",
     ])
     return {
         "id": "pursue_and_when",
@@ -1791,8 +1824,6 @@ def _varga_dignity(planet: str, varga_sign: int) -> Optional[str]:
 def _divisional_item(chart: Chart, division: int, *, ne: bool) -> dict[str, Any]:
     """One card: what a D-chart reads for, and how strong it looks here."""
     en_label, ne_label, en_dom, ne_dom = VARGA_DOMAIN[division]
-    lagna_sign = varga_rashi_from_longitude(division, chart.lagna_lon) - 1
-    lagna_lord = SIGN_LORD[lagna_sign]
 
     dignified: list[str] = []      # own / exalted / moolatrikona in this varga
     debilitated: list[str] = []
@@ -1839,65 +1870,42 @@ def _divisional_item(chart: Chart, division: int, *, ne: bool) -> dict[str, Any]
     else:
         level = "tentative"
 
-    # Ascendant lord placement within this varga — the chart's key signal.
-    lord_pf = chart.planet(lagna_lord)
-    lord_clause_en = lord_clause_ne = ""
-    if lord_pf:
-        lord_vsign = varga_rashi_from_longitude(division, lord_pf.longitude) - 1
-        lord_dign = _varga_dignity(lagna_lord, lord_vsign)
-        lord_clause_en = (
-            f" Its ascendant lord {PLANET_EN[lagna_lord]} sits in "
-            f"{RASHI_EN[lord_vsign]}"
-            + (f", {DIGNITY_PHRASE[lord_dign]}" if lord_dign in DIGNITY_PHRASE else "")
-            + "."
-        )
-        lord_clause_ne = (
-            f" यसको लग्नेश {PLANET_NE[lagna_lord]} {RASHI_NE[lord_vsign]} राशिमा"
-            + (f", {DIGNITY_PHRASE_NE.get(lord_dign, lord_dign)}"
-               if lord_dign in DIGNITY_PHRASE else "")
-            + " छ।"
-        )
-
     verdict_en = {
-        "strong": "The chart is well supported here",
-        "moderate": "The chart holds moderate strength here",
-        "mixed": "Strength here is mixed — support alongside friction",
-        "tentative": "This area reads through the placements above rather than "
-                     "any standout strength",
+        "strong": "strong and well-supported",
+        "moderate": "reasonably supported",
+        "mixed": "mixed — some support and some challenges",
+        "tentative": "average, without a standout signal",
     }[level]
     verdict_ne = {
-        "strong": "यस क्षेत्रमा कुण्डली राम्रोसँग समर्थित छ",
-        "moderate": "यहाँ कुण्डलीको बल मध्यम छ",
-        "mixed": "यहाँको बल मिश्रित छ — समर्थनसँगै केही घर्षण",
-        "tentative": "यो क्षेत्र कुनै विशेष बलभन्दा माथिका स्थितिबाट पढिन्छ",
+        "strong": "बलियो र राम्रोसँग समर्थित",
+        "moderate": "ठीकठाकसँग समर्थित",
+        "mixed": "मिश्रित — केही समर्थन, केही चुनौती",
+        "tentative": "सामान्य, कुनै विशेष संकेतबिना",
     }[level]
 
+    strong_keys = list(dict.fromkeys(dignified + same_sign))
     if ne:
-        strong_names = ", ".join(PLANET_NE[k] for k in dict.fromkeys(dignified + same_sign))
+        strong_names = ", ".join(PLANET_NE[k] for k in strong_keys)
         weak_names = ", ".join(PLANET_NE[k] for k in debilitated)
-        text = (
-            f"D{division} ({ne_label}) चक्र {ne_dom} का लागि पढिन्छ। "
-            f"यसको लग्न {RASHI_NE[lagna_sign]} राशिमा, {PLANET_NE[lagna_lord]} द्वारा शासित।"
-            + lord_clause_ne
-        )
+        text = f"D{division} ({ne_label}) चक्रले तपाईंको {ne_dom} देखाउँछ।"
         if strong_names:
-            text += f" यहाँ {strong_names} बलियो देखिन्छन्।"
+            text += f" यहाँ {strong_names} बलियो छन्, जसले यस क्षेत्रलाई सघाउँछ।"
         if weak_names:
-            text += f" {weak_names} भने दबाबमा छन्।"
-        text += f" {verdict_ne}।"
+            text += f" {weak_names} भने केही दबाबमा छन्, त्यसैले यता थप ध्यान चाहिन्छ।"
+        text += f" समग्रमा यो क्षेत्र {verdict_ne} देखिन्छ।"
     else:
-        strong_names = ", ".join(PLANET_EN[k] for k in dict.fromkeys(dignified + same_sign))
+        strong_names = ", ".join(PLANET_EN[k] for k in strong_keys)
         weak_names = ", ".join(PLANET_EN[k] for k in debilitated)
-        text = (
-            f"The D{division} ({en_label}) chart is read for {en_dom}. Its ascendant "
-            f"falls in {RASHI_EN[lagna_sign]}, ruled by {PLANET_EN[lagna_lord]}."
-            + lord_clause_en
-        )
+        one_strong = len(strong_keys) == 1
+        one_weak = len(debilitated) == 1
+        text = f"The D{division} chart ({en_label}) shows your {en_dom}."
         if strong_names:
-            text += f" Here {strong_names} look strong."
+            text += f" {strong_names} {'is' if one_strong else 'are'} strong here, " \
+                    "which helps this area."
         if weak_names:
-            text += f" {weak_names} work under pressure."
-        text += f" {verdict_en}."
+            text += f" {weak_names} {'is' if one_weak else 'are'} under some strain, " \
+                    "so this part needs more care."
+        text += f" Overall, this area looks {verdict_en}."
 
     label = f"D{division} — {ne_label}" if ne else f"D{division} — {en_label}"
     return {
@@ -2646,20 +2654,25 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     strong, weak = _strongest(chart), _weakest(chart)
     if ne:
         rec = [
-            f"{PLANET_NE[strong]} का विषयमा लाग्नुहोस् — यहीँ गति सबैभन्दा सजिलो बन्छ।",
-            f"{PLANET_NE[weak]} का विषयलाई दिनचर्या र साना, दोहोरिने प्रयासबाट संरचना दिनुहोस् — "
-            "तयार महसुस हुने पर्खाइ नगरी।",
-            "ठूला कदमलाई दृष्टिकोणमा उल्लेख गरिएका सहायक उप-अवधिसँग मिलाउनुहोस्।",
-            "तलका प्रत्येक प्राथमिकताका लागि आगामी त्रैमासमा एउटा ठोस बानी पछ्याउनुहोस्।",
+            f"तपाईंको बलियो पक्ष — {_plain_theme(strong, True)} — मा ध्यान दिनुहोस्; यहाँ "
+            "प्रगति सबैभन्दा सजिलो हुन्छ।",
+            f"कमजोर पक्ष — {_plain_theme(weak, True)} — लाई छोड्ने होइन, बरु साना नियमित "
+            "बानीबाट बिस्तारै बलियो बनाउनुहोस्; पूरै तयार भएको महसुस नभएसम्म नपर्खनुहोस्।",
+            "ठूला निर्णय माथि देखाइएका अनुकूल समयमा गर्नुहोस्, ताकि समय तपाईंको साथमा हुँदा "
+            "काम अघि बढोस्।",
+            "तल दिइएका हरेक प्राथमिकताका लागि एउटा सानो बानी छान्नुहोस् र अर्को तीन महिना "
+            "निरन्तर पछ्याउनुहोस्।",
         ]
     else:
         rec = [
-            f"Lean into {PLANET_EN[strong]} themes — that is where momentum is "
-            "cheapest to build.",
-            f"Give structure to {PLANET_EN[weak]} themes through routine and "
-            "small, repeated effort rather than waiting to feel ready.",
-            "Align major moves with the supportive sub-periods noted in the outlook.",
-            "Track one concrete habit per priority below for the next quarter.",
+            f"Play to your strengths — {_plain_theme(strong, False)}. This is where "
+            "progress comes easiest for you.",
+            f"Don't avoid your weaker side — {_plain_theme(weak, False)}. Build it up "
+            "slowly with small, regular habits instead of waiting until you feel ready.",
+            "Save big decisions for the good times highlighted above, so you act when "
+            "the timing is on your side.",
+            "Pick one small habit for each priority below and stick with it for the "
+            "next three months.",
         ]
     sections.append(_nsec("practical_recommendations", "Practical recommendations",
                           "व्यावहारिक सुझाव", rec))
@@ -2790,43 +2803,40 @@ def _weakest(chart: Chart) -> str:
 
 def _action_plan(chart: Chart, *, ne: bool = False) -> list[str]:
     strong, weak = _strongest(chart), _weakest(chart)
-    tenth = chart.house_lord.get(10)
     if ne:
         plan = [
-            f"१. {PLANET_NE[strong]} को बल ({KARAKA_NE[strong].split(',')[0]}) मा आफ्नो आधार "
-            "बनाउनुहोस् — यो तपाईंको सबैभन्दा छिटो लाभ हो।",
-            f"२. {PLANET_NE[weak]} का विषय ({KARAKA_NE[weak].split(',')[0]}) वरिपरि सरल साप्ताहिक "
-            "दिनचर्या राख्नुहोस्, ताकि तिनले अवरोध गर्न छोडून्।",
+            f"१. तपाईं स्वाभाविक रूपमा राम्रो भएको कुरा — {_plain_theme(strong, True)} — मा "
+            "आधार बनाउनुहोस्। यसले सबैभन्दा छिटो नतिजा दिन्छ।",
+            f"२. कमजोर पक्ष — {_plain_theme(weak, True)} — लाई सरल साप्ताहिक दिनचर्यामा "
+            "ढाल्नुहोस्, ताकि यसले तपाईंलाई रोक्न छाडोस्।",
         ]
         if chart.maha_lord:
             plan.append(
-                f"३. चलिरहेको {PLANET_NE[chart.maha_lord]} अवधिसँग काम गर्नुहोस् — ठूला पहलका लागि "
-                f"{DASHA_THEME_NE[chart.maha_lord].split(',')[0]} लाई प्राथमिकता दिनुहोस्।")
+                f"३. अहिले तपाईंको जीवनमा {_plain_theme(chart.maha_lord, True)} लाई साथ दिने "
+                "समय चलिरहेको छ — ठूला कदम यसै बेला चाल्नुहोस्।")
         else:
-            plan.append("३. ठूला पहललाई आफ्ना सहायक उप-अवधिसँग मिलाउनुहोस्।")
+            plan.append("३. ठूला कदम माथि देखाइएका अनुकूल समयमा चाल्नुहोस्।")
         plan.append(
-            f"४. करियरका लागि {PLANET_NE[tenth]} ले नेतृत्व गरेको १० औं भावको मार्गलाई "
-            "निरन्तर, दृश्य कामबाट विकास गर्नुहोस्।")
-        plan.append("५. नैतिक, स्थिर दैनिक लय कायम राख्नुहोस् — कुण्डलीको हरेक क्षेत्रलाई "
-                    "बलियो बनाउने एउटै उपाय।")
+            "४. करियर र प्रतिष्ठाका लागि निरन्तर, अरूले देख्ने गरी काम गर्दै रहनुहोस्।")
+        plan.append("५. इमानदार र स्थिर दैनिक दिनचर्या कायम राख्नुहोस् — यसैले जीवनको हरेक "
+                    "पक्ष चुपचाप बलियो बनाउँछ।")
         return plan
     plan = [
-        f"1. Build your platform on {PLANET_EN[strong]} strengths "
-        f"({KARAKA[strong].split(',')[0]}) — this is your fastest leverage.",
-        f"2. Put a simple weekly routine around {PLANET_EN[weak]} themes "
-        f"({KARAKA[weak].split(',')[0]}) so they stop being a drag.",
+        f"1. Build on what you're naturally good at — {_plain_theme(strong, False)}. "
+        "This gives you the fastest results.",
+        f"2. Turn your weaker side — {_plain_theme(weak, False)} — into a simple "
+        "weekly routine so it stops holding you back.",
     ]
     if chart.maha_lord:
         plan.append(
-            f"3. Work with the current {PLANET_EN[chart.maha_lord]} period — favour "
-            f"{DASHA_THEME[chart.maha_lord].split(',')[0]} for major initiatives.")
+            f"3. You're currently in a life phase that favours "
+            f"{_plain_theme(chart.maha_lord, False)} — use this time for your bigger moves.")
     else:
-        plan.append("3. Time major initiatives with your supportive sub-periods.")
+        plan.append("3. Time your bigger moves for the good periods highlighted above.")
     plan.append(
-        f"4. For career, develop the 10th-house path led by {PLANET_EN[tenth]} "
-        "with consistent, visible work.")
-    plan.append("5. Keep an ethical, steady daily rhythm — the one remedy that "
-               "strengthens every area of the chart.")
+        "4. For your career and reputation, keep showing up with steady, visible work.")
+    plan.append("5. Keep an honest, steady daily routine — it's the one thing that "
+                "quietly strengthens every part of your life.")
     return plan
 
 
