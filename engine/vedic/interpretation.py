@@ -196,6 +196,38 @@ DASHA_THEME_NE = {
     "ketu": "वैराग्य, विशेषज्ञता, आन्तरिक साधना र आध्यात्मिक मोड",
 }
 
+# Plain-language life themes for each planet — everyday words a reader with no
+# astrology background understands, used in place of bare planet names in the
+# advice sections ("lean into Saturn" → "lean into discipline and steady work").
+PLAIN_THEME_EN = {
+    "sun": "confidence and leadership",
+    "moon": "your emotional calm and home life",
+    "mars": "energy, courage and taking action",
+    "mercury": "clear thinking, communication and learning",
+    "jupiter": "learning, good judgement and steady growth",
+    "venus": "relationships, comfort and enjoying life",
+    "saturn": "discipline, patience and steady hard work",
+    "rahu": "ambition and trying new or unconventional paths",
+    "ketu": "focus, letting go and inner work",
+}
+PLAIN_THEME_NE = {
+    "sun": "आत्मविश्वास र नेतृत्व",
+    "moon": "मनको शान्ति र घरजीवन",
+    "mars": "जोश, साहस र काम गर्ने हिम्मत",
+    "mercury": "स्पष्ट सोच, सञ्चार र सिकाइ",
+    "jupiter": "ज्ञान, असल निर्णय र क्रमिक प्रगति",
+    "venus": "सम्बन्ध, सुखसुविधा र जीवनको आनन्द",
+    "saturn": "अनुशासन, धैर्य र लगनशील परिश्रम",
+    "rahu": "महत्वाकांक्षा र नयाँ/फरक बाटो",
+    "ketu": "एकाग्रता, त्याग र भित्री साधना",
+}
+
+
+def _plain_theme(key: str, ne: bool) -> str:
+    """Everyday-language meaning of a planet, e.g. 'discipline and steady work'."""
+    return PLAIN_THEME_NE.get(key, key) if ne else PLAIN_THEME_EN.get(key, key)
+
+
 # Dasha year length — 360-day savana year, matching the Vimshottari engine so
 # the report's reconstructed bhukti dates and chapter durations stay aligned.
 DAYS_PER_YEAR = 360.0
@@ -407,13 +439,13 @@ DIGNITY_SCORE = {
     "friend": 1, "neutral": 0, "enemy": -1, "debilitated": -2, None: 0,
 }
 DIGNITY_PHRASE = {
-    "exalted": "exalted (deeply dignified)",
-    "moolatrikona": "in moolatrikona (very comfortable)",
-    "own": "in its own sign (stable and self-assured)",
-    "friend": "in a friendly sign (supported)",
-    "neutral": "in a neutral sign",
-    "enemy": "in an enemy sign (somewhat strained)",
-    "debilitated": "debilitated (under pressure, needing conscious effort)",
+    "exalted": "at its very best and very strong",
+    "moolatrikona": "very comfortable and strong",
+    "own": "steady and self-assured",
+    "friend": "well supported",
+    "neutral": "in a neutral spot",
+    "enemy": "a little strained",
+    "debilitated": "weak and needing conscious effort",
 }
 
 
@@ -577,11 +609,11 @@ def _detect_yogas(chart_planets: dict[str, PlanetFact], lagna_sign: int,
         yogas.append({
             "key": "gajakesari", "name": "Gaja-Kesari Yoga",
             "name_ne": "गजकेसरी योग", "polarity": "benefic",
-            "text": "Jupiter sits in an angle from the Moon, a classic combination "
-                    "for good judgement, respect and steady fortune that tends to "
-                    "ripen with maturity.",
-            "text_ne": "बृहस्पति चन्द्रमाबाट केन्द्रमा छ — असल विवेक, सम्मान र "
-                       "परिपक्वतासँगै फल्ने स्थिर भाग्यको उत्कृष्ट संयोग।",
+            "text": "Jupiter sits at a strong angle to the Moon — a classic, well-loved "
+                    "combination for good judgement, respect and steady good fortune that "
+                    "tends to grow with age.",
+            "text_ne": "बृहस्पति चन्द्रबाट बलियो कोणमा छ — असल विवेक, सम्मान र "
+                       "उमेरसँगै झन् फल्दै जाने स्थिर भाग्यको उत्कृष्ट संयोग।",
         })
     # Budha-Aditya — Sun and Mercury in the same sign.
     if "sun" in P and "mercury" in P and P["sun"].sign == P["mercury"].sign:
@@ -617,11 +649,11 @@ def _detect_yogas(chart_planets: dict[str, PlanetFact], lagna_sign: int,
             yogas.append({
                 "key": f"mahapurusha_{key}", "name": f"{name} Mahapurusha Yoga",
                 "name_ne": f"{name_ne} महापुरुष योग", "polarity": "benefic",
-                "text": f"{PLANET_EN[key]} is dignified in an angle, forming {name} "
-                        f"Yoga — a signature of strong character traits tied to "
-                        f"{KARAKA[key].split(',')[0]}.",
-                "text_ne": f"{PLANET_NE[key]} केन्द्रमा गरिमामान भई {name_ne} महापुरुष "
-                           f"योग बनाउँछ — {KARAKA_NE[key].split(',')[0]} सँग जोडिएको "
+                "text": f"{PLANET_EN[key]} is strong and well-placed in a key position "
+                        f"of the chart, forming {name} Yoga — a mark of strong character "
+                        f"tied to {KARAKA[key].split(',')[0]}.",
+                "text_ne": f"{PLANET_NE[key]} कुण्डलीको बलियो स्थानमा राम्रोसँग रहेर {name_ne} "
+                           f"महापुरुष योग बनाउँछ — {KARAKA_NE[key].split(',')[0]} सँग जोडिएको "
                            f"बलियो चारित्रिक विशेषता।",
             })
     # Kemadruma — Moon isolated: 2nd & 12th from Moon empty of other planets AND
@@ -637,15 +669,15 @@ def _detect_yogas(chart_planets: dict[str, PlanetFact], lagna_sign: int,
         yogas.append({
             "key": "kemadruma", "name": "Kemadruma (isolated Moon)",
             "name_ne": "केमद्रुम (एकान्त चन्द्र)", "polarity": "caution",
-            "text": "The Moon has no planets flanking it, which classically points "
-                    "to needing self-built emotional support structures. It is "
-                    "widely considered softened by a strong Moon, benefic aspects, "
-                    "or planets in angles — so treat it as a reminder to nurture "
-                    "stable routines and relationships, not as a verdict.",
-            "text_ne": "चन्द्रमाको दुवैतिर कुनै ग्रह छैन, जुन शास्त्रअनुसार आफैँले "
-                       "भावनात्मक आधार निर्माण गर्नुपर्ने सङ्केत हो। बलियो चन्द्र, शुभ "
-                       "दृष्टि वा केन्द्रका ग्रहले यसलाई नरम पार्छन् — त्यसैले यसलाई "
-                       "स्थिर दिनचर्या र सम्बन्ध पोषण गर्ने सम्झना ठान्नुहोस्, दण्ड होइन।",
+            "text": "The Moon has no planets on either side of it, which traditionally "
+                    "points to building your own emotional support system. A strong Moon, "
+                    "helpful influences from friendly planets, or planets in strong "
+                    "positions all soften it — so treat it as a reminder to nurture "
+                    "steady routines and relationships, not as a bad verdict.",
+            "text_ne": "चन्द्रमाको दुवैतिर कुनै ग्रह छैन, जुन परम्परा अनुसार आफैँले "
+                       "भावनात्मक आधार निर्माण गर्नुपर्ने सङ्केत हो। बलियो चन्द्र, सहयोगी "
+                       "ग्रहको प्रभाव वा बलियो स्थानमा रहेका ग्रहले यसलाई नरम पार्छन् — त्यसैले "
+                       "यसलाई स्थिर दिनचर्या र सम्बन्ध पोषण गर्ने सम्झना ठान्नुहोस्, नराम्रो फैसला होइन।",
         })
     # Neecha-bhanga — a debilitated planet whose dispositor or exaltation-lord
     # sits in a kendra from the lagna (a common cancellation rule).
@@ -659,13 +691,13 @@ def _detect_yogas(chart_planets: dict[str, PlanetFact], lagna_sign: int,
             yogas.append({
                 "key": f"neechabhanga_{key}", "name": f"Neecha-Bhanga ({PLANET_EN[key]})",
                 "name_ne": f"नीचभंग ({PLANET_NE[key]})", "polarity": "benefic",
-                "text": f"{PLANET_EN[key]} is debilitated but its strength is "
-                        f"classically restored (neecha-bhanga) because a related "
-                        f"lord holds an angle — early friction in this area often "
-                        f"converts into notable later strength.",
-                "text_ne": f"{PLANET_NE[key]} नीच भए पनि सम्बन्धित स्वामी केन्द्रमा "
-                           f"भएकाले (नीचभंग) यसको बल पुनर्स्थापित हुन्छ — यस क्षेत्रको "
-                           f"सुरुको बाधा प्रायः पछि उल्लेखनीय बलमा बदलिन्छ।",
+                "text": f"{PLANET_EN[key]} starts off weak, but that weakness is "
+                        f"cancelled out (a pattern called neecha-bhanga) because a "
+                        f"related planet holds a strong position — so early friction in "
+                        f"this area often turns into real strength later on.",
+                "text_ne": f"{PLANET_NE[key]} सुरुमा कमजोर भए पनि सम्बन्धित ग्रह बलियो "
+                           f"स्थानमा भएकाले त्यो कमजोरी रद्द हुन्छ (नीचभंग) — यस क्षेत्रको "
+                           f"सुरुको बाधा प्रायः पछि गएर वास्तविक बलमा बदलिन्छ।",
             })
     # Raja yoga — a trikona lord and a kendra lord occupying the same house.
     return yogas
@@ -693,13 +725,14 @@ def _detect_raja_dhana(chart: "Chart") -> list[dict[str, Any]]:
                     yogas.append({
                         "key": "raja_" + "_".join(sorted(pair)),
                         "name": "Raja Yoga", "name_ne": "राज योग", "polarity": "benefic",
-                        "text": f"An angular lord ({PLANET_EN[kl]}) and a trine lord "
-                                f"({PLANET_EN[tl]}) join in one house — a Raja-yoga "
-                                f"pattern supporting rise in status, provided the "
-                                f"planets involved are reasonably strong.",
-                        "text_ne": f"केन्द्रका स्वामी ({PLANET_NE[kl]}) र त्रिकोणका स्वामी "
-                                   f"({PLANET_NE[tl]}) एउटै भावमा मिल्छन् — सम्बन्धित ग्रह "
-                                   f"बलियो भएमा प्रतिष्ठा वृद्धि गर्ने राजयोग ढाँचा।",
+                        "text": f"A planet ruling one of your key 'power' houses "
+                                f"({PLANET_EN[kl]}) and a planet ruling one of your lucky "
+                                f"houses ({PLANET_EN[tl]}) come together in one house — a "
+                                f"Raja yoga that supports a rise in status and success, as "
+                                f"long as the planets involved are reasonably strong.",
+                        "text_ne": f"तपाईंको मुख्य 'शक्ति' भावको स्वामी ({PLANET_NE[kl]}) र "
+                                   f"भाग्यशाली भावको स्वामी ({PLANET_NE[tl]}) एउटै भावमा मिल्छन् — "
+                                   f"सम्बन्धित ग्रह बलियो भएमा प्रतिष्ठा र सफलता बढाउने राजयोग।",
                     })
     # Dhana yoga — lords of 2 and 11 (wealth & gains) together.
     l2 = chart.house_lord.get(2)
@@ -709,11 +742,11 @@ def _detect_raja_dhana(chart: "Chart") -> list[dict[str, Any]]:
             yogas.append({
                 "key": "dhana_2_11", "name": "Dhana Yoga", "name_ne": "धन योग",
                 "polarity": "benefic",
-                "text": "The lords of income (2nd) and gains (11th) combine, a "
-                        "wealth-forming pattern that rewards consistent earning "
-                        "and saving habits.",
-                "text_ne": "आम्दानी (२ औं) र लाभ (११ औं) का स्वामी मिल्छन् — नियमित "
-                           "कमाइ र बचतको बानीलाई पुरस्कृत गर्ने धन-निर्माण ढाँचा।",
+                "text": "The planets ruling your income (2nd house) and your gains "
+                        "(11th house) come together — a wealth-building combination that "
+                        "rewards steady earning and saving habits.",
+                "text_ne": "तपाईंको आम्दानी (२ औं भाव) र लाभ (११ औं भाव) का स्वामी ग्रह "
+                           "एकसाथ आउँछन् — नियमित कमाइ र बचतको बानीलाई फल दिने धन-निर्माण संयोग।",
             })
     return yogas
 
@@ -1438,31 +1471,32 @@ def _planet_line(chart: Chart, key: str, *, ne: bool = False) -> str:
     if ne:
         bits = [
             f"{PLANET_NE[key]} {RASHI_NE[pf.sign]} राशिमा {deg}°{minute:02d}′ "
-            f"({NAKSHATRA_NE[pf.nakshatra]} नक्षत्र, चरण {pf.pada}), {_ord_ne(pf.house)} भावमा"
+            f"(जन्म तारा {NAKSHATRA_NE[pf.nakshatra]}, चरण {pf.pada}), तपाईंको "
+            f"{_ord_ne(pf.house)} भावमा छ"
         ]
         if pf.dignity:
-            bits.append(DIGNITY_PHRASE_NE.get(pf.dignity, pf.dignity))
+            bits.append(f"र यहाँ {DIGNITY_PHRASE_NE.get(pf.dignity, pf.dignity)} छ")
         if pf.retrograde and key not in {"rahu", "ketu"}:
-            bits.append("वक्री (यसका विषय भित्री रूपमा फर्किन्छन्)")
+            bits.append("अहिले उल्टो गति (वक्री) मा छ, त्यसैले यसका विषय भित्री रूपमा फर्किन्छन्")
         if pf.combust:
-            bits.append("अस्त — सूर्यसमीप भएकाले बाह्य फलमा बढी प्रयास चाहिन्छ")
+            bits.append("सूर्यको धेरै नजिक (अस्त) छ, त्यसैले बाह्य फल पाउन बढी प्रयास चाहिन्छ")
         if pf.vargottama:
-            bits.append("वर्गोत्तम (D1 र D9 मा एउटै राशि — उल्लेखनीय रूपमा सुदृढ)")
-        return ", ".join(bits) + "।"
+            bits.append("दुवै मुख्य चार्टमा उही राशिमा (वर्गोत्तम) छ — जसले यसलाई उल्लेखनीय रूपमा बलियो बनाउँछ")
+        return "; ".join(bits) + "।"
     bits = [
-        f"{PLANET_EN[key]} ({PLANET_NE[key]}) is at {RASHI_EN[pf.sign]} "
-        f"{deg}°{minute:02d}′ in {NAKSHATRA_EN[pf.nakshatra]} nakshatra "
-        f"(pada {pf.pada}), occupying the {_ord(pf.house)} house"
+        f"{PLANET_EN[key]} is in {RASHI_EN[pf.sign]} at {deg}°{minute:02d}′ "
+        f"(birth star {NAKSHATRA_EN[pf.nakshatra]}, quarter {pf.pada}), in your "
+        f"{_ord(pf.house)} house"
     ]
     if pf.dignity:
-        bits.append(DIGNITY_PHRASE.get(pf.dignity, pf.dignity))
+        bits.append(f"and is {DIGNITY_PHRASE.get(pf.dignity, pf.dignity)} there")
     if pf.retrograde and key not in {"rahu", "ketu"}:
-        bits.append("retrograde (its themes turn inward and are revisited)")
+        bits.append("moving backwards for now (retrograde), so its themes turn inward and get revisited")
     if pf.combust:
-        bits.append("combust — close to the Sun, so its outer results need extra effort")
+        bits.append("very close to the Sun (combust), so its outer results take extra effort")
     if pf.vargottama:
-        bits.append("vargottama (same sign in D1 and D9 — notably reinforced)")
-    return ", ".join(bits) + "."
+        bits.append("in the same sign in both main charts (vargottama), which makes it noticeably stronger")
+    return "; ".join(bits) + "."
 
 
 def _signified_house_planet(chart: Chart, house: int, *, ne: bool = False) -> str:
@@ -1470,28 +1504,29 @@ def _signified_house_planet(chart: Chart, house: int, *, ne: bool = False) -> st
     lf = chart.planet(lord) if lord else None
     occ = chart.house_occupants.get(house, [])
     if ne:
-        parts = [f"{_ord_ne(house)} भाव ({HOUSE_NE.get(house,'')}) ले {HOUSE_THEME_NE[house]} लाई शासन गर्छ।"]
+        parts = [f"{_ord_ne(house)} भाव ({HOUSE_NE.get(house,'')}) ले {HOUSE_THEME_NE[house]} लाई समेट्छ।"]
         if lf:
-            dign = DIGNITY_PHRASE_NE.get(lf.dignity, lf.dignity or "स्थित")
+            dign = DIGNITY_PHRASE_NE.get(lf.dignity, lf.dignity or "रहेको")
             parts.append(
-                f"यसका स्वामी {PLANET_NE[lord]} {_ord_ne(lf.house)} भावमा {dign}"
-                + (f", र षड्बलमा {_SHADBALA_STATUS_NE.get(lf.shadbala_status, lf.shadbala_status)} श्रेणीमा"
+                f"यसलाई हेर्ने ग्रह {PLANET_NE[lord]} तपाईंको {_ord_ne(lf.house)} भावमा छ र यहाँ {dign} छ"
+                + (f"; समग्र बल {_SHADBALA_STATUS_NE.get(lf.shadbala_status, lf.shadbala_status)}"
                    if lf.shadbala_status else "")
                 + "।"
             )
         if occ:
-            parts.append("यहाँ " + ", ".join(PLANET_NE[k] for k in occ) + " स्थित छन्।")
+            parts.append("यस भावमा रहेका ग्रह: " + ", ".join(PLANET_NE[k] for k in occ) + "।")
         return " ".join(parts)
-    parts = [f"The {_ord(house)} house ({HOUSE_NE.get(house,'')}) governs {HOUSE_THEME[house]}."]
+    parts = [f"The {_ord(house)} house covers {HOUSE_THEME[house]}."]
     if lf:
         dign = DIGNITY_PHRASE.get(lf.dignity, lf.dignity or "placed")
         parts.append(
-            f"Its lord {PLANET_EN[lord]} sits in the {_ord(lf.house)} house, {dign}"
-            + (f", and is graded {lf.shadbala_status} in Shadbala" if lf.shadbala_status else "")
+            f"The planet that rules it, {PLANET_EN[lord]}, is in your {_ord(lf.house)} house "
+            f"and is {dign} there"
+            + (f"; its overall strength is {lf.shadbala_status.lower()}" if lf.shadbala_status else "")
             + "."
         )
     if occ:
-        parts.append("Occupied by " + ", ".join(PLANET_EN[k] for k in occ) + ".")
+        parts.append("Planets sitting in this house: " + ", ".join(PLANET_EN[k] for k in occ) + ".")
     return " ".join(parts)
 
 
@@ -1593,11 +1628,10 @@ def _window_phrase(dasha: Optional[dict[str, Any]], lord: str, now: datetime,
         return None
     span = f"{_date(w['start'], ne)} → {_date(w['end'], ne)}"
     if ne:
-        kind = "अन्तर्दशा" if w["kind"] == "antardasha" else "महादशा"
-        when = "हाल चलिरहेको" if w["running"] else "आगामी"
-        return f"{when} {PLANET_NE[lord]} {kind} ({span})"
-    when = "the current" if w["running"] else "the upcoming"
-    return f"{when} {PLANET_EN[lord]} {w['kind']} ({span})"
+        when = "हाल चलिरहेको अनुकूल समय" if w["running"] else "आगामी अनुकूल समय"
+        return f"{when} ({span})"
+    when = "a good period running now" if w["running"] else "an upcoming good period"
+    return f"{when} ({span})"
 
 
 def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[dict[str, Any]]:
@@ -1634,7 +1668,7 @@ def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[di
             else:
                 gloss = f"यो आउँदो अध्यायले {theme} लाई अगाडि ल्याउनेछ।"
             bal_ne = " (जन्मकालीन शेष)" if balance else ""
-            label = f"{PLANET_NE[lord]} महादशा{bal_ne} · उमेर {a0}–{a1} ({status})"
+            label = f"{PLANET_NE[lord]} को जीवन-कालखण्ड{bal_ne} · उमेर {a0}–{a1} ({status})"
             text = f"{span} ({dur}): {gloss}"
         else:
             status = "past" if past else ("present · you are here" if current else "ahead")
@@ -1646,7 +1680,7 @@ def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[di
             else:
                 gloss = f"This coming chapter brings {theme} to the fore."
             bal_en = " (balance at birth)" if balance else ""
-            label = f"{PLANET_EN[lord]} mahadasha{bal_en} · age {a0}–{a1} ({status})"
+            label = f"{PLANET_EN[lord]} life period{bal_en} · age {a0}–{a1} ({status})"
             text = f"{span} ({dur}): {gloss}"
         items.append({
             "label": label,
@@ -1654,13 +1688,15 @@ def _life_journey_section(chart: Chart, now: datetime, lang: str) -> Optional[di
             "text": text,
         })
     body = ([
-        "तपाईंको जीवन विम्शोत्तरी महादशाका अध्यायहरूमा उघ्रन्छ। तल जन्मदेखि बाँचिसकेका "
-        "विगत अध्याय, हाल चलिरहेको अध्याय र आगामी अध्यायहरू उमेरसहित दिइएको छ — कुन "
-        "कालखण्डले जीवनमा कस्तो जोड दिन्छ भन्ने एकै नजरमा हेर्न।",
+        "तपाईंको जीवन ठूला-ठूला कालखण्ड (जसलाई ज्योतिषमा महादशा भनिन्छ) मा बाँडिएको हुन्छ, "
+        "र हरेक कालखण्डले जीवनको फरक पक्षमा जोड दिन्छ। तल जन्मदेखि बाँचिसकेका विगतका "
+        "कालखण्ड, हाल चलिरहेको कालखण्ड र आगामी कालखण्डहरू उमेरसहित दिइएको छ — कुन "
+        "बेला जीवनमा के कुरामा जोड पर्छ भन्ने एकै नजरमा हेर्न।",
     ] if ne else [
-        "Your life unfolds in Vimshottari mahadasha chapters. Below are the chapters "
-        "you have already lived, the one running now, and the ones ahead — with ages "
-        "— so you can see at a glance which era of life emphasises what.",
+        "Your life is divided into long chapters (called mahadashas in astrology), and "
+        "each one emphasises a different part of life. Below are the chapters you have "
+        "already lived, the one running now, and the ones ahead — with ages — so you "
+        "can see at a glance which stage of life emphasises what.",
     ])
     return {
         "id": "life_journey",
@@ -1684,20 +1720,22 @@ def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
         conf = _planet_confidence(chart, lord)
         window = _window_phrase(d, lord, now, ne=ne)
         if ne:
-            timing = f" सर्वोत्तम समय: {window}।" if window else ""
-            text = f"{pursue_ne} यसको सूत्रधार {PLANET_NE[lord]} हो।{timing}"
+            timing = f" सबैभन्दा राम्रो समय: {window}।" if window else ""
+            text = f"{pursue_ne}{timing}"
             label = area_ne
         else:
-            timing = f" Best window: {window}." if window else ""
-            text = f"{pursue_en} Its ruling graha is {PLANET_EN[lord]}.{timing}"
+            timing = f" Best time for this: {window}." if window else ""
+            text = f"{pursue_en}{timing}"
             label = area_en
         items.append({"label": label, "confidence": conf.level, "text": text})
 
     strong = _strongest(chart)
     add(
-        "मुख्य बल", "Your strongest lever", strong,
-        f"पहिलो प्राथमिकता यही हो — {DASHA_THEME_NE[strong]}; यहीँ गति सबैभन्दा सजिलो बन्छ।",
-        f"Lead with {DASHA_THEME[strong]} — momentum is cheapest to build here.",
+        "तपाईंको सबैभन्दा बलियो पक्ष", "Your strongest area", strong,
+        f"तपाईं स्वाभाविक रूपमा {_plain_theme(strong, True)} मा राम्रो हुनुहुन्छ — यहीँ "
+        "मिहिनेत सबैभन्दा छिटो फल दिन्छ, त्यसैले यसमै सबैभन्दा बढी लगानी गर्नुहोस्।",
+        f"You are naturally good at {_plain_theme(strong, False)} — effort pays off "
+        "fastest here, so put most of your energy into it.",
     )
     # Career (10th), wealth/gains (11th), relationships (7th), learning & dharma (9th).
     add(
@@ -1722,13 +1760,13 @@ def _pursue_section(chart: Chart, now: datetime, lang: str) -> dict[str, Any]:
     )
 
     body = ([
-        "यो खण्डले तपाईंले कुन कुरामा लाग्ने र त्यसका लागि कुन दशा-कालखण्ड सबैभन्दा "
-        "अनुकूल छ भन्ने जोड्छ। तल प्रत्येक जीवन-क्षेत्रको सूत्रधार ग्रह र त्यसको आगामी "
-        "वा हालको दशा-सञ्झ्याल दिइएको छ — ठूला निर्णय ती अनुकूल समयसँग मिलाउनुहोस्।",
+        "यो खण्डले तपाईंले कुन कुरामा ध्यान दिने र त्यसका लागि कुन समय सबैभन्दा राम्रो "
+        "छ भन्ने देखाउँछ। तल हरेक जीवन-क्षेत्रसँगै त्यसका लागि अनुकूल समय दिइएको छ — "
+        "ठूला निर्णय ती समयसँग मिलाउनुहोस्।",
     ] if ne else [
-        "This section ties what to pursue to the dasha window that most favours it. "
-        "For each life area you get its ruling graha and that graha's current or "
-        "upcoming dasha window — align your bigger decisions with those windows.",
+        "This section shows what to focus on and the best time for each one. Every "
+        "life area below comes with the period that most favours it — try to line up "
+        "your bigger decisions with those good times.",
     ])
     return {
         "id": "pursue_and_when",
@@ -1791,8 +1829,6 @@ def _varga_dignity(planet: str, varga_sign: int) -> Optional[str]:
 def _divisional_item(chart: Chart, division: int, *, ne: bool) -> dict[str, Any]:
     """One card: what a D-chart reads for, and how strong it looks here."""
     en_label, ne_label, en_dom, ne_dom = VARGA_DOMAIN[division]
-    lagna_sign = varga_rashi_from_longitude(division, chart.lagna_lon) - 1
-    lagna_lord = SIGN_LORD[lagna_sign]
 
     dignified: list[str] = []      # own / exalted / moolatrikona in this varga
     debilitated: list[str] = []
@@ -1839,65 +1875,42 @@ def _divisional_item(chart: Chart, division: int, *, ne: bool) -> dict[str, Any]
     else:
         level = "tentative"
 
-    # Ascendant lord placement within this varga — the chart's key signal.
-    lord_pf = chart.planet(lagna_lord)
-    lord_clause_en = lord_clause_ne = ""
-    if lord_pf:
-        lord_vsign = varga_rashi_from_longitude(division, lord_pf.longitude) - 1
-        lord_dign = _varga_dignity(lagna_lord, lord_vsign)
-        lord_clause_en = (
-            f" Its ascendant lord {PLANET_EN[lagna_lord]} sits in "
-            f"{RASHI_EN[lord_vsign]}"
-            + (f", {DIGNITY_PHRASE[lord_dign]}" if lord_dign in DIGNITY_PHRASE else "")
-            + "."
-        )
-        lord_clause_ne = (
-            f" यसको लग्नेश {PLANET_NE[lagna_lord]} {RASHI_NE[lord_vsign]} राशिमा"
-            + (f", {DIGNITY_PHRASE_NE.get(lord_dign, lord_dign)}"
-               if lord_dign in DIGNITY_PHRASE else "")
-            + " छ।"
-        )
-
     verdict_en = {
-        "strong": "The chart is well supported here",
-        "moderate": "The chart holds moderate strength here",
-        "mixed": "Strength here is mixed — support alongside friction",
-        "tentative": "This area reads through the placements above rather than "
-                     "any standout strength",
+        "strong": "strong and well-supported",
+        "moderate": "reasonably supported",
+        "mixed": "mixed — some support and some challenges",
+        "tentative": "average, without a standout signal",
     }[level]
     verdict_ne = {
-        "strong": "यस क्षेत्रमा कुण्डली राम्रोसँग समर्थित छ",
-        "moderate": "यहाँ कुण्डलीको बल मध्यम छ",
-        "mixed": "यहाँको बल मिश्रित छ — समर्थनसँगै केही घर्षण",
-        "tentative": "यो क्षेत्र कुनै विशेष बलभन्दा माथिका स्थितिबाट पढिन्छ",
+        "strong": "बलियो र राम्रोसँग समर्थित",
+        "moderate": "ठीकठाकसँग समर्थित",
+        "mixed": "मिश्रित — केही समर्थन, केही चुनौती",
+        "tentative": "सामान्य, कुनै विशेष संकेतबिना",
     }[level]
 
+    strong_keys = list(dict.fromkeys(dignified + same_sign))
     if ne:
-        strong_names = ", ".join(PLANET_NE[k] for k in dict.fromkeys(dignified + same_sign))
+        strong_names = ", ".join(PLANET_NE[k] for k in strong_keys)
         weak_names = ", ".join(PLANET_NE[k] for k in debilitated)
-        text = (
-            f"D{division} ({ne_label}) चक्र {ne_dom} का लागि पढिन्छ। "
-            f"यसको लग्न {RASHI_NE[lagna_sign]} राशिमा, {PLANET_NE[lagna_lord]} द्वारा शासित।"
-            + lord_clause_ne
-        )
+        text = f"D{division} ({ne_label}) चक्रले तपाईंको {ne_dom} देखाउँछ।"
         if strong_names:
-            text += f" यहाँ {strong_names} बलियो देखिन्छन्।"
+            text += f" यहाँ {strong_names} बलियो छन्, जसले यस क्षेत्रलाई सघाउँछ।"
         if weak_names:
-            text += f" {weak_names} भने दबाबमा छन्।"
-        text += f" {verdict_ne}।"
+            text += f" {weak_names} भने केही दबाबमा छन्, त्यसैले यता थप ध्यान चाहिन्छ।"
+        text += f" समग्रमा यो क्षेत्र {verdict_ne} देखिन्छ।"
     else:
-        strong_names = ", ".join(PLANET_EN[k] for k in dict.fromkeys(dignified + same_sign))
+        strong_names = ", ".join(PLANET_EN[k] for k in strong_keys)
         weak_names = ", ".join(PLANET_EN[k] for k in debilitated)
-        text = (
-            f"The D{division} ({en_label}) chart is read for {en_dom}. Its ascendant "
-            f"falls in {RASHI_EN[lagna_sign]}, ruled by {PLANET_EN[lagna_lord]}."
-            + lord_clause_en
-        )
+        one_strong = len(strong_keys) == 1
+        one_weak = len(debilitated) == 1
+        text = f"The D{division} chart ({en_label}) shows your {en_dom}."
         if strong_names:
-            text += f" Here {strong_names} look strong."
+            text += f" {strong_names} {'is' if one_strong else 'are'} strong here, " \
+                    "which helps this area."
         if weak_names:
-            text += f" {weak_names} work under pressure."
-        text += f" {verdict_en}."
+            text += f" {weak_names} {'is' if one_weak else 'are'} under some strain, " \
+                    "so this part needs more care."
+        text += f" Overall, this area looks {verdict_en}."
 
     label = f"D{division} — {ne_label}" if ne else f"D{division} — {en_label}"
     return {
@@ -2073,31 +2086,33 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             f"{NAKSHATRA_NE[nak_i]} नक्षत्र, चरण {nak_p} मा — तपाईंको जन्म नक्षत्र — र सूर्य "
             f"{RASHI_NE[chart.sun_sign]} मा। लग्नले संसारसँग कसरी भेट्नुहुन्छ, चन्द्रले भित्री मन, "
             f"र सूर्यले मूल स्वरूप देखाउँछ।",
-            f"लग्नका स्वामी {PLANET_NE[lagna_lord]} "
-            + (DIGNITY_PHRASE_NE.get(ll.dignity, "स्थित") if ll else "स्थित")
-            + (f" {_ord_ne(ll.house)} भावमा" if ll else "")
-            + f", यसैले कुण्डली {_strength_word_ne(summary_conf.level)} आधारमा टिकेको छ।",
+            f"तपाईंको लग्नको स्वामी ग्रह {PLANET_NE[lagna_lord]} "
+            + (f"{_ord_ne(ll.house)} भावमा, यहाँ " if ll else "")
+            + (DIGNITY_PHRASE_NE.get(ll.dignity, "रहेको") if ll else "रहेको")
+            + f" — यसैले कुण्डली {_strength_word_ne(summary_conf.level)} आधारमा टिकेको छ।",
         ]
         if chart.dasha:
             d = chart.dasha
             summary_body.append(
-                f"समय अहिले: {PLANET_NE[d['maha_lord']]} महादशा {_date(d['maha_end'], ne)} सम्म, "
-                f"र यसभित्र {PLANET_NE[d['antar_lord']]} अन्तर्दशा {_date(d['antar_start'], ne)} – "
-                f"{_date(d['antar_end'], ne)} सम्म। पूर्ण मिति सहितको तालिका 'दशा तालिका' खण्डमा छ।"
+                f"अहिलेको समय: तपाईं {PLANET_NE[d['maha_lord']]} को मुख्य जीवन-कालखण्ड (महादशा) मा "
+                f"हुनुहुन्छ, जुन {_date(d['maha_end'], ne)} सम्म रहन्छ; यसभित्रको हालको उप-कालखण्ड "
+                f"(अन्तर्दशा) {PLANET_NE[d['antar_lord']]} को हो, {_date(d['antar_start'], ne)} – "
+                f"{_date(d['antar_end'], ne)}। मिति सहितको पूरा तालिका 'जीवन-कालखण्ड तालिका' खण्डमा छ।"
             )
         if benefic_yogas:
             summary_body.append(
                 "सक्रिय सहायक योग: " + ", ".join(_yoga_name(y, True) for y in benefic_yogas) + "।")
     else:
         summary_body = [
-            f"{RASHI_EN[chart.lagna_sign]} ascendant; the Moon (the mind) is in "
-            f"{RASHI_EN[chart.moon_sign]} in {NAKSHATRA_EN[nak_i]} nakshatra, pada {nak_p} "
-            f"— your janma nakshatra — and the Sun is in {RASHI_EN[chart.sun_sign]}. "
-            f"The rising sign shows how you meet the world, the Moon your inner climate, "
-            f"the Sun your core self.",
-            f"The ascendant lord {PLANET_EN[lagna_lord]} is "
+            f"{RASHI_EN[chart.lagna_sign]} is your rising sign (ascendant); the Moon (your "
+            f"mind and feelings) is in {RASHI_EN[chart.moon_sign]}, in the birth star "
+            f"{NAKSHATRA_EN[nak_i]}, quarter {nak_p} — the star the Moon was in when you were "
+            f"born — and the Sun is in {RASHI_EN[chart.sun_sign]}. The rising sign shows how you "
+            f"meet the world, the Moon your inner world, the Sun your core self.",
+            f"The ruler of your rising sign, {PLANET_EN[lagna_lord]}, is "
+            + (f"in your {_ord(ll.house)} house and " if ll else "")
             + (DIGNITY_PHRASE.get(ll.dignity, "placed") if ll else "placed")
-            + (f" in the {_ord(ll.house)} house" if ll else "")
+            + (" there" if ll else "")
             + ", so the chart rests on "
             + _strength_word(summary_conf.level)
             + " foundation.",
@@ -2105,10 +2120,11 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
         if chart.dasha:
             d = chart.dasha
             summary_body.append(
-                f"Timing now: the {PLANET_EN[d['maha_lord']]} mahadasha runs until "
-                f"{_fmt_date(d['maha_end'])}, and within it the {PLANET_EN[d['antar_lord']]} "
-                f"antardasha runs {_fmt_date(d['antar_start'])} – {_fmt_date(d['antar_end'])}. "
-                f"The Dasha timeline section gives the full schedule with dates."
+                f"Where you are now: you're in {PLANET_EN[d['maha_lord']]}'s main life period "
+                f"(mahadasha) until {_fmt_date(d['maha_end'])}, and the current sub-phase within "
+                f"it (antardasha) belongs to {PLANET_EN[d['antar_lord']]}, running "
+                f"{_fmt_date(d['antar_start'])} – {_fmt_date(d['antar_end'])}. The Life-period "
+                f"timeline section gives the full schedule with dates."
             )
         if benefic_yogas:
             summary_body.append(
@@ -2168,28 +2184,28 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             emo_body.append(
                 f"चन्द्र {_ord_ne(moon.house)} भावमा भएकाले तपाईंको भावनात्मक सुरक्षा "
                 f"{HOUSE_THEME_NE[moon.house]} सँग जोडिन्छ। "
-                + ("गरिमामान चन्द्रले मनको स्वाभाविक स्थिरता सघाउँछ।"
+                + ("बलियो चन्द्रले मनलाई स्वाभाविक रूपमा स्थिर राख्न सघाउँछ।"
                    if DIGNITY_SCORE.get(moon.dignity, 0) >= 1
-                   else "यहाँ चन्द्र केही दबाबमा भएकाले विचारपूर्वक विश्राम, दिनचर्या र सहयोगी "
+                   else "यहाँ चन्द्र केही दबाबमा भएकाले विचारपूर्वक विश्राम, नियमित दिनचर्या र सहयोगी "
                         "सङ्गतले स्पष्ट फाइदा दिन्छ।"))
         else:
             emo_body.append(
                 f"With the Moon in the {_ord(moon.house)} house, your emotional security is "
                 f"tied to {HOUSE_THEME[moon.house]}. "
-                + ("A dignified Moon supports natural steadiness of mind."
+                + ("A strong Moon helps keep your mind naturally steady."
                    if DIGNITY_SCORE.get(moon.dignity, 0) >= 1
                    else "Because the Moon is under some pressure here, deliberate rest, "
-                        "routine and supportive company pay off noticeably.")
+                        "a regular routine and supportive company pay off noticeably.")
             )
         aspectors = chart.aspects_to(moon.house)
         ben = [a for a in aspectors if a in NATURAL_BENEFICS]
         if ben:
             if ne:
                 emo_body.append(", ".join(PLANET_NE[a] for a in ben)
-                                + " को शुभ दृष्टिले मनलाई अतिरिक्त सुरक्षा र आशावाद दिन्छ।")
+                                + " को सहयोगी प्रभावले मनलाई अतिरिक्त सुरक्षा र आशावाद दिन्छ।")
             else:
-                emo_body.append("Benefic aspect(s) from " + ", ".join(PLANET_EN[a] for a in ben)
-                                + " lend the mind extra protection and optimism.")
+                emo_body.append("A helpful, friendly influence from " + ", ".join(PLANET_EN[a] for a in ben)
+                                + " lends the mind extra protection and optimism.")
     sections.append(_nsec("emotional_nature", "Emotional nature",
                           "भावनात्मक स्वभाव", emo_body, emo_conf))
 
@@ -2202,13 +2218,13 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
                 strengths.append(
                     f"{PLANET_NE[key]} बलियो सम्पत्ति हो — {KARAKA_NE[key].split(',')[0]} सजिलै "
                     f"आउँछ ({DIGNITY_PHRASE_NE.get(pf.dignity, 'राम्रोसँग स्थित')}"
-                    + (f", षड्बलमा {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
+                    + (f", समग्र बल {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
                        if pf.shadbala_status else "") + ")।")
             else:
                 strengths.append(
                     f"{PLANET_EN[key]} is a strong asset — {KARAKA[key].split(',')[0]} comes "
                     f"more easily ({DIGNITY_PHRASE.get(pf.dignity, 'well placed')}"
-                    + (f", {pf.shadbala_status} in Shadbala" if pf.shadbala_status else "") + ")."
+                    + (f", overall strength {pf.shadbala_status.lower()}" if pf.shadbala_status else "") + ")."
                 )
             str_conf.support(f"{PLANET_EN[key]} dignified/strong")
     if not strengths:
@@ -2229,16 +2245,18 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             if ne:
                 line = (f"{PLANET_NE[key]} ले सचेत सहयोग खोज्छ — {KARAKA_NE[key].split(',')[0]} "
                         f"प्रयासपूर्ण लाग्न सक्छ ({DIGNITY_PHRASE_NE.get(pf.dignity, 'दबाबमा')}"
-                        + (f", षड्बलमा {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
+                        + (f", समग्र बल {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
                            if pf.shadbala_status else "") + ")।")
                 if cancelled:
-                    line += " उत्साहजनक कुरा — नीचभंग ढाँचाले यसलाई पछि बलमा बदल्न सक्छ।"
+                    line += (" राम्रो कुरा — यहाँ यो कमजोरी रद्द गर्ने योग (नीचभंग) छ, "
+                             "जसले यसलाई पछि गएर बलमा बदल्न सक्छ।")
             else:
                 line = (f"{PLANET_EN[key]} needs conscious support — {KARAKA[key].split(',')[0]} "
                         f"can feel effortful ({DIGNITY_PHRASE.get(pf.dignity, 'under pressure')}"
-                        + (f", {pf.shadbala_status} in Shadbala" if pf.shadbala_status else "") + ").")
+                        + (f", overall strength {pf.shadbala_status.lower()}" if pf.shadbala_status else "") + ").")
                 if cancelled:
-                    line += " Encouragingly, a neecha-bhanga pattern tends to convert this into later strength."
+                    line += (" The good news: a pattern that cancels this weakness "
+                             "(neecha-bhanga) tends to turn it into strength later on.")
             challenges.append(line)
             ch_conf.against(f"{PLANET_EN[key]} weak/debilitated")
     if not challenges:
@@ -2263,29 +2281,30 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     if ne:
         if tl:
             car_body.append(
-                f"करियरको दिशा १० औं भावका स्वामी {PLANET_NE[tenth_lord]} {_ord_ne(tl.house)} "
-                f"भावमा जानुले तय गर्छ — सार्वजनिक काम {HOUSE_THEME_NE[tl.house].split(',')[0]} सँग मिसिन्छ।")
+                f"तपाईंको करियरको दिशा, करियर हेर्ने ग्रह {PLANET_NE[tenth_lord]} तपाईंको "
+                f"{_ord_ne(tl.house)} भावमा जानुले तय गर्छ — त्यसैले सार्वजनिक काम "
+                f"{HOUSE_THEME_NE[tl.house].split(',')[0]} सँग मिसिन्छ।")
         if "saturn" in P and "sun" in P:
-            car_body.append("सूर्य र शनि मिलेर काममा अधिकार/दृश्यता र अनुशासित सेवाको सन्तुलन देखाउँछन्।")
+            car_body.append("सूर्य र शनि मिलेर काममा अधिकार/चिनारी र अनुशासित मिहिनेतको सन्तुलन देखाउँछन्।")
         if chart.maha_lord:
             car_body.append(
-                f"चलिरहेको {PLANET_NE[chart.maha_lord]} महादशाले हाल करियरलाई "
-                f"{DASHA_THEME_NE[chart.maha_lord]} ले रङ्ग्याउँछ।")
+                f"अहिले तपाईं {PLANET_NE[chart.maha_lord]} को मुख्य जीवन-कालखण्डमा हुनुहुन्छ, जसले "
+                f"हाल करियरलाई {DASHA_THEME_NE[chart.maha_lord]} ले रङ्ग्याउँछ।")
     else:
         if tl:
             car_body.append(
-                f"Career direction follows the 10th lord {PLANET_EN[tenth_lord]} into the "
-                f"{_ord(tl.house)} house — blending public work with "
-                f"{HOUSE_THEME[tl.house].split(',')[0]}."
+                f"Your career direction is set by the planet that rules your career area, "
+                f"{PLANET_EN[tenth_lord]}, moving into your {_ord(tl.house)} house — so your "
+                f"public work blends with {HOUSE_THEME[tl.house].split(',')[0]}."
             )
         if "saturn" in P and "sun" in P:
             car_body.append(
                 "Sun and Saturn together describe the balance between authority/visibility "
-                "and disciplined service in your work life.")
+                "and disciplined hard work in your working life.")
         if chart.maha_lord:
             car_body.append(
-                f"The running {PLANET_EN[chart.maha_lord]} mahadasha currently colours career "
-                f"with {DASHA_THEME[chart.maha_lord]}.")
+                f"You're currently in {PLANET_EN[chart.maha_lord]}'s main life period, which "
+                f"right now colours your career with {DASHA_THEME[chart.maha_lord]}.")
     sections.append(_nsec("career", "Career & vocation", "पेशा / कर्म",
                           car_body, car_conf))
 
@@ -2303,17 +2322,17 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     if ne:
         if "jupiter" in P:
             fin_body.append(
-                f"बृहस्पति (धन र कृपाको स्वाभाविक कारक) {RASHI_NE[P['jupiter'].sign]} राशिको "
-                f"{_ord_ne(P['jupiter'].house)} भावमा — {DIGNITY_PHRASE_NE.get(P['jupiter'].dignity,'स्थित')}।")
+                f"धन र समृद्धिसँग सम्बन्धित ग्रह बृहस्पति {RASHI_NE[P['jupiter'].sign]} राशिको "
+                f"{_ord_ne(P['jupiter'].house)} भावमा छ — यहाँ {DIGNITY_PHRASE_NE.get(P['jupiter'].dignity,'रहेको')}।")
         if dhana:
             fin_body.append("धन-निर्माण गर्ने धन योगले नियमित कमाइ र बचतको बानीबाट संचयलाई सघाउँछ।")
         fin_body.append("वित्त व्यवस्थित बचतमा राम्रो प्रतिक्रिया दिन्छ; कुण्डलीले प्रवृत्ति देखाउँछ, "
                         "बानीले नतिजा तय गर्छ।")
     else:
         if "jupiter" in P:
-            fin_body.append(f"Jupiter (natural significator of wealth and grace) is in "
-                            f"{RASHI_EN[P['jupiter'].sign]}, house {P['jupiter'].house} — "
-                            f"{DIGNITY_PHRASE.get(P['jupiter'].dignity,'placed')}.")
+            fin_body.append(f"Jupiter, the planet naturally linked to wealth and good fortune, "
+                            f"is in {RASHI_EN[P['jupiter'].sign]} (your {_ord(P['jupiter'].house)} "
+                            f"house) — {DIGNITY_PHRASE.get(P['jupiter'].dignity,'placed')} there.")
         if dhana:
             fin_body.append("A wealth-forming Dhana yoga supports accumulation through "
                            "steady earning and saving habits.")
@@ -2334,21 +2353,22 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     if ne:
         if "venus" in P:
             rel_body.append(
-                f"शुक्र, प्रेम र साझेदारीको कारक, {RASHI_NE[P['venus'].sign]} राशिको "
-                f"{_ord_ne(P['venus'].house)} भावमा — {DIGNITY_PHRASE_NE.get(P['venus'].dignity,'स्थित')}। "
-                "यसले तपाईंले नजिकको सम्बन्धमा के मूल्य दिनुहुन्छ भन्ने देखाउँछ।")
+                f"प्रेम र साझेदारीसँग सम्बन्धित ग्रह शुक्र {RASHI_NE[P['venus'].sign]} राशिको "
+                f"{_ord_ne(P['venus'].house)} भावमा छ — यहाँ {DIGNITY_PHRASE_NE.get(P['venus'].dignity,'रहेको')}। "
+                "यसले तपाईंले नजिकको सम्बन्धमा के कुरालाई महत्व दिनुहुन्छ भन्ने देखाउँछ।")
         if any(a in NATURAL_MALEFICS for a in chart.aspects_to(7)):
-            rel_body.append("साझेदारी भावमा पाप ग्रहको दृष्टिले सम्बन्ध केही परीक्षाबाट परिपक्व हुने "
-                            "सङ्केत गर्छ — सञ्चार र साझा मूल्यले बाटो सजिलो बनाउँछन्। यो प्रवृत्ति हो, निश्चित परिणाम होइन।")
+            rel_body.append("साझेदारी भावमाथि कठोर मानिने ग्रहको प्रभाव परेकाले सम्बन्ध केही "
+                            "परीक्षाबाट परिपक्व हुने सङ्केत हुन्छ — खुला सञ्चार र साझा मूल्यले बाटो सजिलो "
+                            "बनाउँछन्। यो एउटा प्रवृत्ति मात्र हो, निश्चित परिणाम होइन।")
     else:
         if "venus" in P:
             rel_body.append(
-                f"Venus, the significator of love and partnership, is in {RASHI_EN[P['venus'].sign]} "
-                f"(house {P['venus'].house}) — {DIGNITY_PHRASE.get(P['venus'].dignity,'placed')}. "
-                "It describes what you value and seek in closeness.")
+                f"Venus, the planet linked to love and partnership, is in {RASHI_EN[P['venus'].sign]} "
+                f"(your {_ord(P['venus'].house)} house) — {DIGNITY_PHRASE.get(P['venus'].dignity,'placed')} "
+                "there. It describes what you value and look for in closeness.")
         if any(a in NATURAL_MALEFICS for a in chart.aspects_to(7)):
-            rel_body.append("Malefic aspect to the partnership house suggests relationships "
-                           "mature through some testing — communication and shared values "
+            rel_body.append("A challenging influence on the partnership house suggests relationships "
+                           "mature through some testing — open communication and shared values "
                            "smooth the path. This is a tendency, not a fixed outcome.")
     sections.append(_nsec("relationships", "Relationships & partnership",
                           "सम्बन्ध", rel_body, rel_conf))
@@ -2372,13 +2392,13 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     hp_conf = _planet_confidence(chart, lagna_lord)
     if ne:
         health_body = [
-            "ज्योतिषमा जीवनशक्ति लग्न, यसका स्वामी र चन्द्रबाट पढिन्छ; ६ औं भावले रोग, "
-            "निको हुने क्रम र दैनिक दिनचर्या देखाउँछ।",
+            "ज्योतिषमा तपाईंको जीवनशक्ति लग्न (उदाउँदो राशि), यसको स्वामी ग्रह र चन्द्रबाट हेरिन्छ; "
+            "६ औं भावले रोग, निको हुने क्रम र दैनिक दिनचर्या देखाउँछ।",
         ]
         if ll:
             health_body.append(
-                f"लग्नका स्वामी {PLANET_NE[lagna_lord]} ({DIGNITY_PHRASE_NE.get(ll.dignity,'स्थित')}, "
-                f"{_ord_ne(ll.house)} भावमा) "
+                f"तपाईंको लग्नको स्वामी ग्रह {PLANET_NE[lagna_lord]} ({_ord_ne(ll.house)} भावमा, "
+                f"यहाँ {DIGNITY_PHRASE_NE.get(ll.dignity,'रहेको')}) "
                 + ("बलियो शरीर र छिटो निको हुनेलाई सघाउँछ।"
                    if DIGNITY_SCORE.get(ll.dignity, 0) >= 1
                    else "सक्रिय आत्म-हेरचाह खोज्छ — नियमित निद्रा, चाल र तनाव व्यवस्थापनले ठूलो फाइदा दिन्छ।"))
@@ -2387,14 +2407,14 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
                            "कुनै समस्यामा योग्य पेशेवरसँग सल्लाह लिनुहोस्।")
     else:
         health_body = [
-            "In Jyotisha, vitality is read from the lagna, its lord, and the Moon; the "
-            "6th house describes illness, recovery and daily regimen.",
+            "In Vedic astrology, your vitality is read from the rising sign, its ruling planet, "
+            "and the Moon; the 6th house describes illness, recovery and daily routine.",
         ]
         if ll:
             health_body.append(
-                f"The lagna lord {PLANET_EN[lagna_lord]} ({DIGNITY_PHRASE.get(ll.dignity,'placed')}, "
-                f"house {ll.house}) "
-                + ("supports robust constitution and quick recovery."
+                f"Your rising-sign ruler {PLANET_EN[lagna_lord]} (in your {_ord(ll.house)} house, "
+                f"{DIGNITY_PHRASE.get(ll.dignity,'placed')} there) "
+                + ("supports a robust constitution and quick recovery."
                    if DIGNITY_SCORE.get(ll.dignity, 0) >= 1
                    else "asks for proactive self-care — regular sleep, movement and stress "
                         "management have outsized benefit."))
@@ -2435,9 +2455,10 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
         owns = [h for h, lord in chart.house_lord.items() if lord == d["maha_lord"]]
         if ne:
             phase_body.append(
-                f"तपाईं {PLANET_NE[d['maha_lord']]} महादशामा हुनुहुन्छ ({_date(d['maha_end'], ne)} सम्म), "
-                f"र यसभित्र {PLANET_NE[d['antar_lord']]} अन्तर्दशा {_date(d['antar_start'], ne)} देखि "
-                f"{_date(d['antar_end'], ne)} सम्म। यो चरणले {DASHA_THEME_NE[d['maha_lord']]} मा जोड दिन्छ।")
+                f"अहिले तपाईं {PLANET_NE[d['maha_lord']]} को मुख्य जीवन-कालखण्ड (महादशा) मा "
+                f"हुनुहुन्छ ({_date(d['maha_end'], ne)} सम्म); यसभित्रको हालको उप-कालखण्ड "
+                f"(अन्तर्दशा) {PLANET_NE[d['antar_lord']]} को हो, {_date(d['antar_start'], ne)} देखि "
+                f"{_date(d['antar_end'], ne)} सम्म। यो समयले {DASHA_THEME_NE[d['maha_lord']]} मा जोड दिन्छ।")
             if ml:
                 owns_txt = (f" र तपाईंको {', '.join(_ord_ne(h) for h in owns)} भावको स्वामी हो"
                             if owns else "")
@@ -2450,15 +2471,15 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
                     f"केन्द्रित हुन्छ। यो {DIGNITY_PHRASE_NE.get(ml.dignity, 'स्थित')} छ — {firm}।")
             if al and d["antar_lord"] != d["maha_lord"]:
                 phase_body.append(
-                    f"{PLANET_NE[d['antar_lord']]} अन्तर्दशाले {DASHA_THEME_NE[d['antar_lord']].split(',')[0]} "
-                    f"को उप-विषयलाई तिखार्छ (यो तपाईंको {_ord_ne(al.house)} भाव समात्छ) — "
-                    f"{_date(d['antar_end'], ne)} सम्म।")
+                    f"यसभित्रको {PLANET_NE[d['antar_lord']]} उप-कालखण्डले "
+                    f"{DASHA_THEME_NE[d['antar_lord']].split(',')[0]} लाई थप तिखार्छ (यो तपाईंको "
+                    f"{_ord_ne(al.house)} भावसँग जोडिन्छ) — {_date(d['antar_end'], ne)} सम्म।")
         else:
             phase_body.append(
-                f"You are running the {PLANET_EN[d['maha_lord']]} mahadasha (until "
-                f"{_fmt_date(d['maha_end'])}), and within it the {PLANET_EN[d['antar_lord']]} "
-                f"antardasha from {_fmt_date(d['antar_start'])} to {_fmt_date(d['antar_end'])}. "
-                f"This phase emphasises {DASHA_THEME[d['maha_lord']]}.")
+                f"You're in {PLANET_EN[d['maha_lord']]}'s main life period (mahadasha) until "
+                f"{_fmt_date(d['maha_end'])}, and the current sub-phase within it (antardasha) "
+                f"belongs to {PLANET_EN[d['antar_lord']]}, from {_fmt_date(d['antar_start'])} to "
+                f"{_fmt_date(d['antar_end'])}. This phase emphasises {DASHA_THEME[d['maha_lord']]}.")
             if ml:
                 owns_txt = (
                     f" and rules your {', '.join(_ord(h) for h in owns)} house"
@@ -2478,14 +2499,14 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
                     f"It is {DIGNITY_PHRASE.get(ml.dignity, 'placed')} — {firm}.")
             if al and d["antar_lord"] != d["maha_lord"]:
                 phase_body.append(
-                    f"The {PLANET_EN[d['antar_lord']]} antardasha sharpens the sub-theme of "
-                    f"{DASHA_THEME[d['antar_lord']].split(',')[0]} (it holds your "
+                    f"Within it, the {PLANET_EN[d['antar_lord']]} sub-period sharpens the theme of "
+                    f"{DASHA_THEME[d['antar_lord']].split(',')[0]} (linked to your "
                     f"{_ord(al.house)} house) until {_fmt_date(d['antar_end'])}.")
     else:
         phase_body.append("हालको मितिका लागि दशा समय निकाल्न सकिएन।" if ne else
                           "Dasha timing could not be resolved for the current date.")
     sections.append(_nsec("current_life_phase", "Current life phase",
-                          "वर्तमान दशा", phase_body, phase_conf))
+                          "वर्तमान जीवन-कालखण्ड", phase_body, phase_conf))
 
     # 12b — Life journey (past → present → future chapters) ---------------------
     journey = _life_journey_section(chart, now, lang)
@@ -2502,13 +2523,13 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             lf = chart.planet(b["lord"])
             running = b["start"] <= now < b["end"]
             if ne:
-                house_txt = f" — तपाईंको {_ord_ne(lf.house)} भाव छुन्छ" if lf else ""
-                label = f"{PLANET_NE[b['lord']]} अन्तर्दशा" + (" · अहिले चलिरहेको" if running else "")
+                house_txt = f" — तपाईंको {_ord_ne(lf.house)} भावसँग जोडिन्छ" if lf else ""
+                label = f"{PLANET_NE[b['lord']]} उप-कालखण्ड" + (" · अहिले चलिरहेको" if running else "")
                 text = (f"{_date(b['start'], ne)} → {_date(b['end'], ne)}: "
                         f"{DASHA_THEME_NE[b['lord']].split(',')[0]}{house_txt}।")
             else:
-                house_txt = f" — touches your {_ord(lf.house)} house" if lf else ""
-                label = f"{PLANET_EN[b['lord']]} antardasha" + (" · running now" if running else "")
+                house_txt = f" — linked to your {_ord(lf.house)} house" if lf else ""
+                label = f"{PLANET_EN[b['lord']]} sub-period" + (" · running now" if running else "")
                 text = (f"{_fmt_date(b['start'])} → {_fmt_date(b['end'])}: "
                         f"{DASHA_THEME[b['lord']].split(',')[0]}{house_txt}.")
             timeline_items.append({
@@ -2518,22 +2539,23 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             })
         for m in d["upcoming_maha"]:
             if ne:
-                label = f"{PLANET_NE[m['lord']]} महादशा (अर्को प्रमुख अवधि)"
+                label = f"{PLANET_NE[m['lord']]} जीवन-कालखण्ड (अर्को प्रमुख कालखण्ड)"
                 text = (f"{_date(m['start'], ne)} देखि सुरु भई {_date(m['end'], ne)} सम्म "
                         f"({DASHA_YEARS[m['lord']]} वर्ष): {DASHA_THEME_NE[m['lord']].split(',')[0]} को अध्याय।")
             else:
-                label = f"{PLANET_EN[m['lord']]} mahadasha (next major period)"
+                label = f"{PLANET_EN[m['lord']]} life period (next major chapter)"
                 text = (f"Begins {_fmt_date(m['start'])}, lasting to {_fmt_date(m['end'])} "
                         f"({DASHA_YEARS[m['lord']]} yrs): a {DASHA_THEME[m['lord']].split(',')[0]} chapter.")
             timeline_items.append({"label": label, "confidence": "moderate", "text": text})
         timeline_body = [
-            f"चलिरहेको {PLANET_NE[d['maha_lord']]} महादशाभित्रको अन्तर्दशा तालिका, अनि पछि "
-            f"आउने महादशाहरू — कुण्डलीको सबैभन्दा सूक्ष्म समय-तह।" if ne else
-            f"Antardasha schedule inside the running {PLANET_EN[d['maha_lord']]} mahadasha, "
-            f"then the mahadashas that follow — the chart's most precise timing layer.",
+            f"अहिले चलिरहेको {PLANET_NE[d['maha_lord']]} जीवन-कालखण्डभित्रका उप-कालखण्डहरूको "
+            f"तालिका, अनि पछि आउने ठूला जीवन-कालखण्डहरू — तपाईंको समयको सबैभन्दा सूक्ष्म तह।" if ne else
+            f"The schedule of sub-periods inside your current {PLANET_EN[d['maha_lord']]} life "
+            f"period, and the big life periods that follow — the most precise timing layer of "
+            f"your chart.",
         ]
-        sections.append(_nsec("dasha_timeline", "Dasha timeline (dated)",
-                              "दशा तालिका", timeline_body, items=timeline_items))
+        sections.append(_nsec("dasha_timeline", "Life-period timeline (with dates)",
+                              "जीवन-कालखण्ड तालिका", timeline_body, items=timeline_items))
 
     # 14 — 12-month outlook -----------------------------------------------------
     out_conf = phase_conf
@@ -2548,8 +2570,8 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
         lf = chart.planet(lead)
         if ne:
             outlook_body.append(
-                f"{PLANET_NE[lead]} अन्तर्दशाले वर्षको नेतृत्व गर्छ ({_date(d['antar_end'], ne)} सम्म), "
-                f"{DASHA_THEME_NE[lead]} लाई अगाडि ल्याउँदै।")
+                f"आगामी वर्षको नेतृत्व {PLANET_NE[lead]} को उप-कालखण्डले गर्छ ({_date(d['antar_end'], ne)} "
+                f"सम्म), {DASHA_THEME_NE[lead]} लाई अगाडि ल्याउँदै।")
             if lf:
                 good = DIGNITY_SCORE.get(lf.dignity, 0) >= 1 or lf.shadbala_status in {"Strong", "Exceptional"}
                 outlook_body.append(
@@ -2561,12 +2583,12 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             if upcoming:
                 nxt = upcoming[0]
                 outlook_body.append(
-                    f"आउने परिवर्तन: {PLANET_NE[nxt['lord']]} उप-अवधि {_date(nxt['start'], ne)} मा "
-                    f"खुल्छ, {DASHA_THEME_NE[nxt['lord']].split(',')[0]} लाई अगाडि ल्याउँदै।")
+                    f"आउने परिवर्तन: {PLANET_NE[nxt['lord']]} को उप-कालखण्ड {_date(nxt['start'], ne)} मा "
+                    f"सुरु हुन्छ, {DASHA_THEME_NE[nxt['lord']].split(',')[0]} लाई अगाडि ल्याउँदै।")
         else:
             outlook_body.append(
-                f"The {PLANET_EN[lead]} antardasha leads the year (through "
-                f"{_fmt_date(d['antar_end'])}), foregrounding {DASHA_THEME[lead]}.")
+                f"The year ahead is led by {PLANET_EN[lead]}'s sub-period (through "
+                f"{_fmt_date(d['antar_end'])}), bringing {DASHA_THEME[lead]} to the fore.")
             if lf:
                 good = DIGNITY_SCORE.get(lf.dignity, 0) >= 1 or lf.shadbala_status in {"Strong", "Exceptional"}
                 outlook_body.append(
@@ -2646,20 +2668,25 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     strong, weak = _strongest(chart), _weakest(chart)
     if ne:
         rec = [
-            f"{PLANET_NE[strong]} का विषयमा लाग्नुहोस् — यहीँ गति सबैभन्दा सजिलो बन्छ।",
-            f"{PLANET_NE[weak]} का विषयलाई दिनचर्या र साना, दोहोरिने प्रयासबाट संरचना दिनुहोस् — "
-            "तयार महसुस हुने पर्खाइ नगरी।",
-            "ठूला कदमलाई दृष्टिकोणमा उल्लेख गरिएका सहायक उप-अवधिसँग मिलाउनुहोस्।",
-            "तलका प्रत्येक प्राथमिकताका लागि आगामी त्रैमासमा एउटा ठोस बानी पछ्याउनुहोस्।",
+            f"तपाईंको बलियो पक्ष — {_plain_theme(strong, True)} — मा ध्यान दिनुहोस्; यहाँ "
+            "प्रगति सबैभन्दा सजिलो हुन्छ।",
+            f"कमजोर पक्ष — {_plain_theme(weak, True)} — लाई छोड्ने होइन, बरु साना नियमित "
+            "बानीबाट बिस्तारै बलियो बनाउनुहोस्; पूरै तयार भएको महसुस नभएसम्म नपर्खनुहोस्।",
+            "ठूला निर्णय माथि देखाइएका अनुकूल समयमा गर्नुहोस्, ताकि समय तपाईंको साथमा हुँदा "
+            "काम अघि बढोस्।",
+            "तल दिइएका हरेक प्राथमिकताका लागि एउटा सानो बानी छान्नुहोस् र अर्को तीन महिना "
+            "निरन्तर पछ्याउनुहोस्।",
         ]
     else:
         rec = [
-            f"Lean into {PLANET_EN[strong]} themes — that is where momentum is "
-            "cheapest to build.",
-            f"Give structure to {PLANET_EN[weak]} themes through routine and "
-            "small, repeated effort rather than waiting to feel ready.",
-            "Align major moves with the supportive sub-periods noted in the outlook.",
-            "Track one concrete habit per priority below for the next quarter.",
+            f"Play to your strengths — {_plain_theme(strong, False)}. This is where "
+            "progress comes easiest for you.",
+            f"Don't avoid your weaker side — {_plain_theme(weak, False)}. Build it up "
+            "slowly with small, regular habits instead of waiting until you feel ready.",
+            "Save big decisions for the good times highlighted above, so you act when "
+            "the timing is on your side.",
+            "Pick one small habit for each priority below and stick with it for the "
+            "next three months.",
         ]
     sections.append(_nsec("practical_recommendations", "Practical recommendations",
                           "व्यावहारिक सुझाव", rec))
@@ -2699,14 +2726,14 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
         pf = P[key]
         if ne:
             text = (_planet_line(chart, key, ne=True)
-                    + f" यसले {KARAKA_NE[key]} लाई संकेत गर्छ।"
-                    + (f" षड्बलले यसलाई {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)} "
-                       "श्रेणी दिन्छ।" if pf.shadbala_status else ""))
+                    + f" यसले जीवनमा {KARAKA_NE[key]} लाई प्रतिनिधित्व गर्छ।"
+                    + (f" यसको समग्र बल {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)} "
+                       "छ।" if pf.shadbala_status else ""))
             label = PLANET_NE[key]
         else:
             text = (_planet_line(chart, key)
-                    + f" It signifies {KARAKA[key]}."
-                    + (f" Shadbala grades it {pf.shadbala_status}." if pf.shadbala_status else ""))
+                    + f" In life it stands for {KARAKA[key]}."
+                    + (f" Its overall strength is {pf.shadbala_status.lower()}." if pf.shadbala_status else ""))
             label = f"{PLANET_EN[key]} ({PLANET_NE[key]})"
         planet_items.append({
             "label": label,
@@ -2790,43 +2817,40 @@ def _weakest(chart: Chart) -> str:
 
 def _action_plan(chart: Chart, *, ne: bool = False) -> list[str]:
     strong, weak = _strongest(chart), _weakest(chart)
-    tenth = chart.house_lord.get(10)
     if ne:
         plan = [
-            f"१. {PLANET_NE[strong]} को बल ({KARAKA_NE[strong].split(',')[0]}) मा आफ्नो आधार "
-            "बनाउनुहोस् — यो तपाईंको सबैभन्दा छिटो लाभ हो।",
-            f"२. {PLANET_NE[weak]} का विषय ({KARAKA_NE[weak].split(',')[0]}) वरिपरि सरल साप्ताहिक "
-            "दिनचर्या राख्नुहोस्, ताकि तिनले अवरोध गर्न छोडून्।",
+            f"१. तपाईं स्वाभाविक रूपमा राम्रो भएको कुरा — {_plain_theme(strong, True)} — मा "
+            "आधार बनाउनुहोस्। यसले सबैभन्दा छिटो नतिजा दिन्छ।",
+            f"२. कमजोर पक्ष — {_plain_theme(weak, True)} — लाई सरल साप्ताहिक दिनचर्यामा "
+            "ढाल्नुहोस्, ताकि यसले तपाईंलाई रोक्न छाडोस्।",
         ]
         if chart.maha_lord:
             plan.append(
-                f"३. चलिरहेको {PLANET_NE[chart.maha_lord]} अवधिसँग काम गर्नुहोस् — ठूला पहलका लागि "
-                f"{DASHA_THEME_NE[chart.maha_lord].split(',')[0]} लाई प्राथमिकता दिनुहोस्।")
+                f"३. अहिले तपाईंको जीवनमा {_plain_theme(chart.maha_lord, True)} लाई साथ दिने "
+                "समय चलिरहेको छ — ठूला कदम यसै बेला चाल्नुहोस्।")
         else:
-            plan.append("३. ठूला पहललाई आफ्ना सहायक उप-अवधिसँग मिलाउनुहोस्।")
+            plan.append("३. ठूला कदम माथि देखाइएका अनुकूल समयमा चाल्नुहोस्।")
         plan.append(
-            f"४. करियरका लागि {PLANET_NE[tenth]} ले नेतृत्व गरेको १० औं भावको मार्गलाई "
-            "निरन्तर, दृश्य कामबाट विकास गर्नुहोस्।")
-        plan.append("५. नैतिक, स्थिर दैनिक लय कायम राख्नुहोस् — कुण्डलीको हरेक क्षेत्रलाई "
-                    "बलियो बनाउने एउटै उपाय।")
+            "४. करियर र प्रतिष्ठाका लागि निरन्तर, अरूले देख्ने गरी काम गर्दै रहनुहोस्।")
+        plan.append("५. इमानदार र स्थिर दैनिक दिनचर्या कायम राख्नुहोस् — यसैले जीवनको हरेक "
+                    "पक्ष चुपचाप बलियो बनाउँछ।")
         return plan
     plan = [
-        f"1. Build your platform on {PLANET_EN[strong]} strengths "
-        f"({KARAKA[strong].split(',')[0]}) — this is your fastest leverage.",
-        f"2. Put a simple weekly routine around {PLANET_EN[weak]} themes "
-        f"({KARAKA[weak].split(',')[0]}) so they stop being a drag.",
+        f"1. Build on what you're naturally good at — {_plain_theme(strong, False)}. "
+        "This gives you the fastest results.",
+        f"2. Turn your weaker side — {_plain_theme(weak, False)} — into a simple "
+        "weekly routine so it stops holding you back.",
     ]
     if chart.maha_lord:
         plan.append(
-            f"3. Work with the current {PLANET_EN[chart.maha_lord]} period — favour "
-            f"{DASHA_THEME[chart.maha_lord].split(',')[0]} for major initiatives.")
+            f"3. You're currently in a life phase that favours "
+            f"{_plain_theme(chart.maha_lord, False)} — use this time for your bigger moves.")
     else:
-        plan.append("3. Time major initiatives with your supportive sub-periods.")
+        plan.append("3. Time your bigger moves for the good periods highlighted above.")
     plan.append(
-        f"4. For career, develop the 10th-house path led by {PLANET_EN[tenth]} "
-        "with consistent, visible work.")
-    plan.append("5. Keep an ethical, steady daily rhythm — the one remedy that "
-               "strengthens every area of the chart.")
+        "4. For your career and reputation, keep showing up with steady, visible work.")
+    plan.append("5. Keep an honest, steady daily routine — it's the one thing that "
+                "quietly strengthens every part of your life.")
     return plan
 
 
@@ -2888,15 +2912,15 @@ HOUSE_THEME_NE = {
 }
 
 DIGNITY_PHRASE_NE = {
-    "exalted": "उच्च (गहिरो गरिमा)",
-    "moolatrikona": "मूलत्रिकोणमा (अत्यन्त सहज)",
-    "own": "स्वराशिमा (स्थिर र आत्मविश्वासी)",
-    "friend": "मित्र राशिमा (समर्थित)",
-    "neutral": "सम राशिमा",
-    "enemy": "शत्रु राशिमा (केही तनाव)",
-    "debilitated": "नीच (दबाब, सचेत प्रयास चाहिन्छ)",
-    "placed": "स्थित",
-    "well placed": "राम्रो स्थित",
+    "exalted": "उत्कृष्ट अवस्थामा, अत्यन्तै बलियो",
+    "moolatrikona": "अत्यन्तै सहज र बलियो",
+    "own": "स्थिर र आत्मविश्वासी",
+    "friend": "राम्रोसँग समर्थित",
+    "neutral": "तटस्थ अवस्थामा",
+    "enemy": "अलिकति दबाबमा",
+    "debilitated": "कमजोर, सचेत प्रयास चाहिने",
+    "placed": "रहेको",
+    "well placed": "राम्रोसँग रहेको",
     "under pressure": "दबाबमा",
 }
 
