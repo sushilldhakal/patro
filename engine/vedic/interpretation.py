@@ -64,6 +64,37 @@ RASHI_NE = [
     "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन",
 ]
 
+# Plain, everyday personality words for each sign (0-based), so "Leo rising"
+# becomes something a reader with no astrology background understands.
+SIGN_TRAIT_EN = [
+    "bold, energetic and quick to act",
+    "steady, patient and grounded, someone who values comfort and security",
+    "curious, chatty and adaptable",
+    "caring, sensitive and family-minded",
+    "confident, warm and proud, someone who likes to be seen and appreciated",
+    "practical, careful and good with detail",
+    "friendly, fair and people-oriented, someone who values balance",
+    "intense, private and strong-willed",
+    "optimistic, freedom-loving and big-picture",
+    "disciplined, ambitious and hard-working",
+    "independent, original and open-minded",
+    "gentle, imaginative and kind-hearted",
+]
+SIGN_TRAIT_NE = [
+    "साहसी, ऊर्जावान् र छिटो निर्णय लिने",
+    "स्थिर, धैर्यवान् र व्यावहारिक; सुख र सुरक्षालाई महत्व दिने",
+    "जिज्ञासु, कुराकानी रुचाउने र परिस्थिति अनुसार ढल्ने",
+    "मायालु, संवेदनशील र परिवारप्रिय",
+    "आत्मविश्वासी, न्यानो र स्वाभिमानी; चिनिन र सम्मान पाउन रुचाउने",
+    "व्यावहारिक, सतर्क र सानो कुरामा पनि ध्यान दिने",
+    "मिलनसार, न्यायप्रिय र मानिससँग घुलमिल हुने; सन्तुलन खोज्ने",
+    "गहन, गोप्य स्वभावको र दृढ इच्छाशक्ति भएको",
+    "आशावादी, स्वतन्त्रताप्रेमी र फराकिलो सोच भएको",
+    "अनुशासित, महत्वाकांक्षी र परिश्रमी",
+    "स्वतन्त्र, मौलिक र खुला विचार भएको",
+    "कोमल, कल्पनाशील र दयालु हृदयको",
+]
+
 # 0-based sign → ruling planet.
 SIGN_LORD = [
     "mars", "venus", "mercury", "moon", "sun", "mercury",
@@ -1504,29 +1535,30 @@ def _signified_house_planet(chart: Chart, house: int, *, ne: bool = False) -> st
     lf = chart.planet(lord) if lord else None
     occ = chart.house_occupants.get(house, [])
     if ne:
-        parts = [f"{_ord_ne(house)} भाव ({HOUSE_NE.get(house,'')}) ले {HOUSE_THEME_NE[house]} लाई समेट्छ।"]
+        parts = [f"जीवनको यो क्षेत्र {HOUSE_THEME_NE[house]} सँग सम्बन्धित छ।"]
         if lf:
             dign = DIGNITY_PHRASE_NE.get(lf.dignity, lf.dignity or "रहेको")
             parts.append(
-                f"यसलाई हेर्ने ग्रह {PLANET_NE[lord]} तपाईंको {_ord_ne(lf.house)} भावमा छ र यहाँ {dign} छ"
-                + (f"; समग्र बल {_SHADBALA_STATUS_NE.get(lf.shadbala_status, lf.shadbala_status)}"
+                f"यो क्षेत्र सम्हाल्ने ग्रह {PLANET_NE[lord]} अहिले {HOUSE_THEME_NE[lf.house].split(',')[0]} "
+                f"सँग सम्बन्धित भागमा छ, र यहाँ {dign} छ"
+                + (f" (समग्र बल {_SHADBALA_STATUS_NE.get(lf.shadbala_status, lf.shadbala_status)})"
                    if lf.shadbala_status else "")
                 + "।"
             )
         if occ:
-            parts.append("यस भावमा रहेका ग्रह: " + ", ".join(PLANET_NE[k] for k in occ) + "।")
+            parts.append("यस क्षेत्रमा अहिले रहेका ग्रह: " + ", ".join(PLANET_NE[k] for k in occ) + "।")
         return " ".join(parts)
-    parts = [f"The {_ord(house)} house covers {HOUSE_THEME[house]}."]
+    parts = [f"This area of life is about {HOUSE_THEME[house]}."]
     if lf:
         dign = DIGNITY_PHRASE.get(lf.dignity, lf.dignity or "placed")
         parts.append(
-            f"The planet that rules it, {PLANET_EN[lord]}, is in your {_ord(lf.house)} house "
-            f"and is {dign} there"
-            + (f"; its overall strength is {lf.shadbala_status.lower()}" if lf.shadbala_status else "")
+            f"The planet in charge of it, {PLANET_EN[lord]}, currently sits in the part of "
+            f"your chart about {HOUSE_THEME[lf.house].split(',')[0]}, and is {dign} there"
+            + (f" (overall strength {lf.shadbala_status.lower()})" if lf.shadbala_status else "")
             + "."
         )
     if occ:
-        parts.append("Planets sitting in this house: " + ", ".join(PLANET_EN[k] for k in occ) + ".")
+        parts.append("Planets currently in this area: " + ", ".join(PLANET_EN[k] for k in occ) + ".")
     return " ".join(parts)
 
 
@@ -2082,14 +2114,16 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     nak_i, nak_p = chart.moon_nak
     if ne:
         summary_body = [
-            f"{RASHI_NE[chart.lagna_sign]} लग्न; मन (चन्द्र) {RASHI_NE[chart.moon_sign]} राशिको "
-            f"{NAKSHATRA_NE[nak_i]} नक्षत्र, चरण {nak_p} मा — तपाईंको जन्म नक्षत्र — र सूर्य "
-            f"{RASHI_NE[chart.sun_sign]} मा। लग्नले संसारसँग कसरी भेट्नुहुन्छ, चन्द्रले भित्री मन, "
-            f"र सूर्यले मूल स्वरूप देखाउँछ।",
+            f"तीन कुराले तपाईंको सिंगो कुण्डलीको स्वर तय गर्छन्: तपाईंको लग्न (मानिससामु "
+            f"कस्तो देखिनुहुन्छ), तपाईंको चन्द्र (भावना र मन), र तपाईंको सूर्य (भित्री मूल "
+            f"स्वरूप)। यहाँ, {RASHI_NE[chart.lagna_sign]} लग्न छ, चन्द्र {RASHI_NE[chart.moon_sign]} "
+            f"राशिमा (जन्म तारा {NAKSHATRA_NE[nak_i]}), र सूर्य {RASHI_NE[chart.sun_sign]} राशिमा।",
+            f"सरल भाषामा भन्दा, तपाईं अरूसामु {SIGN_TRAIT_NE[chart.lagna_sign]} व्यक्तिका रूपमा "
+            f"देखिनुहुन्छ।",
             f"तपाईंको लग्नको स्वामी ग्रह {PLANET_NE[lagna_lord]} "
             + (f"{_ord_ne(ll.house)} भावमा, यहाँ " if ll else "")
             + (DIGNITY_PHRASE_NE.get(ll.dignity, "रहेको") if ll else "रहेको")
-            + f" — यसैले कुण्डली {_strength_word_ne(summary_conf.level)} आधारमा टिकेको छ।",
+            + f" — यसैले समग्रमा तपाईंको कुण्डली {_strength_word_ne(summary_conf.level)} आधारमा टिकेको छ।",
         ]
         if chart.dasha:
             d = chart.dasha
@@ -2101,21 +2135,23 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             )
         if benefic_yogas:
             summary_body.append(
-                "सक्रिय सहायक योग: " + ", ".join(_yoga_name(y, True) for y in benefic_yogas) + "।")
+                "तपाईंको कुण्डलीमा सक्रिय राम्रा संयोगहरू (योग): "
+                + ", ".join(dict.fromkeys(_yoga_name(y, True) for y in benefic_yogas))
+                + " — यिनको अर्थ तल 'योग' खण्डमा सजिलो भाषामा दिइएको छ।")
     else:
         summary_body = [
-            f"{RASHI_EN[chart.lagna_sign]} is your rising sign (ascendant); the Moon (your "
-            f"mind and feelings) is in {RASHI_EN[chart.moon_sign]}, in the birth star "
-            f"{NAKSHATRA_EN[nak_i]}, quarter {nak_p} — the star the Moon was in when you were "
-            f"born — and the Sun is in {RASHI_EN[chart.sun_sign]}. The rising sign shows how you "
-            f"meet the world, the Moon your inner world, the Sun your core self.",
-            f"The ruler of your rising sign, {PLANET_EN[lagna_lord]}, is "
+            f"Three things set the tone of your whole chart: your rising sign (how you come "
+            f"across to others), your Moon (your emotions and mind), and your Sun (your core "
+            f"self). Here, {RASHI_EN[chart.lagna_sign]} is rising, your Moon is in "
+            f"{RASHI_EN[chart.moon_sign]} (birth star {NAKSHATRA_EN[nak_i]}), and your Sun is "
+            f"in {RASHI_EN[chart.sun_sign]}.",
+            f"In plain terms, you tend to come across to others as "
+            f"{SIGN_TRAIT_EN[chart.lagna_sign]}.",
+            f"The planet ruling your rising sign, {PLANET_EN[lagna_lord]}, is "
             + (f"in your {_ord(ll.house)} house and " if ll else "")
             + (DIGNITY_PHRASE.get(ll.dignity, "placed") if ll else "placed")
             + (" there" if ll else "")
-            + ", so the chart rests on "
-            + _strength_word(summary_conf.level)
-            + " foundation.",
+            + f", so overall your chart rests on {_strength_word(summary_conf.level)} foundation.",
         ]
         if chart.dasha:
             d = chart.dasha
@@ -2128,8 +2164,9 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
             )
         if benefic_yogas:
             summary_body.append(
-                "Supportive patterns active: "
-                + ", ".join(y["name"] for y in benefic_yogas) + "."
+                "Helpful combinations (yogas) active in your chart: "
+                + ", ".join(dict.fromkeys(y["name"] for y in benefic_yogas))
+                + " — each is explained in plain words in the Yogas section below."
             )
     sections.append(_nsec(
         "executive_summary", "Executive summary", "सारांश",
@@ -2140,37 +2177,38 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     pers_conf = _planet_confidence(chart, lagna_lord)
     if ne:
         pers_body = [
-            f"तपाईंको बाह्य व्यक्तित्व {RASHI_NE[chart.lagna_sign]} लग्नले र सबैभन्दा बढी यसका "
-            f"स्वामी {PLANET_NE[lagna_lord]} ले आकार दिन्छ।",
-            _planet_line(chart, lagna_lord, ne=True),
+            f"मानिससामु तपाईं प्रायः {SIGN_TRAIT_NE[chart.lagna_sign]} व्यक्तिका रूपमा "
+            f"देखिनुहुन्छ ({RASHI_NE[chart.lagna_sign]} लग्न)।",
+            f"तपाईं आफूलाई कसरी प्रस्तुत गर्नुहुन्छ भन्नेमा {PLANET_NE[lagna_lord]} ग्रहको सबैभन्दा "
+            f"ठूलो हात हुन्छ, त्यसैले {_plain_theme(lagna_lord, True)} तपाईंको बाहिरी शैलीको ठूलो "
+            f"हिस्सा हो।",
         ]
         if sun:
             pers_body.append(
-                f"{RASHI_NE[sun.sign]} राशिको सूर्य ({_ord_ne(sun.house)} भावमा) ले इच्छाशक्ति र "
-                f"आत्म-छवि देखाउँछ — {KARAKA_NE['sun']} का विषय।")
+                f"भित्री रूपमा, तपाईंको आत्म-छवि र इच्छाशक्ति {_plain_theme('sun', True)} वरिपरि "
+                f"बनेको हुन्छ (सूर्य {RASHI_NE[sun.sign]} राशिमा)।")
         if "mercury" in P:
             me = P["mercury"]
             pers_body.append(
-                f"{RASHI_NE[me.sign]} राशिको बुधले सोच र सञ्चारलाई आकार दिन्छ"
-                + (f"; {_ord_ne(me.house)} भावमा भएकाले {HOUSE_THEME_NE[me.house].split(',')[0]} तर्फ ढल्किन्छ।"
-                   if me.house else "।"))
+                f"तपाईं कसरी सोच्नुहुन्छ र कुरा गर्नुहुन्छ भन्ने बुधले देखाउँछ — तपाईंको मन "
+                f"{_plain_theme('mercury', True)} तर्फ ढल्किन्छ।")
     else:
         pers_body = [
-            f"Your outward personality is coloured by a {RASHI_EN[chart.lagna_sign]} "
-            f"ascendant and shaped most by its ruler {PLANET_EN[lagna_lord]}.",
-            _planet_line(chart, lagna_lord),
+            f"To other people, you usually come across as {SIGN_TRAIT_EN[chart.lagna_sign]} "
+            f"({RASHI_EN[chart.lagna_sign]} rising).",
+            f"How you present yourself is shaped most by {PLANET_EN[lagna_lord]} (the planet "
+            f"ruling your rising sign), so {_plain_theme(lagna_lord, False)} is a big part of "
+            f"your outward style.",
         ]
         if sun:
             pers_body.append(
-                f"The Sun in {RASHI_EN[sun.sign]} (house {sun.house}) describes the will "
-                f"and self-image you grow into — themes of {KARAKA['sun']}."
+                f"Deeper down, your sense of self and drive is built around "
+                f"{_plain_theme('sun', False)} (your Sun is in {RASHI_EN[sun.sign]})."
             )
         if "mercury" in P:
-            me = P["mercury"]
             pers_body.append(
-                f"Mercury in {RASHI_EN[me.sign]} shapes how you think and communicate; "
-                + (f"placed in the {_ord(me.house)}, it leans toward {HOUSE_THEME[me.house].split(',')[0]}."
-                   if me.house else "")
+                f"The way you think and communicate leans toward "
+                f"{_plain_theme('mercury', False)}."
             )
     sections.append(_nsec("personality", "Personality & temperament",
                           "व्यक्तित्व", pers_body, pers_conf))
@@ -2179,23 +2217,27 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     emo_conf = _planet_confidence(chart, "moon")
     emo_body = []
     if moon:
-        emo_body.append(_planet_line(chart, "moon", ne=ne))
         if ne:
             emo_body.append(
-                f"चन्द्र {_ord_ne(moon.house)} भावमा भएकाले तपाईंको भावनात्मक सुरक्षा "
-                f"{HOUSE_THEME_NE[moon.house]} सँग जोडिन्छ। "
-                + ("बलियो चन्द्रले मनलाई स्वाभाविक रूपमा स्थिर राख्न सघाउँछ।"
+                f"भावनात्मक रूपमा, तपाईं प्रायः {SIGN_TRAIT_NE[moon.sign]} हुनुहुन्छ "
+                f"(चन्द्र {RASHI_NE[moon.sign]} राशिमा)।")
+            emo_body.append(
+                f"तपाईंलाई भावनात्मक सुरक्षा मुख्यतया {HOUSE_THEME_NE[moon.house]} सँग जोडिएको "
+                f"हुन्छ। "
+                + ("तपाईंको मन स्वाभाविक रूपमा स्थिर रहन्छ।"
                    if DIGNITY_SCORE.get(moon.dignity, 0) >= 1
-                   else "यहाँ चन्द्र केही दबाबमा भएकाले विचारपूर्वक विश्राम, नियमित दिनचर्या र सहयोगी "
-                        "सङ्गतले स्पष्ट फाइदा दिन्छ।"))
+                   else "विचारपूर्वक विश्राम, नियमित दिनचर्या र सहयोगी सङ्गतले तपाईंको मनलाई "
+                        "शान्त राख्न स्पष्ट फाइदा दिन्छ।"))
         else:
             emo_body.append(
-                f"With the Moon in the {_ord(moon.house)} house, your emotional security is "
-                f"tied to {HOUSE_THEME[moon.house]}. "
-                + ("A strong Moon helps keep your mind naturally steady."
+                f"Emotionally, you tend to be {SIGN_TRAIT_EN[moon.sign]} (your Moon is in "
+                f"{RASHI_EN[moon.sign]}).")
+            emo_body.append(
+                f"Your sense of emotional security is mainly tied to {HOUSE_THEME[moon.house]}. "
+                + ("Your mind tends to stay naturally steady."
                    if DIGNITY_SCORE.get(moon.dignity, 0) >= 1
-                   else "Because the Moon is under some pressure here, deliberate rest, "
-                        "a regular routine and supportive company pay off noticeably.")
+                   else "Deliberate rest, a regular routine and supportive company clearly help "
+                        "keep you calm and settled.")
             )
         aspectors = chart.aspects_to(moon.house)
         ben = [a for a in aspectors if a in NATURAL_BENEFICS]
@@ -2212,26 +2254,28 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     # 4 — Strengths -------------------------------------------------------------
     strengths = []
     str_conf = Confidence()
+    strong_themes: list[str] = []
     for key, pf in sorted(P.items(), key=lambda kv: kv[1].shadbala_ratio or 0, reverse=True):
+        if key not in PLAIN_THEME_EN:
+            continue
         if pf.dignity in {"exalted", "own", "moolatrikona"} or pf.shadbala_status in {"Strong", "Exceptional"}:
-            if ne:
-                strengths.append(
-                    f"{PLANET_NE[key]} बलियो सम्पत्ति हो — {KARAKA_NE[key].split(',')[0]} सजिलै "
-                    f"आउँछ ({DIGNITY_PHRASE_NE.get(pf.dignity, 'राम्रोसँग स्थित')}"
-                    + (f", समग्र बल {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
-                       if pf.shadbala_status else "") + ")।")
-            else:
-                strengths.append(
-                    f"{PLANET_EN[key]} is a strong asset — {KARAKA[key].split(',')[0]} comes "
-                    f"more easily ({DIGNITY_PHRASE.get(pf.dignity, 'well placed')}"
-                    + (f", overall strength {pf.shadbala_status.lower()}" if pf.shadbala_status else "") + ")."
-                )
+            strong_themes.append(_plain_theme(key, ne))
             str_conf.support(f"{PLANET_EN[key]} dignified/strong")
-    if not strengths:
+    if strong_themes:
+        joined = "; ".join(strong_themes)
+        if ne:
+            strengths.append(
+                f"तपाईंको सबैभन्दा बलियो पक्षहरू यी हुन्: {joined}। यी कुरा तपाईंलाई स्वाभाविक "
+                f"रूपमै सजिलै आउँछन्, त्यसैले तपाईं यिनमा भरोसा गरेर अगाडि बढ्न सक्नुहुन्छ।")
+        else:
+            strengths.append(
+                f"Your strongest areas are: {joined}. These come more naturally to you, so "
+                f"you can lean on them and build on them with confidence.")
+    else:
         strengths.append(
-            "कुनै ग्रह शास्त्रीय रूपमा उच्च छैन, तर धेरै कार्ययोग्य छन्; तपाईंको बल तयार भई "
-            "आउनुभन्दा परिश्रमबाट बन्दै जान्छ।" if ne else
-            "No planet is classically exalted, but several are workable; "
+            "कुनै ग्रह विशेष रूपमा बलियो छैन, तर धेरै ठीकठाक छन्; तपाईंको बल तयार भई "
+            "आउनुभन्दा मिहिनेतबाट बन्दै जान्छ।" if ne else
+            "No single area stands out as exceptionally strong, but several are solid; "
             "your strengths build through effort rather than arriving ready-made.")
     sections.append(_nsec("strengths", "Core strengths", "बल पक्ष",
                           strengths, str_conf))
@@ -2240,20 +2284,20 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     challenges = []
     ch_conf = Confidence()
     for key, pf in P.items():
+        if key not in PLAIN_THEME_EN:
+            continue
         if pf.dignity == "debilitated" or pf.shadbala_status in {"Weak", "Borderline"}:
             cancelled = any(y["key"].startswith(f"neechabhanga_{key}") for y in chart.yogas)
+            theme = _plain_theme(key, ne)
             if ne:
-                line = (f"{PLANET_NE[key]} ले सचेत सहयोग खोज्छ — {KARAKA_NE[key].split(',')[0]} "
-                        f"प्रयासपूर्ण लाग्न सक्छ ({DIGNITY_PHRASE_NE.get(pf.dignity, 'दबाबमा')}"
-                        + (f", समग्र बल {_SHADBALA_STATUS_NE.get(pf.shadbala_status, pf.shadbala_status)}"
-                           if pf.shadbala_status else "") + ")।")
+                line = (f"{theme} — यी कुरा तुरुन्तै सहजै नआउन सक्छन्, र यिनमा सचेत प्रयास तथा "
+                        f"अभ्यास चाहिन्छ।")
                 if cancelled:
-                    line += (" राम्रो कुरा — यहाँ यो कमजोरी रद्द गर्ने योग (नीचभंग) छ, "
+                    line += (" राम्रो कुरा — यहाँ यो कमजोरी रद्द गर्ने संयोग (नीचभंग) छ, "
                              "जसले यसलाई पछि गएर बलमा बदल्न सक्छ।")
             else:
-                line = (f"{PLANET_EN[key]} needs conscious support — {KARAKA[key].split(',')[0]} "
-                        f"can feel effortful ({DIGNITY_PHRASE.get(pf.dignity, 'under pressure')}"
-                        + (f", overall strength {pf.shadbala_status.lower()}" if pf.shadbala_status else "") + ").")
+                line = (f"{theme.capitalize()} may not come as easily to you, and can take "
+                        f"conscious effort and practice.")
                 if cancelled:
                     line += (" The good news: a pattern that cancels this weakness "
                              "(neecha-bhanga) tends to turn it into strength later on.")
@@ -2749,8 +2793,8 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
     for h in range(1, 13):
         conf = _house_confidence(chart, h)
         house_items.append({
-            "label": f"{_ord_ne(h)} भाव ({HOUSE_NE.get(h,'')})" if ne
-                     else f"House {h} ({HOUSE_NE.get(h,'')})",
+            "label": f"{HOUSE_THEME_NE[h].split(',')[0].capitalize()} ({_ord_ne(h)} भाव)" if ne
+                     else f"{HOUSE_THEME[h].split(',')[0].capitalize()} (house {h})",
             "confidence": conf.level,
             "factors": conf.factors,
             "text": _signified_house_planet(chart, h, ne=ne),
