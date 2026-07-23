@@ -62,7 +62,11 @@ logger = logging.getLogger(__name__)
 #     Chandra Vasa rashi→direction table fixed (मिथुन/तुला/कुम्भ = West, वृश्चिक
 #     etc. = North); Shiva Vasa remainder order fixed (rem 1 = कैलास, shubha;
 #     कैलास/गौरी/सभा were scrambled).
-CACHE_PAYLOAD_VERSION = 25
+# 26: added per-graha is_combust (अस्त) flag to the planetary positions (and the
+#     gochar table) so the sunrise spashtagraha, D-charts and gochar chart can
+#     show वक्री/अस्त. Invalidates stale daily/month/year cache whose planets
+#     predate the field (is_retrograde was already present, is_combust was not).
+CACHE_PAYLOAD_VERSION = 26
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
