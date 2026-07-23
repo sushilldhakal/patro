@@ -56,12 +56,12 @@ logger = logging.getLogger(__name__)
 #     tithi) and Visha Ghati of the Nitya Yoga (visha_yoga, योग विष — toxic
 #     opening ghatis of Vishkumbha/Atiganda/Shula/Ganda/Vyaghata/Vajra, whole
 #     span for Vyatipata) to the inauspicious timings.
-# 25: corrected nivas_shool per Muhurta Chintamani — Homahuti graha-mukha now
-#     counts Sun→Moon nakshatra and maps in the canonical graha order (was a
-#     /3 bucket in the wrong sequence; Chandra is auspicious); Chandra Vasa
-#     rashi→direction table fixed (मिथुन/तुला/कुम्भ = West, वृश्चिक etc. = North);
-#     Shiva Vasa remainder order fixed (rem 1 = कैलास, shubha; कैलास/गौरी/सभा
-#     were scrambled).
+# 25: corrected nivas_shool per Muhurta Chintamani — Homahuti graha-mukha order
+#     fixed (Sun→Moon nakshatra span in 9 groups of 3; canonical graha sequence
+#     सूर्य/बुध/शुक्र/शनि/चन्द्र/मंगल/बृहस्पति/राहु/केतु; Chandra is auspicious);
+#     Chandra Vasa rashi→direction table fixed (मिथुन/तुला/कुम्भ = West, वृश्चिक
+#     etc. = North); Shiva Vasa remainder order fixed (rem 1 = कैलास, shubha;
+#     कैलास/गौरी/सभा were scrambled).
 CACHE_PAYLOAD_VERSION = 25
 
 _REQUIRED_PAYLOAD_KEYS = (

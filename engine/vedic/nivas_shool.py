@@ -77,8 +77,8 @@ _SHIVAVASA = (
 )
 _SHIVAVASA_RESULT = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 0: 6}
 
-# Homahuti graha-mukha order (Muhurta Chintamani): count Sun-nakshatra → Moon-
-# nakshatra, divide by 9; the remainder (1-based) indexes this sequence:
+# Homahuti graha-mukha order (Muhurta Chintamani): the Sun→Moon nakshatra span
+# is divided into 9 groups of 3; the group index selects this sequence:
 #   1 सूर्य, 2 बुध, 3 शुक्र, 4 शनि, 5 चन्द्र, 6 मंगल, 7 बृहस्पति, 8 राहु, 9 केतु.
 # Aahuti falling on a benefic mukha (Budha, Shukra, Chandra, Guru) is auspicious.
 _HOMAHUTI_GRAHAS = (
@@ -212,11 +212,11 @@ def _shivavasa_at(tithi_absolute: int) -> dict[str, Any]:
 def _homahuti_at(instant: datetime) -> dict[str, Any]:
     sun_nak = get_surya_nakshatra(instant)["number"]
     moon_nak = get_nakshatra(instant)[0]
-    # Inclusive count Sun-nakshatra → Moon-nakshatra, then take it modulo 9.
-    # ((moon-sun) % 27) is the 0-based distance; +1 makes the count inclusive,
-    # so the 0-based graha index is ((count - 1) % 9) == (distance % 9).
+    # The 27 nakshatras from the Sun's star to the Moon's are split into 9 groups
+    # of 3 ("९ ले भाग"), each group governed by one graha's mukha. `distance // 3`
+    # is that group index; the graha order is _HOMAHUTI_GRAHAS.
     distance = (moon_nak - sun_nak) % 27
-    graha = _HOMAHUTI_GRAHAS[distance % 9]
+    graha = _HOMAHUTI_GRAHAS[(distance // 3) % 9]
     return dict(graha)
 
 

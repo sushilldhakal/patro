@@ -24,9 +24,9 @@ def test_nivas_shool_jul_9_2026_kathmandu():
     payload = build_daily_panchanga(date(2026, 7, 9), DEFAULT_LOCATION)
     ns = payload["nivas_shool"]
 
-    # Sun in nakshatra 7, Moon in nakshatra 1 → inclusive count 22, 22 mod 9 = 4
-    # → Shani (Muhurta Chintamani graha-mukha order).
-    assert ns["homahuti"]["current"]["key"] == "saturn"
+    # Sun in nakshatra 7, Moon in nakshatra 1 → span distance 21, group 21//3 = 7
+    # → Rahu (Muhurta Chintamani graha-mukha: 9 groups of 3 nakshatras).
+    assert ns["homahuti"]["current"]["key"] == "rahu"
     assert ns["disha_shool"]["direction_key"] == "S"
     assert ns["rahu_vasa"]["direction_key"] == "S"
 
@@ -64,6 +64,21 @@ _WEEK = {
     date(2026, 7, 11): ("Saturday", "E", "E"),
     date(2026, 7, 12): ("Sunday", "W", "N"),
 }
+
+
+def test_homahuti_graha_mukha_clayton():
+    # Clayton, Victoria on 2026-07-23: Sun nakshatra 8, Moon nakshatra 16 →
+    # span distance 8, group 8//3 = 2 → Shukra; when the Moon reaches nakshatra
+    # 17 (distance 9, group 3) it becomes Shani.
+    from engine.astronomy.location import ObserverLocation
+
+    clayton = ObserverLocation(
+        lat=-37.9152, lon=145.1300, timezone="Australia/Melbourne", name="Clayton", city_id=None
+    )
+    segs = build_daily_panchanga(date(2026, 7, 23), clayton)["nivas_shool"]["homahuti"]["segments"]
+    names = [s["name_en"] for s in segs]
+    assert names[0] == "Shukra"
+    assert names[-1] == "Shani"
 
 
 def test_disha_shool_and_rahu_vasa_weekday_tables():
