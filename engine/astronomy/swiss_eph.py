@@ -223,26 +223,35 @@ def get_all_planetary_positions(
 
 
 def _annotate_combustion(positions: dict[str, Any]) -> None:
-    """Flag each body ``is_combust`` when it lies within the Sun's combustion
-    orb (अस्त). Mirrors the kundali-detail logic so the sunrise spashtagraha and
-    gochar tables carry the same asta state. The Sun and the shadow nodes
-    (Rahu/Ketu) never combust; the Moon uses its own orb."""
-    from engine.vedic.interpretation import COMBUST_ORB, _angular_sep, combust_orb
+    """Flag each body ``is_combust`` (अस्त) using the SAME heliacal definition as
+    the standalone /graha-asta page, so the sunrise spashtagraha, D-charts and
+    gochar tables agree with it date-for-date.
+
+    Planets (mars, mercury, jupiter, venus, saturn) reuse the Surya-Siddhanta
+    arcus-visionis orbs from ``engine.vedic.udayast`` (direction- and
+    retrograde-aware); the Moon uses the चन्द्र तारा अस्त elongation orb from
+    ``engine.vedic.graha_detail``. The Sun and the shadow nodes (Rahu/Ketu)
+    never combust."""
+    from engine.vedic.graha_detail import MOON_ASTA_ORB
+    from engine.vedic.udayast import UDAYAST_GRAHAS, combustion_threshold
 
     sun_lon = positions.get("sun", {}).get("longitude")
     for key, pos in positions.items():
-        if key == "sun" or key not in COMBUST_ORB or sun_lon is None:
-            pos["is_combust"] = False
+        pos["is_combust"] = False
+        if sun_lon is None:
             continue
         lon = pos.get("longitude")
         if lon is None:
-            pos["is_combust"] = False
             continue
-        if key == "moon":
-            orb: float | None = COMBUST_ORB["moon"]
-        else:
-            orb = combust_orb(key, bool(pos.get("is_retrograde", False)))
-        pos["is_combust"] = orb is not None and _angular_sep(lon, sun_lon) < orb
+        # Geocentric sidereal elongation from the Sun (ayanamsha-independent).
+        diff = (lon - sun_lon) % 360.0
+        separation = min(diff, 360.0 - diff)
+        if key in UDAYAST_GRAHAS:
+            east_of_sun = diff < 180.0
+            retro = bool(pos.get("is_retrograde", False))
+            pos["is_combust"] = separation < combustion_threshold(key, retro, east_of_sun)
+        elif key == "moon":
+            pos["is_combust"] = separation < MOON_ASTA_ORB
 
 
 # ── rise / set ───────────────────────────────────────────────────────────────
