@@ -278,6 +278,7 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
             "dms_in_rashi":  _dms_in_sign(lon),
             "speed_deg_day": round(spd, 4),
             "is_retrograde": is_vakri,
+            "is_combust":    bool(pos.get("is_combust", False)),
             "motion":        "Vakri" if is_vakri else "Margi",
         }
     return table

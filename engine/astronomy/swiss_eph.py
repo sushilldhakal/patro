@@ -217,7 +217,32 @@ def get_all_planetary_positions(
     )
     ketu_pos["is_retrograde"] = True
     positions["ketu"] = ketu_pos
+
+    _annotate_combustion(positions)
     return positions
+
+
+def _annotate_combustion(positions: dict[str, Any]) -> None:
+    """Flag each body ``is_combust`` when it lies within the Sun's combustion
+    orb (अस्त). Mirrors the kundali-detail logic so the sunrise spashtagraha and
+    gochar tables carry the same asta state. The Sun and the shadow nodes
+    (Rahu/Ketu) never combust; the Moon uses its own orb."""
+    from engine.vedic.interpretation import COMBUST_ORB, _angular_sep, combust_orb
+
+    sun_lon = positions.get("sun", {}).get("longitude")
+    for key, pos in positions.items():
+        if key == "sun" or key not in COMBUST_ORB or sun_lon is None:
+            pos["is_combust"] = False
+            continue
+        lon = pos.get("longitude")
+        if lon is None:
+            pos["is_combust"] = False
+            continue
+        if key == "moon":
+            orb: float | None = COMBUST_ORB["moon"]
+        else:
+            orb = combust_orb(key, bool(pos.get("is_retrograde", False)))
+        pos["is_combust"] = orb is not None and _angular_sep(lon, sun_lon) < orb
 
 
 # ── rise / set ───────────────────────────────────────────────────────────────
