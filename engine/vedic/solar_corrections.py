@@ -127,7 +127,7 @@ def build_solar_corrections(
         else None,
         "ishtakaal_note_ne": (
             "सूचीबद्ध सूर्योदय/अस्तमा देशान्तर (गौरीशंकर ८६° १५′ केन्द्र) समायोजित छ — "
-            "इष्टकाल गणनामा पुनः देशान्तर थप्नु/pर्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
+            "इष्टकाल गणनामा पुनः देशान्तर थप्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
         ),
         "ishtakaal_note_en": (
             "Listed sunrise/sunset already include Deshaantar from the Gaurishankar "
