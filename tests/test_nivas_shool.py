@@ -24,7 +24,9 @@ def test_nivas_shool_jul_9_2026_kathmandu():
     payload = build_daily_panchanga(date(2026, 7, 9), DEFAULT_LOCATION)
     ns = payload["nivas_shool"]
 
-    assert ns["homahuti"]["current"]["key"] == "rahu"
+    # Sun in nakshatra 7, Moon in nakshatra 1 → inclusive count 22, 22 mod 9 = 4
+    # → Shani (Muhurta Chintamani graha-mukha order).
+    assert ns["homahuti"]["current"]["key"] == "saturn"
     assert ns["disha_shool"]["direction_key"] == "S"
     assert ns["rahu_vasa"]["direction_key"] == "S"
 
@@ -35,7 +37,8 @@ def test_nivas_shool_jul_9_2026_kathmandu():
     assert agni[0]["end_local_time_short"].startswith("10:")
 
     shiva = ns["shivavasa"]["segments"]
-    assert shiva[0]["name_en"] == "Sabhayam"
+    # Krishna tithi 24 → paksha-tithi 9 → (9×2+5) mod 7 = 2 → Gauri-sannidhau.
+    assert shiva[0]["name_en"] == "Gauri-sannidhau"
 
     chandra = ns["chandra_vasa"]["current"]
     assert chandra["direction_key"] == "E"

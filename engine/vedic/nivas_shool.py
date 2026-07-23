@@ -62,25 +62,33 @@ _AGNIVASA = (
 # Agnivasa formula remainder → index in _AGNIVASA (0/3→Prithvi, 1→Akasha, 2→Patala)
 _AGNIVASA_RESULT = {0: 0, 3: 0, 1: 1, 2: 2}
 
+# Shiva Vasa (शिववास): (shukla-paksha tithi × 2 + 5) mod 7. The remainder →
+# abode, in canonical order — कैलास (best) at remainder 1, श्मशान (worst) at 0:
+#   1 कैलास, 2 गौरी सन्निधि, 3 वृषभारूढ, 4 सभा, 5 भोजन, 6 क्रीडा, 0/7 श्मशान.
+# The first three are auspicious for Rudrabhisheka; the rest are not.
 _SHIVAVASA = (
+    {"name_en": "Kailase", "name_ne": "कैलास", "is_auspicious": True},
     {"name_en": "Gauri-sannidhau", "name_ne": "गौरी सन्निधि", "is_auspicious": True},
-    {"name_en": "Sabhayam", "name_ne": "सभा", "is_auspicious": False},
     {"name_en": "Vrishabhaarudha", "name_ne": "वृषभारूढ", "is_auspicious": True},
-    {"name_en": "Kailase", "name_ne": "कैलास", "is_auspicious": False},
+    {"name_en": "Sabhayam", "name_ne": "सभा", "is_auspicious": False},
     {"name_en": "Bhojane", "name_ne": "भोजन", "is_auspicious": False},
     {"name_en": "Kridayam", "name_ne": "क्रीडा", "is_auspicious": False},
     {"name_en": "Shmashane", "name_ne": "श्मशान", "is_auspicious": False},
 )
 _SHIVAVASA_RESULT = {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 0: 6}
 
+# Homahuti graha-mukha order (Muhurta Chintamani): count Sun-nakshatra → Moon-
+# nakshatra, divide by 9; the remainder (1-based) indexes this sequence:
+#   1 सूर्य, 2 बुध, 3 शुक्र, 4 शनि, 5 चन्द्र, 6 मंगल, 7 बृहस्पति, 8 राहु, 9 केतु.
+# Aahuti falling on a benefic mukha (Budha, Shukra, Chandra, Guru) is auspicious.
 _HOMAHUTI_GRAHAS = (
     {"key": "sun", "symbol": "☉", "name_en": "Surya", "name_ne": "सूर्य", "is_auspicious": False},
-    {"key": "moon", "symbol": "☽", "name_en": "Chandra", "name_ne": "चन्द्र", "is_auspicious": False},
-    {"key": "mars", "symbol": "♂", "name_en": "Mangala", "name_ne": "मंगल", "is_auspicious": False},
     {"key": "mercury", "symbol": "☿", "name_en": "Budha", "name_ne": "बुध", "is_auspicious": True},
-    {"key": "jupiter", "symbol": "♃", "name_en": "Guru", "name_ne": "गुरु", "is_auspicious": True},
     {"key": "venus", "symbol": "♀", "name_en": "Shukra", "name_ne": "शुक्र", "is_auspicious": True},
     {"key": "saturn", "symbol": "♄", "name_en": "Shani", "name_ne": "शनि", "is_auspicious": False},
+    {"key": "moon", "symbol": "☽", "name_en": "Chandra", "name_ne": "चन्द्र", "is_auspicious": True},
+    {"key": "mars", "symbol": "♂", "name_en": "Mangala", "name_ne": "मंगल", "is_auspicious": False},
+    {"key": "jupiter", "symbol": "♃", "name_en": "Guru", "name_ne": "गुरु", "is_auspicious": True},
     {"key": "rahu", "symbol": "☊", "name_en": "Rahu", "name_ne": "राहु", "is_auspicious": False},
     {"key": "ketu", "symbol": "☋", "name_en": "Ketu", "name_ne": "केतु", "is_auspicious": False},
 )
@@ -204,14 +212,26 @@ def _shivavasa_at(tithi_absolute: int) -> dict[str, Any]:
 def _homahuti_at(instant: datetime) -> dict[str, Any]:
     sun_nak = get_surya_nakshatra(instant)["number"]
     moon_nak = get_nakshatra(instant)[0]
+    # Inclusive count Sun-nakshatra → Moon-nakshatra, then take it modulo 9.
+    # ((moon-sun) % 27) is the 0-based distance; +1 makes the count inclusive,
+    # so the 0-based graha index is ((count - 1) % 9) == (distance % 9).
     distance = (moon_nak - sun_nak) % 27
-    graha = _HOMAHUTI_GRAHAS[(distance // 3) % 9]
+    graha = _HOMAHUTI_GRAHAS[distance % 9]
     return dict(graha)
+
+
+# Chandra Vasa (Muhurta Chintamani): the Moon's abode by its rashi.
+#   East  : मेष, सिंह, धनु     (rashi % 4 == 1)
+#   South : वृष, कन्या, मकर    (rashi % 4 == 2)
+#   West  : मिथुन, तुला, कुम्भ  (rashi % 4 == 3)
+#   North : कर्कट, वृश्चिक, मीन (rashi % 4 == 0)
+# Mapped to the _DIRECTIONS tuple order (0=E, 1=W, 2=N, 3=S).
+_CHANDRA_VASA_DIR_IDX = {1: 0, 2: 3, 3: 1, 0: 2}
 
 
 def _chandra_vasa_at(instant: datetime) -> dict[str, Any]:
     rashi = get_chandra_rashi(instant)["number"]
-    return _direction((rashi - 1) % 4)
+    return _direction(_CHANDRA_VASA_DIR_IDX[rashi % 4])
 
 
 def _kumbha_chakra_at(paksha_tithi: int, weekday_py: int) -> dict[str, Any]:
