@@ -84,13 +84,20 @@ def _tithi_name_ne(display: int, paksha: str) -> str:
 def _paksha_block(lunar: dict, paksha: str) -> dict:
     from engine.vedic.sankranti import BS_MONTH_NAMES
 
-    month_name = lunar.get("name") or "Unknown"
-    is_adhik = lunar.get("is_adhik", False)
+    # Nepali patro reckons lunar months pūrṇimānta (pūrṇimā→pūrṇimā), so the
+    # month a paksha belongs to is the pūrṇimānta name — e.g. today's śukla
+    # fortnight is आषाढ शुक्ल, not श्रावण (its amānta name). This matches the
+    # dainik-kranti listing, which reads lunar_calendar.purnimant. In krishna
+    # paksha the two models agree, so only śukla labels change.
+    month_name = lunar.get("purnimanta_name") or lunar.get("name") or "Unknown"
+    month_ne = lunar.get("purnimanta_name_ne")
+    is_adhik = lunar.get("purnimanta_is_adhik", lunar.get("is_adhik", False))
     prefix = "अधिक " if is_adhik else ""
-    try:
-        month_ne = BS_MONTH_NAMES_NEPALI[BS_MONTH_NAMES.index(month_name)]
-    except ValueError:
-        month_ne = month_name
+    if not month_ne:
+        try:
+            month_ne = BS_MONTH_NAMES_NEPALI[BS_MONTH_NAMES.index(month_name)]
+        except ValueError:
+            month_ne = month_name
 
     paksha_ne = PAKSHA_NAMES_NE[paksha]
     label_ne = f"{prefix}{month_ne} {paksha_ne}"

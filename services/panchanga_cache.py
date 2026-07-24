@@ -66,7 +66,10 @@ logger = logging.getLogger(__name__)
 #     gochar table) so the sunrise spashtagraha, D-charts and gochar chart can
 #     show वक्री/अस्त. Invalidates stale daily/month/year cache whose planets
 #     predate the field (is_retrograde was already present, is_combust was not).
-CACHE_PAYLOAD_VERSION = 26
+# 27: paksha label now uses the pūrṇimānta month name (Nepali patro reckoning),
+#     so today's śukla fortnight reads आषाढ शुक्ल पक्ष, not श्रावण. Only śukla
+#     labels change; krishna already matched. Invalidates stale paksha labels.
+CACHE_PAYLOAD_VERSION = 27
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
