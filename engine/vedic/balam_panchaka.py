@@ -48,12 +48,14 @@ def _nak_chip(nak_index: int) -> dict[str, Any]:
     }
 
 
-def _time_fields(end_dt: datetime, sunrise_dt: datetime) -> dict[str, str]:
-    info = time_from_sunrise(end_dt, sunrise_dt)
+def _time_fields(
+    end_dt: datetime, sunrise_dt: datetime, timezone_name: str | None = None
+) -> dict[str, str]:
+    info = time_from_sunrise(end_dt, sunrise_dt, timezone_name)
     return {
         "end_time": end_dt.isoformat(),
         "end_local_time": info["local_time"],
-        "end_local_time_short": end_dt.strftime("%H:%M"),
+        "end_local_time_short": info["local_time"][:5],
         "end_hours_clock": info["hours_clock"],
         "end_ghati_clock": info["ghati_clock"],
     }
@@ -62,6 +64,7 @@ def _time_fields(end_dt: datetime, sunrise_dt: datetime) -> dict[str, str]:
 def build_chandrabalam(
     sunrise_dt: datetime,
     chandra_rashi_spans: list[dict[str, Any]],
+    timezone_name: str | None = None,
 ) -> dict[str, Any]:
     """Shubha chandrabalam rashis for current and next moon-rashi periods."""
     if not chandra_rashi_spans:
@@ -74,7 +77,7 @@ def build_chandrabalam(
     till: dict[str, str] | None = None
     if len(chandra_rashi_spans) > 1 and chandra_rashi_spans[0].get("end_time"):
         end_dt = datetime.fromisoformat(chandra_rashi_spans[0]["end_time"].replace("Z", "+00:00"))
-        till = _time_fields(end_dt, sunrise_dt)
+        till = _time_fields(end_dt, sunrise_dt, timezone_name)
         next_idx = int(chandra_rashi_spans[1]["number"]) - 1
     else:
         next_idx = (moon_idx + 1) % 12
@@ -91,6 +94,7 @@ def build_chandrabalam(
 def build_tarabalam(
     sunrise_dt: datetime,
     nakshatra_block: dict[str, Any],
+    timezone_name: str | None = None,
 ) -> dict[str, Any]:
     """Shubha tarabalam nakshatras for current and next moon-nakshatra periods."""
     current_num = int(nakshatra_block["number"])
@@ -101,7 +105,7 @@ def build_tarabalam(
     next_num = nakshatra_block.get("next", {}).get("number")
     if nakshatra_block.get("end_time") and next_num:
         end_dt = datetime.fromisoformat(nakshatra_block["end_time"].replace("Z", "+00:00"))
-        till = _time_fields(end_dt, sunrise_dt)
+        till = _time_fields(end_dt, sunrise_dt, timezone_name)
         next_idx = int(next_num) - 1
     else:
         next_idx = (current_idx + 1) % 27
@@ -135,6 +139,7 @@ def build_panchaka_rahita(
     sunrise_dt: datetime,
     lagna_spans: list[dict[str, Any]],
     vaara_num: int,
+    timezone_name: str | None = None,
 ) -> list[dict[str, Any]]:
     """
     Panchaka rahita windows from lagna spans.
@@ -151,8 +156,8 @@ def build_panchaka_rahita(
         lagna_num = int(span["number"])
         remainder = _panchaka_remainder(start_dt, lagna_num, vaara_num)
         en, ne, good = _segment_label(remainder)
-        start_info = time_from_sunrise(start_dt, sunrise_dt)
-        end_info = time_from_sunrise(end_dt, sunrise_dt)
+        start_info = time_from_sunrise(start_dt, sunrise_dt, timezone_name)
+        end_info = time_from_sunrise(end_dt, sunrise_dt, timezone_name)
         raw.append(
             {
                 "name": en,
@@ -163,8 +168,8 @@ def build_panchaka_rahita(
                 "end_time": end_dt.isoformat(),
                 "start_local_time": start_info["local_time"],
                 "end_local_time": end_info["local_time"],
-                "start_local_time_short": start_dt.strftime("%H:%M"),
-                "end_local_time_short": end_dt.strftime("%H:%M"),
+                "start_local_time_short": start_info["local_time"][:5],
+                "end_local_time_short": end_info["local_time"][:5],
                 "start_hours_clock": start_info["hours_clock"],
                 "end_hours_clock": end_info["hours_clock"],
             }

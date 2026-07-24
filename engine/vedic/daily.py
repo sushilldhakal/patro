@@ -238,16 +238,17 @@ def build_daily_panchanga(
         lon=location.lon,
         timezone_name=location.timezone,
     )
-    chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc)
-    nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc)
+    tz_name = location.timezone
+    chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc, tz_name)
+    nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc, tz_name)
     surya_nakshatra = get_surya_nakshatra(sunrise_utc)
     nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
-    chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans)
-    tarabalam = build_tarabalam(sunrise_utc, nakshatra_block)
+    chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans, tz_name)
+    tarabalam = build_tarabalam(sunrise_utc, nakshatra_block, tz_name)
     chandra_rashi = get_chandra_rashi(sunrise_utc)
     tarabala_table = build_tarabala_table(nakshatra_block)
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
-    panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num)
+    panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num, tz_name)
     udaya_lagna = build_udaya_lagna(lagna_spans)
     nivas_shool = build_nivas_shool_block(
         sunrise_utc,

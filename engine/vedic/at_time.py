@@ -433,15 +433,20 @@ def build_panchanga_civil_day(
         timezone_name=location.timezone,
         ayanamsa=mode,
     )
-    chandra_rashi_spans = build_chandra_rashi_spans(midnight_local, next_midnight_local)
-    nakshatra_pada_spans = build_nakshatra_pada_spans(midnight_local, next_midnight_local)
+    tz_name = location.timezone
+    chandra_rashi_spans = build_chandra_rashi_spans(
+        midnight_local, next_midnight_local, tz_name
+    )
+    nakshatra_pada_spans = build_nakshatra_pada_spans(
+        midnight_local, next_midnight_local, tz_name
+    )
 
     # Derived balam / panchaka from the midnight references (origin = midnight).
-    tarabalam = build_tarabalam(midnight_local, nak_block)
-    chandrabalam = build_chandrabalam(midnight_local, chandra_rashi_spans)
+    tarabalam = build_tarabalam(midnight_local, nak_block, tz_name)
+    chandrabalam = build_chandrabalam(midnight_local, chandra_rashi_spans, tz_name)
     tarabala_table = build_tarabala_table(nak_block)
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
-    panchaka_rahita = build_panchaka_rahita(midnight_local, lagna_spans, vaara_num)
+    panchaka_rahita = build_panchaka_rahita(midnight_local, lagna_spans, vaara_num, tz_name)
     udaya_lagna = build_udaya_lagna(lagna_spans)
 
     # Overlay onto the detail (raw daily payload shape the FE reads first).

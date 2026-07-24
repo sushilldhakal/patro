@@ -69,7 +69,10 @@ logger = logging.getLogger(__name__)
 # 27: paksha label now uses the pūrṇimānta month name (Nepali patro reckoning),
 #     so today's śukla fortnight reads आषाढ शुक्ल पक्ष, not श्रावण. Only śukla
 #     labels change; krishna already matched. Invalidates stale paksha labels.
-CACHE_PAYLOAD_VERSION = 27
+# 28: nakshatra-pada / chandra-rashi span and panchaka-rahita *_local_time_short
+#     were emitted in UTC instead of observer-local time; now localized.
+#     Invalidates stale cached spans/panchaka carrying UTC clock strings.
+CACHE_PAYLOAD_VERSION = 28
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

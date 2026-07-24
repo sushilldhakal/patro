@@ -42,15 +42,23 @@ def _moon_pada_at(dt: datetime) -> tuple[int, int]:
     return nak_num, pada
 
 
-def _attach_end(span: dict[str, Any], end_dt: datetime, sunrise_dt: datetime, day_end: datetime) -> None:
+def _attach_end(
+    span: dict[str, Any],
+    end_dt: datetime,
+    sunrise_dt: datetime,
+    day_end: datetime,
+    timezone_name: str | None = None,
+) -> None:
     if end_dt >= day_end:
         return
-    end_info = time_from_sunrise(end_dt, sunrise_dt)
+    # ``end_local_time`` / ``end_local_time_short`` must be the observer's wall
+    # clock — derive them from the localized value, not raw UTC strftime.
+    end_info = time_from_sunrise(end_dt, sunrise_dt, timezone_name)
     span.update(
         {
             "end_time": end_dt.isoformat(),
             "end_local_time": end_info["local_time"],
-            "end_local_time_short": end_dt.strftime("%H:%M"),
+            "end_local_time_short": end_info["local_time"][:5],
             "end_hours_clock": end_info["hours_clock"],
             "end_ghati_clock": end_info["ghati_clock"],
         }
@@ -60,6 +68,7 @@ def _attach_end(span: dict[str, Any], end_dt: datetime, sunrise_dt: datetime, da
 def build_chandra_rashi_spans(
     sunrise_dt: datetime,
     next_sunrise_dt: datetime,
+    timezone_name: str | None = None,
 ) -> list[dict[str, Any]]:
     """Moon rashis from sunrise until next sunrise."""
     spans: list[dict[str, Any]] = []
@@ -73,7 +82,7 @@ def build_chandra_rashi_spans(
             "name": rashi["name"],
             "name_ne": rashi["name_ne"],
         }
-        _attach_end(span, end_dt, sunrise_dt, next_sunrise_dt)
+        _attach_end(span, end_dt, sunrise_dt, next_sunrise_dt, timezone_name)
         spans.append(span)
         if end_dt >= next_sunrise_dt:
             break
@@ -85,6 +94,7 @@ def build_chandra_rashi_spans(
 def build_nakshatra_pada_spans(
     sunrise_dt: datetime,
     next_sunrise_dt: datetime,
+    timezone_name: str | None = None,
 ) -> list[dict[str, Any]]:
     """Nakshatra pada transitions from sunrise until next sunrise."""
     spans: list[dict[str, Any]] = []
@@ -100,7 +110,7 @@ def build_nakshatra_pada_spans(
             "pada": pada,
             "pada_ne": to_nepali_digits(pada),
         }
-        _attach_end(span, end_dt, sunrise_dt, next_sunrise_dt)
+        _attach_end(span, end_dt, sunrise_dt, next_sunrise_dt, timezone_name)
         spans.append(span)
         if end_dt >= next_sunrise_dt:
             break
