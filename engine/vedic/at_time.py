@@ -347,6 +347,154 @@ def build_panchanga_at_time(
     return state
 
 
+def build_panchanga_civil_day(
+    greg: date,
+    location: ObserverLocation,
+    *,
+    ayanamsa: int | None = None,
+) -> dict[str, Any]:
+    """Civil-day (midnight→midnight) panchanga: full civil-date state with the
+    reference-moment angas recomputed at **00:00 of ``greg``**.
+
+    The default daily state is anchored at sunrise (udaya). This variant keeps
+    every property that belongs to the calendar date itself — festivals, ritu,
+    ayana, samvatsara, sun/moon times, weekday, muhurta, choghadiya, hora — but
+    re-reads the *moving* angas (तिथि/नक्षत्र/योग/करण, chandra/surya rashi, lagna,
+    tara/chandra bala, panchaka) at local midnight, and re-projects the day-window
+    spans (lagna, chandra-rashi, nakshatra-pada) onto midnight→next-midnight. This
+    keeps the page's headline values consistent with the दिन-रात chart, which is
+    also midnight-anchored.
+    """
+    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
+    from engine.astronomy.positions import get_chandra_rashi, get_surya_rashi
+    from engine.vedic.lagna_spans import build_lagna_spans
+    from engine.vedic.pushkara_navamsha import enrich_lagna_spans_with_pushkara
+    from engine.vedic.rashi_spans import (
+        build_chandra_rashi_spans,
+        build_nakshatra_pada_spans,
+    )
+    from engine.vedic.balam_panchaka import (
+        build_chandrabalam,
+        build_panchaka_rahita,
+        build_tarabalam,
+        build_udaya_lagna,
+    )
+    from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
+    from engine.vedic.daily import _paksha_block
+    from services.panchanga_api import _element_state, build_daily_state
+
+    mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
+    tz = resolve_observer_timezone(
+        location.timezone, lat=location.lat, lon=location.lon
+    )
+    # Midnight is BOTH the reference moment and the ghati/day origin in this mode
+    # — the span builders use their first argument as the elapsed-time origin and
+    # the day-window start, and format local `*_local_time_short` from the passed
+    # datetime's tzinfo, so we hand them observer-local-aware bounds to keep every
+    # displayed clock in local time (not UTC) and every "भोलि/पर्सि" day-offset
+    # counted from midnight (the FE mirrors this with a midnight origin).
+    midnight_local = datetime(greg.year, greg.month, greg.day, tzinfo=tz)
+    next_midnight_local = midnight_local + timedelta(days=1)
+    midnight_utc = midnight_local.astimezone(timezone.utc)
+
+    # Civil-date base — festivals / ritu / ayana / samvat / sun-moon / weekday etc.
+    state = build_daily_state(
+        greg, location, include_festivals=True, include_detail=True
+    )
+    detail = dict(state.get("detail") or {})
+    vaara_num = int((detail.get("vaara") or {}).get("number") or 0)
+    lunar = detail.get("lunar_month") or {}
+
+    # Point angas at local midnight; midnight is the ghati origin so an anga that
+    # ends before sunrise reads as "today HH:MM", not tomorrow.
+    angas = build_instant_anga_snapshot(
+        midnight_local, midnight_local, ayanamsa=mode, timezone_name=location.timezone
+    )
+    nak_block = angas["nakshatra"]
+    tithi_info = calculate_tithi(midnight_utc)
+    paksha = _paksha_block(lunar, tithi_info["paksha"])
+    chandra_rashi = get_chandra_rashi(midnight_utc)
+    surya_rashi = get_surya_rashi(midnight_utc)
+    lagna = get_lagna(midnight_utc, lat=location.lat, lon=location.lon, ayanamsa=mode)
+
+    # Day-window spans over midnight → next midnight (local-aware bounds).
+    lagna_spans = build_lagna_spans(
+        midnight_local,
+        next_midnight_local,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+        ayanamsa=mode,
+    )
+    lagna_spans = enrich_lagna_spans_with_pushkara(
+        lagna_spans,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+        ayanamsa=mode,
+    )
+    chandra_rashi_spans = build_chandra_rashi_spans(midnight_local, next_midnight_local)
+    nakshatra_pada_spans = build_nakshatra_pada_spans(midnight_local, next_midnight_local)
+
+    # Derived balam / panchaka from the midnight references (origin = midnight).
+    tarabalam = build_tarabalam(midnight_local, nak_block)
+    chandrabalam = build_chandrabalam(midnight_local, chandra_rashi_spans)
+    tarabala_table = build_tarabala_table(nak_block)
+    chandrabala_table = build_chandrabalam_table(chandra_rashi)
+    panchaka_rahita = build_panchaka_rahita(midnight_local, lagna_spans, vaara_num)
+    udaya_lagna = build_udaya_lagna(lagna_spans)
+
+    # Overlay onto the detail (raw daily payload shape the FE reads first).
+    detail.update(
+        {
+            "tithi": angas["tithi"],
+            "nakshatra": angas["nakshatra"],
+            "yoga": angas["yoga"],
+            "karana": angas["karana"],
+            "paksha": paksha,
+            "chandra_rashi": chandra_rashi,
+            "surya_rashi": surya_rashi,
+            "chandra_rashi_spans": chandra_rashi_spans,
+            "nakshatra_pada_spans": nakshatra_pada_spans,
+            "lagna": lagna,
+            "lagna_spans": lagna_spans,
+            "udaya_lagna": udaya_lagna,
+            "tarabalam": tarabalam,
+            "chandrabalam": chandrabalam,
+            "tarabala_table": tarabala_table,
+            "chandrabala_table": chandrabala_table,
+            "panchaka_rahita": panchaka_rahita,
+        }
+    )
+
+    # Overlay the mapped top-level fields build_daily_state exposes.
+    state.update(
+        {
+            "mode": "civil",
+            "boundary": "midnight",
+            "panchanga_date_ad": greg.isoformat(),
+            "tithi": _element_state(angas["tithi"], location.timezone),
+            "nakshatra": _element_state(angas["nakshatra"], location.timezone),
+            "yoga": _element_state(angas["yoga"], location.timezone),
+            "karana": _element_state(angas["karana"], location.timezone),
+            "paksha": paksha["label_en"],
+            "paksha_ne": paksha["label_ne"],
+            "chandra_rashi": chandra_rashi["name"],
+            "chandra_rashi_ne": chandra_rashi["name_ne"],
+            "surya_rashi": surya_rashi["name"],
+            "surya_rashi_ne": surya_rashi["name_ne"],
+            "lagna": lagna["name"],
+            "lagna_ne": lagna["name_ne"],
+            "lagna_spans": lagna_spans,
+            "udaya_lagna": udaya_lagna,
+            "tarabala_table": tarabala_table,
+            "chandrabala_table": chandrabala_table,
+            "detail": detail,
+        }
+    )
+    return state
+
+
 def instant_row_from_date(
     greg: date,
     clock: str,

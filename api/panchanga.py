@@ -189,6 +189,10 @@ def panchanga_day(
         False,
         description="Attach a civil-day (midnight→midnight) timeline stitched from the previous + current day",
     ),
+    reference: Literal["sunrise", "midnight"] = Query(
+        "sunrise",
+        description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
+    ),
 ):
     """Daily panchanga — single-day astronomical time-state."""
     from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
@@ -197,7 +201,16 @@ def panchanga_day(
         greg = resolve_panchanga_date(date_key, era=era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
+    if reference == "midnight":
+        from engine.vedic.at_time import build_panchanga_civil_day
+
+        payload = build_panchanga_civil_day(greg, location)
+        if not detail:
+            payload.pop("detail", None)
+        if not festivals:
+            payload.pop("festivals", None)
+    else:
+        payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
     if civil:
         from services.civil_timeline import build_civil_timeline
 
