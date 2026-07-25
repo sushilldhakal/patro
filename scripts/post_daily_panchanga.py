@@ -22,28 +22,26 @@ import pathlib
 import sys
 import time
 from datetime import date, datetime
-from urllib.parse import urlencode
-from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 import config  # noqa: E402
-from engine.astronomy.location import resolve_location  # noqa: E402
+from services.fb_post_content import (  # noqa: E402
+    KATHMANDU_TZ,
+    image_url,
+    kathmandu_location,
+    ne_digits,
+    page_url,
+)
 from services.og_image import og_fields  # noqa: E402
 from services.panchanga_api import build_daily_state  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("fb_daily_post")
 
-KATHMANDU_TZ = ZoneInfo("Asia/Kathmandu")
-KATHMANDU_CITY_ID = 1283240  # GeoNames id — used only to build the shareable link
 _STATE_FILE = pathlib.Path(
     os.getenv("FB_POST_STATE_FILE", "/var/tmp/vedicpatro-fb-last-post.txt")
 )
-
-
-def _kathmandu_location():
-    return resolve_location(lat=27.7172, lon=85.324, timezone="Asia/Kathmandu", name="Kathmandu")
 
 
 def _sunrise_datetime(payload: dict, day: date) -> datetime | None:
@@ -57,23 +55,6 @@ def _sunrise_datetime(payload: dict, day: date) -> datetime | None:
     return datetime(day.year, day.month, day.day, hour, minute, tzinfo=KATHMANDU_TZ)
 
 
-def _image_url(day: date) -> str:
-    query = urlencode({"city": KATHMANDU_CITY_ID, "date": day.isoformat(), "full": "1"})
-    return f"{config.frontend_url()}/og-image?{query}"
-
-
-def _page_url(day: date) -> str:
-    query = urlencode({"city": KATHMANDU_CITY_ID, "date": day.isoformat()})
-    return f"{config.frontend_url()}/panchanga?{query}"
-
-
-_DEVANAGARI_DIGITS = "०१२३४५६७८९"
-
-
-def _ne_digits(value: str) -> str:
-    return "".join(_DEVANAGARI_DIGITS[int(c)] if c.isdigit() else c for c in value)
-
-
 def _build_caption(fields: dict, day: date) -> str:
     date_line = " · ".join(x for x in (fields["weekday"], fields["ad_line"]) if x)
     return (
@@ -81,8 +62,8 @@ def _build_caption(fields: dict, day: date) -> str:
         f"{date_line}\n"
         f"तिथि {fields['tithi']} · नक्षत्र {fields['nakshatra']} · "
         f"योग {fields['yoga']} · करण {fields['karana']}\n"
-        f"सूर्योदय {_ne_digits(fields['sunrise'])} · सूर्यास्त {_ne_digits(fields['sunset'])}\n\n"
-        f"पूर्ण दिन-चक्र: {_page_url(day)}"
+        f"सूर्योदय {ne_digits(fields['sunrise'])} · सूर्यास्त {ne_digits(fields['sunset'])}\n\n"
+        f"पूर्ण दिन-चक्र: {page_url(day)}"
     )
 
 
@@ -126,7 +107,7 @@ def main() -> int:
         logger.info("Already posted for %s — skipping.", day.isoformat())
         return 0
 
-    location = _kathmandu_location()
+    location = kathmandu_location()
     payload = build_daily_state(day, location, include_festivals=False, include_detail=True)
     fields = og_fields(payload, date_ad=day.isoformat(), location_name="Kathmandu")
 
@@ -140,11 +121,11 @@ def main() -> int:
         else:
             logger.info("Sunrise already passed or unavailable — posting now.")
 
-    image_url = _image_url(day)
+    photo_url = image_url(day)
     caption = _build_caption(fields, day)
 
     if args.dry_run:
-        print("IMAGE URL:", image_url)
+        print("IMAGE URL:", photo_url)
         print("CAPTION:")
         print(caption)
         return 0
@@ -153,7 +134,7 @@ def main() -> int:
 
     try:
         post_id = post_photo_by_url(
-            image_url=image_url, caption=caption, page_id=page_id, access_token=token
+            image_url=photo_url, caption=caption, page_id=page_id, access_token=token
         )
     except FacebookPostError:
         logger.exception("Facebook post failed for %s", day.isoformat())

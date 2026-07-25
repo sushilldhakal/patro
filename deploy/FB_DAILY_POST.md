@@ -67,6 +67,31 @@ Kathmandu sunrise; the service then sleeps until today's exact sunrise
 (recomputed daily, so it tracks the ~05:08–06:40 drift) and posts. A per-day
 guard file (`/var/tmp/vedicpatro-fb-last-post.txt`) stops duplicate posts.
 
+## 4. Anga-change posts (optional)
+
+Besides the once-daily sunrise post, you can also post whenever the running
+**तिथि / नक्षत्र / योग / करण** changes for Kathmandu — each transition becomes its
+own post (same daily image + a link to `/panchanga`). It uses the same
+`FB_PAGE_ID` / `FB_PAGE_ACCESS_TOKEN`.
+
+```bash
+# Test detection without posting (needs a baseline first):
+python scripts/post_panchanga_changes.py --reset      # record current angas
+python scripts/post_panchanga_changes.py --dry-run    # prints only real changes
+
+sudo cp deploy/vedicpatro-fb-changes.service /etc/systemd/system/
+sudo cp deploy/vedicpatro-fb-changes.timer   /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now vedicpatro-fb-changes.timer
+```
+
+The timer polls **every 5 minutes**, so a change is posted within ~5 min of when
+it happens. State lives in `/var/tmp/vedicpatro-fb-anga-state.json`; the first
+run records a baseline and posts nothing. A karana changes a few times a day and
+the others once or twice, so expect roughly 6–10 change posts per day **around
+the clock** (angas also change overnight). To restrict posting to daytime,
+narrow the timer's `OnCalendar` (e.g. `*-*-* 05..21:0/5:00`).
+
 ## Notes
 
 - **Image**: served by `/og-image?...&full=1`. If the headless browser is off

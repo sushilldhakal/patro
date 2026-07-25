@@ -39,7 +39,8 @@ def test_caption_and_urls():
     assert "सूर्योदय ०५:२२" in caption  # times localised to Devanagari digits
     assert "/panchanga?city=1283240&date=2026-07-25" in caption
 
-    assert poster._image_url(day).endswith("date=2026-07-25&full=1")
+    from services.fb_post_content import image_url
+    assert image_url(day).endswith("date=2026-07-25&full=1")
 
 
 def test_post_photo_by_url_builds_request(monkeypatch):

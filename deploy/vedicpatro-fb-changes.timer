@@ -1,0 +1,11 @@
+[Unit]
+Description=Poll for Kathmandu panchanga anga changes every 5 minutes
+
+[Timer]
+# Every 5 minutes. Each anga transition (tithi/nakshatra/yoga/karana) is posted
+# on the first poll after it happens, so posts land within ~5 min of the change.
+OnCalendar=*-*-* *:0/5:00
+Persistent=false
+
+[Install]
+WantedBy=timers.target
