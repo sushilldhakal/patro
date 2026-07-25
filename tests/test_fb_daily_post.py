@@ -34,13 +34,36 @@ def test_caption_and_urls():
         "sunrise": "05:22",
         "sunset": "18:57",
     }
-    caption = poster._build_caption(fields, day)
-    assert "एकादशी" in caption and "ज्येष्ठा" in caption
+    lines = [
+        "तिथि: एकादशी → द्वादशी (११:५०)",
+        "नक्षत्र: ज्येष्ठा (दिनभर)",
+        "करण: विष्टि → बव (११:५०) → बालव (०१:०२)",
+    ]
+    caption = poster._build_caption(fields, day, lines)
     assert "सूर्योदय ०५:२२" in caption  # times localised to Devanagari digits
+    assert "तिथि: एकादशी → द्वादशी (११:५०)" in caption  # transition schedule included
+    assert "करण: विष्टि → बव (११:५०) → बालव (०१:०२)" in caption
     assert "/panchanga?city=1283240&date=2026-07-25" in caption
 
     from services.fb_post_content import image_url
     assert image_url(day).endswith("date=2026-07-25&full=1")
+
+
+def test_anga_transition_lines_match_the_day():
+    from datetime import date as _date
+
+    from services.fb_post_content import anga_transition_lines, kathmandu_location
+    from services.panchanga_api import build_daily_state
+
+    day = _date(2026, 7, 25)
+    loc = kathmandu_location()
+    payload = build_daily_state(day, loc, include_festivals=False, include_detail=True)
+    lines = {ln.split(":", 1)[0]: ln for ln in anga_transition_lines(payload, day, loc)}
+
+    assert lines["तिथि"] == "तिथि: एकादशी → द्वादशी (११:५०)"
+    assert lines["नक्षत्र"] == "नक्षत्र: ज्येष्ठा (दिनभर)"  # no change this day
+    assert lines["योग"] == "योग: ब्रह्म → इन्द्र (२१:२४)"
+    assert lines["करण"] == "करण: विष्टि → बव (११:५०) → बालव (०१:०२)"  # two changes
 
 
 def test_post_photo_by_url_builds_request(monkeypatch):

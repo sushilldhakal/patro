@@ -1,9 +1,24 @@
 # Daily Kathmandu panchanga → Facebook Page
 
-Posts today's दिन-चक्र panchanga image to a Facebook Page every morning at
+Posts today's दिन-चक्र panchanga image to a Facebook Page once every morning at
 **Kathmandu sunrise**. The image is fetched by Facebook from the public
-`/og-image` endpoint (`full=1` → the full-height chart); the caption is a Nepali
-summary plus a link to that day's `/panchanga` page.
+`/og-image` endpoint (`full=1` → the full-height chart); the caption lists the
+day's anga changes with their times plus a link to that day's `/panchanga` page:
+
+```
+आजको पञ्चाङ्ग — काठमाडौँ
+शनिवार · २५ जुलाई २०२६ · सूर्योदय ०५:२२ · सूर्यास्त १८:५७
+
+तिथि: एकादशी → द्वादशी (११:५०)
+नक्षत्र: ज्येष्ठा (दिनभर)
+योग: ब्रह्म → इन्द्र (२१:२४)
+करण: विष्टि → बव (११:५०) → बालव (०१:०२)
+
+पूर्ण दिन-चक्र: https://vedicpatro.com/panchanga?city=1283240&date=2026-07-25
+```
+
+One post per day covers the whole day's transitions, so nothing needs to run
+through the day.
 
 The poster is **dormant** until `FB_PAGE_ID` and `FB_PAGE_ACCESS_TOKEN` are set —
 nothing posts without them.
@@ -66,31 +81,6 @@ The timer fires at **23:05 UTC (≈04:50 NPT)**, just before the earliest
 Kathmandu sunrise; the service then sleeps until today's exact sunrise
 (recomputed daily, so it tracks the ~05:08–06:40 drift) and posts. A per-day
 guard file (`/var/tmp/vedicpatro-fb-last-post.txt`) stops duplicate posts.
-
-## 4. Anga-change posts (optional)
-
-Besides the once-daily sunrise post, you can also post whenever the running
-**तिथि / नक्षत्र / योग / करण** changes for Kathmandu — each transition becomes its
-own post (same daily image + a link to `/panchanga`). It uses the same
-`FB_PAGE_ID` / `FB_PAGE_ACCESS_TOKEN`.
-
-```bash
-# Test detection without posting (needs a baseline first):
-python scripts/post_panchanga_changes.py --reset      # record current angas
-python scripts/post_panchanga_changes.py --dry-run    # prints only real changes
-
-sudo cp deploy/vedicpatro-fb-changes.service /etc/systemd/system/
-sudo cp deploy/vedicpatro-fb-changes.timer   /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now vedicpatro-fb-changes.timer
-```
-
-The timer polls **every 5 minutes**, so a change is posted within ~5 min of when
-it happens. State lives in `/var/tmp/vedicpatro-fb-anga-state.json`; the first
-run records a baseline and posts nothing. A karana changes a few times a day and
-the others once or twice, so expect roughly 6–10 change posts per day **around
-the clock** (angas also change overnight). To restrict posting to daytime,
-narrow the timer's `OnCalendar` (e.g. `*-*-* 05..21:0/5:00`).
 
 ## Notes
 

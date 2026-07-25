@@ -28,10 +28,12 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 import config  # noqa: E402
 from services.fb_post_content import (  # noqa: E402
     KATHMANDU_TZ,
+    anga_transition_lines,
     image_url,
     kathmandu_location,
     ne_digits,
     page_url,
+    sunrise_datetime,
 )
 from services.og_image import og_fields  # noqa: E402
 from services.panchanga_api import build_daily_state  # noqa: E402
@@ -44,25 +46,14 @@ _STATE_FILE = pathlib.Path(
 )
 
 
-def _sunrise_datetime(payload: dict, day: date) -> datetime | None:
-    sunrise = (payload.get("sun") or {}).get("sunrise")  # "HH:MM"
-    if not sunrise:
-        return None
-    try:
-        hour, minute = (int(x) for x in sunrise.split(":"))
-    except ValueError:
-        return None
-    return datetime(day.year, day.month, day.day, hour, minute, tzinfo=KATHMANDU_TZ)
-
-
-def _build_caption(fields: dict, day: date) -> str:
-    date_line = " · ".join(x for x in (fields["weekday"], fields["ad_line"]) if x)
+def _build_caption(fields: dict, day: date, transition_lines: list[str]) -> str:
+    header = " · ".join(x for x in (fields["weekday"], fields["ad_line"]) if x)
+    header += f" · सूर्योदय {ne_digits(fields['sunrise'])} · सूर्यास्त {ne_digits(fields['sunset'])}"
+    body = "\n".join(transition_lines)
     return (
         f"आजको पञ्चाङ्ग — काठमाडौँ\n"
-        f"{date_line}\n"
-        f"तिथि {fields['tithi']} · नक्षत्र {fields['nakshatra']} · "
-        f"योग {fields['yoga']} · करण {fields['karana']}\n"
-        f"सूर्योदय {ne_digits(fields['sunrise'])} · सूर्यास्त {ne_digits(fields['sunset'])}\n\n"
+        f"{header}\n\n"
+        f"{body}\n\n"
         f"पूर्ण दिन-चक्र: {page_url(day)}"
     )
 
@@ -112,7 +103,7 @@ def main() -> int:
     fields = og_fields(payload, date_ad=day.isoformat(), location_name="Kathmandu")
 
     if args.wait_for_sunrise:
-        sunrise = _sunrise_datetime(payload, day)
+        sunrise = sunrise_datetime(payload, day)
         if sunrise and sunrise > now:
             wait_seconds = min((sunrise - now).total_seconds(), args.max_wait_min * 60)
             logger.info("Sleeping %.0f min until Kathmandu sunrise (%s).",
@@ -122,7 +113,7 @@ def main() -> int:
             logger.info("Sunrise already passed or unavailable — posting now.")
 
     photo_url = image_url(day)
-    caption = _build_caption(fields, day)
+    caption = _build_caption(fields, day, anga_transition_lines(payload, day, location))
 
     if args.dry_run:
         print("IMAGE URL:", photo_url)
