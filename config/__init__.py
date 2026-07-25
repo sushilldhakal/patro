@@ -79,6 +79,24 @@ def facebook_app_secret() -> str | None:
     return (os.getenv("FACEBOOK_APP_SECRET") or "").strip() or None
 
 
+# ─── Facebook Page daily post ───────────────────────────────────────────────────
+
+def fb_page_id() -> str | None:
+    """Target Facebook Page numeric id for the daily panchanga post. Unset ⇒ the
+    poster stays dormant."""
+    return (os.getenv("FB_PAGE_ID") or "").strip() or None
+
+
+def fb_page_access_token() -> str | None:
+    """Long-lived Page access token with pages_manage_posts. Unset ⇒ dormant."""
+    return (os.getenv("FB_PAGE_ACCESS_TOKEN") or "").strip() or None
+
+
+def fb_graph_api_version() -> str:
+    """Graph API version segment (FB_GRAPH_API_VERSION), e.g. v21.0."""
+    return (os.getenv("FB_GRAPH_API_VERSION") or "v21.0").strip()
+
+
 def access_token_ttl_minutes() -> int:
     return int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "30"))
 
@@ -89,7 +107,29 @@ def refresh_token_ttl_days() -> int:
 
 def frontend_url() -> str:
     """Base URL of the web app — used to build email verification / reset links."""
-    return (os.getenv("FRONTEND_URL", "https://dpatro.vercel.app") or "").rstrip("/")
+    return (os.getenv("FRONTEND_URL", "https://vedicpatro.com") or "").rstrip("/")
+
+
+# ─── Open Graph share image ─────────────────────────────────────────────────────
+
+def og_screenshot_enabled() -> bool:
+    """Render the /og-image preview by screenshotting the real दिन-चक्र chart with
+    a headless browser. Set OG_SCREENSHOT=false to fall back to the Pillow card
+    (e.g. if the VM can't run Chromium)."""
+    return os.getenv("OG_SCREENSHOT", "true").lower() not in {"0", "false", "no"}
+
+
+def og_preview_base_url() -> str:
+    """Base URL the screenshotter loads the /panchanga/og-preview page from.
+    Defaults to the front-end URL; override with OG_PREVIEW_BASE_URL (e.g.
+    http://127.0.0.1 to render from the same box without a public round-trip)."""
+    return (os.getenv("OG_PREVIEW_BASE_URL") or frontend_url()).rstrip("/")
+
+
+def og_chromium_path() -> str | None:
+    """Explicit Chromium executable for Playwright (OG_CHROMIUM_PATH). None → use
+    Playwright's bundled browser (installed via `playwright install chromium`)."""
+    return os.getenv("OG_CHROMIUM_PATH") or None
 
 
 # ─── Email (SMTP) ──────────────────────────────────────────────────────────────

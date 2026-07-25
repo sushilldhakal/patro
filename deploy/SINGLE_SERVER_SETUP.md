@@ -88,6 +88,47 @@ sudo certbot --nginx -d vedicpatro.com -d www.vedicpatro.com \
 certbot rewrites the nginx config to add the `:443` server block and an
 http→https redirect.
 
+> **After certbot runs**, copy the `location = /og-image`, `location = /panchanga`
+> and `location @og_share` blocks (and keep the `map $http_user_agent $og_crawler`
+> at the top of the file) into the generated `:443` server block too — certbot
+> only duplicates what it recognises. Then `sudo nginx -t && sudo systemctl reload nginx`.
+
+## 5b. Open Graph share images (link previews)
+
+Shared `/panchanga?...` links render a per-date PNG preview via the FastAPI
+`/og-image` endpoint. The **primary** path screenshots the real दिन-चक्र
+timeline chart with a headless browser; if that's unavailable it **falls back**
+to a Pillow-drawn card, so `/og-image` always returns an image.
+
+```bash
+cd /home/ubuntu/patro
+. .venv/bin/activate && pip install -r requirements.txt   # Pillow + playwright
+
+# Primary path — install Chromium + its OS libraries for Playwright:
+playwright install --with-deps chromium
+
+# Fallback path — Pillow needs libraqm for correct Devanagari shaping
+# (without it the Nepali text renders with misplaced vowel signs):
+sudo apt-get install -y libraqm0
+
+sudo systemctl restart nepali-holiday-api
+```
+
+The screenshotter loads the front-end's `/panchanga/og-preview` page and
+captures the chart. It reaches that page at `FRONTEND_URL` by default; on a
+single box you can skip the public round-trip with
+`OG_PREVIEW_BASE_URL=http://127.0.0.1` in `.env`. Set `OG_SCREENSHOT=false` to
+turn the browser off entirely and always serve the Pillow card. The Mukta font
+(fallback card) is bundled in the repo (`assets/fonts/`). Verify:
+
+```bash
+curl -sD- -o /tmp/og.png "https://vedicpatro.com/og-image?place=Kathmandu&date=2026-07-25" | head
+# → 200, content-type: image/png ; /tmp/og.png opens as the timeline chart
+```
+
+> The first request for a given date renders (~a few seconds) and is then cached
+> on disk (`/tmp/vedicpatro-og-cache`), so crawlers and repeat hits are instant.
+
 ## 6. Point the API's email links at the new domain
 
 In `/home/ubuntu/patro/.env`:
@@ -147,7 +188,7 @@ push to main  →  GitHub Actions  →  ssh into the box  →  run scripts/deplo
    | `SSH_KEY`     | the private key printed above      |
 
 That's it — pushing to `main` now rebuilds and republishes the site
-automatically, exactly like Vercel did.
+automatically via GitHub Actions + SSH to the Oracle box.
 
 > Builds run **on the Oracle box** (it has the CPU/RAM to spare). If you'd rather
 > build on GitHub's runners and ship only the `dist/` artifact (no Node needed on

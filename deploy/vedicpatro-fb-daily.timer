@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily trigger for the Kathmandu panchanga Facebook post
+
+[Timer]
+# 23:05 UTC ≈ 04:50 NPT — just before the earliest Kathmandu sunrise (~05:08
+# NPT). The service then waits until today's exact sunrise before posting, so
+# the post always lands at sunrise even as it drifts (~05:08–06:40) over the
+# year. Kept in UTC so it is independent of the VM's local timezone.
+OnCalendar=*-*-* 23:05:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
