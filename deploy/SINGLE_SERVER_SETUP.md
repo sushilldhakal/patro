@@ -147,7 +147,7 @@ push to main  →  GitHub Actions  →  ssh into the box  →  run scripts/deplo
    | `SSH_KEY`     | the private key printed above      |
 
 That's it — pushing to `main` now rebuilds and republishes the site
-automatically, exactly like Vercel did.
+automatically via GitHub Actions + SSH to the Oracle box.
 
 > Builds run **on the Oracle box** (it has the CPU/RAM to spare). If you'd rather
 > build on GitHub's runners and ship only the `dist/` artifact (no Node needed on

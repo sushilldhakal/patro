@@ -5,8 +5,8 @@ existing FastAPI app and stores data in **PostgreSQL running on this same Oracle
 server**. No external/cloud database is used.
 
 ```
-Vercel (React)  ──HTTPS──►  nginx → uvicorn (FastAPI)  ──localhost──►  PostgreSQL
-   bearer JWT                  (existing service)                      (new, local)
+nginx (React) ──HTTPS──►  nginx → uvicorn (FastAPI)  ──localhost──►  PostgreSQL
+   bearer JWT               (same Oracle server)                     (new, local)
 ```
 
 If `DATABASE_URL` is **not** set, the auth routes are silently disabled and the
@@ -52,7 +52,7 @@ Edit `/home/ubuntu/patro/.env` (see `.env.example` for the full list):
 ```ini
 DATABASE_URL=postgresql+psycopg://patro:CHANGE_ME_STRONG_PASSWORD@127.0.0.1:5432/patro
 JWT_SECRET=<output of: openssl rand -hex 32>
-FRONTEND_URL=https://dpatro.vercel.app
+FRONTEND_URL=https://vedicpatro.com
 
 # Email for verification + password reset (Gmail app-password example).
 # Omit SMTP_HOST to disable real sending (links are logged instead).
@@ -132,8 +132,8 @@ permission in the dashboard. This is not a code bug.
 5. **Facebook Login → Settings**:
    - **Login with the JavaScript SDK**: set to **Yes** (required — without this you get
      *"JSSDK Option is Not Toggled"*)
-   - **Valid OAuth Redirect URIs**: `http://localhost:5173/`, `https://vedicpatro.com/`, `https://dpatro.vercel.app/`
-   - **Allowed domains** (or **App domains**): `localhost`, `vedicpatro.com`, `dpatro.vercel.app`
+   - **Valid OAuth Redirect URIs**: `http://localhost:5173/`, `https://vedicpatro.com/`, `https://www.vedicpatro.com/`
+   - **Allowed domains** (or **App domains**): `localhost`, `vedicpatro.com`, `www.vedicpatro.com`
 6. While the app is in **Development** mode, only **Roles** users (admins/developers/testers)
    can log in. Add your Facebook account under **App roles → Test users** or as a Developer.
 

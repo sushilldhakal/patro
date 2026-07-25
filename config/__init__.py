@@ -89,7 +89,7 @@ def refresh_token_ttl_days() -> int:
 
 def frontend_url() -> str:
     """Base URL of the web app — used to build email verification / reset links."""
-    return (os.getenv("FRONTEND_URL", "https://dpatro.vercel.app") or "").rstrip("/")
+    return (os.getenv("FRONTEND_URL", "https://vedicpatro.com") or "").rstrip("/")
 
 
 # ─── Email (SMTP) ──────────────────────────────────────────────────────────────
