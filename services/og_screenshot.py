@@ -15,6 +15,7 @@ caller falls back to the Pillow card, so /og-image always returns an image.
 from __future__ import annotations
 
 import hashlib
+import io
 import logging
 import threading
 import time
@@ -28,6 +29,13 @@ _lock = threading.Lock()
 _CACHE_DIR = Path("/tmp/vedicpatro-og-cache")
 _CACHE_TTL_SECONDS = 24 * 60 * 60  # a shared date is fixed; the bare "today" rolls daily
 _VIEWPORT = {"width": 1280, "height": 960}
+
+# Final Open Graph frame: 1200×630 (the 1.91:1 Facebook/X expect), rendered at
+# 2× for crispness. The tall chart is fit-scaled and centred on a cream canvas so
+# the whole timeline stays visible — no cropping — with seamless padding (the
+# chart's own background is the same cream).
+OG_W, OG_H, OG_SCALE = 1200, 630, 2
+_CANVAS_BG = (247, 243, 234)  # #F7F3EA — matches the preview page background
 
 
 def screenshot_available() -> bool:
@@ -63,6 +71,26 @@ def _write_cache(path: Path, data: bytes) -> None:
         tmp.replace(path)
     except OSError:
         logger.debug("Could not write OG screenshot cache", exc_info=True)
+
+
+def _letterbox(png: bytes) -> bytes:
+    """Fit the captured chart (variable height) onto a fixed 1200×630 cream
+    canvas, centred — the whole chart stays visible, never cropped."""
+    from PIL import Image
+
+    src = Image.open(io.BytesIO(png)).convert("RGB")
+    target_w, target_h = OG_W * OG_SCALE, OG_H * OG_SCALE
+    scale = min(target_w / src.width, target_h / src.height)
+    new_w = max(1, round(src.width * scale))
+    new_h = max(1, round(src.height * scale))
+    resized = src.resize((new_w, new_h), Image.LANCZOS)
+
+    canvas = Image.new("RGB", (target_w, target_h), _CANVAS_BG)
+    canvas.paste(resized, ((target_w - new_w) // 2, (target_h - new_h) // 2))
+
+    out = io.BytesIO()
+    canvas.save(out, format="PNG", optimize=True)
+    return out.getvalue()
 
 
 def _capture(query: str, timeout_ms: int) -> bytes:
@@ -104,7 +132,7 @@ def render_timeline_png(query: str, *, timeout_ms: int = 30000) -> bytes:
         cached = _read_cache(cache)
         if cached is not None:
             return cached
-        png = _capture(query, timeout_ms)
+        png = _letterbox(_capture(query, timeout_ms))
 
     _write_cache(cache, png)
     return png

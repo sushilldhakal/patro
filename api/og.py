@@ -114,8 +114,10 @@ def _share_html(*, title: str, description: str, page_url: str, image_url: str) 
         f"<meta property=\"og:description\" content=\"{d}\">"
         f"<meta property=\"og:url\" content=\"{pu}\">"
         f"<meta property=\"og:image\" content=\"{iu}\">"
-        # Dimensions intentionally omitted: the timeline screenshot's height
-        # varies by day (muhurta lanes), so consumers measure the image itself.
+        # /og-image always returns a fixed 1200×630 frame (chart letterboxed, or
+        # the Pillow card), so the exact ratio is safe to advertise.
+        "<meta property=\"og:image:width\" content=\"1200\">"
+        "<meta property=\"og:image:height\" content=\"630\">"
         "<meta property=\"og:image:type\" content=\"image/png\">"
         "<meta property=\"og:locale\" content=\"ne_NP\">"
         "<meta name=\"twitter:card\" content=\"summary_large_image\">"
