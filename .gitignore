@@ -30,6 +30,8 @@ venv/
 ENV/
 env/
 .env/
+.ignore/
+.ignore
 
 # --- Environment & secrets ---
 .env
