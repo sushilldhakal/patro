@@ -80,10 +80,26 @@ GOOGLE_CLIENT_ID=xxxxxxxx.apps.googleusercontent.com
 ```
 
 This must match `VITE_GOOGLE_CLIENT_ID` in the dhakal-patro frontend build. In Google
-Cloud, add these **Authorized JavaScript origins**:
+Cloud, add these **Authorized JavaScript origins** (used by the desktop GSI button /
+One Tap):
 
 - `https://vedicpatro.com`
 - `https://www.vedicpatro.com`
+- `http://localhost:5173` *(local dev)*
+
+**Authorized redirect URIs** — REQUIRED, and separate from the origins above. Mobile
+browsers can't return the credential through the GSI popup (third-party-cookie / ITP /
+no FedCM on iOS), so the app falls back to a full-page redirect to
+`<origin>/auth/google/callback` (see `src/lib/auth/google-redirect.ts`). Google rejects
+the sign-in with **`Error 400: redirect_uri_mismatch`** unless the *exact* callback URL
+is listed here (no trailing slash):
+
+- `https://vedicpatro.com/auth/google/callback`
+- `https://www.vedicpatro.com/auth/google/callback`
+- `http://localhost:5173/auth/google/callback` *(local dev)*
+
+Omitting these breaks Google sign-in **on mobile only** — desktop keeps working because
+it authorizes via the JavaScript origins. Changes can take a few minutes to propagate.
 
 If `GOOGLE_CLIENT_ID` is missing, `POST /auth/google` returns **503** with
 `"Google sign-in is not configured"`. After setting it, restart the API and look for
