@@ -126,7 +126,7 @@ async def _guard_private_cache(request, call_next):
 
 # ── routers ───────────────────────────────────────────────────────────────────
 
-from api import cities, elements, kundali, meta, panchanga, patro  # noqa: E402
+from api import cities, elements, kundali, meta, og, panchanga, patro  # noqa: E402
 
 # Public data routes are versioned (…/api/v1/…) so an engine bump can rev the
 # version and the CDN treats it as a fresh object — no purge. /health and /about
@@ -134,6 +134,10 @@ from api import cities, elements, kundali, meta, panchanga, patro  # noqa: E402
 _version_prefix = f"/{config.api_version()}"
 
 app.include_router(meta.router)
+# Unversioned: nginx maps /og-image → this route so shared /panchanga links get
+# a per-date PNG preview (og:image). Kept off the version prefix so the public
+# URL stays a clean /og-image.
+app.include_router(og.router)
 app.include_router(cities.router, prefix=_version_prefix)
 app.include_router(kundali.router, prefix=_version_prefix)
 # Element routes are registered before panchanga so the static /panchanga/element(s)

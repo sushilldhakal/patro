@@ -88,6 +88,32 @@ sudo certbot --nginx -d vedicpatro.com -d www.vedicpatro.com \
 certbot rewrites the nginx config to add the `:443` server block and an
 http→https redirect.
 
+> **After certbot runs**, copy the `location = /og-image`, `location = /panchanga`
+> and `location @og_share` blocks (and keep the `map $http_user_agent $og_crawler`
+> at the top of the file) into the generated `:443` server block too — certbot
+> only duplicates what it recognises. Then `sudo nginx -t && sudo systemctl reload nginx`.
+
+## 5b. Open Graph share images (link previews)
+
+Shared `/panchanga?...` links render a per-date PNG preview via the FastAPI
+`/og-image` endpoint (Pillow). Pillow needs **libraqm** for correct Devanagari
+shaping — without it the Nepali text renders with misplaced vowel signs:
+
+```bash
+sudo apt-get install -y libraqm0
+cd /home/ubuntu/patro
+. .venv/bin/activate && pip install -r requirements.txt   # picks up Pillow
+sudo systemctl restart nepali-holiday-api
+```
+
+The Mukta font is bundled in the repo (`assets/fonts/`), so no font install is
+needed. Verify:
+
+```bash
+curl -sD- -o /tmp/og.png "https://vedicpatro.com/og-image?place=Kathmandu&date=2026-07-25" | head
+# → 200, content-type: image/png ; /tmp/og.png should open as a 1200×630 card
+```
+
 ## 6. Point the API's email links at the new domain
 
 In `/home/ubuntu/patro/.env`:

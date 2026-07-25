@@ -4,6 +4,10 @@ pydantic>=2.10.0
 pyswisseph>=2.10.0
 python-dotenv>=1.0.0
 
+# Open Graph share-image rendering (/og-image). Pillow needs libraqm on the host
+# for correct Devanagari shaping: `sudo apt-get install libraqm0`.
+Pillow>=11.0.0
+
 # Auth / user profiles
 SQLAlchemy>=2.0.30
 psycopg[binary]>=3.2.0
