@@ -31,10 +31,11 @@ def kathmandu_location() -> ObserverLocation:
 
 
 def image_url(day: date) -> str:
-    """Public /og-image for Kathmandu on `day` — the full-height chart (full=1),
-    the same image the daily poster uses, fetched by Facebook to attach."""
+    """Public image URL for Kathmandu on `day` — the full-height chart (full=1),
+    the same image the daily poster uses, fetched by Facebook to attach. Served
+    via /api/og-image (nginx already proxies /api → FastAPI)."""
     query = urlencode({"city": KATHMANDU_CITY_ID, "date": day.isoformat(), "full": "1"})
-    return f"{config.frontend_url()}/og-image?{query}"
+    return f"{config.frontend_url()}/api/og-image?{query}"
 
 
 def page_url(day: date) -> str:

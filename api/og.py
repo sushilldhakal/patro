@@ -159,7 +159,9 @@ def share_panchanga(
     qs = request.url.query
     suffix = f"?{qs}" if qs else ""
     page_url = f"{base}/panchanga{suffix}"
-    image_url = f"{base}/og-image{suffix}"
+    # Served via /api/og-image (nginx proxies /api → FastAPI), so it resolves
+    # without an extra nginx rule for a bare /og-image.
+    image_url = f"{base}/api/og-image{suffix}"
 
     date_line = " · ".join(x for x in (f["weekday"], f["ad_line"]) if x)
     title = f"{f['paksha']} {f['tithi']} · {label} · {f['ad_line']} — पञ्चाङ्ग | Vedic Patro"
