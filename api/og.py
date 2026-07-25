@@ -75,6 +75,7 @@ def og_image(
     place: str | None = Query(None, description="Display label for the location"),
     date_q: str | None = Query(None, alias="date", description="AD date YYYY-MM-DD (default: today)"),
     time: str | None = Query(None, description="HH:MM — needle position on the chart / URL parity"),
+    full: bool = Query(False, description="Full-height chart (standalone photo) instead of the 1200×630 link-preview frame"),
 ):
     # Preferred: screenshot the real दिन-चक्र timeline chart. Fall back to the
     # Pillow card if the browser is unavailable or the render fails, so a crawler
@@ -84,7 +85,12 @@ def og_image(
 
     if screenshot_available():
         try:
-            png = render_timeline_png(request.url.query)
+            # Drop `full` from the query the screenshotter passes to the preview
+            # page — it only controls letterboxing here, not the chart itself.
+            preview_query = "&".join(
+                part for part in request.url.query.split("&") if not part.startswith("full=")
+            )
+            png = render_timeline_png(preview_query, letterbox=not full)
         except Exception:
             logger.warning("OG timeline screenshot failed; using card fallback", exc_info=True)
 

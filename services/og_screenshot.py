@@ -119,10 +119,13 @@ def _capture(query: str, timeout_ms: int) -> bytes:
             browser.close()
 
 
-def render_timeline_png(query: str, *, timeout_ms: int = 30000) -> bytes:
+def render_timeline_png(query: str, *, letterbox: bool = True, timeout_ms: int = 30000) -> bytes:
     """Screenshot the timeline chart for the given shareable-URL query string.
+
+    letterbox=True fits it onto the fixed 1200×630 OG frame (link previews);
+    letterbox=False returns the full-height chart (a standalone photo post).
     Raises on any failure so the caller can fall back to the card."""
-    cache = _cache_path(query)
+    cache = _cache_path(f"{'lb' if letterbox else 'full'}:{query}")
     cached = _read_cache(cache)
     if cached is not None:
         return cached
@@ -132,7 +135,9 @@ def render_timeline_png(query: str, *, timeout_ms: int = 30000) -> bytes:
         cached = _read_cache(cache)
         if cached is not None:
             return cached
-        png = _letterbox(_capture(query, timeout_ms))
+        png = _capture(query, timeout_ms)
+        if letterbox:
+            png = _letterbox(png)
 
     _write_cache(cache, png)
     return png

@@ -1,0 +1,22 @@
+[Unit]
+Description=Post the daily Kathmandu panchanga to Facebook at sunrise
+Documentation=https://github.com/sushilldhakal/patro
+After=network-online.target nepali-holiday-api.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/patro
+Environment=PYTHONUNBUFFERED=1
+# Provides FB_PAGE_ID, FB_PAGE_ACCESS_TOKEN, FRONTEND_URL, etc.
+EnvironmentFile=-/home/ubuntu/patro/.env
+# --wait-for-sunrise computes today's Kathmandu sunrise and sleeps until it,
+# so the timer can fire early and the post still lands at sunrise.
+ExecStart=/home/ubuntu/patro/.venv/bin/python scripts/post_daily_panchanga.py --wait-for-sunrise
+# Allow the in-process sleep until sunrise (capped at 3h by the script).
+TimeoutStartSec=4h
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vedicpatro-fb-daily

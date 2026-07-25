@@ -79,6 +79,24 @@ def facebook_app_secret() -> str | None:
     return (os.getenv("FACEBOOK_APP_SECRET") or "").strip() or None
 
 
+# ─── Facebook Page daily post ───────────────────────────────────────────────────
+
+def fb_page_id() -> str | None:
+    """Target Facebook Page numeric id for the daily panchanga post. Unset ⇒ the
+    poster stays dormant."""
+    return (os.getenv("FB_PAGE_ID") or "").strip() or None
+
+
+def fb_page_access_token() -> str | None:
+    """Long-lived Page access token with pages_manage_posts. Unset ⇒ dormant."""
+    return (os.getenv("FB_PAGE_ACCESS_TOKEN") or "").strip() or None
+
+
+def fb_graph_api_version() -> str:
+    """Graph API version segment (FB_GRAPH_API_VERSION), e.g. v21.0."""
+    return (os.getenv("FB_GRAPH_API_VERSION") or "v21.0").strip()
+
+
 def access_token_ttl_minutes() -> int:
     return int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "30"))
 
