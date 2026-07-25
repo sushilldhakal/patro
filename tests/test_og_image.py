@@ -32,7 +32,10 @@ def test_og_fields_date_is_day_month_year():
     assert f["tithi"] and f["nakshatra"] and f["yoga"] and f["karana"]
 
 
-def test_og_image_endpoint_serves_png():
+def test_og_image_endpoint_serves_png(monkeypatch):
+    # Force the Pillow-card path (no headless browser) so the test is fast and
+    # deterministic; the screenshot path is exercised separately in the browser.
+    monkeypatch.setenv("OG_SCREENSHOT", "false")
     client = TestClient(__import__("app.main", fromlist=["app"]).app)
     resp = client.get("/og-image", params={"date": "2026-07-25", "place": "Kathmandu"})
     assert resp.status_code == 200
@@ -41,7 +44,8 @@ def test_og_image_endpoint_serves_png():
     assert "max-age" in resp.headers.get("cache-control", "")
 
 
-def test_og_image_endpoint_tolerates_bad_input():
+def test_og_image_endpoint_tolerates_bad_input(monkeypatch):
+    monkeypatch.setenv("OG_SCREENSHOT", "false")
     client = TestClient(__import__("app.main", fromlist=["app"]).app)
     # Unknown city id + garbage date must still yield a card, never a 4xx/5xx.
     resp = client.get("/og-image", params={"city": 999999999, "date": "nonsense"})

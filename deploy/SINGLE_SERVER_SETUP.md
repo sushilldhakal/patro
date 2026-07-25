@@ -96,23 +96,38 @@ http→https redirect.
 ## 5b. Open Graph share images (link previews)
 
 Shared `/panchanga?...` links render a per-date PNG preview via the FastAPI
-`/og-image` endpoint (Pillow). Pillow needs **libraqm** for correct Devanagari
-shaping — without it the Nepali text renders with misplaced vowel signs:
+`/og-image` endpoint. The **primary** path screenshots the real दिन-चक्र
+timeline chart with a headless browser; if that's unavailable it **falls back**
+to a Pillow-drawn card, so `/og-image` always returns an image.
 
 ```bash
-sudo apt-get install -y libraqm0
 cd /home/ubuntu/patro
-. .venv/bin/activate && pip install -r requirements.txt   # picks up Pillow
+. .venv/bin/activate && pip install -r requirements.txt   # Pillow + playwright
+
+# Primary path — install Chromium + its OS libraries for Playwright:
+playwright install --with-deps chromium
+
+# Fallback path — Pillow needs libraqm for correct Devanagari shaping
+# (without it the Nepali text renders with misplaced vowel signs):
+sudo apt-get install -y libraqm0
+
 sudo systemctl restart nepali-holiday-api
 ```
 
-The Mukta font is bundled in the repo (`assets/fonts/`), so no font install is
-needed. Verify:
+The screenshotter loads the front-end's `/panchanga/og-preview` page and
+captures the chart. It reaches that page at `FRONTEND_URL` by default; on a
+single box you can skip the public round-trip with
+`OG_PREVIEW_BASE_URL=http://127.0.0.1` in `.env`. Set `OG_SCREENSHOT=false` to
+turn the browser off entirely and always serve the Pillow card. The Mukta font
+(fallback card) is bundled in the repo (`assets/fonts/`). Verify:
 
 ```bash
 curl -sD- -o /tmp/og.png "https://vedicpatro.com/og-image?place=Kathmandu&date=2026-07-25" | head
-# → 200, content-type: image/png ; /tmp/og.png should open as a 1200×630 card
+# → 200, content-type: image/png ; /tmp/og.png opens as the timeline chart
 ```
+
+> The first request for a given date renders (~a few seconds) and is then cached
+> on disk (`/tmp/vedicpatro-og-cache`), so crawlers and repeat hits are instant.
 
 ## 6. Point the API's email links at the new domain
 

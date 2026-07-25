@@ -9,6 +9,7 @@ so the og:image URL can be built by simply swapping the path to /og-image.
 from __future__ import annotations
 
 import html
+import logging
 from datetime import date
 
 from fastapi import APIRouter, Query, Request
@@ -23,6 +24,8 @@ from engine.astronomy.location import (
 )
 from services.og_image import og_fields, render_panchanga_og
 from services.panchanga_api import build_daily_state
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["og"])
 
@@ -54,21 +57,39 @@ def _resolve_location(
             return DEFAULT_LOCATION
 
 
+def _card_png(*, city, lat, lon, tz, place, date_q) -> bytes:
+    """Pillow fallback card — used when the headless screenshot is unavailable."""
+    greg = _parse_date(date_q)
+    location = _resolve_location(city=city, lat=lat, lon=lon, tz=tz)
+    payload = build_daily_state(greg, location, include_festivals=False, include_detail=True)
+    return render_panchanga_og(payload, date_ad=greg.isoformat(), location_name=place or location.name)
+
+
 @router.get("/og-image")
 def og_image(
+    request: Request,
     city: int | None = Query(None, description="GeoNames city id (shareable-URL 'city' param)"),
     lat: float | None = Query(None, description="Observer latitude"),
     lon: float | None = Query(None, description="Observer longitude"),
     tz: str | None = Query(None, description="IANA timezone, e.g. Asia/Kathmandu"),
     place: str | None = Query(None, description="Display label for the location"),
     date_q: str | None = Query(None, alias="date", description="AD date YYYY-MM-DD (default: today)"),
-    time: str | None = Query(None, description="HH:MM — accepted for URL parity; the day card is date-based"),
+    time: str | None = Query(None, description="HH:MM — needle position on the chart / URL parity"),
 ):
-    greg = _parse_date(date_q)
-    location = _resolve_location(city=city, lat=lat, lon=lon, tz=tz)
-    payload = build_daily_state(greg, location, include_festivals=False, include_detail=True)
-    label = place or location.name
-    png = render_panchanga_og(payload, date_ad=greg.isoformat(), location_name=label)
+    # Preferred: screenshot the real दिन-चक्र timeline chart. Fall back to the
+    # Pillow card if the browser is unavailable or the render fails, so a crawler
+    # always gets an image.
+    png: bytes | None = None
+    from services.og_screenshot import render_timeline_png, screenshot_available
+
+    if screenshot_available():
+        try:
+            png = render_timeline_png(request.url.query)
+        except Exception:
+            logger.warning("OG timeline screenshot failed; using card fallback", exc_info=True)
+
+    if png is None:
+        png = _card_png(city=city, lat=lat, lon=lon, tz=tz, place=place, date_q=date_q)
 
     return Response(
         content=png,
@@ -93,8 +114,9 @@ def _share_html(*, title: str, description: str, page_url: str, image_url: str) 
         f"<meta property=\"og:description\" content=\"{d}\">"
         f"<meta property=\"og:url\" content=\"{pu}\">"
         f"<meta property=\"og:image\" content=\"{iu}\">"
-        "<meta property=\"og:image:width\" content=\"1200\">"
-        "<meta property=\"og:image:height\" content=\"630\">"
+        # Dimensions intentionally omitted: the timeline screenshot's height
+        # varies by day (muhurta lanes), so consumers measure the image itself.
+        "<meta property=\"og:image:type\" content=\"image/png\">"
         "<meta property=\"og:locale\" content=\"ne_NP\">"
         "<meta name=\"twitter:card\" content=\"summary_large_image\">"
         f"<meta name=\"twitter:title\" content=\"{t}\">"

@@ -4,9 +4,14 @@ pydantic>=2.10.0
 pyswisseph>=2.10.0
 python-dotenv>=1.0.0
 
-# Open Graph share-image rendering (/og-image). Pillow needs libraqm on the host
-# for correct Devanagari shaping: `sudo apt-get install libraqm0`.
+# Open Graph share-image rendering (/og-image).
+# Primary path: screenshot the real दिन-चक्र chart with Playwright/Chromium
+#   (after `pip install`, run `playwright install --with-deps chromium`).
+#   Set OG_SCREENSHOT=false to disable and use the Pillow card instead.
+# Fallback path: a Pillow card. Pillow needs libraqm for Devanagari shaping:
+#   `sudo apt-get install libraqm0`.
 Pillow>=11.0.0
+playwright>=1.40.0
 
 # Auth / user profiles
 SQLAlchemy>=2.0.30
