@@ -122,7 +122,7 @@ turn the browser off entirely and always serve the Pillow card. The Mukta font
 (fallback card) is bundled in the repo (`assets/fonts/`). Verify:
 
 ```bash
-curl -sD- -o /tmp/og.png "https://vedicpatro.com/og-image?place=Kathmandu&date=2026-07-25" | head
+curl -sD- -o /tmp/og.png "https://vedicpatro.com/api/og-image?place=Kathmandu&date=2026-07-25" | head
 # → 200, content-type: image/png ; /tmp/og.png opens as the timeline chart
 ```
 

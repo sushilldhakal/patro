@@ -84,7 +84,7 @@ guard file (`/var/tmp/vedicpatro-fb-last-post.txt`) stops duplicate posts.
 
 ## Notes
 
-- **Image**: served by `/og-image?...&full=1`. If the headless browser is off
+- **Image**: served by `/api/og-image?...&full=1`. If the headless browser is off
   (`OG_SCREENSHOT=false`) it falls back to the Pillow card, so a post always has
   an image.
 - **Token expiry**: a Page token derived from a long-lived user token generally
