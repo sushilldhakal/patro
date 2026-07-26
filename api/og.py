@@ -164,7 +164,8 @@ def share_panchanga(
     image_url = f"{base}/api/og-image{suffix}"
 
     date_line = " · ".join(x for x in (f["weekday"], f["ad_line"]) if x)
-    title = f"{f['paksha']} {f['tithi']} · {label} · {f['ad_line']} — पञ्चाङ्ग | Vedic Patro"
+    date_part = f"{f['bs_line']} ({f['ad_line']})" if f['bs_line'] else f['ad_line']
+    title = f"{f['paksha']} {f['tithi']} · {label} · {date_part} — पञ्चाङ्ग | Vedic Patro"
     description = (
         f"{label}, {date_line}। तिथि {f['tithi']}, नक्षत्र {f['nakshatra']}, "
         f"योग {f['yoga']}, करण {f['karana']}। सूर्योदय {f['sunrise']}, सूर्यास्त {f['sunset']}।"
