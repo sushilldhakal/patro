@@ -72,7 +72,10 @@ logger = logging.getLogger(__name__)
 # 28: nakshatra-pada / chandra-rashi span and panchaka-rahita *_local_time_short
 #     were emitted in UTC instead of observer-local time; now localized.
 #     Invalidates stale cached spans/panchaka carrying UTC clock strings.
-CACHE_PAYLOAD_VERSION = 28
+# 29: patro-table sign fix for deshaantar (west → negative) and belaantar
+#     (mean − apparent, e.g. July → positive). Sunrise physics unchanged;
+#     invalidates stale solar_corrections labels and ishtakaal belaantar sign.
+CACHE_PAYLOAD_VERSION = 29
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

@@ -37,3 +37,33 @@ def test_planet_payload_includes_dms_and_rashi_ne():
     assert "rashi_ne" in sun
     assert "deg_in_rashi" in sun
     assert sun["dms_in_rashi"].endswith('"')
+
+
+def test_graha_udayakal_uses_deshaantar_sunrise_not_belaantar():
+    """Udayakalika spashtagraha: deshaantar in listed sunrise only; belaantar is reference."""
+    from datetime import timedelta
+
+    from engine.vedic.solar_corrections import compute_belaantar, compute_deshaantar, standard_meridian_longitude
+
+    target = date(2026, 7, 26)
+    loc = DEFAULT_LOCATION
+    daily = build_daily_panchanga(target, loc)
+    sunrise = calculate_sunrise(
+        target, latitude=loc.lat, longitude=loc.lon, timezone_name=loc.timezone,
+    )
+
+    # Planets are anchored to listed sunrise (deshaantar-adjusted).
+    assert daily["planets"]["sun"]["longitude"] == get_all_planetary_positions(sunrise)["sun"]["longitude"]
+    assert daily["planets_anchor"]["local_time"] == daily["sunrise"]["local_time_short"]
+
+    meridian = standard_meridian_longitude(loc.timezone, on_date=target, lat=loc.lat, lon=loc.lon)
+    desha = compute_deshaantar(loc.lon, meridian)
+    bela = compute_belaantar(sunrise)
+
+    # Patro display signs (Kathmandu west of meridian; July sun slow).
+    assert desha["sign"] == "rin"
+    assert bela["sign"] == "dhan"
+
+    # Belaantar must not shift the graha epoch — only a different instant would.
+    bela_shifted = get_all_planetary_positions(sunrise + timedelta(minutes=bela["minutes_total"]))["sun"]["longitude"]
+    assert daily["planets"]["sun"]["longitude"] != bela_shifted
