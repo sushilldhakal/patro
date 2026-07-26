@@ -505,7 +505,8 @@ def _compute_ishta_kalas(
     """Return (ishtaKala, ahoratriIshtaKala) in ghadi/pala/vipala.
 
     Ishta Kala — elapsed time from sunrise to birth (civil clock).
-    Ahoratri Ishta Kala — same interval adjusted by Belaantar and Deshaantar.
+    Ahoratri Ishta Kala — same interval adjusted by Belaantar only (listed
+    sunrise/sunset already include Deshaantar).
     """
     from engine.vedic.at_time import resolve_vedic_day_anchor
 
@@ -516,9 +517,7 @@ def _compute_ishta_kalas(
         delta_sec += 86400.0
 
     solar = _solar_corrections_block(panchanga)
-    correction_min = _signed_solar_minutes(solar.get("belaantar")) + _signed_solar_minutes(
-        solar.get("deshaantar")
-    )
+    correction_min = _signed_solar_minutes(solar.get("belaantar"))
     corrected_sec = max(0.0, delta_sec - correction_min * 60.0)
 
     # Field names match the kundali overview labels used in Nepali patro software.
@@ -916,9 +915,7 @@ def build_kundali_detail(
     birth_clock = instant_local.strftime("%H:%M")
     ishta, ahoratri_ishta = _compute_ishta_kalas(instant_local, location, panchanga)
     solar = _solar_corrections_block(panchanga)
-    correction_min = _signed_solar_minutes(solar.get("belaantar")) + _signed_solar_minutes(
-        solar.get("deshaantar")
-    )
+    correction_min = _signed_solar_minutes(solar.get("belaantar"))
 
     moon_nak_idx, moon_pada = nakshatra_of(moon_lon)
     yoga_block = panchanga.get("yoga") or {}
