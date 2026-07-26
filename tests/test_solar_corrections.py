@@ -72,7 +72,7 @@ def test_daily_modern_npt_era():
 
 
 def test_belaantar_matches_swiss_ephemeris_at_sunrise():
-    """Belaantar = Swiss Ephemeris equation of time at local sunrise."""
+    """Patro belaantar = −(Swiss Ephemeris equation of time) at local sunrise."""
     import swisseph as swe
     from datetime import timezone
 
@@ -85,16 +85,18 @@ def test_belaantar_matches_swiss_ephemeris_at_sunrise():
     at = datetime.fromisoformat(daily["solar_corrections"]["computed_at_local"])
     jd = get_julian_day(at.astimezone(timezone.utc))
     swe_min = float(swe.time_equ(jd)) * 24.0 * 60.0
-    assert abs(b["minutes_total"] - swe_min) < 0.01
-    assert b["sign"] == ("dhan" if swe_min >= 0 else "rin")
+    assert abs(b["minutes_total"] + swe_min) < 0.01
+    assert b["sign"] == ("dhan" if swe_min <= 0 else "rin")
 
 
 def test_belaantar_seasonal_signs():
-    """Spot-check equation-of-time sign by season (apparent − mean)."""
+    """Patro sign: positive when sun runs slow (Jan/Jul), negative when fast (Oct)."""
     jan = build_daily_panchanga(date(2026, 1, 15), DEFAULT_LOCATION)["solar_corrections"]["belaantar"]
+    jul = build_daily_panchanga(date(2026, 7, 26), DEFAULT_LOCATION)["solar_corrections"]["belaantar"]
     oct = build_daily_panchanga(date(2026, 10, 15), DEFAULT_LOCATION)["solar_corrections"]["belaantar"]
-    assert jan["sign"] == "rin"  # Sun slow in January
-    assert oct["sign"] == "dhan"  # Sun fast in October
+    assert jan["sign"] == "dhan"
+    assert jul["sign"] == "dhan"
+    assert oct["sign"] == "rin"
 
 
 def test_build_solar_corrections_structure():

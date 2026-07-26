@@ -54,19 +54,21 @@ def _split_minutes_signed(total_minutes: float) -> dict[str, Any]:
 
 def compute_belaantar(at: datetime) -> dict[str, Any]:
     """
-    Equation of time: apparent solar time minus mean solar time.
+    Equation of time for patro tables: mean solar time minus apparent solar time.
 
-    Surya Panchanga: positive (धन) → add; negative (ऋण) → subtract when
-  correcting mean solar time toward apparent (true) solar time.
+    Opposite sign from Swiss Ephemeris ``time_equ`` (apparent − mean).
+    July (sun slow) → positive e.g. +6:34; October (sun fast) → negative.
+    Positive (धन) / negative (ऋण) are reference values only — listed rise/set
+    do not apply belaantar (only deshaantar).
     """
     init_ephemeris()
     _ensure_initialized()
     utc = at.astimezone(timezone.utc)
     jd = get_julian_day(utc)
-    # apparent − mean solar time, in days
     e_days = default_engine.equation_of_time(jd)
+    patro_min = -(e_days * 24.0 * 60.0)
     return {
-        **_split_minutes_signed(e_days * 24.0 * 60.0),
+        **_split_minutes_signed(patro_min),
         "name_ne": "बेलान्तर",
         "name_en": "Belaantar (equation of time)",
     }
