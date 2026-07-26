@@ -1,24 +1,39 @@
 # Daily Kathmandu panchanga → Facebook Page
 
-Posts today's दिन-चक्र panchanga image to a Facebook Page once every morning at
-**Kathmandu sunrise**. The image is fetched by Facebook from the public
-`/og-image` endpoint (`full=1` → the full-height chart); the caption lists the
-day's anga changes with their times plus a link to that day's `/panchanga` page:
+Posts to a Facebook Page once every morning at **Kathmandu sunrise**, as a
+**link post** to `/panchanga` (not an uploaded photo) — Facebook crawls that
+URL itself and renders the whole card, including the chart image, as one
+tappable unit that opens vedicpatro.com. A plain photo upload's image is never
+clickable, which is why this uses a link post instead. The caption gives the
+Nepali (BS) date alongside the Gregorian one and lists the day's anga changes
+with their times:
 
 ```
 आजको पञ्चाङ्ग — काठमाडौँ
-शनिवार · २५ जुलाई २०२६ · सूर्योदय ०५:२२ · सूर्यास्त १८:५७
+शनिवार · साउन ९, २०८३ (२५ जुलाई २०२६) · सूर्योदय ०५:२२ · सूर्यास्त १८:५७
 
 तिथि: एकादशी → द्वादशी (११:५०)
 नक्षत्र: ज्येष्ठा (दिनभर)
 योग: ब्रह्म → इन्द्र (२१:२४)
 करण: विष्टि → बव (११:५०) → बालव (०१:०२)
 
-पूर्ण दिन-चक्र: https://vedicpatro.com/panchanga?city=1283240&date=2026-07-25
+पूर्ण दिन-चक्र: https://vedicpatro.com/panchanga
 ```
 
 One post per day covers the whole day's transitions, so nothing needs to run
-through the day.
+through the day. The link is bare `/panchanga` — with no stored preference and
+no URL params the page already defaults to today in Kathmandu, so no query
+string is needed.
+
+> **This depends on the nginx crawler routing being live** (see
+> `nginx-vedicpatro.conf`'s `map $http_user_agent $og_crawler` +
+> `location = /panchanga` block). When Facebook's crawler fetches `/panchanga`
+> to build the link card, nginx must route it to `/share/panchanga` for it to
+> see the chart's og:image — otherwise Facebook falls back to whatever image
+> it finds on the plain SPA page. If the posted card doesn't show the chart,
+> that routing is the first thing to check (`curl -A facebookexternalhit
+> https://vedicpatro.com/panchanga` should return the `/share/panchanga` HTML,
+> not the SPA shell).
 
 The poster is **dormant** until `FB_PAGE_ID` and `FB_PAGE_ACCESS_TOKEN` are set —
 nothing posts without them.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Post today's Kathmandu panchanga image to a Facebook Page at sunrise.
+"""Post today's Kathmandu panchanga to a Facebook Page at sunrise, as a link.
 
 Dormant unless FB_PAGE_ID and FB_PAGE_ACCESS_TOKEN are set. Designed to be run
 by a systemd timer shortly before the earliest Kathmandu sunrise; with
@@ -9,8 +9,10 @@ before publishing.
     python scripts/post_daily_panchanga.py --wait-for-sunrise
     python scripts/post_daily_panchanga.py --dry-run     # print, don't post
 
-The photo is fetched by the Graph API from the public /og-image endpoint
-(``full=1`` → the full-height chart), so nothing is uploaded from here.
+Posted as a link to /panchanga (not an uploaded photo): Facebook crawls that
+URL itself for the title/description/image, so the picture it shows is
+tappable and opens the site — a plain photo upload's image never links
+anywhere.
 """
 
 from __future__ import annotations
@@ -46,15 +48,20 @@ _STATE_FILE = pathlib.Path(
 )
 
 
-def _build_caption(fields: dict, day: date, transition_lines: list[str]) -> str:
-    header = " · ".join(x for x in (fields["weekday"], fields["ad_line"]) if x)
+def _build_caption(fields: dict, transition_lines: list[str]) -> str:
+    # Nepali (BS) date first — this is a Nepali panchanga page — with the
+    # Gregorian date alongside it, then the weekday and sunrise/sunset.
+    date_bit = fields["bs_line"] or fields["ad_line"]
+    if fields["bs_line"] and fields["ad_line"]:
+        date_bit = f"{fields['bs_line']} ({fields['ad_line']})"
+    header = " · ".join(x for x in (fields["weekday"], date_bit) if x)
     header += f" · सूर्योदय {ne_digits(fields['sunrise'])} · सूर्यास्त {ne_digits(fields['sunset'])}"
     body = "\n".join(transition_lines)
     return (
         f"आजको पञ्चाङ्ग — काठमाडौँ\n"
         f"{header}\n\n"
         f"{body}\n\n"
-        f"पूर्ण दिन-चक्र: {page_url(day)}"
+        f"पूर्ण दिन-चक्र: {page_url()}"
     )
 
 
@@ -112,20 +119,26 @@ def main() -> int:
         else:
             logger.info("Sunrise already passed or unavailable — posting now.")
 
-    photo_url = image_url(day)
-    caption = _build_caption(fields, day, anga_transition_lines(payload, day, location))
+    link = page_url()
+    caption = _build_caption(fields, anga_transition_lines(payload, day, location))
 
     if args.dry_run:
-        print("IMAGE URL:", photo_url)
+        print("LINK:", link)
+        print("IMAGE (via link's og:image):", image_url(day))
         print("CAPTION:")
         print(caption)
         return 0
 
-    from services.fb_page import FacebookPostError, post_photo_by_url
+    from services.fb_page import FacebookPostError, post_link
 
     try:
-        post_id = post_photo_by_url(
-            image_url=photo_url, caption=caption, page_id=page_id, access_token=token
+        # Post as a link (not a plain photo upload) so the picture Facebook
+        # shows is tappable and opens vedicpatro.com/panchanga — a photo-only
+        # post never links anywhere. Facebook crawls `link` itself for the
+        # image/title/description (the crawler routing + /api/og-image we set
+        # up serves it the live chart), so no image URL is passed here.
+        post_id = post_link(
+            link=link, message=caption, page_id=page_id, access_token=token
         )
     except FacebookPostError:
         logger.exception("Facebook post failed for %s", day.isoformat())
