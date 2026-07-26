@@ -2,10 +2,66 @@
   "_meta": {
     "bs_year": 2083,
     "months": [
-      { "bs_month": 6, "name_ne": "असोज" },
-      { "bs_month": 7, "name_ne": "कार्तिक" }
+      { "bs_month": 6, "name_ne": "असोज", "ad_range": "2026-09-17 — 2026-10-16" },
+      { "bs_month": 7, "name_ne": "कार्तिक", "ad_range": "2026-10-17 — 2026-11-15" }
     ],
-    "description": "Ashoj & Kartik festival catalog BS 2083",
-    "source": "User-provided patro list (2026-07-03)"
-  }
+    "description": "Ashwin & Kartik 2083 — Dashain, Tihar, Pitri Paksha, solar/lunar/bs_fixed/ad_fixed",
+    "source": "User patro export Ashwin–Chaitra 2083 (2026-07-26)"
+  },
+  "ashwin_solar_day1": [
+    { "id": "kanya-sankranti", "name_ne": "कन्या संक्रान्ति" },
+    { "id": "vishwakarma-puja-solar", "name_ne": "विश्वकर्मा पूजा" },
+    { "id": "surya-shashthi", "name_ne": "सूर्य षष्ठी" }
+  ],
+  "ashwin_lunar_shukla": [
+    { "tithi": 6, "festivals": [{ "id": "mahalaxmi-vrata-arambha", "name_ne": "महालक्ष्मी व्रतारम्भ" }] },
+    { "tithi": 7, "festivals": [{ "id": "radha-janmotsav", "name_ne": "राधा जन्मोत्सव" }] },
+    { "tithi": 9, "festivals": [{ "id": "adukh-navami-brata", "name_ne": "अदु:ख नवमी ब्रत" }] },
+    { "tithi": 11, "festivals": [{ "id": "hariparivartini-ekadashi", "name_ne": "हरिपरिवर्तनी एकादशी" }] },
+    { "tithi": 12, "festivals": [
+      { "id": "vaman-dwadashi", "name_ne": "वामन जयन्ती" },
+      { "id": "indradhojotthana", "name_ne": "ईन्द्रधोजोत्थान" }
+    ]},
+    { "tithi": 14, "festivals": [
+      { "id": "indra-jatra", "name_ne": "इन्द्र जात्रा" },
+      { "id": "anant-chaturdashi", "name_ne": "अनन्त चतुर्दशी" }
+    ]},
+    { "tithi": 6, "festivals": [
+      { "id": "bilva-nimantran", "name_ne": "विल्व निमन्त्रण" },
+      { "id": "saraswati-avahan", "name_ne": "सरस्वतीको आवाह" }
+    ]}
+  ],
+  "ashwin_pitri_paksha": [
+    { "tithi": 1, "paksha": "krishna", "festivals": [{ "id": "sohrashraddha-arambha", "name_ne": "सोह्रश्राद्ध प्रारम्भ / प्रतिपदा श्राद्ध" }] },
+    { "tithi": 15, "paksha": "krishna", "festivals": [{ "id": "pitri-visarjan", "name_ne": "पितृ विसर्जन / औंसी श्राद्ध" }] }
+  ],
+  "ashwin_dashain": [
+    { "bs_day": 25, "festivals": [
+      { "id": "ghatasthapana", "name_ne": "घटस्थापना" },
+      { "id": "navaratri-arambha", "name_ne": "नवरात्रारम्भ" }
+    ]},
+    { "bs_day": 31, "festivals": [{ "id": "fulpati", "name_ne": "फूलपाती" }] }
+  ],
+  "kartik_dashain_tihar": [
+    { "bs_day": 1, "festivals": [{ "id": "tula-sankranti", "name_ne": "तुला संक्रान्ति" }] },
+    { "bs_day": 2, "festivals": [
+      { "id": "maha-ashtami", "name_ne": "महाष्टमी" },
+      { "id": "kalratri", "name_ne": "कालरात्री" },
+      { "id": "kuchi-bhway", "name_ne": "कुछी भ्वय" },
+      { "id": "dashain-vidaa-kartik-2", "name_ne": "दशै विदा" }
+    ]},
+    { "bs_day": 3, "festivals": [
+      { "id": "maha-navami", "name_ne": "महानवमी" },
+      { "id": "syakwatyakw", "name_ne": "स्याक्वत्याक्व" },
+      { "id": "manvadi", "name_ne": "मन्वादि" }
+    ]},
+    { "bs_day": 4, "festivals": [
+      { "id": "vijaya-dashami", "name_ne": "विजया दशमी / दशै टिका" },
+      { "id": "devi-visarjan", "name_ne": "देवीविसर्जन" }
+    ]},
+    { "bs_day": 21, "festivals": [{ "id": "dhanteras", "name_ne": "धनतेरस" }] },
+    { "bs_day": 22, "festivals": [{ "id": "tihar", "name_ne": "लक्ष्मी पूजा / कुकुर तिहार" }] },
+    { "bs_day": 24, "festivals": [{ "id": "bhai-tika", "name_ne": "भाइटीका" }] },
+    { "bs_day": 29, "festivals": [{ "id": "chhath", "name_ne": "छठपर्व" }] }
+  ]
 }

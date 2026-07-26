@@ -13,6 +13,11 @@ from engine.vedic.lunar_month import find_festival_in_lunar_month
 from engine.vedic.sankranti import find_sankranti
 
 
+def _resolve_adhik_policy(rule: dict[str, Any], gregorian_year: int) -> str:
+    """Return explicit adhik_policy from the rule (default skip = Nija Maas / festival masa lag)."""
+    return rule.get("adhik_policy", "skip")
+
+
 def compute_lunar_festival(
     rule: dict[str, Any],
     gregorian_year: int,
@@ -24,11 +29,29 @@ def compute_lunar_festival(
         tithi=int(rule["tithi"]),
         paksha=rule["paksha"],
         gregorian_year=gregorian_year,
-        adhik_policy=rule.get("adhik_policy", "skip"),
+        adhik_policy=_resolve_adhik_policy(rule, gregorian_year),
         date_selection=rule.get("date_selection", "udaya"),
         location=location,
         month_model=month_model,
     )
+
+
+def compute_adhik_arambha(
+    rule: dict[str, Any],
+    gregorian_year: int,
+) -> Optional[date]:
+    """First day of Adhik Maas when the intercalary month matches ``lunar_month``."""
+    from engine.vedic.adhik_maas import find_adhik_maas_for_gregorian_year
+
+    adhik = find_adhik_maas_for_gregorian_year(gregorian_year)
+    if not adhik or not adhik.get("has_adhik_maas"):
+        return None
+    if rule.get("lunar_month") and adhik.get("month_name") != rule.get("lunar_month"):
+        return None
+    start = adhik.get("start_date")
+    if not start:
+        return None
+    return date.fromisoformat(start)
 
 
 def compute_solar_festival(
@@ -112,6 +135,8 @@ def compute_festival_dates(
         start = compute_bs_fixed_festival(rule, gregorian_year)
     elif rule_type == "ad_fixed":
         start = compute_ad_fixed_festival(rule, gregorian_year)
+    elif rule_type == "adhik_arambha":
+        start = compute_adhik_arambha(rule, gregorian_year)
     else:
         return None
 

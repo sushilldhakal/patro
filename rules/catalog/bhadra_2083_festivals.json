@@ -2,55 +2,80 @@
   "_meta": {
     "bs_year": 2083,
     "bs_month": 5,
-    "name_ne": "भदौ",
-    "description": "Bhadra festival catalog BS 2083",
-    "source": "User-provided patro list (2026-07-03)"
+    "month_name_ne": "भदौ",
+    "ad_range": "2026-08-17 — 2026-09-16",
+    "description": "Bhadra 2083 festival catalog — solar, lunar, bs_fixed, ad_fixed",
+    "source": "User patro export Ashadh–Bhadra 2083 (2026-07-26)"
   },
   "solar_bs5_day1": [
     { "id": "simha-sankranti", "name_ne": "सिंह संक्रान्ति" },
     { "id": "tharu-guriya-parwa", "name_ne": "थारु गुरिया पर्व" },
-    { "id": "nag-panchami", "name_ne": "नाग पञ्चमी व्रत" }
+    { "id": "nag-panchami", "name_ne": "नाग पञ्चमी" }
   ],
   "lunar_shrawan_in_bhadra": [
-    { "tithi": 6, "paksha": "shukla", "festivals": [{ "id": "kalki-jayanti", "name_ne": "कल्कि जयन्ती" }] },
-    { "tithi": 7, "paksha": "shukla", "festivals": [{ "id": "tulsidas-jayanti", "name_ne": "तुलसीदास जयन्ती" }] },
-    { "tithi": 8, "paksha": "shukla", "festivals": [{ "id": "gorakhkali-puja-shrawan-shukla", "name_ne": "गोरखकाली पूजा" }] },
-    { "tithi": 11, "paksha": "shukla", "festivals": [{ "id": "putrada-ekadashi", "name_ne": "पुत्रदा एकादशी व्रत" }] },
+    { "tithi": 2, "paksha": "shukla", "festivals": [{ "id": "kirtipur-bagh-bhairav-jatra", "name_ne": "कीर्तिपुर बाघभैरव जात्रा" }] },
+    { "tithi": 4, "paksha": "shukla", "festivals": [{ "id": "yala-panchadan", "name_ne": "यल पञ्चदान" }] },
+    { "tithi": 5, "paksha": "shukla", "festivals": [{ "id": "thakali-phalo-parwa-arambha", "name_ne": "थकाली फालो पर्व शुरु" }] },
+    { "tithi": 6, "paksha": "shukla", "festivals": [{ "id": "doleshwar-mahadev-utsav", "name_ne": "डोलेश्वर उत्सव" }] },
+    { "tithi": 8, "paksha": "shukla", "festivals": [
+      { "id": "bahidhyabboy", "name_ne": "बहिध्यब्बोय" },
+      { "id": "gorakhkali-puja-shrawan-shukla", "name_ne": "गोरखकाली पूजा" }
+    ]},
+    { "tithi": 11, "paksha": "shukla", "festivals": [
+      { "id": "badimalika-mela", "name_ne": "बाजुरा बडिमालिका मेला" },
+      { "id": "purnima-vrata-shrawan", "name_ne": "पूर्णिमाव्रत" }
+    ]},
     { "tithi": 15, "paksha": "shukla", "festivals": [
       { "id": "janai-purnima", "name_ne": "जनै पूर्णिमा" },
-      { "id": "raksha-bandhan", "name_ne": "रक्षा बन्धन" },
-      { "id": "kwati-khane-din", "name_ne": "क्वाति खाने दिन" },
-      { "id": "sanskrit-diwas", "name_ne": "संस्कृत दिवस" },
-      { "id": "purnima-vrata-shrawan", "name_ne": "पूर्णिमा व्रत" },
+      { "id": "raksha-bandhan", "name_ne": "रक्षाबन्धन" },
       { "id": "rishitarpani", "name_ne": "ऋषितर्पणी" }
     ]}
   ],
   "lunar_bhadra": [
-    { "tithi": 1, "paksha": "krishna", "festivals": [{ "id": "gai-jatra", "name_ne": "गाईजात्रा" }] },
-    { "tithi": 2, "paksha": "krishna", "festivals": [{ "id": "ropai-jatra", "name_ne": "रोपाईं जात्रा" }] },
-    { "tithi": 4, "paksha": "krishna", "festivals": [{ "id": "mangal-chauthi", "name_ne": "मंगलचौथी व्रत" }] },
+    { "tithi": 1, "paksha": "krishna", "festivals": [{ "id": "gai-jatra", "name_ne": "गाईजात्रा (सापारु)" }] },
+    { "tithi": 2, "paksha": "krishna", "festivals": [{ "id": "ropai-jatra", "name_ne": "रोपाई जात्रा" }] },
+    { "tithi": 4, "paksha": "krishna", "festivals": [{ "id": "mangal-chauthi", "name_ne": "मंगल चौथी ब्रत" }] },
+    { "tithi": 6, "paksha": "krishna", "festivals": [{ "id": "chandra-shashthi-vrata", "name_ne": "चन्द्र षष्ठी व्रत" }] },
     { "tithi": 7, "paksha": "krishna", "festivals": [{ "id": "gaura-saptami", "name_ne": "गौरा सप्तमी" }] },
     { "tithi": 8, "paksha": "krishna", "festivals": [
       { "id": "krishna-janmashtami", "name_ne": "श्रीकृष्ण जन्माष्टमी" },
-      { "id": "gaura-parwa", "name_ne": "गौरा पर्व" },
-      { "id": "durvashtami", "name_ne": "दुर्वाष्टमी" },
+      { "id": "gaura-parwa", "name_ne": "गौरापर्व" },
       { "id": "gorakhkali-puja-bhadra", "name_ne": "गोरखकाली पूजा" }
     ]},
     { "tithi": 9, "paksha": "krishna", "festivals": [
-      { "id": "guga-navami", "name_ne": "गूङा नवमी" },
-      { "id": "radha-krishna-rath-yatra-biratnagar", "name_ne": "राधाकृष्ण रथयात्रा" }
+      { "id": "guga-navami", "name_ne": "गुँगा नवमी" },
+      { "id": "radha-krishna-rath-yatra-biratnagar", "name_ne": "राधाकृष्ण रथ यात्रा" }
     ]},
-    { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "aja-ekadashi", "name_ne": "अजा एकादशी व्रत" }] },
+    { "tithi": 11, "paksha": "krishna", "festivals": [
+      { "id": "aja-ekadashi", "name_ne": "अजा एकादशी" },
+      { "id": "chepang-chonam-parwa", "name_ne": "चेपाङ छोनाम (न्वागी) पर्व" }
+    ]},
+    { "tithi": 14, "paksha": "krishna", "festivals": [
+      { "id": "juga-chahre", "name_ne": "जुगः चःह्रे पूजा" },
+      { "id": "darsha-shraddha-bhadra", "name_ne": "दर्श श्राद्ध" }
+    ]},
     { "tithi": 15, "paksha": "krishna", "festivals": [
       { "id": "kushe-aunshi", "name_ne": "कुशे औंसी" },
-      { "id": "motiram-bhatt-jayanti", "name_ne": "मोतीराम भट्ट जन्मजयन्ती" }
+      { "id": "motiram-bhatt-jayanti", "name_ne": "मोतीराम जयन्ती" },
+      { "id": "nisi-barne-bhadra", "name_ne": "निशि बार्ने" }
     ]},
-    { "tithi": 1, "paksha": "shukla", "festivals": [{ "id": "gunla-parva-samapti", "name_ne": "गुंला पर्व समाप्ति" }] },
-    { "tithi": 2, "paksha": "shukla", "festivals": [{ "id": "dar-khane-din", "name_ne": "दर खाने दिन" }] },
-    { "tithi": 3, "paksha": "shukla", "festivals": [
-      { "id": "teej", "name_ne": "हरितालिका तीज" },
-      { "id": "ganesh-chaturthi-vrata", "name_ne": "गणेश चतुर्थी व्रत" }
-    ]},
-    { "tithi": 4, "paksha": "shukla", "festivals": [{ "id": "ganesh-chaturthi", "name_ne": "गणेश चतुर्थी" }] }
+    { "tithi": 1, "paksha": "shukla", "festivals": [{ "id": "gunla-parva-samapti", "name_ne": "गुँला धर्म समाप्ति" }] },
+    { "tithi": 2, "paksha": "shukla", "festivals": [{ "id": "dar-khane-din", "name_ne": "तीजको दरखाने दिन" }] },
+    { "tithi": 3, "paksha": "shukla", "festivals": [{ "id": "teej", "name_ne": "हरितालिका (तीज)" }] },
+    { "tithi": 5, "paksha": "shukla", "festivals": [
+      { "id": "sapta-rishi-puja", "name_ne": "सप्तऋषि पूजा" },
+      { "id": "kwakh-javi", "name_ne": "क्वख जाविय" }
+    ]}
+  ],
+  "bs_fixed": [
+    { "bs_day": 15, "festivals": [{ "id": "harisiddhi-dhophukhum-mela", "name_ne": "हरिसिद्धिमा धोपुखुमेला (जलविहार)" }] },
+    { "bs_day": 16, "festivals": [{ "id": "lalitpur-narasimha-yatra", "name_ne": "ल.पु. नृसिंहयात्रा" }] },
+    { "bs_day": 17, "festivals": [{ "id": "nivritti-bharan-diwas", "name_ne": "निवृत्तिभरण दिवस" }] }
+  ],
+  "ad_fixed": [
+    { "ad_month": 8, "ad_day": 19, "festivals": [{ "id": "world-photography-day", "name_ne": "विश्व फोटोग्राफी दिवस" }] },
+    { "ad_month": 9, "ad_day": 8, "festivals": [{ "id": "international-literacy-day", "name_ne": "विश्व साक्षरता दिवस" }] },
+    { "ad_month": 9, "ad_day": 10, "festivals": [{ "id": "world-suicide-prevention-day", "name_ne": "विश्व आत्महत्या रोकथाम दिवस" }] },
+    { "ad_month": 9, "ad_day": 16, "festivals": [{ "id": "world-ozone-day", "name_ne": "विश्व ओजोन संरक्षण दिवस" }] }
   ]
 }

@@ -2,10 +2,42 @@
   "_meta": {
     "bs_year": 2083,
     "months": [
-      { "bs_month": 11, "name_ne": "फागुन" },
-      { "bs_month": 12, "name_ne": "चैत" }
+      { "bs_month": 11, "name_ne": "फागुन", "ad_range": "2027-02-13 — 2027-03-14" },
+      { "bs_month": 12, "name_ne": "चैत", "ad_range": "2027-03-15 — 2027-04-13" }
     ],
-    "description": "Falgun & Chaitra festival catalog BS 2083",
-    "source": "User-provided patro list (2026-07-03)"
+    "description": "Falgun & Chaitra 2083 — Holi, Shivaratri, Biska Jatra, Ghode Jatra",
+    "source": "User patro export Ashwin–Chaitra 2083 (2026-07-26)"
+  },
+  "falgun": {
+    "solar_day1": [{ "id": "kumbh-sankranti", "name_ne": "कुम्भ संक्रान्ति" }],
+    "lunar": [
+      { "tithi": 14, "paksha": "krishna", "festivals": [
+        { "id": "shivaratri", "name_ne": "महाशिवरात्री" },
+        { "id": "silachahre-puja", "name_ne": "सिला चःह्रे पूजा" }
+      ]},
+      { "tithi": 14, "paksha": "shukla", "festivals": [{ "id": "pahadma-holi", "name_ne": "पहाडमा होली" }] },
+      { "tithi": 15, "paksha": "shukla", "festivals": [
+        { "id": "holi", "name_ne": "फागुपूर्णिमा / होली" },
+        { "id": "terai-holi", "name_ne": "तराईमा होली" }
+      ]}
+    ],
+    "bs_fixed": [
+      { "bs_day": 1, "festivals": [{ "id": "janayuddha-diwas", "name_ne": "जनयुद्ध दिवस" }] },
+      { "bs_day": 14, "festivals": [{ "id": "national-magar-day", "name_ne": "राष्ट्रिय मगर दिवस" }] }
+    ]
+  },
+  "chaitra": {
+    "solar_day1": [{ "id": "meen-sankranti", "name_ne": "चैत्र संक्रान्ति" }],
+    "lunar": [
+      { "tithi": 11, "paksha": "shukla", "festivals": [{ "id": "amalaki-ekadashi", "name_ne": "आमलकी एकादशी" }] },
+      { "tithi": 15, "paksha": "shukla", "festivals": [{ "id": "gauri-vrata", "name_ne": "गौरी व्रत" }] },
+      { "tithi": 2, "paksha": "shukla", "festivals": [{ "id": "biska-jatra", "name_ne": "बिस्का जात्रा सुरु" }] },
+      { "tithi": 8, "paksha": "krishna", "festivals": [{ "id": "ghode-jatra", "name_ne": "घोडेजात्रा" }] }
+    ],
+    "bs_fixed": [
+      { "bs_day": 3, "festivals": [{ "id": "national-writer-day", "name_ne": "राष्ट्रिय लेखक दिवस" }] },
+      { "bs_day": 19, "festivals": [{ "id": "national-cooperative-day", "name_ne": "राष्ट्रिय सहकारी दिवस" }] },
+      { "bs_day": 29, "festivals": [{ "id": "bhaktapur-vishwa-dhvaja-patan", "name_ne": "भक्तपुर विश्वध्वजपातन" }] }
+    ]
   }
 }

@@ -2,11 +2,75 @@
   "_meta": {
     "bs_year": 2083,
     "months": [
-      { "bs_month": 8, "name_ne": "मंसिर" },
-      { "bs_month": 9, "name_ne": "पुष" },
-      { "bs_month": 10, "name_ne": "माघ" }
+      { "bs_month": 8, "name_ne": "मंसिर", "ad_range": "2026-11-16 — 2026-12-15" },
+      { "bs_month": 9, "name_ne": "पुष", "ad_range": "2026-12-16 — 2027-01-14" },
+      { "bs_month": 10, "name_ne": "माघ", "ad_range": "2027-01-15 — 2027-02-12" }
     ],
-    "description": "Mangsir, Poush & Magh festival catalog BS 2083",
-    "source": "User-provided patro list (2026-07-03)"
+    "description": "Mangsir, Poush & Magh 2083 festival catalog",
+    "source": "User patro export Ashwin–Chaitra 2083 (2026-07-26)"
+  },
+  "mangsir": {
+    "solar_day1": [
+      { "id": "dhanu-sankranti", "name_ne": "माघे सङ्क्रान्ति" },
+      { "id": "gopashtami-vrata", "name_ne": "गोपाष्टमी" }
+    ],
+    "lunar": [
+      { "tithi": 11, "paksha": "shukla", "festivals": [
+        { "id": "haribodhi-ekadashi", "name_ne": "हरिबोधिनी एकादशी" },
+        { "id": "tulsi-vivah", "name_ne": "तुलसी विवाह" }
+      ]},
+      { "tithi": 15, "paksha": "shukla", "festivals": [
+        { "id": "kartik-snan-samapti", "name_ne": "कार्तिकस्नान / चतुर्मासव्रत समाप्ति" },
+        { "id": "guru-nanak-jayanti", "name_ne": "गुरु नानक जयन्ती" }
+      ]}
+    ],
+    "bs_fixed": [
+      { "bs_day": 2, "festivals": [{ "id": "hetaunda-kushmanda-mela", "name_ne": "हेटौडा कुष्माण्ड सरोवरमेला" }] },
+      { "bs_day": 20, "festivals": [
+        { "id": "triveni-mela", "name_ne": "त्रीवेणीहरुमा मेला" },
+        { "id": "pashupatinath-mela", "name_ne": "पशुपतिनाथमा मेला" }
+      ]}
+    ]
+  },
+  "poush": {
+    "solar_day1": [
+      { "id": "dhanu-sankranti", "name_ne": "पौष संक्रान्ति" },
+      { "id": "national-flag-day", "name_ne": "राष्ट्रिय झण्डा दिवस" }
+    ],
+    "lunar": [
+      { "tithi": 11, "paksha": "shukla", "festivals": [
+        { "id": "mokshada-ekadashi", "name_ne": "मोक्षदा एकादशी" },
+        { "id": "gita-jayanti", "name_ne": "गीता जयन्ती" }
+      ]},
+      { "tithi": 15, "paksha": "shukla", "festivals": [
+        { "id": "yomari-punhi", "name_ne": "योमरी पुन्ही" },
+        { "id": "udhauli-parwa", "name_ne": "उधौली पर्व" },
+        { "id": "jyapu-diwas", "name_ne": "ज्यापु दिवस" }
+      ]}
+    ],
+    "bs_fixed": [
+      { "bs_day": 15, "festivals": [{ "id": "national-reconciliation-day", "name_ne": "राष्ट्रिय मेलमिलाप दिवस" }] },
+      { "bs_day": 27, "festivals": [{ "id": "prithvi-jayanti", "name_ne": "पृथ्वी जयन्ती / राष्ट्रिय एकता दिवस" }] }
+    ]
+  },
+  "magh": {
+    "solar_day1": [
+      { "id": "maghe-sankranti", "name_ne": "माघे संक्रान्ति" },
+      { "id": "maghi-parwa", "name_ne": "माघी पर्व" },
+      { "id": "uttarayan-arambha", "name_ne": "उत्तरायण आरम्भ" }
+    ],
+    "lunar": [
+      { "tithi": 15, "paksha": "shukla", "festivals": [
+        { "id": "swasthani-brata-arambha", "name_ne": "श्री स्वस्थानी व्रत आरम्भ" }
+      ]},
+      { "tithi": 11, "paksha": "krishna", "festivals": [{ "id": "sattila-ekadashi", "name_ne": "षट्तिला एकादशी" }] },
+      { "tithi": 5, "paksha": "shukla", "festivals": [
+        { "id": "saraswati-puja", "name_ne": "सरस्वती पूजा" },
+        { "id": "vasant-panchami-vrata", "name_ne": "वसन्त पञ्चमी" }
+      ]}
+    ],
+    "bs_fixed": [
+      { "bs_day": 2, "festivals": [{ "id": "shwet-matsyendranath-snan", "name_ne": "श्वेत मत्स्येन्द्रनाथ स्नान" }] }
+    ]
   }
 }

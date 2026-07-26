@@ -1,0 +1,155 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "bs_month": 3,
+    "month_name_ne": "असार",
+    "ad_range": "2026-06-15 — 2026-07-16",
+    "description": "Ashadh 2083 festival catalog — solar, lunar (Nija Jestha/Ashadh on civil grid), bs_fixed, ad_fixed. BS 2083 follows Adhik Jestha; Nija Jestha lunar festivals appear on civil Ashadh days.",
+    "source": "User patro export Ashadh–Bhadra 2083 (2026-07-26)"
+  },
+  "solar": [
+    {
+      "bs_day": 1,
+      "festivals": [{ "id": "mithun-sankranti", "name_ne": "मिथुन संक्रान्ति" }]
+    }
+  ],
+  "lunar_jestha_on_ashadh": [
+    {
+      "bs_day": 1,
+      "tithi": 15,
+      "paksha": "krishna",
+      "festivals": [{ "id": "sombare-aunshi", "name_ne": "सोमबारे औंसी" }]
+    },
+    {
+      "bs_day": 6,
+      "tithi": 6,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "bhoto-jatra", "name_ne": "भोटो जात्रा" },
+        { "id": "sithi-nakha", "name_ne": "सिथि नखः" },
+        { "id": "kumar-shashthi", "name_ne": "कुमार षष्ठी" }
+      ]
+    },
+    {
+      "bs_day": 8,
+      "tithi": 8,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "vayu-ashtami", "name_ne": "वायु अष्टमी" },
+        { "id": "gorakhkali-puja-jestha", "name_ne": "गोरखकाली पूजा" },
+        { "id": "bhumiraj-puja", "name_ne": "भूमिराज पूजा" }
+      ]
+    },
+    {
+      "bs_day": 10,
+      "tithi": 10,
+      "paksha": "shukla",
+      "festivals": [{ "id": "padmasambhava-jayanti", "name_ne": "वज्रगुरु पद्मसम्भव जयन्ती" }]
+    },
+    {
+      "bs_day": 11,
+      "tithi": 11,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "nirjala-ekadashi", "name_ne": "निर्जला एकादशी" },
+        { "id": "tulsi-dal-rakhne", "name_ne": "तुलसीको दल राख्ने" },
+        { "id": "bhumi-puja", "name_ne": "भूमी पूजा" }
+      ]
+    },
+    {
+      "bs_day": 15,
+      "tithi": 15,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "jya-punhi", "name_ne": "ज्या: पुन्हि" },
+        { "id": "kabir-jayanti", "name_ne": "कवीर जयन्ती" },
+        { "id": "panauti-jatra", "name_ne": "पनौति जात्रा" }
+      ]
+    },
+    {
+      "bs_day": 26,
+      "tithi": 11,
+      "paksha": "krishna",
+      "festivals": [{ "id": "yogini-ekadashi-smarta", "name_ne": "योगिनी एकादशी (स्मार्त)" }]
+    },
+    {
+      "bs_day": 27,
+      "tithi": 12,
+      "paksha": "krishna",
+      "festivals": [{ "id": "yogini-ekadashi-vaishnava", "name_ne": "योगिनी एकादशी (वैष्णव)" }]
+    }
+  ],
+  "lunar_ashadh": [
+    {
+      "bs_day": 23,
+      "tithi": 8,
+      "paksha": "krishna",
+      "festivals": [
+        { "id": "bhalbhal-ashtami", "name_ne": "भलभल अष्टमी" },
+        { "id": "devpatan-trishul-jatra", "name_ne": "देवपाटनमा त्रिशूल जात्रा" }
+      ]
+    },
+    {
+      "bs_day": 24,
+      "tithi": 9,
+      "paksha": "krishna",
+      "festivals": [{ "id": "nakva-dishi", "name_ne": "नक्वा दिशी" }]
+    },
+    {
+      "bs_day": 28,
+      "tithi": 13,
+      "paksha": "krishna",
+      "festivals": [
+        { "id": "dila-chahre", "name_ne": "दिला चःह्रे पूजा" },
+        { "id": "shani-pradosh-ashadh", "name_ne": "शनि प्रदोष व्रत" }
+      ]
+    },
+    {
+      "bs_day": 29,
+      "tithi": 14,
+      "paksha": "krishna",
+      "festivals": [{ "id": "nisi-barne-ashadh", "name_ne": "निशिबार्ने" }]
+    },
+    {
+      "bs_day": 30,
+      "tithi": 15,
+      "paksha": "krishna",
+      "festivals": [
+        { "id": "darsha-shraddha-ashadh", "name_ne": "दर्श श्राद्ध" },
+        { "id": "halo-barne-ashadh", "name_ne": "हलोबार्ने" }
+      ]
+    },
+    {
+      "bs_day": 32,
+      "tithi": 2,
+      "paksha": "shukla",
+      "festivals": [{ "id": "jagannath-rath-yatra", "name_ne": "जगन्नाथ रथयात्रा" }]
+    }
+  ],
+  "bs_fixed": [
+    {
+      "bs_day": 1,
+      "festivals": [{ "id": "adhik-maas-apupadan-samapti", "name_ne": "अधिकमास अपूपदान समाप्ति" }]
+    },
+    { "bs_day": 29, "festivals": [{ "id": "bhanu-jayanti", "name_ne": "भानु जयन्ती" }] }
+  ],
+  "ad_fixed": [
+    { "ad_month": 6, "ad_day": 15, "festivals": [{ "id": "world-elder-abuse-awareness-day", "name_ne": "विश्व अग्रज दुर्व्यवहार जागरुकता दिवस" }] },
+    { "ad_month": 6, "ad_day": 16, "festivals": [{ "id": "international-family-remittance-day", "name_ne": "अन्तर्राष्ट्रिय परिवार रेमिटेयान्स दिवस" }] },
+    { "ad_month": 6, "ad_day": 17, "festivals": [{ "id": "world-drought-day", "name_ne": "विश्व खडेरी रोकथाम दिवस" }] },
+    { "ad_month": 6, "ad_day": 19, "festivals": [{ "id": "world-day-end-sexual-violence-conflict", "name_ne": "विश्व द्वन्द्वमा यौन हिंसा उन्मूलनको दिवस" }] },
+    { "ad_month": 6, "ad_day": 21, "festivals": [
+      { "id": "world-yoga-day", "name_ne": "विश्व योग दिवस" },
+      { "id": "world-music-day", "name_ne": "विश्व संगीत दिवस" }
+    ]},
+    { "ad_month": 6, "ad_day": 23, "festivals": [{ "id": "world-olympic-day", "name_ne": "विश्व ओलम्पिक दिवस" }] },
+    { "ad_month": 6, "ad_day": 27, "festivals": [{ "id": "msme-day", "name_ne": "सूक्ष्म साना र मझौला उद्योग दिवस" }] },
+    { "ad_month": 6, "ad_day": 30, "festivals": [
+      { "id": "world-asteroid-day", "name_ne": "विश्व क्षुद्रग्रह दिवस" },
+      { "id": "world-smile-day", "name_ne": "विश्व मुस्कान दिवस" }
+    ]},
+    { "ad_month": 7, "ad_day": 2, "festivals": [{ "id": "world-sports-journalism-day", "name_ne": "विश्व खेलकुद पत्रकार दिवस" }] },
+    { "ad_month": 7, "ad_day": 12, "festivals": [{ "id": "world-day-combat-sandstorms", "name_ne": "विश्व बालुवा र धुलो आंधी सँग लड्ने दिवस" }] },
+    { "ad_month": 7, "ad_day": 15, "festivals": [{ "id": "world-youth-skills-day", "name_ne": "विश्व युवा दक्षता दिवस" }] }
+  ]
+}

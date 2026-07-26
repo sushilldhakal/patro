@@ -1,0 +1,170 @@
+{
+  "_meta": {
+    "bs_year": 2083,
+    "bs_month": 2,
+    "month_name_ne": "जेठ",
+    "ad_range": "2026-05-15 — 2026-06-14",
+    "description": "Jestha 2083 festival catalog — solar, lunar, bs_fixed, ad_fixed. BS 2083 has Adhik Jestha; lunar rows use festival masa and the engine prefers Adhik when present.",
+    "source": "User patro export Jestha 2083 (2026-07-26)"
+  },
+  "solar": [
+    {
+      "bs_day": 1,
+      "festivals": [
+        { "id": "vrish-sankranti", "name_ne": "ज्येष्ठ संक्रान्ति" }
+      ]
+    }
+  ],
+  "lunar_jestha": [
+    {
+      "bs_day": 1,
+      "tithi": 13,
+      "paksha": "krishna",
+      "festivals": [{ "id": "sithi-chahre", "name_ne": "सिथि चःह्रे पूजा" }]
+    },
+    {
+      "bs_day": 1,
+      "tithi": 15,
+      "paksha": "krishna",
+      "festivals": [
+        { "id": "batsavitri-vrata", "name_ne": "वटसावित्री व्रत" },
+        { "id": "sani-jayanti", "name_ne": "शनि जयन्ती" },
+        { "id": "matsyanarayan-mela-end", "name_ne": "मत्स्यनारायण मेला समाप्ति" },
+        { "id": "sombare-aunshi", "name_ne": "सोमबारे औंसी" }
+      ]
+    },
+    {
+      "bs_day": 2,
+      "tithi": 14,
+      "paksha": "krishna",
+      "festivals": [
+        { "id": "darsha-shraddha-jestha", "name_ne": "दर्श श्राद्ध" },
+        { "id": "nisi-barne-jestha", "name_ne": "निशिबार्ने" }
+      ]
+    },
+    {
+      "bs_day": 9,
+      "tithi": 8,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "shukla-ashtami-brata-jestha", "name_ne": "अष्टमीब्रत" },
+        { "id": "gorakhkali-puja-jestha", "name_ne": "गोरखकाली पुजा" }
+      ]
+    },
+    {
+      "bs_day": 8,
+      "tithi": 7,
+      "paksha": "shukla",
+      "festivals": [{ "id": "siddhicharan-jayanti", "name_ne": "युगकवि सिद्धिचरण श्रेष्ठ जयन्ती" }]
+    },
+    {
+      "bs_day": 11,
+      "tithi": 10,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "ganga-dashahara", "name_ne": "गङ्गादशहरा" },
+        { "id": "gosainkunda-snan-samapti", "name_ne": "गोसाइँकुण्ड स्नान समाप्ति" }
+      ]
+    },
+    {
+      "bs_day": 12,
+      "tithi": 11,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "hatyamochan-tirtha-snan", "name_ne": "हत्यामोचन तीर्थस्नान" },
+        { "id": "padmini-ekadashi", "name_ne": "पद्मिनी एकादशी व्रत" },
+        { "id": "nirjala-ekadashi", "name_ne": "निर्जला एकादशी" }
+      ]
+    },
+    {
+      "bs_day": 16,
+      "tithi": 13,
+      "paksha": "shukla",
+      "festivals": [{ "id": "pradosh-vrata-baishakh-shukla", "name_ne": "प्रदोष व्रत", "notes": "Shukla Triodashi in Adhik Jestha patro grid" }]
+    },
+    {
+      "bs_day": 17,
+      "tithi": 15,
+      "paksha": "shukla",
+      "festivals": [
+        { "id": "jya-punhi", "name_ne": "अनला पुन्ही" },
+        { "id": "dahi-chiura-khane-din", "name_ne": "दहीचिउरा खाने दिन" },
+        { "id": "kabir-jayanti", "name_ne": "कवीर जयन्ती" }
+      ]
+    },
+    {
+      "bs_day": 23,
+      "tithi": 7,
+      "paksha": "krishna",
+      "festivals": [{ "id": "ravi-saptami", "name_ne": "रवि सप्तमी ब्रत" }]
+    },
+    {
+      "bs_day": 24,
+      "tithi": 8,
+      "paksha": "krishna",
+      "festivals": [{ "id": "gorakhkali-puja-jestha", "name_ne": "गोरखकाली पुजा" }]
+    },
+    {
+      "bs_day": 27,
+      "tithi": 11,
+      "paksha": "krishna",
+      "festivals": [{ "id": "parama-ekadashi", "name_ne": "परमा एकादशी व्रत" }]
+    },
+    {
+      "bs_day": 28,
+      "tithi": 13,
+      "paksha": "krishna",
+      "festivals": [{ "id": "pradosh-vrata-jestha-krishna", "name_ne": "प्रदोष व्रत" }]
+    }
+  ],
+  "lunar_ashadh_on_jestha_grid": [
+    {
+      "bs_day": 29,
+      "lunar_month": "Ashadh",
+      "tithi": 13,
+      "paksha": "krishna",
+      "festivals": [{ "id": "anala-chahre", "name_ne": "अनला चःह्रे पूजा" }]
+    }
+  ],
+  "adhik": [
+    {
+      "bs_day": 2,
+      "festivals": [{ "id": "adhik-maas-arambha", "name_ne": "अधिकमास आरम्भ" }]
+    }
+  ],
+  "bs_fixed": [
+    { "bs_day": 2, "festivals": [{ "id": "madan-ashrit-smriti-diwas", "name_ne": "मदन आश्रित स्मृति दिवस" }] },
+    { "bs_day": 15, "festivals": [
+      { "id": "ganatantra-diwas", "name_ne": "गणतन्त्र दिवस" },
+      { "id": "shanti-sena-diwas", "name_ne": "शान्ति सेना दिवस" }
+    ]},
+    { "bs_day": 20, "festivals": [
+      { "id": "caste-untouchability-abolition-day", "name_ne": "जातीय भेदभाव तथा छुवाछुत उन्मुलन राष्ट्रिय दिवस" },
+      { "id": "child-abuse-prevention-day", "name_ne": "निर्दोष बालबालिका माथि अत्याचार बिरुद्धको दिवस" }
+    ]},
+    { "bs_day": 26, "festivals": [{ "id": "national-farmer-day", "name_ne": "राष्ट्रिय कृषक दिवस" }] }
+  ],
+  "ad_fixed": [
+    { "ad_month": 5, "ad_day": 15, "festivals": [{ "id": "international-family-day", "name_ne": "अन्तर्राष्ट्रिय परिवार दिवस" }] },
+    { "ad_month": 5, "ad_day": 17, "festivals": [{ "id": "world-telecommunication-day", "name_ne": "विश्व दूरसंचार दिवस" }] },
+    { "ad_month": 5, "ad_day": 22, "festivals": [{ "id": "world-biodiversity-day", "name_ne": "जैविक विविधता दिवस" }] },
+    { "ad_month": 5, "ad_day": 28, "festivals": [
+      { "id": "world-womens-health-day", "name_ne": "विश्व महिला स्वास्थ्य दिवस" },
+      { "id": "international-menstrual-hygiene-day", "name_ne": "अन्तर्राष्ट्रिय मर्यादित महिनावारी दिवस" }
+    ]},
+    { "ad_month": 5, "ad_day": 29, "festivals": [
+      { "id": "international-everest-day", "name_ne": "विश्व सगरमाथा दिवस" },
+      { "id": "ganatantra-diwas", "name_ne": "गणतन्त्र दिवस", "notes": "Also bs_fixed Jestha 15 — patro may show on adjacent AD day" }
+    ]},
+    { "ad_month": 5, "ad_day": 31, "festivals": [{ "id": "world-no-tobacco-day", "name_ne": "विश्व धुम्रपान रहित दिवस" }] },
+    { "ad_month": 6, "ad_day": 1, "festivals": [
+      { "id": "world-forest-consumer-day", "name_ne": "वन उपभोक्ता दिवस" },
+      { "id": "global-day-of-parents", "name_ne": "अभिभावक दिवस" }
+    ]},
+    { "ad_month": 6, "ad_day": 3, "festivals": [{ "id": "world-bicycle-day", "name_ne": "विश्व साइकल दिवस" }] },
+    { "ad_month": 6, "ad_day": 5, "festivals": [{ "id": "world-environment-day", "name_ne": "विश्व वातावरण दिवस" }] },
+    { "ad_month": 6, "ad_day": 8, "festivals": [{ "id": "world-oceans-day", "name_ne": "विश्व समुद्र दिवस" }] },
+    { "ad_month": 6, "ad_day": 12, "festivals": [{ "id": "anti-child-labour-day", "name_ne": "बालश्रम विरुद्ध दिवस" }] },
+    { "ad_month": 6, "ad_day": 14, "festivals": [{ "id": "world-blood-donor-day", "name_ne": "विश्व रक्तदाता दिवस", "notes": "Shown on Baishakh 31 / Jestha grid overlap in patro" }] }
+  ]
+}
