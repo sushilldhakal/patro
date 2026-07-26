@@ -26,6 +26,7 @@ def test_caption_and_urls():
     day = date(2026, 7, 25)
     fields = {
         "weekday": "शनिवार",
+        "bs_line": "साउन ९, २०८३",
         "ad_line": "२५ जुलाई २०२६",
         "tithi": "एकादशी",
         "nakshatra": "ज्येष्ठा",
@@ -39,11 +40,14 @@ def test_caption_and_urls():
         "नक्षत्र: ज्येष्ठा (दिनभर)",
         "करण: विष्टि → बव (११:५०) → बालव (०१:०२)",
     ]
-    caption = poster._build_caption(fields, day, lines)
+    caption = poster._build_caption(fields, lines)
+    assert "साउन ९, २०८३ (२५ जुलाई २०२६)" in caption  # BS date alongside AD
     assert "सूर्योदय ०५:२२" in caption  # times localised to Devanagari digits
     assert "तिथि: एकादशी → द्वादशी (११:५०)" in caption  # transition schedule included
     assert "करण: विष्टि → बव (११:५०) → बालव (०१:०२)" in caption
-    assert "/panchanga?city=1283240&date=2026-07-25" in caption
+    # Bare link — no query params, since the page already defaults to today
+    # in Kathmandu with no stored preference / URL params.
+    assert caption.strip().endswith("https://vedicpatro.com/panchanga")
 
     from services.fb_post_content import image_url
     assert image_url(day).endswith("date=2026-07-25&full=1")
@@ -95,6 +99,37 @@ def test_post_photo_by_url_builds_request(monkeypatch):
     assert "/9999/photos" in captured["url"]
     assert "access_token=TOK" in captured["body"]
     assert "url=" in captured["body"] and "caption=" in captured["body"]
+
+
+def test_post_link_builds_request(monkeypatch):
+    from services import fb_page
+
+    captured: dict = {}
+
+    class _FakeResp(io.BytesIO):
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(request, timeout=0):
+        captured["url"] = request.full_url
+        captured["body"] = request.data.decode("utf-8")
+        return _FakeResp(json.dumps({"id": "111_222"}).encode())
+
+    monkeypatch.setattr(fb_page.urllib.request, "urlopen", fake_urlopen)
+
+    post_id = fb_page.post_link(
+        link="https://vedicpatro.com/panchanga",
+        message="नमस्ते",
+        page_id="9999",
+        access_token="TOK",
+    )
+    assert post_id == "111_222"
+    assert "/9999/feed" in captured["url"]  # feed, not /photos — makes the card tappable
+    assert "access_token=TOK" in captured["body"]
+    assert "link=" in captured["body"] and "message=" in captured["body"]
 
 
 def test_post_photo_raises_on_bad_response(monkeypatch):

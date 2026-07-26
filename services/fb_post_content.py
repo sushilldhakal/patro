@@ -38,10 +38,12 @@ def image_url(day: date) -> str:
     return f"{config.frontend_url()}/api/og-image?{query}"
 
 
-def page_url(day: date) -> str:
-    """Shareable /panchanga link for Kathmandu on `day`."""
-    query = urlencode({"city": KATHMANDU_CITY_ID, "date": day.isoformat()})
-    return f"{config.frontend_url()}/panchanga?{query}"
+def page_url() -> str:
+    """Bare /panchanga link. No query params on purpose: with no stored
+    preference and no URL params, the page already defaults to today in
+    Kathmandu — the exact place/date the daily post is about — so the plain
+    URL is both simpler and correct."""
+    return f"{config.frontend_url()}/panchanga"
 
 
 def sunrise_datetime(payload: dict[str, Any], day: date) -> datetime | None:
