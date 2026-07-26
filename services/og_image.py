@@ -154,13 +154,14 @@ def render_panchanga_og(
     loc_font = _font("Bold", 34)
     draw.text((60, y), f.get("location") or "Nepal", font=loc_font, fill=_TEAL)
 
+    # Bikram Sambat leads; the Gregorian date is the small secondary line.
     date_font = _font("Bold", 30)
-    date_str = " · ".join(x for x in (f["weekday"], f["ad_line"]) if x)
+    date_str = " · ".join(x for x in (f["weekday"], f["bs_line"] or f["ad_line"]) if x)
     draw.text((_W - 60 - _text_w(draw, date_str, date_font), y + 4),
               date_str, font=date_font, fill=_INK)
 
     if f["bs_line"]:
-        draw.text((60, y + 46), f["bs_line"], font=_font("Regular", 26), fill=_MUTED)
+        draw.text((60, y + 46), f["ad_line"], font=_font("Regular", 26), fill=_MUTED)
 
     # ── Big tithi ────────────────────────────────────────────────────────────
     ty = y + 108

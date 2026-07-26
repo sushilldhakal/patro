@@ -85,12 +85,10 @@ def og_image(
 
     if screenshot_available():
         try:
-            # Drop `full` from the query the screenshotter passes to the preview
-            # page — it only controls letterboxing here, not the chart itself.
-            preview_query = "&".join(
-                part for part in request.url.query.split("&") if not part.startswith("full=")
-            )
-            png = render_timeline_png(preview_query, letterbox=not full)
+            # `full` is passed through: the preview page renders the tall
+            # standalone chart for it, and the fixed 1200×630 share card
+            # otherwise.
+            png = render_timeline_png(request.url.query, letterbox=not full)
         except Exception:
             logger.warning("OG timeline screenshot failed; using card fallback", exc_info=True)
 
@@ -160,12 +158,16 @@ def share_panchanga(
     suffix = f"?{qs}" if qs else ""
     page_url = f"{base}/panchanga{suffix}"
     # Served via /api/og-image (nginx proxies /api → FastAPI), so it resolves
-    # without an extra nginx rule for a bare /og-image.
-    image_url = f"{base}/api/og-image{suffix}"
+    # without an extra nginx rule for a bare /og-image. `v` busts the CDN /
+    # scraper caches when the card layout changes — keep it in step with
+    # CHART_OG_IMAGE_URL on the front-end.
+    image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=2"
 
-    date_line = " · ".join(x for x in (f["weekday"], f["ad_line"]) if x)
-    date_part = f"{f['bs_line']} ({f['ad_line']})" if f['bs_line'] else f['ad_line']
-    title = f"{f['paksha']} {f['tithi']} · {label} · {date_part} — पञ्चाङ्ग | Vedic Patro"
+    # Nepali (Bikram Sambat) date everywhere a human reads it — the Gregorian
+    # date belongs in the URL, not in the share title.
+    date_ne = f["bs_line"] or f["ad_line"]
+    date_line = " · ".join(x for x in (f["weekday"], date_ne) if x)
+    title = f"{f['paksha']} {f['tithi']} · {label} · {date_ne} — पञ्चाङ्ग | Vedic Patro"
     description = (
         f"{label}, {date_line}। तिथि {f['tithi']}, नक्षत्र {f['nakshatra']}, "
         f"योग {f['yoga']}, करण {f['karana']}। सूर्योदय {f['sunrise']}, सूर्यास्त {f['sunset']}।"

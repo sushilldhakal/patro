@@ -64,3 +64,15 @@ def test_share_html_carries_dynamic_og_image():
     # The image URL reuses the same query params as the shared page URL.
     assert "/og-image?" in resp.text
     assert "date=2026-07-25" in resp.text
+
+
+def test_share_title_uses_bikram_sambat_date():
+    """The link-preview title is Nepali all the way through: the Bikram Sambat
+    date, never the Gregorian one (which stays in the URL)."""
+    client = TestClient(__import__("app.main", fromlist=["app"]).app)
+    resp = client.get("/share/panchanga", params={"date": "2026-07-25", "place": "Kathmandu"})
+    assert resp.status_code == 200
+    title = resp.text.split('<title>')[1].split('</title>')[0]
+    f = og_fields(_payload(), date_ad="2026-07-25", location_name="Kathmandu")
+    assert f["bs_line"] and f["bs_line"] in title
+    assert f["ad_line"] not in title

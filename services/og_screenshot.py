@@ -31,9 +31,10 @@ _CACHE_TTL_SECONDS = 24 * 60 * 60  # a shared date is fixed; the bare "today" ro
 _VIEWPORT = {"width": 1280, "height": 960}
 
 # Final Open Graph frame: 1200×630 (the 1.91:1 Facebook/X expect), rendered at
-# 2× for crispness. The tall chart is fit-scaled and centred on a cream canvas so
-# the whole timeline stays visible — no cropping — with seamless padding (the
-# chart's own background is the same cream).
+# 2× for crispness. The preview page already lays its card out at exactly this
+# size, so the fit below is normally a no-op; it stays as a guard so a capture
+# that drifts off-size still yields a valid 1200×630 PNG rather than a stretched
+# or cropped one.
 OG_W, OG_H, OG_SCALE = 1200, 630, 2
 _CANVAS_BG = (247, 243, 234)  # #F7F3EA — matches the preview page background
 
@@ -49,8 +50,13 @@ def screenshot_available() -> bool:
     return True
 
 
+# Bump when the preview page's layout changes so a redeploy stops serving the
+# previous card from the on-disk cache.
+_RENDER_VERSION = "2"
+
+
 def _cache_path(query: str) -> Path:
-    digest = hashlib.sha256(query.encode("utf-8")).hexdigest()[:24]
+    digest = hashlib.sha256(f"{_RENDER_VERSION}:{query}".encode("utf-8")).hexdigest()[:24]
     return _CACHE_DIR / f"{digest}.png"
 
 
