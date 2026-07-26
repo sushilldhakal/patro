@@ -77,12 +77,13 @@ def compute_deshaantar(
     standard_meridian_longitude: float,
 ) -> dict[str, Any]:
     """
-    Longitude correction from the zone meridian.
+    Longitude correction from the Gaurishankar / zone meridian (patro table sign).
 
-    (standard_meridian − local_longitude) × 4 minutes per degree.
-    Positive (धन) → add; negative (ऋण) → subtract (Surya convention).
+    (local_longitude − standard_meridian) × 4 minutes per degree.
+    West of the meridian → negative (e.g. Kathmandu ≈ −3:42).
+    East of the meridian → positive. Listed rise/set apply −minutes_total internally.
     """
-    delta_min = (standard_meridian_longitude - local_longitude) * 4.0
+    delta_min = (local_longitude - standard_meridian_longitude) * 4.0
     return {
         **_split_minutes_signed(delta_min),
         "name_ne": "देशान्तर",

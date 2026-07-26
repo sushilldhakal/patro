@@ -33,12 +33,14 @@ def test_standard_meridian_kathmandu_kmt_era():
     assert abs(meridian - 85.316667) < 0.02
 
 
-def test_deshaantar_kathmandu_positive_dhan():
+def test_deshaantar_kathmandu_west_of_meridian_is_negative():
+    """Kathmandu is west of 86°15′ NPT meridian — patro shows negative deshaantar."""
     meridian = standard_meridian_longitude("Asia/Kathmandu", on_date=date(2026, 6, 11))
     d = compute_deshaantar(85.324, meridian)
-    assert d["sign"] == "dhan"
-    assert d["apply"] == "add"
+    assert d["sign"] == "rin"
+    assert d["minutes_total"] < 0
     assert d["minutes"] >= 3
+    assert abs(d["minutes_total"] + 3.704) < 0.01
 
 
 def test_belaantar_has_sign_and_labels():

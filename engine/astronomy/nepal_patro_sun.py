@@ -73,7 +73,7 @@ def nepal_patro_solar_event(
         label = "Sunrise" if rise else "Sunset"
         raise EphemerisError(f"{label} calculation failed for {date_val}")
     deshaantar = compute_deshaantar(longitude, meridian)
-    return base + timedelta(minutes=deshaantar["minutes_total"])
+    return base - timedelta(minutes=deshaantar["minutes_total"])
 
 
 def should_use_nepal_patro_sun(
