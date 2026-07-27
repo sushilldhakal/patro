@@ -25,7 +25,6 @@ from services.holiday_generator import (
     FestivalCacheMissError,
     HolidayCacheMissError,
     get_bs_holidays,
-    holidays_on_date,
 )
 from services.panchanga_api import (
     build_calendar_header,
@@ -806,8 +805,3 @@ def calendar_header(bs_year: int, bs_month: int, location: LocationDep):
         return build_calendar_header(bs_year, bs_month, location)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-
-@router.get("/day/{target_date}")
-def day_view_legacy(target_date: date, location: LocationDep):
-    return holidays_on_date(target_date, location)
