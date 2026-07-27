@@ -369,6 +369,37 @@ def nepal_eclipse_year(
     )
 
 
+@router.get("/nepal/panchak/year/{year}")
+def nepal_panchak_year(
+    year: int,
+    location: LocationDep,
+    request: Request,
+    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+):
+    """Annual Panchak windows — Moon in Dhanishta pada 3 through Revati."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    if era == "ad":
+        if not 1943 <= year <= 2090:
+            raise HTTPException(status_code=400, detail="ad year out of supported range")
+        from engine.vedic.panchak_calendar import build_panchak_ad_year
+
+        key = f"panchak_ad_{year}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request, key, lambda: build_panchak_ad_year(year, location),
+            cache_control=bs_year_cache_control(year + 56),
+        )
+
+    _validate_bs_year(year)
+    from engine.vedic.panchak_calendar import build_panchak_bs_year
+
+    key = f"panchak_{year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_panchak_bs_year(year, location),
+        cache_control=bs_year_cache_control(year),
+    )
+
+
 @router.get("/patro/{bs_year}/{bs_month}")
 def patro_month_legacy(
     bs_year: int, bs_month: int, location: LocationDep, request: Request, panchanga: bool = Query(True)
