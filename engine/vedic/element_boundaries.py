@@ -20,9 +20,11 @@ from engine.astronomy.positions import (
     get_yoga,
 )
 
-PADA_SPAN = NAKSHATRA_SPAN / 4
+from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.tithi import calculate_tithi
 from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
+
+PADA_SPAN = NAKSHATRA_SPAN / 4
 
 
 def _find_span_start(
@@ -99,14 +101,12 @@ def _enrich_next_anga(
     timezone_name: str | None = None,
 ) -> dict:
     """Attach end_* to block['next'] and a third anga on block['next']['next'] when needed."""
-    from engine.vedic.ghati_time import time_from_sunrise as _tfs
-
     if "end_time" not in block or "next" not in block:
         return block
 
     current_end = datetime.fromisoformat(block["end_time"].replace("Z", "+00:00"))
     next_end_dt = find_end_fn(current_end + timedelta(seconds=90))
-    next_end_info = _tfs(next_end_dt, sunrise_dt, timezone_name)
+    next_end_info = time_from_sunrise(next_end_dt, sunrise_dt, timezone_name)
     block["next"].update(
         {
             "end_time": next_end_dt.isoformat(),
@@ -122,7 +122,7 @@ def _enrich_next_anga(
 
     third_num = _next_cyclic(block["next"]["number"], cycle_size)
     third_end_dt = find_end_fn(next_end_dt + timedelta(seconds=90))
-    third_end_info = _tfs(third_end_dt, sunrise_dt, timezone_name)
+    third_end_info = time_from_sunrise(third_end_dt, sunrise_dt, timezone_name)
     block["next"]["next"] = {
         "number": third_num,
         "name": names[third_num - 1],
@@ -225,8 +225,6 @@ def _element_with_span(
     progress: float | None = None,
     timezone_name: str | None = None,
 ) -> dict:
-    from engine.vedic.ghati_time import time_from_sunrise
-
     start_info = time_from_sunrise(start_dt, sunrise_dt, timezone_name)
     end_info = time_from_sunrise(end_dt, sunrise_dt, timezone_name)
     block = {
@@ -272,8 +270,6 @@ def _enrich_next_tithi(
     1779 Paush 26 → Pratipada at Gorkha) never showed an end time. Mirrors
     ``_enrich_next_anga`` but with tithi's paksha-aware naming.
     """
-    from engine.vedic.ghati_time import time_from_sunrise
-
     if "end_time" not in block or "next" not in block:
         return block
 
@@ -456,9 +452,3 @@ def build_karana_block(
     return block
 
 
-def time_from_sunrise(
-    end_dt: datetime, sunrise_dt: datetime, timezone_name: str | None = None
-) -> dict:
-    from engine.vedic.ghati_time import time_from_sunrise as _tfs
-
-    return _tfs(end_dt, sunrise_dt, timezone_name)

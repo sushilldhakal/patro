@@ -175,8 +175,6 @@ BRATABANDHA_NAKSHATRA_MODES: dict[str, frozenset[int]] = {
     "nepali": BRATABANDHA_NAKSHATRAS_NEPALI,
     "liberal": BRATABANDHA_NAKSHATRAS_LIBERAL,
 }
-# Back-compat alias — older code/tests expect this name.
-BRATABANDHA_MUHURTA_NAKSHATRAS = BRATABANDHA_NAKSHATRAS_CLASSICAL
 BRATABANDHA_SHUKLA_TITHIS = frozenset({2, 3, 5, 10, 11, 12})
 BRATABANDHA_KRISHNA_TITHIS = frozenset({2, 3, 5})
 # Galagraha tithis (display 1–15) — classical Upanayana rejects these; rikta
