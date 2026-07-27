@@ -356,7 +356,7 @@ def build_ad_month_calendar(
         day_festivals = _festivals_for_day(festivals, current)
         panchanga = get_daily_panchanga(current, location)
         row: dict[str, Any] = {
-            "day": current.day,
+            "day": bs_d,
             "date_ad": current.isoformat(),
             "day_bs": bs_d,
             "month_bs": bs_m,
