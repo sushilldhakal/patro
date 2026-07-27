@@ -7,7 +7,6 @@ from fastapi.responses import Response
 from api.deps import LocationDep, _validate_bs_month, _validate_bs_year
 from services.holiday_generator import precompute_bs_year
 from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month, resolve_panchanga_date
-from services.patro_generator import generate_bs_month_patro, generate_patro
 from services.presentation import render_panchanga_month
 
 router = APIRouter()
@@ -63,17 +62,6 @@ def nepal_patro_grid(
 
     key = f"npatro_{bs_year}_{bs_month}_{format}_{locale}_{location_cache_key(location)}"
     return serve_cached_json(request, key, build_payload, cache_control=bs_year_cache_control(bs_year))
-
-
-@router.get("/nepal/patro/{bs_year}/{bs_month}/legacy")
-def nepal_patro_bs(bs_year: int, bs_month: int, location: LocationDep):
-    """Festival panchanga (patro) for a BS month."""
-    _validate_bs_year(bs_year)
-    _validate_bs_month(bs_month)
-    try:
-        return generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=True)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/nepal/patro/ad/{ad_year}/{ad_month}")
@@ -397,33 +385,4 @@ def nepal_panchak_year(
     return serve_cached_json(
         request, key, lambda: build_panchak_bs_year(year, location),
         cache_control=bs_year_cache_control(year),
-    )
-
-
-@router.get("/patro/{bs_year}/{bs_month}")
-def patro_month_legacy(
-    bs_year: int, bs_month: int, location: LocationDep, request: Request, panchanga: bool = Query(True)
-):
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
-
-    _validate_bs_year(bs_year)
-    _validate_bs_month(bs_month)
-    key = f"patromon_{bs_year}_{bs_month}_{int(panchanga)}_{location_cache_key(location)}"
-    return serve_cached_json(
-        request,
-        key,
-        lambda: generate_bs_month_patro(bs_year, bs_month, location, include_panchanga=panchanga),
-        cache_control=bs_year_cache_control(bs_year),
-    )
-
-
-@router.get("/patro/{bs_year}")
-def patro_year_legacy(bs_year: int, location: LocationDep, request: Request, panchanga: bool = Query(True)):
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
-
-    _validate_bs_year(bs_year)
-    key = f"patroyear_{bs_year}_{int(panchanga)}_{location_cache_key(location)}"
-    return serve_cached_json(
-        request, key, lambda: generate_patro(bs_year, location, include_panchanga=panchanga),
-        cache_control=bs_year_cache_control(bs_year),
     )
