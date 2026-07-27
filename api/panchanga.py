@@ -356,7 +356,8 @@ def nepal_holidays(
                 if date.fromisoformat(h["start_date"]) <= target_month_end
                 and date.fromisoformat(h["end_date"]) >= target_month_start
             ]
-        return {"ad_year": year, "era": "ad", "count": len(holidays_list), "holidays": holidays_list}
+        enriched = _enrich_holiday_bs_dates(holidays_list)
+        return {"ad_year": year, "era": "ad", "count": len(enriched), "holidays": enriched}
 
     _validate_bs_year(year)
     try:
