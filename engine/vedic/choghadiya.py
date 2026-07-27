@@ -5,13 +5,51 @@ from __future__ import annotations
 from typing import Any
 
 CHOGHADIYA = [
-    {"name_ne": "उद्वेग", "bad": True},
-    {"name_ne": "चर"},
-    {"name_ne": "लाभ"},
-    {"name_ne": "अमृत"},
-    {"name_ne": "काल", "bad": True},
-    {"name_ne": "शुभ"},
-    {"name_ne": "रोग", "bad": True},
+    {
+        "name_ne": "उद्वेग",
+        "name_en": "Udvega",
+        "quality_ne": "चिन्ता (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
+        "quality_en": "Anxiety (Avoid Important Tasks)",
+        "bad": True,
+    },
+    {
+        "name_ne": "चर",
+        "name_en": "Chara",
+        "quality_ne": "यात्रा र चलचलका लागि राम्रो",
+        "quality_en": "Good for Movement & Travel",
+    },
+    {
+        "name_ne": "लाभ",
+        "name_en": "Labha",
+        "quality_ne": "लाभ",
+        "quality_en": "Gain",
+    },
+    {
+        "name_ne": "अमृत",
+        "name_en": "Amrita",
+        "quality_ne": "उत्तम (अत्यन्त शुभ)",
+        "quality_en": "Excellent (Highly Auspicious)",
+    },
+    {
+        "name_ne": "काल",
+        "name_en": "Kala",
+        "quality_ne": "अशुभ",
+        "quality_en": "Inauspicious",
+        "bad": True,
+    },
+    {
+        "name_ne": "शुभ",
+        "name_en": "Shubha",
+        "quality_ne": "शुभ",
+        "quality_en": "Auspicious",
+    },
+    {
+        "name_ne": "रोग",
+        "name_en": "Roga",
+        "quality_ne": "रोग (महत्त्वपूर्ण काम टाढा राख्नुहोस्)",
+        "quality_en": "Disease (Avoid Important Tasks)",
+        "bad": True,
+    },
 ]
 
 CHO_DAY_START = [0, 3, 6, 2, 5, 1, 4]
@@ -54,6 +92,10 @@ def build_choghadiya(day_ghati: float, vaara_num: int) -> list[dict[str, Any]]:
         segments.append(
             {
                 "name_ne": c["name_ne"],
+                "name_en": c["name_en"],
+                "name": c["name_en"],
+                "quality_ne": c["quality_ne"],
+                "quality_en": c["quality_en"],
                 "start_g": i * d_seg,
                 "end_g": (i + 1) * d_seg,
                 "bad": bool(c.get("bad")),
@@ -65,6 +107,10 @@ def build_choghadiya(day_ghati: float, vaara_num: int) -> list[dict[str, Any]]:
         segments.append(
             {
                 "name_ne": c["name_ne"],
+                "name_en": c["name_en"],
+                "name": c["name_en"],
+                "quality_ne": c["quality_ne"],
+                "quality_en": c["quality_en"],
                 "start_g": day_ghati + i * n_seg,
                 "end_g": day_ghati + (i + 1) * n_seg,
                 "bad": bool(c.get("bad")),
