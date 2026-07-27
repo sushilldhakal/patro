@@ -109,6 +109,7 @@ def build_daily_state(
         "paksha_ne": raw["paksha"]["label_ne"],
         "chandra_rashi": raw["chandra_rashi"]["name"],
         "chandra_rashi_ne": raw["chandra_rashi"]["name_ne"],
+        "chandra_rashi_spans": raw.get("chandra_rashi_spans") or [],
         "surya_rashi": raw["surya_rashi"]["name"],
         "surya_rashi_ne": raw["surya_rashi"]["name_ne"],
         "ritu": raw["ritu"]["name"],
@@ -310,6 +311,106 @@ def build_month_calendar(
         "month_name_ne": bs_month_name(bs_month, nepali=True),
         "month_start_ad": month_start.isoformat(),
         "month_length": month_length,
+        "lunar_month": lunar.get("name"),
+        "lunar_month_full": lunar.get("full_name"),
+        "lunar_month_is_adhik": lunar.get("is_adhik", False),
+        "lunar_month_type": lunar.get("type"),
+        "location": location.as_dict(),
+        "calendar": calendar,
+    }
+
+
+def build_ad_month_calendar(
+    ad_year: int,
+    ad_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    full: bool = False,
+    exclude_international: bool = False,
+) -> dict[str, Any]:
+    """Gregorian month as a calendar array — Jan–Dec boundaries for English UI."""
+    import calendar as _cal
+    from datetime import timedelta
+    from engine.vedic.bikram_sambat import gregorian_to_bs
+
+    if not 1 <= ad_month <= 12:
+        raise ValueError("ad_month must be 1..12")
+
+    last_day = _cal.monthrange(ad_year, ad_month)[1]
+    month_start = date(ad_year, ad_month, 1)
+    month_end = date(ad_year, ad_month, last_day)
+    bs_years = sorted({gregorian_to_bs(month_start)[0], gregorian_to_bs(month_end)[0]})
+
+    festivals: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for bs_year in bs_years:
+        for f in _collect_bs_year_festivals(bs_year, location):
+            if f["id"] not in seen_ids:
+                seen_ids.add(f["id"])
+                festivals.append(f)
+
+    calendar: list[dict[str, Any]] = []
+    current = month_start
+    while current <= month_end:
+        bs_y, bs_m, bs_d = gregorian_to_bs(current)
+        day_festivals = _festivals_for_day(festivals, current)
+        panchanga = get_daily_panchanga(current, location)
+        row: dict[str, Any] = {
+            "day": current.day,
+            "date_ad": current.isoformat(),
+            "day_bs": bs_d,
+            "month_bs": bs_m,
+            "year_bs": bs_y,
+            "weekday": panchanga["vaara"]["name_ne"],
+            "weekday_en": panchanga["vaara"]["name_english"],
+            "weekday_ne": panchanga["vaara"]["name_ne"],
+            "tithi": panchanga["tithi"]["name"],
+            "tithi_ne": panchanga["tithi"]["name_ne"],
+            "paksha": panchanga["paksha"]["name"],
+            "paksha_ne": panchanga["paksha"].get("name_ne"),
+            "nakshatra": panchanga["nakshatra"]["name"],
+            "nakshatra_ne": panchanga["nakshatra"].get("name_ne"),
+            "yoga": panchanga["yoga"]["name"],
+            "yoga_ne": panchanga["yoga"].get("name_ne"),
+            "karana": panchanga["karana"]["name"],
+            "karana_ne": panchanga["karana"].get("name_ne"),
+            "chandra_rashi": panchanga["chandra_rashi"]["name"],
+            "chandra_rashi_ne": panchanga["chandra_rashi"].get("name_ne"),
+            "sunrise": panchanga["sunrise"]["local_time_short"],
+            "sunset": panchanga["sunset"]["local_time_short"],
+            "aayan": panchanga["aayan"]["name"],
+            "aayan_ne": panchanga["aayan"]["name_ne"],
+            "ayana_mark": ayana_kranti_mark(panchanga["aayan"]),
+            "moonrise": (panchanga.get("moonrise") or {}).get("local_time_short"),
+            "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
+            "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),
+            "moonset_local": (panchanga.get("moonset") or {}).get("local"),
+            "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
+        }
+        if full:
+            row["panchanga"] = build_daily_state(
+                current,
+                location,
+                include_festivals=True,
+                include_detail=False,
+            )
+        calendar.append(row)
+        current += timedelta(days=1)
+
+    mid_greg = date(ad_year, ad_month, min(15, last_day))
+    mid_panchanga = get_daily_panchanga(mid_greg, location)
+    lunar = mid_panchanga["lunar_month"]
+    month_label = mid_greg.strftime("%B")
+    return {
+        "era": "ad",
+        "year_ad": ad_year,
+        "month_ad": ad_month,
+        "year_bs": bs_years[0] if len(bs_years) == 1 else None,
+        "month_bs": None,
+        "month_name": month_label,
+        "month_name_ne": month_label,
+        "month_start_ad": month_start.isoformat(),
+        "month_length": last_day,
         "lunar_month": lunar.get("name"),
         "lunar_month_full": lunar.get("full_name"),
         "lunar_month_is_adhik": lunar.get("is_adhik", False),

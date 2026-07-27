@@ -178,6 +178,42 @@ def panchanga_month(
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_year))
 
 
+@router.get("/panchanga/ad/{ad_year}/{ad_month}")
+def panchanga_ad_month(
+    ad_year: int,
+    ad_month: int,
+    location: LocationDep,
+    request: Request,
+    full: bool = Query(False, description="Include full daily state per day"),
+    clock: str | None = Query(None, description="HH:MM civil clock — ephemeris mode for each day in the month"),
+    exclude_international: bool = Query(
+        False,
+        description="Drop international 'World day' observances (panchanga month grid)",
+    ),
+):
+    """Gregorian (AD) month calendar — Jan–Dec boundaries for English UI."""
+    from services.panchanga_api import build_ad_month_calendar, build_month_calendar_at_clock
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    if not 1943 <= ad_year <= 2090:
+        raise HTTPException(status_code=400, detail="ad year out of supported range")
+    if not 1 <= ad_month <= 12:
+        raise HTTPException(status_code=400, detail="ad_month must be 1..12")
+
+    variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}"
+    key = f"admonth_{ad_year}_{ad_month}_{variant}_{location_cache_key(location)}"
+
+    def build():
+        if clock:
+            raise HTTPException(status_code=400, detail="clock mode not supported for AD month yet")
+        return build_ad_month_calendar(
+            ad_year, ad_month, location, full=full,
+            exclude_international=exclude_international,
+        )
+
+    return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(ad_year + 56))
+
+
 @router.get("/panchanga/{date_key}")
 def panchanga_day(
     date_key: str,

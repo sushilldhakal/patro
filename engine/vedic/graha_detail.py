@@ -242,6 +242,10 @@ def _bs_year_range(bs_year: int) -> tuple[date, date]:
     return year_start, year_end
 
 
+def _ad_year_range(ad_year: int) -> tuple[date, date]:
+    return date(ad_year, 1, 1), date(ad_year, 12, 31)
+
+
 def _bs_label_for(d: date) -> str | None:
     from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 
@@ -384,9 +388,28 @@ def _planet_period(
 
 def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
     """Yearly combustion (asta) periods over a BS year — planets + Moon Tara Asta."""
+    year_start, year_end = _bs_year_range(bs_year)
+    payload = _build_graha_asta_for_range(year_start, year_end, location)
+    payload["bs_year"] = bs_year
+    payload["era"] = "bs"
+    return payload
+
+
+def build_graha_asta_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
+    """Yearly combustion (asta) periods over a Gregorian calendar year."""
+    year_start, year_end = _ad_year_range(ad_year)
+    payload = _build_graha_asta_for_range(year_start, year_end, location)
+    payload["ad_year"] = ad_year
+    payload["era"] = "ad"
+    return payload
+
+
+def _build_graha_asta_for_range(
+    year_start: date, year_end: date, location: Any,
+) -> dict[str, Any]:
+    """Shared asta builder for any inclusive Gregorian date span."""
     from engine.vedic.udayast import build_udayast_range
 
-    year_start, year_end = _bs_year_range(bs_year)
     init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
 
@@ -396,7 +419,6 @@ def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
     periods = _planet_asta_periods(planet_raw["events"], tz)
     periods.extend(_moon_tara_asta_periods(year_start, year_end, location, tz))
 
-    # Sort chronologically within each graha; group order follows ASTA_GRAHAS.
     def sort_key(p: dict[str, Any]) -> tuple[int, str]:
         order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
         start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
@@ -404,7 +426,6 @@ def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
 
     periods.sort(key=sort_key)
     return {
-        "bs_year": bs_year,
         "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
         "location": location.as_dict(),
         "grahas": ASTA_GRAHAS,
@@ -414,10 +435,28 @@ def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
 
 def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
     """Yearly वक्री/मार्गी station timeline over a BS year."""
+    year_start, year_end = _bs_year_range(bs_year)
+    payload = _build_graha_vakri_for_range(year_start, year_end, location)
+    payload["bs_year"] = bs_year
+    payload["era"] = "bs"
+    return payload
+
+
+def build_graha_vakri_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
+    """Yearly वक्री/मार्गी station timeline over a Gregorian calendar year."""
+    year_start, year_end = _ad_year_range(ad_year)
+    payload = _build_graha_vakri_for_range(year_start, year_end, location)
+    payload["ad_year"] = ad_year
+    payload["era"] = "ad"
+    return payload
+
+
+def _build_graha_vakri_for_range(
+    year_start: date, year_end: date, location: Any,
+) -> dict[str, Any]:
     from engine.vedic.bikram_sambat import gregorian_to_bs, format_bs_date
     from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
 
-    year_start, year_end = _bs_year_range(bs_year)
     init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise(
@@ -441,7 +480,6 @@ def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
             pass
         events.append({**e, "entry_date_ad": ad, "entry_date_bs": bs_label})
     return {
-        "bs_year": bs_year,
         "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
         "location": location.as_dict(),
         "grahas": YEARLY_GRAHAS,
@@ -477,12 +515,30 @@ _LUNAR_TYPE_EN = {
 
 def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]:
     """List the solar or lunar eclipses whose maximum falls within a BS year."""
+    year_start, year_end = _bs_year_range(bs_year)
+    payload = _build_eclipse_for_range(year_start, year_end, kind, location)
+    payload["bs_year"] = bs_year
+    payload["era"] = "bs"
+    return payload
+
+
+def build_eclipse_ad_year(ad_year: int, kind: str, location: Any) -> dict[str, Any]:
+    """List the solar or lunar eclipses whose maximum falls within a Gregorian year."""
+    year_start, year_end = _ad_year_range(ad_year)
+    payload = _build_eclipse_for_range(year_start, year_end, kind, location)
+    payload["ad_year"] = ad_year
+    payload["era"] = "ad"
+    return payload
+
+
+def _build_eclipse_for_range(
+    year_start: date, year_end: date, kind: str, location: Any,
+) -> dict[str, Any]:
     from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 
     if kind not in ("solar", "lunar"):
         raise ValueError("kind must be 'solar' or 'lunar'")
 
-    year_start, year_end = _bs_year_range(bs_year)
     init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     geopos = (float(location.lon), float(location.lat), 0.0)
@@ -540,12 +596,10 @@ def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]
             "penumbral_begin_local": _local("penumbral_begin_jd") if kind == "lunar" else None,
             "penumbral_end_local": _local("penumbral_end_jd") if kind == "lunar" else None,
         })
-        # Advance past this eclipse (min spacing ~15 days between eclipses).
         cursor = max_jd + 10.0
 
     events.sort(key=lambda e: e["max_utc"])
     return {
-        "bs_year": bs_year,
         "kind": kind,
         "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
         "location": location.as_dict(),

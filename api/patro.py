@@ -275,56 +275,97 @@ def nepal_graha_sthiti(
     )
 
 
-@router.get("/nepal/graha-asta/year/{bs_year}")
-def nepal_graha_asta_year(bs_year: int, location: LocationDep, request: Request):
-    """Yearly heliacal udaya/asta (rising/setting) timeline for a BS year."""
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
-
-    _validate_bs_year(bs_year)
-    from engine.vedic.graha_detail import build_graha_asta_year
-
-    # `v2`: response shape changed from loose events → per-graha asta periods
-    # (incl. Moon Tara Asta). Bumping the key orphans stale `events`-shaped
-    # disk/blob cache entries built by the previous deploy.
-    key = f"grahaasta_v2_{bs_year}_{location_cache_key(location)}"
-    return serve_cached_json(
-        request, key, lambda: build_graha_asta_year(bs_year, location),
-        cache_control=bs_year_cache_control(bs_year),
-    )
-
-
-@router.get("/nepal/graha-vakri/year/{bs_year}")
-def nepal_graha_vakri_year(bs_year: int, location: LocationDep, request: Request):
-    """Yearly वक्री/मार्गी (retrograde/direct) station timeline for a BS year."""
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
-
-    _validate_bs_year(bs_year)
-    from engine.vedic.graha_detail import build_graha_vakri_year
-
-    key = f"grahavakri_{bs_year}_{location_cache_key(location)}"
-    return serve_cached_json(
-        request, key, lambda: build_graha_vakri_year(bs_year, location),
-        cache_control=bs_year_cache_control(bs_year),
-    )
-
-
-@router.get("/nepal/eclipse/{kind}/year/{bs_year}")
-def nepal_eclipse_year(
-    kind: Literal["solar", "lunar"],
-    bs_year: int,
+@router.get("/nepal/graha-asta/year/{year}")
+def nepal_graha_asta_year(
+    year: int,
     location: LocationDep,
     request: Request,
+    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
 ):
-    """Solar or lunar eclipses whose maximum falls within a BS year."""
+    """Yearly heliacal udaya/asta (rising/setting) timeline for a BS or AD year."""
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    _validate_bs_year(bs_year)
+    if era == "ad":
+        if not 1943 <= year <= 2090:
+            raise HTTPException(status_code=400, detail="ad year out of supported range")
+        from engine.vedic.graha_detail import build_graha_asta_ad_year
+
+        key = f"grahaasta_v2_ad_{year}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request, key, lambda: build_graha_asta_ad_year(year, location),
+            cache_control=bs_year_cache_control(year + 56),
+        )
+
+    _validate_bs_year(year)
+    from engine.vedic.graha_detail import build_graha_asta_year
+
+    key = f"grahaasta_v2_{year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_graha_asta_year(year, location),
+        cache_control=bs_year_cache_control(year),
+    )
+
+
+@router.get("/nepal/graha-vakri/year/{year}")
+def nepal_graha_vakri_year(
+    year: int,
+    location: LocationDep,
+    request: Request,
+    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+):
+    """Yearly वक्री/मार्गी (retrograde/direct) station timeline for a BS or AD year."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    if era == "ad":
+        if not 1943 <= year <= 2090:
+            raise HTTPException(status_code=400, detail="ad year out of supported range")
+        from engine.vedic.graha_detail import build_graha_vakri_ad_year
+
+        key = f"grahavakri_ad_{year}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request, key, lambda: build_graha_vakri_ad_year(year, location),
+            cache_control=bs_year_cache_control(year + 56),
+        )
+
+    _validate_bs_year(year)
+    from engine.vedic.graha_detail import build_graha_vakri_year
+
+    key = f"grahavakri_{year}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, lambda: build_graha_vakri_year(year, location),
+        cache_control=bs_year_cache_control(year),
+    )
+
+
+@router.get("/nepal/eclipse/{kind}/year/{year}")
+def nepal_eclipse_year(
+    kind: Literal["solar", "lunar"],
+    year: int,
+    location: LocationDep,
+    request: Request,
+    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+):
+    """Solar or lunar eclipses whose maximum falls within a BS or AD year."""
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    if era == "ad":
+        if not 1943 <= year <= 2090:
+            raise HTTPException(status_code=400, detail="ad year out of supported range")
+        from engine.vedic.graha_detail import build_eclipse_ad_year
+
+        key = f"eclipse_{kind}_ad_{year}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request, key, lambda: build_eclipse_ad_year(year, kind, location),
+            cache_control=bs_year_cache_control(year + 56),
+        )
+
+    _validate_bs_year(year)
     from engine.vedic.graha_detail import build_eclipse_year
 
-    key = f"eclipse_{kind}_{bs_year}_{location_cache_key(location)}"
+    key = f"eclipse_{kind}_{year}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_eclipse_year(bs_year, kind, location),
-        cache_control=bs_year_cache_control(bs_year),
+        request, key, lambda: build_eclipse_year(year, kind, location),
+        cache_control=bs_year_cache_control(year),
     )
 
 
