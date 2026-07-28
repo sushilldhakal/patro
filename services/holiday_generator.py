@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from calendar import monthrange
 from datetime import date, timedelta
 from functools import lru_cache
@@ -104,6 +105,61 @@ def _build_festival_entry(
 
 def _filter_public_holidays(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [entry for entry in entries if is_public_holiday(entry["id"])]
+
+
+_GENERIC_PURNIMA_VRATA = re.compile(r"^purnima-vrata-")
+
+
+def _is_generic_purnima_vrata(festival_id: str) -> bool:
+    return bool(_GENERIC_PURNIMA_VRATA.match(festival_id))
+
+
+def _is_named_purnima_festival(festival_id: str) -> bool:
+    """True when the catalog entry is a named full-moon observance, not a generic vrata."""
+    if _is_generic_purnima_vrata(festival_id) or festival_id.endswith("-vrata"):
+        return False
+
+    rule = load_rules().get(festival_id, {})
+    if (
+        rule.get("type") == "lunar"
+        and rule.get("tithi") == 15
+        and rule.get("paksha") == "shukla"
+    ):
+        return True
+
+    name_en = (rule.get("name_en") or "").lower()
+    name_ne = rule.get("name_ne") or ""
+    return "purnima" in name_en or "पूर्णिमा" in name_ne or "पुन्ही" in name_ne
+
+
+def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Drop alias / generic vrata rows when a named festival already covers the day."""
+    if len(active) <= 1:
+        return active
+
+    present_ids = {festival["id"] for festival in active}
+    has_named_purnima = any(_is_named_purnima_festival(festival_id) for festival_id in present_ids)
+
+    filtered: list[dict[str, Any]] = []
+    for festival in active:
+        festival_id = festival["id"]
+        rule = load_rules().get(festival_id, {})
+
+        subsumed_by = rule.get("subsumed_by")
+        if subsumed_by and subsumed_by in present_ids:
+            continue
+
+        if festival_id.endswith("-vrata"):
+            base_id = festival_id[: -len("-vrata")]
+            if base_id in present_ids:
+                continue
+
+        if has_named_purnima and _is_generic_purnima_vrata(festival_id):
+            continue
+
+        filtered.append(festival)
+
+    return filtered
 
 
 def _apply_gregorian_year_overrides(
@@ -609,11 +665,13 @@ def festivals_on_date(
 ) -> dict[str, Any]:
     """All festivals/observances active on a specific day."""
     year_payload = get_festivals(target.year, location)
-    active = [
-        item
-        for item in year_payload["festivals"]
-        if date.fromisoformat(item["start_date"]) <= target <= date.fromisoformat(item["end_date"])
-    ]
+    active = filter_redundant_day_festivals(
+        [
+            item
+            for item in year_payload["festivals"]
+            if date.fromisoformat(item["start_date"]) <= target <= date.fromisoformat(item["end_date"])
+        ]
+    )
 
     udaya = get_udaya_tithi(target, location)
     panchanga = {

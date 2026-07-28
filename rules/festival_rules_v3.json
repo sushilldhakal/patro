@@ -1675,6 +1675,7 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
+            "subsumed_by": "guru-purnima",
             "importance": "national",
             "category": "hindu"
         },
@@ -5223,6 +5224,7 @@
             "adhik_policy": "skip",
             "duration_days": 1,
             "notes": "Newari name for Guru Purnima / Ashadh Purnima",
+            "subsumed_by": "guru-purnima",
             "importance": "regional",
             "category": "newari"
         },

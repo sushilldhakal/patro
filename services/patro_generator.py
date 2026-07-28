@@ -15,7 +15,7 @@ from engine.vedic.bikram_sambat import (
 )
 from engine.vedic.daily import get_daily_panchanga
 from services.cache_meta import stamp_payload
-from services.holiday_generator import get_bs_festivals
+from services.holiday_generator import filter_redundant_day_festivals, get_bs_festivals
 
 
 def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
@@ -25,7 +25,7 @@ def _festivals_for_day(all_holidays: list[dict], target: date) -> list[dict]:
         end = date.fromisoformat(holiday["end_date"])
         if start <= target <= end:
             active.append(holiday)
-    return active
+    return filter_redundant_day_festivals(active)
 
 
 def _collect_bs_year_festivals(bs_year: int, location: ObserverLocation) -> list[dict]:
