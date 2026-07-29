@@ -1,10 +1,10 @@
 {
     "_meta": {
-        "version": "3.1.0",
+        "version": "3.2.0",
         "description": "Festival rules using LUNAR MONTH NAMES (correct Adhik Maas model)",
-        "date_updated": "2026-07-03",
+        "date_updated": "2026-07-29",
         "model": "lunar_month_based",
-        "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha."
+        "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on."
     },
     "festivals": {
         "tihar": {
@@ -381,8 +381,8 @@
             "category": "cultural"
         },
         "mata-tirtha-aunshi": {
-            "name_en": "Mata Tirtha Aunshi",
-            "name_ne": "मातातीर्थ औंसी",
+            "name_en": "Mata Tirtha Aunshi (Mother's Day)",
+            "name_ne": "मातातीर्थ औंसी (आमाको मुख हेर्ने दिन)",
             "type": "lunar",
             "lunar_month": "Baishakh",
             "tithi": 15,
@@ -1675,7 +1675,7 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
-            "subsumed_by": "guru-purnima",
+            "alias_of": "guru-purnima",
             "importance": "national",
             "category": "hindu"
         },
@@ -2490,7 +2490,8 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
-            "notes": "With Ghatasthapana — Dashain begins",
+            "alias_of": "ghatasthapana",
+            "notes": "With Ghatasthapana — Dashain begins; same day, same rite",
             "importance": "national",
             "category": "hindu"
         },
@@ -3572,6 +3573,8 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
+            "subsumed_by": "putrada-ekadashi-smarta",
+            "notes": "Usually the day after the Smarta vrata; collapses when both land together",
             "importance": "regional",
             "category": "hindu"
         },
@@ -3620,6 +3623,8 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
+            "subsumed_by": "saraswati-puja",
+            "notes": "Same festival as Saraswati Puja — only shows when the two land apart",
             "importance": "national",
             "category": "hindu"
         },
@@ -4085,6 +4090,8 @@
             "paksha": "shukla",
             "adhik_policy": "skip",
             "duration_days": 1,
+            "alias_of": "amalaki-ekadashi",
+            "notes": "Duplicate label for Amalaki Ekadashi — the id is a legacy mislabel",
             "importance": "regional",
             "category": "hindu"
         },
@@ -4539,7 +4546,8 @@
             "paksha": "krishna",
             "adhik_policy": "skip",
             "duration_days": 1,
-            "notes": "Mother's Day — same tithi as Mata Tirtha Aunshi",
+            "alias_of": "mata-tirtha-aunshi",
+            "notes": "Mother's Day — same tithi and same observance as Mata Tirtha Aunshi",
             "importance": "national",
             "category": "cultural"
         },
@@ -6217,6 +6225,8 @@
             "paksha": "krishna",
             "adhik_policy": "skip",
             "duration_days": 1,
+            "alias_of": "shattila-ekadashi",
+            "notes": "Spelling twin of shattila-ekadashi — same tithi, same name",
             "importance": "regional",
             "category": "hindu"
         },

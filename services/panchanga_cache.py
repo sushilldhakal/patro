@@ -75,7 +75,11 @@ logger = logging.getLogger(__name__)
 # 29: patro-table sign fix for deshaantar (west → negative) and belaantar
 #     (mean − apparent, e.g. July → positive). Sunrise physics unchanged;
 #     invalidates stale solar_corrections labels and ishtakaal belaantar sign.
-CACHE_PAYLOAD_VERSION = 29
+# 30: year/BS-year festival lists now run the same-day redundancy filter the day
+#     view already ran, so alias rows (गुरु पुर्णिमा व्रत, पूर्णिमा व्रत, नवरात्र
+#     आरम्भ, आमाको मुख हेर्ने दिन …) no longer repeat the named festival next to
+#     it. Invalidates cached month/year patro payloads carrying the duplicate rows.
+CACHE_PAYLOAD_VERSION = 30
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

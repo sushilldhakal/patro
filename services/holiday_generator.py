@@ -132,8 +132,25 @@ def _is_named_purnima_festival(festival_id: str) -> bool:
     return "purnima" in name_en or "पूर्णिमा" in name_ne or "पुन्ही" in name_ne
 
 
+def _is_alias_row(festival_id: str) -> bool:
+    """True for catalog rows that are only a second label for another festival.
+
+    ``alias_of`` differs from ``subsumed_by``: an alias never stands on its own,
+    so it is dropped even when its target is not in the same day's list. That
+    matters because a MoHA override can move the canonical row by a day (BS 2081
+    pulled मातातीर्थ औंसी to Baishakh 25) and a day-scoped rule would then let the
+    stranded alias show up as its own festival.
+    """
+    return bool(load_rules().get(festival_id, {}).get("alias_of"))
+
+
 def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Drop alias / generic vrata rows when a named festival already covers the day."""
+    active = [
+        festival
+        for festival in active
+        if is_public_holiday(festival["id"]) or not _is_alias_row(festival["id"])
+    ]
     if len(active) <= 1:
         return active
 
@@ -144,6 +161,10 @@ def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[st
     for festival in active:
         festival_id = festival["id"]
         rule = load_rules().get(festival_id, {})
+
+        if is_public_holiday(festival_id):
+            filtered.append(festival)
+            continue
 
         subsumed_by = rule.get("subsumed_by")
         if subsumed_by and subsumed_by in present_ids:
@@ -160,6 +181,31 @@ def filter_redundant_day_festivals(active: list[dict[str, Any]]) -> list[dict[st
         filtered.append(festival)
 
     return filtered
+
+
+def filter_redundant_year_festivals(festivals: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Year-list counterpart of :func:`filter_redundant_day_festivals`.
+
+    The day filter only sees one date at a time, so the year listing used to keep
+    every alias row (गुरु पूर्णिमा + गुरु पुर्णिमा व्रत + पूर्णिमा व्रत on one day).
+    Replay the day filter over each date a festival is active and keep the rows
+    that survive on at least one of their own days — a multi-day festival stays
+    even when a single day of its span is covered by a more specific label.
+    """
+    by_day: dict[date, list[dict[str, Any]]] = {}
+    for festival in festivals:
+        day = date.fromisoformat(festival["start_date"])
+        end = date.fromisoformat(festival["end_date"])
+        while day <= end:
+            by_day.setdefault(day, []).append(festival)
+            day += timedelta(days=1)
+
+    kept: set[str] = set()
+    for active in by_day.values():
+        for festival in filter_redundant_day_festivals(active):
+            kept.add(festival["id"])
+
+    return [festival for festival in festivals if festival["id"] in kept]
 
 
 def _apply_gregorian_year_overrides(
@@ -201,7 +247,9 @@ def generate_festivals(
 
         festivals.append(_build_festival_entry(festival_id, rule, start_date, end_date))
 
-    festivals = _apply_gregorian_year_overrides(gregorian_year, festivals)
+    festivals = filter_redundant_year_festivals(
+        _apply_gregorian_year_overrides(gregorian_year, festivals)
+    )
     festivals.sort(key=lambda item: item["start_date"])
 
     payload = {
@@ -383,10 +431,12 @@ def generate_bs_festivals(
     for payload in gregorian_payloads:
         save_festivals_cache(payload, location)
 
-    festivals = _apply_bs_year_overrides(
-        bs_year,
-        _merge_bs_year_festivals(bs_year, gregorian_payloads),
-        public_only=False,
+    festivals = filter_redundant_year_festivals(
+        _apply_bs_year_overrides(
+            bs_year,
+            _merge_bs_year_festivals(bs_year, gregorian_payloads),
+            public_only=False,
+        )
     )
     payload = {
         "bs_year": bs_year,

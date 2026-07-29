@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 RULE_VERSION = "v3"
-ENGINE_VERSION = "1.0.3"
+ENGINE_VERSION = "1.0.4"  # 1.0.4: year festival lists run the same-day redundancy filter
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"

@@ -12,7 +12,11 @@ sys.path.insert(0, str(ROOT))
 from engine.astronomy.location import DEFAULT_LOCATION
 from services.holiday_generator import festivals_on_date, load_rules
 from services.patro_generator import _festivals_for_day
-from services.holiday_generator import filter_redundant_day_festivals, get_bs_festivals
+from services.holiday_generator import (
+    filter_redundant_day_festivals,
+    filter_redundant_year_festivals,
+    get_bs_festivals,
+)
 
 
 def _festival(id_: str, start: str) -> dict:
@@ -51,6 +55,51 @@ def test_filter_redundant_day_festivals_unit():
     ids = {f["id"] for f in filtered}
 
     assert ids == {"guru-purnima", "vyas-jayanti", "world-tiger-day"}
+
+
+def test_year_list_drops_the_same_rows_the_day_view_drops():
+    """The Festivals tab reads the year list, so it must dedup like the day view."""
+    ids = {f["id"] for f in get_bs_festivals(2083, DEFAULT_LOCATION)["festivals"]}
+
+    assert "guru-purnima" in ids
+    assert "vyas-jayanti" in ids
+    for redundant in (
+        "guru-purnima-vrata",
+        "purnima-vrata-ashadh",
+        "purnima-vrata-shrawan",
+        "purnima-vrata-ashwin",
+        "dilla-punhi",
+        "ghatasthapana-vrata",
+        "navaratri-arambha",
+        "amako-mukh-herne-din",
+        "sattila-ekadashi",
+        "nari-diwas",
+    ):
+        assert redundant not in ids, redundant
+
+
+def test_alias_row_drops_even_when_its_target_moved_to_another_day():
+    """MoHA overrides can shift the canonical row; the alias must not survive alone."""
+    active = [_festival("amako-mukh-herne-din", "2024-05-08")]
+
+    assert filter_redundant_day_festivals(active) == []
+
+
+def test_year_filter_keeps_a_multi_day_festival_covered_on_one_of_its_days():
+    tihar = {
+        "id": "tihar",
+        "name_ne": "तिहार",
+        "start_date": "2026-11-08",
+        "end_date": "2026-11-12",
+    }
+    festivals = [
+        tihar,
+        _festival("guru-purnima", "2026-11-08"),
+        _festival("guru-purnima-vrata", "2026-11-08"),
+    ]
+    ids = {f["id"] for f in filter_redundant_year_festivals(festivals)}
+
+    assert ids == {"tihar", "guru-purnima"}
 
 
 def test_janai_purnima_day_drops_generic_purnima_vrata():
