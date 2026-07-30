@@ -69,6 +69,9 @@ def resolve_panchanga_date(
 ) -> date:
     """Resolve ``2083-10-12`` (BS) or ``2027-01-25`` (AD) to Gregorian."""
     if era == "ad":
+        parts = date_key.split("-")
+        if len(parts) == 3 and parts[0].isdigit() and len(parts[0]) < 4:
+            date_key = f"{int(parts[0]):04d}-{parts[1]}-{parts[2]}"
         return date.fromisoformat(date_key)
     bs_year, bs_month, bs_day = parse_bs_date(date_key)
     return bs_to_gregorian(bs_year, bs_month, bs_day)
