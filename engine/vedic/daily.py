@@ -8,7 +8,11 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.jd_calendar import civil_day_jd_from_date, civil_iso_from_date
 from engine.astronomy.lagna import lagna_service
-from engine.astronomy.moon import calculate_moonrise_after, calculate_moonset_after
+from engine.astronomy.moon import (
+    calculate_moonrise_after,
+    calculate_moonset_after,
+    moon_service,
+)
 from engine.astronomy.panchanga import panchanga_service
 from engine.astronomy.planets import spashta_table
 from engine.astronomy.rashi import rashi_service
@@ -342,6 +346,10 @@ def _assemble_udaya_panchanga(
         "karana": build_karana_block(sunrise_utc, sunrise_utc, location.timezone),
         "paksha": _paksha_block(lunar, paksha),
         "chandra_rashi": chandra_rashi,
+        # Geometric Moon phase, read at the same sunrise as everything else.
+        # Cut from the Sun→Moon elongation — the identical angle the tithi comes
+        # from — so the illuminated disc and the tithi can never disagree.
+        "moon_phase": moon_service.phase(sunrise_jd),
         "chandra_rashi_spans": chandra_rashi_spans,
         "nakshatra_pada_spans": nakshatra_pada_spans,
         "surya_rashi": rashi_service.surya(sunrise_jd),

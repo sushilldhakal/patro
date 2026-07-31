@@ -261,9 +261,12 @@ def build_planetary_snapshot(
     planets = spashta_table(instant_jd, ayanamsa=mode)
     lagna = lagna_service.lagna(instant_jd, lat=lat, lon=lon, ayanamsa=mode)
     enrich_snapshot_astro(planets, lagna, instant_utc, lat=lat, lon=lon)
+    from engine.astronomy.moon import moon_service
+
     return {
         "planets": planets,
         "lagna": {**lagna, "anchor": "instant"},
+        "moon_phase": moon_service.phase(instant_jd),
         "anchor": "instant",
         "computed_at": instant_utc.isoformat(),
     }

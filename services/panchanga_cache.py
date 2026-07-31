@@ -102,7 +102,10 @@ logger = logging.getLogger(__name__)
 #     Additive. Sunrise-, instant- and midnight-anchored views answer honestly
 #     different questions about the same day, and without the field the
 #     difference reads as the API contradicting itself (audit B3).
-PANCHANGA_PAYLOAD_VERSION = 37
+# 38: day payloads carry a ``moon_phase`` block (name, illuminated fraction,
+#     phase angle, age). New surface — the backend had no phase computation at
+#     all before phase 2 shipped MoonService, and nothing surfaced it until now.
+PANCHANGA_PAYLOAD_VERSION = 38
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
@@ -200,12 +203,26 @@ def resolve_cache_keys(location: ObserverLocation) -> tuple[str, int]:
 
 
 def _local_element_end(block: dict[str, Any], timezone_name: str) -> str | None:
+    """Anga end time as a local ``YYYY-MM-DD HH:MM`` label for the summary row.
+
+    Not ``datetime.fromisoformat``: a pre-1 CE anga ends at an expanded-ISO
+    instant like ``-0057-03-16T04:23:51+00:00``, which that parser rejects
+    outright — it took a BCE day's *cache write* down, so the day computed fine
+    and then 500'd on the way into SQLite. ``parse_ephemeris_instant`` reads both
+    spellings, and ``local_civil_fields`` formats either without needing a
+    ``datetime`` that can hold the year.
+    """
     end_time = block.get("end_time")
     if not end_time:
         return None
-    dt = datetime.fromisoformat(end_time)
-    local = dt.astimezone(resolve_observer_timezone(timezone_name))
-    return local.strftime("%Y-%m-%d %H:%M")
+    from engine.astronomy.ut_instant import local_civil_fields, parse_ephemeris_instant
+
+    try:
+        instant = parse_ephemeris_instant(str(end_time))
+    except ValueError:
+        return None
+    fields = local_civil_fields(instant, timezone_name)
+    return f"{fields.date_iso()} {fields.time_short()}"
 
 
 def _muhurta_json(block: dict[str, Any] | None) -> str | None:

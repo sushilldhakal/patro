@@ -47,7 +47,13 @@ from __future__ import annotations
 #          that hang off it.
 #          Both are fixed in the engine; this bump is what stops the caches from
 #          serving the pre-fix answers.
-ASTRONOMY_VERSION = 2
+# 3: the ephemeris path was only ever set on the importing thread (pyswisseph
+#    keeps it thread-local), so every request — served from FastAPI's threadpool
+#    — silently computed with the built-in Moshier model instead of the Swiss
+#    .se1 files. Sub-arcsecond on modern dates, but a different number, and a
+#    hard failure outside 3000 BCE … 3000 CE. Fixed in AstronomyEngine; this
+#    bump retires every payload computed the old way.
+ASTRONOMY_VERSION = 3
 
 # Guards compose()'s decimal packing. Raise the multiplier below before this.
 _MAX_ASTRONOMY_VERSION = 99

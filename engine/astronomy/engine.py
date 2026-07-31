@@ -11,6 +11,8 @@ from collections import OrderedDict
 from datetime import date, datetime, time, timezone
 from typing import Any
 
+import threading
+
 import swisseph as swe
 
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported
@@ -43,6 +45,32 @@ def _configure_ephemeris() -> bool:
 
 
 EPHEMERIS_CONFIGURED = _configure_ephemeris()
+
+# swisseph keeps its state — including the ephemeris path — *per thread*
+# (pyswisseph 2.10 builds with thread-local storage). The module-level call above
+# therefore configures only the thread that imported this module.
+#
+# That is not an academic detail: FastAPI runs sync endpoints in a starlette
+# threadpool, so every request was served by a thread whose path was still
+# swisseph's compiled-in default (``.:/users/ephe2/:/users/ephe/``). The .se1
+# files were never found, every position silently fell back to the built-in
+# Moshier model, and any date outside Moshier's JD 625000.5 … 2818000.5 window
+# (3000 BCE … 3000 CE) failed outright — which is what made every BCE/BBS
+# request 400 with "outside the installed ephemeris range" while the same call
+# succeeded from a test importing the engine directly.
+_THREAD_STATE = threading.local()
+
+
+def _ensure_ephemeris_for_thread() -> None:
+    """Point *this* thread's swisseph at the bundled ``.se1`` files, once.
+
+    Cheap enough to call on every ephemeris entry point: after the first call
+    per thread it is a single attribute read.
+    """
+    if getattr(_THREAD_STATE, "configured", False):
+        return
+    _configure_ephemeris()
+    _THREAD_STATE.configured = True
 
 
 def _is_ephe_file_missing(exc: Exception) -> bool:
@@ -168,6 +196,7 @@ class AstronomyEngine:
         self, body: int, jd: float, *, sidereal: bool, ayanamsa: int | None = None
     ) -> tuple[float, float]:
         """Cached (longitude % 360, speed) for one body — the single calc_ut hot path."""
+        _ensure_ephemeris_for_thread()
         mode = self._ayanamsa if ayanamsa is None else ayanamsa
         key = (body, round(jd, 9), sidereal, mode if sidereal else -1)
         cached = self._calc_cache.get(key)
@@ -315,6 +344,7 @@ class AstronomyEngine:
 
     def _obliquity(self, jd: float) -> float:
         """True obliquity of the ecliptic (degrees)."""
+        _ensure_ephemeris_for_thread()
         try:
             return swe.calc_ut(jd, _ECL_NUT, 0)[0][0]
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
@@ -368,6 +398,7 @@ class AstronomyEngine:
         'ketu' has no disc, so it has no phenomena; it raises rather than
         returning a plausible-looking zero.
         """
+        _ensure_ephemeris_for_thread()
         body = _BODY_MAP.get(planet)
         if body is None or planet == "ketu":
             raise EphemerisError(f"No phenomena for body: {planet!r}")
@@ -395,6 +426,7 @@ class AstronomyEngine:
         self, body: int, jd: float, *, equatorial: bool = False
     ) -> tuple[float, ...]:
         """Uncached tropical calc — (lon/RA, lat/dec, dist, speeds…)."""
+        _ensure_ephemeris_for_thread()
         flags = _TROPICAL_SPEED | (swe.FLG_EQUATORIAL if equatorial else 0)
         try:
             return swe.calc_ut(jd, body, flags)[0]
@@ -405,6 +437,7 @@ class AstronomyEngine:
         self, jd: float, lat: float, lon: float
     ) -> dict[str, Any]:
         """Lagna shara (0 by definition), RA, kranti and speed in °/day."""
+        _ensure_ephemeris_for_thread()
         try:
             _, ascmc = swe.houses(jd, lat, lon, b"P")
             tropical_asc = ascmc[0]
@@ -427,6 +460,7 @@ class AstronomyEngine:
         self, jd: float, lat: float, lon: float, *, ayanamsa: int | None = None
     ) -> float:
         """Sidereal ascendant longitude in degrees [0, 360)."""
+        _ensure_ephemeris_for_thread()
         mode = self._ayanamsa if ayanamsa is None else ayanamsa
         swe.set_sid_mode(mode)
         try:
@@ -440,6 +474,7 @@ class AstronomyEngine:
 
     def ayanamsa(self, jd: float, *, mode: int | None = None) -> float:
         """Ayanamsa in degrees at the given JD."""
+        _ensure_ephemeris_for_thread()
         swe.set_sid_mode(self._ayanamsa if mode is None else mode)
         return swe.get_ayanamsa_ut(jd)
 
@@ -447,6 +482,7 @@ class AstronomyEngine:
 
     def obliquity(self, jd: float) -> float:
         """True obliquity of the ecliptic in degrees."""
+        _ensure_ephemeris_for_thread()
         try:
             return swe.calc_ut(jd, _ECL_NUT)[0][0]
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
@@ -456,6 +492,7 @@ class AstronomyEngine:
 
     def equation_of_time(self, jd: float) -> float:
         """Equation of time in days (apparent − mean solar time)."""
+        _ensure_ephemeris_for_thread()
         try:
             return float(swe.time_equ(jd))
         except (swe.Error, TypeError, ValueError) as exc:
@@ -465,6 +502,7 @@ class AstronomyEngine:
 
     def next_solar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
         """JD of the next (or previous) global solar-eclipse maximum."""
+        _ensure_ephemeris_for_thread()
         try:
             _retflag, tret = swe.sol_eclipse_when_glob(
                 jd, swe.FLG_SWIEPH, 0, backward
@@ -475,6 +513,7 @@ class AstronomyEngine:
 
     def next_lunar_eclipse_max(self, jd: float, *, backward: bool = False) -> float | None:
         """JD of the next (or previous) lunar-eclipse maximum."""
+        _ensure_ephemeris_for_thread()
         try:
             _retflag, tret = swe.lun_eclipse_when(
                 jd, swe.FLG_SWIEPH, 0, backward
@@ -515,6 +554,7 @@ class AstronomyEngine:
         ``geopos`` = (lon, lat, altitude). When given, local contact times and a
         ``visible`` flag are attached (whether the eclipse is seen from that place).
         """
+        _ensure_ephemeris_for_thread()
         try:
             retflag, tret = swe.sol_eclipse_when_glob(jd, swe.FLG_SWIEPH, 0, backward)
         except (swe.Error, IndexError, TypeError, ValueError):
@@ -534,6 +574,7 @@ class AstronomyEngine:
         self, jd: float, *, backward: bool = False, geopos: tuple[float, float, float] | None = None
     ) -> dict[str, Any] | None:
         """Next/previous lunar eclipse with type + optional local visibility."""
+        _ensure_ephemeris_for_thread()
         try:
             retflag, tret = swe.lun_eclipse_when(jd, swe.FLG_SWIEPH, 0, backward)
         except (swe.Error, IndexError, TypeError, ValueError):
@@ -559,6 +600,7 @@ class AstronomyEngine:
         self, near_jd: float, geopos: tuple[float, float, float]
     ) -> dict[str, Any]:
         """Local circumstances of the solar eclipse whose maximum is near ``near_jd``."""
+        _ensure_ephemeris_for_thread()
         try:
             retflag, tret, _attr = swe.sol_eclipse_when_loc(
                 near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
@@ -582,6 +624,7 @@ class AstronomyEngine:
         self, near_jd: float, geopos: tuple[float, float, float]
     ) -> dict[str, Any]:
         """Whether the lunar eclipse near ``near_jd`` is above the horizon locally."""
+        _ensure_ephemeris_for_thread()
         try:
             retflag, tret, _attr = swe.lun_eclipse_when_loc(
                 near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
@@ -694,6 +737,7 @@ class AstronomyEngine:
         *,
         timezone_name: str | None,
     ) -> datetime | None:
+        _ensure_ephemeris_for_thread()
         # A pre-1 CE day arrives as a ``CivilDay``, which ``datetime.combine``
         # below cannot take. The JD-native twin computes the same instant (both
         # agree to 0.0s on CE days), so route those straight to it.
@@ -758,6 +802,7 @@ class AstronomyEngine:
         *,
         timezone_name: str | None,
     ) -> datetime | None:
+        _ensure_ephemeris_for_thread()
         body_id = _BODY_MAP.get(body)
         if body_id is None:
             raise EphemerisError(f"Unknown body: {body!r}")
@@ -808,6 +853,7 @@ class AstronomyEngine:
         lon: float,
         alt: float,
     ) -> datetime | None:
+        _ensure_ephemeris_for_thread()
         body_id = _BODY_MAP.get(body)
         if body_id is None:
             raise EphemerisError(f"Unknown body: {body!r}")

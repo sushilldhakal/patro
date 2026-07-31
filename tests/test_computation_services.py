@@ -392,3 +392,44 @@ class TestMoonRiseSet:
             rise = moon_service.moonrise_after(jd, location)
             assert rise is not None
             assert 0 <= default_engine.julian_day(rise) - jd < 26 / 24
+
+
+class TestMoonPhaseReachesThePayload:
+    """The service existed since phase 2; nothing surfaced it until now."""
+
+    def test_daily_panchanga_carries_a_moon_phase_block(self):
+        from datetime import date
+
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import build_daily_panchanga
+
+        phase = build_daily_panchanga(date(2026, 7, 31), DEFAULT_LOCATION)["moon_phase"]
+        assert phase["name"] in PHASE_NAMES
+        assert 0.0 <= phase["illuminated_fraction"] <= 1.0
+        assert 0.0 <= phase["elongation"] < 360.0
+
+    def test_the_block_agrees_with_the_day_s_own_tithi(self):
+        """Phase and tithi are cut from one elongation — they cannot disagree."""
+        from datetime import date
+
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import build_daily_panchanga
+
+        payload = build_daily_panchanga(date(2026, 7, 31), DEFAULT_LOCATION)
+        phase = payload["moon_phase"]
+        tithi_number = payload["tithi"]["number"]
+        assert phase["is_waxing"] == (tithi_number <= 15)
+        assert int(phase["elongation"] / 12.0) + 1 == tithi_number
+
+    def test_instant_snapshot_carries_it_too(self):
+        from datetime import datetime, timezone
+
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.at_time import build_planetary_snapshot
+
+        snap = build_planetary_snapshot(
+            datetime(2026, 7, 31, 9, 30, tzinfo=timezone.utc),
+            lat=DEFAULT_LOCATION.lat,
+            lon=DEFAULT_LOCATION.lon,
+        )
+        assert snap["moon_phase"]["name"] in PHASE_NAMES

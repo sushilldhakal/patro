@@ -14,10 +14,13 @@ Audit of `nepali-holiday-api` @ `562c1f3`. 84 HTTP endpoints, ~41k LOC Python.
 | 4 — cache-version unification | **done** — `services/payload_version.py`; `ASTRONOMY_VERSION = 2` invalidates all four namespaces for A0/A0b, `tests/test_payload_version.py` (13 tests) |
 | 5 — housekeeping | **done** — swisseph leaks closed, sunrise entry points collapsed, `AD_YEAR_MIN/MAX` constant, `anchor` field on day payloads |
 
-**Two live bugs found so far, both by the migration scaffolding rather than by a bug
-report** — see A0 and A0b. Suite: 609 passing, plus 3 pre-existing failures in
-`tests/test_panchanga_cache.py` (missing SQLite table in the test environment, unrelated and
-failing identically before these changes).
+**Four live bugs found, every one by the migration scaffolding rather than by a bug
+report** — see A0, A0b, A0c and A0d. A0c is the most serious of them: the API had been
+serving *every* request from the Moshier fallback rather than the Swiss ephemeris files.
+
+Suite: 653 passing. The only failures are 3 in `tests/test_cities_db.py`, which need the
+full GeoNames import (`python scripts/import_cities.py`) — they are an artifact of a
+stub city database, not a code defect.
 
 ### Services now in place
 
@@ -108,6 +111,52 @@ Two further precision notes surfaced while fixing it, both left alone deliberate
   datetime only to read the zone offset. Fixing the truncation itself would shift every
   timestamp in every payload by up to a second; that belongs in phase 5 with its own
   snapshot review, not buried in this one.
+
+---
+
+## A0c. Third live bug, and the worst: the API never used the Swiss ephemeris
+
+`swe.set_ephe_path` was called once, at import of `engine/astronomy/engine.py`.
+pyswisseph 2.10 keeps swisseph's state — the ephemeris path included — in
+**thread-local storage**, so that call configured only the thread that imported
+the module.
+
+FastAPI serves sync endpoints from a starlette threadpool. Every HTTP request
+therefore ran on a thread whose path was still swisseph's compiled-in default
+(`.:/users/ephe2/:/users/ephe/`), found no `.se1` files, and fell through
+`_is_ephe_file_missing` into the built-in Moshier model. Two consequences:
+
+| | Effect |
+|---|---|
+| Every date | Computed with Moshier, not Swiss. Sub-arcsecond (≤0.22″ measured on Sun/Moon/Jupiter across 1900–2026) — small, but not the number the code believed it was returning. |
+| Outside 3000 BCE – 3000 CE | Moshier's own JD range (625000.5 … 2818000.5) ends there, so the request **failed**: HTTP 400 "That date is outside the installed ephemeris range". |
+
+That second row is what made every BCE / BBS endpoint 400 — 19 of the 22 test
+failures on this branch, across `test_jd_pipeline`, `test_instant_pipeline`,
+`test_gochar_ingress`, `test_graha_detail` and `test_bce_instant_serialization`.
+
+The bug was invisible to any test that imported the engine and called it
+directly, because that runs on the importing thread. It only appeared through
+`TestClient` — and the failures it caused had been read as "the ephemeris files
+just don't go back that far".
+
+Fixed with a thread-local guard (`_ensure_ephemeris_for_thread`) on every
+engine entry point that touches an `.se1` file. `tests/test_ephemeris_threading.py`
+pins it, including end-to-end through the threadpool; removing the guard fails 5
+of its 7 tests.
+
+---
+
+## A0d. Fourth: a BCE day computed correctly, then 500'd on the way into the cache
+
+`services/panchanga_cache._local_element_end` parsed anga end times with
+`datetime.fromisoformat`, which rejects the expanded-ISO spelling a pre-1 CE
+instant uses (`-0057-03-16T04:23:51+00:00`). The day built fine and the write to
+SQLite threw.
+
+Only reachable once A0c was fixed — before that, no BCE day got far enough to be
+cached. Now parsed with `parse_ephemeris_instant` + `local_civil_fields`, which
+read both spellings and need no `datetime` that can hold the year.
 
 ---
 
