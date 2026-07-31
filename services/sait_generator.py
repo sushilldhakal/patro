@@ -12,12 +12,15 @@ from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.vedic.bikram_sambat import get_bs_month_length, iter_bs_month_days
 from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
 from engine.vedic.muhurta_engine import CEREMONY_RULES, MUHURTA_CATEGORIES, has_muhurta
+from services.payload_version import stamp
 from engine.vedic.sait_rules import CATEGORY_CHECKS, build_day_panchanga
 from services.sait_db_cache import db_available, load_sait_db, save_sait_db
 
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
-SAIT_ENGINE_VERSION = "4.10.0"
+# Sait windows are built from sunrise/sunset and the angas, so the astronomy
+# axis is folded in — an ephemeris fix invalidates this store too.
+SAIT_ENGINE_VERSION = stamp("4.10.0")
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:

@@ -16,6 +16,7 @@ from typing import Any
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.paths import kundali_db_path
 from services.panchanga_cache import resolve_cache_keys
+from services.payload_version import compose
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,13 @@ logger = logging.getLogger(__name__)
 #     the report prints; Oja-Yugma Bala now requires both rashi+navamsha parity.
 # v10: yoga rules aligned to BPHS (Kemadruma now also needs no planet in an
 #      angle from the Lagna, plus catalog-only fixes read by the Kundali page).
-CACHE_PAYLOAD_VERSION = 10
+KUNDALI_REPORT_VERSION = 10
+
+# Reports embed a build_panchanga_at_time block — sunrise, sunset and the angas
+# hanging off them — so an ephemeris change invalidates them even when no yoga
+# rule moved. A0 reached this store through the BCE branch of
+# resolve_vedic_day_anchor.
+CACHE_PAYLOAD_VERSION = compose(KUNDALI_REPORT_VERSION)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS kundali_report_cache (

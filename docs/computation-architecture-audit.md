@@ -11,7 +11,7 @@ Audit of `nepali-holiday-api` @ `562c1f3`. 84 HTTP endpoints, ~41k LOC Python.
 | 2 — JD-keyed services introduced, facades delegating | **done** — services written, `positions.py` delegating, Moon phase shipped |
 | 2b — migrate the ~56 `positions`/`swiss_eph` importers | **done** — both files deleted; `tests/test_computation_services.py` (116 tests) now pins the services against golden values captured from the pre-refactor modules |
 | 3 — era-twin elimination | not started |
-| 4 — cache-version unification | not started |
+| 4 — cache-version unification | **done** — `services/payload_version.py`; `ASTRONOMY_VERSION = 2` invalidates all four namespaces for A0/A0b, `tests/test_payload_version.py` (13 tests) |
 | 5 — housekeeping | not started |
 
 **Two live bugs found so far, both by the migration scaffolding rather than by a bug
@@ -72,8 +72,9 @@ and Kolkata.
 strongest argument for phase 3: it survived because the two paths were separate code.
 
 ⚠️ **Cached payloads written before this fix contain the wrong sunset / moonrise / moonset
-for pre-1943 and BCE days.** Phase 4 (cache-version unification) should be pulled forward,
-or the affected caches purged.
+for pre-1943 and BCE days.** Resolved: phase 4 was pulled forward, and
+`ASTRONOMY_VERSION = 2` invalidates every store that could hold them. Purge the
+CDN on the deploy that ships it — cache keys carry the version, public URLs do not.
 
 ---
 
@@ -450,10 +451,50 @@ Each of the 8 is a standalone PR with a green Phase-0 snapshot.
 
 ### Phase 4 — cache-version unification (B2)
 
-Single `PAYLOAD_VERSION` constant that every cache layer (`response_cache`, `year_cache`,
-`panchanga_cache`, `blob_db_cache`) derives its key from, so a computation change cannot be
-half-deployed. Today this is a manual four-place bump and the highest-probability cause of
-two pages disagreeing in production.
+**Done.** The original diagnosis was already stale by the time it was acted on: a
+manual four-place bump is *not* what the code did. `response_cache`, `year_cache`
+and `blob_db_cache` all imported `CACHE_PAYLOAD_VERSION` from `panchanga_cache`,
+so those four moved together already.
+
+The real defect was a different one, and it is the one that let A0 rot in the
+caches. Four *independent* version namespaces existed —
+
+| Namespace | Was | Covers |
+|---|---|---|
+| `panchanga_cache.CACHE_PAYLOAD_VERSION` | `35` | daily SQLite rows, response cache, year cache, blob cache |
+| `kundali_report_cache.CACHE_PAYLOAD_VERSION` | `10` | Kundali report SQLite |
+| `sait_generator.SAIT_ENGINE_VERSION` | `"4.10.0"` | sait windows |
+| `cache_meta.ENGINE_VERSION` | `"1.0.4"` | festival / holiday payloads |
+
+— and *every one of them stores something derived from the ephemeris*. So
+invalidating after an engine fix meant reasoning, store by store, about whether
+that particular change could reach it. That reasoning is what failed for A0: the
+fix landed in `_rise_set_civil` and no version moved.
+
+`services/payload_version.py` replaces the reasoning with a second axis:
+
+- **`ASTRONOMY_VERSION`** — bump when `engine/astronomy` changes a computed
+  value. Every namespace folds it in, so one bump invalidates all four. Blunt on
+  purpose: it costs one cold rebuild and removes the case-by-case judgement call.
+- **Domain versions** (`PANCHANGA_PAYLOAD_VERSION`, `KUNDALI_REPORT_VERSION`, …)
+  — bump when that payload's own shape or rules change, invalidating only its
+  own store. A Kundali yoga fix must not throw away a year of panchanga grids.
+
+Integer versions fold through `compose()`, which stays monotonic in both axes so
+the existing `cached < current` staleness checks work unchanged. String versions
+fold in as a `+aN` suffix and are compared for equality.
+
+`ASTRONOMY_VERSION = 2` carries the A0 / A0b fixes. Concretely:
+`35 → 3602`, `10 → 1002`, `"4.10.0" → "4.10.0+a2"`, `"1.0.4" → "1.0.4+a2"` —
+every pre-fix row now fails its own staleness check.
+
+`tests/test_payload_version.py` pins the property, including that
+`response_cache` and `year_cache` still hold no private copy of the constant.
+
+**Deploy note.** Disk caches (`cache/`, untracked) simply orphan; the Postgres
+blob cache self-prunes via `prune_stale_blobs()` on startup. The CDN still needs
+a manual purge — cache keys embed the version but the public *URL* does not, so
+the edge will keep serving pre-bump JSON for up to its `s-maxage` window.
 
 ### Phase 5 — housekeeping
 

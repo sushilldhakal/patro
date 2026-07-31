@@ -12,6 +12,7 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
 from engine.astronomy.timescale import resolve_observer_timezone
+from services.payload_version import compose
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +94,15 @@ logger = logging.getLogger(__name__)
 #     samvatsara instead of null. Invalidates cached days whose label was null.
 # 35: BCE / early-BS civil daily payloads now include solar_corrections (belaantar,
 #     deshaantar) — were hard-coded to {} in build_daily_panchanga_civil.
-CACHE_PAYLOAD_VERSION = 35
+# 36: no payload-shape change — this number moves so the A0 / A0b engine fixes
+#     reach the caches. See services/payload_version.ASTRONOMY_VERSION, which is
+#     the axis that actually invalidated them; 36 records that this store's
+#     contents changed too.
+PANCHANGA_PAYLOAD_VERSION = 36
+
+# What every consumer keys on. Derived, not literal: an ephemeris fix must
+# invalidate this store even when nothing about the payload's own shape changed.
+CACHE_PAYLOAD_VERSION = compose(PANCHANGA_PAYLOAD_VERSION)
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",

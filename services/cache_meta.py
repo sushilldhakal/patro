@@ -8,8 +8,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from services.payload_version import stamp
+
 RULE_VERSION = "v3"
-ENGINE_VERSION = "1.0.4"  # 1.0.4: year festival lists run the same-day redundancy filter
+# 1.0.4: year festival lists run the same-day redundancy filter.
+# Festival dates resolve through udaya (sunrise) tithi, so the astronomy axis is
+# folded in and an ephemeris fix invalidates the holiday payloads too.
+ENGINE_VERSION = stamp("1.0.4")
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"

@@ -184,6 +184,7 @@ def test_bratabandha_requires_uttarayana_and_shukla():
 
 
 def test_engine_version_bumped():
+    from services.payload_version import stamp
     from services.sait_generator import SAIT_ENGINE_VERSION
 
     # 4.1.0 — Upanayana (bratabandha) tightened (Vishti/Bhadra, Vyatipata/
@@ -212,7 +213,9 @@ def test_engine_version_bumped():
     # 4.10.0 — Rudri (rudri-jurne): tightened beyond Śiva-vāsa alone — now also
     # requires Agni-vāsa (fire on Earth/Pātāla for the homa) and scrubs the
     # universal sacrificial doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi/Bhadrā karaṇa).
-    assert SAIT_ENGINE_VERSION == "4.10.0"
+    # The stored version also carries the astronomy axis (services/payload_version)
+    # so an ephemeris fix invalidates this cache without a rules change.
+    assert SAIT_ENGINE_VERSION == stamp("4.10.0")
 
 
 def test_dagdha_tithi_table():
