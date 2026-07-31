@@ -21,14 +21,10 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any, Callable, Optional
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.positions import (
-    KARANA_NAMES,
-    get_chandra_rashi,
-    get_karana,
-    get_nakshatra,
-    get_yoga,
-)
+from engine.astronomy.panchanga import KARANA_NAMES, panchanga_service
+from engine.astronomy.rashi import rashi_service
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start
 from engine.vedic.daily import get_daily_panchanga
 from engine.vedic.element_boundaries import (
@@ -54,17 +50,23 @@ from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
 
 
 def _nakshatra_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
-    num, name_en, progress = get_nakshatra(dt)
-    return num, name_en, NAKSHATRA_NAMES_NE[num - 1], {"progress": round(progress, 4)}
+    nak = panchanga_service.nakshatra(as_julian_day(dt))
+    num, name_en = nak["number"], nak["name"]
+    return num, name_en, NAKSHATRA_NAMES_NE[num - 1], {
+        "progress": round(nak["progress"], 4)
+    }
 
 
 def _yoga_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
-    num, name_en, progress = get_yoga(dt)
-    return num, name_en, YOGA_NAMES_NE[num - 1], {"progress": round(progress, 4)}
+    yoga = panchanga_service.yoga(as_julian_day(dt))
+    num, name_en = yoga["number"], yoga["name"]
+    return num, name_en, YOGA_NAMES_NE[num - 1], {
+        "progress": round(yoga["progress"], 4)
+    }
 
 
 def _karana_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
-    _, name_en = get_karana(dt)
+    name_en = panchanga_service.karana(as_julian_day(dt))["name"]
     try:
         idx = KARANA_NAMES.index(name_en)
     except ValueError:
@@ -86,7 +88,7 @@ def _tithi_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
 
 
 def _chandra_rashi_current(dt: datetime) -> tuple[int, str, str, dict[str, Any]]:
-    d = get_chandra_rashi(dt)
+    d = rashi_service.chandra(as_julian_day(dt))
     return int(d["number"]), d["name"], d.get("name_ne", d["name"]), {}
 
 

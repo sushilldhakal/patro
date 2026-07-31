@@ -5,7 +5,9 @@ from __future__ import annotations
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.astronomy.swiss_eph import calculate_sunrise, get_all_planetary_positions
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.sun import calculate_sunrise
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.daily import build_daily_panchanga
 
@@ -19,7 +21,7 @@ def test_planets_at_udayakal_sunrise():
         longitude=loc.lon,
         timezone_name=loc.timezone,
     )
-    at_sunrise = get_all_planetary_positions(sunrise)["sun"]["longitude"]
+    at_sunrise = spashta_table(as_julian_day(sunrise))["sun"]["longitude"]
 
     daily = build_daily_panchanga(target, loc)
     assert daily["planets_anchor"]["type"] == "udayakal"
@@ -53,7 +55,7 @@ def test_graha_udayakal_uses_deshaantar_sunrise_not_belaantar():
     )
 
     # Planets are anchored to listed sunrise (deshaantar-adjusted).
-    assert daily["planets"]["sun"]["longitude"] == get_all_planetary_positions(sunrise)["sun"]["longitude"]
+    assert daily["planets"]["sun"]["longitude"] == spashta_table(as_julian_day(sunrise))["sun"]["longitude"]
     assert daily["planets_anchor"]["local_time"] == daily["sunrise"]["local_time_short"]
 
     meridian = standard_meridian_longitude(loc.timezone, on_date=target, lat=loc.lat, lon=loc.lon)
@@ -65,5 +67,5 @@ def test_graha_udayakal_uses_deshaantar_sunrise_not_belaantar():
     assert bela["sign"] == "dhan"
 
     # Belaantar must not shift the graha epoch — only a different instant would.
-    bela_shifted = get_all_planetary_positions(sunrise + timedelta(minutes=bela["minutes_total"]))["sun"]["longitude"]
+    bela_shifted = spashta_table(as_julian_day(sunrise + timedelta(minutes=bela["minutes_total"])))["sun"]["longitude"]
     assert daily["planets"]["sun"]["longitude"] != bela_shifted

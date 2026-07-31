@@ -8,8 +8,8 @@ Audit of `nepali-holiday-api` @ `562c1f3`. 84 HTTP endpoints, ~41k LOC Python.
 |---|---|
 | 0 — lock behaviour with twin-equivalence tests | **done** — `tests/test_era_twin_equivalence.py` (21 tests) |
 | 1 — one retrograde definition | **done** — `engine/astronomy/motion.py`, `tests/test_motion.py` (27 tests) |
-| 2 — JD-keyed services introduced, facades delegating | **done** — services written, `positions.py` delegating, Moon phase shipped, `tests/test_computation_services.py` (101 tests) |
-| 2b — migrate the ~56 `positions`/`swiss_eph` importers | **not started** (batched; see phase 2 below) |
+| 2 — JD-keyed services introduced, facades delegating | **done** — services written, `positions.py` delegating, Moon phase shipped |
+| 2b — migrate the ~56 `positions`/`swiss_eph` importers | **done** — both files deleted; `tests/test_computation_services.py` (116 tests) now pins the services against golden values captured from the pre-refactor modules |
 | 3 — era-twin elimination | not started |
 | 4 — cache-version unification | not started |
 | 5 — housekeeping | not started |
@@ -25,8 +25,10 @@ failing identically before these changes).
 |---|---|---|
 | `MoonService` | `engine/astronomy/moon.py` | longitude, **latitude**, speed, declination, elongation, **phase**, **illuminated fraction** |
 | `SunService` | `engine/astronomy/sun.py` | longitude, speed, declination, RA, equation of time, sunrise, sunset |
-| `PlanetService` | `engine/astronomy/planets.py` | positions, speed, retrograde (delegates to `motion`), motion labels |
+| `PlanetService` | `engine/astronomy/planets.py` | positions, speed, retrograde (delegates to `motion`), motion labels, `spashta_table` |
 | `PanchangaService` | `engine/astronomy/panchanga.py` | tithi, nakshatra, yoga, karana, vara, elongation |
+| `RashiService` | `engine/astronomy/rashi.py` | rashi of a longitude, surya/chandra rashi, ritu, ayana |
+| `LagnaService` | `engine/astronomy/lagna.py` | ascendant longitude, rising sign, next sign boundary |
 
 All are JD-keyed, all expose module-level singletons (`moon_service`, `sun_service`,
 `planet_service`, `panchanga_service`). `AstronomyEngine` gained `phenomena()` — the only
@@ -395,6 +397,31 @@ Mechanical, no behaviour change:
 
 Ship `MoonService.phase` / `illuminated_fraction` / `latitude` here (section C) — new code,
 so there is nothing to keep consistent with.
+
+#### How 2b actually went
+
+Four batches, each behaviour-neutral against the full suite:
+
+1. **Homes.** `rashi.py` and `lagna.py` are new — the name tables and the
+   ritu/ayana/ascendant arithmetic had nowhere to go that wasn't a facade. The
+   day-typed `calculate_sun*` / `calculate_moon*` entry points moved bodily into
+   `sun.py` / `moon.py` (not collapsed — that is phase 5, and it needs phase 3
+   first), and `get_all_planetary_positions` became `planets.spashta_table(jd)`.
+2. **Leaf vedic modules** — import swaps, plus a fifth private copy of
+   `RASHI_NAMES` found in `sankranti.py`.
+3. **Vedic builders** — `daily`, `at_time`, `sait_rules`, `gochar`,
+   `graha_detail`, `muhurta_engine`, `shadbala`, `udayast`.
+4. **`api/`, `services/`, `scripts/`, `tests/`**, then both files deleted.
+
+Two things worth carrying into phase 3:
+
+- `PlanetService.position()` returns the *lean* dict. Latitude / RA / declination
+  moved to `position_with_extras()`, because `planet_astro_extras` is not
+  memoised and was costing two extra `calc_ut` calls per body on tables that
+  only wanted a longitude.
+- Use `position()["longitude"]`, not `longitude()`, where a value is compared
+  against an orb: the former rounds to 6 decimals exactly as
+  `get_planet_position` did.
 
 ### Phase 3 — era-twin elimination (A1) — the payoff
 

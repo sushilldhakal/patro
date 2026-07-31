@@ -249,28 +249,30 @@ class TestRetrogradeHasOneAnswer:
     def test_nodes_are_retrograde_by_convention_everywhere(self):
         from datetime import datetime, timezone
 
-        from engine.astronomy.swiss_eph import get_all_planetary_positions
+        from engine.astronomy.planets import spashta_table
+        from engine.astronomy.ut_instant import as_julian_day
         from engine.vedic.gochar import get_gochar_table
 
         dt = datetime(DAY_A.year, DAY_A.month, DAY_A.day, tzinfo=timezone.utc)
-        positions = get_all_planetary_positions(dt)
+        positions = spashta_table(as_julian_day(dt))
         table = get_gochar_table(dt)
 
         for node in ("rahu", "ketu"):
             assert positions[node]["is_retrograde"] is True
             assert table[node]["is_retrograde"] is True, (
                 f"{node}: gochar recomputes retrograde from raw speed and drops "
-                "the node convention that swiss_eph applies"
+                "the node convention that spashta_table applies"
             )
 
     def test_planet_retrograde_agrees_between_surfaces(self):
         from datetime import datetime, timezone
 
-        from engine.astronomy.swiss_eph import get_all_planetary_positions
+        from engine.astronomy.planets import spashta_table
+        from engine.astronomy.ut_instant import as_julian_day
         from engine.vedic.gochar import get_gochar_table
 
         dt = datetime(DAY_A.year, DAY_A.month, DAY_A.day, tzinfo=timezone.utc)
-        positions = get_all_planetary_positions(dt)
+        positions = spashta_table(as_julian_day(dt))
         table = get_gochar_table(dt)
 
         for graha in ("mercury", "venus", "mars", "jupiter", "saturn"):

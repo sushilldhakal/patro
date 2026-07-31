@@ -5,7 +5,7 @@ from datetime import date
 from zoneinfo import ZoneInfo
 
 from engine.astronomy.engine import _horizon_dip_degrees
-from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset
+from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 
 KTM_TZ = ZoneInfo("Asia/Kathmandu")
 

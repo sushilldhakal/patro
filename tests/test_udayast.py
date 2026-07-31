@@ -5,7 +5,7 @@ from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.bikram_sambat import gregorian_to_bs
 from engine.vedic.gochar import build_gochar_ingress_range
 from engine.vedic.udayast import build_udayast_range, find_udayast_events_in_range
-from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.astronomy.sun import calculate_sunrise
 
 
 def test_mercury_western_asta_ashar_2083():

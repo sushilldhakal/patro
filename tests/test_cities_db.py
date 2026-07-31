@@ -155,7 +155,7 @@ def test_kanyam_to_kanchanpur_deshaantar_is_about_31_minutes():
     """Classical 4 min/° from Kanyam Jhapa (~88.09°) to Bhimdatta (~80.18°) ≈ 31.5 min."""
     from zoneinfo import ZoneInfo
 
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
     from engine.vedic.bikram_sambat import iter_bs_month_days
 
     ktm = ZoneInfo("Asia/Kathmandu")

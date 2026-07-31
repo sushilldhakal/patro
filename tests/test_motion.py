@@ -85,10 +85,11 @@ class TestCallSitesAgree:
     """Every surface that reports वक्री must report the same वक्री."""
 
     def test_gochar_table_matches_planetary_positions(self):
-        from engine.astronomy.swiss_eph import get_all_planetary_positions
+        from engine.astronomy.planets import spashta_table
+        from engine.astronomy.ut_instant import as_julian_day
         from engine.vedic.gochar import get_gochar_table
 
-        positions = get_all_planetary_positions(DAY)
+        positions = spashta_table(as_julian_day(DAY))
         table = get_gochar_table(DAY)
 
         for graha, row in table.items():

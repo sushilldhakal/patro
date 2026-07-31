@@ -2,9 +2,13 @@
 
 Three things are pinned here:
 
-1. The services agree with the datetime-shaped functions they replaced, so the
-   ~56 modules still importing ``positions`` / ``swiss_eph`` can migrate in
-   batches without a payload changing underneath them.
+1. The services still produce the numbers the datetime-shaped functions they
+   replaced produced. That comparison used to run against ``positions`` /
+   ``swiss_eph`` live, which stopped proving anything the moment those modules
+   became forwarding shims — and stopped being possible at all when they were
+   deleted. It runs against ``data/golden_astronomy_services.json`` instead:
+   values captured by executing the pre-refactor modules at commit 6034aa2.
+   Regenerate that file only when a number is *meant* to change, and say why.
 2. Julian Day really is the only input — the same instant spelled two ways
    gives one answer.
 3. The Moon-phase surface, which is new (the backend had no ``pheno`` call at
@@ -16,7 +20,9 @@ See docs/computation-architecture-audit.md (sections C, phase 2).
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 
@@ -38,87 +44,83 @@ SAMPLE_JDS = [
     default_engine.julian_day(DT + timedelta(days=37 * i)) for i in range(10)
 ]
 
+GOLDEN = json.loads(
+    (Path(__file__).parent / "data" / "golden_astronomy_services.json").read_text(
+        encoding="utf-8"
+    )
+)
+GOLDEN_ROWS = GOLDEN["rows"]
+
 
 class TestServicesMatchTheFunctionsTheyReplace:
-    """Phase 2 must not change a single number."""
+    """Phase 2 must not change a single number.
 
-    @pytest.mark.parametrize("jd", SAMPLE_JDS)
-    def test_panchanga_service_matches_positions(self, jd: float):
-        from engine.astronomy import positions
+    Each row was produced by running the pre-refactor ``positions`` /
+    ``swiss_eph`` at the recorded JD. A failure here means a service now answers
+    differently from the code it replaced — which is a bug unless the diff is
+    the point of the change.
+    """
 
-        dt = default_engine.datetime_from_jd(jd)
+    @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
+    def test_angas(self, row: dict):
+        jd = row["jd"]
 
         assert panchanga_service.elongation(jd) == pytest.approx(
-            positions.get_tithi_angle(dt), abs=1e-9
+            row["elongation"], abs=1e-9
         )
 
-        number, name, progress = positions.get_nakshatra(dt)
-        nak = panchanga_service.nakshatra(jd)
-        assert (nak["number"], nak["name"]) == (number, name)
-        assert nak["progress"] == pytest.approx(progress, abs=1e-9)
-
-        number, name, progress = positions.get_yoga(dt)
-        yoga = panchanga_service.yoga(jd)
-        assert (yoga["number"], yoga["name"]) == (number, name)
-        assert yoga["progress"] == pytest.approx(progress, abs=1e-9)
-
-        number, name = positions.get_karana(dt)
-        karana = panchanga_service.karana(jd)
-        assert (karana["number"], karana["name"]) == (number, name)
-
-    @pytest.mark.parametrize("jd", SAMPLE_JDS)
-    def test_tithi_matches_the_legacy_index_math(self, jd: float):
-        from engine.astronomy import positions
-
-        elongation = panchanga_service.elongation(jd)
         tithi = panchanga_service.tithi(jd)
-        assert tithi["number"] == positions.get_tithi_number(elongation)
-        assert tithi["paksha"] == positions.get_paksha(tithi["number"])
-        assert tithi["display_number"] == positions.get_display_tithi(
-            tithi["number"]
-        )
-        assert tithi["progress"] == pytest.approx(
-            positions.get_tithi_progress(elongation), abs=1e-12
+        assert tithi["number"] == row["tithi_number"]
+        assert tithi["paksha"] == row["paksha"]
+        assert tithi["display_number"] == row["display_tithi"]
+        assert tithi["progress"] == pytest.approx(row["tithi_progress"], abs=1e-9)
+
+        for name in ("nakshatra", "yoga"):
+            got = getattr(panchanga_service, name)(jd)
+            want = row[name]
+            assert (got["number"], got["name"]) == (want["number"], want["name"]), name
+            assert got["progress"] == pytest.approx(want["progress"], abs=1e-9), name
+
+        karana = panchanga_service.karana(jd)
+        assert (karana["number"], karana["name"]) == (
+            row["karana"]["number"],
+            row["karana"]["name"],
         )
 
-    @pytest.mark.parametrize("jd", SAMPLE_JDS)
-    def test_vara_matches_positions(self, jd: float):
-        from engine.astronomy import positions
-
-        dt = default_engine.datetime_from_jd(jd)
-        number, name, english = positions.get_vaara(dt, "Asia/Kathmandu")
         vara = panchanga_service.vara(jd, "Asia/Kathmandu")
         assert (vara["number"], vara["name"], vara["english"]) == (
-            number,
-            name,
-            english,
+            row["vara"]["number"],
+            row["vara"]["name"],
+            row["vara"]["english"],
         )
 
-    @pytest.mark.parametrize("jd", SAMPLE_JDS)
-    def test_planet_service_matches_swiss_eph(self, jd: float):
-        from engine.astronomy.swiss_eph import get_all_planetary_positions
-
-        dt = default_engine.datetime_from_jd(jd)
-        legacy = get_all_planetary_positions(dt)
-        for graha in GRAHA_KEYS:
-            new = planet_service.position(jd, graha)
-            assert new["longitude"] == pytest.approx(
-                legacy[graha]["longitude"], abs=1e-6
-            ), graha
-            assert new["rashi"] == legacy[graha]["rashi"], graha
-            assert new["is_retrograde"] == legacy[graha]["is_retrograde"], graha
-
-    @pytest.mark.parametrize("jd", SAMPLE_JDS)
-    def test_sun_and_moon_longitudes_match(self, jd: float):
-        from engine.astronomy import positions
-
-        dt = default_engine.datetime_from_jd(jd)
+    @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
+    def test_sun_and_moon_longitudes(self, row: dict):
+        jd = row["jd"]
         assert sun_service.longitude(jd) == pytest.approx(
-            positions.get_sun_longitude(dt), abs=1e-9
+            row["sun_longitude"], abs=1e-9
         )
         assert moon_service.longitude(jd) == pytest.approx(
-            positions.get_moon_longitude(dt), abs=1e-9
+            row["moon_longitude"], abs=1e-9
         )
+
+    @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
+    def test_rashi_ritu_and_ayana(self, row: dict):
+        jd = row["jd"]
+        assert rashi_service.surya(jd) == row["surya_rashi"]
+        assert rashi_service.chandra(jd) == row["chandra_rashi"]
+        assert rashi_service.aayan(jd) == row["aayan"]
+        assert rashi_service.ritu(jd, sidereal=True) == row["ritu"]
+
+    @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
+    def test_lagna(self, row: dict):
+        lat, lon = KATHMANDU
+        assert lagna_service.lagna(row["jd"], lat=lat, lon=lon) == row["lagna"]
+
+    @pytest.mark.parametrize("row", GOLDEN_ROWS, ids=lambda r: str(r["jd"]))
+    def test_spashta_table(self, row: dict):
+        """Every field of every graha row, including DMS strings and अस्त flags."""
+        assert spashta_table(row["jd"]) == row["spashta"]
 
 
 class TestJulianDayIsTheOnlyInput:
@@ -216,9 +218,9 @@ class TestSunService:
         assert max(values) < 17.0
         assert min(values) > -17.0
 
-    def test_sunrise_matches_the_legacy_helper(self):
+    def test_sunrise_matches_the_day_typed_helper(self):
         from engine.astronomy.location import resolve_location_from_query
-        from engine.astronomy.swiss_eph import calculate_sunrise
+        from engine.astronomy.sun import calculate_sunrise
 
         location = resolve_location_from_query(
             lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu"

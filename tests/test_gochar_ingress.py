@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import DEFAULT_LOCATION
-from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
 from engine.vedic.gochar import (
     find_next_nakshatra_entry,

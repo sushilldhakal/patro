@@ -76,14 +76,13 @@ def test_belaantar_matches_swiss_ephemeris_at_sunrise():
     import swisseph as swe
     from datetime import timezone
 
-    from engine.astronomy.swiss_eph import get_julian_day, init_ephemeris
+    from engine.astronomy.ut_instant import as_julian_day
 
-    init_ephemeris()
     target = date(2026, 7, 26)
     daily = build_daily_panchanga(target, DEFAULT_LOCATION)
     b = daily["solar_corrections"]["belaantar"]
     at = datetime.fromisoformat(daily["solar_corrections"]["computed_at_local"])
-    jd = get_julian_day(at.astimezone(timezone.utc))
+    jd = as_julian_day(at.astimezone(timezone.utc))
     swe_min = float(swe.time_equ(jd)) * 24.0 * 60.0
     assert abs(b["minutes_total"] + swe_min) < 0.01
     assert b["sign"] == ("dhan" if swe_min <= 0 else "rin")

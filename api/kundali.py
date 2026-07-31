@@ -126,8 +126,9 @@ def kundali_vimshottari(
     """Vimshottari Mahadasha from Moon sidereal longitude at birth."""
     from datetime import timezone
 
+    from engine.astronomy.planets import spashta_table
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.astronomy.swiss_eph import get_all_planetary_positions
+    from engine.astronomy.ut_instant import as_julian_day
     from engine.vedic.vimshottari import vimshottari_dasha
 
     try:
@@ -141,7 +142,7 @@ def kundali_vimshottari(
             request=request,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
-        planets = get_all_planetary_positions(instant.astimezone(timezone.utc), ayanamsa=mode_id)
+        planets = spashta_table(as_julian_day(instant), ayanamsa=mode_id)
         moon_lon = planets["moon"]["longitude"]
         dasha = vimshottari_dasha(moon_lon, instant.astimezone(timezone.utc), cycles=cycles)
         return {

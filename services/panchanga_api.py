@@ -13,7 +13,7 @@ from engine.astronomy.jd_calendar import (
     format_civil_iso,
     parse_civil_iso,
 )
-from engine.astronomy.positions import ayana_kranti_mark
+from engine.astronomy.rashi import ayana_kranti_mark
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.bikram_sambat import (
     bs_month_name,
@@ -688,8 +688,9 @@ def build_year_sun_times(
     longitude per day (~2 ms) instead of ~80 ms — a cold year computes in
     about a second instead of ~30 s.
     """
-    from engine.astronomy.positions import get_aayan
-    from engine.astronomy.swiss_eph import calculate_sunrise, calculate_sunset
+    from engine.astronomy.rashi import rashi_service
+    from engine.astronomy.sun import calculate_sunrise, calculate_sunset
+    from engine.astronomy.ut_instant import as_julian_day
     from engine.vedic.bikram_sambat import BS_MONTH_NAMES_NEPALI
 
     tz = resolve_observer_timezone(location.timezone)
@@ -706,7 +707,7 @@ def build_year_sun_times(
                 greg, latitude=location.lat, longitude=location.lon,
                 timezone_name=location.timezone,
             )
-            aayan = get_aayan(sunrise_utc)
+            aayan = rashi_service.aayan(as_julian_day(sunrise_utc))
             calendar.append(
                 {
                     "day": bs_day,

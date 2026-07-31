@@ -147,22 +147,16 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 try:
     from engine.astronomy.location import ObserverLocation
-    from engine.astronomy.positions import (
+    from engine.astronomy.panchanga import (
         NAKSHATRA_NAMES,
-        RASHI_NAMES,
         VAARA_ENGLISH,
         VAARA_NAMES,
         YOGA_NAMES,
     )
-    from engine.astronomy.swiss_eph import (
-        calculate_sunrise,
-        calculate_sunset,
-        get_ayanamsa,
-        get_julian_day,
-        get_sun_moon_positions,
-        init_ephemeris,
-    )
+    from engine.astronomy.rashi import RASHI_NAMES
+    from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
     from engine.astronomy.timescale import resolve_observer_timezone
+    from engine.astronomy.ut_instant import as_julian_day
     from engine.vedic.bikram_sambat import bs_month_name, bs_to_gregorian, gregorian_to_bs
 except ImportError as exc:
     print(
@@ -391,7 +385,7 @@ def _elongation(dt: datetime) -> float:
     This is the fundamental input for Tithi and Karana calculations.
     Lahiri ayanamsa has already been applied via FLG_SIDEREAL.
     """
-    sun_long, moon_long = get_sun_moon_positions(dt)
+    sun_long, moon_long = sun_service.sun_moon_longitudes(as_julian_day(dt))
     return (moon_long - sun_long) % 360.0
 
 
@@ -566,13 +560,13 @@ def _tithi_index(dt: datetime) -> int:
 
 def _nakshatra_index(dt: datetime) -> int:
     """Index function for Nakshatra bisection: changes when Moon crosses 13°20′."""
-    _, moon_long = get_sun_moon_positions(dt)
+    _, moon_long = sun_service.sun_moon_longitudes(as_julian_day(dt))
     return int(moon_long / NAKSHATRA_SPAN)
 
 
 def _yoga_index(dt: datetime) -> int:
     """Index function for Yoga bisection: changes when (λ☉+λ☽) crosses 13°20′."""
-    sun_long, moon_long = get_sun_moon_positions(dt)
+    sun_long, moon_long = sun_service.sun_moon_longitudes(as_julian_day(dt))
     return int(((sun_long + moon_long) % 360.0) / YOGA_SPAN)
 
 
@@ -638,7 +632,7 @@ def graha_spashta_6am(target_date: date, loc: dict) -> dict[str, Any]:
     dt_6am_utc   = dt_6am_local.astimezone(timezone.utc)
 
     swe.set_sid_mode(swe.SIDM_LAHIRI)
-    jd = get_julian_day(dt_6am_utc)
+    jd = as_julian_day(dt_6am_utc)
 
     positions: dict[str, Any] = {}
     for graha_name, body_id in _GRAHA_BODIES.items():
@@ -713,8 +707,6 @@ def build_panchanga_for_date(
     -------
     dict   Fully structured JSON-ready panchanga for the requested date.
     """
-    init_ephemeris()   # Ensures Lahiri ayanamsa is set for JPL
-
     lat  = loc["latitude"]
     lon  = loc["longitude"]
     elev = loc["elevation_m"]
@@ -735,9 +727,9 @@ def build_panchanga_for_date(
 
     # ── 2. Sidereal positions at sunrise (Lahiri nirayana) ───────────────────
     swe.set_sid_mode(swe.SIDM_LAHIRI)
-    sun_long, moon_long = get_sun_moon_positions(sunrise_utc)
+    sun_long, moon_long = sun_service.sun_moon_longitudes(as_julian_day(sunrise_utc))
     elong = (moon_long - sun_long) % 360.0
-    ayanamsa_val = get_ayanamsa(sunrise_utc)
+    ayanamsa_val = sun_service.ayanamsa(as_julian_day(sunrise_utc))
 
     # ── 3. BS and Gregorian date labels ─────────────────────────────────────
     bs_year, bs_month, bs_day = gregorian_to_bs(target)
@@ -766,12 +758,12 @@ def build_panchanga_for_date(
         return d["name"]
 
     def _next_nakshatra(t: datetime) -> str:
-        _, m = get_sun_moon_positions(t + timedelta(seconds=90))
+        _, m = sun_service.sun_moon_longitudes(as_julian_day(t + timedelta(seconds=90)))
         idx = int(m / NAKSHATRA_SPAN) % 27
         return NAKSHATRA_NAMES[idx]
 
     def _next_yoga(t: datetime) -> str:
-        s, m = get_sun_moon_positions(t + timedelta(seconds=90))
+        s, m = sun_service.sun_moon_longitudes(as_julian_day(t + timedelta(seconds=90)))
         idx = int(((s + m) % 360.0) / YOGA_SPAN) % 27
         return YOGA_NAMES[idx]
 
@@ -1062,7 +1054,6 @@ def _run_sample() -> None:
     print(f"  Ayanamsa: Lahiri (Chitra Paksha)", file=sys.stderr)
     print("═" * 68, file=sys.stderr)
 
-    init_ephemeris()
     loc = build_location(None, None)             # Kathmandu defaults
     result = build_panchanga_for_date(date(2026, 4, 14), loc)
     print(json.dumps(result, ensure_ascii=False, indent=2))

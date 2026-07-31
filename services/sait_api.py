@@ -178,12 +178,12 @@ def get_sait_detail(
     """
     from datetime import date
 
-    from engine.astronomy.positions import (
-        KARANA_NAMES, NAKSHATRA_NAMES, RASHI_NAMES, RASHI_NAMES_NE, YOGA_NAMES,
-        get_display_tithi, get_karana, get_nakshatra, get_paksha,
-        get_tithi_angle, get_tithi_number, get_yoga,
+    from engine.astronomy.panchanga import (
+        KARANA_NAMES, NAKSHATRA_NAMES, YOGA_NAMES, panchanga_service,
     )
+    from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
     from engine.astronomy.timescale import resolve_observer_timezone
+    from engine.astronomy.ut_instant import as_julian_day
     from dataclasses import replace
 
     from engine.vedic.bikram_sambat import bs_to_gregorian
@@ -262,12 +262,14 @@ def get_sait_detail(
             dp = build_day_panchanga(greg, location)
             start_local = win.start.astimezone(tz)
             end_local = win.end.astimezone(tz)
-            tnum = get_tithi_number(get_tithi_angle(win.start))
-            tdisp = get_display_tithi(tnum)
-            paksha = get_paksha(tnum)
-            nak = get_nakshatra(win.start)[0]
-            yoga = get_yoga(win.start)[0]
-            _, karana = get_karana(win.start)
+            start_jd = as_julian_day(win.start)
+            tithi_block = panchanga_service.tithi(start_jd)
+            tnum = tithi_block["number"]
+            tdisp = tithi_block["display_number"]
+            paksha = tithi_block["paksha"]
+            nak = panchanga_service.nakshatra(start_jd)["number"]
+            yoga = panchanga_service.yoga(start_jd)["number"]
+            karana = panchanga_service.karana(start_jd)["name"]
             vaara0 = dp.vaara - 1  # 0=Sunday
             lagna = win.lagna
             days_out.append(

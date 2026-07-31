@@ -40,7 +40,7 @@ def test_daily_payload_includes_balam_and_panchaka():
 
 
 def test_surya_nakshatra_matches_sun_longitude():
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
 
     sunrise = calculate_sunrise(
         date(2026, 6, 12),

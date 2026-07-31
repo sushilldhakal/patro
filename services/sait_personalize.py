@@ -54,15 +54,12 @@ from datetime import date, datetime, timezone
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.positions import (
-    NAKSHATRA_NAMES,
-    RASHI_NAMES,
-    RASHI_NAMES_NE,
-    get_chandra_rashi,
-    get_nakshatra,
-)
-from engine.astronomy.swiss_eph import calculate_sunrise, get_planet_position
+from engine.astronomy.panchanga import NAKSHATRA_NAMES, panchanga_service
+from engine.astronomy.planets import planet_service
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE, rashi_service
+from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 from engine.vedic.navatara import _compute_navatara_number, _navatara_meta
@@ -157,7 +154,7 @@ def _kumbha_zone(count: int) -> dict[str, str]:
 
 
 def _kumbha_chakra(sunrise_utc, moon_nak: int) -> dict[str, Any]:
-    sun_lon = get_planet_position(sunrise_utc, "sun")["longitude"]
+    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun")["longitude"]
     sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
     count = ((moon_nak - sun_nak) % 27) + 1
     return {"count": count, "sun_nakshatra": sun_nak, **_kumbha_zone(count)}
@@ -181,7 +178,7 @@ _AGNI_MUKHA_PLANETS: tuple[tuple[str, str, str, bool], ...] = (
 
 
 def _agni_mukha(sunrise_utc, moon_nak: int) -> dict[str, Any]:
-    sun_lon = get_planet_position(sunrise_utc, "sun")["longitude"]
+    sun_lon = planet_service.position(as_julian_day(sunrise_utc), "sun")["longitude"]
     sun_nak = int(sun_lon / _NAK_SPAN) % 27 + 1
     count = ((moon_nak - sun_nak) % 27) + 1
     key, ne, en, benefic = _AGNI_MUKHA_PLANETS[(count - 1) // 3]
@@ -242,8 +239,9 @@ def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
     if local.tzinfo is None:
         local = local.replace(tzinfo=tz)
     instant = local.astimezone(timezone.utc)
-    nak_num, _, _ = get_nakshatra(instant)
-    rashi_num = get_chandra_rashi(instant)["number"]
+    instant_jd = as_julian_day(instant)
+    nak_num = panchanga_service.nakshatra(instant_jd)["number"]
+    rashi_num = rashi_service.chandra(instant_jd)["number"]
     return {"nakshatra": nak_num, "rashi": rashi_num}
 
 
@@ -284,8 +282,9 @@ def _annotate_one(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
-    t_nak, _, _ = get_nakshatra(sunrise_utc)
-    t_rashi = get_chandra_rashi(sunrise_utc)["number"]
+    sunrise_jd = as_julian_day(sunrise_utc)
+    t_nak = panchanga_service.nakshatra(sunrise_jd)["number"]
+    t_rashi = rashi_service.chandra(sunrise_jd)["number"]
 
     tara_num = _compute_navatara_number(janma_nak - 1, t_nak - 1, 27)
     chandra_num = _compute_navatara_number(janma_rashi - 1, t_rashi - 1, 12)
@@ -366,7 +365,9 @@ def _graha_shuddhi(
         if key == "moon":
             p_rashi = moon_rashi  # already read at this sunrise
         else:
-            lon = get_planet_position(sunrise_utc, meta["swe"])["longitude"]
+            lon = planet_service.position(
+                as_julian_day(sunrise_utc), meta["swe"]
+            )["longitude"]
             p_rashi = int(lon / 30) % 12 + 1
         house = ((p_rashi - janma_rashi) % 12) + 1
         factors.append(
