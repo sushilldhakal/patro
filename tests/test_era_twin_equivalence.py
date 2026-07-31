@@ -205,22 +205,25 @@ class TestVakriSpanIsAlreadyEraFree:
         assert span["grahas"] == wrapper["grahas"]
 
 
-class TestDailyPanchangaTwins:
-    """``build_daily_panchanga`` vs ``build_daily_panchanga_civil``.
+class TestDailyPanchangaIsEraFreeWhereItCounts:
+    """Merged (phase 3): both entry points run ``build_daily_panchanga_at_jd``.
 
-    Both already share ``_assemble_udaya_panchanga``; the delta is the sunrise
-    prologue and BS labelling. The angas must not differ.
+    The astronomy is now literally one code path. What is still forked is the
+    *labelling* — the lunar-month and Nepal-Sambat engines are CE-only, so a day
+    on the signed patro axis gets documented stubs. That fork is the caller's
+    choice (``patro_bs``), not a second builder, and these tests pin the line
+    between the two halves.
     """
 
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
-    def test_angas_agree(self, day: date):
+    def test_astronomy_is_identical_whichever_entry_point_is_used(self, day: date):
         from engine.vedic.bikram_sambat import gregorian_to_bs
         from engine.vedic.daily import build_daily_panchanga
         from engine.vedic.daily_civil import build_daily_panchanga_civil
 
         bs_y, bs_m, bs_d = gregorian_to_bs(day)
         ce = build_daily_panchanga(day, LOCATION)
-        bce = build_daily_panchanga_civil(
+        patro = build_daily_panchanga_civil(
             civil_of(day),
             LOCATION,
             patro_bs_year=bs_y,
@@ -228,8 +231,53 @@ class TestDailyPanchangaTwins:
             patro_bs_day=bs_d,
         )
         for anga in ("tithi", "nakshatra", "yoga", "karana"):
-            if anga in ce and anga in bce:
-                assert bce[anga] == ce[anga], f"{anga} drifted between era twins"
+            if anga in ce and anga in patro:
+                assert patro[anga] == ce[anga], f"{anga} drifted between entry points"
+        for event in ("sunrise", "sunset", "moonrise", "moonset"):
+            if event in ce and event in patro:
+                assert patro[event] == ce[event], f"{event} drifted between entry points"
+
+    @pytest.mark.parametrize("day", [DAY_A, DAY_B])
+    def test_only_the_calendar_labels_differ(self, day: date):
+        """Everything the CE-only engines feed, and nothing else."""
+        from engine.vedic.bikram_sambat import gregorian_to_bs
+        from engine.vedic.daily import build_daily_panchanga
+        from engine.vedic.daily_civil import build_daily_panchanga_civil
+
+        bs_y, bs_m, bs_d = gregorian_to_bs(day)
+        ce = build_daily_panchanga(day, LOCATION)
+        patro = build_daily_panchanga_civil(
+            civil_of(day),
+            LOCATION,
+            patro_bs_year=bs_y,
+            patro_bs_month=bs_m,
+            patro_bs_day=bs_d,
+        )
+        differing = {k for k in set(ce) | set(patro) if ce.get(k) != patro.get(k)}
+        assert differing <= {
+            "lunar_month",
+            "lunar_calendar",
+            "nepal_sambat",
+            "ns_date",
+            "display",
+            "festivals",
+            "date",
+            "date_bs",
+        }, f"unexpected divergence: {sorted(differing)}"
+
+    def test_the_patro_axis_labels_say_they_are_stubs(self):
+        """A stubbed block must announce itself, not look like a real answer."""
+        from engine.vedic.daily_civil import build_daily_panchanga_civil
+
+        payload = build_daily_panchanga_civil(
+            CivilDay(-100, 7, 31),
+            LOCATION,
+            patro_bs_year=-157,
+            patro_bs_month=4,
+            patro_bs_day=16,
+        )
+        assert payload["lunar_month"]["source"] == "solar_month_stub"
+        assert payload["lunar_calendar"]["source"] == "solar_month_stub"
 
 
 class TestOneJdOneAnswerAcrossEndpoints:

@@ -382,25 +382,99 @@ def _assemble_udaya_panchanga(
     return payload
 
 
-def build_daily_panchanga(
-    target: date,
+# ── labelling stubs for days the CE-only calendar engines cannot reach ───────
+#
+# The lunar-month and Nepal-Sambat engines are built on ``datetime.date`` and the
+# verified BS table, so they have nothing to say about a day on the signed patro
+# axis (BBS, or BS years before the table starts). These stand in, and say so via
+# ``source``/``available`` rather than inventing a label.
+
+
+def _lunar_stub_for_solar_month(bs_month: int, paksha: str) -> dict[str, Any]:
+    """Pūrṇimānta lunar labels from solar BS month when the lunar engine is off."""
+    from engine.vedic.sankranti import BS_MONTH_NAMES
+
+    name = BS_MONTH_NAMES[bs_month - 1]
+    month_ne = name
+    try:
+        month_ne = BS_MONTH_NAMES_NEPALI[bs_month - 1]
+    except (IndexError, ValueError):
+        pass
+    return {
+        "name": name,
+        "purnimanta_name": name,
+        "purnimanta_name_ne": month_ne,
+        "name_ne": month_ne,
+        "is_adhik": False,
+        "purnimanta_is_adhik": False,
+        "source": "solar_month_stub",
+        "paksha": paksha,
+    }
+
+
+def _lunar_calendar_stub(lunar: dict, paksha: str) -> dict[str, Any]:
+    return {
+        "purnimant": {
+            "name": lunar.get("purnimanta_name"),
+            "name_ne": lunar.get("purnimanta_name_ne"),
+            "paksha": paksha,
+            "is_adhik": lunar.get("purnimanta_is_adhik", False),
+        },
+        "amant": {
+            "name": lunar.get("name"),
+            "name_ne": lunar.get("name_ne"),
+            "paksha": paksha,
+            "is_adhik": lunar.get("is_adhik", False),
+        },
+        "source": "solar_month_stub",
+    }
+
+
+def _ns_date_stub() -> dict[str, Any]:
+    return {
+        "year": 0,
+        "label_ne": "—",
+        "label_en": "—",
+        "available": False,
+    }
+
+
+def build_daily_panchanga_at_jd(
+    jd_ut: float,
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
+    patro_bs: tuple[int, int, int] | None = None,
     include_festivals: bool = False,
 ) -> dict[str, Any]:
-    """Full udaya panchanga for one civil day at the observer location."""
-    sunrise_utc = calculate_sunrise(
-        target,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
+    """Full udaya panchanga for the civil day named by *jd_ut*.
+
+    The astronomy below — sunrise, sunset, the two moon events, the next
+    sunrise, tithi and vara — is one path for every era. That is the half where
+    a CE/BCE fork could hide a wrong number, and it is where A0 did.
+
+    The labelling is a genuine fork, so it is explicit and the caller picks it:
+
+    ``patro_bs=None``
+        Derive everything from the Gregorian day — real lunar month, real Nepal
+        Sambat, festivals. Only possible when ``datetime.date`` can hold the year.
+    ``patro_bs=(year, month, day)``
+        The caller resolved the day on the signed patro axis. The CE-only
+        calendar engines cannot speak to it, so the lunar and NS blocks are
+        stubs and the year may be negative (BBS).
+    """
+    from engine.astronomy.jd_calendar import (
+        CivilDay,
+        civil_day_add,
+        format_civil_iso,
     )
-    sunset_utc = calculate_sunset(
-        target,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
+    from engine.astronomy.sun import sun_service
+
+    jd = float(jd_ut)
+    civil = CivilDay.from_jd_ut(jd)
+
+    # ── astronomy — era-free ────────────────────────────────────────────────
+    sunrise_utc = sun_service.sunrise(jd, location)
+    sunset_utc = sun_service.sunset(jd, location)
     moonrise_utc = calculate_moonrise_after(
         sunrise_utc,
         latitude=location.lat,
@@ -413,39 +487,63 @@ def build_daily_panchanga(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
+    next_sunrise_utc = sun_service.sunrise(civil_day_add(jd, 1), location)
 
     tithi_info = calculate_tithi(sunrise_utc)
     vara = panchanga_service.vara(as_julian_day(sunrise_utc), location.timezone)
     vaara_num, vaara_sanskrit, vaara_english = (
         vara["number"], vara["name"], vara["english"]
     )
-
-    bs_year, bs_month, bs_day = gregorian_to_bs(target)
-
     display_tithi = tithi_info["display_number"]
     paksha = tithi_info["paksha"]
-    tithi_name_ne = _tithi_name_ne(display_tithi, paksha)
+    date_ad = format_civil_iso(civil.year, civil.month, civil.day)
 
-    lunar = merge_lunar_month_for_day(target, paksha)
-
-    ns_date = gregorian_to_ns(
-        target,
-        bs_year,
-        tithi_display=display_tithi,
-        tithi_absolute=tithi_info["number"],
-        tithi_name_ne=tithi_name_ne,
-        paksha=paksha,
-        lunar_month_name=lunar.get("name"),
-        is_adhik=lunar.get("is_adhik", False),
-        location=location,
-    )
-
-    next_sunrise_utc = calculate_sunrise(
-        target + timedelta(days=1),
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
+    # ── labelling — the fork the caller chose ───────────────────────────────
+    if patro_bs is None:
+        target = civil.to_date()
+        bs_year, bs_month, bs_day = gregorian_to_bs(target)
+        lunar = merge_lunar_month_for_day(target, paksha)
+        ns_date = gregorian_to_ns(
+            target,
+            bs_year,
+            tithi_display=display_tithi,
+            tithi_absolute=tithi_info["number"],
+            tithi_name_ne=_tithi_name_ne(display_tithi, paksha),
+            paksha=paksha,
+            lunar_month_name=lunar.get("name"),
+            is_adhik=lunar.get("is_adhik", False),
+            location=location,
+        )
+        lunar_calendar = get_lunar_calendar_layers(target, paksha)
+        display = _display_headers(
+            target, bs_year, bs_month, bs_day, vaara_english, ns_date
+        )
+        date_label = target.isoformat()
+        solar_anchor_date = target
+        festival_date = target
+    else:
+        bs_year, bs_month, bs_day = patro_bs
+        lunar = _lunar_stub_for_solar_month(bs_month, paksha)
+        ns_date = _ns_date_stub()
+        lunar_calendar = _lunar_calendar_stub(lunar, paksha)
+        display = _display_headers_civil(
+            date_ad,
+            bs_year,
+            bs_month,
+            bs_day,
+            VAARA_NAMES_NE[vaara_num],
+            vaara_english,
+            ns_date,
+        )
+        date_label = date_ad
+        try:
+            solar_anchor_date = civil.to_date()
+        except ValueError:
+            # ``datetime.date`` cannot represent a BCE civil label. Belaantar
+            # only needs the ephemeris instant (sunrise); the date is read for
+            # zone meridian / timezone-era metadata, so a fixed probe day serves.
+            solar_anchor_date = date(2020, 6, 15)
+        festival_date = None
 
     return _assemble_udaya_panchanga(
         sunrise_utc=sunrise_utc,
@@ -461,22 +559,36 @@ def build_daily_panchanga(
         bs_year=bs_year,
         bs_month=bs_month,
         bs_day=bs_day,
-        date_label=target.isoformat(),
-        date_ad=civil_iso_from_date(target),
-        jd_ut=civil_day_jd_from_date(target),
-        display=_display_headers(target, bs_year, bs_month, bs_day, vaara_english, ns_date),
+        date_label=date_label,
+        date_ad=date_ad,
+        jd_ut=jd,
+        display=display,
         ns_date=ns_date,
         lunar=lunar,
-        lunar_calendar=get_lunar_calendar_layers(target, paksha),
+        lunar_calendar=lunar_calendar,
         solar_corrections=build_solar_corrections(
-            target,
+            solar_anchor_date,
             local_longitude=location.lon,
             timezone_name=location.timezone,
             at=sunrise_utc,
             lat=location.lat,
         ),
         include_festivals=include_festivals,
-        festival_date=target,
+        festival_date=festival_date,
+    )
+
+
+def build_daily_panchanga(
+    target: date,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    include_festivals: bool = False,
+) -> dict[str, Any]:
+    """Full udaya panchanga for one Gregorian day. Thin wrapper over the JD builder."""
+    return build_daily_panchanga_at_jd(
+        civil_day_jd_from_date(target),
+        location,
+        include_festivals=include_festivals,
     )
 
 

@@ -10,7 +10,7 @@ Audit of `nepali-holiday-api` @ `562c1f3`. 84 HTTP endpoints, ~41k LOC Python.
 | 1 — one retrograde definition | **done** — `engine/astronomy/motion.py`, `tests/test_motion.py` (27 tests) |
 | 2 — JD-keyed services introduced, facades delegating | **done** — services written, `positions.py` delegating, Moon phase shipped |
 | 2b — migrate the ~56 `positions`/`swiss_eph` importers | **done** — both files deleted; `tests/test_computation_services.py` (116 tests) now pins the services against golden values captured from the pre-refactor modules |
-| 3 — era-twin elimination | not started |
+| 3 — era-twin elimination | **done** — all 8 builder pairs merged onto JD-native builders; `tests/test_era_twin_equivalence.py` rewritten to pin the post-merge invariants |
 | 4 — cache-version unification | **done** — `services/payload_version.py`; `ASTRONOMY_VERSION = 2` invalidates all four namespaces for A0/A0b, `tests/test_payload_version.py` (13 tests) |
 | 5 — housekeeping | not started |
 
@@ -448,6 +448,55 @@ Recipe per builder (copy `build_graha_vakri_span`):
 - Delete the wrappers once no caller remains.
 
 Each of the 8 is a standalone PR with a green Phase-0 snapshot.
+
+#### How phase 3 actually went
+
+All eight pairs merged, in three batches, each verified with a 35-payload
+before/after snapshot across bs / ad / bce (scratch harness, not committed) —
+zero diffs throughout.
+
+| Was | Now |
+|---|---|
+| `build_eclipse_year` / `_ad_year` | `build_eclipse_span(jd_start, jd_end, kind, location)` |
+| `build_panchak_bs_year` / `_ad_year` | `build_panchak_span(…)` |
+| `build_graha_asta_year` / `_ad_year` + both `_for_range` bodies | `build_graha_asta_span(…)` |
+| `build_udayast_range` / `_civil` | `build_udayast_span(…)` |
+| `build_graha_sthiti` / `_civil` | `build_graha_sthiti(jd, location, date_bs=None)` |
+| `build_gochar_response` / `_civil` | `build_gochar(jd, location, …)` |
+| `build_gochar_ingress_range` / `_civil` | `build_gochar_ingress(jd_start, jd_end, …)` |
+| `build_daily_panchanga` / `_civil` | `build_daily_panchanga_at_jd(jd, …, patro_bs=None)` |
+
+Four things worth carrying forward:
+
+- **The udayast merge needed A0 fixed first.** Its twins differed only in which
+  sunrise helper they called, and before A0 those helpers disagreed. Merging at
+  that point would have silently changed CE answers. Phase ordering mattered.
+
+- **The ingress twins had genuinely drifted.** Both decide whether an entry
+  landing before sunrise belongs to the previous vedic day, but the CE path
+  compared wall-clock *minutes* against a recomputed sunrise while the BCE path
+  compared Julian Days. The JD comparison won — exact, and it works for entries
+  with no `datetime` to read an hour off. No sampled range changed; a difference
+  would only surface within a minute of sunrise.
+
+- **`build_daily_panchanga` is not fully era-free, and should not be.** The
+  astronomy is now one path — that is the half where A0 lived. The *labelling*
+  is still forked, because the lunar-month and Nepal-Sambat engines are built on
+  `datetime.date` and the verified BS table and have nothing to say about a day
+  on the signed patro axis. That fork is now an explicit caller-chosen argument
+  (`patro_bs`) inside one function, with stubs that announce themselves via
+  `source: "solar_month_stub"` / `available: false`, instead of a second module.
+
+- **Labels stayed put.** The span builders are era-free, but `era` / `bs_year` /
+  `ad_year` are published fields that tests pin, so the year routes re-apply them
+  through `_stamp_year_era()`. Labelling happens once, in the route, rather than
+  being a reason to fork a builder. Note this leaves `build_graha_vakri_span`'s
+  payload (no such fields) inconsistent with its siblings — pre-existing, and
+  worth resolving deliberately rather than as a side effect of this phase.
+
+The route handlers shrank on their own, as predicted: `/nepal/gochar/jd/{jd_ut}`
+had a three-way fan-out whose first two branches were identical code, and is now
+a single call.
 
 ### Phase 4 — cache-version unification (B2)
 
