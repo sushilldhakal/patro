@@ -202,42 +202,59 @@ def _format_periods(
     return formatted
 
 
-def _build_for_range(
-    year_start: date,
-    year_end: date,
-    location: Any,
+def build_panchak_span(
+    jd_start: float, jd_end: float, location: Any
 ) -> dict[str, Any]:
+    """Panchak windows overlapping an inclusive Julian Day span.
+
+    The era-agnostic entry point: ``EraMiddleware`` has already resolved whatever
+    era the client asked for down to a JD pair, so this serves ad, bc, bs and bbs
+    from one body. ``list_panchak_periods`` already accepted ``CivilDay`` bounds,
+    so the CE/BCE split never had to reach this far.
+    """
+    from engine.astronomy.jd_calendar import CivilDay
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
     periods = list_panchak_periods(
-        year_start, year_end, timezone_name=location.timezone,
+        CivilDay.from_jd_ut(span_start),
+        CivilDay.from_jd_ut(span_end),
+        timezone_name=location.timezone,
     )
     return {
-        **_year_range_jd_fields_panchak(year_start, year_end),
+        "range_start_jd": span_start,
+        "range_end_jd": span_end,
         "location": location.as_dict(),
         "count": len(periods),
         "periods": _format_periods(periods, timezone_name=location.timezone),
     }
 
 
-def _year_range_jd_fields_panchak(year_start: date, year_end: date) -> dict[str, float]:
+def build_panchak_bs_year(bs_year: int, location: Any) -> dict[str, Any]:
+    """Panchak windows in a BS year. Thin wrapper over the span builder."""
     from engine.astronomy.jd_calendar import civil_day_jd_from_date
 
-    return {
-        "range_start_jd": civil_day_jd_from_date(year_start),
-        "range_end_jd": civil_day_jd_from_date(year_end),
-    }
-
-
-def build_panchak_bs_year(bs_year: int, location: Any) -> dict[str, Any]:
     year_start, year_end = _bs_year_range(bs_year)
-    payload = _build_for_range(year_start, year_end, location)
+    payload = build_panchak_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        location,
+    )
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
     return payload
 
 
 def build_panchak_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
+    """Panchak windows in a Gregorian year. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     year_start, year_end = _ad_year_range(ad_year)
-    payload = _build_for_range(year_start, year_end, location)
+    payload = build_panchak_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        location,
+    )
     payload["ad_year"] = ad_year
     payload["era"] = "ad"
     return payload

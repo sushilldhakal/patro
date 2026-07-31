@@ -161,6 +161,50 @@ def find_udayast_events_in_range(
     return events
 
 
+def build_udayast_span(
+    jd_start: float,
+    jd_end: float,
+    location: Any,
+    *,
+    grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Udaya/asta timeline over an inclusive Julian Day span, anchored at sunrise.
+
+    The era-agnostic entry point: ``EraMiddleware`` has already resolved whatever
+    era the client asked for down to a JD pair, so this serves ad, bc, bs and bbs
+    from one body.
+
+    The CE and BCE variants this replaces differed only in which sunrise helper
+    they called. ``sun_service.sunrise`` makes that choice from the JD itself —
+    and the two helpers now agree on CE days, which they did not before the A0
+    fix (``_rise_set_civil`` was anchored at 12:00 UT rather than local midnight).
+    Merging them before that fix would have silently changed CE answers.
+    """
+    from engine.astronomy.jd_calendar import civil_day_add
+    from engine.astronomy.sun import sun_service
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
+    if span_end < span_start:
+        raise ValueError("to_date must be on or after from_date")
+
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = sun_service.sunrise(span_start, location)
+    # The window closes at the *next* day's sunrise, so the last day in the span
+    # is covered end to end.
+    until_sunrise = sun_service.sunrise(civil_day_add(span_end, 1), location)
+
+    raw = find_udayast_events_in_range(from_sunrise, until_sunrise, grahas=grahas)
+    events = [_attach_local_time(dict(e), tz) for e in raw]
+    return {
+        "from_jd": span_start,
+        "to_jd": span_end,
+        "level": "udayast",
+        "location": location.as_dict(),
+        "events": events,
+    }
+
+
 def build_udayast_range(
     from_date: date,
     to_date: date,
@@ -168,40 +212,17 @@ def build_udayast_range(
     *,
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Udaya/asta timeline between civil dates (inclusive), anchored at sunrise."""
-    from engine.astronomy.sun import calculate_sunrise
+    """Udaya/asta timeline between civil dates. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
 
     if to_date < from_date:
         raise ValueError("to_date must be on or after from_date")
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise(
-        from_date,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise(
-        to_date + timedelta(days=1),
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_udayast_events_in_range(
-        from_sunrise,
-        until_sunrise,
+    return build_udayast_span(
+        civil_day_jd_from_date(from_date),
+        civil_day_jd_from_date(to_date),
+        location,
         grahas=grahas,
     )
-    events = [_attach_local_time(dict(e), tz) for e in raw]
-    from engine.astronomy.jd_calendar import civil_day_jd_from_date
-
-    return {
-        "from_jd": civil_day_jd_from_date(from_date),
-        "to_jd": civil_day_jd_from_date(to_date),
-        "level": "udayast",
-        "location": location.as_dict(),
-        "events": events,
-    }
 
 
 def build_udayast_range_civil(
@@ -211,41 +232,14 @@ def build_udayast_range_civil(
     *,
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Udaya/asta timeline between civil days (inclusive), BCE-safe."""
+    """Udaya/asta timeline between civil days. Thin wrapper over the span builder."""
     from engine.astronomy.jd_calendar import CivilDay
-    from engine.astronomy.sun import (
-        calculate_sunrise_civil,
-        calculate_sunrise_civil_next,
-    )
 
     if not isinstance(from_civil, CivilDay) or not isinstance(to_civil, CivilDay):
         raise TypeError("from_civil and to_civil must be CivilDay")
-    if to_civil.to_jd_ut() < from_civil.to_jd_ut():
-        raise ValueError("to_date must be on or after from_date")
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise_civil(
-        from_civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise_civil_next(
-        to_civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_udayast_events_in_range(
-        from_sunrise,
-        until_sunrise,
+    return build_udayast_span(
+        float(from_civil.to_jd_ut()),
+        float(to_civil.to_jd_ut()),
+        location,
         grahas=grahas,
     )
-    events = [_attach_local_time(dict(e), tz) for e in raw]
-    return {
-        "from_jd": float(from_civil.to_jd_ut()),
-        "to_jd": float(to_civil.to_jd_ut()),
-        "level": "udayast",
-        "location": location.as_dict(),
-        "events": events,
-    }

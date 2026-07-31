@@ -13,6 +13,41 @@ from services.presentation import render_panchanga_month
 router = APIRouter()
 
 
+def _year_span_jd(request: Request, era: str, year: int) -> tuple[float, float]:
+    """Inclusive ``(first_day_jd, last_day_jd)`` for an era + year.
+
+    Prefers the span ``EraMiddleware`` already resolved for this request; falls
+    back to resolving it here when the middleware did not (direct calls, tests).
+    """
+    from app.era_middleware import era_context
+    from engine.calendar.era import year_span_jd
+
+    ctx = era_context(request)
+    if ctx.julian is not None and ctx.julian_end is not None:
+        return float(ctx.julian), float(ctx.julian_end)
+    try:
+        return year_span_jd(era, year)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+def _stamp_year_era(payload: dict, era: str, year: int) -> dict:
+    """Re-apply the legacy year/era labels the per-era builders used to add.
+
+    The span builders are era-free by design, but these two fields are part of
+    the published payload, so the labelling stays — it just happens here, once,
+    instead of inside two forked builders. ``bs_year`` carries the *signed*
+    patro axis (negative for bbs), which is what the BS builders emitted.
+    """
+    if era in ("ad", "bc"):
+        payload["ad_year"] = year
+        payload["era"] = "ad"
+    else:
+        payload["bs_year"] = _signed_bs_year_from_browse(era, year)
+        payload["era"] = "bs"
+    return payload
+
+
 @router.get("/nepal/gochar/year/{bs_year}")
 def nepal_gochar_year(bs_year: int, location: LocationDep, request: Request):
     """Yearly Gochar summary — slow-graha transit timeline + monthly rashi snapshots."""
@@ -430,26 +465,25 @@ def nepal_graha_asta_year(
     era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
 ):
     """Yearly heliacal udaya/asta (rising/setting) timeline for a BS or AD year."""
+    from engine.vedic.graha_detail import build_graha_asta_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad":
-        if not 1943 <= year <= 2090:
-            raise HTTPException(status_code=400, detail="ad year out of supported range")
-        from engine.vedic.graha_detail import build_graha_asta_ad_year
+    if era == "ad" and not 1943 <= year <= 2090:
+        raise HTTPException(status_code=400, detail="ad year out of supported range")
+    if era != "ad":
+        _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
 
-        key = f"grahaasta_v2_ad_{year}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request, key, lambda: build_graha_asta_ad_year(year, location),
-            cache_control=bs_year_cache_control(year + 56),
-        )
-
-    bs_signed = _signed_bs_year_from_browse(era, year)
-    from engine.vedic.graha_detail import build_graha_asta_year
-
-    key = f"grahaasta_v2_{bs_signed}_{location_cache_key(location)}"
+    jd_start, jd_end = _year_span_jd(request, era, year)
+    key = f"grahaasta_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_graha_asta_year(bs_signed, location),
-        cache_control=bs_year_cache_control(bs_signed),
+        request,
+        key,
+        lambda: _stamp_year_era(
+            build_graha_asta_span(jd_start, jd_end, location), era, year
+        ),
+        cache_control=bs_year_cache_control(
+            year + 56 if era == "ad" else _signed_bs_year_from_browse(era, year)
+        ),
     )
 
 
@@ -502,26 +536,25 @@ def nepal_eclipse_year(
     era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
 ):
     """Solar or lunar eclipses whose maximum falls within a BS or AD year."""
+    from engine.vedic.graha_detail import build_eclipse_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad":
-        if not 1943 <= year <= 2090:
-            raise HTTPException(status_code=400, detail="ad year out of supported range")
-        from engine.vedic.graha_detail import build_eclipse_ad_year
+    if era == "ad" and not 1943 <= year <= 2090:
+        raise HTTPException(status_code=400, detail="ad year out of supported range")
+    if era != "ad":
+        _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
 
-        key = f"eclipse_{kind}_ad_{year}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request, key, lambda: build_eclipse_ad_year(year, kind, location),
-            cache_control=bs_year_cache_control(year + 56),
-        )
-
-    bs_signed = _signed_bs_year_from_browse(era, year)
-    from engine.vedic.graha_detail import build_eclipse_year
-
-    key = f"eclipse_{kind}_{bs_signed}_{location_cache_key(location)}"
+    jd_start, jd_end = _year_span_jd(request, era, year)
+    key = f"eclipse_{kind}_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_eclipse_year(bs_signed, kind, location),
-        cache_control=bs_year_cache_control(bs_signed),
+        request,
+        key,
+        lambda: _stamp_year_era(
+            build_eclipse_span(jd_start, jd_end, kind, location), era, year
+        ),
+        cache_control=bs_year_cache_control(
+            year + 56 if era == "ad" else _signed_bs_year_from_browse(era, year)
+        ),
     )
 
 
@@ -533,24 +566,21 @@ def nepal_panchak_year(
     era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
 ):
     """Annual Panchak windows — Moon in Dhanishta pada 3 through Revati."""
+    from engine.vedic.panchak_calendar import build_panchak_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad":
-        if not 1943 <= year <= 2090:
-            raise HTTPException(status_code=400, detail="ad year out of supported range")
-        from engine.vedic.panchak_calendar import build_panchak_ad_year
+    if era == "ad" and not 1943 <= year <= 2090:
+        raise HTTPException(status_code=400, detail="ad year out of supported range")
+    if era != "ad":
+        _validate_bs_year(year)
 
-        key = f"panchak_ad_{year}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request, key, lambda: build_panchak_ad_year(year, location),
-            cache_control=bs_year_cache_control(year + 56),
-        )
-
-    _validate_bs_year(year)
-    from engine.vedic.panchak_calendar import build_panchak_bs_year
-
-    key = f"panchak_{year}_{location_cache_key(location)}"
+    jd_start, jd_end = _year_span_jd(request, era, year)
+    key = f"panchak_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_panchak_bs_year(year, location),
-        cache_control=bs_year_cache_control(year),
+        request,
+        key,
+        lambda: _stamp_year_era(
+            build_panchak_span(jd_start, jd_end, location), era, year
+        ),
+        cache_control=bs_year_cache_control(year + 56 if era == "ad" else year),
     )

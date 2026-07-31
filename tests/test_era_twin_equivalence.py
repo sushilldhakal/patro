@@ -131,25 +131,41 @@ class TestUdayastTwins:
         assert bce["events"] == ce["events"]
 
 
-class TestGrahaAstaTwins:
-    """The two ``_build_graha_asta_for_*_range`` bodies are near-identical text.
+class TestGrahaAstaSpanIsEraFree:
+    """Merged (phase 3). ``_build_graha_asta_for_range`` and its ``_civil`` twin
+    were identical text down to a duplicated ``sort_key`` closure; both are gone.
 
-    They must stay that way behaviourally until they are merged.
+    What is left to pin is that the year wrappers add labels and nothing else.
     """
 
-    def test_asta_periods_identical_over_same_span(self):
+    def test_ad_year_wrapper_matches_the_span_builder(self):
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
         from engine.vedic.graha_detail import (
-            _build_graha_asta_for_civil_range,
-            _build_graha_asta_for_range,
+            build_graha_asta_ad_year,
+            build_graha_asta_span,
         )
 
-        start, end = date(2026, 1, 1), date(2026, 4, 1)
-        ce = _build_graha_asta_for_range(start, end, LOCATION)
-        bce = _build_graha_asta_for_civil_range(
-            civil_of(start), civil_of(end), LOCATION
+        wrapped = build_graha_asta_ad_year(2026, LOCATION)
+        span = build_graha_asta_span(
+            civil_day_jd_from_date(date(2026, 1, 1)),
+            civil_day_jd_from_date(date(2026, 12, 31)),
+            LOCATION,
         )
-        assert bce["periods"] == ce["periods"]
-        assert bce["grahas"] == ce["grahas"]
+        assert strip(wrapped, "ad_year", "era") == span
+
+    def test_bs_year_wrapper_only_adds_labels(self):
+        from engine.vedic.graha_detail import build_graha_asta_year
+
+        wrapped = build_graha_asta_year(2083, LOCATION)
+        assert wrapped["era"] == "bs"
+        assert wrapped["bs_year"] == 2083
+        assert set(strip(wrapped, "bs_year", "era")) == {
+            "range_start_jd",
+            "range_end_jd",
+            "location",
+            "grahas",
+            "periods",
+        }
 
 
 class TestVakriSpanIsAlreadyEraFree:

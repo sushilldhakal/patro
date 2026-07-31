@@ -509,80 +509,82 @@ def _planet_period(
     }
 
 
+def build_graha_asta_span(
+    jd_start: float, jd_end: float, location: Any
+) -> dict[str, Any]:
+    """Combustion (अस्त) periods over an inclusive Julian Day span.
+
+    The era-agnostic entry point: ``EraMiddleware`` has already resolved whatever
+    era the client asked for down to a JD pair, so this serves ad, bc, bs and bbs
+    from one body.
+
+    This replaces two functions whose bodies were identical line for line —
+    including a ``sort_key`` closure written out twice — differing only in which
+    udayast builder they called. That pair is now one JD-native call.
+    """
+    from engine.astronomy.jd_calendar import CivilDay
+    from engine.vedic.udayast import build_udayast_span
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
+    tz = resolve_observer_timezone(location.timezone)
+
+    planet_raw = build_udayast_span(
+        span_start, span_end, location, grahas=ASTA_PLANET_GRAHAS,
+    )
+    periods = _planet_asta_periods(planet_raw["events"], tz)
+    periods.extend(
+        _moon_tara_asta_periods(
+            CivilDay.from_jd_ut(span_start),
+            CivilDay.from_jd_ut(span_end),
+            location,
+            tz,
+        )
+    )
+
+    def sort_key(p: dict[str, Any]) -> tuple[int, str]:
+        order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
+        start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
+        return (order, start_iso)
+
+    periods.sort(key=sort_key)
+    return {
+        "range_start_jd": span_start,
+        "range_end_jd": span_end,
+        "location": location.as_dict(),
+        "grahas": ASTA_GRAHAS,
+        "periods": periods,
+    }
+
+
 def build_graha_asta_year(bs_year: int, location: Any) -> dict[str, Any]:
-    """Yearly combustion (asta) periods over a BS year — planets + Moon Tara Asta."""
+    """Combustion periods over a BS year. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     year_start, year_end = _bs_year_range(bs_year)
-    payload = _build_graha_asta_for_range(year_start, year_end, location)
+    payload = build_graha_asta_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        location,
+    )
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
     return payload
 
 
 def build_graha_asta_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
-    """Yearly combustion (asta) periods over a Gregorian calendar year."""
+    """Combustion periods over a Gregorian year. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     year_start, year_end = _ad_year_range(ad_year)
-    payload = _build_graha_asta_for_range(year_start, year_end, location)
+    payload = build_graha_asta_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        location,
+    )
     payload["ad_year"] = ad_year
     payload["era"] = "ad"
     return payload
-
-
-def _build_graha_asta_for_range(
-    year_start: date | CivilDay, year_end: date | CivilDay, location: Any,
-) -> dict[str, Any]:
-    """Shared asta builder for any inclusive civil span (``date`` or ``CivilDay``)."""
-    if isinstance(year_start, CivilDay):
-        return _build_graha_asta_for_civil_range(year_start, year_end, location)
-
-    from engine.vedic.udayast import build_udayast_range
-
-    tz = resolve_observer_timezone(location.timezone)
-
-    planet_raw = build_udayast_range(
-        year_start, year_end, location, grahas=ASTA_PLANET_GRAHAS,
-    )
-    periods = _planet_asta_periods(planet_raw["events"], tz)
-    periods.extend(_moon_tara_asta_periods(year_start, year_end, location, tz))
-
-    def sort_key(p: dict[str, Any]) -> tuple[int, str]:
-        order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
-        start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
-        return (order, start_iso)
-
-    periods.sort(key=sort_key)
-    return {
-        **_year_range_jd_fields(year_start, year_end),
-        "location": location.as_dict(),
-        "grahas": ASTA_GRAHAS,
-        "periods": periods,
-    }
-
-
-def _build_graha_asta_for_civil_range(
-    year_start: CivilDay, year_end: CivilDay, location: Any,
-) -> dict[str, Any]:
-    from engine.vedic.udayast import build_udayast_range_civil
-
-    tz = resolve_observer_timezone(location.timezone)
-
-    planet_raw = build_udayast_range_civil(
-        year_start, year_end, location, grahas=ASTA_PLANET_GRAHAS,
-    )
-    periods = _planet_asta_periods(planet_raw["events"], tz)
-    periods.extend(_moon_tara_asta_periods(year_start, year_end, location, tz))
-
-    def sort_key(p: dict[str, Any]) -> tuple[int, str]:
-        order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
-        start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
-        return (order, start_iso)
-
-    periods.sort(key=sort_key)
-    return {
-        **_year_range_jd_fields(year_start, year_end),
-        "location": location.as_dict(),
-        "grahas": ASTA_GRAHAS,
-        "periods": periods,
-    }
 
 
 def build_graha_vakri_span(jd_start: float, jd_end: float, location: Any) -> dict[str, Any]:
@@ -701,51 +703,29 @@ _LUNAR_TYPE_EN = {
 }
 
 
-def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]:
-    """List the solar or lunar eclipses whose maximum falls within a BS year."""
-    from engine.vedic.bikram_sambat import bs_year_civil_range
-
-    year_start, year_end = bs_year_civil_range(bs_year)
-    payload = _build_eclipse_for_range(year_start, year_end, kind, location)
-    payload["bs_year"] = bs_year
-    payload["era"] = "bs"
-    return payload
-
-
-def build_eclipse_ad_year(ad_year: int, kind: str, location: Any) -> dict[str, Any]:
-    """List the solar or lunar eclipses whose maximum falls within a Gregorian year."""
-    year_start, year_end = _ad_year_range(ad_year)
-    payload = _build_eclipse_for_range(year_start, year_end, kind, location)
-    payload["ad_year"] = ad_year
-    payload["era"] = "ad"
-    return payload
-
-
-def _build_eclipse_for_range(
-    year_start: date | CivilDay, year_end: date | CivilDay, kind: str, location: Any,
+def build_eclipse_span(
+    jd_start: float, jd_end: float, kind: str, location: Any
 ) -> dict[str, Any]:
-    from engine.astronomy.jd_calendar import civil_day_add
-    from engine.astronomy.ut_instant import local_civil_fields
+    """Solar or lunar eclipses whose maximum falls in an inclusive Julian Day span.
 
+    The era-agnostic entry point: ``EraMiddleware`` has already resolved whatever
+    era the client asked for down to a JD pair, so this serves ad, bc, bs and bbs
+    from one body and needs no calendar logic of its own.
+    """
     if kind not in ("solar", "lunar"):
         raise ValueError("kind must be 'solar' or 'lunar'")
 
+    from engine.astronomy.jd_calendar import civil_day_add
+    from engine.astronomy.ut_instant import local_civil_fields
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
+    # The span names inclusive civil *days*; the scan wants a half-open instant
+    # window, so the last day is extended to its end.
+    scan_end = float(civil_day_add(span_end, 1))
+
     tz = resolve_observer_timezone(location.timezone)
     geopos = (float(location.lon), float(location.lat), 0.0)
-
-    if isinstance(year_start, CivilDay):
-        jd_start = float(year_start.to_jd_ut())
-        jd_end = float(civil_day_add(year_end.to_jd_ut(), 1))
-    else:
-        start_dt = datetime(
-            year_start.year, year_start.month, year_start.day, tzinfo=timezone.utc,
-        )
-        end_dt = (
-            datetime(year_end.year, year_end.month, year_end.day, tzinfo=timezone.utc)
-            + timedelta(days=1)
-        )
-        jd_start = default_engine.julian_day(start_dt)
-        jd_end = default_engine.julian_day(end_dt)
 
     finder = (
         default_engine.next_solar_eclipse if kind == "solar"
@@ -755,15 +735,15 @@ def _build_eclipse_for_range(
     type_en = _SOLAR_TYPE_EN if kind == "solar" else _LUNAR_TYPE_EN
 
     events: list[dict[str, Any]] = []
-    cursor = jd_start
+    cursor = span_start
     guard = 0
-    while cursor < jd_end and guard < 60:
+    while cursor < scan_end and guard < 60:
         guard += 1
         ecl = finder(cursor, geopos=geopos)
         if ecl is None:
             break
         max_jd = ecl["max_jd"]
-        if max_jd >= jd_end:
+        if max_jd >= scan_end:
             break
         max_local = default_engine.datetime_from_jd(max_jd).astimezone(tz)
         etype = ecl["type"]
@@ -794,7 +774,37 @@ def _build_eclipse_for_range(
     events.sort(key=lambda e: e["max_utc"])
     return {
         "kind": kind,
-        **_year_range_jd_fields(year_start, year_end),
+        "range_start_jd": span_start,
+        "range_end_jd": span_end,
         "location": location.as_dict(),
         "events": events,
     }
+
+
+def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]:
+    """Eclipses within a BS year. Thin wrapper — the span builder does the work."""
+    from engine.vedic.bikram_sambat import bs_year_civil_range
+
+    year_start, year_end = bs_year_civil_range(bs_year)
+    payload = build_eclipse_span(
+        year_start.to_jd_ut(), year_end.to_jd_ut(), kind, location
+    )
+    payload["bs_year"] = bs_year
+    payload["era"] = "bs"
+    return payload
+
+
+def build_eclipse_ad_year(ad_year: int, kind: str, location: Any) -> dict[str, Any]:
+    """Eclipses within a Gregorian year. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
+    year_start, year_end = _ad_year_range(ad_year)
+    payload = build_eclipse_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        kind,
+        location,
+    )
+    payload["ad_year"] = ad_year
+    payload["era"] = "ad"
+    return payload
