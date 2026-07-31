@@ -193,6 +193,16 @@ BS_CALENDAR_MIN_YEAR = 1
 BS_ESTIMATED_MIN_YEAR = BS_PANCHANGA_MIN_YEAR
 BS_SUPPORTED_MAX_YEAR = 3000
 
+# What the ``era=ad`` year endpoints accept. Deliberately narrower than the BS
+# range above: those endpoints are the Gregorian *browse* surface, and 1943 is
+# where the BS side of the mapping stops being a lookup and starts being a
+# sankranti estimate (BS 2000). The engine itself is BCE-safe and would happily
+# compute any of these years — widening this is a product decision, not a
+# technical one, which is why it lives in a named constant now instead of being
+# spelled out at four call sites.
+AD_YEAR_MIN = 1943
+AD_YEAR_MAX = 2090
+
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD
 BS_REFERENCE_START = date(2025, 4, 14)
 BS_REFERENCE_YEAR = 2082

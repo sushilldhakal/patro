@@ -16,6 +16,7 @@ from api.deps import (
     _validate_bs_month,
     _validate_bs_year,
 )
+from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN
 from engine.vedic.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
@@ -226,7 +227,7 @@ def panchanga_ad_month(
     from services.panchanga_api import build_ad_month_calendar, build_month_calendar_at_clock
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if not 1943 <= ad_year <= 2090:
+    if not AD_YEAR_MIN <= ad_year <= AD_YEAR_MAX:
         raise HTTPException(status_code=400, detail="ad year out of supported range")
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")

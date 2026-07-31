@@ -29,11 +29,7 @@ from engine.astronomy.engine import default_engine
 from engine.astronomy.panchanga import NAKSHATRA_NAMES
 from engine.astronomy.planets import spashta_table
 from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
-from engine.astronomy.sun import (
-    calculate_sunrise,
-    calculate_sunrise_civil,
-    calculate_sunrise_civil_next,
-)
+from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.gochar import GRAHA_META, GRAHA_ORDER, NAKSHATRA_SPAN, PADA_SPAN
@@ -226,6 +222,7 @@ def _build_graha_sthiti_at_sunrise(
     return {
         "date_ad": date_ad,
         "date_bs": date_bs,
+        "anchor": "sunrise",
         "timezone": str(tz),
         "sunrise_local": format_ut_instant_local(sunrise, location.timezone)["local"],
         "location": location.as_dict(),
@@ -575,17 +572,36 @@ def build_graha_asta_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
 
 
 def build_graha_vakri_span(jd_start: float, jd_end: float, location: Any) -> dict[str, Any]:
-    """Yearly वक्री/मार्गी station timeline over a Julian Day span.
+    """Yearly वक्री/मार्गी station timeline over an inclusive Julian Day span.
 
     The era-agnostic entry point: the caller has already resolved whatever era the
     client asked for down to a JD pair (see :mod:`engine.calendar.era`), so this
     works identically for ad, bc, bs and bbs and needs no calendar logic of its own.
+
+    This was the reference implementation for the phase 3 pattern, but it still
+    delegated to a CE/BCE pair of its own one level down. That pair is gone: the
+    body lives here, and picks its rise helper from the JD like everything else.
     """
-    return _build_graha_vakri_for_civil_range(
-        CivilDay.from_jd_ut(float(jd_start)),
-        CivilDay.from_jd_ut(float(jd_end)),
-        location,
+    from engine.astronomy.jd_calendar import civil_day_add
+    from engine.astronomy.sun import sun_service
+    from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
+    tz = resolve_observer_timezone(location.timezone)
+
+    from_sunrise = sun_service.sunrise(span_start, location)
+    until_sunrise = sun_service.sunrise(civil_day_add(span_end, 1), location)
+    raw = find_motion_stations_in_range(
+        from_sunrise, until_sunrise, grahas=YEARLY_GRAHAS
     )
+    return {
+        "range_start_jd": span_start,
+        "range_end_jd": span_end,
+        "location": location.as_dict(),
+        "grahas": YEARLY_GRAHAS,
+        "events": [_attach_local_time(dict(ev), tz) for ev in raw],
+    }
 
 
 def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
@@ -593,7 +609,9 @@ def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
     from engine.vedic.bikram_sambat import bs_year_civil_range
 
     year_start_c, year_end_c = bs_year_civil_range(bs_year)
-    payload = _build_graha_vakri_for_civil_range(year_start_c, year_end_c, location)
+    payload = build_graha_vakri_span(
+        year_start_c.to_jd_ut(), year_end_c.to_jd_ut(), location
+    )
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
     return payload
@@ -601,67 +619,17 @@ def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
 
 def build_graha_vakri_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
     """Yearly वक्री/मार्गी station timeline over a Gregorian calendar year."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     year_start, year_end = _ad_year_range(ad_year)
-    payload = _build_graha_vakri_for_range(year_start, year_end, location)
+    payload = build_graha_vakri_span(
+        civil_day_jd_from_date(year_start),
+        civil_day_jd_from_date(year_end),
+        location,
+    )
     payload["ad_year"] = ad_year
     payload["era"] = "ad"
     return payload
-
-
-def _build_graha_vakri_for_range(
-    year_start: date, year_end: date, location: Any,
-) -> dict[str, Any]:
-    from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise(
-        year_start, latitude=location.lat, longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise(
-        year_end + timedelta(days=1), latitude=location.lat, longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_motion_stations_in_range(from_sunrise, until_sunrise, grahas=YEARLY_GRAHAS)
-    events: list[dict[str, Any]] = []
-    for ev in raw:
-        events.append(_attach_local_time(dict(ev), tz))
-    return {
-        **_year_range_jd_fields(year_start, year_end),
-        "location": location.as_dict(),
-        "grahas": YEARLY_GRAHAS,
-        "events": events,
-    }
-
-
-def _build_graha_vakri_for_civil_range(
-    year_start: CivilDay, year_end: CivilDay, location: Any,
-) -> dict[str, Any]:
-    from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise_civil(
-        year_start,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise_civil_next(
-        year_end,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_motion_stations_in_range(from_sunrise, until_sunrise, grahas=YEARLY_GRAHAS)
-    events: list[dict[str, Any]] = []
-    for ev in raw:
-        events.append(_attach_local_time(dict(ev), tz))
-    return {
-        **_year_range_jd_fields(year_start, year_end),
-        "location": location.as_dict(),
-        "grahas": YEARLY_GRAHAS,
-        "events": events,
-    }
 
 
 # ─── चन्द्र / सूर्य ग्रहण — yearly eclipse listing ────────────────────────────

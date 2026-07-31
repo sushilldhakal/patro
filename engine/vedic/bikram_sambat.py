@@ -9,7 +9,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
-import swisseph as swe
 
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported, format_civil_iso
 from engine.astronomy.sun import calculate_sunrise
@@ -168,7 +167,7 @@ def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     # month never changes. Locating one civil day probes up to ~50 month starts
     # (month scan + get_bs_month_length's lookahead), so this is the difference
     # between one solve per month and one per probe.
-    from engine.astronomy.jd_calendar import civil_day_jd_ut
+    from engine.astronomy.jd_calendar import civil_day_jd_ut, civil_parts_from_jd_ut
     from engine.astronomy.engine import default_engine
     from engine.vedic.sankranti import find_sankranti_after_jd
 
@@ -179,12 +178,12 @@ def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     if sankranti_jd is None:
         raise ValueError(f"Could not find sankranti for BS {bs_year}/{bs_month}")
 
-    y, m, d, _hour = swe.revjul(sankranti_jd)
-    if int(y) >= 1:
+    y, m, d = civil_parts_from_jd_ut(sankranti_jd)
+    if y >= 1:
         sankranti = default_engine.datetime_from_jd(sankranti_jd)
         start = _sankranti_start_date(sankranti)
         return CivilDay.from_date(start)
-    return CivilDay(int(y), int(m), int(d))
+    return CivilDay(y, m, d)
 
 
 def get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:

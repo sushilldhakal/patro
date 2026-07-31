@@ -292,6 +292,12 @@ def _assemble_udaya_panchanga(
         "date": date_label,
         "date_ad": date_ad,
         "jd_ut": jd_ut,
+        # Which instant the moving quantities were read at. Sunrise-anchored,
+        # instant-anchored and midnight-anchored payloads answer honestly
+        # different questions about the same day; without this field the
+        # difference reads as the API contradicting itself. See B3 in
+        # docs/computation-architecture-audit.md.
+        "anchor": "sunrise",
         "display": display,
         "bs_date": {
             "year": bs_year,

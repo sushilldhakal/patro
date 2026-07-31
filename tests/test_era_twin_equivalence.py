@@ -354,3 +354,36 @@ class TestRetrogradeHasOneAnswer:
 
         for graha in ("mercury", "venus", "mars", "jupiter", "saturn"):
             assert table[graha]["is_retrograde"] == positions[graha]["is_retrograde"]
+
+
+class TestDeclaredAnchor:
+    """Phase 5 (B3): every day payload says which instant it was read at.
+
+    Sunrise-, instant- and midnight-anchored views answer honestly different
+    questions about the same day. They are not inconsistent — but without a
+    declared anchor a client cannot tell that, and the difference reads as the
+    API contradicting itself.
+    """
+
+    def test_sunrise_anchored_builders_declare_it(self):
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.vedic.daily import build_daily_panchanga
+        from engine.vedic.gochar import build_gochar
+        from engine.vedic.graha_detail import build_graha_sthiti
+
+        jd = civil_day_jd_from_date(DAY_A)
+        assert build_daily_panchanga(DAY_A, LOCATION)["anchor"] == "sunrise"
+        assert build_gochar(jd, LOCATION, include_next_entry=False)["anchor"] == "sunrise"
+        assert build_graha_sthiti(jd, LOCATION)["anchor"] == "sunrise"
+
+    def test_instant_snapshot_declares_instant(self):
+        from datetime import datetime, timezone
+
+        from engine.vedic.at_time import build_planetary_snapshot
+
+        snap = build_planetary_snapshot(
+            datetime(2026, 7, 31, 9, 30, tzinfo=timezone.utc),
+            lat=LOCATION.lat,
+            lon=LOCATION.lon,
+        )
+        assert snap["anchor"] == "instant"

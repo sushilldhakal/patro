@@ -110,8 +110,8 @@ def resolve_vedic_day_anchor(
     Instants before today's sunrise belong to the previous vedic day.
     Returns (anchor_date, sunrise_utc, sunset_utc, next_sunrise_utc).
     """
-    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from engine.astronomy.sun import calculate_sunrise_civil, calculate_sunset_civil
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_jd_from_date
+    from engine.astronomy.sun import sun_service
     from engine.astronomy.ut_instant import UtInstant, local_civil_fields
 
     tz = resolve_observer_timezone(location.timezone, lat=location.lat, lon=location.lon)
@@ -129,39 +129,20 @@ def resolve_vedic_day_anchor(
             else CivilDay(civil_raw.year, civil_raw.month, civil_raw.day)
         )
 
-    def _sunrise(day: date | CivilDay) -> datetime:
-        if isinstance(day, CivilDay) and date_if_supported(day.year, day.month, day.day) is None:
-            return calculate_sunrise_civil(
-                day,
-                latitude=location.lat,
-                longitude=location.lon,
-                timezone_name=location.timezone,
-            )
-        if isinstance(day, CivilDay):
-            day = day.to_date()
-        return calculate_sunrise(
-            day,
-            latitude=location.lat,
-            longitude=location.lon,
-            timezone_name=location.timezone,
+    # sun_service picks the CE or BCE rise helper from the JD, which is the
+    # branch these two used to spell out by hand.
+    def _day_jd(day: date | CivilDay) -> float:
+        return (
+            day.to_jd_ut()
+            if isinstance(day, CivilDay)
+            else civil_day_jd_from_date(day)
         )
 
+    def _sunrise(day: date | CivilDay) -> datetime:
+        return sun_service.sunrise(_day_jd(day), location)
+
     def _sunset(day: date | CivilDay) -> datetime:
-        if isinstance(day, CivilDay) and date_if_supported(day.year, day.month, day.day) is None:
-            return calculate_sunset_civil(
-                day,
-                latitude=location.lat,
-                longitude=location.lon,
-                timezone_name=location.timezone,
-            )
-        if isinstance(day, CivilDay):
-            day = day.to_date()
-        return calculate_sunset(
-            day,
-            latitude=location.lat,
-            longitude=location.lon,
-            timezone_name=location.timezone,
-        )
+        return sun_service.sunset(_day_jd(day), location)
 
     sunrise_today = _sunrise(civil).astimezone(tz)
 
@@ -283,6 +264,7 @@ def build_planetary_snapshot(
     return {
         "planets": planets,
         "lagna": {**lagna, "anchor": "instant"},
+        "anchor": "instant",
         "computed_at": instant_utc.isoformat(),
     }
 
@@ -400,6 +382,9 @@ def build_panchanga_at_time(
     state.update(
         {
             "mode": "ephemeris",
+            # Overrides the "sunrise" the udaya day state carried: the moving
+            # angas below were re-read at the queried instant, not at sunrise.
+            "anchor": "instant",
             "query_instant": instant_local.isoformat(),
             "query_instant_local": instant_local.strftime("%Y-%m-%d %H:%M:%S"),
             "panchanga_date_ad": anchor.isoformat(),
@@ -553,6 +538,9 @@ def build_panchanga_civil_day(
         {
             "mode": "civil",
             "boundary": "midnight",
+            # Same override as the instant path: the moving angas here were
+            # re-read at local midnight, not at the udaya day's sunrise.
+            "anchor": "midnight",
             "panchanga_date_ad": greg.isoformat(),
             "tithi": _element_state(angas["tithi"], location.timezone),
             "nakshatra": _element_state(angas["nakshatra"], location.timezone),

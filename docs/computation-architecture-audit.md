@@ -12,7 +12,7 @@ Audit of `nepali-holiday-api` @ `562c1f3`. 84 HTTP endpoints, ~41k LOC Python.
 | 2b — migrate the ~56 `positions`/`swiss_eph` importers | **done** — both files deleted; `tests/test_computation_services.py` (116 tests) now pins the services against golden values captured from the pre-refactor modules |
 | 3 — era-twin elimination | **done** — all 8 builder pairs merged onto JD-native builders; `tests/test_era_twin_equivalence.py` rewritten to pin the post-merge invariants |
 | 4 — cache-version unification | **done** — `services/payload_version.py`; `ASTRONOMY_VERSION = 2` invalidates all four namespaces for A0/A0b, `tests/test_payload_version.py` (13 tests) |
-| 5 — housekeeping | not started |
+| 5 — housekeeping | **done** — swisseph leaks closed, sunrise entry points collapsed, `AD_YEAR_MIN/MAX` constant, `anchor` field on day payloads |
 
 **Two live bugs found so far, both by the migration scaffolding rather than by a bug
 report** — see A0 and A0b. Suite: 609 passing, plus 3 pre-existing failures in
@@ -555,6 +555,37 @@ the edge will keep serving pre-bump JSON for up to its `s-maxage` window.
 - Add an explicit `anchor` field (`sunrise` / `instant` / `midnight`) to day payloads (B3).
 
 ---
+
+### Phase 5 — housekeeping (done)
+
+- **Both swisseph leaks closed.** `bikram_sambat.py:182`'s `swe.revjul` is now
+  `civil_parts_from_jd_ut`, and the module-level `import swisseph` went with it.
+  `patro_year_axis.py` was comments only, as suspected — no action.
+
+- **The four sunrise entry points are one.** `SunService.sunrise(jd, location)`
+  picks the CE or BCE helper itself; `calculate_sunrise` / `calculate_sunset`
+  stay for CE-only call sites holding a `datetime.date`; the `_civil` pair is
+  now module-private, so nothing outside `sun.py` can pick the wrong variant;
+  and `calculate_sunrise_civil_next` is deleted — its last caller went with
+  phase 3.
+
+  Doing this turned up one more twin the audit missed: `build_graha_vakri_span`,
+  the *reference implementation*, still delegated to a
+  `_build_graha_vakri_for_range` / `_for_civil_range` pair one level down. Merged
+  — the reference now actually demonstrates the pattern it is cited for.
+
+- **`AD_YEAR_MIN` / `AD_YEAR_MAX`** replace the hardcoded `1943..2090` at four
+  call sites (the audit found three; `api/panchanga.py:229` is a fourth). The
+  *values* are unchanged on purpose. The audit read the mismatch against the
+  BS 60–3000 range as a bug, but widening the Gregorian browse surface is a
+  product decision, not a technical one — the engine has been BCE-safe since
+  phase 3 and would compute any of those years. It is now one named constant
+  with the reasoning attached, so that decision can be made deliberately.
+
+- **`anchor` is declared** on day payloads: `"sunrise"` for the udaya builders
+  (daily, gochar, graha-sthiti), `"instant"` for `/panchanga/at-time` and the
+  planetary snapshot, `"midnight"` for the civil-midnight variant. Additive;
+  `PANCHANGA_PAYLOAD_VERSION` 36 → 37 carries it.
 
 ## G. What not to do
 

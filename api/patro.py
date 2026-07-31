@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import Response
 
 from api.deps import LocationDep, _signed_bs_year_from_browse, _validate_bs_month, _validate_bs_year
+from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN
 from services.holiday_generator import precompute_bs_year
 from app.day_resolver import greg_date_for_date_key
 from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
@@ -440,7 +441,7 @@ def nepal_graha_asta_year(
     from engine.vedic.graha_detail import build_graha_asta_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not 1943 <= year <= 2090:
+    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
         raise HTTPException(status_code=400, detail="ad year out of supported range")
     if era != "ad":
         _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
@@ -511,7 +512,7 @@ def nepal_eclipse_year(
     from engine.vedic.graha_detail import build_eclipse_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not 1943 <= year <= 2090:
+    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
         raise HTTPException(status_code=400, detail="ad year out of supported range")
     if era != "ad":
         _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
@@ -541,7 +542,7 @@ def nepal_panchak_year(
     from engine.vedic.panchak_calendar import build_panchak_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not 1943 <= year <= 2090:
+    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
         raise HTTPException(status_code=400, detail="ad year out of supported range")
     if era != "ad":
         _validate_bs_year(year)

@@ -851,6 +851,7 @@ def build_gochar(
     result: dict[str, Any] = {
         "date_bs": date_bs if date_bs is not None else _bs_label_for_civil(civil),
         "date_ad": format_civil_iso(civil.year, civil.month, civil.day),
+        "anchor": "sunrise",
         "computed_at": {
             "utc": sunrise_utc.isoformat(),
             "local": format_ut_instant_local(sunrise_utc, location.timezone).get(

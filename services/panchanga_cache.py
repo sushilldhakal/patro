@@ -98,7 +98,11 @@ logger = logging.getLogger(__name__)
 #     reach the caches. See services/payload_version.ASTRONOMY_VERSION, which is
 #     the axis that actually invalidated them; 36 records that this store's
 #     contents changed too.
-PANCHANGA_PAYLOAD_VERSION = 36
+# 37: day payloads declare their ``anchor`` ("sunrise" | "instant" | "midnight").
+#     Additive. Sunrise-, instant- and midnight-anchored views answer honestly
+#     different questions about the same day, and without the field the
+#     difference reads as the API contradicting itself (audit B3).
+PANCHANGA_PAYLOAD_VERSION = 37
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

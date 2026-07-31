@@ -3,15 +3,22 @@
 Sunrise and sunset also need an observer, so they take a location alongside the
 JD. Everything else is location-independent.
 
-The four historical sunrise entry points (``calculate_sunrise``,
-``calculate_sunrise_civil``, ``calculate_sunrise_civil_next``,
-``nepal_patro_solar_event``) exist because CE and pre-1 CE days travel as
-different types, and because a Nepal observer needs the published-table
-correction. They now live here, next to the JD-keyed :meth:`SunService.sunrise`
-that will replace them: phase 3 removes the reason the CE/BCE pair exists, and
-phase 5 deletes the day-typed entry points outright. Until then, having all of
-them in one module is what turns that collapse into a local edit rather than
-another sweep across 40 call sites.
+There used to be four sunrise entry points — ``calculate_sunrise``,
+``calculate_sunrise_civil``, ``calculate_sunrise_civil_next`` and
+``nepal_patro_solar_event`` — because CE and pre-1 CE days travelled as
+different types and a Nepal observer needs the published-table correction.
+Picking the wrong one for a given day type was a live footgun, and it was the
+mechanism that forced the era-twin builders to exist.
+
+Phase 3 removed the reason for the split, so the collapse is done here:
+
+* :meth:`SunService.sunrise` / :meth:`SunService.sunset` take a JD and pick the
+  CE or BCE helper themselves. This is what callers should use.
+* ``calculate_sunrise`` / ``calculate_sunset`` remain for the CE-only call sites
+  that hold a ``datetime.date`` and nothing else.
+* The ``_civil`` helpers are private — nothing outside this module chooses them
+  any more, so nothing outside can choose wrong.
+* ``calculate_sunrise_civil_next`` is gone; its last caller went with phase 3.
 
 See docs/computation-architecture-audit.md (sections A4, C, phase 2).
 """
@@ -22,7 +29,7 @@ from datetime import date, datetime
 from typing import Any
 
 from engine.astronomy.engine import EphemerisError, SIDM_LAHIRI, default_engine
-from engine.astronomy.jd_calendar import CivilDay, civil_day_add, date_if_supported
+from engine.astronomy.jd_calendar import CivilDay, date_if_supported
 from engine.astronomy.nepal_patro_sun import (
     nepal_patro_solar_event,
     should_use_nepal_patro_sun,
@@ -45,7 +52,7 @@ def default_altitude(latitude: float, longitude: float) -> float:
     return 0.0
 
 
-# ── day-typed rise/set entry points (phase 5 collapses these) ────────────────
+# ── day-typed rise/set entry points ─────────────────────────────────────────
 
 
 def calculate_sunrise(
@@ -90,7 +97,7 @@ def calculate_sunset(
     return result
 
 
-def calculate_sunrise_civil(
+def _calculate_sunrise_civil(
     civil: CivilDay,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
@@ -114,7 +121,7 @@ def calculate_sunrise_civil(
     return result
 
 
-def calculate_sunset_civil(
+def _calculate_sunset_civil(
     civil: CivilDay,
     latitude: float = LAT_KATHMANDU,
     longitude: float = LON_KATHMANDU,
@@ -136,24 +143,6 @@ def calculate_sunset_civil(
     if result is None:
         raise EphemerisError(f"Sunset calculation failed for civil {civil}")
     return result
-
-
-def calculate_sunrise_civil_next(
-    civil: CivilDay,
-    latitude: float = LAT_KATHMANDU,
-    longitude: float = LON_KATHMANDU,
-    altitude: float | None = None,
-    timezone_name: str | None = None,
-) -> datetime:
-    """Sunrise on the civil day after ``civil`` (BCE-safe)."""
-    next_civil = CivilDay.from_jd_ut(civil_day_add(civil.to_jd_ut(), 1))
-    return calculate_sunrise_civil(
-        next_civil,
-        latitude=latitude,
-        longitude=longitude,
-        altitude=altitude,
-        timezone_name=timezone_name,
-    )
 
 
 class SunService:
@@ -221,7 +210,7 @@ class SunService:
         civil = CivilDay.from_jd_ut(jd)
         real_date = date_if_supported(civil.year, civil.month, civil.day)
         if real_date is None:
-            return calculate_sunrise_civil(
+            return _calculate_sunrise_civil(
                 civil,
                 latitude=location.lat,
                 longitude=location.lon,
@@ -242,7 +231,7 @@ class SunService:
         civil = CivilDay.from_jd_ut(jd)
         real_date = date_if_supported(civil.year, civil.month, civil.day)
         if real_date is None:
-            return calculate_sunset_civil(
+            return _calculate_sunset_civil(
                 civil,
                 latitude=location.lat,
                 longitude=location.lon,
