@@ -23,10 +23,14 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
+from engine.astronomy.jd_calendar import CivilDay
+from engine.astronomy.motion import is_retrograde
 from engine.astronomy.engine import default_engine
 from engine.astronomy.positions import NAKSHATRA_NAMES, RASHI_NAMES, RASHI_NAMES_NE
 from engine.astronomy.swiss_eph import (
     calculate_sunrise,
+    calculate_sunrise_civil,
+    calculate_sunrise_civil_next,
     get_all_planetary_positions,
     init_ephemeris,
 )
@@ -158,25 +162,22 @@ def _graha_row(graha: str, sid_lon: float, speed: float, extras: dict[str, Any],
     }
 
 
-def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
-    """Full daily sphuta table for all 9 grahas + लग्न, computed at sunrise."""
-    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+def _build_graha_sthiti_at_sunrise(
+    sunrise: Any,
+    location: Any,
+    *,
+    date_ad: str,
+    date_bs: str,
+) -> dict[str, Any]:
+    from engine.astronomy.ut_instant import format_ut_instant_local
     from engine.vedic.udayast import is_heliacally_visible
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
-    sunrise = calculate_sunrise(
-        date_ad,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
     jd = default_engine.julian_day(sunrise)
     positions = get_all_planetary_positions(sunrise)
 
     rows: list[dict[str, Any]] = []
 
-    # लग्न (ascendant) first — the reference tables lead with it.
     asc_lon = default_engine.ascendant(jd, location.lat, location.lon)
     asc_extras = default_engine.ascendant_astro_extras(jd, location.lat, location.lon)
     asc_nak_idx, asc_pada = _pada_for(asc_lon)
@@ -208,7 +209,7 @@ def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
         pos = positions.get(graha, {})
         sid_lon = float(pos.get("longitude", 0.0))
         speed = float(pos.get("speed", 0.0))
-        is_retro = bool(pos.get("is_retrograde", speed < 0.0))
+        is_retro = is_retrograde(graha, speed)
         extras = default_engine.planet_astro_extras(jd, graha)
         combust = False
         if graha not in ("sun", "moon", "rahu", "ketu"):
@@ -221,25 +222,100 @@ def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
             is_retro=is_retro, is_combust=combust,
         ))
 
-    bs_y, bs_m, bs_d = gregorian_to_bs(date_ad)
     return {
-        "date_ad": date_ad.isoformat(),
-        "date_bs": format_bs_date(bs_y, bs_m, bs_d),
+        "date_ad": date_ad,
+        "date_bs": date_bs,
         "timezone": str(tz),
-        "sunrise_local": sunrise.astimezone(tz).isoformat(),
+        "sunrise_local": format_ut_instant_local(sunrise, location.timezone)["local"],
         "location": location.as_dict(),
         "rows": rows,
     }
 
 
+def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
+    """Full daily sphuta table for all 9 grahas + लग्न, computed at sunrise."""
+    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+
+    init_ephemeris()
+    sunrise = calculate_sunrise(
+        date_ad,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    bs_y, bs_m, bs_d = gregorian_to_bs(date_ad)
+    return _build_graha_sthiti_at_sunrise(
+        sunrise,
+        location,
+        date_ad=date_ad.isoformat(),
+        date_bs=format_bs_date(bs_y, bs_m, bs_d),
+    )
+
+
+def build_graha_sthiti_civil(
+    civil: Any,
+    location: Any,
+    *,
+    date_bs: str,
+) -> dict[str, Any]:
+    """Sphuta table at sunrise for a civil day that may fall before 1 CE."""
+    from engine.astronomy.jd_calendar import format_civil_iso
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil
+
+    init_ephemeris()
+    sunrise = calculate_sunrise_civil(
+        civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    return _build_graha_sthiti_at_sunrise(
+        sunrise,
+        location,
+        date_ad=format_civil_iso(civil.year, civil.month, civil.day),
+        date_bs=date_bs,
+    )
+
+
 # ─── ग्रह अस्त / वक्री — yearly station timelines ──────────────────────────────
 
-def _bs_year_range(bs_year: int) -> tuple[date, date]:
-    from engine.vedic.bikram_sambat import bs_to_gregorian, get_bs_month_length, get_bs_month_start
+def _bs_label_for_ad_key(ad: str) -> str | None:
+    from engine.astronomy.jd_calendar import date_if_supported, parse_civil_iso
+    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs, locate_patro_day_for_civil
 
-    year_start = get_bs_month_start(bs_year, 1)
-    year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
-    return year_start, year_end
+    try:
+        civil = parse_civil_iso(ad)
+        greg = date_if_supported(civil.year, civil.month, civil.day)
+        if greg is not None:
+            y, m, d = gregorian_to_bs(greg)
+        else:
+            y, m, d = locate_patro_day_for_civil(civil)
+        return format_bs_date(y, m, d)
+    except Exception:
+        return None
+
+
+def _bs_year_range(bs_year: int):
+    """Civil span of a BS year — ``date`` pair for CE, ``CivilDay`` pair for BCE.
+
+    The CE branch is unchanged (it keeps the BS date overrides that
+    ``bs_to_gregorian`` applies). Only years whose start predates 1 CE — where
+    ``get_bs_month_start`` has no ``date`` to return and raises — fall through to
+    the JD-axis equivalent, so callers on the signed patro axis stop 400ing.
+    """
+    from engine.vedic.bikram_sambat import (
+        bs_to_gregorian,
+        bs_year_civil_range,
+        get_bs_month_length,
+        get_bs_month_start,
+    )
+
+    try:
+        year_start = get_bs_month_start(bs_year, 1)
+        year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
+        return year_start, year_end
+    except ValueError:
+        return bs_year_civil_range(bs_year)
 
 
 def _ad_year_range(ad_year: int) -> tuple[date, date]:
@@ -256,23 +332,48 @@ def _bs_label_for(d: date) -> str | None:
         return None
 
 
-def _stamp(dt_local: datetime | None) -> dict[str, Any] | None:
-    """Format an aware local datetime as {iso, date_ad, date_bs, time_short}."""
-    if dt_local is None:
-        return None
-    d = dt_local.date()
+def _year_range_jd_fields(year_start: date | CivilDay, year_end: date | CivilDay) -> dict[str, float]:
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
+    if isinstance(year_start, CivilDay):
+        return {
+            "range_start_jd": float(year_start.to_jd_ut()),
+            "range_end_jd": float(year_end.to_jd_ut()),
+        }
     return {
-        "iso": dt_local.isoformat(),
-        "date_ad": d.isoformat(),
-        "date_bs": _bs_label_for(d),
-        "time_short": dt_local.strftime("%H:%M"),
+        "range_start_jd": civil_day_jd_from_date(year_start),
+        "range_end_jd": civil_day_jd_from_date(year_end),
     }
 
 
-def _duration_days(start: datetime | None, end: datetime | None) -> int | None:
+def _stamp(dt_local: datetime | Any | None, *, timezone_name: str) -> dict[str, Any] | None:
+    """Format an aware local datetime as {iso, jd, time_short}."""
+    if dt_local is None:
+        return None
+    from engine.astronomy.ut_instant import UtInstant, local_civil_fields
+
+    fields = local_civil_fields(dt_local, timezone_name)
+    iso = dt_local.isoformat() if isinstance(dt_local, (datetime, UtInstant)) else str(dt_local)
+    return {
+        "iso": iso,
+        "jd": fields.civil_day_jd,
+        "time_short": fields.time_short(),
+    }
+
+
+def _duration_days(
+    start: datetime | Any | None,
+    end: datetime | Any | None,
+    *,
+    timezone_name: str,
+) -> int | None:
     if start is None or end is None:
         return None
-    return (end.date() - start.date()).days + 1
+    from engine.astronomy.ut_instant import local_civil_fields
+
+    s_jd = local_civil_fields(start, timezone_name).civil_day_jd
+    e_jd = local_civil_fields(end, timezone_name).civil_day_jd
+    return int(round(e_jd - s_jd)) + 1
 
 
 def _moon_sun_elongation(dt: datetime) -> float:
@@ -283,8 +384,24 @@ def _moon_sun_elongation(dt: datetime) -> float:
     return min(diff, 360.0 - diff)
 
 
+def _elongation_at(instant) -> float:
+    from engine.astronomy.engine import default_engine
+    from engine.astronomy.ut_instant import UtInstant, as_julian_day
+
+    if isinstance(instant, UtInstant):
+        jd = instant.jd_ut
+    elif isinstance(instant, datetime):
+        jd = default_engine.julian_day(instant.astimezone(timezone.utc))
+    else:
+        jd = as_julian_day(instant)
+    moon = float(default_engine.planet_position(jd, "moon")["longitude"])
+    sun = float(default_engine.planet_position(jd, "sun")["longitude"])
+    diff = (moon - sun) % 360.0
+    return min(diff, 360.0 - diff)
+
+
 def _moon_tara_asta_periods(
-    from_date: date, to_date: date, location: Any, tz
+    from_date: date | CivilDay, to_date: date | CivilDay, location: Any, tz
 ) -> list[dict[str, Any]]:
     """चन्द्र तारा अस्त — combustion windows (moonrise → moonset) each lunation.
 
@@ -292,14 +409,15 @@ def _moon_tara_asta_periods(
     ``MOON_ASTA_ORB`` at any point; consecutive asta days form one period whose
     start is the first day's moonrise and end is the last day's moonset.
     """
-    def day_min_elongation(d: date) -> float:
-        noon = datetime(d.year, d.month, d.day, 12, tzinfo=tz).astimezone(timezone.utc)
-        # The Moon moves <15°/day, so a >28° gap at noon can't reach the orb.
-        if _moon_sun_elongation(noon) > 28.0:
+    from engine.astronomy.ut_instant import local_wall_instant
+
+    def day_min_elongation(d: date | CivilDay) -> float:
+        noon = local_wall_instant(d, location.timezone, hour=12, minute=0)
+        if _elongation_at(noon) > 28.0:
             return 99.0
-        base = datetime(d.year, d.month, d.day, tzinfo=tz)
+        base = local_wall_instant(d, location.timezone, hour=0, minute=0)
         return min(
-            _moon_sun_elongation((base + timedelta(minutes=30 * i)).astimezone(timezone.utc))
+            _elongation_at(base + timedelta(minutes=30 * i))
             for i in range(48)
         )
 
@@ -335,9 +453,9 @@ def _moon_tara_asta_periods(
         periods.append({
             "graha": "moon",
             "graha_ne": "चन्द्र",
-            "start": _stamp(rise_local),
-            "end": _stamp(set_local),
-            "duration_days": _duration_days(rise_local, set_local),
+            "start": _stamp(rise_local, timezone_name=location.timezone),
+            "end": _stamp(set_local, timezone_name=location.timezone),
+            "duration_days": _duration_days(rise_local, set_local, timezone_name=location.timezone),
             "hemisphere": None,
         })
     return periods
@@ -364,24 +482,32 @@ def _planet_asta_periods(events: list[dict[str, Any]], tz) -> list[dict[str, Any
     return periods
 
 
+def _instant_to_local(raw: str, tz) -> datetime | Any:
+    """Parse API ``entry_time_utc`` for local civil-field formatting (BCE-safe)."""
+    from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+    return parse_ephemeris_instant(str(raw))
+
+
 def _planet_period(
     graha: str, asta: dict[str, Any] | None, udaya: dict[str, Any] | None, tz
 ) -> dict[str, Any]:
     from engine.vedic.gochar import GRAHA_META
 
-    def to_local(ev: dict[str, Any] | None) -> datetime | None:
+    def to_local(ev: dict[str, Any] | None):
         if ev is None:
             return None
-        return datetime.fromisoformat(ev["entry_time_utc"]).astimezone(tz)
+        return _instant_to_local(ev["entry_time_utc"], tz)
 
     start_local = to_local(asta)
     end_local = to_local(udaya)
+    tz_name = getattr(tz, "key", str(tz))
     return {
         "graha": graha,
         "graha_ne": GRAHA_META[graha]["ne"],
-        "start": _stamp(start_local),
-        "end": _stamp(end_local),
-        "duration_days": _duration_days(start_local, end_local),
+        "start": _stamp(start_local, timezone_name=tz_name),
+        "end": _stamp(end_local, timezone_name=tz_name),
+        "duration_days": _duration_days(start_local, end_local, timezone_name=tz_name),
         "hemisphere": (asta or udaya or {}).get("hemisphere"),
     }
 
@@ -405,9 +531,12 @@ def build_graha_asta_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
 
 
 def _build_graha_asta_for_range(
-    year_start: date, year_end: date, location: Any,
+    year_start: date | CivilDay, year_end: date | CivilDay, location: Any,
 ) -> dict[str, Any]:
-    """Shared asta builder for any inclusive Gregorian date span."""
+    """Shared asta builder for any inclusive civil span (``date`` or ``CivilDay``)."""
+    if isinstance(year_start, CivilDay):
+        return _build_graha_asta_for_civil_range(year_start, year_end, location)
+
     from engine.vedic.udayast import build_udayast_range
 
     init_ephemeris()
@@ -426,17 +555,61 @@ def _build_graha_asta_for_range(
 
     periods.sort(key=sort_key)
     return {
-        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        **_year_range_jd_fields(year_start, year_end),
         "location": location.as_dict(),
         "grahas": ASTA_GRAHAS,
         "periods": periods,
     }
 
 
+def _build_graha_asta_for_civil_range(
+    year_start: CivilDay, year_end: CivilDay, location: Any,
+) -> dict[str, Any]:
+    from engine.vedic.udayast import build_udayast_range_civil
+
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+
+    planet_raw = build_udayast_range_civil(
+        year_start, year_end, location, grahas=ASTA_PLANET_GRAHAS,
+    )
+    periods = _planet_asta_periods(planet_raw["events"], tz)
+    periods.extend(_moon_tara_asta_periods(year_start, year_end, location, tz))
+
+    def sort_key(p: dict[str, Any]) -> tuple[int, str]:
+        order = ASTA_GRAHAS.index(p["graha"]) if p["graha"] in ASTA_GRAHAS else 99
+        start_iso = p["start"]["iso"] if p.get("start") else (p["end"]["iso"] if p.get("end") else "")
+        return (order, start_iso)
+
+    periods.sort(key=sort_key)
+    return {
+        **_year_range_jd_fields(year_start, year_end),
+        "location": location.as_dict(),
+        "grahas": ASTA_GRAHAS,
+        "periods": periods,
+    }
+
+
+def build_graha_vakri_span(jd_start: float, jd_end: float, location: Any) -> dict[str, Any]:
+    """Yearly वक्री/मार्गी station timeline over a Julian Day span.
+
+    The era-agnostic entry point: the caller has already resolved whatever era the
+    client asked for down to a JD pair (see :mod:`engine.calendar.era`), so this
+    works identically for ad, bc, bs and bbs and needs no calendar logic of its own.
+    """
+    return _build_graha_vakri_for_civil_range(
+        CivilDay.from_jd_ut(float(jd_start)),
+        CivilDay.from_jd_ut(float(jd_end)),
+        location,
+    )
+
+
 def build_graha_vakri_year(bs_year: int, location: Any) -> dict[str, Any]:
     """Yearly वक्री/मार्गी station timeline over a BS year."""
-    year_start, year_end = _bs_year_range(bs_year)
-    payload = _build_graha_vakri_for_range(year_start, year_end, location)
+    from engine.vedic.bikram_sambat import bs_year_civil_range
+
+    year_start_c, year_end_c = bs_year_civil_range(bs_year)
+    payload = _build_graha_vakri_for_civil_range(year_start_c, year_end_c, location)
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
     return payload
@@ -454,7 +627,6 @@ def build_graha_vakri_ad_year(ad_year: int, location: Any) -> dict[str, Any]:
 def _build_graha_vakri_for_range(
     year_start: date, year_end: date, location: Any,
 ) -> dict[str, Any]:
-    from engine.vedic.bikram_sambat import gregorian_to_bs, format_bs_date
     from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
 
     init_ephemeris()
@@ -470,17 +642,40 @@ def _build_graha_vakri_for_range(
     raw = find_motion_stations_in_range(from_sunrise, until_sunrise, grahas=YEARLY_GRAHAS)
     events: list[dict[str, Any]] = []
     for ev in raw:
-        e = _attach_local_time(dict(ev), tz)
-        ad = e.get("entry_date_ad") or e.get("entry_time_utc", "")[:10]
-        bs_label = None
-        try:
-            y, m, d = gregorian_to_bs(date.fromisoformat(ad))
-            bs_label = format_bs_date(y, m, d)
-        except Exception:
-            pass
-        events.append({**e, "entry_date_ad": ad, "entry_date_bs": bs_label})
+        events.append(_attach_local_time(dict(ev), tz))
     return {
-        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        **_year_range_jd_fields(year_start, year_end),
+        "location": location.as_dict(),
+        "grahas": YEARLY_GRAHAS,
+        "events": events,
+    }
+
+
+def _build_graha_vakri_for_civil_range(
+    year_start: CivilDay, year_end: CivilDay, location: Any,
+) -> dict[str, Any]:
+    from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
+
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = calculate_sunrise_civil(
+        year_start,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    until_sunrise = calculate_sunrise_civil_next(
+        year_end,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    raw = find_motion_stations_in_range(from_sunrise, until_sunrise, grahas=YEARLY_GRAHAS)
+    events: list[dict[str, Any]] = []
+    for ev in raw:
+        events.append(_attach_local_time(dict(ev), tz))
+    return {
+        **_year_range_jd_fields(year_start, year_end),
         "location": location.as_dict(),
         "grahas": YEARLY_GRAHAS,
         "events": events,
@@ -515,7 +710,9 @@ _LUNAR_TYPE_EN = {
 
 def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]:
     """List the solar or lunar eclipses whose maximum falls within a BS year."""
-    year_start, year_end = _bs_year_range(bs_year)
+    from engine.vedic.bikram_sambat import bs_year_civil_range
+
+    year_start, year_end = bs_year_civil_range(bs_year)
     payload = _build_eclipse_for_range(year_start, year_end, kind, location)
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
@@ -532,9 +729,10 @@ def build_eclipse_ad_year(ad_year: int, kind: str, location: Any) -> dict[str, A
 
 
 def _build_eclipse_for_range(
-    year_start: date, year_end: date, kind: str, location: Any,
+    year_start: date | CivilDay, year_end: date | CivilDay, kind: str, location: Any,
 ) -> dict[str, Any]:
-    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+    from engine.astronomy.jd_calendar import civil_day_add
+    from engine.astronomy.ut_instant import local_civil_fields
 
     if kind not in ("solar", "lunar"):
         raise ValueError("kind must be 'solar' or 'lunar'")
@@ -543,10 +741,19 @@ def _build_eclipse_for_range(
     tz = resolve_observer_timezone(location.timezone)
     geopos = (float(location.lon), float(location.lat), 0.0)
 
-    start_dt = datetime(year_start.year, year_start.month, year_start.day, tzinfo=timezone.utc)
-    end_dt = datetime(year_end.year, year_end.month, year_end.day, tzinfo=timezone.utc) + timedelta(days=1)
-    jd_start = default_engine.julian_day(start_dt)
-    jd_end = default_engine.julian_day(end_dt)
+    if isinstance(year_start, CivilDay):
+        jd_start = float(year_start.to_jd_ut())
+        jd_end = float(civil_day_add(year_end.to_jd_ut(), 1))
+    else:
+        start_dt = datetime(
+            year_start.year, year_start.month, year_start.day, tzinfo=timezone.utc,
+        )
+        end_dt = (
+            datetime(year_end.year, year_end.month, year_end.day, tzinfo=timezone.utc)
+            + timedelta(days=1)
+        )
+        jd_start = default_engine.julian_day(start_dt)
+        jd_end = default_engine.julian_day(end_dt)
 
     finder = (
         default_engine.next_solar_eclipse if kind == "solar"
@@ -568,12 +775,7 @@ def _build_eclipse_for_range(
             break
         max_local = default_engine.datetime_from_jd(max_jd).astimezone(tz)
         etype = ecl["type"]
-        ecl_date = max_local.date()
-        try:
-            y, m, d = gregorian_to_bs(ecl_date)
-            bs_label = format_bs_date(y, m, d)
-        except Exception:
-            bs_label = None
+        max_fields = local_civil_fields(max_local, location.timezone)
 
         def _local(key: str) -> str | None:
             v = ecl.get(key)
@@ -588,8 +790,7 @@ def _build_eclipse_for_range(
             "type_en": type_en.get(etype, etype),
             "max_utc": default_engine.datetime_from_jd(max_jd).isoformat(),
             "max_local": max_local.isoformat(),
-            "date_ad": ecl_date.isoformat(),
-            "date_bs": bs_label,
+            "date_jd": max_fields.civil_day_jd,
             "visible": bool(ecl.get("visible", False)),
             "begin_local": _local("local_begin_jd") if kind == "solar" else _local("partial_begin_jd"),
             "end_local": _local("local_end_jd") if kind == "solar" else _local("partial_end_jd"),
@@ -601,7 +802,7 @@ def _build_eclipse_for_range(
     events.sort(key=lambda e: e["max_utc"])
     return {
         "kind": kind,
-        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        **_year_range_jd_fields(year_start, year_end),
         "location": location.as_dict(),
         "events": events,
     }

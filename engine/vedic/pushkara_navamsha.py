@@ -88,7 +88,15 @@ def find_lagna_degree_crossing(
     return hi
 
 
-def _format_local_time(dt: datetime, tz_name: str) -> dict[str, str]:
+def _format_local_time(dt: datetime | UtInstant, tz_name: str) -> dict[str, str]:
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
+    if isinstance(dt, UtInstant):
+        block = format_ut_instant_local(dt, tz_name)
+        return {
+            "local_time": block["local_time"],
+            "local_time_short": block["local_time_short"],
+        }
     tz = resolve_observer_timezone(tz_name)
     local = dt.astimezone(tz)
     return {
@@ -112,8 +120,10 @@ def pushkara_times_for_span(
     if not start_raw or not end_raw or rashi_num < 1:
         return []
 
-    start_dt = datetime.fromisoformat(str(start_raw).replace("Z", "+00:00"))
-    end_dt = datetime.fromisoformat(str(end_raw).replace("Z", "+00:00"))
+    from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+    start_dt = parse_ephemeris_instant(str(start_raw).replace("Z", "+00:00"))
+    end_dt = parse_ephemeris_instant(str(end_raw).replace("Z", "+00:00"))
 
     hits: list[dict[str, Any]] = []
     for deg in pushkara_degrees_for_rashi(rashi_num):

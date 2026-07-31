@@ -3,6 +3,9 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+from engine.astronomy.engine import default_engine
+from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+from engine.astronomy.ut_instant import UtInstant, day_instant_utc
 from engine.astronomy.swiss_eph import EphemerisError, get_sun_longitude
 
 RASHI_NAMES = [
@@ -47,12 +50,162 @@ def _to_unix_seconds(dt: datetime) -> float:
 
 
 def _from_unix_seconds(seconds: float) -> datetime:
-    return UNIX_EPOCH_UTC + timedelta(seconds=seconds)
+    try:
+        return UNIX_EPOCH_UTC + timedelta(seconds=seconds)
+    except OverflowError:
+        # Pre-1 CE: no ``datetime`` can hold it, so hand back a JD-backed instant.
+        # Kept as a fallback rather than always going through JD because the JD
+        # round-trip truncates to whole seconds, which would shift CE results.
+        from engine.astronomy.jd_calendar import unix_seconds_to_jd_ut
+
+        return UtInstant(unix_seconds_to_jd_ut(seconds))  # type: ignore[return-value]
 
 
 def get_sun_rashi_at_time(dt: datetime) -> int:
     sun_long = get_sun_longitude(dt, sidereal=True)
     return int(sun_long / 30) % 12
+
+
+def get_sun_rashi_at_jd(jd: float) -> int:
+    sun_long = default_engine.sun_longitude(float(jd), sidereal=True)
+    return int(sun_long / 30) % 12
+
+
+def _angular_error_jd(jd: float, target_degree: float) -> float:
+    sun_long = default_engine.sun_longitude(float(jd), sidereal=True)
+    return _angular_error(sun_long, target_degree)
+
+
+def _bisect_sankranti_jd(
+    target_degree: float, low_jd: float, high_jd: float, tolerance_days: float = 1 / 86400
+) -> float:
+    tolerance = float(tolerance_days)
+    low, high = float(low_jd), float(high_jd)
+    for _ in range(60):
+        if high - low < tolerance:
+            break
+        mid = (low + high) / 2
+        mid_err = _angular_error_jd(mid, target_degree)
+        low_err = _angular_error_jd(low, target_degree)
+        if low_err == 0:
+            return low
+        if mid_err == 0:
+            return mid
+        if low_err * mid_err <= 0:
+            high = mid
+        else:
+            low = mid
+    return high
+
+
+def find_sankranti_brent_jd(
+    target_degree: float,
+    low_jd: float,
+    high_jd: float,
+    tolerance_days: float = 60 / 86400,
+    max_iterations: int = 50,
+) -> float:
+    """Refine a sankranti instant in JD (UT), including BCE dates."""
+    tol = float(tolerance_days)
+    a, b = float(low_jd), float(high_jd)
+
+    def f(jd: float) -> float:
+        return _angular_error_jd(jd, target_degree)
+
+    fa, fb = f(a), f(b)
+    if fa == 0:
+        return a
+    if fb == 0:
+        return b
+    if fa * fb > 0:
+        return _bisect_sankranti_jd(target_degree, a, b, tolerance_days=tolerance_days)
+
+    if abs(fa) < abs(fb):
+        a, b = b, a
+        fa, fb = fb, fa
+
+    c, fc, d = a, fa, a
+    mflag = True
+
+    for _ in range(max_iterations):
+        if abs(b - a) <= tol or fb == 0:
+            return b
+        if fa != fc and fb != fc:
+            s = (
+                (a * fb * fc) / ((fa - fb) * (fa - fc))
+                + (b * fa * fc) / ((fb - fa) * (fb - fc))
+                + (c * fa * fb) / ((fc - fa) * (fc - fb))
+            )
+        else:
+            s = b - fb * (b - a) / (fb - fa)
+
+        cond1 = not (min((3 * a + b) / 4, b) < s < max((3 * a + b) / 4, b))
+        cond2 = mflag and abs(s - b) >= abs(b - c) / 2
+        cond3 = (not mflag) and abs(s - b) >= abs(c - d) / 2
+        cond4 = mflag and abs(b - c) < tol
+        cond5 = (not mflag) and abs(c - d) < tol
+
+        if cond1 or cond2 or cond3 or cond4 or cond5:
+            s = (a + b) / 2
+            mflag = True
+        else:
+            mflag = False
+
+        fs = f(s)
+        d, c = c, b
+        fc = fb
+        if fa * fs < 0:
+            b, fb = s, fs
+        else:
+            a, fa = s, fs
+        if abs(fa) < abs(fb):
+            a, b = b, a
+            fa, fb = fb, fa
+
+    return b
+
+
+def find_sankranti_after_jd(
+    target_rashi: int, after_jd: float, max_days: int = 40
+) -> float | None:
+    """Next sidereal sankranti at or after ``after_jd`` (Julian Day UT)."""
+    target_degree = target_rashi * 30
+    prev_rashi = (target_rashi - 1) % 12
+    current_rashi = get_sun_rashi_at_jd(after_jd)
+
+    if current_rashi == target_rashi:
+        search_jd = after_jd
+        for _ in range(max_days):
+            search_jd = civil_day_add(search_jd, -1)
+            if get_sun_rashi_at_jd(search_jd) == prev_rashi:
+                low, high = search_jd, after_jd
+                break
+        else:
+            return None
+    elif current_rashi == prev_rashi:
+        search_jd = after_jd
+        for _ in range(max_days):
+            search_jd = civil_day_add(search_jd, 1)
+            if get_sun_rashi_at_jd(search_jd) == target_rashi:
+                low, high = after_jd, search_jd
+                break
+        else:
+            return None
+    else:
+        search_jd = after_jd
+        found_prev: float | None = None
+        for _ in range(max_days * 12):
+            search_jd = civil_day_add(search_jd, 1)
+            rashi = get_sun_rashi_at_jd(search_jd)
+            if rashi == prev_rashi:
+                found_prev = search_jd
+            elif rashi == target_rashi and found_prev is not None:
+                low, high = found_prev, search_jd
+                break
+        else:
+            return None
+
+    return find_sankranti_brent_jd(target_degree, low, high, tolerance_days=60 / 86400)
 
 
 def _bisect_sankranti(
@@ -184,10 +337,9 @@ def find_sankranti(target_rashi: int, after: datetime, max_days: int = 40) -> Op
 
 
 def find_mesh_sankranti(year: int) -> Optional[datetime]:
-    search_start = datetime(year, 4, 1, 0, 0, 0, tzinfo=timezone.utc)
-    return find_sankranti(0, search_start, max_days=30)
+    # ``day_instant_utc`` rather than ``datetime(...)`` so BCE search years work.
+    return find_sankranti(0, day_instant_utc(CivilDay(year, 4, 1)), max_days=30)
 
 
 def find_makara_sankranti(year: int) -> Optional[datetime]:
-    search_start = datetime(year, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
-    return find_sankranti(9, search_start, max_days=30)
+    return find_sankranti(9, day_instant_utc(CivilDay(year, 1, 1)), max_days=30)

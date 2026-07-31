@@ -24,7 +24,12 @@ def standard_meridian_longitude(
     tz = resolve_observer_timezone(
         timezone_name, lat=lat, lon=lon, country=country,
     )
-    probe = datetime.combine(on_date or date(2020, 6, 15), time(12, 0), tzinfo=tz)
+    # The datetime is only a probe for the zone's UTC offset. A pre-1 CE civil day
+    # (``CivilDay``, not a ``date``) has no tz database coverage anyway, so fall
+    # back to the same fixed CE reference ``ut_instant`` uses for its offset
+    # lookups rather than trying to build an unrepresentable datetime.
+    probe_day = on_date if isinstance(on_date, date) else date(2020, 6, 15)
+    probe = datetime.combine(probe_day, time(12, 0), tzinfo=tz)
     offset = tz.utcoffset(probe)
     if offset is None:
         raise ValueError(f"Timezone {timezone_name!r} has no UTC offset")

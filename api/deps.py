@@ -29,13 +29,45 @@ def location_params(
 LocationDep = Annotated[ObserverLocation, Depends(location_params)]
 
 
-def _validate_bs_year(year: int) -> None:
-    from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR
-    if not BS_ESTIMATED_MIN_YEAR <= year <= BS_SUPPORTED_MAX_YEAR:
+def _validate_bbs_url_year(url_year: int) -> None:
+    from engine.vedic.patro_year_axis import PATRO_EPHEMERIS_SIGNED_MIN
+
+    bbs_max = -PATRO_EPHEMERIS_SIGNED_MIN
+    if url_year < 1 or url_year > bbs_max:
         raise HTTPException(
             status_code=400,
-            detail=f"year must be a BS year between {BS_ESTIMATED_MIN_YEAR} and {BS_SUPPORTED_MAX_YEAR}",
+            detail=f"bbs url year must be 1..{bbs_max} (पू. वि.सं.)",
         )
+
+
+def _signed_bs_year_from_browse(era: Literal["bs", "bbs"], url_year: int) -> int:
+    """Map share URL era+year to signed patro axis (−200 for era=bbs&year=200)."""
+    if era == "bbs":
+        _validate_bbs_url_year(url_year)
+        signed = -url_year
+        _validate_bs_year(signed)
+        return signed
+    _validate_bs_year(url_year)
+    return url_year
+
+
+def _validate_bs_year(year: int) -> None:
+    from engine.vedic.patro_year_axis import (
+        PATRO_SIGNED_YEAR_MAX,
+        PATRO_SIGNED_YEAR_MIN,
+        validate_patro_signed_year,
+    )
+
+    try:
+        validate_patro_signed_year(year)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"year must be a signed patro year "
+                f"({PATRO_SIGNED_YEAR_MIN}..-1 = BBS, 1..{PATRO_SIGNED_YEAR_MAX} = BS; 0 invalid)"
+            ),
+        ) from exc
 
 
 def _validate_bs_month(month: int) -> None:

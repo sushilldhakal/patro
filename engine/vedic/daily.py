@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.jd_calendar import civil_day_jd_from_date, civil_iso_from_date
 from engine.astronomy.swiss_eph import (
     calculate_moonrise_after,
     calculate_moonset_after,
@@ -65,6 +66,13 @@ from engine.astronomy.positions import (
 def _time_block(dt, timezone_name: str) -> dict[str, str] | None:
     if dt is None:
         return None
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
+    if isinstance(dt, UtInstant):
+        block = format_ut_instant_local(dt, timezone_name)
+        # Same expanded-ISO shape the CE branch emits below, not a jd: sentinel.
+        block["utc"] = dt.isoformat()
+        return block
     local_tz = resolve_observer_timezone(timezone_name)
     local = dt.astimezone(local_tz)
     return {
@@ -132,6 +140,251 @@ def _display_headers(
     }
 
 
+def _display_headers_civil(
+    date_ad: str,
+    bs_year: int,
+    bs_month: int,
+    bs_day: int,
+    vaara_ne: str,
+    vaara_english: str,
+    ns_date: dict,
+) -> dict:
+    bs_month_ne = BS_MONTH_NAMES_NEPALI[bs_month - 1]
+    era_label = "BBS" if bs_year < 0 else "वि.सं."
+    year_digits = to_nepali_digits(abs(bs_year) if bs_year < 0 else bs_year)
+    prefix = f"BBS {abs(bs_year)}" if bs_year < 0 else f"वि.सं. {to_nepali_digits(bs_year)}"
+    if bs_year < 0:
+        bs_ne = f"BBS {year_digits} {bs_month_ne} {to_nepali_digits(bs_day)} {vaara_ne}"
+    else:
+        bs_ne = f"{prefix} {bs_month_ne} {to_nepali_digits(bs_day)} {vaara_ne}"
+    return {
+        "bs_ne": bs_ne,
+        "gregorian_en": f"{date_ad} {vaara_english}",
+        "ns_ne": ns_date.get("label_ne") and f"ने.सं. {to_nepali_digits(ns_date.get('year', 0))} {ns_date['label_ne']}" or "",
+    }
+
+
+def _assemble_udaya_panchanga(
+    *,
+    sunrise_utc,
+    sunset_utc,
+    moonrise_utc,
+    moonset_utc,
+    next_sunrise_utc,
+    location: ObserverLocation,
+    tithi_info: dict,
+    vaara_num: int,
+    vaara_sanskrit: str,
+    vaara_english: str,
+    bs_year: int,
+    bs_month: int,
+    bs_day: int,
+    date_label: str,
+    date_ad: str,
+    jd_ut: float,
+    display: dict,
+    ns_date: dict,
+    lunar: dict,
+    lunar_calendar: dict,
+    solar_corrections: dict,
+    include_festivals: bool,
+    festival_date: date | None,
+) -> dict[str, Any]:
+    from engine.astronomy.ut_instant import UtInstant
+
+    display_tithi = tithi_info["display_number"]
+    paksha = tithi_info["paksha"]
+
+    lahiri_ayanamsa = get_ayanamsa(sunrise_utc)
+    dinamaan = compute_dinamaan(sunrise_utc, sunset_utc)
+
+    muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, location.timezone)
+    from engine.astronomy.ut_instant import local_weekday_py_from_jd
+
+    if isinstance(sunrise_utc, UtInstant):
+        weekday_py = local_weekday_py_from_jd(sunrise_utc.jd_ut, location.timezone)
+    else:
+        weekday_py = sunrise_utc.astimezone(
+            resolve_observer_timezone(location.timezone)
+        ).weekday()
+    if not isinstance(sunrise_utc, UtInstant):
+        muhurta = enrich_muhurta_block(
+            muhurta,
+            sunrise_utc=sunrise_utc,
+            sunset_utc=sunset_utc,
+            next_sunrise_utc=next_sunrise_utc,
+            vaara_index=vaara_num,
+            weekday_py=weekday_py,
+            timezone_name=location.timezone,
+            tithi_info=tithi_info,
+        )
+    ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
+    ritu_pauranik = get_ritu(
+        sunrise_utc,
+        sidereal=True,
+        lat=location.lat,
+        timezone_name=location.timezone,
+    )
+    ritu_vedic = get_ritu(
+        sunrise_utc,
+        sidereal=False,
+        lat=location.lat,
+        timezone_name=location.timezone,
+    )
+    aayan_pauranik = get_aayan(sunrise_utc, sidereal=True)
+    aayan_vedic = get_aayan(sunrise_utc, sidereal=False)
+    lagna_spans = build_lagna_spans(
+        sunrise_utc,
+        next_sunrise_utc,
+        lat=location.lat,
+        lon=location.lon,
+        timezone_name=location.timezone,
+    )
+    from engine.vedic.pushkara_navamsha import enrich_lagna_spans_with_pushkara
+
+    if not isinstance(sunrise_utc, UtInstant):
+        lagna_spans = enrich_lagna_spans_with_pushkara(
+            lagna_spans,
+            lat=location.lat,
+            lon=location.lon,
+            timezone_name=location.timezone,
+        )
+    tz_name = location.timezone
+    chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc, tz_name)
+    nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc, tz_name)
+    surya_nakshatra = get_surya_nakshatra(sunrise_utc)
+    nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
+    chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans, tz_name)
+    tarabalam = build_tarabalam(sunrise_utc, nakshatra_block, tz_name)
+    chandra_rashi = get_chandra_rashi(sunrise_utc)
+    tarabala_table = build_tarabala_table(nakshatra_block)
+    chandrabala_table = build_chandrabalam_table(chandra_rashi)
+    panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num, tz_name)
+    udaya_lagna = build_udaya_lagna(lagna_spans)
+    nivas_shool = build_nivas_shool_block(
+        sunrise_utc,
+        next_sunrise_utc,
+        weekday_py=weekday_py,
+        timezone_name=location.timezone,
+    )
+    sunrise_block = _time_block(sunrise_utc, location.timezone)
+    sunset_block = _time_block(sunset_utc, location.timezone)
+    day_ghati = day_ghati_from_sun_times(
+        sunrise_block.get("local_time_short"),
+        sunset_block.get("local_time_short"),
+    )
+    choghadiya = (
+        build_choghadiya(day_ghati, vaara_num)
+        if day_ghati is not None
+        else []
+    )
+    hora = build_hora(
+        sunrise_utc,
+        sunset_utc,
+        next_sunrise_utc,
+        vaara_num,
+        location.timezone,
+        sunrise_short=sunrise_block.get("local_time_short"),
+        sunset_short=sunset_block.get("local_time_short"),
+    )
+
+    # No `bs_year >= 1` gate: the Jovian walk is JD-based and table-backed now, so
+    # BBS years resolve too. The resolver already answers None for anything
+    # outside the precomputed range, which is the only reason the guard existed.
+    samvatsara = samvatsara_payload_for_bs_year(bs_year)
+
+    payload: dict[str, Any] = {
+        "date": date_label,
+        "date_ad": date_ad,
+        "jd_ut": jd_ut,
+        "display": display,
+        "bs_date": {
+            "year": bs_year,
+            "month": bs_month,
+            "day": bs_day,
+            "month_name": bs_month_name(bs_month),
+            "month_name_ne": BS_MONTH_NAMES_NEPALI[bs_month - 1],
+        },
+        "samvatsara": samvatsara,
+        "ns_date": ns_date,
+        "location": location.as_dict(),
+        "sunrise": sunrise_block,
+        "sunset": sunset_block,
+        "day_ghati": day_ghati,
+        "choghadiya": choghadiya,
+        "hora": hora,
+        "solar_corrections": solar_corrections,
+        "moonrise": _time_block(moonrise_utc, location.timezone),
+        "moonset": _time_block(moonset_utc, location.timezone),
+        "dinamaan": dinamaan,
+        "ratrimana": ratrimana,
+        "madhyahna": _time_block(
+            sunrise_utc + (sunset_utc - sunrise_utc) / 2,
+            location.timezone,
+        ),
+        "lahiri_ayanamsa": {
+            "name": "Lahiri",
+            "degrees": round(lahiri_ayanamsa, 6),
+        },
+        "aayan": aayan_pauranik,
+        "aayan_pauranik": aayan_pauranik,
+        "aayan_vedic": aayan_vedic,
+        "vaara": {
+            "number": vaara_num,
+            "name_sanskrit": vaara_sanskrit,
+            "name_english": vaara_english,
+            "name_ne": VAARA_NAMES_NE[vaara_num],
+        },
+        "tithi": build_tithi_block(sunrise_utc, sunrise_utc, tithi_info, location.timezone),
+        "nakshatra": build_nakshatra_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
+        "yoga": build_yoga_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
+        "karana": build_karana_block(sunrise_utc, sunrise_utc, location.timezone),
+        "paksha": _paksha_block(lunar, paksha),
+        "chandra_rashi": chandra_rashi,
+        "chandra_rashi_spans": chandra_rashi_spans,
+        "nakshatra_pada_spans": nakshatra_pada_spans,
+        "surya_rashi": get_surya_rashi(sunrise_utc),
+        "surya_nakshatra": surya_nakshatra,
+        "ritu": ritu_pauranik,
+        "ritu_pauranik": ritu_pauranik,
+        "ritu_vedic": ritu_vedic,
+        "lunar_month": lunar,
+        "lunar_calendar": lunar_calendar,
+        "planets": get_all_planetary_positions(sunrise_utc),
+        "planets_anchor": {
+            "type": "udayakal",
+            "local_time": sunrise_block.get("local_time_short"),
+            "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
+            "label_en": "Udayakalika Spashtagraha (sunrise)",
+        },
+        "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
+        "lagna_spans": lagna_spans,
+        "udaya_lagna": udaya_lagna,
+        "chandrabalam": chandrabalam,
+        "tarabalam": tarabalam,
+        "tarabala_table": tarabala_table,
+        "chandrabala_table": chandrabala_table,
+        "panchaka_rahita": panchaka_rahita,
+        "muhurta": muhurta,
+        "nivas_shool": nivas_shool,
+        "markers": {
+            "is_purnima": paksha == "shukla" and display_tithi == 15,
+            "is_Aausi": paksha == "krishna" and display_tithi == 15,
+            "is_ekadashi": display_tithi == 11,
+        },
+    }
+
+    payload["ayanamsa"] = payload["lahiri_ayanamsa"]
+
+    if include_festivals and festival_date is not None:
+        from services.holiday_generator import festivals_on_date
+
+        day_festivals = festivals_on_date(festival_date, location)
+        payload["festivals"] = day_festivals["festivals"]
+
+    return payload
+
+
 def build_daily_panchanga(
     target: date,
     location: ObserverLocation = DEFAULT_LOCATION,
@@ -187,192 +440,44 @@ def build_daily_panchanga(
         location=location,
     )
 
-    lahiri_ayanamsa = get_ayanamsa(sunrise_utc)
-    dinamaan = compute_dinamaan(sunrise_utc, sunset_utc)
-
-    muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, location.timezone)
     next_sunrise_utc = calculate_sunrise(
         target + timedelta(days=1),
         latitude=location.lat,
         longitude=location.lon,
         timezone_name=location.timezone,
     )
-    weekday_py = sunrise_utc.astimezone(resolve_observer_timezone(location.timezone)).weekday()
-    muhurta = enrich_muhurta_block(
-        muhurta,
+
+    return _assemble_udaya_panchanga(
         sunrise_utc=sunrise_utc,
         sunset_utc=sunset_utc,
+        moonrise_utc=moonrise_utc,
+        moonset_utc=moonset_utc,
         next_sunrise_utc=next_sunrise_utc,
-        vaara_index=vaara_num,
-        weekday_py=weekday_py,
-        timezone_name=location.timezone,
+        location=location,
         tithi_info=tithi_info,
-    )
-    ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
-    ritu_pauranik = get_ritu(
-        sunrise_utc,
-        sidereal=True,
-        lat=location.lat,
-        timezone_name=location.timezone,
-    )
-    ritu_vedic = get_ritu(
-        sunrise_utc,
-        sidereal=False,
-        lat=location.lat,
-        timezone_name=location.timezone,
-    )
-    aayan_pauranik = get_aayan(sunrise_utc, sidereal=True)
-    aayan_vedic = get_aayan(sunrise_utc, sidereal=False)
-    lagna_spans = build_lagna_spans(
-        sunrise_utc,
-        next_sunrise_utc,
-        lat=location.lat,
-        lon=location.lon,
-        timezone_name=location.timezone,
-    )
-    from engine.vedic.pushkara_navamsha import enrich_lagna_spans_with_pushkara
-
-    lagna_spans = enrich_lagna_spans_with_pushkara(
-        lagna_spans,
-        lat=location.lat,
-        lon=location.lon,
-        timezone_name=location.timezone,
-    )
-    tz_name = location.timezone
-    chandra_rashi_spans = build_chandra_rashi_spans(sunrise_utc, next_sunrise_utc, tz_name)
-    nakshatra_pada_spans = build_nakshatra_pada_spans(sunrise_utc, next_sunrise_utc, tz_name)
-    surya_nakshatra = get_surya_nakshatra(sunrise_utc)
-    nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
-    chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans, tz_name)
-    tarabalam = build_tarabalam(sunrise_utc, nakshatra_block, tz_name)
-    chandra_rashi = get_chandra_rashi(sunrise_utc)
-    tarabala_table = build_tarabala_table(nakshatra_block)
-    chandrabala_table = build_chandrabalam_table(chandra_rashi)
-    panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num, tz_name)
-    udaya_lagna = build_udaya_lagna(lagna_spans)
-    nivas_shool = build_nivas_shool_block(
-        sunrise_utc,
-        next_sunrise_utc,
-        weekday_py=weekday_py,
-        timezone_name=location.timezone,
-    )
-    sunrise_block = _time_block(sunrise_utc, location.timezone)
-    sunset_block = _time_block(sunset_utc, location.timezone)
-    day_ghati = day_ghati_from_sun_times(
-        sunrise_block.get("local_time_short"),
-        sunset_block.get("local_time_short"),
-    )
-    choghadiya = (
-        build_choghadiya(day_ghati, vaara_num)
-        if day_ghati is not None
-        else []
-    )
-    hora = build_hora(
-        sunrise_utc,
-        sunset_utc,
-        next_sunrise_utc,
-        vaara_num,
-        location.timezone,
-        sunrise_short=sunrise_block.get("local_time_short"),
-        sunset_short=sunset_block.get("local_time_short"),
-    )
-    solar_corrections = build_solar_corrections(
-        target,
-        local_longitude=location.lon,
-        timezone_name=location.timezone,
-        at=sunrise_utc,
-        lat=location.lat,
-    )
-
-    payload: dict[str, Any] = {
-        "date": target.isoformat(),
-        "display": _display_headers(target, bs_year, bs_month, bs_day, vaara_english, ns_date),
-        "bs_date": {
-            "year": bs_year,
-            "month": bs_month,
-            "day": bs_day,
-            "month_name": bs_month_name(bs_month),
-            "month_name_ne": BS_MONTH_NAMES_NEPALI[bs_month - 1],
-        },
-        "samvatsara": samvatsara_payload_for_bs_year(bs_year),
-        "ns_date": ns_date,
-        "location": location.as_dict(),
-        "sunrise": sunrise_block,
-        "sunset": sunset_block,
-        "day_ghati": day_ghati,
-        "choghadiya": choghadiya,
-        "hora": hora,
-        "solar_corrections": solar_corrections,
-        "moonrise": _time_block(moonrise_utc, location.timezone),
-        "moonset": _time_block(moonset_utc, location.timezone),
-        "dinamaan": dinamaan,
-        "ratrimana": ratrimana,
-        "madhyahna": _time_block(
-            sunrise_utc + (sunset_utc - sunrise_utc) / 2,
-            location.timezone,
+        vaara_num=vaara_num,
+        vaara_sanskrit=vaara_sanskrit,
+        vaara_english=vaara_english,
+        bs_year=bs_year,
+        bs_month=bs_month,
+        bs_day=bs_day,
+        date_label=target.isoformat(),
+        date_ad=civil_iso_from_date(target),
+        jd_ut=civil_day_jd_from_date(target),
+        display=_display_headers(target, bs_year, bs_month, bs_day, vaara_english, ns_date),
+        ns_date=ns_date,
+        lunar=lunar,
+        lunar_calendar=get_lunar_calendar_layers(target, paksha),
+        solar_corrections=build_solar_corrections(
+            target,
+            local_longitude=location.lon,
+            timezone_name=location.timezone,
+            at=sunrise_utc,
+            lat=location.lat,
         ),
-        "lahiri_ayanamsa": {
-            "name": "Lahiri",
-            "degrees": round(lahiri_ayanamsa, 6),
-        },
-        "aayan": aayan_pauranik,
-        "aayan_pauranik": aayan_pauranik,
-        "aayan_vedic": aayan_vedic,
-        "vaara": {
-            "number": vaara_num,
-            "name_sanskrit": vaara_sanskrit,
-            "name_english": vaara_english,
-            "name_ne": VAARA_NAMES_NE[vaara_num],
-        },
-        "tithi": build_tithi_block(sunrise_utc, sunrise_utc, tithi_info, location.timezone),
-        "nakshatra": build_nakshatra_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
-        "yoga": build_yoga_block(sunrise_utc, sunrise_utc, timezone_name=location.timezone),
-        "karana": build_karana_block(sunrise_utc, sunrise_utc, location.timezone),
-        "paksha": _paksha_block(lunar, paksha),
-        "chandra_rashi": chandra_rashi,
-        "chandra_rashi_spans": chandra_rashi_spans,
-        "nakshatra_pada_spans": nakshatra_pada_spans,
-        "surya_rashi": get_surya_rashi(sunrise_utc),
-        "surya_nakshatra": surya_nakshatra,
-        "ritu": ritu_pauranik,
-        "ritu_pauranik": ritu_pauranik,
-        "ritu_vedic": ritu_vedic,
-        "lunar_month": lunar,
-        "lunar_calendar": get_lunar_calendar_layers(target, paksha),
-        "planets": get_all_planetary_positions(sunrise_utc),
-        "planets_anchor": {
-            "type": "udayakal",
-            "local_time": sunrise_block.get("local_time_short"),
-            "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
-            "label_en": "Udayakalika Spashtagraha (sunrise)",
-        },
-        "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
-        "lagna_spans": lagna_spans,
-        "udaya_lagna": udaya_lagna,
-        "chandrabalam": chandrabalam,
-        "tarabalam": tarabalam,
-        "tarabala_table": tarabala_table,
-        "chandrabala_table": chandrabala_table,
-        "panchaka_rahita": panchaka_rahita,
-        "muhurta": muhurta,
-        "nivas_shool": nivas_shool,
-        "markers": {
-            "is_purnima": paksha == "shukla" and display_tithi == 15,
-            "is_Aausi": paksha == "krishna" and display_tithi == 15,
-            "is_ekadashi": display_tithi == 11,
-        },
-    }
-
-    # Backward-compatible alias (was ayanamsa = Lahiri degrees)
-    payload["ayanamsa"] = payload["lahiri_ayanamsa"]
-
-    if include_festivals:
-        from services.holiday_generator import festivals_on_date
-
-        day_festivals = festivals_on_date(target, location)
-        payload["festivals"] = day_festivals["festivals"]
-
-    return payload
+        include_festivals=include_festivals,
+        festival_date=target,
+    )
 
 
 def get_daily_panchanga(

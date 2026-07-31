@@ -7,7 +7,13 @@ from typing import Any
 
 from engine.astronomy.positions import NAKSHATRA_NAMES
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
+from engine.astronomy.ut_instant import (
+    LocalCivilFields,
+    day_instant_utc,
+    local_civil_fields,
+    parse_ephemeris_instant,
+)
+from engine.vedic.bikram_sambat import gregorian_to_bs
 from engine.vedic.gochar import find_next_pada_entry, _pada_flat_for
 from engine.vedic.graha_detail import _ad_year_range, _bs_year_range
 from engine.vedic.names_ne import to_nepali_digits
@@ -24,13 +30,13 @@ def _flat_from_entry(entry: dict[str, Any]) -> int:
     return nak_idx * 4 + (int(entry["to_pada"]) - 1)
 
 
-def _format_clock_en(local: datetime) -> str:
-    return local.strftime("%I:%M %p").lstrip("0").replace(" 0", " ")
+def _format_clock_en_hm(hour: int, minute: int) -> str:
+    h12 = hour % 12 or 12
+    meridiem = "AM" if hour < 12 else "PM"
+    return f"{h12}:{minute:02d} {meridiem}"
 
 
-def _format_clock_ne(local: datetime) -> str:
-    hour = local.hour
-    minute = local.minute
+def _format_clock_ne_hm(hour: int, minute: int) -> str:
     h12 = hour % 12 or 12
     meridiem = "अपराह्न" if hour >= 12 else "पूर्वाह्न"
     return f"{to_nepali_digits(h12)}:{to_nepali_digits(f'{minute:02d}')} {meridiem}"
@@ -47,24 +53,39 @@ def _format_duration(start: datetime, end: datetime) -> tuple[str, str]:
     return duration_en, duration_ne
 
 
-def _moment_stamp(dt_local: datetime) -> dict[str, Any]:
-    d = dt_local.date()
-    bs_y, bs_m, bs_d = gregorian_to_bs(d)
+def _patro_date_for(fields: LocalCivilFields) -> tuple[int, int, int]:
+    """BS/BBS triple for a local civil day, on either side of 1 CE."""
+    if fields.year >= 1:
+        return gregorian_to_bs(date(fields.year, fields.month, fields.day))
+    from engine.astronomy.jd_calendar import CivilDay
+    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
+
+    return locate_patro_day_for_civil(CivilDay(fields.year, fields.month, fields.day))
+
+
+def _moment_stamp(fields: LocalCivilFields) -> dict[str, Any]:
+    bs_y, bs_m, bs_d = _patro_date_for(fields)
     return {
-        "iso": dt_local.isoformat(),
-        "date_ad": d.isoformat(),
-        "date_bs": format_bs_date(bs_y, bs_m, bs_d),
+        "iso": fields.iso(),
+        "jd": fields.civil_day_jd,
         "bs_year": bs_y,
         "bs_month": bs_m,
         "bs_day": bs_d,
-        "time_short": dt_local.strftime("%H:%M"),
-        "time_en": _format_clock_en(dt_local),
-        "time_ne": _format_clock_ne(dt_local),
+        "time_short": fields.time_short(),
+        "time_en": _format_clock_en_hm(fields.hour, fields.minute),
+        "time_ne": _format_clock_ne_hm(fields.hour, fields.minute),
     }
 
 
-def _period_overlaps(start_local: datetime, end_local: datetime, year_start: date, year_end: date) -> bool:
-    return start_local.date() <= year_end and end_local.date() >= year_start
+def _period_overlaps(
+    start: LocalCivilFields, end: LocalCivilFields, year_start, year_end
+) -> bool:
+    """Day-granularity overlap, compared on the JD axis so BCE bounds work."""
+    from engine.astronomy.jd_calendar import civil_day_jd_ut
+
+    start_jd_bound = civil_day_jd_ut(year_start.year, year_start.month, year_start.day)
+    end_jd_bound = civil_day_jd_ut(year_end.year, year_end.month, year_end.day)
+    return start.civil_day_jd <= end_jd_bound and end.civil_day_jd >= start_jd_bound
 
 
 def _find_next_panchak_start(after: datetime) -> datetime | None:
@@ -74,7 +95,7 @@ def _find_next_panchak_start(after: datetime) -> datetime | None:
         entry = find_next_pada_entry("moon", cursor)
         if entry is None:
             return None
-        entry_dt = datetime.fromisoformat(entry["entry_time_utc"])
+        entry_dt = parse_ephemeris_instant(entry["entry_time_utc"])
         if _flat_from_entry(entry) == _PANCHAK_START_FLAT:
             return entry_dt
         cursor = entry_dt + timedelta(seconds=30)
@@ -88,7 +109,7 @@ def _find_next_panchak_end(after: datetime) -> datetime | None:
         entry = find_next_pada_entry("moon", cursor)
         if entry is None:
             return None
-        entry_dt = datetime.fromisoformat(entry["entry_time_utc"])
+        entry_dt = parse_ephemeris_instant(entry["entry_time_utc"])
         if _flat_from_entry(entry) == _PANCHAK_END_FLAT:
             return entry_dt
         cursor = entry_dt + timedelta(seconds=30)
@@ -103,7 +124,7 @@ def _find_open_start(before: datetime) -> datetime | None:
         entry = find_next_pada_entry("moon", cursor)
         if entry is None:
             break
-        entry_dt = datetime.fromisoformat(entry["entry_time_utc"])
+        entry_dt = parse_ephemeris_instant(entry["entry_time_utc"])
         if entry_dt >= before:
             break
         if _flat_from_entry(entry) == _PANCHAK_START_FLAT:
@@ -113,20 +134,20 @@ def _find_open_start(before: datetime) -> datetime | None:
 
 
 def list_panchak_periods(
-    year_start: date,
-    year_end: date,
+    year_start,
+    year_end,
     *,
     timezone_name: str,
 ) -> list[tuple[datetime, datetime]]:
-    """Raw UTC (start, end) pairs overlapping the inclusive Gregorian span."""
+    """Raw UTC (start, end) pairs overlapping the inclusive civil span.
+
+    Bounds accept ``date`` or ``CivilDay``; the scan below runs on instants, and
+    ``UtInstant`` carries BCE ones through the same arithmetic and comparisons.
+    """
     tz = resolve_observer_timezone(timezone_name)
     pad = timedelta(days=_SEARCH_PAD_DAYS)
-    search_start = datetime(
-        year_start.year, year_start.month, year_start.day, tzinfo=timezone.utc,
-    ) - pad
-    search_end = datetime(
-        year_end.year, year_end.month, year_end.day, 23, 59, 59, tzinfo=timezone.utc,
-    ) + pad
+    search_start = day_instant_utc(year_start) - pad
+    search_end = day_instant_utc(year_end, hour=23, minute=59, second=59) + pad
 
     cursor = search_start
     period_start: datetime | None = None
@@ -152,9 +173,12 @@ def list_panchak_periods(
 
     filtered: list[tuple[datetime, datetime]] = []
     for start_utc, end_utc in raw:
-        start_local = start_utc.astimezone(tz)
-        end_local = end_utc.astimezone(tz)
-        if _period_overlaps(start_local, end_local, year_start, year_end):
+        if _period_overlaps(
+            local_civil_fields(start_utc, timezone_name),
+            local_civil_fields(end_utc, timezone_name),
+            year_start,
+            year_end,
+        ):
             filtered.append((start_utc, end_utc))
     return filtered
 
@@ -164,15 +188,14 @@ def _format_periods(
     *,
     timezone_name: str,
 ) -> list[dict[str, Any]]:
-    tz = resolve_observer_timezone(timezone_name)
     formatted: list[dict[str, Any]] = []
     for start_utc, end_utc in periods:
-        start_local = start_utc.astimezone(tz)
-        end_local = end_utc.astimezone(tz)
-        duration_en, duration_ne = _format_duration(start_local, end_local)
+        # Duration comes off the UTC instants — same elapsed time, and UtInstant
+        # subtraction yields a timedelta just as datetime subtraction does.
+        duration_en, duration_ne = _format_duration(start_utc, end_utc)
         formatted.append({
-            "start": _moment_stamp(start_local),
-            "end": _moment_stamp(end_local),
+            "start": _moment_stamp(local_civil_fields(start_utc, timezone_name)),
+            "end": _moment_stamp(local_civil_fields(end_utc, timezone_name)),
             "duration_en": duration_en,
             "duration_ne": duration_ne,
         })
@@ -188,10 +211,19 @@ def _build_for_range(
         year_start, year_end, timezone_name=location.timezone,
     )
     return {
-        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        **_year_range_jd_fields_panchak(year_start, year_end),
         "location": location.as_dict(),
         "count": len(periods),
         "periods": _format_periods(periods, timezone_name=location.timezone),
+    }
+
+
+def _year_range_jd_fields_panchak(year_start: date, year_end: date) -> dict[str, float]:
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
+    return {
+        "range_start_jd": civil_day_jd_from_date(year_start),
+        "range_end_jd": civil_day_jd_from_date(year_end),
     }
 
 

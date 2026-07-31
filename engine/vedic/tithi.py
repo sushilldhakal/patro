@@ -14,6 +14,7 @@ from engine.astronomy.positions import (
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.swiss_eph import calculate_sunrise
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import day_instant_utc
 
 TITHI_NAMES = [
     "Pratipada",
@@ -36,7 +37,7 @@ TITHI_NAMES = [
 
 def calculate_tithi(dt: date | datetime) -> dict[str, Any]:
     if isinstance(dt, date) and not isinstance(dt, datetime):
-        dt = datetime.combine(dt, datetime.min.time()).replace(tzinfo=timezone.utc)
+        dt = day_instant_utc(dt)
     elif isinstance(dt, datetime) and dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
 

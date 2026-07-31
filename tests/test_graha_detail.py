@@ -1,3 +1,5 @@
+import json
+
 from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
@@ -63,39 +65,132 @@ def test_asta_year_has_periods_including_moon():
     for p in payload["periods"]:
         if p["start"] and p["end"]:
             assert p["duration_days"] >= 1
-            assert p["start"]["date_bs"]
+            assert "jd" in p["start"]
+
+
+def test_graha_sthiti_early_bs_year():
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+    from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil
+    from engine.vedic.graha_detail import build_graha_sthiti_civil
+
+    start = get_bs_month_start_civil(20, 4)
+    civil = CivilDay.from_jd_ut(civil_day_add(start.to_jd_ut(), 14))
+    payload = build_graha_sthiti_civil(
+        civil,
+        DEFAULT_LOCATION,
+        date_bs=format_bs_date(20, 4, 15),
+    )
+    assert payload["date_bs"] == format_bs_date(20, 4, 15)
+    assert len(payload["rows"]) == 10
+    assert payload["date_ad"].startswith("-")
+
+
+def test_asta_early_bs_year():
+    payload = build_graha_asta_year(20, DEFAULT_LOCATION)
+    assert payload["periods"], "expected asta periods in BS 20 (BCE civil span)"
+    assert payload.get("range_start_jd")
+
+
+def test_graha_sthiti_http_bs_20():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client = TestClient(app)
+    r = client.get(
+        "/v1/nepal/graha-sthiti/20-04-15",
+        params={"era": "bs", "city_id": 1283240},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["date_bs"] == "20-04-15"
+    assert len(body["rows"]) == 10
+
+
+def test_graha_sthiti_http_bbs_positive_year():
+    """BBS browse uses positive year in the path + era=bbs, not signed bs=-N."""
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client = TestClient(app)
+    r = client.get(
+        "/v1/nepal/graha-sthiti/2076-04-15",
+        params={"era": "bbs", "city_id": 1283240},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["date_bs"] == "2076-04-15"
+    assert len(body["rows"]) == 10
 
 
 def test_moon_tara_asta_matches_reference_window():
     """Jan 2026 Moon Tara Asta: moonrise 17 Jan → moonset 20 Jan (BS 2082)."""
+    from engine.astronomy.jd_calendar import CivilDay
+
     payload = build_graha_asta_year(2082, DEFAULT_LOCATION)
     jan = [
         p for p in payload["periods"]
-        if p["graha"] == "moon" and p["start"] and p["start"]["date_ad"] == "2026-01-17"
+        if p["graha"] == "moon"
+        and p["start"]
+        and CivilDay.from_jd_ut(p["start"]["jd"]) == CivilDay(2026, 1, 17)
     ]
     assert jan, "expected a Moon Tara Asta window starting 2026-01-17"
     p = jan[0]
     assert p["start"]["time_short"] == "05:50"
-    assert p["end"]["date_ad"] == "2026-01-20"
+    end_civil = CivilDay.from_jd_ut(p["end"]["jd"])
+    assert (end_civil.year, end_civil.month, end_civil.day) == (2026, 1, 20)
     assert p["end"]["time_short"] == "19:02"
     assert p["duration_days"] == 4
 
 
-def test_vakri_year_has_stations_with_bs_dates():
+def test_vakri_year_has_stations_with_jd():
     payload = build_graha_vakri_year(2082, DEFAULT_LOCATION)
     assert payload["events"], "expected retrograde/direct stations in the year"
+    assert payload["range_start_jd"] < payload["range_end_jd"]
+    assert all("entry_jd" in e for e in payload["events"])
+
+
+def test_vakri_bs_year_1_bce_safe():
+    payload = build_graha_vakri_year(1, DEFAULT_LOCATION)
+    assert payload["events"], "expected vakri/margi stations in BS 1"
+    assert all("entry_jd" in e for e in payload["events"])
     labels = {e["label_ne"] for e in payload["events"]}
     assert "वक्री" in labels
     for e in payload["events"]:
         assert e["graha"] in YEARLY_GRAHAS
-        assert e["entry_date_bs"]
+
+
+def test_graha_vakri_http_accepts_era_bbs():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    client = TestClient(app)
+    r = client.get(
+        "/v1/nepal/graha-vakri/year/4",
+        params={"era": "bbs", "year": 4, "language": "ne", "city_id": 1283240},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert "gregorian_range" not in body
+    assert "range_start_jd_date" in body
+    for e in body["events"]:
+        assert "entry_jd" in e
+        assert "entry_jd_date" in e
+        assert "entry_date_ad" not in e
+        assert "entry_date_bs" not in e
+        assert not str(e["entry_jd_date"]).startswith("-")
 
 
 def test_lunar_eclipse_sept_2025_visible_from_nepal():
     """The 7 Sep 2025 total lunar eclipse is visible from Kathmandu."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     payload = build_eclipse_year(2082, "lunar", DEFAULT_LOCATION)
     assert payload["events"]
-    sept = [e for e in payload["events"] if e["date_ad"] == "2025-09-07"]
+    target_jd = civil_day_jd_from_date(date(2025, 9, 7))
+    sept = [e for e in payload["events"] if e["date_jd"] == target_jd]
     assert sept, "expected the 7 Sep 2025 lunar eclipse"
     ev = sept[0]
     assert ev["type"] == "total"
@@ -109,3 +204,13 @@ def test_solar_eclipse_year_lists_events():
     for e in payload["events"]:
         assert e["kind"] == "solar"
         assert e["type"] in ("total", "annular", "hybrid", "partial")
+
+
+def test_lunar_eclipse_early_bs_year_bce_safe():
+    """BS 5 spans 52–51 BCE — must not call datetime() on negative civil years."""
+    payload = build_eclipse_year(5, "lunar", DEFAULT_LOCATION)
+    assert payload["bs_year"] == 5
+    assert payload["range_start_jd"] < payload["range_end_jd"]
+    assert payload["events"]
+    for e in payload["events"]:
+        assert isinstance(e["date_jd"], float)

@@ -4,13 +4,15 @@ from typing import Any, Literal
 
 import gzip
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, Response
 
+from app.era_middleware import era_params
 from api.deps import (
     LocationDep,
     _enrich_holiday_bs_dates,
     _nepal_holidays_for_ad_year,
+    _signed_bs_year_from_browse,
     _validate_bs_month,
     _validate_bs_year,
 )
@@ -34,8 +36,8 @@ from services.panchanga_api import (
     build_month_calendar_at_clock,
     build_patro_month,
     build_year_calendar,
-    resolve_panchanga_date,
 )
+from app.day_resolver import greg_date_for_date_key
 from services.presentation import render_panchanga, render_panchanga_month
 
 router = APIRouter()
@@ -137,12 +139,42 @@ def panchanga_year(
     )
 
 
+# NOTE: must stay ABOVE "/panchanga/{bs_year}/{bs_month}" — FastAPI matches in
+# declaration order, and the two-segment BS month route otherwise swallows
+# "/panchanga/jd/<float>" and tries to parse "jd" as an int bs_year. That made
+# the JD endpoint permanently unreachable (422), even though it is the escape
+# hatch every "before 1 CE; use civil/JD APIs" error message points callers to.
+@router.get("/panchanga/jd/{jd_ut}")
+def panchanga_day_jd(
+    jd_ut: float,
+    location: LocationDep,
+    festivals: bool = Query(False, description="Include festivals on this day"),
+    detail: bool = Query(True, description="Include full computation detail block"),
+    reference: Literal["sunrise", "midnight"] = Query(
+        "sunrise",
+        description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
+    ),
+):
+    """Daily panchanga keyed by civil-day Julian Day (0h UT) — the canonical form.
+
+    Identical to ``/panchanga?jd=…``; both address a day without naming a
+    calendar, and both reach pre-1 CE civil days.
+    """
+    return _day_payload_for_jd(
+        jd_ut, location, festivals=festivals, detail=detail, reference=reference
+    )
+
+
 @router.get("/panchanga/{bs_year}/{bs_month}")
 def panchanga_month(
     bs_year: int,
     bs_month: int,
     location: LocationDep,
     request: Request,
+    era: Literal["bs", "bbs"] = Query(
+        "bs",
+        description="Browse era for the path year (bbs maps url year N → signed −N)",
+    ),
     full: bool = Query(False, description="Include full daily state per day"),
     clock: str | None = Query(None, description="HH:MM civil clock — ephemeris mode for each day in the month"),
     exclude_international: bool = Query(
@@ -158,23 +190,23 @@ def panchanga_month(
     """
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    _validate_bs_year(bs_year)
+    bs_signed = _signed_bs_year_from_browse(era, bs_year)
     _validate_bs_month(bs_month)
     variant = f"{'full' if full else 'lite'}_{clock or 'udaya'}{'_nointl' if exclude_international else ''}"
-    key = f"month_{bs_year}_{bs_month}_{variant}_{location_cache_key(location)}"
+    key = f"month_{bs_signed}_{bs_month}_{variant}_{location_cache_key(location)}"
 
     def build():
         if clock:
             return build_month_calendar_at_clock(
-                bs_year, bs_month, location, clock, full=full,
+                bs_signed, bs_month, location, clock, full=full,
                 exclude_international=exclude_international,
             )
         return build_month_calendar(
-            bs_year, bs_month, location, full=full,
+            bs_signed, bs_month, location, full=full,
             exclude_international=exclude_international,
         )
 
-    return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_year))
+    return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(bs_signed))
 
 
 @router.get("/panchanga/ad/{ad_year}/{ad_month}")
@@ -213,11 +245,124 @@ def panchanga_ad_month(
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(ad_year + 56))
 
 
-@router.get("/panchanga/{date_key}")
-def panchanga_day(
-    date_key: str,
+def _bce_day_payload(
+    civil, location, *, festivals: bool, detail: bool, bs_triple=None
+) -> dict:
+    """Daily payload for a pre-1 CE civil day (same shape as the CE branch).
+
+    ``bs_triple`` short-circuits the reverse JD→BS scan when the caller already
+    knows the patro date (an ``era=bs`` request always does).
+    """
+    from engine.astronomy.jd_calendar import format_civil_iso
+    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
+    from services.panchanga_api import build_daily_state_civil
+
+    patro_year, patro_month, patro_day = bs_triple or locate_patro_day_for_civil(civil)
+    payload = build_daily_state_civil(
+        civil,
+        location,
+        patro_bs_year=patro_year,
+        patro_bs_month=patro_month,
+        patro_bs_day=patro_day,
+        include_festivals=festivals,
+        include_detail=detail,
+    )
+    payload["jd_ut"] = civil.to_jd_ut()
+    payload["date_ad"] = format_civil_iso(civil.year, civil.month, civil.day)
+    return payload
+
+
+def _day_payload_for_jd(
+    jd_ut: float,
+    location,
+    *,
+    festivals: bool,
+    detail: bool,
+    civil: bool = False,
+    reference: str = "sunrise",
+) -> JSONResponse:
+    """The one body behind every day route. Julian Day in, rendered day out.
+
+    Nothing here knows which calendar the caller used to name the day, or which
+    one the response will be labelled in — the era middleware owns both ends.
+    """
+    from engine.astronomy.jd_calendar import format_civil_iso
+    from services.panchanga_api import resolve_panchanga_jd_ut
+    from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
+
+    canonical, civil_day, greg = resolve_panchanga_jd_ut(jd_ut)
+
+    headers = {
+        "Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
+        "CDN-Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
+    }
+
+    if greg is None:
+        if reference == "midnight":
+            raise HTTPException(
+                status_code=501,
+                detail="midnight reference for BCE civil days is not supported yet",
+            )
+        payload = _bce_day_payload(civil_day, location, festivals=festivals, detail=detail)
+        payload["jd_ut"] = canonical
+        return JSONResponse(content=payload, headers=headers)
+
+    if reference == "midnight":
+        from engine.vedic.at_time import build_panchanga_civil_day
+
+        payload = build_panchanga_civil_day(greg, location)
+        if not detail:
+            payload.pop("detail", None)
+        if not festivals:
+            payload.pop("festivals", None)
+    else:
+        payload = build_daily_state(
+            greg, location, include_festivals=festivals, include_detail=detail
+        )
+
+    if civil:
+        from services.civil_timeline import build_civil_timeline
+
+        payload["civil_timeline"] = build_civil_timeline(greg, location)
+
+    payload["jd_ut"] = canonical
+    payload["date_ad"] = format_civil_iso(civil_day.year, civil_day.month, civil_day.day)
+    return JSONResponse(content=payload, headers=headers)
+
+
+def _panchanga_day_impl(
+    date_key: str | None,
     location: LocationDep,
-    era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
+    request: Request,
+    *,
+    festivals: bool,
+    detail: bool,
+    civil: bool,
+    reference: str,
+):
+    """Shared handler for ``/panchanga/today``, ``/panchanga/{date_key}`` and ``?jd=``."""
+    from app.day_resolver import DayResolutionError, day_jd_for_request
+
+    try:
+        jd_ut = day_jd_for_request(request, date_key)
+    except DayResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return _day_payload_for_jd(
+        jd_ut,
+        location,
+        festivals=festivals,
+        detail=detail,
+        civil=civil,
+        reference=reference,
+    )
+
+
+@router.get("/panchanga")
+def panchanga_day_query(
+    location: LocationDep,
+    request: Request,
+    _era: None = Depends(era_params),
     festivals: bool = Query(False, description="Include festivals on this day"),
     detail: bool = Query(True, description="Include full computation detail block"),
     civil: bool = Query(
@@ -229,33 +374,85 @@ def panchanga_day(
         description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
     ),
 ):
-    """Daily panchanga — single-day astronomical time-state."""
-    from services.response_cache import DAILY_PANCHANGA_CACHE_CONTROL
+    """Daily panchanga addressed by ``?jd=`` or by ``?era=&year=&month=&day=``.
 
-    try:
-        greg = resolve_panchanga_date(date_key, era=era)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    if reference == "midnight":
-        from engine.vedic.at_time import build_panchanga_civil_day
+    The preferred day route: nothing about the calendar reaches this handler, and
+    with no parameters at all it resolves the observer's current day.
+    """
+    return _panchanga_day_impl(
+        None,
+        location,
+        request,
+        festivals=festivals,
+        detail=detail,
+        civil=civil,
+        reference=reference,
+    )
 
-        payload = build_panchanga_civil_day(greg, location)
-        if not detail:
-            payload.pop("detail", None)
-        if not festivals:
-            payload.pop("festivals", None)
-    else:
-        payload = build_daily_state(greg, location, include_festivals=festivals, include_detail=detail)
-    if civil:
-        from services.civil_timeline import build_civil_timeline
 
-        payload["civil_timeline"] = build_civil_timeline(greg, location)
-    return JSONResponse(
-        content=payload,
-        headers={
-            "Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
-            "CDN-Cache-Control": DAILY_PANCHANGA_CACHE_CONTROL,
-        },
+@router.get("/panchanga/today")
+def panchanga_day_today(
+    location: LocationDep,
+    request: Request,
+    _era: None = Depends(era_params),
+    festivals: bool = Query(False, description="Include festivals on this day"),
+    detail: bool = Query(True, description="Include full computation detail block"),
+    civil: bool = Query(
+        False,
+        description="Attach a civil-day (midnight→midnight) timeline stitched from the previous + current day",
+    ),
+    reference: Literal["sunrise", "midnight"] = Query(
+        "sunrise",
+        description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
+    ),
+):
+    """Observer-local today → JD → panchanga.
+
+    ``today`` names an instant, not a date, so ``?era=`` here can only mean how
+    to label the answer — it never causes "today" to be read as a BS or AD date.
+    """
+    return _panchanga_day_impl(
+        "today",
+        location,
+        request,
+        festivals=festivals,
+        detail=detail,
+        civil=civil,
+        reference=reference,
+    )
+
+
+@router.get("/panchanga/{date_key}")
+def panchanga_day(
+    date_key: str,
+    location: LocationDep,
+    request: Request,
+    _era: None = Depends(era_params),
+    festivals: bool = Query(False, description="Include festivals on this day"),
+    detail: bool = Query(True, description="Include full computation detail block"),
+    civil: bool = Query(
+        False,
+        description="Attach a civil-day (midnight→midnight) timeline stitched from the previous + current day",
+    ),
+    reference: Literal["sunrise", "midnight"] = Query(
+        "sunrise",
+        description="Anga reference moment: sunrise (udaya, default) or midnight (civil-day 00:00)",
+    ),
+):
+    """Daily panchanga for a ``Y-M-D`` path segment.
+
+    The string is read in ``inputEra`` (falling back to ``era``, then BS) and
+    becomes a Julian Day before the handler sees it. ``/panchanga?jd=`` and
+    ``/panchanga?era=&year=&month=&day=`` address the same day without a path.
+    """
+    return _panchanga_day_impl(
+        date_key,
+        location,
+        request,
+        festivals=festivals,
+        detail=detail,
+        civil=civil,
+        reference=reference,
     )
 
 
@@ -655,7 +852,7 @@ def nepal_panchanga_day(
 ):
     """Combined daily panchanga + festivals + public holiday status."""
     try:
-        greg = resolve_panchanga_date(date_key, era=era)
+        greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -721,7 +918,7 @@ def nepal_sankranti_day(
     """Sankrantis occurring on or near a given date."""
     from engine.vedic.sankranti_calendar import build_sankranti_day_response
     try:
-        greg = resolve_panchanga_date(date_key, era=era)
+        greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return build_sankranti_day_response(greg, location)

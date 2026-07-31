@@ -5,6 +5,7 @@ from typing import Optional
 
 from engine.astronomy.positions import TITHI_SPAN, get_tithi_angle
 from engine.vedic.tithi import calculate_tithi
+from engine.astronomy.ut_instant import day_instant_utc
 
 
 def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: int = 60) -> datetime:
@@ -58,7 +59,7 @@ def find_next_tithi(
     if after is None:
         after = datetime.now(timezone.utc)
     elif isinstance(after, date) and not isinstance(after, datetime):
-        after = datetime.combine(after, datetime.min.time()).replace(tzinfo=timezone.utc)
+        after = day_instant_utc(after)
     elif isinstance(after, datetime) and after.tzinfo is None:
         after = after.replace(tzinfo=timezone.utc)
 

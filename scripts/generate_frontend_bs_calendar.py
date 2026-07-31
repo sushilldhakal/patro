@@ -21,14 +21,14 @@ OUT_PATH = API_ROOT.parent / "dhakal-patro" / "src" / "lib" / "bs-calendar-data.
 sys.path.insert(0, str(API_ROOT))
 
 from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start  # noqa: E402
-from engine.vedic.constants import BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
+from engine.vedic.constants import BS_CALENDAR_MIN_YEAR, BS_PANCHANGA_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
 
 
 def main() -> None:
     month_lengths: dict[str, list[int]] = {}
     baisakh_1_ad: dict[str, str] = {}
 
-    for year in range(BS_ESTIMATED_MIN_YEAR, BS_SUPPORTED_MAX_YEAR + 1):
+    for year in range(BS_CALENDAR_MIN_YEAR, BS_SUPPORTED_MAX_YEAR + 1):
         month_lengths[str(year)] = [get_bs_month_length(year, m) for m in range(1, 13)]
         baisakh_1_ad[str(year)] = get_bs_month_start(year, 1).isoformat()
         if year % 50 == 0:
@@ -39,7 +39,9 @@ def main() -> None:
     ).isoformat()
 
     payload = {
-        "start_year": BS_ESTIMATED_MIN_YEAR,
+        "start_year": BS_CALENDAR_MIN_YEAR,
+        "browse_start_year": BS_PANCHANGA_MIN_YEAR,
+        "panchanga_start_year": BS_PANCHANGA_MIN_YEAR,
         "end_year": BS_SUPPORTED_MAX_YEAR,
         "source": "nepali-holiday-api/panchanga",
         "notes": (

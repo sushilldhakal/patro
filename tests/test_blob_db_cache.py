@@ -5,6 +5,7 @@ from services.blob_db_cache import db_available, load_blob, save_blob
 
 
 def _use_sqlite(tmp_path, monkeypatch):
+    monkeypatch.delenv("PATRO_LOCAL_DEV", raising=False)
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{tmp_path / 'blob.db'}")
     db_mod.get_engine.cache_clear()
     db_mod._session_factory.cache_clear()

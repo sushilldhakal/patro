@@ -38,9 +38,15 @@ BASE_URL = "https://raw.githubusercontent.com/aloistr/swisseph/master/ephe"
 # spans 600 years. Asteroid (seas*) files are omitted: the engine only needs
 # Sun, Moon, Mercury–Saturn and the (analytically computed) lunar node.
 EPHE_FILES = (
-    "seplm06.se1", "sepl_00.se1", "sepl_06.se1",
+    "seplm06.se1", "seplm12.se1", "seplm18.se1", "seplm24.se1",
+    "seplm30.se1", "seplm36.se1", "seplm42.se1", "seplm48.se1",
+    "seplm54.se1", "seplm60.se1", "seplm66.se1", "seplm72.se1",
+    "sepl_00.se1", "sepl_06.se1",
     "sepl_12.se1", "sepl_18.se1", "sepl_24.se1",
-    "semom06.se1", "semo_00.se1", "semo_06.se1",
+    "semom06.se1", "semom12.se1", "semom18.se1", "semom24.se1",
+    "semom30.se1", "semom36.se1", "semom42.se1", "semom48.se1",
+    "semom54.se1", "semom60.se1", "semom66.se1", "semom72.se1",
+    "semo_00.se1", "semo_06.se1",
     "semo_12.se1", "semo_18.se1", "semo_24.se1",
 )
 

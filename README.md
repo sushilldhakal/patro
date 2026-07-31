@@ -4,8 +4,8 @@
 
 JPL (NASA's Jet Propulsion Laboratory, Lahiri ayanamsa), Kathmandu default observer.
 
-**Production:** https://patro.onrender.com  
-**Interactive docs:** https://patro.onrender.com/docs
+**Production:** https://vedicpatro.com  
+**Interactive docs:** https://vedicpatro.com/docs
 
 ---
 
@@ -19,6 +19,50 @@ uvicorn app:app --host 0.0.0.0 --port 8080 --reload
 ```
 
 Local base URL: `http://localhost:8080`
+
+**Localhost without the server Postgres / panchanga SQLite:** create `nepali-holiday-api/.env.local` with:
+
+```bash
+PATRO_LOCAL_DEV=true
+```
+
+That skips shared blob-cache reads/writes and the daily SQLite cache-aside; responses are computed on demand and month/year payloads cache under `cache/` on disk. Auth and `/profiles` are not mounted unless you set `AUTH_DATABASE_ENABLED=true` and run Postgres locally.
+
+### Signed patro year axis (BS + BBS)
+
+Month routes use a **single signed integer** `bs_year`:
+
+| Range | Label | Meaning |
+|-------|--------|---------|
+| `1 … 17055` | **BS** | Vikram Samvat — **BS 1 = 57 BCE** |
+| `−1 … −12942` | **BBS** | Before Bikram Samvat — `\|year\|` is the BBS number; **BBS 1 = 58 BCE**, BBS 2 = 59 BCE, … |
+| `0` | — | Invalid |
+
+There is **no year zero**: BS 1 and BBS 1 are consecutive years (57 and 58 BCE).
+Offsets in `_gregorian_year_for_bs_month` shift negatives up by one to keep it
+gapless — a uniform offset silently made 58 BCE unreachable and put every BBS
+year one year too early.
+
+Two separate limits, both in `engine/vedic/patro_year_axis.py`:
+
+| | Range | Meaning |
+|---|---|---|
+| `PATRO_SIGNED_YEAR_MIN/MAX` | `−12942 … 17055` | The **axis** — what a URL, picker or label may name. Sized to the full Swiss Ephemeris span (11 Aug 13000 BCE, JD −3026604.5 … 7 Jan 17000 CE). |
+| `PATRO_EPHEMERIS_SIGNED_MIN/MAX` | `−7144 … 3057` | What the **installed** `.se1` files compute. Measured end to end (month 1 and 12 of the boundary year both build). |
+
+- **Full panchanga** (tithi/nakshatra/yoga/karana) works across the whole
+  ephemeris window — BBS 7144 through BS 3057, BBS and BS 1–59 included.
+- **Festivals** need the BS month-length table + festival stack, so they attach
+  from **BS 60** up (`BS_PANCHANGA_SIGNED_MIN`); BBS months carry panchanga but
+  no festivals.
+- Years on the axis but outside the ephemeris window answer **400** with the
+  remediation from `ephemeris_range_message()`. Widen it by installing the rest
+  of the Swiss files (`python scripts/install_ephemeris.py`) — deep BCE needs
+  `seplm*/semom*`, far CE needs more `sepl_*/semo_*` — then re-measure both
+  `PATRO_EPHEMERIS_*` constants and mirror them in
+  `dhakal-patro/src/lib/patro-year-axis.ts`.
+- Year pickers list the **ephemeris** window only, so no dead options (and not
+  ~30 000 `<option>` nodes); out-of-window years still resolve in URLs.
 
 ---
 
@@ -247,7 +291,7 @@ Precompute and persist the holiday cache for a BS year. Runs JPL ephemeris (typi
 **Example**
 
 ```bash
-curl -X POST https://patro.onrender.com/generate/2083
+curl -X POST https://vedicpatro.com/generate/2083
 ```
 
 ---
@@ -324,10 +368,10 @@ When `month` is set, the response also includes `"bs_month": 5` and a filtered `
 
 ```bash
 # Full BS year
-curl https://patro.onrender.com/holidays/2083
+curl https://vedicpatro.com/holidays/2083
 
 # BS month only (e.g. Kartik = 7)
-curl "https://patro.onrender.com/holidays/2083?month=7"
+curl "https://vedicpatro.com/holidays/2083?month=7"
 ```
 
 ---
@@ -362,7 +406,7 @@ Festivals active on a specific Gregorian date, plus udaya tithi summary.
 **Example**
 
 ```bash
-curl https://patro.onrender.com/day/2026-10-20
+curl https://vedicpatro.com/day/2026-10-20
 ```
 
 ---
@@ -442,7 +486,7 @@ Festival dates use `month_model: festival` by default — Purnimant windows with
 **Example**
 
 ```bash
-curl "https://patro.onrender.com/panchanga/2026-06-07?festivals=true"
+curl "https://vedicpatro.com/panchanga/2026-06-07?festivals=true"
 ```
 
 ---
@@ -494,7 +538,7 @@ Set `panchanga=false` for a lighter response (dates and festivals only).
 **Example**
 
 ```bash
-curl https://patro.onrender.com/patro/2083/1
+curl https://vedicpatro.com/patro/2083/1
 ```
 
 ---
@@ -532,7 +576,7 @@ Full BS year Patro: all 12 months plus a consolidated festival index.
 **Example**
 
 ```bash
-curl "https://patro.onrender.com/patro/2083?panchanga=false"
+curl "https://vedicpatro.com/patro/2083?panchanga=false"
 ```
 
 ---

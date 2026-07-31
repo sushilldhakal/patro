@@ -1,10 +1,11 @@
 import json
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 from api.deps import LocationDep
+from app.instant_resolver import instant_for_parts, instant_for_request
 from services.panchanga_api import build_kundali
 from services.response_cache import AT_TIME_PANCHANGA_CACHE_CONTROL
 
@@ -14,20 +15,32 @@ router = APIRouter(tags=["kundali"])
 @router.get("/panchanga/at-time")
 def panchanga_at_time(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="ISO local or offset datetime; naive uses observer TZ; omit for now"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Ephemeris-mode panchanga at an instant — angas, planets, lagna, muhurta_now."""
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_panchanga_at_time, parse_query_datetime
+    from engine.vedic.at_time import build_panchanga_at_time
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         payload = build_panchanga_at_time(instant, location, ayanamsa=mode_id)
@@ -45,22 +58,34 @@ def panchanga_at_time(
 @router.get("/planetary/positions")
 def planetary_positions(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="ISO datetime; naive uses observer TZ; omit for now"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Nine grahas + lagna at an instant."""
     from datetime import timezone
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot, parse_query_datetime
+    from engine.vedic.at_time import build_planetary_snapshot
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         return {
@@ -84,8 +109,17 @@ def tropical_seasons(location: LocationDep):
 @router.get("/kundali/vimshottari")
 def kundali_vimshottari(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="Birth instant (ISO); naive uses observer TZ"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
     cycles: int = Query(1, ge=1, le=3, description="Full 120-year cycles after birth dasha"),
 ):
@@ -94,15 +128,17 @@ def kundali_vimshottari(
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
     from engine.astronomy.swiss_eph import get_all_planetary_positions
-    from engine.vedic.at_time import parse_query_datetime
     from engine.vedic.vimshottari import vimshottari_dasha
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         planets = get_all_planetary_positions(instant.astimezone(timezone.utc), ayanamsa=mode_id)
@@ -122,8 +158,17 @@ def kundali_vimshottari(
 @router.get("/kundali/report")
 def kundali_report(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="Birth instant (ISO); naive uses observer TZ"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
     lang: str | None = Query(None, description="Report language: en or ne"),
     force: bool = Query(False, description="Bypass cache and regenerate the report"),
@@ -133,7 +178,7 @@ def kundali_report(
     from datetime import timezone as _tz
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot, parse_query_datetime
+    from engine.vedic.at_time import build_planetary_snapshot
     from engine.vedic.interpretation import iter_report
     from engine.vedic.shadbala import compute_shadbala
     from engine.vedic.vimshottari import vimshottari_dasha
@@ -144,11 +189,14 @@ def kundali_report(
     )
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         _, mode_id = resolve_ayanamsha_mode(ayanamsha)
         instant_utc = instant.astimezone(_tz.utc)
@@ -207,21 +255,32 @@ def kundali_report(
 @router.get("/shadbala")
 def shadbala(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="ISO datetime; naive uses observer TZ; omit for now"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
 ):
     """Sixfold planetary strength (Shadbala) in Virupas at an instant."""
     from datetime import timezone
 
-    from engine.vedic.at_time import parse_query_datetime
     from engine.vedic.shadbala import compute_shadbala
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         result = compute_shadbala(instant.astimezone(timezone.utc),
                                   lat=location.lat, lon=location.lon, timezone_name=location.timezone)
@@ -282,20 +341,31 @@ def kundali_yoga_reference(
 @router.get("/kundali/detail")
 def kundali_detail(
     location: LocationDep,
+    request: Request,
     datetime: str | None = Query(None, alias="datetime",
                                   description="Birth instant (ISO); naive uses observer TZ"),
+    jd: float | None = Query(
+        None,
+        description="Civil-day Julian Day (0h UT) — use with `clock` instead of `datetime`",
+    ),
+    clock: str | None = Query(
+        None,
+        description="Observer-local HH:MM or HH:MM:SS on the civil day given by `jd`",
+    ),
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
-    from engine.vedic.at_time import parse_query_datetime
     from engine.vedic.kundali_detail import build_kundali_detail
 
     try:
-        instant = parse_query_datetime(
-            datetime,
+        instant = instant_for_request(
+            datetime_raw=datetime,
+            jd=jd,
+            clock=clock,
             timezone_name=location.timezone,
             lat=location.lat,
             lon=location.lon,
+            request=request,
         )
         return build_kundali_detail(instant, location, ayanamsha=ayanamsha)
     except ValueError as exc:
@@ -333,8 +403,20 @@ def kundali_dasha_expand(
 
 @router.get("/kundali/milan")
 def kundali_milan(
-    boy_datetime: str = Query(..., description="Groom birth instant (ISO); naive uses boy_timezone"),
-    girl_datetime: str = Query(..., description="Bride birth instant (ISO); naive uses girl_timezone"),
+    boy_datetime: str | None = Query(None, description="Groom birth instant (ISO); naive uses boy_timezone"),
+    girl_datetime: str | None = Query(None, description="Bride birth instant (ISO); naive uses girl_timezone"),
+    boy_jd: float | None = Query(None, description="Groom birth civil day as Julian Day (0h UT) — use with `boy_clock`"),
+    boy_clock: str | None = Query(None, description="Groom birth time (HH:MM) local to `boy_timezone`"),
+    boy_era: str | None = Query(None, description="Calendar of boy_year/month/day: ad, bc, bs or bbs"),
+    boy_year: int | None = Query(None, ge=1, description="Groom birth year in `boy_era` — always positive"),
+    boy_month: int | None = Query(None, ge=1, le=12),
+    boy_day: int | None = Query(None, ge=1),
+    girl_jd: float | None = Query(None, description="Bride birth civil day as Julian Day (0h UT) — use with `girl_clock`"),
+    girl_clock: str | None = Query(None, description="Bride birth time (HH:MM) local to `girl_timezone`"),
+    girl_era: str | None = Query(None, description="Calendar of girl_year/month/day: ad, bc, bs or bbs"),
+    girl_year: int | None = Query(None, ge=1, description="Bride birth year in `girl_era` — always positive"),
+    girl_month: int | None = Query(None, ge=1, le=12),
+    girl_day: int | None = Query(None, ge=1),
     boy_lat: float | None = Query(None),
     boy_lon: float | None = Query(None),
     boy_timezone: str | None = Query(None, description="IANA tz for the groom's birthplace"),
@@ -345,19 +427,40 @@ def kundali_milan(
     lang: str = Query("ne", description="Response language for kuta values: ne or en"),
 ):
     """Ashtakoota (Guna Milan) compatibility, computed entirely server-side."""
-    from engine.vedic.at_time import parse_query_datetime
     from engine.vedic.milan import build_kundali_milan
 
     default_tz = "Asia/Kathmandu"
     try:
-        boy_instant = parse_query_datetime(
-            boy_datetime,
+        if boy_datetime is None and boy_jd is None and boy_year is None:
+            raise ValueError(
+                "provide boy_jd + boy_clock, boy_era + boy_year/month/day + boy_clock, "
+                "or boy_datetime"
+            )
+        if girl_datetime is None and girl_jd is None and girl_year is None:
+            raise ValueError(
+                "provide girl_jd + girl_clock, girl_era + girl_year/month/day + girl_clock, "
+                "or girl_datetime"
+            )
+        boy_instant = instant_for_parts(
+            era=boy_era,
+            year=boy_year,
+            month=boy_month,
+            day=boy_day,
+            clock=boy_clock,
+            datetime_raw=boy_datetime,
+            jd=boy_jd,
             timezone_name=boy_timezone or default_tz,
             lat=boy_lat,
             lon=boy_lon,
         )
-        girl_instant = parse_query_datetime(
-            girl_datetime,
+        girl_instant = instant_for_parts(
+            era=girl_era,
+            year=girl_year,
+            month=girl_month,
+            day=girl_day,
+            clock=girl_clock,
+            datetime_raw=girl_datetime,
+            jd=girl_jd,
             timezone_name=girl_timezone or default_tz,
             lat=girl_lat,
             lon=girl_lon,

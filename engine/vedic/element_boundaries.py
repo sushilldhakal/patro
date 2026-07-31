@@ -24,6 +24,12 @@ from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.tithi import calculate_tithi
 from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
 
+
+def _parse_instant(value: str) -> datetime:
+    from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+    return parse_ephemeris_instant(value)  # type: ignore[return-value]
+
 PADA_SPAN = NAKSHATRA_SPAN / 4
 
 
@@ -104,7 +110,7 @@ def _enrich_next_anga(
     if "end_time" not in block or "next" not in block:
         return block
 
-    current_end = datetime.fromisoformat(block["end_time"].replace("Z", "+00:00"))
+    current_end = _parse_instant(block["end_time"])
     next_end_dt = find_end_fn(current_end + timedelta(seconds=90))
     next_end_info = time_from_sunrise(next_end_dt, sunrise_dt, timezone_name)
     block["next"].update(
@@ -273,7 +279,7 @@ def _enrich_next_tithi(
     if "end_time" not in block or "next" not in block:
         return block
 
-    current_end = datetime.fromisoformat(block["end_time"].replace("Z", "+00:00"))
+    current_end = _parse_instant(block["end_time"])
     next_end_dt = find_tithi_end(current_end + timedelta(seconds=90))
     next_end_info = time_from_sunrise(next_end_dt, sunrise_dt, timezone_name)
     block["next"].update(

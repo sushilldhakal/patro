@@ -15,6 +15,7 @@ from engine.astronomy.engine import (
     SIDM_LAHIRI,
     default_engine,
 )
+from engine.astronomy.jd_calendar import CivilDay, civil_day_add, date_if_supported
 from engine.astronomy.nepal_patro_sun import (
     nepal_patro_solar_event,
     should_use_nepal_patro_sun,
@@ -166,8 +167,14 @@ def _dms_in_sign(longitude: float) -> str:
 
 
 def _enrich_planet_position(
-    pos: dict[str, Any], *, rashi_names: list[str], rashi_names_ne: list[str]
+    pos: dict[str, Any],
+    *,
+    body: str,
+    rashi_names: list[str],
+    rashi_names_ne: list[str],
 ) -> dict[str, Any]:
+    from engine.astronomy.motion import is_retrograde
+
     longitude = float(pos["longitude"])
     rashi_idx = int(longitude / 30) % 12
     speed = float(pos.get("speed", 0.0))
@@ -179,44 +186,42 @@ def _enrich_planet_position(
         "dms": _dms_absolute(longitude),
         "deg_in_rashi": round(longitude % 30.0, 6),
         "dms_in_rashi": _dms_in_sign(longitude),
-        "is_retrograde": speed < 0,
+        "is_retrograde": is_retrograde(body, speed),
     }
 
 
 def get_all_planetary_positions(
-    dt: datetime,
+    dt: datetime | Any,
     *,
     sidereal: bool = True,
     ayanamsa: int = SIDM_LAHIRI,
 ) -> dict[str, Any]:
     from engine.astronomy.positions import RASHI_NAMES, RASHI_NAMES_NE
+    from engine.astronomy.ut_instant import as_julian_day
 
-    jd = default_engine.julian_day(dt)
+    jd = as_julian_day(dt)
     raw = default_engine.all_planet_positions(jd, sidereal=sidereal, ayanamsa=ayanamsa)
 
     positions: dict[str, Any] = {}
     for name in PLANET_IDS:
         positions[name] = _enrich_planet_position(
-            raw[name], rashi_names=RASHI_NAMES, rashi_names_ne=RASHI_NAMES_NE
+            raw[name], body=name, rashi_names=RASHI_NAMES, rashi_names_ne=RASHI_NAMES_NE
         )
 
-    # Nodes are displayed वक्री by convention; the true node's instantaneous
-    # speed oscillates and would otherwise flicker between direct/retrograde.
-    positions["rahu"]["is_retrograde"] = True
-
+    # The nodes' वक्री-by-convention rule now lives in engine.astronomy.motion,
+    # applied by _enrich_planet_position above — no post-hoc overwrite here.
     rahu_long = positions["rahu"]["longitude"]
     ketu_long = (rahu_long + 180.0) % 360
-    ketu_pos = _enrich_planet_position(
+    positions["ketu"] = _enrich_planet_position(
         {
             "longitude": round(ketu_long, 6),
             "speed": round(-positions["rahu"]["speed"], 6),
             "rashi": int(ketu_long / 30) % 12 + 1,
         },
+        body="ketu",
         rashi_names=RASHI_NAMES,
         rashi_names_ne=RASHI_NAMES_NE,
     )
-    ketu_pos["is_retrograde"] = True
-    positions["ketu"] = ketu_pos
 
     _annotate_combustion(positions)
     return positions
@@ -298,6 +303,72 @@ def calculate_sunset(
     return result
 
 
+def calculate_sunrise_civil(
+    civil: CivilDay,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime:
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is not None and should_use_nepal_patro_sun(
+        latitude, longitude, altitude=altitude
+    ):
+        return nepal_patro_solar_event(
+            greg, latitude, longitude, rise=True, timezone_name=timezone_name,
+        )
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
+    result = default_engine.rise_civil(
+        civil, "sun", latitude, longitude, altitude, timezone_name=timezone_name
+    )
+    if result is None:
+        raise EphemerisError(f"Sunrise calculation failed for civil {civil}")
+    return result
+
+
+def calculate_sunset_civil(
+    civil: CivilDay,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime:
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is not None and should_use_nepal_patro_sun(
+        latitude, longitude, altitude=altitude
+    ):
+        return nepal_patro_solar_event(
+            greg, latitude, longitude, rise=False, timezone_name=timezone_name,
+        )
+    if altitude is None:
+        altitude = _default_altitude(latitude, longitude)
+    result = default_engine.set_civil(
+        civil, "sun", latitude, longitude, altitude, timezone_name=timezone_name
+    )
+    if result is None:
+        raise EphemerisError(f"Sunset calculation failed for civil {civil}")
+    return result
+
+
+def calculate_sunrise_civil_next(
+    civil: CivilDay,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime:
+    """Sunrise on the civil day after ``civil`` (BCE-safe)."""
+    next_civil = CivilDay.from_jd_ut(civil_day_add(civil.to_jd_ut(), 1))
+    return calculate_sunrise_civil(
+        next_civil,
+        latitude=latitude,
+        longitude=longitude,
+        altitude=altitude,
+        timezone_name=timezone_name,
+    )
+
+
 def calculate_moonrise(
     date_val: date,
     latitude: float = LAT_KATHMANDU,
@@ -362,5 +433,6 @@ def next_lunar_eclipse_max(jd: float, *, backward: bool = False) -> float | None
 
 def graha_spashta_datetime(target: date, timezone_name: str) -> datetime:
     """Local 06:00 anchor for graha spashta (some patros use 06:00; Surya uses sunrise)."""
-    observer_tz = resolve_observer_timezone(timezone_name)
-    return datetime.combine(target, time(6, 0), tzinfo=observer_tz)
+    from engine.astronomy.ut_instant import local_wall_instant
+
+    return local_wall_instant(target, timezone_name, hour=6)

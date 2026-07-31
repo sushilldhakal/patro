@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from engine.astronomy.paths import PROJECT_ROOT
 
 load_dotenv(PROJECT_ROOT / ".env")
+# Optional overrides for local dev (e.g. PATRO_LOCAL_DEV=true) — not committed.
+load_dotenv(PROJECT_ROOT / ".env.local", override=True)
 
 
 def cors_origins() -> list[str] | None:
@@ -56,6 +58,54 @@ def database_url() -> str | None:
     When unset, the auth/profile routes are disabled (the panchanga API still runs).
     """
     return (os.getenv("DATABASE_URL") or "").strip() or None
+
+
+def postgres_cache_enabled() -> bool:
+    """Use Postgres for shared gzip blob caches (year/month/sait).
+
+    Off when ``DATABASE_URL`` is unset, ``PATRO_LOCAL_DEV=true``, or
+    ``BLOB_CACHE_USE_DB=false``. Local dev then uses ``cache/`` on disk and
+    computes on miss — no connection to the production blob store.
+    """
+    if os.getenv("BLOB_CACHE_USE_DB", "").lower() in {"0", "false", "no"}:
+        return False
+    if os.getenv("PATRO_LOCAL_DEV", "").lower() in {"1", "true", "yes"}:
+        return False
+    return database_url() is not None
+
+
+def panchanga_sqlite_cache_enabled() -> bool:
+    """Daily panchanga SQLite cache-aside (``data/panchanga_cache.db``).
+
+    Set ``PANCHANGA_CACHE=false`` or ``PATRO_LOCAL_DEV=true`` to always compute
+    fresh daily rows locally (useful when the server DB is not copied).
+    """
+    if os.getenv("PANCHANGA_CACHE", "").lower() in {"0", "false", "no"}:
+        return False
+    if os.getenv("PATRO_LOCAL_DEV", "").lower() in {"1", "true", "yes"}:
+        return False
+    return True
+
+
+def auth_database_enabled() -> bool:
+    """Whether to connect at startup and mount ``/auth`` + ``/profiles``.
+
+    ``PATRO_LOCAL_DEV=true`` skips Postgres even when ``DATABASE_URL`` is set in
+    ``.env`` (typical panchanga-only laptop dev). Set ``AUTH_DATABASE_ENABLED=true``
+    to force auth on locally when Postgres is running.
+    """
+    explicit = (os.getenv("AUTH_DATABASE_ENABLED") or "").strip().lower()
+    if explicit in {"0", "false", "no"}:
+        return False
+    if explicit in {"1", "true", "yes"}:
+        return database_url() is not None
+    if os.getenv("PATRO_LOCAL_DEV", "").lower() in {"1", "true", "yes"}:
+        return False
+    return database_url() is not None
+
+
+def local_dev_mode() -> bool:
+    return os.getenv("PATRO_LOCAL_DEV", "").lower() in {"1", "true", "yes"}
 
 
 def jwt_secret() -> str:

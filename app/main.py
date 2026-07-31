@@ -6,6 +6,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.era_middleware import EraMiddleware
+from engine.astronomy.engine import EphemerisError
 from fastapi.middleware.gzip import GZipMiddleware
 
 import config
@@ -46,7 +50,7 @@ async def lifespan(app: FastAPI):
             "Swiss Ephemeris files not found — running on the built-in Moshier model. "
             "Run `python scripts/install_ephemeris.py` to install them."
         )
-    if config.database_url():
+    if config.auth_database_enabled():
         from database.db import init_db
         try:
             init_db()
@@ -63,6 +67,13 @@ async def lifespan(app: FastAPI):
                 )
         except Exception:
             logger.exception("Failed to initialise auth database")
+    elif config.database_url() and config.local_dev_mode():
+        logger.info(
+            "PATRO_LOCAL_DEV — skipping auth database (panchanga-only); "
+            "set AUTH_DATABASE_ENABLED=true when local Postgres is up"
+        )
+    elif config.database_url():
+        logger.warning("DATABASE_URL is set but auth database is disabled")
     warm_task = asyncio.create_task(_warm_holiday_cache_background(app))
     yield
     warm_task.cancel()
@@ -97,6 +108,26 @@ def _cors_origins() -> list[str]:
     return merged
 
 
+# Middleware order matters, and Starlette applies it outermost-last: whatever is
+# added last wraps everything added before it. The stack below is, outside in:
+#
+#   CORS  ->  EraMiddleware  ->  GZip  ->  routes
+#
+# JSON here compresses ~10×+ (full month: 1.17 MB → ~100 KB over the wire).
+# Skips responses that already set Content-Encoding (pre-gzipped year cache).
+app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+# Era ⇄ Julian Day gate — the only place a calendar label becomes a Julian Day,
+# or the reverse. It sits outside GZip and so may receive an already-compressed
+# body (the year cache serves pre-gzipped bytes); it decompresses, rewrites the
+# JSON, and recompresses.
+app.add_middleware(EraMiddleware)
+
+# CORS must be the OUTERMOST layer. EraMiddleware short-circuits invalid dates
+# with its own 400 without calling the rest of the stack, so anything inside it
+# never runs for those responses. With CORS inside, every date-validation error
+# reached the browser stripped of `Access-Control-Allow-Origin` — unreadable, so
+# the app saw an opaque network failure instead of "bbs year must be 1..12942".
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins(),
@@ -104,9 +135,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# JSON here compresses ~10×+ (full month: 1.17 MB → ~100 KB over the wire).
-# Skips responses that already set Content-Encoding (pre-gzipped year cache).
-app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+@app.exception_handler(EphemerisError)
+async def _ephemeris_out_of_range(request, exc: EphemerisError):
+    """A date with no ephemeris behind it is a bad request, not a server fault.
+
+    The patro year axis is deliberately wider than the Swiss ephemeris files
+    (which are per-machine and gitignored), and a year can also pass date
+    conversion and only run out of ephemeris once the panchanga is computed.
+    Without this the caller got a 500 with an empty body.
+    """
+    logger.info("ephemeris out of range for %s: %s", request.url.path, exc)
+    return JSONResponse(
+        status_code=400,
+        content={
+            "detail": (
+                "That date is outside the installed ephemeris range, so no "
+                "panchanga can be computed for it."
+            )
+        },
+    )
 
 # User-specific routes must never be cached by a shared/CDN cache (Cloudflare),
 # even if a broad cache rule is applied to /api/*. Public panchanga endpoints opt
@@ -146,10 +194,12 @@ app.include_router(elements.router, prefix=_version_prefix)
 app.include_router(panchanga.router, prefix=_version_prefix)
 app.include_router(patro.router, prefix=_version_prefix)
 
-if config.database_url():
+if config.auth_database_enabled():
     from app.routers import auth as auth_router
     from app.routers import profiles as profiles_router
     app.include_router(auth_router.router)
     app.include_router(profiles_router.router)
+elif config.local_dev_mode():
+    logger.info("PATRO_LOCAL_DEV — auth/profile routes not mounted")
 else:
     logger.warning("DATABASE_URL not set — auth/profile routes are disabled")

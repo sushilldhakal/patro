@@ -40,6 +40,8 @@ def time_from_sunrise(
     ``timezone_name`` is given; without it they fall back to ``end_dt`` as-is
     (historically UTC — kept for callers that don't localize).
     """
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
     delta = (end_dt - sunrise_dt).total_seconds()
     if delta < 0:
         delta += 86400
@@ -54,17 +56,26 @@ def time_from_sunrise(
     seconds = int(delta % 60)
 
     local_dt = end_dt
-    if timezone_name is not None:
-        from engine.astronomy.timescale import resolve_observer_timezone
+    local_time: str
+    local_iso: str
+    if isinstance(end_dt, UtInstant):
+        block = format_ut_instant_local(end_dt, timezone_name or "UTC")
+        local_time = block["local_time"]
+        local_iso = block["local"]
+    else:
+        if timezone_name is not None:
+            from engine.astronomy.timescale import resolve_observer_timezone
 
-        local_dt = end_dt.astimezone(resolve_observer_timezone(timezone_name))
+            local_dt = end_dt.astimezone(resolve_observer_timezone(timezone_name))
+        local_time = local_dt.strftime("%H:%M:%S")
+        local_iso = local_dt.isoformat()
 
     return {
         "seconds_from_sunrise": round(delta),
         "ghati_clock": f"{ghati}:{pala:02d}:{vipala:02d}",
         "hours_clock": f"{hours}:{minutes:02d}:{seconds:02d}",
-        "local_time": local_dt.strftime("%H:%M:%S"),
-        "local_iso": local_dt.isoformat(),
+        "local_time": local_time,
+        "local_iso": local_iso,
     }
 
 

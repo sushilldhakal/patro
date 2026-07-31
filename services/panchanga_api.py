@@ -6,6 +6,13 @@ from datetime import date
 from typing import Any, Literal
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.jd_calendar import (
+    CivilDay,
+    civil_day_jd_from_date,
+    date_if_supported,
+    format_civil_iso,
+    parse_civil_iso,
+)
 from engine.astronomy.positions import ayana_kranti_mark
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.bikram_sambat import (
@@ -14,8 +21,10 @@ from engine.vedic.bikram_sambat import (
     format_bs_date,
     get_bs_month_length,
     get_bs_month_start,
+    get_bs_month_start_civil,
     gregorian_to_bs,
     iter_bs_month_days,
+    iter_bs_month_civil_days,
     parse_bs_date,
     shaka_year,
 )
@@ -24,13 +33,112 @@ from engine.vedic.daily import get_daily_panchanga
 from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 
 
+def _panchanga_for_patro_day(
+    bs_year: int,
+    bs_month: int,
+    bs_day: int,
+    civil_iso: str,
+    location: ObserverLocation,
+) -> dict[str, Any]:
+    civil = parse_civil_iso(civil_iso)
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if bs_year <= -1 or greg is None:
+        from engine.vedic.daily_civil import get_daily_panchanga_civil
+
+        return get_daily_panchanga_civil(
+            civil,
+            location,
+            patro_bs_year=bs_year,
+            patro_bs_month=bs_month,
+            patro_bs_day=bs_day,
+        )
+    return get_daily_panchanga(greg, location)
+
+
+def _month_row_from_panchanga(
+    bs_day: int,
+    date_ad: str,
+    panchanga: dict[str, Any],
+    day_festivals: list,
+    *,
+    full: bool,
+    location: ObserverLocation,
+    greg: date | None,
+    exclude_international: bool,
+) -> dict[str, Any]:
+    row: dict[str, Any] = {
+        "day": bs_day,
+        "date_ad": date_ad,
+        "weekday": panchanga["vaara"]["name_ne"],
+        "weekday_en": panchanga["vaara"]["name_english"],
+        "weekday_ne": panchanga["vaara"]["name_ne"],
+        "tithi": panchanga["tithi"]["name"],
+        "tithi_ne": panchanga["tithi"]["name_ne"],
+        "paksha": panchanga["paksha"]["name"],
+        "paksha_ne": panchanga["paksha"].get("name_ne"),
+        "nakshatra": panchanga["nakshatra"]["name"],
+        "nakshatra_ne": panchanga["nakshatra"].get("name_ne"),
+        "yoga": panchanga["yoga"]["name"],
+        "yoga_ne": panchanga["yoga"].get("name_ne"),
+        "karana": panchanga["karana"]["name"],
+        "karana_ne": panchanga["karana"].get("name_ne"),
+        "chandra_rashi": panchanga["chandra_rashi"]["name"],
+        "chandra_rashi_ne": panchanga["chandra_rashi"].get("name_ne"),
+        "sunrise": panchanga["sunrise"]["local_time_short"],
+        "sunset": panchanga["sunset"]["local_time_short"],
+        "aayan": panchanga["aayan"]["name"],
+        "aayan_ne": panchanga["aayan"]["name_ne"],
+        "ayana_mark": ayana_kranti_mark(panchanga["aayan"]),
+        "moonrise": (panchanga.get("moonrise") or {}).get("local_time_short"),
+        "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
+        "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),
+        "moonset_local": (panchanga.get("moonset") or {}).get("local"),
+        "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
+    }
+    if full:
+        if greg is not None:
+            row["panchanga"] = build_daily_state(
+                greg,
+                location,
+                include_festivals=True,
+                include_detail=False,
+            )
+        else:
+            row["panchanga"] = build_daily_state_civil(
+                parse_civil_iso(date_ad),
+                location,
+                patro_bs_year=panchanga["bs_date"]["year"],
+                patro_bs_month=panchanga["bs_date"]["month"],
+                patro_bs_day=panchanga["bs_date"]["day"],
+                include_festivals=False,
+                include_detail=False,
+            )
+    return row
+
+
 def _local_stamp(iso_dt: str | None, timezone_name: str) -> str | None:
+    """``YYYY-MM-DD HH:MM`` in observer-local time, BCE years included.
+
+    Anga boundaries on BCE/BBS days arrive as the ``jd:<float>`` sentinel that
+    ``UtInstant.isoformat()`` emits, because those years have no ``datetime``
+    representation. Feeding that to ``datetime.fromisoformat`` is what made every
+    BBS ``full=true`` month and every BBS year wheel fail with
+    ``Invalid isoformat string: 'jd:751471.80…'``.
+    """
     if not iso_dt:
         return None
-    from datetime import datetime
+    from engine.astronomy.ut_instant import (
+        UtInstant,
+        format_ut_instant_local,
+        parse_ephemeris_instant,
+    )
 
-    dt = datetime.fromisoformat(iso_dt)
-    local = dt.astimezone(resolve_observer_timezone(timezone_name))
+    instant = parse_ephemeris_instant(iso_dt)
+    if isinstance(instant, UtInstant):
+        parts = format_ut_instant_local(instant, timezone_name)
+        civil, _, clock = parts["local"].partition("T")
+        return f"{civil} {clock[:5]}"
+    local = instant.astimezone(resolve_observer_timezone(timezone_name))
     return local.strftime("%Y-%m-%d %H:%M")
 
 
@@ -62,19 +170,22 @@ def _element_state(block: dict, timezone_name: str) -> dict[str, Any]:
     return state
 
 
-def resolve_panchanga_date(
-    date_key: str,
-    *,
-    era: Literal["bs", "ad"] = "bs",
-) -> date:
-    """Resolve ``2083-10-12`` (BS) or ``2027-01-25`` (AD) to Gregorian."""
-    if era == "ad":
-        parts = date_key.split("-")
-        if len(parts) == 3 and parts[0].isdigit() and len(parts[0]) < 4:
-            date_key = f"{int(parts[0]):04d}-{parts[1]}-{parts[2]}"
-        return date.fromisoformat(date_key)
-    bs_year, bs_month, bs_day = parse_bs_date(date_key)
-    return bs_to_gregorian(bs_year, bs_month, bs_day)
+def greg_date_for_date_key(date_key: str, era: str) -> date:
+    """Thin re-export of the one resolver, imported late to avoid a cycle.
+
+    ``app`` imports ``app.main``, which imports the routers, which import this
+    module — so the resolver cannot be bound at module level here.
+    """
+    from app.day_resolver import greg_date_for_date_key as _resolve
+
+    return _resolve(date_key, era)
+
+
+def resolve_panchanga_jd_ut(jd_ut: float) -> tuple[float, CivilDay, date | None]:
+    """Canonical civil-day JD (0h UT) and optional ``date`` when CE."""
+    civil = CivilDay.from_jd_ut(float(jd_ut))
+    canonical = civil.to_jd_ut()
+    return canonical, civil, date_if_supported(civil.year, civil.month, civil.day)
 
 
 def build_daily_state(
@@ -93,6 +204,7 @@ def build_daily_state(
     payload: dict[str, Any] = {
         "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
         "date_ad": greg.isoformat(),
+        "jd_ut": raw.get("jd_ut"),
         "weekday": raw["vaara"]["name_ne"],
         "weekday_en": raw["vaara"]["name_english"],
         "sun": {
@@ -148,6 +260,93 @@ def build_daily_state(
             }
             for f in raw["festivals"]
         ]
+
+    if include_detail:
+        payload["detail"] = raw
+
+    hora = raw.get("hora") or []
+    payload["hora"] = hora
+    payload["hora_day"] = [slot for slot in hora if slot.get("phase") == "day"]
+    payload["choghadiya"] = raw.get("choghadiya") or []
+    payload["tarabala_table"] = raw.get("tarabala_table")
+    payload["chandrabala_table"] = raw.get("chandrabala_table")
+
+    return payload
+
+
+def build_daily_state_civil(
+    civil: CivilDay,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    patro_bs_year: int,
+    patro_bs_month: int,
+    patro_bs_day: int,
+    include_festivals: bool = False,
+    include_detail: bool = True,
+) -> dict[str, Any]:
+    """Single-day state for BCE civil days on the signed patro axis."""
+    from engine.vedic.daily_civil import get_daily_panchanga_civil
+
+    raw = get_daily_panchanga_civil(
+        civil,
+        location,
+        patro_bs_year=patro_bs_year,
+        patro_bs_month=patro_bs_month,
+        patro_bs_day=patro_bs_day,
+        include_festivals=include_festivals,
+    )
+    from_cache = bool(raw.pop("_from_cache", False))
+    bs = raw["bs_date"]
+    tz = location.timezone
+    date_ad = raw["date_ad"]
+
+    payload: dict[str, Any] = {
+        "date_bs": format_bs_date(bs["year"], bs["month"], bs["day"]),
+        "date_ad": date_ad,
+        "jd_ut": raw.get("jd_ut"),
+        "weekday": raw["vaara"]["name_ne"],
+        "weekday_en": raw["vaara"]["name_english"],
+        "sun": {
+            "sunrise": raw["sunrise"]["local_time_short"],
+            "sunset": raw["sunset"]["local_time_short"],
+            "noon": (raw.get("muhurta") or {}).get("abhijit", {}).get("solar_noon"),
+        },
+        "moon": {
+            "rise": (raw["moonrise"] or {}).get("local_time_short"),
+            "set": (raw["moonset"] or {}).get("local_time_short"),
+        },
+        "tithi": _element_state(raw["tithi"], tz),
+        "nakshatra": _element_state(raw["nakshatra"], tz),
+        "yoga": _element_state(raw["yoga"], tz),
+        "karana": _element_state(raw["karana"], tz),
+        "paksha": raw["paksha"]["label_en"],
+        "paksha_ne": raw["paksha"]["label_ne"],
+        "chandra_rashi": raw["chandra_rashi"]["name"],
+        "chandra_rashi_ne": raw["chandra_rashi"]["name_ne"],
+        "chandra_rashi_spans": raw.get("chandra_rashi_spans") or [],
+        "surya_rashi": raw["surya_rashi"]["name"],
+        "surya_rashi_ne": raw["surya_rashi"]["name_ne"],
+        "ritu": raw["ritu"]["name"],
+        "ritu_ne": raw["ritu"]["name_ne"],
+        "aayan": raw["aayan"]["name"],
+        "aayan_ne": raw["aayan"]["name_ne"],
+        "ayana_mark": ayana_kranti_mark(raw["aayan"]),
+        "lagna": raw["lagna"]["name"],
+        "lagna_ne": raw["lagna"]["name_ne"],
+        "lagna_spans": raw.get("lagna_spans") or [],
+        "udaya_lagna": raw.get("udaya_lagna") or [],
+        "planets": raw.get("planets"),
+        "planets_anchor": raw.get("planets_anchor"),
+        "solar_corrections": raw.get("solar_corrections"),
+        "dinamaan": raw["dinamaan"]["label_en"],
+        "muhurta": raw.get("muhurta"),
+        "nivas_shool": raw.get("nivas_shool"),
+        "location": raw["location"],
+        "lunar_calendar": raw.get("lunar_calendar"),
+        "lunar_month": raw.get("lunar_month"),
+        "bs_date": raw["bs_date"],
+        "from_cache": from_cache,
+    }
 
     if include_detail:
         payload["detail"] = raw
@@ -246,6 +445,67 @@ def build_month_calendar_at_clock(
     }
 
 
+def _weekday_index_from_jd(jd_ut: float) -> int:
+    """Sunday = 0 … Saturday = 6."""
+    return int((float(jd_ut) + 0.5) % 7)
+
+
+_WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+_WEEKDAY_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"]
+
+
+def build_month_civil_skeleton(
+    bs_year: int,
+    bs_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> dict[str, Any]:
+    """Month grid with ``date_ad`` + weekday only (BBS / pre-panchanga BS years)."""
+    from engine.astronomy.jd_calendar import CivilDay, parse_civil_iso
+    from engine.vedic.patro_year_axis import is_bbs_signed, patro_year_supports_sankranti_grid
+
+    if not patro_year_supports_sankranti_grid(bs_year):
+        from engine.vedic.patro_year_axis import ephemeris_range_message
+
+        raise ValueError(ephemeris_range_message(bs_year))
+
+    start_c = get_bs_month_start_civil(bs_year, bs_month)
+    month_length = get_bs_month_length(bs_year, bs_month)
+    calendar: list[dict[str, Any]] = []
+    for bs_day, iso in iter_bs_month_civil_days(bs_year, bs_month):
+        civil = parse_civil_iso(iso)
+        wd = _weekday_index_from_jd(civil.to_jd_ut())
+        calendar.append(
+            {
+                "day": bs_day,
+                "date_ad": iso,
+                "weekday": _WEEKDAY_NE[wd],
+                "weekday_en": _WEEKDAY_EN[wd],
+                "weekday_ne": _WEEKDAY_NE[wd],
+                "tithi": "",
+                "festivals": [],
+            }
+        )
+
+    from engine.astronomy.jd_calendar import format_civil_iso
+
+    month_start_ad = format_civil_iso(start_c.year, start_c.month, start_c.day)
+    payload: dict[str, Any] = {
+        "year_bs": bs_year,
+        "month_bs": bs_month,
+        "month_name": bs_month_name(bs_month),
+        "month_name_ne": bs_month_name(bs_month, nepali=True),
+        "month_start_ad": month_start_ad,
+        "month_length": month_length,
+        "location": location.as_dict(),
+        "calendar": calendar,
+        "grid_mode": "civil_skeleton",
+    }
+    if is_bbs_signed(bs_year):
+        payload["era"] = "bbs"
+        payload["bbs"] = -bs_year
+    return payload
+
+
 def build_month_calendar(
     bs_year: int,
     bs_month: int,
@@ -255,64 +515,53 @@ def build_month_calendar(
     exclude_international: bool = False,
 ) -> dict[str, Any]:
     """BS month as a calendar array — the Patro grid as JSON."""
+    from engine.vedic.patro_year_axis import patro_year_supports_full_panchanga
+
+    if not patro_year_supports_full_panchanga(bs_year):
+        return build_month_civil_skeleton(bs_year, bs_month, location)
+
     if not 1 <= bs_month <= 12:
         raise ValueError("bs_month must be 1..12")
 
-    festivals = _collect_bs_year_festivals(bs_year, location)
+    from engine.vedic.patro_year_axis import BS_PANCHANGA_SIGNED_MIN, is_bbs_signed
+
+    festivals: list[dict[str, Any]] = []
+    if bs_year >= BS_PANCHANGA_SIGNED_MIN:
+        festivals = _collect_bs_year_festivals(bs_year, location)
+
     calendar: list[dict[str, Any]] = []
 
-    for bs_day, greg in iter_bs_month_days(bs_year, bs_month):
-        day_festivals = _festivals_for_day(festivals, greg)
-        panchanga = get_daily_panchanga(greg, location)
-        row: dict[str, Any] = {
-            "day": bs_day,
-            "date_ad": greg.isoformat(),
-            "weekday": panchanga["vaara"]["name_ne"],
-            "weekday_en": panchanga["vaara"]["name_english"],
-            "weekday_ne": panchanga["vaara"]["name_ne"],
-            "tithi": panchanga["tithi"]["name"],
-            "tithi_ne": panchanga["tithi"]["name_ne"],
-            "paksha": panchanga["paksha"]["name"],
-            "paksha_ne": panchanga["paksha"].get("name_ne"),
-            "nakshatra": panchanga["nakshatra"]["name"],
-            "nakshatra_ne": panchanga["nakshatra"].get("name_ne"),
-            "yoga": panchanga["yoga"]["name"],
-            "yoga_ne": panchanga["yoga"].get("name_ne"),
-            "karana": panchanga["karana"]["name"],
-            "karana_ne": panchanga["karana"].get("name_ne"),
-            "chandra_rashi": panchanga["chandra_rashi"]["name"],
-            "chandra_rashi_ne": panchanga["chandra_rashi"].get("name_ne"),
-            "sunrise": panchanga["sunrise"]["local_time_short"],
-            "sunset": panchanga["sunset"]["local_time_short"],
-            "aayan": panchanga["aayan"]["name"],
-            "aayan_ne": panchanga["aayan"]["name_ne"],
-            "ayana_mark": ayana_kranti_mark(panchanga["aayan"]),
-            "moonrise": (panchanga.get("moonrise") or {}).get("local_time_short"),
-            "moonrise_local": (panchanga.get("moonrise") or {}).get("local"),
-            "moonset": (panchanga.get("moonset") or {}).get("local_time_short"),
-            "moonset_local": (panchanga.get("moonset") or {}).get("local"),
-            "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
-        }
-        if full:
-            row["panchanga"] = build_daily_state(
-                greg,
-                location,
-                include_festivals=True,
-                include_detail=False,
+    for bs_day, civil_iso in iter_bs_month_civil_days(bs_year, bs_month):
+        civil = parse_civil_iso(civil_iso)
+        greg = date_if_supported(civil.year, civil.month, civil.day)
+        day_festivals = _festivals_for_day(festivals, greg) if greg is not None else []
+        panchanga = _panchanga_for_patro_day(bs_year, bs_month, bs_day, civil_iso, location)
+        calendar.append(
+            _month_row_from_panchanga(
+                bs_day,
+                civil_iso if (bs_year <= -1 or greg is None) else greg.isoformat(),
+                panchanga,
+                day_festivals,
+                full=full,
+                location=location,
+                greg=greg,
+                exclude_international=exclude_international,
             )
-        calendar.append(row)
+        )
 
-    month_start = get_bs_month_start(bs_year, bs_month)
     month_length = get_bs_month_length(bs_year, bs_month)
-    mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_length))
-    mid_panchanga = get_daily_panchanga(mid_greg, location)
+    start_c = get_bs_month_start_civil(bs_year, bs_month)
+    month_start_ad = format_civil_iso(start_c.year, start_c.month, start_c.day)
+    mid_day = min(15, month_length)
+    mid_iso = list(iter_bs_month_civil_days(bs_year, bs_month))[mid_day - 1][1]
+    mid_panchanga = _panchanga_for_patro_day(bs_year, bs_month, mid_day, mid_iso, location)
     lunar = mid_panchanga["lunar_month"]
-    return {
+    payload: dict[str, Any] = {
         "year_bs": bs_year,
         "month_bs": bs_month,
         "month_name": bs_month_name(bs_month),
         "month_name_ne": bs_month_name(bs_month, nepali=True),
-        "month_start_ad": month_start.isoformat(),
+        "month_start_ad": month_start_ad,
         "month_length": month_length,
         "lunar_month": lunar.get("name"),
         "lunar_month_full": lunar.get("full_name"),
@@ -320,7 +569,12 @@ def build_month_calendar(
         "lunar_month_type": lunar.get("type"),
         "location": location.as_dict(),
         "calendar": calendar,
+        "grid_mode": "full_panchanga",
     }
+    if is_bbs_signed(bs_year):
+        payload["era"] = "bbs"
+        payload["bbs"] = -bs_year
+    return payload
 
 
 def build_ad_month_calendar(
@@ -613,7 +867,7 @@ def build_festivals_for_date(
     *,
     era: Literal["bs", "ad"] = "bs",
 ) -> dict[str, Any]:
-    greg = resolve_panchanga_date(date_key, era=era)
+    greg = greg_date_for_date_key(date_key, era)
     bs_year, bs_month, bs_day = gregorian_to_bs(greg)
     festivals = _collect_bs_year_festivals(bs_year, location)
     active = _festivals_for_day(festivals, greg)
@@ -641,7 +895,7 @@ def build_kundali(
     era: Literal["bs", "ad"] = "bs",
 ) -> dict[str, Any]:
     """Planetary positions at sunrise — API-only kundali snapshot."""
-    greg = resolve_panchanga_date(date_key, era=era)
+    greg = greg_date_for_date_key(date_key, era)
     raw = get_daily_panchanga(greg, location)
     bs = raw["bs_date"]
     planets: dict[str, str] = {}

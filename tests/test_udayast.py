@@ -1,5 +1,6 @@
 from datetime import date
 
+from engine.astronomy.jd_calendar import CivilDay, date_if_supported
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.bikram_sambat import gregorian_to_bs
 from engine.vedic.gochar import build_gochar_ingress_range
@@ -20,7 +21,12 @@ def test_mercury_western_asta_ashar_2083():
     west_asta = [e for e in asta if e["hemisphere"] == "west"]
     assert west_asta, "expected western (evening) asta for retrograde mercury"
     # BS ~21 (July 5) per Surya Siddhanta 12° retrograde orb
-    bs_days = [gregorian_to_bs(date.fromisoformat(e["entry_date_ad"]))[2] for e in west_asta]
+    bs_days = []
+    for e in west_asta:
+        civil = CivilDay.from_jd_ut(e["entry_jd"])
+        greg = date_if_supported(civil.year, civil.month, civil.day)
+        assert greg is not None
+        bs_days.append(gregorian_to_bs(greg)[2])
     assert any(20 <= d <= 22 for d in bs_days)
 
 
@@ -35,7 +41,7 @@ def test_patro_includes_udayast_and_motion():
     assert len(mars) >= 1
     motion = [e for e in payload["events"] if e["level"] == "motion"]
     assert any(e["graha"] == "mercury" and e["label_ne"] == "वक्री" for e in motion)
-    assert all("entry_vedic_date_ad" in e for e in payload["events"])
+    assert all("entry_vedic_jd" in e for e in payload["events"])
     payload = build_gochar_ingress_range(
         date(2026, 6, 15),
         date(2026, 7, 16),

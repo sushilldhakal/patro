@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def db_available() -> bool:
-    return config.database_url() is not None
+    return config.postgres_cache_enabled()
 
 
 def load_blob(cache_key: str) -> bytes | None:

@@ -10,11 +10,13 @@ Terminology
 -----------
 Gochar  : current planetary transit through a rashi (sign).
 Rashi   : one of 12 zodiac signs (Mesha…Meena), each 30°.
-Vakri   : retrograde motion (speed < 0°/day).
+Vakri   : retrograde motion — decided by engine.astronomy.motion.is_retrograde,
+          which is the single definition (the nodes are Vakri by convention,
+          not by the sign of their speed).
 Margi   : direct / prograde motion.
 
 All longitudes are sidereal (Lahiri ayanamsa).
-Rahu = Mean Ascending Node; Ketu = Rahu + 180° (always Vakri by convention).
+Rahu = Mean Ascending Node; Ketu = Rahu + 180° (both always Vakri by convention).
 """
 
 from __future__ import annotations
@@ -22,6 +24,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
+from engine.astronomy.motion import is_retrograde, motion_label
 from engine.astronomy.positions import RASHI_NAMES, NAKSHATRA_NAMES, RASHI_NAMES_NE
 from engine.astronomy.swiss_eph import (
     PLANET_IDS,
@@ -158,18 +161,51 @@ def _attach_local_time(
     *,
     sunrise_local: datetime | None = None,
 ) -> dict[str, Any]:
-    entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
-    entry["entry_time_local"] = entry_local.strftime("%Y-%m-%d %H:%M")
-    entry["entry_time_local_short"] = entry_local.strftime("%H:%M")
-    entry["entry_date_ad"] = entry_local.date().isoformat()
-    if sunrise_local is not None:
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local, local_civil_fields, parse_ephemeris_instant
+
+    utc_raw = entry["entry_time_utc"]
+    try:
+        parsed = parse_ephemeris_instant(str(utc_raw))
+    except ValueError:
+        parsed = datetime.fromisoformat(str(utc_raw))
+    tz_name = getattr(tz, "key", str(tz))
+    if isinstance(parsed, UtInstant):
+        local_info = format_ut_instant_local(parsed, tz_name)
+        entry["entry_time_local"] = local_info["local"].replace("T", " ")[:16]
+        entry["entry_time_local_short"] = local_info["local_time_short"]
+        fields = local_civil_fields(parsed, tz_name)
+    else:
+        entry_local = parsed.astimezone(tz)
+        entry["entry_time_local"] = entry_local.strftime("%Y-%m-%d %H:%M")
+        entry["entry_time_local_short"] = entry_local.strftime("%H:%M")
+        fields = local_civil_fields(parsed, tz_name)
+    entry["entry_jd"] = fields.civil_day_jd
+    entry.pop("entry_date_ad", None)
+    if sunrise_local is not None and not isinstance(parsed, UtInstant):
+        from engine.astronomy.jd_calendar import civil_day_add
+        from engine.astronomy.ut_instant import as_julian_day
+
+        entry_local = parsed.astimezone(tz)
         entry_mins = entry_local.hour * 60 + entry_local.minute
         sunrise_mins = sunrise_local.hour * 60 + sunrise_local.minute
-        vedic_date = entry_local.date()
+        vedic_jd = fields.civil_day_jd
         if entry_mins < sunrise_mins:
-            vedic_date = vedic_date - timedelta(days=1)
-        entry["entry_vedic_date_ad"] = vedic_date.isoformat()
+            vedic_jd = civil_day_add(vedic_jd, -1)
+        entry["entry_vedic_jd"] = vedic_jd
+        entry.pop("entry_vedic_date_ad", None)
     return entry
+
+
+def _entry_sort_key(entry: dict[str, Any]) -> float:
+    """Chronological key for an ingress entry — the JD behind ``entry_time_utc``.
+
+    Sorting the ISO strings works only while years stay positive: a BCE range
+    stamps ``-0038-…`` before ``-0037-…`` chronologically, but the strings compare
+    the other way round.
+    """
+    from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
+
+    return as_julian_day(parse_ephemeris_instant(str(entry["entry_time_utc"])))
 
 
 def _bisect_index_change(
@@ -243,7 +279,7 @@ def _dms_in_sign(lon: float) -> str:
 
 # ─── Core gochar table ────────────────────────────────────────────────────────
 
-def get_gochar_table(dt: datetime) -> dict[str, Any]:
+def get_gochar_table(dt: datetime | Any) -> dict[str, Any]:
     """
     Return the full Gochar table (current planetary positions) at the given moment.
 
@@ -263,8 +299,7 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
         lon  = pos.get("longitude", 0.0)
         spd  = pos.get("speed", 0.0)
         rashi_idx = (pos.get("rashi", 1) - 1) % 12  # stored 1-based in raw
-        # Ketu always moves retrograde by Vedic convention (shadow node opposite Rahu)
-        is_vakri = spd < 0 or graha == "ketu"
+        is_vakri = is_retrograde(graha, spd)
         table[graha] = {
             "name_vedic":    meta["vedic"],
             "name_ne":       meta["ne"],
@@ -279,7 +314,7 @@ def get_gochar_table(dt: datetime) -> dict[str, Any]:
             "speed_deg_day": round(spd, 4),
             "is_retrograde": is_vakri,
             "is_combust":    bool(pos.get("is_combust", False)),
-            "motion":        "Vakri" if is_vakri else "Margi",
+            "motion":        motion_label(graha, spd),
         }
     return table
 
@@ -363,6 +398,8 @@ def find_upcoming_rashi_entries(
 
     Sorted chronologically. Suitable for a "planetary transits this year" panel.
     """
+    from engine.astronomy.ut_instant import parse_ephemeris_instant
+
     if grahas is None:
         grahas = GRAHA_ORDER
     entries: list[dict[str, Any]] = []
@@ -374,8 +411,8 @@ def find_upcoming_rashi_entries(
                 break
             entries.append(entry)
             # Advance past this entry to find the next one
-            current_dt = datetime.fromisoformat(entry["entry_time_utc"]) + timedelta(hours=1)
-    entries.sort(key=lambda e: e["entry_time_utc"])
+            current_dt = parse_ephemeris_instant(entry["entry_time_utc"]) + timedelta(hours=1)
+    entries.sort(key=_entry_sort_key)
     return entries
 
 
@@ -465,7 +502,7 @@ def find_next_pada_entry(
 
 def _is_retrograde(graha: str, dt: datetime) -> bool:
     speed = float(get_planet_position(dt, PLANET_IDS[graha])["speed"])
-    return speed < 0.0
+    return is_retrograde(graha, speed)
 
 
 def _bisect_retrograde_change(
@@ -531,7 +568,7 @@ def find_motion_stations_in_range(
             was_retro = now_retro
             cursor = crossing + timedelta(seconds=90)
 
-    events.sort(key=lambda e: e["entry_time_utc"])
+    events.sort(key=_entry_sort_key)
     return events
 
 
@@ -570,7 +607,7 @@ def find_ingress_entries_in_range(
         udayast = find_udayast_events_in_range(from_dt, until_dt)
         motion = find_motion_stations_in_range(from_dt, until_dt)
         merged = pada + rashi + udayast + motion
-        merged.sort(key=lambda e: e["entry_time_utc"])
+        merged.sort(key=_entry_sort_key)
         return merged
 
     finder = {
@@ -579,6 +616,8 @@ def find_ingress_entries_in_range(
         "rashi": find_next_rashi_entry,
     }[level]
 
+    from engine.astronomy.ut_instant import parse_ephemeris_instant
+
     entries: list[dict[str, Any]] = []
     for graha in grahas:
         cursor = from_dt
@@ -586,12 +625,14 @@ def find_ingress_entries_in_range(
             entry = finder(graha, cursor)
             if entry is None:
                 break
-            entry_utc = datetime.fromisoformat(entry["entry_time_utc"])
+            # ``parse_ephemeris_instant`` rather than ``datetime.fromisoformat``:
+            # a BCE crossing serializes to an expanded year no ``datetime`` holds.
+            entry_utc = parse_ephemeris_instant(entry["entry_time_utc"])
             if entry_utc > until_dt:
                 break
             entries.append(entry)
             cursor = entry_utc + timedelta(seconds=90)
-    entries.sort(key=lambda e: e["entry_time_utc"])
+    entries.sort(key=_entry_sort_key)
     return entries
 
 
@@ -640,9 +681,95 @@ def build_gochar_ingress_range(
             timezone_name=location.timezone,
         ).astimezone(tz)
         events.append(_attach_local_time(entry, tz, sunrise_local=sunrise_local))
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     return {
-        "from_date_ad": from_date.isoformat(),
-        "to_date_ad": to_date.isoformat(),
+        "from_jd": civil_day_jd_from_date(from_date),
+        "to_jd": civil_day_jd_from_date(to_date),
+        "level": level,
+        "location": location.as_dict(),
+        "events": events,
+    }
+
+
+def _attach_local_time_civil(
+    entry: dict[str, Any],
+    location: Any,
+    tz,
+) -> dict[str, Any]:
+    """``_attach_local_time`` plus a JD-derived ``entry_vedic_date_ad``.
+
+    The CE path shifts an entry that lands before sunrise onto the previous civil
+    day by comparing wall clocks. A BCE entry has no ``datetime`` to read an hour
+    off, so the same decision is made on the JD axis — which is exact for CE days
+    too, hence one code path for both.
+    """
+    entry = _attach_local_time(entry, tz)
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil
+    from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
+
+    entry_jd = float(entry["entry_jd"])
+    local_civil = CivilDay.from_jd_ut(entry_jd)
+    entry_instant_jd = as_julian_day(parse_ephemeris_instant(str(entry["entry_time_utc"])))
+    sunrise_jd = as_julian_day(calculate_sunrise_civil(
+        local_civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    ))
+    vedic_jd = entry_jd
+    if entry_instant_jd < sunrise_jd:
+        vedic_jd = civil_day_add(entry_jd, -1)
+    entry["entry_vedic_jd"] = vedic_jd
+    entry.pop("entry_vedic_date_ad", None)
+    return entry
+
+
+def build_gochar_ingress_range_civil(
+    from_civil: Any,  # CivilDay
+    to_civil: Any,    # CivilDay
+    location: Any,
+    *,
+    level: str = "pada",
+    grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Ingress timeline between two civil days (inclusive end), anchored at sunrise.
+
+    The ``CivilDay``/JD twin of :func:`build_gochar_ingress_range`, for ranges
+    ``datetime.date`` cannot express — BCE years and the early BS years that map
+    onto them (BS 20 starts around 37 BCE).
+    """
+    from engine.astronomy.jd_calendar import format_civil_iso
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunrise_civil_next
+
+    if to_civil.to_jd_ut() < from_civil.to_jd_ut():
+        raise ValueError("to_date must be on or after from_date")
+
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = calculate_sunrise_civil(
+        from_civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    until_sunrise = calculate_sunrise_civil_next(
+        to_civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    raw = find_ingress_entries_in_range(
+        from_sunrise,
+        until_sunrise,
+        level=level,
+        grahas=grahas,
+    )
+    events = [_attach_local_time_civil(dict(e), location, tz) for e in raw]
+    return {
+        "from_jd": float(from_civil.to_jd_ut()),
+        "to_jd": float(to_civil.to_jd_ut()),
         "level": level,
         "location": location.as_dict(),
         "events": events,
@@ -650,6 +777,94 @@ def build_gochar_ingress_range(
 
 
 # ─── Formatted gochar response ────────────────────────────────────────────────
+
+def build_gochar_response_civil(
+    civil: Any,  # CivilDay
+    location: Any,
+    *,
+    date_bs: str,
+    include_next_entry: bool = True,
+    include_upcoming: bool = False,
+) -> dict[str, Any]:
+    """Gochar at local sunrise for a BCE/extended civil patro day."""
+    from engine.astronomy.jd_calendar import format_civil_iso
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil
+    from engine.astronomy.ut_instant import format_ut_instant_local
+
+    init_ephemeris()
+
+    sunrise_utc = calculate_sunrise_civil(
+        civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    tz = resolve_observer_timezone(location.timezone)
+    gochar = get_gochar_table(sunrise_utc)
+
+    if include_next_entry:
+        for graha in GRAHA_ORDER:
+            rashi_entry = find_next_rashi_entry(graha, sunrise_utc)
+            if rashi_entry:
+                rashi_entry = _attach_local_time(dict(rashi_entry), tz)
+                gochar[graha]["next_rashi_entry"] = {
+                    "to_rashi": rashi_entry["to_rashi"],
+                    "to_rashi_ne": rashi_entry.get("to_rashi_ne"),
+                    "entry_time_local": rashi_entry["entry_time_local"],
+                    "entry_time_utc": rashi_entry["entry_time_utc"],
+                }
+            else:
+                gochar[graha]["next_rashi_entry"] = None
+
+            nak_entry = find_next_nakshatra_entry(graha, sunrise_utc)
+            if nak_entry:
+                nak_entry = _attach_local_time(dict(nak_entry), tz)
+                gochar[graha]["next_nakshatra_entry"] = {
+                    "to_nakshatra": nak_entry["to_nakshatra"],
+                    "to_nakshatra_ne": nak_entry["to_nakshatra_ne"],
+                    "label_ne": nak_entry["label_ne"],
+                    "entry_time_local": nak_entry["entry_time_local"],
+                    "entry_time_local_short": nak_entry["entry_time_local_short"],
+                    "entry_time_utc": nak_entry["entry_time_utc"],
+                }
+            else:
+                gochar[graha]["next_nakshatra_entry"] = None
+
+            pada_entry = find_next_pada_entry(graha, sunrise_utc)
+            if pada_entry:
+                pada_entry = _attach_local_time(dict(pada_entry), tz)
+                gochar[graha]["next_pada_entry"] = {
+                    "to_nakshatra": pada_entry["to_nakshatra"],
+                    "to_nakshatra_ne": pada_entry["to_nakshatra_ne"],
+                    "to_pada": pada_entry["to_pada"],
+                    "to_pada_ne": pada_entry["to_pada_ne"],
+                    "label_ne": pada_entry["label_ne"],
+                    "entry_time_local": pada_entry["entry_time_local"],
+                    "entry_time_local_short": pada_entry["entry_time_local_short"],
+                    "entry_time_utc": pada_entry["entry_time_utc"],
+                }
+            else:
+                gochar[graha]["next_pada_entry"] = None
+
+    date_ad = format_civil_iso(civil.year, civil.month, civil.day)
+    result: dict[str, Any] = {
+        "date_bs": date_bs,
+        "date_ad": date_ad,
+        "computed_at": {
+            "utc": sunrise_utc.isoformat() if hasattr(sunrise_utc, "isoformat") else str(sunrise_utc),
+            "local": format_ut_instant_local(sunrise_utc, location.timezone).get("local_time_short", "—"),
+            "note": "Positions at local true sunrise (Udaya)",
+        },
+        "location": location.as_dict(),
+        "gochar": gochar,
+    }
+    if include_upcoming:
+        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
+        result["upcoming_transits"] = find_upcoming_rashi_entries(
+            sunrise_utc, slow_grahas, max_results_per_graha=3
+        )
+    return result
+
 
 def build_gochar_response(
     target: date,
@@ -756,6 +971,15 @@ def build_gochar_response(
     return result
 
 
+def _year_range_jd_fields(year_start: date, year_end: date) -> dict[str, float]:
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
+    return {
+        "range_start_jd": civil_day_jd_from_date(year_start),
+        "range_end_jd": civil_day_jd_from_date(year_end),
+    }
+
+
 def build_gochar_year_summary(
     bs_year: int,
     location: Any,
@@ -819,7 +1043,7 @@ def build_gochar_year_summary(
 
     return {
         "bs_year": bs_year,
-        "gregorian_range": {"start": year_start.isoformat(), "end": year_end.isoformat()},
+        **_year_range_jd_fields(year_start, year_end),
         "location": location.as_dict(),
         "upcoming_transits": upcoming,
         "monthly_snapshots": monthly_snapshots,

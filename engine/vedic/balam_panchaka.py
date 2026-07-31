@@ -76,7 +76,9 @@ def build_chandrabalam(
 
     till: dict[str, str] | None = None
     if len(chandra_rashi_spans) > 1 and chandra_rashi_spans[0].get("end_time"):
-        end_dt = datetime.fromisoformat(chandra_rashi_spans[0]["end_time"].replace("Z", "+00:00"))
+        from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+        end_dt = parse_ephemeris_instant(chandra_rashi_spans[0]["end_time"])
         till = _time_fields(end_dt, sunrise_dt, timezone_name)
         next_idx = int(chandra_rashi_spans[1]["number"]) - 1
     else:
@@ -104,7 +106,9 @@ def build_tarabalam(
     till: dict[str, str] | None = None
     next_num = nakshatra_block.get("next", {}).get("number")
     if nakshatra_block.get("end_time") and next_num:
-        end_dt = datetime.fromisoformat(nakshatra_block["end_time"].replace("Z", "+00:00"))
+        from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+        end_dt = parse_ephemeris_instant(nakshatra_block["end_time"])
         till = _time_fields(end_dt, sunrise_dt, timezone_name)
         next_idx = int(next_num) - 1
     else:
@@ -151,8 +155,12 @@ def build_panchaka_rahita(
 
     raw: list[dict[str, Any]] = []
     for span in lagna_spans:
-        start_dt = datetime.fromisoformat(span["start_time"].replace("Z", "+00:00"))
-        end_dt = datetime.fromisoformat(span["end_time"].replace("Z", "+00:00"))
+        from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+        start_dt = parse_ephemeris_instant(span["start_time"])
+        from engine.astronomy.ut_instant import parse_ephemeris_instant
+
+        end_dt = parse_ephemeris_instant(span["end_time"])
         lagna_num = int(span["number"])
         remainder = _panchaka_remainder(start_dt, lagna_num, vaara_num)
         en, ne, good = _segment_label(remainder)

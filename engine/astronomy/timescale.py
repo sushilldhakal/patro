@@ -148,4 +148,8 @@ def to_utc(dt: datetime) -> datetime:
 
 
 def nepal_midnight(date_val: date) -> datetime:
-    return datetime.combine(date_val, time(0, 0, 0), tzinfo=NEPAL_TZ)
+    # Local import: ``ut_instant`` imports this module, so a top-level import
+    # would be circular.
+    from engine.astronomy.ut_instant import local_wall_instant
+
+    return local_wall_instant(date_val, "Asia/Kathmandu")

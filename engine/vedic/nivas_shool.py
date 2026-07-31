@@ -145,6 +145,10 @@ _BHADRA_LOKA = {
 
 
 def _local_short(dt: datetime, timezone_name: str) -> str:
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
+    if isinstance(dt, UtInstant):
+        return format_ut_instant_local(dt, timezone_name)["local_time_short"]
     from engine.astronomy.timescale import resolve_observer_timezone
 
     local = dt.astimezone(resolve_observer_timezone(timezone_name))

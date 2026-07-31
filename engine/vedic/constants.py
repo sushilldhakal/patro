@@ -186,16 +186,11 @@ BS_MAX_YEAR = max(BS_MONTH_LENGTHS.keys())
 # The engine computes any year on-demand via JPL; the disk cache
 # keeps repeat requests in the millisecond range, so a wide range is cheap.
 #
-# Floor is BS 60, not 0: the estimator maps a BS month to Gregorian year
-# ``bs_year - 57`` and searches a window ~15 days earlier, so BS < 60 would
-# cross into Gregorian year 0, which Python's ``datetime`` (min year 1) cannot
-# represent. BS 60 (≈ 3 CE) is the lowest year that reliably computes a full
-# year. Ceiling is BS 3000 (≈ 2943 CE), well inside JPL's range.
-#
-# Caveat for very old dates: before ~1582 CE the Julian/Gregorian split and the
-# absence of modern time zones make local-solar reckoning approximate; treat
-# pre-1582 output as best-effort historical estimation, not civil record.
-BS_ESTIMATED_MIN_YEAR = 60
+# Floor is BS 60 for full daily/month panchanga (Python ``date`` + lunar tables).
+# BS 1–59: civil BS↔AD grid only (includes BCE); see ``BS_CALENDAR_MIN_YEAR``.
+BS_PANCHANGA_MIN_YEAR = 60
+BS_CALENDAR_MIN_YEAR = 1
+BS_ESTIMATED_MIN_YEAR = BS_PANCHANGA_MIN_YEAR
 BS_SUPPORTED_MAX_YEAR = 3000
 
 # Reference point from Hamro Patro public date page: 2082-01-01 BS = 2025-04-14 AD

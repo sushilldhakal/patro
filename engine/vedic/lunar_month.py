@@ -19,6 +19,8 @@ from engine.vedic.sankranti import find_sankranti, get_sun_rashi_at_time
 from engine.vedic.names_ne import lunar_masa_name_ne
 from engine.vedic.tithi import get_udaya_tithi
 from engine.vedic.tithi_boundaries import find_next_tithi
+from engine.astronomy.jd_calendar import CivilDay
+from engine.astronomy.ut_instant import day_instant_utc
 
 MonthModel = Literal["amanta", "purnimant", "festival"]
 
@@ -114,7 +116,7 @@ def compute_lunar_month(start_Aausi: datetime) -> LunarMonth:
 
 
 def build_lunar_year(gregorian_year: int) -> LunarYear:
-    search_start = datetime(gregorian_year, 2, 15, tzinfo=timezone.utc)
+    search_start = day_instant_utc(CivilDay(gregorian_year, 2, 15))
     first_Aausi = find_Aausi(search_start)
     if first_Aausi is None:
         raise ValueError(f"Could not find starting Aausi for {gregorian_year}")
@@ -241,7 +243,7 @@ def _lunar_month_payload(
 
 
 def _find_amanta_month_for_date(target: date) -> dict:
-    check = datetime.combine(target, datetime.min.time().replace(hour=12), tzinfo=timezone.utc)
+    check = day_instant_utc(target, hour=12)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         for month in lunar_year.months:
@@ -308,9 +310,7 @@ def _amanta_context(
     """The amanta month covering ``target`` (with its preceding-adhik count) plus
     the previous month and its count — used to attribute the junction Aausi to
     the month it closes rather than the one it opens."""
-    check = datetime.combine(
-        target, datetime.min.time().replace(hour=12), tzinfo=timezone.utc
-    )
+    check = day_instant_utc(target, hour=12)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
         adhik_before = 0

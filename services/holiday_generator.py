@@ -523,6 +523,22 @@ def get_bs_festivals(
     bs_month: int | None = None,
 ) -> dict[str, Any]:
     location = DEFAULT_LOCATION  # national calendar — see _year_payload_memo note
+
+    # The festival stack is a modern (MoHA / lunar-rule) construct built on
+    # Gregorian `date`, so it stops where that does — the same BS 60 floor the
+    # month builder already applies. Answer empty rather than raising: this used
+    # to surface as a bare 500 on /nepal/festivals for BBS and pre-60 years.
+    from engine.vedic.patro_year_axis import BS_PANCHANGA_SIGNED_MIN
+
+    if bs_year < BS_PANCHANGA_SIGNED_MIN:
+        return {
+            "bs_year": bs_year,
+            "count": 0,
+            "festivals": [],
+            "unavailable_reason": "pre_festival_era",
+            **({"bs_month": bs_month} if bs_month is not None else {}),
+        }
+
     memo_key = ("festivals_bs", bs_year)
     payload = _year_payload_memo.get(memo_key)
     if payload is None:

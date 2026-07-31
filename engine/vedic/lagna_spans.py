@@ -39,8 +39,16 @@ def build_lagna_spans(
 
         start_info = time_from_sunrise(cursor, sunrise_dt)
         end_info = time_from_sunrise(end_dt, sunrise_dt)
-        start_local = cursor.astimezone(tz)
-        end_local = end_dt.astimezone(tz)
+        from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
+        if isinstance(cursor, UtInstant):
+            start_local_time = format_ut_instant_local(cursor, timezone_name)["local_time"]
+            end_local_time = format_ut_instant_local(end_dt, timezone_name)["local_time"]
+        else:
+            start_local = cursor.astimezone(tz)
+            end_local = end_dt.astimezone(tz)
+            start_local_time = start_local.strftime("%H:%M:%S")
+            end_local_time = end_local.strftime("%H:%M:%S")
 
         spans.append(
             {
@@ -52,11 +60,11 @@ def build_lagna_spans(
                 "start_time": cursor.isoformat(),
                 "start_ghati_clock": start_info["ghati_clock"],
                 "start_hours_clock": start_info["hours_clock"],
-                "start_local_time": start_local.strftime("%H:%M:%S"),
+                "start_local_time": start_local_time,
                 "end_time": end_dt.isoformat(),
                 "end_ghati_clock": end_info["ghati_clock"],
                 "end_hours_clock": end_info["hours_clock"],
-                "end_local_time": end_local.strftime("%H:%M:%S"),
+                "end_local_time": end_local_time,
             }
         )
         cursor = end_dt

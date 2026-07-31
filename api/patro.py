@@ -4,9 +4,10 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import Response
 
-from api.deps import LocationDep, _validate_bs_month, _validate_bs_year
+from api.deps import LocationDep, _signed_bs_year_from_browse, _validate_bs_month, _validate_bs_year
 from services.holiday_generator import precompute_bs_year
-from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month, resolve_panchanga_date
+from app.day_resolver import greg_date_for_date_key
+from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
 from services.presentation import render_panchanga_month
 
 router = APIRouter()
@@ -171,42 +172,132 @@ def generate_year(year: int, location: LocationDep):
 def nepal_gochar_ingress(
     location: LocationDep,
     request: Request,
-    from_date: date = Query(..., alias="from"),
-    to_date: date = Query(..., alias="to"),
+    from_date: str = Query(..., alias="from"),
+    to_date: str = Query(..., alias="to"),
     era: Literal["bs", "ad"] = Query("ad"),
     level: Literal["pada", "nakshatra", "rashi", "patro", "udayast"] = Query("pada"),
     grahas: str | None = Query(None),
 ):
     """Planetary ingress timeline between two dates."""
-    from engine.vedic.gochar import GRAHA_ORDER, build_gochar_ingress_range
+    from app.day_resolver import civil_day_for_date_key
+    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
+    from engine.vedic.gochar import (
+        GRAHA_ORDER,
+        build_gochar_ingress_range,
+        build_gochar_ingress_range_civil,
+    )
     from services.response_cache import location_cache_key, serve_cached_json
 
-    try:
-        if era == "bs":
-            from_greg = resolve_panchanga_date(from_date.isoformat(), era="bs")
-            to_greg = resolve_panchanga_date(to_date.isoformat(), era="bs")
-        else:
-            from_greg, to_greg = from_date, to_date
-        graha_list = None
-        if grahas:
-            graha_list = [g.strip() for g in grahas.split(",") if g.strip()]
-            unknown = [g for g in graha_list if g not in GRAHA_ORDER]
-            if unknown:
-                raise ValueError(f"Unknown graha(s): {', '.join(unknown)}")
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    graha_list = None
+    if grahas:
+        graha_list = [g.strip() for g in grahas.split(",") if g.strip()]
+        unknown = [g for g in graha_list if g not in GRAHA_ORDER]
+        if unknown:
+            raise HTTPException(
+                status_code=400, detail=f"Unknown graha(s): {', '.join(unknown)}"
+            )
 
     # Deterministic per (range, location, level, grahas) — ingress moments are
     # fixed astronomy, so cache + persist rather than re-scanning the range.
     graha_key = ",".join(graha_list) if graha_list else "all"
+
+    # ``from``/``to`` arrive as ``str``, not ``date``: an early-BS or BCE endpoint
+    # (BS 20-04-14, -0037-07-02) is a valid range bound the JD path can compute,
+    # but pydantic rejects it before the handler ever runs. An endpoint this can't
+    # resolve stays ``None`` and falls through to ``resolve_panchanga_date``, which
+    # owns both the BS→Gregorian overrides and the 400 for genuine garbage.
+    from_civil = civil_day_for_date_key(from_date, era)
+    to_civil = civil_day_for_date_key(to_date, era)
+    if from_civil is not None and to_civil is not None and (
+        date_if_supported(from_civil.year, from_civil.month, from_civil.day) is None
+        or date_if_supported(to_civil.year, to_civil.month, to_civil.day) is None
+    ):
+        from_iso = format_civil_iso(from_civil.year, from_civil.month, from_civil.day)
+        to_iso = format_civil_iso(to_civil.year, to_civil.month, to_civil.day)
+        key = (
+            f"gocharingress_civil_v2_{from_iso}_{to_iso}"
+            f"_{level}_{graha_key}_{location_cache_key(location)}"
+        )
+        return serve_cached_json(
+            request, key,
+            lambda: build_gochar_ingress_range_civil(
+                from_civil, to_civil, location, level=level, grahas=graha_list
+            ),
+        )
+
+    try:
+        from_greg = greg_date_for_date_key(from_date, era)
+        to_greg = greg_date_for_date_key(to_date, era)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     key = (
-        f"gocharingress_{from_greg.isoformat()}_{to_greg.isoformat()}"
+        f"gocharingress_v2_{from_greg.isoformat()}_{to_greg.isoformat()}"
         f"_{level}_{graha_key}_{location_cache_key(location)}"
     )
     return serve_cached_json(
         request, key,
         lambda: build_gochar_ingress_range(
             from_greg, to_greg, location, level=level, grahas=graha_list
+        ),
+    )
+
+
+@router.get("/nepal/gochar/jd/{jd_ut}")
+def nepal_gochar_jd(
+    jd_ut: float,
+    location: LocationDep,
+    request: Request,
+    upcoming: bool = Query(False),
+):
+    """Gochar at local sunrise for a civil day keyed by Julian Day (0h UT)."""
+    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
+    from engine.vedic.bikram_sambat import format_bs_date, locate_patro_day_for_civil
+    from engine.vedic.gochar import build_gochar_response, build_gochar_response_civil
+    from services.panchanga_api import resolve_panchanga_jd_ut
+    from services.response_cache import location_cache_key, serve_cached_json
+
+    canonical, civil, greg = resolve_panchanga_jd_ut(jd_ut)
+    if greg is None:
+        py, pm, pd = locate_patro_day_for_civil(civil)
+        date_bs = format_bs_date(py, pm, pd)
+        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
+        key = f"gochar_jd_{canonical}_{int(upcoming)}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request,
+            key,
+            lambda: build_gochar_response_civil(
+                civil,
+                location,
+                date_bs=date_bs,
+                include_next_entry=True,
+                include_upcoming=upcoming,
+            ),
+        )
+
+    if date_if_supported(civil.year, civil.month, civil.day) is None:
+        py, pm, pd = locate_patro_day_for_civil(civil)
+        date_bs = format_bs_date(py, pm, pd)
+        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
+        key = f"gochar_jd_{canonical}_{int(upcoming)}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request,
+            key,
+            lambda: build_gochar_response_civil(
+                civil,
+                location,
+                date_bs=date_bs,
+                include_next_entry=True,
+                include_upcoming=upcoming,
+            ),
+        )
+
+    key = f"gochar_jd_{greg.isoformat()}_{int(upcoming)}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request,
+        key,
+        lambda: build_gochar_response(
+            greg, location, include_next_entry=True, include_upcoming=upcoming
         ),
     )
 
@@ -220,10 +311,46 @@ def nepal_gochar(
     upcoming: bool = Query(False),
 ):
     """Gochar (planetary transit) table for a date."""
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_add, date_if_supported, format_civil_iso, parse_civil_iso
+    from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil, locate_patro_day_for_civil, parse_bs_date
     from services.response_cache import location_cache_key, serve_cached_json
 
+    def _civil_day_for_key(key: str, date_era: str):
+        """``(CivilDay, bs_triple)`` — the triple is what an ``era=bs`` caller sent."""
+        try:
+            if date_era == "ad":
+                return parse_civil_iso(key), None
+            bs_year, bs_month, bs_day = parse_bs_date(key)
+            start = get_bs_month_start_civil(bs_year, bs_month)
+            civil_day = CivilDay.from_jd_ut(civil_day_add(start.to_jd_ut(), bs_day - 1))
+            return civil_day, (bs_year, bs_month, bs_day)
+        except Exception:
+            return None, None
+
+    civil, bs_triple = _civil_day_for_key(date_key, era)
+    if civil is not None and date_if_supported(civil.year, civil.month, civil.day) is None:
+        from engine.vedic.gochar import build_gochar_response_civil
+
+        # An ``era=bs`` request already carries the patro date; only an AD key
+        # needs the reverse JD→BS scan.
+        py, pm, pd = bs_triple or locate_patro_day_for_civil(civil)
+        date_bs = format_bs_date(py, pm, pd)
+        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
+        key = f"gochar_civil_{ad_iso}_{int(upcoming)}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request,
+            key,
+            lambda: build_gochar_response_civil(
+                civil,
+                location,
+                date_bs=date_bs,
+                include_next_entry=True,
+                include_upcoming=upcoming,
+            ),
+        )
+
     try:
-        greg = resolve_panchanga_date(date_key, era=era)
+        greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     from engine.vedic.gochar import build_gochar_response
@@ -245,14 +372,46 @@ def nepal_graha_sthiti(
     date_key: str,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("ad"),
+    era: Literal["bs", "bbs", "ad", "bc"] = Query("ad"),
 ):
     """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
+    from app.day_resolver import DayResolutionError, civil_day_for_date_key
+    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
+    from engine.vedic.bikram_sambat import format_bs_date, locate_patro_day_for_civil
     from services.response_cache import location_cache_key, serve_cached_json
 
+    civil = civil_day_for_date_key(date_key, era)
+    if civil is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{date_key!r} is not a date this era can read",
+        )
+
+    bs_triple_from_key: tuple[int, int, int] | None = None
+    if era in ("bs", "bbs"):
+        parts = date_key.strip().split("-")
+        if len(parts) == 3:
+            try:
+                bs_triple_from_key = (int(parts[0]), int(parts[1]), int(parts[2]))
+            except ValueError:
+                bs_triple_from_key = None
+
+    if date_if_supported(civil.year, civil.month, civil.day) is None:
+        from engine.vedic.graha_detail import build_graha_sthiti_civil
+
+        py, pm, pd = bs_triple_from_key or locate_patro_day_for_civil(civil)
+        date_bs = format_bs_date(py, pm, pd)
+        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
+        key = f"grahasthiti_civil_{ad_iso}_{location_cache_key(location)}"
+        return serve_cached_json(
+            request,
+            key,
+            lambda: build_graha_sthiti_civil(civil, location, date_bs=date_bs),
+        )
+
     try:
-        greg = resolve_panchanga_date(date_key, era=era)
-    except ValueError as exc:
+        greg = greg_date_for_date_key(date_key, era)
+    except DayResolutionError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     from engine.vedic.graha_detail import build_graha_sthiti
 
@@ -268,7 +427,7 @@ def nepal_graha_asta_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+    era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
 ):
     """Yearly heliacal udaya/asta (rising/setting) timeline for a BS or AD year."""
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
@@ -284,13 +443,13 @@ def nepal_graha_asta_year(
             cache_control=bs_year_cache_control(year + 56),
         )
 
-    _validate_bs_year(year)
+    bs_signed = _signed_bs_year_from_browse(era, year)
     from engine.vedic.graha_detail import build_graha_asta_year
 
-    key = f"grahaasta_v2_{year}_{location_cache_key(location)}"
+    key = f"grahaasta_v2_{bs_signed}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_graha_asta_year(year, location),
-        cache_control=bs_year_cache_control(year),
+        request, key, lambda: build_graha_asta_year(bs_signed, location),
+        cache_control=bs_year_cache_control(bs_signed),
     )
 
 
@@ -299,29 +458,38 @@ def nepal_graha_vakri_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+    era: Literal["ad", "bc", "bs", "bbs"] = Query(
+        "bs", description="Calendar era for year — all four take a positive year"
+    ),
 ):
-    """Yearly वक्री/मार्गी (retrograde/direct) station timeline for a BS or AD year."""
-    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+    """Yearly वक्री/मार्गी (retrograde/direct) station timeline.
 
-    if era == "ad":
-        if not 1943 <= year <= 2090:
-            raise HTTPException(status_code=400, detail="ad year out of supported range")
-        from engine.vedic.graha_detail import build_graha_vakri_ad_year
+    Reference implementation of the era architecture: the handler does no calendar
+    conversion at all. ``EraMiddleware`` has already turned ``era`` + ``year`` into
+    a Julian Day span, and renders the Julian Days in the response back into the
+    requested era on the way out. Adding an era here is a codec change, not a
+    handler change.
+    """
+    from app.era_middleware import era_context
+    from engine.calendar.era import year_span_jd
+    from engine.vedic.graha_detail import build_graha_vakri_span
+    from services.response_cache import location_cache_key, serve_cached_json
 
-        key = f"grahavakri_ad_{year}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request, key, lambda: build_graha_vakri_ad_year(year, location),
-            cache_control=bs_year_cache_control(year + 56),
+    ctx = era_context(request)
+    try:
+        jd_start, jd_end = (
+            (ctx.julian, ctx.julian_end)
+            if ctx.julian is not None and ctx.julian_end is not None
+            else year_span_jd(era, year)
         )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    _validate_bs_year(year)
-    from engine.vedic.graha_detail import build_graha_vakri_year
-
-    key = f"grahavakri_{year}_{location_cache_key(location)}"
+    key = f"grahavakri_jd_v2_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_graha_vakri_year(year, location),
-        cache_control=bs_year_cache_control(year),
+        request,
+        key,
+        lambda: build_graha_vakri_span(jd_start, jd_end, location),
     )
 
 
@@ -331,7 +499,7 @@ def nepal_eclipse_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+    era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
 ):
     """Solar or lunar eclipses whose maximum falls within a BS or AD year."""
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
@@ -347,13 +515,13 @@ def nepal_eclipse_year(
             cache_control=bs_year_cache_control(year + 56),
         )
 
-    _validate_bs_year(year)
+    bs_signed = _signed_bs_year_from_browse(era, year)
     from engine.vedic.graha_detail import build_eclipse_year
 
-    key = f"eclipse_{kind}_{year}_{location_cache_key(location)}"
+    key = f"eclipse_{kind}_{bs_signed}_{location_cache_key(location)}"
     return serve_cached_json(
-        request, key, lambda: build_eclipse_year(year, kind, location),
-        cache_control=bs_year_cache_control(year),
+        request, key, lambda: build_eclipse_year(bs_signed, kind, location),
+        cache_control=bs_year_cache_control(bs_signed),
     )
 
 

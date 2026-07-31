@@ -42,9 +42,10 @@ def _slot(
     end_g: float,
     tz_name: str,
 ) -> dict[str, Any]:
-    tz = resolve_observer_timezone(tz_name)
     info = _PLANETS[planet]
     bad = bool(info["bad"])
+    from engine.astronomy.ut_instant import local_hhmm
+
     return {
         "index": index,
         "phase": phase,
@@ -55,8 +56,8 @@ def _slot(
         "quality_ne": "अशुभ" if bad else "शुभ",
         "tone": "bad" if bad else "good",
         "bad": bad,
-        "start_local_time_short": start_dt.astimezone(tz).strftime("%H:%M"),
-        "end_local_time_short": end_dt.astimezone(tz).strftime("%H:%M"),
+        "start_local_time_short": local_hhmm(start_dt, tz_name),
+        "end_local_time_short": local_hhmm(end_dt, tz_name),
         "start_g": round(start_g, 4),
         "end_g": round(end_g, 4),
     }

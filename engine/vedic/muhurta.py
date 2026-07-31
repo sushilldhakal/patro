@@ -69,6 +69,28 @@ def _hora_kala(
     return start, end
 
 
+def _local_clock(instant: datetime, tz_name: str) -> tuple[str, str, str, str]:
+    """HH:MM, iso local, iso utc-ish for period endpoints."""
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+
+    if isinstance(instant, UtInstant):
+        block = format_ut_instant_local(instant, tz_name)
+        return (
+            block["local_time_short"],
+            block["local"],
+            block.get("utc") or instant.isoformat(),
+            block["local_time_short"],
+        )
+    tz = resolve_observer_timezone(tz_name)
+    local = instant.astimezone(tz)
+    return (
+        local.strftime("%H:%M"),
+        local.isoformat(),
+        instant.isoformat(),
+        local.strftime("%H:%M"),
+    )
+
+
 def _period_block(
     sunrise_utc: datetime,
     sunset_utc: datetime,
@@ -77,16 +99,17 @@ def _period_block(
     *,
     is_auspicious: bool,
 ) -> dict[str, Any]:
-    tz   = resolve_observer_timezone(tz_name)
     s, e = _hora_kala(sunrise_utc, sunset_utc, period_no)
+    start_time, start_local, start_utc, _ = _local_clock(s, tz_name)
+    end_time, end_local, end_utc, _ = _local_clock(e, tz_name)
     return {
         "period_no":    period_no,
-        "start_time":  s.astimezone(tz).strftime("%H:%M"),
-        "end_time":    e.astimezone(tz).strftime("%H:%M"),
-        "start_local": s.astimezone(tz).isoformat(),
-        "end_local":   e.astimezone(tz).isoformat(),
-        "start_utc":   s.isoformat(),
-        "end_utc":     e.isoformat(),
+        "start_time":  start_time,
+        "end_time":    end_time,
+        "start_local": start_local,
+        "end_local":   end_local,
+        "start_utc":   start_utc,
+        "end_utc":     end_utc,
         "is_auspicious": is_auspicious,
     }
 
@@ -161,23 +184,25 @@ def compute_abhijit_muhurta(
     in some Panchanga traditions because it corresponds to the 28th nakshatra
     (Abhijit), which is excluded from the 27-nakshatra count on Wednesdays.
     """
-    tz      = resolve_observer_timezone(tz_name)
     total_s = (sunset_utc - sunrise_utc).total_seconds()
     muhurta_s = total_s / 15.0
     solar_noon = sunrise_utc + timedelta(seconds=total_s / 2.0)
     start  = sunrise_utc + timedelta(seconds=7 * muhurta_s)
     end    = sunrise_utc + timedelta(seconds=8 * muhurta_s)
+    st, sl, su, _ = _local_clock(start, tz_name)
+    et, el, eu, _ = _local_clock(end, tz_name)
+    nt, _, _, _ = _local_clock(solar_noon, tz_name)
 
     return {
         "name":              "Abhijit",
         "muhurta_no":        8,
-        "start_time":        start.astimezone(tz).strftime("%H:%M"),
-        "end_time":          end.astimezone(tz).strftime("%H:%M"),
-        "start_local":       start.astimezone(tz).isoformat(),
-        "end_local":         end.astimezone(tz).isoformat(),
-        "start_utc":         start.isoformat(),
-        "end_utc":           end.isoformat(),
-        "solar_noon":        solar_noon.astimezone(tz).strftime("%H:%M"),
+        "start_time":        st,
+        "end_time":          et,
+        "start_local":       sl,
+        "end_local":         el,
+        "start_utc":         su,
+        "end_utc":           eu,
+        "solar_noon":        nt,
         "duration_minutes":  round(muhurta_s / 60, 1),
         "is_auspicious":     True,
     }
@@ -201,11 +226,13 @@ def build_all_muhurtas(
     for i in range(15):
         s = sunrise_utc + timedelta(seconds=i * muhurta_s)
         e = sunrise_utc + timedelta(seconds=(i + 1) * muhurta_s)
+        st, _, _, _ = _local_clock(s, tz_name)
+        et, _, _, _ = _local_clock(e, tz_name)
         result.append({
             "number":        i + 1,
             "name":          MUHURTA_NAMES[i],
-            "start_time":    s.astimezone(tz).strftime("%H:%M"),
-            "end_time":      e.astimezone(tz).strftime("%H:%M"),
+            "start_time":    st,
+            "end_time":      et,
             "is_auspicious": MUHURTA_AUSPICIOUS[i],
         })
     return result

@@ -79,7 +79,21 @@ logger = logging.getLogger(__name__)
 #     view already ran, so alias rows (गुरु पुर्णिमा व्रत, पूर्णिमा व्रत, नवरात्र
 #     आरम्भ, आमाको मुख हेर्ने दिन …) no longer repeat the named festival next to
 #     it. Invalidates cached month/year patro payloads carrying the duplicate rows.
-CACHE_PAYLOAD_VERSION = 30
+# 31: civil-day ``jd_ut`` (Julian Day at 0h UT) + ``date_ad`` ISO on daily payloads —
+#     canonical ephemeris identity; AD string parsing uses ``parse_civil_iso``.
+# 32: BCE/BBS daily panchanga via ``CivilDay`` + ``jd_ut`` cache keys (``date_ad``).
+# 33: BCE instants serialize as expanded ISO (``-0157-06-16T09:13:39+00:00``)
+#     instead of the ``jd:<float>`` sentinel. The sentinel crashed the month
+#     ``full=true`` and year-wheel builders (`datetime.fromisoformat`) and, where
+#     it survived, rendered as literal "jd:16" in clipped HH:MM labels.
+#     Invalidates every cached BCE payload that still carries `jd:` strings.
+# 34: samvatsara resolves on the signed axis. The Jovian walk moved off the
+#     CE-only `date` path onto `jd_ut` and is now backed by a precomputed table
+#     (engine/vedic/samvatsara_table.json), so BBS and BS < 58 days carry a
+#     samvatsara instead of null. Invalidates cached days whose label was null.
+# 35: BCE / early-BS civil daily payloads now include solar_corrections (belaantar,
+#     deshaantar) — were hard-coded to {} in build_daily_panchanga_civil.
+CACHE_PAYLOAD_VERSION = 35
 
 _REQUIRED_PAYLOAD_KEYS = (
     "lagna",
@@ -138,7 +152,9 @@ CREATE INDEX IF NOT EXISTS idx_panchanga_cache_city_date
 
 
 def cache_enabled() -> bool:
-    return os.environ.get("PANCHANGA_CACHE", "true").lower() not in {"0", "false", "no"}
+    import config
+
+    return config.panchanga_sqlite_cache_enabled()
 
 
 def _connect() -> sqlite3.Connection:
@@ -198,7 +214,7 @@ def _row_from_panchanga(
     *,
     location_key: str,
     city_id: int,
-    greg: date,
+    date_key: str,
 ) -> dict[str, Any]:
     tz = raw["location"]["timezone"]
     muhurta = raw.get("muhurta") or {}
@@ -208,7 +224,7 @@ def _row_from_panchanga(
     return {
         "city_id": city_id,
         "location_key": location_key,
-        "date": greg.isoformat(),
+        "date": date_key,
         "tithi": raw["tithi"]["name"],
         "tithi_end": _local_element_end(raw["tithi"], tz),
         "nakshatra": raw["nakshatra"]["name"],
@@ -314,7 +330,113 @@ def store_panchanga_cache(
 
     location_key, city_id = resolve_cache_keys(location)
     ensure_schema()
-    row = _row_from_panchanga(raw, location_key=location_key, city_id=city_id, greg=greg)
+    row = _row_from_panchanga(
+        raw, location_key=location_key, city_id=city_id, date_key=greg.isoformat()
+    )
+
+    with _connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO panchanga_cache (
+                city_id, location_key, date,
+                tithi, tithi_end, nakshatra, nakshatra_end,
+                yoga, yoga_end, karana, karana_end,
+                sunrise, sunset, moonrise, moonset,
+                rahu_kalam, yama_ganda, gulika, abhijit,
+                festivals, payload_json, computed_at
+            ) VALUES (
+                :city_id, :location_key, :date,
+                :tithi, :tithi_end, :nakshatra, :nakshatra_end,
+                :yoga, :yoga_end, :karana, :karana_end,
+                :sunrise, :sunset, :moonrise, :moonset,
+                :rahu_kalam, :yama_ganda, :gulika, :abhijit,
+                :festivals, :payload_json, :computed_at
+            )
+            ON CONFLICT(location_key, date) DO UPDATE SET
+                city_id = excluded.city_id,
+                tithi = excluded.tithi,
+                tithi_end = excluded.tithi_end,
+                nakshatra = excluded.nakshatra,
+                nakshatra_end = excluded.nakshatra_end,
+                yoga = excluded.yoga,
+                yoga_end = excluded.yoga_end,
+                karana = excluded.karana,
+                karana_end = excluded.karana_end,
+                sunrise = excluded.sunrise,
+                sunset = excluded.sunset,
+                moonrise = excluded.moonrise,
+                moonset = excluded.moonset,
+                rahu_kalam = excluded.rahu_kalam,
+                yama_ganda = excluded.yama_ganda,
+                gulika = excluded.gulika,
+                abhijit = excluded.abhijit,
+                festivals = excluded.festivals,
+                payload_json = excluded.payload_json,
+                computed_at = excluded.computed_at
+            """,
+            row,
+        )
+        conn.commit()
+
+
+def get_cached_panchanga_jd(
+    jd_ut: float,
+    location: ObserverLocation,
+) -> dict[str, Any] | None:
+    if not cache_enabled():
+        return None
+
+    from engine.astronomy.jd_calendar import CivilDay, format_civil_iso
+
+    civil = CivilDay.from_jd_ut(float(jd_ut))
+    date_key = format_civil_iso(civil.year, civil.month, civil.day)
+    location_key, _ = resolve_cache_keys(location)
+    ensure_schema()
+
+    with _connect() as conn:
+        row = conn.execute(
+            """
+            SELECT payload_json FROM panchanga_cache
+            WHERE location_key = ? AND date = ?
+            """,
+            (location_key, date_key),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    payload = json.loads(row["payload_json"])
+    if not _payload_cache_valid(payload):
+        logger.debug(
+            "Stale panchanga cache for jd %s (%s) @ %s — recomputing",
+            jd_ut,
+            date_key,
+            location_key,
+        )
+        return None
+    return payload
+
+
+def store_panchanga_cache_jd(
+    jd_ut: float,
+    location: ObserverLocation,
+    raw: dict[str, Any],
+) -> None:
+    if not cache_enabled():
+        return
+
+    date_key = raw.get("date_ad") or raw.get("date")
+    if not date_key:
+        from engine.astronomy.jd_calendar import CivilDay, format_civil_iso
+
+        civil = CivilDay.from_jd_ut(float(jd_ut))
+        date_key = format_civil_iso(civil.year, civil.month, civil.day)
+
+    location_key, city_id = resolve_cache_keys(location)
+    ensure_schema()
+    row = _row_from_panchanga(
+        raw, location_key=location_key, city_id=city_id, date_key=date_key
+    )
 
     with _connect() as conn:
         conn.execute(

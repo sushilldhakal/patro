@@ -42,6 +42,8 @@ def parse_query_datetime(
     country: str | None = None,
 ) -> datetime:
     """Parse ISO datetime; naive values use the observer timezone; omit for now."""
+    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local, parse_ephemeris_instant
+
     tz = resolve_observer_timezone(
         timezone_name, lat=lat, lon=lon, country=country,
     )
@@ -50,10 +52,23 @@ def parse_query_datetime(
     text = raw.strip()
     if text.endswith("Z"):
         text = f"{text[:-1]}+00:00"
-    dt = datetime.fromisoformat(text)
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=tz)
-    return dt.astimezone(tz)
+    try:
+        instant = parse_ephemeris_instant(text)
+    except ValueError:
+        instant = datetime.fromisoformat(text)
+    if isinstance(instant, UtInstant):
+        local = format_ut_instant_local(instant, timezone_name)["local"]
+        # Re-parse as CE wall clock when possible; BCE falls back to anchor via expanded ISO.
+        try:
+            instant = parse_ephemeris_instant(local)
+        except ValueError:
+            instant = parse_ephemeris_instant(text)
+    if isinstance(instant, UtInstant):
+        # Last resort: UTC expanded instant as datetime (year may clamp — avoid for BCE callers).
+        return datetime.fromisoformat(instant.isoformat())
+    if instant.tzinfo is None:
+        return instant.replace(tzinfo=tz)
+    return instant.astimezone(tz)
 
 
 def parse_clock_on_date(
@@ -66,6 +81,8 @@ def parse_clock_on_date(
     country: str | None = None,
 ) -> datetime:
     """Apply HH:MM (or HH:MM:SS) on a civil date in the observer timezone."""
+    from engine.astronomy.ut_instant import local_wall_instant
+
     tz = resolve_observer_timezone(
         timezone_name, lat=lat, lon=lon, country=country,
     )
@@ -75,7 +92,12 @@ def parse_clock_on_date(
     hour = int(parts[0])
     minute = int(parts[1])
     second = int(parts[2]) if len(parts) > 2 else 0
-    return datetime.combine(greg, time(hour, minute, second), tzinfo=tz)
+    if isinstance(greg, date):
+        return datetime.combine(greg, time(hour, minute, second), tzinfo=tz)
+    # Pre-1 CE: resolve the same wall clock on the JD axis instead.
+    return local_wall_instant(
+        greg, timezone_name, hour=hour, minute=minute, second=second
+    )
 
 
 def resolve_vedic_day_anchor(
@@ -88,49 +110,80 @@ def resolve_vedic_day_anchor(
     Instants before today's sunrise belong to the previous vedic day.
     Returns (anchor_date, sunrise_utc, sunset_utc, next_sunrise_utc).
     """
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunset_civil
+    from engine.astronomy.ut_instant import UtInstant, local_civil_fields
+
     tz = resolve_observer_timezone(location.timezone, lat=location.lat, lon=location.lon)
-    local = instant_local.astimezone(tz)
-    civil = local.date()
-    sunrise_today = calculate_sunrise(
-        civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    ).astimezone(tz)
+
+    if isinstance(instant_local, UtInstant):
+        fields = local_civil_fields(instant_local, location.timezone)
+        civil = CivilDay(fields.year, fields.month, fields.day)
+        local = instant_local
+    else:
+        local = instant_local.astimezone(tz)
+        civil_raw = local.date()
+        civil = (
+            civil_raw
+            if isinstance(civil_raw, date)
+            else CivilDay(civil_raw.year, civil_raw.month, civil_raw.day)
+        )
+
+    def _sunrise(day: date | CivilDay) -> datetime:
+        if isinstance(day, CivilDay) and date_if_supported(day.year, day.month, day.day) is None:
+            return calculate_sunrise_civil(
+                day,
+                latitude=location.lat,
+                longitude=location.lon,
+                timezone_name=location.timezone,
+            )
+        if isinstance(day, CivilDay):
+            day = day.to_date()
+        return calculate_sunrise(
+            day,
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
+
+    def _sunset(day: date | CivilDay) -> datetime:
+        if isinstance(day, CivilDay) and date_if_supported(day.year, day.month, day.day) is None:
+            return calculate_sunset_civil(
+                day,
+                latitude=location.lat,
+                longitude=location.lon,
+                timezone_name=location.timezone,
+            )
+        if isinstance(day, CivilDay):
+            day = day.to_date()
+        return calculate_sunset(
+            day,
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
+
+    sunrise_today = _sunrise(civil).astimezone(tz)
 
     if local < sunrise_today:
         anchor = civil - timedelta(days=1)
     else:
         anchor = civil
 
-    sunrise_utc = calculate_sunrise(
-        anchor,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    sunset_utc = calculate_sunset(
-        anchor,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    next_sunrise_utc = calculate_sunrise(
-        anchor + timedelta(days=1),
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
+    sunrise_utc = _sunrise(anchor)
+    sunset_utc = _sunset(anchor)
+    next_sunrise_utc = _sunrise(anchor + timedelta(days=1))
     return anchor, sunrise_utc, sunset_utc, next_sunrise_utc
 
 
-def _parse_window_bounds(block: dict[str, Any], tz: ZoneInfo) -> tuple[datetime, datetime]:
-    start = datetime.fromisoformat(block["start_local"].replace("Z", "+00:00"))
-    end = datetime.fromisoformat(block["end_local"].replace("Z", "+00:00"))
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=tz)
-    if end.tzinfo is None:
-        end = end.replace(tzinfo=tz)
+def _parse_window_bounds(
+    block: dict[str, Any],
+    timezone_name: str,
+) -> tuple[datetime | UtInstant, datetime | UtInstant]:
+    from engine.astronomy.ut_instant import UtInstant, parse_local_wall_iso
+
+    start = parse_local_wall_iso(block["start_local"], timezone_name)
+    end = parse_local_wall_iso(block["end_local"], timezone_name)
     return start, end
 
 
@@ -154,7 +207,7 @@ def compute_muhurta_now(
 
     result: dict[str, Any] = {}
     for key, block in windows.items():
-        start, end = _parse_window_bounds(block, tz)
+        start, end = _parse_window_bounds(block, timezone_name)
         result[key] = {
             **block,
             "active": start <= local < end,
@@ -245,7 +298,9 @@ def build_panchanga_at_time(
     from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
 
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
-    from services.panchanga_api import build_daily_state
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from engine.vedic.bikram_sambat import gregorian_to_bs
+    from services.panchanga_api import build_daily_state, build_daily_state_civil
 
     anchor, sunrise_utc, sunset_utc, next_sunrise_utc = resolve_vedic_day_anchor(
         instant_local, location
@@ -309,9 +364,27 @@ def build_panchanga_at_time(
     }
 
     # Full udaya day state for timeline, rashi spans, balam, festivals, etc.
-    state = build_daily_state(
-        anchor, location, include_festivals=True, include_detail=True
-    )
+    if isinstance(anchor, CivilDay) and date_if_supported(
+        anchor.year, anchor.month, anchor.day
+    ) is None:
+        bs_y, bs_m, bs_d = gregorian_to_bs(anchor)
+        state = build_daily_state_civil(
+            anchor,
+            location,
+            patro_bs_year=bs_y,
+            patro_bs_month=bs_m,
+            patro_bs_day=bs_d,
+            include_festivals=True,
+            include_detail=True,
+        )
+    else:
+        greg_anchor = anchor.to_date() if isinstance(anchor, CivilDay) else anchor
+        state = build_daily_state(
+            greg_anchor,
+            location,
+            include_festivals=True,
+            include_detail=True,
+        )
     detail = dict(state.get("detail") or {})
 
     # Instant overlays for cards + graha row; keep daily spans in detail for chart tracks.

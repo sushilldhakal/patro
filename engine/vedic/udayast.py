@@ -15,9 +15,16 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
+from engine.astronomy.motion import is_retrograde
 from engine.astronomy.swiss_eph import get_planet_position, init_ephemeris
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.vedic.gochar import GRAHA_META, GRAHA_ORDER, _attach_local_time, _longitude_for
+from engine.vedic.gochar import (
+    GRAHA_META,
+    GRAHA_ORDER,
+    _attach_local_time,
+    _entry_sort_key,
+    _longitude_for,
+)
 
 # Slow grahas + inner planets (exclude Sun/Moon/Rahu/Ketu for patro udayast rows).
 UDAYAST_GRAHAS: list[str] = ["mars", "mercury", "jupiter", "venus", "saturn"]
@@ -34,8 +41,7 @@ def _elongation(graha: str, dt: datetime) -> tuple[float, bool, bool]:
     separation = min(diff, 360.0 - diff)
     east_of_sun = diff < 180.0
     speed = float(get_planet_position(dt, graha)["speed"])
-    retrograde = speed < 0.0
-    return separation, east_of_sun, retrograde
+    return separation, east_of_sun, is_retrograde(graha, speed)
 
 
 def combustion_threshold(graha: str, retrograde: bool, east_of_sun: bool) -> float:
@@ -151,7 +157,7 @@ def find_udayast_events_in_range(
             was_visible = now_visible
             cursor = crossing + timedelta(seconds=90)
 
-    events.sort(key=lambda e: e["entry_time_utc"])
+    events.sort(key=_entry_sort_key)
     return events
 
 
@@ -188,9 +194,56 @@ def build_udayast_range(
         grahas=grahas,
     )
     events = [_attach_local_time(dict(e), tz) for e in raw]
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
     return {
-        "from_date_ad": from_date.isoformat(),
-        "to_date_ad": to_date.isoformat(),
+        "from_jd": civil_day_jd_from_date(from_date),
+        "to_jd": civil_day_jd_from_date(to_date),
+        "level": "udayast",
+        "location": location.as_dict(),
+        "events": events,
+    }
+
+
+def build_udayast_range_civil(
+    from_civil: Any,
+    to_civil: Any,
+    location: Any,
+    *,
+    grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Udaya/asta timeline between civil days (inclusive), BCE-safe."""
+    from engine.astronomy.jd_calendar import CivilDay
+    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunrise_civil_next
+
+    if not isinstance(from_civil, CivilDay) or not isinstance(to_civil, CivilDay):
+        raise TypeError("from_civil and to_civil must be CivilDay")
+    if to_civil.to_jd_ut() < from_civil.to_jd_ut():
+        raise ValueError("to_date must be on or after from_date")
+
+    init_ephemeris()
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = calculate_sunrise_civil(
+        from_civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    until_sunrise = calculate_sunrise_civil_next(
+        to_civil,
+        latitude=location.lat,
+        longitude=location.lon,
+        timezone_name=location.timezone,
+    )
+    raw = find_udayast_events_in_range(
+        from_sunrise,
+        until_sunrise,
+        grahas=grahas,
+    )
+    events = [_attach_local_time(dict(e), tz) for e in raw]
+    return {
+        "from_jd": float(from_civil.to_jd_ut()),
+        "to_jd": float(to_civil.to_jd_ut()),
         "level": "udayast",
         "location": location.as_dict(),
         "events": events,

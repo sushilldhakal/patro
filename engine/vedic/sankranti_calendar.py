@@ -9,6 +9,7 @@ from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.bikram_sambat import _sankranti_start_date, gregorian_to_bs
 from engine.vedic.names_ne import to_nepali_digits
+from engine.astronomy.ut_instant import day_instant_utc
 from engine.vedic.sankranti import (
     BS_MONTH_NAMES,
     RASHI_NAMES,
@@ -97,7 +98,7 @@ def sankrantis_on_date(
     window_hours: int = 24,
 ) -> list[dict[str, Any]]:
     """Sankrantis occurring on or within window_hours of a civil date."""
-    day_start = datetime(target.year, target.month, target.day, tzinfo=timezone.utc)
+    day_start = day_instant_utc(target)
     window_start = day_start - timedelta(hours=window_hours)
     window_end = day_start + timedelta(days=1, hours=window_hours)
 

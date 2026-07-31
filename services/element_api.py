@@ -40,6 +40,7 @@ from engine.vedic.element_boundaries import (
     find_yoga_end,
     find_yoga_start,
 )
+from engine.astronomy.ut_instant import local_wall_instant
 from engine.vedic.names_ne import (
     KARANA_NAMES_NE,
     NAKSHATRA_NAMES_NE,
@@ -243,8 +244,10 @@ def element_spans(
     if spec.kind != "span" or spec.current is None or spec.end_of is None:
         raise TypeError(f"Element '{name}' is a {spec.kind} element — use day/month, not spans.")
     tz = resolve_observer_timezone(location.timezone)
-    start_utc = datetime(start.year, start.month, start.day, tzinfo=tz).astimezone(timezone.utc)
-    end_utc = (datetime(end.year, end.month, end.day, tzinfo=tz) + timedelta(days=1)).astimezone(timezone.utc)
+    # local_wall_instant, not datetime(...), so a pre-1 CE range works — the CE
+    # branch builds the identical datetime, BCE gets a JD-backed UtInstant.
+    start_utc = local_wall_instant(start, location.timezone)
+    end_utc = local_wall_instant(end, location.timezone) + timedelta(days=1)
 
     spans: list[dict[str, Any]] = []
     cursor = start_utc

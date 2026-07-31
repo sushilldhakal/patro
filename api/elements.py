@@ -13,17 +13,16 @@ from __future__ import annotations
 from datetime import date, timedelta
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from api.deps import LocationDep
-from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start
 from services.element_api import (
     element_day,
     element_month,
     element_spans,
     list_elements,
 )
-from services.panchanga_api import resolve_panchanga_date
+from app.day_resolver import greg_date_for_date_key
 
 router = APIRouter(tags=["elements"])
 
@@ -43,7 +42,7 @@ def panchanga_element_day(
 ):
     """A single element's block for one day (thin slice of the daily payload)."""
     try:
-        greg = resolve_panchanga_date(date_key, era=era)
+        greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     try:
@@ -56,29 +55,64 @@ def panchanga_element_day(
 def panchanga_element_spans(
     name: str,
     location: LocationDep,
-    start: date | None = Query(None, description="Range start (AD, YYYY-MM-DD)"),
-    end: date | None = Query(None, description="Range end (AD, inclusive)"),
-    bs_year: int | None = Query(None, description="BS year — with bs_month, spans that whole BS month"),
-    bs_month: int | None = Query(None, ge=1, le=12, description="BS month (1–12)"),
+    request: Request,
+    start_jd: float | None = Query(None, description="Range start as Julian Day (0h UT)"),
+    end_jd: float | None = Query(None, description="Range end as Julian Day (0h UT, inclusive)"),
 ):
-    """Continuous begin→end spans of one element over a date range or a BS month."""
-    if bs_year is not None and bs_month is not None:
-        try:
-            start = get_bs_month_start(bs_year, bs_month)
-            end = start + timedelta(days=get_bs_month_length(bs_year, bs_month) - 1)
-        except (ValueError, KeyError) as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-    if start is None or end is None:
+    """Continuous begin→end spans of one element over a Julian Day range.
+
+    The range arrives as Julian Days, never as calendar strings. ``start``/``end``
+    used to be ``datetime.date`` query params, which rejected every pre-1 CE range
+    outright ("invalid character in year" on ``-0037-06-19``) — a whole era of the
+    axis was unreachable because of a parameter type. ``era`` + ``year`` + ``month``
+    on the query string is resolved to a JD span by ``EraMiddleware``.
+    """
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+
+    ctx = getattr(request.state, "era_ctx", None)
+
+    # Preferred: the era middleware already resolved era+year+month to a span.
+    if start_jd is None and end_jd is None and ctx is not None and ctx.julian is not None:
+        start_jd = ctx.julian
+        if ctx.julian_end is not None:
+            end_jd = ctx.julian_end
+        elif ctx.month is not None:
+            from engine.calendar.era import to_jd
+
+            # The month came in written in the *input* calendar, so the month
+            # after it must be found in that same one. Using the display era here
+            # would silently walk a different calendar's month boundary.
+            span_era = ctx.input_era or ctx.era
+            try:
+                next_month = (
+                    to_jd(span_era, ctx.year, ctx.month + 1, 1)
+                    if ctx.month < 12
+                    else to_jd(span_era, (ctx.year or 0) + 1, 1, 1)
+                )
+                end_jd = civil_day_add(next_month, -1)
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    if start_jd is None or end_jd is None:
         raise HTTPException(
             status_code=400,
-            detail="Provide start & end (AD), or bs_year & bs_month.",
+            detail="Provide start_jd & end_jd, or era + year + month.",
         )
-    if end < start:
+    if end_jd < start_jd:
         raise HTTPException(status_code=400, detail="end must not precede start.")
-    if (end - start).days > 400:
+    if (end_jd - start_jd) > 400:
         raise HTTPException(status_code=400, detail="Range too large (max ~400 days).")
+    # Hand back a real ``date`` whenever the JD is CE, so the existing CE path
+    # runs on ``datetime`` exactly as before; only pre-1 CE days travel as
+    # ``CivilDay`` and pick up the JD-backed instant handling.
+    from engine.astronomy.jd_calendar import date_if_supported
+
+    def _bound(jd: float):
+        civil = CivilDay.from_jd_ut(jd)
+        return date_if_supported(civil.year, civil.month, civil.day) or civil
+
     try:
-        return element_spans(name, start, end, location)
+        return element_spans(name, _bound(start_jd), _bound(end_jd), location)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except TypeError as exc:  # table element asked for spans

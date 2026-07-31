@@ -319,6 +319,15 @@ _TITHI_EN = [
 ]
 
 
+def _month_is_ce(bs_year: int, bs_month: int) -> bool:
+    """True when every day of this BS month has a Gregorian ``date``."""
+    from engine.astronomy.jd_calendar import date_if_supported
+    from engine.vedic.bikram_sambat import get_bs_month_start_civil
+
+    start = get_bs_month_start_civil(bs_year, bs_month)
+    return date_if_supported(start.year, start.month, start.day) is not None
+
+
 def get_sait_month_all(
     bs_year: int,
     bs_month: int,
@@ -333,6 +342,19 @@ def get_sait_month_all(
     categories = rules.get("categories") or {}
     if not 1 <= bs_month <= 12:
         raise ValueError(f"bs_month must be 1–12, got {bs_month}")
+
+    # Pre-1 CE months have no ``date`` for the muhūrta rule stack to run on, and
+    # sait is a modern convention besides. Answer with the normal shape and empty
+    # lists rather than a 400 — a hard error here blanked the whole home page for
+    # BS < 60 even though its panchanga computes fine.
+    if not _month_is_ce(bs_year, bs_month):
+        return {
+            "bs_year": bs_year,
+            "bs_month": bs_month,
+            "month_name_ne": BS_MONTHS_NE[bs_month - 1],
+            "categories": {cat_id: [] for cat_id in categories},
+            "unavailable_reason": "pre_ce",
+        }
 
     by_category = {
         cat_id: generate_sait_month_days(bs_year, bs_month, cat_id, location)
