@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from engine.astronomy.positions import NAKSHATRA_NAMES, RASHI_NAMES, RASHI_NAMES_NE
+from engine.astronomy.panchanga import NAKSHATRA_NAMES
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 
 NavataraTone = Literal["best", "good", "neutral", "bad", "worst"]

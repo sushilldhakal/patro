@@ -5,13 +5,11 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.positions import (
-    NAKSHATRA_NAMES,
-    NAKSHATRA_SPAN,
-    get_chandra_rashi,
-    get_moon_longitude,
-    get_sun_longitude,
-)
+from engine.astronomy.moon import moon_service
+from engine.astronomy.panchanga import NAKSHATRA_NAMES, NAKSHATRA_SPAN
+from engine.astronomy.rashi import rashi_service
+from engine.astronomy.sun import sun_service
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.element_boundaries import find_moon_pada_end, find_moon_rashi_end
 from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE, to_nepali_digits
@@ -21,7 +19,7 @@ PADA_SPAN = NAKSHATRA_SPAN / 4
 
 def get_surya_nakshatra(dt: datetime) -> dict[str, Any]:
     """Sun nakshatra at the given instant (udayakal)."""
-    sun_long = get_sun_longitude(dt)
+    sun_long = sun_service.longitude(as_julian_day(dt))
     nak_num = int(sun_long / NAKSHATRA_SPAN) + 1
     if nak_num > 27:
         nak_num = 1
@@ -33,7 +31,7 @@ def get_surya_nakshatra(dt: datetime) -> dict[str, Any]:
 
 
 def _moon_pada_at(dt: datetime) -> tuple[int, int]:
-    moon_long = get_moon_longitude(dt)
+    moon_long = moon_service.longitude(as_julian_day(dt))
     nak_num = int(moon_long / NAKSHATRA_SPAN) + 1
     if nak_num > 27:
         nak_num = 1
@@ -75,7 +73,7 @@ def build_chandra_rashi_spans(
     cursor = sunrise_dt
 
     while cursor < next_sunrise_dt and len(spans) < 4:
-        rashi = get_chandra_rashi(cursor)
+        rashi = rashi_service.chandra(as_julian_day(cursor))
         end_dt = min(find_moon_rashi_end(cursor), next_sunrise_dt)
         span: dict[str, Any] = {
             "number": rashi["number"],

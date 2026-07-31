@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from engine.astronomy.positions import NAKSHATRA_NAMES
+from engine.astronomy.panchanga import NAKSHATRA_NAMES
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import (
     LocalCivilFields,

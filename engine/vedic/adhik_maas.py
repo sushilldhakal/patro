@@ -14,7 +14,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Optional
 
-from engine.astronomy.swiss_eph import EphemerisError
+from engine.astronomy.engine import EphemerisError
 from engine.vedic.sankranti import get_sun_rashi_at_time
 from engine.vedic.tithi_boundaries import find_next_tithi, find_tithi_end
 

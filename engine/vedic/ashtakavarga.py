@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.astronomy.positions import RASHI_NAMES, RASHI_NAMES_NE
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
 
 # Contributors, in the column order the client renders.
 CONTRIBUTORS = ["lagna", "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]

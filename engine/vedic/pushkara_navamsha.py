@@ -17,7 +17,8 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from engine.astronomy.engine import SIDM_LAHIRI
-from engine.astronomy.positions import get_sidereal_asc_longitude
+from engine.astronomy.lagna import lagna_service
+from engine.astronomy.ut_instant import as_julian_day
 from engine.astronomy.timescale import resolve_observer_timezone
 
 _NAVAMSHA_DEG = 30.0 / 9.0  # 3°20′
@@ -45,7 +46,10 @@ def pushkara_degrees_for_rashi(rashi_number: int) -> tuple[float, float]:
 def _degree_in_rashi(
     dt: datetime, *, lat: float, lon: float, ayanamsa: int = SIDM_LAHIRI
 ) -> float:
-    return get_sidereal_asc_longitude(dt, lat=lat, lon=lon, ayanamsa=ayanamsa) % 30.0
+    return (
+        lagna_service.longitude(as_julian_day(dt), lat=lat, lon=lon, ayanamsa=ayanamsa)
+        % 30.0
+    )
 
 
 def find_lagna_degree_crossing(

@@ -5,24 +5,49 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Callable
 
-from engine.astronomy.positions import (
+from engine.astronomy.moon import moon_service
+from engine.astronomy.panchanga import (
     KARANA_NAMES,
     KARANA_SPAN,
     NAKSHATRA_NAMES,
     NAKSHATRA_SPAN,
     YOGA_NAMES,
     YOGA_SPAN,
-    get_karana,
-    get_moon_longitude,
-    get_nakshatra,
-    get_sun_longitude,
-    get_tithi_angle,
-    get_yoga,
+    panchanga_service,
 )
-
+from engine.astronomy.sun import sun_service
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.tithi import calculate_tithi
 from engine.vedic.tithi_boundaries import find_tithi_end, find_tithi_start
+
+# This module bisects in datetime space, so it needs the angas as functions of an
+# instant. These adapters are the only place that conversion happens; everything
+# below passes them around as callables the way it always has.
+
+
+def _moon_longitude(dt: datetime, ayanamsa: int | None = None) -> float:
+    return moon_service.longitude(as_julian_day(dt), ayanamsa=ayanamsa)
+
+
+def _sun_longitude(dt: datetime) -> float:
+    return sun_service.longitude(as_julian_day(dt))
+
+
+def _elongation(dt: datetime) -> float:
+    return panchanga_service.elongation(as_julian_day(dt))
+
+
+def _nakshatra_number(dt: datetime, ayanamsa: int | None = None) -> int:
+    return panchanga_service.nakshatra(as_julian_day(dt), ayanamsa=ayanamsa)["number"]
+
+
+def _yoga_number(dt: datetime, ayanamsa: int | None = None) -> int:
+    return panchanga_service.yoga(as_julian_day(dt), ayanamsa=ayanamsa)["number"]
+
+
+def _karana_number(dt: datetime) -> int:
+    return panchanga_service.karana(as_julian_day(dt))["number"]
 
 
 def _parse_instant(value: str) -> datetime:
@@ -57,15 +82,15 @@ def _find_span_start(
 
 
 def find_nakshatra_start(dt: datetime, ayanamsa: int | None = None) -> datetime:
-    return _find_span_start(dt, lambda moment: get_nakshatra(moment, ayanamsa=ayanamsa)[0])
+    return _find_span_start(dt, lambda moment: _nakshatra_number(moment, ayanamsa))
 
 
 def find_yoga_start(dt: datetime, ayanamsa: int | None = None) -> datetime:
-    return _find_span_start(dt, lambda moment: get_yoga(moment, ayanamsa=ayanamsa)[0])
+    return _find_span_start(dt, lambda moment: _yoga_number(moment, ayanamsa))
 
 
 def find_karana_start(dt: datetime) -> datetime:
-    return _find_span_start(dt, lambda moment: get_karana(moment)[0] - 1)
+    return _find_span_start(dt, lambda moment: _karana_number(moment) - 1)
 
 
 def _find_span_end(
@@ -142,12 +167,12 @@ def _enrich_next_anga(
 
 
 def _moon_rashi_index(dt: datetime) -> int:
-    moon_long = get_moon_longitude(dt)
+    moon_long = _moon_longitude(dt)
     return int(moon_long / 30) % 12
 
 
 def _moon_pada_index(dt: datetime) -> int:
-    moon_long = get_moon_longitude(dt)
+    moon_long = _moon_longitude(dt)
     nak_num = int(moon_long / NAKSHATRA_SPAN) + 1
     if nak_num > 27:
         nak_num = 1
@@ -161,7 +186,7 @@ def find_moon_rashi_end(dt: datetime) -> datetime:
         dt,
         _moon_rashi_index,
         30.0,
-        get_moon_longitude,
+        _moon_longitude,
         max_hours=60,
     )
 
@@ -171,40 +196,33 @@ def find_moon_pada_end(dt: datetime) -> datetime:
         dt,
         _moon_pada_index,
         PADA_SPAN,
-        get_moon_longitude,
+        _moon_longitude,
         max_hours=8,
     )
 
 
 def find_nakshatra_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
     def get_index(moment: datetime) -> int:
-        return get_nakshatra(moment, ayanamsa=ayanamsa)[0]
+        return _nakshatra_number(moment, ayanamsa)
 
-    def get_value(moment: datetime) -> float:
-        from engine.astronomy.swiss_eph import get_moon_longitude
-
-        return get_moon_longitude(moment)
-
-    return _find_span_end(dt, get_index, NAKSHATRA_SPAN, get_value)
+    return _find_span_end(dt, get_index, NAKSHATRA_SPAN, _moon_longitude)
 
 
 def find_sun_nakshatra_end(dt: datetime) -> datetime:
     def get_index(moment: datetime) -> int:
-        sun_long = get_sun_longitude(moment)
+        sun_long = _sun_longitude(moment)
         nak_num = int(sun_long / NAKSHATRA_SPAN) + 1
         return 1 if nak_num > 27 else nak_num
 
-    return _find_span_end(dt, get_index, NAKSHATRA_SPAN, get_sun_longitude)
+    return _find_span_end(dt, get_index, NAKSHATRA_SPAN, _sun_longitude)
 
 
 def find_yoga_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
     def get_index(moment: datetime) -> int:
-        return get_yoga(moment, ayanamsa=ayanamsa)[0]
+        return _yoga_number(moment, ayanamsa)
 
     def get_value(moment: datetime) -> float:
-        from engine.astronomy.swiss_eph import get_sun_moon_positions
-
-        sun_long, moon_long = get_sun_moon_positions(moment)
+        sun_long, moon_long = sun_service.sun_moon_longitudes(as_julian_day(moment))
         return (sun_long + moon_long) % 360
 
     return _find_span_end(dt, get_index, YOGA_SPAN, get_value)
@@ -212,9 +230,9 @@ def find_yoga_end(dt: datetime, ayanamsa: int | None = None) -> datetime:
 
 def find_karana_end(dt: datetime) -> datetime:
     def get_index(moment: datetime) -> int:
-        return get_karana(moment)[0] - 1
+        return _karana_number(moment) - 1
 
-    return _find_span_end(dt, get_index, KARANA_SPAN, get_tithi_angle)
+    return _find_span_end(dt, get_index, KARANA_SPAN, _elongation)
 
 
 def _element_with_span(
@@ -357,8 +375,9 @@ def build_nakshatra_block(
 ) -> dict:
     from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 
-    number, name, progress = get_nakshatra(dt, ayanamsa=ayanamsa)
-    moon_long = get_moon_longitude(dt, ayanamsa=ayanamsa)
+    nak = panchanga_service.nakshatra(as_julian_day(dt), ayanamsa=ayanamsa)
+    number, name, progress = nak["number"], nak["name"], nak["progress"]
+    moon_long = _moon_longitude(dt, ayanamsa=ayanamsa)
     pos_in_nak = moon_long % NAKSHATRA_SPAN
     pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
     start_dt = find_nakshatra_start(dt, ayanamsa=ayanamsa)
@@ -394,7 +413,8 @@ def build_yoga_block(
 ) -> dict:
     from engine.vedic.names_ne import YOGA_NAMES_NE
 
-    number, name, progress = get_yoga(dt, ayanamsa=ayanamsa)
+    yoga = panchanga_service.yoga(as_julian_day(dt), ayanamsa=ayanamsa)
+    number, name, progress = yoga["number"], yoga["name"], yoga["progress"]
     start_dt = find_yoga_start(dt, ayanamsa=ayanamsa)
     end_dt = find_yoga_end(dt, ayanamsa=ayanamsa)
     next_num = _next_cyclic(number, 27)
@@ -432,10 +452,14 @@ def _karana_name_ne(name: str) -> str:
 def build_karana_block(
     dt: datetime, sunrise_dt: datetime, timezone_name: str | None = None
 ) -> dict:
-    number, name = get_karana(dt)
+    karana = panchanga_service.karana(as_julian_day(dt))
+    number, name = karana["number"], karana["name"]
     start_dt = find_karana_start(dt)
     end_dt = find_karana_end(dt)
-    next_num, next_name = get_karana(end_dt + timedelta(seconds=90))
+    next_karana = panchanga_service.karana(
+        as_julian_day(end_dt + timedelta(seconds=90))
+    )
+    next_num, next_name = next_karana["number"], next_karana["name"]
     block = _element_with_span(
         sunrise_dt,
         number=number,

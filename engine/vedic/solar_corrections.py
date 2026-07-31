@@ -5,8 +5,8 @@ from __future__ import annotations
 from datetime import date, datetime, time, timezone
 from typing import Any, Literal
 
-from engine.astronomy.swiss_eph import _ensure_initialized, get_julian_day, init_ephemeris
 from engine.astronomy.engine import default_engine
+from engine.astronomy.ut_instant import as_julian_day
 from engine.astronomy.timescale import is_nepal_observer, nepal_timezone_era, resolve_observer_timezone
 
 SignKind = Literal["dhan", "rin"]
@@ -66,10 +66,8 @@ def compute_belaantar(at: datetime) -> dict[str, Any]:
     Positive (धन) / negative (ऋण) are reference values only — listed rise/set
     do not apply belaantar (only deshaantar).
     """
-    init_ephemeris()
-    _ensure_initialized()
     utc = at.astimezone(timezone.utc)
-    jd = get_julian_day(utc)
+    jd = as_julian_day(utc)
     e_days = default_engine.equation_of_time(jd)
     patro_min = -(e_days * 24.0 * 60.0)
     return {

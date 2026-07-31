@@ -5,7 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.positions import find_lagna_end, get_lagna
+from engine.astronomy.lagna import lagna_service
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.ghati_time import time_from_sunrise
 
 
@@ -28,12 +29,18 @@ def build_lagna_spans(
     cursor = sunrise_dt
 
     for index in range(12):
-        lagna = get_lagna(cursor, lat=lat, lon=lon, ayanamsa=mode)
-        end_dt = (
-            next_sunrise_dt
-            if index == 11
-            else find_lagna_end(cursor, lat=lat, lon=lon, ayanamsa=mode)
-        )
+        cursor_jd = as_julian_day(cursor)
+        lagna = lagna_service.lagna(cursor_jd, lat=lat, lon=lon, ayanamsa=mode)
+        if index == 11:
+            end_dt = next_sunrise_dt
+        else:
+            end_jd = lagna_service.next_boundary(
+                cursor_jd, lat=lat, lon=lon, ayanamsa=mode
+            )
+            # Offset from the caller's own instant rather than rebuilt from the
+            # JD: datetime_from_jd truncates to whole seconds, which would
+            # coarsen every span boundary this payload prints.
+            end_dt = cursor + timedelta(days=end_jd - cursor_jd)
         if end_dt <= cursor:
             end_dt = cursor + timedelta(seconds=60)
 

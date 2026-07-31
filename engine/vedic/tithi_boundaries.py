@@ -3,13 +3,13 @@
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
-from engine.astronomy.positions import TITHI_SPAN, get_tithi_angle
+from engine.astronomy.panchanga import TITHI_SPAN, panchanga_service
+from engine.astronomy.ut_instant import as_julian_day, day_instant_utc
 from engine.vedic.tithi import calculate_tithi
-from engine.astronomy.ut_instant import day_instant_utc
 
 
 def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: int = 60) -> datetime:
-    current_elongation = get_tithi_angle(dt)
+    current_elongation = panchanga_service.elongation(as_julian_day(dt))
     current_tithi = int(current_elongation / TITHI_SPAN)
     start_dt = dt
     end_dt = dt + timedelta(hours=30)
@@ -17,7 +17,7 @@ def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: in
 
     for _ in range(max_iterations):
         mid_dt = start_dt + (end_dt - start_dt) / 2
-        mid_tithi = int(get_tithi_angle(mid_dt) / TITHI_SPAN)
+        mid_tithi = int(panchanga_service.elongation(as_julian_day(mid_dt)) / TITHI_SPAN)
         if end_dt - start_dt < tolerance:
             return end_dt
         if mid_tithi == current_tithi:
@@ -28,14 +28,14 @@ def find_tithi_end(dt: datetime, max_iterations: int = 50, tolerance_seconds: in
 
 
 def find_tithi_start(dt: datetime, max_iterations: int = 50, tolerance_seconds: int = 60) -> datetime:
-    current_tithi = int(get_tithi_angle(dt) / TITHI_SPAN)
+    current_tithi = int(panchanga_service.elongation(as_julian_day(dt)) / TITHI_SPAN)
     start_dt = dt - timedelta(hours=30)
     end_dt = dt
     tolerance = timedelta(seconds=tolerance_seconds)
 
     for _ in range(max_iterations):
         mid_dt = start_dt + (end_dt - start_dt) / 2
-        mid_tithi = int(get_tithi_angle(mid_dt) / TITHI_SPAN)
+        mid_tithi = int(panchanga_service.elongation(as_julian_day(mid_dt)) / TITHI_SPAN)
         if end_dt - start_dt < tolerance:
             return end_dt
         if mid_tithi == current_tithi:

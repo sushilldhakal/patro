@@ -3,25 +3,11 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from engine.astronomy.engine import default_engine
+from engine.astronomy.engine import EphemerisError, default_engine
 from engine.astronomy.jd_calendar import CivilDay, civil_day_add
-from engine.astronomy.ut_instant import UtInstant, day_instant_utc
-from engine.astronomy.swiss_eph import EphemerisError, get_sun_longitude
-
-RASHI_NAMES = [
-    "Mesha",
-    "Vrishabha",
-    "Mithuna",
-    "Karka",
-    "Simha",
-    "Kanya",
-    "Tula",
-    "Vrishchika",
-    "Dhanu",
-    "Makara",
-    "Kumbha",
-    "Meena",
-]
+from engine.astronomy.rashi import RASHI_NAMES
+from engine.astronomy.sun import sun_service
+from engine.astronomy.ut_instant import UtInstant, as_julian_day, day_instant_utc
 
 BS_MONTH_NAMES = [
     "Baishakh",
@@ -62,7 +48,7 @@ def _from_unix_seconds(seconds: float) -> datetime:
 
 
 def get_sun_rashi_at_time(dt: datetime) -> int:
-    sun_long = get_sun_longitude(dt, sidereal=True)
+    sun_long = sun_service.longitude(as_julian_day(dt), sidereal=True)
     return int(sun_long / 30) % 12
 
 
@@ -216,8 +202,8 @@ def _bisect_sankranti(
         if high - low < tolerance:
             break
         mid = low + (high - low) / 2
-        mid_err = _angular_error(get_sun_longitude(mid, sidereal=True), target_degree)
-        low_err = _angular_error(get_sun_longitude(low, sidereal=True), target_degree)
+        mid_err = _angular_error(sun_service.longitude(as_julian_day(mid), sidereal=True), target_degree)
+        low_err = _angular_error(sun_service.longitude(as_julian_day(low), sidereal=True), target_degree)
         if low_err == 0:
             return low
         if mid_err == 0:
@@ -241,7 +227,7 @@ def find_sankranti_brent(
     b = _to_unix_seconds(high)
 
     def f(ts: float) -> float:
-        return _angular_error(get_sun_longitude(_from_unix_seconds(ts), sidereal=True), target_degree)
+        return _angular_error(sun_service.longitude(as_julian_day(_from_unix_seconds(ts)), sidereal=True), target_degree)
 
     fa, fb = f(a), f(b)
     if fa == 0:

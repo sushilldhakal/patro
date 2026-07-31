@@ -10,7 +10,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.positions import get_chandra_rashi, get_karana, get_nakshatra
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.rashi import rashi_service
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.element_boundaries import (
     find_karana_end,
     find_moon_rashi_end,
@@ -215,7 +217,7 @@ def _shivavasa_at(tithi_absolute: int) -> dict[str, Any]:
 
 def _homahuti_at(instant: datetime) -> dict[str, Any]:
     sun_nak = get_surya_nakshatra(instant)["number"]
-    moon_nak = get_nakshatra(instant)[0]
+    moon_nak = panchanga_service.nakshatra(as_julian_day(instant))["number"]
     # The 27 nakshatras from the Sun's star to the Moon's are split into 9 groups
     # of 3 ("९ ले भाग"), each group governed by one graha's mukha. `distance // 3`
     # is that group index; the graha order is _HOMAHUTI_GRAHAS.
@@ -234,7 +236,7 @@ _CHANDRA_VASA_DIR_IDX = {1: 0, 2: 3, 3: 1, 0: 2}
 
 
 def _chandra_vasa_at(instant: datetime) -> dict[str, Any]:
-    rashi = get_chandra_rashi(instant)["number"]
+    rashi = rashi_service.chandra(as_julian_day(instant))["number"]
     return _direction(_CHANDRA_VASA_DIR_IDX[rashi % 4])
 
 
@@ -334,12 +336,12 @@ def _collect_vishti_spans(
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt
     while cursor < next_sunrise_dt:
-        _, name = get_karana(cursor)
+        name = panchanga_service.karana(as_julian_day(cursor))["name"]
         if name != "Vishti":
             cursor = find_karana_end(cursor) + timedelta(seconds=90)
             continue
         end_dt = min(find_karana_end(cursor), next_sunrise_dt)
-        rashi = get_chandra_rashi(cursor)["number"]
+        rashi = rashi_service.chandra(as_julian_day(cursor))["number"]
         loka_key = _BHADRA_LOKA_BY_RASHI.get(rashi, "prithvi")
         loka = _BHADRA_LOKA[loka_key]
         span: dict[str, Any] = {

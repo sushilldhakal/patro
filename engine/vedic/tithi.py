@@ -3,18 +3,11 @@
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
-from engine.astronomy.positions import (
-    TITHI_SPAN,
-    get_display_tithi,
-    get_paksha,
-    get_tithi_angle,
-    get_tithi_number,
-    get_tithi_progress,
-)
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.astronomy.ut_instant import day_instant_utc
+from engine.astronomy.ut_instant import as_julian_day, day_instant_utc
 
 TITHI_NAMES = [
     "Pratipada",
@@ -41,11 +34,12 @@ def calculate_tithi(dt: date | datetime) -> dict[str, Any]:
     elif isinstance(dt, datetime) and dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
 
-    elongation = get_tithi_angle(dt)
-    tithi_num = get_tithi_number(elongation)
-    paksha = get_paksha(tithi_num)
-    display_num = get_display_tithi(tithi_num)
-    progress = get_tithi_progress(elongation)
+    tithi = panchanga_service.tithi(as_julian_day(dt))
+    elongation = tithi["elongation"]
+    tithi_num = tithi["number"]
+    paksha = tithi["paksha"]
+    display_num = tithi["display_number"]
+    progress = tithi["progress"]
 
     if display_num == 15:
         name = "Purnima" if paksha == "shukla" else "Aausi"

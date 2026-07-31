@@ -5,12 +5,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from engine.astronomy.positions import (
-    NAKSHATRA_NAMES,
-    RASHI_NAMES,
-    RASHI_NAMES_NE,
-    get_nakshatra,
-)
+from engine.astronomy.panchanga import NAKSHATRA_NAMES, panchanga_service
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE
 from engine.vedic.tithi import calculate_tithi
@@ -125,7 +122,7 @@ def build_tarabalam(
 
 def _panchaka_remainder(dt: datetime, lagna_num: int, vaara_num: int) -> int:
     tithi_num = int(calculate_tithi(dt)["number"])
-    nak_num = int(get_nakshatra(dt)[0])
+    nak_num = panchanga_service.nakshatra(as_julian_day(dt))["number"]
     vaara_panchaka = vaara_num + 1  # Sunday=1 … Saturday=7
     total = tithi_num + vaara_panchaka + nak_num + lagna_num
     return total % 9
