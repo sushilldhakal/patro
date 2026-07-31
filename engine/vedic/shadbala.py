@@ -15,16 +15,12 @@ import math
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from engine.astronomy.positions import get_vaara, get_sidereal_asc_longitude
-from engine.astronomy.swiss_eph import (
-    AYANAMSA_LAHIRI,
-    calculate_sunrise,
-    calculate_sunset,
-    get_all_planetary_positions,
-    get_julian_day,
-    get_sun_longitude,
-)
-from engine.astronomy.engine import default_engine
+from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI, default_engine
+from engine.astronomy.lagna import lagna_service
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
+from engine.astronomy.ut_instant import as_julian_day
 
 PLANETS = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]
 
@@ -320,7 +316,7 @@ _WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "
 
 
 def _weekday_of(dt: datetime, tz_name: str) -> int:
-    _, _, eng = get_vaara(dt, tz_name)
+    eng = panchanga_service.vara(as_julian_day(dt), tz_name)["english"]
     return _WEEKDAYS.index(eng)
 
 
@@ -330,8 +326,8 @@ def _ingress_weekday(birth_utc: datetime, target_deg: float, tz_name: str, max_d
     day = birth_utc
     for _ in range(max_days):
         prev = day - timedelta(days=1)
-        rel_day = (get_sun_longitude(day) - target_deg) % 360
-        rel_prev = (get_sun_longitude(prev) - target_deg) % 360
+        rel_day = (sun_service.longitude(as_julian_day(day)) - target_deg) % 360
+        rel_prev = (sun_service.longitude(as_julian_day(prev)) - target_deg) % 360
         if rel_prev > 300 and rel_day < 60:  # boundary fell between prev and day
             break
         day = prev
@@ -415,17 +411,15 @@ def compute_shadbala(
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Full sixfold strength of the seven planets at an instant."""
-    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
-
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
-    jd = get_julian_day(instant_utc)
+    jd = as_julian_day(instant_utc)
     obliquity = default_engine.obliquity(jd)
 
-    positions = get_all_planetary_positions(instant_utc, ayanamsa=mode)
+    positions = spashta_table(jd, ayanamsa=mode)
     lons = {p: float(positions[p]["longitude"]) for p in PLANETS}
     speeds = {p: float(positions[p]["speed"]) for p in PLANETS}
     d1_signs = {p: _sign(lons[p]) for p in PLANETS}
-    lagna_lon = get_sidereal_asc_longitude(instant_utc, lat=lat, lon=lon, ayanamsa=mode)
+    lagna_lon = lagna_service.longitude(jd, lat=lat, lon=lon, ayanamsa=mode)
     lagna_sign = _sign(lagna_lon)
 
     # Day frame: sunrise / sunset / weekday in the observer's timezone.

@@ -7,15 +7,14 @@ from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.jd_calendar import civil_day_jd_from_date, civil_iso_from_date
-from engine.astronomy.swiss_eph import (
-    calculate_moonrise_after,
-    calculate_moonset_after,
-    calculate_sunrise,
-    calculate_sunset,
-    get_all_planetary_positions,
-    get_ayanamsa,
-)
+from engine.astronomy.lagna import lagna_service
+from engine.astronomy.moon import calculate_moonrise_after, calculate_moonset_after
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.rashi import rashi_service
+from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import BS_MONTH_NAMES_NEPALI, bs_month_name, gregorian_to_bs
 from engine.vedic.element_boundaries import (
     build_karana_block,
@@ -53,14 +52,6 @@ from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.hora import build_hora
 from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
 from engine.vedic.tithi import calculate_tithi
-from engine.astronomy.positions import (
-    get_aayan,
-    get_chandra_rashi,
-    get_lagna,
-    get_ritu,
-    get_surya_rashi,
-    get_vaara,
-)
 
 
 def _time_block(dt, timezone_name: str) -> dict[str, str] | None:
@@ -195,7 +186,11 @@ def _assemble_udaya_panchanga(
     display_tithi = tithi_info["display_number"]
     paksha = tithi_info["paksha"]
 
-    lahiri_ayanamsa = get_ayanamsa(sunrise_utc)
+    # One JD for the whole sunrise-anchored block: every service below is asked
+    # about this exact instant, so the payload cannot mix two sunrises.
+    sunrise_jd = as_julian_day(sunrise_utc)
+
+    lahiri_ayanamsa = sun_service.ayanamsa(sunrise_jd)
     dinamaan = compute_dinamaan(sunrise_utc, sunset_utc)
 
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, location.timezone)
@@ -219,20 +214,20 @@ def _assemble_udaya_panchanga(
             tithi_info=tithi_info,
         )
     ratrimana = compute_dinamaan(sunset_utc, next_sunrise_utc)
-    ritu_pauranik = get_ritu(
-        sunrise_utc,
+    ritu_pauranik = rashi_service.ritu(
+        sunrise_jd,
         sidereal=True,
         lat=location.lat,
         timezone_name=location.timezone,
     )
-    ritu_vedic = get_ritu(
-        sunrise_utc,
+    ritu_vedic = rashi_service.ritu(
+        sunrise_jd,
         sidereal=False,
         lat=location.lat,
         timezone_name=location.timezone,
     )
-    aayan_pauranik = get_aayan(sunrise_utc, sidereal=True)
-    aayan_vedic = get_aayan(sunrise_utc, sidereal=False)
+    aayan_pauranik = rashi_service.aayan(sunrise_jd, sidereal=True)
+    aayan_vedic = rashi_service.aayan(sunrise_jd, sidereal=False)
     lagna_spans = build_lagna_spans(
         sunrise_utc,
         next_sunrise_utc,
@@ -256,7 +251,7 @@ def _assemble_udaya_panchanga(
     nakshatra_block = build_nakshatra_block(sunrise_utc, sunrise_utc)
     chandrabalam = build_chandrabalam(sunrise_utc, chandra_rashi_spans, tz_name)
     tarabalam = build_tarabalam(sunrise_utc, nakshatra_block, tz_name)
-    chandra_rashi = get_chandra_rashi(sunrise_utc)
+    chandra_rashi = rashi_service.chandra(sunrise_jd)
     tarabala_table = build_tarabala_table(nakshatra_block)
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
     panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num, tz_name)
@@ -343,21 +338,23 @@ def _assemble_udaya_panchanga(
         "chandra_rashi": chandra_rashi,
         "chandra_rashi_spans": chandra_rashi_spans,
         "nakshatra_pada_spans": nakshatra_pada_spans,
-        "surya_rashi": get_surya_rashi(sunrise_utc),
+        "surya_rashi": rashi_service.surya(sunrise_jd),
         "surya_nakshatra": surya_nakshatra,
         "ritu": ritu_pauranik,
         "ritu_pauranik": ritu_pauranik,
         "ritu_vedic": ritu_vedic,
         "lunar_month": lunar,
         "lunar_calendar": lunar_calendar,
-        "planets": get_all_planetary_positions(sunrise_utc),
+        "planets": spashta_table(sunrise_jd),
         "planets_anchor": {
             "type": "udayakal",
             "local_time": sunrise_block.get("local_time_short"),
             "label_ne": "उदयकालिक स्पष्टग्रह (सूर्योदय)",
             "label_en": "Udayakalika Spashtagraha (sunrise)",
         },
-        "lagna": get_lagna(sunrise_utc, lat=location.lat, lon=location.lon),
+        "lagna": lagna_service.lagna(
+            sunrise_jd, lat=location.lat, lon=location.lon
+        ),
         "lagna_spans": lagna_spans,
         "udaya_lagna": udaya_lagna,
         "chandrabalam": chandrabalam,
@@ -418,7 +415,10 @@ def build_daily_panchanga(
     )
 
     tithi_info = calculate_tithi(sunrise_utc)
-    vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, location.timezone)
+    vara = panchanga_service.vara(as_julian_day(sunrise_utc), location.timezone)
+    vaara_num, vaara_sanskrit, vaara_english = (
+        vara["number"], vara["name"], vara["english"]
+    )
 
     bs_year, bs_month, bs_day = gregorian_to_bs(target)
 

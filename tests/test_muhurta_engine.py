@@ -3,6 +3,8 @@
 from datetime import date, datetime, timedelta, timezone
 from unittest.mock import patch
 
+from engine.astronomy.ut_instant import as_julian_day
+
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.bikram_sambat import bs_to_gregorian
 from engine.vedic.muhurta_engine import (
@@ -102,6 +104,25 @@ def test_day_gate_rejects_simhastha_and_bala_vriddha():
         assert not _day_gate(rule, weak.gregorian, DEFAULT_LOCATION).ok
 
 
+# The muhurta engine reads its angas from the JD-keyed services, so the fakes
+# below replace a service method rather than a module-level function. Each
+# returns the same dict shape the real service does, and each receives a JD.
+
+
+def _tithi_block(number: int, paksha: str = "shukla") -> dict:
+    return {
+        "number": number,
+        "paksha": paksha,
+        "display_number": number if number <= 15 else number - 15,
+        "progress": 0.0,
+        "elongation": (number - 1) * 12.0,
+    }
+
+
+def _named(number: int, name: str) -> dict:
+    return {"number": number, "name": name, "progress": 0.0}
+
+
 def test_day_kill_when_vishti_touches_practical_window():
     """A Vishti slice inside sunrise→sunset must scrub the entire day."""
     from engine.vedic.muhurta_engine import _major_dosha_touches_practical_window
@@ -115,13 +136,18 @@ def test_day_kill_when_vishti_touches_practical_window():
     sunset = datetime(2026, 2, 1, 12, 0, tzinfo=timezone.utc)
     next_sunrise = datetime(2026, 2, 2, 1, 0, tzinfo=timezone.utc)
 
-    def _karana_side_effect(dt):
-        # Vishti only for one mid-morning sample; rest clean.
-        if dt == sunrise + timedelta(hours=3):
-            return (7, "Vishti")
-        return (1, "Bava")
+    vishti_jd = as_julian_day(sunrise + timedelta(hours=3))
 
-    with patch("engine.vedic.muhurta_engine.get_karana", side_effect=_karana_side_effect):
+    def _karana_side_effect(jd, **kwargs):
+        # Vishti only for one mid-morning sample; rest clean.
+        if jd == vishti_jd:
+            return _named(7, "Vishti")
+        return _named(1, "Bava")
+
+    with patch(
+        "engine.astronomy.panchanga.panchanga_service.karana",
+        side_effect=_karana_side_effect,
+    ):
         assert _major_dosha_touches_practical_window(
             rule,
             sunrise=sunrise,
@@ -147,12 +173,17 @@ def test_no_day_kill_when_dosha_only_after_sunset():
     sunset = datetime(2026, 2, 1, 12, 0, tzinfo=timezone.utc)
     next_sunrise = datetime(2026, 2, 2, 1, 0, tzinfo=timezone.utc)
 
-    def _karana_side_effect(dt):
-        if dt >= sunset:
-            return (7, "Vishti")
-        return (1, "Bava")
+    sunset_jd = as_julian_day(sunset)
 
-    with patch("engine.vedic.muhurta_engine.get_karana", side_effect=_karana_side_effect):
+    def _karana_side_effect(jd, **kwargs):
+        if jd >= sunset_jd:
+            return _named(7, "Vishti")
+        return _named(1, "Bava")
+
+    with patch(
+        "engine.astronomy.panchanga.panchanga_service.karana",
+        side_effect=_karana_side_effect,
+    ):
         assert not _major_dosha_touches_practical_window(
             rule,
             sunrise=sunrise,
@@ -179,7 +210,10 @@ def test_dur_muhurta_does_not_day_kill():
     next_sunrise = datetime(2026, 2, 2, 1, 0, tzinfo=timezone.utc)
     dur = [(sunrise + timedelta(hours=2), sunrise + timedelta(hours=3))]
 
-    with patch("engine.vedic.muhurta_engine.get_karana", return_value=(1, "Bava")):
+    with patch(
+        "engine.astronomy.panchanga.panchanga_service.karana",
+        return_value=_named(1, "Bava"),
+    ):
         assert not _major_dosha_touches_practical_window(
             rule,
             sunrise=sunrise,
@@ -214,9 +248,10 @@ def test_dagdha_day_kills():
 
     # Sunday (vaara=1) × Dwadashi (12) is Dagdha all day; must day-kill.
     with (
-        patch("engine.vedic.muhurta_engine.get_tithi_angle", return_value=150.0),
-        patch("engine.vedic.muhurta_engine.get_tithi_number", return_value=12),
-        patch("engine.vedic.muhurta_engine.get_display_tithi", return_value=12),
+        patch(
+            "engine.astronomy.panchanga.panchanga_service.tithi",
+            return_value=_tithi_block(12),
+        ),
     ):
         assert _major_dosha_touches_practical_window(
             rule,
@@ -249,15 +284,15 @@ def test_godhuli_shields_dagdha():
     dt = datetime(2026, 2, 1, 12, 0, tzinfo=timezone.utc)
     # Sunday (vaara=1) × Dwadashi (12) is Dagdha — fake the ephemeris tithi.
     with (
-        patch("engine.vedic.muhurta_engine.get_tithi_angle", return_value=150.0),
-        patch("engine.vedic.muhurta_engine.get_tithi_number", return_value=12),
-        patch("engine.vedic.muhurta_engine.get_display_tithi", return_value=12),
-        patch("engine.vedic.muhurta_engine.get_paksha", return_value="shukla"),
-        patch("engine.vedic.muhurta_engine.get_nakshatra", return_value=(13, "Hasta", 0.0)),
         patch(
-            "engine.vedic.muhurta_engine.get_sidereal_asc_longitude",
-            return_value=15.0,
+            "engine.astronomy.panchanga.panchanga_service.tithi",
+            return_value=_tithi_block(12),
         ),
+        patch(
+            "engine.astronomy.panchanga.panchanga_service.nakshatra",
+            return_value=_named(13, "Hasta"),
+        ),
+        patch("engine.astronomy.lagna.lagna_service.longitude", return_value=15.0),
     ):
         rejected, *_ = _window_ok(
             rule, dt, {}, frozenset(), 1, DEFAULT_LOCATION, in_godhuli=False
@@ -279,17 +314,23 @@ def test_vishti_and_vaidhriti_rejected():
     )
     dt = datetime(2026, 2, 1, 12, 0, tzinfo=timezone.utc)
     with (
-        patch("engine.vedic.muhurta_engine.get_tithi_angle", return_value=50.0),
-        patch("engine.vedic.muhurta_engine.get_tithi_number", return_value=5),
-        patch("engine.vedic.muhurta_engine.get_display_tithi", return_value=5),
-        patch("engine.vedic.muhurta_engine.get_paksha", return_value="shukla"),
-        patch("engine.vedic.muhurta_engine.get_yoga", return_value=(27, "Vaidhriti", 0.0)),
-        patch("engine.vedic.muhurta_engine.get_karana", return_value=(7, "Vishti")),
-        patch("engine.vedic.muhurta_engine.get_nakshatra", return_value=(13, "Hasta", 0.0)),
         patch(
-            "engine.vedic.muhurta_engine.get_sidereal_asc_longitude",
-            return_value=15.0,
+            "engine.astronomy.panchanga.panchanga_service.tithi",
+            return_value=_tithi_block(5),
         ),
+        patch(
+            "engine.astronomy.panchanga.panchanga_service.yoga",
+            return_value=_named(27, "Vaidhriti"),
+        ),
+        patch(
+            "engine.astronomy.panchanga.panchanga_service.karana",
+            return_value=_named(7, "Vishti"),
+        ),
+        patch(
+            "engine.astronomy.panchanga.panchanga_service.nakshatra",
+            return_value=_named(13, "Hasta"),
+        ),
+        patch("engine.astronomy.lagna.lagna_service.longitude", return_value=15.0),
     ):
         ok, *_ = _window_ok(rule, dt, {}, frozenset(), 5, DEFAULT_LOCATION)
         assert not ok

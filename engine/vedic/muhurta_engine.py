@@ -37,28 +37,15 @@ from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.positions import (
-    get_karana,
-    get_moon_longitude,
-    get_nakshatra,
-    get_sidereal_asc_longitude,
-    get_surya_rashi,
-    get_tithi_angle,
-    get_tithi_number,
-    get_display_tithi,
-    get_paksha,
-    get_yoga,
-)
-from engine.astronomy.swiss_eph import (
-    calculate_sunrise,
-    calculate_sunset,
-    get_julian_day,
-    get_planet_position,
-    julian_day_to_datetime,
-    next_lunar_eclipse_max,
-    next_solar_eclipse_max,
-)
+from engine.astronomy.engine import default_engine
+from engine.astronomy.lagna import lagna_service
+from engine.astronomy.moon import moon_service
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.planets import planet_service
+from engine.astronomy.rashi import rashi_service
+from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.sait_rules import (
     CHATURMAS_LUNAR_MONTHS,
     GRIHA_PRAVESH_GROWTH_TITHIS,
@@ -611,15 +598,18 @@ def _eclipse_near(greg: date, pad_days: int) -> bool:
     if pad_days <= 0:
         return False
     noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=timezone.utc)
-    jd = get_julian_day(noon)
+    jd = as_julian_day(noon)
     maxima: list[float] = []
-    for finder in (next_solar_eclipse_max, next_lunar_eclipse_max):
+    for finder in (
+        default_engine.next_solar_eclipse_max,
+        default_engine.next_lunar_eclipse_max,
+    ):
         for backward in (False, True):
             tmax = finder(jd, backward=backward)
             if tmax is not None:
                 maxima.append(tmax)
     for tmax in maxima:
-        ecl_date = julian_day_to_datetime(tmax).date()
+        ecl_date = default_engine.datetime_from_jd(tmax).date()
         if abs((ecl_date - greg).days) <= pad_days:
             return True
     return False
@@ -630,8 +620,8 @@ def _sankranti_moment_between(start_iso: str, end_iso: str) -> str | None:
     """Cached exact solar-ingress ISO between two UTC timestamps, or None."""
     start = datetime.fromisoformat(start_iso)
     end = datetime.fromisoformat(end_iso)
-    r0 = get_surya_rashi(start)["number"]
-    r1 = get_surya_rashi(end)["number"]
+    r0 = rashi_service.surya(as_julian_day(start))["number"]
+    r1 = rashi_service.surya(as_julian_day(end))["number"]
     if r0 == r1:
         return None
     target_degree = (r1 - 1) * 30
@@ -654,7 +644,7 @@ def _sankranti_vetoes(
     if moment_iso is None:
         return []
     moment = datetime.fromisoformat(moment_iso)
-    incoming = get_surya_rashi(moment + timedelta(minutes=1))["number"]
+    incoming = rashi_service.surya(as_julian_day(moment + timedelta(minutes=1)))["number"]
     hours = (
         rule.major_sankranti_buffer_hours
         if incoming in rule.major_sankranti_rashis
@@ -739,27 +729,27 @@ def _major_dosha_at(
         return True
 
     if rule.avoid_yogas:
-        yoga_num, _, _ = get_yoga(dt)
+        yoga_num = panchanga_service.yoga(as_julian_day(dt))["number"]
         if yoga_num in rule.avoid_yogas:
             return True
 
     if rule.avoid_karanas:
-        _, karana_name = get_karana(dt)
+        karana_name = panchanga_service.karana(as_julian_day(dt))["name"]
         if karana_name in rule.avoid_karanas:
             return True
 
     shielded = in_godhuli and rule.godhuli_overrides_dagdha_shunya
     if not shielded:
-        tithi = get_display_tithi(get_tithi_number(get_tithi_angle(dt)))
+        tithi = panchanga_service.tithi(as_julian_day(dt))["display_number"]
         if rule.check_dagdha and is_dagdha(day_vaara, tithi):
             return True
         if rule.check_shunya:
             drained = SHUNYA_TITHI_RASHIS.get(tithi)
-            if drained and _rashi(get_moon_longitude(dt)) in drained:
+            if drained and _rashi(moon_service.longitude(as_julian_day(dt))) in drained:
                 return True
 
     if pierced_naks:
-        nak = get_nakshatra(dt)[0]
+        nak = panchanga_service.nakshatra(as_julian_day(dt))["number"]
         if nak in pierced_naks:
             return True
     return False
@@ -807,7 +797,10 @@ def _day_gate(rule: CeremonyRule, greg, location: ObserverLocation) -> _DayGate:
         # Sankranti = the Sun changes sidereal rāśi within the vedic day.
         tz = resolve_observer_timezone(location.timezone)
         noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
-        if get_surya_rashi(noon)["number"] != get_surya_rashi(noon + timedelta(days=1))["number"]:
+        if (
+            rashi_service.surya(as_julian_day(noon))["number"]
+            != rashi_service.surya(as_julian_day(noon + timedelta(days=1)))["number"]
+        ):
             return _DayGate(False)
     if rule.lunar_months and dp.lunar_month not in rule.lunar_months:
         return _DayGate(False)
@@ -841,7 +834,10 @@ def _planet_rashis(greg, location: ObserverLocation) -> dict[str, int]:
     """Slow-planet rāśis at local noon (they barely move within a day)."""
     tz = resolve_observer_timezone(location.timezone)
     noon = datetime(greg.year, greg.month, greg.day, 12, 0, tzinfo=tz)
-    return {p: _rashi(get_planet_position(noon, p)["longitude"]) for p in _MALEFICS}
+    noon_jd = as_julian_day(noon)
+    return {
+        p: _rashi(planet_service.position(noon_jd, p)["longitude"]) for p in _MALEFICS
+    }
 
 
 # Graha Vedha (Latta): each planet "pierces" the Nth nakṣatra counting its own as
@@ -886,10 +882,10 @@ def latta_pierced_nakshatras(
             continue
         if planet in ("rahu", "ketu"):
             if rahu_lon is None:
-                rahu_lon = get_planet_position(noon, "rahu")["longitude"]
+                rahu_lon = planet_service.position(as_julian_day(noon), "rahu")["longitude"]
             lon = rahu_lon if planet == "rahu" else (rahu_lon + 180.0) % 360.0
         else:
-            lon = get_planet_position(noon, planet)["longitude"]
+            lon = planet_service.position(as_julian_day(noon), planet)["longitude"]
         pierced.add(_latta_target(_nakshatra_of(lon), offset))
     return frozenset(pierced)
 
@@ -912,8 +908,9 @@ def _window_ok(
     if rule.block_dur_muhurta and in_dur_muhurta:
         return (False, 0, 0, 0)
 
-    tnum = get_tithi_number(get_tithi_angle(dt))
-    tithi = get_display_tithi(tnum)
+    tithi_block = panchanga_service.tithi(as_julian_day(dt))
+    tnum = tithi_block["number"]
+    tithi = tithi_block["display_number"]
     if tithi in _RIKTA:
         return (False, 0, 0, 0)
     if rule.avoid_tithis and tithi in rule.avoid_tithis:
@@ -926,38 +923,44 @@ def _window_ok(
             return (False, 0, 0, 0)
         if rule.check_shunya:
             drained = SHUNYA_TITHI_RASHIS.get(tithi)
-            if drained and _rashi(get_moon_longitude(dt)) in drained:
+            if drained and _rashi(moon_service.longitude(as_julian_day(dt))) in drained:
                 return (False, 0, 0, 0)
 
     if rule.shukla_tithis or rule.krishna_tithis:
-        allowed = rule.shukla_tithis if get_paksha(tnum) == "shukla" else rule.krishna_tithis
+        allowed = (
+            rule.shukla_tithis
+            if tithi_block["paksha"] == "shukla"
+            else rule.krishna_tithis
+        )
         if tithi not in allowed:
             return (False, 0, 0, 0)
     elif rule.tithis and tithi not in rule.tithis:
         return (False, 0, 0, 0)
-    if rule.shukla_only and get_paksha(tnum) != "shukla":
+    if rule.shukla_only and tithi_block["paksha"] != "shukla":
         return (False, 0, 0, 0)
 
     if rule.avoid_yogas:
-        yoga_num, _, _ = get_yoga(dt)
+        yoga_num = panchanga_service.yoga(as_julian_day(dt))["number"]
         if yoga_num in rule.avoid_yogas:
             return (False, 0, 0, 0)
 
     if rule.avoid_karanas:
-        _, karana_name = get_karana(dt)
+        karana_name = panchanga_service.karana(as_julian_day(dt))["name"]
         if karana_name in rule.avoid_karanas:
             return (False, 0, 0, 0)
 
-    nak = get_nakshatra(dt)[0]
+    nak = panchanga_service.nakshatra(as_julian_day(dt))["number"]
     if rule.nakshatras and nak not in rule.nakshatras:
         return (False, 0, 0, 0)
     if pierced_naks and nak in pierced_naks:  # Graha Vedha — malefic Latta strike
         return (False, 0, 0, 0)
-    lagna = _rashi(get_sidereal_asc_longitude(dt, lat=location.lat, lon=location.lon))
+    lagna = _rashi(
+        lagna_service.longitude(as_julian_day(dt), lat=location.lat, lon=location.lon)
+    )
     if rule.lagnas and lagna not in rule.lagnas:
         return (False, 0, 0, 0)
     if rule.avoid_moon_houses:
-        moon_h = (_rashi(get_moon_longitude(dt)) - lagna) % 12 + 1
+        moon_h = (_rashi(moon_service.longitude(as_julian_day(dt))) - lagna) % 12 + 1
         if moon_h in rule.avoid_moon_houses:
             return (False, 0, 0, 0)
     if rule.avoid_malefic_houses:

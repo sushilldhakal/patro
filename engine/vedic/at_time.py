@@ -6,14 +6,14 @@ from datetime import date, datetime, time, timedelta, timezone
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
+from engine.astronomy.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
-from engine.astronomy.positions import get_lagna, get_vaara
-from engine.astronomy.swiss_eph import (
-    calculate_sunrise,
-    calculate_sunset,
-    get_all_planetary_positions,
-)
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 from engine.vedic.daily import _time_block
 from engine.vedic.element_boundaries import (
@@ -111,7 +111,7 @@ def resolve_vedic_day_anchor(
     Returns (anchor_date, sunrise_utc, sunset_utc, next_sunrise_utc).
     """
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunset_civil
+    from engine.astronomy.sun import calculate_sunrise_civil, calculate_sunset_civil
     from engine.astronomy.ut_instant import UtInstant, local_civil_fields
 
     tz = resolve_observer_timezone(location.timezone, lat=location.lat, lon=location.lon)
@@ -275,11 +275,10 @@ def build_planetary_snapshot(
     lon: float,
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
-    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
-
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
-    planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
-    lagna = get_lagna(instant_utc, lat=lat, lon=lon, ayanamsa=mode)
+    instant_jd = as_julian_day(instant_utc)
+    planets = spashta_table(instant_jd, ayanamsa=mode)
+    lagna = lagna_service.lagna(instant_jd, lat=lat, lon=lon, ayanamsa=mode)
     enrich_snapshot_astro(planets, lagna, instant_utc, lat=lat, lon=lon)
     return {
         "planets": planets,
@@ -295,8 +294,6 @@ def build_panchanga_at_time(
     ayanamsa: int | None = None,
 ) -> dict[str, Any]:
     """Ephemeris-mode panchanga: full udaya day layout + instant angas/planets."""
-    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
-
     mode = ayanamsa if ayanamsa is not None else AYANAMSA_LAHIRI
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
     from engine.vedic.bikram_sambat import gregorian_to_bs
@@ -308,14 +305,18 @@ def build_panchanga_at_time(
     instant_utc = instant_local.astimezone(timezone.utc)
     tz = location.timezone
 
-    vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, tz)
+    vara = panchanga_service.vara(as_julian_day(sunrise_utc), tz)
+    vaara_num, vaara_sanskrit, vaara_english = (
+        vara["number"], vara["name"], vara["english"]
+    )
     angas = build_instant_anga_snapshot(
         instant_utc, sunrise_utc, ayanamsa=mode, timezone_name=location.timezone
     )
     muhurta = build_muhurta_block(sunrise_utc, sunset_utc, vaara_num, tz)
-    instant_planets = get_all_planetary_positions(instant_utc, ayanamsa=mode)
-    instant_lagna = get_lagna(
-        instant_utc, lat=location.lat, lon=location.lon, ayanamsa=mode
+    instant_jd = as_julian_day(instant_utc)
+    instant_planets = spashta_table(instant_jd, ayanamsa=mode)
+    instant_lagna = lagna_service.lagna(
+        instant_jd, lat=location.lat, lon=location.lon, ayanamsa=mode
     )
     instant_lagna["anchor"] = "instant"
     enrich_snapshot_astro(
@@ -438,8 +439,7 @@ def build_panchanga_civil_day(
     keeps the page's headline values consistent with the दिन-रात chart, which is
     also midnight-anchored.
     """
-    from engine.astronomy.swiss_eph import AYANAMSA_LAHIRI
-    from engine.astronomy.positions import get_chandra_rashi, get_surya_rashi
+    from engine.astronomy.rashi import rashi_service
     from engine.vedic.lagna_spans import build_lagna_spans
     from engine.vedic.pushkara_navamsha import enrich_lagna_spans_with_pushkara
     from engine.vedic.rashi_spans import (
@@ -486,9 +486,12 @@ def build_panchanga_civil_day(
     nak_block = angas["nakshatra"]
     tithi_info = calculate_tithi(midnight_utc)
     paksha = _paksha_block(lunar, tithi_info["paksha"])
-    chandra_rashi = get_chandra_rashi(midnight_utc)
-    surya_rashi = get_surya_rashi(midnight_utc)
-    lagna = get_lagna(midnight_utc, lat=location.lat, lon=location.lon, ayanamsa=mode)
+    midnight_jd = as_julian_day(midnight_utc)
+    chandra_rashi = rashi_service.chandra(midnight_jd)
+    surya_rashi = rashi_service.surya(midnight_jd)
+    lagna = lagna_service.lagna(
+        midnight_jd, lat=location.lat, lon=location.lon, ayanamsa=mode
+    )
 
     # Day-window spans over midnight → next midnight (local-aware bounds).
     lagna_spans = build_lagna_spans(

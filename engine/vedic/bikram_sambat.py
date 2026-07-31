@@ -12,7 +12,7 @@ from typing import Optional
 import swisseph as swe
 
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported, format_civil_iso
-from engine.astronomy.swiss_eph import calculate_sunrise
+from engine.astronomy.sun import calculate_sunrise
 from engine.astronomy.timescale import to_nepal_time
 from engine.vedic.constants import (
     BS_CALENDAR_DATA,

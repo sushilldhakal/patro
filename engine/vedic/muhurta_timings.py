@@ -10,17 +10,10 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.positions import (
-    get_display_tithi,
-    get_karana,
-    get_nakshatra,
-    get_paksha,
-    get_tithi_angle,
-    get_tithi_number,
-    get_yoga,
-)
-from engine.astronomy.swiss_eph import get_sun_longitude
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.sun import sun_service
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.ghati_time import time_from_sunrise
 from engine.vedic.rashi_spans import get_surya_nakshatra
 from engine.vedic.element_boundaries import (
@@ -246,7 +239,8 @@ def _collect_nakshatra_intervals(
     intervals: list[dict[str, Any]] = []
     cursor = scope_start
     while cursor < scope_end:
-        num, name, _ = get_nakshatra(cursor)
+        nak = panchanga_service.nakshatra(as_julian_day(cursor))
+        num, name = nak["number"], nak["name"]
         nak_start = find_nakshatra_start(cursor)
         nak_end = find_nakshatra_end(cursor)
         intervals.append(
@@ -270,12 +264,16 @@ def _find_sun_nakshatra_end(dt: datetime) -> datetime:
 
 def _sun_degree_band(dt: datetime) -> int:
     """0-based whole-degree band of the Sun within its sign (0 → 1st degree)."""
-    return int(get_sun_longitude(dt) % 30.0)
+    return int(_sun_longitude(dt) % 30.0)
+
+
+def _sun_longitude(dt: datetime) -> float:
+    return sun_service.longitude(as_julian_day(dt))
 
 
 def _find_sun_degree_end(dt: datetime) -> datetime:
     """Instant the Sun leaves its current 1° band (crosses to the next degree)."""
-    return _find_span_end(dt, _sun_degree_band, 1.0, get_sun_longitude, max_hours=36)
+    return _find_span_end(dt, _sun_degree_band, 1.0, _sun_longitude, max_hours=36)
 
 
 def _collect_baana_segments(
@@ -361,12 +359,13 @@ def _collect_tithi_intervals(
     for _ in range(40):
         if cursor >= scope_end:
             break
-        num = get_tithi_number(get_tithi_angle(cursor))  # 1..30
+        tithi = panchanga_service.tithi(as_julian_day(cursor))
+        num = tithi["number"]  # 1..30
         intervals.append(
             {
                 "number": num,
-                "display": get_display_tithi(num),  # 1..15
-                "paksha": get_paksha(num),
+                "display": tithi["display_number"],  # 1..15
+                "paksha": tithi["paksha"],
                 "start_dt": find_tithi_start(cursor),
                 "end_dt": find_tithi_end(cursor),
             }
@@ -411,7 +410,8 @@ def _collect_yoga_intervals(
     for _ in range(40):
         if cursor >= scope_end:
             break
-        num, name, _ = get_yoga(cursor)
+        yoga = panchanga_service.yoga(as_julian_day(cursor))
+        num, name = yoga["number"], yoga["name"]
         y_start = find_yoga_start(cursor)
         y_end = find_yoga_end(cursor)
         intervals.append(
@@ -458,7 +458,7 @@ def _collect_vishti_spans(
     spans: list[dict[str, Any]] = []
     cursor = sunrise_dt
     while cursor < next_sunrise_dt:
-        _, name = get_karana(cursor)
+        name = panchanga_service.karana(as_julian_day(cursor))["name"]
         if name != "Vishti":
             cursor = find_karana_end(cursor) + timedelta(seconds=90)
             continue

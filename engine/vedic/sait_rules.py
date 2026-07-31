@@ -37,17 +37,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
+from engine.astronomy.lagna import lagna_service
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.positions import (
-    get_aayan,
-    get_karana,
-    get_nakshatra,
-    get_sidereal_asc_longitude,
-    get_surya_rashi,
-    get_vaara,
-    get_yoga,
-)
-from engine.astronomy.swiss_eph import calculate_sunrise, get_planet_position
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.planets import planet_service
+from engine.astronomy.rashi import rashi_service
+from engine.astronomy.sun import calculate_sunrise
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.lunar_month import get_lunar_calendar_layers
 from engine.vedic.tithi import calculate_tithi_at_sunrise
 
@@ -314,21 +310,28 @@ def build_day_panchanga(
         longitude=location.lon,
         timezone_name=location.timezone,
     )
+    # Everything below is read at the one sunrise instant, so it is resolved to
+    # a JD once and every service is asked about that same moment.
+    sunrise_jd = as_julian_day(sunrise_utc)
+
     tithi_info = calculate_tithi_at_sunrise(target, location)
-    nak_num, _, _ = get_nakshatra(sunrise_utc)
-    vaara_num, _, _ = get_vaara(sunrise_utc, location.timezone)
-    surya = get_surya_rashi(sunrise_utc)
-    aayan = get_aayan(sunrise_utc)
-    yoga_num, _, _ = get_yoga(sunrise_utc)
-    _, karana_name = get_karana(sunrise_utc)
+    nak_num = panchanga_service.nakshatra(sunrise_jd)["number"]
+    vaara_num = panchanga_service.vara(sunrise_jd, location.timezone)["number"]
+    surya = rashi_service.surya(sunrise_jd)
+    aayan = rashi_service.aayan(sunrise_jd)
+    yoga_num = panchanga_service.yoga(sunrise_jd)["number"]
+    karana_name = panchanga_service.karana(sunrise_jd)["name"]
 
     sun_lon = surya["longitude"]
-    jupiter = get_planet_position(sunrise_utc, "jupiter")["longitude"]
-    venus = get_planet_position(sunrise_utc, "venus")["longitude"]
-    mercury = get_planet_position(sunrise_utc, "mercury")["longitude"]
+    # position()["longitude"] rather than longitude(): the former rounds to 6
+    # decimals exactly as the old get_planet_position did, and these values are
+    # compared against combustion orbs.
+    jupiter = planet_service.position(sunrise_jd, "jupiter")["longitude"]
+    venus = planet_service.position(sunrise_jd, "venus")["longitude"]
+    mercury = planet_service.position(sunrise_jd, "mercury")["longitude"]
 
-    asc_lon = get_sidereal_asc_longitude(
-        sunrise_utc, lat=location.lat, lon=location.lon,
+    asc_lon = lagna_service.longitude(
+        sunrise_jd, lat=location.lat, lon=location.lon,
     )
     lagna_rashi = int(asc_lon / 30) % 12 + 1
     jupiter_rashi = int(jupiter / 30) % 12 + 1

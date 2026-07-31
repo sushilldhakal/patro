@@ -11,7 +11,6 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from engine.astronomy.swiss_eph import get_planet_position
 from engine.vedic.bikram_sambat import get_bs_month_start
 from engine.vedic.sankranti import find_mesh_sankranti
 

@@ -25,15 +25,11 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from engine.astronomy.motion import is_retrograde, motion_label
-from engine.astronomy.positions import RASHI_NAMES, NAKSHATRA_NAMES, RASHI_NAMES_NE
-from engine.astronomy.swiss_eph import (
-    PLANET_IDS,
-    get_all_planetary_positions,
-    get_julian_day,
-    get_planet_position,
-    init_ephemeris,
-)
+from engine.astronomy.panchanga import NAKSHATRA_NAMES
+from engine.astronomy.planets import planet_service, spashta_table
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 
 # ─── Display metadata per graha ──────────────────────────────────────────────
 
@@ -104,11 +100,11 @@ GRAHA_ORDER: list[str] = [
 
 
 def _longitude_for(graha: str, dt: datetime) -> float:
-    init_ephemeris()
+    jd = as_julian_day(dt)
     if graha == "ketu":
-        rahu_pos = get_planet_position(dt, PLANET_IDS["rahu"])
-        return (rahu_pos["longitude"] + 180.0) % 360.0
-    return float(get_planet_position(dt, PLANET_IDS[graha])["longitude"])
+        rahu_lon = planet_service.position(jd, "rahu")["longitude"]
+        return (rahu_lon + 180.0) % 360.0
+    return float(planet_service.position(jd, graha)["longitude"])
 
 
 def _rashi_index_for(graha: str, dt: datetime) -> int:
@@ -289,8 +285,7 @@ def get_gochar_table(dt: datetime | Any) -> dict[str, Any]:
       - Motion direction: Margi (direct) or Vakri (retrograde)
       - Daily speed in degrees/day
     """
-    init_ephemeris()
-    raw = get_all_planetary_positions(dt)
+    raw = spashta_table(as_julian_day(dt))
 
     table: dict[str, Any] = {}
     for graha in GRAHA_ORDER:
@@ -354,7 +349,6 @@ def find_next_rashi_entry(
     dict with entry_time, from_rashi, to_rashi, and UTC/local strings.
     None if the graha doesn't change rashi in the search window.
     """
-    init_ephemeris()
     if graha not in GRAHA_META:
         raise ValueError(f"Unknown graha: {graha!r}")
 
@@ -501,8 +495,7 @@ def find_next_pada_entry(
 
 
 def _is_retrograde(graha: str, dt: datetime) -> bool:
-    speed = float(get_planet_position(dt, PLANET_IDS[graha])["speed"])
-    return is_retrograde(graha, speed)
+    return planet_service.is_retrograde(as_julian_day(dt), graha)
 
 
 def _bisect_retrograde_change(
@@ -534,7 +527,6 @@ def find_motion_stations_in_range(
     if grahas is None:
         grahas = list(_MOTION_PATRO_GRAHAS)
 
-    init_ephemeris()
     events: list[dict[str, Any]] = []
     scan = timedelta(hours=3)
 
@@ -645,12 +637,11 @@ def build_gochar_ingress_range(
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
     """Ingress timeline between two civil dates (inclusive end), anchored at sunrise."""
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
 
     if to_date < from_date:
         raise ValueError("to_date must be on or after from_date")
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise(
         from_date,
@@ -706,7 +697,7 @@ def _attach_local_time_civil(
     """
     entry = _attach_local_time(entry, tz)
     from engine.astronomy.jd_calendar import CivilDay, civil_day_add
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil
+    from engine.astronomy.sun import calculate_sunrise_civil
     from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
 
     entry_jd = float(entry["entry_jd"])
@@ -741,12 +732,14 @@ def build_gochar_ingress_range_civil(
     onto them (BS 20 starts around 37 BCE).
     """
     from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunrise_civil_next
+    from engine.astronomy.sun import (
+        calculate_sunrise_civil,
+        calculate_sunrise_civil_next,
+    )
 
     if to_civil.to_jd_ut() < from_civil.to_jd_ut():
         raise ValueError("to_date must be on or after from_date")
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise_civil(
         from_civil,
@@ -788,10 +781,9 @@ def build_gochar_response_civil(
 ) -> dict[str, Any]:
     """Gochar at local sunrise for a BCE/extended civil patro day."""
     from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil
+    from engine.astronomy.sun import calculate_sunrise_civil
     from engine.astronomy.ut_instant import format_ut_instant_local
 
-    init_ephemeris()
 
     sunrise_utc = calculate_sunrise_civil(
         civil,
@@ -889,10 +881,9 @@ def build_gochar_response(
                     If True, include next 3 entries for slow grahas
                     (Jupiter, Saturn, Rahu, Ketu) — useful for yearly view.
     """
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
     from engine.vedic.bikram_sambat import gregorian_to_bs, format_bs_date
 
-    init_ephemeris()
 
     sunrise_utc = calculate_sunrise(
         target,
@@ -1000,9 +991,8 @@ def build_gochar_year_summary(
     year_start = get_bs_month_start(bs_year, 1)
     year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))
 
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
 
-    init_ephemeris()
     sunrise_utc = calculate_sunrise(
         year_start,
         latitude=location.lat,

@@ -16,8 +16,9 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from engine.astronomy.motion import is_retrograde
-from engine.astronomy.swiss_eph import get_planet_position, init_ephemeris
+from engine.astronomy.planets import planet_service
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.gochar import (
     GRAHA_META,
     GRAHA_ORDER,
@@ -40,7 +41,7 @@ def _elongation(graha: str, dt: datetime) -> tuple[float, bool, bool]:
     diff = (planet_lon - sun_lon) % 360.0
     separation = min(diff, 360.0 - diff)
     east_of_sun = diff < 180.0
-    speed = float(get_planet_position(dt, graha)["speed"])
+    speed = planet_service.speed(as_julian_day(dt), graha)
     return separation, east_of_sun, is_retrograde(graha, speed)
 
 
@@ -110,7 +111,6 @@ def find_udayast_events_in_range(
     if grahas is None:
         grahas = list(UDAYAST_GRAHAS)
 
-    init_ephemeris()
     events: list[dict[str, Any]] = []
 
     for graha in grahas:
@@ -169,12 +169,11 @@ def build_udayast_range(
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
     """Udaya/asta timeline between civil dates (inclusive), anchored at sunrise."""
-    from engine.astronomy.swiss_eph import calculate_sunrise
+    from engine.astronomy.sun import calculate_sunrise
 
     if to_date < from_date:
         raise ValueError("to_date must be on or after from_date")
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise(
         from_date,
@@ -214,14 +213,16 @@ def build_udayast_range_civil(
 ) -> dict[str, Any]:
     """Udaya/asta timeline between civil days (inclusive), BCE-safe."""
     from engine.astronomy.jd_calendar import CivilDay
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil, calculate_sunrise_civil_next
+    from engine.astronomy.sun import (
+        calculate_sunrise_civil,
+        calculate_sunrise_civil_next,
+    )
 
     if not isinstance(from_civil, CivilDay) or not isinstance(to_civil, CivilDay):
         raise TypeError("from_civil and to_civil must be CivilDay")
     if to_civil.to_jd_ut() < from_civil.to_jd_ut():
         raise ValueError("to_date must be on or after from_date")
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise_civil(
         from_civil,

@@ -26,15 +26,16 @@ from typing import Any
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.motion import is_retrograde
 from engine.astronomy.engine import default_engine
-from engine.astronomy.positions import NAKSHATRA_NAMES, RASHI_NAMES, RASHI_NAMES_NE
-from engine.astronomy.swiss_eph import (
+from engine.astronomy.panchanga import NAKSHATRA_NAMES
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
+from engine.astronomy.sun import (
     calculate_sunrise,
     calculate_sunrise_civil,
     calculate_sunrise_civil_next,
-    get_all_planetary_positions,
-    init_ephemeris,
 )
 from engine.astronomy.timescale import resolve_observer_timezone
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.gochar import GRAHA_META, GRAHA_ORDER, NAKSHATRA_SPAN, PADA_SPAN
 from engine.vedic.names_ne import NAKSHATRA_NAMES_NE, to_nepali_digits
 from engine.vedic.vimshottari import (
@@ -174,7 +175,7 @@ def _build_graha_sthiti_at_sunrise(
 
     tz = resolve_observer_timezone(location.timezone)
     jd = default_engine.julian_day(sunrise)
-    positions = get_all_planetary_positions(sunrise)
+    positions = spashta_table(as_julian_day(sunrise))
 
     rows: list[dict[str, Any]] = []
 
@@ -236,7 +237,6 @@ def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
     """Full daily sphuta table for all 9 grahas + लग्न, computed at sunrise."""
     from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 
-    init_ephemeris()
     sunrise = calculate_sunrise(
         date_ad,
         latitude=location.lat,
@@ -260,9 +260,6 @@ def build_graha_sthiti_civil(
 ) -> dict[str, Any]:
     """Sphuta table at sunrise for a civil day that may fall before 1 CE."""
     from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.astronomy.swiss_eph import calculate_sunrise_civil
-
-    init_ephemeris()
     sunrise = calculate_sunrise_civil(
         civil,
         latitude=location.lat,
@@ -539,7 +536,6 @@ def _build_graha_asta_for_range(
 
     from engine.vedic.udayast import build_udayast_range
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
 
     planet_raw = build_udayast_range(
@@ -567,7 +563,6 @@ def _build_graha_asta_for_civil_range(
 ) -> dict[str, Any]:
     from engine.vedic.udayast import build_udayast_range_civil
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
 
     planet_raw = build_udayast_range_civil(
@@ -629,7 +624,6 @@ def _build_graha_vakri_for_range(
 ) -> dict[str, Any]:
     from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise(
         year_start, latitude=location.lat, longitude=location.lon,
@@ -656,7 +650,6 @@ def _build_graha_vakri_for_civil_range(
 ) -> dict[str, Any]:
     from engine.vedic.gochar import _attach_local_time, find_motion_stations_in_range
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     from_sunrise = calculate_sunrise_civil(
         year_start,
@@ -737,7 +730,6 @@ def _build_eclipse_for_range(
     if kind not in ("solar", "lunar"):
         raise ValueError("kind must be 'solar' or 'lunar'")
 
-    init_ephemeris()
     tz = resolve_observer_timezone(location.timezone)
     geopos = (float(location.lon), float(location.lat), 0.0)
 

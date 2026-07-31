@@ -13,7 +13,8 @@ from datetime import datetime, timezone
 from typing import Any
 
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
-from engine.astronomy.swiss_eph import get_all_planetary_positions
+from engine.astronomy.planets import spashta_table
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.interpretation import (
     NAKSHATRA_EN,
     NAKSHATRA_NE,
@@ -176,7 +177,7 @@ def _person_from_moon(moon_lon: float, birth_instant: str,
 
 
 def _moon_longitude(instant: datetime, mode_id: int) -> float:
-    planets = get_all_planetary_positions(instant.astimezone(timezone.utc), ayanamsa=mode_id)
+    planets = spashta_table(as_julian_day(instant), ayanamsa=mode_id)
     return float(planets["moon"]["longitude"])
 
 

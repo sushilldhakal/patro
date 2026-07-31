@@ -8,14 +8,14 @@ from typing import Any
 from engine.astronomy.jd_calendar import CivilDay, format_civil_iso
 from engine.vedic.solar_corrections import build_solar_corrections
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.swiss_eph import (
-    calculate_moonrise_after,
-    calculate_moonset_after,
+from engine.astronomy.moon import calculate_moonrise_after, calculate_moonset_after
+from engine.astronomy.panchanga import panchanga_service
+from engine.astronomy.sun import (
     calculate_sunrise_civil,
     calculate_sunrise_civil_next,
     calculate_sunset_civil,
 )
-from engine.astronomy.positions import get_vaara
+from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.names_ne import VAARA_NAMES_NE
 from engine.vedic.daily import (
     _assemble_udaya_panchanga,
@@ -111,7 +111,10 @@ def build_daily_panchanga_civil(
     )
 
     tithi_info = calculate_tithi(sunrise_utc)
-    vaara_num, vaara_sanskrit, vaara_english = get_vaara(sunrise_utc, location.timezone)
+    vara = panchanga_service.vara(as_julian_day(sunrise_utc), location.timezone)
+    vaara_num, vaara_sanskrit, vaara_english = (
+        vara["number"], vara["name"], vara["english"]
+    )
     paksha = tithi_info["paksha"]
     lunar = _lunar_stub_for_solar_month(patro_bs_month, paksha)
     ns_date = _ns_date_stub()
