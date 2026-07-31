@@ -233,44 +233,31 @@ def _build_graha_sthiti_at_sunrise(
     }
 
 
-def build_graha_sthiti(date_ad: date, location: Any) -> dict[str, Any]:
-    """Full daily sphuta table for all 9 grahas + लग्न, computed at sunrise."""
-    from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
-
-    sunrise = calculate_sunrise(
-        date_ad,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    bs_y, bs_m, bs_d = gregorian_to_bs(date_ad)
-    return _build_graha_sthiti_at_sunrise(
-        sunrise,
-        location,
-        date_ad=date_ad.isoformat(),
-        date_bs=format_bs_date(bs_y, bs_m, bs_d),
-    )
-
-
-def build_graha_sthiti_civil(
-    civil: Any,
-    location: Any,
-    *,
-    date_bs: str,
+def build_graha_sthiti(
+    jd: float, location: Any, *, date_bs: str | None = None
 ) -> dict[str, Any]:
-    """Sphuta table at sunrise for a civil day that may fall before 1 CE."""
-    from engine.astronomy.jd_calendar import format_civil_iso
-    sunrise = calculate_sunrise_civil(
-        civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
+    """Full daily sphuta table for all 9 grahas + लग्न, computed at sunrise.
+
+    The era-agnostic entry point: *jd* names the civil day, so ad, bc, bs and
+    bbs all arrive here the same way. ``sun_service.sunrise`` picks the CE or
+    BCE rise helper from the JD itself — the only thing the two merged twins
+    actually disagreed about.
+
+    ``date_bs`` is the printed Bikram label. A caller that already resolved the
+    day from a BS date key passes its own (that key *is* the answer, and
+    re-deriving it can land on a neighbouring day at a month boundary);
+    otherwise it is derived here.
+    """
+    from engine.astronomy.jd_calendar import CivilDay, format_civil_iso
+    from engine.astronomy.sun import sun_service
+
+    civil = CivilDay.from_jd_ut(float(jd))
+    date_ad = format_civil_iso(civil.year, civil.month, civil.day)
     return _build_graha_sthiti_at_sunrise(
-        sunrise,
+        sun_service.sunrise(float(jd), location),
         location,
-        date_ad=format_civil_iso(civil.year, civil.month, civil.day),
-        date_bs=date_bs,
+        date_ad=date_ad,
+        date_bs=date_bs if date_bs is not None else _bs_label_for_ad_key(date_ad),
     )
 
 

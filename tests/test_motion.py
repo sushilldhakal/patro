@@ -104,7 +104,11 @@ class TestCallSitesAgree:
         location = resolve_location_from_query(
             lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu"
         )
-        sthiti = build_graha_sthiti(date(2026, 7, 31), location)
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+
+        sthiti = build_graha_sthiti(
+            civil_day_jd_from_date(date(2026, 7, 31)), location
+        )
         table = get_gochar_table(DAY)
 
         for row in sthiti["rows"]:

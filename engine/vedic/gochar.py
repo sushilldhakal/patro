@@ -98,6 +98,10 @@ GRAHA_ORDER: list[str] = [
     "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
 ]
 
+# The grahas slow enough that "next three rashi entries" is a useful yearly
+# horizon. The fast ones would just list the next few weeks.
+SLOW_GRAHAS: list[str] = ["jupiter", "saturn", "rahu", "ketu"]
+
 
 def _longitude_for(graha: str, dt: datetime) -> float:
     jd = as_julian_day(dt)
@@ -628,6 +632,74 @@ def find_ingress_entries_in_range(
     return entries
 
 
+def _attach_ingress_local_time(entry: dict[str, Any], location: Any, tz) -> dict[str, Any]:
+    """``_attach_local_time`` plus the vedic-day shift for an ingress entry.
+
+    An entry that lands before sunrise belongs to the previous vedic day. The CE
+    twin decided that by comparing wall-clock *minutes* against a sunrise it
+    recomputed from the entry's local date; this compares Julian Days directly,
+    which is exact (no truncation to the minute) and works for BCE entries that
+    have no ``datetime`` to read an hour off. One code path for both.
+    """
+    entry = _attach_local_time(entry, tz)
+
+    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+    from engine.astronomy.sun import sun_service
+    from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
+
+    entry_jd = float(entry["entry_jd"])
+    entry_instant_jd = as_julian_day(
+        parse_ephemeris_instant(str(entry["entry_time_utc"]))
+    )
+    sunrise_jd = as_julian_day(sun_service.sunrise(entry_jd, location))
+
+    entry["entry_vedic_jd"] = (
+        civil_day_add(entry_jd, -1) if entry_instant_jd < sunrise_jd else entry_jd
+    )
+    entry.pop("entry_vedic_date_ad", None)
+    return entry
+
+
+def build_gochar_ingress(
+    jd_start: float,
+    jd_end: float,
+    location: Any,
+    *,
+    level: str = "pada",
+    grahas: list[str] | None = None,
+) -> dict[str, Any]:
+    """Ingress timeline over an inclusive Julian Day span, anchored at sunrise.
+
+    The era-agnostic entry point: ad, bc, bs and bbs all arrive as a JD pair, so
+    this covers BCE years and the early BS years that map onto them (BS 20 starts
+    around 37 BCE) with the same body that serves 2026.
+    """
+    from engine.astronomy.jd_calendar import civil_day_add
+    from engine.astronomy.sun import sun_service
+
+    span_start = float(jd_start)
+    span_end = float(jd_end)
+    if span_end < span_start:
+        raise ValueError("to_date must be on or after from_date")
+
+    tz = resolve_observer_timezone(location.timezone)
+    from_sunrise = sun_service.sunrise(span_start, location)
+    # Closes at the next day's sunrise so the last day of the span is whole.
+    until_sunrise = sun_service.sunrise(civil_day_add(span_end, 1), location)
+
+    raw = find_ingress_entries_in_range(
+        from_sunrise, until_sunrise, level=level, grahas=grahas,
+    )
+    events = [_attach_ingress_local_time(dict(e), location, tz) for e in raw]
+    return {
+        "from_jd": span_start,
+        "to_jd": span_end,
+        "level": level,
+        "location": location.as_dict(),
+        "events": events,
+    }
+
+
 def build_gochar_ingress_range(
     from_date: date,
     to_date: date,
@@ -636,161 +708,99 @@ def build_gochar_ingress_range(
     level: str = "pada",
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Ingress timeline between two civil dates (inclusive end), anchored at sunrise."""
-    from engine.astronomy.sun import calculate_sunrise
+    """Ingress timeline between civil dates. Thin wrapper over the span builder."""
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
 
     if to_date < from_date:
         raise ValueError("to_date must be on or after from_date")
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise(
-        from_date,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise(
-        to_date + timedelta(days=1),
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_ingress_entries_in_range(
-        from_sunrise,
-        until_sunrise,
+    return build_gochar_ingress(
+        civil_day_jd_from_date(from_date),
+        civil_day_jd_from_date(to_date),
+        location,
         level=level,
         grahas=grahas,
     )
-    events: list[dict[str, Any]] = []
-    for e in raw:
-        entry = dict(e)
-        entry_local = datetime.fromisoformat(entry["entry_time_utc"]).astimezone(tz)
-        sunrise_local = calculate_sunrise(
-            entry_local.date(),
-            latitude=location.lat,
-            longitude=location.lon,
-            timezone_name=location.timezone,
-        ).astimezone(tz)
-        events.append(_attach_local_time(entry, tz, sunrise_local=sunrise_local))
-    from engine.astronomy.jd_calendar import civil_day_jd_from_date
-
-    return {
-        "from_jd": civil_day_jd_from_date(from_date),
-        "to_jd": civil_day_jd_from_date(to_date),
-        "level": level,
-        "location": location.as_dict(),
-        "events": events,
-    }
-
-
-def _attach_local_time_civil(
-    entry: dict[str, Any],
-    location: Any,
-    tz,
-) -> dict[str, Any]:
-    """``_attach_local_time`` plus a JD-derived ``entry_vedic_date_ad``.
-
-    The CE path shifts an entry that lands before sunrise onto the previous civil
-    day by comparing wall clocks. A BCE entry has no ``datetime`` to read an hour
-    off, so the same decision is made on the JD axis — which is exact for CE days
-    too, hence one code path for both.
-    """
-    entry = _attach_local_time(entry, tz)
-    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
-    from engine.astronomy.sun import calculate_sunrise_civil
-    from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
-
-    entry_jd = float(entry["entry_jd"])
-    local_civil = CivilDay.from_jd_ut(entry_jd)
-    entry_instant_jd = as_julian_day(parse_ephemeris_instant(str(entry["entry_time_utc"])))
-    sunrise_jd = as_julian_day(calculate_sunrise_civil(
-        local_civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    ))
-    vedic_jd = entry_jd
-    if entry_instant_jd < sunrise_jd:
-        vedic_jd = civil_day_add(entry_jd, -1)
-    entry["entry_vedic_jd"] = vedic_jd
-    entry.pop("entry_vedic_date_ad", None)
-    return entry
 
 
 def build_gochar_ingress_range_civil(
-    from_civil: Any,  # CivilDay
-    to_civil: Any,    # CivilDay
+    from_civil: Any,
+    to_civil: Any,
     location: Any,
     *,
     level: str = "pada",
     grahas: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Ingress timeline between two civil days (inclusive end), anchored at sunrise.
-
-    The ``CivilDay``/JD twin of :func:`build_gochar_ingress_range`, for ranges
-    ``datetime.date`` cannot express — BCE years and the early BS years that map
-    onto them (BS 20 starts around 37 BCE).
-    """
-    from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.astronomy.sun import (
-        calculate_sunrise_civil,
-        calculate_sunrise_civil_next,
-    )
-
-    if to_civil.to_jd_ut() < from_civil.to_jd_ut():
-        raise ValueError("to_date must be on or after from_date")
-
-    tz = resolve_observer_timezone(location.timezone)
-    from_sunrise = calculate_sunrise_civil(
-        from_civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    until_sunrise = calculate_sunrise_civil_next(
-        to_civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    raw = find_ingress_entries_in_range(
-        from_sunrise,
-        until_sunrise,
+    """Ingress timeline between civil days. Thin wrapper over the span builder."""
+    return build_gochar_ingress(
+        float(from_civil.to_jd_ut()),
+        float(to_civil.to_jd_ut()),
+        location,
         level=level,
         grahas=grahas,
     )
-    events = [_attach_local_time_civil(dict(e), location, tz) for e in raw]
-    return {
-        "from_jd": float(from_civil.to_jd_ut()),
-        "to_jd": float(to_civil.to_jd_ut()),
-        "level": level,
-        "location": location.as_dict(),
-        "events": events,
-    }
 
 
 # ─── Formatted gochar response ────────────────────────────────────────────────
 
-def build_gochar_response_civil(
-    civil: Any,  # CivilDay
+def _bs_label_for_civil(civil: Any) -> str | None:
+    """Printed Bikram label for a civil day, CE or not.
+
+    Modern days go through ``gregorian_to_bs`` (the verified BS table); days the
+    table cannot reach fall back to walking the patro axis.
+    """
+    from engine.astronomy.jd_calendar import date_if_supported
+    from engine.vedic.bikram_sambat import (
+        format_bs_date,
+        gregorian_to_bs,
+        locate_patro_day_for_civil,
+    )
+
+    try:
+        greg = date_if_supported(civil.year, civil.month, civil.day)
+        if greg is not None:
+            y, m, d = gregorian_to_bs(greg)
+        else:
+            y, m, d = locate_patro_day_for_civil(civil)
+        return format_bs_date(y, m, d)
+    except Exception:
+        return None
+
+
+def build_gochar(
+    jd: float,
     location: Any,
     *,
-    date_bs: str,
+    date_bs: str | None = None,
     include_next_entry: bool = True,
     include_upcoming: bool = False,
 ) -> dict[str, Any]:
-    """Gochar at local sunrise for a BCE/extended civil patro day."""
-    from engine.astronomy.jd_calendar import format_civil_iso
-    from engine.astronomy.sun import calculate_sunrise_civil
+    """Gochar table at local sunrise on the civil day containing *jd*.
+
+    The era-agnostic entry point: ad, bc, bs and bbs all arrive as a JD, and
+    ``sun_service.sunrise`` picks the CE or BCE rise helper from it.
+
+    This replaces a CE/BCE pair whose bodies were the same 60 lines twice over.
+    The only substantive difference was the sunrise call; the rest was two
+    spellings of the same formatting — ``target.isoformat()`` vs
+    ``format_civil_iso``, ``astimezone(tz).strftime("%H:%M")`` vs
+    ``format_ut_instant_local(...)["local_time_short"]``. The BCE-safe spelling
+    is kept because it is correct for both, and returns the identical string on
+    CE days.
+
+    Parameters
+    ----------
+    jd                  Julian Day naming the civil day.
+    location            ObserverLocation (.lat, .lon, .timezone).
+    date_bs             Printed Bikram label; derived when omitted.
+    include_next_entry  Next rashi / nakshatra / pada entry per graha.
+    include_upcoming    Next 3 rashi entries for the slow grahas — the yearly view.
+    """
+    from engine.astronomy.jd_calendar import CivilDay, format_civil_iso
+    from engine.astronomy.sun import sun_service
     from engine.astronomy.ut_instant import format_ut_instant_local
 
-
-    sunrise_utc = calculate_sunrise_civil(
-        civil,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
+    civil = CivilDay.from_jd_ut(float(jd))
+    sunrise_utc = sun_service.sunrise(float(jd), location)
     tz = resolve_observer_timezone(location.timezone)
     gochar = get_gochar_table(sunrise_utc)
 
@@ -838,125 +848,23 @@ def build_gochar_response_civil(
             else:
                 gochar[graha]["next_pada_entry"] = None
 
-    date_ad = format_civil_iso(civil.year, civil.month, civil.day)
     result: dict[str, Any] = {
-        "date_bs": date_bs,
-        "date_ad": date_ad,
+        "date_bs": date_bs if date_bs is not None else _bs_label_for_civil(civil),
+        "date_ad": format_civil_iso(civil.year, civil.month, civil.day),
         "computed_at": {
-            "utc": sunrise_utc.isoformat() if hasattr(sunrise_utc, "isoformat") else str(sunrise_utc),
-            "local": format_ut_instant_local(sunrise_utc, location.timezone).get("local_time_short", "—"),
+            "utc": sunrise_utc.isoformat(),
+            "local": format_ut_instant_local(sunrise_utc, location.timezone).get(
+                "local_time_short", "—"
+            ),
             "note": "Positions at local true sunrise (Udaya)",
         },
         "location": location.as_dict(),
         "gochar": gochar,
     }
-    if include_upcoming:
-        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
-        result["upcoming_transits"] = find_upcoming_rashi_entries(
-            sunrise_utc, slow_grahas, max_results_per_graha=3
-        )
-    return result
-
-
-def build_gochar_response(
-    target: date,
-    location: Any,  # ObserverLocation
-    *,
-    include_next_entry: bool = True,
-    include_upcoming: bool = False,
-) -> dict[str, Any]:
-    """
-    Full Gochar response for a given date.
-
-    Computes positions at local sunrise (the traditional Vedic day anchor).
-    Optionally includes next rashi-entry times for each graha.
-
-    Parameters
-    ----------
-    target          Gregorian date.
-    location        ObserverLocation (has .lat, .lon, .timezone, etc.).
-    include_next_entry
-                    If True, include next rashi entry for each graha.
-    include_upcoming
-                    If True, include next 3 entries for slow grahas
-                    (Jupiter, Saturn, Rahu, Ketu) — useful for yearly view.
-    """
-    from engine.astronomy.sun import calculate_sunrise
-    from engine.vedic.bikram_sambat import gregorian_to_bs, format_bs_date
-
-
-    sunrise_utc = calculate_sunrise(
-        target,
-        latitude=location.lat,
-        longitude=location.lon,
-        timezone_name=location.timezone,
-    )
-    tz      = resolve_observer_timezone(location.timezone)
-    bs_year, bs_month, bs_day = gregorian_to_bs(target)
-
-    gochar = get_gochar_table(sunrise_utc)
-
-    # Enrich with next rashi / nakshatra / pada entries
-    if include_next_entry:
-        for graha in GRAHA_ORDER:
-            rashi_entry = find_next_rashi_entry(graha, sunrise_utc)
-            if rashi_entry:
-                rashi_entry = _attach_local_time(dict(rashi_entry), tz)
-                gochar[graha]["next_rashi_entry"] = {
-                    "to_rashi": rashi_entry["to_rashi"],
-                    "to_rashi_ne": rashi_entry.get("to_rashi_ne"),
-                    "entry_time_local": rashi_entry["entry_time_local"],
-                    "entry_time_utc": rashi_entry["entry_time_utc"],
-                }
-            else:
-                gochar[graha]["next_rashi_entry"] = None
-
-            nak_entry = find_next_nakshatra_entry(graha, sunrise_utc)
-            if nak_entry:
-                nak_entry = _attach_local_time(dict(nak_entry), tz)
-                gochar[graha]["next_nakshatra_entry"] = {
-                    "to_nakshatra": nak_entry["to_nakshatra"],
-                    "to_nakshatra_ne": nak_entry["to_nakshatra_ne"],
-                    "label_ne": nak_entry["label_ne"],
-                    "entry_time_local": nak_entry["entry_time_local"],
-                    "entry_time_local_short": nak_entry["entry_time_local_short"],
-                    "entry_time_utc": nak_entry["entry_time_utc"],
-                }
-            else:
-                gochar[graha]["next_nakshatra_entry"] = None
-
-            pada_entry = find_next_pada_entry(graha, sunrise_utc)
-            if pada_entry:
-                pada_entry = _attach_local_time(dict(pada_entry), tz)
-                gochar[graha]["next_pada_entry"] = {
-                    "to_nakshatra": pada_entry["to_nakshatra"],
-                    "to_nakshatra_ne": pada_entry["to_nakshatra_ne"],
-                    "to_pada": pada_entry["to_pada"],
-                    "to_pada_ne": pada_entry["to_pada_ne"],
-                    "label_ne": pada_entry["label_ne"],
-                    "entry_time_local": pada_entry["entry_time_local"],
-                    "entry_time_local_short": pada_entry["entry_time_local_short"],
-                    "entry_time_utc": pada_entry["entry_time_utc"],
-                }
-            else:
-                gochar[graha]["next_pada_entry"] = None
-
-    result: dict[str, Any] = {
-        "date_bs":   format_bs_date(bs_year, bs_month, bs_day),
-        "date_ad":   target.isoformat(),
-        "computed_at": {
-            "utc":   sunrise_utc.isoformat(),
-            "local": sunrise_utc.astimezone(tz).strftime("%H:%M"),
-            "note":  "Positions at local true sunrise (Udaya)",
-        },
-        "location": location.as_dict(),
-        "gochar":   gochar,
-    }
 
     if include_upcoming:
-        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
         result["upcoming_transits"] = find_upcoming_rashi_entries(
-            sunrise_utc, slow_grahas, max_results_per_graha=3
+            sunrise_utc, SLOW_GRAHAS, max_results_per_graha=3
         )
 
     return result
@@ -986,7 +894,7 @@ def build_gochar_year_summary(
     )
 
     if slow_grahas is None:
-        slow_grahas = ["jupiter", "saturn", "rahu", "ketu"]
+        slow_grahas = list(SLOW_GRAHAS)
 
     year_start = get_bs_month_start(bs_year, 1)
     year_end = bs_to_gregorian(bs_year, 12, get_bs_month_length(bs_year, 12))

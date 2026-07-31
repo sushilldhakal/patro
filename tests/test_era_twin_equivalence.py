@@ -1,8 +1,8 @@
 """Phase 0 of the computation-architecture migration: lock the era twins together.
 
 Several builders are forked in two — a CE path taking ``datetime.date`` and a
-BCE-safe path taking ``CivilDay`` (``build_graha_sthiti`` / ``build_graha_sthiti_civil``,
-``build_gochar_response`` / ``_civil``, ``build_udayast_range`` / ``_civil``, …).
+BCE-safe path taking ``CivilDay`` (``build_gochar_response`` / ``_civil``,
+``build_daily_panchanga`` / ``_civil``, …).
 For any day *both* can express they are describing the same Julian Day, so they
 must produce the same astronomy.
 
@@ -60,63 +60,76 @@ class TestSameDayIsSameJd:
         assert format_civil_iso(c.year, c.month, c.day) == civil_iso_from_date(day)
 
 
-class TestGrahaSthitiTwins:
-    """``build_graha_sthiti`` vs ``build_graha_sthiti_civil`` — sunrise sphuta table."""
+class TestGrahaSthitiIsEraFree:
+    """Merged (phase 3): ``build_graha_sthiti_civil`` is gone, ``build_graha_sthiti``
+    takes a JD. A ``date`` and the ``CivilDay`` spelling of the same day name one
+    Julian Day, so they cannot diverge any more — but the label plumbing still can.
+    """
 
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
-    def test_rows_are_identical(self, day: date):
-        from engine.vedic.graha_detail import build_graha_sthiti, build_graha_sthiti_civil
+    def test_both_spellings_of_the_day_give_one_payload(self, day: date):
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.vedic.graha_detail import build_graha_sthiti
 
-        ce = build_graha_sthiti(day, LOCATION)
-        bce = build_graha_sthiti_civil(
-            civil_of(day), LOCATION, date_bs=ce["date_bs"]
+        from_date = build_graha_sthiti(civil_day_jd_from_date(day), LOCATION)
+        from_civil = build_graha_sthiti(civil_of(day).to_jd_ut(), LOCATION)
+        assert from_civil == from_date
+
+    @pytest.mark.parametrize("day", [DAY_A, DAY_B])
+    def test_supplying_the_bs_label_changes_only_that_field(self, day: date):
+        """The route passes its own date_bs for pre-CE days; nothing else moves."""
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.vedic.graha_detail import build_graha_sthiti
+
+        jd = civil_day_jd_from_date(day)
+        derived = build_graha_sthiti(jd, LOCATION)
+        supplied = build_graha_sthiti(jd, LOCATION, date_bs="9999-01-01")
+        assert supplied["date_bs"] == "9999-01-01"
+        assert strip(supplied, "date_bs") == strip(derived, "date_bs")
+
+
+class TestGocharIsEraFree:
+    """Merged (phase 3): ``build_gochar_response`` and its ``_civil`` twin were
+    the same sixty lines twice; ``build_gochar(jd, …)`` is what is left."""
+
+    @pytest.mark.parametrize("day", [DAY_A, DAY_B])
+    def test_both_spellings_of_the_day_give_one_payload(self, day: date):
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.vedic.gochar import build_gochar
+
+        from_date = build_gochar(
+            civil_day_jd_from_date(day), LOCATION, include_next_entry=False
         )
-        assert bce["rows"] == ce["rows"]
-
-    @pytest.mark.parametrize("day", [DAY_A, DAY_B])
-    def test_sunrise_and_date_agree(self, day: date):
-        from engine.vedic.graha_detail import build_graha_sthiti, build_graha_sthiti_civil
-
-        ce = build_graha_sthiti(day, LOCATION)
-        bce = build_graha_sthiti_civil(civil_of(day), LOCATION, date_bs=ce["date_bs"])
-        assert bce["sunrise_local"] == ce["sunrise_local"]
-        assert bce["date_ad"] == ce["date_ad"]
-        assert bce["timezone"] == ce["timezone"]
-
-
-class TestGocharTwins:
-    """``build_gochar_response`` vs ``build_gochar_response_civil``."""
-
-    @pytest.mark.parametrize("day", [DAY_A, DAY_B])
-    def test_gochar_table_is_identical(self, day: date):
-        from engine.vedic.gochar import build_gochar_response, build_gochar_response_civil
-
-        ce = build_gochar_response(day, LOCATION, include_next_entry=False)
-        bce = build_gochar_response_civil(
-            civil_of(day), LOCATION, date_bs=ce["date_bs"], include_next_entry=False
+        from_civil = build_gochar(
+            civil_of(day).to_jd_ut(), LOCATION, include_next_entry=False
         )
-        assert bce["gochar"] == ce["gochar"]
+        assert from_civil == from_date
 
     @pytest.mark.parametrize("day", [DAY_A, DAY_B])
-    def test_next_entries_are_identical(self, day: date):
+    def test_next_entries_survive_the_merge(self, day: date):
         """The expensive branch — next rashi/nakshatra/pada crossings per graha."""
-        from engine.vedic.gochar import build_gochar_response, build_gochar_response_civil
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.vedic.gochar import build_gochar
 
-        ce = build_gochar_response(day, LOCATION, include_next_entry=True)
-        bce = build_gochar_response_civil(
-            civil_of(day), LOCATION, date_bs=ce["date_bs"], include_next_entry=True
+        payload = build_gochar(
+            civil_day_jd_from_date(day), LOCATION, include_next_entry=True
         )
-        assert bce["gochar"] == ce["gochar"]
+        for graha, row in payload["gochar"].items():
+            assert "next_rashi_entry" in row, graha
+            assert "next_nakshatra_entry" in row, graha
+            assert "next_pada_entry" in row, graha
 
-    def test_computed_at_anchor_agrees(self):
-        from engine.vedic.gochar import build_gochar_response, build_gochar_response_civil
+    def test_computed_at_is_the_sunrise_anchor(self):
+        from engine.astronomy.jd_calendar import civil_day_jd_from_date
+        from engine.astronomy.sun import sun_service
+        from engine.vedic.gochar import build_gochar
 
-        ce = build_gochar_response(DAY_A, LOCATION, include_next_entry=False)
-        bce = build_gochar_response_civil(
-            civil_of(DAY_A), LOCATION, date_bs=ce["date_bs"], include_next_entry=False
-        )
-        assert bce["computed_at"]["utc"] == ce["computed_at"]["utc"]
-        assert bce["computed_at"]["local"] == ce["computed_at"]["local"]
+        jd = civil_day_jd_from_date(DAY_A)
+        payload = build_gochar(jd, LOCATION, include_next_entry=False)
+        assert payload["computed_at"]["utc"] == sun_service.sunrise(
+            jd, LOCATION
+        ).isoformat()
+        assert payload["computed_at"]["note"].startswith("Positions at local true sunrise")
 
 
 class TestUdayastTwins:

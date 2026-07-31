@@ -2,6 +2,7 @@ import json
 
 from datetime import date
 
+from engine.astronomy.jd_calendar import civil_day_jd_from_date
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.graha_detail import (
     YEARLY_GRAHAS,
@@ -18,7 +19,7 @@ GRAHA_KEYS = {
 
 
 def test_graha_sthiti_has_all_rows_and_columns():
-    payload = build_graha_sthiti(date(2025, 7, 19), DEFAULT_LOCATION)
+    payload = build_graha_sthiti(civil_day_jd_from_date(date(2025, 7, 19)), DEFAULT_LOCATION)
     rows = payload["rows"]
     # लग्न + 9 grahas.
     assert len(rows) == 10
@@ -40,7 +41,7 @@ def test_graha_sthiti_has_all_rows_and_columns():
 
 def test_graha_sthiti_sun_declination_positive_in_july():
     """Sun sits ~+20° declination in mid-July (northern summer)."""
-    payload = build_graha_sthiti(date(2025, 7, 19), DEFAULT_LOCATION)
+    payload = build_graha_sthiti(civil_day_jd_from_date(date(2025, 7, 19)), DEFAULT_LOCATION)
     sun = next(r for r in payload["rows"] if r["graha"] == "sun")
     assert 18.0 <= sun["declination"] <= 23.0
     # Sun is never retrograde and its ecliptic latitude is ~0.
@@ -48,7 +49,7 @@ def test_graha_sthiti_sun_declination_positive_in_july():
 
 
 def test_graha_sthiti_saturn_retrograde_mid_2025():
-    payload = build_graha_sthiti(date(2025, 7, 19), DEFAULT_LOCATION)
+    payload = build_graha_sthiti(civil_day_jd_from_date(date(2025, 7, 19)), DEFAULT_LOCATION)
     saturn = next(r for r in payload["rows"] if r["graha"] == "saturn")
     assert saturn["is_retrograde"] is True
     assert saturn["speed_deg_day"] < 0.0
@@ -69,14 +70,13 @@ def test_asta_year_has_periods_including_moon():
 
 
 def test_graha_sthiti_early_bs_year():
-    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+    from engine.astronomy.jd_calendar import civil_day_add
     from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil
-    from engine.vedic.graha_detail import build_graha_sthiti_civil
 
     start = get_bs_month_start_civil(20, 4)
-    civil = CivilDay.from_jd_ut(civil_day_add(start.to_jd_ut(), 14))
-    payload = build_graha_sthiti_civil(
-        civil,
+    jd = civil_day_add(start.to_jd_ut(), 14)
+    payload = build_graha_sthiti(
+        jd,
         DEFAULT_LOCATION,
         date_bs=format_bs_date(20, 4, 15),
     )

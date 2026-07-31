@@ -215,12 +215,12 @@ def nepal_gochar_ingress(
 ):
     """Planetary ingress timeline between two dates."""
     from app.day_resolver import civil_day_for_date_key
-    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
-    from engine.vedic.gochar import (
-        GRAHA_ORDER,
-        build_gochar_ingress_range,
-        build_gochar_ingress_range_civil,
+    from engine.astronomy.jd_calendar import (
+        civil_day_jd_from_date,
+        date_if_supported,
+        format_civil_iso,
     )
+    from engine.vedic.gochar import GRAHA_ORDER, build_gochar_ingress
     from services.response_cache import location_cache_key, serve_cached_json
 
     graha_list = None
@@ -255,8 +255,12 @@ def nepal_gochar_ingress(
         )
         return serve_cached_json(
             request, key,
-            lambda: build_gochar_ingress_range_civil(
-                from_civil, to_civil, location, level=level, grahas=graha_list
+            lambda: build_gochar_ingress(
+                float(from_civil.to_jd_ut()),
+                float(to_civil.to_jd_ut()),
+                location,
+                level=level,
+                grahas=graha_list,
             ),
         )
 
@@ -272,8 +276,12 @@ def nepal_gochar_ingress(
     )
     return serve_cached_json(
         request, key,
-        lambda: build_gochar_ingress_range(
-            from_greg, to_greg, location, level=level, grahas=graha_list
+        lambda: build_gochar_ingress(
+            civil_day_jd_from_date(from_greg),
+            civil_day_jd_from_date(to_greg),
+            location,
+            level=level,
+            grahas=graha_list,
         ),
     )
 
@@ -286,53 +294,21 @@ def nepal_gochar_jd(
     upcoming: bool = Query(False),
 ):
     """Gochar at local sunrise for a civil day keyed by Julian Day (0h UT)."""
-    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
-    from engine.vedic.bikram_sambat import format_bs_date, locate_patro_day_for_civil
-    from engine.vedic.gochar import build_gochar_response, build_gochar_response_civil
+    from engine.vedic.gochar import build_gochar
     from services.panchanga_api import resolve_panchanga_jd_ut
     from services.response_cache import location_cache_key, serve_cached_json
 
-    canonical, civil, greg = resolve_panchanga_jd_ut(jd_ut)
-    if greg is None:
-        py, pm, pd = locate_patro_day_for_civil(civil)
-        date_bs = format_bs_date(py, pm, pd)
-        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
-        key = f"gochar_jd_{canonical}_{int(upcoming)}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request,
-            key,
-            lambda: build_gochar_response_civil(
-                civil,
-                location,
-                date_bs=date_bs,
-                include_next_entry=True,
-                include_upcoming=upcoming,
-            ),
-        )
-
-    if date_if_supported(civil.year, civil.month, civil.day) is None:
-        py, pm, pd = locate_patro_day_for_civil(civil)
-        date_bs = format_bs_date(py, pm, pd)
-        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
-        key = f"gochar_jd_{canonical}_{int(upcoming)}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request,
-            key,
-            lambda: build_gochar_response_civil(
-                civil,
-                location,
-                date_bs=date_bs,
-                include_next_entry=True,
-                include_upcoming=upcoming,
-            ),
-        )
-
-    key = f"gochar_jd_{greg.isoformat()}_{int(upcoming)}_{location_cache_key(location)}"
+    # This used to fan out three ways; the first two branches were the same code
+    # twice, and the third differed only in which twin it called. One builder,
+    # one call.
+    canonical, civil, _greg = resolve_panchanga_jd_ut(jd_ut)
+    day_jd = float(civil.to_jd_ut())
+    key = f"gochar_jd_{canonical}_{int(upcoming)}_{location_cache_key(location)}"
     return serve_cached_json(
         request,
         key,
-        lambda: build_gochar_response(
-            greg, location, include_next_entry=True, include_upcoming=upcoming
+        lambda: build_gochar(
+            day_jd, location, include_next_entry=True, include_upcoming=upcoming
         ),
     )
 
@@ -346,7 +322,14 @@ def nepal_gochar(
     upcoming: bool = Query(False),
 ):
     """Gochar (planetary transit) table for a date."""
-    from engine.astronomy.jd_calendar import CivilDay, civil_day_add, date_if_supported, format_civil_iso, parse_civil_iso
+    from engine.astronomy.jd_calendar import (
+        CivilDay,
+        civil_day_add,
+        civil_day_jd_from_date,
+        date_if_supported,
+        format_civil_iso,
+        parse_civil_iso,
+    )
     from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil, locate_patro_day_for_civil, parse_bs_date
     from services.response_cache import location_cache_key, serve_cached_json
 
@@ -362,10 +345,10 @@ def nepal_gochar(
         except Exception:
             return None, None
 
+    from engine.vedic.gochar import build_gochar
+
     civil, bs_triple = _civil_day_for_key(date_key, era)
     if civil is not None and date_if_supported(civil.year, civil.month, civil.day) is None:
-        from engine.vedic.gochar import build_gochar_response_civil
-
         # An ``era=bs`` request already carries the patro date; only an AD key
         # needs the reverse JD→BS scan.
         py, pm, pd = bs_triple or locate_patro_day_for_civil(civil)
@@ -375,8 +358,8 @@ def nepal_gochar(
         return serve_cached_json(
             request,
             key,
-            lambda: build_gochar_response_civil(
-                civil,
+            lambda: build_gochar(
+                float(civil.to_jd_ut()),
                 location,
                 date_bs=date_bs,
                 include_next_entry=True,
@@ -388,7 +371,6 @@ def nepal_gochar(
         greg = greg_date_for_date_key(date_key, era)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    from engine.vedic.gochar import build_gochar_response
 
     # Deterministic per (date, location, upcoming) — planetary positions for a
     # given day never change, so cache + persist it (DB-backed) rather than
@@ -396,8 +378,11 @@ def nepal_gochar(
     key = f"gochar_{greg.isoformat()}_{int(upcoming)}_{location_cache_key(location)}"
     return serve_cached_json(
         request, key,
-        lambda: build_gochar_response(
-            greg, location, include_next_entry=True, include_upcoming=upcoming
+        lambda: build_gochar(
+            civil_day_jd_from_date(greg),
+            location,
+            include_next_entry=True,
+            include_upcoming=upcoming,
         ),
     )
 
@@ -410,9 +395,10 @@ def nepal_graha_sthiti(
     era: Literal["bs", "bbs", "ad", "bc"] = Query("ad"),
 ):
     """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
-    from app.day_resolver import DayResolutionError, civil_day_for_date_key
-    from engine.astronomy.jd_calendar import date_if_supported, format_civil_iso
-    from engine.vedic.bikram_sambat import format_bs_date, locate_patro_day_for_civil
+    from app.day_resolver import civil_day_for_date_key
+    from engine.astronomy.jd_calendar import date_if_supported
+    from engine.vedic.bikram_sambat import format_bs_date
+    from engine.vedic.graha_detail import build_graha_sthiti
     from services.response_cache import location_cache_key, serve_cached_json
 
     civil = civil_day_for_date_key(date_key, era)
@@ -422,38 +408,24 @@ def nepal_graha_sthiti(
             detail=f"{date_key!r} is not a date this era can read",
         )
 
-    bs_triple_from_key: tuple[int, int, int] | None = None
-    if era in ("bs", "bbs"):
+    # Pre-1 CE days have no Gregorian date to run gregorian_to_bs on, so a
+    # bs/bbs date key supplies the Bikram label directly — the key already *is*
+    # the answer. CE days keep deriving it in the builder, as they always did;
+    # passing the key's triple there instead would be a payload change.
+    date_bs: str | None = None
+    if era in ("bs", "bbs") and date_if_supported(civil.year, civil.month, civil.day) is None:
         parts = date_key.strip().split("-")
         if len(parts) == 3:
             try:
-                bs_triple_from_key = (int(parts[0]), int(parts[1]), int(parts[2]))
+                date_bs = format_bs_date(int(parts[0]), int(parts[1]), int(parts[2]))
             except ValueError:
-                bs_triple_from_key = None
+                date_bs = None
 
-    if date_if_supported(civil.year, civil.month, civil.day) is None:
-        from engine.vedic.graha_detail import build_graha_sthiti_civil
-
-        py, pm, pd = bs_triple_from_key or locate_patro_day_for_civil(civil)
-        date_bs = format_bs_date(py, pm, pd)
-        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
-        key = f"grahasthiti_civil_{ad_iso}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request,
-            key,
-            lambda: build_graha_sthiti_civil(civil, location, date_bs=date_bs),
-        )
-
-    try:
-        greg = greg_date_for_date_key(date_key, era)
-    except DayResolutionError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    from engine.vedic.graha_detail import build_graha_sthiti
-
-    key = f"grahasthiti_{greg.isoformat()}_{location_cache_key(location)}"
+    jd = float(civil.to_jd_ut())
+    key = f"grahasthiti_jd_{jd:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
         request, key,
-        lambda: build_graha_sthiti(greg, location),
+        lambda: build_graha_sthiti(jd, location, date_bs=date_bs),
     )
 
 
