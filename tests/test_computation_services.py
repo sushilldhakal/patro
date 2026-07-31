@@ -21,10 +21,14 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from engine.astronomy.engine import default_engine
+from engine.astronomy.lagna import lagna_service
 from engine.astronomy.moon import PHASE_NAMES, moon_service
 from engine.astronomy.panchanga import panchanga_service
-from engine.astronomy.planets import GRAHA_KEYS, planet_service
+from engine.astronomy.planets import GRAHA_KEYS, planet_service, spashta_table
+from engine.astronomy.rashi import RASHI_NAMES, RITU_DATA, rashi_service
 from engine.astronomy.sun import sun_service
+
+KATHMANDU = (27.7172, 85.3240)
 
 DT = datetime(2026, 7, 31, 6, 0, tzinfo=timezone.utc)
 JD = default_engine.julian_day(DT)
@@ -248,3 +252,141 @@ class TestPlanetService:
     def test_motion_labels_both_locales(self):
         assert planet_service.motion(JD, "rahu") == "Vakri"
         assert planet_service.motion(JD, "rahu", locale="ne") == "वक्री"
+
+    def test_extras_are_a_superset_of_the_lean_position(self):
+        """``position`` stays cheap; the uncached extras are opt-in."""
+        lean = planet_service.position(JD, "mars")
+        full = planet_service.position_with_extras(JD, "mars")
+        assert lean.items() <= full.items()
+        assert {"latitude", "right_ascension", "declination"} <= full.keys()
+
+
+class TestSpashtaTable:
+    """The स्पष्ट ग्रह table — moved here from ``swiss_eph`` unchanged."""
+
+    def test_every_graha_is_present(self):
+        table = spashta_table(JD)
+        assert set(table) == set(GRAHA_KEYS)
+
+    def test_ketu_is_derived_from_rahu_not_calculated(self):
+        table = spashta_table(JD)
+        rahu, ketu = table["rahu"], table["ketu"]
+        assert (ketu["longitude"] - rahu["longitude"]) % 360 == pytest.approx(
+            180.0, abs=1e-5
+        )
+        assert ketu["speed"] == pytest.approx(-rahu["speed"], abs=1e-6)
+
+    def test_rashi_name_agrees_with_the_longitude(self):
+        for graha, pos in spashta_table(JD).items():
+            expected = RASHI_NAMES[int(pos["longitude"] / 30) % 12]
+            assert pos["rashi_name"] == expected, graha
+            assert pos["rashi"] == int(pos["longitude"] / 30) % 12 + 1, graha
+
+    def test_dms_is_consistent_with_the_longitude(self):
+        for graha, pos in spashta_table(JD).items():
+            degrees = int(pos["dms"][:3])
+            assert degrees == int(pos["longitude"]), graha
+            assert pos["deg_in_rashi"] == pytest.approx(pos["longitude"] % 30, abs=1e-6)
+
+    def test_sun_and_nodes_never_combust(self):
+        """अस्त is a heliacal setting — the Sun cannot set in its own glare."""
+        for jd in SAMPLE_JDS:
+            table = spashta_table(jd)
+            assert table["sun"]["is_combust"] is False
+            assert table["rahu"]["is_combust"] is False
+            assert table["ketu"]["is_combust"] is False
+
+    def test_nodes_are_retrograde_by_convention(self):
+        for jd in SAMPLE_JDS:
+            table = spashta_table(jd)
+            assert table["rahu"]["is_retrograde"] is True
+            assert table["ketu"]["is_retrograde"] is True
+
+
+class TestRashiService:
+    def test_surya_and_chandra_read_their_own_longitudes(self):
+        for jd in SAMPLE_JDS:
+            surya = rashi_service.surya(jd)
+            assert surya["longitude"] == pytest.approx(
+                round(sun_service.longitude(jd), 6), abs=1e-6
+            )
+            assert surya["name"] == RASHI_NAMES[int(surya["longitude"] / 30) % 12]
+
+            chandra = rashi_service.chandra(jd)
+            assert chandra["longitude"] == pytest.approx(
+                round(moon_service.longitude(jd), 6), abs=1e-6
+            )
+
+    def test_ritu_follows_the_sun_two_signs_at_a_time(self):
+        for jd in SAMPLE_JDS:
+            ritu = rashi_service.ritu(jd, sidereal=True)
+            assert ritu["number"] == RITU_DATA[(ritu["sun_rashi"] - 1) // 2]["number"]
+
+    def test_southern_hemisphere_gets_the_inverted_season(self):
+        """Sydney in July is winter, Kathmandu in July is monsoon."""
+        july = default_engine.julian_day(datetime(2026, 7, 15, 6, tzinfo=timezone.utc))
+        north = rashi_service.ritu(july, lat=27.7, timezone_name="Asia/Kathmandu")
+        south = rashi_service.ritu(july, lat=-33.9, timezone_name="Australia/Sydney")
+        assert north["basis"] != "southern_local"
+        assert south["basis"] == "southern_local"
+        assert south["name"] == "Shishira"
+
+    def test_aayan_flips_at_the_makara_boundary(self):
+        """Uttarayana is Makara→Mithuna; the mark must agree with the name."""
+        for jd in SAMPLE_JDS:
+            aayan = rashi_service.aayan(jd)
+            uttara = aayan["sun_rashi"] in (10, 11, 12, 1, 2, 3)
+            assert (aayan["name"] == "Uttarayana") is uttara
+            assert aayan["kranti_mark"] == ("उ" if uttara else "द")
+
+
+class TestLagnaService:
+    def test_next_boundary_lands_in_the_following_rashi(self):
+        """The search converges from above: the answer is inside the next sign,
+        by at most the 30-second bisection tolerance."""
+        from engine.astronomy.lagna import _TOLERANCE_DAYS
+
+        lat, lon = KATHMANDU
+        for jd in SAMPLE_JDS:
+            here = lagna_service.rashi_index(jd, lat=lat, lon=lon)
+            end = lagna_service.next_boundary(jd, lat=lat, lon=lon)
+            assert end > jd
+            assert lagna_service.rashi_index(end, lat=lat, lon=lon) == (here + 1) % 12
+            assert (
+                lagna_service.rashi_index(end - 2 * _TOLERANCE_DAYS, lat=lat, lon=lon)
+                == here
+            )
+
+    def test_a_full_circuit_of_boundaries_takes_a_sidereal_day(self):
+        """The ascendant sweeps all twelve signs once per sidereal day.
+
+        Measured boundary-to-boundary, not from an arbitrary instant: starting
+        mid-sign, twelve boundaries later is one circuit *minus* the part of the
+        first sign already elapsed.
+        """
+        lat, lon = KATHMANDU
+        start = lagna_service.next_boundary(JD, lat=lat, lon=lon)
+        jd = start
+        for _ in range(12):
+            jd = lagna_service.next_boundary(jd, lat=lat, lon=lon)
+        assert jd - start == pytest.approx(0.99727, abs=0.005)
+
+    def test_lagna_block_agrees_with_its_own_longitude(self):
+        lat, lon = KATHMANDU
+        lagna = lagna_service.lagna(JD, lat=lat, lon=lon)
+        assert lagna["name"] == RASHI_NAMES[int(lagna["longitude"] / 30) % 12]
+        assert lagna["degree_in_rashi"] == pytest.approx(
+            lagna["longitude"] % 30, abs=1e-4
+        )
+
+
+class TestMoonRiseSet:
+    def test_moonrise_after_is_within_a_day_and_a_bit(self):
+        """The Moon rises once every ~24h50m, so a 26h window always contains one."""
+        from engine.astronomy.location import ObserverLocation
+
+        location = ObserverLocation()
+        for jd in SAMPLE_JDS:
+            rise = moon_service.moonrise_after(jd, location)
+            assert rise is not None
+            assert 0 <= default_engine.julian_day(rise) - jd < 26 / 24

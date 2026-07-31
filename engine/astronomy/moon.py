@@ -14,9 +14,15 @@ See docs/computation-architecture-audit.md (sections C, phase 2).
 
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any
 
 from engine.astronomy.engine import default_engine
+from engine.astronomy.sun import (
+    LAT_KATHMANDU,
+    LON_KATHMANDU,
+    default_altitude,
+)
 
 # Synodic month (new moon → new moon), days. Used only to label the phase's age;
 # the phase itself is geometric, from the Sun–Moon elongation.
@@ -45,6 +51,66 @@ PHASE_NAMES_NE = (
     "अर्ध चन्द्र",
     "घट्दो चन्द्र",
 )
+
+
+# ── day-typed rise/set entry points (phase 5 collapses these) ────────────────
+#
+# The Moon rises ~50 minutes later each day, so a civil day can hold two
+# moonrises or none at all. That is why the ``_after`` pair exists and is what
+# the daily builders actually use: "the next moonrise after sunrise" is a
+# well-defined question on every day, where "the moonrise on this date" is not.
+
+
+def calculate_moonrise(
+    date_val: date,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    if altitude is None:
+        altitude = default_altitude(latitude, longitude)
+    return default_engine.rise(
+        date_val, "moon", latitude, longitude, altitude, timezone_name=timezone_name
+    )
+
+
+def calculate_moonset(
+    date_val: date,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    if altitude is None:
+        altitude = default_altitude(latitude, longitude)
+    return default_engine.set(
+        date_val, "moon", latitude, longitude, altitude, timezone_name=timezone_name
+    )
+
+
+def calculate_moonrise_after(
+    after_dt: datetime,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    if altitude is None:
+        altitude = default_altitude(latitude, longitude)
+    return default_engine.rise_after(after_dt, "moon", latitude, longitude, altitude)
+
+
+def calculate_moonset_after(
+    after_dt: datetime,
+    latitude: float = LAT_KATHMANDU,
+    longitude: float = LON_KATHMANDU,
+    altitude: float | None = None,
+    timezone_name: str | None = None,
+) -> datetime | None:
+    if altitude is None:
+        altitude = default_altitude(latitude, longitude)
+    return default_engine.set_after(after_dt, "moon", latitude, longitude, altitude)
 
 
 class MoonService:
@@ -99,6 +165,35 @@ class MoonService:
             "right_ascension": extras["right_ascension"],
             "declination": extras["declination"],
         }
+
+    # ── rise / set ──────────────────────────────────────────────────────────
+
+    def moonrise_after(self, jd: float, location: Any):
+        """First moonrise at or after *jd*, or ``None`` if the Moon stays down.
+
+        "After an instant" rather than "on a day": at ~50 minutes of daily drift
+        a civil day can contain two moonrises or none, so a day-keyed answer has
+        to pick one arbitrarily.
+        """
+        from engine.astronomy.ut_instant import ut_instant_from_jd
+
+        return calculate_moonrise_after(
+            ut_instant_from_jd(jd),
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
+
+    def moonset_after(self, jd: float, location: Any):
+        """First moonset at or after *jd*, or ``None`` if the Moon stays up."""
+        from engine.astronomy.ut_instant import ut_instant_from_jd
+
+        return calculate_moonset_after(
+            ut_instant_from_jd(jd),
+            latitude=location.lat,
+            longitude=location.lon,
+            timezone_name=location.timezone,
+        )
 
     # ── phase ───────────────────────────────────────────────────────────────
 
