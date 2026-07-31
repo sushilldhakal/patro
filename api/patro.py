@@ -4,8 +4,15 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import Response
 
-from api.deps import LocationDep, _signed_bs_year_from_browse, _validate_bs_month, _validate_bs_year
-from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN
+from api.deps import (
+    EraQuery,
+    LocationDep,
+    _signed_bs_year_from_browse,
+    _validate_bs_month,
+    _validate_bs_year,
+    stamp_year_era,
+    validated_year_span_jd,
+)
 from services.holiday_generator import precompute_bs_year
 from app.day_resolver import greg_date_for_date_key
 from services.panchanga_api import build_calendar_header, build_month_calendar, build_patro_month
@@ -14,39 +21,15 @@ from services.presentation import render_panchanga_month
 router = APIRouter()
 
 
-def _year_span_jd(request: Request, era: str, year: int) -> tuple[float, float]:
-    """Inclusive ``(first_day_jd, last_day_jd)`` for an era + year.
-
-    Prefers the span ``EraMiddleware`` already resolved for this request; falls
-    back to resolving it here when the middleware did not (direct calls, tests).
-    """
-    from app.era_middleware import era_context
-    from engine.calendar.era import year_span_jd
-
-    ctx = era_context(request)
-    if ctx.julian is not None and ctx.julian_end is not None:
-        return float(ctx.julian), float(ctx.julian_end)
-    try:
-        return year_span_jd(era, year)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-
-def _stamp_year_era(payload: dict, era: str, year: int) -> dict:
-    """Re-apply the legacy year/era labels the per-era builders used to add.
-
-    The span builders are era-free by design, but these two fields are part of
-    the published payload, so the labelling stays — it just happens here, once,
-    instead of inside two forked builders. ``bs_year`` carries the *signed*
-    patro axis (negative for bbs), which is what the BS builders emitted.
-    """
-    if era in ("ad", "bc"):
-        payload["ad_year"] = year
-        payload["era"] = "ad"
-    else:
-        payload["bs_year"] = _signed_bs_year_from_browse(era, year)
-        payload["era"] = "bs"
-    return payload
+def _cache_year_hint(era: str, year: int) -> int:
+    """A BS-ish year for :func:`bs_year_cache_control`, which only asks
+    "is this in the past?" so it can pick an edge TTL. Any pre-epoch era is
+    unambiguously historical, so it maps to a year far below the current one."""
+    if era == "ad":
+        return year + 56
+    if era in ("bc", "bbs"):
+        return -abs(year)
+    return year
 
 
 @router.get("/nepal/gochar/year/{bs_year}")
@@ -210,7 +193,7 @@ def nepal_gochar_ingress(
     request: Request,
     from_date: str = Query(..., alias="from"),
     to_date: str = Query(..., alias="to"),
-    era: Literal["bs", "ad"] = Query("ad"),
+    era: EraQuery = "ad",
     level: Literal["pada", "nakshatra", "rashi", "patro", "udayast"] = Query("pada"),
     grahas: str | None = Query(None),
 ):
@@ -319,69 +302,50 @@ def nepal_gochar(
     date_key: str,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("bs"),
+    era: EraQuery = "bs",
     upcoming: bool = Query(False),
 ):
     """Gochar (planetary transit) table for a date."""
-    from engine.astronomy.jd_calendar import (
-        CivilDay,
-        civil_day_add,
-        civil_day_jd_from_date,
-        date_if_supported,
-        format_civil_iso,
-        parse_civil_iso,
-    )
-    from engine.vedic.bikram_sambat import format_bs_date, get_bs_month_start_civil, locate_patro_day_for_civil, parse_bs_date
+    from app.day_resolver import civil_day_for_date_key
+    from engine.astronomy.jd_calendar import date_if_supported
+    from engine.vedic.bikram_sambat import format_bs_date
+    from engine.vedic.gochar import build_gochar
     from services.response_cache import location_cache_key, serve_cached_json
 
-    def _civil_day_for_key(key: str, date_era: str):
-        """``(CivilDay, bs_triple)`` — the triple is what an ``era=bs`` caller sent."""
-        try:
-            if date_era == "ad":
-                return parse_civil_iso(key), None
-            bs_year, bs_month, bs_day = parse_bs_date(key)
-            start = get_bs_month_start_civil(bs_year, bs_month)
-            civil_day = CivilDay.from_jd_ut(civil_day_add(start.to_jd_ut(), bs_day - 1))
-            return civil_day, (bs_year, bs_month, bs_day)
-        except Exception:
-            return None, None
-
-    from engine.vedic.gochar import build_gochar
-
-    civil, bs_triple = _civil_day_for_key(date_key, era)
-    if civil is not None and date_if_supported(civil.year, civil.month, civil.day) is None:
-        # An ``era=bs`` request already carries the patro date; only an AD key
-        # needs the reverse JD→BS scan.
-        py, pm, pd = bs_triple or locate_patro_day_for_civil(civil)
-        date_bs = format_bs_date(py, pm, pd)
-        ad_iso = format_civil_iso(civil.year, civil.month, civil.day)
-        key = f"gochar_civil_{ad_iso}_{int(upcoming)}_{location_cache_key(location)}"
-        return serve_cached_json(
-            request,
-            key,
-            lambda: build_gochar(
-                float(civil.to_jd_ut()),
-                location,
-                date_bs=date_bs,
-                include_next_entry=True,
-                include_upcoming=upcoming,
-            ),
+    # One resolver for every era: engine.calendar.era.to_jd knows all four, so
+    # the local ad-or-bs parser this used to carry (which silently returned None
+    # for bc and bbs, dropping the request into the CE-only path and a 400) is
+    # gone.
+    civil = civil_day_for_date_key(date_key, era)
+    if civil is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{date_key!r} is not a date this era can read",
         )
 
-    try:
-        greg = greg_date_for_date_key(date_key, era)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    # A bs/bbs key already *is* the Bikram label. Pre-1 CE it is also the only
+    # way to get one, since gregorian_to_bs needs a Gregorian date; on CE days
+    # the builder derives it, as it always did.
+    date_bs: str | None = None
+    if era in ("bs", "bbs") and date_if_supported(civil.year, civil.month, civil.day) is None:
+        parts = date_key.strip().split("-")
+        if len(parts) == 3:
+            try:
+                date_bs = format_bs_date(int(parts[0]), int(parts[1]), int(parts[2]))
+            except ValueError:
+                date_bs = None
 
-    # Deterministic per (date, location, upcoming) — planetary positions for a
+    # Deterministic per (day, location, upcoming) — planetary positions for a
     # given day never change, so cache + persist it (DB-backed) rather than
     # recomputing the ephemeris on every DainikKranti view.
-    key = f"gochar_{greg.isoformat()}_{int(upcoming)}_{location_cache_key(location)}"
+    jd = float(civil.to_jd_ut())
+    key = f"gochar_jd_{jd:.1f}_{int(upcoming)}_{location_cache_key(location)}"
     return serve_cached_json(
         request, key,
         lambda: build_gochar(
-            civil_day_jd_from_date(greg),
+            jd,
             location,
+            date_bs=date_bs,
             include_next_entry=True,
             include_upcoming=upcoming,
         ),
@@ -393,7 +357,7 @@ def nepal_graha_sthiti(
     date_key: str,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "bbs", "ad", "bc"] = Query("ad"),
+    era: EraQuery = "ad",
 ):
     """Full daily sphuta table — all 9 grahas + लग्न, computed at sunrise."""
     from app.day_resolver import civil_day_for_date_key
@@ -435,28 +399,21 @@ def nepal_graha_asta_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
+    era: EraQuery = "bs",
 ):
     """Yearly heliacal udaya/asta (rising/setting) timeline for a BS or AD year."""
     from engine.vedic.graha_detail import build_graha_asta_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
-        raise HTTPException(status_code=400, detail="ad year out of supported range")
-    if era != "ad":
-        _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
-
-    jd_start, jd_end = _year_span_jd(request, era, year)
+    jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"grahaasta_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
         request,
         key,
-        lambda: _stamp_year_era(
+        lambda: stamp_year_era(
             build_graha_asta_span(jd_start, jd_end, location), era, year
         ),
-        cache_control=bs_year_cache_control(
-            year + 56 if era == "ad" else _signed_bs_year_from_browse(era, year)
-        ),
+        cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )
 
 
@@ -465,9 +422,7 @@ def nepal_graha_vakri_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["ad", "bc", "bs", "bbs"] = Query(
-        "bs", description="Calendar era for year — all four take a positive year"
-    ),
+    era: EraQuery = "bs",
 ):
     """Yearly वक्री/मार्गी (retrograde/direct) station timeline.
 
@@ -506,28 +461,21 @@ def nepal_eclipse_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "bbs", "ad"] = Query("bs", description="Calendar era for year (bs, bbs, or ad)"),
+    era: EraQuery = "bs",
 ):
     """Solar or lunar eclipses whose maximum falls within a BS or AD year."""
     from engine.vedic.graha_detail import build_eclipse_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
-        raise HTTPException(status_code=400, detail="ad year out of supported range")
-    if era != "ad":
-        _signed_bs_year_from_browse(era, year)  # validates the BS/BBS range
-
-    jd_start, jd_end = _year_span_jd(request, era, year)
+    jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"eclipse_{kind}_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
         request,
         key,
-        lambda: _stamp_year_era(
+        lambda: stamp_year_era(
             build_eclipse_span(jd_start, jd_end, kind, location), era, year
         ),
-        cache_control=bs_year_cache_control(
-            year + 56 if era == "ad" else _signed_bs_year_from_browse(era, year)
-        ),
+        cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )
 
 
@@ -536,24 +484,19 @@ def nepal_panchak_year(
     year: int,
     location: LocationDep,
     request: Request,
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for year (bs or ad)"),
+    era: EraQuery = "bs",
 ):
     """Annual Panchak windows — Moon in Dhanishta pada 3 through Revati."""
     from engine.vedic.panchak_calendar import build_panchak_span
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
-    if era == "ad" and not AD_YEAR_MIN <= year <= AD_YEAR_MAX:
-        raise HTTPException(status_code=400, detail="ad year out of supported range")
-    if era != "ad":
-        _validate_bs_year(year)
-
-    jd_start, jd_end = _year_span_jd(request, era, year)
+    jd_start, jd_end = validated_year_span_jd(request, era, year)
     key = f"panchak_jd_{jd_start:.1f}_{jd_end:.1f}_{location_cache_key(location)}"
     return serve_cached_json(
         request,
         key,
-        lambda: _stamp_year_era(
+        lambda: stamp_year_era(
             build_panchak_span(jd_start, jd_end, location), era, year
         ),
-        cache_control=bs_year_cache_control(year + 56 if era == "ad" else year),
+        cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )

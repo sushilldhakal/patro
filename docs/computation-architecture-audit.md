@@ -636,6 +636,50 @@ the edge will keep serving pre-bump JSON for up to its `s-maxage` window.
   planetary snapshot, `"midnight"` for the civil-midnight variant. Additive;
   `PANCHANGA_PAYLOAD_VERSION` 36 → 37 carries it.
 
+### Era surface: all four eras, everywhere the engine can answer
+
+Phase 3 made the builders era-free, but the *routes* kept the narrow
+`Literal["bs", "ad"]` era sets they were written with — a fair description back
+when each era had its own forked builder, and arbitrary afterwards. A request
+was rejected by pydantic before reaching a builder that would have answered it.
+
+Now `api.deps.EraQuery` is the single declaration, and every era-aware endpoint
+takes `ad`, `bc`, `bs`, `bbs`:
+
+| Surface | Eras |
+|---|---|
+| `/panchanga` day, month, `?jd=`, `/at-time` | all four |
+| `nepal/{gochar,graha-sthiti,panchanga}/{date_key}` | all four |
+| `nepal/{eclipse,panchak,graha-asta,graha-vakri}/year/{year}` | all four |
+| `nepal/gochar/ingress` (from/to range) | all four |
+
+Location is orthogonal — `city=`, `city_id=` and raw `lat/lon/timezone` each
+combine with each era (48 combinations pinned in `tests/test_era_surface.py`).
+
+Year-range validation moved with it. `AD_YEAR_MIN/MAX` (1943–2090) only ever
+made sense for `ad`, and had no answer for `bc`; `validated_year_span_jd` checks
+the **Julian Day span** against the installed `.se1` files instead. That is the
+one question every era can be asked, and the one that actually matters. It also
+widens `ad` beyond 1943–2090 on the year endpoints, which the audit had flagged
+as a product decision — keeping it would have left the surface incoherent
+(`bc` 3000 answerable, `ad` 1900 not).
+
+Two endpoints stay narrow **on purpose**, and are pinned as such so a later
+reader can tell "not supported yet" from "nobody widened it":
+
+- `nepal/sankranti/{date_key}` — `build_sankranti_day_response` takes a
+  `datetime.date` and labels it through `gregorian_to_bs`. It is CE-only at the
+  *builder*; widening the signature would only move the 400.
+- `/panchanga/{bs_year}/{bs_month}` — the path segments are a BS year and month
+  feeding `_signed_bs_year_from_browse`. An AD year there would be silently read
+  as a BS year. Gregorian months have `/nepal/patro/ad/{ad_year}/{ad_month}`.
+
+Widening also surfaced a third instance of the A0d bug class:
+`services/presentation/canonical.to_canonical` parsed `date_ad` with
+`date.fromisoformat`, so a BCE day computed correctly and then 500'd inside the
+renderer. Same fix — `parse_civil_iso` + `date_if_supported` — and the CE-only
+`special` block now reports `available: false` instead of crashing.
+
 ## G. What not to do
 
 - **Don't add a caching/memo layer** to the new services. `AstronomyEngine._calc` and

@@ -28,6 +28,72 @@ def location_params(
 
 LocationDep = Annotated[ObserverLocation, Depends(location_params)]
 
+# Every era the engine can compute. Routes used to declare their own narrow
+# subsets — bs|ad here, bs|bbs|ad there — which was a fair description of the
+# builders back when each era had its own forked builder. Phase 3 merged those,
+# so the subsets became arbitrary: a request for era=bbs was rejected by a
+# Literal before reaching a builder that would have answered it fine.
+ERA_CODES = ("ad", "bc", "bs", "bbs")
+EraCode = Literal["ad", "bc", "bs", "bbs"]
+EraQuery = Annotated[
+    EraCode,
+    Query(description="Calendar era for the date: ad, bc, bs or bbs"),
+]
+
+
+def validated_year_span_jd(request, era: str, year: int) -> tuple[float, float]:
+    """Inclusive ``(first_day_jd, last_day_jd)`` for era + year, range-checked.
+
+    Prefers the span ``EraMiddleware`` already resolved for this request. The
+    range check is on the *Julian Days*, not on a per-era year number: that is
+    the one question every era can be asked, and it is the question that
+    actually matters — whether the installed ``.se1`` files cover the span.
+    """
+    from app.era_middleware import era_context
+    from engine.calendar.era import year_span_jd
+    from engine.vedic.patro_year_axis import (
+        EPHEMERIS_JD_MAX,
+        EPHEMERIS_JD_MIN,
+        jd_span_within_ephemeris,
+    )
+
+    ctx = getattr(request.state, "era_ctx", None)
+    if ctx is not None and ctx.julian is not None and ctx.julian_end is not None:
+        jd_start, jd_end = float(ctx.julian), float(ctx.julian_end)
+    else:
+        try:
+            jd_start, jd_end = year_span_jd(era, year)
+        except (ValueError, OverflowError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    if not jd_span_within_ephemeris(jd_start, jd_end):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"{era} year {year} falls outside the ephemeris files installed on "
+                f"this host (JD {EPHEMERIS_JD_MIN} .. {EPHEMERIS_JD_MAX})"
+            ),
+        )
+    return jd_start, jd_end
+
+
+def stamp_year_era(payload: dict, era: str, year: int) -> dict:
+    """Re-apply the year/era labels the per-era builders used to add.
+
+    The span builders are era-free by design, but these fields are part of the
+    published payload. ``bs``/``bbs`` keep their existing spelling — ``era: "bs"``
+    with a *signed* ``bs_year`` (negative for bbs) — because clients already read
+    it that way. ``ad``/``bc`` echo the requested era with a positive year, which
+    is the rule the rest of the era surface follows: the era carries the sign.
+    """
+    if era in ("ad", "bc"):
+        payload["ad_year"] = year
+        payload["era"] = era
+    else:
+        payload["bs_year"] = _signed_bs_year_from_browse(era, year)
+        payload["era"] = "bs"
+    return payload
+
 
 def _validate_bbs_url_year(url_year: int) -> None:
     from engine.vedic.patro_year_axis import PATRO_EPHEMERIS_SIGNED_MIN

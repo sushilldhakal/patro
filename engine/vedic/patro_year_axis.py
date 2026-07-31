@@ -45,6 +45,19 @@ PATRO_SIGNED_YEAR_MAX = 17055  # BS 17055 ≈ 16998 CE
 PATRO_EPHEMERIS_SIGNED_MIN = -7144  # BBS 7144 ≈ 7200 BCE
 PATRO_EPHEMERIS_SIGNED_MAX = 3057  # BS 3057 ≈ 3000 CE
 
+# The same window as a JD pair, for the eras that are not counted in patro years.
+# A Gregorian or BC year has no signed patro number to check, so range-validating
+# an ``era=ad``/``era=bc`` request means asking whether its JD span lands inside
+# the files. Both ends carry the ~35-day margin the lunar-month and festival
+# searches run past a year's edges.
+EPHEMERIS_JD_MIN = -908744.0  # 3 Nov 7202 BCE
+EPHEMERIS_JD_MAX = 2818000.5  # 28 Apr 3003 CE
+
+
+def jd_span_within_ephemeris(jd_start: float, jd_end: float) -> bool:
+    """True when the installed ``.se1`` files cover this whole civil-day span."""
+    return EPHEMERIS_JD_MIN <= float(jd_start) and float(jd_end) <= EPHEMERIS_JD_MAX
+
 # Years with a hand-maintained BS month-length table + festival stack. Outside
 # it the grid is derived from sankranti moments instead; both give a full
 # panchanga, so this gates festivals only, not tithi/nakshatra.

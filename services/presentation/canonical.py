@@ -22,7 +22,13 @@ from services.presentation.helpers import (
 
 def to_canonical(daily_state: dict[str, Any]) -> dict[str, Any]:
     """Map engine daily_state → Surya Panchanga canonical schema."""
-    greg = date.fromisoformat(daily_state["date_ad"])
+    from engine.astronomy.jd_calendar import date_if_supported, parse_civil_iso
+
+    # Not date.fromisoformat: a pre-1 CE day spells date_ad on the expanded axis
+    # ("-0043-03-15"), which that parser rejects — it turned an otherwise fine
+    # BCE payload into a 500 at the very last step, inside the renderer.
+    civil = parse_civil_iso(daily_state["date_ad"])
+    greg = date_if_supported(civil.year, civil.month, civil.day)
     loc = daily_state.get("location") or {}
     muhurta = daily_state.get("muhurta") or {}
     paksha = daily_state.get("paksha")
@@ -98,10 +104,23 @@ def to_canonical(daily_state: dict[str, Any]) -> dict[str, Any]:
         },
         "festivals": festival_list(daily_state.get("festivals")),
         "is_public_holiday": daily_state.get("is_public_holiday", False),
-        "special": build_special_block(
-            greg,
-            location_timezone=loc.get("timezone") or "Asia/Kathmandu",
-            lunar_month=daily_state.get("lunar_month"),
+        # The sankranti scan behind this block takes a datetime.date, so it has
+        # nothing to say about a pre-1 CE day. Report that rather than omitting
+        # the key or inventing an answer — adhik/kshaya still come from the
+        # lunar_month block, which is itself stubbed on the patro axis.
+        "special": (
+            build_special_block(
+                greg,
+                location_timezone=loc.get("timezone") or "Asia/Kathmandu",
+                lunar_month=daily_state.get("lunar_month"),
+            )
+            if greg is not None
+            else {
+                "adhik_maas": False,
+                "kshaya_maas": False,
+                "sankranti": None,
+                "available": False,
+            }
         ),
         "meta": {
             "format": "surya_canonical",

@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse, Response
 
 from app.era_middleware import era_params
 from api.deps import (
+    EraQuery,
     LocationDep,
     _enrich_holiday_bs_dates,
     _nepal_holidays_for_ad_year,
@@ -32,6 +33,7 @@ from services.holiday_generator import (
 from services.panchanga_api import (
     build_calendar_header,
     build_daily_state,
+    build_daily_state_civil,
     build_festivals_for_date,
     build_month_calendar,
     build_month_calendar_at_clock,
@@ -172,6 +174,10 @@ def panchanga_month(
     bs_month: int,
     location: LocationDep,
     request: Request,
+    # Deliberately *not* widened to ad/bc: the path segments are BS year+month,
+    # and this feeds _signed_bs_year_from_browse. An AD year here would be read
+    # as a BS year and silently answer the wrong month. Callers wanting a
+    # Gregorian month have /nepal/patro/ad/{ad_year}/{ad_month}.
     era: Literal["bs", "bbs"] = Query(
         "bs",
         description="Browse era for the path year (bbs maps url year N → signed −N)",
@@ -844,7 +850,7 @@ def nepal_upcoming_festivals(
 def nepal_panchanga_day(
     date_key: str,
     location: LocationDep,
-    era: Literal["bs", "ad"] = Query("bs", description="Date era: bs (2083-10-12) or ad (2027-01-25)"),
+    era: EraQuery = "bs",
     format: Literal["raw", "surya", "toyanath", "canonical", "patro", "dayblock"] = Query(
         "surya", description="Presentation style"),
     variant: Literal["default", "nepal_official", "toyanath", "surya"] = Query("default"),
@@ -852,12 +858,36 @@ def nepal_panchanga_day(
     output: Literal["json", "text"] = Query("json"),
 ):
     """Combined daily panchanga + festivals + public holiday status."""
-    try:
-        greg = greg_date_for_date_key(date_key, era)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    from app.day_resolver import civil_day_for_date_key
+    from engine.astronomy.jd_calendar import date_if_supported
+    from engine.vedic.bikram_sambat import locate_patro_day_for_civil
 
-    state = build_daily_state(greg, location, include_festivals=True, include_detail=False)
+    civil = civil_day_for_date_key(date_key, era)
+    if civil is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"{date_key!r} is not a date this era can read",
+        )
+
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is None:
+        # Pre-1 CE: the signed patro axis carries the day, and the CE-only
+        # lunar/festival engines stub out — same split build_daily_panchanga_at_jd
+        # makes one layer down.
+        py, pm, pd = locate_patro_day_for_civil(civil)
+        state = build_daily_state_civil(
+            civil,
+            location,
+            patro_bs_year=py,
+            patro_bs_month=pm,
+            patro_bs_day=pd,
+            include_festivals=True,
+            include_detail=False,
+        )
+    else:
+        state = build_daily_state(
+            greg, location, include_festivals=True, include_detail=False
+        )
     from services.holiday_generator import is_public_holiday
     festivals = state.get("festivals", [])
     for f in festivals:
@@ -914,6 +944,10 @@ def nepal_sankranti_year(ad_year: int, location: LocationDep):
 def nepal_sankranti_day(
     date_key: str,
     location: LocationDep,
+    # Not widened to bc/bbs: build_sankranti_day_response takes a datetime.date
+    # and labels it through gregorian_to_bs, so it is CE-only at the *builder*,
+    # not at this signature. Declaring eras it would 400 on would be worse than
+    # declaring the truth — see docs/computation-architecture-audit.md.
     era: Literal["bs", "ad"] = Query("bs"),
 ):
     """Sankrantis occurring on or near a given date."""
