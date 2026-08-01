@@ -15,6 +15,9 @@ repository maintained by astro.com.
 
 Usage:
     python scripts/install_ephemeris.py          # download any missing files
+    python scripts/install_ephemeris.py --deep-bce # also seplm78..138 (≈ BBS 13201 BCE)
+    python scripts/install_ephemeris.py --far-ce   # also sepl_30..174 (≈ AD 17191 CE)
+    python scripts/install_ephemeris.py --extended # deep BCE + far CE (full Swiss span)
     python scripts/install_ephemeris.py --force  # re-download everything
 """
 
@@ -50,6 +53,30 @@ EPHE_FILES = (
     "semo_12.se1", "semo_18.se1", "semo_24.se1",
 )
 
+# Each +6 step is another ~600-year BCE block. seplm72 ≈ 7202 BCE; seplm132 ≈
+# 13000 BCE (Swiss Ephemeris deep limit). Always install matching semom* pairs.
+def _ce_ephe_file(prefix: str, n: int) -> str:
+    suffix = f"{n:02d}" if n < 100 else str(n)
+    return f"{prefix}{suffix}.se1"
+
+
+def _moshier_ephe_file(prefix: str, n: int) -> str:
+    return f"{prefix}{n}.se1"
+
+
+# seplm72 ≈ 7202 BCE; seplm138 ≈ 13200 BCE (covers BBS 13201 / 13201 BCE target).
+DEEP_BCE_EPHE_FILES = tuple(
+    _moshier_ephe_file(prefix, n)
+    for n in range(78, 139, 6)
+    for prefix in ("seplm", "semom")
+)
+
+FAR_CE_EPHE_FILES = tuple(
+    _ce_ephe_file(prefix, n)
+    for n in range(30, 175, 6)
+    for prefix in ("sepl_", "semo_")
+)
+
 
 def _download(name: str, dest: Path) -> int:
     url = f"{BASE_URL}/{name}"
@@ -61,13 +88,19 @@ def _download(name: str, dest: Path) -> int:
 
 
 def main() -> None:
-    force = "--force" in sys.argv[1:]
+    argv = sys.argv[1:]
+    force = "--force" in argv
+    deep_bce = "--deep-bce" in argv or "--extended" in argv
+    far_ce = "--far-ce" in argv or "--extended" in argv
+    file_list = EPHE_FILES + (DEEP_BCE_EPHE_FILES if deep_bce else ()) + (
+        FAR_CE_EPHE_FILES if far_ce else ()
+    )
     ephe_dir = ephemeris_path()
     ephe_dir.mkdir(parents=True, exist_ok=True)
 
     downloaded = skipped = 0
     total_bytes = 0
-    for name in EPHE_FILES:
+    for name in file_list:
         dest = ephe_dir / name
         if dest.exists() and dest.stat().st_size > 0 and not force:
             skipped += 1

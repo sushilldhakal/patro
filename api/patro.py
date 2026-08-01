@@ -411,7 +411,8 @@ def nepal_graha_asta_year(
         request,
         key,
         lambda: stamp_year_era(
-            build_graha_asta_span(jd_start, jd_end, location), era, year
+            build_graha_asta_span(jd_start, jd_end, location), era, year,
+            jd_start=jd_start, jd_end=jd_end,
         ),
         cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )
@@ -473,7 +474,8 @@ def nepal_eclipse_year(
         request,
         key,
         lambda: stamp_year_era(
-            build_eclipse_span(jd_start, jd_end, kind, location), era, year
+            build_eclipse_span(jd_start, jd_end, kind, location), era, year,
+            jd_start=jd_start, jd_end=jd_end,
         ),
         cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )
@@ -496,7 +498,8 @@ def nepal_panchak_year(
         request,
         key,
         lambda: stamp_year_era(
-            build_panchak_span(jd_start, jd_end, location), era, year
+            build_panchak_span(jd_start, jd_end, location), era, year,
+            jd_start=jd_start, jd_end=jd_end,
         ),
         cache_control=bs_year_cache_control(_cache_year_hint(era, year)),
     )

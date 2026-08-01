@@ -45,6 +45,18 @@ def test_today_jd_when_year_absent():
     assert ctx.year is None
 
 
+def test_bs_month_path_ignores_query_ymd_for_middleware_gate():
+    """Month grid handlers read path y/m; query mirrors must not to_jd()-gate the request."""
+    ctx, err = _resolve(
+        _params("era=bbs&year=2082&month=11&language=ne&city_id=1283240"),
+        "/v1/panchanga/2077/4",
+    )
+    assert err is None
+    assert ctx is not None
+    assert ctx.era == "bbs"
+    assert ctx.year is None and ctx.month is None and ctx.day is None
+
+
 def test_panchanga_today_path_honors_input_era_query_parts():
     ctx, err = _resolve(
         _params("era=bs&inputEra=ad&year=2026&month=8&day=2&language=ne&city_id=1283240"),

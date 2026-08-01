@@ -41,18 +41,15 @@ def _panchanga_for_patro_day(
     location: ObserverLocation,
 ) -> dict[str, Any]:
     civil = parse_civil_iso(civil_iso)
-    greg = date_if_supported(civil.year, civil.month, civil.day)
-    if bs_year <= -1 or greg is None:
-        from engine.vedic.daily_civil import get_daily_panchanga_civil
+    from engine.vedic.daily_civil import get_daily_panchanga_civil
 
-        return get_daily_panchanga_civil(
-            civil,
-            location,
-            patro_bs_year=bs_year,
-            patro_bs_month=bs_month,
-            patro_bs_day=bs_day,
-        )
-    return get_daily_panchanga(greg, location)
+    return get_daily_panchanga_civil(
+        civil,
+        location,
+        patro_bs_year=bs_year,
+        patro_bs_month=bs_month,
+        patro_bs_day=bs_day,
+    )
 
 
 def _month_row_from_panchanga(
@@ -523,10 +520,13 @@ def build_month_calendar(
     if not 1 <= bs_month <= 12:
         raise ValueError("bs_month must be 1..12")
 
-    from engine.vedic.patro_year_axis import BS_PANCHANGA_SIGNED_MIN, is_bbs_signed
+    from engine.vedic.patro_year_axis import (
+        is_bbs_signed,
+        patro_year_supports_gregorian_festival_rules,
+    )
 
     festivals: list[dict[str, Any]] = []
-    if bs_year >= BS_PANCHANGA_SIGNED_MIN:
+    if patro_year_supports_gregorian_festival_rules(bs_year):
         festivals = _collect_bs_year_festivals(bs_year, location)
 
     calendar: list[dict[str, Any]] = []
@@ -577,44 +577,76 @@ def build_month_calendar(
     return payload
 
 
-def build_ad_month_calendar(
-    ad_year: int,
-    ad_month: int,
+def build_gregorian_browse_month_calendar(
+    era: Literal["ad", "bc"],
+    browse_year: int,
+    browse_month: int,
     location: ObserverLocation = DEFAULT_LOCATION,
     *,
     full: bool = False,
     exclude_international: bool = False,
 ) -> dict[str, Any]:
-    """Gregorian month as a calendar array — Jan–Dec boundaries for English UI."""
-    import calendar as _cal
-    from datetime import timedelta
+    """Gregorian AD or BC month — Jan–Dec civil boundaries for English UI."""
+    from engine.calendar.era import to_jd
+    from engine.astronomy.jd_calendar import (
+        CivilDay,
+        civil_day_add,
+        date_if_supported,
+        format_civil_iso,
+    )
     from engine.vedic.bikram_sambat import gregorian_to_bs
+    from engine.vedic.daily_civil import get_daily_panchanga_civil
 
-    if not 1 <= ad_month <= 12:
-        raise ValueError("ad_month must be 1..12")
+    if era not in ("ad", "bc"):
+        raise ValueError("era must be ad or bc")
+    if not 1 <= browse_month <= 12:
+        raise ValueError("month must be 1..12")
 
-    last_day = _cal.monthrange(ad_year, ad_month)[1]
-    month_start = date(ad_year, ad_month, 1)
-    month_end = date(ad_year, ad_month, last_day)
-    bs_years = sorted({gregorian_to_bs(month_start)[0], gregorian_to_bs(month_end)[0]})
+    jd_start = to_jd(era, browse_year, browse_month, 1)
+    if browse_month == 12:
+        jd_next_month = to_jd(era, browse_year + 1, 1, 1)
+    else:
+        jd_next_month = to_jd(era, browse_year, browse_month + 1, 1)
+    month_length = int(round(jd_next_month - jd_start))
+    start_civil = CivilDay.from_jd_ut(jd_start)
+
+    end_jd = civil_day_add(jd_start, month_length - 1)
+    end_civil = CivilDay.from_jd_ut(end_jd)
+    bs_years = sorted({gregorian_to_bs(start_civil)[0], gregorian_to_bs(end_civil)[0]})
 
     festivals: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
+    from engine.vedic.patro_year_axis import patro_year_supports_gregorian_festival_rules
+
     for bs_year in bs_years:
+        if not patro_year_supports_gregorian_festival_rules(bs_year):
+            continue
         for f in _collect_bs_year_festivals(bs_year, location):
             if f["id"] not in seen_ids:
                 seen_ids.add(f["id"])
                 festivals.append(f)
 
     calendar: list[dict[str, Any]] = []
-    current = month_start
-    while current <= month_end:
-        bs_y, bs_m, bs_d = gregorian_to_bs(current)
-        day_festivals = _festivals_for_day(festivals, current)
-        panchanga = get_daily_panchanga(current, location)
+    for offset in range(month_length):
+        civil = CivilDay.from_jd_ut(civil_day_add(jd_start, offset))
+        bs_y, bs_m, bs_d = gregorian_to_bs(civil)
+        greg = date_if_supported(civil.year, civil.month, civil.day)
+        day_festivals = _festivals_for_day(festivals, greg) if greg is not None else []
+        if greg is not None:
+            panchanga = get_daily_panchanga(greg, location)
+            date_ad = greg.isoformat()
+        else:
+            panchanga = get_daily_panchanga_civil(
+                civil,
+                location,
+                patro_bs_year=bs_y,
+                patro_bs_month=bs_m,
+                patro_bs_day=bs_d,
+            )
+            date_ad = format_civil_iso(civil.year, civil.month, civil.day)
         row: dict[str, Any] = {
-            "day": bs_d,
-            "date_ad": current.isoformat(),
+            "day": civil.day,
+            "date_ad": date_ad,
             "day_bs": bs_d,
             "month_bs": bs_m,
             "year_bs": bs_y,
@@ -645,29 +677,52 @@ def build_ad_month_calendar(
             "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
         }
         if full:
-            row["panchanga"] = build_daily_state(
-                current,
-                location,
-                include_festivals=True,
-                include_detail=False,
-            )
+            if greg is not None:
+                row["panchanga"] = build_daily_state(
+                    greg,
+                    location,
+                    include_festivals=True,
+                    include_detail=False,
+                )
+            else:
+                row["panchanga"] = build_daily_state_civil(
+                    civil,
+                    location,
+                    patro_bs_year=bs_y,
+                    patro_bs_month=bs_m,
+                    patro_bs_day=bs_d,
+                    include_festivals=False,
+                    include_detail=False,
+                )
         calendar.append(row)
-        current += timedelta(days=1)
 
-    mid_greg = date(ad_year, ad_month, min(15, last_day))
-    mid_panchanga = get_daily_panchanga(mid_greg, location)
+    mid_offset = min(14, month_length - 1)
+    mid_civil = CivilDay.from_jd_ut(civil_day_add(jd_start, mid_offset))
+    mid_greg = date_if_supported(mid_civil.year, mid_civil.month, mid_civil.day)
+    if mid_greg is not None:
+        mid_panchanga = get_daily_panchanga(mid_greg, location)
+        month_label = mid_greg.strftime("%B")
+    else:
+        bs_y, bs_m, bs_d = gregorian_to_bs(mid_civil)
+        mid_panchanga = get_daily_panchanga_civil(
+            mid_civil,
+            location,
+            patro_bs_year=bs_y,
+            patro_bs_month=bs_m,
+            patro_bs_day=bs_d,
+        )
+        month_label = format_civil_iso(mid_civil.year, mid_civil.month, 1)[:7]
+
     lunar = mid_panchanga["lunar_month"]
-    month_label = mid_greg.strftime("%B")
-    return {
-        "era": "ad",
-        "year_ad": ad_year,
-        "month_ad": ad_month,
+    payload: dict[str, Any] = {
+        "era": era,
+        "month_ad": browse_month,
         "year_bs": bs_years[0] if len(bs_years) == 1 else None,
         "month_bs": None,
         "month_name": month_label,
         "month_name_ne": month_label,
-        "month_start_ad": month_start.isoformat(),
-        "month_length": last_day,
+        "month_start_ad": format_civil_iso(start_civil.year, start_civil.month, start_civil.day),
+        "month_length": month_length,
         "lunar_month": lunar.get("name"),
         "lunar_month_full": lunar.get("full_name"),
         "lunar_month_is_adhik": lunar.get("is_adhik", False),
@@ -675,6 +730,30 @@ def build_ad_month_calendar(
         "location": location.as_dict(),
         "calendar": calendar,
     }
+    if era == "ad":
+        payload["year_ad"] = browse_year
+    else:
+        payload["year_bc"] = browse_year
+    return payload
+
+
+def build_ad_month_calendar(
+    ad_year: int,
+    ad_month: int,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    full: bool = False,
+    exclude_international: bool = False,
+) -> dict[str, Any]:
+    """Gregorian month as a calendar array — Jan–Dec boundaries for English UI."""
+    return build_gregorian_browse_month_calendar(
+        "ad",
+        ad_year,
+        ad_month,
+        location,
+        full=full,
+        exclude_international=exclude_international,
+    )
 
 
 def build_year_sun_times(

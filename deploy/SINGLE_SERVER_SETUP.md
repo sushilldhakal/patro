@@ -197,8 +197,12 @@ automatically via GitHub Actions + SSH to the Oracle box.
 
 ## Updating manually (if ever needed)
 
-* **Frontend:** `cd /home/ubuntu/dhakal-patro && bash scripts/deploy.sh`
-* **Backend:**  `cd /home/ubuntu/patro && bash scripts/deploy.sh`
+* **Frontend:** `cd /home/ubuntu/dhakal-patro && bash scripts/deploy.sh`  
+  Feature branch: `DEPLOY_REF=your-branch bash scripts/deploy.sh`
+* **Backend:**  `cd /home/ubuntu/patro && bash scripts/deploy.sh`  
+  Feature branch: `DEPLOY_REF=your-branch bash scripts/deploy.sh`
+
+See **[DEPLOY_FEATURE_BRANCH.md](DEPLOY_FEATURE_BRANCH.md)** for a full checklist (era/patro branches, ephemeris, rollback).
 
 ## Process model
 

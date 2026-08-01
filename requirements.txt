@@ -20,3 +20,7 @@ PyJWT>=2.9.0
 cryptography>=42.0.0   # RS256 verification of Google ID tokens
 bcrypt>=4.1.0
 email-validator>=2.1.0
+
+# Auto-downloads Swiss .se1 (BBS 13201 … AD 17191) on pip install; needs network once.
+# Deploy MUST include the ephemeris_provision/ directory (see repo). Keep last.
+-e ./ephemeris_provision

@@ -18,9 +18,9 @@ numbers wrong:
 
 ``PATRO_EPHEMERIS_SIGNED_MIN/MAX``
     What **this host** can actually compute, measured against the installed
-    ``data/ephemeris/*.se1`` set (currently ``seplm/semom`` out to ``…72``, plus
-    ``sepl_/semo_`` to ``…24``). Positions outside it raise, so month/day builds
-    are gated on this, not on the axis.
+    ``data/ephemeris/*.se1`` set (``seplm/semom`` through ``…72``, ``sepl_/semo_``
+    through ``…168`` when ``--extended`` / ``--far-ce`` is installed). Positions
+    outside it raise, so month/day builds are gated on this, not on the axis.
 
 Re-measure the ephemeris pair after adding or removing ``.se1`` files — probe
 ``swe.calc_ut`` for the full graha set and take the widest whole patro years
@@ -31,27 +31,20 @@ from __future__ import annotations
 
 # ── The axis: full Swiss Ephemeris span ───────────────────────────────────────
 # JD −3026604.5 = 11 Aug 13000 BCE (civil −12999); the first *whole* patro year
-# inside that is BBS 12942. JD 7930188.5 = 7 Jan 17000 CE; last whole year BS 17055.
-PATRO_SIGNED_YEAR_MIN = -12942  # BBS 12942 ≈ 12999 BCE
-PATRO_SIGNED_YEAR_MAX = 17055  # BS 17055 ≈ 16998 CE
+# inside that is BBS 12942. Extended product window targets BBS 13201 (13201 BCE).
+PATRO_SIGNED_YEAR_MIN = -13202  # one step below product floor (invalid browse)
+PATRO_SIGNED_YEAR_MAX = 17248  # one step above product ceiling (invalid browse)
 
 # ── What the installed .se1 files actually cover ──────────────────────────────
-# Measured two ways, because raw positions reach further than a whole patro year
-# does: ``swe.calc_ut`` resolves the full graha set over JD ≈ −908744 (3 Nov 7202
-# BCE) … 2818000.5 (28 Apr 3003 CE), but a *year* also needs the lunar-month and
-# festival searches that run ~35 days past its edges. These two are the widest
-# years whose month 1 and month 12 both actually build end to end; BS 3058 fails
-# in the festival stack at JD 2818000.86, just past the upper limit.
-PATRO_EPHEMERIS_SIGNED_MIN = -7144  # BBS 7144 ≈ 7200 BCE
-PATRO_EPHEMERIS_SIGNED_MAX = 3057  # BS 3057 ≈ 3000 CE
+# Target navigation: BBS 13201 (13201 BCE) … BS 17247 (through AD 17191 CE).
+# Re-measure after ``install_ephemeris.py --extended`` (deep BCE through seplm138,
+# far CE through sepl_174). Until those files exist, requests at the edges may 400.
+PATRO_EPHEMERIS_SIGNED_MIN = -13201  # BBS 13201 ≈ 13201 BCE
+PATRO_EPHEMERIS_SIGNED_MAX = 17247  # BS 17247 ≈ AD 17191 CE
 
-# The same window as a JD pair, for the eras that are not counted in patro years.
-# A Gregorian or BC year has no signed patro number to check, so range-validating
-# an ``era=ad``/``era=bc`` request means asking whether its JD span lands inside
-# the files. Both ends carry the ~35-day margin the lunar-month and festival
-# searches run past a year's edges.
-EPHEMERIS_JD_MIN = -908744.0  # 3 Nov 7202 BCE
-EPHEMERIS_JD_MAX = 2818000.5  # 28 Apr 3003 CE
+# JD window for ``era=ad``/``era=bc`` range checks (~35-day margin past patro year).
+EPHEMERIS_JD_MIN = -3100277.5  # BBS 13201 civil start − 35d
+EPHEMERIS_JD_MAX = 8000342.5  # AD 17191 civil end + 35d
 
 
 def jd_span_within_ephemeris(jd_start: float, jd_end: float) -> bool:
@@ -101,6 +94,22 @@ def patro_year_within_ephemeris(signed: int) -> bool:
 def patro_year_supports_sankranti_grid(signed: int) -> bool:
     """Month boundaries need sankranti moments, so they need the ephemeris."""
     return patro_year_within_ephemeris(signed)
+
+
+def patro_year_supports_gregorian_festival_rules(signed: int) -> bool:
+    """True when the BS year's civil span fits ``datetime.date`` (festival rules)."""
+    if signed < BS_PANCHANGA_SIGNED_MIN:
+        return False
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start_civil
+
+    start = get_bs_month_start_civil(signed, 1)
+    total = sum(get_bs_month_length(signed, m) for m in range(1, 13))
+    end = CivilDay.from_jd_ut(start.to_jd_ut() + total - 1)
+    return (
+        date_if_supported(start.year, start.month, start.day) is not None
+        and date_if_supported(end.year, end.month, end.day) is not None
+    )
 
 
 def patro_year_supports_full_panchanga(signed: int) -> bool:

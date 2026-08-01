@@ -5,9 +5,19 @@ Panchanga is computed from ephemeris time (JD), not from Python ``date`` /
 negative years), while ``swe.julday`` / ``swe.revjul`` can.
 
 Convention here:
-- **jd_ut** — Julian Day at **0h UT** on the proleptic-Gregorian civil label
-  (year, month, day). Consecutive civil days are exactly 1.0 JD apart.
+- **jd_ut** — Julian Day at **0h UT** on the civil label (year, month, day).
+  Consecutive civil days are exactly 1.0 JD apart.
 - **jd_instant** — any UT instant passed to ``calc_ut`` (sunrise, sankranti, …).
+
+The civil label is **Julian before the 1582-10-15 Gregorian cutover and
+Gregorian from it on** — the historical convention, and what Stellarium, the
+astronomical literature and Swiss Ephemeris' own ``swe_date_conversion`` mean by
+a pre-1582 date. Labelling those days proleptic-Gregorian instead (pyswisseph's
+``swe.julday`` default) silently shifts them: 255 BCE by 4 days, 1000 BCE by 9,
+1581 CE by 10 — enough to move the Moon a full 51°, i.e. a different tithi and
+nakshatra. The two calendars happen to coincide through 201–300 CE, so a spot
+check in that window cannot detect the difference; do not validate BCE work
+there.
 
 New code should treat ``jd_ut`` as the canonical cache key for a civil day once
 BCE BS years are enabled; ``date_ad`` strings remain a display/export field.
@@ -23,9 +33,34 @@ import swisseph as swe
 # Unix epoch (1970-01-01 00:00:00 UTC) in Julian Day numbers.
 JD_UNIX_EPOCH: float = 2440587.5
 
+# 1582-10-15 Gregorian at 0h UT — the first Gregorian day, following 1582-10-04
+# Julian directly. Every label ↔ JD conversion picks its calendar from this.
+GREGORIAN_CUTOVER_JD_UT: float = 2299160.5
+_GREGORIAN_CUTOVER_CIVIL: tuple[int, int, int] = (1582, 10, 15)
+
+
+def swe_cal_for_civil(year: int, month: int, day: int) -> int:
+    """``GREG_CAL`` from 1582-10-15 on, ``JUL_CAL`` before it.
+
+    The ten labels 1582-10-05..14 never existed. They read as Julian so the
+    codec stays total (a date parser should not raise on a plausible key); they
+    round-trip to their Gregorian equivalent rather than to themselves.
+    """
+    if (int(year), int(month), int(day)) >= _GREGORIAN_CUTOVER_CIVIL:
+        return swe.GREG_CAL
+    return swe.JUL_CAL
+
+
+def swe_cal_for_jd(jd_ut: float) -> int:
+    """``GREG_CAL`` on or after the cutover instant, ``JUL_CAL`` before it."""
+    return swe.GREG_CAL if float(jd_ut) >= GREGORIAN_CUTOVER_JD_UT else swe.JUL_CAL
+
 
 class CivilDay(NamedTuple):
-    """Proleptic Gregorian civil day (supports BCE via negative year)."""
+    """Civil day — Julian calendar before 1582-10-15, Gregorian from it on.
+
+    Supports BCE via negative (astronomical) year, so 255 BCE is ``-254``.
+    """
 
     year: int
     month: int
@@ -216,7 +251,15 @@ def format_civil_strftime(
 
 def civil_day_jd_ut(year: int, month: int, day: int, *, hour_ut: float = 0.0) -> float:
     """JD for a civil (y, m, d) at ``hour_ut`` UT — delegates to Swiss Ephemeris."""
-    return float(swe.julday(int(year), int(month), int(day), float(hour_ut)))
+    return float(
+        swe.julday(
+            int(year),
+            int(month),
+            int(day),
+            float(hour_ut),
+            swe_cal_for_civil(year, month, day),
+        )
+    )
 
 
 def civil_day_jd_from_date(d: date) -> float:
@@ -224,7 +267,7 @@ def civil_day_jd_from_date(d: date) -> float:
 
 
 def civil_parts_from_jd_ut(jd_ut: float) -> tuple[int, int, int]:
-    year, month, day, _hour = swe.revjul(float(jd_ut))
+    year, month, day, _hour = swe.revjul(float(jd_ut), swe_cal_for_jd(jd_ut))
     return int(year), int(month), int(day)
 
 
@@ -233,8 +276,15 @@ def civil_day_add(jd_ut: float, days: int) -> float:
 
 
 def date_if_supported(year: int, month: int, day: int) -> date | None:
-    """``datetime.date`` for this civil label, or ``None`` for BCE / year 0."""
-    if year < 1:
+    """``datetime.date`` for this civil label, or ``None`` when it cannot hold it.
+
+    ``None`` for BCE / year 0 (outside ``date``'s range) **and** for anything
+    before the 1582-10-15 cutover: ``datetime.date`` is proleptic Gregorian, so
+    it cannot carry a Julian label without changing which day it means. Callers
+    already branch on ``None`` to take the ``CivilDay`` path — that path is now
+    what every pre-cutover day uses, not just BCE ones.
+    """
+    if year < 1 or (year, month, day) < _GREGORIAN_CUTOVER_CIVIL:
         return None
     try:
         return date(year, month, day)

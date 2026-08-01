@@ -17,7 +17,7 @@ from api.deps import (
     _validate_bs_month,
     _validate_bs_year,
 )
-from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN
+from engine.vedic.constants import AD_YEAR_MAX, AD_YEAR_MIN, BC_YEAR_MAX, BC_YEAR_MIN
 from engine.vedic.bikram_sambat import (
     bs_month_name,
     bs_to_gregorian,
@@ -113,6 +113,7 @@ def panchanga_year(
     bs_year: int,
     location: LocationDep,
     request: Request,
+    era: EraQuery = "bs",
     full: bool = Query(False, description="Include full daily state per day"),
     wheel: bool = Query(
         False,
@@ -121,20 +122,16 @@ def panchanga_year(
     ),
 ):
     """Full BS year calendar — all months in one response."""
-    _validate_bs_year(bs_year)
+    signed = _signed_bs_year_from_browse(era, bs_year)
+    _validate_bs_year(signed)
     if wheel:
-        # Bump the variant suffix (not the global CACHE_PAYLOAD_VERSION) to rebuild
-        # only the wheel year caches when the slimmed payload shape changes — the
-        # daily/month/lite/sun caches stay warm. v2: dropped lagna_spans (~half the
-        # payload). v3: also dropped the ~20 duplicated flat per-day fields the
-        # wheel never reads.
         variant = "wheel3"
-        build = lambda: build_year_calendar(bs_year, location, full=True, shape="wheel")
+        build = lambda: build_year_calendar(signed, location, full=True, shape="wheel")
     else:
         variant = "full" if full else "lite"
-        build = lambda: build_year_calendar(bs_year, location, full=full)
+        build = lambda: build_year_calendar(signed, location, full=full)
     return _cached_year_response(
-        bs_year,
+        signed,
         location,
         request,
         variant=variant,
@@ -234,7 +231,10 @@ def panchanga_ad_month(
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not AD_YEAR_MIN <= ad_year <= AD_YEAR_MAX:
-        raise HTTPException(status_code=400, detail="ad year out of supported range")
+        raise HTTPException(
+            status_code=400,
+            detail=f"ad year out of supported range ({AD_YEAR_MIN}..{AD_YEAR_MAX})",
+        )
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
 
@@ -250,6 +250,48 @@ def panchanga_ad_month(
         )
 
     return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(ad_year + 56))
+
+
+@router.get("/panchanga/bc/{bc_year}/{bc_month}")
+def panchanga_bc_month(
+    bc_year: int,
+    bc_month: int,
+    location: LocationDep,
+    request: Request,
+    full: bool = Query(False, description="Include full daily state per day"),
+    exclude_international: bool = Query(
+        False,
+        description="Drop international 'World day' observances (panchanga month grid)",
+    ),
+):
+    """Gregorian BCE month calendar — positive ``bc_year`` is ``N`` BC (``era=bc``)."""
+    from api.deps import validated_year_span_jd
+    from services.panchanga_api import build_gregorian_browse_month_calendar
+    from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
+
+    if not BC_YEAR_MIN <= bc_year <= BC_YEAR_MAX:
+        raise HTTPException(
+            status_code=400,
+            detail=f"bc year out of supported range ({BC_YEAR_MIN}..{BC_YEAR_MAX})",
+        )
+    if not 1 <= bc_month <= 12:
+        raise HTTPException(status_code=400, detail="bc_month must be 1..12")
+    validated_year_span_jd(request, "bc", bc_year)
+
+    variant = f"{'full' if full else 'lite'}_{'_nointl' if exclude_international else ''}"
+    key = f"bcmont_{bc_year}_{bc_month}_{variant}_{location_cache_key(location)}"
+
+    def build():
+        return build_gregorian_browse_month_calendar(
+            "bc",
+            bc_year,
+            bc_month,
+            location,
+            full=full,
+            exclude_international=exclude_international,
+        )
+
+    return serve_cached_json(request, key, build, cache_control=bs_year_cache_control(-bc_year))
 
 
 def _bce_day_payload(
@@ -287,6 +329,7 @@ def _day_payload_for_jd(
     detail: bool,
     civil: bool = False,
     reference: str = "sunrise",
+    bs_triple: tuple[int, int, int] | None = None,
 ) -> JSONResponse:
     """The one body behind every day route. Julian Day in, rendered day out.
 
@@ -310,7 +353,13 @@ def _day_payload_for_jd(
                 status_code=501,
                 detail="midnight reference for BCE civil days is not supported yet",
             )
-        payload = _bce_day_payload(civil_day, location, festivals=festivals, detail=detail)
+        payload = _bce_day_payload(
+            civil_day,
+            location,
+            festivals=festivals,
+            detail=detail,
+            bs_triple=bs_triple,
+        )
         payload["jd_ut"] = canonical
         return JSONResponse(content=payload, headers=headers)
 
@@ -355,6 +404,18 @@ def _panchanga_day_impl(
     except DayResolutionError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    bs_triple: tuple[int, int, int] | None = None
+    ctx = getattr(request.state, "era_ctx", None)
+    if (
+        ctx is not None
+        and ctx.input_era in ("bs", "bbs")
+        and ctx.year is not None
+        and ctx.month is not None
+        and ctx.day is not None
+    ):
+        signed = ctx.year if ctx.input_era == "bs" else -ctx.year
+        bs_triple = (signed, ctx.month, ctx.day)
+
     return _day_payload_for_jd(
         jd_ut,
         location,
@@ -362,6 +423,7 @@ def _panchanga_day_impl(
         detail=detail,
         civil=civil,
         reference=reference,
+        bs_triple=bs_triple,
     )
 
 
@@ -544,7 +606,7 @@ def convert_bs_to_ad(bs_date: str):
 def nepal_holidays(
     location: LocationDep,
     year: int = Query(..., description="Year to query"),
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for the year param (bs or ad)"),
+    era: EraQuery = "bs",
     month: int | None = Query(None, ge=1, le=12, description="Month filter (1–12 in the given era)"),
 ):
     """Nepal public holidays with both BS and AD dates for every entry."""
@@ -562,24 +624,34 @@ def nepal_holidays(
         enriched = _enrich_holiday_bs_dates(holidays_list)
         return {"ad_year": year, "era": "ad", "count": len(enriched), "holidays": enriched}
 
-    _validate_bs_year(year)
+    if era in ("bc",):
+        raise HTTPException(
+            status_code=400,
+            detail="Nepal holiday listings are not defined for era=bc; use era=bs, bbs, or ad.",
+        )
+
+    signed = _signed_bs_year_from_browse(era, year)
     try:
         from services.holiday_generator import filter_holidays_by_bs_month
-        payload = get_bs_holidays(year, location)
+        payload = get_bs_holidays(signed, location)
     except HolidayCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     holidays_list = payload["holidays"]
     if month is not None:
         from services.holiday_generator import filter_holidays_by_bs_month
-        holidays_list = filter_holidays_by_bs_month(holidays_list, year, month)
+        holidays_list = filter_holidays_by_bs_month(holidays_list, signed, month)
 
-    return {
-        "bs_year": year, "era": "bs",
+    result: dict[str, Any] = {
+        "bs_year": signed,
+        "era": era,
         "gregorian_range": payload["gregorian_range"],
         "count": len(holidays_list),
         "holidays": _enrich_holiday_bs_dates(holidays_list),
     }
+    if era == "bbs":
+        result["bbs"] = year
+    return result
 
 
 @router.get("/nepal/sait/categories", tags=["sait"])
@@ -760,7 +832,7 @@ def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
 def nepal_festivals(
     location: LocationDep,
     year: int = Query(..., description="Year to query"),
-    era: Literal["bs", "ad"] = Query("bs", description="Calendar era for the year param"),
+    era: EraQuery = "bs",
     month: int | None = Query(None, ge=1, le=12, description="Month filter"),
 ):
     """All Nepal festivals (including regional) with both BS and AD dates."""
@@ -787,14 +859,23 @@ def nepal_festivals(
         enriched = _enrich_holiday_bs_dates(festivals)
         return {"ad_year": year, "era": "ad", "count": len(enriched), "festivals": enriched}
 
-    _validate_bs_year(year)
+    if era in ("bc",):
+        raise HTTPException(
+            status_code=400,
+            detail="Festival rules are not defined for era=bc; use era=bs, bbs, or ad.",
+        )
+
+    signed = _signed_bs_year_from_browse(era, year)
     from services.holiday_generator import get_bs_festivals
     try:
-        payload = get_bs_festivals(year, location, bs_month=month)
+        payload = get_bs_festivals(signed, location, bs_month=month)
     except FestivalCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     enriched = _enrich_holiday_bs_dates(payload["festivals"])
-    return {**payload, "era": "bs", "count": len(enriched), "festivals": enriched}
+    result: dict[str, Any] = {**payload, "era": era, "count": len(enriched), "festivals": enriched}
+    if era == "bbs":
+        result["bbs"] = year
+    return result
 
 
 @router.get("/nepal/festivals/upcoming")

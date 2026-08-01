@@ -11,6 +11,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
+from engine.astronomy.engine import EphemerisError
 from engine.vedic.bikram_sambat import get_bs_month_start
 from engine.vedic.sankranti import find_mesh_sankranti
 
@@ -245,7 +246,7 @@ def samvatsara_payload_for_bs_year(bs_year: int) -> dict[str, str | int] | None:
     """
     try:
         data = samvatsara_for_bs_year(bs_year)
-    except ValueError:
+    except (ValueError, EphemerisError):
         return None
     return {
         "key": data["key"],

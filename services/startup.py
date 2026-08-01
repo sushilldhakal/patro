@@ -13,6 +13,51 @@ from services.holiday_generator import precompute_bs_range
 logger = logging.getLogger(__name__)
 
 
+def ensure_swiss_ephemeris_files() -> bool:
+    """Download missing ``.se1`` files for the full browse window (idempotent).
+
+    Runs from app startup when the extended set is absent — covers live hosts
+    where ``pip install -r requirements.txt`` did not execute the local hook
+    (wheel-only install) or ``ephemeris_provision/`` was missing from the deploy.
+    Set ``SKIP_EPHEMERIS_PROVISION=1`` to disable.
+    """
+    if os.environ.get("SKIP_EPHEMERIS_PROVISION", "").lower() in {"1", "true", "yes"}:
+        return False
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    from engine.astronomy.paths import ephemeris_path
+
+    ephe = ephemeris_path()
+    extended_ok = (ephe / "sepl_174.se1").is_file() and (ephe / "seplm138.se1").is_file()
+    if extended_ok:
+        return True
+
+    api_root = Path(__file__).resolve().parent.parent
+    script = api_root / "scripts" / "install_ephemeris.py"
+    if not script.is_file():
+        logger.warning("install_ephemeris.py not found — cannot provision .se1 files")
+        return False
+
+    logger.info("Swiss Ephemeris extended files missing — running install_ephemeris.py --extended")
+    try:
+        subprocess.check_call(
+            [sys.executable, str(script), "--extended"],
+            cwd=str(api_root),
+        )
+    except subprocess.CalledProcessError:
+        logger.exception("Ephemeris download failed")
+        return False
+
+    import swisseph as swe
+
+    if ephe.is_dir() and any(ephe.glob("*.se1")):
+        swe.set_ephe_path(str(ephe))
+        return True
+    return False
+
+
 def _precompute_enabled() -> bool:
     return os.environ.get("PRECOMPUTE_ON_STARTUP", "true").lower() not in {
         "0",

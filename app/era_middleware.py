@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -37,6 +38,18 @@ _VALID_LANGUAGES = frozenset({"en", "ne"})
 #: era-rendered sibling; the raw JD is kept so clients can round-trip exactly.
 _JD_KEYS = {"jd_ut", "julian", "julian_start", "julian_end", "jd"}
 _JD_SUFFIX = "_jd"
+
+# Vikram month/year grids — path segments are authoritative; mirrored ?year=&month=
+# must not run to_jd() here (400s when they disagree with the path or when month
+# lengths were bad — see bikram_sambat._get_bs_month_start_civil).
+_PATH_BS_MONTH_BROWSE = re.compile(
+    r"/panchanga/(?!(?:ad/|bc/|year/|today|element/|elements|at-time|og-preview))(\d{1,5})/(\d{1,2})(?:/|$|\?)"
+)
+_PATH_BS_YEAR_BROWSE = re.compile(r"/panchanga/year/(\d{1,5})(?:/|$|\?)")
+
+
+def _path_addressed_browse_grid(path: str) -> bool:
+    return bool(_PATH_BS_MONTH_BROWSE.search(path) or _PATH_BS_YEAR_BROWSE.search(path))
 
 
 @dataclass(frozen=True)
@@ -104,10 +117,35 @@ def _date_error(era: str, year: int | None, exc: Exception) -> str:
     raw Julian Days.
     """
     if isinstance(exc, EphemerisError):
-        return (
+        msg = (
             f"{era} year {year} is outside the installed ephemeris range, so no "
             "panchanga can be computed for it"
         )
+        if (
+            era == "bs"
+            and year is not None
+            and year > 0
+        ):
+            from engine.vedic.patro_year_axis import (
+                PATRO_EPHEMERIS_SIGNED_MAX,
+                PATRO_SIGNED_YEAR_MIN,
+                patro_year_within_ephemeris,
+            )
+
+            # ``-year`` must itself be on the axis before it can be asked about:
+            # the BS max is wider than the BBS one, so mirroring a large BS year
+            # lands off the negative end. The hint is best-effort; building an
+            # error message must never raise.
+            if (
+                year > PATRO_EPHEMERIS_SIGNED_MAX
+                and -year >= PATRO_SIGNED_YEAR_MIN
+                and patro_year_within_ephemeris(-year)
+            ):
+                msg += (
+                    f". Vikram year {year} before the BS epoch is "
+                    f"era=bbs&year={year} (पू. वि.सं.), not era=bs."
+                )
+        return msg
     return str(exc)
 
 
@@ -152,6 +190,9 @@ def _resolve(params, path: str = "") -> tuple[EraContext | None, str | None]:
     year = _as_int(params.get("year"))
     month = _as_int(params.get("month"))
     day = _as_int(params.get("day"))
+
+    if _path_addressed_browse_grid(path):
+        year = month = day = None
 
     # 2. Explicit calendar parts, read in ``inputEra``. A full y/m/d wins even on a
     #    relative-day path, so ``/today?year=…`` addresses that day, not today.

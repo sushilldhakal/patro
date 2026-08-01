@@ -42,8 +42,18 @@ async def _warm_holiday_cache_background(app: FastAPI) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.precomputed_bs_years = []
-    from engine.astronomy.engine import EPHEMERIS_CONFIGURED, ephemeris_path
-    if EPHEMERIS_CONFIGURED:
+    from services.startup import ensure_swiss_ephemeris_files
+
+    loop = asyncio.get_running_loop()
+    try:
+        await loop.run_in_executor(None, ensure_swiss_ephemeris_files)
+    except Exception:
+        logger.exception("Ephemeris provisioning failed")
+
+    from engine.astronomy.engine import ephemeris_path, _configure_ephemeris
+
+    configured = _configure_ephemeris()
+    if configured:
         logger.info("Swiss Ephemeris (.se1) active from %s", ephemeris_path())
     else:
         logger.warning(

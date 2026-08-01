@@ -4,17 +4,24 @@ set -euo pipefail
 
 APP_DIR="${APP_DIR:-/home/ubuntu/patro}"
 SERVICE_NAME="nepali-holiday-api"
+DEPLOY_REF="${DEPLOY_REF:-main}"
 
 cd "${APP_DIR}"
 
-echo "==> Pulling latest code"
-git fetch origin main
-git reset --hard origin/main
+echo "==> Pulling latest code (${DEPLOY_REF})"
+git fetch origin "${DEPLOY_REF}"
+git reset --hard "origin/${DEPLOY_REF}"
 
 echo "==> Installing dependencies"
 source .venv/bin/activate
 pip install --upgrade pip -q
-pip install -r requirements.txt -q
+if [[ -f ephemeris_provision/setup.py ]]; then
+  pip install -r requirements.txt -q
+else
+  echo "WARNING: ephemeris_provision/ not in tree — installing requirements without -e hook" >&2
+  echo "         Commit ephemeris_provision/ on the branch or rely on install_ephemeris.py below." >&2
+  grep -v '^-e ./ephemeris_provision' requirements.txt | pip install -r /dev/stdin -q
+fi
 
 if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
   echo "==> Building cities.db (GeoNames global + full Nepal coverage)"
@@ -22,8 +29,8 @@ if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import need
   python scripts/import_cities.py
 fi
 
-echo "==> Installing Swiss Ephemeris .se1 files (idempotent)"
-python scripts/install_ephemeris.py
+echo "==> Installing Swiss Ephemeris .se1 files (idempotent; also runs via requirements.txt)"
+python scripts/install_ephemeris.py --extended
 
 echo "==> Restarting service"
 sudo systemctl restart "${SERVICE_NAME}"

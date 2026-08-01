@@ -18,7 +18,9 @@ from engine.vedic.gochar import (
 
 # BS 20 Baisakh 1 lands in 37 BCE — the era where `datetime.date` gives up.
 EARLY_BS_RANGE = {"from": "20-04-14", "to": "20-05-14", "era": "bs"}
-BCE_AD_RANGE = {"from": "-0037-07-02", "to": "-0037-08-02", "era": "ad"}
+# Julian-calendar labels, per the pre-1582 convention in jd_calendar: the same
+# days read -07-02/-08-02 when civil labels were still proleptic Gregorian.
+BCE_AD_RANGE = {"from": "-0037-07-05", "to": "-0037-08-05", "era": "ad"}
 LOCATION_PARAMS = {"lat": 27.7172, "lon": 85.324, "tz": "Asia/Kathmandu"}
 
 

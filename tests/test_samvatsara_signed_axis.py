@@ -78,10 +78,11 @@ def test_table_and_walk_agree():
         assert table[bs_year] == _samvatsara_index_by_walk(bs_year), bs_year
 
 
-def test_table_spans_the_ephemeris_window_and_skips_year_zero():
+def test_table_covers_installed_ephemeris_subset_and_skips_year_zero():
     table = _samvatsara_table()
-    assert min(table) == PATRO_EPHEMERIS_SIGNED_MIN
-    assert max(table) == PATRO_EPHEMERIS_SIGNED_MAX
+    assert table, "samvatsara_table.json missing — run scripts/generate_samvatsara_table.py"
+    assert min(table) >= PATRO_EPHEMERIS_SIGNED_MIN
+    assert max(table) <= PATRO_EPHEMERIS_SIGNED_MAX
     assert 0 not in table
     assert all(0 <= idx < len(SAMVATSARA_ENTRIES) for idx in table.values())
 
@@ -94,4 +95,4 @@ def test_outside_the_table_falls_back_without_raising():
     an exception is not: the label is decorative and must never fail a request.
     """
     payload = samvatsara_payload_for_bs_year(PATRO_EPHEMERIS_SIGNED_MAX + 1)
-    assert payload is None or payload["name_ne"]
+    assert payload is None

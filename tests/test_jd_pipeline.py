@@ -148,7 +148,9 @@ class TestYearsAreAlwaysPositive:
         bbs = get("?era=bbs&year=4&month=1&day=1")["date_parts"]
         assert bbs["vikram"] == {"era": "bbs", "year": 4, "month": 1, "day": 1}
         # BBS 1 is 58 BCE, so BBS 4 falls in 61 BCE — not BC 4.
-        assert bbs["gregorian"] == {"era": "bc", "year": 61, "month": 3, "day": 16}
+        # March 19 is the *Julian* label, per the pre-1582 convention in
+        # jd_calendar; the same day read March 17 as a proleptic Gregorian one.
+        assert bbs["gregorian"] == {"era": "bc", "year": 61, "month": 3, "day": 19}
 
     def test_bbs_1_sits_immediately_before_bs_1(self):
         """The two eras are consecutive — there is no year zero between them."""
@@ -227,3 +229,70 @@ class TestRoutesDoNotKnowCalendars:
         from api.panchanga import _day_payload_for_jd
 
         assert "jd_ut" in inspect.signature(_day_payload_for_jd).parameters
+
+
+class TestPre1582LabelsAreJulian:
+    """Civil labels follow the historical calendar, not proleptic Gregorian.
+
+    A date before 1582-10-15 means the *Julian* day of that name — what
+    Stellarium, the astronomical literature and Swiss Ephemeris' own
+    ``swe_date_conversion`` show. Reading those labels as proleptic Gregorian
+    (pyswisseph's ``swe.julday`` default) shifts them by up to 10 days, which
+    moves the Moon far enough to change the tithi and the nakshatra.
+    """
+
+    @pytest.mark.parametrize(
+        "year,month,day,expected_jd",
+        [
+            (-999, 8, 1, 1356385.5),  # 1000 BCE — 9 days off if read Gregorian
+            (-254, 8, 1, 1628496.5),  # 255 BCE — the reported case
+            (1000, 6, 15, 2086473.5),  # CE side of the cutover, 6 days off
+            (1582, 10, 4, 2299159.5),  # last Julian day
+            (1582, 10, 15, 2299160.5),  # first Gregorian day
+            (2026, 8, 1, 2461253.5),  # modern — unchanged either way
+        ],
+    )
+    def test_label_to_jd_uses_the_historical_calendar(
+        self, year, month, day, expected_jd
+    ):
+        from engine.astronomy.jd_calendar import civil_day_jd_ut
+
+        assert civil_day_jd_ut(year, month, day) == expected_jd
+
+    def test_the_cutover_seam_skips_the_ten_days_that_never_existed(self):
+        """1582-10-04 is followed directly by 1582-10-15, one JD later."""
+        from engine.astronomy.jd_calendar import civil_parts_from_jd_ut
+
+        last_julian = 2299159.5
+        assert civil_parts_from_jd_ut(last_julian) == (1582, 10, 4)
+        assert civil_parts_from_jd_ut(last_julian + 1) == (1582, 10, 15)
+
+    @pytest.mark.parametrize(
+        "year,month,day",
+        [(-999, 8, 1), (-254, 8, 1), (1, 1, 1), (1000, 6, 15), (1582, 10, 15), (2026, 8, 1)],
+    )
+    def test_labels_round_trip_through_jd(self, year, month, day):
+        from engine.astronomy.jd_calendar import civil_day_jd_ut, civil_parts_from_jd_ut
+
+        jd = civil_day_jd_ut(year, month, day)
+        assert civil_parts_from_jd_ut(jd) == (year, month, day)
+
+    def test_datetime_date_refuses_pre_cutover_labels(self):
+        """``datetime.date`` is proleptic Gregorian, so it cannot carry a Julian
+        label without changing which day it means. Callers branch on ``None``."""
+        from engine.astronomy.jd_calendar import date_if_supported
+
+        assert date_if_supported(1000, 6, 15) is None
+        assert date_if_supported(1582, 10, 4) is None
+        assert date_if_supported(1582, 10, 15) is not None
+
+    def test_the_255_ce_window_cannot_detect_the_bug(self):
+        """Julian and Gregorian coincide through 201-300 CE — a spot check there
+        passes either way, which is why 255 BCE broke while 255 CE looked fine."""
+        import swisseph as swe
+
+        from engine.astronomy.jd_calendar import civil_day_jd_ut
+
+        assert civil_day_jd_ut(255, 8, 1) == swe.julday(255, 8, 1, 0.0, swe.GREG_CAL)
+        assert civil_day_jd_ut(255, 8, 1) == swe.julday(255, 8, 1, 0.0, swe.JUL_CAL)
+        assert civil_day_jd_ut(-254, 8, 1) != swe.julday(-254, 8, 1, 0.0, swe.GREG_CAL)

@@ -271,16 +271,23 @@ class AstronomyEngine:
             raise EphemerisError(f"Datetime must have timezone info: {dt}")
         utc = dt.astimezone(timezone.utc)
         hour = utc.hour + utc.minute / 60.0 + utc.second / 3600.0
-        return swe.julday(utc.year, utc.month, utc.day, hour)
+        # GREG_CAL unconditionally, unlike ``civil_day_jd_ut``: a ``datetime`` is
+        # proleptic Gregorian *by definition*, at every epoch. Julian labels never
+        # reach this method — ``date_if_supported`` refuses to build a ``datetime``
+        # for a pre-cutover day, so those travel as ``CivilDay`` / ``UtInstant``.
+        return swe.julday(utc.year, utc.month, utc.day, hour, swe.GREG_CAL)
 
     def datetime_from_jd(self, jd: float) -> datetime:
-        """Julian Day Number → UTC datetime (BCE uses ``UtInstant``)."""
-        year, month, day, hour = swe.revjul(jd)
-        if year >= 1:
+        """Julian Day Number → UTC datetime (``UtInstant`` when ``datetime`` cannot hold the year)."""
+        from engine.astronomy.jd_calendar import swe_cal_for_jd
+
+        year, month, day, hour = swe.revjul(jd, swe_cal_for_jd(jd))
+        y, m, d = int(year), int(month), int(day)
+        if date_if_supported(y, m, d) is not None:
             h = int(hour)
-            m = int((hour - h) * 60)
-            s = int(((hour - h) * 60 - m) * 60)
-            return datetime(year, month, day, h, m, s, tzinfo=timezone.utc)
+            mi = int((hour - h) * 60)
+            s = int(((hour - h) * 60 - mi) * 60)
+            return datetime(y, m, d, h, mi, s, tzinfo=timezone.utc)
         from engine.astronomy.ut_instant import UtInstant
 
         return UtInstant(float(jd))  # type: ignore[return-value]

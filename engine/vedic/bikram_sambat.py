@@ -11,7 +11,7 @@ from typing import Optional
 
 
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported, format_civil_iso
-from engine.astronomy.sun import calculate_sunrise
+from engine.astronomy.sun import _calculate_sunrise_civil, calculate_sunrise
 from engine.astronomy.timescale import to_nepal_time
 from engine.vedic.constants import (
     BS_CALENDAR_DATA,
@@ -42,15 +42,30 @@ _MONTH_SEARCH_STARTS = [
     (10, 1), (11, 1), (12, 1), (1, 1), (2, 1), (3, 1),
 ]
 
+# Mean sidereal year — the period the sankrantis actually keep, since a sankranti
+# is the Sun reaching a fixed sidereal longitude. The *Gregorian* date of a given
+# sankranti drifts ~1 day per 71 years against this (precession of the equinoxes),
+# which is why month starts must be extrapolated in sidereal years rather than
+# guessed from a fixed Gregorian window. See _mesha_start_estimate_jd.
+_SIDEREAL_YEAR_DAYS = 365.256363
+
+
+def _year_index(bs_year: int) -> int:
+    """Signed patro year → a gapless index for year arithmetic.
+
+    The axis has no year 0: signed −1 (BBS 1) immediately precedes signed +1
+    (BS 1). Shifting negatives up by one closes that gap, so ``a - b`` is the
+    true number of years between two points on the axis.
+    """
+    return bs_year if bs_year >= 1 else bs_year + 1
+
 
 def _gregorian_year_for_bs_month(bs_year: int, bs_month: int) -> int:
     """Civil (proleptic Gregorian, astronomical) year holding this BS/BBS month.
 
-    The signed axis has **no year 0**: BS 1 (57 BCE) is immediately preceded by
-    BBS 1 (58 BCE), i.e. signed −1. A single uniform offset would implicitly
-    reserve a slot for signed 0 and leave civil −57 / 58 BCE unreachable, which
-    is exactly what happened — every BBS year came out one year too early
-    (BBS 1 landed on 59 BCE). Negative years therefore shift up by one.
+    Only valid near the present, where a BS month still sits in its familiar
+    Gregorian slot (month 1 ≈ April). Precession invalidates it for distant
+    years — use :func:`_mesha_start_estimate_jd` for those.
     """
     offset = 57 if bs_year >= 1 else 56
     return bs_year - offset if bs_month <= 9 else bs_year - offset + 1
@@ -107,7 +122,7 @@ def _sankranti_start_date(sankranti_utc):
     civil = CivilDay(fields.year, fields.month, fields.day)
     # Compare the UTC instants directly — equivalent to comparing both in local
     # time, and avoids needing a local-time object we cannot build here.
-    if sankranti_utc <= calculate_sunrise(civil):
+    if sankranti_utc <= _calculate_sunrise_civil(civil):
         return civil
     return civil + timedelta(days=1)
 
@@ -161,29 +176,79 @@ def _get_bs_month_start_estimated(bs_year: int, bs_month: int) -> date:
     return d
 
 
+@lru_cache(maxsize=1)
+def _mesha_anchor() -> tuple[int, float]:
+    """``(year_index, jd)`` of a Mesha sankranti we know from authoritative data.
+
+    Taken from the official month-length table rather than hard-coded, so the
+    extrapolation below stays pinned to the same source as the modern calendar.
+    """
+    year = _OFFICIAL_YEAR_RANGES[0][2]
+    start = _get_bs_month_start_official(year, 1)
+    return _year_index(year), CivilDay.from_date(start).to_jd_ut()
+
+
+def _mesha_start_estimate_jd(bs_year: int) -> float:
+    """Approximate JD of BS/BBS *bs_year*'s Mesha sankranti (month 1).
+
+    Extrapolated in **sidereal** years from a known anchor. Accurate to about a
+    day even 4,000 years out, which is all the local sankranti solve needs — and
+    unlike a fixed Gregorian window it does not decay with precession.
+    """
+    anchor_index, anchor_jd = _mesha_anchor()
+    return anchor_jd + (_year_index(bs_year) - anchor_index) * _SIDEREAL_YEAR_DAYS
+
+
 @lru_cache(maxsize=16384)
 def _get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
     # Pure function of (year, month) — the sankranti instant that opens a BS
     # month never changes. Locating one civil day probes up to ~50 month starts
     # (month scan + get_bs_month_length's lookahead), so this is the difference
-    # between one solve per month and one per probe.
-    from engine.astronomy.jd_calendar import civil_day_jd_ut, civil_parts_from_jd_ut
+    # between one solve per month and one per probe. The cache also flattens the
+    # month-to-month chaining below: each month solves once, not once per caller.
+    #
+    # Month 1 is anchored by sidereal extrapolation; every later month is
+    # chained off the month before it. Chaining is what makes the sequence
+    # monotonic *by construction*: each search begins inside the preceding
+    # sign, so it can only ever find the very next sankranti.
+    #
+    # The previous version derived an independent Gregorian search window per
+    # month from a fixed table (month 1 ≈ April, month 10 ≈ January). That holds
+    # near the present but not in deep time: by BBS ~2000 precession has moved
+    # Mesha sankranti to mid-February, so the windows for months 10-12 opened
+    # *after* their sankranti had passed. find_sankranti_after_jd then scanned
+    # forward and returned the *next year's* sankranti, producing month starts
+    # that ran backwards — and month lengths of +395 and -335 days, which
+    # surfaced as "day must be 1..-335" 400s on every BBS month endpoint.
+    from engine.astronomy.jd_calendar import civil_parts_from_jd_ut
     from engine.astronomy.engine import default_engine
     from engine.vedic.sankranti import find_sankranti_after_jd
 
-    greg_year = _gregorian_year_for_bs_month(bs_year, bs_month)
-    greg_month, greg_day = _MONTH_SEARCH_STARTS[bs_month - 1]
-    search_jd = civil_day_jd_ut(greg_year, greg_month, greg_day) - 15.0
+    if bs_month == 1:
+        # Start ~10 days before the estimate, so the Sun is still in Meena
+        # (sign 11) and the solve walks forward onto the Mesha boundary.
+        search_jd = _mesha_start_estimate_jd(bs_year) - 10.0
+    else:
+        # 25 days past the previous month's start the Sun is always still in
+        # that month's sign — the shortest solar month is ~29.3 days.
+        previous = _get_bs_month_start_civil(bs_year, bs_month - 1)
+        search_jd = previous.to_jd_ut() + 25.0
+
     sankranti_jd = find_sankranti_after_jd(bs_month - 1, search_jd, max_days=45)
     if sankranti_jd is None:
         raise ValueError(f"Could not find sankranti for BS {bs_year}/{bs_month}")
 
     y, m, d = civil_parts_from_jd_ut(sankranti_jd)
-    if y >= 1:
+    if date_if_supported(y, m, d) is not None:
         sankranti = default_engine.datetime_from_jd(sankranti_jd)
         start = _sankranti_start_date(sankranti)
         return CivilDay.from_date(start)
-    return CivilDay(y, m, d)
+    from engine.astronomy.ut_instant import UtInstant
+
+    start = _sankranti_start_date(UtInstant(sankranti_jd))
+    if isinstance(start, CivilDay):
+        return start
+    return CivilDay.from_date(start)
 
 
 def get_bs_month_start_civil(bs_year: int, bs_month: int) -> CivilDay:
@@ -253,6 +318,21 @@ def _patro_year_start_jd(signed: int) -> float:
     return get_bs_month_start_civil(signed, 1).to_jd_ut()
 
 
+def _patro_year_start_jd_for_search(signed: int) -> float:
+    """Monotonic Mesha-start estimate for year-locating binary search only.
+
+    Full ``_patro_year_start_jd`` calls the ephemeris for every probe year; on
+    deep BCE that pulls in years whose ``.se1`` files are not installed (e.g.
+    BBS 6599 civil days probing signed −12000), which raises and breaks day
+    panchanga even though the target year is in range. The estimate is ~1 day
+    accurate — enough to pick the right year pair before the exact month scan.
+    """
+    from engine.vedic.patro_year_axis import validate_patro_signed_year
+
+    validate_patro_signed_year(signed)
+    return _mesha_start_estimate_jd(signed)
+
+
 def _signed_to_index(signed: int) -> int:
     """Signed patro year → gap-free index (the axis has no year 0)."""
     return signed if signed < 0 else signed - 1
@@ -292,7 +372,7 @@ def locate_patro_day_for_civil(civil: CivilDay) -> tuple[int, int, int]:
     hi = _signed_to_index(PATRO_SIGNED_YEAR_MAX)
     while lo < hi:
         mid = (lo + hi + 1) // 2
-        if _patro_year_start_jd(_index_to_signed(mid)) <= jd:
+        if _patro_year_start_jd_for_search(_index_to_signed(mid)) <= jd:
             lo = mid
         else:
             hi = mid - 1

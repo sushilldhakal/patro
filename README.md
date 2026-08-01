@@ -47,11 +47,11 @@ Two separate limits, both in `engine/vedic/patro_year_axis.py`:
 
 | | Range | Meaning |
 |---|---|---|
-| `PATRO_SIGNED_YEAR_MIN/MAX` | `−12942 … 17055` | The **axis** — what a URL, picker or label may name. Sized to the full Swiss Ephemeris span (11 Aug 13000 BCE, JD −3026604.5 … 7 Jan 17000 CE). |
-| `PATRO_EPHEMERIS_SIGNED_MIN/MAX` | `−7144 … 3057` | What the **installed** `.se1` files compute. Measured end to end (month 1 and 12 of the boundary year both build). |
+| `PATRO_SIGNED_YEAR_MIN/MAX` | `−13201 … 17247` | The **axis** — BBS 13201 (13201 BCE) through BS 17247 (through AD 17191 CE). |
+| `PATRO_EPHEMERIS_SIGNED_MIN/MAX` | `−13201 … 17247` | What the **installed** `.se1` files compute (base + `--extended`: `seplm138` / `sepl_174`). |
 
 - **Full panchanga** (tithi/nakshatra/yoga/karana) works across the whole
-  ephemeris window — BBS 7144 through BS 3057, BBS and BS 1–59 included.
+  ephemeris window — BBS 13201 through BS 17247, BBS and BS 1–59 included.
 - **Festivals** need the BS month-length table + festival stack, so they attach
   from **BS 60** up (`BS_PANCHANGA_SIGNED_MIN`); BBS months carry panchanga but
   no festivals.

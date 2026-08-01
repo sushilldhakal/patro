@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
+from engine.astronomy.jd_calendar import swe_cal_for_civil, swe_cal_for_jd
 from engine.astronomy.timescale import resolve_observer_timezone
 
 
@@ -21,7 +22,7 @@ _EXPANDED_ISO_RE = re.compile(
 
 def format_expanded_utc_iso(jd_ut: float) -> str:
     """``±YYYY-MM-DDTHH:MM:SS.ffffff+00:00`` for any JD, BCE included."""
-    year, month, day, hour = swe.revjul(float(jd_ut))
+    year, month, day, hour = swe.revjul(float(jd_ut), swe_cal_for_jd(jd_ut))
     total = max(0.0, float(hour)) * 3600.0
     h = int(total // 3600)
     rem = total - h * 3600
@@ -41,15 +42,23 @@ def jd_from_expanded_utc_iso(text: str) -> float:
         raise ValueError(f"not an expanded ISO instant: {text!r}")
     second = float(match.group("second") or 0.0)
     hour = int(match.group("hour")) + int(match.group("minute")) / 60 + second / 3600
-    return swe.julday(
-        int(match.group("year")), int(match.group("month")), int(match.group("day")), hour
+    y, m, d = (
+        int(match.group("year")),
+        int(match.group("month")),
+        int(match.group("day")),
     )
+    return swe.julday(y, m, d, hour, swe_cal_for_civil(y, m, d))
 
 
 def _iso_year_is_ce(text: str) -> bool:
-    """True when a timestamp's year is ≥ 1, i.e. ``datetime`` can hold it."""
+    """True when a timestamp's civil date fits ``datetime.date`` (and thus ``fromisoformat``)."""
     match = _EXPANDED_ISO_RE.match(text)
-    return match is not None and int(match.group("year")) >= 1
+    if match is None:
+        return False
+    from engine.astronomy.jd_calendar import date_if_supported
+
+    y, m, d = int(match.group("year")), int(match.group("month")), int(match.group("day"))
+    return date_if_supported(y, m, d) is not None
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,7 +79,7 @@ class UtInstant:
 
     @property
     def _utc_parts(self) -> tuple[int, int, int, float]:
-        year, month, day, hour = swe.revjul(self.jd_ut)
+        year, month, day, hour = swe.revjul(self.jd_ut, swe_cal_for_jd(self.jd_ut))
         return int(year), int(month), int(day), float(hour)
 
     @property
@@ -202,7 +211,13 @@ class LocalCivilFields(NamedTuple):
     @property
     def civil_day_jd(self) -> float:
         """JD at 0h UT of this local civil day — for day-granularity comparisons."""
-        return swe.julday(self.year, self.month, self.day, 0.0)
+        return swe.julday(
+            self.year,
+            self.month,
+            self.day,
+            0.0,
+            swe_cal_for_civil(self.year, self.month, self.day),
+        )
 
     def date_iso(self) -> str:
         sign = "-" if self.year < 0 else ""
@@ -237,9 +252,8 @@ def local_civil_fields(
         tz = resolve_observer_timezone(timezone_name)
         ref = datetime(2000, 6, 15, 12, 0, tzinfo=timezone.utc)
         offset = tz.utcoffset(ref) or timedelta(0)
-        year, month, day, local_hour = swe.revjul(
-            instant.jd_ut + offset.total_seconds() / 86400.0
-        )
+        local_jd = instant.jd_ut + offset.total_seconds() / 86400.0
+        year, month, day, local_hour = swe.revjul(local_jd, swe_cal_for_jd(local_jd))
         h = int(local_hour)
         m = int((local_hour - h) * 60)
         s = int(round(((local_hour - h) * 60 - m) * 60))
@@ -270,12 +284,14 @@ def day_instant_utc(
     """UTC instant at a wall-clock time on a civil day — accepts ``date`` or ``CivilDay``.
 
     Replaces the ``datetime(d.year, d.month, d.day, h, tzinfo=utc)`` idiom, which
-    raises ``year -37 is out of range`` on any pre-1 CE day. CE days still get a
-    real ``datetime`` built exactly as before, so CE results are unchanged; BCE
-    days fall through to a JD-backed :class:`UtInstant`.
+    raises on BCE civil labels and on CE years outside ``datetime``'s range. CE days
+    that fit ``datetime.date`` still get a real ``datetime``; everything else uses
+    a JD-backed :class:`UtInstant`.
     """
+    from engine.astronomy.jd_calendar import date_if_supported
+
     year, month, dom = day.year, day.month, day.day
-    if year >= 1:
+    if date_if_supported(year, month, dom) is not None:
         return datetime(year, month, dom, hour, minute, second, tzinfo=timezone.utc)
     from engine.astronomy.jd_calendar import civil_day_jd_ut
 
@@ -311,8 +327,10 @@ def local_wall_instant(
 
 def ut_instant_from_jd(jd: float) -> UtInstant | datetime:
     """``datetime`` when CE-representable, else ``UtInstant``."""
-    year, _month, _day, _hour = swe.revjul(float(jd))
-    if year >= 1:
+    from engine.astronomy.jd_calendar import date_if_supported
+
+    year, month, day, _hour = swe.revjul(float(jd), swe_cal_for_jd(jd))
+    if date_if_supported(int(year), int(month), int(day)) is not None:
         from engine.astronomy.engine import default_engine
 
         return default_engine.datetime_from_jd(jd)
@@ -347,7 +365,7 @@ def format_ut_instant_local(
         # midnight rollover, so any Kathmandu time after ~18:15 UTC was stamped
         # with the previous civil day (a yoga ending 05:35 read as the 15th, not
         # the 16th, which looked like an end *before* its own start).
-        year, month, day, local_hour = swe.revjul(local_jd)
+        year, month, day, local_hour = swe.revjul(local_jd, swe_cal_for_jd(local_jd))
         h = int(local_hour)
         m = int((local_hour - h) * 60)
         s = int(((local_hour - h) * 60 - m) * 60)

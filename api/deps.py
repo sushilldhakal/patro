@@ -77,7 +77,26 @@ def validated_year_span_jd(request, era: str, year: int) -> tuple[float, float]:
     return jd_start, jd_end
 
 
-def stamp_year_era(payload: dict, era: str, year: int) -> dict:
+def gregorian_range_from_jd_span(jd_start: float, jd_end: float) -> dict[str, str]:
+    """Inclusive civil ISO endpoints for a Julian Day span (BCE-safe)."""
+    from engine.astronomy.jd_calendar import civil_parts_from_jd_ut, format_civil_iso
+
+    sy, sm, sd = civil_parts_from_jd_ut(float(jd_start))
+    ey, em, ed = civil_parts_from_jd_ut(float(jd_end))
+    return {
+        "start": format_civil_iso(sy, sm, sd),
+        "end": format_civil_iso(ey, em, ed),
+    }
+
+
+def stamp_year_era(
+    payload: dict,
+    era: str,
+    year: int,
+    *,
+    jd_start: float | None = None,
+    jd_end: float | None = None,
+) -> dict:
     """Re-apply the year/era labels the per-era builders used to add.
 
     The span builders are era-free by design, but these fields are part of the
@@ -92,6 +111,8 @@ def stamp_year_era(payload: dict, era: str, year: int) -> dict:
     else:
         payload["bs_year"] = _signed_bs_year_from_browse(era, year)
         payload["era"] = "bs"
+    if jd_start is not None and jd_end is not None:
+        payload["gregorian_range"] = gregorian_range_from_jd_span(jd_start, jd_end)
     return payload
 
 
