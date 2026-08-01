@@ -1,4 +1,11 @@
-"""Nepal patro sunrise — गौरीशंकर meridian + देशान्तर."""
+"""Nepal sunrise/sunset — true observer geometry.
+
+These used to pin the गौरीशंकर-meridian + देशान्तर shortcut, which computed
+rise/set at one national reference latitude and shifted by longitude alone.
+That is gone: every observer's own latitude now reaches
+``rise_trans_true_hor``, so east–west ordering still holds but the gaps are no
+longer exactly 4 min per degree of longitude.
+"""
 
 from __future__ import annotations
 
@@ -72,8 +79,11 @@ def test_year_sun_times_api_siraha_before_kathmandu():
     assert day_s["sunrise"] < day_k["sunrise"], (
         f"Siraha {day_s['sunrise']} should be before Kathmandu {day_k['sunrise']}"
     )
-    # Siraha (~86.21°E) is slightly east of गौरीशंकर → a few minutes before Kathmandu.
-    assert day_s["sunrise"] == "05:10"
+    # Siraha (~86.21°E) is east of Kathmandu, so it still rises first. The gap is
+    # narrower than longitude alone would give: Siraha is also ~1.06° further
+    # south, and in Ashadh (near the northern solstice) a southern observer rises
+    # later. Was 05:10 under the reference-latitude shortcut.
+    assert day_s["sunrise"] == "05:12"
     assert day_k["sunrise"] == "05:14"
 
 
@@ -89,16 +99,25 @@ def test_east_west_ordering_across_nepal_2083_ashadh_24():
     assert biratnagar < ktm < dhangadhi
 
 
-def test_jhapa_kanchanpur_deshaantar_gap_matches_longitude():
-    """Classical 4 min/° — झापा ८८°४' vs कञ्चनपुर ८०°११' ≈ 31.5 minutes."""
+def test_jhapa_kanchanpur_gap_is_longitude_reduced_by_latitude():
+    """झापा ८८°४'/२६°३५' vs कञ्चनपुर ८०°११'/२८°५७' — both effects, not just देशान्तर.
+
+    The classical table treats this gap as longitude × 4 min = 31.5 minutes.
+    True geometry gives less: Kanchanpur is ~2.4° further north, and in Ashadh
+    (near the northern solstice) that makes it rise earlier, eating into the
+    east–west gap. Kanchanpur is still last — longitude remains the dominant
+    term — but the 4 min/° identity no longer holds, and asserting that it does
+    is what the removed reference-latitude shortcut was for.
+    """
     greg = _bs_gregorian(2083, 3, 24)
     jhapa = calculate_sunrise(greg, *JHAPA, timezone_name="Asia/Kathmandu")
     kanch = calculate_sunrise(greg, *KANCHANPUR, timezone_name="Asia/Kathmandu")
     delta_min = (kanch - jhapa).total_seconds() / 60.0
-    expected = (JHAPA[1] - KANCHANPUR[1]) * 4.0
-    assert abs(delta_min - expected) < 0.05, (
-        f"gap {delta_min:.2f} min ≠ longitude×4 {expected:.2f} min "
-        f"(Jhapa {jhapa.astimezone(KTM_TZ).strftime('%H:%M')}, "
-        f"Kanchanpur {kanch.astimezone(KTM_TZ).strftime('%H:%M')})"
+    longitude_only = (JHAPA[1] - KANCHANPUR[1]) * 4.0
+    assert delta_min > 0, "Kanchanpur (west) must still rise after Jhapa (east)"
+    assert delta_min < longitude_only - 1.0, (
+        f"gap {delta_min:.2f} min should sit below the longitude-only "
+        f"{longitude_only:.2f} min once latitude is honoured — a flat 4 min/° "
+        "result means the देशान्तर-only shortcut is back"
     )
-    assert 31.0 <= delta_min <= 32.0
+    assert 25.0 <= delta_min <= 28.0

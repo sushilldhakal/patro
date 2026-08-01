@@ -5,13 +5,10 @@ offset at all: it enters through the hour angle, cos H = (sin h0 − sin φ sin 
 / (cos φ cos δ), so its effect depends on the Sun's declination and therefore on
 the season — zero at the equinoxes, largest at the solstices.
 
-These tests pin both halves of that:
-
-* the generic observer path must move sunrise when only latitude changes, and
-  must move it in opposite directions in June and December;
-* the Nepal patro path deliberately does *not*, because published Nepali
-  panchanga tables correct from the गौरीशंकर meridian by longitude alone
-  (see engine/astronomy/nepal_patro_sun.py).
+Every observer — inside Nepal or not — goes through ``rise_trans_true_hor``
+with their own latitude. The old Nepal shortcut, which computed once at a fixed
+national reference latitude on the 86°15′ meridian and shifted by देशान्तर
+alone, is gone; these tests fail if anything like it comes back.
 """
 
 from __future__ import annotations
@@ -19,7 +16,6 @@ from __future__ import annotations
 from datetime import date, timezone
 
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset
-from engine.astronomy.nepal_patro_sun import NEPAL_PATRO_REFERENCE_LATITUDE
 
 # One meridian, so every difference below is latitude alone.
 SHARED_LON = 85.3167
@@ -91,26 +87,34 @@ def test_equinox_is_the_latitude_null_point():
     assert delta_min < 10.0, f"equinox sunrise should barely move with latitude ({delta_min:.1f} min)"
 
 
-def test_nepal_patro_path_is_latitude_independent_by_design():
-    """Inside Nepal, sunrise is computed at the national reference latitude.
+def test_nepal_observers_are_latitude_sensitive():
+    """The regression guard: inside Nepal, latitude must reach the ephemeris.
 
-    Two Nepali observers on one meridian differing only in latitude get the
-    same sunrise — the documented देशान्तर-only convention, not an oversight.
-    Change this test if that convention ever changes.
+    Both observers sit in the old shortcut's box (lat 26.35–30.45,
+    lon 80.05–88.20) on one meridian. Under the reference-latitude shortcut
+    these two were identical to the second.
     """
     lon = 85.3167
     south = calculate_sunrise(JUNE, 26.6, lon, timezone_name="Asia/Kathmandu")
     north = calculate_sunrise(JUNE, 29.5, lon, timezone_name="Asia/Kathmandu")
-    assert south == north
-    reference = calculate_sunrise(
-        JUNE, NEPAL_PATRO_REFERENCE_LATITUDE, lon, timezone_name="Asia/Kathmandu"
+    delta_min = abs((north - south).total_seconds()) / 60.0
+    assert delta_min > 2.0, (
+        f"Nepal observers 2.9° apart in latitude differ by only {delta_min:.2f} min "
+        "— a reference-latitude shortcut appears to be back"
     )
-    assert south == reference
+    assert north < south, "in June the northern observer must rise earlier"
 
 
-def test_explicit_altitude_opts_out_of_the_nepal_path_and_restores_latitude():
-    """Passing an altitude routes a Nepal observer to the true-geometry path."""
+def test_nepal_sunrise_matches_between_default_and_explicit_altitude():
+    """Passing altitude=0.0 explicitly must not change the answer.
+
+    The old shortcut keyed off ``altitude is None``, so these two calls took
+    different code paths and returned different times.
+    """
     lon = 85.3167
-    south = calculate_sunrise(JUNE, 26.6, lon, altitude=0.0, timezone_name="Asia/Kathmandu")
-    north = calculate_sunrise(JUNE, 29.5, lon, altitude=0.0, timezone_name="Asia/Kathmandu")
-    assert south != north
+    for lat in (26.6, 27.7172, 29.5):
+        implicit = calculate_sunrise(JUNE, lat, lon, timezone_name="Asia/Kathmandu")
+        explicit = calculate_sunrise(
+            JUNE, lat, lon, altitude=0.0, timezone_name="Asia/Kathmandu"
+        )
+        assert implicit == explicit, f"lat {lat}: {implicit} != {explicit}"
