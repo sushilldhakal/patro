@@ -32,6 +32,19 @@ def test_month_calendar_full_embeds_patro_fields() -> None:
     assert p.get("solar_corrections")
 
 
+def test_shrawan_opens_in_ashadh_purnimant_shukla() -> None:
+    """BS श्रावण १ can still be आषाढ शुक्ल (pūrṇimānta), not solar-month stub."""
+    month = build_month_calendar(2083, 4, DEFAULT_LOCATION, full=True)
+    row = month["calendar"][0]
+    assert row["day"] == 1
+    lc = row["panchanga"]["lunar_calendar"]
+    assert lc.get("source") != "solar_month_stub"
+    purnim = lc["purnimant"]
+    assert purnim["name"] == "Ashadh"
+    assert purnim["name_ne"] == "आषाढ"
+    assert row["paksha"] == "shukla"
+
+
 def test_year_calendar_full_has_all_months_and_days() -> None:
     year = build_year_calendar(2083, DEFAULT_LOCATION, full=True)
     assert year["year_bs"] == 2083

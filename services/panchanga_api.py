@@ -41,6 +41,12 @@ def _panchanga_for_patro_day(
     location: ObserverLocation,
 ) -> dict[str, Any]:
     civil = parse_civil_iso(civil_iso)
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is not None:
+        # CE-representable days: real pūrṇimānta/amānta labels (Nepali patro),
+        # not the solar-BS-month stub used only when the lunar engine is off.
+        return get_daily_panchanga(greg, location)
+
     from engine.vedic.daily_civil import get_daily_panchanga_civil
 
     return get_daily_panchanga_civil(
