@@ -100,14 +100,14 @@ def _month_row_from_panchanga(
     }
     if full:
         if greg is not None:
-            row["panchanga"] = build_daily_state(
+            embed = build_daily_state(
                 greg,
                 location,
                 include_festivals=True,
                 include_detail=False,
             )
         else:
-            row["panchanga"] = build_daily_state_civil(
+            embed = build_daily_state_civil(
                 parse_civil_iso(date_ad),
                 location,
                 patro_bs_year=panchanga["bs_date"]["year"],
@@ -116,6 +116,13 @@ def _month_row_from_panchanga(
                 include_festivals=False,
                 include_detail=False,
             )
+        # Dainik Kranti / month patro read `panchanga.lunar_calendar.purnimant`.
+        # Keep embed aligned with the sunrise row (patro_bs civil stub ≠ pūrṇimānta).
+        if panchanga.get("lunar_calendar"):
+            embed["lunar_calendar"] = panchanga["lunar_calendar"]
+        if panchanga.get("lunar_month"):
+            embed["lunar_month"] = panchanga["lunar_month"]
+        row["panchanga"] = embed
     return row
 
 

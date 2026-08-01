@@ -105,7 +105,10 @@ logger = logging.getLogger(__name__)
 # 38: day payloads carry a ``moon_phase`` block (name, illuminated fraction,
 #     phase angle, age). New surface — the backend had no phase computation at
 #     all before phase 2 shipped MoonService, and nothing surfaced it until now.
-PANCHANGA_PAYLOAD_VERSION = 38
+# 39: BS month ``full=true`` embed copies pūrṇimānta ``lunar_calendar`` from the
+#     sunrise row (was solar_month_stub when embed came from patro_bs civil path
+#     or stale month response-cache gzip). Invalidates month/year response blobs.
+PANCHANGA_PAYLOAD_VERSION = 39
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

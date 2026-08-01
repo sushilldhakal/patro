@@ -38,7 +38,7 @@ def test_shrawan_opens_in_ashadh_purnimant_shukla() -> None:
     row = month["calendar"][0]
     assert row["day"] == 1
     lc = row["panchanga"]["lunar_calendar"]
-    assert lc.get("source") != "solar_month_stub"
+    assert lc.get("source") != "solar_month_stub", lc
     purnim = lc["purnimant"]
     assert purnim["name"] == "Ashadh"
     assert purnim["name_ne"] == "आषाढ"
