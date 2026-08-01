@@ -15,8 +15,8 @@ repository maintained by astro.com.
 
 Usage:
     python scripts/install_ephemeris.py          # download any missing files
-    python scripts/install_ephemeris.py --deep-bce # also seplm78..138 (≈ BBS 13201 BCE)
-    python scripts/install_ephemeris.py --far-ce   # also sepl_30..174 (≈ AD 17191 CE)
+    python scripts/install_ephemeris.py --deep-bce # also seplm78..132 (deep BCE on GitHub)
+    python scripts/install_ephemeris.py --far-ce   # also sepl_30..168 (far CE on GitHub)
     python scripts/install_ephemeris.py --extended # deep BCE + far CE (full Swiss span)
     python scripts/install_ephemeris.py --force  # re-download everything
 """
@@ -64,16 +64,17 @@ def _moshier_ephe_file(prefix: str, n: int) -> str:
     return f"{prefix}{n}.se1"
 
 
-# seplm72 ≈ 7202 BCE; seplm138 ≈ 13200 BCE (covers BBS 13201 / 13201 BCE target).
+# seplm72 ≈ 7202 BCE; seplm132 is the deepest block on aloistr/swisseph GitHub
+# (seplm138 is not published there — 404).
 DEEP_BCE_EPHE_FILES = tuple(
     _moshier_ephe_file(prefix, n)
-    for n in range(78, 139, 6)
+    for n in range(78, 133, 6)
     for prefix in ("seplm", "semom")
 )
 
 FAR_CE_EPHE_FILES = tuple(
     _ce_ephe_file(prefix, n)
-    for n in range(30, 175, 6)
+    for n in range(30, 169, 6)
     for prefix in ("sepl_", "semo_")
 )
 

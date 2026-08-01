@@ -48,7 +48,7 @@ Two separate limits, both in `engine/vedic/patro_year_axis.py`:
 | | Range | Meaning |
 |---|---|---|
 | `PATRO_SIGNED_YEAR_MIN/MAX` | `−13201 … 17247` | The **axis** — BBS 13201 (13201 BCE) through BS 17247 (through AD 17191 CE). |
-| `PATRO_EPHEMERIS_SIGNED_MIN/MAX` | `−13201 … 17247` | What the **installed** `.se1` files compute (base + `--extended`: `seplm138` / `sepl_174`). |
+| `PATRO_EPHEMERIS_SIGNED_MIN/MAX` | `−13201 … 17247` | What the **installed** `.se1` files compute (base + `--extended`: `seplm132` / `sepl_168` on GitHub). |
 
 - **Full panchanga** (tithi/nakshatra/yoga/karana) works across the whole
   ephemeris window — BBS 13201 through BS 17247, BBS and BS 1–59 included.

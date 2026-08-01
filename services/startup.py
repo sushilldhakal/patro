@@ -30,7 +30,7 @@ def ensure_swiss_ephemeris_files() -> bool:
     from engine.astronomy.paths import ephemeris_path
 
     ephe = ephemeris_path()
-    extended_ok = (ephe / "sepl_174.se1").is_file() and (ephe / "seplm138.se1").is_file()
+    extended_ok = (ephe / "sepl_168.se1").is_file() and (ephe / "seplm132.se1").is_file()
     if extended_ok:
         return True
 

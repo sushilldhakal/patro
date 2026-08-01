@@ -37,8 +37,8 @@ PATRO_SIGNED_YEAR_MAX = 17248  # one step above product ceiling (invalid browse)
 
 # ── What the installed .se1 files actually cover ──────────────────────────────
 # Target navigation: BBS 13201 (13201 BCE) … BS 17247 (through AD 17191 CE).
-# Re-measure after ``install_ephemeris.py --extended`` (deep BCE through seplm138,
-# far CE through sepl_174). Until those files exist, requests at the edges may 400.
+# Re-measure after ``install_ephemeris.py --extended`` (deep BCE through seplm132,
+# far CE through sepl_168 on the GitHub ephe mirror).
 PATRO_EPHEMERIS_SIGNED_MIN = -13201  # BBS 13201 ≈ 13201 BCE
 PATRO_EPHEMERIS_SIGNED_MAX = 17247  # BS 17247 ≈ AD 17191 CE
 
