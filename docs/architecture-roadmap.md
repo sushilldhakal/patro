@@ -97,6 +97,11 @@ with its file reference, then its consequence.
 
 ### W1 — `ObserverLocation` is missing a field the engine reads
 
+> **Corrected 2026-08-02 during Phase 1 implementation.** The original text called
+> `default_altitude()` an "estimator" and gave the Kathmandu dip as "~1.1 arcminutes".
+> Both were wrong, and the first was wrong in a way that invited the regression this
+> entry should prevent. Superseded text kept below the rule for the record.
+
 `engine/astronomy/location.py:11` declares `lat, lon, timezone, name, city_id`.
 `engine/astronomy/sun.py:239` reads:
 
@@ -105,19 +110,40 @@ getattr(location, "altitude", None) or default_altitude(location.lat, location.l
 ```
 
 The `getattr` is not defensive coding around an optional field — it reads a field that
-**does not exist on the dataclass**, and always falls through to the estimator. So:
+**does not exist on the dataclass**, so the lookup always misses.
 
-- Altitude is never caller-supplied. Every observer gets `default_altitude(lat, lon)`.
-- Altitude is absent from `ObserverLocation.cache_key()`, which is
-  `f"{lat:.4f}_{lon:.4f}_{timezone}"` — two observers at the same coordinates with
-  different elevations are one cache entry.
-- The horizon dip at `engine/astronomy/engine.py:89` (`-1.76·√h`) exists *specifically*
-  because altitude changes rise/set. At Kathmandu's ~1400 m the dip is ~1.1 arcminutes of
-  time-equivalent — non-trivial, and the audit's own cache-version log (entry 21) records
-  a past bug in exactly this term. The physics is correct; the plumbing is guesswork.
+What it falls through to is **not an estimate**. `default_altitude()` returns `0.0`
+unconditionally and deliberately: sea level everywhere. Feeding Kathmandu's real ~1400 m
+produces a **~1.1° geometric horizon dip** (`1.76·√1400/60 = 1.0976°`) that advances
+sunrise and delays sunset by ~6.3 min each — a flat 14h00m day. The valley's true horizon
+is the surrounding hills, *above* the astronomical horizon, so the sea-cliff dip is
+unphysical there, and sea level is what matches published Nepali panchang. This is pinned
+by `tests/test_horizon_dip.py` and recorded in the audit's cache-version log (entry 21).
 
-Consequence: the most latitude/altitude-sensitive number the API publishes is derived
-from a field the type system says is not there.
+So the defect is **structural, not numerical**:
+
+- The value every observer gets is correct. Nothing computed is wrong.
+- But altitude cannot be *supplied*: `ObserverLocation` has no field for it, so the
+  capability `AstronomyEngine` has supported all along (`_horizon_dip_degrees`, verified
+  against Drik Panchang) is unreachable from any API caller.
+- Altitude is absent from `ObserverLocation.cache_key()` — harmless while the value is a
+  constant, wrong the moment it is not.
+- The `or` is a latent override bug on top of the missing field: it would discard an
+  explicitly chosen `altitude=0.0` as falsy.
+
+Consequence: the type system asserts observers have no altitude while the rise/set path
+reads one anyway. **Do not "fix" this by wiring terrain elevation into
+`default_altitude`** — that is the ~6.3-minute regression, not the cure.
+
+<details>
+<summary>Superseded original wording</summary>
+
+> ...always falls through to the estimator. So: Altitude is never caller-supplied. Every
+> observer gets `default_altitude(lat, lon)`. ... At Kathmandu's ~1400 m the dip is ~1.1
+> arcminutes of time-equivalent — non-trivial ... The physics is correct; the plumbing is
+> guesswork.
+
+</details>
 
 ### W2 — Historical timezone modelling is Nepal-shaped
 
@@ -477,7 +503,7 @@ touches `panchanga_cache.py`.
 
 | Phase | Correctness | Reproducibility | Performance | Extensibility | Files |
 |---|---|---|---|---|---|
-| 1 Observer | altitude becomes real, not estimated | — | — | historical tz becomes modellable | ~6 |
+| 1 Observer | altitude becomes *supplyable* and consistent across all 5 rise/set methods; no computed value moves | — | — | historical tz becomes modellable | 6 (**done**) |
 | 2 Provenance | — | **the core win** | — | — | ~5 |
 | 3 ΔT | BCE error bars become known and published | ΔT becomes a recorded input | — | alternative models become possible | ~4 + design doc |
 | 4 Snapshot | — | snapshots are immutable and attributable | foundation for all of it | multi-tradition becomes affordable | ~8 new |

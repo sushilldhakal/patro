@@ -1,6 +1,25 @@
 # Phase 1 — Observer model hardening: implementation plan
 
-**Status: plan only. No code written. Awaiting approval.**
+**Status: IMPLEMENTED (2026-08-02).** Commits `9819fce`, `8c5f1b5`, `b76bdbe`, `e35e646`
+and this one, on `phase-1-observer-model`. See §12 for what changed against the plan.
+
+> ## Scope boundary — read before extending altitude anywhere
+>
+> **Altitude is internally consistent at the `ObserverLocation` → astronomy boundary, but
+> full end-to-end altitude propagation through all calculation layers is intentionally
+> deferred to a future phase.**
+>
+> Concretely: all five astronomy-layer rise/set methods that accept an `ObserverLocation`
+> (`SunService.sunrise`, `.sunset`, `.sunrise_after`, `MoonService.moonrise_after`,
+> `.moonset_after`) read `location.altitude` and therefore agree with each other. The 17
+> call sites in `engine/vedic/` and `services/` that call `calculate_sunrise(...)` and
+> friends with bare `lat`/`lon` floats still resolve altitude through
+> `sun.default_altitude()` — sea level. An elevated observer's sunrise is correct through
+> the service methods and sea-level through those direct callers.
+>
+> This is invisible today because every observer's altitude is `0.0`. It becomes a real
+> divergence the moment an altitude input path is added, so **an API-level `altitude`
+> query parameter must not be added before that propagation is done.**
 
 Companion to [`architecture-roadmap.md`](architecture-roadmap.md) §4 Phase 1, which this
 document supersedes in detail. Target: `main @ b6e02ce`.
@@ -109,6 +128,12 @@ Three, in order of importance:
    entry point, verified against Drik Panchang by `test_horizon_dip.py`). The *only* thing
    that cannot express it is `ObserverLocation` — so the capability exists but no API caller
    can reach it.
+
+   > **Corrected during implementation.** This was one-sixth true. The `getattr` was one
+   > of six location-taking rise/set methods; the other five never mentioned altitude at
+   > all. Phase 1 makes altitude reachable through **all six**, which is what the
+   > `ObserverLocation` boundary means — but not through the 17 bare-float callers above
+   > them. See the scope boundary at the top of this document.
 3. **The Phase 4 blocker.** `AstronomicalSnapshot` is keyed by `observer_id`. An observer
    identity that omits a field the astronomy consumes would produce snapshots that collide
    across physically different observers. Phase 1 is the cheapest possible time to fix this
@@ -593,4 +618,72 @@ move to Phase 2, not to manufacture work to match the original scope.
 
 ---
 
-**STOP. No code written. Awaiting approval.**
+## 12. How Phase 1 actually went
+
+Five commits on `phase-1-observer-model`. Every criterion in §10 met, including the two
+amended ones. **No computed value moved**: five daily-panchanga payloads spanning
+2026-06-10 Kathmandu, 2026-06-10 Jhapa, 1930-03-15 (IST era), Julian 1500-06-10 and
+57 BCE were captured at clean `HEAD` and re-captured after each commit — 452,602 bytes,
+**0 diffs** throughout.
+
+| Commit | |
+|---|---|
+| `9819fce` | `altitude` field, `DEFAULT_ALTITUDE`, `MIN_ALTITUDE_M`, validation, conditional `cache_key()` suffix |
+| `8c5f1b5` | altitude threaded through all six astronomy-layer rise/set methods; `getattr` and `ALT_KATHMANDU` removed |
+| `b76bdbe` | `resolve_cache_keys()` city shortcuts no longer swallow altitude |
+| `e35e646` | `tests/test_observer_model.py` (19) + 1 additive case in `test_horizon_dip.py` |
+| *(this)* | documentation |
+
+### The one plan assumption that was wrong
+
+§2.1 file 2 described the fix as "delete the `getattr` at `:239`" — ~3 lines, `sun.py`
+only. Implementation found the `getattr` was **one of six** location-taking rise/set
+methods, and the other five never mentioned altitude at all:
+
+| Method | Before | After |
+|---|---|---|
+| `SunService.sunrise` | omitted → `default_altitude()` | `location.altitude` |
+| `SunService.sunset` | omitted | `location.altitude` |
+| `SunService.sunrise_after` | `getattr(...) or default_altitude(...)` | `location.altitude` |
+| `MoonService.moonrise_after` | omitted | `location.altitude` |
+| `MoonService.moonset_after` | omitted | `location.altitude` |
+
+Executing the plan literally would have **created** a defect: `sunrise_after`'s docstring
+promises "same observer geometry as `sunrise`, so a day boundary can never disagree with
+the sunrise printed for that day", and wiring altitude into `sunrise_after` alone puts the
+day boundary at 1400 m while the printed sunrise stays at sea level — 6.28 minutes apart.
+
+Work stopped, three options were put up (fix the one `getattr` / fix the astronomy-layer
+boundary / propagate everywhere), and the boundary option was approved. This added
+`moon.py` to the changed-file list, which §2.1 had listed as *unchanged*.
+
+### The `or` was a second, subtler bug
+
+`getattr(location, "altitude", None) or default_altitude(...)` never produced a wrong
+answer, because the divergence needed a non-zero altitude that nothing could supply. But
+`or` treats `0.0` as falsy, so it would also have **silently discarded an explicitly
+chosen `altitude=0.0`** had `default_altitude` ever returned non-zero — precisely the
+mechanism of risk R1. Reading the field directly closes both.
+
+### Measured altitude response (1400 m vs sea level, 2026-06-10 Kathmandu)
+
+| Method | Δ |
+|---|---|
+| `sunrise` | −6.28 min |
+| `sunset` | +6.28 min |
+| `sunrise_after` | −6.28 min (identical to `sunrise` — invariant holds) |
+| `moonrise_after` | −5.88 min |
+| `moonset_after` | +5.92 min |
+
+### Guards proved non-vacuous
+
+Mutation-tested rather than assumed: reintroducing the `getattr` and `ALT_KATHMANDU` fails
+2 tests; reverting `sunrise()` to ignore altitude fails 3, including the invariant test.
+
+### Everything else held
+
+The §6.3 prediction — *exactly one existing test file changes, additively* — was correct.
+`as_dict()` untouched, so all 35 public payload sites are unchanged. Every cache key
+producible by the current API is byte-identical, so no store was invalidated and
+`PANCHANGA_PAYLOAD_VERSION` stayed at `40` / `ASTRONOMY_VERSION` at `3`. Suite went
+830 → 850 passing with the same 5 pre-existing local-environment failures.
