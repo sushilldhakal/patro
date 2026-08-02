@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "description": "Sunrise and sunset against published almanac times for Kathmandu. Covers both horizon conventions the engine supports: the sea-level horizon used by Nepali published panchang, and the elevation-adjusted horizon Drik Panchang uses.",
+  "source": {
+    "authority": "Drik Panchang; Nepali published panchang (Gaurishankar meridian convention)",
+    "reference": "Values carried forward from tests/test_horizon_dip.py and tests/test_nepal_patro_sun.py, where they were established while fixing the valley-dip regression (panchanga_cache payload-version log entry 21).",
+    "retrieved": "pre-existing in repository",
+    "verified_by": "Repository history: the sea-level pair is what published Nepali panchang shows and is the shipped default; the 1400 m pair reproduces Drik Panchang for the same chart.",
+    "notes": "Two rows, one chart, two horizon conventions - this dataset exists to pin that the choice is deliberate. Feeding Kathmandu's real 1400 m elevation gives a ~1.1 degree sea-cliff dip that is unphysical in a valley ringed by hills; sea level is the shipped default."
+  },
+  "tolerance": {
+    "value": 90,
+    "unit": "seconds",
+    "rationale": "Published almanacs print to the minute, and independent publishers differ slightly in refraction model and horizon definition. 90 s accepts a one-minute printed difference plus rounding, while still catching the ~380 s error the valley-dip bug produced."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "entries": [
+    {
+      "id": "kathmandu_1945_sea_level",
+      "date": "1945-12-28",
+      "observer": {"lat": 27.7172, "lon": 85.3240, "altitude": 0.0, "timezone": "Asia/Kathmandu", "name": "Kathmandu"},
+      "expected": {"sunrise_local": "06:38", "sunset_local": "17:02"},
+      "note": "Sea-level horizon - the shipped default and the published Nepali panchang convention."
+    },
+    {
+      "id": "kathmandu_1945_elevation_1400m",
+      "date": "1945-12-28",
+      "observer": {"lat": 27.7172, "lon": 85.3240, "altitude": 1400.0, "timezone": "Asia/Kathmandu", "name": "Kathmandu"},
+      "expected": {"sunrise_local": "06:32", "sunset_local": "17:09"},
+      "note": "Elevation-adjusted horizon - reproduces Drik Panchang. Opt-in, not the default."
+    }
+  ]
+}

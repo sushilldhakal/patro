@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "todo",
+  "description": "Tropical equinox and solstice instants. Directly gates the tropical_seasons migration deferred in docs/engine-boundary-audit.md section 4.",
+  "source": {
+    "authority": "",
+    "reference": "",
+    "retrieved": "",
+    "verified_by": "",
+    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+  },
+  "tolerance": {
+    "value": 60.0,
+    "unit": "seconds",
+    "rationale": "Observatory-published equinox instants are given to the minute or better. 60 s is far tighter than the ~8 s difference between the current Meeus series and Swiss Ephemeris, so this dataset can adjudicate between them rather than merely tolerate both."
+  },
+  "reconciled_under_provenance": "",
+  "todo": "HIGHEST PRIORITY. Needs equinox/solstice instants for a handful of years from an observatory source (USNO, IMCCE) - explicit approval required before fetching. Until this exists the tropical_seasons migration cannot be verified against anything except the implementation it would replace.",
+  "entry_shape": {
+    "id": "str",
+    "year": "int",
+    "event": "march_equinox|june_solstice|september_equinox|december_solstice",
+    "expected": {
+      "instant_utc": "YYYY-MM-DDTHH:MM:SSZ"
+    }
+  },
+  "entries": []
+}

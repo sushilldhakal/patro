@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "todo",
+  "description": "Solar ingress instants (sankranti) - when the Sun enters each sidereal rashi. Drives the Nepali solar month boundaries and therefore every BS date.",
+  "source": {
+    "authority": "",
+    "reference": "",
+    "retrieved": "",
+    "verified_by": "",
+    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+  },
+  "tolerance": {
+    "value": 120.0,
+    "unit": "seconds",
+    "rationale": "Published patro sankranti times are printed to the minute; 120 s accepts a printed-minute difference plus the ayanamsha-formula spread, which shifts an ingress instant more than it shifts a longitude."
+  },
+  "reconciled_under_provenance": "",
+  "todo": "Needs 12 sankranti instants for one BS year from an authoritative Nepali patro (Nepal Panchanga Nirnayak Samiti preferred, since its dates are what the product is measured against). A BS year with a known-awkward boundary is more valuable than an easy one.",
+  "entry_shape": {
+    "id": "str",
+    "rashi": "int 1-12",
+    "expected": {
+      "instant_local": "YYYY-MM-DDTHH:MM",
+      "bs_date": "YYYY-MM-DD"
+    },
+    "observer": "see sunrise_sunset.json"
+  },
+  "entries": []
+}

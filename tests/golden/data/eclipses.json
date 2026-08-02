@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "todo",
+  "description": "Solar and lunar eclipse contact times, global and as seen from Kathmandu.",
+  "source": {
+    "authority": "",
+    "reference": "",
+    "retrieved": "",
+    "verified_by": "",
+    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+  },
+  "tolerance": {
+    "value": 120.0,
+    "unit": "seconds",
+    "rationale": "Eclipse contact times are published to the second, but local circumstances depend on the observer coordinates and elevation assumed by the publisher. 120 s accommodates that while still catching a wrong eclipse or a wrong type."
+  },
+  "reconciled_under_provenance": "",
+  "todo": "Needs greatest-eclipse and local contact times for 2-3 eclipses visible from Nepal, from NASA GSFC eclipse canon or equivalent - approval required before fetching. Include at least one BCE eclipse if the source covers it, since that is where the engine is least verified.",
+  "entry_shape": {
+    "id": "str",
+    "kind": "solar|lunar",
+    "expected": {
+      "greatest_utc": "YYYY-MM-DDTHH:MM:SSZ",
+      "type": "total|annular|partial|penumbral",
+      "local_visible": "bool"
+    }
+  },
+  "entries": []
+}

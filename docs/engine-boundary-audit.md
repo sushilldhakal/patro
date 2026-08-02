@@ -123,6 +123,23 @@ would let the migration be verified against external truth rather than against t
 implementation being replaced — which is exactly the trap the prior audit's self-captured
 goldens fell into.
 
+### DECIDED 2026-08-02: defer (option A for now, B when unblocked)
+
+**The Meeus implementation stays unchanged.** Recorded here so the deferral is a decision
+with a trigger, not an omission:
+
+| | |
+|---|---|
+| **What exists** | A second solar-longitude implementation (`tropical_seasons.solar_apparent_longitude`, Meeus ch. 25) running outside the astronomy layer and bypassing Swiss Ephemeris. |
+| **Measured difference** | ≤ **0.0057°** against the ephemeris across 1950–2100 — about **8 seconds** of equinox timing. Pinned by `tests/test_engine_boundary.py::test_that_duplicate_still_agrees_with_the_ephemeris`, which fails if it drifts past 0.02°. |
+| **Expected migration impact** | Season-boundary instants move ≤ 8 s. A *printed* boundary changes only when it falls within 8 s of a minute rollover — roughly 1-in-7 per boundary, 6 boundaries a year. If any printed value moves, `PANCHANGA_PAYLOAD_VERSION` must be bumped and the change reviewed as a behaviour change. The byte-identical harness does **not** currently cover `tropical_seasons`, so the true blast radius must be measured first. |
+| **Also unblocked by migrating** | Tropical seasons become BCE-capable (today `_julian_day` uses `datetime.timestamp()`, so the module is CE-only — the one astronomy path in the engine that is not BCE-safe), and the Meeus coefficients become visible to `EnvironmentProvenance`. |
+| **Trigger** | The `equinox_solstice` golden dataset (`tests/golden/data/equinox_solstice.json`, currently `todo`) being populated from an observatory source. It is flagged **highest priority** there for this reason. |
+| **Why not sooner** | Without external equinox instants, the migration could only be verified against the implementation being replaced. That is precisely how the prior audit's self-captured goldens hid four live bugs. |
+
+Until then the duplicate is *contained rather than accepted*: two guard tests hold it to one
+known implementation and to agreement with the ephemeris.
+
 ---
 
 ## 5. The boundary naming issue — deliberately not fixed

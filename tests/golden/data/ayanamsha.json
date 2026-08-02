@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "todo",
+  "description": "Lahiri ayanamsha values across the precession cycle. Underpins every sidereal longitude the engine publishes.",
+  "source": {
+    "authority": "",
+    "reference": "",
+    "retrieved": "",
+    "verified_by": "",
+    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+  },
+  "tolerance": {
+    "value": 5.0,
+    "unit": "arcseconds",
+    "rationale": "Published Lahiri tables and independent implementations agree to a few arcseconds in the modern era. 5 arcsec is tight enough to detect a formula or epoch-convention change, which is the realistic failure mode."
+  },
+  "reconciled_under_provenance": "",
+  "todo": "Needs Lahiri ayanamsha at several epochs from a published table (Indian Astronomical Ephemeris, or the Rashtriya Panchang). Note the engine has an open question here: get_ayanamsa_ut and get_ayanamsa_ex_ut differ by ~13.9 arcsec at J2000 - this dataset should settle which is correct.",
+  "entry_shape": {
+    "id": "str",
+    "jd_ut": "float",
+    "expected": {
+      "ayanamsha_deg": "float"
+    }
+  },
+  "entries": []
+}

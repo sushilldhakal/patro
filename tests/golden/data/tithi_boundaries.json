@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "todo",
+  "description": "Tithi start and end instants - the sharpest test of Moon-Sun elongation, and the quantity most sensitive to delta-T at historical dates.",
+  "source": {
+    "authority": "",
+    "reference": "",
+    "retrieved": "",
+    "verified_by": "",
+    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+  },
+  "tolerance": {
+    "value": 180.0,
+    "unit": "seconds",
+    "rationale": "Tithi boundaries are printed to the minute in almanacs, and the elongation rate near a boundary means a small longitude difference becomes a larger time difference. 180 s reflects that amplification; see docs/timescale-contract.md section 3 for why BCE entries would need far wider tolerance."
+  },
+  "reconciled_under_provenance": "",
+  "todo": "Needs tithi end times for a month from an authoritative Nepali patro. Modern dates first. BCE entries should NOT be added without the uncertainty envelope from docs/timescale-contract.md section 3 attached - at 3000 BCE a tithi end time carries roughly +/- 2 h from delta-T alone, so a tight golden value there would be false precision.",
+  "entry_shape": {
+    "id": "str",
+    "date": "YYYY-MM-DD",
+    "expected": {
+      "tithi_number": "int",
+      "tithi_name": "str",
+      "end_local": "YYYY-MM-DDTHH:MM"
+    },
+    "observer": "see sunrise_sunset.json"
+  },
+  "entries": []
+}
