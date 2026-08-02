@@ -9,7 +9,7 @@ import sqlite3
 from datetime import date, datetime, timezone
 from typing import Any
 
-from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.location import DEFAULT_ALTITUDE, DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
 from engine.astronomy.timescale import resolve_observer_timezone
 from services.payload_version import compose
@@ -193,14 +193,31 @@ def ensure_schema() -> None:
 
 
 def resolve_cache_keys(location: ObserverLocation) -> tuple[str, int]:
-    """Return (location_key, city_id) for cache lookup."""
+    """Return (location_key, city_id) for cache lookup.
+
+    Both city shortcuts below discard latitude and longitude — deliberately, so
+    that everyone in a town shares one computation. They must not also discard
+    **altitude**: two observers at one town's coordinates but different
+    elevations see genuinely different rise/set times (1400 m moves sunrise
+    ~6.3 minutes), so collapsing them would serve one the other's day.
+
+    Altitude is a constant ``DEFAULT_ALTITUDE`` for every observer the current
+    API can construct, so in practice both guards are always taken and every key
+    produced here is byte-identical to the pre-altitude ones. The guards exist so
+    that stays true when altitude becomes settable, rather than silently not.
+    """
+    at_default_altitude = location.altitude == DEFAULT_ALTITUDE
+
     if location.city_id is not None:
-        return f"city:{location.city_id}", location.city_id
+        if at_default_altitude:
+            return f"city:{location.city_id}", location.city_id
+        return f"city:{location.city_id}_alt{location.altitude:.1f}", location.city_id
 
     if (
         abs(location.lat - DEFAULT_LOCATION.lat) < 0.02
         and abs(location.lon - DEFAULT_LOCATION.lon) < 0.02
         and location.timezone == DEFAULT_LOCATION.timezone
+        and at_default_altitude
     ):
         return f"city:{KATHMANDU_CITY_ID}", KATHMANDU_CITY_ID
 
