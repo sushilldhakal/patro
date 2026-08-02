@@ -655,3 +655,36 @@ class TestPayloadCompression:
         assert second["_from_cache"] is True
         for key in ("tithi", "nakshatra", "yoga", "karana", "sunrise", "sunset"):
             assert second[key] == first[key]
+
+
+class TestProvenanceEndpoint:
+    """GET /meta/provenance — scientific transparency, additive surface."""
+
+    @pytest.fixture(scope="class")
+    def client(self):
+        from fastapi.testclient import TestClient
+
+        from app.main import app
+
+        return TestClient(app)
+
+    def test_reports_the_live_environment(self, client):
+        r = client.get("/meta/provenance")
+        assert r.status_code == 200
+        prov = r.json()["provenance"]
+        live = current_provenance()
+        assert prov["provenance_hash"] == live.provenance_hash
+        for field in live.HASHED_FIELDS:
+            assert field in prov, f"{field} missing from the published record"
+
+    def test_reports_cache_drift_without_purging(self, client):
+        body = client.get("/meta/provenance").json()
+        assert "cache" in body
+        assert "stale_hashes" in body["cache"] or "error" in body["cache"]
+
+    def test_publishes_no_ayanamsha(self, client):
+        """The environment/request boundary holds at the API surface too:
+        ayanamsha is a request input, not an environment fact."""
+        body = json.dumps(client.get("/meta/provenance").json()).lower()
+        assert "lahiri" not in body
+        assert "ayanam" not in body
