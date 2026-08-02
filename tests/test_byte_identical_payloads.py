@@ -71,6 +71,32 @@ SCENARIOS: dict[str, Callable[[], dict[str, Any]]] = {
     "bce_57": lambda: build_daily_panchanga_at_jd(
         CivilDay(-56, 3, 16).to_jd_ut(), DEFAULT_LOCATION, patro_bs=(-113, 12, 3)
     ),
+    # ── cultural surface ────────────────────────────────────────────────────
+    #
+    # The five scenarios above call the builder with its default
+    # ``include_festivals=False``, so none of them carried a ``festivals`` key
+    # and the entire festival/rule surface — ~2,700 lines across rules/engine.py,
+    # sait_rules, lunar_month, sankranti and holiday_generator — had no
+    # regression cover at all.
+    #
+    # That matters most for a *cultural rule extraction*, which is by definition
+    # a refactor that must not change which festivals land on which day. These
+    # days are chosen to exercise the distinct rule kinds rather than to be
+    # representative: lunar-month resolution, solar sankranti anchoring, the
+    # Newari calendar, and a deliberately empty day so a rule that starts
+    # over-matching is caught too.
+    "festival_dashain": lambda: build_daily_panchanga(
+        date(2026, 10, 20), DEFAULT_LOCATION, include_festivals=True
+    ),
+    "festival_new_year": lambda: build_daily_panchanga(
+        date(2026, 4, 14), DEFAULT_LOCATION, include_festivals=True
+    ),
+    "festival_tihar": lambda: build_daily_panchanga(
+        date(2026, 11, 8), DEFAULT_LOCATION, include_festivals=True
+    ),
+    "festival_quiet_day": lambda: build_daily_panchanga(
+        date(2026, 6, 10), DEFAULT_LOCATION, include_festivals=True
+    ),
 }
 
 
@@ -154,6 +180,10 @@ def test_every_era_path_is_covered() -> None:
         "pre_1943",
         "julian_1500",
         "bce_57",
+        "festival_dashain",
+        "festival_new_year",
+        "festival_tihar",
+        "festival_quiet_day",
     }
 
     # Two distinct observers, so a location-dependent change cannot hide.
@@ -184,3 +214,43 @@ def test_fixtures_are_strict_json_and_canonical() -> None:
             f"{name}.json is not in canonical form — regenerate it rather than "
             "editing it by hand"
         )
+
+
+def test_cultural_surface_is_actually_covered() -> None:
+    """The festival scenarios must carry real festival data.
+
+    Added because the original five fixtures all had ``include_festivals``
+    defaulted to False, so the entire festival/rule surface was uncovered while
+    the harness looked comprehensive. This asserts the cover is real — a
+    ``festivals`` key present, multiple rule *kinds* exercised, and at least one
+    deliberately empty day so a rule that starts over-matching is caught too.
+    """
+    import json as _json
+
+    festival_scenarios = [n for n in SCENARIOS if n.startswith("festival_")]
+    assert len(festival_scenarios) >= 4
+
+    populated = 0
+    categories: set[str] = set()
+    for name in festival_scenarios:
+        payload = _json.loads(fixture_path(name).read_text(encoding="utf-8"))
+        assert "festivals" in payload, f"{name} carries no festivals key"
+        for entry in payload["festivals"]:
+            categories.add(entry.get("category", ""))
+        if payload["festivals"]:
+            populated += 1
+
+    assert populated >= 3, "at least three festival days must actually be populated"
+    assert len(categories) >= 2, (
+        f"only one festival category covered ({categories}) — the extraction this "
+        "protects spans lunar, solar and Newari rule kinds"
+    )
+    empty = [
+        n
+        for n in festival_scenarios
+        if not _json.loads(fixture_path(n).read_text(encoding="utf-8"))["festivals"]
+    ]
+    assert empty, (
+        "no empty-festival day is covered, so a rule that starts matching every "
+        "day would not be caught"
+    )
