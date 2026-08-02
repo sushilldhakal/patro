@@ -47,6 +47,25 @@ SCHEMA_VERSION = 1
 
 Status = Literal["populated", "todo"]
 
+#: How a dataset's expected values were obtained. The distinction is the whole
+#: point of this package.
+#:
+#: ``mathematical_definition``
+#:     Solved from a stated mathematical definition against Swiss Ephemeris by an
+#:     **independent** reference solver in ``tests/golden/definitions.py`` — one
+#:     that calls ``swe.calc_ut`` directly rather than going through the
+#:     production code path. Swiss Ephemeris is this engine's astronomical
+#:     authority, so "the instant where tropical solar longitude reaches 0" is a
+#:     definition, not an opinion. This is NOT self-capture: the reference solver
+#:     shares no code with the production solver, so it catches convergence bugs,
+#:     bracketing errors and rashi off-by-ones.
+#:
+#: ``external_publication``
+#:     A printed almanac or observatory table. Used to compare CONVENTIONS —
+#:     which day a festival is assigned to, which horizon model an almanac
+#:     assumes — never to define astronomy.
+SourceKind = Literal["mathematical_definition", "external_publication"]
+
 #: Units a tolerance may be expressed in. Every dataset must pick one and give a
 #: rationale — an unexplained tolerance is a place for a real disagreement to
 #: hide.
@@ -74,6 +93,9 @@ class Source:
     """
 
     authority: str
+    kind: str = "external_publication"
+    definition: str = ""         # the mathematics, when kind is mathematical_definition
+    method: str = ""             # solver + tolerance used to evaluate the definition
     reference: str = ""          # URL, ISBN, edition, table name
     publication_year: str = ""   # edition/almanac year, when the source states one
     convention: str = ""         # the calculation convention the source follows
@@ -85,11 +107,24 @@ class Source:
     #: external authority.
     _SELF_MARKERS = ("commit ", "engine/", "services/", "captured from", "this engine")
 
+    def is_definition_based(self) -> bool:
+        return self.kind == "mathematical_definition"
+
     def is_external(self) -> bool:
+        """True when this is a defensible authority rather than a self-capture.
+
+        A definition-based source is authoritative by construction: it states the
+        mathematics and evaluates it against the ephemeris independently of the
+        production path. An external publication is authoritative by publisher.
+        Anything that merely records what this engine happened to output is
+        neither, and is rejected.
+        """
         lowered = self.authority.lower()
         if not lowered.strip():
             return False
-        return not any(marker in lowered for marker in self._SELF_MARKERS)
+        if any(marker in lowered for marker in self._SELF_MARKERS):
+            return False
+        return True
 
 
 @dataclass(frozen=True)
@@ -163,6 +198,19 @@ class GoldenDataset:
                     f"{self.name}: external source needs a reference or notes so a "
                     "later reader can re-check it"
                 )
+            if self.source.is_definition_based():
+                if not self.source.definition.strip():
+                    raise GoldenDataError(
+                        f"{self.name}: a mathematical_definition source must state "
+                        "the definition it evaluates (e.g. 'tropical solar longitude "
+                        "= 0/90/180/270 degrees')"
+                    )
+                if not self.source.method.strip():
+                    raise GoldenDataError(
+                        f"{self.name}: a mathematical_definition source must state "
+                        "its solving method and tolerance, so the value can be "
+                        "reproduced independently"
+                    )
             if not self.source.convention.strip():
                 raise GoldenDataError(
                     f"{self.name}: source must state its calculation convention "
@@ -201,6 +249,9 @@ def _dataset_from_dict(name: str, raw: dict[str, Any]) -> GoldenDataset:
         description=raw.get("description", ""),
         source=Source(
             authority=src.get("authority", ""),
+            kind=src.get("kind", "external_publication"),
+            definition=src.get("definition", ""),
+            method=src.get("method", ""),
             reference=src.get("reference", ""),
             publication_year=str(src.get("publication_year", "")),
             convention=src.get("convention", ""),

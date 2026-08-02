@@ -64,7 +64,23 @@ vice versa. Confirmed: no `tradition` parameter exists on any API surface.
 
 **This is the real Phase 7 gap** — not extraction, but *parameterisation*.
 
-### 1.3 Two knobs exist and are never varied
+### 1.3 Two knobs exist and are never varied — but they are NOT dead
+
+**RESOLVED 2026-08-02.** Phase 7 asked whether these are required concepts or dead
+historical fields. Measured, they are **neither**: `date_selection="boundary"` produces a
+**different date on every sample tried** (one day earlier than `"udaya"` for Maha Navami,
+Laxmi Puja and two Ekadashis). The branch is implemented, behaviourally significant, used
+by no rule, and — until now — tested by nothing.
+
+That is working capability with no consumer and no coverage, i.e. a latent liability rather
+than dead code. **Verdict: keep, and cover.** The udaya/boundary distinction is genuinely
+Vedic (the day the tithi is running at sunrise, versus the day it begins), not an
+implementation artefact, so deleting it would remove a real cultural knob.
+`tests/test_cultural_rule_knobs.py` now pins both branches and asserts that no rule sets
+them — so the first rule that does will fail loudly and get coverage first.
+
+`adhik_policy` is uniformly `"skip"` on all 338 lunar rules and absent on the 240 non-lunar
+ones, where it is meaningless. Same verdict: a real concept, one value in use, now pinned.
 
 | Knob | Read at | Values across 578 rules |
 |---|---|---|

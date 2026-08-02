@@ -207,3 +207,148 @@ class TestProvenanceIsRecorded:
                 f"\n  note: {len(stale)} golden dataset(s) were last reconciled under a "
                 f"different environment (live is {live.short_hash}): {', '.join(stale)}"
             )
+
+
+# ── definition-based comparisons ─────────────────────────────────────────────
+#
+# Swiss Ephemeris is this engine's astronomical authority, so these datasets are
+# solved from a stated mathematical definition rather than transcribed from a
+# printed calendar. The reference solvers in tests/golden/definitions.py share no
+# code with production: they use plain bisection directly on swe.calc_ut, where
+# production uses Brent's method with its own bracketing. What that catches is
+# bracketing errors, convergence failures and rashi off-by-ones.
+
+
+class TestEquinoxSolstice:
+    DATASET = "equinox_solstice"
+
+    def test_reference_solver_still_reproduces_the_stored_values(self):
+        """Ephemeris-drift detector. The stored values are frozen; re-solving
+        them under the current environment must agree. If this fails while the
+        production test passes, the ephemeris changed, not the engine."""
+        from tests.golden import definitions as D
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        for entry in ds.entries:
+            got = D.equinox_solstice_jd(entry["year"], entry["event"])
+            drift = abs(got - entry["expected"]["jd_ut"]) * 86400
+            assert drift < ds.tolerance.value, (
+                f"{entry['id']}: reference solver drifted {drift:.1f}s from the "
+                "stored value — the ephemeris environment changed"
+            )
+
+    def test_solved_longitudes_hit_the_definition(self):
+        """The definition itself: tropical longitude is 0/90/180/270 at these
+        instants. Independent of both solvers."""
+        from tests.golden import definitions as D
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        targets = {"march_equinox": 0.0, "june_solstice": 90.0,
+                   "september_equinox": 180.0, "december_solstice": 270.0}
+        for entry in ds.entries:
+            lon = D.tropical_sun_longitude(entry["expected"]["jd_ut"])
+            off = abs(((lon - targets[entry["event"]] + 180) % 360) - 180)
+            assert off < 1e-4, f"{entry['id']}: longitude off by {off:.6f}°"
+
+
+class TestSankranti:
+    DATASET = "sankranti"
+
+    def test_production_solver_matches_the_definition(self):
+        """The real check: engine/vedic/sankranti.find_sankranti_after_jd against
+        an independently-solved sidereal ingress."""
+        from engine.vedic.sankranti import find_sankranti_after_jd
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+
+        failures: list[str] = []
+        for entry in ds.entries:
+            want_jd = entry["expected"]["jd_ut"]
+            # Production takes a ZERO-based rashi index (target_degree =
+            # target_rashi * 30), while the dataset uses the conventional
+            # 1-based numbering where rashi 1 = Mesh = 0 deg. An off-by-one here
+            # shows up as a clean ~30-day error, which is how it was caught.
+            got_jd = find_sankranti_after_jd(entry["rashi"] - 1, want_jd - 45.0)
+            if got_jd is None:
+                failures.append(f"{entry['id']}: production returned None")
+                continue
+            delta = abs(got_jd - want_jd) * 86400
+            if delta > ds.tolerance.value:
+                failures.append(
+                    f"{entry['id']}: production {got_jd:.6f} vs definition "
+                    f"{want_jd:.6f} ({delta:.1f}s, tolerance {ds.tolerance.value}s)"
+                )
+        assert not failures, "\n  ".join(["definition mismatch:"] + failures)
+
+    def test_solved_longitudes_hit_the_definition(self):
+        from tests.golden import definitions as D
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        for entry in ds.entries:
+            lon = D.sidereal_sun_longitude(entry["expected"]["jd_ut"])
+            target = entry["expected"]["sidereal_longitude_deg"]
+            off = abs(((lon - target + 180) % 360) - 180)
+            assert off < 1e-3, f"{entry['id']}: sidereal longitude off by {off:.6f}°"
+
+
+class TestTithiBoundaries:
+    DATASET = "tithi_boundaries"
+
+    def test_reference_solver_still_reproduces_the_stored_values(self):
+        from tests.golden import definitions as D
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        for entry in ds.entries:
+            got = D.tithi_boundary_jd(entry["after_jd_ut"])
+            drift = abs(got - entry["expected"]["jd_ut"]) * 86400
+            assert drift < ds.tolerance.value, (
+                f"{entry['id']}: reference drifted {drift:.1f}s from stored"
+            )
+
+    def test_elongation_is_a_multiple_of_twelve_degrees(self):
+        """The definition: a tithi boundary is where elongation crosses n*12°."""
+        from tests.golden import definitions as D
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        for entry in ds.entries:
+            elong = D.elongation(entry["expected"]["jd_ut"])
+            off = min(elong % 12.0, 12.0 - (elong % 12.0))
+            assert off < 1e-3, (
+                f"{entry['id']}: elongation {elong:.6f}° is {off:.6f}° from a "
+                "multiple of 12"
+            )
+
+    def test_boundaries_span_a_synodic_month(self):
+        """Sanity on the physics: 30 tithis fill one synodic month, so the mean
+        boundary spacing must be ~29.53/30 = 0.984 days."""
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+        jds = [e["expected"]["jd_ut"] for e in ds.entries]
+        mean = (jds[-1] - jds[0]) / (len(jds) - 1)
+        assert 0.90 < mean < 1.06, f"mean tithi length {mean:.4f} d is implausible"
+
+    def test_astronomical_boundary_carries_no_calendar_assignment(self):
+        """Layering guard. A tithi boundary is an astronomical instant; which
+        civil day it is credited to is the udaya rule, which is cultural. This
+        dataset must never grow a date-assignment field."""
+        ds = schema.load(self.DATASET)
+        forbidden = {"bs_date", "civil_date", "udaya_tithi", "festival", "date"}
+        for entry in ds.entries:
+            leaked = forbidden & set(entry) | forbidden & set(entry.get("expected", {}))
+            assert not leaked, (
+                f"{entry['id']}: calendar-assignment field(s) {leaked} leaked into "
+                "an astronomy dataset — that belongs in the calendar-rule layer"
+            )
