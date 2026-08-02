@@ -61,6 +61,7 @@ def test_daily_payload_includes_solar_corrections():
     sc = daily["solar_corrections"]
     assert sc["belaantar"]["name_ne"] == "बेलान्तर"
     assert sc["deshaantar"]["name_ne"] == "देशान्तर"
+    assert sc["akshamsha"]["name_ne"] == "अक्षांश"
     assert sc["sunrise_includes_corrections"] is True
     assert sc["timezone_era"]["key"] == "ist"
     assert "ishtakaal_note_ne" in sc
@@ -98,10 +99,27 @@ def test_belaantar_seasonal_signs():
     assert oct["sign"] == "rin"
 
 
+def test_akshamsha_kathmandu_is_near_zero():
+    daily = build_daily_panchanga(date(2026, 6, 11), DEFAULT_LOCATION)
+    a = daily["solar_corrections"]["akshamsha"]
+    assert abs(a["minutes_total"]) < 0.05
+
+
+def test_akshamsha_south_of_reference_positive_in_june():
+    from engine.astronomy.location import ObserverLocation
+
+    jhapa = ObserverLocation(lat=26.5833, lon=88.0667, timezone="Asia/Kathmandu", name="Jhapa")
+    daily = build_daily_panchanga(date(2026, 6, 11), jhapa)
+    a = daily["solar_corrections"]["akshamsha"]
+    assert a["sign"] == "dhan"
+    assert a["minutes_total"] > 1.5
+
+
 def test_build_solar_corrections_structure():
     sc = build_solar_corrections(
         date(2026, 1, 15),
         local_longitude=85.324,
         timezone_name="Asia/Kathmandu",
+        lat=27.7172,
     )
-    assert "belaantar" in sc and "deshaantar" in sc
+    assert "belaantar" in sc and "deshaantar" in sc and "akshamsha" in sc

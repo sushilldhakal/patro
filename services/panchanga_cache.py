@@ -108,7 +108,9 @@ logger = logging.getLogger(__name__)
 # 39: BS month ``full=true`` embed copies pūrṇimānta ``lunar_calendar`` from the
 #     sunrise row (was solar_month_stub when embed came from patro_bs civil path
 #     or stale month response-cache gzip). Invalidates month/year response blobs.
-PANCHANGA_PAYLOAD_VERSION = 39
+# 40: ``solar_corrections.akshamsha`` — latitude correction on the Gaurishankar
+#     meridian (reference display; rise/set already use observer latitude).
+PANCHANGA_PAYLOAD_VERSION = 40
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
