@@ -1,7 +1,9 @@
 # Cache architecture — measurements
 
-**Phase 8.** Status: measured. **No migration performed**, per the instruction not to
-migrate unless measurements justify it. They do not — but not for the reason expected.
+**Phase 8.** Status: measured, and the measured win **shipped**.
+
+The roadmap's snapshot/derived split was **not** performed — it measures at 4.4% (§3).
+Transparent gzip **was**: 6.14×, no migration, no version bump (§6).
 
 ---
 

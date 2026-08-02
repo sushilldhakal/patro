@@ -1,7 +1,7 @@
 # Calculation identity vs provenance
 
-**Phase 4.** Status: investigated, documented, one gap closed. **No new abstraction built**
-— see §4.
+**Phase 4.** Status: COMPLETE. One gap closed (`kundali_report_cache.provenance_hash`);
+**no new abstraction built** — see §4 for why `CalculationIdentity` was not created.
 
 ---
 

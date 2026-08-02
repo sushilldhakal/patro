@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-import math
 from datetime import datetime, timezone
 from typing import Any
 
+from engine.astronomy.engine import default_engine
 from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
 
 DAY_MS = 86_400_000
-RAD = math.pi / 180
 SUN_DEG_PER_DAY = 360 / 365.2422
 
 
@@ -22,19 +21,25 @@ def _julian_day(date: datetime) -> float:
 
 
 def solar_apparent_longitude(date: datetime) -> float:
-    """Apparent geocentric tropical Sun longitude [0, 360). Meeus ch. 25."""
-    t = (_julian_day(date) - 2451545.0) / 36525
-    l0 = 280.46646 + 36000.76983 * t + 0.0003032 * t * t
-    m = (357.52911 + 35999.05029 * t - 0.0001537 * t * t) * RAD
-    c = (
-        (1.914602 - 0.004817 * t - 0.000014 * t * t) * math.sin(m)
-        + (0.019993 - 0.000101 * t) * math.sin(2 * m)
-        + 0.000289 * math.sin(3 * m)
-    )
-    true_long = l0 + c
-    omega = (125.04 - 1934.136 * t) * RAD
-    apparent = true_long - 0.00569 - 0.00478 * math.sin(omega)
-    return (apparent % 360 + 360) % 360
+    """Apparent geocentric tropical Sun longitude [0, 360).
+
+    Delegates to the ephemeris. This used to be a hand-rolled Meeus chapter 25
+    low-precision series — the engine's only second implementation of a quantity
+    the astronomy layer already owned. Removed because it:
+
+    * disagreed with the ephemeris by up to 0.0057 deg, which is **8.4 minutes**
+      of season-boundary timing (the Sun moves 0.0411 deg/hour) — visible, since
+      boundaries are published to the minute;
+    * was CE-only by construction (``datetime.timestamp()`` cannot represent
+      BCE), making tropical seasons the one astronomy path in this engine that
+      was not BCE-safe;
+    * was invisible to ``EnvironmentProvenance``, so a cached season boundary
+      could not say what produced it.
+
+    Swiss Ephemeris is this engine's astronomical authority, so there is no
+    reason to carry a lower-precision approximation of it.
+    """
+    return default_engine.sun_longitude(_julian_day(date), sidereal=False)
 
 
 def _refine_crossing(target_deg: float, guess: datetime) -> datetime:

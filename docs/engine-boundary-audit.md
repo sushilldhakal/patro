@@ -1,6 +1,14 @@
 # Engine boundary audit
 
-**Phase 5.** Status: audited. **One finding needs a decision (§4); nothing else moved.**
+**Phase 5.** Status: COMPLETE, and the duplicate it found has since been **migrated** (§4).
+
+> ⚠️ **Units correction (2026-08-02).** This document originally reported the Meeus-vs-
+> ephemeris difference as "~8 seconds" of equinox timing. That was a units error: the Sun
+> moves 0.0411°/**hour**, so 0.0057° is 0.14 hr = **8.4 minutes**, not 8 seconds. The `×60`
+> in the original calculation converts hours to minutes, and the result was mislabelled as
+> seconds. Every "8 s" below should read **8.4 min**. This materially changed the decision —
+> 8.4 minutes *is* visible in a boundary printed to the minute — and the migration was
+> carried out rather than deferred.
 
 Three layers, and the question for each boundary is whether code sits on the right side:
 
@@ -73,13 +81,13 @@ Measured against the ephemeris:
 
 | Date | Meeus | Swiss | Δ | as equinox timing |
 |---|---|---|---|---|
-| 1950-03-20 | 359.31304° | 359.31344° | −0.00040° | −0.6 s |
-| 2000-03-20 | 0.18505° | 0.18257° | +0.00249° | +3.6 s |
-| 2026-03-20 | 359.89115° | 359.88544° | +0.00571° | +8.3 s |
-| 2050-03-20 | 0.07501° | 0.06928° | +0.00573° | +8.4 s |
-| 2100-03-20 | 359.95386° | 359.95496° | −0.00110° | −1.6 s |
+| 1950-03-20 | 359.31304° | 359.31344° | −0.00040° | −0.6 min |
+| 2000-03-20 | 0.18505° | 0.18257° | +0.00249° | +3.6 min |
+| 2026-03-20 | 359.89115° | 359.88544° | +0.00571° | +8.3 min |
+| 2050-03-20 | 0.07501° | 0.06928° | +0.00573° | +8.4 min |
+| 2100-03-20 | 359.95386° | 359.95496° | −0.00110° | −1.6 min |
 
-**Worst 0.0057°, about 8 seconds of equinox timing.** Not a live defect — no season label
+**Worst 0.0057°, about 8.4 MINUTES of equinox timing** (corrected — see the note at the top). Not a live defect — no season label
 on any day plausibly turns on 8 seconds. But three structural problems:
 
 1. **Ownership is wrong.** Astronomy computed outside the astronomy layer, so the UT
@@ -123,22 +131,36 @@ would let the migration be verified against external truth rather than against t
 implementation being replaced — which is exactly the trap the prior audit's self-captured
 goldens fell into.
 
-### DECIDED 2026-08-02: defer (option A for now, B when unblocked)
+### DECIDED 2026-08-02: MIGRATED (option B)
 
-**The Meeus implementation stays unchanged.** Recorded here so the deferral is a decision
-with a trigger, not an omission:
+**The Meeus implementation has been removed.** `solar_apparent_longitude` now delegates to
+`default_engine.sun_longitude(jd, sidereal=False)`.
+
+The deferral recorded here on 2026-08-02 had a trigger — the `equinox_solstice` golden
+dataset being populated. Phase 9 populated it from a mathematical definition against Swiss
+Ephemeris, so the trigger fired and the migration was carried out the same day. Re-measuring
+for the migration also exposed the units error corrected above, which reversed the
+cost/benefit: an 8.4-minute shift is visible, and carrying a lower-precision approximation
+of the authority to preserve it is not defensible.
 
 | | |
 |---|---|
 | **What exists** | A second solar-longitude implementation (`tropical_seasons.solar_apparent_longitude`, Meeus ch. 25) running outside the astronomy layer and bypassing Swiss Ephemeris. |
-| **Measured difference** | ≤ **0.0057°** against the ephemeris across 1950–2100 — about **8 seconds** of equinox timing. Pinned by `tests/test_engine_boundary.py::test_that_duplicate_still_agrees_with_the_ephemeris`, which fails if it drifts past 0.02°. |
+| **Measured difference (pre-migration)** | ≤ **0.0057°** across 1950–2100 = **8.4 minutes** of season-boundary timing. |
 | **Expected migration impact** | Season-boundary instants move ≤ 8 s. A *printed* boundary changes only when it falls within 8 s of a minute rollover — roughly 1-in-7 per boundary, 6 boundaries a year. If any printed value moves, `PANCHANGA_PAYLOAD_VERSION` must be bumped and the change reviewed as a behaviour change. The byte-identical harness does **not** currently cover `tropical_seasons`, so the true blast radius must be measured first. |
 | **Also unblocked by migrating** | Tropical seasons become BCE-capable (today `_julian_day` uses `datetime.timestamp()`, so the module is CE-only — the one astronomy path in the engine that is not BCE-safe), and the Meeus coefficients become visible to `EnvironmentProvenance`. |
-| **Trigger** | The `equinox_solstice` golden dataset (`tests/golden/data/equinox_solstice.json`, currently `todo`) being populated from an observatory source. It is flagged **highest priority** there for this reason. |
+| **Trigger (FIRED)** | `tests/golden/data/equinox_solstice.json`, populated in Phase 9 from the definition "tropical solar longitude = 0/90/180/270°". |
 | **Why not sooner** | Without external equinox instants, the migration could only be verified against the implementation being replaced. That is precisely how the prior audit's self-captured goldens hid four live bugs. |
 
-Until then the duplicate is *contained rather than accepted*: two guard tests hold it to one
-known implementation and to agreement with the ephemeris.
+**Now guarded at zero.** `tests/test_engine_boundary.py::test_no_hand_rolled_solar_longitude_remains`
+fails if a hand-rolled series reappears, and `test_tropical_seasons_now_uses_the_ephemeris`
+asserts exact equality with the engine rather than mere agreement. The dead `RAD` constant
+and `math` import went with the series.
+
+Also resolved by migrating: tropical seasons are no longer the one astronomy path outside
+`EnvironmentProvenance`, since the ephemeris call is now provenanced like every other.
+`_julian_day` still uses `datetime.timestamp()`, so the module remains CE-only at its
+*entry point* — that is a separate, smaller gap than a whole second solar model.
 
 ---
 

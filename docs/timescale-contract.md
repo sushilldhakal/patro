@@ -1,7 +1,8 @@
 # Timescale contract, and what ΔT costs at historical dates
 
-**Phase 3.** Status: investigated and documented. **No code architecture added** — see §5
-for why the planned `DeltaTProvider` was not built.
+**Phase 3.** Status: COMPLETE. **No code architecture added** — see §5 for why the planned
+`DeltaTProvider` was not built. The UT contract is enforced by
+`tests/test_timescale_contract.py`.
 
 ---
 

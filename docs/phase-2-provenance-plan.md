@@ -1,6 +1,7 @@
 # Phase 2 — Calculation provenance: implementation plan
 
-**Status: plan only. No code written. Awaiting approval.**
+**Status: IMPLEMENTED.** Six commits, `9eb9a57`…`7788d56`. See §14 for the outcome and
+the findings that changed the design.
 
 Companion to [`architecture-roadmap.md`](architecture-roadmap.md) §4 Phase 2 and
 [`phase-1-observer-model-plan.md`](phase-1-observer-model-plan.md). Target:

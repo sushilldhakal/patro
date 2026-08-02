@@ -1,9 +1,22 @@
 # Phase 7 preparation — cultural rule layer
 
-**Status: analysis only. No code moved, no imports changed, no outputs touched.**
+**Status: analysis COMPLETE, B1 and B2 IMPLEMENTED.**
 
-Phase 7 execution is **blocked** on the golden datasets in `tests/golden/data/`
-(`sankranti`, `tithi_boundaries`). This document is the allowed preparation.
+* **B1 — tradition selector: shipped.** `engine/vedic/tradition.py` plus a `tradition`
+  query parameter on `/v1/nepal/festivals`. The Smarta/Vaishnava split is now selectable
+  rather than merely enumerated.
+* **B2 — `date_selection` / `adhik_policy`: resolved.** Not dead concepts; kept and covered
+  (§1.3).
+* **B3 — dropped as churn.** The cache helpers are already positionally separated from the
+  rule logic in `holiday_generator.py`; splitting the file would move working code for a
+  nominal ownership gain.
+* **B4 — declined.** `sait_rules.py`'s constants are already declarative frozensets carrying
+  extensive inline śāstra commentary; relocating them to JSON would lose that documentation,
+  add a load step, and enable nothing (no second tradition's sait rules exist).
+
+The golden gate is now satisfied — `sankranti` and `tithi_boundaries` are populated from
+mathematical definitions against Swiss Ephemeris (`tests/golden/data/`), and the
+byte-identical harness covers four festival scenarios.
 
 > ## Headline: the extraction is largely already done
 >

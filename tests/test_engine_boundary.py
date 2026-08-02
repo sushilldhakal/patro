@@ -53,11 +53,14 @@ class TestNoCulturalRulesInAstronomy:
 
 
 class TestDuplicateAstronomyIsContained:
-    def test_only_one_known_second_solar_longitude(self):
-        """tropical_seasons implements Meeus ch.25 independently of the
-        ephemeris — a known, documented duplicate pending the decision in
-        docs/engine-boundary-audit.md §4. This test fails if a *second* such
-        implementation appears, or if that one is removed (update the audit)."""
+    def test_no_hand_rolled_solar_longitude_remains(self):
+        """The engine must have exactly ONE solar-longitude implementation.
+
+        tropical_seasons used to carry a Meeus ch.25 series that bypassed the
+        ephemeris. It was migrated (docs/engine-boundary-audit.md §4), so the
+        expected count is now zero. This fails if anyone reintroduces one —
+        which matters because the duplicate disagreed by 8.4 minutes of
+        season-boundary timing and was CE-only."""
         found: list[str] = []
         for pkg in ("engine", "services"):
             for path in (ROOT / pkg).rglob("*.py"):
@@ -67,29 +70,25 @@ class TestDuplicateAstronomyIsContained:
                 # Meeus' mean-longitude and mean-anomaly coefficients.
                 if "280.46646" in text or "357.52911" in text:
                     found.append(str(path.relative_to(ROOT)))
-        assert found == ["engine/vedic/tropical_seasons.py"], (
-            "the set of hand-rolled solar-longitude implementations changed: "
-            f"{found}. One is known and documented; a second is a duplication "
-            "risk. See docs/engine-boundary-audit.md section 3."
+        assert found == [], (
+            "a hand-rolled solar-longitude series reappeared: "
+            f"{found}. Use engine.astronomy.engine.default_engine.sun_longitude — "
+            "Swiss Ephemeris is the astronomical authority. See "
+            "docs/engine-boundary-audit.md section 4."
         )
 
-    def test_that_duplicate_still_agrees_with_the_ephemeris(self):
-        """While it exists, it must not drift. 0.0057 degrees is ~8 s of equinox
-        timing; anything much larger means the series has gone stale relative to
-        the ephemeris and the migration becomes urgent."""
+    def test_tropical_seasons_now_uses_the_ephemeris(self):
+        """Post-migration: the two must agree exactly, not approximately."""
         from datetime import datetime, timezone
 
         from engine.astronomy.engine import default_engine
         from engine.astronomy.jd_calendar import CivilDay
         from engine.vedic.tropical_seasons import solar_apparent_longitude
 
-        worst = 0.0
+        from engine.vedic.tropical_seasons import _julian_day
+
         for year in (1950, 2000, 2026, 2050, 2100):
-            meeus = solar_apparent_longitude(
-                datetime(year, 3, 20, 12, 0, tzinfo=timezone.utc)
-            )
-            swiss = default_engine.sun_longitude(
-                CivilDay(year, 3, 20).to_jd_ut() + 0.5, sidereal=False
-            )
-            worst = max(worst, abs(((meeus - swiss + 540) % 360) - 180))
-        assert worst < 0.02, f"Meeus series drifted {worst:.5f} deg from the ephemeris"
+            when = datetime(year, 3, 20, 12, 0, tzinfo=timezone.utc)
+            got = solar_apparent_longitude(when)
+            want = default_engine.sun_longitude(_julian_day(when), sidereal=False)
+            assert got == want, f"{year}: {got} != {want}"
