@@ -162,6 +162,16 @@ That approximation is correct in spirit and documented in the code. Two problems
 
 ### W3 — ΔT is entirely implicit
 
+> **Corrected 2026-08-02 during Phase 2.** "Entirely implicit" was true of *our
+> code* but wrong about the library: swisseph exposes a full ΔT API
+> (`deltat`, `deltat_ex`, `get_tid_acc`, `set_tid_acc`, `set_delta_t_userdef`,
+> and five model constants). The active model is
+> `MOD_DELTAT_STEPHENSON_ETC_2016` (id 5) and the live tidal acceleration is
+> **−25.936**, not the documented `TIDAL_DEFAULT` of −25.8. Phase 2 now records
+> all of it. The magnitudes below were literature-recalled; the measured values
+> are 63.8 s (2000 CE), 2.94 h (1 CE), 7.09 h (1001 BCE), 20.9 h (3001 BCE) —
+> so the argument stands, with better numbers.
+
 `grep -rni 'deltat|delta_t|jd_et' engine/ services/` returns **zero hits**. Every call is
 `swe.calc_ut`, so Swiss Ephemeris applies its own ΔT internally, unversioned and
 unrecorded.
@@ -504,7 +514,7 @@ touches `panchanga_cache.py`.
 | Phase | Correctness | Reproducibility | Performance | Extensibility | Files |
 |---|---|---|---|---|---|
 | 1 Observer | altitude becomes *supplyable* and consistent across all 5 rise/set methods; no computed value moves | — | — | historical tz becomes modellable | 6 (**done**) |
-| 2 Provenance | — | **the core win** | — | — | ~5 |
+| 2 Provenance | — | **the core win** | — | — | 8 (**done**) |
 | 3 ΔT | BCE error bars become known and published | ΔT becomes a recorded input | — | alternative models become possible | ~4 + design doc |
 | 4 Snapshot | — | snapshots are immutable and attributable | foundation for all of it | multi-tradition becomes affordable | ~8 new |
 | 5 Cache rebuild | — | — | **content changes stop discarding astronomy** | derivation becomes swappable | ~15 |
@@ -523,7 +533,7 @@ touches `panchanga_cache.py`.
 | 25,772-year precession cycle | reachable per-request; not storable | precomputable and attributable (4, 8) |
 | Web API | 84 endpoints, healthy | faster on the derivation path (5) |
 | iOS/Android offline | blocked — engine and content are one tree | unblocked (4, 10) |
-| Historical reproducibility | **not achievable** — a silent dependency bump is undetectable | achievable (2, 3) |
+| Historical reproducibility | **achieved for the environment axis** (Phase 2): every cached row records the swisseph build, .se1 digest, DE number, ΔT model and behaviour, tidal acceleration and correction constants that produced it; drift is reported at startup | ΔT *modelling* choice still open (3) |
 | Multiple Vedic traditions | requires editing calculation code | configuration (7) |
 
 ### 6.3 The single most valuable change
