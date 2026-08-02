@@ -11,7 +11,7 @@ from typing import Any, Literal
 
 from engine.vedic.names_ne import to_nepali_digits
 from services.presentation.canonical import to_canonical
-from services.presentation.helpers import ENGINE_VERSION, primary_festival
+from services.presentation.helpers import RENDERER_VERSION, primary_festival
 
 Locale = Literal["en", "ne"]
 DAY_SEPARATOR = "────────────────────"
@@ -121,7 +121,7 @@ def render_dayblock_payload(
         "meta": {
             "format": "dayblock",
             "locale": locale,
-            "engine_version": ENGINE_VERSION,
+            "engine_version": RENDERER_VERSION,
             "from_cache": daily_state.get("from_cache", False),
         },
         "date": canonical.get("date"),
@@ -172,7 +172,7 @@ def render_month_stream(
         "meta": {
             "format": "dayblock_month",
             "locale": locale,
-            "engine_version": ENGINE_VERSION,
+            "engine_version": RENDERER_VERSION,
             "view": "linear_panchanga_stream",
         },
         "header": {

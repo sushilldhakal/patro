@@ -5,7 +5,15 @@ from __future__ import annotations
 from datetime import date
 from typing import Any
 
-ENGINE_VERSION = "2.2.0"
+# The RENDERER's version, not the astronomy engine's. Deliberately outside
+# services.payload_version.compose(): this number tracks the shape of the Surya
+# canonical JSON, which changes for presentation reasons that have nothing to do
+# with the ephemeris. Folding it into the astronomy axis would make a display
+# tweak invalidate every astronomical cache.
+#
+# Emitted as the "engine_version" key for backward compatibility with existing
+# consumers; only the constant was renamed.
+RENDERER_VERSION = "2.2.0"
 
 
 def end_time_hhmm(end_stamp: str | None) -> str | None:
