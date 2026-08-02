@@ -532,3 +532,45 @@ class TestDriftDetection:
         conn.commit()
         conn.close()
         assert pc.report_provenance_drift()["stale_hashes"] == []
+
+
+class TestAyanamshaIsUnified:
+    """One ayanamsha definition engine-wide.
+
+    The engine previously used both swisseph variants: FLG_SIDEREAL (== ex_ut)
+    for every planet, but the plain get_ayanamsa_ut for the ascendant and the
+    published field. A payload's lagna therefore disagreed with its own planets
+    by up to 18 arcsec. See docs/ayanamsha-variants.md.
+    """
+
+    def test_no_call_to_the_non_ex_variant_remains(self):
+        offenders: list[str] = []
+        for pkg in ("engine", "services", "api", "app", "rules"):
+            for path in (ROOT / pkg).rglob("*.py"):
+                if "__pycache__" in path.parts:
+                    continue
+                for lineno, line in enumerate(path.read_text().splitlines(), start=1):
+                    code = line.split("#", 1)[0]
+                    if "get_ayanamsa_ut" in code:
+                        offenders.append(f"{path.relative_to(ROOT)}:{lineno}")
+        assert not offenders, (
+            "swe.get_ayanamsa_ut does not match what FLG_SIDEREAL applies — use "
+            "engine.astronomy.engine._ayanamsa_degrees: " + ", ".join(offenders)
+        )
+
+    def test_published_ayanamsa_matches_the_planets(self):
+        """The defect this fixed: the published field must be the ayanamsha the
+        neighbouring longitudes were actually computed with."""
+        import swisseph as swe
+
+        from engine.astronomy.engine import default_engine
+
+        for jd in (2461144.5, 2451545.0, 1721423.5):
+            published = default_engine.ayanamsa(jd)
+            tropical = default_engine.sun_longitude(jd, sidereal=False)
+            sidereal = default_engine.sun_longitude(jd, sidereal=True)
+            implied = (tropical - sidereal) % 360
+            assert abs(published - implied) * 3600 < 0.1, (
+                f"jd {jd}: published ayanamsa {published:.9f} vs the value the "
+                f"planets imply {implied:.9f}"
+            )

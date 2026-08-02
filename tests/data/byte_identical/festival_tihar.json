@@ -25,7 +25,7 @@
   },
   "anchor": "sunrise",
   "ayanamsa": {
-    "degrees": 24.2322,
+    "degrees": 24.234391,
     "name": "Lahiri"
   },
   "bs_date": {
@@ -912,20 +912,20 @@
   },
   "lagna": {
     "anchor": "sunrise",
-    "degree_in_rashi": 20.4838,
-    "longitude": 200.483828,
+    "degree_in_rashi": 20.4816,
+    "longitude": 200.481637,
     "name": "Tula",
     "name_ne": "तुला",
     "number": 7
   },
   "lagna_spans": [
     {
-      "degree_in_rashi": 20.4838,
+      "degree_in_rashi": 20.4816,
       "end_ghati_clock": "1:51:19",
       "end_hours_clock": "0:44:31",
       "end_local_time": "07:03:35",
       "end_time": "2026-11-08T01:18:35.874987+00:00",
-      "longitude": 200.483828,
+      "longitude": 200.481637,
       "name": "Tula",
       "name_ne": "तुला",
       "number": 7,
@@ -943,12 +943,12 @@
       "start_time": "2026-11-08T00:34:04+00:00"
     },
     {
-      "degree_in_rashi": 0.034,
+      "degree_in_rashi": 0.0318,
       "end_ghati_clock": "7:37:01",
       "end_hours_clock": "3:02:48",
       "end_local_time": "09:21:52",
       "end_time": "2026-11-08T03:36:52.750000+00:00",
-      "longitude": 210.033995,
+      "longitude": 210.031805,
       "name": "Vrishchika",
       "name_ne": "वृश्चिक",
       "number": 8,
@@ -959,12 +959,12 @@
       "start_time": "2026-11-08T01:18:35.874987+00:00"
     },
     {
-      "degree_in_rashi": 0.0765,
+      "degree_in_rashi": 0.0743,
       "end_ghati_clock": "12:47:34",
       "end_hours_clock": "5:07:01",
       "end_local_time": "11:26:05",
       "end_time": "2026-11-08T05:41:05.874973+00:00",
-      "longitude": 240.076532,
+      "longitude": 240.074343,
       "name": "Dhanu",
       "name_ne": "धनु",
       "number": 9,
@@ -975,12 +975,12 @@
       "start_time": "2026-11-08T03:36:52.750000+00:00"
     },
     {
-      "degree_in_rashi": 0.102,
+      "degree_in_rashi": 0.0998,
       "end_ghati_clock": "17:04:13",
       "end_hours_clock": "6:49:41",
       "end_local_time": "13:08:45",
       "end_time": "2026-11-08T07:23:45.249973+00:00",
-      "longitude": 270.101955,
+      "longitude": 270.099767,
       "name": "Makara",
       "name_ne": "मकर",
       "number": 10,
@@ -1004,12 +1004,12 @@
       "start_time": "2026-11-08T05:41:05.874973+00:00"
     },
     {
-      "degree_in_rashi": 0.0148,
+      "degree_in_rashi": 0.0126,
       "end_ghati_clock": "20:45:42",
       "end_hours_clock": "8:18:16",
       "end_local_time": "14:37:20",
       "end_time": "2026-11-08T08:52:20.874973+00:00",
-      "longitude": 300.014822,
+      "longitude": 300.012635,
       "name": "Kumbha",
       "name_ne": "कुम्भ",
       "number": 11,
@@ -1020,12 +1020,12 @@
       "start_time": "2026-11-08T07:23:45.249973+00:00"
     },
     {
-      "degree_in_rashi": 0.0862,
+      "degree_in_rashi": 0.084,
       "end_ghati_clock": "24:20:09",
       "end_hours_clock": "9:44:03",
       "end_local_time": "16:03:07",
       "end_time": "2026-11-08T10:18:07.749973+00:00",
-      "longitude": 330.086208,
+      "longitude": 330.084021,
       "name": "Meena",
       "name_ne": "मीन",
       "number": 12,
@@ -1039,7 +1039,7 @@
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "14:55:57",
+          "local_time": "14:55:58",
           "local_time_short": "14:55"
         }
       ],
@@ -1049,12 +1049,12 @@
       "start_time": "2026-11-08T08:52:20.874973+00:00"
     },
     {
-      "degree_in_rashi": 0.0328,
+      "degree_in_rashi": 0.0306,
       "end_ghati_clock": "28:20:23",
       "end_hours_clock": "11:20:09",
       "end_local_time": "17:39:13",
       "end_time": "2026-11-08T11:54:13.374986+00:00",
-      "longitude": 0.03282,
+      "longitude": 0.030633,
       "name": "Mesha",
       "name_ne": "मेष",
       "number": 1,
@@ -1068,7 +1068,7 @@
         {
           "degree": 26.6667,
           "degree_dms": "26°40'",
-          "local_time": "17:27:34",
+          "local_time": "17:27:35",
           "local_time_short": "17:27"
         }
       ],
@@ -1078,12 +1078,12 @@
       "start_time": "2026-11-08T10:18:07.749973+00:00"
     },
     {
-      "degree_in_rashi": 0.027,
+      "degree_in_rashi": 0.0248,
       "end_ghati_clock": "33:11:00",
       "end_hours_clock": "13:16:24",
       "end_local_time": "19:35:28",
       "end_time": "2026-11-08T13:50:28.374973+00:00",
-      "longitude": 30.026966,
+      "longitude": 30.02478,
       "name": "Vrishabha",
       "name_ne": "वृष",
       "number": 2,
@@ -1094,12 +1094,12 @@
       "start_time": "2026-11-08T11:54:13.374986+00:00"
     },
     {
-      "degree_in_rashi": 0.0719,
+      "degree_in_rashi": 0.0697,
       "end_ghati_clock": "38:47:20",
       "end_hours_clock": "15:30:56",
       "end_local_time": "21:50:00",
       "end_time": "2026-11-08T16:05:00.249960+00:00",
-      "longitude": 60.071853,
+      "longitude": 60.069666,
       "name": "Mithuna",
       "name_ne": "मिथुन",
       "number": 3,
@@ -1110,12 +1110,12 @@
       "start_time": "2026-11-08T13:50:28.374973+00:00"
     },
     {
-      "degree_in_rashi": 0.0877,
+      "degree_in_rashi": 0.0855,
       "end_ghati_clock": "44:35:23",
       "end_hours_clock": "17:50:09",
       "end_local_time": "00:09:13",
       "end_time": "2026-11-08T18:24:13.374960+00:00",
-      "longitude": 90.087717,
+      "longitude": 90.085531,
       "name": "Karka",
       "name_ne": "कर्कट",
       "number": 4,
@@ -1139,12 +1139,12 @@
       "start_time": "2026-11-08T16:05:00.249960+00:00"
     },
     {
-      "degree_in_rashi": 0.0086,
+      "degree_in_rashi": 0.0064,
       "end_ghati_clock": "50:16:24",
       "end_hours_clock": "20:06:33",
       "end_local_time": "02:25:37",
       "end_time": "2026-11-08T20:40:37.749960+00:00",
-      "longitude": 120.00859,
+      "longitude": 120.006404,
       "name": "Simha",
       "name_ne": "सिंह",
       "number": 5,
@@ -1155,12 +1155,12 @@
       "start_time": "2026-11-08T18:24:13.374960+00:00"
     },
     {
-      "degree_in_rashi": 0.0227,
+      "degree_in_rashi": 0.0205,
       "end_ghati_clock": "60:01:50",
       "end_hours_clock": "24:00:44",
       "end_local_time": "06:19:48",
       "end_time": "2026-11-09T00:34:48+00:00",
-      "longitude": 150.022688,
+      "longitude": 150.020502,
       "name": "Kanya",
       "name_ne": "कन्या",
       "number": 6,
@@ -1185,7 +1185,7 @@
     }
   ],
   "lahiri_ayanamsa": {
-    "degrees": 24.2322,
+    "degrees": 24.234391,
     "name": "Lahiri"
   },
   "location": {
@@ -2816,7 +2816,7 @@
         {
           "degree": 6.6667,
           "degree_dms": "6°40'",
-          "local_time": "14:55:57",
+          "local_time": "14:55:58",
           "local_time_short": "14:55"
         }
       ],
@@ -2843,7 +2843,7 @@
         {
           "degree": 26.6667,
           "degree_dms": "26°40'",
-          "local_time": "17:27:34",
+          "local_time": "17:27:35",
           "local_time_short": "17:27"
         }
       ],

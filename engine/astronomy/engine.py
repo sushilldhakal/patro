@@ -138,6 +138,29 @@ ECLIPSE_LOCAL_SEARCH_BACKOFF_DAYS = 1.0
 ECLIPSE_LOCAL_MATCH_TOLERANCE_DAYS = 0.75
 
 
+def _ayanamsa_degrees(jd: float) -> float:
+    """Ayanamsha at *jd*, matching what ``FLG_SIDEREAL`` actually applies.
+
+    ``swe.get_ayanamsa_ex_ut``, **not** ``swe.get_ayanamsa_ut``. The two
+    disagree — 5.9" at 2026, 13.9" at J2000, 17.7" at 1 CE, sign included so it
+    does not cancel — and only the ``_ex_`` variant reproduces the value
+    ``calc_ut(..., FLG_SIDEREAL)`` uses internally (verified to 0.000").
+
+    Before this existed the engine used both: every planet came from
+    ``FLG_SIDEREAL`` while the ascendant and the published ``ayanamsa`` field
+    came from the plain ``_ut`` variant, so a payload's own numbers disagreed
+    with each other by up to 18". Found by the definition-based golden suite,
+    which failed with a systematic ~150 s sankranti offset.
+
+    See docs/ayanamsha-variants.md.
+    """
+    _ensure_ephemeris_for_thread()
+    try:
+        return float(swe.get_ayanamsa_ex_ut(jd, swe.FLG_SWIEPH)[1])
+    except (swe.Error, IndexError, TypeError, ValueError) as exc:
+        raise EphemerisError(f"ayanamsa failed at jd={jd}: {exc}") from exc
+
+
 def _horizon_dip_degrees(altitude_m: float) -> float:
     """Geometric dip of the visible horizon for an observer elevated
     ``altitude_m`` above sea level, in degrees (negative — the horizon sits
@@ -282,7 +305,7 @@ class AstronomyEngine:
                 try:
                     tropical = swe.calc_ut(jd, body, _TROPICAL_SPEED)[0]
                     values = (
-                        (tropical[0] - swe.get_ayanamsa_ut(jd)) % 360,
+                        (tropical[0] - _ayanamsa_degrees(jd)) % 360,
                         tropical[1],
                         tropical[2],
                         tropical[3],
@@ -532,7 +555,7 @@ class AstronomyEngine:
         try:
             _, ascmc = swe.houses(jd, lat, lon, b"P")
             tropical_asc = ascmc[0]
-            return (tropical_asc - swe.get_ayanamsa_ut(jd)) % 360
+            return (tropical_asc - _ayanamsa_degrees(jd)) % 360
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"Ascendant calculation failed: {exc}") from exc
 
@@ -542,7 +565,7 @@ class AstronomyEngine:
         """Ayanamsa in degrees at the given JD."""
         _ensure_ephemeris_for_thread()
         swe.set_sid_mode(self._ayanamsa if mode is None else mode)
-        return swe.get_ayanamsa_ut(jd)
+        return _ayanamsa_degrees(jd)
 
     # ── obliquity ────────────────────────────────────────────────────────────
 

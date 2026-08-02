@@ -111,7 +111,14 @@ logger = logging.getLogger(__name__)
 #     or stale month response-cache gzip). Invalidates month/year response blobs.
 # 40: ``solar_corrections.akshamsha`` — latitude correction on the Gaurishankar
 #     meridian (reference display; rise/set already use observer latitude).
-PANCHANGA_PAYLOAD_VERSION = 40
+# 41: ayanamsha unified on swe.get_ayanamsa_ex_ut. The engine previously used
+#     BOTH variants — FLG_SIDEREAL (== ex_ut) for every planet, but the plain
+#     get_ayanamsa_ut for ascendant() and for the published `ayanamsa` field — so
+#     a payload's lagna disagreed with its own planets by up to 18". Shifts
+#     ayanamsa, lahiri_ayanamsa, lagna, lagna_spans, udaya_lagna and
+#     panchaka_rahita by <=6.8 arcsec (<=2 s of clock time on span boundaries).
+#     No rashi or nakshatra label changes. See docs/ayanamsha-variants.md.
+PANCHANGA_PAYLOAD_VERSION = 41
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

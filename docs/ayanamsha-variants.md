@@ -4,8 +4,8 @@
 comparison failed with a systematic ~150-second offset. That is 5.9 arcseconds of solar
 motion — not convergence noise, a real longitude difference.
 
-**Status: reported, not fixed.** Changing it moves the ascendant, which is a behaviour
-change requiring approval (§4).
+**Status: FIXED (2026-08-02).** Option B applied — see §4 for the measured impact and §6
+for what shipped.
 
 ---
 
@@ -41,13 +41,15 @@ swe.calc_ut(jd, body, FLG_SWIEPH)[0][0] - swe.get_ayanamsa_ut(jd)   # off by 6�
 
 ## 2. Where the engine uses each
 
-| Site | Method | Variant |
+| Site | Before | After |
 |---|---|---|
-| `engine.py` `_calc(sidereal=True)` — **all planets, Sun, Moon** | `FLG_SIDEREAL` | **ex_ut** |
-| `engine.py:476` `ascendant()` | `tropical_asc - get_ayanamsa_ut(jd)` | **_ut** |
-| `engine.py:486` `ayanamsa()` — the value published in payloads | `get_ayanamsa_ut(jd)` | **_ut** |
+| `_calc(sidereal=True)` — all planets, Sun, Moon | `FLG_SIDEREAL` (ex_ut) | unchanged |
+| `_calc` node fallback | `get_ayanamsa_ut` | `_ayanamsa_degrees` (ex_ut) |
+| `ascendant()` | `get_ayanamsa_ut` | `_ayanamsa_degrees` (ex_ut) |
+| `ayanamsa()` — the published field | `get_ayanamsa_ut` | `_ayanamsa_degrees` (ex_ut) |
 
-**The planets and the ascendant are therefore computed against different ayanamshas.**
+All four now route through one helper, `engine.astronomy.engine._ayanamsa_degrees`. There is
+no remaining call to `swe.get_ayanamsa_ut` anywhere in the repository.
 
 ## 3. How much it matters
 
@@ -76,14 +78,21 @@ the inconsistency is too small to be visible.
 | **B. Move `ascendant()` and `ayanamsa()` to `get_ayanamsa_ex_ut`** ⬅ recommended | One definition engine-wide, and the published field matches the longitudes. **Changes the ascendant by ≤1.2 s of lagna and the published `ayanamsa` by ≤18″.** A lagna *rashi* could change only if the ascendant sat within 18″ of a sign boundary — roughly a 1-in-6000 chance per chart. Needs a `PANCHANGA_PAYLOAD_VERSION` bump. |
 | C. Move planets to `_ut` | Wrong direction — `_ut` is the variant that does not match `FLG_SIDEREAL`. |
 
-**Recommendation: B**, but it is a behaviour change and therefore a decision for the
-maintainer, not a refactor to slip in.
+**B was applied.** Measured blast radius across all nine byte-identical scenarios:
 
-Blast radius if B is taken: `ascendant()` feeds lagna, lagna_spans, the kundali chart and
-every varga. The byte-identical harness covers lagna in the daily payload, so the diff
-would be visible and reviewable; the four festival scenarios would be unaffected.
+| | |
+|---|---|
+| Fields affected | `ayanamsa`, `lahiri_ayanamsa`, `lagna`, `lagna_spans`, `udaya_lagna`, `panchaka_rahita` |
+| Changed leaves | 579 across 9 scenarios |
+| Largest numeric shift | **6.8 arcsec** (`lagna_spans[8].degree_in_rashi`) |
+| Label changes | **none** — no rashi or nakshatra name moved |
+| Only string changes | 6 clock times, each ±2 s (pushkara-navamsha span boundaries) |
+| Version | `PANCHANGA_PAYLOAD_VERSION` 40 → 41, `CACHE_PAYLOAD_VERSION` 4003 → 4103 |
 
-## 5. What already guards this
+The version bump invalidates cached daily/month/year payloads, which is correct: they carry
+the pre-fix lagna.
+
+## 6. What guards this
 
 `tests/golden/definitions.py::ayanamsha` uses `get_ayanamsa_ex_ut` and documents why. The
 sankranti golden dataset compares production against it, so if `_calc` ever switched
