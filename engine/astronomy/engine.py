@@ -86,6 +86,58 @@ def _is_ephe_file_missing(exc: Exception) -> bool:
     return "not found" in str(exc).lower()
 
 
+# ── astronomy correction constants ───────────────────────────────────────────
+#
+# Every value below changes a computed astronomical result. They are named (not
+# inline) so that they are discoverable, reviewable, and importable by the
+# provenance layer — a stored result should be able to say which constants
+# produced it. Values are exactly what the code used before they were named;
+# this block introduced no numerical change.
+#
+# Deliberately NOT in this group, because they change no computed value:
+# ``_CACHE_MAX`` (memo sizing), the ``round(jd, 9)`` memo-key granularity, the
+# ``b"P"`` house-system flag (measured: the ascendant is identical under
+# Placidus/Koch/Whole-sign/Equal/Regiomontanus, because only ``ascmc[0]`` is
+# read), and the arcminute→degree and angle-wrap divisors below, which are unit
+# conversions rather than corrections.
+
+# Atmospheric pressure (mbar) and temperature (°C) passed to
+# ``swe.rise_trans_true_hor``, which uses them to compute refraction at the
+# horizon.
+#
+# Current values preserved for compatibility. Their numerical effect was
+# measured during the Phase 2 investigation: pressure 0.0 is Swiss Ephemeris'
+# "derive from the observer's altitude" sentinel and reproduces an explicit
+# 1013.25 mbar exactly at sea level, so it is inert there; temperature 0.0 means
+# literally 0 °C and shifts sunrise by about 42 seconds against the ISA standard
+# 15 °C (Kathmandu, 2026-06-10).
+#
+# No evidence was found that 0 °C was chosen deliberately — it is undocumented
+# and predates the current code. Validation, and any change, are deferred to
+# future accuracy work; see docs/phase-2-investigation-report.md §4.1. Do not
+# "correct" these without a golden-test baseline: doing so moves every sunrise
+# and sunset the service publishes.
+REFRACTION_PRESSURE = 0.0
+REFRACTION_TEMPERATURE = 0.0
+
+# Geometric horizon dip in arcminutes per √metre — the standard geodetic
+# approximation dip = 1.76 * sqrt(h).
+HORIZON_DIP_COEFFICIENT = 1.76
+
+# Finite-difference step for the ascendant's rate of change. The ascendant has
+# no closed-form speed, so it is differentiated numerically; this is the step
+# size, and it therefore sets the precision of the reported value.
+ASCENDANT_SPEED_STEP_DAYS = 60.0 / 86400.0
+
+# Local-eclipse search: how far before the known global maximum to start
+# ``sol/lun_eclipse_when_loc``, and how far the local maximum may fall from the
+# global one before it is treated as a *different* eclipse (the local search
+# skips ahead when this one is not visible from the observer). Both change which
+# eclipse — if any — is reported as locally visible.
+ECLIPSE_LOCAL_SEARCH_BACKOFF_DAYS = 1.0
+ECLIPSE_LOCAL_MATCH_TOLERANCE_DAYS = 0.75
+
+
 def _horizon_dip_degrees(altitude_m: float) -> float:
     """Geometric dip of the visible horizon for an observer elevated
     ``altitude_m`` above sea level, in degrees (negative — the horizon sits
@@ -100,7 +152,8 @@ def _horizon_dip_degrees(altitude_m: float) -> float:
     """
     if altitude_m <= 0:
         return 0.0
-    return -1.76 * math.sqrt(altitude_m) / 60.0
+    # / 60.0 converts the arcminute coefficient to degrees.
+    return -HORIZON_DIP_COEFFICIENT * math.sqrt(altitude_m) / 60.0
 
 # ── body identifiers exposed as class attributes so callers never touch swe ──
 _SUN = swe.SUN
@@ -446,9 +499,15 @@ class AstronomyEngine:
         """Lagna shara (0 by definition), RA, kranti and speed in °/day."""
         _ensure_ephemeris_for_thread()
         try:
+            # b"P" (Placidus) is the house *division* system. Only ascmc[0] —
+            # the ascendant — is read here, and that is the ecliptic/horizon
+            # intersection, identical under every house system (verified against
+            # Koch, Whole-sign, Equal and Regiomontanus). The flag is therefore
+            # not an astronomy correction constant; it would become one only if
+            # house cusps were ever read from the first return value.
             _, ascmc = swe.houses(jd, lat, lon, b"P")
             tropical_asc = ascmc[0]
-            step_days = 60.0 / 86400.0
+            step_days = ASCENDANT_SPEED_STEP_DAYS
             _, ascmc_next = swe.houses(jd + step_days, lat, lon, b"P")
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
             raise EphemerisError(f"houses failed: {exc}") from exc
@@ -610,13 +669,16 @@ class AstronomyEngine:
         _ensure_ephemeris_for_thread()
         try:
             retflag, tret, _attr = swe.sol_eclipse_when_loc(
-                near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
+                near_jd - ECLIPSE_LOCAL_SEARCH_BACKOFF_DAYS,
+                geopos,
+                swe.FLG_SWIEPH,
+                False,
             )
         except (swe.Error, IndexError, TypeError, ValueError):
             return {}
         local_max = float(tret[0])
         # The local search may skip to a later eclipse if this one is invisible here.
-        if abs(local_max - near_jd) > 0.75:
+        if abs(local_max - near_jd) > ECLIPSE_LOCAL_MATCH_TOLERANCE_DAYS:
             return {"visible": False}
         return {
             "visible": bool(retflag & (swe.ECL_VISIBLE)),
@@ -634,12 +696,15 @@ class AstronomyEngine:
         _ensure_ephemeris_for_thread()
         try:
             retflag, tret, _attr = swe.lun_eclipse_when_loc(
-                near_jd - 1.0, geopos, swe.FLG_SWIEPH, False
+                near_jd - ECLIPSE_LOCAL_SEARCH_BACKOFF_DAYS,
+                geopos,
+                swe.FLG_SWIEPH,
+                False,
             )
         except (swe.Error, IndexError, TypeError, ValueError):
             return {}
         local_max = float(tret[0])
-        if abs(local_max - near_jd) > 0.75:
+        if abs(local_max - near_jd) > ECLIPSE_LOCAL_MATCH_TOLERANCE_DAYS:
             return {"visible": False}
         return {
             "visible": bool(retflag & swe.ECL_VISIBLE),
@@ -769,7 +834,10 @@ class AstronomyEngine:
         jd_start = self.julian_day(local_midnight.astimezone(timezone.utc))
         try:
             result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
+                jd_start, body_id, calc_flag, (lon, lat, alt),
+                REFRACTION_PRESSURE,
+                REFRACTION_TEMPERATURE,
+                _horizon_dip_degrees(alt),
             )
             value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
@@ -839,7 +907,10 @@ class AstronomyEngine:
         jd_start = civil.to_jd_ut() - self._utc_offset_days(civil, observer_tz)
         try:
             result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
+                jd_start, body_id, calc_flag, (lon, lat, alt),
+                REFRACTION_PRESSURE,
+                REFRACTION_TEMPERATURE,
+                _horizon_dip_degrees(alt),
             )
             value = None if result[0] < 0 else self.datetime_from_jd(result[1][0])
         except (swe.Error, IndexError, TypeError, ValueError) as exc:
@@ -867,7 +938,10 @@ class AstronomyEngine:
         jd_start = self.julian_day(after_dt.astimezone(timezone.utc))
         try:
             result = swe.rise_trans_true_hor(
-                jd_start, body_id, calc_flag, (lon, lat, alt), 0.0, 0.0, _horizon_dip_degrees(alt)
+                jd_start, body_id, calc_flag, (lon, lat, alt),
+                REFRACTION_PRESSURE,
+                REFRACTION_TEMPERATURE,
+                _horizon_dip_degrees(alt),
             )
             if result[0] < 0:
                 return None
