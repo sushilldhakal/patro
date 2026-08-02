@@ -578,3 +578,80 @@ class TestAyanamshaIsUnified:
                 f"jd {jd}: published ayanamsa {published:.9f} vs the value the "
                 f"planets imply {implied:.9f}"
             )
+
+
+class TestPayloadCompression:
+    """Transparent gzip on cached payloads: 6.14x measured, both formats readable.
+
+    Chosen over the roadmap's snapshot/derived split, which measured at 4.4%
+    (docs/cache-architecture-measurements.md). 6x from a codec beats 1.04x from
+    an architecture change, with none of the risk.
+    """
+
+    def test_roundtrip(self):
+        from services.panchanga_cache import _decode_payload, _encode_payload
+
+        payload = {"tithi": {"name": "Dashami"}, "planets": {"sun": 123.456}, "ne": "दशमी"}
+        assert _decode_payload(_encode_payload(payload)) == payload
+
+    def test_legacy_plain_text_rows_still_read(self):
+        """Existing rows are uncompressed TEXT. They must keep working with no
+        migration and no data rewrite — that is what makes this rollback-safe."""
+        import json as _json
+
+        from services.panchanga_cache import _decode_payload
+
+        payload = {"tithi": {"name": "Ekadashi"}}
+        assert _decode_payload(_json.dumps(payload)) == payload
+
+    def test_compression_actually_compresses(self):
+        """Guard the premise. If a future payload shape stopped compressing, the
+        codec would be pure overhead."""
+        import json as _json
+        from datetime import date
+
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import build_daily_panchanga
+        from services.panchanga_cache import _encode_payload
+
+        payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+        raw = len(_json.dumps(payload, ensure_ascii=False).encode())
+        packed = len(_encode_payload(payload))
+        assert raw / packed > 3.0, f"only {raw / packed:.2f}x — codec no longer pays"
+
+    def test_written_rows_are_stored_compressed(self, tmp_path, monkeypatch):
+        import sqlite3
+        from datetime import date
+
+        import services.panchanga_cache as pc
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import get_daily_panchanga
+
+        path = tmp_path / "p.db"
+        monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
+        monkeypatch.setattr(pc, "cache_enabled", lambda: True)
+        get_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+
+        conn = sqlite3.connect(path)
+        stored = conn.execute("SELECT payload_json FROM panchanga_cache").fetchone()[0]
+        conn.close()
+        assert isinstance(stored, bytes), "payload should be stored as gzip bytes"
+        assert stored[:2] == b"\x1f\x8b", "not a gzip stream"
+
+    def test_round_trip_through_the_real_cache(self, tmp_path, monkeypatch):
+        """Write then read back through the public API — the values must survive."""
+        from datetime import date
+
+        import services.panchanga_cache as pc
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import get_daily_panchanga
+
+        path = tmp_path / "p.db"
+        monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
+        monkeypatch.setattr(pc, "cache_enabled", lambda: True)
+
+        first = get_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+        second = get_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+        assert second["_from_cache"] is True
+        for key in ("tithi", "nakshatra", "yoga", "karana", "sunrise", "sunset"):
+            assert second[key] == first[key]

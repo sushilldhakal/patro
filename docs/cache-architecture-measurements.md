@@ -116,13 +116,22 @@ Concrete thresholds, so this is a decision rather than an omission:
 
 None currently hold.
 
-## 6. Cheaper wins available first
+## 6. Cheaper wins — #1 SHIPPED
 
-If storage does become pressing, these come before an architectural migration:
+1. **Compression — DONE.** `payload_json` now stores gzip level 6, transparently.
 
-1. **Compression.** `payload_json` is stored as raw TEXT. These payloads are highly
-   repetitive JSON; gzip typically achieves 5–10×, which is more than the 4× a snapshot
-   split would give, for far less risk. `response_cache` and `year_cache` already gzip.
+   | | |
+   |---|---|
+   | Measured on 400 real payloads | **6.14×** |
+   | Live cache | 1005 MB → **~164 MB** |
+   | Compress | 0.70 ms/row (write path) |
+   | Decompress | **0.051 ms/row** (read path) |
+
+   **6.14× from a codec against 1.04× from the architecture change the roadmap
+   proposed**, with none of the risk. No migration, no data rewrite, no version bump:
+   SQLite's dynamic typing lets gzip bytes sit in the TEXT column as a BLOB, and
+   `_decode_payload` branches on type, so pre-existing plain-text rows keep working
+   indefinitely and a rollback leaves every unrewritten row readable.
 2. **Drop `hora` and `choghadiya` from storage** (17% combined) — both are pure functions of
    sunrise and sunset, which are already in the row, so they are the cheapest possible
    regeneration.
