@@ -245,6 +245,71 @@ def ensure_schema() -> None:
             )
 
 
+def stored_provenance_hashes() -> list[tuple[str | None, int]]:
+    """``[(provenance_hash, row_count)]`` present in the cache, most rows first.
+
+    ``None`` counts rows written before the column existed. This is the query
+    that makes selective invalidation possible — with only a version counter,
+    the sole remedy for a bad dependency was discarding everything.
+    """
+    if not cache_enabled():
+        return []
+    ensure_schema()
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT provenance_hash, COUNT(*) FROM panchanga_cache "
+            "GROUP BY provenance_hash ORDER BY COUNT(*) DESC"
+        ).fetchall()
+    return [(r[0], r[1]) for r in rows]
+
+
+def report_provenance_drift() -> dict[str, Any]:
+    """Compare cached rows against the live environment and log any drift.
+
+    **Logs only — nothing is purged and no row is invalidated.** A provenance
+    change means an *input* changed, which is not the same as an *output*
+    changing: a pyswisseph patch release touching an unrelated routine moves the
+    hash while every number stays identical. Deciding what to do about that is a
+    judgement call, and this makes the call possible instead of making it
+    silently.
+
+    Its value is turning the A0c failure mode — the API served Moshier results
+    for months because nothing noticed the ephemeris files were unreachable —
+    from invisible into a startup WARNING.
+    """
+    live = current_provenance()
+    stored = stored_provenance_hashes()
+    known = [(h, n) for h, n in stored if h]
+    legacy = sum(n for h, n in stored if not h)
+    stale = [(h, n) for h, n in known if h != live.provenance_hash]
+
+    summary: dict[str, Any] = {
+        "live_hash": live.provenance_hash,
+        "rows_current": sum(n for h, n in known if h == live.provenance_hash),
+        "rows_pre_provenance": legacy,
+        "stale_hashes": [{"provenance_hash": h, "rows": n} for h, n in stale],
+    }
+    if stale:
+        logger.warning(
+            "Panchanga cache holds %d row(s) from %d earlier astronomical "
+            "environment(s); live provenance is %s. Nothing was invalidated — "
+            "inspect with services.panchanga_cache.stored_provenance_hashes(). "
+            "Stale: %s",
+            sum(n for _h, n in stale),
+            len(stale),
+            live.short_hash,
+            ", ".join(f"{h[:16]} ({n} rows)" for h, n in stale),
+        )
+    elif legacy:
+        logger.info(
+            "Panchanga cache: %d row(s) predate provenance recording (hash NULL); "
+            "live provenance is %s",
+            legacy,
+            live.short_hash,
+        )
+    return summary
+
+
 def resolve_cache_keys(location: ObserverLocation) -> tuple[str, int]:
     """Return (location_key, city_id) for cache lookup.
 

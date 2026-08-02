@@ -443,3 +443,92 @@ class TestCacheStorage:
         payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
         assert "provenance_hash" not in payload
         assert "provenance" not in json.dumps(payload).lower()
+
+
+class TestDriftDetection:
+    """Detection is logging-only. Nothing is ever purged."""
+
+    @pytest.fixture()
+    def seeded(self, tmp_path, monkeypatch):
+        import sqlite3
+
+        import services.panchanga_cache as pc
+
+        path = tmp_path / "panchanga.db"
+        monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
+        monkeypatch.setattr(pc, "cache_enabled", lambda: True)
+        pc.ensure_schema()
+        live = current_provenance().provenance_hash
+        conn = sqlite3.connect(path)
+        rows = [
+            ("city:1", "2026-01-01", live),
+            ("city:1", "2026-01-02", live),
+            ("city:1", "2020-01-01", "0" * 64),   # a different environment
+            ("city:1", "2019-01-01", None),        # pre-provenance
+        ]
+        conn.executemany(
+            "INSERT INTO panchanga_cache "
+            "(city_id, location_key, date, payload_json, computed_at, provenance_hash) "
+            "VALUES (1,?,?,'{}','x',?)",
+            rows,
+        )
+        conn.commit()
+        conn.close()
+        return pc, path
+
+    def test_stored_hashes_are_queryable(self, seeded):
+        pc, _ = seeded
+        counts = dict(pc.stored_provenance_hashes())
+        assert counts[current_provenance().provenance_hash] == 2
+        assert counts["0" * 64] == 1
+        assert counts[None] == 1
+
+    def test_drift_is_reported_with_counts(self, seeded):
+        pc, _ = seeded
+        report = pc.report_provenance_drift()
+        assert report["live_hash"] == current_provenance().provenance_hash
+        assert report["rows_current"] == 2
+        assert report["rows_pre_provenance"] == 1
+        assert report["stale_hashes"] == [{"provenance_hash": "0" * 64, "rows": 1}]
+
+    def test_drift_logs_a_warning(self, seeded, caplog):
+        pc, _ = seeded
+        with caplog.at_level("WARNING"):
+            pc.report_provenance_drift()
+        assert any("earlier astronomical environment" in r.message for r in caplog.records)
+
+    def test_drift_detection_purges_nothing(self, seeded):
+        """The rule: detection and invalidation are separate decisions. A
+        provenance change means an *input* moved, which is not the same as an
+        *output* moving."""
+        import sqlite3
+
+        pc, path = seeded
+        before = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM panchanga_cache"
+        ).fetchone()[0]
+        pc.report_provenance_drift()
+        after = sqlite3.connect(path).execute(
+            "SELECT COUNT(*) FROM panchanga_cache"
+        ).fetchone()[0]
+        assert before == after == 4
+
+    def test_matching_environment_reports_no_drift(self, tmp_path, monkeypatch):
+        import sqlite3
+
+        import services.panchanga_cache as pc
+
+        path = tmp_path / "p.db"
+        monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
+        monkeypatch.setattr(pc, "cache_enabled", lambda: True)
+        pc.ensure_schema()
+        conn = sqlite3.connect(path)
+        conn.execute(
+            "INSERT INTO panchanga_cache "
+            "(city_id, location_key, date, payload_json, computed_at, provenance_hash) "
+            "VALUES (1,'city:1','2026-01-01','{}','x',?)",
+            (current_provenance().provenance_hash,),
+        )
+        conn.commit()
+        conn.close()
+        assert pc.report_provenance_drift()["stale_hashes"] == []
