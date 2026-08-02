@@ -64,12 +64,21 @@ class Source:
     ``authority`` must name a publisher, not a code path. "Drik Panchang" or
     "Nepal Panchanga Nirnayak Samiti" qualify; "engine/astronomy/sun.py at
     commit abc123" does not — that is a regression baseline wearing a lab coat.
+
+    ``convention`` is the field most likely to be skipped and most likely to
+    cause a false failure. Two almanacs can both be right and still disagree,
+    because they answer slightly different questions: udaya-tithi versus
+    instant-tithi, sea-level versus elevation-adjusted horizon, Lahiri versus
+    Drik ayanamsha, madhyama versus spashta positions. A golden entry without a
+    stated convention cannot be adjudicated when it disagrees with the engine.
     """
 
     authority: str
-    reference: str = ""      # URL, ISBN, edition, table name
-    retrieved: str = ""      # ISO date the value was read from the source
-    verified_by: str = ""    # who/what checked it, and how
+    reference: str = ""          # URL, ISBN, edition, table name
+    publication_year: str = ""   # edition/almanac year, when the source states one
+    convention: str = ""         # the calculation convention the source follows
+    retrieved: str = ""          # ISO date the value was read from the source
+    verified_by: str = ""        # who/what checked it, and how
     notes: str = ""
 
     #: Substrings that indicate a self-captured baseline rather than an
@@ -110,6 +119,10 @@ class GoldenDataset:
     source: Source
     tolerance: Tolerance
     entries: tuple[dict[str, Any], ...] = ()
+    #: Fields every entry in this dataset must carry. Declared per dataset
+    #: because what identifies a calculation differs: a sankranti needs an
+    #: observer and an ayanamsha, an equinox instant needs neither.
+    required_entry_fields: tuple[str, ...] = ()
     #: EnvironmentProvenance hash at the time the dataset was last reconciled
     #: against the engine. Recorded, never asserted — the environment legitimately
     #: changes, and a golden value's authority comes from its source, not from
@@ -150,6 +163,22 @@ class GoldenDataset:
                     f"{self.name}: external source needs a reference or notes so a "
                     "later reader can re-check it"
                 )
+            if not self.source.convention.strip():
+                raise GoldenDataError(
+                    f"{self.name}: source must state its calculation convention "
+                    "(udaya vs instant tithi, sea-level vs elevation horizon, "
+                    "which ayanamsha, madhyama vs spashta). Two almanacs can both "
+                    "be right and still disagree; without the convention a "
+                    "disagreement cannot be adjudicated."
+                )
+            for entry in self.entries:
+                missing = [f for f in self.required_entry_fields if f not in entry]
+                if missing:
+                    raise GoldenDataError(
+                        f"{self.name}: entry {entry.get('id', '?')!r} is missing "
+                        f"required field(s) {missing}. Declared in the dataset's "
+                        "'required_entry_fields'."
+                    )
         else:
             if self.entries:
                 raise GoldenDataError(
@@ -173,6 +202,8 @@ def _dataset_from_dict(name: str, raw: dict[str, Any]) -> GoldenDataset:
         source=Source(
             authority=src.get("authority", ""),
             reference=src.get("reference", ""),
+            publication_year=str(src.get("publication_year", "")),
+            convention=src.get("convention", ""),
             retrieved=src.get("retrieved", ""),
             verified_by=src.get("verified_by", ""),
             notes=src.get("notes", ""),
@@ -183,6 +214,7 @@ def _dataset_from_dict(name: str, raw: dict[str, Any]) -> GoldenDataset:
             rationale=tol.get("rationale", "n/a"),
         ),
         entries=tuple(raw.get("entries", ())),
+        required_entry_fields=tuple(raw.get("required_entry_fields", ())),
         reconciled_under_provenance=raw.get("reconciled_under_provenance", ""),
         schema_version=int(raw.get("schema_version", SCHEMA_VERSION)),
         todo=raw.get("todo", ""),

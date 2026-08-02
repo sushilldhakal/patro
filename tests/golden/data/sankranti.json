@@ -7,7 +7,9 @@
     "reference": "",
     "retrieved": "",
     "verified_by": "",
-    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+    "notes": "UNPOPULATED. REQUIRED in source.convention. State: which ayanamsha; whether the printed instant is the true ingress or rounded; and the day-assignment rule (e.g. 'sankranti before midnight belongs to that day' vs a sunrise-based rule). This rule IS the cultural logic under test — without it a disagreement cannot be adjudicated. Do not fill from this engine's own output — the loader rejects a self-referential authority.",
+    "convention": "",
+    "publication_year": ""
   },
   "tolerance": {
     "value": 120.0,
@@ -15,15 +17,30 @@
     "rationale": "Published patro sankranti times are printed to the minute; 120 s accepts a printed-minute difference plus the ayanamsha-formula spread, which shifts an ingress instant more than it shifts a longitude."
   },
   "reconciled_under_provenance": "",
-  "todo": "Needs 12 sankranti instants for one BS year from an authoritative Nepali patro (Nepal Panchanga Nirnayak Samiti preferred, since its dates are what the product is measured against). A BS year with a known-awkward boundary is more valuable than an easy one.",
+  "todo": "PRIORITY 1 — gates Phase 7 cultural-rule extraction. Needs the 12 sankranti (solar ingress) instants for ONE Bikram Sambat year from an authoritative Nepali patro. Nepal Panchanga Nirnayak Samiti is preferred because its dates are what the product is measured against. A year containing a known-awkward boundary (an ingress within a few minutes of midnight or of sunrise) is worth more than an easy year, because that is where a convention difference shows up. For each: rashi, the ingress instant in local time, and the BS date the patro assigns the day — the assignment rule is the cultural rule being validated.",
   "entry_shape": {
-    "id": "str",
-    "rashi": "int 1-12",
-    "expected": {
-      "instant_local": "YYYY-MM-DDTHH:MM",
-      "bs_date": "YYYY-MM-DD"
+    "id": "str, e.g. mesh_2083",
+    "rashi": "int 1-12 (1 = Mesh)",
+    "observer": {
+      "lat": "float",
+      "lon": "float",
+      "altitude": "float metres",
+      "timezone": "IANA",
+      "name": "str"
     },
-    "observer": "see sunrise_sunset.json"
+    "ayanamsha": "str — which ayanamsha the patro uses (usually lahiri; state if not)",
+    "expected": {
+      "instant_local": "YYYY-MM-DDTHH:MM (as printed by the patro)",
+      "bs_date": "YYYY-MM-DD in BS — the day the patro assigns"
+    }
   },
-  "entries": []
+  "entries": [],
+  "priority": 1,
+  "required_entry_fields": [
+    "ayanamsha",
+    "expected",
+    "id",
+    "observer",
+    "rashi"
+  ]
 }

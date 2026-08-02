@@ -7,7 +7,9 @@
     "reference": "",
     "retrieved": "",
     "verified_by": "",
-    "notes": "UNPOPULATED. Do not fill from this engine's own output - that would be a regression baseline, and the runner rejects it. Needs a published almanac, observatory table, or an authority the maintainer designates."
+    "notes": "UNPOPULATED. REQUIRED. State the definition used: geocentric apparent solar longitude reaching 0/90/180/270 degrees TROPICAL, and the timescale of the published instant (UTC vs TT — these differ by delta-T, ~69 s today, which is larger than the 60 s tolerance). Do not fill from this engine's own output — the loader rejects a self-referential authority.",
+    "convention": "",
+    "publication_year": ""
   },
   "tolerance": {
     "value": 60.0,
@@ -15,14 +17,21 @@
     "rationale": "Observatory-published equinox instants are given to the minute or better. 60 s is far tighter than the ~8 s difference between the current Meeus series and Swiss Ephemeris, so this dataset can adjudicate between them rather than merely tolerate both."
   },
   "reconciled_under_provenance": "",
-  "todo": "HIGHEST PRIORITY. Needs equinox/solstice instants for a handful of years from an observatory source (USNO, IMCCE) - explicit approval required before fetching. Until this exists the tropical_seasons migration cannot be verified against anything except the implementation it would replace.",
+  "todo": "PRIORITY 3 — unlocks the tropical_seasons migration deferred in docs/engine-boundary-audit.md section 4. Needs March-equinox / June-solstice / September-equinox / December-solstice instants in UTC for a handful of years, spread across the range (e.g. 1950, 2000, 2026, 2050). Source must be an observatory or national ephemeris — USNO, IMCCE, or the Astronomical Almanac. REQUIRES EXPLICIT APPROVAL before fetching from the web. Tolerance is deliberately 60 s, tighter than the ~8 s difference between the current Meeus series and Swiss Ephemeris, so this dataset can ADJUDICATE between them rather than merely tolerate both.",
   "entry_shape": {
-    "id": "str",
+    "id": "str, e.g. march_equinox_2026",
     "year": "int",
     "event": "march_equinox|june_solstice|september_equinox|december_solstice",
     "expected": {
       "instant_utc": "YYYY-MM-DDTHH:MM:SSZ"
     }
   },
-  "entries": []
+  "entries": [],
+  "priority": 3,
+  "required_entry_fields": [
+    "event",
+    "expected",
+    "id",
+    "year"
+  ]
 }

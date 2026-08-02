@@ -263,6 +263,18 @@ over the precession cycle, or published Nepali patro sunrise tables.
 
 ### W8 — Culture is welded to computation
 
+> **Corrected 2026-08-02 during Phase 7 preparation.** Two claims below are wrong.
+> (a) The festival rules are **already declarative** — 578 rules in
+> `rules/festival_rules_v3.json`, with `rules/engine.py` only 189 lines of thin
+> matchers over them. (b) "No Ekadashi Smarta/Vaishnava split exists anywhere" is
+> **false**: four rules encode it (`yogini-ekadashi-smarta/-vaishnava`,
+> `putrada-ekadashi-smarta/-vaishnava`, tithi 11 vs 12). I had grepped `.py`
+> files only. The split is encoded by *enumeration* rather than
+> *parameterisation* — both variants are emitted together and no tradition
+> selector exists — which is the real gap. `engine/vedic/sait_rules.py` (614
+> lines, 36 cultural constants) remains the one genuinely un-extracted module.
+> See docs/phase-7-preparation.md.
+
 - `engine/vedic/sait_rules.py` (614 LOC) encodes Nepali muhurta convention inline —
   its docstring says so ("conservative and traditionally defensible").
 - `engine/vedic/muhurta_engine.py:548` already swaps a nakshatra allow-list "for a named

@@ -7,7 +7,9 @@
     "reference": "Published longitude for the 1945-12-28 11:30 Kathmandu chart; carried forward from tests/test_kundali_detail.py::test_rahu_ketu_use_mean_node_matching_drikpanchang.",
     "retrieved": "pre-existing in repository",
     "verified_by": "Established while reverting payload-version 8: the mean node lands within the usual ayanamsha-formula tolerance (Drik 6d34'04\" Mithuna, engine 6d34'29\"), while the true node was off by 16.7 arcminutes (6d50'48\").",
-    "notes": "The single most load-bearing external check in the repository - it decided the mean-vs-true node question, which moves rashi and nakshatra near boundaries."
+    "notes": "The single most load-bearing external check in the repository - it decided the mean-vs-true node question, which moves rashi and nakshatra near boundaries.",
+    "publication_year": "n/a (values established in-repo during the payload-version 8 revert)",
+    "convention": "Sidereal (nirayana) apparent geocentric longitude, Lahiri ayanamsha, MEAN lunar node for Rahu/Ketu. Drik Panchang's default chart settings. Spashta (true) positions, not madhyama."
   },
   "tolerance": {
     "value": 60,
@@ -19,11 +21,30 @@
     {
       "id": "drik_1945_rahu_mean_node",
       "instant_local": "1945-12-28T11:30:00",
-      "observer": {"lat": 27.7172, "lon": 85.3240, "altitude": 0.0, "timezone": "Asia/Kathmandu", "name": "Kathmandu"},
+      "observer": {
+        "lat": 27.7172,
+        "lon": 85.324,
+        "altitude": 0.0,
+        "timezone": "Asia/Kathmandu",
+        "name": "Kathmandu"
+      },
       "ayanamsha": "lahiri",
       "graha": "rahu",
-      "expected": {"longitude_deg": 66.56778, "rashi": 3, "rashi_name": "Mithuna", "dms_in_rashi": "6d34'04\""},
+      "expected": {
+        "longitude_deg": 66.56778,
+        "rashi": 3,
+        "rashi_name": "Mithuna",
+        "dms_in_rashi": "6d34'04\""
+      },
       "note": "Mithuna starts at 60 deg; 6d34'04\" = 6.56778 deg, so absolute longitude 66.56778 deg."
     }
+  ],
+  "required_entry_fields": [
+    "id",
+    "instant_local",
+    "observer",
+    "ayanamsha",
+    "graha",
+    "expected"
   ]
 }
