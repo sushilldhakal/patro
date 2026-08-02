@@ -29,22 +29,37 @@ behaviour, that is the regression harness, not this directory.
 
 ---
 
-## Status
+## Status — all 8 populated, 91 entries
 
-| Dataset | Status | Entries | Authority |
+| Dataset | Entries | Kind | Authority |
 |---|---|---|---|
-| `sunrise_sunset` | ✅ populated | 2 | Drik Panchang; published Nepali panchang |
-| `graha_longitudes` | ✅ populated | 1 | Drik Panchang |
-| `weekday_direction_tables` | ✅ populated | 7 | DrikPanchang |
-| `equinox_solstice` | ⬜ todo | — | **highest priority** — gates the `tropical_seasons` migration |
-| `sankranti` | ⬜ todo | — | needs an authoritative Nepali patro |
-| `eclipses` | ⬜ todo | — | needs NASA GSFC canon or equivalent |
-| `ayanamsha` | ⬜ todo | — | needs a published Lahiri table |
-| `tithi_boundaries` | ⬜ todo | — | needs an authoritative Nepali patro |
+| `tithi_boundaries` | 32 | definition | `(Moon − Sun) mod 360 = n·12°` |
+| `equinox_solstice` | 20 | definition | tropical solar longitude = 0/90/180/270° |
+| `sankranti` | 12 | definition | sidereal solar longitude = (rashi−1)·30° |
+| `ayanamsha` | 11 | definition | tropical − sidereal offset, 4 modes |
+| `weekday_direction_tables` | 7 | publication | DrikPanchang |
+| `eclipses` | 6 | definition | swisseph eclipse search |
+| `sunrise_sunset` | 2 | publication | Drik Panchang; Nepali published panchang |
+| `graha_longitudes` | 1 | publication | Drik Panchang |
 
-The populated three were promoted from values already verified in this repository — they
-were established while fixing real bugs (the valley-dip regression, the mean-vs-true node
-reversal, the Rahu Vasa table copy), so their provenance is the repository's own history.
+**Two source kinds, both legitimate, for different reasons:**
+
+- **`mathematical_definition`** — solved from a stated definition against Swiss Ephemeris by
+  an independent reference solver in `../definitions.py`. Swiss Ephemeris is this engine's
+  astronomical authority, so "the instant tropical solar longitude reaches 0°" is a
+  definition. The solver shares no code with production (plain bisection on `swe.calc_ut`
+  versus production's Brent with its own bracketing), so it catches bracketing errors,
+  convergence failures and rashi off-by-ones. It cannot catch swisseph being wrong — out of
+  scope by definition.
+- **`external_publication`** — a printed almanac, used to compare **conventions** (which day
+  a festival is assigned to, which horizon model an almanac assumes), never to define
+  astronomy. The three publication-backed datasets were promoted from values established in
+  this repository while fixing real bugs.
+
+**What this suite has already caught:** the sankranti comparison failed on first run with a
+systematic ~150 s offset, exposing that the engine used two different ayanamsha variants —
+`FLG_SIDEREAL` for planets but `get_ayanamsa_ut` for the ascendant. See
+`../../docs/ayanamsha-variants.md`.
 
 ---
 
@@ -109,9 +124,8 @@ record that in `notes` and either widen the tolerance with a rationale or drop t
 
 ---
 
-## Known open question
+## Resolved
 
-`swe.get_ayanamsa_ut` and `swe.get_ayanamsa_ex_ut` differ by **~13.9 arcseconds** at J2000.
-The engine uses the former. This sits inside the ~40 arcsec spread already documented
-against Drik Panchang, so it is tolerated rather than resolved. The `ayanamsha` dataset is
-the intended way to settle it.
+The `get_ayanamsa_ut` vs `get_ayanamsa_ex_ut` question — previously open here — was settled
+by this suite and fixed. Only `_ex_ut` matches what `FLG_SIDEREAL` applies; the engine now
+uses it everywhere. `docs/ayanamsha-variants.md`.

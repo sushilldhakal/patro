@@ -352,3 +352,113 @@ class TestTithiBoundaries:
                 f"{entry['id']}: calendar-assignment field(s) {leaked} leaked into "
                 "an astronomy dataset — that belongs in the calendar-rule layer"
             )
+
+
+class TestAyanamsha:
+    DATASET = "ayanamsha"
+
+    MODES = {"lahiri": "SIDM_LAHIRI", "raman": "SIDM_RAMAN",
+             "krishnamurti": "SIDM_KRISHNAMURTI", "true_citra": "SIDM_TRUE_CITRA"}
+
+    def test_production_matches_the_definition(self):
+        """After the unification, the engine's published ayanamsa must equal the
+        independently-derived value. See docs/ayanamsha-variants.md."""
+        import swisseph as swe
+
+        from engine.astronomy.engine import default_engine
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+
+        failures: list[str] = []
+        for entry in ds.entries:
+            mode = getattr(swe, self.MODES[entry["mode"]])
+            got = default_engine.ayanamsa(entry["jd_ut"], mode=mode)
+            want = entry["expected"]["ayanamsha_deg"]
+            delta = abs(got - want) * 3600
+            if delta > ds.tolerance.value:
+                failures.append(
+                    f"{entry['id']}: engine {got:.9f} vs definition {want:.9f} "
+                    f"({delta:.3f} arcsec)"
+                )
+        assert not failures, "\n  ".join(["ayanamsha mismatch:"] + failures)
+
+    def test_lahiri_grows_monotonically_with_time(self):
+        """Precession is one-directional: the ayanamsha increases ~50.3"/year.
+
+        swisseph returns it modulo 360, so the raw values wrap (356.06 deg at
+        1 CE becomes 9.92 deg at 1000 CE). Unwrap before checking — the physical
+        quantity is continuous even though its representation is not. Over the
+        3000 BCE - 3000 CE span the total is ~83 deg, well under one full turn
+        of the 25,772-year cycle.
+        """
+        ds = schema.load(self.DATASET)
+        rows = sorted(
+            (e for e in ds.entries if e["mode"] == "lahiri"), key=lambda e: e["jd_ut"]
+        )
+        raw = [e["expected"]["ayanamsha_deg"] for e in rows]
+        unwrapped = [raw[0]]
+        for value in raw[1:]:
+            turns = round((unwrapped[-1] - value) / 360.0)
+            unwrapped.append(value + 360.0 * turns)
+
+        assert unwrapped == sorted(unwrapped), (
+            f"Lahiri ayanamsha is not monotonic in time: {unwrapped}"
+        )
+        span_years = (rows[-1]["jd_ut"] - rows[0]["jd_ut"]) / 365.2422
+        rate = (unwrapped[-1] - unwrapped[0]) * 3600 / span_years
+        assert 45 < rate < 55, f"precession rate {rate:.1f} arcsec/yr is implausible"
+
+    def test_modes_disagree_as_they_should(self):
+        """There is no single universal ayanamsha — the mode is part of the
+        question. If every mode agreed, the selector would be meaningless."""
+        ds = schema.load(self.DATASET)
+        at_j2000 = {
+            e["mode"]: e["expected"]["ayanamsha_deg"]
+            for e in ds.entries
+            if e["jd_ut"] == 2451545.0
+        }
+        assert len(set(at_j2000.values())) == len(at_j2000), "modes are not distinct"
+
+
+class TestEclipses:
+    DATASET = "eclipses"
+
+    def test_production_matches_the_definition(self):
+        from engine.astronomy.engine import default_engine
+
+        ds = schema.load(self.DATASET)
+        if not ds.is_runnable:
+            pytest.skip(f"{self.DATASET}: {ds.todo}")
+
+        failures: list[str] = []
+        for entry in ds.entries:
+            if entry["kind"] == "solar":
+                got = default_engine.next_solar_eclipse(entry["after_jd_ut"])
+            else:
+                got = default_engine.next_lunar_eclipse(entry["after_jd_ut"])
+            assert got is not None, f"{entry['id']}: engine found no eclipse"
+            delta = abs(got["max_jd"] - entry["expected"]["jd_ut"]) * 86400
+            if delta > ds.tolerance.value:
+                failures.append(
+                    f"{entry['id']}: engine {got['max_jd']:.6f} vs definition "
+                    f"{entry['expected']['jd_ut']:.6f} ({delta:.1f}s)"
+                )
+            if got["type"] != entry["expected"]["type"]:
+                failures.append(
+                    f"{entry['id']}: type {got['type']!r} vs "
+                    f"{entry['expected']['type']!r}"
+                )
+        assert not failures, "\n  ".join(["eclipse mismatch:"] + failures)
+
+    def test_eclipses_recur_on_the_eclipse_season_cycle(self):
+        """Sanity on the physics: successive eclipses of one kind fall ~6 months
+        apart, the eclipse-season interval."""
+        ds = schema.load(self.DATASET)
+        for kind in ("solar", "lunar"):
+            jds = sorted(
+                e["expected"]["jd_ut"] for e in ds.entries if e["kind"] == kind
+            )
+            gaps = [b - a for a, b in zip(jds, jds[1:])]
+            assert all(130 < g < 220 for g in gaps), f"{kind} gaps {gaps} implausible"

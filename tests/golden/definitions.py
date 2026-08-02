@@ -209,3 +209,40 @@ def tithi_boundary_jd(after_jd: float, tolerance_days: float = ONE_SECOND) -> fl
 def tithi_number(jd_ut: float) -> int:
     """1..30 from the elongation. The definition, stated once."""
     return int(elongation(jd_ut) // 12.0) + 1
+
+
+def eclipse_jd(after_jd: float, kind: str) -> tuple[float, int]:
+    """Next solar or lunar eclipse maximum at or after *after_jd*.
+
+    ``swe.sol_eclipse_when_glob`` / ``lun_eclipse_when`` are called **directly**
+    here rather than through ``AstronomyEngine``, so this is an independent path
+    to the same fact. Returns ``(jd_of_maximum, retflag)``.
+
+    An eclipse is not a root-finding problem the way an ingress is — it is a
+    geometric coincidence swisseph searches for — so the "definition" here is
+    swisseph's own eclipse search, and the value of the golden entry is
+    regression against ephemeris change rather than adjudication between solvers.
+    """
+    _ensure_ephemeris()
+    if kind == "solar":
+        retflag, tret = swe.sol_eclipse_when_glob(after_jd, swe.FLG_SWIEPH, 0, False)
+    elif kind == "lunar":
+        retflag, tret = swe.lun_eclipse_when(after_jd, swe.FLG_SWIEPH, 0, False)
+    else:
+        raise ValueError(f"kind must be 'solar' or 'lunar', got {kind!r}")
+    return float(tret[0]), int(retflag)
+
+
+def eclipse_kind_label(retflag: int, kind: str) -> str:
+    """Coarse eclipse type from a swisseph retflag."""
+    if retflag & swe.ECL_TOTAL:
+        return "total"
+    if kind == "solar":
+        if retflag & swe.ECL_ANNULAR_TOTAL:
+            return "hybrid"
+        if retflag & swe.ECL_ANNULAR:
+            return "annular"
+        return "partial"
+    if retflag & swe.ECL_PARTIAL:
+        return "partial"
+    return "penumbral"
