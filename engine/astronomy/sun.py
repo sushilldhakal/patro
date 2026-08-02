@@ -6,9 +6,16 @@ JD. Everything else is location-independent.
 There used to be four sunrise entry points — ``calculate_sunrise``,
 ``calculate_sunrise_civil``, ``calculate_sunrise_civil_next`` and
 ``nepal_patro_solar_event`` — because CE and pre-1 CE days travelled as
-different types and a Nepal observer needs the published-table correction.
+different types and a Nepal observer took a published-table shortcut.
 Picking the wrong one for a given day type was a live footgun, and it was the
 mechanism that forced the era-twin builders to exist.
+
+The Nepal shortcut is gone. It computed rise/set once at a fixed national
+reference latitude on the 86°15′ meridian and shifted it by देशान्तर alone, so
+every Nepali observer got Kathmandu's latitude and two cities on one meridian
+~3° apart returned the same sunrise to the second. Rise/set now always go
+through ``rise_trans_true_hor`` with the observer's own latitude, longitude and
+altitude — देशान्तर is inherent in that longitude, never re-added by hand.
 
 Phase 3 removed the reason for the split, so the collapse is done here:
 
@@ -30,10 +37,6 @@ from typing import Any
 
 from engine.astronomy.engine import EphemerisError, SIDM_LAHIRI, default_engine
 from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-from engine.astronomy.nepal_patro_sun import (
-    nepal_patro_solar_event,
-    should_use_nepal_patro_sun,
-)
 
 LAT_KATHMANDU = 27.7172
 LON_KATHMANDU = 85.3240
@@ -62,10 +65,6 @@ def calculate_sunrise(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
-    if should_use_nepal_patro_sun(latitude, longitude, altitude=altitude):
-        return nepal_patro_solar_event(
-            date_val, latitude, longitude, rise=True, timezone_name=timezone_name,
-        )
     if altitude is None:
         altitude = default_altitude(latitude, longitude)
     result = default_engine.rise(
@@ -83,10 +82,6 @@ def calculate_sunset(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
-    if should_use_nepal_patro_sun(latitude, longitude, altitude=altitude):
-        return nepal_patro_solar_event(
-            date_val, latitude, longitude, rise=False, timezone_name=timezone_name,
-        )
     if altitude is None:
         altitude = default_altitude(latitude, longitude)
     result = default_engine.set(
@@ -104,13 +99,6 @@ def _calculate_sunrise_civil(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
-    greg = date_if_supported(civil.year, civil.month, civil.day)
-    if greg is not None and should_use_nepal_patro_sun(
-        latitude, longitude, altitude=altitude
-    ):
-        return nepal_patro_solar_event(
-            greg, latitude, longitude, rise=True, timezone_name=timezone_name,
-        )
     if altitude is None:
         altitude = default_altitude(latitude, longitude)
     result = default_engine.rise_civil(
@@ -128,13 +116,6 @@ def _calculate_sunset_civil(
     altitude: float | None = None,
     timezone_name: str | None = None,
 ) -> datetime:
-    greg = date_if_supported(civil.year, civil.month, civil.day)
-    if greg is not None and should_use_nepal_patro_sun(
-        latitude, longitude, altitude=altitude
-    ):
-        return nepal_patro_solar_event(
-            greg, latitude, longitude, rise=False, timezone_name=timezone_name,
-        )
     if altitude is None:
         altitude = default_altitude(latitude, longitude)
     result = default_engine.set_civil(
@@ -202,10 +183,10 @@ class SunService:
     def sunrise(self, jd: float, location: Any):
         """Sunrise on the civil day containing *jd*, as a UTC instant.
 
-        Not a bare ``engine.rise``: a Nepal observer is routed through
-        ``nepal_patro_solar_event``, the correction that makes Nepali sunrise
-        match the published patro tables. Reaching for ``engine.rise`` directly
-        silently loses that, which is why this decision belongs in one place.
+        Picks the CE or BCE helper for *jd* and passes the observer's own
+        latitude, longitude and altitude straight through to
+        ``rise_trans_true_hor``. No reference-latitude or देशान्तर-only
+        substitution happens on the way.
         """
         civil = CivilDay.from_jd_ut(jd)
         real_date = date_if_supported(civil.year, civil.month, civil.day)
@@ -226,7 +207,7 @@ class SunService:
     def sunset(self, jd: float, location: Any):
         """Sunset on the civil day containing *jd*, as a UTC instant.
 
-        Same Nepal-patro routing as :meth:`sunrise`.
+        Same true-observer geometry as :meth:`sunrise`.
         """
         civil = CivilDay.from_jd_ut(jd)
         real_date = date_if_supported(civil.year, civil.month, civil.day)
@@ -245,13 +226,18 @@ class SunService:
         )
 
     def sunrise_after(self, instant, location: Any):
-        """Next sunrise at or after *instant* — the panchanga day boundary."""
+        """Next sunrise at or after *instant* — the panchanga day boundary.
+
+        Same observer geometry as :meth:`sunrise`, so a day boundary can never
+        disagree with the sunrise printed for that day.
+        """
         return self._engine.rise_after(
             instant,
             "sun",
             location.lat,
             location.lon,
-            getattr(location, "altitude", 0.0) or 0.0,
+            getattr(location, "altitude", None)
+            or default_altitude(location.lat, location.lon),
         )
 
 

@@ -86,7 +86,11 @@ def compute_deshaantar(
 
     (local_longitude − standard_meridian) × 4 minutes per degree.
     West of the meridian → negative (e.g. Kathmandu ≈ −3:42).
-    East of the meridian → positive. Listed rise/set apply −minutes_total internally.
+    East of the meridian → positive.
+
+    Reference / display value only. Rise and set are computed by Swiss
+    Ephemeris at the observer's own longitude, which already carries this
+    offset — nothing adds ``minutes_total`` to a sunrise.
     """
     delta_min = (local_longitude - standard_meridian_longitude) * 4.0
     return {
@@ -132,12 +136,12 @@ def build_solar_corrections(
         if is_nepal_observer(lat, local_longitude, country=country)
         else None,
         "ishtakaal_note_ne": (
-            "सूचीबद्ध सूर्योदय/अस्तमा देशान्तर (गौरीशंकर ८६° १५′ केन्द्र) समायोजित छ — "
+            "सूचीबद्ध सूर्योदय/अस्त स्थानको वास्तविक अक्षांश र देशान्तरबाट गणना गरिएको हो — "
             "इष्टकाल गणनामा पुनः देशान्तर थप्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
         ),
         "ishtakaal_note_en": (
-            "Listed sunrise/sunset already include Deshaantar from the Gaurishankar "
-            "meridian (86°15′ E); do not apply Deshaantar again for Ishtakaal. "
-            "Belaantar is shown for reference only."
+            "Listed sunrise/sunset are computed from the observer's own latitude "
+            "and longitude, so Deshaantar is already inherent; do not apply it "
+            "again for Ishtakaal. Belaantar is shown for reference only."
         ),
     }
