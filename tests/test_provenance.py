@@ -544,15 +544,19 @@ class TestAyanamshaIsUnified:
     """
 
     def test_no_call_to_the_non_ex_variant_remains(self):
+        # Parse rather than grep: _ayanamsa_degrees' own docstring names the
+        # forbidden function in order to explain why it is forbidden, and a
+        # text search cannot tell that from a call.
+        import ast
+
         offenders: list[str] = []
         for pkg in ("engine", "services", "api", "app", "rules"):
             for path in (ROOT / pkg).rglob("*.py"):
                 if "__pycache__" in path.parts:
                     continue
-                for lineno, line in enumerate(path.read_text().splitlines(), start=1):
-                    code = line.split("#", 1)[0]
-                    if "get_ayanamsa_ut" in code:
-                        offenders.append(f"{path.relative_to(ROOT)}:{lineno}")
+                for node in ast.walk(ast.parse(path.read_text())):
+                    if isinstance(node, ast.Attribute) and node.attr == "get_ayanamsa_ut":
+                        offenders.append(f"{path.relative_to(ROOT)}:{node.lineno}")
         assert not offenders, (
             "swe.get_ayanamsa_ut does not match what FLG_SIDEREAL applies — use "
             "engine.astronomy.engine._ayanamsa_degrees: " + ", ".join(offenders)
