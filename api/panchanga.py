@@ -828,14 +828,48 @@ def nepal_sait_for_category(bs_year: int, category: str, location: LocationDep):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+def _apply_tradition(festivals: list, tradition_value: str | None) -> tuple[list, str]:
+    """Filter a computed festival list to one observing tradition.
+
+    Applied on READ rather than baked into the cache key: the cached payload is
+    the superset (``all``), and filtering it is a list comprehension over ~550
+    entries. Keying the cache per tradition would multiply every stored year by
+    the number of traditions to remove one festival from each.
+    """
+    from engine.vedic import tradition as tradition_module
+    from services.holiday_generator import load_rules
+
+    try:
+        resolved = tradition_module.normalize(tradition_value)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if resolved == tradition_module.DEFAULT:
+        return festivals, resolved
+    return tradition_module.filter_entries(festivals, resolved, load_rules()), resolved
+
+
 @router.get("/nepal/festivals")
 def nepal_festivals(
     location: LocationDep,
     year: int = Query(..., description="Year to query"),
     era: EraQuery = "bs",
     month: int | None = Query(None, ge=1, le=12, description="Month filter"),
+    tradition: str | None = Query(
+        None,
+        description="Observing tradition: all (default), smarta or vaishnava. "
+                    "Selects which Ekadashi vrata dates apply.",
+    ),
 ):
     """All Nepal festivals (including regional) with both BS and AD dates."""
+    # Validate before any lookup: a malformed parameter is a 400 regardless of
+    # whether the requested year happens to be cached.
+    from engine.vedic import tradition as _tradition_module
+
+    try:
+        _tradition_module.normalize(tradition)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     if era == "ad":
         from services.holiday_generator import get_bs_festivals
         seen: dict[str, Any] = {}
@@ -856,8 +890,14 @@ def nepal_festivals(
             festivals = [f for f in festivals
                          if date.fromisoformat(f["start_date"]) <= m_end
                          and date.fromisoformat(f["end_date"]) >= m_start]
-        enriched = _enrich_holiday_bs_dates(festivals)
-        return {"ad_year": year, "era": "ad", "count": len(enriched), "festivals": enriched}
+        enriched, resolved_tradition = _apply_tradition(
+            _enrich_holiday_bs_dates(festivals), tradition
+        )
+        payload = {"ad_year": year, "era": "ad", "count": len(enriched),
+                   "festivals": enriched}
+        if tradition is not None:
+            payload["tradition"] = resolved_tradition
+        return payload
 
     if era in ("bc",):
         raise HTTPException(
@@ -871,10 +911,14 @@ def nepal_festivals(
         payload = get_bs_festivals(signed, location, bs_month=month)
     except FestivalCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-    enriched = _enrich_holiday_bs_dates(payload["festivals"])
+    enriched, resolved_tradition = _apply_tradition(
+        _enrich_holiday_bs_dates(payload["festivals"]), tradition
+    )
     result: dict[str, Any] = {**payload, "era": era, "count": len(enriched), "festivals": enriched}
     if era == "bbs":
         result["bbs"] = year
+    if tradition is not None:
+        result["tradition"] = resolved_tradition
     return result
 
 
