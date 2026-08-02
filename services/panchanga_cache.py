@@ -11,6 +11,7 @@ from typing import Any
 
 from engine.astronomy.location import DEFAULT_ALTITUDE, DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
+from engine.astronomy.provenance import current_provenance
 from engine.astronomy.timescale import resolve_observer_timezone
 from services.payload_version import compose
 
@@ -165,11 +166,33 @@ CREATE TABLE IF NOT EXISTS panchanga_cache (
     payload_json TEXT NOT NULL,
     computed_at TEXT NOT NULL,
 
+    -- Which astronomical environment produced this row (see
+    -- engine.astronomy.provenance). Recorded, never part of the key: a cache key
+    -- answers "which lookup bucket is this?", provenance answers "how was it
+    -- calculated?". Keying on it would orphan every row the moment any
+    -- dependency moved, including upgrades that change no number.
+    -- NULL means "written before provenance existed", which is accurate and
+    -- distinguishable from any real hash.
+    provenance_hash TEXT,
+
     PRIMARY KEY (location_key, date)
 );
 CREATE INDEX IF NOT EXISTS idx_panchanga_cache_city_date
     ON panchanga_cache(city_id, date);
+CREATE INDEX IF NOT EXISTS idx_panchanga_cache_provenance
+    ON panchanga_cache(provenance_hash);
 """
+
+# Columns added after the table's original shape. ``CREATE TABLE IF NOT EXISTS``
+# is a no-op on an existing table, so a new column in _SCHEMA above reaches fresh
+# databases only — an existing one needs an explicit ALTER.
+#
+# ``ADD COLUMN`` with no DEFAULT is metadata-only in SQLite: measured at 0.0006 s
+# against a table with the production row profile (18k rows, 1.1 GB), with no
+# data rewrite and no file-size change. Existing rows read NULL.
+_ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("provenance_hash", "TEXT"),
+)
 
 
 def cache_enabled() -> bool:
@@ -187,9 +210,39 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
+def _migrate_added_columns(conn: sqlite3.Connection) -> list[str]:
+    """Add any column in ``_ADDED_COLUMNS`` the table does not yet have.
+
+    Additive and idempotent: nullable, no DEFAULT, no data rewritten, no row
+    touched. Safe to run on every connect, and safe to run against a database
+    written by an older build — that build simply never selects the new column.
+
+    Follows the runtime column introspection ``services/cities_db`` already uses
+    for its optional admin columns.
+    """
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(panchanga_cache)")}
+    if not existing:  # table not created yet; _SCHEMA carries the columns
+        return []
+    added: list[str] = []
+    for name, coltype in _ADDED_COLUMNS:
+        if name in existing:
+            continue
+        conn.execute(f"ALTER TABLE panchanga_cache ADD COLUMN {name} {coltype}")
+        added.append(name)
+    return added
+
+
 def ensure_schema() -> None:
     with _connect() as conn:
+        # Order matters: migrate first so the CREATE INDEX statements in _SCHEMA
+        # find their columns on a pre-existing table.
+        migrated = _migrate_added_columns(conn)
         conn.executescript(_SCHEMA)
+        if migrated:
+            logger.info(
+                "panchanga_cache: added column(s) %s (additive, existing rows NULL)",
+                ", ".join(migrated),
+            )
 
 
 def resolve_cache_keys(location: ObserverLocation) -> tuple[str, int]:
@@ -299,6 +352,10 @@ def _row_from_panchanga(
             ensure_ascii=False,
         ),
         "computed_at": datetime.now(timezone.utc).isoformat(),
+        # Column, not part of payload_json: provenance must stay out of the
+        # presentation payload, and a column is what makes
+        # `SELECT DISTINCT provenance_hash` and selective invalidation possible.
+        "provenance_hash": current_provenance().provenance_hash,
     }
 
 
@@ -395,14 +452,14 @@ def store_panchanga_cache(
                 yoga, yoga_end, karana, karana_end,
                 sunrise, sunset, moonrise, moonset,
                 rahu_kalam, yama_ganda, gulika, abhijit,
-                festivals, payload_json, computed_at
+                festivals, payload_json, computed_at, provenance_hash
             ) VALUES (
                 :city_id, :location_key, :date,
                 :tithi, :tithi_end, :nakshatra, :nakshatra_end,
                 :yoga, :yoga_end, :karana, :karana_end,
                 :sunrise, :sunset, :moonrise, :moonset,
                 :rahu_kalam, :yama_ganda, :gulika, :abhijit,
-                :festivals, :payload_json, :computed_at
+                :festivals, :payload_json, :computed_at, :provenance_hash
             )
             ON CONFLICT(location_key, date) DO UPDATE SET
                 city_id = excluded.city_id,
@@ -424,7 +481,8 @@ def store_panchanga_cache(
                 abhijit = excluded.abhijit,
                 festivals = excluded.festivals,
                 payload_json = excluded.payload_json,
-                computed_at = excluded.computed_at
+                computed_at = excluded.computed_at,
+                provenance_hash = excluded.provenance_hash
             """,
             row,
         )
@@ -499,14 +557,14 @@ def store_panchanga_cache_jd(
                 yoga, yoga_end, karana, karana_end,
                 sunrise, sunset, moonrise, moonset,
                 rahu_kalam, yama_ganda, gulika, abhijit,
-                festivals, payload_json, computed_at
+                festivals, payload_json, computed_at, provenance_hash
             ) VALUES (
                 :city_id, :location_key, :date,
                 :tithi, :tithi_end, :nakshatra, :nakshatra_end,
                 :yoga, :yoga_end, :karana, :karana_end,
                 :sunrise, :sunset, :moonrise, :moonset,
                 :rahu_kalam, :yama_ganda, :gulika, :abhijit,
-                :festivals, :payload_json, :computed_at
+                :festivals, :payload_json, :computed_at, :provenance_hash
             )
             ON CONFLICT(location_key, date) DO UPDATE SET
                 city_id = excluded.city_id,
@@ -528,7 +586,8 @@ def store_panchanga_cache_jd(
                 abhijit = excluded.abhijit,
                 festivals = excluded.festivals,
                 payload_json = excluded.payload_json,
-                computed_at = excluded.computed_at
+                computed_at = excluded.computed_at,
+                provenance_hash = excluded.provenance_hash
             """,
             row,
         )

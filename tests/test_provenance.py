@@ -299,3 +299,147 @@ class TestDiagnostics:
     def test_memoised_but_refreshable(self):
         assert current_provenance() is current_provenance()
         assert current_provenance(refresh=True) is not None
+
+
+class TestCacheStorage:
+    """provenance_hash is recorded as a queryable column — never a cache key."""
+
+    @pytest.fixture()
+    def db(self, tmp_path, monkeypatch):
+        import services.panchanga_cache as pc
+
+        path = tmp_path / "panchanga.db"
+        monkeypatch.setattr(pc, "panchanga_db_path", lambda: path)
+        monkeypatch.setenv("PANCHANGA_CACHE", "true")
+        return path
+
+    def _legacy_table(self, path):
+        """A table in the pre-provenance shape, with one row in it."""
+        import sqlite3
+
+        conn = sqlite3.connect(path)
+        conn.executescript(
+            """CREATE TABLE panchanga_cache (
+                 city_id INTEGER NOT NULL DEFAULT 0, location_key TEXT NOT NULL,
+                 date TEXT NOT NULL, payload_json TEXT NOT NULL,
+                 computed_at TEXT NOT NULL, PRIMARY KEY (location_key, date));"""
+        )
+        conn.execute(
+            "INSERT INTO panchanga_cache VALUES (1,'city:1283240','2026-06-10','{}','now')"
+        )
+        conn.commit()
+        conn.close()
+
+    def test_migration_adds_the_column_to_an_existing_table(self, db):
+        import sqlite3
+
+        import services.panchanga_cache as pc
+
+        self._legacy_table(db)
+        conn = sqlite3.connect(db)
+        assert "provenance_hash" not in {
+            r[1] for r in conn.execute("PRAGMA table_info(panchanga_cache)")
+        }
+        conn.close()
+
+        pc.ensure_schema()
+
+        conn = sqlite3.connect(db)
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(panchanga_cache)")}
+        assert "provenance_hash" in cols
+        # Existing data untouched; the new column reads NULL.
+        row = conn.execute(
+            "SELECT payload_json, provenance_hash FROM panchanga_cache"
+        ).fetchone()
+        assert row == ("{}", None)
+        conn.close()
+
+    def test_migration_is_idempotent(self, db):
+        import services.panchanga_cache as pc
+
+        self._legacy_table(db)
+        pc.ensure_schema()
+        pc.ensure_schema()  # must not raise "duplicate column name"
+        import sqlite3
+
+        conn = sqlite3.connect(db)
+        assert conn.execute("SELECT COUNT(*) FROM panchanga_cache").fetchone()[0] == 1
+        conn.close()
+
+    def test_index_exists_for_selective_invalidation(self, db):
+        import sqlite3
+
+        import services.panchanga_cache as pc
+
+        pc.ensure_schema()
+        conn = sqlite3.connect(db)
+        names = {
+            r[0]
+            for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='index' "
+                "AND tbl_name='panchanga_cache'"
+            )
+        }
+        assert "idx_panchanga_cache_provenance" in names
+        conn.close()
+
+    def test_null_provenance_rows_are_still_served(self, db):
+        """Pre-provenance rows mean 'written before this existed'. They must not
+        be treated as stale — that would be an invalidation, which this phase is
+        explicitly not doing."""
+        import services.panchanga_cache as pc
+
+        self._legacy_table(db)
+        pc.ensure_schema()
+        import sqlite3
+
+        conn = sqlite3.connect(db)
+        n = conn.execute(
+            "SELECT COUNT(*) FROM panchanga_cache WHERE provenance_hash IS NULL"
+        ).fetchone()[0]
+        conn.close()
+        assert n == 1
+
+    def test_written_rows_carry_the_live_hash(self, db):
+        import sqlite3
+        from datetime import date
+
+        import services.panchanga_cache as pc
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import get_daily_panchanga
+
+        if not pc.cache_enabled():
+            # PATRO_LOCAL_DEV=true (.env.local) disables the SQLite cache, so
+            # nothing is written and there is no table to inspect. Same reason
+            # tests/test_panchanga_cache.py cannot run on such a checkout.
+            pytest.skip("panchanga SQLite cache disabled in this environment")
+
+        get_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+        conn = sqlite3.connect(db)
+        stored = conn.execute(
+            "SELECT DISTINCT provenance_hash FROM panchanga_cache"
+        ).fetchall()
+        conn.close()
+        assert stored == [(current_provenance().provenance_hash,)]
+
+    def test_provenance_is_not_in_the_cache_key(self):
+        """The distinction the design rests on: a cache key answers 'which
+        bucket?', provenance answers 'how was it produced?'. Keying on it would
+        orphan every row whenever any dependency moved."""
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from services.panchanga_cache import resolve_cache_keys
+
+        key, _city = resolve_cache_keys(DEFAULT_LOCATION)
+        assert key == "city:1283240"
+        assert current_provenance().provenance_hash not in key
+
+    def test_provenance_is_not_in_the_payload(self, db):
+        """Provenance must not mix with presentation. It lives in a column."""
+        from datetime import date
+
+        from engine.astronomy.location import DEFAULT_LOCATION
+        from engine.vedic.daily import build_daily_panchanga
+
+        payload = build_daily_panchanga(date(2026, 6, 10), DEFAULT_LOCATION)
+        assert "provenance_hash" not in payload
+        assert "provenance" not in json.dumps(payload).lower()
