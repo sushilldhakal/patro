@@ -40,7 +40,13 @@ from engine.astronomy.jd_calendar import CivilDay, date_if_supported
 
 LAT_KATHMANDU = 27.7172
 LON_KATHMANDU = 85.3240
-ALT_KATHMANDU = 1400.0
+# ``ALT_KATHMANDU = 1400.0`` used to live here, unreferenced. It was a loaded
+# gun: the obvious-looking next step is to feed it to ``default_altitude``, and
+# doing so regresses sunrise by ~7 minutes for the reason that function's
+# docstring gives. Removed rather than left lying around. If you need the
+# valley's terrain elevation for a deliberate opt-in, pass it at the call site
+# (``calculate_sunrise(..., altitude=1400.0)``) — see
+# tests/test_horizon_dip.py, which pins both behaviours.
 
 
 def default_altitude(latitude: float, longitude: float) -> float:
@@ -51,6 +57,11 @@ def default_altitude(latitude: float, longitude: float) -> float:
     ~7 min each (a flat 14h00m day). The valley's real horizon is the
     surrounding hills (above the astronomical horizon), so the sea-cliff dip
     is unphysical here; sea level matches standard published panchang times.
+
+    This is the resolver for callers holding bare ``lat``/``lon`` floats. A
+    caller holding an ``ObserverLocation`` reads ``location.altitude``, whose
+    default (``location.DEFAULT_ALTITUDE``) is the same 0.0 — the two must
+    agree, and ``tests/test_observer_model.py`` asserts that they do.
     """
     return 0.0
 
@@ -195,12 +206,14 @@ class SunService:
                 civil,
                 latitude=location.lat,
                 longitude=location.lon,
+                altitude=location.altitude,
                 timezone_name=location.timezone,
             )
         return calculate_sunrise(
             real_date,
             latitude=location.lat,
             longitude=location.lon,
+            altitude=location.altitude,
             timezone_name=location.timezone,
         )
 
@@ -216,12 +229,14 @@ class SunService:
                 civil,
                 latitude=location.lat,
                 longitude=location.lon,
+                altitude=location.altitude,
                 timezone_name=location.timezone,
             )
         return calculate_sunset(
             real_date,
             latitude=location.lat,
             longitude=location.lon,
+            altitude=location.altitude,
             timezone_name=location.timezone,
         )
 
@@ -236,8 +251,7 @@ class SunService:
             "sun",
             location.lat,
             location.lon,
-            getattr(location, "altitude", None)
-            or default_altitude(location.lat, location.lon),
+            location.altitude,
         )
 
 

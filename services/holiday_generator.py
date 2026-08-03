@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.vedic import tradition as tradition_module
 from engine.vedic.bikram_sambat import (
     bs_year_date_range,
     get_bs_month_length,
@@ -231,12 +232,23 @@ def _apply_gregorian_year_overrides(
 def generate_festivals(
     gregorian_year: int,
     location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    tradition: str = tradition_module.DEFAULT,
 ) -> dict[str, Any]:
-    """All computed festivals/observances for a Gregorian year."""
+    """All computed festivals/observances for a Gregorian year.
+
+    ``tradition`` selects which observing tradition's rules apply. The default
+    (``"all"``) emits every rule, including both the Smarta and Vaishnava
+    variants of the Ekadashi vratas — which is what this function did before a
+    selector existed, so the default changes nothing.
+    """
+    tradition = tradition_module.normalize(tradition)
     rules = load_rules()
     festivals: list[dict[str, Any]] = []
 
     for festival_id, rule in rules.items():
+        if not tradition_module.rule_applies(rule, tradition):
+            continue
         dates = compute_festival_dates(festival_id, rule, gregorian_year, location)
         if dates is None:
             continue
@@ -259,6 +271,10 @@ def generate_festivals(
         "count": len(festivals),
         "festivals": festivals,
     }
+    # Additive, and only when a caller actually selected one: keeping the key
+    # absent under the default leaves every existing payload byte-identical.
+    if tradition != tradition_module.DEFAULT:
+        payload["tradition"] = tradition
     return stamp_payload(payload, location.cache_key())
 
 

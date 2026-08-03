@@ -10,7 +10,7 @@ from datetime import date
 from typing import Any
 
 from services.presentation.helpers import (
-    ENGINE_VERSION,
+    RENDERER_VERSION,
     build_special_block,
     end_time_hhmm,
     festival_list,
@@ -124,7 +124,7 @@ def to_canonical(daily_state: dict[str, Any]) -> dict[str, Any]:
         ),
         "meta": {
             "format": "surya_canonical",
-            "engine_version": ENGINE_VERSION,
+            "engine_version": RENDERER_VERSION,
             "from_cache": daily_state.get("from_cache", False),
         },
     }

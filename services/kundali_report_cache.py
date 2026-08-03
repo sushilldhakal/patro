@@ -15,6 +15,7 @@ from typing import Any
 
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.paths import kundali_db_path
+from engine.astronomy.provenance import current_provenance
 from services.panchanga_cache import resolve_cache_keys
 from services.payload_version import compose
 
@@ -52,11 +53,25 @@ CREATE TABLE IF NOT EXISTS kundali_report_cache (
     ayanamsha TEXT NOT NULL,
     lang TEXT NOT NULL,
     payload_json TEXT NOT NULL,
-    computed_at TEXT NOT NULL
+    computed_at TEXT NOT NULL,
+
+    -- Which astronomical environment produced this report. Recorded, never
+    -- keyed: the identity of a calculation (birth instant, location, ayanamsha,
+    -- language) is what the cache_key already carries; provenance answers the
+    -- separate question of how it was computed. See
+    -- engine.astronomy.provenance and docs/calculation-identity.md.
+    provenance_hash TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_kundali_report_cache_lookup
     ON kundali_report_cache(birth_instant, location_key, ayanamsha, lang);
+CREATE INDEX IF NOT EXISTS idx_kundali_report_cache_provenance
+    ON kundali_report_cache(provenance_hash);
 """
+
+# See services.panchanga_cache._ADDED_COLUMNS — same additive-migration pattern.
+_ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("provenance_hash", "TEXT"),
+)
 
 
 def cache_enabled() -> bool:
@@ -72,9 +87,29 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
+def _migrate_added_columns(conn: sqlite3.Connection) -> list[str]:
+    """Add missing columns to an existing table. Additive, nullable, idempotent."""
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(kundali_report_cache)")}
+    if not existing:
+        return []
+    added: list[str] = []
+    for name, coltype in _ADDED_COLUMNS:
+        if name in existing:
+            continue
+        conn.execute(f"ALTER TABLE kundali_report_cache ADD COLUMN {name} {coltype}")
+        added.append(name)
+    return added
+
+
 def ensure_schema() -> None:
     with _connect() as conn:
+        migrated = _migrate_added_columns(conn)
         conn.executescript(_SCHEMA)
+        if migrated:
+            logger.info(
+                "kundali_report_cache: added column(s) %s (additive, existing rows NULL)",
+                ", ".join(migrated),
+            )
 
 
 def make_cache_key(
@@ -145,6 +180,7 @@ def store_report_cache(
         "lang": lang,
         "payload_json": json.dumps(payload, ensure_ascii=False),
         "computed_at": datetime.now(timezone.utc).isoformat(),
+        "provenance_hash": current_provenance().provenance_hash,
     }
 
     with _connect() as conn:
@@ -152,10 +188,10 @@ def store_report_cache(
             """
             INSERT INTO kundali_report_cache (
                 cache_key, birth_instant, location_key, ayanamsha, lang,
-                payload_json, computed_at
+                payload_json, computed_at, provenance_hash
             ) VALUES (
                 :cache_key, :birth_instant, :location_key, :ayanamsha, :lang,
-                :payload_json, :computed_at
+                :payload_json, :computed_at, :provenance_hash
             )
             ON CONFLICT(cache_key) DO UPDATE SET
                 birth_instant = excluded.birth_instant,
@@ -163,7 +199,8 @@ def store_report_cache(
                 ayanamsha = excluded.ayanamsha,
                 lang = excluded.lang,
                 payload_json = excluded.payload_json,
-                computed_at = excluded.computed_at
+                computed_at = excluded.computed_at,
+                provenance_hash = excluded.provenance_hash
             """,
             row,
         )

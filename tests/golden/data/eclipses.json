@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "priority": 5,
+  "description": "Global eclipse maxima and types. Regression against ephemeris change rather than adjudication between solvers.",
+  "source": {
+    "authority": "Swiss Ephemeris 2.10.03 (DE441) eclipse search",
+    "kind": "mathematical_definition",
+    "definition": "A solar eclipse maximum is the instant of greatest obscuration of the Sun by the Moon as seen from Earth; a lunar eclipse maximum is the instant of deepest immersion of the Moon in Earth's shadow. Unlike an ingress this is a geometric coincidence rather than a root of a monotonic function, so swisseph's own search IS the definition.",
+    "method": "swe.sol_eclipse_when_glob / swe.lun_eclipse_when called directly in tests/golden/definitions.py::eclipse_jd, independently of AstronomyEngine.",
+    "reference": "tests/golden/definitions.py::eclipse_jd",
+    "publication_year": "n/a (derived)",
+    "convention": "Global (not location-specific) maximum, UT timescale. Local visibility is a separate calculation and is deliberately not part of this dataset.",
+    "retrieved": "2026-08-02",
+    "verified_by": "Types and spacing sanity-checked: eclipses recur at ~6-month intervals, consistent with the eclipse-season cycle.",
+    "notes": "Because swisseph's search is the definition here, this dataset detects EPHEMERIS change (a library upgrade moving an eclipse) rather than solver disagreement. That is still the thing most worth catching for eclipses."
+  },
+  "tolerance": {
+    "value": 60,
+    "unit": "seconds",
+    "rationale": "Eclipse maxima are published to the second and the search is deterministic, so any real difference indicates an ephemeris or algorithm change rather than convergence noise. 60 s is loose enough to survive a patch-level refinement while catching a wrong eclipse (which differs by months)."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "required_entry_fields": [
+    "id",
+    "kind",
+    "after_jd_ut",
+    "expected"
+  ],
+  "entries": [
+    {
+      "id": "solar_0",
+      "kind": "solar",
+      "after_jd_ut": 2461041.5,
+      "expected": {
+        "jd_ut": 2461089.008255423,
+        "instant_utc": "2026-02-17T12:11:53Z",
+        "type": "annular"
+      }
+    },
+    {
+      "id": "solar_1",
+      "kind": "solar",
+      "after_jd_ut": 2461094.008255,
+      "expected": {
+        "jd_ut": 2461265.240268718,
+        "instant_utc": "2026-08-12T17:45:59Z",
+        "type": "total"
+      }
+    },
+    {
+      "id": "solar_2",
+      "kind": "solar",
+      "after_jd_ut": 2461270.240269,
+      "expected": {
+        "jd_ut": 2461443.166422351,
+        "instant_utc": "2027-02-06T15:59:39Z",
+        "type": "annular"
+      }
+    },
+    {
+      "id": "lunar_0",
+      "kind": "lunar",
+      "after_jd_ut": 2461041.5,
+      "expected": {
+        "jd_ut": 2461102.981727012,
+        "instant_utc": "2026-03-03T11:33:41Z",
+        "type": "total"
+      }
+    },
+    {
+      "id": "lunar_1",
+      "kind": "lunar",
+      "after_jd_ut": 2461107.981727,
+      "expected": {
+        "jd_ut": 2461280.675670948,
+        "instant_utc": "2026-08-28T04:12:58Z",
+        "type": "partial"
+      }
+    },
+    {
+      "id": "lunar_2",
+      "kind": "lunar",
+      "after_jd_ut": 2461285.675671,
+      "expected": {
+        "jd_ut": 2461457.467278241,
+        "instant_utc": "2027-02-20T23:12:53Z",
+        "type": "penumbral"
+      }
+    }
+  ]
+}

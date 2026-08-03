@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "priority": 3,
+  "description": "Tropical equinox and solstice instants, solved from the definition against Swiss Ephemeris.",
+  "source": {
+    "authority": "Swiss Ephemeris 2.10.03 (DE441) evaluated against a mathematical definition",
+    "kind": "mathematical_definition",
+    "definition": "The instant at which the apparent geocentric TROPICAL solar longitude reaches exactly 0 deg (March equinox), 90 deg (June solstice), 180 deg (September equinox) or 270 deg (December solstice).",
+    "method": "Independent bisection in tests/golden/definitions.py on swe.calc_ut(SUN, FLG_SWIEPH), bracketed +/-20 days around the nominal date, converged to 1 second. Deliberately shares no code with the production solver, which uses Brent's method with its own bracketing.",
+    "reference": "tests/golden/definitions.py::equinox_solstice_jd",
+    "publication_year": "n/a (derived, not published)",
+    "convention": "Apparent geocentric tropical longitude, UT timescale (JD UT, matching the engine's UT contract). No nutation or aberration adjustment beyond what swe.calc_ut applies by default.",
+    "retrieved": "2026-08-02",
+    "verified_by": "Convergence checked: solved longitudes land within 3e-6 deg of target. Cross-check: the 2000 March equinox solves to 2000-03-20 07:35 UT, matching the widely published instant.",
+    "notes": "Derived, not transcribed. Swiss Ephemeris is this engine's astronomical authority, so this dataset verifies the PRODUCTION SOLVER converges to the definition - not that the ephemeris is correct."
+  },
+  "tolerance": {
+    "value": 60,
+    "unit": "seconds",
+    "rationale": "The reference solver converges to 1 s and production targets 60 s. A 60 s tolerance therefore accepts production's own stated precision while still detecting a bracketing or convergence fault, which shows up as minutes or more. It is also far tighter than the ~8 s difference between the Meeus series in tropical_seasons and Swiss Ephemeris, so this dataset can adjudicate that migration."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "required_entry_fields": [
+    "id",
+    "year",
+    "event",
+    "expected"
+  ],
+  "entries": [
+    {
+      "id": "march_equinox_1950",
+      "year": 1950,
+      "event": "march_equinox",
+      "expected": {
+        "jd_ut": 2433361.691044807,
+        "instant_utc": "1950-03-21T04:35:06Z"
+      }
+    },
+    {
+      "id": "june_solstice_1950",
+      "year": 1950,
+      "event": "june_solstice",
+      "expected": {
+        "jd_ut": 2433454.483328819,
+        "instant_utc": "1950-06-21T23:36:00Z"
+      }
+    },
+    {
+      "id": "september_equinox_1950",
+      "year": 1950,
+      "event": "september_equinox",
+      "expected": {
+        "jd_ut": 2433548.113558769,
+        "instant_utc": "1950-09-23T14:43:31Z"
+      }
+    },
+    {
+      "id": "december_solstice_1950",
+      "year": 1950,
+      "event": "december_solstice",
+      "expected": {
+        "jd_ut": 2433637.925900459,
+        "instant_utc": "1950-12-22T10:13:18Z"
+      }
+    },
+    {
+      "id": "march_equinox_2000",
+      "year": 2000,
+      "event": "march_equinox",
+      "expected": {
+        "jd_ut": 2451623.81614399,
+        "instant_utc": "2000-03-20T07:35:15Z"
+      }
+    },
+    {
+      "id": "june_solstice_2000",
+      "year": 2000,
+      "event": "june_solstice",
+      "expected": {
+        "jd_ut": 2451716.574791908,
+        "instant_utc": "2000-06-21T01:47:42Z"
+      }
+    },
+    {
+      "id": "september_equinox_2000",
+      "year": 2000,
+      "event": "september_equinox",
+      "expected": {
+        "jd_ut": 2451810.227490425,
+        "instant_utc": "2000-09-22T17:27:35Z"
+      }
+    },
+    {
+      "id": "december_solstice_2000",
+      "year": 2000,
+      "event": "december_solstice",
+      "expected": {
+        "jd_ut": 2451900.067660332,
+        "instant_utc": "2000-12-21T13:37:26Z"
+      }
+    },
+    {
+      "id": "march_equinox_2026",
+      "year": 2026,
+      "event": "march_equinox",
+      "expected": {
+        "jd_ut": 2461120.115254402,
+        "instant_utc": "2026-03-20T14:45:58Z"
+      }
+    },
+    {
+      "id": "june_solstice_2026",
+      "year": 2026,
+      "event": "june_solstice",
+      "expected": {
+        "jd_ut": 2461212.850356102,
+        "instant_utc": "2026-06-21T08:24:31Z"
+      }
+    },
+    {
+      "id": "september_equinox_2026",
+      "year": 2026,
+      "event": "september_equinox",
+      "expected": {
+        "jd_ut": 2461306.503626823,
+        "instant_utc": "2026-09-23T00:05:13Z"
+      }
+    },
+    {
+      "id": "december_solstice_2026",
+      "year": 2026,
+      "event": "december_solstice",
+      "expected": {
+        "jd_ut": 2461396.368220329,
+        "instant_utc": "2026-12-21T20:50:14Z"
+      }
+    },
+    {
+      "id": "march_equinox_2050",
+      "year": 2050,
+      "event": "march_equinox",
+      "expected": {
+        "jd_ut": 2469885.930317879,
+        "instant_utc": "2050-03-20T10:19:39Z"
+      }
+    },
+    {
+      "id": "june_solstice_2050",
+      "year": 2050,
+      "event": "june_solstice",
+      "expected": {
+        "jd_ut": 2469978.647986412,
+        "instant_utc": "2050-06-21T03:33:06Z"
+      }
+    },
+    {
+      "id": "september_equinox_2050",
+      "year": 2050,
+      "event": "september_equinox",
+      "expected": {
+        "jd_ut": 2470072.311528206,
+        "instant_utc": "2050-09-22T19:28:36Z"
+      }
+    },
+    {
+      "id": "december_solstice_2050",
+      "year": 2050,
+      "event": "december_solstice",
+      "expected": {
+        "jd_ut": 2470162.193612099,
+        "instant_utc": "2050-12-21T16:38:48Z"
+      }
+    },
+    {
+      "id": "march_equinox_2100",
+      "year": 2100,
+      "event": "march_equinox",
+      "expected": {
+        "jd_ut": 2488148.045302391,
+        "instant_utc": "2100-03-20T13:05:14Z"
+      }
+    },
+    {
+      "id": "june_solstice_2100",
+      "year": 2100,
+      "event": "june_solstice",
+      "expected": {
+        "jd_ut": 2488240.731776237,
+        "instant_utc": "2100-06-21T05:33:45Z"
+      }
+    },
+    {
+      "id": "september_equinox_2100",
+      "year": 2100,
+      "event": "september_equinox",
+      "expected": {
+        "jd_ut": 2488334.418082237,
+        "instant_utc": "2100-09-22T22:02:02Z"
+      }
+    },
+    {
+      "id": "december_solstice_2100",
+      "year": 2100,
+      "event": "december_solstice",
+      "expected": {
+        "jd_ut": 2488424.328089714,
+        "instant_utc": "2100-12-21T19:52:27Z"
+      }
+    }
+  ]
+}

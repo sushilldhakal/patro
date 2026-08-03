@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "priority": 2,
+  "description": "Astronomical tithi boundary instants across one synodic month. The BOUNDARY only - which civil day a tithi is credited to is the udaya rule, which is cultural and lives in the calendar-rule layer.",
+  "source": {
+    "authority": "Swiss Ephemeris 2.10.03 (DE441) evaluated against a mathematical definition",
+    "kind": "mathematical_definition",
+    "definition": "A tithi boundary is the instant at which (Moon longitude - Sun longitude) mod 360 reaches an exact multiple of 12 deg. Tithi number = floor(elongation / 12) + 1, giving 30 tithis per synodic month.",
+    "method": "Independent bisection in tests/golden/definitions.py on swe.calc_ut(MOON) - swe.calc_ut(SUN), bracketed over 2 days (a tithi averages ~0.98 days), converged to 1 second. Elongation is monotonic across the bracket, so bisection is safe.",
+    "reference": "tests/golden/definitions.py::tithi_boundary_jd",
+    "publication_year": "n/a (derived, not published)",
+    "convention": "Elongation of APPARENT geocentric longitudes. Ayanamsha-INDEPENDENT: it is a difference of two longitudes, so the ayanamsha cancels - this is why no ayanamsha field appears here, unlike sankranti. UT timescale. 32 consecutive boundaries starting 2026-06-10, covering a full synodic month plus overlap.",
+    "retrieved": "2026-08-02",
+    "verified_by": "Convergence checked: solved elongations land within 4e-5 deg of the target multiple of 12 deg. Boundary spacing averages ~0.98 days, matching the synodic month / 30.",
+    "notes": "Kshaya and adhika tithi are CONSEQUENCES of these boundaries falling either side of sunrise, not separate astronomical events. They belong to the calendar-rule layer and are covered by the byte-identical harness, not here."
+  },
+  "tolerance": {
+    "value": 60,
+    "unit": "seconds",
+    "rationale": "Production's find_tithi_end defaults to tolerance_seconds=60 and the reference converges to 1 s, so 60 s accepts production's stated precision. Near a boundary the Moon moves ~0.5 arcmin/minute, so 60 s corresponds to ~0.5 arcmin of elongation - far below the 12 deg tithi span, yet tight enough that a convergence fault (which moves the answer by hours) is caught."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "required_entry_fields": [
+    "id",
+    "after_jd_ut",
+    "expected"
+  ],
+  "entries": [
+    {
+      "id": "boundary_00",
+      "after_jd_ut": 2461201.5,
+      "expected": {
+        "jd_ut": 2461202.311321259,
+        "instant_utc": "2026-06-10T19:28:18Z",
+        "tithi_ending": 25,
+        "elongation_deg": 300.0
+      }
+    },
+    {
+      "id": "boundary_01",
+      "after_jd_ut": 2461202.321321258,
+      "expected": {
+        "jd_ut": 2461203.213018188,
+        "instant_utc": "2026-06-11T17:06:45Z",
+        "tithi_ending": 26,
+        "elongation_deg": 312.0
+      }
+    },
+    {
+      "id": "boundary_02",
+      "after_jd_ut": 2461203.223018188,
+      "expected": {
+        "jd_ut": 2461204.088302154,
+        "instant_utc": "2026-06-12T14:07:09Z",
+        "tithi_ending": 27,
+        "elongation_deg": 324.0
+      }
+    },
+    {
+      "id": "boundary_03",
+      "after_jd_ut": 2461204.098302154,
+      "expected": {
+        "jd_ut": 2461204.943223266,
+        "instant_utc": "2026-06-13T10:38:14Z",
+        "tithi_ending": 28,
+        "elongation_deg": 336.0
+      }
+    },
+    {
+      "id": "boundary_04",
+      "after_jd_ut": 2461204.953223266,
+      "expected": {
+        "jd_ut": 2461205.78488449,
+        "instant_utc": "2026-06-14T06:50:14Z",
+        "tithi_ending": 29,
+        "elongation_deg": 348.0
+      }
+    },
+    {
+      "id": "boundary_05",
+      "after_jd_ut": 2461205.79488449,
+      "expected": {
+        "jd_ut": 2461206.620953368,
+        "instant_utc": "2026-06-15T02:54:10Z",
+        "tithi_ending": 30,
+        "elongation_deg": 0.0
+      }
+    },
+    {
+      "id": "boundary_06",
+      "after_jd_ut": 2461206.630953368,
+      "expected": {
+        "jd_ut": 2461207.459280547,
+        "instant_utc": "2026-06-15T23:01:22Z",
+        "tithi_ending": 1,
+        "elongation_deg": 12.0
+      }
+    },
+    {
+      "id": "boundary_07",
+      "after_jd_ut": 2461207.469280547,
+      "expected": {
+        "jd_ut": 2461208.307571715,
+        "instant_utc": "2026-06-16T19:22:54Z",
+        "tithi_ending": 2,
+        "elongation_deg": 24.0
+      }
+    },
+    {
+      "id": "boundary_08",
+      "after_jd_ut": 2461208.317571715,
+      "expected": {
+        "jd_ut": 2461209.173021391,
+        "instant_utc": "2026-06-17T16:09:09Z",
+        "tithi_ending": 3,
+        "elongation_deg": 36.0
+      }
+    },
+    {
+      "id": "boundary_09",
+      "after_jd_ut": 2461209.183021391,
+      "expected": {
+        "jd_ut": 2461210.061969602,
+        "instant_utc": "2026-06-18T13:29:14Z",
+        "tithi_ending": 4,
+        "elongation_deg": 48.0
+      }
+    },
+    {
+      "id": "boundary_10",
+      "after_jd_ut": 2461210.071969602,
+      "expected": {
+        "jd_ut": 2461210.979421232,
+        "instant_utc": "2026-06-19T11:30:22Z",
+        "tithi_ending": 5,
+        "elongation_deg": 60.0
+      }
+    },
+    {
+      "id": "boundary_11",
+      "after_jd_ut": 2461210.989421232,
+      "expected": {
+        "jd_ut": 2461211.928588254,
+        "instant_utc": "2026-06-20T10:17:10Z",
+        "tithi_ending": 6,
+        "elongation_deg": 72.0
+      }
+    },
+    {
+      "id": "boundary_12",
+      "after_jd_ut": 2461211.938588254,
+      "expected": {
+        "jd_ut": 2461212.910531156,
+        "instant_utc": "2026-06-21T09:51:10Z",
+        "tithi_ending": 7,
+        "elongation_deg": 84.0
+      }
+    },
+    {
+      "id": "boundary_13",
+      "after_jd_ut": 2461212.920531156,
+      "expected": {
+        "jd_ut": 2461213.923960568,
+        "instant_utc": "2026-06-22T10:10:30Z",
+        "tithi_ending": 8,
+        "elongation_deg": 96.0
+      }
+    },
+    {
+      "id": "boundary_14",
+      "after_jd_ut": 2461213.933960568,
+      "expected": {
+        "jd_ut": 2461214.965405118,
+        "instant_utc": "2026-06-23T11:10:11Z",
+        "tithi_ending": 9,
+        "elongation_deg": 108.0
+      }
+    },
+    {
+      "id": "boundary_15",
+      "after_jd_ut": 2461214.975405117,
+      "expected": {
+        "jd_ut": 2461216.02974548,
+        "instant_utc": "2026-06-24T12:42:50Z",
+        "tithi_ending": 10,
+        "elongation_deg": 120.0
+      }
+    },
+    {
+      "id": "boundary_16",
+      "after_jd_ut": 2461216.03974548,
+      "expected": {
+        "jd_ut": 2461217.111030728,
+        "instant_utc": "2026-06-25T14:39:53Z",
+        "tithi_ending": 11,
+        "elongation_deg": 132.0
+      }
+    },
+    {
+      "id": "boundary_17",
+      "after_jd_ut": 2461217.121030727,
+      "expected": {
+        "jd_ut": 2461218.203325192,
+        "instant_utc": "2026-06-26T16:52:47Z",
+        "tithi_ending": 12,
+        "elongation_deg": 144.0
+      }
+    },
+    {
+      "id": "boundary_18",
+      "after_jd_ut": 2461218.213325191,
+      "expected": {
+        "jd_ut": 2461219.301326443,
+        "instant_utc": "2026-06-27T19:13:55Z",
+        "tithi_ending": 13,
+        "elongation_deg": 156.0
+      }
+    },
+    {
+      "id": "boundary_19",
+      "after_jd_ut": 2461219.311326442,
+      "expected": {
+        "jd_ut": 2461220.400647579,
+        "instant_utc": "2026-06-28T21:36:56Z",
+        "tithi_ending": 14,
+        "elongation_deg": 168.0
+      }
+    },
+    {
+      "id": "boundary_20",
+      "after_jd_ut": 2461220.410647579,
+      "expected": {
+        "jd_ut": 2461221.497702785,
+        "instant_utc": "2026-06-29T23:56:42Z",
+        "tithi_ending": 15,
+        "elongation_deg": 180.0
+      }
+    },
+    {
+      "id": "boundary_21",
+      "after_jd_ut": 2461221.507702785,
+      "expected": {
+        "jd_ut": 2461222.589364009,
+        "instant_utc": "2026-07-01T02:08:41Z",
+        "tithi_ending": 16,
+        "elongation_deg": 192.0
+      }
+    },
+    {
+      "id": "boundary_22",
+      "after_jd_ut": 2461222.599364009,
+      "expected": {
+        "jd_ut": 2461223.672510829,
+        "instant_utc": "2026-07-02T04:08:25Z",
+        "tithi_ending": 17,
+        "elongation_deg": 204.0
+      }
+    },
+    {
+      "id": "boundary_23",
+      "after_jd_ut": 2461223.682510829,
+      "expected": {
+        "jd_ut": 2461224.74367187,
+        "instant_utc": "2026-07-03T05:50:53Z",
+        "tithi_ending": 18,
+        "elongation_deg": 216.0
+      }
+    },
+    {
+      "id": "boundary_24",
+      "after_jd_ut": 2461224.75367187,
+      "expected": {
+        "jd_ut": 2461225.798956141,
+        "instant_utc": "2026-07-04T07:10:30Z",
+        "tithi_ending": 19,
+        "elongation_deg": 228.0
+      }
+    },
+    {
+      "id": "boundary_25",
+      "after_jd_ut": 2461225.808956141,
+      "expected": {
+        "jd_ut": 2461226.834236139,
+        "instant_utc": "2026-07-05T08:01:18Z",
+        "tithi_ending": 20,
+        "elongation_deg": 240.0
+      }
+    },
+    {
+      "id": "boundary_26",
+      "after_jd_ut": 2461226.844236139,
+      "expected": {
+        "jd_ut": 2461227.845643762,
+        "instant_utc": "2026-07-06T08:17:44Z",
+        "tithi_ending": 21,
+        "elongation_deg": 252.0
+      }
+    },
+    {
+      "id": "boundary_27",
+      "after_jd_ut": 2461227.855643762,
+      "expected": {
+        "jd_ut": 2461228.830173029,
+        "instant_utc": "2026-07-07T07:55:27Z",
+        "tithi_ending": 22,
+        "elongation_deg": 264.0
+      }
+    },
+    {
+      "id": "boundary_28",
+      "after_jd_ut": 2461228.840173028,
+      "expected": {
+        "jd_ut": 2461229.786259912,
+        "instant_utc": "2026-07-08T06:52:13Z",
+        "tithi_ending": 23,
+        "elongation_deg": 276.0
+      }
+    },
+    {
+      "id": "boundary_29",
+      "after_jd_ut": 2461229.796259912,
+      "expected": {
+        "jd_ut": 2461230.714133294,
+        "instant_utc": "2026-07-09T05:08:21Z",
+        "tithi_ending": 24,
+        "elongation_deg": 288.0
+      }
+    },
+    {
+      "id": "boundary_30",
+      "after_jd_ut": 2461230.724133294,
+      "expected": {
+        "jd_ut": 2461231.615876,
+        "instant_utc": "2026-07-10T02:46:52Z",
+        "tithi_ending": 25,
+        "elongation_deg": 300.0
+      }
+    },
+    {
+      "id": "boundary_31",
+      "after_jd_ut": 2461231.625876,
+      "expected": {
+        "jd_ut": 2461232.495279839,
+        "instant_utc": "2026-07-10T23:53:12Z",
+        "tithi_ending": 26,
+        "elongation_deg": 312.0
+      }
+    }
+  ]
+}

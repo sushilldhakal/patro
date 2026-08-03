@@ -1,1790 +1,1790 @@
 {
- "_source": "engine/astronomy/{positions,swiss_eph}.py at commit 6034aa2",
- "observer": {
-  "lat": 27.7172,
-  "lon": 85.324,
-  "timezone": "Asia/Kathmandu"
- },
- "rows": [
-  {
-   "jd": 2461252.75,
-   "elongation": 198.682760751,
-   "tithi_number": 17,
-   "paksha": "krishna",
-   "display_tithi": 2,
-   "tithi_progress": 0.556896729,
-   "nakshatra": {
-    "number": 23,
-    "name": "Dhanishta",
-    "progress": 0.689271047
-   },
-   "yoga": {
-    "number": 4,
-    "name": "Saubhagya",
-    "progress": 0.477335037
-   },
-   "karana": {
-    "number": 34,
-    "name": "Garija"
-   },
-   "vara": {
-    "number": 5,
-    "name": "Shukravara",
-    "english": "Friday"
-   },
-   "sun_longitude": 103.840853205,
-   "moon_longitude": 302.523613957,
-   "surya_rashi": {
-    "number": 4,
-    "name": "Karka",
-    "name_ne": "कर्कट",
-    "longitude": 103.840853,
-    "progress": 0.4614
-   },
-   "chandra_rashi": {
-    "number": 11,
-    "name": "Kumbha",
-    "name_ne": "कुम्भ",
-    "longitude": 302.523614,
-    "progress": 0.0841
-   },
-   "aayan": {
-    "name": "Dakshinayana",
-    "name_ne": "दक्षिणायण",
-    "name_sanskrit": "Dakshinayana",
-    "sun_rashi": 4,
-    "basis": "sidereal",
-    "kranti_mark": "द"
-   },
-   "ritu": {
-    "number": 2,
-    "name": "Grishma",
-    "name_sanskrit": "Grishma",
-    "name_ne": "ग्रीष्म",
-    "season": "Summer",
-    "sun_rashi": 4,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 7,
-    "name": "Tula",
-    "name_ne": "तुला",
-    "longitude": 185.923101,
-    "degree_in_rashi": 5.9231,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 103.840853,
-     "speed": 0.956071,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "103°50'27\"",
-     "deg_in_rashi": 13.840853,
-     "dms_in_rashi": "13°50'27\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 302.523614,
-     "speed": 12.475602,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "302°31'25\"",
-     "deg_in_rashi": 2.523614,
-     "dms_in_rashi": "02°31'25\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 84.715777,
-     "speed": 0.727284,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "084°42'57\"",
-     "deg_in_rashi": 24.715777,
-     "dms_in_rashi": "24°42'57\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 149.048507,
-     "speed": 1.041379,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "149°02'55\"",
-     "deg_in_rashi": 29.048507,
-     "dms_in_rashi": "29°02'55\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 58.330386,
-     "speed": 0.67653,
-     "rashi": 2,
-     "rashi_name": "Vrishabha",
-     "rashi_ne": "वृष",
-     "dms": "058°19'49\"",
-     "deg_in_rashi": 28.330386,
-     "dms_in_rashi": "28°19'49\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 102.564584,
-     "speed": 0.221405,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "102°33'53\"",
-     "deg_in_rashi": 12.564584,
-     "dms_in_rashi": "12°33'53\"",
-     "is_retrograde": false,
-     "is_combust": true
-    },
-    "saturn": {
-     "longitude": 350.502244,
-     "speed": -0.007582,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "350°30'08\"",
-     "deg_in_rashi": 20.502244,
-     "dms_in_rashi": "20°30'08\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 306.75435,
-     "speed": -0.052992,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "306°45'16\"",
-     "deg_in_rashi": 6.75435,
-     "dms_in_rashi": "06°45'16\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 126.75435,
-     "speed": 0.052992,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "126°45'16\"",
-     "deg_in_rashi": 6.75435,
-     "dms_in_rashi": "06°45'16\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
+  "_source": "engine/astronomy/{positions,swiss_eph}.py at commit 6034aa2; lagna rows regenerated 2026-08-02 for the ayanamsha unification (get_ayanamsa_ut -> get_ayanamsa_ex_ut, see docs/ayanamsha-variants.md) — no rashi label changed, longitudes moved <= 6.8 arcsec",
+  "observer": {
+    "lat": 27.7172,
+    "lon": 85.324,
+    "timezone": "Asia/Kathmandu"
   },
-  {
-   "jd": 2461289.75,
-   "elongation": 295.553594541,
-   "tithi_number": 25,
-   "paksha": "krishna",
-   "display_tithi": 10,
-   "tithi_progress": 0.629466212,
-   "nakshatra": {
-    "number": 6,
-    "name": "Ardra",
-    "progress": 0.624961094
-   },
-   "yoga": {
-    "number": 17,
-    "name": "Vyatipata",
-    "progress": 0.083402598
-   },
-   "karana": {
-    "number": 50,
-    "name": "Vishti"
-   },
-   "vara": {
-    "number": 0,
-    "name": "Ravivara",
-    "english": "Sunday"
-   },
-   "sun_longitude": 139.445886718,
-   "moon_longitude": 74.999481259,
-   "surya_rashi": {
-    "number": 5,
-    "name": "Simha",
-    "name_ne": "सिंह",
-    "longitude": 139.445887,
-    "progress": 0.6482
-   },
-   "chandra_rashi": {
-    "number": 3,
-    "name": "Mithuna",
-    "name_ne": "मिथुन",
-    "longitude": 74.999481,
-    "progress": 0.5
-   },
-   "aayan": {
-    "name": "Dakshinayana",
-    "name_ne": "दक्षिणायण",
-    "name_sanskrit": "Dakshinayana",
-    "sun_rashi": 5,
-    "basis": "sidereal",
-    "kranti_mark": "द"
-   },
-   "ritu": {
-    "number": 3,
-    "name": "Varsha",
-    "name_sanskrit": "Varsha",
-    "name_ne": "वर्षा",
-    "season": "Monsoon",
-    "sun_rashi": 5,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 8,
-    "name": "Vrishchika",
-    "name_ne": "वृश्चिक",
-    "longitude": 217.258354,
-    "degree_in_rashi": 7.2584,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 139.445887,
-     "speed": 0.969977,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "139°26'45\"",
-     "deg_in_rashi": 19.445887,
-     "dms_in_rashi": "19°26'45\"",
-     "is_retrograde": false,
-     "is_combust": false
+  "rows": [
+    {
+      "jd": 2461252.75,
+      "elongation": 198.682760751,
+      "tithi_number": 17,
+      "paksha": "krishna",
+      "display_tithi": 2,
+      "tithi_progress": 0.556896729,
+      "nakshatra": {
+        "number": 23,
+        "name": "Dhanishta",
+        "progress": 0.689271047
+      },
+      "yoga": {
+        "number": 4,
+        "name": "Saubhagya",
+        "progress": 0.477335037
+      },
+      "karana": {
+        "number": 34,
+        "name": "Garija"
+      },
+      "vara": {
+        "number": 5,
+        "name": "Shukravara",
+        "english": "Friday"
+      },
+      "sun_longitude": 103.840853205,
+      "moon_longitude": 302.523613957,
+      "surya_rashi": {
+        "number": 4,
+        "name": "Karka",
+        "name_ne": "कर्कट",
+        "longitude": 103.840853,
+        "progress": 0.4614
+      },
+      "chandra_rashi": {
+        "number": 11,
+        "name": "Kumbha",
+        "name_ne": "कुम्भ",
+        "longitude": 302.523614,
+        "progress": 0.0841
+      },
+      "aayan": {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": 4,
+        "basis": "sidereal",
+        "kranti_mark": "द"
+      },
+      "ritu": {
+        "number": 2,
+        "name": "Grishma",
+        "name_sanskrit": "Grishma",
+        "name_ne": "ग्रीष्म",
+        "season": "Summer",
+        "sun_rashi": 4,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 7,
+        "name": "Tula",
+        "name_ne": "तुला",
+        "longitude": 185.920457,
+        "degree_in_rashi": 5.9205,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 103.840853,
+          "speed": 0.956071,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "103°50'27\"",
+          "deg_in_rashi": 13.840853,
+          "dms_in_rashi": "13°50'27\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 302.523614,
+          "speed": 12.475602,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "302°31'25\"",
+          "deg_in_rashi": 2.523614,
+          "dms_in_rashi": "02°31'25\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 84.715777,
+          "speed": 0.727284,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "084°42'57\"",
+          "deg_in_rashi": 24.715777,
+          "dms_in_rashi": "24°42'57\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 149.048507,
+          "speed": 1.041379,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "149°02'55\"",
+          "deg_in_rashi": 29.048507,
+          "dms_in_rashi": "29°02'55\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 58.330386,
+          "speed": 0.67653,
+          "rashi": 2,
+          "rashi_name": "Vrishabha",
+          "rashi_ne": "वृष",
+          "dms": "058°19'49\"",
+          "deg_in_rashi": 28.330386,
+          "dms_in_rashi": "28°19'49\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 102.564584,
+          "speed": 0.221405,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "102°33'53\"",
+          "deg_in_rashi": 12.564584,
+          "dms_in_rashi": "12°33'53\"",
+          "is_retrograde": false,
+          "is_combust": true
+        },
+        "saturn": {
+          "longitude": 350.502244,
+          "speed": -0.007582,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "350°30'08\"",
+          "deg_in_rashi": 20.502244,
+          "dms_in_rashi": "20°30'08\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 306.75435,
+          "speed": -0.052992,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "306°45'16\"",
+          "deg_in_rashi": 6.75435,
+          "dms_in_rashi": "06°45'16\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 126.75435,
+          "speed": 0.052992,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "126°45'16\"",
+          "deg_in_rashi": 6.75435,
+          "dms_in_rashi": "06°45'16\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "moon": {
-     "longitude": 74.999481,
-     "speed": 14.313008,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "074°59'58\"",
-     "deg_in_rashi": 14.999481,
-     "dms_in_rashi": "14°59'58\"",
-     "is_retrograde": false,
-     "is_combust": false
+    {
+      "jd": 2461289.75,
+      "elongation": 295.553594541,
+      "tithi_number": 25,
+      "paksha": "krishna",
+      "display_tithi": 10,
+      "tithi_progress": 0.629466212,
+      "nakshatra": {
+        "number": 6,
+        "name": "Ardra",
+        "progress": 0.624961094
+      },
+      "yoga": {
+        "number": 17,
+        "name": "Vyatipata",
+        "progress": 0.083402598
+      },
+      "karana": {
+        "number": 50,
+        "name": "Vishti"
+      },
+      "vara": {
+        "number": 0,
+        "name": "Ravivara",
+        "english": "Sunday"
+      },
+      "sun_longitude": 139.445886718,
+      "moon_longitude": 74.999481259,
+      "surya_rashi": {
+        "number": 5,
+        "name": "Simha",
+        "name_ne": "सिंह",
+        "longitude": 139.445887,
+        "progress": 0.6482
+      },
+      "chandra_rashi": {
+        "number": 3,
+        "name": "Mithuna",
+        "name_ne": "मिथुन",
+        "longitude": 74.999481,
+        "progress": 0.5
+      },
+      "aayan": {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": 5,
+        "basis": "sidereal",
+        "kranti_mark": "द"
+      },
+      "ritu": {
+        "number": 3,
+        "name": "Varsha",
+        "name_sanskrit": "Varsha",
+        "name_ne": "वर्षा",
+        "season": "Monsoon",
+        "sun_rashi": 5,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 8,
+        "name": "Vrishchika",
+        "name_ne": "वृश्चिक",
+        "longitude": 217.255759,
+        "degree_in_rashi": 7.2558,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 139.445887,
+          "speed": 0.969977,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "139°26'45\"",
+          "deg_in_rashi": 19.445887,
+          "dms_in_rashi": "19°26'45\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 74.999481,
+          "speed": 14.313008,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "074°59'58\"",
+          "deg_in_rashi": 14.999481,
+          "dms_in_rashi": "14°59'58\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 148.081788,
+          "speed": 1.77815,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "148°04'54\"",
+          "deg_in_rashi": 28.081788,
+          "dms_in_rashi": "28°04'54\"",
+          "is_retrograde": false,
+          "is_combust": true
+        },
+        "venus": {
+          "longitude": 182.941962,
+          "speed": 0.724386,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "182°56'31\"",
+          "deg_in_rashi": 2.941962,
+          "dms_in_rashi": "02°56'31\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 82.471211,
+          "speed": 0.626487,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "082°28'16\"",
+          "deg_in_rashi": 22.471211,
+          "dms_in_rashi": "22°28'16\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 110.560485,
+          "speed": 0.206216,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "110°33'38\"",
+          "deg_in_rashi": 20.560485,
+          "dms_in_rashi": "20°33'38\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 349.136591,
+          "speed": -0.062439,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "349°08'12\"",
+          "deg_in_rashi": 19.136591,
+          "dms_in_rashi": "19°08'12\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 304.793646,
+          "speed": -0.052992,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "304°47'37\"",
+          "deg_in_rashi": 4.793646,
+          "dms_in_rashi": "04°47'37\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 124.793646,
+          "speed": 0.052992,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "124°47'37\"",
+          "deg_in_rashi": 4.793646,
+          "dms_in_rashi": "04°47'37\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "mercury": {
-     "longitude": 148.081788,
-     "speed": 1.77815,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "148°04'54\"",
-     "deg_in_rashi": 28.081788,
-     "dms_in_rashi": "28°04'54\"",
-     "is_retrograde": false,
-     "is_combust": true
+    {
+      "jd": 2461326.75,
+      "elongation": 30.340930032,
+      "tithi_number": 3,
+      "paksha": "shukla",
+      "display_tithi": 3,
+      "tithi_progress": 0.528410836,
+      "nakshatra": {
+        "number": 16,
+        "name": "Vishakha",
+        "progress": 0.452317729
+      },
+      "yoga": {
+        "number": 2,
+        "name": "Priti",
+        "progress": 0.629065706
+      },
+      "karana": {
+        "number": 6,
+        "name": "Garija"
+      },
+      "vara": {
+        "number": 2,
+        "name": "Mangalavara",
+        "english": "Tuesday"
+      },
+      "sun_longitude": 175.689973025,
+      "moon_longitude": 206.030903057,
+      "surya_rashi": {
+        "number": 6,
+        "name": "Kanya",
+        "name_ne": "कन्या",
+        "longitude": 175.689973,
+        "progress": 0.8563
+      },
+      "chandra_rashi": {
+        "number": 7,
+        "name": "Tula",
+        "name_ne": "तुला",
+        "longitude": 206.030903,
+        "progress": 0.8677
+      },
+      "aayan": {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": 6,
+        "basis": "sidereal",
+        "kranti_mark": "द"
+      },
+      "ritu": {
+        "number": 3,
+        "name": "Varsha",
+        "name_sanskrit": "Varsha",
+        "name_ne": "वर्षा",
+        "season": "Monsoon",
+        "sun_rashi": 6,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 9,
+        "name": "Dhanu",
+        "name_ne": "धनु",
+        "longitude": 249.446291,
+        "degree_in_rashi": 9.4463,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 175.689973,
+          "speed": 0.990064,
+          "rashi": 6,
+          "rashi_name": "Kanya",
+          "rashi_ne": "कन्या",
+          "dms": "175°41'24\"",
+          "deg_in_rashi": 25.689973,
+          "dms_in_rashi": "25°41'24\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 206.030903,
+          "speed": 12.392621,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "206°01'51\"",
+          "deg_in_rashi": 26.030903,
+          "dms_in_rashi": "26°01'51\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 200.671004,
+          "speed": 0.942647,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "200°40'16\"",
+          "deg_in_rashi": 20.671004,
+          "dms_in_rashi": "20°40'16\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 192.312284,
+          "speed": -0.386349,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "192°18'44\"",
+          "deg_in_rashi": 12.312284,
+          "dms_in_rashi": "12°18'44\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 104.434823,
+          "speed": 0.555709,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "104°26'05\"",
+          "deg_in_rashi": 14.434823,
+          "dms_in_rashi": "14°26'05\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 117.437588,
+          "speed": 0.159655,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "117°26'15\"",
+          "deg_in_rashi": 27.437588,
+          "dms_in_rashi": "27°26'15\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 346.386214,
+          "speed": -0.077102,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "346°23'10\"",
+          "deg_in_rashi": 16.386214,
+          "dms_in_rashi": "16°23'10\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 302.832943,
+          "speed": -0.052992,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "302°49'59\"",
+          "deg_in_rashi": 2.832943,
+          "dms_in_rashi": "02°49'59\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 122.832943,
+          "speed": 0.052992,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "122°49'59\"",
+          "deg_in_rashi": 2.832943,
+          "dms_in_rashi": "02°49'59\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "venus": {
-     "longitude": 182.941962,
-     "speed": 0.724386,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "182°56'31\"",
-     "deg_in_rashi": 2.941962,
-     "dms_in_rashi": "02°56'31\"",
-     "is_retrograde": false,
-     "is_combust": false
+    {
+      "jd": 2461363.75,
+      "elongation": 110.14724819,
+      "tithi_number": 10,
+      "paksha": "shukla",
+      "display_tithi": 10,
+      "tithi_progress": 0.178937349,
+      "nakshatra": {
+        "number": 25,
+        "name": "Purva Bhadrapada",
+        "progress": 0.211979013
+      },
+      "yoga": {
+        "number": 14,
+        "name": "Harshana",
+        "progress": 0.162914412
+      },
+      "karana": {
+        "number": 19,
+        "name": "Taitila"
+      },
+      "vara": {
+        "number": 4,
+        "name": "Guruvara",
+        "english": "Thursday"
+      },
+      "sun_longitude": 212.679138649,
+      "moon_longitude": 322.826386839,
+      "surya_rashi": {
+        "number": 8,
+        "name": "Vrishchika",
+        "name_ne": "वृश्चिक",
+        "longitude": 212.679139,
+        "progress": 0.0893
+      },
+      "chandra_rashi": {
+        "number": 11,
+        "name": "Kumbha",
+        "name_ne": "कुम्भ",
+        "longitude": 322.826387,
+        "progress": 0.7609
+      },
+      "aayan": {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": 8,
+        "basis": "sidereal",
+        "kranti_mark": "द"
+      },
+      "ritu": {
+        "number": 4,
+        "name": "Sharad",
+        "name_sanskrit": "Sharad",
+        "name_ne": "शरद",
+        "season": "Autumn",
+        "sun_rashi": 8,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 10,
+        "name": "Makara",
+        "name_ne": "मकर",
+        "longitude": 287.521509,
+        "degree_in_rashi": 17.5215,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 212.679139,
+          "speed": 1.008617,
+          "rashi": 8,
+          "rashi_name": "Vrishchika",
+          "rashi_ne": "वृश्चिक",
+          "dms": "212°40'45\"",
+          "deg_in_rashi": 2.679139,
+          "dms_in_rashi": "02°40'45\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 322.826387,
+          "speed": 12.790628,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "322°49'35\"",
+          "deg_in_rashi": 22.826387,
+          "dms_in_rashi": "22°49'35\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 193.341695,
+          "speed": 0.836395,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "193°20'30\"",
+          "deg_in_rashi": 13.341695,
+          "dms_in_rashi": "13°20'30\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 179.163097,
+          "speed": 0.200829,
+          "rashi": 6,
+          "rashi_name": "Kanya",
+          "rashi_ne": "कन्या",
+          "dms": "179°09'47\"",
+          "deg_in_rashi": 29.163097,
+          "dms_in_rashi": "29°09'47\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 122.963606,
+          "speed": 0.432098,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "122°57'49\"",
+          "deg_in_rashi": 2.963606,
+          "dms_in_rashi": "02°57'49\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 121.887503,
+          "speed": 0.073952,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "121°53'15\"",
+          "deg_in_rashi": 1.887503,
+          "dms_in_rashi": "01°53'15\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 344.117266,
+          "speed": -0.037906,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "344°07'02\"",
+          "deg_in_rashi": 14.117266,
+          "dms_in_rashi": "14°07'02\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 300.87224,
+          "speed": -0.052992,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "300°52'20\"",
+          "deg_in_rashi": 0.87224,
+          "dms_in_rashi": "00°52'20\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 120.87224,
+          "speed": 0.052992,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "120°52'20\"",
+          "deg_in_rashi": 0.87224,
+          "dms_in_rashi": "00°52'20\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "mars": {
-     "longitude": 82.471211,
-     "speed": 0.626487,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "082°28'16\"",
-     "deg_in_rashi": 22.471211,
-     "dms_in_rashi": "22°28'16\"",
-     "is_retrograde": false,
-     "is_combust": false
+    {
+      "jd": 2461400.75,
+      "elongation": 211.036733515,
+      "tithi_number": 18,
+      "paksha": "krishna",
+      "display_tithi": 3,
+      "tithi_progress": 0.58639446,
+      "nakshatra": {
+        "number": 8,
+        "name": "Pushya",
+        "progress": 0.594611717
+      },
+      "yoga": {
+        "number": 27,
+        "name": "Vaidhriti",
+        "progress": 0.361468421
+      },
+      "karana": {
+        "number": 36,
+        "name": "Vishti"
+      },
+      "vara": {
+        "number": 6,
+        "name": "Shanivara",
+        "english": "Saturday"
+      },
+      "sun_longitude": 250.224756047,
+      "moon_longitude": 101.261489562,
+      "surya_rashi": {
+        "number": 9,
+        "name": "Dhanu",
+        "name_ne": "धनु",
+        "longitude": 250.224756,
+        "progress": 0.3408
+      },
+      "chandra_rashi": {
+        "number": 4,
+        "name": "Karka",
+        "name_ne": "कर्कट",
+        "longitude": 101.26149,
+        "progress": 0.3754
+      },
+      "aayan": {
+        "name": "Dakshinayana",
+        "name_ne": "दक्षिणायण",
+        "name_sanskrit": "Dakshinayana",
+        "sun_rashi": 9,
+        "basis": "sidereal",
+        "kranti_mark": "द"
+      },
+      "ritu": {
+        "number": 5,
+        "name": "Hemanta",
+        "name_sanskrit": "Hemanta",
+        "name_ne": "हेमन्त",
+        "season": "Pre-winter",
+        "sun_rashi": 9,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 12,
+        "name": "Meena",
+        "name_ne": "मीन",
+        "longitude": 335.877846,
+        "degree_in_rashi": 5.8778,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 250.224756,
+          "speed": 1.018433,
+          "rashi": 9,
+          "rashi_name": "Dhanu",
+          "rashi_ne": "धनु",
+          "dms": "250°13'29\"",
+          "deg_in_rashi": 10.224756,
+          "dms_in_rashi": "10°13'29\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 101.26149,
+          "speed": 14.944813,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "101°15'41\"",
+          "deg_in_rashi": 11.26149,
+          "dms_in_rashi": "11°15'41\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 246.526157,
+          "speed": 1.576419,
+          "rashi": 9,
+          "rashi_name": "Dhanu",
+          "rashi_ne": "धनु",
+          "dms": "246°31'34\"",
+          "deg_in_rashi": 6.526157,
+          "dms_in_rashi": "06°31'34\"",
+          "is_retrograde": false,
+          "is_combust": true
+        },
+        "venus": {
+          "longitude": 203.636931,
+          "speed": 0.951705,
+          "rashi": 7,
+          "rashi_name": "Tula",
+          "rashi_ne": "तुला",
+          "dms": "203°38'13\"",
+          "deg_in_rashi": 23.636931,
+          "dms_in_rashi": "23°38'13\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 134.799272,
+          "speed": 0.17477,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "134°47'57\"",
+          "deg_in_rashi": 14.799272,
+          "dms_in_rashi": "14°47'57\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 122.503215,
+          "speed": -0.042851,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "122°30'12\"",
+          "deg_in_rashi": 2.503215,
+          "dms_in_rashi": "02°30'12\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 343.906807,
+          "speed": 0.027643,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "343°54'25\"",
+          "deg_in_rashi": 13.906807,
+          "dms_in_rashi": "13°54'25\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 298.911536,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "298°54'42\"",
+          "deg_in_rashi": 28.911536,
+          "dms_in_rashi": "28°54'42\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 118.911536,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "118°54'42\"",
+          "deg_in_rashi": 28.911536,
+          "dms_in_rashi": "28°54'42\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "jupiter": {
-     "longitude": 110.560485,
-     "speed": 0.206216,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "110°33'38\"",
-     "deg_in_rashi": 20.560485,
-     "dms_in_rashi": "20°33'38\"",
-     "is_retrograde": false,
-     "is_combust": false
+    {
+      "jd": 2461437.75,
+      "elongation": 301.276859003,
+      "tithi_number": 26,
+      "paksha": "krishna",
+      "display_tithi": 11,
+      "tithi_progress": 0.106404917,
+      "nakshatra": {
+        "number": 18,
+        "name": "Jyeshtha",
+        "progress": 0.187886479
+      },
+      "yoga": {
+        "number": 12,
+        "name": "Dhruva",
+        "progress": 0.780008532
+      },
+      "karana": {
+        "number": 51,
+        "name": "Bava"
+      },
+      "vara": {
+        "number": 1,
+        "name": "Somavara",
+        "english": "Monday"
+      },
+      "sun_longitude": 287.894960711,
+      "moon_longitude": 229.171819714,
+      "surya_rashi": {
+        "number": 10,
+        "name": "Makara",
+        "name_ne": "मकर",
+        "longitude": 287.894961,
+        "progress": 0.5965
+      },
+      "chandra_rashi": {
+        "number": 8,
+        "name": "Vrishchika",
+        "name_ne": "वृश्चिक",
+        "longitude": 229.17182,
+        "progress": 0.6391
+      },
+      "aayan": {
+        "name": "Uttarayana",
+        "name_ne": "उत्तरायण",
+        "name_sanskrit": "Uttarayana",
+        "sun_rashi": 10,
+        "basis": "sidereal",
+        "kranti_mark": "उ"
+      },
+      "ritu": {
+        "number": 5,
+        "name": "Hemanta",
+        "name_sanskrit": "Hemanta",
+        "name_ne": "हेमन्त",
+        "season": "Pre-winter",
+        "sun_rashi": 10,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 1,
+        "name": "Mesha",
+        "name_ne": "मेष",
+        "longitude": 24.197044,
+        "degree_in_rashi": 24.197,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 287.894961,
+          "speed": 1.0153,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "287°53'42\"",
+          "deg_in_rashi": 17.894961,
+          "dms_in_rashi": "17°53'42\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 229.17182,
+          "speed": 11.936238,
+          "rashi": 8,
+          "rashi_name": "Vrishchika",
+          "rashi_ne": "वृश्चिक",
+          "dms": "229°10'19\"",
+          "deg_in_rashi": 19.17182,
+          "dms_in_rashi": "19°10'19\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 305.995582,
+          "speed": 1.22133,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "305°59'44\"",
+          "deg_in_rashi": 5.995582,
+          "dms_in_rashi": "05°59'44\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 243.069357,
+          "speed": 1.140307,
+          "rashi": 9,
+          "rashi_name": "Dhanu",
+          "rashi_ne": "धनु",
+          "dms": "243°04'10\"",
+          "deg_in_rashi": 3.069357,
+          "dms_in_rashi": "03°04'10\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 133.110472,
+          "speed": -0.280573,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "133°06'38\"",
+          "deg_in_rashi": 13.110472,
+          "dms_in_rashi": "13°06'38\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 119.082884,
+          "speed": -0.128091,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "119°04'58\"",
+          "deg_in_rashi": 29.082884,
+          "dms_in_rashi": "29°04'58\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 346.0548,
+          "speed": 0.085155,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "346°03'17\"",
+          "deg_in_rashi": 16.0548,
+          "dms_in_rashi": "16°03'17\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 296.950833,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "296°57'03\"",
+          "deg_in_rashi": 26.950833,
+          "dms_in_rashi": "26°57'03\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 116.950833,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "116°57'03\"",
+          "deg_in_rashi": 26.950833,
+          "dms_in_rashi": "26°57'03\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "saturn": {
-     "longitude": 349.136591,
-     "speed": -0.062439,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "349°08'12\"",
-     "deg_in_rashi": 19.136591,
-     "dms_in_rashi": "19°08'12\"",
-     "is_retrograde": true,
-     "is_combust": false
+    {
+      "jd": 2461474.75,
+      "elongation": 21.806129812,
+      "tithi_number": 2,
+      "paksha": "shukla",
+      "display_tithi": 2,
+      "tithi_progress": 0.817177484,
+      "nakshatra": {
+        "number": 27,
+        "name": "Revati",
+        "progress": 0.025097397
+      },
+      "yoga": {
+        "number": 24,
+        "name": "Shukla",
+        "progress": 0.414735059
+      },
+      "karana": {
+        "number": 4,
+        "name": "Kaulava"
+      },
+      "vara": {
+        "number": 3,
+        "name": "Budhavara",
+        "english": "Wednesday"
+      },
+      "sun_longitude": 325.195168819,
+      "moon_longitude": 347.001298631,
+      "surya_rashi": {
+        "number": 11,
+        "name": "Kumbha",
+        "name_ne": "कुम्भ",
+        "longitude": 325.195169,
+        "progress": 0.8398
+      },
+      "chandra_rashi": {
+        "number": 12,
+        "name": "Meena",
+        "name_ne": "मीन",
+        "longitude": 347.001299,
+        "progress": 0.5667
+      },
+      "aayan": {
+        "name": "Uttarayana",
+        "name_ne": "उत्तरायण",
+        "name_sanskrit": "Uttarayana",
+        "sun_rashi": 11,
+        "basis": "sidereal",
+        "kranti_mark": "उ"
+      },
+      "ritu": {
+        "number": 6,
+        "name": "Shishira",
+        "name_sanskrit": "Shishira",
+        "name_ne": "शिशिर",
+        "season": "Winter",
+        "sun_rashi": 11,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 3,
+        "name": "Mithuna",
+        "name_ne": "मिथुन",
+        "longitude": 62.23152,
+        "degree_in_rashi": 2.2315,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 325.195169,
+          "speed": 0.999805,
+          "rashi": 11,
+          "rashi_name": "Kumbha",
+          "rashi_ne": "कुम्भ",
+          "dms": "325°11'43\"",
+          "deg_in_rashi": 25.195169,
+          "dms_in_rashi": "25°11'43\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 347.001299,
+          "speed": 12.974992,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "347°00'05\"",
+          "deg_in_rashi": 17.001299,
+          "dms_in_rashi": "17°00'05\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 298.852691,
+          "speed": 0.602301,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "298°51'10\"",
+          "deg_in_rashi": 28.852691,
+          "dms_in_rashi": "28°51'10\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 286.451868,
+          "speed": 1.194637,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "286°27'07\"",
+          "deg_in_rashi": 16.451868,
+          "dms_in_rashi": "16°27'07\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 119.865946,
+          "speed": -0.282695,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "119°51'57\"",
+          "deg_in_rashi": 29.865946,
+          "dms_in_rashi": "29°51'57\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 114.505294,
+          "speed": -0.098835,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "114°30'19\"",
+          "deg_in_rashi": 24.505294,
+          "dms_in_rashi": "24°30'19\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 349.906195,
+          "speed": 0.11859,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "349°54'22\"",
+          "deg_in_rashi": 19.906195,
+          "dms_in_rashi": "19°54'22\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 294.990129,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "294°59'24\"",
+          "deg_in_rashi": 24.990129,
+          "dms_in_rashi": "24°59'24\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 114.990129,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "114°59'24\"",
+          "deg_in_rashi": 24.990129,
+          "dms_in_rashi": "24°59'24\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "rahu": {
-     "longitude": 304.793646,
-     "speed": -0.052992,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "304°47'37\"",
-     "deg_in_rashi": 4.793646,
-     "dms_in_rashi": "04°47'37\"",
-     "is_retrograde": true,
-     "is_combust": false
+    {
+      "jd": 2461511.75,
+      "elongation": 120.07124418,
+      "tithi_number": 11,
+      "paksha": "shukla",
+      "display_tithi": 11,
+      "tithi_progress": 0.005937015,
+      "nakshatra": {
+        "number": 10,
+        "name": "Magha",
+        "progress": 0.140066982
+      },
+      "yoga": {
+        "number": 10,
+        "name": "Ganda",
+        "progress": 0.27479065
+      },
+      "karana": {
+        "number": 21,
+        "name": "Vanija"
+      },
+      "vara": {
+        "number": 5,
+        "name": "Shukravara",
+        "english": "Friday"
+      },
+      "sun_longitude": 1.796315576,
+      "moon_longitude": 121.867559756,
+      "surya_rashi": {
+        "number": 1,
+        "name": "Mesha",
+        "name_ne": "मेष",
+        "longitude": 1.796316,
+        "progress": 0.0599
+      },
+      "chandra_rashi": {
+        "number": 5,
+        "name": "Simha",
+        "name_ne": "सिंह",
+        "longitude": 121.86756,
+        "progress": 0.0623
+      },
+      "aayan": {
+        "name": "Uttarayana",
+        "name_ne": "उत्तरायण",
+        "name_sanskrit": "Uttarayana",
+        "sun_rashi": 1,
+        "basis": "sidereal",
+        "kranti_mark": "उ"
+      },
+      "ritu": {
+        "number": 1,
+        "name": "Vasanta",
+        "name_sanskrit": "Vasanta",
+        "name_ne": "वसन्त",
+        "season": "Spring",
+        "sun_rashi": 1,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 4,
+        "name": "Karka",
+        "name_ne": "कर्कट",
+        "longitude": 94.409425,
+        "degree_in_rashi": 4.4094,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 1.796316,
+          "speed": 0.978631,
+          "rashi": 1,
+          "rashi_name": "Mesha",
+          "rashi_ne": "मेष",
+          "dms": "001°47'47\"",
+          "deg_in_rashi": 1.796316,
+          "dms_in_rashi": "01°47'47\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 121.86756,
+          "speed": 14.038561,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "121°52'03\"",
+          "deg_in_rashi": 1.86756,
+          "dms_in_rashi": "01°52'03\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 348.638446,
+          "speed": 1.862541,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "348°38'18\"",
+          "deg_in_rashi": 18.638446,
+          "dms_in_rashi": "18°38'18\"",
+          "is_retrograde": false,
+          "is_combust": true
+        },
+        "venus": {
+          "longitude": 331.016904,
+          "speed": 1.210887,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "331°01'01\"",
+          "deg_in_rashi": 1.016904,
+          "dms_in_rashi": "01°01'01\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 117.922928,
+          "speed": 0.162401,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "117°55'23\"",
+          "deg_in_rashi": 27.922928,
+          "dms_in_rashi": "27°55'23\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 112.769732,
+          "speed": 0.009821,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "112°46'11\"",
+          "deg_in_rashi": 22.769732,
+          "dms_in_rashi": "22°46'11\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 354.501099,
+          "speed": 0.125515,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "354°30'04\"",
+          "deg_in_rashi": 24.501099,
+          "dms_in_rashi": "24°30'04\"",
+          "is_retrograde": false,
+          "is_combust": true
+        },
+        "rahu": {
+          "longitude": 293.029426,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "293°01'46\"",
+          "deg_in_rashi": 23.029426,
+          "dms_in_rashi": "23°01'46\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 113.029426,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "113°01'46\"",
+          "deg_in_rashi": 23.029426,
+          "dms_in_rashi": "23°01'46\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     },
-    "ketu": {
-     "longitude": 124.793646,
-     "speed": 0.052992,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "124°47'37\"",
-     "deg_in_rashi": 4.793646,
-     "dms_in_rashi": "04°47'37\"",
-     "is_retrograde": true,
-     "is_combust": false
+    {
+      "jd": 2461548.75,
+      "elongation": 211.758527916,
+      "tithi_number": 18,
+      "paksha": "krishna",
+      "display_tithi": 3,
+      "tithi_progress": 0.646543993,
+      "nakshatra": {
+        "number": 19,
+        "name": "Mula",
+        "progress": 0.707006445
+      },
+      "yoga": {
+        "number": 22,
+        "name": "Sadhya",
+        "progress": 0.532123296
+      },
+      "karana": {
+        "number": 36,
+        "name": "Vishti"
+      },
+      "vara": {
+        "number": 0,
+        "name": "Ravivara",
+        "english": "Sunday"
+      },
+      "sun_longitude": 37.668224679,
+      "moon_longitude": 249.426752595,
+      "surya_rashi": {
+        "number": 2,
+        "name": "Vrishabha",
+        "name_ne": "वृष",
+        "longitude": 37.668225,
+        "progress": 0.2556
+      },
+      "chandra_rashi": {
+        "number": 9,
+        "name": "Dhanu",
+        "name_ne": "धनु",
+        "longitude": 249.426753,
+        "progress": 0.3142
+      },
+      "aayan": {
+        "name": "Uttarayana",
+        "name_ne": "उत्तरायण",
+        "name_sanskrit": "Uttarayana",
+        "sun_rashi": 2,
+        "basis": "sidereal",
+        "kranti_mark": "उ"
+      },
+      "ritu": {
+        "number": 1,
+        "name": "Vasanta",
+        "name_sanskrit": "Vasanta",
+        "name_ne": "वसन्त",
+        "season": "Spring",
+        "sun_rashi": 2,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 5,
+        "name": "Simha",
+        "name_ne": "सिंह",
+        "longitude": 125.747214,
+        "degree_in_rashi": 5.7472,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 37.668225,
+          "speed": 0.961178,
+          "rashi": 2,
+          "rashi_name": "Vrishabha",
+          "rashi_ne": "वृष",
+          "dms": "037°40'06\"",
+          "deg_in_rashi": 7.668225,
+          "dms_in_rashi": "07°40'06\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 249.426753,
+          "speed": 12.054884,
+          "rashi": 9,
+          "rashi_name": "Dhanu",
+          "rashi_ne": "धनु",
+          "dms": "249°25'36\"",
+          "deg_in_rashi": 9.426753,
+          "dms_in_rashi": "09°25'36\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 59.623817,
+          "speed": 1.291439,
+          "rashi": 2,
+          "rashi_name": "Vrishabha",
+          "rashi_ne": "वृष",
+          "dms": "059°37'26\"",
+          "deg_in_rashi": 29.623817,
+          "dms_in_rashi": "29°37'26\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "venus": {
+          "longitude": 15.939178,
+          "speed": 1.21645,
+          "rashi": 1,
+          "rashi_name": "Mesha",
+          "rashi_ne": "मेष",
+          "dms": "015°56'21\"",
+          "deg_in_rashi": 15.939178,
+          "dms_in_rashi": "15°56'21\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 129.142245,
+          "speed": 0.412424,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "129°08'32\"",
+          "deg_in_rashi": 9.142245,
+          "dms_in_rashi": "09°08'32\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 115.111642,
+          "speed": 0.111525,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "115°06'42\"",
+          "deg_in_rashi": 25.111642,
+          "dms_in_rashi": "25°06'42\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 358.890917,
+          "speed": 0.107768,
+          "rashi": 12,
+          "rashi_name": "Meena",
+          "rashi_ne": "मीन",
+          "dms": "358°53'27\"",
+          "deg_in_rashi": 28.890917,
+          "dms_in_rashi": "28°53'27\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 291.068722,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "291°04'07\"",
+          "deg_in_rashi": 21.068722,
+          "dms_in_rashi": "21°04'07\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 111.068722,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "111°04'07\"",
+          "deg_in_rashi": 21.068722,
+          "dms_in_rashi": "21°04'07\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
+    },
+    {
+      "jd": 2461585.75,
+      "elongation": 294.487192496,
+      "tithi_number": 25,
+      "paksha": "krishna",
+      "display_tithi": 10,
+      "tithi_progress": 0.540599375,
+      "nakshatra": {
+        "number": 1,
+        "name": "Ashwini",
+        "progress": 0.566085264
+      },
+      "yoga": {
+        "number": 7,
+        "name": "Sukarma",
+        "progress": 0.045631091
+      },
+      "karana": {
+        "number": 50,
+        "name": "Vishti"
+      },
+      "vara": {
+        "number": 2,
+        "name": "Mangalavara",
+        "english": "Tuesday"
+      },
+      "sun_longitude": 73.060611027,
+      "moon_longitude": 7.547803523,
+      "surya_rashi": {
+        "number": 3,
+        "name": "Mithuna",
+        "name_ne": "मिथुन",
+        "longitude": 73.060611,
+        "progress": 0.4354
+      },
+      "chandra_rashi": {
+        "number": 1,
+        "name": "Mesha",
+        "name_ne": "मेष",
+        "longitude": 7.547804,
+        "progress": 0.2516
+      },
+      "aayan": {
+        "name": "Uttarayana",
+        "name_ne": "उत्तरायण",
+        "name_sanskrit": "Uttarayana",
+        "sun_rashi": 3,
+        "basis": "sidereal",
+        "kranti_mark": "उ"
+      },
+      "ritu": {
+        "number": 2,
+        "name": "Grishma",
+        "name_sanskrit": "Grishma",
+        "name_ne": "ग्रीष्म",
+        "season": "Summer",
+        "sun_rashi": 3,
+        "basis": "sidereal"
+      },
+      "lagna": {
+        "number": 6,
+        "name": "Kanya",
+        "name_ne": "कन्या",
+        "longitude": 157.909505,
+        "degree_in_rashi": 7.9095,
+        "anchor": "sunrise"
+      },
+      "spashta": {
+        "sun": {
+          "longitude": 73.060611,
+          "speed": 0.95372,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "073°03'38\"",
+          "deg_in_rashi": 13.060611,
+          "dms_in_rashi": "13°03'38\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "moon": {
+          "longitude": 7.547804,
+          "speed": 13.361857,
+          "rashi": 1,
+          "rashi_name": "Mesha",
+          "rashi_ne": "मेष",
+          "dms": "007°32'52\"",
+          "deg_in_rashi": 7.547804,
+          "dms_in_rashi": "07°32'52\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mercury": {
+          "longitude": 64.385245,
+          "speed": -0.393728,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "064°23'07\"",
+          "deg_in_rashi": 4.385245,
+          "dms_in_rashi": "04°23'07\"",
+          "is_retrograde": true,
+          "is_combust": true
+        },
+        "venus": {
+          "longitude": 61.062084,
+          "speed": 1.223414,
+          "rashi": 3,
+          "rashi_name": "Mithuna",
+          "rashi_ne": "मिथुन",
+          "dms": "061°03'44\"",
+          "deg_in_rashi": 1.062084,
+          "dms_in_rashi": "01°03'44\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "mars": {
+          "longitude": 146.904798,
+          "speed": 0.534945,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "146°54'17\"",
+          "deg_in_rashi": 26.904798,
+          "dms_in_rashi": "26°54'17\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "jupiter": {
+          "longitude": 120.570989,
+          "speed": 0.177474,
+          "rashi": 5,
+          "rashi_name": "Simha",
+          "rashi_ne": "सिंह",
+          "dms": "120°34'16\"",
+          "deg_in_rashi": 0.570989,
+          "dms_in_rashi": "00°34'16\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "saturn": {
+          "longitude": 2.191867,
+          "speed": 0.067027,
+          "rashi": 1,
+          "rashi_name": "Mesha",
+          "rashi_ne": "मेष",
+          "dms": "002°11'31\"",
+          "deg_in_rashi": 2.191867,
+          "dms_in_rashi": "02°11'31\"",
+          "is_retrograde": false,
+          "is_combust": false
+        },
+        "rahu": {
+          "longitude": 289.108019,
+          "speed": -0.052992,
+          "rashi": 10,
+          "rashi_name": "Makara",
+          "rashi_ne": "मकर",
+          "dms": "289°06'29\"",
+          "deg_in_rashi": 19.108019,
+          "dms_in_rashi": "19°06'29\"",
+          "is_retrograde": true,
+          "is_combust": false
+        },
+        "ketu": {
+          "longitude": 109.108019,
+          "speed": 0.052992,
+          "rashi": 4,
+          "rashi_name": "Karka",
+          "rashi_ne": "कर्कट",
+          "dms": "109°06'29\"",
+          "deg_in_rashi": 19.108019,
+          "dms_in_rashi": "19°06'29\"",
+          "is_retrograde": true,
+          "is_combust": false
+        }
+      }
     }
-   }
-  },
-  {
-   "jd": 2461326.75,
-   "elongation": 30.340930032,
-   "tithi_number": 3,
-   "paksha": "shukla",
-   "display_tithi": 3,
-   "tithi_progress": 0.528410836,
-   "nakshatra": {
-    "number": 16,
-    "name": "Vishakha",
-    "progress": 0.452317729
-   },
-   "yoga": {
-    "number": 2,
-    "name": "Priti",
-    "progress": 0.629065706
-   },
-   "karana": {
-    "number": 6,
-    "name": "Garija"
-   },
-   "vara": {
-    "number": 2,
-    "name": "Mangalavara",
-    "english": "Tuesday"
-   },
-   "sun_longitude": 175.689973025,
-   "moon_longitude": 206.030903057,
-   "surya_rashi": {
-    "number": 6,
-    "name": "Kanya",
-    "name_ne": "कन्या",
-    "longitude": 175.689973,
-    "progress": 0.8563
-   },
-   "chandra_rashi": {
-    "number": 7,
-    "name": "Tula",
-    "name_ne": "तुला",
-    "longitude": 206.030903,
-    "progress": 0.8677
-   },
-   "aayan": {
-    "name": "Dakshinayana",
-    "name_ne": "दक्षिणायण",
-    "name_sanskrit": "Dakshinayana",
-    "sun_rashi": 6,
-    "basis": "sidereal",
-    "kranti_mark": "द"
-   },
-   "ritu": {
-    "number": 3,
-    "name": "Varsha",
-    "name_sanskrit": "Varsha",
-    "name_ne": "वर्षा",
-    "season": "Monsoon",
-    "sun_rashi": 6,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 9,
-    "name": "Dhanu",
-    "name_ne": "धनु",
-    "longitude": 249.448504,
-    "degree_in_rashi": 9.4485,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 175.689973,
-     "speed": 0.990064,
-     "rashi": 6,
-     "rashi_name": "Kanya",
-     "rashi_ne": "कन्या",
-     "dms": "175°41'24\"",
-     "deg_in_rashi": 25.689973,
-     "dms_in_rashi": "25°41'24\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 206.030903,
-     "speed": 12.392621,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "206°01'51\"",
-     "deg_in_rashi": 26.030903,
-     "dms_in_rashi": "26°01'51\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 200.671004,
-     "speed": 0.942647,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "200°40'16\"",
-     "deg_in_rashi": 20.671004,
-     "dms_in_rashi": "20°40'16\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 192.312284,
-     "speed": -0.386349,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "192°18'44\"",
-     "deg_in_rashi": 12.312284,
-     "dms_in_rashi": "12°18'44\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 104.434823,
-     "speed": 0.555709,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "104°26'05\"",
-     "deg_in_rashi": 14.434823,
-     "dms_in_rashi": "14°26'05\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 117.437588,
-     "speed": 0.159655,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "117°26'15\"",
-     "deg_in_rashi": 27.437588,
-     "dms_in_rashi": "27°26'15\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 346.386214,
-     "speed": -0.077102,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "346°23'10\"",
-     "deg_in_rashi": 16.386214,
-     "dms_in_rashi": "16°23'10\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 302.832943,
-     "speed": -0.052992,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "302°49'59\"",
-     "deg_in_rashi": 2.832943,
-     "dms_in_rashi": "02°49'59\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 122.832943,
-     "speed": 0.052992,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "122°49'59\"",
-     "deg_in_rashi": 2.832943,
-     "dms_in_rashi": "02°49'59\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461363.75,
-   "elongation": 110.14724819,
-   "tithi_number": 10,
-   "paksha": "shukla",
-   "display_tithi": 10,
-   "tithi_progress": 0.178937349,
-   "nakshatra": {
-    "number": 25,
-    "name": "Purva Bhadrapada",
-    "progress": 0.211979013
-   },
-   "yoga": {
-    "number": 14,
-    "name": "Harshana",
-    "progress": 0.162914412
-   },
-   "karana": {
-    "number": 19,
-    "name": "Taitila"
-   },
-   "vara": {
-    "number": 4,
-    "name": "Guruvara",
-    "english": "Thursday"
-   },
-   "sun_longitude": 212.679138649,
-   "moon_longitude": 322.826386839,
-   "surya_rashi": {
-    "number": 8,
-    "name": "Vrishchika",
-    "name_ne": "वृश्चिक",
-    "longitude": 212.679139,
-    "progress": 0.0893
-   },
-   "chandra_rashi": {
-    "number": 11,
-    "name": "Kumbha",
-    "name_ne": "कुम्भ",
-    "longitude": 322.826387,
-    "progress": 0.7609
-   },
-   "aayan": {
-    "name": "Dakshinayana",
-    "name_ne": "दक्षिणायण",
-    "name_sanskrit": "Dakshinayana",
-    "sun_rashi": 8,
-    "basis": "sidereal",
-    "kranti_mark": "द"
-   },
-   "ritu": {
-    "number": 4,
-    "name": "Sharad",
-    "name_sanskrit": "Sharad",
-    "name_ne": "शरद",
-    "season": "Autumn",
-    "sun_rashi": 8,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 10,
-    "name": "Makara",
-    "name_ne": "मकर",
-    "longitude": 287.523821,
-    "degree_in_rashi": 17.5238,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 212.679139,
-     "speed": 1.008617,
-     "rashi": 8,
-     "rashi_name": "Vrishchika",
-     "rashi_ne": "वृश्चिक",
-     "dms": "212°40'45\"",
-     "deg_in_rashi": 2.679139,
-     "dms_in_rashi": "02°40'45\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 322.826387,
-     "speed": 12.790628,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "322°49'35\"",
-     "deg_in_rashi": 22.826387,
-     "dms_in_rashi": "22°49'35\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 193.341695,
-     "speed": 0.836395,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "193°20'30\"",
-     "deg_in_rashi": 13.341695,
-     "dms_in_rashi": "13°20'30\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 179.163097,
-     "speed": 0.200829,
-     "rashi": 6,
-     "rashi_name": "Kanya",
-     "rashi_ne": "कन्या",
-     "dms": "179°09'47\"",
-     "deg_in_rashi": 29.163097,
-     "dms_in_rashi": "29°09'47\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 122.963606,
-     "speed": 0.432098,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "122°57'49\"",
-     "deg_in_rashi": 2.963606,
-     "dms_in_rashi": "02°57'49\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 121.887503,
-     "speed": 0.073952,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "121°53'15\"",
-     "deg_in_rashi": 1.887503,
-     "dms_in_rashi": "01°53'15\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 344.117266,
-     "speed": -0.037906,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "344°07'02\"",
-     "deg_in_rashi": 14.117266,
-     "dms_in_rashi": "14°07'02\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 300.87224,
-     "speed": -0.052992,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "300°52'20\"",
-     "deg_in_rashi": 0.87224,
-     "dms_in_rashi": "00°52'20\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 120.87224,
-     "speed": 0.052992,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "120°52'20\"",
-     "deg_in_rashi": 0.87224,
-     "dms_in_rashi": "00°52'20\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461400.75,
-   "elongation": 211.036733515,
-   "tithi_number": 18,
-   "paksha": "krishna",
-   "display_tithi": 3,
-   "tithi_progress": 0.58639446,
-   "nakshatra": {
-    "number": 8,
-    "name": "Pushya",
-    "progress": 0.594611717
-   },
-   "yoga": {
-    "number": 27,
-    "name": "Vaidhriti",
-    "progress": 0.361468421
-   },
-   "karana": {
-    "number": 36,
-    "name": "Vishti"
-   },
-   "vara": {
-    "number": 6,
-    "name": "Shanivara",
-    "english": "Saturday"
-   },
-   "sun_longitude": 250.224756047,
-   "moon_longitude": 101.261489562,
-   "surya_rashi": {
-    "number": 9,
-    "name": "Dhanu",
-    "name_ne": "धनु",
-    "longitude": 250.224756,
-    "progress": 0.3408
-   },
-   "chandra_rashi": {
-    "number": 4,
-    "name": "Karka",
-    "name_ne": "कर्कट",
-    "longitude": 101.26149,
-    "progress": 0.3754
-   },
-   "aayan": {
-    "name": "Dakshinayana",
-    "name_ne": "दक्षिणायण",
-    "name_sanskrit": "Dakshinayana",
-    "sun_rashi": 9,
-    "basis": "sidereal",
-    "kranti_mark": "द"
-   },
-   "ritu": {
-    "number": 5,
-    "name": "Hemanta",
-    "name_sanskrit": "Hemanta",
-    "name_ne": "हेमन्त",
-    "season": "Pre-winter",
-    "sun_rashi": 9,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 12,
-    "name": "Meena",
-    "name_ne": "मीन",
-    "longitude": 335.880799,
-    "degree_in_rashi": 5.8808,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 250.224756,
-     "speed": 1.018433,
-     "rashi": 9,
-     "rashi_name": "Dhanu",
-     "rashi_ne": "धनु",
-     "dms": "250°13'29\"",
-     "deg_in_rashi": 10.224756,
-     "dms_in_rashi": "10°13'29\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 101.26149,
-     "speed": 14.944813,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "101°15'41\"",
-     "deg_in_rashi": 11.26149,
-     "dms_in_rashi": "11°15'41\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 246.526157,
-     "speed": 1.576419,
-     "rashi": 9,
-     "rashi_name": "Dhanu",
-     "rashi_ne": "धनु",
-     "dms": "246°31'34\"",
-     "deg_in_rashi": 6.526157,
-     "dms_in_rashi": "06°31'34\"",
-     "is_retrograde": false,
-     "is_combust": true
-    },
-    "venus": {
-     "longitude": 203.636931,
-     "speed": 0.951705,
-     "rashi": 7,
-     "rashi_name": "Tula",
-     "rashi_ne": "तुला",
-     "dms": "203°38'13\"",
-     "deg_in_rashi": 23.636931,
-     "dms_in_rashi": "23°38'13\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 134.799272,
-     "speed": 0.17477,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "134°47'57\"",
-     "deg_in_rashi": 14.799272,
-     "dms_in_rashi": "14°47'57\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 122.503215,
-     "speed": -0.042851,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "122°30'12\"",
-     "deg_in_rashi": 2.503215,
-     "dms_in_rashi": "02°30'12\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 343.906807,
-     "speed": 0.027643,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "343°54'25\"",
-     "deg_in_rashi": 13.906807,
-     "dms_in_rashi": "13°54'25\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 298.911536,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "298°54'42\"",
-     "deg_in_rashi": 28.911536,
-     "dms_in_rashi": "28°54'42\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 118.911536,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "118°54'42\"",
-     "deg_in_rashi": 28.911536,
-     "dms_in_rashi": "28°54'42\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461437.75,
-   "elongation": 301.276859003,
-   "tithi_number": 26,
-   "paksha": "krishna",
-   "display_tithi": 11,
-   "tithi_progress": 0.106404917,
-   "nakshatra": {
-    "number": 18,
-    "name": "Jyeshtha",
-    "progress": 0.187886479
-   },
-   "yoga": {
-    "number": 12,
-    "name": "Dhruva",
-    "progress": 0.780008532
-   },
-   "karana": {
-    "number": 51,
-    "name": "Bava"
-   },
-   "vara": {
-    "number": 1,
-    "name": "Somavara",
-    "english": "Monday"
-   },
-   "sun_longitude": 287.894960711,
-   "moon_longitude": 229.171819714,
-   "surya_rashi": {
-    "number": 10,
-    "name": "Makara",
-    "name_ne": "मकर",
-    "longitude": 287.894961,
-    "progress": 0.5965
-   },
-   "chandra_rashi": {
-    "number": 8,
-    "name": "Vrishchika",
-    "name_ne": "वृश्चिक",
-    "longitude": 229.17182,
-    "progress": 0.6391
-   },
-   "aayan": {
-    "name": "Uttarayana",
-    "name_ne": "उत्तरायण",
-    "name_sanskrit": "Uttarayana",
-    "sun_rashi": 10,
-    "basis": "sidereal",
-    "kranti_mark": "उ"
-   },
-   "ritu": {
-    "number": 5,
-    "name": "Hemanta",
-    "name_sanskrit": "Hemanta",
-    "name_ne": "हेमन्त",
-    "season": "Pre-winter",
-    "sun_rashi": 10,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 1,
-    "name": "Mesha",
-    "name_ne": "मेष",
-    "longitude": 24.200357,
-    "degree_in_rashi": 24.2004,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 287.894961,
-     "speed": 1.0153,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "287°53'42\"",
-     "deg_in_rashi": 17.894961,
-     "dms_in_rashi": "17°53'42\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 229.17182,
-     "speed": 11.936238,
-     "rashi": 8,
-     "rashi_name": "Vrishchika",
-     "rashi_ne": "वृश्चिक",
-     "dms": "229°10'19\"",
-     "deg_in_rashi": 19.17182,
-     "dms_in_rashi": "19°10'19\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 305.995582,
-     "speed": 1.22133,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "305°59'44\"",
-     "deg_in_rashi": 5.995582,
-     "dms_in_rashi": "05°59'44\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 243.069357,
-     "speed": 1.140307,
-     "rashi": 9,
-     "rashi_name": "Dhanu",
-     "rashi_ne": "धनु",
-     "dms": "243°04'10\"",
-     "deg_in_rashi": 3.069357,
-     "dms_in_rashi": "03°04'10\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 133.110472,
-     "speed": -0.280573,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "133°06'38\"",
-     "deg_in_rashi": 13.110472,
-     "dms_in_rashi": "13°06'38\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 119.082884,
-     "speed": -0.128091,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "119°04'58\"",
-     "deg_in_rashi": 29.082884,
-     "dms_in_rashi": "29°04'58\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 346.0548,
-     "speed": 0.085155,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "346°03'17\"",
-     "deg_in_rashi": 16.0548,
-     "dms_in_rashi": "16°03'17\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 296.950833,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "296°57'03\"",
-     "deg_in_rashi": 26.950833,
-     "dms_in_rashi": "26°57'03\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 116.950833,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "116°57'03\"",
-     "deg_in_rashi": 26.950833,
-     "dms_in_rashi": "26°57'03\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461474.75,
-   "elongation": 21.806129812,
-   "tithi_number": 2,
-   "paksha": "shukla",
-   "display_tithi": 2,
-   "tithi_progress": 0.817177484,
-   "nakshatra": {
-    "number": 27,
-    "name": "Revati",
-    "progress": 0.025097397
-   },
-   "yoga": {
-    "number": 24,
-    "name": "Shukla",
-    "progress": 0.414735059
-   },
-   "karana": {
-    "number": 4,
-    "name": "Kaulava"
-   },
-   "vara": {
-    "number": 3,
-    "name": "Budhavara",
-    "english": "Wednesday"
-   },
-   "sun_longitude": 325.195168819,
-   "moon_longitude": 347.001298631,
-   "surya_rashi": {
-    "number": 11,
-    "name": "Kumbha",
-    "name_ne": "कुम्भ",
-    "longitude": 325.195169,
-    "progress": 0.8398
-   },
-   "chandra_rashi": {
-    "number": 12,
-    "name": "Meena",
-    "name_ne": "मीन",
-    "longitude": 347.001299,
-    "progress": 0.5667
-   },
-   "aayan": {
-    "name": "Uttarayana",
-    "name_ne": "उत्तरायण",
-    "name_sanskrit": "Uttarayana",
-    "sun_rashi": 11,
-    "basis": "sidereal",
-    "kranti_mark": "उ"
-   },
-   "ritu": {
-    "number": 6,
-    "name": "Shishira",
-    "name_sanskrit": "Shishira",
-    "name_ne": "शिशिर",
-    "season": "Winter",
-    "sun_rashi": 11,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 3,
-    "name": "Mithuna",
-    "name_ne": "मिथुन",
-    "longitude": 62.234708,
-    "degree_in_rashi": 2.2347,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 325.195169,
-     "speed": 0.999805,
-     "rashi": 11,
-     "rashi_name": "Kumbha",
-     "rashi_ne": "कुम्भ",
-     "dms": "325°11'43\"",
-     "deg_in_rashi": 25.195169,
-     "dms_in_rashi": "25°11'43\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 347.001299,
-     "speed": 12.974992,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "347°00'05\"",
-     "deg_in_rashi": 17.001299,
-     "dms_in_rashi": "17°00'05\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 298.852691,
-     "speed": 0.602301,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "298°51'10\"",
-     "deg_in_rashi": 28.852691,
-     "dms_in_rashi": "28°51'10\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 286.451868,
-     "speed": 1.194637,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "286°27'07\"",
-     "deg_in_rashi": 16.451868,
-     "dms_in_rashi": "16°27'07\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 119.865946,
-     "speed": -0.282695,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "119°51'57\"",
-     "deg_in_rashi": 29.865946,
-     "dms_in_rashi": "29°51'57\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 114.505294,
-     "speed": -0.098835,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "114°30'19\"",
-     "deg_in_rashi": 24.505294,
-     "dms_in_rashi": "24°30'19\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 349.906195,
-     "speed": 0.11859,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "349°54'22\"",
-     "deg_in_rashi": 19.906195,
-     "dms_in_rashi": "19°54'22\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 294.990129,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "294°59'24\"",
-     "deg_in_rashi": 24.990129,
-     "dms_in_rashi": "24°59'24\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 114.990129,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "114°59'24\"",
-     "deg_in_rashi": 24.990129,
-     "dms_in_rashi": "24°59'24\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461511.75,
-   "elongation": 120.07124418,
-   "tithi_number": 11,
-   "paksha": "shukla",
-   "display_tithi": 11,
-   "tithi_progress": 0.005937015,
-   "nakshatra": {
-    "number": 10,
-    "name": "Magha",
-    "progress": 0.140066982
-   },
-   "yoga": {
-    "number": 10,
-    "name": "Ganda",
-    "progress": 0.27479065
-   },
-   "karana": {
-    "number": 21,
-    "name": "Vanija"
-   },
-   "vara": {
-    "number": 5,
-    "name": "Shukravara",
-    "english": "Friday"
-   },
-   "sun_longitude": 1.796315576,
-   "moon_longitude": 121.867559756,
-   "surya_rashi": {
-    "number": 1,
-    "name": "Mesha",
-    "name_ne": "मेष",
-    "longitude": 1.796316,
-    "progress": 0.0599
-   },
-   "chandra_rashi": {
-    "number": 5,
-    "name": "Simha",
-    "name_ne": "सिंह",
-    "longitude": 121.86756,
-    "progress": 0.0623
-   },
-   "aayan": {
-    "name": "Uttarayana",
-    "name_ne": "उत्तरायण",
-    "name_sanskrit": "Uttarayana",
-    "sun_rashi": 1,
-    "basis": "sidereal",
-    "kranti_mark": "उ"
-   },
-   "ritu": {
-    "number": 1,
-    "name": "Vasanta",
-    "name_sanskrit": "Vasanta",
-    "name_ne": "वसन्त",
-    "season": "Spring",
-    "sun_rashi": 1,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 4,
-    "name": "Karka",
-    "name_ne": "कर्कट",
-    "longitude": 94.412444,
-    "degree_in_rashi": 4.4124,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 1.796316,
-     "speed": 0.978631,
-     "rashi": 1,
-     "rashi_name": "Mesha",
-     "rashi_ne": "मेष",
-     "dms": "001°47'47\"",
-     "deg_in_rashi": 1.796316,
-     "dms_in_rashi": "01°47'47\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 121.86756,
-     "speed": 14.038561,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "121°52'03\"",
-     "deg_in_rashi": 1.86756,
-     "dms_in_rashi": "01°52'03\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 348.638446,
-     "speed": 1.862541,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "348°38'18\"",
-     "deg_in_rashi": 18.638446,
-     "dms_in_rashi": "18°38'18\"",
-     "is_retrograde": false,
-     "is_combust": true
-    },
-    "venus": {
-     "longitude": 331.016904,
-     "speed": 1.210887,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "331°01'01\"",
-     "deg_in_rashi": 1.016904,
-     "dms_in_rashi": "01°01'01\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 117.922928,
-     "speed": 0.162401,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "117°55'23\"",
-     "deg_in_rashi": 27.922928,
-     "dms_in_rashi": "27°55'23\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 112.769732,
-     "speed": 0.009821,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "112°46'11\"",
-     "deg_in_rashi": 22.769732,
-     "dms_in_rashi": "22°46'11\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 354.501099,
-     "speed": 0.125515,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "354°30'04\"",
-     "deg_in_rashi": 24.501099,
-     "dms_in_rashi": "24°30'04\"",
-     "is_retrograde": false,
-     "is_combust": true
-    },
-    "rahu": {
-     "longitude": 293.029426,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "293°01'46\"",
-     "deg_in_rashi": 23.029426,
-     "dms_in_rashi": "23°01'46\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 113.029426,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "113°01'46\"",
-     "deg_in_rashi": 23.029426,
-     "dms_in_rashi": "23°01'46\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461548.75,
-   "elongation": 211.758527916,
-   "tithi_number": 18,
-   "paksha": "krishna",
-   "display_tithi": 3,
-   "tithi_progress": 0.646543993,
-   "nakshatra": {
-    "number": 19,
-    "name": "Mula",
-    "progress": 0.707006445
-   },
-   "yoga": {
-    "number": 22,
-    "name": "Sadhya",
-    "progress": 0.532123296
-   },
-   "karana": {
-    "number": 36,
-    "name": "Vishti"
-   },
-   "vara": {
-    "number": 0,
-    "name": "Ravivara",
-    "english": "Sunday"
-   },
-   "sun_longitude": 37.668224679,
-   "moon_longitude": 249.426752595,
-   "surya_rashi": {
-    "number": 2,
-    "name": "Vrishabha",
-    "name_ne": "वृष",
-    "longitude": 37.668225,
-    "progress": 0.2556
-   },
-   "chandra_rashi": {
-    "number": 9,
-    "name": "Dhanu",
-    "name_ne": "धनु",
-    "longitude": 249.426753,
-    "progress": 0.3142
-   },
-   "aayan": {
-    "name": "Uttarayana",
-    "name_ne": "उत्तरायण",
-    "name_sanskrit": "Uttarayana",
-    "sun_rashi": 2,
-    "basis": "sidereal",
-    "kranti_mark": "उ"
-   },
-   "ritu": {
-    "number": 1,
-    "name": "Vasanta",
-    "name_sanskrit": "Vasanta",
-    "name_ne": "वसन्त",
-    "season": "Spring",
-    "sun_rashi": 2,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 5,
-    "name": "Simha",
-    "name_ne": "सिंह",
-    "longitude": 125.750264,
-    "degree_in_rashi": 5.7503,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 37.668225,
-     "speed": 0.961178,
-     "rashi": 2,
-     "rashi_name": "Vrishabha",
-     "rashi_ne": "वृष",
-     "dms": "037°40'06\"",
-     "deg_in_rashi": 7.668225,
-     "dms_in_rashi": "07°40'06\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 249.426753,
-     "speed": 12.054884,
-     "rashi": 9,
-     "rashi_name": "Dhanu",
-     "rashi_ne": "धनु",
-     "dms": "249°25'36\"",
-     "deg_in_rashi": 9.426753,
-     "dms_in_rashi": "09°25'36\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 59.623817,
-     "speed": 1.291439,
-     "rashi": 2,
-     "rashi_name": "Vrishabha",
-     "rashi_ne": "वृष",
-     "dms": "059°37'26\"",
-     "deg_in_rashi": 29.623817,
-     "dms_in_rashi": "29°37'26\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "venus": {
-     "longitude": 15.939178,
-     "speed": 1.21645,
-     "rashi": 1,
-     "rashi_name": "Mesha",
-     "rashi_ne": "मेष",
-     "dms": "015°56'21\"",
-     "deg_in_rashi": 15.939178,
-     "dms_in_rashi": "15°56'21\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 129.142245,
-     "speed": 0.412424,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "129°08'32\"",
-     "deg_in_rashi": 9.142245,
-     "dms_in_rashi": "09°08'32\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 115.111642,
-     "speed": 0.111525,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "115°06'42\"",
-     "deg_in_rashi": 25.111642,
-     "dms_in_rashi": "25°06'42\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 358.890917,
-     "speed": 0.107768,
-     "rashi": 12,
-     "rashi_name": "Meena",
-     "rashi_ne": "मीन",
-     "dms": "358°53'27\"",
-     "deg_in_rashi": 28.890917,
-     "dms_in_rashi": "28°53'27\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 291.068722,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "291°04'07\"",
-     "deg_in_rashi": 21.068722,
-     "dms_in_rashi": "21°04'07\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 111.068722,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "111°04'07\"",
-     "deg_in_rashi": 21.068722,
-     "dms_in_rashi": "21°04'07\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  },
-  {
-   "jd": 2461585.75,
-   "elongation": 294.487192496,
-   "tithi_number": 25,
-   "paksha": "krishna",
-   "display_tithi": 10,
-   "tithi_progress": 0.540599375,
-   "nakshatra": {
-    "number": 1,
-    "name": "Ashwini",
-    "progress": 0.566085264
-   },
-   "yoga": {
-    "number": 7,
-    "name": "Sukarma",
-    "progress": 0.045631091
-   },
-   "karana": {
-    "number": 50,
-    "name": "Vishti"
-   },
-   "vara": {
-    "number": 2,
-    "name": "Mangalavara",
-    "english": "Tuesday"
-   },
-   "sun_longitude": 73.060611027,
-   "moon_longitude": 7.547803523,
-   "surya_rashi": {
-    "number": 3,
-    "name": "Mithuna",
-    "name_ne": "मिथुन",
-    "longitude": 73.060611,
-    "progress": 0.4354
-   },
-   "chandra_rashi": {
-    "number": 1,
-    "name": "Mesha",
-    "name_ne": "मेष",
-    "longitude": 7.547804,
-    "progress": 0.2516
-   },
-   "aayan": {
-    "name": "Uttarayana",
-    "name_ne": "उत्तरायण",
-    "name_sanskrit": "Uttarayana",
-    "sun_rashi": 3,
-    "basis": "sidereal",
-    "kranti_mark": "उ"
-   },
-   "ritu": {
-    "number": 2,
-    "name": "Grishma",
-    "name_sanskrit": "Grishma",
-    "name_ne": "ग्रीष्म",
-    "season": "Summer",
-    "sun_rashi": 3,
-    "basis": "sidereal"
-   },
-   "lagna": {
-    "number": 6,
-    "name": "Kanya",
-    "name_ne": "कन्या",
-    "longitude": 157.912918,
-    "degree_in_rashi": 7.9129,
-    "anchor": "sunrise"
-   },
-   "spashta": {
-    "sun": {
-     "longitude": 73.060611,
-     "speed": 0.95372,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "073°03'38\"",
-     "deg_in_rashi": 13.060611,
-     "dms_in_rashi": "13°03'38\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "moon": {
-     "longitude": 7.547804,
-     "speed": 13.361857,
-     "rashi": 1,
-     "rashi_name": "Mesha",
-     "rashi_ne": "मेष",
-     "dms": "007°32'52\"",
-     "deg_in_rashi": 7.547804,
-     "dms_in_rashi": "07°32'52\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mercury": {
-     "longitude": 64.385245,
-     "speed": -0.393728,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "064°23'07\"",
-     "deg_in_rashi": 4.385245,
-     "dms_in_rashi": "04°23'07\"",
-     "is_retrograde": true,
-     "is_combust": true
-    },
-    "venus": {
-     "longitude": 61.062084,
-     "speed": 1.223414,
-     "rashi": 3,
-     "rashi_name": "Mithuna",
-     "rashi_ne": "मिथुन",
-     "dms": "061°03'44\"",
-     "deg_in_rashi": 1.062084,
-     "dms_in_rashi": "01°03'44\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "mars": {
-     "longitude": 146.904798,
-     "speed": 0.534945,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "146°54'17\"",
-     "deg_in_rashi": 26.904798,
-     "dms_in_rashi": "26°54'17\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "jupiter": {
-     "longitude": 120.570989,
-     "speed": 0.177474,
-     "rashi": 5,
-     "rashi_name": "Simha",
-     "rashi_ne": "सिंह",
-     "dms": "120°34'16\"",
-     "deg_in_rashi": 0.570989,
-     "dms_in_rashi": "00°34'16\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "saturn": {
-     "longitude": 2.191867,
-     "speed": 0.067027,
-     "rashi": 1,
-     "rashi_name": "Mesha",
-     "rashi_ne": "मेष",
-     "dms": "002°11'31\"",
-     "deg_in_rashi": 2.191867,
-     "dms_in_rashi": "02°11'31\"",
-     "is_retrograde": false,
-     "is_combust": false
-    },
-    "rahu": {
-     "longitude": 289.108019,
-     "speed": -0.052992,
-     "rashi": 10,
-     "rashi_name": "Makara",
-     "rashi_ne": "मकर",
-     "dms": "289°06'29\"",
-     "deg_in_rashi": 19.108019,
-     "dms_in_rashi": "19°06'29\"",
-     "is_retrograde": true,
-     "is_combust": false
-    },
-    "ketu": {
-     "longitude": 109.108019,
-     "speed": 0.052992,
-     "rashi": 4,
-     "rashi_name": "Karka",
-     "rashi_ne": "कर्कट",
-     "dms": "109°06'29\"",
-     "deg_in_rashi": 19.108019,
-     "dms_in_rashi": "19°06'29\"",
-     "is_retrograde": true,
-     "is_combust": false
-    }
-   }
-  }
- ]
+  ]
 }

@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "description": "Disha Shool and Rahu Vasa direction by weekday, against DrikPanchang's Kathmandu tables. Pure lookup tables - no astronomy - but they were wrong once (Rahu Vasa was a copy of Disha Shool) and the error was invisible without an external table.",
+  "source": {
+    "authority": "DrikPanchang",
+    "reference": "Kathmandu weekday tables; carried forward from tests/test_nivas_shool.py.",
+    "retrieved": "pre-existing in repository",
+    "verified_by": "Established while fixing payload-version 19: Rahu Vasa is a distinct 8-direction weekday cycle and coincides with Disha Shool only on Thursday.",
+    "notes": "Cultural lookup rather than astronomy, but included because an external table is the only thing that can verify it.",
+    "publication_year": "n/a (weekday cycle, not year-dependent)",
+    "convention": "Direction by civil weekday, where the day boundary is sunrise (udaya), Kathmandu. Disha Shool and Rahu Vasa are independent cycles; Rahu Vasa is an 8-direction cycle coinciding with Disha Shool only on Thursday."
+  },
+  "tolerance": {
+    "value": 0,
+    "unit": "exact",
+    "rationale": "Direction labels are discrete lookups. Any difference is a table error, not a precision difference."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "entries": [
+    {
+      "id": "2026-07-06",
+      "date": "2026-07-06",
+      "weekday": "Monday",
+      "expected": {
+        "disha_shool": "E",
+        "rahu_vasa": "NW"
+      }
+    },
+    {
+      "id": "2026-07-07",
+      "date": "2026-07-07",
+      "weekday": "Tuesday",
+      "expected": {
+        "disha_shool": "N",
+        "rahu_vasa": "W"
+      }
+    },
+    {
+      "id": "2026-07-08",
+      "date": "2026-07-08",
+      "weekday": "Wednesday",
+      "expected": {
+        "disha_shool": "N",
+        "rahu_vasa": "SW"
+      }
+    },
+    {
+      "id": "2026-07-09",
+      "date": "2026-07-09",
+      "weekday": "Thursday",
+      "expected": {
+        "disha_shool": "S",
+        "rahu_vasa": "S"
+      }
+    },
+    {
+      "id": "2026-07-10",
+      "date": "2026-07-10",
+      "weekday": "Friday",
+      "expected": {
+        "disha_shool": "W",
+        "rahu_vasa": "SE"
+      }
+    },
+    {
+      "id": "2026-07-11",
+      "date": "2026-07-11",
+      "weekday": "Saturday",
+      "expected": {
+        "disha_shool": "E",
+        "rahu_vasa": "E"
+      }
+    },
+    {
+      "id": "2026-07-12",
+      "date": "2026-07-12",
+      "weekday": "Sunday",
+      "expected": {
+        "disha_shool": "W",
+        "rahu_vasa": "N"
+      }
+    }
+  ],
+  "required_entry_fields": [
+    "id",
+    "date",
+    "weekday",
+    "expected"
+  ]
+}

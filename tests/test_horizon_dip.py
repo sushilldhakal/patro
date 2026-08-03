@@ -62,3 +62,30 @@ def test_sea_level_location_unaffected():
     d = date(2026, 7, 4)
     sunrise = calculate_sunrise(d, 27.0, 85.0, timezone_name="Asia/Kathmandu", altitude=0.0)
     assert sunrise is not None
+
+
+def test_observer_location_altitude_reaches_the_dip():
+    """The dip is reachable from an ``ObserverLocation``, not only from a bare
+    float.
+
+    Phase 1 made ``altitude`` an explicit field; before that, the only way to
+    get an elevated horizon was to pass ``altitude=`` to these functions
+    directly, because ``ObserverLocation`` could not carry it. A location-driven
+    call must now land on the same instant as the equivalent float call.
+    """
+    from engine.astronomy.jd_calendar import CivilDay
+    from engine.astronomy.location import ObserverLocation
+    from engine.astronomy.sun import sun_service
+
+    d = date(1945, 12, 28)
+    jd = CivilDay(d.year, d.month, d.day).to_jd_ut()
+    loc = ObserverLocation(
+        lat=27.7172, lon=85.3240, timezone="Asia/Kathmandu", altitude=1400.0
+    )
+
+    via_location = sun_service.sunrise(jd, loc)
+    via_float = calculate_sunrise(
+        d, 27.7172, 85.3240, altitude=1400.0, timezone_name="Asia/Kathmandu"
+    )
+    assert via_location == via_float
+    assert via_location.astimezone(KTM_TZ).strftime("%H:%M") in {"06:31", "06:32", "06:33"}

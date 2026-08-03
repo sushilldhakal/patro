@@ -17,6 +17,33 @@ def health():
     }
 
 
+@router.get("/meta/provenance")
+def provenance():
+    """Which astronomical environment this process computes with.
+
+    Scientific transparency: a published panchanga value is only reproducible if
+    the environment that produced it is knowable. Every field here is observed
+    from the running system, never hand-written — see
+    engine/astronomy/provenance.py.
+
+    Also reports whether the cache holds rows from an earlier environment. That
+    is diagnostic only; nothing is purged, because an input change is not the
+    same as an output change (docs/ayanamsha-variants.md is the counter-example:
+    an input that DID change outputs, caught by a golden test rather than by a
+    version bump).
+    """
+    from engine.astronomy.provenance import current_provenance
+    from services.panchanga_cache import report_provenance_drift
+
+    prov = current_provenance()
+    payload = {"provenance": prov.as_dict()}
+    try:
+        payload["cache"] = report_provenance_drift()
+    except Exception as exc:  # noqa: BLE001 — diagnostics must not 500
+        payload["cache"] = {"error": f"{type(exc).__name__}: {exc}"}
+    return payload
+
+
 @router.get("/about")
 def about():
     return {

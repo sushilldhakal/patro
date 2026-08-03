@@ -181,6 +181,7 @@ class MoonService:
             ut_instant_from_jd(jd),
             latitude=location.lat,
             longitude=location.lon,
+            altitude=location.altitude,
             timezone_name=location.timezone,
         )
 
@@ -192,6 +193,7 @@ class MoonService:
             ut_instant_from_jd(jd),
             latitude=location.lat,
             longitude=location.lon,
+            altitude=location.altitude,
             timezone_name=location.timezone,
         )
 

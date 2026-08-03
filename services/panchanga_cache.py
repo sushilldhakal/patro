@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gzip
 import json
 import logging
 import os
@@ -9,8 +10,9 @@ import sqlite3
 from datetime import date, datetime, timezone
 from typing import Any
 
-from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
+from engine.astronomy.location import DEFAULT_ALTITUDE, DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
+from engine.astronomy.provenance import current_provenance
 from engine.astronomy.timescale import resolve_observer_timezone
 from services.payload_version import compose
 
@@ -108,7 +110,16 @@ logger = logging.getLogger(__name__)
 # 39: BS month ``full=true`` embed copies pūrṇimānta ``lunar_calendar`` from the
 #     sunrise row (was solar_month_stub when embed came from patro_bs civil path
 #     or stale month response-cache gzip). Invalidates month/year response blobs.
-PANCHANGA_PAYLOAD_VERSION = 39
+# 40: ``solar_corrections.akshamsha`` — latitude correction on the Gaurishankar
+#     meridian (reference display; rise/set already use observer latitude).
+# 41: ayanamsha unified on swe.get_ayanamsa_ex_ut. The engine previously used
+#     BOTH variants — FLG_SIDEREAL (== ex_ut) for every planet, but the plain
+#     get_ayanamsa_ut for ascendant() and for the published `ayanamsa` field — so
+#     a payload's lagna disagreed with its own planets by up to 18". Shifts
+#     ayanamsa, lahiri_ayanamsa, lagna, lagna_spans, udaya_lagna and
+#     panchaka_rahita by <=6.8 arcsec (<=2 s of clock time on span boundaries).
+#     No rashi or nakshatra label changes. See docs/ayanamsha-variants.md.
+PANCHANGA_PAYLOAD_VERSION = 41
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
@@ -163,11 +174,68 @@ CREATE TABLE IF NOT EXISTS panchanga_cache (
     payload_json TEXT NOT NULL,
     computed_at TEXT NOT NULL,
 
+    -- Which astronomical environment produced this row (see
+    -- engine.astronomy.provenance). Recorded, never part of the key: a cache key
+    -- answers "which lookup bucket is this?", provenance answers "how was it
+    -- calculated?". Keying on it would orphan every row the moment any
+    -- dependency moved, including upgrades that change no number.
+    -- NULL means "written before provenance existed", which is accurate and
+    -- distinguishable from any real hash.
+    provenance_hash TEXT,
+
     PRIMARY KEY (location_key, date)
 );
 CREATE INDEX IF NOT EXISTS idx_panchanga_cache_city_date
     ON panchanga_cache(city_id, date);
+CREATE INDEX IF NOT EXISTS idx_panchanga_cache_provenance
+    ON panchanga_cache(provenance_hash);
 """
+
+# Columns added after the table's original shape. ``CREATE TABLE IF NOT EXISTS``
+# is a no-op on an existing table, so a new column in _SCHEMA above reaches fresh
+# databases only — an existing one needs an explicit ALTER.
+#
+# ``ADD COLUMN`` with no DEFAULT is metadata-only in SQLite: measured at 0.0006 s
+# against a table with the production row profile (18k rows, 1.1 GB), with no
+# data rewrite and no file-size change. Existing rows read NULL.
+_ADDED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("provenance_hash", "TEXT"),
+)
+
+
+# ── payload compression ──────────────────────────────────────────────────────
+#
+# Daily payloads are ~54 KB of highly repetitive JSON. Measured on 400 real rows:
+# gzip level 6 gives **6.14x** (1005 MB -> ~164 MB for the live cache) at
+# 0.051 ms/row to decompress, which is negligible next to the SQLite read it
+# rides along with.
+#
+# Chosen over the snapshot/derived split proposed in the roadmap, which measured
+# at only 4.4% (docs/cache-architecture-measurements.md): 6x for a codec beats
+# 1.04x for an architecture change, with none of the risk.
+#
+# Backward compatible with no migration and no data rewrite. SQLite is
+# dynamically typed, so gzip bytes go into the TEXT-declared column as a BLOB and
+# come back as ``bytes``; pre-existing rows come back as ``str``. The reader
+# branches on the type, so old and new rows coexist indefinitely and a rollback
+# leaves every row readable by the previous code as long as it has not been
+# rewritten.
+
+_GZIP_LEVEL = 6
+
+
+def _encode_payload(payload: dict[str, Any]) -> bytes:
+    """JSON -> gzip bytes for storage."""
+    return gzip.compress(
+        json.dumps(payload, ensure_ascii=False).encode("utf-8"), _GZIP_LEVEL
+    )
+
+
+def _decode_payload(stored: Any) -> dict[str, Any]:
+    """Stored payload -> dict, accepting both gzip bytes and legacy plain text."""
+    if isinstance(stored, (bytes, bytearray, memoryview)):
+        return json.loads(gzip.decompress(bytes(stored)).decode("utf-8"))
+    return json.loads(stored)
 
 
 def cache_enabled() -> bool:
@@ -185,20 +253,132 @@ def _connect() -> sqlite3.Connection:
     return conn
 
 
+def _migrate_added_columns(conn: sqlite3.Connection) -> list[str]:
+    """Add any column in ``_ADDED_COLUMNS`` the table does not yet have.
+
+    Additive and idempotent: nullable, no DEFAULT, no data rewritten, no row
+    touched. Safe to run on every connect, and safe to run against a database
+    written by an older build — that build simply never selects the new column.
+
+    Follows the runtime column introspection ``services/cities_db`` already uses
+    for its optional admin columns.
+    """
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(panchanga_cache)")}
+    if not existing:  # table not created yet; _SCHEMA carries the columns
+        return []
+    added: list[str] = []
+    for name, coltype in _ADDED_COLUMNS:
+        if name in existing:
+            continue
+        conn.execute(f"ALTER TABLE panchanga_cache ADD COLUMN {name} {coltype}")
+        added.append(name)
+    return added
+
+
 def ensure_schema() -> None:
     with _connect() as conn:
+        # Order matters: migrate first so the CREATE INDEX statements in _SCHEMA
+        # find their columns on a pre-existing table.
+        migrated = _migrate_added_columns(conn)
         conn.executescript(_SCHEMA)
+        if migrated:
+            logger.info(
+                "panchanga_cache: added column(s) %s (additive, existing rows NULL)",
+                ", ".join(migrated),
+            )
+
+
+def stored_provenance_hashes() -> list[tuple[str | None, int]]:
+    """``[(provenance_hash, row_count)]`` present in the cache, most rows first.
+
+    ``None`` counts rows written before the column existed. This is the query
+    that makes selective invalidation possible — with only a version counter,
+    the sole remedy for a bad dependency was discarding everything.
+    """
+    if not cache_enabled():
+        return []
+    ensure_schema()
+    with _connect() as conn:
+        rows = conn.execute(
+            "SELECT provenance_hash, COUNT(*) FROM panchanga_cache "
+            "GROUP BY provenance_hash ORDER BY COUNT(*) DESC"
+        ).fetchall()
+    return [(r[0], r[1]) for r in rows]
+
+
+def report_provenance_drift() -> dict[str, Any]:
+    """Compare cached rows against the live environment and log any drift.
+
+    **Logs only — nothing is purged and no row is invalidated.** A provenance
+    change means an *input* changed, which is not the same as an *output*
+    changing: a pyswisseph patch release touching an unrelated routine moves the
+    hash while every number stays identical. Deciding what to do about that is a
+    judgement call, and this makes the call possible instead of making it
+    silently.
+
+    Its value is turning the A0c failure mode — the API served Moshier results
+    for months because nothing noticed the ephemeris files were unreachable —
+    from invisible into a startup WARNING.
+    """
+    live = current_provenance()
+    stored = stored_provenance_hashes()
+    known = [(h, n) for h, n in stored if h]
+    legacy = sum(n for h, n in stored if not h)
+    stale = [(h, n) for h, n in known if h != live.provenance_hash]
+
+    summary: dict[str, Any] = {
+        "live_hash": live.provenance_hash,
+        "rows_current": sum(n for h, n in known if h == live.provenance_hash),
+        "rows_pre_provenance": legacy,
+        "stale_hashes": [{"provenance_hash": h, "rows": n} for h, n in stale],
+    }
+    if stale:
+        logger.warning(
+            "Panchanga cache holds %d row(s) from %d earlier astronomical "
+            "environment(s); live provenance is %s. Nothing was invalidated — "
+            "inspect with services.panchanga_cache.stored_provenance_hashes(). "
+            "Stale: %s",
+            sum(n for _h, n in stale),
+            len(stale),
+            live.short_hash,
+            ", ".join(f"{h[:16]} ({n} rows)" for h, n in stale),
+        )
+    elif legacy:
+        logger.info(
+            "Panchanga cache: %d row(s) predate provenance recording (hash NULL); "
+            "live provenance is %s",
+            legacy,
+            live.short_hash,
+        )
+    return summary
 
 
 def resolve_cache_keys(location: ObserverLocation) -> tuple[str, int]:
-    """Return (location_key, city_id) for cache lookup."""
+    """Return (location_key, city_id) for cache lookup.
+
+    Both city shortcuts below discard latitude and longitude — deliberately, so
+    that everyone in a town shares one computation. They must not also discard
+    **altitude**: two observers at one town's coordinates but different
+    elevations see genuinely different rise/set times (1400 m moves sunrise
+    ~6.3 minutes), so collapsing them would serve one the other's day.
+
+    Altitude is a constant ``DEFAULT_ALTITUDE`` for every observer the current
+    API can construct, so in practice both guards are always taken and every key
+    produced here is byte-identical to the pre-altitude ones. The guards exist so
+    that stays true when altitude becomes settable, rather than silently not.
+    """
+    at_default_altitude = location.altitude == DEFAULT_ALTITUDE
+
     if location.city_id is not None:
-        return f"city:{location.city_id}", location.city_id
+        if at_default_altitude:
+            return f"city:{location.city_id}", location.city_id
+        return f"city:{location.city_id}_alt{location.altitude:.1f}", location.city_id
 
     if (
         abs(location.lat - DEFAULT_LOCATION.lat) < 0.02
         and abs(location.lon - DEFAULT_LOCATION.lon) < 0.02
         and location.timezone == DEFAULT_LOCATION.timezone
+        and at_default_altitude
     ):
         return f"city:{KATHMANDU_CITY_ID}", KATHMANDU_CITY_ID
 
@@ -275,11 +455,12 @@ def _row_from_panchanga(
         "gulika": _muhurta_json(muhurta.get("gulika")),
         "abhijit": _muhurta_json(muhurta.get("abhijit")),
         "festivals": json.dumps(raw.get("festivals", []), ensure_ascii=False),
-        "payload_json": json.dumps(
-            {**raw, "_cache_version": CACHE_PAYLOAD_VERSION},
-            ensure_ascii=False,
-        ),
+        "payload_json": _encode_payload({**raw, "_cache_version": CACHE_PAYLOAD_VERSION}),
         "computed_at": datetime.now(timezone.utc).isoformat(),
+        # Column, not part of payload_json: provenance must stay out of the
+        # presentation payload, and a column is what makes
+        # `SELECT DISTINCT provenance_hash` and selective invalidation possible.
+        "provenance_hash": current_provenance().provenance_hash,
     }
 
 
@@ -342,7 +523,7 @@ def get_cached_panchanga(
     if row is None:
         return None
 
-    payload = json.loads(row["payload_json"])
+    payload = _decode_payload(row["payload_json"])
     if not _payload_cache_valid(payload):
         logger.debug(
             "Stale panchanga cache for %s @ %s — recomputing",
@@ -376,14 +557,14 @@ def store_panchanga_cache(
                 yoga, yoga_end, karana, karana_end,
                 sunrise, sunset, moonrise, moonset,
                 rahu_kalam, yama_ganda, gulika, abhijit,
-                festivals, payload_json, computed_at
+                festivals, payload_json, computed_at, provenance_hash
             ) VALUES (
                 :city_id, :location_key, :date,
                 :tithi, :tithi_end, :nakshatra, :nakshatra_end,
                 :yoga, :yoga_end, :karana, :karana_end,
                 :sunrise, :sunset, :moonrise, :moonset,
                 :rahu_kalam, :yama_ganda, :gulika, :abhijit,
-                :festivals, :payload_json, :computed_at
+                :festivals, :payload_json, :computed_at, :provenance_hash
             )
             ON CONFLICT(location_key, date) DO UPDATE SET
                 city_id = excluded.city_id,
@@ -405,7 +586,8 @@ def store_panchanga_cache(
                 abhijit = excluded.abhijit,
                 festivals = excluded.festivals,
                 payload_json = excluded.payload_json,
-                computed_at = excluded.computed_at
+                computed_at = excluded.computed_at,
+                provenance_hash = excluded.provenance_hash
             """,
             row,
         )
@@ -438,7 +620,7 @@ def get_cached_panchanga_jd(
     if row is None:
         return None
 
-    payload = json.loads(row["payload_json"])
+    payload = _decode_payload(row["payload_json"])
     if not _payload_cache_valid(payload):
         logger.debug(
             "Stale panchanga cache for jd %s (%s) @ %s — recomputing",
@@ -480,14 +662,14 @@ def store_panchanga_cache_jd(
                 yoga, yoga_end, karana, karana_end,
                 sunrise, sunset, moonrise, moonset,
                 rahu_kalam, yama_ganda, gulika, abhijit,
-                festivals, payload_json, computed_at
+                festivals, payload_json, computed_at, provenance_hash
             ) VALUES (
                 :city_id, :location_key, :date,
                 :tithi, :tithi_end, :nakshatra, :nakshatra_end,
                 :yoga, :yoga_end, :karana, :karana_end,
                 :sunrise, :sunset, :moonrise, :moonset,
                 :rahu_kalam, :yama_ganda, :gulika, :abhijit,
-                :festivals, :payload_json, :computed_at
+                :festivals, :payload_json, :computed_at, :provenance_hash
             )
             ON CONFLICT(location_key, date) DO UPDATE SET
                 city_id = excluded.city_id,
@@ -509,7 +691,8 @@ def store_panchanga_cache_jd(
                 abhijit = excluded.abhijit,
                 festivals = excluded.festivals,
                 payload_json = excluded.payload_json,
-                computed_at = excluded.computed_at
+                computed_at = excluded.computed_at,
+                provenance_hash = excluded.provenance_hash
             """,
             row,
         )

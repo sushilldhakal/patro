@@ -100,11 +100,27 @@ def warm_holiday_cache() -> list[int]:
             start_year,
             end_year,
         )
+    _report_provenance_drift()
     _prune_stale_blob_cache()
     _warm_year_response_cache()
     _warm_popular_city_caches()
     _warm_sait_cache()
     return generated
+
+
+def _report_provenance_drift() -> None:
+    """Log whether cached rows came from a different astronomical environment.
+
+    Diagnostics only — no cache is purged. See
+    services.panchanga_cache.report_provenance_drift for why detection and
+    invalidation are deliberately separate.
+    """
+    try:
+        from services.panchanga_cache import report_provenance_drift
+
+        report_provenance_drift()
+    except Exception:  # noqa: BLE001 - never let a diagnostic break startup
+        logger.exception("Provenance drift check failed (continuing)")
 
 
 def _prune_stale_blob_cache() -> None:

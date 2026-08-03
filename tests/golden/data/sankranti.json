@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "status": "populated",
+  "priority": 1,
+  "description": "Solar ingress (sankranti) instants - the ASTRONOMICAL event only. Which civil day a sankranti is credited to is a separate cultural rule and is deliberately not part of this dataset.",
+  "source": {
+    "authority": "Swiss Ephemeris 2.10.03 (DE441) evaluated against a mathematical definition",
+    "kind": "mathematical_definition",
+    "definition": "The instant at which the apparent geocentric SIDEREAL solar longitude reaches (rashi - 1) * 30 deg, for rashi 1..12 (1 = Mesh at 0 deg). Sidereal longitude = tropical longitude - ayanamsha.",
+    "method": "Independent bisection in tests/golden/definitions.py. Sidereal longitude is derived explicitly as swe.calc_ut(SUN) - swe.get_ayanamsa_ex_ut(jd, FLG_SWIEPH) -- NOT get_ayanamsa_ut, which disagrees by 5.9 arcsec at 2026 and does not match what FLG_SIDEREAL applies rather than via FLG_SIDEREAL, so the ayanamsha enters visibly. Bracket found by 5-day scan for a sign change; converged to 1 second.",
+    "reference": "tests/golden/definitions.py::sankranti_jd",
+    "publication_year": "n/a (derived, not published)",
+    "convention": "Sidereal (nirayana) zodiac, LAHIRI ayanamsha (swe.SIDM_LAHIRI). Apparent geocentric longitude, UT timescale. NOTE: this fixes the astronomical instant only. A patro's printed sankranti DATE additionally applies a day-assignment rule, which is cultural and lives in the calendar-rule layer.",
+    "retrieved": "2026-08-02",
+    "verified_by": "Convergence checked: solved sidereal longitudes land within 4e-6 deg of the target multiple of 30 deg.",
+    "notes": "Ayanamsha-dependent by construction. A different ayanamsha gives a different instant, which is why the mode is recorded per entry. The ayanamsha variant matters: get_ayanamsa_ex_ut reproduces FLG_SIDEREAL exactly, get_ayanamsa_ut does not. This suite found that by failing with a systematic ~150 s offset. See docs/ayanamsha-variants.md."
+  },
+  "tolerance": {
+    "value": 60,
+    "unit": "seconds",
+    "rationale": "Production's find_sankranti_after_jd targets 60 s (tolerance_days=60/86400) and the reference converges to 1 s, so 60 s accepts production's stated precision. A bracketing fault - the realistic failure, given the three-branch search in find_sankranti_after_jd - moves the answer by days, not seconds."
+  },
+  "reconciled_under_provenance": "1a29d9327c09017b650e42c91ae90f44da6f213e084fd4518f849be901a80ec8",
+  "required_entry_fields": [
+    "id",
+    "year",
+    "rashi",
+    "ayanamsha",
+    "expected"
+  ],
+  "entries": [
+    {
+      "id": "rashi01_2026",
+      "year": 2026,
+      "rashi": 1,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461144.668511391,
+        "instant_utc": "2026-04-14T04:02:39Z",
+        "sidereal_longitude_deg": 0.0
+      }
+    },
+    {
+      "id": "rashi02_2026",
+      "year": 2026,
+      "rashi": 2,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461175.536135674,
+        "instant_utc": "2026-05-15T00:52:02Z",
+        "sidereal_longitude_deg": 30.0
+      }
+    },
+    {
+      "id": "rashi03_2026",
+      "year": 2026,
+      "rashi": 3,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461206.807650566,
+        "instant_utc": "2026-06-15T07:23:01Z",
+        "sidereal_longitude_deg": 60.0
+      }
+    },
+    {
+      "id": "rashi04_2026",
+      "year": 2026,
+      "rashi": 4,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461238.256510735,
+        "instant_utc": "2026-07-16T18:09:23Z",
+        "sidereal_longitude_deg": 90.0
+      }
+    },
+    {
+      "id": "rashi05_2026",
+      "year": 2026,
+      "rashi": 5,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461269.603308678,
+        "instant_utc": "2026-08-17T02:28:46Z",
+        "sidereal_longitude_deg": 120.0
+      }
+    },
+    {
+      "id": "rashi06_2026",
+      "year": 2026,
+      "rashi": 6,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461300.59927845,
+        "instant_utc": "2026-09-17T02:22:58Z",
+        "sidereal_longitude_deg": 150.0
+      }
+    },
+    {
+      "id": "rashi07_2026",
+      "year": 2026,
+      "rashi": 7,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461331.098402977,
+        "instant_utc": "2026-10-17T14:21:42Z",
+        "sidereal_longitude_deg": 180.0
+      }
+    },
+    {
+      "id": "rashi08_2026",
+      "year": 2026,
+      "rashi": 8,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461361.09250927,
+        "instant_utc": "2026-11-16T14:13:13Z",
+        "sidereal_longitude_deg": 210.0
+      }
+    },
+    {
+      "id": "rashi09_2026",
+      "year": 2026,
+      "rashi": 9,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461390.704888344,
+        "instant_utc": "2026-12-16T04:55:02Z",
+        "sidereal_longitude_deg": 240.0
+      }
+    },
+    {
+      "id": "rashi10_2026",
+      "year": 2026,
+      "rashi": 10,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461054.900931358,
+        "instant_utc": "2026-01-14T09:37:20Z",
+        "sidereal_longitude_deg": 270.0
+      }
+    },
+    {
+      "id": "rashi11_2026",
+      "year": 2026,
+      "rashi": 11,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461084.443739891,
+        "instant_utc": "2026-02-12T22:38:59Z",
+        "sidereal_longitude_deg": 300.0
+      }
+    },
+    {
+      "id": "rashi12_2026",
+      "year": 2026,
+      "rashi": 12,
+      "ayanamsha": "lahiri",
+      "expected": {
+        "jd_ut": 2461114.314631462,
+        "instant_utc": "2026-03-14T19:33:04Z",
+        "sidereal_longitude_deg": 330.0
+      }
+    }
+  ]
+}

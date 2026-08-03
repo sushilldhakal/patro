@@ -747,19 +747,3 @@ def build_eclipse_year(bs_year: int, kind: str, location: Any) -> dict[str, Any]
     payload["bs_year"] = bs_year
     payload["era"] = "bs"
     return payload
-
-
-def build_eclipse_ad_year(ad_year: int, kind: str, location: Any) -> dict[str, Any]:
-    """Eclipses within a Gregorian year. Thin wrapper over the span builder."""
-    from engine.astronomy.jd_calendar import civil_day_jd_from_date
-
-    year_start, year_end = _ad_year_range(ad_year)
-    payload = build_eclipse_span(
-        civil_day_jd_from_date(year_start),
-        civil_day_jd_from_date(year_end),
-        kind,
-        location,
-    )
-    payload["ad_year"] = ad_year
-    payload["era"] = "ad"
-    return payload

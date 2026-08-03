@@ -1,4 +1,4 @@
-"""Belaantar (equation of time) and Deshaantar (longitude correction) — Surya Panchanga style."""
+"""Belaantar, Deshaantar and Akshamsha — Surya Panchanga solar corrections."""
 
 from __future__ import annotations
 
@@ -6,8 +6,13 @@ from datetime import date, datetime, time, timezone
 from typing import Any, Literal
 
 from engine.astronomy.engine import default_engine
+from engine.astronomy.sun import LAT_KATHMANDU, calculate_sunrise
 from engine.astronomy.ut_instant import as_julian_day
 from engine.astronomy.timescale import is_nepal_observer, nepal_timezone_era, resolve_observer_timezone
+
+# Gaurishankar prime meridian — same reference as patro देशान्तर tables.
+GAURISHANKAR_MERIDIAN = 86.25
+REFERENCE_LATITUDE = LAT_KATHMANDU
 
 SignKind = Literal["dhan", "rin"]
 
@@ -102,6 +107,40 @@ def compute_deshaantar(
     }
 
 
+def compute_akshamsha(
+    target: date,
+    local_latitude: float,
+    *,
+    timezone_name: str,
+    reference_latitude: float = REFERENCE_LATITUDE,
+    meridian_longitude: float = GAURISHANKAR_MERIDIAN,
+) -> dict[str, Any]:
+    """
+    Latitude correction on the Gaurishankar meridian (patro table sign).
+
+    Sunrise at the observer's latitude minus sunrise at the national reference
+    latitude (Kathmandu), both on 86°15′E. Season-dependent — unlike देशान्तर
+    it is not a fixed minutes-per-degree offset.
+
+    Reference / display value only; listed rise/set use the observer's own latitude.
+    """
+    t_obs = calculate_sunrise(
+        target, local_latitude, meridian_longitude, timezone_name=timezone_name,
+    )
+    t_ref = calculate_sunrise(
+        target, reference_latitude, meridian_longitude, timezone_name=timezone_name,
+    )
+    delta_min = (t_obs - t_ref).total_seconds() / 60.0
+    return {
+        **_split_minutes_signed(delta_min),
+        "name_ne": "अक्षांश",
+        "name_en": "Akshamsha (latitude correction)",
+        "local_latitude": round(local_latitude, 6),
+        "reference_latitude": round(reference_latitude, 6),
+        "meridian_longitude": round(meridian_longitude, 6),
+    }
+
+
 def build_solar_corrections(
     target: date,
     *,
@@ -111,7 +150,7 @@ def build_solar_corrections(
     lat: float | None = None,
     country: str | None = None,
 ) -> dict[str, Any]:
-    """Daily Belaantar + Deshaantar for patro tables and advanced calculations."""
+    """Daily Belaantar, Deshaantar and Akshamsha for patro tables."""
     tz = resolve_observer_timezone(
         timezone_name, lat=lat, lon=local_longitude, country=country,
     )
@@ -125,8 +164,18 @@ def build_solar_corrections(
     )
     belaantar = compute_belaantar(anchor)
     deshaantar = compute_deshaantar(local_longitude, meridian)
+    akshamsha = (
+        compute_akshamsha(
+            target,
+            lat,
+            timezone_name=timezone_name,
+            meridian_longitude=GAURISHANKAR_MERIDIAN,
+        )
+        if lat is not None
+        else None
+    )
 
-    return {
+    out: dict[str, Any] = {
         "belaantar": belaantar,
         "deshaantar": deshaantar,
         "standard_meridian_longitude": meridian,
@@ -137,11 +186,14 @@ def build_solar_corrections(
         else None,
         "ishtakaal_note_ne": (
             "सूचीबद्ध सूर्योदय/अस्त स्थानको वास्तविक अक्षांश र देशान्तरबाट गणना गरिएको हो — "
-            "इष्टकाल गणनामा पुनः देशान्तर थप्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
+            "इष्टकाल गणनामा पुनः देशान्तर वा अक्षांश थप्नु पर्दैन। बेलान्तर सन्दर्भका लागि मात्र देखाइएको हो।"
         ),
         "ishtakaal_note_en": (
             "Listed sunrise/sunset are computed from the observer's own latitude "
-            "and longitude, so Deshaantar is already inherent; do not apply it "
-            "again for Ishtakaal. Belaantar is shown for reference only."
+            "and longitude, so Deshaantar and Akshamsha are already inherent; do "
+            "not apply them again for Ishtakaal. Belaantar is shown for reference only."
         ),
     }
+    if akshamsha is not None:
+        out["akshamsha"] = akshamsha
+    return out
