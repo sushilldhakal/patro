@@ -119,7 +119,11 @@ logger = logging.getLogger(__name__)
 #     ayanamsa, lahiri_ayanamsa, lagna, lagna_spans, udaya_lagna and
 #     panchaka_rahita by <=6.8 arcsec (<=2 s of clock time on span boundaries).
 #     No rashi or nakshatra label changes. See docs/ayanamsha-variants.md.
-PANCHANGA_PAYLOAD_VERSION = 41
+# 42: gochar day payloads carry ``ayanamsa`` {name, degrees} — the frame the
+#     longitudes in the same response are expressed in. Additive; needed by the
+#     3D sky, which places the rashi belt against the equinox and cannot derive
+#     the server's exact Lahiri value on its own.
+PANCHANGA_PAYLOAD_VERSION = 42
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

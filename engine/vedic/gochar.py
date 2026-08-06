@@ -860,6 +860,14 @@ def build_gochar(
             "note": "Positions at local true sunrise (Udaya)",
         },
         "location": location.as_dict(),
+        # The frame the longitudes above are expressed in: where the sidereal
+        # zero sits against the equinox on this date. A client drawing the sky
+        # needs it to place the rashi belt — it is the shift that walks Mesha
+        # away from वसन्त सम्पात over the centuries.
+        "ayanamsa": {
+            "name": "Lahiri",
+            "degrees": round(sun_service.ayanamsa(as_julian_day(sunrise_utc)), 6),
+        },
         "gochar": gochar,
     }
 
