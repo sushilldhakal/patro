@@ -57,7 +57,14 @@ def _dig_bala(house: int, sign: int) -> float:
 
 
 def _drishti_bala(madhya: float, planet_longitudes: dict[str, float]) -> float:
-    """Net aspect on the bhava midpoint: benefic adds, malefic subtracts, /4."""
+    """Net aspect on the bhava midpoint: benefic adds, malefic subtracts.
+
+    Taken at full value, NOT quartered. The quarter belongs to a *planet's* Drik
+    Bala (shadbala._drik), where it keeps one of six components from swamping the
+    other five; a bhava's Drishti Bala is one of only three and is meant to carry
+    real weight. Quartering it here pinned the column to about +/-20 virupas
+    against a ~500 total, so it never separated two bhavas sharing a lord.
+    """
     total = 0.0
     for g in GRAHAS:
         lon = planet_longitudes.get(g)
@@ -66,7 +73,7 @@ def _drishti_bala(madhya: float, planet_longitudes: dict[str, float]) -> float:
         angle = _norm(madhya - float(lon))  # aspected - aspecting
         d = _drishti(g, angle)
         total += d if g in BENEFICS else -d
-    return total / 4.0
+    return total
 
 
 def compute_bhava_bala(
