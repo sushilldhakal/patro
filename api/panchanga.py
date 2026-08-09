@@ -491,6 +491,40 @@ def panchanga_day_today(
     )
 
 
+@router.get("/panchanga/rashifal")
+def panchanga_rashifal(
+    location: LocationDep,
+    request: Request,
+    _era: None = Depends(era_params),
+    period: Literal["daily", "weekly", "monthly"] = Query(
+        "daily",
+        description="Daily, weekly (7 days from anchor), or monthly (BS month containing anchor day)",
+    ),
+    date_key: str | None = Query(None, alias="date"),
+):
+    """Server-computed rashifal from sunrise panchanga (Drik Ganita, Lahiri)."""
+    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from services.rashifal_api import rashifal_for_gregorian
+
+    try:
+        jd_ut = day_jd_for_request(request, date_key)
+    except DayResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    civil = CivilDay.from_jd_ut(float(jd_ut))
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Rashifal is available for CE-representable dates only.",
+        )
+    try:
+        return rashifal_for_gregorian(greg, location, period=period)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/panchanga/{date_key}")
 def panchanga_day(
     date_key: str,

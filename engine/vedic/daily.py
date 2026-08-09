@@ -55,6 +55,7 @@ from engine.vedic.samvatsara import samvatsara_payload_for_bs_year
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.hora import build_hora
 from engine.vedic.navatara import build_chandrabalam_table, build_tarabala_table
+from engine.vedic.rashifal import build_daily_rashifal
 from engine.vedic.tithi import calculate_tithi
 
 
@@ -258,6 +259,7 @@ def _assemble_udaya_panchanga(
     chandra_rashi = rashi_service.chandra(sunrise_jd)
     tarabala_table = build_tarabala_table(nakshatra_block)
     chandrabala_table = build_chandrabalam_table(chandra_rashi)
+    rashifal = build_daily_rashifal(chandrabala_table, vaara_num=vaara_num)
     panchaka_rahita = build_panchaka_rahita(sunrise_utc, lagna_spans, vaara_num, tz_name)
     udaya_lagna = build_udaya_lagna(lagna_spans)
     nivas_shool = build_nivas_shool_block(
@@ -375,6 +377,7 @@ def _assemble_udaya_panchanga(
         "tarabalam": tarabalam,
         "tarabala_table": tarabala_table,
         "chandrabala_table": chandrabala_table,
+        "rashifal": rashifal,
         "panchaka_rahita": panchaka_rahita,
         "muhurta": muhurta,
         "nivas_shool": nivas_shool,

@@ -280,6 +280,7 @@ def build_daily_state(
     payload["choghadiya"] = raw.get("choghadiya") or []
     payload["tarabala_table"] = raw.get("tarabala_table")
     payload["chandrabala_table"] = raw.get("chandrabala_table")
+    payload["rashifal"] = raw.get("rashifal")
 
     return payload
 
@@ -367,6 +368,7 @@ def build_daily_state_civil(
     payload["choghadiya"] = raw.get("choghadiya") or []
     payload["tarabala_table"] = raw.get("tarabala_table")
     payload["chandrabala_table"] = raw.get("chandrabala_table")
+    payload["rashifal"] = raw.get("rashifal")
 
     return payload
 

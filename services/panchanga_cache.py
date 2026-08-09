@@ -123,7 +123,8 @@ logger = logging.getLogger(__name__)
 #     longitudes in the same response are expressed in. Additive; needed by the
 #     3D sky, which places the rashi belt against the equinox and cannot derive
 #     the server's exact Lahiri value on its own.
-PANCHANGA_PAYLOAD_VERSION = 42
+# 43: ``rashifal`` block on daily payloads (navatara chandrabala + Moorti Nirnaya).
+PANCHANGA_PAYLOAD_VERSION = 43
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
@@ -142,6 +143,7 @@ _REQUIRED_PAYLOAD_KEYS = (
     "choghadiya",
     "tarabala_table",
     "chandrabala_table",
+    "rashifal",
     "nivas_shool",
     # Rows cached before the samvatsara feature lack this key; requiring it
     # forces them to recompute so modern dates get their samvatsara label
@@ -502,6 +504,9 @@ def _payload_cache_valid(payload: dict[str, Any]) -> bool:
         and isinstance(chandrabala_table, dict)
         and isinstance(chandrabala_table.get("rows"), list)
         and len(chandrabala_table["rows"]) == 12
+        and isinstance(payload.get("rashifal"), dict)
+        and isinstance((payload.get("rashifal") or {}).get("signs"), list)
+        and len((payload.get("rashifal") or {}).get("signs") or []) == 12
     )
 
 
