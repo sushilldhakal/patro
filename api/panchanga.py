@@ -186,6 +186,63 @@ def panchanga_rashifal_janma(birth: str, birth_tz: str = "Asia/Kathmandu"):
     return {"janma_nakshatra": janma["nakshatra"], "janma_rashi": janma["rashi"]}
 
 
+@router.get("/panchanga/rashifal/personal")
+def panchanga_rashifal_personal(
+    location: LocationDep,
+    request: Request,
+    birth: str,
+    birth_lat: float,
+    birth_lon: float,
+    birth_tz: str = "Asia/Kathmandu",
+    _era: None = Depends(era_params),
+    period: Literal["daily", "weekly", "monthly", "yearly"] = Query("daily"),
+    date_key: str | None = Query(None, alias="date"),
+):
+    """Personal rashifal cast on one birth chart — Lagna, natal Ashtakavarga
+    and the running Vimshottari Mahadasha/Antardasha — rather than a Moon-sign
+    shortcut. ``location`` is where the transits are being read *from* (the
+    viewer's current place); ``birth_lat``/``birth_lon`` are where the person
+    was *born* (needed once, to cast the Lagna — the Moon is geocentric and
+    would not need this, but the ascendant does).
+    """
+    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from engine.vedic.rashifal_personal import birth_instant_from_local, build_natal_chart
+    from services.rashifal_api import personal_rashifal_for_gregorian
+
+    try:
+        jd_ut = day_jd_for_request(request, date_key)
+    except DayResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    civil = CivilDay.from_jd_ut(float(jd_ut))
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Rashifal is available for CE-representable dates only.",
+        )
+
+    try:
+        birth_instant = birth_instant_from_local(birth, birth_tz)
+        natal = build_natal_chart(birth_instant, lat=birth_lat, lon=birth_lon)
+        payload = personal_rashifal_for_gregorian(natal, greg, location, period=period)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Cast on one person's birth chart — never shared/edge-cached, unlike the
+    # general rashifal a couple of routes up. A short private browser cache
+    # only, so flipping period tabs on the same profile doesn't refetch.
+    private_cache_control = "private, max-age=120"
+    return JSONResponse(
+        payload,
+        headers={
+            "Cache-Control": private_cache_control,
+            "Vary": "Accept-Encoding",
+        },
+    )
+
+
 @router.get("/panchanga/{bs_year}/{bs_month}")
 def panchanga_month(
     bs_year: int,

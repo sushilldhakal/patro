@@ -25,7 +25,7 @@ Window definitions, all anchored on the observer's own sunrise:
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
@@ -44,6 +44,7 @@ from engine.vedic.rashifal_engine import (
     detect_ingresses,
     method_block,
 )
+from engine.vedic.rashifal_personal import NatalChart, aggregate_personal, build_personal_sign_payload
 
 #: Days between samples in a yearly sweep. Slow grahas cannot skip a sign in 3.
 YEARLY_SAMPLE_STEP = 3
@@ -216,6 +217,97 @@ def rashifal_for_gregorian(
         frames = _frames_for_range(start, end, location, step=YEARLY_SAMPLE_STEP)
         payload = _aggregate("yearly", frames, sample_step=YEARLY_SAMPLE_STEP)
         payload["bs_year"] = bs_year
+        return payload
+
+    raise ValueError(f"unsupported rashifal period: {period!r}")
+
+
+def personal_rashifal_for_gregorian(
+    natal: NatalChart,
+    greg: date,
+    location: ObserverLocation = DEFAULT_LOCATION,
+    *,
+    period: Period = "daily",
+    as_of: datetime | None = None,
+) -> dict[str, Any]:
+    """Scored personal rashifal — same window resolution as the general engine,
+    read against one person's own birth chart instead of a tested rashi.
+
+    ``as_of`` is when the Vimshottari dasha is read at (defaults to now); the
+    transit window itself is always anchored on ``greg``, same as the general
+    reading, so browsing the calendar still moves the personal one in step.
+    """
+    when = as_of or datetime.now(tz=natal.birth_instant_utc.tzinfo)
+
+    if period == "daily":
+        frame = build_day_frame(greg, location, with_hora=True)
+        payload = build_personal_sign_payload(natal, frame, "daily", when)
+        payload.update(
+            {
+                "period": "daily",
+                "anchor": "sunrise",
+                "date_ad": greg.isoformat(),
+                **_bs_label(greg),
+                "method": method_block("daily", sample_step=1, days=1),
+            }
+        )
+        return payload
+
+    if period == "weekly":
+        start = _week_start(greg)
+        frames = _frames_for_range(start, start + timedelta(days=6), location)
+        payload = aggregate_personal(natal, frames, "weekly", when)
+        payload.update(_bs_label(start))
+        payload.update(
+            {
+                "period": "weekly",
+                "anchor": "sunrise",
+                "range_start_ad": frames[0].date_ad,
+                "range_end_ad": frames[-1].date_ad,
+                "method": method_block("weekly", sample_step=1, days=len(frames)),
+            }
+        )
+        return payload
+
+    if period == "monthly":
+        bs_year, bs_month, _ = gregorian_to_bs(greg)
+        frames = [
+            build_day_frame(date.fromisoformat(civil_iso), location)
+            for _bs_day, civil_iso in iter_bs_month_civil_days(bs_year, bs_month)
+        ]
+        if not frames:
+            raise ValueError(f"no civil days for BS {bs_year}-{bs_month}")
+        payload = aggregate_personal(natal, frames, "monthly", when)
+        payload.update(
+            {
+                "period": "monthly",
+                "anchor": "sunrise",
+                "range_start_ad": frames[0].date_ad,
+                "range_end_ad": frames[-1].date_ad,
+                "bs_year": bs_year,
+                "bs_month": bs_month,
+                "bs_month_name_ne": bs_month_name(bs_month, nepali=True),
+                "bs_month_name_en": bs_month_name(bs_month),
+                "method": method_block("monthly", sample_step=1, days=len(frames)),
+            }
+        )
+        return payload
+
+    if period == "yearly":
+        bs_year, _, _ = gregorian_to_bs(greg)
+        start, end = bs_year_date_range(bs_year)
+        frames = _frames_for_range(start, end, location, step=YEARLY_SAMPLE_STEP)
+        payload = aggregate_personal(natal, frames, "yearly", when)
+        payload.update(
+            {
+                "period": "yearly",
+                "anchor": "sunrise",
+                "range_start_ad": frames[0].date_ad,
+                "range_end_ad": frames[-1].date_ad,
+                "bs_year": bs_year,
+                "method": method_block("yearly", sample_step=YEARLY_SAMPLE_STEP, days=len(frames)),
+            }
+        )
         return payload
 
     raise ValueError(f"unsupported rashifal period: {period!r}")
