@@ -496,16 +496,28 @@ def panchanga_rashifal(
     location: LocationDep,
     request: Request,
     _era: None = Depends(era_params),
-    period: Literal["daily", "weekly", "monthly"] = Query(
+    period: Literal["daily", "weekly", "monthly", "yearly"] = Query(
         "daily",
-        description="Daily, weekly (7 days from anchor), or monthly (BS month containing anchor day)",
+        description=(
+            "Daily; weekly (the Aitabar→Sanibar week containing the anchor day); "
+            "monthly (BS month containing it); yearly (BS year containing it)"
+        ),
     ),
     date_key: str | None = Query(None, alias="date"),
 ):
-    """Server-computed rashifal from sunrise panchanga (Drik Ganita, Lahiri)."""
+    """Server-computed rashifal from sunrise panchanga (Drik Ganita, Lahiri).
+
+    Deterministic per (day, period, location) — every layer is read at the
+    observer's own sunrise — so the whole payload goes through the gzip response
+    cache. That matters most for ``yearly``, which sweeps ~123 sunrises.
+    """
     from app.day_resolver import DayResolutionError, day_jd_for_request
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from services.rashifal_api import rashifal_for_gregorian
+    from services.response_cache import (
+        DAILY_PANCHANGA_CACHE_CONTROL,
+        location_cache_key,
+        serve_cached_json,
+    )
 
     try:
         jd_ut = day_jd_for_request(request, date_key)
@@ -519,10 +531,19 @@ def panchanga_rashifal(
             status_code=400,
             detail="Rashifal is available for CE-representable dates only.",
         )
-    try:
+
+    def build():
+        from services.rashifal_api import rashifal_for_gregorian
+
         return rashifal_for_gregorian(greg, location, period=period)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    from services.rashifal_api import rashifal_window_key
+
+    window = rashifal_window_key(greg, period)
+    key = f"rashifal_{period}_{window}_{location_cache_key(location)}"
+    return serve_cached_json(
+        request, key, build, cache_control=DAILY_PANCHANGA_CACHE_CONTROL
+    )
 
 
 @router.get("/panchanga/{date_key}")
