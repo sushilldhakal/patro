@@ -139,11 +139,12 @@ def panchanga_year(
     )
 
 
-# NOTE: must stay ABOVE "/panchanga/{bs_year}/{bs_month}" — FastAPI matches in
-# declaration order, and the two-segment BS month route otherwise swallows
-# "/panchanga/jd/<float>" and tries to parse "jd" as an int bs_year. That made
-# the JD endpoint permanently unreachable (422), even though it is the escape
-# hatch every "before 1 CE; use civil/JD APIs" error message points callers to.
+# NOTE: this route and the next must stay ABOVE "/panchanga/{bs_year}/{bs_month}"
+# — FastAPI matches in declaration order, and the two-segment BS month route
+# otherwise swallows both "/panchanga/jd/<float>" (tries to parse "jd" as an int
+# bs_year) and "/panchanga/rashifal/janma" (tries to parse "rashifal" as one).
+# That made the JD endpoint permanently unreachable (422), even though it is the
+# escape hatch every "before 1 CE; use civil/JD APIs" error message points to.
 @router.get("/panchanga/jd/{jd_ut}")
 def panchanga_day_jd(
     jd_ut: float,
@@ -162,6 +163,83 @@ def panchanga_day_jd(
     """
     return _day_payload_for_jd(
         jd_ut, location, festivals=festivals, detail=detail, reference=reference
+    )
+
+
+@router.get("/panchanga/rashifal/janma")
+def panchanga_rashifal_janma(birth: str, birth_tz: str = "Asia/Kathmandu"):
+    """Janma (birth) Moon rashi for a naive local birth datetime.
+
+    Thin wrapper over the same ``compute_janma_points`` the sait personalize
+    route uses — lets a signed-in user's saved profile pick out its own card on
+    the rashifal grid without duplicating the janma-Moon computation. Only the
+    birth instant is needed (the Moon is geocentric), so no location is asked
+    for here; the caller already resolved BS→AD on its own saved profile before
+    calling this.
+    """
+    from services.sait_personalize import compute_janma_points
+
+    try:
+        janma = compute_janma_points(birth, birth_tz)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"janma_nakshatra": janma["nakshatra"], "janma_rashi": janma["rashi"]}
+
+
+@router.get("/panchanga/rashifal/personal")
+def panchanga_rashifal_personal(
+    location: LocationDep,
+    request: Request,
+    birth: str,
+    birth_lat: float,
+    birth_lon: float,
+    birth_tz: str = "Asia/Kathmandu",
+    _era: None = Depends(era_params),
+    period: Literal["daily", "weekly", "monthly", "yearly"] = Query("daily"),
+    date_key: str | None = Query(None, alias="date"),
+):
+    """Personal rashifal cast on one birth chart — Lagna, natal Ashtakavarga
+    and the running Vimshottari Mahadasha/Antardasha — rather than a Moon-sign
+    shortcut. ``location`` is where the transits are being read *from* (the
+    viewer's current place); ``birth_lat``/``birth_lon`` are where the person
+    was *born* (needed once, to cast the Lagna — the Moon is geocentric and
+    would not need this, but the ascendant does).
+    """
+    from app.day_resolver import DayResolutionError, day_jd_for_request
+    from engine.astronomy.jd_calendar import CivilDay, date_if_supported
+    from engine.vedic.rashifal_personal import birth_instant_from_local, build_natal_chart
+    from services.rashifal_api import personal_rashifal_for_gregorian
+
+    try:
+        jd_ut = day_jd_for_request(request, date_key)
+    except DayResolutionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    civil = CivilDay.from_jd_ut(float(jd_ut))
+    greg = date_if_supported(civil.year, civil.month, civil.day)
+    if greg is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Rashifal is available for CE-representable dates only.",
+        )
+
+    try:
+        birth_instant = birth_instant_from_local(birth, birth_tz)
+        natal = build_natal_chart(birth_instant, lat=birth_lat, lon=birth_lon)
+        payload = personal_rashifal_for_gregorian(natal, greg, location, period=period)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Cast on one person's birth chart — never shared/edge-cached, unlike the
+    # general rashifal a couple of routes up. A short private browser cache
+    # only, so flipping period tabs on the same profile doesn't refetch.
+    private_cache_control = "private, max-age=120"
+    return JSONResponse(
+        payload,
+        headers={
+            "Cache-Control": private_cache_control,
+            "Vary": "Accept-Encoding",
+        },
     )
 
 
