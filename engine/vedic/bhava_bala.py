@@ -4,7 +4,7 @@ Each bhava's strength sums three components, all in Virupas:
   * Bhavadhipati Bala — the full Shadbala of the bhava's lord.
   * Bhava Digbala   — directional strength from the sign-type on the bhava.
   * Bhava Drishti Bala — net benefic-minus-malefic aspect on the bhava's midpoint.
-420 Virupas (7 Rupas) is treated as the 100% benchmark.
+500 Virupas is treated as the 100% benchmark.
 """
 
 from __future__ import annotations
@@ -13,7 +13,12 @@ from typing import Any
 
 from engine.vedic.shadbala import BENEFICS, SIGN_LORD, _drishti, _norm
 
-REFERENCE_VIRUPAS = 420.0  # 7 rupas = 100%
+# The bhava benchmark, NOT a planetary one. An earlier version used 420 — that
+# is Mercury's/Jupiter's *required Shadbala* from shadbala.REQUIRED, a per-planet
+# figure. A bhava's total is its lord's whole Shadbala Pinda (~330-670) plus up
+# to 60 Digbala plus a small Drishti term, so it averages ~500; against 420 all
+# but the weakest houses printed over 100%.
+REFERENCE_VIRUPAS = 500.0
 GRAHAS = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]
 
 GRAHA_NAME_EN = {

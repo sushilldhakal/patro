@@ -76,11 +76,13 @@ def test_ashtakavarga_and_bhava_bala_present():
     bb = payload["bhavaBala"]
     assert bb is not None
     assert len(bb["houses"]) == 12
-    assert bb["referenceVirupas"] == 420.0
+    # The bhava benchmark, not a planetary one — see bhava_bala.REFERENCE_VIRUPAS.
+    assert bb["referenceVirupas"] == 500.0
     for h in bb["houses"]:
         assert 0.0 <= h["disha"] <= 60.0
         component_sum = h["bhavadhipati"] + h["disha"] + h["drishti"]
         assert abs(h["totalPinda"] - component_sum) < 0.05
+        assert abs(h["percent"] - component_sum / 5.0) < 0.05
     assert bb["strongest"]["totalPinda"] >= bb["weakest"]["totalPinda"]
 
 
