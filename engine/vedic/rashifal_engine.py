@@ -137,8 +137,11 @@ for _g, _pairs in _VEDHA_PAIRS.items():
         _map[_a] = _b
         _map.setdefault(_b, _a)
     VEDHA[_g] = _map
-# Venus — directional table, taken as given (1↔8 and 3→1 coexist).
-VEDHA["venus"] = {1: 8, 2: 7, 3: 1, 4: 10, 5: 9, 7: 2, 8: 5, 9: 11, 10: 4, 11: 6, 12: 3}
+# Venus, unlike the other six, is given as a one-way list rather than as pairs:
+# the nine auspicious transit houses 1,2,3,4,5,8,9,11,12 obstructed by 8,7,1,10,
+# 9,5,11,3,6 respectively. Not mirrored — vedha here cancels Venus's *good*
+# results only, and houses 6, 7 and 10 (already adverse for Venus) carry none.
+VEDHA["venus"] = {1: 8, 2: 7, 3: 1, 4: 10, 5: 9, 8: 5, 9: 11, 11: 3, 12: 6}
 # Rahu and Ketu have no vedha table in the classical sources; their transits are
 # read unobstructed rather than given an invented one.
 VEDHA["rahu"] = {}
@@ -149,6 +152,14 @@ VEDHA["ketu"] = {}
 VEDHA_EXEMPT: frozenset[frozenset[str]] = frozenset(
     {frozenset({"sun", "saturn"}), frozenset({"moon", "mercury"})}
 )
+
+#: How far Naisargika (natural) bala is allowed to bend the period weights.
+#: The classical order is Sun > Moon > Venus > Jupiter > Mercury > Mars > Saturn,
+#: but it is a *natural* strength, not a temporal one — applied at full force it
+#: would erase Saturn from the yearly reading, which is exactly backwards, since
+#: the slow grahas are what a year turns on. So it enters as a bounded nudge on
+#: top of the speed-based profile rather than as a replacement for it.
+NAISARGIKA_SWING = 0.25
 
 #: Natonnata (diurnal / nocturnal) class. Mercury is always strong, and the
 #: nodes take no side.
@@ -180,6 +191,23 @@ GRAHA_PERIOD_WEIGHT: dict[Period, dict[str, float]] = {
         "venus": 0.8, "saturn": 2.5, "rahu": 1.5, "ketu": 1.5,
     },
 }
+
+def _naisargika_factor(graha: str) -> float:
+    """Naisargika bala of ``graha`` as a multiplier around 1.0.
+
+    Virupas run 8.57 (Saturn) to 60 (Sun); normalised to [0, 1] and applied with
+    :data:`NAISARGIKA_SWING`, the Sun ends up ~1.12 and Saturn ~0.88.
+    """
+    from engine.vedic.shadbala import NAISARGIKA
+
+    virupas = NAISARGIKA.get(graha)
+    if virupas is None:
+        # Rahu and Ketu carry no Naisargika bala; they take the period weight as is.
+        return 1.0
+    low, high = 8.57, 60.0
+    share = (virupas - low) / (high - low)
+    return 1.0 + (share - 0.5) * NAISARGIKA_SWING
+
 
 #: How the seven layers mix, per period. Each row sums to 1.0.
 LAYER_WEIGHTS: dict[Period, dict[str, float]] = {
@@ -248,15 +276,18 @@ LORD_NUMBER: dict[str, int] = {
     "sun": 1, "moon": 2, "jupiter": 3, "rahu": 4, "mercury": 5,
     "venus": 6, "ketu": 7, "saturn": 8, "mars": 9,
 }
+#: Graha colours as the classical texts give them — the Sun blood-red, Mars
+#: pale-red, Mercury grass-green, Venus variegated, Saturn dark. The nodes have
+#: no colour in the seven-graha list, so they keep the customary smoky pair.
 LORD_COLOR_NE: dict[str, str] = {
-    "sun": "सुन्तला/तामे", "moon": "सेतो", "mars": "रातो", "mercury": "हरियो",
-    "jupiter": "पहेँलो", "venus": "सेतो/गुलाबी", "saturn": "गाढा निलो",
-    "rahu": "धुम्र", "ketu": "खैरो",
+    "sun": "रक्तवर्ण", "moon": "सेतो", "mars": "हल्का रातो",
+    "mercury": "घाँसे हरियो", "jupiter": "पहेँलो", "venus": "विविधरङ्गी",
+    "saturn": "कालो", "rahu": "धुम्र", "ketu": "खैरो",
 }
 LORD_COLOR_EN: dict[str, str] = {
-    "sun": "Orange / copper", "moon": "White", "mars": "Red", "mercury": "Green",
-    "jupiter": "Yellow", "venus": "White / pink", "saturn": "Deep blue",
-    "rahu": "Smoke grey", "ketu": "Grey",
+    "sun": "Blood red", "moon": "White", "mars": "Pale red",
+    "mercury": "Grass green", "jupiter": "Yellow", "venus": "Variegated",
+    "saturn": "Dark", "rahu": "Smoke grey", "ketu": "Grey",
 }
 LORD_DISHA_NE: dict[str, str] = {
     "sun": "पूर्व", "venus": "आग्नेय", "mars": "दक्षिण", "rahu": "नैऋत्य",
@@ -366,6 +397,26 @@ REMEDY_EN: dict[str, str] = {
     "rahu": "Remember Durga or Bhairava; avoid rumour, shortcuts and unclear information.",
     "ketu": "Visit Ganesh or Bhairava; strengthen meditation and focus.",
 }
+
+
+#: Classical four-grade strength scale, quoted on the 20-point Vimshopaka
+#: reckoning: Full 15–20, Medium 10–15, Small 5–10, Nil below 5. Expressed here
+#: as the percent floor of each grade so the UI can label a score the way a
+#: printed patro does, alongside the five-band tone the colours come from.
+GRADE_FLOOR: tuple[tuple[int, str, str, str], ...] = (
+    (75, "full", "पूर्ण बल", "Full"),
+    (50, "medium", "मध्यम बल", "Medium"),
+    (25, "small", "अल्प बल", "Small"),
+    (0, "nil", "निर्बल", "Nil"),
+)
+
+
+def grade_for_percent(percent: int) -> dict[str, str]:
+    """Vimshopaka-scale grade for a 0–100 score."""
+    for floor, key, label_ne, label_en in GRADE_FLOOR:
+        if percent >= floor:
+            return {"grade": key, "grade_ne": label_ne, "grade_en": label_en}
+    return {"grade": "nil", "grade_ne": "निर्बल", "grade_en": "Nil"}
 
 
 def clamp(value: float, low: float = -1.0, high: float = 1.0) -> float:
@@ -641,7 +692,10 @@ def gochar_rows(
                 "bindu": bindu,
                 "retrograde": retrograde,
                 "combust": combust,
-                "weight": round(weights[graha] * frame.natonnata(graha), 4),
+                "weight": round(
+                    weights[graha] * frame.natonnata(graha) * _naisargika_factor(graha),
+                    4,
+                ),
                 "score": round(clamp(score), 4),
             }
         )
@@ -1224,6 +1278,7 @@ def build_sign_payload(frame: DayFrame, rashi: int, period: Period) -> dict[str,
         "percent": scored["percent"],
         "stars": scored["stars"],
         "tone": tone,
+        **grade_for_percent(scored["percent"]),
         # Legacy chandrabala/moorti surface — the old cards read these directly.
         "tara": chandra["tara"],
         "quality": chandra["quality"],
@@ -1277,6 +1332,15 @@ def _day_marker(iso: str, score: float) -> dict[str, Any]:
     }
 
 
+#: How much of an aggregate score comes from the window's loudest day rather
+#: than from its mean. A plain average is the statistically honest summary but
+#: not the traditional one: a period is read by its strongest transit, good or
+#: bad, and averaging thirty days pulls every sign back toward the middle until
+#: the twelve are indistinguishable. Blending the extreme back in restores the
+#: spread without inventing it — the number still comes from days that happened.
+AGGREGATE_PEAK_WEIGHT = 0.35
+
+
 def aggregate_sign(
     rashi: int,
     frames: list[DayFrame],
@@ -1284,18 +1348,21 @@ def aggregate_sign(
 ) -> dict[str, Any]:
     """Merge a window of day frames into one reading for ``rashi``.
 
-    The headline score is the mean over the window — a period is not its worst
-    day. The worst and best days are reported separately so the caution the old
-    engine folded into the summary is still visible, just as a date rather than
-    as a permanent downgrade of the whole month.
+    The headline score is the window mean pulled :data:`AGGREGATE_PEAK_WEIGHT`
+    of the way toward its most extreme day. The best and weakest days are also
+    reported as dates, so the caution the old engine folded permanently into the
+    summary now points at the day it actually belongs to.
     """
     scored = [score_sign(f, rashi, period) for f in frames]
     mean = sum(s["score"] for s in scored) / len(scored)
-    score = clamp(mean)
-    tone = tone_for_score(score)
 
     best_i = max(range(len(scored)), key=lambda i: scored[i]["score"])
     worst_i = min(range(len(scored)), key=lambda i: scored[i]["score"])
+    peak = max(
+        (scored[best_i]["score"], scored[worst_i]["score"]), key=abs
+    )
+    score = clamp(mean * (1 - AGGREGATE_PEAK_WEIGHT) + peak * AGGREGATE_PEAK_WEIGHT)
+    tone = tone_for_score(score)
 
     # Component and domain means over the window.
     layer_means: dict[str, float] = {}
@@ -1350,6 +1417,8 @@ def aggregate_sign(
         "percent": int(round((score + 1) / 2 * 100)),
         "stars": TONE_RANK[tone] + 1,
         "tone": tone,
+        **grade_for_percent(int(round((score + 1) / 2 * 100))),
+        "mean_score": round(clamp(mean), 4),
         "tara": mid_blocks["chandrabala"]["tara"],
         "quality": mid_blocks["chandrabala"]["quality"],
         "tara_num": mid_blocks["chandrabala"]["tara_num"],
@@ -1446,6 +1515,13 @@ def method_block(period: Period, *, sample_step: int, days: int) -> dict[str, An
         "moorti": "transit_moon_house_from_janma_rashi",
         "lucky_fields": "rashi_lord (colour, number, direction, hora)",
         "natonnata": "day_fraction from observer latitude x solar declination",
+        "naisargika": f"natural-bala nudge of +/-{NAISARGIKA_SWING / 2:.0%} on the graha weights",
+        "grade_scale": "vimshopaka four-grade (full/medium/small/nil)",
+        "aggregate": (
+            "daily"
+            if period == "daily"
+            else f"mean blended {AGGREGATE_PEAK_WEIGHT:.0%} toward the window's peak day"
+        ),
         "sample_step_days": sample_step,
         "days_computed": days,
     }
