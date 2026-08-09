@@ -139,11 +139,12 @@ def panchanga_year(
     )
 
 
-# NOTE: must stay ABOVE "/panchanga/{bs_year}/{bs_month}" — FastAPI matches in
-# declaration order, and the two-segment BS month route otherwise swallows
-# "/panchanga/jd/<float>" and tries to parse "jd" as an int bs_year. That made
-# the JD endpoint permanently unreachable (422), even though it is the escape
-# hatch every "before 1 CE; use civil/JD APIs" error message points callers to.
+# NOTE: this route and the next must stay ABOVE "/panchanga/{bs_year}/{bs_month}"
+# — FastAPI matches in declaration order, and the two-segment BS month route
+# otherwise swallows both "/panchanga/jd/<float>" (tries to parse "jd" as an int
+# bs_year) and "/panchanga/rashifal/janma" (tries to parse "rashifal" as one).
+# That made the JD endpoint permanently unreachable (422), even though it is the
+# escape hatch every "before 1 CE; use civil/JD APIs" error message points to.
 @router.get("/panchanga/jd/{jd_ut}")
 def panchanga_day_jd(
     jd_ut: float,
@@ -163,6 +164,26 @@ def panchanga_day_jd(
     return _day_payload_for_jd(
         jd_ut, location, festivals=festivals, detail=detail, reference=reference
     )
+
+
+@router.get("/panchanga/rashifal/janma")
+def panchanga_rashifal_janma(birth: str, birth_tz: str = "Asia/Kathmandu"):
+    """Janma (birth) Moon rashi for a naive local birth datetime.
+
+    Thin wrapper over the same ``compute_janma_points`` the sait personalize
+    route uses — lets a signed-in user's saved profile pick out its own card on
+    the rashifal grid without duplicating the janma-Moon computation. Only the
+    birth instant is needed (the Moon is geocentric), so no location is asked
+    for here; the caller already resolved BS→AD on its own saved profile before
+    calling this.
+    """
+    from services.sait_personalize import compute_janma_points
+
+    try:
+        janma = compute_janma_points(birth, birth_tz)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"janma_nakshatra": janma["nakshatra"], "janma_rashi": janma["rashi"]}
 
 
 @router.get("/panchanga/{bs_year}/{bs_month}")
