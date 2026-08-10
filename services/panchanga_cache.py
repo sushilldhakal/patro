@@ -124,7 +124,13 @@ logger = logging.getLogger(__name__)
 #     3D sky, which places the rashi belt against the equinox and cannot derive
 #     the server's exact Lahiri value on its own.
 # 43: ``rashifal`` block on daily payloads (navatara chandrabala + Moorti Nirnaya).
-PANCHANGA_PAYLOAD_VERSION = 43
+# 44: rashifal ``prediction_ne`` / ``prediction_en`` rewritten — the composed
+#     reading now walks every scored layer (Ashtakavarga base, retrograde and
+#     combust grahas, the period's time-lord, a closing counsel) instead of
+#     four clauses, and house numbers are rendered in Devanagari digits inside
+#     Nepali prose. Text-only, but the cached gzip blobs hold the old wording,
+#     so they have to be orphaned or the short version is served forever.
+PANCHANGA_PAYLOAD_VERSION = 44
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
