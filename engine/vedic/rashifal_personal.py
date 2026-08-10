@@ -50,6 +50,8 @@ from engine.vedic.rashifal_engine import (
     LORD_DISHA_EN,
     LORD_DISHA_NE,
     LORD_NUMBER,
+    REMEDY_EN,
+    REMEDY_NE,
     TONE_RANK,
     DayFrame,
     Period,
@@ -383,46 +385,267 @@ HOUSE_THEME_EN = {
     11: "gains, networks and aspirations", 12: "expenses, foreign lands and rest",
 }
 
+#: What each Sudarshana frame answers for. The three chakras are not three
+#: opinions about the same question — Lagna speaks for the body and one's own
+#: effort, Chandra for the mind, Surya for standing and authority — so naming
+#: which of the three is carrying the period says something the blended score
+#: cannot.
+CHAKRA_NE = {"lagna": "लग्न", "moon": "चन्द्र", "sun": "सूर्य"}
+CHAKRA_EN = {"lagna": "Lagna", "moon": "Chandra", "sun": "Surya"}
+CHAKRA_GLOSS_NE = {
+    "lagna": "आफ्नै प्रयास, शरीर र आत्मविश्वास",
+    "moon": "मन, भावना र घरेलु शान्ति",
+    "sun": "प्रतिष्ठा, अधिकार र पदीय पक्ष",
+}
+CHAKRA_GLOSS_EN = {
+    "lagna": "your own effort, body and confidence",
+    "moon": "mind, emotion and domestic peace",
+    "sun": "standing, authority and position",
+}
+
+#: Closing counsel, keyed on the tone the layers actually produced — the
+#: reading ends on what to *do*, which is what a reader came for.
+_TONE_CLOSER_NE = {
+    "best": "जोखिम लिने हो भने यही अवधि उपयुक्त छ; तर लिखित सहमति र स्पष्ट सर्तमा मात्र अघि बढ्नुहोस्।",
+    "good": "योजनाबद्ध रूपमा अघि बढ्दा नतिजा पक्षमा आउँछ; अनावश्यक विवाद र हतारो निर्णयबाट टाढै रहनुहोस्।",
+    "neutral": "ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+    "bad": "नयाँ लगानी, ऋण र हस्ताक्षरका काम केही समय पछि सार्नुहोस्; स्वास्थ्य र वाणीमा संयम राख्नुहोस्।",
+    "worst": "यात्रा, विवाद र ठूलो लगानी सकेसम्म टार्नुहोस्; धैर्य नै यस अवधिको सबैभन्दा ठूलो उपाय हो।",
+}
+_TONE_CLOSER_EN = {
+    "best": "If you are going to take a risk, this is the window for it — but move only on written agreements and clear terms.",
+    "good": "Planned, deliberate steps pay off; stay clear of avoidable disputes and rushed decisions.",
+    "neutral": "Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+    "bad": "Push new investment, borrowing and anything requiring a signature a little further out; keep restraint over health and speech.",
+    "worst": "Defer travel, disputes and any large outlay where you can; patience is the strongest remedy this period has.",
+}
+
+
+def _num(value: int, ne: bool) -> str:
+    """House and bindu counts, in the script the sentence around them is
+    written in — a Latin "12" inside a Devanagari clause reads as a typo."""
+    return to_nepali_digits(value) if ne else str(value)
+
+
+def _join(names: list[str], ne: bool) -> str:
+    """Graha names as a readable list. English wants a conjunction before the
+    last item ("Saturn, Rahu and Ketu"); Nepali reads fine comma-separated."""
+    if ne or len(names) < 2:
+        return ", ".join(names)
+    return f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+def _sav_note(sav: int, lang: str) -> str:
+    """Natal Sarvashtakavarga of the Lagna sign, read on the classical scale:
+    337 bindus over twelve signs average 28, so 30+ is carrying weight and
+    under 25 is thin."""
+    ne = lang == "ne"
+    count = to_nepali_digits(sav) if ne else str(sav)
+    if sav >= 30:
+        return (
+            f"जन्म अष्टकवर्गमा तपाईंको लग्न राशिमा {count} बिन्दु छन् — यो औसतभन्दा बलियो हो, "
+            "त्यसैले प्रतिकूल गोचरले पनि दीर्घकालीन असर पार्दैन।"
+            if ne
+            else f"Your natal Ashtakavarga gives the Lagna sign {count} bindus — above average, "
+            "so even an adverse transit does not leave a lasting mark."
+        )
+    if sav <= 25:
+        return (
+            f"जन्म अष्टकवर्गमा लग्न राशिमा {count} बिन्दु मात्र छन् — आधार अलि पातलो भएकाले "
+            "अनुकूल गोचरको फल पनि पूरै नआउन सक्छ; काम गर्दा बलियो तयारी चाहिन्छ।"
+            if ne
+            else f"The Lagna sign holds only {count} bindus in your natal Ashtakavarga — a thin base, "
+            "so even a favourable transit may not deliver in full; prepare more thoroughly than the transit suggests."
+        )
+    return (
+        f"जन्म अष्टकवर्गमा लग्न राशिमा {count} बिन्दु छन् — औसत स्तरको आधार, "
+        "जसले गोचरको फल जस्ताको तस्तै देखाउँछ।"
+        if ne
+        else f"The Lagna sign holds {count} bindus in your natal Ashtakavarga — an average base, "
+        "which lets the transits read much as they stand."
+    )
+
 
 def _compose_prediction(
-    *, tone: str, period: Period, scored: dict[str, Any], lang: str
+    *,
+    natal: NatalChart,
+    tone: str,
+    period: Period,
+    scored: dict[str, Any],
+    lang: str,
 ) -> str:
+    """Assemble the personal reading from every layer that decided the score.
+
+    Deterministic — same chart and same instant give the same paragraph, with
+    nothing sampled and nothing seeded on the clock. The general engine's
+    equivalent reads a transit chart; this one can additionally name *where in
+    the birth chart* each dasha lord sits, which is the whole reason a reading
+    cast on a real chart says more than a Moon-sign column.
+    """
     ne = lang == "ne"
     period_word = (PERIOD_NE if ne else PERIOD_EN)[period]
     parts = [(_TONE_OPENER_NE if ne else _TONE_OPENER_EN)[tone].format(period=period_word)]
 
     blocks = scored["blocks"]
+    house_theme = HOUSE_THEME_NE if ne else HOUSE_THEME_EN
+
+    # ── Vimshottari: both lords, and the natal house each one owns the
+    # subject matter of. This is the layer the general engine cannot have.
     dasha = blocks["dasha"]
     maha_lord = dasha["mahadasha"]["lord_ne" if ne else "lord_en"]
     antar_lord = dasha["antardasha"]["lord_ne" if ne else "lord_en"]
+    maha_house = house_from(natal.graha_sign[dasha["mahadasha"]["lord"]], natal.lagna_sign)
+    antar_house = house_from(natal.graha_sign[dasha["antardasha"]["lord"]], natal.lagna_sign)
     parts.append(
-        f"हाल {maha_lord} महादशामा {antar_lord} अन्तर्दशा चलिरहेको छ।"
+        f"हाल तपाईंको {maha_lord} महादशाभित्र {antar_lord} अन्तर्दशा चलिरहेको छ।"
         if ne
-        else f"You are currently running {maha_lord} Mahadasha, {antar_lord} Antardasha."
+        else f"You are currently running {maha_lord} Mahadasha with {antar_lord} Antardasha."
+    )
+    parts.append(
+        f"महादशेश {maha_lord} जन्मकुण्डलीको {_num(maha_house, ne)} भावमा रहेकाले यस अवधिको मूल विषय "
+        f"{house_theme[maha_house]}सँग जोडिएको छ, भने अन्तर्दशेश {antar_lord} "
+        f"{_num(antar_house, ne)} भावमा भएकाले {house_theme[antar_house]}सँग जोडिएका प्रसङ्ग "
+        "अहिले अगाडि आउँछन्।"
+        if ne
+        else f"The Mahadasha lord {maha_lord} sits in house {maha_house} of your birth chart, so the "
+        f"period's underlying subject is {house_theme[maha_house]}; the Antardasha lord {antar_lord} "
+        f"in house {antar_house} brings {house_theme[antar_house]} to the front right now."
     )
 
-    domains = scored["domains"]
-    ranked = sorted(domains, key=lambda d: d["score"], reverse=True)
+    # ── Sudarshana: which of the three frames is carrying the period.
+    chakra = blocks["gochar"]["chakra_scores"]
+    ordered = sorted(chakra.items(), key=lambda kv: kv[1], reverse=True)
+    (best_key, best_val), (worst_key, worst_val) = ordered[0], ordered[-1]
+    if best_val - worst_val > 0.12:
+        gloss = CHAKRA_GLOSS_NE if ne else CHAKRA_GLOSS_EN
+        chakra_names = CHAKRA_NE if ne else CHAKRA_EN
+        parts.append(
+            f"सुदर्शन चक्रमा {chakra_names[best_key]} चक्र बलियो देखिन्छ — {gloss[best_key]}ले साथ दिन्छ; "
+            f"{chakra_names[worst_key]} चक्र भने कमजोर भएकाले {gloss[worst_key]}मा चाप पर्न सक्छ।"
+            if ne
+            else f"Across the Sudarshana chakras the {chakra_names[best_key]} frame is the strong "
+            f"one — support comes through {gloss[best_key]}; the {chakra_names[worst_key]} frame is "
+            f"weaker, so {gloss[worst_key]} can come under pressure."
+        )
+
+    # ── Life domains, both ends, each tied to the house it leans on.
+    ranked = sorted(scored["domains"], key=lambda d: d["score"], reverse=True)
     strong, weak = ranked[0], ranked[-1]
     if strong["score"] > 0.08:
-        house = max(strong["houses"])
+        house = min(strong["houses"])
         parts.append(
-            f"{strong['label_ne']} पक्ष बलियो देखिन्छ।" if ne else f"{strong['label_en']} looks strong."
-        )
-        _ = house
-    if weak["score"] < -0.08:
-        parts.append(
-            f"{weak['label_ne']}मा भने सतर्कता चाहिन्छ।"
+            f"{strong['label_ne']} पक्ष सबैभन्दा बलियो छ — {house_theme[house]}मा लगानी गरेको समय "
+            "र मिहिनेतले प्रतिफल दिन्छ।"
             if ne
-            else f"{weak['label_en']} needs more care."
+            else f"{strong['label_en']} is the strongest side — time and effort put into "
+            f"{house_theme[house]} return a real result."
+        )
+    if weak["score"] < -0.08:
+        house = min(weak["houses"])
+        parts.append(
+            f"{weak['label_ne']} पक्षमा भने सतर्कता चाहिन्छ; {house_theme[house]}सँग सम्बन्धित "
+            "काममा हतार नगर्नुहोस्।"
+            if ne
+            else f"{weak['label_en']} calls for care, though — do not rush anything touching "
+            f"{house_theme[house]}."
         )
 
+    # ── The single loudest transit from the Lagna, favourable or not.
+    rows = blocks["gochar"]["rows"]
+    loudest = max(rows, key=lambda r: abs(r["score"]) * r["weight"])
+    graha_name = loudest["graha_ne"] if ne else loudest["graha_en"]
+    sign_name = loudest["sign_ne"] if ne else loudest["sign_en"]
+    bindu = _num(loudest["bindu"], ne)
+    loud_house = _num(loudest["house"], ne)
+    if loudest["vedha_by"]:
+        blocker = loudest["vedha_by_ne"] if ne else PLANET_EN[loudest["vedha_by"]]
+        parts.append(
+            f"गोचरमा {graha_name} {sign_name} राशि हुँदै {loud_house} भावमा छन् तर "
+            f"{blocker}को वेध परेकाले त्यसको फल रोकिन्छ — आशा गरेको नतिजा ढिलो आउँछ।"
+            if ne
+            else f"In transit {graha_name} moves through {sign_name} into house {loudest['house']}, "
+            f"but {blocker} obstructs it, so the promised result stalls and arrives late."
+        )
+    elif loudest["favourable"]:
+        parts.append(
+            f"गोचरमा {graha_name} {sign_name} राशिबाट {loud_house} भावमा छन्, जहाँ तपाईंको "
+            f"जन्म अष्टकवर्गमा {bindu} बिन्दु छन् — {house_theme[loudest['house']]}मा यसले प्रत्यक्ष साथ दिन्छ।"
+            if ne
+            else f"{graha_name} transits {sign_name} into house {loudest['house']}, where your natal "
+            f"Ashtakavarga holds {bindu} bindus — direct support for {house_theme[loudest['house']]}."
+        )
+    else:
+        parts.append(
+            f"गोचरमा {graha_name} {sign_name} राशिबाट {loud_house} भावमा रहेकाले "
+            f"{house_theme[loudest['house']]}मा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्।"
+            if ne
+            else f"{graha_name} transiting {sign_name} into house {loudest['house']} can press on "
+            f"{house_theme[loudest['house']]} — that is the area to stay alert in."
+        )
+
+    # ── Retrograde / combust grahas, which change what a transit can deliver.
+    vakri = [r for r in rows if r["retrograde"]]
+    asta = [r for r in rows if r["combust"]]
+    if vakri:
+        names = _join([(r["graha_ne"] if ne else r["graha_en"]) for r in vakri], ne)
+        verb = "stands" if len(vakri) == 1 else "stand"
+        parts.append(
+            f"{names} वक्री अवस्थामा रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि जागृत हुन्छन् — "
+            "नयाँ सुरु गर्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो।"
+            if ne
+            else f"{names} {verb} retrograde, so unfinished business started earlier resurfaces — "
+            "a better window for closing what is open than for starting something new."
+        )
+    if asta:
+        names = _join([(r["graha_ne"] if ne else r["graha_en"]) for r in asta], ne)
+        verb, pronoun = ("is", "it") if len(asta) == 1 else ("are", "they")
+        parts.append(
+            f"{names} अस्त भएकाले त्यससँग जोडिएको विषयमा अहिले निर्णय गर्न हतार नगर्नुहोस्।"
+            if ne
+            else f"{names} {verb} combust, so hold off on decisions tied to what {pronoun} signifies."
+        )
+
+    # ── The natal base every transit above has to land on.
+    parts.append(_sav_note(blocks["ashtakavarga"]["sav"], lang))
+
+    # ── Short-window layers for short windows; the period's time-lord for long ones.
+    if period in ("daily", "weekly"):
+        chandra = blocks["chandrabala"]
+        moorti = blocks["moorti"]
+        parts.append(
+            f"चन्द्रबल {chandra['tara']} ({chandra['quality']}) र गोचर चन्द्र जन्म राशिबाट "
+            f"{_num(moorti['house_from_moon'], ne)} भावमा — मूर्ति {moorti['moorti_ne']}।"
+            if ne
+            else f"Chandrabala is {chandra['tara_en']} ({chandra['quality_en'].lower()}), with the "
+            f"transit Moon {moorti['house_from_moon']} houses from your natal Moon — a "
+            f"{moorti['moorti_en']} moorti."
+        )
+    else:
+        cycle = blocks["cycle"]
+        parts.append(
+            f"{period_word}को कालचक्रमा {cycle['graha_ne']} {cycle['sign_ne']} राशि हुँदै "
+            f"{_num(cycle['house'], ne)} भावमा छन्, जसले सिङ्गो अवधिको गति निर्धारण गर्छ।"
+            if ne
+            else f"For {period_word.lower()} the time-lord {cycle['graha_en']} runs through "
+            f"{cycle['sign_en']} in house {cycle['house']}, which sets the pace of the whole window."
+        )
+
+    # ── The chart's own ruler, last, because it qualifies everything above.
     lord = blocks["rashi_lord"]
     parts.append(
-        f"लग्नेश {lord['lord_ne']} {lord['house']} भावमा {lord['dignity_ne']} अवस्थामा छन्।"
+        f"लग्नेश {lord['lord_ne']} {_num(lord['house'], ne)} भावमा {lord['dignity_ne']} अवस्थामा छन्, "
+        f"त्यसैले {house_theme[lord['house']]}सँग जोडिएको प्रयासले नै समग्र फल निर्धारण गर्छ।"
         if ne
-        else f"Your Lagna lord {lord['lord_en']} stands in house {lord['house']}, {lord['dignity_en'].lower()}."
+        else f"Your Lagna lord {lord['lord_en']} stands in house {lord['house']}, "
+        f"{lord['dignity_en'].lower()}, so it is effort tied to {house_theme[lord['house']]} "
+        "that decides the overall result."
     )
+
+    if tone in ("bad", "worst"):
+        culprit = min(rows, key=lambda r: r["score"] * r["weight"])["graha"]
+        parts.append((REMEDY_NE if ne else REMEDY_EN)[culprit])
+
+    parts.append((_TONE_CLOSER_NE if ne else _TONE_CLOSER_EN)[tone])
 
     return " ".join(parts)
 
@@ -496,8 +719,12 @@ def build_personal_sign_payload(
         "components": _components(scored, period),
         "domains": scored["domains"],
         "gochar": scored["blocks"]["gochar"]["rows"],
-        "prediction_ne": _compose_prediction(tone=tone, period=period, scored=scored, lang="ne"),
-        "prediction_en": _compose_prediction(tone=tone, period=period, scored=scored, lang="en"),
+        "prediction_ne": _compose_prediction(
+            natal=natal, tone=tone, period=period, scored=scored, lang="ne"
+        ),
+        "prediction_en": _compose_prediction(
+            natal=natal, tone=tone, period=period, scored=scored, lang="en"
+        ),
     }
     return payload
 
@@ -566,9 +793,13 @@ def aggregate_personal(
         "gochar": mid["blocks"]["gochar"]["rows"],
         "days_in_period": len(frames),
     }
+    # Compose against the *window's* domain means rather than the mid-day
+    # frame's, so the paragraph never names a strongest/weakest side that
+    # disagrees with the domain bars rendered beside it.
+    window_scored = {**mid, "domains": domain_means}
     for lang in ("ne", "en"):
         payload[f"prediction_{lang}"] = _compose_prediction(
-            tone=tone, period=period, scored=mid, lang=lang
+            natal=natal, tone=tone, period=period, scored=window_scored, lang=lang
         )
     return payload
 

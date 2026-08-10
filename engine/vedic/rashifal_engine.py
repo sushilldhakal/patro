@@ -1085,6 +1085,67 @@ def _primary_house(domain: str) -> int:
     return max(DOMAIN_HOUSES[domain].items(), key=lambda kv: kv[1])[0]
 
 
+def _num(value: int, ne: bool) -> str:
+    """House and bindu counts in the script of the sentence around them — a
+    Latin "12" inside a Devanagari clause reads as a typo."""
+    return to_nepali_digits(value) if ne else str(value)
+
+
+def _graha_list(names: list[str], ne: bool) -> str:
+    """English wants a conjunction before the last item; Nepali reads fine
+    comma-separated."""
+    if ne or len(names) < 2:
+        return ", ".join(names)
+    return f"{', '.join(names[:-1])} and {names[-1]}"
+
+
+def _sav_note(sav: int, ne: bool) -> str:
+    """Sarvashtakavarga of the sign, on the classical scale: 337 bindus over
+    twelve signs average 28, so 30+ is carrying the period and under 25 is thin."""
+    count = _num(sav, ne)
+    if sav >= 30:
+        return (
+            f"अष्टकवर्गमा यस राशिमा {count} बिन्दु छन् — औसतभन्दा बलियो आधार, "
+            "जसले प्रतिकूल गोचरको असर पनि खुम्च्याइदिन्छ।"
+            if ne
+            else f"The sign holds {count} Ashtakavarga bindus — an above-average base, "
+            "which blunts even an adverse transit."
+        )
+    if sav <= 25:
+        return (
+            f"अष्टकवर्गमा यस राशिमा {count} बिन्दु मात्र छन् — आधार पातलो भएकाले "
+            "अनुकूल गोचरको फल पनि पूरै नआउन सक्छ।"
+            if ne
+            else f"The sign holds only {count} Ashtakavarga bindus — a thin base, so even a "
+            "favourable transit may not deliver in full."
+        )
+    return (
+        f"अष्टकवर्गमा यस राशिमा {count} बिन्दु छन् — औसत आधार, "
+        "जसले गोचरको फल जस्ताको तस्तै देखाउँछ।"
+        if ne
+        else f"The sign holds {count} Ashtakavarga bindus — an average base, which lets the "
+        "transits read much as they stand."
+    )
+
+
+#: Closing counsel, keyed on the tone the layers produced — the reading ends
+#: on what to *do*, which is what a reader came for.
+_TONE_CLOSER_NE: dict[str, str] = {
+    "best": "ठूला काम अघि बढाउने हो भने यही अवधि उपयुक्त छ; तर सर्त र कागजात स्पष्ट राख्नुहोस्।",
+    "good": "योजनाबद्ध रूपमा अघि बढ्दा नतिजा पक्षमा आउँछ; अनावश्यक विवादबाट टाढै रहनुहोस्।",
+    "neutral": "ठूलो अपेक्षा नराखी नियमित काममा ध्यान दिनुहोस् — साना निर्णय आफैँ मिल्दै जान्छन्।",
+    "bad": "नयाँ लगानी र हस्ताक्षरका काम केही समय पछि सार्नुहोस्; स्वास्थ्य र वाणीमा संयम राख्नुहोस्।",
+    "worst": "यात्रा, विवाद र ठूलो लगानी सकेसम्म टार्नुहोस्; धैर्य नै यस अवधिको सबैभन्दा ठूलो उपाय हो।",
+}
+_TONE_CLOSER_EN: dict[str, str] = {
+    "best": "If you mean to push something big forward, this is the window — keep terms and paperwork explicit.",
+    "good": "Planned, deliberate steps pay off; stay clear of avoidable disputes.",
+    "neutral": "Keep expectations modest and attend to routine work — the smaller decisions settle themselves.",
+    "bad": "Push new investment and anything requiring a signature further out; keep restraint over health and speech.",
+    "worst": "Defer travel, disputes and any large outlay where you can; patience is the strongest remedy this period has.",
+}
+
+
 def _compose_prediction(
     *,
     tone: NavataraTone,
@@ -1095,12 +1156,19 @@ def _compose_prediction(
     lord: dict[str, Any],
     chandra: dict[str, Any],
     moorti: dict[str, Any],
-    lang: str,
+    ashtakavarga: dict[str, Any] | None = None,
+    cycle: dict[str, Any] | None = None,
+    vaara: dict[str, Any] | None = None,
+    lang: str = "ne",
 ) -> str:
     """Assemble the reading from the layers that actually decided the score.
 
     Deterministic: same inputs, same sentence. Nothing is sampled and nothing is
-    seeded on the clock.
+    seeded on the clock. Every scored layer gets a say — a reader who opened a
+    rashifal wants the reasoning, not a headline, so the paragraph walks the
+    strong and weak domains, the loudest transit, retrograde/combust grahas,
+    the sign's Ashtakavarga base, the period's time-lord and the sign lord,
+    and closes on what to actually do.
     """
     ne = lang == "ne"
     period_word = PERIOD_NE[period] if ne else PERIOD_EN[period]
@@ -1117,50 +1185,108 @@ def _compose_prediction(
             else f"{strong['label_en']} is the strong side — attention to {HOUSE_THEME_EN[house]} pays off."
         )
     if weak["score"] < -0.08:
+        house = _primary_house(weak["key"])
         parts.append(
-            f"{weak['label_ne']} पक्षमा भने सतर्कता चाहिन्छ।"
+            f"{weak['label_ne']} पक्षमा भने सतर्कता चाहिन्छ; {HOUSE_THEME_NE[house]}सँग "
+            "जोडिएका कुरामा हतार नगर्नुहोस्।"
             if ne
-            else f"Take extra care on the {weak['label_en'].lower()} side."
+            else f"Take extra care on the {weak['label_en'].lower()} side — do not rush what "
+            f"touches {HOUSE_THEME_EN[house]}."
         )
 
     # The single loudest transit, favourable or not.
     loudest = max(rows, key=lambda r: abs(r["score"]) * r["weight"])
+    loud_house = _num(loudest["house"], ne)
+    loud_sign = loudest["sign_ne"] if ne else loudest["sign_en"]
     if loudest["vedha_by"]:
         parts.append(
-            f"{loudest['graha_ne']} {loudest['house']} भावमा छ तर {loudest['vedha_by_ne']}को वेध परेकाले फल रोकिन्छ।"
+            f"{loudest['graha_ne']} {loud_sign} राशि हुँदै {loud_house} भावमा छन् तर "
+            f"{loudest['vedha_by_ne']}को वेध परेकाले फल रोकिन्छ — नतिजा ढिलो आउँछ।"
             if ne
-            else f"{loudest['graha_en']} sits in house {loudest['house']} but {PLANET_EN[loudest['vedha_by']]} obstructs it, so the result stalls."
+            else f"{loudest['graha_en']} moves through {loud_sign} into house {loudest['house']} but "
+            f"{PLANET_EN[loudest['vedha_by']]} obstructs it, so the result stalls and arrives late."
         )
     elif loudest["favourable"]:
         parts.append(
-            f"{loudest['graha_ne']}को {loudest['house']} भाव गोचरले {HOUSE_THEME_NE[loudest['house']]}मा साथ दिन्छ।"
+            f"{loudest['graha_ne']} {loud_sign} राशिबाट {loud_house} भावमा रहेकाले "
+            f"{HOUSE_THEME_NE[loudest['house']]}मा प्रत्यक्ष साथ मिल्छ।"
             if ne
-            else f"{loudest['graha_en']} transiting house {loudest['house']} supports {HOUSE_THEME_EN[loudest['house']]}."
+            else f"{loudest['graha_en']} transiting {loud_sign} into house {loudest['house']} gives "
+            f"direct support to {HOUSE_THEME_EN[loudest['house']]}."
         )
     else:
         parts.append(
-            f"{loudest['graha_ne']} {loudest['house']} भावमा रहेकाले {HOUSE_THEME_NE[loudest['house']]}मा दबाब पर्न सक्छ।"
+            f"{loudest['graha_ne']} {loud_sign} राशिबाट {loud_house} भावमा रहेकाले "
+            f"{HOUSE_THEME_NE[loudest['house']]}मा दबाब पर्न सक्छ; यसै क्षेत्रमा बढी सचेत रहनुहोस्।"
             if ne
-            else f"{loudest['graha_en']} in house {loudest['house']} can press on {HOUSE_THEME_EN[loudest['house']]}."
+            else f"{loudest['graha_en']} in {loud_sign}, house {loudest['house']}, can press on "
+            f"{HOUSE_THEME_EN[loudest['house']]} — that is the area to stay alert in."
         )
 
+    # Retrograde and combust grahas change what a transit is able to deliver.
+    vakri = [r for r in rows if r["retrograde"]]
+    asta = [r for r in rows if r["combust"]]
+    if vakri:
+        names = _graha_list([(r["graha_ne"] if ne else r["graha_en"]) for r in vakri], ne)
+        verb = "stands" if len(vakri) == 1 else "stand"
+        parts.append(
+            f"{names} वक्री रहेकाले अघि सुरु गरेर अलपत्र परेका काम फेरि अगाडि आउँछन् — "
+            "नयाँ थाल्नुभन्दा अधुरो काम टुङ्ग्याउन यो समय राम्रो हो।"
+            if ne
+            else f"{names} {verb} retrograde, so unfinished business started earlier resurfaces — "
+            "a better window for closing what is open than for starting something new."
+        )
+    if asta:
+        names = _graha_list([(r["graha_ne"] if ne else r["graha_en"]) for r in asta], ne)
+        verb, pronoun = ("is", "it") if len(asta) == 1 else ("are", "they")
+        parts.append(
+            f"{names} अस्त भएकाले त्यससँग जोडिएको विषयमा अहिले निर्णय गर्न हतार नगर्नुहोस्।"
+            if ne
+            else f"{names} {verb} combust, so hold off on decisions tied to what {pronoun} signifies."
+        )
+
+    if ashtakavarga:
+        parts.append(_sav_note(ashtakavarga["sav"], ne))
+
     parts.append(
-        f"राशिस्वामी {lord['lord_ne']} {lord['house']} भावमा {lord['dignity_ne']} अवस्थामा छन्।"
+        f"राशिस्वामी {lord['lord_ne']} {_num(lord['house'], ne)} भावमा {lord['dignity_ne']} "
+        f"अवस्थामा छन्, त्यसैले {HOUSE_THEME_NE[lord['house']]}सँग जोडिएको प्रयासले नै "
+        "समग्र फल निर्धारण गर्छ।"
         if ne
-        else f"The sign lord {lord['lord_en']} stands in house {lord['house']}, {lord['dignity_en'].lower()}."
+        else f"The sign lord {lord['lord_en']} stands in house {lord['house']}, "
+        f"{lord['dignity_en'].lower()}, so effort tied to {HOUSE_THEME_EN[lord['house']]} is what "
+        "decides the overall result."
     )
 
     if period in ("daily", "weekly"):
         parts.append(
-            f"चन्द्रबल {chandra['tara']} ({chandra['quality']}), मूर्ति {moorti['moorti_ne']}।"
+            f"चन्द्रबल {chandra['tara']} ({chandra['quality']}) र गोचर चन्द्र जन्म राशिबाट "
+            f"{_num(moorti['house_from_moon'], ne)} भावमा — मूर्ति {moorti['moorti_ne']}।"
             if ne
-            else f"Chandrabala is {chandra['tara_en']} ({chandra['quality_en'].lower()}); "
-            f"the moorti is {moorti['moorti_en']}."
+            else f"Chandrabala is {chandra['tara_en']} ({chandra['quality_en'].lower()}), with the "
+            f"transit Moon {moorti['house_from_moon']} houses from the sign — a "
+            f"{moorti['moorti_en']} moorti."
+        )
+        if vaara:
+            parts.append(
+                f"वारपति {vaara['day_lord_ne']} राशिस्वामीसँग {vaara['relation_ne']} छन्।"
+                if ne
+                else f"The day lord {vaara['day_lord_en']} is {vaara['relation_en']}."
+            )
+    elif cycle:
+        parts.append(
+            f"{period_word}को कालचक्रमा {cycle['graha_ne']} {cycle['sign_ne']} राशि हुँदै "
+            f"{_num(cycle['house'], ne)} भावमा छन्, जसले सिङ्गो अवधिको गति निर्धारण गर्छ।"
+            if ne
+            else f"For {period_word.lower()} the time-lord {cycle['graha_en']} runs through "
+            f"{cycle['sign_en']} in house {cycle['house']}, setting the pace of the whole window."
         )
 
     if tone in ("bad", "worst"):
         culprit = min(rows, key=lambda r: r["score"] * r["weight"])["graha"]
         parts.append((REMEDY_NE if ne else REMEDY_EN)[culprit])
+
+    parts.append((_TONE_CLOSER_NE if ne else _TONE_CLOSER_EN)[tone])
 
     return " ".join(parts)
 
@@ -1298,12 +1424,14 @@ def build_sign_payload(frame: DayFrame, rashi: int, period: Period) -> dict[str,
         "prediction_ne": _compose_prediction(
             tone=tone, period=period, rashi=rashi, rows=rows,
             domains=scored["domains"], lord=lord, chandra=chandra,
-            moorti=moorti, lang="ne",
+            moorti=moorti, ashtakavarga=blocks["ashtakavarga"],
+            cycle=blocks["cycle"], vaara=blocks["vaara_hora"], lang="ne",
         ),
         "prediction_en": _compose_prediction(
             tone=tone, period=period, rashi=rashi, rows=rows,
             domains=scored["domains"], lord=lord, chandra=chandra,
-            moorti=moorti, lang="en",
+            moorti=moorti, ashtakavarga=blocks["ashtakavarga"],
+            cycle=blocks["cycle"], vaara=blocks["vaara_hora"], lang="en",
         ),
     }
     return payload
@@ -1449,13 +1577,20 @@ def aggregate_sign(
             lord=mid_blocks["rashi_lord"],
             chandra=mid_blocks["chandrabala"],
             moorti=mid_blocks["moorti"],
+            ashtakavarga=mid_blocks["ashtakavarga"],
+            cycle=mid_blocks["cycle"],
+            vaara=mid_blocks["vaara_hora"],
             lang=lang,
         )
         best = payload["best_day"]
         weak = payload["weak_day"]
+        # Digits localised here rather than in `_bs_label`, so the structured
+        # `date_bs` field keeps its Latin numerals for any caller that reads it.
         window = (
-            f" यस अवधिको सबैभन्दा अनुकूल दिन {best['date_bs'] or best['date_ad']}, "
-            f"सबैभन्दा सतर्क रहनुपर्ने दिन {weak['date_bs'] or weak['date_ad']}।"
+            f" यस अवधिको सबैभन्दा अनुकूल दिन "
+            f"{to_nepali_digits(best['date_bs'] or best['date_ad'])}, "
+            f"सबैभन्दा सतर्क रहनुपर्ने दिन "
+            f"{to_nepali_digits(weak['date_bs'] or weak['date_ad'])}।"
             if lang == "ne"
             else f" The strongest day in this window is {best['date_ad']}; "
             f"the one to watch is {weak['date_ad']}."
