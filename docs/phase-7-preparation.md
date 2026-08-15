@@ -89,19 +89,23 @@ That is working capability with no consumer and no coverage, i.e. a latent liabi
 than dead code. **Verdict: keep, and cover.** The udaya/boundary distinction is genuinely
 Vedic (the day the tithi is running at sunrise, versus the day it begins), not an
 implementation artefact, so deleting it would remove a real cultural knob.
-`tests/test_cultural_rule_knobs.py` now pins both branches and asserts that no rule sets
-them — so the first rule that does will fail loudly and get coverage first.
+`tests/test_cultural_rule_knobs.py` pins both branches. It used to assert that *no* rule
+set them; that tripwire fired as designed when the Dashain and Tihar rules took the
+kaal-vyapini modes, and the pin is now "every rule that sets `date_selection` has a
+published-date reference behind it in `tests/test_kaal_vyapini.py`".
 
 `adhik_policy` is uniformly `"skip"` on all 338 lunar rules and absent on the 240 non-lunar
 ones, where it is meaningless. Same verdict: a real concept, one value in use, now pinned.
 
 | Knob | Read at | Values across 578 rules |
 |---|---|---|
-| `date_selection` | `rules/engine.py:35` — `rule.get("date_selection", "udaya")` | **`(default)` for all 578** — no rule ever sets it |
+| `date_selection` | `rules/engine.py:35` — `rule.get("date_selection", "udaya")` | `(default)` for 570; `madhyahna` on Vijaya Dashami / Devi Visarjan, `aparahna` on Fulpati / Maha Ashtami / Kalratri / Maha Navami, `pradosh` on Laxmi Puja / Gai Puja |
 | `adhik_policy` | `rules/engine.py:16` | `"skip"` for all 338 lunar rules, absent otherwise — effectively a constant |
 
-Both are parameters in name only. They are either the seam Phase 7 should use, or dead
-weight to delete. Deciding needs the golden data (§4).
+`adhik_policy` is still a parameter in name only. `date_selection` no longer is: the
+kaal-vyapini modes were added because the observed Nepali dates for Dashain and Tihar are
+not the udaya-tithi dates — in 2024 the whole Dashain week falls a day before its udaya
+day, and Nepal observed Fulpati on a civil day whose printed tithi is Shashthi.
 
 ---
 

@@ -5,13 +5,14 @@ Measured, they are neither:
 
 * **Implemented and behaviourally significant.** ``date_selection="boundary"``
   moves a festival a full day against ``"udaya"`` on every sample tried.
-* **Never exercised.** All 578 rules in festival_rules_v3.json leave
-  ``date_selection`` unset, and all 338 lunar rules set ``adhik_policy="skip"``.
+* **Now exercised.** ``date_selection`` was unset on all 578 rules until the
+  Dashain and Tihar rules took the kaal-vyapini modes; ``adhik_policy`` is still
+  ``"skip"`` on all 338 lunar rules.
 * **Never tested** — until this file.
 
-So they are not dead code to delete. They are working capability with no consumer
-and no coverage, which is a latent liability: the first rule to set one would get
-untested behaviour. These tests pin the branches so that cannot happen.
+So they are not dead code to delete. They are working capability that must not be
+taken up without coverage: the pin below is now "every rule that sets the knob is
+covered" rather than "no rule sets it".
 
 The distinction is genuinely Vedic, not an implementation artefact:
 
@@ -19,6 +20,9 @@ The distinction is genuinely Vedic, not an implementation artefact:
               running at — standard Nepali patro practice
 ``boundary``  the festival falls on the day the tithi BEGINS, regardless of
               sunrise
+``madhyahna`` / ``aparahna`` / ``pradosh``
+              the festival falls on the day the tithi PERVADES that part of the
+              day — see engine/vedic/kaal.py and tests/test_kaal_vyapini.py
 
 See docs/phase-7-preparation.md section 1.3.
 """
@@ -73,21 +77,38 @@ class TestDateSelectionIsLive:
         assert 'date_selection", "udaya"' in src or "date_selection\", \"udaya\"" in src
 
 
-class TestNoRuleUsesTheKnobs:
-    """Pins the audit finding. If a rule starts setting one, this fails and the
-    knob needs the coverage above extended to that rule's shape."""
+class TestTheKnobsStayCovered:
+    """Pins the audit finding. A rule may take a knob, but only once the value
+    and the rule are covered — otherwise this fails."""
 
     @staticmethod
     def _rules():
         path = ROOT / "rules" / "festival_rules_v3.json"
         return json.loads(path.read_text(encoding="utf-8"))["festivals"]
 
-    def test_no_rule_sets_date_selection(self):
-        setters = [k for k, v in self._rules().items() if "date_selection" in v]
-        assert not setters, (
-            f"{len(setters)} rule(s) now set date_selection: {setters[:5]}. The "
-            "branch is live but was previously unexercised — extend "
-            "TestDateSelectionIsLive to cover the new shape."
+    def test_every_date_selection_value_is_known(self):
+        from engine.vedic.kaal import KAAL_NAMES
+
+        known = {"udaya", "boundary", *KAAL_NAMES}
+        used = {
+            v["date_selection"] for v in self._rules().values() if "date_selection" in v
+        }
+        assert used <= known, (
+            f"unknown date_selection value(s) {used - known} — rules/engine.py "
+            "passes the string straight through, so an unrecognised one silently "
+            "falls back to udaya."
+        )
+
+    def test_every_rule_setting_date_selection_is_covered(self):
+        """The knob may be used, but not without a published-date check behind
+        it. tests/test_kaal_vyapini.py holds those references."""
+        from tests.test_kaal_vyapini import COVERED_RULE_IDS
+
+        setters = {k for k, v in self._rules().items() if "date_selection" in v}
+        assert setters <= COVERED_RULE_IDS, (
+            f"rule(s) {sorted(setters - COVERED_RULE_IDS)} set date_selection with "
+            "no reference date behind them — add them to the tables in "
+            "tests/test_kaal_vyapini.py before relying on the result."
         )
 
     def test_adhik_policy_is_uniformly_skip_where_present(self):
