@@ -14,7 +14,11 @@ RULE_VERSION = "v3"
 # 1.0.4: year festival lists run the same-day redundancy filter.
 # Festival dates resolve through udaya (sunrise) tithi, so the astronomy axis is
 # folded in and an ephemeris fix invalidates the holiday payloads too.
-ENGINE_VERSION = stamp("1.0.4")
+# 1.0.5: lunar festivals resolve through the amanta month name, which is now
+# taken from the Sankranti a month contains rather than the Sun's rashi at its
+# Purnima. Moves every festival whose masa was mis-named — Buddha Jayanti and
+# Holi 2079 BS, among others — so the cached holiday payloads must be orphaned.
+ENGINE_VERSION = stamp("1.0.5")
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"

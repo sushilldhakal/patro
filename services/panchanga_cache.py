@@ -130,7 +130,14 @@ logger = logging.getLogger(__name__)
 #     four clauses, and house numbers are rendered in Devanagari digits inside
 #     Nepali prose. Text-only, but the cached gzip blobs hold the old wording,
 #     so they have to be orphaned or the short version is served forever.
-PANCHANGA_PAYLOAD_VERSION = 44
+# 45: amanta lunar months are named from the Sun's rashi at the month's opening
+#     Aausi (the Sankranti it contains), not at its Purnima. The old rule named
+#     every month whose Sankranti falls in the Shukla Paksha one masa ahead —
+#     BS 2079 Baishakh 1 read वैशाख शुक्ल त्रयोदशी instead of चैत्र — and the
+#     pūrṇimānta / festival-masa labels inherited the slip. Shifts
+#     ``lunar_month`` and ``lunar_calendar`` on roughly half the days of every
+#     year, so the cached blobs have to be orphaned.
+PANCHANGA_PAYLOAD_VERSION = 45
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

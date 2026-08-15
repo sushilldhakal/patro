@@ -213,9 +213,12 @@ def test_engine_version_bumped():
     # 4.10.0 — Rudri (rudri-jurne): tightened beyond Śiva-vāsa alone — now also
     # requires Agni-vāsa (fire on Earth/Pātāla for the homa) and scrubs the
     # universal sacrificial doṣas (Vyatipāta/Vaidhṛti yoga, Viṣṭi/Bhadrā karaṇa).
+    # 4.11.0 — no rules change: the pūrṇimānta lunar month stored on every sait
+    # day moved when amanta months started being named from the Sankranti they
+    # contain instead of the Sun's rashi at their Purnima.
     # The stored version also carries the astronomy axis (services/payload_version)
     # so an ephemeris fix invalidates this cache without a rules change.
-    assert SAIT_ENGINE_VERSION == stamp("4.10.0")
+    assert SAIT_ENGINE_VERSION == stamp("4.11.0")
 
 
 def test_dagdha_tithi_table():

@@ -14,12 +14,14 @@ sys.path.insert(0, str(ROOT))
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.bikram_sambat import gregorian_to_bs
 from engine.vedic.lunar_month import (
+    _next_masa_name,
     build_purnimant_months,
     clear_lunar_year_cache,
     find_festival_in_lunar_month,
     get_lunar_calendar_layers,
     get_lunar_year,
 )
+from engine.vedic.tithi import get_udaya_tithi
 from rules.engine import compute_festival_dates
 import json
 
@@ -41,16 +43,25 @@ def test_purnimant_shrawan_window_2026():
     windows = build_purnimant_months(get_lunar_year(2026))
     shrawan = next(w for w in windows if w.solar_name == "Shrawan" and not w.is_adhik)
     bhadra = next(w for w in windows if w.solar_name == "Bhadra" and not w.is_adhik)
-    assert shrawan.start == date(2026, 6, 30)
-    assert shrawan.end_purnima == date(2026, 7, 29)
-    assert bhadra.start == date(2026, 7, 30)
-    assert bhadra.end_purnima == date(2026, 8, 28)
+    # Shrawan Purnima 2083 BS is 2026-08-28, so the Shrawan pūrṇimānta window
+    # is the one that *ends* on it.
+    assert shrawan.start == date(2026, 7, 30)
+    assert shrawan.end_purnima == date(2026, 8, 28)
+    assert bhadra.start == date(2026, 8, 29)
+    assert bhadra.end_purnima == date(2026, 9, 26)
 
 
-def test_festival_masa_lag_during_adhik_jestha():
+def test_no_festival_masa_lag_after_adhik_jestha():
+    """Adhik Jestha is named after the Nija Jestha that follows it, so months
+    after the intercalation keep their own names — no lag correction."""
     windows = build_purnimant_months(get_lunar_year(2026))
-    bhadra = next(w for w in windows if w.solar_name == "Bhadra" and not w.is_adhik)
-    assert bhadra.festival_masa == "Shrawan"
+    assert [(w.solar_name, w.is_adhik) for w in windows][2:6] == [
+        ("Baishakh", False),
+        ("Jestha", True),
+        ("Jestha", False),
+        ("Ashadh", False),
+    ]
+    assert all(w.festival_masa == w.solar_name for w in windows)
 
 
 def test_janai_purnima_2083_matches_moha():
@@ -132,7 +143,70 @@ def test_daily_panchanga_includes_purnimanta_fields():
 def test_lunar_calendar_layers_on_janai_day():
     layers = get_lunar_calendar_layers(date(2026, 8, 28))
     assert layers["adhik_maas"]["year_has_adhik"] is True
-    assert layers["amanta"]["name"] == "Bhadra"
-    assert layers["purnimant"]["solar_name"] == "Bhadra"
+    assert layers["adhik_maas"]["name_ne"] == "अधिक ज्येष्ठ"
+    assert layers["amanta"]["name"] == "Shrawan"
+    assert layers["purnimant"]["solar_name"] == "Shrawan"
     assert layers["festival_masa"]["festival_masa"] == "Shrawan"
     assert layers["festival_masa"]["window_end"] == "2026-08-28"
+
+
+def test_baishakh_1_2079_is_chaitra_shukla_trayodashi():
+    """Regression: BS 2079 Baishakh 1 (2022-04-14) is Chaitra Shukla Trayodashi.
+
+    Naming the amanta month from the Sun's rashi at its Purnima put this day in
+    Baishakh — the Mesha Sankranti (2022-04-14) falls in the Shukla Paksha, so
+    the Purnima had already crossed into the next solar month.
+    """
+    from engine.vedic.lunar_month import merge_lunar_month_for_day
+
+    target = date(2022, 4, 14)
+    assert gregorian_to_bs(target) == (2079, 1, 1)
+
+    udaya = get_udaya_tithi(target, DEFAULT_LOCATION)
+    assert (udaya["tithi"], udaya["paksha"]) == (13, "shukla")
+
+    lunar = merge_lunar_month_for_day(target, udaya["paksha"])
+    assert lunar["name"] == "Chaitra"
+    assert lunar["purnimanta_name"] == "Chaitra"
+    assert lunar["purnimanta_name_ne"] == "चैत्र"
+
+
+@pytest.mark.parametrize("gregorian_year", [2022, 2023, 2024, 2025, 2026, 2027])
+def test_lunar_month_names_run_consecutively(gregorian_year: int):
+    """Each amanta month is the next masa after the one before it, except an
+    Adhik Maas, which repeats the name of the Nija month that follows it."""
+    months = get_lunar_year(gregorian_year).months
+    for previous, current in zip(months, months[1:]):
+        expected = (
+            previous.month_name
+            if previous.is_adhik
+            else _next_masa_name(previous.month_name)
+        )
+        assert current.month_name == expected, (
+            f"{previous.start_Aausi.date()} {previous.month_name} → "
+            f"{current.start_Aausi.date()} {current.month_name}"
+        )
+
+
+@pytest.mark.parametrize(
+    "festival_id,gregorian_year,expected",
+    [
+        # Both fall in months whose Sankranti lands in the Shukla Paksha, which
+        # is exactly where the old Purnima-based naming slipped a month.
+        ("buddha-jayanti", 2022, date(2022, 5, 16)),
+        ("buddha-jayanti", 2023, date(2023, 5, 5)),
+        ("buddha-jayanti", 2025, date(2025, 5, 12)),
+        ("holi", 2022, date(2022, 3, 18)),
+        ("holi", 2023, date(2023, 3, 7)),
+        ("holi", 2025, date(2025, 3, 14)),
+    ],
+)
+def test_purnima_festivals_match_published_patro(
+    festival_id: str, gregorian_year: int, expected: date
+):
+    rules = json.loads((ROOT / "rules" / "festival_rules_v3.json").read_text())["festivals"]
+    result = compute_festival_dates(
+        festival_id, rules[festival_id], gregorian_year, DEFAULT_LOCATION
+    )
+    assert result is not None
+    assert result[0] == expected
