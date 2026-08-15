@@ -37,7 +37,7 @@ class LunarMonth:
     month_name: str
     month_index: int
     is_adhik: bool
-    sun_rashi_at_purnima: int
+    sun_rashi_at_start: int
     sankranti_date: Optional[datetime] = None
 
     @property
@@ -71,16 +71,23 @@ class LunarYear:
     adhik_month_name: Optional[str] = None
 
 
-def name_lunar_month(start_Aausi: datetime, end_Aausi: datetime) -> str:
-    """Name a lunar month using Sun's rashi at the month's Purnima."""
-    search_start = start_Aausi + timedelta(days=2)
-    purnima = find_purnima(search_start)
-    if purnima is None or purnima >= end_Aausi:
-        midpoint = start_Aausi + (end_Aausi - start_Aausi) / 2
-        purnima = find_purnima(midpoint - timedelta(days=3)) or midpoint
+def name_lunar_month(start_Aausi: datetime) -> str:
+    """Name an amanta lunar month from the Sun's rashi at its opening Aausi.
 
-    sun_rashi = get_sun_rashi_at_time(purnima)
-    return BS_MONTH_NAMES[sun_rashi]
+    The classical rule names a lunar month after the solar month (rashi) the
+    Sun occupies when the month *begins* — equivalently, after the Sankranti
+    that falls inside it.  Chaitra is the amanta month that starts with the Sun
+    in Meena and carries the Mesha Sankranti; Baishakh is the next one.
+
+    Naming from the Sun's rashi at the month's Purnima instead is wrong
+    whenever the Sankranti falls in the Shukla Paksha (roughly half the
+    months), which pushed those months a full name ahead.
+
+    An Adhik Maas contains no Sankranti, so it opens with the Sun in the same
+    rashi as the Nija month that follows it and shares that month's name —
+    exactly the traditional "Adhik X precedes Nija X" pairing.
+    """
+    return BS_MONTH_NAMES[get_sun_rashi_at_time(start_Aausi)]
 
 
 def compute_lunar_month(start_Aausi: datetime) -> LunarMonth:
@@ -92,8 +99,8 @@ def compute_lunar_month(start_Aausi: datetime) -> LunarMonth:
     if next_Aausi is None:
         raise ValueError(f"Could not find Aausi after {purnima}")
 
-    sun_rashi = get_sun_rashi_at_time(purnima)
-    month_name = name_lunar_month(start_Aausi, next_Aausi)
+    sun_rashi = get_sun_rashi_at_time(start_Aausi)
+    month_name = name_lunar_month(start_Aausi)
     is_adhik = is_adhik_maas(start_Aausi, next_Aausi)
 
     sankranti = None
@@ -108,9 +115,9 @@ def compute_lunar_month(start_Aausi: datetime) -> LunarMonth:
         end_purnima=purnima,
         end_Aausi=next_Aausi,
         month_name=month_name,
-        month_index=(sun_rashi + 1) if sun_rashi < 12 else 1,
+        month_index=sun_rashi + 1,
         is_adhik=is_adhik,
-        sun_rashi_at_purnima=sun_rashi,
+        sun_rashi_at_start=sun_rashi,
         sankranti_date=sankranti,
     )
 
@@ -159,22 +166,16 @@ def clear_lunar_year_cache() -> None:
     _lunar_year_cache.clear()
 
 
-def _shift_masa_name(name: str, offset: int) -> str:
-    if name not in BS_MONTH_NAMES:
-        return name
-    index = (BS_MONTH_NAMES.index(name) - offset) % 12
-    return BS_MONTH_NAMES[index]
+def build_purnimant_months(lunar_year: LunarYear) -> list[PurnimantMonth]:
+    """Purnimant windows (previous Purnima → this Purnima) with masa labels.
 
-
-def build_purnimant_months(
-    lunar_year: LunarYear,
-    *,
-    adhik_policy: Literal["skip", "use_adhik", "both"] = "skip",
-) -> list[PurnimantMonth]:
-    """Purnimant windows with festival masa labels (adhik-aware lag)."""
+    A purnimant month carries the same name as the amanta month whose Shukla
+    Paksha closes it, so the label is the amanta name directly.  No adhik lag
+    correction is applied: an Adhik Maas is named after the Nija month that
+    follows it, which keeps every later month on its own name.
+    """
     windows: list[PurnimantMonth] = []
     prev_purnima: datetime | None = None
-    adhik_before = 0
 
     for month in lunar_year.months:
         start_dt = (
@@ -182,33 +183,17 @@ def build_purnimant_months(
             if prev_purnima is not None
             else month.start_Aausi
         )
-        if month.is_adhik:
-            if adhik_policy != "use_adhik":
-                adhik_before += 1
-            windows.append(
-                PurnimantMonth(
-                    start=start_dt.date(),
-                    end_purnima=month.end_purnima.date(),
-                    start_dt=start_dt,
-                    end_dt=month.end_purnima,
-                    solar_name=month.month_name,
-                    festival_masa=month.month_name,
-                    is_adhik=True,
-                )
+        windows.append(
+            PurnimantMonth(
+                start=start_dt.date(),
+                end_purnima=month.end_purnima.date(),
+                start_dt=start_dt,
+                end_dt=month.end_purnima,
+                solar_name=month.month_name,
+                festival_masa=month.month_name,
+                is_adhik=month.is_adhik,
             )
-        else:
-            festival_masa = _shift_masa_name(month.month_name, adhik_before)
-            windows.append(
-                PurnimantMonth(
-                    start=start_dt.date(),
-                    end_purnima=month.end_purnima.date(),
-                    start_dt=start_dt,
-                    end_dt=month.end_purnima,
-                    solar_name=month.month_name,
-                    festival_masa=festival_masa,
-                    is_adhik=False,
-                )
-            )
+        )
         prev_purnima = month.end_purnima
 
     return windows
@@ -304,26 +289,19 @@ def _next_masa_name(name: str) -> str:
     return BS_MONTH_NAMES[(BS_MONTH_NAMES.index(name) + 1) % 12]
 
 
-def _amanta_context(
-    target: date,
-) -> tuple[Optional[LunarMonth], int, Optional[LunarMonth], int]:
-    """The amanta month covering ``target`` (with its preceding-adhik count) plus
-    the previous month and its count — used to attribute the junction Aausi to
-    the month it closes rather than the one it opens."""
+def _amanta_context(target: date) -> tuple[Optional[LunarMonth], Optional[LunarMonth]]:
+    """The amanta month covering ``target`` plus the one before it — used to
+    attribute the junction Aausi to the month it closes rather than the one it
+    opens."""
     check = day_instant_utc(target, hour=12)
     for gregorian_year in (target.year - 1, target.year, target.year + 1):
         lunar_year = get_lunar_year(gregorian_year)
-        adhik_before = 0
         prev: Optional[LunarMonth] = None
-        prev_adhik_before = 0
         for month in lunar_year.months:
             if month.start_Aausi <= check < month.end_Aausi:
-                return month, adhik_before, prev, prev_adhik_before
+                return month, prev
             prev = month
-            prev_adhik_before = adhik_before
-            if month.is_adhik:
-                adhik_before += 1
-    return None, 0, None, 0
+    return None, None
 
 
 def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dict:
@@ -340,7 +318,7 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
       * Krishna paksha (nija) → the *next* month's name (the krishna paksha
         precedes the shukla that names the pūrṇimānta month).
     """
-    month, adhik_before, prev_month, prev_adhik_before = _amanta_context(target)
+    month, prev_month = _amanta_context(target)
     if month is None:
         return _lunar_month_payload(None, month_type="unknown", paksha_model="purnimant")
 
@@ -358,15 +336,18 @@ def compute_purnimanta_paksha(target: date, paksha: Optional[str] = None) -> dic
         and prev_month is not None
         and target == month.start_Aausi.date()
     ):
-        month, adhik_before = prev_month, prev_adhik_before
+        month = prev_month
 
     if month.is_adhik:
         name = month.month_name
         is_adhik = True
         month_type = "adhik"
     else:
-        nija_name = _shift_masa_name(month.month_name, adhik_before)
-        name = _next_masa_name(nija_name) if paksha == "krishna" else nija_name
+        name = (
+            _next_masa_name(month.month_name)
+            if paksha == "krishna"
+            else month.month_name
+        )
         is_adhik = False
         month_type = "nija"
 
@@ -415,7 +396,7 @@ def get_lunar_calendar_layers(target: date, paksha: Optional[str] = None) -> dic
             "year_has_adhik": lunar_year.has_adhik,
             "name": lunar_year.adhik_month_name,
             "name_ne": (
-                f"अधिक {lunar_year.adhik_month_name}"
+                f"अधिक {lunar_masa_name_ne(lunar_year.adhik_month_name)}"
                 if lunar_year.adhik_month_name
                 else None
             ),
@@ -534,7 +515,7 @@ def _purnimant_month_to_lunar_month(window: PurnimantMonth) -> LunarMonth:
         month_name=window.festival_masa,
         month_index=1,
         is_adhik=window.is_adhik,
-        sun_rashi_at_purnima=0,
+        sun_rashi_at_start=0,
     )
 
 
@@ -606,7 +587,7 @@ def _find_festival_in_purnimant(
 
     for search_year in (gregorian_year - 1, gregorian_year):
         lunar_year = get_lunar_year(search_year)
-        windows = build_purnimant_months(lunar_year, adhik_policy=adhik_policy)
+        windows = build_purnimant_months(lunar_year)
         label_key = "festival_masa" if use_festival_masa else "solar_name"
         matching = [w for w in windows if getattr(w, label_key) == lunar_month_name]
 

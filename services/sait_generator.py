@@ -20,7 +20,10 @@ ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / "cache"
 # Sait windows are built from sunrise/sunset and the angas, so the astronomy
 # axis is folded in — an ephemeris fix invalidates this store too.
-SAIT_ENGINE_VERSION = stamp("4.10.0")
+# 4.11.0: sait days carry the pūrṇimānta lunar month, which moved when amanta
+#         months started being named from the Sankranti they contain rather
+#         than from the Sun's rashi at their Purnima.
+SAIT_ENGINE_VERSION = stamp("4.11.0")
 
 
 def sait_cache_path(bs_year: int, category: str, location_key: str) -> Path:
