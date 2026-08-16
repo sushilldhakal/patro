@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "version": "3.2.0",
+    "version": "3.3.0",
     "description": "Festival rules using LUNAR MONTH NAMES (correct Adhik Maas model)",
     "date_updated": "2026-07-29",
     "model": "lunar_month_based",
-    "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on.",
+    "notes": "Purnimant festival masa (default month_model=festival) with Adhik lag; MoHA overrides for public holidays. v3.1: full solar/lunar catalog — solar festivals carry bs_month/solar_day (sankranti calendar), ad_fixed carry ad_month/ad_day, lunar carry lunar_month/tithi/paksha. v3.2: duplicate-label handling — `alias_of` marks a row that is only a second name for another festival (always hidden, even if an override moved the canonical row to another day); `subsumed_by` marks a distinct observance that is hidden only on days the named festival also falls on. v3.3: `date_selection` accepts the kaal-vyapini modes madhyahna / aparahna / pradosh alongside udaya and boundary — the day a tithi pervades that part of the day, for observances whose date is not the udaya-tithi day (Vijaya Dashami, Laxmi Puja).",
     "tradition_field": "Optional. Present only on rules whose date depends on the observing tradition (Smarta vs Vaishnava Ekadashi). Absent means the rule is tradition-neutral and is emitted for every tradition. See docs/phase-7-preparation.md and engine/vedic/tradition.py."
   },
   "festivals": {
@@ -199,8 +199,9 @@
       "tithi": 10,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "madhyahna",
       "duration_days": 1,
-      "notes": "Main day of Dashain — Devi Visarjan",
+      "notes": "Main day of Dashain — Devi Visarjan. Tika falls on the day Dashami pervades madhyahna, not on the udaya-Dashami day: in 2024 Dashami ran 10-12 11:14 to 10-13 09:24 NPT and Tika was the 12th.",
       "importance": "national",
       "category": "hindu"
     },
@@ -225,8 +226,9 @@
       "tithi": 15,
       "paksha": "krishna",
       "adhik_policy": "skip",
+      "date_selection": "pradosh",
       "duration_days": 1,
-      "notes": "Deepawali, Aausi",
+      "notes": "Deepawali, Aausi. The lamps are lit in pradosh kaal, so the day is the one Amavasya pervades the first fifth of the night — 2022-10-24, whose Amavasya opens at 17:43, minutes after sunset.",
       "importance": "national",
       "category": "hindu"
     },
@@ -565,8 +567,9 @@
       "tithi": 7,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "aparahna",
       "duration_days": 1,
-      "notes": "Seventh day of Dashain",
+      "notes": "Seventh day of Dashain. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
       "importance": "national",
       "category": "hindu"
     },
@@ -578,8 +581,9 @@
       "tithi": 8,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "aparahna",
       "duration_days": 1,
-      "notes": "Eighth day of Dashain — Kalratri",
+      "notes": "Eighth day of Dashain — Kalratri. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
       "importance": "national",
       "category": "hindu"
     },
@@ -591,8 +595,9 @@
       "tithi": 9,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "aparahna",
       "duration_days": 1,
-      "notes": "Ninth day of Dashain",
+      "notes": "Ninth day of Dashain. Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024).",
       "importance": "national",
       "category": "hindu"
     },
@@ -2518,9 +2523,11 @@
       "tithi": 8,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "aparahna",
       "duration_days": 1,
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "notes": "Durga Puja Saptami/Ashtami/Navami are aparahna-vyapini: the day the tithi holds the fourth fifth of daylight, which is a day earlier than the udaya day whenever the tithi opens late (Dashain 2024)."
     },
     "devi-visarjan": {
       "name_en": "Devi Visarjan",
@@ -2530,9 +2537,11 @@
       "tithi": 10,
       "paksha": "shukla",
       "adhik_policy": "skip",
+      "date_selection": "madhyahna",
       "duration_days": 1,
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "notes": "Same civil day as Vijaya Dashami — resolved by the same madhyahna-vyapini Dashami."
     },
     "papankusha-ekadashi": {
       "name_en": "Papankusha Ekadashi Vrata",
@@ -2710,9 +2719,11 @@
       "tithi": 15,
       "paksha": "krishna",
       "adhik_policy": "skip",
+      "date_selection": "pradosh",
       "duration_days": 1,
       "importance": "national",
-      "category": "hindu"
+      "category": "hindu",
+      "notes": "Gai Tihar — morning observance on the same civil day as Laxmi Puja, so it follows the same pradosh-vyapini Amavasya."
     },
     "govardhan-puja": {
       "name_en": "Govardhan Puja",

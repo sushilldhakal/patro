@@ -18,7 +18,10 @@ RULE_VERSION = "v3"
 # taken from the Sankranti a month contains rather than the Sun's rashi at its
 # Purnima. Moves every festival whose masa was mis-named — Buddha Jayanti and
 # Holi 2079 BS, among others — so the cached holiday payloads must be orphaned.
-ENGINE_VERSION = stamp("1.0.5")
+# 1.0.6: kaal-vyapini date_selection (madhyahna / pradosh) — the rules file hash
+# covers the JSON side of this change, but the selection logic itself lives in
+# the engine and needs its own bump.
+ENGINE_VERSION = stamp("1.0.6")
 
 RULES_PATH = Path(__file__).resolve().parent.parent / "rules" / "festival_rules_v3.json"
 OVERRIDES_PATH = Path(__file__).resolve().parent.parent / "rules" / "holiday_overrides_v1.json"

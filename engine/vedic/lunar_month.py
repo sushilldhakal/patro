@@ -17,12 +17,19 @@ from engine.vedic.bs_year import bs_solar_year_for_gregorian_year
 from engine.vedic.constants import BS_MONTH_NAMES
 from engine.vedic.sankranti import find_sankranti, get_sun_rashi_at_time
 from engine.vedic.names_ne import lunar_masa_name_ne
+from engine.vedic.kaal import Kaal, KAAL_NAMES, vyapini_date
 from engine.vedic.tithi import get_udaya_tithi
-from engine.vedic.tithi_boundaries import find_next_tithi
+from engine.vedic.tithi_boundaries import find_next_tithi, find_tithi_end
 from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.ut_instant import day_instant_utc
 
 MonthModel = Literal["amanta", "purnimant", "festival"]
+
+# How a rule picks the civil day out of the tithi it names:
+#   udaya     — the day whose sunrise the tithi holds (what printed patro prints)
+#   boundary  — the day the tithi begins, sunrise ignored
+#   madhyahna / aparahna / pradosh — the day the tithi pervades that kaal
+DateSelection = Literal["udaya", "boundary", "madhyahna", "aparahna", "pradosh"]
 
 # MoHA patro: when Shrawan civil Purnima falls early in the month, observance
 # shifts to the next civil month (Bhadau) — common in Adhik years.
@@ -525,7 +532,7 @@ def find_festival_in_lunar_month(
     paksha: str,
     gregorian_year: int,
     adhik_policy: Literal["skip", "use_adhik", "both"] = "skip",
-    date_selection: Literal["udaya", "boundary"] = "udaya",
+    date_selection: DateSelection = "udaya",
     location: ObserverLocation = DEFAULT_LOCATION,
     month_model: MonthModel = "festival",
 ) -> Optional[date]:
@@ -579,7 +586,7 @@ def _find_festival_in_purnimant(
     paksha: str,
     gregorian_year: int,
     adhik_policy: Literal["skip", "use_adhik", "both"],
-    date_selection: Literal["udaya", "boundary"],
+    date_selection: DateSelection,
     location: ObserverLocation,
     use_festival_masa: bool,
 ) -> Optional[date]:
@@ -599,20 +606,11 @@ def _find_festival_in_purnimant(
                     continue
 
             month = _purnimant_month_to_lunar_month(window)
-            if date_selection == "boundary":
-                boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
-                if boundary:
-                    candidates.append((boundary, False))
-                continue
-
-            exact = _search_tithi_in_month(month, tithi, paksha, location)
-            if exact:
-                candidates.append((exact, True))
-                continue
-
-            boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
-            if boundary:
-                candidates.append((boundary, False))
+            found = _resolve_tithi_day(
+                month, tithi, paksha, date_selection, location
+            )
+            if found is not None:
+                candidates.append(found)
 
     if not candidates:
         return None
@@ -626,7 +624,7 @@ def _find_festival_in_amanta(
     paksha: str,
     gregorian_year: int,
     adhik_policy: Literal["skip", "use_adhik", "both"],
-    date_selection: Literal["udaya", "boundary"],
+    date_selection: DateSelection,
     location: ObserverLocation,
 ) -> Optional[date]:
     candidates: list[tuple[date, bool]] = []
@@ -642,24 +640,49 @@ def _find_festival_in_amanta(
                 if any(m.is_adhik for m in matching_months):
                     continue
 
-            if date_selection == "boundary":
-                boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
-                if boundary:
-                    candidates.append((boundary, False))
-                continue
-
-            exact = _search_tithi_in_month(month, tithi, paksha, location)
-            if exact:
-                candidates.append((exact, True))
-                continue
-
-            boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
-            if boundary:
-                candidates.append((boundary, False))
+            found = _resolve_tithi_day(
+                month, tithi, paksha, date_selection, location
+            )
+            if found is not None:
+                candidates.append(found)
 
     if not candidates:
         return None
     return min(candidates, key=_candidate_rank(gregorian_year))[0]
+
+
+def _resolve_tithi_day(
+    month: LunarMonth,
+    tithi: int,
+    paksha: str,
+    date_selection: DateSelection,
+    location: ObserverLocation,
+) -> Optional[tuple[date, bool]]:
+    """One month's candidate day for (tithi, paksha), plus whether it is exact.
+
+    "Exact" means the selection rule the caller asked for actually resolved;
+    an inexact candidate is the tithi-start fallback, which _candidate_rank
+    ranks below an exact one from another month.
+    """
+    if date_selection == "boundary":
+        boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
+        return (boundary, False) if boundary else None
+
+    if date_selection in KAAL_NAMES:
+        vyapini = _vyapini_tithi_date_in_month(
+            month, tithi, paksha, date_selection, location
+        )
+        if vyapini:
+            return (vyapini, True)
+        # A kshaya tithi can miss the kaal on both days it touches; fall through
+        # to udaya so the festival still lands somewhere sensible.
+
+    exact = _search_tithi_in_month(month, tithi, paksha, location)
+    if exact:
+        return (exact, True)
+
+    boundary = _boundary_tithi_date_in_month(month, tithi, paksha)
+    return (boundary, False) if boundary else None
 
 
 def _candidate_rank(gregorian_year: int):
@@ -676,7 +699,10 @@ def _candidate_rank(gregorian_year: int):
     return _rank
 
 
-def _boundary_tithi_date_in_month(month: LunarMonth, tithi: int, paksha: str) -> Optional[date]:
+def _boundary_tithi_instant_in_month(
+    month: LunarMonth, tithi: int, paksha: str
+) -> Optional[datetime]:
+    """The instant this month's *tithi* begins, or None if it falls outside it."""
     search_start = month.start_Aausi if paksha == "shukla" else month.end_purnima
     search_end = month.end_Aausi
     tithi_datetime = find_next_tithi(tithi, paksha, search_start, within_days=35)
@@ -687,7 +713,31 @@ def _boundary_tithi_date_in_month(month: LunarMonth, tithi: int, paksha: str) ->
             return None
     elif not (search_start <= tithi_datetime < search_end):
         return None
+    return tithi_datetime
+
+
+def _boundary_tithi_date_in_month(month: LunarMonth, tithi: int, paksha: str) -> Optional[date]:
+    tithi_datetime = _boundary_tithi_instant_in_month(month, tithi, paksha)
+    if tithi_datetime is None:
+        return None
     return tithi_datetime.date()
+
+
+def _vyapini_tithi_date_in_month(
+    month: LunarMonth,
+    tithi: int,
+    paksha: str,
+    kaal: Kaal,
+    location: ObserverLocation = DEFAULT_LOCATION,
+) -> Optional[date]:
+    """The day this month's *tithi* pervades ``kaal`` — see engine.vedic.kaal."""
+    tithi_start = _boundary_tithi_instant_in_month(month, tithi, paksha)
+    if tithi_start is None:
+        return None
+    tithi_end = find_tithi_end(tithi_start)
+    if tithi_end is None:
+        return None
+    return vyapini_date(tithi_start, tithi_end, kaal, location)
 
 
 def _search_tithi_in_month(

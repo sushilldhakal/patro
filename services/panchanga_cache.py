@@ -137,7 +137,12 @@ logger = logging.getLogger(__name__)
 #     pūrṇimānta / festival-masa labels inherited the slip. Shifts
 #     ``lunar_month`` and ``lunar_calendar`` on roughly half the days of every
 #     year, so the cached blobs have to be orphaned.
-PANCHANGA_PAYLOAD_VERSION = 45
+# 46: Vijaya Dashami and Laxmi Puja resolve by kaal-vyapini tithi (madhyahna /
+#     pradosh) instead of udaya, moving them a day in the years where the tithi
+#     reaches the kaal on one day but sunrise on the next — Dashain Tika 2024 to
+#     Oct 12, Laxmi Puja 2024 to Oct 31. Month and year payloads carry festival
+#     names per day, so their blobs have to be orphaned.
+PANCHANGA_PAYLOAD_VERSION = 46
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.
