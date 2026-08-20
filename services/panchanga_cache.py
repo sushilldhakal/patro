@@ -145,7 +145,11 @@ logger = logging.getLogger(__name__)
 # 47: build_gochar gained a "vedic_stars" field — the 32 named-star catalogue
 #     positioned from sefstars.txt. New key, not a changed value, but cached
 #     gochar blobs from before this predate the field entirely.
-PANCHANGA_PAYLOAD_VERSION = 47
+# 48: vedic_stars gained the 10 शिशुमार body-part stars (Polaris, Thuban,
+#     Rastaban, Eltanin, Altais, Kochab, Pherkad, Edasich, Alsafi, Zeta
+#     Draconis). Same key as 47, more entries — cached blobs from before this
+#     are missing them, so they have to be orphaned too.
+PANCHANGA_PAYLOAD_VERSION = 48
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

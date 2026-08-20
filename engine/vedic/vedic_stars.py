@@ -21,6 +21,12 @@ asterism rather than one star, and have no single catalogue star to sit on.
 Their position is the geometric centroid (on the unit sphere, to sidestep any
 0°/360° wrap) of the figure's own bright stars, each resolved the same way as
 any other entry here.
+
+शिशुमार (the Purāṇic dolphin figure — tail, waist and jaw) is different
+again: every body part it names is a real, already-individually-catalogued
+star, not a centroid, so it needs no composite entry here at all. The client
+draws the lines joining them (see ``vedic-constellations.ts``); this module
+only has to make sure each star it needs is present under its own name.
 """
 
 from __future__ import annotations
@@ -66,6 +72,22 @@ _SINGLE_STARS: tuple[tuple[str, str, str, str], ...] = (
     ("लुब्धक-बन्धु", "Procyon", "α Canis Minoris — HIP 37279", ",alCMi"),
     ("दिति", "Pollux", "Diti — β Geminorum — HIP 37826", ",beGem"),
     ("अदिति", "Castor", "Aditi — α Geminorum — HIP 36850", ",alGem"),
+    # शिशुमार (the Purāṇic dolphin/porpoise figure) — तारा not already above.
+    # Two of its names repeat ones used elsewhere in this catalogue for a
+    # different physical star (प्रजापति also names the Orion figure below;
+    # अग्नि also names Elnath above) — both are real, separately attested
+    # traditions naming different stars the same thing, kept as given rather
+    # than invented apart.
+    ("ध्रुवतारा", "Polaris", "α Ursae Minoris — the tail's tip", ",alUMi"),
+    ("प्रजापति", "Thuban", "α Draconis — शिशुमारको पुच्छर", ",alDra"),
+    ("अग्नि", "Rastaban", "β Draconis — शिशुमारको पुच्छर", ",beDra"),
+    ("इन्द्र", "Eltanin", "γ Draconis — शिशुमारको पुच्छर", ",gaDra"),
+    ("धर्म", "Altais", "δ Draconis — शिशुमारको पुच्छर", ",deDra"),
+    ("धाता", "Kochab", "β Ursae Minoris — पुच्छरको जरा", ",beUMi"),
+    ("विधाता", "Pherkad", "γ Ursae Minoris — पुच्छरको जरा", ",gaUMi"),
+    ("उत्तानपाद", "Edasich", "ι Draconis — शिशुमारको माथिल्लो बङ्गारा", ",ioDra"),
+    ("यज्ञ", "Alsafi", "σ Draconis — शिशुमारको तल्लो बङ्गारा", ",siDra"),
+    ("ब्रह्मा", "Zeta Draconis", "ζ Draconis — शिशुमारको टाउको", ",zeDra"),
 )
 
 # Whole-asterism entries: no single catalogue star, so the position is the
