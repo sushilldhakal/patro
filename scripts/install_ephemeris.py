@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download the Swiss Ephemeris ``.se1`` binary files into data/ephemeris/.
+"""Download the Swiss Ephemeris ``.se1`` binaries and ``sefstars.txt`` into data/ephemeris/.
 
 Without these files pyswisseph silently falls back to its built-in Moshier
 analytical model (retflag bit SEFLG_MOSEPH). Installing them lets the engine
@@ -93,7 +93,7 @@ def main() -> None:
     force = "--force" in argv
     deep_bce = "--deep-bce" in argv or "--extended" in argv
     far_ce = "--far-ce" in argv or "--extended" in argv
-    file_list = EPHE_FILES + (DEEP_BCE_EPHE_FILES if deep_bce else ()) + (
+    file_list = ("sefstars.txt",) + EPHE_FILES + (DEEP_BCE_EPHE_FILES if deep_bce else ()) + (
         FAR_CE_EPHE_FILES if far_ce else ()
     )
     ephe_dir = ephemeris_path()

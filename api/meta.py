@@ -44,6 +44,23 @@ def provenance():
     return payload
 
 
+@router.get("/meta/capabilities")
+def capabilities():
+    """What this host can compute — year bounds, cache version, festival floor.
+
+    The web and mobile clients fetch this instead of mirroring
+    ``PATRO_EPHEMERIS_SIGNED_*`` (and friends) in their own source. Month
+    calendar payloads also carry a ``limits`` block from the same function.
+    """
+    from engine.vedic.patro_year_axis import browse_limits
+    from services.panchanga_cache import CACHE_PAYLOAD_VERSION
+
+    return {
+        **browse_limits(),
+        "cache_payload_version": CACHE_PAYLOAD_VERSION,
+    }
+
+
 @router.get("/about")
 def about():
     return {

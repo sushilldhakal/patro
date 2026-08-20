@@ -128,3 +128,50 @@ def instant_for_request(
         lat=lat,
         lon=lon,
     )
+
+
+def birth_instant_from_query(
+    *,
+    birth: str | None = None,
+    birth_tz: str = "Asia/Kathmandu",
+    birth_era: str | None = None,
+    birth_year: int | None = None,
+    birth_month: int | None = None,
+    birth_day: int | None = None,
+    birth_clock: str | None = None,
+    lat: float | None = None,
+    lon: float | None = None,
+) -> _datetime:
+    """Resolve a saved profile's birth moment. Era parts win over a Gregorian ISO.
+
+    Clients send the profile's stored ``birth_date`` / ``birth_era`` / clock
+    (and timezone) and this is the only place those become an instant. The
+    older ``birth=YYYY-MM-DDTHH:MM`` form stays for callers that already hold
+    a Gregorian civil datetime.
+    """
+    clock = birth_clock
+    if not clock and birth and "T" in birth:
+        clock = birth.split("T", 1)[1]
+
+    if None not in (birth_year, birth_month, birth_day):
+        return instant_for_parts(
+            era=birth_era or "ad",
+            year=int(birth_year),
+            month=int(birth_month),
+            day=int(birth_day),
+            clock=clock or "12:00",
+            datetime_raw=None,
+            jd=None,
+            timezone_name=birth_tz,
+            lat=lat,
+            lon=lon,
+        )
+
+    if birth:
+        from engine.vedic.rashifal_personal import birth_instant_from_local
+
+        return birth_instant_from_local(birth, birth_tz)
+
+    raise ValueError(
+        "Provide birth_era + birth_year/month/day + birth_clock, or a birth datetime."
+    )

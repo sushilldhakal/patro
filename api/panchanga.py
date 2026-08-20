@@ -167,20 +167,35 @@ def panchanga_day_jd(
 
 
 @router.get("/panchanga/rashifal/janma")
-def panchanga_rashifal_janma(birth: str, birth_tz: str = "Asia/Kathmandu"):
-    """Janma (birth) Moon rashi for a naive local birth datetime.
+def panchanga_rashifal_janma(
+    birth: str | None = None,
+    birth_tz: str = "Asia/Kathmandu",
+    birth_era: str | None = None,
+    birth_year: int | None = None,
+    birth_month: int | None = None,
+    birth_day: int | None = None,
+    birth_clock: str | None = None,
+):
+    """Janma (birth) Moon rashi from a birth moment.
 
-    Thin wrapper over the same ``compute_janma_points`` the sait personalize
-    route uses — lets a signed-in user's saved profile pick out its own card on
-    the rashifal grid without duplicating the janma-Moon computation. Only the
-    birth instant is needed (the Moon is geocentric), so no location is asked
-    for here; the caller already resolved BS→AD on its own saved profile before
-    calling this.
+    Send the profile's stored era + civil parts (``birth_era``, ``birth_year``,
+    ``birth_month``, ``birth_day``, ``birth_clock``) and this host converts them.
+    The older ``birth=YYYY-MM-DDTHH:MM`` Gregorian form is still accepted.
     """
-    from services.sait_personalize import compute_janma_points
+    from app.instant_resolver import birth_instant_from_query
+    from services.sait_personalize import compute_janma_from_instant
 
     try:
-        janma = compute_janma_points(birth, birth_tz)
+        instant = birth_instant_from_query(
+            birth=birth,
+            birth_tz=birth_tz,
+            birth_era=birth_era,
+            birth_year=birth_year,
+            birth_month=birth_month,
+            birth_day=birth_day,
+            birth_clock=birth_clock,
+        )
+        janma = compute_janma_from_instant(instant)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return {"janma_nakshatra": janma["nakshatra"], "janma_rashi": janma["rashi"]}
@@ -190,10 +205,15 @@ def panchanga_rashifal_janma(birth: str, birth_tz: str = "Asia/Kathmandu"):
 def panchanga_rashifal_personal(
     location: LocationDep,
     request: Request,
-    birth: str,
     birth_lat: float,
     birth_lon: float,
+    birth: str | None = None,
     birth_tz: str = "Asia/Kathmandu",
+    birth_era: str | None = None,
+    birth_year: int | None = None,
+    birth_month: int | None = None,
+    birth_day: int | None = None,
+    birth_clock: str | None = None,
     _era: None = Depends(era_params),
     period: Literal["daily", "weekly", "monthly", "yearly"] = Query("daily"),
     date_key: str | None = Query(None, alias="date"),
@@ -206,8 +226,9 @@ def panchanga_rashifal_personal(
     would not need this, but the ascendant does).
     """
     from app.day_resolver import DayResolutionError, day_jd_for_request
+    from app.instant_resolver import birth_instant_from_query
     from engine.astronomy.jd_calendar import CivilDay, date_if_supported
-    from engine.vedic.rashifal_personal import birth_instant_from_local, build_natal_chart
+    from engine.vedic.rashifal_personal import build_natal_chart
     from services.rashifal_api import personal_rashifal_for_gregorian
 
     try:
@@ -224,7 +245,17 @@ def panchanga_rashifal_personal(
         )
 
     try:
-        birth_instant = birth_instant_from_local(birth, birth_tz)
+        birth_instant = birth_instant_from_query(
+            birth=birth,
+            birth_tz=birth_tz,
+            birth_era=birth_era,
+            birth_year=birth_year,
+            birth_month=birth_month,
+            birth_day=birth_day,
+            birth_clock=birth_clock,
+            lat=birth_lat,
+            lon=birth_lon,
+        )
         natal = build_natal_chart(birth_instant, lat=birth_lat, lon=birth_lon)
         payload = personal_rashifal_for_gregorian(natal, greg, location, period=period)
     except ValueError as exc:
@@ -888,6 +919,11 @@ def nepal_sait_personalize(
     location: LocationDep,
     birth: str | None = None,
     birth_tz: str = "Asia/Kathmandu",
+    birth_era: str | None = None,
+    birth_year: int | None = None,
+    birth_month: int | None = None,
+    birth_day: int | None = None,
+    birth_clock: str | None = None,
     janma_nakshatra: int | None = None,
     janma_rashi: int | None = None,
     gender: str | None = None,
@@ -899,33 +935,42 @@ def nepal_sait_personalize(
     the category-specific native rule (rudri Moon-house, annaprasan Janma-tārā).
 
     Supply either the janma Moon directly (``janma_nakshatra`` 1–27 and
-    ``janma_rashi`` 1–12) or a naive birth datetime (``birth`` = ``YYYY-MM-DDTHH:MM``
-    interpreted in ``birth_tz``), from which the janma Moon is computed.
+    ``janma_rashi`` 1–12) or a birth moment — era + civil parts, or the older
+    ``birth=YYYY-MM-DDTHH:MM`` Gregorian form — from which the janma Moon is
+    computed.
 
-    ``gender`` (with a ``birth`` date) enables the annaprāśana age-month rule.
+    ``gender`` (with a birth date) enables the annaprāśana age-month rule.
     """
-    from datetime import date as _date
+    from app.instant_resolver import birth_instant_from_query
+    from engine.astronomy.timescale import resolve_observer_timezone
 
     _validate_bs_year(bs_year)
     from services.response_cache import SAIT_CUSTOM_CACHE_CONTROL
-    from services.sait_personalize import compute_janma_points, personalize_sait
+    from services.sait_personalize import compute_janma_from_instant, personalize_sait
 
-    birth_date: _date | None = None
-    if birth:
-        try:
-            birth_date = _date.fromisoformat(birth.split("T")[0])
-        except ValueError:
-            birth_date = None
-
+    birth_date = None
+    has_birth_parts = None not in (birth_year, birth_month, birth_day)
     try:
+        if birth or has_birth_parts:
+            instant = birth_instant_from_query(
+                birth=birth,
+                birth_tz=birth_tz,
+                birth_era=birth_era,
+                birth_year=birth_year,
+                birth_month=birth_month,
+                birth_day=birth_day,
+                birth_clock=birth_clock,
+            )
+            tz = resolve_observer_timezone(birth_tz)
+            birth_date = instant.astimezone(tz).date()
+            if janma_nakshatra is None or janma_rashi is None:
+                janma = compute_janma_from_instant(instant)
+                janma_nakshatra = janma["nakshatra"]
+                janma_rashi = janma["rashi"]
         if janma_nakshatra is None or janma_rashi is None:
-            if not birth:
-                raise ValueError(
-                    "Provide either janma_nakshatra + janma_rashi, or a birth datetime."
-                )
-            janma = compute_janma_points(birth, birth_tz)
-            janma_nakshatra = janma["nakshatra"]
-            janma_rashi = janma["rashi"]
+            raise ValueError(
+                "Provide either janma_nakshatra + janma_rashi, or a birth moment."
+            )
         payload = personalize_sait(
             bs_year,
             category,

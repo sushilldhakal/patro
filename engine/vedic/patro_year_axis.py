@@ -122,6 +122,33 @@ def patro_year_supports_full_panchanga(signed: int) -> bool:
     return patro_year_within_ephemeris(signed)
 
 
+def browse_limits() -> dict[str, int]:
+    """Ephemeris / picker bounds — the API's single copy of what the UI may offer.
+
+    Clients fetch this (``GET /meta/capabilities`` or the ``limits`` block on
+    month calendars) instead of mirroring these constants.
+    """
+    from engine.vedic.constants import (
+        AD_YEAR_MAX,
+        AD_YEAR_MIN,
+        BC_YEAR_MAX,
+        BC_YEAR_MIN,
+    )
+
+    return {
+        "signed_year_min": PATRO_SIGNED_YEAR_MIN,
+        "signed_year_max": PATRO_SIGNED_YEAR_MAX,
+        "ephemeris_signed_min": PATRO_EPHEMERIS_SIGNED_MIN,
+        "ephemeris_signed_max": PATRO_EPHEMERIS_SIGNED_MAX,
+        "ad_year_min": AD_YEAR_MIN,
+        "ad_year_max": AD_YEAR_MAX,
+        "bc_year_min": BC_YEAR_MIN,
+        "bc_year_max": BC_YEAR_MAX,
+        "bbs_url_year_max": -PATRO_EPHEMERIS_SIGNED_MIN,
+        "festival_stack_min_year": BS_PANCHANGA_SIGNED_MIN,
+    }
+
+
 def ephemeris_range_message(signed: int) -> str:
     """Operator-facing explanation for a year the installed files can't reach."""
     which = "before" if signed < PATRO_EPHEMERIS_SIGNED_MIN else "after"

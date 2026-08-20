@@ -142,7 +142,10 @@ logger = logging.getLogger(__name__)
 #     reaches the kaal on one day but sunrise on the next — Dashain Tika 2024 to
 #     Oct 12, Laxmi Puja 2024 to Oct 31. Month and year payloads carry festival
 #     names per day, so their blobs have to be orphaned.
-PANCHANGA_PAYLOAD_VERSION = 46
+# 47: build_gochar gained a "vedic_stars" field — the 32 named-star catalogue
+#     positioned from sefstars.txt. New key, not a changed value, but cached
+#     gochar blobs from before this predate the field entirely.
+PANCHANGA_PAYLOAD_VERSION = 47
 
 # What every consumer keys on. Derived, not literal: an ephemeris fix must
 # invalidate this store even when nothing about the payload's own shape changed.

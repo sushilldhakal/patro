@@ -37,6 +37,18 @@ DASHA_LORD_NE = {
     "mercury": "बुध",
 }
 
+DASHA_LORD_EN = {
+    "ketu": "Ketu",
+    "venus": "Venus",
+    "sun": "Sun",
+    "moon": "Moon",
+    "mars": "Mars",
+    "rahu": "Rahu",
+    "jupiter": "Jupiter",
+    "saturn": "Saturn",
+    "mercury": "Mercury",
+}
+
 NE_TO_LORD = {
     "केतु": "ketu",
     "शुक्र": "venus",

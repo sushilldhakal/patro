@@ -238,7 +238,15 @@ def compute_janma_points(birth_datetime: str, birth_tz: str) -> dict[str, int]:
     local = datetime.fromisoformat(birth_datetime)
     if local.tzinfo is None:
         local = local.replace(tzinfo=tz)
-    instant = local.astimezone(timezone.utc)
+    return compute_janma_from_instant(local.astimezone(timezone.utc))
+
+
+def compute_janma_from_instant(instant: datetime) -> dict[str, int]:
+    """Janma Moon nakṣatra + rāśi from an already-resolved UTC instant."""
+    if instant.tzinfo is None:
+        instant = instant.replace(tzinfo=timezone.utc)
+    else:
+        instant = instant.astimezone(timezone.utc)
     instant_jd = as_julian_day(instant)
     nak_num = panchanga_service.nakshatra(instant_jd)["number"]
     rashi_num = rashi_service.chandra(instant_jd)["number"]

@@ -944,6 +944,26 @@ class AstronomyEngine:
             self._rise_cache.popitem(last=False)
         return value
 
+    def fixed_star_sidereal(self, star: str, jd: float) -> tuple[float, float, float]:
+        """A catalogued fixed star's (sidereal longitude, latitude, magnitude) at *jd*.
+
+        Backed by ``swe.fixstar2_ut`` against the bundled ``sefstars.txt`` —
+        real precession, proper motion, aberration and nutation from the Swiss
+        Ephemeris fixed-star catalogue, the same source and the same sidereal
+        mode (Lahiri) every graha above already uses. ``star`` is the catalogue
+        search key, e.g. ``",alCar"`` (a leading comma searches the
+        nomenclature/Bayer field only, so it cannot match the wrong star under
+        a shared or ambiguous traditional name).
+        """
+        _ensure_ephemeris_for_thread()
+        swe.set_sid_mode(self._ayanamsa)
+        try:
+            xx, _stnam, _retflags = swe.fixstar2_ut(star, jd, swe.FLG_SIDEREAL)
+            mag, _stnam2 = swe.fixstar2_mag(star)
+        except swe.Error as exc:
+            raise EphemerisError(f"fixstar2_ut failed for {star!r}: {exc}") from exc
+        return xx[0] % 360.0, xx[1], mag
+
     def _rise_set_after(
         self,
         after_dt: datetime,

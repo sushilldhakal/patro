@@ -98,6 +98,9 @@ def _month_row_from_panchanga(
         "moonset_local": (panchanga.get("moonset") or {}).get("local"),
         "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
     }
+    abhijit = _abhijit_window(panchanga)
+    if abhijit:
+        row["abhijit"] = abhijit
     if full:
         if greg is not None:
             embed = build_daily_state(
@@ -439,7 +442,7 @@ def build_month_calendar_at_clock(
     mid_greg = bs_to_gregorian(bs_year, bs_month, min(15, month_length))
     mid_panchanga = get_daily_panchanga(mid_greg, location)
     lunar = mid_panchanga["lunar_month"]
-    return {
+    return _stamp_month_grid({
         "year_bs": bs_year,
         "month_bs": bs_month,
         "month_name": bs_month_name(bs_month),
@@ -454,12 +457,40 @@ def build_month_calendar_at_clock(
         "mode": "ephemeris",
         "clock": clock,
         "calendar": calendar,
-    }
+    })
 
 
 def _weekday_index_from_jd(jd_ut: float) -> int:
     """Sunday = 0 … Saturday = 6."""
     return int((float(jd_ut) + 0.5) % 7)
+
+
+def _abhijit_window(panchanga: dict[str, Any]) -> dict[str, str] | None:
+    """8th-muhurta Abhijit window already computed on the daily payload."""
+    ab = (panchanga.get("muhurta") or {}).get("abhijit") or panchanga.get("abhijit") or {}
+    start = ab.get("start_time")
+    end = ab.get("end_time")
+    if not start or not end:
+        return None
+    out = {"start_time": start, "end_time": end}
+    noon = ab.get("solar_noon")
+    if noon:
+        out["solar_noon"] = noon
+    return out
+
+
+def _stamp_month_grid(payload: dict[str, Any]) -> dict[str, Any]:
+    """Month-length, first weekday, and browse limits — clients must not recompute these."""
+    from engine.vedic.patro_year_axis import browse_limits
+
+    calendar = payload.get("calendar") or []
+    payload.setdefault("month_length", len(calendar))
+    first_iso = calendar[0].get("date_ad") if calendar else None
+    if first_iso:
+        civil = parse_civil_iso(first_iso)
+        payload["first_weekday"] = _weekday_index_from_jd(civil.to_jd_ut())
+    payload["limits"] = browse_limits()
+    return payload
 
 
 _WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
@@ -515,7 +546,7 @@ def build_month_civil_skeleton(
     if is_bbs_signed(bs_year):
         payload["era"] = "bbs"
         payload["bbs"] = -bs_year
-    return payload
+    return _stamp_month_grid(payload)
 
 
 def build_month_calendar(
@@ -589,7 +620,7 @@ def build_month_calendar(
     if is_bbs_signed(bs_year):
         payload["era"] = "bbs"
         payload["bbs"] = -bs_year
-    return payload
+    return _stamp_month_grid(payload)
 
 
 def build_gregorian_browse_month_calendar(
@@ -691,6 +722,9 @@ def build_gregorian_browse_month_calendar(
             "moonset_local": (panchanga.get("moonset") or {}).get("local"),
             "festivals": _day_festival_names(day_festivals, exclude_international=exclude_international),
         }
+        abhijit = _abhijit_window(panchanga)
+        if abhijit:
+            row["abhijit"] = abhijit
         if full:
             if greg is not None:
                 row["panchanga"] = build_daily_state(
@@ -749,7 +783,7 @@ def build_gregorian_browse_month_calendar(
         payload["year_ad"] = browse_year
     else:
         payload["year_bc"] = browse_year
-    return payload
+    return _stamp_month_grid(payload)
 
 
 def build_ad_month_calendar(

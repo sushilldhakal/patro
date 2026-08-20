@@ -98,6 +98,17 @@ GRAHA_ORDER: list[str] = [
     "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
 ]
 
+# Classical exaltation rashi (1-based). Debilitation is the opposite sign.
+EXALT_RASHI_NO: dict[str, int] = {
+    "sun": 1,
+    "moon": 2,
+    "mars": 10,
+    "mercury": 6,
+    "jupiter": 4,
+    "venus": 12,
+    "saturn": 7,
+}
+
 # The grahas slow enough that "next three rashi entries" is a useful yearly
 # horizon. The fast ones would just list the next few weeks.
 SLOW_GRAHAS: list[str] = ["jupiter", "saturn", "rahu", "ketu"]
@@ -277,6 +288,47 @@ def _dms_in_sign(lon: float) -> str:
     return f'{d:02d}°{m:02d}\'{s:02d}"'
 
 
+def nakshatra_fields_from_longitude(lon: float) -> dict[str, Any]:
+    """Nakshatra, pada, nakshatra lord and KP sub-lord from a sidereal longitude."""
+    from engine.vedic.vimshottari import (
+        DASHA_LORD_EN,
+        DASHA_LORD_NE,
+        DASHA_SEQUENCE,
+        DASHA_YEARS,
+        NAKSHATRA_LORDS_NE,
+    )
+
+    lon = lon % 360.0
+    nak_idx = int(lon // NAKSHATRA_SPAN) % 27
+    pos_in_nak = lon - nak_idx * NAKSHATRA_SPAN
+    pada = min(int(pos_in_nak / PADA_SPAN) + 1, 4)
+
+    elapsed_years = (pos_in_nak / NAKSHATRA_SPAN) * 120.0
+    start_idx = nak_idx % 9
+    cumulative = 0.0
+    sub_key = DASHA_SEQUENCE[start_idx]
+    for i in range(9):
+        lord = DASHA_SEQUENCE[(start_idx + i) % 9]
+        cumulative += DASHA_YEARS[lord]
+        if elapsed_years < cumulative:
+            sub_key = lord
+            break
+
+    star_lord_key = DASHA_SEQUENCE[nak_idx % 9]
+    return {
+        "nakshatra_no": nak_idx + 1,
+        "nakshatra": NAKSHATRA_NAMES[nak_idx],
+        "nakshatra_ne": NAKSHATRA_NAMES_NE[nak_idx],
+        "pada": pada,
+        "nakshatra_lord": star_lord_key,
+        "nakshatra_lord_ne": NAKSHATRA_LORDS_NE[nak_idx],
+        "nakshatra_lord_en": DASHA_LORD_EN[star_lord_key],
+        "sub_lord": sub_key,
+        "sub_lord_ne": DASHA_LORD_NE[sub_key],
+        "sub_lord_en": DASHA_LORD_EN[sub_key],
+    }
+
+
 # ─── Core gochar table ────────────────────────────────────────────────────────
 
 def get_gochar_table(dt: datetime | Any) -> dict[str, Any]:
@@ -299,13 +351,14 @@ def get_gochar_table(dt: datetime | Any) -> dict[str, Any]:
         spd  = pos.get("speed", 0.0)
         rashi_idx = (pos.get("rashi", 1) - 1) % 12  # stored 1-based in raw
         is_vakri = is_retrograde(graha, spd)
+        rashi_no = rashi_idx + 1
         table[graha] = {
             "name_vedic":    meta["vedic"],
             "name_ne":       meta["ne"],
             "symbol":        meta["symbol"],
             "longitude":     round(lon, 4),
             "dms_absolute":  _dms_absolute(lon),
-            "rashi_no":      rashi_idx + 1,
+            "rashi_no":      rashi_no,
             "rashi":         RASHI_NAMES[rashi_idx],
             "rashi_ne":      RASHI_NAMES_NE[rashi_idx],
             "deg_in_rashi":  round(lon % 30.0, 4),
@@ -314,6 +367,8 @@ def get_gochar_table(dt: datetime | Any) -> dict[str, Any]:
             "is_retrograde": is_vakri,
             "is_combust":    bool(pos.get("is_combust", False)),
             "motion":        motion_label(graha, spd),
+            "is_exalted":    EXALT_RASHI_NO.get(graha) == rashi_no,
+            **nakshatra_fields_from_longitude(lon),
         }
     return table
 
@@ -766,6 +821,20 @@ def _bs_label_for_civil(civil: Any) -> str | None:
         return None
 
 
+def _vedic_stars_safe(jd: float) -> list[dict[str, Any]]:
+    """``build_vedic_stars``, degraded to an empty list on any ephemeris fault.
+
+    Mirrors ``_bs_label_for_civil`` above: a sefstars.txt problem should drop
+    the star layer, not 500 every gochar request that touches this builder.
+    """
+    try:
+        from engine.vedic.vedic_stars import build_vedic_stars
+
+        return build_vedic_stars(jd)
+    except Exception:
+        return []
+
+
 def build_gochar(
     jd: float,
     location: Any,
@@ -869,6 +938,12 @@ def build_gochar(
             "degrees": round(sun_service.ayanamsa(as_julian_day(sunrise_utc)), 6),
         },
         "gochar": gochar,
+        # Thirty-two individually named bright stars — अगस्त्य, अभिजित्, सप्तर्षि
+        # and the rest — computed live from the Swiss Ephemeris fixed-star
+        # catalogue for this same instant. Never fatal: a missing/misconfigured
+        # sefstars.txt should degrade to "no star layer", not break gochar for
+        # every other consumer of this endpoint.
+        "vedic_stars": _vedic_stars_safe(as_julian_day(sunrise_utc)),
     }
 
     if include_upcoming:

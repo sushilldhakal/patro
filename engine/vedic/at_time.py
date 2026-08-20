@@ -578,7 +578,7 @@ def instant_row_from_date(
     )
     snap = build_panchanga_at_time(instant, location)
     bs_day = gregorian_to_bs(greg)[2]
-    return {
+    row: dict[str, Any] = {
         "day": bs_day,
         "date_ad": greg.isoformat(),
         "weekday": snap["vaara"]["name_ne"],
@@ -598,3 +598,11 @@ def instant_row_from_date(
         "query_instant": snap["query_instant"],
         "panchanga": snap,
     }
+    abhijit = snap.get("abhijit") or (snap.get("muhurta") or {}).get("abhijit")
+    if isinstance(abhijit, dict) and abhijit.get("start_time") and abhijit.get("end_time"):
+        row["abhijit"] = {
+            "start_time": abhijit["start_time"],
+            "end_time": abhijit["end_time"],
+            **({"solar_noon": abhijit["solar_noon"]} if abhijit.get("solar_noon") else {}),
+        }
+    return row
