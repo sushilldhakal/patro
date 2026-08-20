@@ -1,5 +1,5 @@
-"""नामाङ्कित वैदिक तारा — thirty-two individually named bright stars, the ones
-classical texts single out by name rather than only as नक्षत्र members.
+"""नामाङ्कित वैदिक तारा — named bright stars, the ones classical texts single
+out by name rather than only as नक्षत्र members.
 
 Positions are computed live from the Swiss Ephemeris fixed-star catalogue
 (``data/ephemeris/sefstars.txt``, the same file and source as the app's
@@ -16,10 +16,11 @@ Procyon). Both are kept as separate catalogue entries: a reader searching for
 know it is Procyon under another one.
 
 Three entries — प्रजापति (the Orion figure), सप्तर्षि (the Big Dipper) and
-त्रिशङ्कु (the Southern Cross) — name a whole asterism rather than one star,
-and have no single catalogue star to sit on. Their position is the geometric
-centroid (on the unit sphere, to sidestep any 0°/360° wrap) of the figure's
-own bright stars, each resolved the same way as any other entry here.
+त्रिशङ्कु (the Southern Cross) — plus मिथुन and अश्विनौ, name a whole
+asterism rather than one star, and have no single catalogue star to sit on.
+Their position is the geometric centroid (on the unit sphere, to sidestep any
+0°/360° wrap) of the figure's own bright stars, each resolved the same way as
+any other entry here.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from engine.astronomy.engine import default_engine
+from engine.astronomy.engine import EphemerisError, default_engine
 
 # Search keys are the sefstars.txt "nomenclature" field (Bayer/Flamsteed),
 # looked up with a leading comma — which searches that field only, so a
@@ -63,6 +64,8 @@ _SINGLE_STARS: tuple[tuple[str, str, str, str], ...] = (
     ("उषा", "Alnitak", "ζ Orionis — HIP 26727", ",zeOri"),
     ("मृगशिरासँग सम्बन्धित ताराहरू", "Meissa / Lambda Orionis region", "λ Orionis — HIP 26207", ",laOri"),
     ("लुब्धक-बन्धु", "Procyon", "α Canis Minoris — HIP 37279", ",alCMi"),
+    ("दिति", "Pollux", "Diti — β Geminorum — HIP 37826", ",beGem"),
+    ("अदिति", "Castor", "Aditi — α Geminorum — HIP 36850", ",alGem"),
 )
 
 # Whole-asterism entries: no single catalogue star, so the position is the
@@ -85,6 +88,18 @@ _COMPOSITE_STARS: tuple[tuple[str, str, str, tuple[str, ...]], ...] = (
         "Southern Cross / Crux",
         "Crux — constellation/asterism",
         (",alCru", ",beCru", ",gaCru", ",deCru"),
+    ),
+    (
+        "अश्विनौ",
+        "Ashvinau",
+        "Castor & Pollux — α + β Geminorum",
+        (",alGem", ",beGem"),
+    ),
+    (
+        "मिथुन",
+        "Gemini",
+        "Mithuna — Gemini / The Twins",
+        (",alGem", ",beGem", ",gaGem", ",deGem", ",epGem", ",muGem"),
     ),
 )
 
@@ -113,21 +128,33 @@ def _centroid(points: list[tuple[float, float]]) -> tuple[float, float]:
     return lon, lat
 
 
+def _place(key: str, jd: float) -> tuple[float, float, float] | None:
+    try:
+        return default_engine.fixed_star_sidereal(key, jd)
+    except (EphemerisError, Exception):
+        return None
+
+
 def build_vedic_stars(jd: float) -> list[dict[str, Any]]:
-    """The 32-star catalogue, positioned for *jd* (Julian Day, UT).
+    """The named-star catalogue, positioned for *jd* (Julian Day, UT).
 
     Each entry: ``ne``/``en`` names, ``designation`` hint, sidereal ecliptic
     ``lon``/``lat`` in degrees, and ``mag`` (apparent visual magnitude — the
-    brightest member's, for the three whole-asterism entries).
+    brightest member's, for whole-asterism entries).
     """
     out: list[dict[str, Any]] = []
     for ne, en, designation, key in _SINGLE_STARS:
-        lon, lat, mag = default_engine.fixed_star_sidereal(key, jd)
+        placed = _place(key, jd)
+        if placed is None:
+            continue
+        lon, lat, mag = placed
         out.append(
             {"ne": ne, "en": en, "designation": designation, "lon": round(lon, 4), "lat": round(lat, 4), "mag": round(mag, 2)}
         )
     for ne, en, designation, keys in _COMPOSITE_STARS:
-        placed = [default_engine.fixed_star_sidereal(key, jd) for key in keys]
+        placed = [p for p in (_place(key, jd) for key in keys) if p is not None]
+        if len(placed) < 2:
+            continue
         lon, lat = _centroid([(p[0], p[1]) for p in placed])
         mag = min(p[2] for p in placed)
         out.append(
