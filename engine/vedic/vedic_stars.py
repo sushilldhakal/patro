@@ -16,8 +16,8 @@ Procyon). Both are kept as separate catalogue entries: a reader searching for
 know it is Procyon under another one.
 
 Three entries — प्रजापति (the Orion figure), सप्तर्षि (the Big Dipper) and
-त्रिशङ्कु (the Southern Cross) — plus मिथुन and अश्विनौ, name a whole
-asterism rather than one star, and have no single catalogue star to sit on.
+त्रिशङ्कु (the Southern Cross) — plus मिथुन, name a whole asterism rather
+than one star, and have no single catalogue star to sit on.
 Their position is the geometric centroid (on the unit sphere, to sidestep any
 0°/360° wrap) of the figure's own bright stars, each resolved the same way as
 any other entry here.
@@ -110,12 +110,6 @@ _COMPOSITE_STARS: tuple[tuple[str, str, str, tuple[str, ...]], ...] = (
         "Southern Cross / Crux",
         "Crux — constellation/asterism",
         (",alCru", ",beCru", ",gaCru", ",deCru"),
-    ),
-    (
-        "अश्विनौ",
-        "Ashvinau",
-        "Castor & Pollux — α + β Geminorum",
-        (",alGem", ",beGem"),
     ),
     (
         "मिथुन",
