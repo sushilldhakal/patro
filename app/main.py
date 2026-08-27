@@ -75,6 +75,7 @@ async def lifespan(app: FastAPI):
                 logger.warning(
                     "FACEBOOK_APP_ID / FACEBOOK_APP_SECRET not set — POST /auth/facebook will return 503"
                 )
+            logger.info("Apple sign-in audiences: %s", ", ".join(config.apple_client_ids()) or "(none)")
         except Exception:
             logger.exception("Failed to initialise auth database")
     elif config.database_url() and config.local_dev_mode():

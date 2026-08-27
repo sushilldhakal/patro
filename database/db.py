@@ -42,6 +42,25 @@ def init_db() -> None:
     from database import models  # noqa: F401
 
     Base.metadata.create_all(bind=get_engine())
+    _ensure_apple_user_id_column()
+
+
+def _ensure_apple_user_id_column() -> None:
+    """create_all will not ALTER existing tables — add the Apple column if missing."""
+    from sqlalchemy import inspect, text
+
+    engine = get_engine()
+    inspector = inspect(engine)
+    if "users" not in inspector.get_table_names():
+        return
+    columns = {col["name"] for col in inspector.get_columns("users")}
+    if "apple_user_id" in columns:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN apple_user_id VARCHAR(128)"))
+        conn.execute(
+            text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_apple_user_id ON users (apple_user_id)")
+        )
 
 
 def get_db() -> Iterator[Session]:

@@ -33,6 +33,12 @@ class FacebookAuthRequest(BaseModel):
     access_token: str
 
 
+class AppleAuthRequest(BaseModel):
+    identity_token: str
+    # First Sign in with Apple may include a private-relay or real email.
+    email: str | None = None
+
+
 class TokenPair(BaseModel):
     access_token: str
     refresh_token: str

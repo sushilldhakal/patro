@@ -28,8 +28,8 @@ class GoogleAuthError(Exception):
 
 
 def verify_google_id_token(token: str) -> dict[str, Any]:
-    client_id = config.google_client_id()
-    if not client_id:
+    audiences = config.google_client_ids()
+    if not audiences:
         raise GoogleAuthError("Google sign-in is not configured")
 
     try:
@@ -38,7 +38,7 @@ def verify_google_id_token(token: str) -> dict[str, Any]:
             token,
             signing_key.key,
             algorithms=["RS256"],
-            audience=client_id,
+            audience=audiences,
         )
     except Exception as exc:  # invalid signature, audience, expiry, malformed, etc.
         logger.warning("Google ID token verification failed: %s: %s", type(exc).__name__, exc)

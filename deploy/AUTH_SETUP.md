@@ -181,9 +181,11 @@ A single nightly dump is enough at this scale:
 | POST   | `/auth/login`              | —    | Email + password → token pair   |
 | POST   | `/auth/google`             | —    | Google ID token → token pair    |
 | POST   | `/auth/facebook`           | —    | Facebook access token → pair    |
+| POST   | `/auth/apple`              | —    | Apple identity token → pair     |
 | POST   | `/auth/refresh`            | —    | Rotate refresh → new token pair |
 | POST   | `/auth/logout`             | —    | Revoke a refresh token          |
 | GET    | `/auth/me`                 | ✓    | Current user                    |
+| DELETE | `/auth/me`                 | ✓    | Permanently delete the account  |
 | POST   | `/auth/verify-email`       | —    | Confirm email via token         |
 | POST   | `/auth/resend-verification`| ✓    | Re-send verification email      |
 | POST   | `/auth/forgot-password`    | —    | Email a reset link              |

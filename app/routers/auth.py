@@ -18,10 +18,12 @@ from sqlalchemy import select
 
 import config
 from app import emailer
+from app.apple_auth import AppleAuthError, verify_apple_identity_token
 from app.facebook_auth import FacebookAuthError, verify_facebook_access_token
 from app.google_auth import GoogleAuthError, verify_google_id_token
 from database.models import EmailToken, RefreshToken, User
 from database.schemas import (
+    AppleAuthRequest,
     ForgotPasswordRequest,
     GoogleAuthRequest,
     FacebookAuthRequest,
@@ -178,6 +180,61 @@ def facebook_auth(body: FacebookAuthRequest, db: DbSession) -> TokenPair:
     return _issue_tokens(db, user)
 
 
+def _apple_email(claims: dict, fallback: str | None) -> str:
+    email = claims.get("email") or fallback
+    if isinstance(email, str) and email.strip():
+        return email.strip().lower()
+    sub = str(claims["sub"])
+    return f"apple.{sub}@users.vedicpatro.com"
+
+
+def _oauth_apple_user(db: DbSession, sub: str, email: str) -> User:
+    """Find or create a user after Apple has verified their identity token."""
+    user = db.scalar(select(User).where(User.apple_user_id == sub))
+    if user is None:
+        user = db.scalar(select(User).where(User.email == email))
+        if user is None:
+            user = User(
+                email=email,
+                password_hash=hash_password(generate_opaque_token()),
+                is_verified=True,
+                apple_user_id=sub,
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        else:
+            user.apple_user_id = sub
+            user.is_verified = True
+            db.commit()
+    elif not user.is_verified:
+        user.is_verified = True
+        db.commit()
+
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account disabled")
+    return user
+
+
+@router.post("/apple", response_model=TokenPair)
+def apple_auth(body: AppleAuthRequest, db: DbSession) -> TokenPair:
+    """Sign in (or sign up) with a Sign in with Apple identity token."""
+    try:
+        claims = verify_apple_identity_token(body.identity_token)
+    except AppleAuthError as exc:
+        not_configured = "not configured" in str(exc)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
+            if not_configured
+            else status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+
+    email = _apple_email(claims, body.email)
+    user = _oauth_apple_user(db, str(claims["sub"]), email)
+    return _issue_tokens(db, user)
+
+
 @router.post("/refresh", response_model=TokenPair)
 def refresh(body: RefreshRequest, db: DbSession) -> TokenPair:
     token_hash = hash_token(body.refresh_token)
@@ -210,6 +267,17 @@ def logout(body: RefreshRequest, db: DbSession) -> MessageResponse:
 @router.get("/me", response_model=UserOut)
 def me(user: CurrentUser) -> User:
     return user
+
+
+@router.delete("/me", response_model=MessageResponse)
+def delete_me(user: CurrentUser, db: DbSession) -> MessageResponse:
+    """Permanently delete the signed-in account and all saved kundali profiles.
+
+    Required by Apple App Store and Google Play for apps that create accounts.
+    """
+    db.delete(user)
+    db.commit()
+    return MessageResponse(message="Account deleted")
 
 
 # ─── Email verification ────────────────────────────────────────────────────────

@@ -119,6 +119,55 @@ def google_client_id() -> str | None:
     return (os.getenv("GOOGLE_CLIENT_ID") or "").strip() or None
 
 
+def google_client_ids() -> list[str]:
+    """All Google OAuth client IDs that may appear as the ID-token audience.
+
+    Native iOS/Android tokens often use their own client ID as ``aud``; the web
+    GIS button uses ``GOOGLE_CLIENT_ID``. Accept every configured ID so mobile
+    and web share one verify path.
+    """
+    ids: list[str] = []
+    for key in ("GOOGLE_CLIENT_ID", "GOOGLE_IOS_CLIENT_ID", "GOOGLE_ANDROID_CLIENT_ID"):
+        value = (os.getenv(key) or "").strip()
+        if value:
+            ids.append(value)
+    extra = (os.getenv("GOOGLE_CLIENT_IDS") or "").strip()
+    if extra:
+        ids.extend(part.strip() for part in extra.split(",") if part.strip())
+    seen: set[str] = set()
+    unique: list[str] = []
+    for item in ids:
+        if item not in seen:
+            seen.add(item)
+            unique.append(item)
+    return unique
+
+
+def apple_client_ids() -> list[str]:
+    """Audiences accepted for Sign in with Apple identity tokens.
+
+    Defaults to the iOS bundle ID. Add a Services ID (web) via APPLE_CLIENT_IDS
+    or APPLE_SERVICES_ID. When empty, POST /auth/apple returns 503.
+    """
+    ids: list[str] = []
+    bundle = (os.getenv("APPLE_BUNDLE_ID") or "com.vedicpatro.mobile").strip()
+    if bundle:
+        ids.append(bundle)
+    services = (os.getenv("APPLE_SERVICES_ID") or "").strip()
+    if services:
+        ids.append(services)
+    extra = (os.getenv("APPLE_CLIENT_IDS") or "").strip()
+    if extra:
+        ids.extend(part.strip() for part in extra.split(",") if part.strip())
+    seen: set[str] = set()
+    unique: list[str] = []
+    for item in ids:
+        if item not in seen:
+            seen.add(item)
+            unique.append(item)
+    return unique
+
+
 def facebook_app_id() -> str | None:
     """Facebook app ID. When unset, POST /auth/facebook returns 503."""
     return (os.getenv("FACEBOOK_APP_ID") or "").strip() or None
