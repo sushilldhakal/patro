@@ -288,15 +288,45 @@ def door_onto_open(room: PlannedRoom, open_rooms: list[PlannedRoom]) -> None:
 
 
 def seal_circulation(rooms: list[PlannedRoom]) -> None:
-    """Every open space needs at least one way in from whatever real room
-    it borders — a leftover carve sliver otherwise gets a wall from each
-    side but no door on either."""
+    """Every *connected cluster* of open space needs at least one way in
+    from whatever real room it borders — not one door per fragment. Two
+    open/circulation pieces sharing a wall are already walkable between
+    (open-to-open, no door needed — same rule validate.py's own reachability
+    check uses), so dooring every leftover notch/gap into its nearest real
+    room independently just surrounds that room with redundant openings
+    (a big room bordering three small leftover slivers would get three
+    doors for what is really one connected hallway)."""
     hosts = [r for r in rooms if r.life not in ("circulation", "outdoor")]
-    for space in rooms:
-        if space.life not in ("circulation", "outdoor"):
-            continue
-        if space.doors:
-            continue
+    opens = [r for r in rooms if r.life in ("circulation", "outdoor")]
+
+    parent = {r.id: r.id for r in opens}
+
+    def find(x: str) -> str:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: str, b: str) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+    for i in range(len(opens)):
+        for j in range(i + 1, len(opens)):
+            if shared_seg(opens[i].rect, opens[j].rect):
+                union(opens[i].id, opens[j].id)
+
+    clusters: dict[str, list[PlannedRoom]] = {}
+    for r in opens:
+        clusters.setdefault(find(r.id), []).append(r)
+
+    for cluster in clusters.values():
+        if any(r.doors for r in cluster):
+            continue  # this cluster already has a way in somewhere
+        # The biggest piece reads as the real hall/passage, not a decorative
+        # sliver — give it the door.
+        space = max(cluster, key=lambda r: r.rect.w * r.rect.h)
         for host in hosts:
             seg = shared_seg(space.rect, host.rect)
             if seg:

@@ -1,0 +1,30 @@
+{
+  "_comment": "Practical planning sizes, not a Vastu claim (see architecture.py's docstring re: category C — architectural planning rules, not classical content). `minimum` is the previous IDEAL_SIZE min_side/min_area, converted to width/depth (width=min_side, depth=min_area/min_side) — kept exactly as before so the placement gate (box_fits, checked against `minimum` only) never gets stricter than it already was; nothing placeable before stops being placeable. `comfortable` and `preferred` are new aspirational tiers, used only by the grow-into-leftover-space logic, never to reject a placement. Where the user supplied a table (master_bedroom, bedroom, toilet, bathroom, combined, kitchen, puja, living, dining, study, library, family, store, laundry, servant), `comfortable` = their stated minimum row and `preferred` = their 'recommended starting size' row verbatim (bedroom's preferred is their own explicit 3-tier example). A few of the user's 'minimum' values come out slightly under this file's derived `minimum` (puja, store, laundry) — left as-is rather than silently overridden; the gate still uses only the derived `minimum`, so this doesn't affect what can be placed. Kinds absent from the user's table (guest, kitchen_dining, office, staircase, garage, balcony, courtyard, garden, gym) have comfortable/preferred scaled 1.1x/1.25x off the derived minimum.",
+  "version": "2026.09.01.1",
+  "sizes": {
+    "master_bedroom":  {"minimum": {"width": 2.9,  "depth": 3.62}, "comfortable": {"width": 3.3, "depth": 3.6}, "preferred": {"width": 3.6, "depth": 4.2}},
+    "bedroom":         {"minimum": {"width": 2.7,  "depth": 3.33}, "comfortable": {"width": 3.0, "depth": 3.0}, "preferred": {"width": 3.3, "depth": 3.6}},
+    "guest":           {"minimum": {"width": 2.7,  "depth": 3.33}, "comfortable": {"width": 3.0, "depth": 3.7}, "preferred": {"width": 3.4, "depth": 4.2}},
+    "living":          {"minimum": {"width": 2.9,  "depth": 4.14}, "comfortable": {"width": 3.3, "depth": 4.2}, "preferred": {"width": 4.2, "depth": 5.0}},
+    "family":          {"minimum": {"width": 2.8,  "depth": 3.57}, "comfortable": {"width": 3.0, "depth": 3.6}, "preferred": {"width": 3.6, "depth": 4.2}},
+    "dining":          {"minimum": {"width": 2.4,  "depth": 2.92}, "comfortable": {"width": 2.7, "depth": 3.0}, "preferred": {"width": 3.0, "depth": 3.6}},
+    "kitchen":         {"minimum": {"width": 2.4,  "depth": 2.92}, "comfortable": {"width": 2.4, "depth": 3.0}, "preferred": {"width": 3.0, "depth": 3.6}},
+    "kitchen_dining":  {"minimum": {"width": 2.9,  "depth": 4.48}, "comfortable": {"width": 3.2, "depth": 4.9}, "preferred": {"width": 3.6, "depth": 5.6}},
+    "puja":            {"minimum": {"width": 1.8,  "depth": 1.94}, "comfortable": {"width": 1.5, "depth": 1.5}, "preferred": {"width": 1.8, "depth": 1.8}},
+    "study":           {"minimum": {"width": 2.4,  "depth": 2.71}, "comfortable": {"width": 2.4, "depth": 2.7}, "preferred": {"width": 2.7, "depth": 3.0}},
+    "office":          {"minimum": {"width": 2.4,  "depth": 2.92}, "comfortable": {"width": 2.6, "depth": 3.2}, "preferred": {"width": 3.0, "depth": 3.7}},
+    "store":           {"minimum": {"width": 1.6,  "depth": 1.88}, "comfortable": {"width": 1.5, "depth": 1.8}, "preferred": {"width": 1.8, "depth": 2.1}},
+    "laundry":         {"minimum": {"width": 1.6,  "depth": 1.88}, "comfortable": {"width": 1.5, "depth": 2.1}, "preferred": {"width": 1.8, "depth": 2.4}},
+    "staircase":       {"minimum": {"width": 1.15, "depth": 2.43}, "comfortable": {"width": 1.3, "depth": 2.7}, "preferred": {"width": 1.4, "depth": 3.0}},
+    "garage":          {"minimum": {"width": 2.8,  "depth": 4.29}, "comfortable": {"width": 3.1, "depth": 4.7}, "preferred": {"width": 3.5, "depth": 5.4}},
+    "balcony":         {"minimum": {"width": 1.2,  "depth": 2.08}, "comfortable": {"width": 1.3, "depth": 2.3}, "preferred": {"width": 1.5, "depth": 2.6}},
+    "courtyard":       {"minimum": {"width": 2.0,  "depth": 3.0},  "comfortable": {"width": 2.2, "depth": 3.3}, "preferred": {"width": 2.5, "depth": 3.8}},
+    "garden":          {"minimum": {"width": 2.0,  "depth": 3.0},  "comfortable": {"width": 2.2, "depth": 3.3}, "preferred": {"width": 2.5, "depth": 3.8}},
+    "servant":         {"minimum": {"width": 2.2,  "depth": 2.73}, "comfortable": {"width": 2.4, "depth": 2.7}, "preferred": {"width": 2.7, "depth": 3.0}},
+    "gym":             {"minimum": {"width": 2.6,  "depth": 3.08}, "comfortable": {"width": 2.9, "depth": 3.4}, "preferred": {"width": 3.3, "depth": 3.9}},
+    "library":         {"minimum": {"width": 2.4,  "depth": 2.71}, "comfortable": {"width": 2.7, "depth": 3.0}, "preferred": {"width": 3.0, "depth": 3.6}},
+    "toilet":          {"minimum": {"width": 1.0,  "depth": 1.5},  "comfortable": {"width": 1.2, "depth": 1.8}, "preferred": {"width": 1.5, "depth": 2.1}},
+    "bathroom":        {"minimum": {"width": 1.5,  "depth": 1.87}, "comfortable": {"width": 1.5, "depth": 2.1}, "preferred": {"width": 1.8, "depth": 2.4}},
+    "combined":        {"minimum": {"width": 1.5,  "depth": 2.0},  "comfortable": {"width": 1.5, "depth": 2.1}, "preferred": {"width": 1.8, "depth": 2.4}}
+  }
+}
