@@ -427,8 +427,16 @@ def forms_rectangle_with(r: Rect, cell: Rect) -> bool:
 
 
 def merge_rect_into(room: PlannedRoom, cell: Rect) -> None:
+    """Grow ``room`` by ``cell``, matching whichever branch of
+    ``forms_rectangle_with`` actually accepted this pair. A bare height
+    comparison can't tell direction apart: the mandala divides both axes
+    into exact thirds, so every cell shares the same height *and* the same
+    width regardless of row/column — same-height alone is true even for a
+    cell stacked above/below (different y), which would silently merge in
+    the wrong direction and grow the rect into unrelated territory."""
     r = room.rect
-    if abs(r.h - cell.h) < MERGE_EPS:
+    same_row = abs(r.h - cell.h) < MERGE_EPS and abs(r.y - cell.y) < MERGE_EPS
+    if same_row:
         room.rect = Rect(min(r.x, cell.x), r.y, r.w + cell.w, r.h)
     else:
         room.rect = Rect(r.x, min(r.y, cell.y), r.w, r.h + cell.h)
