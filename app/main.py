@@ -185,7 +185,7 @@ async def _guard_private_cache(request, call_next):
 
 # ── routers ───────────────────────────────────────────────────────────────────
 
-from api import cities, elements, kundali, meta, og, panchanga, patro  # noqa: E402
+from api import cities, elements, kundali, meta, og, panchanga, patro, vastu  # noqa: E402
 
 # Public data routes are versioned (…/api/v1/…) so an engine bump can rev the
 # version and the CDN treats it as a fresh object — no purge. /health and /about
@@ -204,6 +204,7 @@ app.include_router(kundali.router, prefix=_version_prefix)
 app.include_router(elements.router, prefix=_version_prefix)
 app.include_router(panchanga.router, prefix=_version_prefix)
 app.include_router(patro.router, prefix=_version_prefix)
+app.include_router(vastu.router, prefix=_version_prefix)
 
 if config.auth_database_enabled():
     from app.routers import auth as auth_router

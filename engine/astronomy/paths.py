@@ -37,6 +37,18 @@ def yoga_reference_source_path() -> Path:
     return DATA_DIR / "yoga_reference.json"
 
 
+def vastu_db_path() -> Path:
+    return DATA_DIR / "vastu.db"
+
+
+def vastu_zone_uses_source_path() -> Path:
+    return DATA_DIR / "vastu_zone_uses.json"
+
+
+def vastu_room_index_source_path() -> Path:
+    return DATA_DIR / "vastu_room_index.json"
+
+
 def ephemeris_path() -> Path:
     """Directory holding the Swiss Ephemeris ``.se1`` binary files.
 

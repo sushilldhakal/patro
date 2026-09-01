@@ -1,0 +1,3118 @@
+{
+  "version": "2026.09.01.2",
+  "sources": [
+    "mayamata",
+    "manasara",
+    "vishvakarma",
+    "samarangana",
+    "aparajita"
+  ],
+  "verification_status": "user_verified",
+  "mappings": [
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "Treasury",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "safe",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "living room",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "water source",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "open and light space",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "avoid",
+      "matched_phrase_en": "Heavy loads",
+      "matched_phrase_ne": "गह्रौँ भार",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir8:north",
+      "polarity": "avoid",
+      "matched_phrase_en": "piles of waste",
+      "matched_phrase_ne": "फोहोरको थुप्रो",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "best",
+      "matched_phrase_en": "Puja room",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir8:northeast",
+      "polarity": "best",
+      "matched_phrase_en": "underground water tank",
+      "matched_phrase_ne": "भूमिगत पानी ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "Kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "staircase",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "staircase",
+      "matched_phrase_ne": "सिँढी",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy objects",
+      "matched_phrase_ne": "भारी सामान",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir8:east",
+      "polarity": "best",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "dir8:east",
+      "polarity": "best",
+      "matched_phrase_en": "large windows",
+      "matched_phrase_ne": "ठूला झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir8:southeast",
+      "polarity": "best",
+      "matched_phrase_en": "Kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir8:southeast",
+      "polarity": "best",
+      "matched_phrase_en": "stove",
+      "matched_phrase_ne": "चुल्हो",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir8:southeast",
+      "polarity": "best",
+      "matched_phrase_en": "electrical appliances",
+      "matched_phrase_ne": "बिजुलीका उपकरण",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir8:southeast",
+      "polarity": "best",
+      "matched_phrase_en": "inverter",
+      "matched_phrase_ne": "इन्भर्टर",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "dir8:southeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य शयनकक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir8:southeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water tank",
+      "matched_phrase_ne": "पानीको भूमिगत ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir8:south",
+      "polarity": "best",
+      "matched_phrase_en": "Bedrooms",
+      "matched_phrase_ne": "शयनकक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir8:south",
+      "polarity": "best",
+      "matched_phrase_en": "heavy cupboards",
+      "matched_phrase_ne": "गह्रौँ अलमारी",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir8:south",
+      "polarity": "best",
+      "matched_phrase_en": "storage",
+      "matched_phrase_ne": "भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "dir8:south",
+      "polarity": "avoid",
+      "matched_phrase_en": "A large open gap",
+      "matched_phrase_ne": "ठूलो खुला भाग",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir8:south",
+      "polarity": "avoid",
+      "matched_phrase_en": "the main entrance",
+      "matched_phrase_ne": "मुख्य प्रवेश",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "dir8:southwest",
+      "polarity": "best",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य शयनकक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "dir8:southwest",
+      "polarity": "best",
+      "matched_phrase_en": "the heaviest part of the house",
+      "matched_phrase_ne": "घरको सबैभन्दा गह्रौँ भाग",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "dir8:southwest",
+      "polarity": "best",
+      "matched_phrase_en": "overhead water tank",
+      "matched_phrase_ne": "माथिल्लो पानी ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "courtyard",
+      "subject_type": "feature",
+      "zone": "dir8:southwest",
+      "polarity": "avoid",
+      "matched_phrase_en": "Open courtyard",
+      "matched_phrase_ne": "खुला आँगन",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "dir8:southwest",
+      "polarity": "avoid",
+      "matched_phrase_en": "large windows",
+      "matched_phrase_ne": "ठूलो झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir8:southwest",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": null
+    },
+    {
+      "subject": "dining",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "Dining room",
+      "matched_phrase_ne": "भोजन कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "study",
+      "matched_phrase_ne": "अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "childrens_room",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "children's room",
+      "matched_phrase_ne": "बालबालिकाको कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "avoid",
+      "matched_phrase_en": "The main puja room",
+      "matched_phrase_ne": "मुख्य पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "guest",
+      "subject_type": "room",
+      "zone": "dir8:northwest",
+      "polarity": "best",
+      "matched_phrase_en": "Guest room",
+      "matched_phrase_ne": "पाहुना कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir8:northwest",
+      "polarity": "best",
+      "matched_phrase_en": "storage",
+      "matched_phrase_ne": "भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir8:northwest",
+      "polarity": "best",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "garage",
+      "subject_type": "room",
+      "zone": "dir8:northwest",
+      "polarity": "best",
+      "matched_phrase_en": "garage",
+      "matched_phrase_ne": "गाडी राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir16:n",
+      "polarity": "best",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "office",
+      "subject_type": "room",
+      "zone": "dir16:n",
+      "polarity": "best",
+      "matched_phrase_en": "office",
+      "matched_phrase_ne": "कार्यालय",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir16:n",
+      "polarity": "best",
+      "matched_phrase_en": "a money safe",
+      "matched_phrase_ne": "पैसा राख्ने सेफ",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "dir16:n",
+      "polarity": "best",
+      "matched_phrase_en": "an open living room",
+      "matched_phrase_ne": "खुल्ला बैठक",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:n",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:n",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy store",
+      "matched_phrase_ne": "भारी भण्डार कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir16:n",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "first_aid_room",
+      "subject_type": "room",
+      "zone": "dir16:nne",
+      "polarity": "best",
+      "matched_phrase_en": "First-aid",
+      "matched_phrase_ne": "प्राथमिक उपचार",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:nne",
+      "polarity": "best",
+      "matched_phrase_en": "medicine storage",
+      "matched_phrase_ne": "औषधि भण्डारण",
+      "zone_note": null
+    },
+    {
+      "subject": "gym",
+      "subject_type": "room",
+      "zone": "dir16:nne",
+      "polarity": "best",
+      "matched_phrase_en": "a light exercise room",
+      "matched_phrase_ne": "हल्का व्यायाम कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:nne",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:nne",
+      "polarity": "avoid",
+      "matched_phrase_en": "a waste dump",
+      "matched_phrase_ne": "फोहोर फ्याँक्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "dir16:nne",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy overhead tank",
+      "matched_phrase_ne": "भारी ओभरहेड ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "best",
+      "matched_phrase_en": "Puja room",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "best",
+      "matched_phrase_en": "meditation",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "best",
+      "matched_phrase_en": "yoga",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "courtyard",
+      "subject_type": "feature",
+      "zone": "dir16:ne",
+      "polarity": "best",
+      "matched_phrase_en": "an open courtyard",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy storage",
+      "matched_phrase_ne": "भारी भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir16:ne",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "dir16:ne",
+      "polarity": "avoid",
+      "matched_phrase_en": "an overhead water tank",
+      "matched_phrase_ne": "ओभरहेड पानीको ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "garden",
+      "subject_type": "room",
+      "zone": "dir16:ene",
+      "polarity": "best",
+      "matched_phrase_en": "Garden",
+      "matched_phrase_ne": "बगैंचा",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "dir16:ene",
+      "polarity": "best",
+      "matched_phrase_en": "large windows",
+      "matched_phrase_ne": "ठूलो झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "dir16:ene",
+      "polarity": "best",
+      "matched_phrase_en": "a light sitting area",
+      "matched_phrase_ne": "हल्का बैठक",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:ene",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:ene",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy storage",
+      "matched_phrase_ne": "गह्रौँ भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir16:ene",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "bathroom",
+      "subject_type": "room",
+      "zone": "dir16:e",
+      "polarity": "best",
+      "matched_phrase_en": "Bathroom",
+      "matched_phrase_ne": "स्नानगृह",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir16:e",
+      "polarity": "best",
+      "matched_phrase_en": "an east-facing main door",
+      "matched_phrase_ne": "पूर्व-मुखी मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "dir16:e",
+      "polarity": "best",
+      "matched_phrase_en": "living room",
+      "matched_phrase_ne": "बैठक कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir16:e",
+      "polarity": "avoid",
+      "matched_phrase_en": "Heavy cupboards",
+      "matched_phrase_ne": "भारी दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:e",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "best",
+      "matched_phrase_en": "Washing machine",
+      "matched_phrase_ne": "वासिङ मेसिन",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "best",
+      "matched_phrase_en": "a churning/work nook",
+      "matched_phrase_ne": "दही मन्थन",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "best",
+      "matched_phrase_en": "an informal talk room",
+      "matched_phrase_ne": "अनौपचारिक छलफल कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "avoid",
+      "matched_phrase_en": "Meditation room",
+      "matched_phrase_ne": "ध्यान कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:ese",
+      "polarity": "avoid",
+      "matched_phrase_en": "a sleeping bed",
+      "matched_phrase_ne": "सुत्ने ओछ्यान",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir16:se",
+      "polarity": "best",
+      "matched_phrase_en": "Main kitchen",
+      "matched_phrase_ne": "मुख्य भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir16:se",
+      "polarity": "best",
+      "matched_phrase_en": "electrical meter",
+      "matched_phrase_ne": "विद्युत मिटर",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir16:se",
+      "polarity": "best",
+      "matched_phrase_en": "generator",
+      "matched_phrase_ne": "जेनेरेटर",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir16:se",
+      "polarity": "best",
+      "matched_phrase_en": "heater",
+      "matched_phrase_ne": "हिटर",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir16:se",
+      "polarity": "avoid",
+      "matched_phrase_en": "Underground water tank",
+      "matched_phrase_ne": "भूमिगत पानीको ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "dir16:se",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:se",
+      "polarity": "avoid",
+      "matched_phrase_en": "bedroom",
+      "matched_phrase_ne": "बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "gym",
+      "subject_type": "room",
+      "zone": "dir16:sse",
+      "polarity": "best",
+      "matched_phrase_en": "Gym",
+      "matched_phrase_ne": "व्यायामशाला",
+      "zone_note": null
+    },
+    {
+      "subject": "guard_room",
+      "subject_type": "room",
+      "zone": "dir16:sse",
+      "polarity": "best",
+      "matched_phrase_en": "a guard room",
+      "matched_phrase_ne": "सुरक्षा गार्डको कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:sse",
+      "polarity": "best",
+      "matched_phrase_en": "sports storage",
+      "matched_phrase_ne": "खेलकुद सामग्री",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:sse",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:sse",
+      "polarity": "avoid",
+      "matched_phrase_en": "a waste dump",
+      "matched_phrase_ne": "फोहोर फ्याँक्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:s",
+      "polarity": "best",
+      "matched_phrase_en": "Bedroom",
+      "matched_phrase_ne": "बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir16:s",
+      "polarity": "best",
+      "matched_phrase_en": "heavy cupboards",
+      "matched_phrase_ne": "भारी सामान राख्ने दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir16:s",
+      "polarity": "avoid",
+      "matched_phrase_en": "A well",
+      "matched_phrase_ne": "पानीको इनार",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir16:s",
+      "polarity": "avoid",
+      "matched_phrase_en": "boring",
+      "matched_phrase_ne": "बोरिङ",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:s",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "courtyard",
+      "subject_type": "feature",
+      "zone": "dir16:s",
+      "polarity": "avoid",
+      "matched_phrase_en": "an open courtyard",
+      "matched_phrase_ne": "खुल्ला आँगन",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:ssw",
+      "polarity": "best",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "dir16:ssw",
+      "polarity": "best",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्यांकी",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:ssw",
+      "polarity": "best",
+      "matched_phrase_en": "dustbin",
+      "matched_phrase_ne": "डस्टबिन",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:ssw",
+      "polarity": "best",
+      "matched_phrase_en": "a waste dump",
+      "matched_phrase_ne": "फोहोर फ्याँक्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:ssw",
+      "polarity": "avoid",
+      "matched_phrase_en": "Puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir16:ssw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a safe",
+      "matched_phrase_ne": "तिजोरी",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "dir16:ssw",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:ssw",
+      "polarity": "avoid",
+      "matched_phrase_en": "the main bed",
+      "matched_phrase_ne": "मुख्य ओछ्यान",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "dir16:sw",
+      "polarity": "best",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir16:sw",
+      "polarity": "best",
+      "matched_phrase_en": "heavy cupboards",
+      "matched_phrase_ne": "गह्रौँ दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir16:sw",
+      "polarity": "best",
+      "matched_phrase_en": "a jewellery locker",
+      "matched_phrase_ne": "सुनचाँदी राख्ने दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:sw",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "dir16:sw",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir16:sw",
+      "polarity": "avoid",
+      "matched_phrase_en": "main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "balcony",
+      "subject_type": "feature",
+      "zone": "dir16:sw",
+      "polarity": "avoid",
+      "matched_phrase_en": "an open balcony",
+      "matched_phrase_ne": "खुल्ला बाल्कोनी",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "dir16:wsw",
+      "polarity": "best",
+      "matched_phrase_en": "Study room",
+      "matched_phrase_ne": "अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "dir16:wsw",
+      "polarity": "best",
+      "matched_phrase_en": "bookcase",
+      "matched_phrase_ne": "किताबको दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:wsw",
+      "polarity": "best",
+      "matched_phrase_en": "children's bedroom",
+      "matched_phrase_ne": "बच्चाहरूको बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:wsw",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "dir16:wsw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a gas stove",
+      "matched_phrase_ne": "भान्साको ग्यास चुल्हो",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:wsw",
+      "polarity": "avoid",
+      "matched_phrase_en": "disposal fittings",
+      "matched_phrase_ne": "विसर्जनको सामग्री",
+      "zone_note": null
+    },
+    {
+      "subject": "dining",
+      "subject_type": "room",
+      "zone": "dir16:w",
+      "polarity": "best",
+      "matched_phrase_en": "Dining room",
+      "matched_phrase_ne": "भोजन कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "dir16:w",
+      "polarity": "best",
+      "matched_phrase_en": "a west-facing main door",
+      "matched_phrase_ne": "पश्चिम-मुखी मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "dir16:w",
+      "polarity": "best",
+      "matched_phrase_en": "a safe",
+      "matched_phrase_ne": "तिजोरी",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:w",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "dir16:w",
+      "polarity": "avoid",
+      "matched_phrase_en": "a disposal zone",
+      "matched_phrase_ne": "विसर्जन क्षेत्र",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:w",
+      "polarity": "avoid",
+      "matched_phrase_en": "junk storage",
+      "matched_phrase_ne": "कबाड भण्डारण",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "best",
+      "matched_phrase_en": "Washing machine",
+      "matched_phrase_ne": "वासिङ मेसिन",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "best",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "best",
+      "matched_phrase_en": "waste store",
+      "matched_phrase_ne": "फोहोर भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "avoid",
+      "matched_phrase_en": "Puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a new bride's room",
+      "matched_phrase_ne": "नयाँ दुलहीको कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:wnw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a deep-rest bedroom",
+      "matched_phrase_ne": "गहिरो विश्रामको बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "guest",
+      "subject_type": "room",
+      "zone": "dir16:nw",
+      "polarity": "best",
+      "matched_phrase_en": "Guest room",
+      "matched_phrase_ne": "अतिथि कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "dir16:nw",
+      "polarity": "best",
+      "matched_phrase_en": "grain store",
+      "matched_phrase_ne": "अन्न भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "garage",
+      "subject_type": "room",
+      "zone": "dir16:nw",
+      "polarity": "best",
+      "matched_phrase_en": "vehicle parking",
+      "matched_phrase_ne": "सवारी साधन पार्किङ",
+      "zone_note": null
+    },
+    {
+      "subject": "rcc_pillar",
+      "subject_type": "feature",
+      "zone": "dir16:nw",
+      "polarity": "avoid",
+      "matched_phrase_en": "A heavy RCC pillar",
+      "matched_phrase_ne": "भारी आरसीसी पिलर",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "dir16:nw",
+      "polarity": "avoid",
+      "matched_phrase_en": "master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "dir16:nw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a badly placed septic",
+      "matched_phrase_ne": "सेफ्टी ट्यांकीको गलत विन्यास",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "dir16:nnw",
+      "polarity": "best",
+      "matched_phrase_en": "A newlyweds' bedroom",
+      "matched_phrase_ne": "नवविवाहित दम्पतीको बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "dressing_room",
+      "subject_type": "room",
+      "zone": "dir16:nnw",
+      "polarity": "best",
+      "matched_phrase_en": "dressing room",
+      "matched_phrase_ne": "ड्रेसिङ रुम",
+      "zone_note": null
+    },
+    {
+      "subject": "dressing_room",
+      "subject_type": "room",
+      "zone": "dir16:nnw",
+      "polarity": "best",
+      "matched_phrase_en": "a place for scents",
+      "matched_phrase_ne": "सुगन्धित वस्तु राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "dir16:nnw",
+      "polarity": "avoid",
+      "matched_phrase_en": "Puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "dir16:nnw",
+      "polarity": "avoid",
+      "matched_phrase_en": "a student's study",
+      "matched_phrase_ne": "विद्यार्थीहरूको अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:soma",
+      "polarity": "best",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:soma",
+      "polarity": "best",
+      "matched_phrase_en": "meditation",
+      "matched_phrase_ne": "ध्यान कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:soma",
+      "polarity": "best",
+      "matched_phrase_en": "a light sitting room",
+      "matched_phrase_ne": "हल्का बैठक",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "pada32:soma",
+      "polarity": "best",
+      "matched_phrase_en": "a place for gems",
+      "matched_phrase_ne": "बहुमूल्य रत्न राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:soma",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:soma",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:soma",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "first_aid_room",
+      "subject_type": "room",
+      "zone": "pada32:bhujaga",
+      "polarity": "best",
+      "matched_phrase_en": "First-aid",
+      "matched_phrase_ne": "प्राथमिक उपचार बाकस",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:bhujaga",
+      "polarity": "best",
+      "matched_phrase_en": "medicine storage",
+      "matched_phrase_ne": "औषधि भण्डारण",
+      "zone_note": null
+    },
+    {
+      "subject": "gym",
+      "subject_type": "room",
+      "zone": "pada32:bhujaga",
+      "polarity": "best",
+      "matched_phrase_en": "a light exercise room",
+      "matched_phrase_ne": "हल्का व्यायाम कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:bhujaga",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "pada32:bhujaga",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy overhead tank",
+      "matched_phrase_ne": "भारी ओभरहेड ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:bhujaga",
+      "polarity": "avoid",
+      "matched_phrase_en": "junk",
+      "matched_phrase_ne": "कबाड",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:aditi",
+      "polarity": "best",
+      "matched_phrase_en": "A light sitting room",
+      "matched_phrase_ne": "हल्का बस्ने कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:aditi",
+      "polarity": "best",
+      "matched_phrase_en": "meditation",
+      "matched_phrase_ne": "ध्यान कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:aditi",
+      "polarity": "best",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:aditi",
+      "polarity": "best",
+      "matched_phrase_en": "a north door",
+      "matched_phrase_ne": "उत्तरको ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:aditi",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:aditi",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy store",
+      "matched_phrase_ne": "भारी स्टोर रुम",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:aditi",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "pada32:diti",
+      "polarity": "best",
+      "matched_phrase_en": "Study",
+      "matched_phrase_ne": "अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:diti",
+      "polarity": "best",
+      "matched_phrase_en": "a child's bed",
+      "matched_phrase_ne": "बालबालिकाको ओछ्यान",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:diti",
+      "polarity": "best",
+      "matched_phrase_en": "a light window",
+      "matched_phrase_ne": "हल्का झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:diti",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:diti",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy junk storage",
+      "matched_phrase_ne": "भारी कबाड भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:diti",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:shikhi",
+      "polarity": "best",
+      "matched_phrase_en": "Meditation",
+      "matched_phrase_ne": "ध्यान कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:shikhi",
+      "polarity": "best",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:shikhi",
+      "polarity": "best",
+      "matched_phrase_en": "a lightly ventilated window",
+      "matched_phrase_ne": "हल्का हावा आउने झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "pada32:shikhi",
+      "polarity": "best",
+      "matched_phrase_en": "open space",
+      "matched_phrase_ne": "खुला स्थान",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:shikhi",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "fear of fire and grief"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:shikhi",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": "fear of fire and grief"
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:shikhi",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": "fear of fire and grief"
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:shikhi",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy storage",
+      "matched_phrase_ne": "भारी भण्डार",
+      "zone_note": "fear of fire and grief"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:parjanya",
+      "polarity": "best",
+      "matched_phrase_en": "Underground water tank",
+      "matched_phrase_ne": "भूमिगत पानीको ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "garden",
+      "subject_type": "room",
+      "zone": "pada32:parjanya",
+      "polarity": "best",
+      "matched_phrase_en": "garden",
+      "matched_phrase_ne": "बगैंचा",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:parjanya",
+      "polarity": "best",
+      "matched_phrase_en": "a large window",
+      "matched_phrase_ne": "ठूलो झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:parjanya",
+      "polarity": "best",
+      "matched_phrase_en": "a light sitting room",
+      "matched_phrase_ne": "हल्का बस्ने कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:parjanya",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:parjanya",
+      "polarity": "avoid",
+      "matched_phrase_en": "junk storage",
+      "matched_phrase_ne": "कबाड भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "rcc_pillar",
+      "subject_type": "feature",
+      "zone": "pada32:parjanya",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy RCC pillar",
+      "matched_phrase_ne": "भारी आरसीसी पिलर",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:jayanta",
+      "polarity": "best",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "highly auspicious — wealth and children"
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "pada32:jayanta",
+      "polarity": "best",
+      "matched_phrase_en": "study",
+      "matched_phrase_ne": "अध्ययन कोठा",
+      "zone_note": "highly auspicious — wealth and children"
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:jayanta",
+      "polarity": "best",
+      "matched_phrase_en": "living room",
+      "matched_phrase_ne": "बैठक कोठा",
+      "zone_note": "highly auspicious — wealth and children"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:jayanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "pada32:jayanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "a waste dump",
+      "matched_phrase_ne": "फोहोर फाल्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "pada32:jayanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy overhead tank",
+      "matched_phrase_ne": "भारी ओभरहेड ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:mahendra",
+      "polarity": "best",
+      "matched_phrase_en": "Main entrance",
+      "matched_phrase_ne": "मुख्य प्रवेशद्वार",
+      "zone_note": "honour and fame"
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:mahendra",
+      "polarity": "best",
+      "matched_phrase_en": "living room",
+      "matched_phrase_ne": "बैठक कोठा",
+      "zone_note": "honour and fame"
+    },
+    {
+      "subject": "office",
+      "subject_type": "room",
+      "zone": "pada32:mahendra",
+      "polarity": "best",
+      "matched_phrase_en": "office",
+      "matched_phrase_ne": "अफिस",
+      "zone_note": "honour and fame"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:mahendra",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:mahendra",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:mahendra",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy junk",
+      "matched_phrase_ne": "भारी कबाड",
+      "zone_note": null
+    },
+    {
+      "subject": "bathroom",
+      "subject_type": "room",
+      "zone": "pada32:surya",
+      "polarity": "best",
+      "matched_phrase_en": "Bathroom with morning sun",
+      "matched_phrase_ne": "स्नानगृह",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:surya",
+      "polarity": "best",
+      "matched_phrase_en": "a large window",
+      "matched_phrase_ne": "ठूलो झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:surya",
+      "polarity": "best",
+      "matched_phrase_en": "a yoga room",
+      "matched_phrase_ne": "योग कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:surya",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "anger and pride"
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:surya",
+      "polarity": "avoid",
+      "matched_phrase_en": "a sleeping bed",
+      "matched_phrase_ne": "सुत्ने ओछ्यान",
+      "zone_note": "anger and pride"
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "pada32:surya",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy furniture",
+      "matched_phrase_ne": "भारी फर्निचर",
+      "zone_note": "anger and pride"
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:satya",
+      "polarity": "best",
+      "matched_phrase_en": "Living room",
+      "matched_phrase_ne": "बैठक कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:satya",
+      "polarity": "best",
+      "matched_phrase_en": "a place for social visits",
+      "matched_phrase_ne": "सामाजिक भेटघाटको ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:satya",
+      "polarity": "best",
+      "matched_phrase_en": "windows",
+      "matched_phrase_ne": "झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:satya",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "fear of deceit from outsiders"
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "pada32:satya",
+      "polarity": "avoid",
+      "matched_phrase_en": "filth",
+      "matched_phrase_ne": "फोहोर मैला",
+      "zone_note": "fear of deceit from outsiders"
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "pada32:bhrisha",
+      "polarity": "best",
+      "matched_phrase_en": "Washing machine",
+      "matched_phrase_ne": "वासिङ मेसिन",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "pada32:bhrisha",
+      "polarity": "best",
+      "matched_phrase_en": "cupboards",
+      "matched_phrase_ne": "दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "pada32:bhrisha",
+      "polarity": "best",
+      "matched_phrase_en": "a laundry spot",
+      "matched_phrase_ne": "लुगा धुने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "pada32:bhrisha",
+      "polarity": "avoid",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": "excess anger and cruelty"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:bhrisha",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "excess anger and cruelty"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:bhrisha",
+      "polarity": "avoid",
+      "matched_phrase_en": "main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "excess anger and cruelty"
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:aakasha",
+      "polarity": "best",
+      "matched_phrase_en": "Kitchen window",
+      "matched_phrase_ne": "भान्साको झ्याल",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:aakasha",
+      "polarity": "best",
+      "matched_phrase_en": "exhaust fan",
+      "matched_phrase_ne": "हावा बाहिर फाल्ने फ्यान",
+      "zone_note": null
+    },
+    {
+      "subject": "window",
+      "subject_type": "opening",
+      "zone": "pada32:aakasha",
+      "polarity": "best",
+      "matched_phrase_en": "ventilation",
+      "matched_phrase_ne": "भेन्टिलेसन",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:aakasha",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "theft and sudden loss"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:aakasha",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": "theft and sudden loss"
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "pada32:anila",
+      "polarity": "best",
+      "matched_phrase_en": "Gas stove",
+      "matched_phrase_ne": "भान्साको ग्यास चुल्हो",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "pada32:anila",
+      "polarity": "best",
+      "matched_phrase_en": "electrical meter",
+      "matched_phrase_ne": "विद्युत मिटर",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "pada32:anila",
+      "polarity": "best",
+      "matched_phrase_en": "geyser",
+      "matched_phrase_ne": "गिजर",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "pada32:anila",
+      "polarity": "best",
+      "matched_phrase_en": "heater",
+      "matched_phrase_ne": "हिटर",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:anila",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "harm to children and fire"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:anila",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": "harm to children and fire"
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:pushan",
+      "polarity": "best",
+      "matched_phrase_en": "A cattle shed",
+      "matched_phrase_ne": "पशुहरूको गोठ",
+      "zone_note": null
+    },
+    {
+      "subject": "guard_room",
+      "subject_type": "room",
+      "zone": "pada32:pushan",
+      "polarity": "best",
+      "matched_phrase_en": "a service gate",
+      "matched_phrase_ne": "सहायक गेट",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:pushan",
+      "polarity": "best",
+      "matched_phrase_en": "a store",
+      "matched_phrase_ne": "भण्डार कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:pushan",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "servitude and hard labour"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:pushan",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "servitude and hard labour"
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:vitatha",
+      "polarity": "best",
+      "matched_phrase_en": "Store room",
+      "matched_phrase_ne": "भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:vitatha",
+      "polarity": "best",
+      "matched_phrase_en": "a secondary guest bedroom",
+      "matched_phrase_ne": "सहायक गेस्ट बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:vitatha",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "moral decline and lying"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:vitatha",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "moral decline and lying"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:grihakshata",
+      "polarity": "best",
+      "matched_phrase_en": "A south-facing main door",
+      "matched_phrase_ne": "दक्षिण-मुखी मुख्य ढोका",
+      "zone_note": "highly auspicious — wealth and ease"
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:grihakshata",
+      "polarity": "best",
+      "matched_phrase_en": "bedroom",
+      "matched_phrase_ne": "बेडरुम",
+      "zone_note": "highly auspicious — wealth and ease"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:grihakshata",
+      "polarity": "avoid",
+      "matched_phrase_en": "Underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:grihakshata",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "pada32:grihakshata",
+      "polarity": "avoid",
+      "matched_phrase_en": "an open gap",
+      "matched_phrase_ne": "खुला ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "rcc_pillar",
+      "subject_type": "feature",
+      "zone": "pada32:yama",
+      "polarity": "best",
+      "matched_phrase_en": "A heavy RCC pillar",
+      "matched_phrase_ne": "भारी आरसीसी पिलर",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:yama",
+      "polarity": "best",
+      "matched_phrase_en": "iron storage",
+      "matched_phrase_ne": "फलामका सामान राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "staircase",
+      "subject_type": "room",
+      "zone": "pada32:yama",
+      "polarity": "best",
+      "matched_phrase_en": "stairs",
+      "matched_phrase_ne": "भर्याङ",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:yama",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "chronic illness and untimely death"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:yama",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "chronic illness and untimely death"
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:gandharva",
+      "polarity": "best",
+      "matched_phrase_en": "A music",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:gandharva",
+      "polarity": "best",
+      "matched_phrase_en": "leisure room",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "pada32:gandharva",
+      "polarity": "best",
+      "matched_phrase_en": "living room",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:gandharva",
+      "polarity": "best",
+      "matched_phrase_en": "guest bedroom",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "pada32:gandharva",
+      "polarity": "avoid",
+      "matched_phrase_en": "The main safe",
+      "matched_phrase_ne": "मुख्य तिजोरी",
+      "zone_note": "money is hard to keep"
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:gandharva",
+      "polarity": "avoid",
+      "matched_phrase_en": "a junk room",
+      "matched_phrase_ne": "कबाड कोठा",
+      "zone_note": "money is hard to keep"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:bhringraj",
+      "polarity": "best",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:bhringraj",
+      "polarity": "best",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "pada32:bhringraj",
+      "polarity": "best",
+      "matched_phrase_en": "a dustbin",
+      "matched_phrase_ne": "डस्टबिन राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "pada32:bhringraj",
+      "polarity": "avoid",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": "bodily weakness"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:bhringraj",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "bodily weakness"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:bhringraj",
+      "polarity": "avoid",
+      "matched_phrase_en": "main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "bodily weakness"
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:mriga",
+      "polarity": "best",
+      "matched_phrase_en": "A heavy store",
+      "matched_phrase_ne": "भारी स्टोर रुम",
+      "zone_note": null
+    },
+    {
+      "subject": "staircase",
+      "subject_type": "room",
+      "zone": "pada32:mriga",
+      "polarity": "best",
+      "matched_phrase_en": "the foot of the stairs",
+      "matched_phrase_ne": "भर्याङको तल्लो भाग",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "pada32:mriga",
+      "polarity": "best",
+      "matched_phrase_en": "heavy goods",
+      "matched_phrase_ne": "गह्रौँ सामग्री",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:mriga",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "loss of children and wealth"
+    },
+    {
+      "subject": "balcony",
+      "subject_type": "feature",
+      "zone": "pada32:mriga",
+      "polarity": "avoid",
+      "matched_phrase_en": "an open balcony",
+      "matched_phrase_ne": "खुला बाल्कोनी",
+      "zone_note": "loss of children and wealth"
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "pada32:pitra",
+      "polarity": "best",
+      "matched_phrase_en": "The heaviest room",
+      "matched_phrase_ne": "घरको सबैभन्दा भारी कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "pada32:pitra",
+      "polarity": "best",
+      "matched_phrase_en": "heavy cupboards",
+      "matched_phrase_ne": "गह्रौँ कपाट",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "pada32:pitra",
+      "polarity": "best",
+      "matched_phrase_en": "master bedroom",
+      "matched_phrase_ne": "मास्टर बेडरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:pitra",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "loss of lifespan and wealth"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:pitra",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": "loss of lifespan and wealth"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:pitra",
+      "polarity": "avoid",
+      "matched_phrase_en": "a water boring",
+      "matched_phrase_ne": "पानीको बोरिङ",
+      "zone_note": "loss of lifespan and wealth"
+    },
+    {
+      "subject": "guard_room",
+      "subject_type": "room",
+      "zone": "pada32:dauvarika",
+      "polarity": "best",
+      "matched_phrase_en": "A guard room",
+      "matched_phrase_ne": "सुरक्षा गार्ड कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "pada32:dauvarika",
+      "polarity": "best",
+      "matched_phrase_en": "study",
+      "matched_phrase_ne": "अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "guard_room",
+      "subject_type": "room",
+      "zone": "pada32:dauvarika",
+      "polarity": "best",
+      "matched_phrase_en": "a rear service gate",
+      "matched_phrase_ne": "घरको पछाडिको सहायक गेट",
+      "zone_note": null
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "pada32:dauvarika",
+      "polarity": "avoid",
+      "matched_phrase_en": "The main safe",
+      "matched_phrase_ne": "मुख्य तिजोरी",
+      "zone_note": null
+    },
+    {
+      "subject": "balcony",
+      "subject_type": "feature",
+      "zone": "pada32:dauvarika",
+      "polarity": "avoid",
+      "matched_phrase_en": "an open balcony",
+      "matched_phrase_ne": "खुला बाल्कोनी",
+      "zone_note": null
+    },
+    {
+      "subject": "childrens_room",
+      "subject_type": "room",
+      "zone": "pada32:sugriva",
+      "polarity": "best",
+      "matched_phrase_en": "A children's study",
+      "matched_phrase_ne": "बच्चाहरूको अध्ययन कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "pada32:sugriva",
+      "polarity": "best",
+      "matched_phrase_en": "bookcase",
+      "matched_phrase_ne": "किताबको दराज",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:sugriva",
+      "polarity": "best",
+      "matched_phrase_en": "grain store",
+      "matched_phrase_ne": "अन्न भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:sugriva",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "grief and loss"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:sugriva",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": "grief and loss"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:pushpadanta",
+      "polarity": "best",
+      "matched_phrase_en": "A west-facing main door",
+      "matched_phrase_ne": "पश्चिम-मुखी मुख्य ढोका",
+      "zone_note": "highly auspicious — lineage and wealth"
+    },
+    {
+      "subject": "dining",
+      "subject_type": "room",
+      "zone": "pada32:pushpadanta",
+      "polarity": "best",
+      "matched_phrase_en": "dining room",
+      "matched_phrase_ne": "भोजन कक्ष",
+      "zone_note": "highly auspicious — lineage and wealth"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:pushpadanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:pushpadanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:pushpadanta",
+      "polarity": "avoid",
+      "matched_phrase_en": "filthy junk",
+      "matched_phrase_ne": "फोहोर कबाड",
+      "zone_note": null
+    },
+    {
+      "subject": "dining",
+      "subject_type": "room",
+      "zone": "pada32:varuna",
+      "polarity": "best",
+      "matched_phrase_en": "Dining room",
+      "matched_phrase_ne": "भोजन कक्ष",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_overhead",
+      "subject_type": "feature",
+      "zone": "pada32:varuna",
+      "polarity": "best",
+      "matched_phrase_en": "overhead water tank",
+      "matched_phrase_ne": "ओभरहेड पानीको ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:varuna",
+      "polarity": "best",
+      "matched_phrase_en": "a west door",
+      "matched_phrase_ne": "पश्चिमको ढोका",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:varuna",
+      "polarity": "avoid",
+      "matched_phrase_en": "A toilet septic",
+      "matched_phrase_ne": "शौचालयको सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:varuna",
+      "polarity": "avoid",
+      "matched_phrase_en": "a junk pile",
+      "matched_phrase_ne": "कबाड राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:asura",
+      "polarity": "best",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:asura",
+      "polarity": "best",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:asura",
+      "polarity": "best",
+      "matched_phrase_en": "a junk room",
+      "matched_phrase_ne": "कबाड राख्ने कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "pada32:asura",
+      "polarity": "best",
+      "matched_phrase_en": "dustbin",
+      "matched_phrase_ne": "डस्टबिन",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:asura",
+      "polarity": "avoid",
+      "matched_phrase_en": "Puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "quarrel and insult"
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "pada32:asura",
+      "polarity": "avoid",
+      "matched_phrase_en": "master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": "quarrel and insult"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:asura",
+      "polarity": "avoid",
+      "matched_phrase_en": "main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "quarrel and insult"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:shosha",
+      "polarity": "best",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "electrical",
+      "subject_type": "feature",
+      "zone": "pada32:shosha",
+      "polarity": "best",
+      "matched_phrase_en": "an oven",
+      "matched_phrase_ne": "ओभन",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:shosha",
+      "polarity": "best",
+      "matched_phrase_en": "dry-goods storage",
+      "matched_phrase_ne": "सुख्खा सामान भण्डारण गर्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "master_bedroom",
+      "subject_type": "room",
+      "zone": "pada32:shosha",
+      "polarity": "avoid",
+      "matched_phrase_en": "Master bedroom",
+      "matched_phrase_ne": "मुख्य बेडरुम",
+      "zone_note": "despair"
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:shosha",
+      "polarity": "avoid",
+      "matched_phrase_en": "a child's bed",
+      "matched_phrase_ne": "बालबालिकाको ओछ्यान",
+      "zone_note": "despair"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:papayakshma",
+      "polarity": "best",
+      "matched_phrase_en": "Toilet outlet pipe",
+      "matched_phrase_ne": "शौचालयको आउटलेट पाइप",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:papayakshma",
+      "polarity": "best",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "pada32:papayakshma",
+      "polarity": "best",
+      "matched_phrase_en": "junk",
+      "matched_phrase_ne": "कबाड",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:papayakshma",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "illness and hardship"
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:papayakshma",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": "illness and hardship"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:papayakshma",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "illness and hardship"
+    },
+    {
+      "subject": "waste_dump",
+      "subject_type": "feature",
+      "zone": "pada32:roga",
+      "polarity": "best",
+      "matched_phrase_en": "A waste spot",
+      "matched_phrase_ne": "फोहोर राख्ने ठाउँ",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:roga",
+      "polarity": "best",
+      "matched_phrase_en": "septic",
+      "matched_phrase_ne": "सेफ्टी ट्याङ्की",
+      "zone_note": null
+    },
+    {
+      "subject": "septic",
+      "subject_type": "feature",
+      "zone": "pada32:roga",
+      "polarity": "best",
+      "matched_phrase_en": "an outlet pipe",
+      "matched_phrase_ne": "आउटलेट पाइप",
+      "zone_note": null
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:roga",
+      "polarity": "avoid",
+      "matched_phrase_en": "Bedroom",
+      "matched_phrase_ne": "बेडरुम",
+      "zone_note": "chronic illness"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:roga",
+      "polarity": "avoid",
+      "matched_phrase_en": "main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "chronic illness"
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "pada32:roga",
+      "polarity": "avoid",
+      "matched_phrase_en": "a well",
+      "matched_phrase_ne": "पानीको इनार",
+      "zone_note": "chronic illness"
+    },
+    {
+      "subject": "dressing_room",
+      "subject_type": "room",
+      "zone": "pada32:naga",
+      "polarity": "best",
+      "matched_phrase_en": "Dressing room",
+      "matched_phrase_ne": "लुगा फेर्ने कोठा",
+      "zone_note": null
+    },
+    {
+      "subject": "bathroom",
+      "subject_type": "room",
+      "zone": "pada32:naga",
+      "polarity": "best",
+      "matched_phrase_en": "washroom",
+      "matched_phrase_ne": "वाशरुम",
+      "zone_note": null
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:naga",
+      "polarity": "avoid",
+      "matched_phrase_en": "Main door",
+      "matched_phrase_ne": "मुख्य ढोका",
+      "zone_note": "an enemy's plot"
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "pada32:naga",
+      "polarity": "avoid",
+      "matched_phrase_en": "puja",
+      "matched_phrase_ne": "पूजा कोठा",
+      "zone_note": "an enemy's plot"
+    },
+    {
+      "subject": "bedroom",
+      "subject_type": "room",
+      "zone": "pada32:naga",
+      "polarity": "avoid",
+      "matched_phrase_en": "bedroom",
+      "matched_phrase_ne": "बेडरुम",
+      "zone_note": "an enemy's plot"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:mukhya",
+      "polarity": "best",
+      "matched_phrase_en": "A north-facing main door",
+      "matched_phrase_ne": "उत्तर-मुखी मुख्य ढोका",
+      "zone_note": "highly auspicious — wealth and ease"
+    },
+    {
+      "subject": "study",
+      "subject_type": "room",
+      "zone": "pada32:mukhya",
+      "polarity": "best",
+      "matched_phrase_en": "study",
+      "matched_phrase_ne": "अध्ययन कक्ष",
+      "zone_note": "highly auspicious — wealth and ease"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:mukhya",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": "fire against water"
+    },
+    {
+      "subject": "laundry",
+      "subject_type": "room",
+      "zone": "pada32:mukhya",
+      "polarity": "avoid",
+      "matched_phrase_en": "heavy cupboards",
+      "matched_phrase_ne": "भारी कपाट",
+      "zone_note": "fire against water"
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:mukhya",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": "fire against water"
+    },
+    {
+      "subject": "main_door",
+      "subject_type": "opening",
+      "zone": "pada32:bhallata",
+      "polarity": "best",
+      "matched_phrase_en": "Main entrance",
+      "matched_phrase_ne": "मुख्य प्रवेशद्वार",
+      "zone_note": "great wealth and land"
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "pada32:bhallata",
+      "polarity": "best",
+      "matched_phrase_en": "a locker",
+      "matched_phrase_ne": "तिजोरी",
+      "zone_note": "great wealth and land"
+    },
+    {
+      "subject": "safe_locker",
+      "subject_type": "feature",
+      "zone": "pada32:bhallata",
+      "polarity": "best",
+      "matched_phrase_en": "a safe",
+      "matched_phrase_ne": "सेफ",
+      "zone_note": "great wealth and land"
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "pada32:bhallata",
+      "polarity": "avoid",
+      "matched_phrase_en": "Toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "pada32:bhallata",
+      "polarity": "avoid",
+      "matched_phrase_en": "kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "rcc_pillar",
+      "subject_type": "feature",
+      "zone": "pada32:bhallata",
+      "polarity": "avoid",
+      "matched_phrase_en": "a heavy RCC pillar",
+      "matched_phrase_ne": "भारी आरसीसी पिलर",
+      "zone_note": null
+    },
+    {
+      "subject": "living",
+      "subject_type": "room",
+      "zone": "inner4:bhudhara",
+      "polarity": "best",
+      "matched_phrase_en": "An open core toward the living room",
+      "matched_phrase_ne": null,
+      "zone_note": null
+    },
+    {
+      "subject": "rcc_pillar",
+      "subject_type": "feature",
+      "zone": "inner4:bhudhara",
+      "polarity": "avoid",
+      "matched_phrase_en": "A pillar",
+      "matched_phrase_ne": "खम्बा",
+      "zone_note": null
+    },
+    {
+      "subject": "staircase",
+      "subject_type": "room",
+      "zone": "inner4:bhudhara",
+      "polarity": "avoid",
+      "matched_phrase_en": "stair",
+      "matched_phrase_ne": "सिँढी",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "inner4:bhudhara",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "store",
+      "subject_type": "room",
+      "zone": "inner4:aryama",
+      "polarity": "avoid",
+      "matched_phrase_en": "A dark store",
+      "matched_phrase_ne": "अँध्यारो भण्डार",
+      "zone_note": null
+    },
+    {
+      "subject": "toilet",
+      "subject_type": "room",
+      "zone": "inner4:aryama",
+      "polarity": "avoid",
+      "matched_phrase_en": "toilet",
+      "matched_phrase_ne": "शौचालय",
+      "zone_note": null
+    },
+    {
+      "subject": "heavy_load",
+      "subject_type": "feature",
+      "zone": "inner4:vivasvan",
+      "polarity": "best",
+      "matched_phrase_en": "A firm floor",
+      "matched_phrase_ne": "स्थिर भुइँ",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "inner4:vivasvan",
+      "polarity": "avoid",
+      "matched_phrase_en": "Puja",
+      "matched_phrase_ne": "पूजा",
+      "zone_note": null
+    },
+    {
+      "subject": "water_tank_underground",
+      "subject_type": "feature",
+      "zone": "inner4:vivasvan",
+      "polarity": "avoid",
+      "matched_phrase_en": "underground water",
+      "matched_phrase_ne": "भूमिगत पानी",
+      "zone_note": null
+    },
+    {
+      "subject": "kitchen",
+      "subject_type": "room",
+      "zone": "inner4:mitra",
+      "polarity": "avoid",
+      "matched_phrase_en": "Kitchen",
+      "matched_phrase_ne": "भान्सा",
+      "zone_note": null
+    },
+    {
+      "subject": "puja",
+      "subject_type": "room",
+      "zone": "inner4:mitra",
+      "polarity": "avoid",
+      "matched_phrase_en": "the main puja",
+      "matched_phrase_ne": "मुख्य पूजा",
+      "zone_note": null
+    },
+    {
+      "subject": "family",
+      "subject_type": "room",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "north",
+      "matched_phrase_ne": "उत्तर",
+      "zone_note": "From vastu.plan.why.family — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "family",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "west",
+      "matched_phrase_ne": "पश्चिम",
+      "zone_note": "From vastu.plan.why.family — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "family",
+      "subject_type": "room",
+      "zone": "dir8:southeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "southeast",
+      "matched_phrase_ne": "दक्षिणपूर्व",
+      "zone_note": "From vastu.plan.why.family — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "servant",
+      "subject_type": "room",
+      "zone": "dir8:northwest",
+      "polarity": "best",
+      "matched_phrase_en": "northwest",
+      "matched_phrase_ne": "उत्तरपश्चिम",
+      "zone_note": "From vastu.plan.why.servant — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "servant",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "west",
+      "matched_phrase_ne": "पश्चिम",
+      "zone_note": "From vastu.plan.why.servant — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "servant",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "northeast",
+      "matched_phrase_ne": "ईशान",
+      "zone_note": "From vastu.plan.why.servant — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "library",
+      "subject_type": "room",
+      "zone": "dir8:north",
+      "polarity": "best",
+      "matched_phrase_en": "north",
+      "matched_phrase_ne": "उत्तर",
+      "zone_note": "From vastu.plan.why.library — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "library",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "best",
+      "matched_phrase_en": "northeast",
+      "matched_phrase_ne": "ईशान",
+      "zone_note": "From vastu.plan.why.library — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "library",
+      "subject_type": "room",
+      "zone": "dir8:west",
+      "polarity": "best",
+      "matched_phrase_en": "west",
+      "matched_phrase_ne": "पश्चिम",
+      "zone_note": "From vastu.plan.why.library — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "library",
+      "subject_type": "room",
+      "zone": "dir8:southeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "southeast",
+      "matched_phrase_ne": "दक्षिणपूर्व",
+      "zone_note": "From vastu.plan.why.library — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    },
+    {
+      "subject": "combined",
+      "subject_type": "room",
+      "zone": "dir8:northeast",
+      "polarity": "avoid",
+      "matched_phrase_en": "northeast",
+      "matched_phrase_ne": "ईशान",
+      "zone_note": "From vastu.plan.why.combined — app placement rationale, not the classical-text-cross-referenced zone wheel."
+    }
+  ]
+}

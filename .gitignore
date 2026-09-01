@@ -105,3 +105,7 @@ data/*.zip
 # Generated yoga reference DB (rebuilt from data/yoga_reference.json)
 data/yoga_reference.db
 data/yoga_reference.db-*
+
+# Generated Vastu reference DB (rebuilt from data/vastu_zone_uses.json + data/vastu_room_index.json)
+data/vastu.db
+data/vastu.db-*
