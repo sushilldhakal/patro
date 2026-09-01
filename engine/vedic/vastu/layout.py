@@ -176,8 +176,18 @@ def is_wet(kind: str) -> bool:
     return kind in ("toilet", "bathroom", "combined")
 
 
-def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: CardinalWall) -> PlannedRoom | None:
-    for room in rooms:
+def place_foyer(
+    rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: CardinalWall
+) -> tuple[PlannedRoom | None, list[PlannedSpace]]:
+    """Carve the entrance foyer's footprint out of whatever it lands on,
+    returning the foyer room (or None if a real room in its way can't be
+    carved down to its own minimum — see the `hits` loop below) plus any
+    wet rooms that had to be dropped entirely for the same reason. A wet
+    room that can't be carved down to its own minimum is *removed*, not
+    left at its original size: leaving it in place would silently overlap
+    the foyer instead of reporting a real placement conflict."""
+    dropped: list[PlannedSpace] = []
+    for room in list(rooms):
         if not is_wet(room.kind) or overlap_area(room.rect, foyer) < 0.08:
             continue
         pieces = split_by(room.rect, foyer)
@@ -185,6 +195,10 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         if keep:
             add_leftovers(rooms, pieces, keep, room.id, storey, False)
             room.rect = keep
+        else:
+            rooms.remove(room)
+            dropped.append(PlannedSpace(id=room.id, kind=room.kind, index=room.index))
+            add_leftovers(rooms, pieces, None, room.id, storey, False)
 
     hits = [
         r for r in rooms
@@ -195,7 +209,7 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         pieces = split_by(hit.rect, foyer)
         remain = largest(pieces)
         if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[hit.kind]):
-            return None
+            return None, dropped
         carved.append((hit, remain, pieces))
     for room, remain, pieces in carved:
         add_leftovers(rooms, pieces, remain, room.id, storey, False)
@@ -229,7 +243,7 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         doors=[], windows=[], adjacent_to=[],
     )
     rooms.append(foyer_room)
-    return foyer_room
+    return foyer_room, dropped
 
 
 def connect_foyer(foyer_room: PlannedRoom, rooms: list[PlannedRoom]) -> None:
@@ -517,7 +531,16 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     used_hosts: set[str] = set()
 
     def cell_cuts(zone: ZoneId) -> list[Rect]:
-        return [corner_cuts[CORNER_ZONES.index(zone)]] if zone in CORNER_ZONES else []
+        """Every rect this zone's usable area must exclude before anything
+        gets placed in it — corner notches, plus the staircase's own
+        footprint if this is its zone. Reserving the stair here, before any
+        room or wet-area claims the zone, is what stops it from ever being
+        handed a cell that overlaps the stair in the first place (rather
+        than discovering the overlap only after the fact)."""
+        cuts = [corner_cuts[CORNER_ZONES.index(zone)]] if zone in CORNER_ZONES else []
+        if stair and zone == stair.host_id:
+            cuts = [*cuts, stair.rect]
+        return cuts
 
     def cell_rect(zone: ZoneId) -> Rect:
         return usable_cell(grid.cells[zone], cell_cuts(zone))
@@ -566,6 +589,13 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             leftover.append(wet)
 
     if stair:
+        # The stair's own zone (cell_cuts, above) already excludes its
+        # footprint from every cell computed for that zone, so nothing
+        # placed through the normal zone-claiming path (majors, wet areas,
+        # the free-zone loop below) can land on top of it — the stair is
+        # reserved before any of that runs, not carved out after the fact.
+        # This search is a defensive fallback only, for a room that somehow
+        # still overlaps it (e.g. geometry this session hasn't anticipated).
         host_room = next(
             (r for r in rooms if r.life != "circulation" and r.kind not in ("staircase", "brahmasthan")
              and (_rect_contains(r.rect, stair.rect) or overlap_area(r.rect, stair.rect) > 0.4)),
@@ -577,16 +607,16 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             if remain and box_fits(remain.w, remain.h, IDEAL_SIZE[host_room.kind]):
                 add_leftovers(rooms, pieces, remain, host_room.id, storey, False)
                 host_room.rect = remain
-        elif stair.host_id and stair.host_id in free:
-            # Nothing claimed the stair's mandala zone, so it's still
-            # sitting in `free` as a whole cell — carve the stair out of it
-            # now, or the free-zone loop below drops a full, uncarved cell
-            # room right on top of it (a real overlap, not a cosmetic one).
-            zid = stair.host_id
-            cell = cell_rect(zid)
-            pieces = split_by(cell, stair.rect)
-            free.remove(zid)
-            add_leftovers(rooms, pieces, None, f"center_{zid}", storey, want_court)
+            else:
+                # Shrinking this room to make way for the staircase would
+                # take it below its own minimum — keeping it at full size
+                # would silently overlap the stair instead. Drop it (it
+                # comes back as an unplaced/leftover space) and reclaim
+                # whatever's left of its footprint as open circulation
+                # rather than losing it outright.
+                rooms.remove(host_room)
+                leftover.append(PlannedSpace(id=host_room.id, kind=host_room.kind, index=host_room.index))
+                add_leftovers(rooms, pieces, None, host_room.id, storey, False)
         rooms.append(PlannedRoom(
             id=f"stair_{storey}", kind="staircase", floor=storey, rect=stair.rect,
             life="vertical", vastu_region=_region_of_shaft(stair.rect, grid),
@@ -608,7 +638,8 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             continue
         rooms.append(open_piece(f"center_{zid}_{storey}", rect, storey, want_court))
 
-    boxed_foyer = place_foyer(rooms, foyer, storey, site.facing)
+    boxed_foyer, foyer_dropped = place_foyer(rooms, foyer, storey, site.facing)
+    leftover.extend(foyer_dropped)
 
     for wet in attach_later:
         done = False

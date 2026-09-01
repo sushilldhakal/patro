@@ -86,6 +86,58 @@ def test_every_room_fits_inside_the_plot():
         assert r.y + r.h <= site.height + eps
 
 
+def _overlap_area(a, b) -> float:
+    w = min(a.x + a.w, b.x + b.w) - max(a.x, b.x)
+    h = min(a.y + a.h, b.y + b.h) - max(a.y, b.y)
+    return w * h if w > 0 and h > 0 else 0.0
+
+
+def test_staircase_never_overlaps_another_room():
+    """Regression test for a real bug: a wet room could claim the
+    staircase's mandala zone (via place_wet_in_cell) before the stair's own
+    carve-out step ever ran, leaving the stair overlapping whatever landed
+    there first — worst on upper floors, where the wet-area program differs
+    from the ground floor. build_floor's `cell_cuts` now excludes the
+    stair's footprint from its zone up front, so nothing can claim it in
+    the first place."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja"), mode="strict", storeys=2,
+    )
+    site = SiteInput(width=10, height=8, facing="south")
+    concept = plan_house(req, site)
+    for floor in concept.floors:
+        stair = next((r for r in floor.rooms if r.kind == "staircase"), None)
+        if not stair:
+            continue
+        for room in floor.rooms:
+            if room.id == stair.id:
+                continue
+            assert _overlap_area(room.rect, stair.rect) < 0.05, (
+                f"{room.id} overlaps the staircase on floor {floor.storey}"
+            )
+
+
+def test_foyer_never_overlaps_a_wet_room_by_more_than_a_sliver():
+    """Regression test: the entrance foyer could land on a bathroom/combined
+    room without shrinking it first, if shrinking would have taken that
+    room below its own minimum size — place_foyer now drops such a room to
+    `leftover` instead of leaving it in place under the foyer."""
+    req = HouseRequirement(
+        bedrooms=2, master_bedroom_index=1, toilets=2, bathrooms=2, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja", "study"), mode="balanced", storeys=1,
+    )
+    site = SiteInput(width=7, height=6, facing="west")
+    concept = plan_house(req, site)
+    foyer = next(r for r in concept.floors[0].rooms if r.kind == "foyer")
+    for room in concept.floors[0].rooms:
+        if room.id == foyer.id or room.kind not in ("bathroom", "combined", "toilet"):
+            continue
+        # A hairline sliver (below the carve-worthiness threshold place_foyer
+        # itself uses) is tolerated; a room-sized overlap is not.
+        assert _overlap_area(room.rect, foyer.rect) < 0.1, f"{room.id} overlaps the foyer"
+
+
 def test_multi_floor_has_staircase_on_every_floor():
     req = HouseRequirement(bedrooms=3, toilets=2, extras=("kitchen", "living", "dining"), storeys=2)
     site = SiteInput(width=15, height=10, facing="east")
