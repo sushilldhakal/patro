@@ -426,38 +426,68 @@ def forms_rectangle_with(r: Rect, cell: Rect) -> bool:
     return (same_height and (touches_left or touches_right)) or (same_width and (touches_top or touches_bottom))
 
 
-def merge_rect_into(room: PlannedRoom, cell: Rect) -> None:
-    """Grow ``room`` by ``cell``, matching whichever branch of
-    ``forms_rectangle_with`` actually accepted this pair. A bare height
-    comparison can't tell direction apart: the mandala divides both axes
-    into exact thirds, so every cell shares the same height *and* the same
-    width regardless of row/column — same-height alone is true even for a
-    cell stacked above/below (different y), which would silently merge in
-    the wrong direction and grow the rect into unrelated territory."""
-    r = room.rect
+def _merged_rect(r: Rect, cell: Rect) -> Rect:
+    """The rect ``r`` would become after absorbing ``cell`` — matching
+    whichever branch of ``forms_rectangle_with`` actually accepted this
+    pair. A bare height comparison can't tell direction apart: the mandala
+    divides both axes into exact thirds, so every cell shares the same
+    height *and* the same width regardless of row/column — same-height
+    alone is true even for a cell stacked above/below (different y), which
+    would silently merge in the wrong direction and grow the rect into
+    unrelated territory."""
     same_row = abs(r.h - cell.h) < MERGE_EPS and abs(r.y - cell.y) < MERGE_EPS
     if same_row:
-        room.rect = Rect(min(r.x, cell.x), r.y, r.w + cell.w, r.h)
-    else:
-        room.rect = Rect(r.x, min(r.y, cell.y), r.w, r.h + cell.h)
+        return Rect(min(r.x, cell.x), r.y, r.w + cell.w, r.h)
+    return Rect(r.x, min(r.y, cell.y), r.w, r.h + cell.h)
+
+
+def merge_rect_into(room: PlannedRoom, cell: Rect) -> None:
+    room.rect = _merged_rect(room.rect, cell)
+
+
+# Small slack so a merge landing a hair past `preferred` (mandala cells
+# rarely divide evenly) isn't refused over a rounding difference.
+_GROWTH_SLACK = 0.05
+
+
+def _growth_priority(room: PlannedRoom, cell: Rect) -> tuple[int, float] | None:
+    """Should a leftover mandala cell grow ``room``, and how eagerly?
+
+    A merge that would push the room's area past its `preferred` tier is
+    refused outright (returns None) — past that point the cell is better
+    left as its own open/circulation space than folded into an already-
+    generous room (see data/vastu_room_sizes.json's `_comment`). Among
+    rooms willing to take the cell, one still below its `comfortable` tier
+    is preferred over one already comfortable-or-above; ties (including
+    every room whose kind carries no tier data at all — e.g. the mandala's
+    own centre) fall back to the original "biggest room wins" heuristic.
+    """
+    merged = _merged_rect(room.rect, cell)
+    merged_area = merged.w * merged.h
+    tiers = arch.ROOM_SIZE_TIERS.get(room.kind)
+    if tiers is not None and merged_area > tiers.preferred.area + _GROWTH_SLACK:
+        return None
+    below_comfortable = tiers is not None and room.rect.w * room.rect.h < tiers.comfortable.area
+    return (0 if below_comfortable else 1, -merged_area)
 
 
 def try_merge_into_neighbor(rooms: list[PlannedRoom], cell: Rect, center_id: str) -> bool:
-    """First choice: fold into an adjacent real room. Second choice (for
-    edge zones, which are never notch-trimmed): grow the true centre —
-    architecturally normal when there's less program to fill the zones
-    around it, unlike a scatter of same-colored orphan cells."""
-    best: PlannedRoom | None = None
-    best_area = -1.0
-    for room in rooms:
-        if not is_merge_target(room) or not forms_rectangle_with(room.rect, cell):
-            continue
-        area = room.rect.w * room.rect.h
-        if area > best_area:
-            best, best_area = room, area
+    """First choice: fold into an adjacent real room, picked by
+    ``_growth_priority``. Second choice (for edge zones, which are never
+    notch-trimmed): grow the true centre — architecturally normal when
+    there's less program to fill the zones around it, unlike a scatter of
+    same-colored orphan cells. If every willing candidate is already at its
+    preferred size, the cell stays unmerged and becomes its own open piece."""
+    candidates = [
+        (room, priority)
+        for room in rooms
+        if is_merge_target(room) and forms_rectangle_with(room.rect, cell)
+        and (priority := _growth_priority(room, cell)) is not None
+    ]
+    best = min(candidates, key=lambda rp: rp[1])[0] if candidates else None
     if not best:
         center = next((r for r in rooms if r.id == center_id), None)
-        if center and forms_rectangle_with(center.rect, cell):
+        if center and forms_rectangle_with(center.rect, cell) and _growth_priority(center, cell) is not None:
             best = center
     if not best:
         return False

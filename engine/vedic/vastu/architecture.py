@@ -6,13 +6,22 @@ Faithful port of the *non-Vastu-content* tables in the web client's
 ``src/lib/house-plan/engine.ts``'s ``PLACE_ORDER``/``prefs.ts``'s
 ``HOST_KINDS``. This is category C from the user's own spec ("architectural
 planning rules") — comfortable room sizes and assignment order, not a
-classical claim, so unlike ``zone_rules.py`` this table IS hardcoded and
-faithful to the source rather than derived from ``vastu_room_index``.
+classical claim.
+
+``IDEAL_SIZE`` (the placement gate's minimum) and ``ROOM_SIZE_TIERS``
+(minimum/comfortable/preferred, the latter two used only by layout.py's
+leftover-space growth, never to reject a placement) are both sourced from
+``data/vastu_room_sizes.json`` via ``services.vastu_room_sizes_db`` — one
+table, not two drifting copies. ``IDEAL_SIZE``'s numbers are unchanged from
+the original hardcoded port (see that JSON's own ``_comment`` for how its
+``minimum`` tier was derived from the old ``min_side``/``min_area`` pairs).
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+from services import vastu_room_sizes_db as sizes_db
 
 from .rooms import HouseRequirement, PlannedSpace
 
@@ -28,31 +37,11 @@ class IdealSize:
     min_area: float
 
 
+ROOM_SIZE_TIERS: dict[str, sizes_db.RoomSizeTiers] = sizes_db.all_tiers()
+
 IDEAL_SIZE: dict[str, IdealSize] = {
-    "master_bedroom": IdealSize(2.9, 10.5),
-    "bedroom": IdealSize(2.7, 9),
-    "guest": IdealSize(2.7, 9),
-    "living": IdealSize(2.9, 12),
-    "family": IdealSize(2.8, 10),
-    "dining": IdealSize(2.4, 7),
-    "kitchen": IdealSize(2.4, 7),
-    "kitchen_dining": IdealSize(2.9, 13),
-    "puja": IdealSize(1.8, 3.5),
-    "study": IdealSize(2.4, 6.5),
-    "office": IdealSize(2.4, 7),
-    "store": IdealSize(1.6, 3),
-    "laundry": IdealSize(1.6, 3),
-    "staircase": IdealSize(1.15, 2.8),
-    "garage": IdealSize(2.8, 12),
-    "balcony": IdealSize(1.2, 2.5),
-    "courtyard": IdealSize(2, 6),
-    "garden": IdealSize(2, 6),
-    "servant": IdealSize(2.2, 6),
-    "gym": IdealSize(2.6, 8),
-    "library": IdealSize(2.4, 6.5),
-    "toilet": IdealSize(1, 1.5),
-    "bathroom": IdealSize(1.5, 2.8),
-    "combined": IdealSize(1.5, 3),
+    kind: IdealSize(min_side=tiers.minimum.width, min_area=tiers.minimum.area)
+    for kind, tiers in ROOM_SIZE_TIERS.items()
 }
 
 # Rooms placed first claim the best available zone; wet rooms go after so
