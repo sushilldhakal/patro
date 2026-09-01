@@ -422,7 +422,15 @@ def split_leftovers(pieces: list[Rect], keep: Rect | None) -> list[Rect]:
 
 
 def add_leftovers(rooms: list[PlannedRoom], pieces: list[Rect], keep: Rect | None, id_prefix: str, storey: int, want_court: bool) -> None:
+    """A carve's smaller remainder pieces — try folding each into a
+    neighbor first (same rule and same courtyard exception as the
+    free-zone loop's own leftover handling), so a carve doesn't scatter
+    small, separately-labeled open fragments through the plan when one of
+    them could cleanly extend an adjacent room or the hall instead."""
+    center_id = f"center_{storey}"
     for i, rect in enumerate(split_leftovers(pieces, keep)):
+        if not want_court and try_merge_into_neighbor(rooms, rect, center_id):
+            continue
         rooms.append(open_piece(f"{id_prefix}_gap{i}_{storey}", rect, storey, want_court))
 
 
