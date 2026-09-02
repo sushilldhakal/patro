@@ -39,7 +39,7 @@ router = APIRouter(tags=["vastu"])
 # Bump when layout.py/building.py/scoring.py logic changes so old cache
 # entries don't get served under a stale algorithm (same pattern as
 # services/response_cache.py's own CACHE_PAYLOAD_VERSION note).
-_HOUSE_PLAN_ENGINE_VERSION = "6"  # bumped: every carve-leftover site now keeps sub-0.9m slivers (real area) instead of silently dropping them (real, unaccounted, doubly-walled gaps)
+_HOUSE_PLAN_ENGINE_VERSION = "11"  # bumped: ensure_reachable's and validate.py's circulation-fragment exemptions now also check kind in IDEAL_SIZE, so "living" (real, sized, but life=circulation for wall purposes) is no longer treated like a decorative brahmasthan scrap that's fine to leave permanently sealed with zero doors
 
 
 @router.get("/vastu/zones")

@@ -104,6 +104,26 @@ def shared_seg(a: Rect, b: Rect) -> Seg | None:
     return None
 
 
+def touches(a: Rect, b: Rect, eps: float = 0.05) -> bool:
+    """True if `a` and `b`'s boundaries meet at all — a real shared wall
+    (what `shared_seg` requires) *or* only a single corner point, which
+    `shared_seg` reports as no connection at all (its own length > 0.45
+    gate). The mandala's own corner notches sit exactly this way against
+    its centre by construction — diagonal, corner-only, zero shared-edge
+    length — so two open/circulation rooms that only corner-touch still
+    read, and are drawn, as one continuous floor (see building.py's
+    OPEN_KINDS-style shared fill); without this they'd count as separate
+    disconnected islands, each needing its own door into a neighboring
+    room even though there's no wall between them to walk through.
+    Deliberately not used for wall/door placement itself, which still needs
+    `shared_seg`'s real edge — only for deciding whether two open pieces
+    are the same reachable space."""
+    return (
+        a.x <= b.x + b.w + eps and b.x <= a.x + a.w + eps
+        and a.y <= b.y + b.h + eps and b.y <= a.y + a.h + eps
+    )
+
+
 def edges(rect: Rect) -> list[Seg]:
     return [
         Seg("n", rect.x, rect.y, rect.x + rect.w, rect.y),

@@ -20,6 +20,20 @@ def _is_room(row: PlannedRoom) -> bool:
     return row.life != "circulation"
 
 
+def _needs_reachability(row: PlannedRoom) -> bool:
+    """Broader than `_is_room`: a circulation-life *fragment* (brahmasthan,
+    hall, landing, foyer, verandah) is fine left dead if nothing connects
+    it — decorative floor, not a room anyone asked for. But "living" is
+    life="circulation" too (open-plan: no wall/door of its own) while still
+    being a real, named, sized room someone explicitly requested — it must
+    still be reachable via *some* real connection (a door, or open floor
+    genuinely touching a reached room), even though it's exempt from
+    `_is_room`'s "must have its own door" check just above. `kind in
+    IDEAL_SIZE` is the same test layout.py's own place_foyer/ensure_reachable
+    use to tell a real room apart from a decorative fragment."""
+    return _is_room(row) or row.kind in arch.IDEAL_SIZE
+
+
 def _neighbors(room: PlannedRoom, floor: FloorConcept) -> list[str]:
     out = [d.connects_to for d in room.doors]
     for other in floor.rooms:
@@ -27,14 +41,18 @@ def _neighbors(room: PlannedRoom, floor: FloorConcept) -> list[str]:
             continue
         if any(d.connects_to == room.id for d in other.doors):
             out.append(other.id)
-        touch = shared_seg(room.rect, other.rect)
         both_open = room.life in ("circulation", "outdoor") and other.life in ("circulation", "outdoor")
-        if both_open and touch:
+        # A real shared wall, not layout.py's looser `touches` (which also
+        # counts a corner-only meeting point, with no actual opening in it)
+        # — this check exists to certify a room reachable, so it must mean
+        # an opening someone could really walk through, not a coincidence
+        # of the mandala's own grid lines crossing at a point.
+        if both_open and shared_seg(room.rect, other.rect):
             out.append(other.id)
         if (
             room.life != "circulation"
             and other.life in ("circulation", "outdoor")
-            and (touch or _overlap_loose(room.rect, other.rect))
+            and (shared_seg(room.rect, other.rect) or _overlap_loose(room.rect, other.rect))
         ):
             out.append(other.id)
     return out
@@ -66,7 +84,7 @@ def validate_concept(floors: list[FloorConcept], leftover: list, storeys: int) -
                 seen.add(nxt)
                 q.append(nxt)
         for room in floor.rooms:
-            if not _is_room(room):
+            if not _needs_reachability(room):
                 continue
             if room.id not in seen:
                 all_reachable = False

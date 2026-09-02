@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import pytest
 
+from engine.vedic.vastu.architecture import box_fits
 from engine.vedic.vastu.layout import plan_house
 from engine.vedic.vastu.rooms import HouseRequirement, PlannedSpace
 from engine.vedic.vastu.types import SiteInput
@@ -209,3 +210,163 @@ def test_room_with_no_tier_data_keeps_original_uncapped_growth():
     priority = _growth_priority(center, cell)
     assert priority is not None
     assert priority[0] == 1  # no comfortable tier to be "below" of
+
+
+def test_generous_plot_packs_more_than_eight_majors():
+    """The mandala has only 8 outer zones (nw/n/ne/w/e/sw/s/se) and each one
+    used to be handed *whole* to a single major room, so a request needing
+    more than 8 majors (or extra wet rooms with no free zone or ensuite
+    host) failed no matter how big the plot got — the real bottleneck was
+    zone count, not zone size. On a 15x14m plot every zone is ~23 sqm,
+    dwarfing any room's minimum, so `pack_into_surplus` should carve the
+    overflow out of that surplus instead of reporting it unplaceable."""
+    from engine.vedic.vastu import architecture as arch
+
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen_dining", "puja", "study", "store", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    site = SiteInput(width=15, height=14, facing="east")
+    concept = plan_house(req, site)
+    assert concept.leftover == []
+    rooms = [r for r in concept.floors[0].rooms if r.kind in arch.IDEAL_SIZE]
+    for room in rooms:
+        assert box_fits(room.rect.w, room.rect.h, arch.IDEAL_SIZE[room.kind]), room
+    assert concept.validation.all_reachable, concept.validation.issues
+    assert concept.validation.every_room_has_door, concept.validation.issues
+
+
+def test_kitchen_dining_inherits_kitchens_avoid_zones():
+    """kitchen_dining has no classical-source rows of its own (confirmed by
+    test_vastu_rules_db.py's own test_kitchen_dining_still_has_no_invented_rule
+    — that's still true at the raw db.get_by_subject layer), so before this
+    fix it fell back to "every zone acceptable" and could land in a zone
+    kitchen's own real data explicitly avoids (e.g. north) — silently
+    dropping the fire-corner constraint the combined room is supposed to
+    keep. zone_rules.zone_costs_for_subject aliases it to "kitchen" one
+    layer up from the db, so this and the raw-db test both hold at once."""
+    from engine.vedic.vastu import zone_rules
+
+    kitchen = zone_rules.zone_costs_for_subject("kitchen")
+    combo = zone_rules.zone_costs_for_subject("kitchen_dining")
+    assert combo.preferred == kitchen.preferred
+    assert combo.avoid == kitchen.avoid
+    assert "north" in combo.avoid  # the exact zone this bug let kitchen_dining land in
+
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen_dining", "puja", "study", "store", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    site = SiteInput(width=15, height=14, facing="east")
+    concept = plan_house(req, site)
+    kd = next(r for r in concept.floors[0].rooms if r.kind == "kitchen_dining")
+    assert kd.vastu_region not in kitchen.avoid
+
+
+def test_carve_falls_back_to_a_strip_when_the_donor_is_too_narrow_for_a_corner_cut():
+    """A snug corner cut is tried first (least wasted donor area), but on a
+    narrow/tall donor it can leave the donor itself below its own minimum
+    even though the donor has plenty of *total* surplus — e.g. a 2.3x4.67
+    room: cutting a 1.5x2.0 corner for a `combined` leaves only a 0.8m-wide
+    strip, under any real room's own min_side. A full-width strip across
+    the donor's short axis is the only shape that still leaves it a valid,
+    full-length remainder."""
+    from engine.vedic.vastu import architecture as arch
+    from engine.vedic.vastu.geometry import Rect, largest, split_by
+    from engine.vedic.vastu.layout import extra_rect_candidates
+
+    narrow_donor = Rect(0.0, 0.0, 2.3, 4.67)
+    candidates = extra_rect_candidates(narrow_donor, "combined")
+    assert candidates, "a narrow donor should still offer a valid strip candidate"
+    ok = False
+    for extra_rect in candidates:
+        pieces = split_by(narrow_donor, extra_rect, min_side=0.02)
+        remain = largest(pieces)
+        if remain and box_fits(remain.w, remain.h, arch.IDEAL_SIZE["store"]):
+            ok = True
+            break
+    assert ok, "none of the candidates left the donor a valid remainder"
+
+
+def test_generous_plot_never_double_carves_the_same_donor():
+    """Regression for the fragmentation this fix chased down twice: the
+    reported request (3 bedrooms, 2 toilets, bathroom, combined, living,
+    kitchen_dining, puja, study, store, laundry on a 15x14m plot) must place
+    everything, and — the actual "double wall" symptom — no single donor
+    room should end up carved more than once (attach_toilet's ensuite carve
+    counts too), which is what stacked a second partition right next to an
+    ensuite's own leftover sliver."""
+    from collections import Counter
+
+    from engine.vedic.vastu import architecture as arch
+
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen_dining", "puja", "study", "store", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    site = SiteInput(width=15, height=14, facing="east")
+    concept = plan_house(req, site)
+    assert concept.leftover == []
+    rooms = [r for r in concept.floors[0].rooms if r.kind in arch.IDEAL_SIZE]
+    # Each of the 8 mandala zones starts with exactly one room in it, so at
+    # most 2 real rooms sharing a `vastu_region` (the original + one carve)
+    # is a clean single split; 3+ means something got carved twice.
+    by_region = Counter(r.vastu_region for r in rooms if r.kind != "foyer")
+    assert max(by_region.values()) <= 2, by_region
+    for room in rooms:
+        assert box_fits(room.rect.w, room.rect.h, arch.IDEAL_SIZE[room.kind]), room
+
+
+def test_every_room_reachable_with_bounded_extra_doors():
+    """A room has more than one door normally in exactly two cases: it hosts
+    an ensuite toilet/bathroom/combined, or it has a balcony. But this house's
+    open/circulation floor can genuinely fragment into several islands with
+    no real wall between them at all (mandala corner notches only touch the
+    true centre at a single point, not an edge — verified directly on this
+    exact request: touches()-based "connectivity" for that was a false
+    positive, letting the reachability check wrongly certify a room whose
+    only door led into one of those islands as reachable, when nobody could
+    actually walk there). With that corrected to require a real shared wall,
+    an island with no other real-wall bridge to the rest of the house does
+    need *some* ordinary room to carry a second, unearned door to connect it
+    — the alternative is a room nobody can enter at all, which is strictly
+    worse. So the guarantee this asserts is the one that actually matters:
+    every room is genuinely walkable-to (`all_reachable`), and no room ends
+    up carrying more bridge doors than the layout actually needs."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen_dining", "puja", "study", "store", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    site = SiteInput(width=15, height=14, facing="east")
+    concept = plan_house(req, site)
+    assert concept.leftover == []
+    assert concept.validation.all_reachable, concept.validation.issues
+    rooms = concept.floors[0].rooms
+    for room in rooms:
+        if room.life in ("circulation", "outdoor") or room.kind == "brahmasthan":
+            continue
+        total = len(room.doors) + sum(1 for other in rooms if any(d.connects_to == room.id for d in other.doors))
+        limit = 2
+        assert total <= limit, (room.id, room.kind, total)
+
+
+def test_living_room_has_no_walls_or_doors():
+    """An open-plan living room reads as part of the house's circulation,
+    not a closed room off it: no door, and (via life_zone_of putting it in
+    _CIRCULATION_KINDS) no wall against whatever open/Brahmasthan space it
+    borders either."""
+    req = HouseRequirement(
+        bedrooms=2, toilets=1, extras=("kitchen", "living"), mode="flexible", storeys=1,
+    )
+    site = SiteInput(width=12, height=10, facing="south")
+    concept = plan_house(req, site)
+    living = next(r for r in concept.floors[0].rooms if r.kind == "living")
+    assert living.life == "circulation"
+    # living itself never has its own door — but another closed room is
+    # free to door *onto* it, same as it would onto any other open space;
+    # that's the other room's one required door, not a wall/door of living's.
+    assert living.doors == []

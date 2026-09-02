@@ -26,7 +26,11 @@ from services import vastu_room_sizes_db as sizes_db
 from .rooms import HouseRequirement, PlannedSpace
 
 WET_KINDS = frozenset({"toilet", "bathroom", "combined"})
-HOST_KINDS = frozenset({"master_bedroom", "bedroom", "guest"})
+# Only the master bedroom gets an ensuite — a regular bedroom or guest room
+# doesn't automatically pick one up just because it's a private room with
+# surplus space (user's own instruction: "only give attach toilet shower
+# to मुख्य शयनकक्ष not all of them").
+HOST_KINDS = frozenset({"master_bedroom"})
 
 STAIR_WIDTH_M = 1.25
 
@@ -72,7 +76,12 @@ _EXTRA_KINDS = frozenset(
 )
 
 
-_CIRCULATION_KINDS = frozenset({"hall", "foyer", "landing", "brahmasthan", "verandah"})
+# "living" belongs here, not in _SEMI_KINDS: an open-plan living room reads
+# as part of the house's circulation, not a closed room off it — no wall
+# where it meets the hall/Brahmasthan, no door either (building.py's
+# compile_layer only walls an open room's edge against a *closed* room or
+# the exterior, matching how it already treats brahmasthan/hall/foyer).
+_CIRCULATION_KINDS = frozenset({"hall", "foyer", "landing", "brahmasthan", "verandah", "living"})
 _OUTDOOR_KINDS = frozenset({"garden", "courtyard", "balcony", "garage"})
 _SERVICE_EXTRA = frozenset({"kitchen", "kitchen_dining", "store", "laundry"})
 _PRIVATE_KINDS = frozenset({"master_bedroom", "bedroom", "guest"})
@@ -124,11 +133,23 @@ def expand_planned_spaces(req: HouseRequirement) -> list[PlannedSpace]:
     master = min(max(req.master_bedroom_index, 1), beds)
     for i in range(1, beds + 1):
         out.append(PlannedSpace(id=f"master_{i}" if i == master else f"bedroom_{i}", kind="master_bedroom" if i == master else "bedroom", index=i))
-    for i in range(1, _clamp_count(req.toilets, 1, 5) + 1):
+    # A "combined" room is one physical toilet+bathroom, not a fixture on
+    # top of the separate toilet/bathroom counts — asking for 2 toilets,
+    # 1 bathroom, 1 combined means one of those 2 toilets *is* the combined
+    # room (and so is the 1 bathroom), for 2 wet rooms total (1 toilet +
+    # 1 combined), not 4 (2 toilets + 1 bathroom + 1 combined as if
+    # unrelated). Each combined room absorbs one slot from *both* counts,
+    # since it satisfies both needs in the one room; either can bottom out
+    # at 0 (a request of 1 toilet + 1 combined has no separate toilet left
+    # at all — the combined room already covers it).
+    combined_n = _clamp_count(req.combined_toilet_bath, 0, 5)
+    toilets_n = max(0, _clamp_count(req.toilets, 1, 5) - combined_n)
+    bathrooms_n = max(0, _clamp_count(req.bathrooms, 0, 5) - combined_n)
+    for i in range(1, toilets_n + 1):
         out.append(PlannedSpace(id=f"toilet_{i}", kind="toilet", index=i))
-    for i in range(1, _clamp_count(req.bathrooms, 0, 5) + 1):
+    for i in range(1, bathrooms_n + 1):
         out.append(PlannedSpace(id=f"bathroom_{i}", kind="bathroom", index=i))
-    for i in range(1, _clamp_count(req.combined_toilet_bath, 0, 5) + 1):
+    for i in range(1, combined_n + 1):
         out.append(PlannedSpace(id=f"combined_{i}", kind="combined", index=i))
     counted_kinds = {"bedroom", "master_bedroom", "toilet", "bathroom", "combined"}
     for kind in req.extras:

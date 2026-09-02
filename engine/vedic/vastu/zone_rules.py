@@ -61,7 +61,23 @@ class ZoneCosts:
     has_data: bool
 
 
+# A subject with no extracted mention of its own gets "no verified rule
+# available" (every zone acceptable) per this module's own stated policy —
+# correct for a subject nobody wrote about, but "kitchen_dining" is a
+# *combined* modern room, not an unmapped one: the classical sources talk
+# about kitchen and about dining separately, never about a merged room, so
+# `db.get_by_subject("kitchen_dining")` is always empty and this combined
+# room ended up with zero placement preference at all — free to land in a
+# zone kitchen's own data explicitly avoids (e.g. north), silently losing
+# the fire-corner constraint entirely instead of inheriting it. Alias it to
+# "kitchen" so it keeps that seat, matching this file's earlier note (and
+# the dead frontend copy's own SPACE_ZONE_RULES.kitchen_dining) that a
+# combined kitchen+dining mirrors kitchen's seat, not dining's.
+_SUBJECT_ALIAS: dict[str, str] = {"kitchen_dining": "kitchen"}
+
+
 def zone_costs_for_subject(subject: str) -> ZoneCosts:
+    subject = _SUBJECT_ALIAS.get(subject, subject)
     mappings = db.get_by_subject(subject)
     if not mappings:
         return ZoneCosts(frozenset(), frozenset(_DIR8_ORDER), frozenset(), has_data=False)
