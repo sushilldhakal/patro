@@ -32,10 +32,15 @@ class Seg:
     y2: float
 
 
-def split_by(outer: Rect, cut: Rect) -> list[Rect]:
+def split_by(outer: Rect, cut: Rect, min_side: float = 0.85) -> list[Rect]:
     """Carve `cut` out of `outer`, returning the remaining piece(s) — up to 4
-    strips (left/right/top/bottom of the cut), each kept only if >= 0.85 on
-    both sides. Ports classical.ts:96-108 exactly, including its epsilons."""
+    strips (left/right/top/bottom of the cut), each kept only if >= `min_side`
+    on both sides. Ports classical.ts:96-108 exactly, including its epsilons
+    (the default `min_side=0.85` is that port's own threshold — untouched,
+    so every existing caller keeps its exact prior behavior). A caller that
+    needs every scrap of area accounted for (nothing thrown away, however
+    thin) rather than only pieces large enough to be a sensible standalone
+    room passes a smaller `min_side` explicitly — see `usable_cell`."""
     ix = max(outer.x, cut.x)
     iy = max(outer.y, cut.y)
     ir = min(outer.x + outer.w, cut.x + cut.w)
@@ -43,15 +48,15 @@ def split_by(outer: Rect, cut: Rect) -> list[Rect]:
     if ir <= ix + 0.02 or ib <= iy + 0.02:
         return [outer]
     out: list[Rect] = []
-    if ix - outer.x >= 0.85:
+    if ix - outer.x >= min_side:
         out.append(Rect(outer.x, outer.y, ix - outer.x, outer.h))
-    if outer.x + outer.w - ir >= 0.85:
+    if outer.x + outer.w - ir >= min_side:
         out.append(Rect(ir, outer.y, outer.x + outer.w - ir, outer.h))
-    if iy - outer.y >= 0.85:
+    if iy - outer.y >= min_side:
         out.append(Rect(ix, outer.y, ir - ix, iy - outer.y))
-    if outer.y + outer.h - ib >= 0.85:
+    if outer.y + outer.h - ib >= min_side:
         out.append(Rect(ix, ib, ir - ix, outer.y + outer.h - ib))
-    return [r for r in out if r.w >= 0.85 and r.h >= 0.85]
+    return [r for r in out if r.w >= min_side and r.h >= min_side]
 
 
 def largest(rects: list[Rect]) -> Rect | None:

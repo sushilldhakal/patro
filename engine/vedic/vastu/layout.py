@@ -151,11 +151,11 @@ def attach_toilet(host: PlannedRoom, wet: PlannedSpace, storey: int, rooms: list
         r.y + r.h - th if south else r.y,
         tw, th,
     )
-    pieces = split_by(r, bath)
+    pieces = split_by(r, bath, min_side=0.02)
     remain = largest(pieces)
     if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[host.kind]):
         return None
-    add_leftovers(rooms, pieces, remain, host.id, storey, False)
+    add_leftovers(rooms, pieces, remain, host.id, storey, False, min_side=0.02)
     host.rect = remain
     room = make_room(wet, bath, storey, host.vastu_region)
     add_door(room, "e" if west else "w", 0.55, host.id, WET_DOOR_W)
@@ -190,15 +190,15 @@ def place_foyer(
     for room in list(rooms):
         if not is_wet(room.kind) or overlap_area(room.rect, foyer) < 0.08:
             continue
-        pieces = split_by(room.rect, foyer)
+        pieces = split_by(room.rect, foyer, min_side=0.02)
         keep = largest([p for p in pieces if box_fits(p.w, p.h, IDEAL_SIZE[room.kind])])
         if keep:
-            add_leftovers(rooms, pieces, keep, room.id, storey, False)
+            add_leftovers(rooms, pieces, keep, room.id, storey, False, min_side=0.02)
             room.rect = keep
         else:
             rooms.remove(room)
             dropped.append(PlannedSpace(id=room.id, kind=room.kind, index=room.index))
-            add_leftovers(rooms, pieces, None, room.id, storey, False)
+            add_leftovers(rooms, pieces, None, room.id, storey, False, min_side=0.02)
 
     hits = [
         r for r in rooms
@@ -206,13 +206,13 @@ def place_foyer(
     ]
     carved: list[tuple[PlannedRoom, Rect, list[Rect]]] = []
     for hit in hits:
-        pieces = split_by(hit.rect, foyer)
+        pieces = split_by(hit.rect, foyer, min_side=0.02)
         remain = largest(pieces)
         if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[hit.kind]):
             return None, dropped
         carved.append((hit, remain, pieces))
     for room, remain, pieces in carved:
-        add_leftovers(rooms, pieces, remain, room.id, storey, False)
+        add_leftovers(rooms, pieces, remain, room.id, storey, False, min_side=0.02)
         room.rect = remain
 
     for room in list(rooms):
@@ -220,18 +220,18 @@ def place_foyer(
             continue
         if overlap_area(room.rect, foyer) < 0.15:
             continue
-        pieces = [p for p in split_by(room.rect, foyer) if p.w >= 0.9 and p.h >= 0.9]
+        # min_side=0.02, not the usual 0.9: a fragment too thin to be its own
+        # sensible room is still real floor area, and dropping it here (as
+        # this used to, at the default 0.9 threshold) either leaves an
+        # unwalled-off gap next to the foyer or, if it was this room's only
+        # surviving piece, deletes the room's entire remaining area outright.
+        pieces = split_by(room.rect, foyer, min_side=0.02)
         keep = largest(pieces)
         if not keep:
             rooms.remove(room)
             continue
         room.rect = keep
-        cut_index = 0
-        for piece in pieces:
-            if piece is keep:
-                continue
-            rooms.append(open_piece(f"{room.id}_cut{cut_index}", piece, storey, room.life == "outdoor"))
-            cut_index += 1
+        add_leftovers(rooms, pieces, keep, room.id, storey, room.life == "outdoor", min_side=0.02)
 
     foyer_room = PlannedRoom(
         id=f"foyer_{storey}" if storey == 0 else f"landing_{storey}",
@@ -410,7 +410,7 @@ def usable_cell(cell: Rect, cuts: list[Rect]) -> tuple[Rect, list[Rect]]:
     gaps that no room accounts for."""
     pieces = [cell]
     for cut in cuts:
-        pieces = [p for piece in pieces for p in split_by(piece, cut)]
+        pieces = [p for piece in pieces for p in split_by(piece, cut, min_side=0.02)]
     kept = largest(pieces) or cell
     return kept, [p for p in pieces if p is not kept]
 
@@ -423,18 +423,29 @@ def open_piece(id_: str, rect: Rect, storey: int, want_court: bool) -> PlannedRo
     )
 
 
-def split_leftovers(pieces: list[Rect], keep: Rect | None) -> list[Rect]:
-    return [p for p in pieces if p is not keep and p.w >= 0.9 and p.h >= 0.9]
+def split_leftovers(pieces: list[Rect], keep: Rect | None, min_side: float = 0.9) -> list[Rect]:
+    return [p for p in pieces if p is not keep and p.w >= min_side and p.h >= min_side]
 
 
-def add_leftovers(rooms: list[PlannedRoom], pieces: list[Rect], keep: Rect | None, id_prefix: str, storey: int, want_court: bool) -> None:
+def add_leftovers(
+    rooms: list[PlannedRoom], pieces: list[Rect], keep: Rect | None, id_prefix: str, storey: int,
+    want_court: bool, min_side: float = 0.9,
+) -> None:
     """A carve's smaller remainder pieces — try folding each into a
     neighbor first (same rule and same courtyard exception as the
     free-zone loop's own leftover handling), so a carve doesn't scatter
     small, separately-labeled open fragments through the plan when one of
-    them could cleanly extend an adjacent room or the hall instead."""
+    them could cleanly extend an adjacent room or the hall instead.
+
+    `min_side` defaults to the size below which a piece isn't worth its own
+    room (matches `split_leftovers`'s own prior default exactly, so every
+    existing caller is unaffected). `claim_cell` passes a much smaller
+    value: a notch-clipped piece too thin to be a sensible room is still
+    real floor area, and dropping it silently leaves an unwalled-off gap
+    that no room accounts for — better a thin sliver of open floor than an
+    unexplained hole between two walls."""
     center_id = f"center_{storey}"
-    for i, rect in enumerate(split_leftovers(pieces, keep)):
+    for i, rect in enumerate(split_leftovers(pieces, keep, min_side)):
         if not want_court and try_merge_into_neighbor(rooms, rect, center_id):
             continue
         rooms.append(open_piece(f"{id_prefix}_gap{i}_{storey}", rect, storey, want_court))
@@ -566,7 +577,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         this once, only for a zone that's actually being claimed — not
         from a `fits`-style probe of a candidate that might not be picked."""
         kept, leftovers = usable_cell(grid.cells[zone], cell_cuts(zone))
-        add_leftovers(rooms, leftovers, None, f"notch_{zone}", storey, want_court)
+        add_leftovers(rooms, leftovers, None, f"notch_{zone}", storey, want_court, min_side=0.02)
         return kept
 
     for space in majors:
@@ -595,9 +606,12 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         rect = wet_rect_in_cell(cell, wet.kind, zone, [foyer])
         free.remove(zone)
         rooms.append(make_room(wet, rect, storey, ZONE_DIR[zone]))
-        for i, piece in enumerate(split_by(cell, rect)):
-            if piece.w >= 0.9 and piece.h >= 0.9:
-                rooms.append(open_piece(f"center_{zone}_{i}_{storey}", piece, storey, want_court))
+        # min_side=0.02: a leftover strip around the wet room is still real
+        # floor area even when it's too thin to be its own sensible room
+        # (and a piece that's a hair under 0.9 only from float rounding —
+        # e.g. a computed width of 0.8999999999999999 — used to be dropped
+        # here outright at the old 0.9 threshold).
+        add_leftovers(rooms, split_by(cell, rect, min_side=0.02), None, f"center_{zone}", storey, want_court, min_side=0.02)
         return True
 
     attach_later: list[PlannedSpace] = []
@@ -626,10 +640,10 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             None,
         )
         if host_room:
-            pieces = split_by(host_room.rect, stair.rect)
+            pieces = split_by(host_room.rect, stair.rect, min_side=0.02)
             remain = largest(pieces)
             if remain and box_fits(remain.w, remain.h, IDEAL_SIZE[host_room.kind]):
-                add_leftovers(rooms, pieces, remain, host_room.id, storey, False)
+                add_leftovers(rooms, pieces, remain, host_room.id, storey, False, min_side=0.02)
                 host_room.rect = remain
             else:
                 # Shrinking this room to make way for the staircase would
@@ -640,7 +654,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
                 # rather than losing it outright.
                 rooms.remove(host_room)
                 leftover.append(PlannedSpace(id=host_room.id, kind=host_room.kind, index=host_room.index))
-                add_leftovers(rooms, pieces, None, host_room.id, storey, False)
+                add_leftovers(rooms, pieces, None, host_room.id, storey, False, min_side=0.02)
         rooms.append(PlannedRoom(
             id=f"stair_{storey}", kind="staircase", floor=storey, rect=stair.rect,
             life="vertical", vastu_region=_region_of_shaft(stair.rect, grid),

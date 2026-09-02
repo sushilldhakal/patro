@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -144,17 +145,31 @@ def test_house_plan_open_rooms_meeting_head_on_share_open_floor():
                         )
 
 
-def test_house_plan_rooms_fully_cover_the_plot():
-    """Regression test: usable_cell() used to return only the largest piece
-    of a corner-notch-clipped zone cell and silently drop the rest — real
-    floor area that ends up walled off on both sides (by the notch's own
-    zone and whichever room sits across the gap) but claimed by no room at
-    all, closed or open. On this plot it was a consistent ~9m^2 (~6% of
-    the plot) split across the 4 corner-notch positions."""
-    resp = client.post("/v1/vastu/house-plan", json=_BODY)
+@pytest.mark.parametrize("plot_width,plot_depth", [(15, 10), (12, 9), (10, 15), (13, 10), (11, 14)])
+def test_house_plan_rooms_fully_cover_the_plot(plot_width, plot_depth):
+    """Regression test for two stacked bugs that both left real floor area
+    claimed by no room at all (closed or open) — walled off on both sides,
+    since the rooms on either side of the gap still get their own full
+    wall, so it renders as two parallel walls with dead space between them:
+
+    1. usable_cell() returned only the largest piece of a corner-notch-
+       clipped zone cell and silently dropped the rest.
+    2. Every carve site (attach_toilet, place_foyer, place_wet_in_cell, the
+       stair's host-room carve, and usable_cell's own notch leftover) fed
+       its remainder through a >=0.9m-per-side filter before registering it
+       as open space — so even after (1) was fixed, a thinner leftover
+       (sometimes several square metres' worth, e.g. 12x9m lost 7.26 m^2)
+       still vanished silently. Every one of those sites now keeps
+       leftovers down to a couple of centimetres.
+
+    (12, 9) and (10, 15) specifically reproduce bug 2 on plot sizes well
+    within normal use, not just extreme/cramped edge cases.
+    """
+    body = {**_BODY, "site": {**_BODY["site"], "plot_width": plot_width, "plot_depth": plot_depth}}
+    resp = client.post("/v1/vastu/house-plan", json=body)
     assert resp.status_code == 200
     floor = resp.json()["floors"][0]
-    plot_area = _BODY["site"]["plot_width"] * _BODY["site"]["plot_depth"]
+    plot_area = plot_width * plot_depth
     covered = sum(r["w"] * r["h"] for r in floor["rooms"])
     assert abs(covered - plot_area) < 0.5, f"covered {covered:.2f} of {plot_area:.2f} m^2"
 
