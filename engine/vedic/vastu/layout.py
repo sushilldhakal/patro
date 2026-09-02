@@ -399,14 +399,20 @@ def ensure_reachable(rooms: list[PlannedRoom], root_id: str) -> None:
             return
 
 
-def usable_cell(cell: Rect, cuts: list[Rect]) -> Rect:
-    """The mandala's corner notches are a deliberate decorative cut — the
-    sliver stays unclaimed on purpose (same treatment the 4 Brahmasthan-
-    corner notches get)."""
+def usable_cell(cell: Rect, cuts: list[Rect]) -> tuple[Rect, list[Rect]]:
+    """The mandala's corner notches are a deliberate decorative cut, so the
+    piece they clip off a neighboring zone's cell is never made part of
+    that zone's own room. Returns (the largest remaining piece, every
+    smaller piece cut off in the process) — callers that are only probing
+    a candidate zone's size can ignore the second element, but whichever
+    call actually finalizes a zone must register those smaller pieces as
+    open space (see `claim_cell`), or they end up as real, unwalled-off
+    gaps that no room accounts for."""
     pieces = [cell]
     for cut in cuts:
         pieces = [p for piece in pieces for p in split_by(piece, cut)]
-    return largest(pieces) or cell
+    kept = largest(pieces) or cell
+    return kept, [p for p in pieces if p is not kept]
 
 
 def open_piece(id_: str, rect: Rect, storey: int, want_court: bool) -> PlannedRoom:
@@ -551,7 +557,17 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         return cuts
 
     def cell_rect(zone: ZoneId) -> Rect:
-        return usable_cell(grid.cells[zone], cell_cuts(zone))
+        kept, _ = usable_cell(grid.cells[zone], cell_cuts(zone))
+        return kept
+
+    def claim_cell(zone: ZoneId) -> Rect:
+        """Finalize `zone`: same rect as cell_rect, but also registers
+        whatever a corner-notch cut left over in it as open space. Call
+        this once, only for a zone that's actually being claimed — not
+        from a `fits`-style probe of a candidate that might not be picked."""
+        kept, leftovers = usable_cell(grid.cells[zone], cell_cuts(zone))
+        add_leftovers(rooms, leftovers, None, f"notch_{zone}", storey, want_court)
+        return kept
 
     for space in majors:
         picked = pick_zone(space.kind, free, mode, lambda z: box_fits(cell_rect(z).w, cell_rect(z).h, IDEAL_SIZE[space.kind]))
@@ -559,7 +575,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             leftover.append(space)
             continue
         zone, relaxed_flag = picked
-        rect = cell_rect(zone)
+        rect = claim_cell(zone)
         free.remove(zone)
         room = make_room(space, rect, storey, ZONE_DIR[zone])
         if relaxed_flag or zone_rules.vastu_cost(space.kind, ZONE_DIR[zone], mode)[1]:
@@ -575,7 +591,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         if not picked or toilet_forbidden(ZONE_DIR[picked[0]]):
             return False
         zone = picked[0]
-        cell = cell_rect(zone)
+        cell = claim_cell(zone)
         rect = wet_rect_in_cell(cell, wet.kind, zone, [foyer])
         free.remove(zone)
         rooms.append(make_room(wet, rect, storey, ZONE_DIR[zone]))
@@ -632,7 +648,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         ))
 
     for zid in list(free):
-        rect = cell_rect(zid)
+        rect = claim_cell(zid)
         if rect.w < 0.9 or rect.h < 0.9:
             continue
         # Every zone this loop touches gets a final fate right here (merged

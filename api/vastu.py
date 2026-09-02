@@ -39,7 +39,7 @@ router = APIRouter(tags=["vastu"])
 # Bump when layout.py/building.py/scoring.py logic changes so old cache
 # entries don't get served under a stale algorithm (same pattern as
 # services/response_cache.py's own CACHE_PAYLOAD_VERSION note).
-_HOUSE_PLAN_ENGINE_VERSION = "4"  # bumped: room-size tiers wired in, stair/foyer overlap fixes, open-room wall over-drawing fix, leftover-carve merge attempt
+_HOUSE_PLAN_ENGINE_VERSION = "5"  # bumped: usable_cell no longer silently drops a corner-notch's collateral leftover (real, unaccounted, doubly-walled gaps)
 
 
 @router.get("/vastu/zones")

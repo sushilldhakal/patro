@@ -144,6 +144,21 @@ def test_house_plan_open_rooms_meeting_head_on_share_open_floor():
                         )
 
 
+def test_house_plan_rooms_fully_cover_the_plot():
+    """Regression test: usable_cell() used to return only the largest piece
+    of a corner-notch-clipped zone cell and silently drop the rest — real
+    floor area that ends up walled off on both sides (by the notch's own
+    zone and whichever room sits across the gap) but claimed by no room at
+    all, closed or open. On this plot it was a consistent ~9m^2 (~6% of
+    the plot) split across the 4 corner-notch positions."""
+    resp = client.post("/v1/vastu/house-plan", json=_BODY)
+    assert resp.status_code == 200
+    floor = resp.json()["floors"][0]
+    plot_area = _BODY["site"]["plot_width"] * _BODY["site"]["plot_depth"]
+    covered = sum(r["w"] * r["h"] for r in floor["rooms"])
+    assert abs(covered - plot_area) < 0.5, f"covered {covered:.2f} of {plot_area:.2f} m^2"
+
+
 def test_house_plan_invalid_facing_is_422():
     body = {**_BODY, "site": {**_BODY["site"], "facing": "northeast"}}
     resp = client.post("/v1/vastu/house-plan", json=body)
