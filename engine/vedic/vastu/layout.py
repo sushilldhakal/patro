@@ -176,8 +176,18 @@ def is_wet(kind: str) -> bool:
     return kind in ("toilet", "bathroom", "combined")
 
 
-def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: CardinalWall) -> PlannedRoom | None:
-    for room in rooms:
+def place_foyer(
+    rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: CardinalWall
+) -> tuple[PlannedRoom | None, list[PlannedSpace]]:
+    """Carve the entrance foyer's footprint out of whatever it lands on,
+    returning the foyer room (or None if a real room in its way can't be
+    carved down to its own minimum — see the `hits` loop below) plus any
+    wet rooms that had to be dropped entirely for the same reason. A wet
+    room that can't be carved down to its own minimum is *removed*, not
+    left at its original size: leaving it in place would silently overlap
+    the foyer instead of reporting a real placement conflict."""
+    dropped: list[PlannedSpace] = []
+    for room in list(rooms):
         if not is_wet(room.kind) or overlap_area(room.rect, foyer) < 0.08:
             continue
         pieces = split_by(room.rect, foyer)
@@ -185,6 +195,10 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         if keep:
             add_leftovers(rooms, pieces, keep, room.id, storey, False)
             room.rect = keep
+        else:
+            rooms.remove(room)
+            dropped.append(PlannedSpace(id=room.id, kind=room.kind, index=room.index))
+            add_leftovers(rooms, pieces, None, room.id, storey, False)
 
     hits = [
         r for r in rooms
@@ -195,7 +209,7 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         pieces = split_by(hit.rect, foyer)
         remain = largest(pieces)
         if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[hit.kind]):
-            return None
+            return None, dropped
         carved.append((hit, remain, pieces))
     for room, remain, pieces in carved:
         add_leftovers(rooms, pieces, remain, room.id, storey, False)
@@ -229,7 +243,7 @@ def place_foyer(rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: Card
         doors=[], windows=[], adjacent_to=[],
     )
     rooms.append(foyer_room)
-    return foyer_room
+    return foyer_room, dropped
 
 
 def connect_foyer(foyer_room: PlannedRoom, rooms: list[PlannedRoom]) -> None:
@@ -385,14 +399,20 @@ def ensure_reachable(rooms: list[PlannedRoom], root_id: str) -> None:
             return
 
 
-def usable_cell(cell: Rect, cuts: list[Rect]) -> Rect:
-    """The mandala's corner notches are a deliberate decorative cut — the
-    sliver stays unclaimed on purpose (same treatment the 4 Brahmasthan-
-    corner notches get)."""
+def usable_cell(cell: Rect, cuts: list[Rect]) -> tuple[Rect, list[Rect]]:
+    """The mandala's corner notches are a deliberate decorative cut, so the
+    piece they clip off a neighboring zone's cell is never made part of
+    that zone's own room. Returns (the largest remaining piece, every
+    smaller piece cut off in the process) — callers that are only probing
+    a candidate zone's size can ignore the second element, but whichever
+    call actually finalizes a zone must register those smaller pieces as
+    open space (see `claim_cell`), or they end up as real, unwalled-off
+    gaps that no room accounts for."""
     pieces = [cell]
     for cut in cuts:
         pieces = [p for piece in pieces for p in split_by(piece, cut)]
-    return largest(pieces) or cell
+    kept = largest(pieces) or cell
+    return kept, [p for p in pieces if p is not kept]
 
 
 def open_piece(id_: str, rect: Rect, storey: int, want_court: bool) -> PlannedRoom:
@@ -408,7 +428,15 @@ def split_leftovers(pieces: list[Rect], keep: Rect | None) -> list[Rect]:
 
 
 def add_leftovers(rooms: list[PlannedRoom], pieces: list[Rect], keep: Rect | None, id_prefix: str, storey: int, want_court: bool) -> None:
+    """A carve's smaller remainder pieces — try folding each into a
+    neighbor first (same rule and same courtyard exception as the
+    free-zone loop's own leftover handling), so a carve doesn't scatter
+    small, separately-labeled open fragments through the plan when one of
+    them could cleanly extend an adjacent room or the hall instead."""
+    center_id = f"center_{storey}"
     for i, rect in enumerate(split_leftovers(pieces, keep)):
+        if not want_court and try_merge_into_neighbor(rooms, rect, center_id):
+            continue
         rooms.append(open_piece(f"{id_prefix}_gap{i}_{storey}", rect, storey, want_court))
 
 
@@ -426,38 +454,68 @@ def forms_rectangle_with(r: Rect, cell: Rect) -> bool:
     return (same_height and (touches_left or touches_right)) or (same_width and (touches_top or touches_bottom))
 
 
-def merge_rect_into(room: PlannedRoom, cell: Rect) -> None:
-    """Grow ``room`` by ``cell``, matching whichever branch of
-    ``forms_rectangle_with`` actually accepted this pair. A bare height
-    comparison can't tell direction apart: the mandala divides both axes
-    into exact thirds, so every cell shares the same height *and* the same
-    width regardless of row/column — same-height alone is true even for a
-    cell stacked above/below (different y), which would silently merge in
-    the wrong direction and grow the rect into unrelated territory."""
-    r = room.rect
+def _merged_rect(r: Rect, cell: Rect) -> Rect:
+    """The rect ``r`` would become after absorbing ``cell`` — matching
+    whichever branch of ``forms_rectangle_with`` actually accepted this
+    pair. A bare height comparison can't tell direction apart: the mandala
+    divides both axes into exact thirds, so every cell shares the same
+    height *and* the same width regardless of row/column — same-height
+    alone is true even for a cell stacked above/below (different y), which
+    would silently merge in the wrong direction and grow the rect into
+    unrelated territory."""
     same_row = abs(r.h - cell.h) < MERGE_EPS and abs(r.y - cell.y) < MERGE_EPS
     if same_row:
-        room.rect = Rect(min(r.x, cell.x), r.y, r.w + cell.w, r.h)
-    else:
-        room.rect = Rect(r.x, min(r.y, cell.y), r.w, r.h + cell.h)
+        return Rect(min(r.x, cell.x), r.y, r.w + cell.w, r.h)
+    return Rect(r.x, min(r.y, cell.y), r.w, r.h + cell.h)
+
+
+def merge_rect_into(room: PlannedRoom, cell: Rect) -> None:
+    room.rect = _merged_rect(room.rect, cell)
+
+
+# Small slack so a merge landing a hair past `preferred` (mandala cells
+# rarely divide evenly) isn't refused over a rounding difference.
+_GROWTH_SLACK = 0.05
+
+
+def _growth_priority(room: PlannedRoom, cell: Rect) -> tuple[int, float] | None:
+    """Should a leftover mandala cell grow ``room``, and how eagerly?
+
+    A merge that would push the room's area past its `preferred` tier is
+    refused outright (returns None) — past that point the cell is better
+    left as its own open/circulation space than folded into an already-
+    generous room (see data/vastu_room_sizes.json's `_comment`). Among
+    rooms willing to take the cell, one still below its `comfortable` tier
+    is preferred over one already comfortable-or-above; ties (including
+    every room whose kind carries no tier data at all — e.g. the mandala's
+    own centre) fall back to the original "biggest room wins" heuristic.
+    """
+    merged = _merged_rect(room.rect, cell)
+    merged_area = merged.w * merged.h
+    tiers = arch.ROOM_SIZE_TIERS.get(room.kind)
+    if tiers is not None and merged_area > tiers.preferred.area + _GROWTH_SLACK:
+        return None
+    below_comfortable = tiers is not None and room.rect.w * room.rect.h < tiers.comfortable.area
+    return (0 if below_comfortable else 1, -merged_area)
 
 
 def try_merge_into_neighbor(rooms: list[PlannedRoom], cell: Rect, center_id: str) -> bool:
-    """First choice: fold into an adjacent real room. Second choice (for
-    edge zones, which are never notch-trimmed): grow the true centre —
-    architecturally normal when there's less program to fill the zones
-    around it, unlike a scatter of same-colored orphan cells."""
-    best: PlannedRoom | None = None
-    best_area = -1.0
-    for room in rooms:
-        if not is_merge_target(room) or not forms_rectangle_with(room.rect, cell):
-            continue
-        area = room.rect.w * room.rect.h
-        if area > best_area:
-            best, best_area = room, area
+    """First choice: fold into an adjacent real room, picked by
+    ``_growth_priority``. Second choice (for edge zones, which are never
+    notch-trimmed): grow the true centre — architecturally normal when
+    there's less program to fill the zones around it, unlike a scatter of
+    same-colored orphan cells. If every willing candidate is already at its
+    preferred size, the cell stays unmerged and becomes its own open piece."""
+    candidates = [
+        (room, priority)
+        for room in rooms
+        if is_merge_target(room) and forms_rectangle_with(room.rect, cell)
+        and (priority := _growth_priority(room, cell)) is not None
+    ]
+    best = min(candidates, key=lambda rp: rp[1])[0] if candidates else None
     if not best:
         center = next((r for r in rooms if r.id == center_id), None)
-        if center and forms_rectangle_with(center.rect, cell):
+        if center and forms_rectangle_with(center.rect, cell) and _growth_priority(center, cell) is not None:
             best = center
     if not best:
         return False
@@ -487,10 +545,29 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     used_hosts: set[str] = set()
 
     def cell_cuts(zone: ZoneId) -> list[Rect]:
-        return [corner_cuts[CORNER_ZONES.index(zone)]] if zone in CORNER_ZONES else []
+        """Every rect this zone's usable area must exclude before anything
+        gets placed in it — corner notches, plus the staircase's own
+        footprint if this is its zone. Reserving the stair here, before any
+        room or wet-area claims the zone, is what stops it from ever being
+        handed a cell that overlaps the stair in the first place (rather
+        than discovering the overlap only after the fact)."""
+        cuts = [corner_cuts[CORNER_ZONES.index(zone)]] if zone in CORNER_ZONES else []
+        if stair and zone == stair.host_id:
+            cuts = [*cuts, stair.rect]
+        return cuts
 
     def cell_rect(zone: ZoneId) -> Rect:
-        return usable_cell(grid.cells[zone], cell_cuts(zone))
+        kept, _ = usable_cell(grid.cells[zone], cell_cuts(zone))
+        return kept
+
+    def claim_cell(zone: ZoneId) -> Rect:
+        """Finalize `zone`: same rect as cell_rect, but also registers
+        whatever a corner-notch cut left over in it as open space. Call
+        this once, only for a zone that's actually being claimed — not
+        from a `fits`-style probe of a candidate that might not be picked."""
+        kept, leftovers = usable_cell(grid.cells[zone], cell_cuts(zone))
+        add_leftovers(rooms, leftovers, None, f"notch_{zone}", storey, want_court)
+        return kept
 
     for space in majors:
         picked = pick_zone(space.kind, free, mode, lambda z: box_fits(cell_rect(z).w, cell_rect(z).h, IDEAL_SIZE[space.kind]))
@@ -498,7 +575,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             leftover.append(space)
             continue
         zone, relaxed_flag = picked
-        rect = cell_rect(zone)
+        rect = claim_cell(zone)
         free.remove(zone)
         room = make_room(space, rect, storey, ZONE_DIR[zone])
         if relaxed_flag or zone_rules.vastu_cost(space.kind, ZONE_DIR[zone], mode)[1]:
@@ -514,7 +591,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         if not picked or toilet_forbidden(ZONE_DIR[picked[0]]):
             return False
         zone = picked[0]
-        cell = cell_rect(zone)
+        cell = claim_cell(zone)
         rect = wet_rect_in_cell(cell, wet.kind, zone, [foyer])
         free.remove(zone)
         rooms.append(make_room(wet, rect, storey, ZONE_DIR[zone]))
@@ -536,6 +613,13 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             leftover.append(wet)
 
     if stair:
+        # The stair's own zone (cell_cuts, above) already excludes its
+        # footprint from every cell computed for that zone, so nothing
+        # placed through the normal zone-claiming path (majors, wet areas,
+        # the free-zone loop below) can land on top of it — the stair is
+        # reserved before any of that runs, not carved out after the fact.
+        # This search is a defensive fallback only, for a room that somehow
+        # still overlaps it (e.g. geometry this session hasn't anticipated).
         host_room = next(
             (r for r in rooms if r.life != "circulation" and r.kind not in ("staircase", "brahmasthan")
              and (_rect_contains(r.rect, stair.rect) or overlap_area(r.rect, stair.rect) > 0.4)),
@@ -547,16 +631,16 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             if remain and box_fits(remain.w, remain.h, IDEAL_SIZE[host_room.kind]):
                 add_leftovers(rooms, pieces, remain, host_room.id, storey, False)
                 host_room.rect = remain
-        elif stair.host_id and stair.host_id in free:
-            # Nothing claimed the stair's mandala zone, so it's still
-            # sitting in `free` as a whole cell — carve the stair out of it
-            # now, or the free-zone loop below drops a full, uncarved cell
-            # room right on top of it (a real overlap, not a cosmetic one).
-            zid = stair.host_id
-            cell = cell_rect(zid)
-            pieces = split_by(cell, stair.rect)
-            free.remove(zid)
-            add_leftovers(rooms, pieces, None, f"center_{zid}", storey, want_court)
+            else:
+                # Shrinking this room to make way for the staircase would
+                # take it below its own minimum — keeping it at full size
+                # would silently overlap the stair instead. Drop it (it
+                # comes back as an unplaced/leftover space) and reclaim
+                # whatever's left of its footprint as open circulation
+                # rather than losing it outright.
+                rooms.remove(host_room)
+                leftover.append(PlannedSpace(id=host_room.id, kind=host_room.kind, index=host_room.index))
+                add_leftovers(rooms, pieces, None, host_room.id, storey, False)
         rooms.append(PlannedRoom(
             id=f"stair_{storey}", kind="staircase", floor=storey, rect=stair.rect,
             life="vertical", vastu_region=_region_of_shaft(stair.rect, grid),
@@ -564,7 +648,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         ))
 
     for zid in list(free):
-        rect = cell_rect(zid)
+        rect = claim_cell(zid)
         if rect.w < 0.9 or rect.h < 0.9:
             continue
         # Every zone this loop touches gets a final fate right here (merged
@@ -578,7 +662,8 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             continue
         rooms.append(open_piece(f"center_{zid}_{storey}", rect, storey, want_court))
 
-    boxed_foyer = place_foyer(rooms, foyer, storey, site.facing)
+    boxed_foyer, foyer_dropped = place_foyer(rooms, foyer, storey, site.facing)
+    leftover.extend(foyer_dropped)
 
     for wet in attach_later:
         done = False

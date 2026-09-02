@@ -78,6 +78,87 @@ def test_house_plan_feet_unit_converts_to_meters():
     assert abs(d["height"] - 10.0) < 0.1
 
 
+def _shared_span(a: dict, b: dict) -> tuple[bool, float, float, float] | None:
+    """Port of engine.vedic.vastu.geometry.shared_seg for the API's plain-dict
+    room shape: (is_horizontal, fixed_coordinate, lo, hi) of the segment
+    where rects `a` and `b` touch flush, or None if they don't."""
+    eps = 0.04
+    ax0, ax1, ay0, ay1 = a["x"], a["x"] + a["w"], a["y"], a["y"] + a["h"]
+    bx0, bx1, by0, by1 = b["x"], b["x"] + b["w"], b["y"], b["y"] + b["h"]
+    if abs(ax1 - bx0) < eps or abs(bx1 - ax0) < eps:
+        x = ax1 if abs(ax1 - bx0) < eps else ax0
+        lo, hi = max(ay0, by0), min(ay1, by1)
+        if hi - lo > 0.45:
+            return (False, x, lo, hi)
+    if abs(ay1 - by0) < eps or abs(by1 - ay0) < eps:
+        y = ay1 if abs(ay1 - by0) < eps else ay0
+        lo, hi = max(ax0, bx0), min(ax1, bx1)
+        if hi - lo > 0.45:
+            return (True, y, lo, hi)
+    return None
+
+
+def _wall_covers(layer: dict, span: tuple[bool, float, float, float]) -> list[dict]:
+    horiz, fixed, lo, hi = span
+    verts = {v["id"]: v for v in layer["vertices"]}
+    hits = []
+    for w in layer["walls"]:
+        va, vb = verts[w["a"]], verts[w["b"]]
+        if horiz and abs(va["y"] - vb["y"]) < 1e-3 and abs(va["y"] - fixed) < 0.05:
+            wlo, whi = min(va["x"], vb["x"]), max(va["x"], vb["x"])
+        elif not horiz and abs(va["x"] - vb["x"]) < 1e-3 and abs(va["x"] - fixed) < 0.05:
+            wlo, whi = min(va["y"], vb["y"]), max(va["y"], vb["y"])
+        else:
+            continue
+        if min(whi, hi) - max(wlo, lo) > 0.05:
+            hits.append(w)
+    return hits
+
+
+def test_house_plan_open_rooms_meeting_head_on_share_open_floor():
+    """Regression test: compile_layer used to wall off the *entire* side of
+    an open/circulation room (Brahmasthan, hall, foyer, landing) whenever
+    any part of that side touched a closed room — even the portion of the
+    same side that actually bordered another open room, which should stay
+    open floor (that's the whole point of open-to-open reachability needing
+    no door). On this plot it used to cut the Brahmasthan into several
+    separately walled-off slivers; it should now read as one open area
+    wherever two open rooms meet without a door between them."""
+    for storeys in (1, 2):
+        body = {**_BODY, "requirement": {**_BODY["requirement"], "storeys": storeys}}
+        resp = client.post("/v1/vastu/house-plan", json=body)
+        assert resp.status_code == 200
+        for floor in resp.json()["floors"]:
+            layer = floor["layer"]
+            open_rooms = [r for r in floor["rooms"] if r["life"] in ("circulation", "outdoor")]
+            door_walls = {h["wall_id"] for h in layer["holes"] if h["type"] == "door"}
+            for i in range(len(open_rooms)):
+                for j in range(i + 1, len(open_rooms)):
+                    span = _shared_span(open_rooms[i], open_rooms[j])
+                    if not span:
+                        continue
+                    for wall in _wall_covers(layer, span):
+                        assert wall["id"] in door_walls, (
+                            f"{open_rooms[i]['id']} and {open_rooms[j]['id']} are walled off "
+                            f"from each other with no door (floor {floor['storey']})"
+                        )
+
+
+def test_house_plan_rooms_fully_cover_the_plot():
+    """Regression test: usable_cell() used to return only the largest piece
+    of a corner-notch-clipped zone cell and silently drop the rest — real
+    floor area that ends up walled off on both sides (by the notch's own
+    zone and whichever room sits across the gap) but claimed by no room at
+    all, closed or open. On this plot it was a consistent ~9m^2 (~6% of
+    the plot) split across the 4 corner-notch positions."""
+    resp = client.post("/v1/vastu/house-plan", json=_BODY)
+    assert resp.status_code == 200
+    floor = resp.json()["floors"][0]
+    plot_area = _BODY["site"]["plot_width"] * _BODY["site"]["plot_depth"]
+    covered = sum(r["w"] * r["h"] for r in floor["rooms"])
+    assert abs(covered - plot_area) < 0.5, f"covered {covered:.2f} of {plot_area:.2f} m^2"
+
+
 def test_house_plan_invalid_facing_is_422():
     body = {**_BODY, "site": {**_BODY["site"], "facing": "northeast"}}
     resp = client.post("/v1/vastu/house-plan", json=body)

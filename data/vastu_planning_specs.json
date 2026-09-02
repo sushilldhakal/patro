@@ -1,0 +1,54 @@
+{
+  "_comment": "Practical planning defaults for doors, windows, staircases, and circulation — companion to vastu_room_sizes.json's room-size tiers. Same category-C status: architectural planning conventions, not classical Vastu content (Vastu proportion/placement rules for openings live in entrance.py/zone_rules.py, e.g. door-height-as-ratio-of-width and NE/SW solar window sizing). This file is reference data only, not yet wired into the engine — each section's `current_implementation` block records the constant(s) already live in code (as of this file's version) so the two don't silently drift apart. Units are metres throughout.",
+  "version": "2026.09.01.1",
+  "doors": {
+    "_comment": "width/height are the reference planning size; wall_opening = width + typical frame allowance. current_implementation cites engine/vedic/vastu/entrance.py (DOOR_RATIO, ENTRANCE_W) and building.py/layout.py (DOOR_W, WET_DOOR_W) — those derive height as width * DOOR_RATIO(2) rather than a fixed value, which is why e.g. main door height (1.05 * 2 = 2.10m) matches this table but room/wet door heights (1.80m, 1.50m) run lower than the flat 2.1m reference below.",
+    "main_entrance": {"width": 1.1, "height": 2.1, "wall_opening": 1.2, "swing": "in", "current_implementation": {"width": 1.05, "height": 2.1, "source_constant": "entrance.py:ENTRANCE_W"}},
+    "room": {"width": 0.9, "height": 2.1, "wall_opening": 1.0, "swing": "in", "current_implementation": {"width": 0.9, "height": 1.8, "source_constant": "layout.py:DOOR_W"}},
+    "toilet": {"width": 0.775, "height": 2.1, "wall_opening": 0.85, "swing": "out", "current_implementation": {"width": 0.75, "height": 1.5, "source_constant": "layout.py:WET_DOOR_W"}},
+    "bathroom": {"width": 0.775, "height": 2.1, "wall_opening": 0.85, "swing": "out", "current_implementation": {"width": 0.75, "height": 1.5, "source_constant": "layout.py:WET_DOOR_W"}},
+    "kitchen": {"width": 0.85, "height": 2.1, "wall_opening": 0.95, "swing": "in", "current_implementation": null},
+    "puja": {"width": 0.825, "height": 2.1, "wall_opening": 0.9, "swing": "in", "current_implementation": null}
+  },
+  "windows": {
+    "_comment": "minimum/preferred are per-room-type planning sizes (width x height). The engine's live sizing (entrance.py WIN_NE_*/WIN_SW_*, building.py) is direction-based rather than room-type-based — a solar wall (N/E, per is_solar_wall) gets the larger WIN_NE_W x WIN_NE_H window at a lower sill, a non-solar wall (S/W) gets the smaller WIN_SW_W x WIN_SW_H at a higher sill — which is itself a Vastu solar-gain convention, not a gap to fill; the two tables answer different questions (how big should this room's windows be vs. how big should a window on this wall be) and are meant to be reconciled together in a later phase, not by replacing one with the other.",
+    "bedroom": {"minimum": {"width": 1.2, "height": 1.0}, "preferred": {"width": 1.5, "height": 1.2}},
+    "master_bedroom": {"minimum": {"width": 1.5, "height": 1.0}, "preferred": {"width": 1.8, "height": 1.2}},
+    "living": {"minimum": {"width": 1.5, "height": 1.2}, "preferred": {"width": 2.1, "height": 1.5}},
+    "kitchen": {"minimum": {"width": 1.0, "height": 0.9}, "preferred": {"width": 1.2, "height": 1.0}},
+    "bathroom": {"minimum": {"width": 0.6, "height": 0.45}, "preferred": {"width": 0.6, "height": 0.6}},
+    "toilet": {"minimum": {"width": 0.6, "height": 0.45}, "preferred": {"width": 0.6, "height": 0.6}},
+    "puja": {"minimum": {"width": 0.6, "height": 0.6}, "preferred": {"width": 0.9, "height": 0.9}},
+    "current_implementation": {
+      "solar_wall": {"width": 1.45, "height": 1.35, "sill": 0.85, "source_constant": "entrance.py:WIN_NE_W/WIN_NE_H/WIN_NE_SILL", "applies_to": "north/east-facing walls (is_solar_wall)"},
+      "non_solar_wall": {"width": 0.75, "height": 0.7, "sill": 1.45, "source_constant": "entrance.py:WIN_SW_W/WIN_SW_H/WIN_SW_SILL", "applies_to": "south/west-facing walls"}
+    }
+  },
+  "staircase": {
+    "_comment": "Residential straight/dog-leg planning defaults. Actual footprint should be computed per-project from floor-to-floor height and riser/tread, not hardcoded — see next_legal_count() in entrance.py for the existing even-step-count rule this should compose with.",
+    "minimum_clear_width": 0.9,
+    "preferred_width": 1.0,
+    "preferred_width_range": {"min": 1.0, "max": 1.1},
+    "riser": {"typical": 0.17, "range": {"min": 0.15, "max": 0.18}},
+    "tread": {"typical": 0.28, "range": {"min": 0.25, "max": 0.3}},
+    "landing_width": "at least the staircase width",
+    "current_implementation": {
+      "width": 1.25,
+      "length": 2.5,
+      "source_constant": "layout.py:STAIR_W/STAIR_L, architecture.py:STAIR_WIDTH_M",
+      "note": "footprint is a fixed 1.25 x 2.5m box today, wider than the 0.9-1.1m reference width above; riser/tread are not yet modeled to derive the footprint from floor height"
+    }
+  },
+  "circulation": {
+    "_comment": "Wall thickness and passage clearances to reserve before placing rooms/furniture, so a room's footprint is not mistaken for its usable area.",
+    "external_wall_thickness": {"min": 0.15, "max": 0.23},
+    "internal_partition_thickness": {"min": 0.1, "max": 0.15},
+    "room_circulation": 0.9,
+    "main_passage_width": {"min": 1.0, "max": 1.2},
+    "current_implementation": {
+      "wall_thickness": 0.18,
+      "source_constant": "building.py:WALL_T",
+      "note": "one uniform thickness for all walls today; no external/internal split and no reserved circulation/passage allowance separate from room footprint yet"
+    }
+  }
+}

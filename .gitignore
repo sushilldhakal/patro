@@ -44,6 +44,8 @@ data/cities.db
 data/cities15000.txt
 data/cities15000.zip
 data/panchanga.db
+data/panchanga.db-shm
+data/panchanga.db-wal
 
 # Swiss Ephemeris .se1 binaries — provisioned by scripts/install_ephemeris.py
 data/ephemeris/

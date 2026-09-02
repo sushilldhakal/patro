@@ -186,13 +186,25 @@ def compile_layer(width: float, height: float, facing: CardinalWall, rooms: list
     # exist *before* any door/window holes are placed, or a later door on
     # this same boundary can't find (and merge into) it, leaving a
     # duplicate, unmerged wall segment behind.
+    #
+    # A side can be split between neighbors — part of it against a closed
+    # room, the rest against another open room (a mandala cell fragmented
+    # by notches routinely produces exactly this). Walling the *whole* side
+    # whenever *any* part of it touches a closed room used to draw a wall
+    # straight across the open-to-open portion too — visually chopping one
+    # continuous hall/Brahmasthan into separate walled-off compartments.
+    # shared_seg's returned span is already clipped to the true overlap, so
+    # using it directly (instead of just its `.wall` label) walls only the
+    # sub-span that's actually against a closed room.
     for room in open_rooms:
-        closed_walls = {seg.wall for other in closed if (seg := shared_seg(room.rect, other.rect))}
+        closed_segs = [seg for other in closed if (seg := shared_seg(room.rect, other.rect))]
         for e in edges(room.rect):
-            on_perim = on_perimeter(e, width, height)
-            if not on_perim and e.wall not in closed_walls:
+            if on_perimeter(e, width, height):
+                wall(e.x1, e.y1, e.x2, e.y2, "exterior")
                 continue
-            wall(e.x1, e.y1, e.x2, e.y2, "exterior" if on_perim else "interior")
+            for seg in closed_segs:
+                if seg.wall == e.wall:
+                    wall(seg.x1, seg.y1, seg.x2, seg.y2, "interior")
 
     hole_n = 0
 

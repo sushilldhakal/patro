@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 from engine.vedic.vastu.layout import plan_house
-from engine.vedic.vastu.rooms import HouseRequirement
+from engine.vedic.vastu.rooms import HouseRequirement, PlannedSpace
 from engine.vedic.vastu.types import SiteInput
 
 FACINGS = ["east", "west", "north", "south"]
@@ -86,6 +86,58 @@ def test_every_room_fits_inside_the_plot():
         assert r.y + r.h <= site.height + eps
 
 
+def _overlap_area(a, b) -> float:
+    w = min(a.x + a.w, b.x + b.w) - max(a.x, b.x)
+    h = min(a.y + a.h, b.y + b.h) - max(a.y, b.y)
+    return w * h if w > 0 and h > 0 else 0.0
+
+
+def test_staircase_never_overlaps_another_room():
+    """Regression test for a real bug: a wet room could claim the
+    staircase's mandala zone (via place_wet_in_cell) before the stair's own
+    carve-out step ever ran, leaving the stair overlapping whatever landed
+    there first — worst on upper floors, where the wet-area program differs
+    from the ground floor. build_floor's `cell_cuts` now excludes the
+    stair's footprint from its zone up front, so nothing can claim it in
+    the first place."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja"), mode="strict", storeys=2,
+    )
+    site = SiteInput(width=10, height=8, facing="south")
+    concept = plan_house(req, site)
+    for floor in concept.floors:
+        stair = next((r for r in floor.rooms if r.kind == "staircase"), None)
+        if not stair:
+            continue
+        for room in floor.rooms:
+            if room.id == stair.id:
+                continue
+            assert _overlap_area(room.rect, stair.rect) < 0.05, (
+                f"{room.id} overlaps the staircase on floor {floor.storey}"
+            )
+
+
+def test_foyer_never_overlaps_a_wet_room_by_more_than_a_sliver():
+    """Regression test: the entrance foyer could land on a bathroom/combined
+    room without shrinking it first, if shrinking would have taken that
+    room below its own minimum size — place_foyer now drops such a room to
+    `leftover` instead of leaving it in place under the foyer."""
+    req = HouseRequirement(
+        bedrooms=2, master_bedroom_index=1, toilets=2, bathrooms=2, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja", "study"), mode="balanced", storeys=1,
+    )
+    site = SiteInput(width=7, height=6, facing="west")
+    concept = plan_house(req, site)
+    foyer = next(r for r in concept.floors[0].rooms if r.kind == "foyer")
+    for room in concept.floors[0].rooms:
+        if room.id == foyer.id or room.kind not in ("bathroom", "combined", "toilet"):
+            continue
+        # A hairline sliver (below the carve-worthiness threshold place_foyer
+        # itself uses) is tolerated; a room-sized overlap is not.
+        assert _overlap_area(room.rect, foyer.rect) < 0.1, f"{room.id} overlaps the foyer"
+
+
 def test_multi_floor_has_staircase_on_every_floor():
     req = HouseRequirement(bedrooms=3, toilets=2, extras=("kitchen", "living", "dining"), storeys=2)
     site = SiteInput(width=15, height=10, facing="east")
@@ -94,3 +146,66 @@ def test_multi_floor_has_staircase_on_every_floor():
     for floor in concept.floors:
         assert any(r.kind == "staircase" for r in floor.rooms)
     assert concept.validation.stair_connects
+
+
+def _bedroom_room(w: float, h: float):
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.layout import make_room
+
+    return make_room(PlannedSpace(id="bedroom_1", kind="bedroom"), Rect(0, 0, w, h), storey=0, region="east")
+
+
+def test_leftover_growth_refuses_past_preferred_tier():
+    """A room already at (or past) its preferred size shouldn't keep
+    absorbing leftover mandala cells — data/vastu_room_sizes.json's whole
+    point is that excess space should stay usable elsewhere instead."""
+    from engine.vedic.vastu import architecture as arch
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.layout import _growth_priority
+
+    tiers = arch.ROOM_SIZE_TIERS["bedroom"]
+    room = _bedroom_room(tiers.preferred.width, tiers.preferred.depth)
+    cell = Rect(room.rect.x + room.rect.w, room.rect.y, 2.0, room.rect.h)
+    assert _growth_priority(room, cell) is None
+
+
+def test_leftover_growth_allowed_up_to_preferred_tier():
+    from engine.vedic.vastu import architecture as arch
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.layout import _growth_priority
+
+    tiers = arch.ROOM_SIZE_TIERS["bedroom"]
+    room = _bedroom_room(tiers.minimum.width, tiers.minimum.depth)
+    cell = Rect(room.rect.x + room.rect.w, room.rect.y, 0.2, room.rect.h)
+    assert _growth_priority(room, cell) is not None
+
+
+def test_below_comfortable_room_outranks_above_comfortable_room():
+    """Among willing candidates, a room still short of `comfortable` should
+    be favored over one that's already reached it."""
+    from engine.vedic.vastu import architecture as arch
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.layout import _growth_priority
+
+    tiers = arch.ROOM_SIZE_TIERS["bedroom"]
+    below_comfortable = _bedroom_room(tiers.minimum.width, tiers.minimum.depth)
+    at_comfortable = _bedroom_room(tiers.comfortable.width, tiers.comfortable.depth)
+    cell = Rect(0, 0, 0.2, 0.2)
+    priority_below = _growth_priority(below_comfortable, cell)
+    priority_at = _growth_priority(at_comfortable, cell)
+    assert priority_below is not None and priority_at is not None
+    assert priority_below[0] == 0
+    assert priority_at[0] == 1
+
+
+def test_room_with_no_tier_data_keeps_original_uncapped_growth():
+    """The mandala's own centre (kind="brahmasthan") carries no size tier —
+    it must keep growing exactly as it always did, unbounded."""
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.layout import _growth_priority, open_piece
+
+    center = open_piece("center_0", Rect(0, 0, 20, 20), storey=0, want_court=False)
+    cell = Rect(20, 0, 5, 20)
+    priority = _growth_priority(center, cell)
+    assert priority is not None
+    assert priority[0] == 1  # no comfortable tier to be "below" of
