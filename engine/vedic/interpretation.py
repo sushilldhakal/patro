@@ -963,17 +963,20 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     })
     catalog.append({
         "key": "sunapha", "name": "Sunapha Yoga", "polarity": "benefic",
-        "present": bool(chandra_2) and not chandra_12,
-        "text": "Planets (other than the Sun) occupy the 2nd house from the Moon while "
-                "the 12th from the Moon is empty — a Chandra yoga for self-made prosperity "
-                "and reputation built through personal effort.",
+        # BPHS: planets (other than the Sun) occupy the 2nd from the Moon.
+        # Not exclusive of Anapha/Durdhara — see the yoga_reference.json
+        # definitions, which state each side's condition independently.
+        "present": bool(chandra_2),
+        "text": "Planets (other than the Sun) occupy the 2nd house from the Moon — a "
+                "Chandra yoga for self-made prosperity and reputation built through "
+                "personal effort.",
     })
     catalog.append({
         "key": "anapha", "name": "Anapha Yoga", "polarity": "benefic",
-        "present": bool(chandra_12) and not chandra_2,
-        "text": "Planets occupy the 12th house from the Moon while the 2nd from the Moon "
-                "is empty — a Chandra yoga for refinement, comfort and graceful conduct "
-                "that attracts support from others.",
+        "present": bool(chandra_12),
+        "text": "Planets occupy the 12th house from the Moon — a Chandra yoga for "
+                "refinement, comfort and graceful conduct that attracts support from "
+                "others.",
     })
     catalog.append({
         "key": "durdhara", "name": "Durdhara Yoga", "polarity": "benefic",
@@ -981,19 +984,30 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
         "text": "Planets flank the Moon on both the 2nd and 12th sides — a strong Chandra "
                 "yoga for wealth, vehicles and a life supported by resources on every side.",
     })
+    _kemadruma_isolated = "moon" in P and not chandra_2 and not chandra_12
+    _kemadruma_kendra_occupied = any(chart.house_occupants.get(h) for h in KENDRA)
     catalog.append({
         "key": "kemadruma", "name": "Kemadruma (isolated Moon)", "polarity": "caution",
         # BPHS: no planet (except Sun) flanks the Moon in the 2nd/12th AND no
-        # planet occupies an angle from the Lagna.
-        "present": (
-            "moon" in P and not chandra_2 and not chandra_12
-            and not any(chart.house_occupants.get(h) for h in KENDRA)
-        ),
+        # planet occupies an angle from the Lagna. A planet in an angle
+        # classically cancels (bhanga) the isolation — see kemadruma_bhanga
+        # below, which fires precisely on that cancellation.
+        "present": _kemadruma_isolated and not _kemadruma_kendra_occupied,
         "text": "Formed when the Moon has no planets flanking it (2nd/12th) and no planet "
                 "occupies an angle from the Lagna — classically pointing to self-built "
                 "emotional support. It is widely considered softened by a strong Moon or "
                 "benefic aspects, so treat it as a reminder to nurture stable routines and "
                 "relationships, not as a verdict.",
+    })
+    catalog.append({
+        "key": "kemadruma_bhanga", "name": "Kemadruma Bhanga Raja Yoga", "polarity": "benefic",
+        # BPHS cancellation: the Moon is structurally isolated (2nd/12th empty)
+        # but a planet occupying an angle from the Lagna breaks the isolation,
+        # turning the caution into a self-made-wealth Raja yoga.
+        "present": _kemadruma_isolated and _kemadruma_kendra_occupied,
+        "text": "The Moon is structurally isolated (2nd/12th empty) but a planet occupies "
+                "an angle from the Lagna, cancelling Kemadruma — classically turning it "
+                "into a Raja yoga for wealth and standing earned through one's own effort.",
     })
     catalog.append({
         "key": "chandra_mangala", "name": "Chandra-Mangala Yoga", "polarity": "mixed",
@@ -1113,17 +1127,18 @@ def full_yoga_catalog(chart: "Chart") -> list[dict[str, Any]]:
     # ── Sun-based (Surya) yogas ───────────────────────────────────────────────
     catalog.append({
         "key": "veshi", "name": "Veshi Yoga", "polarity": "benefic",
-        "present": bool(surya_2) and not surya_12,
-        "text": "Planets occupy the 2nd house from the Sun while the 12th from the Sun "
-                "is empty — a Surya yoga for truthful speech, integrity and recognition "
-                "through principled action.",
+        # BPHS: planets (other than the Moon) occupy the 2nd from the Sun.
+        # Not exclusive of Vasi/Ubhayachari — see the yoga_reference.json
+        # definitions, which state each side's condition independently.
+        "present": bool(surya_2),
+        "text": "Planets occupy the 2nd house from the Sun — a Surya yoga for truthful "
+                "speech, integrity and recognition through principled action.",
     })
     catalog.append({
         "key": "vasi", "name": "Vasi Yoga", "polarity": "benefic",
-        "present": bool(surya_12) and not surya_2,
-        "text": "Planets occupy the 12th house from the Sun while the 2nd from the Sun "
-                "is empty — a Surya yoga for charity, spiritual merit and influence "
-                "through selfless service.",
+        "present": bool(surya_12),
+        "text": "Planets occupy the 12th house from the Sun — a Surya yoga for charity, "
+                "spiritual merit and influence through selfless service.",
     })
     catalog.append({
         "key": "ubhayachari", "name": "Ubhayachari Yoga", "polarity": "benefic",
