@@ -13,6 +13,10 @@ python-dotenv>=1.0.0
 Pillow>=11.0.0
 playwright>=1.40.0
 
+# Vastu house-plan room placement — CP-SAT constraint solver (engine/vedic/vastu/solver.py).
+# Ships prebuilt wheels for Linux/macOS; no C++ toolchain needed to install.
+ortools>=9.11,<10
+
 # Auth / user profiles
 SQLAlchemy>=2.0.30
 psycopg[binary]>=3.2.0

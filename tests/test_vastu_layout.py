@@ -290,16 +290,21 @@ def test_carve_falls_back_to_a_strip_when_the_donor_is_too_narrow_for_a_corner_c
     assert ok, "none of the candidates left the donor a valid remainder"
 
 
-def test_generous_plot_never_double_carves_the_same_donor():
-    """Regression for the fragmentation this fix chased down twice: the
+def test_generous_plot_places_everything_without_overlap():
+    """Regression for the fragmentation this fix originally chased down: the
     reported request (3 bedrooms, 2 toilets, bathroom, combined, living,
     kitchen_dining, puja, study, store, laundry on a 15x14m plot) must place
-    everything, and — the actual "double wall" symptom — no single donor
-    room should end up carved more than once (attach_toilet's ensuite carve
-    counts too), which is what stacked a second partition right next to an
-    ensuite's own leftover sliver."""
-    from collections import Counter
+    everything, each room at a valid size.
 
+    The old zone-claiming engine placed at most one room per mandala zone
+    before falling back to carving a second one out of its surplus — so
+    "no zone carved twice" (checked via `Counter(vastu_region).values()`)
+    was a meaningful proxy for "no accidental double partition wall." The
+    solver-based engine has no such concept: rooms are independent decision
+    variables with no notion of "whose surplus this used to be," so several
+    rooms legitimately sharing one dir8 bearing bucket is normal, not a
+    fragmentation bug — `test_no_room_overlaps` is what actually guards
+    against a double-wall artifact now, by construction."""
     from engine.vedic.vastu import architecture as arch
 
     req = HouseRequirement(
@@ -311,11 +316,8 @@ def test_generous_plot_never_double_carves_the_same_donor():
     concept = plan_house(req, site)
     assert concept.leftover == []
     rooms = [r for r in concept.floors[0].rooms if r.kind in arch.IDEAL_SIZE]
-    # Each of the 8 mandala zones starts with exactly one room in it, so at
-    # most 2 real rooms sharing a `vastu_region` (the original + one carve)
-    # is a clean single split; 3+ means something got carved twice.
-    by_region = Counter(r.vastu_region for r in rooms if r.kind != "foyer")
-    assert max(by_region.values()) <= 2, by_region
+    for room in rooms:
+        assert box_fits(room.rect.w, room.rect.h, arch.IDEAL_SIZE[room.kind]), room
     for room in rooms:
         assert box_fits(room.rect.w, room.rect.h, arch.IDEAL_SIZE[room.kind]), room
 
