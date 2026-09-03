@@ -46,6 +46,19 @@ SOLVE_TIME_LIMIT_S = 4.0
 
 _DIR8_ORDER = ("north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest")
 
+# Classically-paired kinds pulled toward each other in the objective (see
+# ``_try_solve``'s own ADJ_WEIGHT) — deliberately small and hand-picked
+# rather than sourced from ``rooms.RoomSpec.adjacency``, which turned out to
+# be dead code: nothing in the actual request pipeline
+# (``HouseRequirement`` -> ``expand_planned_spaces`` -> ``PlannedSpace``)
+# ever constructs a ``RoomSpec`` or reads its ``adjacency`` field, so there
+# was no real per-request adjacency data to wire in.
+ADJACENCY_CLOSE: frozenset[frozenset[str]] = frozenset({
+    frozenset({"kitchen", "dining"}),
+    frozenset({"kitchen_dining", "living"}),
+    frozenset({"living", "dining"}),
+})
+
 
 def to_units(metres: float) -> int:
     return max(0, round(metres / UNIT))
@@ -271,10 +284,34 @@ def _try_solve(
         model.add_element(pada_index, cost_table, cost)
         cost_terms.append(cost)
 
-        per_space[space.id] = {"x": x, "y": y, "w": w, "h": h}
+        per_space[space.id] = {"x": x, "y": y, "w": w, "h": h, "pada_row": pada_row, "pada_col": pada_col}
 
     model.add_no_overlap_2d(x_intervals, y_intervals)
-    model.minimize(sum(cost_terms))
+
+    # A light tie-breaker, not a hard rule: pull a few classically-paired
+    # kinds toward each other (kitchen_near_dining is already one of
+    # validate.py's own checks) without letting it outweigh the real vastu
+    # cost terms above — each pair can move the objective by at most
+    # ADJ_WEIGHT * 2 * (PADA_N - 1), well under a single strict-mode
+    # zone-avoid cost of 80.
+    ADJ_WEIGHT = 3
+    adjacency_terms = []
+    for i, a in enumerate(spaces):
+        for b in spaces[i + 1:]:
+            if frozenset({a.kind, b.kind}) not in ADJACENCY_CLOSE:
+                continue
+            pa, pb = per_space[a.id], per_space[b.id]
+            dr = model.new_int_var(-PADA_N, PADA_N, f"dr_{a.id}_{b.id}")
+            model.add(dr == pa["pada_row"] - pb["pada_row"])
+            adr = model.new_int_var(0, PADA_N, f"adr_{a.id}_{b.id}")
+            model.add_abs_equality(adr, dr)
+            dc = model.new_int_var(-PADA_N, PADA_N, f"dc_{a.id}_{b.id}")
+            model.add(dc == pa["pada_col"] - pb["pada_col"])
+            adc = model.new_int_var(0, PADA_N, f"adc_{a.id}_{b.id}")
+            model.add_abs_equality(adc, dc)
+            adjacency_terms.extend((adr, adc))
+
+    model.minimize(sum(cost_terms) + ADJ_WEIGHT * sum(adjacency_terms))
 
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = SOLVE_TIME_LIMIT_S

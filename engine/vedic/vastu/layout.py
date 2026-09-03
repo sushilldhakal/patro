@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from . import architecture as arch
 from . import zone_rules
 from .architecture import IDEAL_SIZE, box_fits, expand_planned_spaces, life_zone_of, resolve_storey
-from .entrance import foyer_rect, toilet_forbidden
+from .entrance import foyer_rect
 from .geometry import Rect, largest, overlap_area, shared_seg, split_by, touches
 from .rooms import HouseRequirement, PlannedSpace
 from .solver import corridor_bands, disjoint_reserved, solve_layout
@@ -25,7 +25,6 @@ STAIR_L = 2.5
 MERGE_EPS = 0.05
 
 DOOR_W = 0.9
-WET_DOOR_W = 0.75
 
 ZoneId = str  # "nw" | "n" | "ne" | "w" | "e" | "sw" | "s" | "se"
 
@@ -141,68 +140,6 @@ def min_footprint(kind: str) -> tuple[float, float]:
     return (size.min_side, max(size.min_side, size.min_area / size.min_side))
 
 
-def wet_footprint(kind: str) -> tuple[float, float]:
-    """(short, long) side lengths."""
-    return min_footprint(kind)
-
-
-def pin_toilet(cell: Rect, w: float, h: float, zone: ZoneId, avoid: list[Rect] | None = None) -> Rect:
-    avoid = avoid or []
-    tw, th = min(w, cell.w), min(h, cell.h)
-    spots = [
-        Rect(cell.x + cell.w - tw, cell.y + cell.h - th, tw, th),
-        Rect(cell.x, cell.y + cell.h - th, tw, th),
-        Rect(cell.x + cell.w - tw, cell.y, tw, th),
-        Rect(cell.x, cell.y, tw, th),
-    ]
-    clear = next((s for s in spots if all(overlap_area(s, a) < 0.08 for a in avoid)), None)
-    if clear:
-        return clear
-    if zone in ("nw", "w", "s", "e"):
-        return Rect(cell.x, cell.y + cell.h - th, tw, th)
-    return spots[0]
-
-
-def attach_toilet(host: PlannedRoom, wet: PlannedSpace, storey: int, rooms: list[PlannedRoom]) -> PlannedRoom | None:
-    if toilet_forbidden(host.vastu_region):
-        return None
-    if host.vastu_region not in ("south", "northwest", "west"):
-        return None
-    r = host.rect
-    short, long = wet_footprint(wet.kind)
-    host_min = IDEAL_SIZE[host.kind].min_side
-    upright = r.h >= long and r.w - short >= host_min
-    tw, th = (short, long) if upright else (long, short)
-    if r.w < tw + host_min and r.h < th + host_min:
-        return None
-    west = host.vastu_region in ("south", "northwest")
-    south = host.vastu_region in ("south", "northwest", "west")
-    bath = Rect(
-        r.x if west else r.x + r.w - tw,
-        r.y + r.h - th if south else r.y,
-        tw, th,
-    )
-    pieces = split_by(r, bath, min_side=0.02)
-    remain = largest(pieces)
-    if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[host.kind]):
-        return None
-    add_leftovers(rooms, pieces, remain, host.id, storey, False, min_side=0.02)
-    host.rect = remain
-    room = make_room(wet, bath, storey, host.vastu_region)
-    add_door(room, "e" if west else "w", 0.55, host.id, WET_DOOR_W)
-    return room
-
-
-def wet_rect_in_cell(cell: Rect, kind: str, zone: ZoneId, avoid: list[Rect] | None = None) -> Rect:
-    short, long = wet_footprint(kind)
-    horizontal = cell.w >= long and cell.h >= short and cell.h < long
-    tw = long if horizontal else min(cell.w, max(short, long if horizontal else short))
-    th = short if horizontal else min(cell.h, long)
-    if not box_fits(tw, th, IDEAL_SIZE[kind]):
-        return cell
-    return pin_toilet(cell, tw, th, zone, avoid)
-
-
 def is_wet(kind: str) -> bool:
     return kind in ("toilet", "bathroom", "combined")
 
@@ -242,163 +179,6 @@ def extra_rect_candidates(donor_rect: Rect, extra_kind: str) -> list[Rect]:
     if r.h > 0:
         add(max(extra_ideal.min_side, extra_ideal.min_area / r.h), r.h)
     return [c for c in out if box_fits(c.w, c.h, extra_ideal)]
-
-
-def carve_extra_room(
-    rooms: list[PlannedRoom],
-    open_rooms: list[PlannedRoom],
-    donor: PlannedRoom,
-    space: PlannedSpace,
-    storey: int,
-    wet: bool,
-    used_hosts: set[str],
-) -> tuple[PlannedRoom, bool] | None:
-    """Try each of `extra_rect_candidates(donor.rect, space.kind)` in turn,
-    shrinking `donor` (and registering any smaller scrap via `add_leftovers`,
-    same as `attach_toilet`'s own ensuite carve) on the first one that both
-    leaves the donor itself still valid *and* gives the new room a door that
-    doesn't break the one-door rule: every ordinary room gets exactly one
-    door, to the open/circulation space it now borders (never to `donor` —
-    that would silently hand `donor` an unearned second door just for
-    having had surplus). The one legitimate exception is a wet room
-    (toilet/bathroom/combined) landing on a private host room's surplus —
-    a genuine ensuite, same as `attach_toilet`'s own carve — and only once
-    per host (`used_hosts` — shared with `attach_toilet`'s own bookkeeping,
-    so a host that already has an ensuite from there can't get a second one
-    here). A candidate with neither option is skipped, not accepted with a
-    door that would violate the rule.
-
-    Returns `(room, became_ensuite_host)` — not yet appended to `rooms`,
-    caller still owns that — or None if no candidate works at all."""
-    # A corner zone (nw/ne/sw/se) only ever touches the corridor through one
-    # specific edge (see mandala()'s own docstring) — an edge zone touches
-    # it through any of three. A candidate that happens to carve off exactly
-    # that one connecting edge leaves `donor` itself landlocked, even though
-    # it's still a perfectly valid room by size — `ensure_reachable` will
-    # notice and patch it with a bridge door later, but that's a door donor
-    # didn't earn. Preserving whatever connection `donor` already had is
-    # tried first, across every candidate, before ever accepting one that
-    # would cost it.
-    donor_had_open_link = any(shared_seg(donor.rect, o.rect) for o in open_rooms)
-    candidates = extra_rect_candidates(donor.rect, space.kind)
-    for require_donor_link in ([True, False] if donor_had_open_link else [False]):
-        for extra_rect in candidates:
-            pieces = split_by(donor.rect, extra_rect, min_side=0.02)
-            remain = largest(pieces)
-            if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[donor.kind]):
-                continue
-            if require_donor_link and not any(shared_seg(remain, o.rect) for o in open_rooms):
-                continue
-            open_neighbor = next((o for o in open_rooms if shared_seg(extra_rect, o.rect)), None)
-            if open_neighbor:
-                target_rect, target_id, becomes_host = open_neighbor.rect, open_neighbor.id, False
-            elif wet and donor.kind in arch.HOST_KINDS and donor.id not in used_hosts:
-                target_rect, target_id, becomes_host = remain, donor.id, True
-            else:
-                continue
-            add_leftovers(rooms, pieces, remain, donor.id, storey, False, min_side=0.02)
-            donor.rect = remain
-            room = make_room(space, extra_rect, storey, donor.vastu_region)
-            seg = shared_seg(extra_rect, target_rect)
-            if seg:
-                add_door(room, seg.wall, 0.5, target_id, WET_DOOR_W if wet else DOOR_W)
-            return room, becomes_host
-    return None
-
-
-def pack_into_surplus(
-    rooms: list[PlannedRoom],
-    leftover: list[PlannedSpace],
-    mode: str,
-    storey: int,
-    relaxed: list[PlanConflict],
-    used_hosts: set[str] | None = None,
-) -> None:
-    """Second-chance placement for anything that couldn't claim its own
-    mandala zone (majors first, then wet-room overflow — `leftover`'s
-    existing append order already puts majors ahead). Rather than fail
-    outright, try to carve a corner out of an already-placed room's surplus —
-    a zone that's much bigger than its room's own minimum, which is common
-    on a generous plot where each zone still only ever hosts one room. The
-    carved piece is sized to the *new* room's own minimum footprint, not to
-    however large the donor happens to be — an earlier version gave the new
-    room the donor's full width/height, which routinely left it oversized
-    enough to have surplus of its own, inviting yet another overflow room to
-    carve into *that* in turn. `carve_extra_room` (see its own docstring)
-    also enforces that this never hands `donor` an extra door it hasn't
-    earned — a plain donor keeps its one door; only a wet room landing on a
-    private host's surplus becomes a real, single-use ensuite.
-
-    `used_hosts` (already carrying an ensuite, whether from `attach_toilet`
-    or from this same call) is never donated a *second* ensuite door, and is
-    tried as a plain size-donor (no door to it) only after every untouched
-    room — donating from it at all stacks a new partition right next to its
-    ensuite's own leftover sliver, fragmenting one zone more than the plot
-    actually needs when another donor would do. `touched` grows with every
-    carve *this call* makes too, not just hosts: with several overflow rooms
-    to place, the lowest-cost donor for the first is often the lowest-cost
-    donor for the next one too; without this they'd all stack onto that one
-    room instead of spreading across whatever else is available first."""
-    used_hosts = used_hosts if used_hosts is not None else set()
-    touched = set(used_hosts)
-    still: list[PlannedSpace] = []
-    for space in leftover:
-        wet = is_wet(space.kind)
-        open_rooms = [r for r in rooms if r.life in ("circulation", "outdoor")]
-        # is_merge_target (used elsewhere for *growing* a room with a
-        # leftover scrap) excludes every circulation-life room, which is
-        # right for decorative open-floor fragments but wrong here for
-        # "living" specifically — it's life="circulation" purely for
-        # wall/door purposes (open-plan), while still being a real, sized
-        # room with genuine surplus to give up, same as any ordinary donor.
-        # Excluding it here just shrank the donor pool for no reason,
-        # making a more precious room (like puja) more likely to be needed.
-        candidates = [
-            r for r in rooms
-            if (is_merge_target(r) or (r.life == "circulation" and r.kind in IDEAL_SIZE))
-            # puja and kitchen are never bargained down for floor area, even
-            # as a last resort. Every other kind's own "ideal zone" cost is a
-            # graded, negotiable preference (still 0 for a well-placed
-            # bedroom or living room too, so ranking or de-prioritizing by
-            # cost alone can't tell these apart from any other room that's
-            # merely sitting where it should). Carving *from* one of these
-            # doesn't just shrink its area — carve_extra_room pins the new
-            # piece to the donor's own outer corner and leaves the donor the
-            # inner remainder, so the carved room (e.g. a toilet) ends up
-            # sitting at the zone's true exterior corner while the donor
-            # (puja/kitchen) is pushed inward — visibly wrong for a zone
-            # that's supposed to *be* that room's, not just host its label.
-            # A request that asked for puja/kitchen specifically wants that
-            # room at its own size and position, not shrunk and shoved off
-            # the corner so something else fits. Reporting the other item as
-            # genuinely unplaceable is the honest outcome here.
-            and r.kind not in ("puja", "kitchen", "kitchen_dining")
-        ]
-        if wet and space.kind in ("toilet", "combined"):
-            candidates = [r for r in candidates if not toilet_forbidden(r.vastu_region)]
-        candidates.sort(key=lambda r: zone_rules.vastu_cost(space.kind, r.vastu_region, mode)[0])
-        untouched = [r for r in candidates if r.id not in touched]
-
-        placed = False
-        for donor in [*untouched, *candidates]:
-            cost, _ = zone_rules.vastu_cost(space.kind, donor.vastu_region, mode)
-            if cost >= 200:
-                continue  # this donor's own direction avoids the kind outright
-            result = carve_extra_room(rooms, open_rooms, donor, space, storey, wet, used_hosts)
-            if not result:
-                continue
-            room, became_host = result
-            rooms.append(room)
-            touched.add(donor.id)
-            if became_host:
-                used_hosts.add(donor.id)
-            if cost > 0:
-                relaxed.append(PlanConflict(id=f"relax-{room.id}", severity="info", message_key="vastu.plan.valid.vastu_relaxed"))
-            placed = True
-            break
-        if not placed:
-            still.append(space)
-    leftover[:] = still
 
 
 def place_foyer(
@@ -525,33 +305,6 @@ def connect_foyer(foyer_room: PlannedRoom, rooms: list[PlannedRoom]) -> None:
     else:
         wall = "s" if dy > 0 else "n"
     add_door(foyer_room, wall, 0.5, host.id)
-
-
-def pick_zone(kind: str, free: list[ZoneId], mode: str, fits) -> tuple[ZoneId, bool] | None:
-    preferred = [d for d in zone_rules.allowed_regions(kind, "strict") if any(ZONE_DIR[z] == d for z in free)]
-    acceptable = [d for d in zone_rules.allowed_regions(kind, mode) if d not in preferred]
-
-    def rank(ids: list[str]) -> list[ZoneId]:
-        candidates = [z for z in free if ZONE_DIR[z] in ids and fits(z)]
-        # Several subjects (puja, bedroom, living, study, garden, library)
-        # carry northeast as just one of several *equally* preferred zones
-        # in the extracted data — nothing in the cost numbers says northeast
-        # over north/east/etc. But PLACE_ORDER already processes puja before
-        # every one of those others, and northeast is the single most
-        # widely-cited placement in classical teaching (Īśānya, the puja
-        # corner) — so on an actual tie, prefer it, rather than let an
-        # unrelated fixed zone-iteration order (nw before n before ne, an
-        # accident of how `cells` happens to be listed) decide whether puja
-        # or some other room gets there first.
-        return sorted(candidates, key=lambda z: (zone_rules.vastu_cost(kind, ZONE_DIR[z], mode)[0], 0 if z == "ne" else 1))
-
-    best = rank(preferred)
-    if best:
-        return (best[0], False)
-    nxt = rank(acceptable)
-    if nxt:
-        return (nxt[0], mode == "strict")
-    return None
 
 
 def door_onto_open(room: PlannedRoom, open_rooms: list[PlannedRoom]) -> None:
@@ -740,22 +493,6 @@ def ensure_reachable(rooms: list[PlannedRoom], root_id: str) -> None:
         room, neighbor = bridge
         seg = shared_seg(room.rect, neighbor.rect)
         add_door(room, seg.wall, 0.5, neighbor.id)
-
-
-def usable_cell(cell: Rect, cuts: list[Rect]) -> tuple[Rect, list[Rect]]:
-    """The mandala's corner notches are a deliberate decorative cut, so the
-    piece they clip off a neighboring zone's cell is never made part of
-    that zone's own room. Returns (the largest remaining piece, every
-    smaller piece cut off in the process) — callers that are only probing
-    a candidate zone's size can ignore the second element, but whichever
-    call actually finalizes a zone must register those smaller pieces as
-    open space (see `claim_cell`), or they end up as real, unwalled-off
-    gaps that no room accounts for."""
-    pieces = [cell]
-    for cut in cuts:
-        pieces = [p for piece in pieces for p in split_by(piece, cut, min_side=0.02)]
-    kept = largest(pieces) or cell
-    return kept, [p for p in pieces if p is not kept]
 
 
 def open_piece(id_: str, rect: Rect, storey: int, want_court: bool) -> PlannedRoom:
@@ -979,14 +716,6 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
                 rooms[j].adjacent_to.append(rooms[i].id)
 
     return rooms, leftover, relaxed
-
-
-def _rect_contains(outer: Rect, inner: Rect) -> bool:
-    return (
-        inner.x >= outer.x - 0.05 and inner.y >= outer.y - 0.05
-        and inner.x + inner.w <= outer.x + outer.w + 0.05
-        and inner.y + inner.h <= outer.y + outer.h + 0.05
-    )
 
 
 def _region_of_shaft(rect: Rect, grid: Mandala) -> str:

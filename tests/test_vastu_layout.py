@@ -372,3 +372,59 @@ def test_living_room_has_no_walls_or_doors():
     # free to door *onto* it, same as it would onto any other open space;
     # that's the other room's one required door, not a wall/door of living's.
     assert living.doors == []
+
+
+def test_small_plot_degrades_instead_of_crashing():
+    """The solver can't always fit everything a request asks for — a plot
+    too small for the room list must degrade gracefully (drop the least
+    essential rooms and place the rest), not raise or 500. Lower-priority
+    extras (study/store/laundry/a spare bedroom) should be the first thing
+    dropped, not the master bedroom or kitchen, matching `PLACE_ORDER`'s own
+    priority (wet rooms, which carry no PLACE_ORDER entry at all, are
+    dropped ahead of everything in it)."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1,
+        extras=("living", "kitchen", "dining", "puja", "study", "store", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    from engine.vedic.vastu.architecture import IDEAL_SIZE
+
+    site = SiteInput(width=9, height=8, facing="east")
+    concept = plan_house(req, site)  # must not raise
+    assert concept.leftover, "a 9x8m plot with this full room list should have to drop something"
+    kinds_left = {s.kind for s in concept.leftover}
+    assert "master_bedroom" not in kinds_left
+    assert "kitchen" not in kinds_left
+    assert "toilet" in kinds_left or "bathroom" in kinds_left or "study" in kinds_left
+    placed = concept.floors[0].rooms
+    for room in placed:
+        if room.kind in IDEAL_SIZE:
+            assert box_fits(room.rect.w, room.rect.h, IDEAL_SIZE[room.kind]), room
+
+
+def test_every_room_touches_the_corridor_spine():
+    """The solver's own hard constraint — every room must sit flush against
+    the corridor cross (`solver.corridor_bands`) — checked directly at the
+    geometry level, not just inferred from `validation.all_reachable` (which
+    also accepts a room reached only via a door bridge)."""
+    from engine.vedic.vastu.geometry import shared_seg
+    from engine.vedic.vastu.solver import corridor_bands, solve_layout
+
+    width, height = 13.0, 11.0
+    h_band, v_band = corridor_bands(width, height, 0.85)
+    spaces = [
+        PlannedSpace(id="master_1", kind="master_bedroom", index=1),
+        PlannedSpace(id="bedroom_2", kind="bedroom", index=2),
+        PlannedSpace(id="bedroom_3", kind="bedroom", index=3),
+        PlannedSpace(id="living", kind="living"),
+        PlannedSpace(id="kitchen", kind="kitchen"),
+        PlannedSpace(id="dining", kind="dining"),
+        PlannedSpace(id="puja", kind="puja"),
+        PlannedSpace(id="toilet_1", kind="toilet", index=1),
+    ]
+    result = solve_layout(spaces, width, height, "flexible", reserved=[h_band, v_band], corridor_w=0.85)
+    assert not result.dropped, result.dropped
+    for space_id, placement in result.placed.items():
+        touches_h = shared_seg(placement.rect, h_band) is not None
+        touches_v = shared_seg(placement.rect, v_band) is not None
+        assert touches_h or touches_v, f"{space_id} doesn't touch the corridor spine: {placement.rect}"
