@@ -1,0 +1,1002 @@
+[
+    {
+        "yoga_id": "1",
+        "sort": 1,
+        "name": "Gajakesari",
+        "name_ne": "गजकेसरी",
+        "definition": "Jupiter is in a kendra from the Moon.",
+        "definition_ne": "चन्द्रमाबाट केन्द्र (१, ४, ७, १० औं भाव) मा बृहस्पति।",
+        "result": "Polite, generous, lasting reputation.",
+        "result_ne": "विनम्र, उदार, र चिरस्थायी कीर्ति।"
+    },
+    {
+        "yoga_id": "2",
+        "sort": 2,
+        "name": "Sunapha",
+        "name_ne": "सुनफा",
+        "definition": "Planets (excluding the Sun) are in the 2nd house from the Moon.",
+        "definition_ne": "चन्द्रमाबाट दोस्रो भावमा सूर्य बाहेक अन्य ग्रहहरू।",
+        "result": "Self-earned property, king or equal, intelligent, wealthy, and good reputation.",
+        "result_ne": "स्व-अर्जित सम्पत्ति, राजा वा राजा समान, बुद्धिमान, धनी, र राम्रो प्रतिष्ठा।"
+    },
+    {
+        "yoga_id": "3",
+        "sort": 3,
+        "name": "Anapha",
+        "name_ne": "अनफा",
+        "definition": "Planets (excluding the Sun) are in the 12th house from the Moon.",
+        "definition_ne": "चन्द्रमाबाट १२ औं भावमा सूर्य बाहेक अन्य ग्रहहरू।",
+        "result": "Well-formed organs, majestic appearance, good reputation, polite, generous, self-respect, and fond of dress and sense pleasures.",
+        "result_ne": "सुगठित अंगहरू, तेजस्वी रूप, राम्रो प्रतिष्ठा, विनम्र, उदार, आत्म-सम्मान, र पहिरन तथा इन्द्रिय सुखको शौकीन।"
+    },
+    {
+        "yoga_id": "4",
+        "sort": 4,
+        "name": "Dhurdhura",
+        "name_ne": "धुधुर",
+        "definition": "Planets are on both sides of the Moon (in both the 2nd and 12th houses from the Moon).",
+        "definition_ne": "चन्द्रमाको दुवै छेउमा (दोस्रो र १२ औं भावमा) ग्रहहरू हुनु।",
+        "result": "Bountiful and blessed with much wealth and conveyances.",
+        "result_ne": "उदार र प्रशस्त धन तथा सवारी साधनहरूले युक्त।"
+    },
+    {
+        "yoga_id": "5",
+        "sort": 5,
+        "name": "Kemadruma",
+        "name_ne": "केमद्रुम",
+        "definition": "No planets on either side of the Moon (the 2nd and 12th houses from the Moon are vacant).",
+        "definition_ne": "चन्द्रमाको दुवै छेउमा (दोस्रो र १२ औं भावमा) कुनै ग्रह नहुनु।",
+        "result": "The person will be dirty, sorrowful, doing unrighteous deeds, poor, dependent, a rogue, and a swindler.",
+        "result_ne": "व्यक्ति फोहोरी, दुःखी, अधर्मी कार्य गर्ने, गरिब, पराश्रित, धूर्त र ठग हुनेछ।"
+    },
+    {
+        "yoga_id": "6",
+        "sort": 6,
+        "name": "Chandra Mangala",
+        "name_ne": "चन्द्र मङ्गल",
+        "definition": "Mars conjoins the Moon.",
+        "definition_ne": "मंगल र चन्द्रमाको युति हुनु (एउटै भावमा हुनु)।",
+        "result": "Earnings through unscrupulous means, a seller of women, or treating the mother harshly.",
+        "result_ne": "अनैतिक माध्यमबाट आर्जन, स्त्रीहरूको व्यापार गर्ने, वा आमालाई कठोर व्यवहार गर्ने।"
+    },
+    {
+        "yoga_id": "7",
+        "sort": 7,
+        "name": "Adhi",
+        "name_ne": "अधि",
+        "definition": "Benefics (Jupiter, Venus, and Mercury) are situated in the 6th, 7th, and 8th houses from the Moon.",
+        "definition_ne": "चन्द्रमाबाट ६, ७ र ८ औं भावमा शुभ ग्रहहरू (बृहस्पति, शुक्र र बुध) हुनु।",
+        "result": "Polite, trustworthy, enjoyable and happy life, healthy and long-lived.",
+        "result_ne": "विनम्र, भरपर्दो, रमाइलो र सुखी जीवन, स्वस्थ र दीर्घायु।"
+    },
+    {
+        "yoga_id": "8",
+        "sort": 8,
+        "name": "Chatussagara",
+        "name_ne": "चतुःसागर",
+        "definition": "All the kendras (1st, 4th, 7th, and 10th houses) are occupied by planets.",
+        "definition_ne": "सबै केन्द्रहरू (१, ४, ७, र १० औं भाव) मा ग्रहहरू हुनु।",
+        "result": "Good reputation, equal to a ruler, long and prosperous life, blessed with good children and health.",
+        "result_ne": "राम्रो प्रतिष्ठा, शासक समान, लामो र समृद्ध जीवन, असल सन्तान र स्वास्थ्यको सुख।"
+    },
+    {
+        "yoga_id": "9",
+        "sort": 9,
+        "name": "Vasumathi",
+        "name_ne": "वसुमती",
+        "definition": "Benefics occupy the upachayas (3rd, 6th, 10th, and 11th houses) either from the Lagna or from the Moon.",
+        "definition_ne": "लग्न वा चन्द्रमाबाट उपचय भावहरू (३, ६, १०, र ११ औं भाव) मा शुभ ग्रहहरू हुनु।",
+        "result": "The person will not be a dependent but will always command plenty of wealth.",
+        "result_ne": "व्यक्ति कसैको अधीनमा नबस्ने र सधैं प्रशस्त धनको स्वामी हुनेछ।"
+    },
+    {
+        "yoga_id": "10",
+        "sort": 10,
+        "name": "Rajalakshana",
+        "name_ne": "राजलक्षण",
+        "definition": "Jupiter, Venus, Mercury, and the Moon are in Lagna or placed in kendras.",
+        "definition_ne": "बृहस्पति, शुक्र, बुध र चन्द्रमा लग्नमा वा केन्द्रमा हुनु।",
+        "result": "Possess attractive appearance and endowed with all the good qualities of high personages.",
+        "result_ne": "आकर्षक रूप र उच्च व्यक्तित्वका सबै राम्रा गुणहरूले युक्त हुनु।"
+    },
+    {
+        "yoga_id": "11",
+        "sort": 11,
+        "name": "Vanchanachorabheethi",
+        "name_ne": "वञ्चनाचोरभीति",
+        "definition": "The Lagna is occupied by a malefic with Gulika in a trine; or Gulika is associated with the lords of Kendras and Thrikonas; or Lagna lord joins Rahu, Saturn, or Ketu.",
+        "definition_ne": "लग्नमा पापी ग्रह र त्रिकोणमा गुलिक हुनु; वा गुलिक केन्द्र/त्रिकोणका स्वामीहरूसँग हुनु; वा लग्नेश राहु, शनि वा केतुसँग हुनु।",
+        "result": "Feelings of suspicion towards others, fear of being cheated, swindled, and robbed.",
+        "result_ne": "अरूप्रति शंकाको भावना, ठगिने, लुटिने वा चोरी हुने डर।"
+    },
+    {
+        "yoga_id": "12",
+        "sort": 12,
+        "name": "Sakata",
+        "name_ne": "शकट",
+        "definition": "The Moon is in the 12th, 6th, or 8th house from Jupiter.",
+        "definition_ne": "बृहस्पतिबाट चन्द्रमा १२, ६, वा ८ औं भावमा हुनु।",
+        "result": "Loses fortune and may regain it; ordinary and insignificant; suffers from poverty and misery.",
+        "result_ne": "भाग्य गुम्ने र पुनः प्राप्त हुन सक्ने; सामान्य र महत्त्वहीन जीवन; गरिबी र दुःख भोग्नुपर्ने।"
+    },
+    {
+        "yoga_id": "13",
+        "sort": 13,
+        "name": "Amala",
+        "name_ne": "अमला",
+        "definition": "The 10th from the Moon or Lagna is occupied by a benefic planet.",
+        "definition_ne": "लग्न वा चन्द्रमाबाट १० औं भावमा शुभ ग्रह हुनु।",
+        "result": "Spotless character, lasting fame, reputation, and a prosperous life.",
+        "result_ne": "निष्कलंक चरित्र, चिरस्थायी कीर्ति, प्रतिष्ठा, र समृद्ध जीवन।"
+    },
+    {
+        "yoga_id": "14",
+        "sort": 14,
+        "name": "Parvata",
+        "name_ne": "पर्वत",
+        "definition": "Benefics are in kendras, and the 6th and 8th houses are empty or occupied by benefics.",
+        "definition_ne": "शुभ ग्रहहरू केन्द्रमा हुनु, र ६ औं तथा ८ औं भाव खाली हुनु वा शुभ ग्रहहरूले भरिनु।",
+        "result": "Wealthy, prosperous, liberal, charitable, humorous, and head of a town or village.",
+        "result_ne": "धनी, समृद्ध, उदार, परोपकारी, हास्यप्रिय, र सहर वा गाउँको प्रमुख।"
+    },
+    {
+        "yoga_id": "15",
+        "sort": 15,
+        "name": "Kahala",
+        "name_ne": "काहल",
+        "definition": "Lords of the 4th and 9th houses are in kendras from each other and Lagna lord is strong.",
+        "definition_ne": "चौथो र नवौं भावका स्वामीहरू एकअर्काबाट केन्द्रमा हुनु र लग्नेश बलियो हुनु।",
+        "result": "Stubborn, daring, head of a small army and a few villages.",
+        "result_ne": "हठ्ठी, साहसी, सानो सेना र केही गाउँको प्रमुख।"
+    },
+    {
+        "yoga_id": "16",
+        "sort": 16,
+        "name": "Vesi",
+        "name_ne": "वेशी",
+        "definition": "Planets other than the Moon occupy the 2nd from the Sun.",
+        "definition_ne": "सूर्यबाट दोस्रो भावमा चन्द्रमा बाहेक अन्य ग्रह हुनु।",
+        "result": "Fortunate, happy, virtuous, famous, and aristocratic.",
+        "result_ne": "भाग्यमानी, सुखी, सदाचारी, प्रसिद्ध र कुलीन।"
+    },
+    {
+        "yoga_id": "17",
+        "sort": 17,
+        "name": "Vasi",
+        "name_ne": "वासी",
+        "definition": "Planets other than the Moon occupy the 12th from the Sun.",
+        "definition_ne": "सूर्यबाट १२ औं भावमा चन्द्रमा बाहेक अन्य ग्रह हुनु।",
+        "result": "Happy, prosperous, liberal, and favorite of the ruling classes.",
+        "result_ne": "सुखी, समृद्ध, उदार, र शासक वर्गको प्रिय।"
+    },
+    {
+        "yoga_id": "18",
+        "sort": 18,
+        "name": "Obhayachari",
+        "name_ne": "उभयचारी",
+        "definition": "Planets other than the Moon are on both sides of the Sun (in 2nd and 12th).",
+        "definition_ne": "सूर्यको दुवै छेउमा (दोस्रो र १२ औं भावमा) चन्द्रमा बाहेकका ग्रहहरू हुनु।",
+        "result": "Eloquent speaker, well-proportioned limbs, liked by all, wealthy and famous.",
+        "result_ne": "कुशल वक्ता, सुगठित शरीर, सबैको प्रिय, धनी र प्रसिद्ध।"
+    },
+    {
+        "yoga_id": "19",
+        "sort": 19,
+        "name": "Hamsa",
+        "name_ne": "हंस",
+        "definition": "Jupiter occupies a kendra which is his own or exaltation sign.",
+        "definition_ne": "बृहस्पति केन्द्रमा आफ्नो वा उच्च राशिमा हुनु।",
+        "result": "Handsome body, liked by others, righteous in disposition, and pure in mind.",
+        "result_ne": "सुन्दर शरीर, अरूद्वारा रुचाइएको, धार्मिक र शुद्ध मन भएको।"
+    },
+    {
+        "yoga_id": "20",
+        "sort": 20,
+        "name": "Malavya",
+        "name_ne": "मालव्य",
+        "definition": "Venus occupies a kendra which is his own or exaltation sign.",
+        "definition_ne": "शुक्र केन्द्रमा आफ्नो वा उच्च राशिमा हुनु।",
+        "result": "Well-developed physique, strong-minded, wealthy, happy with children and wife, commands vehicles.",
+        "result_ne": "सुगठित शरीर, दृढ इच्छाशक्ति, धनी, श्रीमती र सन्तानको सुख, र सवारी साधनको स्वामी।"
+    },
+    {
+        "yoga_id": "21",
+        "sort": 21,
+        "name": "Sasa",
+        "name_ne": "शश",
+        "definition": "Saturn occupies a kendra which is his own or exaltation sign.",
+        "definition_ne": "शनि केन्द्रमा आफ्नो वा उच्च राशिमा हुनु।",
+        "result": "Head of a village or town, or even a king; covets others' riches and wicked in disposition.",
+        "result_ne": "गाउँ वा सहरको प्रमुख, वा राजा समान; अरूको सम्पत्तिमा आँखा गाड्ने र कठोर स्वभाव।"
+    },
+    {
+        "yoga_id": "22",
+        "sort": 22,
+        "name": "Ruchaka",
+        "name_ne": "रुचक",
+        "definition": "Mars occupies a kendra which is his own or exaltation sign.",
+        "definition_ne": "मंगल केन्द्रमा आफ्नो वा उच्च राशिमा हुनु।",
+        "result": "Strong physique, famous, well-versed in ancient lore, leader of an army.",
+        "result_ne": "बलियो शरीर, प्रसिद्ध, प्राचीन शास्त्रको ज्ञाता, र सेनाको प्रमुख।"
+    },
+    {
+        "yoga_id": "23",
+        "sort": 23,
+        "name": "Bhadra",
+        "name_ne": "भद्र",
+        "definition": "Mercury occupies a kendra which is his own or exaltation sign.",
+        "definition_ne": "बुध केन्द्रमा आफ्नो वा उच्च राशिमा हुनु।",
+        "result": "Strong, lion-like face, well-proportioned limbs, taciturn, helps relatives, lives to a good old age.",
+        "result_ne": "बलियो, सिंह जस्तै अनुहार, सुगठित अंगहरू, गम्भीर, आफन्तलाई मद्दत गर्ने, र दीर्घायु।"
+    },
+    {
+        "yoga_id": "24",
+        "sort": 24,
+        "name": "Budha-Aditya",
+        "name_ne": "बुधादित्य",
+        "definition": "Mercury combines with the Sun.",
+        "definition_ne": "बुध र सूर्यको युति हुनु।",
+        "result": "Highly intelligent, skillful in all works, good reputation, and surrounded by all comforts.",
+        "result_ne": "अत्यन्तै बुद्धिमान, सबै कार्यमा निपुण, राम्रो प्रतिष्ठा, र सबै प्रकारका सुख-सुविधाले युक्त।"
+    },
+    {
+        "yoga_id": "25",
+        "sort": 25,
+        "name": "Mahabhagya",
+        "name_ne": "महाभाग्य",
+        "definition": "For males: day birth with Sun, Moon, and Lagna in odd signs. For females: night birth with Sun, Moon, and Lagna in even signs.",
+        "definition_ne": "पुरुषको लागि: दिउँसोको जन्म र सूर्य, चन्द्रमा तथा लग्न बिजोर राशिमा हुनु। महिलाको लागि: रातीको जन्म र सूर्य, चन्द्रमा तथा लग्न जोर राशिमा हुनु।",
+        "result": "Good character, liberal, generous, famous, ruler or equal, lives to old age.",
+        "result_ne": "असल चरित्र, उदार, परोपकारी, प्रसिद्ध, शासक समान, र दीर्घायु।"
+    },
+    {
+        "yoga_id": "26",
+        "sort": 26,
+        "name": "Pushkala",
+        "name_ne": "पुष्कल",
+        "definition": "The lord of the sign occupied by the Moon conjoins Lagna lord in kendra or friendly sign, aspecting Lagna, while Lagna has a strong planet.",
+        "definition_ne": "चन्द्रमा रहेको राशिको स्वामी लग्नेससँग केन्द्र वा मित्र राशिमा हुनु र लग्नलाई दृष्टि दिनु, साथै लग्नमा बलियो ग्रह हुनु।",
+        "result": "Wealthy, sweet speech, famous, honored by the king.",
+        "result_ne": "धनी, मधुर वाणी, प्रसिद्ध, र राजाद्वारा सम्मानित।"
+    },
+    {
+        "yoga_id": "27",
+        "sort": 27,
+        "name": "Lakshmi",
+        "name_ne": "लक्ष्मी",
+        "definition": "Lagna lord is powerful and 9th lord occupies own or exaltation sign identical with kendra or trikona.",
+        "definition_ne": "लग्नेश बलियो हुनु र नवमेश आफ्नो वा उच्च राशिमा केन्द्र वा त्रिकोणमा हुनु।",
+        "result": "Wealthy, noble, learned, man of high integrity and reputation.",
+        "result_ne": "धनी, कुलीन, विद्वान, उच्च निष्ठा र प्रतिष्ठा भएको व्यक्ति।"
+    },
+    {
+        "yoga_id": "28",
+        "sort": 28,
+        "name": "Gauri",
+        "name_ne": "गौरी",
+        "definition": "The lord of Navamsa occupied by the 10th lord is in the 10th in exaltation combined with Lagna lord.",
+        "definition_ne": "दशमेश रहेको नवंशको स्वामी दशम भावमा उच्च राशिमा लग्नेससँग हुनु।",
+        "result": "Respectable family, owns lands, charitable, virtuous, praised by all.",
+        "result_ne": "प्रतिष्ठित परिवार, भूमिपति, परोपकारी, सदाचारी, र सबैद्वारा प्रशंसित।"
+    },
+    {
+        "yoga_id": "29",
+        "sort": 29,
+        "name": "Bharathi",
+        "name_ne": "भारती",
+        "definition": "The lords of Navamsas occupied by 2nd, 5th, and 11th lords are exalted and combine with 9th lord.",
+        "definition_ne": "दोस्रो, पाँचौं र एघारौं भावका स्वामीहरू रहेको नवंशको स्वामी उच्च राशिमा नवमेशसँग हुनु।",
+        "result": "World-famous, reputed scholar, fond of music, romantic, handsome.",
+        "result_ne": "विश्वप्रसिद्ध, प्रतिष्ठित विद्वान, संगीतको शौकीन, रोमान्टिक, र सुन्दर।"
+    },
+    {
+        "yoga_id": "30",
+        "sort": 30,
+        "name": "Chapa",
+        "name_ne": "चाप",
+        "definition": "Lagna lord is exalted, and 4th and 10th lords interchange houses.",
+        "definition_ne": "लग्नेश उच्च राशिमा हुनु, र चौथो तथा दशमेशको स्थान परिवर्तन हुनु।",
+        "result": "Grace a King's Council, wealthy, full of strength, exchequer or controller of treasury.",
+        "result_ne": "राजसभाको शोभा बढाउने, धनी, बलियो, र कोष नियन्त्रक।"
+    },
+    {
+        "yoga_id": "31",
+        "sort": 31,
+        "name": "Sreenatha",
+        "name_ne": "श्रीनाथ",
+        "definition": "The exalted lord of the 7th occupies the 10th house, and the 10th lord is with the 9th lord.",
+        "definition_ne": "सातौँ भावको स्वामी उच्च राशिमा दशम भावमा हुनु र दशमेश नवमेशसँग हुनु।",
+        "result": "Agreeable speaker, godly, has a good wife and children, loved by all.",
+        "result_ne": "मधुर वक्ता, ईश्वरीय भक्त, असल श्रीमती र सन्तानको सुख, र सबैको प्रिय।"
+    },
+    {
+        "yoga_id": "32",
+        "sort": 32,
+        "name": "Lagna Malika",
+        "name_ne": "लग्न मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the Lagna.",
+        "definition_ne": "लग्नबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "King, ruler, commander, and wealthy.",
+        "result_ne": "राजा, शासक, सेनापति, र धनी।"
+    },
+    {
+        "yoga_id": "33",
+        "sort": 33,
+        "name": "Dhana Malika",
+        "name_ne": "धन मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 2nd house.",
+        "definition_ne": "दोस्रो भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Very wealthy, dutiful, resolute and unsympathetic.",
+        "result_ne": "अत्यन्तै धनी, कर्तव्यनिष्ठ, दृढनिश्चयी र कठोर स्वभाव।"
+    },
+    {
+        "yoga_id": "34",
+        "sort": 34,
+        "name": "Vikrama Malika",
+        "name_ne": "विक्रम मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 3rd house.",
+        "definition_ne": "तेस्रो भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Ruler, rich, sickly, surrounded by brave men.",
+        "result_ne": "शासक, धनी, रोगी, तर वीर पुरुषहरूले घेरिएको।"
+    },
+    {
+        "yoga_id": "35",
+        "sort": 35,
+        "name": "Sukha Malika",
+        "name_ne": "सुख मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 4th house.",
+        "definition_ne": "चौथो भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Charitable and wealthy.",
+        "result_ne": "परोपकारी र धनी।"
+    },
+    {
+        "yoga_id": "36",
+        "sort": 36,
+        "name": "Putra Malika",
+        "name_ne": "पुत्र मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 5th house.",
+        "definition_ne": "पाँचौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Highly religious and famous.",
+        "result_ne": "अत्यन्तै धार्मिक र प्रसिद्ध।"
+    },
+    {
+        "yoga_id": "37",
+        "sort": 37,
+        "name": "Satru Malika",
+        "name_ne": "शत्रु मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 6th house.",
+        "definition_ne": "छैटौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Greedy and somewhat poor.",
+        "result_ne": "लोभी र केही गरिब।"
+    },
+    {
+        "yoga_id": "38",
+        "sort": 38,
+        "name": "Kalatra Malika",
+        "name_ne": "कलत्र मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 7th house.",
+        "definition_ne": "सातौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Coveted by women and influential.",
+        "result_ne": "स्त्रीहरूद्वारा रुचाइएको र प्रभावशाली।"
+    },
+    {
+        "yoga_id": "39",
+        "sort": 39,
+        "name": "Randhra Malika",
+        "name_ne": "रन्ध्र मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 8th house.",
+        "definition_ne": "आठौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Poor and hen-pecked.",
+        "result_ne": "गरिब र जोइँटिंग्रे।"
+    },
+    {
+        "yoga_id": "40",
+        "sort": 40,
+        "name": "Bhagya Malika",
+        "name_ne": "भाग्य मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 9th house.",
+        "definition_ne": "नवौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Religious, well-to-do, mighty and good.",
+        "result_ne": "धार्मिक, धनी, शक्तिशाली र भलाद्मी।"
+    },
+    {
+        "yoga_id": "41",
+        "sort": 41,
+        "name": "Karma Malika",
+        "name_ne": "कर्म मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 10th house.",
+        "definition_ne": "दशौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Respected and virtuous.",
+        "result_ne": "सम्मानित र सदाचारी।"
+    },
+    {
+        "yoga_id": "42",
+        "sort": 42,
+        "name": "Labha Malika",
+        "name_ne": "लाभ मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 11th house.",
+        "definition_ne": "एघारौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Skillful and beloved of lovely women.",
+        "result_ne": "निपुण र सुन्दरी स्त्रीहरूको प्रिय।"
+    },
+    {
+        "yoga_id": "43",
+        "sort": 43,
+        "name": "Vraya Malika",
+        "name_ne": "व्यय मालिका",
+        "definition": "All seven planets occupy seven contiguous houses starting from the 12th house.",
+        "definition_ne": "बाह्रौं भावबाट सुरु गरेर सातवटा लगातार भावहरूमा सबै सात ग्रहहरू हुनु।",
+        "result": "Honored, liberal, and respected.",
+        "result_ne": "सम्मानित, उदार र आदरणीय।"
+    },
+    {
+        "yoga_id": "44",
+        "sort": 44,
+        "name": "Sankha",
+        "name_ne": "शङ्ख",
+        "definition": "The lords of the 5th and 6th houses are in mutual kendras and Lagna lord is powerful.",
+        "definition_ne": "पाँचौं र छैटौं भावका स्वामीहरू एकअर्काबाट केन्द्रमा हुनु र लग्नेश बलियो हुनु।",
+        "result": "Fond of pleasures, humanitarian, blessed with wife, children, lands, learned in sciences.",
+        "result_ne": "विलासी, मानवताप्रेमी, श्रीमती, सन्तान र जग्गाजमिनको सुख, र विज्ञानमा निपुण।"
+    },
+    {
+        "yoga_id": "45",
+        "sort": 45,
+        "name": "Bheri",
+        "name_ne": "भेरी",
+        "definition": "Venus, Lagna lord, and Jupiter are in mutual kendras and 9th lord is powerful.",
+        "definition_ne": "शुक्र, लग्नेश, र बृहस्पति एकअर्काबाट केन्द्रमा हुनु र नवमेश बलियो हुनु।",
+        "result": "Long-lived, free from disease, ruler, generous instincts, religiously inclined.",
+        "result_ne": "दीर्घायु, रोगमुक्त, शासक समान, उदार र धार्मिक प्रवृत्तिको।"
+    },
+    {
+        "yoga_id": "46",
+        "sort": 46,
+        "name": "Mridanga",
+        "name_ne": "मृदङ्ग",
+        "definition": "The lord of Navamsa occupied by an exalted planet is in quadrant or trine in friendly or exalted sign, Lagna lord strong.",
+        "definition_ne": "उच्च ग्रह रहेको नवंशको स्वामी केन्द्र वा त्रिकोणमा आफ्नो वा उच्च राशिमा हुनु, लग्नेश बलियो हुनु।",
+        "result": "Respected by rulers, famous, attractive, commanding much influence.",
+        "result_ne": "शासकहरूद्वारा सम्मानित, प्रसिद्ध, आकर्षक, र अत्यन्तै प्रभावशाली।"
+    },
+    {
+        "yoga_id": "47",
+        "sort": 47,
+        "name": "Parijatha",
+        "name_ne": "पारिजात",
+        "definition": "The lord of the sign occupied by Lagna lord, or Navamsa lord of that Rasi lord, is in a kendra, trikona, or own/exaltation sign.",
+        "definition_ne": "लग्नेश रहेको राशिको स्वामी, वा सो राशिको स्वामी रहेको नवंशको स्वामी केन्द्र, त्रिकोण वा आफ्नो/उच्च राशिमा हुनु।",
+        "result": "Happy in middle and last parts of life, honored by kings, generous, famous.",
+        "result_ne": "जीवनको मध्य र अन्तिम भागमा सुखी, राजाहरूद्वारा सम्मानित, उदार र प्रसिद्ध।"
+    },
+    {
+        "yoga_id": "48",
+        "sort": 48,
+        "name": "Gaja",
+        "name_ne": "गज",
+        "definition": "The lord of the 9th from 11th (7th lord) occupies the 11th in conjunction with the Moon, aspected by 11th lord.",
+        "definition_ne": "एघारौं भावबाट नवौं भावको स्वामी (सातौँ भावको स्वामी) चन्द्रमासँग एघारौं भावमा हुनु र एकादशेशबाट दृष्ट हुनु।",
+        "result": "Commands cattle, elephants and horses; happy and rich throughout life.",
+        "result_ne": "पशुधन, हात्ती र घोडाहरूले युक्त; जीवनभर सुखी र धनी।"
+    },
+    {
+        "yoga_id": "49",
+        "sort": 49,
+        "name": "Kalanidhi",
+        "name_ne": "कलानिधि",
+        "definition": "Jupiter joins or is aspected by Mercury and Venus in 2nd or 5th house.",
+        "definition_ne": "बृहस्पति दोस्रो वा पाँचौं भावमा बुध र शुक्रसँग हुनु वा तिनीहरूबाट दृष्ट हुनु।",
+        "result": "Passionate, good-natured, favored by kings, commands conveyances.",
+        "result_ne": "भावुक, दयालु स्वभाव, राजाद्वारा सम्मानित, र सवारी साधनले युक्त।"
+    },
+    {
+        "yoga_id": "50",
+        "sort": 50,
+        "name": "Amsavatara",
+        "name_ne": "अंशावतार",
+        "definition": "Venus and Jupiter in kendras, Lagna falls in movable sign, and Saturn is exalted in kendra.",
+        "definition_ne": "शुक्र र बृहस्पति केन्द्रमा हुनु, लग्न चर राशिमा हुनु, र शनि केन्द्रमा उच्च हुनु।",
+        "result": "Unsullied name and fame, versatile learning, controller of passions, philosopher, ruler.",
+        "result_ne": "निष्कलंक कीर्ति र नाम, बहुमुखी प्रतिभा, इन्द्रिय नियन्त्रक, दार्शनिक, र शासक समान।"
+    },
+    {
+        "yoga_id": "51",
+        "sort": 51,
+        "name": "Harihara Brahma",
+        "name_ne": "हरिहर ब्रह्मा",
+        "definition": "Benefics in 8th/12th from 2nd lord; or Jupiter, Moon, Mercury in 4th, 9th, 8th from 7th lord; or Sun, Venus, Mars in 4th, 10th, 11th from Lagna lord.",
+        "definition_ne": "द्वितीयेशबाट ८/१२ भावमा शुभ ग्रह हुनु; वा सप्तमेशबाट ४, ९, ८ औं भावमा क्रमशः बृहस्पति, चन्द्रमा र बुध हुनु; वा लग्नेशबाट ४, १०, ११ औं भावमा क्रमशः सूर्य, शुक्र र मंगल हुनु।",
+        "result": "Eminent scholar, truthful, surrounded by pleasures, helper of others.",
+        "result_ne": "प्रतिष्ठित विद्वान, सत्यवादी, सुख-सुविधाले युक्त, र परोपकारी।"
+    },
+    {
+        "yoga_id": "52",
+        "sort": 52,
+        "name": "Kusuma",
+        "name_ne": "कुसुम",
+        "definition": "Jupiter is in Lagna, the Moon in the 7th, and the Sun in the 8th from the Moon (2nd from Lagna).",
+        "definition_ne": "बृहस्पति लग्नमा हुनु, चन्द्रमा सातौंमा हुनु, र सूर्य चन्द्रमाबाट आठौं (लग्नबाट दोस्रो) भावमा हुनु।",
+        "result": "King or equal, protector of kith and kin, founder of town, unsullied reputation.",
+        "result_ne": "राजा वा राजा समान, आफ्नो कुलको रक्षक, गाउँ/शहरको संस्थापक, र स्वच्छ प्रतिष्ठा।"
+    },
+    {
+        "yoga_id": "53",
+        "sort": 53,
+        "name": "Matsya",
+        "name_ne": "मत्स्य",
+        "definition": "Lagna and 9th joined by malefics, 5th by both malefics and benefics, 4th and 8th by malefics.",
+        "definition_ne": "लग्न र नवौं भावमा पापी ग्रह, पाँचौं भावमा पापी र शुभ ग्रह दुवै, चौथो र आठौं भावमा पापी ग्रह हुनु।",
+        "result": "Ocean of love, reader of times, good-natured, famous, religious.",
+        "result_ne": "प्रेमको सागर, भविष्य द्रष्टा (ज्योतिषी), दयालु, प्रसिद्ध र धार्मिक।"
+    },
+    {
+        "yoga_id": "54",
+        "sort": 54,
+        "name": "Kurma",
+        "name_ne": "कुर्म",
+        "definition": "Benefics occupy 5th, 6th, and 7th in own/exalted/friendly Navamsa; or in 1st, 3rd, and 11th exalted/own/friendly signs.",
+        "definition_ne": "पाँचौं, छैटौं र सातौं भावमा शुभ ग्रहहरू आफ्नै/उच्च/मित्र नवंशमा हुनु; वा पहिलो, तेस्रो र एघारौं भावमा आफ्नै/उच्च/मित्र राशिमा हुनु।",
+        "result": "World-famous, princely enjoyments, courageous, helpful, mild temperament.",
+        "result_ne": "विश्वप्रसिद्ध, राजकीय सुख, साहसी, सहयोगी, र शान्त स्वभाव।"
+    },
+    {
+        "yoga_id": "55",
+        "sort": 55,
+        "name": "Devendra",
+        "name_ne": "देवेन्द्र",
+        "definition": "Lagna is fixed, lords of Lagna and 11th interchange houses, and lord of 2nd is in 10th and vice versa.",
+        "definition_ne": "लग्न स्थिर राशिमा हुनु, लग्नेश र एकादशेशको स्थान परिवर्तन हुनु, र द्वितीयेश दशम भावमा तथा दशमेश दोस्रो भावमा हुनु।",
+        "result": "Respected by rulers, wealthy, long-lived, attractive personality.",
+        "result_ne": "शासकहरूद्वारा सम्मानित, धनी, दीर्घायु, र आकर्षक व्यक्तित्व।"
+    },
+    {
+        "yoga_id": "56",
+        "sort": 56,
+        "name": "Makuta",
+        "name_ne": "मुकुट",
+        "definition": "Jupiter is in 9th from 9th lord, benefic is in 9th from Jupiter, and Saturn is in 10th.",
+        "definition_ne": "नवमेशबाट नवौं भावमा बृहस्पति हुनु, बृहस्पतिबाट नवौं भावमा शुभ ग्रह हुनु, र शनि दशौं भावमा हुनु।",
+        "result": "Powerful, sports-loving, sometimes evil-minded or head of forest tribes.",
+        "result_ne": "शक्तिशाली, खेलकुद प्रेमी, कहिलेकाहीं कठोर स्वभाव वा वन-सम्बन्धी कार्यको प्रमुख।"
+    },
+    {
+        "yoga_id": "57",
+        "sort": 57,
+        "name": "Chandika",
+        "name_ne": "चण्डिका",
+        "definition": "Navamsa lords of 6th and 9th lords combine with Sun, and fixed Lagna is aspected by 6th lord.",
+        "definition_ne": "छैटौं र नवौं भावका स्वामीहरू रहेको नवंशको स्वामी सूर्यसँग युति हुनु र स्थिर लग्नलाई षष्ठेशले देख्नु।",
+        "result": "Aggressive, charitable, wealthy, minister or equal, long life and fame.",
+        "result_ne": "आक्रामक, परोपकारी, धनी, मन्त्री वा मन्त्री समान, दीर्घायु र कीर्ति।"
+    },
+    {
+        "yoga_id": "58",
+        "sort": 58,
+        "name": "Jaya",
+        "name_ne": "जय",
+        "definition": "The lord of the 6th is debilitated and the lord of the 10th is deeply exalted.",
+        "definition_ne": "षष्ठेश नीच राशिमा हुनु र दशमेश पूर्ण उच्च राशिमा हुनु।",
+        "result": "Happy, victorious over enemies, successful in all ventures, long-lived.",
+        "result_ne": "सुखी, शत्रुहरूमाथि विजय प्राप्त गर्ने, सबै कार्यमा सफल, र दीर्घायु।"
+    },
+    {
+        "yoga_id": "59",
+        "sort": 59,
+        "name": "Vidyut",
+        "name_ne": "विद्युत",
+        "definition": "The 11th lord is in deep exaltation and conjoins Venus in kendra from Lagna lord.",
+        "definition_ne": "एकादशेश पूर्ण उच्च राशिमा हुनु र लग्नेशबाट केन्द्रमा शुक्रसँग युति हुनु।",
+        "result": "Charitable, pleasure-loving, treasurer or controller of wealth, king or equal.",
+        "result_ne": "परोपकारी, सुख-विलास प्रेमी, धनको रक्षक वा नियन्त्रक, र राजा समान।"
+    },
+    {
+        "yoga_id": "60",
+        "sort": 60,
+        "name": "Gandharva",
+        "name_ne": "गन्धर्व",
+        "definition": "The 10th lord is in Kama Thrikona (3, 7, 11), Lagna lord and Jupiter associate, Sun is exalted, Moon in 9th.",
+        "definition_ne": "दशमेश काम त्रिकोण (३, ७, ११) मा हुनु, लग्नेश र बृहस्पति एकत्र हुनु, सूर्य उच्च हुनु र चन्द्रमा नवौंमा हुनु।",
+        "result": "Unparalleled skill in fine arts, strong, pleasure-loving, famous, lives up to 68 years.",
+        "result_ne": "ललितकलामा अतुलनीय निपुणता, बलियो, सुख-विलास प्रेमी, प्रसिद्ध, र ६८ वर्षको आयु।"
+    },
+    {
+        "yoga_id": "61",
+        "sort": 61,
+        "name": "Siva",
+        "name_ne": "शिव",
+        "definition": "The lord of the 5th is in 9th, 9th lord in 10th, and 10th lord in 5th.",
+        "definition_ne": "पञ्चमेश नवौं भावमा, नवमेश दशौं भावमा, र दशमेश पाँचौं भावमा हुनु।",
+        "result": "Big trader, conqueror and commander of armies, divine wisdom, virtuous.",
+        "result_ne": "ठूलो व्यापारी, सेनापति वा विजेता, आध्यात्मिक ज्ञान र सदाचारी जीवन।"
+    },
+    {
+        "yoga_id": "62",
+        "sort": 62,
+        "name": "Vishnu",
+        "name_ne": "विष्णु",
+        "definition": "The lord of Navamsa of 9th lord and the 10th lord join the 2nd house in conjunction with 9th lord.",
+        "definition_ne": "नवमेश रहेको नवंशको स्वामी र दशमेश नवमेशसँग दोस्रो भावमा हुनु।",
+        "result": "Enjoyable life, earns in lakhs, witty conversation, praises from rulers, lives up to 100 years.",
+        "result_ne": "रमाइलो जीवन, लाखौंको कमाइ, हास्यप्रिय र बुद्धिमान वक्ता, शासकहरूद्वारा प्रशंसित, र १०० वर्षको स्वस्थ आयु।"
+    },
+    {
+        "yoga_id": "63",
+        "sort": 63,
+        "name": "Brahma",
+        "name_ne": "ब्रह्मा",
+        "definition": "Jupiter and Venus in kendras from 9th and 11th lords, Mercury in kendra from Lagna/10th lord.",
+        "definition_ne": "बृहस्पति र शुक्र क्रमशः नवमेश र एकादशेशबाट केन्द्रमा हुनु, र बुध लग्नेश वा दशमेशबाट केन्द्रमा हुनु।",
+        "result": "Enjoys luxurious foods, respected by learned men, highly learned, long-lived, charitable.",
+        "result_ne": "उत्तम भोजनको सुख, विद्वानहरूद्वारा सम्मानित, उच्च शिक्षित, दीर्घायु, र परोपकारी।"
+    },
+    {
+        "yoga_id": "64",
+        "sort": 64,
+        "name": "Indra",
+        "name_ne": "इन्द्र",
+        "definition": "The lords of the 5th and 11th houses interchange houses, and Moon is in the 5th.",
+        "definition_ne": "पाँचौं र एघारौं भावका स्वामीहरू बीच स्थान परिवर्तन हुनु र चन्द्रमा पाँचौं भावमा हुनु।",
+        "result": "Highly courageous, lasting fame, ruler, lives up to 36 years.",
+        "result_ne": "अत्यन्तै साहसी, चिरस्थायी कीर्ति, शासक समान, तर ३६ वर्षको अल्पायु।"
+    },
+    {
+        "yoga_id": "65",
+        "sort": 65,
+        "name": "Ravi",
+        "name_ne": "रवि",
+        "definition": "The Sun joins the 10th house, and 10th lord is in the 3rd house conjoined with Saturn.",
+        "definition_ne": "सूर्य दशम भावमा हुनु र दशमेश तेस्रो भावमा शनिसँग हुनु।",
+        "result": "Respected by rulers, well-versed in sciences, famous after 15th year, simple food, lotus-like eyes.",
+        "result_ne": "शासकहरूद्वारा सम्मानित, विज्ञानको ज्ञाता, १५ वर्षपछि प्रसिद्ध, सादा भोजन र कमल जस्ता सुन्दर आँखा।"
+    },
+    {
+        "yoga_id": "66",
+        "sort": 66,
+        "name": "Garuda",
+        "name_ne": "गरुड",
+        "definition": "The lord of Navamsa occupied by Moon is exalted, and birth is during day with waxing Moon.",
+        "definition_ne": "चन्द्रमा रहेको नवंशको स्वामी उच्च राशिमा हुनु, र दिनको जन्म तथा शुक्ल पक्षको चन्द्रमा हुनु।",
+        "result": "Respected by the pious, polished speech, feared by enemies, danger from poison in 34th year.",
+        "result_ne": "धार्मिक व्यक्तिहरूद्वारा सम्मानित, सभ्य वाणी, शत्रुहरूमा डर पैदा गर्ने, र ३४ वर्षमा विषको खतरा।"
+    },
+    {
+        "yoga_id": "67",
+        "sort": 67,
+        "name": "Go",
+        "name_ne": "गो",
+        "definition": "Strong Jupiter occupies Moolatrikona with 2nd lord, and Lagna lord is in exaltation.",
+        "definition_ne": "बलियो बृहस्पति आफ्नो मूलत्रिकोण राशिमा द्वितीयेशसँग हुनु र लग्नेश उच्च राशिमा हुनु।",
+        "result": "Hailing from a respectable family, king or equal, wealthy and strong.",
+        "result_ne": "प्रतिष्ठित परिवारमा जन्म, राजा वा राजा समान, धनी र बलियो।"
+    },
+    {
+        "yoga_id": "68",
+        "sort": 68,
+        "name": "Gola",
+        "name_ne": "गोल",
+        "definition": "Full Moon is in 9th conjoined with Jupiter and Venus, Mercury joins Navamsa Lagna.",
+        "definition_ne": "पूर्ण चन्द्रमा नवौं भावमा बृहस्पति र शुक्रसँग हुनु, र बुध नवंश लग्नमा हुनु।",
+        "result": "Polite, learned, magistrate or head of village, long-lived.",
+        "result_ne": "विनम्र, शिक्षित, न्यायधीश वा गाउँको प्रमुख, र दीर्घायु।"
+    },
+    {
+        "yoga_id": "69",
+        "sort": 69,
+        "name": "Thrilochana",
+        "name_ne": "त्रिलोचन",
+        "definition": "The Sun, Moon, and Mars are in mutual trines (1st, 5th, and 9th houses from each other).",
+        "definition_ne": "सूर्य, चन्द्रमा, र मंगल एकअर्काबाट त्रिकोण (५ र ९ औं भाव) मा हुनु।",
+        "result": "Great wealth, terror to enemies, highly intelligent, good longevity.",
+        "result_ne": "अपार धन, शत्रुहरूका लागि भयङ्कर, अत्यन्तै बुद्धिमान, र राम्रो आयु।"
+    },
+    {
+        "yoga_id": "70",
+        "sort": 70,
+        "name": "Kulavardhana",
+        "name_ne": "कुलवर्धन",
+        "definition": "All planets are in the 5th house from Lagna, the Sun, and the Moon.",
+        "definition_ne": "लग्न, सूर्य र चन्द्रमा तीनैबाट पाँचौं भावमा सबै ग्रहहरू हुनु।",
+        "result": "Unbroken line of successors, wealthy, healthy and long-lived.",
+        "result_ne": "वंशको निरन्तरता (सन्तानको सुख), धनी, स्वस्थ र दीर्घायु।"
+    },
+    {
+        "yoga_id": "71",
+        "sort": 71,
+        "name": "Yupa",
+        "name_ne": "यूप",
+        "definition": "All planets occupy the first four houses contiguously from the Lagna.",
+        "definition_ne": "लग्नबाट सुरु गरेर लगातार चारवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Liberal, self-possessed, and noted for charitable deeds.",
+        "result_ne": "उदार स्वभाव, आत्म-नियन्त्रित, र परोपकारी कार्यका लागि प्रसिद्ध।"
+    },
+    {
+        "yoga_id": "72",
+        "sort": 72,
+        "name": "Ishu",
+        "name_ne": "इषु",
+        "definition": "All planets occupy four contiguous houses starting from the 4th house.",
+        "definition_ne": "चौथो भावबाट सुरु गरेर लगातार चारवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Successful as a superintendent or head of a jail or camp.",
+        "result_ne": "कारागार वा शिविरको सुपरिटेन्डेन्ट वा प्रमुखको रूपमा सफल।"
+    },
+    {
+        "yoga_id": "73",
+        "sort": 73,
+        "name": "Sakti",
+        "name_ne": "शक्ति",
+        "definition": "All planets occupy four contiguous houses starting from the 7th house.",
+        "definition_ne": "सातौं भावबाट सुरु गरेर लगातार चारवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Lazy, slothful, devoid of riches, generally disliked.",
+        "result_ne": "अल्छी, निष्कृय, धनहीन, र सामान्यतया मानिसहरूद्वारा नरुचाइएको।"
+    },
+    {
+        "yoga_id": "74",
+        "sort": 74,
+        "name": "Danda",
+        "name_ne": "दण्ड",
+        "definition": "All planets occupy four contiguous houses starting from the 10th house.",
+        "definition_ne": "दशौं भावबाट सुरु गरेर लगातार चारवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Lacks happiness from wife and children, dependent.",
+        "result_ne": "श्रीमती र सन्तानको सुखबाट वञ्चित, पराश्रित जीवन।"
+    },
+    {
+        "yoga_id": "75",
+        "sort": 75,
+        "name": "Nav",
+        "name_ne": "नौ",
+        "definition": "All planets occupy the seven houses contiguously starting from the Lagna.",
+        "definition_ne": "लग्नबाट सुरु गरेर लगातार सातवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Occasionally happy, famous, and miserly.",
+        "result_ne": "समय-समयमा सुखी हुने, प्रसिद्ध तर कञ्जुस स्वभाव।"
+    },
+    {
+        "yoga_id": "76",
+        "sort": 76,
+        "name": "Kuta",
+        "name_ne": "कूट",
+        "definition": "All planets occupy the seven houses contiguously starting from the 4th house.",
+        "definition_ne": "चौथो भावबाट सुरु गरेर लगातार सातवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Liar, cruel, and may earn livelihood through prisons.",
+        "result_ne": "झूटो बोल्ने, निर्दयी स्वभाव, र कारागार वा सुरक्षासम्बन्धी कार्यमा संलग्न।"
+    },
+    {
+        "yoga_id": "77",
+        "sort": 77,
+        "name": "Chhatra",
+        "name_ne": "छत्र",
+        "definition": "All planets occupy the seven houses contiguously starting from the 7th house.",
+        "definition_ne": "सातौं भावबाट सुरु गरेर लगातार सातवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Happy, prosperous, helpful to kith and kin.",
+        "result_ne": "सुखी, समृद्ध, र आफ्ना आफन्त तथा मित्रहरूका लागि सहयोगी।"
+    },
+    {
+        "yoga_id": "78",
+        "sort": 78,
+        "name": "Chapa (Nabhasa)",
+        "name_ne": "चाप (नभस)",
+        "definition": "All planets occupy the seven houses contiguously starting from the 10th house.",
+        "definition_ne": "दशौं भावबाट सुरु गरेर लगातार सातवटा भावहरूमा सबै ग्रहहरू हुनु।",
+        "result": "Brave and happy in the first and last periods of life.",
+        "result_ne": "साहसी, र जीवनको सुरुवाती तथा अन्तिम भागमा सुखी।"
+    },
+    {
+        "yoga_id": "79",
+        "sort": 79,
+        "name": "Ardha Chandra",
+        "name_ne": "अर्ध चन्द्र",
+        "definition": "All planets occupy seven contiguous houses beginning from a Panapara or Apoklima.",
+        "definition_ne": "पणपर (२, ५, ८, ११) वा आपोक्लिम (३, ६, ९, १२) भावबाट सुरु गरेर लगातार सात भावमा ग्रह हुनु।",
+        "result": "Fair features, happy throughout life, commander.",
+        "result_ne": "सुन्दर रूप, जीवनभर सुखी, र सेनापति वा प्रमुख व्यक्ति।"
+    },
+    {
+        "yoga_id": "80",
+        "sort": 80,
+        "name": "Chakra",
+        "name_ne": "चक्र",
+        "definition": "All planets occupy the odd houses (1, 3, 5, 7, 9, 11) in the chart.",
+        "definition_ne": "कुण्डलीका सबै बिजोर भावहरू (१, ३, ५, ७, ९, ११) मा सबै ग्रहहरू हुनु।",
+        "result": "Respected, king or equal, of virtuous conduct.",
+        "result_ne": "सम्मानित, राजा वा राजा समान, र सदाचारी चरित्र भएको।"
+    },
+    {
+        "yoga_id": "81",
+        "sort": 81,
+        "name": "Gada",
+        "name_ne": "गदा",
+        "definition": "All planets occupy two adjacent kendras (e.g., 1st and 4th, 4th and 7th).",
+        "definition_ne": "सबै ग्रहहरू दुईवटा लगातार केन्द्र भावहरूमा (जस्तै पहिलो र चौथो) हुनु।",
+        "result": "Highly religious, wealthy, and devoted to charitable deeds.",
+        "result_ne": "अत्यन्तै धार्मिक, धनी, र परोपकारी कार्यमा समर्पित।"
+    },
+    {
+        "yoga_id": "82",
+        "sort": 82,
+        "name": "Sakata (Nabhasa)",
+        "name_ne": "शकट (नभस)",
+        "definition": "All planets occupy the 1st and 7th houses.",
+        "definition_ne": "सबै ग्रहहरू पहिलो र सातौं भावमा मात्र हुनु।",
+        "result": "Poor, unhappy in domestic life, eke out livelihood by manual labor.",
+        "result_ne": "गरिब, पारिवारिक जीवनमा दुःखी, र शारीरिक श्रमद्वारा जीविकोपार्जन गर्ने।"
+    },
+    {
+        "yoga_id": "83",
+        "sort": 83,
+        "name": "Vihaga",
+        "name_ne": "विहग",
+        "definition": "All planets occupy the 4th and 10th houses.",
+        "definition_ne": "सबै ग्रहहरू चौथो र दशौं भावमा मात्र हुनु।",
+        "result": "Vagrant, traveling agent, quarrelsome and mean.",
+        "result_ne": "घुमन्ते जीवन, यात्रा गर्ने पेशा (एजेन्ट), झगडालु र नीच स्वभाव।"
+    },
+    {
+        "yoga_id": "84",
+        "sort": 84,
+        "name": "Vajra",
+        "name_ne": "वज्र",
+        "definition": "Benefics occupy the 1st and 7th houses, and malefics in the 4th and 10th houses.",
+        "definition_ne": "शुभ ग्रहहरू पहिलो र सातौं भावमा हुनु, र पापी ग्रहहरू चौथो र दशौं भावमा हुनु।",
+        "result": "Happy and handsome person, brave.",
+        "result_ne": "सुखी, सुन्दर रूप, र साहसी व्यक्तित्व।"
+    },
+    {
+        "yoga_id": "85",
+        "sort": 85,
+        "name": "Yava",
+        "name_ne": "यव",
+        "definition": "Malefics occupy the 1st and 7th houses, and benefics in the 4th and 10th houses.",
+        "definition_ne": "पापी ग्रहहरू पहिलो र सातौं भावमा हुनु, र शुभ ग्रहहरू चौथो र दशौं भावमा हुनु।",
+        "result": "Happy in the middle period of life.",
+        "result_ne": "जीवनको मध्य भागमा सुखी र समृद्ध।"
+    },
+    {
+        "yoga_id": "86",
+        "sort": 86,
+        "name": "Sringhataka",
+        "name_ne": "शृङ्गाटक",
+        "definition": "All planets occupy the Lagna and its trines (1st, 5th, and 9th houses).",
+        "definition_ne": "सबै ग्रहहरू लग्न र यसको त्रिकोण (१, ५, र ९ औं भाव) मा हुनु।",
+        "result": "Happy in later life, wealthy.",
+        "result_ne": "जीवनको उत्तरार्धमा सुखी र धन-धान्यले पूर्ण।"
+    },
+    {
+        "yoga_id": "87",
+        "sort": 87,
+        "name": "Hala",
+        "name_ne": "हल",
+        "definition": "All planets occupy triangular houses other than the Lagna's trine (e.g., 2, 6, 10).",
+        "definition_ne": "लग्न बाहेकका अन्य त्रिकोणात्मक भावहरू (जस्तै २, ६, १०) मा सबै ग्रह हुनु।",
+        "result": "Agriculturist, farmer, estate manager.",
+        "result_ne": "कृषक, खेती-किसानी गर्ने, वा जग्गा-जमिन व्यवस्थापन गर्ने पेशा।"
+    },
+    {
+        "yoga_id": "88",
+        "sort": 88,
+        "name": "Kamala",
+        "name_ne": "कमल",
+        "definition": "All planets are situated in the four kendras.",
+        "definition_ne": "सबै ग्रहहरू चारवटा केन्द्र भावहरूमा मात्र बाँडिएर रहनु।",
+        "result": "Prestige, wide fame, and innumerable virtues.",
+        "result_ne": "उच्च प्रतिष्ठा, ठूलो कीर्ति, र असंख्य राम्रा गुणहरूले युक्त।"
+    },
+    {
+        "yoga_id": "89",
+        "sort": 89,
+        "name": "Vapee",
+        "name_ne": "वापी",
+        "definition": "All planets are ranged in the four Panaparas or four Apoklimas.",
+        "definition_ne": "सबै ग्रहहरू केवल पणपर (२, ५, ८, ११) वा केवल आपोक्लिम (३, ६, ९, १२) भावमा हुनु।",
+        "result": "Hoarder of money, trickery.",
+        "result_ne": "पैसा जम्मा गर्ने (कञ्जुस), र चलाख वा धूर्त स्वभाव।"
+    },
+    {
+        "yoga_id": "90",
+        "sort": 90,
+        "name": "Samudra (Nabhasa)",
+        "name_ne": "समुद्र (नभस)",
+        "definition": "All planets occupy the six even houses.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका छवटा जोर भावहरू (२, ४, ६, ८, १०, १२) मा हुनु।",
+        "result": "Ruler or equal, free from care and worry.",
+        "result_ne": "शासक वा शासक समान जीवन, चिन्ता र दुःखबाट मुक्त।"
+    },
+    {
+        "yoga_id": "91",
+        "sort": 91,
+        "name": "Vallaki",
+        "name_ne": "वल्लकी",
+        "definition": "All planets occupy any seven signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि सातवटा राशिहरूमा विभाजित हुनु।",
+        "result": "Large number of friends, fond of music and fine arts, learned.",
+        "result_ne": "धेरै साथीभाइहरू भएको, संगीत र ललितकलाको प्रेमी, र विद्वान।"
+    },
+    {
+        "yoga_id": "92",
+        "sort": 92,
+        "name": "Damni",
+        "name_ne": "दामिनी",
+        "definition": "All planets occupy any six signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि छ वटा राशिहरूमा विभाजित हुनु।",
+        "result": "Highly charitable, always helping others, protector of cattle.",
+        "result_ne": "अत्यन्तै परोपकारी, सधैं अरूलाई मद्दत गर्ने, र पशुधनको रक्षक।"
+    },
+    {
+        "yoga_id": "93",
+        "sort": 93,
+        "name": "Pasa",
+        "name_ne": "पाश",
+        "definition": "All planets occupy any five signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि पाँचवटा राशिहरूमा विभाजित हुनु।",
+        "result": "Acquires wealth righteously, surrounded by friends and relatives.",
+        "result_ne": "धर्मपूर्वक धन आर्जन गर्ने, र साथीभाइ तथा आफन्तहरूले घेरिएको।"
+    },
+    {
+        "yoga_id": "94",
+        "sort": 94,
+        "name": "Kedara",
+        "name_ne": "केदार",
+        "definition": "All planets occupy any four signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि चारवटा राशिहरूमा विभाजित हुनु।",
+        "result": "Earns livelihood by agriculture, helpful.",
+        "result_ne": "कृषि कार्यद्वारा जीविकोपार्जन गर्ने, र सहयोगी स्वभाव।"
+    },
+    {
+        "yoga_id": "95",
+        "sort": 95,
+        "name": "Sula",
+        "name_ne": "शूल",
+        "definition": "All planets occupy any three signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि तीनवटा राशिहरूमा मात्र हुनु।",
+        "result": "Devoid of wealth, courageous, cruel, wounds.",
+        "result_ne": "धनहीन, साहसी, कहिलेकाहीं निर्दयी, र शरीरमा चोटपटकको दाग।"
+    },
+    {
+        "yoga_id": "96",
+        "sort": 96,
+        "name": "Yuga",
+        "name_ne": "युग",
+        "definition": "All planets occupy any two signs in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीका कुनै पनि दुईवटा राशिहरूमा मात्र हुनु।",
+        "result": "Poor, ostracised by society, heretical.",
+        "result_ne": "गरिब, समाजद्वारा अपहेलित, र परम्परा विरोधी प्रवृत्तिको।"
+    },
+    {
+        "yoga_id": "97",
+        "sort": 97,
+        "name": "Gola (Nabhasa)",
+        "name_ne": "गोल (नभस)",
+        "definition": "All planets occupy a single sign in the chart.",
+        "definition_ne": "सबै ग्रहहरू कुण्डलीको एउटै राशिमा एकत्र हुनु।",
+        "result": "Poor, dirty, ignorant, and indolent.",
+        "result_ne": "गरिब, अस्वच्छ जीवनशैली, अशिक्षित वा अज्ञानी, र अल्छी।"
+    },
+    {
+        "yoga_id": "98",
+        "sort": 98,
+        "name": "Rajju",
+        "name_ne": "रज्जु",
+        "definition": "All planets occupy movable signs.",
+        "definition_ne": "सबै ग्रहहरू केवल चर (मेष, कर्कट, तुला, मकर) राशिहरूमा हुनु।",
+        "result": "Fond of travel, handsome, searches wealth in foreign lands, cruel.",
+        "result_ne": "यात्रा प्रेमी, सुन्दर, विदेशमा धन आर्जन गर्न रुचाउने, र केही कठोर स्वभाव।"
+    },
+    {
+        "yoga_id": "99",
+        "sort": 99,
+        "name": "Musala",
+        "name_ne": "मुसल",
+        "definition": "All planets occupy fixed signs.",
+        "definition_ne": "सबै ग्रहहरू केवल स्थिर (वृष, सिंह, वृश्चिक, कुम्भ) राशिहरूमा हुनु।",
+        "result": "Self-respect, wealth, learning, steady mind, famous.",
+        "result_ne": "स्वाभिमानी, धनी, शिक्षित, दृढ वा स्थिर बुद्धि भएको, र प्रसिद्ध।"
+    },
+    {
+        "yoga_id": "100",
+        "sort": 100,
+        "name": "Nala",
+        "name_ne": "नल",
+        "definition": "All planets occupy common signs.",
+        "definition_ne": "सबै ग्रहहरू केवल द्विस्वभाव (मिथुन, कन्या, धनु, मीन) राशिहरूमा हुनु।",
+        "result": "Deformed limbs, shrewd, and defected.",
+        "result_ne": "अंगहरूमा केही कमजोरी, चलाख, र समय-समयमा निराश हुने स्वभाव।"
+    }
+]

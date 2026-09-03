@@ -1,0 +1,1002 @@
+[
+    {
+        "yoga_id": "201",
+        "sort": 201,
+        "name": "Sahodareesangama Yoga",
+        "name_ne": "सहोदरीसंगम योग",
+        "definition": "If the lord of the 7th and Venus are in conjunction in the 4th house and are aspected by or associated with malefics or are in cruel shashtiamsas.",
+        "definition_ne": "यदि सप्तमेश (७ औं भावको स्वामी) र शुक्र चौथो भावमा युतिमा छन् र पापी ग्रहहरूद्वारा दृष्ट वा युत छन् वा क्रूर षष्ट्यांशमा छन्।",
+        "result": "The person will be guilty of intercourse with his own sisters.",
+        "result_ne": "व्यक्ति आफ्नै दिदीबहिनीसँग अनैतिक सम्बन्ध राख्ने पापमा दोषी हुनेछ।"
+    },
+    {
+        "yoga_id": "202",
+        "sort": 202,
+        "name": "Kapata Yoga (I)",
+        "name_ne": "कपट योग (१)",
+        "definition": "The 4th house must be joined by a malefic and the 4th lord must be associated with or aspected by malefics or be hemmed in between malefics.",
+        "definition_ne": "चौथो भाव पापी ग्रहले युक्त हुनुपर्छ र चतुर्थेश पापी ग्रहहरूसँग युत वा दृष्ट हुनुपर्छ वा पापी ग्रहहरूको बीचमा (पापकर्तरीमा) हुनुपर्छ।",
+        "result": "The person becomes a hypocrite.",
+        "result_ne": "व्यक्ति कपटी वा पाखण्डी बन्नेछ।"
+    },
+    {
+        "yoga_id": "203",
+        "sort": 203,
+        "name": "Kapata Yoga (II)",
+        "name_ne": "कपट योग (२)",
+        "definition": "The 4th house must be occupied by Sani (Saturn), Kuja (Mars), Rahu, and the malefic 10th lord, who in his turn should be aspected by malefics.",
+        "definition_ne": "चौथो भावमा शनि, मंगल, राहु र पापी दशमेश हुनुपर्छ, र ती पनि पापी ग्रहहरूद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The person becomes a hypocrite.",
+        "result_ne": "व्यक्ति कपटी वा पाखण्डी बन्नेछ।"
+    },
+    {
+        "yoga_id": "204",
+        "sort": 204,
+        "name": "Kapata Yoga (III)",
+        "name_ne": "कपट योग (३)",
+        "definition": "The 4th lord must join Saturn, Mandi, and Rahu, and be aspected by malefics.",
+        "definition_ne": "चतुर्थेश शनि, मन्दी र राहुसँग युत हुनुपर्छ र पापी ग्रहहरूद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The person becomes a hypocrite.",
+        "result_ne": "व्यक्ति कपटी वा पाखण्डी बन्नेछ।"
+    },
+    {
+        "yoga_id": "205",
+        "sort": 205,
+        "name": "Nishkapata Yoga (I)",
+        "name_ne": "निष्कपट योग (१)",
+        "definition": "The 4th house must be occupied by a benefic, or a planet in exaltation, friendly or own house, or the 4th house must be a benefic sign.",
+        "definition_ne": "चौथो भावमा शुभ ग्रह वा उच्चको ग्रह, मित्र वा स्वगृही ग्रह हुनुपर्छ, वा चौथो भाव शुभ राशि हुनुपर्छ।",
+        "result": "The person will be pure-hearted and hates secrecy and hypocrisy.",
+        "result_ne": "व्यक्ति शुद्ध हृदयको हुनेछ र गोपनीयता तथा कपटलाई घृणा गर्नेछ।"
+    },
+    {
+        "yoga_id": "206",
+        "sort": 206,
+        "name": "Nishkapata Yoga (II)",
+        "name_ne": "निष्कपट योग (२)",
+        "definition": "Lord of Lagna should join the 4th in conjunction with or aspected by a benefic or occupy Parvata or Uttamamsa vargas.",
+        "definition_ne": "लग्नेश चौथो भावमा शुभ ग्रहसँग युत वा दृष्ट हुनुपर्छ वा पर्वत वा उत्तमांश वर्गमा बस्नुपर्छ।",
+        "result": "The person will be pure-hearted and hates secrecy and hypocrisy.",
+        "result_ne": "व्यक्ति शुद्ध हृदयको हुनेछ र गोपनीयता तथा कपटलाई घृणा गर्नेछ।"
+    },
+    {
+        "yoga_id": "207",
+        "sort": 207,
+        "name": "Matru Satrutwa Yoga",
+        "name_ne": "मातृ शत्रुत्व योग",
+        "definition": "The lords of Lagna and the 4th are natural or temporal enemies.",
+        "definition_ne": "लग्नेश र चतुर्थेश प्राकृतिक वा तात्कालिक शत्रु हुनुपर्छ र पापी ग्रहद्वारा दृष्ट वा युत हुनुपर्छ।",
+        "result": "Ill-feelings or enmity will prevail between mother and son.",
+        "result_ne": "आमा र छोराको बीचमा मनमुटाव वा शत्रुता रहनेछ।"
+    },
+    {
+        "yoga_id": "208",
+        "sort": 208,
+        "name": "Matru Sneha Yoga",
+        "name_ne": "मातृ स्नेह योग",
+        "definition": "The lords of the 1st and 4th houses must have common lords, or be temporal or natural friends, or aspected by benefics.",
+        "definition_ne": "पहिलो (लग्न) र चौथो भावको स्वामी एउटै हुनुपर्छ, वा तात्कालिक वा प्राकृतिक मित्र हुनुपर्छ, वा शुभ ग्रहद्वारा दृष्ट हुनुपर्छ।",
+        "result": "Cordial relations will prevail between mother and son.",
+        "result_ne": "आमा र छोराको बीचमा सुमधुर र न्यानो सम्बन्ध कायम रहनेछ।"
+    },
+    {
+        "yoga_id": "209",
+        "sort": 209,
+        "name": "Vahana Yoga (I)",
+        "name_ne": "वाहन योग (१)",
+        "definition": "The lord of Lagna must join the 4th, 11th, or the 9th.",
+        "definition_ne": "लग्नेश चौथो, एघारौं वा नवौं भावमा बस्नुपर्छ।",
+        "result": "The native will acquire material comforts and conveyances (vehicles).",
+        "result_ne": "जातकले भौतिक सुख र सवारी साधन (वाहन) प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "210",
+        "sort": 210,
+        "name": "Vahana Yoga (II)",
+        "name_ne": "वाहन योग (२)",
+        "definition": "The 4th lord must be exalted and the lord of the exaltation sign must occupy a kendra or trikona.",
+        "definition_ne": "चतुर्थेश उच्च हुनुपर्छ र उच्च राशिको स्वामी केन्द्र वा त्रिकोणमा हुनुपर्छ।",
+        "result": "The native will acquire material comforts and conveyances.",
+        "result_ne": "जातकले भौतिक सुख र सवारी साधन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "211",
+        "sort": 211,
+        "name": "Anapathya Yoga",
+        "name_ne": "अनपत्य योग",
+        "definition": "If Jupiter (putrakaraka) and the lords of Lagna, the 7th, and the 5th are weak.",
+        "definition_ne": "यदि बृहस्पति (पुत्रकारक) र लग्न, सप्तम तथा पञ्चम भावका स्वामीहरू निर्बल छन्।",
+        "result": "The native will have childlessness or loss of children.",
+        "result_ne": "जातक निःसन्तान हुनेछ वा सन्तानको सुख प्राप्त गर्न सक्नेछैन।"
+    },
+    {
+        "yoga_id": "212",
+        "sort": 212,
+        "name": "Sarpasapa Yoga (I)",
+        "name_ne": "सर्पशाप योग (१)",
+        "definition": "The 5th should be occupied by Rahu and aspected by Kuja (Mars), or the 5th house being a sign of Mars should be occupied by Rahu.",
+        "definition_ne": "पाँचौं भावमा राहु बसेर मंगलद्वारा दृष्ट हुनुपर्छ, वा पाँचौं भाव मंगलको राशि (मेष/वृश्चिक) भएर त्यसमा राहु हुनुपर्छ।",
+        "result": "Death of children due to the curse of serpents.",
+        "result_ne": "सर्पको श्रापका कारण सन्तानको मृत्यु वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "213",
+        "sort": 213,
+        "name": "Sarpasapa Yoga (II)",
+        "name_ne": "सर्पशाप योग (२)",
+        "definition": "If the 5th lord is in conjunction with Rahu, and Saturn is in the 5th house aspected by or associated with the Moon.",
+        "definition_ne": "यदि पञ्चमेश राहुसँग युतिमा छ, र पाँचौं भावमा शनि बसेर चन्द्रमाद्वारा दृष्ट वा युत छ।",
+        "result": "Death of children due to the curse of serpents.",
+        "result_ne": "सर्पको श्रापका कारण सन्तानको मृत्यु वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "214",
+        "sort": 214,
+        "name": "Sarpasapa Yoga (III)",
+        "name_ne": "सर्पशाप योग (३)",
+        "definition": "The karaka of children (Jupiter) in association with Mars, Rahu in Lagna, and the 5th lord in a dusthana (6, 8, 12).",
+        "definition_ne": "सन्तान कारक (बृहस्पति) मंगलसँग युत हुनुपर्छ, लग्नमा राहु र पञ्चमेश त्रिक भाव (६, ८, १२) मा हुनुपर्छ।",
+        "result": "Death of children due to the curse of serpents.",
+        "result_ne": "सर्पको श्रापका कारण सन्तानको मृत्यु वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "215",
+        "sort": 215,
+        "name": "Sarpasapa Yoga (IV)",
+        "name_ne": "सर्पशाप योग (४)",
+        "definition": "The 5th house, being a sign of Mars, must be conjoined by Rahu and aspected by or associated with Mercury.",
+        "definition_ne": "पाँचौं भाव मंगलको राशि भएर त्यसमा राहु हुनुपर्छ र बुधसँग युत वा दृष्ट हुनुपर्छ।",
+        "result": "Death of children due to the curse of serpents.",
+        "result_ne": "सर्पको श्रापका कारण सन्तानको मृत्यु वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "216",
+        "sort": 216,
+        "name": "Pitrusapa Sutakshaya Yoga",
+        "name_ne": "पितृशाप सुतक्षय योग",
+        "definition": "The Sun must occupy the 5th house which should be his place of debilitation, or the amsas of Capricorn and Aquarius, or be hemmed in between malefics.",
+        "definition_ne": "सूर्य पाँचौं भावमा हुनुपर्छ जुन उसको नीच राशि (तुला) हुनुपर्छ, वा मकर र कुम्भको नवांश हुनुपर्छ, वा पापी ग्रहहरूको बीचमा हुनुपर्छ।",
+        "result": "The subject will lose issues on account of his father's wrath/curse.",
+        "result_ne": "जातकले बुबाको क्रोध वा श्रापका कारण सन्तान गुमाउनुपर्नेछ।"
+    },
+    {
+        "yoga_id": "217",
+        "sort": 217,
+        "name": "Matrusapa Sutakshaya Yoga",
+        "name_ne": "मातृशाप सुतक्षय योग",
+        "definition": "If the 8th lord is in the 5th, the 5th lord is in the 8th, and the Moon and the 4th lord join the 6th house.",
+        "definition_ne": "यदि अष्टमेश पाँचौंमा, पञ्चमेश आठौंमा छ, र चन्द्रमा तथा चतुर्थेश छैटौं भावमा बस्दछन्।",
+        "result": "There will be loss of children due to the curse of the mother.",
+        "result_ne": "आमाको श्रापका कारण सन्तानको नाश हुनेछ।"
+    },
+    {
+        "yoga_id": "218",
+        "sort": 218,
+        "name": "Bhratrusapa Sutakshaya Yoga",
+        "name_ne": "भ्रातृशाप सुतक्षय योग",
+        "definition": "The lords of Lagna and the 5th must join the 8th, and the lord of the 3rd should combine with Mars and Rahu in the 5th house.",
+        "definition_ne": "लग्नेश र पञ्चमेश आठौं भावमा हुनुपर्छ, र तृतीयेश मंगल र राहुसँग पाँचौं भावमा मिल्नुपर्छ।",
+        "result": "There will be death of children due to curses from brothers.",
+        "result_ne": "दाजुभाइको श्रापका कारण सन्तानको मृत्यु वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "219",
+        "sort": 219,
+        "name": "Pretasapa Yoga",
+        "name_ne": "प्रेतशाप योग",
+        "definition": "The Sun and Saturn in the 5th, weak Moon in the 7th, Rahu in Lagna, and Jupiter in the 12th.",
+        "definition_ne": "पाँचौं भावमा सूर्य र शनि, सातौंमा कमजोर चन्द्रमा, लग्नमा राहु, र बाह्रौंमा बृहस्पति हुनुपर्छ।",
+        "result": "Children will die through the curses of Pretas or manes (departed ancestors) of the dead.",
+        "result_ne": "प्रेत वा अतृप्त पितृहरूको श्रापले गर्दा सन्तानको मृत्यु हुनेछ।"
+    },
+    {
+        "yoga_id": "220",
+        "sort": 220,
+        "name": "Bahuputra Yoga (I)",
+        "name_ne": "बहुपुत्र योग (१)",
+        "definition": "Rahu in the 5th house, in a Navamsa other than that of Saturn.",
+        "definition_ne": "पाँचौं भावमा राहु हुनुपर्छ र त्यो शनिको नवांशमा हुनुहुँदैन।",
+        "result": "The person will have a large number of children.",
+        "result_ne": "व्यक्तिका धेरै सन्तानहरू हुनेछन्।"
+    },
+    {
+        "yoga_id": "221",
+        "sort": 221,
+        "name": "Bahuputra Yoga (II)",
+        "name_ne": "बहुपुत्र योग (२)",
+        "definition": "The lord of the Navamsa occupied by a planet who is in association with the 7th lord is in the 1st, 2nd, or 5th house.",
+        "definition_ne": "सप्तमेशसँग युत भएको ग्रह बसेको नवांशको स्वामी पहिलो, दोस्रो वा पाँचौं भावमा हुनुपर्छ।",
+        "result": "The person will have a large number of children.",
+        "result_ne": "व्यक्तिका धेरै सन्तानहरू हुनेछन्।"
+    },
+    {
+        "yoga_id": "222",
+        "sort": 222,
+        "name": "Dattaputra Yoga (I)",
+        "name_ne": "दत्तपुत्र योग (१)",
+        "definition": "Mars and Saturn should occupy the 5th house and the lord of Lagna should be in a sign of Mercury, aspected by or in association with Mercury.",
+        "definition_ne": "पाँचौं भावमा मंगल र शनि हुनुपर्छ र लग्नेश बुधको राशि (मिथुन/कन्या) मा भएर बुधसँग युत वा दृष्ट हुनुपर्छ।",
+        "result": "The person will adopt children.",
+        "result_ne": "व्यक्तिले धर्मपुत्र वा धर्मपुत्री (दत्तपुत्र) ग्रहण गर्नेछ।"
+    },
+    {
+        "yoga_id": "223",
+        "sort": 223,
+        "name": "Dattaputra Yoga (II)",
+        "name_ne": "दत्तपुत्र योग (२)",
+        "definition": "The lord of the 7th must be posited in the 11th, the 5th lord must conjoin a benefic, and the 5th house must be occupied by Mars or Saturn.",
+        "definition_ne": "सप्तमेश एघारौं भावमा हुनुपर्छ, पञ्चमेश शुभ ग्रहसँग युत हुनुपर्छ, र पाँचौं भावमा मंगल वा शनि हुनुपर्छ।",
+        "result": "The person will adopt children.",
+        "result_ne": "व्यक्तिले धर्मपुत्र वा धर्मपुत्री (दत्तपुत्र) ग्रहण गर्नेछ।"
+    },
+    {
+        "yoga_id": "224",
+        "sort": 224,
+        "name": "Aputra Yoga",
+        "name_ne": "अपुत्र योग",
+        "definition": "The lord of the 5th house should occupy a dusthana (6th, 8th, or 12th).",
+        "definition_ne": "पञ्चमेश (५ औं भावको स्वामी) त्रिक भाव (६, ८ वा १२ औं भाव) मा बस्नुपर्छ।",
+        "result": "The person will have no issues at all.",
+        "result_ne": "व्यक्तिको सन्तान नै हुने छैनन् (निःसन्तान हुनेछ)।"
+    },
+    {
+        "yoga_id": "225",
+        "sort": 225,
+        "name": "Ekaputra Yoga",
+        "name_ne": "एकपुत्र योग",
+        "definition": "Lord of the 5th house should join a kendra or trikona.",
+        "definition_ne": "पञ्चमेश केन्द्र वा त्रिकोणमा बस्नुपर्छ।",
+        "result": "The person will have only one son.",
+        "result_ne": "व्यक्तिको एक मात्र पुत्र हुनेछ।"
+    },
+    {
+        "yoga_id": "226",
+        "sort": 226,
+        "name": "Satputra Yoga",
+        "name_ne": "सत्पुत्र योग",
+        "definition": "If Jupiter is lord of the 5th house and the Sun occupies a favourable position.",
+        "definition_ne": "यदि बृहस्पति पञ्चमेश छ र सूर्य अनुकूल स्थानमा छ।",
+        "result": "The native will have a worthy and dutiful son.",
+        "result_ne": "जातकले एक योग्य, आज्ञाकारी र सत्पुत्र प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "227",
+        "sort": 227,
+        "name": "Kalanirdesat Putra Yoga (I)",
+        "name_ne": "कालनिर्देशात पुत्र योग (१)",
+        "definition": "Jupiter should be in the 5th house and the lord of the 5th should join Venus.",
+        "definition_ne": "बृहस्पति पाँचौं भावमा हुनुपर्छ र पञ्चमेश शुक्रसँग मिल्नुपर्छ।",
+        "result": "The native begets a son in his 32nd or 33rd year.",
+        "result_ne": "जातकको ३२ वा ३३ औं वर्षमा पुत्र प्राप्ति हुनेछ।"
+    },
+    {
+        "yoga_id": "228",
+        "sort": 228,
+        "name": "Kalanirdesat Putra Yoga (II)",
+        "name_ne": "कालनिर्देशात पुत्र योग (२)",
+        "definition": "Jupiter must occupy the 9th from Lagna and Venus should be in the 9th from Jupiter, in conjunction with the lord of Lagna.",
+        "definition_ne": "बृहस्पति लग्नबाट नवौं भावमा हुनुपर्छ र शुक्र बृहस्पतिबाट नवौं भावमा लग्नेशसँग युत हुनुपर्छ।",
+        "result": "The native begets a son in his 40th year.",
+        "result_ne": "जातकको ४० औं वर्षमा पुत्र प्राप्ति हुनेछ।"
+    },
+    {
+        "yoga_id": "229",
+        "sort": 229,
+        "name": "Kalanirdesat Putranasa Yoga (I)",
+        "name_ne": "कालनिर्देशात पुत्रनाश योग (१)",
+        "definition": "Rahu must occupy the 5th house, the lord of the 5th must be in conjunction with a malefic, and Jupiter should be debilitated.",
+        "definition_ne": "पाँचौं भावमा राहु हुनुपर्छ, पञ्चमेश पापी ग्रहसँग युत हुनुपर्छ, र बृहस्पति नीच हुनुपर्छ।",
+        "result": "The person will suffer loss of issues in his 32nd year.",
+        "result_ne": "जातकको ३२ औं वर्षमा सन्तानको कष्ट वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "230",
+        "sort": 230,
+        "name": "Kalanirdesat Putranasa Yoga (II)",
+        "name_ne": "कालनिर्देशात पुत्रनाश योग (२)",
+        "definition": "Malefics should be disposed in the 5th from Jupiter and Lagna.",
+        "definition_ne": "बृहस्पति र लग्न दुवैबाट पाँचौं भावमा पापी ग्रहहरू हुनुपर्छ।",
+        "result": "The person will suffer loss of issues in his 40th year.",
+        "result_ne": "जातकको ४० औं वर्षमा सन्तानको कष्ट वा हानि हुनेछ।"
+    },
+    {
+        "yoga_id": "231",
+        "sort": 231,
+        "name": "Buddhimaturya Yoga",
+        "name_ne": "बुद्धिमाधुर्य योग",
+        "definition": "The lord of the 5th, being a benefic, is either aspected by another benefic or occupies a benefic sign.",
+        "definition_ne": "शुभ ग्रह पञ्चमेश भएर अर्को शुभ ग्रहद्वारा दृष्ट हुनुपर्छ वा शुभ राशिमा बस्नुपर्छ।",
+        "result": "The person will be a man of great intelligence and character.",
+        "result_ne": "व्यक्ति अत्यन्त बुद्धिमान र उत्कृष्ट चरित्र भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "232",
+        "sort": 232,
+        "name": "Theevrabuddhi Yoga",
+        "name_ne": "तीव्रबुद्धि योग",
+        "definition": "The lord of the navamsa, in which the lord of the 5th is placed, should be aspected by benefics, and the 5th lord himself should be a benefic.",
+        "definition_ne": "पञ्चमेश बसेको नवांशको स्वामी शुभ ग्रहहरूद्वारा दृष्ट हुनुपर्छ, र पञ्चमेश स्वयं शुभ ग्रह हुनुपर्छ।",
+        "result": "The person will be precociously intelligent (genius).",
+        "result_ne": "व्यक्ति कुशाग्र बुद्धि (तीव्र बुद्धि वा प्रतिभाशाली) हुनेछ।"
+    },
+    {
+        "yoga_id": "233",
+        "sort": 233,
+        "name": "Buddhi Jada Yoga",
+        "name_ne": "बुद्धि जड योग",
+        "definition": "If the lord of the Ascendant is conjoined with or aspected by evil planets, Saturn occupies the 5th, and the lord of Lagna is aspected by Saturn.",
+        "definition_ne": "यदि लग्नेश पापी ग्रहहरूसँग युत वा दृष्ट छ, पाँचौं भावमा शनि छ, र लग्नेश शनिद्वारा दृष्ट छ।",
+        "result": "The person will be a dunce (mentally dull).",
+        "result_ne": "व्यक्ति मन्दबुद्धि वा बुद्धू (जडबुद्धि) हुनेछ।"
+    },
+    {
+        "yoga_id": "234",
+        "sort": 234,
+        "name": "Thrikalagnana Yoga",
+        "name_ne": "त्रिकालज्ञान योग",
+        "definition": "Jupiter should occupy Mrudwamsa in his own navamsa, or Gopuramsa, and be aspected by a benefic planet.",
+        "definition_ne": "बृहस्पति आफ्नै नवांशमा मृदुवंशमा वा गोपुरांशमा हुनुपर्छ र शुभ ग्रहद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The native becomes capable of reading the past, present, and future ( intuitive seership).",
+        "result_ne": "जातक भूत, वर्तमान र भविष्य देख्न सक्ने (त्रिकालज्ञ वा अन्तर्दृष्टि भएको) हुनेछ।"
+    },
+    {
+        "yoga_id": "235",
+        "sort": 235,
+        "name": "Putra Sukha Yoga",
+        "name_ne": "पुत्र सुख योग",
+        "definition": "Benefics should occupy the 5th from Lagna, or the 5th lord be aspected by benefics, and the 5th lord is strong.",
+        "definition_ne": "लग्नबाट पाँचौं भावमा शुभ ग्रह हुनुपर्छ वा पञ्चमेश शुभ ग्रहद्वारा दृष्ट हुनुपर्छ, र पञ्चमेश बलियो हुनुपर्छ।",
+        "result": "The native will have immense happiness from children.",
+        "result_ne": "जातकले सन्तानबाट पूर्ण सुख र सन्तोष प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "236",
+        "sort": 236,
+        "name": "Jara Yoga",
+        "name_ne": "जार योग",
+        "definition": "The lord of the 7th should be in the 4th in exchange of houses with the 4th lord, aspected by malefics.",
+        "definition_ne": "दशम भावमा दशमेश, द्वितीयेश र सप्तमेश एकसाथ हुनुपर्छ।",
+        "result": "The native will have connections with multiple partners.",
+        "result_ne": "व्यक्तिको वैवाहिक जीवन बाहिर अन्य स्त्रीहरूसँग सम्बन्ध हुन सक्छ।"
+    },
+    {
+        "yoga_id": "237",
+        "sort": 237,
+        "name": "Jarajaputra Yoga",
+        "name_ne": "जारजपुत्र योग",
+        "definition": "If the lord of the 5th is conjoined with Venus, and the Moon occupies the 5th house.",
+        "definition_ne": "यदि पञ्चमेश र सप्तमेश बलियो भई छैटौं भावको स्वामीसँग मिल्छन् र शुभ ग्रहद्वारा दृष्ट हुन्छन्।",
+        "result": "The wife will get an issue from another man if the native is impotent.",
+        "result_ne": "यदि जातक नपुंसक भएमा उसकी पत्नीले अन्य व्यक्तिबाट सन्तान प्राप्त गर्नेछिन्।"
+    },
+    {
+        "yoga_id": "238",
+        "sort": 238,
+        "name": "Bahu Stree Yoga",
+        "name_ne": "बहु स्त्री योग",
+        "definition": "The lord of the 7th is in own sign or exalted, and is conjoined with Venus.",
+        "definition_ne": "लग्नेश र सप्तमेश एकअर्कासँग युति वा दृष्टि सम्बन्धमा हुनुपर्छ।",
+        "result": "The native will have many wives or female associations.",
+        "result_ne": "जातकका एकभन्दा बढी पत्नी वा धेरै स्त्रीहरूसँग सम्बन्ध हुनेछ।"
+    },
+    {
+        "yoga_id": "239",
+        "sort": 239,
+        "name": "Satkalatra Yoga",
+        "name_ne": "सत्कलत्र योग",
+        "definition": "The lord of the 7th or Venus should join or be aspected by Jupiter or Mercury.",
+        "definition_ne": "सप्तमेश वा शुक्र बृहस्पति वा बुधसँग युत हुनुपर्छ वा उनीहरूद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The native's wife will be noble, chaste, and virtuous.",
+        "result_ne": "जातककी पत्नी कुलीन, पतिव्रता, सुशील र सद्गुणी हुनेछिन्।"
+    },
+    {
+        "yoga_id": "240",
+        "sort": 240,
+        "name": "Bhaga Chumbana Yoga",
+        "name_ne": "भग चुम्बन योग",
+        "definition": "If the lord of the 7th is in the 4th in conjunction with Venus, or Lagna lord is debilitated in Rasi/Navamsa.",
+        "definition_ne": "यदि सप्तमेश चौथो भावमा शुक्रसँग युतिमा छ, वा लग्नेश राशि वा नवांशमा नीच छ।",
+        "result": "The person will indulge in oral/sensual pleasures (caressing the pudendum).",
+        "result_ne": "व्यक्ति अत्यधिक कामुक र कामवासनामा लिप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "241",
+        "sort": 241,
+        "name": "Bhagya Yoga",
+        "name_ne": "भाग्य योग",
+        "definition": "A strong benefic should occupy Lagna, the 3rd, or 5th, simultaneously aspecting the 9th house.",
+        "definition_ne": "बलियो शुभ ग्रह लग्न, तेस्रो वा पाँचौं भावमा बसेर नवौं भावमा पूर्ण दृष्टि राख्नुपर्छ।",
+        "result": "The subject will be extremely fortunate, pleasure-loving, and rich.",
+        "result_ne": "जातक अत्यन्त भाग्यशाली, विलासी र धनी हुनेछ।"
+    },
+    {
+        "yoga_id": "242",
+        "sort": 242,
+        "name": "Jananatpurvam Pitru Marana Yoga",
+        "name_ne": "जननात्पूर्वम् पितृ मरण योग",
+        "definition": "The Sun must be in the 6th, 8th, or 12th; lord of the 8th must be in the 9th; lord of the 12th in Lagna; and the lord of the 6th in the 5th.",
+        "definition_ne": "सूर्य छैटौं, आठौं वा बाह्रौं भावमा हुनुपर्छ, अष्टमेश नवौं भावमा, द्वादशेश लग्नमा र षष्ठेश पाँचौं भावमा हुनुपर्छ।",
+        "result": "The native will be a posthumous child (father dies before birth).",
+        "result_ne": "जातकको जन्म हुनु अघि ही बुबाको मृत्यु हुनेछ (मरणोपरान्त जन्म हुनेछ)।"
+    },
+    {
+        "yoga_id": "243",
+        "sort": 243,
+        "name": "Dhatrutwa Yoga",
+        "name_ne": "दातृत्व योग",
+        "definition": "The lord of the 9th should be exalted, aspected by a benefic, and the 9th house should be occupied by a benefic.",
+        "definition_ne": "नवमेश (९ औं भावको स्वामी) उच्च हुनुपर्छ, शुभ ग्रहद्वारा दृष्ट हुनुपर्छ, र नवौं भावमा शुभ ग्रह बसेको हुनुपर्छ।",
+        "result": "The person will be highly charitable and humanitarian.",
+        "result_ne": "व्यक्ति दानवीर, अत्यन्तै उदार र परोपकारी स्वभावको हुनेछ।"
+    },
+    {
+        "yoga_id": "244",
+        "sort": 244,
+        "name": "Apakeerti Yoga",
+        "name_ne": "अपकीर्ति योग",
+        "definition": "The 10th house must be occupied by the Sun and Saturn, who should join malefic amsas or be aspected by malefics.",
+        "definition_ne": "दशम भाव (१० औं भाव) मा सूर्य र शनि सँगै बस्नुपर्छ, र ती पापी नवांश वा पापी ग्रहद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The person will have a bad reputation or suffer setbacks in prestige.",
+        "result_ne": "व्यक्तिले अपजस, अपकीर्ति वा समाजमा बदनामी बेहोर्नुपर्नेछ।"
+    },
+    {
+        "yoga_id": "245",
+        "sort": 245,
+        "name": "Raja Yoga (I)",
+        "name_ne": "राजयोग (१)",
+        "definition": "Three or more planets should be in exaltation or own house, occupying kendras.",
+        "definition_ne": "तीन वा सोभन्दा बढी ग्रहहरू उच्च वा स्वगृही भएर केन्द्र (१, ४, ७, १० औं भाव) मा बस्नुपर्छ।",
+        "result": "The person becomes a famous king or ruler.",
+        "result_ne": "व्यक्ति एक प्रसिद्ध राजा, शासक वा देशको नेतृत्व गर्ने व्यक्ति बन्नेछ।"
+    },
+    {
+        "yoga_id": "246",
+        "sort": 246,
+        "name": "Raja Yoga (II)",
+        "name_ne": "राजयोग (२)",
+        "definition": "When a planet is in debilitation but is free from combustion (bright rays), or is retrograde, and occupies favourable positions.",
+        "definition_ne": "जब कुनै ग्रह राशि कुण्डलीमा नीच राशिमा भए पनि किरण युक्त (अस्त नभएको) वा वक्री भएर शुभ भावहरूमा बस्दछ।",
+        "result": "The person will attain a position equal to that of a ruler with royal insignia.",
+        "result_ne": "व्यक्तिले राजा समान उच्च पद, मान-सम्मान र राजकीय अधिकार प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "247",
+        "sort": 247,
+        "name": "Raja Yoga (III)",
+        "name_ne": "राजयोग (३)",
+        "definition": "Two, three, or four planets possess Digbala (Directional Strength).",
+        "definition_ne": "दुई, तीन वा चारवटा ग्रहहरूसँग दिग्बल (दिशा बल) हुनुपर्छ।",
+        "result": "Even if born in an ordinary family, the native becomes a ruler.",
+        "result_ne": "साधारण परिवारमा जन्मेको व्यक्ति पनि उच्च ओहोदाको शासक वा प्रशासक बन्नेछ।"
+    },
+    {
+        "yoga_id": "248",
+        "sort": 248,
+        "name": "Neechabhanga Raja Yoga (I)",
+        "name_ne": "नीचभङ्ग राजयोग (१)",
+        "definition": "Lagna is Kumbha (Aquarius) with Venus in it, and four planets are exalted without occupying evil navamsas or shastiamsas.",
+        "definition_ne": "कुम्भ लग्न भएर त्यसमा शुक्र हुनुपर्छ र चारवटा ग्रह पापी नवांश वा षष्ट्यांशमा नपरी उच्च हुनुपर्छ।",
+        "result": "The subject becomes a highly powerful ruler or dictator.",
+        "result_ne": "जातक अत्यन्त शक्तिशाली राजा, शासक वा शक्तिशाली तानासाह बन्नेछ।"
+    },
+    {
+        "yoga_id": "249",
+        "sort": 249,
+        "name": "Neechabhanga Raja Yoga (II)",
+        "name_ne": "नीचभङ्ग राजयोग (२)",
+        "definition": "The Moon in Lagna, Jupiter in the 4th, Venus in the 10th, and Saturn exalted or in his own house.",
+        "definition_ne": "लग्नमा चन्द्रमा, चौथो भावमा बृहस्पति, दशम भावमा शुक्र र शनि उच्च वा स्वगृही हुनुपर्छ।",
+        "result": "The subject becomes a ruler or an equal to him.",
+        "result_ne": "जातक एक ठूलो शासक वा त्यस समान उच्च ओहोदामा पुग्नेछ।"
+    },
+    {
+        "yoga_id": "250",
+        "sort": 250,
+        "name": "Neechabhanga Raja Yoga (III)",
+        "name_ne": "नीचभङ्ग राजयोग (३)",
+        "definition": "The lord of the sign a planet is debilitated in, or the planet who would be exalted there, is in a kendra from the Moon or Lagna.",
+        "definition_ne": "कुनै नीच ग्रह बसेको राशिको स्वामी, वा त्यो राशिमा उच्च हुने ग्रह, चन्द्रमा वा लग्नबाट केन्द्रमा हुनुपर्छ।",
+        "result": "It cancels debilitation, ushering in royal luck and rise from humble beginnings.",
+        "result_ne": "यसले नीचभङ्ग गरी राजयोगको फल दिन्छ, जसले गर्दा मानिस साधारण अवस्थाबाट पनि उच्च सफलतामा पुग्दछ।"
+    },
+    {
+        "yoga_id": "251",
+        "sort": 251,
+        "name": "Raja Yoga (IV)",
+        "name_ne": "राजयोग (४)",
+        "definition": "The Moon is in the 4th, aspected by Jupiter from the 12th, and Mars from the 10th.",
+        "definition_ne": "लग्न बाहेक अन्य केन्द्रमा बलियो चन्द्रमा हुनुपर्छ र बृहस्पतिद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The native rises to great prominence and power.",
+        "result_ne": "जातक धन, शक्ति र प्रभावका दृष्टिले राजा समान वा उच्च स्तरको बन्नेछ।"
+    },
+    {
+        "yoga_id": "252",
+        "sort": 252,
+        "name": "Raja Yoga (V)",
+        "name_ne": "राजयोग (५)",
+        "definition": "All the planets debilitated in Rasi are exalted in the Navamsa.",
+        "definition_ne": "राशि कुण्डलीमा नीच भएका सबै ग्रहहरू नवांश कुण्डलीमा उच्च हुनुपर्छ।",
+        "result": "High political or administrative power and wealth.",
+        "result_ne": "जातकले उच्च राजनीतिक वा प्रशासनिक शक्ति र ठूलो धन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "253",
+        "sort": 253,
+        "name": "Raja Yoga (VI)",
+        "name_ne": "राजयोग (६)",
+        "definition": "Jupiter is in Lagna, Mercury is in the 10th, and the Lagna lord and Mars are in the 10th.",
+        "definition_ne": "लग्नमा बृहस्पति, दशममा बुध, र लग्नेश तथा मंगल दशम भावमा हुनुपर्छ।",
+        "result": "The subject earns high authority, wealth, and honors.",
+        "result_ne": "जातकले उच्च राजकीय अधिकार, प्रचुर धन र ठूलो सम्मान आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "254",
+        "sort": 254,
+        "name": "Raja Yoga (VII)",
+        "name_ne": "राजयोग (७)",
+        "definition": "Saturn in exaltation or Moolathrikona occupies a kendra or thrikona aspected by the lord of the 10th.",
+        "definition_ne": "शनि उच्च वा मूलत्रिकोणमा भएर केन्द्र वा त्रिकोणमा बस्नुपर्छ र दशमेश (१० औं भावको स्वामी) द्वारा दृष्ट हुनुपर्छ।",
+        "result": "The native becomes a ruler or a highly respected landlord/leader.",
+        "result_ne": "जातक एक उच्च शासक वा समाजमा अत्यन्त आदरणीय नेता/जमिन्दार बन्नेछ।"
+    },
+    {
+        "yoga_id": "255",
+        "sort": 255,
+        "name": "Raja Yoga (VIII)",
+        "name_ne": "राजयोग (८)",
+        "definition": "The Moon joins Mars in the 2nd or 3rd house, and Rahu occupies the 5th house.",
+        "definition_ne": "चन्द्रमा र मंगल दोस्रो वा तेस्रो भावमा हुनुपर्छ, र राहु पाँचौं भावमा हुनुपर्छ।",
+        "result": "A powerful factor for career rise, though harmful for children.",
+        "result_ne": "यो करियरमा ठूलो उन्नतिका लागि बलियो कारक हो, तर सन्तानका लागि हानिकारक हुन सक्छ।"
+    },
+    {
+        "yoga_id": "256",
+        "sort": 256,
+        "name": "Raja Yoga (IX)",
+        "name_ne": "राजयोग (९)",
+        "definition": "The lord of the 10th occupies an exalted or friendly navamsa in the 9th, having attained Uttamamsa vargas.",
+        "definition_ne": "दशमेश नवौं भावमा उच्च वा मित्र नवांशमा हुनुपर्छ र उत्तमांश वर्ग प्राप्त गरेको हुनुपर्छ।",
+        "result": "The native becomes a ruler or equal to him.",
+        "result_ne": "जातक देशको शासक वा सो सरहको प्रतिष्ठित व्यक्ति बन्नेछ।"
+    },
+    {
+        "yoga_id": "257",
+        "sort": 257,
+        "name": "Raja Yoga (X)",
+        "name_ne": "राजयोग (१०)",
+        "definition": "Jupiter is in the 5th from Lagna, in a kendra from the Moon, and the Lagna being a fixed sign, its lord occupies the 10th.",
+        "definition_ne": "लग्नबाट पाँचौं भावमा बृहस्पति हुनुपर्छ, जुन चन्द्रमाबाट केन्द्रमा होस्, र स्थिर लग्न भएर लग्नेश दशम भावमा हुनुपर्छ।",
+        "result": "High prosperity, administrative and political power.",
+        "result_ne": "अत्यन्तै उच्च समृद्धि, प्रशासनिक र राजनीतिक शक्तिको प्राप्ति हुनेछ।"
+    },
+    {
+        "yoga_id": "258",
+        "sort": 258,
+        "name": "Raja Yoga (XI)",
+        "name_ne": "राजयोग (११)",
+        "definition": "The lord of the navamsa occupied by the Moon is disposed in a quadrant or trine either from Lagna or Mercury.",
+        "definition_ne": "चन्द्रमा बसेको नवांशको स्वामी लग्न वा बुधबाट केन्द्र वा त्रिकोणमा बस्नुपर्छ।",
+        "result": "Highly respectable position and general comforts.",
+        "result_ne": "समाजमा निकै प्रतिष्ठित स्थान र सबै प्रकारका भौतिक सुख प्राप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "259",
+        "sort": 259,
+        "name": "Sarpaganda Yoga",
+        "name_ne": "सर्पगण्ड योग",
+        "definition": "Rahu is in the 2nd house with Mandi, and the 2nd lord is aspected by malefics.",
+        "definition_ne": "दोस्रो भावमा राहु र मन्दी सँगै हुनुपर्छ, र द्वितीयेश पापी ग्रहहरूद्वारा दृष्ट हुनुपर्छ।",
+        "result": "Danger of death or injury from venomous bites.",
+        "result_ne": "विषालु सर्प वा जीवको टोकाइबाट गम्भीर संकट वा मृत्युको जोखिम रहनेछ।"
+    },
+    {
+        "yoga_id": "260",
+        "sort": 260,
+        "name": "Raja Yoga (XII)",
+        "name_ne": "राजयोग (१२)",
+        "definition": "The lord of the Navamsa occupied by a debilitated planet joins a quadrant or trine from Lagna, which is a movable sign, and the lord of Lagna is also in a movable sign.",
+        "definition_ne": "नीच ग्रह बसेको नवांशको स्वामी चर लग्नबाट केन्द्र वा त्रिकोणमा बस्नुपर्छ, र लग्नेश पनि चर राशिमा हुनुपर्छ।",
+        "result": "High administrative rise, honor, and prestige.",
+        "result_ne": "उच्च प्रशासनिक पद, मान-सम्मान र प्रतिष्ठा प्राप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "261",
+        "sort": 261,
+        "name": "Raja Yoga (XIII)",
+        "name_ne": "राजयोग (१३)",
+        "definition": "The lord of Lagna joins a debilitated planet, and Rahu and Saturn occupy the 10th, aspected by the lord of the 9th.",
+        "definition_ne": "लग्नेश नीच ग्रहसँग मिल्नुपर्छ, र दशम भावमा राहु तथा शनि बसेर नवमेश (९ औं भावको स्वामी) द्वारा दृष्ट हुनुपर्छ।",
+        "result": "Extreme difficulties early on, followed by rise to authority.",
+        "result_ne": "प्रारम्भिक जीवनमा ठूला संघर्षहरू हुनेछन्, तर पछि उच्च अधिकार र सफलता प्राप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "262",
+        "sort": 262,
+        "name": "Raja Yoga (XIV)",
+        "name_ne": "राजयोग (१४)",
+        "definition": "Out of the lords of the 11th, 9th, and 2nd, at least one is in a kendra from the Moon, and Jupiter is the lord of the 2nd, 5th, or 11th.",
+        "definition_ne": "११ औं, ९ औं वा २ औं भावका स्वामीहरूमध्ये कम्तीमा एक चन्द्रमाबाट केन्द्रमा हुनुपर्छ, र बृहस्पति २ औं, ५ औं वा ११ औं भावको स्वामी हुनुपर्छ।",
+        "result": "Greatness, respect, and high leadership.",
+        "result_ne": "महानता, समाजमा ठूलो आदर र उच्च नेतृत्व क्षमताको प्राप्ति हुनेछ।"
+    },
+    {
+        "yoga_id": "263",
+        "sort": 263,
+        "name": "Raja Yoga (XV)",
+        "name_ne": "राजयोग (१५)",
+        "definition": "Jupiter, Mercury, Venus, or the Moon joins the 9th house, free from combustion, and is aspected by or associated with friendly planets.",
+        "definition_ne": "बृहस्पति, बुध, शुक्र वा चन्द्रमा नवौं भावमा अस्त नभई बस्नुपर्छ र मित्र ग्रहहरूद्वारा दृष्ट वा युत हुनुपर्छ।",
+        "result": "The native becomes a great man or respected ruler.",
+        "result_ne": "जातक एक महान् पुरुष वा सबैले आदर गर्ने शासक बन्नेछ।"
+    },
+    {
+        "yoga_id": "264",
+        "sort": 264,
+        "name": "Galakarna Yoga",
+        "name_ne": "गलकर्ण योग",
+        "definition": "The 3rd house is occupied by Mandi and Rahu, or by Mars in the shashtiamsa of Preta Puriha.",
+        "definition_ne": "तेस्रो भावमा मन्दी र राहु हुनुपर्छ, वा प्रेत पुरीहको षष्ट्यांशमा मंगल हुनुपर्छ।",
+        "result": "The native suffers from ear troubles or deafness.",
+        "result_ne": "जातकलाई कानको रोग वा बहिरोपनको समस्या हुन सक्छ।"
+    },
+    {
+        "yoga_id": "265",
+        "sort": 265,
+        "name": "Vrana Yoga",
+        "name_ne": "व्रण योग",
+        "definition": "The 6th lord, being a malefic, occupies Lagna, the 8th, or 10th.",
+        "definition_ne": "पापी ग्रह षष्ठेश (६ औं भावको स्वामी) भएर लग्न, आठौं वा दशम भावमा बस्नुपर्छ।",
+        "result": "The person suffers from tumors, boils, or cancer.",
+        "result_ne": "व्यक्तिलाई घाउ-खटिरा, ट्युमर वा क्यान्सर जस्तो गम्भीर रोग लाग्न सक्छ।"
+    },
+    {
+        "yoga_id": "266",
+        "sort": 266,
+        "name": "Sisnavyadhi Yoga",
+        "name_ne": "शिश्नव्याधि योग",
+        "definition": "Mercury joins Lagna in association with the lords of the 6th and 8th.",
+        "definition_ne": "बुध लग्नमा छैटौं र आठौं भावका स्वामीहरूसँगै बस्नुपर्छ।",
+        "result": "The native will suffer from venereal diseases or sexual organ disorders.",
+        "result_ne": "जातकले गुप्त रोग, यौन रोग वा जननेन्द्रिय सम्बन्धी कष्ट बेहोर्नुपर्नेछ।"
+    },
+    {
+        "yoga_id": "267",
+        "sort": 267,
+        "name": "Kalatrashanda Yoga",
+        "name_ne": "कलत्रषण्ड योग",
+        "definition": "The lord of the 7th joins the 6th house with Venus.",
+        "definition_ne": "सप्तमेश शुक्रसँगै छैटौं भावमा बस्नुपर्छ।",
+        "result": "The person's wife will be frigid or sexually unresponsive.",
+        "result_ne": "व्यक्तिको पत्नी यौन रूपमा निष्क्रिय वा उदास स्वभावकी हुनेछिन्।"
+    },
+    {
+        "yoga_id": "268",
+        "sort": 268,
+        "name": "Kushtaroga Yoga (I)",
+        "name_ne": "कुष्ठरोग योग (१)",
+        "definition": "The lord of Lagna must join the 4th or 12th in conjunction with Mars and Mercury.",
+        "definition_ne": "लग्नेश चौथो वा बाह्रौं भावमा मंगल र बुधसँग युतिमा हुनुपर्छ।",
+        "result": "The person suffers from leprosy or severe skin disease.",
+        "result_ne": "व्यक्तिलाई कुष्ठरोग वा गम्भीर छाला सम्बन्धी रोग लाग्न सक्छ।"
+    },
+    {
+        "yoga_id": "269",
+        "sort": 269,
+        "name": "Kushtaroga Yoga (II)",
+        "name_ne": "कुष्ठरोग योग (२)",
+        "definition": "Jupiter occupies the 6th house in association with Saturn and the Moon.",
+        "definition_ne": "बृहस्पति छैटौं भावमा शनि र चन्द्रमासँगै बस्नुपर्छ।",
+        "result": "The person suffers from leprosy or skin disorders.",
+        "result_ne": "व्यक्तिलाई कुष्ठरोग वा छाला सम्बन्धी कष्ट हुन सक्छ।"
+    },
+    {
+        "yoga_id": "270",
+        "sort": 270,
+        "name": "Kshayaroga Yoga",
+        "name_ne": "क्षयरोग योग",
+        "definition": "Rahu is in the 6th, Mandi in a kendra from Lagna, and the lord of Lagna is in the 8th.",
+        "definition_ne": "छैटौं भावमा राहु, लग्नबाट केन्द्रमा मन्दी, र लग्नेश आठौं भावमा हुनुपर्छ।",
+        "result": "The person suffers from tuberculosis (consumption).",
+        "result_ne": "व्यक्तिलाई क्षयरोग (ट्युबरकुलोसिस) वा छातीको रोग लाग्न सक्छ।"
+    },
+    {
+        "yoga_id": "271",
+        "sort": 271,
+        "name": "Bandhana Yoga",
+        "name_ne": "बन्धन योग",
+        "definition": "If the lord of Lagna and the 6th join a kendra or thrikona with Saturn, Rahu, or Kethu.",
+        "definition_ne": "यदि लग्नेश र षष्ठेश शनि, राहु वा केतुसँग केन्द्र वा त्रिकोणमा बस्दछन्।",
+        "result": "The native will undergo incarceration (imprisonment).",
+        "result_ne": "जातकले बन्धन वा कारावास (जेल सजाय) भोग्नुपर्नेछ।"
+    },
+    {
+        "yoga_id": "272",
+        "sort": 272,
+        "name": "Karascheda Yoga",
+        "name_ne": "करच्छेद योग",
+        "definition": "Saturn and Jupiter are in the 9th and 3rd houses.",
+        "definition_ne": "शनि र बृहस्पति क्रमशः नवौं र तेस्रो भावमा हुनुपर्छ।",
+        "result": "Loss of hands or limbs due to accident or severe injury.",
+        "result_ne": "दुर्घटना वा गम्भीर चोटका कारण हात वा अङ्गहरू काटिने वा नष्ट हुने जोखिम हुन्छ।"
+    },
+    {
+        "yoga_id": "273",
+        "sort": 273,
+        "name": "Sirachcheda Yoga",
+        "name_ne": "शिरच्छेद योग",
+        "definition": "The lord of the 6th must be in conjunction with Venus, while the Sun or Saturn joins Rahu in a cruel shashtiamsa.",
+        "definition_ne": "षष्ठेश शुक्रसँग युतिमा हुनुपर्छ, र सूर्य वा शनि राहुसँग क्रूर षष्ट्यांशमा हुनुपर्छ।",
+        "result": "Death of the person will be by decapitation (hanging or beheading).",
+        "result_ne": "व्यक्तिको मृत्यु शिरच्छेदन (फाँसी वा घाँटी काटिएर) हुन सक्छ।"
+    },
+    {
+        "yoga_id": "274",
+        "sort": 274,
+        "name": "Durmarana Yoga",
+        "name_ne": "दुर्मरण योग",
+        "definition": "The Moon, aspected by the Lagna lord, occupies the 6th, 8th, or 12th in association with Saturn, Mandi, or Rahu.",
+        "definition_ne": "चन्द्रमा लग्नेशद्वारा दृष्ट भएर छैटौं, आठौं वा बाह्रौं भावमा शनि, मन्दी वा राहुसँग बस्नुपर्छ।",
+        "result": "The person meets with an unnatural death.",
+        "result_ne": "व्यक्तिको अप्राकृतिक वा अकाल मृत्यु हुन सक्छ।"
+    },
+    {
+        "yoga_id": "275",
+        "sort": 275,
+        "name": "Yuddhe Marana Yoga",
+        "name_ne": "युद्धे मरण योग",
+        "definition": "Mars, being lord of the 6th or 8th, conjoins the 3rd lord and Rahu, Saturn, or Mandi in cruel amsas.",
+        "definition_ne": "मंगल छैटौं वा आठौं भावको स्वामी भएर तृतीयेश र राहु, शनि वा मन्दीसँग क्रूर अंशमा मिल्नुपर्छ।",
+        "result": "The person will be killed in battle.",
+        "result_ne": "व्यक्ति युद्ध वा ठूलो भिडन्तमा मारिन सक्छ।"
+    },
+    {
+        "yoga_id": "276",
+        "sort": 276,
+        "name": "Sanghataka Marana Yoga (I)",
+        "name_ne": "संघाटक मरण योग (१)",
+        "definition": "Many evil planets are in the 8th, occupying a martian Rasi or Navamsa and joining evil sub-divisions.",
+        "definition_ne": "धेरै पापी ग्रहहरू आठौं भावमा मंगलको राशि वा नवांशमा भएर क्रूर वर्गहरूमा बस्नुपर्छ।",
+        "result": "The person will die collectively with many others (plane crash, earthquake, etc.).",
+        "result_ne": "व्यक्तिको सामूहिक दुर्घटना, भूकम्प वा महामारी जस्ता विपत्तिमा धेरै मानिसहरूसँगै मृत्यु हुनेछ।"
+    },
+    {
+        "yoga_id": "277",
+        "sort": 277,
+        "name": "Sanghataka Marana Yoga (II)",
+        "name_ne": "संघाटक मरण योग (२)",
+        "definition": "The Sun, Rahu, and Saturn, being aspected by the 8th lord, join evil amsas.",
+        "definition_ne": "सूर्य, राहु र शनि अष्टमेशद्वारा दृष्ट भएर पापी अंशमा बस्नुपर्छ।",
+        "result": "The person will die collectively with many others.",
+        "result_ne": "व्यक्तिको सामूहिक रूपमा धेरै मानिसहरूसँगै अकाल मृत्यु हुनेछ।"
+    },
+    {
+        "yoga_id": "278",
+        "sort": 278,
+        "name": "Peenasaroga Yoga",
+        "name_ne": "पीनसरोग योग",
+        "definition": "The Moon, Saturn, and a malefic are in the 6th, 8th, and 12th respectively, and the Lagna lord joins a malefic Navamsa.",
+        "definition_ne": "चन्द्रमा छैटौंमा, शनि आठौंमा, र अर्को पापी ग्रह बाह्रौंमा हुनुपर्छ, र लग्नेश पापी नवांशमा बस्नुपर्छ।",
+        "result": "The person suffers from inflammation of the Schleiderian membrane (chronic nose rot).",
+        "result_ne": "व्यक्ति पीनसरोग (नाक पाक्ने वा निरन्तर सिँगान बग्ने गम्भीर रोग) बाट पीडित हुनेछ।"
+    },
+    {
+        "yoga_id": "279",
+        "sort": 279,
+        "name": "Pittaroga Yoga",
+        "name_ne": "पित्तरोग योग",
+        "definition": "The 6th house is occupied by a malefic, and the Sun is conjoined with a malefic and aspected by another malefic.",
+        "definition_ne": "छैटौं भावमा पापी ग्रह हुनुपर्छ, र सूर्य पापी ग्रहसँग युत र अर्को पापी ग्रहद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The subject suffers from severe bilious (liver/bile) complaints.",
+        "result_ne": "जातक पित्त रोग वा कलेजो सम्बन्धी गम्भीर समस्याबाट पीडित हुनेछ।"
+    },
+    {
+        "yoga_id": "280",
+        "sort": 280,
+        "name": "Vikalangapatni Yoga",
+        "name_ne": "विकलाङ्गपत्नी योग",
+        "definition": "Venus and the Sun occupy the 7th, 9th, or 5th house.",
+        "definition_ne": "शुक्र र सूर्य सातौं, नवौं वा पाँचौं भावमा बस्नुपर्छ।",
+        "result": "The person's wife will have deformed or weak limbs.",
+        "result_ne": "व्यक्तिको पत्नीको अङ्गहरू विकलाङ्ग वा कमजोर हुनेछन्।"
+    },
+    {
+        "yoga_id": "281",
+        "sort": 281,
+        "name": "Putrakalatraheena Yoga",
+        "name_ne": "पुत्रकलत्रहीन योग",
+        "definition": "When the waning Moon is in the 5th and malefics occupy the 12th, 7th, and Lagna.",
+        "definition_ne": "जब क्षीण चन्द्रमा पाँचौं भावमा हुन्छ र पापी ग्रहहरू बाह्रौं, सातौं र लग्नमा बस्दछन्।",
+        "result": "The person will be deprived of both wife and children.",
+        "result_ne": "व्यक्ति पत्नी र सन्तान दुवैको सुखबाट वञ्चित (एक्लो) हुनेछ।"
+    },
+    {
+        "yoga_id": "282",
+        "sort": 282,
+        "name": "Bharyasahavyabhichara Yoga",
+        "name_ne": "भार्यासहव्यभिचार योग",
+        "definition": "Venus, Saturn, and Mars join the Moon in the 7th house.",
+        "definition_ne": "शुक्र, शनि र मंगल सातौं भावमा चन्द्रमासँग मिल्नुपर्छ।",
+        "result": "Both the husband and wife will be guilty of adultery.",
+        "result_ne": "श्रीमान् र श्रीमती दुवै व्यभिचार (परपुरुष/परस्त्री गमन) मा संलग्न हुनेछन्।"
+    },
+    {
+        "yoga_id": "283",
+        "sort": 283,
+        "name": "Vamsacheda Yoga",
+        "name_ne": "वंशच्छेद योग",
+        "definition": "The 10th, 7th, and 4th houses are occupied by the Moon, Venus, and malefics respectively.",
+        "definition_ne": "दशम, सप्तम र चतुर्थ भाव क्रमशः चन्द्रमा, शुक्र र पापी ग्रहहरूद्वारा युक्त हुनुपर्छ।",
+        "result": "The native will be the extinguisher of his family line (no descendants).",
+        "result_ne": "जातक उसको वंशको अन्तिम व्यक्ति हुनेछ (वंश नाश वा अन्त्य हुनेछ)।"
+    },
+    {
+        "yoga_id": "284",
+        "sort": 284,
+        "name": "Guhyaroga Yoga",
+        "name_ne": "गुह्यरोग योग",
+        "definition": "The Moon joins malefics in the Navamsa of Cancer or Scorpio.",
+        "definition_ne": "चन्द्रमा नवांश कुण्डलीमा कर्कट वा वृश्चिक राशिमा पापी ग्रहहरूसँग युत हुनुपर्छ।",
+        "result": "The person suffers from private parts diseases, piles, or hernia.",
+        "result_ne": "व्यक्तिलाई गुप्ताङ्गको रोग, हर्ष वा हर्निया जस्ता समस्या हुन सक्छ।"
+    },
+    {
+        "yoga_id": "285",
+        "sort": 285,
+        "name": "Angaheena Yoga",
+        "name_ne": "अङ्गहीन योग",
+        "definition": "When the Moon is in the 10th, Mars in the 7th, and Saturn in the 2nd from the Sun.",
+        "definition_ne": "जब चन्द्रमा दशममा, मंगल सप्तममा र शनि सूर्यबाट दोस्रो भावमा हुन्छ।",
+        "result": "The person suffers from loss of limbs or paralysis.",
+        "result_ne": "व्यक्तिको अङ्गभङ्ग हुन सक्छ वा पक्षघात (प्यारालाइसिस) को सिकार हुनेछ।"
+    },
+    {
+        "yoga_id": "286",
+        "sort": 286,
+        "name": "Swetakushta Yoga",
+        "name_ne": "श्वेतकुष्ठ योग",
+        "definition": "If Mars and Saturn are in the 2nd and 12th, the Moon in Lagna, and the Sun in the 7th.",
+        "definition_ne": "यदि मंगल र शनि दोस्रो र बाह्रौं भावमा छन्, चन्द्रमा लग्नमा र सूर्य सातौं भावमा छ।",
+        "result": "The person suffers from white leprosy (vitiligo).",
+        "result_ne": "व्यक्तिलाई श्वेतकुष्ठ (दुभी) को समस्या हुन सक्छ।"
+    },
+    {
+        "yoga_id": "287",
+        "sort": 287,
+        "name": "Pisacha Grastha Yoga",
+        "name_ne": "पिशाच ग्रस्त योग",
+        "definition": "When Rahu is in Lagna in conjunction with the Moon, and malefics join trines.",
+        "definition_ne": "जब राहु लग्नमा चन्द्रमासँग युतिमा हुन्छ र पापी ग्रहहरू त्रिकोण (५, ९ औं भाव) मा बस्दछन्।",
+        "result": "The person suffers from mental derangement or attacks from \"spirits\".",
+        "result_ne": "व्यक्ति भूतप्रेत, पिशाच वा मानसिक भ्रमबाट पीडित हुनेछ।"
+    },
+    {
+        "yoga_id": "288",
+        "sort": 288,
+        "name": "Andha Yoga (I)",
+        "name_ne": "अन्ध योग (१)",
+        "definition": "The Sun rises in Lagna in conjunction with Rahu, and malefics are disposed in trines.",
+        "definition_ne": "सूर्य लग्नमा राहुसँग युतिमा हुनुपर्छ र पापी ग्रहहरू त्रिकोण (५, ९ औं भाव) मा बस्नुपर्छ।",
+        "result": "The person is born stone-blind.",
+        "result_ne": "व्यक्ति जन्मजात अन्धो (जन्मान्ध) हुनेछ।"
+    },
+    {
+        "yoga_id": "289",
+        "sort": 289,
+        "name": "Andha Yoga (II)",
+        "name_ne": "अन्ध योग (२)",
+        "definition": "Mars, the Moon, Saturn, and the Sun respectively occupy the 2nd, 6th, 12th, and 8th.",
+        "definition_ne": "मंगल, चन्द्रमा, शनि र सूर्य क्रमशः दोस्रो, छैटौं, बाह्रौं र आठौं भावमा बस्नुपर्छ।",
+        "result": "The person is born stone-blind.",
+        "result_ne": "व्यक्ति जन्मजात पूर्ण रूपमा अन्धो हुनेछ।"
+    },
+    {
+        "yoga_id": "290",
+        "sort": 290,
+        "name": "Vatharoga Yoga",
+        "name_ne": "वातरोग योग",
+        "definition": "When Jupiter is in Lagna and Saturn is in the 7th house.",
+        "definition_ne": "जब बृहस्पति लग्नमा र शनि सातौं भावमा हुन्छ।",
+        "result": "The person suffers from windy complaints, gout, or rheumatism.",
+        "result_ne": "व्यक्तिलाई वात रोग, बाथ वा जोर्नी दुखाइको ठूलो समस्या हुनेछ।"
+    },
+    {
+        "yoga_id": "291",
+        "sort": 291,
+        "name": "Matibhramana Yoga (I)",
+        "name_ne": "मतिभ्रमण योग (१)",
+        "definition": "Jupiter and Mars occupy the Lagna and 7th respectively.",
+        "definition_ne": "बृहस्पति र मंगल क्रमशः लग्न र सातौं भावमा बस्नुपर्छ।",
+        "result": "The person becomes insane or mentally deranged.",
+        "result_ne": "व्यक्तिको मानसिक सन्तुलन बिग्रनेछ (पागलपन हुन सक्छ)।"
+    },
+    {
+        "yoga_id": "292",
+        "sort": 292,
+        "name": "Matibhramana Yoga (II)",
+        "name_ne": "मतिभ्रमण योग (२)",
+        "definition": "Saturn is in Lagna, and Mars joins the 9th, 5th, or 7th.",
+        "definition_ne": "शनि लग्नमा हुनुपर्छ, र मंगल नवौं, पाँचौं वा सातौं भावमा बस्नुपर्छ।",
+        "result": "The person becomes insane.",
+        "result_ne": "व्यक्तिको मतिभ्रम वा पागलपन हुन सक्छ।"
+    },
+    {
+        "yoga_id": "293",
+        "sort": 293,
+        "name": "Matibhramana Yoga (III)",
+        "name_ne": "मतिभ्रमण योग (३)",
+        "definition": "Saturn occupies the 12th house with the waning Moon.",
+        "definition_ne": "शनि बाह्रौं भावमा निर्बल चन्द्रमासँगै बस्नुपर्छ।",
+        "result": "The person becomes insane.",
+        "result_ne": "व्यक्तिको मानसिक स्वास्थ्य गम्भीर रूपमा बिग्रनेछ।"
+    },
+    {
+        "yoga_id": "294",
+        "sort": 294,
+        "name": "Matibhramana Yoga (IV)",
+        "name_ne": "मतिभ्रमण योग (४)",
+        "definition": "The Moon and Mercury are in a kendra, aspected by or conjoined with any other planet.",
+        "definition_ne": "चन्द्रमा र बुध केन्द्रमा हुनुपर्छ र कुनै पनि ग्रहद्वारा दृष्ट वा युत हुनुपर्छ।",
+        "result": "The person becomes insane.",
+        "result_ne": "व्यक्तिको मानसिक सन्तुलन बिग्रने वा पागलपन हुनेछ।"
+    },
+    {
+        "yoga_id": "295",
+        "sort": 295,
+        "name": "Khalawata Yoga",
+        "name_ne": "खलवाट योग",
+        "definition": "The Ascendant falls in a malefic sign, aspected by malefics.",
+        "definition_ne": "लग्न पापी राशिमा परेर पापी ग्रहहरूद्वारा दृष्ट हुनुपर्छ।",
+        "result": "The person becomes bald-headed early.",
+        "result_ne": "व्यक्तिको कपाल चाँडै झर्नेछ र तालु खुइलिनेछ।"
+    },
+    {
+        "yoga_id": "296",
+        "sort": 296,
+        "name": "Nishturabhashi Yoga",
+        "name_ne": "निष्ठुरभाषी योग",
+        "definition": "The Moon is in conjunction with Saturn.",
+        "definition_ne": "चन्द्रमा शनिसँग युतिमा हुनुपर्छ।",
+        "result": "The person will be harsh, blunt, and offensive in speech.",
+        "result_ne": "व्यक्तिको बोली कठोर, तीखो र अरूलाई चित्त दुखाउने खालको (निष्ठुरभाषी) हुनेछ।"
+    },
+    {
+        "yoga_id": "297",
+        "sort": 297,
+        "name": "Rajabhrashta Yoga",
+        "name_ne": "राजभ्रष्ट योग",
+        "definition": "The lords of Arudha Lagna and Arudha Dwadasa are in conjunction.",
+        "definition_ne": "आरूढ लग्न र आरूढ द्वादशका स्वामीहरू युतिमा हुनुपर्छ।",
+        "result": "The subject suffers a dramatic fall from high position and power.",
+        "result_ne": "जातकको उच्च पद र प्रतिष्ठाबाट अचानक र नाटकीय रूपमा पतन हुनेछ।"
+    },
+    {
+        "yoga_id": "298",
+        "sort": 298,
+        "name": "Raja Yoga Bhanga (I)",
+        "name_ne": "राजयोग भङ्ग (१)",
+        "definition": "The ascendant being Leo, Saturn is in Libra (exaltation) but occupies a debilitated Navamsa.",
+        "definition_ne": "सिंह लग्न भएर शनि तुला राशि (उच्च) मा भए पनि नीच नवांशमा हुनुपर्छ।",
+        "result": "The person, though born in a royal family, will be bereft of fortune.",
+        "result_ne": "व्यक्ति राजपरिवारमा जन्मे पनि भाग्य र सुखभोगबाट वञ्चित हुनेछ।"
+    },
+    {
+        "yoga_id": "299",
+        "sort": 299,
+        "name": "Raja Yoga Bhanga (II)",
+        "name_ne": "राजयोग भङ्ग (२)",
+        "definition": "The Sun occupies the 10th degree of Libra (deep debilitation).",
+        "definition_ne": "सूर्य तुला राशिको १० डिग्री (परम नीच) मा बस्नुपर्छ।",
+        "result": "Destroys potential rise, keeping the native in misery.",
+        "result_ne": "यसले जातकको प्रगतिका सबै ढोकाहरू बन्द गरी जीवनभर कष्टमा राख्नेछ।"
+    },
+    {
+        "yoga_id": "300",
+        "sort": 300,
+        "name": "Gohanta Yoga",
+        "name_ne": "गोहन्त योग",
+        "definition": "A malefic devoid of benefic aspect in a kendra, and Jupiter in the 8th house.",
+        "definition_ne": "शुभ ग्रहको दृष्टि नभएको पापी ग्रह केन्द्रमा हुनुपर्छ, र बृहस्पति आठौं भावमा हुनुपर्छ।",
+        "result": "The person becomes a butcher (or involved in cruel/slaughter trades).",
+        "result_ne": "व्यक्ति क्रूर स्वभावको हुनेछ र पशु बध वा सो सम्बन्धी व्यवसाय (कसाई) मा लाग्न सक्छ।"
+    }
+]

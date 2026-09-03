@@ -38,28 +38,32 @@ def facing_zone(facing: CardinalWall) -> ZoneId:
     return {"east": "e", "west": "w", "north": "n", "south": "s"}[facing]
 
 
-CORRIDOR_W = 1.0  # target connector width — a real, comfortably walkable hallway thickness
+CORRIDOR_W = 0.85  # target connector width — comfortably walkable, but every zone now gives up this width (not just the 4 edge zones), so it's kept modest rather than a full ~1m hallway
 
 
 @dataclass(frozen=True)
 class Mandala:
     """The 9-zone (8 outer + centre) mandala, subdividing the plot the same
-    way it always has — but with a real, always-connected corridor between
-    every zone and the centre, on the same finer grid the classical 81-pada
-    Vastu Puruṣa Maṇḍala uses (each outer zone is one 3×3 block of it).
+    way it always has — but now with a real alindra: a continuous gallery
+    ringing the centre (Brahmasthān) that every one of the 8 zones shares a
+    real wall with directly, not just the 4 that happen to sit on an axis
+    through it. Classical treatises (Mayamata etc.) describe exactly this —
+    galleries encircling the open central courtyard, not a hallway reaching
+    only partway — and it's what makes the geometry actually robust: a
+    corner zone with only *one* connecting wall (this file's earlier
+    "spoke" design) can be landlocked by a single unlucky carve; a zone
+    bordering a continuous ring on multiple sides can't be, because losing
+    one connection still leaves others.
 
-    The 4 *corner* zones (nw/ne/sw/se) already only ever touched the centre
-    at a single diagonal point — no real wall there, which is exactly what
-    every "room with a door to nowhere" bug this session traced back to.
-    The 4 *edge* zones (n/s/e/w) never had that problem: each already shares
-    a full wall with the centre. So only the edge zones give up a thin strip
-    off their own inner edge (`CORRIDOR_W`, capped so it can't eat an
-    unreasonable share of a small plot) to `corridor` — and that alone is
-    enough: a corner zone's *unshrunk* rect already shares that same strip's
-    edge for its full `CORRIDOR_W` length (verified directly), so every
-    corner gets real connectivity for free, without losing any of its own
-    room area. `cells` needs no further carving — no corner notch, nothing
-    to split before a room can claim it."""
+    Every zone gives up a thin strip (`CORRIDOR_W`, capped so it can't eat
+    an unreasonable share of a small plot) off whichever inner edge faces
+    the centre — the 4 edge zones (n/s/e/w) lose depth on one axis same as
+    before; the 4 corner zones now do too, always along the same axis as
+    their nearest N/S neighbour, which is what makes every strip land
+    exactly edge-to-edge with its neighbours (verified directly) instead of
+    only touching at a corner point — one continuous ring, not four
+    separate dead-end spokes. `cells` needs no further carving — no corner
+    notch, nothing to split before a room can claim it."""
 
     corridor: list[Rect]
     cells: dict[ZoneId, Rect]
@@ -74,20 +78,20 @@ def mandala(width: float, height: float) -> Mandala:
 
     corridor = [
         center,
-        Rect(x1, y1 - ch, x2 - x1, ch),  # off N's inner edge — also touches NW and NE
-        Rect(x1, y2, x2 - x1, ch),  # off S's inner edge — also touches SW and SE
-        Rect(x1 - cw, y1, cw, y2 - y1),  # off W's inner edge — also touches NW and SW
-        Rect(x2, y1, cw, y2 - y1),  # off E's inner edge — also touches NE and SE
+        Rect(0, y1 - ch, width, ch),  # full-width band off N/NW/NE's inner edge
+        Rect(0, y2, width, ch),  # full-width band off S/SW/SE's inner edge
+        Rect(x1 - cw, y1, cw, y2 - y1),  # off W's inner edge — meets both bands above
+        Rect(x2, y1, cw, y2 - y1),  # off E's inner edge — meets both bands above
     ]
     cells = {
-        "nw": Rect(0, 0, x1, y1),
+        "nw": Rect(0, 0, x1, y1 - ch),
         "n": Rect(x1, 0, x2 - x1, y1 - ch),
-        "ne": Rect(x2, 0, width - x2, y1),
+        "ne": Rect(x2, 0, width - x2, y1 - ch),
         "w": Rect(0, y1, x1 - cw, y2 - y1),
         "e": Rect(x2 + cw, y1, width - x2 - cw, y2 - y1),
-        "sw": Rect(0, y2, x1, height - y2),
+        "sw": Rect(0, y2 + ch, x1, height - y2 - ch),
         "s": Rect(x1, y2 + ch, x2 - x1, height - y2 - ch),
-        "se": Rect(x2, y2, width - x2, height - y2),
+        "se": Rect(x2, y2 + ch, width - x2, height - y2 - ch),
     }
     return Mandala(corridor, cells)
 
@@ -340,7 +344,35 @@ def pack_into_surplus(
     for space in leftover:
         wet = is_wet(space.kind)
         open_rooms = [r for r in rooms if r.life in ("circulation", "outdoor")]
-        candidates = [r for r in rooms if is_merge_target(r)]
+        # is_merge_target (used elsewhere for *growing* a room with a
+        # leftover scrap) excludes every circulation-life room, which is
+        # right for decorative open-floor fragments but wrong here for
+        # "living" specifically — it's life="circulation" purely for
+        # wall/door purposes (open-plan), while still being a real, sized
+        # room with genuine surplus to give up, same as any ordinary donor.
+        # Excluding it here just shrank the donor pool for no reason,
+        # making a more precious room (like puja) more likely to be needed.
+        candidates = [
+            r for r in rooms
+            if (is_merge_target(r) or (r.life == "circulation" and r.kind in IDEAL_SIZE))
+            # puja and kitchen are never bargained down for floor area, even
+            # as a last resort. Every other kind's own "ideal zone" cost is a
+            # graded, negotiable preference (still 0 for a well-placed
+            # bedroom or living room too, so ranking or de-prioritizing by
+            # cost alone can't tell these apart from any other room that's
+            # merely sitting where it should). Carving *from* one of these
+            # doesn't just shrink its area — carve_extra_room pins the new
+            # piece to the donor's own outer corner and leaves the donor the
+            # inner remainder, so the carved room (e.g. a toilet) ends up
+            # sitting at the zone's true exterior corner while the donor
+            # (puja/kitchen) is pushed inward — visibly wrong for a zone
+            # that's supposed to *be* that room's, not just host its label.
+            # A request that asked for puja/kitchen specifically wants that
+            # room at its own size and position, not shrunk and shoved off
+            # the corner so something else fits. Reporting the other item as
+            # genuinely unplaceable is the honest outcome here.
+            and r.kind not in ("puja", "kitchen", "kitchen_dining")
+        ]
         if wet and space.kind in ("toilet", "combined"):
             candidates = [r for r in candidates if not toilet_forbidden(r.vastu_region)]
         candidates.sort(key=lambda r: zone_rules.vastu_cost(space.kind, r.vastu_region, mode)[0])
@@ -372,12 +404,17 @@ def place_foyer(
     rooms: list[PlannedRoom], foyer: Rect, storey: int, facing: CardinalWall
 ) -> tuple[PlannedRoom | None, list[PlannedSpace]]:
     """Carve the entrance foyer's footprint out of whatever it lands on,
-    returning the foyer room (or None if a real room in its way can't be
-    carved down to its own minimum — see the `hits` loop below) plus any
-    wet rooms that had to be dropped entirely for the same reason. A wet
-    room that can't be carved down to its own minimum is *removed*, not
-    left at its original size: leaving it in place would silently overlap
-    the foyer instead of reporting a real placement conflict."""
+    returning the foyer room plus any rooms that had to be dropped entirely
+    because they couldn't be carved down to their own minimum (e.g. the
+    foyer's target sits in the *middle* of a room's span rather than
+    flush with an edge, splitting it into two pieces neither big enough on
+    its own). A room that can't be carved down is *removed*, not left at
+    its original size (silently overlapping the foyer) and not allowed to
+    block the foyer for the whole floor either — the earlier shape of this
+    function aborted the entire foyer placement the moment *any* one hit
+    failed, which meant no foyer at all and the main entrance falling back
+    to whatever room happened to touch the facing wall instead (routinely a
+    bedroom) — worse than dropping the one room that didn't fit."""
     dropped: list[PlannedSpace] = []
     for room in list(rooms):
         if not is_wet(room.kind) or overlap_area(room.rect, foyer) < 0.08:
@@ -413,7 +450,10 @@ def place_foyer(
         pieces = split_by(hit.rect, foyer, min_side=0.02)
         remain = largest(pieces)
         if not remain or not box_fits(remain.w, remain.h, IDEAL_SIZE[hit.kind]):
-            return None, dropped
+            rooms.remove(hit)
+            dropped.append(PlannedSpace(id=hit.id, kind=hit.kind, index=hit.index))
+            add_leftovers(rooms, pieces, None, hit.id, storey, False, min_side=0.02)
+            continue
         carved.append((hit, remain, pieces))
     for room, remain, pieces in carved:
         add_leftovers(rooms, pieces, remain, room.id, storey, False, min_side=0.02)
@@ -451,9 +491,21 @@ def place_foyer(
 
 
 def connect_foyer(foyer_room: PlannedRoom, rooms: list[PlannedRoom]) -> None:
+    """The foyer is life="circulation" (open) itself, so if it already
+    shares a real wall with another open/circulation fragment (the corridor,
+    a leftover carve scrap, the courtyard) the two are already one walkable
+    open floor — exactly the rule every other open-to-open pair in this file
+    follows (see the main placement loop's own `if room.life in
+    ("circulation", "outdoor"): continue` before it calls `door_onto_open`
+    on anything else). This used to call `door_onto_open` unconditionally,
+    which doors the foyer onto the *biggest* open neighbor regardless of
+    whether that connection already existed for free — producing a real,
+    rendered interior door immediately next to the actual entrance for no
+    reason (a leftover carve fragment right behind the foyer routinely
+    triggered this). Only a foyer boxed in by nothing but closed rooms
+    genuinely needs a door, which is what the host fallback below is for."""
     open_rooms = [r for r in rooms if r.id != foyer_room.id and r.life in ("circulation", "outdoor")]
-    door_onto_open(foyer_room, open_rooms)
-    if foyer_room.doors:
+    if any(shared_seg(foyer_room.rect, o.rect) for o in open_rooms):
         return
     hosts = sorted(
         (
@@ -480,7 +532,17 @@ def pick_zone(kind: str, free: list[ZoneId], mode: str, fits) -> tuple[ZoneId, b
 
     def rank(ids: list[str]) -> list[ZoneId]:
         candidates = [z for z in free if ZONE_DIR[z] in ids and fits(z)]
-        return sorted(candidates, key=lambda z: zone_rules.vastu_cost(kind, ZONE_DIR[z], mode)[0])
+        # Several subjects (puja, bedroom, living, study, garden, library)
+        # carry northeast as just one of several *equally* preferred zones
+        # in the extracted data — nothing in the cost numbers says northeast
+        # over north/east/etc. But PLACE_ORDER already processes puja before
+        # every one of those others, and northeast is the single most
+        # widely-cited placement in classical teaching (Īśānya, the puja
+        # corner) — so on an actual tie, prefer it, rather than let an
+        # unrelated fixed zone-iteration order (nw before n before ne, an
+        # accident of how `cells` happens to be listed) decide whether puja
+        # or some other room gets there first.
+        return sorted(candidates, key=lambda z: (zone_rules.vastu_cost(kind, ZONE_DIR[z], mode)[0], 0 if z == "ne" else 1))
 
     best = rank(preferred)
     if best:

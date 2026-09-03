@@ -179,7 +179,7 @@ def kundali_report(
     from datetime import timezone as _tz
 
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
-    from engine.vedic.at_time import build_planetary_snapshot
+    from engine.vedic.at_time import build_planetary_snapshot, build_panchanga_at_time, resolve_vedic_day_anchor
     from engine.vedic.interpretation import iter_report
     from engine.vedic.shadbala import compute_shadbala
     from engine.vedic.vimshottari import vimshottari_dasha
@@ -208,6 +208,24 @@ def kundali_report(
         dasha = vimshottari_dasha(moon_lon, instant_utc, cycles=1)
         shadbala = compute_shadbala(instant_utc, lat=location.lat, lon=location.lon,
                                     timezone_name=location.timezone, ayanamsa=mode_id)
+
+        # Gulika/Mandi and day/night birth feed several classical yoga rules
+        # in the report's yoga list — same data the /kundali/detail endpoint
+        # already computes, sourced here the same way.
+        is_day: bool | None = None
+        gulika_lon: float | None = None
+        mandi_lon: float | None = None
+        try:
+            panchanga = build_panchanga_at_time(instant, location, ayanamsa=mode_id)
+            upagraha_raw = {
+                row["key"]: row for row in (panchanga.get("detail") or {}).get("upagrahas") or []
+            }
+            gulika_lon = upagraha_raw.get("gulika", {}).get("longitude")
+            mandi_lon = upagraha_raw.get("mandi", {}).get("longitude")
+            _, sunrise_utc, sunset_utc, _ = resolve_vedic_day_anchor(instant, location)
+            is_day = sunrise_utc <= instant_utc < sunset_utc
+        except Exception:
+            pass
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -226,7 +244,10 @@ def kundali_report(
 
     if cached_records is None:
         cached_records = list(
-            iter_report(planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc), lang=report_lang)
+            iter_report(
+                planets, lagna, shadbala, dasha, now=_dt.now(_tz.utc), lang=report_lang,
+                is_day=is_day, gulika_lon=gulika_lon, mandi_lon=mandi_lon,
+            )
         )
         store_report_cache(
             cache_key,
@@ -295,7 +316,7 @@ def kundali_yoga_reference(
     id: str | None = Query(None, description="Exact yoga id, e.g. '46' or '75-106'"),
     q: str | None = Query(None, description="Case-insensitive search over name/definition/result"),
 ):
-    """Static catalog of the 162 planetary combinations (Raman, Part I).
+    """Static catalog of the 300 planetary combinations (Raman, Parts I-II).
 
     No arguments returns the whole catalog; `id` fetches one combination; `q`
     searches names, definitions and results.
@@ -328,7 +349,7 @@ def kundali_yoga_reference(
     return JSONResponse(
         content={
             "source": "Three Hundred Important Combinations — B. V. Raman",
-            "part": "Part I (combinations 1–162)",
+            "part": "Parts I–II (combinations 1–300)",
             "count": len(combinations),
             "combinations": combinations,
         },

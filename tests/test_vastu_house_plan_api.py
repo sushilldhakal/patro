@@ -10,7 +10,7 @@ from app.main import app
 client = TestClient(app)
 
 _BODY = {
-    "site": {"plot_width": 15, "plot_depth": 10, "unit": "m", "facing": "east"},
+    "site": {"plot_width": 15, "plot_depth": 12, "unit": "m", "facing": "east"},
     "requirement": {
         "bedrooms": 3, "toilets": 2, "bathrooms": 1, "combined_toilet_bath": 1,
         "extras": ["living", "kitchen", "dining", "puja"], "mode": "flexible", "storeys": 1,

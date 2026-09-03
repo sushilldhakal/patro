@@ -295,9 +295,11 @@ def test_kala_sarpa_and_amala_use_whole_sign_reference_points():
     assert present["sunapha"] is True
     assert present["amala"] is True
     assert present["vasi"] is True
-    # Genuinely absent for this chart: the lagna lord (Jupiter) sits in
-    # house 8 (not a kendra), so Parvata's angular-lord condition fails.
-    assert present["parvata"] is False
+    # Parvata (BPHS): benefics occupy angles, and the 6th/8th are empty or
+    # benefic-only. Venus sits in the 10th (a kendra), the 6th is empty, and
+    # the 8th holds only the Moon and Jupiter (both benefics) — so the yoga
+    # is genuinely present for this chart.
+    assert present["parvata"] is True
 
 
 def test_rahu_ketu_use_mean_node_matching_drikpanchang():

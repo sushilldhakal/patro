@@ -39,7 +39,7 @@ router = APIRouter(tags=["vastu"])
 # Bump when layout.py/building.py/scoring.py logic changes so old cache
 # entries don't get served under a stale algorithm (same pattern as
 # services/response_cache.py's own CACHE_PAYLOAD_VERSION note).
-_HOUSE_PLAN_ENGINE_VERSION = "11"  # bumped: ensure_reachable's and validate.py's circulation-fragment exemptions now also check kind in IDEAL_SIZE, so "living" (real, sized, but life=circulation for wall purposes) is no longer treated like a decorative brahmasthan scrap that's fine to leave permanently sealed with zero doors
+_HOUSE_PLAN_ENGINE_VERSION = "17"  # bumped: kitchen/kitchen_dining now get the same donor exclusion puja already had (v15) — carving an overflow room (e.g. a combined toilet+bath) out of kitchen's surplus was leaving kitchen's *label* correctly "southeast" but pushing its actual rect off the zone's true exterior corner, with the carved room (pinned to the donor's outer corner by carve_extra_room) sitting closer to the corner than kitchen itself. Same fix, same reasoning as puja: an overflow room that only fits by shrinking kitchen is now reported as genuinely unplaceable instead of silently displacing it from its own corner. Also: connect_foyer() no longer doors the entrance foyer onto whatever open/circulation fragment it happens to touch — the foyer is itself life="circulation", so if it already shares a real wall with another open fragment (routinely a leftover carve scrap sitting right behind it) the two are already one walkable open floor, same rule every other open-to-open pair in this file follows; the old unconditional call put a real, rendered second "door" right next to the actual entrance for no reason
 
 
 @router.get("/vastu/zones")

@@ -1,5 +1,5 @@
-"""Static reference catalog of the 162 planetary combinations from B. V. Raman's
-'Three Hundred Important Combinations' (Part I).
+"""Static reference catalog of the 300 planetary combinations from B. V. Raman's
+'Three Hundred Important Combinations' (Parts I-II).
 
 The source of truth is the checked-in ``data/yoga_reference.json``. This module
 seeds it into a small SQLite table (``data/yoga_reference.db``, gitignored and

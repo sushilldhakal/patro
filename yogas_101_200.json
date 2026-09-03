@@ -1,0 +1,1002 @@
+[
+    {
+        "yoga_id": "101",
+        "sort": 101,
+        "name": "Srik Yoga (Mala)",
+        "name_ne": "श्रीक योग (माला)",
+        "definition": "All the benefics occupy kendras.",
+        "definition_ne": "सबै शुभ ग्रहहरू केन्द्र (१, ४, ७, १० औं भाव) मा बस्दछन्।",
+        "result": "Live in comfort, possess conveyances, and have many enjoyments.",
+        "result_ne": "आरामदायी जीवन बाँच्नेछ, सवारी साधन प्राप्त गर्नेछ, र अनेकौं सुखभोग गर्नेछ।"
+    },
+    {
+        "yoga_id": "102",
+        "sort": 102,
+        "name": "Sarpa Yoga",
+        "name_ne": "सर्प योग",
+        "definition": "All the malefics occupy kendras.",
+        "definition_ne": "सबै पापी ग्रहहरू केन्द्र (१, ४, ७, १० औं भाव) मा बस्दछन्।",
+        "result": "Miserable in many ways, cruel, and stupid.",
+        "result_ne": "अनेकौं रूपमा दुःखी, क्रूर र मूर्ख हुनेछ।"
+    },
+    {
+        "yoga_id": "103",
+        "sort": 103,
+        "name": "Duryoga",
+        "name_ne": "दुर्योग",
+        "definition": "The lord of the 10th is situated in the 6th, 8th or 12th house.",
+        "definition_ne": "दशमेश (१० औं भावको स्वामी) ६, ८ वा १२ औं भाव (त्रिक भाव) मा बस्दछ।",
+        "result": "Will not derive the fruits of his own bodily exertion; looked down by others; highly selfish and intent on deceiving others, lives in a foreign place.",
+        "result_ne": "आफ्नै शारीरिक परिश्रमको फल प्राप्त नगर्ने; अरूद्वारा अपहेलित हुने; अत्यधिक स्वार्थी र अरूलाई ठग्न उद्यत रहने र विदेशमा बस्ने।"
+    },
+    {
+        "yoga_id": "104",
+        "sort": 104,
+        "name": "Daridra Yoga",
+        "name_ne": "दरिद्र योग",
+        "definition": "The lord of the 11th in the 6th, 8th or 12th.",
+        "definition_ne": "एकादशेश (११ औं भावको स्वामी) ६, ८ वा १२ औं भाव (त्रिक भाव) मा बस्दछ।",
+        "result": "Will contact huge debts, will be very poor, will suffer from auditory troubles, will be mean and will commit sinful and criminal deeds.",
+        "result_ne": "ठूलो ऋणमा डुब्नेछ, निकै गरिब हुनेछ, कानको समस्याबाट पीडित हुनेछ, नीच स्वभावको हुनेछ र पाप तथा आपराधिक कार्य गर्नेछ।"
+    },
+    {
+        "yoga_id": "105",
+        "sort": 105,
+        "name": "Harsha Yoga",
+        "name_ne": "हर्ष योग",
+        "definition": "The lord of the 6th occupying the 6th house.",
+        "definition_ne": "षष्ठेश (६ औं भावको स्वामी) ६ औं भावमै बस्दछ।",
+        "result": "Fortunate, happy, invincible, physically strong, wealthy, famous, and afraid of sinful deeds.",
+        "result_ne": "भाग्यमानी, खुसी, अपराजित, शारीरिक रूपमा बलियो, धनी, प्रसिद्ध र पाप कर्मदेखि डराउने हुनेछ।"
+    },
+    {
+        "yoga_id": "106",
+        "sort": 106,
+        "name": "Sarala Yoga",
+        "name_ne": "सरल योग",
+        "definition": "The lord of the 8th occupying the 8th house.",
+        "definition_ne": "अष्टमेश (८ औं भावको स्वामी) ८ औं भावमै बस्दछ।",
+        "result": "Long-lived, fearless, learned, a terror to enemies, celebrated, and prosperous.",
+        "result_ne": "दीर्घायु, निडर, विद्वान, शत्रुहरूका लागि भयको प्रतीक, प्रसिद्ध र समृद्ध हुनेछ।"
+    },
+    {
+        "yoga_id": "107",
+        "sort": 107,
+        "name": "Vimala Yoga",
+        "name_ne": "विमल योग",
+        "definition": "The lord of the 12th occupying the 12th house.",
+        "definition_ne": "द्वादशेश (१२ औं भावको स्वामी) १२ औं भावमै बस्दछ।",
+        "result": "Frugal, happy, independent, and possessed of ennobling qualities.",
+        "result_ne": "मितव्ययी (कम खर्च गर्ने), खुसी, स्वतन्त्र र उत्कृष्ट मानवीय गुणहरूले युक्त हुनेछ।"
+    },
+    {
+        "yoga_id": "108",
+        "sort": 108,
+        "name": "Sareera Soukhya Yoga",
+        "name_ne": "शरीर सौख्य योग",
+        "definition": "The lord of Lagna, Jupiter or Venus should occupy a quadrant (kendra).",
+        "definition_ne": "लग्नेश, बृहस्पति वा शुक्र केन्द्र (१, ४, ७, १० औं भाव) मा बस्दछन्।",
+        "result": "Endowed with long life, wealth, and political favours.",
+        "result_ne": "दीर्घायु, धन र राजनीतिक लाभ वा राजकीय सुख प्राप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "109",
+        "sort": 109,
+        "name": "Dehapushti Yoga",
+        "name_ne": "देहपुष्टि योग",
+        "definition": "The ascendant lord in a movable sign aspected by a benefic.",
+        "definition_ne": "लग्नेश चर राशि (मेष, कर्कट, तुला, मकर) मा बसेर शुभ ग्रहद्वारा दृष्ट हुन्छ।",
+        "result": "Happy, will possess a well-developed body, will become rich, and will enjoy life.",
+        "result_ne": "खुसी रहनेछ, सुगठित र पुष्ट शरीर भएको हुनेछ, धनी बन्नेछ र जीवनको आनन्द लिनेछ।"
+    },
+    {
+        "yoga_id": "110",
+        "sort": 110,
+        "name": "Dehakashta Yoga",
+        "name_ne": "देहकष्ट योग",
+        "definition": "The lord of Lagna must join a malefic or occupy the 8th house.",
+        "definition_ne": "लग्नेश पापी ग्रहसँग युति गर्दछ वा अष्टम (८ औं) भावमा बस्दछ।",
+        "result": "Devoid of bodily comforts.",
+        "result_ne": "शारीरिक सुखसुविधाबाट वञ्चित हुनेछ (शारीरिक कष्ट भोग्नेछ)।"
+    },
+    {
+        "yoga_id": "111",
+        "sort": 111,
+        "name": "Rogagrastha Yoga",
+        "name_ne": "रोगग्रस्त योग",
+        "definition": "If the lord of Lagna occupies the ascendant in conjunction with the lord of the 6th, 8th or 12th; or if the weak lord of Lagna joins a trine or a quadrant.",
+        "definition_ne": "लग्नेश लग्न भावमै ६, ८ वा १२ औं भावको स्वामीसँग बस्दछ; वा कमजोर लग्नेश केन्द्र वा त्रिकोण भावमा बस्दछ।",
+        "result": "Will possess a weak constitution and be sickly.",
+        "result_ne": "कमजोर शारीरिक बनावट भएको र निरन्तर रोगी वा अस्वस्थ रहनेछ।"
+    },
+    {
+        "yoga_id": "112",
+        "sort": 112,
+        "name": "Krisanga Yoga (I)",
+        "name_ne": "कृशाङ्ग योग (१)",
+        "definition": "The ascendant lord should occupy a dry sign or the sign owned by a dry planet.",
+        "definition_ne": "लग्नेश सुख्खा (शुष्क) राशिमा बस्दछ वा सुख्खा ग्रहको स्वामित्व भएको राशिमा बस्दछ।",
+        "result": "Will have an emaciated or lean body and will suffer from bodily pains.",
+        "result_ne": "दुब्लो वा सुकेको शरीर हुनेछ र शारीरिक पीडा वा दुखाइबाट पीडित हुनेछ।"
+    },
+    {
+        "yoga_id": "113",
+        "sort": 113,
+        "name": "Krisanga Yoga (II)",
+        "name_ne": "कृशाङ्ग योग (२)",
+        "definition": "The Navamsa Lagna should be owned by a dry planet and malefics should join the Lagna.",
+        "definition_ne": "नवांश लग्नको स्वामी सुख्खा ग्रह हुन्छ र लग्नमा पापी ग्रहहरू बस्दछन्।",
+        "result": "Will have an emaciated or lean body and will suffer from bodily pains.",
+        "result_ne": "दुब्लो वा कमजोर शरीर हुनेछ र शारीरिक कष्ट वा पीडा भोग्नेछ।"
+    },
+    {
+        "yoga_id": "114",
+        "sort": 114,
+        "name": "Dehasthoulya Yoga (I)",
+        "name_ne": "देहस्थौल्य योग (१)",
+        "definition": "Lord of Lagna and the planet, in whose Navamsa the lord of Lagna is placed, should occupy watery signs.",
+        "definition_ne": "लग्नेश र लग्नेश बसेको नवांशको स्वामी दुवै जल तत्त्वको राशिमा बस्दछन्।",
+        "result": "Will possess a corpulent (stout) body.",
+        "result_ne": "स्थूल, मोटो वा भारी शरीर (मोटोपना) भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "115",
+        "sort": 115,
+        "name": "Dehasthoulya Yoga (II)",
+        "name_ne": "देहस्थौल्य योग (२)",
+        "definition": "The Lagna must be occupied by Jupiter, or he must aspect the Lagna from a watery sign.",
+        "definition_ne": "लग्न भावमा बृहस्पति बस्दछ, वा बृहस्पतिले जल तत्त्वको राशिबाट लग्नलाई देख्दछ।",
+        "result": "Will possess a corpulent (stout) body.",
+        "result_ne": "मोटो वा स्थूल शरीर भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "116",
+        "sort": 116,
+        "name": "Dehasthoulya Yoga (III)",
+        "name_ne": "देहस्थौल्य योग (३)",
+        "definition": "The ascendant must fall in a watery sign in conjunction with benefics or the ascendant lord must be a watery planet.",
+        "definition_ne": "लग्न जल तत्त्वको राशिमा परेर शुभ ग्रहसँग युति गर्दछ वा लग्नेश स्वयम् जल तत्त्वको ग्रह हुन्छ।",
+        "result": "Will possess a corpulent (stout) body.",
+        "result_ne": "मोटो वा स्थूल शरीर प्राप्त हुनेछ।"
+    },
+    {
+        "yoga_id": "117",
+        "sort": 117,
+        "name": "Sada Sanchara Yoga",
+        "name_ne": "सदा सञ्चार योग",
+        "definition": "The lord of either Lagna or the sign occupied by Lagna lord must be in a movable sign.",
+        "definition_ne": "लग्नेश वा लग्नेश बसेको राशिको स्वामी चर राशिमा बस्दछ।",
+        "result": "The native will almost always be a wanderer (diplomat or traveller).",
+        "result_ne": "जातक सधैं जसो यात्रा गरिरहने (घुमन्ते, कुटनीतिज्ञ वा यात्री) हुनेछ।"
+    },
+    {
+        "yoga_id": "118",
+        "sort": 118,
+        "name": "Dhana Yoga (118)",
+        "name_ne": "धन योग (११८)",
+        "definition": "If the 5th from the Ascendant happens to be a sign of Venus, and if Venus and Saturn are situated in the 5th and 11th respectively.",
+        "definition_ne": "पञ्चम (५ औं) भाव शुक्रको राशि (वृष वा तुला) हुन्छ र शुक्र पञ्चममा तथा शनि एकादश (११ औं) भावमा बस्दछन्।",
+        "result": "The native will acquire much wealth.",
+        "result_ne": "जातकले प्रचुर मात्रामा धन र सम्पत्ति आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "119",
+        "sort": 119,
+        "name": "Dhana Yoga (119)",
+        "name_ne": "धन योग (११९)",
+        "definition": "Mercury should occupy his own sign which should be the 5th from Lagna and the Moon and Mars should be in the 11th.",
+        "definition_ne": "बुध पञ्चम भावमा आफ्नै राशिमा बस्दछ र चन्द्रमा तथा मंगल एकादश (११ औं) भावमा बस्दछन्।",
+        "result": "The native will acquire much wealth.",
+        "result_ne": "जातकले ठूलो धन सम्पत्ति प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "120",
+        "sort": 120,
+        "name": "Dhana Yoga (120)",
+        "name_ne": "धन योग (१२०)",
+        "definition": "Saturn should occupy his own sign which should be the 5th from Lagna, and Mercury and Mars should be posited in the 11th.",
+        "definition_ne": "शनि पञ्चम भावमा आफ्नै राशिमा बस्दछ र बुध तथा मंगल एकादश (११ औं) भावमा बस्दछन्।",
+        "result": "The native will acquire much wealth.",
+        "result_ne": "जातकले अत्यधिक धन लाभ गर्नेछ।"
+    },
+    {
+        "yoga_id": "121",
+        "sort": 121,
+        "name": "Dhana Yoga (121)",
+        "name_ne": "धन योग (१२१)",
+        "definition": "The Sun must occupy the 5th identical with his own sign and Jupiter and the Moon should be in the 11th.",
+        "definition_ne": "सूर्य पञ्चम भावमा आफ्नै राशि (सिंह) मा बस्दछ र बृहस्पति तथा चन्द्रमा एकादश (११ औं) भावमा बस्दछन्।",
+        "result": "The native will acquire much wealth.",
+        "result_ne": "जातकले ठूलो सम्पत्ति र आर्थिक समृद्धि प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "122",
+        "sort": 122,
+        "name": "Dhana Yoga (122)",
+        "name_ne": "धन योग (१२२)",
+        "definition": "If the 5th from Lagna happens to be a house of Jupiter with Jupiter there and Mars and the Moon in the 11th.",
+        "definition_ne": "पञ्चम भाव बृहस्पतिको राशि (धनु वा मीन) भएर बृहस्पति त्यहीं बस्दछ र मंगल तथा चन्द्रमा एकादश भावमा बस्दछन्।",
+        "result": "The native will acquire much wealth.",
+        "result_ne": "जातकले प्रचुर मात्रामा धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "123",
+        "sort": 123,
+        "name": "Dhana Yoga (123)",
+        "name_ne": "धन योग (१२३)",
+        "definition": "If the Sun is in Lagna identical with Leo, and aspected or joined by Mars and Jupiter.",
+        "definition_ne": "सूर्य सिंह लग्नमै बस्दछ र मंगल तथा बृहस्पतिद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले अथाह धन सम्पत्ति प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "124",
+        "sort": 124,
+        "name": "Dhana Yoga (124)",
+        "name_ne": "धन योग (१२४)",
+        "definition": "If the Moon is in Lagna identical with Cancer and aspected by Jupiter and Mars.",
+        "definition_ne": "चन्द्रमा कर्कट लग्नमै बस्दछ र बृहस्पति तथा मंगलद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले अथाह धन सम्पत्ति प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "125",
+        "sort": 125,
+        "name": "Dhana Yoga (125)",
+        "name_ne": "धन योग (१२५)",
+        "definition": "Mars should be in Lagna identical with Aries or Scorpio and joined or aspected by the Moon, Venus and Saturn.",
+        "definition_ne": "मंगल मेष वा वृश्चिक लग्नमै बस्दछ र चन्द्रमा, शुक्र तथा शनिद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले ठूलो धन सम्पत्ति प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "126",
+        "sort": 126,
+        "name": "Dhana Yoga (126)",
+        "name_ne": "धन योग (१२६)",
+        "definition": "Mercury should be in Lagna identical with his own sign and joined or aspected by Saturn and Venus.",
+        "definition_ne": "बुध मिथुन वा कन्या लग्नमै बस्दछ र शनि तथा शुक्रद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले अत्यधिक धन लाभ गर्नेछ।"
+    },
+    {
+        "yoga_id": "127",
+        "sort": 127,
+        "name": "Dhana Yoga (127)",
+        "name_ne": "धन योग (१२७)",
+        "definition": "Jupiter should be in Lagna identical with his own sign and joined or aspected by Mercury and Mars.",
+        "definition_ne": "बृहस्पति धनु वा मीन लग्नमै बस्दछ र बुध तथा मंगलद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले अथाह धन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "128",
+        "sort": 128,
+        "name": "Dhana Yoga (128)",
+        "name_ne": "धन योग (१२८)",
+        "definition": "Venus should be in Lagna identical with his own sign and joined or aspected by Saturn and Mercury.",
+        "definition_ne": "शुक्र वृष वा तुला लग्नमै बस्दछ र शनि तथा बुधद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The subject acquires immense wealth.",
+        "result_ne": "जातकले प्रचुर मात्रामा धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "129",
+        "sort": 129,
+        "name": "Bahudravyarjana Yoga",
+        "name_ne": "बहुद्रव्यार्जन योग",
+        "definition": "Lord of the Lagna in the 2nd, lord of the 2nd in the 11th and the lord of the 11th in Lagna.",
+        "definition_ne": "लग्नेश द्वितीय भावमा, द्वितीयेश एकादश भावमा र एकादशेश लग्न भावमा बस्दछन्।",
+        "result": "The subject will earn lot of money and will amass a good fortune.",
+        "result_ne": "जातकले अत्यधिक धन कमाउनेछ र ठूलो सम्पत्ति सञ्चित गर्नेछ।"
+    },
+    {
+        "yoga_id": "130",
+        "sort": 130,
+        "name": "Swaveeryaddhana Yoga (I)",
+        "name_ne": "स्ववीर्यधन योग (१)",
+        "definition": "The Lord of Lagna, being the strongest planet, should occupy a kendra in conjunction with Jupiter and the 2nd lord should join Vaiseshikamsa.",
+        "definition_ne": "सबैभन्दा बलियो भएको लग्नेश बृहस्पतिसँग केन्द्रमा बस्दछ र द्वितीयेश वैशेषिकांशमा हुन्छ।",
+        "result": "The subject will earn money by his own efforts and exertions.",
+        "result_ne": "जातकले आफ्नै प्रयास र कडा परिश्रमद्वारा धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "131",
+        "sort": 131,
+        "name": "Swaveeryaddhana Yoga (II)",
+        "name_ne": "स्ववीर्यधन योग (२)",
+        "definition": "The lord of the sign in which the lord of the Navamsa occupied by the Ascendant lord is, should be strong, and join a quadrant or a trine from the 2nd lord or should occupy his own or exaltation sign.",
+        "definition_ne": "लग्नेश बसेको नवांश राशिको स्वामी जुन राशिमा बस्छ त्यस राशिको स्वामी बलियो भई द्वितीयेशबाट केन्द्र वा त्रिकोणमा बस्दछ वा आफ्नो स्वराशि/उच्च राशिमा बस्दछ।",
+        "result": "The subject will earn money by his own efforts and exertions.",
+        "result_ne": "जातकले आफ्नै पौरख र श्रमबाट धन कमाउनेछ।"
+    },
+    {
+        "yoga_id": "132",
+        "sort": 132,
+        "name": "Swaveeryaddhana Yoga (III)",
+        "name_ne": "स्ववीर्यधन योग (३)",
+        "definition": "The 2nd lord should occupy a quadrant or trine from the 1st lord or the 2nd lord being a benefic should be either in deep exaltation or in conjunction with an exalted planet.",
+        "definition_ne": "द्वितीयेश लग्नेशबाट केन्द्र वा त्रिकोण भावमा बस्दछ वा शुभ ग्रह भएको द्वितीयेश उच्च राशिमा वा उच्च ग्रहसँग बस्दछ।",
+        "result": "The subject will earn money by his own efforts and exertions.",
+        "result_ne": "जातकले आफ्नै बाहुबल र प्रयासबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "133",
+        "sort": 133,
+        "name": "Madhya Vayasi Dhana Yoga",
+        "name_ne": "मध्यवयसि धन योग",
+        "definition": "The 2nd lord possessing Kalabala must join the lords of Lagna and the 11th in a quadrant or a trine and be aspected by benefics.",
+        "definition_ne": "कालबलले युक्त भएको द्वितीयेश लग्नेश र एकादशेशसँग केन्द्र वा त्रिकोण भावमा बस्दछ र शुभ ग्रहहरूद्वारा दृष्ट हुन्छ।",
+        "result": "The person will acquire money by self-effort towards the middle part of his life.",
+        "result_ne": "जातकले आफ्नो जीवनको मध्यकालमा व्यक्तिगत प्रयासबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "134",
+        "sort": 134,
+        "name": "Anthya Vayasi Dhana Yoga",
+        "name_ne": "अन्त्यवयसि धन योग",
+        "definition": "The planets owning the sign in which the lords of the 2nd and 1st together with a natural benefic are placed, should be strongly disposed in Lagna.",
+        "definition_ne": "द्वितीयेश र लग्नेश कुनै शुभ ग्रहसँग जुन राशिमा बस्दछन्, त्यस राशिको स्वामी लग्नमा बलियो भएर बस्दछ।",
+        "result": "The subject will acquire finance through various means towards the last part of his life.",
+        "result_ne": "जातकले आफ्नो जीवनको उत्तरार्ध (अन्तिम काल) मा विभिन्न माध्यमबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "135",
+        "sort": 135,
+        "name": "Balya Dhana Yoga",
+        "name_ne": "बाल्य धन योग",
+        "definition": "The lords of the 2nd and 10th should be in conjunction in a kendra aspected by the lord of the Navamsa occupied by the ascendant lord.",
+        "definition_ne": "द्वितीयेश र दशमेश केन्द्रमा युति गर्दछन् र लग्नेश बसेको नवांशको स्वामीद्वारा दृष्ट हुन्छन्।",
+        "result": "The person acquires immense riches in the early part of life.",
+        "result_ne": "जातकले आफ्नो बाल्यकाल वा जीवनको प्रारम्भिक चरणमै ठूलो धन सम्पत्ति प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "136",
+        "sort": 136,
+        "name": "Bhratrumooladdhanaprapti Yoga (I)",
+        "name_ne": "भ्रातृमूलाद्धनप्राप्ति योग (१)",
+        "definition": "The lords of Lagna and the 2nd should join the 3rd aspected by benefics.",
+        "definition_ne": "लग्नेश र द्वितीयेश तृतीय भावमा शुभ ग्रहहरूद्वारा दृष्ट भएर बस्दछन्।",
+        "result": "The native gets money through brothers and relatives.",
+        "result_ne": "जातकले आफ्ना दाजुभाइ तथा नातेदारहरूबाट धन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "137",
+        "sort": 137,
+        "name": "Bhratrumooladdhanaprapti Yoga (II)",
+        "name_ne": "भ्रातृमूलाद्धनप्राप्ति योग (२)",
+        "definition": "The lord of the 3rd should be in the 2nd with Jupiter and aspected by or conjoined with the lord of Lagna who should have attained Vaiseshikamsa.",
+        "definition_ne": "तृतीयेश द्वितीय भावमा बृहस्पतिसँग बस्दछ र वैशेषिकांश प्राप्त लग्नेशद्वारा दृष्ट वा युत हुन्छ।",
+        "result": "The native gets money through brothers and relatives.",
+        "result_ne": "जातकले दाजुभाइ तथा परिवारका सदस्यहरूका माध्यमबाट धन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "138",
+        "sort": 138,
+        "name": "Matrumooladdhana Yoga",
+        "name_ne": "मातृमूलाद्धन योग",
+        "definition": "If the lord of the 2nd joins the 4th lord or is aspected by him.",
+        "definition_ne": "द्वितीयेश चतुर्थेश (४ औं भावको स्वामी) सँग बस्दछ वा चतुर्थेशद्वारा दृष्ट हुन्छ।",
+        "result": "One earns money with the help of one's mother.",
+        "result_ne": "जातकले आफ्नी आमाको सहयोग वा माध्यमबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "139",
+        "sort": 139,
+        "name": "Putramooladdhana Yoga",
+        "name_ne": "पुत्रमूलाद्धन योग",
+        "definition": "If the strong lord of the 2nd is in conjunction with the 5th lord or Jupiter and if the lord of Lagna is in Vaiseshikamsa.",
+        "definition_ne": "बलियो द्वितीयेश पञ्चमेश वा बृहस्पतिसँग बस्दछ र लग्नेश वैशेषिकांशमा हुन्छ।",
+        "result": "The person gets wealth through his sons (or after the birth of a son).",
+        "result_ne": "जातकले आफ्ना छोराहरूका माध्यमबाट वा पुत्र जन्मपछि धन-ऐश्वर्य प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "140",
+        "sort": 140,
+        "name": "Satrumooladdhana Yoga",
+        "name_ne": "शत्रुमूलाद्धन योग",
+        "definition": "The strong lord of the 2nd should join the lord of the 6th or Mars and the powerful lord of Lagna should be in Vaiseshikamsa.",
+        "definition_ne": "बलियो द्वितीयेश षष्ठेश वा मंगलसँग बस्दछ र शक्तिशाली लग्नेश वैशेषिकांशमा हुन्छ।",
+        "result": "The native earns money through his enemies.",
+        "result_ne": "जातकले आफ्ना शत्रुहरू वा विपक्षीहरूका माध्यमबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "141",
+        "sort": 141,
+        "name": "Kalatramooladdhana Yoga",
+        "name_ne": "कलत्रमूलाद्धन योग",
+        "definition": "The strong lord of the 2nd should join or be aspected by the 7th lord and Venus and the lord of Lagna must be powerful.",
+        "definition_ne": "बलियो द्वितीयेश सप्तमेश वा शुक्रसँग बस्दछ वा तिनीहरूद्वारा दृष्ट हुन्छ र लग्नेश शक्तिशाली हुन्छ।",
+        "result": "The subject will earn money through wife.",
+        "result_ne": "जातकले श्रीमतीको सहयोग वा पत्नीका माध्यमबाट धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "142",
+        "sort": 142,
+        "name": "Amaranantha Dhana Yoga",
+        "name_ne": "आमरणान्त धन योग",
+        "definition": "If a number of planets occupy the 2nd house and the wealth-giving ones are strong or occupy own or exaltation signs.",
+        "definition_ne": "द्वितीय भावमा धेरै ग्रहहरू बस्दछन् र धन दिने ग्रहहरू (द्वितीयेश र बृहस्पति) बलियो वा आफ्नै राशि/उच्च राशिमा हुन्छन्।",
+        "result": "The native will enjoy wealth throughout life.",
+        "result_ne": "जातकले जीवनभरि धन र ऐश्वर्यको आनन्द लिनेछ (मृत्युपर्यन्त धनी रहनेछ)।"
+    },
+    {
+        "yoga_id": "143",
+        "sort": 143,
+        "name": "Ayatnadhanalabha Yoga",
+        "name_ne": "आयत्नधनलाभ योग",
+        "definition": "The lord of the Lagna and the 2nd must exchange their places.",
+        "definition_ne": "लग्नेश र द्वितीयेशले एकअर्काको भाव परिवर्तन (परिवर्तन योग) गर्दछन्।",
+        "result": "The person earns wealth without much effort.",
+        "result_ne": "जातकले विना कुनै ठूलो मिहिनेत वा विना हतारो धन आर्जन गर्नेछ।"
+    },
+    {
+        "yoga_id": "144",
+        "sort": 144,
+        "name": "Daridra Yoga (144)",
+        "name_ne": "दरिद्र योग (१४४)",
+        "definition": "The lords of the 12th and Lagna should exchange their positions and be conjoined or be aspected by the lord of the 7th.",
+        "definition_ne": "द्वादशेश र लग्नेशले स्थान परिवर्तन गर्दछन् र सप्तमेशद्वारा युत वा दृष्ट हुन्छन्।",
+        "result": "Produces dire poverty, financial straits, and miseries.",
+        "result_ne": "घोर गरिबी, चरम आर्थिक संकट र अनेकौं दुःख कष्ट उत्पन्न गर्नेछ।"
+    },
+    {
+        "yoga_id": "145",
+        "sort": 145,
+        "name": "Daridra Yoga (145)",
+        "name_ne": "दरिद्र योग (१४५)",
+        "definition": "The lords of the 6th and Lagna interchange their positions and the Moon is aspected by the 2nd or 7th lord.",
+        "definition_ne": "षष्ठेश र लग्नेशले स्थान परिवर्तन गर्दछन् र चन्द्रमा द्वितीयेश वा सप्तमेशद्वारा दृष्ट हुन्छ।",
+        "result": "Produces dire poverty, financial straits, and wretchedness.",
+        "result_ne": "चरम गरिबी, आर्थिक कठिनाइ र दयनीय जीवन परिस्थिति सिर्जना गर्नेछ।"
+    },
+    {
+        "yoga_id": "146",
+        "sort": 146,
+        "name": "Daridra Yoga (146)",
+        "name_ne": "दरिद्र योग (१४६)",
+        "definition": "Kethu and the Moon should be in Lagna.",
+        "definition_ne": "लग्न भावमा केतु र चन्द्रमाको युति हुन्छ।",
+        "result": "Produces dire poverty, financial straits, and miseries.",
+        "result_ne": "चरम गरिबी, आर्थिक तङ्गी र जीवनमा कष्टहरू निम्त्याउनेछ।"
+    },
+    {
+        "yoga_id": "147",
+        "sort": 147,
+        "name": "Daridra Yoga (147)",
+        "name_ne": "दरिद्र योग (१४७)",
+        "definition": "The lord of Lagna is in the 8th aspected by or in conjunction with the 2nd or 7th lord.",
+        "definition_ne": "लग्नेश अष्टम भावमा द्वितीयेश वा सप्तमेशसँग बस्दछ वा तिनीहरूद्वारा दृष्ट हुन्छ।",
+        "result": "Produces dire poverty, financial straits, and wretchedness.",
+        "result_ne": "अत्यधिक गरिबी, चरम आर्थिक संकट र कठीन परिस्थिति उत्पन्न गर्दछ।"
+    },
+    {
+        "yoga_id": "148",
+        "sort": 148,
+        "name": "Daridra Yoga (148)",
+        "name_ne": "दरिद्र योग (१४८)",
+        "definition": "The lord of Lagna joins the 6th, 8th or 12th with a malefic aspected by or combined with the 2nd or 7th lord.",
+        "definition_ne": "लग्नेश ६, ८ वा १२ भावमा कुनै पापी ग्रहसँग बस्दछ र द्वितीयेश वा सप्तमेशसँग युत वा दृष्ट हुन्छ।",
+        "result": "Produces dire poverty, financial straits, and miseries.",
+        "result_ne": "घोर निर्धनता, आर्थिक संकट र जीवनमा ठूलो दुःख कष्ट निम्त्याउँछ।"
+    },
+    {
+        "yoga_id": "149",
+        "sort": 149,
+        "name": "Daridra Yoga (149)",
+        "name_ne": "दरिद्र योग (१४९)",
+        "definition": "Lord of Lagna is associated with the 6th, 8th or 12th lord and subjected to malefic aspects.",
+        "definition_ne": "लग्नेश ६, ८ वा १२ औं भावको स्वामीसँग बस्दछ र पापी ग्रहको दृष्टिमा हुन्छ।",
+        "result": "Produces dire poverty, financial straits, and wretchedness.",
+        "result_ne": "चरम दरिद्रता, आर्थिक बाधा र दयनीय जीवन परिस्थिति निम्त्याउनेछ।"
+    },
+    {
+        "yoga_id": "150",
+        "sort": 150,
+        "name": "Daridra Yoga (150)",
+        "name_ne": "दरिद्र योग (१५०)",
+        "definition": "The lord of the 5th joins the lord of the 6th, 8th or 12th without beneficial aspects or conjunctions.",
+        "definition_ne": "पञ्चमेश ६, ८ वा १२ औं भावको स्वामीसँग युति गर्दछ र कुनै शुभ ग्रहको दृष्टि वा युति हुँदैन।",
+        "result": "Produces dire poverty, financial straits, and miseries.",
+        "result_ne": "चरम गरिबी, आर्थिक अभाव र कष्टकर जीवन सिर्जना गर्नेछ।"
+    },
+    {
+        "yoga_id": "151",
+        "sort": 151,
+        "name": "Daridra Yoga (151)",
+        "name_ne": "दरिद्र योग (१५१)",
+        "definition": "The lord of the 5th is in the 6th or 10th aspected by lords of the 2nd, 6th, 7th, 8th or 12th.",
+        "definition_ne": "पञ्चमेश ६ वा १० औं भावमा बसेर २, ६, ७, ८ वा १२ औं भावका स्वामीहरूद्वारा दृष्ट हुन्छ।",
+        "result": "Produces dire poverty and wretchedness.",
+        "result_ne": "घोर गरिबी र दयनीय जीवन अवस्था सिर्जना गर्नेछ।"
+    },
+    {
+        "yoga_id": "152",
+        "sort": 152,
+        "name": "Daridra Yoga (152)",
+        "name_ne": "दरिद्र योग (१५२)",
+        "definition": "Natural malefics, who do not own the 9th or 10th, should occupy Lagna and associate with or be aspected by the maraka lords.",
+        "definition_ne": "नवम वा दशम भावको स्वामी नभएका नैसर्गिक पापी ग्रहहरू लग्नमा बस्दछन् र मारक ग्रह (२ र ७ का स्वामी) सँग युत वा दृष्ट हुन्छन्।",
+        "result": "Produces dire poverty, financial straits, and wretchedness.",
+        "result_ne": "चरम निर्धनता, आर्थिक संकुचन र दयनीय जीवन परिस्थिति निम्त्याउनेछ।"
+    },
+    {
+        "yoga_id": "153",
+        "sort": 153,
+        "name": "Daridra Yoga (153)",
+        "name_ne": "दरिद्र योग (१५३)",
+        "definition": "The lords of the Lagna and Navamsa Lagna should occupy the 6th, 8th or 12th and have the aspect or conjunction of the lords of the 2nd and 7th.",
+        "definition_ne": "लग्नेश र नवांश लग्नेश ६, ८ वा १२ औं भावमा बस्दछन् र द्वितीयेश तथा सप्तमेशद्वारा दृष्ट वा युत हुन्छन्।",
+        "result": "Produces dire poverty and miseries.",
+        "result_ne": "घोर गरिबी, आर्थिक तङ्गी र ठूलो कष्ट निम्त्याउनेछ।"
+    },
+    {
+        "yoga_id": "154",
+        "sort": 154,
+        "name": "Yukthi Samanwithavagmi Yoga (I)",
+        "name_ne": "युक्ति समन्वितवाग्मी योग (१)",
+        "definition": "The 2nd lord should join a benefic in a kendra or thrikona, or be exalted and combined with Jupiter.",
+        "definition_ne": "द्वितीयेश केन्द्र वा त्रिकोण भावमा शुभ ग्रहसँग बस्दछ वा उच्च राशिमा भएर बृहस्पतिसँग युति गर्दछ।",
+        "result": "The person will become an eloquent and skilled speaker.",
+        "result_ne": "जातक अत्यन्त प्रभावशाली, तार्किक र कुशल वक्ता बन्नेछ।"
+    },
+    {
+        "yoga_id": "155",
+        "sort": 155,
+        "name": "Yukthi Samanwithavagmi Yoga (II)",
+        "name_ne": "युक्ति समन्वितवाग्मी योग (२)",
+        "definition": "The lord of speech should occupy a kendra, attain paramochha and gain Parvatamsa, while Jupiter or Venus should be in Simhasanamsa.",
+        "definition_ne": "द्वितीयेश (वाणीको स्वामी) केन्द्रमा बस्दछ, परम उच्च र पर्वतांश प्राप्त गर्दछ र बृहस्पति वा शुक्र सिंहासन अंशमा हुन्छन्।",
+        "result": "The person will become an eloquent and skilled speaker.",
+        "result_ne": "जातक अत्यन्त प्रभावशाली, तार्किक र कुशल वक्ता हुनेछ।"
+    },
+    {
+        "yoga_id": "156",
+        "sort": 156,
+        "name": "Parihasaka Yoga",
+        "name_ne": "परिहासक योग",
+        "definition": "The lord of the Navamsa occupied by the Sun should attain Vaiseshikamsa and join the 2nd house.",
+        "definition_ne": "सूर्य बसेको नवांश राशिको स्वामीले वैशेषिकांश प्राप्त गर्दछ र द्वितीय भावमा बस्दछ।",
+        "result": "The person becomes a humorous and witty speaker.",
+        "result_ne": "जातक हँसमुख, रमाइलो र हास्यव्यङ्ग्यपूर्ण कुराकानी गर्ने वक्ता बन्नेछ।"
+    },
+    {
+        "yoga_id": "157",
+        "sort": 157,
+        "name": "Asatyavadi Yoga",
+        "name_ne": "असत्यवादी योग",
+        "definition": "If the lord of the 2nd occupies the house of Saturn or Mars and if malefics join kendras and thrikonas.",
+        "definition_ne": "द्वितीयेश शनि वा मंगलको राशिमा बस्दछ र केन्द्र तथा त्रिकोण भावहरूमा पापी ग्रहहरू बस्दछन्।",
+        "result": "The native will be a liar.",
+        "result_ne": "जातक असत्य बोल्ने वा झूटो बोल्ने बानी भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "158",
+        "sort": 158,
+        "name": "Jada Yoga",
+        "name_ne": "जड योग",
+        "definition": "The lord of the 2nd should be posited in the 10th house with malefics or the 2nd must be joined by the Sun and Mandi.",
+        "definition_ne": "द्वितीयेश दशम भावमा पापी ग्रहहरूसँग बस्दछ, वा द्वितीय भावमा सूर्य र मान्दी बस्दछन्।",
+        "result": "The person becomes nervous in public assemblies.",
+        "result_ne": "जातक सभा-सम्मेलन वा भीडभाडमा बोल्न डराउने (हडबडाउने वा हच्किने) स्वभावको हुनेछ।"
+    },
+    {
+        "yoga_id": "159",
+        "sort": 159,
+        "name": "Bhaskara Yoga",
+        "name_ne": "भास्कर योग",
+        "definition": "Mercury in the 2nd from the Sun, the Moon in the 11th from Mercury and Jupiter in the 5th or 9th from the Moon.",
+        "definition_ne": "सूर्यबाट दोस्रो भावमा बुध, बुधबाट एघारौं भावमा चन्द्रमा र चन्द्रमाबाट पाँचौं वा नवौं भावमा बृहस्पति बस्दछन्।",
+        "result": "The native will be wealthy, valorous, aristocratic, learned in Sastras, Astrology and Music, and will have a good personality.",
+        "result_ne": "जातक धनी, पराक्रमी, कुलीन स्वभावको, शास्त्र, ज्योतिष र संगीतको ज्ञाता तथा आकर्षक व्यक्तित्व भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "160",
+        "sort": 160,
+        "name": "Marud Yoga",
+        "name_ne": "मरुद् योग",
+        "definition": "Jupiter in 5th or 9th from Venus, the Moon in the 5th from Jupiter and the Sun in a kendra from the Moon.",
+        "definition_ne": "शुक्रबाट पाँचौं वा नवौं भावमा बृहस्पति, बृहस्पतिबाट पाँचौं भावमा चन्द्रमा र चन्द्रमाबाट केन्द्र भावमा सूर्य बस्दछन्।",
+        "result": "Good conversationalist, large-hearted, rich, learned, successful businessman, king or equal and having protruding belly.",
+        "result_ne": "कुशल संलापकर्ता (वार्तालाप गर्न मन पराउने), ठूलो हृदय भएको, धनी, विद्वान, सफल व्यवसायी, राजा वा राजा समान र ठूलो भुँडी भएको हुनेछ।"
+    },
+    {
+        "yoga_id": "161",
+        "sort": 161,
+        "name": "Saraswathi Yoga",
+        "name_ne": "सरस्वती योग",
+        "definition": "If Jupiter, Venus and Mercury occupy Lagna, 2nd, 4th, 5th, 7th, 9th or 10th either jointly or severally, Jupiter being in his own, exaltation or friendly sign.",
+        "definition_ne": "बृहस्पति, शुक्र र बुध लग्न, २, ४, ५, ७, ९ वा १० औं भावमा एक्लै वा मिलेर बस्दछन्, र बृहस्पति आफ्नै, उच्च वा मित्र राशिमा हुन्छ।",
+        "result": "Poet, famous, learned in all sciences, skilled, rich, praised by all, and good wife and children.",
+        "result_ne": "कवि, प्रसिद्ध, सबै शास्त्रहरूको ज्ञाता, सीपयुक्त, धनी, सबैद्वारा प्रशंसित, र असल श्रीमती तथा सन्तान प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "162",
+        "sort": 162,
+        "name": "Budha Yoga",
+        "name_ne": "बुध योग",
+        "definition": "Jupiter in Lagna, the Moon in a kendra, Rahu in the 2nd from the Moon and the Sun and Mars in the 3rd from Rahu.",
+        "definition_ne": "लग्नमा बृहस्पति, चन्द्रमा केन्द्रमा, चन्द्रमाबाट दोस्रो भावमा राहु र राहुबाट तेस्रो भावमा सूर्य र मंगल बस्दछन्।",
+        "result": "Kingly comforts, powerful, famous, aristocratic, learned in sciences, intelligent, and devoid of enemies.",
+        "result_ne": "राजकीय सुखसयल, शक्तिशाली, प्रसिद्ध, प्रतिष्ठित, विज्ञान तथा शास्त्रको ज्ञाता, बुद्धिमान र शत्रुविहीन हुनेछ।"
+    },
+    {
+        "yoga_id": "163",
+        "sort": 163,
+        "name": "Mooka Yoga",
+        "name_ne": "मूक योग",
+        "definition": "The 2nd lord should join the 8th with Jupiter.",
+        "definition_ne": "द्वितीयेश (दोस्रो भावको स्वामी) बृहस्पतिसँग अष्टम भावमा बस्दछ।",
+        "result": "The person becomes dumb. This does not apply if the 8th house is Jupiter's own or exaltation sign.",
+        "result_ne": "जातक लाटो (बोल्न नसक्ने) हुनेछ। यदि ८ औं भाव बृहस्पतिको स्वराशि वा उच्च राशि भएमा यो लागू हुँदैन।"
+    },
+    {
+        "yoga_id": "164",
+        "sort": 164,
+        "name": "Netranasa Yoga",
+        "name_ne": "नेत्रनाश योग",
+        "definition": "If the lords of the 10th and 6th occupy Lagna with the 2nd lord, or if they are in Neechamsa.",
+        "definition_ne": "दशमेश र षष्ठेश द्वितीयेशसँग लग्न भावमा बस्दछन्, वा तिनीहरू नीचांश (नवांशमा नीच) मा हुन्छन्।",
+        "result": "The native loses his eyesight owing to the displeasure of the rulers (or blind at some point in life).",
+        "result_ne": "शासक वा सरकारको कोपभाजनका कारण जातकले आफ्नो आँखाको ज्योति गुमाउनेछ (वा जीवनको कुनै कालखण्डमा दृष्टिविहीन हुनेछ)।"
+    },
+    {
+        "yoga_id": "165",
+        "sort": 165,
+        "name": "Andha Yoga",
+        "name_ne": "अन्ध योग",
+        "definition": "Mercury and the Moon should be in the 2nd or the lords of lagna and the 2nd should join the 2nd with the Sun.",
+        "definition_ne": "बुध र चन्द्रमा दोस्रो भावमा बस्दछन् वा लग्नेश र द्वितीयेश दोस्रो भावमा सूर्यसँग बस्दछन्।",
+        "result": "The person will have defective sight during night or he will be born blind.",
+        "result_ne": "जातक रतन्धो (राति आँखा नदेख्ने) हुनेछ वा जन्मजात दृष्टिविहीन हुनेछ।"
+    },
+    {
+        "yoga_id": "166",
+        "sort": 166,
+        "name": "Sumukha Yoga (I)",
+        "name_ne": "सुमुख योग (१)",
+        "definition": "The lord of the 2nd should be in a kendra aspected by benefics.",
+        "definition_ne": "द्वितीयेश केन्द्र भावमा बसेर शुभ ग्रहहरूद्वारा दृष्ट हुन्छ।",
+        "result": "The subject will have an attractive and smiling face.",
+        "result_ne": "जातकको अनुहार आकर्षक र हँसमुख (सुन्दर) हुनेछ।"
+    },
+    {
+        "yoga_id": "167",
+        "sort": 167,
+        "name": "Sumukha Yoga (II)",
+        "name_ne": "सुमुख योग (२)",
+        "definition": "Benefics should join the 2nd house.",
+        "definition_ne": "द्वितीय भावमा शुभ ग्रहहरू बस्दछन्।",
+        "result": "The subject will have an attractive and smiling face.",
+        "result_ne": "जातकको मुहार अत्यन्त आकर्षक र हँसिलो हुनेछ।"
+    },
+    {
+        "yoga_id": "168",
+        "sort": 168,
+        "name": "Durmukha Yoga (I)",
+        "name_ne": "दुर्मुख योग (१)",
+        "definition": "Malefics should occupy the 2nd and its lord should join an evil planet or be in debilitation.",
+        "definition_ne": "द्वितीय भावमा पापी ग्रहहरू बस्दछन् र द्वितीयेश कुनै पापी ग्रहसँग बस्दछ वा नीच राशिमा हुन्छ।",
+        "result": "The person will have an ugly or repulsive face and he becomes angry and irritable.",
+        "result_ne": "जातकको अनुहार कुरुप वा नराम्रो हुनेछ र उनी क्रोधी तथा झनक्क रिसाउने स्वभावका हुनेछन्।"
+    },
+    {
+        "yoga_id": "169",
+        "sort": 169,
+        "name": "Durmukha Yoga (II)",
+        "name_ne": "दुर्मुख योग (२)",
+        "definition": "The lord of the 2nd being evil, should join Gulika or occupy unfriendly and debilitated Navamsa with malefics.",
+        "definition_ne": "पापी ग्रह भएको द्वितीयेश गुलिकासँग बस्दछ वा शत्रु तथा नीच नवांशमा पापी ग्रहहरूसँग बस्दछ।",
+        "result": "The person will have an ugly or repulsive face and he becomes angry and irritable.",
+        "result_ne": "जातकको अनुहार नराम्रो देखिनेछ र उनी अत्यन्तै रिसाहा तथा चिडचिडे स्वभावका हुनेछन्।"
+    },
+    {
+        "yoga_id": "170",
+        "sort": 170,
+        "name": "Bhojana Soukhya Yoga",
+        "name_ne": "भोजन सौख्य योग",
+        "definition": "The powerful lord of the 2nd should occupy Vaiseshikamsa and have the aspect of Jupiter or Venus.",
+        "definition_ne": "बलवान द्वितीयेश वैशेषिकांशमा बस्दछ र बृहस्पति वा शुक्रद्वारा दृष्ट हुन्छ।",
+        "result": "The subject becomes rich and will always have good and delicious food.",
+        "result_ne": "जातक धनी बन्नेछ र सधैं राम्रो तथा स्वादिष्ट भोजन प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "171",
+        "sort": 171,
+        "name": "Annadana Yoga",
+        "name_ne": "अन्नदान योग",
+        "definition": "The lord of the 2nd should join Vaiseshikamsa and be in conjunction with or aspected by Jupiter and Mercury.",
+        "definition_ne": "द्वितीयेश वैशेषिकांशमा बसेर बृहस्पति र बुधसँग युत वा दृष्ट हुन्छ।",
+        "result": "The person will have a hospitable nature and will feed a large number of people.",
+        "result_ne": "जातक अत्यन्त परोपकारी र अतिथिप्रिय हुनेछ र उनले धेरै मानिसहरूलाई निःशुल्क भोजन गराउनेछन्।"
+    },
+    {
+        "yoga_id": "172",
+        "sort": 172,
+        "name": "Parannabhojana Yoga",
+        "name_ne": "परान्नभोजन योग",
+        "definition": "The lord of the 2nd should be in debilitation or in unfriendly navamsas and aspected by a debilitated planet.",
+        "definition_ne": "द्वितीयेश नीच राशिमा वा शत्रु नवांशमा बस्दछ र नीच ग्रहद्वारा दृष्ट हुन्छ।",
+        "result": "The person will live upon food doled out by others or will be a dependent.",
+        "result_ne": "जातक अरूको निगाहमा वा अरूले दिएको अन्न (भोजन) मा बाँच्नेछ वा अरूमा आश्रित हुनेछ।"
+    },
+    {
+        "yoga_id": "173",
+        "sort": 173,
+        "name": "Sraddhannabhuktha Yoga",
+        "name_ne": "श्राद्धान्नभुक्त योग",
+        "definition": "If Saturn happens to own the 2nd, or join the 2nd lord or if the 2nd is aspected by debilitated Saturn.",
+        "definition_ne": "शनि द्वितीयेश हुन्छ, वा द्वितीयेशसँग बस्दछ, वा द्वितीय भाव नीच शनिको दृष्टिमा हुन्छ।",
+        "result": "The subject gets food prepared at the times of obsequies.",
+        "result_ne": "जातकले मृत्यु संस्कार वा श्राद्धको समयमा बनाइएको भोजन (पिण्डान्न/श्राद्धान्न) मात्र बढी खान पाउनेछ।"
+    },
+    {
+        "yoga_id": "174",
+        "sort": 174,
+        "name": "Sarpaganda Yoga",
+        "name_ne": "सर्पगण्ड योग",
+        "definition": "Rahu should join the 2nd house with Mandi.",
+        "definition_ne": "राहु द्वितीय भावमा मान्दीसँग युति गर्दछ।",
+        "result": "The person will be bitten by a snake.",
+        "result_ne": "जातकलाई सर्पले टोक्नेछ (सर्पदंशको योग रहनेछ)।"
+    },
+    {
+        "yoga_id": "175",
+        "sort": 175,
+        "name": "Vakchalana Yoga",
+        "name_ne": "वाक्चलन योग",
+        "definition": "If a malefic happens to own the 2nd joins a cruel navamsa and if the 2nd is devoid of benefic aspect or association.",
+        "definition_ne": "द्वितीय भावको स्वामी पापी ग्रह भई क्रूर नवांशमा बस्दछ र द्वितीय भाव कुनै शुभ ग्रहद्वारा दृष्ट वा युत हुँदैन।",
+        "result": "The native becomes a stammerer.",
+        "result_ne": "जातक हडबडाउने वा भकभकाएर बोल्ने (तोते वा बोली स्पष्ट नहुने) स्वभावको हुनेछ।"
+    },
+    {
+        "yoga_id": "176",
+        "sort": 176,
+        "name": "Vishaprayoga Yoga",
+        "name_ne": "विषप्रयोग योग",
+        "definition": "The 2nd house must be joined and aspected by malefics and the 2nd lord should be in a cruel navamsa aspected by a malefic.",
+        "definition_ne": "द्वितीय भावमा पापी ग्रह बस्दछन् र द्वितीय भाव पापी ग्रहद्वारा दृष्ट हुन्छ तथा द्वितीयेश क्रूर नवांशमा बसेर पापी ग्रहद्वारा दृष्ट हुन्छ।",
+        "result": "The person will be poisoned by others.",
+        "result_ne": "जातकलाई अरू कसैले विष खुवाउने वा विष प्रयोग गर्ने खतरा रहन्छ।"
+    },
+    {
+        "yoga_id": "177",
+        "sort": 177,
+        "name": "Bhratruvriddhi Yoga",
+        "name_ne": "भ्रातृवृद्धि योग",
+        "definition": "The 3rd lord, or Mars, or the 3rd house should be joined or aspected by benefics and otherwise strong.",
+        "definition_ne": "तृतीयेश, मंगल वा तृतीय भाव शुभ ग्रहहरूद्वारा युत वा दृष्ट हुन्छन् र अन्य रूपमा बलिया हुन्छन्।",
+        "result": "The person will be happy on account of his brothers who will attain great prosperity.",
+        "result_ne": "जातक आफ्ना दाजुभाइहरूको कारणले सुखी रहनेछ र दाजुभाइहरूले ठूलो उन्नति हासिल गर्नेछन्।"
+    },
+    {
+        "yoga_id": "178",
+        "sort": 178,
+        "name": "Sodaranasa Yoga",
+        "name_ne": "सोदरनाश योग",
+        "definition": "Mars and the 3rd lord should occupy the 8th (3rd, 5th or 7th) house and be aspected by malefics.",
+        "definition_ne": "मंगल र तृतीयेश अष्टम (वा ३, ५, ७ औं) भावमा बस्दछन् र पापी ग्रहहरूद्वारा दृष्ट हुन्छन्।",
+        "result": "The person will be devoid of almost all brothers and sisters.",
+        "result_ne": "जातकका प्रायः सबै दाजुभाइ तथा दिदीबहिनीहरूको नाश हुनेछ (अथवा दाजुभाइ विहीन हुनेछ)।"
+    },
+    {
+        "yoga_id": "179",
+        "sort": 179,
+        "name": "Ekabhagini Yoga",
+        "name_ne": "एकभगिनी योग",
+        "definition": "Mercury, the lord of the 3rd and Mars should join the 3rd house, the Moon and Saturn respectively.",
+        "definition_ne": "बुध, तृतीयेश र मंगल क्रमशः तृतीय भाव, चन्द्रमा र शनिसँग युति गर्दछन्।",
+        "result": "The person will have only one sister.",
+        "result_ne": "जातककी केवल एउटी मात्र दिदी वा बहिनी हुनेछिन्।"
+    },
+    {
+        "yoga_id": "180",
+        "sort": 180,
+        "name": "Dwadasa Sahodara Yoga",
+        "name_ne": "द्वादश सहोदर योग",
+        "definition": "If the 3rd lord is in a kendra and exalted Mars joins Jupiter in a thrikona from the 3rd lord.",
+        "definition_ne": "तृतीयेश केन्द्र भावमा बस्दछ र उच्चको मंगल बृहस्पतिसँग तृतीयेशबाट त्रिकोण भावमा बस्दछ (विशेषगरी मकर राशिमा)।",
+        "result": "The native will be the third out of the twelve brothers (and sisters) he will have.",
+        "result_ne": "जातक आफ्ना कुल बाह्र दाजुभाइ (तथा दिदीबहिनीहरू) मध्ये तेस्रो सन्तान हुनेछ।"
+    },
+    {
+        "yoga_id": "181",
+        "sort": 181,
+        "name": "Sapthasankhya Sahodara Yoga",
+        "name_ne": "सप्तसंख्या सहोदर योग",
+        "definition": "Lord of the 12th should join Mars and the Moon should be in the 3rd with Jupiter, devoid of association with or aspect of Venus.",
+        "definition_ne": "द्वादशेश मंगलसँग बस्दछ र चन्द्रमा तृतीय भावमा बृहस्पतिसँग बस्दछ तर शुक्रको युति वा दृष्टि हुँदैन।",
+        "result": "The native will have seven brothers.",
+        "result_ne": "जातकका सात दाजुभाइ हुनेछन्।"
+    },
+    {
+        "yoga_id": "182",
+        "sort": 182,
+        "name": "Parakrama Yoga",
+        "name_ne": "पराक्रम योग",
+        "definition": "The lord of the 3rd should join a benefic navamsa being aspected by (or conjoined with) benefic planets, and Mars should occupy benefic signs.",
+        "definition_ne": "तृतीयेश शुभ नवांशमा बसेर शुभ ग्रहहरूद्वारा दृष्ट वा युत हुन्छ, र मंगल शुभ राशिहरूमा बस्दछ।",
+        "result": "The subject will possess much courage.",
+        "result_ne": "जातक अत्यन्त साहसी, वीर र पराक्रमी स्वभावको हुनेछ।"
+    },
+    {
+        "yoga_id": "183",
+        "sort": 183,
+        "name": "Yuddha Praveena Yoga",
+        "name_ne": "युद्ध प्रवीण योग",
+        "definition": "If the lord of the navamsa joined by the planet who owns the navamsa in which the 3rd lord is placed, joins his own vargas.",
+        "definition_ne": "तृतीयेश बसेको नवांश राशिको स्वामी जुन नवांशमा बस्छ त्यस नवांशको स्वामी आफ्नो षड्वर्ग वा शुभ वर्गहरूमा बस्दछ।",
+        "result": "The person becomes a capable strategist and an expert in warfare.",
+        "result_ne": "जातक कुशल रणनीतिकार र युद्ध कला वा सैन्य कलामा निपुण हुनेछ।"
+    },
+    {
+        "yoga_id": "184",
+        "sort": 184,
+        "name": "Yuddhatpoorvadridhachitta Yoga",
+        "name_ne": "युद्धत्पूर्वदृढचित्त योग",
+        "definition": "The exalted lord of the 3rd should join malefics in movable Rasis or Navamsas.",
+        "definition_ne": "तृतीय भावको उच्च स्वामी पापी ग्रहहरूसँग चर राशि वा नवांशमा बस्दछ।",
+        "result": "The person will be courageous before the commencement of the war.",
+        "result_ne": "जातक युद्ध वा कुनै पनि संघर्ष सुरु हुनुअघि अत्यन्त दृढ र साहसी देखिनेछ (तर मैदानमा साहस कमजोर हुन सक्छ)।"
+    },
+    {
+        "yoga_id": "185",
+        "sort": 185,
+        "name": "Yuddhatpaschaddrudha Yoga",
+        "name_ne": "युद्धत्पश्चाद्दृढ योग",
+        "definition": "The lord of the 3rd should occupy a fixed Rasi, a fixed Navamsa and a cruel Shashtiamsa and the lord of the Rasi so occupied should be in debility.",
+        "definition_ne": "तृतीयेश स्थिर राशि, स्थिर नवांश र क्रूर षष्ठ्यांशमा बस्दछ र सो राशिको स्वामी नीच हुन्छ।",
+        "result": "The person gets courage after the commencement of the war.",
+        "result_ne": "जातकमा वास्तविक साहस वा रणकौशल युद्ध वा संघर्ष सुरु भइसकेपछि मात्र जाग्नेछ।"
+    },
+    {
+        "yoga_id": "186",
+        "sort": 186,
+        "name": "Satkathadisravana Yoga",
+        "name_ne": "सत्कथादिश्रवण योग",
+        "definition": "The 3rd house should be a benefic sign aspected by benefic planets and the 3rd lord should join a benefic amsa.",
+        "definition_ne": "तृतीय भाव शुभ राशि हुन्छ र शुभ ग्रहहरूद्वारा दृष्ट हुन्छ तथा तृतीयेश शुभ नवांश वा शुभ अंशमा बस्दछ।",
+        "result": "The native will always be interested in reading high-class literature and in listening to religious discourses.",
+        "result_ne": "जातक सधैं सत्साहित्य वा धार्मिक-आध्यात्मिक ग्रन्थहरूको अध्ययन गर्न र प्रवचन सुन्नमा रुचि राख्नेछ।"
+    },
+    {
+        "yoga_id": "187",
+        "sort": 187,
+        "name": "Uttama Griha Yoga",
+        "name_ne": "उत्तम गृह योग",
+        "definition": "The lord of the 4th house should join benefics in a kendra or thrikona.",
+        "definition_ne": "चतुर्थेश (४ औं भावको स्वामी) शुभ ग्रहहरूसँग केन्द्र वा त्रिकोण भावमा बस्दछ।",
+        "result": "The subject will possess good houses.",
+        "result_ne": "जातकसँग धेरै राम्रा, आकर्षक र भव्य घरहरू (अचल सम्पत्ति) हुनेछन्।"
+    },
+    {
+        "yoga_id": "188",
+        "sort": 188,
+        "name": "Vichitra Saudha Prakara Yoga",
+        "name_ne": "विचित्र सौध प्राकार योग",
+        "definition": "If the lords of the 4th and 10th are conjoined together with Saturn and Mars.",
+        "definition_ne": "चतुर्थेश र दशमेश दुवै शनि र मंगलसँग एकैसाथ युति गर्दछन्।",
+        "result": "The person acquires innumerable mansions.",
+        "result_ne": "जातकले अनेकौं भव्य र विशाल भवनहरू (अट्टालिकाहरू) प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "189",
+        "sort": 189,
+        "name": "Ayatna Griha Prapta Yoga (I)",
+        "name_ne": "आयत्न गृह प्राप्त योग (१)",
+        "definition": "The lords of Lagna and the 7th occupy Lagna or the 4th, aspected by benefics.",
+        "definition_ne": "लग्नेश र सप्तमेश लग्न वा चतुर्थ भावमा बस्दछन् र शुभ ग्रहहरूद्वारा दृष्ट हुन्छन्।",
+        "result": "The subject acquires substantial house property with hardy any effort.",
+        "result_ne": "जातकले विना कुनै ठूलो प्रयास वा सजिलै ठूलो घरजग्गा प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "190",
+        "sort": 190,
+        "name": "Ayatna Griha Prapta Yoga (II)",
+        "name_ne": "आयत्न गृह प्राप्त योग (२)",
+        "definition": "The lord of the 9th should be posited in a kendra and the lord of the 4th must be in exaltation, moolathrikona or own house.",
+        "definition_ne": "नवमेश (९ औं भावको स्वामी) केन्द्रमा बस्दछ र चतुर्थेश उच्च, मूलत्रिकोण वा आफ्नै घरमा बस्दछ।",
+        "result": "The subject acquires substantial house property with hardy any effort.",
+        "result_ne": "जातकले विना कुनै कठिन परिश्रम घरघडेरी वा घर प्राप्त गर्नेछ।"
+    },
+    {
+        "yoga_id": "191",
+        "sort": 191,
+        "name": "Grihanasa Yoga (I)",
+        "name_ne": "गृहनाश योग (१)",
+        "definition": "The lord of the 4th should be in the 12th aspected by a malefic.",
+        "definition_ne": "चतुर्थेश १२ औं भाव (हानि भाव) मा बस्दछ र पापी ग्रहद्वारा दृष्ट हुन्छ।",
+        "result": "The person will lose all the house property.",
+        "result_ne": "जातकले आफ्नो घर वा सम्पूर्ण अचल सम्पत्ति गुमाउनेछ (विनाश हुनेछ)।"
+    },
+    {
+        "yoga_id": "192",
+        "sort": 192,
+        "name": "Grihanasa Yoga (II)",
+        "name_ne": "गृहनाश योग (२)",
+        "definition": "The lord of the navamsa occupied by the lord of the 4th should be disposed in the 12th.",
+        "definition_ne": "चतुर्थेश जुन नवांश राशिमा बस्छ त्यस राशिको स्वामी १२ औं भावमा बस्दछ।",
+        "result": "The person will lose all the house property.",
+        "result_ne": "जातकले आफ्नो घरघडेरी वा पैतृक घर गुमाउनु पर्नेछ।"
+    },
+    {
+        "yoga_id": "193",
+        "sort": 193,
+        "name": "Bandhu Pujya Yoga (I)",
+        "name_ne": "बन्धु पूज्य योग (१)",
+        "definition": "If the benefic lord of the 4th is aspected by another benefic and Mercury is situated in Lagna.",
+        "definition_ne": "शुभ ग्रह भएको चतुर्थेश अर्को शुभ ग्रहद्वारा दृष्ट हुन्छ र बुध लग्न भावमा बस्दछ।",
+        "result": "The person will be respected by his relatives and friends.",
+        "result_ne": "जातक आफ्ना नातेदार, साथीभाइ र समाजमा अत्यन्त आदरणीय र प्रतिष्ठित हुनेछ।"
+    },
+    {
+        "yoga_id": "194",
+        "sort": 194,
+        "name": "Bandhu Pujya Yoga (II)",
+        "name_ne": "बन्धु पूज्य योग (२)",
+        "definition": "The 4th house or the 4th lord should have the association or aspect of Jupiter.",
+        "definition_ne": "चतुर्थ भाव वा चतुर्थेश बृहस्पतिको युति वा दृष्टिमा रहन्छ।",
+        "result": "The person will be respected and loved by his relatives and friends.",
+        "result_ne": "जातक आफ्ना आफन्त तथा मित्रवर्गबाट अत्यन्त स्नेह र आदर प्राप्त गर्ने पात्र बन्नेछ।"
+    },
+    {
+        "yoga_id": "195",
+        "sort": 195,
+        "name": "Bandhubhisthyaktha Yoga",
+        "name_ne": "बन्धुभिस्त्यक्त योग",
+        "definition": "The 4th lord must be associated with malefics or occupy evil shashtiamsas or join inimical or debilitation signs.",
+        "definition_ne": "चतुर्थेश पापी ग्रहहरूसँग युत हुन्छ वा क्रूर षष्ठ्यांशमा बस्दछ वा शत्रु/नीच राशिमा बस्दछ।",
+        "result": "The person will be deserted by his relatives.",
+        "result_ne": "जातकलाई आफ्नै नातेदार तथा परिवारका सदस्यहरूले त्याग्नेछन् (सम्बन्ध विच्छेद हुनेछ)।"
+    },
+    {
+        "yoga_id": "196",
+        "sort": 196,
+        "name": "Matrudeerghayur Yoga (I)",
+        "name_ne": "मातृदीर्घायु योग (१)",
+        "definition": "A benefic must occupy the 4th, the 4th lord must be exalted, and the Moon must be strong.",
+        "definition_ne": "चतुर्थ भावमा शुभ ग्रह बस्दछ, चतुर्थेश उच्च राशिमा हुन्छ र चन्द्रमा बलियो हुन्छ।",
+        "result": "The native's mother will live long.",
+        "result_ne": "जातककी आमा दीर्घायु हुनुहुनेछ।"
+    },
+    {
+        "yoga_id": "197",
+        "sort": 197,
+        "name": "Matrudeerghayur Yoga (II)",
+        "name_ne": "मातृदीर्घायु योग (२)",
+        "definition": "The lord of the navamsa occupied by the 4th lord should be strong and occupy a kendra from Lagna as well as Chandra Lagna.",
+        "definition_ne": "चतुर्थेश बसेको नवांशको स्वामी बलियो भई लग्न र चन्द्र लग्न दुवैबाट केन्द्र भावमा बस्दछ।",
+        "result": "The native's mother will live long.",
+        "result_ne": "जातककी आमाको आयु लामो हुनेछ।"
+    },
+    {
+        "yoga_id": "198",
+        "sort": 198,
+        "name": "Matrunasa Yoga (I)",
+        "name_ne": "मातृनाश योग (१)",
+        "definition": "The Moon should be hemmed in between, associated with or aspected by evil planets.",
+        "definition_ne": "चन्द्रमा पापी कतरी योगमा (दुवैतिर पापी ग्रह) रहन्छ, पापी ग्रहसँग बस्दछ वा तिनीहरूद्वारा दृष्ट हुन्छ।",
+        "result": "The person's mother will have a very early death.",
+        "result_ne": "जातककी आमाको अल्पायुमै वा चाँडै मृत्यु हुनेछ।"
+    },
+    {
+        "yoga_id": "199",
+        "sort": 199,
+        "name": "Matrunasa Yoga (II)",
+        "name_ne": "मातृनाश योग (२)",
+        "definition": "The planet owning the navamsa, in which the lord of the navamsa occupied by the 4th lord is situated should be disposed in the 6th, 8th or 12th house.",
+        "definition_ne": "चतुर्थेश बसेको नवांशको स्वामी जुन नवांशमा बस्छ त्यस राशिको स्वामी कुण्डलीको ६, ८ वा १२ औं भावमा बस्दछ।",
+        "result": "The person's mother will have a very early death.",
+        "result_ne": "जातकले मातृशोक चाँडै बेहोर्नु पर्नेछ।"
+    },
+    {
+        "yoga_id": "200",
+        "sort": 200,
+        "name": "Matrugami Yoga",
+        "name_ne": "मातृगामी योग",
+        "definition": "The Moon or Venus should join a kendra in conjunction with or aspected by a malefic, and an evil planet should occupy the 4th house.",
+        "definition_ne": "चन्द्रमा वा शुक्र केन्द्रमा पापी ग्रहसँग बस्दछन् वा पापी ग्रहद्वारा दृष्ट हुन्छन्, र चतुर्थ भावमा पनि पापी ग्रह बस्दछ।",
+        "result": "The person will lack moral conscience; guilty of illicit relations with maternal figures.",
+        "result_ne": "जातकमा नैतिक चेतना र चरित्रको कमी हुनेछ; आमा समान वा पूजनीय स्त्रीहरूसँग अनैतिक सम्बन्ध राख्ने कुरुप प्रवृत्ति हुन सक्छ।"
+    }
+]

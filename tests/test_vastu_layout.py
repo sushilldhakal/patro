@@ -362,7 +362,7 @@ def test_living_room_has_no_walls_or_doors():
     req = HouseRequirement(
         bedrooms=2, toilets=1, extras=("kitchen", "living"), mode="flexible", storeys=1,
     )
-    site = SiteInput(width=12, height=10, facing="south")
+    site = SiteInput(width=14, height=12, facing="south")
     concept = plan_house(req, site)
     living = next(r for r in concept.floors[0].rooms if r.kind == "living")
     assert living.life == "circulation"
