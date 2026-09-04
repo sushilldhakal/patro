@@ -17,7 +17,7 @@ from .architecture import IDEAL_SIZE, box_fits, expand_planned_spaces, life_zone
 from .entrance import foyer_rect
 from .geometry import Rect, largest, overlap_area, shared_seg, split_by, touches
 from .rooms import HouseRequirement, PlannedSpace
-from .solver import corridor_bands, disjoint_reserved, solve_layout
+from .solver import corridor_bands, dir8_zone_of_point, disjoint_reserved, solve_layout
 from .types import BuildingLayer, CardinalWall, FloorConcept, HouseConcept, PlanConflict, PlannedDoor, PlannedRoom, StairShaft
 
 STAIR_W = 1.25
@@ -708,6 +708,23 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         door_onto_open(room, open_rooms)
     seal_circulation(rooms)
     ensure_reachable(rooms, boxed_foyer.id if boxed_foyer else center_id)
+
+    # open_piece() stamps every open/circulation fragment "center" up front
+    # (it doesn't know its own final rect's real position relative to the
+    # site) — true only for the one piece that keeps the id `center_id`,
+    # the actual Brahmasthan at the crossing of the corridor spine. Every
+    # other "brahmasthan"-kind fragment (a leftover carve scrap, a corridor
+    # segment off to one side, a scrap folded in from claim_cell) is real
+    # open floor somewhere else in the house, not the sacred centre, and
+    # mislabeling it "center" is what let a large merged scrap in, say, the
+    # southeast outrank the true centre by area and get rendered as
+    # "ब्रह्मस्थान" in its place. Recompute each one's real compass zone
+    # from its own rect now that every rect is final.
+    for room in rooms:
+        if room.kind == "brahmasthan" and room.id != center_id:
+            cx = room.rect.x + room.rect.w / 2
+            cy = room.rect.y + room.rect.h / 2
+            room.vastu_region = dir8_zone_of_point(cx, cy, site.width, site.height)
 
     for i in range(len(rooms)):
         for j in range(i + 1, len(rooms)):

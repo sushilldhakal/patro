@@ -264,18 +264,35 @@ def _try_solve(
         model.add(x == vb_right).only_enforce_if(touches[3])
         model.add_bool_or(touches)
 
+        # Vastu-zone cost is looked up at the room's *centre*, not its
+        # top-left corner: a corner can sit in a cheap pada while the room's
+        # actual bulk — everything a person would call "where this room
+        # is" — sprawls into a completely different, possibly avoid-listed
+        # zone (a wide kitchen with its corner pinned to the southeast pada
+        # but stretching west across half the plot, still scoring as if it
+        # were purely southeast). The centre is the only anchor that tracks
+        # the room's real footprint as its width/height vary.
+        half_w = model.new_int_var(0, max_w, f"hw_{space.id}")
+        model.add_division_equality(half_w, w, 2)
+        cx = model.new_int_var(0, plot_w, f"cx_{space.id}")
+        model.add(cx == x + half_w)
+        half_h = model.new_int_var(0, max_h, f"hh_{space.id}")
+        model.add_division_equality(half_h, h, 2)
+        cy = model.new_int_var(0, plot_h, f"cy_{space.id}")
+        model.add(cy == y + half_h)
+
         pada_col = model.new_int_var(0, PADA_N - 1, f"pc_{space.id}")
         col_lookup = [
             min(PADA_N - 1, int(u * UNIT / width * PADA_N)) if width else 0
             for u in range(plot_w + 1)
         ]
-        model.add_element(x, col_lookup, pada_col)
+        model.add_element(cx, col_lookup, pada_col)
         pada_row = model.new_int_var(0, PADA_N - 1, f"pr_{space.id}")
         row_lookup = [
             min(PADA_N - 1, int(u * UNIT / height * PADA_N)) if height else 0
             for u in range(plot_h + 1)
         ]
-        model.add_element(y, row_lookup, pada_row)
+        model.add_element(cy, row_lookup, pada_row)
         pada_index = model.new_int_var(0, PADA_N * PADA_N - 1, f"pi_{space.id}")
         model.add(pada_index == pada_row * PADA_N + pada_col)
 
@@ -335,7 +352,10 @@ def _try_solve(
             to_metres(solver.value(v["w"])),
             to_metres(solver.value(v["h"])),
         )
-        region = dir8_zone_of_point(rx, ry, width, height)
+        # Same reasoning as the cost lookup above: report the zone the room
+        # actually reads as (its centre), not the zone its corner happens
+        # to sit in.
+        region = dir8_zone_of_point(rx + rw / 2, ry + rh / 2, width, height)
         out[space.id] = Placement(Rect(rx, ry, rw, rh), region)
     return out
 
