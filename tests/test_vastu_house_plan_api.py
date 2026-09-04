@@ -27,8 +27,14 @@ def test_house_plan_end_to_end():
     assert len(body["floors"]) == 1
     rooms = body["floors"][0]["rooms"]
     assert len(rooms) > 0
+    # Not pinned to one exact zone: the kitchen's seat is southeast, but which
+    # of its acceptable zones wins is a joint optimum across every room on the
+    # floor, and it legitimately shifts when constraints change (it moved off
+    # southeast once solver.py started requiring window-eligible rooms on the
+    # perimeter). What must hold is that it isn't placed somewhere the engine
+    # itself considers a compromise.
     kitchen = next(r for r in rooms if r["kind"] == "kitchen")
-    assert kitchen["vastu_region"] == "southeast"
+    assert f"relax-{kitchen['id']}" not in {e["id"] for e in body["vastu_relaxed"]}
     assert 0 <= body["score"]["score"] <= 100
     assert isinstance(body["vastu_relaxed"], list)
     for entry in body["vastu_relaxed"]:
@@ -172,6 +178,41 @@ def test_house_plan_rooms_fully_cover_the_plot(plot_width, plot_depth):
     plot_area = plot_width * plot_depth
     covered = sum(r["w"] * r["h"] for r in floor["rooms"])
     assert abs(covered - plot_area) < 0.5, f"covered {covered:.2f} of {plot_area:.2f} m^2"
+
+
+@pytest.mark.parametrize("plot_width,plot_depth,storeys", [(15, 12, 1), (14, 15, 3), (12, 9, 1)])
+def test_window_rooms_sit_on_the_exterior_wall(plot_width, plot_depth, storeys):
+    """building.py can only put a window in a room whose edge lies on the
+    plot's own perimeter, so a room the solver tucks fully into the interior
+    can never get one. Every kind outside EXTERIOR_EXEMPT_KINDS (storage,
+    utility and the wet rooms, which are routinely interior in real plans)
+    must therefore touch an outer wall."""
+    from engine.vedic.vastu.solver import EXTERIOR_EXEMPT_KINDS
+
+    body = {
+        "site": {**_BODY["site"], "plot_width": plot_width, "plot_depth": plot_depth},
+        "requirement": {**_BODY["requirement"], "storeys": storeys},
+    }
+    resp = client.post("/v1/vastu/house-plan", json=body)
+    assert resp.status_code == 200
+    d = resp.json()
+    eps = 0.02
+    for floor in d["floors"]:
+        for r in floor["rooms"]:
+            # Circulation/outdoor fragments and the stair shaft aren't solver-placed.
+            if r["life"] in ("circulation", "outdoor", "vertical") or r["kind"] in EXTERIOR_EXEMPT_KINDS:
+                continue
+            on_edge = (
+                r["x"] <= eps
+                or r["y"] <= eps
+                or abs(r["x"] + r["w"] - d["width"]) <= eps
+                or abs(r["y"] + r["h"] - d["height"]) <= eps
+            )
+            assert on_edge, (
+                f"{r['id']} ({r['kind']}) is fully interior at "
+                f"({r['x']}, {r['y']}, {r['w']}x{r['h']}) on a {d['width']}x{d['height']} plot "
+                f"— it can never be given a window"
+            )
 
 
 def test_house_plan_invalid_facing_is_422():
