@@ -36,7 +36,7 @@ from dataclasses import dataclass
 from ortools.sat.python import cp_model
 
 from . import zone_rules
-from .architecture import IDEAL_SIZE, ROOM_SIZE_TIERS, PLACE_ORDER
+from .architecture import IDEAL_SIZE, PLACE_ORDER, ROOM_SIZE_TIERS, WET_KINDS
 from .geometry import Rect, split_by
 from .rooms import PlannedSpace
 
@@ -58,6 +58,18 @@ ADJACENCY_CLOSE: frozenset[frozenset[str]] = frozenset({
     frozenset({"kitchen_dining", "living"}),
     frozenset({"living", "dining"}),
 })
+
+# building.py can only put a window on a room whose edge actually lies on the
+# plot's outer perimeter — a room the solver tucks into the interior simply
+# gets zero window candidates there. These are the only kinds allowed to
+# stay windowless/interior: true storage/utility (no one occupies them), and
+# WET_KINDS, matching building.py's own pre-existing exclusion of toilets
+# from window candidacy (wet rooms are routinely ensuite/interior with
+# mechanical ventilation in real plans; requiring all of them on the
+# perimeter too would make multi-bathroom houses infeasible on typical
+# plots). Every other room a person actually occupies must touch an
+# exterior wall.
+EXTERIOR_EXEMPT_KINDS = frozenset({"store", "laundry", *WET_KINDS})
 
 
 def to_units(metres: float) -> int:
@@ -263,6 +275,18 @@ def _try_solve(
         model.add(x_end == vb_left).only_enforce_if(touches[2])
         model.add(x == vb_right).only_enforce_if(touches[3])
         model.add_bool_or(touches)
+
+        # A window-eligible room must also sit flush against one of the
+        # plot's own 4 outer edges — otherwise it has no wall segment on the
+        # perimeter for building.py to ever put a window in (see
+        # EXTERIOR_EXEMPT_KINDS above).
+        if space.kind not in EXTERIOR_EXEMPT_KINDS:
+            ext_touches = [model.new_bool_var(f"ext{i}_{space.id}") for i in range(4)]
+            model.add(x == 0).only_enforce_if(ext_touches[0])
+            model.add(x_end == plot_w).only_enforce_if(ext_touches[1])
+            model.add(y == 0).only_enforce_if(ext_touches[2])
+            model.add(y_end == plot_h).only_enforce_if(ext_touches[3])
+            model.add_bool_or(ext_touches)
 
         # Vastu-zone cost is looked up at the room's *centre*, not its
         # top-left corner: a corner can sit in a cheap pada while the room's

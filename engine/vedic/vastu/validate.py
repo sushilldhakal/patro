@@ -17,7 +17,13 @@ def _overlap_loose(a: Rect, b: Rect) -> bool:
 
 
 def _is_room(row: PlannedRoom) -> bool:
-    return row.life != "circulation"
+    """Matches layout.py's door_onto_open skip set (life in circulation,
+    outdoor) — an outdoor-life room (garage, garden, courtyard, balcony)
+    never gets a door of its own by design (building.py only walls an open
+    room's edge against a closed room or the exterior), so requiring one
+    here made every plan with a garage falsely warn "a room is missing a
+    door" even when nothing was wrong."""
+    return row.life not in ("circulation", "outdoor")
 
 
 def _needs_reachability(row: PlannedRoom) -> bool:
