@@ -17,7 +17,8 @@ from .architecture import IDEAL_SIZE, box_fits, expand_planned_spaces, life_zone
 from .entrance import foyer_rect
 from .geometry import Rect, largest, overlap_area, shared_seg, split_by, touches
 from .rooms import HouseRequirement, PlannedSpace
-from .solver import corridor_bands, dir8_zone_of_point, disjoint_reserved, solve_layout
+from .ring import ring_layout, ring_plan
+from .solver import brahmasthana_rect, corridor_bands, dir8_zone_of_point, disjoint_reserved, solve_layout
 from .types import BuildingLayer, CardinalWall, FloorConcept, HouseConcept, PlanConflict, PlannedDoor, PlannedRoom, StairShaft
 
 STAIR_W = 1.25
@@ -634,22 +635,6 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
 
     center_id = f"center_{storey}"
     foyer = foyer_rect(site.facing, site.width, site.height, 1.35)
-    h_band, v_band = corridor_bands(site.width, site.height, CORRIDOR_W)
-
-    # Corridor pieces, split disjoint from the staircase (place_foyer, below,
-    # already knows how to carve a "brahmasthan"-kind room around the foyer —
-    # there's no equivalent post-hoc fix for the staircase, so it's excluded
-    # up front here instead).
-    stair_first = [stair.rect] if stair else []
-    corridor_pieces = disjoint_reserved([*stair_first, h_band, v_band])[len(stair_first):]
-    for i, rect in enumerate(corridor_pieces):
-        rooms.append(open_piece(f"corridor{i}_{storey}", rect, storey, want_court))
-    # `center_id` names the corridor's single biggest piece — everything
-    # else in this file (ensure_reachable's fallback root, the staircase's
-    # own `adjacent_to`) refers to circulation by this one stable id.
-    if corridor_pieces:
-        biggest = max(range(len(corridor_pieces)), key=lambda i: corridor_pieces[i].w * corridor_pieces[i].h)
-        rooms[biggest].id = center_id
 
     to_place: list[PlannedSpace] = []
     for space in program:
@@ -660,8 +645,35 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             relaxed.append(PlanConflict(id=f"sep-{space.id}", severity="info", message_key="vastu.plan.valid.wet_separate"))
             continue
         to_place.append(space)
-    reserved = [*stair_first, foyer, h_band, v_band]
-    result = solve_layout(to_place, site.width, site.height, mode, reserved, CORRIDOR_W)
+
+    # Rooms go round the edge, Brahmasthāna in the middle (see ring.py). The
+    # stair shaft has to keep the same footprint on every storey, so its cell
+    # is spoken for before the rest of that cell is shared out.
+    stair_hold: dict[str, Rect] = {}
+    if stair:
+        stair_hold = {_ring_zone_of(stair.rect, site.width, site.height): stair.rect}
+    result, ring = ring_layout(
+        to_place, site.width, site.height, mode, CORRIDOR_W, reserved=stair_hold,
+    )
+    brahma = ring.brahmasthana
+
+    # `center_id` is the Brahmasthāna — the maṇḍala's true centre, exactly the
+    # central 3x3 padas (9/81 = 11.11%), unobstructed on every storey. It is
+    # walkable circulation, the hub every room's door opens onto, but nothing
+    # is ever built in it: it simply isn't one of the cells rooms can occupy.
+    #
+    # Added *before* the corridor runs on purpose: validate.py roots its
+    # reachability BFS at the first "brahmasthan"-kind room it finds, while
+    # ensure_reachable repairs doors from `center_id`. Pointing those two at
+    # different roots gets rooms reported isolated that are genuinely fine.
+    rooms.append(open_piece(center_id, brahma, storey, want_court))
+    # Corridors are carved around the Brahmasthāna, the stair and every room
+    # actually placed — a room granted a whole side band (ring._claim_span)
+    # absorbs the run inside that band, and the rest of that wall-to-wall run
+    # survives to keep the network connected.
+    hard = [brahma, *([stair.rect] if stair else []), *(p.rect for p in result.placed.values())]
+    for i, rect in enumerate(disjoint_reserved([*hard, *ring.corridors])[len(hard):]):
+        rooms.append(open_piece(f"corridor{i}_{storey}", rect, storey, want_court))
     for space in to_place:
         placement = result.placed.get(space.id)
         if placement is None:
@@ -679,8 +691,13 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             doors=[], windows=[], adjacent_to=[center_id],
         ))
 
-    boxed_foyer, foyer_dropped = place_foyer(rooms, foyer, storey, site.facing)
-    leftover.extend(foyer_dropped)
+    # The entrance opens straight onto the circulation "#" — its runs reach
+    # all four outer walls, so the hallway from the main door to the
+    # Brahmasthāna already exists and nothing needs carving. This replaces
+    # the old place_foyer(), which cut a foyer out of whichever room sat at
+    # the door and in doing so pushed that room off the outer wall (a room
+    # that no longer touches the perimeter can never be given a window).
+    boxed_foyer = _foyer_on_face(rooms, foyer, site.facing, site.width, site.height)
 
     # The solver places exactly the requested rooms plus the reserved
     # obstacles — unlike the old zone-claiming design it doesn't itself tile
@@ -721,7 +738,7 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     # "ब्रह्मस्थान" in its place. Recompute each one's real compass zone
     # from its own rect now that every rect is final.
     for room in rooms:
-        if room.kind == "brahmasthan" and room.id != center_id:
+        if room.kind in ("brahmasthan", "foyer") and room.id != center_id:
             cx = room.rect.x + room.rect.w / 2
             cy = room.rect.y + room.rect.h / 2
             room.vastu_region = dir8_zone_of_point(cx, cy, site.width, site.height)
@@ -743,20 +760,78 @@ def _region_of_shaft(rect: Rect, grid: Mandala) -> str:
     return "south"
 
 
+def _foyer_on_face(
+    rooms: list[PlannedRoom], door: Rect, facing: CardinalWall, width: float, height: float
+) -> PlannedRoom | None:
+    """Name the corridor run that meets the facing wall the "foyer".
+
+    Nothing is carved or moved: the run already touches the outer wall and
+    already leads to the Brahmasthāna, so it *is* the entrance hall. Marking
+    it is only so building.py hangs the entrance opening on it (that function
+    looks for a room of kind "foyer" first, and otherwise cuts the entrance
+    into whichever closed room sits at the door — a bedroom, say).
+    """
+    want_vertical = facing in ("north", "south")
+    dx, dy = door.x + door.w / 2, door.y + door.h / 2
+    best: PlannedRoom | None = None
+    best_d = float("inf")
+    for room in rooms:
+        if room.life != "circulation" or room.kind != "brahmasthan":
+            continue
+        r = room.rect
+        on_face = (
+            (facing == "west" and r.x <= 0.02)
+            or (facing == "east" and abs(r.x + r.w - width) <= 0.02)
+            or (facing == "north" and r.y <= 0.02)
+            or (facing == "south" and abs(r.y + r.h - height) <= 0.02)
+        )
+        if not on_face:
+            continue
+        # A run parallel to the facing wall touches it only at its far end;
+        # the perpendicular one is the one you actually walk in along.
+        if want_vertical and r.h < r.w:
+            continue
+        if not want_vertical and r.w < r.h:
+            continue
+        d = (r.x + r.w / 2 - dx) ** 2 + (r.y + r.h / 2 - dy) ** 2
+        if d < best_d:
+            best, best_d = room, d
+    if best is not None:
+        best.kind = "foyer"
+    return best
+
+
+def _ring_zone_of(rect: Rect, width: float, height: float) -> str:
+    """Which of the eight ring cells a rect's centre falls in."""
+    plan = ring_plan(width, height, CORRIDOR_W)
+    cx, cy = rect.x + rect.w / 2, rect.y + rect.h / 2
+    best, best_d = "south", float("inf")
+    for zone, cell in plan.cells.items():
+        if cell.x <= cx <= cell.x + cell.w and cell.y <= cy <= cell.y + cell.h:
+            return zone
+        d = (cx - (cell.x + cell.w / 2)) ** 2 + (cy - (cell.y + cell.h / 2)) ** 2
+        if d < best_d:
+            best, best_d = zone, d
+    return best
+
+
 def stair_on_site(site, want: bool) -> StairShaft | None:
+    """The shaft is pinned inside a *ring cell*, not a raw mandala third, so
+    it can never sit on a corridor run or in the Brahmasthāna — it has to hold
+    the identical footprint on every storey, so it is placed once here and the
+    rest of its cell is shared out around it (see ring_layout's `reserved`)."""
     if not want:
         return None
-    grid = mandala(site.width, site.height)
     face = facing_zone(site.facing)
-    zid: ZoneId = "w" if face == "s" else "s"
-    cell = grid.cells[zid]
-    w = min(STAIR_W, cell.w * 0.36)
+    zone = "west" if face == "s" else "south"
+    cell = ring_plan(site.width, site.height, CORRIDOR_W).cells[zone]
+    w = min(STAIR_W, cell.w * 0.5)
     l = min(STAIR_L, cell.h)
-    if zid == "s":
+    if zone == "south":
         rect = Rect(cell.x + cell.w - w, cell.y, w, l)
     else:
         rect = Rect(cell.x + cell.w - w, cell.y + cell.h - l, w, l)
-    return StairShaft(id="stair_shaft", rect=rect, rise="n", floors=[0, 1, 2], host_id=zid)
+    return StairShaft(id="stair_shaft", rect=rect, rise="n", floors=[0, 1, 2], host_id=zone)
 
 
 def build_concept(req: HouseRequirement, site) -> HouseConcept:

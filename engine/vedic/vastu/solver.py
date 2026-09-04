@@ -157,6 +157,26 @@ def snap(rect: Rect) -> Rect:
     return Rect(to_metres(to_units(rect.x)), to_metres(to_units(rect.y)), to_metres(to_units(rect.w)), to_metres(to_units(rect.h)))
 
 
+def brahmasthana_rect(width: float, height: float) -> Rect:
+    """The Brahmasthāna: the central 3x3 padas of the 9x9 Paramasāyika
+    maṇḍala — the standard residential (Mānuṣālaya) grid in the Mayamata,
+    Mānasāra and Viśvakarmā Prakāśa. That is rows 4-6 / columns 4-6 of the
+    81 padas, i.e. exactly 9/81 = 11.11% of the built area, centred.
+
+    Reserved as a hard no-build region, never a preference or a cost: the
+    treatises forbid columns (stambha), load-bearing walls (bhitti) and
+    beams inside it, as well as cooking fires, toilets and drains — the area
+    must be left entirely unobstructed for prāṇa to circulate. It is passed
+    to ``solve_layout`` as a reserved obstacle so no room can ever overlap
+    it, and to ``disjoint_reserved`` ahead of the corridor bands so it keeps
+    its exact shape (see that function's ordering contract).
+
+    Note this is the *maṇḍala* centre — a 3-of-9 proportion of the plot —
+    not ``corridor_bands``' thin walkway, which merely crosses through it.
+    """
+    return snap(Rect(width * 3 / PADA_N, height * 3 / PADA_N, width * 3 / PADA_N, height * 3 / PADA_N))
+
+
 def corridor_bands(width: float, height: float, corridor_w: float) -> tuple[Rect, Rect]:
     """The circulation spine every room must sit flush against — a
     full-width horizontal band and a full-height vertical band crossing at
