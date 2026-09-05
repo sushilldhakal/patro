@@ -76,32 +76,40 @@ def ring_plan(width: float, height: float, corridor_w: float) -> RingPlan:
     # Never let the corridor eat a cell whole on a very small plot.
     d = max(0.6, min(corridor_w, x0 * 0.5, y0 * 0.5))
 
-    left_w, top_h = x0 - d, y0 - d
-    right_x, bot_y = x1 + d, y1 + d
-    right_w, bot_h = width - right_x, height - bot_y
-    mid_w, mid_h = x1 - x0, y1 - y0
+    # Snap the *cut lines* once and build every rect off the same numbers.
+    # Rounding each rect on its own — cells, corridor runs and the centre
+    # each snapped independently, as this used to — leaves slivers of dead
+    # floor between them where two roundings disagree: the west run ended at
+    # 4.6 m while the Brahmasthāna began at 4.7 m, and layout.py duly folded
+    # that 0.1 x 5 m strip into the centre, growing the sacred ninth past
+    # its own scriptural proportion. Shared cut lines tile the plot exactly:
+    # no sliver, no overlap, on any plot size.
+    def cut(v: float) -> float:
+        return round(v / UNIT) * UNIT
+
+    xs = (0.0, cut(x0 - d), cut(x0), cut(x1), cut(x1 + d), width)
+    ys = (0.0, cut(y0 - d), cut(y0), cut(y1), cut(y1 + d), height)
+
+    def box(i: int, j: int, k: int, m: int) -> Rect:
+        return Rect(xs[i], ys[j], xs[k] - xs[i], ys[m] - ys[j])
 
     cells = {
-        "northwest": Rect(0.0, 0.0, left_w, top_h),
-        "north": Rect(x0, 0.0, mid_w, top_h),
-        "northeast": Rect(right_x, 0.0, right_w, top_h),
-        "west": Rect(0.0, y0, left_w, mid_h),
-        "east": Rect(right_x, y0, right_w, mid_h),
-        "southwest": Rect(0.0, bot_y, left_w, bot_h),
-        "south": Rect(x0, bot_y, mid_w, bot_h),
-        "southeast": Rect(right_x, bot_y, right_w, bot_h),
+        "northwest": box(0, 0, 1, 1),
+        "north": box(2, 0, 3, 1),
+        "northeast": box(4, 0, 5, 1),
+        "west": box(0, 2, 1, 3),
+        "east": box(4, 2, 5, 3),
+        "southwest": box(0, 4, 1, 5),
+        "south": box(2, 4, 3, 5),
+        "southeast": box(4, 4, 5, 5),
     }
     corridors = (
-        Rect(x0 - d, 0.0, d, height),   # west run, wall to wall
-        Rect(x1, 0.0, d, height),       # east run
-        Rect(0.0, y0 - d, width, d),    # north run
-        Rect(0.0, y1, width, d),        # south run
+        box(1, 0, 2, 5),  # west run, wall to wall
+        box(3, 0, 4, 5),  # east run
+        Rect(0.0, ys[1], width, ys[2] - ys[1]),  # north run, wall to wall
+        Rect(0.0, ys[3], width, ys[4] - ys[3]),  # south run
     )
-    return RingPlan(
-        cells={z: snap(r) for z, r in cells.items()},
-        corridors=tuple(snap(r) for r in corridors),
-        brahmasthana=snap(Rect(x0, y0, mid_w, mid_h)),
-    )
+    return RingPlan(cells=cells, corridors=corridors, brahmasthana=box(2, 2, 3, 3))
 
 
 def _fits(rect: Rect, kind: str) -> bool:
@@ -135,18 +143,45 @@ def _snap_in(rect: Rect) -> Rect:
 
 
 def _split_along(cell: Rect, kinds: list[str], along_w: bool) -> list[Rect] | None:
-    """Cut positions are snapped once and shared between neighbouring strips,
+    """Every room gets its own minimum first; only what is left over is
+    shared out in proportion to how much floor each would ideally like.
+
+    Sharing the *whole* span in proportion to `_want_area` — what this did
+    before — starves whichever room wants least, however much floor there
+    is. A puja sharing a 4.2 x 4.7 m cell with a study got a 1.5 m strip,
+    under its own 1.8 m minimum, so the split was refused and the study
+    reported unplaceable: 10 m² of minimums turned away from a 19.7 m² cell.
+    Taking the minimums off the top first means a cell is only ever refused
+    when it genuinely cannot hold the rooms.
+
+    Cut positions are snapped once and shared between neighbouring strips,
     rather than snapping each strip's own rect — two independently rounded
-    rects either overlap or leave a sliver of dead floor between them."""
+    rects either overlap or leave a sliver of dead floor between them.
+    """
+    span = cell.w if along_w else cell.h
+    cross = cell.h if along_w else cell.w
+    start = cell.x if along_w else cell.y
+
+    # What each room needs off the top: enough of the span to clear both its
+    # minimum side and its minimum area, plus one grid step so snapping the
+    # cut can't shave it back under.
+    floors: list[float] = []
+    for kind in kinds:
+        ideal = IDEAL_SIZE[kind]
+        if cross + EPS < ideal.min_side:
+            return None  # too narrow across to seat this room at any length
+        floors.append(max(ideal.min_side, ideal.min_area / cross) + UNIT)
+    surplus = span - sum(floors)
+    if surplus < -EPS:
+        return None
+
     weights = [_want_area(k) for k in kinds]
     total = sum(weights)
-    span = cell.w if along_w else cell.h
-    start = cell.x if along_w else cell.y
 
     cuts = [start]
     acc = 0.0
-    for w in weights[:-1]:
-        acc += span * (w / total)
+    for floor, w in zip(floors[:-1], weights[:-1]):
+        acc += floor + surplus * (w / total)
         cuts.append(round((start + acc) / UNIT) * UNIT)
     cuts.append(start + span)
 
@@ -162,21 +197,38 @@ def _split_along(cell: Rect, kinds: list[str], along_w: bool) -> list[Rect] | No
     return out
 
 
-def _split_cell(cell: Rect, kinds: list[str]) -> list[Rect] | None:
-    """Share one cell between rooms, in proportion to each room's preferred
-    area. Returns None if any resulting strip is too small for its room — the
-    caller then sheds a room and retries, rather than handing back a 1.2 m²
-    "bedroom".
+#: For the four edge cells, the axis a shared cell MUST be cut along if every
+#: strip is still to reach the outer wall. An edge cell owns one piece of the
+#: perimeter — the north cell's is the top wall, the east cell's is the right
+#: wall — so the cuts have to run *across* that wall, not parallel to it: cut
+#: the east cell down its width and the inner strip touches no outside wall
+#: at all and can never be given a window (`building.py` only puts windows in
+#: perimeter walls). The four corner cells own a piece of two walls, so either
+#: axis leaves every strip on one of them, and they keep the free choice.
+_PERIMETER_AXIS: dict[str, bool] = {"north": True, "south": True, "east": False, "west": False}
 
-    Both axes are tried, longer side first. Splitting only the long way looks
-    natural but fails cases the short way handles easily: a 4.2x3.8 m cell cut
-    the long way gives two 2.1 m-wide strips, too narrow for any bedroom,
-    while cutting it the short way seats a bedroom and a toilet comfortably.
+
+def _split_cell(cell: Rect, kinds: list[str], zone: str | None = None) -> list[Rect] | None:
+    """Share one cell between rooms. Returns None if a resulting strip is too
+    small for its room — the caller then sheds a room and retries, rather
+    than handing back a 1.2 m² "bedroom".
+
+    On a corner cell both axes are tried, longer side first: splitting only
+    the long way looks natural but fails cases the short way handles easily
+    — a 4.2x3.8 m cell cut the long way gives two 2.1 m-wide strips, too
+    narrow for any bedroom, while cutting it the short way seats a bedroom
+    and a toilet comfortably. An edge cell has no such freedom: only
+    `_PERIMETER_AXIS` keeps every strip on the outer wall, so the other axis
+    is not tried at all. A room with no outside wall is a worse answer than
+    a room this cell couldn't seat — the caller can still place it elsewhere.
     """
     if not kinds:
         return []
     if len(kinds) == 1:
         return [cell] if _fits(cell, kinds[0]) else None
+    forced = _PERIMETER_AXIS.get(zone) if zone else None
+    if forced is not None:
+        return _split_along(cell, kinds, forced)
     first = cell.w >= cell.h
     return _split_along(cell, kinds, first) or _split_along(cell, kinds, not first)
 
@@ -377,7 +429,13 @@ def ring_layout(
                 continue
             if free[zone] + EPS < need:
                 continue
-            key = (_zone_rank(space.kind, zone, mode), -free[zone])
+            # A cell nothing has claimed yet beats one already shared, even
+            # when the shared one has a hair more floor left: `free` counts
+            # only the *minimums* booked into a cell, so a cell holding a
+            # room can read as emptier than a wholly untouched one and win by
+            # centimetres. That is how a 16 m² corner cell stayed empty while
+            # two other cells each took a second room and squeezed both.
+            key = (_zone_rank(space.kind, zone, mode), 1 if buckets[zone] else 0, -free[zone])
             if best_key is None or key < best_key:
                 best, best_key = zone, key
         if best is None:
@@ -402,7 +460,7 @@ def ring_layout(
         cell = usable[zone]
         members = sorted(members, key=lambda s: _priority(s.kind))
         while members:
-            rects = _split_cell(cell, [s.kind for s in members]) if cell is not None else None
+            rects = _split_cell(cell, [s.kind for s in members], zone) if cell is not None else None
             if rects is not None:
                 for space, rect in zip(members, rects):
                     placed[space.id] = Placement(rect, zone)
