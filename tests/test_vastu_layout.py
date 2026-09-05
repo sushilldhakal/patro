@@ -428,3 +428,102 @@ def test_every_room_touches_the_corridor_spine():
         touches_h = shared_seg(placement.rect, h_band) is not None
         touches_v = shared_seg(placement.rect, v_band) is not None
         assert touches_h or touches_v, f"{space_id} doesn't touch the corridor spine: {placement.rect}"
+
+
+def _entrance_point(floor, facing: str) -> tuple[float, float, float]:
+    """(x, y, width) of the compiled entrance opening on `floor`."""
+    holes = [h for h in floor.layer.holes if h.type == "entrance"]
+    assert len(holes) == 1, f"expected exactly one entrance, got {len(holes)}"
+    hole = holes[0]
+    wall = next(w for w in floor.layer.walls if w.id == hole.wall_id)
+    a = next(v for v in floor.layer.vertices if v.id == wall.a)
+    b = next(v for v in floor.layer.vertices if v.id == wall.b)
+    return (a.x + (b.x - a.x) * hole.offset, a.y + (b.y - a.y) * hole.offset, hole.width)
+
+
+@pytest.mark.parametrize("facing", FACINGS)
+@pytest.mark.parametrize("size", [(14, 15), (15, 10), (12, 9), (10, 12), (18, 14)])
+def test_main_door_opens_into_the_hall_never_into_a_room(facing, size):
+    """The main door has to lead into the entrance hall and on into the
+    house — never straight into somebody's room.
+
+    Before the entrance hall was reserved, the door was cut at whichever
+    pada the room index ranked best on the facing wall, with no regard for
+    what was actually behind that stretch of wall. On south- and
+    west-facing plots the sourced padas sit around the middle of the wall,
+    where the maṇḍala puts a *room* rather than a corridor run, so the front
+    door came through a bedroom's, a kitchen's or a toilet's outside wall on
+    every single one of them.
+    """
+    width, height = size
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja"), mode="flexible", storeys=1,
+    )
+    floor = plan_house(req, SiteInput(width=width, height=height, facing=facing)).floors[0]
+    x, y, door_w = _entrance_point(floor, facing)
+
+    # A step in from the opening, still inside the plot, must land on the hall.
+    step = 0.3
+    inside_x = x + (step if facing == "west" else -step if facing == "east" else 0)
+    inside_y = y + (step if facing == "north" else -step if facing == "south" else 0)
+    behind = [
+        r for r in floor.rooms
+        if r.rect.x - 1e-9 <= inside_x <= r.rect.x + r.rect.w + 1e-9
+        and r.rect.y - 1e-9 <= inside_y <= r.rect.y + r.rect.h + 1e-9
+    ]
+    assert [r for r in behind if r.kind in ("foyer", "landing")], (
+        f"main door opens into {[(r.id, r.kind) for r in behind]}, not the entrance hall"
+    )
+    assert door_w == pytest.approx(1.05), "the hall must be wide enough for a full-width main door"
+
+
+@pytest.mark.parametrize("facing", FACINGS)
+@pytest.mark.parametrize("storeys", [1, 2, 3])
+def test_entrance_hall_is_reserved_before_any_room_is_placed(facing, storeys):
+    """Exactly one hall per floor, on the facing wall, with no room over it —
+    it is booked out of the ring cells (`ring.entrance_halls`) before the
+    first room claims a zone, so nothing can be placed in the door's area."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1, combined_toilet_bath=1,
+        extras=("living", "kitchen", "dining", "puja", "store", "staircase"),
+        mode="flexible", storeys=storeys,
+    )
+    width, height = 15.0, 12.0
+    concept = plan_house(req, SiteInput(width=width, height=height, facing=facing))
+    for floor in concept.floors:
+        halls = [r for r in floor.rooms if r.kind in ("foyer", "landing")]
+        assert len(halls) == 1, [r.id for r in halls]
+        hall = halls[0]
+        on_face = {
+            "west": hall.rect.x <= 0.02,
+            "east": abs(hall.rect.x + hall.rect.w - width) <= 0.02,
+            "north": hall.rect.y <= 0.02,
+            "south": abs(hall.rect.y + hall.rect.h - height) <= 0.02,
+        }[facing]
+        assert on_face, f"the hall {hall.rect} doesn't reach the {facing} wall"
+        for room in floor.rooms:
+            if room.id == hall.id:
+                continue
+            assert _overlap_area(room.rect, hall.rect) < 0.02, f"{room.id} sits in the entrance hall"
+
+
+def test_door_slides_off_a_pada_rather_than_open_into_a_room():
+    """`main_door_point` reports the pada the door really stands in.
+
+    The sourced best pada on the south wall is S4 (grihakshata), which sits
+    mid-wall where a room goes. Given the hall it has to open into, the door
+    moves to the nearest pada the whole opening fits in and says so, instead
+    of claiming a pada it isn't on."""
+    from engine.vedic.vastu.entrance import main_door_point
+    from engine.vedic.vastu.geometry import Rect
+
+    width, height = 14.0, 15.0
+    free = main_door_point("south", width, height)
+    assert free.pada == "grihakshata"
+
+    hall = Rect(9.0, height - 1.4, 1.3, 1.4)
+    boxed = main_door_point("south", width, height, hall)
+    assert 9.0 <= boxed.x <= 10.3, boxed
+    assert boxed.y == height
+    assert boxed.pada is not None and boxed.pada != free.pada

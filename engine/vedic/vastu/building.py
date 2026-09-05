@@ -9,7 +9,6 @@ bias, cross-building pairing, the even-not-a-multiple-of-ten window count).
 from __future__ import annotations
 
 from .entrance import (
-    ENTRANCE_W,
     WIN_NE_H,
     WIN_NE_SILL,
     WIN_NE_W,
@@ -17,6 +16,8 @@ from .entrance import (
     WIN_SW_SILL,
     WIN_SW_W,
     door_height,
+    entrance_width,
+    face_span,
     is_solar_wall,
     main_door_point,
     next_legal_count,
@@ -261,26 +262,30 @@ def compile_layer(width: float, height: float, facing: CardinalWall, rooms: list
             break
 
     face = _facing_edge(facing, width, height)
-    door = main_door_point(facing, width, height)
-
-    def door_on_edge(e: Seg) -> bool:
-        pad = 0.12
-        if abs(e.x1 - e.x2) < 0.06:
-            return abs(door.x - e.x1) < 0.08 and min(e.y1, e.y2) - pad <= door.y <= max(e.y1, e.y2) + pad
-        return abs(door.y - e.y1) < 0.08 and min(e.x1, e.x2) - pad <= door.x <= max(e.x1, e.x2) + pad
-
-    on_face = [r for r in closed if any(segs_overlap(e, face) > 0.4 and door_on_edge(e) for e in edges(r.rect))]
-    entry = next((r for r in rooms if r.kind == "foyer"), None)
-    if not entry and on_face:
-        def dist(r: PlannedRoom) -> float:
-            return ((r.rect.x + r.rect.w / 2 - door.x) ** 2 + (r.rect.y + r.rect.h / 2 - door.y) ** 2) ** 0.5
-        entry = sorted(on_face, key=dist)[0]
+    # The main door opens into the entrance hall — layout.py reserves that
+    # hall (the mouth of the corridor run reaching this wall, widened to a
+    # lobby) before a single room is placed, so there is always circulation
+    # directly behind the opening, leading on to the Brahmasthāna. The old
+    # fallback here — "whichever closed room happens to sit at the door" —
+    # is what put the front door through a bedroom's, a kitchen's or a
+    # toilet's outside wall on every south- and west-facing plan; a room is
+    # never an entrance, so if no hall is named the search stays inside the
+    # open floor rather than falling back to a room.
+    entry = next((r for r in rooms if r.kind in ("foyer", "landing")), None)
+    if not entry:
+        open_on_face = [
+            (got, r) for r in open_rooms
+            for e in edges(r.rect) if (got := segs_overlap(e, face)) > 0.4
+        ]
+        entry = max(open_on_face, key=lambda pair: pair[0])[1] if open_on_face else None
+    door = main_door_point(facing, width, height, entry.rect if entry else None)
     if entry:
+        lo, hi = face_span(facing, entry.rect)
         for e in edges(entry.rect):
             if segs_overlap(e, face) < 0.4:
                 continue
             w = wall(e.x1, e.y1, e.x2, e.y2, "exterior")
-            add_hole(w, door.x, door.y, ENTRANCE_W, "entrance", entry.id, "outside")
+            add_hole(w, door.x, door.y, entrance_width(hi - lo), "entrance", entry.id, "outside")
 
     win_candidates: list[tuple[str, Seg, PlannedRoom]] = []
     for room in closed:

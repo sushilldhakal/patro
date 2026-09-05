@@ -1,10 +1,18 @@
 """Entrance placement, foyer geometry, and small architectural constants.
 
-Ports ``src/lib/house-plan/classical.ts``. The one real change: the source's
-``mainDoorPoint()`` picked a hardcoded pada (always 6, or 4 for south) from a
-never-sourced ``DOOR_PADA`` table. Here it asks ``zone_rules.
-entrance_padas_for_wall()`` for the real, extracted best padas on the facing
-wall instead — see zone_rules.py's module docstring for why.
+Ports ``src/lib/house-plan/classical.ts``. Two real changes on the source:
+
+* the source's ``mainDoorPoint()`` picked a hardcoded pada (always 6, or 4
+  for south) from a never-sourced ``DOOR_PADA`` table. Here it asks
+  ``zone_rules.entrance_padas_for_wall()`` for the real, extracted best
+  padas on the facing wall instead — see zone_rules.py's module docstring
+  for why.
+* the door is placed *inside the entrance hall's own mouth* when that hall
+  is known (``main_door_point``'s ``hall`` argument). A main door has to
+  open into circulation and lead on into the house; landing it on the bare
+  pada let it come through whatever happened to sit on the facing wall,
+  which on south- and west-facing plots was routinely a bedroom, a kitchen
+  or a toilet.
 """
 
 from __future__ import annotations
@@ -19,7 +27,17 @@ WALL_GAP = 0.076
 DOOR_RATIO = 2
 ENTRANCE_W = 1.05
 RING_W = 0.9
-FOYER_W = 1.4
+#: Wall left either side of the opening, so the frame sits inside the hall
+#: instead of half in the neighbouring room's wall.
+DOOR_JAMB = 0.12
+#: Entrance hall: how wide its mouth is opened up at the facing wall, and how
+#: far it reaches in before handing over to the corridor spine. A bare
+#: corridor run (``layout.CORRIDOR_W``) is narrower than the door leaf
+#: itself, so the mouth is widened by taking a bite out of the ring cell
+#: beside it — and every centimetre of that bite is floor some room doesn't
+#: get, so the mouth is opened to exactly what the leaf needs and no more.
+FOYER_W = ENTRANCE_W + 2 * DOOR_JAMB
+FOYER_D = 1.35
 
 WIN_NE_W = 1.45
 WIN_SW_W = 0.75
@@ -44,52 +62,104 @@ def _pada_center_t(pada_index: int) -> float:
     return (pada_index - 0.5) / 8
 
 
-def main_door_point(facing: CardinalWall, width: float, height: float) -> DoorPoint:
-    """Door center on the facing wall, at the real best-sourced pada — falls
-    back to the wall's midpoint only if the room index has no main_door data
-    for that wall (never silently invents a pada)."""
+def _along_of_t(facing: CardinalWall, t: float, width: float, height: float) -> float:
+    """Metres along the facing wall's own axis (x on north/south, y on
+    east/west) for the wall fraction ``t``. Only the north wall is traversed
+    with increasing x; the other three run the other way. Kept exactly as
+    ``main_door_point`` always mapped them, so no pada moves."""
+    if facing == "north":
+        return width * t
+    if facing == "south":
+        return width * (1 - t)
+    return height * (1 - t)
+
+
+def _t_of_along(facing: CardinalWall, along: float, width: float, height: float) -> float:
+    """Inverse of ``_along_of_t``."""
+    if facing == "north":
+        return along / width if width else 0.5
+    if facing == "south":
+        return 1 - (along / width if width else 0.5)
+    return 1 - (along / height if height else 0.5)
+
+
+def face_span(facing: CardinalWall, rect: Rect) -> tuple[float, float]:
+    """``rect``'s footprint along the facing wall, as (low, high) metres on
+    that wall's own axis."""
+    if facing in ("north", "south"):
+        return (rect.x, rect.x + rect.w)
+    return (rect.y, rect.y + rect.h)
+
+
+def entrance_width(span: float) -> float:
+    """Opening width for a hall mouth ``span`` metres wide: the standard
+    leaf, narrowed only when the hall genuinely can't take it. Cutting a
+    1.05 m door into a 0.8 m mouth would put a quarter of the opening in the
+    neighbouring room's wall on either side."""
+    return min(ENTRANCE_W, max(0.6, span - 2 * DOOR_JAMB))
+
+
+def entrance_padas(facing: CardinalWall, width: float, height: float) -> list[tuple[float, str]]:
+    """The sourced best padas for the facing wall, best first, each as
+    (metres along the wall, pada id)."""
     wall = _FACING_WALL[facing]
-    candidates = zone_rules.entrance_padas_for_wall(wall)
-    if candidates:
-        pada = spatial.PADA32_BY_ID[candidates[0]]
-        t = _pada_center_t(pada.index)
-        pada_id = pada.id
-    else:
-        t = 0.5
-        pada_id = None
+    out: list[tuple[float, str]] = []
+    for pada_id in zone_rules.entrance_padas_for_wall(wall):
+        pada = spatial.PADA32_BY_ID[pada_id]
+        out.append((_along_of_t(facing, _pada_center_t(pada.index), width, height), pada_id))
+    return out
+
+
+def _pada_at(facing: CardinalWall, t: float) -> str | None:
+    """The pada a door at wall fraction ``t`` actually stands in — so a door
+    the hall pulled off its first-choice pada still reports where it really
+    is, rather than the pada it was aiming for or no pada at all."""
+    index = min(8, max(1, int(t * 8) + 1))
+    pada = spatial.PADA32_BY_CODE.get(f"{_FACING_WALL[facing]}{index}")
+    return pada.id if pada else None
+
+
+def _door_at(facing: CardinalWall, along: float, width: float, height: float) -> DoorPoint:
+    t = _t_of_along(facing, along, width, height)
+    pada = _pada_at(facing, t)
     if facing == "east":
-        return DoorPoint(width, height * (1 - t), t, pada_id)
+        return DoorPoint(width, along, t, pada)
     if facing == "west":
-        return DoorPoint(0, height * (1 - t), t, pada_id)
+        return DoorPoint(0, along, t, pada)
     if facing == "north":
-        return DoorPoint(width * t, 0, t, pada_id)
-    return DoorPoint(width * (1 - t), height, t, pada_id)
+        return DoorPoint(along, 0, t, pada)
+    return DoorPoint(along, height, t, pada)
 
 
-def foyer_rect(facing: CardinalWall, width: float, height: float, depth: float) -> Rect:
-    door = main_door_point(facing, width, height)
-    along = max(FOYER_W, min(width, height) / 9 + 0.85)
-    xs = [0, width / 3, 2 * width / 3, width]
-    ys = [0, height / 3, 2 * height / 3, height]
-    if facing == "west":
-        cell = Rect(xs[0], ys[1], xs[1] - xs[0], ys[2] - ys[1])
-    elif facing == "east":
-        cell = Rect(xs[2], ys[1], xs[3] - xs[2], ys[2] - ys[1])
-    elif facing == "north":
-        cell = Rect(xs[1], ys[0], xs[2] - xs[1], ys[1] - ys[0])
-    else:
-        cell = Rect(xs[1], ys[2], xs[2] - xs[1], ys[3] - ys[2])
+def main_door_point(
+    facing: CardinalWall, width: float, height: float, hall: Rect | None = None
+) -> DoorPoint:
+    """Door center on the facing wall.
 
-    if facing in ("east", "west"):
-        y = min(cell.y + cell.h - along, max(cell.y, door.y - along / 2))
-        if facing == "east":
-            return Rect(cell.x + cell.w - min(depth, cell.w * 0.4), y, min(depth, cell.w * 0.4), along)
-        return Rect(cell.x, y, min(depth, cell.w * 0.4), along)
+    Without ``hall``, the wall's best-sourced pada — falling back to its
+    midpoint only when the room index has no main_door data for that wall
+    (never silently inventing a pada).
 
-    x = min(cell.x + cell.w - along, max(cell.x, door.x - along / 2))
-    if facing == "north":
-        return Rect(x, cell.y, along, min(depth, cell.h * 0.4))
-    return Rect(x, cell.y + cell.h - min(depth, cell.h * 0.4), along, min(depth, cell.h * 0.4))
+    With ``hall`` — the entrance hall's own footprint where it meets that
+    wall — the whole opening is kept inside that mouth: the best-ranked
+    sourced pada it fits in wins, and if none does, the top-ranked one
+    slides to the nearest spot in the mouth where it does. Vastu ranks the
+    padas on a wall; it does not ask for a front door opening into a
+    bedroom, so where the two disagree the hall wins.
+    """
+    options = entrance_padas(facing, width, height)
+    if hall is None:
+        along = options[0][0] if options else _along_of_t(facing, 0.5, width, height)
+        return _door_at(facing, along, width, height)
+
+    lo, hi = face_span(facing, hall)
+    half = entrance_width(hi - lo) / 2
+    lo, hi = lo + half, max(lo + half, hi - half)
+    for along, _pada_id in options:
+        if lo - 1e-6 <= along <= hi + 1e-6:
+            return _door_at(facing, along, width, height)
+    want = options[0][0] if options else (lo + hi) / 2
+    return _door_at(facing, min(hi, max(lo, want)), width, height)
 
 
 def door_height(width: float) -> float:
