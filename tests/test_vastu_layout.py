@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from engine.vedic.vastu.architecture import box_fits
+from engine.vedic.vastu.architecture import IDEAL_SIZE, box_fits
 from engine.vedic.vastu.layout import plan_house
 from engine.vedic.vastu.rooms import HouseRequirement, PlannedSpace
 from engine.vedic.vastu.types import SiteInput
@@ -527,3 +527,92 @@ def test_door_slides_off_a_pada_rather_than_open_into_a_room():
     assert 9.0 <= boxed.x <= 10.3, boxed
     assert boxed.y == height
     assert boxed.pada is not None and boxed.pada != free.pada
+
+
+def test_rooms_are_not_reported_unplaceable_while_a_cell_sits_empty():
+    """Reported from the site: a 15x14 m plot drew seven generously-sized
+    rooms, left the whole north-east cell empty, and still said the study
+    and the laundry "couldn't fit comfortably".
+
+    Two separate causes, both in cell sharing. Claiming compared cells by
+    leftover area, which counts only the *minimums* booked into them, so a
+    cell already holding a room could read as emptier than a wholly
+    untouched one and win by centimetres — leaving a 16 m² cell unclaimed.
+    And `_split_along` shared the whole cell in proportion to preferred
+    area, which starved whichever room wanted least below its own minimum
+    side, so the split was refused and the room dropped.
+    """
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=0, bathrooms=0, combined_toilet_bath=1,
+        extras=("living", "kitchen_dining", "puja", "study", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    concept = plan_house(req, SiteInput(width=15, height=14, facing="west"))
+    assert concept.leftover == [], [s.kind for s in concept.leftover]
+
+    rooms = [r for r in concept.floors[0].rooms if r.kind in IDEAL_SIZE]
+    for room in rooms:
+        assert box_fits(room.rect.w, room.rect.h, IDEAL_SIZE[room.kind]), room
+    # Every one of the eight ring cells earns its keep on a plot this size.
+    assert len({r.vastu_region for r in rooms}) == 8, sorted(r.vastu_region for r in rooms)
+
+
+def test_shared_cell_gives_every_room_its_minimum_first():
+    """A puja (1.8 m min side) beside a study (2.4 m) in a 4.2 x 4.7 m cell.
+    Sharing by preferred area alone gave the puja a 1.5 m strip and refused
+    the whole split; minimums come off the top first now."""
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.ring import _split_cell
+
+    pieces = _split_cell(Rect(10.8, 4.6, 4.2, 4.7), ["puja", "study"])
+    assert pieces is not None, "a 19.7 m2 cell must seat 10 m2 of minimums"
+    for rect, kind in zip(pieces, ["puja", "study"]):
+        assert box_fits(rect.w, rect.h, IDEAL_SIZE[kind]), (kind, rect)
+
+
+@pytest.mark.parametrize("zone,cell", [
+    ("east", (10.8, 4.0, 4.2, 4.0)),
+    ("west", (0.0, 4.0, 4.2, 4.0)),
+    ("north", (5.0, 0.0, 5.0, 3.1)),
+    ("south", (5.0, 8.9, 5.0, 3.1)),
+])
+def test_a_shared_edge_cell_keeps_every_room_on_the_outer_wall(zone, cell):
+    """An edge cell owns one piece of the perimeter. Cutting it parallel to
+    that wall leaves the inner strip touching no outside wall at all, and
+    building.py can only put a window in a perimeter wall — so that room
+    could never have one. The cuts have to run across the wall."""
+    from engine.vedic.vastu.geometry import Rect
+    from engine.vedic.vastu.ring import _split_cell
+
+    rect = Rect(*cell)
+    pieces = _split_cell(rect, ["puja", "combined"], zone)
+    assert pieces is not None
+    for piece in pieces:
+        if zone in ("east", "west"):
+            spans_wall = abs(piece.x - rect.x) < 1e-6 and abs(piece.w - rect.w) < 1e-6
+        else:
+            spans_wall = abs(piece.y - rect.y) < 1e-6 and abs(piece.h - rect.h) < 1e-6
+        assert spans_wall, f"{piece} was cut off the {zone} wall"
+
+
+@pytest.mark.parametrize("size", [(14, 15), (20, 18), (15, 12), (9, 8), (13, 11), (22, 20)])
+def test_ring_grid_tiles_the_plot_with_no_dead_slivers(size):
+    """Cells, corridor runs and the Brahmasthāna are built off one set of
+    snapped cut lines, so they tile the plot exactly. Snapping each rect on
+    its own left 0.1 m strips of dead floor where two roundings disagreed —
+    and layout.py folded one of those into the Brahmasthāna, growing the
+    sacred centre past its own scriptural ninth."""
+    from engine.vedic.vastu.ring import ring_plan
+
+    width, height = size
+    plan = ring_plan(width, height, 0.85)
+    edges = [plan.brahmasthana, *plan.cells.values(), *plan.corridors]
+    step = 0.05
+    for i in range(int(width / step)):
+        for j in range(int(height / step)):
+            x, y = (i + 0.5) * step, (j + 0.5) * step
+            assert any(
+                r.x <= x <= r.x + r.w and r.y <= y <= r.y + r.h for r in edges
+            ), f"({x:.2f}, {y:.2f}) belongs to no cell, corridor or centre"
+    assert abs(plan.brahmasthana.w - width / 3) <= 0.1
+    assert abs(plan.brahmasthana.h - height / 3) <= 0.1
