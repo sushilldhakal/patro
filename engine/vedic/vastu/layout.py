@@ -14,11 +14,17 @@ from dataclasses import dataclass
 from . import architecture as arch
 from . import zone_rules
 from .architecture import IDEAL_SIZE, box_fits, expand_planned_spaces, life_zone_of, resolve_storey
-from .entrance import foyer_rect
 from .geometry import Rect, largest, overlap_area, shared_seg, split_by, touches
 from .rooms import HouseRequirement, PlannedSpace
-from .ring import ring_layout, ring_plan
-from .solver import brahmasthana_rect, corridor_bands, dir8_zone_of_point, disjoint_reserved, solve_layout
+from .ring import EntranceHall, RingPlan, entrance_halls, ring_layout, ring_plan
+from .solver import (
+    SolveResult,
+    brahmasthana_rect,
+    corridor_bands,
+    dir8_zone_of_point,
+    disjoint_reserved,
+    solve_layout,
+)
 from .types import BuildingLayer, CardinalWall, FloorConcept, HouseConcept, PlanConflict, PlannedDoor, PlannedRoom, StairShaft
 
 STAIR_W = 1.25
@@ -634,7 +640,15 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     leftover: list[PlannedSpace] = []
 
     center_id = f"center_{storey}"
-    foyer = foyer_rect(site.facing, site.width, site.height, 1.35)
+    # The main door's own ground is claimed before anything else on the
+    # floor: `entrance_halls` widens the mouth of whichever corridor run
+    # reaches the facing wall into a real lobby, and every room is placed
+    # around it. A room can no longer end up behind the front door, and the
+    # door itself is cut into that lobby rather than into whatever happened
+    # to sit on the facing wall (routinely a bedroom, a kitchen or a toilet
+    # on south- and west-facing plots).
+    plan = ring_plan(site.width, site.height, CORRIDOR_W)
+    halls = entrance_halls(plan, site.facing, site.width, site.height)
 
     to_place: list[PlannedSpace] = []
     for space in program:
@@ -649,12 +663,25 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     # Rooms go round the edge, Brahmasthāna in the middle (see ring.py). The
     # stair shaft has to keep the same footprint on every storey, so its cell
     # is spoken for before the rest of that cell is shared out.
-    stair_hold: dict[str, Rect] = {}
-    if stair:
-        stair_hold = {_ring_zone_of(stair.rect, site.width, site.height): stair.rect}
-    result, ring = ring_layout(
-        to_place, site.width, site.height, mode, CORRIDOR_W, reserved=stair_hold,
-    )
+    # Widening the door's mouth costs one ring cell a strip of floor either
+    # way; which side pays can decide whether a room still fits at all, and
+    # the geometry can't tell in advance. Lay the ring out both ways and
+    # keep the one that places more rooms — the pada-preferred side comes
+    # first, so it wins any tie.
+    best: tuple[int, SolveResult, RingPlan, EntranceHall] | None = None
+    for hall in halls:
+        held: dict[str, list[Rect]] = {}
+        for zone, bite in hall.blocked:
+            held.setdefault(zone, []).append(bite)
+        if stair:
+            held.setdefault(_ring_zone_of(stair.rect, site.width, site.height), []).append(stair.rect)
+        attempt, attempt_ring = ring_layout(
+            to_place, site.width, site.height, mode, CORRIDOR_W,
+            reserved=held, keep_clear=hall.lobby,
+        )
+        if best is None or len(attempt.dropped) < best[0]:
+            best = (len(attempt.dropped), attempt, attempt_ring, hall)
+    _, result, ring, entry_hall = best
     brahma = ring.brahmasthana
 
     # `center_id` is the Brahmasthāna — the maṇḍala's true centre, exactly the
@@ -671,9 +698,32 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
     # actually placed — a room granted a whole side band (ring._claim_span)
     # absorbs the run inside that band, and the rest of that wall-to-wall run
     # survives to keep the network connected.
-    hard = [brahma, *([stair.rect] if stair else []), *(p.rect for p in result.placed.values())]
+    hard = [
+        brahma,
+        *([stair.rect] if stair else []),
+        entry_hall.lobby,
+        *(p.rect for p in result.placed.values()),
+    ]
     for i, rect in enumerate(disjoint_reserved([*hard, *ring.corridors])[len(hard):]):
         rooms.append(open_piece(f"corridor{i}_{storey}", rect, storey, want_court))
+    # The lobby is its own named piece of that same open floor — it shares a
+    # wall with the run it was widened from, so it is already walkable
+    # through to the Brahmasthāna with no door needed.
+    boxed_foyer = PlannedRoom(
+        id=f"foyer_{storey}" if storey == 0 else f"landing_{storey}",
+        kind="foyer" if storey == 0 else "landing",
+        floor=storey,
+        rect=entry_hall.lobby,
+        life="circulation",
+        vastu_region=dir8_zone_of_point(
+            entry_hall.lobby.x + entry_hall.lobby.w / 2,
+            entry_hall.lobby.y + entry_hall.lobby.h / 2,
+            site.width,
+            site.height,
+        ),
+        doors=[], windows=[], adjacent_to=[],
+    )
+    rooms.append(boxed_foyer)
     for space in to_place:
         placement = result.placed.get(space.id)
         if placement is None:
@@ -690,14 +740,6 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
             life="vertical", vastu_region=_region_of_shaft(stair.rect, grid),
             doors=[], windows=[], adjacent_to=[center_id],
         ))
-
-    # The entrance opens straight onto the circulation "#" — its runs reach
-    # all four outer walls, so the hallway from the main door to the
-    # Brahmasthāna already exists and nothing needs carving. This replaces
-    # the old place_foyer(), which cut a foyer out of whichever room sat at
-    # the door and in doing so pushed that room off the outer wall (a room
-    # that no longer touches the perimeter can never be given a window).
-    boxed_foyer = _foyer_on_face(rooms, foyer, site.facing, site.width, site.height)
 
     # The solver places exactly the requested rooms plus the reserved
     # obstacles — unlike the old zone-claiming design it doesn't itself tile
@@ -758,47 +800,6 @@ def _region_of_shaft(rect: Rect, grid: Mandala) -> str:
         if z.x <= cx <= z.x + z.w and z.y <= cy <= z.y + z.h:
             return ZONE_DIR[zid]
     return "south"
-
-
-def _foyer_on_face(
-    rooms: list[PlannedRoom], door: Rect, facing: CardinalWall, width: float, height: float
-) -> PlannedRoom | None:
-    """Name the corridor run that meets the facing wall the "foyer".
-
-    Nothing is carved or moved: the run already touches the outer wall and
-    already leads to the Brahmasthāna, so it *is* the entrance hall. Marking
-    it is only so building.py hangs the entrance opening on it (that function
-    looks for a room of kind "foyer" first, and otherwise cuts the entrance
-    into whichever closed room sits at the door — a bedroom, say).
-    """
-    want_vertical = facing in ("north", "south")
-    dx, dy = door.x + door.w / 2, door.y + door.h / 2
-    best: PlannedRoom | None = None
-    best_d = float("inf")
-    for room in rooms:
-        if room.life != "circulation" or room.kind != "brahmasthan":
-            continue
-        r = room.rect
-        on_face = (
-            (facing == "west" and r.x <= 0.02)
-            or (facing == "east" and abs(r.x + r.w - width) <= 0.02)
-            or (facing == "north" and r.y <= 0.02)
-            or (facing == "south" and abs(r.y + r.h - height) <= 0.02)
-        )
-        if not on_face:
-            continue
-        # A run parallel to the facing wall touches it only at its far end;
-        # the perpendicular one is the one you actually walk in along.
-        if want_vertical and r.h < r.w:
-            continue
-        if not want_vertical and r.w < r.h:
-            continue
-        d = (r.x + r.w / 2 - dx) ** 2 + (r.y + r.h / 2 - dy) ** 2
-        if d < best_d:
-            best, best_d = room, d
-    if best is not None:
-        best.kind = "foyer"
-    return best
 
 
 def _ring_zone_of(rect: Rect, width: float, height: float) -> str:

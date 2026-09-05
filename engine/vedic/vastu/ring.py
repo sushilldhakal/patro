@@ -41,9 +41,11 @@ from dataclasses import dataclass
 
 from . import zone_rules
 from .architecture import IDEAL_SIZE, PLACE_ORDER, ROOM_SIZE_TIERS
-from .geometry import Rect
+from .entrance import FOYER_D, FOYER_W, entrance_padas, face_span
+from .geometry import Rect, overlap_area
 from .rooms import PlannedSpace
 from .solver import UNIT, Placement, SolveResult, snap
+from .types import CardinalWall
 
 # The eight peripheral cells, in compass order.
 RING_ZONES: tuple[str, ...] = (
@@ -179,6 +181,117 @@ def _split_cell(cell: Rect, kinds: list[str]) -> list[Rect] | None:
     return _split_along(cell, kinds, first) or _split_along(cell, kinds, not first)
 
 
+@dataclass(frozen=True)
+class EntranceHall:
+    """The open floor the main door opens into.
+
+    The corridor "#" already reaches all four outer walls, so one of its runs
+    always meets the facing wall head-on — that run is the hallway the door
+    leads into. Its mouth alone is not enough, though: a run is
+    ``layout.CORRIDOR_W`` wide, narrower than the door leaf itself, so the
+    mouth is widened to a real lobby (``FOYER_W`` x ``FOYER_D``) by taking a
+    bite out of the ring cell beside it. ``blocked`` is that bite, per zone,
+    which ``ring_layout`` takes as ``reserved`` — the point being that the
+    main door's own area is spoken for *before* a single room is placed, so
+    no room can ever end up behind the front door.
+    """
+
+    run: Rect
+    lobby: Rect
+    blocked: tuple[tuple[str, Rect], ...]
+
+
+def face_runs(plan: RingPlan, facing: CardinalWall) -> tuple[Rect, Rect]:
+    """The two corridor runs that meet the facing wall head-on. A run
+    parallel to that wall only grazes it at its far end; the perpendicular
+    pair is what you actually walk in along."""
+    west, east, north, south = plan.corridors
+    return (west, east) if facing in ("north", "south") else (north, south)
+
+
+def _clip(cell: Rect, cut: Rect) -> Rect | None:
+    x0, y0 = max(cell.x, cut.x), max(cell.y, cut.y)
+    x1 = min(cell.x + cell.w, cut.x + cut.w)
+    y1 = min(cell.y + cell.h, cut.y + cut.h)
+    if x1 - x0 <= EPS or y1 - y0 <= EPS:
+        return None
+    return Rect(x0, y0, x1 - x0, y1 - y0)
+
+
+def entrance_halls(
+    plan: RingPlan,
+    facing: CardinalWall,
+    width: float,
+    height: float,
+    want_w: float = FOYER_W,
+    depth: float = FOYER_D,
+) -> tuple[EntranceHall, ...]:
+    """Both ways to open the mouth up — widened low along the wall, widened
+    high — best-pada side first.
+
+    Of the two runs reaching the facing wall, the one nearer the wall's
+    best-sourced entrance pada is used, so the door still sits as close to
+    its classical cell as a door that actually opens into the house can.
+    Which *side* the widening's bite comes out of is a different question:
+    it decides whether the ring cell next to it keeps the depth a master
+    bedroom needs, and the geometry alone can't tell — a cell that looks
+    generous may be the only one a big room still fits in. So both are
+    offered and the caller lays the floor out with each, keeping whichever
+    costs fewer rooms (see ``layout.build_floor``).
+    """
+    along_max = width if facing in ("north", "south") else height
+    padas = entrance_padas(facing, width, height)
+    want_along = padas[0][0] if padas else along_max / 2
+
+    run = min(face_runs(plan, facing), key=lambda r: abs(sum(face_span(facing, r)) / 2 - want_along))
+    lo, hi = face_span(facing, run)
+    grow = max(0.0, min(want_w, along_max) - (hi - lo))
+
+    # Never deeper than the outer band it is cut from: past that the lobby
+    # would be reaching into the corridor cross-band it already opens onto.
+    band = {
+        "north": plan.cells["north"].h, "south": plan.cells["south"].h,
+        "west": plan.cells["west"].w, "east": plan.cells["east"].w,
+    }[facing]
+    d = max(UNIT, min(depth, band))
+
+    out: list[EntranceHall] = []
+    seen: set[tuple[float, float, float, float]] = set()
+    for low in (want_along < (lo + hi) / 2, want_along >= (lo + hi) / 2):
+        lo2 = max(0.0, lo - grow) if low else lo
+        hi2 = hi if low else min(along_max, hi + grow)
+        # A side with no plot left hands its share back to the other.
+        short = grow - ((lo - lo2) + (hi2 - hi))
+        if short > 1e-9:
+            lo2, hi2 = max(0.0, lo2 - short), min(along_max, hi2 + short)
+        hall = _hall_at(plan, facing, width, height, lo2, hi2, d, run)
+        key = (hall.lobby.x, hall.lobby.y, hall.lobby.w, hall.lobby.h)
+        if key not in seen:
+            seen.add(key)
+            out.append(hall)
+    return tuple(out)
+
+
+def _hall_at(
+    plan: RingPlan, facing: CardinalWall, width: float, height: float,
+    lo: float, hi: float, depth: float, run: Rect,
+) -> EntranceHall:
+    span = hi - lo
+    if facing == "north":
+        lobby = Rect(lo, 0.0, span, depth)
+    elif facing == "south":
+        lobby = Rect(lo, height - depth, span, depth)
+    elif facing == "west":
+        lobby = Rect(0.0, lo, depth, span)
+    else:
+        lobby = Rect(width - depth, lo, depth, span)
+    lobby = snap(lobby)
+    blocked = tuple(
+        (zone, bite) for zone, cell in plan.cells.items() if (bite := _clip(cell, lobby))
+    )
+    return EntranceHall(run=run, lobby=lobby, blocked=blocked)
+
+
 def _zone_rank(kind: str, zone: str, mode: str) -> float:
     cost, _relaxed = zone_rules.vastu_cost(kind, zone, mode)
     return float(cost)
@@ -216,22 +329,37 @@ def ring_layout(
     height: float,
     mode: str,
     corridor_w: float,
-    reserved: dict[str, Rect] | None = None,
+    reserved: dict[str, list[Rect]] | None = None,
+    keep_clear: Rect | None = None,
 ) -> tuple[SolveResult, RingPlan]:
     """Assign every space to a compass cell, then share each cell out.
 
-    `reserved` maps a zone id to a rect already taken inside that cell (the
-    stair shaft, which has to land on the same footprint on every storey) —
-    that area is carved off before the cell is shared.
+    `reserved` maps a zone id to the rects already taken inside that cell —
+    the stair shaft (which has to land on the same footprint on every
+    storey) and the entrance lobby (see `entrance_halls`). Each is carved off
+    before the cell is shared, and what's left is what rooms may claim.
+
+    `keep_clear` is floor no *side band* may swallow: a band claim
+    (`_claim_span`) takes the bounding box of two cells, corridor run and
+    all, so without this the entrance hall could be absorbed whole by one
+    oversized room and the main door would once again open into it.
     """
     plan = ring_plan(width, height, corridor_w)
     taken = reserved or {}
 
-    # Cell capacity, minus anything already spoken for in it.
+    # What each cell has left once the stair and the entrance lobby have
+    # taken their bite — capacity *and* shape, since a cell can be reduced
+    # to a strip too narrow for a room its raw thirds would have fitted.
+    usable: dict[str, Rect | None] = {}
     free: dict[str, float] = {}
     for zone, cell in plan.cells.items():
-        gone = taken[zone].w * taken[zone].h if zone in taken else 0.0
-        free[zone] = cell.w * cell.h - gone
+        room_for: Rect | None = cell
+        for cut in taken.get(zone, ()):
+            if room_for is None:
+                break
+            room_for = _remainder(room_for, cut)
+        usable[zone] = room_for
+        free[zone] = room_for.w * room_for.h if room_for else 0.0
 
     # Rooms claim zones in placement order, so a puja or kitchen takes its
     # classical seat before a store room can sit in it. Ties break toward the
@@ -244,8 +372,8 @@ def ring_layout(
         best: str | None = None
         best_key: tuple[float, float] | None = None
         for zone in RING_ZONES:
-            cell = plan.cells[zone]
-            if min(cell.w, cell.h) + EPS < IDEAL_SIZE[space.kind].min_side:
+            cell = usable[zone]
+            if cell is None or min(cell.w, cell.h) + EPS < IDEAL_SIZE[space.kind].min_side:
                 continue
             if free[zone] + EPS < need:
                 continue
@@ -254,7 +382,7 @@ def ring_layout(
                 best, best_key = zone, key
         if best is None:
             # Too big for any one cell — try a side band before giving up.
-            span = _claim_span(space, plan, free, taken, mode)
+            span = _claim_span(space, plan, free, taken, mode, keep_clear)
             if span is not None:
                 zone, rect, used_zones = span
                 spans[space.id] = Placement(rect, zone)
@@ -271,9 +399,7 @@ def ring_layout(
     # CP-SAT path had.
     placed: dict[str, Placement] = dict(spans)
     for zone, members in buckets.items():
-        cell = plan.cells[zone]
-        if zone in taken:
-            cell = _remainder(cell, taken[zone])
+        cell = usable[zone]
         members = sorted(members, key=lambda s: _priority(s.kind))
         while members:
             rects = _split_cell(cell, [s.kind for s in members]) if cell is not None else None
@@ -289,8 +415,9 @@ def _claim_span(
     space: PlannedSpace,
     plan: RingPlan,
     free: dict[str, float],
-    taken: dict[str, Rect],
+    taken: dict[str, list[Rect]],
     mode: str,
+    keep_clear: Rect | None = None,
 ) -> tuple[str, Rect, tuple[str, str]] | None:
     """Give `space` a whole side band, if both its cells are still untouched
     and the band is genuinely big enough. Cheapest Vastu zone wins."""
@@ -303,6 +430,10 @@ def _claim_span(
         if any(free[z] + EPS < plan.cells[z].w * plan.cells[z].h for z in zones):
             continue
         rect = _union(plan.cells, zones)
+        # A band spans the corridor run between its two cells, so it can
+        # cover the entrance hall even though neither cell was reserved.
+        if keep_clear is not None and overlap_area(rect, keep_clear) > EPS:
+            continue
         if not _fits(rect, space.kind):
             continue
         rank = _zone_rank(space.kind, zone, mode)
