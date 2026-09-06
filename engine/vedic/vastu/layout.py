@@ -621,6 +621,282 @@ def try_merge_into_neighbor(rooms: list[PlannedRoom], cell: Rect, center_id: str
     return True
 
 
+#: A remainder of a split strip narrower than this is not worth leaving as its
+#: own scrap of floor — better to leave the whole strip alone than to trade one
+#: dead passage for a thinner one. Matches ``shared_seg``'s own minimum useful
+#: wall length, below which two rects don't even count as touching.
+_MIN_REMAINDER = 0.45
+
+
+def _reclaim_priority(room: PlannedRoom, merged: Rect) -> tuple[int, float]:
+    """Rank the rooms willing to swallow a dead corridor strip: whoever ends
+    up smallest *relative to its own preferred size* takes it.
+
+    Deliberately not ``_growth_priority``, which refuses any merge that
+    pushes a room past `preferred` — right for a leftover mandala cell
+    (better left as open floor than stuffed into an already-generous room),
+    wrong here. A corridor strip nobody can walk into is not open floor: it
+    is a walled-off gap between two rooms, and leaving it costs the plan
+    both the area and a pair of pointless walls. On a plot with room to
+    spare every ring room is already past `preferred`, so deferring to that
+    gate would simply never reclaim anything.
+    """
+    area = merged.w * merged.h
+    tiers = arch.ROOM_SIZE_TIERS.get(room.kind)
+    if tiers is None or tiers.preferred.area <= 0:
+        return (1, area)
+    return (0, area / tiers.preferred.area)
+
+
+def _strip_slices(strip: Rect, room: Rect) -> tuple[Rect, list[Rect], Rect] | None:
+    """How much of ``strip`` the room next to it can take, and what is left.
+
+    Returns ``(take, remainder, merged)``: the slice of the strip lying
+    exactly against ``room``'s own face, whatever of the strip that leaves
+    over, and the rectangle ``room`` becomes. ``None`` if this room can't
+    take a square bite at all.
+
+    Slicing matters because a strip spans a whole maṇḍala *cell*, while a
+    cell is routinely shared by two rooms — the north cell holding a puja
+    and a bedroom leaves the strip below it 6 m wide with no single room
+    matching its width. Handing each room the piece under its own face
+    clears the strip; insisting one room take all of it would leave the
+    whole thing dead. The remainder goes back as open floor and is offered
+    to the room on its far side on the next pass.
+    """
+    for horizontal in (True, False):
+        if horizontal:
+            flush = (
+                abs(room.y + room.h - strip.y) < MERGE_EPS
+                or abs(strip.y + strip.h - room.y) < MERGE_EPS
+            )
+            lo, hi, rlo, rhi = strip.x, strip.x + strip.w, room.x, room.x + room.w
+        else:
+            flush = (
+                abs(room.x + room.w - strip.x) < MERGE_EPS
+                or abs(strip.x + strip.w - room.x) < MERGE_EPS
+            )
+            lo, hi, rlo, rhi = strip.y, strip.y + strip.h, room.y, room.y + room.h
+        if not flush:
+            continue
+        # The room may not stick out past the strip: the bite has to be the
+        # room's own full face, or the merged rect stops being a rectangle.
+        if rlo < lo - MERGE_EPS or rhi > hi + MERGE_EPS:
+            continue
+        lo2, hi2 = max(lo, rlo), min(hi, rhi)
+        if hi2 - lo2 < _MIN_REMAINDER:
+            continue
+        cuts = [(lo, lo2), (hi2, hi)]
+        if any(0 < b - a < _MIN_REMAINDER for a, b in cuts):
+            continue
+        if horizontal:
+            take = Rect(lo2, strip.y, hi2 - lo2, strip.h)
+            rest = [Rect(a, strip.y, b - a, strip.h) for a, b in cuts if b - a >= _MIN_REMAINDER]
+            merged = Rect(room.x, min(room.y, strip.y), room.w, room.h + strip.h)
+        else:
+            take = Rect(strip.x, lo2, strip.w, hi2 - lo2)
+            rest = [Rect(strip.x, a, strip.w, b - a) for a, b in cuts if b - a >= _MIN_REMAINDER]
+            merged = Rect(min(room.x, strip.x), room.y, room.w + strip.w, room.h)
+        return take, rest, merged
+    return None
+
+
+def _is_open(room: PlannedRoom) -> bool:
+    return room.life in ("circulation", "outdoor")
+
+
+def _open_cluster(pieces: list[tuple[str, Rect]], root_id: str) -> set[str]:
+    """Ids of the open pieces walkable from ``root_id`` — open floor meeting
+    open floor along a real wall needs no door, so this *is* the house's
+    circulation network."""
+    by_id = dict(pieces)
+    if root_id not in by_id:
+        return set()
+    seen = {root_id}
+    queue = [root_id]
+    while queue:
+        cur = by_id[queue.pop()]
+        for pid, rect in pieces:
+            if pid not in seen and shared_seg(cur, rect):
+                seen.add(pid)
+                queue.append(pid)
+    return seen
+
+
+def _stranded(closed: list[tuple[str, Rect]], opens: list[tuple[str, Rect]]) -> int:
+    """Closed rooms touching no open floor — nothing for ``door_onto_open``
+    to hang a door on, i.e. rooms with no way in."""
+    return sum(1 for _, rect in closed if not any(shared_seg(rect, o) for _, o in opens))
+
+
+def _open_along_long_side(strip: Rect, rooms: list[PlannedRoom]) -> bool:
+    """Does open floor run alongside this strip, rather than just meeting it
+    end-on?
+
+    A strip's two *long* sides are what make it a passage or not. Open floor
+    along one of them means the strip is simply part of that floor — the
+    plan draws no wall between two open pieces, so a 0.9 m link between the
+    living room and the Brahmasthāna reads as one continuous space, not as a
+    corridor. Open floor only at the *ends* is the opposite case: that is a
+    passage between two rooms, which is worth keeping only if somebody walks
+    through it.
+
+    This is also what puts the two vertical runs permanently out of reach —
+    each borders the Brahmasthāna down its whole inner side by construction
+    (``ring_plan``), so no reclaim can ever nibble at the house's spine.
+    """
+    horizontal = strip.w >= strip.h
+    eps = 0.04
+    for room in rooms:
+        if not _is_open(room):
+            continue
+        r = room.rect
+        if r is strip:
+            continue
+        if horizontal:
+            flush = abs(r.y + r.h - strip.y) < eps or abs(strip.y + strip.h - r.y) < eps
+            span = min(r.x + r.w, strip.x + strip.w) - max(r.x, strip.x)
+        else:
+            flush = abs(r.x + r.w - strip.x) < eps or abs(strip.x + strip.w - r.x) < eps
+            span = min(r.y + r.h, strip.y + strip.h) - max(r.y, strip.y)
+        if flush and span > 0.45:
+            return True
+    return False
+
+
+def _door_targets(rooms: list[PlannedRoom]) -> set[str]:
+    """Which open pieces the plan is about to hang its doors on.
+
+    Mirrors ``door_onto_open``'s own rule exactly — each closed room takes
+    the *biggest* open space it shares a wall with — so it answers the only
+    question that matters here: is this strip a passage somebody actually
+    walks in through, or floor with a wall on both sides and no door onto
+    either? Every ring cell borders a full-height vertical run and nothing
+    else of that size, so the runs come back live and stay off-limits;
+    a horizontal band whose rooms all face a run comes back unused.
+
+    Recomputed after every reclaim, since growing one room changes what its
+    neighbours touch.
+    """
+    ranked = sorted(
+        (r for r in rooms if _is_open(r)), key=lambda s: -(s.rect.w * s.rect.h)
+    )
+    chosen: set[str] = set()
+    for room in rooms:
+        if _is_open(room):
+            continue
+        for space in ranked:
+            if shared_seg(room.rect, space.rect):
+                chosen.add(space.id)
+                break
+    return chosen
+
+
+def _network_no_worse(
+    rooms: list[PlannedRoom], dropped: PlannedRoom, host: PlannedRoom,
+    merged: Rect, rest: list[Rect], center_id: str,
+) -> bool:
+    """Would the house still work with ``dropped``'s claimed slice gone and
+    ``host`` grown into it? Two things have to survive the trade:
+
+    * every open piece that could reach the Brahmasthāna still can;
+    * no closed room loses its last open neighbour.
+
+    Both are judged as "no *worse* than before", never as absolutes. A plan
+    handed to this pass can already contain an open sliver connected to
+    nothing (the 5 cm scraps left beside a snapped stair shaft do exactly
+    that) or a room touching no open floor; measuring against a perfect
+    house instead of the actual one would let a single pre-existing sliver
+    anywhere on the floor veto every reclaim on that floor.
+    """
+    opens_now = [(r.id, r.rect) for r in rooms if _is_open(r)]
+    closed_now = [(r.id, r.rect) for r in rooms if not _is_open(r)]
+
+    opens_after = [(r.id, r.rect) for r in rooms if _is_open(r) and r.id != dropped.id]
+    opens_after += [(f"{dropped.id}~{i}", rect) for i, rect in enumerate(rest)]
+    closed_after = [
+        (r.id, merged if r.id == host.id else r.rect)
+        for r in rooms if not _is_open(r) and r.id != dropped.id
+    ]
+
+    was = _open_cluster(opens_now, center_id) - {dropped.id}
+    now = _open_cluster(opens_after, center_id)
+    if was - now:
+        return False
+    return _stranded(closed_after, opens_after) <= _stranded(closed_now, opens_now)
+
+
+def absorb_dead_corridors(rooms: list[PlannedRoom], center_id: str, storey: int) -> None:
+    """Fold every corridor segment the house does not actually walk through
+    back into the room beside it.
+
+    ``ring_plan`` cuts circulation as a wall-to-wall "#" — two vertical runs
+    and two horizontal ones — because the geometry cannot know in advance
+    which of them the front door and the rooms will end up using. In
+    practice they rarely all get used: each ring cell borders a *vertical*
+    run down its whole side, so that is where ``door_onto_open`` puts every
+    door, and the horizontal runs are left as ``CORRIDOR_W`` strips lying
+    between two rooms with no door onto either — a passage nobody can enter,
+    drawn as dead floor with a wall on each side. That is what put a gap
+    between a store and the bedroom under it, and between a bedroom and the
+    study under it, on a plan where neither room opened onto the gap.
+
+    So: hand a strip's floor to the rooms beside it whenever doing so leaves
+    the circulation network no worse off (``_network_no_worse``). One bite
+    at a time, re-testing after each — absorbing one changes who touches
+    what, and two strips can each look redundant on their own while the
+    network still needs one of them.
+
+    What survives is a strip something genuinely depends on: a wet room's or
+    the stair's only route to a door, since neither can be grown into. The
+    Brahmasthāna is never a candidate — it is the root the network is
+    measured from, and the treatises' one un-buildable square besides.
+    """
+    for _ in range(len(rooms) * 2):
+        strips = sorted(
+            (r for r in rooms if r.kind == "brahmasthan" and r.id != center_id),
+            key=lambda r: r.rect.w * r.rect.h,
+        )
+        if not _absorb_one(rooms, strips, center_id, storey):
+            return
+
+
+def _absorb_one(
+    rooms: list[PlannedRoom], strips: list[PlannedRoom], center_id: str, storey: int,
+) -> bool:
+    """One reclaim: the best-ranked room that can take a square bite out of
+    some strip without cutting the house's circulation takes it. Returns
+    whether anything moved."""
+    live = _door_targets(rooms)
+    for strip in strips:
+        if strip.id in live or _open_along_long_side(strip.rect, rooms):
+            continue
+        options = []
+        for room in rooms:
+            if not is_merge_target(room):
+                continue
+            sliced = _strip_slices(strip.rect, room.rect)
+            if sliced is None:
+                continue
+            take, rest, merged = sliced
+            options.append((_reclaim_priority(room, merged), room, take, rest, merged))
+        options.sort(key=lambda o: o[0])
+        for _, room, take, rest, merged in options:
+            if not _network_no_worse(rooms, strip, room, merged, rest, center_id):
+                continue
+            room.rect = merged
+            rooms.remove(strip)
+            for i, rect in enumerate(rest):
+                rooms.append(PlannedRoom(
+                    id=f"{strip.id}_part{i}", kind=strip.kind, floor=storey, rect=rect,
+                    life=strip.life, vastu_region=strip.vastu_region,
+                    doors=[], windows=[], adjacent_to=[],
+                ))
+            return True
+    return False
+
+
+
 def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair: StairShaft | None, want_court: bool) -> tuple[list[PlannedRoom], list[PlannedSpace], list[PlanConflict]]:
     """Room placement is a real CP-SAT solve (``solver.solve_layout``), not a
     greedy zone-claim — every room's rectangle is a decision variable, no
@@ -757,6 +1033,15 @@ def build_floor(storey: int, program: list[PlannedSpace], site, mode: str, stair
         if not want_court and try_merge_into_neighbor(rooms, scrap, center_id):
             continue
         rooms.append(open_piece(f"fill{i}_{storey}", scrap, storey, want_court))
+
+    # Every rect is final now except for the corridor runs nobody uses — run
+    # the reclaim *before* doors are placed so `door_onto_open` and
+    # `seal_circulation` below decide against the geometry that ships, not
+    # against strips that are about to disappear. Skipped for a courtyard
+    # house for the same reason every other merge is (`want_court`): there
+    # the open floor is the point, not leftover space to be tidied away.
+    if not want_court:
+        absorb_dead_corridors(rooms, center_id, storey)
 
     open_rooms = [r for r in rooms if r.life in ("circulation", "outdoor")]
     if boxed_foyer:

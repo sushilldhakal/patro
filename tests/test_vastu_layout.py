@@ -616,3 +616,72 @@ def test_ring_grid_tiles_the_plot_with_no_dead_slivers(size):
             ), f"({x:.2f}, {y:.2f}) belongs to no cell, corridor or centre"
     assert abs(plan.brahmasthana.w - width / 3) <= 0.1
     assert abs(plan.brahmasthana.h - height / 3) <= 0.1
+
+
+@pytest.mark.parametrize("facing", FACINGS)
+@pytest.mark.parametrize("size", [(13.8, 15), (15, 10), (12, 12), (18, 15)])
+def test_no_corridor_strip_is_walled_off_between_two_rooms(facing, size):
+    """The corridor "#" is cut wall-to-wall before anyone knows which runs
+    the plan will use. Every ring cell borders a *vertical* run down its
+    whole side, so that is where the doors go, and the horizontal runs were
+    left as 0.85 m strips lying between two rooms with a wall on each side
+    and no door onto either — floor nobody could reach, and a store and the
+    bedroom under it pushed apart for nothing.
+
+    `absorb_dead_corridors` hands each of those back to a neighbour. What
+    may still survive is a strip a *wet* room or the stair depends on for
+    its own door (neither can be grown into), so the check is that no
+    surviving strip has a merge-eligible room on both sides of it.
+    """
+    from engine.vedic.vastu.geometry import shared_seg
+    from engine.vedic.vastu.layout import is_merge_target
+
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=1,
+        extras=("living", "kitchen", "dining", "puja", "store", "study", "office", "laundry"),
+        mode="flexible", storeys=1,
+    )
+    width, height = size
+    concept = plan_house(req, SiteInput(width=width, height=height, facing=facing))
+    for floor in concept.floors:
+        rooms = floor.rooms
+        doored = {d.connects_to for r in rooms for d in r.doors} | {r.id for r in rooms if r.doors}
+        for strip in rooms:
+            if strip.kind != "brahmasthan" or strip.id.startswith("center_") or strip.id in doored:
+                continue
+            if min(strip.rect.w, strip.rect.h) < 0.3:
+                continue
+            growable = [
+                r for r in rooms
+                if is_merge_target(r) and shared_seg(strip.rect, r.rect)
+            ]
+            assert len(growable) < 2, (
+                f"{strip.id} {strip.rect} is a passage with no door, walled in by "
+                f"{[r.kind for r in growable]} — one of them should have absorbed it"
+            )
+
+
+def test_reclaimed_corridor_keeps_every_room_rectangular_and_inside_the_plot():
+    """A room only ever absorbs a strip it forms a rectangle with, so the
+    reclaim can neither turn a room into an L nor push it off the plot."""
+    req = HouseRequirement(
+        bedrooms=3, master_bedroom_index=1, toilets=2, bathrooms=1,
+        extras=("living", "kitchen", "dining", "puja", "store", "study", "office", "laundry"),
+        mode="flexible", storeys=2,
+    )
+    width, height = 13.8, 15.0
+    concept = plan_house(req, SiteInput(width=width, height=height, facing="west"))
+    for floor in concept.floors:
+        for room in floor.rooms:
+            r = room.rect
+            assert r.w > 0 and r.h > 0, (room.id, r)
+            assert r.x >= -0.05 and r.y >= -0.05, (room.id, r)
+            assert r.x + r.w <= width + 0.05 and r.y + r.h <= height + 0.05, (room.id, r)
+        rooms = floor.rooms
+        for i in range(len(rooms)):
+            for j in range(i + 1, len(rooms)):
+                a, b = rooms[i].rect, rooms[j].rect
+                ov = max(0.0, min(a.x + a.w, b.x + b.w) - max(a.x, b.x)) * max(
+                    0.0, min(a.y + a.h, b.y + b.h) - max(a.y, b.y)
+                )
+                assert ov < 0.01, f"{rooms[i].id} overlaps {rooms[j].id} by {ov:.3f} m2"
