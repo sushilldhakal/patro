@@ -497,7 +497,7 @@ def check_griha_aarambha(day: DayPanchanga) -> bool:
 #   6. Dagdha: reject a burnt weekday × tithi clash.
 # (The Moon-house side of Chandra Bala, Graha Vedha, and the Shunya-tithi veto are
 # time/chart-resolved and live in the muhūrta engine, not this sunrise gate.)
-def check_griha_pravesh(day: DayPanchanga, *, apurva: bool = True) -> bool:
+def check_griha_pravesh(day: DayPanchanga) -> bool:
     # Step 1 — month alignment (śuddha months only; the adhik flag comes from the
     # pakṣa-resolved layer, so Śuddha Jyeṣṭha is correctly allowed).
     if day.is_adhik_maas:
@@ -606,7 +606,7 @@ CATEGORY_CHECKS = {
     "vivah": check_vivah,
     "bratabandha": check_bratabandha,
     "griha-aarambha": check_griha_aarambha,
-    "griha-pravesh": lambda d: check_griha_pravesh(d, apurva=True),
+    "griha-pravesh": check_griha_pravesh,
     "byaparik-pratisthan": check_byaparik_pratisthan,
     "agni-jurne": check_agni_jurne,
     "rudri-jurne": check_rudri_jurne,

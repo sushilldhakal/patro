@@ -23,7 +23,6 @@ from engine.vedic.interpretation import (
     NAK_LORD,
     OWN_SIGNS,
     PLANET_KEYS,
-    PLANET_EN,
     PLANET_NE,
     SIGN_LORD,
     _angular_sep,

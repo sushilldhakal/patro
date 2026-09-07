@@ -296,7 +296,6 @@ def test_griha_pravesh_four_step_rule():
 def test_griha_pravesh_nakshatra_fallback_adds_dates():
     """A scarce griha-pravesh year triggers the widened nakshatra set, which
     yields at least as many days as the strict set."""
-    from dataclasses import replace
 
     from engine.vedic.muhurta_engine import CEREMONY_RULES, has_muhurta
     from engine.vedic.bikram_sambat import iter_bs_month_days

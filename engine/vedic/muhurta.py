@@ -219,7 +219,6 @@ def build_all_muhurtas(
     Returns a list of 15 dicts, each with name, times, and auspiciousness.
     Useful for rendering a full muhurta table in a Panchanga UI.
     """
-    tz      = resolve_observer_timezone(tz_name)
     total_s = (sunset_utc - sunrise_utc).total_seconds()
     muhurta_s = total_s / 15.0
     result: list[dict[str, Any]] = []

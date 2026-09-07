@@ -22,7 +22,7 @@ from .entrance import (
     main_door_point,
     next_legal_count,
 )
-from .geometry import Rect, Seg, edges, on_perimeter, segs_overlap, shared_seg
+from .geometry import Seg, edges, on_perimeter, segs_overlap, shared_seg
 from .types import BHole, BuildingLayer, BVertex, BWall, CardinalWall, PlannedRoom
 
 WALL_T = 0.18

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date
 from typing import Any
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
-from engine.astronomy.jd_calendar import civil_day_jd_from_date, civil_iso_from_date
+from engine.astronomy.jd_calendar import civil_day_jd_from_date
 from engine.astronomy.lagna import lagna_service
 from engine.astronomy.moon import (
     calculate_moonrise_after,
@@ -16,7 +16,7 @@ from engine.astronomy.moon import (
 from engine.astronomy.panchanga import panchanga_service
 from engine.astronomy.planets import spashta_table
 from engine.astronomy.rashi import rashi_service
-from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
+from engine.astronomy.sun import sun_service
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.bikram_sambat import BS_MONTH_NAMES_NEPALI, bs_month_name, gregorian_to_bs
@@ -146,7 +146,6 @@ def _display_headers_civil(
     ns_date: dict,
 ) -> dict:
     bs_month_ne = BS_MONTH_NAMES_NEPALI[bs_month - 1]
-    era_label = "BBS" if bs_year < 0 else "वि.सं."
     year_digits = to_nepali_digits(abs(bs_year) if bs_year < 0 else bs_year)
     prefix = f"BBS {abs(bs_year)}" if bs_year < 0 else f"वि.सं. {to_nepali_digits(bs_year)}"
     if bs_year < 0:

@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-from engine.astronomy.timescale import resolve_observer_timezone
 from engine.vedic.choghadiya import day_ghati_from_sun_times
 
 # Chaldean order starting from the weekday lord at sunrise.

@@ -909,7 +909,6 @@ def _window_ok(
         return (False, 0, 0, 0)
 
     tithi_block = panchanga_service.tithi(as_julian_day(dt))
-    tnum = tithi_block["number"]
     tithi = tithi_block["display_number"]
     if tithi in _RIKTA:
         return (False, 0, 0, 0)

@@ -12,7 +12,6 @@ from engine.vedic.vimshottari import (
     NAKSHATRA_LORDS_NE,
     NAKSHATRA_SPAN_DEG,
     NE_TO_LORD,
-    YEAR_DAYS,
     _add_years,
     _format_years_label,
 )

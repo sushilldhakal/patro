@@ -13,12 +13,12 @@ Degree thresholds by element (start of Pushkara navamsha within the sign):
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any
 
 from engine.astronomy.engine import SIDM_LAHIRI
 from engine.astronomy.lagna import lagna_service
-from engine.astronomy.ut_instant import as_julian_day
+from engine.astronomy.ut_instant import UtInstant, as_julian_day
 from engine.astronomy.timescale import resolve_observer_timezone
 
 _NAVAMSHA_DEG = 30.0 / 9.0  # 3°20′
@@ -93,7 +93,7 @@ def find_lagna_degree_crossing(
 
 
 def _format_local_time(dt: datetime | UtInstant, tz_name: str) -> dict[str, str]:
-    from engine.astronomy.ut_instant import UtInstant, format_ut_instant_local
+    from engine.astronomy.ut_instant import format_ut_instant_local
 
     if isinstance(dt, UtInstant):
         block = format_ut_instant_local(dt, tz_name)

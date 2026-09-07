@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date
 
 from engine.astronomy.location import DEFAULT_LOCATION
 from engine.vedic.bikram_sambat import bs_to_gregorian

@@ -12,8 +12,6 @@ from functools import lru_cache
 from pathlib import Path
 
 from engine.astronomy.engine import EphemerisError
-from engine.vedic.bikram_sambat import get_bs_month_start
-from engine.vedic.sankranti import find_mesh_sankranti
 
 SAMVATSARA_ENTRIES: tuple[dict[str, str | int], ...] = (
     {"key": "prabhava", "name_en": "Prabhava", "name_ne": "प्रभव", "cycle": 1, "deity": "brahma"},

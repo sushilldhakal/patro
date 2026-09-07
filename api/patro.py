@@ -7,7 +7,6 @@ from fastapi.responses import Response
 from api.deps import (
     EraQuery,
     LocationDep,
-    _signed_bs_year_from_browse,
     _validate_bs_month,
     _validate_bs_year,
     stamp_year_era,
@@ -90,7 +89,7 @@ def nepal_patro_ad(ad_year: int, ad_month: int, location: LocationDep):
     if not 1 <= ad_month <= 12:
         raise HTTPException(status_code=400, detail="ad_month must be 1..12")
     import calendar as _cal
-    from engine.vedic.bikram_sambat import gregorian_to_bs, iter_bs_month_days
+    from engine.vedic.bikram_sambat import gregorian_to_bs
     from engine.vedic.daily import get_daily_panchanga
     from services.patro_generator import _collect_bs_year_festivals, _festivals_for_day
 

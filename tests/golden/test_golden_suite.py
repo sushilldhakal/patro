@@ -15,7 +15,6 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from engine.astronomy.jd_calendar import CivilDay
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.provenance import current_provenance
 from tests.golden import schema

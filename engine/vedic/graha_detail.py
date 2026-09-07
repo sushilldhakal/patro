@@ -28,8 +28,7 @@ from engine.astronomy.motion import is_retrograde
 from engine.astronomy.engine import default_engine
 from engine.astronomy.panchanga import NAKSHATRA_NAMES
 from engine.astronomy.planets import spashta_table
-from engine.astronomy.rashi import RASHI_NAMES, RASHI_NAMES_NE
-from engine.astronomy.sun import calculate_sunrise
+from engine.astronomy.rashi import RASHI_NAMES_NE
 from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.gochar import GRAHA_META, GRAHA_ORDER, NAKSHATRA_SPAN, PADA_SPAN

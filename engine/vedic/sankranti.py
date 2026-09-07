@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from engine.astronomy.engine import EphemerisError, default_engine
+from engine.astronomy.engine import default_engine
 from engine.astronomy.jd_calendar import CivilDay, civil_day_add
 from engine.astronomy.rashi import RASHI_NAMES
 from engine.astronomy.sun import sun_service

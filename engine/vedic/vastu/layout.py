@@ -19,13 +19,10 @@ from .rooms import HouseRequirement, PlannedSpace
 from .ring import EntranceHall, RingPlan, entrance_halls, ring_layout, ring_plan
 from .solver import (
     SolveResult,
-    brahmasthana_rect,
-    corridor_bands,
     dir8_zone_of_point,
     disjoint_reserved,
-    solve_layout,
 )
-from .types import BuildingLayer, CardinalWall, FloorConcept, HouseConcept, PlanConflict, PlannedDoor, PlannedRoom, StairShaft
+from .types import CardinalWall, FloorConcept, HouseConcept, PlanConflict, PlannedDoor, PlannedRoom, StairShaft
 
 STAIR_W = 1.25
 STAIR_L = 2.5
