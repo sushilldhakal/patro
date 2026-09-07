@@ -49,7 +49,6 @@ def validated_year_span_jd(request, era: str, year: int) -> tuple[float, float]:
     the one question every era can be asked, and it is the question that
     actually matters — whether the installed ``.se1`` files cover the span.
     """
-    from app.era_middleware import era_context
     from engine.calendar.era import year_span_jd
     from engine.vedic.patro_year_axis import (
         EPHEMERIS_JD_MAX,

@@ -10,7 +10,6 @@ Registered before the generic ``/panchanga/{date_key}`` route so the static
 
 from __future__ import annotations
 
-from datetime import date, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from engine.astronomy.panchanga import NAKSHATRA_NAMES
-from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import (
     LocalCivilFields,
     day_instant_utc,
@@ -144,7 +143,6 @@ def list_panchak_periods(
     Bounds accept ``date`` or ``CivilDay``; the scan below runs on instants, and
     ``UtInstant`` carries BCE ones through the same arithmetic and comparisons.
     """
-    tz = resolve_observer_timezone(timezone_name)
     pad = timedelta(days=_SEARCH_PAD_DAYS)
     search_start = day_instant_utc(year_start) - pad
     search_end = day_instant_utc(year_end, hour=23, minute=59, second=59) + pad

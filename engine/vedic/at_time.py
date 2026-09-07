@@ -4,18 +4,15 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
 from typing import Any
-from zoneinfo import ZoneInfo
 
 from engine.astronomy.engine import SIDM_LAHIRI as AYANAMSA_LAHIRI
 from engine.astronomy.lagna import lagna_service
 from engine.astronomy.location import ObserverLocation
 from engine.astronomy.panchanga import panchanga_service
 from engine.astronomy.planets import spashta_table
-from engine.astronomy.sun import calculate_sunrise, calculate_sunset
 from engine.astronomy.timescale import resolve_observer_timezone
-from engine.astronomy.ut_instant import as_julian_day
-from engine.vedic.bikram_sambat import format_bs_date, gregorian_to_bs
-from engine.vedic.daily import _time_block
+from engine.astronomy.ut_instant import UtInstant, as_julian_day
+from engine.vedic.bikram_sambat import gregorian_to_bs
 from engine.vedic.element_boundaries import (
     build_karana_block,
     build_nakshatra_block,
@@ -29,7 +26,6 @@ from engine.vedic.muhurta import (
     compute_rahu_kalam,
     compute_yamaganda,
 )
-from engine.vedic.names_ne import VAARA_NAMES_NE
 from engine.vedic.tithi import calculate_tithi
 
 
@@ -161,7 +157,7 @@ def _parse_window_bounds(
     block: dict[str, Any],
     timezone_name: str,
 ) -> tuple[datetime | UtInstant, datetime | UtInstant]:
-    from engine.astronomy.ut_instant import UtInstant, parse_local_wall_iso
+    from engine.astronomy.ut_instant import parse_local_wall_iso
 
     start = parse_local_wall_iso(block["start_local"], timezone_name)
     end = parse_local_wall_iso(block["end_local"], timezone_name)
@@ -291,9 +287,7 @@ def build_panchanga_at_time(
     tz = location.timezone
 
     vara = panchanga_service.vara(as_julian_day(sunrise_utc), tz)
-    vaara_num, vaara_sanskrit, vaara_english = (
-        vara["number"], vara["name"], vara["english"]
-    )
+    vaara_num = vara["number"]
     angas = build_instant_anga_snapshot(
         instant_utc, sunrise_utc, ayanamsa=mode, timezone_name=location.timezone
     )

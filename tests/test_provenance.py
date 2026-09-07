@@ -565,8 +565,6 @@ class TestAyanamshaIsUnified:
     def test_published_ayanamsa_matches_the_planets(self):
         """The defect this fixed: the published field must be the ayanamsha the
         neighbouring longitudes were actually computed with."""
-        import swisseph as swe
-
         from engine.astronomy.engine import default_engine
 
         for jd in (2461144.5, 2451545.0, 1721423.5):

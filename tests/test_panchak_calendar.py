@@ -13,7 +13,7 @@ def test_panchak_bs_2083_count():
 
 
 def test_panchak_bs_2083_first_period_dates():
-    from engine.astronomy.jd_calendar import CivilDay, civil_day_jd_from_date
+    from engine.astronomy.jd_calendar import civil_day_jd_from_date
 
     payload = build_panchak_bs_year(2083, DEFAULT_LOCATION)
     first = payload["periods"][0]

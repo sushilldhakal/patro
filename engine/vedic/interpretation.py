@@ -4025,7 +4025,7 @@ def build_chart(planets_raw: dict[str, Any], lagna_raw: dict[str, Any],
 
 # ── Confidence helpers tied to chart facts ────────────────────────────────────
 
-def _planet_confidence(chart: Chart, key: str, *, theme_house: Optional[int] = None) -> Confidence:
+def _planet_confidence(chart: Chart, key: str) -> Confidence:
     """Standard confidence build for a planet-centred insight."""
     conf = Confidence()
     pf = chart.planet(key)
@@ -4817,7 +4817,6 @@ def build_sections(chart: Chart, *, now: datetime, lang: str = "en") -> list[dic
                 f"भित्री रूपमा, तपाईंको आत्म-छवि र इच्छाशक्ति {_plain_theme('sun', True)} वरिपरि "
                 f"बनेको हुन्छ (सूर्य {RASHI_NE[sun.sign]} राशिमा)।")
         if "mercury" in P:
-            me = P["mercury"]
             pers_body.append(
                 f"तपाईं कसरी सोच्नुहुन्छ र कुरा गर्नुहुन्छ भन्ने बुधले देखाउँछ — तपाईंको मन "
                 f"{_plain_theme('mercury', True)} तर्फ ढल्किन्छ।")

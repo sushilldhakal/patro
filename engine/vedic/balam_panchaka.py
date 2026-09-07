@@ -155,8 +155,6 @@ def build_panchaka_rahita(
         from engine.astronomy.ut_instant import parse_ephemeris_instant
 
         start_dt = parse_ephemeris_instant(span["start_time"])
-        from engine.astronomy.ut_instant import parse_ephemeris_instant
-
         end_dt = parse_ephemeris_instant(span["end_time"])
         lagna_num = int(span["number"])
         remainder = _panchaka_remainder(start_dt, lagna_num, vaara_num)

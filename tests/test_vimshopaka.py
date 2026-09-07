@@ -7,7 +7,6 @@ from engine.vedic.vimshopaka import (
     _varga_vishwa,
     compute_vimshopaka,
 )
-from engine.vedic.vargas import varga_rashi_from_longitude
 
 
 def _d1_signs(lons):

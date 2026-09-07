@@ -6,7 +6,6 @@ All other formats (Toyanath patro, raw engine, regional variants) derive from th
 
 from __future__ import annotations
 
-from datetime import date
 from typing import Any
 
 from services.presentation.helpers import (
@@ -15,7 +14,6 @@ from services.presentation.helpers import (
     end_time_hhmm,
     festival_list,
     muhurta_window,
-    primary_festival,
     tithi_display_name,
 )
 

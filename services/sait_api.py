@@ -264,7 +264,6 @@ def get_sait_detail(
             end_local = win.end.astimezone(tz)
             start_jd = as_julian_day(win.start)
             tithi_block = panchanga_service.tithi(start_jd)
-            tnum = tithi_block["number"]
             tdisp = tithi_block["display_number"]
             paksha = tithi_block["paksha"]
             nak = panchanga_service.nakshatra(start_jd)["number"]

@@ -126,7 +126,7 @@ import json
 import sys
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 # ─── Dependency guard ─────────────────────────────────────────────────────────
 try:
@@ -146,11 +146,9 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 try:
-    from engine.astronomy.location import ObserverLocation
     from engine.astronomy.panchanga import (
         NAKSHATRA_NAMES,
         VAARA_ENGLISH,
-        VAARA_NAMES,
         YOGA_NAMES,
     )
     from engine.astronomy.rashi import RASHI_NAMES
@@ -1049,9 +1047,9 @@ def _run_sample() -> None:
     """
     print("═" * 68, file=sys.stderr)
     print("  Toyanath Panchanga Engine — Sample Execution", file=sys.stderr)
-    print(f"  Date  : Baisakh 1, BS 2083 (AD 2026-04-14)", file=sys.stderr)
-    print(f"  Place : Kathmandu, Nepal (27.7172°N, 85.3240°E, 1400 m)", file=sys.stderr)
-    print(f"  Ayanamsa: Lahiri (Chitra Paksha)", file=sys.stderr)
+    print("  Date  : Baisakh 1, BS 2083 (AD 2026-04-14)", file=sys.stderr)
+    print("  Place : Kathmandu, Nepal (27.7172°N, 85.3240°E, 1400 m)", file=sys.stderr)
+    print("  Ayanamsa: Lahiri (Chitra Paksha)", file=sys.stderr)
     print("═" * 68, file=sys.stderr)
 
     loc = build_location(None, None)             # Kathmandu defaults

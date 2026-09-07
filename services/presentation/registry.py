@@ -8,7 +8,6 @@ from services.presentation.canonical import to_canonical
 from services.presentation.panchanga_renderer import render_dayblock_payload, render_month_stream
 from services.presentation.patro import to_patro_month
 from services.presentation.rules import Variant, apply_variant
-from services.presentation.surya import to_surya, to_surya_month
 from services.presentation.toyanath import to_toyanath, to_toyanath_month
 
 FormatStyle = Literal["canonical", "surya", "toyanath", "patro", "dayblock", "raw"]

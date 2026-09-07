@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from bisect import bisect_right
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Optional
@@ -15,14 +15,11 @@ from engine.astronomy.sun import _calculate_sunrise_civil, calculate_sunrise
 from engine.astronomy.timescale import to_nepal_time
 from engine.vedic.constants import (
     BS_CALENDAR_DATA,
-    BS_CALENDAR_MIN_YEAR,
-    BS_ESTIMATED_MIN_YEAR,
     BS_MAX_YEAR,
     BS_MIN_YEAR,
     BS_MONTH_NAMES,
     BS_MONTH_NAMES_NEPALI,
     BS_PANCHANGA_MIN_YEAR,
-    BS_SUPPORTED_MAX_YEAR,
     get_bs_year_data,
 )
 from engine.vedic.sankranti import find_mesh_sankranti

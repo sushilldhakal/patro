@@ -9,7 +9,7 @@ this payload; it does no astrological arithmetic of its own.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from engine.astronomy.sidereal import resolve_ayanamsha_mode

@@ -8,7 +8,6 @@ from typing import Any, Literal
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.jd_calendar import (
     CivilDay,
-    civil_day_jd_from_date,
     date_if_supported,
     format_civil_iso,
     parse_civil_iso,
@@ -25,7 +24,6 @@ from engine.vedic.bikram_sambat import (
     gregorian_to_bs,
     iter_bs_month_days,
     iter_bs_month_civil_days,
-    parse_bs_date,
     shaka_year,
 )
 from engine.vedic.samvatsara import samvatsara_payload_for_bs_year
@@ -503,7 +501,7 @@ def build_month_civil_skeleton(
     location: ObserverLocation = DEFAULT_LOCATION,
 ) -> dict[str, Any]:
     """Month grid with ``date_ad`` + weekday only (BBS / pre-panchanga BS years)."""
-    from engine.astronomy.jd_calendar import CivilDay, parse_civil_iso
+    from engine.astronomy.jd_calendar import parse_civil_iso
     from engine.vedic.patro_year_axis import is_bbs_signed, patro_year_supports_sankranti_grid
 
     if not patro_year_supports_sankranti_grid(bs_year):

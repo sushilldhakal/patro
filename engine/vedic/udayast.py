@@ -12,7 +12,7 @@ Nepali patro labels:
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from engine.astronomy.motion import is_retrograde
@@ -21,7 +21,6 @@ from engine.astronomy.timescale import resolve_observer_timezone
 from engine.astronomy.ut_instant import as_julian_day
 from engine.vedic.gochar import (
     GRAHA_META,
-    GRAHA_ORDER,
     _attach_local_time,
     _entry_sort_key,
     _longitude_for,

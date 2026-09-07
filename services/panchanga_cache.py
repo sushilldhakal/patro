@@ -5,7 +5,6 @@ from __future__ import annotations
 import gzip
 import json
 import logging
-import os
 import sqlite3
 from datetime import date, datetime, timezone
 from typing import Any
@@ -13,7 +12,6 @@ from typing import Any
 from engine.astronomy.location import DEFAULT_ALTITUDE, DEFAULT_LOCATION, ObserverLocation
 from engine.astronomy.paths import KATHMANDU_CITY_ID, panchanga_db_path
 from engine.astronomy.provenance import current_provenance
-from engine.astronomy.timescale import resolve_observer_timezone
 from services.payload_version import compose
 
 logger = logging.getLogger(__name__)

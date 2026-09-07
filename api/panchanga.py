@@ -336,7 +336,7 @@ def panchanga_ad_month(
     ),
 ):
     """Gregorian (AD) month calendar — Jan–Dec boundaries for English UI."""
-    from services.panchanga_api import build_ad_month_calendar, build_month_calendar_at_clock
+    from services.panchanga_api import build_ad_month_calendar
     from services.response_cache import bs_year_cache_control, location_cache_key, serve_cached_json
 
     if not AD_YEAR_MIN <= ad_year <= AD_YEAR_MAX:
@@ -796,7 +796,6 @@ def nepal_holidays(
 
     signed = _signed_bs_year_from_browse(era, year)
     try:
-        from services.holiday_generator import filter_holidays_by_bs_month
         payload = get_bs_holidays(signed, location)
     except HolidayCacheMissError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -1268,7 +1267,7 @@ def nepal_panchanga_year(bs_year: int, location: LocationDep):
     _validate_bs_year(bs_year)
     from engine.vedic.bikram_sambat import (
         format_bs_date, get_bs_month_length, get_bs_month_start,
-        gregorian_to_bs, iter_bs_month_days, bs_to_gregorian,
+        iter_bs_month_days, bs_to_gregorian,
     )
     from engine.vedic.daily import get_daily_panchanga
 

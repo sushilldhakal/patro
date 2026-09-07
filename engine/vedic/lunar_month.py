@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from typing import Literal, Optional
 
 from engine.astronomy.location import DEFAULT_LOCATION, ObserverLocation

@@ -9,7 +9,7 @@ longer exactly 4 min per degree of longitude.
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date
 from zoneinfo import ZoneInfo
 
 from engine.astronomy.location import ObserverLocation

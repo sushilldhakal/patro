@@ -21,7 +21,7 @@ Rahu = Mean Ascending Node; Ketu = Rahu + 180° (both always Vakri by convention
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from engine.astronomy.motion import is_retrograde, motion_label
@@ -194,7 +194,6 @@ def _attach_local_time(
     entry.pop("entry_date_ad", None)
     if sunrise_local is not None and not isinstance(parsed, UtInstant):
         from engine.astronomy.jd_calendar import civil_day_add
-        from engine.astronomy.ut_instant import as_julian_day
 
         entry_local = parsed.astimezone(tz)
         entry_mins = entry_local.hour * 60 + entry_local.minute
@@ -698,7 +697,7 @@ def _attach_ingress_local_time(entry: dict[str, Any], location: Any, tz) -> dict
     """
     entry = _attach_local_time(entry, tz)
 
-    from engine.astronomy.jd_calendar import CivilDay, civil_day_add
+    from engine.astronomy.jd_calendar import civil_day_add
     from engine.astronomy.sun import sun_service
     from engine.astronomy.ut_instant import as_julian_day, parse_ephemeris_instant
 

@@ -21,7 +21,12 @@ OUT_PATH = API_ROOT.parent / "dhakal-patro" / "src" / "lib" / "bs-calendar-data.
 sys.path.insert(0, str(API_ROOT))
 
 from engine.vedic.bikram_sambat import get_bs_month_length, get_bs_month_start  # noqa: E402
-from engine.vedic.constants import BS_CALENDAR_MIN_YEAR, BS_PANCHANGA_MIN_YEAR, BS_SUPPORTED_MAX_YEAR  # noqa: E402
+from engine.vedic.constants import (  # noqa: E402
+    BS_CALENDAR_MIN_YEAR,
+    BS_ESTIMATED_MIN_YEAR,
+    BS_PANCHANGA_MIN_YEAR,
+    BS_SUPPORTED_MAX_YEAR,
+)
 
 
 def main() -> None:

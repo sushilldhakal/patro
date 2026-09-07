@@ -82,7 +82,6 @@ class TestDuplicateAstronomyIsContained:
         from datetime import datetime, timezone
 
         from engine.astronomy.engine import default_engine
-        from engine.astronomy.jd_calendar import CivilDay
         from engine.vedic.tropical_seasons import solar_apparent_longitude
 
         from engine.vedic.tropical_seasons import _julian_day
