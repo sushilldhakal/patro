@@ -53,6 +53,10 @@ def vastu_room_sizes_source_path() -> Path:
     return DATA_DIR / "vastu_room_sizes.json"
 
 
+def bhava_reference_source_path() -> Path:
+    return DATA_DIR / "bhava_reference.json"
+
+
 def ephemeris_path() -> Path:
     """Directory holding the Swiss Ephemeris ``.se1`` binary files.
 

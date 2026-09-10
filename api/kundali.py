@@ -360,6 +360,27 @@ def kundali_yoga_reference(
     )
 
 
+@router.get("/kundali/reference/bhava")
+def kundali_bhava_reference():
+    """Static, chart-independent bhava/graha reference content — graha-drishti
+    summaries, per-house theme text, bhavesh-phala, karakatva + saravali, and
+    Lal Kitab signals. Also folded into `/kundali/detail` (as `bhavaReference`)
+    for callers that already fetch the full chart; this route exists for
+    callers that only need this content on its own (e.g. a transit chart
+    that never calls `/kundali/detail`).
+    """
+    from engine.vedic.bhava_reference import bhava_reference_payload
+    from services.response_cache import DEFAULT_CACHE_CONTROL
+
+    return JSONResponse(
+        content=bhava_reference_payload(),
+        headers={
+            "Cache-Control": DEFAULT_CACHE_CONTROL,
+            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+        },
+    )
+
+
 @router.get("/kundali/detail")
 def kundali_detail(
     location: LocationDep,

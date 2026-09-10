@@ -10,6 +10,7 @@ from engine.astronomy.location import ObserverLocation
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
 from engine.vedic.ashtakavarga import compute_ashtakavarga
 from engine.vedic.bhava_bala import compute_bhava_bala
+from engine.vedic.bhava_reference import bhava_reference_payload
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.ghati_time import seconds_to_ghadi_pala
@@ -2341,4 +2342,5 @@ def build_kundali_detail(
         "ayanamsha": ayanamsha_label,
         "location": location.as_dict(),
         "birth_instant": instant_local.isoformat(),
+        "bhavaReference": bhava_reference_payload(),
     }
