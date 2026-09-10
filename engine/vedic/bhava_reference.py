@@ -42,14 +42,35 @@ chart-independent Lal Kitab guidance (not keyed by house), so they aren't
 surfaced in the per-house detail dialog — kept here for a future general
 Lal Kitab reference surface.
 
+`houseClassicalName`, `phaladeepikaKarakatva`, `phaladeepikaHouseResults`,
+`grahaDusthaSusthaRule` and `phaladeepikaSource` were added by
+``scripts/ingest_phaladeepika.py``, parsed from a real, cited Phaladeepika
+source doc (sibling ``phaladeepika-navagraha-bhava-phala.md`` — ch. 2
+karakatva verses with citations, author-attributed to Mantreshwara).
+`phaladeepikaKarakatva` is a *second*, differently-sourced karakatva table
+alongside the existing Uttara-Kalamrita-based `grahaKarakatva` — shown
+together in the per-house dialog rather than one replacing the other.
+`phaladeepikaHouseResults` only covers grahas sun through saturn (7): the
+source itself states rahu/ketu's house result depends on rashi and drishti
+and gives none, and for the same reason (Phaladeepika ch. 8's actual
+verses weren't available to the source) these are traditional summaries,
+not per-house shlokas — kept separate from `grahaHouseSaravali`, which does
+have (differently-sourced) per-house shlokas. `grahaDusthaSusthaRule` is
+chart-wide (combust/debilitated/enemy-sign/6-8-12-house => a graha can't
+give its full result), not house-keyed.
+
 Translation note: `naadiSutras`, `grahaYuti2`, `grahaYuti3`, the newly
 added (non-12th-house) `grahaHouseSaravali` entries, the BPHS-sourced
-`bhaveshPhala` entries, and every `lalKitab*` field added by
-`ingest_lal_kitab.py` currently have their `*En` field set equal to the
-Nepali text — English translation for this content is a known follow-up,
-not yet done. `houseInfo` and the handful of `bhaveshPhala`/
-`grahaHouseSaravali` entries retained from the original hand-authored round
-already carry real English.
+`bhaveshPhala` entries, every `lalKitab*` field added by
+`ingest_lal_kitab.py`, and every `phaladeepika*`/`grahaDusthaSusthaRule`
+field added by `ingest_phaladeepika.py` currently have their `*En` field
+set equal to the Nepali text — English translation for this content is a
+known follow-up, not yet done (the one exception is `phaladeepikaKarakatva`'s
+`shlokaSourceEn` and `houseClassicalName`'s `en`, which carry real English:
+a transliterated chapter.verse citation for the former, real English house
+names straight from the source for the latter). `houseInfo` and the
+handful of `bhaveshPhala`/`grahaHouseSaravali` entries retained from the
+original hand-authored round already carry real English.
 """
 
 from __future__ import annotations
