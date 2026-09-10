@@ -265,10 +265,13 @@ def main() -> None:
 
     data["bhaveshPhalaSupplementary"] = payload
     data["bhaveshPhalaSupplementarySource"] = (
-        "Brihat Parashar Hora Shastra / Phaladeepika — supplementary house-lord "
-        "placement set, collected across multiple extraction rounds. English "
-        "primary; Nepali translation not yet done (ne mirrors en)."
+        "बृहत्पाराशरहोराशास्त्रम् / फलदीपिका — थप भावेश-स्थान सूत्र सङ्ग्रह, "
+        "विभिन्न प्रयासहरूमा सङ्कलित।"
     )
+    # NOTE: this script's own `ne`/`translationNe` output is English-mirrored
+    # (this script's source was 100% English) — run
+    # scripts/translate_bhavesh_supplementary_ne.py immediately after this
+    # one to fill in the real, hand-translated Nepali before shipping.
 
     with TARGET_JSON.open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)

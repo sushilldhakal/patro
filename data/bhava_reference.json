@@ -4543,7 +4543,7 @@
       ]
     }
   ],
-  "naadiSutraSource": "Brighu Naadi Sangraha (Dr. N. Srinivasan Sastry)",
+  "naadiSutraSource": "भृगु नाडी सङ्ग्रह (डा. एन. श्रीनिवासन शास्त्री)",
   "bhaveshPhalaSource": "बृहत्पाराशरहोराशास्त्रम्, अध्याय १३ (भावेशफलाध्यायः) — पूर्वखण्ड, सुबोधिनी टीका",
   "lalKitabSafetyTips": {
     "sun": {
@@ -6754,7 +6754,7 @@
       }
     }
   },
-  "bhaveshPhalaSupplementarySource": "Brihat Parashar Hora Shastra / Phaladeepika — supplementary house-lord placement set, collected across multiple extraction rounds. English primary; Nepali translation not yet done (ne mirrors en).",
+  "bhaveshPhalaSupplementarySource": "बृहत्पाराशरहोराशास्त्रम् / फलदीपिका — थप भावेश-स्थान सूत्र सङ्ग्रह, विभिन्न प्रयासहरूमा सङ्कलित।",
   "rashiClassification": {
     "1": {
       "rashiNe": "मेष",
@@ -7249,5 +7249,5 @@
       "en": "उपाय गर्दा 'श्रद्धा' र 'सात्त्विक आहार' को पालना अनिवार्य छ।"
     }
   ],
-  "lalKitabRevisionSource": "Source 9 — Jyotish Lal Kitab (B.M. Gosvami); Lal Kitab-specific Sustha/Dustha logic and a revised remedy-deity table, resolving disagreement between two earlier Lal Kitab submissions."
+  "lalKitabRevisionSource": "ज्योतिष लाल किताब (बि.एम. गोस्वामी) — लाल किताबको विशिष्ट सुस्थ/दुःस्थ सिद्धान्त र परिमार्जित उपचार-देवता तालिका।"
 }

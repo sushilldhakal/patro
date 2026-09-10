@@ -87,9 +87,8 @@ RAHU_METAL_NOTE_NE = "नीलम/सीसा"
 KETU_ITEM_NOTE_NE = "मिश्रित कालो-सेतो कम्बल दान"
 
 REVISION_SOURCE = (
-    "Source 9 — Jyotish Lal Kitab (B.M. Gosvami); Lal Kitab-specific "
-    "Sustha/Dustha logic and a revised remedy-deity table, resolving "
-    "disagreement between two earlier Lal Kitab submissions."
+    "ज्योतिष लाल किताब (बि.एम. गोस्वामी) — लाल किताबको विशिष्ट सुस्थ/दुःस्थ "
+    "सिद्धान्त र परिमार्जित उपचार-देवता तालिका।"
 )
 
 
