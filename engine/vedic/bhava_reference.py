@@ -42,6 +42,42 @@ chart-independent Lal Kitab guidance (not keyed by house), so they aren't
 surfaced in the per-house detail dialog — kept here for a future general
 Lal Kitab reference surface.
 
+`rashiClassification`, `grahaExaltationDebilitation`,
+`grahaNaturalFriendship`, `houseBodyPart`, `grahaAnimalBird`,
+`grahaGrainMetalTaste`, `grahaRemedy`, `grahaManifestationAge`,
+`lalKitabNapunsakNote` and `lalKitabTablesSource` were added by
+``scripts/ingest_lal_kitab_tables.py``, hand-transcribed (not regex-parsed
+— the source is compact tables, not prose) from a second Lal Kitab
+submission's foundational-grammar section (sibling
+``lal-kitab-foundational-tables.md``). Three sections of that submission
+were skipped as literally redundant with content already ingested (same
+system, near-identical text) — see that markdown file's header. One of the
+three, the sustha/dustha rule, was WRONGLY skipped on the reasoning that
+Phaladeepika's `grahaDusthaSusthaRule` already covered "the same idea" —
+that was a mistake (comparing across two different systems, not within
+Lal Kitab), corrected by `ingest_lal_kitab_revision.py` below. Like the
+general Lal Kitab guidance above, `rashiClassification` through
+`grahaManifestationAge` are chart-independent classifications rather than
+predictions, so only `grahaManifestationAge` and `houseBodyPart` are
+currently surfaced (small, directly relevant additions to the per-house
+dialog); the rest await a future general reference surface.
+
+`lalKitabSusthaDustha`, `lalKitabMahaSutraSummary` and
+`lalKitabRevisionSource` were added, and `grahaRemedy` +
+`grahaGrainMetalTaste`'s moon/rahu/ketu rows revised, by
+``scripts/ingest_lal_kitab_revision.py`` — a follow-up citing "Source 9,
+Jyotish Lal Kitab by B.M. Gosvami". `lalKitabSusthaDustha` is Lal Kitab's
+OWN sustha/dustha mechanism (Pakka Ghar + exaltation/debilitation based)
+and must stay conceptually separate from `grahaDusthaSusthaRule`
+(Phaladeepika's classical 6-8-12 Dusthana logic) — never merge or treat
+either as making the other redundant; they're different systems with
+different rules that happen to share an English gloss ("well/ill-placed").
+The `grahaRemedy` revision resolves a disagreement between two Lal-Kitab-
+labeled submissions (not a Lal-Kitab-vs-Phaladeepika question) on a few
+grahas' deities and Moon's metal — the newer, more specifically-cited pass
+was taken as authoritative per explicit user direction; see git history on
+`ingest_lal_kitab_tables.py` for the values it replaced.
+
 `houseClassicalName`, `phaladeepikaKarakatva`, `phaladeepikaHouseResults`,
 `grahaDusthaSusthaRule` and `phaladeepikaSource` were added by
 ``scripts/ingest_phaladeepika.py``, parsed from a real, cited Phaladeepika
