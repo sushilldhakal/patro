@@ -123,11 +123,15 @@ names straight from the source for the latter). `houseInfo` and the
 handful of `bhaveshPhala`/`grahaHouseSaravali` entries retained from the
 original hand-authored round already carry real English.
 
-`bhaveshPhalaSupplementary` runs this the other way: its source is 100%
-English (translation + analysis, no Nepali at all in any of the five
-rounds), so its `ne`/`translationNe` fields are the ones mirroring the
-English as translation debt, not the reverse — the only field in this
-whole module where that's the case.
+`bhaveshPhalaSupplementary`'s source was 100% English (translation +
+analysis, no Nepali at all in any of the five rounds), so it briefly ran
+the translation-debt direction the other way (`ne`/`translationNe`
+mirroring `en`/`translationEn`) until ``scripts/translate_bhavesh_
+supplementary_ne.py`` hand-translated all 144 entries' `ne` and (where a
+shloka exists) `translationNe` into real Nepali — this field no longer has
+any translation debt. `translationNe`/`translationEn` stay empty strings
+(not translated) for the 38 of 144 pairs that never had a shloka to
+translate in the first place (Round 1's prose-only fallback).
 """
 
 from __future__ import annotations
