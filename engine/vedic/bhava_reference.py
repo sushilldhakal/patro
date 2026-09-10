@@ -59,6 +59,21 @@ have (differently-sourced) per-house shlokas. `grahaDusthaSusthaRule` is
 chart-wide (combust/debilitated/enemy-sign/6-8-12-house => a graha can't
 give its full result), not house-keyed.
 
+`bhaveshPhalaSupplementary` and `bhaveshPhalaSupplementarySource` were
+added by ``scripts/ingest_bhavesha_phala.py``, parsed from
+``bhavesha-phala-collected.md`` (sibling) — five rounds of NotebookLM
+extraction collected across a conversation, covering all 144 house-lord
+placements (106 with a full shloka+IAST+translation+analysis, 38 with only
+a short prose summary — see that markdown file's own "Status" section).
+Deliberately kept separate from, not merged into, the existing
+`bhaveshPhala` (an actual BPHS ch. 13 transcription, already 139/144 with
+verified shlokas): this supplementary set's citations are less rigorous
+("Source Image N" / "Source 16" references, inconsistent across rounds,
+occasional verse reuse across houses) and it's sourced from a different
+mix (BPHS + Phaladeepika, not cleanly attributed per entry). Shown as a
+second citation in the per-house dialog, same pattern as
+`phaladeepikaKarakatva` alongside `grahaKarakatva`.
+
 Translation note: `naadiSutras`, `grahaYuti2`, `grahaYuti3`, the newly
 added (non-12th-house) `grahaHouseSaravali` entries, the BPHS-sourced
 `bhaveshPhala` entries, every `lalKitab*` field added by
@@ -71,6 +86,12 @@ a transliterated chapter.verse citation for the former, real English house
 names straight from the source for the latter). `houseInfo` and the
 handful of `bhaveshPhala`/`grahaHouseSaravali` entries retained from the
 original hand-authored round already carry real English.
+
+`bhaveshPhalaSupplementary` runs this the other way: its source is 100%
+English (translation + analysis, no Nepali at all in any of the five
+rounds), so its `ne`/`translationNe` fields are the ones mirroring the
+English as translation debt, not the reverse — the only field in this
+whole module where that's the case.
 """
 
 from __future__ import annotations
