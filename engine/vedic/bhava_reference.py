@@ -33,13 +33,23 @@ yuti) — never searched or filtered — so it's loaded straight into memory as
 plain dicts rather than seeded into a SQLite table. It is reference data,
 kept out of both the Postgres user store and the kundali report cache.
 
+`lalKitabHouse` was later fully replaced — and `lalKitabSafetyTips`,
+`lalKitabYuti`, `lalKitabBasics`, `lalKitabRinVichar`, `lalKitabVarshaphal`,
+`lalKitabHealthSignals` and `lalKitabWealthVastu` added — by
+``scripts/ingest_lal_kitab.py``, parsed from a 15-part, 788-rule Lal Kitab
+source doc (sibling ``lal-kitab.md``). The last five of those are
+chart-independent Lal Kitab guidance (not keyed by house), so they aren't
+surfaced in the per-house detail dialog — kept here for a future general
+Lal Kitab reference surface.
+
 Translation note: `naadiSutras`, `grahaYuti2`, `grahaYuti3`, the newly
-added (non-12th-house) `grahaHouseSaravali` entries, and the BPHS-sourced
-`bhaveshPhala` entries currently have their `*En` field set equal to the
+added (non-12th-house) `grahaHouseSaravali` entries, the BPHS-sourced
+`bhaveshPhala` entries, and every `lalKitab*` field added by
+`ingest_lal_kitab.py` currently have their `*En` field set equal to the
 Nepali text — English translation for this content is a known follow-up,
-not yet done. `houseInfo`, `lalKitabHouse`, and the handful of
-`bhaveshPhala`/`grahaHouseSaravali` entries retained from the original
-hand-authored round already carry real English.
+not yet done. `houseInfo` and the handful of `bhaveshPhala`/
+`grahaHouseSaravali` entries retained from the original hand-authored round
+already carry real English.
 """
 
 from __future__ import annotations
