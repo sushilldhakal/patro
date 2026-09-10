@@ -17,18 +17,29 @@ source documents (`vedic_astrology_app_data-v3.md` and
 either frontend, per the "put rules on the server, not the client" call
 made after the first round of content went to both repos by hand.
 
+`bhaveshPhala` was later re-sourced from `bphs_bhavesha_phaladhyaya.md` —
+an actual transcription of BPHS chapter 13 (भावेशफलाध्यायः, "Bhavesha
+Phaladhyaya"), with real shlokas — replacing most of the original
+paraphrased Hindi-derived entries (which also mis-cited the source as
+"chapter 27"; there was no real citation in the original text to check
+against). Where a lord→house pair isn't covered by the chapter 13 text
+(5 pairs, as of this writing — see git history for `bhaveshPhala`'s exact
+gaps), the original paraphrased entry is kept as a fallback with `shloka:
+null`.
+
 Unlike the yoga catalog or vastu content, this data is looked up only by an
 exact known key (a graha, a graha+house pair, or a sorted graha-pair id for
 yuti) — never searched or filtered — so it's loaded straight into memory as
 plain dicts rather than seeded into a SQLite table. It is reference data,
 kept out of both the Postgres user store and the kundali report cache.
 
-Translation note: `naadiSutras`, `grahaYuti2`, `grahaYuti3`, and the newly
-added (non-12th-house) `grahaHouseSaravali` entries currently have their
-`*En` field set equal to the Nepali text — English translation for this
-batch is a known follow-up, not yet done. Every other field in this payload
-(graha-drishti, houseInfo, bhaveshPhala, the pre-existing house-12 saravali
-entries, lalKitabHouse) already carries real English.
+Translation note: `naadiSutras`, `grahaYuti2`, `grahaYuti3`, the newly
+added (non-12th-house) `grahaHouseSaravali` entries, and the BPHS-sourced
+`bhaveshPhala` entries currently have their `*En` field set equal to the
+Nepali text — English translation for this content is a known follow-up,
+not yet done. `houseInfo`, `lalKitabHouse`, and the handful of
+`bhaveshPhala`/`grahaHouseSaravali` entries retained from the original
+hand-authored round already carry real English.
 """
 
 from __future__ import annotations
