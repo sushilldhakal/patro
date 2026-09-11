@@ -398,7 +398,8 @@ def kundali_detail(
     ayanamsha: str | None = Query(None, description="Ayanamsha mode: lahiri, nepal, raman, kp, true_citra"),
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
-    from engine.vedic.kundali_detail import build_kundali_detail
+    from engine.vedic.kundali_detail import KUNDALI_DETAIL_VERSION, build_kundali_detail
+    from services.response_cache import DEFAULT_CACHE_CONTROL, location_cache_key, serve_cached_json
 
     try:
         instant = instant_for_request(
@@ -410,9 +411,23 @@ def kundali_detail(
             lon=location.lon,
             request=request,
         )
-        return build_kundali_detail(instant, location, ayanamsha=ayanamsha)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Deterministic given (birth instant, location, ayanamsha): the same chart
+    # never changes, so cache the full computed payload instead of rebuilding
+    # every dasha tree, all 20 vargas and the 300-yoga catalog on every view.
+    ayanamsha_id = ayanamsha or "lahiri"
+    cache_key = (
+        f"kundalidetail_{KUNDALI_DETAIL_VERSION}_{instant.isoformat()}_"
+        f"{ayanamsha_id}_{location_cache_key(location)}"
+    )
+    return serve_cached_json(
+        request,
+        cache_key,
+        lambda: build_kundali_detail(instant, location, ayanamsha=ayanamsha),
+        cache_control=DEFAULT_CACHE_CONTROL,
+    )
 
 
 @router.get("/kundali/dasha/expand")
