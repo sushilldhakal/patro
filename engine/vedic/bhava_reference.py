@@ -132,6 +132,24 @@ shloka exists) `translationNe` into real Nepali — this field no longer has
 any translation debt. `translationNe`/`translationEn` stay empty strings
 (not translated) for the 38 of 144 pairs that never had a shloka to
 translate in the first place (Round 1's prose-only fallback).
+
+`grahaHouseSaravali`'s sun/mars/venus/saturn/ketu entries, and the new
+`grahaBhaveshPhala`/`grahaBhaveshPhalaSupplementary` tables, were added by
+``scripts/ingest_graha_saravali_phaladesh.py`` from user-supplied per-graha
+"ग्रह फलादेश" markdown files (sibling ``graha-phaladesh-src/*.md``,
+not committed here) — real Saravali/Jataka-Parijata/Phaladeepika-cited
+content, replacing `grahaHouseSaravali`'s previous short, generically-
+sourced ("वैदिक ज्योतिष सन्दर्भ") one-liners for those five grahas.
+`grahaBhaveshPhala`/`grahaBhaveshPhalaSupplementary` are keyed by graha +
+house (not house-ownership pairs like `bhaveshPhala`), because the source
+files treat the graha as owning and occupying house N for every N — a
+different, less rigorous framing than `bhaveshPhala`'s real BPHS ch. 13
+house-lordship data, so kept separate rather than merged in. See that
+script's module docstring for the full parsing/provenance detail,
+including that this content is templated (same text per house, number
+swapped in) in every file but Surya's — ingested as-is per explicit user
+direction. Moon/mercury/jupiter/rahu are still pending from the user for
+all three of these tables.
 """
 
 from __future__ import annotations
