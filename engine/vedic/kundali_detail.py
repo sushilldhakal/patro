@@ -10,7 +10,6 @@ from engine.astronomy.location import ObserverLocation
 from engine.astronomy.sidereal import resolve_ayanamsha_mode
 from engine.vedic.ashtakavarga import compute_ashtakavarga
 from engine.vedic.bhava_bala import compute_bhava_bala
-from engine.vedic.bhava_reference import bhava_reference_payload
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.ghati_time import seconds_to_ghadi_pala
@@ -2185,6 +2184,16 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+# Bump when build_kundali_detail's output shape or contents change, so the
+# response cache (keyed by birth instant + location + ayanamsha) in
+# api/kundali.py stops serving pre-change payloads for already-cached charts.
+# v1: initial cached version — dropped the embedded `bhavaReference` blob
+#     (833KB of chart-independent static content, already its own cacheable
+#     endpoint at /kundali/reference/bhava and unused by the frontend's
+#     /kundali/detail response type).
+KUNDALI_DETAIL_VERSION = 1
+
+
 def build_kundali_detail(
     instant_local: datetime,
     location: ObserverLocation,
@@ -2342,5 +2351,4 @@ def build_kundali_detail(
         "ayanamsha": ayanamsha_label,
         "location": location.as_dict(),
         "birth_instant": instant_local.isoformat(),
-        "bhavaReference": bhava_reference_payload(),
     }
