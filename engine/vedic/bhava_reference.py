@@ -133,23 +133,25 @@ any translation debt. `translationNe`/`translationEn` stay empty strings
 (not translated) for the 38 of 144 pairs that never had a shloka to
 translate in the first place (Round 1's prose-only fallback).
 
-`grahaHouseSaravali`'s sun/mars/venus/saturn/ketu entries, and the new
-`grahaBhaveshPhala`/`grahaBhaveshPhalaSupplementary` tables, were added by
+`grahaHouseSaravali`'s sun/mars/venus/saturn/ketu entries were added by
 ``scripts/ingest_graha_saravali_phaladesh.py`` from user-supplied per-graha
 "ग्रह फलादेश" markdown files (sibling ``graha-phaladesh-src/*.md``,
 not committed here) — real Saravali/Jataka-Parijata/Phaladeepika-cited
 content, replacing `grahaHouseSaravali`'s previous short, generically-
-sourced ("वैदिक ज्योतिष सन्दर्भ") one-liners for those five grahas.
-`grahaBhaveshPhala`/`grahaBhaveshPhalaSupplementary` are keyed by graha +
-house (not house-ownership pairs like `bhaveshPhala`), because the source
-files treat the graha as owning and occupying house N for every N — a
-different, less rigorous framing than `bhaveshPhala`'s real BPHS ch. 13
-house-lordship data, so kept separate rather than merged in. See that
-script's module docstring for the full parsing/provenance detail,
-including that this content is templated (same text per house, number
-swapped in) in every file but Surya's — ingested as-is per explicit user
-direction. Moon/mercury/jupiter/rahu are still pending from the user for
-all three of these tables.
+sourced ("वैदिक ज्योतिष सन्दर्भ") one-liners for those five grahas. Those
+same source files' "भावेश फल"/"भावेश फलम्" sub-sections were briefly
+ingested too, into two now-removed tables (`grahaBhaveshPhala`/
+`grahaBhaveshPhalaSupplementary`, keyed by graha + house) — reverted once
+it became clear they frame the graha as owning and occupying house N for
+every N, which isn't a real (chart-independent) fact, unlike `bhaveshPhala`
+/`bhaveshPhalaSupplementary`'s actual BPHS/collected-source house-lordship
+data (keyed by house-ownership pairs, real for every ascendant). The
+dialog surfaces that real data — computed per chart from `rashiLord` plus
+`bhaveshPhala`/`bhaveshPhalaSupplementary`, exactly as the "भावेश सम्बन्ध"
+section already did — inside the "ग्रह फलादेश" per-occupant card too now,
+instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
+module docstring for the full history. Moon/mercury/jupiter/rahu are still
+pending from the user for `grahaHouseSaravali`.
 """
 
 from __future__ import annotations

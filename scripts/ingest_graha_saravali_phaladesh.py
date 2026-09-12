@@ -1,14 +1,16 @@
-"""Ingest a batch of per-graha "ग्रह फलादेश" documents into
-data/bhava_reference.json: the existing ``grahaHouseSaravali`` table, plus
-two new tables — ``grahaBhaveshPhala`` and ``grahaBhaveshPhalaSupplementary``
-— for that same batch's "भावेश फल" content (added in a second pass, per
-explicit user direction not to drop it).
+"""Ingest a batch of per-graha "ग्रह फलादेश" documents' सारावली content into
+the existing ``grahaHouseSaravali`` table in data/bhava_reference.json,
+replacing the short, generically-sourced ("वैदिक ज्योतिष सन्दर्भ" — not a
+real citation) one-liner entries that table originally held with real
+Saravali/Jataka-Parijata/Phaladeepika-cited, per-house shloka + अर्थ +
+व्याख्या + स्थिति content supplied directly by the user, one graha per
+markdown file.
 
 Source: sibling files in ``../../graha-phaladesh-src/`` (not committed to
 this repo, same as the other ``ingest_*`` scripts' source docs), named
 ``<n>_<graha>_full_phaladesh.md``. Each file has one "## <emoji> <ग्रह>"
 header followed by 12 "### ⬡ भाव N मा <ग्रह>को फल" sections, each with
-three parts:
+three parts — only the first is ingested here:
 
   1) 📜 **श्लोक — <source>** > <shloka>
      * **अर्थ:** ...
@@ -17,54 +19,48 @@ three parts:
 
   2) #### भावेश फल (बृहत्पाराशर होराशास्त्र)
      * **N भाव को स्वामी <ग्रह> → N भाव मा**
-     📜 **<citation, e.g. बृ.पा.हो.शा. (भावेशफलाध्याय) — श्लोक N>** > <shloka>
-     * **अर्थ:** ...
-     * **व्याख्या:** ...
+     📜 **<citation>** > <shloka> / * **अर्थ:** ... / * **व्याख्या:** ...
 
   3) #### 🏠 भावेश फलम्
-     * **संस्कृत श्लोक:** > <shloka>
-     * **अर्थ:** ...
-     * **विस्तृत व्याख्या:** ...
+     * **संस्कृत श्लोक:** > <shloka> / * **अर्थ:** ... / * **विस्तृत व्याख्या:** ...
 
 <source> in part 1 is "सारावली" throughout मंगल/शुक्र/शनि/केतु, but सूर्य's
 file mixes सारावली, जातक पारिजात and फलदीपिका per house — the actual
 per-house source is captured, not hardcoded.
 
-Parts 2 and 3 assume the graha both owns and occupies house N for every N
-(nonsensical for grahas that own only 1-2 houses, and meaningless for
-rahu/ketu which own none) — a different framing from the existing
-``bhaveshPhala``/``bhaveshPhalaSupplementary`` tables (keyed by real
-house-ownership, shared across every ascendant, already sourced from an
-actual BPHS ch. 13 transcription). That mismatch is why parts 2-3 go into
-their own ``grahaBhaveshPhala``/``grahaBhaveshPhalaSupplementary`` tables
-(keyed by graha + house, not house-ownership pairs) instead of being
-merged into the existing ones — merging would have conflated two
-different models and overwritten unrelated, already-correct data for
-grahas/house-pairs outside this batch. In every file but Surya's, parts
-2-3's text is a single template repeated for all 12 houses with only the
-house number swapped in (part 1 still varies per house, at minimum by
-स्थिति/rating) — ingested as-is per explicit user direction; see this
-script's git history for the prior revision that left parts 2-3 out for
-that reason.
+Parts 2 and 3 are deliberately NOT ingested (a prior revision of this
+script did, into two now-removed tables ``grahaBhaveshPhala``/
+``grahaBhaveshPhalaSupplementary`` — see git history): they frame the
+graha as both owning and occupying house N for every N, which isn't a
+real (chart-independent) fact — house ownership depends on the
+ascendant, so it varies per chart. The dialog already computes the real,
+chart-specific version of this exact fact correctly — which graha
+actually owns the house currently being viewed, and where that graha
+currently sits — via `rashiLord` + the existing `bhaveshPhala`/
+`bhaveshPhalaSupplementary` tables (real BPHS ch. 13 + collected-source
+content, keyed by house-ownership pairs, shared across every ascendant).
+Per explicit user example, that real per-chart content is now also shown
+inside the "ग्रह फलादेश" per-occupant card in BhavaDetailDialog.tsx
+(see its `LordPlacementBlock`), rather than this batch's own (necessarily
+chart-independent, and in every file but Surya's, literally templated)
+भावेश-फल text.
 
-Only entries for houses present in a given source file are replaced;
-other grahas' entries in all three tables are untouched. ``houseTheme``
-(part 1 only) is preserved from the existing entry (or filled from the
+Only ``grahaHouseSaravali[graha]`` entries for houses present in a given
+source file are replaced; other grahas' entries are untouched.
+``houseTheme`` is preserved from the existing entry (or filled from the
 standard 12-house name list below) since the new files don't carry it.
 
-Rating mapping (part 1's स्थिति emoji/word -> existing ``ratingLabel`` keys):
+Rating mapping (स्थिति emoji/word -> existing ``ratingLabel`` keys):
   💰 लाभदायक                  -> shubh
   ⚠️ मध्यम                    -> mishrit
   ⚠️ कष्टदायक / कष्टदायक/सावधान -> kamjor
 
-``shlokaSourceNe`` is the captured source name/citation (a real citation,
-replacing part 1's old "वैदिक ज्योतिष सन्दर्भ" placeholder); part 3's is
-always the source's own generic label, "संस्कृत श्लोक". ``shlokaSourceEn``
-is an English title where known (सारावली/जातक पारिजात/फलदीपिका for part 1,
-"Sanskrit shloka" for part 3), else mirrors the Nepali (part 2's citation
-line, e.g. "बृ.पा.हो.शा. ... श्लोक ११", isn't translated). ``meaningEn``/
-``explanationEn`` mirror the Nepali text throughout (translation debt,
-same convention as the rest of this file's non-English-sourced content).
+``shlokaSourceNe`` is the captured source name (a real citation, replacing
+the old "वैदिक ज्योतिष सन्दर्भ" placeholder); ``shlokaSourceEn`` is its
+English title where known (सारावली/जातक पारिजात/फलदीपिका), else mirrors
+the Nepali. ``meaningEn``/``explanationEn`` mirror the Nepali text
+(translation debt, same convention as the rest of this file's
+non-English-sourced content).
 
 Run from the repo root: ``python scripts/ingest_graha_saravali_phaladesh.py``
 """
@@ -109,18 +105,9 @@ HOUSE_HEADER_RE = re.compile(
     r"^###\s*⬡\s*भाव\s*([0-9०-९]+)\s.*?मा.*?फल\s*$", re.MULTILINE
 )
 BHAVESH_PHALA_HEADER_RE = re.compile(r"^####\s*भावेश\s*फल", re.MULTILINE)
-BHAVESH_PHALAM_HEADER_RE = re.compile(r"^####\s*🏠\s*भावेश\s*फलम्", re.MULTILINE)
 
 SARAVALI_BLOCK_RE = re.compile(
     r"📜\s*\*\*श्लोक\s*—\s*(.+?)\*\*\s*\n((?:>.*\n?)+)"
-)
-BHAVESH_SHLOKA_RE = re.compile(
-    r"📜\s*\*\*(.+?)\*\*\s*\n((?:>.*\n?)+)"
-)
-BHAVESHAM_SHLOKA_RE = re.compile(
-    # सूर्य house 3 has a source typo ("शल्क" for "श्लोक") — tolerate any
-    # word there rather than require the exact spelling.
-    r"\*\s*\*\*संस्कृत \S+:\*\*\s*\n((?:>.*\n?)+)"
 )
 SOURCE_EN_NAME = {
     "सारावली": "Saravali",
@@ -129,7 +116,6 @@ SOURCE_EN_NAME = {
 }
 MEANING_RE = re.compile(r"\*\s*\*\*अर्थ:\*\*\s*(.+)")
 EXPLANATION_RE = re.compile(r"\*\s*\*\*व्याख्या:\*\*\s*(.+)")
-DETAILED_EXPLANATION_RE = re.compile(r"\*\s*\*\*विस्तृत व्याख्या:\*\*\s*(.+)")
 # Two स्थिति formats appear across the batch: a labelled one ("* **स्थिति:**
 # ⚠️ कष्टदायक") used by मंगल/शुक्र/शनि/केतु, and an unlabelled emoji+bold one
 # ("* ⚠️ **कष्टदायक / सावधान**") used by सूर्य.
@@ -179,39 +165,6 @@ def parse_saravali(segment: str, path_name: str, house_num: str) -> dict:
     }
 
 
-def parse_bhavesh_phala(segment: str, path_name: str, house_num: str) -> dict:
-    shloka_m = BHAVESH_SHLOKA_RE.search(segment)
-    meaning_m = MEANING_RE.search(segment)
-    explanation_m = EXPLANATION_RE.search(segment)
-    if not (shloka_m and meaning_m and explanation_m):
-        raise ValueError(f"{path_name}: house {house_num} missing a भावेश फल field")
-
-    source_ne = shloka_m.group(1).strip()
-    return {
-        "shloka": parse_shloka(shloka_m.group(2)),
-        "sourceNe": source_ne,
-        "sourceEn": source_ne,
-        "meaning": meaning_m.group(1).strip(),
-        "explanation": explanation_m.group(1).strip(),
-    }
-
-
-def parse_bhavesh_phalam(segment: str, path_name: str, house_num: str) -> dict:
-    shloka_m = BHAVESHAM_SHLOKA_RE.search(segment)
-    meaning_m = MEANING_RE.search(segment)
-    explanation_m = DETAILED_EXPLANATION_RE.search(segment)
-    if not (shloka_m and meaning_m and explanation_m):
-        raise ValueError(f"{path_name}: house {house_num} missing a भावेश फलम् field")
-
-    return {
-        "shloka": parse_shloka(shloka_m.group(1)),
-        "sourceNe": "संस्कृत श्लोक",
-        "sourceEn": "Sanskrit shloka",
-        "meaning": meaning_m.group(1).strip(),
-        "explanation": explanation_m.group(1).strip(),
-    }
-
-
 def parse_file(path: Path) -> dict[str, dict]:
     text = path.read_text(encoding="utf-8")
     headers = list(HOUSE_HEADER_RE.finditer(text))
@@ -225,20 +178,13 @@ def parse_file(path: Path) -> dict[str, dict]:
         end = headers[i + 1].start() if i + 1 < len(headers) else len(text)
         body = text[start:end]
 
+        # Part 1 (सारावली) always precedes the "भावेश फल" heading — slicing
+        # the body there keeps parts 2-3's own "* **अर्थ:**"/"* **व्याख्या:**"
+        # lines from being mistaken for part 1's.
         bp_header_m = BHAVESH_PHALA_HEADER_RE.search(body)
-        bpm_header_m = BHAVESH_PHALAM_HEADER_RE.search(body)
-        if not (bp_header_m and bpm_header_m):
-            raise ValueError(f"{path.name}: house {house_num} missing a भावेश फल/फलम् heading")
+        saravali_segment = body[: bp_header_m.start()] if bp_header_m else body
 
-        saravali_segment = body[: bp_header_m.start()]
-        bhavesh_phala_segment = body[bp_header_m.end() : bpm_header_m.start()]
-        bhavesh_phalam_segment = body[bpm_header_m.end() :]
-
-        out[house_num] = {
-            "saravali": parse_saravali(saravali_segment, path.name, house_num),
-            "bhaveshPhala": parse_bhavesh_phala(bhavesh_phala_segment, path.name, house_num),
-            "bhaveshPhalam": parse_bhavesh_phalam(bhavesh_phalam_segment, path.name, house_num),
-        }
+        out[house_num] = parse_saravali(saravali_segment, path.name, house_num)
     return out
 
 
@@ -247,20 +193,14 @@ def main() -> None:
         data = json.load(f)
 
     saravali_table = data["grahaHouseSaravali"]
-    bhavesh_phala_table = data.setdefault("grahaBhaveshPhala", {})
-    bhavesh_phalam_table = data.setdefault("grahaBhaveshPhalaSupplementary", {})
 
     for graha_key, filename in SOURCE_FILES.items():
         path = SOURCE_DIR / filename
         houses = parse_file(path)
-
         saravali_graha = saravali_table.setdefault(graha_key, {})
-        bp_graha = bhavesh_phala_table.setdefault(graha_key, {})
-        bpm_graha = bhavesh_phalam_table.setdefault(graha_key, {})
 
-        for house_num, parsed in houses.items():
+        for house_num, saravali in houses.items():
             house_int = to_int(house_num)
-            saravali = parsed["saravali"]
             existing_theme = saravali_graha.get(house_num, {}).get("houseTheme")
             saravali_graha[house_num] = {
                 "house": house_int,
@@ -275,31 +215,7 @@ def main() -> None:
                 "rating": saravali["rating"],
             }
 
-            bp = parsed["bhaveshPhala"]
-            bp_graha[house_num] = {
-                "house": house_int,
-                "shloka": bp["shloka"],
-                "shlokaSourceNe": bp["sourceNe"],
-                "shlokaSourceEn": bp["sourceEn"],
-                "meaningNe": bp["meaning"],
-                "meaningEn": bp["meaning"],
-                "explanationNe": bp["explanation"],
-                "explanationEn": bp["explanation"],
-            }
-
-            bpm = parsed["bhaveshPhalam"]
-            bpm_graha[house_num] = {
-                "house": house_int,
-                "shloka": bpm["shloka"],
-                "shlokaSourceNe": bpm["sourceNe"],
-                "shlokaSourceEn": bpm["sourceEn"],
-                "meaningNe": bpm["meaning"],
-                "meaningEn": bpm["meaning"],
-                "explanationNe": bpm["explanation"],
-                "explanationEn": bpm["explanation"],
-            }
-
-        print(f"{graha_key}: {len(houses)} houses updated (saravali + bhaveshPhala + bhaveshPhalam)")
+        print(f"{graha_key}: {len(houses)} houses updated")
 
     with TARGET_JSON.open("w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
