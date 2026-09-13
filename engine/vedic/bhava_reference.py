@@ -150,9 +150,9 @@ dialog surfaces that real data — computed per chart from `rashiLord` plus
 `bhaveshPhala`/`bhaveshPhalaSupplementary`, exactly as the "भावेश सम्बन्ध"
 section already did — inside the "ग्रह फलादेश" per-occupant card too now,
 instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
-module docstring for the full history. Moon/jupiter/rahu are still pending
-from the user for `grahaHouseSaravali` (mercury and venus were completed
-below).
+module docstring for the full history. Jupiter/rahu are still pending
+from the user for `grahaHouseSaravali` (mercury, venus and moon were
+completed below).
 
 `grahaHouseSaravali[graha][house]` was reshaped by
 ``scripts/ingest_sun_house_multi_source.py`` from a single classical
@@ -184,8 +184,24 @@ every other graha's table.
 same way, from a शुक्र document shaped exactly like mercury's (four
 citations per house + one unified summary, rating inferred from
 sentiment) — also filling in house 4, which venus's previous table
-(short, generic single citations) didn't have either. Moon/jupiter/rahu
-are still pending a `grahaHouseSaravali` table of their own.
+(short, generic single citations) didn't have either.
+
+``scripts/ingest_moon_house_multi_source.py`` completed moon's table from
+a third document shape: a full फलदीपिका citation and a full होरासार
+citation per house — each with its **own** meaningNe/explanationNe, sun's
+style, not mercury/venus's meaning-less style — plus a third "सारावली
+एवं जातक पारिजात दृष्टिकोण" paragraph that never cleanly separates which
+words are सारावली's vs जातक पारिजात's and only occasionally quotes an
+actual Sanskrit fragment inline, so it isn't a citable third `entries`
+item; it goes into `summaryNe`/`summaryEn` instead — reusing that field
+for "a reading not attached to one clean citation" rather than strictly
+"the entries' only reading", which is why the dialog renders per-entry
+meanings and the summary together without treating them as alternatives.
+Unlike mercury/venus, moon's `rating` values are lifted directly from the
+source document's own "शास्त्रीय फल श्रेणी" classification (not
+sentiment-inferred). Also fills in house 4, which moon's previous
+(short, generic) table didn't have. jupiter/rahu are still pending a
+`grahaHouseSaravali` table of their own.
 """
 
 from __future__ import annotations
