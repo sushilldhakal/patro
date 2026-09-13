@@ -200,8 +200,22 @@ meanings and the summary together without treating them as alternatives.
 Unlike mercury/venus, moon's `rating` values are lifted directly from the
 source document's own "शास्त्रीय फल श्रेणी" classification (not
 sentiment-inferred). Also fills in house 4, which moon's previous
-(short, generic) table didn't have. jupiter/rahu are still pending a
-`grahaHouseSaravali` table of their own.
+(short, generic) table didn't have.
+
+``scripts/normalize_grahaHouseSaravali_shape.py`` then collapsed the two
+shapes above into one, permanently, per explicit user direction that every
+graha must render identically: all of a house's citations listed together
+(shloka + source only, no per-citation meaning), then a single combined
+reading once at the end. It merged every remaining per-entry
+meaningNe/explanationNe (sun, moon, and the still-generic mars/jupiter/
+saturn/rahu/ketu single-citation entries) into that house's `summaryNe`/
+`summaryEn` — appending any pre-existing summary (moon's सारावली/जातक
+पारिजात note) last — then deleted those four keys from every entry
+everywhere. `entries[]` is now always exactly `{shloka, shlokaSourceNe,
+shlokaSourceEn}` and `summaryNe`/`summaryEn` are required, not optional,
+for every graha and house in this table — including jupiter/rahu, still
+pending real per-graha content from the user but no longer a different
+shape while they wait.
 """
 
 from __future__ import annotations
