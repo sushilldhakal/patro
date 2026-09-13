@@ -232,7 +232,24 @@ table). Neither source document nor grahaHouseSaravali labels a rating for
 rahu/ketu, so each house's rating is inferred from its combined meaning's
 sentiment, same convention as mercury/venus. Also fills in house 4 for
 both grahas, which their previous (short, generic) tables didn't have.
-Jupiter is now the only graha still pending real content for this table.
+``scripts/ingest_mars_jupiter_saturn_house_multi_source.py`` then
+completed mars, jupiter and saturn from a third combined document (mars
+and saturn replacing their earlier one-citation-per-house content from
+``ingest_graha_saravali_phaladesh.py``; jupiter's first real content —
+it was the last graha still on the short, generic placeholder). Same
+shape as rahu/ketu's document: four citations per house (सारावली,
+फलदीपिका, होरासार, and either बृहत्पाराशर होराशास्त्र — house 1 only, all
+three grahas — or जातक पारिजात — houses 2-12) plus a separate combined-
+meaning/combined-explanation pair, concatenated into `summaryNe`/
+`summaryEn`. Rating again inferred from sentiment (not labelled in the
+source) — jupiter, a natural benefic, reads positively in nearly every
+house per this document, which is the source's own framing rather than
+anything smoothed over here. Also fills in house 4 for all three grahas
+(mars/saturn's earlier tables didn't have it; jupiter's placeholder
+didn't either). With this round, all nine grahas in `grahaHouseSaravali`
+(sun, moon, mars, mercury, jupiter, venus, saturn, rahu, ketu) now carry
+real, multi-citation, user-supplied content — none is on the original
+short generic placeholder anymore.
 
 Per explicit user direction, the dialog's per-occupant "ग्रह फलादेश" card
 no longer renders a "भावेश फल" lord-placement mini-section (it only ever
