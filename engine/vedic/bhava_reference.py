@@ -152,6 +152,20 @@ section already did — inside the "ग्रह फलादेश" per-occupan
 instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
 module docstring for the full history. Moon/mercury/jupiter/rahu are still
 pending from the user for `grahaHouseSaravali`.
+
+`grahaHouseSaravali[graha][house]` was reshaped by
+``scripts/ingest_sun_house_multi_source.py`` from a single classical
+citation per house to `{house, houseTheme, rating, entries: [...]}`, where
+`entries` holds one or more `{shloka, shlokaSourceNe/En, meaningNe/En,
+explanationNe/En}` citations — `houseTheme`/`rating` moved up a level since
+they describe the house placement itself, not any one citation of it. Sun's
+table was corrected and completed at the same time: it now carries **two**
+classical citations per house (सारावली/फलदीपिका/होरासार/जातक पारिजात, mixed
+per house, matching a corrected user-supplied document) including a house 4
+entry that didn't exist before (the dialog had force-hidden house 4 pending
+this). Every other graha's existing single citation was wrapped as a
+1-element `entries` list, unaffected in content — moon/mercury/jupiter/rahu
+are still pending a second citation the same way sun just got one.
 """
 
 from __future__ import annotations
