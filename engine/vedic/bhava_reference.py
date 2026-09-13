@@ -150,9 +150,10 @@ dialog surfaces that real data — computed per chart from `rashiLord` plus
 `bhaveshPhala`/`bhaveshPhalaSupplementary`, exactly as the "भावेश सम्बन्ध"
 section already did — inside the "ग्रह फलादेश" per-occupant card too now,
 instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
-module docstring for the full history. Jupiter/rahu are still pending
-from the user for `grahaHouseSaravali` (mercury, venus and moon were
-completed below).
+module docstring for the full history. (See further down for
+`grahaHouseSaravali`'s later completion, graha by graha, and the removal
+of this per-occupant lord-placement mini-section once its content proved
+permanently unavailable.)
 
 `grahaHouseSaravali[graha][house]` was reshaped by
 ``scripts/ingest_sun_house_multi_source.py`` from a single classical
@@ -213,9 +214,37 @@ saturn/rahu/ketu single-citation entries) into that house's `summaryNe`/
 पारिजात note) last — then deleted those four keys from every entry
 everywhere. `entries[]` is now always exactly `{shloka, shlokaSourceNe,
 shlokaSourceEn}` and `summaryNe`/`summaryEn` are required, not optional,
-for every graha and house in this table — including jupiter/rahu, still
-pending real per-graha content from the user but no longer a different
-shape while they wait.
+for every graha and house in this table — including jupiter, still
+pending real content but no longer a different shape while it waits.
+
+``scripts/ingest_rahu_ketu_house_multi_source.py`` completed both rahu's
+and ketu's tables from one combined user document covering both grahas:
+3-4 classical citations per house (सारावली, फलदीपिका, सर्वार्थचिन्तामणि,
+बृहत्पाराशर होराशास्त्र and जातक पारिजात, mixed per house) followed by a
+separate "संयुक्त अर्थ" (combined meaning) and "संयुक्त विस्तृत व्याख्या"
+(combined explanation) paragraph — concatenated into one `summaryNe`/
+`summaryEn`, matching the now-uniform shape rather than kept as two
+labelled parts. सर्वार्थचिन्तामणि (Sarvartha Chintamani) and बृहत्पाराशर
+होराशास्त्र (Brihat Parashara Hora Shastra) are new sources, added here for
+the first time; author names given alongside each ग्रन्थ in the source
+document are dropped (bare book name only, matching every other graha's
+table). Neither source document nor grahaHouseSaravali labels a rating for
+rahu/ketu, so each house's rating is inferred from its combined meaning's
+sentiment, same convention as mercury/venus. Also fills in house 4 for
+both grahas, which their previous (short, generic) tables didn't have.
+Jupiter is now the only graha still pending real content for this table.
+
+Per explicit user direction, the dialog's per-occupant "ग्रह फलादेश" card
+no longer renders a "भावेश फल" lord-placement mini-section (it only ever
+showed a "coming soon" placeholder, since `bhaveshPhala`/
+`bhaveshPhalaSupplementary` content for that per-occupant use was emptied
+pending re-verification and never restored) or the grahaDusthaSusthaRule
+"यी फल कहिले लागू हुन्छन्?" accordion. `bhaveshPhala`/`bhaveshPhalaSupplementary` stay in this file and are
+still read by the outer "भावेश सम्बन्ध" section — only the now-content-
+free per-occupant duplicate was removed. `grahaDusthaSusthaRule` has no
+remaining reader anywhere in the frontend after the accordion's removal,
+but the field is left in place here (not a data-shape change) in case a
+future surface wants Phaladeepika's dusstha/susstha principle again.
 """
 
 from __future__ import annotations
