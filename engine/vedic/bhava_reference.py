@@ -151,7 +151,8 @@ dialog surfaces that real data — computed per chart from `rashiLord` plus
 section already did — inside the "ग्रह फलादेश" per-occupant card too now,
 instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
 module docstring for the full history. Moon/jupiter/rahu are still pending
-from the user for `grahaHouseSaravali` (mercury was completed below).
+from the user for `grahaHouseSaravali` (mercury and venus were completed
+below).
 
 `grahaHouseSaravali[graha][house]` was reshaped by
 ``scripts/ingest_sun_house_multi_source.py`` from a single classical
@@ -177,8 +178,14 @@ optional (absent for mercury's entries) and the table gained per-house
 when the entries carry no meaning of their own. Mercury's `rating` values
 aren't from the source document (it doesn't label one); they're inferred
 per house from that house's content sentiment, same rating vocabulary as
-every other graha's table. Moon/jupiter/rahu are still pending a
-`grahaHouseSaravali` table of their own.
+every other graha's table.
+
+``scripts/ingest_venus_house_multi_source.py`` completed venus's table the
+same way, from a शुक्र document shaped exactly like mercury's (four
+citations per house + one unified summary, rating inferred from
+sentiment) — also filling in house 4, which venus's previous table
+(short, generic single citations) didn't have either. Moon/jupiter/rahu
+are still pending a `grahaHouseSaravali` table of their own.
 """
 
 from __future__ import annotations
