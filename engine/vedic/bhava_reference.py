@@ -276,11 +276,17 @@ citation was corrected to its real text. Everything else the user
 checked — including moon house 12's होरासार, venus house 11's सारावली/
 जातक पारिजात and all of house 12, rahu house 2's सारावली/सर्वार्थचिन्तामणि,
 and ketu's बृहत्पाराशर होराशास्त्र/सारावली citations — was confirmed
-already correct and left untouched. One flagged item was NOT fixed: mars
-house 1's सारावली citation opens with "भूपौदार्यः", which the user
-identified as a corrupted word but offered two possible authentic
-readings ("प्रतापी चतुरः" / "ह्रस्वो गौरः") without settling on one — left
-as-is pending the user's choice rather than guessing between them.
+already correct and left untouched.
+
+Mars house 1's सारावली citation — the one item left unresolved above,
+corrupted to "भूपौदार्यः..." with two candidate authentic openings offered
+— was then settled by the user (अध्याय ३०) as "ह्रस्वो गौरः शूरः पित्ती
+वाग्मी च साहसी क्षतधीः। क्रोधो लग्ने भौमे प्रतापावान् भवति जातः॥", applied
+as a direct one-off edit (no script, for a single-field fix). "प्रतापी
+चतुरः..." — the other candidate — is in fact राहु's own house 1 सारावली
+citation, already correctly present in `grahaHouseSaravali["rahu"]["1"]`;
+"भूपौदार्यः" was a garbled OCR-like splice, not a genuine citation from
+either graha.
 """
 
 from __future__ import annotations
