@@ -150,8 +150,42 @@ dialog surfaces that real data — computed per chart from `rashiLord` plus
 `bhaveshPhala`/`bhaveshPhalaSupplementary`, exactly as the "भावेश सम्बन्ध"
 section already did — inside the "ग्रह फलादेश" per-occupant card too now,
 instead of the reverted tables. See ``ingest_graha_saravali_phaladesh.py``'s
-module docstring for the full history. Moon/mercury/jupiter/rahu are still
-pending from the user for `grahaHouseSaravali`.
+module docstring for the full history. Moon/jupiter/rahu are still pending
+from the user for `grahaHouseSaravali` (mercury and venus were completed
+below).
+
+`grahaHouseSaravali[graha][house]` was reshaped by
+``scripts/ingest_sun_house_multi_source.py`` from a single classical
+citation per house to `{house, houseTheme, rating, entries: [...]}`, where
+`entries` holds one or more `{shloka, shlokaSourceNe/En, meaningNe/En,
+explanationNe/En}` citations — `houseTheme`/`rating` moved up a level since
+they describe the house placement itself, not any one citation of it. Sun's
+table was corrected and completed at the same time: it now carries **two**
+classical citations per house (सारावली/फलदीपिका/होरासार/जातक पारिजात, mixed
+per house, matching a corrected user-supplied document) including a house 4
+entry that didn't exist before (the dialog had force-hidden house 4 pending
+this). Every other graha's existing single citation was wrapped as a
+1-element `entries` list, unaffected in content.
+
+``scripts/ingest_mercury_house_multi_source.py`` then completed mercury's
+table from a differently-shaped user document: **four** classical citations
+per house (सारावली, फलदीपिका, होरासार, जातक पारिजात — every source, every
+house) followed by one unified अर्थ+व्याख्या reading covering all four
+shlokas together, rather than a separate reading per shloka. To carry that
+shape, `entries[].meaningNe/meaningEn/explanationNe/explanationEn` became
+optional (absent for mercury's entries) and the table gained per-house
+`summaryNe`/`summaryEn` fields for that unified reading — present exactly
+when the entries carry no meaning of their own. Mercury's `rating` values
+aren't from the source document (it doesn't label one); they're inferred
+per house from that house's content sentiment, same rating vocabulary as
+every other graha's table.
+
+``scripts/ingest_venus_house_multi_source.py`` completed venus's table the
+same way, from a शुक्र document shaped exactly like mercury's (four
+citations per house + one unified summary, rating inferred from
+sentiment) — also filling in house 4, which venus's previous table
+(short, generic single citations) didn't have either. Moon/jupiter/rahu
+are still pending a `grahaHouseSaravali` table of their own.
 """
 
 from __future__ import annotations
