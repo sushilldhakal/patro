@@ -1,5 +1,5 @@
 {
-  "version": "2026.09.13.3",
+  "version": "2026.09.13.5",
   "grahaDrishti": {
     "sun": {
       "isMalefic": true,
@@ -310,22 +310,16 @@
           {
             "shloka": "अल्पकेशोऽलसः क्रोधी दृप्तः पङ्गुः प्रतापावान्।\nउष्णगात्रोऽभयः शूरो धनपुत्रविवर्जितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भाव (लग्न) मा सूर्य स्थित हुँदा व्यक्ति कम कपाल भएको, अल्छी, क्रोधी, अभिमानी, प्रतापी, उष्ण शरीर भएको, निडर, शूरवीर तथा धन र सन्तानको सुखमा कमी भोग्ने हुन्छ।",
-            "meaningEn": "With the Sun placed in the 1st house (Lagna), the person has thin hair, is lazy, hot-tempered, proud, of great valor, hot-bodied, fearless and courageous, but sees less happiness from wealth and children.",
-            "explanationNe": "सूर्य लग्नमा हुनाले आत्मबल र तेज बढाउँछ तर क्रोधी स्वभाव र शारीरिक पित्त विकार पनि दिन्छ।",
-            "explanationEn": "The Sun in the Lagna raises self-confidence and radiance, but also brings a hot temper and bile-type physical disorders."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "तीक्ष्णः शूरः प्रतापी च स्थिरचित्तोऽभयः सुखी।\nलग्ने रवौ भवेज्जातो पित्तरोगादितो नरः॥",
             "shlokaSourceNe": "होरासार",
-            "shlokaSourceEn": "Horasara",
-            "meaningNe": "लग्नमा सूर्य भएमा जातक तीक्ष्ण स्वभावको, शूरवीर, प्रतापी, स्थिर चित्त भएको, निडर र सुखी हुन्छ, तर पित्त सम्बन्धी रोगले पीडित रहन्छ।",
-            "meaningEn": "With the Sun in the Lagna, the native is sharp-natured, valorous, of great might, steady-minded, fearless and happy, yet troubled by bile-related ailments.",
-            "explanationNe": "होरासार अनुसार यो स्थितिले मान-प्रतिष्ठा दिन्छ तर स्वास्थ्यमा पित्त दोष बढाउँछ।",
-            "explanationEn": "Per the Horasara, this placement brings honor and standing, but aggravates the bile constitution."
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भाव (लग्न) मा सूर्य स्थित हुँदा व्यक्ति कम कपाल भएको, अल्छी, क्रोधी, अभिमानी, प्रतापी, उष्ण शरीर भएको, निडर, शूरवीर तथा धन र सन्तानको सुखमा कमी भोग्ने हुन्छ। सूर्य लग्नमा हुनाले आत्मबल र तेज बढाउँछ तर क्रोधी स्वभाव र शारीरिक पित्त विकार पनि दिन्छ। लग्नमा सूर्य भएमा जातक तीक्ष्ण स्वभावको, शूरवीर, प्रतापी, स्थिर चित्त भएको, निडर र सुखी हुन्छ, तर पित्त सम्बन्धी रोगले पीडित रहन्छ। होरासार अनुसार यो स्थितिले मान-प्रतिष्ठा दिन्छ तर स्वास्थ्यमा पित्त दोष बढाउँछ।",
+        "summaryEn": "With the Sun placed in the 1st house (Lagna), the person has thin hair, is lazy, hot-tempered, proud, of great valor, hot-bodied, fearless and courageous, but sees less happiness from wealth and children. The Sun in the Lagna raises self-confidence and radiance, but also brings a hot temper and bile-type physical disorders. With the Sun in the Lagna, the native is sharp-natured, valorous, of great might, steady-minded, fearless and happy, yet troubled by bile-related ailments. Per the Horasara, this placement brings honor and standing, but aggravates the bile constitution."
       },
       "2": {
         "house": 2,
@@ -335,22 +329,16 @@
           {
             "shloka": "धनधान्यपरिभ्रष्टो मुखरोगी सर्वदा भवेत्।\nराजदण्डभयाक्रान्तो धनस्थे तिमिरारिहन्तारि॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दोस्रो भावमा सूर्य हुँदा व्यक्ति धन र धान्यमा बाधा भोग्ने, मुख वा आँखाको रोगी र सरकारी कारबाही वा दण्डको भय रहने हुन्छ।",
-            "meaningEn": "With the Sun in the 2nd house, the person faces obstacles to wealth and grain, suffers ailments of the mouth or eyes, and lives in fear of government action or punishment.",
-            "explanationNe": "धन भावमा पापग्रह/क्रूर ग्रह सूर्य हुनाले सञ्चित धन र पारिवारिक सुखमा बाधा पुर्‍याउँछ।",
-            "explanationEn": "The Sun, a fiery/malefic graha, in the house of wealth obstructs accumulated wealth and family happiness."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "श्रीविद्याविनयैर्हीनः स्वल्पवाक् नेत्ररोगी च।\nधनस्थे भास्करे जातो भवेच्चापि दरिद्रता॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "द्वितीय भावमा सूर्य भएमा जातक धन, विद्या र नम्रतामा कमी भोग्ने, कम बोल्ने, आँखाको रोगी र धनको कमी झेल्ने हुन्छ।",
-            "meaningEn": "With the Sun in the 2nd house, the native lacks prosperity, learning and humility, speaks little, suffers eye ailments, and faces poverty.",
-            "explanationNe": "फलदीपिकाका अनुसार यसले बोलीमा कडापन र दाहिने आँखामा कमजोरी ल्याउँछ।",
-            "explanationEn": "Per the Phaladeepika, this brings harshness of speech and weakness in the right eye."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "दोस्रो भावमा सूर्य हुँदा व्यक्ति धन र धान्यमा बाधा भोग्ने, मुख वा आँखाको रोगी र सरकारी कारबाही वा दण्डको भय रहने हुन्छ। धन भावमा पापग्रह/क्रूर ग्रह सूर्य हुनाले सञ्चित धन र पारिवारिक सुखमा बाधा पुर्‍याउँछ। द्वितीय भावमा सूर्य भएमा जातक धन, विद्या र नम्रतामा कमी भोग्ने, कम बोल्ने, आँखाको रोगी र धनको कमी झेल्ने हुन्छ। फलदीपिकाका अनुसार यसले बोलीमा कडापन र दाहिने आँखामा कमजोरी ल्याउँछ।",
+        "summaryEn": "With the Sun in the 2nd house, the person faces obstacles to wealth and grain, suffers ailments of the mouth or eyes, and lives in fear of government action or punishment. The Sun, a fiery/malefic graha, in the house of wealth obstructs accumulated wealth and family happiness. With the Sun in the 2nd house, the native lacks prosperity, learning and humility, speaks little, suffers eye ailments, and faces poverty. Per the Phaladeepika, this brings harshness of speech and weakness in the right eye."
       },
       "3": {
         "house": 3,
@@ -360,22 +348,16 @@
           {
             "shloka": "भ्रातृहीनो महावीर्यो रणधीरः प्रतापवान्।\nधनी मानी यशस्वी च सहजेऽर्के सुखी नरः॥",
             "shlokaSourceNe": "जातक पारिजात",
-            "shlokaSourceEn": "Jataka Parijata",
-            "meaningNe": "तेस्रो भावमा सूर्य हुँदा जातक दाजुभाइको सुखमा कमी भए पनि महापराक्रमी, युद्धमा धैर्यवान्, प्रतापी, धनी, मानी, यशस्वी र सुखी हुन्छ।",
-            "meaningEn": "With the Sun in the 3rd house, the native sees less happiness from siblings but is greatly valorous, steadfast in battle, of great might, wealthy, respected, famed and happy.",
-            "explanationNe": "३ औँ भाव सूर्यको लागि उत्तम उपचय भाव हो, जसले अद्भूत साहस र विजय दिन्छ।",
-            "explanationEn": "The 3rd house is an excellent upachaya placement for the Sun, granting remarkable courage and victory."
+            "shlokaSourceEn": "Jataka Parijata"
           },
           {
             "shloka": "तेजोबलान्वितः शूरः सुखी बन्धुविवर्जितः।\nसहजे भास्करे जातो ज्ञानी च बहुवित्तवान्॥",
             "shlokaSourceNe": "होरासार",
-            "shlokaSourceEn": "Horasara",
-            "meaningNe": "तेस्रो भावमा सूर्य भए जातक तेजस्वी, बलवान्, शूरवीर, सुखी, ज्ञानी र धनी हुन्छ तर बान्धवहरूसँग मतभेद रहन्छ।",
-            "meaningEn": "With the Sun in the 3rd house, the native is radiant, strong, valorous, happy, knowledgeable and wealthy, but has discord with relatives.",
-            "explanationNe": "यसले व्यक्तिलाई आत्मनिर्भर र पराक्रमी बनाउँछ।",
-            "explanationEn": "This makes the person self-reliant and courageous."
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "तेस्रो भावमा सूर्य हुँदा जातक दाजुभाइको सुखमा कमी भए पनि महापराक्रमी, युद्धमा धैर्यवान्, प्रतापी, धनी, मानी, यशस्वी र सुखी हुन्छ। ३ औँ भाव सूर्यको लागि उत्तम उपचय भाव हो, जसले अद्भूत साहस र विजय दिन्छ। तेस्रो भावमा सूर्य भए जातक तेजस्वी, बलवान्, शूरवीर, सुखी, ज्ञानी र धनी हुन्छ तर बान्धवहरूसँग मतभेद रहन्छ। यसले व्यक्तिलाई आत्मनिर्भर र पराक्रमी बनाउँछ।",
+        "summaryEn": "With the Sun in the 3rd house, the native sees less happiness from siblings but is greatly valorous, steadfast in battle, of great might, wealthy, respected, famed and happy. The 3rd house is an excellent upachaya placement for the Sun, granting remarkable courage and victory. With the Sun in the 3rd house, the native is radiant, strong, valorous, happy, knowledgeable and wealthy, but has discord with relatives. This makes the person self-reliant and courageous."
       },
       "4": {
         "house": 4,
@@ -385,22 +367,16 @@
           {
             "shloka": "सुखहीनो निष्परिग्रहो हृद्रोगी विकलः सदा।\nबन्धुस्थाने स्थिते सूर्ये नरः कर्मरतो भवेत्॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "चौथो भावमा सूर्य हुँदा व्यक्ति सुखहीन, सम्पत्तिविहीन, हृदय रोगी, सधैँ बेचैन तर निरन्तर काममा लागिरहने हुन्छ।",
-            "meaningEn": "With the Sun in the 4th house, the person lacks comfort, owns little property, suffers heart ailments, stays perpetually restless, but remains constantly occupied with work.",
-            "explanationNe": "चौथो भावमा सूर्य दिग्बलहीन हुने हुनाले मानसिक शान्ति र आमाको सुखमा असर पार्छ।",
-            "explanationEn": "The Sun lacks directional strength in the 4th house, which affects peace of mind and happiness from the mother."
+            "shlokaSourceEn": "Phaladeepika"
           },
           {
             "shloka": "मातुलसुखहीनश्च बान्धवप्रतिकूलकः।\nचतुर्थे तिग्मरश्मौ तु बन्धुहीनः सुतान्वितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "चौथो भावमा सूर्य भए मामाको सुख नहुने, बन्धु-बान्धव अनुकूल नरहने, तर सन्तानको सुख प्राप्त हुने हुन्छ।",
-            "meaningEn": "With the Sun in the 4th house, there is no happiness from maternal uncles, relatives are unfavorable, yet the native gains the happiness of children.",
-            "explanationNe": "यसले घरेलु वातावरणमा केही उष्णता र अशान्ति उत्पन्न गराउँछ।",
-            "explanationEn": "This brings some heat and unrest into the domestic environment."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "चौथो भावमा सूर्य हुँदा व्यक्ति सुखहीन, सम्पत्तिविहीन, हृदय रोगी, सधैँ बेचैन तर निरन्तर काममा लागिरहने हुन्छ। चौथो भावमा सूर्य दिग्बलहीन हुने हुनाले मानसिक शान्ति र आमाको सुखमा असर पार्छ। चौथो भावमा सूर्य भए मामाको सुख नहुने, बन्धु-बान्धव अनुकूल नरहने, तर सन्तानको सुख प्राप्त हुने हुन्छ। यसले घरेलु वातावरणमा केही उष्णता र अशान्ति उत्पन्न गराउँछ।",
+        "summaryEn": "With the Sun in the 4th house, the person lacks comfort, owns little property, suffers heart ailments, stays perpetually restless, but remains constantly occupied with work. The Sun lacks directional strength in the 4th house, which affects peace of mind and happiness from the mother. With the Sun in the 4th house, there is no happiness from maternal uncles, relatives are unfavorable, yet the native gains the happiness of children. This brings some heat and unrest into the domestic environment."
       },
       "5": {
         "house": 5,
@@ -410,22 +386,16 @@
           {
             "shloka": "मन्दमतिः सुतहीनः कान्तारवनप्रियो धनविहीनः।\nजीवति चाल्पायुष्मान् सुतभवने भास्करो यस्य॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पाँचौँ भावमा सूर्य हुँदा व्यक्ति सन्तान सुखमा कमी भोग्ने, एकान्त वा वनप्रिय हुने र पेट/पित्त सम्बन्धी समस्या देखिने हुन्छ।",
-            "meaningEn": "With the Sun in the 5th house, the person sees less happiness from children, is drawn to solitude or forest-like retreats, and shows stomach or bile-related trouble.",
-            "explanationNe": "५ औँ भावमा सूर्यको तापले गर्दा सन्तान प्राप्तिमा ढिलाइ वा बाधा हुनसक्छ।",
-            "explanationEn": "The Sun's heat in the 5th house can delay or obstruct the matter of children."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "त्वरितवक्ता तीव्रमेधा स्वल्पपुत्रो न धनावान्।\nसुतभवने सूर्यस्थे पित्तरोगादितो भवेत्॥",
             "shlokaSourceNe": "होरासार",
-            "shlokaSourceEn": "Horasara",
-            "meaningNe": "पाँचौँ भावमा सूर्य भए जातक छिटो बोल्ने, तीव्र बुद्धि भएको, कम सन्तान हुने र पेट/पित्तको रोगी हुन्छ।",
-            "meaningEn": "With the Sun in the 5th house, the native speaks quickly, is sharp-witted, has few children, and is not wealthy, and suffers from bile-related ailments.",
-            "explanationNe": "बुद्धिको विकास तीव्र भए पनि सन्तान र सञ्चित धनमा उतारचढाव रहन्छ।",
-            "explanationEn": "Though intellect develops sharply, children and accumulated wealth stay unsteady."
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "पाँचौँ भावमा सूर्य हुँदा व्यक्ति सन्तान सुखमा कमी भोग्ने, एकान्त वा वनप्रिय हुने र पेट/पित्त सम्बन्धी समस्या देखिने हुन्छ। ५ औँ भावमा सूर्यको तापले गर्दा सन्तान प्राप्तिमा ढिलाइ वा बाधा हुनसक्छ। पाँचौँ भावमा सूर्य भए जातक छिटो बोल्ने, तीव्र बुद्धि भएको, कम सन्तान हुने र पेट/पित्तको रोगी हुन्छ। बुद्धिको विकास तीव्र भए पनि सन्तान र सञ्चित धनमा उतारचढाव रहन्छ।",
+        "summaryEn": "With the Sun in the 5th house, the person sees less happiness from children, is drawn to solitude or forest-like retreats, and shows stomach or bile-related trouble. The Sun's heat in the 5th house can delay or obstruct the matter of children. With the Sun in the 5th house, the native speaks quickly, is sharp-witted, has few children, and is not wealthy, and suffers from bile-related ailments. Though intellect develops sharply, children and accumulated wealth stay unsteady."
       },
       "6": {
         "house": 6,
@@ -435,22 +405,16 @@
           {
             "shloka": "नीरोगः बलवान् शूरो धनवान् भूपतिप्रियः।\nजितारिर्विख्यातो रिपुस्थाने दिवाकरे॥",
             "shlokaSourceNe": "जातक पारिजात",
-            "shlokaSourceEn": "Jataka Parijata",
-            "meaningNe": "छैटौँ भावमा सूर्य हुँदा व्यक्ति निरोगी, बलवान्, शूरवीर, धनी, राजा/सरकारको प्रिय, शत्रुमाथि विजय पाउने र प्रसिद्ध हुन्छ।",
-            "meaningEn": "With the Sun in the 6th house, the person is healthy, strong, valorous, wealthy, favored by rulers and government, victorious over enemies, and renowned.",
-            "explanationNe": "छैटौँ भावमा सूर्यले शत्रुहन्ता योग बनाउँछ र आरोग्यता प्रदान गर्छ।",
-            "explanationEn": "The Sun in the 6th house forms a shatru-hanta (enemy-destroying) yoga and grants good health."
+            "shlokaSourceEn": "Jataka Parijata"
           },
           {
             "shloka": "नृपमान्यो महातेजाः ख्यातकर्मा जिताहवः।\nषष्ठे दिवाकरे जातो बलवान् धनवान् भवेत्॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "छैटौँ भावमा सूर्य भए जातक राजाबाट सम्मानित, महातेजस्वी, प्रसिद्ध कर्म गर्ने, युद्धमा विजयी, बलवान् र धनी हुन्छ।",
-            "meaningEn": "With the Sun in the 6th house, the native is honored by rulers, greatly radiant, known for notable deeds, victorious in conflict, strong and wealthy.",
-            "explanationNe": "प्रशासनिक क्षेत्र वा प्रतिस्पर्धात्मक परीक्षामा सफलताका लागि यो उत्तम स्थान हो।",
-            "explanationEn": "This is an excellent placement for success in administrative work or competitive examinations."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "छैटौँ भावमा सूर्य हुँदा व्यक्ति निरोगी, बलवान्, शूरवीर, धनी, राजा/सरकारको प्रिय, शत्रुमाथि विजय पाउने र प्रसिद्ध हुन्छ। छैटौँ भावमा सूर्यले शत्रुहन्ता योग बनाउँछ र आरोग्यता प्रदान गर्छ। छैटौँ भावमा सूर्य भए जातक राजाबाट सम्मानित, महातेजस्वी, प्रसिद्ध कर्म गर्ने, युद्धमा विजयी, बलवान् र धनी हुन्छ। प्रशासनिक क्षेत्र वा प्रतिस्पर्धात्मक परीक्षामा सफलताका लागि यो उत्तम स्थान हो।",
+        "summaryEn": "With the Sun in the 6th house, the person is healthy, strong, valorous, wealthy, favored by rulers and government, victorious over enemies, and renowned. The Sun in the 6th house forms a shatru-hanta (enemy-destroying) yoga and grants good health. With the Sun in the 6th house, the native is honored by rulers, greatly radiant, known for notable deeds, victorious in conflict, strong and wealthy. This is an excellent placement for success in administrative work or competitive examinations."
       },
       "7": {
         "house": 7,
@@ -460,22 +424,16 @@
           {
             "shloka": "कलत्रगामी परदारसक्तो दरिद्रो दुःखी परिभूतश्च।\nद्यूनस्थिते भास्करसूनुपित्रा जाया विनाशं कुरुते च पुंसाम्॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "सातौँ भावमा सूर्य हुँदा वैवाहिक जीवनमा कलह, पत्नीको स्वास्थ्यमा कष्ट, अपमान र वैवाहिक सुखमा कमी आउँछ।",
-            "meaningEn": "With the Sun in the 7th house, there is discord in married life, distress to the spouse's health, humiliation, and a decline in marital happiness.",
-            "explanationNe": "सातौँ भावमा सूर्यको उपस्थिति र तापले साझेदारी र दाम्पत्य जीवनमा मतभेद ल्याउँछ।",
-            "explanationEn": "The Sun's presence and heat in the 7th house brings friction into partnerships and married life."
+            "shlokaSourceEn": "Phaladeepika"
           },
           {
             "shloka": "मदने विनोदशीलो दारेद्वेषी न शान्तबुद्धिः स्यात्।\nसप्तमे तिग्मरश्मौ तु कामी चाटुकल्पो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सातौँ भावमा सूर्य भए व्यक्ति चञ्चल, पत्नीप्रति रुष्ट रहने, अशान्त बुद्धि भएको र कामुक स्वभावको हुन्छ।",
-            "meaningEn": "With the Sun in the 7th house, the person is fickle, resentful toward the spouse, restless-minded, and of a passionate disposition.",
-            "explanationNe": "वैवाहिक तालमेल मिलाउन दुवै पक्षमा धैर्यको आवश्यकता पर्छ।",
-            "explanationEn": "Both partners need patience to keep the marriage in harmony."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सातौँ भावमा सूर्य हुँदा वैवाहिक जीवनमा कलह, पत्नीको स्वास्थ्यमा कष्ट, अपमान र वैवाहिक सुखमा कमी आउँछ। सातौँ भावमा सूर्यको उपस्थिति र तापले साझेदारी र दाम्पत्य जीवनमा मतभेद ल्याउँछ। सातौँ भावमा सूर्य भए व्यक्ति चञ्चल, पत्नीप्रति रुष्ट रहने, अशान्त बुद्धि भएको र कामुक स्वभावको हुन्छ। वैवाहिक तालमेल मिलाउन दुवै पक्षमा धैर्यको आवश्यकता पर्छ।",
+        "summaryEn": "With the Sun in the 7th house, there is discord in married life, distress to the spouse's health, humiliation, and a decline in marital happiness. The Sun's presence and heat in the 7th house brings friction into partnerships and married life. With the Sun in the 7th house, the person is fickle, resentful toward the spouse, restless-minded, and of a passionate disposition. Both partners need patience to keep the marriage in harmony."
       },
       "8": {
         "house": 8,
@@ -485,22 +443,16 @@
           {
             "shloka": "विकलाक्षो धनहीनः सुतहीनः स्वल्पजीवितो भवति।\nअष्टमभवने सूर्ये नृपती कोपादपगतश्रीः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "आठौँ भावमा सूर्य हुँदा दृष्टिमा कमजोरी, धन र सन्तानमा कष्ट, र राजा/सरकारको कोपका कारण श्री (सम्पत्ति) नाश हुने भय रहन्छ।",
-            "meaningEn": "With the Sun in the 8th house, there is weakness of eyesight, distress regarding wealth and children, and the risk of losing prosperity through a ruler's or government's displeasure.",
-            "explanationNe": "आठौँ भावमा सूर्यले आँखाको समस्या र अचानक मान-हानि गराउन सक्छ।",
-            "explanationEn": "The Sun in the 8th house can cause eye trouble and a sudden loss of standing."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "विकलेक्षणः स्वल्पसुतो व्याधितोऽतिविख्यातः।\nनिधने भास्करे जातो जनप्रियश्चापि जायते॥",
             "shlokaSourceNe": "होरासार",
-            "shlokaSourceEn": "Horasara",
-            "meaningNe": "आठौँ भावमा सूर्य भए जातक कमजोर दृष्टियुक्त, कम सन्तान भएको, रोगी तर समाजमा प्रसिद्ध र जनप्रिय हुन्छ।",
-            "meaningEn": "With the Sun in the 8th house, the native has weak eyesight, few children, is prone to illness, yet becomes very well-known and popular among people.",
-            "explanationNe": "यसले गुप्त अध्ययन र खोजमुलक कार्यमा भने सफलता प्रदान गर्छ।",
-            "explanationEn": "This still grants success in occult study and research-oriented work."
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "आठौँ भावमा सूर्य हुँदा दृष्टिमा कमजोरी, धन र सन्तानमा कष्ट, र राजा/सरकारको कोपका कारण श्री (सम्पत्ति) नाश हुने भय रहन्छ। आठौँ भावमा सूर्यले आँखाको समस्या र अचानक मान-हानि गराउन सक्छ। आठौँ भावमा सूर्य भए जातक कमजोर दृष्टियुक्त, कम सन्तान भएको, रोगी तर समाजमा प्रसिद्ध र जनप्रिय हुन्छ। यसले गुप्त अध्ययन र खोजमुलक कार्यमा भने सफलता प्रदान गर्छ।",
+        "summaryEn": "With the Sun in the 8th house, there is weakness of eyesight, distress regarding wealth and children, and the risk of losing prosperity through a ruler's or government's displeasure. The Sun in the 8th house can cause eye trouble and a sudden loss of standing. With the Sun in the 8th house, the native has weak eyesight, few children, is prone to illness, yet becomes very well-known and popular among people. This still grants success in occult study and research-oriented work."
       },
       "9": {
         "house": 9,
@@ -510,22 +462,16 @@
           {
             "shloka": "धर्मे धर्मरतः सुतार्थसहितो भूपालपूजाङ्कितः।\nभ्रातृद्वेषपरो गुरुद्विजपरो नो सत्यवादी रवेः॥",
             "shlokaSourceNe": "जातक पारिजात",
-            "shlokaSourceEn": "Jataka Parijata",
-            "meaningNe": "नवौँ भावमा सूर्य हुँदा व्यक्ति धर्ममा लीन, सन्तान र धनले युक्त, राजा/सरकारबाट सम्मानित र गुरु-ब्राह्मणको भक्त हुन्छ।",
-            "meaningEn": "With the Sun in the 9th house, the person is devoted to dharma, blessed with children and wealth, honored by rulers or government, and devoted to teachers and brahmins.",
-            "explanationNe": "नवौँ भावमा सूर्यले भाग्य वृद्धि र उच्च प्रतिष्ठा दिलाउँछ, यद्यपि पितासँग वैचारिक मतभेद हुनसक्छ।",
-            "explanationEn": "The Sun in the 9th house raises fortune and standing, though it can bring differences of opinion with the father."
+            "shlokaSourceEn": "Jataka Parijata"
           },
           {
             "shloka": "पितृद्वेषी सुतधनी धर्मिष्ठो देवपूजकः।\nनवमे तिग्मरश्मौ तु सुभगः सुसुतो भवेत्॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "नवौँ भावमा सूर्य भए जातक धर्मिष्ठ, देवताको पूजक, भाग्यशाली, सुखी र सुपुत्रवान् हुन्छ तर पितासँग मतभेद हुनसक्छ।",
-            "meaningEn": "With the Sun in the 9th house, the native is righteous, devoted to the gods, fortunate, happy and blessed with good children, though there may be friction with the father.",
-            "explanationNe": "यो आध्यात्मिक र धार्मिक उन्नतिका लागि शुभ योग हो।",
-            "explanationEn": "This is an auspicious yoga for spiritual and religious progress."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "नवौँ भावमा सूर्य हुँदा व्यक्ति धर्ममा लीन, सन्तान र धनले युक्त, राजा/सरकारबाट सम्मानित र गुरु-ब्राह्मणको भक्त हुन्छ। नवौँ भावमा सूर्यले भाग्य वृद्धि र उच्च प्रतिष्ठा दिलाउँछ, यद्यपि पितासँग वैचारिक मतभेद हुनसक्छ। नवौँ भावमा सूर्य भए जातक धर्मिष्ठ, देवताको पूजक, भाग्यशाली, सुखी र सुपुत्रवान् हुन्छ तर पितासँग मतभेद हुनसक्छ। यो आध्यात्मिक र धार्मिक उन्नतिका लागि शुभ योग हो।",
+        "summaryEn": "With the Sun in the 9th house, the person is devoted to dharma, blessed with children and wealth, honored by rulers or government, and devoted to teachers and brahmins. The Sun in the 9th house raises fortune and standing, though it can bring differences of opinion with the father. With the Sun in the 9th house, the native is righteous, devoted to the gods, fortunate, happy and blessed with good children, though there may be friction with the father. This is an auspicious yoga for spiritual and religious progress."
       },
       "10": {
         "house": 10,
@@ -535,22 +481,16 @@
           {
             "shloka": "मतिविक्रमप्रतापैः श्रीमान् नृपसदृशो भवति जातः।\nदशमे रवौ विशोको मतिमान् हयवाहनोपेतः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशौँ भावमा सूर्य हुँदा जातक बुद्धि, विक्रम र प्रतापले युक्त, धनी, राजा समान सम्मानित, शोकरहित र सवारी साधनले पूर्ण हुन्छ।",
-            "meaningEn": "With the Sun in the 10th house, the native is endowed with intellect, valor and majesty, wealthy, honored like a ruler, free of grief, and possesses fine vehicles.",
-            "explanationNe": "दशम भावमा सूर्य दिग्बली हुन्छ। यो कुलदीपक र राजयोग कारक स्थान हो।",
-            "explanationEn": "The Sun has directional strength in the 10th house — its best placement, making one the pride of the family and a cause of raja yoga."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "सुखी कीर्तिमान् विजयी नृपमान्यो महाधनः।\nपितृसौख्ययुतो जातो दशमेऽह्नो यदा पतिः॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "दशौँ भावमा सूर्य भए व्यक्ति सुखी, कीर्तिमान्, विजयी, सरकारबाट सम्मानित, महाधनी र पिताको पूर्ण सुख पाउने हुन्छ।",
-            "meaningEn": "With the Sun in the 10th house, the person is happy, renowned, victorious, honored by government, greatly wealthy, and enjoys full happiness from the father.",
-            "explanationNe": "यसले कार्यक्षेत्रमा उच्च पद, नेतृत्व र सफलता प्रदान गर्दछ।",
-            "explanationEn": "This grants a high position, leadership and success in one's career."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "दशौँ भावमा सूर्य हुँदा जातक बुद्धि, विक्रम र प्रतापले युक्त, धनी, राजा समान सम्मानित, शोकरहित र सवारी साधनले पूर्ण हुन्छ। दशम भावमा सूर्य दिग्बली हुन्छ। यो कुलदीपक र राजयोग कारक स्थान हो। दशौँ भावमा सूर्य भए व्यक्ति सुखी, कीर्तिमान्, विजयी, सरकारबाट सम्मानित, महाधनी र पिताको पूर्ण सुख पाउने हुन्छ। यसले कार्यक्षेत्रमा उच्च पद, नेतृत्व र सफलता प्रदान गर्दछ।",
+        "summaryEn": "With the Sun in the 10th house, the native is endowed with intellect, valor and majesty, wealthy, honored like a ruler, free of grief, and possesses fine vehicles. The Sun has directional strength in the 10th house — its best placement, making one the pride of the family and a cause of raja yoga. With the Sun in the 10th house, the person is happy, renowned, victorious, honored by government, greatly wealthy, and enjoys full happiness from the father. This grants a high position, leadership and success in one's career."
       },
       "11": {
         "house": 11,
@@ -560,22 +500,16 @@
           {
             "shloka": "प्रभूतधनवान् मानी वीर्यवान् विगतक्लम्।\nलाभेऽर्के शत्रुहन्ता च जायते सेवानृपप्रियः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एघारौँ भावमा सूर्य हुँदा जातक प्रचुर धनवान्, मानी, पराक्रमी, दुःखरहित, शत्रुको नाश गर्ने र राजा/सरकारको प्रिय हुन्छ।",
-            "meaningEn": "With the Sun in the 11th house, the native is abundantly wealthy, self-respecting, valorous, free of sorrow, destroys enemies, and is favored by rulers or government.",
-            "explanationNe": "एकादश भावमा सूर्यले सबै मनोकांक्षा पूरा गराउँछ र निरन्तर लाभ दिन्छ।",
-            "explanationEn": "The Sun in the 11th house fulfils every wish and brings continuous gains."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "धनवान् दीर्घजीवी च शोकरहितः सुखी जनः।\nलाभस्थे तिग्मरश्मौ तु बहुभृत्यवृतो भवेत्॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "एघारौँ भावमा सूर्य भए व्यक्ति धनवान्, दीर्घायु, शोकरहित, सुखी र धेरै सेवक तथा सहयोगीहरूले घेरिएको हुन्छ।",
-            "meaningEn": "With the Sun in the 11th house, the person is wealthy, long-lived, free of grief, happy, and surrounded by many servants and helpers.",
-            "explanationNe": "व्यापार, लगानी र समाजमा ठूलो सफलताका लागि यो अत्यन्त शुभ छ।",
-            "explanationEn": "This is highly auspicious for great success in business, investment and society."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "एघारौँ भावमा सूर्य हुँदा जातक प्रचुर धनवान्, मानी, पराक्रमी, दुःखरहित, शत्रुको नाश गर्ने र राजा/सरकारको प्रिय हुन्छ। एकादश भावमा सूर्यले सबै मनोकांक्षा पूरा गराउँछ र निरन्तर लाभ दिन्छ। एघारौँ भावमा सूर्य भए व्यक्ति धनवान्, दीर्घायु, शोकरहित, सुखी र धेरै सेवक तथा सहयोगीहरूले घेरिएको हुन्छ। व्यापार, लगानी र समाजमा ठूलो सफलताका लागि यो अत्यन्त शुभ छ।",
+        "summaryEn": "With the Sun in the 11th house, the native is abundantly wealthy, self-respecting, valorous, free of sorrow, destroys enemies, and is favored by rulers or government. The Sun in the 11th house fulfils every wish and brings continuous gains. With the Sun in the 11th house, the person is wealthy, long-lived, free of grief, happy, and surrounded by many servants and helpers. This is highly auspicious for great success in business, investment and society."
       },
       "12": {
         "house": 12,
@@ -585,40 +519,37 @@
           {
             "shloka": "पतितः सुतहीनश्च विकलाङ्गो धनविहीनश्च।\nनृपकोपादपगतश्रीः व्यये रवौ भवति जातः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "बाह्रौँ भावमा सूर्य हुँदा व्यक्ति अत्यधिक खर्च गर्ने, बायाँ आँखा वा अंगमा कमजोरी भोग्ने, र राज्य/सरकारबाट धनहानि हुनसक्ने हुन्छ।",
-            "meaningEn": "With the Sun in the 12th house, the person spends excessively, suffers weakness in an eye or limb, and may lose wealth through the displeasure of a ruler or government.",
-            "explanationNe": "व्यय भावमा सूर्यले अनावश्यक खर्च र आँखाको समस्या दिन्छ तर विदेश यात्राका लागि बाटो खोल्छ।",
-            "explanationEn": "The Sun in the house of expenditure brings needless spending and eye trouble, but opens the way for travel abroad."
+            "shlokaSourceEn": "Saravali"
           },
           {
             "shloka": "पितृद्वेषी नेत्ररोगी सुतहीनो बलोज्झितः।\nपतितो विकलो व्योमगतेऽर्के जायते नरः॥",
             "shlokaSourceNe": "फलदीपिका",
-            "shlokaSourceEn": "Phaladeepika",
-            "meaningNe": "बाह्रौँ भावमा सूर्य भए व्यक्ति पितासँग मतभेद राख्ने, आँखाको रोगी, सन्तान वा बलमा कमी र देश/विदेशमा भ्रमणशील हुन्छ।",
-            "meaningEn": "With the Sun placed in the 12th house, the person has friction with the father, suffers eye ailments, lacks children or strength, and travels widely at home and abroad.",
-            "explanationNe": "यसले अध्यात्म र वैदेशिक क्षेत्रबाट भने लाभ दिलाउन सक्छ।",
-            "explanationEn": "This can still bring benefit through spirituality and foreign connections."
+            "shlokaSourceEn": "Phaladeepika"
           }
-        ]
+        ],
+        "summaryNe": "बाह्रौँ भावमा सूर्य हुँदा व्यक्ति अत्यधिक खर्च गर्ने, बायाँ आँखा वा अंगमा कमजोरी भोग्ने, र राज्य/सरकारबाट धनहानि हुनसक्ने हुन्छ। व्यय भावमा सूर्यले अनावश्यक खर्च र आँखाको समस्या दिन्छ तर विदेश यात्राका लागि बाटो खोल्छ। बाह्रौँ भावमा सूर्य भए व्यक्ति पितासँग मतभेद राख्ने, आँखाको रोगी, सन्तान वा बलमा कमी र देश/विदेशमा भ्रमणशील हुन्छ। यसले अध्यात्म र वैदेशिक क्षेत्रबाट भने लाभ दिलाउन सक्छ।",
+        "summaryEn": "With the Sun in the 12th house, the person spends excessively, suffers weakness in an eye or limb, and may lose wealth through the displeasure of a ruler or government. The Sun in the house of expenditure brings needless spending and eye trouble, but opens the way for travel abroad. With the Sun placed in the 12th house, the person has friction with the father, suffers eye ailments, lacks children or strength, and travels widely at home and abroad. This can still bring benefit through spirituality and foreign connections."
       }
     },
     "moon": {
       "1": {
         "house": 1,
         "houseTheme": "लग्न",
-        "rating": "shubh",
+        "rating": "uttam",
         "entries": [
           {
-            "shloka": "रूपवान् सुभगः कामी स्थूलदेहश्चन्द्रमा तनौ।\nसुरूपः कान्तिमांश्चैव बहुपुत्रो धनी सुखी॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भाव (लग्न) मा चन्द्रमा हुँदा व्यक्ति रूपवान्, कान्तिमान्, धनी, कामी र सुखी हुन्छ।",
-            "meaningEn": "With the Moon in the 1st house, the person is handsome, radiant, wealthy, passionate, and happy.",
-            "explanationNe": "लग्नमा चन्द्रमा हुनाले सौन्दर्य र आकर्षण बढ्छ।",
-            "explanationEn": "The Moon in the Lagna increases beauty and charm."
+            "shloka": "शुक्लपक्षे शशी लग्ने निर्भयो दृढगात्रवान्।\nबलिष्ठश्च तथा लक्ष्मीवान् दीर्घायुश्च भवेन्नरः॥",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "मेषवृषकर्कलग्ने हिमगौ धनवान् सुखी नृपालसमः।\nवाग्बुद्धिवित्तरहितो लग्नस्थे नोक्तभेषु बलरहिते॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "यदि जन्मकुण्डलीको प्रथम भाव (लग्न) मा शुक्ल पक्षको चन्द्रमा स्थित छ भने जातक निर्भय, सुदृढ शरीर भएको, बलवान्, धनधान्य एवं लक्ष्मीले युक्त र दीर्घायु हुन्छ। (यदि कृष्ण पक्षको क्षीण चन्द्रमा लग्नमा भए शरीर दुर्बल, अल्पायु र चञ्चल स्वभाव दिन्छ)। चन्द्रमा मन र शरीरको कारक ग्रह हो। प्रथम भावमा बलिष्ठ (शुक्ल पक्षको) चन्द्रमा रहँदा जातकको व्यक्तित्व प्रभावशाली, सौम्य र दयालु हुन्छ। मेष, वृष वा कर्कट लग्न भएमा लग्नस्थ चन्द्रमाले राजयोग समान फल दिन्छ। यदि मेष, वृष वा कर्कट राशि लग्न भई त्यसमा चन्द्रमा बसेको छ भने जातक धनवान्, सुखी र राजा समान वैभवशाली हुन्छ। तर यी तीन राशिबाहेक अन्य राशिमा बलहीन चन्द्रमा लग्नमा बसेमा जातक वाणी, बुद्धि, धन र शारीरिक बलबाट हीन हुन्छ। होरासारकार पृथुयसका अनुसार चन्द्रमाको लग्नस्थिति राशि र बलमा निर्भर गर्दछ। स्वराशि (कर्कट) वा उच्च राशि (वृष) तथा मित्र राशि मेषमा लग्नस्थ चन्द्रमाले उच्च राजकीय पद र सुख प्रदान गर्दछ। सारावली र जातक पारिजात अनुसार चन्द्रमा दिग्बली हुने स्थान चतुर्थ भाव भए तापनि लग्नमा चन्द्रमा रहँदा जातकको सौन्दर्य र जनप्रियता उच्च हुन्छ। जातक पारिजात (अध्याय १०) अनुसार चन्द्रमा १, ४, ७, १० केन्द्र स्थान वा शुभ ग्रहको दृष्टिमा रहँदा शुभ फल गुणात्मक रूपमा वृद्धि हुन्छ।",
+        "summaryEn": "If a waxing (shukla paksha) Moon is placed in the 1st house (Lagna) of the birth chart, the native is fearless, has a sturdy body, is strong, endowed with wealth and prosperity, and long-lived. (A weak, waning Moon in the Lagna instead gives a frail body, a short life, and a restless nature.) The Moon governs the mind and body. A strong (waxing) Moon in the 1st house gives an impressive, gentle and compassionate personality. With Aries, Taurus or Cancer as the ascendant, a Lagna-placed Moon can give results akin to a raja yoga. If Aries, Taurus or Cancer is the ascendant and the Moon sits there, the native is wealthy, happy and as splendid as a king. But a weak Moon in the Lagna in any other sign leaves the native lacking in speech, intellect, wealth and physical strength. Per Horasara's author Prithuyashas, the Moon's Lagna effect depends on its sign and strength. A Lagna Moon in its own sign (Cancer), exaltation (Taurus), or friendly sign (Aries) grants high, royal-level position and comfort. Per Saravali and Jataka Parijata, even though the 4th house is where the Moon gains directional strength, a Moon in the Lagna still gives the native great beauty and popularity. Per Jataka Parijata (ch. 10), when the Moon occupies an angle (1st, 4th, 7th, 10th) or is aspected by benefics, its auspicious results increase further."
       },
       "2": {
         "house": 2,
@@ -626,47 +557,75 @@
         "rating": "shubh",
         "entries": [
           {
-            "shloka": "भोगी दाता बहुमित्रो मिष्टान्नपानभुक् धनवान्।\nद्वितीयस्थे शशिनि जातो नृपपूजितो तेजस्वी॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा चन्द्रमा हुँदा व्यक्ति भोगी, दानवीर, धनी र मीठो बोल्ने हुन्छ।",
-            "meaningEn": "With the Moon in the 2nd house, the person is fond of enjoyment, generous, wealthy, and sweet-spoken.",
-            "explanationNe": "वाणीमा मिठास र धन सञ्चयमा लाभ हुन्छ।",
-            "explanationEn": "It brings sweetness to speech and gain in accumulating wealth."
+            "shloka": "धनाढ्योऽन्तवार्णिविषयसुखवान् वाचि विकलः।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "धनगे बहुप्रतापी धनवान् वनितादृतोऽल्पसन्तुष्टः।",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा चन्द्रमा स्थित भए जातक अत्यन्त धनवान्, धेरै कुटुम्ब/परिवार भएको, सांसारिक विषय-भोग र सुख भोग्ने हुन्छ, तर वाणीमा केही विकलता वा अस्पष्टता हुन सक्छ। दोस्रो भाव धन, वाणी र कुटुम्बको हो। चन्द्रमा शुभ ग्रह भएकाले यहाँ बस्दा धन सञ्चय र पारिवारिक सुख राम्रो दिन्छ। यदि पापिग्रहको प्रभाव परेमा वाणीमा चञ्चलता वा दोहोरो अर्थ लाग्ने बोली हुन सक्छ। द्वितीय भावमा चन्द्रमा भए जातक ठूलो प्रतापी, धनी, स्त्रीहरूको प्रिय (स्त्रीहरूबाट आदर पाउने) र थोरै वस्तुमा पनि सन्तुष्ट रहने स्वभावको हुन्छ। होरासार अनुसार दोस्रो भावको चन्द्रमाले मानिसलाई शान्त, सन्तोषी र स्त्री वर्गबाट आर्थिक वा सामाजिक लाभ दिलाउने योग बनाउँछ। सारावली अनुसार द्वितीय भावमा चन्द्रमा स्वराशि (कर्कट) वा उच्च (वृष) भएमा जातकको मातृकुल र स्वअर्जित धनमा निरन्तर वृद्धि हुन्छ। जातक पारिजात अनुसार यदि २औं भावको स्वामी र चन्द्रमाको सम्बन्ध शुभ वर्गमा भए जातक बहुमूल्य रत्न, मोती र मिष्टान्न भोजनको भोक्ता हुन्छ।",
+        "summaryEn": "With the Moon in the 2nd house, the native is very wealthy, has a large family, enjoys worldly pleasures and comforts, but may show some hesitancy or lack of clarity in speech. The 2nd house governs wealth, speech and family. Being a benefic, the Moon here brings good wealth accumulation and family happiness. If afflicted by a malefic, speech may become erratic or double-edged. With the Moon in the 2nd house, the native is highly influential, wealthy, favored by women, and content even with little. Per the Horasara, the Moon in the 2nd house makes a person calm and contented, and forms a yoga for financial or social gain through women. Per Saravali, a 2nd-house Moon in its own sign (Cancer) or exalted (Taurus) brings steady growth in the native's maternal lineage and self-earned wealth. Per Jataka Parijata, if the 2nd lord and the Moon share an auspicious relationship, the native enjoys precious gems, pearls, and fine sweets."
       },
       "3": {
         "house": 3,
         "houseTheme": "सहज भाव",
-        "rating": "shubh",
+        "rating": "mishrit",
         "entries": [
           {
-            "shloka": "भ्रातृमान् साहसी शूरः सुतवान् ज्ञानसंयुतः।\nसहजस्थे शशाङ्के च तेजस्वी धार्मिको भवेत्॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा चन्द्रमा हुँदा व्यक्ति साहसी, पराक्रमी, दाजुभाइयुक्त र धार्मिक हुन्छ।",
-            "meaningEn": "With the Moon in the 3rd house, the person is courageous, valiant, blessed with siblings, and righteous.",
-            "explanationNe": "पराक्रम र कलात्मक रुचि बढ्छ।",
-            "explanationEn": "It increases valor and interest in the arts."
+            "shloka": "सहोत्थे सभ्रातृप्रमदबलशौर्योऽतिकृपणः।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "पिशुनो दयाविहीनो मायावी विक्रमाश्रिते शशिनि॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा चन्द्रमा भए जातक भाइ-बहिनीले युक्त, स्त्री सुख पाउने, बलवान् र पराक्रमी हुन्छ, तर स्वभावले केही धन सञ्चय गर्न रुचाउने (कन्जुस/कृपण) हुन्छ। तेस्रो भाव उपचय भाव हो। जातक पारिजात र फलदीपिका दुवैका अनुसार उपचय भाव (३, ६, १०, ११) मा चन्द्रमा रहनु शुभ मानिन्छ। यसले जातकमा कलात्मक पराक्रम र सञ्चार क्षमता बढाउँछ। यदि तेस्रो भावमा चन्द्रमा स्थित छ भने जातक अलि कुरा लगाउने (पिशुन), दयारहित र मायावी (चतुर/छली) स्वभावको हुन सक्छ। होरासारले तेस्रो भावको चन्द्रमालाई मानिसको मानसिक चञ्चलता र कुटिलतासँग जोडेर हेरेको छ। तर यदि चन्द्रमा पूर्ण (बलवान्) छ भने यसले दाजुभाइ र कला क्षेत्रबाट ठूलो सफलता दिन्छ। जातक पारिजात (अध्याय १०) ले स्पष्ट रूपमा भनेको छ: \"तृतीयषष्ठलाभे षु शशिनश्च शुभप्रदाः\" अर्थात् लग्नबाट तेस्रो, छैठौं, दशौँ र एघारौँ भावमा चन्द्रमा अति शुभ र फलदायी हुन्छ। सारावली अनुसार तेस्रो चन्द्रमाले यात्रा, लेखन र सङ्गीत कलामा विशेष रुचि जगाउँछ।",
+        "summaryEn": "With the Moon in the 3rd house, the native is blessed with siblings, enjoys the happiness of women, is strong and valorous, but tends to be somewhat frugal about accumulating wealth. The 3rd house is an upachaya house. Both Jataka Parijata and Phaladeepika consider the Moon auspicious in the upachaya houses (3, 6, 10, 11). This increases the native's artistic valor and communication ability. If the Moon is placed in the 3rd house, the native may be somewhat backbiting, lacking in compassion, and cunning (crafty) by nature. The Horasara links the 3rd-house Moon to mental restlessness and cunning. However, if the Moon is full (strong), it brings great success through siblings and the arts. Jataka Parijata (ch. 10) states clearly: \"tṛtīya-ṣaṣṭha-lābhe ṣu śaśinaśca śubhapradāḥ\" — the Moon is highly auspicious in the 3rd, 6th, 10th and 11th houses from the Lagna. Per Saravali, a 3rd-house Moon awakens a special interest in travel, writing and music."
+      },
+      "4": {
+        "house": 4,
+        "houseTheme": "सुख भाव",
+        "rating": "uttam",
+        "entries": [
+          {
+            "shloka": "सुखी भोगी त्यागी सुहृदि ससुहृद्वाहनयशाः।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "मृष्टान्नभुग्विनीतः स्त्रीलोकः सौख्यभाक् सुखस्थेन्दौ।",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
+          }
+        ],
+        "summaryNe": "चतुर्थ भावमा चन्द्रमा भए जातक सुखी, विविध सुख-भोग प्राप्त गर्ने, दानी/त्यागी, असल मित्रहरू भएको, वाहन (सवारी साधन) र यशले युक्त हुन्छ। चौथो भाव चन्द्रमाको कारक भाव हो र यहाँ चन्द्रमा दिग्बली हुन्छ। त्यसैले चतुर्थस्थ चन्द्रमाले आमाको पूर्ण सुख, घर-जग्गा, सवारी साधन र मानसिक शान्ति प्रदान गर्दछ। चौथो भावमा चन्द्रमा भए जातक स्वादिष्ट र मीठो भोजन गर्ने, नम्र/विनीत स्वभावको, स्त्री वर्गबाट सुख पाउने र सधैं प्रसन्न रहने हुन्छ। होरासारका अनुसार चतुर्थ चन्द्रमाले जातकको जीवनमा जलसम्बन्धी, दूध, कृषि वा वाहनसम्बन्धी सुखमा वृद्धि गराउँछ। सारावली अनुसार चतुर्थ भावमा चन्द्रमा स्वराशि (कर्कट) मा वा उच्च (वृष) मा भएमा जातक विशाल महल, जलसम्बन्धी वैभव र लोकप्रिय व्यक्तित्वको धनी हुन्छ। जातक पारिजात (अध्याय १२) अनुसार चतुर्थेश र चन्द्रमा शुभ ग्रहबाट दृष्ट भए जातकले जीवनभर अखण्ड वाहन र भूमि सुख प्राप्त गर्दछ।",
+        "summaryEn": "With the Moon in the 4th house, the native is happy, enjoys various comforts, is charitable, has good friends, and is endowed with vehicles and fame. The 4th house is the Moon's own significator house, and the Moon has directional strength here. A 4th-house Moon grants full happiness from the mother, home and land, vehicles, and peace of mind. With the Moon in the 4th house, the native enjoys delicious, sweet food, is humble by nature, gains happiness through women, and stays cheerful. Per the Horasara, a 4th-house Moon increases comforts related to water, dairy, agriculture or vehicles in the native's life. Per Saravali, a 4th-house Moon in its own sign (Cancer) or exalted (Taurus) makes the native the owner of a grand mansion, water-related splendor, and a widely popular personality. Per Jataka Parijata (ch. 12), if the 4th lord and the Moon are aspected by benefics, the native enjoys uninterrupted comfort of vehicles and land throughout life."
       },
       "5": {
         "house": 5,
         "houseTheme": "सन्तान/बुद्धि",
-        "rating": "shubh",
+        "rating": "uttam",
         "entries": [
           {
-            "shloka": "सुतवान् ज्ञानसम्पन्नः मन्त्री वा राजपूजितः।\nसुतस्थे शशिनि जातो मेधावी च नरो भवेत्॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा चन्द्रमा हुँदा व्यक्ति सन्तानवान्, मेधावी, ज्ञानी र राजपूजित हुन्छ।",
-            "meaningEn": "With the Moon in the 5th house, the person is blessed with children, intelligent, knowledgeable, and honored by the king.",
-            "explanationNe": "मन्त्रसिद्धि र बौद्धिक श्रेष्ठता।",
-            "explanationEn": "It brings mantra-siddhi and intellectual excellence."
+            "shloka": "सुपुत्रो मेधावी मृदुगतिरमात्यः सुतगते।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "स्त्रीबुद्धिसत्त्वयुक्तो बहुश्रुतोत्पन्नवित्तवान् सुतगे॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा चन्द्रमा भए जातक उत्तम सन्तान (सुपुत्र) भएको, मेधावी (तीक्ष्ण बुद्धिमान्), कोमल/मन्द चाल भएको र राजा वा सरकारको मन्त्री/सल्लाहकार पद प्राप्त गर्ने हुन्छ। पाँचौं भाव बुद्धि, मन्त्र र सन्तानको हो। चन्द्रमा जस्तो सौम्य ग्रह पञ्चममा बस्दा जातकमा उच्च कल्पनाशीलता, मन्त्र सिद्धि र शुभ सन्तति योग बन्दछ। पञ्चम भावमा चन्द्रमा रहे जातक सुन्दर पत्नी, बुद्धि र सात्त्विक गुणले युक्त, बहुश्रुत (शास्त्रज्ञ/विद्वान्) र आफ्नै परिश्रमले धन आर्जन गर्ने हुन्छ। होरासार अनुसार ५औं भावको चन्द्रमाले जातकलाई ज्ञान र विवेक त दिन्छ, तर धन कमाउन केही कडा मेहनत गर्नुपर्ने हुन्छ। सारावली अनुसार पञ्चम भावमा चन्द्रमा स्थिर राशिमा भए पुत्र सन्तान र चर वा द्विस्वभाव राशिमा भए कन्या सन्तानको बाहुल्य हुन सक्छ। जातक पारिजात अनुसार यदि पञ्चम भावमा चन्द्रमा गुरु वा शुक्रको वर्गमा छ भने जातक उच्च कोटिको ज्ञानी र विद्वान् हुन्छ।",
+        "summaryEn": "With the Moon in the 5th house, the native has an excellent child, is highly intelligent, gentle in gait, and attains a position as minister or advisor to a ruler or government. The 5th house governs intellect, mantra, and children. A gentle graha like the Moon here creates high imaginative power, mastery of mantra, and an auspicious progeny yoga. With the Moon in the 5th house, the native has a beautiful spouse, intellect and sattvic qualities, is widely learned, and earns wealth through their own effort. Per the Horasara, the Moon in the 5th house grants knowledge and wisdom, but earning wealth requires considerable hard work. Per Saravali, if the 5th-house Moon is in a fixed sign, sons predominate among the children; in a movable or dual sign, daughters may predominate. Per Jataka Parijata, if the 5th-house Moon is in Jupiter's or Venus's varga, the native becomes a highly learned scholar."
       },
       "6": {
         "house": 6,
@@ -674,47 +633,56 @@
         "rating": "kamjor",
         "entries": [
           {
-            "shloka": "अल्पायुः कपटी मूर्खः श्लेष्मरोगादितः सदा।\nषष्ठस्थे शशिनि जातो रिपुभिः पीडितो भवेत्॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा चन्द्रमा हुँदा कफ विकार, शत्रुको भय र स्वास्थ्यमा उतारचढाव हुन सक्छ।",
-            "meaningEn": "With the Moon in the 6th house, there may be phlegm disorders, fear of enemies, and fluctuating health.",
-            "explanationNe": "स्वास्थ्यमा विशेष ध्यान दिनुपर्छ।",
-            "explanationEn": "Special attention should be paid to health."
+            "shloka": "क्षतेऽल्पायुश्चन्द्रेऽमतिरुदररोगी परिभवी।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "षष्ठेऽलसो दरिद्रो बहुशत्रुः सोदरादिदमनश्च।",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "छैठौं भावमा चन्द्रमा भए जातक शरीरमा चोटपटक लाग्ने, अल्पायु, मन्दबुद्धि, पेटको रोगी र अरूबाट पराजित वा अपमानित हुने सम्भावना रहन्छ। छैठौं भाव दुस्थान (त्रिक भाव) भएकाले यहाँ चन्द्रमा बस्दा कफ, पेट वा जलसम्बन्धी रोग उत्पन्न हुन सक्छ। तर उपचय भाव भएकाले यदि चन्द्रमा पूर्ण बली छ भने शत्रुमाथि विजय पनि दिलाउँछ। छैठौं भावमा चन्द्रमा भए जातक आलसी, दरिद्र, धेरै शत्रु भएको र आफ्ना दाजुभाइहरूलाई दबाउने वा उनीहरूसँग विरोध गर्ने हुन्छ। होरासारका अनुसार ६ठौं भावमा चन्द्रमा रहँदा जातकको पाचन प्रणाली कमजोर हुन सक्छ र भाइभाइमा मतभेद हुन सक्छ। सारावली र बृहज्जातक अनुसार ६ठौं वा ८औं भावमा चन्द्रमा रहनु बालारिष्ट (बाल्यकालमा अस्वस्थता) को कारक बन्न सक्छ। तर जातक पारिजात र सारावली दुवैले स्पष्ट पारेका छन् कि यदि ६ठौं चन्द्रमामा शुभ ग्रह (गुरु, शुक्र, बुध) को दृष्टि छ भने बालारिष्ट भङ्ग भई जातक दीर्घायु हुन्छ।",
+        "summaryEn": "With the Moon in the 6th house, the native may suffer bodily injury, have a short life, dull intellect, stomach ailments, and be prone to defeat or humiliation by others. The 6th house is a dusthana, so the Moon here can cause phlegm, stomach or water-related illness. But being an upachaya house too, a strong (full) Moon here can also grant victory over enemies. With the Moon in the 6th house, the native is lazy, poor, has many enemies, and suppresses or conflicts with their own siblings. Per the Horasara, a 6th-house Moon can weaken the native's digestive system and cause discord among siblings. Per Saravali and the Brihat Jataka, a Moon in the 6th or 8th house can be a factor in bala-arishta (childhood ill health). But both Jataka Parijata and Saravali make clear that if the 6th-house Moon is aspected by a benefic (Jupiter, Venus or Mercury), the bala-arishta is cancelled and the native becomes long-lived."
       },
       "7": {
         "house": 7,
         "houseTheme": "दाम्पत्य भाव",
-        "rating": "shubh",
+        "rating": "uttam",
         "entries": [
           {
-            "shloka": "सुभ्रूः कान्तो वपुष्मान् कामार्तो सुभगो सुखी।\nसप्तमे शशिनि जातो भार्यावान् जनवल्लभः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा चन्द्रमा हुँदा व्यक्ति सुन्दर जीवनसाथी पाउने, जनप्रिय र सुखी हुन्छ।",
-            "meaningEn": "With the Moon in the 7th house, the person finds a beautiful spouse, is well-liked, and happy.",
-            "explanationNe": "विवाह र साझेदारीका लागि उत्तम स्थिति।",
-            "explanationEn": "It is an excellent placement for marriage and partnership."
+            "shloka": "स्मरे दृष्टेः सौम्यो वरयुवतिकांतोऽतिसुभगः॥",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "स्त्रीदयितो नृपनेता प्रदानशीलोऽस्तगे निशानाथे॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा चन्द्रमा भए जातक स्वयं सौम्य, सुन्दर, रूपवती र श्रेष्ठ पत्नीको प्रिय (र पत्नी पनि अत्यन्त सुन्दरी हुने) र अति सौभाग्यशाली हुन्छ। सातौं भाव विवाह र साझेदारीको हो। चन्द्रमा यहाँ बस्दा जीवनसाथी सुन्दर, भावुक र दयालु मिल्छ। दम्पतीबीच आपसी प्रेम र मधुरता कायम रहन्छ। सातौं (अस्त) भावमा चन्द्रमा भए जातक स्त्रीको अत्यन्त प्रिय, राजा/सरकारको नेता वा मुख्य अधिकारी र उदार एवं दानशील हुन्छ। होरासारका अनुसार सप्तमस्थ चन्द्रमाले जातकलाई व्यापार, विदेश यात्रा र समाजमा प्रतिष्ठा दिलाउँछ। सारावली अनुसार सप्तम भावमा पूर्ण चन्द्रमा भएमा जातकको विवाह द्रुत गतिमा हुन्छ र पत्नी समृद्ध कुलकी हुन्छिन्। जातक पारिजात (अध्याय ११) अनुसार यदि सप्तम भावमा चन्द्रमा र शुक्रको शुभ योग छ भने जातकको दाम्पत्य जीवन अत्यन्त सुखद रहन्छ।",
+        "summaryEn": "With the Moon in the 7th house, the native is themselves gentle and handsome, dear to a beautiful and excellent spouse (who is likewise very beautiful), and exceedingly fortunate. The 7th house governs marriage and partnership. The Moon here brings a beautiful, emotionally warm and kind spouse, with mutual love and sweetness enduring between the couple. With the Moon in the 7th (setting) house, the native is greatly loved by women, becomes a leader or chief official for a ruler or government, and is generous and charitable. Per the Horasara, a 7th-house Moon brings the native success in business, foreign travel, and standing in society. Per Saravali, a full Moon in the 7th house brings a swift marriage, with the spouse coming from a prosperous family. Per Jataka Parijata (ch. 11), if the Moon and Venus form an auspicious yoga in the 7th house, the native's married life stays exceptionally happy."
       },
       "8": {
         "house": 8,
         "houseTheme": "आयु भाव",
-        "rating": "kamjor",
+        "rating": "mishrit",
         "entries": [
           {
-            "shloka": "व्याधितो विकलो अल्पायुः दुःखितो बन्धुवर्जितः।\nअष्टमस्थे शशिनि जातो चञ्चलो भयपीडितः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा चन्द्रमा हुँदा मानसिक चञ्चलता, जलभय र स्वास्थ्यमा समस्या हुन सक्छ।",
-            "meaningEn": "With the Moon in the 8th house, there may be mental restlessness, fear of water, and health trouble.",
-            "explanationNe": "मानसिक शान्ति र जलबाट सावधान रहनुपर्छ।",
-            "explanationEn": "Caution should be exercised regarding mental peace and water."
+            "shloka": "मृतौ रोग्यल्पायुः...",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "धनवान् निधने भोगी हिमगौ ज्ञानी प्रतापबहुलः स्यात्।",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "आठौं भावमा चन्द्रमा भए जातक रोगी र अल्पायु हुन सक्छ। (तर यदि चन्द्रमा पूर्ण, उच्च वा शुभग्रहबाट दृष्ट छ भने दोष हट्छ)। आठौं भाव सङ्कट र आयुको हो। चन्द्रमा यहाँ वृश्चिक (नीच) वा पाप प्रभावमा भए मानसिक तनाव, जलभय र अस्वस्थता दिन्छ। (विशेष परिस्थिति अनुसार) आठौं भावमा चन्द्रमा भए जातक धनवान्, विविध भोग भोग्ने, ज्ञानी र ठूलो प्रतापी पनि हुन सक्छ। होरासारले अष्टम चन्द्रमाको एउटा विशिष्ट पक्ष उजागर गरेको छ— यदि अष्टमस्थ चन्द्रमा शुभ प्रभावमा छ वा आफ्नै उच्च/स्वराशिमा छ भने यसले गूढ ज्ञान (ज्योतिष/अनुसन्धान) र गुप्त धन दिलाउँछ। शास्त्रीय ग्रन्थहरूमा आठौं चन्द्रमालाई बालारिष्ट विचार गर्दा विशेष ध्यान दिइन्छ। सारावली र बृहज्जातक अनुसार: \"अथापि वा पापनिरीक्षितश्चन्द्रः षष्ठाष्टमगो मरणाय।\" अर्थात् पापग्रहबाट दृष्ट अष्टम चन्द्रमाले कष्ट दिन्छ, तर यदि गुरु वा शुक्रले देखेमा मानिस दीर्घायु र सुखी हुन्छ।",
+        "summaryEn": "With the Moon in the 8th house, the native may be sickly and short-lived. (But if the Moon is full, exalted, or aspected by a benefic, this affliction is removed.) The 8th house governs danger and longevity. A Moon here in Scorpio (debilitation) or under malefic influence brings mental stress, fear of water, and poor health. (Under specific circumstances) with the Moon in the 8th house, the native can also be wealthy, enjoy varied comforts, be knowledgeable, and greatly powerful. The Horasara highlights a special side of the 8th-house Moon — if it is under benefic influence or in its own exaltation or own sign, it grants occult knowledge (astrology/research) and hidden wealth. Classical texts pay special attention to bala-arishta when assessing an 8th-house Moon. Per Saravali and the Brihat Jataka: \"athāpi vā pāpanirīkṣitaścandraḥ ṣaṣṭhāṣṭamago maraṇāya\" — an 8th-house Moon aspected by malefics brings hardship, but if seen by Jupiter or Venus, the person becomes long-lived and happy."
       },
       "9": {
         "house": 9,
@@ -722,15 +690,18 @@
         "rating": "uttam",
         "entries": [
           {
-            "shloka": "धार्मिकः सुतवान् प्राज्ञः सर्वसौख्यसमन्वितः।\nनवमे शशिनि जातो भाग्यवान् जनपूजितः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा चन्द्रमा हुँदा व्यक्ति धार्मिक, भाग्यशाली, विद्वान् र जनपूजित हुन्छ।",
-            "meaningEn": "With the Moon in the 9th house, the person is righteous, fortunate, learned, and honored by people.",
-            "explanationNe": "तीर्थयात्रा र भाग्यको पूर्ण विकास।",
-            "explanationEn": "It brings full development of pilgrimage and fortune."
+            "shloka": "तपसि शुभधर्मात्मसुतवान्।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "धर्मप्रियोऽतिभाषी नवमे स्त्रीचञ्चलो धनाध्यक्षः॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा चन्द्रमा भए जातक शुभ आचरण गर्ने, धार्मिक, परोपकारी, भाग्यशाली र असल सन्तान (पुत्र) ले युक्त हुन्छ। नवम भाव त्रिकोण भाव (भाग्य र धर्मको) हो। यहाँ चन्द्रमा बस्दा जातकको भाग्योदय विवाह र सन्तान प्राप्तिपछि तीव्र गतिमा हुन्छ। नवम भावमा चन्द्रमा भए जातक धर्ममा रुचि राख्ने, प्रगल्भ वक्ता (धेरै/प्रभावशाली बोल्ने), स्त्रीप्रति केही चञ्चल तर कोषको अध्यक्ष (धनाध्यक्ष/बैंक वा वित्त अधिकारी) हुन्छ। होरासार अनुसार नवमस्थ चन्द्रमाले जातकलाई धार्मिक तीर्थयात्रा, परोपकार र धन व्यवस्थापनमा शीर्ष स्थानमा पुर्‍याउँछ। सारावली अनुसार नवम भावमा चन्द्रमा हुनु भाग्य वृद्धि र देव-ब्राह्मण भक्ति प्रदान गर्ने उत्तम योग हो। जातक पारिजात अनुसार यदि नवमेश र चन्द्रमाको शुभ सम्बन्ध छ भने जातक जीवनभर अखण्ड भाग्य भोग गर्दछ।",
+        "summaryEn": "With the Moon in the 9th house, the native behaves righteously, is religious, charitable, fortunate, and blessed with a good child. The 9th house is a trikona house (of fortune and dharma). The Moon here accelerates the native's rise in fortune, especially after marriage and having children. With the Moon in the 9th house, the native takes interest in dharma, is a bold and impactful speaker, somewhat restless regarding women, but becomes a treasurer (a finance official). Per the Horasara, a 9th-house Moon brings the native to the top through religious pilgrimage, charity, and financial administration. Per Saravali, the Moon in the 9th house is an excellent yoga that increases fortune and devotion to gods and brahmins. Per Jataka Parijata, if the 9th lord and the Moon share an auspicious relationship, the native enjoys unbroken good fortune throughout life."
       },
       "10": {
         "house": 10,
@@ -738,15 +709,18 @@
         "rating": "uttam",
         "entries": [
           {
-            "shloka": "कर्मसिद्धो महाधनी सुजनः सत्यवाचकः।\nदशमे शशिनि जातो राजमान्यो महामतिः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा चन्द्रमा हुँदा व्यक्ति कर्मसिद्ध, धनी, सत्यवादी र सरकारबाट सम्मानित हुन्छ।",
-            "meaningEn": "With the Moon in the 10th house, the person is accomplished in action, wealthy, truthful, and honored by the government.",
-            "explanationNe": "व्यावसायिक सफलता र समाजमा उच्च पद।",
-            "explanationEn": "It brings success in business and a high position in society."
+            "shloka": "जयी सिद्धारम्भो नभसि शुभकृत्सत्प्रियकरः।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "सर्वोपायैर्धनवान् दशमे हिमगौ विदग्धयुवतीशः।",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा चन्द्रमा भए जातक विजयी (प्रतिस्पर्धामा जित्ने), जे काम सुरु गर्छ त्यसमा प्रारम्भमै सफलता पाउने, शुभ कर्म गर्ने र सज्जन पुरुषहरूको प्रिय हुन्छ। दशम भाव उपचय र केन्द्र दुवै हो। यहाँ चन्द्रमा बस्दा जातक राज्य/सरकारबाट सम्मानित, व्यापार वा सार्वजनिक सेवामा उच्च स्थान प्राप्त गर्ने हुन्छ। दशम भावमा चन्द्रमा भए जातक सबै धर्मसम्मत/उचित उपायहरूद्वारा धन उपार्जन गर्ने र चतुर एवं कलाकुशल पत्नीको पति हुन्छ। होरासारका अनुसार १०औं भावको चन्द्रमाले कार्यक्षेत्रमा बहुमुखी प्रतिभा र व्यापारिक सफलता प्रदान गर्दछ। जातक पारिजात (अध्याय १०) र सारावली अनुसार दशम भावमा सूर्य वा चन्द्रमा हुनु कार्यकुशलता र राजकीय वैभवको प्रतीक हो। यदि चन्द्रमा अमला योग (दशममा केवल शुभग्रह) बनाउँछ भने जातक निष्कलङ्क कीर्तिवान् हुन्छ।",
+        "summaryEn": "With the Moon in the 10th house, the native is victorious, finds success right from the start of any undertaking, performs righteous deeds, and is dear to virtuous people. The 10th house is both an upachaya and a kendra. The Moon here brings honor from the state or government, and a high position in business or public service. With the Moon in the 10th house, the native earns wealth through all righteous means and becomes the husband of a clever, artistically accomplished wife. Per the Horasara, a 10th-house Moon grants versatile talent and business success in the native's career. Per Jataka Parijata (ch. 10) and Saravali, the Sun or Moon in the 10th house is a symbol of professional skill and royal splendor. If the Moon forms an Amala yoga (only benefics in the 10th from the Moon/Lagna), the native attains a spotless reputation."
       },
       "11": {
         "house": 11,
@@ -754,31 +728,37 @@
         "rating": "uttam",
         "entries": [
           {
-            "shloka": "लाभवान् सुतवान् प्राज्ञः दीर्घायुः बहुसेवकः।\nएकादशे शशिनि जातो गुणवान् राजपूजितः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा चन्द्रमा हुँदा व्यक्ति प्रचुर लाभवान्, दीर्घायु, गुणवान् र राजपूजित हुन्छ।",
-            "meaningEn": "With the Moon in the 11th house, the person has abundant gain, long life, virtue, and honor from the king.",
-            "explanationNe": "आम्दानीका स्रोतहरू बहुआयामिक हुन्छन्।",
-            "explanationEn": "Sources of income become multi-dimensional."
+            "shloka": "मनस्वी बह्वायुर्धनतनयभृत्यैः सह भवेत्।",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "लाभे धनी सुविद्वान् गोमान् नृपसम्मतो विनीतश्च॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा चन्द्रमा भए जातक मनस्वी (दृढ सङ्कल्प भएको), दीर्घायु, धन, पुत्र र सेवकहरू (नौकर-चाकर) को सुख प्राप्त गर्ने हुन्छ। ११औं भाव सर्वोत्तम उपचय भाव हो। यहाँ सबै ग्रहले शुभ फल दिन्छन्। चन्द्रमा एकादशमा हुँदा इच्छा पूर्ति, निरन्तर आम्दानी र समाजमा ठूलो प्रतिष्ठा मिल्छ। एकादश (लाभ) भावमा चन्द्रमा भए जातक अत्यन्त धनी, ठूलो विद्वान्, पशु/गोधन वा सम्पत्तियुक्त, राजा/सरकारबाट सम्मानित र नम्र स्वभावको हुन्छ। होरासारका अनुसार लाभ भावको चन्द्रमाले मानिसलाई समाजप्रिय, विद्वान् र व्यावसायिक रूपमा सफल बनाउँछ। जातक पारिजात (अध्याय १०) अनुसार: \"इन्दोस्तु तृतीये षष्ठे दशमे एकादशे शुभदः।\" अर्थात् ११औं भावमा चन्द्रमा रहँदा जातकले जीवनमा कहिल्यै आर्थिक अभाव भोग्नु पर्दैन। सारावली अनुसार एकादश चन्द्रमाले मित्रहरूबाट अपार लाभ दिलाउँछ।",
+        "summaryEn": "With the Moon in the 11th house, the native is strong-willed, long-lived, and enjoys wealth, children and servants. The 11th house is the best of the upachaya houses — every graha gives auspicious results here. The Moon in the 11th brings fulfillment of desires, steady income, and great standing in society. With the Moon in the 11th (gains) house, the native is extremely wealthy, greatly learned, endowed with cattle/property, honored by rulers or government, and humble. Per the Horasara, the Moon in the house of gains makes a person sociable, learned, and professionally successful. Per Jataka Parijata (ch. 10): \"indostu tṛtīye ṣaṣṭhe daśame ekādaśe śubhadaḥ\" — with the Moon in the 11th house, the native never suffers financial want in life. Per Saravali, an 11th-house Moon brings immense gain through friends."
       },
       "12": {
         "house": 12,
         "houseTheme": "व्यय भाव",
-        "rating": "kamjor",
+        "rating": "mishrit",
         "entries": [
           {
-            "shloka": "व्ययशीलः पतितः क्रोधी नेत्ररोगी कफान्वितः।\nद्वादशे शशिनि जातो विकलो बन्धुवर्जितः॥",
-            "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा चन्द्रमा हुँदा अत्यधिक खर्च, नेत्र विकार र मानसिक चिन्ता हुन सक्छ।",
-            "meaningEn": "With the Moon in the 12th house, there may be excessive expense, eye disorders, and mental worry.",
-            "explanationNe": "विदेश प्रवास र अध्यात्मका लागि भने अनुकूल हुन्छ।",
-            "explanationEn": "It is however favorable for foreign travel and spirituality."
+            "shloka": "व्यये द्वेष्यो दुःखो शशिनि परिभूतोऽलसतमः॥",
+            "shlokaSourceNe": "फलदीपिका",
+            "shlokaSourceEn": "Phaladeepika"
+          },
+          {
+            "shloka": "नयनातुरोऽङ्गहीनो व्ययगे स्त्रीदोषवानेकमतिः।\nक्षेत्रोच्चशस्तपक्षे व्ययगे हिमगौ सुखी धनी भवति॥",
+            "shlokaSourceNe": "होरासार",
+            "shlokaSourceEn": "Horasara"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा चन्द्रमा भए जातक अरूको द्वेषपात्र (घृणाको पात्र), दुःखी, अपमानित वा पराजित हुने र अत्यन्त आलसी हुन्छ। १२औं भाव खर्च र हानि/एकान्तको हो। यहाँ चन्द्रमा कमजोर भए मानसिक चिन्ता, आँखाको समस्या र व्यर्थको खर्च हुन सक्छ। १२औं भावमा चन्द्रमा भए मानिस आँखाको रोगी, अङ्गहीन वा दुर्बल, स्त्रीका कारण कष्ट पाउने र चञ्चल मति भएको हुन्छ। विशेष नियम: तर यदि द्वादश भाव चन्द्रमाको आफ्नै घर (कर्कट), उच्च राशि (वृष) वा शुक्ल पक्षको बलवान् चन्द्रमा छ भने जातक सुखी र धनी हुन्छ। होरासारले द्वादश चन्द्रमाको अपवाद स्पष्ट रूपमा प्रस्तुत गरेको छ— यदि १२औं भावमा चन्द्रमा स्वराशियुक्त वा पूर्ण बली छ भने विदेश यात्रा, वैदेशिक व्यापार र परोपकारबाट ठूलो धन प्राप्त हुन्छ। सारावली अनुसार द्वादश भावको क्षीण चन्द्रमाले नेत्रविकार वा शयन सुखमा बाधा दिन्छ, तर पूर्ण चन्द्रमा भएमा धार्मिक कार्यमा खर्च गर्ने र मोक्ष मार्गमा लाग्ने उच्च विचार दिन्छ।",
+        "summaryEn": "With the Moon in the 12th house, the native becomes an object of others' resentment, is unhappy, subject to humiliation or defeat, and extremely lazy. The 12th house governs expenditure and loss/solitude. A weak Moon here can bring mental anxiety, eye trouble, and wasteful spending. With the Moon in the 12th house, the person suffers eye ailments, is weak or deficient in a limb, faces trouble because of women, and is fickle-minded. Special rule: but if the 12th-house Moon is in its own sign (Cancer), exalted (Taurus), or a strong waxing Moon, the native is happy and wealthy. The Horasara clearly lays out the exception for the 12th-house Moon — if it is in its own sign or fully strong there, it brings great wealth through foreign travel, overseas trade, and charitable work. Per Saravali, a waning 12th-house Moon causes eye disorders or disturbed rest, but a full Moon there instead inclines the native toward spending on religious works and elevated thoughts leaning toward the path of liberation (moksha)."
       }
     },
     "mars": {
@@ -790,13 +770,11 @@
           {
             "shloka": "व्रणाङ्कितगात्रः साहसी शूरो रोगादितोऽल्पायुः।\nतनौ कुजे जातो भवति क्रोधी नृपद्रोही॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भावमा मंगल हुँदा शरीरमा चोटको खत, साहसी तर क्रोधी स्वभाव हुन्छ।",
-            "meaningEn": "With Mars in the 1st house, there are scars on the body, and a courageous but hot-tempered nature.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भावमा मंगल हुँदा शरीरमा चोटको खत, साहसी तर क्रोधी स्वभाव हुन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 1st house, there are scars on the body, and a courageous but hot-tempered nature. Mars's influence in this position has a distinct effect on the native's life."
       },
       "2": {
         "house": 2,
@@ -806,13 +784,11 @@
           {
             "shloka": "धनहीनः सुतहीनः क्रूरः परान्नभुक् सर्वदा भवेत्।\nद्वितीयस्थे मङ्गले जातो वञ्चको जनवर्जितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा मंगल हुँदा वाणीमा कडापन र धन सञ्चयमा चुनौती हुन्छ।",
-            "meaningEn": "With Mars in the 2nd house, there is harshness in speech and a challenge to accumulating wealth.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा मंगल हुँदा वाणीमा कडापन र धन सञ्चयमा चुनौती हुन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 2nd house, there is harshness in speech and a challenge to accumulating wealth. Mars's influence in this position has a distinct effect on the native's life."
       },
       "3": {
         "house": 3,
@@ -822,13 +798,11 @@
           {
             "shloka": "विक्रमी सुतयुक्तश्च भ्रातृहीनश्च साहसी।\nसहजस्थे मङ्गले जातो तेजस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा मंगल अत्यन्त शुभ, प्रतापी र पराक्रमी बनाउँछ।",
-            "meaningEn": "With Mars in the 3rd house, it is extremely auspicious, granting valor and might.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा मंगल अत्यन्त शुभ, प्रतापी र पराक्रमी बनाउँछ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 3rd house, it is extremely auspicious, granting valor and might. Mars's influence in this position has a distinct effect on the native's life."
       },
       "5": {
         "house": 5,
@@ -838,13 +812,11 @@
           {
             "shloka": "सुतहीनः दुःखितश्च क्रोधी चञ्चलमानसः।\nसुतस्थे मङ्गले जातो मन्दबुद्धिश्च जायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा मंगल हुँदा पेट र सन्तान पक्षमा ध्यान दिनुपर्छ।",
-            "meaningEn": "With Mars in the 5th house, attention must be paid to the stomach and to children.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा मंगल हुँदा पेट र सन्तान पक्षमा ध्यान दिनुपर्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 5th house, attention must be paid to the stomach and to children. Mars's influence in this position has a distinct effect on the native's life."
       },
       "6": {
         "house": 6,
@@ -854,13 +826,11 @@
           {
             "shloka": "कामुकः बलवान् शूरो जितारिरिपुसूदनः।\nषष्ठे मङ्गले जातो धनी राजप्रियः सुखी॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा मंगलले शत्रु र रोगमाथि पूर्ण विजय दिन्छ।",
-            "meaningEn": "With Mars in the 6th house, it grants complete victory over enemies and disease.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "षष्ठ भावमा मंगलले शत्रु र रोगमाथि पूर्ण विजय दिन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 6th house, it grants complete victory over enemies and disease. Mars's influence in this position has a distinct effect on the native's life."
       },
       "7": {
         "house": 7,
@@ -870,13 +840,11 @@
           {
             "shloka": "कलत्रहीनो दुःखी च परदाररतः सदा।\nसप्तमे मङ्गले जातो रोगी चञ्चलमानसः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा मंगल (माङ्गलिक दोष) ले दाम्पत्यमा सतर्कता माग्छ।",
-            "meaningEn": "With Mars in the 7th house (the Manglik dosha), caution is called for in married life.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा मंगल (माङ्गलिक दोष) ले दाम्पत्यमा सतर्कता माग्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 7th house (the Manglik dosha), caution is called for in married life. Mars's influence in this position has a distinct effect on the native's life."
       },
       "8": {
         "house": 8,
@@ -886,13 +854,11 @@
           {
             "shloka": "अल्पायुः विकलाङ्गश्च रोगार्तो दुःखसमन्वितः।\nअष्टमे मङ्गले जातो धनहीनश्च जायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा मंगल हुँदा दुर्घटना र रक्त विकारबाट जोगिनुपर्छ।",
-            "meaningEn": "With Mars in the 8th house, one should guard against accidents and blood disorders.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "अष्टम भावमा मंगल हुँदा दुर्घटना र रक्त विकारबाट जोगिनुपर्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 8th house, one should guard against accidents and blood disorders. Mars's influence in this position has a distinct effect on the native's life."
       },
       "9": {
         "house": 9,
@@ -902,13 +868,11 @@
           {
             "shloka": "धर्महीनः पितृद्वेषी हिंसकः पापकृत् सदा।\nनवमे मङ्गले जातो जनद्वेषी नरो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा मंगल हुँदा पितासँग मतभेद तर साहसी भाग्य हुन्छ।",
-            "meaningEn": "With Mars in the 9th house, there is disagreement with the father, yet a bold fortune.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा मंगल हुँदा पितासँग मतभेद तर साहसी भाग्य हुन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 9th house, there is disagreement with the father, yet a bold fortune. Mars's influence in this position has a distinct effect on the native's life."
       },
       "10": {
         "house": 10,
@@ -918,13 +882,11 @@
           {
             "shloka": "शूरश्चतुरः प्राप्तश्रीः नृपमान्यो महामतिः।\nदशमे मङ्गले जातो यशस्वी बहुसेवकः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा मंगल (कुलदीपक योग/दिग्बली) ले उच्च पद दिन्छ।",
-            "meaningEn": "With Mars in the 10th house (Kuladipaka yoga / directional strength), it grants a high position.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा मंगल (कुलदीपक योग/दिग्बली) ले उच्च पद दिन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 10th house (Kuladipaka yoga / directional strength), it grants a high position. Mars's influence in this position has a distinct effect on the native's life."
       },
       "11": {
         "house": 11,
@@ -934,13 +896,11 @@
           {
             "shloka": "लाभवान् सुतवान् प्राज्ञः शूरश्च बहुवित्तवान्।\nएकादशे मङ्गले जातो यशस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा मंगलले घर-जग्गा र धनको प्रचुर लाभ दिन्छ।",
-            "meaningEn": "With Mars in the 11th house, it grants abundant gain of property and wealth.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा मंगलले घर-जग्गा र धनको प्रचुर लाभ दिन्छ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 11th house, it grants abundant gain of property and wealth. Mars's influence in this position has a distinct effect on the native's life."
       },
       "12": {
         "house": 12,
@@ -950,13 +910,11 @@
           {
             "shloka": "नेत्ररोगी व्ययशीलः पतितो बन्धुवर्जितः।\nद्वादशे मङ्गले जातो दुःखी च परदेशभाक्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा मंगलले अत्यधिक खर्च र वैदेशिक योग बनाउँछ।",
-            "meaningEn": "With Mars in the 12th house, it causes excessive expense and a tendency toward foreign travel.",
-            "explanationNe": "यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Mars's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा मंगलले अत्यधिक खर्च र वैदेशिक योग बनाउँछ। यस स्थानमा मंगलको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Mars in the 12th house, it causes excessive expense and a tendency toward foreign travel. Mars's influence in this position has a distinct effect on the native's life."
       }
     },
     "mercury": {
@@ -1318,13 +1276,11 @@
           {
             "shloka": "रूपवान् सुभगः कामी दीर्घायुः जनपूजितः।\nतनौ गुरौ जातो ज्ञानी सर्वशास्त्रविशारदः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भावमा बृहस्पति (हंस योग) ले उच्च ज्ञान र दीर्घायु दिन्छ।",
-            "meaningEn": "With Jupiter in the 1st house (Hansa yoga), it grants high knowledge and long life.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भावमा बृहस्पति (हंस योग) ले उच्च ज्ञान र दीर्घायु दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 1st house (Hansa yoga), it grants high knowledge and long life. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "2": {
         "house": 2,
@@ -1334,13 +1290,11 @@
           {
             "shloka": "प्राज्ञो धनी कविः कामी मिष्टवाक्यश्च राजभाक्।\nकुटुम्बी जायते नूनं धनस्थे देवपूजिते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा बृहस्पतिले प्रचुर धन र वाणीमा सत्यता दिन्छ।",
-            "meaningEn": "With Jupiter in the 2nd house, it grants abundant wealth and truthfulness in speech.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा बृहस्पतिले प्रचुर धन र वाणीमा सत्यता दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 2nd house, it grants abundant wealth and truthfulness in speech. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "3": {
         "house": 3,
@@ -1350,13 +1304,11 @@
           {
             "shloka": "भ्रातृमान् कृपणः शूरः सुतवान् बन्धुपूजितः।\nसहजस्थे गुरौ जातो तेजस्वी कार्यसाधकः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा बृहस्पतिले बुद्धि र पराक्रमको सन्तुलन गराउँछ।",
-            "meaningEn": "With Jupiter in the 3rd house, it balances intellect and valor.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा बृहस्पतिले बुद्धि र पराक्रमको सन्तुलन गराउँछ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 3rd house, it balances intellect and valor. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "5": {
         "house": 5,
@@ -1366,13 +1318,11 @@
           {
             "shloka": "मन्त्री सुतवान् प्राज्ञः काव्यशास्त्रविशारदः।\nसुतस्थे गुरौ जातो नृपपूज्यो महामतिः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा बृहस्पतिले मन्त्रसिद्धि र सन्तान उन्नति गराउँछ।",
-            "meaningEn": "With Jupiter in the 5th house, it brings mantra-siddhi and the flourishing of children.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा बृहस्पतिले मन्त्रसिद्धि र सन्तान उन्नति गराउँछ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 5th house, it brings mantra-siddhi and the flourishing of children. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "6": {
         "house": 6,
@@ -1382,13 +1332,11 @@
           {
             "shloka": "शत्रुहन्ता आलसः शूरः मन्दोत्साहो जनप्रियः।\nषष्ठस्थे गुरौ जातो नीरोगश्च प्रजायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा बृहस्पतिले रोग र ऋणबाट मुक्ति दिन्छ।",
-            "meaningEn": "With Jupiter in the 6th house, it grants release from disease and debt.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "षष्ठ भावमा बृहस्पतिले रोग र ऋणबाट मुक्ति दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 6th house, it grants release from disease and debt. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "7": {
         "house": 7,
@@ -1398,13 +1346,11 @@
           {
             "shloka": "सुभगः कान्तिमान् कामी भार्यावान् जनवल्लभः।\nसप्तमे गुरौ जातो राजाश्रयो महामतिः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा बृहस्पतिले गुणवती पत्नी र प्रतिष्ठित विवाह दिन्छ।",
-            "meaningEn": "With Jupiter in the 7th house, it brings a virtuous spouse and an honored marriage.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा बृहस्पतिले गुणवती पत्नी र प्रतिष्ठित विवाह दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 7th house, it brings a virtuous spouse and an honored marriage. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "8": {
         "house": 8,
@@ -1414,13 +1360,11 @@
           {
             "shloka": "दीर्घायुः निरोगश्च गुप्तविद्याविशारदः।\nअष्टमे गुरौ जातो सिद्धिकार्यरतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा बृहस्पतिले गूढ ज्ञान र दीर्घायु प्रदान गर्दछ।",
-            "meaningEn": "With Jupiter in the 8th house, it grants occult knowledge and long life.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "अष्टम भावमा बृहस्पतिले गूढ ज्ञान र दीर्घायु प्रदान गर्दछ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 8th house, it grants occult knowledge and long life. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "9": {
         "house": 9,
@@ -1430,13 +1374,11 @@
           {
             "shloka": "धार्मिकः सुतवान् प्राज्ञः सर्वसौख्यसमन्वितः।\nनवमे गुरौ जातो भाग्यवान् जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा गुरु (आफ्नै कारक भाव) ले सर्वोच्च भाग्य दिन्छ।",
-            "meaningEn": "With Jupiter in the 9th house (its own significator house), it grants the highest fortune.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा गुरु (आफ्नै कारक भाव) ले सर्वोच्च भाग्य दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 9th house (its own significator house), it grants the highest fortune. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "10": {
         "house": 10,
@@ -1446,13 +1388,11 @@
           {
             "shloka": "कर्मसिद्धो महाधनी राजमान्यो महामतिः।\nदशमे गुरौ जातो यशस्वी बहुसेवकः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा बृहस्पतिले प्रशासनिक र सामाजिक प्रतिष्ठा दिन्छ।",
-            "meaningEn": "With Jupiter in the 10th house, it grants administrative and social prestige.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा बृहस्पतिले प्रशासनिक र सामाजिक प्रतिष्ठा दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 10th house, it grants administrative and social prestige. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "11": {
         "house": 11,
@@ -1462,13 +1402,11 @@
           {
             "shloka": "लाभवान् सुतवान् प्राज्ञः दीर्घायुः बहुसेवकः।\nएकादशे गुरौ जातो गुणवान् राजपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा बृहस्पतिले बहुआयामिक आय र पूर्ण लाभ दिन्छ।",
-            "meaningEn": "With Jupiter in the 11th house, it grants income from many sources and full gain.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा बृहस्पतिले बहुआयामिक आय र पूर्ण लाभ दिन्छ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 11th house, it grants income from many sources and full gain. Jupiter's influence in this position has a distinct effect on the native's life."
       },
       "12": {
         "house": 12,
@@ -1478,13 +1416,11 @@
           {
             "shloka": "व्ययशीलः पतितः क्रोधी आलसः बन्धुवर्जितः।\nद्वादशे गुरौ जातो धार्मिकश्च परदेशभाक्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा बृहस्पतिले मोक्ष र सात्विक खर्च गराउँछ।",
-            "meaningEn": "With Jupiter in the 12th house, it brings liberation and sattvic expenditure.",
-            "explanationNe": "यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Jupiter's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा बृहस्पतिले मोक्ष र सात्विक खर्च गराउँछ। यस स्थानमा बृहस्पतिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Jupiter in the 12th house, it brings liberation and sattvic expenditure. Jupiter's influence in this position has a distinct effect on the native's life."
       }
     },
     "venus": {
@@ -1846,13 +1782,11 @@
           {
             "shloka": "धीरः कृशः कार्यसहो कृपणः स्थिरबुद्धिमान्।\nमन्दे १ भावगे जातो जायते जननायकः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भावमा शनिले गम्भीरता र जननायकको गुण दिन्छ।",
-            "meaningEn": "With Saturn in the 1st house, it grants gravity and the qualities of a leader of people.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भावमा शनिले गम्भीरता र जननायकको गुण दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 1st house, it grants gravity and the qualities of a leader of people. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "2": {
         "house": 2,
@@ -1862,13 +1796,11 @@
           {
             "shloka": "धनहीनः सुतहीनः मुखरोगी सर्वदा भवेत्।\nद्वितीयस्थे शनौ जातो वञ्चको जनवर्जितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा शनिले सञ्चयमा ढिलाइ र वाणीमा गम्भीरता ल्याउँछ।",
-            "meaningEn": "With Saturn in the 2nd house, it brings delay in accumulation and gravity to speech.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा शनिले सञ्चयमा ढिलाइ र वाणीमा गम्भीरता ल्याउँछ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 2nd house, it brings delay in accumulation and gravity to speech. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "3": {
         "house": 3,
@@ -1878,13 +1810,11 @@
           {
             "shloka": "शूरश्चतुरः प्राप्तश्रीः भ्रातृहीनश्च साहसी।\nसहजस्थे शनौ जातो तेजस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा शनि (उपचय) ले कठोर परिश्रम र पराक्रम दिन्छ।",
-            "meaningEn": "With Saturn in the 3rd house (upachaya), it grants hard work and valor.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा शनि (उपचय) ले कठोर परिश्रम र पराक्रम दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 3rd house (upachaya), it grants hard work and valor. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "5": {
         "house": 5,
@@ -1894,13 +1824,11 @@
           {
             "shloka": "सुतहीनः मन्दबुद्धिः दुःखी चञ्चलमानसः।\nसुतस्थे शनौ जातो जनद्वेषी नरो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा शनिले मन्त्र र सन्तान पक्षमा धैर्य माग्छ।",
-            "meaningEn": "With Saturn in the 5th house, it calls for patience regarding mantra practice and children.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा शनिले मन्त्र र सन्तान पक्षमा धैर्य माग्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 5th house, it calls for patience regarding mantra practice and children. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "6": {
         "house": 6,
@@ -1910,13 +1838,11 @@
           {
             "shloka": "शत्रुहन्ता महाकामी बलवान् शूरवान् धनी।\nषष्ठस्थे शनौ जातो नृपमान्यो महामतिः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा शनिले शत्रु र रोग परास्त गर्ने महाबल दिन्छ।",
-            "meaningEn": "With Saturn in the 6th house, it grants the great strength to defeat enemies and disease.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "षष्ठ भावमा शनिले शत्रु र रोग परास्त गर्ने महाबल दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 6th house, it grants the great strength to defeat enemies and disease. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "7": {
         "house": 7,
@@ -1926,13 +1852,11 @@
           {
             "shloka": "कलत्रहीनो दुःखी च कृशगात्रो मलयानुकूलः।\nसप्तमे शनौ जातो रोगी चञ्चलमानसः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा शनि (सप्तम दिग्बली) ले परिपक्व जीवनसाथी दिन्छ।",
-            "meaningEn": "With Saturn in the 7th house (directional strength in the 7th), it brings a mature spouse.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा शनि (सप्तम दिग्बली) ले परिपक्व जीवनसाथी दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 7th house (directional strength in the 7th), it brings a mature spouse. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "8": {
         "house": 8,
@@ -1942,13 +1866,11 @@
           {
             "shloka": "अल्पायुः विकलाङ्गश्च रोगार्तो दुःखसमन्वितः।\nअष्टमे शनौ जातो धनहीनश्च जायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा शनि (आयु कारक) ले दीर्घायु प्रदान गर्दछ।",
-            "meaningEn": "With Saturn in the 8th house (significator of lifespan), it grants long life.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "अष्टम भावमा शनि (आयु कारक) ले दीर्घायु प्रदान गर्दछ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 8th house (significator of lifespan), it grants long life. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "9": {
         "house": 9,
@@ -1958,13 +1880,11 @@
           {
             "shloka": "धर्महीनः पितृद्वेषी हिंसकः पापकृत् सदा।\nनवमे शनौ जातो जनद्वेषी नरो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा शनिले ढिलो तर स्थायी भाग्य दिन्छ।",
-            "meaningEn": "With Saturn in the 9th house, it grants slow but lasting fortune.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा शनिले ढिलो तर स्थायी भाग्य दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 9th house, it grants slow but lasting fortune. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "10": {
         "house": 10,
@@ -1974,13 +1894,11 @@
           {
             "shloka": "शूरश्चतुरः प्राप्तश्रीः नृपमान्यो महामतिः।\nदशमे शनौ जातो यशस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा शनि (शश राजयोग) ले सर्वोच्च प्रशासनिक पद दिन्छ।",
-            "meaningEn": "With Saturn in the 10th house (Shasha Rajayoga), it grants the highest administrative position.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा शनि (शश राजयोग) ले सर्वोच्च प्रशासनिक पद दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 10th house (Shasha Rajayoga), it grants the highest administrative position. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "11": {
         "house": 11,
@@ -1990,13 +1908,11 @@
           {
             "shloka": "लाभवान् सुतवान् प्राज्ञः शूरश्च बहुवित्तवान्।\nएकादशे शनौ जातो दीर्घायुः जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा शनिले स्थायी र प्रचुर धनलाभ दिन्छ।",
-            "meaningEn": "With Saturn in the 11th house, it grants lasting and abundant gain of wealth.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा शनिले स्थायी र प्रचुर धनलाभ दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 11th house, it grants lasting and abundant gain of wealth. Saturn's influence in this position has a distinct effect on the native's life."
       },
       "12": {
         "house": 12,
@@ -2006,13 +1922,11 @@
           {
             "shloka": "नेत्ररोगी व्ययशीलः पतितो बन्धुवर्जितः।\nद्वादशे शनौ जातो दुःखी च परदेशभाक्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा शनिले वैदेशिक योग र एकान्त साधना दिन्छ।",
-            "meaningEn": "With Saturn in the 12th house, it brings a tendency to live abroad and solitary practice.",
-            "explanationNe": "यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Saturn's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा शनिले वैदेशिक योग र एकान्त साधना दिन्छ। यस स्थानमा शनिको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Saturn in the 12th house, it brings a tendency to live abroad and solitary practice. Saturn's influence in this position has a distinct effect on the native's life."
       }
     },
     "rahu": {
@@ -2024,13 +1938,11 @@
           {
             "shloka": "प्रतापी चतुरः कूटः परदेशरतः सुखी।\nलग्ने राहौ जातो जितशत्रुः प्रजायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भावमा राहुले चतुर, कूटनीतिज्ञ र साहसी बनाउँछ।",
-            "meaningEn": "With Rahu in the 1st house, it makes the person clever, diplomatic, and bold.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भावमा राहुले चतुर, कूटनीतिज्ञ र साहसी बनाउँछ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 1st house, it makes the person clever, diplomatic, and bold. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "2": {
         "house": 2,
@@ -2040,13 +1952,11 @@
           {
             "shloka": "धनहीनः कपटी क्रोधी मुखरोगी सर्वदा भवेत्।\nधनस्थे राहौ जातो वञ्चको जनवर्जितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा राहुले वाणीमा कडापन र अचानक धनलाभ दिन्छ।",
-            "meaningEn": "With Rahu in the 2nd house, it brings harshness to speech and sudden gain of wealth.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा राहुले वाणीमा कडापन र अचानक धनलाभ दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 2nd house, it brings harshness to speech and sudden gain of wealth. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "3": {
         "house": 3,
@@ -2056,13 +1966,11 @@
           {
             "shloka": "शूरः पराक्रमी श्रीमान् भ्रातृहीनः सुतवान् धनी।\nसहजस्थे राहौ जातो तेजस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा राहुले अत्यन्त पराक्रम र मिडिया/प्रविधिमा सफलता दिन्छ।",
-            "meaningEn": "With Rahu in the 3rd house, it grants great valor and success in media/technology.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा राहुले अत्यन्त पराक्रम र मिडिया/प्रविधिमा सफलता दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 3rd house, it grants great valor and success in media/technology. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "5": {
         "house": 5,
@@ -2072,13 +1980,11 @@
           {
             "shloka": "सुतहीनो मन्दबुद्धिः क्रोधी चञ्चलमानसः।\nसुतस्थे राहौ जातो गुप्तपापरतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा राहुले शेयर/सट्टा र प्रविधिमा सफलता दिन्छ।",
-            "meaningEn": "With Rahu in the 5th house, it brings success in speculation/stock markets and technology.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा राहुले शेयर/सट्टा र प्रविधिमा सफलता दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 5th house, it brings success in speculation/stock markets and technology. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "6": {
         "house": 6,
@@ -2088,13 +1994,11 @@
           {
             "shloka": "शत्रुहन्ता महाबलवान् नीरोगः श्रीमान् धनी।\nषष्ठस्थे राहौ जातो राजमान्यो महामतिः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा राहुले शत्रु र अदालतमा पूर्ण विजय दिन्छ।",
-            "meaningEn": "With Rahu in the 6th house, it grants complete victory over enemies and in court cases.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "षष्ठ भावमा राहुले शत्रु र अदालतमा पूर्ण विजय दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 6th house, it grants complete victory over enemies and in court cases. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "7": {
         "house": 7,
@@ -2104,13 +2008,11 @@
           {
             "shloka": "कलत्रहीनो दुःखी च परदाररतः सदा।\nसप्तमे राहौ जातो रोगी चञ्चलमानसः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा राहुले भिन्न संस्कृति/विदेशमा विवाह योग बनाउँछ।",
-            "meaningEn": "With Rahu in the 7th house, it creates the likelihood of marriage across cultures or abroad.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा राहुले भिन्न संस्कृति/विदेशमा विवाह योग बनाउँछ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 7th house, it creates the likelihood of marriage across cultures or abroad. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "8": {
         "house": 8,
@@ -2120,13 +2022,11 @@
           {
             "shloka": "अल्पायुः विकलाङ्गश्च रोगार्तो दुःखसमन्वितः।\nअष्टमे राहौ जातो धनहीनश्च जायते॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा राहुले गुप्त धन र अचानक परिवर्तन ल्याउँछ।",
-            "meaningEn": "With Rahu in the 8th house, it brings hidden wealth and sudden change.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "अष्टम भावमा राहुले गुप्त धन र अचानक परिवर्तन ल्याउँछ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 8th house, it brings hidden wealth and sudden change. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "9": {
         "house": 9,
@@ -2136,13 +2036,11 @@
           {
             "shloka": "धर्महीनः पितृद्वेषी आध्यात्मिकरतः सुखी।\nनवमे राहौ जातो विदेशगमने रतः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा राहुले विदेश यात्रा र भिन्न विचार दिन्छ।",
-            "meaningEn": "With Rahu in the 9th house, it brings foreign travel and unconventional views.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा राहुले विदेश यात्रा र भिन्न विचार दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 9th house, it brings foreign travel and unconventional views. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "10": {
         "house": 10,
@@ -2152,13 +2050,11 @@
           {
             "shloka": "शूरश्चतुरः प्राप्तश्रीः नृपमान्यो महामतिः।\nदशमे राहौ जातो यशस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा राहुले राजनीति र उच्च पद दिन्छ।",
-            "meaningEn": "With Rahu in the 10th house, it grants success in politics and high position.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा राहुले राजनीति र उच्च पद दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 10th house, it grants success in politics and high position. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "11": {
         "house": 11,
@@ -2168,13 +2064,11 @@
           {
             "shloka": "लाभवान् सुतवान् प्राज्ञः दीर्घायुः बहुसेवकः।\nएकादशे राहौ जातो गुणवान् राजपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा राहुले अप्रत्याशित ठूलो आर्थिक लाभ दिन्छ।",
-            "meaningEn": "With Rahu in the 11th house, it grants unexpectedly large financial gain.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा राहुले अप्रत्याशित ठूलो आर्थिक लाभ दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 11th house, it grants unexpectedly large financial gain. Rahu's influence in this position has a distinct effect on the native's life."
       },
       "12": {
         "house": 12,
@@ -2184,13 +2078,11 @@
           {
             "shloka": "नेत्ररोगी व्ययशीलः पतितो बन्धुवर्जितः।\nद्वादशे राहौ जातो दुःखी च परदेशभाक्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा राहुले स्थायी विदेश बसोबास दिन्छ।",
-            "meaningEn": "With Rahu in the 12th house, it grants permanent residence abroad.",
-            "explanationNe": "यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Rahu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा राहुले स्थायी विदेश बसोबास दिन्छ। यस स्थानमा राहुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Rahu in the 12th house, it grants permanent residence abroad. Rahu's influence in this position has a distinct effect on the native's life."
       }
     },
     "ketu": {
@@ -2202,13 +2094,11 @@
           {
             "shloka": "गूढज्ञः मोक्षगामी च शूरः शत्रुविनाशकः।\nलग्ने केतौ जातो आध्यात्मिक ज्ञानवान्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "प्रथम भावमा केतुले आध्यात्मिक दृष्टि र शोध क्षमता दिन्छ।",
-            "meaningEn": "With Ketu in the 1st house, it grants spiritual insight and research ability.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "प्रथम भावमा केतुले आध्यात्मिक दृष्टि र शोध क्षमता दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 1st house, it grants spiritual insight and research ability. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "2": {
         "house": 2,
@@ -2218,13 +2108,11 @@
           {
             "shloka": "धनहीनः वाग्दुष्टः मुखरोगी सर्वदा भवेत्।\nद्वितीयस्थे केतौ जातो जनद्वेषी नरो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वितीय भावमा केतुले मौनता र गुप्त धन दिन्छ।",
-            "meaningEn": "With Ketu in the 2nd house, it brings reticence and hidden wealth.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वितीय भावमा केतुले मौनता र गुप्त धन दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 2nd house, it brings reticence and hidden wealth. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "3": {
         "house": 3,
@@ -2234,13 +2122,11 @@
           {
             "shloka": "शूरः पराक्रमी श्रीमान् शत्रुहन्ता सुतवान् धनी।\nसहजस्थे केतौ जातो तेजस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "तृतीय भावमा केतुले महापराक्रम र शत्रु नाश दिन्छ।",
-            "meaningEn": "With Ketu in the 3rd house, it grants great valor and the destruction of enemies.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "तृतीय भावमा केतुले महापराक्रम र शत्रु नाश दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 3rd house, it grants great valor and the destruction of enemies. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "5": {
         "house": 5,
@@ -2250,13 +2136,11 @@
           {
             "shloka": "सुतहीनो मन्दबुद्धिः मन्त्रज्ञानविशारदः।\nसुतस्थे केतौ जातो गुप्तविद्यारतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "पञ्चम भावमा केतुले उच्च मन्त्रसिद्धि र गूढ ज्ञान दिन्छ।",
-            "meaningEn": "With Ketu in the 5th house, it grants high mantra-siddhi and occult knowledge.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "पञ्चम भावमा केतुले उच्च मन्त्रसिद्धि र गूढ ज्ञान दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 5th house, it grants high mantra-siddhi and occult knowledge. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "6": {
         "house": 6,
@@ -2266,13 +2150,11 @@
           {
             "shloka": "शत्रुहन्ता महाबलवान् नीरोगः श्रीमान् धनी।\nषष्ठस्थे केतौ जातो राजमान्यो महामतिः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "षष्ठ भावमा केतुले प्रतिस्पर्धी र शत्रु नाश गर्दछ।",
-            "meaningEn": "With Ketu in the 6th house, it destroys competitors and enemies.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "षष्ठ भावमा केतुले प्रतिस्पर्धी र शत्रु नाश गर्दछ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 6th house, it destroys competitors and enemies. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "7": {
         "house": 7,
@@ -2282,13 +2164,11 @@
           {
             "shloka": "कलत्रहीनो दुःखी च परदाररतः सदा।\nसप्तमे केतौ जातो रोगी चञ्चलमानसः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "सप्तम भावमा केतुले वैवाहिक जीवनमा अध्यात्म वा उदासीनता दिन्छ।",
-            "meaningEn": "With Ketu in the 7th house, it brings spirituality or detachment into married life.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "सप्तम भावमा केतुले वैवाहिक जीवनमा अध्यात्म वा उदासीनता दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 7th house, it brings spirituality or detachment into married life. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "8": {
         "house": 8,
@@ -2298,13 +2178,11 @@
           {
             "shloka": "अल्पायुः विकलाङ्गश्च रोगार्तो गुप्तविद्यावित्।\nअष्टमे केतौ जातो सिद्धिकार्यरतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "अष्टम भावमा केतुले गूढ अनुसन्धान र तन्त्र-मन्त्र दिन्छ।",
-            "meaningEn": "With Ketu in the 8th house, it grants occult research and tantra-mantra.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "अष्टम भावमा केतुले गूढ अनुसन्धान र तन्त्र-मन्त्र दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 8th house, it grants occult research and tantra-mantra. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "9": {
         "house": 9,
@@ -2314,13 +2192,11 @@
           {
             "shloka": "धर्महीनः पितृद्वेषी आध्यात्मिकरतः सुखी।\nनवमे केतौ जातो तीर्थयात्रारतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "नवम भावमा केतुले उच्च तीर्थयात्रा र मोक्ष रुचि दिन्छ।",
-            "meaningEn": "With Ketu in the 9th house, it grants a strong interest in pilgrimage and liberation.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "नवम भावमा केतुले उच्च तीर्थयात्रा र मोक्ष रुचि दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 9th house, it grants a strong interest in pilgrimage and liberation. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "10": {
         "house": 10,
@@ -2330,13 +2206,11 @@
           {
             "shloka": "शूरश्चतुरः प्राप्तश्रीः कर्मसिद्धो महामतिः।\nदशमे केतौ जातो यशस्वी जनपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "दशम भावमा केतुले कर्मक्षेत्रमा भिन्न पहिचान दिन्छ।",
-            "meaningEn": "With Ketu in the 10th house, it grants a distinct identity in one's career.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "दशम भावमा केतुले कर्मक्षेत्रमा भिन्न पहिचान दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 10th house, it grants a distinct identity in one's career. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "11": {
         "house": 11,
@@ -2346,13 +2220,11 @@
           {
             "shloka": "लाभवान् सुतवान् प्राज्ञः दीर्घायुः बहुसेवकः।\nएकादशे केतौ जातो गुणवान् राजपूजितः॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "एकादश भावमा केतुले अचानक आर्थिक लाभ दिन्छ।",
-            "meaningEn": "With Ketu in the 11th house, it grants sudden financial gain.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "एकादश भावमा केतुले अचानक आर्थिक लाभ दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 11th house, it grants sudden financial gain. Ketu's influence in this position has a distinct effect on the native's life."
       },
       "12": {
         "house": 12,
@@ -2362,13 +2234,11 @@
           {
             "shloka": "व्ययशीलः मोक्षगामी नेत्ररोगी कफान्वितः।\nद्वादशे केतौ जातो सिद्धिकार्यरतो भवेत्॥",
             "shlokaSourceNe": "सारावली",
-            "shlokaSourceEn": "Saravali",
-            "meaningNe": "द्वादश भावमा केतु (मोक्ष कारक) ले परम पद र मोक्ष दिन्छ।",
-            "meaningEn": "With Ketu in the 12th house (significator of liberation), it grants the highest position and moksha.",
-            "explanationNe": "यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
-            "explanationEn": "Ketu's influence in this position has a distinct effect on the native's life."
+            "shlokaSourceEn": "Saravali"
           }
-        ]
+        ],
+        "summaryNe": "द्वादश भावमा केतु (मोक्ष कारक) ले परम पद र मोक्ष दिन्छ। यस स्थानमा केतुको प्रभावले जातकको जीवनमा विशेष प्रभाव पार्दछ।",
+        "summaryEn": "With Ketu in the 12th house (significator of liberation), it grants the highest position and moksha. Ketu's influence in this position has a distinct effect on the native's life."
       }
     }
   },
