@@ -25,7 +25,10 @@ def test_vimshottari_lord_years_and_120_year_cycle():
         "rahu": 18, "jupiter": 16, "saturn": 19, "mercury": 17,
     }
     assert sum(DASHA_YEARS.values()) == 120
-    assert YEAR_DAYS == 360.0
+    # Mean Gregorian year, not a 360-day savana year — see vimshottari.py's
+    # comment on YEAR_DAYS for why (drifted real dates ~5 days/year vs.
+    # every mainstream reference implementation).
+    assert YEAR_DAYS == 365.2425
 
 
 def test_vimshottari_balance_is_remaining_nakshatra_times_lord_years():
@@ -40,8 +43,8 @@ def test_vimshottari_balance_is_remaining_nakshatra_times_lord_years():
     assert result["sequence"][1]["years"] == 7
 
 
-def test_rahu_jupiter_antardasha_is_2_years_4_months_24_days():
-    """18 × 16 / 120 = 2.4 savana years = 2y 4m 24d (last digit × 3 = days)."""
+def test_rahu_jupiter_antardasha_is_2_4_years():
+    """18 × 16 / 120 = 2.4 years, converted at the real (365.2425-day) year."""
     start = datetime(2000, 1, 1, tzinfo=timezone.utc)
     end = start + timedelta(days=18 * YEAR_DAYS)
     children = subdivide_dasha_period("rahu", start, end, parent_full_years=18)
@@ -50,8 +53,6 @@ def test_rahu_jupiter_antardasha_is_2_years_4_months_24_days():
         datetime.fromisoformat(jupiter["end"]) - datetime.fromisoformat(jupiter["start"])
     ).total_seconds() / 86400
     assert abs(days - 2.4 * YEAR_DAYS) < 0.01
-    # 2y 4m 24d in 30-day months: 2×360 + 4×30 + 24 = 864.
-    assert abs(days - 864) < 0.01
 
 
 def test_birth_balance_skips_antardashas_already_consumed():

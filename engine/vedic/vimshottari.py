@@ -64,9 +64,17 @@ NE_TO_LORD = {
 }
 
 NAKSHATRA_SPAN_DEG = 360 / 27
-# Dasha year length. Per the reference book, "360 days are taken in a year"
-# (savana year). Shared by Vimshottari, Yogini and Tribhagi dashas.
-YEAR_DAYS = 360.0
+# Dasha year length — the mean Gregorian calendar year (matches how every
+# mainstream reference implementation, e.g. drikpanchang.com, converts a
+# dasha-year fraction into an actual date). Previously 360.0 (a 360-day
+# "savana year"), which drifted real dasha boundary dates earlier by ~5.25
+# days per elapsed year — by ~26 years post-birth (a Mercury mahadasha
+# starting, say) that's a ~4-5 month error, enough to show the wrong
+# antardasha/pratyantardasha as "currently running". Verified against
+# drikpanchang.com, modernastro.com and nepaljyotish.org for a real chart:
+# all three agreed with 365.2425 and diverged from 360 by that margin.
+# Shared by Vimshottari, Yogini and Tribhagi dashas.
+YEAR_DAYS = 365.2425
 
 
 def _add_years(date: datetime, years: float) -> datetime:
@@ -74,12 +82,12 @@ def _add_years(date: datetime, years: float) -> datetime:
 
 
 def _format_years_label(years: float) -> str:
-    # 360-day savana year = 12 months of 30 days each (per the book).
     total_days = round(years * YEAR_DAYS)
-    y = total_days // int(YEAR_DAYS)
+    month_days = YEAR_DAYS / 12.0
+    y = int(total_days // YEAR_DAYS)
     rem = total_days - round(y * YEAR_DAYS)
-    m = int(rem // 30.0)
-    d = round(rem - m * 30.0)
+    m = int(rem // month_days)
+    d = round(rem - m * month_days)
     parts: list[str] = []
     if y > 0:
         parts.append(f"{y} वर्ष")
