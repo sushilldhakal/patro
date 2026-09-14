@@ -130,6 +130,7 @@ def kundali_vimshottari(
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
     from engine.astronomy.ut_instant import as_julian_day
     from engine.vedic.vimshottari import vimshottari_dasha
+    from services.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         instant = instant_for_request(
@@ -145,7 +146,7 @@ def kundali_vimshottari(
         planets = spashta_table(as_julian_day(instant), ayanamsa=mode_id)
         moon_lon = planets["moon"]["longitude"]
         dasha = vimshottari_dasha(moon_lon, instant.astimezone(timezone.utc), cycles=cycles)
-        return {
+        payload = {
             "ayanamsha": ayanamsha or "lahiri",
             "moon_longitude": moon_lon,
             "location": location.as_dict(),
@@ -154,6 +155,17 @@ def kundali_vimshottari(
         }
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Deterministic given (birth instant, location, ayanamsha), same as
+    # /kundali/detail — explicit policy instead of leaving this to whatever
+    # Cloudflare's default happens to be for a route with no origin header.
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": DEFAULT_CACHE_CONTROL,
+            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+        },
+    )
 
 
 @router.get("/kundali/report")
@@ -293,6 +305,7 @@ def shadbala(
     from datetime import timezone
 
     from engine.vedic.shadbala import compute_shadbala
+    from services.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         instant = instant_for_request(
@@ -306,9 +319,19 @@ def shadbala(
         )
         result = compute_shadbala(instant.astimezone(timezone.utc),
                                   lat=location.lat, lon=location.lon, timezone_name=location.timezone)
-        return {**result, "location": location.as_dict(), "query_instant": instant.isoformat()}
+        payload = {**result, "location": location.as_dict(), "query_instant": instant.isoformat()}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Deterministic given (birth instant, location) — same explicit policy as
+    # /kundali/detail rather than an unset header left to Cloudflare's default.
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": DEFAULT_CACHE_CONTROL,
+            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+        },
+    )
 
 
 @router.get("/kundali/yogas/reference")
