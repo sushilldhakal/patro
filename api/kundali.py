@@ -303,7 +303,6 @@ def shadbala(
     from datetime import timezone
 
     from engine.vedic.shadbala import compute_shadbala
-    from services.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         instant = instant_for_request(
@@ -321,13 +320,13 @@ def shadbala(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    # Deterministic given (birth instant, location) — same explicit policy as
-    # /kundali/detail rather than an unset header left to Cloudflare's default.
+    # This backs the editable, per-profile kundali page's Shadbala tab —
+    # never let a shared/CDN cache hold it, same reasoning as /kundali/detail.
     return JSONResponse(
         content=payload,
         headers={
-            "Cache-Control": DEFAULT_CACHE_CONTROL,
-            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+            "Cache-Control": "private, no-store",
+            "CDN-Cache-Control": "private, no-store",
         },
     )
 
@@ -480,9 +479,19 @@ def kundali_dasha_expand(
 
         subdivide = subdivide_yogini_period if system == "yogini" else subdivide_dasha_period
         children = subdivide(lord, _parse(start), _parse(end))
-        return {"lord": lord, "system": system, "children": children}
+        payload = {"lord": lord, "system": system, "children": children}
     except (ValueError, KeyError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # Expands a node of the editable, per-profile kundali page's Dasha tree —
+    # never let a shared/CDN cache hold it, same reasoning as /kundali/detail.
+    return JSONResponse(
+        content=payload,
+        headers={
+            "Cache-Control": "private, no-store",
+            "CDN-Cache-Control": "private, no-store",
+        },
+    )
 
 
 @router.get("/kundali/milan")
