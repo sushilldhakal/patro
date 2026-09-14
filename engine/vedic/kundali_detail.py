@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
 
 from engine.astronomy.location import ObserverLocation
@@ -35,7 +35,7 @@ from engine.vedic.interpretation import (
 from engine.vedic.shadbala import compute_shadbala
 from engine.vedic.vargas import VARGA_DIVISIONS, varga_rashi_from_longitude
 from engine.vedic.tribhagi import tribhagi_dasha
-from engine.vedic.vimshottari import DASHA_LORD_NE, vimshottari_dasha
+from engine.vedic.vimshottari import DASHA_LORD_NE, YEAR_DAYS, vimshottari_dasha
 from engine.vedic.yogini import (
     YOGINI_CYCLE_YEARS,
     YOGINI_LORD_NE,
@@ -2005,52 +2005,95 @@ def _parse_iso(value: str) -> datetime:
     return dt
 
 
-def subdivide_yogini_period(lord: str, start: datetime, end: datetime) -> list[dict[str, Any]]:
+def _subdivide_cycle(
+    lord: str,
+    start: datetime,
+    end: datetime,
+    *,
+    sequence: list[str],
+    years_map: dict[str, float],
+    cycle_years: float,
+    lord_ne_map: dict[str, str],
+    parent_full_years: float | None = None,
+) -> list[dict[str, Any]]:
+    """Split [start, end) into child periods using classical year proportions.
+
+    ``parent_full_years`` is the theoretical full length of this parent (e.g. 20
+    for a Venus mahadasha). When the visible span is only the birth balance,
+    children are laid out on that full span and any period that ended before
+    ``start`` is dropped — the first remaining child is clipped to birth.
+    Omitting it keeps the older "compress all children into the visible span"
+    behaviour, which is correct for a full parent at any depth.
+    """
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=timezone.utc)
+    if end.tzinfo is None:
+        end = end.replace(tzinfo=timezone.utc)
+    visible_years = (end - start).total_seconds() / (YEAR_DAYS * 86400.0)
+    full_years = float(parent_full_years) if parent_full_years is not None else visible_years
+    if full_years <= 0:
+        full_years = visible_years
+    theo_start = end - timedelta(days=full_years * YEAR_DAYS)
+    start_idx = sequence.index(lord)
+    cursor = theo_start
+    children: list[dict[str, Any]] = []
+    n = len(sequence)
+    for step in range(n):
+        sub_lord = sequence[(start_idx + step) % n]
+        dur_days = years_map[sub_lord] * full_years / cycle_years * YEAR_DAYS
+        child_end = end if step == n - 1 else cursor + timedelta(days=dur_days)
+        if child_end <= start:
+            cursor = child_end
+            continue
+        child_start = start if cursor < start else cursor
+        children.append({
+            "lord": sub_lord,
+            "lord_ne": lord_ne_map[sub_lord],
+            "start": child_start.isoformat(),
+            "end": child_end.isoformat(),
+        })
+        cursor = child_end
+    if children:
+        children[-1]["end"] = end.isoformat()
+    return children
+
+
+def subdivide_yogini_period(
+    lord: str,
+    start: datetime,
+    end: datetime,
+    parent_full_years: float | None = None,
+) -> list[dict[str, Any]]:
     """Yogini antardasha children proportional to the 36-year yogini cycle."""
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
-    if end.tzinfo is None:
-        end = end.replace(tzinfo=timezone.utc)
-    total = end - start
-    start_idx = YOGINI_SEQUENCE.index(lord)
-    cursor = start
-    children: list[dict[str, Any]] = []
-    for step in range(len(YOGINI_SEQUENCE)):
-        sub_lord = YOGINI_SEQUENCE[(start_idx + step) % len(YOGINI_SEQUENCE)]
-        frac = YOGINI_YEARS[sub_lord] / float(sum(YOGINI_YEARS.values()))
-        sub_end = end if step == len(YOGINI_SEQUENCE) - 1 else cursor + total * frac
-        children.append({
-            "lord": sub_lord,
-            "lord_ne": YOGINI_LORD_NE[sub_lord],
-            "start": cursor.isoformat(),
-            "end": sub_end.isoformat(),
-        })
-        cursor = sub_end
-    return children
+    return _subdivide_cycle(
+        lord,
+        start,
+        end,
+        sequence=list(YOGINI_SEQUENCE),
+        years_map=YOGINI_YEARS,
+        cycle_years=float(sum(YOGINI_YEARS.values())),
+        lord_ne_map=YOGINI_LORD_NE,
+        parent_full_years=parent_full_years,
+    )
 
 
-def subdivide_dasha_period(lord: str, start: datetime, end: datetime) -> list[dict[str, Any]]:
-    """Antardasha children proportional to Vimshottari within [start, end)."""
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
-    if end.tzinfo is None:
-        end = end.replace(tzinfo=timezone.utc)
-    total = end - start
-    start_idx = DASHA_ORDER.index(lord)
-    cursor = start
-    children: list[dict[str, Any]] = []
-    for step in range(9):
-        sub_lord = DASHA_ORDER[(start_idx + step) % 9]
-        frac = DASHA_YEARS[sub_lord] / 120.0
-        sub_end = end if step == 8 else cursor + total * frac
-        children.append({
-            "lord": sub_lord,
-            "lord_ne": DASHA_LORD_NE[sub_lord],
-            "start": cursor.isoformat(),
-            "end": sub_end.isoformat(),
-        })
-        cursor = sub_end
-    return children
+def subdivide_dasha_period(
+    lord: str,
+    start: datetime,
+    end: datetime,
+    parent_full_years: float | None = None,
+) -> list[dict[str, Any]]:
+    """Antardasha / pratyantar children: MD_years × AD_years / 120."""
+    return _subdivide_cycle(
+        lord,
+        start,
+        end,
+        sequence=list(DASHA_ORDER),
+        years_map=DASHA_YEARS,
+        cycle_years=120.0,
+        lord_ne_map=DASHA_LORD_NE,
+        parent_full_years=parent_full_years,
+    )
 
 
 def _tree_node(
@@ -2061,8 +2104,12 @@ def _tree_node(
     *,
     subdivide_fn=subdivide_dasha_period,
     lord_ne_map: dict[str, str] | None = None,
+    parent_full_years: float | None = None,
+    years_map: dict[str, float] | None = None,
+    cycle_years: float = 120.0,
 ) -> dict[str, Any]:
     ne_map = lord_ne_map or DASHA_LORD_NE
+    years = years_map or DASHA_YEARS
     node = {
         "lord": lord,
         "lord_ne": ne_map.get(lord, lord),
@@ -2070,6 +2117,8 @@ def _tree_node(
         "end": end.isoformat(),
     }
     if depth > 1:
+        visible_years = (end - start).total_seconds() / (YEAR_DAYS * 86400.0)
+        full_years = float(parent_full_years) if parent_full_years is not None else visible_years
         node["children"] = [
             _tree_node(
                 child["lord"],
@@ -2078,8 +2127,11 @@ def _tree_node(
                 depth - 1,
                 subdivide_fn=subdivide_fn,
                 lord_ne_map=lord_ne_map,
+                parent_full_years=full_years * years[child["lord"]] / cycle_years,
+                years_map=years,
+                cycle_years=cycle_years,
             )
-            for child in subdivide_fn(lord, start, end)
+            for child in subdivide_fn(lord, start, end, parent_full_years)
         ]
     return node
 
@@ -2126,11 +2178,16 @@ def _build_dasha_tree(
     maha_count: int = 3,
     subdivide_fn=subdivide_dasha_period,
     lord_ne_map: dict[str, str] | None = None,
+    md_full_years=None,
+    years_map: dict[str, float] | None = None,
+    cycle_years: float = 120.0,
 ) -> dict[str, Any]:
     tree: list[dict[str, Any]] = []
+    years = years_map or DASHA_YEARS
     for period in _dasha_window(dasha["sequence"], maha_count):
         start = _parse_iso(period["start"])
         end = _parse_iso(period["end"])
+        full_years = md_full_years(period["lord"]) if md_full_years else None
         tree.append(
             _tree_node(
                 period["lord"],
@@ -2139,6 +2196,9 @@ def _build_dasha_tree(
                 tree_depth,
                 subdivide_fn=subdivide_fn,
                 lord_ne_map=lord_ne_map,
+                parent_full_years=full_years,
+                years_map=years,
+                cycle_years=cycle_years,
             )
         )
     return {**dasha, "tree": tree, "tree_depth": tree_depth}
@@ -2191,7 +2251,9 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     (833KB of chart-independent static content, already its own cacheable
 #     endpoint at /kundali/reference/bhava and unused by the frontend's
 #     /kundali/detail response type).
-KUNDALI_DETAIL_VERSION = 1
+# v2: birth-balance antardasha skips consumed bhuktis; Tribhagi starts from
+#     the janma-nakshatra lord (Vimshottari / 3), not a tribhaga-shifted lord.
+KUNDALI_DETAIL_VERSION = 2
 
 
 def build_kundali_detail(
@@ -2226,11 +2288,21 @@ def build_kundali_detail(
     dasha = vimshottari_dasha(
         moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, vimshottari_cycle_years)
     )
-    dasha_tree = _build_dasha_tree(dasha, tree_depth=3, maha_count=3)
+    dasha_tree = _build_dasha_tree(
+        dasha,
+        tree_depth=3,
+        maha_count=3,
+        md_full_years=lambda lord: float(DASHA_YEARS[lord]),
+    )
     tribhagi = tribhagi_dasha(
         moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, tribhagi_cycle_years)
     )
-    tribhagi_tree = _build_dasha_tree(tribhagi, tree_depth=3, maha_count=3)
+    tribhagi_tree = _build_dasha_tree(
+        tribhagi,
+        tree_depth=3,
+        maha_count=3,
+        md_full_years=lambda lord: DASHA_YEARS[lord] / 3.0,
+    )
     yogini = yogini_dasha(
         moon_lon, instant_utc, cycles=_cycles_for_horizon(instant_utc, YOGINI_CYCLE_YEARS)
     )
@@ -2240,6 +2312,9 @@ def build_kundali_detail(
         maha_count=3,
         subdivide_fn=subdivide_yogini_period,
         lord_ne_map=YOGINI_LORD_NE,
+        md_full_years=lambda lord: float(YOGINI_YEARS[lord]),
+        years_map=YOGINI_YEARS,
+        cycle_years=YOGINI_CYCLE_YEARS,
     )
 
     is_day: Optional[bool] = None

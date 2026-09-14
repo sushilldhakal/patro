@@ -251,7 +251,10 @@ def dasha_block(natal: NatalChart, as_of: datetime) -> dict[str, Any]:
     )
     maha = _find_running(dasha["sequence"], as_of)
     antardashas = subdivide_dasha_period(
-        maha["lord"], _parse_iso(maha["start"]), _parse_iso(maha["end"])
+        maha["lord"],
+        _parse_iso(maha["start"]),
+        _parse_iso(maha["end"]),
+        parent_full_years=float(DASHA_YEARS[maha["lord"]]),
     )
     antar = _find_running(antardashas, as_of)
 

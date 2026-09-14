@@ -34,24 +34,21 @@ def tribhagi_dasha(
 ) -> dict[str, Any]:
     """Tribhagi dasha from Moon longitude at birth.
 
-    Each nakshatra is split into three equal tribhagas. The active tribhaga
-    shifts the starting mahadasha lord forward in the Vimshottari sequence, and
-    every period lasts one third of the corresponding Vimshottari years.
+    Classical Tribhagi (त्रिभागी = divided by three) is Vimshottari with every
+    mahadasha compressed to 1/3, so the 120-year cycle becomes three 40-year
+    cycles. The starting lord is the janma-nakshatra lord, same as Vimshottari;
+    the birth balance is the Vimshottari balance divided by three.
     """
     lon = moon_sidereal_lon_deg % 360
     nakshatra_index = int(lon // NAKSHATRA_SPAN_DEG)
-    nak_lord_idx, _ = _nakshatra_lord_index(lon)
+    start_idx, mahadasha_lord = _nakshatra_lord_index(lon)
 
     pos_in_nak = lon % NAKSHATRA_SPAN_DEG
     tribhaga_size = NAKSHATRA_SPAN_DEG / TRIBHAGA_PARTS
     tribhaga = min(TRIBHAGA_PARTS - 1, int(pos_in_nak / tribhaga_size))
-    pos_in_tribhaga = pos_in_nak - tribhaga * tribhaga_size
-    frac_in_tribhaga = pos_in_tribhaga / tribhaga_size
-
-    start_idx = (nak_lord_idx + tribhaga) % len(DASHA_SEQUENCE)
-    mahadasha_lord = DASHA_SEQUENCE[start_idx]
+    fraction_elapsed = pos_in_nak / NAKSHATRA_SPAN_DEG
     full_years = DASHA_YEARS[mahadasha_lord] / TRIBHAGA_PARTS
-    balance_years = (1 - frac_in_tribhaga) * full_years
+    balance_years = (1 - fraction_elapsed) * full_years
 
     if birth_instant.tzinfo is None:
         birth_instant = birth_instant.replace(tzinfo=timezone.utc)
