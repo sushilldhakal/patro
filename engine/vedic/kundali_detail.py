@@ -13,7 +13,6 @@ from engine.vedic.bhava_bala import compute_bhava_bala
 from engine.vedic.at_time import build_panchanga_at_time, build_planetary_snapshot
 from engine.vedic.choghadiya import build_choghadiya, day_ghati_from_sun_times
 from engine.vedic.ghati_time import seconds_to_ghadi_pala
-from engine.vedic.graha_yuddha import compute_yuddha_bala
 from engine.vedic.interpretation import (
     COMBUST_ORB,
     DASHA_ORDER,
@@ -2260,7 +2259,22 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     serving pre-fix dates for any chart already computed once, no matter
 #     how the HTTP-level Cache-Control is set — that cache is keyed on this
 #     version, not on the code that produced it.
-KUNDALI_DETAIL_VERSION = 3
+# v4: Shadbala, Bhava Bala and Vimshopaka Bala corrected against the
+#     reference rules — Oja-Yugma Rasi/Navamsha are independent (max 30, not
+#     AND-gated to 15); Paksha/Ayana doubling removed for Moon/Sun where
+#     unsupported, Ayana given its full Sun/Mars/Jupiter/Venus-north,
+#     Moon/Saturn-south, Mercury-both-ways table with Sun re-doubled;
+#     Tribhaga night order corrected; Graha Yuddha now folds into Kala Bala
+#     and the planet's total/ratio/status instead of sitting in a disconnected
+#     display field; Saptavargaja Bala scores exaltation (45) per varga;
+#     Bhava Digbala's Sagittarius/Capricorn half-split now uses a real degree
+#     (the bhava madhya carries the Lagna's exact degree forward by 30° per
+#     house) and Scorpio is Keeta-only; Bhava Drishti Bala gained the Special
+#     Addition bonus (own lord/Jupiter/Venus/Mercury, occupying or aspecting);
+#     a new per-planet Bhava % field was added; Vimshopaka's Saptavarga and
+#     Dashavarga Swavishwa tables had mis-assigned D7/D9/D12/D30/D60 weights
+#     corrected.
+KUNDALI_DETAIL_VERSION = 4
 
 
 def build_kundali_detail(
@@ -2377,8 +2391,8 @@ def build_kundali_detail(
         if planets.get(key)
     }
     ashtakavarga = compute_ashtakavarga(planet_lons, lagna_lon)
-    bhava_bala = compute_bhava_bala(lagna_rashi, planet_lons, shadbala)
-    yuddha = compute_yuddha_bala(shadbala.get("planets") or [], planet_lons)
+    bhava_bala = compute_bhava_bala(lagna_lon, planet_lons, shadbala)
+    yuddha = shadbala.get("yuddha") or {"wars": [], "byPlanet": {}}
 
     from engine.vedic.vimshopaka import compute_vimshopaka
     vimshopaka_d1_signs = {p: sign_of(lon) for p, lon in planet_lons.items()}

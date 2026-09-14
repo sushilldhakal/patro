@@ -66,13 +66,13 @@ SHODASHAVARGA_DIVS = (1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60)
 SWAVISHWA: dict[str, Optional[dict[int, float]]] = {
     # Rashi 6, Hora 2, Drekkana 4, Navamsha 5, Dwadashamsha 2, Trimshamsha 1.
     "shadvarga": {1: 6.0, 2: 2.0, 3: 4.0, 9: 5.0, 12: 2.0, 30: 1.0},
-    # Shadvarga split + Saptamsha 1 (Rashi 5, Hora 2, Drekkana 3, Saptamsha 1,
-    # Navamsha 2.5, Dwadashamsha 4.5, Trimshamsha 2).
-    "saptavarga": {1: 5.0, 2: 2.0, 3: 3.0, 7: 1.0, 9: 2.5, 12: 4.5, 30: 2.0},
-    # Rashi 3, Shastiamsha 5, all eight others 1.5 each.
+    # Rashi 5, Hora 2, Drekkana 3, Saptamsha 2.5, Navamsha 4.5, Dwadashamsha 2,
+    # Trimshamsha 1.
+    "saptavarga": {1: 5.0, 2: 2.0, 3: 3.0, 7: 2.5, 9: 4.5, 12: 2.0, 30: 1.0},
+    # Rashi 3, Navamsha 3, Shastiamsha 3.5, the remaining seven 1.5 each.
     "dashavarga": {
-        1: 3.0, 2: 1.5, 3: 1.5, 7: 1.5, 9: 1.5, 10: 1.5,
-        12: 1.5, 16: 1.5, 30: 1.5, 60: 5.0,
+        1: 3.0, 2: 1.5, 3: 1.5, 7: 1.5, 9: 3.0, 10: 1.5,
+        12: 1.5, 16: 1.5, 30: 1.5, 60: 3.5,
     },
     # Rashi 3.5, Navamsha 3, Shodashamsha 2, Shastiamsha 4, Hora/Drekkana/
     # Trimshamsha 1 each, the remaining nine 0.5 each.

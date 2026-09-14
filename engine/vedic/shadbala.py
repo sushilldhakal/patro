@@ -21,6 +21,7 @@ from engine.astronomy.panchanga import panchanga_service
 from engine.astronomy.planets import spashta_table
 from engine.astronomy.sun import calculate_sunrise, calculate_sunset, sun_service
 from engine.astronomy.ut_instant import as_julian_day
+from engine.vedic.graha_yuddha import compute_yuddha_bala
 
 PLANETS = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"]
 
@@ -186,11 +187,21 @@ def _temporal_rel(p: str, other: str, d1_signs: dict[str, int]) -> int:
 _COMPOUND = {2: 20.0, 1: 15.0, 0: 10.0, -1: 4.0, -2: 2.0}
 
 
-def _dignity(p: str, lord: str, d1_signs: dict[str, int], *, is_d1: bool, lon: float) -> float:
+def _exalt_sign(p: str) -> int:
+    return _sign(EXALT_DEG[p])
+
+
+def _dignity(p: str, sign: int, d1_signs: dict[str, int], *, is_d1: bool, lon: float) -> float:
+    # Exaltation in any of the 7 vargas scores the same top tier as
+    # Moolatrikona (45) — distinct from, and on top of, the separate Uchcha
+    # Bala (which grades exact proximity to the deep-exaltation degree in D1).
+    if sign == _exalt_sign(p):
+        return 45.0
+    lord = SIGN_LORD[sign]
     if lord == p:
         if is_d1:
             ms, lo, hi = MOOLA[p]
-            if _sign(lon) == ms and lo <= (lon % 30) < hi:
+            if sign == ms and lo <= (lon % 30) < hi:
                 return 45.0
         return 30.0
     return _COMPOUND[_natural_rel(p, lord) + _temporal_rel(p, lord, d1_signs)]
@@ -200,7 +211,7 @@ def _saptavargaja(p: str, lon: float, d1_signs: dict[str, int]) -> float:
     total = 0.0
     for vf in (_d1, _d2_hora, _d3, _d7, _d9, _d12):
         sign = vf(lon)
-        total += _dignity(p, SIGN_LORD[sign], d1_signs, is_d1=(vf is _d1), lon=lon)
+        total += _dignity(p, sign, d1_signs, is_d1=(vf is _d1), lon=lon)
     lord30 = _d30_lord(lon)
     if lord30 == p:
         total += 30.0
@@ -218,12 +229,13 @@ def _uchcha(p: str, lon: float) -> float:
 
 
 def _oja(p: str, lon: float) -> float:
-    # Oja-Yugma Bala: 15 Virupas only when BOTH the rashi and the navamsha carry
-    # the planet's preferred parity (Moon/Venus → even, others → odd); else 0.
+    # Oja-Yugma Rasi Bala and Oja-Yugma Navamsha Bala are two independent
+    # 15-Virupa components (max 30 combined), each awarded when that chart's
+    # sign parity matches the planet's preference (Moon/Venus → even, others → odd).
     pref_odd = p not in ("moon", "venus")
     rashi_ok = (_d1(lon) % 2 == 0) == pref_odd
     navamsa_ok = (_d9(lon) % 2 == 0) == pref_odd
-    return 15.0 if (rashi_ok and navamsa_ok) else 0.0
+    return (15.0 if rashi_ok else 0.0) + (15.0 if navamsa_ok else 0.0)
 
 
 def _kendradi(p_sign: int, lagna_sign: int) -> float:
@@ -271,14 +283,13 @@ def _nathonnatha(p: str, birth_min: float, noon_min: float) -> float:
 
 
 def _paksha(p: str, sun_lon: float, moon_lon: float) -> float:
+    # Benefics gain up to 60 Virupas in Shukla Paksha, malefics up to 60 in
+    # Krishna Paksha — the same 0-60 scale for every planet, Moon included.
     sep = _norm(moon_lon - sun_lon)
     if sep > 180:
         sep = 360 - sep
     benefic_val = sep / 3.0
-    val = benefic_val if p in BENEFICS else 60.0 - benefic_val
-    if p == "moon":
-        val *= 2
-    return val
+    return benefic_val if p in BENEFICS else 60.0 - benefic_val
 
 
 def _tribhaga(p: str, birth_min: float, sunrise_min: float, sunset_min: float) -> float:
@@ -291,7 +302,7 @@ def _tribhaga(p: str, birth_min: float, sunrise_min: float, sunset_min: float) -
         elapsed = birth_min - sunset_min if birth_min >= sunset_min else birth_min + (1440 - sunset_min)
         length = ((1440 - sunset_min) + sunrise_min) / 3
         third = min(int(elapsed / length), 2) if length else 0
-        lords = ["moon", "venus", "mars"]
+        lords = ["moon", "mars", "venus"]
     return (60.0 if lords[third] == p else 0.0) + jup
 
 
@@ -302,13 +313,20 @@ def _hora(p: str, birth_min: float, sunrise_min: float, weekday: int) -> float:
 
 
 def _ayana(p: str, sidereal_lon: float, ayanamsa: float, obliquity: float) -> float:
+    # Sun, Mars, Jupiter, Venus favor northern declination (Uttarayana); Moon
+    # and Saturn favor southern (Dakshinayana); Mercury is strong in both
+    # directions, gaining strength the further it sits from the equator either
+    # way. The Sun's result is then doubled.
     trop = _norm(sidereal_lon + ayanamsa)
     decl = math.degrees(math.asin(math.sin(math.radians(obliquity)) * math.sin(math.radians(trop))))
-    if p in ("moon", "saturn"):
-        decl = -decl
-    val = max(0.0, min(60.0, (decl + 24.0) / 48.0 * 60.0))
+    if p == "mercury":
+        val = max(0.0, min(60.0, abs(decl) / 24.0 * 60.0))
+    else:
+        if p in ("moon", "saturn"):
+            decl = -decl
+        val = max(0.0, min(60.0, (decl + 24.0) / 48.0 * 60.0))
     if p == "sun":
-        val *= 2  # the Sun's Ayana bala is doubled
+        val *= 2.0
     return val
 
 
@@ -462,12 +480,11 @@ def compute_shadbala(
             + hora + ayana + yuddha
         )
 
-        # BPHS: the Sun's Cheshta bala is its (undoubled) Ayana bala; the
-        # Moon's is its (undoubled) Paksha bala.
+        # Sun's Chesta Bala equals its Ayana Bala; Moon's equals its Paksha Bala.
         if p == "sun":
-            cheshta = min(60.0, ayana / 2.0)
+            cheshta = ayana
         elif p == "moon":
-            cheshta = paksha / 2.0
+            cheshta = paksha
         else:
             cheshta = _cheshta(p, speeds)
         naisargika = NAISARGIKA[p]
@@ -530,6 +547,22 @@ def compute_shadbala(
             },
         })
 
+    # Yuddha Bala: fold the planetary-war adjustment into Kala Bala (and hence
+    # the total) before ranking, per the rule listing it as a Kala Bala
+    # sub-component — winner gains, loser loses, the same Virupas figure.
+    yuddha_result = compute_yuddha_bala(rows, lons)
+    for row in rows:
+        delta = yuddha_result["byPlanet"].get(row["key"], 0.0)
+        if delta:
+            row["sub_balas"]["kala"]["yuddha"] = round(delta, 2)
+            row["breakdown"]["kala"] = round(row["breakdown"]["kala"] + delta, 2)
+            row["total_virupas"] = round(sum(row["breakdown"].values()), 2)
+            row["rupas"] = round(row["total_virupas"] / 60.0, 2)
+            row["ratio"] = round(row["total_virupas"] / row["required"], 4) if row["required"] else 0.0
+            row["status"] = _status(row["ratio"])
+            row["top_bala"] = BALA_LABELS[max(row["breakdown"], key=row["breakdown"].get)]
+            row["weakest_bala"] = BALA_LABELS[min(row["breakdown"], key=row["breakdown"].get)]
+
     rows.sort(key=lambda r: r["ratio"], reverse=True)
 
     counts = {k: 0 for k in ("Exceptional", "Strong", "Adequate", "Borderline", "Weak")}
@@ -551,6 +584,7 @@ def compute_shadbala(
             "counts": counts,
         },
         "method": "Parashari Shadbala (Lahiri sidereal, JPL — NASA's Jet Propulsion Laboratory)",
+        "yuddha": yuddha_result,
     }
 
 
