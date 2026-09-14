@@ -130,7 +130,6 @@ def kundali_vimshottari(
     from engine.astronomy.sidereal import resolve_ayanamsha_mode
     from engine.astronomy.ut_instant import as_julian_day
     from engine.vedic.vimshottari import vimshottari_dasha
-    from services.response_cache import DEFAULT_CACHE_CONTROL
 
     try:
         instant = instant_for_request(
@@ -156,14 +155,13 @@ def kundali_vimshottari(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    # Deterministic given (birth instant, location, ayanamsha), same as
-    # /kundali/detail — explicit policy instead of leaving this to whatever
-    # Cloudflare's default happens to be for a route with no origin header.
+    # This backs the editable, per-profile kundali page's Dasha tab — never
+    # let a shared/CDN cache hold it, same reasoning as /kundali/detail.
     return JSONResponse(
         content=payload,
         headers={
-            "Cache-Control": DEFAULT_CACHE_CONTROL,
-            "CDN-Cache-Control": DEFAULT_CACHE_CONTROL,
+            "Cache-Control": "private, no-store",
+            "CDN-Cache-Control": "private, no-store",
         },
     )
 
@@ -422,7 +420,7 @@ def kundali_detail(
 ):
     """Full birth-chart jyotish payload: panchanga, vargas, dasha tree, yogas, avakahada."""
     from engine.vedic.kundali_detail import KUNDALI_DETAIL_VERSION, build_kundali_detail
-    from services.response_cache import DEFAULT_CACHE_CONTROL, location_cache_key, serve_cached_json
+    from services.response_cache import location_cache_key, serve_cached_json
 
     try:
         instant = instant_for_request(
@@ -437,9 +435,14 @@ def kundali_detail(
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    # Deterministic given (birth instant, location, ayanamsha): the same chart
-    # never changes, so cache the full computed payload instead of rebuilding
-    # every dasha tree, all 20 vargas and the 300-yoga catalog on every view.
+    # Deterministic given (birth instant, location, ayanamsha), so the origin
+    # still caches the built payload on disk to skip rebuilding every dasha
+    # tree, all 20 vargas and the 300-yoga catalog on repeat views. But this
+    # endpoint backs the editable, per-profile kundali page — never let a
+    # shared/CDN cache (Cloudflare) hold the HTTP response itself, no matter
+    # what broad cache rule is set for the rest of the site: a stale edge
+    # copy here would silently show an old chart after a saved birth-date
+    # edit. private, no-store on both headers overrides any such rule.
     ayanamsha_id = ayanamsha or "lahiri"
     cache_key = (
         f"kundalidetail_{KUNDALI_DETAIL_VERSION}_{instant.isoformat()}_"
@@ -449,7 +452,7 @@ def kundali_detail(
         request,
         cache_key,
         lambda: build_kundali_detail(instant, location, ayanamsha=ayanamsha),
-        cache_control=DEFAULT_CACHE_CONTROL,
+        cache_control="private, no-store",
     )
 
 
