@@ -2253,7 +2253,14 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     /kundali/detail response type).
 # v2: birth-balance antardasha skips consumed bhuktis; Tribhagi starts from
 #     the janma-nakshatra lord (Vimshottari / 3), not a tribhaga-shifted lord.
-KUNDALI_DETAIL_VERSION = 2
+# v3: dasha year length (vimshottari.YEAR_DAYS) fixed from a 360-day savana
+#     year to the real 365.2425-day year — every dasha/antar/pratyantar/
+#     sookshma/prana date for Vimshottari, Tribhagi and Yogini shifts by
+#     this. Without this bump the persistent disk/DB cache below keeps
+#     serving pre-fix dates for any chart already computed once, no matter
+#     how the HTTP-level Cache-Control is set — that cache is keyed on this
+#     version, not on the code that produced it.
+KUNDALI_DETAIL_VERSION = 3
 
 
 def build_kundali_detail(
