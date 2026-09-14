@@ -287,6 +287,17 @@ as a direct one-off edit (no script, for a single-field fix). "प्रता�
 citation, already correctly present in `grahaHouseSaravali["rahu"]["1"]`;
 "भूपौदार्यः" was a garbled OCR-like splice, not a genuine citation from
 either graha.
+
+``scripts/ingest_bhavesha_phala_v3.py`` restored `bhaveshPhala` (emptied to
+`{}` in commit 3d05efb pending re-verification — see above) from
+``bhavesha-phala-bphs-report-v3.md`` (sibling to this repo), a fresh
+re-verified BPHS ch. 13 transcription covering all 144 house-lord →
+house-placement pairs with a real cited shloka each (0 gaps, unlike the
+pre-removal table's 5 paraphrased fallbacks) — the outer "भावेश सम्बन्ध"
+section's `shloka: null` branch is accordingly now dead code for every
+pair, kept only as a defensive fallback. `bhaveshPhalaSupplementary` was
+NOT touched by this restoration and stays empty pending its own
+re-verification.
 """
 
 from __future__ import annotations
