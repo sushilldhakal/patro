@@ -2275,7 +2275,18 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     a new per-planet Bhava % field was added; Vimshopaka's Saptavarga and
 #     Dashavarga Swavishwa tables had mis-assigned D7/D9/D12/D30/D60 weights
 #     corrected.
-KUNDALI_DETAIL_VERSION = 4
+# v5: new `grahaShanti` field — the classical 4-step Graha Shanti decision
+#     (dasha-lord affliction, Lagnesha/Yogakaraka strength, Rahu/Ketu/Saturn
+#     affliction, Saturn's Sade Sati/Dhaiya transit), computed by
+#     `shanti_recommendation.compute_shanti_recommendation`. Without this
+#     bump the disk cache keeps serving pre-v5 payloads with no
+#     `grahaShanti` key at all for any chart already computed once.
+# v6: `grahaShanti` Step 3 broadened from "Rahu/Ketu/Saturn conjunct a
+#     Lagnesha/5th/9th lord" to also catch Vish Yoga (Saturn-Moon), Grahan
+#     Yoga (Rahu/Ketu-Sun/Moon), Angarak Yoga (Mars-Rahu) and Guru-Chandal
+#     Yoga (Jupiter-Rahu) — each now emits a "pacify" finding for the
+#     malefic and a new "soothe" finding for the afflicted luminary/planet.
+KUNDALI_DETAIL_VERSION = 6
 
 
 def build_kundali_detail(

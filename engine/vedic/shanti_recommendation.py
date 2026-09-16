@@ -10,10 +10,16 @@ convention):
   2. Lagnesha/yogakaraka check — is the 1st/5th/9th house lord weak
      (below its Shadbala floor), debilitated, or combust?
      -> strengthening remedy (gem + mantra, no daan).
-  3. Affliction check — is Rahu, Ketu or Saturn occupying/aspecting a
-     benefic house (1st/5th/9th) or a benefic-group planet?
-     -> pacification remedy (japa + homa + daan, never a gem) for that
-     malefic.
+  3. Affliction check — two parts, both feeding the same pacification
+     remedy (japa + homa + daan, never a gem) for the malefic, plus a
+     "soothe" remedy for the luminary/Lagnesha it afflicts:
+       (a) is Rahu, Ketu or Saturn in close conjunction with a
+           Lagnesha/5th/9th-lord planet?
+       (b) is a luminary or the mind directly hit by a named classical
+           yoga — Vish Yoga (Saturn-Moon, by conjunction or Saturn's
+           3rd/7th/10th aspect), Grahan Yoga (Rahu/Ketu-Sun or
+           Rahu/Ketu-Moon), Angarak Yoga (Mars-Rahu), or Guru-Chandal
+           Yoga (Jupiter-Rahu)?
   4. Saturn's transit — is transiting Saturn in Sade Sati (12th/1st/2nd
      from natal Moon), Dhaiya/Ardhashtama (4th/8th from natal Moon), or
      the 8th house from Lagna?
@@ -37,12 +43,6 @@ from engine.vedic.interpretation import Chart, DUSTHANA, PLANET_NE, TRIKONA, _an
 MARAKA_HOUSES = {2, 7}
 BENEFIC_HOUSES = TRIKONA  # {1, 5, 9} — Lagnesha, Panchamesha, Navamesha
 
-# Orb for a "severe" (close) conjunction between a malefic and a benefic-group
-# planet in Step 3. Same-house/same-sign alone is too broad a net — against a
-# multi-house watch set it fires on almost any chart by chance, so this
-# requires the planets to actually stand close together in longitude, the
-# same magnitude of orb this engine already uses for combustion (8-17°).
-STEP3_CONJUNCTION_ORB_DEG = 10.0
 
 _REASON_LABEL_NE = {
     "dusthana": "६, ८ वा १२ भावको स्वामी",
@@ -82,6 +82,19 @@ def _affliction_reasons(chart: Chart, graha: str, dusthana_lords: set[str], mara
     if pf is not None and pf.combust:
         reasons.append("combust")
     return reasons
+
+
+def _conjunct(chart: Chart, a: str, b: str) -> bool:
+    """Classical yuti: the two grahas share a rashi (house), the standard
+    textbook test for Vish/Grahan/Angarak/Guru-Chandal Yoga — not a tight
+    degree orb. A same-house pair can stand 0-30° apart; e.g. Saturn at
+    6°33′ and Moon at 27°04′ in the same rashi are ~20° apart and still a
+    textbook Vish Yoga.
+    """
+    pa, pb = chart.planets.get(a), chart.planets.get(b)
+    if pa is None or pb is None:
+        return False
+    return pa.house == pb.house
 
 
 def _finding(
@@ -146,23 +159,22 @@ def compute_shanti_recommendation(
             "a gem and mantra japa (no daan for this planet).",
         ))
 
-    # ── Step 3 — Rahu/Ketu/Saturn afflicting a benefic graha or bhava ─────
+    # ── Step 3 — functional-benefic affliction + luminary/mind yogas ──────
     # "अत्यधिक पीडित" (severely afflicted) is read as a close (tight-orb)
-    # conjunction with a Lagnesha/5th/9th-lord planet — not merely sharing a
-    # house/sign, which spans up to 30° and, checked against a multi-planet
-    # watch set with three candidate malefics, overlaps on almost every
-    # chart by chance and carries no real signal.
-    step3_ne, step3_en = "राहु/केतु/शनिद्वारा शुभ ग्रह वा भाव पीडा परीक्षण", "Rahu/Ketu/Saturn Affliction Check"
+    # conjunction — not merely sharing a house/sign, which spans up to 30°
+    # and, checked against a multi-planet watch set with three candidate
+    # malefics, overlaps on almost every chart by chance and carries no
+    # real signal.
+    step3_ne = "राहु/केतु/शनि/मङ्गल/बृहस्पतिद्वारा शुभ ग्रह, चन्द्र वा सूर्यको पीडा परीक्षण"
+    step3_en = "Rahu/Ketu/Saturn/Mars/Jupiter Affliction Check (incl. Vish/Grahan/Angarak/Guru-Chandal Yoga)"
+
+    # (a) Rahu/Ketu/Saturn conjunct a Lagnesha/5th/9th-lord planet.
     for graha in ("rahu", "ketu", "saturn"):
         pf = chart.planets.get(graha)
         if pf is None:
             continue
         afflicted_lord = next(
-            (
-                b for b in benefic_lords
-                if (bp := chart.planets.get(b)) is not None
-                and _angular_sep(pf.longitude, bp.longitude) < STEP3_CONJUNCTION_ORB_DEG
-            ),
+            (b for b in benefic_lords if _conjunct(chart, graha, b)),
             None,
         )
         if afflicted_lord is None:
@@ -175,6 +187,77 @@ def compute_shanti_recommendation(
             f"{graha.title()} stands in close conjunction with {afflicted_lord.title()} "
             "(Lagnesha/5th/9th lord), afflicting it — pacify with Vedic japa, homa and "
             "daan (never wear this planet's gem).",
+        ))
+
+    # (b) Vish Yoga — Saturn conjunct, or special-aspecting (3rd/7th/10th), the Moon.
+    moon = chart.planets.get("moon")
+    if moon is not None and chart.planets.get("saturn") is not None:
+        vish = _conjunct(chart, "saturn", "moon") or "saturn" in chart.aspects_to(moon.house)
+        if vish:
+            findings.append(_finding(
+                3, step3_ne, step3_en, "saturn", "pacify",
+                "शनि र चन्द्रको युति/दृष्टिले विष योग बनेको छ (मानसिक अशान्ति, चिन्ता, ढिलाइ) — "
+                "शनिको वैदिक जप, हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
+                "Saturn's conjunction or aspect on the Moon forms Vish Yoga (mental unrest, "
+                "anxiety, delays) — pacify Saturn with japa, homa and daan (never wear its gem).",
+            ))
+            findings.append(_finding(
+                3, step3_ne, step3_en, "moon", "soothe",
+                "शनिसँगको विष योगले चन्द्र (मन) पीडित भएको छ — चन्द्रको जप र रुद्राभिषेकद्वारा शान्ति गर्नुपर्छ।",
+                "Saturn's Vish Yoga is afflicting the Moon (the mind) — soothe it with Moon "
+                "japa and Rudrabhishek.",
+            ))
+
+    # (c) Grahan Yoga — Rahu or Ketu conjunct the Sun or Moon.
+    for node in ("rahu", "ketu"):
+        for luminary in ("sun", "moon"):
+            if not _conjunct(chart, node, luminary):
+                continue
+            node_ne, lum_ne = PLANET_NE.get(node, node), PLANET_NE.get(luminary, luminary)
+            findings.append(_finding(
+                3, step3_ne, step3_en, node, "pacify",
+                f"{node_ne}ले {lum_ne}सँग ग्रहण योग बनाएको छ — {node_ne}को वैदिक जप, हवन र "
+                "दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
+                f"{node.title()}'s conjunction with {luminary.title()} forms Grahan (eclipse) "
+                f"Yoga — pacify {node.title()} with japa, homa and daan (never wear its gem).",
+            ))
+            findings.append(_finding(
+                3, step3_ne, step3_en, luminary, "soothe",
+                f"{node_ne}सँगको ग्रहण योगले {lum_ne} पीडित भएको छ — यसको आफ्नै शान्ति/जपद्वारा सुधार्नुपर्छ।",
+                f"{node.title()}'s Grahan Yoga is afflicting {luminary.title()} — soothe it "
+                "with its own japa and shanti.",
+            ))
+
+    # (d) Angarak Yoga — Mars conjunct Rahu.
+    if _conjunct(chart, "mars", "rahu"):
+        findings.append(_finding(
+            3, step3_ne, step3_en, "rahu", "pacify",
+            "राहु र मङ्गलको युतिले अङ्गारक योग बनेको छ (दुर्घटना, आवेश, विवाद) — राहुको वैदिक जप, "
+            "हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
+            "Rahu's conjunction with Mars forms Angarak Yoga (accidents, impulsiveness, "
+            "disputes) — pacify Rahu with japa, homa and daan (never wear its gem).",
+        ))
+        findings.append(_finding(
+            3, step3_ne, step3_en, "mars", "soothe",
+            "अङ्गारक योगले मङ्गल पीडित/उग्र भएको छ — मङ्गलको जप र दानद्वारा सुधार्नुपर्छ।",
+            "Angarak Yoga leaves Mars afflicted and volatile — soothe it with its own japa "
+            "and daan.",
+        ))
+
+    # (e) Guru-Chandal Yoga — Jupiter conjunct Rahu.
+    if _conjunct(chart, "jupiter", "rahu"):
+        findings.append(_finding(
+            3, step3_ne, step3_en, "rahu", "pacify",
+            "राहु र बृहस्पतिको युतिले गुरु-चाण्डाल योग बनेको छ (सल्लाह/नैतिकतामा भ्रम) — राहुको "
+            "वैदिक जप, हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
+            "Rahu's conjunction with Jupiter forms Guru-Chandal Yoga (confused judgement/"
+            "ethics) — pacify Rahu with japa, homa and daan (never wear its gem).",
+        ))
+        findings.append(_finding(
+            3, step3_ne, step3_en, "jupiter", "soothe",
+            "गुरु-चाण्डाल योगले बृहस्पति पीडित भएको छ — बृहस्पतिको जप र दानद्वारा सुधार्नुपर्छ।",
+            "Guru-Chandal Yoga leaves Jupiter afflicted — soothe it with its own japa and "
+            "daan.",
         ))
 
     # ── Step 4 — Saturn's Sade Sati / Dhaiya / 8th-from-Lagna transit ─────
