@@ -25,6 +25,13 @@ convention):
      the 8th house from Lagna?
      -> Saturn's shami-samidha homa, mustard-oil daan and japa.
 
+Each finding also carries a `tier` — "critical" (an active dasha/transit, or
+a yoga landing on a luminary or the Lagnesha) or "core" (a real but less
+time-pressured affliction, e.g. a secondary stellium yuti or a weak trikona
+lord) — so the UI can show the headline items expanded and group the rest,
+without pretending to a finer per-rule severity score this app has no
+methodology to defend.
+
 All four steps reuse data already computed for the rest of /kundali/detail —
 chart.house_lord, chart.planets[*].dignity/combust/shadbala_ratio,
 chart.maha_lord/antar_lord, chart.aspects_to, and engine.vedic.gochar for
@@ -99,7 +106,7 @@ def _conjunct(chart: Chart, a: str, b: str) -> bool:
 
 def _finding(
     step: int, title_ne: str, title_en: str, graha: str, remedy: str,
-    reason_ne: str, reason_en: str,
+    reason_ne: str, reason_en: str, tier: str,
 ) -> dict[str, Any]:
     return {
         "step": step,
@@ -110,6 +117,13 @@ def _finding(
         "remedy": remedy,
         "reasonNe": reason_ne,
         "reasonEn": reason_en,
+        # "critical" — active dasha/transit, or a yoga landing on a luminary
+        # (Sun/Moon) or the Lagnesha; "core" — everything else real but less
+        # time-pressured (a secondary stellium yuti, a weak trikona lord).
+        # Not a fine-grained 1-10 score: this app has no defensible
+        # methodology to rank dozens of rule branches against each other at
+        # that resolution, so it sticks to a boundary it can actually justify.
+        "tier": tier,
     }
 
 
@@ -136,6 +150,7 @@ def compute_shanti_recommendation(
             "यसको जप, दान र नवग्रह शान्ति अनिवार्य।",
             f"The current dasha/antardasha lord {lord.title()} is {reason_en} — "
             "its japa, daan and navagraha shanti are mandatory.",
+            "critical",
         ))
 
     # ── Step 2 — Lagnesha / Panchamesha / Navamesha (yogakaraka) strength ─
@@ -157,6 +172,7 @@ def compute_shanti_recommendation(
             "रत्न धारण र मन्त्र पाठद्वारा सबल बनाउनुपर्छ (दान गरिँदैन)।",
             f"{graha.title()}, a Lagnesha/5th/9th lord, is weak — strengthen with "
             "a gem and mantra japa (no daan for this planet).",
+            "core",
         ))
 
     # ── Step 3 — functional-benefic affliction + luminary/mind yogas ──────
@@ -195,6 +211,7 @@ def compute_shanti_recommendation(
             f"{graha.title()} is conjunct {afflicted_lord.title()} (Lagnesha/5th/9th lord) "
             "in the same house, afflicting it — pacify with Vedic japa, homa and daan "
             "(never wear this planet's gem).",
+            "critical" if afflicted_lord in ("sun", "moon") else "core",
         ))
 
     # (b) Vish Yoga — Saturn conjunct, or special-aspecting (3rd/7th/10th), the Moon.
@@ -210,12 +227,14 @@ def compute_shanti_recommendation(
                     "शनिको वैदिक जप, हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
                     "Saturn's conjunction or aspect on the Moon forms Vish Yoga (mental unrest, "
                     "anxiety, delays) — pacify Saturn with japa, homa and daan (never wear its gem).",
+                    "critical",
                 ))
             findings.append(_finding(
                 3, step3_ne, step3_en, "moon", "soothe",
                 "शनिसँगको विष योगले चन्द्र (मन) पीडित भएको छ — चन्द्रको जप र रुद्राभिषेकद्वारा शान्ति गर्नुपर्छ।",
                 "Saturn's Vish Yoga is afflicting the Moon (the mind) — soothe it with Moon "
                 "japa and Rudrabhishek.",
+                "critical",
             ))
 
     # (c) Grahan Yoga — Rahu or Ketu conjunct the Sun or Moon.
@@ -232,12 +251,14 @@ def compute_shanti_recommendation(
                     "दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
                     f"{node.title()}'s conjunction with {luminary.title()} forms Grahan (eclipse) "
                     f"Yoga — pacify {node.title()} with japa, homa and daan (never wear its gem).",
+                    "critical",
                 ))
             findings.append(_finding(
                 3, step3_ne, step3_en, luminary, "soothe",
                 f"{node_ne}सँगको ग्रहण योगले {lum_ne} पीडित भएको छ — यसको आफ्नै शान्ति/जपद्वारा सुधार्नुपर्छ।",
                 f"{node.title()}'s Grahan Yoga is afflicting {luminary.title()} — soothe it "
                 "with its own japa and shanti.",
+                "critical",
             ))
 
     # (d) Angarak Yoga — Mars conjunct Rahu.
@@ -250,12 +271,14 @@ def compute_shanti_recommendation(
                 "हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
                 "Rahu's conjunction with Mars forms Angarak Yoga (accidents, impulsiveness, "
                 "disputes) — pacify Rahu with japa, homa and daan (never wear its gem).",
+                "core",
             ))
         findings.append(_finding(
             3, step3_ne, step3_en, "mars", "soothe",
             "अङ्गारक योगले मङ्गल पीडित/उग्र भएको छ — मङ्गलको जप र दानद्वारा सुधार्नुपर्छ।",
             "Angarak Yoga leaves Mars afflicted and volatile — soothe it with its own japa "
             "and daan.",
+            "core",
         ))
 
     # (e) Guru-Chandal Yoga — Jupiter conjunct Rahu.
@@ -268,12 +291,14 @@ def compute_shanti_recommendation(
                 "वैदिक जप, हवन र दानद्वारा शान्ति गर्नुपर्छ (रत्न कहिल्यै लगाइँदैन)।",
                 "Rahu's conjunction with Jupiter forms Guru-Chandal Yoga (confused judgement/"
                 "ethics) — pacify Rahu with japa, homa and daan (never wear its gem).",
+                "core",
             ))
         findings.append(_finding(
             3, step3_ne, step3_en, "jupiter", "soothe",
             "गुरु-चाण्डाल योगले बृहस्पति पीडित भएको छ — बृहस्पतिको जप र दानद्वारा सुधार्नुपर्छ।",
             "Guru-Chandal Yoga leaves Jupiter afflicted — soothe it with its own japa and "
             "daan.",
+            "core",
         ))
 
     # ── Step 4 — Saturn's Sade Sati / Dhaiya / 8th-from-Lagna transit ─────
@@ -300,6 +325,7 @@ def compute_shanti_recommendation(
                 "शमी समिधा हवन, तोरीको तेल दान र जपद्वारा शान्ति गर्नुपर्छ।",
                 f"Saturn is currently transiting in {phase_en} — pacify with Shami-wood "
                 "homa, mustard-oil daan and japa.",
+                "critical",
             ))
 
     return {"findings": findings}

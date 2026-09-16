@@ -2286,7 +2286,10 @@ def _build_varga_charts(points: dict[str, dict[str, Any]]) -> dict[str, Any]:
 #     Yoga (Rahu/Ketu-Sun/Moon), Angarak Yoga (Mars-Rahu) and Guru-Chandal
 #     Yoga (Jupiter-Rahu) — each now emits a "pacify" finding for the
 #     malefic and a new "soothe" finding for the afflicted luminary/planet.
-KUNDALI_DETAIL_VERSION = 6
+# v7: every `grahaShanti` finding now carries a `tier` ("critical" | "core")
+#     so a chart with many simultaneous afflictions can be shown headline-
+#     first instead of as one flat, unranked list.
+KUNDALI_DETAIL_VERSION = 7
 
 
 def build_kundali_detail(
