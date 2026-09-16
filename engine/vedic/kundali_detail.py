@@ -32,6 +32,7 @@ from engine.vedic.interpretation import (
     sign_of,
 )
 from engine.vedic.shadbala import compute_shadbala
+from engine.vedic.shanti_recommendation import compute_shanti_recommendation
 from engine.vedic.vargas import VARGA_DIVISIONS, varga_rashi_from_longitude
 from engine.vedic.tribhagi import tribhagi_dasha
 from engine.vedic.vimshottari import DASHA_LORD_NE, YEAR_DAYS, vimshottari_dasha
@@ -2351,8 +2352,9 @@ def build_kundali_detail(
     _gulika_lon = _upagraha_raw.get("gulika", {}).get("longitude")
     _mandi_lon = _upagraha_raw.get("mandi", {}).get("longitude")
 
+    now_utc = datetime.now(timezone.utc)
     chart = build_chart(
-        planets, lagna, shadbala, dasha, datetime.now(timezone.utc), is_day=is_day,
+        planets, lagna, shadbala, dasha, now_utc, is_day=is_day,
         gulika_lon=_gulika_lon, mandi_lon=_mandi_lon,
     )
 
@@ -2414,6 +2416,8 @@ def build_kundali_detail(
                 lon is not None and orb is not None and _angular_sep(lon, sun_lon) < orb
             )
 
+    graha_shanti = compute_shanti_recommendation(chart, now_utc)
+
     return {
         "panchanga": panchanga,
         "shadbala": shadbala,
@@ -2425,6 +2429,7 @@ def build_kundali_detail(
         "vimshopaka": vimshopaka,
         "ashtakavarga": ashtakavarga,
         "yogas": _yogas_to_api(full_yoga_catalog(chart)),
+        "grahaShanti": graha_shanti,
         "vargaCharts": varga_charts,
         "upagrahas": upagrahas,
         "avakahada": _build_avakahada(moon_lon, sign_of(moon_lon) + 1, lagna_rashi),
