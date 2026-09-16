@@ -38,7 +38,7 @@ from datetime import datetime
 from typing import Any
 
 from engine.vedic.gochar import get_gochar_table
-from engine.vedic.interpretation import Chart, DUSTHANA, PLANET_NE, TRIKONA, _angular_sep
+from engine.vedic.interpretation import Chart, DUSTHANA, PLANET_NE, TRIKONA
 
 MARAKA_HOUSES = {2, 7}
 BENEFIC_HOUSES = TRIKONA  # {1, 5, 9} — Lagnesha, Panchamesha, Navamesha
@@ -160,11 +160,11 @@ def compute_shanti_recommendation(
         ))
 
     # ── Step 3 — functional-benefic affliction + luminary/mind yogas ──────
-    # "अत्यधिक पीडित" (severely afflicted) is read as a close (tight-orb)
-    # conjunction — not merely sharing a house/sign, which spans up to 30°
-    # and, checked against a multi-planet watch set with three candidate
-    # malefics, overlaps on almost every chart by chance and carries no
-    # real signal.
+    # "अत्यधिक पीडित" (severely afflicted) is read as the classical yuti
+    # test (`_conjunct` — same rashi/house), scoped to specific, named
+    # two-planet pairs rather than a broad watch-set-plus-aspects sweep,
+    # which (checked against several houses across three malefics) would
+    # overlap on almost every chart by chance and carry no real signal.
     step3_ne = "राहु/केतु/शनि/मङ्गल/बृहस्पतिद्वारा शुभ ग्रह, चन्द्र वा सूर्यको पीडा परीक्षण"
     step3_en = "Rahu/Ketu/Saturn/Mars/Jupiter Affliction Check (incl. Vish/Grahan/Angarak/Guru-Chandal Yoga)"
 
