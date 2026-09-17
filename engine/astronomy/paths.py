@@ -57,6 +57,19 @@ def bhava_reference_source_path() -> Path:
     return DATA_DIR / "bhava_reference.json"
 
 
+def documents_db_path() -> Path:
+    return DATA_DIR / "documents.db"
+
+
+def documents_source_dir() -> Path:
+    """Directory of hand-authored ``<slug>.json`` scripture manifests.
+
+    Checked into git (real content, not derived data) — see
+    ``data/documents_source/README.md`` for the authoring format.
+    """
+    return DATA_DIR / "documents_source"
+
+
 def ephemeris_path() -> Path:
     """Directory holding the Swiss Ephemeris ``.se1`` binary files.
 

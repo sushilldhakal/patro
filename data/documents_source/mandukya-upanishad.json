@@ -1,0 +1,133 @@
+{
+  "slug": "mandukya-upanishad",
+  "order_index": 3,
+  "title_sa": "माण्डूक्योपनिषद्",
+  "title_ne": "माण्डूक्य उपनिषद्",
+  "title_en": "Mandukya Upanishad",
+  "subtitle_ne": "अथर्ववेद",
+  "subtitle_en": "Atharvaveda",
+  "description_ne": "सबैभन्दा छोटो तर सबैभन्दा गहिरो उपनिषद्हरूमध्ये एक — ॐकार र चेतनाका चार अवस्था (जाग्रत, स्वप्न, सुषुप्ति, तुरीय) को विवेचना।",
+  "description_en": "One of the shortest yet most philosophically dense Upanishads — an examination of the syllable AUM and the four states of consciousness (waking, dream, deep sleep, and the fourth).",
+  "source_ne": "अथर्ववेद",
+  "source_en": "Atharvaveda. English translation: Eternal Raga (eternalraga.com) — please credit/link to the original when sharing publicly.",
+  "cover_image": "",
+  "has_chapters": false,
+  "audio_prefix": "documents/mandukya-upanishad",
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "शान्ति पाठ · 1",
+          "sanskrit": "ॐ भद्रं कर्णेभिः शृणुयाम देवाः भद्रं पश्येमाक्षभिर्यजत्राः । स्थिरैरङ्गैस्तुष्टुवाँसस्तनूभिर्व्यशेम देवहितं यदायुः । भद्रं नो अपि वातय मनः ।। ॐ शान्तिः शान्तिः शान्तिः ।। ॐ इत्येतदक्षरमिदं सर्वं तस्योपव्याख्यानं भूतं भवद् भविष्यदिति सर्वमोङ्कार एव यच्चान्यत् त्रिकालातीतं तदप्योङ्कार एव ।। १ ।।",
+          "transliteration": "oṃ bhadraṃ karṇebhiḥ śṛṇuyāma devāḥ bhadraṃ paśyemākṣabhiryajatrāḥ | sthirairaṅgaistuṣṭuvāṃsastanūbhirvyaśema devahitaṃ yadāyuḥ || bhadraṃ no api vātaya manaḥ || oṃ śāntiḥ śāntiḥ śāntiḥ || oṃ ityetadakṣaramidaṃ sarvaṃ tasyopavyākhyānaṃ bhūtaṃ bhavad bhaviṣyaditi sarvamoṅkāra eva yaccānyat trikālātītaṃ tadapyoṅkāra eva || 1 ||",
+          "meaning_ne": "हे देवताहरू, हामीले कानले मंगलमय कुरा सुनौं। हे पूजनीयहरू, हामीले आँखाले मंगलमय कुरा हेरौं। स्थिर अंग र स्वस्थ शरीरले स्तुति गर्दै, देवताहरूका लागि हितकर पूर्ण आयु बाँचौं। मनले मंगलमय कुरा नै उच्चारण गरोस्। ॐ शान्ति शान्ति शान्ति। ॐ — यो अक्षर नै यो सबै हो। यसको व्याख्या यस्तो छ: जे भूत, वर्तमान र भविष्य छ, त्यो सबै ॐकार नै हो। र जे तीन कालभन्दा पर छ, त्यो पनि ॐकार नै हो।",
+          "meaning_en": "O gods, may we hear what is auspicious with our ears. O venerable ones, may we see what is auspicious with our eyes. May we, praising you with steady limbs and healthy bodies, live out the full span that is good for the gods. May the mind send forth what is auspicious. Om peace, peace, peace. AUM: this syllable is all of this. Its explanation is as follows. Whatever is past, present, and future: all of that is AUM. And whatever lies beyond the three times: that too is AUM.",
+          "audio_file": "Mandukya_1.wav"
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2",
+          "sanskrit": "सर्वं ह्येतद् ब्रह्मायमात्मा ब्रह्म सोऽयमात्मा चतुष्पात् ।। २ ।।",
+          "transliteration": "sarvaṃ hyetad brahmāyamātmā brahma so'yamātmā catuṣpāt || 2 ||",
+          "meaning_ne": "यो सबै निश्चय नै ब्रह्म हो। यो आत्मा नै ब्रह्म हो। यही आत्माका चार पाद (अंश) छन्।",
+          "meaning_en": "All of this is indeed Brahman. This Self is Brahman. This same Self has four quarters.",
+          "audio_file": "Mandukya_2.wav"
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "जागरितस्थानो बहिष्प्रज्ञः सप्ताङ्ग एकोनविंशतिमुखः स्थूलभुग्वैश्वानरः प्रथमः पादः ।। ३ ।।",
+          "transliteration": "jāgaritasthāno bahiṣprajñaḥ saptāṅga ekonaviṃśatimukhaḥ sthūlabhugvaiśvānaraḥ prathamaḥ pādaḥ || 3 ||",
+          "meaning_ne": "जाग्रत अवस्थामा रहने, बाहिरतर्फ चेतना भएको, सात अंग र उन्नाइस मुख भएको, स्थूल पदार्थको भोक्ता — वैश्वानर नै पहिलो पाद हो।",
+          "meaning_en": "The one who dwells in the waking state, conscious outward, with seven limbs and nineteen mouths, the enjoyer of gross objects: Vaisvanara is the first quarter.",
+          "audio_file": "Mandukya_3.wav"
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "स्वप्नस्थानोऽन्तःप्रज्ञः सप्ताङ्ग एकोनविंशतिमुखः प्रविविक्तभुक्तैजसो द्वितीयः पादः ।। ४ ।।",
+          "transliteration": "svapnasthāno'ntaḥprajñaḥ saptāṅga ekonaviṃśatimukhaḥ praviviktabhuktaijaso dvitīyaḥ pādaḥ || 4 ||",
+          "meaning_ne": "स्वप्न अवस्थामा रहने, भित्रतर्फ चेतना भएको, सात अंग र उन्नाइस मुख भएको, सूक्ष्म पदार्थको भोक्ता — तैजस नै दोस्रो पाद हो।",
+          "meaning_en": "The one who dwells in the dream state, conscious inward, with seven limbs and nineteen mouths, the enjoyer of subtle objects: Taijasa is the second quarter.",
+          "audio_file": "Mandukya_4.wav"
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "यत्र सुप्तो न कञ्चन कामं कामयते न कञ्चन स्वप्नं पश्यति तत्सुषुप्तम् । सुषुप्तस्थान एकीभूतः प्रज्ञानघन एवानन्दमयो ह्यानन्दभुक् चेतोमुखः प्राज्ञस्तृतीयः पादः ।। ५ ।।",
+          "transliteration": "yatra supto na kañcana kāmaṃ kāmayate na kañcana svapnaṃ paśyati tatsuṣuptam | suṣuptasthāna ekībhūtaḥ prajñānaghana evānandamayo hyānandabhuk cetomukhaḥ prājñastṛtīyaḥ pādaḥ || 5 ||",
+          "meaning_ne": "जहाँ सुतेको व्यक्ति कुनै इच्छा गर्दैन, कुनै सपना देख्दैन, त्यो नै सुषुप्ति हो। सुषुप्ति अवस्थामा रहने, एकीभूत, केवल प्रज्ञानघन, आनन्दमय, आनन्दको भोक्ता, चेतनामुखी — प्राज्ञ नै तेस्रो पाद हो।",
+          "meaning_en": "Where the sleeper desires nothing and sees no dream: that is deep sleep. The one who dwells in deep sleep, unified, a mass of awareness alone, made of bliss, the enjoyer of bliss, whose door is consciousness: Prajna is the third quarter.",
+          "audio_file": "Mandukya_5.wav"
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6",
+          "sanskrit": "एष सर्वेश्वरः एष सर्वज्ञ एषोऽन्तर्यामी एष योनिः सर्वस्य प्रभवाप्ययौ हि भूतानाम् ।। ६ ।।",
+          "transliteration": "eṣa sarveśvaraḥ eṣa sarvajña eṣo'ntaryāmī eṣa yoniḥ sarvasya prabhavāpyayau hi bhūtānām || 6 ||",
+          "meaning_ne": "यो नै सबैको ईश्वर हो, यो नै सर्वज्ञ हो, यो नै अन्तर्यामी हो, यो नै सबैको मूल हो। सबै प्राणीहरूको उत्पत्ति र लय यहीँबाट हुन्छ।",
+          "meaning_en": "This one is the lord of all, the knower of all, the inner controller, the source of all. This is where all beings arise and into which they subside.",
+          "audio_file": "Mandukya_6.wav"
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "7",
+          "sanskrit": "नान्तःप्रज्ञं न बहिष्प्रज्ञं नोभयतःप्रज्ञं न प्रज्ञानघनं न प्रज्ञं नाप्रज्ञम् । अदृष्टमव्यवहार्यमग्राह्यमलक्षणमचिन्त्यमव्यपदेश्यमेकात्मप्रत्ययसारं प्रपञ्चोपशमं शान्तं शिवमद्वैतं चतुर्थं मन्यन्ते स आत्मा स विज्ञेयः ।। ७ ।।",
+          "transliteration": "nāntaḥprajñaṃ na bahiṣprajñaṃ nobhayataḥprajñaṃ na prajñānaghanaṃ na prajñaṃ nāprajñam | adṛṣṭamavyavahāryamagrāhyamalakṣaṇamacintyamavyapadeśyamekātmapratyayasāraṃ prapañcopaśamaṃ śāntaṃ śivamadvaitaṃ caturthaṃ manyante sa ātmā sa vijñeyaḥ || 7 ||",
+          "meaning_ne": "न भित्रतर्फ चेतना भएको, न बाहिरतर्फ, न दुवैतर्फ, न प्रज्ञानघन, न चेतन, न अचेतन। अदृश्य, व्यवहारभन्दा पर, अग्राह्य, लक्षणरहित, अचिन्त्य, वर्णनभन्दा पर, एक आत्माको निश्चयमात्र सार भएको, प्रपञ्चको शमन भएको, शान्त, शिव, अद्वैत — यसैलाई चतुर्थ (तुरीय) मानिन्छ। यही आत्मा हो, यही जान्नुपर्ने कुरा हो।",
+          "meaning_en": "Not conscious inward, not conscious outward, not conscious in both directions, not a mass of awareness, not conscious, not unconscious. It is unseen, beyond ordinary transaction, beyond grasp, without defining marks, unthinkable, beyond designation. Its essence is the certainty of the one Self. It is the cessation of the phenomenal world, peaceful, auspicious, without a second. That is what they call the fourth. It is the Self. It is to be known.",
+          "audio_file": "Mandukya_7.wav"
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "8",
+          "sanskrit": "सोऽयमात्माध्यक्षरमोङ्काराऽधिमात्रं पादा मात्राः मात्राश्च पादा अकार उकारो मकार इति ।। ८ ।।",
+          "transliteration": "so'yamātmādhyakṣaramoṅkārā'dhimātraṃ pādā mātrāḥ mātrāśca pādā akāra ukāro makāra iti || 8 ||",
+          "meaning_ne": "यही आत्मा अक्षरको दृष्टिले ॐकार हो। पादहरू नै मात्राहरू हुन्, र मात्राहरू नै पादहरू — अ, उ, म्।",
+          "meaning_en": "This same Self, considered in terms of the syllable, is AUM. The quarters of the Self are the sounds, and the sounds are the quarters: A, U, M.",
+          "audio_file": "Mandukya_8.wav"
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "9",
+          "sanskrit": "जागरितस्थानो वैश्वानरोऽकारः प्रथमा मात्राऽऽप्तेरादिमत्त्वाद् वाऽऽप्नोति ह वै सर्वान् कामानादिश्च भवति य एवं वेद ।। ९ ।।",
+          "transliteration": "jāgaritasthāno vaiśvānaro'kāraḥ prathamā mātrā''pterādimattvād vā''pnoti ha vai sarvān kāmānādiśca bhavati ya evaṃ veda || 9 ||",
+          "meaning_ne": "जाग्रत अवस्थाको वैश्वानर नै अ (पहिलो मात्रा) हो, व्याप्ति वा आदि हुनाले। यो जान्नेले सबै कामनाहरू प्राप्त गर्छ र आफ्नो कुलमा अग्रणी बन्छ।",
+          "meaning_en": "Vaisvanara of the waking state is A, the first sound, on account of pervading all or on account of being first. The one who knows this attains all desires and becomes the first among their kin.",
+          "audio_file": "Mandukya_9.wav"
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "10",
+          "sanskrit": "स्वप्नस्थानस्तैजस उकारो द्वितीया मात्रोत्कर्षाद् उभयत्वाद्वोत्कर्षति ह वै ज्ञानसन्तति समानश्च भवति नास्याब्रह्मविच्चुले भवति य एवं वेद ।। १० ।।",
+          "transliteration": "svapnasthānastaijasa ukāro dvitīyā mātrotkarṣād ubhayatvādvotkarṣati ha vai jñānasantati samānaśca bhavati nāsyābrahmaviccule bhavati ya evaṃ veda || 10 ||",
+          "meaning_ne": "स्वप्न अवस्थाको तैजस नै उ (दोस्रो मात्रा) हो, उत्कर्ष वा बीचमा हुनाले। यो जान्नेले ज्ञानको निरन्तरता बढाउँछ, सबैसँग समान हुन्छ, र यसको कुलमा ब्रह्म नजान्ने कोही रहँदैन।",
+          "meaning_en": "Taijasa of the dream state is U, the second sound, on account of excelling or on account of being between the two. The one who knows this elevates the continuity of knowledge, becomes dear to all, and in whose family no one remains ignorant of Brahman.",
+          "audio_file": "Mandukya_10.wav"
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "11",
+          "sanskrit": "सुषुप्तस्थानः प्राज्ञो मकारस्तृतीया मात्रा मितेरपीतेर्वा मिनोति ह वा इदं सर्वमपीतिश्च भवति य एवं वेद ।। ११ ।।",
+          "transliteration": "suṣuptasthānaḥ prājño makārastṛtīyā mātrā miterapītervā minoti ha vā idaṃ sarvamapītiśca bhavati ya evaṃ veda || 11 ||",
+          "meaning_ne": "सुषुप्ति अवस्थाको प्राज्ञ नै म् (तेस्रो मात्रा) हो, नाप्ने वा लय हुनाले। यो जान्नेले यो सम्पूर्ण संसारलाई नाप्छ र सबैलाई आफूमा लय गर्छ।",
+          "meaning_en": "Prajna of the deep sleep state is M, the third sound, on account of measuring or on account of absorption. The one who knows this measures out this whole world, and everything is absorbed into that one.",
+          "audio_file": "Mandukya_11.wav"
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "12",
+          "sanskrit": "अमात्रश्चतुर्थोऽव्यवहार्यः प्रपञ्चोपशमः शिवोऽद्वैत एवमोङ्कार आत्मैव संविशत्यात्मनाऽऽत्मानं य एवं वेद ।। १२ ।।",
+          "transliteration": "amātraścaturtho'vyavahāryaḥ prapañcopaśamaḥ śivo'dvaita evamoṅkāra ātmaiva saṃviśatyātmanā''tmānaṃ ya evaṃ veda || 12 ||",
+          "meaning_ne": "मात्रारहित चतुर्थ, व्यवहारभन्दा पर, प्रपञ्चको शमन, शिव, अद्वैत — यही ॐकार हो। यो आत्मा नै हो। यो जान्नेले आत्माद्वारा आत्मामा प्रवेश गर्छ।",
+          "meaning_en": "The fourth is without sound, beyond ordinary transaction, the cessation of the phenomenal world, auspicious, without a second. AUM is the Self itself. The one who knows this enters the Self through the Self.",
+          "audio_file": "Mandukya_12.wav"
+        }
+      ]
+    }
+  ]
+}

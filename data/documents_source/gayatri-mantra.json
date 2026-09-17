@@ -1,0 +1,45 @@
+{
+  "slug": "gayatri-mantra",
+  "order_index": 1,
+  "title_sa": "गायत्री मन्त्रः",
+  "title_ne": "गायत्री मन्त्र",
+  "title_en": "Gayatri Mantra",
+  "subtitle_ne": "ऋग्वेद ३.६२.१०",
+  "subtitle_en": "Rigveda 3.62.10",
+  "description_ne": "सबैभन्दा पवित्र वैदिक मन्त्रहरूमध्ये एक, सूर्यदेव सवितालाई समर्पित।",
+  "description_en": "One of the most sacred Vedic mantras, addressed to Savitr, the sun deity.",
+  "source_ne": "ऋग्वेद",
+  "source_en": "Rigveda",
+  "cover_image": "",
+  "has_chapters": false,
+  "audio_prefix": "documents/gayatri-mantra",
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "ॐ भूर्भुवः स्वः । तत्सवितुर्वरेण्यं ॥",
+          "transliteration": "oṃ bhūr bhuvaḥ svaḥ, tat savitur vareṇyaṃ",
+          "meaning_ne": "ॐ — पृथ्वी, अन्तरिक्ष र स्वर्ग (त्रिलोक)। त्यो पूज्य सवितादेव (सूर्य)को उत्कृष्ट तेज...",
+          "meaning_en": "Om — the earth, the atmosphere, and the heavens. That excellent, adorable radiance of Savitr (the sun)...",
+          "audio_file": "gayatri_01.wav",
+          "audio_duration_seconds": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2",
+          "sanskrit": "भर्गो देवस्य धीमहि । धियो यो नः प्रचोदयात् ॥",
+          "transliteration": "bhargo devasya dhīmahi, dhiyo yo naḥ pracodayāt",
+          "meaning_ne": "...त्यो देवताको तेजको हामी ध्यान गर्छौं। त्यसले हाम्रो बुद्धिलाई सही मार्गमा प्रेरित गरून्।",
+          "meaning_en": "...that divine radiance — we meditate upon it. May it inspire our intellect.",
+          "audio_file": "gayatri_02.wav",
+          "audio_duration_seconds": null
+        }
+      ]
+    }
+  ]
+}

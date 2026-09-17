@@ -209,6 +209,21 @@ def frontend_url() -> str:
     return (os.getenv("FRONTEND_URL", "https://vedicpatro.com") or "").rstrip("/")
 
 
+# ─── Documents (shlokas/stotram) audio ──────────────────────────────────────────
+
+
+def r2_public_base_url() -> str | None:
+    """Public base URL the Cloudflare R2 bucket serves audio/cover files from.
+
+    Either the bucket's R2.dev dev URL or a custom domain mapped to it in the
+    Cloudflare dashboard — the API never talks to R2 itself, it only prefixes
+    stored object keys with this to build a playable URL. A manifest's
+    ``audio_file``/``cover_image`` may also be a full ``http(s)://`` URL, which
+    is used as-is and needs this unset.
+    """
+    return (os.getenv("R2_PUBLIC_BASE_URL") or "").strip().rstrip("/") or None
+
+
 # ─── Open Graph share image ─────────────────────────────────────────────────────
 
 def og_screenshot_enabled() -> bool:

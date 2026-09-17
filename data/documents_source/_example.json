@@ -1,0 +1,36 @@
+{
+  "_comment": "Copy this file to <your-slug>.json and fill it in. Filenames starting with _ are skipped by the importer, so this template is never seeded.",
+  "slug": "example-stotram",
+  "order_index": 999,
+  "title_sa": "उदाहरण स्तोत्रम्",
+  "title_ne": "उदाहरण स्तोत्र",
+  "title_en": "Example Stotram",
+  "subtitle_ne": "",
+  "subtitle_en": "",
+  "description_ne": "",
+  "description_en": "",
+  "source_ne": "",
+  "source_en": "",
+  "cover_image": "",
+  "has_chapters": false,
+  "audio_prefix": "documents/example-stotram",
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "",
+          "transliteration": "",
+          "meaning_ne": "",
+          "meaning_en": "",
+          "audio_file": "1.mp3",
+          "audio_duration_seconds": null
+        }
+      ]
+    }
+  ]
+}

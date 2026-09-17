@@ -111,3 +111,7 @@ data/yoga_reference.db-*
 # Generated Vastu reference DB (rebuilt from data/vastu_zone_uses.json + data/vastu_room_index.json)
 data/vastu.db
 data/vastu.db-*
+
+# Generated Documents reference DB (rebuilt from data/documents_source/*.json)
+data/documents.db
+data/documents.db-*
