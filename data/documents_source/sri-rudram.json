@@ -1,0 +1,501 @@
+{
+  "slug": "sri-rudram",
+  "order_index": 3,
+  "category": "scripture",
+  "title_sa": "श्रीरुद्रप्रश्नः",
+  "title_ne": "श्री रुद्रम्",
+  "title_en": "Sri Rudram",
+  "subtitle_ne": "कृष्ण यजुर्वेद, तैत्तिरीय संहिता · ११ अनुवाक",
+  "subtitle_en": "Krishna Yajurveda, Taittiriya Samhita · 11 Anuvakas",
+  "description_ne": "रुद्र (शिव) लाई समर्पित वैदिक स्तोत्र — नमस्कारका सहस्र नाम र शान्त रूपको प्रार्थना। तैत्तिरीय संहिताको चौथो काण्ड, पाँचौं प्रपाठक (नमकम्)।",
+  "description_en": "The Vedic hymn to Rudra (Shiva) — salutations to his thousand forms and a prayer for his peaceful aspect. From Taittiriya Samhita, Kanda 4, Prapathaka 5 (Namakam).",
+  "source_ne": "कृष्ण यजुर्वेदीय तैत्तिरीय संहिता, चतुर्थ काण्ड, पञ्चम प्रपाठक",
+  "source_en": "Krishna Yajurveda, Taittiriya Samhita 4.5 (Sri Rudra Prasna / Namakam)",
+  "cover_image": "",
+  "has_chapters": true,
+  "audio_prefix": "documents/sri-rudram",
+  "chapters": [
+    {
+      "number": 1,
+      "title_ne": "रुद्रको धनुष र शान्त रूप",
+      "title_en": "Rudra's bow and peaceful form",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1.1",
+          "sanskrit": "अथ श्रीरुद्रप्रश्नः ॥ श्री गुरुभ्यॊ नमः । हरिः ऒ३म् । ऒं गणानां त्वा गणपतिꣳ हवामहॆ कविं कवीनामुपमश्रवस्तमम् । ज्यॆष्ठराजं ब्रह्मणां ब्रह्मणस्पत आ नः श्ड़्ण्वन्नूतिभिस्सीद सादनम् ॥",
+          "transliteration": "atha srīrudrapraśnaḥ śrī gurubhyo namaḥ . hariḥ o3m . oṃ gaṇānāṃ tvā gaṇapatigͫ havāmahe kaviṃ kavīnāmupamaśravastamam . jyeṣṭharājaṃ brahmaṇāṃ brahmaṇaspata ā naḥ śṛṇvannūtibhissīda sādanam ..",
+          "meaning_ne": "अब श्री रुद्र प्रश्न सुरु हुन्छ। पूज्य गुरुहरूलाई नमस्कार। ॐ, हरि परब्रह्म। ॐ, हामी गणहरूका स्वामी गणपतिलाई आह्वान गर्छौं — ज्ञानीहरूमा सर्वश्रेष्ठ, सबैभन्दा यशस्वी, प्रार्थनाहरूका ज्येष्ठ राजा ब्रह्मणस्पति। हाम्रो प्रार्थना सुन्नुहोस् र आशीर्वाद दिन यहाँ विराजमान हुनुहोस्।",
+          "meaning_en": "Now begins the Śrī Rudra Praśna. Salutations to the revered Gurus. Oṃ, Hari, the supreme being. Om, we invoke you, O Lord of the Ganas (attendants of Shiva). The wisest among the wise, and the most famous of all. The eldest Lord of all prayers, O Brahmanaspati (Lord of knowledge and prayers). Hear our prayers and sit with us to grant your blessings.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1.2",
+          "sanskrit": "ओ-न्नमो भगवते॑ रुद्रा॒य ॥",
+          "transliteration": "ō-nnamō bhagavatē̍ rudrā̠ya ॥",
+          "meaning_ne": "ॐ, भगवान् रुद्रलाई नमस्कार।",
+          "meaning_en": "Oṃ, salutations to the blessed one, Rudra.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "1.3",
+          "sanskrit": "नम॑स्ते रुद्र म॒न्यव॑ उ॒तोत॒ इष॑वे॒ नमः॑ । नम॑स्ते अस्तु॒ धन्व॑ने बा॒हुभ्या॑मु॒त ते॒ नमः॑ ॥",
+          "transliteration": "nama̍stē rudra ma̠nyava̍ u̠tōta̠ iṣa̍vē̠ nama̍ḥ । nama̍stē astu̠ dhanva̍nē bā̠hubhyā̍mu̠ta tē̠ nama̍ḥ ॥",
+          "meaning_ne": "रुद्रको क्रोधलाई नमस्कार, उहाँको बाणलाई पनि नमस्कार। रुद्रको धनुष र बाहुहरूलाई नमस्कार।",
+          "meaning_en": "Salutations to the wrath of Rudra and to his arrows. Salutations to Rudra's bow and arms.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "1.4",
+          "sanskrit": "या त॒ इषुः॑ शि॒वत॑मा शि॒व-म्ब॒भूव॑ ते॒ धनुः॑ । शि॒वा श॑र॒व्या॑ या तव॒ तया॑ नो रुद्र मृडय ।",
+          "transliteration": "yā ta̠ iṣu̍-śśi̠vata̍mā śi̠va-mba̠bhūva̍ tē̠ dhanu̍ḥ । śi̠vā śa̍ra̠vyā̍ yā tava̠ tayā̍ nō rudra mṛḍaya ।",
+          "meaning_ne": "तपाईंको बाण अत्यन्त कल्याणकारी होस् र धनुष शान्त होस्। त्यही शान्त बाणले, हे रुद्र, हामीलाई सुख दिनुहोस्।",
+          "meaning_en": "Let your arrow be most auspicious and your bow peaceful. With that most peaceful arrow of yours, O Rudra, make us happy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "1.5",
+          "sanskrit": "या ते॑ रुद्र शि॒वा त॒नूरघो॒रा-ऽपा॑पकाशिनी । तया॑ नस्त॒नुवा॒ शन्त॑मया॒ गिरि॑शन्ता॒भिचा॑कशीहि ॥",
+          "transliteration": "yā tē̍ rudra śi̠vā ta̠nūraghō̠rā-'pā̍pakāśinī । tayā̍ nasta̠nuvā̠ śanta̍mayā̠ giri̍śantā̠bhichā̍kaśīhi ॥",
+          "meaning_ne": "हे रुद्र, तपाईंको त्यो मङ्गलमय, अघोर र पापनाशक रूप — त्यही अत्यन्त शान्त तनुले, हे गिरिशन्त, हामीलाई दर्शन दिनुहोस्।",
+          "meaning_en": "That auspicious and benevolent form of yours, O Rudra, which destroys sins— with that peaceful form, O Giriśa, make yourself known to us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "1.6",
+          "sanskrit": "यामिषु॑-ङ्गिरिशन्त॒ हस्ते॒ बिभ॒र्​ष्यस्त॑वे । शि॒वा-ङ्गि॑रित्र॒ ता-ङ्कु॑रु॒ मा हिग्ं॑सीः॒ पुरु॑ष॒-ञ्जग॑त्॥",
+          "transliteration": "yāmiṣu̍-ṅgiriśanta̠ hastē̠ bibha̠r​ṣyasta̍vē । śi̠vā-ṅgi̍ritra̠ tā-ṅku̍ru̠ mā hig̍ṃsī̠ḥ puru̍ṣa̠-ñjaga̍t॥",
+          "meaning_ne": "हे गिरिशन्त, तपाईंले हातमा समातेको त्यो बाणलाई शान्त बनाइदिनुहोस्। पुरुष र जगत्लाई हिंसा नगर्नुहोस्।",
+          "meaning_en": "That arrow you hold in your hand, O Giriśa, make it peaceful. Do not harm the world or its people.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "1.7",
+          "sanskrit": "शि॒वेन॒ वच॑सा त्वा॒ गिरि॒शाच्छा॑ वदामसि । यथा॑ न॒-स्सर्व॒मिज्जग॑दय॒क्ष्मग्ं सु॒मना॒ अस॑त् ॥",
+          "transliteration": "śi̠vēna̠ vacha̍sā tvā̠ giri̠śāchChā̍ vadāmasi । yathā̍ na̠-ssarva̠mijjaga̍daya̠kṣmagṃ su̠manā̠ asa̍t ॥",
+          "meaning_ne": "हे गिरिश, हामी तपाईंलाई मङ्गल वचनले सम्बोधन गर्छौं, ताकि सम्पूर्ण जगत् रोगरहित र सुमनस्क होस्।",
+          "meaning_en": "We invoke you, O Giriśa, with auspicious words so that the whole world may be free from disease and suffering.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "1.8",
+          "sanskrit": "अध्य॑वोचदधिव॒क्ता प्र॑थ॒मो दैव्यो॑ भि॒षक् । अहीग्॑श्च॒ सर्वा᳚ञ्ज॒म्भय॒न्-थ्सर्वा᳚श्च यातुधा॒न्यः॑ ॥",
+          "transliteration": "adhya̍vocadadhiva̱ktā pra̍tha̱mo daivyo̍ bhi̱ṣak . ahīg̍śca̱ sarvā̎ñja̱mbhaya̱n-thsarvā̎śca yātudhā̱nya̍ḥ ..",
+          "meaning_ne": "देवताहरूका प्रथम वैद्य अधिवक्ताले भने — सबै सर्प र यातुधानहरूलाई नष्ट गरून्।",
+          "meaning_en": "The first divine healer said, \"May Rudra remove all the serpents and other harmful beings.\"",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "1.9",
+          "sanskrit": "अ॒सौ यस्ता॒म्रो अ॑रु॒ण उ॒त ब॒भ्रुस्सु॑म॒ङ्गलः॑ । ये चे॒माग्ं रु॒द्रा अ॒भितो॑ दि॒क्षु श्रि॒ता-स्स॑हस्र॒शो-ऽवैषा॒ग्ं॒ हेड॑ ईमहे ॥",
+          "transliteration": "a̠sau yastā̠mrō a̍ru̠ṇa u̠ta ba̠bhrussu̍ma̠ṅgala̍ḥ । yē chē̠māgṃ ru̠drā a̠bhitō̍ di̠kṣu śri̠tā-ssa̍hasra̠śō-'vaiṣā̠gṃ̠ hēḍa̍ īmahē ॥",
+          "meaning_ne": "जो ताम्र, अरुण र बभ्रु वर्णका अत्यन्त मङ्गलमय हुनुहुन्छ, र दिशाहरूमा हजारौं रुद्र अवस्थित छन् — उनीहरूको क्रोधबाट हामी मुक्त होऔं।",
+          "meaning_en": "The one who is copper-red, reddish-brown, and auburn-hued, very auspicious, and the Rudras that are spread in all directions, may they remove the harm from us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "1.10",
+          "sanskrit": "अ॒सौ यो॑-ऽव॒सर्प॑ति॒ नील॑ग्रीवो॒ विलो॑हितः । उ॒तैन॑-ङ्गो॒पा अ॑दृश॒न्नदृ॑शन्नुदहा॒र्यः॑ । उ॒तैनं॒-विँश्वा॑ भू॒तानि॒ स दृ॒ष्टो मृ॑डयाति नः ॥",
+          "transliteration": "a̠sau yō̍-'va̠sarpa̍ti̠ nīla̍grīvō̠ vilō̍hitaḥ । u̠taina̍-ṅgō̠pā a̍dṛśa̠nnadṛ̍śannudahā̠rya̍ḥ । u̠taina̠ṃ viśvā̍ bhū̠tāni̠ sa dṛ̠ṣṭō mṛ̍ḍayāti naḥ ॥",
+          "meaning_ne": "नीलग्रीव र विलोहित वर्णका उहाँ संसारमा विचरण गर्नुहुन्छ। गोठाला र पानी भर्नेहरूले उहाँलाई देखे; सबै भूतले देखे। देखिएपछि उहाँ हामीलाई सुख दिनुहुन्छ।",
+          "meaning_en": "The blue-throated, red-hued one moves through the world. He is seen by the cowherds and all beings. When seen, he brings protection to us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "1.11",
+          "sanskrit": "नमो॑ अस्तु॒ नील॑ग्रीवाय सहस्रा॒क्षाय॑ मी॒ढुषे᳚ । अथो॒ ये अ॑स्य॒ सत्वा॑नो॒-ऽह-न्तेभ्यो॑-ऽकर॒न्नमः॑ ॥",
+          "transliteration": "namō̍ astu̠ nīla̍grīvāya sahasrā̠kṣāya̍ mī̠ḍhuṣē̎ । athō̠ yē a̍sya̠ satvā̍nō̠-'ha-ntēbhyō̍-'kara̠nnama̍ḥ ॥",
+          "meaning_ne": "नीलग्रीव, सहस्राक्ष र वर्षा गर्ने मीढुष्लाई नमस्कार। उहाँका अनुचरहरूलाई पनि मैले नमस्कार गरें।",
+          "meaning_en": "Salutations to the blue-throated one, the thousand-eyed one who showers blessings. Salutations to those who follow him.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "1.12",
+          "sanskrit": "प्रमुंच धन्वनस्त्वमुभयॊरार्त्नियॊर्ज्याम् । याश्च तॆ हस्त इषवः परा ता भगवॊ वप ।",
+          "transliteration": "pramu̍ñcha̠ dhanva̍na̠stvamu̠bhayō̠rārtni̍ yō̠rjyām । yāścha̍ tē̠ hasta̠ iṣa̍va̠ḥ parā̠ tā bha̍gavō vapa ॥",
+          "meaning_ne": "हे भगवन्, धनुषका दुवै टुप्पाबाट प्रत्यञ्चा खोलिदिनुहोस्, र हातका बाणहरू हामीबाट टाढा फालिदिनुहोस्।",
+          "meaning_en": "Release the string of your bow from both ends, O Lord, and may the arrows in your hand be far away from us, O Lord.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "1.13",
+          "sanskrit": "अ॒व॒तत्य॒ धनु॒स्त्वग्ं सह॑स्राक्ष॒ शते॑षुधे । नि॒शीर्य॑ श॒ल्याना॒-म्मुखा॑ शि॒वो नः॑ सु॒मना॑ भव ॥",
+          "transliteration": "a̠va̠tatya̠ dhanu̠stvagṃ saha̍srākṣa̠ śatē̍ṣudhē । ni̠śīrya̍ śa̠lyānā̠-mmukhā̍ śi̠vō na̍-ssu̠manā̍ bhava ॥",
+          "meaning_ne": "हे सहस्राक्ष, सयौं बाण भएका प्रभु, धनुष झुकाउनुहोस्, बाणका टुप्पा भत्काउनुहोस्, र हामीप्रति शिव तथा सुमनस्क हुनुहोस्।",
+          "meaning_en": "O thousand-eyed Lord, lower your bow and keep its arrows away from us. Be peaceful and kind to us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "1.14",
+          "sanskrit": "विज्य॒-न्धनुः॑ कप॒र्दिनो॒ विश॑ल्यो॒ बाण॑वाग्ं उ॒त । अने॑शन्न॒स्येष॑व आ॒भुर॑स्य निष॒ङ्गथिः॑ ॥",
+          "transliteration": "vijya̠-ndhanu̍ḥ kapa̠rdinō̠ viśa̍lyō̠ bāṇa̍vāgṃ u̠ta । anē̍śanna̠syēṣa̍va ā̠bhura̍sya niṣa̠ṅgathi̍ḥ ॥",
+          "meaning_ne": "जटाधारी कपर्दीको धनुष विज्य (प्रत्यञ्चारहित) होस्, बाणविहीन होस्; उहाँका बाण र निषङ्ग पनि निष्क्रिय रहून्।",
+          "meaning_en": "The unstrung bow of Kapardin (one with matted hair), with arrows removed, is kept aside. The quiver is also set aside for the protection of the world.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "1.15",
+          "sanskrit": "या ते॑ हे॒तिर्मी॑डुष्टम॒ हस्ते॑ ब॒भूव॑ ते॒ धनुः॑ । तया॒-ऽस्मान्, वि॒श्वत॒स्त्वम॑य॒क्ष्मया॒ परि॑ब्भुज ॥",
+          "transliteration": "yā tē̍ hē̠tirmī̍ḍuṣṭama̠ hastē̍ ba̠bhūva̍ tē̠ dhanu̍ḥ । tayā̠-'smān, vi̠śvata̠stvama̍ya̠kṣmayā̠ pari̍bbhuja ॥",
+          "meaning_ne": "हे अत्यन्त कृपालु, तपाईंको हातको त्यो आयुध-धनुषले सबै दिशाबाट हामीलाई रोगरहित भई रक्षा गर्नुहोस्।",
+          "meaning_en": "That weapon in your hand, O most gracious one, that bow—protect us from all directions and make us free from disease.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "1.16",
+          "sanskrit": "नम॑स्ते अ॒स्त्वायु॑धा॒याना॑तताय धृ॒ष्णवे᳚ । उ॒भाभ्या॑मु॒त ते॒ नमो॑ बा॒हुभ्या॒-न्तव॒ धन्व॑ने ॥",
+          "transliteration": "nama̍stē a̠stvāyu̍dhā̠yānā̍tatāya dhṛ̠ṣṇavē̎ । u̠bhābhyā̍mu̠ta tē̠ namō̍ bā̠hubhyā̠-ntava̠ dhanva̍nē ॥",
+          "meaning_ne": "तपाईंको शक्तिशाली आयुधलाई नमस्कार। तपाईंका दुवै बाहु र धनुषलाई पनि नमस्कार।",
+          "meaning_en": "Salutations to your mighty weapon, O Rudra. Salutations to both your arms and your bow, which are powerful and victorious.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "1.17",
+          "sanskrit": "परि॑ ते॒ धन्व॑नो हे॒तिर॒स्मान् वृ॑णक्तु वि॒श्वतः॑ । अथो॒ य इ॑षु॒धिस्तवा॒रे अ॒स्मन्निधे॑हि॒ तम् ॥१॥",
+          "transliteration": "pari̍ tē̠ dhanva̍nō hē̠tira̠smān vṛ̍ṇaktu vi̠śvata̍ḥ । athō̠ ya i̍ṣu̠dhistavā̠rē a̠smannidhē̍hi̠ tam ॥ 1 ॥",
+          "meaning_ne": "तपाईंको धनुषका बाणहरूले सबै दिशाबाट हामीलाई छेडून्। तपाईंको तरकस हामीबाट टाढा राखिदिनुहोस्।",
+          "meaning_en": "May the arrows of your bow not harm us from all sides. And may your quiver be placed far away from us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "1.18",
+          "sanskrit": "श्री शम्भ॑वे॒ नमः॑ ॥ नम॑स्ते अस्तु भगवन्-विश्वेश्व॒राय॑ महादे॒वाय॑ त्र्यम्ब॒काय॑ त्रिपुरान्त॒काय॑ त्रिकाग्निका॒लाय॑ कालाग्निरु॒द्राय॑ नीलक॒ण्ठाय॑ मृत्युञ्ज॒याय॑ सर्वेश्व॒राय॑ सदाशि॒वाय॑ [शङ्क॒राय॑] श्रीम-न्महादे॒वाय॒ नमः॑ ।",
+          "transliteration": "śrī śambha̍vē̠ nama̍ḥ ॥ nama̍stē astu bhagavan-viśvēśva̠rāya̍ mahādē̠vāya̍ tryamba̠kāya̍ tripurānta̠kāya̍ trikāgnikā̠lāya̍ kālāgniru̠drāya̍ nīlaka̠ṇṭhāya̍ mṛtyuñja̠yāya̍ sarvēśva̠rāya̍ sadāśi̠vāya̍ [śaṅka̠rāya̍] śrīma-nmahādē̠vāya̠ nama̍ḥ ।",
+          "meaning_ne": "श्री शम्भुलाई नमस्कार। विश्वेश्वर, महादेव, त्र्यम्बक, त्रिपुरान्तक, त्रिकाग्निकाल, कालाग्निरुद्र, नीलकण्ठ, मृत्युञ्जय, सर्वेश्वर, सदाशिव, शङ्कर — श्रीमन् महादेवलाई नमस्कार।",
+          "meaning_en": "This verse is a powerful invocation to Lord Shiva, calling him by many of his divine names and forms. It begins by addressing him as Viśveśvara (the lord of the universe) and Mahadeva (the great god), and continues to praise his other aspects, including Tryambaka (the three-eyed one), Tripurāntaka (the destroyer of the demon Tripura), and Kālāgnirudra (the fire that consumes time). Shiva is also praised as Nīlakaṇṭha (the blue-throated one, who saved the world by swallowing poison), and as Mṛtyuṃjaya (the conqueror of death). Finally, the verse addresses him as Sarveśvara (the lord of all beings) and Sadāśiva (the ever-auspicious one), concluding with an offering of salutations to Śrīman Mahādeva (the glorious great god).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title_ne": "नमो नमः — सेनापति र दिशापति",
+      "title_en": "Salutations — commander and lord of directions",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "2.1",
+          "sanskrit": "नमो॒ हिर॑ण्य बाहवे सेना॒न्ये॑ दि॒शा-ञ्च॒ पत॑ये॒ नमो॒ नमो॑ वृ॒क्षेभ्यो॒ हरि॑केशेभ्यः पशू॒ना-म्पत॑ये॒ नमो॒ नमः॑ स॒स्पिञ्ज॑राय॒ त्विषी॑मते पथी॒ना-म्पत॑ये॒ नमो॒ नमो॑ बभ्लु॒शाय॑ विव्या॒धिने-ऽन्ना॑ना॒-म्पत॑ये॒ नमो॒ नमो॒ हरि॑केशायोपवी॒तिने॑ पु॒ष्टाना॒-म्पत॑ये॒ नमो॒ नमो॑ भ॒वस्य॑ हे॒त्यै जग॑ता॒-म्पत॑ये॒ नमो॒ नमो॑ रु॒द्राया॑तता॒विने॒ क्षेत्रा॑णा॒-म्पत॑ये॒ नमो॒ नम॑स्सू॒तायाह॑न्त्याय॒ वना॑ना॒-म्पत॑ये॒ नमो॒ नमो॒ रोहि॑ताय स्थ॒पत॑ये वृ॒क्षाणा॒-म्पत॑ये॒ नमो॒ नमो॑ म॒न्त्रिणे॑ वाणि॒जाय॒ कक्षा॑णा॒-म्पत॑ये॒ नमो॒ नमो॑ भुव॒न्तये॑ वारिवस्कृ॒ता-यौष॑धीना॒-म्पत॑ये॒ नमो॒ नम॑ उ॒च्चैर्घो॑षायाक्र॒न्दय॑ते पत्ती॒ना-म्पत॑ये॒ नमो॒ नमः॑ कृत्स्नवी॒ताय॒ धाव॑ते॒ सत्त्व॑ना॒-म्पत॑ये॒ नमः॑ ॥२॥",
+          "transliteration": "namō̠ hira̍ṇya bāhavē sēnā̠nyē̍ di̠śā-ñcha̠ pata̍yē̠ namō̠ namō̍ vṛ̠kṣēbhyō̠ hari̍kēśēbhyaḥ paśū̠nā-mpata̍yē̠ namō̠ nama̍-ssa̠spiñja̍rāya̠ tviṣī̍matē pathī̠nā-mpata̍yē̠ namō̠ namō̍ babhlu̠śāya̍ vivyā̠dhinē-'nnā̍nā̠-mpata̍yē̠ namō̠ namō̠ hari̍kēśāyōpavī̠tinē̍ pu̠ṣṭānā̠-mpata̍yē̠ namō̠ namō̍ bha̠vasya̍ hē̠tyai jaga̍tā̠-mpata̍yē̠ namō̠ namō̍ ru̠drāyā̍tatā̠vinē̠ kṣētrā̍ṇā̠-mpata̍yē̠ namō̠ nama̍ssū̠tāyāha̍ntyāya̠ vanā̍nā̠-mpata̍yē̠ namō̠ namō̠ rōhi̍tāya stha̠pata̍yē vṛ̠kṣāṇā̠-mpata̍yē̠ namō̠ namō̍ ma̠ntriṇē̍ vāṇi̠jāya̠ kakṣā̍ṇā̠-mpata̍yē̠ namō̠ namō̍ bhuva̠ntayē̍ vārivaskṛ̠tā-yauṣa̍dhīnā̠-mpata̍yē̠ namō̠ nama̍ u̠chchairghō̍ṣāyākra̠ndaya̍tē pattī̠nā-mpata̍yē̠ namō̠ nama̍ḥ kṛtsnavī̠tāya̠ dhāva̍tē̠ sattva̍nā̠-mpata̍yē̠ nama̍ḥ ॥ 2 ॥",
+          "meaning_ne": "स्वर्णबाहु सेनापति, दिशाका पतिलाई नमस्कार। हरिकेश वृक्षहरू र पशुपतिलाई नमस्कार। चम्किलो कपाल भएका पथपतिकलाई नमस्कार। भोजनका पति बभ्लुशलाई नमस्कार। यज्ञोपवीतधारी पुष्टिपतिलाई नमस्कार। भवको आयुध र जगत्पतिलाई नमस्कार। तानिएको धनुषधारी क्षेत्रपति रुद्रलाई नमस्कार। वनपति सूतलाई नमस्कार। रक्तवर्ण स्थपति र वृक्षपतिलाई नमस्कार। मन्त्री, वाणिज र कक्षपतिलाई नमस्कार। जल र औषधिका पतिलाई नमस्कार। चर्को घोष गर्ने पत्तीपतिलाई नमस्कार। वेगले दौडने सत्त्वपतिलाई नमस्कार।",
+          "meaning_en": "Salutations to the golden-armed one, the leader of armies, the lord of all directions. Salutations to the trees with green leaves, the lord of animals. Salutations to the one with bright hair, the protector of paths. Salutations to the one who shines and is the lord of food. Salutations to the one with bright hair, who protects the well-nourished. Salutations to the weapon of Bhava, the lord of all that moves. Salutations to Rudra, wielder of weapons, the lord of fields. Salutations to the one who destroys enemies, the lord of forests. Salutations to the red one, the lord of trees. Salutations to the counselor and the leader of merchants, the lord of boundaries. Salutations to the one who brings forth water and fertility, the lord of herbs. Salutations to the one with a loud call, the lord of warriors. Salutations to the one who leads and runs swiftly, the lord of beings.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title_ne": "नमो नमः — निषङ्गी रूप",
+      "title_en": "Salutations — the armed one",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "3.1",
+          "sanskrit": "नम॒-स्सह॑मानाय निव्या॒धिन॑ आव्या॒धिनी॑ना॒-म्पत॑ये नमो॒ नमः॑ ककु॒भाय॑ निष॒ङ्गिणे᳚ स्ते॒नाना॒-म्पत॑ये॒ नमो॒ नमो॑ निष॒ङ्गिण॑ इषुधि॒मते॒ तस्क॑राणा॒-म्पत॑ये॒ नमो॒ नमो॒ वञ्च॑ते परि॒वञ्च॑ते स्तायू॒ना-म्पत॑ये॒ नमो॒ नमो॑ निचे॒रवे॑ परिच॒रायार॑ण्याना॒-म्पत॑ये॒ नमो॒ नमः॑ सृका॒विभ्यो॒ जिघाग्ं॑सद्भ्यो मुष्ण॒ता-म्पत॑ये॒ नमो॒ नमो॑-ऽसि॒मद्भ्यो॒ नक्त॒ञ्चर॑द्भ्यः प्रकृ॒न्ताना॒-म्पत॑ये॒ नमो॒ नम॑ उष्णी॒षिणे॑ गिरिच॒राय॑ कुलु॒ञ्चाना॒-म्पत॑ये॒ नमो॒ नम॒ इषु॑मद्भ्यो धन्वा॒विभ्य॑श्च वो॒ नमो॒ नम॑ आतन्-वा॒नेभ्यः॑ प्रति॒दधा॑नेभ्यश्च वो॒ नमो॒ नम॑ आ॒यच्छ॑द्भ्यो विसृ॒जद्भ्य॑श्च वो॒ नमो॒ नमो-ऽस्स॑द्भ्यो॒ विद्य॑द्भ्यश्च वो॒ नमो॒ नम॒ आसी॑नेभ्य॒-श्शया॑नेभ्यश्च वो॒ नमो॒ नमः॑ स्व॒पद्भ्यो॒ जाग्र॑द्भ्यश्च वो॒ नमो॒ नम॒स्तिष्ठ॑द्भ्यो॒ धाव॑द्भ्यश्च वो॒ नमो॒ नमः॑ स॒भाभ्यः॑ स॒भाप॑तिभ्यश्च वो॒ नमो॒ नमो॒ अश्वे॒भ्यो-ऽश्व॑पतिभ्यश्च वो॒ नमः॑ ॥३॥",
+          "transliteration": "nama̠-ssaha̍mānāya nivyā̠dhina̍ āvyā̠dhinī̍nā̠-mpata̍yē namō̠ nama̍ḥ kaku̠bhāya̍ niṣa̠ṅgiṇē̎ stē̠nānā̠-mpata̍yē̠ namō̠ namō̍ niṣa̠ṅgiṇa̍ iṣudhi̠matē̠ taska̍rāṇā̠-mpata̍yē̠ namō̠ namō̠ vañcha̍tē pari̠vañcha̍tē stāyū̠nā-mpata̍yē̠ namō̠ namō̍ nichē̠ravē̍ paricha̠rāyāra̍ṇyānā̠-mpata̍yē̠ namō̠ nama̍-ssṛkā̠vibhyō̠ jighāg̍ṃsadbhyō muṣṇa̠tā-mpata̍yē̠ namō̠ namō̍-'si̠madbhyō̠ nakta̠ñchara̍dbhyaḥ prakṛ̠ntānā̠-mpata̍yē̠ namō̠ nama̍ uṣṇī̠ṣiṇē̍ giricha̠rāya̍ kulu̠ñchānā̠-mpata̍yē̠ namō̠ nama̠ iṣu̍madbhyō dhanvā̠vibhya̍ścha vō̠ namō̠ nama̍ ātan-vā̠nēbhya̍ḥ prati̠dadhā̍nēbhyaścha vō̠ namō̠ nama̍ ā̠yachCha̍dbhyō visṛ̠jadbhya̍ścha vō̠ namō̠ namō-'ssa̍dbhyō̠ vidya̍dbhyaścha vō̠ namō̠ nama̠ āsī̍nēbhya̠-śśayā̍nēbhyaścha vō̠ namō̠ nama̍-ssva̠padbhyō̠ jāgra̍dbhyaścha vō̠ namō̠ nama̠stiṣṭha̍dbhyō̠ dhāva̍dbhyaścha vō̠ namō̠ nama̍-ssa̠bhābhya̍-ssa̠bhāpa̍tibhyaścha vō̠ namō̠ namō̠ aśvē̠bhyō-'śva̍patibhyaścha vō̠ nama̍ḥ ॥ 3 ॥",
+          "meaning_ne": "सहनशील र आव्याधिनीहरूका पतिलाई नमस्कार। चोरहरूका पति निषङ्गीलाई नमस्कार। तरकसधारी तस्करपतिलाई नमस्कार। ठग्ने र परिवञ्चक स्तायुपतिलाई नमस्कार। वनमा लुकी हिँड्ने अरण्यपतिलाई नमस्कार। राति काट्ने मुष्णतापतिलाई नमस्कार। खड्गधारी निशाचर प्रकृन्तापतिलाई नमस्कार। पगडीधारी गिरिचर कुलुञ्चपतिलाई नमस्कार। बाण र धनुषधारीहरूलाई नमस्कार। धनुष तान्ने र चढाउनेहरूलाई नमस्कार। बाण छाड्नेहरूलाई नमस्कार। बस्ने, सुत्ने, जाग्ने, उभिने र दौडनेहरूलाई नमस्कार। सभा र सभापतिहरूलाई नमस्कार। अश्व र अश्वपतिहरूलाई नमस्कार।",
+          "meaning_en": "Salutations to the one who endures and afflicts, the lord of all those who suffer and afflict others. Salutations to the lord of thieves and robbers, armed with swords and arrows. Salutations to those who deceive and cheat, to the lord of robbers who lie in wait. Salutations to those who move secretly in the forest, the lord of hidden beings. Salutations to those who seize in the night, the lord of those who cut down. Salutations to the lord of those with head-coverings, who roam in the mountains. Salutations to those who hold arrows and bows. Salutations to those who stretch the bow and those who draw it back. Salutations to those who release arrows and those who shoot them. Salutations to those who sit, lie down, stand, and run. Salutations to those who are in assemblies and to the leaders of assemblies. Salutations to horses and the lords of horses.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title_ne": "नमो नमः — गण, सेना र शिल्पी",
+      "title_en": "Salutations — hosts, armies and craftsmen",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "4.1",
+          "sanskrit": "नम॑ आव्या॒धिनी᳚भ्यो वि॒विध्य॑न्तीभ्यश्च वो॒ नमो॒ नम॒ उग॑णाभ्यस्तृग्ं-ह॒तीभ्य॑श्च वो॒ नमो॒ नमो॑ गृ॒त्सेभ्यो॑ गृ॒त्सप॑तिभ्यश्च वो॒ नमो॒ नमो॒ व्राते᳚भ्यो॒ व्रात॑पतिभ्यश्च वो॒ नमो॒ नमो॑ ग॒णेभ्यो॑ ग॒णप॑तिभ्यश्च वो॒ नमो॒ नमो॒ विरू॑पेभ्यो वि॒श्वरू॑पेभ्यश्च वो॒ नमो॒ नमो॑ मह॒द्भ्यः॑, क्षुल्ल॒केभ्य॑श्च वो॒ नमो॒ नमो॑ र॒थिभ्यो॑-ऽर॒थेभ्य॑श्च वो॒ नमो॒ नमो॒ रथे᳚भ्यो॒ रथ॑पतिभ्यश्च वो॒ नमो॒ नम॒-स्सेना᳚भ्य-स्सेना॒निभ्य॑श्च वो॒ नमो॒ नमः॑, क्ष॒त्तृभ्यः॑ सङ्ग्रही॒तृभ्य॑श्च वो॒ नमो॒ नम॒स्तक्ष॑भ्यो रथका॒रेभ्य॑श्च वो॒ नमो॒ नमः॒ कुला॑लेभ्यः क॒र्मारे᳚भ्यश्च वो॒ नमो॒ नमः॑ पु॒ञ्जिष्टे᳚भ्यो निषा॒देभ्य॑श्च वो॒ नमो॒ नम॑ इषु॒कृद्भ्यो॑ धन्व॒कृद्भ्य॑श्च वो॒ नमो॒ नमो॑ मृग॒युभ्यः॑ श्व॒निभ्य॑श्च वो॒ नमो॒ नम॒-श्श्वभ्य॒-श्श्वप॑तिभ्यश्च वो॒ नमः॑ ॥४॥",
+          "transliteration": "nama̍ āvyā̠dhinī̎bhyō vi̠vidhya̍ntībhyaścha vō̠ namō̠ nama̠ uga̍ṇābhyastṛgṃ-ha̠tībhya̍ścha vō̠ namō̠ namō̍ gṛ̠tsēbhyō̍ gṛ̠tsapa̍tibhyaścha vō̠ namō̠ namō̠ vrātē̎bhyō̠ vrāta̍patibhyaścha vō̠ namō̠ namō̍ ga̠ṇēbhyō̍ ga̠ṇapa̍tibhyaścha vō̠ namō̠ namō̠ virū̍pēbhyō vi̠śvarū̍pēbhyaścha vō̠ namō̠ namō̍ maha̠dbhya̍ḥ, kṣulla̠kēbhya̍ścha vō̠ namō̠ namō̍ ra̠thibhyō̍-'ra̠thēbhya̍ścha vō̠ namō̠ namō̠ rathē̎bhyō̠ ratha̍patibhyaścha vō̠ namō̠ nama̠-ssēnā̎bhya-ssēnā̠nibhya̍ścha vō̠ namō̠ nama̍ḥ, kṣa̠ttṛbhya̍-ssaṅgrahī̠tṛbhya̍ścha vō̠ namō̠ nama̠stakṣa̍bhyō rathakā̠rēbhya̍ścha vō̠ namō̠ nama̠ḥ kulā̍lēbhyaḥ ka̠rmārē̎bhyaścha vō̠ namō̠ nama̍ḥ pu̠ñjiṣṭē̎bhyō niṣā̠dēbhya̍ścha vō̠ namō̠ nama̍ iṣu̠kṛdbhyō̍ dhanva̠kṛdbhya̍ścha vō̠ namō̠ namō̍ mṛga̠yubhya̍-śśva̠nibhya̍ścha vō̠ namō̠ nama̠-śśvabhya̠-śśvapa̍tibhyaścha vō̠ nama̍ḥ ॥ 4 ॥",
+          "meaning_ne": "घाउ पार्ने र बेधन गर्ने शक्तिहरूलाई नमस्कार। उग्र गण र प्रहार गर्नेहरूलाई नमस्कार। चतुरहरू र तिनका पतिलाई नमस्कार। व्रात, गण, विरूप र विश्वरूपलाई नमस्कार। महान् र क्षुल्लकलाई नमस्कार। रथी र अरथलाई, रथ र रथपतिलाई नमस्कार। सेना र सेनानायकलाई नमस्कार। सारथि र सङ्ग्रहीतालाई नमस्कार। तक्षक, रथकार, कुमाले, कर्मार, पुञ्जिष्ट, निषाद, इषुकार, धन्वकार, मृगयु, शिकारी कुकुर र श्वपतिहरूलाई नमस्कार।",
+          "meaning_en": "Salutations to those who pierce and wound, and to those who lead great armies. Salutations to the wealthy and their leaders, to the lords of clans and hosts. Salutations to the different forms of Rudra, who appear in various forms, great and small. Salutations to the charioteers and the leaders of chariots. Salutations to the armies and their commanders. Salutations to those who give protection and those who enforce laws. Salutations to the carpenters and the builders of chariots. Salutations to the potters and the blacksmiths. Salutations to the fishermen and the hunters. Salutations to those who make bows and arrows, and to the hunters and their leaders. Salutations to the dogs and their masters.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title_ne": "नमो नमः — विविध रूप",
+      "title_en": "Salutations — manifold forms",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "5.1",
+          "sanskrit": "नमो॑ भ॒वाय॑ च रु॒द्राय॑ च॒ नमः॑ श॒र्वाय॑ च पशु॒पत॑ये च॒ नमो॒ नील॑ग्रीवाय च शिति॒कण्ठा॑य च॒ नमः॑ कप॒र्दिने॑ च॒ व्यु॑प्तकेशाय च॒ नमः॑ सहस्रा॒क्षाय॑ च श॒तध॑न्वने च॒ नमो॑ गिरि॒शाय॑ च शिपिवि॒ष्टाय॑ च॒ नमो॑ मी॒ढुष्ट॑माय॒ चेषु॑मते च॒ नमो᳚ ह्र॒स्वाय॑ च वाम॒नाय॑ च॒ नमो॑ बृह॒ते च॒ वर्​षी॑यसे च॒ नमो॑ वृ॒द्धाय॑ च सं॒​वृँध्व॑ने च॒ नमो॒ अग्रि॑याय च प्रथ॒माय॑ च॒ नम॑ आ॒शवे॑ चाजि॒राय॑ च॒ नम॒-श्शीघ्रि॑याय च॒ शीभ्या॑य च॒ नम॑ ऊ॒र्म्या॑य चावस्व॒न्या॑य च॒ नमः॑ स्रोत॒स्या॑य च॒ द्वीप्या॑य च ॥५॥",
+          "transliteration": "namō̍ bha̠vāya̍ cha ru̠drāya̍ cha̠ nama̍-śśa̠rvāya̍ cha paśu̠pata̍yē cha̠ namō̠ nīla̍grīvāya cha śiti̠kaṇṭhā̍ya cha̠ nama̍ḥ kapa̠rdinē̍ cha̠ vyu̍ptakēśāya cha̠ nama̍-ssahasrā̠kṣāya̍ cha śa̠tadha̍nvanē cha̠ namō̍ giri̠śāya̍ cha śipivi̠ṣṭāya̍ cha̠ namō̍ mī̠ḍhuṣṭa̍māya̠ chēṣu̍matē cha̠ namō̎ hra̠svāya̍ cha vāma̠nāya̍ cha̠ namō̍ bṛha̠tē cha̠ var​ṣī̍yasē cha̠ namō̍ vṛ̠ddhāya̍ cha sa̠ṃvṛdhva̍nē cha̠ namō̠ agri̍yāya cha pratha̠māya̍ cha̠ nama̍ ā̠śavē̍ chāji̠rāya̍ cha̠ nama̠-śśīghri̍yāya cha̠ śībhyā̍ya cha̠ nama̍ ū̠rmyā̍ya chāvasva̠nyā̍ya cha̠ nama̍-ssrōta̠syā̍ya cha̠ dvīpyā̍ya cha ॥ 5 ॥",
+          "meaning_ne": "भव र रुद्रलाई नमस्कार। शर्व र पशुपतिलाई नमस्कार। नीलग्रीव र शितिकण्ठलाई नमस्कार। जटाधारी र मुण्डित केशलाई नमस्कार। सहस्राक्ष र शतधन्वलाई नमस्कार। गिरिश र शिपिविष्टलाई नमस्कार। अत्यन्त दाता र बाणधारीलाई नमस्कार। होचो र वामनलाई नमस्कार। विशाल र वर्षीयस्लाई नमस्कार। वृद्ध र बढ़्नेलाई नमस्कार। अग्र र प्रथमलाई नमस्कार। शीघ्र र वेगवानलाई नमस्कार। लहर र स्रोत, द्वीपमा बस्नेलाई नमस्कार।",
+          "meaning_en": "Salutations to Bhava and Rudra, to the destroyer and the protector of cattle. Salutations to the blue-throated one and the white-necked one. Salutations to the one with matted hair and the one with shaven hair. Salutations to the one with a thousand eyes and the one who carries a hundred bows. Salutations to the lord of the mountains and the dweller within. Salutations to the most bountiful and the lord of arrows. Salutations to the small and the dwarf. Salutations to the great and the vast. Salutations to the old and the one who grows. Salutations to the foremost and the first. Salutations to the swift and the swiftest. Salutations to the quick and the fast. Salutations to the waves and the rivers.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title_ne": "नमो नमः — वृद्ध, युवा र दिशा",
+      "title_en": "Salutations — the aged, the young, and the quarters",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "6.1",
+          "sanskrit": "नमो᳚ ज्ये॒ष्ठाय॑ च कनि॒ष्ठाय॑ च॒ नमः॑ पूर्व॒जाय॑ चापर॒जाय॑ च॒ नमो॑ मध्य॒माय॑ चापग॒ल्भाय॑ च॒ नमो॑ जघ॒न्या॑य च॒ बुध्नि॑याय च॒ नमः॑ सो॒भ्या॑य च प्रतिस॒र्या॑य च॒ नमो॒ याम्या॑य च॒ क्षेम्या॑य च॒ नम॑ उर्व॒र्या॑य च॒ खल्या॑य च॒ नम॒-श्श्लोक्या॑य चा-ऽवसा॒न्या॑य च॒ नमो॒ वन्या॑य च॒ कक्ष्या॑य च॒ नमः॑ श्र॒वाय॑ च प्रतिश्र॒वाय॑ च॒ नम॑ आ॒शुषे॑णाय चा॒शुर॑थाय च॒ नम॒-श्शूरा॑य चावभिन्द॒ते च॒ नमो॑ व॒र्मिणे॑ च वरू॒थिने॑ च॒ नमो॑ बि॒ल्मिने॑ च कव॒चिने॑ च॒ नमः॑ श्रु॒ताय॑ च श्रुतसे॒नाय॑ च॥ ६॥",
+          "transliteration": "namō̎ jyē̠ṣṭhāya̍ cha kani̠ṣṭhāya̍ cha̠ nama̍ḥ pūrva̠jāya̍ chāpara̠jāya̍ cha̠ namō̍ madhya̠māya̍ chāpaga̠lbhāya̍ cha̠ namō̍ jagha̠nyā̍ya cha̠ budhni̍yāya cha̠ nama̍-ssō̠bhyā̍ya cha pratisa̠ryā̍ya cha̠ namō̠ yāmyā̍ya cha̠ kṣēmyā̍ya cha̠ nama̍ urva̠ryā̍ya cha̠ khalyā̍ya cha̠ nama̠-śślōkyā̍ya chā-'vasā̠nyā̍ya cha̠ namō̠ vanyā̍ya cha̠ kakṣyā̍ya cha̠ nama̍-śśra̠vāya̍ cha pratiśra̠vāya̍ cha̠ nama̍ ā̠śuṣē̍ṇāya chā̠śura̍thāya cha̠ nama̠-śśūrā̍ya chāvabhinda̠tē cha̠ namō̍ va̠rmiṇē̍ cha varū̠thinē̍ cha̠ namō̍ bi̠lminē̍ cha kava̠chinē̍ cha̠ nama̍-śśru̠tāya̍ cha śrutasē̠nāya̍ cha ॥ 6 ॥",
+          "meaning_ne": "ज्येष्ठ र कनिष्ठलाई नमस्कार। पूर्वज र अपरजलाई नमस्कार। मध्यम र अपगल्भलाई नमस्कार। जघन्य र बुध्नियलाई नमस्कार। शोभ्य र प्रतिसर्यलाई नमस्कार। याम्य र क्षेम्यलाई नमस्कार। उर्वर खेत र खलिहानलाई नमस्कार। यशस्वी र अन्त्यलाई नमस्कार। वन र झाडीलाई नमस्कार। श्रवण र प्रतिश्रवणलाई नमस्कार। शीघ्र सेना र शीघ्र रथलाई नमस्कार। शूर र शत्रुनाशकलाई नमस्कार। कवचधारी र ढालधारीलाई नमस्कार। श्रुत र श्रुतसेनालाई नमस्कार।",
+          "meaning_en": "Salutations to the eldest and the youngest, to the first-born and the last-born. Salutations to the one in the middle and the weak. Salutations to the lowest and the one at the base. Salutations to the strong and the patient. Salutations to those in the south and those who protect. Salutations to the fertile fields and the threshing floors. Salutations to the famous and the last. Salutations to the wild and the forest. Salutations to the heard and the echoed. Salutations to the swift armies and the fast chariots. Salutations to the brave and the destroyer of enemies. Salutations to the armored and the shielded. Salutations to the learned and the wise generals.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title_ne": "नमो नमः — भूमि, वृक्ष र नदी",
+      "title_en": "Salutations — earth, trees and rivers",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "7.1",
+          "sanskrit": "नमो॑ दुन्दु॒भ्या॑य चाहन॒न्या॑य च॒ नमो॑ धृ॒ष्णवे॑ च प्रमृ॒शाय॑ च॒ नमो॑ दू॒ताय॑ च प्रहि॑ताय च॒ नमो॑ निष॒ङ्गिणे॑ चेषुधि॒मते॑ च॒ नम॑स्ती॒क्ष्णेष॑वे चायु॒धिने॑ च॒ नमः॑ स्वायु॒धाय॑ च सु॒धन्व॑ने च॒ नम॒-स्स्रुत्या॑य च॒ पथ्या॑य च॒ नमः॑ का॒ट्या॑य च नी॒प्या॑य च॒ नम॒-स्सूद्या॑य च सर॒स्या॑य च॒ नमो॑ ना॒द्याय॑ च वैश॒न्ताय॑ च॒ नमः॒ कूप्या॑य चाव॒ट्या॑य च॒ नमो॒ वर्​ष्या॑य चाव॒र्​ष्याय॑ च॒ नमो॑ मे॒घ्या॑य च विद्यु॒त्या॑य च॒ नम ई॒ध्रिया॑य चात॒प्या॑य च॒ नमो॒ वात्या॑य च॒ रेष्मि॑याय च॒ नमो॑ वास्त॒व्या॑य च वास्तु॒पाय॑ च ॥ ७॥",
+          "transliteration": "namō̍ dundu̠bhyā̍ya chāhana̠nyā̍ya cha̠ namō̍ dhṛ̠ṣṇavē̍ cha pramṛ̠śāya̍ cha̠ namō̍ dū̠tāya̍ cha prahi̍tāya cha̠ namō̍ niṣa̠ṅgiṇē̍ chēṣudhi̠matē̍ cha̠ nama̍stī̠kṣṇēṣa̍vē chāyu̠dhinē̍ cha̠ nama̍-ssvāyu̠dhāya̍ cha su̠dhanva̍nē cha̠ nama̠-ssrutyā̍ya cha̠ pathyā̍ya cha̠ nama̍ḥ kā̠ṭyā̍ya cha nī̠pyā̍ya cha̠ nama̠-ssūdyā̍ya cha sara̠syā̍ya cha̠ namō̍ nā̠dyāya̍ cha vaiśa̠ntāya̍ cha̠ nama̠ḥ kūpyā̍ya chāva̠ṭyā̍ya cha̠ namō̠ var​ṣyā̍ya chāva̠r​ṣyāya̍ cha̠ namō̍ mē̠ghyā̍ya cha vidyu̠tyā̍ya cha̠ nama ī̠dhriyā̍ya chāta̠pyā̍ya cha̠ namō̠ vātyā̍ya cha̠ rēṣmi̍yāya cha̠ namō̍ vāsta̠vyā̍ya cha vāstu̠pāya̍ cha ॥ 7 ॥",
+          "meaning_ne": "नगाडा र युद्धनादलाई नमस्कार। धृष्ण र प्रमृशलाई नमस्कार। दूत र पठाइएकालाई नमस्कार। खड्गधारी र तरकसधारीलाई नमस्कार। तीक्ष्ण बाण र आयुधधारीलाई नमस्कार। स्वायुध र सुधन्वालाई नमस्कार। बाटो र पथलाई नमस्कार। किनारा र उपत्यकालाई नमस्कार। घाँस र ताललाई नमस्कार। नदी र पोखरीलाई नमस्कार। कुवा र खाडललाई नमस्कार। वर्षा र अनावृष्टिलाई नमस्कार। मेघ र विद्युत्लाई नमस्कार। घाम र तापलाई नमस्कार। बतास र कुहिरोलाई नमस्कार। घर र वास्तुपाललाई नमस्कार।",
+          "meaning_en": "Salutations to the drum and the war cry. Salutations to the bold and the daring. Salutations to the messenger and the emissary. Salutations to the swordsman and the archer. Salutations to the sharp arrows and the wielders of weapons. Salutations to the one with weapons and the bearer of a fine bow. Salutations to the rivers and the roads. Salutations to the edges and the valleys. Salutations to the grassy lands and the lakes. Salutations to the flowing rivers and the stagnant ponds. Salutations to the rain and the drought. Salutations to the clouds and the lightning. Salutations to the heat and the cold. Salutations to the storms and the mist. Salutations to the dwellings and the protectors of homes.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title_ne": "नमो नमः — तीर्थ र प्रदेश",
+      "title_en": "Salutations — fords and regions",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "8.1",
+          "sanskrit": "नम॒-स्सोमा॑य च रु॒द्राय॑ च॒ नम॑स्ता॒म्राय॑ चारु॒णाय॑ च॒ नमः॑ श॒ङ्गाय॑ च पशु॒पत॑ये च॒ नम॑ उ॒ग्राय॑ च भी॒माय॑ च॒ नमो॑ अग्रेव॒धाय॑ च दूरेव॒धाय॑ च॒ नमो॑ ह॒न्त्रे च॒ हनी॑यसे च॒ नमो॑ वृ॒क्षेभ्यो॒ हरि॑केशेभ्यो॒ नम॑स्ता॒राय॒ नम॑श्श॒म्भवे॑ च मयो॒भवे॑ च॒ नमः॑ शङ्क॒राय॑ च मयस्क॒राय॑ च॒ नमः॑ शि॒वाय॑ च शि॒वत॑राय च॒ नम॒स्तीर्थ्या॑य च॒ कूल्या॑य च॒ नमः॑ पा॒र्या॑य चावा॒र्या॑य च॒ नमः॑ प्र॒तर॑णाय चो॒त्तर॑णाय च॒ नम॑ आता॒र्या॑य चाला॒द्या॑य च॒ नम॒-श्शष्प्या॑य च॒ फेन्या॑य च॒ नमः॑ सिक॒त्या॑य च प्रवा॒ह्या॑य च ॥ ८॥",
+          "transliteration": "nama̠-ssōmā̍ya cha ru̠drāya̍ cha̠ nama̍stā̠mrāya̍ chāru̠ṇāya̍ cha̠ nama̍-śśa̠ṅgāya̍ cha paśu̠pata̍yē cha̠ nama̍ u̠grāya̍ cha bhī̠māya̍ cha̠ namō̍ agrēva̠dhāya̍ cha dūrēva̠dhāya̍ cha̠ namō̍ ha̠ntrē cha̠ hanī̍yasē cha̠ namō̍ vṛ̠kṣēbhyō̠ hari̍kēśēbhyō̠ nama̍stā̠rāya̠ nama̍śśa̠mbhavē̍ cha mayō̠bhavē̍ cha̠ nama̍-śśaṅka̠rāya̍ cha mayaska̠rāya̍ cha̠ nama̍-śśi̠vāya̍ cha śi̠vata̍rāya cha̠ nama̠stīrthyā̍ya cha̠ kūlyā̍ya cha̠ nama̍ḥ pā̠ryā̍ya chāvā̠ryā̍ya cha̠ nama̍ḥ pra̠tara̍ṇāya chō̠ttara̍ṇāya cha̠ nama̍ ātā̠ryā̍ya chālā̠dyā̍ya cha̠ nama̠-śśaṣpyā̍ya cha̠ phēnyā̍ya cha̠ nama̍-ssika̠tyā̍ya cha pravā̠hyā̍ya cha ॥ 8 ॥",
+          "meaning_ne": "सोम र रुद्रलाई नमस्कार। ताम्र र अरुणलाई नमस्कार। शङ्ग र पशुपतिलाई नमस्कार। उग्र र भीमलाई नमस्कार। नजिक र टाढाबाट नाश गर्नेलाई नमस्कार। हन्ता र हनीयस्लाई नमस्कार। हरिकेश वृक्षहरूलाई नमस्कार। तारालाई नमस्कार। शम्भु र मयोभवलाई नमस्कार। शङ्कर र मयस्करलाई नमस्कार। शिव र शिवातरलाई नमस्कार। तीर्थ र किनारामा बस्नेलाई नमस्कार। पारी र वारिमा बस्नेलाई नमस्कार। तार्ने र उतार्नेलाई नमस्कार। आतार्य र आलाद्यलाई नमस्कार। घाँस र फेनलाई नमस्कार। बालुवा र प्रवाहलाई नमस्कार।",
+          "meaning_en": "Salutations to Soma and Rudra. Salutations to the red and the copper-colored one. Salutations to the one with spears and the protector of animals. Salutations to the fierce and terrifying one. Salutations to the one who kills from afar and near. Salutations to the one who kills and the one who strikes again. Salutations to the trees with bright leaves. Salutations to the one who is a star. Salutations to the one who brings happiness and the one who grants blessings. Salutations to the auspicious one and the more auspicious one. 8.1 Salutations to the lord of fords and riverbanks. Salutations to the lord of crossings and the uncrossed. Salutations to the one who helps us to cross over and the one who brings us across. Salutations to the one who leads us on and the one who takes us to the end. Salutations to the lord of the green pastures and the foamy waters. Salutations to the lord of sandy shores and flowing rivers. 8",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "title_ne": "नमो नमः — गृह, पथ र हृदय",
+      "title_en": "Salutations — homes, paths and the heart",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "9.1",
+          "sanskrit": "नम॑ इरि॒ण्या॑य च प्रप॒थ्या॑य च॒ नमः॑ किग्ंशि॒लाय॑ च॒ क्षय॑णाय च॒ नमः॑ कप॒र्दिने॑ च पुल॒स्तये॑ च॒ नमो॒ गोष्ठ्या॑य च॒ गृह्या॑य च॒ नम॒स्तल्प्या॑य च॒ गेह्या॑य च॒ नमः॑ का॒ट्या॑य च गह्वरे॒ष्ठाय॑ च॒ नमो᳚ ह्रद॒य्या॑य च निवे॒ष्प्या॑य च॒ नमः॑ पाग्ं स॒व्या॑य च रज॒स्या॑य च॒ नम॒-श्शुष्क्या॑य च हरि॒त्या॑य च॒ नमो॒ लोप्या॑य चोल॒प्या॑य च॒ नम॑ ऊ॒र्व्या॑य च सू॒र्म्या॑य च॒ नमः॑ प॒र्ण्या॑य च पर्णश॒द्या॑य च॒ नमो॑-ऽपगु॒रमा॑णाय चाभिघ्न॒ते च॒ नम॑ आख्खिद॒ते च॑ प्रख्खिद॒ते च॒ नमो॑ वः किरि॒केभ्यो॑ दे॒वाना॒ग्॒म्॒ हृद॑येभ्यो॒ नमो॑ विक्षीण॒केभ्यो॒ नमो॑ विचिन्व॒त्केभ्यो॒ नम॑ आनिर् ह॒तेभ्यो॒ नम॑ आमीव॒त्केभ्यः॑ ॥ ९॥",
+          "transliteration": "nama̍ iri̠ṇyā̍ya cha prapa̠thyā̍ya cha̠ nama̍ḥ kigṃśi̠lāya̍ cha̠ kṣaya̍ṇāya cha̠ nama̍ḥ kapa̠rdinē̍ cha pula̠stayē̍ cha̠ namō̠ gōṣṭhyā̍ya cha̠ gṛhyā̍ya cha̠ nama̠stalpyā̍ya cha̠ gēhyā̍ya cha̠ nama̍ḥ kā̠ṭyā̍ya cha gahvarē̠ṣṭhāya̍ cha̠ namō̎ hrada̠yyā̍ya cha nivē̠ṣpyā̍ya cha̠ nama̍ḥ pāgṃ sa̠vyā̍ya cha raja̠syā̍ya cha̠ nama̠-śśuṣkyā̍ya cha hari̠tyā̍ya cha̠ namō̠ lōpyā̍ya chōla̠pyā̍ya cha̠ nama̍ ū̠rvyā̍ya cha sū̠rmyā̍ya cha̠ nama̍ḥ pa̠rṇyā̍ya cha parṇaśa̠dyā̍ya cha̠ namō̍-'pagu̠ramā̍ṇāya chābhighna̠tē cha̠ nama̍ ākhkhida̠tē cha̍ prakhkhida̠tē cha̠ namō̍ vaḥ kiri̠kēbhyō̍ dē̠vānā̠g̠m̠ hṛda̍yēbhyō̠ namō̍ vikṣīṇa̠kēbhyō̠ namō̍ vichinva̠tkēbhyō̠ nama̍ ānir ha̠tēbhyō̠ nama̍ āmīva̠tkēbhya̍ḥ ॥ 9 ॥",
+          "meaning_ne": "मरुभूमि र बाटोमा बस्नेलाई नमस्कार। कंकर र बस्तीमा बस्नेलाई नमस्कार। जटाधारी कपर्दी र पुलस्तिलाई नमस्कार। गोठ र घरमा बस्नेलाई नमस्कार। शय्या र गेहमा बस्नेलाई नमस्कार। काँडे झाडी र गुफामा बस्नेलाई नमस्कार। हृदय र निवासमा बस्नेलाई नमस्कार। धूलो र रजमा बस्नेलाई नमस्कार। सुक्खा र हरियो भूमिमा बस्नेलाई नमस्कार। लोप्य र उलप्यलाई नमस्कार। पृथ्वी र लहरमा बस्नेलाई नमस्कार। पात र पर्णशय्यामा बस्नेलाई नमस्कार। आक्रमण र प्रहार गर्नेलाई नमस्कार। पीडा दिने र सताउनेलाई नमस्कार। देवताका हृदय किरिकहरूलाई नमस्कार। क्षीण र अन्वेषकलाई नमस्कार। अजेय र अबाधलाई नमस्कार।",
+          "meaning_en": "Salutations to the one who dwells in deserts and paths. Salutations to the one who lives among rocks and in homes. Salutations to the one with matted hair and the one who has simple braids. Salutations to the one who lives in cow pens and houses. Salutations to the one who dwells in beds and homes. Salutations to the one who resides in valleys and caves. Salutations to the one who is in the heart and in sacred enclosures. Salutations to the one who dwells in the fields and on dusty roads. Salutations to the one in dry lands and green meadows. Salutations to the one in trees and plants. Salutations to the one who obstructs and the one who strikes. Salutations to the one who opens and the one who closes. Salutations to the one who is in the hearts of gods. Salutations to the one who is lean and the one who searches. Salutations to the one who is indestructible and the one who holds together.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "title_ne": "रक्षा र औषधि रूप",
+      "title_en": "Protection and the healing form",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "10.1",
+          "sanskrit": "द्रापे॒ अन्ध॑सस्पते॒ दरि॑द्र॒न्नील॑लोहित । ए॒षा-म्पुरु॑षाणामे॒षा-म्प॑शू॒ना-म्मा भेर्मा-ऽरो॒ मो ए॑षा॒-ङ्किञ्च॒नाम॑मत् ।",
+          "transliteration": "drāpē̠ andha̍saspatē̠ dari̍dra̠nnīla̍lōhita । ē̠ṣā-mpuru̍ṣāṇāmē̠ṣā-mpa̍śū̠nā-mmā bhērmā-'rō̠ mō ē̍ṣā̠-ṅkiñcha̠nāma̍mat ।",
+          "meaning_ne": "हे कष्टहर्ता, अन्नका पति, दरिद्र, नीललोहित! यी पुरुष र पशुहरूलाई नमारिदिनुहोस्, न रोग लगाइदिनुहोस्, यिनको केही पनि नष्ट नगर्नुहोस्।",
+          "meaning_en": "O Rudra, lord of herbs, blue-throated and red-hued one, do not harm these men or these animals. Do not take away their lives or wealth, O lord.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "10.2",
+          "sanskrit": "या ते॑ रुद्र शि॒वा त॒नू-श्शि॒वा वि॒श्वाह॑भेषजी । शि॒वा रु॒द्रस्य॑ भेष॒जी तया॑ नो मृड जी॒वसे᳚ ॥",
+          "transliteration": "yā tē̍ rudra śi̠vā ta̠nū-śśi̠vā vi̠śvāha̍bhēṣajī । śi̠vā ru̠drasya̍ bhēṣa̠jī tayā̍ nō mṛḍa jī̠vasē̎ ॥",
+          "meaning_ne": "हे रुद्र, तपाईंको त्यो शिव तनु विश्वको औषधि हो। रुद्रको त्यही कल्याणकारी भेषजले हामीलाई बाँच्न सुख दिनुहोस्।",
+          "meaning_en": "That auspicious and benevolent form of yours, O Rudra, is the healer of the entire world. With that most benevolent form of yours, grant us happiness and long life.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "10.3",
+          "sanskrit": "इ॒माग्ं रु॒द्राय॑ त॒वसे॑ कप॒र्दिने᳚ क्ष॒यद्वी॑राय॒ प्रभ॑रामहे म॒तिम् । यथा॑ न॒श्शमस॑द्द्वि॒पदे॒ चतु॑ष्पदे॒ विश्व॑-म्पु॒ष्ट-ङ्ग्रामे॑ अ॒स्मिन्नना॑तुरम् ।",
+          "transliteration": "i̠māgṃ ru̠drāya̍ ta̠vasē̍ kapa̠rdinē̎ kṣa̠yadvī̍rāya̠ prabha̍rāmahē ma̠tim । yathā̍ na̠śśamasa̍ddvi̠padē̠ chatu̍ṣpadē̠ viśva̍-mpu̠ṣṭa-ṅgrāmē̍ a̠sminnanā̍turam ।",
+          "meaning_ne": "शक्तिशाली, जटाधारी, वीरनाशक रुद्रलाई हामी मन अर्पण गर्छौं, ताकि यस ग्राममा दुईखुट्टे र चारखुट्टे सबै पुष्ट र निरोग रहून्।",
+          "meaning_en": "We offer our minds and hearts to the mighty Rudra, the one with matted hair, the destroyer of enemies, so that, in this village, all beings, both two-legged and four-legged, may flourish and live free from disease.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "10.4",
+          "sanskrit": "मृ॒डा नो॑ रुद्रो॒त नो॒ मय॑स्कृधि क्ष॒यद्वी॑राय॒ नम॑सा विधेम ते । यच्छ-ञ्च॒ योश्च॒ मनु॑राय॒जे पि॒ता तद॑श्याम॒ तव॑ रुद्र॒ प्रणी॑तौ ।",
+          "transliteration": "mṛ̠ḍā nō̍ rudrō̠ta nō̠ maya̍skṛdhi kṣa̠yadvī̍rāya̠ nama̍sā vidhēma tē । yachCha-ñcha̠ yōścha̠ manu̍rāya̠jē pi̠tā tada̍śyāma̠ tava̍ rudra̠ praṇī̍tau ।",
+          "meaning_ne": "हे रुद्र, हामीलाई सुख दिनुहोस्, कल्याण गर्नुहोस्। वीरनाशकलाई नमस्कार गर्छौं। पिता मनुले जुन शं र योस् मागे, तपाईंको मार्गदर्शनमा हामी त्यो पाऔं।",
+          "meaning_en": "O Rudra, make us happy with your blessings. You are the destroyer of enemies. We offer you our salutations. May we obtain the riches and happiness sought by our ancestors under your guidance.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "10.5",
+          "sanskrit": "मा नो॑ म॒हान्त॑मु॒त मा नो॑ अर्भ॒क-म्मा न॒ उक्ष॑न्तमु॒त मा न॑ उक्षि॒तम् । मा नो॑-ऽवधीः पि॒तर॒-म्मोत मा॒तर॑-म्प्रि॒या मा न॑स्त॒नुवो॑ रुद्र रीरिषः ।",
+          "transliteration": "mā nō̍ ma̠hānta̍mu̠ta mā nō̍ arbha̠ka-mmā na̠ ukṣa̍ntamu̠ta mā na̍ ukṣi̠tam । mā nō̍-'vadhīḥ pi̠tara̠-mmōta mā̠tara̍-mpri̠yā mā na̍sta̠nuvō̍ rudra rīriṣaḥ ।",
+          "meaning_ne": "हाम्रा वृद्ध, बालक, युवा वा गर्भस्थलाई नमारिदिनुहोस्। पिता, माता र प्रियजनलाई नमारिदिनुहोस्। हे रुद्र, हाम्रो शरीरलाई पीडा नदिनुहोस्।",
+          "meaning_en": "Do not harm the elderly, the young, or the infants among us. Do not kill our fathers, mothers, or dear ones. O Rudra, protect us and spare our bodies from harm.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "10.6",
+          "sanskrit": "मा न॑स्तो॒के तन॑ये॒ मा न॒ आयु॑षि॒ मा नो॒ गोषु॒ मा नो॒ अश्वे॑षु रीरिषः । वी॒रान्मा नो॑ रुद्र भामि॒तो-ऽव॑धीर्​ह॒विष्मं॑तो॒ नम॑सा विधेम ते ।",
+          "transliteration": "māna̍stō̠kē tana̍yē̠ mā na̠ āyu̍ṣi̠ mā nō̠ gōṣu̠ mā nō̠ aśvē̍ṣu rīriṣaḥ । vī̠rānmā nō̍ rudra bhāmi̠tō-'va̍dhīr​ha̠viṣmaṃ̍tō̠ nama̍sā vidhēma tē ।",
+          "meaning_ne": "हाम्रा सन्तान, आयु, गाई र घोडालाई पीडा नदिनुहोस्। हे रुद्र, क्रोधमा आएर हाम्रा वीरहरूलाई नमारिदिनुहोस्। हवि लिएर हामी तपाईंलाई नमस्कार गर्छौं।",
+          "meaning_en": "Do not harm our children, our lives, our cattle, or our horses. O Rudra, protector of warriors, do not destroy our heroes. We offer you our worship with respect and devotion.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "10.7",
+          "sanskrit": "आ॒रात्ते॑ गो॒घ्न उ॒त पू॑रुष॒घ्ने क्ष॒यद्वी॑राय सु॒म्नम॒स्मे ते॑ अस्तु । रक्षा॑ च नो॒ अधि॑ च देव ब्रू॒ह्यथा॑ च न॒-श्शर्म॑ यच्छ द्वि॒बर्​हाः᳚ ।",
+          "transliteration": "ā̠rāttē̍ gō̠ghna u̠ta pū̍ruṣa̠ghnē kṣa̠yadvī̍rāya su̠mnama̠smē tē̍ astu । rakṣā̍ cha nō̠ adhi̍ cha dēva brū̠hyathā̍ cha na̠-śśarma̍ yachcha dvi̠bar​hā̎ḥ ।",
+          "meaning_ne": "टाढैबाट गाई र पुरुष नाश गर्ने वीरनाशकलाई हाम्रो सुम्न होस्। हे देव, हामीलाई रक्षा गर्नुहोस्, भन्नुहोस्, र दोहोरो शरण दिनुहोस्।",
+          "meaning_en": "O Rudra, who kills cattle and men from afar, we offer our salutations to you, the destroyer of enemies. Protect us and give us your protection and blessings, O mighty one, and grant us happiness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "10.8",
+          "sanskrit": "स्तु॒हि श्रु॒त-ङ्ग॑र्त॒सदं॒-युँवा॑न-म्मृ॒गन्न भी॒ममु॑पह॒न्तुमु॒ग्रम् । मृ॒डा ज॑रि॒त्रे रु॑द्र॒ स्तवा॑नो अ॒न्यन्ते॑ अ॒स्मन्निव॑पन्तु॒ सेनाः᳚ ।",
+          "transliteration": "stu̠hi śru̠ta-ṅga̍rta̠sada̠ṃ yuvā̍na-mmṛ̠ganna bhī̠mamu̍paha̠ntumu̠gram । mṛ̠ḍā ja̍ri̠trē ru̍dra̠ stavā̍nō a̠nyantē̍ a̠smanniva̍pantu̠ sēnā̎ḥ ।",
+          "meaning_ne": "गुफामा बस्ने, युवा, मृगजस्तै भीम, उग्र रुद्रको स्तुति गर। स्तुति गर्दा, हे रुद्र, गाउनेलाई सुख देऊ; तपाईंका सेनाहरू अरूतिर जाऊन्, हामीतिर होइन।",
+          "meaning_en": "Praise the renowned Rudra, who resides in the cave, youthful, fierce like a wild animal, terrifying and powerful. O Rudra, we sing your praises, protect us and drive away the armies of our enemies.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "10.9",
+          "sanskrit": "परि॑णो रु॒द्रस्य॑ हे॒तिर्वृ॑णक्तु॒ परि॑ त्वे॒षस्य॑ दुर्म॒ति र॑घा॒योः । अव॑ स्थि॒रा म॒घव॑द्भ्य-स्तनुष्व॒ मीढ्व॑स्तो॒काय॒ तन॑याय मृडय ।",
+          "transliteration": "pari̍ṇō ru̠drasya̍ hē̠tirvṛ̍ṇaktu̠ pari̍ tvē̠ṣasya̍ durma̠ti ra̍ghā̠yōḥ । ava̍ sthi̠rā ma̠ghava̍dbhya-stanuṣva̠ mīḍhva̍stō̠kāya̠ tana̍yāya mṛḍaya ।",
+          "meaning_ne": "रुद्रको आयुधले हामीलाई छेडोस्, उहाँको तीक्ष्ण दुर्मतिले पनि। हे मीढ्वस्, धनीहरूका लागि स्थिर आयुध झुकाऊ, र सन्तानलाई सुख देऊ।",
+          "meaning_en": "May Rudra’s weapons avoid us, and may his fierce anger turn away from us. Protect us, O Rudra, and bless our children and our descendants with happiness and well-being.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "10.10",
+          "sanskrit": "मीढु॑ष्टम॒ शिव॑तम शि॒वो नः॑ सु॒मना॑ भव । प॒र॒मे वृ॒क्ष आयु॑धन्नि॒धाय॒ कृत्तिं॒-वँसा॑न॒ आच॑र॒ पिना॑क॒-म्बिभ्र॒दाग॑हि ।",
+          "transliteration": "mīḍhu̍ṣṭama̠ śiva̍tama śi̠vō na̍-ssu̠manā̍ bhava । pa̠ra̠mē vṛ̠kṣa āyu̍dhanni̠dhāya̠ kṛtti̠ṃ vasā̍na̠ ācha̍ra̠ pinā̍ka̠-mbibhra̠dāga̍hi ।",
+          "meaning_ne": "हे अत्यन्त दाता, अत्यन्त शिव, हामीप्रति शिव र सुमनस्क हुनुहोस्। उच्चतम वृक्षमा आयुध राखेर, व्याघ्रचर्म ओढेर, पिनाक लिएर हामीकहाँ आउनुहोस्।",
+          "meaning_en": "O Rudra, most generous and auspicious one, be kind to us. In the highest tree, place your weapon aside, and come to us, wearing your tiger skin, carrying your Pināka bow, and bestow your grace upon us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "10.11",
+          "sanskrit": "विकि॑रिद॒ विलो॑हित॒ नम॑स्ते अस्तु भगवः । यास्ते॑ स॒हस्रग्ं॑ हे॒तयो॒न्यम॒स्मन्निव॑पन्तु॒ ताः ।",
+          "transliteration": "viki̍rida̠ vilō̍hita̠ nama̍stē astu bhagavaḥ । yāstē̍ sa̠hasragṃ̍ hē̠tayō̠nyama̠smanniva̍pantu̠ tāḥ ।",
+          "meaning_ne": "हे शत्रुलाई छर्ने विलोहित भगवन्, तपाईंलाई नमस्कार। तपाईंका हजारौं आयुध अरूतिर जाऊन्, हामीतिर होइन।",
+          "meaning_en": "O Rudra, the scatterer of enemies, red-hued one, salutations to you, O blessed lord. May your thousand weapons strike down our enemies, but spare us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "10.12",
+          "sanskrit": "स॒हस्रा॑णि सहस्र॒धा बा॑हु॒वोस्तव॑ हे॒तयः॑ । तासा॒मीशा॑नो भगवः परा॒चीना॒ मुखा॑ कृधि ॥ १०॥",
+          "transliteration": "sa̠hasrā̍ṇi sahasra̠dhā bā̍hu̠vōstava̍ hē̠taya̍ḥ । tāsā̠mīśā̍nō bhagavaḥ parā̠chīnā̠ mukhā̍ kṛdhi ॥ 10 ॥",
+          "meaning_ne": "तपाईंका बाहुमा हजारौं-हजार आयुध छन्। हे तिनका ईशान भगवन्, तिनका मुख हामीबाट टाढा फर्काइदिनुहोस्।",
+          "meaning_en": "Your arms hold thousands upon thousands of weapons (sahasrāṇi sahasradhā bāhuvostava hētayaḥ) — O Bhagavān, master of them all (tāsām īśānaḥ), turn them away from us — let their terrible force face away and be directed elsewhere (parāchīnā mukhā kṛdhi)!",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "title_ne": "सहस्र रुद्र र शान्ति",
+      "title_en": "The thousand Rudras and the peace-chant",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "11.1",
+          "sanskrit": "स॒हस्रा॑णि सहस्र॒शो ये रु॒द्रा अधि॒ भूम्या᳚म् । तेषाग्ं॑ सहस्रयोज॒ने-ऽव॒धन्वा॑नि तन्मसि ।",
+          "transliteration": "sa̠hasrā̍ṇi sahasra̠śō yē ru̠drā adhi̠ bhūmyā̎m । tēṣāg̍ṃ sahasrayōja̠nē-'va̠dhanvā̍ni tanmasi ।",
+          "meaning_ne": "पृथ्वीमा हजारौं-हजार रुद्र हुनुहुन्छ। उनीहरूका धनुष हामी हजार योजन टाढा राख्छौं।",
+          "meaning_en": "O Rudra, you have thousands of weapons in your arms. O lord, make them face away from us and protect us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "11.2",
+          "sanskrit": "अ॒स्मिन्म॑ह॒त्य॑र्ण॒वें᳚-ऽतरि॑क्षे भ॒वा अधि॑ । नील॑ग्रीवा-श्शिति॒कण्ठा᳚-श्श॒र्वा अ॒धः, क्ष॑माच॒राः ।",
+          "transliteration": "a̠sminma̍ha̠tya̍rṇa̠vē̎m-'tari̍kṣē bha̠vā adhi̍ । nīla̍grīvā-śśiti̠kaṇṭhā̎-śśa̠rvā a̠dhaḥ, kṣa̍mācha̠rāḥ ।",
+          "meaning_ne": "यस विशाल अन्तरिक्ष-समुद्रमा भव बस्नुहुन्छ। नीलग्रीव, शितिकण्ठ शर्वहरू तल पृथ्वीमा विचरण गर्छन्।",
+          "meaning_en": "In this vast ocean of space, Rudra dwells. His blue throat and white neck shine. He moves across the earth, fierce and mighty.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "11.3",
+          "sanskrit": "नील॑ग्रीवा-श्शिति॒कण्ठा॒ दिवग्ं॑ रु॒द्रा उप॑श्रिताः । ये वृ॒क्षेषु॑ स॒स्पिञ्ज॑रा॒ नील॑ग्रीवा॒ विलो॑हिताः ।",
+          "transliteration": "nīla̍grīvā-śśiti̠kaṇṭhā̠ divag̍ṃ ru̠drā upa̍śritāḥ । yē vṛ̠kṣēṣu̍ sa̠spiñja̍rā̠ nīla̍grīvā̠ vilō̍hitāḥ ।",
+          "meaning_ne": "आकाशमा नीलग्रीव शितिकण्ठ रुद्र बस्नुहुन्छ। वृक्षमा पहेंलो-रातो नीलग्रीव रुद्रहरू पनि हुनुहुन्छ।",
+          "meaning_en": "The blue-throated, white-necked Rudras dwell in the skies. The Rudras in the trees, yellowish and reddish-hued, also roam, fierce in their appearance.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "11.4",
+          "sanskrit": "ये भू॒ताना॒मधि॑पतयो विशि॒खासः॑ कप॒र्दि॑नः । ये अन्ने॑षु वि॒विध्य॑न्ति॒ पात्रे॑षु॒ पिब॑तो॒ जनान्॑ । ये प॒था-म्प॑थि॒रक्ष॑य ऐलबृ॒दा॑ य॒व्युधः॑ । ये ती॒र्थानि॑ प्र॒चर॑न्ति सृ॒काव॑न्तो निष॒ङ्गिणः॑ । य ए॒ताव॑न्तश्च॒ भूयाग्ं॑सश्च॒ दिशो॑ रु॒द्रा वि॑तस्थि॒रे । तेषाग्ं॑ सहस्रयोज॒ने-ऽव॒धन्वा॑नि तन्मसि । नमो॑ रु॒द्रेभ्यो॒ ये पृ॑थि॒व्यां-येँ᳚-ऽन्तरि॑क्षे॒ ये दि॒वि येषा॒मन्नं॒-वाँतो॑ व॒र्​ष॒मिष॑व॒स्तेभ्यो॒ दश॒ प्राची॒र्दश॑ दक्षि॒णा दश॑ प्र॒तीची॒-र्दशो-दी॑ची॒-र्दशो॒र्ध्वास्तेभ्यो॒ नम॒स्ते नो॑ मृडयन्तु॒ ते य-न्द्वि॒ष्मो यश्च॑ नो॒ द्वेष्टि॒ तं-वोँ॒ जम्भे॑ दधामि॥ ११॥",
+          "transliteration": "yē bhū̠tānā̠madhi̍patayō viśi̠khāsa̍ḥ kapa̠rdi̍naḥ । yē annē̍ṣu vi̠vidhya̍nti̠ pātrē̍ṣu̠ piba̍tō̠ janān̍ । yē pa̠thā-mpa̍thi̠rakṣa̍ya ailabṛ̠dā̍ ya̠vyudha̍ḥ । yē tī̠rthāni̍ pra̠chara̍nti sṛ̠kāva̍ntō niṣa̠ṅgiṇa̍ḥ । ya ē̠tāva̍ntaścha̠ bhūyāg̍ṃsaścha̠ diśō̍ ru̠drā vi̍tasthi̠rē । tēṣāg̍ṃ sahasrayōja̠nē-'va̠dhanvā̍ni tanmasi । namō̍ ru̠drēbhyō̠ yē pṛ̍thi̠vyāṃ yē̎-'ntari̍kṣē̠ yē di̠vi yēṣā̠manna̠ṃ vātō̍ va̠r​ṣa̠miṣa̍va̠stēbhyō̠ daśa̠ prāchī̠rdaśa̍ dakṣi̠ṇā daśa̍ pra̠tīchī̠-rdaśō-dī̍chī̠-rdaśō̠rdhvāstēbhyō̠ nama̠stē nō̍ mṛḍayantu̠ tē ya-ndvi̠ṣmō yaścha̍ nō̠ dvēṣṭi̠ taṃ vō̠ jambhē̍ dadhāmi ॥ 11 ॥",
+          "meaning_ne": "भूतहरूका अधिपति, विशिख र कपर्दी रुद्रहरू; अन्न र पात्रमा बेधन गर्नेहरू; पथका रक्षक; तीर्थमा तरवार-बाण लिएर हिँड्नेहरू — यति र अझ बढी रुद्र सबै दिशामा फैलिएका छन्। उनीहरूका धनुष हामी हजार योजन टाढा राख्छौं। पृथ्वी, अन्तरिक्ष र द्यौसमा बस्ने, वायु-वर्षालाई बाण बनाउने रुद्रलाई पूर्व-दक्षिण-पश्चिम-उत्तर-माथि दस-दस नमस्कार। उनीहरू हामीलाई सुख देऊन्। जसलाई हामी द्वेष गर्छौं र जसले हामीलाई द्वेष गर्छ, त्यसलाई तपाईंका जबडामा राख्छौं।",
+          "meaning_en": "Salutations to the Rudras, lords of beings, with matted hair and sharp arrows. They enter into food and drink, partaking along with all beings. Salutations to the Rudras who protect the paths and roads, who roam the sacred places, carrying swords and arrows. Rudras are spread in all directions, countless in number. To these Rudras, we offer salutations, asking them to lay down their bows at a distance of a thousand leagues. Salutations to the Rudras who are on the earth, in the atmosphere, and in the heavens, whose arrows are the winds and the rain. We offer salutations in all directions—east, south, west, north, and upward. May they protect us and grant us happiness. We place those whom we dislike and those who dislike us in your jaws, O Rudra.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "11.5",
+          "sanskrit": "त्र्य॑म्बकं-यँजामहे सुग॒न्धि-म्पु॑ष्टि॒वर्ध॑नम् । उ॒र्वा॒रु॒कमि॑व॒ बन्ध॑नान्मृत्यो॑र्मुक्षीय॒ मा-ऽमृता᳚त् ।",
+          "transliteration": "trya̍mbakaṃ yajāmahē suga̠ndhi-mpu̍ṣṭi̠vardha̍nam । u̠rvā̠ru̠kami̍va̠ bandha̍nānmṛtyō̍rmukṣīya̠ mā-'mṛtā̎t ।",
+          "meaning_ne": "सुगन्धित र पुष्टिवर्धक त्र्यम्बकको हामी यजन गर्छौं। काँक्रो लहराबाट छुटेजस्तै मृत्युबाट मुक्त होऔं, अमृतबाट होइन।",
+          "meaning_en": "We worship the three-eyed lord (Tryambaka), fragrant and nourishing, who increases our vitality. Like a cucumber detaches from its vine, may we be freed from the bonds of death, but not from immortality.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "11.6",
+          "sanskrit": "यो रु॒द्रो अ॒ग्नौ यो अ॒प्सु य ओष॑धीषु॒ यो रु॒द्रो विश्वा॒ भुव॑ना वि॒वेश॒ तस्मै॑ रु॒द्राय॒ नमो॑ अस्तु । तमु॑ ष्टु॒हि॒ य-स्स्वि॒षुस्सु॒धन्वा॒ यो विश्व॑स्य॒ क्षय॑ति भेष॒जस्य॑ । यक्ष्वा᳚म॒हे सौ᳚मन॒साय॑ रु॒द्र-न्नमो᳚भिर्दे॒वमसु॑र-न्दुवस्य । अ॒य-म्मे॒ हस्तो॒ भग॑वान॒य-म्मे॒ भग॑वत्तरः । अ॒य-म्मे᳚ वि॒श्वभे᳚षजो॒-ऽयग्ं शि॒वाभि॑मर्​शनः । ये ते॑ स॒हस्र॑म॒युत॒-म्पाशा॒ मृत्यो॒ मर्त्या॑य॒ हन्त॑वे । तान् य॒ज्ञस्य॑ मा॒यया॒ सर्वा॒नव॑ यजामहे । मृ॒त्यवे॒ स्वाहा॑ मृ॒त्यवे॒ स्वाहा᳚ ॥ ११॥ ओ-न्नमो भगवते रुद्राय विष्णवे मृत्यु॑र्मे पा॒हि ॥ प्राणाना-ङ्ग्रन्थिरसि रुद्रो मा॑ विशा॒न्तकः । तेनान्नेना᳚प्याय॒स्व ॥ नमो रुद्राय विष्णवे मृत्यु॑र्मे पा॒हि ॥",
+          "transliteration": "yō ru̠drō a̠gnau yō a̠psu ya ōṣa̍dhīṣu̠ yō ru̠drō viśvā̠ bhuva̍nā vi̠vēśa̠ tasmai̍ ru̠drāya̠ namō̍ astu । tamu̍ ṣṭu̠hi̠ ya-ssvi̠ṣussu̠dhanvā̠ yō viśva̍sya̠ kṣaya̍ti bhēṣa̠jasya̍ । yakṣvā̎ma̠hē sau̎mana̠sāya̍ ru̠dra-nnamō̎bhirdē̠vamasu̍ra-nduvasya । a̠ya-mmē̠ hastō̠ bhaga̍vāna̠ya-mmē̠ bhaga̍vattaraḥ । a̠ya-mmē̎ vi̠śvabhē̎ṣajō̠-'yagṃ śi̠vābhi̍mar​śanaḥ । yē tē̍ sa̠hasra̍ma̠yuta̠-mpāśā̠ mṛtyō̠ martyā̍ya̠ hanta̍vē । tān ya̠jñasya̍ mā̠yayā̠ sarvā̠nava̍ yajāmahē । mṛ̠tyavē̠ svāhā̍ mṛ̠tyavē̠ svāhā̎ । ō-nnamō bhagavatē rudrāya viṣṇavē mṛtyu̍rmē pā̠hi ॥ prāṇānā-ṅgranthirasi rudrō mā̍ viśā̠ntakaḥ । tēnānnēnā̎pyāya̠sva ॥ namō rudrāya viṣṇavē mṛtyu̍rmē pā̠hi ॥",
+          "meaning_ne": "जो रुद्र अग्नि, जल, ओषधि र सम्पूर्ण भुवनमा प्रवेश गर्नुभएको छ, त्यस रुद्रलाई नमस्कार। सुधन्वा र भेषजका स्वामीको स्तुति गरौं। यो हात भगवत् छ, विश्वभेषज र शिवाभिमर्शन छ। हे मृत्यु, तिम्रा हजार-अयुत पाश यज्ञको मायाले हामी हटाउँछौं। मृत्युलाई स्वाहा। ॐ, रुद्र-विष्णुलाई नमस्कार; मृत्युबाट मलाई रक्षा गर। प्राणको ग्रन्थि हो रुद्र, अन्तक भएर नछिर। यस अन्नले पुष्ट होऊ।",
+          "meaning_en": "To the Rudra who is in fire, who is in water, and who is in plants, who has entered into all the worlds—salutations to that Rudra. Praise that Rudra, who wields a strong bow and cures all ailments in the world. We worship Rudra with our salutations, the divine one, the lord of all beings, seeking his favor. This hand of mine is divine. It is the most divine. This hand of mine is the healer of the world, and it brings blessings when it touches. O death, you have thousands and tens of thousands of nooses to slay mortal beings. We disarm all those nooses by the power of sacrifice. Svāhā to death, Svāhā to death! Oṃ, salutations to the blessed one, Rudra, who is also Viṣṇu. Protect me from death.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "11.7",
+          "sanskrit": "सदाशि॒वोम् । ॐ शान्ति॒-श्शान्ति॒-श्शान्तिः॑ ।",
+          "transliteration": "sadāśi̠vōm । ōṃ śānti̠-śśānti̠-śśānti̍ḥ ।",
+          "meaning_ne": "सदाशिव ॐ। ॐ शान्तिः शान्तिः शान्तिः।",
+          "meaning_en": "Om, I invoke the eternal Lord Shiva. Om, may there be peace, peace, peace.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

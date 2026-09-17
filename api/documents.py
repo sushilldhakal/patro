@@ -1,8 +1,18 @@
 """Documents (शोत्र/स्तोत्र) routes — Sanskrit text, meanings, and R2 audio URLs.
 
-* ``GET /documents``        → list of documents for the library grid
-* ``GET /documents/{slug}`` → one document's chapters + shlokas, audio/cover
-                               keys resolved to playable URLs
+* ``GET /documents``                              → list of documents for the library grid
+* ``GET /documents/{slug}``                        → one document's metadata; for a chaptered
+                                                      document, chapters carry only a
+                                                      ``shloka_count`` (no verse text) so the
+                                                      client can render a chapter picker without
+                                                      downloading the whole book — verses arrive
+                                                      only once a chapter is opened
+* ``GET /documents/{slug}/chapters/{chapter}``     → one chapter's shlokas, audio resolved
+
+Splitting by chapter (never by an arbitrary page size) keeps this scaling to
+much larger multi-chapter works later: the unit of pagination is always the
+chapter a verse is already labelled with (see ``verse_label``), not a fixed
+count of verses.
 
 No auth — same public/read-only shape as vastu, panchanga, kundali. Content
 lives in ``data/documents_source/*.json`` (see that folder's README) and is
@@ -52,6 +62,15 @@ def _resolve_document_summary(doc: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
+    audio_key = s.pop("audio_key", None)
+    return {**s, "audio_url": _resolve_asset_url(audio_key)}
+
+
+def _find_chapter(doc: dict[str, Any], chapter_number: int) -> dict[str, Any] | None:
+    return next((c for c in doc["chapters"] if c["number"] == chapter_number), None)
+
+
 @router.get("/documents")
 def list_documents():
     documents = [_resolve_document_summary(dict(d)) for d in documents_db.list_documents()]
@@ -64,13 +83,47 @@ def document_detail(slug: str):
     if doc is None:
         raise HTTPException(status_code=404, detail=f"No such document: {slug}")
 
-    def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
-        audio_key = s.pop("audio_key", None)
-        return {**s, "audio_url": _resolve_asset_url(audio_key)}
-
     chapters = []
     for chapter in doc["chapters"]:
-        shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
-        chapters.append({**chapter, "shlokas": shlokas})
+        if doc["has_chapters"]:
+            # Metadata only — a chaptered document's verses are fetched per
+            # chapter (see /documents/{slug}/chapters/{chapter}) so opening
+            # the library never downloads an entire multi-hundred-verse book.
+            chapters.append(
+                {
+                    "number": chapter["number"],
+                    "title_ne": chapter["title_ne"],
+                    "title_en": chapter["title_en"],
+                    "shloka_count": len(chapter["shlokas"]),
+                }
+            )
+        else:
+            shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
+            chapters.append({**chapter, "shlokas": shlokas})
 
     return {**_resolve_document_summary(doc), "chapters": chapters}
+
+
+@router.get("/documents/{slug}/chapters/{chapter_number}")
+def document_chapter_detail(slug: str, chapter_number: int):
+    doc = documents_db.get_document_detail(slug)
+    if doc is None:
+        raise HTTPException(status_code=404, detail=f"No such document: {slug}")
+
+    chapter = _find_chapter(doc, chapter_number)
+    if chapter is None:
+        raise HTTPException(status_code=404, detail=f"No such chapter: {chapter_number}")
+
+    summary = dict(doc)
+    summary.pop("chapters", None)
+    shlokas = [_resolve_shloka(dict(s)) for s in chapter["shlokas"]]
+
+    return {
+        **_resolve_document_summary(summary),
+        "chapter": {
+            "number": chapter["number"],
+            "title_ne": chapter["title_ne"],
+            "title_en": chapter["title_en"],
+            "shlokas": shlokas,
+        },
+    }

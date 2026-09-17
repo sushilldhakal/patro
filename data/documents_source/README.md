@@ -6,12 +6,26 @@ etc). `services/documents_db.py` seeds all of them into `data/documents.db`
 — content-hash versioned, so editing or adding a file here and redeploying is
 enough; nothing needs to be run by hand.
 
+## Category
+
+`category` picks which tab a document lands on in the app's `/documents`
+library. Three values:
+
+- `mantra` — a single short verse (Gayatri Mantra, Vakratunda Mahakaya).
+- `stotram` — a multi-verse hymn or ashtakam (Shiva Tandava Stotram,
+  Pashupatyashtakam).
+- `scripture` — a larger canonical text seeded chapter by chapter (Bhagavad
+  Gita, an Upanishad, the Ashtavakra Gita).
+
+If omitted, it defaults to `stotram`.
+
 ## Shape
 
 ```jsonc
 {
   "slug": "vishnu-sahasranama",       // unique, URL-safe — becomes /documents/<slug>
   "order_index": 10,                   // list-page sort order, ascending
+  "category": "stotram",               // "mantra" | "stotram" | "scripture" — powers the /documents tabs
   "title_sa": "श्री विष्णुसहस्रनामस्तोत्रम्",   // Devanagari Sanskrit title
   "title_ne": "श्री विष्णु सहस्रनाम स्तोत्र",
   "title_en": "Shri Vishnu Sahasranama Stotram",

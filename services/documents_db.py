@@ -22,10 +22,15 @@ from typing import Any
 
 from engine.astronomy.paths import documents_db_path, documents_source_dir
 
+_ADDED_COLUMNS: list[tuple[str, str]] = [
+    ("category", "TEXT NOT NULL DEFAULT 'stotram'"),
+]
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS documents (
     slug            TEXT PRIMARY KEY,
     order_index     INTEGER NOT NULL DEFAULT 0,
+    category        TEXT NOT NULL DEFAULT 'stotram',
     title_sa        TEXT NOT NULL,
     title_ne        TEXT NOT NULL,
     title_en        TEXT NOT NULL,
@@ -80,6 +85,17 @@ def _connect() -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
     return conn
+
+
+def _migrate_added_columns(conn: sqlite3.Connection) -> None:
+    """Add missing columns to an existing table. Additive, nullable, idempotent."""
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(documents)")}
+    if not existing:
+        return
+    for name, coltype in _ADDED_COLUMNS:
+        if name in existing:
+            continue
+        conn.execute(f"ALTER TABLE documents ADD COLUMN {name} {coltype}")
 
 
 def _manifest_paths() -> list[Path]:
@@ -181,14 +197,15 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     conn.execute(
         """
         INSERT INTO documents
-            (slug, order_index, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
+            (slug, order_index, category, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
              has_chapters, chapter_count, shloka_count, full_audio_key)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
             manifest.get("order_index", 0),
+            manifest.get("category", "stotram"),
             manifest["title_sa"],
             manifest["title_ne"],
             manifest["title_en"],
@@ -228,6 +245,7 @@ def ensure_seeded() -> None:
         version = _content_version(paths)
         with _connect() as conn:
             conn.executescript(_SCHEMA)
+            _migrate_added_columns(conn)
             current = conn.execute(
                 "SELECT value FROM documents_meta WHERE key = 'version'"
             ).fetchone()
@@ -251,6 +269,7 @@ def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
     return {
         "slug": row["slug"],
         "order_index": row["order_index"],
+        "category": row["category"],
         "title_sa": row["title_sa"],
         "title_ne": row["title_ne"],
         "title_en": row["title_en"],

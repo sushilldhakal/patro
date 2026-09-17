@@ -1,0 +1,106 @@
+{
+  "slug": "kalabhairavashtakam",
+  "order_index": 12,
+  "category": "stotram",
+  "title_sa": "श्री कालभैरवाष्टकम्",
+  "title_ne": "श्री कालभैरवाष्टकम्",
+  "title_en": "Shri Kalabhairavashtakam",
+  "subtitle_ne": "आदि शङ्कराचार्य रचित",
+  "subtitle_en": "Traditionally attributed to Adi Shankaracharya",
+  "description_ne": "काशीका अधिष्ठाता देवता कालभैरव (शिव)को स्तुतिमा आठ श्लोक, फलश्रुतिसहित।",
+  "description_en": "An ashtakam glorifying Lord Kalabhairava, the presiding deity of Kashi, with a closing verse on the fruits of reciting it.",
+  "source_ne": "आदि शङ्कराचार्य रचित",
+  "source_en": "Traditionally attributed to Adi Shankaracharya",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "देवराजसेव्यमानपावनांघ्रिपङ्कजं व्यालयज्ञसूत्रमिन्दुशेखरं कृपाकरम्। नारदादियोगिवृन्दवन्दितं दिगंबरं काशिकापुराधिनाथकालभैरवं भजे॥1॥",
+          "transliteration": "devarāja-sevyamāna-pāvanāṅghri-paṅkajaṃ vyāla-yajña-sūtram-indu-śekharaṃ kṛpākaram, nāradādi-yogivṛnda-vanditaṃ digambaraṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसका कमलजस्ता चरणहरू देवराज इन्द्रद्वारा पूजित छन्; जसले सर्पलाई जनैको रूपमा र चन्द्रमालाई शिरमा धारण गर्नुभएको छ, जो अत्यन्त कृपालु हुनुहुन्छ; जो नारद लगायत योगीहरूद्वारा वन्दित हुनुहुन्छ; र जो दिगम्बर (आकाशलाई नै वस्त्र बनाउने) हुनुहुन्छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, whose lotus feet are revered by Indra, king of the devas; who wears a snake as his sacred thread and the crescent moon on his head, and who is ever compassionate; who is praised by Narada and other yogis; and who is Digambara, wearing the sky itself as his garment.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2",
+          "sanskrit": "भानुकोटिभास्वरं भवाब्धितारकं परं नीलकण्ठमीप्सितार्थदायकं त्रिलोचनम्। कालकालमंबुजाक्षमक्षशूलमक्षरं काशिकापुराधिनाथकालभैरवं भजे॥2॥",
+          "transliteration": "bhānu-koṭi-bhāsvaraṃ bhavābdhi-tārakaṃ paraṃ nīlakaṇṭham-īpsitārtha-dāyakaṃ trilocanam, kāla-kālam-ambujākṣam-akṣaśūlam-akṣaraṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जो करोडौं सूर्यसरह देदीप्यमान हुनुहुन्छ, जसले भवसागरबाट भक्तहरूलाई पार लगाउनुहुन्छ, जो सर्वश्रेष्ठ हुनुहुन्छ; जसको कण्ठ नीलो छ, तीन नेत्र छन्, र जो इच्छित फल दिनुहुन्छ; जो कालको पनि काल हुनुहुन्छ, जसका आँखा कमलजस्ता छन्, जसको त्रिशूलले संसारलाई धारण गर्दछ, र जो अविनाशी हुनुहुन्छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, who shines with the brilliance of a million suns, the supreme one who ferries devotees across the ocean of worldly existence; who has a blue throat and three eyes, and who grants desired boons; who is death unto death itself, whose eyes resemble lotuses, whose trident sustains the world, and who is imperishable.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "शूलटङ्कपाशदण्डपाणिमादिकारणं श्यामकायमादिदेवमक्षरं निरामयम्। भीमविक्रमं प्रभुं विचित्रताण्डवप्रियं काशिकापुराधिनाथकालभैरवं भजे॥3॥",
+          "transliteration": "śūla-ṭaṅka-pāśa-daṇḍa-pāṇim-ādikāraṇaṃ śyāmakāyam-ādidevam-akṣaraṃ nirāmayam, bhīmavikramaṃ prabhuṃ vicitra-tāṇḍava-priyaṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसका हातमा त्रिशूल, टङ्क, पाश र दण्ड छन्, जो सृष्टिको आदि कारण हुनुहुन्छ; जसको शरीर श्याम वर्णको छ, जो आदिदेव, अविनाशी र रोगरहित हुनुहुन्छ; जो अत्यन्त पराक्रमी हुनुहुन्छ र अद्भुत ताण्डव नृत्यमा रमाउनुहुन्छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, who holds the trident, mattock, noose and club, the primordial cause of creation; whose body is dark-hued, the primeval god, imperishable and free from disease; who is immensely mighty and delights in the wondrous tandava dance.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "भुक्तिमुक्तिदायकं प्रशस्तचारुविग्रहं भक्तवत्सलं स्थितं समस्तलोकविग्रहम्। विनिक्वणन्मनोज्ञहेमकिङ्किणीलसत्कटिं काशिकापुराधिनाथकालभैरवं भजे॥4॥",
+          "transliteration": "bhukti-mukti-dāyakaṃ praśasta-cāru-vigrahaṃ bhaktavatsalaṃ sthitaṃ samasta-loka-vigraham, vinikvaṇan-manojña-hema-kiṅkiṇī-lasat-kaṭiṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसले भोग र मोक्ष दुवै प्रदान गर्नुहुन्छ, जसको स्वरूप अत्यन्त सुन्दर छ; जो भक्तवत्सल हुनुहुन्छ र सम्पूर्ण लोकको स्वरूप नै हुनुहुन्छ; जसको कम्मरमा सुनको घण्टीयुक्त पेटी मधुर आवाजसँग झुल्किरहेको छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, who bestows both worldly enjoyment and liberation, whose form is graceful and beautiful; who is affectionate towards his devotees, the very embodiment of all the worlds; whose waist shines with a golden bell-chain that tinkles sweetly.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "धर्मसेतुपालकं त्वधर्ममार्गनाशकं कर्मपाशमोचकं सुशर्मदायकं विभुम्। स्वर्णवर्णशेषपाशशोभिताङ्गमण्डलं काशिकापुराधिनाथकालभैरवं भजे॥5॥",
+          "transliteration": "dharma-setu-pālakaṃ tv-adharma-mārga-nāśakaṃ karma-pāśa-mocakaṃ suśarma-dāyakaṃ vibhum, svarṇavarṇa-śeṣa-pāśa-śobhitāṅga-maṇḍalaṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसले धर्मको सेतु रक्षा गर्नुहुन्छ र अधर्मको मार्ग नष्ट गर्नुहुन्छ; जसले कर्मको बन्धनबाट मुक्त गरी सुख प्रदान गर्नुहुन्छ; जसको शरीर सुनौलो सर्पहरूले सुशोभित छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, who upholds the bridge of dharma and destroys the path of adharma; who frees devotees from the bonds of karma and bestows true well-being; whose body is adorned with golden-hued serpents.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6",
+          "sanskrit": "रत्नपादुकाप्रभाभिरामपादयुग्मकं नित्यमद्वितीयमिष्टदैवतं निरंजनम्। मृत्युदर्पनाशनं करालदंष्ट्रमोक्षणं काशिकापुराधिनाथकालभैरवं भजे॥6॥",
+          "transliteration": "ratna-pādukā-prabhābhi-rāma-pāda-yugmakaṃ nityam-advitīyam-iṣṭadaivataṃ nirañjanam, mṛtyu-darpa-nāśanaṃ karāla-daṃṣṭra-mokṣaṇaṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसका चरणहरू रत्नजडित पादुकाले सुशोभित छन्, जो नित्य, अद्वितीय र निर्मल इष्टदेवता हुनुहुन्छ; जसले मृत्युको घमण्ड नाश गर्नुहुन्छ र जसका भयानक दाँतले मुक्ति प्रदान गर्दछन्।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, whose feet are graced by gem-studded sandals, who is eternal, non-dual and the beloved chosen deity, ever pure; who destroys the pride of death, and whose fearsome teeth grant liberation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "7",
+          "sanskrit": "अट्टहासभिन्नपद्मजाण्डकोशसंततिं दृष्टिपातनष्टपापजालमुग्रशासनम्। अष्टसिद्धिदायकं कपालमालिकाधरं काशिकापुराधिनाथकालभैरवं भजे॥7॥",
+          "transliteration": "aṭṭahāsa-bhinna-padmajāṇḍa-kośa-santatiṃ dṛṣṭipāta-naṣṭa-pāpajālam-ugraśāsanam, aṣṭasiddhi-dāyakaṃ kapālamālikā-dharaṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जसको अट्टहासले ब्रह्माको सृष्टिबाट उत्पन्न भ्रमजाल टुक्रिन्छ; जसको दृष्टिमात्रले पापको जाल नष्ट हुन्छ; जसले अष्टसिद्धि प्रदान गर्नुहुन्छ र नरकपालको माला धारण गर्नुहुन्छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, whose thunderous laughter shatters the delusions born of Brahma's creation; whose mere glance destroys the web of sins; who bestows the eight siddhis and wears a garland of skulls.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "8",
+          "sanskrit": "भूतसंघनायकं विशालकीर्तिदायकं काशिवासलोकपुण्यपापशोधकं विभुम्। नीतिमार्गकोविदं पुरातनं जगत्पतिं काशिकापुराधिनाथकालभैरवं भजे॥8॥",
+          "transliteration": "bhūta-saṅgha-nāyakaṃ viśāla-kīrti-dāyakaṃ kāśi-vāsa-loka-puṇya-pāpa-śodhakaṃ vibhum, nīti-mārga-kovidaṃ purātanaṃ jagatpatiṃ kāśikā-purādhinātha-kālabhairavaṃ bhaje",
+          "meaning_ne": "काशीका अधिष्ठाता कालभैरवलाई नमन गर्दछु — जो भूतगणका नायक हुनुहुन्छ र महान् कीर्ति प्रदान गर्नुहुन्छ; जसले काशीवासीका पुण्य र पाप दुवै शुद्ध गर्नुहुन्छ; जो नीतिमार्गमा निपुण, अनादि र जगतका स्वामी हुनुहुन्छ।",
+          "meaning_en": "Salutations to Lord Kalabhairava, the supreme lord of Kashi, the leader of hosts of spirits, bestower of great glory; who purifies the people of Kashi of both their sins and merits; who is well-versed in the path of righteousness, the most ancient lord of the universe.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "9",
+          "sanskrit": "कालभैरवाष्टकं पठंति ये मनोहरं ज्ञानमुक्तिसाधनं विचित्रपुण्यवर्धनम्। शोकमोहदैन्यलोभकोपतापनाशनं प्रयान्ति कालभैरवांघ्रिसन्निधिं नरा ध्रुवम्॥9॥",
+          "transliteration": "kālabhairavāṣṭakaṃ paṭhanti ye manoharaṃ jñāna-mukti-sādhanaṃ vicitra-puṇya-vardhanam, śoka-moha-dainya-lobha-kopa-tāpa-nāśanaṃ prayānti kālabhairavāṅghri-sannidhiṃ narā dhruvam",
+          "meaning_ne": "जुन मानिसले यो मनोहर कालभैरवाष्टकम् पढ्छ, जुन ज्ञान र मुक्तिको साधन हो, जसले विविध पुण्य बढाउँछ, र जसले शोक, मोह, दीनता, लोभ, क्रोध र सन्ताप नष्ट गर्छ — त्यो निश्चय नै कालभैरवका चरणहरूको सामीप्य प्राप्त गर्दछ।",
+          "meaning_en": "Those who recite this beautiful Kalabhairavashtakam, which is a means to knowledge and liberation and which increases manifold merit, and which destroys grief, delusion, misery, greed, anger and affliction — will surely attain the presence of Lord Kalabhairava's feet.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

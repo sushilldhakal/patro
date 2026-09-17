@@ -2,6 +2,7 @@
   "_comment": "Copy this file to <your-slug>.json and fill it in. Filenames starting with _ are skipped by the importer, so this template is never seeded.",
   "slug": "example-stotram",
   "order_index": 999,
+  "category": "stotram",
   "title_sa": "उदाहरण स्तोत्रम्",
   "title_ne": "उदाहरण स्तोत्र",
   "title_en": "Example Stotram",

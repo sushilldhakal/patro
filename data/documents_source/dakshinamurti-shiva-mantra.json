@@ -1,0 +1,34 @@
+{
+  "slug": "dakshinamurti-shiva-mantra",
+  "order_index": 11,
+  "category": "mantra",
+  "title_sa": "दक्षिणामूर्ति शिव मन्त्रः",
+  "title_ne": "दक्षिणामूर्ति शिव मन्त्र",
+  "title_en": "Dakshinamurti Shiva Mantra",
+  "subtitle_ne": "विद्या र बुद्धिका लागि प्रार्थना",
+  "subtitle_en": "A prayer for wisdom and intellect",
+  "description_ne": "गुरुस्वरूप भगवान् दक्षिणामूर्ति (शिव)लाई नमन गर्दै मेधा र प्रज्ञाको वरदान माग्ने मन्त्र।",
+  "description_en": "A mantra saluting Lord Dakshinamurti, Shiva as the supreme teacher, seeking the boons of memory and wisdom.",
+  "source_ne": "पारम्परिक",
+  "source_en": "Traditional",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "ॐ नमो भगवते दक्षिणामूर्तये। मह्यं मेधां प्रज्ञां प्रयच्छ स्वाहा॥",
+          "transliteration": "Om Namo Bhagawate Dakshinamurtaye, Mahyam Medham Prajnam Prayachchha Swaha",
+          "meaning_ne": "ॐ, भगवान् दक्षिणामूर्ति (गुरुस्वरूप शिव)लाई नमस्कार। मलाई मेधा (स्मरणशक्ति) र प्रज्ञा (बुद्धि) प्रदान गर्नुहोस्, स्वाहा।",
+          "meaning_en": "Om, salutations to Lord Dakshinamurti (Shiva as the supreme teacher). Please grant me sharp memory and wisdom. Svaha.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

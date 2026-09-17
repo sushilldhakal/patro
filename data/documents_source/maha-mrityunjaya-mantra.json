@@ -1,0 +1,34 @@
+{
+  "slug": "maha-mrityunjaya-mantra",
+  "order_index": 7,
+  "category": "mantra",
+  "title_sa": "महामृत्युञ्जय मन्त्रः",
+  "title_ne": "महामृत्युञ्जय मन्त्र",
+  "title_en": "Maha Mrityunjaya Mantra",
+  "subtitle_ne": "ऋग्वेद ७.५९.१२",
+  "subtitle_en": "Rigveda 7.59.12",
+  "description_ne": "मृत्युभय हरण गरी दीर्घायु र स्वास्थ्य प्रदान गर्ने भनी मानिने भगवान् शिवको सबैभन्दा शक्तिशाली मन्त्रहरूमध्ये एक।",
+  "description_en": "One of the most powerful mantras to Lord Shiva, believed to remove the fear of death and bestow health and longevity.",
+  "source_ne": "ऋग्वेद",
+  "source_en": "Rigveda",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्। उर्वारुकमिव बन्धनान् मृत्योर्मुक्षीय मामृतात्॥",
+          "transliteration": "Om Tryambakam Yajamahe Sugandhim Pushti-Vardhanam, Urvarukamiva Bandhanan Mrityormukshiya Mamritat",
+          "meaning_ne": "हामी त्रिनेत्रधारी भगवान् शिवको पूजा गर्दछौं, जो सुगन्धित हुनुहुन्छ र सबै प्राणीको पुष्टि (समृद्धि) बढाउनुहुन्छ। जसरी पाकेको काँक्रो सजिलै बोटबाट अलग हुन्छ, त्यसरी नै उहाँले हामीलाई मृत्युबाट मुक्त गरी अमरत्व प्रदान गरून्।",
+          "meaning_en": "We worship the three-eyed Lord Shiva, who is fragrant and who nourishes and increases the well-being of all beings. May He liberate us from death, for the sake of immortality, just as a ripe cucumber is easily severed from its vine.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

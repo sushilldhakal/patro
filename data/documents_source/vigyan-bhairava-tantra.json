@@ -1,0 +1,1456 @@
+{
+  "slug": "vigyan-bhairava-tantra",
+  "order_index": 16,
+  "category": "scripture",
+  "title_sa": "विज्ञानभैरव तन्त्रम्",
+  "title_ne": "विज्ञानभैरव तन्त्र",
+  "title_en": "Vijnana Bhairava Tantra",
+  "subtitle_ne": "शिव–शक्ति संवाद · ११२ धारणा",
+  "subtitle_en": "A dialogue of Shiva and Shakti · 112 dharanas",
+  "description_ne": "विज्ञानभैरव तन्त्र प्राचीन भारतीय तान्त्रिक परम्पराको एक अमूल्य रत्न हो। यो पवित्र ग्रन्थ भगवान शिव (भैरव) र देवी पार्वती (देवी)बीचको गहिरो संवादको रूपमा प्रस्तुत गरिएको छ। यस ग्रन्थमा ११२ विभिन्न ध्यान प्रविधिहरू समावेश छन् जसले मानव चेतनाको विविध अवस्थाहरूमा पहुँच गर्ने सरल तर गहिरो उपायहरू प्रदान गर्दछ। यी प्रविधिहरूले आत्म-साक्षात्कार र मोक्ष प्राप्तिमा सहयोग पुर्‍याउँछन्। विज्ञानभैरव तन्त्रको विशेषता यो हो कि यसमा कुनै कठिन कर्मकाण्ड वा जटिल अभ्यासको आवश्यकता छैन। यो दैनिक जीवनका सामान्य क्रियाकलापहरूलाई नै ध्यानको माध्यम बनाउने अद्भुत कला सिकाउँछ।",
+  "description_en": "A jewel of the ancient Indian tantric tradition, given as a deep dialogue between Lord Shiva (Bhairava) and Goddess Parvati (Devi). It holds 112 meditation methods that open simple yet deep ways into the many states of human consciousness, supporting self-realization and liberation. It needs no hard ritual or complex practice: it teaches the art of turning ordinary daily acts themselves into meditation.",
+  "source_ne": "रुद्रयामल तन्त्र",
+  "source_en": "Rudrayamala Tantra",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "श्रीदेव्युवाच — श्रुतं देव मया सर्वं रुद्रयामलसम्भवम् । त्रिकभेदमशेषेण सारात्सारविभागशः ॥ १ ॥",
+          "transliteration": "śrīdevyuvāca — śrutaṃ deva mayā sarvaṃ rudrayāmalasambhavam | trikabhedamaśeṣeṇa sārātsāravibhāgaśaḥ || 1 ||",
+          "meaning_ne": "हे देव, रुद्र र उनकी शक्तिको ऐक्यबाट निस्केका र रुद्रयामल तन्त्रमा वर्णित सबै कुरा मैले ध्यानपूर्वक सुनेकी छु। साथै सम्पूर्ण ज्ञानको सार मानिने शक्तिका तीन भाग — त्रिक — लाई पनि मैले सार र असारको भेदसहित राम्ररी बुझिसकेकी छु।",
+          "meaning_en": "Sri Devi says: O Deva, I have heard in detail all that has been revealed through the union of Rudra and his Shakti — what has emerged from the Rudrayamala Tantra. I have also understood Trika, the three divisions of Shakti, which forms the quintessence of all knowledge, distinguishing the essential from the non-essential.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2",
+          "sanskrit": "अद्यापि न निवृत्तो मे संशयः परमेश्वर । किं रूपं तत्त्वतो देव शब्दराशिकलात्मकम् ॥ २ ॥",
+          "transliteration": "adyāpi na nivṛtto me saṃśayaḥ parameśvara | kiṃ rūpaṃ tattvato deva śabdarāśikalātmakam || 2 ||",
+          "meaning_ne": "हे परमेश्वर, मैले यति धेरै सुने तापनि मेरो शंका अझै पूर्ण रूपमा हटेको छैन। हे देव, तपाईंको वास्तविक स्वरूप के हो? के तपाईं ती शब्द–समूहका स्वरूप हुनुहुन्छ, जसबाट सबै मन्त्र उत्पन्न भएका छन्?",
+          "meaning_en": "O Supreme Lord, even now my doubts are not completely removed. O Divine One, what is Your true nature? Are You the essence of the cluster of sound (शब्दराशि) from which all mantras arise?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "किं वा नादात्मभेदेन भैरवे भैरवाकृते । त्रिशिरोभेदभिन्नं वा किं वा शक्तित्रयात्मकम् ॥ परापरापरा चैते कथितं परमेश्वर ॥ ३ ॥",
+          "transliteration": "kiṃ vā nādātmabhedena bhairave bhairavākṛte | triśirobhedabhinnaṃ vā kiṃ vā śaktitrayātmakam || parāparāparā caite kathitaṃ parameśvara || 3 ||",
+          "meaning_ne": "हे भैरव, नादका विभिन्न मार्गहरूबाट, जसले उच्च चेतनाको अवस्थामा प्रवेश गराउँछन्, तपाईंको सत्यरूप जान्न सकिन्छ त? या त्यो त्रिशिर भैरव तन्त्रमा बताइने विधिबाट भिन्न छ? या परा, परापरा र अपरा — यी तीन शक्तिरूपहरूको ज्ञानबाट तपाईंलाई जान्न सकिन्छ? यिनै मेरा शङ्का हुन्, हे परमेश्वर!",
+          "meaning_en": "O Bhairava, can Your true nature be realized through the different approaches related to nāda (subtle sound), by which one enters higher consciousness? Or is it different from the method taught in the Trishira Bhairava Tantra? Or can it be known through the understanding of the three forms of Shakti — para (supreme), parapara (supreme-non-supreme), and apara (non-supreme)? These are my doubts, O Supreme Lord!",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "नादविन्दुमयं भैरवम् चन्द्रार्धवधनरोवधकाः । चक्रारूढमनःकं वा नादं वा शक्तिस्वरूपकम् ॥ ४ ॥",
+          "transliteration": "nādavindumayaṃ bhairavam candrārdhavadhanarovadhakāḥ | cakrārūḍhamanaḥkaṃ vā nādaṃ vā śaktisvarūpakam || 4 ||",
+          "meaning_ne": "हे भैरव, के तपाईं नाद र बिन्दु हुनुहुन्छ? वा के तपाईं उच्च मानसिक केन्द्रहरूमा ध्यान केन्द्रित गर्दा जान्न सकिन्छ, वा त्यो बिना कम्पन उत्पन्न हुने अनाहत स्वर हो? वा के तपाईं आधा चन्द्रजस्तो अवरोधक रूप हुनुहुन्छ, अथवा शक्तिको रूप हुनुहुन्छ?",
+          "meaning_en": "O Bhairava, are You nāda (primordial sound) and bindu (point), or can You be realized by concentrating on the ascending psychic centers, or are You the unstruck sound which arises without any vibration? Or are You the obstructing half-moon form, or the form of Shakti?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "ऩरापराया साक्रम् अपारायाश्च न पुनः । पाराय एव तत् तद्वत्स्यात प्रतिवन्तद्विरुध्यते ॥ ५ ॥",
+          "transliteration": "narāparāyā sākram apārāyāśca na punaḥ | pārāya eva tat tadvatsyāta prativantadvirudhyate || 5 ||",
+          "meaning_ne": "के तपाईं परा र अपरा (सर्वव्यापी र सार्वभौमिक) हुनुहुन्छ, वा केवल अपरा (पूर्णरूपमा भौतिक) वा केवल परा (पूर्णरूपमा अलौकिक) हुनुहुन्छ? यदि तपाईं केवल अपरा हुनुहुन्छ भने, तर्पणको प्राकृतिक स्वरूप विरोधाभासमा पर्छ।",
+          "meaning_en": "Is Your reality transcendent and immanent, or is it completely immanent or completely transcendental? If it is fully immanent, the very nature of transcendence becomes contradicted.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6",
+          "sanskrit": "न वह वर्णविभेदेन ध्रुवभेदेन नाभिते । परत्वं व् निर्कल्यत्वेन साकल्यत्वेन तद्भिते ॥ ६ ॥",
+          "transliteration": "na vaha varṇavibhedena dhruvabhedena nābhite | paratvaṃ v nirkalyatvena sākalyatvena tadbhite || 6 ||",
+          "meaning_ne": "परत्व (अलौकिकत्व) वर्ण (रंग), शब्द (ध्वनि) वा रूप (आकार) का विभाजनहरूमा अस्तित्वमा आउँदैन। यदि परत्व अविभाज्य छ भने, यो परिभाषित गर्न सकिँदैन र कुनै संयुक्त भागसँग सहअस्तित्व गर्न सक्दैन।",
+          "meaning_en": "Paratva (transcendence) cannot exist within the divisions of varna (colour), shabda (sound), or roopa (form). If transcendence is indivisible, it cannot be defined or coexist with composite parts.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "7",
+          "sanskrit": "प्रसादंकुरु मेनाथ वंशेषु विवि संशयम् । भैरि उवाच । साधुसाधुत्वया पृष्टं तन्त्रसारवमदं वप्रये ॥ ७ ॥",
+          "transliteration": "prasādaṃkuru menātha vaṃśeṣu vivi saṃśayam | bhairi uvāca | sādhusādhutvayā pṛṣṭaṃ tantrasāravamadaṃ vapraye || 7 ||",
+          "meaning_ne": "हे देवता, मेरो सबै शङ्का पूर्णरूपमा नष्ट गरिदिनुहोस्। त्यसपछि भैरव भन्छन्: \"सही, राम्ररी भनियो, प्रिय! तपाईंले सोध्नुभएका कुरा तन्त्रको सार हुन्।\"",
+          "meaning_en": "O Lord, please remove all my doubts completely. Then Bhairava says: \"Well said, dear one! What you have asked about is the essence of Tantra.\"",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "8",
+          "sanskrit": "गहूनीयतमंभद्रेतथावप कथयावम ते । यविंवचत्सकर्म रूपम् भैरवस्य प्रकीर्तितधम् ॥ ८ ॥",
+          "transliteration": "gahūnīyatamaṃbhadretathāvapa kathayāvama te | yaviṃvacatsakarma rūpam bhairavasya prakīrtitadham || 8 ||",
+          "meaning_ne": "हे महानारी, यद्यपि यो तन्त्रको सबैभन्दा गोप्य भाग हो, म तपाईंलाई भैरवका निश्चित रूपहरूबारे व्याख्या गरिएको कुरा बताउनेछु।",
+          "meaning_en": "Noble lady, although this is the most secret part of the tantras, yet I will speak to you about what has been expounded regarding the defined forms of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "9",
+          "sanskrit": "तदसारतया देवी भैरवेन शक्रजालितम् । मायास्वप्नोपमंच गन्धिन्धर भ्रमम् ॥ ९ ॥",
+          "transliteration": "tadasāratayā devī bhairavena śakrajālitam | māyāsvapnopamaṃca gandhindhara bhramam || 9 ||",
+          "meaning_ne": "हे देवी, भैरवको साकार रूप असार छ र कुनै आध्यात्मिक मूल्य छैन, इन्द्रको मायावी सपना जस्तै जाल जस्तो छ र स्वर्गका संगीतकारहरूको भ्रम जस्तै छ।",
+          "meaning_en": "O Devi, the sakara (manifest) aspect of Bhairava is insubstantial and of no spiritual value, like the illusory dream-like web of Indra, and is also like the delusion of celestial musicians.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "10",
+          "sanskrit": "ध्यानाथं भ्रान्तिद्धुनाम् भैरवाजडम्बरवितानम् । केिळं विनष्टं पंसुप्रविकल्पविनहतात्मनाम् ॥ १० ॥",
+          "transliteration": "dhyānāthaṃ bhrāntiddhunām bhairavājaḍambaravitānam | keiḷaṃ vinaṣṭaṃ paṃsupravikalpavinahatātmanām || 10 ||",
+          "meaning_ne": "साकार साधनाहरू ती मानिसहरूका लागि वर्णित छन्, जसको बुद्धि भ्रमित छ, मन विचलित छ वा ध्यानको मार्गमा प्रवेश गर्न कर्म र देखावटी अनुष्ठानहरूमा लाग्ने प्रवृत्ति छ।",
+          "meaning_en": "The sakara sadhanas are described for those of deluded intellect, who are prey to distracted thoughts or inclined toward performing actions and ostentatious rituals while trying to follow the path of meditation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "11",
+          "sanskrit": "तत्त्वतो न निअत्मासौ शब्दराशिन्भरैः । न चासौ विवशरा दिग्देवो न च शक्तियात्मक् ॥ ११ ॥",
+          "transliteration": "tattvato na niatmāsau śabdarāśinbharaiḥ | na cāsau vivaśarā digdevo na ca śaktiyātmak || 11 ||",
+          "meaning_ne": "वास्तवमा, भैरवको सार नौ रूपहरूमा, अक्षरहरूको माला, तीन प्रवाहहरूमा वा तीन शक्तिहरूमा छैन।",
+          "meaning_en": "In reality, the essence of Bhairava is not contained in the nine forms, nor in the garland of letters, nor in the three flows, nor even in the three powers of Shakti.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "12",
+          "sanskrit": "नादविन्दुमयो न चावप न चन्द्राधवधनरोवधकः । न चक्रक्रमसवम्भन्नो न च शक्तिस्वरूपक् ॥ १२ ॥",
+          "transliteration": "nādavindumayo na cāvapa na candrādhavadhanarovadhakaḥ | na cakrakramasavambhanno na ca śaktisvarūpak || 12 ||",
+          "meaning_ne": "उहाँको रूप नाद र बिन्दुमा देखिन्न, न अवरोधित अर्धचन्द्रमा, न क्रमबद्ध चक्रहरूमा प्रवेश गर्दा, न शक्ति वा उर्जामा नै उहाँको सार समाहित छ।",
+          "meaning_en": "His (Bhairava's) form cannot be perceived in nāda and bindu, nor in the obstructed half moon, nor in the piercing of successive chakras, nor does Shakti, or energy, constitute his essence.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "13",
+          "sanskrit": "अप्रिद्धुमतीनाम व्ह एता पारविभीवषकाः । मातमृदोकित्सिं प्रित्यृथम दुषाहृतम् ॥ १३ ॥",
+          "transliteration": "apriddhumatīnāma vha etā pāravibhīvaṣakāḥ | mātamṛdokitsiṃ prityṛthama duṣāhṛtam || 13 ||",
+          "meaning_ne": "यी कुरा अपरिपक्व बौद्धिकताको भएका मानिसहरूलाई आध्यात्मिक मार्गमा लाग्न उत्प्रेरित गर्न, जस्तै आमाले आफ्ना बच्चालाई मिठाइले तान्छिन्, त्यस्तो डराउने कथा जस्तो बताइएका छन्।",
+          "meaning_en": "These things have been told about the form of Bhairava like tales used to frighten children, intended to guide people of immature intellect along the spiritual path, just as a mother entices her child with sweets.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "14",
+          "sanskrit": "वदक्कारकृनोन्मितुा दशेशोद्दशेा विशेषणी । व्यपदष्टेमु शक्यासासिकथ्या परमेष्ठत् ॥ १४ ॥",
+          "transliteration": "vadakkārakṛnonmituā daśeśoddaśeā viśeṣaṇī | vyapadaṣṭemu śakyāsāsikathyā parameṣṭhat || 14 ||",
+          "meaning_ne": "अन्ततः (भैरवको अवस्था) समय, स्थान वा दिशा अनुसार मापन गर्न सकिँदैन, र कुनै गुण वा नामले पनि जनाउन सकिँदैन।",
+          "meaning_en": "Ultimately, the state of Bhairava cannot be measured in terms of time, space, or direction, nor can it be indicated by any attribute or designation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "15",
+          "sanskrit": "अन्तस्वानभुवानन्दा विकल्पोन्मितु गोचरा । यास्था भवरताकारा भैरवी भैरवात्मन् ॥ १५ ॥",
+          "transliteration": "antasvānabhuvānandā vikalponmitu gocarā | yāsthā bhavaratākārā bhairavī bhairavātman || 15 ||",
+          "meaning_ne": "यस प्रकार, भैरवको आत्मा, जो भैरवी भनेर चिनिन्छ, आन्तरिक चेतनाको आनन्दको रूपमा अनुभव गरिन्छ, पूर्ण रूपको अवस्था, जसमा कुनै विरोध छैन र सम्पूर्ण ब्रह्माण्डको आवास हो।",
+          "meaning_en": "The Atman of Bhairava, known as Bhairavi, is experienced as the bliss of one’s own inner awareness, a state whose form is fullness, free from all contradictions, and is the abode of the entire universe.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "16",
+          "sanskrit": "तद्वपस्तुत्त्वतोऽस्यम् विमलं विश्वपूरणम् । एवं विधे परतत्त्वेक्पज्यू कश्च तप्यृवत् ॥ १६ ॥",
+          "transliteration": "tadvapastuttvato'syam vimalaṃ viśvapūraṇam | evaṃ vidhe paratattvekpajyū kaśca tapyṛvat || 16 ||",
+          "meaning_ne": "उहाँको स्वभावको सार शुद्ध र सम्पूर्ण ब्रह्माण्डभर व्याप्त छ। यस सर्वोच्च वास्तविकताको स्वभाव हो, जसको पूजा गर्नुपर्छ र जसलाई पूजा द्वारा शान्त पार्नुपर्छ।",
+          "meaning_en": "The essence of His nature is pure and pervades the entire universe. Being the nature of the highest reality, who is the object of worship and to be pacified by worship?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "17",
+          "sanskrit": "एवं विधा भैरवस्य यास्था परगीयते। सा परा पररूपणे परा देवी प्रकीवत्तधा ॥ १७ ॥",
+          "transliteration": "evaṃ vidhā bhairavasya yāsthā paragīyate| sā parā pararūpaṇe parā devī prakīvattadhā || 17 ||",
+          "meaning_ne": "यसरी भैरवको अन्त्यात्मक अवस्था, जसको वर्णन वा गान गरिएको छ, परम देवी अर्थात सर्वोच्च देवीको माध्यमबाट जानिन्छ।",
+          "meaning_en": "In this way, the transcendental state of Bhairava, which is described or sung of, is known through the absolute or highest form, Paradevi, the supreme goddess.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "18",
+          "sanskrit": "शक्तिविमतो यद्वद्ध अभेदसिद्धा स्थितः । अतस्तद्धमध्वं वामत्वात् प्राश्वि परात्मन् ॥ १८ ॥",
+          "transliteration": "śaktivimato yadvaddha abhedasiddhā sthitaḥ | atastaddhamadhvaṃ vāmatvāt prāśvi parātman || 18 ||",
+          "meaning_ne": "जसरी शक्ति शक्ति धारकबाट अलग छैन, त्यसै गरी पराशक्ति, सर्वोच्च शक्ति, जसले धर्मको सार हो, भैरवबाट अलग हुन सक्दैन।",
+          "meaning_en": "Just as Shakti is not different from Shaktiman, the holder of power, similarly Parashakti, the highest power, which is the essence of Dharma, can never be separated from Bhairava, the possessor of Dharma.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 19,
+          "verse_label": "19",
+          "sanskrit": "निह्नेदावधिकः शक्ति भैरवतः भिन्नो न त्वरितया विभाव्यते। केनचित् ज्ञानसत्तायां प्रारम्भोऽयं प्रिशेणे ॥ १९ ॥",
+          "transliteration": "nihnedāvadhikaḥ śakti bhairavataḥ bhinno na tvaritayā vibhāvyate| kenacit jñānasattāyāṃ prārambho'yaṃ priśeṇe || 19 ||",
+          "meaning_ne": "जसरी आगोबाट जलाउने शक्ति अलग छैन, त्यसैगरी पराशक्ति भैरवबाट अलग छैन। यद्यपि आरम्भमा यसलाई अलग कल्पना गरिन्छ, ज्ञान प्राप्तिको प्रारम्भिक चरणको रूपमा।",
+          "meaning_en": "Just as the power to burn is not separate from fire, similarly Parashakti is not different from Bhairava. However, it is imagined as separate in the beginning, as a preliminary step towards entry into its knowledge.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 20,
+          "verse_label": "20",
+          "sanskrit": "शक्त्यास्थाप्रविष्टस्य नवविभागाग्ने भावना। तदासौ वशिरूपी स्यात् शैवीमुखु महोच्यते॥ २० ॥",
+          "transliteration": "śaktyāsthāpraviṣṭasya navavibhāgāgne bhāvanā| tadāsau vaśirūpī syāt śaivīmukhu mahocyate|| 20 ||",
+          "meaning_ne": "जो व्यक्ति शक्ति अवस्थामा प्रवेश गर्छ, उसलाई शिवसँग एकत्वको भावना हुन्छ। त्यसपछि वास्तवमा ऊ शिवको रूप जस्तै हुन्छ। यस सन्दर्भमा भनिन्छ कि शक्ति शिवको मुख हो।",
+          "meaning_en": "One who enters the state of Shakti experiences identification with Shiva, without division. Then one verily becomes like the form of Shiva. In this context, Shakti is said to be the face of Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 21,
+          "verse_label": "21",
+          "sanskrit": "यथालोकेन दीपस्य वकरणभास्करस्य च। साध्यते एवं विभागावद् तद्वशक्त्या वशिष्ठ प्रयः ॥ २१ ॥",
+          "transliteration": "yathālokena dīpasya vakaraṇabhāskarasya ca| sādhyate evaṃ vibhāgāvad tadvaśaktyā vaśiṣṭha prayaḥ || 21 ||",
+          "meaning_ne": "जसरी दीपको ज्योति वा सूर्यका किरणले अन्तरिक्ष, दिशा र रूप देखाउँछन्, त्यसै गरी शिव शक्ति मार्फत प्रकट हुन्छ।",
+          "meaning_en": "Just as space, direction, and form are revealed by the flame of a candle or the rays of the sun, similarly Shiva is revealed through the medium of Shakti.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 22,
+          "verse_label": "22",
+          "sanskrit": "श्री देवी उवाच: विवदशे कार्यशून्यं च व्यापदशे विशेषता।",
+          "transliteration": "śrī devī uvāca: vivadaśe kāryaśūnyaṃ ca vyāpadaśe viśeṣatā|",
+          "meaning_ne": "हे देवता, त्रिशूल र खोपडीले अलंकारित, समय, स्थान र दिशा विहीन र कुनै विशेषता रहित अवस्था बताउनुहोस्।",
+          "meaning_en": "Sri Devi said: O Lord of the Gods, who bears the trident and skulls as ornaments, tell me of that state which is devoid of time, space, direction, and free from characteristics.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 23,
+          "verse_label": "23",
+          "sanskrit": "यास्था भवरताकारा भैरवस्योपलभ्यते। कैः रूपायमख्यातो मत्तस्य परा देवी कथंभिते। यथा सम्यग्aham इव मे ब्रूहि भैरव ॥ २३ ॥",
+          "transliteration": "yāsthā bhavaratākārā bhairavasyopalabhyate| kaiḥ rūpāyamakhyāto mattasya parā devī kathaṃbhite| yathā samyagaham iva me brūhi bhairava || 23 ||",
+          "meaning_ne": "भैरवको पूर्णताको अवस्था कसरी प्राप्त गर्न सकिन्छ, र सर्वोच्च शक्ति परदेवी भैरवको मुख कसरी बन्छ? यसरी मलाई पूर्ण रूपमा बुझ्नको लागि बताउनुहोस्।",
+          "meaning_en": "By what means can the state of fullness of Bhairava be achieved, and how does Paradevi, the highest Shakti, become the face of Bhairava? Tell me this so that I may know it completely.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 24,
+          "verse_label": "24",
+          "sanskrit": "श्री भैरव उवाच: ऊर्ध्वे प्राणो ह्यधो अपानो विसगात्मा परोच्चरते। उत्पत्तिवद्वत् यस्थानेभरणाद् भवरता स्थितवत् ॥ २४ ॥",
+          "transliteration": "śrī bhairava uvāca: ūrdhve prāṇo hyadho apāno visagātmā paroccarate| utpattivadvat yasthānebharaṇād bhavaratā sthitavat || 24 ||",
+          "meaning_ne": "परदेवी, जसको स्वभाव विसर्ग (सृष्टी) हो, उर्ध्व प्राण र अधो आपनाको रूपमा प्रकट हुन्छ। प्राणका यी दुई बिन्दुहरूमा मन केन्द्रित गर्दा पूर्णताको अवस्था प्राप्त हुन्छ।",
+          "meaning_en": "Sri Bhairava said: Paradevi, whose nature is Visarga (creation), manifests as upward Prana and downward Apana. By fixing the mind at these two points, the state of fullness results.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 25,
+          "verse_label": "25",
+          "sanskrit": "मरुतोऽन्तिवध् प्राणवायुं आवनितनधात। भर्व्याभरै स्यत्तथं व्यज्यतेऽपि ॥ २५ ॥",
+          "transliteration": "maruto'ntivadh prāṇavāyuṃ āvanitanadhāta| bharvyābharai syattathaṃ vyajyate'pi || 25 ||",
+          "meaning_ne": "अन्त:प्रवाहित र बहिर्गमनशील प्राण वायु आफ्नो स्थानमा नियन्त्रण गरिएपछि, भैरवको सार, जसमा भैरवीसँग भिन्नता छैन, प्रकट हुन्छ।",
+          "meaning_en": "When the ingoing and outgoing pranic air are restrained in their space, the essence of Bhairava, which is not different from Bhairavi, manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 26,
+          "verse_label": "26",
+          "sanskrit": "न व्रजन्ने विशेषे विमरुध्दद्रूपाविकासते। नविकल्पतया मध्येतया भैरूपता ॥ २६ ॥",
+          "transliteration": "na vrajanne viśeṣe vimarudhdadrūpāvikāsate| navikalpatayā madhyetayā bhairūpatā || 26 ||",
+          "meaning_ne": "जब वायुको रूपमा शक्ति स्थिर हुन्छ र कुनै विशेष दिशामा तीव्र गति गर्दैन, तब मध्य भागमा निरविकल्प अवस्थाबाट भैरवको रूप विकास हुन्छ।",
+          "meaning_en": "When Shakti in the form of Vayu or pranic air is still and does not move in any particular direction, through the state of Nirvikalpa, the form of Bhairava develops in the middle.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 27,
+          "verse_label": "27",
+          "sanskrit": "कुम्भक्भाता रवेचता वा पूरक वा यदा भित्ते। तदन्तेशान्तनामासौ शक्त्या शान्त प्रकाशते॥ २७ ॥",
+          "transliteration": "kumbhakbhātā ravecatā vā pūraka vā yadā bhitte| tadanteśāntanāmāsau śaktyā śānta prakāśate|| 27 ||",
+          "meaning_ne": "जब कुम्भक पूरक वा रेचक पछि गरिन्छ, तब शान्त शक्ति अनुभव हुन्छ र त्यस मार्फत भैरव चेतना प्रकट हुन्छ।",
+          "meaning_en": "When Kumbhaka is performed after Puraka or Rechaka, the Shanta Shakti is experienced, and through that peace, Bhairava consciousness is revealed.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 28,
+          "verse_label": "28",
+          "sanskrit": "आमृणाविरणाभासांसक्ष्मूर्तात् सूक्ष्मूर्ततरावत्मकाम। वचन्तयत्तेऽमव्द्वषट्कान्तेश्याम्यन्तीम्भ्रमेोदये ॥ २८ ॥",
+          "transliteration": "āmṛṇāviraṇābhāsāṃsakṣmūrtāt sūkṣmūrtatarāvatmakāma| vacantayatte'mavdvaṣaṭkānteśyāmyantīmbhrameodaye || 28 ||",
+          "meaning_ne": "सूक्ष्म रूपको माध्यमबाट अन्तर्निहित कामको अनुभूति हुन्छ, जसले अन्ततः भैरव चेतनाको उदय गराउँछ।",
+          "meaning_en": "Through the subtle form, the latent inner desire is experienced, which ultimately brings forth the rise of Bhairava consciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 29,
+          "verse_label": "29",
+          "sanskrit": "उद्गच्छन्तं तवद्रूपाम् प्र्वतचक्रं क्रमात्क्रमम्। ऊर्ध्वं मवुष्टियं यात तदन्तेमहोदय् ॥ २९ ॥",
+          "transliteration": "udgacchantaṃ tavadrūpām prvatacakraṃ kramātkramam| ūrdhvaṃ mavuṣṭiyaṃ yāta tadantemahoday || 29 ||",
+          "meaning_ne": "मूलबाट उदाएको शक्ति जस्तै सूर्यका किरणहरूले उज्यालो फैलाउँछन्, त्यसैगरी क्रमशः सबै चक्रहरू हुँदै माथि उभिन्छ। अन्ततः ती द्वादशान्तमा मिलेर भैरव प्रकट हुन्छ।",
+          "meaning_en": "Meditate on that Shakti arising from the root, moving upwards like lightning through all the chakras one by one to the Dwadashanta. Then at last, the glorious form of Bhairava dawns.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 30,
+          "verse_label": "30",
+          "sanskrit": "क्रमद्वादशकं सम्यग् द्वादशारभवेदतम्। स्थूलू सक्ष्मू परवस्थत्या मुक्त्वा मुक्त्वान्तत् वशिष्ठ ॥ ३० ॥",
+          "transliteration": "kramadvādaśakaṃ samyag dvādaśārabhavedatam| sthūlū sakṣmū paravasthatyā muktvā muktvāntat vaśiṣṭha || 30 ||",
+          "meaning_ne": "द्वादश चक्रहरूको सम्बन्धित अक्षरहरूको ज्ञानमार्फत क्रमशः प्रत्येक चक्रमा प्रवेश गर्नुपर्छ। यसरी स्थूलबाट सूक्ष्म हुँदै क्रमशः मुक्त हुँदै अन्त्यमा कुण्डलिनी शिव बनिन्छ।",
+          "meaning_en": "The twelve centers should be pierced successively through proper understanding of their twelve associated letters. Thus, becoming liberated from the gross and then the subtle one by one, at the end of its journey the Kundalini becomes Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 31,
+          "verse_label": "31",
+          "sanskrit": "तयापूषधुमध्वान्तं भङ्क्त्वा भ्रू रूपेसेतुना। निर्विकल्पं कृत्वा च सीर्ध्वं सिगोद्धगम् ॥ ३१ ॥",
+          "transliteration": "tayāpūṣadhumadhvāntaṃ bhaṅktvā bhrū rūpesetunā| nirvikalpaṃ kṛtvā ca sīrdhvaṃ sigoddhagam || 31 ||",
+          "meaning_ne": "मूर्धा (टाउकोको टुप्पो) भरेर र भ्रूबीचको पुल पार गरी, मनलाई सबै द्वैत विचारबाट माथि उठाएर सर्वव्यापी बनाउनुहोस्।",
+          "meaning_en": "Then, having filled the tip of the moordha (forehead) and crossed the bridge between the eyebrows, the mind rises above all dichotomizing thought patterns and omnipresence prevails.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 32,
+          "verse_label": "32",
+          "sanskrit": "वशिखपञ्चवैश्चिरूपम् णद्धड्रशान्युपञ्चकम्। ध्यायतोऽनत्तुरेशन्यू प्रिशेयो हृदयेभिते ॥ ३२ ॥",
+          "transliteration": "vaśikhapañcavaiścirūpam ṇaddhaḍraśānyupañcakam| dhyāyato'nattureśanyū priśeyo hṛdayebhite || 32 ||",
+          "meaning_ne": "मोरको प्वाँखका विभिन्न रंगीन गोलाकार जस्ता, पाँच शून्यहरूमा ध्यान गर्नुहोस्। त्यसपछि अन्तसम्म अनुगमन गर्दै, जुन प्रधान शून्य हुन्छ, हृदयमा प्रवेश गर्नुहोस्।",
+          "meaning_en": "Like the live different coloured circles on the peacock's feathers, one should meditate on the five voids. Then by following them to the end, which becomes the principle void, enter the heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 33,
+          "verse_label": "33",
+          "sanskrit": "ईदृशने क्रमणे यत्र कुर्वन्ता वचन्तना। शान्ये कुण्ड्ये परेपाः स्वयम् ल्रीना द्रप्रदा ॥ ३३ ॥",
+          "transliteration": "īdṛśane kramaṇe yatra kurvantā vacantanā| śānye kuṇḍye parepāḥ svayam lrīnā drapradā || 33 ||",
+          "meaning_ne": "यसरी, जहाँसुकै सजग चेतना छ, चाहे शून्यमा होस् वा अन्य वस्तुमा, वा उत्कृष्ट व्यक्तिमा (जस्तै गुरु), क्रमशः आत्मसात हुने अनुग्रह प्राप्त हुन्छ।",
+          "meaning_en": "In this way, wherever there is mindful awareness, either on the void, or on another object such as a wall, or on an excellent person such as guru, gradually the boon of absorption into the self is granted.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 34,
+          "verse_label": "34",
+          "sanskrit": "कपारान्तमनधो न्यस्य वतिष्ठन्मीरलतः। क्रमणे मनसो दार्ढात् शयते लष्यमत्तुमम् ॥ ३४ ॥",
+          "transliteration": "kapārāntamanadho nyasya vatiṣṭhanmīralataḥ| kramaṇe manaso dārḍhāt śayate laṣyamattumam || 34 ||",
+          "meaning_ne": "आँखा बन्द गरेर टाउकोको टुप्पोमा ध्यान केन्द्रित गरी, क्रमशः मनलाई स्थिर पार्नुहोस् र लक्ष्यतर्फ निर्देश गर्नुहोस्, जुन प्रकट हुनेछ।",
+          "meaning_en": "Having closed the eyes, and fixing the attention at the crown of the head, gradually stabilize the mind and direct it towards the goal, which will become discernible.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 35,
+          "verse_label": "35",
+          "sanskrit": "मध्यनाडी मध्यसस्थं वा विससृर्भरूपया। ध्यातान्तव्योमया देवीया तया प्रकटते ॥ ३५ ॥",
+          "transliteration": "madhyanāḍī madhyasasthaṃ vā visasṛrbharūpayā| dhyātāntavyomayā devīyā tayā prakaṭate || 35 ||",
+          "meaning_ne": "शरीरको मध्य अक्षमा (सुषुम्ना) अवस्थित, कमलको डाँठ जस्तो सानो मध्य नाडीमा ध्यान गर्नुहोस्। त्यसपछि देवीको कृपाले दिव्य रूप प्रकट हुन्छ।",
+          "meaning_en": "One should meditate on the inner space of the medial nadi (sushumna) situated in the central axis of the body, which is as slender as a fibre of the lotus stem, and then by the grace of Devi, the divine form is revealed.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 36,
+          "verse_label": "36",
+          "sanskrit": "कररुद्धदृगस्त्रणे भ्रभूदेद्वाररोधनात्। दृष्टे विन्दौ क्रमाल्लीनेतन्मध्ये परमा वस्थवत् ॥ ३६ ॥",
+          "transliteration": "kararuddhadṛgastraṇe bhrabhūdedvārarodhanāt| dṛṣṭe vindau kramāllīnetanmadhye paramā vasthavat || 36 ||",
+          "meaning_ne": "हातले सबै दिशामा प्रवेश बन्द गरेर, भ्रू केन्द्र (त्राटक) छेदन गर्नुहोस् र बिन्दु देख्नुहोस्। त्यसमा क्रमशः अवग्रह गर्दा परम अवस्था प्राप्त हुन्छ।",
+          "meaning_en": "By using the hands to block the entrances in all directions, the eyebrow centre is pierced and bindu (or light) is seen. Being gradually absorbed within that, the supreme state is realized.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 37,
+          "verse_label": "37",
+          "sanskrit": "धामान्तशोभसम्भतूसक्ष्मूाविवतरलाकृवतम्। विन्दुं वशिखान्ते हृदये लयान्ते ध्यायतो लयः ॥ ३७ ॥",
+          "transliteration": "dhāmāntaśobhasambhatūsakṣmūāvivataralākṛvatam| vinduṃ vaśikhānte hṛdaye layānte dhyāyato layaḥ || 37 ||",
+          "meaning_ne": "सुलभ चिन्ह (तिलक) वा शिखाको अन्तिम बिन्दुमा सूक्ष्म ज्योति ध्यान गर्दा, उत्तेजना र कम्पन उत्पन्न हुन्छ, त्यसपछि हृदयको गुफामा अवशोषण र लय प्राप्त हुन्छ।",
+          "meaning_en": "Whenever one meditates upon the subtle fire in the form of a tilak or on the bindu at the end of the shikha, a condition of agitation and shaking is produced, followed by absorption and dissolution in the cave of the heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 38,
+          "verse_label": "38",
+          "sanskrit": "अनाहते पाणिकण्ठे भिशब्देस्वरद्द्रुते। शब्दब्रह्मणः निरीक्ष्णात् परं ब्रह्मावधिगच्छत् ॥ ३८ ॥",
+          "transliteration": "anāhate pāṇikaṇṭhe bhiśabdesvaraddrute| śabdabrahmaṇaḥ nirīkṣṇāt paraṃ brahmāvadhigacchat || 38 ||",
+          "meaning_ne": "अनाहत (बिना प्रहार) ध्वनिमा कुशल व्यक्ति, जुन निरन्तर नदी जस्तै बहिरहन्छ, शब्दब्रह्मको अभ्यासद्वारा परम ब्रह्मको अवस्था प्राप्त गर्दछ।",
+          "meaning_en": "One, who is adept in listening to the unstruck sound in anahata, which is uninterrupted like a rushing river, attains the supreme state of Brahma by mastery of shabdabrahman, the form of Brahman as sound.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 39,
+          "verse_label": "39",
+          "sanskrit": "प्रणिवदसमच्चुरात् प्लान्ते शून्य भावानात्। शून्या परा शक्त्या शून्याताम् वेत्स्यति ॥ ३९ ॥",
+          "transliteration": "praṇivadasamaccurāt plānte śūnya bhāvānāt| śūnyā parā śaktyā śūnyātām vetsyati || 39 ||",
+          "meaning_ne": "ओ भैरवी, जो प्राणवाक्य (ॐ) दोहोर्याउँछ र लामो समयसम्म शून्यमा ध्यान गर्छ, त्यो शून्य अनुभव गर्छ, र त्यस शून्यबाट परा शक्ति प्रकट हुन्छ।",
+          "meaning_en": "O Bhairavi, one who repeats the Pranava (Aum) perfectly, while concentrating on the void for protracted periods, experiences the void, and by that void the transcendental Shakti is revealed.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 40,
+          "verse_label": "40",
+          "sanskrit": "यस्य कस्याप् अप् मन्त्रस्य पदान्तं आनीय भुवायते। शून्या शून्यभूतोऽसौ शून्याकारः पुरुषे भिते ॥ ४० ॥",
+          "transliteration": "yasya kasyāp ap mantrasya padāntaṃ ānīya bhuvāyate| śūnyā śūnyabhūto'sau śūnyākāraḥ puruṣe bhite || 40 ||",
+          "meaning_ne": "जो व्यक्तिले ॐको अक्षरहरूमा ध्यान गर्छ, सुरु देखि अन्तसम्म, शून्य रूपमा, त्यो साधक शून्यको ध्यानद्वारा शून्य बन्न पुग्छ।",
+          "meaning_en": "Whoever contemplates even on the matras or letters of Aum from first to last, in the form of void, verily that sadhaka by meditation on the void becomes the void.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 41,
+          "verse_label": "41",
+          "sanskrit": "तन्त्र्यावद्याद्यशब्देषु दीर्घेषु क्रमस्स्थते। अनन्यचेताः प्रत्यन्ते परव्योमिभुज्यते ॥ ४१ ॥",
+          "transliteration": "tantryāvadyādyaśabdeṣu dīrgheṣu kramassthate| ananyacetāḥ pratyante paravyomibhujyate || 41 ||",
+          "meaning_ne": "विभिन्न वाद्ययन्त्रका दीर्घ स्वरहरूमा एकाग्रचित्त ध्यान स्थापन गर्दा, अन्त्यमा शरीर सर्वोच्च अन्तरिक्ष जस्तो अनुभव हुन्छ।",
+          "meaning_en": "When one-pointed awareness on the prolonged inner sounds of different musical instruments, such as stringed, wind, and percussion, is gradually established, in the end the body becomes the supreme space.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 42,
+          "verse_label": "42",
+          "sanskrit": "वपण्डमन्त्रस्य सिस्य स्थलीकर्णमणे तु। अधन्दुने विन्दुनादान्त् शून्योच्चाराद्भिवेच्छति ॥ ४२ ॥",
+          "transliteration": "vapaṇḍamantrasya sisya sthalīkarṇamaṇe tu| adhandune vindunādānt śūnyoccārādbhivecchati || 42 ||",
+          "meaning_ne": "बीज मन्त्रका सबै अक्षरहरू (विशेष गरी “म्”) दोहोर्याएर ध्यान गर्दा, प्रत्येक ध्वनाको शून्यमा ध्यान गर्दै, साधक शिव बनिन्छ।",
+          "meaning_en": "By repetition of all the gross letters of the bija mantras successively, including the 'M', and meditating on the void within each sound, one verily becomes Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 43,
+          "verse_label": "43",
+          "sanskrit": "वनेजहेसिविधक्कमन्युगुप्तभाव्यवेदव्यत्। निर्विकल्पमानास्तस्य वियत्सिंधु प्रत्तित ध्ये ॥ ४३ ॥",
+          "transliteration": "vanejahesividhakkamanyuguptabhāvyavedavyat| nirvikalpamānāstasya viyatsiṃdhu prattita dhye || 43 ||",
+          "meaning_ne": "सबै दिशाहरूलाई आफ्नो शरीरभित्र, स्थान वा शून्यको रूपमा ध्यान गर्दा, मन सबै विचारबाट मुक्त भई विलीन हुन्छ।",
+          "meaning_en": "All the directions should be contemplated upon simultaneously in one's own body as space or void. The mind, being free from all thoughts, becomes dissolved in the vacuous space of consciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 44,
+          "verse_label": "44",
+          "sanskrit": "पष्ट्रशून्यमूलं शून्यमन्युगुप्तभाव्यच्चेय। शरीरविनिर्माणेण शक्त्य शून्यमना भिते ॥ ४४ ॥",
+          "transliteration": "paṣṭraśūnyamūlaṃ śūnyamanyuguptabhāvyacceya| śarīravinirmāṇeṇa śaktya śūnyamanā bhite || 44 ||",
+          "meaning_ne": "मेरुदण्डको शून्य र मूलको शून्यमा एकसाथ ध्यान गर्दा, शरीरको स्वतन्त्र शक्ति द्वारा मन पूर्णरूपमा शून्यभूत हुन्छ।",
+          "meaning_en": "One who contemplates simultaneously on the void of the back (spinal column) and the void of the root becomes void-minded by that energy which is independent of the body.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 45,
+          "verse_label": "45",
+          "sanskrit": "पष्ट्रशून्यमूलं शून्यं हृच्छून्यंभाव्यवेध्यम्। युगुप्तवर्नविकल्पत्वावन्नविकल्पोदयसत्तत् ॥ ४५ ॥",
+          "transliteration": "paṣṭraśūnyamūlaṃ śūnyaṃ hṛcchūnyaṃbhāvyavedhyam| yuguptavarnavikalpatvāvannavikalpodayasattat || 45 ||",
+          "meaning_ne": "मेरुदण्ड, मूल र हृदयको शून्यमा स्थिर ध्यान गर्दा, निरविकल्प स्थिति प्रकट हुन्छ।",
+          "meaning_en": "By steady contemplation on the void of the back, the void of the root, and the void of the heart simultaneously, there arises the state of nirvikalpa, which is free from thought constructs.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 46,
+          "verse_label": "46",
+          "sanskrit": "तनदूशेषे शून्यं क्षणमाभाविभाज्यते। निर्विकल्पं निर्विकल्पं निर्विकल्पस्वरूपभाक् ॥ ४६ ॥",
+          "transliteration": "tanadūśeṣe śūnyaṃ kṣaṇamābhāvibhājyate| nirvikalpaṃ nirvikalpaṃ nirvikalpasvarūpabhāk || 46 ||",
+          "meaning_ne": "यदि शरीरलाई शून्यको रूपमा केही क्षणका लागि ध्यान दिइन्छ, मन शून्य हुन्छ र शून्यरूप (भैरव रूप) प्रकट हुन्छ।",
+          "meaning_en": "If one concentrates on the body as a void, even for a moment, with the mind free from thought, then one attains thoughtlessness and verily becomes that form of void known as Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 47,
+          "verse_label": "47",
+          "sanskrit": "सिंदहेगतेंद्रव्यमविप्रविघप्तं मग्रहेण। विभाज्यते तस्य भावना सा स्थिरा भिते ॥ ४७ ॥",
+          "transliteration": "siṃdahegateṃdravyamavipravighaptaṃ magraheṇa| vibhājyate tasya bhāvanā sā sthirā bhite || 47 ||",
+          "meaning_ne": "सुनौलो आँखाको ध्यान गर्दै, शरीरका सबै घटकहरूमा ध्यान दिनुहोस्, जसले मनलाई स्थिर बनाउँछ।",
+          "meaning_en": "O gazelle-eyed one, concentrate upon all the constituents of the body pervaded by space, so that the thought becomes steady.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 48,
+          "verse_label": "48",
+          "sanskrit": "धेअन्तरे त्वविभागं व्यभवत्तभूतं विविचन्त्यते। न वकं वचदन्तरे तस्य ध्यानन्नध्यये भाग्भिते ॥ ४८ ॥",
+          "transliteration": "dheantare tvavibhāgaṃ vyabhavattabhūtaṃ vivicantyate| na vakaṃ vacadantare tasya dhyānannadhyaye bhāgbhite || 48 ||",
+          "meaning_ne": "शरीरको छालामा भित्री भागमा केही नभएको रूपमा ध्यान गर्नुहोस्। यसरी ध्यान गर्दा, साधक शून्य जस्तो हुन्छ।",
+          "meaning_en": "One should contemplate on the skin of the body as a mere wall or partition with nothing inside it. By meditating thus, he becomes like the void, which cannot be meditated upon.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 49,
+          "verse_label": "49",
+          "sanskrit": "हृद्याकाशे वनरीणाः पिसम्पटुमध्यग्। अनन्यचेताः सभुगे परं सौभावयमाप्नयुः ॥ ४९ ॥",
+          "transliteration": "hṛdyākāśe vanarīṇāḥ pisampaṭumadhyag| ananyacetāḥ sabhuge paraṃ saubhāvayamāpnayuḥ || 49 ||",
+          "meaning_ne": "सौभाग्यको प्रतिक, हृदय केन्द्रको कमलमा बन्द आँखाले एकाग्रचित्त ध्यान गर्नेले परम आध्यात्मिक अनुभव प्राप्त गर्छ।",
+          "meaning_en": "O embodiment of good fortune, one who contemplates with closed eyes and one-pointed concentration on the mantra in the middle of the lotus in the heart space achieves the highest spiritual realization.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 50,
+          "verse_label": "50",
+          "sanskrit": "सित्धः स्वशरीरस्य द्वादशान्ते मनोर्लयात्। दृढिद्धुर्दृढीभतूंतत्त्वरक्ष्यं प्रत्तित ध्ये ॥ ५० ॥",
+          "transliteration": "sitdhaḥ svaśarīrasya dvādaśānte manorlayāt| dṛḍhiddhurdṛḍhībhatūṃtattvarakṣyaṃ prattita dhye || 50 ||",
+          "meaning_ne": "ध्यान र अभ्यासद्वारा मन द्वादशान्तमा विलीन हुँदा, लक्ष्यको वास्तविक स्वरूप शरीरमा प्रकट हुन्छ।",
+          "meaning_en": "When the mind is dissolved in dwadashanta by steady awareness and steady practice, the true nature or essence of the goal manifests everywhere in one's body.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 51,
+          "verse_label": "51",
+          "sanskrit": "यथा तथा यत्नति द्वादशान्ते मनोर्लयते। प्रवृत्तीन् श्रीयित्तृदेवल्य शून्यं वदनभ्ये भिते ॥ ५१ ॥",
+          "transliteration": "yathā tathā yatnati dvādaśānte manorlayate| pravṛttīn śrīyittṛdevalya śūnyaṃ vadanabhye bhite || 51 ||",
+          "meaning_ne": "मनलाई बारम्बार द्वादशान्तमा लगाउँदा, हरेक क्षणमा मनको चलन कम हुँदै जान्छ र प्रत्येक क्षण अद्भुत स्थितिमा पुग्छ।",
+          "meaning_en": "By bringing the mind forcibly to dwadashanta again and again, however and wherever possible, the fluctuations of the mind diminish day by day, so that each moment becomes an extraordinary state.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 52,
+          "verse_label": "52",
+          "sanskrit": "काराविना कर्पदादुवस्थाने स्वकं परुम। प्लष्टुं विविचन्त्येद्वेशान्ताभासस्तदा भिते ॥ ५२ ॥",
+          "transliteration": "kārāvinā karpadāduvasthāne svakaṃ paruma| plaṣṭuṃ vivicantyedveśāntābhāsastadā bhite || 52 ||",
+          "meaning_ne": "कालाग्निद्वारा आफ्नो शरीर जलेको जस्तो ध्यान गर्नुहोस्। त्यसपछि अन्ततः मनमा शान्ति अनुभव हुन्छ।",
+          "meaning_en": "One should contemplate that one's own body has been burnt by Kaalagni, arising from the movement of time. Then at last one will experience tranquility.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 53,
+          "verse_label": "53",
+          "sanskrit": "एवं एतिजगत्सं दध्यात्वा विकल्पतः। अनन्यचेताः परमुस्संभुताि परमो भिते ॥ ५३ ॥",
+          "transliteration": "evaṃ etijagatsaṃ dadhyātvā vikalpataḥ| ananyacetāḥ paramussaṃbhutāi paramo bhite || 53 ||",
+          "meaning_ne": "संपूर्ण जगतलाई जलिरहेको भनी एकाग्रचित्त ध्यान गर्दा, साधक दिव्य पुरुषत्व वा परम स्थितिमा पुग्छ।",
+          "meaning_en": "In the same way, having meditated with an unwavering and one-pointed mind on the entire universe being burnt (by Kaalagni), that man becomes a godman or attains a supreme state of manhood.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 54,
+          "verse_label": "54",
+          "sanskrit": "स्वधेन जगतो वप सक्ष्मू सक्ष्मूतरावण च। तत्त्वावन यावत् वनर्ह्यात्वान्तेव्यज्यते परा ॥ ५४ ॥",
+          "transliteration": "svadhena jagato vapa sakṣmū sakṣmūtarāvaṇa ca| tattvāvana yāvat vanarhyātvāntevyajyate parā || 54 ||",
+          "meaning_ne": "आत्मशरीर र सम्पूर्ण ब्रह्माण्डका तत्त्वहरू, सूक्ष्मदेखि अतिसूक्ष्मसम्म ध्यान गर्दा, अन्ततः परमेश्वरी परदेवी प्रकट हुन्छिन्।",
+          "meaning_en": "Dharana on those constituents which comprise one's own body and the whole universe, such as the tattwas and tanmatras, from subtle to subtlest, leads to the source of existence. In this way, Paradevi, the supreme goddess, is revealed at the end of meditation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 55,
+          "verse_label": "55",
+          "sanskrit": "पीनांच दुर्लांशविं ध्यानत्वा द्वादशगोचरे। प्रविश्य हृदये ध्यानन्मुक्ति स्वातन्त्र्यमाप्नयुात ॥ ५५ ॥",
+          "transliteration": "pīnāṃca durlāṃśaviṃ dhyānatvā dvādaśagocare| praviśya hṛdaye dhyānanmukti svātantryamāpnayuāta || 55 ||",
+          "meaning_ne": "द्वादश इन्द्रियका नाजुक शक्तिहरूमा ध्यान दिएर हृदय केन्द्रमा प्रवेश गर्दा साधक मुक्त हुन्छ।",
+          "meaning_en": "Having meditated on the gross and weak shakti in the twelve Indriyas (thus making it subtle), one who enters the heart space and meditates there attains mukti and becomes liberated.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 56,
+          "verse_label": "56",
+          "sanskrit": "भिन्नार्ध्वावदरूपणे वचन्तयत्क्रमशोऽवखिलम्। स्थलीक सक्ष्मू परवस्थत्या यावत् दन्ते मनोर्लय ॥ ५६ ॥",
+          "transliteration": "bhinnārdhvāvadarūpaṇe vacantayatkramaśo'vakhilam| sthalīka sakṣmū paravasthatyā yāvat dante manorlaya || 56 ||",
+          "meaning_ne": "संपूर्ण ब्रह्माण्डको विकासक्रमलाई ध्यान गर्दै, स्थूललाई सूक्ष्म र सूक्ष्मलाई परे स्थितिमा विलीन गर्नुहोस्, जबसम्म मन अन्ततः विलीन नहुन्छ।",
+          "meaning_en": "By meditating on the entire form of the universe and the course of its development through time and space, gradually dissolve the gross into the subtle and the subtle into the state of being beyond, until the mind is finally dissolved.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 57,
+          "verse_label": "57",
+          "sanskrit": "अस्य सिस्यध विश्वस्य पयन्तषे समन्तत्। अर्ध्वप्रवक्रयया तत्त्वंशि ंधित्वा महोदय् ॥ ५७ ॥",
+          "transliteration": "asya sisyadha viśvasya payantaṣe samantat| ardhvapravakrayayā tattvaṃśi ṃdhitvā mahoday || 57 ||",
+          "meaning_ne": "यस विधिले सम्पूर्ण ब्रह्माण्डको सबै पक्षहरू, शिवतत्वसम्म, ध्यान गर्नुहोस्। यसरी परम वास्तविकताको अनुभव हुन्छ।",
+          "meaning_en": "By this method one should meditate on all the sides or aspects of the universe up to the Shiva tatwa (which is the quintessence) of all. In this way the experience of the supreme reality arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 58,
+          "verse_label": "58",
+          "sanskrit": "विश्वमतेन महादेवी शून्य भूतं विविचन्तयते। ति ति च मनो लीनं तत्सल्लयभाजनम् ॥ ५८ ॥",
+          "transliteration": "viśvamatena mahādevī śūnya bhūtaṃ vivicantayate| ti ti ca mano līnaṃ tatsallayabhājanam || 58 ||",
+          "meaning_ne": "महादेवी, यस ब्रह्माण्डलाई शून्य मात्र मान्दै ध्यान गर्नुहोस्। मन पनि यसरी विलीन हुँदै, लय वा पूर्ण विलीनताको अनुभव हुन्छ।",
+          "meaning_en": "O great Goddess, one should concentrate on this universe as nothing but void. Dissolving the mind also like this, one then experiences the state of laya, or total dissolution.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 59,
+          "verse_label": "59",
+          "sanskrit": "घटावद्भाजने दृश्टं भवत्तस्त्यक्त्वा विविचन्त्यते। तल्लयान्त क्षणाद्गत्वा तल्लयात् तन्मयो भिते ॥ ५९ ॥",
+          "transliteration": "ghaṭāvadbhājane dṛśṭaṃ bhavattastyaktvā vivicantyate| tallayānta kṣaṇādgatvā tallayāt tanmayo bhite || 59 ||",
+          "meaning_ne": "भित्रको खाली स्थानमा दृष्टि लगाएर, भाँडो जस्तो बाहिरी संरचना छोड्दा, मन तुरुन्त विलीन हुन्छ।",
+          "meaning_en": "One should fix his sight (on the empty space) inside the pot, leaving aside the enclosing structure. Thus, the pot being gone, the mind will at once be dissolved. Through that laya the mind becomes completely absorbed.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 60,
+          "verse_label": "60",
+          "sanskrit": "विनिर्जृध वगवरविभत्त्यावददशे दृश्टं विविचन्त्यते। विळीने मानसे भावे निर्वृत्तिः प्रजायते ॥ ६० ॥",
+          "transliteration": "vinirjṛdha vagavaravibhattyāvadadaśe dṛśṭaṃ vivicantyate| viḷīne mānase bhāve nirvṛttiḥ prajāyate || 60 ||",
+          "meaning_ne": "पर्वत वा खच्चट ठाउँमा दृष्टि लगाउने, जहाँ मन अड्किन सक्दैन। यसरी मनको विचलन कम हुन्छ र विलीनताको अनुभव हुन्छ।",
+          "meaning_en": "One should fix his gaze on a treeless place, like bare mountains or rocks, where there is no support for the mind to dwell on. Then the modifications of the mind become less and the experience of dissolution takes place.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 61,
+          "verse_label": "61",
+          "sanskrit": "उभय भावयोः ज्ञान ध्यात्वा मध्यं सामाश्रयते। युगुप्च द्वयम् त्यक्त्वा मध्येतत्त्वं प्रकाशते ॥ ६१ ॥",
+          "transliteration": "ubhaya bhāvayoḥ jñāna dhyātvā madhyaṃ sāmāśrayate| yugupca dvayam tyaktvā madhyetattvaṃ prakāśate || 61 ||",
+          "meaning_ne": "दुई वस्तुहरूको ध्यान गरेर, जब ज्ञान पूर्ण हुन्छ, दुवै त्यागेर मध्यस्थ (शून्य)मा ध्यान गर्नुहोस्।",
+          "meaning_en": "One should think of two objects, and in the event of such knowledge being matured, then cast both aside and dwell on the gap or space in the middle. Having meditated in the middle, the experience of the essence arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 62,
+          "verse_label": "62",
+          "sanskrit": "भायेत्येवरुद्धावचनानि भान्तरं वर्जते। तदा तन्मध्यभाने विकसत्यवत् भावना ॥ ६२ ॥",
+          "transliteration": "bhāyetyevaruddhāvacanāni bhāntaraṃ varjate| tadā tanmadhyabhāne vikasatyavat bhāvanā || 62 ||",
+          "meaning_ne": "मनलाई एक वस्तुमा स्थिर राख्दा र अन्यलाई नछोड्दा, चेतना भित्रै प्रकट हुन्छ।",
+          "meaning_en": "When the mind is restrained to one object of awareness, casting all others aside and not allowing movement from one to another, then inside that perception the awareness blossoms.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 63,
+          "verse_label": "63",
+          "sanskrit": "सिंहं दहेन वचन्मयं वह जगद्वा परभाव्यते। युगुप्तवर्नविकल्पने मनसा परमोदय् ॥ ६३ ॥",
+          "transliteration": "siṃhaṃ dahena vacanmayaṃ vaha jagadvā parabhāvyate| yuguptavarnavikalpane manasā paramoday || 63 ||",
+          "meaning_ne": "शरीर र सम्पूर्ण ब्रह्माण्डलाई चेतनाको रूपमा ध्यान गर्दा, सर्वोच्च चेतना प्रकट हुन्छ।",
+          "meaning_en": "One should concentrate with an unwavering mind on all existence, the body, and even the universe simultaneously as nothing but consciousness, then the supreme consciousness arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 64,
+          "verse_label": "64",
+          "sanskrit": "न्याद्वयस्य संघट्टाद् अन्तरं विचलन्तत्। योगी समत्वविज्ञानसमद्गुमान्भाजनम् ॥ ६४ ॥",
+          "transliteration": "nyādvayasya saṃghaṭṭād antaraṃ vicalantat| yogī samatvavijñānasamadgumānbhājanam || 64 ||",
+          "meaning_ne": "प्राण र आपानको मिलनबाट योगी सन्तुलनमा पुग्छ र चेतनाको अनुभव योग्य हुन्छ।",
+          "meaning_en": "From the fusion of both vayus (prana and apana) inside or outside the body, the yogi attains equilibrium and becomes fit for the proper manifestation of consciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 65,
+          "verse_label": "65",
+          "sanskrit": "सिंहं जगत्स्वधेन वा स्वानन्दभवरतं स्मरते। युगुप्तस्वामतेने हि परानन्दमयो भिते ॥ ६५ ॥",
+          "transliteration": "siṃhaṃ jagatsvadhena vā svānandabhavarataṃ smarate| yuguptasvāmatene hi parānandamayo bhite || 65 ||",
+          "meaning_ne": "संपूर्ण ब्रह्माण्ड वा आफ्नै शरीरको आनन्दमा ध्यान गर्दा, सर्वोच्च आनन्द अनुभव हुन्छ।",
+          "meaning_en": "One should contemplate simultaneously on the entire universe or on one's own body filled with the bliss of the self. Then through one's own nectar, one becomes alive with the supreme bliss.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 66,
+          "verse_label": "66",
+          "sanskrit": "कुहनने प्रयोगणे सद्य एि मृ्षेणे। समदुवेत महानन्दो यने तत्त्वं प्रकटते ॥ ६६ ॥",
+          "transliteration": "kuhanane prayogaṇe sadya ei mṛṣeṇe| samaduveta mahānando yane tattvaṃ prakaṭate || 66 ||",
+          "meaning_ne": "धार्मिक अभ्यास गरेर साधक तुरुन्त महानन्द अनुभव गर्छ र त्यसबाट तत्त्वको प्रकाश हुन्छ।",
+          "meaning_en": "O gazelle-eyed one, verily by applying the performance of religious austerities, great bliss arises immediately, by which the essence is illumined.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 67,
+          "verse_label": "67",
+          "sanskrit": "सिस्रद्धो तोवनिन्दने प्राणशक्त्योर्ध्वयथा शन्ै। वपपीलस्पशिरले खायां प्रथते परमं सुखम् ॥ ६७ ॥",
+          "transliteration": "sisraddho tovanindane prāṇaśaktyordhvayathā śanai| vapapīlaspaśirale khāyāṃ prathate paramaṃ sukham || 67 ||",
+          "meaning_ne": "सारा नाड़ियोंलाई अवरुद्ध गर्दा प्राणशक्ति शिरबाट माथि उठ्छ। त्यस बेला शरीरमा जिब्रो र चमेलीको अनुभव जस्तै अनुभव हुन्छ।",
+          "meaning_en": "By blocking all the channels (of perception) the pranashakti moves slowly upwards (through the spinal column). At that time, feeling the sensation of an ant crawling in the body, one experiences the supreme bliss.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 68,
+          "verse_label": "68",
+          "sanskrit": "हि्ने विषस्य मध्येतु वचत्तं सुखमयं वल्ष्पते। केषिं शायिणं पूर्णं स्मरानन्दने यज्युते ॥ ६८ ॥",
+          "transliteration": "hine viṣasya madhyetu vacattaṃ sukhamayaṃ valṣpate| keṣiṃ śāyiṇaṃ pūrṇaṃ smarānandane yajyute || 68 ||",
+          "meaning_ne": "मनको आनन्दलाई मणिपुर चक्रमा वा अनाहत चक्रमा फ्याँक्नुहोस्। त्यसपछि तपाईं आनन्दको स्मरणमा एकीकृत हुनुहुन्छ।",
+          "meaning_en": "One should throw the blissful mind into the fire (manipura chakra) in the middle of that fibre-like lotus stalk (sushumna) or into that which is only full of air (anahata chakra). Then one is united with the remembrance of bliss.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 69,
+          "verse_label": "69",
+          "sanskrit": "शिवसंगमसङ्गं भधु शक्त्याशेऽसावनकम। यत्सुखं ब्रह्मतत्त्वस्य तत्सुखं स्वात्माक्यमच्युते ॥ ६९ ॥",
+          "transliteration": "śivasaṃgamasaṅgaṃ bhadhu śaktyāśe'sāvanakama| yatsukhaṃ brahmatattvasya tatsukhaṃ svātmākyamacyute || 69 ||",
+          "meaning_ne": "शक्तिसँग मिलेर उत्साह उत्पन्न हुन्छ र अन्ततः शिव शक्तिसँग विलीन हुन्छ। यस आनन्दलाई ब्रह्मको स्वरूप मानिन्छ, जुन वास्तवमा आफ्नै आत्मा हो।",
+          "meaning_en": "By the union with shakti there is excitation and in the end, one is absorbed into shakti. That bliss, which is said to be the nature of Brahman (ever-expanding consciousness), is in reality one’s own self.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 70,
+          "verse_label": "70",
+          "sanskrit": "श्रेहनामन्थनाकोटस्त्रीसुखस्य भरात्स्मृति। शक्त्यभानदेवापरादिवेशभिदानन्दसम्प्लुत् ॥ ७० ॥",
+          "transliteration": "śrehanāmanthanākoṭastrīsukhasya bharātsmṛti| śaktyabhānadevāparādiveśabhidānandasamplut || 70 ||",
+          "meaning_ne": "देवीका माध्यमबाट महिलाको आनन्द प्राप्त हुन्छ, जसमा चिन्तन, स्मरण र शारीरिक अनुभूति सम्मिलित हुन्छ।",
+          "meaning_en": "O Queen of Gods, the bliss of a woman is attained even in the absence of shakti. By fully remembering and absorbing the mind in the experience of kissing, hugging, and embracing, the bliss swells.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 71,
+          "verse_label": "71",
+          "sanskrit": "आनन्दमहवत् प्राप्ते दृष्टे या नन्धिवचरात्। आनन्दमद्गुतं ध्यानत्वा तल्लयस्तन्मना भिते ॥ ७१ ॥",
+          "transliteration": "ānandamahavat prāpte dṛṣṭe yā nandhivacarāt| ānandamadgutaṃ dhyānatvā tallayastanmanā bhite || 71 ||",
+          "meaning_ne": "विशेष घटना वा आनन्द प्राप्त भए पछि त्यसमा एकाग्रचित्त ध्यान गर्दा मन विलीन हुन्छ र आनन्द उत्पन्न हुन्छ।",
+          "meaning_en": "When great joy is obtained (through any event such as meeting with relatives), one should meditate on that with one-pointedness, until the mind becomes absorbed and the bliss ever arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 72,
+          "verse_label": "72",
+          "sanskrit": "जवविधपानकृतोल्लासरसानन्दविजम्भृणात। भान्यद्भे वरतास्थां महानन्दस्ततो भिते ॥ ७२ ॥",
+          "transliteration": "javavidhapānakṛtollāsarasānandavijambhṛṇāta| bhānyadbhe varatāsthāṃ mahānandastato bhite || 72 ||",
+          "meaning_ne": "खाना पिउँदा र स्वादको आनन्दमा ध्यान गर्दा, पूर्ण आनन्द उत्पन्न हुन्छ जुन सर्वोच्च आनन्दमा परिणत हुन्छ।",
+          "meaning_en": "If one concentrates on eating and drinking and the happiness obtained by that joy of taste, from such contemplation of enjoyment arises the state of fullness, which then becomes supreme joy or bliss.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 73,
+          "verse_label": "73",
+          "sanskrit": "गतावद्विषयास्वादासमसौख्यैकतात्मन्। योवगनस्तन्मयत्वे मनोरूढसे तदात्मता ॥ ७३ ॥",
+          "transliteration": "gatāvadviṣayāsvādāsamasaukhyaikatātman| yovaganastanmayatve manorūḍhase tadātmatā || 73 ||",
+          "meaning_ne": "इन्द्रियहरूको आनन्दमा ध्यान गर्दा योगी समान आनन्दको अनुभव गर्छ र मनसँग एकीकृत हुन्छ।",
+          "meaning_en": "As a result of concentration on the pleasures of the senses, such as music or song, the yogi experiences equal happiness within. By being thus absorbed, the yogi ascends beyond the mind and becomes one with that supreme.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 74,
+          "verse_label": "74",
+          "sanskrit": "यि यि मनस्तुष्टमनधस्तितिस्ति धारयते। ति ति परानन्दस्वरूपं सम्प्रतिष्ठते ॥ ७४ ॥",
+          "transliteration": "yi yi manastuṣṭamanadhastitisti dhārayate| ti ti parānandasvarūpaṃ sampratiṣṭhate || 74 ||",
+          "meaning_ne": "जहिले पनि मन सन्तुष्ट हुन्छ र त्यसमा ध्यान राख्दा सर्वोच्च आनन्दको स्वरूप प्रकट हुन्छ।",
+          "meaning_en": "Whenever there is satisfaction of mind and the mind is held there alone, the nature of supreme bliss manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 75,
+          "verse_label": "75",
+          "sanskrit": "अनागतायां निद्रायां प्रणष्टे ह्यगोचरे। सांस्थ मनसा गम्याः परा देवी प्रकाशते ॥ ७५ ॥",
+          "transliteration": "anāgatāyāṃ nidrāyāṃ praṇaṣṭe hyagocare| sāṃstha manasā gamyāḥ parā devī prakāśate || 75 ||",
+          "meaning_ne": "सुत्नुअघि, बाह्य संसारको चेतना हराएपछि, मनलाई एकाग्र राख्दा परमेश्वरी प्रकट हुन्छ।",
+          "meaning_en": "By entering that state preceding sleep, where the awareness of the outer world has faded, the mind is absorbed in the threshold state which the supreme goddess illumines.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 76,
+          "verse_label": "76",
+          "sanskrit": "तजे सा सयूद्धीपादरेाकाशेशिऱीकृते। दृवष्टवनि:श्य श्लेया तत्ति स्वात्मरूपं प्रकाशते ॥ ७६ ॥",
+          "transliteration": "taje sā sayūddhīpādareākāśeśirīkṛte| dṛvaṣṭavani:śya śleyā tatti svātmarūpaṃ prakāśate || 76 ||",
+          "meaning_ne": "सूर्यको किरण वा तेलको बत्तीले फैलिएको स्थानमा ध्यान गर्दा, आफ्नो आत्माको स्वरूप प्रकट हुन्छ।",
+          "meaning_en": "By gazing on the space that appears variegated by the rays of the sun or an oil lamp, there the nature of one's essential self is illumined.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 77,
+          "verse_label": "77",
+          "sanskrit": "करवङ्कण्या क्रोधनया भरा व्यालेवर्हाना। खचे या धदृवष्टकाऱेच परािावाप्त प्रकाशते ॥ ७७ ॥",
+          "transliteration": "karavaṅkaṇyā krodhanayā bharā vyālevarhānā| khace yā dhadṛvaṣṭakāreca parāiāvāpta prakāśate || 77 ||",
+          "meaning_ne": "योगको सहज दृष्टिले, करंकिनी, क्रोधना, भैरवी, लेलिहनया र खेचरीको अवस्थाहरू प्रकट हुन्छन् र यसबाट सर्वोच्च उपलब्धि प्रकट हुन्छ।",
+          "meaning_en": "At the time of intuitive perception (the attitudes of) karankini, krodhana, bhairavi, lelihanaya, and khechari are revealed, whereby the supreme attainment manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 78,
+          "verse_label": "78",
+          "sanskrit": "मद्वृपासनेविजक्ने हस्तपादौ वनराश्रयम्। वनधाय तत्प्रसङ्गेन परा पणूधमवतभिद्धते ॥ ७८ ॥",
+          "transliteration": "madvṛpāsanevijakne hastapādau vanarāśrayam| vanadhāya tatprasaṅgena parā paṇūdhamavatabhiddhate || 78 ||",
+          "meaning_ne": "नरम आसनमा बस्दा, हात र खुट्टा आरामदायी राख्दा, मन पूर्ण रूपले तात्त्विक स्थितिमा प्रवेश गर्छ।",
+          "meaning_en": "Seated on a soft seat, by means of one buttock, with the hands and legs relaxed, at this time the mind becomes full of transcendence.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 79,
+          "verse_label": "79",
+          "sanskrit": "उपविश्यासनेसम्यविः कृत्वाधकधुवञ्चतौ। कव्योविमन् कुन्धश् ममायावत तल्लयात ॥ ७९ ॥",
+          "transliteration": "upaviśyāsanesamyaviḥ kṛtvādhakadhuvañcatau| kavyoviman kundhaś mamāyāvata tallayāta || 79 ||",
+          "meaning_ne": "सही आसनमा बसेर, हात र भुजा घेरामा राखी, ध्यानले मन शान्त हुन्छ।",
+          "meaning_en": "Sitting in a correct posture and curving the arms and hands into a circle, fix the gaze inside this space. The mind becomes peaceful by this laya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 80,
+          "verse_label": "80",
+          "sanskrit": "स्थरूपस्य भास्यस्तब्धां दृवष्टं वनपात्यच। अवचरणे वनराधारं मन कृत्वा वशिं व्रजते ॥ ८० ॥",
+          "transliteration": "stharūpasya bhāsyastabdhāṃ dṛvaṣṭaṃ vanapātyaca| avacaraṇe vanarādhāraṃ mana kṛtvā vaśiṃ vrajate || 80 ||",
+          "meaning_ne": "कुनै वस्तुको स्थिर रूपमा नजर टिकाउँदा, मन शून्य हुँदै शिवको स्थिति प्राप्त हुन्छ।",
+          "meaning_en": "One should steady the gaze (without blinking) on the gross form of any object. When the mind is transfixed and made supportless, it at once acquires the state of shiva (transcendence).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 81,
+          "verse_label": "81",
+          "sanskrit": "मध्यवजह्वे वारतास्ये मध्ये वनविक्ष्य चेतनाम। होच्चारं मनसा कुण्डं तत् शान्ते प्रलीयते ॥ ८१ ॥",
+          "transliteration": "madhyavajahve vāratāsye madhye vanavikṣya cetanāma| hoccāraṃ manasā kuṇḍaṃ tat śānte pralīyate || 81 ||",
+          "meaning_ne": "जिब्रोको मध्य भागमा ध्यान राखी ‘हा’ मन्त्रोच्चार गर्दा मन शान्त हुन्छ।",
+          "meaning_en": "Placing the middle of the tongue in that which has been opened widely and throwing the consciousness in the middle, mentally repeating 'Ha', the mind will be dissolved in tranquility.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 82,
+          "verse_label": "82",
+          "sanskrit": "आसने शयनेव स्थत्वा वनराधारं विभाव्यन। स्वदहें मन वस विन्द्रेषणात्क्षीणाशयो भिते ॥ ८२ ॥",
+          "transliteration": "āsane śayaneva sthatvā vanarādhāraṃ vibhāvyana| svadaheṃ mana vasa vindreṣaṇātkṣīṇāśayo bhite || 82 ||",
+          "meaning_ne": "बस्दा वा सुत्दा, आफ्नो शरीरलाई शून्य ठान्दा, मानसिक संस्कारहरू कम हुँदै अन्ततः समाप्त हुन्छन्।",
+          "meaning_en": "While sitting or lying down, one should think of one's own body as being supportless (suspended in space). Then, in a moment, the samskaras or thought constructs of the mind are reduced and cease.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 83,
+          "verse_label": "83",
+          "sanskrit": "चरासने स्थतस्याथ शनि धदहे चलनात। प्रशान्ते मानसे भेदवे वदव्यौघम आप्नयात ॥ ८३ ॥",
+          "transliteration": "carāsane sthatasyātha śani dhadahe calanāta| praśānte mānase bhedave vadavyaughama āpnayāta || 83 ||",
+          "meaning_ne": "शरीरलाई बिस्तारै हल्लाउँदा वा झुलाउँदा, मन शान्त हुन्छ र दिव्य चेतनामा प्रवेश हुन्छ।",
+          "meaning_en": "As a result of slowly swinging or rocking the body, one attains a tranquil state of mind and floats into the stream of divine consciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 84,
+          "verse_label": "84",
+          "sanskrit": "आकाशं विमलं पश्यन्कृत्वा दृवष्टं वनरन्तराम। स्तब्धात्मा तत्क्षणाद्दवे भरा िंरूपं प्नयात ॥ ८४ ॥",
+          "transliteration": "ākāśaṃ vimalaṃ paśyankṛtvā dṛvaṣṭaṃ vanarantarāma| stabdhātmā tatkṣaṇāddave bharā iṃrūpaṃ pnayāta || 84 ||",
+          "meaning_ne": "खोलिएको आकाशमा नजर टिकाउँदै, तत्काल भैरवको प्रकृति अनुभव हुन्छ।",
+          "meaning_en": "Having fixed the gaze continuously on the clear sky (without blinking) and with a steady awareness, at once the nature of Bhairava is achieved.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 85,
+          "verse_label": "85",
+          "sanskrit": "शून्यं मवून धवियत्सिम्ध भरा इत्वने भास्यते। तत्सिम्ध भरा आकारतजे स्तत्त्वं समाविशते ॥ ८५ ॥",
+          "transliteration": "śūnyaṃ mavūna dhaviyatsimdha bharā itvane bhāsyate| tatsimdha bharā ākārataje stattvaṃ samāviśate || 85 ||",
+          "meaning_ne": "आकाशलाई भैरवको स्वरूप ठान्दै ध्यान गर्दा, प्रकाशको तत्त्व भैरव स्थितिमा प्रवेश गर्दछ।",
+          "meaning_en": "One should contemplate on the sky as the form of Bhairava until it is absorbed in the forehead. Then all that space will be entered by the essence of light in the state of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 86,
+          "verse_label": "86",
+          "sanskrit": "वकवञ्चज्ज्ञातम द्व्तै दावय बाह्यालोकस्तम् पुनु। विश्वावद भरा िंरूपं ऽात्वानन्तप्रकाशभतृ ॥ ८६ ॥",
+          "transliteration": "vakavañcajjñātama dvtai dāvaya bāhyālokastam punu| viśvāvada bharā iṃrūpaṃ 'ātvānantaprakāśabhatṛ || 86 ||",
+          "meaning_ne": "द्वैतताको थोरै ज्ञान पाएर बाह्य संसारलाई हेर्दा, भैरवको अनन्त रूप अनुभव हुन्छ।",
+          "meaning_en": "Knowing a bit about duality, the outer light and darkness in the manifest world, one who again experiences the infinite form of Bhairava procures illumination.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 87,
+          "verse_label": "87",
+          "sanskrit": "एिमिे दुवनशधायांकृष्णऩऺागमेवचरम्। तवै मरंभाभयन रूपं भरा िंरूपमिष्ये वत ॥ ८७ ॥",
+          "transliteration": "eimie duvanaśadhāyāṃkṛṣṇanaऺāgamevacaram| tavai maraṃbhābhayana rūpaṃ bharā iṃrūpamiṣye vata || 87 ||",
+          "meaning_ne": "अन्धकारको समय वा अर्धचन्द्रको रातमा गहिरो अँध्यारो हेर्दा भैरवको रूप प्राप्त हुन्छ।",
+          "meaning_en": "Like this, one should ever contemplate on the terrible darkness of night during the dark fortnight of the moon, if he desires to attain the form of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 88,
+          "verse_label": "88",
+          "sanskrit": "एिमिे वनमील्यादौ निःकेृष्णाभमाग्रत्। प्रसायध भरा िंरूपंभाियम् स्तन्मयो भिते ॥ ८८ ॥",
+          "transliteration": "eimie vanamīlyādau niḥkeṛṣṇābhamāgrat| prasāyadha bharā iṃrūpaṃbhāiyam stanmayo bhite || 88 ||",
+          "meaning_ne": "आँखा बन्द गरेर अगाडि फैलिएको गहिरो अँध्यारो भैरवको रूपका रूपमा ध्यान गर्दा, साधक त्यससँग एकाकार हुन्छ।",
+          "meaning_en": "Similarly, while closing the eyes, one should contemplate on the profound darkness spreading in front as the form of Bhairava. Thus he becomes one with that.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 89,
+          "verse_label": "89",
+          "sanskrit": "यस्य कस्यवेन्द्रयस्यावऩ व्याघाताच्च वनरोधत्। प्रविष्टस्याद्वयेशन्यू ेति ि आ्त्मा प्रकाशते ॥ ८९ ॥",
+          "transliteration": "yasya kasyavendrayasyāvana vyāghātācca vanarodhat| praviṣṭasyādvayeśanyū eti i ātmā prakāśate || 89 ||",
+          "meaning_ne": "कसैले पनि एउटै इन्द्रियलाई नियन्त्रण गरेर रोक्छ भने, त्यो व्यक्ति द्वैतविहीन शून्यमा प्रवेश गर्छ र आत्मा प्रकाशमान हुन्छ।",
+          "meaning_en": "Whoever restrains even the same sense organ enters the one void without a second by this obstruction, and there the atma, or self, is illumined.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 90,
+          "verse_label": "90",
+          "sanskrit": "अविन्दुम अ् विसगमध च् अकारम ज् ऩतो महान। उदवेत दवेि सहसा ऻानौघ् ऩरमश्वेर् ॥ ९० ॥",
+          "transliteration": "avinduma a visagamadha c akārama j nato mahāna| udaveta davei sahasā ऻānaugh naramaśver || 90 ||",
+          "meaning_ne": "बिन्दु र विसर्ग नहुँदा ‘अ’ अक्षरको उच्चारण गर्दा, एकैचोटि परमेश्वरको ज्ञानको बाढी बग्छ।",
+          "meaning_en": "O Devi, by recitation of akaara, the letter 'A', in the absence of bindu and visarga, a great torrent of knowledge of the supreme Lord, Parameshvara, at once arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 91,
+          "verse_label": "91",
+          "sanskrit": "िणस्यध सविसगस्यध विसगान्त धं वचवतंकुरु। वनराधारणे वचत्तने स्पशृद्ब्रेह्म सनातनम ॥ ९१ ॥",
+          "transliteration": "iṇasyadha savisagasyadha visagānta dhaṃ vacavataṃkuru| vanarādhāraṇe vacattane spaśṛdbrehma sanātanama || 91 ||",
+          "meaning_ne": "मनलाई विसर्गसँग जोड्दा, विसर्गको अन्त्यमा ध्यान गर्दा, सधैंका लागि ब्रह्मले मन छोइदिन्छ।",
+          "meaning_en": "When the mind is joined with the visarga, at the end of the visarga it is made supportless. In this way the mind is touched by the eternal Brahma, or the supreme consciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 92,
+          "verse_label": "92",
+          "sanskrit": "व्योमाकारंस्वमात्मानम ध्य् ायवेद्दवग्भरनािृ म। वनराश्रया वचवत् शवि् स्वरूऩंदशयत्ते दा ॥ ९२ ॥",
+          "transliteration": "vyomākāraṃsvamātmānama dhy āyaveddavagbharanāiṛ ma| vanarāśrayā vacavat śavi svarūnaṃdaśayatte dā || 92 ||",
+          "meaning_ne": "व्यक्तिलाई आफ्नो आत्मालाई अनन्त आकाशको रूपमा ध्यान गर्दा, मन स्थिर हुन्छ र चेतना आफ्नो रूपमा प्रकट हुन्छ।",
+          "meaning_en": "When one meditates on one's own self in the form of unlimited space (in all directions), the mind is suspended, and shakti in the form of consciousness is revealed as the form of one's own self.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 93,
+          "verse_label": "93",
+          "sanskrit": "वकंवचदङ्गम व्िवभद्यादौ तीक्ष्णसच्यू ावदना तत्। तिि ऍचतेनांयक्त्वु ा भरैिेवनमऱधा गवत् ॥ ९३ ॥",
+          "transliteration": "vakaṃvacadaṅgama vivabhadyādau tīkṣṇasacyū āvadanā tat| tii ऍcatenāṃyaktvu ā bharaiievanamaradhā gavat || 93 ||",
+          "meaning_ne": "सुरूमा शरीरको कुनै अङ्गलाई नुकीलो उपकरणले सानो छेदन गर्दा, त्यस क्षेत्रमा चेतना पठाउँदा भैरवको शुद्ध स्वरूपतर्फ गति हुन्छ।",
+          "meaning_en": "At first one should pierce any limb of the body a little bit with a sharp, pointed needle or any other instrument. Then projecting the consciousness there, verily there is movement towards the pure nature of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 94,
+          "verse_label": "94",
+          "sanskrit": "वचत्ताद्यन्त्कृवतनावध स्त ममान्तभाि यवेदवत। विकल्पानामभािने विकल्परुैवितो भिते ॥ ९४ ॥",
+          "transliteration": "vacattādyantkṛvatanāvadha sta mamāntabhāi yavedavata| vikalpānāmabhāine vikalparuaivito bhite || 94 ||",
+          "meaning_ne": "यसरी ध्यान गर्दा, अन्तरमन वा अन्तःकरणको अस्तित्व मेरो भित्र छैन भनी बुझिन्छ। विचारविहीन अवस्थामा, व्यक्ति विचारबाट मुक्त हुन्छ।",
+          "meaning_en": "By contemplating thus, the antahkarana, or inner instrument of mind, and so on is non-existent within me, then, in the absence of vikalpas (thought constructs), one becomes free from the vikalpas.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 95,
+          "verse_label": "95",
+          "sanskrit": "माया विमोवहनी नाम कऱाया् कऱनंवस्थतम। इत्यावदधमं तत्त्वानांकऱयन्न पथृ ग्भिते ॥ ९५ ॥",
+          "transliteration": "māyā vimovahanī nāma karāyā karanaṃvasthatama| ityāvadadhamaṃ tattvānāṃkarayanna pathṛ gbhite || 95 ||",
+          "meaning_ne": "माया अर्थात् भ्रमणकारी तत्व, नाम र सीमित कर्ममा अवस्थित छ। यसरी विभिन्न तत्त्वहरूको कार्य बुझ्दा, व्यक्ति सर्वोच्च वास्तविकतासँग अलग छैन भनि बोध हुन्छ।",
+          "meaning_en": "Maya is the delusive principle residing in manifest existence, causing name and limited activity. Considering thus the nature or functions of the various elements, one realizes that he is not separate from the supreme reality.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 96,
+          "verse_label": "96",
+          "sanskrit": "झवगतीच्छांसमत्पु न्नामिळोक्य शमंनयते। यत एि समद्भु ूता ततस्ति ंऱीयते ॥ ९६ ॥",
+          "transliteration": "jhavagatīcchāṃsamatpu nnāmiḷokya śamaṃnayate| yata ei samadbhu ūtā tatasti ṃrīyate || 96 ||",
+          "meaning_ne": "तत्क्षण उत्पन्न हुने इच्छा र लालसालाई नियन्त्रित गरेर समाप्त गर्नुहोस्। त्यसपछि मन मूल स्रोतमा एकाकार हुन्छ।",
+          "meaning_en": "Observing the desires, which spring up in a flash, put an end to them. Then verily the mind will be absorbed in the very source from which they have arisen.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 97,
+          "verse_label": "97",
+          "sanskrit": "यदा ममच्छे ा नोत्पन्ना ऻानंिा कस्तदावस्म िै। तत्त्वतोऽहम त्थाभतूस्तल्लीनस्तन्मना भिते ॥ ९७ ॥",
+          "transliteration": "yadā mamacche ā notpannā ऻānaṃiā kastadāvasma iai| tattvato'hama tthābhatūstallīnastanmanā bhite || 97 ||",
+          "meaning_ne": "जब मेरो इच्छा ज्ञान उत्पन्न गर्दैन भने म के हुँ? वास्तवमा, म तत्त्वमा अवगाहित छु र त्यसमा एकाकार हुन्छु।",
+          "meaning_en": "When my desires do not produce knowledge, then what am I? Indeed, being absorbed in the essence, I am, and identifying with that, one becomes that.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 98,
+          "verse_label": "98",
+          "sanskrit": "इच्छायामथिा ऻानेजातेवचत्तंवनिशे यते। आत्मिद्ध्यु ानन्यचतेास्ततस्तत्त्वाथदधशनधम ॥ ९८ ॥",
+          "transliteration": "icchāyāmathiā ऻānejātevacattaṃvaniśe yate| ātmiddhyu ānanyacateāstatastattvāthadadhaśanadhama || 98 ||",
+          "meaning_ne": "इच्छा वा ज्ञान उत्पन्न हुँदा, त्यसलाई आत्मा ठान्दै ध्यान गर्नुहोस्। यसरी मन एकाग्र बनाएर, तत्त्वको वास्तविकता बोध हुन्छ।",
+          "meaning_en": "When desire or knowledge arises, one should fix the mind there, thinking that to be the very self. Making the mind absolutely one-pointed in this way, he realizes the essence of the tattwas.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 99,
+          "verse_label": "99",
+          "sanskrit": "वनवनवध मत्तंभिज्ज्ञे ानम व्नराधारंभ्रमात्मकम। तत्त्वत् कस्यवचन्नतै दैम्भािी वशि् वप्रये ॥ ९९ ॥",
+          "transliteration": "vanavanavadha mattaṃbhijjñe ānama vnarādhāraṃbhramātmakama| tattvat kasyavacannatai daimbhāiī vaśi vapraye || 99 ||",
+          "meaning_ne": "सर्वज्ञ ज्ञान सापेक्ष ज्ञानको तुलना गर्दा, आधारविहीन र भ्रमपूर्ण हुन्छ। यसरी ध्यान गर्दा व्यक्ति भैरवमा एकाकार हुन्छ।",
+          "meaning_en": "O dear one, compared to absolute knowledge, all relative knowledge is without cause, and thus becomes baseless and deceptive. Contemplating like this, one becomes Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 100,
+          "verse_label": "100",
+          "sanskrit": "वचद्धमाध सिद्धहेषे ुविशषेो नावस्त कुिवचत। अतश्च तन्मयंसि ंभाियन्भिवजज्जन् ॥ १०० ॥",
+          "transliteration": "vacaddhamādha siddhaheṣe uviśaṣeo nāvasta kuivacata| ataśca tanmayaṃsi ṃbhāiyanbhivajajjan || 100 ||",
+          "meaning_ne": "भैरव सम्पूर्ण चेतनामा अविभाज्य छ। यसमा ध्यान गर्नेहरूले सापेक्ष संसार भन्दा पर जान्छन्।",
+          "meaning_en": "He (Bhairava) is of the nature of undifferentiated consciousness in all embodied forms. Therefore, those persons who contemplate on all creation pervaded by that consciousness, transcend relative existence.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 101,
+          "verse_label": "101",
+          "sanskrit": "कामक्रोधऱोभमोहमदमात्सयगधोचरे। िवुद्धंवनवस्तवमतांकृत्वा तत्तत्त्वमिवशष्यते ॥ १०१ ॥",
+          "transliteration": "kāmakrodharobhamohamadamātsayagadhocare| ivuddhaṃvanavastavamatāṃkṛtvā tattattvamivaśaṣyate || 101 ||",
+          "meaning_ne": "काम, क्रोध, लोभ, मोह, अहंकार र ईर्ष्यालाई हेर्दा, मन पूर्णतया स्थिर हुन्छ र केवल तत्त्व रहन्छ।",
+          "meaning_en": "When lust, anger, greed, delusion, arrogance and jealousy are seen within, having fixed the mind completely on these, the underlying tattwa, or essence, alone remains.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 102,
+          "verse_label": "102",
+          "sanskrit": "इन्द्रजाऱमयंविश्वंव्यस्तंिा वचिकमि त। भ्रमद्वा ध्यायत् सि ंऩश्यतश्च सखु ोद्गम् ॥ १०२ ॥",
+          "transliteration": "indrajāramayaṃviśvaṃvyastaṃiā vacikami ta| bhramadvā dhyāyat si ṃnaśyataśca sakhu odgam || 102 ||",
+          "meaning_ne": "संसारलाई जादुई प्रदर्शन वा चित्र जस्तो छायाँ ठानेर ध्यान गर्दा, आनन्द उत्पन्न हुन्छ।",
+          "meaning_en": "Meditating on the manifest world as imagined or illusive, like a magic show or a painting, and seeing all existence as transient, happiness arises.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 103,
+          "verse_label": "103",
+          "sanskrit": "न वचत्तंवनवऺऩदे ्दु्खेन सखु ेिा ऩवरवऺऩते। भरैवि ऻायतांमध्येवकं तत्त्वमिवशष्यते ॥ १०३ ॥",
+          "transliteration": "na vacattaṃvanavaऺnade dukhena sakhu eiā navaravaऺnate| bharaivi ऻāyatāṃmadhyevakaṃ tattvamivaśaṣyate || 103 ||",
+          "meaning_ne": "मन पीडा वा सुखमा स्थिर नहोस्, तर तत्त्वको मध्य (बीचमा) रहिरहेको अवस्था जान्नुहोस्।",
+          "meaning_en": "O Goddess, the mind should not dwell on pain or pleasure, but the essence that remains in the middle (in between the opposites) should be known.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 104,
+          "verse_label": "104",
+          "sanskrit": "विहाय वनजदहेस्थंसि ंधास्मीवत भाियन। दृढने मनसा दृष्ट्या नान्यवेऺण्या सखु ी भिते ॥ १०४ ॥",
+          "transliteration": "vihāya vanajadahesthaṃsi ṃdhāsmīvata bhāiyana| dṛḍhane manasā dṛṣṭyā nānyaveऺṇyā sakhu ī bhite || 104 ||",
+          "meaning_ne": "आफ्नो शरीरलाई विचार नगरी दृढ मनले ध्यान गर्दा, व्यक्ति सबैत्र व्याप्त हुन्छ र खुशी अनुभव गर्छ।",
+          "meaning_en": "Abandoning consideration for one's own body, one should contemplate with a firm mind that 'I am everywhere'. When this is seen, one does not see another and thus becomes happy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 105,
+          "verse_label": "105",
+          "sanskrit": "घटादौ यच्च विऻानवमच्छाद्यंिा ममान्तरे। निै सिग्ध तंजातंभाियवन्नवत सिग्ध् ॥ १०५ ॥",
+          "transliteration": "ghaṭādau yacca viऻānavamacchādyaṃiā mamāntare| niai sigdha taṃjātaṃbhāiyavannavata sigdh || 105 ||",
+          "meaning_ne": "विशेष ज्ञान, जस्तै घडेरीको उदाहरण वा इच्छाहरू केवल मेरो भित्र मात्र नभई सबैत्र अवस्थित छन् भन्ने कुरा ध्यान गर्दा, व्यक्ति सर्वव्यापी हुन्छ।",
+          "meaning_en": "Contemplating on that special knowledge, for example, the analogy of the jar, or that desires, etc. exist not only within me but everywhere, one thus becomes all-pervasive.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 106,
+          "verse_label": "106",
+          "sanskrit": "ग्राह्यग्राहकसविवत्त् सामान्या सिद्ध वेहनाम। योवगनांतुविशषेोऽवस्त सम्बन्धेसाधनता ॥ १०६ ॥",
+          "transliteration": "grāhyagrāhakasavivatt sāmānyā siddha vehanāma| yovaganāṃtuviśaṣeo'vasta sambandhesādhanatā || 106 ||",
+          "meaning_ne": "विषय र वस्तु (सब्जेक्ट र ओब्जेक्ट) सबैमा सामान्य हुन्छ। योगीहरू विशेष रूपमा यसको सम्बन्धबारे सचेत हुन्छन्।",
+          "meaning_en": "The subject-object consciousness is common to everybody. Yogis, however, are especially alert regarding this relationship.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 107,
+          "verse_label": "107",
+          "sanskrit": "स्विदन्यशरीरऽेवऩ सविवत्तंअनभुाियते। अऩऺे ांस्वशरीरस्य त्यक्त्वा व्याऩी वदनरै्भिते ॥ १०७ ॥",
+          "transliteration": "svidanyaśarīra'evana savivattaṃanabhuāiyate| anaऺe āṃsvaśarīrasya tyaktvā vyānī vadanaraibhite || 107 ||",
+          "meaning_ne": "आफ्नो र अरूको शरीरमा रहेको चेतनामा ध्यान गर्दा, सबै शरीरको अपेक्षा त्यागेर समयसँगै सर्वव्यापी हुन्छ।",
+          "meaning_en": "Contemplate on consciousness, such as one's own and even in another's body as well. Thus abandoning all physical expectation, one becomes all-pervasive in the course of time.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 108,
+          "verse_label": "108",
+          "sanskrit": "नराधारंमन् कृत्वा विकल्पान्न विकल्पयते। तदात्मऩरमात्मत्वेभरैिो मगृ ऱोचने ॥ १०८ ॥",
+          "transliteration": "narādhāraṃman kṛtvā vikalpānna vikalpayate| tadātmanaramātmatvebharaiio magṛ rocane || 108 ||",
+          "meaning_ne": "मनलाई सबै आधारबाट मुक्त राखेर, सबै विचार/विपरीत विचारबाट टाढा रहनुहोस्। त्यसपछि आत्मा सर्वोच्च आत्मासँग एकाकार हुन्छ।",
+          "meaning_en": "O gazelle-eyed one, having freed the mind of all supports, one should refrain from all the Vikalpas (thoughts/counter-thoughts). Then, the self becomes one with the supreme Self in the state of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 109,
+          "verse_label": "109",
+          "sanskrit": "सिऻध् सिक्धता धच व्याऩक् ऩरमश्वेर्। स एिाहम श् िै धमा धइवत दार्ढ्ावध्छिो भिते ॥ १०९ ॥",
+          "transliteration": "siऻdh sikdhatā dhaca vyānak naramaśver| sa eiāhama ś iai dhamā dhaivata dārḍhāvadhchio bhite || 109 ||",
+          "meaning_ne": "सर्वशक्तिमान परमेश्वर सर्वव्यापी, सर्वज्ञ र सर्वशक्तिमान हुनुहुन्छ। यसरी दृढ बिश्वासका साथ ध्यान गर्दा, व्यक्ति भैरवमा परिणत हुन्छ।",
+          "meaning_en": "The supreme Lord, who is omnipresent, omniscient and omnipotent, verily, I am He and I have the same Shiva-nature. Contemplating thus with firm conviction, one becomes Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 110,
+          "verse_label": "110",
+          "sanskrit": "जऱस्यिेोमयधो िह्नेर्ज्ाऱाभङ्ग्य् प्रभारि्े। ममि भर्है स्यतैा विश्वभङ्ग्यो विभवेदता् ॥ ११० ॥",
+          "transliteration": "jarasyieomayadho ihnerjārābhaṅgy prabhārie| mami bharhai syataiā viśvabhaṅgyo vibhavedatā || 110 ||",
+          "meaning_ne": "जसरी पानीमा तरङ्गहरू उठ्छन्, आगोमा ज्योति फैलिन्छ, सूर्यका किरणहरू फैलिन्छन्, त्यसै गरी भैरवका तरङ्गहरू उठ्छन्। यस अवशोषणबाट उत्पन्न शान्तिको अन्त्यले भैरवको स्वरूप प्रकट हुन्छ।",
+          "meaning_en": "Just as waves arise from water, flames from fire, and rays of light from the sun, similarly the waves of Bhairava arise. At the end of the commotion caused by that absorption, the form of Bhairava appears.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 113,
+          "verse_label": "113",
+          "sanskrit": "सम्प्रदायवममंदवेि शृणुसम्यविदाम्यहम। कैिल्यंजायतेसद्यो निेयो् स्तब्धमाियो् ॥ ११३ ॥",
+          "transliteration": "sampradāyavamamaṃdavei śṛṇusamyavidāmyahama| kaiilyaṃjāyatesadyo nieyo stabdhamāiyo || 113 ||",
+          "meaning_ne": "ओ देवी, यो रहस्यमय परम्परा सम्पूर्ण रूपमा सुन। यदि आँखाहरू स्थिर राखेर (झप्किने बिना) दृष्टि केन्द्रित गरिन्छ भने, तुरुन्तै कैवल्य (मोक्ष) प्रकट हुन्छ।",
+          "meaning_en": "Listen, O Devi, as I am telling you about this mystic tradition in its entirety. If the eyes are fixed in a steady gaze (without blinking), kaivalya will arise immediately.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 114,
+          "verse_label": "114",
+          "sanskrit": "सम्कोचंकणयधो् कृत्वा ह्यधोद्वारेतथिै च। अनच्कमहऱंध्यायविशद्ब्रेह्म सनातनम ॥ ११४ ॥",
+          "transliteration": "samkocaṃkaṇayadho kṛtvā hyadhodvāretathiai ca| anackamaharaṃdhyāyaviśadbrehma sanātanama || 114 ||",
+          "meaning_ne": "कानका खुला भाग र तल्लो निकास (प्रजनन/मलमूत्र) बन्द गरेर, अनाहतध्वनिको राजमहलमा ध्यान गर्दा, व्यक्ति शाश्वत ब्रह्ममा प्रवेश गर्छ।",
+          "meaning_en": "Contracting the openings of the ears and also the lower openings, and then meditating on the palace of the anahad (unstruck) sound within, one enters the eternal Brahma.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 115,
+          "verse_label": "115",
+          "sanskrit": "कूपावदकेमहागतेवस्थत्वोऩवरनरीऺणात। अविकल्पमते सम्यक्सद्यवश्चत्तऱय् िुटम ॥ ११५ ॥",
+          "transliteration": "kūpāvadakemahāgatevasthatvonavaranarīऺṇāta| avikalpamate samyaksadyavaścattaray iuṭama || 115 ||",
+          "meaning_ne": "गहिरो खाल्टो वा कुहिरो माथि स्थिर भएर तल हेर्दा, मन सम्पूर्ण रूपमा विकल्पमुक्त हुन्छ र तुरुन्तै समाधान प्रकट हुन्छ।",
+          "meaning_en": "Standing above a deep hole or well and looking steadily downward, the mind becomes entirely free of vikalpas and dissolution immediately manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 116,
+          "verse_label": "116",
+          "sanskrit": "यि यि मनो यावत िाह्येिाभ्यन्तरऽेवऩ िा। ति ति वशिािास्था व्याऩकत्वात्क्व यास्यवत ॥ ११६ ॥",
+          "transliteration": "yi yi mano yāvata iāhyeiābhyantara'evana iā| ti ti vaśiāiāsthā vyānakatvātkva yāsyavata || 116 ||",
+          "meaning_ne": "मन जहाँसुकै गए पनि, बाहिर वा भित्रतर्फ, त्यहाँ शिवको सर्वव्यापक स्वरूप जानेछ।",
+          "meaning_en": "Wherever the mind moves, whether outwards or inwards, there the all-pervasive state of Shiva will go.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 117,
+          "verse_label": "117",
+          "sanskrit": "यि यिाऺमागणेचतै न्यंव्यज्यतेविभो्। तस्य तन्माधवमत्वावच्चल्लयाद्भवरतात्मता ॥ ११७ ॥",
+          "transliteration": "yi yiāऺmāgaṇecatai nyaṃvyajyatevibho| tasya tanmādhavamatvāvaccallayādbhavaratātmatā || 117 ||",
+          "meaning_ne": "जस वस्तुमा दृष्टि केन्द्रित हुन्छ, त्यही वस्तुलाई परमस्वरूपसँग एउटै ठानेर ध्यान गर्दा, मन एकाग्र हुन्छ र पूर्णता (poornatva) अनुभव हुन्छ।",
+          "meaning_en": "Wherever the consciousness leads through the eyes, contemplating that object as being of the same nature as the supreme, absorption of mind and the state of completeness are experienced.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 118,
+          "verse_label": "118",
+          "sanskrit": "ऺतुाद्यन्तेभयेशोकेगह्वरेिा रणाद्द्रतुे। कुतहूर्ेऺधुाद्यन्तेब्रह्मसत्तामयी दशा ॥ ११८ ॥",
+          "transliteration": "ऺtuādyantebhayeśokegahvareiā raṇāddratue| kutahūreऺdhuādyantebrahmasattāmayī daśā || 118 ||",
+          "meaning_ne": "छिङ्क्दा, डर, शोक, भ्रम, युद्धबाट भाग्दा, जिज्ञासा वा भोकको सुरुवात/निवारणको समयमा, त्यो अवस्था ब्रह्मको बाह्य उपस्थितिको रूपमा देखा पर्छ।",
+          "meaning_en": "At the beginning and end of sneezing, in terror, sorrow, confusion, fleeing from battle, in curiosity, or at the onset or appeasement of hunger, that state is the external existence of Brahma.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 119,
+          "verse_label": "119",
+          "sanskrit": "िस्तषुुस्मयमधाणषे ुदृष्टेदशे ेमनस्त्यजते। स्वशरीरं वनराधारंकृत्वा प्रसरवत प्रभु ॥ ११९ ॥",
+          "transliteration": "istaṣuusmayamadhāṇaṣe udṛṣṭedaśe emanastyajate| svaśarīraṃ vanarādhāraṃkṛtvā prasaravata prabhu || 119 ||",
+          "meaning_ne": "पुरानो सम्झनासँग सम्बन्धित वस्तु आउँदा, मनलाई अलग राखेर शरीरलाई आधारविहीन ठानेर, सर्वव्यापी प्रभु प्रकट हुन्छ।",
+          "meaning_en": "Leave the mind aside when memorable objects of the past arise, making one's body supportless; then the omnipresent and mighty Lord manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 120,
+          "verse_label": "120",
+          "sanskrit": "क्ववचद्वस्तवुन विन्यस्य शनदृैवधष्टम व्नितयते। तज्ज्ञानंवचत्तसवहतंदवेि शन्यू ाऱायो भिते ॥ १२० ॥",
+          "transliteration": "kvavacadvastavuna vinyasya śanadṛaivadhaṣṭama vnitayate| tajjñānaṃvacattasavahataṃdavei śanyū ārāyo bhite || 120 ||",
+          "meaning_ne": "थोरै समयको लागि कुनै वस्तुमा दृष्टि केन्द्रित गरेर त्यसलाई ज्ञान र प्रभाव सहित फिर्ता हटाउँदा, व्यक्ति रिक्तताको वासस्थानमा प्रवेश गर्छ।",
+          "meaning_en": "Momentarily casting the gaze on some object and slowly withdrawing it with the knowledge and impression of that object, one becomes the abode of the void.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 121,
+          "verse_label": "121",
+          "sanskrit": "भक्त्यद्रुेकावद्वरिस्य यादृशी जायतेमवत्। सा शवि् शाङ्करी वनत्यंभियत्ते ांतत् वशि् ॥ १२१ ॥",
+          "transliteration": "bhaktyadruekāvadvarisya yādṛśī jāyatemavat| sā śavi śāṅkarī vanatyaṃbhiyatte āṃtat vaśi || 121 ||",
+          "meaning_ne": "पूर्ण रूपमा वैराग्यमा आधारित गहिरो भक्तिबाट उदाएको अन्तरदृष्टि शङ्करको शक्ति हो। यसमा नियमित ध्यान गर्दा शिव प्रकट हुन्छ।",
+          "meaning_en": "That intuition which emerges from intense devotion of a detached person is known as the Shakti of Shankara. By contemplating on that Shakti, Shiva is revealed there.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 122,
+          "verse_label": "122",
+          "sanskrit": "िस्त्वन्तरेिद्ये मानेसिि स्तषुुशन्यू ता। तामिे मनसा ध्यात्वा विवदतोऽवऩ प्रशाम्यवत ॥ १२२ ॥",
+          "transliteration": "istvantareidye mānesii staṣuuśanyū tā| tāmie manasā dhyātvā vivadato'vana praśāmyavata || 122 ||",
+          "meaning_ne": "जब कुनै विशेष वस्तु अनुभूत हुन्छ, अन्य वस्तुहरूमा शून्यता स्थापित हुन्छ। यसलाई ध्यान गर्दा, मन शान्त हुन्छ।",
+          "meaning_en": "When one perceives a particular object, vacuity is established regarding all other objects. Contemplating on that vacuity, the mind rests in tranquility.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 123,
+          "verse_label": "123",
+          "sanskrit": "वकंवचज्ज्ञयैा ध स्मतृ ा शवुद्ध् सा शवुद्ध् शम्भदुशनध े। न शवुचह्यशध वुचस्तस्मावन्नविकल्प् सखु ी भिते ॥ १२३ ॥",
+          "transliteration": "vakaṃvacajjñayaiā dha smatṛ ā śavuddh sā śavuddh śambhaduśanadha e| na śavucahyaśadha vucastasmāvannavikalp sakhu ī bhite || 123 ||",
+          "meaning_ne": "थोरै बुझ्नेहरूले शुद्ध भन्ने कुरा, शिब अनुभव गर्ने व्यक्तिका लागि शुद्ध वा अशुद्ध होइन। निर्विकल्प शुद्धि नै वास्तविक खुशी हो।",
+          "meaning_en": "What people of little understanding believe to be purity is neither pure nor impure to one who has experienced Shiva. Nirvikalpa, freedom from vikalpas, is the real purification bringing happiness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 124,
+          "verse_label": "124",
+          "sanskrit": "सिद्धभरैनो भाि् सामान्यष्वे वऩ गोचर्। न च तद्व्यवतरिे ेण ऩरोऽस्तीत्यद्वया गवत् ॥ १२४ ॥",
+          "transliteration": "siddhabharaino bhāi sāmānyaṣve vana gocar| na ca tadvyavatarie eṇa naro'stītyadvayā gavat || 124 ||",
+          "meaning_ne": "भैरवको वास्तविकता सर्वत्र विद्यमान छ। यसरी ध्यान गर्दा, \"उनी बाहिर होइन\" भन्ने अनुभूति हुन्छ र एकात्मकता प्राप्त हुन्छ।",
+          "meaning_en": "The reality of Bhairava dwells everywhere, even in ordinary people. Contemplating thus, “There is nothing other than Him,” one attains the non-dual state.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 125,
+          "verse_label": "125",
+          "sanskrit": "सम् शिौ च वमिेच समो मानािमानयो्। ब्रह्मण् ऩवरऩणूत्वावदवत ऻात्वा सखु ी भिते ॥ १२५ ॥",
+          "transliteration": "sam śiau ca vamieca samo mānāimānayo| brahmaṇ navaranaṇūtvāvadavata ऻātvā sakhu ī bhite || 125 ||",
+          "meaning_ne": "मित्र र शत्रु, सम्मान र अपमानमा कुनै भेद नगर्ने व्यक्ति, ब्रह्मलाई सर्वव्यापी जान्दछ र अत्यन्त खुशी हुन्छ।",
+          "meaning_en": "One who makes no distinction between friend and foe, honour and dishonour, knowing Brahman to be full in itself, becomes supremely happy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 126,
+          "verse_label": "126",
+          "sanskrit": "न द्वषे ंभाियत्क्वे ावऩ न रागंभाियत्क्वे वचत। रागद्वषेविवनमिधु ौ मध्येब्रह्म प्रसऩवधत ॥ १२६ ॥",
+          "transliteration": "na dvaṣe ṃbhāiyatkve āvana na rāgaṃbhāiyatkve vacata| rāgadvaṣevivanamidhu au madhyebrahma prasanavadhata || 126 ||",
+          "meaning_ne": "मित्र वा शत्रुको विचार नगर्नुहोस्। राग वा द्वेषविहीन रहँदा, ब्रह्मको अवस्था मध्यमा प्रकट हुन्छ।",
+          "meaning_en": "One should never think in terms of friendship or enmity. Being free from the ideas of friend and foe, in the middle the nature of supreme consciousness blooms.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 127,
+          "verse_label": "127",
+          "sanskrit": "यदिद्ये ंयदग्राह्यंयच्छून्यंयदभािगम। तत्सिंभरैिंभाव्यंतदन्तेिोधसम्भि् ॥ १२७ ॥",
+          "transliteration": "yadidye ṃyadagrāhyaṃyacchūnyaṃyadabhāigama| tatsiṃbharaiiṃbhāvyaṃtadanteiodhasambhi || 127 ||",
+          "meaning_ne": "भैरवलाई सबै खाली, नसम्झिने, नपकडिने वस्तुको रूपमा ध्यान गर्दा, अन्तमा आत्मज्ञान प्राप्त हुन्छ।",
+          "meaning_en": "By contemplating on Bhairava as all that which is void, cannot be known or grasped, realization occurs at the end.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 128,
+          "verse_label": "128",
+          "sanskrit": "वनत्येवनराश्रयेशन्यू ेव्याऩकेकऱनोविते। नाह्याकाशेमन् कृत्वा वनराकाशंसमाविशते ॥ १२८ ॥",
+          "transliteration": "vanatyevanarāśrayeśanyū evyānakekaranovite| nāhyākāśeman kṛtvā vanarākāśaṃsamāviśate || 128 ||",
+          "meaning_ne": "बाहिरी अनन्त आकाशमा, आधारविहीन, रिक्त, सर्वव्यापी ध्यान केन्द्रित गर्दा, अव्यक्त, निराकार आयाममा प्रवेश हुन्छ।",
+          "meaning_en": "Fixing the mind in the outer space, eternal, without support, void and omnipresent, one enters the formless, unmanifest dimension.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 129,
+          "verse_label": "129",
+          "sanskrit": "यि यि मनो यावत तत्तत त् नेिै तत्क्षणम। पवरत्यज्यानिवस्थत्या वनस्तरङ्गस्ततो भिते ॥ १२९ ॥",
+          "transliteration": "yi yi mano yāvata tattata t neiai tatkṣaṇama| pavaratyajyānivasthatyā vanastaraṅgastato bhite || 129 ||",
+          "meaning_ne": "मन जहाँसुकै भए पनि त्यति नै क्षणमा त्याग गर्दा, मन आधारविहीन र व्यवधानमुक्त हुन्छ।",
+          "meaning_en": "Wherever the mind dwells, casting that aside that very moment, the mind becomes supportless and free from disturbance.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 130,
+          "verse_label": "130",
+          "sanskrit": "भया सिमधर्ियवत सिधो व्यापकोऽवखऱे। इवत भैरिशब्दस्य सन्ततोच्चारणावच्छि् ॥ १३० ॥",
+          "transliteration": "bhayā simadhariyavata sidho vyāpako'vakhare| ivata bhairiśabdasya santatoccāraṇāvacchi || 130 ||",
+          "meaning_ne": "भैरव शब्दले डर र आतंक हटाउने, गर्जने, सबै दिन दिने, सम्पूर्ण ब्रह्माण्ड भर्ने शक्ति छ। यसलाई निरन्तर उच्चारण गर्नेले शिवसँग एकता प्राप्त गर्छ।",
+          "meaning_en": "The word Bhairava denotes he who dispels all fear and terror, who howls and cries, who gives all, and who pervades the universe. One who constantly repeats the word Bhairava becomes one with Shiva.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 131,
+          "verse_label": "131",
+          "sanskrit": "अहंममदेवमत्यावद प्रवतऩवत्तप्रसङ्गत्। वनराधारेमनो यावत तद्ध्यानप्ररेणाच्छमी ॥ १३१ ॥",
+          "transliteration": "ahaṃmamadevamatyāvada pravatanavattaprasaṅgat| vanarādhāremano yāvata taddhyānaprareṇācchamī || 131 ||",
+          "meaning_ne": "\"म हुँ\", \"यो मेरो हो\" भन्ने बक्तव्यको समयमा, परम वास्तविकतामा ध्यान गर्दा मन आधारविहीन हुन्छ।",
+          "meaning_en": "At the time of asserting, “I am” or “This is mine,” by inspired meditation on that highest reality, the mind becomes supportless.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 132,
+          "verse_label": "132",
+          "sanskrit": "वनत्यो विभवुनरधाधारो व्यापकश्चावखऱावधप्। शब्दान्प्रवतऺणंध्यायंकृताथोऽथानध रूु प्त् ॥ १३२ ॥",
+          "transliteration": "vanatyo vibhavunaradhādhāro vyāpakaścāvakharāvadhap| śabdānpravataऺṇaṃdhyāyaṃkṛtātho'thānadha rūu pt || 132 ||",
+          "meaning_ne": "निरन्तर शब्दहरू: सर्वव्यापी, आधारविहीन, ब्रह्मको स्वभावको ध्यान गर्दा, तिनीहरूको अर्थ अनुसार पूर्ति प्राप्त हुन्छ।",
+          "meaning_en": "Meditating on words like eternal, omnipresent, supportless, master of the universe, one attains fulfilment in accordance with their meaning.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 133,
+          "verse_label": "133",
+          "sanskrit": "अतत्त्ववमन्द्रजाऱाभवमदंसिमधिवस्थतम। वकं तत्त्ववमन्द्रजाऱस्य इवत दार्ढ्ाछधमंव्रजते ॥ १३३ ॥",
+          "transliteration": "atattvavamandrajārābhavamadaṃsimadhivasthatama| vakaṃ tattvavamandrajārasya ivata dārḍhāchadhamaṃvrajate || 133 ||",
+          "meaning_ne": "यो संसार जादूझैँ छ, कुनै वास्तविकता विना। यसमा दृढ विश्वास गर्दा शान्ति प्राप्त हुन्छ।",
+          "meaning_en": "This world is illusory like magic, devoid of essence. Being firmly convinced of this, one attains peace.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 134,
+          "verse_label": "134",
+          "sanskrit": "आत्मनो वनविकधारस्य क्व ऻानंक्व च िा वक्रया। ऻानायत्ता िवहभाधा अत् शन्यू वमदंजगत ॥ १३४ ॥",
+          "transliteration": "ātmano vanavikadhārasya kva ऻānaṃkva ca iā vakrayā| ऻānāyattā ivahabhādhā at śanyū vamadaṃjagata || 134 ||",
+          "meaning_ne": "अचल आत्माको ज्ञान वा गतिविधि कसरी हुन्छ? सबै बाह्य वस्तु ज्ञानको नियन्त्रणमा छन्। त्यसैले यो संसार रिक्त छ।",
+          "meaning_en": "How can there be knowledge or activity of the changeless Atman? All external objects are under the control of knowledge. Therefore, this world is void.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 135,
+          "verse_label": "135",
+          "sanskrit": "न मेिन्धो न मोऺो मेभीतस्यतैा विभीवषका्। प्रवतविम्बवमदमिद्धुजे र्धे वष्वि वििस्वत् ॥ १३५ ॥",
+          "transliteration": "na meindho na moऺo mebhītasyataiā vibhīvaṣakā| pravatavimbavamadamiddhuje rdhe vaṣvi viisvat || 135 ||",
+          "meaning_ne": "मेरो लागि बन्धन वा मोक्ष छैन। डर र आतंक डराउनेहरू ती बुद्धिका प्रतिबिम्ब मात्र हुन्।",
+          "meaning_en": "There is neither bondage nor liberation for me. These scarecrows are merely reflections of the intellect.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 136,
+          "verse_label": "136",
+          "sanskrit": "इवन्द्रयद्वारकं सि सखु दु्खावदसम्गमम। इतीवन्द्रयावण सम्त्यज्य स्वस्थ् स्वात्मवन िततधे ॥ १३६ ॥",
+          "transliteration": "ivandrayadvārakaṃ si sakhu dukhāvadasamgamama| itīvandrayāvaṇa samtyajya svasth svātmavana itatadhe || 136 ||",
+          "meaning_ne": "सर्वेन्द्रियहरूद्वारा हुने सुख-दुःखको सम्पर्क त्यागेर, आत्ममा स्थित हुनुपर्छ।",
+          "meaning_en": "All doors of perception produce pain and pleasure. Thus, casting aside sensory objects and withdrawing within, one abides in the self.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 137,
+          "verse_label": "137",
+          "sanskrit": "ऻानप्रकाशकं सि सिणे आत्मा प्रकाशक्। एकवमकस्वभाित्वात्ज्ऻानंऻये ंविभाव्यते॥ १३७ ॥",
+          "transliteration": "ऻānaprakāśakaṃ si siṇe ātmā prakāśak| ekavamakasvabhāitvātjऻānaṃऻye ṃvibhāvyate|| 137 ||",
+          "meaning_ne": "ज्ञान सबैलाई प्रकट गर्छ र आत्मा ज्ञान दिने हो। यसलाई एउटै ठानेर ध्यान गर्नुपर्छ।",
+          "meaning_en": "Knowledge reveals all, and the self is the revealer. One should contemplate the knowledge and the knower as one and the same.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 138,
+          "verse_label": "138",
+          "sanskrit": "मानसंचतेना शविरात्मा चवेत चतष्टुयम। यदा वप्रयेऩवरऺीणंतदा तद्भरैि्म ॥ १३८ ॥",
+          "transliteration": "mānasaṃcatenā śavirātmā caveta cataṣṭuyama| yadā vaprayenavaraऺīṇaṃtadā tadbharaiima || 138 ||",
+          "meaning_ne": "मन, चेतना, शक्ति र आत्माको यो समूह विलीन हुँदा, भैरवको अवस्था प्रकट हुन्छ।",
+          "meaning_en": "When the mind, awareness, energy, and self (the set of four) dissolve, the state of Bhairava manifests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 139,
+          "verse_label": "139",
+          "sanskrit": "वनस्तरङ्गोऩदशे ानांशतमिुं समासत्। द्वादशाभ्यवधकं दवेि यज्ज्ञात्वा ऻानविज्जन् ॥ १३९ ॥",
+          "transliteration": "vanastaraṅgonadaśe ānāṃśatamiuṃ samāsat| dvādaśābhyavadhakaṃ davei yajjñātvā ऻānavijjan || 139 ||",
+          "meaning_ne": "मानसको विचार रोक्ने ११२ तरिकाहरू संक्षेपमा बताइए। यी जान्दा मानिस ज्ञानी बनिन्छ।",
+          "meaning_en": "O Goddess, I have briefly told you more than 112 ways to still the mind. Knowing these, one becomes wise.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 140,
+          "verse_label": "140",
+          "sanskrit": "अि चकै तमयिव ो जायतेभरैि् स्वयम्। िाचा करोवत कमावधण शापानग्रुहकारक् ॥ १४० ॥",
+          "transliteration": "ai cakai tamayiva o jāyatebharaii svayam| iācā karovata kamāvadhaṇa śāpānagruhakārak || 140 ||",
+          "meaning_ne": "यी ध्यान विधिहरूमध्ये एउटामा स्थिर भए पनि, व्यक्ति भैरवको अवस्था प्राप्त गर्छ र वचनले आशिर्वाद वा शाप दिन सक्छ।",
+          "meaning_en": "One attains the state of Bhairava if established even in one of these 112 practices; through speech, one confers blessings or curses.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 141,
+          "verse_label": "141",
+          "sanskrit": "अजरामरतामवेत सोऽवणमावदगणुावित्। योवगनीनांवप्रयो दवेि सिमधऱेपकावधप् ॥ १४१ ॥",
+          "transliteration": "ajarāmaratāmaveta so'vaṇamāvadagaṇuāvit| yovaganīnāṃvaprayo davei simadharepakāvadhap || 141 ||",
+          "meaning_ne": "यी ध्यान विधिहरूमध्ये एकले साधकलाई जरा, मृत्यु, बुढ्यौलीबाट मुक्त गर्छ, सिद्धिहरू दिन्छ र योगिनहरूको प्रिय बनाउँछ।",
+          "meaning_en": "By practicing even one of these dharanas, the sadhaka becomes free from old age, attains immortality, gains siddhis, and becomes the darling of yoginis and master of all siddhas.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 142,
+          "verse_label": "142",
+          "sanskrit": "जीिन्नवऩ विमिु ोऽसौ कुिन्नध वऩ न वऱप्यते। श्री दिेी उिाच । इदंयवद िऩदुि े ऩरायाश्च महश्वे र ॥ १४२ ॥",
+          "transliteration": "jīinnavana vimiu o'sau kuinnadha vana na varapyate| śrī dieī uiāca | idaṃyavada inadui e narāyāśca mahaśve ra || 142 ||",
+          "meaning_ne": "देवी भन्छिन्: यदि यसले परम वास्तविकताको प्रकृति जनाउँछ भने, जीवित अवस्थामा पनि मुक्त हुन्छ र संसारिक क्रियाबाट प्रभावित हुँदैन।",
+          "meaning_en": "The Goddess said: O great Lord, if this is the nature of the supreme reality, he is liberated while living and unaffected by worldly activities.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 143,
+          "verse_label": "143",
+          "sanskrit": "एिमिु व्यिस्थायांजप्यतेको जऩश्च क्। ध्यायतेको महानाथ ऩज्यू तेकश्च तप्यृ वत ॥ १४३ ॥",
+          "transliteration": "eimiu vyisthāyāṃjapyateko janaśca k| dhyāyateko mahānātha najyū tekaśca tapyṛ vata || 143 ||",
+          "meaning_ne": "देवीले सोधिन्: स्थापित क्रम अनुसार, को पूज्य हुन्छ, को ध्यान गरिन्छ, र को सन्तुष्ट हुन्छ?",
+          "meaning_en": "Thus (Devi) said, O great Lord: in the established order, who would be invoked and meditated upon, and who is gratified by that worship?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 144,
+          "verse_label": "144",
+          "sanskrit": "हूयतेकस्य िा होमो याग् कस्य च वकं कथम। श्री भैरि उिाच । एषाि प्रवक्रया िाह्या स्थऱू ेष्विे मगृ ऺे णे॥ १४४ ॥",
+          "transliteration": "hūyatekasya iā homo yāg kasya ca vakaṃ kathama| śrī bhairi uiāca | eṣāi pravakrayā iāhyā stharū eṣvie magṛ ऺe ṇe|| 144 ||",
+          "meaning_ne": "श्री भैरव भन्छन्: यो विधि बाह्य रूपका पूजाहरू हुन्, जसमा होम, यज्ञ र अन्य कर्महरू गरिन्छ।",
+          "meaning_en": "Sri Bhairava said: These acts—oblations, sacrifice, and other rituals—are verily the gross forms of worship.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 145,
+          "verse_label": "145",
+          "sanskrit": "भयूो भयू् ऩरेभािेभािना भाव्यतेवह या। जऩ् सोऽि स्वयंनादो मन्त्रात्मा जप्य ईदृश् ॥ १४५ ॥",
+          "transliteration": "bhayūo bhayū narebhāiebhāinā bhāvyatevaha yā| jan so'i svayaṃnādo mantrātmā japya īdṛś || 145 ||",
+          "meaning_ne": "परम चेतनामा हुनुको विचारलाई बारम्बार ध्यान गर्ने, यही जप हो। यो आत्म-उत्पन्न ध्वनि मन्त्रको आत्मा हो।",
+          "meaning_en": "Contemplate on the thought of being in supreme consciousness repeatedly; this is japa. That self-generated sound is the soul of mantra. Japa is done like this.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 146,
+          "verse_label": "146",
+          "sanskrit": "ध्यानंवह वनश्चऱा िवुद्धवनरधाकारा वनराश्रया। न तुध्यानंशरीरावऺमखु हस्तावदकल्पना ॥ १४६ ॥",
+          "transliteration": "dhyānaṃvaha vanaścarā ivuddhavanaradhākārā vanarāśrayā| na tudhyānaṃśarīrāvaऺmakhu hastāvadakalpanā || 146 ||",
+          "meaning_ne": "बुद्धि स्थिर, निराकार र आधारविहीन हुँदा, ध्यान पुष्टि हुन्छ। देवताको रूप, आँखाहरू, हात आदि कल्पना ध्यान होइन।",
+          "meaning_en": "When the intellect becomes steady, formless, and unsupported, meditation is verified. Imagining the deity with body, eyes, hands, etc., is not meditation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 147,
+          "verse_label": "147",
+          "sanskrit": "ऩजू ा नाम न ऩष्पु ाद्ययैा ध मवत् वक्रयतेदृढा। वनविकधल्पेमहाव्योवि सा ऩजू ा ह्यदराल्लय् ॥ १४७ ॥",
+          "transliteration": "najū ā nāma na naṣpu ādyayaiā dha mavat vakrayatedṛḍhā| vanavikadhalpemahāvyovi sā najū ā hyadarāllay || 147 ||",
+          "meaning_ne": "फूलको अर्पण पूजा होइन। वास्तविक पूजा भनेको महाकाशमा, निर्विकल्प स्थितिमा मन स्थिर गर्नु हो।",
+          "meaning_en": "Offering flowers, etc., is not true worship. Making the mind steady in the great void (mahakasha) in a thoughtless state is real worship.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 148,
+          "verse_label": "148",
+          "sanskrit": "अिकै तमयवुिस्थेयोत्पद्यते वदनावद्दनम। भवरताकारता साि तवृप्तरत्यन्तऩणू तधा ॥ १४८ ॥",
+          "transliteration": "aikai tamayavuistheyotpadyate vadanāvaddanama| bhavaratākāratā sāi tavṛptaratyantanaṇū tadhā || 148 ||",
+          "meaning_ne": "कुनै एक अभ्यासमा स्थापित हुँदा, अनुभव दिनप्रतिदिन विकसित भएर पूर्णता प्राप्त हुन्छ।",
+          "meaning_en": "By being established in any one of the practices, the experience grows day by day until a state of absolute fullness or satisfaction is attained.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 149,
+          "verse_label": "149",
+          "sanskrit": "महाशन्यू ाऱयेिह्नौ भतूाऺविषयावदकम। हूयतेमनसा साधं स होमश्चतेनास्रचुा ॥ १४९ ॥",
+          "transliteration": "mahāśanyū ārayeihnau bhatūāऺviṣayāvadakama| hūyatemanasā sādhaṃ sa homaścatenāsracuā || 149 ||",
+          "meaning_ne": "महाकाशको अग्निमा मन, तत्व र इन्द्रियहरू अर्पण गर्दा वास्तविक होम पूर्ति हुन्छ।",
+          "meaning_en": "The real oblation is made when elements, senses, and mind are offered into the fire of the great void (bhairava) using consciousness as the ladle.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 150,
+          "verse_label": "150",
+          "sanskrit": "यागोऽि ऩरमशे ावन तवुष्टरनन्दऱऺणा। ऺऩणात्सिपधाि् पानांिाणात्सिस्यधपािवधत ॥ १५० ॥",
+          "transliteration": "yāgo'i naramaśe āvana tavuṣṭaranandaraऺṇā| ऺnaṇātsipadhāi pānāṃiāṇātsisyadhapāivadhata || 150 ||",
+          "meaning_ne": "आनन्दपूर्ण यज्ञ सबै पाप नष्ट गरेर सबैको उद्धार गर्ने उपाय बनिन्छ।",
+          "meaning_en": "O supreme Goddess, Parvati, this blissful sacrifice destroys all sins and becomes the saviour of all.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 151,
+          "verse_label": "151",
+          "sanskrit": "रुद्रशविसमािशे स्तत ऺ् िेंभािना ऩरा। अन्यथा तस्य तत्त्वस्य का ऩजू ा काश्च तप्यृ वत ॥ १५१ ॥",
+          "transliteration": "rudraśavisamāiśe stata ऺ ieṃbhāinā narā| anyathā tasya tattvasya kā najū ā kāśca tapyṛ vata || 151 ||",
+          "meaning_ne": "रुद्रको शक्तिमा डुबेको अवस्था सबैभन्दा महान ध्यान हो। अन्यथा, तत्त्वको पूजाको अर्थ के?",
+          "meaning_en": "The greatest contemplation is absorption into Rudra’s Shakti. Otherwise, how can there be any worship of that element?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 152,
+          "verse_label": "152",
+          "sanskrit": "स्वतन्त्रानन्दवचन्मािसार् स्वात्मा वहसितध्। आिशे नंतत्स्वरूपेस्वात्मन् स्नानमीवरतम ॥ १५२ ॥",
+          "transliteration": "svatantrānandavacanmāisār svātmā vahasitadh| āiśe naṃtatsvarūpesvātman snānamīvaratama || 152 ||",
+          "meaning_ne": "आत्मा नै स्वतन्त्र आनन्द र चेतनाको सार हो। आत्मा स्वरूपमा डुब्नु वास्तविक स्नान (शुद्धि) हो।",
+          "meaning_en": "One's own self is the all-pervasive bliss of freedom and essence of consciousness. Absorption into that nature is the real bath (purification).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 153,
+          "verse_label": "153",
+          "sanskrit": "यरै िे ऩज्यू तेद्रव्यस्तै प्यत ध ेिा ऩरापर्। यश्चि िै ऩजूक् सि् धस एिकै क्व ऩजू नम ॥ १५३ ॥",
+          "transliteration": "yarai ie najyū tedravyastai pyata dha eiā narāpar| yaści iai najūk si dhasa eikai kva najū nama || 153 ||",
+          "meaning_ne": "पारमपरिक वास्तविकता पूजा गर्ने सामग्री र पूजक एउटै हुन्। यसोभए, पूजा के हो?",
+          "meaning_en": "The oblations and the worshipper, by which the transcendental reality is worshipped, are all one. What then is this worship?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 154,
+          "verse_label": "154",
+          "sanskrit": "व्रजते प्र्ाणो विशज्जे ीि इच्छया कुवटऱाकृवत्। दीघात्मधा सा महादिेी ऩरऺिेम ऩ्राऩरा ॥ १५४ ॥",
+          "transliteration": "vrajate prāṇo viśajje īi icchayā kuvaṭarākṛvat| dīghātmadhā sā mahādieī naraऺiema nrānarā || 154 ||",
+          "meaning_ne": "प्राण र आपान, कुण्डलिनीको इच्छा अनुसार गतिशील हुँदै, महान देवी फैलिन्छिन् र परम तीर्थस्थल बन्छिन्।",
+          "meaning_en": "Prana and apana, moving swiftly by the will of kundalini, cause the great goddess to stretch and become the supreme pilgrimage of manifest and unmanifest.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 155,
+          "verse_label": "155",
+          "sanskrit": "अस्यामनचुरन व्तष्ठन म् हानन्दमयऽेर्ध्वरे। तया दव्ये ा समाविष्ट् ऩरंभरैिंआप्नयुात ॥ १५५ ॥",
+          "transliteration": "asyāmanacurana vtaṣṭhana m hānandamaya'erdhvare| tayā davye ā samāviṣṭ naraṃbharaiiṃāpnayuāta || 155 ||",
+          "meaning_ne": "यो आनन्दपूर्ण यज्ञको अभ्यास गर्नेले देवीको कृपाले भैरवको परम अवस्था प्राप्त गर्छ।",
+          "meaning_en": "One who pursues and abides in this blissful sacrifice attains, through the goddess’s grace, the supreme state of Bhairava.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 155,
+          "verse_label": "155b",
+          "sanskrit": "सकारणे िवहयावधत हकारणे विशते ऩ्नु्। हंसहंसत्ये मंुमन्त्रंजीिो जऩवत वनत्यश् ॥ १५५b ॥",
+          "transliteration": "sakāraṇe ivahayāvadhata hakāraṇe viśate nnu| haṃsahaṃsatye maṃumantraṃjīio janavata vanatyaś || 155b ||",
+          "meaning_ne": "श्वास बाहिर ‘हा’ र भित्र ‘सा’ गर्दै, व्यक्तिले निरन्तर ‘हंसा’ मन्त्र जप गर्छ।",
+          "meaning_en": "The breath is exhaled with the sound ‘Ha’ and inhaled with ‘Sa’. Thus, the individual continuously repeats the Hamsa mantra.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 156,
+          "verse_label": "156",
+          "sanskrit": "षट्शतावन वदिा रािौ सहस्राण्यके विम्शवत्। जऩो दव्ये ा् समवुद्दष्ट् सऱुभो दुऱभधो जड्ै॥ १५६ ॥",
+          "transliteration": "ṣaṭśatāvana vadiā rāiau sahasrāṇyake vimśavat| jano davye ā samavuddaṣṭ sarubho durabhadho jaḍai|| 156 ||",
+          "meaning_ne": "यो देवीको जप दिनरात २१,६०० पटक दोहोर्याइन्छ; सजिलो छ, तर अज्ञानका लागि कठिन छ।",
+          "meaning_en": "This japa of the Goddess, repeated 21,600 times during day and night, is easily available but difficult for the ignorant.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 157,
+          "verse_label": "157",
+          "sanskrit": "इत्यतेिवथतंदवेि ऩरमामतृ मत्तुमम। एतच्च निै कस्यावऩ प्रकाश्यंतुकदाचन ॥ १५७ ॥",
+          "transliteration": "ityateivathataṃdavei naramāmatṛ mattumama| etacca niai kasyāvana prakāśyaṃtukadācana || 157 ||",
+          "meaning_ne": "यो सर्वोत्तम उपदेश अमरत्व प्राप्त गर्न सिखाउने, कसैलाई कहिल्यै खुलाउन हुँदैन।",
+          "meaning_en": "O Goddess, this most excellent teaching, leading to the immortal state, should never be revealed to anyone.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 158,
+          "verse_label": "158",
+          "sanskrit": "ऩरवशष्येखऱेक्रूरेअभिेगरुुपादयो्। वनविकधल्पमतीनांतुिीराणांउन्नतात्मनाम ॥ १५८ ॥",
+          "transliteration": "naravaśaṣyekharekrūreabhiegaruupādayo| vanavikadhalpamatīnāṃtuiīrāṇāṃunnatātmanāma || 158 ||",
+          "meaning_ne": "यी शिक्षाहरू अन्य शिष्य, दुष्ट, कडाप्रकृति भएका, वा गुरुमा पूर्ण समर्पण नगर्नेहरूलाई नदिनु। केवल विवेकशील, आत्म-नियन्त्रित उच्च व्यक्तिहरूलाई मात्र।",
+          "meaning_en": "These teachings should not be disclosed to evil, cruel, or undisciplined disciples. They should be revealed only to advanced, self-controlled souls free of vikalpas.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 159,
+          "verse_label": "159",
+          "sanskrit": "भिानांगरुुिगस्य दातव्यंवनविशधङ्कया। ग्रामो राज्यंऩरुं दशे ऩिुदारकुटुंबकम ॥ १५९ ॥",
+          "transliteration": "bhiānāṃgaruuigasya dātavyaṃvanaviśadhaṅkayā| grāmo rājyaṃnaruṃ daśe niudārakuṭuṃbakama || 159 ||",
+          "meaning_ne": "गुरुका शिष्यहरू, जो शंका वा संदेहबाट मुक्त छन्, घर, गाउँ, राज्य आदि त्यागेर, दीक्षा पाउन योग्य छन्।",
+          "meaning_en": "Those devotees of the guru, free from doubt, having renounced home, village, kingdom, and relatives, should be accepted for initiation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 160,
+          "verse_label": "160",
+          "sanskrit": "सिमधतेत्पवरत्यज्य ग्राह्यमतेन्मगृ ऺे णे। वकमवेभरवस्थरदैवेि वस्थरं ऩरवमदंधनम ॥ १६० ॥",
+          "transliteration": "simadhatetpavaratyajya grāhyamatenmagṛ ऺe ṇe| vakamavebharavastharadaivei vastharaṃ naravamadaṃdhanama || 160 ||",
+          "meaning_ne": "संसारिक वस्तु अस्थायी छन्, तर यो परम सम्पत्ति चिरस्थायी छ।",
+          "meaning_en": "Worldly accoutrements are temporary, O Goddess, but this supreme wealth is everlasting.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "slug": "pashupatyashtakam",
+  "order_index": 6,
+  "category": "stotram",
+  "title_sa": "श्री पशुपत्यष्टकम्",
+  "title_ne": "श्री पशुपत्यष्टकम्",
+  "title_en": "Shri Pashupatyashtakam",
+  "subtitle_ne": "पशुपतिनाथको स्तुतिमा आठ श्लोक",
+  "subtitle_en": "Eight verses in praise of Lord Pashupatinath",
+  "description_ne": "ध्यान श्लोक र फलश्रुतिसहित शिवलाई पशुपति रूपमा स्तुति गर्ने अष्टक।",
+  "description_en": "An ashtakam glorifying Lord Shiva as Pashupati, the Lord of all beings, with an opening meditation verse and closing fruits-of-recitation verse.",
+  "source_ne": "श्री पृथिवीपतिसूरि रचित",
+  "source_en": "Composed by Shri Prithvipati Suri",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "ध्यानम्",
+          "sanskrit": "ध्यायेन्नित्यं महेशं रजतगिरिनिभं चारुचन्द्रावतंसं रत्नाकल्पोज्ज्वलाङ्गं परशुमृगवराभीतिहस्तं प्रसन्नम्। पद्मासीनं समन्तात्स्तुतममरगणैर्व्याघ्रकृत्तिं वसानं विश्वाद्यं विश्वबीजं निखिलभयहरं पञ्चवक्त्रं त्रिनेत्रम्॥",
+          "transliteration": "dhyāyen nityaṃ maheśaṃ rajatagirinibhaṃ cārucandrāvataṃsaṃ ratnākalpojjvalāṅgaṃ paraśumṛgavarābhītihastaṃ prasannam, padmāsīnaṃ samantāt-stutam-amaragaṇair-vyāghrakṛttiṃ vasānaṃ viśvādyaṃ viśvabījaṃ nikhilabhayaharaṃ pañcavaktraṃ trinetram",
+          "meaning_ne": "सधैं महेश (शिव)को ध्यान गर्नुपर्छ — जो चाँदीको पर्वतजस्तै श्वेत वर्णका छन्, सुन्दर चन्द्रमाले सिँगारिएका छन्, रत्नहरूका गहनाले चम्किरहेका अङ्ग भएका छन्, हातमा फर्सा, मृग र अभयमुद्रा धारण गरेका, सदा प्रसन्न, कमलमा विराजमान, चारैतिरबाट देवगणहरूद्वारा स्तुति गरिएका, बाघको छाला ओढेका, विश्वका आदि र विश्वका बीज स्वरूप, सम्पूर्ण भय हरण गर्ने, पाँच मुख र तीन नेत्र भएका छन्।",
+          "meaning_en": "One should ever meditate on Mahesha (Shiva) — resembling a mountain of silver, adorned with a beautiful crescent moon, his limbs radiant with jeweled ornaments, holding an axe, a deer and the gesture of protection in his hands, ever gracious, seated on a lotus, praised on all sides by hosts of gods, clad in a tiger's hide, the origin and the very seed of the universe, the remover of all fear, with five faces and three eyes.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1",
+          "sanskrit": "पशुपतिं द्युपतिं धरणीपतिं भुजगलोकपतिं च सतीपतिम्। प्रणतभक्तजनार्तिहरं परं भजत रे मनुजा गिरिजापतिम्॥1॥",
+          "transliteration": "paśupatiṃ dyupatiṃ dharaṇīpatiṃ bhujagalokapatiṃ ca satīpatim, praṇatabhaktajanārtiharaṃ paraṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "हे मानिसहरू हो, गिरिजापति (पार्वतीपति शिव)लाई भज — जो सम्पूर्ण प्राणीका पति (पशुपति), स्वर्गका पति (द्युपति), पृथ्वीका पति, नागलोकका पति र सतीका पति हुन्, जो शरणमा आएका भक्तजनको पीडा हर्ने सर्वश्रेष्ठ हुन्।",
+          "meaning_en": "O men, worship Girijapati (the Lord of Parvati) — the Lord of all beings, the Lord of heaven, the Lord of the earth, the Lord of the serpent world, and the Lord of Sati; the supreme one who removes the suffering of devotees who bow to him.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "2",
+          "sanskrit": "न जनको जननी न च सोदरो न तनयो न च भूरिबलं कुलम्। अवति कोऽपि न कालवशं गतं भजत रे मनुजा गिरिजापतिम्॥2॥",
+          "transliteration": "na janako jananī na ca sodaro na tanayo na ca bhūribalaṃ kulam, avati ko'pi na kālavaśaṃ gataṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "जब मानिस काल (मृत्यु)को वशमा पर्छ, त्यतिखेर न बाबुले, न आमाले, न दाजुभाइले, न छोराले, न ठूलो शक्तिशाली कुलले नै उसलाई बचाउन सक्छ। त्यसैले हे मानिसहरू हो, गिरिजापतिलाई भज।",
+          "meaning_en": "Neither father, nor mother, nor brother, nor son, nor even a family of great strength can protect one who has come under the sway of time (death) — no one can. Therefore, O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "3",
+          "sanskrit": "मुरजडिण्डिमवाद्यविलक्षणं मधुरपञ्चमनादविशारदम्। प्रमथभूतगणैरपि सेवितं भजत रे मनुजा गिरिजापतिम्॥3॥",
+          "transliteration": "murajaḍiṇḍimavādyavilakṣaṇaṃ madhurapañcamanādaviśāradam, pramathabhūtagaṇair-api sevitaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "मुरज र डिण्डिम आदि बाजाका विशिष्ट ध्वनिले युक्त, मधुर पञ्चम स्वरमा दक्ष, प्रमथ र भूतगणहरूद्वारा समेत सेवित गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "[Worship him] who is distinguished by the sound of instruments like the muraja and dindima drums, who is skilled in the sweet fifth musical note, and who is served even by the hosts of Pramathas and Bhutas — O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "4",
+          "sanskrit": "शरणदं सुखदं शरणान्वितं शिव शिवेति शिवेति नतं नृणाम्। अभयदं करुणावरुणालयं भजत रे मनुजा गिरिजापतिम्॥4॥",
+          "transliteration": "śaraṇadaṃ sukhadaṃ śaraṇānvitaṃ śiva śiveti śiveti nataṃ nṛṇām, abhayadaṃ karuṇāvaruṇālayaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "शरण दिने, सुख दिने, शरणागतवत्सल, जसलाई मानिसहरू 'शिव शिव' भन्दै नमन गर्छन्, अभय दिने, करुणाको सागर गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "[Worship him] who grants refuge, who grants happiness, who is full of compassion for those who take refuge, to whom men bow saying 'Shiva, Shiva', who grants fearlessness, the ocean of compassion — O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "5",
+          "sanskrit": "नरशिरोरचितं मणिकुण्डलं भुजगहारमुदं वृषभध्वजम्। चितिरजोधवलीकृतविग्रहं भजत रे मनुजा गिरिजापतिम्॥5॥",
+          "transliteration": "naraśirorachitaṃ maṇikuṇḍalaṃ bhujagahāramudaṃ vṛṣabhadhvajam, chitirajodhavalīkṛtavigrahaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "नरकपालले सजिएका, मणिका कुण्डल पहिरेका, सर्पको हार लगाएर प्रसन्न हुने, वृषभको ध्वजा भएका, चिताको खरानीले शरीर सेतो बनाएका गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "[Worship him] who is adorned with a garland of human skulls, who wears jeweled earrings, who delights in a garland of serpents, whose banner bears a bull, whose form is whitened with ash from the funeral pyre — O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "6",
+          "sanskrit": "मखविनाशकरं शशिशेखरं सततमध्वरभाजिफलप्रदम्। प्रलयदग्धसुरासुरमानवं भजत रे मनुजा गिरिजापतिम्॥6॥",
+          "transliteration": "makhavināśakaraṃ śaśiśekharaṃ satatam-adhvarabhāji-phalapradam, pralayadagdhasurāsuramānavaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "यज्ञको नाश गर्ने (दक्षयज्ञ ध्वंस गर्ने), शिरमा चन्द्रमा धारण गर्ने, यज्ञ गर्नेहरूलाई सधैं फल दिने, प्रलयकालमा देवता, दानव र मानवसमेतलाई आफूमा लीन गर्ने गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "[Worship him] who destroyed the sacrifice, who bears the crescent moon on his head, who ever grants the fruits to those who perform rites, in whom gods, demons and humans alike are consumed at the time of dissolution — O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "7",
+          "sanskrit": "मदमपास्य चिरं हृदि संस्थितं मरणजन्मजराभयपीडितम्। जगदुदीक्ष्य समीपभयाकुलं भजत रे मनुजा गिरिजापतिम्॥7॥",
+          "transliteration": "madam-apāsya ciraṃ hṛdi saṃsthitaṃ maraṇajanmajarābhayapīḍitam, jagadudīkṣya samīpabhayākulaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "अहंकार त्यागेर, जन्म, मृत्यु र जराको भयले पीडित भई, वरिपरि भयले व्याकुल यो संसारलाई देखेर, सदा हृदयमा वास गर्ने गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "Casting away pride, O you who are tormented by the fear of death, birth and old age, seeing the world around you overwhelmed by fear — worship Girijapati, who ever dwells within the heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "8",
+          "sanskrit": "हरिविरञ्चिसुराधिपपूजितं यमजनेशधनेशनमस्कृतम्। त्रिनयनं भुवनत्रितयाधिपं भजत रे मनुजा गिरिजापतिम्॥8॥",
+          "transliteration": "harivirañcisurādhipapūjitaṃ yamajaneśadhaneśanamaskṛtam, trinayanaṃ bhuvanatritayādhipaṃ bhajata re manujā girijāpatim",
+          "meaning_ne": "हरि (विष्णु), विरञ्चि (ब्रह्मा) र देवराज इन्द्रद्वारा पूजित, यमराज र कुबेरजस्ता लोकपालहरूद्वारा नमस्कृत, तीन नेत्र भएका, त्रिलोकका अधिपति गिरिजापतिलाई हे मानिसहरू हो, भज।",
+          "meaning_en": "[Worship him] who is worshipped by Hari, Virinchi and the chief of the gods, who is bowed to by Yama and the lord of wealth (Kubera), the three-eyed one, the lord of the three worlds — O men, worship Girijapati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "9",
+          "sanskrit": "पशुपतेरिदमष्टकमद्भुतं विरचितं पृथिवीपतिसूरिणा। पठति संशृणुते मनुजः सदा शिवपुरीं वसते लभते मुदम्॥9॥",
+          "transliteration": "paśupateridam-aṣṭakam-adbhutaṃ viracitaṃ pṛthivīpatisūriṇā, paṭhati saṃśṛṇute manujaḥ sadā śivapurīṃ vasate labhate mudam",
+          "meaning_ne": "पशुपतिको यो अद्भुत अष्टक पृथिवीपतिसूरिद्वारा रचना गरिएको हो। जुन मानिसले यसलाई सधैं पढ्छ वा सुन्छ, ऊ शिवपुरीमा वास गर्छ र आनन्द प्राप्त गर्छ।",
+          "meaning_en": "This wondrous ashtakam of Pashupati was composed by Prithvipati Suri. A person who always recites or listens to it comes to dwell in Shivapuri and attains bliss.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

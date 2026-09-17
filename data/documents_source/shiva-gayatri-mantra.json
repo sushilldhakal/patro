@@ -1,0 +1,34 @@
+{
+  "slug": "shiva-gayatri-mantra",
+  "order_index": 9,
+  "category": "mantra",
+  "title_sa": "शिव गायत्री मन्त्रः",
+  "title_ne": "शिव गायत्री मन्त्र",
+  "title_en": "Shiva Gayatri Mantra",
+  "subtitle_ne": "यजुर्वेद",
+  "subtitle_en": "Yajurveda",
+  "description_ne": "भगवान् शिवको स्वरूपको ध्यान गरी बुद्धिलाई सन्मार्गतर्फ प्रेरित गर्न पढिने गायत्री शैलीको मन्त्र।",
+  "description_en": "A Gayatri-style mantra meditating on the form of Lord Shiva, invoked to illumine the intellect.",
+  "source_ne": "यजुर्वेद",
+  "source_en": "Yajurveda",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "ॐ महादेवाय विद्महे रुद्रमूर्तये धीमहि। तन्नः शिवः प्रचोदयात्॥",
+          "transliteration": "Om Mahadevaya Vidmahe Rudramurtaye Dhimahi, Tannah Shivah Prachodayat",
+          "meaning_ne": "ॐ, हामी महादेवलाई जानौं, रुद्रको स्वरूपको ध्यान गरौं। त्यो शिवले हाम्रो बुद्धिलाई सन्मार्गतर्फ प्रेरित गरून्।",
+          "meaning_en": "Om, let us come to know Mahadeva; let us meditate on the form of Rudra. May that Shiva illumine and guide our intellect.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}

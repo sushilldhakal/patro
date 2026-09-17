@@ -1,0 +1,70 @@
+{
+  "slug": "shiv-namaskaratha-mantra",
+  "order_index": 15,
+  "category": "mantra",
+  "title_sa": "शिवनमस्कारार्थमन्त्रः",
+  "title_ne": "शिव नमस्कारार्थ मन्त्र",
+  "title_en": "Shiv Namaskaratha Mantra",
+  "subtitle_ne": "पाँच मन्त्रको संग्रह",
+  "subtitle_en": "A compiled sequence of five Shiva invocations",
+  "description_ne": "शिवलाई नमस्कार गर्दा एकसाथ जोडेर पढिने पाँच मन्त्रको संग्रह — हिरण्यबाहु स्तुति, ईशान सर्वविद्यानाम्, दुई गायत्री-शैलीका मन्त्र, र महादेवलाई नमस्कारसहित शान्तिपाठ।",
+  "description_en": "A compiled sequence of five verses recited together in salutation to Shiva — the golden Hiranyabahu invocation, the Ishana Sarvavidyanam verse, two Gayatri-style mantras, and a closing salutation to Mahadeva with the Shanti chant.",
+  "source_ne": "पारम्परिक",
+  "source_en": "Traditional",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1",
+          "sanskrit": "ॐ नमो हिरण्यबाहवे हिरण्यवर्णाय हिरण्यरूपाय हिरण्यपतये अम्बिकापतये उमापतये पशुपतये नमो नमः॥",
+          "transliteration": "Om Namo Hiranyabahavey Hiranyavarnaya Hiranyaroopaya Hiranyapataye Ambikapataye Umapataye Pashupataye Namo Namah",
+          "meaning_ne": "ॐ, सुनौलो बाहु भएका, सुनौलो वर्ण भएका, सुनौलो स्वरूप भएका, सुन (धन)का स्वामी, अम्बिकाका पति, उमाका पति, र सम्पूर्ण प्राणीका पति (पशुपति)लाई पटक-पटक नमस्कार।",
+          "meaning_en": "Om, salutations again and again to the one with golden arms, of golden hue, of golden form, the lord of gold (wealth), the consort of Ambika, the consort of Uma, and the lord of all beings (Pashupati).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2",
+          "sanskrit": "ईशान सर्वविद्यानाम् ईश्वर सर्व भूतानाम् ब्रह्मादीपते ब्रह्मनोदिपते ब्रह्मा शिवो अस्तु सदा शिवोहम्॥",
+          "transliteration": "Ishana Sarvavidyanaam Ishwara Sarva Bhootanaam, Brahmaadeepate Brahmanodeepate Brahma Shivo Astu Sadaa Shivoham",
+          "meaning_ne": "हे ईशान, समस्त विद्याका अधिपति, समस्त प्राणीका ईश्वर, ब्रह्माका पनि अधिपति, सृष्टिकर्ताका पनि अधिपति — मलाई सदा कल्याण (शिव) प्राप्त होस्; म सदा शिवस्वरूप नै हुँ।",
+          "meaning_en": "O Ishana, the ruler of all knowledge, the lord of all beings, the overlord even of Brahma, the overlord of creation — may auspiciousness (Shiva) ever be mine; I am ever Shiva himself.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "तत्पुरुषाय विद्महे वाग्विशुद्धाय धीमहि। तन्नो शिवः प्रचोदयात्॥",
+          "transliteration": "Tatpurushaya Vidmahe Vaagvishuddhaya Dhimahi, Tanno Shivah Prachodayat",
+          "meaning_ne": "ॐ, हामी त्यो परमपुरुष (तत्पुरुष)लाई जान्न खोजौं, वाणीलाई शुद्ध पार्नेको ध्यान गरौं। त्यो शिवले हाम्रो बुद्धिलाई सन्मार्गतर्फ प्रेरित गरून्।",
+          "meaning_en": "Let us come to know that Supreme Being (Tatpurusha); let us meditate upon the one who purifies speech. May that Shiva illumine and guide our intellect.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "महादेवाय विद्महे रुद्रमूर्तये धीमहि। तन्नः शिवः प्रचोदयात्॥",
+          "transliteration": "Mahadevaya Vidmahe Rudramurtaye Dhimahi, Tannah Shivah Prachodayat",
+          "meaning_ne": "ॐ, हामी महादेवलाई जानौं, रुद्रको स्वरूपको ध्यान गरौं। त्यो शिवले हाम्रो बुद्धिलाई सन्मार्गतर्फ प्रेरित गरून्।",
+          "meaning_en": "Let us come to know Mahadeva; let us meditate on the form of Rudra. May that Shiva illumine and guide our intellect.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "नमस्ते अस्तु भगवन् विश्वेश्वराय महादेवाय त्र्यम्बकाय त्रिपुरान्तकाय त्रिकाग्निकालाय कालाग्निरुद्राय नीलकण्ठाय मृत्युञ्जयाय सर्वेश्वराय सदाशिवाय श्रीमन्महादेवाय नमः॥ श्रीमन्महादेवाय नमः। श्रीमन्महादेवाय नमः। ॐ शान्तिः शान्तिः शान्तिः॥",
+          "transliteration": "Namaste Astu Bhagawan Vishweshwaraya Mahadevaya, Tryambakaya Tripurantakaya Trikagnikalaya, Kalagnirudraya Nilakanthaya Mrityunjayaya, Sarveshwaraya Sadashivaya Shriman Mahadevaya Namah, Shriman Mahadevaya Namah, Shriman Mahadevaya Namah, Om Shanti Shanti Shantih",
+          "meaning_ne": "हे भगवान् विश्वेश्वर महादेवलाई नमस्कार होस् — त्रिनेत्रधारी त्र्यम्बकलाई, त्रिपुरको नाश गर्ने त्रिपुरान्तकलाई, त्रिकाग्निकाल र कालाग्निरुद्रलाई, नीलो कण्ठ भएका नीलकण्ठलाई, मृत्युलाई जित्ने मृत्युञ्जयलाई, सबैका ईश्वर सर्वेश्वरलाई, र सदा कल्याणकारी सदाशिवलाई; श्रीमान् महादेवलाई नमस्कार। श्रीमान् महादेवलाई नमस्कार। श्रीमान् महादेवलाई नमस्कार। ॐ शान्ति, शान्ति, शान्ति।",
+          "meaning_en": "Salutations to you, O Lord, the Lord of the universe, the great god; to the three-eyed one, the destroyer of the three cities, the fire at the time of dissolution, Rudra who is that dissolving fire, the blue-throated one, the conqueror of death, the lord of all, the eternally auspicious one — salutations to the glorious Mahadeva. Salutations to the glorious Mahadeva. Salutations to the glorious Mahadeva. Om, peace, peace, peace.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}
