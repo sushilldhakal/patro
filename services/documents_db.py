@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS documents (
     cover_image     TEXT,
     has_chapters    INTEGER NOT NULL DEFAULT 0,
     chapter_count   INTEGER NOT NULL DEFAULT 0,
-    shloka_count    INTEGER NOT NULL DEFAULT 0
+    shloka_count    INTEGER NOT NULL DEFAULT 0,
+    full_audio_key  TEXT
 );
 
 CREATE TABLE IF NOT EXISTS shlokas (
@@ -117,10 +118,24 @@ def _resolve_audio_key(audio_prefix: str | None, shloka: dict[str, Any]) -> str 
     return f"{prefix}/{audio_file}" if prefix else audio_file
 
 
+def _resolve_full_audio_key(audio_prefix: str | None, full_audio_file: Any) -> str | None:
+    """Same key-joining rule as a shloka's audio, for the whole-document recording."""
+    if not full_audio_file:
+        return None
+    full_audio_file = str(full_audio_file).strip()
+    if not full_audio_file:
+        return None
+    if full_audio_file.startswith("http://") or full_audio_file.startswith("https://"):
+        return full_audio_file
+    prefix = (audio_prefix or "").strip().strip("/")
+    return f"{prefix}/{full_audio_file}" if prefix else full_audio_file
+
+
 def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> None:
     slug = manifest["slug"]
     has_chapters = bool(manifest.get("has_chapters"))
     audio_prefix = manifest.get("audio_prefix")
+    full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
     chapters = manifest.get("chapters") or []
 
     global_order = 0
@@ -164,8 +179,8 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO documents
             (slug, order_index, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
-             has_chapters, chapter_count, shloka_count)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             has_chapters, chapter_count, shloka_count, full_audio_key)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
@@ -183,6 +198,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             1 if has_chapters else 0,
             chapter_count,
             shloka_count,
+            full_audio_key,
         ),
     )
     conn.executemany(
@@ -242,6 +258,7 @@ def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
         "has_chapters": bool(row["has_chapters"]),
         "chapter_count": row["chapter_count"],
         "shloka_count": row["shloka_count"],
+        "full_audio_key": row["full_audio_key"],
     }
 
 

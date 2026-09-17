@@ -44,7 +44,12 @@ def _resolve_document_summary(doc: dict[str, Any]) -> dict[str, Any]:
     # captures doc's keys at spread time, so "cover_image" would survive alongside
     # "cover_image_url" if the pop and the spread were combined in one expression.
     cover_image = doc.pop("cover_image", None)
-    return {**doc, "cover_image_url": _resolve_asset_url(cover_image)}
+    full_audio_key = doc.pop("full_audio_key", None)
+    return {
+        **doc,
+        "cover_image_url": _resolve_asset_url(cover_image),
+        "full_audio_url": _resolve_asset_url(full_audio_key),
+    }
 
 
 @router.get("/documents")

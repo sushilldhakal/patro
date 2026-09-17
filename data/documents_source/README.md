@@ -29,6 +29,13 @@ enough; nothing needs to be run by hand.
   // one-line change here instead of touching every shloka.
   "audio_prefix": "documents/vishnu-sahasranama",
 
+  // Optional: one continuous recording of the whole document (joined onto
+  // audio_prefix the same way a verse's audio_file is, or a full URL). Powers
+  // a "play full recording" control separate from the per-verse players —
+  // this is a single uncut file, not the same audio re-split; upload both if
+  // you want both experiences. Omit entirely if you only have per-verse clips.
+  "full_audio_file": "vishnu-sahasranama-full.mp3",
+
   "chapters": [
     {
       "number": null,                  // null when has_chapters is false
