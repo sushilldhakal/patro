@@ -27,7 +27,9 @@
           "meaning_ne": "ॐ — पृथ्वी, अन्तरिक्ष र स्वर्ग (त्रिलोक)। त्यो पूज्य सवितादेव (सूर्य)को उत्कृष्ट तेज...",
           "meaning_en": "Om — the earth, the atmosphere, and the heavens. That excellent, adorable radiance of Savitr (the sun)...",
           "audio_file": "gayatri_01.wav",
-          "audio_duration_seconds": null
+          "audio_duration_seconds": null,
+          "full_audio_start": 0.0,
+          "full_audio_end": 4.89
         },
         {
           "verse_number": 2,
@@ -37,7 +39,9 @@
           "meaning_ne": "...त्यो देवताको तेजको हामी ध्यान गर्छौं। त्यसले हाम्रो बुद्धिलाई सही मार्गमा प्रेरित गरून्।",
           "meaning_en": "...that divine radiance — we meditate upon it. May it inspire our intellect.",
           "audio_file": "gayatri_02.wav",
-          "audio_duration_seconds": null
+          "audio_duration_seconds": null,
+          "full_audio_start": 4.89,
+          "full_audio_end": 10.58
         }
       ]
     }

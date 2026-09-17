@@ -56,7 +56,9 @@ CREATE TABLE IF NOT EXISTS shlokas (
     meaning_ne              TEXT,
     meaning_en              TEXT,
     audio_key               TEXT,
-    audio_duration_seconds  REAL
+    audio_duration_seconds  REAL,
+    full_audio_start        REAL,
+    full_audio_end          REAL
 );
 CREATE INDEX IF NOT EXISTS idx_shlokas_document_order
     ON shlokas(document_slug, global_order);
@@ -168,6 +170,8 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("meaning_en"),
                     audio_key,
                     shloka.get("audio_duration_seconds"),
+                    shloka.get("full_audio_start"),
+                    shloka.get("full_audio_end"),
                 )
             )
 
@@ -206,8 +210,8 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
              verse_number, verse_label, sanskrit, transliteration, meaning_ne, meaning_en,
-             audio_key, audio_duration_seconds)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -308,6 +312,8 @@ def get_document_detail(slug: str) -> dict[str, Any] | None:
                 "meaning_en": r["meaning_en"],
                 "audio_key": r["audio_key"],
                 "audio_duration_seconds": r["audio_duration_seconds"],
+                "full_audio_start": r["full_audio_start"],
+                "full_audio_end": r["full_audio_end"],
             }
         )
 
