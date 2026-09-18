@@ -13,6 +13,7 @@
   "source_en": "Shukla Yajurveda, Vajasaneyi Samhita",
   "cover_image": "",
   "has_chapters": true,
+  "inline_chapters": true,
   "chapters": [
     {
       "number": 1,

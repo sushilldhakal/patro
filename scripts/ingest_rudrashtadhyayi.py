@@ -202,6 +202,7 @@ def main() -> None:
         "source_en": "Shukla Yajurveda, Vajasaneyi Samhita",
         "cover_image": "",
         "has_chapters": True,
+        "inline_chapters": True,
         "chapters": chapters,
     }
     OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
