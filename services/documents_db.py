@@ -69,6 +69,8 @@ CREATE TABLE IF NOT EXISTS shlokas (
 );
 CREATE INDEX IF NOT EXISTS idx_shlokas_document_order
     ON shlokas(document_slug, global_order);
+CREATE INDEX IF NOT EXISTS idx_shlokas_document_chapter
+    ON shlokas(document_slug, chapter_number, global_order);
 
 CREATE TABLE IF NOT EXISTS documents_meta (
     key   TEXT PRIMARY KEY,
@@ -78,6 +80,7 @@ CREATE TABLE IF NOT EXISTS documents_meta (
 
 _seed_lock = threading.Lock()
 _seeded = False
+_current_version: str | None = None
 
 
 def _connect() -> sqlite3.Connection:
@@ -239,7 +242,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
 
 
 def ensure_seeded() -> None:
-    global _seeded
+    global _seeded, _current_version
     if _seeded:
         return
     with _seed_lock:
@@ -254,6 +257,7 @@ def ensure_seeded() -> None:
                 "SELECT value FROM documents_meta WHERE key = 'version'"
             ).fetchone()
             if current is not None and current["value"] == version:
+                _current_version = version
                 _seeded = True
                 return
 
@@ -266,7 +270,19 @@ def ensure_seeded() -> None:
                 "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
                 (version,),
             )
+        _current_version = version
         _seeded = True
+
+
+def content_version() -> str:
+    """Content-hash version of the currently seeded manifests.
+
+    Changes only when a manifest's bytes change, so callers (the response
+    cache) can key off it and get automatic invalidation on content edits
+    without a manual cache-bust step.
+    """
+    ensure_seeded()
+    return _current_version or "0"
 
 
 def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
@@ -287,6 +303,30 @@ def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
         "chapter_count": row["chapter_count"],
         "shloka_count": row["shloka_count"],
         "full_audio_key": row["full_audio_key"],
+    }
+
+
+def _document_detail_base(doc_row: sqlite3.Row) -> dict[str, Any]:
+    detail = _row_to_document_summary(doc_row)
+    detail["source_ne"] = doc_row["source_ne"]
+    detail["source_en"] = doc_row["source_en"]
+    return detail
+
+
+def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "id": r["id"],
+        "global_order": r["global_order"],
+        "verse_number": r["verse_number"],
+        "verse_label": r["verse_label"],
+        "sanskrit": r["sanskrit"],
+        "transliteration": r["transliteration"],
+        "meaning_ne": r["meaning_ne"],
+        "meaning_en": r["meaning_en"],
+        "audio_key": r["audio_key"],
+        "audio_duration_seconds": r["audio_duration_seconds"],
+        "full_audio_start": r["full_audio_start"],
+        "full_audio_end": r["full_audio_end"],
     }
 
 
@@ -324,25 +364,110 @@ def get_document_detail(slug: str) -> dict[str, Any] | None:
             }
             chapters_by_key[key] = chapter
             chapters.append(chapter)
-        chapter["shlokas"].append(
-            {
-                "id": r["id"],
-                "global_order": r["global_order"],
-                "verse_number": r["verse_number"],
-                "verse_label": r["verse_label"],
-                "sanskrit": r["sanskrit"],
-                "transliteration": r["transliteration"],
-                "meaning_ne": r["meaning_ne"],
-                "meaning_en": r["meaning_en"],
-                "audio_key": r["audio_key"],
-                "audio_duration_seconds": r["audio_duration_seconds"],
-                "full_audio_start": r["full_audio_start"],
-                "full_audio_end": r["full_audio_end"],
-            }
-        )
+        chapter["shlokas"].append(_shloka_row_to_dict(r))
 
-    detail = _row_to_document_summary(doc_row)
-    detail["source_ne"] = doc_row["source_ne"]
-    detail["source_en"] = doc_row["source_en"]
+    detail = _document_detail_base(doc_row)
     detail["chapters"] = chapters
     return detail
+
+
+def get_document_summary(slug: str) -> dict[str, Any] | None:
+    """Document metadata plus its chapter list, sized to what ``/documents/{slug}``
+    actually returns.
+
+    A paginated chaptered document (``has_chapters`` and not ``inline_chapters``
+    — the Gita) gets its chapter list from a ``GROUP BY`` count, never reading
+    verse text; its chapters are fetched individually via
+    :func:`get_chapter_shlokas`. A document with no chapters, or an
+    ``inline_chapters`` one, embeds every verse here since the whole text is
+    meant to render on one page regardless.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+        if doc_row is None:
+            return None
+        embed_shlokas = (not doc_row["has_chapters"]) or bool(doc_row["inline_chapters"])
+        if embed_shlokas:
+            shloka_rows = conn.execute(
+                "SELECT * FROM shlokas WHERE document_slug = ? ORDER BY global_order ASC",
+                (slug,),
+            ).fetchall()
+            chapters: list[dict[str, Any]] = []
+            chapters_by_key: dict[Any, dict[str, Any]] = {}
+            for r in shloka_rows:
+                key = r["chapter_number"]
+                chapter = chapters_by_key.get(key)
+                if chapter is None:
+                    chapter = {
+                        "number": r["chapter_number"],
+                        "title_ne": r["chapter_title_ne"],
+                        "title_en": r["chapter_title_en"],
+                        "shlokas": [],
+                    }
+                    chapters_by_key[key] = chapter
+                    chapters.append(chapter)
+                chapter["shlokas"].append(_shloka_row_to_dict(r))
+        else:
+            chapter_rows = conn.execute(
+                """
+                SELECT chapter_number, chapter_title_ne, chapter_title_en,
+                       COUNT(*) AS shloka_count
+                FROM shlokas
+                WHERE document_slug = ?
+                GROUP BY chapter_number
+                ORDER BY MIN(global_order) ASC
+                """,
+                (slug,),
+            ).fetchall()
+            chapters = [
+                {
+                    "number": r["chapter_number"],
+                    "title_ne": r["chapter_title_ne"],
+                    "title_en": r["chapter_title_en"],
+                    "shloka_count": r["shloka_count"],
+                }
+                for r in chapter_rows
+            ]
+
+    detail = _document_detail_base(doc_row)
+    detail["chapters"] = chapters
+    return detail
+
+
+def document_summary_lite(slug: str) -> dict[str, Any] | None:
+    """Just the document row as a summary dict — no chapters, no shlokas.
+
+    The base payload for a single-chapter response, where building the full
+    chapter list (or worse, every chapter's verses) would be wasted work.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        doc_row = conn.execute("SELECT * FROM documents WHERE slug = ?", (slug,)).fetchone()
+    if doc_row is None:
+        return None
+    return _document_detail_base(doc_row)
+
+
+def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None:
+    """One chapter's shlokas, filtered directly in SQL.
+
+    Unlike routing a chapter request through :func:`get_document_detail`, this
+    never reads (or Python-regroups) any other chapter's verse text.
+    """
+    ensure_seeded()
+    with _connect() as conn:
+        shloka_rows = conn.execute(
+            "SELECT * FROM shlokas WHERE document_slug = ? AND chapter_number = ? "
+            "ORDER BY global_order ASC",
+            (slug, chapter_number),
+        ).fetchall()
+    if not shloka_rows:
+        return None
+    first = shloka_rows[0]
+    return {
+        "number": first["chapter_number"],
+        "title_ne": first["chapter_title_ne"],
+        "title_en": first["chapter_title_en"],
+        "shlokas": [_shloka_row_to_dict(r) for r in shloka_rows],
+    }
