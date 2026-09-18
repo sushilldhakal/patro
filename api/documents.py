@@ -19,18 +19,29 @@ count of verses.
 No auth — same public/read-only shape as vastu, panchanga, kundali. Content
 lives in ``data/documents_source/*.json`` (see that folder's README) and is
 served from ``data/documents.db`` via ``services/documents_db.py``.
+
+Every route is served through ``response_cache``'s gzip cache: the payload is
+a pure function of the manifests already seeded into SQLite, and the cache
+key embeds ``documents_db.content_version()`` so editing a shloka and
+redeploying invalidates exactly the cached entries that changed.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 import config
-from services import documents_db
+from services import documents_db, response_cache
 
 router = APIRouter(tags=["documents"])
+
+# Static reference text: an hour in the browser, a day at the edge, and a week
+# of stale-while-revalidate to shield the origin — same profile as the other
+# deterministic-content routes in response_cache. The content-hash suffix in
+# each cache key (not the URL) is what actually invalidates on a content edit.
+_CACHE_CONTROL = response_cache.DEFAULT_CACHE_CONTROL
 
 
 def _resolve_asset_url(key: str | None) -> str | None:
@@ -69,63 +80,61 @@ def _resolve_shloka(s: dict[str, Any]) -> dict[str, Any]:
     return {**s, "audio_url": _resolve_asset_url(audio_key)}
 
 
-def _find_chapter(doc: dict[str, Any], chapter_number: int) -> dict[str, Any] | None:
-    return next((c for c in doc["chapters"] if c["number"] == chapter_number), None)
-
-
 @router.get("/documents")
-def list_documents():
-    documents = [_resolve_document_summary(dict(d)) for d in documents_db.list_documents()]
-    return {"count": len(documents), "documents": documents}
+def list_documents(request: Request):
+    def build():
+        documents = [_resolve_document_summary(dict(d)) for d in documents_db.list_documents()]
+        return {"count": len(documents), "documents": documents}
+
+    cache_key = f"documents_list_v{documents_db.content_version()}"
+    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
 @router.get("/documents/{slug}")
-def document_detail(slug: str):
-    doc = documents_db.get_document_detail(slug)
-    if doc is None:
-        raise HTTPException(status_code=404, detail=f"No such document: {slug}")
+def document_detail(slug: str, request: Request):
+    def build():
+        doc = documents_db.get_document_summary(slug)
+        if doc is None:
+            raise HTTPException(status_code=404, detail=f"No such document: {slug}")
 
-    chapters = []
-    embed_shlokas = (not doc["has_chapters"]) or bool(doc.get("inline_chapters"))
-    for chapter in doc["chapters"]:
-        if embed_shlokas:
-            shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
-            chapters.append({**chapter, "shlokas": shlokas})
-        else:
-            # Metadata only — a paginated chaptered document's verses are
-            # fetched per chapter (see /documents/{slug}/chapters/{chapter}).
-            chapters.append(
-                {
-                    "number": chapter["number"],
-                    "title_ne": chapter["title_ne"],
-                    "title_en": chapter["title_en"],
-                    "shloka_count": len(chapter["shlokas"]),
-                }
-            )
+        chapters = []
+        embed_shlokas = (not doc["has_chapters"]) or bool(doc.get("inline_chapters"))
+        for chapter in doc["chapters"]:
+            if embed_shlokas:
+                shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
+                chapters.append({**chapter, "shlokas": shlokas})
+            else:
+                # Metadata only — already shaped this way by get_document_summary.
+                chapters.append(chapter)
 
-    return {**_resolve_document_summary(doc), "chapters": chapters}
+        return {**_resolve_document_summary(doc), "chapters": chapters}
+
+    cache_key = f"documents_detail_v{documents_db.content_version()}_{slug}"
+    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
 
 
 @router.get("/documents/{slug}/chapters/{chapter_number}")
-def document_chapter_detail(slug: str, chapter_number: int):
-    doc = documents_db.get_document_detail(slug)
-    if doc is None:
-        raise HTTPException(status_code=404, detail=f"No such document: {slug}")
+def document_chapter_detail(slug: str, chapter_number: int, request: Request):
+    def build():
+        summary = documents_db.document_summary_lite(slug)
+        if summary is None:
+            raise HTTPException(status_code=404, detail=f"No such document: {slug}")
 
-    chapter = _find_chapter(doc, chapter_number)
-    if chapter is None:
-        raise HTTPException(status_code=404, detail=f"No such chapter: {chapter_number}")
+        chapter = documents_db.get_chapter_shlokas(slug, chapter_number)
+        if chapter is None:
+            raise HTTPException(status_code=404, detail=f"No such chapter: {chapter_number}")
 
-    summary = dict(doc)
-    summary.pop("chapters", None)
-    shlokas = [_resolve_shloka(dict(s)) for s in chapter["shlokas"]]
+        shlokas = [_resolve_shloka(dict(s)) for s in chapter["shlokas"]]
 
-    return {
-        **_resolve_document_summary(summary),
-        "chapter": {
-            "number": chapter["number"],
-            "title_ne": chapter["title_ne"],
-            "title_en": chapter["title_en"],
-            "shlokas": shlokas,
-        },
-    }
+        return {
+            **_resolve_document_summary(summary),
+            "chapter": {
+                "number": chapter["number"],
+                "title_ne": chapter["title_ne"],
+                "title_en": chapter["title_en"],
+                "shlokas": shlokas,
+            },
+        }
+
+    cache_key = f"documents_chapter_v{documents_db.content_version()}_{slug}_{chapter_number}"
+    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
