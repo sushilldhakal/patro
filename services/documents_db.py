@@ -24,6 +24,7 @@ from engine.astronomy.paths import documents_db_path, documents_source_dir
 
 _ADDED_COLUMNS: list[tuple[str, str]] = [
     ("category", "TEXT NOT NULL DEFAULT 'stotram'"),
+    ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
 ]
 
 _SCHEMA = """
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS documents (
     source_en       TEXT,
     cover_image     TEXT,
     has_chapters    INTEGER NOT NULL DEFAULT 0,
+    inline_chapters INTEGER NOT NULL DEFAULT 0,
     chapter_count   INTEGER NOT NULL DEFAULT 0,
     shloka_count    INTEGER NOT NULL DEFAULT 0,
     full_audio_key  TEXT
@@ -152,6 +154,7 @@ def _resolve_full_audio_key(audio_prefix: str | None, full_audio_file: Any) -> s
 def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> None:
     slug = manifest["slug"]
     has_chapters = bool(manifest.get("has_chapters"))
+    inline_chapters = bool(manifest.get("inline_chapters"))
     audio_prefix = manifest.get("audio_prefix")
     full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
     chapters = manifest.get("chapters") or []
@@ -199,8 +202,8 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO documents
             (slug, order_index, category, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
-             has_chapters, chapter_count, shloka_count, full_audio_key)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
@@ -217,6 +220,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             manifest.get("source_en"),
             manifest.get("cover_image") or None,
             1 if has_chapters else 0,
+            1 if inline_chapters else 0,
             chapter_count,
             shloka_count,
             full_audio_key,
@@ -279,6 +283,7 @@ def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
         "description_en": row["description_en"],
         "cover_image": row["cover_image"],
         "has_chapters": bool(row["has_chapters"]),
+        "inline_chapters": bool(row["inline_chapters"]) if "inline_chapters" in row.keys() else False,
         "chapter_count": row["chapter_count"],
         "shloka_count": row["shloka_count"],
         "full_audio_key": row["full_audio_key"],

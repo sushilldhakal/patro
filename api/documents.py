@@ -1,12 +1,14 @@
 """Documents (शोत्र/स्तोत्र) routes — Sanskrit text, meanings, and R2 audio URLs.
 
 * ``GET /documents``                              → list of documents for the library grid
-* ``GET /documents/{slug}``                        → one document's metadata; for a chaptered
-                                                      document, chapters carry only a
-                                                      ``shloka_count`` (no verse text) so the
-                                                      client can render a chapter picker without
-                                                      downloading the whole book — verses arrive
-                                                      only once a chapter is opened
+* ``GET /documents/{slug}``                        → one document's metadata. For a
+                                                      paginated chaptered document (the Gita),
+                                                      chapters carry only a ``shloka_count``
+                                                      so the client can render a chapter picker
+                                                      without downloading the whole book. For
+                                                      ``inline_chapters`` documents (Sri Rudram),
+                                                      every chapter's verses are embedded here
+                                                      so the whole text renders on one page.
 * ``GET /documents/{slug}/chapters/{chapter}``     → one chapter's shlokas, audio resolved
 
 Splitting by chapter (never by an arbitrary page size) keeps this scaling to
@@ -84,11 +86,14 @@ def document_detail(slug: str):
         raise HTTPException(status_code=404, detail=f"No such document: {slug}")
 
     chapters = []
+    embed_shlokas = (not doc["has_chapters"]) or bool(doc.get("inline_chapters"))
     for chapter in doc["chapters"]:
-        if doc["has_chapters"]:
-            # Metadata only — a chaptered document's verses are fetched per
-            # chapter (see /documents/{slug}/chapters/{chapter}) so opening
-            # the library never downloads an entire multi-hundred-verse book.
+        if embed_shlokas:
+            shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
+            chapters.append({**chapter, "shlokas": shlokas})
+        else:
+            # Metadata only — a paginated chaptered document's verses are
+            # fetched per chapter (see /documents/{slug}/chapters/{chapter}).
             chapters.append(
                 {
                     "number": chapter["number"],
@@ -97,9 +102,6 @@ def document_detail(slug: str):
                     "shloka_count": len(chapter["shlokas"]),
                 }
             )
-        else:
-            shlokas = [_resolve_shloka(s) for s in chapter["shlokas"]]
-            chapters.append({**chapter, "shlokas": shlokas})
 
     return {**_resolve_document_summary(doc), "chapters": chapters}
 

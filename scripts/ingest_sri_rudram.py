@@ -457,7 +457,9 @@ def build_document(verses: list[dict]) -> dict:
         "source_en": "Krishna Yajurveda, Taittiriya Samhita 4.5 (Sri Rudra Prasna / Namakam)",
         "cover_image": "",
         "has_chapters": True,
+        "inline_chapters": True,
         "audio_prefix": "documents/sri-rudram",
+        "full_audio_file": "sri-rudram.mp3",
         "chapters": chapters,
     }
 
