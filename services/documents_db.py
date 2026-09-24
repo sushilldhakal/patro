@@ -27,6 +27,15 @@ _ADDED_COLUMNS: list[tuple[str, str]] = [
     ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
 ]
 
+# Same additive/nullable/idempotent pattern as _ADDED_COLUMNS, but for the
+# shlokas table. sukta_number groups a chaptered scripture's verses one level
+# below "chapter" (e.g. the Rigveda: chapter = Mandala, sukta = the group of
+# verses within it) without forcing every document to model suktas — it's
+# simply null for anything that doesn't have them.
+_ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
+    ("sukta_number", "INTEGER"),
+]
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS documents (
     slug            TEXT PRIMARY KEY,
@@ -58,6 +67,7 @@ CREATE TABLE IF NOT EXISTS shlokas (
     chapter_title_en        TEXT,
     verse_number            INTEGER NOT NULL,
     verse_label             TEXT NOT NULL,
+    sukta_number            INTEGER,
     sanskrit                TEXT NOT NULL,
     transliteration         TEXT,
     meaning_ne              TEXT,
@@ -95,12 +105,18 @@ def _connect() -> sqlite3.Connection:
 def _migrate_added_columns(conn: sqlite3.Connection) -> None:
     """Add missing columns to an existing table. Additive, nullable, idempotent."""
     existing = {row[1] for row in conn.execute("PRAGMA table_info(documents)")}
-    if not existing:
-        return
-    for name, coltype in _ADDED_COLUMNS:
-        if name in existing:
-            continue
-        conn.execute(f"ALTER TABLE documents ADD COLUMN {name} {coltype}")
+    if existing:
+        for name, coltype in _ADDED_COLUMNS:
+            if name in existing:
+                continue
+            conn.execute(f"ALTER TABLE documents ADD COLUMN {name} {coltype}")
+
+    existing_shloka_cols = {row[1] for row in conn.execute("PRAGMA table_info(shlokas)")}
+    if existing_shloka_cols:
+        for name, coltype in _ADDED_SHLOKA_COLUMNS:
+            if name in existing_shloka_cols:
+                continue
+            conn.execute(f"ALTER TABLE shlokas ADD COLUMN {name} {coltype}")
 
 
 def _manifest_paths() -> list[Path]:
@@ -186,6 +202,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     chapter.get("title_en"),
                     shloka["verse_number"],
                     shloka.get("verse_label") or str(shloka["verse_number"]),
+                    shloka.get("sukta_number"),
                     shloka["sanskrit"],
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
@@ -233,9 +250,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         """
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
-             verse_number, verse_label, sanskrit, transliteration, meaning_ne, meaning_en,
+             verse_number, verse_label, sukta_number, sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -319,6 +336,7 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "global_order": r["global_order"],
         "verse_number": r["verse_number"],
         "verse_label": r["verse_label"],
+        "sukta_number": r["sukta_number"],
         "sanskrit": r["sanskrit"],
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],
