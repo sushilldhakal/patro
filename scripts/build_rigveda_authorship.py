@@ -9,9 +9,9 @@ by (mandala, sukta) number. Kept separate from the ~10.5k-rik samhita data
 so adding more Mandalas' worth of attribution later is a small, reviewable
 diff instead of touching the big generated manifest by hand.
 
-Currently covers Mandala 1, Suktas 1-129 (of 191) — the rest of Mandala 1
-and Mandalas 2-10 have no entry yet and simply won't get a Rishi/Devata/
-Chhanda line on the page until they're added here.
+Currently covers all of Mandala 1 (Suktas 1-191). Mandalas 2-10 have no
+entry yet and simply won't get a Rishi/Devata/Chhanda line on the page
+until they're added here.
 
 Run from the repo root:
 
@@ -132,6 +132,42 @@ ROWS: list[tuple[int, int, str, str, str]] = [
     (127, 127, "Paruchhepa Daivodasi", "Agni", "Atyashti, Atidhriti"),
     (128, 128, "Paruchhepa Daivodasi", "Agni", "Atyashti"),
     (129, 129, "Paruchhepa Daivodasi", "Indra (1–5, 7–10), Indu (6)", "Atyashti, Atishakvari, Ashti"),
+    (130, 130, "Paruchhepa Daivodasi", "Indra", "Atyashti"),
+    (131, 131, "Paruchhepa Daivodasi", "Indra", "Atyashti"),
+    (132, 132, "Paruchhepa Daivodasi", "Indra", "Atyashti"),
+    (133, 133, "Paruchhepa Daivodasi", "Indra", "Atyashti"),
+    (134, 134, "Paruchhepa Daivodasi", "Vayu", "Atyashti"),
+    (135, 135, "Paruchhepa Daivodasi", "Vayu", "Atyashti"),
+    (136, 136, "Paruchhepa Daivodasi", "Mitra-Varuna", "Atyashti"),
+    (137, 137, "Paruchhepa Daivodasi", "Mitra-Varuna", "Atyashti"),
+    (138, 138, "Paruchhepa Daivodasi", "Pushan", "Atyashti"),
+    (139, 139, "Paruchhepa Daivodasi",
+     "Vishvedeva, Mitra-Varuna, Ashvins, Indra, Agni, Maruts, Indragni, Brihaspati",
+     "Atishakvari, Atyashti"),
+    (140, 141, "Dirghatama Auchathya", "Agni", "Jagati, Trishtup"),
+    (142, 142, "Dirghatama Auchathya", "Apri Deities (Agni, Tanunapat, Narashamsa, etc.)", "Anushtup"),
+    (143, 150, "Dirghatama Auchathya", "Agni", "Jagati, Trishtup, Ushnih"),
+    (151, 153, "Dirghatama Auchathya", "Mitra-Varuna", "Jagati, Trishtup"),
+    (154, 156, "Dirghatama Auchathya", "Vishnu", "Jagati, Trishtup"),
+    (157, 158, "Dirghatama Auchathya", "Ashvinikumar", "Jagati, Trishtup"),
+    (159, 160, "Dirghatama Auchathya", "Dyavaprithivi", "Jagati, Trishtup"),
+    (161, 161, "Dirghatama Auchathya", "Ribhugana", "Jagati, Trishtup"),
+    (162, 163, "Dirghatama Auchathya", "Ashva (Metaphor for Nation/Agni), Mitra-Varuna, Rudra", "Jagati, Trishtup"),
+    (164, 164, "Dirghatama Auchathya",
+     "Vishvedeva (Asya Vamiya Sukta — Agni, Surya, Kala, Sarasvati)", "Jagati, Trishtup"),
+    (165, 165, "Agastya Maitravaruni", "Indra & Maruts", "Trishtup"),
+    (166, 168, "Agastya Maitravaruni", "Maruts / Indra-Maruts", "Jagati, Trishtup"),
+    (169, 178, "Agastya Maitravaruni", "Indra (and Maruts)", "Trishtup"),
+    (179, 179, "Lopamudra (1–2), Agastya (3–4), Brahmachari Disciple (5–6)", "Rati / Dampati", "Trishtup"),
+    (180, 184, "Agastya Maitravaruni", "Ashvinikumar", "Trishtup, Jagati"),
+    (185, 185, "Agastya Maitravaruni", "Dyavaprithivi", "Trishtup"),
+    (186, 186, "Agastya Maitravaruni", "Vishvedeva", "Trishtup"),
+    (187, 187, "Agastya Maitravaruni", "Anna / Oshadhis (Pitum)", "Gayatri, Anushtup, Trishtup"),
+    (188, 188, "Agastya Maitravaruni", "Apri Hymn / Deities", "Gayatri"),
+    (189, 189, "Agastya Maitravaruni", "Agni", "Trishtup"),
+    (190, 190, "Agastya Maitravaruni", "Brihaspati", "Trishtup"),
+    (191, 191, "Agastya Maitravaruni",
+     "Ap, Oshadhis, Surya (Vishaghnopanishad / Poison Destroyer)", "Anushtup, Gayatri"),
 ]
 
 
