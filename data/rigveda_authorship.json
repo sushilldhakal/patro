@@ -643,5 +643,315 @@
     "rishi": "Paruchhepa Daivodasi",
     "devata": "Indra (1–5, 7–10), Indu (6)",
     "chhanda": "Atyashti, Atishakvari, Ashti"
+  },
+  "1.130": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Indra",
+    "chhanda": "Atyashti"
+  },
+  "1.131": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Indra",
+    "chhanda": "Atyashti"
+  },
+  "1.132": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Indra",
+    "chhanda": "Atyashti"
+  },
+  "1.133": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Indra",
+    "chhanda": "Atyashti"
+  },
+  "1.134": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Vayu",
+    "chhanda": "Atyashti"
+  },
+  "1.135": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Vayu",
+    "chhanda": "Atyashti"
+  },
+  "1.136": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Mitra-Varuna",
+    "chhanda": "Atyashti"
+  },
+  "1.137": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Mitra-Varuna",
+    "chhanda": "Atyashti"
+  },
+  "1.138": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Pushan",
+    "chhanda": "Atyashti"
+  },
+  "1.139": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Vishvedeva, Mitra-Varuna, Ashvins, Indra, Agni, Maruts, Indragni, Brihaspati",
+    "chhanda": "Atishakvari, Atyashti"
+  },
+  "1.140": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.141": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.142": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Apri Deities (Agni, Tanunapat, Narashamsa, etc.)",
+    "chhanda": "Anushtup"
+  },
+  "1.143": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.144": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.145": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.146": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.147": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.148": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.149": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.150": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup, Ushnih"
+  },
+  "1.151": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Mitra-Varuna",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.152": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Mitra-Varuna",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.153": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Mitra-Varuna",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.154": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Vishnu",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.155": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Vishnu",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.156": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Vishnu",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.157": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Ashvinikumar",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.158": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Ashvinikumar",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.159": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Dyavaprithivi",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.160": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Dyavaprithivi",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.161": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Ribhugana",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.162": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Ashva (Metaphor for Nation/Agni), Mitra-Varuna, Rudra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.163": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Ashva (Metaphor for Nation/Agni), Mitra-Varuna, Rudra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.164": {
+    "rishi": "Dirghatama Auchathya",
+    "devata": "Vishvedeva (Asya Vamiya Sukta — Agni, Surya, Kala, Sarasvati)",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.165": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra & Maruts",
+    "chhanda": "Trishtup"
+  },
+  "1.166": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Maruts / Indra-Maruts",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.167": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Maruts / Indra-Maruts",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.168": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Maruts / Indra-Maruts",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.169": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.170": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.171": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.172": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.173": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.174": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.175": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.176": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.177": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.178": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Indra (and Maruts)",
+    "chhanda": "Trishtup"
+  },
+  "1.179": {
+    "rishi": "Lopamudra (1–2), Agastya (3–4), Brahmachari Disciple (5–6)",
+    "devata": "Rati / Dampati",
+    "chhanda": "Trishtup"
+  },
+  "1.180": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.181": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.182": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.183": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.184": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.185": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Dyavaprithivi",
+    "chhanda": "Trishtup"
+  },
+  "1.186": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Vishvedeva",
+    "chhanda": "Trishtup"
+  },
+  "1.187": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Anna / Oshadhis (Pitum)",
+    "chhanda": "Gayatri, Anushtup, Trishtup"
+  },
+  "1.188": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Apri Hymn / Deities",
+    "chhanda": "Gayatri"
+  },
+  "1.189": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Agni",
+    "chhanda": "Trishtup"
+  },
+  "1.190": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Brihaspati",
+    "chhanda": "Trishtup"
+  },
+  "1.191": {
+    "rishi": "Agastya Maitravaruni",
+    "devata": "Ap, Oshadhis, Surya (Vishaghnopanishad / Poison Destroyer)",
+    "chhanda": "Anushtup, Gayatri"
   }
 }
