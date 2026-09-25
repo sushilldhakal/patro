@@ -38,6 +38,14 @@ ARCHIVE = ROOT / "data/archive.zip"
 ARCHIVE_MEMBER = "complete_rigveda_all_mandalas.json"
 OUT = ROOT / "data/documents_source/rigveda.json"
 
+# Traditional Rishi/Devata/Chhanda attribution per Sukta (the Anukramani) —
+# not present anywhere in the archive itself (see the ingest module docstring
+# below), so it's kept as its own small file and merged in here by
+# "<mandala>.<sukta>" key. Built/extended by scripts/build_rigveda_authorship.py.
+# Missing keys (most Suktas, for now) simply get no attribution — never
+# fabricated.
+AUTHORSHIP_PATH = ROOT / "data/rigveda_authorship.json"
+
 MANDALA_RE = re.compile(r"Mandala\s+(\d+)")
 SUKTA_RE = re.compile(r"Sukta\s+(\d+)")
 
@@ -54,6 +62,12 @@ def _load_source() -> dict[str, Any]:
     with zipfile.ZipFile(ARCHIVE) as zf:
         with zf.open(ARCHIVE_MEMBER) as f:
             return json.load(f)
+
+
+def _load_authorship() -> dict[str, Any]:
+    if not AUTHORSHIP_PATH.is_file():
+        return {}
+    return json.loads(AUTHORSHIP_PATH.read_text(encoding="utf-8"))
 
 
 def _rik_sanskrit(rik: dict[str, Any]) -> str:
@@ -84,6 +98,7 @@ def _rik_meaning(rik: dict[str, Any]) -> str | None:
 
 def build_manifest() -> dict[str, Any]:
     source = _load_source()
+    authorship = _load_authorship()
 
     # Sort mandalas/suktas numerically — dict insertion order in the source
     # JSON already happens to be sorted, but don't rely on that.
@@ -99,6 +114,7 @@ def build_manifest() -> dict[str, Any]:
         verse_number = 0
         for sukta_key in sukta_keys:
             sukta_number = int(SUKTA_RE.match(sukta_key).group(1))
+            sukta_attribution = authorship.get(f"{mandala_number}.{sukta_number}")
             for rik in suktas[sukta_key]:
                 verse_number += 1
                 rik_number = rik["rik_number"]
@@ -107,6 +123,12 @@ def build_manifest() -> dict[str, Any]:
                         "verse_number": verse_number,
                         "verse_label": f"{sukta_number}.{rik_number}",
                         "sukta_number": sukta_number,
+                        # Traditional Anukramani attribution for this Sukta —
+                        # null when scripts/build_rigveda_authorship.py has no
+                        # entry for it yet (most Suktas, for now).
+                        "sukta_rishi": (sukta_attribution or {}).get("rishi"),
+                        "sukta_devata": (sukta_attribution or {}).get("devata"),
+                        "sukta_chhanda": (sukta_attribution or {}).get("chhanda"),
                         "sanskrit": _rik_sanskrit(rik),
                         "transliteration": _rik_transliteration(rik),
                         "meaning_en": _rik_meaning(rik),

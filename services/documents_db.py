@@ -34,6 +34,9 @@ _ADDED_COLUMNS: list[tuple[str, str]] = [
 # simply null for anything that doesn't have them.
 _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     ("sukta_number", "INTEGER"),
+    ("sukta_rishi", "TEXT"),
+    ("sukta_devata", "TEXT"),
+    ("sukta_chhanda", "TEXT"),
 ]
 
 _SCHEMA = """
@@ -68,6 +71,9 @@ CREATE TABLE IF NOT EXISTS shlokas (
     verse_number            INTEGER NOT NULL,
     verse_label             TEXT NOT NULL,
     sukta_number            INTEGER,
+    sukta_rishi             TEXT,
+    sukta_devata            TEXT,
+    sukta_chhanda           TEXT,
     sanskrit                TEXT NOT NULL,
     transliteration         TEXT,
     meaning_ne              TEXT,
@@ -203,6 +209,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka["verse_number"],
                     shloka.get("verse_label") or str(shloka["verse_number"]),
                     shloka.get("sukta_number"),
+                    shloka.get("sukta_rishi"),
+                    shloka.get("sukta_devata"),
+                    shloka.get("sukta_chhanda"),
                     shloka["sanskrit"],
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
@@ -250,9 +259,10 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         """
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
-             verse_number, verse_label, sukta_number, sanskrit, transliteration, meaning_ne, meaning_en,
+             verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
+             sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -337,6 +347,9 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "verse_number": r["verse_number"],
         "verse_label": r["verse_label"],
         "sukta_number": r["sukta_number"],
+        "sukta_rishi": r["sukta_rishi"],
+        "sukta_devata": r["sukta_devata"],
+        "sukta_chhanda": r["sukta_chhanda"],
         "sanskrit": r["sanskrit"],
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],

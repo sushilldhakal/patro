@@ -61,6 +61,42 @@ if [[ "${health_ok}" -ne 1 ]]; then
   exit 1
 fi
 
+echo "==> Warming documents cache"
+# The service restart above resets services/documents_db.py's in-process
+# _seeded flag, so the next request to touch it pays a real reseed (parses
+# every data/documents_source/*.json manifest — ~1.5s with the Rigveda
+# corpus) plus, per document, a cache-miss build the first time its content
+# hash changes. Without this, that cost lands on whichever real visitor's
+# request happens to be first — which is exactly the "why is this page
+# taking 5-8s" complaint. Paying it here, synchronously, as part of the
+# deploy instead, means every real visitor after this point hits an
+# already-warm cache. Best-effort: a warm-up failure never fails the deploy.
+python - <<'PYEOF' || echo "WARNING: cache warm-up failed (non-fatal)" >&2
+import urllib.request
+
+BASE = "http://127.0.0.1:8000/v1"
+
+
+def get_json(path: str):
+    with urllib.request.urlopen(f"{BASE}{path}", timeout=30) as resp:
+        import json
+
+        return json.loads(resp.read())
+
+
+docs = get_json("/documents")["documents"]
+for doc in docs:
+    slug = doc["slug"]
+    detail = get_json(f"/documents/{slug}")
+    if doc["has_chapters"] and not doc.get("inline_chapters"):
+        for chapter in detail["chapters"]:
+            number = chapter["number"]
+            if number is not None:
+                get_json(f"/documents/{slug}/chapters/{number}")
+
+print(f"Warmed {len(docs)} documents")
+PYEOF
+
 if [[ -f .env ]] && grep -qE '^DATABASE_URL=' .env; then
   if ! grep -qE '^GOOGLE_CLIENT_ID=' .env; then
     echo "WARNING: DATABASE_URL is set but GOOGLE_CLIENT_ID is missing — /auth/google returns 503" >&2
