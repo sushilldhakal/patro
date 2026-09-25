@@ -1,0 +1,1111 @@
+{
+  "1": [
+    {
+      "start": 1,
+      "end": 3,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Savita, Vayu",
+      "chhanda": "Gayatri"
+    },
+    {
+      "start": 4,
+      "end": 10,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Vishnu, Agni",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 11,
+      "end": 18,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Indra, Agni-Soma",
+      "chhanda": "Gayatri"
+    },
+    {
+      "start": 19,
+      "end": 25,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Agni, Yajna, Savita",
+      "chhanda": "Gayatri / Jagati"
+    },
+    {
+      "start": 26,
+      "end": 31,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Yajna, Savita",
+      "chhanda": "Gayatri / Anushtup"
+    }
+  ],
+  "2": [
+    {
+      "start": 1,
+      "end": 5,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Yajna, Vishnu, Savita",
+      "chhanda": "Gayatri"
+    },
+    {
+      "start": 6,
+      "end": 13,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Agni, Indra, Yajna",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 14,
+      "end": 20,
+      "rishi": "Parameshthi Prajapati",
+      "devata": "Agni, Sarasvati",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 21,
+      "end": 26,
+      "rishi": "Vamadeva, Prajapati",
+      "devata": "Tvashta, Ishvara",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 27,
+      "end": 34,
+      "rishi": "Vamadeva, Prajapati",
+      "devata": "Agni, Pitaras, Apo",
+      "chhanda": "Anushtup / Trishtup"
+    }
+  ],
+  "3": [
+    {
+      "start": 1,
+      "end": 13,
+      "rishi": "Devavata, Bharata",
+      "devata": "Agni, Indragni",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 14,
+      "end": 27,
+      "rishi": "Devavata, Bharata",
+      "devata": "Agni, Prajapati",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 28,
+      "end": 37,
+      "rishi": "Prabandhu, Saptadhriti",
+      "devata": "Brihaspati, Aditya",
+      "chhanda": "Jagati / Gayatri"
+    },
+    {
+      "start": 38,
+      "end": 47,
+      "rishi": "Asuri",
+      "devata": "Agni, Vishvedevah",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 48,
+      "end": 63,
+      "rishi": "Aurnavabha, Narayana",
+      "devata": "Yajna, Rudra",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "4": [
+    {
+      "start": 1,
+      "end": 9,
+      "rishi": "Prajapati",
+      "devata": "Apah, Oshadhis, Paramatma",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 10,
+      "end": 18,
+      "rishi": "Angiras",
+      "devata": "Yajna, Apah",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 19,
+      "end": 25,
+      "rishi": "Vatsa",
+      "devata": "Vak, Vidyut",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 26,
+      "end": 34,
+      "rishi": "Vatsa",
+      "devata": "Yajna, Varuna, Yajamana",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 35,
+      "end": 37,
+      "rishi": "Gotama, Vatsa",
+      "devata": "Agni, Soma",
+      "chhanda": "Trishtup"
+    }
+  ],
+  "5": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Gotama",
+      "devata": "Vishnu, Agni",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 20,
+      "rishi": "Vasishtha, Dirghatama",
+      "devata": "Vishnu, Yajna",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 21,
+      "end": 30,
+      "rishi": "Dirghatama",
+      "devata": "Yajna, Indra",
+      "chhanda": "Anushtup / Jagati"
+    },
+    {
+      "start": 31,
+      "end": 43,
+      "rishi": "Madhuchhanda, Agastya",
+      "devata": "Agni, Vishnu",
+      "chhanda": "Gayatri / Trishtup"
+    }
+  ],
+  "6": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Agastya, Medhatithi",
+      "devata": "Savita, Tvashta, Brihaspati",
+      "chhanda": "Gayatri / Jagati"
+    },
+    {
+      "start": 11,
+      "end": 21,
+      "rishi": "Medhatithi, Dirghatama",
+      "devata": "Vata, Yajna, Varuna",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 22,
+      "end": 30,
+      "rishi": "Dirghatama, Medhatithi",
+      "devata": "Varuna, Apah",
+      "chhanda": "Trishtup / Gayatri"
+    },
+    {
+      "start": 31,
+      "end": 37,
+      "rishi": "Madhuchhanda",
+      "devata": "Yajna, Agni",
+      "chhanda": "Gayatri / Anushtup"
+    }
+  ],
+  "7": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Gotama, Vasishtha",
+      "devata": "Vidvans, Vayu",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 20,
+      "rishi": "Vatsara Kashyapa",
+      "devata": "Vishvedeva, Brihaspati",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 21,
+      "end": 30,
+      "rishi": "Vatsara Kashyapa, Devashrava",
+      "devata": "Soma, Yajnapati",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 31,
+      "end": 48,
+      "rishi": "Trishoka, Vishvamitra, Kutsa",
+      "devata": "Prajapati, Surya, Vidvans",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "8": [
+    {
+      "start": 1,
+      "end": 12,
+      "rishi": "Kutsa, Bharadwaja",
+      "devata": "Grihapati, Agni",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 13,
+      "end": 25,
+      "rishi": "Bharadwaja, Atri",
+      "devata": "Vishvedeva, Grihapati",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 26,
+      "end": 45,
+      "rishi": "Atri, Kutsa, Praskanva",
+      "devata": "Indra, Surya",
+      "chhanda": "Gayatri / Jagati"
+    },
+    {
+      "start": 46,
+      "end": 63,
+      "rishi": "Devas, Vasishtha",
+      "devata": "Prajapati, Vishvedeva",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "9": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Indra, Brihaspati",
+      "devata": "Savita, Indra",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 20,
+      "rishi": "Vasishtha",
+      "devata": "Brihaspati, Prajapati",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 21,
+      "end": 30,
+      "rishi": "Vasishtha, Tapasa",
+      "devata": "Prajapati, Samrat",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 31,
+      "end": 40,
+      "rishi": "Tapasa, Varuna, Devavata",
+      "devata": "Mitra, Rakshoghna, Yajamana",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "10": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Varuna",
+      "devata": "Prajapati, Agni, Indra",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 11,
+      "end": 20,
+      "rishi": "Varuna",
+      "devata": "Mitra-Varuna, Pushan",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 21,
+      "end": 34,
+      "rishi": "Vamadeva",
+      "devata": "Surya, Prajapati",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "11": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Prajapati",
+      "devata": "Savita",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Prajapati",
+      "devata": "Agni, Savita",
+      "chhanda": "Jagati / Anushtup"
+    },
+    {
+      "start": 36,
+      "end": 60,
+      "rishi": "Sindhudveepa",
+      "devata": "Apah, Vasus, Rudras",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 61,
+      "end": 83,
+      "rishi": "Vishvamitra, Somahuti",
+      "devata": "Vasus, Adityas, Agni",
+      "chhanda": "Gayatri / Trishtup"
+    }
+  ],
+  "12": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Shyavashva, Vatsapree, Dhruva",
+      "devata": "Savita, Agni",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Trita, Vatsapree",
+      "devata": "Jiva, Ishwara, Agni",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 36,
+      "end": 65,
+      "rishi": "Virupa, Gotama, Madhuchhanda",
+      "devata": "Agni, Nirriti, Patni",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 66,
+      "end": 100,
+      "rishi": "Kumaraharita, Varuna",
+      "devata": "Krishivala, Vaidyas",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 101,
+      "end": 117,
+      "rishi": "Pavakagni",
+      "devata": "Vidvan, Agni",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "13": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Vatsara",
+      "devata": "Agni",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 16,
+      "end": 30,
+      "rishi": "Indragni",
+      "devata": "Ritava, Agni",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 31,
+      "end": 45,
+      "rishi": "Virupa",
+      "devata": "Agni",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 46,
+      "end": 58,
+      "rishi": "Ushana",
+      "devata": "Pranas, Prajapati",
+      "chhanda": "Pankti / Anushtup"
+    }
+  ],
+  "14": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Ushana, Vishvedeva",
+      "devata": "Ashvinis, Vasus, Prajapati",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 20,
+      "rishi": "Vishvedeva",
+      "devata": "Chhandas (Meters)",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 21,
+      "end": 31,
+      "rishi": "Vishvedeva",
+      "devata": "Vidushi, Ishvara, Prajapati",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "15": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Parameshthi",
+      "devata": "Agni, Vidvans, Rudras",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Parameshthi",
+      "devata": "Vishvedevah, Varsha Ritu",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 36,
+      "end": 55,
+      "rishi": "Parameshthi",
+      "devata": "Agni",
+      "chhanda": "Gayatri / Trishtup"
+    }
+  ],
+  "16": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Parameshthi Kutsa",
+      "devata": "Rudra",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 30,
+      "rishi": "Kutsa",
+      "devata": "Rudras",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 31,
+      "end": 45,
+      "rishi": "Kutsa, Prajapati",
+      "devata": "Rudras",
+      "chhanda": "Anushtup / Jagati"
+    },
+    {
+      "start": 46,
+      "end": 66,
+      "rishi": "Prajapati, Deva",
+      "devata": "Rudras",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "17": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Medhatithi, Lopamudra",
+      "devata": "Agni, Prana",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Vishvakarma",
+      "devata": "Vishvakarma (Cosmic Architect)",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 36,
+      "end": 75,
+      "rishi": "Apratiratha, Gritsamada",
+      "devata": "Agni, Yajna, Indra",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 76,
+      "end": 99,
+      "rishi": "Vamadeva",
+      "devata": "Yajna Purusha",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "18": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Devas",
+      "devata": "Prajapati, Atma",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 16,
+      "end": 28,
+      "rishi": "Devas",
+      "devata": "Yajna-anushthanatma",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 29,
+      "end": 45,
+      "rishi": "Devas, Shunahshepa",
+      "devata": "Vidvan, Agni",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 46,
+      "end": 68,
+      "rishi": "Galava, Devashrava",
+      "devata": "Indu, Agni, Indra",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "19": [
+    {
+      "start": 1,
+      "end": 25,
+      "rishi": "Prajapati, Abhuti",
+      "devata": "Soma, Indra",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 26,
+      "end": 50,
+      "rishi": "Haimavarchi",
+      "devata": "Yajna, Indra",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 51,
+      "end": 75,
+      "rishi": "Shamkha",
+      "devata": "Pitarah (Ancestors)",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 76,
+      "end": 95,
+      "rishi": "Shankha",
+      "devata": "Prajapati, Soma",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "20": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Ashwinau, Prajapati",
+      "devata": "Sabhesha, Teacher/Preacher",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Kaundinya, Prajapati",
+      "devata": "Paramatma, Indra",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 36,
+      "end": 65,
+      "rishi": "Angirasa, Vamadeva",
+      "devata": "Tanunapat, Indra, Tvashta",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 66,
+      "end": 90,
+      "rishi": "Vidarbhi",
+      "devata": "Ashvi-Sarasvati-Indra",
+      "chhanda": "Gayatri / Anushtup"
+    }
+  ],
+  "21": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Shunahshepa, Vamadeva",
+      "devata": "Varuna, Agni-Varuna, Adityah",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 28,
+      "rishi": "Svastyatreya",
+      "devata": "Vidvanso, Vishvedeva, Rudras",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 29,
+      "end": 61,
+      "rishi": "Svastyatreya",
+      "devata": "Ashvinis, Sarasvati, Indra",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "22": [
+    {
+      "start": 1,
+      "end": 14,
+      "rishi": "Prajapati, Yajnapurusha",
+      "devata": "Savita, Vidvanso, Indra",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 15,
+      "end": 25,
+      "rishi": "Prajapati",
+      "devata": "Dishah (Directions), Agni",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 26,
+      "end": 34,
+      "rishi": "Prajapati",
+      "devata": "Yajna, Prajapati",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "23": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Prajapati",
+      "devata": "Parameshvara, Vayu, Indra",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 32,
+      "rishi": "Prajapati",
+      "devata": "Shri, Praja, Adhyapaka",
+      "chhanda": "Anushtup / Jagati"
+    },
+    {
+      "start": 33,
+      "end": 48,
+      "rishi": "Prajapati",
+      "devata": "Adhyapaka, Surya",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 49,
+      "end": 65,
+      "rishi": "Prajapati",
+      "devata": "Samadhata, Yajna-Vedi",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "24": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Prajapati",
+      "devata": "Domestic & Wild Animals",
+      "chhanda": "Prose / Yajus"
+    },
+    {
+      "start": 11,
+      "end": 25,
+      "rishi": "Prajapati",
+      "devata": "Birds, Aquatic Life",
+      "chhanda": "Prose / Yajus"
+    },
+    {
+      "start": 26,
+      "end": 40,
+      "rishi": "Prajapati",
+      "devata": "Time divisions, Seasons",
+      "chhanda": "Prose / Yajus"
+    }
+  ],
+  "25": [
+    {
+      "start": 1,
+      "end": 9,
+      "rishi": "Prajapati",
+      "devata": "Maruts, Cosmic Forces",
+      "chhanda": "Prose / Yajus"
+    },
+    {
+      "start": 10,
+      "end": 18,
+      "rishi": "Prajapati",
+      "devata": "Hiranyagarbha, Ishvara",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 19,
+      "end": 35,
+      "rishi": "Gotama",
+      "devata": "Ishvara, Yajna",
+      "chhanda": "Trishtup / Anushtup"
+    },
+    {
+      "start": 36,
+      "end": 47,
+      "rishi": "Gotama",
+      "devata": "Vidvansah, Yajna",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "26": [
+    {
+      "start": 1,
+      "end": 5,
+      "rishi": "Laugakshi",
+      "devata": "Ishvara",
+      "chhanda": "Anushtup / Gayatri"
+    },
+    {
+      "start": 6,
+      "end": 15,
+      "rishi": "Kutsa, Nodha Gotama",
+      "devata": "Vaishvanara, Agni",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 25,
+      "rishi": "Medhatithi, Gritsamada",
+      "devata": "Vidvan, Agni",
+      "chhanda": "Anushtup / Gayatri"
+    }
+  ],
+  "27": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Agni, Vasishtha",
+      "devata": "Vahni, Vayu",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 30,
+      "rishi": "Hiranyagarbha, Purumeedha",
+      "devata": "Prajapati, Vayu",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 31,
+      "end": 45,
+      "rishi": "Angirasa, Bhargava, Shamyu",
+      "devata": "Agni, Samvatsara",
+      "chhanda": "Gayatri / Anushtup"
+    }
+  ],
+  "28": [
+    {
+      "start": 1,
+      "end": 12,
+      "rishi": "Brihaduktha Vamadeva",
+      "devata": "Indra, Rudra",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 13,
+      "end": 25,
+      "rishi": "Ashvinau, Prajapati",
+      "devata": "Ahoratre (Day/Night), Indra",
+      "chhanda": "Anushtup / Jagati"
+    },
+    {
+      "start": 26,
+      "end": 46,
+      "rishi": "Sarasvati",
+      "devata": "Vanyah, Agni, Indra",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "29": [
+    {
+      "start": 1,
+      "end": 15,
+      "rishi": "Brihaduktho Vamadevya",
+      "devata": "Agni, Tvashta, Surya",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 16,
+      "end": 35,
+      "rishi": "Jamadagni",
+      "devata": "Vidvan, Vidvan Shilpi",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 36,
+      "end": 60,
+      "rishi": "Bharadvaja, Narayana",
+      "devata": "Viras, Ishvara, Agni",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "30": [
+    {
+      "start": 1,
+      "end": 5,
+      "rishi": "Narayana",
+      "devata": "Savita, Ishvara",
+      "chhanda": "Prose / Yajus"
+    },
+    {
+      "start": 6,
+      "end": 15,
+      "rishi": "Narayana",
+      "devata": "Ishvara",
+      "chhanda": "Prose / Yajus"
+    },
+    {
+      "start": 16,
+      "end": 22,
+      "rishi": "Narayana",
+      "devata": "Rajeshvarau",
+      "chhanda": "Prose / Yajus"
+    }
+  ],
+  "31": [
+    {
+      "start": 1,
+      "end": 5,
+      "rishi": "Narayana",
+      "devata": "Purusha (*Sahasrashirsha Purushah...*)",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 6,
+      "end": 10,
+      "rishi": "Narayana",
+      "devata": "Purusha, Srashteshvara",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 11,
+      "end": 16,
+      "rishi": "Narayana",
+      "devata": "Purusha",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 17,
+      "end": 22,
+      "rishi": "Uttara Narayana",
+      "devata": "Aditya, Purusha",
+      "chhanda": "Trishtup"
+    }
+  ],
+  "32": [
+    {
+      "start": 1,
+      "end": 5,
+      "rishi": "Svayambhu Brahma",
+      "devata": "Paramatma, Agni, Aditya",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 6,
+      "end": 10,
+      "rishi": "Svayambhu Brahma",
+      "devata": "Paramatma",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 11,
+      "end": 16,
+      "rishi": "Svayambhu Brahma",
+      "devata": "Paramatma",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "33": [
+    {
+      "start": 1,
+      "end": 25,
+      "rishi": "Vatsapri, Vishvamitra, Vishvavara",
+      "devata": "Agnayah, Vidvans, Agni",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 26,
+      "end": 50,
+      "rishi": "Agastya, Praskanva",
+      "devata": "Indra, Surya, Savita",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 51,
+      "end": 75,
+      "rishi": "Suhotra",
+      "devata": "Vishvedeva, Vayu",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 76,
+      "end": 97,
+      "rishi": "Medhatithi, Vasishtha, Trita",
+      "devata": "Indra-Marut, Ashvins, Indra",
+      "chhanda": "Trishtup / Gayatri"
+    }
+  ],
+  "34": [
+    {
+      "start": 1,
+      "end": 6,
+      "rishi": "Shiva Sankalpa",
+      "devata": "Manas (Mind)",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 7,
+      "end": 25,
+      "rishi": "Prajapati",
+      "devata": "Agni, Savita",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 26,
+      "end": 58,
+      "rishi": "Agastya, Prajapati",
+      "devata": "Brahmanaspati, Vishvedevah",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "35": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Prajapati",
+      "devata": "Agni, Pitarah",
+      "chhanda": "Anushtup / Trishtup"
+    },
+    {
+      "start": 11,
+      "end": 22,
+      "rishi": "Yamayana",
+      "devata": "Savita, Yama",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "36": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Vayu, Savita, Gayatri",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 11,
+      "end": 17,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Dyau, Prithivi, Apah, Shanti",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 18,
+      "end": 24,
+      "rishi": "Gotama",
+      "devata": "Paramatma, Vishvedevah",
+      "chhanda": "Anushtup / Gayatri"
+    }
+  ],
+  "37": [
+    {
+      "start": 1,
+      "end": 10,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Savita, Ashvinau",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 11,
+      "end": 21,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Mahavira, Agni",
+      "chhanda": "Trishtup / Jagati"
+    }
+  ],
+  "38": [
+    {
+      "start": 1,
+      "end": 14,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Ashvinau, Indra",
+      "chhanda": "Gayatri / Trishtup"
+    },
+    {
+      "start": 15,
+      "end": 28,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Savita, Agni",
+      "chhanda": "Jagati / Trishtup"
+    }
+  ],
+  "39": [
+    {
+      "start": 1,
+      "end": 6,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Yajna, Agni",
+      "chhanda": "Gayatri / Anushtup"
+    },
+    {
+      "start": 7,
+      "end": 13,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Svaha, Prajapati",
+      "chhanda": "Trishtup / Anushtup"
+    }
+  ],
+  "40": [
+    {
+      "start": 1,
+      "end": 1,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Ishvara",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 2,
+      "end": 2,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Karma / Atman",
+      "chhanda": "Anushtup"
+    },
+    {
+      "start": 3,
+      "end": 5,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Atman",
+      "chhanda": "Trishtup"
+    },
+    {
+      "start": 6,
+      "end": 8,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Atman / Ishvara",
+      "chhanda": "Trishtup / Jagati"
+    },
+    {
+      "start": 9,
+      "end": 11,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Vidya & Avidya",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 12,
+      "end": 14,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Sambhuti & Asambhuti",
+      "chhanda": "Jagati / Trishtup"
+    },
+    {
+      "start": 15,
+      "end": 16,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Surya / Paramatma",
+      "chhanda": "Trishtup"
+    },
+    {
+      "start": 17,
+      "end": 17,
+      "rishi": "Dadhycha Atharvana",
+      "devata": "Agni / Paramatma",
+      "chhanda": "Trishtup"
+    }
+  ]
+}
