@@ -4136,15 +4136,26 @@
       "all": "सबै",
       "mantra": "मन्त्र",
       "stotram": "स्तोत्र",
+      "shruti": "श्रुति",
+      "gita": "गीता",
+      "upanishad": "उपनिषद्",
       "scripture": "ग्रन्थ"
     },
     "empty_category": "यस वर्गमा हाल कुनै ग्रन्थ छैन।",
     "chapter_nav": "अध्यायहरू",
     "sukta_label": "सूक्त {{number}}",
+    "sukta_rishi": "ऋषि",
+    "sukta_devata": "देवता",
+    "sukta_chhanda": "छन्द",
     "chapter_label": "अध्याय {{number}}",
     "chapter_progress": "अध्याय {{current}} / {{total}}",
     "back_to_chapters": "सबै अध्याय",
     "prev_chapter": "अघिल्लो अध्याय",
-    "next_chapter": "अर्को अध्याय"
+    "next_chapter": "अर्को अध्याय",
+    "jump_chapter_label": "अध्याय",
+    "jump_verse_label": "श्लोक",
+    "jump_verse_placeholder": "जस्तै: ५.२",
+    "jump_button": "जानुहोस्",
+    "jump_not_found": "यो अध्याय वा श्लोक फेला परेन।"
   }
 }
