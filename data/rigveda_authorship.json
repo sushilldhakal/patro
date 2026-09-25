@@ -1,0 +1,647 @@
+{
+  "1.1": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Agni",
+    "chhanda": "Gayatri"
+  },
+  "1.2": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Vayu (1–3), Indra-Vayu (4–6), Mitra-Varuna (7–9)",
+    "chhanda": "Gayatri"
+  },
+  "1.3": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Ashvinikumar (1–3), Indra (4–6), Vishvedeva (7–9), Sarasvati (10–12)",
+    "chhanda": "Gayatri"
+  },
+  "1.4": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.5": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.6": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra (1–3), Maruts (4–10)",
+    "chhanda": "Gayatri"
+  },
+  "1.7": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.8": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.9": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.10": {
+    "rishi": "Madhuchhanda Vaishvamitra",
+    "devata": "Indra",
+    "chhanda": "Anushtup"
+  },
+  "1.11": {
+    "rishi": "Jeta Madhuchhandasa",
+    "devata": "Indra",
+    "chhanda": "Anushtup"
+  },
+  "1.12": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Agni",
+    "chhanda": "Gayatri"
+  },
+  "1.13": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Apri Deities (Idhma/Agni, Tanunapat, Narashamsa, Ila, Barhis, Divya Dvarah, Uphasanakta, Daivya Hotara, Sarasvati-Ila-Bharati, Tvashta, Vanaspati, Svahakriti)",
+    "chhanda": "Gayatri"
+  },
+  "1.14": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Vishvedeva",
+    "chhanda": "Gayatri"
+  },
+  "1.15": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Ritu Devatas (Indra, Maruts, Tvashta, Agni, Mitra-Varuna, Dravinoda, Ashvinikumar, Garhapatya)",
+    "chhanda": "Gayatri"
+  },
+  "1.16": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Indra",
+    "chhanda": "Gayatri"
+  },
+  "1.17": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Indra-Varuna",
+    "chhanda": "Gayatri"
+  },
+  "1.18": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Brahmanaspati, Indra, Somadeva, Sadasaspati, Narashamsa",
+    "chhanda": "Gayatri"
+  },
+  "1.19": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Agni & Maruts",
+    "chhanda": "Gayatri"
+  },
+  "1.20": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Ribhugana",
+    "chhanda": "Gayatri"
+  },
+  "1.21": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Indragni",
+    "chhanda": "Gayatri"
+  },
+  "1.22": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Ashvinikumar, Savita, Agni, Devinis, Indrani, Varunani, Agnayi, Dyavaprithivi, Vishnu",
+    "chhanda": "Gayatri"
+  },
+  "1.23": {
+    "rishi": "Medhatithi Kanva",
+    "devata": "Vayu, Indra-Vayu, Mitra-Varuna, Indra-Marutvan, Vishvedeva, Pushan, Apah, Agni",
+    "chhanda": "Gayatri, Pur-Ushnih, Pratishtha, Anushtup"
+  },
+  "1.24": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Agni, Prajapati, Savita, Varuna",
+    "chhanda": "Trishtup, Gayatri"
+  },
+  "1.25": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Varuna",
+    "chhanda": "Gayatri"
+  },
+  "1.26": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Agni (1–12), Devagana (13)",
+    "chhanda": "Gayatri (1–12), Trishtup (13)"
+  },
+  "1.27": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Agni",
+    "chhanda": "Gayatri"
+  },
+  "1.28": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Indra, Ulukhala, Ulukhala-Musala, Prajapati, Harishchandra, Soma",
+    "chhanda": "Anushtup (1–6), Gayatri (7–9)"
+  },
+  "1.29": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Indra",
+    "chhanda": "Pankti"
+  },
+  "1.30": {
+    "rishi": "Shunahshepa Ajigarti",
+    "devata": "Indra (1–16), Ashvinikumar (17–19), Usha (20–22)",
+    "chhanda": "Gayatri, Padanirvritt Gayatri, Trishtup"
+  },
+  "1.31": {
+    "rishi": "Hiranyastupa Angirasa",
+    "devata": "Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.32": {
+    "rishi": "Hiranyastupa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Trishtup"
+  },
+  "1.33": {
+    "rishi": "Hiranyastupa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Trishtup"
+  },
+  "1.34": {
+    "rishi": "Hiranyastupa Angirasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.35": {
+    "rishi": "Hiranyastupa Angirasa",
+    "devata": "Agni, Mitra-Varuna, Ratri, Savita",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.36": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Agni, Yupa",
+    "chhanda": "Barhata Pragatha, Brihati"
+  },
+  "1.37": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Maruts",
+    "chhanda": "Gayatri"
+  },
+  "1.38": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Maruts",
+    "chhanda": "Gayatri"
+  },
+  "1.39": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Maruts",
+    "chhanda": "Barhata Pragatha"
+  },
+  "1.40": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Brahmanaspati",
+    "chhanda": "Barhata Pragatha"
+  },
+  "1.41": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Varuna, Mitra, Aryama",
+    "chhanda": "Gayatri"
+  },
+  "1.42": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Pushan",
+    "chhanda": "Gayatri"
+  },
+  "1.43": {
+    "rishi": "Kanva Ghaura",
+    "devata": "Rudra, Somadeva, Mitra-Varuna",
+    "chhanda": "Gayatri, Anushtup"
+  },
+  "1.44": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Agni, Ashvinikumar",
+    "chhanda": "Brihati, Satobrihati"
+  },
+  "1.45": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Agni, Devagana",
+    "chhanda": "Anushtup"
+  },
+  "1.46": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Ashvinikumar",
+    "chhanda": "Gayatri"
+  },
+  "1.47": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Ashvinikumar",
+    "chhanda": "Barhata Pragatha"
+  },
+  "1.48": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Usha",
+    "chhanda": "Barhata Pragatha"
+  },
+  "1.49": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Usha",
+    "chhanda": "Anushtup"
+  },
+  "1.50": {
+    "rishi": "Praskanva Kanva",
+    "devata": "Surya, Rogaghna Upanishad",
+    "chhanda": "Gayatri, Anushtup"
+  },
+  "1.51": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.52": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.53": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.54": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.55": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.56": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.57": {
+    "rishi": "Savya Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.58": {
+    "rishi": "Nodha Gautama",
+    "devata": "Agni (Vaishvanara Agni)",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.59": {
+    "rishi": "Nodha Gautama",
+    "devata": "Agni (Vaishvanara Agni)",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.60": {
+    "rishi": "Nodha Gautama",
+    "devata": "Agni (Vaishvanara Agni)",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.61": {
+    "rishi": "Nodha Gautama",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.62": {
+    "rishi": "Nodha Gautama",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.63": {
+    "rishi": "Nodha Gautama",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.64": {
+    "rishi": "Nodha Gautama",
+    "devata": "Maruts",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.65": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.66": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.67": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.68": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.69": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.70": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Dvipada Virat"
+  },
+  "1.71": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Trishtup"
+  },
+  "1.72": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Trishtup"
+  },
+  "1.73": {
+    "rishi": "Parashara Shaktya",
+    "devata": "Agni",
+    "chhanda": "Trishtup"
+  },
+  "1.74": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.75": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.76": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.77": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.78": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.79": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni / Shuchi Agni",
+    "chhanda": "Gayatri, Trishtup"
+  },
+  "1.80": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Indra",
+    "chhanda": "Pankti, Jagati, Gayatri, Trishtup, Anushtup"
+  },
+  "1.81": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Indra",
+    "chhanda": "Pankti, Jagati, Gayatri, Trishtup, Anushtup"
+  },
+  "1.82": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Indra",
+    "chhanda": "Pankti, Jagati, Gayatri, Trishtup, Anushtup"
+  },
+  "1.83": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Indra",
+    "chhanda": "Pankti, Jagati, Gayatri, Trishtup, Anushtup"
+  },
+  "1.84": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Indra",
+    "chhanda": "Pankti, Jagati, Gayatri, Trishtup, Anushtup"
+  },
+  "1.85": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Maruts",
+    "chhanda": "Jagati, Trishtup, Prastara Pankti"
+  },
+  "1.86": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Maruts",
+    "chhanda": "Jagati, Trishtup, Prastara Pankti"
+  },
+  "1.87": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Maruts",
+    "chhanda": "Jagati, Trishtup, Prastara Pankti"
+  },
+  "1.88": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Maruts",
+    "chhanda": "Jagati, Trishtup, Prastara Pankti"
+  },
+  "1.89": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Vishvedeva",
+    "chhanda": "Jagati, Viratsthana, Trishtup"
+  },
+  "1.90": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Vishvedeva",
+    "chhanda": "Gayatri, Anushtup"
+  },
+  "1.91": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Soma",
+    "chhanda": "Trishtup, Gayatri, Ushnih"
+  },
+  "1.92": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Usha, Ashvinikumar",
+    "chhanda": "Trishtup, Ushnih, Jagati"
+  },
+  "1.93": {
+    "rishi": "Gotama Rahugana",
+    "devata": "Agni-Soma",
+    "chhanda": "Anushtup, Trishtup, Gayatri, Jagati"
+  },
+  "1.94": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Agni / Vaishvanara Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.95": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Agni / Vaishvanara Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.96": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Agni / Vaishvanara Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.97": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Agni / Vaishvanara Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.98": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Agni / Vaishvanara Agni",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.99": {
+    "rishi": "Kashyapa Maricha",
+    "devata": "Agni (Jataveda Agni)",
+    "chhanda": "Trishtup"
+  },
+  "1.100": {
+    "rishi": "Varshagira (Rijrashva, Ambarisha, Sahadeva, Bhayamana, Suradhas)",
+    "devata": "Indra",
+    "chhanda": "Trishtup"
+  },
+  "1.101": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.102": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.103": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.104": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.105": {
+    "rishi": "Trita Aptya / Kutsa Angirasa",
+    "devata": "Vishvedeva",
+    "chhanda": "Trishtup"
+  },
+  "1.106": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Vishvedeva",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.107": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Vishvedeva",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.108": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indragni",
+    "chhanda": "Trishtup"
+  },
+  "1.109": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Indragni",
+    "chhanda": "Trishtup"
+  },
+  "1.110": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Ribhugana",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.111": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Ribhugana",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.112": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Dyavaprithivi, Agni, Ashvinikumar",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.113": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Usha, Ratri",
+    "chhanda": "Trishtup"
+  },
+  "1.114": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Rudra",
+    "chhanda": "Jagati, Trishtup"
+  },
+  "1.115": {
+    "rishi": "Kutsa Angirasa",
+    "devata": "Surya",
+    "chhanda": "Trishtup"
+  },
+  "1.116": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.117": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.118": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.119": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.120": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Ashvinikumar",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.121": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Indra / Vishvedeva",
+    "chhanda": "Trishtup"
+  },
+  "1.122": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Vishvedeva",
+    "chhanda": "Trishtup, Viradrupa Trishtup"
+  },
+  "1.123": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Usha",
+    "chhanda": "Trishtup"
+  },
+  "1.124": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Usha",
+    "chhanda": "Trishtup"
+  },
+  "1.125": {
+    "rishi": "Kakshivan Dairghatamasa",
+    "devata": "Svanaya Danastuti",
+    "chhanda": "Trishtup, Jagati"
+  },
+  "1.126": {
+    "rishi": "Kakshivan Dairghatamasa (1–5), Svanaya Bhavayavya (6), Romasha (7)",
+    "devata": "Svanaya Bhavayavya (1–5, 7), Romasha (6)",
+    "chhanda": "Trishtup (1–5), Anushtup (6–7)"
+  },
+  "1.127": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Agni",
+    "chhanda": "Atyashti, Atidhriti"
+  },
+  "1.128": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Agni",
+    "chhanda": "Atyashti"
+  },
+  "1.129": {
+    "rishi": "Paruchhepa Daivodasi",
+    "devata": "Indra (1–5, 7–10), Indu (6)",
+    "chhanda": "Atyashti, Atishakvari, Ashti"
+  }
+}
