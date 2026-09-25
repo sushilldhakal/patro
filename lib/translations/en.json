@@ -4140,6 +4140,7 @@
     },
     "empty_category": "No documents in this category yet.",
     "chapter_nav": "Chapters",
+    "sukta_label": "Sukta {{number}}",
     "chapter_label": "Chapter {{number}}",
     "chapter_progress": "Chapter {{current}} of {{total}}",
     "back_to_chapters": "All chapters",

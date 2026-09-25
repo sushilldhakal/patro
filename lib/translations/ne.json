@@ -4140,6 +4140,7 @@
     },
     "empty_category": "यस वर्गमा हाल कुनै ग्रन्थ छैन।",
     "chapter_nav": "अध्यायहरू",
+    "sukta_label": "सूक्त {{number}}",
     "chapter_label": "अध्याय {{number}}",
     "chapter_progress": "अध्याय {{current}} / {{total}}",
     "back_to_chapters": "सबै अध्याय",
