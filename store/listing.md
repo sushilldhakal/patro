@@ -15,26 +15,39 @@ Use these strings in App Store Connect and Google Play Console. Keep the privacy
 
 **Full description**
 
-Vedic Patro is a Nepali Bikram Sambat calendar and panchanga for daily use.
+Vedic Patro is a free Nepali calendar (Nepali Patro) with daily panchanga, Bikram Sambat dates, festivals, kundali and a 3D sky view — in Nepali and English.
 
-• Today’s date in BS and AD, with tithi, nakshatra, yoga and karana  
-• Month grid with festivals and Nepal public holidays  
-• Sunrise, sunset, muhurta windows and abhijit  
-• Kundali and kundali milan from saved birth profiles  
-• Ceremony sait (muhurta), rashifal, gochar and eclipses  
-• 3D sky view with optional camera overlay  
-• AD ↔ BS converter  
-• Nepali and English, with Devanagari digits  
+TODAY'S PANCHANGA
+• Today's date in BS and AD with tithi, nakshatra, yoga and karana
+• Sunrise, sunset, muhurta windows, abhijit muhurta and choghadiya
+• Panchak patro, calculated for your place (Kathmandu by default)
+
+NEPALI CALENDAR & FESTIVALS
+• Bikram Sambat month grid with Nepal public holidays
+• Hindu festivals, ekadashi, purnima, amavasya and eclipse dates
+• AD ↔ BS date converter, with Devanagari digits
+
+KUNDALI & JYOTISH
+• Kundali (Vedic birth chart) and kundali milan from saved birth profiles
+• Planetary positions (graha gochar), dasha and rashifal
+• Ceremony sait: vivah, bratabandha, griha pravesh and other shubha muhurta
+
+LEARN VEDIC ASTRONOMY
+• Plain-language articles on tithi, nakshatra, graha, ayanamsha and the calendar
+• Interactive 3D sky and planet diagrams — works with an optional camera overlay
+
+MADE FOR EVERYDAY USE
+• Nepali and English, light, dark or system theme
+• Download calendar data for offline use
+• No ads. No in-app purchases.
 
 An account is optional. Sign in with email, Google, Apple (iOS) or Facebook to save kundali profiles across devices. You can delete the account from Account at any time.
 
 Location is optional (While Using the App only): panchanga for your place, and true-north compass in the sky view. Search a city if you prefer. Camera is optional: a live overlay in Aakash Gochar — we do not take photos or upload video. Motion stays on the device. Details: https://www.vedicpatro.com/privacy
 
-Panchanga times are astronomical calculations for the place you choose (Kathmandu by default). They are a reference, not a substitute for a local printed almanac or a qualified adviser.
+Panchanga times are astronomical calculations for the place you choose. They are a reference, not a substitute for a local printed almanac or a qualified adviser.
 
-No ads. No in-app purchases.
-
-**Keywords (Apple, 100 chars):** nepali,calendar,panchanga,patro,bikram,sambat,kundali,tithi,nakshatra,muhurta,nepal,jyotish
+**Keywords (Apple, 100 chars):** nepali patro,calendar,panchanga,bikram sambat,kundali,tithi,nakshatra,muhurta,rashifal,jyotish
 
 **Category**
 - Apple primary: Lifestyle  

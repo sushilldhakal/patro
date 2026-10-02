@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { apiForgotPassword } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
 import { SocialSignInButtons } from "./SocialSignInButtons";
 
@@ -362,7 +363,7 @@ function Field({
   ...props
 }: React.ComponentProps<typeof TextInput> & { label: string; email?: boolean }) {
   const colors = useThemeColors();
-  const Input = email ? EmailTextInput : TextInput;
+  const Input = email ? EmailTextInput : props.secureTextEntry ? PasswordInput : TextInput;
   return (
     <View className="mt-3 gap-1.5">
       <Text className="text-sm text-foreground">{label}</Text>

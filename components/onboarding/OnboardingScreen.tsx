@@ -65,6 +65,87 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
+const TOUR_STEPS: {
+  icon: keyof typeof Ionicons.glyphMap;
+  ne: [string, string];
+  en: [string, string];
+}[] = [
+  {
+    icon: "calendar-outline",
+    ne: ["आजको पञ्चाङ्ग", "बि.सं. र ई.सं. मिति, तिथि, नक्षत्र, योग, करण र सूर्योदय–सूर्यास्त एकै ठाउँमा।"],
+    en: ["Daily panchanga", "BS and AD dates, tithi, nakshatra, yoga, karana and sunrise–sunset in one place."],
+  },
+  {
+    icon: "gift-outline",
+    ne: ["चाडपर्व र बिदा", "महिना ग्रिडमा चाडपर्व र सार्वजनिक बिदा हेर्नुहोस्।"],
+    en: ["Festivals & holidays", "Browse festivals and public holidays on the month grid."],
+  },
+  {
+    icon: "planet-outline",
+    ne: ["ग्रह स्थिति र आकाश", "ग्रहहरूको स्थिति र ३D आकाश दृश्य हेर्नुहोस्।"],
+    en: ["Planets & sky view", "See planetary positions and explore the 3D sky."],
+  },
+  {
+    icon: "menu-outline",
+    ne: ["थप मेनु", "कुण्डली, साइत, राशिफल, रूपान्तरण र सेटिङ तलको 'थप' बाट पुग्न सकिन्छ।"],
+    en: ["The More tab", "Kundali, sait, rashifal, converter and settings live under 'More' at the bottom."],
+  },
+];
+
+/** Short, skippable feature tour shown once, right after the setup screen. */
+function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () => void }) {
+  const { colors } = useTheme();
+  const [index, setIndex] = useState(0);
+  const ne = language === "ne";
+  const step = TOUR_STEPS[index];
+  const last = index === TOUR_STEPS.length - 1;
+  const [title, body] = ne ? step.ne : step.en;
+
+  return (
+    <View className="flex-1 px-6 pb-10 pt-16" style={{ backgroundColor: colors.background }}>
+      <View className="flex-row justify-end">
+        <Pressable
+          onPress={onDone}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={ne ? "छोड्नुहोस्" : "Skip tour"}
+        >
+          <Text className="text-sm font-semibold text-muted-foreground">
+            {ne ? "छोड्नुहोस्" : "Skip"}
+          </Text>
+        </Pressable>
+      </View>
+      <View className="flex-1 items-center justify-center gap-4">
+        <View
+          className="h-24 w-24 items-center justify-center rounded-full"
+          style={{ backgroundColor: `${colors.secondary}1a` }}
+        >
+          <Ionicons name={step.icon} size={44} color={colors.secondary} />
+        </View>
+        <Text className="text-center text-2xl font-bold text-foreground">{title}</Text>
+        <Text className="text-center text-base text-muted-foreground">{body}</Text>
+        <View className="mt-2 flex-row gap-2">
+          {TOUR_STEPS.map((_, i) => (
+            <View
+              key={i}
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: i === index ? colors.secondary : colors.border }}
+            />
+          ))}
+        </View>
+      </View>
+      <Pressable
+        onPress={() => (last ? onDone() : setIndex(index + 1))}
+        className="items-center rounded-lg bg-primary px-5 py-3.5 active:opacity-80"
+      >
+        <Text className="text-base font-semibold" style={{ color: "#ffffff" }}>
+          {last ? (ne ? "सुरु गर्नुहोस्" : "Start exploring") : ne ? "अर्को" : "Next"}
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
 /**
  * The very first screen a new install sees, before anything else in the app
  * renders (see app/_layout.tsx). Downloading calendar data offline is the
@@ -76,13 +157,14 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const { setLang } = useLocale();
   const { isOnline, startInstallDownload } = useOfflineData();
 
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
+  const [tour, setTour] = useState(false);
   const [language, setLanguage] = useState<AppLanguage>("ne");
   const [era, setEra] = useState<OnboardingCalendarEra>("bs");
   const [dataMode, setDataMode] = useState<OnboardingDataMode>("online");
   const [submitting, setSubmitting] = useState(false);
 
-  const chooseTheme = (next: "light" | "dark") => {
+  const chooseTheme = (next: "system" | "light" | "dark") => {
     setTheme(next);
     setPreference(next);
   };
@@ -96,11 +178,13 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       await Promise.all([setStoredCalendarEraPreference(era), setStoredDataMode(dataMode)]);
       await setOnboardingComplete();
       if (dataMode === "offline") void startInstallDownload();
-      onComplete();
+      setTour(true);
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (tour) return <FeatureTour language={language} onDone={onComplete} />;
 
   return (
     <ScrollView
@@ -119,6 +203,12 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       </Text>
 
       <Section label="थिम · Theme">
+        <OptionCard
+          icon="phone-portrait-outline"
+          title="सिस्टम · System"
+          selected={theme === "system"}
+          onPress={() => chooseTheme("system")}
+        />
         <OptionCard
           icon="sunny-outline"
           title="उज्यालो · Light"

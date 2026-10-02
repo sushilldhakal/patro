@@ -1,11 +1,18 @@
-import { Pressable, Text, View } from "react-native";
+import { Linking, Platform, Pressable, Share, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { AppShell, LangToggle } from "@/components/AppShell";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useBreakpoint } from "@/lib/responsive";
 import { Card } from "@/components/ui/Card";
 import { API_BASE } from "@/lib/api";
-import { APP_VERSION, SUPPORT_EMAIL } from "@/lib/store-links";
+import {
+  APP_VERSION,
+  SUPPORT_EMAIL,
+  feedbackMailto,
+  reviewUrl,
+  storeListingUrl,
+} from "@/lib/store-links";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import {
@@ -23,6 +30,29 @@ import {
   resolveElementDrawerIcon,
   type DrawerIconName,
 } from "@/lib/drawer-icons";
+
+function ActionRow({
+  onPress,
+  label,
+  icon,
+}: {
+  onPress: () => void;
+  label: string;
+  icon: DrawerIconName;
+}) {
+  const colors = useThemeColors();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      className="flex-row items-center gap-3 border-b border-border/40 py-3 active:opacity-80"
+    >
+      <AppNavIcon name={icon} size={20} color={colors.secondary} />
+      <Text className="flex-1 text-sm font-medium text-foreground">{label}</Text>
+      <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
+    </Pressable>
+  );
+}
 
 function RouteRow({
   path,
@@ -151,6 +181,42 @@ export default function MoreScreen() {
           {saitRoutes.map((r) => (
             <RouteRow key={r.path} path={r.path} label={r.label} icon={r.icon} />
           ))}
+        </Card>
+
+        <Card>
+          <Text className="mb-2 text-base font-semibold text-foreground">
+            {pick("सेटिङ", "Settings")}
+          </Text>
+          <View className="flex-row items-center justify-between gap-3 border-b border-border/40 py-3">
+            <Text className="text-sm font-medium text-foreground">{pick("थिम", "Theme")}</Text>
+            <ThemeSwitcher showLabel />
+          </View>
+          <ActionRow
+            label={pick("एप रेट गर्नुहोस्", "Rate Vedic Patro")}
+            icon="star"
+            onPress={() => void Linking.openURL(reviewUrl(Platform.OS)).catch(() => {})}
+          />
+          <ActionRow
+            label={pick("प्रतिक्रिया पठाउनुहोस्", "Send feedback")}
+            icon="heart"
+            onPress={() =>
+              void Linking.openURL(
+                feedbackMailto(`Vedic Patro ${APP_VERSION} feedback`),
+              ).catch(() => {})
+            }
+          />
+          <ActionRow
+            label={pick("एप साझा गर्नुहोस्", "Share the app")}
+            icon="sparkles"
+            onPress={() =>
+              void Share.share({
+                message: pick(
+                  `वैदिक पात्रो — नेपाली पात्रो र पञ्चाङ्ग: ${storeListingUrl(Platform.OS)}`,
+                  `Vedic Patro — Nepali calendar & panchanga: ${storeListingUrl(Platform.OS)}`,
+                ),
+              }).catch(() => {})
+            }
+          />
         </Card>
 
         <Card>

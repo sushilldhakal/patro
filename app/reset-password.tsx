@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { TextInput, View } from "react-native";
+import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
@@ -79,11 +80,9 @@ export default function ResetPasswordScreen() {
       <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <TextInput
+      <PasswordInput
         value={value}
         onChangeText={onChange}
-        secureTextEntry
-        autoCapitalize="none"
         autoComplete="new-password"
         placeholder={placeholder}
         placeholderTextColor={colors.mutedForeground}
