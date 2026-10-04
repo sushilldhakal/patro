@@ -5,12 +5,12 @@
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
-  "subtitle_ne": "सूत्रस्थान · अध्याय १ · दीर्घञ्जीवितीय",
-  "subtitle_en": "Sutrasthana · Chapter 1 · Quest for Longevity",
-  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थानको पहिलो अध्याय (दीर्घञ्जीवितीय) — आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदण्ड, त्रिदोष, षड्रस र चिकित्सकको लक्षण।",
-  "description_en": "The root compendium of Ayurveda. Sutrasthana, Chapter 1 (Dirghanjivitiya) — the descent of Ayurveda, the definition of life, the tripod of mind, soul and body, tridosha, the six tastes, and the marks of a true physician.",
-  "source_ne": "चरकसंहिता, सूत्रस्थानम्, अध्याय १",
-  "source_en": "Charaka Samhita, Sutrasthana, Chapter 1",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १–२",
+  "subtitle_en": "Sutrasthana · Chapters 1–2",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष) र अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू)।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha) and Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels).",
+  "source_ne": "चरकसंहिता, सूत्रस्थानम्",
+  "source_en": "Charaka Samhita, Sutrasthana",
   "cover_image": "",
   "has_chapters": true,
   "inline_chapters": false,
@@ -172,6 +172,175 @@
           "transliteration": "varamātmā hutāśena tapto aṅgāracchaṭena vā | na tu ajñātanidānasya bheṣajasya nipātanam || 125 || yogavittvapyarūpajñaḥ tādṛgvid jñeyamuttamam | yuktijñānātparaṁ nāsti bhiṣajāṁ siddhisādhanam || 138-140 ||",
           "meaning_ne": "चिकित्सक लक्षणम् एवं युक्ति\n\nअज्ञानी र ढोंगी वैद्यको हातबाट गलत औषधि सेवन गर्नुभन्दा त आगोमा पस्नु वा तातो फलाम निल्नु अझ बेस हो। साँचो र उत्तम वैद्य त्यो हो जसलाई शास्त्रको पूर्ण ज्ञान, व्यावहारिक कुशलता, पवित्रता र मुख्य रूपमा 'युक्ति' (औषधिको देश, काल, मात्रा अनुसार विवेकपूर्ण प्रयोग) को ज्ञान हुन्छ। युक्ति ज्ञानविना केवल औषधिको नाम जानेर मात्र चिकित्सामा सिद्धि (सफलता) मिल्दैन।",
           "meaning_en": "Characteristics of True Physicians vs. Impostors\n\nMedical Ethics & Rational Therapeutics\n\nIt is far better for a suffering patient to fall into fire or swallow molten iron than to be treated by an ignorant, unqualified pseudo-physician (Chhadmapratiroopaka Vaidya). A true physician possesses profound theoretical knowledge (Sastra Jñana), practical training (Karma Kausalya), purity (Saucha), and above all, rational application (Yukti). Knowledge of pharmacology without rational application (Yukti) cannot bring clinical success (Siddhi).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title_ne": "अपामार्गस्तण्डुलीयोऽध्यायः",
+      "title_en": "Apamarga Tanduliya Adhyaya — Grains of Apamarga",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "अपामार्गस्तण्डुलीयोऽध्यायः",
+          "transliteration": "apāmārga taṇḍulīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको दोस्रो अध्याय (अपामार्गस्तण्डुलीय अध्याय) पञ्चकर्म शोधन र यवागू (औषधीय झोल) मा केन्द्रित छ। यसमा समेटिएका विषय:\n\n१. शिरोविरेचन — टाउको सफा गर्ने नस्य द्रव्य (श्लोक १–६)।\n२. वमन — माथिल्लो शोधनका लागि बान्ता गराउने द्रव्य (श्लोक ७–८)।\n३. विरेचन — तल्लो शोधनका लागि दिशा गराउने द्रव्य (श्लोक ९–१०)।\n४. आस्थापन र अनुवासन बस्ति — वात शमन गर्ने एनिमा द्रव्य (श्लोक ११–१४)।\n५. मात्रा र काल — व्यक्तिअनुसार मात्रा, समय र युक्ति (श्लोक १५–१७)।\n६. अष्टाविंशति यवागू — २८ रोगका लागि औषधीय झोल (श्लोक १८–३३)।\n७. अध्यायको उपसंहार (श्लोक ३४–३६)।",
+          "meaning_en": "Chapter 2 of Sutrasthana (Apāmārga Taṇḍulīya Adhyāya) focuses on Panchakarma Purification Therapies and Nutritional Therapeutics (Yavagu). It contains 36 verses divided into:\n1. Shirovirechana (Erhine / Nasya Drugs): Herbs used for head evacuation (Verses 1-6).\n2. Vamana (Emesis / Vomiting Drugs): Herbs for upper metabolic purification (Verses 7-8).\n3. Virechana (Purgation Drugs): Herbs for lower intestinal purgation (Verses 9-10).\n4. Asthapana & Anuvasana Basti (Decoction & Unctuous Enema Drugs): Herbs for colonic purification and Vata alleviation (Verses 11-14).\n5. Matra & Kala (Dosage & Timing / Rational Application): Principle of individualized therapy (Verses 15-17).\n6. 28 Medicated Gruels (Yavagu): Precise dietary formulations for 28 distinct medical conditions (Verses 18-33).\n7. Concluding Remarks & Wisdom of Atreya: Final synthesis (Verses 34-36).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातोऽपामार्गस्तण्डुलीयं अध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥ अपामार्गस्य तण्डुलान् फलानि मरिचानि च। पिप्पलीश्च समन्ताच्च बीजान्यर्कस्य चापि च॥ ३॥",
+          "transliteration": "athāto'pāmārgastaṇḍulīyaṁ adhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 || apāmārgasya taṇḍulān phalāni maricāni ca | pippalīśca samantācca bījānyarkasya cāpi ca || 3 ||",
+          "meaning_ne": "शिरोविरेचन द्रव्याणि\n\nअब हामी 'अपामार्गस्तण्डुलीय' (अपामार्गको बिउ) नामक दोस्रो अध्यायको व्याख्या गर्नेछौँ। सुरुमा अपामार्गका चामल (बिउ), मरिच, पिप्पली (पिप्ला) र अर्क (आँक) का बिउहरू सङ्कलन गर्नुपर्छ।",
+          "meaning_en": "Title & Collection of Apamarga Seeds\n\nHead Evacuation Drugs\n\nNow we shall expound the chapter entitled Apāmārga Taṇḍulīya (Grains of Apamarga), as stated by the revered Lord Atreya. First, one should collect the husked grains/seeds of Apamarga (Achyranthes aspera), along with black pepper (Maricha), long pepper (Pippali), and seeds of Arka (Calotropis procera).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–6",
+          "sanskrit": "शिरीषबीजं सरर्षपबीजं व्योषं हिङ्गु च शिखरिणि। गौरसर्षपबीजं च बीजं शिग्रुकस्य च॥ ४॥ एतानि शिरोविरेचने प्रयोज्यानि गौरवशिरःशूलपीनसार्दितादीनाम्।",
+          "transliteration": "śirīṣabījaṁ sararṣapabījaṁ vyoṣaṁ hiṅgu ca śikhariṇi | gaurasarṣapabījaṁ ca bījaṁ śigrukasya ca || 4 || etāni śirovirecane prayojyāni gauravaśiraḥśūlapīnasārditādīnām ||",
+          "meaning_ne": "शिरोविरेचनका औषधिहरू: शिरीषको बिउ, तोरी, त्रिकटु (पिप्ला, मरिच, सुठो), हिङ, सेतो तोरी र सजिवन (शिग्रु) को बिउ।\nउपयोगिता: टाउको गहुँगो हुनु, टाउको दुख्नु, पुराना पिनास (पीनस), मुख बाङ्गिने रोग (अर्दित), छारेरोग (अपस्मार), सुँघ्ने शक्ति हराउनु र मूर्छा पर्दा नस्य दिन यी औषधि प्रयोग गरिन्छ।",
+          "meaning_en": "Complete List of Erhine / Nasya Drugs\n\nHerbs for Shirovirechana (Head Evacuation): Seeds of Shirisha (Albizia lebbeck), mustard (Sarshapa), Trikatu (Pippali, Maricha, Sunthi), Asafoetida (Hingu), white mustard (Gaura-sarshapa), and drumstick seeds (Shigru).\nIndications: Heaviness of the head (Shiro-gaurava), headache (Shiro-shula), chronic rhinitis (Pinasa), facial paralysis (Ardita), epilepsy (Apasmara), loss of smell (Ghranana-nasa), and unconsciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "7–8",
+          "sanskrit": "मदनं जीमूतकं इक्ष्वाकुं धामार्गवं कुटजम्। कृतवेधनं च षडेतानि वमने प्रयोज्यानि॥ ७-८॥",
+          "transliteration": "madanaṁ jīmūtakaṁ ikṣvākuṁ dhāmārgavaṁ kuṭajam | kṛtavedhanaṁ ca ṣaḍetāni vamane prayojyāni || 7-8 ||",
+          "meaning_ne": "वमन-विरेचन-बस्ति द्रव्याणि\n\nवमन (बान्ता गराउने) ६ मुख्य औषधिहरू:\n१. मैनाफल (मदनफल - सर्वश्रेष्ठ)\n२. जिमुतक\n३. इक्ष्वाकु (तितो लौका)\n४. धामार्गव (घिरौँला)\n५. कुटज (इन्द्रजौ)\n६. कृतवेधन (तितो तरकारी/घिरौँला)\nकफको आधिक्य, छातीको गढबढी, विष र मन्दाग्निमा यी औषधिको काढा वा चूर्ण दिएर वमन गराइन्छ।",
+          "meaning_en": "Emetic Drugs for Vamana Therapy (वमन द्रव्याणि)\n\nEmesis, Purgation & Enema Drugs\n\nSix Primary Emetic Herbs (Vamana Dravya):\n1. Madanaphala (Randia dumetorum - safest and best emetic)\n2. Jimutaka (Luffa echinata)\n3. Ikshvaku (Lagenaria siceraria / Wild Gourd)\n4. Dhamargava (Luffa aegyptiaca)\n5. Kutaja (Holarrhena antidysenterica)\n6. Kritavedhana (Luffa acutangula)\n\nIndications: Diseases of Kapha dominance, chest congestion, poisoning, and acute indigestion.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "9–10",
+          "sanskrit": "त्रिवृतं त्रि फलां दन्तीं द्रवन्तीं सप्तलां तथा। शङ्खिनीं तिल्वकं चैव कटुकीं च विरेचने॥ ९-१०॥",
+          "transliteration": "trivṛtaṁ tri phalāṁ dantīṁ dravantīṁ samptalāṁ tathā | śaṅkhinīṁ tilvakaṁ caiva kaṭukīṁ ca virecane || 9-10 ||",
+          "meaning_ne": "विरेचन (दिशा गराउने) मुख्य औषधिहरू: निशोध (त्रिवृत), त्रिफला (हर्रो, बर्रो, अमला), दन्ती, द्रवन्ती, सप्तला, शङ्खिनी, तिल्वक र कुटकी।\nपित्त विकार, कमलपित्त (जण्डिस), छालासम्बन्धी रोग (कुष्ठ), ज्वरो र पेटको गाँठो (गुल्म) मा विरेचन दिइन्छ।",
+          "meaning_en": "Purgative Drugs for Virechana Therapy (विरेचन द्रव्याणि)\n\nPrimary Purgative Herbs (Virechana Dravya): Trivrit (Operculina turpethum), Triphala (Haritaki, Bibhitaki, Amalaki), Danti (Baliospermum montanum), Dravanti, Saptala, Shankhini, Tilvaka, and Katuki (Picrorhiza kurroa).\nIndications: Pitta disorders, jaundice (Kamala), skin diseases (Kushtha), fever, and abdominal tumors (Gulma).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "11–14",
+          "sanskrit": "दशमूलं बलामरण्डं कुटजं रास्नां यवानिकाम्। बस्तौ प्रयोजयेद् विद्वान् वातघ्नानि च सर्वशः॥ ११-१४॥",
+          "transliteration": "daśamūlaṁ balāmaraṇḍaṁ kuṭajaṁ rāsnāṁ yavānikām | bastau prayojayed vidvān vātaghnāni ca sarvaśaḥ || 11-14 ||",
+          "meaning_ne": "बस्ति (एनिमा) का मुख्य औषधिहरू: दशमूल, बलामूल, अरण्ड (एरण्ड/अन्डीको मूल), रास्ना, जवानो, कुटज, घिउ, तेल र सिन्धे नुन।\nसंसारका सम्पूर्ण वात रोग, कब्जियत, निहुरिन नसक्ने पिठ्युँको दुखाइ र जोर्नीको समस्यामा बस्ति सर्वोत्तम चिकित्सा हो।",
+          "meaning_en": "Enema Drugs for Asthapana & Anuvasana Basti (बस्ति द्रव्याणि)\n\nEnema Herbs (Basti Dravya): Dashamula (10 roots), Bala (Sida cordifolia), Eranda (Ricinus communis / Castor root), Rasna (Pluchea lanceolata), Carom seeds (Yavanika), Kutaja, along with oil, ghee, and rock salt.\nIndications: All major Vata disorders, constipation, sciatica, joint degeneration, and lower abdominal pains. Basti is hailed as the half-treatment (Ardha-Chikitsa) of internal medicine.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "15–17",
+          "sanskrit": "मात्राकालौ समाश्रित्य सिद्धिर्युक्ताौ प्रतिष्ठिता। तिष्ठत्योपरि युक्तिज्ञो द्रव्यज्ञानवतां सदा॥ १६-१७॥",
+          "transliteration": "mātrākālau samāśritya siddhiryuktau pratiṣṭhitā | tiṣṭhatyopari yuktijño dravyajñānavatāṁ sadā || 16-17 ||",
+          "meaning_ne": "चिकित्सामा सफलता केवल 'युक्ति' (विवेकपूर्ण प्रयोग) मा निर्भर गर्दछ, जसको लागि औषधिको सही मात्रा (मात्रा) र सही समय (काल) को ध्यान राख्न आवश्यक छ। औषधिको नाम मात्र घोक्ने वैद्यभन्दा देश, काल र मात्रा बुझेर प्रयोग गर्ने युक्तिमान् वैद्य सदैव श्रेष्ठ हुन्छ।",
+          "meaning_en": "Principle of Dosage, Time & Rational Application (मात्रा-काल-युक्ति)\n\nClinical success (Siddhi) depends entirely on Yukti (rational application)—which requires administering the exact dose (Matra) at the appropriate time (Kala) based on patient constitution, age, season, and strength. A physician who possesses the wisdom of rational application (Yuktijña) stands far superior to one who merely memorizes the names of herbs.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "18.1",
+          "sanskrit": "अग्निदीपक एवं पाचक यवागू",
+          "transliteration": null,
+          "meaning_ne": "पिप्ला, पिप्लाको जरा, चव्य, चिता र सुठो (पञ्चकोल) मिलाएर पकाइएको यवागू। यसले पाचन अग्नि बढाउँछ र पेटको ग्याँस/अजीर्ण हटाउँछ।",
+          "meaning_en": "Deepaniya & Pachaniya Yavagu\n\nIngredients: Pippali (Long pepper), Pippalimula (Pepper root), Chavya, Chitraka (Plumbago zeylanica), and Nagar/Sunthi (Dry ginger) - known as Panchakola.\nIndication: Stimulates digestive fire (Agni), relieves indigestion and abdominal distension.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "18.2",
+          "sanskrit": "पेट दुखाइ निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "पिप्लाको जरा र गजपिप्ला मोही वा अमिलो झाँगमा पकाएर बनाइएको यवागू। यसले पेटको कडा दुखाइ शान्त पार्छ।",
+          "meaning_en": "Shoolaghni Yavagu\n\nIngredients: Processed with Pippalimula and Gadjapippali cooked in buttermilk or sour gruel.\nIndication: Relieves severe colic pain (Shula) and intestinal cramps.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "18.3",
+          "sanskrit": "आमातिसार निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "शालपर्णी, पृष्ठपर्णी, बेलको काँचो फल, अनारको बोक्रा र सुठो हालेर पकाएको यवागू। यसले आउँ परेको पखाला (आमातिसार) निको पार्छ।",
+          "meaning_en": "Amatisaraghni Yavagu\n\nIngredients: Prepared with Shalaparni, Prishniparni, Bhati, Dadima (Pomegranate peel), and Nagara.\nIndication: Cures acute diarrhea with mucus (Ama-Atisara).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "18.4",
+          "sanskrit": "रक्तातिसार निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "बाख्राको दूध, नीलो कमल र मोचरस हालेर पकाइएको यवागू। यसले रगतमासी (रगत बग्ने पखाला) रोक्छ।",
+          "meaning_en": "Raktatisaraghni Yavagu\n\nIngredients: Cooked with goat's milk (Aja-Kshira), Payasya, Utpala, and Mocharasa (Bombax gum).\nIndication: Stops severe dysentery with blood discharge (Raktatisara).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "18.5",
+          "sanskrit": "मूत्रकृच्छ्र निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "गोखुरु र काँडेबैगुन (कण्टकारी) हालेर पकाइएको यवागू। यसले पिसाब फेर्दा हुने जलन र दुखाइ हटाउँछ।",
+          "meaning_en": "Mutrakrichhraghni Yavagu\n\nIngredients: Prepared with Gokshura (Tribulus terrestris) and Kantakari, sweetened with honey.\nIndication: Relieves dysuria (painful urination) and urinary gravel.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "18.6",
+          "sanskrit": "कीरा निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "वायुविडङ्ग, पिप्लाको जरा र मरिच हालेर मोहीमा पकाएको यवागू। यसले पेटको कीरा जुका नष्ट गर्छ।",
+          "meaning_en": "Krimighni Yavagu\n\nIngredients: Processed with Vidanga (Embelia ribes), Pippalimula, Maricha, and buttermilk.\nIndication: Eradicates intestinal worms (Krimi) and parasites.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "18.7",
+          "sanskrit": "तर्सा/तिर्खा निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "सुठो, नागरमोथा र श्रीखण्ड हालेर पकाइएको यवागू। यसले कडा तिर्खा र दाह शान्त पार्छ।",
+          "meaning_en": "Pipasaghni Yavagu\n\nIngredients: Prepared with Sunthi, Utpala, Musta (Cyperus rotundus), and Chandana.\nIndication: Quenches excessive thirst (Pipasa) and internal heat.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "18.8",
+          "sanskrit": "विष निवारक यवागू",
+          "transliteration": null,
+          "meaning_ne": "बाकुची र अनन्तमूल (सारिवा) हालेर पकाइएको यवागू। यसले शरीरभित्रको विष र विषाक्त खानाको प्रभाव नष्ट गर्छ।",
+          "meaning_en": "Vishaghni Yavagu\n\nIngredients: Prepared with Somaraji (Bakuchi) and Sariva (Hemidesmus indicus).\nIndication: Neutralizes internal toxins and food poisoning.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "18.9",
+          "sanskrit": "कृशता र स्थौल्यादि यवागू",
+          "transliteration": null,
+          "meaning_ne": "दुब्लो मानिसका लागि मासुको रस हालेको (बृंहण) यवागू; मोटा मानिसको तौल घटाउन गवेधुकाको बिउ र मह हालेको (कर्षण) यवागू।",
+          "meaning_en": "Karshani & Brmhani Yavagu\n\nBrmhani (Nourishing): Cooked with minced meat of wild animals, beneficial for emaciated patients.\nKarshani (Reducing): Cooked with Gavedhuka seeds and honey, beneficial for obesity (Sthoulya).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "10–28",
+          "sanskrit": "अन्य विशेष यवागूहरू",
+          "transliteration": null,
+          "meaning_ne": "१०. स्नेहनी — घिउ, तेल र मज्जा। सुक्खा शरीरमा स्निग्धता ल्याउँछ।\n११. रूक्षणी — भुटेको सामा (श्यामाक)। बढी बोसो र कफ घटाउँछ।\n१२. कासघ्नी — पिप्पली, स्वरस र कण्टकारी। कडा खोकी शान्त पार्छ।\n१३. हिक्कानाशिनी — दशमूलको काढा। नरोकिने हिक्का निको पार्छ।\n१४. अनुलोमनी — हर्रो र अमला। दिसा नियमित गर्छ।\n१५. वातघ्नी — रास्ना, एरण्ड र दूध। कडा वातको दुखाइ हटाउँछ।\n१६. पित्तघ्नी — जेठीमधु र मह। अम्लपित्त र दाह घटाउँछ।\n१७. कण्ठ्या — जवानो र सुठो। स्वर र घाँटी सफा राख्छ।\n१८. हृद्या — अनार र अमला। मुटुको दुखाइमा हृदयबल दिन्छ।\n१९. रेतस्य — दूध, सतावरी र चिनी। शुक्र र प्रजनन शक्ति बढाउँछ।\n२०. मदनाशिनी — मद्यको झोल र औषधि। मातेको अवस्था र हैंगओभर हटाउँछ।\n२१. क्षुधाग्नि — भस्म र गह्रौँ औषधि। असामान्य भोक (भस्मक) शान्त पार्छ।\n२२. ज्वरघ्नी — चिराइतो, नागरमोथा र गुर्जो। पुरानो ज्वरो निको पार्छ।\n२३. विषमज्वरघ्नी — नीमको पात र त्रिफला। औलो वा विषम ज्वरो निको पार्छ।\n२४. स्रोत-शोधनी — तोरीको बिउ र त्रिकटु। बन्द स्रोतहरू खोल्छ।\n२५. व्रण-रोपणी — गुग्गुल, नीम र बेसार। भित्रको घाउ भर्छ।\n२६. तर्पणी — भुटेको सत्तू। तत्काल बल र जलपूर्ति दिन्छ।\n२७. श्रमहर — दूध, चिनी र दाख। शारीरिक थकान हटाउँछ।\n२८. धातु-पुष्टिकर — दूध, मास र मासुको झोल। धातुहरू पोषण गर्छ।",
+          "meaning_en": "Remaining medicated gruels\n\n10. Snehani — Ghee, oil, and marrow. Induces unctuousness in a dry body.\n11. Rukshani — Roasted barley (Shyamaka). Reduces excess fat and Kapha.\n12. Kasaghni — Pippali, svarasa, and Kantakari. Relieves severe cough (Kasa).\n13. Hikkanashini — Dashamula decoction. Cures intractable hiccups (Hikka).\n14. Anulomani — Haritaki and Amla. Regulates bowel movements.\n15. Vataghni — Rasna, Eranda, and milk. Relieves severe Vata body ache.\n16. Pittaghni — Licorice (Yashtimadhu) and honey. Reduces hyperacidity and burning.\n17. Kanthya — Yavani and dry ginger. Improves voice clarity and throat health.\n18. Hridya — Pomegranate and Amalaki. A cardiac tonic for heart pain.\n19. Retasya — Milk, Shatavari, and sugar. Enhances semen and fertility.\n20. Madasani — Wine broth and herbs. Relieves intoxication and hangover.\n21. Kshudhagni — Bhasma and heavy herbs. Calms morbid hunger (Bhasmaka).\n22. Jwaraghni — Kiratatikta, Musta, and Guduchi. Cures chronic fever (Jwara).\n23. Vishamajwaraghni — Neem leaves and Triphala. Cures malarial or intermittent fever.\n24. Sroto-Shodhani — Mustard seeds and Trikatu. Clears obstructed bodily channels.\n25. Vrana-Ropani — Guggulu, Neem, and Haridra. Promotes healing of internal ulcers.\n26. Tarpani — Roasted grain flour (Saktu). Gives instant energy and rehydration.\n27. Sramahara — Milk, sugar, and Draksha. Relieves physical fatigue.\n28. Dhatu-Pushtikara — Milk, Masha, and meat broth. Nourishes the deep tissues (Dhatus).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "34–36",
+          "sanskrit": "इत्येता अष्टाविंशतिरिक्षुकादीनां यवागुवः। प्रोक्ताः सिद्धतमाः सम्यगात्रेयेण महर्षिणा॥ ३४-३६॥",
+          "transliteration": "ityetā aṣṭāviṁśatirikṣukādīnāṁ yavāguvaḥ | proktāḥ siddhatamāḥ samyagātreyeṇa maharṣiṇā || 34-36 ||",
+          "meaning_ne": "अध्याय उपसंहार\n\nयसरी महर्षि पुनर्वसु आत्रेयद्वारा प्रतिपादित पञ्चकर्मका शोधन औषधिहरू र २८ प्रकारका सिद्ध यवागूहरूको वर्णन गरिएको चरकसंहिता, सूत्रस्थानको 'अपामार्गस्तण्डुलीय' नामक दोस्रो अध्याय समाप्त हुन्छ।",
+          "meaning_en": "Conclusion\n\nChapter Conclusion & Summary\n\nThus ends the second chapter entitled Apāmārga Taṇḍulīya of the Sutrasthana in Charaka Samhita. Maharshi Punarvasu Atreya has perfectly described these 28 highly effective medicated gruels (Yavagu) along with the essential herbs for the five purification therapies (Panchakarma).",
           "audio_file": null
         }
       ]
