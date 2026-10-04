@@ -5,10 +5,10 @@
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
-  "subtitle_ne": "सूत्रस्थान · अध्याय १–४",
-  "subtitle_en": "Sutrasthana · Chapters 1–4",
-  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप) र अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय)।",
-  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), and Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas).",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १–८",
+  "subtitle_en": "Sutrasthana · Chapters 1–8",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप), अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय), अध्याय ५ मात्राशितीय (आहार मात्रा र दिनचर्या), अध्याय ६ तस्याशितीय (ऋतुचर्या), अध्याय ७ नवेगान्धारणीय (वेग नरोक्ने नियम) र अध्याय ८ इन्द्रियोपक्रमणीय (इन्द्रिय, मन र सद्वृत्त)।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas), Chapter 5 Matrashitiya (quantity of food and the daily regimen), Chapter 6 Tasyashitiya (seasonal regimen), Chapter 7 Navegandharaniya (not suppressing natural urges), and Chapter 8 Indriyopakramaniya (the senses, the mind, and right conduct).",
   "source_ne": "चरकसंहिता, सूत्रस्थानम्",
   "source_en": "Charaka Samhita, Sutrasthana",
   "cover_image": "",
@@ -607,6 +607,556 @@
           "transliteration": "iti ṣaḍvirecanaśatāśritīyo'dhyāyaḥ",
           "meaning_ne": "चौथो अध्यायले आयुर्वेदको चिकित्सकीय शब्दकोश र औषधिको साधन दिन्छ। पाँच कषाय कल्पना र पचास महाकषाय सिकेपछि चिकित्सकले युक्ति (तर्कसंगत योग) बाट जुनसुकै अवस्थाको उपचार गर्न सक्छ।",
           "meaning_en": "Conclusion\n\nChapter 4 provides the clinical vocabulary and pharmacological toolbox of Ayurveda. By mastering the 5 kashaya kalpanas and 50 Mahakashayas, the practitioner gains the capability to manage any clinical condition through rational composition (Yukti).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "title_ne": "मात्राशितीयोऽध्यायः",
+      "title_en": "Matrashitiya Adhyaya — Quantity of Food and Daily Regimen",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "मात्राशितीयोऽध्यायः",
+          "transliteration": "mātrāśitīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको पाँचौं अध्याय (मात्राशितीय अध्याय) आहारको मात्रा, दिनचर्या र व्यक्तिगत स्वच्छतामा केन्द्रित छ। यसमा १०४ श्लोक छन्।\n\n१. आहार मात्रा — खानाको उचित मात्रा र पाचन (श्लोक १–७)।\n२. गुरु र लघु द्रव्य — भारी र हल्का आहार (श्लोक ८–१२)।\n३. अञ्जन — आँखाको हेरचाह (श्लोक १३–१४)।\n४. धूमपान — औषधीय धुवाँ (श्लोक १५–२६)।\n५. नस्य र अणुतेल — नाकमा तेल (श्लोक २७–३८)।\n६. दन्तधावन र गण्डूष — दाँत, जिब्रो र मुख (श्लोक ३९–५५)।\n७. अभ्यङ्ग, स्नान र परिधान — शरीरको दैनिक हेरचाह (श्लोक ५६–७२)।\n८. रक्षण र सदाचार — जुत्ता, छाता, लठ्ठी र स्वच्छता (श्लोक ७३–८७)।\n९. नित्य सेवनीय र असेवनीय आहार (श्लोक ८८–९२)।\n१०. स्वस्थवृत्तको सार (श्लोक ९३–१०४)।",
+          "meaning_en": "Chapter 5 of Sutrasthana (Mātrāśitīya Adhyāya) is the foundational treatise on Personal Hygiene, Daily Regimen (Dinacharya), and Dietary Quantity (Ahara Matra). It contains 104 verses covering:\n1. Ahara Matra (Proper Quantity of Food & Digestion): Verses 1–7\n2. Guru & Laghu Dravya (Nature of Heavy & Light Food Articles): Verses 8–12\n3. Anjana (Collyrium for Eye Care & Prevention of Cataracts/Vision Loss): Verses 13–14\n4. Dhumapana (Medicated Smoking - Types, Herbs, Doses, Benefits & Contraindications): Verses 15–26\n5. Nasya & Anutaila (Nasal Drops, Oil Preparation & Neurological Protection): Verses 27–38\n6. Oral & Dental Hygiene (Dantadhavana, Jivhanirlekhana, Gandusha/Kavala): Verses 39–55\n7. Body Care & Daily Regimen (Abhyanga, Padabhyanga, Snana, Vastra, Ratna, Sugandha): Verses 56–72\n8. Protective Regimen & Social Conduct (Footwear, Umbrella, Walking Stick, Cleanliness): Verses 73–87\n9. Nitya Sevaniya & Asevaniya Ahara (Foodstuffs for Daily Consumption vs Avoidance): Verses 88–92\n10. Summary & Principles of Health Preservation (Svasthavritta): Verses 93–104",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो मात्राशितीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto mātrāśitīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "आहारमात्रा\n\nअब हामी आहारको उचित मात्रा र दिनचर्यासम्बन्धी 'मात्राशितीय' नामक पाँचौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nQuantity of Food & Digestion\n\nNow we shall expound the chapter entitled Mātrāśitīya (The Chapter on Proper Quantity of Food), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–5",
+          "sanskrit": "मात्राशी स्यात्। आहारमात्रा पुनरग्निशक्त्यपेक्षिणी॥ ३॥ यावद्ध्यस्याशनमशितमनुपहत्य प्रकृतिं यथाकालं जरां गच्छति तावदस्य मात्राप्रमाणं वेदितव्यं भवति॥ ४॥ तत्र शालिषष्टिकमुद्गहरिणशशलावकपिञ्जलादीनि लघुनि अपि मात्रावन्त्युपयुञ्जीत, तथा पिष्टातिलतिलपिण्याकमेषमाषानूपौदकमत्स्यगुडक्षीरादीनि गुरूणि अपि मात्रावन्त्युपयुञ्जीत॥ ५॥",
+          "transliteration": "mātrāśī syāt | āhāramātrā punaragniśaktyapekṣiṇī || 3 || yāvaddhyasyāśanamaśitamanupahatya prakṛtiṁ yathākālaṁ jarāṁ gacchati tāvadasya mātrāpramāṇaṁ veditavyaṁ bhavati || 4 || tatra śāliṣaṣṭikamudgahariṇaśaśalāvakapiñjalādīni laghuni api mātrāvantyupayuñjīta, tathā piṣṭātilatilapiṇyākameṣamāṣānūpaudakamatsyaguḍakṣīrādīni gurūṇi api mātrāvantyupayuñjīta || 5 ||",
+          "meaning_ne": "मानिसले सधैँ उचित मात्रामा भोजन गर्नुपर्छ। आहारको मात्रा व्यक्तिको पाचन शक्ति (अग्निबल) मा भर पर्दछ। जुन मात्रामा खाएको भोजनले शरीरका धातु र दोषलाई नबिगारी समयमै सजिलै पच्दछ, त्यसैलाई आहारको सही मात्रा मानिन्छ। हल्का भोजन (जस्तै मसिना चामल, साठे चामल, मुगी, हरिण र खरायोको मासु) पनि मात्रा मिलाएर खानुपर्छ। त्यसै गरी गहुङ्गो भोजन (जस्तै पीठोका परिकार, तिल, सुँगुर तथा माछाको मासु, मासको दाल, सख्खर र दूध) पनि कडा नियन्त्रण र सानो मात्रामा मात्र सेवन गर्नुपर्छ।",
+          "meaning_en": "Definition of Proper Quantity (Ahara Matra) & Digestion (Agni)\n\nOne should always eat food in proper measure (Matra). The exact quantity of food depends upon the individual's digestive fire (Agni-shakti). The proper quantity of food is defined as that amount which digests smoothly within the expected time without disturbing the natural bodily equilibrium (Prakriti). Light food articles (Laghu) such as Shali rice, Shashtika rice, Mudga (mung bean), venison, rabbit, and quail meat should be consumed in proper measure. Heavy food articles (Guru) such as pastry, sesame preparations, pork, black gram (Masha), aquatic meat, fish, jaggery, and milk must also strictly be eaten in controlled, limited quantities.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "6–7",
+          "sanskrit": "न हि लघूनामपि सौहित्यमग्नेर्युक्तमस्त्युपयोगाय। गुरूणां पुनरर्धसौहित्यं गुरुणामपि हीनता॥ ६॥ तद्धि भुक्तं सम्यग्जरति, न च बलवर्णसुखायुषा युङ्क्ते, गुरु ह्यपरिपक्वमनुपहत्य प्रकृतिं न जरति॥ ७॥",
+          "transliteration": "na hi laghūnāmapi sauhityamagneryuktamastyupayogāya | gurūṇāṁ punarardhasauhityaṁ gurūṇāmapi hīnatā || 6 || tiddhi bhuktaṁ samyagjarati, na ca balavarṇasukhāyuṣā yuṅkte, guru hyaparipakvamanupahatya prakṛtiṁ na jarati || 7 ||",
+          "meaning_ne": "हल्का भोजन पनि अघाउन्जेल टन्न खानु हुँदैन, किनकि अत्यधिक भोजनले पाचन अग्निलाई मन्द बनाउँछ। गहुङ्गो भोजन त अझ पेटको आधा वा एक-तिहाइ भाग मात्र भरिने गरी खानुपर्छ। सही मात्रामा गरिएको भोजन राम्ररी पचेर बल, कान्ति, सुख र आयु वृद्धि गर्दछ। गहुङ्गो भोजन धेरै खाँदा नपचीकन पेटमा कुहिन्छ र रोग उत्पन्न गराउँछ।",
+          "meaning_en": "Capacity of the Stomach & Physiological Effects\n\nEven light foods should not be eaten to full satiety, as overeating weakens the digestive fire. For heavy foods, one should fill only one-half or one-third of the stomach capacity. Food taken in proper measure undergoes proper digestion, enhancing physical strength, complexion, happiness, and lifespan. Overeating heavy food remains undigested, produces metabolic toxins (Ama), and damages bodily health.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "8–12",
+          "sanskrit": "मात्रावद्ध्यशनमशितमनुपहत्य प्रकृतिं यथाकालं जरां गच्छति। गुरूणि हि वाय्वग्निगुणहीनानि पृथिव्यप्प्रधानत्वात्, लघूनि पुनर्वाय्वग्निगुणभूयिष्ठत्वात्॥ ८॥ तस्माल्लघून्यपि मात्रावन्त्युपयुञ्जीत, गुरूणि पुनरत्यन्तमात्रावन्ति। न च नोपयोक्तव्यानि गुरूणि, मात्रा हि सर्वत्रापेक्षिणी॥ ९॥ तत्र मात्रासन्दीपितो ह्यग्निरुदीरयति बलमुपचयं चाशु करोति॥ १०॥",
+          "transliteration": "mātrāvaddhyaśanamaśitamanupahatya prakṛtiṁ yathākālaṁ jarāṁ gacchati | gurūṇi hi vāyvagniguṇahīnāni pṛthivyappradhānatvāt, laghūni punervāyvagniguṇabhūyiṣṭhatvāt || 8 || tasmāllaghūnyapi mātrāvantyupayuñjīta, gurūṇi punaratyaṁtamātrāvanti | na ca nopayoktavyāni gurūṇi, mātrā hi sarvatrāpekṣiṇī || 9 || tatra mātrāsandīpito hyagnirudīrayati balamupcayaṁ cāśu karoti || 10 ||",
+          "meaning_ne": "गुरु-लघु-द्रव्य विचार\n\nगहुङ्गो पदार्थमा पृथ्वी र जल तत्वको प्रधानता हुने हुनाले तिनमा वायु र अग्निको गुण कम हुन्छ, त्यसैले ती ढिलो पच्दछन्। हल्का पदार्थमा वायु र अग्नि तत्वको प्रधानता हुने हुनाले ती चाँडै पच्दछन् र पाचन अग्निलाई प्रदीप्त पार्छन्। तसर्थ, हल्का वा गहुङ्गो जुनसुकै भोजन पनि मात्रा मिलाएरै खानुपर्छ। सही मात्रामा गरिएको भोजनले अग्निलाई तीव्र बनाई शरीरमा तुरुन्तै बल र धातुको पुष्टि गर्दछ।",
+          "meaning_en": "Digestion Dynamics & Element Composition\n\nNature of Heavy & Light Foods\n\nHeavy articles (Guru) are dominant in the Earth (Prithvi) and Water (Ap) elements, lacking Air (Vayu) and Fire (Agni) qualities, and thus require greater digestive exertion. Light articles (Laghu) are dominant in Air and Fire elements, making them inherently easy to digest and stimulating to the digestive fire. However, proper quantity (Matra) is mandatory for both. When food is eaten in the correct measure, the digestive fire burns brightly, promoting immediate strength, tissue nourishment (Upachaya), and longevity.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "13–14",
+          "sanskrit": "सौवीरमञ्जनं नित्यं हितमक्ष्णोः प्रयोजयेत्। पञ्चरात्रेऽष्टरात्रे वा स्रावणार्थे रसाञ्जनम्॥ १३॥ चक्षुस्तेजोमयं तस्य विशेषाच्छ्लेष्मतो भयम्। तत्प्रशान्त्यर्थमञ्जनं मतातङ्कप्रशान्तये॥ १४॥",
+          "transliteration": "sauvīramañjanaṁ nityaṁ hitamakṣṇoḥ prayojayet | pañcarātre'ṣṭarātre vā srāvaṇārthe rasāñjanam || 13 || cakṣustejomayaṁ tasya viśeṣācchleṣmato bhayam | tatpraśāntyarthamañjanaṁ matātaṅkapraśāntaye || 14 ||",
+          "meaning_ne": "अञ्जनविधि\n\nआँखाको ज्योति कायम राख्न हरेक दिन सौवीराञ्जन (कसिौँ/काजल) लगाउनुपर्छ। आँखामा जमेको कफ बाहिर निकाल्न ५ वा ८ रातको अन्तरमा रसाञ्जन प्रयोग गर्नुपर्छ। आँखा तेज (अग्नि) प्रधान अङ्ग भएकाले यसलाई कफबाट धेरै खतरा हुन्छ। अञ्जनको प्रयोगले कफ पखाली आँखाको दृष्टि सूर्यको किरणझैँ निर्मल र तीक्ष्ण बनाउँछ।",
+          "meaning_en": "Sauveeranjana & Rasanjana Application\n\nOphthalmic Care & Collyrium\n\nSauveeranjana (antimony collyrium) should be applied daily to the eyes to maintain clarity and vision. Rasanjana (extract of Berberis aristata with goat's milk) should be applied once every 5 or 8 nights to induce lacrimation and evacuate excess Kapha. The eye is predominantly composed of the Light/Fire element (Tejas) and is particularly vulnerable to Kapha disorders. Regular application of collyrium eliminates Kapha, keeping vision sharp like the radiant rays of the sun.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "15–20",
+          "sanskrit": "प्रयोगपानं शमनं स्नेहनं विरेचनम्। धूमस्य त्रिविधं प्रोक्तं तस्य कर्माणि वक्ष्यते॥ १५॥ हरेणुकांसर्जरसं शैलजं मुस्तमेव च। चन्दनं पत्रमेलां च उशीरं ध्यामकं तथा॥ १६॥ एतैर्द्रव्यैः कृतं वर्तिं पिबेच्छमनमात्मवान्। स्नेहनं घृतमज्जाभ्यां विरेच्यं तीक्ष्णौषधैः॥ १७॥ ऋजुस्त्र्यवनातो ग्रन्थिहीनः सुषिणो वरः। अङ्गुलैश्चतुरशीत्या त्रिभिः सोपान उच्यते॥ १८॥ विरेचने त्रिभिश्चैवैकोनैश्चत्वारिंशदङ्गुलः। त्रिंशदङ्गुलको मन्दः शमने षड्त्रिंशदङ्गुलः॥ १९॥",
+          "transliteration": "prayogapānaṁ śamanaṁ snehanaṁ virecanam | dhūmasya trividhaṁ proktaṁ tasya karmāṇi vakṣyate || 15 || hareṇukāṁsarjarasaṁ śailajaṁ mustameva ca | candanaṁ patramelāṁ ca uśīraṁ dhyāmakaṁ tathā || 16 || etairdravyaiḥ kṛtaṁ vartiṁ pibecchamanāmātmavān | snehanaṁ ghṛtamajjābhyāṁ virecyaṁ tīkṣṇauṣadhaiḥ || 17 || ṛjustryavanāto granthihīnaḥ suṣiṇo varaḥ | aṅgulaiścaturaśītyā tribhiḥ sopāna ucyate || 18 || virecane tribhiścaivaikonaiścatvāriṁśadaṅgulaḥ | triṁśadaṅgulako mandaḥ śamane ṣaḍtriṁśadaṅgulaḥ || 19 ||",
+          "meaning_ne": "धूमपान विधि\n\nधूमपान तीन प्रकारका हुन्छन्:\n१. शमन (सामान्य): हरेणुका, साखुको रयाल, मुस्ता, चन्दन, अलैँची, खस र उशीरबाट बनेको।\n२. स्नेहन (स्निग्ध): घिउ, मज्जा र मैनबाट बनेको।\n३. विरेचन (तीक्ष्ण): तीक्ष्ण र कफनाशक औषधिबाट बनेको।\n\nधूमनेत्र (धूमपानको पाइप): पाइप सोझो, तीन वटा गाँठो भएको र भित्र प्वाल परेको हुनुपर्छ। लम्बाइ: शमनका लागि ३६ अङ्गुल, विरेचनका लागि २४ अङ्गुल र स्नेहनका लागि ३२ अङ्गुल हुनुपर्छ।",
+          "meaning_en": "Types of Smoking, Ingredients & Pipes\n\nMedicated Smoking\n\nMedicated smoking (Dhumapana) is of three main types:\n1. Prayogika / Shamana (Habitual / Palliative): Prepared from Hareņukā, Sarjarasa, Musta, Sandalwood, Ela, Usheera, etc.\n2. Snehana (Unctuous / Soothing): Prepared with ghee, animal marrow, and wax.\n3. Virechana / Tikshna (Purificatory / Erhine): Prepared with sharp, pungent herbs (Shirovirechana drugs).\n\nSmoking Pipe Dimensions (Dhumanetra): The pipe must be straight, with three joints, hollow, and made of metal or wood. Length specifications:\n- Palliative (Prayogika): 36 Angulas (inches).\n- Purificatory (Virechanika): 24 Angulas.\n- Unctuous (Snehana): 32 Angulas.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "21–26",
+          "sanskrit": "गौरवं शिरसः शूलं पीनसार्धावभेदकौ। कर्णाक्षिशूलं कासश्च हिक्का श्वासो गलग्रहः॥ २१॥ दन्तदौर्बल्यमक्ष्यादि स्रावः पूतिघ्राणास्यगन्धता। दन्तशूलमरोचको हनुमन्याग्रहस्तथा॥ २२॥ कण्डूः क्रिमयः पाण्डुत्वं मुखे प्रसेकः स्वरभेदश्च। श्लेष्मारोगश्च शिरसि धूमपानात्प्रशाम्यति॥ २३॥ त्रिचतुष्पानपायी स्यादहोरात्रेण बुद्धिमान्। मुखेन वा पिबेद्धूमं नासिकया वा समुत्सृजेत्॥ २४॥ नासिकया पिबेद्यस्तु चक्षुस्तस्य विहन्यते॥ २५॥",
+          "transliteration": "gauravaṁ śirasaḥ śūlaṁ pīnasārdhāvabhedakau | karṇākṣiśūlaṁ kāsaśca hikkā śvāso galagrahaḥ || 21 || dantadaurbalyamakṣyādi srāvaḥ pūtighrāṇāsyagandhatā | dantaśūlamarocako hanumanyāgrahastathā || 22 || kaṇḍūḥ krimayaḥ pāṇḍutvaṁ mukhe prasekaḥ svarabhedaśca | śleṣmārogaśca śirasi dhūmapānātpraśāmyati || 23 || tricatuṣpānapāyī syādahorātreṇa buddhimān | mukhena vā pibeddhūmaṁ nāsikayā vā samutsṛjet || 24 || nāsikayā pibedyastu cakṣustasya vihanyate || 25 ||",
+          "meaning_ne": "धूमपानका फाइदाहरू: टाउको गहुङ्गो हुनु, टाउको दुख्नु, पुराना पिनास, आधा टाउको दुख्नु (माइग्रेन), कान र आँखा दुख्नु, खोकी, बाडुली, सासमा फेर्न गाह्रो हुनु, बङ्गारा र गर्दन अररो हुनु, दाँत दुख्नु, मुखको दुर्गन्ध र कफका समस्त रोग धूमपानले शान्त हुन्छन्।\nसेवन विधि: धुवाँ मुख वा नाकबाट तानेर सधैँ मुखबाटै बाहिर फाल्नुपर्छ। नाकबाट धुवाँ बाहिर फाल्दा आँखाको दृष्टि कमजोर हुन्छ।",
+          "meaning_en": "Indications, Proper Administration & Benefits of Dhumapana\n\nIndications & Benefits: Medicated smoking cures heaviness of head, headache, rhinitis (Pinasa), hemicrania (Ardavabhedaka), earache, eye pain, cough, hiccup, dyspnea, lockjaw, stiffness of neck/jaw, toothache, excessive salivation, bad breath, and all Kapha-Vata disorders above the clavicle.\nProcedure: Smoke should be inhaled through the mouth or nose, but always exhaled through the mouth only. Inhaling through the mouth and exhaling through the nose protects vision; exhaling smoke through the eyes/nose damages vision.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "27–38",
+          "sanskrit": "चन्दनं गुरु पत्रं च दार्वी त्वगेला फलानि च। बलामुशीरं रास्नां च समङ्गां सारिवां तथा॥ २७॥ कमलस्य च किञ्जल्कं बिल्वमुत्पलमेव च। एतानि समभागानि तिलतैलेन साधयेत्॥ २८॥ एष तैलं नस्यविधौ योज्यं सर्वर्तुषु द्विजैः। नित्यं नस्यमभ्यस्यतो नासिका न विहन्यते॥ २९॥ केशश्मश्रु न पतति न पाण्डुरतां व्रजेत्। न ग्रैवा न च मन्यायास्तम्भो नार्दितमेव च॥ ३०॥ स्वरो महान् भवति च वक्त्रं च सुगन्धिमत्। इन्द्रियाणां प्रसादेन दृश्यते सहसा न च॥ ३१॥",
+          "transliteration": "candanaṁ guru patraṁ ca dārvī tvagelā phalāni ca | balāmuśīraṁ rāsnāṁ ca samaṅgāṁ sārivāṁ tathā || 27 || kamalasya ca kiñjalkaṁ bilvamutpalameva ca | etāni samabhāgāni tilatailena sādhayet || 28 || eṣa tailaṁ nasyavidhau yojyaṁ sarvartuṣu dvijaiḥ | nityaṁ nasyamabhyasyato nāsikā na vihanyate || 29 || keśaśmaśru na patati na pāṇḍuratāṁ vrajet | na graivā na ca manyāyāstambho nārditameva ca || 30 || svaro mahān bhavati ca vaktraṁ ca sugandhimat | indriyāṇāṁ prasādena dṛśyate sahasā na ca || 31 ||",
+          "meaning_ne": "नस्यविधि एवं अणुतेल\n\nअणुतेलको निर्माण र नस्यका फाइदाहरू: चन्दन, अगरु, दालचिनी, अलैँची, बला, खस, रास्ना, सारिवा, कमलको केसर, बेल र तिलको तेल मिसाएर १० पटक पकाएर अणुतेल तयार गरिन्छ।\nदिनहूँ नस्य हाल्नुका फाइदा:\n१. कपाल र दाह्री-जुँगा झर्दैनन् र फुल्दैनन्।\n२. मुख बाङ्गिने (अर्दित), गर्दन अररो हुने र टाउको दुख्ने रोग लाग्दैन।\n३. स्वर मधुर हुन्छ, मुख सुगन्धित हुन्छ र सबै इन्द्रियहरू बलिया र तीक्ष्ण हुन्छन्।",
+          "meaning_en": "Preparation & Benefits of Anutaila\n\nNasal Administration & Anutaila\n\nAnutaila Formulation: Medicated oil prepared with Sandalwood, Agarwood, Cinnamon, Ela, Bala, Usheera, Rasna, Sariva, Lotus stamens, Bilva, and Sesame oil, boiled 10 times in rainwater/goat's milk.\nBenefits of Daily Nasal Drops (Nasya):\n1. Hair does not fall out or turn prematurely gray (Palitya).\n2. Prevents facial paralysis (Ardita), cervical spondylosis, and headaches.\n3. Enhances voice clarity, olfactory perception, and sensory organ vigor (Indriya Prasadana).\n4. Strengthens the neck, shoulders, and chest muscles.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "39–55",
+          "sanskrit": "कषायस्तिक्तकटुकः कनिष्ठिकाग्रसमस्थौल्यः। अर्कन्यग्रोधखदिरकरञ्जककुभादिजः॥ ३९॥ दन्तधावनवृक्षो यो द्वौ कालो भुक्तमन्तरे। क्षौद्रप्रियङ्गुमरिचैस्तैलेन च समायुतः॥ ४०॥ जिह्वालिखनमौत्पल्यममलं कटुकषायकैः। सुवर्णरजतताम्रैर्वा जिह्वा निर्लिख्यते सुखम्॥ ४१॥ तैलखण्डगुडाद्भिर्वा गण्डूषं धारयेन्नरः। दन्तहर्षं दन्तचालं मुखदौर्गन्ध्यमेव च॥ ४२॥ हन्त्यजिह्वाशोषं च कण्ठशोषं च मानवः॥ ४३॥",
+          "transliteration": "kaṣāyastiktakaṭukaḥ kaniṣṭhikāgrasamasthaulyaḥ | arkanyagrodhakhadirakarañjakakubhādijaḥ || 39 || dantadhāvanavṛkṣo yo dvau kālo bhuktamantare | kṣaudrapriyaṅgumaricaistailena ca samāyutaḥ || 40 || jihvālikhanamautpalyamamalaṁ kaṭukaṣāyakaiḥ | suvarṇarajatatāmrairvā jihvā nirlikhyate sukham || 41 || tailakhaṇḍaguḍādbhirvā gaṇḍūṣaṁ dhārayennaraḥ | dantaharṣaṁ dantacālaṁ mukhadaurgandhyameva ca || 42 || hantyajihvāśoṣaṁ ca kaṇṭhaśoṣaṁ ca mānavaḥ || 43 ||",
+          "meaning_ne": "दन्तधावन-गण्डूष विधि\n\n- दन्तधावन (दाँत माझ्ने): आँक, वर, खदिर (खैर), करञ्ज र अर्जुनका तितो, कषाय वा पिरो रस भएका काठका डाँठले दिनको दुई पटक (बिहान र खानापछि) दाँत माझ्नुपर्छ।\n- जिह्वानिर्लेखन (जिब्रो कोर्ने): सुन, चाँदी, तामा वा लचिलो काठको जिभ्रीले जिब्रोमा जमेको मयल पखाल्नुपर्छ।\n- गण्डूष (तेल वा पानी मुखमा भर्ने): तिलको तेल वा मनतातो पानी मुखमा भरेर राख्दा दाँत सिरिङ्ग हुने, दाँत हल्लिने, मुख गन्हाउने र ओठ फुट्ने समस्या पूर्ण रूपमा निको हुन्छ।",
+          "meaning_en": "Toothbrushing, Tongue Scraping & Mouth Gargling\n\nOral & Dental Hygiene\n\n- Dantadhavana (Toothbrushing): Twigs of Arka, Nyagrodha (Banyan), Khadira, Karanja, or Arjuna having astringent (Kashaya), bitter (Tikta), or pungent (Katu) tastes should be used twice daily (morning and after meals).\n- Jivhanirlekhana (Tongue Scraping): Tongue scrapers made of gold, silver, copper, or flexible wooden twigs remove tongue coating, bad breath, and loss of taste.\n- Gandusha / Kavala (Oil Pulling / Gargling): Holding sesame oil, warm water, or herbal decoctions in the mouth prevents tooth sensitivity (Danta-harsha), loose teeth (Danta-chala), oral dryness, and facial wrinkles.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "56–72",
+          "sanskrit": "स्नेहाभ्यङ्गाद्यथा कुम्भश्चर्म स्नेहविभावितम्। उपाङ्गश्चाक्षस्तथा दृढः क्लेशसहो भवेत्॥ ५६॥ स्पर्शनेन्द्रियजिच्छ्रेष्ठस्त्वचि कायो नृणां स्थितः। त्वच्यश्च परमं तैलं तस्मादभ्यङ्गमचरेत्॥ ५७॥ न चाभिघाताभिहतं गात्रमभ्यङ्गसेविनः। विकारं भजतेऽत्यन्तं बलकर्मणि वा क्वचित्॥ ५८॥ पादाभ्यङ्गश्च पादानां दार्ढ्यं सुप्तिमश्रमम्। नयनप्रसादं कुरुते वातशमनमेव च॥ ५९॥ पवित्रं वृष्यमायुष्यं श्रमस्वेदह्रदं परम्। शरीरबलकृच्छ्रेष्ठं स्नानमग्निप्रवर्धनम्॥ ६०॥ काम्यं यशस्यमायुष्यमलक्ष्मीघ्नमनुत्तमम्। ह्लादनं भेषजं श्रीमद्वस्त्रनिर्मलधारणम्॥ ६१॥",
+          "transliteration": "snehābhyaṅgādyathā kumbhaścarma snehavibhāvitam | upāṅgaścākṣastathā dṛḍhaḥ kleśasaho bhavet || 56 || sparśanendriyajiccśreṣṭhastvaci kāyo nṛṇāṁ sthitaḥ | tvacyaśca paramaṁ tailaṁ tasmādabhyaṅgamacaret || 57 || na cābhighātābhihataṁ gātramabhyaṅgasevinaḥ | vikāraṁ bhajate'tyantaṁ bal karmaṇi vā kvacit || 58 || pādābhyāṅgaśca pādānāṁ dārḍhyaṁ suptimaśramam | nayanaprasādaṁ kurute vātaśamanameva ca || 59 || pavitraṁ vṛṣyamāyuṣyaṁ śramasvedahradaṁ param | śarīrabalakṛcchreṣṭhaṁ snānamagnipravardhanam || 60 || kāmyaṁ yaśasyamāyuṣyamalakṣmīghnamanuttamam | hlādanaṁ bheṣajaṁ śrīmadvastranirmaladhāraṇam || 61 ||",
+          "meaning_ne": "अभ्यङ्ग-स्नान-परिधान\n\n- अभ्यङ्ग (तेल मालिस): जसरी घैँटो वा छालामा तेल घस्दा त्यो बलियो र खप्ने हुन्छ, त्यसै गरी शरीरमा दिनहूँ तेल मालिस गर्दा छाला कोमल, बलियो र चोटपटक सहन सक्ने हुन्छ।\n- पादाभ्यङ्ग (खुट्टाको मालिस): गोडामा तेल घस्दा पैतला फाट्ने, नसामारिने र थकाइ मेटिनुका साथै आँखाको दृष्टि तीव्र हुन्छ।\n- स्नान (नुहाउने): नुहाउनाले शरीर र मन पवित्र हुन्छ, थकाइ र पसिना मेटिन्छ, शरीरमा बल र पाचन अग्नि बढ्छ।\n- सफा लुगा र सुगन्ध: सफा कपडा लगाउने र प्राकृतिक अत्तर प्रयोग गर्नाले आयु, कान्ति, प्रसन्नता र आरोग्यता वृद्धि हुन्छ।",
+          "meaning_en": "Massage, Bathing, Attire & Perfumes\n\nDaily Body Care & Regimen\n\n- Abhyanga (Oil Massage): As an earthen pot or leather skin becomes strong and impervious when lubricated with oil, human skin and tissues become resilient, radiant, and resistant to trauma when massaged daily with oil.\n- Padabhyanga (Foot Massage): Prevents foot numbness, roughness, fatigue, and cracks (Vipadika), while improving vision and pacifying Vata.\n- Snana (Bathing): Purifies the mind, enhances libido (Vrishya), promotes longevity, removes fatigue and sweat, strengthens the body, and kindles the digestive fire.\n- Clean Attire & Perfumes: Wearing clean clothes and natural perfumes (Sugandha) brings charm, fortune, longevity, and psychological well-being.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "73–87",
+          "sanskrit": "चक्षुष्यं स्पर्शनहितं पादयोर्हितमुत्तमम्। पादत्रधारणं बल्यं पराक्रमसुखावहम्॥ ७३॥ ईत्युपसर्गघ्नं बल्यं गुप्त्यावरणशङ्करम्। घर्मानिलरजोरोधं छत्रधारणमुच्यते॥ ७४॥ स्खलतः सम्प्रतिष्ठानं शत्रूणां च निवारणम्। अवष्टम्भनमायुष्यं भयघ्नं दण्डधारणम्॥ ७५॥ पादमूर्धमलत्यागः शौचमाचमनं तथा। सर्वप्राण्यनुकम्पा च मङ्गलस्याभिनन्दनम्॥ ७६॥",
+          "transliteration": "cakṣuṣyaṁ sparśanahitaṁ pādayorhitamuttamam | pādatradhāraṇaṁ balyaṁ parākramasukhāvaham || 73 || ītyupasargaghnaṁ balyaṁ guptyāvaraṇaśaṅkaram | gharmānilarajorodhaṁ chatradhāraṇamucyate || 74 || skhalataḥ sampratiṣṭhānaṁ śatrūṇāṁ ca nivāraṇam | avaṣṭambhanamāyuṣyaṁ bhayaghnaṁ daṇḍadhāraṇam || 75 || pādamūrdhamalatyāgaḥ śaucamācamanaṁ tathā | sarvaprāṇyanukampā ca maṅgalasyābhinandanam || 76 ||",
+          "meaning_ne": "रक्षण-सदाचार विधि\n\n- जुत्ता वा चप्पल लगाउनु: पैतलाको रक्षा गर्छ, आँखाको दृष्टि बढाउँछ र विषालु जीवजन्तुबाट बचाउँछ।\n- छाता ओढ्नु: घाम, पानी, धूलो, हावा र सङ्क्रामक कीटाणुबाट शरीरको रक्षा गर्दछ।\n- लाठी (लाठी/छडी) टेक्नु: लड्नबाट बचाउँछ, जङ्गली जनावर वा शत्रु भगाउँछ, थकाइ कम गर्छ र आयु बढाउँछ।\n- सदाचार र सरसफाइ: कपाल र नङ समयमै काट्नु, हातगोडा धुनु, सफा रहनु र सबै प्राणीप्रति दया राख्नुले दीर्घायु प्राप्त हुन्छ।",
+          "meaning_en": "Footwear, Umbrellas, Staff & Personal Hygiene\n\nProtective Regimen & Conduct\n\n- Footwear (Padatra-dharana): Protects feet, promotes vision (Chakshushya), shields against venomous creatures, and brings comfort and vigor.\n- Umbrella (Chatra-dharana): Protects against sun heat, rain, dust, wind, and environmental pollution (Upasarga).\n- Walking Stick (Danda-dharana): Provides support against slipping, repels dangerous animals or enemies, reduces physical fatigue, and imparts confidence.\n- Sanitation & Compassion: Regular trimming of hair and nails, washing of feet, personal cleanliness (Shaucha), and showing compassion to all living beings promote physical and spiritual wellness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "88–92",
+          "sanskrit": "षष्टिकान् शालिमुद्गांश्च सैन्धवामलके यवान्। आन्तरीक्षं पयो सर्पिर्जाङ्गल मधु चाभ्यसेत्॥ ८८॥ न कुर्चिकामिलाटांश्च दधिकूर्चांश्च दधि न च। वाराहमाहिषाज्यानि मत्स्यान् दधि च माषकान्॥ ८९॥ यवकान्न समभ्यसेत्। एतान् न नित्यं युञ्जीत द्रव्यान् बलविनाशनः॥ ९०॥",
+          "transliteration": "ṣaṣṭikān śālimudgāṁśca saindhavāmalake yavān | āntarīkṣaṁ payo sarpirjāṅgala madhu cābhyaset || 88 || na kurcikāmilāṭāṁśca dadhikūrcāṁśca dadhi na ca | vārāhamāhiṣājyāni matsyān dadhi ca māṣakān || 89 || yavakānna samabhyaset | etān na nityaṁ yuñjīta dravyān balavināśanaḥ || 90 ||",
+          "meaning_ne": "नित्य सेवनीय-असेवनीय आहार\n\nसधैँ सेवन गर्न योग्य उत्तम आहार (नित्य सेवनीय):\nसाठे चामल, मसिना चामल, मुगीको दाल, सिन्धे नून, अमला, जौ, आकाशको शुद्ध पानी (वा शुद्ध जल), गाईको दूध र घिउ, हरिण/खरायोको मासु र मह।\nसधैँ सेवन गर्न नहुने अहितकर आहार (नित्य असेवनीय):\nपनिरका परिकार (कुर्चिका, किलाट), दही (विशेष गरी राति), सुँगुर र राँगाको मासु, माछा, मासको दाल र अङ्कुरित अनाज। यी चिजहरू दिनहूँ खाँदा पाचन अग्नि र शरीरको बल नष्ट हुन्छ।",
+          "meaning_en": "Articles for Daily Consumption vs Avoidance\n\nDaily Dietary Guidelines\n\nArticles Recommended for Daily Use (Nitya Sevaniya):\n1. Shashtika & Shali Rice\n2. Mudga (Mung bean)\n3. Saindhava Lavana (Rock salt)\n4. Amalaki (Indian gooseberry)\n5. Yava (Barley)\n6. Antariksha Jala (Rainwater / Pure natural water)\n7. Cow Milk & Cow Ghee\n8. Jangala Meat (Meat of arid zone animals)\n9. Honey (Madhu)\n\nArticles Prohibited for Daily Use (Nitya Asevaniya):\nHeavy cheese preparations (Kurchika, Kilata), curd/yogurt (Dadhi - especially at night), pork, buffalo beef/meat, fish, black gram (Masha), and unrefined dried sprouts. Continuous daily use of these destroys digestive fire and physical strength.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "93–104",
+          "sanskrit": "नगेन्द्रनगराकारं शरीरं नगरोपमम्। नगरस्येव नगरो धीमान् पूरस्य पूरवित्॥ ९३॥ स्वास्थ्यानुवर्तनं यत्तु सर्वमेतत्प्रदर्शितम्। न हि स्वास्थ्यादृते किञ्चिदन्यत्कृत्यतमं नृणाम्॥ ९४॥ ये ये भावाः शरीरेऽस्मिन् दोषादीनां समताकराः। तान् तान् सेवेत सततं विपरीतांश्च वर्जयेत्॥ ९५॥ इति मात्राशितीयो नाम पञ्चमोऽध्यायः समाप्तः॥ १०४॥",
+          "transliteration": "nagendranagarākāraṁ śarīraṁ nagaropamam | nagarsyeva nagaro dhīmān pūrasya pūravit || 93 || svāsthyānuvartanaṁ yattu sarvametatpradarśitam | na hi svāsthyādṛte kiñcidanyatkṛtyatamaṁ nṛṇām || 94 || ye ye bhāvāḥ śarīre'smin doṣādīnāṁ samatākarāḥ | tān tān seveta satataṁ viparītāṁśca varjayet || 95 || iti mātrāśitīyo nāma pañcamo'dhyāyaḥ samāptaḥ || 104 ||",
+          "meaning_ne": "स्वस्थवृत्त सङ्ग्रह\n\nबुद्धिमान् व्यक्तिले आफ्नो शरीरलाई एउटा सुन्दर नगर ठानेर त्यसको रक्षा त्यसै गरी गर्नुपर्छ जसरी नगरपाल वा राजाले नगरको रक्षा गर्छ। मानव जीवनमा स्वास्थ्य रक्षा गर्नुभन्दा ठूलो अर्को कुनै कर्तव्य छैन। जसले शरीरका दोष र धातुहरूलाई सम अवस्थामा राख्छन्, तिनै आहार र विहारको निरन्तर सेवन गर्नुपर्छ र विपरीत स्वभावका हानिकारक कुराहरूलाई पूर्ण रूपमा त्याग्नुपर्छ।\nयसरी चरकसंहिता सूत्रस्थानको 'मात्राशितीय' नामक पाँचौँ अध्याय समाप्त भयो।",
+          "meaning_en": "Concluding Wisdom of Atreya\n\nSummary & Principles of Health Preservation\n\nA wise person should protect and govern their body just as a king or town administrator guards a prosperous city. There is no higher duty for a human being than maintaining good health (Swasthya). All regimens, habits, and diets that maintain the equilibrium of Doshas, Dhatus, and Malas should be consistently adopted, while all contrary habits should be strictly renounced. Thus ends the fifth chapter entitled Mātrāśitīya Adhyāya of Sutrasthana in Charaka Samhita.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "title_ne": "तस्याशितीयोऽध्यायः",
+      "title_en": "Tasyashitiya Adhyaya — Seasonal Regimen",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "तस्याशितीयोऽध्यायः",
+          "transliteration": "tasyāśitīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको छैटौं अध्याय (तस्याशितीय अध्याय) ऋतुचर्या र वातावरणसँगको अनुकूलन बताउँछ। यसमा ५० श्लोक छन्।\n\n१. अयन र षड्ऋतु — आदान र विसर्ग काल, छ ऋतु र बल (श्लोक १–८)।\n२. हेमन्त र शिशिर — बलियो अग्नि, स्निग्ध र भारी आहार (श्लोक ९–१८)।\n३. वसन्त — कफको वृद्धि, वमन र हलुका आहार (श्लोक १९–२६)।\n४. ग्रीष्म — गर्मी, चिसो र मिठो आहार, दिवा निद्रा (श्लोक २७–३२)।\n५. वर्षा — मन्द अग्नि, वातको वृद्धि, बस्ति (श्लोक ३३–४०)।\n६. शरद् — पित्तको वृद्धि, विरेचन, रक्तमोक्षण र हंसोदक (श्लोक ४१–४८)।\n७. ऋतुसन्धि र ओकसात्म्य — ऋतु बदल्दा क्रमशः बानी मिलाउने (श्लोक ४९–५०)।",
+          "meaning_en": "Chapter 6 of Sutrasthana (Tasyāśitīya Adhyāya) establishes the comprehensive doctrine of Seasonal Regimen (Ṛtucaryā) and Environmental Adaptation (Sātmya/Okasātmya). It contains 50 verses covering:\n1. The Solar Cycle & Two Solstices (Ayanas): Ādāna Kāla (Northern Solstice / Uttarayana) and Visarga Kāla (Southern Solstice / Dakshinayana).\n2. The Six Seasons (Ṣaḍ Ṛtu): Śiśira (Late Winter), Vasanta (Spring), Grīṣma (Summer), Varṣā (Monsoon), Śarad (Autumn), and Hemanta (Early Winter).\n3. Seasonal Variation of Human Strength (Bala): Maximum strength in Winter, moderate strength in Spring/Autumn, minimum strength in Summer/Monsoon.\n4. Detailed Regimen for Each Season:\n- Hemanta & Śiśira Ṛtucaryā (Verses 9–18): Strong Agni, heavy oil/ghee/meat diet, exercise, warm baths, attire.\n- Vasanta Ṛtucaryā (Verses 19–26): Kapha liquidation, emesis (Vamana), nasal drops (Nasya), light diet, prohibition of day sleep.\n- Grīṣma Ṛtucaryā (Verses 27–32): Exhaustion of physical strength, light/sweet/cold foods, milk, rice, day sleep permitted.\n- Varṣā Ṛtucaryā (Verses 33–40): Weakened Agni, Vata aggravation & Pitta accumulation, honey, boiled water, enema (Basti).\n- Śarad Ṛtucaryā (Verses 41–48): Pitta aggravation by autumn sun, purgation (Virechana), bloodletting (Raktamokṣaṇa), Haṁsodaka water.\n5. Habitual Acclimatization (Okasātmya & Sātmya) (Verses 49–50): Gradual transition between seasons (Ṛtusandhi) and adaptation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–3",
+          "sanskrit": "अथातो तस्याशितीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥ तस्याशिताद्यादहाराद्बलं वर्णश्च वर्धते। यस्य र्तुसात्म्यं विदितमाहारविहारजम्॥ ३॥",
+          "transliteration": "athāto tasyāśitīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 || tasyāśitādyādāhārādbalaṁ varṇaśca vardhate | yasya rtusātmyaṁ viditamāhāravihārajam || 3 ||",
+          "meaning_ne": "कालविभागः तथा बलम्\n\nअब हामी मौसमी आहार-विहार तथा अनुकूलतासम्बन्धी 'तस्याशितीय' नामक छैटौँ अध्यायको व्याख्या गर्नेछौँ।\nऋतुअनुसार (मौसमअनुसार) मिल्दोदोहोरिने आहार र विहारको सही ज्ञान भई त्यसको पालना गर्दा मात्र मनुष्यको शारीरिक बल, ओज र कान्ति (अनुहारको चमक) अभिवृद्धि हुन्छ।",
+          "meaning_en": "Title & The Annual Solar Cycle\n\nSolstices, Seasons & Physical Strength\n\nNow we shall expound the chapter entitled Tasyāśitīya (Dietary & Lifestyle Adaptation according to Seasons), as stated by Lord Atreya.\nA person's physical strength (Bala) and complexion (Varna) increase through food and lifestyle only when they possess thorough knowledge of seasonal suitability (Ritu-Satmya).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "4–8",
+          "sanskrit": "इह खलु संवत्सरं षडङ्गमृतुविभागेन विद्यात्। तत्रादित्यः कालमार्गाग्निविशेषेण दक्षिणोत्तरप्लवनाभ्यामादानविसर्गौ कालावुपलक्षयति॥ ४॥ तत्र माघादिषु षट्सु मासेष्वभिक्रमेण शिशिरवसन्तग्रीष्मेषु वायो रूक्षस्य वातोद्भूतस्य नित्यमभिवर्धमानस्य तिग्मभानोराप्यायमानस्य च जगतः सोम्यमंशमुपशोषयतः रूक्षा रसाश्चाभिवर्धन्ते तिक्ताषायकटुकाः क्रमेन, तस्मादादानकालो भवति॥ ५॥ वर्षाशरद्धेमन्तेषु तु पुनर्वायोरतिरूक्षस्याप्रबलाधिनिष्ठितस्य सोम्यस्य च जगतः सोम्यांशेनाप्याय्यमानस्य हिमांशोरप्रतापिनः सौम्या रसाश्चाभिवर्धन्ते मधुरअम्ललवणाः क्रमेन, तस्माद्विसर्गकालो भवति॥ ६॥ शीते शमस्तथाऽऽदानं विसर्गे बलमूर्जितम्। नृणां मध्यं वसन्तान्ते वर्षासु च विनिर्दिशेत्॥ ७–८॥",
+          "transliteration": "iha khalu saṁvatsaraṁ ṣaḍaṅgamṛtuvibhāgena vidyāt | tatrādityaḥ kālamārgāgniviśeṣeṇa dakṣiṇottaraplavanābhyāmādānavisargau kālāvupalakṣayati || 4 || tatra māghādiṣu ṣaṭsu māseṣvabhikrameṇa śiśiravasantagrīṣmeṣu vāyorūkṣasya vātodbhūtasya nityamabhivardhamānasya tigmabhānorāpyāyamānasya ca jagataḥ somyamaṁśamupaśoṣayataḥ rūkṣā rasāścābhivardhante tiktāṣāyakaṭukāḥ kramena, tasmādādānakālo bhavati || 5 || varṣāśaraddhemanteṣu tu punarvāyoratirūkṣasyāprabalādhiniṣṭhitaḥ somyasya ca jagataḥ somyāṁśenāpyāyyamānasya himāṁśorapratāpinaḥ saumyā rasāścābhivardhante madhuraamlalavaṇāḥ kramena, tasmādvisargakālo bhavati || 6 || śīte śamastathā''dānaṁ visarge balamūrjitam | nṛṇāṁ madhyaṁ vasantānte varṣāsu ca vinirdiśet || 7-8 ||",
+          "meaning_ne": "१. उत्तरायण / आदान काल: माघ महिनादेखि सुरु हुने ६ महिना (शिशिर, वसन्त र ग्रीष्म ऋतु)। सूर्यको प्रखर घाम र सुक्खा हावाले पृथ्वीको आर्द्रता र स्निग्धता सोस्दछ। यस कालमा क्रमशः तीतो (तिक्त), कषाय (कसैलो) र कटु (पिरो) रसहरू बली हुन्छन् जसले गर्दा मानिसको बल घट्दै जान्छ।\n२. दक्षिणायन / विसर्ग काल: वर्षा, शरद र हेमन्त गरी ६ महिना। चन्द्रमाको शीतल किरण र वर्षाले पृथ्वीलाई शीतल र पुष्ट बनाउँछ। यस कालमा क्रमशः अमिलो (अम्ल), नुनिलो (लवण) र मीठो (मधुर) रसहरू प्रबल हुन्छन् जसले शरीरको बल बढाउँछ।\n३. शारीरिक बलको अवस्था:\n- उत्तम (अधिक) बल: हेमन्त र शिशिर ऋतुमा।\n- मध्यम बल: वसन्त र शरद ऋतुमा।\n- अल्प (न्यून) बल: ग्रीष्म र वर्षा ऋतुमा।",
+          "meaning_en": "Solstices (Ayanas), Six Seasons & Physical Strength\n\n1. Uttarayana / Adana Kala (Debilitating / Northern Solstice): Consists of 6 months starting from Magha (Shishira, Vasanta, Greeshma). The intense sun rays and dry winds absorb the moisture (Saumya) of the earth. Dry (Ruksha) tastes dominate progressively: Bitter (Tikta in Shishira), Astringent (Kashaya in Vasanta), and Pungent (Katu in Greeshma). This period reduces human physical strength.\n2. Dakshinayana / Visarga Kala (Rejuvenating / Southern Solstice): Consists of 6 months (Varsha, Sharad, Hemanta). The gentle moon and rain replenish the earth's moisture. Unctuous/nourishing (Saumya) tastes dominate: Sour (Amla in Varsha), Salty (Lavana in Sharad), and Sweet (Madhura in Hemanta). Human strength increases during this phase.\n3. Seasonal Strength (Bala):\n- Maximum Strength: Hemanta & Shishira (Winter).\n- Moderate Strength: Vasanta (Spring) & Sharad (Autumn).\n- Minimum Strength: Greeshma (Summer) & Varsha (Monsoon).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "9–13",
+          "sanskrit": "बलीनः शीतसंस्पर्शाद्गोष्ठी भवति देहिनाम्। स्वावृत्तो बलिभिर्धातून् पचेत् फलेन समाश्रितः॥ ९॥ तस्माद्धेमन्ते सात्म्योऽयं रसो स्वादु रसोऽनिलः। लवणोऽम्लस्तथा तैलं घृतं मांसरसादिकम्॥ १०॥ रसान् स्निग्धान् रसान् मद्यान् गन्धान् सिद्धान् सुरानपि। गौडं च पिष्टविकृतिं तैलं नवमथापि च॥ ११॥ एणेयान् लघुकान् मांसान् सुपुष्टान् माहिषानपि। भक्षयेत् सततं देही हेमन्ते तर्पणे रतः॥ १२॥ जलं च तापितं पीत्वा सुशीतमपि वा पुनः। न जातु हीयते तेन वयो बलमथापि च॥ १३॥",
+          "transliteration": "balīnaḥ śītasaṁsparśādgoṣṭhī bhavati dehinām | svāvṛtto balibhirdhātūn pacet phalena samāśritaḥ || 9 || tasmāddhemante sātmyo'yaṁ raso svādu raso'nilaḥ | lavaṇo'mlastathā tailaṁ ghṛtaṁ māṁsarasādikam || 10 || rasān snigdhān rasān madyān gandhān siddhān surānapi | gauḍaṁ ca piṣṭavikṛtiṁ tailaṁ navamathāpi ca || 11 || eṇeyān laghukān māṁsān supuṣṭān māhiṣānapi | bhakṣayet satataṁ dehī hemante tarpaṇe rataḥ || 12 || jalaṁ ca tāpitaṁ pītvā suśītamapi vā punaḥ | na jātu hīyate tena vayo balamathāpi ca || 13 ||",
+          "meaning_ne": "हेमन्त-शिशिर र्तुचर्या\n\nहेमन्त ऋतु (मंसिर-पुस) मा बाहिरी जाडोका कारण शरीरका छिद्रहरू थुनिन्छन् र भित्री जठराग्नि (पाचनशक्ति) अत्यन्त तीव्र हुन्छ। यस्तो बेला पर्याप्त र भारी भोजन नपाएमा तीव्र अग्निले शरीरका धातुहरूलाई नै डढाउन थाल्छ।\nतसर्थ, हेमन्त ऋतुमा मीठो, अमिलो र नुनिलो रसयुक्त, चिल्लो (स्निग्ध) भोजन गर्नुपर्छ। घिउ, तेल, मासुको रसा (सूप), सखर र चाकुबाट बनेका पकवान, पिठोका परिकार, मदिरा (सुरा) र तातो पानीको सेवन गर्नुपर्छ। यसले आयु र बल कहिल्यै घट्न दिँदैन।",
+          "meaning_en": "Digestive Power & Diet in Hemanta (Hemanta Diet)\n\nEarly Winter & Late Winter Regimen\n\nDuring Hemanta (early winter), external cold constricts the bodily pores (Twak-sancoca), trapping internal heat and making the digestive fire (Jatharagni) extremely strong. If adequate heavy fuel/food is not supplied, this intense fire starts consuming the body's own tissues (Dhatus).\nTherefore, one should consume heavy, unctuous (Snigdha), sweet (Madhura), sour (Amla), and salty (Lavana) foods, including meat soup (Mamsarasa), ghee, oils, sugarcane preparations (Gauda), pastry delicacies (Pishta-vikriti), lard/fats, fatty meats (deer, aquatic animals, buffalo), and fermented beverages (Sura/Maireya), followed by warm water.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "14–18",
+          "sanskrit": "अभ्यङ्गमुत्सादनं च मूर्ध्नि तैलं च सेचयेत्। जेन्ताकं स्वादमभ्यस्येद्भूमिसंस्थानि गृहाणि च॥ १४॥ उष्णानां प्रावृतानां च यानानां शयनासनाम्। प्रावृतानि गुरुण्येव वासांसि गुणितानि च॥ १५॥ गुरुणाऽगरुधूपेन धूपितान्यङ्गकेषु च। पीनस्तनोरूः कामिनीः श्लिष्य शेत सुखं निशि॥ १६॥ वर्जयेदन्नपानानि वातला लघुनि ध्रुवम्। प्रवातमतिशीतं च हेमन्ते च शिशिरे समाः॥ १७–१८॥",
+          "transliteration": "abhyaṅgamutsādanaṁ ca mūrdhni tailaṁ ca secayet | jentākaṁ svādamabhyasyedbhūmisaṁsthāni gṛhāṇi ca || 14 || uṣṇānāṁ prāvṛtānāṁ ca yānānāṁ śayanāsanām | prāvṛtāni guruṇyeva vāsāṁsi guṇitāni ca || 15 || guruṇā'garudhūpena dhūpitānyaṅgakeṣu ca | pīnastanorūḥ kāminīḥ śliṣya śeta sukhaṁ niśi || 16 || varjayedannapānāni vātalā laghuni dhruvam | pravātamatiśītaṁ ca hemante ca śiśire samāḥ || 17-18 ||",
+          "meaning_ne": "हेमन्त र शिशिर ऋतुको जीवनशैली:\n१. मालिस र उबटन: दिनहूँ शरीरमा तेल मालिस (अभ्यङ्ग), उबटन र टाउकोमा तेल लगाउनुपर्छ।\n२. स्वेदन र आवास: तातो पानीले नुहाउने, बन्द र तातो कोठा वा भूमिगत घर (अन्डरग्राउन्ड रूम) मा बस्ने।\n३. वस्त्र र ओछ्यान: बाक्लो, न्यानो र ऊनी कपडा लगाउने, अगुरु धूपले सुगन्धित वस्त्र पहिरिने।\n४. वर्जित कुराहरू: चिसो हावा (प्रवात), सुक्खा र हलुका भोजन, उपवास र अति चिसो पानी पूर्णतः त्याग्नुपर्छ।\nशिशिर ऋतुमा पनि यी सम्पूर्ण नियमहरू पालना गर्नुपर्छ।",
+          "meaning_en": "Lifestyle Habits for Hemanta & Shishira\n\nLifestyle for Winter:\n1. Body & Head Massage: Daily full-body oil massage (Abhyanga), herbal paste massage (Utsadana), and head oiling (Shiro-abhyanga).\n2. Fomentation & Housing: Warm bath chambers (Jentaka Sweda), heated rooms, and underground or warm insulated houses (Bhumigriha).\n3. Clothing & Bedding: Heavy, thick, warm woolen garments, silks, and clothes fumigated with Agaru scent (Aguru-dhupa). Warm beds and blankets.\n4. Prohibitions: Avoid cold/windy exposures (Pravata), light dry foods (Laghu-Ruksha Ahara), and excessive fasting.\nShishira Ritucharya (Late Winter - Magha & Phalguna) follows identical rules, with even stricter avoidance of cold winds and dry foods due to increasing dryness (Adana Kala).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "19–26",
+          "sanskrit": "वसन्ते कफचितोऽर्केण लीनोऽग्निं बाधते कफः। तस्माद्वसन्ते कर्माणि वमनादीनि कारयेत्॥ १९॥ तीक्ष्णैर्वमननस्याद्यैर्लघुभिः क्षारकटुभिः। यवैर्मुद्गैश्च मध्वाद्यैर्वसन्ते तर्पणं हितम्॥ २०॥ व्यायाममुद्वर्तनं च धुपं चाञ्जनमेव च। सुखोदकैः सुप्रक्षाल्य अङ्गमनुलिम्पति॥ २१॥ चन्दनगरुदिग्धाङ्गो यव गोधूम भोजनः। शरभैणलवान्मांसायैः पीत्वा सिधुं तथा मधु॥ २२॥ वसन्ते निर्हृत्य कफं व्यायामेन च देहिनः। कान्तिमन्तो बलवन्तो भवन्त्यायुरनुत्तमाः॥ २३॥ गुरु शीतं दिवास्वप्नं स्निग्धं च मधुरं त्यजेत्। वसन्ते वर्जयेन्नित्यं कफप्रशमने रतः॥ २४–२६॥",
+          "transliteration": "vasante kaphacito'rkeṇa līno'gniṁ bādhate kaphaḥ | tasmādvasante karmāṇi vamanādīni kārayet || 19 || tīkṣṇairvamananasyādyairlaghubhiḥ kṣārakaṭubhiḥ | yavairmudgaiśca madhvādyairvasante tarpaṇaṁ hitam || 20 || vyāyāmamudvartanaṁ ca dhupaṁ cāñjanameva ca | sukhodakaiḥ suprakṣālya aṅgamanulimpati || 21 || candanagarudigdhāṅgo yava godhūma bhojanaḥ | śarabhaiṇalavānmāṁsāyaiḥ pītvā sidhuṁ tathā madhu || 22 || vasante nirhṛtya kaphaṁ vyāyāmena ca dehinaḥ | kāntimanto balavanto bhavantyāyuranuttamāḥ || 23 || guru śītaṁ divāsvapnaṁ snigdhaṁ ca madhuraṁ tyajet | vasante varjayennityaṁ kaphapraśamane rataḥ || 24-26 ||",
+          "meaning_ne": "वसन्त र्तुचर्या\n\nवसन्त ऋतु (चैत-वैशाख) मा सूर्यको घामले गर्दा हिउँदमा जम्मा भएको कफ पग्लिन्छ र जठराग्नि (पाचनशक्ति) लाई मन्द बनाउँछ। यसले गर्दा रुघाखोकी, दम र कफका रोगहरू उत्पन्न हुन्छन्।\n१. शोधन चिकित्सा: वसन्तमा कफलाई बाहिर निकाल्न वमन (उल्टी गराउने), नस्य (नाकमा औषधि हाल्ने) र गंडूष गर्नुपर्छ।\n२. आहार: जौ (यव), सुकेको गहुँ, मुँगको दाल, मह, सेकेको मासु र महबाट बनेको हल्का मदिरा सेवन गर्नुपर्छ।\n३. बिहार: कसरत (व्यायाम), सुख्खा पिठो वा चन्दनको उबटन (उद्वर्तन) र मनतातो पानीले नुहाउनुपर्छ।\n४. वर्जित: दिउँसो सुत्नु (दिवास्वप्न), चिल्लो, मीठो, भारी र चिसो भोजन पूर्ण रूपमा त्याग्नुपर्छ।",
+          "meaning_en": "Kapha Aggravation, Therapies & Diet in Spring\n\nSpring Regimen\n\nIn Vasanta (Spring - Chaitra & Vaishakha), the strong spring sun melts the Kapha accumulated during winter. This liquefied Kapha suppresses the digestive fire (Agni) and gives rise to numerous respiratory and metabolic diseases.\n1. Purification Therapies: One must immediately eliminate Kapha through therapeutic emesis (Vamana), nasal drops (Nasya), gargling (Kavala/Gandusha), and medicated smoking (Dhumapana).\n2. Diet: Barley (Yava), roasted wheat, Mudga lentils, honey (Madhu), roasted/barbecued game meats, and mild fermented wines (Sidhu, Madhvikam).\n3. Lifestyle: Vigorous exercise (Vyayama), dry powder massage (Udvartana), applying sandalwood and Agaru pastes, and bathing in lukewarm water.\n4. Prohibitions: Strictly avoid daytime sleeping (Divasvapna), heavy (Guru), oily (Snigdha), sour, and sweet foods, which further aggravate Kapha.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "27–32",
+          "sanskrit": "मयूखैर्जगतः स्नेहं ग्रीष्मे पीत्वा दिवाकरः। मन्दं करोति पवनं वर्धयत्यनिलं तथा॥ २७॥ तस्माद्ग्रीष्मे कट्वम्ललवणव्यायामार्ककरांस्त्यजेत्। स्वादु शीतं द्रवं स्निग्धमन्नपानं भजेन्नरः॥ २८॥ शर्करा च पयो गाढं शश मांसादि तर्पकम्। घृतं पयः सशर्करमन्नं च शालि भक्षयेत्॥ २९॥ पिबेद्रसान् सुशीतांश्च मन्थान् सशर्कराँस्तथा। मद्यं न पेयं पेयं वा अल्पं वा बहुवारिजम्॥ ३०॥ रात्रौ च चन्द्रांशुशीतेषु हर्म्यपृष्ठेषु संविशेत्। चन्दनाद्रोऽङ्गको ग्रीष्मे दिवा स्वापः प्रशस्यते॥ ३१–३२॥",
+          "transliteration": "mayūkhairjagataḥ snehaṁ grīṣme pītvā divākaraḥ | mandaṁ karoti pavanaṁ vardhayatyanilaṁ tathā || 27 || tasmādgrīṣme kaṭvamlalavaṇavyāyāmārkakarāṁstyajet | svādu śītaṁ dravaṁ snigdhamannapānaṁ bhajennaraḥ || 28 || śarkarā ca payo gāḍhaṁ śaśa māṁsādi tarpakam | ghṛtaṁ payaḥ saśarkarāmannaṁ ca śāli bhakṣayet || 29 || pibedrasān suśītāṁśca manthān saśarkarāṁstathā | madyaṁ na peyaṁ peyaṁ vā alpaṁ vā bahuvārijam || 30 || rātrau ca candrāṁśuśīteṣu harmyapṛṣṭheṣu saṁviśet | candanādro'ṅgako grīṣme divā svāpaḥ praśasyate || 31-32 ||",
+          "meaning_ne": "ग्रीष्म र्तुचर्या\n\nग्रीष्म ऋतु (जेठ-असार) मा कडा घामले शरीरको सम्पूर्ण स्निग्धता सोस्दछ र शारीरिक बल क्षीण गराउँछ। यस ऋतुमा वात दोष सञ्चित हुन्छ र कफ शान्त हुन्छ।\n१. आहार: मीठो, चिसो, पातलो र चिल्लो भोजन गर्नुपर्छ। सेतो चामल (शाली धान), दूध, घिउ, चिनी हालेको चिसो पन्ना/मन्थ (फलफूलको जुस), खरायोको मासु र प्रशस्त चिसो पानी पिउनुपर्छ।\n२. वर्जित: पिरो, अमिलो, नुनिलो खानेकुरा, कडा घाम, कसरत र मदिरा सेवन त्याग्नुपर्छ (मदिरा पिउनै परे धेरै पानी मिसाएर अलिअलि मात्र पिउने)।\n३. विहार: जिउमा चन्दनको लेप लगाउने। ग्रीष्म ऋतुमा मात्र दिउँसो सुत्न (दिवास्वप्न) छुट छ। राति चन्द्रमाको शीतल किरण आउने कौसीमा सुत्नुपर्छ।",
+          "meaning_en": "Solar Heat, Hydration & Summer Diet\n\nSummer Regimen\n\nIn Greeshma (Summer - Jestha & Ashadha), the intense sun dries up environmental moisture and human physical strength. Vata accumulates (Chaya), while Kapha pacifies (Prashama).\n1. Diet: Sweet (Madhura), cold (Sheeta), liquid (Drava), and unctuous (Snigdha) preparations. Fine Shali rice, cold milk mixed with sugar and ghee, sweet fruit drinks (Mantha), cold water, and rabbit meat.\n2. Prohibitions: Avoid pungent (Katu), sour (Amla), salty (Lavana) foods, direct sun exposure, hard physical exercise, and alcohol (alcohol causes burning, swelling, and delusion; if necessary, consume very diluted with abundant water).\n3. Lifestyle: Apply cool sandalwood paste on the body. Rest during midday in cool, shaded rooms (Divasvapna permitted in summer). Sleep at night on moonlit open terraces (Harmyaprishta).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "33–40",
+          "sanskrit": "आदानग्लानवपुषां अग्निः क्षीणोऽपि दीप्यते। वर्षास्वम्बुधराटोपे वाते चोद्धूतमारुते॥ ३३॥ बाष्पेण भूमेर्वृष्ट्या च जलाम्लेन च देहिनाम्। दूष्यन्त्यग्निरयं तस्माद्वर्षासु कुप्यति मारुतः॥ ३४॥ तस्माद्वर्षासु सामान्यं भजेदाहारमौषधम्। वातप्रशमनं यत् स्यादग्नेश्च दीपनं परम्॥ ३५॥ जीर्णं धान्यं यवान् गोधूमं सूपं याङ्गलमामिषम्। पिबेत् सुसंस्कृतं मद्यं मध्वल्पं चापि भक्षयेत्॥ ३६॥ नदीजलं तु नाद्याच्च उदपानं तथाऽऽतपम्। व्यवायं चापि वर्षासु न कुर्यात् सहसा नरः॥ ३७॥ आस्थापनानुवासनैश्च वातं तत्रोपपादयेत्। वर्जयेच्च जलं वापि अप्रसन्नं नदीजलम्॥ ३८–४०॥",
+          "transliteration": "ādānaglānavapuṣāṁ agniḥ kṣīṇo'pi dīpyate | varṣāsvambudharātope vāte coddhūtamārute || 33 || bāṣpeṇabhūmervṛṣṭyā ca jalāmlena ca dehinām | dūṣyantyagnirayaṁ tasmādvarṣāsu kupyati mārutaḥ || 34 || tasmādvarṣāsu sāmānyaṁ bhajedāhāramauṣadham | vātapraśamanaṁ yat syādagneśca dīpanaṁ param || 35 || jīrṇaṁ dhānyaṁ yavān godhūmaṁ sūpaṁ yāṅgalamāmiṣam | pibetsusaṁskṛtaṁ madyaṁ madhvalpaṁ cāpi bhakṣayet || 36 || nadījalaṁ tu nādyācca udapānaṁ tathā''tapam | vyavāyaṁ cāpi varṣāsu na kuryāt sahasā naraḥ || 37 || āsthāpanānuvāsanaiśca vātaṁ tatropapādayet | varjayecca jalaṁ vāpi aprasannaṁ nadījalam || 38-40 ||",
+          "meaning_ne": "वर्षा र्तुचर्या\n\nवर्षा ऋतु (साउन-भदौ) मा ग्रीष्मको घामले पहिले नै कमजोर भएको शरीरमा, भुइँबाट निस्कने तातो बाफ (वाष्प), वर्षाको चिसो पानी र हावाले जठराग्नि (पाचनशक्ति) अत्यन्त मन्द गराउँछ। यस ऋतुमा वात दोष उग्र रूपमा कुपित (प्रकुपित) हुन्छ र पित्त दोष जम्मा हुन थाल्छ।\n१. आहार: पुराना चामल, गहुँ, जौ, मुँगको दाल, सुकेको/जङ्गली जनावरको मासुको रस, थोरै मह (चिसो र ओस फाल्न) र उमलेर सेलाएको पानी पिउनुपर्छ।\n२. शोधन चिकित्सा: कुपित वातलाई शान्त पार्न बस्ति चिकित्सा (काढा र तेलको एनिमा) गराउनुपर्छ।\n३. वर्जित: नदीको धमिलो पानी, चिसो वर्षामा भिज्नु, दिउँसो सुत्नु, कसरत र अत्यधिक मैथुन त्याग्नुपर्छ।",
+          "meaning_en": "Weakened Agni, Vata Aggravation & Basti in Monsoon\n\nMonsoon Regimen\n\nIn Varsha (Monsoon - Shrawan & Bhadra), the body is already weakened by the summer heat (Adana Kala). The damp earth vapor, acidic rainwater, and cold winds severely weaken the digestive fire (Agni) and cause severe aggravation of Vata (Vata Prakopa) along with Pitta accumulation (Pitta Chaya).\n1. Diet: Aged grains (old rice, barley, wheat), soup of Mudga, game meat broth (Jangala mamsarasa), small quantities of honey (Honey counteracts dampness and digestive sluggishness), and boiled water.\n2. Purification Therapy: Medicated enemas—both decoction enema (Asthapana Basti) and unctuous enema (Anuvasana Basti)—are essential to control aggravated Vata.\n3. Prohibitions: Avoid river water, unboiled muddy water, heavy rain exposure, riverbanks, day sleep, excessive exertion, and sexual intercourse.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "41–48",
+          "sanskrit": "वर्षाशीताचिताङ्गानां सहसैवांशुकल्पितम्। शरद्यार्ककरास्तप्तानां कुप्यति पित्तमंशुकैः॥ ४१॥ तत्र स्वादु लघु शीतं तिक्तं च पित्तप्रशमनं अन्नपानं विधीयते। शालिमुद्गसिताधात्रीयवगोधूमसेवनम्॥ ४२॥ विरेचनं घृतपानं अस्रस्रावणमेव च। शरद्यम्बु सुप्रसन्नं हंसोदकमिति स्मृतम्॥ ४३॥ दिवा सूर्यकरैस्तप्तं रात्रौ चन्द्रांशुशीतलम्। विषघ्नं शुद्धममलं हंसोदकमिति स्मृतम्॥ ४४॥ न स्नानपानगाहेषु तदम्बु क्षोभयेन्मलम्। शरद्यमलमंशूनां चन्दनानां च सेवनम्॥ ४५॥ तुषारं दधि तैलं च वसां तैलं च वर्जयेत्। अर्ककांश्च दिवास्वप्नं प्रावातं च शरत्त्यजेत्॥ ४६–४८॥",
+          "transliteration": "varṣāśītācitāṅgānāṁ sahasaivaṁśukalpitam | śaradyārkakarāstaptānāṁ kupyati pittamaṁśukaiḥ || 41 || tatra svādu laghu śītaṁ tiktaṁ ca pittapraśamanaṁ annapānaṁ vidhīyate | śālimudgasitādhātrīyavagodhūmasevanam || 42 || virecanaṁ ghṛtapānaṁ asrasrāvaṇameva ca | virecanaṁ ghṛtapānaṁ asrasrāvaṇameva ca || 43 || divā sūryakaraistaptaṁ rātrau candrāṁśuśītalam | viṣaghnaṁ śuddhamamalaṁ haṁsodakamiti smṛtam || 44 || na snānapānagāheṣu tadambu kṣobhayenmalam | śaradyamalamaṁśūnāṁ candanānāṁ ca sevanam || 45 || tuṣāraṁ dadhi tailaṁ ca vasāṁ tailaṁ ca varjayet | arkakāṁśca divāsvapnaṁ prāvātaṁ ca śarattyajet || 46-48 ||",
+          "meaning_ne": "शरद् र्तुचर्या\n\nशरद ऋतु (असोज-कात्तिक) मा वर्षाको चिसोबाट एकाएक निस्कने प्रखर घामले शरीर तताउँदा वर्षामा सञ्चित भएको पित्त दोष उग्र रूपमा कुपित हुन्छ।\n१. शोधन चिकित्सा: कुपित पित्त निकाल्न विरेचन (जुल्याप/दिसा गराउने), तिक्त घिउ (तिक्त घृत) सेवन र रक्तमोक्षण (रगत झिक्ने) चिकित्सा गर्नुपर्छ।\n२. आहार: मीठो, हलुका, तीतो र चिसो खानेकुरा। शाली धानको चामल, गहुँ, जौ, मुँगको दाल, अमला र मिश्री सेवन गर्नुपर्छ।\n३. हंसोदक जल: दिउँसो घामको किरणले तापेको र राति चन्द्रमाको किरण (अगस्त्य नक्षत्र) ले सेलाएको पानी निरोगी, विषरहित र अमृतसमान हुन्छ; यसलाई 'हंसोदक' भनिन्छ। यो पिउन र नुहाउन उत्तम हुन्छ।\n४. वर्जित: दही (दधि), तोरीको तेल, बोसो, कडा घाम, शीत (तुषार), दिउँसो सुत्नु र पूर्वी हावा त्याग्नुपर्छ।",
+          "meaning_en": "Pitta Aggravation, Hamsodaka & Autumn Diet\n\nAutumn Regimen\n\nIn Sharad (Autumn - Asoj & Kartik), the sudden hot sun rays heat up the body accustomed to monsoon cold, causing severe Pitta aggravation (Pitta Prakopa).\n1. Purification Therapies: Therapeutic purgation (Virechana), medicated ghee intake (Tikta Ghrita), and bloodletting (Raktamokshana) to eliminate toxified blood and Pitta.\n2. Diet: Sweet (Madhura), light (Laghu), bitter (Tikta), and cold foods. Shali rice, barley, wheat, Mudga, sugar, Amalaki, and bitter vegetables.\n3. Haṁsodaka (Purified Celestial Water): Water exposed to sun rays during the day and moonbeams (Agastya star) at night becomes detoxified, non-sticky, pure, and crystal-clear (Hamsodaka). It is ideal for drinking, bathing, and swimming without aggravating any Dosha.\n4. Prohibitions: Avoid curd (Dadhi), mustard oil, lard, fats, sunbathing, dew (Tushara), daytime sleep, and direct strong winds.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "49–50",
+          "sanskrit": "कायस्य र्त्वादिशेषेण आहारविधिमुत्तमम्। न सेवेताति सात्म्यं यत्तज्ज्ञो धीमान् त्यजेच्छनैः॥ ४९॥ सात्म्यमप्यहितं यत् स्यात् क्रमात्तत् परिवर्जयेत्। सात्म्यमप्यहितं यत् स्यात् क्रमात्तत् परिवर्जयेत्॥ ५०॥",
+          "transliteration": "kāyasya rtvādiśeṣeṇa āhāravidhimuttamam | na sevetāti sātmyaṁ yattajjño dhīmān tyajecchanaiḥ || 49 || sātmyamapyahitaṁ yat syāt kramāt tat parivarjayet | sātmyamapyahitaṁ yat syāt kramāt tat parivarjayet || 50 ||",
+          "meaning_ne": "ऋतुसन्धि तथा सात्म्य\n\n१. ऋतुसन्धि (मौसम परिवर्तनको सङ्क्रमण काल): जाँदै गरेको ऋतुका अन्तिम ७ दिन र आउँदै गरेको ऋतुका सुरुका ७ दिन गरी १४ दिनको अवधिलाई 'ऋतुसन्धि' भनिन्छ। यस समयमा अघिल्लो ऋतुको आहार-विहारलाई बिस्तारै-बिस्तारै छोड्दै र नयाँ ऋतुको नियमलाई क्रमशः अपनाउँदै जानुपर्छ (पादांशिक क्रम)। अचानक परिवर्तन गर्दा असात्म्यज रोगहरू उत्पन्न हुन्छन्।\n२. सात्म्य र ओकसात्म्य नियम: यदि कुनै अहितकर (हानिकारक) खानेकुरा वा बानी शरीरलाई बानी परिसकेको छ भने पनि त्यसलाई हत्तपत्त एक्कासि छोड्नु हुँदैन। १/४ भाग घटाउँदै चार चरणमा बिस्तारै छोड्नुपर्छ र असल बानी बसाल्नुपर्छ।",
+          "meaning_en": "Seasonal Junction (Ritusandhi) & Habitual Adaptation (Okasatmya)\n\nHabitual Adaptation & Transition\n\n1. Seasonal Transition (Ritusandhi): The last 7 days of the departing season and the first 7 days of the incoming season (total 14 days) constitute Ritusandhi. During this phase, one must gradually discard the previous season's regimen and slowly adopt the new season's regimen (Padansika Krama). Sudden changes trigger disease.\n2. Habitual Adaptation (Okasatmya & Satmya): Even if an unwholesome diet/habit (Ahita Satmya) has become habitual (Okasatmya), it must not be abandoned abruptly. Discontinue bad habits in quarters: 1/4th reduction on the 1st step, 2/4th on the 2nd step, 3/4th on the 3rd step, and complete 100% elimination on the 4th step while substituting wholesome habits (Hita Satmya).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "title_ne": "नवेगान्धारणीयोऽध्यायः",
+      "title_en": "Navegandharaniya Adhyaya — Non-Suppression of Natural Urges",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "नवेगान्धारणीयोऽध्यायः",
+          "transliteration": "navegāndhāraṇīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको सातौं अध्याय (नवेगान्धारणीय अध्याय) प्राकृतिक वेग नरोक्ने, रोक्नुपर्ने मानसिक वेग, व्यायाम र प्रकृति बताउँछ। यसमा ६१ श्लोक छन्।\n\n१. अधारणीय १३ वेग — मूत्र, पुरीष, शुक्र, वात, छर्दि, क्षवथु, उद्गार, जृम्भा, क्षुधा, तृष्णा, अश्रु, निद्रा र श्रमश्वास (श्लोक ३–३१)।\n२. धारणीय वेग — मन, वाणी र शरीरका रोक्नुपर्ने वेग (श्लोक ३२–३५)।\n३. व्यायाम — लाभ, सीमा र अतिव्यायाम (श्लोक ३६–४५)।\n४. प्रकृति — दोषको प्रधानता र व्यक्तिगत हेरचाह (श्लोक ४६–५०)।\n५. सद्वृत्त — स्वच्छता र स्वस्थ आचरण (श्लोक ५१–६१)।",
+          "meaning_en": "Chapter 7 of Sutrasthana (Na Vegān Dhāraṇīya Adhyāya) is a vital treatise on preventive medicine (Susthavritta), psychosomatic health, and lifestyle hygiene. It details the physiological dangers of suppressing natural bodily reflexes, the mental and emotional urges that must be suppressed, physical exercise guidelines, and the constitutional classification of individuals (Prakriti). It contains 61 verses covering:\n\n1. The 13 Non-Suppressible Physical Urges (Adhāraṇīya Vegāḥ): Diseases caused by their suppression and precise therapeutic management (Verses 3–31).\n- Urine (Mūtra), Feces (Purīṣa), Semen (Śukra), Flatus (Vāta), Vomiting (Chhardi), Sneezing (Kṣavathu), Belching (Udgāra), Yawning (Jṛmbhā), Hunger (Kṣudhā), Thirst (Tṛṣṇā), Tears (Aśru), Sleep (Nidrā), and Exertional Dyspnea (Śrama-śvāsa).\n2. Mental & Behavioral Urges to Suppress (Dhāraṇīya Vegāḥ): Ethical, mental, and speech control (Verses 32–35).\n3. Physical Exercise (Vyāyāma): Benefits, limits, over-exertion symptoms, and contraindications (Verses 36–44).\n4. Physiological Constitution (Prakṛti) & Immunity: Dosha predominance from conception, constitutional traits, and customized care (Verses 46–50).\n5. Sanitation, Ethical Conduct & Wholesome Living (Sadvṛtta): Guidelines for personal purity and disease prevention (Verses 51–61).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो नवेगान्धारणीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto navegāndhāraṇīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "अधारणीयाः १३ वेगाः\n\nअब हामी प्राकृतिक वेगहरूलाई रोक्नु हुँदैन भन्ने विषयसँग सम्बन्धित 'नवेगान्धारणीय' नामक सातौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Prologue\n\nThe 13 Non-Suppressible Urges\n\nNow we shall expound the chapter entitled Na Vegān Dhāraṇīya (Non-Suppression of Natural Urges), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–5",
+          "sanskrit": "न वेगान् धारयेद्धीमांञ्जातान् मूत्रपुरीषयोः। न रेतसो न वातस्य न छर्द्याः क्षवथोर्न च॥ ३॥ नोद्गारस्य न जृम्भाया न क्षुधाया न तृष्णया। न बाष्पस्य न निद्राया निश्वासस्य श्रमेण च॥ ४॥ धारणादेषामुदीर्णानां वेगानां मानवा हितान्। व्याधयोऽभिप्रवर्तन्ते ये तान् वक्ष्याम्यनुक्रमात्॥ ५॥",
+          "transliteration": "na vegān dhārayeddhīmāñjātān mūtrapurīṣayoḥ | na retaso na vātasya na chardyāḥ kṣavathorna ca || 3 || nodgārasya na jṛmbhāyā na kṣudhāyā na tṛṣṇayā | na bāṣpasya na nidrāyā niśvāsasya śrameṇa ca || 4 || dhāraṇādeṣāmudīrṇānāṁ vegānāṁ mānavā hitān | vyādhayo'bhipravartante ye tān vakṣyāmyanukramāt || 5 ||",
+          "meaning_ne": "बुद्धिमान् मानिसले शरीरमा स्वतः उत्पन्न भएका निम्न १३ वटा प्राकृतिक वेगहरूलाई कहिल्यै पनि जबर्जस्ती रोक्नु हुँदैन:\n१. पिसाब (मूत्र)\n२. दिसा (पुरीष)\n३. वीर्य (शुक्र)\n४. पाद/अपान वायु (वात)\n५. वान्त/उल्टो (छर्दि)\n६. हाछ्युँ (क्षवथु)\n७. डकार (उद्गार)\n८. हाई (जृम्भा)\n९. भोक (क्षुधा)\n१०. तिर्खा (तृष्णा)\n११. आँसु (बाष्प/अश्रु)\n१२. निद्रा (निद्रा)\n१३. श्रमपछि आउने छिटो सास (श्रम-निश्वास)\n\nयी वेगहरूलाई रोक्नाले उत्पन्न हुने रोगहरू र तिनका उपचारहरू तल क्रमशः वर्णन गरिएको छ।",
+          "meaning_en": "List of the 13 Natural Urges\n\nA wise person should never forcibly suppress the following 13 naturally arisen urges:\n1. Urine (Mūtra)\n2. Feces (Purīṣa)\n3. Semen (Retas / Śukra)\n4. Flatus (Vāta)\n5. Vomiting (Chhardi)\n6. Sneezing (Kṣavathu)\n7. Belching (Udgāra)\n8. Yawning (Jṛmbhā)\n9. Hunger (Kṣudhā)\n10. Thirst (Tṛṣṇā)\n11. Tears (Bāṣpa / Aśru)\n12. Sleep (Nidrā)\n13. Heavy breathing caused by exertion (Śrama-niśvāsa)\n\nSuppression of these urges leads to various severe ailments, which will now be detailed sequentially along with their specific remedies.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "6–7",
+          "sanskrit": "वङ्क्षणानाहरुग्रोधमूत्रकृच्छ्रशिरोरुजः। विनतीनामस्तु जङ्घानां मूत्रस्य ग्रहणाद्भवेत्॥ ६॥ तदेषामौषधं सर्वं पगाहारविधौ हितम्। अवगाहोऽभ्यङ्गश्चैव सर्पिषश्चावपीडकम्॥ ७॥",
+          "transliteration": "vaṅkṣaṇānāharugrodhamūtrakṛcchraśirorujaḥ | vinatīnāmastu jaṅghānāṁ mūtrasya grahaṇādbhavet || 6 || tadeṣāmauṣadhaṁ sarvaṁ pagāhāravidhau hitam | avagāho'bhyaṅgaścaiva sarpiṣaścāvapīḍakam || 7 ||",
+          "meaning_ne": "- लक्षण: पिसाबको वेग रोक्नाले कोखा र मूत्राशय सुन्निने तथा दुख्ने, पिसाब फेर्न गाह्रो हुने (मूत्रकृच्छ्र), टाउको दुख्ने, र शरीर अगाडितर्फ नुग्ने जस्ता समस्या हुन्छन्।\n- उपचार: मनतातो पानी वा काढामा टब-बाथ (अवगाह), तल्लो पेटमा तेल घस्ने (अभ्यङ्ग), खाना खानुअघि र खाएपछि घिउ पिउने (अवपीडक घृतपान) र बस्ती (एनिमा) प्रयोग गर्नुपर्छ।",
+          "meaning_en": "Suppression of Mūtra (Urine Urge)\n\n- Pathology of Suppression: Suppression of urine causes distension and pain in the groin/bladder (Vankshana-anaha), dysuria (Mutrakrichchhra), severe headache (Shirahshula), bending forward of the torso (Vinamana), and groin/thigh stiffness.\n- Therapeutics: Sitz bath (Avagaha) with warm herbal decoctions, oil massage (Abhyanga) over the lower abdomen, administration of ghee before meals and after digestion (Avapidaka Snetapan), and three-fold enema therapy (Basti).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "8–9",
+          "sanskrit": "पक्वाशयशिरःशूलं वातमूत्रपुरीषता। पिण्डिकोद्वेष्टनाध्मानं पुरीषे धारिते भवेत्॥ ८॥ स्वेदनाम्यञ्जनावागाहवर्त्यो बस्तयस्तथा। अन्नपानं च विड्भेदि पुरीषे प्रतिहते हितम्॥ ९॥",
+          "transliteration": "pakvāśayaśiraḥśūlaṁ vātamūtrapurīṣatā | piṇḍikodveṣṭanādhmānaṁ purīṣe dhārite bhavet || 8 || svedanāmyañjanāvāgāhavartyo bastayastathā | annapānaṁ ca viḍbhedi purīṣe pratihate hitam || 9 ||",
+          "meaning_ne": "- लक्षण: दिसाको वेग रोक्नाले पेट र टाउको दुख्ने, अपान वायु र पिसाब रोकिने, पिँडौला बाउँडिने (ऐंठन) र पेट फुल्ने हुन्छ।\n- उपचार: सेक्ने (स्वेदन), तेल मालिस गर्ने, टब-बाथ, गुदामा बत्ती (वर्ति) राख्ने, एनिमा (बस्ती) दिने र दिसा खुलाउने (रेचक) आहारविहार गर्नुपर्छ।",
+          "meaning_en": "Suppression of Purīṣa (Fecal Urge)\n\n- Pathology: Suppressing bowel movements causes colonic colic (Pakwashaya-shula), headache, obstruction of flatus and urine (Vata-mutra-sanga), calf muscle cramps (Pindikodveshtana), and abdominal distension (Adhmana).\n- Therapeutics: Fomentation/Sweating (Svedana), abdominal oil massage (Abhyanga), sitz bath, rectal suppositories (Varti), enema (Basti), and laxative food/drinks (Vidbhedi Annapana).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "10–11",
+          "sanskrit": "मेढ्रवृषणयोः शूलमङ्गमर्दो हृदि व्यथा। भवेत् प्रबद्धं मूत्रं च रेतसस्तस्य धारणात्॥ १०॥ अभ्यङ्गोऽवगाहः मदिरा चरणायुधाः। शालिर्मूत्रं बस्तिश्च मैथुनं च प्रधांसितम्॥ ११॥",
+          "transliteration": "meḍhravṛṣaṇayoḥ śūlamaṅgamardo hṛdi vyathā | bhavet prabaddhaṁ mūtraṁ ca retasastasya dhāraṇāt || 10 || abhyaṅgo'vagāhaḥ madirā caraṇāyudhāḥ | śālirmūtraṁ bastiśca maithunaṁ ca pradhāṁsitam || 11 ||",
+          "meaning_ne": "- लक्षण: वीर्यको वेग रोक्नाले लिङ्ग र अण्डकोष दुख्ने, शरीर थिचिएको जस्तो भई दुख्ने, छाती/हृदयमा पीडा हुने र पिसाब अड्किने हुन्छ।\n- उपचार: तेल मालिस, अवगाह स्नान, मदिरा, कुखुराको मासु, शालि धानको भात, दुध, बस्ती र प्रसन्न मनले मैथुन गर्नु लाभदायक हुन्छ।",
+          "meaning_en": "Suppression of Śukra (Semen Urge)\n\n- Pathology: Suppressing ejaculate/semen leads to pain in the penis and testicles (Medhra-Vrishana Shula), body aches (Angamarda), cardiac discomfort (Hridi Vyatha), and urinary retention (Mutra-sanga).\n- Therapeutics: Massage, warm bath, wine (Madira), chicken meat (Caranayudha), Shali rice, medicated milk, enema (Basti), and healthy sexual intercourse with a beloved partner.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "12–13",
+          "sanskrit": "सङ्गो विण्मूत्रवातानामाध्मानं वेदना श्रमा। जठरे वातजाश्चान्ये रोगाः स्युर्वातधारणात्॥ १२॥ स्नेहास्वेदविधिश्चात्र वस्तयश्चानुलोमनाः। पानमन्नं च वातघ्नं व्यञ्जनानि च तद्धितम्॥ १३॥",
+          "transliteration": "saṅgo viṇmūtravātānāmādhmānaṁ vedanā śramā | jaṭhare vātajāścānye rogāḥ syurvātadhāraṇāt || 12 || snehāsvedavidhiścātra vastayaścānulomanāḥ | pānamannaṁ ca vātaghnaṁ vyañjanāni ca taddhitam || 13 ||",
+          "meaning_ne": "- लक्षण: अपान वायु (पाद) को वेग रोक्नाले दिसा, पिसाब र वायु रोकिने, पेट डुम्मिएर फुल्ने, तीव्र पीडा र थकान हुने जस्ता पेटका वातजन्य रोगहरू हुन्छन्।\n- उपचार: स्नेहन (तेल प्रयोग), स्वेदन (सेक्ने), वायु अनुलोमन गराउने एनिमा र वातनाशक गरम खानपान प्रयोग गर्नुपर्छ।",
+          "meaning_en": "Suppression of Vāta / Pureeṣaja Vāyu (Flatus Urge)\n\n- Pathology: Suppressing flatus causes retention of stool, urine, and gas, severe abdominal tympanites/flatulence (Adhmana), acute pain, physical fatigue, and all digestive disorders driven by Vata.\n- Therapeutics: Oleation (Snehana), fomentation (Svedana), carminative enemas (Anulomana Basti), and Vata-pacifying diet, warm soups, and spices.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "14–15",
+          "sanskrit": "कण्डूकोठारुचिव्यङ्गशोथपाण्ड्वामयज्वराः। कुष्ठहृल्लासविसर्पाश्चर्दिग्रहाद्भवन्ति तु॥ १४॥ भुक्त्वा प्रच्छर्दनं धूमो लङ्घनं रक्तमोक्षणम्। रुक्षमन्रं च सम्भोज्यं वमनच्छर्दिघाति च॥ १५॥",
+          "transliteration": "kaṇḍūkoṭhārucivyangaśothapāṇḍvāmayajvarāḥ | kuṣṭhahṛllāsavisarpāścardigrahādbhavanti tu || 14 || bhuktvā pracchardanaṁ dhūmo laṅghanaṁ raktamokṣaṇam | rukṣamanraṁ ca sambhojyaṁ vamanacchardighāti ca || 15 ||",
+          "meaning_ne": "- लक्षण: उल्टी (वान्त) को वेग रोक्नाले चिलाउने, डाबर आउने, अरुचि, पोतो/छाइ, सुन्निने, पाण्डु (रक्तअल्पता), ज्वरो, छालाका रोग, वाकवाकी र विसर्प जस्ता रोग हुन्छन्।\n- उपचार: खाना खाएर वमन गराउने, धूमपान, लङ्घन (उपवास), रक्तमोक्षण (दूषित रगत निकाल्ने) र रुखो आहार सेवन गराउनुपर्छ।",
+          "meaning_en": "Suppression of Chhardi (Vomiting Urge)\n\n- Pathology: Suppressing vomiting causes skin itching (Kandu), urticarial rashes (Kotha), anorexia (Aruchi), facial pigmentation (Vyanga), edema (Shotha), anemia (Pandu), fever (Jvara), skin diseases (Kushtha), nausea (Hrillasa), and erysipelas (Visarpa).\n- Therapeutics: Induced vomiting after light meals (Prachchardana), medicated smoking (Dhumapana), fasting (Langhana), bloodletting (Raktamokshana), dry diet (Ruksha Anna), and Kapha-purgatives.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "16–17",
+          "sanskrit": "मन्यास्तम्भः शिरःशूलमर्धितार्धावभेदकौ। इन्द्रियाणां च दौर्बल्यं क्षवथोः प्रतिघातजम्॥ १६॥ तत्रोर्ध्वजत्रुकेऽभ्यङ्गः स्वेदो धूमः सनावनः। हितं च भोजनं वातघ्नं सर्पिषश्चावपीडकम्॥ १७॥",
+          "transliteration": "manyāstambhaḥ śiraḥśūlamarditārdhāvabhedakau | indriyāṇāṁ ca daurbalyaṁ kṣavathoḥ pratighātajam || 16 || tatrordhvajatruke'bhyaṅgaḥ svedo dhūmaḥ sanāvanaḥ | hitaṁ ca bhojanaṁ vātaghnaṁ sarpiṣaścāvapīḍakam || 17 ||",
+          "meaning_ne": "- लक्षण: हाछ्युँको वेग रोक्नाले गर्दन अररिने (गर्दन स्तम्भ), टाउको दुख्ने, मुख बाङ्गिने (अर्दित), आधा टाउको दुख्ने (माइग्रेन) र ज्ञानेन्द्रियहरू कमजोर हुने हुन्छन्।\n- उपचार: काँधभन्दा माथि तेल मालिस, बाफ दिने, धूमपान, नस्य (नाकमा औषधि हाल्ने) र वातनाशक तातो भोजन गराउनुपर्छ।",
+          "meaning_en": "Suppression of Kṣavathu (Sneezing Urge)\n\n- Pathology: Suppressing sneezing leads to torticollis/stiff neck (Manya-stambha), headache, facial paralysis (Ardita), hemicrania/migraine (Ardhavabhedaka), and sensory impairment (Indriya Daurbalya).\n- Therapeutics: Supraclavicular oil massage, head fomentation, medicated smoking (Dhumapana), nasal drops (Nasya), Vata-mitigating meals, and nasal ghee drops (Avapidaka Snetapan).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "18–19",
+          "sanskrit": "कम्पो विभन्धो हृदय उरसि चापि पूरता। आनाधः कास उिक्का च हिक्का चोद्गारधारणात्॥ १८॥ हिक्काविधावौषधं यदुद्गारेऽप्याचरेच्च तत्। वातानुलोमनं यच्च पानमन्नं च तद्धितम्॥ १९॥",
+          "transliteration": "kampo vibhandho hṛdaya urasi cāpi pūratā | ānādhaḥ kāsa uikkā ca hikkā codgāradhāraṇāt || 18 || hikkāvidhāvauṣadhaṁ yadudgāre'pyācarecca tat | vātānulomanaṁ yacca pānamannaṁ ca taddhitam || 19 ||",
+          "meaning_ne": "- लक्षण: डकार रोक्नाले शरीर काप्ने, छाती र मुटु डुम्मिएर भारी हुने, पेट भुक्क फुल्ने, खोकी र हिक्का (हिकप) आउने हुन्छ।\n- उपचार: हिक्का (हिकप) को जस्तै उपचार गर्ने र वायुलाई सुचारु गराउने (अनुलोमन) गरम खानपान दिनुपर्छ।",
+          "meaning_en": "Suppression of Udgāra (Belching Urge)\n\n- Pathology: Suppressing belches causes tremors (Kampa), constriction in chest/heart (Hridayorasi Purata), abdominal bloating, cough, and hiccups (Hikka).\n- Therapeutics: Treatment identical to hiccup therapy (Hikka Chikitsa), carminative drinks/food (Vatanulomana Anna-Pana), and warm ghee preparations.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "20–21",
+          "sanskrit": "विनतिर्नतिराक्षेपः सुप्तिः कम्पः प्रवेपनम्। जृम्भाया निग्रहात्तांस्तु सर्वाननिलजिज्जयैत्॥ २०॥ स्नेहास्वेदविधिश्चात्र वातघ्नं सर्वमौषधम्। जृम्भाया निग्रहे कार्यं सर्वमेव हिशोभनम्॥ २१॥",
+          "transliteration": "vinatirnatirākṣepaḥ suptiḥ kampaḥ pravepanam | jṛmbhāyā nigrahāttāṁstu sarvānanilajjayait || 20 || snehāsvedavidhiścātra vātaghnaṁ sarvamauṣadham | jṛmbhāyā nigrahe kāryaṁ sarvameva hiśobhanam || 21 ||",
+          "meaning_ne": "- लक्षण: हाई (जृम्भा) रोक्नाले शरीर कुब्रो पर्ने, ऐंठन/कम्पन हुने, अङ्ग सुन्न हुने र काप्ने हुन्छ।\n- उपचार: वातनाशक सम्पूर्ण उपचार, तेल मालिस, सेक्ने र न्यानो वातावरण प्रदान गर्नुपर्छ।",
+          "meaning_en": "Suppression of Jṛmbhā (Yawning Urge)\n\n- Pathology: Suppressing yawning causes severe body deformities/bending, convulsions (Akshepa), numbness (Supti), tremors, and muscular spasms.\n- Therapeutics: Complete Vata-alleviating measures, including external oleation (Snehana), sudation (Svedana), and comforting heat.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "22–23",
+          "sanskrit": "कार्श्यं दौर्बल्यं वैवर्ण्यमङ्गमर्दोऽरुचिर्भ्रमः। क्षुधो निग्रहतस्तत्र स्निग्धोष्णं लघु भोजनम्॥ २२॥ तदेषामौषधं सर्वं पगाहारविधौ हितम्। अवगाहोऽभ्यङ्गश्चैव सर्पिषश्चावपीडकम्॥ २३॥",
+          "transliteration": "kārśyaṁ daurbalyaṁ vaivarṇyamaṅgamardo'rucirbhramaḥ | kṣudho nigrahatastatra snigdhoṣṇaṁ laghu bhohanam || 22 || tadeṣāmauṣadhaṁ sarvaṁ pagāhāravidhau hitam | avagāho'bhyaṅgaścaiva sarpiṣaścāvapīḍakam || 23 ||",
+          "meaning_ne": "- लक्षण: भोक रोक्नाले शरीर दुब्लाउने, कमजोरी हुने, छालाको रङ बिग्रिने, अङ्ग दुख्ने, अरुचि र चक्कर लाग्ने हुन्छ।\n- उपचार: चिल्लो, मनतातो, हलुका र पचाउन सजिलो भोजन दिनुपर्छ।",
+          "meaning_en": "Suppression of Kṣudhā (Hunger Urge)\n\n- Pathology: Suppressing hunger results in emaciation (Karshya), debility (Daurbalya), skin discoloration (Vaivarnya), body aches (Angamarda), anorexia (Aruchi), and vertigo (Bhrama).\n- Therapeutics: Warm, unctuous, light, and digestible food (Snigdha-Ushna-Laghu Bhojana).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "24–25",
+          "sanskrit": "कण्ठास्यशोषः बाधिर्यं श्रमः सादो हृदि व्यथा। तृष्णाया निग्रहात्तत्र शीतः सर्वो विधिर्हितः॥ २४॥ तर्पणानि च पानानि शीतानि मधुराणि च। तृष्णाया निग्रहे कार्यं सर्वमेव हिशोभनम्॥ २५॥",
+          "transliteration": "kaṇṭhāsyaśoṣaḥ bādhiryaṁ śramaḥ sādo hṛdi vyathā | tṛṣṇāyā nigrahāttatra śītaḥ sarvo vidhirhitaḥ || 24 || tarpaṇāni ca pānāni śītāni madhurāṇi ca | tṛṣṇāyā nigrahe kāryaṁ sarvameva hiśobhanam || 25 ||",
+          "meaning_ne": "- लक्षण: तिर्खा रोक्नाले घाँटी र मुख सुक्ने, कान कम सुन्ने, थकान, आलस्य र मुटु दुख्ने हुन्छ।\n- उपचार: चिसो, मीठो, पोषिलो सर्वत, जुस र शीतल वातावरण प्रयोग गर्नुपर्छ।",
+          "meaning_en": "Suppression of Tṛṣṇā (Thirst Urge)\n\n- Pathology: Suppressing thirst leads to dryness of throat and mouth (Kanthasya-shosha), hearing impairment (Badhirya), exhaustion (Shrama), malaise (Sada), and cardiac pain (Hridi Vyatha).\n- Therapeutics: Cold, refreshing, sweet, nourishing drinks (Tarpana Pana) and cold baths.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "26–27",
+          "sanskrit": "प्रतिश्यायोऽक्षिरोगश्च हृद्रोगश्चारुचिर्भ्रमः। बाष्पस्य निग्रहात्तस्य स्वप्नो मद्यं प्रियाः कथाः॥ २६॥ तदेषामौषधं सर्वं पगाहारविधौ हितम्। अवगाहोऽभ्यङ्गश्चैव सर्पिषश्चावपीडकम्॥ २७॥",
+          "transliteration": "pratiśyāyo'kṣirogaśca hṛdrogaścārucirbhramaḥ | bāṣpasya nigrahāttasya svapno madyaṁ priyāḥ kathāḥ || 26 || tadeṣāmauṣadhaṁ sarvaṁ pagāhāravidhau hitam | avagāho'bhyaṅgaścaiva sarpiṣaścāvapīḍakam || 27 ||",
+          "meaning_ne": "- लक्षण: रोदन वा अश्रु (आँसु) रोक्नाले पिनास, आँखाको रोग, मुटुरोग, अरुचि र चक्कर लाग्ने हुन्छ।\n- उपचार: पर्याप्त निद्रा, मदिराको सन्तुलित सेवन, र प्रियजनहरूसँग मनका कुरा सेयर गर्नु उत्तम हुन्छ।",
+          "meaning_en": "Suppression of Bāṣpa / Aśru (Tears Urge)\n\n- Pathology: Suppressing emotional tears causes chronic rhinitis (Pratishyaya), eye diseases (Akshi-roga), heart disease (Hridroga), anorexia, and vertigo.\n- Therapeutics: Restful sleep (Svapna), mild wine (Madya), comforting conversations with loved ones (Priya Katha), and emotional relaxation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "28–29",
+          "sanskrit": "जृम्भाङ्गमर्दस्तन्द्रा च शिरोरोगोऽक्षिगौरवम्। निद्राया निग्रहात्तत्र स्वप्नो संवाहनानि च॥ २८॥ तदेषामौषधं सर्वं पगाहारविधौ हितम्। अवगाहोऽभ्यङ्गश्चैव सर्पिषश्चावपीडकम्॥ २९॥",
+          "transliteration": "jṛmbhāṅgamardastandrā ca śirorogo'kṣigauravam | nidrāyā nigrahāttatra svapno saṁvāhanāni ca || 28 || tadeṣāmauṣadhaṁ sarvaṁ pagāhāravidhau hitam | avagāho'bhyaṅgaścaiva sarpiṣaścāvapīḍakam || 29 ||",
+          "meaning_ne": "- लक्षण: निद्रा रोक्नाले हाई आउने, शरीर दुख्ने, धमिलो देखिने/सुस्ती (तन्द्रा), टाउको दुख्ने र आँखा गहुँगो हुने हुन्छ।\n- उपचार: मस्त निद्रा र हल्का शरीर मालिस (संवाहन) गराउनुपर्छ।",
+          "meaning_en": "Suppression of Nidrā (Sleep Urge)\n\n- Pathology: Suppressing sleep produces excessive yawning, body aches, drowsiness (Tandra), headache, and heaviness of eyes (Akshi-gaurava).\n- Therapeutics: Sound restorative sleep (Svapna) and gentle body massage/shampooing (Samvahana).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "30–31",
+          "sanskrit": "गुल्मो हृद्रोग मोहाश्च श्रमाश्वासविधारणात्। विश्रामो वातघ्नक्रियाश्चैव अत्र हिताः स्मृताः॥ ३०॥ इति वेगा उदीर्णा ये न धार्या भूतमिच्छता। कायाग्निबलरक्षार्थं रोगोत्पादभयादपि॥ ३१॥",
+          "transliteration": "gulmo hṛdroga mohāśca śramāśvāsavidhāraṇāt | viśrāmo vātaghnakriyāścaiva atra hitāḥ smṛtāḥ || 30 || iti vegā udīrṇā ye na dhāryā bhūtamicchatā | kāyāgnibalarakṣārthaṁ rogotpādabhayādapi || 31 ||",
+          "meaning_ne": "- लक्षण: कडा मिहिनेत वा दौडिएपछि आउने तीव्र सास (श्रम-निश्वास) रोक्नाले वायुको डल्लो (गुल्म), मुटुरोग र मूर्छा हुने हुन्छ।\n- उपचार: तुरुन्त आराम गर्ने र वातनाशक शान्तिमय वातावरण अपनाउनुपर्छ।",
+          "meaning_en": "Suppression of Śrama-Śvāsa (Exertional Dyspnea)\n\n- Pathology: Suppressing rapid breathing after intense physical exertion causes abdominal tumors (Gulma), heart disease (Hridroga), and fainting (Moha).\n- Therapeutics: Immediate rest (Vishrama) and Vata-alleviating measures to preserve digestive fire (Agni) and physical strength (Bala).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "32–35",
+          "sanskrit": "मनोवाक्कायवेगांस्तु धारयेद्धि सदा हितार्थी। लोभशोकभयक्रोधमाननैर्लज्जेर्ष्यातिरागाणाम्॥ ३२॥ परस्याभिध्यानादेभ्यो वेगेभ्यो मनोनिवर्तयेत्। परुषाणां चातिवेगानां सूचकानामनृतस्य च॥ ३३॥ अकालज्ञानवाक्यानां वाचं वेगाद् निवर्तयेत्। परस्त्रीपरद्रव्याणां हिंसायाश्चाप्यतन्द्रितः॥ ३४॥ कायवेगाद् निवर्तयेत सर्वथा धर्मबुद्धिमान्॥ ३५॥",
+          "transliteration": "manovākkāyavegāṁstu dhārayeddhi sadā hitārthī | lobhaśokabhayakrodhamānānairlajjerṣyātirāgāṇām || 32 || parasyābhidhyānādebhyo vegebhyo manonivartayet | paruṣāṇāṁ cātivegānāṁ sūcakānāmanṛtasya ca || 33 || akālajñānavākyānāṁ vācaṁ vegād nivartayet | parastrīparadravyāṇāṁ hiṁsāyāścāpyatandritaḥ || 34 || kāyavegād nivartayeta sarvathā dharmabuddhimān || 35 ||",
+          "meaning_ne": "धारणीयाः वेगाः\n\nआफ्नो कल्याण चाहने व्यक्तिले मन, वचन र शरीरका निम्न नकारात्मक आवेगहरूलाई अवश्य रोक्नुपर्छ:\n\n१. मानसिक वेगहरू: लोभ, शोक, डर, क्रोध (रिस), घमण्ड, निर्लज्जता, डाहा/ईर्ष्या, अत्यधिक मोह/आसक्ति र अरूको अहित चिन्ता।\n२. वाचिक (वचनका) वेगहरू: कठोर/कटु वचन, चुगली गर्ने, ढाँट्ने/झुटो बोल्ने र असमयमा वा अनावश्यक बोल्ने।\n३. कायिक (शरीरका) वेगहरू: परस्त्री गमन, चोरी/अरूको सम्पत्ति हडप्ने र हिंसा/कुटपिट।",
+          "meaning_en": "Control of Mind, Speech & Body\n\nMental & Emotional Urges to Suppress\n\nA person desiring well-being must strictly suppress negative mental, verbal, and physical impulses:\n\n1. Mental Urges (Manasika Vega): Greed (Lobha), grief (Shoka), fear (Bhaya), anger (Krodha), vanity (Mana), shamelessness (Nirlajjata), jealousy (Eershya), excessive attachment (Atiraga), and malice toward others (Abhidhya).\n2. Verbal Urges (Vachika Vega): Harsh speech (Parusha), gossiping/backbiting (Suchana), falsehood (Anrita), and untimely or irrelevant speech (Akala-vakya).\n3. Physical Urges (Kayika Vega): Adultery (Para-stree), theft (Para-dravya), and violence (Himsa).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "36–39",
+          "sanskrit": "शरीरायासजनकं कर्म व्यायामसंज्ञितम्। तत्कृत्वा तु सुखं देहं विमृद्वीयात् समन्ततः॥ ३६॥ लाघवं कर्मसामर्थ्यं स्थैर्यं दुःखसहिष्णुता। दोषक्षयोऽग्निवृद्धिश्च व्यायामादुपजायते॥ ३७॥ व्यायामं कुर्वतो नित्यं विरुद्धमपि भोजनम्। विदग्धमविदग्धं वा निर्दोषं परिपच्यते॥ ३८॥ तृष्णा क्षयः प्रतमको रक्तपित्तं श्रमः क्लमः। अतिव्यायामतः कासो ज्वरश्छर्दिश्च जायते॥ ३९॥",
+          "transliteration": "śarīrāyāsajanakaṁ karma vyāyāmasaṁjñitam | tatkṛtvā tu sukhaṁ dehaṁ vimṛdvīyāt samantataḥ || 36 || lāghavaṁ karmasāmarthyaṁ sthairyaṁ duḥkasahiṣṇutā | doṣakṣayo'gnivṛddhiśca vyāyāmādupajāyate || 37 || vyāyāmaṁ kurvato nityaṁ viruddhamapi bhohanam | vidagdhāmavidagdhaṁ vā nirdoṣaṁ paripacyate || 38 || tṛṣṇā kṣayaḥ pratamako raktapittaṁ śramaḥ klamaḥ | ativyāyāmataḥ kāso jvaraśchardiśca jāyate || 39 ||",
+          "meaning_ne": "व्यायाम-विचारः\n\n- परिभाषा: शरीरलाई थकाउने शारीरिक गतिविधिलाई 'व्यायाम' भनिन्छ। व्यायामपछि सम्पूर्ण शरीरमा हलुका मालिस गर्नुपर्छ।\n- फाइदाहरू: शरीरमा हलुकापन, काम गर्ने क्षमतामा वृद्धि, स्थिरता, कष्ट सहने शक्ति, दोषको क्षय र पाचन अग्नि तीव्र हुन्छ। नियमित व्यायाम गर्ने व्यक्तिले उल्टो-सुल्टो (विरुद्ध) वा नपाकेको खाना पनि सजिलै पचाउँछ।\n- अत्यधिक व्यायामका हानिहरू: बढी तिर्खा लाग्नु, शरीर क्षीण हुनु, दम आउनु, रगत बग्ने रोग (रक्तपित्त), मानसिक थकान, खोकी, ज्वरो र वान्त हुनु।",
+          "meaning_en": "Definition, Benefits & Over-Exertion\n\nPhysical Exercise & Physiology\n\n- Definition: Physical action that produces bodily tiredness is called Vyayama (Exercise). After exercise, one should gently massage the entire body.\n- Benefits: Lightness of body (Laghava), capacity for hard work (Karma-samarthya), stability (Sthairya), tolerance of hardship (Dukha-sahishnuta), destruction of Doshas, and enhancement of digestion (Agni-vriddhi). Regular exercisers easily digest even incompatible (Viruddha) or partially cooked foods.\n- Complications of Over-Exercise: Excessive thirst, emaciation (Kshaya), severe dyspnea (Pratamaka), bleeding disorders (Raktapitta), mental exhaustion (Klama), cough, fever, and vomiting.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 19,
+          "verse_label": "40–45",
+          "sanskrit": "व्यायामं जाग्रथं च अध्वं स्त्रीहासं भारवाहनम्। गजाश्वरथचर्याश्च कुर्याच्छक्त्यर्धतो नरः॥ ४०॥ अतिव्यायामात् तु नरो विनश्यत्यतिसाहसात्। सिंहो नागमिवाकर्षन् महता विनश्यति॥ ४५॥",
+          "transliteration": "vyāyāmaṁ jāgrathaṁ ca adhvaṁ strīhāsaṁ bhāravāhanam | gajāśvarathacaryāśca kuryācchaktyardhato naraḥ || 40 || ativyāyāmāt tu naro vinaśyatyatisāhasāt | siṁho nāgamivākarṣan mahatā vinaśyati || 45 ||",
+          "meaning_ne": "- आधा क्षमताको नियम: व्यायाम, राति जाग्राम बस्नु, लामो पैदल यात्रा, स्त्री-प्रसङ्ग, भारी बोक्नु जस्ता कार्यहरू मानिसले आफ्नो आधा शारीरिक क्षमता (शक्त्यर्ध) सम्म मात्र गर्नुपर्छ।\n- दृष्टान्त: क्षमताभन्दा बढी साहस वा व्यायाम गर्ने मानिस त्यसरी नै नष्ट हुन्छ, जसरी एउटा सिंहले विशाल हात्तीलाई जबर्दस्ती तान्न खोज्दा आफैँ मर्छ।",
+          "meaning_en": "Limits & Contraindications of Exercise\n\n- Half-Capacity Rule (Shaktyardha): Exercise, night awakening, walking long distances, sexual indulgence, weightlifting, and riding animals should only be performed up to half of one's full physical capacity (Shaktyardha).\n- Analogy: A person performing excessive exertion perishes abruptly, just as a lion dies instantly after attempting to forcibly drag a giant elephant.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 20,
+          "verse_label": "46–50",
+          "sanskrit": "समपित्तानिलकफाः केचिद्गर्भादि मानवाः। दृश्यन्ते वातलाः केचित् पित्तलाः श्लेष्मलास्तथा॥ ४६॥ तेषामनातुराः पूर्वे वातलाद्याः सदातुराः। दोषानुशयिता ह्येषां देहप्रकृतिुरुच्यते॥ ४७॥ विपरीतगुणैस्तेषां मारुतप्रकृतीनाम्। उपक्रमः सर्वदैव स्निग्धोष्णैः शस्यते भृशम्॥ ४८॥",
+          "transliteration": "samapittānilakaphāḥ kecidgarbhādi mānavāḥ | dṛśyante vātalāḥ kecit pittalāḥ śleṣmalāstathā || 46 || teṣāmanāturāḥ pūrve vātalādyāḥ sadāturāः | doṣānuśayitā hyeṣāṁ dehaprakṛtirucyate || 47 || viparītaguṇaisteṣāṁ mārutaprakṛtīnām | upakramaḥ sarvadaiva snigdhoṣṇaiḥ śasyate bhṛśam || 48 ||",
+          "meaning_ne": "प्रकृति-विचारः\n\n- प्रकृतिको निर्माण: गर्भधारणकै समयमा शुक्र र डिम्बमा रहेको दोषको प्रबलताका आधारमा व्यक्तिको शारीरिक प्रकृति (देहप्रकृति) निर्धारण हुन्छ।\n- प्रकृतिका प्रकारहरू:\n१. समप्रकृति: वात, पित्त र कफ समान अवस्थामा भएका मानिसहरू सधैँ निरोगी रहन्छन्।\n२. वातज, पित्तज र कफज प्रकृति: कुनै एक दोष बढी भएका मानिसहरू रोगप्रति संवेदनशील (सदा-आतुर) हुन्छन्।\n- उपचारको सिद्धान्त: व्यक्तिको प्रकृतिभन्दा विपरित गुण भएका आहारविहार र औषधि प्रयोग गर्नुपर्छ। जस्तै वात प्रकृतिका लागि सधैँ चिल्लो र गरम (स्निग्ध-उष्ण) वस्तु प्रयोग गर्नु उत्तम हुन्छ।",
+          "meaning_en": "Dosha Predominance & Prakriti\n\nConstitutional Types & Individualized Care\n\n- Prakriti Formation: Human constitutional types (Prakriti) are established at the time of fertilization (Garbhadi) based on the dominant Dosha in sperm and ovum.\n- Types:\n1. Sama-Prakriti: Balanced Vata, Pitta, Kapha — always healthy (Anatura).\n2. Vata-Prakriti, Pitta-Prakriti, Kapha-Prakriti: Single Dosha predominant — prone to disease (Sada-atura).\n3. Dwandvaja & Sannipata: Dual or triple Dosha combinations.\n- Therapeutic Principle: Treatment and daily diet must feature opposite qualities (Viparita Guna) to the person's inherent Prakriti. For Vata constitution, unctuous and warm (Snigdha-Ushna) therapies are required permanently.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 21,
+          "verse_label": "51–61",
+          "sanskrit": "त्याज्यं विरुद्धमाहारं सर्वमेव हिताशिना। देशं कालं प्रमाणं च ज्ञात्वा भुञ्जीत मानवः॥ ५१॥ धीधैर्यस्मृतिबोधात्मा सर्वभूतहिते रतः। आप्तोपसेवी विद्वांश्च नोपतापैः स युज्यते॥ ६०॥ इति अग्निवेशकृते तन्त्रे चरकप्रतिसंस्कृते सूत्रस्थाने नवेगान्धारणीयो नाम सप्तमोऽध्यायः॥ ६१॥",
+          "transliteration": "tyājyaṁ viruddhamāhāraṁ sarvameva hitāśinā | deśaṁ kālaṁ pramāṇaṁ ca jñātvā bhuñjīta mānavaḥ || 51 || dhīdhairyasmṛtibodhātmā sarvabhūtahite rataḥ | āptopasevī vidvāṁśca nopatāpaiḥ sa yujjate || 60 || iti agniveśakṛte tantre carakapratisaṁskṛte sūtrasthāne navegāndhāraṇīyo nāma saptamo'dhyāyaḥ || 61 ||",
+          "meaning_ne": "सद्वृत्तम्\n\n- आहार नियम: आफ्नो हित चाहने व्यक्तिले सम्पूर्ण विरुद्ध आहार त्याग गरी स्थान (देश), समय (काल) र मात्रा (प्रमाण) को ख्याल गरेर भोजन गर्नुपर्छ।\n- आदर्श पुरुषको लक्षण: जसको बुद्धि (धी), धैर्य, स्मरणशक्ति (स्मृति) र आत्मज्ञान स्पष्ट छ, जो सम्पूर्ण प्राणीको हितमा लीन रहन्छ र ज्ञानी गुरुहरूको सेवा गर्दछ, त्यो व्यक्ति कहिल्यै शारीरिक वा मानसिक रोगबाट पीडित हुँदैन।\n- उपसंहार: यसरी अग्निवेशद्वारा रचित र चरकद्वारा प्रतिसंस्कृत चरकसंहिताको सूत्रस्थान अन्तर्गत 'नवेगान्धारणीय' नामक सातौँ अध्याय समाप्त भयो।",
+          "meaning_en": "Code of Healthy Living\n\nPreventive Hygiene & Ethical Conduct\n\n- Dietary Wisdom: One must abandon all unwholesome and incompatible foods (Viruddha Ahara) and consume meals after calculating the territory (Desha), season (Kala), and quantity (Pramana).\n- The Ideal Human Being: One endowed with intellect (Dhi), patience (Dhairya), memory (Smriti), self-knowledge (Atma-bodha), devotion to the welfare of all living beings (Sarva-bhuta-hita), and reverence for noble teachers (Apta-seva) never suffers from physical or mental diseases.\n- Conclusion: Thus ends Chapter 7, entitled Na Vegān Dhāraṇīya, in the Sutrasthana of Charaka Samhita.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "title_ne": "इन्द्रियोपक्रमणीयोऽध्यायः",
+      "title_en": "Indriyopakramaniya Adhyaya — Approach to the Senses",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "इन्द्रियोपक्रमणीयोऽध्यायः",
+          "transliteration": "indriyopakramaṇīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको आठौं अध्याय (इन्द्रियोपक्रमणीय अध्याय) इन्द्रिय, मन र सद्वृत्त बताउँछ। यसमा ३४ श्लोक छन्।\n\n१. पञ्चपञ्चक — इन्द्रिय, द्रव्य, अधिष्ठान, अर्थ र बुद्धि (श्लोक ३–११)।\n२. मन — स्वरूप, विषय र कार्य (श्लोक १२–१६)।\n३. रोगहेतु — असात्म्येन्द्रियार्थसंयोग, प्रज्ञापराध र परिणाम (श्लोक १७–१८)।\n४. सद्वृत्त — व्यक्तिगत, सामाजिक र आहारसम्बन्धी आचरण (श्लोक १९–२९)।\n५. सद्वृत्तको फल — आयु, इन्द्रियजय र मानसिक शान्ति (श्लोक ३०–३४)।",
+          "meaning_en": "Chapter 8 of Sutrasthana (Indriyopakramaṇīya Adhyāya) provides a profound exploration of Sensory Physiology, Mental Health, Cognitive Mechanisms, and the Code of Ethical Conduct (Sadvṛtta). It contains 34 verses structured as follows:\n\n1. The Five Pentads of Senses (Pañca-Pañcaka): Systematization of Sense Organs, Constituent Elements, Anatomic Seats, Sense Objects, and Sensory Perceptions (Verses 3–11).\n2. Physiology & Functions of Mind (Manas / Sattva): Definition, atomic nature (Aṇutva), singular focus (Ekatva), objects of thought (Cintya, Vicārya, Ūhya, Dhyeya, Saṅkalpya), and governing roles (Verses 4–16).\n3. Etiology of Psychological & Sensory Disorders: Improper sensory-object contact (Asātmyendriyārtha Saṁyoga), intellectual errors (Prajñāparādha), and seasonal transformations (Pariṇāma) (Verses 17–18).\n4. Code of Ethical & Moral Conduct (Sadvṛtta): Comprehensive rules for personal, social, professional, dietary, spiritual, and emotional discipline (Verses 19–29).\n5. Benefits of Sadvṛtta: Attainment of physical longevity, sensory control, mental tranquility, and spiritual liberation (Verses 30–34).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातोऽिन्द्रियोपक्रमणीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto'indriyopakramaṇīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "पञ्चपञ्चकम् - Pañca-Pañcaka\n\nअब हामी ज्ञानेन्द्रियहरूको स्वास्थ्य रक्षा र मनोचिकित्सासम्बन्धी 'इन्द्रियोपक्रमणीय' नामक आठौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nThe Five Pentads of Senses\n\nNow we shall expound the chapter entitled Indriyopakramaṇīya (Methodology & Health of Sense Organs), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "इह खलु पञ्चेन्द्रियाणि, पञ्चेन्द्रियद्रव्याणि, पञ्चेन्द्रियायतनानि, पञ्चेन्द्रियार्थाः, पञ्चेन्द्रियबुद्धयो भवन्त्युक्तं नामाभिसन्धायात्ममनसी च॥ ३॥",
+          "transliteration": "iha khalu pañcendriyāṇi, pañcendriyadravyāṇi, pañcendriyāyatanāni, pañcendriyārthāḥ, pañcendriyabuddhayo bhavantyuktaṁ nāmābhisandhāyātmamanasī ca || 3 ||",
+          "meaning_ne": "आयुर्वेदमा ज्ञानेन्द्रिय सम्बन्धी ज्ञानलाई पाँच पञ्चक (पञ्चपञ्चक) र आत्मा तथा मनमा विभाजन गरिएको छ:\n१. पाँच ज्ञानेन्द्रिय: चक्षु (आँखा), श्रोत्र (कान), घ्राण (नाक), रसना (जिब्रो), र स्पर्शन (छाला)।\n२. पाँच इन्द्रिय द्रव्य: तेज (अग्नि), आकाश, पृथ्वी, जल, र वायु।\n३. पाँच इन्द्रिय स्थान: दुई आँखा, दुई कान, नाक, जिब्रो, र सम्पूर्ण शरीरको छाला।\n४. पाँच इन्द्रिय विषय: रूप, शब्द, गन्ध, रस, र स्पर्श।\n५. पाँच इन्द्रिय बुद्धि: चक्षु बुद्धि, श्रोत्र बुद्धि, घ्राण बुद्धि, रसना बुद्धि, र स्पर्शन बुद्धि।",
+          "meaning_en": "The Five Pentads (पञ्चपञ्चकम्)\n\nIn this system of medicine, sensory physiology is classified into Five Pentads (Pañca-Pañcaka), along with the Soul (Ātmā) and the Mind (Manas):\n1. Pañca Indriyāṇi (Five Sense Organs): Visual (Cakṣu), Auditory (Śrotra), Olfactory (Ghrāṇa), Gustatory (Rasanā), and Tactile (Sparśana).\n2. Pañca Indriya-Dravyāṇi (Five Constituent Elements): Fire (Tejas), Space (Ākāśa), Earth (Pṛthvī), Water (Ap), and Air (Vāyu).\n3. Pañca Indriyāyatanāni (Five Anatomic Seats): Eyes, Ears, Nose, Tongue, and Skin.\n4. Pañca Indriyārthāḥ (Five Sense Objects): Form/Color (Rūpa), Sound (Śabda), Smell (Gandha), Taste (Rasa), and Touch (Sparśa).\n5. Pañca Indriya-Buddhayaḥ (Five Sensory Perceptions): Visual perception, Auditory perception, Olfactory perception, Gustatory perception, and Tactile perception.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4–11",
+          "sanskrit": "तत्र चक्षुः खलु तेजोगुणविशेषान्वितम्, श्रोत्रम् आकाशगुणविशेषान्वितम्, घ्राणं पृथ्वीगुणविशेषान्वितम्, रसना उदकगुणविशेषान्विता, स्पर्शनं वायुगुणविशेषान्वितम्। तत्र यज्जातिकमिन्द्रियं तज्जातिकमेवार्थमभिविनिश्चिनोति; सर्वं च सर्वगुणं तस्य तस्य तु महाभूतस्य विशेषाद्द्रव्ये तत्तल्लक्षणमुपपद्यते॥ ४-११॥",
+          "transliteration": "tatra cakṣuḥ khalu tejoguṇaviśeṣānvitam, śrotram ākāśaguṇaviśeṣānvitam, ghrāṇaṁ pṛthvīguṇaviśeṣānvitam, rasanā udakaguṇaviśeṣānvitā, sparśanaṁ vāyuguṇaviśeṣānvitam | tatra yajjātikamindriyaṁ tajjātikamevārthamabhiviniścinoti; sarvaṁ ca sarvaguṇaṁ tasya tasya tu mahābhūtasya viśeṣāddravye tattallakṣaṇamupapadyate || 4-11 ||",
+          "meaning_ne": "प्रत्येक ज्ञानेन्द्रियमा एउटा विशिष्ट महाभूतको प्रधानता हुन्छ:\n- आँखा (चक्षु) मा तेज (अग्नि) महाभूतको प्रधानता हुन्छ, त्यसैले यसले रूप ग्रहण गर्दछ।\n- कान (श्रोत्र) मा आकाश महाभूतको प्रधानता हुन्छ, त्यसैले यसले शब्द ग्रहण गर्दछ।\n- नाक (घ्राण) मा पृथ्वी महाभूतको प्रधानता हुन्छ, त्यसैले यसले गन्ध ग्रहण गर्दछ।\n- जिब्रो (रसना) मा जल महाभूतको प्रधानता हुन्छ, त्यसैले यसले रस ग्रहण गर्दछ।\n- छाला (स्पर्शन) मा वायु महाभूतको प्रधानता हुन्छ, त्यसैले यसले स्पर्श ग्रहण गर्दछ।\n\nसमान गुण भएका कारणले इन्द्रियले आफ्नो महाभूत अनुकूलको विषयलाई मात्र ग्रहण गर्दछ।",
+          "meaning_en": "Elemental Composition of Senses\n\nEach sense organ is predominantly constituted by a specific Mahābhūta (Great Element):\n- The Eye is predominant in Tejas (Fire), making it receptive to Rūpa (Visual Form).\n- The Ear is predominant in Ākāśa (Space), making it receptive to Śabda (Sound).\n- The Nose is predominant in Pṛthvī (Earth), making it receptive to Gandha (Smell).\n- The Tongue is predominant in Jala/Udaka (Water), making it receptive to Rasa (Taste).\n- The Skin is predominant in Vāyu (Air), making it receptive to Sparśa (Touch).\n\nBy principle of similarity (Samānya), a sense organ perceives that specific object which shares its elemental nature. Although all matter contains all five elements, the predominance (Utkarṣa) determines specific functional attributes.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "12–13",
+          "sanskrit": "अतीन्द्रियं पुनर्मनः सत्त्वसंज्ञकं, 'चेत' इत्याहुरेके; तदर्थात्मीयेन्द्रियाभिग्रहेण प्रवर्तते। अणुत्वमथ चैकत्वं द्वौ गुणौ मनसः स्मृतौ॥ १२-१३॥",
+          "transliteration": "atīndriyaṁ punarmanaḥ sattvasaṁjñakaṁ, 'ceta' ityāhureke; tadarthātmīyendriyābhigraheṇa pravartate | aṇutvamatha caikatvaṁ dvau guṇau manasaḥ smṛtau || 12-13 ||",
+          "meaning_ne": "मनःस्वरूपम्\n\nमन (सत्त्व वा चेत) भौतिक ज्ञानेन्द्रियहरूभन्दा सूक्ष्म र परे (अतीन्द्रिय) हुन्छ। यसले ज्ञानेन्द्रियहरूलाई तिनका विषयतर्फ प्रेरित गर्दछ। मनका दुई मुख्य गुणहरू हुन्छन्:\n१. अणुत्व (अत्यन्त सूक्ष्म हुनु): मन परमाणु जस्तै सूक्ष्म हुन्छ।\n२. एकत्व (एक समयमा एउटा मात्र हुनु): मन एक पटकमा एउटा मात्र विषयसँग जोडिन सक्छ। एकै पटक धेरै कुरा अनुभव भएको भान हुनु मनको तीव्र गतिको परिणाम हो।",
+          "meaning_en": "Attributes & Functions of Mind (Manas)\n\nPhysiology, Nature & Functions of Mind\n\nThe Mind (Manas), also termed Sattva or Cetas, transcends the physical sense organs (Atīndriya). It acts as the internal controller directing the sense organs to their respective objects.\nThe Mind possesses two cardinal attributes:\n1. Aṇutva (Atomic Subtlety / Infinitesimal Nature): Its fine atomic nature allows extremely rapid movement.\n2. Ekatva (Oneness / Singularity of Focus): It can connect with only one sensory perception at a time. The illusion of simultaneous multi-sensory processing is due to the lightning speed (Āśukāritva) of mental transitions.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "14–15",
+          "sanskrit": "चिन्त्यं विचार्यमूह्यं ध्येयं सङ्कल्प्यमेव च। यत्किञ्चिन्मनसो ज्ञेयं तत्सर्वं ह्यर्थसंज्ञकम्॥ इन्द्रियाभिग्रहः कर्म मनसः स्वस्य निग्रहः। ऊहो विचारश्च, ततः परं बुद्धिः प्रवर्तते॥ १४-१५॥",
+          "transliteration": "cintyaṁ vicāryamūhyaṁ dhyeyaṁ saṅkalpyameva ca | yatkiñcinmanaso jñeyaṁ tatsarvaṁ hyarthasaṁjñakam || indriyābhigrahaḥ karma manasaḥ svasya nigrahaḥ | ūho vicāraśca, tataḥ paraṁ buddhiḥ pravartate || 14-15 ||",
+          "meaning_ne": "मनका ५ विषयहरू:\n१. चिन्त्य: विचार र मन्थन गर्नुपर्ने कुरा।\n२. विचार्य: गुण र दोषको विश्लेषण गर्नुपर्ने विषय।\n३. ऊह्य: तर्क र अनुमान लगाउनुपर्ने कुरा।\n४. ध्येय: ध्यान र एकाग्रता लगाउनुपर्ने विषय।\n५. सङ्कल्प्य: सङ्कल्प, इच्छा र उद्देश्य।\n\nमनका ४ कार्यहरू:\n१. इन्द्रियाभिग्रह: ज्ञानेन्द्रियहरूलाई नियन्त्रण र सञ्चालन गर्नु।\n२. स्वस्य निग्रह: मनलाई नराम्रा वा हानिकारक विषयबाट रोक्नु (आत्म-नियन्त्रण)।\n३. ऊह: सम्भावनाहरूको विचार गर्नु।\n४. विचार: उचित र अनुचितको मन्थन गर्नु। यसपछि मात्र बुद्धिले अन्तिम निर्णय गर्दछ।",
+          "meaning_en": "Objects and Roles of Mind\n\nFive Cognizable Objects of Mind (Manaso Arthāḥ):\n1. Cintya: Objects requiring deep contemplation and problem-solving.\n2. Vicārya: Topics requiring analytical reasoning and discrimination of pros/cons.\n3. Ūhya: Logical deduction, hypothesis, and conjecture.\n4. Dhyeya: Objects of meditation and focused concentration.\n5. Saṅkalpya: Intentions, desires, and resolution.\n\nFour Core Functions of Mind (Manasaḥ Karmāṇi):\n1. Indriyābhigraha: Controlling and activating the sense organs.\n2. Svasya Nigraha: Self-restraint (abstaining from unwholesome or harmful desires).\n3. Ūha: Speculative reasoning and intuitive grasping.\n4. Vicāra: Deliberation and evaluating choices.\nFollowing mental deliberation, the Intellect (Buddhi) makes a final decisive judgment.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "16",
+          "sanskrit": "त्रिविधं खलु सत्त्वं - शुद्धं, राजसं, तामसमिति। तत्र शुद्धमदोषमाख्यातं कल्याणांशत्वात्, राजसं सदोषमाख्यातं रोषांशत्वात्, तामसमपि सदोषमाख्यातं मोहांशत्वात्॥ १६॥",
+          "transliteration": "trividhaṁ khalu sattvaṁ - śuddhaṁ, rājasaṁ, tāmasamiti | tatra śuddhamadoṣamākhyātaṁ kalyāṇāṁśatvāt, rājasaṁ sadoṣamākhyātaṁ roṣāṁśatvāt, tāmasamapi sadoṣamākhyātaṁ mohāṁśatvāt || 16 ||",
+          "meaning_ne": "मानसिक गुणहरू (सत्त्व) तीन प्रकारका हुन्छन्:\n१. शुद्ध (सात्त्विक): यो दोषरहित हुन्छ; यसमा कल्याण, सत्य, ज्ञान र करुणाको अंश हुन्छ।\n२. राजस: यो दोषयुक्त हुन्छ; यसमा क्रोध, काम, अहंकार र चञ्चलताको अंश हुन्छ।\n३. तामस: यो पनि दोषयुक्त हुन्छ; यसमा मोह, अज्ञानता, आलस्य र अन्धकारको अंश हुन्छ।\nरज र तम मनका दुई मुख्य विकार वा मानस दोष हुन्।",
+          "meaning_en": "Three Mental Constitutions (Sattva Gunas)\n\nMental nature (Sattva) is classified into three types:\n1. Śuddha / Sāttvika (Pure): Free from defect; characterized by wisdom, compassion, truth, clarity, and auspiciousness (Kalyāṇa).\n2. Rājasa (Passionate / Agitated): Defective; characterized by anger (Roṣa), desire, pride, greed, and restlessness.\n3. Tāmasa (Ignorant / Lethargic): Defective; characterized by delusion (Moha), ignorance, laziness, depression, and darkness.\n\nWhile Sattva is pure, Rajas and Tamas function as the two psychological Doshas (Mānasika Doṣa) causing mental disorders.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "17–18",
+          "sanskrit": "अतियोगमयोगं च मिथ्यायोगं च सर्वशः। अतीन्द्रियाणामर्थानां व्याधीनां परमं कारणम्॥ १७॥ एतदेव च तद्धेतुत्रयं- असात्म्येन्द्रियार्थसंयोगः, प्रज्ञापराधः, परिणामश्चेति॥ १८॥",
+          "transliteration": "atiyogaṁ amayogaṁ ca mithyāyogaṁ ca sarvaśaḥ | atīndriyāṇāmarthānāṁ vyādhīnāṁ paramaṁ kāraṇam || 17 || etadeva ca taddhetutrayaṁ- asātmyendriyārthasaṁyogaḥ, prajñāparādhaḥ, pariṇāmaśceti || 18 ||",
+          "meaning_ne": "रोगहेतवः\n\nसबै शारीरिक र मानसिक रोगहरूका मुख्य तीन वटा कारणहरू हुन्छन्:\n१. असात्म्येन्द्रियार्थ संयोग (इन्द्रिय र विषयको गलत संयोग):\n- अतियोग: इन्द्रियको अत्यधिक प्रयोग (जस्तै: कडा घाम वा प्रकाशमा लगातार हेर्नु)।\n- अयोग: इन्द्रियको प्रयोग नै नगर्नु (जस्तै: सधैँ अँध्यारोमा बस्नु)।\n- मिथ्यायोग: विकृत वा डरलाग्दो रूप वा आवाजको सेवन गर्नु।\n२. प्रज्ञापराध (बुद्धिको अपराध): परिणाम हानिकारक छ भन्ने थाहा हुँदाहुँदै पनि जानीजानी गलत आहार-विहार र प्राकृतिक वेगहरू रोक्नु।\n३. परिणाम (काल/समय): ऋतुहरूको अनुकूल नहुनु वा मौसमको कडा परिवर्तन हुनु।",
+          "meaning_en": "Threefold Causes of Disease\n\nEtiology of Sensory & Mental Diseases\n\nThe primary underlying causes of all physical and psychological diseases stem from three types of improper interactions involving the senses, intellect, and time:\n1. Asātmyendriyārthasaṁyoga (Unwholesome Sensory-Object Contact):\n- Atiyoga: Excessive use (e.g., staring at bright light, listening to deafening noise).\n- Ayoga: Complete non-use (e.g., staying in total darkness, refusal to listen).\n- Mithyāyoga: Perverted use (e.g., viewing terrifying/distorting sights, harsh/scourging sounds).\n2. Prajñāparādha (Intellectual Blunder / Crime against Wisdom): Wilfully engaging in unwholesome diet, lifestyle, or suppressing natural urges despite knowing their harmful consequences.\n3. Pariṇāma / Kāla (Seasonal Transformation / Time): Seasonal extremes (excessive cold, heat, rain, or unseasonal weather).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "19–20",
+          "sanskrit": "तस्मादात्महितं चिकीर्षता सर्वेण सर्वं सर्वदा स्मृतिमास्थाय सद्वृत्तमनुष्ठेयम्। तद्ध्याचरन् युगपत् सम्पादयत्यरोग्यमिन्द्रियविजयं च॥ १९-२०॥",
+          "transliteration": "tasmādātmahitaṁ cikīrṣatā sarveṇa sarvaṁ sarvadā smṛtimāsthāya sadvṛttamanuṣṭheyam | tadhyācaran yugapat sampādayatyarogyamindriyavijayaṁ ca || 19-20 ||",
+          "meaning_ne": "सद्वृत्तम् - Sadvṛtta\n\nतसर्थ, आफ्नो कल्याण, निरोगीता र आत्म-उन्नति चाहने व्यक्तिले सधैँ सजग भई सद्वृत्त (उत्तम नैतिक आचरण) को पालन गर्नुपर्छ। सद्वृत्तको निष्ठापूर्वक पालनाले दुई वटा ठूला फलहरू एकैसाथ प्राप्त हुन्छन्:\n१. आरोग्य: पूर्ण शारीरिक स्वास्थ्य र रोगमुक्ति।\n२. इन्द्रिय विजय: इन्द्रियहरू र मनमाथि पूर्ण नियन्त्रण।",
+          "meaning_en": "Definition & Importance of Sadvṛtta\n\nCode of Ethical Conduct\n\nTherefore, anyone seeking self-welfare, physical health, and spiritual evolution must constantly remember and strictly practice Sadvṛtta (the Code of Noble and Ethical Conduct). Practice of Sadvṛtta simultaneously bestows two supreme achievements:\n1. Ārogya: Perfect physical health and freedom from illness.\n2. Indriya-Vijaya: Complete mastery over senses and mind.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "21–25",
+          "sanskrit": "देवगोब्राह्मणगुरूद्धवृद्धांसिद्धानाचार्यानर्चयेत्, अपि च अग्निमुपचरेत्, ओषधीर्धारयेत्, सत्यवादी, प्रियवादी, अहिंसकः, धैर्यात्मा, समलोष्टाश्मकाञ्चनः, सर्वभूतेष्वभयप्रदः स्यात्॥ २१-२५॥",
+          "transliteration": "devagobrāhmaṇagurūddhavṛddhāṁsiddhānācāryānarcayet, api ca agnimupacaret, oṣadhīrdhārayet, | satyavādī, priyavādī, ahiṁsakaḥ, dhairyātmā, samaloṣṭāśmakāñcanaḥ, sarvabhūteṣvabhayapradaḥ syāt || 21-25 ||",
+          "meaning_ne": "सद्वृत्तका धार्मिक र व्यक्तिगत नियमहरू:\n- आदर र सम्मान: देवता, गुरु, आमाबाबु, वृद्ध, विद्वान्, शिक्षक र सिद्ध पुरुषहरूको सम्मान र सेवा गर्नु।\n- वाणीको संयम: सधैँ सत्य र प्रिय (मीठो) बोल्नु। अश्लील, कठोर वा झूटो नबोल्नु।\n- अहिंसा र करुणा: कसैप्रति हिंसा नगर्नु (अहिंसा), धैर्य धारण गर्नु, र सबै प्राणीहरूलाई अभयदान (सुरक्षा) दिनु।\n- समानता: माटो, ढुङ्गा र सुनलाई समान दृष्टिले हेर्नु (सम्पत्ति वा भौतिक कुरामा समभाव राख्नु)।",
+          "meaning_en": "Rules of Religious, Moral & Personal Conduct\n\nEssential Rules of Moral & Personal Behavior:\n- Reverence: Respect deities, cows, scholars (Brāhmaṇas), spiritual preceptors (Gurus), elders, perfected beings (Siddhas), and teachers. Maintain sacred fires and wear protective medicinal herbs.\n- Speech: Speak truth (Satyavādī), speak softly and agreeably (Priyavādī), avoid harsh, vulgar, or deceptive speech.\n- Ego & Emotions: Practice non-violence (Ahiṁsā), cultivate patience (Dhairya), maintain emotional equilibrium (Samatva) towards wealth and poverty (treating clay, stone, and gold equally).\n- Compassion: Provide fearlessness and sanctuary to all living beings (Sarvabhūteṣu Abhayapradaḥ).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "26–27",
+          "sanskrit": "न नग्नः स्नायात्, न च रथाश्वपादचारिणां मध्ये गच्छेत्, न श्मशानघाताभ्याशकुड्यादिषु वसेत्। न सन्ध्ययोः भुञ्जीत, न नग्नः शेत, न नखैः तृणं छिन्द्यात्, न जुगुप्सितं पश्येत्॥ २६-२७॥",
+          "transliteration": "na nagnaḥ snāyāt, na ca rathāśvapādacāriṇāṁ madhye gacchet, na śmaśānaghātābhyāśakuḍyādiṣu vaset | na sandhyayoḥ bhuñjīta, na nagnaḥ śeta, na nakhaiḥ tṛṇaṁ chindyāt, na jugupsitaṁ paśyet || 26-27 ||",
+          "meaning_ne": "सामाजिक र वातावरणीय आचरण:\n- नाङ्गो भएर स्नान नगर्नु र नसुत्नु।\n- सवारी साधन, घोडा वा भीडको बीचमा असावधान भएर नहिँड्नु।\n- मसानघाट, वधशाला वा भत्किएका पुराना पर्खाल नजिक नबस्नु।\n- बिहान वा साँझको सन्ध्या समयमा भोजन नगर्नु।\n- नङले घाँस काट्ने, नङ टोक्ने वा अकारण हात-खुट्टा हल्लाउने जस्ता कुलत नगर्नु।\n- घिनलाग्दा, अश्लील वा डराउने वस्तुहरू नहेर्नु।",
+          "meaning_en": "Social Hygiene & Public Ethics\n\nPublic Discipline & Prohibited Actions:\n- Never bathe or sleep completely unclothed (Nagna).\n- Do not walk recklessly in the middle of heavy traffic (carriages, horses, crowds).\n- Do not reside near cremation grounds, slaughterhouses, or unstable/dilapidated structures.\n- Do not consume food during dawn or dusk transitions (Sandhyā).\n- Refrain from neurotic nervous habits such as biting nails, cutting grass with fingernails, or making purposeless body movements.\n- Avoid gazing at repulsive, vulgar, or terrifying sights.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "28–29",
+          "sanskrit": "नानिःसिक्तपादपाणिमुखः अशुचिः भुञ्जीत; न प्रोक्षितं न अनिर्वेदितं अन्नमद्यात्। नाहङ्कृतः स्यात्, न क्रुद्धः, न शोकाकुलः, न चातिहर्षितः स्यात्॥ २८-२९॥",
+          "transliteration": "nāniḥsiktapādapāṇimukhaḥ aśuciḥ bhuñjīta; na prokṣitaṁ na anirveditaṁ annamadyāt | nāhaṅkṛtaḥ syāt, na kruddhaḥ, na śokākulaḥ, na cātiharṣitaḥ syāt || 28-29 ||",
+          "meaning_ne": "भोजन र मानसिक सन्तुलनका नियमहरू:\n- भोजनको नियम: हात, खुट्टा र मुख नधोई, अशुद्ध अवस्थामा वा अस्वच्छ ठाउँमा भोजन नगर्नु। मन्त्र र कृतज्ञतापूर्वक पवित्र भोजन मात्र सेवन गर्नु।\n- मानसिक संयम: अहंकार नगर्नु, क्रोध नगर्नु, धेरै शोक वा धेरै हर्ष (अत्यधिक उत्तेजना) मा नपर्नु। मनलाई सधैँ शान्त र सन्तुलित राख्नु।",
+          "meaning_en": "Dietary, Mental & Environmental Conduct\n\nRules for Eating & Emotional Balance:\n- Eating Hygiene: Never eat without washing hands, feet, and face. Do not eat in an unclean state, in unhygienic places, or at improper hours. Food should be wholesome, sacred, warm, unctuous, and consumed with gratitude.\n- Psychological Balance: Avoid vanity (Ahankāra), anger (Krodha), excessive grief (Śoka), or overly exuberant excitement (Atiharṣa). Maintain emotional equanimity in all conditions.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "30–34",
+          "sanskrit": "इत्येतत् सद्वृत्तमखिलमुपदिष्टं यथायथम्। यत् सम्यगनुतिष्ठन् नरो समाः शतं जीवत्यनातुरः॥ ३०॥ यशांसि लभते लोके यशो भवती चोत्तमम्। धर्माधर्मौ न बाधेते जित्वा लोकद्वयं सुखम्॥ ३४॥",
+          "transliteration": "ityetat sadvṛttamakhilamupadiṣṭaṁ yathāyatham | yat samyaganutiṣṭhan naro samāḥ śataṁ jīvatyanāturaḥ || 30 || yaśāṁsi labhate loke yaśo bhavatī cottamam | dharmādharmau na bādhete jitvā lokadvayaṁ sukham || 34 ||",
+          "meaning_ne": "सद्वृत्तफलम्\n\nयसरी सद्वृत्त (उत्तम आचरण) को सम्पूर्ण उपदेश पूरा भयो।\nजसले यी नैतिक, शारीरिक, मानसिक र सामाजिक नियमहरूको निष्ठापूर्वक पालन गर्दछ, उसले:\n१. सय वर्षको निरोगी जीवन: १०० वर्षसम्म रोगरहित दीर्घायु प्राप्त गर्दछ।\n२. यश र कीर्ति: समाजमा उच्च प्रतिष्ठा, सम्मान र कल्याण प्राप्त गर्दछ।\n३. इहलोक र परलोकको विजय: यस लोकमा सुख-शान्ति र परलोकमा सद्गति प्राप्त गर्दछ।\n\nइति अग्निवेशकृते चरकसंहितायाम् सूत्रस्थाने इन्द्रियोपक्रमणीयो नाम अष्टमोऽध्यायः समाप्तः॥",
+          "meaning_en": "Ultimate Achievements & Chapter Conclusion\n\nFruits & Benefits of Sadvṛtta\n\nThis completes the comprehensive guide to Sadvṛtta (Ethical Conduct).\nA person who meticulously practices these ethical, hygienic, mental, and spiritual guidelines achieves:\n1. Centenarian Lifespan (Śataṁ Varṣāṇi): A disease-free life of 100 years.\n2. Universal Respect & Fame (Yaśas): High social esteem, noble reputation, and prosperity.\n3. Mastery over Both Worlds (Lokadvaya-Jaya): Spiritual harmony in this worldly life (Ihaloka) and liberation/bliss in the afterlife (Paraloka).\n\nThus ends Chapter 8, entitled Indriyopakramaṇīya Adhyāya of Sutrasthana in the Charaka Samhita of Agnivesha.",
           "audio_file": null
         }
       ]
