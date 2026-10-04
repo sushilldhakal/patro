@@ -5,10 +5,10 @@
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
-  "subtitle_ne": "सूत्रस्थान · अध्याय १–१२",
-  "subtitle_en": "Sutrasthana · Chapters 1–12",
-  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप), अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय), अध्याय ५ मात्राशितीय (आहार मात्रा र दिनचर्या), अध्याय ६ तस्याशितीय (ऋतुचर्या), अध्याय ७ नवेगान्धारणीय (वेग नरोक्ने नियम), अध्याय ८ इन्द्रियोपक्रमणीय (इन्द्रिय, मन र सद्वृत्त), अध्याय ९ खुड्डकचतुष्पाद (चिकित्साका चार पाद), अध्याय १० महाचतुष्पाद (साध्य-असाध्यता), अध्याय ११ तिस्रैषणीय (जीवनका तीन इच्छा) र अध्याय १२ वातकलाकलीय (वातको गुण र कर्म)।",
-  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas), Chapter 5 Matrashitiya (quantity of food and the daily regimen), Chapter 6 Tasyashitiya (seasonal regimen), Chapter 7 Navegandharaniya (not suppressing natural urges), Chapter 8 Indriyopakramaniya (the senses, the mind, and right conduct), Chapter 9 Khuddakachatushpada (the four pillars of treatment), Chapter 10 Mahachatushpada (prognosis), Chapter 11 Tisraishaniya (the three desires of life), and Chapter 12 Vatakalakaliya (the qualities and actions of vata).",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १–१५",
+  "subtitle_en": "Sutrasthana · Chapters 1–15",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप), अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय), अध्याय ५ मात्राशितीय (आहार मात्रा र दिनचर्या), अध्याय ६ तस्याशितीय (ऋतुचर्या), अध्याय ७ नवेगान्धारणीय (वेग नरोक्ने नियम), अध्याय ८ इन्द्रियोपक्रमणीय (इन्द्रिय, मन र सद्वृत्त), अध्याय ९ खुड्डकचतुष्पाद (चिकित्साका चार पाद), अध्याय १० महाचतुष्पाद (साध्य-असाध्यता), अध्याय ११ तिस्रैषणीय (जीवनका तीन इच्छा) अध्याय १२ वातकलाकलीय (वातको गुण र कर्म), अध्याय १३ स्नेहाध्याय (स्नेहन), अध्याय १४ स्वेदाध्याय (स्वेदन) र अध्याय १५ उपकल्पनीय (वमनको पूर्वतयारी)।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas), Chapter 5 Matrashitiya (quantity of food and the daily regimen), Chapter 6 Tasyashitiya (seasonal regimen), Chapter 7 Navegandharaniya (not suppressing natural urges), Chapter 8 Indriyopakramaniya (the senses, the mind, and right conduct), Chapter 9 Khuddakachatushpada (the four pillars of treatment), Chapter 10 Mahachatushpada (prognosis), Chapter 11 Tisraishaniya (the three desires of life), Chapter 12 Vatakalakaliya (the qualities and actions of vata), Chapter 13 Snehadhyaya (oleation), Chapter 14 Svedadhyaya (sudation), and Chapter 15 Upakalpaniya (preparation for emesis).",
   "source_ne": "चरकसंहिता, सूत्रस्थानम्",
   "source_en": "Charaka Samhita, Sutrasthana",
   "cover_image": "",
@@ -1581,6 +1581,324 @@
           "transliteration": "iti vāryovidaḥ prokte punarvasurātreyo muniruvāca - na piśunaṁ vācyaṁ, sarva eva bhavantaḥ samyagāhuranyatraikāntagrāhāt | sarva eva hi vātapittaśleṣmāṇaḥ prakupitāḥ śarīraṁ bādhante, sāmyāmāpannāḥ dhārayanti | tasmād doṣāṇāṁ sāmyamarogāḥ, vaiṣamyaṁ tu roga iti || 18 ||",
           "meaning_ne": "भगवान् आत्रेयको अन्तिम सर्वमान्य सिद्धान्त:\nसबै ऋषिहरूका भनाइ सुनिसकेपछि भगवान् पुनर्वसु आत्रेयले निष्कर्ष दिँदै भन्नुभयो:\n\"कसैको विचार पनि गलत छैन। तपाईंहरू सबैले सही कुरा भन्नुभएको छ, केवल एउटै पक्षलाई मात्र सर्वोपरि मान्ने (एकान्तग्रह) गल्ती गर्नुभएको छ।\nवास्तवमा वात, पित्त र कफ तीनै दोषहरू शरीरका आधार हुन्। जब यी तीनै दोषहरू सन्तुलित (साम्यावस्था) हुन्छन्, तब शरीर निरोगी र स्वस्थ रहन्छ। तर जब यिनीहरूमा विषमता (असन्तुलन) आउँछ, तब शरीरमा रोग उत्पन्न हुन्छ। वायु चालक भए पनि पित्त र कफसँग मिलेर नै यसले शरीरको रक्षा गर्दछ।\"\n\nअन्तिम निष्कर्ष:\nदोषहरूको समानता नै स्वास्थ्य (आरोग्य) हो;\nदोषहरूको विषमता नै रोग हो।",
           "meaning_en": "Lord Atreya's Final Authoritative Verdict (पुनर्वसु आत्रेय सिद्धान्तः)\n\nLord Atreya's Authoritative Reconciliation:\nListening to all sages, Lord Punarvasu Atreya delivered the final verdict:\n\"None of the opinions expressed should be criticized as incorrect. All of you have spoken correctly, except for adopting a one-sided perspective (Ekantha-Graha).\nThe truth is that Vata, Pitta, and Kapha together constitute the biological foundation of life. When all three Doshas are in their state of equilibrium (Samya), they sustain the body in absolute health (Aroga). When any of them becomes imbalanced (Vaishamya), disease (Roga) ensues. While Vata is the primary mover and conductor, it acts in complete harmony with Pitta and Kapha to sustain creation.\"\n\nConcluding Summary Verse:\nEquilibrium of Doshas (Dosha Samya) is Health (Arogya);\nDisequilibrium of Doshas (Dosha Vaishamya) is Disease (Roga).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "title_ne": "स्नेहाध्यायः",
+      "title_en": "Snehadhyaya — Oleation Therapy",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "स्नेहाध्यायः",
+          "transliteration": "snehādhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको तेह्रौं अध्याय (स्नेहाध्याय) स्नेहन कर्म बताउँछ। यसमा ९९ श्लोक छन्। घृत, तैल, वसा र मज्जा — यी चार स्नेह, तिनको उत्पत्ति, गुण, मात्रा, ऋतु, स्नेहनका लक्षण र अनुपान समेटिएका छन्।\n\n१. चार स्नेह — घिउ, तेल, वसा र मज्जा (श्लोक ४–१७)।\n२. यमक, त्रिवृत र महास्नेह तथा ऋतुअनुसार प्रयोग (श्लोक १८–२५)।\n३. उत्तम, मध्यम र ह्रस्व मात्रा (श्लोक २६–३९)।\n४. स्नेहनका योग्यता, लक्षण र अनुपान (श्लोक ४०–९९)।",
+          "meaning_en": "Chapter 13 of Sutrasthana (Snehādhyāya) is dedicated to Oleation Therapy (Snehana), one of the foundational preparatory measures (Pūrvakarma) in Ayurveda. It contains 99 verses detailing the four main unctuous substances, their sources, specific properties, therapeutic dosage protocols, signs of proper oleation, and management of complications.\n\n1. The Four Unctuous Substances (Catur-Sneha): Ghṛta (Ghee), Taila (Oil), Vasā (Muscle Fat), and Majjā (Marrow).\n2. Origins of Unctuous Substances (Sneha-Yoni): Vegetable (Sthāvara) and Animal (Jaṅgama) sources.\n3. Properties & Specific Indications of the Four Snehas: When and for which disease/dosha each Sneha is prescribed.\n4. Combinations of Snehas: Yamaka (2 mixed), Trivṛta (3 mixed), and Mahā-Sneha (all 4 mixed).\n5. Dosage Protocols (Mātrā-Vicāra):\n- Uttama Mātrā (High Dose - digested in 24 hours)\n- Madhyama Mātrā (Medium Dose - digested in 12 hours)\n- Hrasva Mātrā (Low Dose - digested in 6 hours)\n6. Indications & Contraindications (Snigdha & Asnigdha Arha): Who should and should not undergo oleation.\n7. Clinical Signs of Oleation (Sneha-Lakṣaṇa):\n- Samyak Snigdha (Properly oleated)\n- Asnigdha / Rūkṣa (Under-oleated)\n- Atisnigdha (Over-oleated)\n8. Anupāna (Post-drink / Vehicle): Warm water, broth, or rice wash according to the type of Sneha.\n9. Management of Complications (Upadrava & Cikitsā): Management of indigested Sneha, fasting, and counter-therapies.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–3",
+          "sanskrit": "अथातः स्नेहाध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥ स्नेहानां योनयो यावन्त्यो गुणा ये यैश्च कर्मभिः। युज्यन्ते यस्य यावन्तश्चिन्तयित्वा पुनर्वसुम्। पप्रच्छ निपुणं धीमानाग्निवेशः कृताञ्जलिः॥ ३॥",
+          "transliteration": "athātaḥ snehādhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 || snehānāṁ yonayo yāvantyo guṇā ye yaiśca karmabhiḥ | yujyante yasya yāvantaścintayitvā punarvasum | papraccha nipuṇaṁ dhīmānāgniveśaḥ kṛtāñjaliḥ || 3 ||",
+          "meaning_ne": "चतुःस्नेहाः\n\nअब हामी स्नेह (तेल, घिउ आदि चिल्लो पदार्थ) सम्बन्धी 'स्नेहाध्याय' नामक तेह्रौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो। धीमान् शिष्य अग्निवेशले आदरपूर्वक हात जोडेर भगवान् पुनर्वसुसँग स्नेहका स्रोतहरू, तिनका गुणहरू, प्रयोग विधि र मात्राबारे सूक्ष्म प्रश्नहरू सोध्नुभयो।",
+          "meaning_en": "Chapter Announcement & Inquiry by Agnivesha\n\nIntroduction & The Four Unctuous Substances\n\nNow we shall expound the chapter entitled Snehādhyāya (Chapter on Oleation Therapy), as stated by the revered Lord Atreya. The wise disciple Agnivesha, after deep reflection, folded his hands in reverence and inquired of Lord Punarvasu Atreya regarding the origins, properties, clinical applications, and dosage measures of all unctuous substances.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "4–8",
+          "sanskrit": "द्वियोनयो हि स्नेहाः स्युः स्थावराश्चैव जङ्गमाः। तत्र स्थावरयोनयः तिलाः प्रियालास्तिलवदेरण्डोऽथ विभीतकः॥ ४॥ चित्रको भल्लातको निम्बो बिल्वस्त्रायन्त्यथापि च। कुसुम्भं तम्पकोऽक्षश्च श्रीवेष्टः शिग्रुरेव च॥ ५॥ सर्षपः कासमर्दश्च तस्या बीजं तथैव च। एताश्चान्याश्च बहुशः स्थावराः स्नेहयोनयः॥ ६॥ जङ्गमाश्चैव स्नेहाः स्युर्मत्स्येषु पक्षिषु तथा। पशुषु चैव सर्वेषु ये चान्ये जङ्गमाः स्मृताः॥ ७॥ तत्र घृतं तैल वसा मज्जा चेति चतुर्विधः। स्नेहः प्रधानो निर्दिष्टः सर्वस्नेहोत्तमो घृतम्॥ ८॥",
+          "transliteration": "dviyonayo hi snehāḥ syuḥ sthāvarāścaiva jaṅgamāḥ | tatra sthāvarayonayaḥ tilāḥ priyālāstilavaderando'tha vibhītakaḥ || 4 || citrako bhallātako nimbo bilvastrāyantyathāpi ca | kusumbhaṁ tampako'kṣaśca śrīveṣṭaḥ śigrureva ca || 5 || sarṣapaḥ kāsamardaśca tasyā bījaṁ tathaiva ca | etāścānyāśca bahuśaḥ sthāvarāḥ snehayonayaḥ || 6 || jaṅgamāścaiva snehāḥ syurmatsyeṣu pakṣiṣu tathā | paśuṣu caiva sarveṣu ye cānye jaṅgamāḥ smṛtāḥ || 7 || tatra ghṛtaṁ taila vasā majjā ceti caturvidhaḥ | snehaḥ pradhāno nirdiṣṭaḥ sarvasnehottamo ghṛtam || 8 ||",
+          "meaning_ne": "स्नेहका दुई मूल स्रोतहरू हुन्छन्: स्थावर (वनस्पति) र जङ्गम (प्राणी)।\n१. वनस्पति स्रोत: तिल, एरण्ड (अण्डिर), बर्रो, चित्रक, भल्लातक, निम, बेल, तोरी, सजिवन आदि।\n२. प्राणी स्रोत: माछा, चराचुरङ्गी, र पशुहरूबाट प्राप्त हुने दूध, दही, घिउ, वसा र मज्जा।\nयी सम्पूर्ण स्नेहहरूमध्ये चार प्रमुख स्नेह (चतुर्स्नेह) हुन्: घिउ, तेल, वसा र मज्जा। अनि यी चारमध्ये पनि घिउ (घृत) सर्वोत्तम मानिन्छ।",
+          "meaning_en": "Sources of Unctuous Substances (स्थावर-जङ्गम योनि)\n\nUnctuous substances originate from two sources: Sthāvara (Vegetable/Botanical) and Jaṅgama (Animal).\n1. Vegetable Sources: Sesame (Tila), Priyala, Castor (Eranda), Vibhitaka, Chitraka, Bhallataka, Neem, Bilva, Trayanti, Kusumbha, Champaka, Mustard (Sarshapa), Shigru, Kasamarda, etc.\n2. Animal Sources: Milk, curd, ghee, fat, and marrow obtained from fish, birds, aquatic creatures, and terrestrial animals.\nAmong all unctuous substances, four are supreme (Catur-Sneha): Ghee (Ghṛta), Oil (Taila), Muscle Fat (Vasā), and Marrow (Majjā). Of these four, Ghṛta (Ghee) is the best of all.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "9–10",
+          "sanskrit": "पित्तानिलहरं रसशुक्राौजसां हितम्। निर्वापणं मृदुकरं स्वरवर्णप्रसादनम्॥ ९॥ घृतं भावनया युक्तं सहस्रगुणमृच्छति। सर्वस्नेहोत्तमं शीतं संस्कारस्यानुवर्तनात्॥ १०॥",
+          "transliteration": "pittānilaharaṁ rasaśukrojasāṁ hitam | nirvāpaṇaṁ mṛdukaraṁ svaravarṇaprasādanam || 9 || ghṛtaṁ bhāvanayā yuktaṁ sahasraguṇamṛcchati | sarvasnehottamaṁ śītaṁ saṁskārasyānuvartanāt || 10 ||",
+          "meaning_ne": "घिउको गुण र उपयोगिता:\n- यसले पित्त र वात दोषलाई शान्त पार्छ।\n- रस धातु, शुक्र धातु र ओजको वृद्धि गर्दछ।\n- शरीरको दाह (बल्ने जलन) शान्त पार्छ, शरीरलाई कोमल बनाउँछ तथा स्वर र छालाको रङ्गमा निखार ल्याउँछ।\n- संस्कारको अनुवर्तन: घिउको विशेष गुण के छ भने यसमा जुन औषधि पकाएर संस्कार गरिन्छ, त्यस औषधिको गुणलाई यसले आफूमा सोस्छ तर आफ्नो मूल गुण गुमाउँदैन। घिउलाई हजार पटक धुन वा संस्कार गर्दा यसको गुण हजार गुणा बढ्दछ।",
+          "meaning_en": "Specific Properties & Indications of Ghṛta (Ghee)\n\nSpecific Qualities & Therapeutic Indications of the Four Snehas\n\nProperties & Indications of Ghṛta (Ghee):\n- Pacifies Pitta and Vata doshas.\n- Nourishes Rasa (plasma), Śukra (reproductive tissue), and Ojas (vital essence).\n- Relieves burning sensation (Nirvāpaṇa), softens tissues (Mṛdukara), and enhances voice (Svara) and complexion (Varṇa).\n- Samskarasya Anuvartana: Ghee possesses the unique capability of assimilating the therapeutic qualities of herbs with which it is processed without losing its own inherent properties. When processed a thousand times (Sahasra-dhauta / Sahasra-bhavita), its potency increases a thousandfold.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "11–13",
+          "sanskrit": "मारुतघ्नं न च श्लेष्मवर्धनां बलवर्धनम्। त्वच्यमुष्णं स्थिरकरं योनिशोधनमुत्तमम्॥ ११॥ तैलेन सदृशः कश्चिन्नास्ति मारुतजित् स्नेहात्। बलवर्णकरः सूक्ष्मः उष्णेन बलवान् स्मृतः॥ १२॥ छिन्नभिन्नच्युतोत्पिष्टमथितक्षतपिच्चिते। भग्ने स्फुटिते दग्धे तैलास्याभ्यञ्जनं हितम्॥ १३॥",
+          "transliteration": "mārutaghnaṁ na ca śleṣmavardhanāṁ balavardhanam | tvacyamuṣṇaṁ sthirakaraṁ yoniśodhanamuttamam || 11 || tailena sadṛśaḥ kaścinnāsti mārutajit snehāt | balavarṇakaraḥ sūkṣmaḥ uṣṇena balavān smṛtaḥ || 12 || chinnabhinnacyutotpista-mathitakṣatapiccite | bhagne sphuṭite dagdhe tailāsyābhyañjanaṁ hitam || 13 ||",
+          "meaning_ne": "तेलको गुण र उपयोगिता:\n- यसले कफ नबढाई वात दोषलाई पूर्ण रूपमा नष्ट गर्दछ।\n- बल, छालाको कान्ति र स्थिरता प्रदान गर्दछ तथा स्त्री जननेन्द्रिय (योनि) को शोधन गर्दछ।\n- वात रोग शान्त पार्न तेल जस्तो शक्तिशाली अर्को कुनै स्नेह छैन। यो उष्ण (तातो), सूक्ष्म (सूक्ष्म स्रोतसमा छिर्ने) हुन्छ।\n- हाड भाँँचिएको (भग्न), जोड हटेको (च्युत), काटिएको, थिचिएको, र पोलिएको (दग्ध) चोटपटकमा तेलको मालिस र प्रयोग अत्यन्त हितकारी हुन्छ।",
+          "meaning_en": "Specific Properties & Indications of Taila (Oil / Sesame Oil)\n\nProperties & Indications of Taila (Sesame Oil):\n- Pacifies Vata without excessively increasing Kapha.\n- Enhances physical strength (Bala), skin health (Tvacya), stability (Sthirakara), and purifies the female reproductive tract (Yoni-shodhana).\n- Supreme Vata Pacifier: There is no substance equal to oil for subduing Vata. It is hot in potency (Uṣṇa), subtle (Sūkṣma - penetrates deep channels), and highly effective when combined with heat.\n- Trauma & Bone Healing: Highly beneficial for massage and application in cuts (Chinna), lacerations (Bhinna), dislocations (Chyuta), fractures (Bhagna), burns (Dagdha), and crushed tissue injuries.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "14–17",
+          "sanskrit": "मज्जा तु शुक्रबलकृत् श्लेष्ममेदोविवर्धनः। मज्जा विशेषतोऽस्थ्नां च बलोत्पादकरो मतः॥ १४॥ वसा तु विद्धक्षतभग्नविश्लेषाहतपातने। शस्ता योनिभ्रंशशूलेषु शिरःकर्णाक्षिरोगिणाम्॥ १५॥ व्यायामातिश्रमक्षीणशुक्ररक्तमहाग्निनाम्। मज्जा वसा च सानुपानौ पिबेन्नात्युष्णकाले॥ १६॥ वसा मज्जा च वातघ्नौ बल्यौ कफविवर्धनौ। धातूनां तर्पणौ ज्ञेयौ विशेषादस्थिसन्धिषु॥ १७॥",
+          "transliteration": "majjā tu śukrabalakṛt śleṣmamedovivardhanaḥ | majjā viśeṣato'sthnāṁ ca balotpādakaro mataḥ || 14 || vasā tu viddhakṣatabhagnaviśleṣāhatapātanaiḥ | śastā yonibhraṁśaśūleṣu śiraḥkarṇākṣirogiṇām || 15 || vyāyāmātiśramakṣīṇa-śukraraktamahāgninām | majjā vasā ca sānupānau pibennātyuṣṇakāle || 16 || vasā majjā ca vātaghnau balyau kaphavivardhanaiḥ | dhātūnāṁ tarpaṇau jñeyau viśeṣādasthisandhiṣu || 17 ||",
+          "meaning_ne": "वसा (चर्बो) र मज्जाको गुण र उपयोगिता:\n- वसा: गहिरो चोटपटक, हाड भाँँचिएको, पाठेघर खसेको (योनिभ्रंश), कान र टाउको दुख्ने रोगमा विशेष उपयोगी हुन्छ।\n- मज्जा: यसले शुक्र धातु, शारीरिक बल र कफ बढाउँछ। विशेष गरी हाड (अस्थि) र जोर्नीहरूलाई मजबुत बनाउँछ।\n- वसा र मज्जा दुवैले वात शान्त पार्छन्, धातुहरूको तर्पण (पोषण) गर्दछन्। अत्यधिक व्यायाम, परिश्रम, रगत वा शुक्रक्षय भएका तथा तीव्र पाचन अग्नि (महाग्नि) भएका व्यक्तिहरूका लागि यी उपयुक्त हुन्छन्। अत्यधिक गर्मीयाममा यिनको सेवन गर्नुहुँदैन।",
+          "meaning_en": "Properties & Indications of Vasā (Fat) and Majjā (Marrow)\n\nProperties & Indications of Vasā (Muscle Fat) & Majjā (Bone Marrow):\n- Vasā (Muscle Fat): Indicated in deep penetrating wounds (Viddha), fractures (Bhagna), prolapse of uterus (Yoni-bhramsha), severe earache, headache, eye disorders, and trauma from falls.\n- Majjā (Marrow): Increases Śukra (semen), strength, Kapha, and fat tissue (Meda). It specifically nourishes and strengthens the bones (Asthi) and joints (Sandhi).\n- Both Vasā and Majjā nourish all tissues (Dhatus), pacify severe Vata, and are prescribed for individuals depleted by excessive exercise, heavy labor, severe blood/semen loss, and those possessing hyper-active digestive fire (Mahāgni). They should not be taken in hot summer seasons.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "18–25",
+          "sanskrit": "सर्पिस्तैलं वसा मज्जा सर्व एते समन्विताः। महास्नेह इति ख्यातो वातव्याधौ महाबले॥ १८॥ त्रिभिरिष्टैस्त्रिवृत् स्नेहः स्याद्द्वाभ्यामेव यमकः स्मृतः। शरद्यापगे काले घृतं केवलमिष्यते॥ १९॥ प्रावृषि केवलं तैलं वसा मज्जा च माधवे। ग्रीष्मे न स्नेहनं शस्तं जलौकादिविधानवत्॥ २०॥",
+          "transliteration": "sarpistailaṁ vasā majjā sarva ete samanvitāḥ | mahāsneha iti khyāto vātavyādhau mahābale || 18 || tribhiriṣṭaistrivṛt snehaḥ syāddvābhyāmeva yamakaḥ smṛtaḥ | śaradyāpage kāle ghṛtaṁ kevalamiṣyate || 19 || prāvṛṣi kevalaṁ tailaṁ vasā majjā ca mādhave | grīṣme na snehanaṁ śastaṁ jalaukādividhānavat || 20 ||",
+          "meaning_ne": "- स्नेहका मिश्रणहरू:\n- यमक: दुई स्नेहको मिश्रण (जस्तै: घिउ + तेल)।\n- त्रिवृत: तीन स्नेहको मिश्रण।\n- महास्नेह: चारै वटा स्नेह (घिउ, तेल, वसा, मज्जा) को मिश्रण, जुन गम्भीर वात रोगमा प्रयोग गरिन्छ।\n- ऋतु अनुसार स्नेह सेवनको नियम:\n- शरद् ऋतु (कात्तिक-मंसिर): घिउको सेवन उत्तम मानिन्छ (पित्त शान्त पार्न)।\n- प्रावृट् (वर्षाको सुरु): तेलको सेवन उत्तम मानिन्छ (वात शान्त पार्न)।\n- वसत ऋतु (चैत-वैशाख): वसा र मज्जाको सेवन उत्तम मानिन्छ।\n- ग्रीष्म ऋतु (अत्यधिक गर्मी): स्नेहपान गराउनु हुँदैन।",
+          "meaning_en": "Combinations of Sneha & Seasonal Prescriptions\n\nCombinations, Seasonal Rules, & Dosage Protocols\n\n- Combinations of Sneha:\n- Yamaka: Combination of any 2 unctuous substances (e.g., Ghee + Oil).\n- Trivṛta: Combination of any 3 unctuous substances.\n- Mahā-Sneha: Combination of all 4 unctuous substances (Ghee + Oil + Fat + Marrow), indicated for severe, intractable Vata disorders (Mahābalah Vātavyādhi).\n- Seasonal Administration Rules:\n- Sharad (Autumn): Pure Ghṛta (Ghee) is best administered when Pitta is naturally aggravated.\n- Prāvṛṭ (Early Monsoon): Pure Taila (Oil) is best administered when Vata is naturally aggravated.\n- Mādhava (Spring): Vasā (Fat) and Majjā (Marrow) are administered in spring.\n- Grīṣma (Summer): Oleation therapy is generally avoided in extreme summer unless urgent.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "26–39",
+          "sanskrit": "मात्रा तु त्रिविधा ज्ञेया प्रधाना मध्यमा तथा। ह्रस्वा चेति विकल्पोऽयं तस्या वक्ष्यामि लक्षणम्॥ २६॥ अहोरात्रेण या जीर्येत् सा मात्रा चोत्तमा मता। अहोरात्रार्धजीर्णा तु मात्रा मध्यसिद्धा मता॥ २७॥ या तु दिनचतुर्थांशे जीर्येत् सा ह्रस्विका मता। एतासां च प्रयोगांश्च शृणु सम्यक् प्रभिद्यतः॥ २८॥",
+          "transliteration": "mātrā tu trividhā jñeyā pradhānā madhyamā tathā | hrasvā Ceti vikalpo'yaṁ tasyā vakṣyāmi lakṣanam || 26 || ahorātreṇa yā jīryet sā mātrā Cottomā matā | ahorātrārdhajīrṇā tu mātrā madhyasiddhā matā || 27 || yā tu dinacaturthāṁśe jīryet sā hrasvikā matā | etāsāṁ ca prayogāṁśca śṛṇu samyak prabhidyataḥ || 28 ||",
+          "meaning_ne": "पाचन अवधिको आधारमा स्नेहको मात्रा तीन प्रकारको हुन्छ:\n१. उत्तम मात्रा: जसलाई पच्न पूर्ण २४ घण्टा (एक दिन-रात) लाग्दछ। यो बलिया व्यक्ति र गम्भीर रोगमा पञ्चकर्म पूर्व दिइन्छ।\n२. मध्यम मात्रा: जसलाई पच्न १२ घण्टा (आधा दिन) लाग्दछ। यो मध्यम बल भएका व्यक्तिहरूका लागि उपयुक्त हुन्छ।\n३. ह्रस्व (लघु) मात्रा: जसलाई पच्न ६ घण्टा लाग्दछ। यो बालक, वृद्ध, सुकुमार र कमजोर पाचन अग्नि भएकाहरूका लागि सुरक्षित हुन्छ।",
+          "meaning_en": "Three Dosage Levels (Mātrā-Vicāra)\n\nDosage of unctuous substances is classified into three levels based on digestive time:\n1. Uttama Mātrā (Maximum Dose): Takes a full day and night (24 hours) to digest. It cures severe diseases, cleanses channels, and is used prior to Panchakarma in strong patients.\n2. Madhyama Mātrā (Medium Dose): Takes half a day and night (12 hours) to digest. It causes moderate oleation without severe discomfort and is suitable for moderate strength.\n3. Hrasva Mātrā (Low Dose): Takes a quarter of a day (6 hours) to digest. Used for daily rejuvenative (Bṛṁhaṇa) purposes, for children, the elderly, delicate persons, and those with poor digestion.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "40–58",
+          "sanskrit": "स्वेद्याः शोध्याः शुष्का वातार्ता बलवर्णार्थिनश्च ये। क्षीणशुक्राग्नितमसो वृद्धा बालाश्च स्नेह्याः स्मृताः॥ ४०॥ न त्वेव मन्दाग्निमतिस्थूलमबलं तथा। ऊरुस्तम्भजठरार्तामूर्च्छार्तान्न मद्यपानरतान्॥ ४१॥",
+          "transliteration": "svedyāḥ śodhyāḥ śuṣkā vātārtā balavarṇārthinaśca ye | kṣīṇaśukrāgnitamaso vṛddhā bālāśca snehyāḥ smṛtāḥ || 40 || na tveva mandāgnimatisthūlamabalaṁ tathā | ūrustambhajaṭharārtāmūrcchārtānna madyapānaratān || 41 ||",
+          "meaning_ne": "- स्नेहन गराउनुपर्ने व्यक्तिहरू: जसलाई स्वेदन (सेक्ने) र पञ्चकर्म शोधन गराउनु छ; सुक्खा छाला, वात रोग, शुक्रक्षय, मन्दाग्नि, र दुब्लाएका व्यक्तिहरू, बालक तथा वृद्धहरू।\n- स्नेहन गराउन नहुने व्यक्तिहरू: अत्यधिक मन्दाग्नि भएका, अत्यधिक मोटा (अतिस्थूल), ज्यादै कमजोर, उरुस्तम्भ (हिँड्न नसकिने गरी तिघ्रा कठ्याङ्ग्रिने रोग), जलोदर (पेटमा पानी जमेको), मूर्छा पर्ने र अत्यधिक रक्सी पिउने व्यक्तिहरू।",
+          "meaning_en": "Indications & Contraindications for Snehana\n\nIndications, Clinical Signs, & Management of Oleation\n\n- Who Should Undergo Snehana (Indications): Those scheduled for Fomentation (Svedana) and Purification (Śodhana / Panchakarma); persons suffering from dry skin, Vata disorders, loss of semen, diminished digestive fire, loss of strength/complexion, children, and elderly.\n- Who Should NOT Undergo Snehana (Contraindications): Persons with severely depressed digestion (Mandāgni), extreme obesity (Atisthūla), severe debility, Ūrustambha (stiffness of thighs), ascites (Jathara), fainting spells (Mūrcchā), acute intoxication, and acute diarrhea.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "59–69",
+          "sanskrit": "वातानुलोम्यं दीप्तोऽग्निर्विट्स्निग्धा असंहता। मार्दवं स्निग्धता चाङ्गे स्निग्धानां लक्षणां स्मृतम्॥ ५९॥ रूक्षता गात्रवैवर्ण्यं स्तम्भः सम्यगपाचनम्। अस्निग्धस्य भवेच्चैवं लक्षणां मारुतप्रकोपः॥ ६०॥ पाण्डुता गौरवं जाड्यं पुरीषे चाप्यपक्वता। अतिस्निग्धस्य लक्षणं स्नेहे भवेच्छर्द्यथापि च॥ ६१॥",
+          "transliteration": "vātānulomyaṁ dīpto'gnirviṭsnigdhā asaṁhatā | mārdavaṁ snigdhatā cāṅge snigdhānāṁ lakṣaṇāṁ smṛtam || 59 || rūkṣatā gātravaivarṇyaṁ stambhaḥ samyagapācanam | asnigdhasya bhaveccaivaṁ lakṣaṇāṁ mārutaprakopaḥ || 60 || pāṇḍutā gauravaṁ jāḍyaṁ purīṣe cāpyapakvatā | atisnigdhasya lakṣaṇaṁ snehe bhavecchardyathāpi ca || 61 ||",
+          "meaning_ne": "१. सम्यक् (उचित) स्नेहनका लक्षण: पेटको वायु सहज रूपमा निष्कासन हुनु, पाचन अग्नि प्रदीप्त हुनु, दिसा नरम र चिल्लो हुनु तथा शरीर र छाला कोमल हुनु।\n२. अस्निग्ध (अपुग) स्नेहनका लक्षण: शरीर सुक्खा हुनु, छालाको रङ्ग बिग्रिनु, शरीर कठ्याङ्ग्रिनु र वात दोष बढ्नु।\n३. अतिस्निग्ध (अत्यधिक) स्नेहनका लक्षण: शरीर पहेंलो हुनु (पाण्डुता), शरीर गहुँगो हुनु, आलस्य हुनु, दिसामा नपचेको घिउ/तेल देखिनु र वाकवाकी लाग्नु।",
+          "meaning_en": "Clinical Signs of Oleation (Sneha-Lakṣaṇa)\n\n1. Proper Oleation (Samyak Snigdha): Normal downward movement of flatus (Vātānulomya), stimulated digestive fire (Dīpto'gni), soft and oily stools, and softness and unctuousness of the skin.\n2. Under-Oleation (Asnigdha / Rūkṣa): Dryness of body, pale complexion, body stiffness, improper digestion, and aggravation of Vata.\n3. Over-Oleation (Atisnigdha): Pallor (Pāṇḍutā), heaviness of body (Gaurava), lethargy (Jāḍya), presence of undigested fat in stool, and nausea or vomiting.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "70–99",
+          "sanskrit": "उष्णेनोदककार्यं तु स्नेहेषु सर्वेषु चेष्यते। ऋते तैलं तिलानां तु तत्र यूषं प्रशस्यते॥ ७०॥ तैलस्य पश्चात् पेयः स्याद् यूषः सिद्धो धान्यकादिभिः। वसाया मण्डः पेयः स्यान्मज्ज्ञोपेया च युज्यते॥ ७१॥ द्रवमुष्णमनभिष्यन्दि नातिस्निग्धमसंकीर्णम्। भुञ्जीत मात्रया अन्नं तु स्नेहे जीर्णे प्रकांक्षिता॥ ७२॥",
+          "transliteration": "uṣṇenodakakāryaṁ tu sneheṣu sarveṣu ceṣyate | ṛte tailaṁ tilānāṁ tu tatra yūṣaṁ praśasyate || 70 || tailasya paścāt peyaḥ syād yūṣaḥ siddho dhānyakādibhiḥ | vasāyā maṇḍaḥ peyaḥ syānmajjñopeyā ca yujyate || 71 || dravamuṣṇamanabhiṣyandi nātisnigdhamasaṁkīrṇam | bhuñjīta mātrayā annaṁ tu snehe jīrṇe prakāṁkṣitā || 72 ||",
+          "meaning_ne": "- अनुपान (स्नेह सेवनपछिको पेय पदार्थ):\n- तातो पानी: घिउ तथा सामान्य स्नेह सेवन गरेपछि तातो पानी पिउनुपर्छ।\n- युष (दाल/गेडागुडीको झोल): तेल सेवन गरेपछि पिउनुपर्छ।\n- माण्ड (माण): वसा (चर्बो) सेवन गरेपछि पिउनुपर्छ।\n- पेया (पातलो जाउलो): मज्जा सेवन गरेपछि पिउनुपर्छ।\n- आहार नियम: स्नेह पूर्ण रूपमा पचेपछि मात्र तातो, पातलो, हल्का र नटाँसिने भोजन उचित मात्रामा गर्नुपर्छ।\n- स्नेह अजिर्णको चिकित्सा: यदि स्नेह नपचेमा तातो पानी पिउने, उपवास (लङ्घन) बस्ने वा तातो पानी खाएर उल्टी (वमन) गराउने।",
+          "meaning_en": "Post-Oleation Vehicle (Anupāna), Diet, & Complication Management\n\n- Anupāna (Post-drink / Vehicle):\n- Warm Water (Uṣṇodaka): Universal post-drink after consuming ghee or general Sneha.\n- Yūṣa (Cereal/Lentil broth): Vehicle after consuming sesame oil.\n- Maṇḍa (Clear rice scum): Vehicle after consuming Vasā (Fat).\n- Peyā (Thin gruel): Vehicle after consuming Majjā (Marrow).\n- Diet Post-Oleation: After the Sneha is fully digested, the patient should consume warm, liquid, light, non-clogging (Anabhiṣyandi) food in moderate quantity.\n- Management of Indigestion (Sneha-Ajīrṇa): Sipping warm water continuously is the best line of treatment. If severe indigestion or nausea arises, fasting (Laṅghana) or warm water emesis (Vamana) should be performed.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "सारांश",
+          "sanskrit": "इति स्नेहाध्यायः",
+          "transliteration": "iti snehādhyāyaḥ",
+          "meaning_ne": "स्नेहाध्यायले घिउ, तेल, वसा र मज्जाको गुण, मात्रा, ऋतु, रोगी छनोट र स्नेहनपछिको हेरचाह बताउँछ। यी नियमले शरीरलाई पञ्चकर्मका लागि सुरक्षित रूपमा तयार गर्छ।",
+          "meaning_en": "Summary\n\nSnehādhyāya provides an exhaustive clinical roadmap for using unctuous substances in preventive and therapeutic medicine. By detailing the distinct properties of Ghee, Oil, Fat, and Marrow, Charaka lays down precise rules for dosage, seasonal timing, patient selection, and post-oleation management—ensuring that the body is safely prepared for Panchakarma detoxification.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "title_ne": "स्वेदाध्यायः",
+      "title_en": "Svedadhyaya — Sudation Therapy",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "स्वेदाध्यायः",
+          "transliteration": "svedādhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको चौधौं अध्याय (स्वेदाध्याय) स्वेदन कर्म बताउँछ। यसमा ६५ श्लोक छन्। स्नेहनपछि गरिने पसिना उपचार, अग्निसहित १३ र अग्निरहित १० विधि, तथा उचित, अपूर्ण र अत्यधिक स्वेदनका लक्षण समेटिएका छन्।\n\n१. स्वेदनको प्रयोजन र सावधानी (श्लोक ३–१३)।\n२. साग्नि स्वेद — १३ विधि (श्लोक ३९–४१)।\n३. निरग्नि स्वेद — १० विधि (श्लोक ६४–६५)।\n४. सम्यक्, अस्विन्न र अतिस्विन्न लक्षण (श्लोक २१–२३)।",
+          "meaning_en": "Chapter 14 of Sutrasthana (Svedādhyāya) systematically details Fomentation and Sudation Therapy (Svedana Karma), which follows Oleation (Snehana) as a prerequisite for purificatory Panchakarma procedures (Vamana, Virechana) or as a standalone treatment for Vata and Kapha disorders. It contains 65 verses covering:\n1. Definition & Indications of Sveda: Softening channels, removing stiffness (Stambha), heaviness (Gaurava), and coldness (Sheeta).\n2. Protection of Vital Organs during Sudation: Specific precautions for eyes, heart, scrotum, and vulnerable body parts.\n3. The 13 Thermal Sudation Methods (Sāgni Sveda):\n- Saṅkara, Prastara, Bhū, Kumbhī, Kūpa, Holāka, Aśmaghana, Iṣṭakā, Nāḍī, Pariṣeka, Avagāha, Jentāka, Karṣū.\n4. The 10 Non-Thermal Sudation Methods (Niragni Sveda):\n- Vyāyāma, Uṣṇagṛha, Gurupravāraṇa, Kṣudhā, Bahupāna, Bhaya, Krodha, Upanāha, Āhāva, Ātapa.\n5. Degree of Sudation (Mātrā & Bala): Mild (Mṛdu), Moderate (Madhyama), and Intense (Mahān) applications based on disease severity and patient tolerance.\n6. Clinical Signs: Symptoms of proper sudation (Samyak Svinna), insufficient sudation (Asvinna), and excessive sudation (Atisvinna) along with remedies for complications.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातः स्वेदाध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athātaḥ svedādhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "अब हामी स्वेदन (पसिना निकाल्ने चिकित्सा) सम्बन्धी 'स्वेदाध्याय' नामक चौधौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nFundamental Principles & Indications of Fomentation\n\nNow we shall expound the chapter entitled Svedādhyāya (Sudation Therapy), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–6",
+          "sanskrit": "स्नेहाक्तस्य यथा शुष्कं काष्ठं नामयते नरः। स्वेदेन स्वेदनेनाङ्गं नमयेत्तद्वदेव हि॥ ३॥ स्तम्भगौरवशीतघ्नं स्वेदनं स्वेदकारकम्। सम्यक्संस्वेदिते स्वादु सौकुमार्यं च जायते॥ ४॥",
+          "transliteration": "snehāktasya yathā śuṣkaṁ kāṣṭhaṁ nāmayate naraḥ | svedena svedanenāṅgaṁ namayettadvadeva hi || 3 || stambhagauravaśītaghnaṁ svedanaṁ svedakārakam | samyaksaṁsvedite svādu saukumāryaṁ ca jāyate || 4 ||",
+          "meaning_ne": "जसरी तेल लगाएर ताप दिएपछि सुकेको काठलाई सजिलै बङ्गाउन सकिन्छ, त्यसरी नै स्नेहपान गराई स्वेदन गर्दा शरीरका अङ्गहरू लचिला, कोमल र लचकदार हुन्छन्। स्वेदन चिकित्साले शरीरको कडापन (स्तम्भ), गहुँगोपन (गौरव) र जाडो/शीतलता (शीत) लाई नष्ट गर्दछ र शरीरका स्रोतसहरूलाई सफा गरी दूषित दोषहरूलाई कोष्ठमा ल्याउँछ।",
+          "meaning_en": "Clinical Purpose & Prerequisite of Sudation\n\nJust as a dry, rigid piece of wood can be gently bent and shaped after applying oil and moist heat without breaking, so too can a rigid human body be rendered soft, flexible, and pliable through Oleation (Snehana) followed by Sudation (Svedana).\nSudation therapy eliminates stiffness (Stambha), heaviness (Gaurava), and coldness (Sheeta), induces sweating (Sveda-karaka), softens body channels (Srotas), and mobilizes stagnated metabolic toxins (Doshas/Mala) toward the digestive tract (Koshtha) for evacuation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "10–13",
+          "sanskrit": "दृद्धृदयं मुष्कौ च स्वेदयन्मृदु वा न वा। अक्षिणोः कमलैः पद्मः स्वच्छैर्वा वाससा भिषक्॥ १०॥ छादयेत् स्विद्यमानस्य हृदयं च सुशीतलाइः। मुष्कयोश्च मणौ चैव न स्वेदो भृशमिष्यते॥ ११॥",
+          "transliteration": "dṛgdṛdayaṁ muṣkau ca svedayanmṛdu vā na vā | akṣiṇoḥ kamalaiḥ padmaiḥ svacchairvā vāsasā bhiṣak || 10 || chādayet svidyamānasya hṛdayaṁ ca suśītalaiḥ | muṣkayośca maṇau caiva na svedaḥ bhṛśamiṣyate || 11 ||",
+          "meaning_ne": "स्वेदन चिकित्सा गर्दा आँखा, हृदय र अण्डकोषमा कि त अति मृदु (कम) ताप दिनुपर्छ कि त तापबाट जोगाउनुपर्छ:\n१. आँखा: कमलको पात वा चीसो सफा कपडाले छोप्नुपर्छ।\n२. हृदय: छातीमा चीसो कपडा वा चन्दनको लेप लगाउनुपर्छ।\n३. अण्डकोष र लिङ्ग: शुक्रधातुको रक्षाका लागि यी अङ्गहरूमा उच्च ताप दिनुहुँदैन।",
+          "meaning_en": "Precautions for Eyes, Heart, and Scrotum\n\nProtection of Vital Organs & Degree of Heat\n\nDuring sudation therapy, the eyes (Drik), heart (Hridaya), and scrotum (Mushka) must be subjected to very mild heat or excluded from direct heat altogether:\n1. Eyes: Cover with lotus petals, cool cloths, or moist compresses.\n2. Heart: Apply cool compresses or sandalwood paste over the precordium during therapy.\n3. Scrotum & Genitals: Protect from high temperature to prevent damage to reproductive tissue (Shukra) and vital energy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "39–41",
+          "sanskrit": "संकरः प्रस्तरो भूः कुम्भी कूपो होलाका अश्मघनः। इष्टका नाडी परिषेकोऽवगाहश्च जेन्ताकः॥ ३९॥ कर्षूश्चेति त्रयोदशः स्वेदाः साग्नयः स्मृताः। सर्व एते विधातव्याः सम्यग्दोषव्याध्यपेक्षया॥ ४०॥",
+          "transliteration": "saṁkaraḥ prastaro bhūḥ kumbhī kūpo holākā aśmaghanaḥ | iṣṭakā nāḍī pariṣeko'vagāhaśca jentākaḥ || 39 || karṣūśceti trayodaśaḥ svedāḥ sāgnayaḥ smṛtāḥ | sarva ete vidhātabyāḥ samyagdoṣavyādhyapekṣayā || 40 ||",
+          "meaning_ne": "साग्नि स्वेदाः\n\nअग्निबाट गरिने १३ प्रकारका मुख्य स्वेदनहरू (साग्नि स्वेदन):\n१. सङ्कर (पिण्ड स्वेद): जडीबुटी, अन्न वा मासुको पोटली बनाएर सेक्ने।\n२. प्रस्तर: उम्लेको काढामाथि राखिएको तख्ता वा पाटामा सुतेर सेक्ने।\n३. भू-स्वेद: तातो बनाइएको जमिनमा पात ओछ्याएर सुत्ने।\n४. कुम्भी: माटोको गाग्रोमा काढा उमालेर त्यसको बाफ लिने।\n५. कूप-स्वेद: खाल्डो खनेर तातो कोइला र पात राखी सेक्ने।\n६. होलाक: गुइँठा (गोबर) बालेर त्यसको तापबाट सेक्ने।\n७. अश्मघन: तातो फल्याक/ढुङ्गामा पात ओछ्याएर सेक्ने।\n८. इष्टका: तातो इट्टामा काढा/पानी छर्केर सेक्ने।\n९. नाडी-स्वेद: पाइप/नलीबाट उम्लेको काढाको बाफ प्रभावित अङ्गमा दिने।\n१०. परिषेक: तातो तेल, दूध वा काढाको धारा शरीरमा खन्याउने।\n११. अवगाह: तातो काढा वा जलले भरिएको टबमा डुबेर बस्ने।\n१२. जेन्ताक: विशेष प्रकारको साउना कोठा (स्वेद गृह) बनाएर बाफ लिने।\n१३. कर्षू: खाटमुनि सानो खाल्डो खनेर कोइलाको तापबाट सेक्ने।",
+          "meaning_en": "Classification of the 13 Sagni Svedas\n\nThe 13 Thermal Sudation Methods\n\nThere are 13 distinct methods of Thermal Sudation (Sāgni Sveda):\n1. Saṅkara (Bolus Fomentation): Applying heat using cloth pouches (Pinda) filled with medicated herbs, pulse, or meat.\n2. Prastara (Slab Sudation): Lying on a stone/wooden slab heated by boiling herb decoctions beneath.\n3. Bhū (Ground Sudation): Lying on an earthen ground heated by burning fuels and covered with aromatic leaves.\n4. Kumbhī (Pitcher Sudation): Sitting over a buried clay pot containing boiling decoctions or heated stones.\n5. Kūpa (Pit Sudation): Sitting inside a pit dug in the ground filled with burning charcoal and covered with leaves.\n6. Holāka (Heap Sudation): Steam/heat from a mound of burning dried cow dung covered with herbs.\n7. Aśmaghana (Stone Slab Sudation): Lying on a heated stone slab draped with blankets and leaves.\n8. Iṣṭakā (Brick Sudation): Heat from water poured over red-hot bricks wrapped in leaf compresses.\n9. Nāḍī (Pipe/Tube Steam Sudation): Directing steam through a curved pipe from a kettle boiling herbal decoctions.\n10. Pariṣeka (Affusion / Shower Sudation): Pouring warm medicated liquids, oils, or decoctions over the body.\n11. Avagāha (Tub Bath Sudation): Immersing the body in a tub filled with warm medicated liquid/decoction.\n12. Jentāka (Sweat-House / Sauna Chamber): Circular sauna room built near water bodies with central heating shafts.\n13. Karṣū (Trench / Charcoal Hearth Sudation): Sitting over a small trench filled with smokeless charcoal underneath a cot.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "64–65",
+          "sanskrit": "व्यायाम उष्णगृहं गुरुप्रावरणं क्षुधा। बहुपानं भयं क्रोध उपनाहो महाहवः॥ ६४॥ आतपश्चेति विज्ञेया दश स्वेदाः निरग्नयः। एतैश्च शमयेद् धीमान् कफवातसमुद्भवान्॥ ६५॥",
+          "transliteration": "vyāyāma uṣṇagṛhaṁ guruprāvāraṇaṁ kṣudhā | bahupānaṁ bhayaṁ krodha upanāho mahāhavaḥ || 64 || ātapaśceti vijñeyā daśa svedāḥ niragnayaḥ | etaiśca śamayed dhīmān kaphavātasamudbhavān || 65 ||",
+          "meaning_ne": "निरग्नि स्वेदाः\n\nअग्निबिना पसिना निकाल्ने १० गैर-तापीय विधिहरू (निरग्नि स्वेदन):\n१. व्यायाम: कडा शारीरिक परिश्रमबाट आन्तरिक ताप पैदा गर्ने।\n२. उष्णगृह: हावा नछिर्ने तातो कोठामा बस्ने।\n३. गुरुप्रावरण: बाक्लो कपडा वा कम्वल ओढेर बस्ने।\n४. क्षुधा (भोक): उपवास बसेर आन्तरिक अग्नि प्रदीप्त गर्ने।\n५. बहुपान: प्रशस्त तातो झोल वा पेय पदार्थ पिउने।\n६. भय (डर): मानसिक भय उत्पन्न भई पसिना आउने।\n७. क्रोध (रिष): रिसको आवेगले पसिना आउने।\n८. उपनाह: तातो लेप बाँधेर उष्णता पैदा गर्ने।\n९. महाहव (कुस्ती/मल्लयुद्ध): शारीरिक कुस्ती वा युद्ध गर्ने।\n१०. आतप: घाममा बसेर घामको ताप लिने।",
+          "meaning_en": "Classification of the 10 Niragni Svedas\n\nThe 10 Non-Thermal Sudation Methods\n\nThere are 10 Non-Thermal Methods of Sudation (Niragni Sveda) that induce sweating without direct fire:\n1. Vyāyāma (Physical Exercise): Heavy physical exertion generating internal metabolic heat.\n2. Uṣṇagṛha (Warm Chamber): Staying in an airtight, wind-free, insulated room.\n3. Gurupravāraṇa (Heavy Clothing / Blankets): Wearing thick woolens or covering with heavy quilts.\n4. Kṣudhā (Fasting / Hunger): Fasting mobilizes internal metabolic heat (Agni) and induces sweating.\n5. Bahupāna (Copious Drinking): Drinking large quantities of warm liquids or alcoholic beverages.\n6. Bhaya (Fear): Psychological emotional exertion inducing autonomic sweating.\n7. Krodha (Anger): Anger accelerating circulation and inducing sweat.\n8. Upanāha (Warm Poultice/Bandaging): Applying thick warm herbal paste under airtight leather/cloth wraps.\n9. Mahāhava (Physical Wrestling / Combat): Intense physical combat or wrestling.\n10. Ātapa (Sunbathing / Solar Heat): Exposure to natural sunlight.\n\nThese methods relieve disorders of Kapha and Vata without exposure to direct flame.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "21–23",
+          "sanskrit": "स्वेदश्च्युतिः स्वास्थ्याभावः शीतशूलव्युपशमः। स्तम्भगौरवनिग्रहश्च सम्यक्स्विन्नस्य लक्षणम्॥ २१॥ अस्विन्ने त्वप्रवृत्तिः स्यात् स्तम्भोऽनिद्रा च दाहश्च। अतिस्विन्ने तु पित्तप्रकोपो दाहो मूर्छा भ्रमस्तृषा॥ २२॥",
+          "transliteration": "svedaścyutiḥ svāsthyābhāvaḥ śītaśūlavyupaśamaḥ | stambhagauravanigrahaśca samyaksbinnasya lakṣaṇam || 21 || asvinne tvapravṛttiḥ syāt stambho'nidrā ca dāhaśca | atisvinne tu pittaprakopo dāho mūrcchā bhramastṛṣā || 22 ||",
+          "meaning_ne": "- सम्यक् स्निग्ध/स्विन्न (उचित स्वेदनका लक्षण): दुखाइ र चीसोपना शान्त हुनु, शरीरको कडापन र गहुँगोपन हट्नु, पसिना आउनु र अङ्गहरू कोमल हुनु।\n- अस्विन्न (अपूर्ण स्वेदनका लक्षण): पसिना नआउनु, कडापन कायमै रहनु, चीसो महसुस हुनु।\n- अतिस्विन्न (अत्यधिक स्वेदनका लक्षण): पित्तको प्रकोप हुनु, शरीरमा डाह हुनु, चक्कर लाग्नु (भ्रम), मूर्छा पर्नु, अति तिर्खा लाग्नु र दुर्वल हुनु।\n- अतिस्वेदनको चिकित्सा: चीसो उपचार (शीतोपचार), मधुर र चीसो आहार-विहार गराउनुपर्छ।",
+          "meaning_en": "Features of Proper, Inadequate, and Excessive Sudation\n\nClinical Assessment of Sudation\n\n- Samyak Svinna (Proper Sudation): Cessation of pain and coldness (Śīta-śūla-vyupaśama), relief from stiffness (Stambha-nigraha) and heaviness (Gaurava-nigraha), soft pliable skin, and adequate perspiration.\n- Asvinna (Insufficient Sudation): Lack of perspiration, persistent stiffness, coldness, and absence of relief.\n- Atisvinna (Excessive Sudation): Aggravation of Pitta, severe burning sensation (Dāha), fainting (Mūrcchā), dizziness (Bhrama), thirst (Tṛṣā), weakness (Daurbalya), and joint pain.\n\nRemedy for Excessive Sudation: Treatment with cooling measures (Śītopacāra), sweet/cooling diet (Madhura-Śīta Āhāra), and Pitta-pacifying remedies.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "उपसंहार",
+          "sanskrit": "इति स्वेदाध्यायः",
+          "transliteration": "iti svedādhyāyaḥ",
+          "meaning_ne": "चौधौं अध्यायले स्वेदन कर्मको आधार, वर्गीकरण र सुरक्षा नियम दिन्छ। स्नेहनसँगै यसले पञ्चकर्मको पूर्वकर्म पूरा गर्छ।",
+          "meaning_en": "Conclusion\n\nChapter 14 establishes the foundational mechanics, classification, and safety rules of Svedana Karma, completing the purificatory preparation phase (Poorvakarma) alongside Snehana.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "title_ne": "उपकल्पनीयोध्यायः",
+      "title_en": "Upakalpaniya Adhyaya — Preparation for Purification",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "उपकल्पनीयोध्यायः",
+          "transliteration": "upakalpanīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको पन्ध्रौं अध्याय (उपकल्पनीय अध्याय) पञ्चकर्मको पूर्व तयारी र वमन विधि बताउँछ।\n\n१. सम्भार सङ्ग्रह — सामग्री पहिले नै जुटाउने (श्लोक ३)।\n२. आतुरागार — उपचारकक्षको बनावट (श्लोक ४)।\n३. सामग्री र परिचारक (श्लोक ५–६)।\n४. वमन विधि — तयारी, औषधि, वेग र जाँच (श्लोक ७–२०)।\n५. संसर्जन क्रम — वमनपछिको क्रमबद्ध आहार (श्लोक २५–२८)।",
+          "meaning_en": "Chapter 15 of Sutrasthana (Upakalpanīya Adhyāya) details the Equipment, Clinical Facilities, and Procedural Protocols for Panchakarma Purification Therapies. It contains 25 prose and verse sections covering:\n\n1. Sambhāra-Saṅgraha (Advance Collection of Materials): The necessity of procuring all required drugs, utensils, and equipment prior to initiating purification.\n2. Āturāgāra / Āturāśālā (Hospital & Clinical Infrastructure): Architectural design, sanitation, ventilation, acoustic insulation, and environmental safety of the therapy chamber.\n3. Clinic Inventory & Staffing: Essential ward items, furniture, utensils, attendants, specialized nurses, cooks, masseurs, and musical entertainers.\n4. Vamana Protocol (Emesis Procedure): Patient assessment, pre-procedure oleation and sudation (Snehana & Svedana), Kapha-provoking diet, administration of emetic formulations (Madanaphala), and monitoring vomiting bouts (Vega).\n5. Clinical Assessment of Vamana: Signs of proper emesis (Samyak Vanta), inadequate emesis (Ayoga), and excessive emesis (Atiyoga).\n6. Saṁsarjana Krama (Post-Purification Dietary Resuscitation): Sequential administration of liquid to solid diets (Peyā, Vilepī, Yūṣa, Māṁsa-Rasa) to restore digestive fire (Agni).\n7. Risks of Unpreparedness: Complications (Vyāpad) arising from inadequate equipment, poor staffing, or improper procedure.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातोऽउपकल्पनीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto'upakalpanīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "सम्भारसंग्रहः आतूरागारादिसंविधानञ्च\n\nअब हामी पञ्चकर्म चिकित्साका लागि आवश्यक उपकरण, अस्पताल भवन र पूर्वतयारीसम्बन्धी 'उपकल्पनीय' नामक पन्ध्रौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nAdvance Preparation & Clinical Infrastructure\n\nNow we shall expound the chapter entitled Upakalpanīya (Equipment and Clinical Preparation for Panchakarma), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "राजानं राजमात्रं वा महाधनं वा पुनरन्यं यमुपकल्पनीयं मन्येत वैद्यः, तस्य सिद्धैषिणा पूर्वमेवौषधम् उपकल्पयितव्यं भवति। न हि संत्रासे समुत्पन्ने, प्राप्तकाले वा क्रियायाः सम्भारः सुशको भवत्युपपादयितुम्। न च असम्भृतसम्भारं वैद्यम् आतुरः सहसा विश्वासमभ्युपैति; न च प्राप्तकाले क्रिया क्रियामुपैति अकृतसम्भारत्वात्। तस्मात् पूर्वमेव वैद्येन सिद्धैषिणा सर्वोपकरणानि सङ्ग्रहीतव्यानि भवन्ति॥ ३॥",
+          "transliteration": "rājānaṁ rājamātraṁ vā mahādhanaṁ vā punaranyaṁ yamupakalpanīyaṁ manyeta vaidyaḥ, tasya siddhaiṣiṇā pūrvamevauṣadham upakalpayitavyaṁ bhavati | na hi saṁtrāse samutpanne, prāptakāle vā kriyāyāḥ sambhāraḥ suśako bhavatyupapādayitum | na ca asambhṛtasambhāraṁ vaidyaṁ āturaḥ sahasā viśvāsamabhyupaiti; na ca prāptakāle kriyā kriyāmupaiti akṛtasambhāratvāt | tasmāt pūrvameva vaidyena siddhaiṣiṇā sarvopakaraṇāni saṅgrahītavyāni bhavanti || 3 ||",
+          "meaning_ne": "सफल चिकित्सा चाहने वैद्यले राजा, धनी वा सर्वसाधारण जुनसुकै रोगीको उपचार गर्नुअघि नै सम्पूर्ण औषधि र उपकरणहरू पूर्वतयारीका साथ जम्मा गर्नुपर्छ। आपत्कालीन अवस्था वा उपचारको सही समय आएका बेला तत्काल सामान खोज्न सम्भव हुँदैन। तयारी नगरेको वैद्यमाथि रोगीले विश्वास गर्दैन र समयमा सामान नपुग्दा उपचार निष्फल हुन्छ। त्यसैले वैद्यले अगाडि नै सबै उपकरण सङ्कलन गर्नुपर्छ।",
+          "meaning_en": "Necessity of Advance Preparation (Sambhāra-Saṅgraha)\n\nA physician seeking clinical success (Siddhaiṣī) must procure all necessary drugs, equipment, and ward supplies prior to treating any patient—whether a king, an aristocrat, a wealthy person, or an ordinary individual. When an emergency arises or the exact time for therapy arrives, it is impossible to gather equipment instantly. Furthermore, a patient loses confidence in a physician who is unprepared, and therapeutic interventions fail if delayed by missing supplies. Therefore, comprehensive advance collection (Sambhāra-Saṅgraha) is mandatory.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "गृहमेव तावत् पूर्वमेव वास्तुविद्याकुशलेन प्रशस्ते वास्तौ दृढं वातातपसहं प्रवातमेकदेशं प्रच्छायानुदकमोलूखलमुसलपिधानकोष्ठकस्नानभूमिमहानसं प्रशस्तदिक्शब्दरूपरसगन्धस्पर्शं कारयेत्॥ ४॥",
+          "transliteration": "gṛhameva tāvat pūrvameva vāstuvidyākuśalena praśaste vāstau dṛḍhaṁ vātātapasahaṁ pravātamekadeśaṁ pracchāyānudakamolūkhalamusalapidhānakoṣṭhakasnānabhūmimahānasaṁ praśastadikśabdarūparasagandhasparśaṁ kārayet || 4 ||",
+          "meaning_ne": "अस्पताल भवनको निर्माण: वास्तुशास्त्रका विद्वान्‌द्वारा प्रशस्त र पवित्र भूमिमा मजबुत अस्पताल भवन बनाउनुपर्छ। यो भवन हावाहुरी, घाम र पानी सहनसक्ने, उज्यालो र हावा छिर्ने तर सिधा चिसो हावा नआउने, ओसिलो नभएको, कुटानी-पिसानी गर्ने ओखल-मुसल भएको, भण्डार गृह, स्नानघर र सफा भान्साघर (महानस) ले युक्त हुनुपर्छ। यहाँका शब्द, रूप, गन्ध र स्पर्श रोगीका लागि मनमोहक र सुखदायक हुनुपर्छ।",
+          "meaning_en": "Architectural Specifications of Hospital Ward (Āturāgāra / Āturāśālā)\n\nHospital Building Specifications: First, an expert architect (Vāstuvidyā-kuśala) should construct a strong, durable hospital building on auspicious ground.\n1. Environmental Resilience: Must withstand strong winds, intense heat, and heavy rain, while having well-ventilated areas alongside shaded, draft-free rooms.\n2. Sanitation & Drainage: Free from dampness and standing water (Anudaka).\n3. Dedicated Facilities: Equipped with an apothecary store, grinding room with mortar and pestle (Olūkhala-Musala), private lavatories, bathing chambers (Snānabhūmi), and a clean kitchen (Mahānasa).\n4. Sensory Comfort: Built in a pleasing orientation (Praśasta-Dik) with pleasant sounds, visuals, tastes, aromas, and tactile environments to soothe the patient's mind.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "तत्र शयनासनस्तरणप्रावरणोपधानकांस्यकांस्यपात्रोदकपात्रकलशकुम्भीपिठरघटकुण्डकटाहआचमनीप्रस्थकुडवाप्रस्थकादिमानभाण्डसंभारमुपचारकांश्च कारयेत्। तथा शालिषष्टिकमुद्गमाषयवतिलकुलत्थबदरमृद्वीकाभयामलकविभीतकप्रस्थप्रस्थादिकं घृततैलवसामज्जक्षौद्रफाणितलवणसैन्धवसौवर्चलकाललवणविडसामुद्रकादि च॥ ५॥",
+          "transliteration": "tatra śayanāsanastaraṇaprāvaraṇopadhānakāṁsyakāṁsyapātrodakapātrakalaśakumbhīpiṭharaghaṭakuṇḍakaṭāhāācamanīprasthakuḍavāprasthakādimānabhāṇḍasaṁbhāramupacārakāṁśca kārayet | tathā śāliṣaṣṭikamudgamāṣayavatilakulatthabadaramṛdvīkābhayāmalakavibhītakaprasthaprasthādikaṁ ghṛtatailavasāmajjakṣaudraphāṇitalavaṇasaindhavasauvarcalakālalavaṇaviḍasāmudrakādi ca || 5 ||",
+          "meaning_ne": "अस्पताल सामग्री तथा परिचारक वर्गः\n\nअस्पतालका आवश्यक सामग्रीहरू:\n१. ओछ्यान र फर्निचर: सुत्नका लागि खाट, बस्नका लागि कुर्सी, नरम डसना, कम्बल, तन्ना र सिरानी।\n२. भाँडाकुँडाहरू: काँसका भाँडा, पानीका घैँटा, पकाउने कसौँडी, कराही, आचमनी (चम्चा) र नाप्ने भाँडाहरू (कुडव, प्रस्थ)।\n३. खाद्यान्न भण्डार: मसिना धानको चामल, साठी चामल, मुगी, माष (मास), जौ, तिल, गहत, बयर, दाख (मृद्वीका) र त्रिफला।\n४. स्नेह र लवण: घिउ, तेल, वसा, मज्जा, मह, राब (फाणित) तथा ५ प्रकारका नुन (सैन्धव, सौवर्चल, कालो नुन, बिड र समुद्र नुन)।",
+          "meaning_en": "Essential Ward Furniture, Utensils & Food Supplies\n\nWard Inventory, Attendants & Staffing\n\nWard Supplies & Inventory:\n1. Furniture & Bedding: Comfortable cots, chairs, soft mattresses, warm blankets, sheets, and clean pillows.\n2. Utensils & Containers: Bronze and wooden vessels, water jars, large earthen pots (Kumbhī), cooking cauldrons (Kaṭāha), spoons, and calibrated measuring vessels (Prastha, Kuḍava).\n3. Dietary Staples: Shali rice, Shashthika (60-day) rice, green gram (Mudga), black gram (Māṣa), barley (Yava), sesame seeds, Kulattha, jujube fruits, raisins (Mṛdvīkā), and Triphala (Haritaki, Amalaki, Bibhitaki).\n4. Unctuous Media & Salts: Pure cow ghee, sesame oil, muscle fat (Vasā), marrow (Majjā), honey, jaggery syrup (Phāṇita), and 5 types of salts (Saindhava, Sauvarchala, Kala, Bida, Samudra).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6",
+          "sanskrit": "तथा परिचारकान् स्निग्धशुचिशुश्रूषकदक्षप्राज्ञसहानुकूलानुपचारकुशलान् सर्वकर्मसु, तथा गानहास्यपाठकथास्तुतिश्लोक गाथाकुशलान् आख्यायिकाकुशलान् वांशिकांश्च पुराणकुशलान् तथा अनुकूलावश्यककारिणश्च गृहीतवाक्यप्रहीणानुपस्थानकुशलान् कारयेत्॥ ६॥",
+          "transliteration": "tathā paricārakān snigdhaśuciśuśrūṣakadakṣaprājñasahānukūlānupacārakuśalān sarvakarmasu, tathā gānahāsyapāṭhakathāstutiśloka gāthākuśalān ākhyāyikākuśalān vāṁśikāṁśca purāṇakuśalān tathā anakūlāvaśyakakāriṇaśca gṛhītavākyaprahīṇānupasthānakuśalān kārayet || 6 ||",
+          "meaning_ne": "परिचारक तथा सहयोगी वर्ग:\n१. परिचारक (नर्स/असिस्टेन्ट): स्नेही, सफा, सेवाभाव भएका, दक्ष, बुद्धिमान् र सबै प्रकारका सेवा कार्यमा निपुण हुनुपर्छ।\n२. मनोरञ्जन टोली: रोगीको मन बहलाउन र दुःखादि बिर्साउन गायन, हास्य, कथा, स्तुति, मन्त्र, बाँसुरी बादक र पुराण वाचकहरू राख्नुपर्छ।\n३. सहयोगी कर्मचारी: आज्ञाकारी, फुर्तिला र तुरुन्त काम फत्ते गर्ने सहयोगीहरू हुनुपर्छ।",
+          "meaning_en": "Medical Staff, Attendants & Specialized Personnel\n\nClinical Staff Requirements:\n1. Nurses & Attendants: Must be affectionate (Snigdha), hygienic (Śuci), devoted to service (Śuśrūṣaka), highly skilled (Dakṣa), intelligent, adaptable, and thoroughly trained in all nursing duties.\n2. Therapeutic Entertainers: Musicians, singers, comedians, storytellers, reciters of uplifting poetry, flute players (Vāṁśika), and scholars of epics (Purāṇa) to distract the patient from pain and elevate mental strength (Sattva).\n3. General Support Staff: Obedient, prompt, and dedicated ward boys and cleansers who execute orders instantly.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "7–8",
+          "sanskrit": "तत आतुरं स्नेहनस्वेदाभ्यामुपपादितं वमनद्रव्यम पाययितुं पूर्वमेव स्निग्धशुचिं कृतमङ्गलजापहोमबलिप्रायश्चित्तं समभिपूजितदेवर्षिद्विजगुरुं स्विष्टमभिप्रेते नक्षत्रतिथौ करणे मुहूर्ते श्वो वमनं पातासीति स्नेहमद्यमांसमण्डक्षीरदधिमाशतिलप्रभृतिभिः कपोलभृतैः दोषाणामुत्क्लेषनार्थं रात्रावेवोपपादयेत्॥ ७॥",
+          "transliteration": "tata āturaṁ snehanasvedābhyāmupapāditaṁ vamanadravyama pāyayituṁ pūrvameva snigdhaśuciṁ kṛtamaṅgalajāpahomabaliprāyaścittaṁ samabhipūjitadevarṣidvijaguruṁ sviṣṭamabhiprete nakṣatratithau karaṇe muhūrte śvo vamanaṁ pātāsīti snehamadyamāṁsamaṇḍakṣīradagdhimāṣatilaprabhṛtibhiḥ kapolabhṛtaiḥ doṣāṇāmutkleṣanārthaṁ rātrāvevopapādayet || 7 ||",
+          "meaning_ne": "वमनविधिः वमनलक्षणञ्च\n\nवमनपूर्व तयारी र आहार:\n१. रोगीलाई पहिले राम्ररी स्नेह (तेल/घिउ सेवन) र स्वेद (सेकताप) गराएर दोषहरू पगाल्नुपर्छ।\n२. शुभ नक्षत्र र तिथिमा, स्नान र मङ्गल पाठ गरी रोगीलाई वमनका लागि तयार पारिन्छ।\n३. वमन गराउने अघिल्लो रात रोगीका कफ दोषहरूलाई उकास्न (उत्क्लेश गराउन) दूध, दही, माष (मास), मासुको रस, तिल र चिल्लोयुक्त कफवर्धक आहार गराइन्छ।",
+          "meaning_en": "Pre-Vamana Patient Examination & Preparation\n\nVamana Procedure & Clinical Management\n\nPre-Emesis Protocol:\n1. Pre-Purification: The patient must first undergo thorough oleation (Snehana) and sudation (Svedana) to loosen channel-bound toxins.\n2. Psychological & Spiritual Readiness: On an auspicious day/star (Nakṣatra-Tithi), after morning ablutions, prayers, and blessings from elders, the patient is mentally prepared for therapy.\n3. Kapha Liquefaction Diet: On the evening prior to Vamana, the patient is administered Kapha-provoking foods—milk, curd, black gram (Māṣa), meat soup (Māṁsa-Rasa), sesame, and unctuous dishes—to deliberately liquefy and mobilize Kapha toxins (Doṣotkleṣaṇa) into the stomach (Āmāśaya).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "9–11",
+          "sanskrit": "ततः प्रभाते भुक्तवन्तं यवागूं मण्डोपेतां समासिच्य पीतागदं मदनफलकषायं मधुसैन्धवयुक्तं कनककलशात् आतुरं प्राङ्मुखमुदङ्मुखं वा सुखोपविष्टं पाययेत्। ततः मुहूर्तमात्रमुद्वीक्षेत। तस्य कण्ठहृदयपीडा-प्रसेक-हृल्लास-शिरोगौरवैः वमनप्रवृत्तिमनुमीयेत॥ ८॥",
+          "transliteration": "tataḥ prabhāte bhuktavantaṁ yavāgūṁ maṇḍopetām samāsicya pītāgadaṁ madanaphalakaṣāyaṁ madhusaindhavayuktaṁ kanakakalaśāt āturaṁ prāṅmukhamudaṅmukhaṁ vā sukhopaviṣṭaṁ pāyayet | tataḥ muhūrtamātramudvīkṣeta | tasya kaṇṭhahṛdayapīḍā-praseka-hṛllāsa-śirogauravaiḥ vamanapravṛttimanumīyeta || 8 ||",
+          "meaning_ne": "वमन औषधिको सेवन विधि:\n१. बिहान सबेरै रोगीलाई मनतातो दाल/चामलको मण्ड वा जाउलो खुवाइन्छ।\n२. त्यसपछि पूर्व वा उत्तर फर्काएर आरामसँग बसाली मदनफलको काढामा मह र सिन्धेनुन मिसाएर पिउन दिइन्छ।\n३. औषधि पिएपछि एक मुहूर्त (करिब ४८ मिनेट) पर्खिइन्छ। मुखबाट र्याल आउनु (प्रसेक), जीउ काप्नु, वाकवाकी लाग्नु (हृल्लास) र टाउको गहुँगो हुनु वमन सुरु हुने लक्षण हुन्।",
+          "meaning_en": "Administration of the Vamana Formulation\n\nAdministration of Emetic Formula:\n1. Morning Meal: At dawn, after digestion of the previous night's food, the patient is given warm rice gruel (Yavāgū) with ghee to fill the stomach.\n2. Emetic Draught: The patient sits comfortably facing East or North and drinks the warm decoction of Madanaphala (Randia dumetorum) mixed with honey (Madhu) and rock salt (Saindhava).\n3. Onset Monitoring: The physician waits for about 48 minutes (Muhūrta). Onset of emesis is signaled by salivation (Praseka), nausea (Hṛllāsa), frontal heaviness (Śiro-gaurava), and chest/throat constriction.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "12–16",
+          "sanskrit": "ततो जानुसमप्रमाणपीठे सुखोपविष्टस्य कण्ठमङ्गुलीभ्यामुत्पलादिना वा प्रमृज्यात्। ततः प्रवृत्ते वेगे पार्श्वशिरोधरापिधानं कण्ठोपपीडनं च कुर्युरनुचरकाः। प्रवृत्ते च वेगेऽनुवेगमवेक्षेत- कफं पित्तं वातमिति॥ ९॥",
+          "transliteration": "tato jānusamapramāṇapīṭhe sukhopaviṣṭasya kaṇṭhamaṅgulībhyāmutpalādinā vā pramṛjyāt | tataḥ pravṛtte vege pārśvaśirodharāpidhānaṁ kaṇṭhopapīḍanaṁ ca kuryuranucarakaḥ | pravṛtte ca vege'nuvegamavekṣeta- kaphaṁ pittaṁ vātamiti || 9 ||",
+          "meaning_ne": "वमन गराउने तरिका र कफ-पित्तको निरीक्षण:\n१. रोगीलाई घुँडासम्म अग्लो कुर्सीमा बसालेर अगाडि ढल्काउनुपर्छ।\n२. वमन आफै नआएमा औँला वा कमलको डाँठले गलामा बिस्तारै स्पर्श गरी वमन उकास्नुपर्छ।\n३. सहयोगीहरूले रोगीको निधार, कञ्चट र कोखा समातेर साहरा दिनुपर्छ।\n४. वैद्यले प्रत्येक उल्टीको निरन्तर निरीक्षण गर्नुपर्छ: सुरुमा कफ, त्यसपछि पित्त र अन्त्यमा वायु प्रकट हुन्छ।",
+          "meaning_en": "Induction, Assistance & Monitoring of Vomiting Bouts (Vega)\n\nAssisting Vomiting Bouts:\n1. Postural Alignment: Patient sits on a knee-high seat, leaning forward over a basin.\n2. Gentle Stimulation: If vomiting does not start spontaneously, the physician gently tickles the posterior throat using fingers or a soft lotus stalk.\n3. Physical Support: Attendants support the patient's forehead, temples, and flanks, and press the abdomen gently.\n4. Vomitus Inspection: The physician inspects each bout (Vega) in order: first Mucus/Kapha comes out, followed by Bile/Pitta, and finally Air/Vata.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "17–20",
+          "sanskrit": "सम्यग्वान्ते तु काले कफपित्तानिलौघप्रवृत्तिः, हृदयपार्श्वमूर्धलिङ्गस्रोतोविशुद्धिः, लाघवञ्च शरीरस्य। अयोगे तु प्रसेक-हृल्लास-स्रोतोऽविशुद्धि-स्फोट-कण्डू-पिडकोत्पत्तयः। अतियोगे तु फेनचन्द्रिकारक्तचन्द्रिकोद्गमनं, कण्ठशोष-तिमिर-भ्रमाश्च भवन्ति॥ १०॥",
+          "transliteration": "samyagvānte tu kāle kaphapittānilaughapravṛttiḥ, hṛdayapārśvamūrdhaliṅgasrotoviśuddhiḥ, lāghavañca śarīrasya | ayoge tu praseka-hṛllāsa-sroto'viśuddhi-sphoṭa-kaṇḍū-piḍakotpattayaḥ | atiyoge tu phenacandrikāraktacandrikodgamanaṁ, kaṇṭhaśoṣa-timira-bhramāśca bhavanti || 10 ||",
+          "meaning_ne": "वमनसम्यगयोगलक्षणम् संसर्जनक्रमश्च\n\nवमनको सही, अयोग्य र अति-योग लक्षणहरू:\n१. सम्यक वमन (सही वमन): क्रमबद्ध रूपमा कफ, पित्त र वायुको निष्कासन; छाती, कोखा, टाउको र ज्ञानेन्द्रियका स्रोतसहरूको शुद्धि; शरीरमा हलुकापन।\n२. अयोग (अपर्याप्त वमन): निरन्तर र्याल बग्नु, वाकवाकी लागिरहनु, स्रोतस सफा नहुनु, डाबर र चिलचिलाहट हुनु।\n३. अतियोग (अत्यधिक वमन): फिँज र रगतका थोपा बग्नु, गला सुक्नु, आँखा अगाडि अँध्यारो छाउनु र चक्कर लाग्नु।",
+          "meaning_en": "Features of Proper (Samyak), Inadequate (Ayoga), and Excessive (Atiyoga) Emesis\n\nAssessment of Vamana & Post-Purification Care\n\nClinical Assessment of Vamana:\n1. Samyak Vanta (Proper Emesis): Sequential discharge of Kapha, Pitta, and Vata; clarity and lightness in the chest, flanks, head, and sensory channels (Srotas); lightness of the entire body.\n2. Ayoga (Inadequate Emesis): Persistent salivation, nausea, uncleared channels, skin eruptions, itching, and heaviness.\n3. Atiyoga (Excessive Emesis): Frothy vomit, presence of reddish blood specks (Rakta-chandrikā), extreme thirst, throat dryness, blackout (Timira), and dizziness (Bhrama).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "21–24",
+          "sanskrit": "ततः सुप्रक्षालितपाणिपादमुखमातुरम् आश्वास्य, स्नेहनिकं वैरेचनिकं वैशदनिकं वा धूमं पाययित्वा, निवातमनुष्णानतिशीतोदकेन प्रक्षालितगात्रं सुखशयने शयितम् अनुशासीत॥ ११॥",
+          "transliteration": "tataḥ suprakṣālitapāṇipādamukhamāturam āśvāsya, snehanikaṁ vairecanikaṁ vaiśadanikaṁ vā dhūmaṁ pāyayitvā, nivātamanuṣṇānatiśītodakena prakṣālitagātraṁ sukhaśayane śayitaṁ anuśāsīta || 11 ||",
+          "meaning_ne": "वमनपछिको हेरचाह र धूमपान:\n१. वमन सकिएपछि रोगीको हात, गोडा र मुख मनतातो पानीले धोएर ढाडस दिनुपर्छ।\n२. घाँटी र टाउकोमा बाँकी रहेको कफ हटाउन स्नेहिक वा वैरेचनिक धूमपान (औषधीय धुवाँ) गराउनुपर्छ।\n३. हावा नछिर्ने शान्त कोठामा रोगीलाई नरम ओछ्यानमा विश्राम गराउनुपर्छ।",
+          "meaning_en": "Post-Vamana Regimen & Medicated Smoking (Dhūmapāna)\n\nImmediate Post-Vamana Protocol:\n1. Wash & Reassurance: The patient washes their hands, feet, and face with lukewarm water and is given reassuring words.\n2. Medicated Smoking (Dhūmapāna): Administer unctuous (Snehana), evacuant (Virechana), or soothing (Vaishadana) medicated smoke to clear residual Kapha from the throat and head.\n3. Rest: Patient rests on a soft bed in a draft-free room (Nivāta), avoiding loud speech, cold air, anger, and physical strain.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "25–28",
+          "sanskrit": "ततो सायङ्काले प्रतरसि वा लङ्घितमातुरं विशुद्धदेहमग्निबलमवेक्ष्य पेया-विलेपी-कृतकृतयूष-मांसरसैः सायं प्रातरनुपूर्व्या उपचरेत्। प्रथमे अन्नकाले पेयाम्, द्वितीये विलेपीम्, तृतीये अकृतं यूषम्, चतुर्थे कृतं यूषम्, पञ्चमे अकृतं मांसरसम्, षष्ठे कृतं मांसरसं पाययेत्॥ १२॥",
+          "transliteration": "tato sāyaṅkāle pratarasi vā laṅghitamāturam viśuddhadehamagnibalamavekṣya peyā-vilepī-kṛtakṛtayūṣa-māṁsarasaiḥ sāyaṁ prātaranupūrvyā upacaret | prathame annakāle peyām, dvitīye vilepīm, tṛtīye akṛtaṁ yūṣam, caturthe kṛtaṁ yūṣam, pañcame akṛtaṁ māṁsarasam, ṣaṣṭhe kṛtaṁ māṁsarasaṁ pāyayet || 12 ||",
+          "meaning_ne": "संसर्जन क्रम (क्रमबद्ध आहार व्यवस्था):\nवमनपछि पाचन अग्नि सुस्त हुने भएकाले सोझै साह्रो अन्न दिनु हुँदैन। आगोको सानो झिल्कोमा पहिले सुकेको पराल, त्यसपछि सुकेको गुइँठा र पछि काठ हाल्दा दनदनी बलेझैँ पाचन अग्निलाई बढाउन निम्न क्रमले ६ छाक खाना दिइन्छ:\n१. पहिलो र दोस्रो छाक: पातलो जाउलो/मण्ड (पेया)।\n२. तेस्रो र चौथो छाक: बाक्लो लेदो जाउलो (विलेपी)।\n३. पाँचौँ छाक: मसला र घिउ नहालेको मुगीको रस (अकृत युष)।\n४. छैटौँ छाक: घिउ, जिरा र नुनले बघारेको मुगीको रस (कृत युष)।\n५. सातौँ र आठौँ छाक: जाँगरिलो मासुको रस (मांसरस)।",
+          "meaning_en": "Dietary Resuscitation Protocol (Saṁsarjana Krama)\n\nSaṁsarjana Krama (Dietary Resuscitation):\nBecause emesis temporarily weakens the digestive fire (Agni), solid food must not be given immediately. The diet is restored gradually over 1 to 3 days (6 meal times for maximum purification / Pravara Shuddhi):\n1. Meal 1 & 2: Thin rice water / gruel (Peyā).\n2. Meal 3 & 4: Thick rice paste (Vilepī).\n3. Meal 5: Unseasoned green gram soup (Akṛta Yūṣa).\n4. Meal 6: Seasoned green gram soup with ghee and salt (Kṛta Yūṣa).\n5. Meal 7 & 8: Plain meat soup (Akṛta Māṁsa-Rasa) progressing to Seasoned meat soup (Kṛta Māṁsa-Rasa).\n\n(Analogy: Just as a tiny spark of fire gradually grows into a massive flame when fed sequentially with dry grass, cow dung, and logs, the digestive fire is revived step-by-step).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "29–31",
+          "sanskrit": "एवमुपपादितः पुरुषः पुनराप्यायितबलवर्णो भवति। असम्भृतसम्भारस्य तु वैद्यस्यातुरे व्यापादाः प्रादुर्भवन्ति, येभ्यो वैद्यो यशो धर्मं च परिहीयते। तस्माद्भिषजा सर्वोपकरणानि पूर्वमेव सङ्ग्रहीतव्यानि भवन्ति॥ १३॥",
+          "transliteration": "evamupapāditaḥ puruṣaḥ punarāpyāyitabalavarṇo bhavati | asambhṛtasambhārasya tu vaidyasyāture vyāpādāḥ prādurbhavanti, yebhyo vaidyo yaśo dharmaṁ ca parihīyate | tasmādbhiṣajā sarvopakaraṇāni pūrvameva saṅgrahītavyāni bhavanti || 13 ||",
+          "meaning_ne": "यो विधिपूर्वक पञ्चकर्म र संसर्जन क्रम पालना गर्दा रोगीले पुनः पूर्ण शक्ति, कान्ति र स्वास्थ्य प्राप्त गर्दछ। पूर्वतयारी नगर्ने र सामानको अभावमा उपचार गर्ने वैद्यको हातबाट बिरामीमा गम्भीर उपद्रव र जटिलताहरू उत्पन्न हुन्छन्, जसले गर्दा वैद्यको यश, धर्म र प्रतिष्ठा नष्ट हुन्छ। त्यसैले श्रेष्ठ वैद्यले पूर्वतयारीमा कहिल्यै सम्झौता गर्नु हुँदैन।",
+          "meaning_en": "Hazards of Inadequate Planning & Summary\n\nBy adhering to this meticulous protocol, the patient regains full vitality, strength, complexion, and health. Conversely, an unprepared physician who lacks necessary supplies faces clinical disasters (Vyāpad), leading to loss of reputation (Yaśas), virtue (Dharma), and trust. Hence, comprehensive advance preparation is the cornerstone of Ayurvedic medicine.",
           "audio_file": null
         }
       ]
