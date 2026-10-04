@@ -5,10 +5,10 @@
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
-  "subtitle_ne": "सूत्रस्थान · अध्याय १–८",
-  "subtitle_en": "Sutrasthana · Chapters 1–8",
-  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप), अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय), अध्याय ५ मात्राशितीय (आहार मात्रा र दिनचर्या), अध्याय ६ तस्याशितीय (ऋतुचर्या), अध्याय ७ नवेगान्धारणीय (वेग नरोक्ने नियम) र अध्याय ८ इन्द्रियोपक्रमणीय (इन्द्रिय, मन र सद्वृत्त)।",
-  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas), Chapter 5 Matrashitiya (quantity of food and the daily regimen), Chapter 6 Tasyashitiya (seasonal regimen), Chapter 7 Navegandharaniya (not suppressing natural urges), and Chapter 8 Indriyopakramaniya (the senses, the mind, and right conduct).",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १–१२",
+  "subtitle_en": "Sutrasthana · Chapters 1–12",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप), अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय), अध्याय ५ मात्राशितीय (आहार मात्रा र दिनचर्या), अध्याय ६ तस्याशितीय (ऋतुचर्या), अध्याय ७ नवेगान्धारणीय (वेग नरोक्ने नियम), अध्याय ८ इन्द्रियोपक्रमणीय (इन्द्रिय, मन र सद्वृत्त), अध्याय ९ खुड्डकचतुष्पाद (चिकित्साका चार पाद), अध्याय १० महाचतुष्पाद (साध्य-असाध्यता), अध्याय ११ तिस्रैषणीय (जीवनका तीन इच्छा) र अध्याय १२ वातकलाकलीय (वातको गुण र कर्म)।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas), Chapter 5 Matrashitiya (quantity of food and the daily regimen), Chapter 6 Tasyashitiya (seasonal regimen), Chapter 7 Navegandharaniya (not suppressing natural urges), Chapter 8 Indriyopakramaniya (the senses, the mind, and right conduct), Chapter 9 Khuddakachatushpada (the four pillars of treatment), Chapter 10 Mahachatushpada (prognosis), Chapter 11 Tisraishaniya (the three desires of life), and Chapter 12 Vatakalakaliya (the qualities and actions of vata).",
   "source_ne": "चरकसंहिता, सूत्रस्थानम्",
   "source_en": "Charaka Samhita, Sutrasthana",
   "cover_image": "",
@@ -1157,6 +1157,430 @@
           "transliteration": "ityetat sadvṛttamakhilamupadiṣṭaṁ yathāyatham | yat samyaganutiṣṭhan naro samāḥ śataṁ jīvatyanāturaḥ || 30 || yaśāṁsi labhate loke yaśo bhavatī cottamam | dharmādharmau na bādhete jitvā lokadvayaṁ sukham || 34 ||",
           "meaning_ne": "सद्वृत्तफलम्\n\nयसरी सद्वृत्त (उत्तम आचरण) को सम्पूर्ण उपदेश पूरा भयो।\nजसले यी नैतिक, शारीरिक, मानसिक र सामाजिक नियमहरूको निष्ठापूर्वक पालन गर्दछ, उसले:\n१. सय वर्षको निरोगी जीवन: १०० वर्षसम्म रोगरहित दीर्घायु प्राप्त गर्दछ।\n२. यश र कीर्ति: समाजमा उच्च प्रतिष्ठा, सम्मान र कल्याण प्राप्त गर्दछ।\n३. इहलोक र परलोकको विजय: यस लोकमा सुख-शान्ति र परलोकमा सद्गति प्राप्त गर्दछ।\n\nइति अग्निवेशकृते चरकसंहितायाम् सूत्रस्थाने इन्द्रियोपक्रमणीयो नाम अष्टमोऽध्यायः समाप्तः॥",
           "meaning_en": "Ultimate Achievements & Chapter Conclusion\n\nFruits & Benefits of Sadvṛtta\n\nThis completes the comprehensive guide to Sadvṛtta (Ethical Conduct).\nA person who meticulously practices these ethical, hygienic, mental, and spiritual guidelines achieves:\n1. Centenarian Lifespan (Śataṁ Varṣāṇi): A disease-free life of 100 years.\n2. Universal Respect & Fame (Yaśas): High social esteem, noble reputation, and prosperity.\n3. Mastery over Both Worlds (Lokadvaya-Jaya): Spiritual harmony in this worldly life (Ihaloka) and liberation/bliss in the afterlife (Paraloka).\n\nThus ends Chapter 8, entitled Indriyopakramaṇīya Adhyāya of Sutrasthana in the Charaka Samhita of Agnivesha.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "title_ne": "खुड्डकचतुष्पादोऽध्यायः",
+      "title_en": "Khuddakachatushpada Adhyaya — The Four Pillars of Treatment",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "खुड्डकचतुष्पादोऽध्यायः",
+          "transliteration": "khuḍḍakacatuṣpādo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको नवौं अध्याय (खुड्डकचतुष्पाद अध्याय) चिकित्साका चार पाद र तिनका सोह्र गुण बताउँछ। यसमा २६ श्लोक छन्।\n\n१. चार पाद — वैद्य, औषध, परिचारक र रोगी।\n२. सोह्र गुण — प्रत्येक पादका चार गुण।\n३. वैद्यको प्रधानता — उपचारको मुख्य संचालक वैद्य हो (श्लोक ८–१०)।\n४. प्राणाभिसर — साँचो चिकित्सकको योग्यता (श्लोक ११–१४, २०–२६)।\n५. रोगाभिसर — ढोंगी र अयोग्य चिकित्सक (श्लोक १५–१९)।\n६. चार वृत्ति — मैत्री, करुणा, प्रीति र उपेक्षा।",
+          "meaning_en": "Chapter 9 of Sutrasthana (Khuḍḍaka Catuṣpādo 'dhyāyaḥ) establishes the Four Pillars of Medical Therapeutics (Cikitsā Catuṣpāda) and their Sixteen Essential Qualities (Ṣoḍaśa Guṇāḥ). It contains 26 verses detailing:\n1. The Four Pillars of Therapeutics: Physician (Bhiṣak), Medicament (Dravya), Nursing Attendant (Upasthātā), and Patient (Rogī).\n2. The 16 Essential Qualities: 4 distinct attributes required for each of the 4 pillars.\n3. Supreme Role of the Physician: Why the doctor is the primary commander and driving force of successful medical treatment.\n4. Characteristics of Genuine Physicians (Prāṇābhisara): Complete professional, ethical, and clinical qualifications.\n5. Critique of Charlatans & Pseudo-Physicians (Rogābhisara / Chhadmacārī): Warnings against uneducated impostors.\n6. The Four Virtues of a True Healer: Friendship (Maitrī), Compassion (Karuṇā), Joy in Healing (Prīti), and Equanimity (Upekṣā).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो खुड्डकचतुष्पादमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto khuḍḍakacatuṣpādamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "चिकित्सा चतुष्पाद\n\nअब हामी चिकित्साका चार स्तम्भहरू (चतुष्पाद) सम्बन्धी 'खुड्डकचतुष्पाद' नामक नवौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title Announcement & Atreya's Proclamation\n\nThe Four Quadruples of Therapeutics\n\nNow we shall expound the minor chapter entitled Khuddaka Chatushpada (The Four Pillars of Therapeutics), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "भिषग्द्रव्याण्युपस्थाता रोगी पादचतुष्टयम्। गुणवत् कारणं ज्ञेयं विकारव्युपशान्तये॥ ३॥",
+          "transliteration": "bhiṣagdravyāṇyupasthātā rogī pādacatuṣṭayam | guṇavat kāraṇaṁ jñeyaṁ vikāravyupaśāntaye || 3 ||",
+          "meaning_ne": "चिकित्साका चार मुख्य अङ्ग वा स्तम्भहरू हुन्छन्:\n१. भिषक् (चिकित्सक/डाक्टर)\n२. द्रव्य (औषधि तथा आहार)\n३. उपस्थाता (नर्स/परिचारक)\n४. रोगी (बिरामी)\n\nयी चारै वटा अङ्गहरू आफ्ना-आफ्ना आवश्यक गुणहरूले युक्त भएमा मात्र रोगलाई पूर्ण रूपमा शान्त र निको पार्न सफल हुन्छन्।",
+          "meaning_en": "The Four Quadruples & 16 Qualities (चतुष्पाद एवं षोडश गुणाः)\n\nWord-by-Word Meaning:\n- भिषक् (bhiṣak): The Physician\n- द्रव्याणि (dravyāṇi): The Medicaments / Drugs\n- उपस्थाता (upasthātā): The Nursing Attendant / Assistant\n- रोगी (rogī): The Patient\n- पादचतुष्टयम् (pādacatuṣṭayam): The fourfold limbs / pillars\n- गुणवत् (guṇavat): Possessing their requisite qualities\n- कारणम् (kāraṇam): The primary cause / means\n- विकारव्युपशान्तये (vikāravyupaśāntaye): For the alleviation and complete cure of diseases\nThe Physician (Bhishak), the Medicament (Dravya), the Nursing Attendant (Upasthata), and the Patient (Rogi) constitute the four pillars of therapeutics (Chatushpada). When endowed with their respective essential qualities, these four pillars act as the complete cause for the alleviation and cure of all diseases.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "श्रुते पर्यवदातत्वं बहुशो दृष्टकर्मता। दाक्ष्यं शौचमिति ज्ञेयं वैद्ये प्राधान्यमर्हति॥ ४॥",
+          "transliteration": "śrute paryavadātatvaṁ bahuśo dṛṣṭakarmatā | dākṣyaṁ śaucamiti jñeyaṁ vaidye prādhānyamarhati || 4 ||",
+          "meaning_ne": "षोडश गुणाः\n\nश्रेष्ठ चिकित्सकमा हुनुपर्ने चार वटा मुख्य गुणहरू:\n१. शास्त्रको गहिरो ज्ञान (श्रुते पर्यवदातत्वम्): आयुर्वेद शास्त्र र चिकित्सा ग्रन्थहरूको स्पष्ट र पूर्ण ज्ञान।\n२. प्रचुर व्यावहारिक अनुभव (बहुशो दृष्टकर्मता): धेरै रोगीहरूको चिकित्सा र क्रिया प्रत्यक्ष देखेको तथा गरेको अनुभव।\n३. चतुरता र दक्षता (दाक्ष्यम्): सही समयमा सही निर्णय लिने निपुणता र कार्यकुशलता।\n४. पवित्रता र शुद्धता (शौचम्): मन, वचन, शरीर र आचरणको शुद्धता।",
+          "meaning_en": "Four Qualities of the Physician (वैद्य गुणाः)\n\nThe 16 Qualities of the Four Pillars\n\nThe four primary qualities required in a Healer/Physician (Vaidya) are:\n1. Shrute Paryavadatatvam: Deep, comprehensive, and clear theoretical knowledge of medical scriptures.\n2. Bahusho Drishtakarmata: Extensive practical experience and observation of clinical procedures/surgeries.\n3. Dakshyam: Clinical dexterity, efficiency, resourcefulness, and quick decision-making skill.\n4. Shoucham: Purity of mind, body, speech, and ethical integrity.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "बहुता तत्र योग्यत्वमनेककल्पना सम्पत्। औषधस्य गुणाः प्रोक्ताश्चतुष्कोणस्य सिद्धये॥ ५॥",
+          "transliteration": "bahutā tatra yogyatvamanekakalpanā sampat | auṣadhasya guṇāḥ proktāścatuṣkoṇasya siddhaye || 5 ||",
+          "meaning_ne": "उत्तम औषधिमा हुनुपर्ने चार वटा मुख्य गुणहरू:\n१. प्रचुरता (बहुता): सजिलै र पर्याप्त मात्रामा उपलब्ध हुनु।\n२. उपयुक्तता (योग्यत्वम्): रोग र रोगीको प्रकृति अनुसार प्रभावकारी हुनु।\n३. विभिन्न रूपमा बनाउन सकिने (अनेककल्पना): काढा, चूर्ण, अवलेह, तेल, घिउ आदि अनेक रूपमा निर्माण गर्न सकिने क्षमता।\n४. गुणसम्पन्नता (सम्पत्): पूर्ण वीर्यवान्, ताजा, सही समयमा सङ्कलन गरिएको र शुद्ध हुनु।",
+          "meaning_en": "Four Qualities of Medicaments (औषध गुणाः)\n\nThe four qualities required in Medicaments/Drugs (Oshadhi/Dravya) are:\n1. Bahuta: Availability in abundance and easy accessibility.\n2. Yogyatvam: High efficacy, potency, and appropriateness for the specific condition.\n3. Aneka-kalpana: Versatility for formulation into multiple dosage forms (e.g., decoctions, powders, pastes, medicated oils, ghees).\n4. Sampat: Richness in genuine active constituents, harvested in the right season, and uncontaminated.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6",
+          "sanskrit": "उपचारज्ञता दाक्ष्यमनुरक्तिश्च चेतसि। शौचं चेति चतुष्कोऽयं परिचारे जनो गुणी॥ ६॥",
+          "transliteration": "upacārajñatā dākṣyamanuraktiśca cetasi | śaucaṁ ceti catuṣko'yaṁ pericāre jano guṇī || 6 ||",
+          "meaning_ne": "उत्तम परिचारक (नर्स/सहयोगी) मा हुनुपर्ने चार वटा मुख्य गुणहरू:\n१. सेवा कलाको ज्ञान (उपचारज्ञता): बिरामीको हेरचाह र सुश्रुषा कसरी गर्ने भन्ने पूर्ण ज्ञान।\n२. कार्यकुशलता (दाक्ष्यम्): फुर्तिलो, चनाखो र डाक्टरको निर्देशन तुरुन्त पालन गर्ने क्षमता।\n३. स्नेह र दयाभाव (अनुरक्ति): बिरामीप्रति आत्मीयता, माया र सेवाभाव हुनु।\n४. शुद्धता (शौचम्): शारीरिक र मानिसक सरसफाइ।",
+          "meaning_en": "Four Qualities of the Nursing Attendant (परिचारक गुणाः)\n\nThe four essential qualities required in a Nursing Attendant (Upasthata/Paricharaka) are:\n1. Upacharajnata: Knowledge of proper caregiving, nursing techniques, and patient handling.\n2. Dakshyam: Resourcefulness, alertness, and promptness in executing orders.\n3. Anurakti: Compassion, affection, and genuine dedication towards the patient's well-being.\n4. Shoucham: Personal hygiene, cleanliness in managing the patient's environment, and mental purity.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "7",
+          "sanskrit": "स्मृतिानिर्देशकारित्वमभीरुत्वमथापि च। ज्ञापकत्वं च रोगाणां तावद्रोगिगुणाः स्मृताः॥ ७॥",
+          "transliteration": "smṛtirnirdeśakāritvamabhīrutvamathāpi ca | jñāpakatvaṁ ca rogāṇāṁ tāvadrogiguṇāḥ smṛtāḥ || 7 ||",
+          "meaning_ne": "उत्तम रोगी (बिरामी) मा हुनुपर्ने चार वटा मुख्य गुणहरू:\n१. स्मरणशक्ति (स्मृति): रोगको सुरुवाती अवस्था, खानपान र घटनाक्रम सम्झनसक्ने क्षमता।\n२. आज्ञाकारिता (निर्देशकारित्वम्): चिकित्सकको निर्देशन र पथ्य-परहेज पूर्ण रूपमा पालन गर्नु।\n३. निडरता (अभिरुत्वम्): रोग र उपचार प्रक्रियाप्रति धैर्यवान् र नडराउने हुनु।\n४. रोगको स्पष्ट वर्णन (ज्ञापकत्वम्): आफ्ना लक्षण र पीडा डाक्टरलाई स्पष्टसँग भन्न सक्नु।",
+          "meaning_en": "Four Qualities of the Patient (रोगी गुणाः)\n\nThe four essential qualities required in a Patient (Rogi) are:\n1. Smriti: Good memory to accurately recall diet, lifestyle habits, onset of symptoms, and history.\n2. Nirdeshakaritvam: Complete obedience and strict adherence to the physician's instructions.\n3. Abhirutvam: Courage, mental fortitude, and lack of undue fear regarding treatments or medicines.\n4. Jnapakatvam: Ability to clearly articulate feelings, pain, and symptoms to the doctor.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "8–10",
+          "sanskrit": "कारणं षोडशगुणं सिद्धौ पादचतुष्टयम्। विज्ञाता शासिता योक्ता प्रधानं भिषगत्र तु॥ ८॥ मृत्पिण्डदण्डचक्रादि कुम्भकारमृते यथा। नाङ्गीकरोति परिणामं तद्वत् पादत्रयं भिषक्॥ ९॥ भिषगेकः प्रधानं स्याद् व्यूहे योद्धारणे यथा। तस्माद् वैश्यो गुणोपेतो भिषक् पूज्यतमो मतः॥ १०॥",
+          "transliteration": "kāraṇaṁ ṣoḍaśaguṇaṁ siddhau pādacatuṣṭayam | vijñātā śāsitā yoktā pradhānaṁ bhiṣagatra tu || 8 || mṛtpiṇḍadaṇḍacakrādi kumbhakāramṛte yathā | nāṅgīkaroti pariṇāmaṁ tadvat pādatrayaṁ bhiṣak || 9 || bhiṣagekaḥ pradhānaṁ syād vyūhe yoddhāraṇe yathā | tasmād vaiśyo guṇopeto bhiṣak pūjyatamo mataḥ || 10 ||",
+          "meaning_ne": "भिषक् प्राधान्यम्\n\nसोलह गुणले युक्त चार अङ्गहरू हुँदाहुँदै पनि चिकित्सक नै सबैभन्दा मुख्य हुन्छ।\n- चिकित्सक नै ज्ञानवान् (विज्ञाता), नियन्त्रक (शासिता) र योजनाकार (योक्ता) हो।\n- दृष्टान्त १: जसरी माटो, पाङ्ग्रो र लौरो भए तापनि कुम्हाले बिना घडा बन्न सक्दैन, त्यसैगरी औषधि, परिचारक र रोगी भएर पनि चिकित्सक बिना रोग निको हुन सक्दैन।\n- दृष्टान्त २: जसरी युद्ध मैदानमा कुशल सेनापतिले सेनालाई विजयतर्फ लैजान्छ, त्यसैगरी चिकित्सकले चिकित्सा प्रक्रियाको नेतृत्व गर्दछ। तसर्थ, गुणवान् वैद्य सबैभन्दा पूजनीय मानिन्छ।",
+          "meaning_en": "The Physician as the Core Commander\n\nSupreme Importance of the Physician\n\nAlthough the four pillars with their sixteen qualities are collectively required for success, the Physician (Bhishak) is the supreme lead element.\n- The physician acts as the Knower (Vijnata), the Ruler (Shasita), and the Deployer (Yokta) of the other three pillars.\n- Analogy 1: Just as clay, the wheel, string, and stick cannot create a pot without the potter (Kumbhakara), so also drugs, attendants, and patients cannot achieve cure without a skilled physician.\n- Analogy 2: Just as a commander (Yoddharana) leads an army to victory on the battlefield, the physician leads the medical process to conquer disease. Thus, an accomplished physician is the most revered among the four.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "11–14",
+          "sanskrit": "शास्त्रं ज्योतिः प्रकाशार्थं दर्शनं बुद्धिरात्मनः। ताभ्यां भिषक् सुयुक्ताभ्यां चिकित्सन्नापराध्यति॥ ११॥ मैत्री कारुण्यमार्तेषु शक्ये प्रीतिरुपेक्षणम्। प्रकृतिस्थेषु भूतेषु वैद्यवृत्तिश्चतुर्विधा॥ १२॥",
+          "transliteration": "śāstraṁ jyotiḥ prakāśārthaṁ darśanaṁ buddhirātmanaḥ | tābhyāṁ bhiṣak suyuktābhyāṁ cikitsannāparādhyati || 11 || maitrī kāruṇyamārteṣu śakye prītirupekṣaṇam | prakṛtiṣtheṣu bhūteṣu vaidyavṛttiścaturvidhā || 12 ||",
+          "meaning_ne": "शास्त्र प्रकाश दिने बत्ती (दीपक) जस्तै हो र आफ्नो बुद्धि हेर्ने आँखा जस्तै हो। यी दुवैको सही प्रयोग गर्ने चिकित्सकबाट चिकित्सामा कहिल्यै गल्ती हुँदैन।\n\nचिकित्सकका चार नैतिक कर्तव्यहरू (वैद्यवृत्ति):\n१. मैत्री: सबै प्राणीहरूप्रति मित्रवत व्यवहार।\n२. कारुण्य: रोगी र दुःखीहरूप्रति अपार दया।\n३. प्रीति: साध्य (निको हुने) रोगीको चिकित्सा गर्दा खुसी र तत्परता।\n४. उपेक्षा: असाध्य रोगीहरूप्रति तटस्थता र समभाव।",
+          "meaning_en": "Genuine Physicians (Pranabhisara) & The Four Virtues\n\nQualifications of True Physicians vs. Charlatans\n\nScriptural knowledge (Shastra) acts as a lamp (Jyoti) to illuminate the path, while the physician's own intellect (Buddhi) serves as the eyes (Darshana). A physician equipped with both never makes clinical errors.\n\nThe Four Essential Attitudes of a True Physician (Vaidya Vritti):\n1. Maitri: Universal friendship and goodwill towards all living beings.\n2. Karunya: Deep compassion towards those who are diseased and suffering (Arta).\n3. Priti: Joy, enthusiasm, and devotion in treating curable cases (Shakya).\n4. Upekshanam: Equanimity, peaceful detachment, and non-entanglement with terminal or incurable cases (Incurable/Prakritistha).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "15–19",
+          "sanskrit": "वरमात्मा हुताशेन तप्तो वा सम्प्रपातितः। न तु अज्ञानवता वैद्येनाभिसंस्कृत भेषजम्॥ १५॥ भिषक्छद्मचरा ह्येते रोगाणामभिसराः स्मृताः। कुर्वन्त्यबुद्धाः सिद्धीनां यदृच्छासिद्धिलक्षणम्॥ १६॥",
+          "transliteration": "varamātmā hutāśena tapto vā samprapātitaḥ | na tu ajñānavatā vaidyenābhiyaṁskṛta bheṣajam || 15 || bhiṣakchadmacarā hyete rogāṇāmabhisarāḥ smṛtāḥ | kurvantyabuddhāḥ siddhīnāṁ yadṛcchāsiddhilakṣaṇam || 16 ||",
+          "meaning_ne": "अज्ञानी र अयोग्य डाक्टरको हातबाट औषधि खानु भन्दा बलिरहेको आगोमा हामफाल्नु वा भीरबाट खस्नु श्रेयस्कर हुन्छ!\nछद्मभेषी डाक्टरहरू (ढोंगी) वास्तवमा रोग र मृत्युका दूत हुन्। उनीहरू कपटपूर्ण भेष धारण गरेर रोगीहरूलाई ठग्छन् र संयोगवश कुनै बिरामी निको भएमा त्यसलाई आफ्नै सफलता भनी घमण्ड गर्छन्।",
+          "meaning_en": "Pseudo-Physicians & Charlatans (Rogabhisara / Chhadmachari)\n\nIt is better for a person to jump into a blazing fire or jump off a cliff than to take medicines prescribed by an ignorant, uneducated physician!\nPseudo-physicians who disguise themselves as doctors (Bhishak-chhadmachara) are actually messengers of disease and death (Rogabhisara). They roam about wearing medical attire, exploiting patients' ignorance, and claiming accidental recoveries (Yadrichha Siddhi) as their own success.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "20–26",
+          "sanskrit": "कुलीनाः शीलसम्पन्नाः विद्यावन्तो जितेन्द्रियाः। लक्षणज्ञाः सुसंसिद्धाः प्राणिसंशयमोचकाः॥ २०॥ तस्मात् भिषग् वरं विद्वान् सर्वदा पूजितो भवेत्। इति खुड्डकचतुष्पादः सर्वव्याधिनिबर्हणः॥ २६॥",
+          "transliteration": "kulīnāḥ śīlasampannāḥ vidyāvanto jitendriyāḥ | lakṣaṇajñāḥ susaṁsiddhāḥ prāṇisaṁśayamocakāḥ || 20 || tasmāt bhiṣag varaṁ vidvān sarvadā pūjito bhavet | iti khuḍḍakacatuṣpādaḥ sarvavyādhinibarhaṇaḥ || 26 ||",
+          "meaning_ne": "सच्चा जीवनदाता चिकित्सकहरू (प्राणाभिसार वैद्य) उत्तम चरित्र, शास्त्रज्ञान, इन्द्रिय संयम, लक्षण विज्ञानमा निपुण र सफल उपचार गर्ने क्षमताले युक्त हुन्छन्। उनीहरूले रोगीहरूलाई रोग र मृत्युको मुखबाट बचाउँछन्। तसर्थ, विद्वान् र सदाचारी वैद्य सधैँ पूजनीय हुन्छन्। यसरी नवौँ अध्याय समाप्त भयो।",
+          "meaning_en": "Characteristics of Genuine Doctors (Pranabhisara) & Conclusion\n\nGenuine life-saving physicians (Pranabhisara Vaidya) possess noble character, deep scriptural learning, self-control (Jitendriya), mastery over clinical symptoms, and proven treatment results. They liberate living beings from the clutches of disease and death. Therefore, a learned physician should always be honored and respected. Thus ends the ninth chapter entitled Khuddaka Chatushpada.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "title_ne": "महाचतुष्पादोऽध्यायः",
+      "title_en": "Mahachatushpada Adhyaya — Prognosis and the Four Pillars",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "महाचतुष्पादोऽध्यायः",
+          "transliteration": "mahācatuṣpādo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको दशौं अध्याय (महाचतुष्पाद अध्याय) चिकित्साको फल र रोगको साध्य-असाध्यता बताउँछ। यसमा २५ श्लोक छन्। मैत्रेय र आत्रेयको वाद छ।\n\n१. मैत्रेयको आक्षेप — उपचार भए पनि नभए पनि कोही बाँच्छ, कोही मर्छ (श्लोक ३–५)।\n२. आत्रेयको उत्तर — योग्य चार पादले चिकित्सा सफल हुन्छ (श्लोक ६–१३)।\n३. साध्यताका चार वर्ग — सुखसाध्य, कृच्छ्रसाध्य, याप्य र प्रत्यख्येय (श्लोक १४–२४)।\n४. निष्कर्ष — वैद्यले साध्य र याप्य मात्र लिन्छ (श्लोक २५)।",
+          "meaning_en": "Chapter 10 of Sutrasthana (Mahācatuṣpādo 'dhyāyaḥ) addresses the Utility of Therapeutics (Cikitsā-Phala) and the Prognostic Classification of Diseases (Sādhyāsādhyatā). It contains 25 verses structured around a classic philosophical debate between Sage Maitreya and Lord Atreya Punarvasu:\n\n1. Maitreya's Skepticism (Verses 3–5): The argument that medical treatment is ineffective or irrelevant, as both treated and untreated patients can recover or die.\n2. Atreya's Refutation & Defense of Medicine (Verses 6–13): Demonstration that rational medical treatment with qualified quadruple pillars (Catuṣpāda) ensures success, illustrated by the analogies of the archer and helping a fallen person.\n3. Fourfold Classification of Disease Prognosis (Verses 14–24):\n- Sukhasādhya (Easily Curable): Mild causes, minor symptoms, single-dosha, healthy patient.\n- Kṛcchrasādhya (Curable with Difficulty): Complex, dual-dosha, requiring instruments, surgery, or caustic agents.\n- Yāpya (Palliative / Manageable): Deeply rooted in tissues (Dhātu-gata), requiring life-long regimen.\n- Pratyākhyeya / Anupakrama (Incurable / Fatal): Severe, multi-systemic, presence of fatal signs (Ariṣṭa).\n4. Conclusion & Practical Value (Verse 25): Why a wise physician must only treat curable or palliative conditions and reject fatal ones.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो महाचतुष्पादमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto mahācatuṣpādamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "चिकित्सा-फल परीक्षा\n\nअब हामी चिकित्साका चार स्तम्भहरूको बृहत् व्याख्या गर्ने 'महाचतुष्पाद' नामक दशौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Chapter Announcement\n\nDebate on the Utility of Therapeutics\n\nNow we shall expound the major chapter entitled Mahācatuṣpāda (The Major Chapter on the Four Pillars of Therapeutics), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–5",
+          "sanskrit": "चतुष्पादं यदुक्तं ते भेषजं व्याधिशान्तये। तदयुक्तं मतिर्मह्यं यतो दृश्यन्ते क्रियाः॥ ३॥ समेत्य युक्ताश्चाप्युच्चैर्भेषजैर्मानवाः कचित्। क्रियमाणा अपि गता न चाप्युद्यमवन्तश्च॥ ४॥ तु ल्यायामातुराणां च क्रियायां चाविशिष्टयाम्। फलस्यैकान्तता नास्ति तस्माद्भे षजमकिञ्चित्॥ ५॥",
+          "transliteration": "catuṣpādaṁ yaduktaṁ te bheṣajaṁ vyādhiśāntaye | tadayuktaṁ matirmahyaṁ yato dṛśyante kriyāḥ || 3 || sametya yuktāścāpyuccairbheṣajairmānavāḥ kacid | kriyamāṇā api gatā na cāpyudyamavantaśca || 4 || tulyāyāmāturāṇāṁ ca kriyāyāṁ cāviśiṣṭāyām | phalasyaikāntatā nāsti tasmādbheṣajamakiñcit || 5 ||",
+          "meaning_ne": "मैत्रेयको शङ्का: ऋषि मैत्रेयले भगवान् आत्रेयसामु शङ्का व्यक्त गर्नुभयो: \"हजुरले भन्नुभयो कि चारै वटा गुणयुक्त स्तम्भहरू (वैद्य, औषधि, परिचारक, रोगी) ले रोग निको पार्छन्। तर मेरो विचारमा यो कुरा युक्तिसङ्गत छैन। किनभने संसारमा चारै गुणयुक्त उपचार पाउँदापाउँदै पनि कतिपय रोगीको मृत्यु हुन्छ, भने कुनै उपचार नपाउने कतिपय मानिसहरू आफैँ निको हुन्छन्। यसरी उपचार र परिस्थिति उस्तै हुँदा पनि परिणाम फरक आउने भएकाले औषधि वा चिकित्साको कुनै खास महत्त्व देखिँदैन।\"",
+          "meaning_en": "Maitreya's Objection against Medicine\n\nMaitreya's Argument: Sage Maitreya raised an objection to Atreya: \"You stated that the four pillars of medicine cure disease. I consider this illogical. In clinical practice, we see patients treated with all four qualified pillars who still die, while others who receive no medical care at all recover completely. When treatments and patient conditions appear similar yet results are contradictory, medicine cannot be considered the decisive factor. Therefore, therapeutics is useless.\"",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "6–8",
+          "sanskrit": "मैत्रेय मैवमवोचः भेषजं हि निरर्थकम्। न हि सम्यक्समारब्धं भेषजं न करोति यत्॥ ६॥ आतुरं ह्यातुरस्यैव सर्वलक्षणलक्षितम्। अक्रियायामपि समं मत्वा ब्रूषे तु यद्वचः॥ ७॥ न तदेतत्त्वया सम्यग्दृष्टं पश्यात्र कारणम्। भिषजा ह्यनुपाक्रान्ता मुच्यन्ते च न वा पुन॥ ८॥",
+          "transliteration": "maitreya maivamavocaḥ bheṣajaṁ hi nirarthakam | na hi samyaksamārabdhaṁ bheṣajaṁ na karoti yat || 6 || āturaṁ hyāturasyaiva sarvalakṣaṇalakṣitam | akriyāyāmapi samaṁ matvā brūṣe tu yadvacaḥ || 7 || na tadetattvayā samyagdṛṣṭaṁ paśyātra kāraṇam | bhiṣajā hyanupākrāntā mucyante ca na vā punaḥ || 8 ||",
+          "meaning_ne": "भगवान् आत्रेयको खण्डन: भगवान् आत्रेयले भन्नुभयो: \"हे मैत्रेय! त्यसरी औषधि निरर्थक छ नभन। विधिपूर्वक र गुणयुक्त स्तम्भहरूमार्फत गरिएको सही चिकित्सा कहिल्यै निष्फल हुँदैन। तिमीले सबै रोगीहरूलाई एउटै दृष्टिले हेर्यौ र रोगको साध्यता-असाध्यता (निको हुने वा नहुने क्षमता) लाई ध्यान दिएनौ। उपचारविना निको हुने मानिसहरूका रोगहरू स्वाभाविक रूपमै सुसाध्य (सजिलै निको हुने) थिए, जबकि पूर्ण उपचार पाउँदापाउँदै मरेका मानिसहरू असाध्य (निको नहुने) रोगबाट ग्रसित थिए।\"",
+          "meaning_en": "Atreya's Refutation & Defense of Medicine\n\nAtreya's Refutation: Lord Atreya replied: \"O Maitreya! Do not speak thus. Proper medical treatment given with complete knowledge and qualified pillars is never ineffective. Your confusion arises because you view all patients as identical without examining their underlying disease severity (Sādhyāsādhyatā). Untreated patients who survive do so because their diseases are naturally mild and easily curable, whereas those who die despite treatment suffer from fundamentally incurable conditions.\"",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "9–10",
+          "sanskrit": "यथा हि पतितं पुरुषम् उत्थापयन् पुरुषः समर्थः क्षिप्रमुत्थापयति। तथा आतुरमपि भेषजवान् वैद्यः क्षिप्रमुत्थापयति॥ ९॥ यथा चेष्वस्त्रविद् इषुमस्तं लक्ष्ये मुञ्चन् न चापराध्यति। तथा सम्यक्प्रयुक्तं भेषजं सिद्धिमुपैति॥ १०॥",
+          "transliteration": "yathā hi patitaṁ puruṣam utthāpayan puruṣaḥ samarthaḥ kṣipramutthāpayati | tathā āturamapi bheṣajavān vaidyaḥ kṣipramutthāpayati || 9 || yathā ceṣvastravid iṣumastaṁ lakṣye muñcan na cāparādhyati | tathā samyakprayuktaṁ bheṣajaṁ siddhimupaiti || 10 ||",
+          "meaning_ne": "चिकित्साका दुई उदाहरणहरू:\n१. लडेको मानिसको उदाहरण: जसरी भुइँमा लडेको मानिसलाई कुनै बलियो व्यक्तिले सहारा दिएर तुरुन्तै उभ्याइदिन्छ, त्यसरी नै कुशल वैद्यले सही औषधिको प्रयोगद्वारा रोगीलाई तुरुन्तै स्वस्थ बनाएर उभ्याउँछ।\n२. कुशल धनुर्धारीको उदाहरण: जसरी धनुर्विद्यामा पारंगत व्यक्तिले नजिकैको स्पष्ट निशानामा हानेको बाण कहिल्यै चुक्दैन, त्यसरी नै सही ज्ञान र विधिपूर्वक गरिएको उपचारले सधैँ सफलता (रोग मुक्ति) दिलाउँछ।",
+          "meaning_en": "Analogies of the Archer & The Fallen Man\n\nClinical Analogies:\n1. The Fallen Person: Just as a strong man quickly lifts up a person who has fallen to the ground (whereas an unsupported person struggles or remains fallen), so does a skilled physician equipped with proper drugs rapidly raise a bedridden patient back to health.\n2. The Skilled Archer: Just as a trained archer shooting an arrow at an unobstructed, close target never misses the mark, so does properly administered therapy guided by rational diagnosis (Yukti) invariably achieve therapeutic success (Siddhi).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "11–13",
+          "sanskrit": "न तु केवलं भेषजात् सिद्धिः, नापि भेषजमन्तरेण सिद्धिः। सर्वथैव तु युक्तिसिद्धं भेषजं फलवद्भवति॥ ११॥ तस्माद्भिषग् बुद्धिकल्पेन ज्ञात्वा साध्यासाध्यतां विभो। असाध्यं वर्जयेत् धीमान् साध्यं चानुपक्रमेत्॥ १२॥ असाध्यं कुरुते यस्तु ज्ञानहीनः चिकित्सकः। अर्थविद्यायशोहानिम् उपयाति स दुर्मतिः॥ १३॥",
+          "transliteration": "na tu kevalaṁ bheṣajāt siddhiḥ, nāpi bheṣajamantareṇa siddhiḥ | sarvathaiva tu yuktisiddhaṁ bheṣajaṁ phalavadbhavati || 11 || tasmādbhiṣag buddhikalpena jñātvā sādhyāsādhyatāṁ vibho | asādhyaṁ varjayet dhīmān sādhyaṁ cānupakramet || 12 || asādhyaṁ kurute yastu jñānahīnaḥ cikitsakaḥ | arthavidyāyaśohānim upayāti sa durmatiḥ || 13 ||",
+          "meaning_ne": "चिकित्सामा सफलता न केवल औषधिका भरमा हुन्छ, न त औषधिना नै सम्भव हुन्छ; युक्तिपूर्वक (विवेकपूर्ण) गरिएको औषधिको प्रयोगले मात्र फल दिन्छ। त्यसैले बुद्धिमान् वैद्यले उपचार सुरु गर्नुअघि रोग निको हुने (साध्य) वा नहुने (असाध्य) कुराको परीक्षण गर्नुपर्छ। ज्ञानी वैद्यले असाध्य रोगको उपचार त्यागिदिन्छ र साध्य रोगको मात्र उपचार गर्छ। तर ज्ञानहीन वैद्यले असाध्य रोगको उपचार गर्दा धन, विद्या, यश र सम्मान सबै गुमाउँछ।",
+          "meaning_en": "Rational Intervention vs. Ignorant Inaction\n\nTherapeutic success relies neither on drugs alone nor on chance without drugs; it is achieved through the rational application (Yukti) of appropriate remedies. Therefore, a wise physician must evaluate the curability (Sādhya) or incurability (Asādhya) of every disease before initiating treatment. The intelligent doctor rejects incurable cases and treats curable ones. An ignorant physician who undertakes incurable cases suffers loss of wealth, knowledge, reputation, and goodwill.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "14–16",
+          "sanskrit": "द्विविधं साध्यमपि च द्विविधं चाप्यसाध्यकम्। सुसाध्यं कृच्छ्रसाध्यं च साध्यं ज्ञेयं द्विलक्षणम्॥ १४॥ याप्यं चानुपक्रम्यं च द्विविधं चाप्यसाध्यकम्। चतुर्धा तदिदं प्रोक्तं रोगाणां साध्यलक्षणम्॥ १५॥ साध्यासाध्यविभागज्ञो ज्ञानवान् भिषगुच्यते। तस्मादेतत्प्रवक्ष्यामि साध्यासाध्यस्य लक्षणम्॥ १६॥",
+          "transliteration": "dvividhaṁ sādhyamapi ca dvividhaṁ cāpyasādhyakam | susādhyaṁ kṛcchrasādhyaṁ ca sādhyaṁ jñeyaṁ dvilakṣaṇam || 14 || yāpyaṁ cānupakramyaṁ ca dvividhaṁ cāpyasādhyakam | caturdhā tadidaṁ proktaṁ rogāṇāṁ sādhyalakṣaṇam || 15 || sādhyāsādhyavibhāgajño jñānavān bhiṣagucyate | tasmādetatpravakṣyāmi sādhyāsādhyasya lakṣaṇam || 16 ||",
+          "meaning_ne": "साध्यासाध्यता-विभाग\n\nरोगहरूलाई मुख्यतया दुई भागमा बाँडिएको छ—साध्य (निको हुने) र असाध्य (निको नहुने)। यी दुवैका दुई-दुई प्रकार गरी जम्मा ४ वटा वर्ग हुन्छन्:\n१. सुसाध्य (सजिलै निको हुने): सामान्य औषधि र थोरै प्रयासले निको हुने रोग।\n२. कृच्छ्रसाध्य (कठिनाइले निको हुने): जटिल शल्यक्रिया, क्षार, वा कठिन उपचारबाट मात्र निको हुने रोग।\n३. याप्य (यापन योग्य / नियन्त्रण मात्र हुने): जीवनभर पथ्य-आहार र औषधिको निरन्तर सेवनबाट मात्र नियन्त्रणमा रहने रोग।\n४. अनुपक्रम / प्रत्याख्येय (सर्वथा निको नहुने / असाध्य): कुनै पनि उपचारले निको नहुने र मृत्यु निश्चित भएको रोग।",
+          "meaning_en": "The 4 Categories of Prognosis\n\nFourfold Prognostic Classification of Diseases\n\nDiseases are fundamentally classified into two main categories—Sādhya (Curable) and Asādhya (Incurable)—each of which is further divided into two sub-types, yielding 4 Prognostic Classes:\n1. Sukhasādhya (Easily Curable): Diseases curable with minor effort and standard remedies.\n2. Kṛcchrasādhya (Curable with Difficulty): Diseases requiring complex, painful, or surgical interventions.\n3. Yāpya (Palliative / Manageable): Incurable diseases where the patient survives only so long as continuous diet and regimen are maintained.\n4. Anupakrama / Pratyākhyeya (Fatal / Untreatable): Severe incurable diseases where treatment is completely ineffective and death is imminent.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "17–18",
+          "sanskrit": "अल्पहेतुप्रवृत्तानां पूर्वरूपैरुपद्रवैः। असंसृष्टमशान्तानां तुल्यदोषर्तुदूष्यताम्॥ १७॥ एकदोषोत्थमल्पं च देशकालवयःक्षमैः। चतुष्पादौपपन्नं च सुसाध्यं रोगमादिशेत्॥ १८॥",
+          "transliteration": "alpahetupravṛttānāṁ pūrvarūpairupadravaiḥ | asaṁsṛṣṭamaśāntānāṁ tulyadoṣartudūṣyatām || 17 || ekadoṣotthamalpaṁ ca deśakālavayaḥkṣamaiḥ | catuṣpādaupapannaṁ ca susādhyaṁ rogamādiśet || 18 ||",
+          "meaning_ne": "सुसाध्य (सजिलै निको हुने) रोगका लक्षणहरू:\n- कारण र लक्षण: रोगको कारण थोरै वा कमजोर हुनु, पूर्वलक्षण र उपद्रव (कम्प्लिकेसन) थोरै हुनु।\n- दोष र दुष्य: केवल एउटा मात्र दोषबाट उत्पन्न भएको हुनु; दोष, ऋतु, दुष्य (धातु) र प्रकृति आपसमा समान नहुनु (जस्तै: कफज रोग ग्रीष्म ऋतुमा हुनु)।\n- रोगी र स्तम्भ: रोगी बलियो, युवा र अनुकूल देशमा बस्ने हुनु, तथा चारै वटा गुणयुक्त चिकित्सा स्तम्भहरू उपलब्ध हुनु।",
+          "meaning_en": "Features of Sukhasadhya (Easily Curable Diseases)\n\nCharacteristics of Sukhasādhya (Easily Curable):\n- Etiology & Onset: Triggered by mild causative factors (Alpa-hetu).\n- Symptoms & Complications: Few prodromal features (Alpa-purvaroopa) and no major complications (Upadrava).\n- Dosha & Dhatus: Caused by a single Dosha (Eka-dosha), where the involved Dosha, Season (Ritu), Tissue (Dushya), and Body Type (Prakriti) are NOT identical (e.g., Kapha disease occurring in dry season or Vata constitution).\n- Patient & Pillars: Occurs in a young, strong patient in a favorable geographical land (Desha), supported by all four qualified therapeutic pillars (Catuṣpāda-sampat).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "19–20",
+          "sanskrit": "शस्त्रादिसाध्यं यच्चापि शस्त्राग्नि क्षारसाधितम्। द्वन्द्वजं शमयत्याशु न चाप्यल्पोपद्रवम्॥ १९॥ तुल्यकालगुणं यच्च व्याधिदेहानुकूलकम्। कृच्छ्रसाध्यं समाख्यातं रोगं बुद्धिमता भिषा॥ २०॥",
+          "transliteration": "śastrādisādhyaṁ yaccāpi śastrāgni kṣārasādhitam | dvandvajaṁ śamayatyāśu na cāpyalpopadravam || 19 || tulyakālaguṇaṁ yacca vyādhidehānukūlakam | kṛcchrasādhyaṁ samākhyātaṁ rogaṁ buddhimatā bhiṣā || 20 ||",
+          "meaning_ne": "कृच्छ्रसाध्य (कठिनाइले निको हुने) रोगका लक्षणहरू:\n- उपचार विधि: शल्यक्रिया (अस्त्र/शस्त्र), अग्निकर्म वा क्षारको प्रयोगबाट मात्र निको हुने रोग।\n- सम्प्राप्ति: दुई वटा दोष (द्वन्द्वज) को प्रकोप हुनु, मध्यम खालका उपद्रवहरू हुनु, वा दोष, ऋतु र शरीरको प्रकृति समान हुनु।\n- रोगीको अवस्था: गर्भवती महिला, वृद्ध वा साना बालबालिकामा लागेको पुरानो रोग।",
+          "meaning_en": "Features of Krichchhasadhya (Curable with Difficulty)\n\nCharacteristics of Kṛcchrasādhya (Curable with Difficulty):\n- Therapeutics Required: Requires surgical instruments (Shastra), cauterization (Agni-karma), or alkaline caustics (Kshara).\n- Pathology: Involves two Doshas (Dvandvaja), moderate complications, or occurs in a season and body constitution identical to the prevailing Dosha.\n- Progression: Chronic conditions that have crossed initial stages or afflict pregnant women, elderly individuals, or young children.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "21–22",
+          "sanskrit": "शेषत्वादायुषो यस्तु पथ्यैः साधयते शनैः। गम्भीरं बहुधातुस्थम् मर्मसन्धि समाश्रितम्॥ २१॥ नित्यानुबन्धिनं रोगं दीर्घकालानुवर्तिनम्। याप्यं विद्यात्तु तं रोगं क्रियासन्ततपालितम्॥ २२॥",
+          "transliteration": "śeṣatvādāyuṣo yastu pathyaiḥ sādhayate śanaiḥ | gambhīraṁ bahudhātustham marmasandhi samāśritam || 21 || nityānubandhinaṁ rogaṁ dīrghakālānuvartinam | yāpyaṁ vidyāttu taṁ rogaṁ kriyāsantatapālitam || 22 ||",
+          "meaning_ne": "याप्य (नियन्त्रण मात्र हुने) रोगका लक्षणहरू:\n- गम्भीरता: शरीरका गहिरा धातुहरू, मर्मस्थान (हृदय, मस्तिष्क, मिर्गौला आदि) र जोर्नीहरूमा फैलिएको रोग।\n- प्रकृति: अलिकति पनि पथ्य (आहार-विहार) बिग्रिनेबित्तिकै पुनः बल्झिने र जीवनभर रहिरहने पुरानो रोग।\n- नियन्त्रण: यो रोग कहिल्यै पूर्ण रूपमा निको हुँदैन; तर निरन्तर औषधि, सही आहार र उपचार पाइरहँदासम्म रोगी जीवित रहन्छ।",
+          "meaning_en": "Features of Yapya (Palliative / Manageable Diseases)\n\nCharacteristics of Yāpya (Palliative / Manageable):\n- Depth: Afflicts deep tissues (Gambhīra / Bahu-dhātustha), vital organs (Marma), or major joints (Sandhi).\n- Persistence: Chronic, recurring diseases that persist for long durations and relapse immediately upon the slightest error in diet or lifestyle.\n- Management: The patient stays alive only through continuous therapeutic care (Kriyā-santata-pālita) and strict adherence to wholesome diet (Pathya). It can be controlled but never eradicated.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "23–24",
+          "sanskrit": "सर्वत्रिदोषजं यच्च सर्वलक्षणलक्षितम्। अतीत्य सर्वभेषज्यं ज्ञानसंज्ञाप्रणाशनम्॥ २३॥ अरिष्टरिष्टसन्तापेः पीडितं चातिदुर्बलम्। असाध्यं वर्जयेद् धीमान् भिषक् सर्वक्रियास्वपि॥ २४॥",
+          "transliteration": "sarvatridoṣajaṁ yacca sarvalakṣaṇalakṣitam | atītya sarvabheṣajyaṁ jñānasaṁjñāpraṇāśanam || 23 || ariṣṭariṣṭasantāpaiḥ pīḍitaṁ cātidurbalam | asādhyaṁ varjayed dhīmān bhiṣak sarvakriyāsvapi || 24 ||",
+          "meaning_ne": "अनुपक्रम / असाध्य (अन्तिम अवस्थाको/मृत्यु निश्चित भएको) रोगका लक्षणहरू:\n- गम्भीरता: तीनै वटा दोषहरू (सन्निपातज) अत्यन्त उग्र भई सबै भयानक लक्षणहरू देखिनु।\n- अवस्था: सम्पूर्ण औषधिको क्षमताभन्दा बाहिर जानु, चेतना र होश हराउनु, शरीर अत्यन्त कमजोर हुनु, र अरिष्ट लक्षण (मृत्युका सूचक लक्षणहरू) देखा पर्नु।\n- वैद्यको कर्तव्य: यस्ता असाध्य र अन्तिम अवस्थाका रोगीहरूको उपचार ज्ञानी वैद्यले पूर्ण रूपमा त्यागिदिनुपर्छ।",
+          "meaning_en": "Features of Anupakrama / Pratyakhyeya (Incurable Diseases)\n\nCharacteristics of Anupakrama / Pratyākhyeya (Fatal / Untreatable):\n- Pathology: Involves all three Doshas (Sannipātaja) displaying all severe signs and symptoms.\n- Clinical Complications: Exceeds the scope of all medical therapies (Atītya sarva-bheṣajyam), causes loss of sensory awareness and consciousness (Saṁjñā-praṇāśa), extreme debility (Ati-durbala), and manifestation of fatal omens / pre-mortality signs (Ariṣṭa).\n- Action: A wise physician completely rejects treating such terminal cases to preserve medical dignity and ethics.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "25",
+          "sanskrit": "तत्र श्लोकः— साध्यासाध्यविभागज्ञो भिषग्ज्ञानवतां वरः। यथोक्तं साधयन् साध्यं लभते धर्ममर्थयोः॥ २५॥ इति अग्निवेशकृते तन्त्रे चरकप्रतिसंस्कृते सूत्रस्थाने महाचतुष्पादो नाम दशमोऽध्यायः॥ १०॥",
+          "transliteration": "tatra ślokaḥ— sādhyāsādhyavibhāgajño bhiṣagjñānavatāṁ varaḥ | yathoktaṁ sādhayan sādhyaṁ labhate dharmamarthayoḥ || 25 || iti agniveśakṛte tantre carakapratisaṁskṛte sūtrasthāne mahācatuṣpādo nāma daśamo'dhāyaḥ || 10 ||",
+          "meaning_ne": "सार श्लोक: साध्य (निको हुने) र असाध्य (निको नहुने) रोगको विभाजनलाई स्पष्ट रूपमा बुझ्ने वैद्य नै ज्ञानीहरूमा श्रेष्ठ मानिन्छ। शास्त्रोक्त विधिअनुसार साध्य रोगको उपचार गर्ने वैद्यले धर्म, अर्थ, काम र कीर्ति प्राप्त गर्दछ।\n\nयसरी अग्निवेशद्वारा रचित र चरकद्वारा प्रतिसंस्कृत चरकसंहिताको सूत्रस्थान अन्तर्गत 'महाचतुष्पाद' नामक दशौँ अध्याय समाप्त भयो।",
+          "meaning_en": "Concluding Wisdom on Clinical Judgment\n\nSummary Verse: A physician who possesses clear expertise in distinguishing curable (Sādhya) from incurable (Asādhya) diseases is considered the foremost among the learned. By treating curable diseases according to prescribed principles, the physician acquires righteous merit (Dharma), wealth (Artha), fame (Yaśas), and universal respect.\n\nThus ends the Tenth Chapter entitled \"Mahācatuṣpāda\" in the Sutrasthana of Agnivesha's compendious treatise, as redacted by Charaka.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "title_ne": "तिस्रैषणीयोऽध्यायः",
+      "title_en": "Tisraishaniya Adhyaya — The Three Desires of Life",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "तिस्रैषणीयोऽध्यायः",
+          "transliteration": "tisraiṣaṇīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको एघारौं अध्याय (तिस्रैषणीय अध्याय) जीवनका इच्छा, स्वास्थ्य, रोग, ज्ञान र चिकित्साका त्रिक बताउँछ। यसमा ५५ श्लोक छन्।\n\n१. तिस्रैषणा — प्राण, धन र परलोकको इच्छा (श्लोक ३–६)।\n२. तीन उपस्तम्भ — आहार, निद्रा र ब्रह्मचर्य; तीन बल (श्लोक ३४–३५)।\n३. तीन हेतु — असात्म्येन्द्रियार्थसंयोग, प्रज्ञापराध र परिणाम (श्लोक ३६–३८)।\n४. तीन रोग र तीन मार्ग — निज, आगन्तु, मानस; शाखा, मर्म, कोष्ठ (श्लोक ३९–४३)।\n५. चार परीक्षा — आप्तोपदेश, प्रत्यक्ष, अनुमान र युक्ति (श्लोक १३–२८)।\n६. तीन वैद्य र तीन औषध — छद्मचारी, सिद्धसाधित, गुणसम्पन्न; दैवव्यपाश्रय, युक्तिव्यपाश्रय, सत्त्वावजय (श्लोक ५०–५५)।",
+          "meaning_en": "Chapter 11 of Sutrasthana (Tisreṣaṇīyo 'dhyāyaḥ) is one of the most fundamental philosophical, clinical, and epistemological chapters in Ayurveda. It covers 55 verses detailing the triads of life, health, disease, cognition, and therapeutics:\n\n1. Tisra Eṣaṇāḥ (The 3 Primary Desires of Life): Prāṇaiṣaṇā (Desire for Life), Dhanaiṣaṇā (Desire for Wealth), Paralokaiṣaṇā (Desire for Afterlife / Spiritual Well-being).\n2. Trayo Upastambhāḥ (The 3 Sub-Pillars of Health): Āhāra (Diet), Swapna / Nidrā (Sleep), Brahmacarya (Controlled Conduct / Celibacy).\n3. Trividhaṃ Balam (The 3 Types of Physical Strength): Sahaja (Innate), Kālaja (Seasonal / Age-related), Yuktikṛta (Acquired / Therapeutic).\n4. Trividhaṁ Kāraṇam (The 3 Primary Etiological Causes of Disease): Asātmyendriyārtha Saṁyoga (Improper sensory-object contact), Prajñāparādha (Intellectual error), Pariṇāma / Kāla (Temporal & seasonal transformation).\n5. Trividhā Rogāḥ (The 3 Classifications of Disease): Nija (Endogenous / Dosha imbalances), Āgantu (Exogenous / External trauma), Mānasa (Mental).\n6. Trividho Roga-Mārgaḥ (The 3 Disease Pathways): Śākhā (Peripheral tissues / Blood / Skin), Marma-Asthi-Sandhi (Vital organs, bones, joints), Koṣṭha (Gastrointestinal tract).\n7. Trividhā Bhiṣajaḥ (The 3 Types of Physicians): Chadmacārī (Impostors), Siddhasādhita (Pseudo-healers), Vaidyaguṇasampanna (True, accomplished physicians).\n8. Trividham Auṣadham (The 3 Modes of Therapy): Daivavyapāśraya (Divine / Spiritual), Yuktivyapāśraya (Rational / Pharmacological), Sattvāvajaya (Psychotherapy / Mental restraint).\n9. Caturvidhā Parīkṣā (The 4 Means of Valid Knowledge / Investigation): Āptopadeśa (Authoritative testimony), Pratyakṣa (Direct perception), Anumāna (Inference), Yukti (Rational experimentation & deduction).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो तिस्रैषणीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto tisraiṣaṇīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "तिस्रैषणाः\n\nअब हामी जीवनका तीन मुख्य एषणाहरू (इच्छाहरू) सम्बन्धी 'तिस्रैषणीय' नामक एघारौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nThe Three Desires of Life\n\nNow we shall expound the chapter entitled Tisreṣaṇīya (The Three Primary Desires of Life), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–6",
+          "sanskrit": "इह खलु पुरुषेणानुपेक्षणीयेन कश्चिदर्थः कश्चित् कार्यमभिसमीक्ष्य लोकेऽस्मिन् वा पारत्रिके वा सम्यगुपगम्यते; तद्यथा— प्राणैषणा, धनैषणा, परलोकैषणेति॥ ३॥ तासां तु खलु प्राणैषणां प्रथमं पुरस्तादुपाददीत। कस्मात्? प्राणपरित्यागे हि सर्वत्यागः॥ ४॥ तस्यानुपालनं स्वस्थस्य स्वस्थवृत्तानुवर्तनम्, आतुरस्य पुनरातुरविकारप्रशमने अप्रमादः। तदुभयमेतदुक्तं भवत्युक्तमशक्यं चोक्तमनुक्तमप्यनुवर्तमानः प्राणाननुपालयति॥ ५॥",
+          "transliteration": "iha khalu puruṣeṇānupekṣaṇīyena kaścidarthaḥ kaścit kāryamabhisamīkṣya loke'smin vā pāratrike vā samyagupagamyate; tadyathā— prāṇaiṣaṇā, dhanaiṣaṇā, paralokaiṣaṇeti || 3 || tāsāṁ tu khalu prāṇaiṣaṇāṁ prathamaṁ purastādupādadīta | kasmāt? prāṇaparityāge hi sarvatyāgaḥ || 4 || tasyānupālanaṁ svasthasya svasthavṛttānuvartanam, āturasya punarāturavikārapraśamane apramādaḥ | tadubhayametaduktaṁ bhavatyuktamaśakyaṁ coktamanuktamapyanuvartamānaḥ prāṇānanupālayati || 5 ||",
+          "meaning_ne": "यस लोक र परलोकमा कल्याण चाहने विवेकशील पुरुषले तीन वटा मुख्य इच्छाहरू (एषणा) पूरा गर्नुपर्छ:\n१. प्राणैषणा (जीवन बाँच्ने इच्छा): यो सबैभन्दा प्रमुख इच्छा हो, किनकि प्राण नै नष्ट भयो भने बाँकी सबै कुरा व्यर्थ हुन्छ। प्राण रक्षाका लागि निरोगीले दिनचर्या र ऋतुचर्याको पालन गर्नुपर्छ भने रोगीले होसियार भई समयमै चिकित्सा गराउनुपर्छ।\n२. धनैषणा (धन र साधन कमाउने इच्छा): जीवन निर्वाह, भोजन, औषधि र धर्म कर्मका लागि धन आवश्यक हुन्छ। कृषि, व्यापार, पशुपालन, सरकारी सेवा वा विद्या आर्जन जस्ता पवित्र उपायहरूबाट धन कमाउनुपर्छ।\n३. परलोकैषणा (परलोक र आध्यात्मिक कल्याणको इच्छा): आत्मा अमर छ र पुनर्जन्म हुन्छ, त्यसैले सत्य, अहिंसा, दान, तपस्या र सत्कर्मद्वारा परलोक सुधार्ने प्रयास गर्नुपर्छ।",
+          "meaning_en": "The Three Primary Desires (Tisra Eṣaṇāḥ)\n\nA rational person who seeks success in this world and the next must pursue three fundamental desires:\n1. Prāṇaiṣaṇā (Desire for Life): This is the foremost desire because if life is lost, everything is lost. To preserve life, a healthy person must strictly follow the daily and seasonal regimens (Swasthavritta), while a diseased person must diligently undergo medical treatment without delay or carelessness.\n2. Dhanaiṣaṇā (Desire for Wealth & Resources): Wealth is essential for procuring food, shelter, medicines, and performing virtuous deeds. One should earn wealth through noble means such as agriculture, animal husbandry, trade, state service, or scholarly professions.\n3. Paralokaiṣaṇā (Desire for the Afterlife / Spiritual Welfare): Since rebirth and spiritual continuity exist, one should cultivate righteousness, study scriptures, practice charity, non-violence (Ahimsa), and self-restraint.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "34–35",
+          "sanskrit": "त्रय उपस्तम्भा इति— आहारः, स्वप्नो, ब्रह्मचर्यमिति; एभिस्त्रिभिुरुपस्तम्भैः सम्यगुपस्तब्धमुपस्तम्भकैः शरीरं बलवर्णोपचयपूर्णमनुवर्तते यावदायुः सुखादुपेतात्, यदा ह्यनुपघातकमैश्वर्येण युज्यते, य इहैनं सम्यगुपचरति सम्यगाहारस्वप्नब्रह्मचर्यैरिति॥ ३४॥ त्रिविधं बलमिति— सहजं, कालजं, युक्तिकृतं च। सहजं यच्छरीरसत्त्वयोः प्राकृतम्, कालजं ऋतुवयःकृतम्, युक्तिकृतं पुनस्तदाहारचेष्टाकृत्॥ ३५॥",
+          "transliteration": "traya upastambhā iti— āhāraḥ, svapno, brahmacaryamiti; ebhistribhirupastambhaiḥ samyagupastabdhāmupastambhakaiḥ śarīraṁ balavarṇopacayapūrṇamanuvartate yāvadāyuḥ sukhādupetāt... || 34 || trividhaṁ balamiti— sahajaṁ, kālajaṁ, yuktikṛtaṁ ca | sahajaṁ yaccharīrasattvayoḥ prākṛtam, kālajaṁ ṛtuvayaḥkṛtam, yuktikṛtaṁ punastadāhāraceṣṭākṛt || 35 ||",
+          "meaning_ne": "त्रयो उपस्तम्भाः\n\nतीन उपस्तम्भहरू (स्वास्थ्यका तीन खम्बाहरू):\n१. आहार: समयमा लिइने हितकर र सन्तुलित भोजन।\n२. स्वप्न (निद्रा): शरीर र मनलाई पुनः ताजगी र शक्ति दिने उचित निद्रा।\n३. ब्रह्मचर्य: इन्द्रिय संयम र वीर्य/ओजको रक्षा।\n\nतीन प्रकारका बल (शरीरको सामर्थ्य):\n१. सहज बल: जन्मजात रूपमा शरीर र मनमा रहने प्राकृतिक शक्ति।\n२. कालज बल: उमेर (युवावस्था) र ऋतु (हेमन्त/शिशिर ऋतुमा बढी) अनुसार परिवर्तन हुने शक्ति।\n३. युक्तिकृत बल: पोषिलो आहार, व्यायाम, रसायन औषधि र उचित जीवनशैलीबाट हासिल गरिने शक्ति।",
+          "meaning_en": "Three Pillars & Three Strengths\n\nThe Three Sub-Pillars of Life\n\nThe Three Sub-Pillars (Trayo Upastambhāḥ):\n1. Āhāra (Proper Diet): Wholesome, balanced food consumed according to digestive strength (Agni).\n2. Swapna / Nidrā (Adequate Sleep): Timely, restful sleep that nourishes bodily tissues, mind, and vitality.\n3. Brahmacarya (Controlled Conduct / Celibacy): Self-restraint in sensory pleasures and preservation of vital energy (Ojas).\n\nThe Three Types of Strength (Trividhaṁ Balam):\n1. Sahaja Bala (Innate Strength): Natural, constitutional strength of body and mind present from birth.\n2. Kālaja Bala (Temporal Strength): Strength influenced by age (youth vs. old age) and seasons (highest in Winter/Hemanta, lowest in Summer/Greeshma).\n3. Yuktikṛta Bala (Acquired Strength): Strength developed through wholesome diet, physical exercise (Vyayama), rasayana tonics, and healthy lifestyle.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "36–38",
+          "sanskrit": "त्रिणीयायतनानीति— असात्म्येन्द्रियार्थसंयोगः, प्रज्ञापराधः, परिणामश्चेति॥ ३६॥ तत्रासात्म्यो नाम यदात्मने न स्वदते न हिनोति वा; इन्द्रियार्थसंयोगः पुनरिन्द्रियाणामर्थैः सह संयोगः॥ ३७॥",
+          "transliteration": "triṇīyāyatanānīti— asātmyendriyārthasaṁyogaḥ, prajñāparādhaḥ, pariṇāmaśceti || 36 || tatrāsātmyo nāma yadātmane na svadate na hinoti vā; indriyārthasaṁyogaḥ punarindriyāṇāmarthaiḥ saha saṁyogaḥ || 37 ||",
+          "meaning_ne": "सबै रोगका मुख्य तीन वटा कारणहरू हुन्छन्:\n१. असात्म्येन्द्रियार्थ संयोग: इन्द्रियहरू र तिनका विषयहरूको अयोग्य संयोग (अतियोग=अति प्रयोग, अयोग=नगण्य प्रयोग, र मिथ्यायोग=गलत प्रयोग)।\n२. प्रज्ञापराध: बुद्धि, धैर्य र स्मृतिको भ्रष्टताका कारण जानेर पनि अहितकर काम गर्नु (जस्तै: कुपथ्य सेवन, अकाल निद्रा, वेग धारण)।\n३. परिणाम (काल): ऋतु र मौसमको अति, अयोग वा विपरीत परिवर्तन।",
+          "meaning_en": "Three Etiological Causes (Trividha-Kāraṇa)\n\nThe Three Causes & Three Pathways of Disease\n\nAll diseases, whether physical or mental, stem from three primary etiological factors (Trividha Ayatana):\n1. Asātmyendriyārtha Saṁyoga: Unwholesome or improper contact between sensory organs and their objects—classified into Atiyoga (excessive use), Ayoga / Heenayoga (non-use), and Mithyayoga (perverted or improper use).\n2. Prajñāparādha (Intellectual Errors / Volitional Transgressions): Misuse of intellect (Dhee), patience/restraint (Dhriti), and memory (Smriti), leading to harmful actions despite knowing the consequences.\n3. Pariṇāma / Kāla (Seasonal & Temporal Variations): Unseasonal or extreme climatic variations (extreme heat, cold, or rain) and aging process.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "39–43",
+          "sanskrit": "त्रयो रोगा इति— निाजाः, आगन्तवः, मानसाश्च। तत्र निाजा शरीरदोषसमुत्थाः, आगन्तवस्त्वभिघातविषवाताग्निसमुत्थाः, मानसाः पुनरिष्टालाभानिष्टलाभाच्चोपजायन्ते॥ ३९॥ त्रयो रोगमार्गा इति— शाखा, मर्मास्थिसन्धयः, कोष्ठश्च॥ ४३॥",
+          "transliteration": "trayo rogā iti— nijāḥ, āgantavaḥ, mānasāśca | tatra nijā śarīradoṣasamutthāḥ, āgantavastvabhighātaviṣavātāgnisamutthāḥ, mānasāḥ punariṣṭālābhāniṣṭalābhāccopajāyante || 39 || trayo rogamārgā iti— śākhā, marmāsthisandhayaḥ, koṣṭhaśca || 43 ||",
+          "meaning_ne": "रोगका तीन वर्गहरू:\n१. निज रोग: आन्तरिक दोषहरू (वात, पित्त, कफ) को असन्तुलनले हुने रोग।\n२. आगन्तुक रोग: बाह्य चोटपटक, विष, आगो, हावा र कीरा-फट्याङ्ग्राको टोकाइबाट हुने रोग।\n३. मानसिक रोग: रज र तम दोषको प्रकोप, मन परेको कुरा नपाउनु वा मन नपरेको कुरा सहनुपर्दा हुने रोग।\n\nरोगका तीन मार्गहरू (रोगको गति):\n१. शाखा (बाह्य मार्ग): छाला, रगत, मासु, बोसो आदि धातुहरू। यसमा कुष्ठ, दाद, सुजन आदि हुन्छन्।\n२. मर्म-अस्थि-सन्धि (मध्यम मार्ग): हृदय, टाउको, बस्ती जस्ता मर्म स्थान, हड्डी र जोडहरू। यसमा पक्षघात, बातरोग, जोर्नी दुख्ने समस्या हुन्छन्।\n३. कोष्ठ (आन्तरिक मार्ग): आमाशय र पक्वाशय (पाचन तन्त्र)। यसमा ज्वरो, झाडापखाला, बान्ता, दम, खोकी आदि हुन्छन्।",
+          "meaning_en": "Three Classifications of Disease & Three Pathways\n\nThe 3 Categories of Disease:\n1. Nija Rogāḥ (Endogenous): Diseases caused by internal imbalance of physical Doshas (Vata, Pitta, Kapha).\n2. Āgantu Rogāḥ (Exogenous): Diseases caused by external factors (trauma, insect/snake bites, poison, fire, radiation, bacterial/viral infections).\n3. Mānasa Rogāḥ (Psychological): Mental afflictions caused by passion (Raja) and ignorance (Tama), or failure to obtain desired objects / gaining undesired outcomes.\n\nThe 3 Disease Pathways (Roga Mārga):\n1. Śākhā (Peripheral Pathway): Involves skin (Twak), blood (Rakta), flesh (Mamsa), fat (Meda), bone marrow (Majja), semen (Shukra). Manifests as skin disorders, edema, erysipelas.\n2. Marma-Asthi-Sandhi (Intermediate Pathway): Involves vital organs (Heart, Head, Bladder), bones, and joints. Manifests as paralysis, joint pain, hemiplegia, sciatica.\n3. Koṣṭha (Central Gastrointestinal Pathway): Involves the digestive tract, stomach (Amashaya), and intestines (Pakwashaya). Manifests as fever, diarrhea, vomiting, cough, asthma, abdominal dropsy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "13–28",
+          "sanskrit": "द्विविधमेव खलु सर्वं सत् चासच्च; तस्य चतुर्विधा परीक्षा— आप्तोपदेशः, प्रत्यक्षम्, अनुमानम्, युक्तिश्चेति॥ १७॥ रजोतमोभ्यां निर्मुक्तास्तपसा ज्ञानबलेन च। येषां त्रिकालममलं ज्ञानमव्याहतं सदा॥ १८॥ आप्ताः शिष्टा विबुद्धास्ते तेषां वाक्यमसंशयम्। सत्यं वक्ष्यन्ति ते कस्मादसत्यं नीरजस्तमाः॥ १९॥",
+          "transliteration": "dvividhameva khalu sarvaṁ sat cāsacca; tasya caturvidhā parīkṣā— āptopadeśaḥ, pratyakṣam, anumānam, yuktiśceti || 17 || rajotamobhyāṁ nirmuktāstapasā jñānabalena ca | yeṣāṁ trikālāmamalaṁ jñānamavyāhataṁ sadā || 18 || āptāḥ śiṣṭā vibuddhāste teṣāṁ vākyamasaṁśayam | satyaṁ vakṣyanti te kasmādasatyaṁ nīrajastamāḥ || 19 ||",
+          "meaning_ne": "चतुर्विधा परीक्षा\n\nसंसारमा रहेका सबै कुरा दुई प्रकारका हुन्छन्: सत् (विद्यमान/सत्य) र असत् (अविद्यमान/असत्य)। यिनको निष्पक्ष जाँचका लागि चार साधनहरू छन्:\n\n१. आप्तोपदेश (आप्त पुरुषको वचन): रज र तम गुणबाट मुक्त, त्रिकालदर्शी, पक्षपातरहित र ज्ञानी महर्षिहरू (आप्त) को प्रामाणिक उपदेश।\n२. प्रत्यक्ष: मन, आत्मा र इन्द्रियहरूको आफ्ना विषयहरूसँग प्रत्यक्ष सम्पर्क भई प्राप्त हुने ज्ञान (जस्तै: आँखाले देख्नु, कानले सुन्नु)।\n३. अनुमान: पूर्व प्रत्यक्ष ज्ञानका आधारमा गरिने तार्किक निष्कर्ष (जस्तै: अग्नि देखेर भोजन पचेको अनुमान गर्नु, धुवाँ देखेर आगोको अनुमान गर्नु)।\n४. युक्ति (युक्तियुक्त विचार/प्रायोगिक बुद्धि): धेरै वटा कारणहरू एकत्र हुँदा उत्पन्न हुने परिणामलाई बुझ्ने बुद्धि (जस्तै: माटो, बीउ, पानी र अनुकूल मौसम मिल्दा अन्न उब्जनु; वैद्य, औषधि, परिचारक र रोगी मिल्दा स्वास्थ्य लाभ हुनु)।",
+          "meaning_en": "Examination & Truth (Chaturvidha Parīkṣā)\n\nThe Four Means of Valid Knowledge\n\nIn this universe, everything is categorized into two aspects: Sat (Existent / Real) and Asat (Non-existent / Unreal). To investigate truth, Ayurveda establishes Four Means of Valid Knowledge (Caturvidhā Parīkṣā):\n\n1. Āptopadeśa (Authoritative Testimony): Statements of Aptas—realized sages and experts who are completely free from spiritual flaws (Rajas and Tamas), possess pure knowledge across past, present, and future, and speak without bias, deceit, or doubt.\n2. Pratyakṣa (Direct Perception): Knowledge gained directly through the five senses (Indriya) when united with the Mind (Manas), Soul (Atma), and Object (Artha).\n3. Anumāna (Inference): Deduction based on prior direct perception and logical cause-effect relationships (e.g., inferring digestive fire from digestion capacity, or fire from smoke).\n4. Yukti (Rational Deduction & Experimental Combination): The intellect that perceives outcomes resulting from the intelligent combination of multiple cause-and-effect factors (e.g., crops grow from land, water, seeds, and season coming together; a patient recovers through correct diagnosis, proper drug, skilled doctor, and good care).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "50–55",
+          "sanskrit": "त्रिविधा भिषज इति— छद्मचरा भिषजः, सिद्धसाधिता भिषजः, वैद्यगुणयुक्ताश्च भिषजः॥ ५०॥ त्रिविधमौषधमिति— दैवव्यपाश्रयं, युक्तिव्यपाश्रयं, सत्त्वावजयश्च। तत्र दैवव्यपाश्रयं— मन्त्रौषधिमणिशङ्गल्याशीःस्वस्त्ययनबलिहोमोपहारनियमादि, युक्तिव्यपाश्रयं— पुनराहारौषधद्रव्याणां योजना, सत्त्वावजयः— पुनरहितभ्योऽर्थेभ्यो मनोनिग्रहः॥ ५४॥",
+          "transliteration": "trividhā bhiṣaja iti— chadmacārā bhiṣajaḥ, siddhasādhitā bhiṣajaḥ, vaidyaguṇayuktāśca bhiṣajaḥ || 50 || trividhamauṣadhamiti— daivavyapāśrayaṁ, yuktivyapāśrayaṁ, sattvāvajayaśca | tatra daivavyapāśrayaṁ— mantrauṣadhimaṇimaṅgalāśīḥsvastyayanabalihomopahāraniyamādi, yuktivyapāśrayaṁ— punarāhāraujadhadravyāṇāṁ yojanā, sattvāvajayaḥ— punarahitebhyo'rthebhyo manonigrahaḥ || 54 ||",
+          "meaning_ne": "चिकित्सकका तीन प्रकार:\n१. छद्मचारी वैद्य (ढोंगी वैद्य): औषधिको झोला, पहिरन र नाम मात्र बोकेर हिँड्ने, शास्त्रको ज्ञान नभएका नक्कली डाक्टर।\n२. सिद्धसाधित वैद्य: वास्तविक सिद्ध वैद्यहरूको नाम भजाएर वा संयोगवश एकाध बिरामी निको पारेर धाक लगाउने बनावटी वैद्य।\n३. वैद्यगुणसम्पन्न वैद्य (वास्तविक वैद्य): शास्त्रको पूर्ण ज्ञान, व्यावहारिक अनुभव, दक्षता, दया र सफलताले युक्त साँचो चिकित्सक।\n\nचिकित्साका तीन प्रकार:\n१. दैवव्यपाश्रय चिकित्सा (दैवी/आध्यात्मिक उपचार): मन्त्र, मणिरत्न, मङ्गल कार्य, पूजापाठ, होम र नियमको पालना।\n२. युक्तिव्यपाश्रय चिकित्सा (भौतिक/औषधीय उपचार): युक्तियुक्त आहार, जडीबुटी औषधि र पञ्चकर्मद्वारा गरिने वैज्ञानिक उपचार।\n३. सत्त्वावजय चिकित्सा (मानसिक/मनोचिकित्सा): मनलाई अहितकर विषय, तनाव र नकारात्मक सोचबाट टाढा राख्ने नियन्त्रण विधि।",
+          "meaning_en": "Three Types of Physicians & Three Therapeutics\n\nThree Types of Physicians & Three Therapeutics\n\nThe 3 Types of Physicians (Trividhā Bhiṣajaḥ):\n1. Chadmacārī Bhiṣak (Pseudo-Physicians / Impostors): Fake doctors who parade with medical boxes, attire, and titles but possess zero knowledge of medical science.\n2. Siddhasādhita Bhiṣak (Feigned / Accidental Healers): Impostors who gain fake reputation by associating with genuine accomplished physicians or exploiting accidental cures.\n3. Vaidyaguṇasampanna Bhiṣak (True Accomplished Physicians): Master physicians endowed with complete theoretical knowledge, practical expertise, clinical success, wisdom, and genuine compassion for patients.\n\nThe 3 Modes of Therapy (Trividham Auṣadham):\n1. Daivavyapāśraya Cikitsā (Spiritual / Divine Therapy): Non-pharmacological measures including sacred chants (Mantra), auspicious gems (Mani), vows (Niyama), oblations (Homa), offerings, and atonements.\n2. Yuktivyapāśraya Cikitsā (Rational / Pharmacological Therapy): Treatment involving rational prescription of diets, herbal formulations, and purificatory procedures (Panchakarma).\n3. Sattvāvajaya Cikitsā (Psychotherapy / Mental Control): Restraining the mind from unwholesome sensory objects, negative thoughts, and emotional stress.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "उपसंहार",
+          "sanskrit": "इति तिस्रैषणीयोऽध्यायः",
+          "transliteration": "iti tisraiṣaṇīyo'dhyāyaḥ",
+          "meaning_ne": "एघारौं अध्यायले आयुर्वेदको अभ्यासको सार दिन्छ। जीवन तीन इच्छा (प्राणैषणा, धनैषणा, परलोकैषणा) बाट टिक्छ, तीन उपस्तम्भ (आहार, निद्रा, ब्रह्मचर्य) ले जोगिन्छ, चार प्रमाण (आप्तोपदेश, प्रत्यक्ष, अनुमान, युक्ति) ले जाँचिन्छ, र साँचो वैद्यले दैवव्यपाश्रय, युक्तिव्यपाश्रय र सत्त्वावजय चिकित्साबाट उपचार गर्छ।",
+          "meaning_en": "Conclusion\n\nChapter 11 synthesizes the ultimate philosophy of Ayurvedic practice: life must be sustained through the three primary desires (Praneshana, Dhaneshana, Paralokeshana), protected via the three sub-pillars (Ahara, Nidra, Brahmacharya), diagnosed through the four valid means of knowledge (Aptopadesha, Pratyaksha, Anumana, Yukti), and treated rationally by genuine physicians using divine, rational, and psychological therapies.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "title_ne": "वातकलाकलीयोध्यायः",
+      "title_en": "Vatakalakaliya Adhyaya — The Symposium on Vata",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "वातकलाकलीयोध्यायः",
+          "transliteration": "vātakalākalīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको बाह्रौं अध्याय (वातकलाकलीय अध्याय) वातको गुण, कर्म र विकारमाथि ऋषिहरूको संवाद हो। यसमा २६ श्लोक छन्।\n\n१. वातका छ गुण र प्रकोप-प्रशमन (श्लोक ३–५)।\n२. ऋषिसम्भाषा — कुश, कुमारशिर, काङ्कायन, बडीश, काप्यक, मरीचि, काप्य र वार्योविद (श्लोक ६–२३)।\n३. आत्रेयको सिद्धान्त — सन्तुलित वात नियन्ता हो, प्रकुपित वात विनाशक हो (श्लोक २४–२६)।",
+          "meaning_en": "Chapter 12 of Sutrasthana (Vātakalākālīyo 'dhyāyaḥ) presents a historic medical symposium convened by great ancient sages to discuss the nature, qualities (Guna), physiological functions (Kala), and pathological manifestations (Akala) of Vata, as well as Pitta and Kapha. It contains 26 verses covering:\n\n1. Qualities of Vata (Vata Guna): Six intrinsic attributes of Vata (Unctuousness-less/Dry, Light, Cold, Hard, Rough, Subtle).\n2. Mechanisms of Agitation and Pacification: Factors that aggravate Vata (Kopana) and factors that soothe it (Shamana).\n3. The Sages' Symposium (Rishi Sambhasha):\n- Kusha Sankrityayana: Physiological & pathological actions of Vata.\n- Kumarashira Bharadwaja: Vata as the primary governor of the body.\n- Kankayana Bahlika: Cosmic and biological manifestations of Vata.\n- Badisha Dhamargava: Vata's role in sensory and motor control.\n- Kapyaka: Metabolic and cellular drivers.\n- Marichi: Solar energy, Fire, and Pitta dynamics.\n- Kapya: Lunar energy, Water, and Kapha dynamics.\n- Varyovida: Comprehensive macro-cosmic and micro-cosmic functions of Vata.\n4. Lord Atreya's Final Synthesis (Atreya Siddhanta): Reconciliation of all views, establishing Vata as the supreme controller (Yanta Neta) when balanced, and the destroyer when aggravated, alongside balanced inter-relationship with Pitta and Kapha.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातो वातकलाकलीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto vātakalākālīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "वातगुणाः प्रकोपणप्रशमनानि च\n\nअब हामी वायुका गुण, सामान्य कार्य (कलो) र असामान्य/विकृत कार्य (अकलो) सम्बन्धी 'वातकलाकलीय' नामक बाह्रौँ अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Inquiry into Vata\n\nQualities, Aggravation, and Pacification of Vata\n\nNow we shall expound the chapter entitled Vātakalākālīya (The Attributes, Beneficial Functions, and Harmful Effects of Vata), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "वातस्य का गुणाः, किं वा तत्प्रकोपणमूर्छितम्। प्रशमनानि वा कानि, कथं चाकुपितः कुरु। शमयत्यनिलः कायं, कुपितः कोपयेत्कथम्॥ ३॥",
+          "transliteration": "vātasya kā guṇāḥ, kiṁ vā tatprakopaṇamūrchitam | praśamanāni vā kāni, kathaṁ cākupitaḥ kuru | śamayatyanilaḥ kāyaṁ, kupitaḥ kopayetkatham || 3 ||",
+          "meaning_ne": "ऋषिहरूले वायुका विषयमा चार वटा मुख्य प्रश्नहरू राखे:\n१. वायुका स्वाभाविक गुणहरू के-के हुन्?\n२. के-कस्ता कारणहरूले गर्दा वायु अत्यन्त कुपित वा प्रकुपित हुन्छ?\n३. कुपित भएको वायुलाई शान्त पार्ने उपाय तथा औषधिहरू के-के हुन्?\n४. अकुपित (सन्तुलित) वायुले शरीरलाई कसरी निरोगी बनाएर राख्छ र कुपित (असन्तुलित) वायुले शरीर तथा ब्रह्माण्डमा कसरी विनाश वा रोग उत्पन्न गराउँछ?",
+          "meaning_en": "The Sages' Fourfold Inquiry into Vata\n\nThe assembled sages posed four fundamental questions regarding Vata:\n1. What are the intrinsic qualities (Gunas) of Vata?\n2. What specific factors cause its severe aggravation (Prakopa)?\n3. What measures and substances bring about its pacification (Shamana)?\n4. How does unaggravated (Akupita) Vata sustain the body in health, and how does aggravated (Kupita) Vata produce pathological destruction both within the body and in the external universe?",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4",
+          "sanskrit": "रूक्षः शीतो लघुः सूक्ष्मश्चलोऽथ विशदः खरः। विपरीतायुर्द्रव्यैर्मारुतः सम्प्रशाम्यति॥ ४॥",
+          "transliteration": "rūkṣaḥ śīto laghuḥ sūkṣmaścalo'tha viśadaḥ kharaḥ | viparītāyurdravyairmārutaḥ sampraśāmyati || 4 ||",
+          "meaning_ne": "वायुका ६ गुणहरू:\n१. रूक्ष: सुक्खा/रुखा\n२. शीत: चिसो\n३. लघु: हल्का\n४. सूक्ष्म: अत्यन्त सूक्ष्म स्रोतसमा पनि प्रवेश गर्न सक्ने\n५. चल: चञ्चल/निरन्तर गतिशील\n६. विशद: पच्छिलो नभएको/सफा\n७. खर: खस्रो\n\nशमन सिद्धान्त: यी गुणहरूको ठीक विपरीत गुण भएका पदार्थहरू (स्निग्ध, तातो, गहुँगो, स्थिर, चिल्लो र नरम आहार-विहार तथा औषधि) को प्रयोग गर्नाले वायु साम्य/शान्त हुन्छ।",
+          "meaning_en": "The Six Qualities of Vata (वातगुणाः)\n\nThe 6 Qualities of Vata:\n1. Ruksha: Unctuousness-less / Dry\n2. Sheeta: Cold\n3. Laghu: Light\n4. Sukshma: Subtle / Penetrating\n5. Chala: Mobile / Dynamic\n6. Vishada: Non-slimy / Clear\n7. Khara: Rough / Coarse\n\nPacification Principle: Vata is pacified by substances, diets, and lifestyle measures possessing qualities directly opposite (Viparita Guna) to these six attributes—namely Warm (Ushna), Unctuous (Snigdha), Heavy (Guru), Smooth (Slakshna), Stable (Sthira), and Slimy (Pichchila).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "5",
+          "sanskrit": "एवमुक्ते तु मुनिभिः शौनको वाक्यमब्रवीत्। समानगुणभूयिष्ठैरभ्यस्यमानैर्मारुतः॥ ५॥ प्रकोपापद्यते क्षिप्रं शरीरं च प्रबाधते। रूक्षशीतलघुव्यवायव्यायामादिभिराचितैः॥",
+          "transliteration": "evamukte tu munibhiḥ śaunako vākyamabravīt | samānaguṇabhūyiṣṭhairabhyasyamānairmārutaḥ || 5 || prakopāpadyate kṣipraṁ śarīraṁ ca prabādhate | rūkṣaśītalaghuvyavāyavyāyāmādibhirācitaiḥ ||",
+          "meaning_ne": "ऋषि शौनकले भन्नुभयो: वायुका समान गुण भएका आहार र विहारको निरन्तर सेवान गर्नाले शरीरमा वायु तुरुन्तै कुपित हुन्छ।\nकारणहरू: रुखा, चिसो र हल्का भोजन गर्नु; अत्यधिक मैथुन गर्नु; सामर्थ्यभन्दा बढी व्यायाम वा परिश्रम गर्नु; उपवास बस्नु; चोटपटक लाग्नु; राति अबेरसम्म जाग्राम बस्नु र प्राकृतिक वेगहरू (दिसा, पिसाब आदि) रोक्नु। यसले वायु प्रकुपित भई शरीरमा विविध प्रकारका वेदना र रोगहरू उत्पन्न गराउँछ।",
+          "meaning_en": "Causes of Vata Aggravation (Vata Prakopa Hetu)\n\nSage Shaunaka explained: Vata quickly becomes aggravated when a person habitually consumes diets and engages in activities possessing qualities similar to Vata (Samana Guna Abhyasa).\nEtiological Factors: Excessive intake of dry (Ruksha), cold (Sheeta), and light (Laghu) foods; excessive sexual indulgence (Vyavaya); strenuous physical exertion (Vyayama); fasting (Upavasa); trauma (Aghata); nighttime awakening (Ratri-Jagarana); and suppression of natural urges. These factors swiftly provoke Vata and afflict the physical body.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "6–7",
+          "sanskrit": "जगदुः कुशनिकेतः साङ्कृत्यायन एव च। शरीरधातुवैषम्यं कुपितः कुरुते अनिलः॥ ६॥ कुमारशिरा भारद्वाजः प्रोवाच - न तथा। अविकृतस्तु देहस्य धारणादविकारकृत्॥ ७॥",
+          "transliteration": "jagaduḥ kuśaniketaḥ sāṅkṛtyāyana eva ca | śarīradhātuvaiṣamyaṁ kupitaḥ kurute anilaḥ || 6 || kumāraśirā bhāradvājaḥ provāca - na tathā | avikṛtastu dehasya dhāraṇādavikārakṛt || 7 ||",
+          "meaning_ne": "वातकर्म-ऋषिसम्भाषा\n\n१. कुश साङ्कृत्यायन: कुपित भएको वायुले शरीरका धातुहरूमा विषमता उत्पन्न गराएर अनेकौँ रोग र क्षय उत्पन्न गराउँछ।\n२. कुमारशिरा भारद्वाज: उहाँले थप्नुभयो कि प्राकृतिक (अविकृत) अवस्थामा रहेको वायुले सम्पूर्ण शरीरको धारणा (अड्याउने काम) गर्दछ र कुनै पनि विकार उत्पन्न हुन नदिई दीर्घायु र बल प्रदान गर्दछ।",
+          "meaning_en": "Discourse of Kusha Sankrityayana & Kumarashira Bharadwaja\n\nThe Sages' Symposium on Functions of Vata\n\n1. Kusha Sankrityayana: When Vata is aggravated, it disrupts the equilibrium of body tissues (Dhatu Vaishamya), leading to systemic diseases and decay.\n2. Kumarashira Bharadwaja: Added that when Vata remains in its natural, unaggravated state (Avikrita), it actively sustains the entire bodily frame (Deha Dharana) and maintains lifespan, strength, and immunity without causing pathology.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "8–11",
+          "sanskrit": "काङ्कायनस्तु बाह्लीकः प्रोवाच - पवनो हि यत्। चेष्टाप्रवर्तकश्चैव सर्वेषामपि देहिनाम्॥ ८॥ बडिशोधामार्गवश्चाह - सर्वचेष्टाप्रवर्तकः। ज्ञानज्ञापयिता चैव इन्द्रियाणां प्रवर्तकः॥ ९॥ काप्यस्तु प्रोवाच - धात्रीव सर्वभूतानां वायुः संवर्धकः स्मृतः। अग्नेश्च सन्दीपयिता धातुसङ्घातकारकः॥ १०॥",
+          "transliteration": "kāṅkāyanastu bāhlīkaḥ provāca - pavano hi yat | ceṣṭāpravartakaścaiva sarveṣāmapi dehinām || 8 || baḍiśodhāmārgavaścāha - sarvaceṣṭāpravartakaḥ | jñānajñāpayitā caiva indriyāṇāṁ pravartakaḥ || 9 || kāpyastu provāca - dhātrīva sarvabhūtānāṁ vāyuḥ saṁvardhakaḥ smṛtaḥ | agneśca sandīpayitā dhātusaङ्ghātakārakaḥ || 10 ||",
+          "meaning_ne": "३. काङ्कायन बाह्लीक: वायु नै सम्पूर्ण प्राणीहरूको शारीरिक र मानिसक चेष्टा तथा गतिहरूलाई सञ्चालन गर्ने मुख्य तत्त्व हो।\n४. बडिश धामार्गव: वायुले शारीरिक गति मात्र होइन, ज्ञानेन्द्रिय र कर्मेन्द्रियहरूलाई आ-आफ्नो विषयमा प्रवृत्त गराउँछ र ज्ञानको अनुभूति गराउँछ।\n५. काप्य: वायु धाइआमा (आमा) जस्तै सम्पूर्ण जीवहरूको पोषण र संवर्धन गर्ने तत्त्व हो; यसले जठराग्निलाई प्रदीप्त गर्दछ र धातुहरूलाई आपसमा जोडेर शरीर निर्माण गर्दछ।",
+          "meaning_en": "Cosmic & Biological Dimensions (Kankayana, Badisha & Kapyaka)\n\n3. Kankayana Bahlika: Vata is the sole initiator of all physical movements, impulses, and bodily activities (Cheshta-Pravartaka) in all living beings.\n4. Badisha Dhamargava: Vata is not only the driver of motor activity, but also the stimulator of sensory perception (Indriya-Pravartaka) and the carrier of mental sensations to consciousness (Jnana-Jnapayita).\n5. Kapyaka: Vata acts like a nurturing mother (Dhatri) to all creatures; it kindles the digestive/metabolic fire (Agni Sandipana) and unites the elemental tissues (Dhatu-Sanghata).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "12–13",
+          "sanskrit": "मरीचिुरुवाच - न वायोः केवलस्यैते गुणाः कर्म च कीर्त्यते। पित्तमन्तःशरीरस्थमग्नेरौष्ण्यगुणात्मकम्॥ ११॥ कुपिताकुपितं कुर्याच्छुभाशुभमनन्तरम्। पक्तिमपक्तिं दृष्टिं च प्रज्ञां वर्णं रतिं धृतिम्॥ १२॥",
+          "transliteration": "marīciruvāca - na vāyoḥ kevalasyaitai guṇāḥ karma ca kīrtyate | pittamantaḥśarīrasthamagnerauṣṇyaguṇātmakam || 11 || kupitākupitaṁ kuryācchubhāśubhamanantaram | paktimapaktiṁ dṛṣṭiṁ ca prajñāṁ varṇaṁ ratiṁ dhṛtim || 12 ||",
+          "meaning_ne": "६. महर्षि मरीचिको कथन (पित्तको महत्त्व): मरीचिले भन्नुभयो कि यी सबै कार्य वायुका मात्र होइनन्। शरीरभित्र रहेको पित्त (अग्नि/ऊर्जा) को पनि ठूलो भूमिका छ।\nसन्तुलित (अकुपित) पित्तले पाचन क्रिया, दृष्टि, बुद्धि, अनुहारको कान्ति, उत्साह र धैर्यता प्रदान गर्दछ। तर कुपित (विकृत) पित्तले अपच, दृष्टिहिनता, अज्ञानता, छालाको विकृति, भय र दाह (बल्ने रोग) उत्पन्न गराउँछ।",
+          "meaning_en": "The Solar & Thermal Argument of Marichi (मरीचेर्मतम्)\n\n6. Marichi's Intervention on Pitta: Sage Marichi contended that vital bodily functions are not solely driven by Vata. Pitta, located within the body, possesses the nature of Fire (Agni) and thermal heat (Aushnya Guna).\nWhen balanced (Akupita Pitta), Pitta causes proper digestion (Pakti), sharp vision (Drishti), intelligence (Prajna), glowing complexion (Varna), enthusiasm (Rati), and courage (Dhriti). When aggravated (Kupita Pitta), it causes indigestion, blindness, ignorance, discoloration, fear, and inflammatory destruction. Thus, Agni/Pitta is fundamental to life.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "14–15",
+          "sanskrit": "काप्यस्तु प्रोवाच - सोम एव शरीरस्थः श्लेष्मा सौम्यगुणात्मकः। कुपिताकुपितः कुर्याच्छुभाशुभमनन्तरम्॥ १३॥ दार्ढ्यं शैथिल्यमुपचयं काश्यमुत्साहमलसताम्। क्लीबतां वृषतां ज्ञानमज्ञानं तथाऽपरम्॥ १४॥",
+          "transliteration": "kāpyastu provāca - soma eva śarīrasthaḥ śleṣmā saumyaguṇātmakam | kupitākupitaḥ kuryācchubhāśubhamanantaram || 13 || dārḍhyaṁ śaithilyamupacayaṁ kārśyamutsāhamalasatām | klībatāṁ vṛṣatāṁ jñānamajñānaṁ tathā'param || 14 ||",
+          "meaning_ne": "७. काप्य ऋषिको कथन (कफको महत्त्व): काप्य ऋषिले भन्नुभयो कि शरीरभित्र रहेको कफ (श्लेष्मा) ले चन्द्रमा (सोम) को प्रतिनिधित्व गर्दछ जसको स्वभाव सौम्य, शीतल र स्थिर हुन्छ।\nसन्तुलित कफले शरीरलाई दृढता (मजबुती), धातुहरूको पुष्टि, कामशक्ति (पुंस्त्व), उत्साह र क्षमाशीलता प्रदान गर्दछ। तर कुपित कफले शरीरमा ढिलापन (शिथिलता), दुब्लोपन, आलस्य, नपुंसकता र अज्ञानता उत्पन्न गराउँछ।",
+          "meaning_en": "The Lunar & Fluid Argument of Kapya (काप्यस्य मतम्)\n\n7. Kapya's Intervention on Kapha: Sage Kapya stated that Kapha (Shleshma), which represents the Soma/Lunar principle within the body, possesses watery, cooling, and stabilizing qualities (Saumya Guna).\nWhen balanced (Akupita Kapha), Kapha provides physical firmness (Dardhya), tissue nourishment (Upachaya), virility (Vrishata), stamina, patience, and clarity. When aggravated (Kupita Kapha), it leads to laxity (Shaithilya), emaciation (Karshya), lethargy (Alasata), impotence (Klibata), and delusion.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "16–20",
+          "sanskrit": "तमुवाच वार्योविदो - वायुरेव सर्वमिदं धारयति। वायुस्तन्त्रयन्त्रधरः, प्राणोदानसमानव्यानापानात्मा॥ १५॥ सर्वेन्द्रियाणामुद्योजकः, सर्वेन्द्रियाणामभिवोढा, सर्वशरीरधातुव्यूहकरः, सन्धानकरः शरीरस्य, प्रवर्तको वाचः, प्रकृतिः स्पर्शशब्दयोः, श्रोत्रस्पर्शनयोर्मूलम्, हर्षउत्साहयोर्योनिः, समीरणोग्नेः, दोषसंशोषणः, क्षेप्ता बहिर्मलानाम्, स्थूलाणुस्रोतसां भेत्ता, प्रणेता गर्भाणाम्, आयुषोऽनुवृत्तिप्रत्ययभूतो भवत्यकुपितः॥ १६॥",
+          "transliteration": "tamuvāca vāryovido - vāyureva sarvamidaṁ dhārayati | vāyustantrayantradharaḥ, prāṇodānasamānavyānāpānātmā || 15 || sarvendriyāṇāmudyo jakaḥ, sarvendriyāṇāmabhivoḍhā, sarvaśarīradhātuvyūhakaraḥ, sandhānakaraḥ śarīrasya, pravartako vācaḥ, prakṛtiḥ sparśaśabdayoḥ, śrotrasparśanayormūlam, harṣautsāhayor yoniḥ, samīraṇo'gneḥ, doṣasaṁśoṣaṇaḥ, kṣeptā bahirmalānām, sthūlāṇusrotasāṁ bhettā, praṇetā garbhāṇām, āyuṣo'nuvṛttipratyayabhūto bhavatyakupitaḥ || 16 ||",
+          "meaning_ne": "सन्तुलित वायुका स्वाभाविक कार्यहरू (वार्योविदको सिद्धान्त):\nराजा वार्योविदले वायुलाई सर्वश्रेष्ठ घोषित गर्दै भन्नुभयो:\n१. तन्त्र-यन्त्र-धर: वायुले सम्पूर्ण शरीर रूपी तन्त्र र यसका अङ्ग-प्रत्यङ्ग रूपी यन्त्रलाई धारण र सञ्चालन गर्दछ।\n२. पाँच प्रकार: यो प्राण, उदान, समान, व्यान र अपान गरी पाँच रूपमा विभाजित छ।\n३. स्नायु तथा इन्द्रिय नियन्त्रण: यसले सबै इन्द्रियहरूलाई सक्रिय बनाउँछ, संवेदनाहरू बोक्दछ, धातुहरूलाई सही स्थानमा व्यवस्थित गर्दछ र शरीरका जोर्नीहरूलाई जोडेर राख्छ।\n४. वाणी र मानसिक उत्साह: यसले वाणी (बोली) फुटाउँछ, स्पर्श र शब्दको अनुभूति गराउँछ, र मनमा हर्ष तथा उत्साह उत्पन्न गराउँछ।\n५. पाचन र उत्सर्जन: यसले जठराग्निलाई प्रदीप्त पार्छ, अनावश्यक दोषलाई सुकाउँछ, दिसा-पिसाब र पसिना जस्ता मलहरूलाई बाहिर फ्याँक्छ, सूक्ष्म र स्थूल स्रोतसहरू (नाडीहरू) को निर्माण गर्छ, गर्भाशयमा गर्भको आकृति निर्माण गर्छ र जीवन वा आयुलाई निरन्तरता दिन्छ।",
+          "meaning_en": "Royal Exposition of Varyovida on Normal & Abnormal Vata (वार्योविदस्य मतम्)\n\nVaryovida's Synthesis of Physiological Vata (Akupita Vata Karma):\nKing Varyovida declared: Vata is the supreme sustainers of all living systems.\n1. Tantra-Yantra-Dhara: Holds together the structural apparatus (Tantra) and functional mechanisms (Yantra) of the organism.\n2. 5 Sub-types: Functions as Prana, Udana, Samana, Vyana, and Apana.\n3. Neurological & Sensory Control: Prompts all sensory and motor organs, carries all sensory impulses, organizes bodily tissues (Dhatu Vyuha), and maintains structural cohesion.\n4. Speech & Mind: Initiates speech (Vak), forms the origin of touch and sound, serves as the root of auditory and tactile senses, and generates joy (Harsha) and enthusiasm (Utsaha).\n5. Metabolism & Excretion: Kindles digestive fire, dries excess morbid humors (Dosha Samshoshana), expels metabolic wastes (Mala Kshepta), dilates micro and macro channels (Srotas), shapes the fetus in the womb (Garbha Praneta), and acts as the direct cause of lifespan continuation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "21–23",
+          "sanskrit": "कुपितस्तु खलु सर्वशरीरचरः शरीरं महद्भिर्विकारैरुपतपति, बलवर्णसुखायूंषि हन्ति। जगति पुनश्चानिलः प्रकुपितो शिखरशिखराणि प्रमथ्नति, द्रुमानुन्मूलयति, सागरान् क्षोभयति, सरांस्युद्घाटयति, भूकम्पानुपजनयति, मेघानभिवर्षयति, सर्वर्तून् विपर्यस्यति, सस्यानि शोषयति, प्रजाः संहरति॥ १७॥",
+          "transliteration": "kupitastu khalu sarvaśarīracaraḥ śarīraṁ mahadbhirvikārairupatapati, balavarṇasukhāyūṁṣi hanti | jagati punaścānilaḥ prakupito śikharaśikharāṇi pramathnati, drumānunmūlayati, sāgarān kṣobhayati, sarāṁsyudghāṭayati, bhūkampānupajanayati, meghānabhivarṣayati, sarvartūn viparyasyati, sasyāni śoṣayati, prajāḥ saṁharati || 17 ||",
+          "meaning_ne": "प्रकुपित वायुका विनाशकारी कार्यहरू:\n- शरीरभित्र: कुपित वायु सम्पूर्ण शरीरमा भ्रमण गरी भयानक रोगहरू उत्पन्न गराउँछ र मानिसको बल, कान्ति, सुख र आयुको नाश गर्दछ।\n- ब्रह्माण्ड (प्रकृतिमा): प्रकृतिमा वायु कुपित हुँदा पहाडका चुचुराहरू ढाल्छ, ठूला रुखहरू ढाल्छ, समुद्रमा तुफान ल्याउँछ, भूकम्प उत्पन्न गराउँछ, बेमौसमी वर्षा गराउँछ, मौसमको चक्र बिर्गार्छ, बालीनाली सुकाउँछ र सम्पूर्ण प्राणी जगतको संहार (प्रलय) गराउँछ।",
+          "meaning_en": "Macrocosmic Functions of Vata (ब्रह्माण्डे वायु कर्म)\n\nPathological Manifestations of Vata:\n- Microcosm (Human Body): When aggravated within the body, Vata circulates through all channels, causing severe disorders (Mahavikara), destroying physical strength, complexion, happiness, and life span.\n- Macrocosm (External Nature): When aggravated in the external universe, Vata shatters mountain peaks, uproots massive trees, agitates oceans, causes devastating earthquakes (Bhukampa), triggers violent storms and floods, disrupts seasonal cycles (Ritu Viparyaya), desiccates crops, and brings about apocalyptic destruction (Pralaya) of living beings.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "24–26",
+          "sanskrit": "इति वार्योविदः प्रोक्ते पुनर्वसुरात्रेयो मुनिरुवाच - न पिशुनं वाच्यं, सर्व एव भवन्तः सम्यगाहुरन्यत्रैकान्तग्राहात्। सर्व एव हि वातपित्तश्लेष्माणः प्रकुपिताः शरीरं बाधन्ते, साम्यमापन्नाः धारयन्ति। तस्माद् दोषाणां साम्यमरोगाः, वैषम्यं तु रोग इति॥ १८॥",
+          "transliteration": "iti vāryovidaḥ prokte punarvasurātreyo muniruvāca - na piśunaṁ vācyaṁ, sarva eva bhavantaḥ samyagāhuranyatraikāntagrāhāt | sarva eva hi vātapittaśleṣmāṇaḥ prakupitāḥ śarīraṁ bādhante, sāmyāmāpannāḥ dhārayanti | tasmād doṣāṇāṁ sāmyamarogāḥ, vaiṣamyaṁ tu roga iti || 18 ||",
+          "meaning_ne": "भगवान् आत्रेयको अन्तिम सर्वमान्य सिद्धान्त:\nसबै ऋषिहरूका भनाइ सुनिसकेपछि भगवान् पुनर्वसु आत्रेयले निष्कर्ष दिँदै भन्नुभयो:\n\"कसैको विचार पनि गलत छैन। तपाईंहरू सबैले सही कुरा भन्नुभएको छ, केवल एउटै पक्षलाई मात्र सर्वोपरि मान्ने (एकान्तग्रह) गल्ती गर्नुभएको छ।\nवास्तवमा वात, पित्त र कफ तीनै दोषहरू शरीरका आधार हुन्। जब यी तीनै दोषहरू सन्तुलित (साम्यावस्था) हुन्छन्, तब शरीर निरोगी र स्वस्थ रहन्छ। तर जब यिनीहरूमा विषमता (असन्तुलन) आउँछ, तब शरीरमा रोग उत्पन्न हुन्छ। वायु चालक भए पनि पित्त र कफसँग मिलेर नै यसले शरीरको रक्षा गर्दछ।\"\n\nअन्तिम निष्कर्ष:\nदोषहरूको समानता नै स्वास्थ्य (आरोग्य) हो;\nदोषहरूको विषमता नै रोग हो।",
+          "meaning_en": "Lord Atreya's Final Authoritative Verdict (पुनर्वसु आत्रेय सिद्धान्तः)\n\nLord Atreya's Authoritative Reconciliation:\nListening to all sages, Lord Punarvasu Atreya delivered the final verdict:\n\"None of the opinions expressed should be criticized as incorrect. All of you have spoken correctly, except for adopting a one-sided perspective (Ekantha-Graha).\nThe truth is that Vata, Pitta, and Kapha together constitute the biological foundation of life. When all three Doshas are in their state of equilibrium (Samya), they sustain the body in absolute health (Aroga). When any of them becomes imbalanced (Vaishamya), disease (Roga) ensues. While Vata is the primary mover and conductor, it acts in complete harmony with Pitta and Kapha to sustain creation.\"\n\nConcluding Summary Verse:\nEquilibrium of Doshas (Dosha Samya) is Health (Arogya);\nDisequilibrium of Doshas (Dosha Vaishamya) is Disease (Roga).",
           "audio_file": null
         }
       ]
