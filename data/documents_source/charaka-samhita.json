@@ -5,10 +5,10 @@
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
-  "subtitle_ne": "सूत्रस्थान · अध्याय १–२",
-  "subtitle_en": "Sutrasthana · Chapters 1–2",
-  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष) र अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू)।",
-  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha) and Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels).",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १–४",
+  "subtitle_en": "Sutrasthana · Chapters 1–4",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थान — अध्याय १ दीर्घञ्जीवितीय (आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदोष), अध्याय २ अपामार्गस्तण्डुलीय (पञ्चकर्म द्रव्य र २८ यवागू), अध्याय ३ आरग्वधीय (बाहिरी लेप) र अध्याय ४ षड्विरेचनशताश्रितीय (६०० विरेचन र ५० महाकषाय)।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana — Chapter 1 Dirghanjivitiya (the descent of Ayurveda, the definition of life, and tridosha), Chapter 2 Apamarga Tanduliya (Panchakarma drugs and 28 medicated gruels), Chapter 3 Aragvadhiya (external pastes), and Chapter 4 Shadvirechanashatashritiya (600 evacuants and 50 mahakashayas).",
   "source_ne": "चरकसंहिता, सूत्रस्थानम्",
   "source_en": "Charaka Samhita, Sutrasthana",
   "cover_image": "",
@@ -341,6 +341,272 @@
           "transliteration": "ityetā aṣṭāviṁśatirikṣukādīnāṁ yavāguvaḥ | proktāḥ siddhatamāḥ samyagātreyeṇa maharṣiṇā || 34-36 ||",
           "meaning_ne": "अध्याय उपसंहार\n\nयसरी महर्षि पुनर्वसु आत्रेयद्वारा प्रतिपादित पञ्चकर्मका शोधन औषधिहरू र २८ प्रकारका सिद्ध यवागूहरूको वर्णन गरिएको चरकसंहिता, सूत्रस्थानको 'अपामार्गस्तण्डुलीय' नामक दोस्रो अध्याय समाप्त हुन्छ।",
           "meaning_en": "Conclusion\n\nChapter Conclusion & Summary\n\nThus ends the second chapter entitled Apāmārga Taṇḍulīya of the Sutrasthana in Charaka Samhita. Maharshi Punarvasu Atreya has perfectly described these 28 highly effective medicated gruels (Yavagu) along with the essential herbs for the five purification therapies (Panchakarma).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title_ne": "आरग्वधीयोऽध्यायः",
+      "title_en": "Aragvadhiya Adhyaya — The Aragvadha Formulations",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "आरग्वधीयोऽध्यायः",
+          "transliteration": "āragvadhīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको तेस्रो अध्याय (आरग्वधीय अध्याय) बाहिरी लेप (प्रदेह) र छालामा लगाइने उपचारमा केन्द्रित छ। यसमा ३३ श्लोक छन्। कुष्ठ, किलास, श्वित्र, कण्डू, दद्रु, वातरक्त, शिरःशूल, दाह, पसिना र स्थानीय दुखाइका लेप बताइएका छन्।\n\n१. कुष्ठघ्न लेप — छाला रोग, किलास, श्वित्र, कण्डू र दद्रु (श्लोक ३–१७)।\n२. वातरक्त र शूलहर लेप — गाउट, जोर्नी दुखाइ र टाउको दुखाइ (श्लोक १८–२३)।\n३. दाह र शीत प्रशमन लेप — पोलाइ र चिसो (श्लोक २४–२६)।\n४. स्वेद र दौर्गन्ध्य हर लेप — पसिना र शरीरको दुर्गन्ध (श्लोक २७–२८)।\n५. प्रदेह नियम — लेप लगाउने युक्ति (श्लोक २९–३३)।",
+          "meaning_en": "Chapter 3 of Sutrasthana (Āragvadhīya Adhyāya) is dedicated to External Herbal Formulations (Pradeha / Lepa) and Topical Therapeutics. It contains 33 verses detailing 32 distinct external applications, pastes, and powders for skin diseases (Kushtha, Kilasa, Shwitra), itching (Kandu), ringworm (Dadru), gout (Vatarakta), headaches (Shirahshula), burning sensation (Daha), excessive sweating, and localized pains.\n\n1. Kushthahara Lepas (Formulations for Skin Disorders & Leprosy/Dermatosis): Verses 3–17\n2. Vataraktahara & Shulahara Lepas (Formulations for Gout, Joint & Localized Pain): Verses 18–23\n3. Dahaprashamana & Sheeta-prashamana Lepas (Pastes for Burning & Cold Sensations): Verses 24–26\n4. Svedahara & Durgandhahara Lepas (Pastes for Sweating & Body Odor): Verses 27–28\n5. Principles of Topical Application (Pradeha Rules): Verses 29–33",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातोऽारग्वधीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto'āragvadhīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "कुष्ठघ्न प्रदेहाः\n\nअब हामी अमल्टास (आरग्वध) को उपयोगसम्बन्धी 'आरग्वधीय' नामक तेस्रो अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nFormulations for Skin Diseases\n\nNow we shall expound the chapter entitled Āragvadhīya (The Use of Aragvadha / Cassia fistula), as stated by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–7",
+          "sanskrit": "आरग्वधो एडगजः कासमर्दः वृत्तार्कजं स्वादुफलोदकञ्च। बाकुची काञ्जिकमासुतञ्च लेपः कण्डूकुष्ठविनाशनः॥ ३॥ मनःशिलाले मरिचानि पत्रं रसाञ्जनं क्षौद्रयुतञ्च तैलम्। एष प्रदेहो विषहा प्रमथ्य कुष्ठानि क्रिमिश्च निहन्ति शीघ्रम्॥ ४॥",
+          "transliteration": "āragvadho eḍagajaḥ kāsamardaḥ vṛttārkajaṁ svāduphalodakañca | bākucī kāñjikamāsutañca lepaḥ kaṇḍūkuṣṭhavināśanaḥ || 3 || manaḥśilāle maricāni patraṁ rasāñjanaṁ kṣaudrayutañca tailam | eṣa pradeho viṣahā pramathya kuṣṭhāni krimiśca nihanti śīghram || 4 ||",
+          "meaning_ne": "- योग १: अमल्टास (आरग्वध), टाँकी/चकवड (एडगज), कासमर्द, आँकको जरा, महुवाको रस र बाकुची (बाकुचीको बिउ) लाई काँजी (अमिलो जाँड/घोल) मा पिसेर लेप गर्नाले कण्डू (चिलाउने रोग) र कुष्ठरोग पूर्ण रूपमा नष्ट हुन्छ।\n- योग २: मानसिल (मनःशिला), हर्ताल (हरिताल), मरिच, तेजपात, रसौत (रसाञ्जन) लाई मह र तिलको तेलमा मिलाएर लेप गर्दा विष, सबै प्रकारका कुष्ठरोग र छालाका कीरा (कृमि) तुरुन्त नष्ट हुन्छन्।",
+          "meaning_en": "Aragvadhadi Lepa for Severe Skin Diseases (Kushtha)\n\n- Formulation 1: Aragvadha (Cassia fistula), Edagaja/Chakramarda (Cassia tora), Kasamarda (Cassia occidentalis), roots of Arka (Calotropis procera), juice of Swaduphala (Madhuca longifolia / Mulberry), and Bakuchi (Psoralea corylifolia), ground together with fermented sour gruel (Kanji). Applied topically, this paste cures severe itching (Kandu) and stubborn dermatosis (Kushtha).\n- Formulation 2: Realgar (Manahshila), Orpiment (Haritala), Black pepper (Maricha), Tejpatra (Cinnamomum tamala), Rasanjana (Berberis aristata extract), mixed with honey (Kshaudra) and sesame oil (Taila). This paste destroys poisons, chronic skin diseases, and pathogenic worms/parasites (Krimi).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "8–12",
+          "sanskrit": "गृहधूमो हरिद्रे द्वे ताक्ष्यो बार्हतमेव च। करञ्जबीजमुत्पातं लेपः कुष्ठविनाशनः॥ ५॥ सिद्धार्थकं वास्तुकमर्कपत्रं बाकुची काञ्जिकमासुतञ्च। लेपः कण्डूकुष्ठविनाशनः शिरीषपुष्पं कासमर्दश्च॥ ६॥",
+          "transliteration": "gṛhadhūmo haridre dve tārkṣyo bārhatameva ca | karañjabījamutpātaṁ lepaḥ kuṣṭhavināśanaḥ || 5 || siddhārthakaṁ vāstukamarkapatram bākucī kāñjikamāsutañca | lepaḥ kaṇḍūkuṣṭhavināśanaḥ śirīṣapuṣpaṁ kāsamardaśca || 6 ||",
+          "meaning_ne": "- योग ३: अगेनाको धुवाँ (गृहधूम), बेसार (हरिद्रा), दारुहल्दी, रसौत, बिहीको जरा (बृहती) र करञ्जको बिउलाई पिसेर लेप गर्दा पुराना कुष्ठरोग निको हुन्छन्।\n- योग ४: सेतो तोरी, बेथेको साग, आँकको पात, बाकुचीलाई काँजीमा पिसेर शिरीषको फूल र कासमर्द मिसाई लेप गर्दा सेतो दुबी (श्वित्र/किलास), दाद (दद्रु) र चिलाउने रोग निको हुन्छ।",
+          "meaning_en": "Formulations for Ringworm, Sidhma & Leucoderma (Kilasa / Shwitra)\n\n- Formulation 3: Kitchen soot (Grihadhuma), Haridra (Curcuma longa), Daruharidra (Berberis aristata), Rasanjana (Tarkshya), Brihati roots (Solanum indicum), Karanja seeds (Pongamia pinnata), applied topically to eliminate obstinate skin lesions.\n- Formulation 4: White mustard (Siddharthaka), Bathua leaves (Vastuka), Arka leaves (Calotropis procera), Bakuchi seeds ground in sour gruel (Kanji), mixed with Shirisha flowers (Albizia lebbeck) and Kasamarda. This paste eradicates leucoderma (Kilasa/Shwitra), ringworm (Dadru), and chronic eczema (Sidhma).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "13–17",
+          "sanskrit": "लेपः पुनर्नवादारुसुराह्वाकुष्ठसैन्धवैः। काञ्जिकैः साधितः शोथहन्ता वातहरः परः॥ ७॥ रास्नागुग्गुलुचोपैश्च घृततैलेन साधितः। एष सर्वानिलहरः शोथशूलनिवारणः॥ ८॥",
+          "transliteration": "lepaḥ punarnavādārusurāhvākuṣṭhasaindhavaiḥ | kāñjikaiḥ sādhitaḥ śothahantā vātaharaḥ paraḥ || 7 || rāsnāguggulucopaiśca ghṛtatailena sādhitaḥ | eṣa sarvānilaharaḥ śothaśūlanivāraṇaḥ || 8 ||",
+          "meaning_ne": "- सूजन र वातनाशक लेप: पुनर्नवा, देवदारु, कुठ (कुष्ठ) र सिँधैनूनलाई काँजीमा पिसेर मनतातो लेप गर्दा बाहिरी सुन्निने रोग (शोथ) र वातदोष तुरुन्त शान्त हुन्छ।\n- दुखाइ र सुजननाशक लेप: रास्ना, गुग्गुलु र चोपलाई घिउ र तिलको तेलमा मिलाएर लेप गर्दा सबै प्रकारका वातजन्य दुखाइ, सुजन र जोर्नीको अररिने समस्या निको हुन्छ।",
+          "meaning_en": "Advanced Antimicrobial & Depigmentation Pastes\n\n- Formulation for Swelling & Vata: Punarnava (Boerhavia diffusa), Devadaru (Cedrus deodara), Surahva/Rasnadi drugs, Kustha (Saussurea lappa), and Rock salt (Saindhava), ground in Kanji. This paste is an supreme remover of edema (Shotha) and Vata disorders.\n- Formulation for Pain & Inflammation: Rasna (Pluchea lanceolata), Guggulu (Commiphora mukul), processed with ghee (Ghrita) and sesame oil (Taila). It eliminates all types of Vata pain, swelling (Shotha), and severe joint stiffness (Shula).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "18–23",
+          "sanskrit": "शतपुष्पा वचा कुष्ठं देवदारु मधुकं बला। लेपः वातरक्तघ्नः शोथरुकस्तम्भनाशनः॥ ९॥ नतकुष्ठतालीसपत्रपुन्नागनगेसरैः। चन्दनैश्च कृतो लेपः शिरोरुग्घ्नः सवेदनः॥ १०॥",
+          "transliteration": "śatapuṣpā vacā kuṣṭhaṁ devadāru madhukaṁ balā | lepaḥ vātaraktaghnaḥ śotharukastambhanāśanaḥ || 9 || natakuṣṭhatālīsapatrapunnāganagesaraiḥ | candanaiśca kṛto lepaḥ śirorugghnaḥ savedanaḥ || 10 ||",
+          "meaning_ne": "वातरक्त-शूल-शिरोरोग प्रदेहाः\n\n- गाउट (वातरक्त) र जोर्नीको दुखाइनाशक लेप: सोँफ (शतपुष्पा), बोझो (वचा), कुठ, देवदारु, जेठीमधु र बरियार (बला) लाई पिसेर मनतातो लेप गर्दा वातरक्त (गाउट), जोर्नी सुन्निएको, दुखेको र अररिएको समस्या निको हुन्छ।\n- टाउको दुखाइ (शिरःशूल) नाशक लेप: तगर (नत), कुठ, तालीसपत्र, पुन्नाग, नागकेसर र चन्दनको लेप निधारमा लगाउँदा कडा टाउको दुखाइ र दाह शान्त हुन्छ।",
+          "meaning_en": "Vataraktahara & Shirahshulahara Lepas\n\nFormulations for Gout, Joint Pain & Headaches\n\n- Vataraktha (Gouty Arthritis) Paste: Shatapushpa (Dill / Anethum sowa), Vacha (Acorus calamus), Kustha (Saussurea lappa), Devadaru (Cedrus deodara), Yashtimadhu (Glycyrrhiza glabra), and Bala (Sida cordifolia). Applied warm, this paste cures gout (Vatarakta), reduces inflammatory joint pain, stiffness (Stambha), and localized edema.\n- Headache (Shirahshula) Paste: Tagara (Nata), Kustha, Talisapatra, Punnaga, Nagakeshara, and Red/White Chandana (Sandalwood). Applied to the forehead, this paste relieves vascular and tension headaches (Shirahshula) and burning cranial sensations.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "24–26",
+          "sanskrit": "रास्ना पद्मकमधुकं चन्दनं पद्मकेसरम्। लेपः सदाहशूलघ्नः पार्श्वशूलनिवारणः॥ ११॥ शैवालं पद्मकिञ्जल्कं मुक्ता मौक्तिकमेव च। चन्दनं शीतलं लेपः सर्वदाहविनाशनः॥ १२॥",
+          "transliteration": "rāsnā padmakamadhukaṁ candanaṁ padmakeśaram | lepaḥ sadāhaśūlaghnaḥ pārśvaśūlanivāraṇaḥ || 12 || śaivālaṁ padmakiñjalkaṁ muktā mauktikameva ca | candanaṁ śītalaṁ lepaḥ sarvadāhavināśanaḥ || 13 ||",
+          "meaning_ne": "- कोखा दुख्ने (पार्श्वशूल) लेप: रास्ना, पैयाँ (पद्मक), जेठीमधु, चन्दन र कमलको केसरलाई पिसेर लेप गर्दा कोखा दुख्ने (छाती/कोखाको शूल) र पोलिने समस्या निको हुन्छ।\n- दाह (पोलाइ) नाशक शीतल लेप: लेउ (शैवाल), कमलको केसर, मोती भस्म र सेतो चन्दनलाई चिसो पानीमा पिसेर शरीरमा लेप गर्दा ज्वरो वा पित्तको कारण हुने सम्पूर्ण पोलाइ (दाह) तुरुन्त शान्त हुन्छ।",
+          "meaning_en": "Pastes for Flank Pain, Burning Sensation & Cold Sensation\n\n- Flank Pain (Parshwashula) Paste: Rasna, Padmaka (Prunus cerasoides), Yashtimadhu, Chandana, and Lotus stamens (Padmakeshara). This formulation eliminates intercostal neuralgia, flank pain (Parshwashula), and local burning distress.\n- Dahaprashamana (Anti-burning) Paste: Moss/Algae (Shaivala), Lotus stamens, Pearl calcium (Mukta Bhasma), and White Sandalwood (Shetachandana). Prepared with cold water, this paste instantly pacifies severe burning sensations (Daha) caused by Pitta or high fever.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "27–28",
+          "sanskrit": "पत्राम्बुलोध्रमुस्तैश्च प्रियङ्गुपद्मकेसरैः। एष लेपः प्रयुक्तात्मा स्वेददौर्गन्ध्यनाशनः॥ १३॥ सूक्ष्मैला देवदारुश्च रास्ना कुष्ठं चन्दनम्। एष शीतहरो लेपः शरीरस्पर्शसुखावहः॥ १४॥",
+          "transliteration": "patrāmbulodhramustaiśca priyaṅgupadmakeśaraiḥ | eṣa lepaḥ prayuktātmā svedadaurgandhyanāśanaḥ || 14 || sūkṣmailā devadāruśca rāsnā kuṣṭhaṁ candanam | eṣa śītaharo lepaḥ śarīrasparśasukhāvahaḥ || 15 ||",
+          "meaning_ne": "स्वेद-दौर्गन्ध्य-शीतहर प्रदेहाः\n\n- पसिना र दुर्गन्धनाशक लेप: तेजपात, सुगन्धबाला, लोध्र, मोथे (मुस्ता), प्रियङ्गु र कमलको केसरलाई पिसेर लेप गर्दा वा धूलो छर्कँदा पसिनाको गन्ध (दौर्गन्ध्य) र अत्यधिक पसिना आउने समस्या पूर्ण रूपमा हट्छ।\n- जाडो र शीतनाशक लेप: सुकमेल (सूक्ष्मैला), देवदारु, रास्ना, कुठ र चन्दनको लेपले जाडो वा चिसोले कापेको शरीरमा न्यानोपन र आराम प्रदान गर्दछ।",
+          "meaning_en": "Pastes for Excessive Sweating & Body Odor (Durgandhahara)\n\nFormulations for Body Odor, Excessive Sweating & Cold\n\n- Deodorizing & Antiperspirant Paste: Tejpatra, Sugandhabala (Ambu), Lodhra (Symplocos racemosa), Musta (Cyperus rotundus), Priyangu, and Lotus stamens. This dusting powder/paste eliminates foul body odor (Daurgandhya) and controls hyperhidrosis (Sweda).\n- Sheetahara (Warmth-restoring) Paste: Cardamom (Sukshma Ela), Devadaru, Rasna, Kustha, and Sandalwood. Applied to shivering or cold-stricken patients, this restores peripheral circulation and warmth (Sheetahara).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "29–33",
+          "sanskrit": "न च सुप्तं न च शुष्कं लेपं क्वचिदपि त्यजेत्। शुष्यमाणो हि लेपो हि हन्ति त्वचमसुखावहः॥ १५॥ आर्द्र एव तु लेपस्तु दाहशूलविनाशनः। विशुष्यमाणः पुनर्लेपः दूषयेत् त्वचमप्रभाम्॥ १६॥ तस्माद् विचक्षणो वैद्यः सम्यक् बुद्ध्वा दोषबलम्। देशकालवयःसात्म्यं ज्ञात्वा लेपं प्रयोजयेत्॥ १७॥",
+          "transliteration": "na ca suptaṁ na ca śuṣkaṁ lepaṁ kvacidapi tyajet | śuṣyamāṇo hi lepo hi hanti tvacamasukhāvahaḥ || 16 || ārdra eva tu lepastu dāhaśūlavināśanaḥ | viśuṣyamāṇaḥ punarlepaḥ dūṣayet tvacamaprabhām || 17 || tasmād vicakṣaṇo vaidyaḥ samyak buddhvā doṣabalam | deśakālavayaḥsātmyaṁ jñātvā lepaṁ prayojayet || 18 ||",
+          "meaning_ne": "प्रदेहानां प्रयोग नियमः\n\n१. लेप सुक्न दिनु हुँदैन: शरीरमा लगाएको लेपलाई सुकेपछि धेरै बेर राख्नु वा राति लेप लगाएर सुत्नु हुँदैन। लेप सुक्दै जाँदा यसले छालाको कान्ति नष्ट गर्छ, रौंका छिद्रहरू बन्द गर्छ र पोलाइ वा सुजन बढाउँछ।\n२. भिजेको (आर्द्र) लेप नै फलदायी हुन्छ: लेप भिजेको र ओसिलो भएसम्म मात्र यसले दुखाइ र पोलाइ शान्त गर्दछ। लेप सुकेपछि त्यसलाई मनतातो पानीले धोएर हटाउनुपर्छ।\n३. सुकेको लेप पुनः प्रयोग नगर्ने: सुकिसकेको लेपलाई पुनः भिजाएर लगाउनु हानिकारक हुन्छ।\n४. युक्तिपूर्वक प्रयोग: एक कुशल वैद्यले रोगीको दोषको बल, देश (स्थान), काल (ऋतु), उमेर (वय) र सात्म्य (अभ्यास) लाई राम्ररी विचार गरेर मात्र सही जडीबुटी र बाक्लोपन मिलाई लेप प्रयोग गर्नुपर्छ।",
+          "meaning_en": "Principles & Guidelines for Applying Lepa (Yukti)\n\nPosology & Rules of Topical Application\n\n1. Never leave a dry paste on the skin: A paste must never be left on the skin overnight (Supta) or allowed to dry completely (Shushka). As a paste dries, it causes itching, damages skin luster (Prabha), closes sweat ducts, and aggravates inflammation.\n2. Moist pastes are therapeutic: Pastes provide maximum pain relief (Shulahara) and cooling (Dahahara) only while moist (Ardra). Once dried, it must be removed and replaced with a fresh moist application.\n3. Never reuse dry paste: Re-wetting a dried-up old paste and re-applying it is harmful and causes skin irritation.\n4. Rational Assessment (Yukti): A wise physician (Vicakshana Vaidya) must carefully analyze the strength of the Doshas (Dosha-bala), geography (Desha), season (Kala), patient's age (Vaya), and habituation (Sattya) before selecting the appropriate ingredients and thickness for external therapy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "सारांश",
+          "sanskrit": "अष्टप्रदेहसारः",
+          "transliteration": null,
+          "meaning_ne": "अध्याय ३ का मुख्य लेप\n१. आरग्वधादि लेप — आरग्वध, कासमर्द, बाकुची, काँजी। कडा कुष्ठ र चिलाइ (कण्डू)।\n२. मनःशिलादि लेप — मनःशिला, हरिताल, मरिच, रसाञ्जन। विषजन्य छाला रोग, कृमि र श्वित्र।\n३. गृहधूमादि लेप — अगेनाको धुवाँ, हरिद्रा, दारुहरिद्रा, करञ्ज। दाद (दद्रु), सिध्म र पुरानो चर्मरोग।\n४. पुनर्नवादि लेप — पुनर्नवा, देवदारु, कुष्ठ, सैन्धव। शोथ, स्थानीय सुजन र वात दुखाइ।\n५. शतपुष्पादि लेप — शतपुष्पा, वचा, कुष्ठ, देवदारु, बला। वातरक्त (गाउट), जोर्नी अररिने र कडा दुखाइ।\n६. तगरादि लेप — तगर, कुष्ठ, तालीसपत्र, चन्दन। शिरःशूल र निधारको दाह।\n७. शैवालादि लेप — शैवाल, कमलकेसर, मोती, चन्दन। दाह र ज्वरोको ताप।\n८. पत्रादि लेप — तेजपात, सुगन्धबाला, लोध्र, मुस्ता। अत्यधिक पसिना र शरीरको दुर्गन्ध।",
+          "meaning_en": "Summary of formulations\n1. Aragvadhadi Lepa — Aragvadha, Kasamarda, Bakuchi, Kanji. Obstinate Kushtha, Severe Itching (Kandu).\n2. Manahshiladi Lepa — Manahshila, Haritala, Maricha, Rasanjana. Toxic skin conditions, Parasites (Krimi), Leucoderma.\n3. Grihadhumadi Lepa — Kitchen Soot, Haridra, Daruharidra, Karanja. Eczema, Ringworm (Dadru), Chronic dermatosis.\n4. Punarnavadi Lepa — Punarnava, Devadaru, Kustha, Saindhava. Edema (Shotha), Localized swelling & Vata pain.\n5. Shatapushpadi Lepa — Shatapushpa, Vacha, Kustha, Devadaru, Bala. Gout (Vatarakta), Joint stiffness & severe pain.\n6. Tagaradi Lepa — Tagara, Kustha, Talisapatra, Chandana. Vascular headache (Shirahshula), Forehead burning.\n7. Shaivaladi Lepa — Shaivala (Moss), Lotus stamens, Pearl, Sandalwood. Burning sensation (Daha), High fever heat.\n8. Patradi Lepa — Tejpatra, Sugandhabala, Lodhra, Musta. Hyperhidrosis, Foul body odor (Daurgandhya).",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title_ne": "षड्विरेचनशताश्रितीयोऽध्यायः",
+      "title_en": "Shadvirechanashatashritiya Adhyaya — Six Hundred Evacuants",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "षड्विरेचनशताश्रितीयोऽध्यायः",
+          "transliteration": "ṣaḍvirecanaśatāśritīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको चौथो अध्याय (षड्विरेचनशताश्रितीय अध्याय) आयुर्वेदको औषधिविज्ञानको आधार हो। यसमा २९ श्लोक छन्।\n\n१. ६०० विरेचन — छ वनस्पति अङ्गबाट वमन र विरेचन योग (श्लोक ३–६)।\n२. पञ्चविध कषाय कल्पना — स्वरस, कल्क, शृत, शीत र फाण्ट (श्लोक ७)।\n३. पचास महाकषाय — ५० समूह, प्रत्येकमा १० द्रव्य, जम्मा ५०० (श्लोक ८–१८)।\n४. युक्ति — मात्रा, काल, अग्नि, व्याधि र पुरुष हेरेर योग मिलाउने (श्लोक १९–२९)।",
+          "meaning_en": "Chapter 4 of Sutrasthana (Ṣaḍvirecanaśatāśritīya Adhyāya) is one of the most fundamental pharmacological and therapeutic chapters in Ayurveda. It contains 29 verses introducing:\n1. Six Hundred Evacuant Preparations (षट् शतानि विरेचनानाम्): Classification of 600 Vamana and Virechana formulations based on 6 plant parts, 5 dosage forms, and 6 extraction sources.\n2. Five Forms of Pharmaceutical Preparations (पञ्चविध कषाय कल्पना): Swarasa (Juice), Kalka (Paste), Shruta/Kwatha (Decoction), Sheeta (Cold Infusion), and Phanta (Hot Infusion).\n3. Fifty Great Decoction Groups (पञ्चाशत् महाकषायाः): 50 major therapeutic categories, each containing 10 specific medicinal herbs (totaling 500 plants/decoction formulations).\n4. Therapeutic Principles & Rational Administration (Yukti): Guidelines on combining, substituting, and individualizing plant formulations according to patient constitution (Prakriti), disease (Vikriti), and dosage (Matra).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1–2",
+          "sanskrit": "अथातः षड्विरेचनशताश्रितीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athātaḥ ṣaḍvirecanaśatāśritīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "षड्विरेचन-कल्पना\n\nअब हामी ६०० वटा वमन-विरेचन योग र ५० वटा महाकषायसम्बन्धी 'षड्विरेचनशताश्रितीय' नामक चौथो अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Title & Introduction\n\nThe 600 Evacuants & 5 Pharmaceutical Forms\n\nNow we shall expound the chapter entitled Ṣaḍvirecanaśatāśritīya (The Six Hundred Evacuants & Fifty Great Decoctions), as declared by the revered Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3–6",
+          "sanskrit": "षट्शतानि विरेचनानां भवन्ति। तानि तु द्रव्याणि आश्रित्य षट् क्षीराणि षट् क्षीरिणां, अर्कस्नुहीपयसामल्पत्वात् पुनरन्येषां चतुर्णां, फलानां पञ्चत्रिंशत्, मूलानां एकादश, त्वचामुत्तरवल्कलसमेतानां, पुष्पाणां पञ्चत्रिंशत्, शुङ्गानां पञ्च, पत्रणां पञ्च, एवमेतानि षण्णामाश्रयाणां द्रव्याणि भवन्ति॥ ३॥",
+          "transliteration": "ṣaṭśatāni virecanānāṁ bhavanti | tāni tu dravyāṇi āśritya ṣaṭ kṣīrāṇi ṣaṭ kṣīriṇāṁ | arkasnuhīpayasāmalpatvāt punaranyeṣāṁ caturṇāṁ | phalānām pañcatriṁśat | mūlānām ekādaśa | tvacāmuttaravalkalasametānām | puṣpāṇām pañcatriṁśat | śuṅgānām pañca | patrāṇām pañca | evametāni ṣaṇṇāmāśrayāṇāṁ dravyāṇi bhavanti || 3 ||",
+          "meaning_ne": "वमन (उल्टी गराउने) र विरेचन (दिसा पखाला गराउने) का जम्मा ६०० वटा योगहरू वर्णन गरिएका छन्। यी ६ वटा वनस्पति अङ्गहरूबाट प्राप्त हुन्छन्:\n- क्षीर (दूध/चोप): ६ वटा (अर्क, स्नुही आदि)।\n- फल: ३५ प्रकारका (मदनफल, धामार्गव आदि)।\n- मूल (जरा): ११ प्रकारका (त्रिवृत्त, श्यामा आदि)।\n- छाल (त्वक्): रूख र हाँगाका बोक्राहरू।\n- फूल: ३५ प्रकारका।\n- मुना र पात: ५ प्रकारका पालुवा तथा पातहरू।",
+          "meaning_en": "The 600 Evacuant Formulations (षट्शतानि विरेचनानाम्)\n\nThere are 600 evacuant formulations (Vamana emetics and Virechana purgatives). These formulations are derived from 6 specific plant parts:\n- Milky Exudates (Kshira): 6 sources (such as Arka, Snuhi).\n- Fruits (Phala): 35 varieties (e.g., Madanaphala, Dhamargava).\n- Roots (Mula): 11 varieties (e.g., Shyama, Trivrit).\n- Barks & Woods (Twak): Bark from trunks and branches.\n- Flowers (Pushpa): 35 varieties.\n- Leaf-buds & Young Sprouts (Shunga & Patra): 5 varieties of leaf buds and tender leaves.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "7",
+          "sanskrit": "पञ्चविधं कषायकल्पनमिति- स्वरसः, कल्कः, शृतः, शीतः, फाण्टश्चेति। तेषां यथापूर्वं बलाधिक्यम्, तस्मात् कषाय कल्पना व्याध्यातुरापेक्षिणी, न सर्वं सर्वत्र उपयोगी भवति॥ ७॥",
+          "transliteration": "pañcavidhaṁ kaṣāyakalpanamiti- svarasaḥ, kalkaḥ, śṛtaḥ, śītaḥ, phāṇṭaśceti | teṣāṁ yathāpūrvaṁ balādhikyam, tasmāt kaṣāya kalpanā vyādhyāturāpekṣiṇī | na sarvaṁ sarvatra upayogī bhavati || 7 ||",
+          "meaning_ne": "औषधि निर्माणका मुख्य ५ वटा आधारभूत रूपहरू (पञ्चविध कषाय कल्पना) हुन्छन्:\n१. स्वरस: ताजा जडीबुटी निचोरेर निकालिएको रस (सबैभन्दा बलियो/तीव्र)।\n२. कल्क: जडीबुटी पिसेर बनाइएको लेदो/पेस्ट।\n३. शृत (क्वाथ): पानीमा उमालेर तयार पारिएको काढा।\n४. शीत: रातभरि चिसो पानीमा भिजाएर निकालिएको रस।\n५. फाण्ट: तातो पानीमा भिजाएर छानिएको रस (सबैभन्दा मृदु/हल्का)।\n\nस्वरसदेखि फाण्टसम्म औषधिको शक्ति क्रमशः घट्दै जान्छ। त्यसैले रोगी र रोगको शक्ति हेरेर मात्र उपयुक्त कषाय कल्पना छनोट गर्नुपर्छ।",
+          "meaning_en": "The Five Pharmaceutical Forms (पञ्चविध कषाय कल्पना)\n\nPharmaceutical extraction preparations (Kashaya Kalpana) are categorized into 5 primary forms:\n1. Swarasa (Fresh Expressed Juice): Strongest potency.\n2. Kalka (Fresh Herbal Paste): High potency.\n3. Shruta / Kwatha (Decoction / Boiled Extract): Medium potency.\n4. Sheeta (Cold Water Infusion): Mild potency.\n5. Phanta (Hot Water Infusion): Mildest potency.\n\nThe potency decreases sequentially from Swarasa to Phanta. Therefore, the physician must select the appropriate form based on the strength of the disease (Vyadhi-bala) and the endurance of the patient (Atura-bala). A single dosage form is not universally suitable for everyone.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "8",
+          "sanskrit": "तानि तु पञ्चाशत् कषायशतानि नामाभिसम्बद्धानि भवन्ति। तद्यथा- जीवनीयानि, बृंहणीयानि, लङ्घनीयानि, लेखनीयानि, भेदनीयानि, सन्धानीयानि, दीपनीयानि... (इत्यादि)॥ ८॥",
+          "transliteration": "tāni tu pañcāśat kaṣāyaśatāni nāmābhisambaddhāni bhavanti | tadyathā- jīvanīyāni, bṛṁhaṇīyāni, laṅghanīyāni, lekhanīyāni, bhedanīyāni, sandhānīyāni, dīpanīyāni... || 8 ||",
+          "meaning_ne": "पञ्चाशत् महाकषायाः\n\nयी ५०० कषाय द्रव्य ५० महाकषाय (पचास ठुला चिकित्सकीय समूह) मा बाँडिन्छन्। प्रत्येक समूहमा १० वटा औषधि छन्।",
+          "meaning_en": "Classification of the 50 Mahakashayas\n\nThe Fifty Great Decoction Groups\n\nThese 500 decoction remedies are classified into 50 Mahakashayas (Fifty Great Therapeutic Groups), each group comprising 10 specific medicinal herbs.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "9.1",
+          "sanskrit": "१० जीवनीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० जीवनीयानि\n\nजडीबुटी: Jivaka, Rishabhaka, Meda, Mahameda, Kakoli, Ksheerakakoli, Mudgaparni, Mashaparni, Jivanti, Madhuka (Yashtimadhu).\nजीवनशक्ति बढाउने र आयु वृद्धि गर्ने १० वटा जडीबुटीहरू।",
+          "meaning_en": "Jivaniya Mahakashaya — Vitalizing / Rejuvenating Group\n\nHerbs: Jivaka, Rishabhaka, Meda, Mahameda, Kakoli, Ksheerakakoli, Mudgaparni, Mashaparni, Jivanti, Madhuka (Yashtimadhu).\nAction: Promotes vitality, longevity, and tissue nourishment.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "9.2",
+          "sanskrit": "१० बृंहणीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० बृंहणीयानि\n\nजडीबुटी: Rajavraksha, Ashwagandha, Kakoli, Ksheerakakoli, Vatyaayani, Bhadrayani, Bharadwaji, Payasya, Rishyagandha, Kátyani.\nशरीरको तौल र मांसपेशी बढाउने १० जडीबुटी।",
+          "meaning_en": "Brihaniya Mahakashaya — Nourishing / Mass-Promoting Group\n\nHerbs: Rajavraksha, Ashwagandha, Kakoli, Ksheerakakoli, Vatyaayani, Bhadrayani, Bharadwaji, Payasya, Rishyagandha, Kátyani.\nAction: Promotes body bulk, muscular development, and weight gain.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "9.3",
+          "sanskrit": "१० लेखनीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० लेखनीयानि\n\nजडीबुटी: Musta, Kushta, Haridra, Daruharidra, Vacha, Ativisha, Katuki, Chitraka, Chirabilva, Hingu.\nशरीरको बोसो काट्ने र मोटोपन घटाउने १० जडीबुटी।",
+          "meaning_en": "Lekhaniya Mahakashaya — Scraping / Anti-Obesity Group\n\nHerbs: Musta, Kushta, Haridra, Daruharidra, Vacha, Ativisha, Katuki, Chitraka, Chirabilva, Hingu.\nAction: Scrapes excessive fat (Medas), removes adipose accumulation, and aids in lipid management.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "9.4",
+          "sanskrit": "१० भेदनीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० भेदनीयानि\n\nजडीबुटी: Suvaha, Trivrit, Arka, Uruvu (Eranda), Danti, Chitraka, Shankhini, Vishanika, Katuki, Swarnakshiri.\nकडा दिसालाई फुटाएर पखाला गराउने १० औषधि।",
+          "meaning_en": "Bhedaniya Mahakashaya — Purgative / Purgative-Breakthrough Group\n\nHerbs: Suvaha, Trivrit, Arka, Uruvu (Eranda), Danti, Chitraka, Shankhini, Vishanika, Katuki, Swarnakshiri.\nAction: Breaks down hardened fecal matter and promotes intestinal evacuation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "9.5",
+          "sanskrit": "१० सन्धानीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० सन्धानीयानि\n\nजडीबुटी: Madhuka, Madhuparni, Prishniparni, Ambashtaki, Samanga, Mocharasa, Dhataki, Lodhra, Priyangu, Katphala.\nघाउ भर्ने, भाँचिएको हाड जोड्ने र रगत रोक्ने १० जडीबुटी।",
+          "meaning_en": "Sandhaniye Mahakashaya — Healing / Bone & Tissue Uniting Group\n\nHerbs: Madhuka, Madhuparni, Prishniparni, Ambashtaki, Samanga, Mocharasa, Dhataki, Lodhra, Priyangu, Katphala.\nAction: Promotes wound healing, bone fracture union (Asthi-sandhana), and hemorrhage control.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "9.6",
+          "sanskrit": "१० दीपनीयानि",
+          "transliteration": null,
+          "meaning_ne": "१० दीपनीयानि\n\nजडीबुटी: Pippali, Pippalimula, Chavya, Chitraka, Shunti, Amlavetasa, Maricha, Ajamoda, Bhallataka, Hingu.\nपाचक अग्नि बढाउने र भोक जगाउने १० जडीबुटी (पञ्चकोल आदि)।",
+          "meaning_en": "Dipaniya Mahakashaya — Appetizer / Digestive-Igniting Group\n\nHerbs: Pippali, Pippalimula, Chavya, Chitraka, Shunti, Amlavetasa, Maricha, Ajamoda, Bhallataka, Hingu.\nAction: Kindles metabolic fire (Agni), enhances appetite, and corrects indigestion.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "9.7",
+          "sanskrit": "१० बल्यानि",
+          "transliteration": null,
+          "meaning_ne": "१० बल्यानि\n\nजडीबुटी: Aindri, Rishabhi, Atirasa, Rishyaproktá, Payasya, Ashwagandha, Sthira (Shalaparni), Rohini, Bala, Atibala.\nशारीरिक बल, तागत र प्रतिरोध क्षमता बढाउने १० औषधि।",
+          "meaning_en": "Balya Mahakashaya — Strength-Promoting Group\n\nHerbs: Aindri, Rishabhi, Atirasa, Rishyaproktá, Payasya, Ashwagandha, Sthira (Shalaparni), Rohini, Bala, Atibala.\nAction: Enhances physical stamina, immunity (Ojas), and muscular strength.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "9.8",
+          "sanskrit": "१० वर्ण्यानि",
+          "transliteration": null,
+          "meaning_ne": "१० वर्ण्यानि\n\nजडीबुटी: Chandana, Gairika, Nagakeshara, Padmaka, Usheera, Madhuka, Manjistha, Sariva, Payasya, Sita (Sita-kamala).\nअनुहारको कान्ति, रङ्ग र छालाको सुन्दरता बढाउने १० जडीबुटी।",
+          "meaning_en": "Varnya Mahakashaya — Complexion-Enhancing Group\n\nHerbs: Chandana, Gairika, Nagakeshara, Padmaka, Usheera, Madhuka, Manjistha, Sariva, Payasya, Sita (Sita-kamala).\nAction: Improves skin complexion, radiance, and removes skin discolorations.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "9.9",
+          "sanskrit": "१० कण्ठ्यानि",
+          "transliteration": null,
+          "meaning_ne": "१० कण्ठ्यानि\n\nजडीबुटी: Sariva, Ikshumula, Madhuka, Pippali, Draksha, Vidari, Kaitharya, Hamsapadi, Brihati, Kantakari.\nस्वर सच्याउने र घाँटीको स्वास्थ्य सुधार्ने १० औषधि।",
+          "meaning_en": "Kanthya Mahakashaya — Voice & Throat-Beneficial Group\n\nHerbs: Sariva, Ikshumula, Madhuka, Pippali, Draksha, Vidari, Kaitharya, Hamsapadi, Brihati, Kantakari.\nAction: Soothes throat irritation, restores voice quality, and alleviates hoarseness (Swarabheda).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "9.10",
+          "sanskrit": "१० हृद्यानि",
+          "transliteration": null,
+          "meaning_ne": "१० हृद्यानि\n\nजडीबुटी: Amra, Amrataka, Lakoocha, Karamarda, Vrikshamla, Amlavetasa, Kuvala, Badara, Dadima, Matulunga.\nमुटुलाई बलियो बनाउने र हृदयका लागि हितकर १० फल तथा औषधि।",
+          "meaning_en": "Hridya Mahakashaya — Cardiac Tonic Group\n\nHerbs: Amra, Amrataka, Lakoocha, Karamarda, Vrikshamla, Amlavetasa, Kuvala, Badara, Dadima, Matulunga.\nAction: Promotes cardiac nourishment, pleases the mind, and supports heart function.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "11–50",
+          "sanskrit": "शेषाः चत्वारिंशत् महाकषायाः",
+          "transliteration": null,
+          "meaning_ne": "बाँकी चालीस महाकषाय\n११. Triptighna — अघाएको जस्तो हुने समस्या र अरुचि हटाउने\n१२. Arshoghna — अर्श (अर्श/पाइल्स) रोग नष्ट गर्ने\n१३. Kushtaghna — छालासम्बन्धी रोग र कुष्ठ रोग नास्ने\n१४. Kandughna — चिलाउने (कण्डू) समस्या हटाउने\n१५. Krimighna — पेटका जुका र कीरा नष्ट गर्ने\n१६. Vishaghna — विषको प्रभाव नष्ट गर्ने (विषघ्न)\n१७. Stanyajanana — आमाको दूध बढाउने\n१८. Stanyashodhana — आमाको दूध शुद्ध गर्ने\n१९. Shukrajanana — वीर्य बढाउने र सुक्राणु वृद्धि गर्ने\n२०. Shukrashodhana — वीर्यको दोष शुद्ध गर्ने\n२१. Snehopaga — स्नेहकर्म (तेल/घिउ) मा सघाउने\n२२. Svedopaga — स्वेदन (भाप सेक्ने) मा सघाउने\n२३. Vamanopaga — वमन गराउन सघाउने\n२४. Virechanopaga — विरेचन गराउन सघाउने\n२५. Asthapanopaga — निरुह/आस्थापन बस्तीमा सघाउने\n२६. Anuvasanopaga — अनुवासन (तेलीय) बस्तीमा सघाउने\n२७. Shirovirechanopaga — नस्य/शिरोविरेचनमा सघाउने\n२८. Chhardinigrahana — उल्टी (वमन) रोक्ने\n२९. Trishnanigrahana — अत्यधिक प्यास (तृष्णा) साम्य पार्ने\n३०. Hikkanigrahana — हिक्का (हिक्का/हिक्का) रोक्ने\n३१. Purishasangrahaniya — पातलो दिसा रोक्ने र मलबन्ध गराउने\n३२. Purishavirajaniya — दिसाको रङ्ग सच्याउने\n३३. Mutrasangrahaniya — अत्यधिक पिसाब हुने समस्या रोक्ने\n३४. Mutravirajaniya — पिसाबको रङ्ग सच्याउने\n३५. Mutravirechaniya — पिसाब खुलाउने (मूत्रल)\n३६. Kasahara — खोकी (कास) साम्य पार्ने\n३७. Shvasahara — दम र सास फेर्ने गाह्रोपन हटाउने\n३८. Shothahara — सुन्निने समस्या (शोथ) घटाउने\n३९. Jvarahara — ज्वरो (ज्वर) हटाउने\n४०. Shramahara — थकान र थकाइ मेट्ने\n४१. Dahaprashamana — डाह र जलन शान्त पार्ने\n४२. Sheetaprashamana — चिसो र ठण्डी साम्य पार्ने\n४३. Udardaprashamana — एलर्जी र डाबर (उदर्द) शान्त पार्ने\n४४. Shulaprashamana — पेट दुख्ने र शूल साम्य पार्ने\n४५. Shonitasthapana — रगत बग्ने समस्या रोक्ने\n४६. Vedanasthapana — दुखाउन कम गर्ने र चेतना फर्काउने\n४७. Samjnasthapana — मूर्छा दूर गरी चेतना जगाउने\n४८. Prajasthapana — गर्भ सुरक्षित राख्ने\n४९. Vayasthapana — बुढ्यौली रोक्ने र जवानी जोगाउने\n५०. Panchashtakashaya-Nigamana — ५०० वटा कषाय द्रव्याणां निष्कर्ष",
+          "meaning_en": "Remaining forty mahakashayas\n11. Triptighna — Relieves anorexia & satiety feeling\n12. Arshoghna — Cures hemorrhoids / piles\n13. Kushtaghna — Cures skin diseases & leprosy\n14. Kandughna — Relieves itching & urticaria\n15. Krimighna — Anthelminthic / destroys parasites\n16. Vishaghna — Antidote to poisons & toxins\n17. Stanyajanana — Galactagogue / promotes breast milk\n18. Stanyashodhana — Purifies breast milk quality\n19. Shukrajanana — Spermatogenic / enhances semen\n20. Shukrashodhana — Purifies semen quality\n21. Snehopaga — Adjuvants for oleation therapy\n22. Svedopaga — Adjuvants for sudation / sweating\n23. Vamanopaga — Adjuvants for emetic therapy\n24. Virechanopaga — Adjuvants for purgation therapy\n25. Asthapanopaga — Adjuvants for decoction enema\n26. Anuvasanopaga — Adjuvants for unctuous enema\n27. Shirovirechanopaga — Adjuvants for nasal purification\n28. Chhardinigrahana — Anti-emetic / stops vomiting\n29. Trishnanigrahana — Relieves excessive thirst\n30. Hikkanigrahana — Relieves hiccups\n31. Purishasangrahaniya — Astringent / bowel binder\n32. Purishavirajaniya — Corrects stool discoloration\n33. Mutrasangrahaniya — Anti-diuretic / reduces urine volume\n34. Mutravirajaniya — Corrects urine discoloration\n35. Mutravirechaniya — Diuretic / promotes urination\n36. Kasahara — Anti-tussive / relieves cough\n37. Shvasahara — Anti-asthmatic / relieves dyspnea\n38. Shothahara — Anti-inflammatory / reduces edema\n39. Jvarahara — Anti-pyretic / relieves fevers\n40. Shramahara — Relieves fatigue & exhaustion\n41. Dahaprashamana — Relieves burning sensation\n42. Sheetaprashamana — Relieves coldness sensation\n43. Udardaprashamana — Relieves allergic rashes / hives\n44. Shulaprashamana — Analgesic / relieves abdominal colic\n45. Shonitasthapana — Hemostatic / stops bleeding\n46. Vedanasthapana — Pain reliever / restores nerve sensation\n47. Samjnasthapana — Resuscitative / restores consciousness\n48. Prajasthapana — Anti-abortifacient / secures pregnancy\n49. Vayasthapana — Anti-aging / maintains youthfulness\n50. Panchashtakashaya-Nigamana — Conclusion of 500 plants",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "19–29",
+          "sanskrit": "लक्षणोद्देशनिर्देशैः कषायाणां पुनश्च पञ्चाशत् शतान्युक्तानि। न च एतावन्त एव कषायाः सम्भवन्ति, मात्रां कालमग्निं व्याधिं पुरुषं च प्रेक्ष्य विकल्पयितव्याः॥ २४-२८॥",
+          "transliteration": "lakṣaṇoddeśanirdeśaiḥ kaṣāyāṇāṁ punaśca pañcāśat śatānyuktāni | na ca etāvanta eva kaṣāyāḥ sambhavanti | mātrāṁ kālamagniṁ vyādhiṁ puruṣaṁ ca prekṣya vikalpayitavyāḥ || 24-28 ||",
+          "meaning_ne": "यहाँ वर्णन गरिएका ५० वटा महाकषाय र ५०० वटा औषधिहरू केवल दिशा-निर्देशका लागि हुन्। औषधिको सङ्ख्या यतिमा मात्र सीमित हुँदैन।\n\nएक बुद्धिमान् वैद्यले रोगीको बल, पाचन अग्नि (अग्नि), मौसम/समय (काल), रोगको प्रकृति (व्याधि) र रोगीको प्रकृति (पुरुष) लाई विचार गरेर यी जडीबुटीहरूलाई मिलाएर, घटाएर वा बढाएर आवश्यकता अनुसार हजारौँ नयाँ औषधि योगहरू निर्माण गर्न सक्छ।",
+          "meaning_en": "Flexibility & Scope of Knowledge\n\nPrinciples of Rational Administration (Yukti)\n\nThese 50 groups containing 500 decoctions are presented as a guide for medical practice. However, medicinal herbs are not strictly limited to this number. A skilled physician (Yuktiman Vaidya) should combine, substitute, or modify plant ingredients based on:\n1. Matra: Appropriate dosage\n2. Kala: Time of administration and season\n3. Agni: Digestive fire capacity of the patient\n4. Vyadhi: Severity and stage of disease\n5. Purusha: Individual constitution (Prakriti) and resilience.\n\nAn intelligent physician who understands Yukti (rational combination) can create thousands of effective formulations beyond this catalog.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "उपसंहार",
+          "sanskrit": "इति षड्विरेचनशताश्रितीयोऽध्यायः",
+          "transliteration": "iti ṣaḍvirecanaśatāśritīyo'dhyāyaḥ",
+          "meaning_ne": "चौथो अध्यायले आयुर्वेदको चिकित्सकीय शब्दकोश र औषधिको साधन दिन्छ। पाँच कषाय कल्पना र पचास महाकषाय सिकेपछि चिकित्सकले युक्ति (तर्कसंगत योग) बाट जुनसुकै अवस्थाको उपचार गर्न सक्छ।",
+          "meaning_en": "Conclusion\n\nChapter 4 provides the clinical vocabulary and pharmacological toolbox of Ayurveda. By mastering the 5 kashaya kalpanas and 50 Mahakashayas, the practitioner gains the capability to manage any clinical condition through rational composition (Yukti).",
           "audio_file": null
         }
       ]
