@@ -1,0 +1,180 @@
+{
+  "slug": "charaka-samhita",
+  "order_index": 110,
+  "category": "ayurveda",
+  "title_sa": "चरकसंहिता",
+  "title_ne": "चरक संहिता",
+  "title_en": "Charaka Samhita",
+  "subtitle_ne": "सूत्रस्थान · अध्याय १ · दीर्घञ्जीवितीय",
+  "subtitle_en": "Sutrasthana · Chapter 1 · Quest for Longevity",
+  "description_ne": "आयुर्वेदको मूल संहिता। सूत्रस्थानको पहिलो अध्याय (दीर्घञ्जीवितीय) — आयुर्वेदको अवतरण, आयुको लक्षण, त्रिदण्ड, त्रिदोष, षड्रस र चिकित्सकको लक्षण।",
+  "description_en": "The root compendium of Ayurveda. Sutrasthana, Chapter 1 (Dirghanjivitiya) — the descent of Ayurveda, the definition of life, the tripod of mind, soul and body, tridosha, the six tastes, and the marks of a true physician.",
+  "source_ne": "चरकसंहिता, सूत्रस्थानम्, अध्याय १",
+  "source_en": "Charaka Samhita, Sutrasthana, Chapter 1",
+  "cover_image": "",
+  "has_chapters": true,
+  "inline_chapters": false,
+  "audio_prefix": "documents/charaka-samhita",
+  "chapters": [
+    {
+      "number": 1,
+      "title_ne": "दीर्घञ्जीवितीयोऽध्यायः",
+      "title_en": "Dirghanjivitiya Adhyaya — Quest for Longevity",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "परिचय",
+          "sanskrit": "दीर्घञ्जीवितीयोऽध्यायः",
+          "transliteration": "dīrghañjīvitīyo'dhyāyaḥ",
+          "meaning_ne": "सूत्रस्थानको पहिलो अध्याय (दीर्घञ्जीवितीय अध्याय) ले आयुर्वेदको दार्शनिक, ज्ञानमीमांसीय र जैविक आधार राख्छ। यस अध्ययनमा समेटिएका विषय:\n\n१. आयुर्वेदावतरण — ब्रह्मादेखि इन्द्र र महर्षि भरद्वाजसम्मको परम्परा।\n२. आयुको लक्षण र पुरुषार्थ — हित, अहित, सुख र दुःख आयु।\n३. त्रिसूत्र — हेतु, लिङ्ग र औषध।\n४. त्रिदण्ड — मन (सत्त्व), आत्मा र शरीर।\n५. षट् पदार्थ — सामान्य, विशेष, गुण, द्रव्य, कर्म र समवाय।\n६. त्रिदोष — वात, पित्त, कफ तथा रज र तम।\n७. षड्रस — छ रस र दोषमा तिनको प्रभाव।\n८. भेषज र चिकित्सकको लक्षण — औषधि वर्ग र युक्तिसहितको चिकित्सा।",
+          "meaning_en": "Chapter 1 of Sutrasthana (Dīrghañjīvitīya Adhyāya) establishes the philosophical, epistemological, and biological foundations of Ayurveda. It contains 141 verses covering:\n1. Ayurvedavatarana (Descent of Ayurveda): Divine lineage from Lord Brahma to Indra and Maharshi Bharadwaja.\n2. Ayur Lakshana & Purushartha: Definition of life (Ayu), health (Arogya), and its four pillars (Hita, Ahita, Sukha, Dukha).\n3. Trisutra Ayurveda: Etiology (Hetu), Symptomatology (Linga), and Therapeutics (Aushadha).\n4. Tridanda Philosophy: The tripod of Mind (Sattva), Soul (Atma), and Body (Sharira).\n5. Shad-Padartha (Six Ontological Categories): Samanya, Vishesha, Guna, Dravya, Karma, Samavaya.\n6. Tridosha Physiology & Properties: Qualities and pacification of Vata, Pitta, Kapha, and Mental Doshas (Rajas, Tamas).\n7. Shad-Rasa (Six Tastes): Tastes and their pharmacological actions on Doshas.\n8. Pharmacology & Herbal Therapeutics: Classification of drugs (Audbhida, Jangama, Parthiva), 16 Panchakarma plants, 4 Snehas, 5 Salts, 8 Milks, 8 Urines.\n9. Medical Ethics & Rational Application (Yukti): Qualities of true physicians versus impostors.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1",
+          "sanskrit": "अथातो दीर्घञ्जीवितीयमध्यायं व्याख्यास्यामः॥ १॥ इति ह स्माह भगवानात्रेयः॥ २॥",
+          "transliteration": "athāto dīrghañjīvitīyamadhyāyaṁ vyākhyāsyāmaḥ || 1 || iti ha smāha bhagavānātreyaḥ || 2 ||",
+          "meaning_ne": "आयुर्वेदावतरण\n\nअब हामी दीर्घायु प्राप्तिसम्बन्धी 'दीर्घञ्जीवितीय' नामक पहिलो अध्यायको व्याख्या गर्नेछौँ, जस्तो कि भगवान् आत्रेय पुनर्वसुले आज्ञा गर्नुभएको थियो।",
+          "meaning_en": "Mangalacharana & Chapter Announcement\n\nDescent of Ayurveda\n\nNow we shall expound the chapter entitled Dīrghañjīvitīya (Quest for Longevity), as stated by the revered sage Lord Atreya.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "3",
+          "sanskrit": "विघ्नभूता यदा रोगाः प्रादुर्भूताः शरीरिणाम्। तपोोपवासाध्ययनब्रह्मचर्यव्रतायुषाम्॥ ३॥",
+          "transliteration": "vighnabhūtā yadā rogāḥ prādurbhūtāḥ śarīriṇām | taponavāsādhyayanabrahmacaryavratāyuṣām || 3 ||",
+          "meaning_ne": "जब मानव जातिको तपस्या, उपवास, स्वाध्याय, ब्रह्मचर्य, व्रत र आयुमा बाधा पुर्याउने रोगहरू उत्पन्न भए, तब त्यस समस्याको समाधान खोज्न महर्षिहरू चिन्तित भए।",
+          "meaning_en": "The Sages' Conference in the Himalayas\n\nWhen diseases arose as severe obstacles to human beings—impeding penance (Tapa), fasting (Upavasa), scriptural study (Adhyayana), celibacy (Brahmacharya), vows (Vrata), and lifespan (Ayu)—the compassionate sages assembled to find a solution.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4–5",
+          "sanskrit": "ब्रह्मणा हि यथा प्रोक्तमायुर्वेदं प्रजापतिः। जग्राह निखिलेनादावश्विनौ तु पुनस्ततः॥ ४॥ अश्विभ्यां भगवाञ्छक्रः प्रतिपेदे ह केवलम्। ऋषीणामुग्रतपसामिन्द्रः शरणमभ्यगात्॥ ५॥",
+          "transliteration": "brahmaṇā hi yathā proktamāyurvedaṁ prajāpatiḥ | jagrāha nikhilenādāvaśvinau tu punastataḥ || 4 || aśvibhyāṁ bhagavāñchakraḥ pratipede ha kevalam | ṛṣīṇāmugratapasāmindraḥ śaraṇamabhyagāt || 5 ||",
+          "meaning_ne": "सृष्टिको सुरुमा भगवान् ब्रह्माले आयुर्वेदलाई पूर्ण रूपमा स्मरण गरी दक्ष प्रजापतिलाई सिकाउनुभयो। दक्ष प्रजापतिबाट अश्विनीकुमारहरूले र अश्विनीकुमारहरूबाट भगवान् इन्द्रले यो ज्ञान प्राप्त गर्नुभयो। मानव जातिको रोग कष्ट निवारणका लागि हिमालयमा भेला भएका महर्षिहरूले ऋषि भारद्वाजलाई इन्द्रकहाँ पठाउने निर्णय गरे।",
+          "meaning_en": "Divine Lineage of Ayurveda\n\nLord Brahma first recalled the eternal science of Ayurveda in its entirety and imparted it to Daksha Prajapati. From Prajapati, the divine twin physicians (Ashwini Kumaras) learned it, and from them, Lord Indra received this knowledge. Realizing the suffering of humanity, the great assembly of sages designated Maharshi Bharadwaja to seek refuge in Lord Indra to obtain this sacred wisdom.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "6–14",
+          "sanskrit": "अङ्गिरा जमदग्निश्च वसिष्ठो भृगुरौशनः। गोतमो साङ्कृत्यश्चैव भरद्वाजस्तथैव च॥ एते चान्ये च बहवः समेता परमर्षयः। धर्मार्थकाममोक्षाणामारोग्यं मूलमुत्तमम्॥ १५॥",
+          "transliteration": "aṅgirā jamadagniśca vasiṣṭho bhṛgurauśanaḥ | gotamo sāṅkṛtyaścaiva bharadvājastathaiva ca || ete cānye ca bahavaḥ sametā paramarṣayaḥ | dharmārthakāmamokṣāṇāmārogyaṁ mūlamuttamam || 15 ||",
+          "meaning_ne": "अङ्गिरा, जमदग्नि, वसिष्ठ, भृगु, शुक्राचार्य, गौतम, साङ्कृत्य र भारद्वाज लगायत अनेकौँ परमर्षिहरू एकत्र भए। उहाँहरूले एकै स्वरमा घोषणा गर्नुभयो: \"धर्म, अर्थ, काम र मोक्ष—यी चार पुरुषार्थ प्राप्तिको उत्तम मूल र आधार निरोगी हुनु (आरोग्य) नै हो।\"",
+          "meaning_en": "The Assembly of Sages\n\nSages including Angiras, Jamadagni, Vashistha, Bhrigu, Ushanas, Gautama, Sankitya, Bharadwaja, and many other exalted rishis gathered together. They declared in unison: \"Health (Arogya) is the supreme prerequisite and foundation for achieving the four goals of human existence (Purusharthas): Righteousness (Dharma), Wealth (Artha), Desire (Kama), and Liberation (Moksha).\"",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "18–23",
+          "sanskrit": "सोऽनन्तमपारं त्रिस्कन्धं आयुर्वेदं महामतिः। यथावच्चिन्तयामास बुद्धिमान् सहस्राक्षो यथाब्रवीत्॥ १८॥ पुनर्वसुर्महातेजाः सर्वभूतानुकम्पया। षद्भ्यः शिष्येभ्यो ज्ञानं शौचोपपन्नेभ्यः प्रददौ॥ ३०-३१॥",
+          "transliteration": "so'nantamapāraṁ triskandhaṁ āyurvedaṁ mahāmatiḥ | yathāvaccintayāmāsa buddhimān sahasrākṣo yathābravīt || 18 || punarvasurmahātejāḥ sarvabhūtānukampayā | ṣaḍbhyaḥ śiṣyebhyo jñānaṁ śaucopapannebhyo pradadau ||",
+          "meaning_ne": "महर्षि भारद्वाजले इन्द्रबाट त्रिस्कन्ध (हेतु, लिङ्ग, औषध) युक्त अथाह आयुर्वेदको ज्ञान सहजै ग्रहण गर्नुभयो र पृथ्वीमा फर्केर महर्षिहरूलाई सिकाउनुभयो। पछि महर्षि पुनर्वसु आत्रेयले सम्पूर्ण प्राणीहरूप्रति करुणा राखी आफ्ना ६ योग्य शिष्यहरू—अग्निवेश, भेल, जतूकर्ण, पराशर, हारीत र क्षारपाणि—लाई यो ज्ञान प्रदान गर्नुभयो। तीमध्ये अत्यन्त बुद्धिमान् अग्निवेशले सबैभन्दा पहिले संहिता (अग्निवेश तन्त्र) को रचना गरे।",
+          "meaning_en": "Bharadwaja Learns from Indra & Atreya Teaches Disciples\n\nMaharshi Bharadwaja effortlessly comprehended the vast, endless, three-tiered (Triskandha) science of Ayurveda exactly as expounded by Indra. Returning to earth, he shared it with the sages. Later, the glorious sage Punarvasu Atreya out of compassion for all living beings bestowed this divine medical knowledge upon his six worthy disciples: Agnivesha, Bhela, Jatukarna, Parashara, Harita, and Ksharapani. Among them, Agnivesha, possessing superior intellect, compiled the first treatise (Agnivesha Tantra).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "24",
+          "sanskrit": "हेतुलिङ्गाौषधज्ञानं स्वस्थातुरपरायणम्। त्रिसूत्रं शाश्वतं पुण्यं बुबुधे यं पितामहः॥ २४॥",
+          "transliteration": "hetuliṅgauṣadhajñānaṁ svasthāturaparāyaṇaṁ | trisūtraṁ śāśvataṁ puṇyaṁ bubudhe yaṁ pitāmahaḥ || 24 ||",
+          "meaning_ne": "आयुर्लक्षणम्\n\nआयुर्वेद तीन वटा सनातन र पवित्र सूत्रहरू (त्रिसूत्र) मा आधारित छ:\n१. हेतु सूत्र: रोग र स्वास्थ्यका कारणहरू।\n२. लिङ्ग सूत्र: रोगका लक्षणहरू।\n३. औषध सूत्र: निरोगी र रोगी दुवैका लागि उपयोगी औषधि, आहार र विहारको ज्ञान।",
+          "meaning_en": "Trisutra Ayurveda (त्रिसूत्रम्)\n\nCore Philosophy & Definition of Life\n\nAyurveda is formulated upon three fundamental pillars (Trisutra):\n1. Hetu (Etiology): Causes of health and disease.\n2. Linga (Symptomatology): Signs, clinical features, and pathogenesis.\n3. Aushadha (Therapeutics): Medicines, diet, and lifestyle regimens.\n\nThis eternal and sacred science serves both the healthy (Swastha) to maintain health and the sick (Aatura) to cure diseases.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "41",
+          "sanskrit": "हिताहितं सुखं दुःखमायुस्तस्य हिताहितम्। मानं च तच्च यत्रोक्तमायुर्वेदः स उच्यते॥ ४१॥",
+          "transliteration": "hitāhitaṁ sukhaṁ duḥkhamāyustasya hitāhitam | mānaṁ ca tacca yatroktamāyurvedaḥ sa ucyate || 41 ||",
+          "meaning_ne": "जसमा हित आयु, अहित आयु, सुख आयु र दुःख आयु—यी चार प्रकारका आयु; आयुका लागि हितकर र अहितकर आहार-विहार; आयुको प्रमाण (अवधि) र आयुको वास्तविक स्वरूपको वर्णन गरिएको छ, त्यस शास्त्रलाई आयुर्वेद भनिन्छ।",
+          "meaning_en": "Definition of Ayurveda (आयुर्वेद परिभाषा)\n\nAyurveda is defined as the science that describes:\n- Four types of life (Ayu): Beneficial (Hita), Harmful (Ahita), Happy (Sukha), and Sorrowful (Dukha).\n- What is wholesome (Hitahara) and unwholesome (Ahitahara) for life.\n- The span/measurement of life (Mana) and the fundamental nature of life (Tattva).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "42",
+          "sanskrit": "चतुर्विध आयु",
+          "transliteration": null,
+          "meaning_ne": "१. हित आयु: समाज कल्याण, सत्य, अहिंसा र सत्कर्ममा समर्पित जीवन।\n२. अहित आयु: हिंसा, कपट र अरूको अहित गर्ने स्वार्थी जीवन।\n३. सुख आयु: शारीरिक र मानसिक रूपमा स्वस्थ, निरोगी, समर्थ र सुखी जीवन।\n४. दुःख आयु: निरन्तर रोग, मानसिक कष्ट, गरिबी र अशान्तिले भरिएको कष्टकर जीवन।",
+          "meaning_en": "Four Types of Ayu (चतुर्विध आयु)\n\n1. Hita Ayu (Beneficial Life): A life dedicated to the welfare of society, truthfulness, non-violence, ethical conduct, and service to humanity.\n2. Ahita Ayu (Harmful Life): A self-centered life driven by malice, deceit, harm to others, and unethical conduct.\n3. Sukha Ayu (Happy Life): Physical and mental well-being, freedom from bodily diseases, financial stability, vigor, and contentment.\n4. Dukha Ayu (Sorrowful Life): Constant suffering due to chronic diseases, mental distress, poverty, weakness, and dissatisfaction.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "44–45",
+          "sanskrit": "शरीरैन्द्रियसत्त्वात्मसंयोगो धारि जीवितम्। नित्यगश्चानुबन्धश्च पर्यायैरायुरुच्यते॥ ४२॥",
+          "transliteration": "śarīrendriyasattvātmasamyogo dhāri jīvitam | nityagaścānubandhaśca paryāyairāyurucyate || 42 ||",
+          "meaning_ne": "शरीर, इन्द्रिय, मन (सत्त्व) र आत्माको परस्पर संयोगलाई जीवन (आयु) भनिन्छ।\nआयुका पर्यायवाची शब्दहरू:\n- धारी: जसले शरीरलाई कुहिन वा नष्ट हुनबाट जोगाउँछ।\n- जीवित: जसले प्राण टिकाइराख्छ।\n- नित्यग: जुन दिनरात निरन्तर बहिरहन्छ र अघि बढ्छ।\n- अनुबन्ध: जसले जन्मदेखि मरणसम्म जीवनको निरन्तरता जोड्दछ।",
+          "meaning_en": "Definition & Synonyms of Ayu (आयुर्लक्षणं पर्यायाश्च)\n\nLife (Ayu) is the dynamic union of four components:\n1. Sharira: Physical body composed of 5 elements (Panchamahabhuta).\n2. Indriya: The eleven sensory and motor organs.\n3. Sattva: Mind / Psyche.\n4. Atma: Eternal consciousness / Soul.\n\nSynonyms of Ayu:\n- Dhari: That which prevents the body from decay.\n- Jivita: That which keeps alive.\n- Nityaga: That which continuously flows/progresses day and night.\n- Anubandha: That which binds life uninterruptedly across time.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "44–53",
+          "sanskrit": "सत्त्वमात्मा शरीरं च त्रयमेतत् त्रिदण्डवत्। लोकस्तिष्ठति संयोगात्तत्र सर्वं प्रतिष्ठितम्॥ ४४-४५॥",
+          "transliteration": "sattvamātmā śarīraṁ ca trayametat tridaṇḍavat | lokastiṣṭhati saṁyogāttatra sarvaṁ pratiṣṭhitam || 44-45 ||",
+          "meaning_ne": "षट्-पदार्थ एवं त्रिदण्ड\n\nमन (सत्त्व), आत्मा र शरीर—यी तीन तत्वहरू त्रिदण्ड (त्रिपाद) जस्तै हुन्। यी तीनैको परस्पर सन्तुलित संयोगमा नै सम्पूर्ण संसार र जीवन टिकेको छ, र आयुर्वेदको सम्पूर्ण चिकित्सा यही आधारमा प्रतिष्ठित छ।",
+          "meaning_en": "The Tripod of Existence (त्रिदण्ड)\n\nSix Categories of Existence & Tridanda\n\nMind (Sattva), Soul (Atma), and Body (Sharira) together form the sacred tripod (Tridanda) of life. The living world stands supported by the harmonious union of these three entities, upon which everything in medicine and existence rests.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "44–52",
+          "sanskrit": "सर्वदा सर्वभावानां सामान्‍यं वृद्धिकारणम्। ह्रासहेतुर्विशेषश्च प्रवृत्तिरुभयस्य तु॥ ४४॥ सामान्यमेकत्वकरं विशेषस्तु पृथक्त्वकृत्। तुल्यार्थता हि सामान्यं विशेषस्तु विपर्ययः॥ ४५॥",
+          "transliteration": "sarvadā sarvabhāvānāṁ sāmānyaṁ vṛddhikāraṇam | hrāsaheturviśeṣaśca pravṛttirubhayasya tu || 44 || sāmānyamekatvakaraṁ viśeṣastu pṛthaktvakṛt | tulyārthatā hi sāmānyaṁ viśeṣastu viparyayaḥ || 45 ||",
+          "meaning_ne": "- सामान्य सिद्धान्त: समान गुण भएका पदार्थ वा आहार-विहारको सेवनले शरीरका समान धातु, दोष वा गुणहरूको वृद्धि हुन्छ (जस्तै दूधको सेवनले शरीरको धातु र कफ बढाउँछ)।\n- विशेष सिद्धान्त: विपरीत गुण भएका पदार्थ वा आहार-विहारको सेवनले शरीरका धातु वा दोषहरूको ह्रास (घट घट्नु) हुन्छ (जस्तै सुक्खा वा पिरो खानाले कफ र बोसो घटाउँछ)।\n- सामान्यले एकता उत्पन्न गर्छ भने विशेषले भिन्नता ल्याउँछ।",
+          "meaning_en": "Samanya and Vishesha Principles (सामान्य-विशेष सिद्धान्त)\n\n- Samanya (Law of Similarity): Similarity is always the cause of increase in all entities. Substances/qualities that possess similar properties enhance those properties in the body (e.g., consumption of milk increases Kshira/Kapha and Dhatu).\n- Vishesha (Law of Dissimilarity / Contrast): Contrast or dissimilarity is the cause of decrease. Unalike substances or qualities diminish bodily constituents (e.g., dry/pungent food reduces Kapha and Fat).\n- Samanya brings oneness/unity; Vishesha brings separation/differentiation.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "57–61",
+          "sanskrit": "वायुः पित्तं कफश्चोक्तः शारीरो दोषसङ्ग्रहः। मानसः पुनरुद्दिष्टो रजस्तम एव च॥ ५७॥",
+          "transliteration": "vāyuḥ pittaṁ kaphaścoktaḥ śārīro doṣasaṅgrahaḥ | mānasaḥ punruddiṣṭo rajastama eva ca || 57 ||",
+          "meaning_ne": "त्रिदोष सिद्धान्त\n\n- शारीरिक दोष: वात, पित्त र कफ। यी तीन दोषको सन्तुलन नै स्वास्थ्य हो र असन्तुलन नै रोग हो।\n- मानसिक दोष: रज (चञ्चलता) र तम (अज्ञान/अन्धकार)। सत्त्व गुण विकाररहित शुद्ध गुण हो।\n- चिकित्सा पद्धति: शारीरिक रोगको उपचार दैवव्यपाश्रय (पूजा, मन्त्र, देव दर्शन) र युक्तिव्यपाश्रय (औषधि, आहार) ले गरिन्छ; मानसिक रोगको उपचार सत्त्वावजय (मन नियन्त्रण) र ज्ञान, विज्ञान, धैर्य, स्मृति र समाधिद्वारा गरिन्छ।",
+          "meaning_en": "Physical & Mental Doshas\n\nDosha Physiology & Therapeutics\n\n- Physical Doshas (Sharira Dosha): Vata, Pitta, and Kapha. When balanced, they sustain health; when imbalanced (Vaishamya), they cause disease.\n- Mental Doshas (Manasa Dosha): Rajas (activity/passion) and Tamas (inertia/darkness). Sattva is a pure psychological quality, not a pathology.\n- Treatments:\n- Physical diseases are treated through Divine (Daivavyapashraya) and Rational (Yuktivyapashraya) therapies.\n- Mental diseases are treated through Psychotherapy/Self-restraint (Satvavajaya) and Spiritual Knowledge (Jñana, Vijñana, Dhairya, Smriti, Samadhi).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "58–61",
+          "sanskrit": "रुक्षः शीतो लघुः सूक्ष्मश्चलोऽथ विशदः खरः। विपरीतगुणैर्द्रव्यैर्मारुतः सम्प्रशाम्यति॥ ५९॥ सस्नेहमुष्णं तीक्ष्णं च द्र्वमम्लं सरं कटु। विपरीतगुणैः पित्तं भेषजैः सम्प्रशाम्यति॥ ६०॥ गुरुशीतमृदुस्निग्धमधुरस्थिरपिच्छिलाः। श्लेष्मणः प्रशमं यान्ति विपरीतगुणैर्गुणाः॥ ६१॥",
+          "transliteration": "rukṣaḥ śīto laghuḥ sūkṣmaścalo'tha viśadaḥ kharaḥ | viparītaguṇairdravyairmārutaḥ sampraśāmyati || 59 || sasnehamuṣṇaṁ tīkṣṇaṁ ca drvamamlaṁ saraṁ kaṭu | viparītaguṇaiḥ pittaṁ bheṣajaiḥ sampraśāmyati || 60 || guruśītamṛdusnigdhamadhurasthirapicchilāḥ | śleṣmaṇaḥ praśamaṁ yānti viparītaguṇairguṇāḥ || 61 ||",
+          "meaning_ne": "१. वातका ७ गुण: रुक्ष (सुक्खा), शीत (चिसो), लघु (हल्का), सूक्ष्म, चल (चञ्चल), विशद (सफा) र खर (खस्रो)। वातलाई उष्ण, स्निग्ध, गहुँगो र स्थिर गुण भएका औषधिले शान्त पार्दछ।\n२. पित्तका ७ गुण: ईषत् स्निग्ध (अलि चिल्लो), उष्ण (तातो), तीक्ष्ण (चम्किलो/तीव्र), द्रव (पातलो), अम्ल (अमिलो), सर (बग्ने) र कटु (पिरो)। पित्तलाई शीत, मन्द र सुक्खा गुणले शान्त पारिन्छ।\n३. कफका ७ गुण: गुरु (गहुँगो), शीत (चिसो), मृदु (नरम), स्निग्ध (चिल्लो), मधुर (गुलियो), स्थिर र पिच्छिल (चीप्लो)। कफलाई उष्ण, लघु, रुक्ष र तीक्ष्ण गुण भएका औषधिले शान्त पार्दछ।",
+          "meaning_en": "Qualities of Vata, Pitta, and Kapha\n\n1. Vata Qualities (वात गुण): Dry (Ruksha), Cold (Sita), Light (Laghu), Subtle (Sukshma), Mobile (Chala), Clear (Vishada), Rough (Khara). Pacified by substances with opposite qualities (Unctuous, Warm, Heavy, Stable).\n2. Pitta Qualities (पित्त गुण): Slightly unctuous (Sasneha), Hot (Ushna), Sharp (Tikshna), Liquid (Drava), Sour (Amla), Flowing (Sara), Pungent (Katu). Pacified by Cool, Dry, Mild substances.\n3. Kapha Qualities (कफ गुण): Heavy (Guru), Cold (Sita), Soft (Mredu), Unctuous (Snigdha), Sweet (Madhura), Firm/Static (Sthira), Slimy (Pichchila). Pacified by Warm, Light, Dry, Sharp remedies.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "66–67",
+          "sanskrit": "षड्-रसाः",
+          "transliteration": null,
+          "meaning_ne": "षड्-रस एवं भेषज\n\nछ वटा रसहरू: मधुर (गुलियो), अम्ल (अमिलो), लवण (नुनिलो), कटु (पिरो), तिक्त (तितो), कषाय (कसैलो)।\n- मधुर, अम्ल र लवण रसले वात शान्त पार्छन्।\n- मधुर, तिक्त र कषाय रसले पित्त शान्त पार्छन्।\n- कटु, तिक्त र कषाय रसले कफ शान्त पार्छन्।",
+          "meaning_en": "The Six Tastes (षड्-रसाः)\n\nSix tastes: Sweet (Madhura), Sour (Amla), Salty (Lavana), Pungent (Katu), Bitter (Tikta), Astringent (Kashaya).\n\nDosha effects:\n- Sweet, Sour, and Salty pacify Vata.\n- Sweet, Bitter, and Astringent pacify Pitta.\n- Pungent, Bitter, and Astringent pacify Kapha.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "76–113",
+          "sanskrit": "चतुःस्नेह, पञ्चलवण, अष्टक्षीर तथा अष्टमूत्र",
+          "transliteration": null,
+          "meaning_ne": "१. चार प्रकारका स्नेह (चतुःस्नेह): घृत (घिउ), तेल, वसा (मासुको बोसो), र मज्जा (हड्डीको मासु)।\n२. पाँच प्रकारका नुन (पञ्चलवण): सैन्धव (सिन्धे नुन-सर्वश्रेष्ठ), सौवर्चल (कालो नुन), विड, औद्भिद र सामुद्र नुन।\n३. आठ पशुका दूध र मूत्र: भेडा, बाख्रा, गाई, भैँसी, हात्ती, उँट, घोडा र गधा। यी दूध र मूत्र शोधन (पञ्चकर्म) तथा जटिल रोगको उपचारमा प्रयोग हुन्छन्।",
+          "meaning_en": "Pharmacological Materials & Panchakarma Preparations\n\n1. Four Unctuous Substances (Chatur-Sneha):\n- Ghrita (Ghee): Best for Pitta and Ojas, intellect, memory.\n- Taila (Sesame Oil): Best for Vata pacification, strength, skin.\n- Vasa (Muscle Fat): Useful for severe pain, joint fatigue, bone injuries.\n- Majja (Marrow): Increases marrow, semen, joint flexibility.\n2. Five Salts (Pancha-Lavana):\n- Saindhava (Rock salt - best), Sauvarchala (Black salt), Vida, Audbhida, Samudra (Sea salt).\n3. Eight Milks & Urines (Ashta-Kshira & Ashta-Mutra):\n- Milks and Urines of Sheep (Avika), Goat (Aja), Cow (Gau), Buffalo (Mahisha), Elephant (Hasti), Camel (Ushtra), Horse (Ashwa), and Donkey (Khara).\n- Used for purgation, emesis, enema, and toxicological antidotes.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "124–141",
+          "sanskrit": "वरमात्मा हुताशेन तप्तो अङ्गारच्छटेन वा। न तु अज्ञातनिदानस्य भेषजस्य निपातनम्॥ १२५॥ योगवित्त्त्वप्यरूपज्ञः तादृग्विद् ज्ञेयमुत्तमम्। युक्तिज्ञानात्परं नास्ति भिषजां सिद्धिसाधनम्॥ १३८-१४०॥",
+          "transliteration": "varamātmā hutāśena tapto aṅgāracchaṭena vā | na tu ajñātanidānasya bheṣajasya nipātanam || 125 || yogavittvapyarūpajñaḥ tādṛgvid jñeyamuttamam | yuktijñānātparaṁ nāsti bhiṣajāṁ siddhisādhanam || 138-140 ||",
+          "meaning_ne": "चिकित्सक लक्षणम् एवं युक्ति\n\nअज्ञानी र ढोंगी वैद्यको हातबाट गलत औषधि सेवन गर्नुभन्दा त आगोमा पस्नु वा तातो फलाम निल्नु अझ बेस हो। साँचो र उत्तम वैद्य त्यो हो जसलाई शास्त्रको पूर्ण ज्ञान, व्यावहारिक कुशलता, पवित्रता र मुख्य रूपमा 'युक्ति' (औषधिको देश, काल, मात्रा अनुसार विवेकपूर्ण प्रयोग) को ज्ञान हुन्छ। युक्ति ज्ञानविना केवल औषधिको नाम जानेर मात्र चिकित्सामा सिद्धि (सफलता) मिल्दैन।",
+          "meaning_en": "Characteristics of True Physicians vs. Impostors\n\nMedical Ethics & Rational Therapeutics\n\nIt is far better for a suffering patient to fall into fire or swallow molten iron than to be treated by an ignorant, unqualified pseudo-physician (Chhadmapratiroopaka Vaidya). A true physician possesses profound theoretical knowledge (Sastra Jñana), practical training (Karma Kausalya), purity (Saucha), and above all, rational application (Yukti). Knowledge of pharmacology without rational application (Yukti) cannot bring clinical success (Siddhi).",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}
