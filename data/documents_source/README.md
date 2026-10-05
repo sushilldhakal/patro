@@ -9,7 +9,7 @@ enough; nothing needs to be run by hand.
 ## Category
 
 `category` picks which tab a document lands on in the app's `/documents`
-library. Seven values:
+library. Six values:
 
 - `mantra` — a single short verse (Gayatri Mantra, Vakratunda Mahakaya).
 - `stotram` — a multi-verse hymn or ashtakam (Shiva Tandava Stotram,
@@ -20,9 +20,9 @@ library. Seven values:
 - `upanishad` — a principal or minor Upanishad, or a closely tied commentary
   (the Gaudapada Karika on the Mandukya Upanishad).
 - `scripture` — everything else seeded chapter by chapter: itihasa (the
-  Valmiki Ramayana, the Mahabharata) and other larger canonical texts not
-  covered above (the Vijnana Bhairava Tantra).
-- `ayurveda` — Ayurvedic samhitas and their chapters (Charaka Samhita).
+  Valmiki Ramayana, the Mahabharata), Ayurvedic samhitas (Charaka Samhita),
+  and other larger canonical texts not covered above (the Vijnana Bhairava
+  Tantra).
 
 If omitted, it defaults to `stotram`.
 

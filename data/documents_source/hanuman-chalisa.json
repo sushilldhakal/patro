@@ -1,0 +1,412 @@
+{
+  "slug": "hanuman-chalisa",
+  "order_index": 18,
+  "category": "stotram",
+  "title_sa": "श्रीहनुमानचालीसा",
+  "title_ne": "हनुमान चालीसा",
+  "title_en": "Hanuman Chalisa",
+  "subtitle_ne": "४० चौपाई",
+  "subtitle_en": "40 chaupais",
+  "description_ne": "गोस्वामी तुलसीदासकृत हनुमान चालीसा — दुई दोहा, चालीस चौपाई र समापन दोहामा हनुमानको स्तुति।",
+  "description_en": "The Hanuman Chalisa of Goswami Tulsidas — two opening dohas, forty chaupais, and a closing doha in praise of Hanuman.",
+  "source_ne": "गोस्वामी तुलसीदास",
+  "source_en": "Goswami Tulsidas",
+  "cover_image": "",
+  "has_chapters": false,
+  "chapters": [
+    {
+      "number": null,
+      "title_ne": null,
+      "title_en": null,
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "दोहा १",
+          "sanskrit": "श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि ।\nबरनउँ रघुबर बिमल जसु जो दायकु फल चारि ॥",
+          "transliteration": "śrīguru carana saroja raja nija manu mukuru sudhāri .\nbaranaüm̐ raghubara bimala jasu jo dāyaku phala cāri ..",
+          "meaning_ne": "गुरुका चरण-कमलको धूलोले आफ्नो मनरूपी ऐना चम्काएर, म रघुकुलका श्रेष्ठ राजाको निर्मल यश गाउँछु, जसले धर्म, अर्थ, काम र मोक्ष — जीवनका चार फल दिन्छ।",
+          "meaning_en": "Having polished the mirror of my heart with the dust of my Guru's lotus feet, I recite the divine fame of the greatest king of Raghukul dynasty, which bestows the fruit of the four goals of life (dharma, artha, kama, moksha).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "दोहा २",
+          "sanskrit": "बुद्धिहीन तनु जानिके सुमिरौं पवन-कुमार ।\nबल बुधि बिद्या देहु मोहिं हरहु कलेस बिकार ॥",
+          "transliteration": "buddhihīna tanu jānike sumirauṃ pavana-kumāra .\nbala budhi bidyā dehu mohiṃ harahu kalesa bikāra ..",
+          "meaning_ne": "यो तन बुद्धिहीन छ भनी जान्दै म पवनकुमारलाई सम्झन्छु। बल, बुद्धि र विद्या दिनुहोस्, र सबै क्लेश तथा विकार हटाउनुहोस्।",
+          "meaning_en": "Knowing that this mind of mine has less intelligence, I remember the 'Son of Wind' who, granting me strength, wisdom and all kinds of knowledge, removes all my suffering and shortcomings.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "1",
+          "sanskrit": "जय हनुमान ज्ञान गुन सागर ।\nजय कपीस तिहुँ लोक उजागर ॥१॥",
+          "transliteration": "jaya hanumāna jñāna guna sāgara .\njaya kapīsa tihum̐ loka ujāgara ..1..",
+          "meaning_ne": "जय हनुमान, ज्ञान र गुणका सागर। जय कपीश, तीनै लोकलाई उज्यालो पार्ने।",
+          "meaning_en": "Victory to Lord Hanuman, the ocean of wisdom and virtue. Victory to the Lord who is supreme among the monkeys, illuminator of the three worlds.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "2",
+          "sanskrit": "राम दूत अतुलित बल धामा ।\nअञ्जनि-पुत्र पवनसुत नामा ॥२॥",
+          "transliteration": "rāma dūta atulita bala dhāmā .\nañjani-putra pavanasuta nāmā ..2..",
+          "meaning_ne": "तपाईं श्रीरामका दूत, अतुलनीय बलका धाम, माता अञ्जनीका पुत्र, र पवनसुत नामले प्रसिद्ध हुनुहुन्छ।",
+          "meaning_en": "You are Lord Rama's emissary, the abode of matchless power, Mother Anjani's son and also popular as the 'Son of the Wind'.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "3",
+          "sanskrit": "महाबीर बिक्रम बजरङ्गी ।\nकुमति निवार सुमति के सङ्गी ॥३॥",
+          "transliteration": "mahābīra bikrama bajaraṅgī .\nkumati nivāra sumati ke saṅgī ..3..",
+          "meaning_ne": "महावीर, वज्रजस्तै पराक्रमी बजरङ्गी। तपाईं कुमति हटाउनुहुन्छ र सुमति भएकाका साथी हुनुहुन्छ।",
+          "meaning_en": "Great hero, you are as mighty as a thunderbolt. You remove evil intellect and are the companion of those having good ones.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "4",
+          "sanskrit": "कञ्चन बरन बिराज सुबेसा ।\nकानन कुण्डल कुञ्चित केसा ॥४॥",
+          "transliteration": "kañcana barana birāja subesā .\nkānana kuṇḍala kuñcita kesā ..4..",
+          "meaning_ne": "तपाईंको वर्ण सुनौलो छ र सुन्दर वस्त्रले सुशोभित हुनुहुन्छ। कानमा कुण्डल छन् र केश घुम्रिएका तथा बाक्ला छन्।",
+          "meaning_en": "Your skin is golden in color and you are adorned with beautiful clothes. You have adorning earrings in your ears and your hair is curly and thick.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "5",
+          "sanskrit": "हाथ बज्र औ ध्वजा बिराजै ।\nकाँधे मूँज जनेउ साजै ॥५॥",
+          "transliteration": "hātha bajra au dhvajā birājai .\nkām̐dhe mūm̐ja janeu sājai ..5..",
+          "meaning_ne": "हातमा गदा र धर्मध्वजा शोभा दिन्छन्। काँधमा मूँजको पवित्र जनेऊ सजिएको छ।",
+          "meaning_en": "In your hands, shine a mace and a flag of righteousness. A sacred thread adorns your shoulder.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "6",
+          "sanskrit": "सङ्कर सुवन केसरीनन्दन ।\nतेज प्रताप महा जग बन्दन ॥६॥",
+          "transliteration": "saṅkara suvana kesarīnandana .\nteja pratāpa mahā jaga bandana ..6..",
+          "meaning_ne": "तपाईं शङ्करका अंश र वानरराज केसरीका पुत्र हुनुहुन्छ। तेज र प्रतापको सीमा छैन। सारा जगत्ले तपाईंको वन्दना गर्छ।",
+          "meaning_en": "You are the embodiment of Lord Shiva and vanar-raj Kesari's son. There is no limit or end to your glory, your magnificence. The whole universe worships you.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "7",
+          "sanskrit": "बिद्यावान गुनी अति चातुर ।\nराम काज करिबे को आतुर ॥७॥",
+          "transliteration": "bidyāvāna gunī ati cātura .\nrāma kāja karibe ko ātura ..7..",
+          "meaning_ne": "तपाईं विद्वान्, गुणी र अत्यन्त चतुर हुनुहुन्छ। श्रीरामका काम गर्न सधैं आतुर रहनुहुन्छ।",
+          "meaning_en": "You are the wisest of the wise, virtuous and (morally) clever. You are always eager to do Lord Rama's works.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "8",
+          "sanskrit": "प्रभु चरित्र सुनिबे को रसिया ।\nराम लखन सीता मन बसिया ॥८॥",
+          "transliteration": "prabhu caritra sunibe ko rasiyā .\nrāma lakhana sītā mana basiyā ..8..",
+          "meaning_ne": "प्रभुको चरित्र सुन्दा तपाईं अत्यन्त रमाउनुहुन्छ। श्रीराम, माता सीता र लक्ष्मण सधैं तपाईंको मनमा बस्नुहुन्छ।",
+          "meaning_en": "You feel extremely delighted in listening to Lord Rama's doings and conduct. Lord Rama, Mother Sita, and Lord Laxmana dwell forever in your heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "9",
+          "sanskrit": "सूक्ष्म रूप धरि सियहिं दिखावा ।\nबिकट रूप धरि लङ्क जरावा ॥९॥",
+          "transliteration": "sūkṣma rūpa dhari siyahiṃ dikhāvā .\nbikaṭa rūpa dhari laṅka jarāvā ..9..",
+          "meaning_ne": "सूक्ष्म रूप धारण गरेर माता सीतासामु प्रकट हुनुभयो। अनि विकट रूप लिएर लङ्का (रावणको राज्य) जलाउनुभयो।",
+          "meaning_en": "Taking the subtle form, you appeared in front of Mother Sita. And, taking the formidable form, you burnt the Lanka (Ravana's kingdom).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 12,
+          "verse_label": "10",
+          "sanskrit": "भीम रूप धरि असुर सँहारे ।\nरामचन्द्र के काज सँवारे ॥१०॥",
+          "transliteration": "bhīma rūpa dhari asura sam̐hāre .\nrāmacandra ke kāja sam̐vāre ..10..",
+          "meaning_ne": "भीमजस्तो विशाल रूप धारण गरेर असुरहरूको संहार गर्नुभयो। यसरी तपाईंले श्रीरामचन्द्रका काम सफलतापूर्वक सम्पन्न गर्नुभयो।",
+          "meaning_en": "Taking the massive form (like that of Bheema), you slaughtered the demons. This is how, you completed Lord Rama's tasks, successfully.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 13,
+          "verse_label": "11",
+          "sanskrit": "लाय सञ्जीवन लखन जियाये ।\nश्रीरघुबीर हरषि उर लाये ॥११॥",
+          "transliteration": "lāya sañjīvana lakhana jiyāye .\nśrīraghubīra haraṣi ura lāye ..11..",
+          "meaning_ne": "सञ्जीवनी औषधि ल्याएर लक्ष्मणलाई जगाउनुभयो। श्रीरघुवीरले हर्षित भई तपाईंलाई हृदयमा लगाउनुभयो।",
+          "meaning_en": "Bringing the magic-herb (sanjivani), you revived Lord Lakshmana, and Sri Raghubir (Rama), rejoicing, embraced you to his heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 14,
+          "verse_label": "12",
+          "sanskrit": "रघुपति कीह्नी बहुत बड़ाई ।\nतुम मम प्रिय भरतहि सम भाई ॥१२॥",
+          "transliteration": "raghupati kīhnī bahuta bar̤āī .\ntuma mama priya bharatahi sama bhāī ..12..",
+          "meaning_ne": "रघुपति श्रीरामले तपाईंको ठूलो प्रशंसा गर्नुभयो र कृतज्ञताले भन्नुभयो — तिमी मलाई भरतजस्तै प्यारो भाइ हौ।",
+          "meaning_en": "Raghupati, Lord Rama praised you greatly and overflowing in gratitude, said that you are a dear brother to him just as Bharat is.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 15,
+          "verse_label": "13",
+          "sanskrit": "सहस बदन तुह्मारो जस गावैं ।\nअस कहि श्रीपति कण्ठ लगावैं ॥१३॥",
+          "transliteration": "sahasa badana tuhmāro jasa gāvaiṃ .\nasa kahi śrīpati kaṇṭha lagāvaiṃ ..13..",
+          "meaning_ne": "हजार मुख भएका शेषनागले समेत तपाईंको यश गाउँछन् भन्दै श्रीपतिले तपाईंलाई कण्ठमा लगाउनुभयो।",
+          "meaning_en": "Even the thousand-mouthed serpent (Sheshnag) sings your glory.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 16,
+          "verse_label": "14",
+          "sanskrit": "सनकादिक ब्रह्मादि मुनीसा ।\nनारद सारद सहित अहीसा ॥१४॥",
+          "transliteration": "sanakādika brahmādi munīsā .\nnārada sārada sahita ahīsā ..14..",
+          "meaning_ne": "सनकादि ऋषि, ब्रह्मादि मुनीश्वर, नारद, माता सरस्वती र सर्पराज — सबैले तपाईंको यश गाउँछन्।",
+          "meaning_en": "Sanak, Sanandan and the other Rishis and great saints; Brahma - the god, Narada, Saraswati - the Mother Divine and the King of serpents sing your glory.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 17,
+          "verse_label": "15",
+          "sanskrit": "जम कुबेर दिगपाल जहाँ ते ।\nकबि कोबिद कहि सके कहाँ ते ॥१५॥",
+          "transliteration": "jama kubera digapāla jahām̐ te .\nkabi kobida kahi sake kahām̐ te ..15..",
+          "meaning_ne": "यम, कुबेर र चारै दिशाका पालकहरू छन्। कवि र विद्वान्ले तपाईंको महिमा कहाँसम्म भन्न सक्छन् र?",
+          "meaning_en": "Yama, Kubera and the guardians of the four quarters; poets and scholars - none can express your glory.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 18,
+          "verse_label": "16",
+          "sanskrit": "तुम उपकार सुग्रीवहिं कीह्ना ।\nराम मिलाय राज पद दीह्ना ॥१६॥",
+          "transliteration": "tuma upakāra sugrīvahiṃ kīhnā .\nrāma milāya rāja pada dīhnā ..16..",
+          "meaning_ne": "तपाईंले सुग्रीवको उपकार गर्नुभयो — श्रीरामसँग मिलाएर उनलाई राजपद दिलाउनुभयो।",
+          "meaning_en": "You helped Sugriva by uniting him with Lord Rama, who then granted him the throne.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 19,
+          "verse_label": "17",
+          "sanskrit": "तुह्मरो मन्त्र बिभीषन माना ।\nलङ्केस्वर भए सब जग जाना ॥१७॥",
+          "transliteration": "tuhmaro mantra bibhīṣana mānā .\nlaṅkesvara bhae saba jaga jānā ..17..",
+          "meaning_ne": "त्यसै गरी तपाईंको उपदेश मानेर विभीषण लङ्काका राजा भए, जुन सारा जगत्ले जान्यो।",
+          "meaning_en": "Likewise, complying with your preachings, even Vibhishana became the King of Lanka.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 20,
+          "verse_label": "18",
+          "sanskrit": "जुग सहस्र जोजन पर भानु ।\nलील्यो ताहि मधुर फल जानू ॥१८॥",
+          "transliteration": "juga sahasra jojana para bhānu .\nlīlyo tāhi madhura phala jānū ..18..",
+          "meaning_ne": "हजारौं योजन टाढा रहेको सूर्यलाई मिठो फल सम्झेर तपाईंले निल्नुभयो।",
+          "meaning_en": "You swallowed the sun, located thousands of miles away, mistaking it to be a sweet fruit!",
+          "audio_file": null
+        },
+        {
+          "verse_number": 21,
+          "verse_label": "19",
+          "sanskrit": "प्रभु मुद्रिका मेलि मुख माहीं ।\nजलधि लाँघि गये अचरज नाहीं ॥१९॥",
+          "transliteration": "prabhu mudrikā meli mukha māhīṃ .\njaladhi lām̐ghi gaye acaraja nāhīṃ ..19..",
+          "meaning_ne": "श्रीरामले दिनुभएको मुद्रिका मुखमा राखेर तपाईं समुद्र नाघेर जानुभयो — यसमा आश्चर्य मान्नु पर्दैन।",
+          "meaning_en": "Keeping the ring in your mouth, which was given to you by Lord Rama, you crossed over the ocean, to no astonishment, whatsoever.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 22,
+          "verse_label": "20",
+          "sanskrit": "दुर्गम काज जगत के जेते ।\nसुगम अनुग्रह तुह्मरे तेते ॥२०॥",
+          "transliteration": "durgama kāja jagata ke jete .\nsugama anugraha tuhmare tete ..20..",
+          "meaning_ne": "जगतका जति दुर्गम काम छन्, तपाईंको अनुग्रहले ती सबै सुगम हुन्छन्।",
+          "meaning_en": "All difficult tasks of this world become easy, with your grace.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 23,
+          "verse_label": "21",
+          "sanskrit": "राम दुआरे तुम रखवारे ।\nहोत न आज्ञा बिनु पैसारे ॥२१॥",
+          "transliteration": "rāma duāre tuma rakhavāre .\nhota na ājñā binu paisāre ..21..",
+          "meaning_ne": "तपाईं श्रीरामको ढोकाका पहरेदार हुनुहुन्छ। तपाईंको आज्ञा बिना कोही अघि बढ्न सक्दैन — श्रीरामको दर्शन तपाईंको कृपाबाट मात्र सम्भव छ।",
+          "meaning_en": "You are the guardian at Lord Rama's door. Nobody can move forward without your permission which means that Lord Rama's darshans (to get the sight of) are possible only with your blessings.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 24,
+          "verse_label": "22",
+          "sanskrit": "सब सुख लहै तुह्मारी सरना ।\nतुम रच्छक काहू को डर ना ॥२२॥",
+          "transliteration": "saba sukha lahai tuhmārī saranā .\ntuma racchaka kāhū ko ḍara nā ..22..",
+          "meaning_ne": "तपाईंको शरणमा आउनेले सबै सुख पाउँछन्। तपाईंजस्तो रक्षक हुँदा कसैको डर रहँदैन।",
+          "meaning_en": "Those who take refuge in you, find all the comforts and happiness. When we have a protector like you, we do not need to get scared of anybody or anything.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 25,
+          "verse_label": "23",
+          "sanskrit": "आपन तेज सह्मारो आपै ।\nतीनों लोक हाँक तें काँपै ॥२३॥",
+          "transliteration": "āpana teja sahmāro āpai .\ntīnoṃ loka hām̐ka teṃ kām̐pai ..23..",
+          "meaning_ne": "आफ्नो तेज तपाईं आफैंले मात्र सहन सक्नुहुन्छ। तपाईंको एक हाँकले तीनै लोक काँप्छन्।",
+          "meaning_en": "You alone can withstand your magnificence. All the three worlds start trembling at one roar of yours.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 26,
+          "verse_label": "24",
+          "sanskrit": "भूत पिसाच निकट नहिं आवै ।\nमहाबीर जब नाम सुनावै ॥२४॥",
+          "transliteration": "bhūta pisāca nikaṭa nahiṃ āvai .\nmahābīra jaba nāma sunāvai ..24..",
+          "meaning_ne": "हे महावीर! तपाईंको नाम सुनाउनेको नजिक भूत र पिशाच आउँदैनन्। तपाईंको नाम सम्झनु मात्रै पर्याप्त छ।",
+          "meaning_en": "O Mahaveer! No ghosts or evil spirits come near the ones who remember your name. Therefore, just remembering your name does everything!",
+          "audio_file": null
+        },
+        {
+          "verse_number": 27,
+          "verse_label": "25",
+          "sanskrit": "नासै रोग हरै सब पीरा ।\nजपत निरन्तर हनुमत बीरा ॥२५॥",
+          "transliteration": "nāsai roga harai saba pīrā .\njapata nirantara hanumata bīrā ..25..",
+          "meaning_ne": "हे हनुमान! तपाईंको नाम निरन्तर जप्दा सबै रोग नाशिन्छन् र सबै पीडा हरिन्छ। त्यसैले नियमित जप अत्यन्त महत्त्वपूर्ण मानिन्छ।",
+          "meaning_en": "O Hanuman! All diseases and all kinds of pain get eradicated when one recites or chants your name. Therefore, chanting your name regularly is considered to be very significant.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 28,
+          "verse_label": "26",
+          "sanskrit": "सङ्कट तें हनुमान छुड़ावै ।\nमन क्रम बचन ध्यान जो लावै ॥२६॥",
+          "transliteration": "saṅkaṭa teṃ hanumāna chur̤āvai .\nmana krama bacana dhyāna jo lāvai ..26..",
+          "meaning_ne": "जसले मन, कर्म र वचनले तपाईंको ध्यान लगाउँछ, हनुमानले उसलाई सबै सङ्कट र कष्टबाट छुटाउनुहुन्छ।",
+          "meaning_en": "Whoever meditates upon or worships you with thought, word, and deed, gets freedom from all kinds of crisis and affliction.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 29,
+          "verse_label": "27",
+          "sanskrit": "सब पर राम तपस्वी राजा ।\nतिन के काज सकल तुम साजा ॥२७॥",
+          "transliteration": "saba para rāma tapasvī rājā .\ntina ke kāja sakala tuma sājā ..27..",
+          "meaning_ne": "सबै राजामा श्रीराम तपस्वी राजा हुनुहुन्छ। तर उहाँका सबै काम तपाईंले नै सम्हाल्नुभयो।",
+          "meaning_en": "Lord Rama is the greatest ascetic amongst all the kings. But, it's only you who carried out all the tasks of Lord Sri Rama.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 30,
+          "verse_label": "28",
+          "sanskrit": "और मनोरथ जो कोई लावै ।\nसोई अमित जीवन फल पावै ॥२८॥",
+          "transliteration": "aura manoratha jo koī lāvai .\nsoī amita jīvana phala pāvai ..28..",
+          "meaning_ne": "जसले जुनसुकै मनोरथ वा सच्चा इच्छा लिएर तपाईंकहाँ आउँछ, उसले जीवनको असीम फल पाउँछ।",
+          "meaning_en": "One who comes to you with any longing or a sincere desire obtains the immeasurable fruit of life.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 31,
+          "verse_label": "29",
+          "sanskrit": "चारों जुग परताप तुह्मारा ।\nहै परसिद्ध जगत उजियारा ॥२९॥",
+          "transliteration": "cāroṃ juga paratāpa tuhmārā .\nhai parasiddha jagata ujiyārā ..29..",
+          "meaning_ne": "चारै युगमा तपाईंको प्रताप छ। तपाईंको यशले सारा जगत् उज्यालो छ भन्ने कुरा प्रसिद्ध छ।",
+          "meaning_en": "Your splendor fills all the four ages. And, your glory is renowned throughout the world.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 32,
+          "verse_label": "30",
+          "sanskrit": "साधु सन्त के तुम रखवारे ।\nअसुर निकन्दन राम दुलारे ॥३०॥",
+          "transliteration": "sādhu santa ke tuma rakhavāre .\nasura nikandana rāma dulāre ..30..",
+          "meaning_ne": "तपाईं साधु-सन्तका रक्षक, असुरहरूको नाश गर्ने, र श्रीरामका दुलारा हुनुहुन्छ।",
+          "meaning_en": "You are the guardian of saints and sages; the destroyer of demons and adored by Lord Rama.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 33,
+          "verse_label": "31",
+          "sanskrit": "अष्टसिद्धि नौ निधि के दाता ।\nअस बर दीन जानकी माता ॥३१॥",
+          "transliteration": "aṣṭasiddhi nau nidhi ke dātā .\nasa bara dīna jānakī mātā ..31..",
+          "meaning_ne": "माता जानकीले तपाईंलाई वर दिनुभयो — योग्य जनलाई अष्टसिद्धि र नौ निधि प्रदान गर्न सक्नुहुन्छ।",
+          "meaning_en": "You have been blessed by Mother Janaki to give boon further, to the deserving ones, wherein you can grant the siddhis (eight different powers) and the nidhis (nine different kinds of wealth).",
+          "audio_file": null
+        },
+        {
+          "verse_number": 34,
+          "verse_label": "32",
+          "sanskrit": "राम रसायन तुह्मरे पासा ।\nसदा रहो रघुपति के दासा ॥३२॥",
+          "transliteration": "rāma rasāyana tuhmare pāsā .\nsadā raho raghupati ke dāsā ..32..",
+          "meaning_ne": "रामभक्तिको रसायन तपाईंसँग छ। सधैं रघुपतिका विनम्र र समर्पित दास रहनुहोस्।",
+          "meaning_en": "You have the essence of Ram bhakti, may you always remain the humble and devoted servant of Raghupati.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 35,
+          "verse_label": "33",
+          "sanskrit": "तुह्मरे भजन राम को पावै ।\nजनम जनम के दुख बिसरावै ॥३३॥",
+          "transliteration": "tuhmare bhajana rāma ko pāvai .\njanama janama ke dukha bisarāvai ..33..",
+          "meaning_ne": "तपाईंको भजन र नाम गाउँदा श्रीरामको भेट हुन्छ, र जन्म-जन्मकाले दुःख बिर्सिन्छ।",
+          "meaning_en": "When one sings your praise, your name, he gets to meet Lord Rama and finds relief from the sorrows of many lifetimes.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 36,
+          "verse_label": "34",
+          "sanskrit": "अन्त काल रघुबर पुर जाई ।\nजहाँ जन्म हरिभक्त कहाई ॥३४॥",
+          "transliteration": "anta kāla raghubara pura jāī .\njahām̐ janma haribhakta kahāī ..34..",
+          "meaning_ne": "तपाईंको कृपाले अन्तकालमा रघुवरको अमर धाम पुगिन्छ, र त्यहाँ जन्म लिएर हरिभक्त भनिन्छ।",
+          "meaning_en": "By your grace, one will go to the immortal abode of Lord Rama after death and remain devoted to him.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 37,
+          "verse_label": "35",
+          "sanskrit": "और देवता चित्त न धरई ।\nहनुमत सेइ सर्ब सुख करई ॥३५॥",
+          "transliteration": "aura devatā citta na dharaī .\nhanumata sei sarba sukha karaī ..35..",
+          "meaning_ne": "अरू देवतामा चित्त राख्नु पर्दैन। हनुमानको सेवा गर्नाले सबै सुख प्राप्त हुन्छ।",
+          "meaning_en": "It is not needed to serve any other deity or god. Service to Lord Hanuman gives all the comforts.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 38,
+          "verse_label": "36",
+          "sanskrit": "सङ्कट कटै मिटै सब पीरा ।\nजो सुमिरै हनुमत बलबीरा ॥३६॥",
+          "transliteration": "saṅkaṭa kaṭai miṭai saba pīrā .\njo sumirai hanumata balabīrā ..36..",
+          "meaning_ne": "बलवान् हनुमानलाई सम्झनेको सबै सङ्कट कट्छ र सबै पीडा मेटिन्छ।",
+          "meaning_en": "All troubles cease for the one who remembers the powerful lord, Lord Hanuman and all his pains also come to an end.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 39,
+          "verse_label": "37",
+          "sanskrit": "जय जय जय हनुमान गोसाईं ।\nकृपा करहु गुरुदेव की नाईं ॥३७॥",
+          "transliteration": "jaya jaya jaya hanumāna gosāīṃ .\nkṛpā karahu gurudeva kī nāīṃ ..37..",
+          "meaning_ne": "जय जय जय हनुमान गोसाईं। हे प्रभु, गुरुदेवझैं हामीमाथि कृपा गर्नुहोस्।",
+          "meaning_en": "O Lord Hanuman! Praises and glory to you O mighty lord, please bestow your grace as our supreme guru.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 40,
+          "verse_label": "38",
+          "sanskrit": "जो सत बार पाठ कर कोई ।\nछूटहि बन्दि महा सुख होई ॥३८॥",
+          "transliteration": "jo sata bāra pāṭha kara koī .\nchūṭahi bandi mahā sukha hoī ..38..",
+          "meaning_ne": "जसले यो चालीसा सय पटक पाठ गर्छ, सबै बन्धन छुट्छ र महासुख प्राप्त हुन्छ।",
+          "meaning_en": "One who recites this Chalisa a hundred times is released from all bondages and will attain great bliss.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 41,
+          "verse_label": "39",
+          "sanskrit": "जो यह पढ़ै हनुमान चालीसा ।\nहोय सिद्धि साखी गौरीसा ॥३९॥",
+          "transliteration": "jo yaha par̤hai hanumāna cālīsā .\nhoya siddhi sākhī gaurīsā ..39..",
+          "meaning_ne": "जसले यो हनुमान चालीसा पढ्छ र पाठ गर्छ, उसका काम सिद्ध हुन्छन्। यसका साक्षी स्वयं भगवान् शिव हुनुहुन्छ।",
+          "meaning_en": "One who reads and recites this Hanuman Chalisa, all his works get accomplished. Lord Shiva, himself, is the witness to it.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 42,
+          "verse_label": "40",
+          "sanskrit": "तुलसीदास सदा हरि चेरा ।\nकीजै नाथ हृदय महँ डेरा ॥४०॥",
+          "transliteration": "tulasīdāsa sadā hari cerā .\nkījai nātha hṛdaya maham̐ ḍerā ..40..",
+          "meaning_ne": "तुलसीदास भन्छन् — म सधैं श्रीरामको सेवक र भक्त रहूँ। हे नाथ, मेरो हृदयभित्र सधैं डेरा जमाउनुहोस्।",
+          "meaning_en": "O Lord Hanuman, may I always remain a servant, a devotee to Lord Sri Ram, says Tulsidas. And, may you always reside in my heart.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 43,
+          "verse_label": "दोहा ३",
+          "sanskrit": "पवनतनय सङ्कट हरन मङ्गल मूरति रूप ।\nराम लखन सीता सहित हृदय बसहु सुर भूप ॥",
+          "transliteration": "pavanatanaya saṅkaṭa harana maṅgala mūrati rūpa .\nrāma lakhana sītā sahita hṛdaya basahu sura bhūpa ..",
+          "meaning_ne": "हे पवनपुत्र, तपाईं सबै दुःख हरण गर्नुहुन्छ। तपाईं मङ्गल र समृद्धिका स्वरूप हुनुहुन्छ। श्रीराम, लक्ष्मण र माता सीतासहित सधैं मेरो हृदयमा बस्नुहोस्।",
+          "meaning_en": "O the Son of Wind, you are the destroyer of all sorrows. You are the embodiment of fortune and prosperity. With Lord Rama, Laxmana and Mother Sita, dwell in my heart, always.",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}
