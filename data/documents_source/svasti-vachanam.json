@@ -1,0 +1,225 @@
+{
+  "slug": "svasti-vachanam",
+  "order_index": 22,
+  "category": "stotram",
+  "title_sa": "स्वस्तिवाचनम्",
+  "title_ne": "स्वस्तिवाचन",
+  "title_en": "Svasti Vachanam",
+  "subtitle_ne": "शुक्ल यजुर्वेद · मङ्गल र शान्ति मन्त्र",
+  "subtitle_en": "Shukla Yajurveda · auspicious and peace mantras",
+  "description_ne": "कर्मारम्भमा पढिने स्वस्तिवाचनका दश मन्त्र (यजुर्वेद २५।१४–२३), दुई शान्ति मन्त्र, गणपति र अम्बिका मन्त्र — नेपाली र अङ्ग्रेजी अर्थसहित। अन्त्यमा सस्वर (स्वरचिह्नसहित) पाठ दिइएको छ।",
+  "description_en": "The ten Svasti Vachanam mantras recited at the start of a rite (Yajurveda 25.14–23), two peace mantras, and the Ganapati and Ambika mantras — with Nepali and English meanings. The accented (svara) text is given at the end.",
+  "source_ne": "शुक्ल यजुर्वेद (वाजसनेयी संहिता) २५।१४–२३, ३६।१७, ३६।२२",
+  "source_en": "Shukla Yajurveda (Vajasaneyi Samhita) 25.14–23, 36.17, 36.22",
+  "cover_image": "",
+  "has_chapters": true,
+  "inline_chapters": true,
+  "chapters": [
+    {
+      "number": 1,
+      "title_ne": "मङ्गल मन्त्र (निःस्वर पाठ)",
+      "title_en": "Auspicious mantras (plain text)",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "1.1",
+          "sanskrit": "आ नो भद्राः क्रतवो यन्तु विश्वतोऽदब्धासो अपरीतास उद्भिदः । देवा नो यथा सदमिद्वृधे असन्नप्रायुवो रक्षितारो दिवेदिवे ॥१॥",
+          "meaning_ne": "(यजुर्वेद २५।१४) चारै तर्फबाट कुनै पनि बाधा वा छलकपटबिनाका, कसैले जित्न नसक्ने र नयाँ कल्याणकारी मार्ग खोल्ने श्रेष्ठ विचार एवं ज्ञान-सङ्कल्पहरू हामीतिर आऊन्। हाम्रा रक्षक, कहिल्यै अल्छी वा प्रमाद नगर्ने देवताहरू प्रतिदिन हाम्रो उन्नति र समृद्धिका लागि सदा तत्पर रहून्।",
+          "meaning_en": "(Yajurveda २५।१४) May noble, auspicious, unobstructed, unhindered, and illuminating thoughts and noble intentions come to us from all directions. May the divine beings, who are our protectors and never neglectful, be ever-present day after day for our growth and spiritual progress.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "1.2",
+          "sanskrit": "देवानां भद्रा सुमतिऋजूयतां देवानां रातिरभि नो नि वर्तताम् । देवानां सख्यमुपसेदिमा वयं देवा न आयुः प्र तिरन्तु जीवसे ॥२॥",
+          "meaning_ne": "(यजुर्वेद २५।१५) सरल तथा निष्कपटी मार्गमा हिँड्ने देवताहरूको कल्याणकारी सुबुद्धि एवं कृपा हामीप्रति सदा प्रवाह होस्। देवताहरूको दान तथा उदारता हामीलाई निरन्तर प्राप्त भइरहोस्। हामी देवताहरूको पवित्र मैत्रीभाव प्राप्त गरौँ, र उहाँहरूले हाम्रो आयु बढाएर स्वस्थ जीवन प्रदान गरून्।",
+          "meaning_en": "(Yajurveda २५।१५) May the auspicious grace and goodwill of the righteous gods turn towards us. May the benevolence and gifts of the divine forces always reach us. May we attain the divine friendship of the gods, and may they extend our lifespan so that we may live a full and meaningful life.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "1.3",
+          "sanskrit": "तान्पूर्वया निविदा हूमहे वयं भगं मित्रमदितिं दक्षमस्रिधम् । अर्यमणं वरुणं सोममश्विना सरस्वती नः सुभगा मयस्करत् ॥३॥",
+          "meaning_ne": "(यजुर्वेद २५।१६) हामी पूर्वजहरूद्वारा परम्परागत रूपमा प्रयोग गरिएका मन्त्र एवं स्तुतिद्वारा ऐश्वर्यदाता भग, सर्वमित्र मित्र, अखण्डित अदिति, समर्थ दक्ष, अर्यमा, वरुण, सोम, दुवै अश्विनीकुमार र परम कल्याणी सरस्वती देवीको आवाहन गर्दछौँ। उहाँहरूले हामीलाई सौभाग्य र सुख प्रदान गरून्।",
+          "meaning_en": "(Yajurveda २५।१६) We invoke through ancient traditional prayers the divine forces: Bhaga (giver of fortune), Mitra (universal friend), Aditi (unbound mother of gods), Daksha (capable creator), Aryaman, Varuna, Soma, the twin Ashvins, and blessed Saraswati. May they grant us good fortune, wisdom, and inner joy.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "1.4",
+          "sanskrit": "तन्नो वातो मयोभु वातु भेषजं तन्माता पृथिवी तत्पिता द्यौः । तद्ग्रावाणः सोमसुतो मयोभुवस्तदश्विना शृणुतं धिष्ण्या युवम् ॥४॥",
+          "meaning_ne": "(यजुर्वेद २५।१७) वायुदेवले हाम्रा लागि सुखदायी औषधि-युक्त पवन ल्याऊन्। माता पृथ्वी र पिता द्युलोक (आकाश) ले हामीलाई आरोग्य प्रदान गरून्। सोम रस निकाल्ने पवित्र ढुङ्गाहरू हाम्रा लागि सुखकारी होऊन्। हे बुद्धिमान् एवं पूजनीय अश्विनीकुमारद्वय! हाम्रा यी प्रार्थनाहरू स्वीकार गर्नुहोस्।",
+          "meaning_en": "(Yajurveda २५।१७) May the wind blow healing and refreshing breezes upon us. May Mother Earth and Father Sky grant us health and nourishment. May the sacred stones used for pressing Soma bring us well-being. O wise and revered Ashvin twins, please hear and accept our prayers!",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "1.5",
+          "sanskrit": "तमीशानं जगतस्तस्थुषस्पतिं धियञ्जिन्वमवसे हूमहे वयम् । पूषा नो यथा वेदसामसद्वृधे रक्षिता पायुरदब्धः स्वस्तये ॥५॥",
+          "meaning_ne": "(यजुर्वेद २५।१८) चर र अचर (संसारका सबै प्राणी र वस्तुहरू) का स्वामी, बुद्धि र विचारलाई प्रेरित गर्ने जगन्नियन्ता ईश्वरको रक्षा र कल्याणका लागि हामी आवाहन गर्दछौँ। पोषणकर्ता पूषादेवले हाम्रा ज्ञान एवं धन-सम्पत्तिको रक्षा गरून् र कहिल्यै पराजित नहुने र रक्षक बनेर हाम्रो कल्याण गरून्।",
+          "meaning_en": "(Yajurveda २५।१८) We invoke for our protection the Supreme Lord (Ishana), the master of all moving and unmoving creation, who inspires our intellect. May Pushan, the divine nourisher, safeguard our wealth and wisdom, remaining our invincible protector for our overall well-being.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "1.6",
+          "sanskrit": "स्वस्ति न इन्द्रो वृद्धश्रवाः स्वस्ति नः पूषा विश्ववेदाः । स्वस्ति नस्तार्क्ष्यो अरिष्टनेमिः स्वस्ति नो बृहस्पतिर्दधातु ॥६॥",
+          "meaning_ne": "(यजुर्वेद २५।१९) महान् कीर्ति भएका इन्द्रदेवले हाम्रो कल्याण गरून्। सर्वज्ञ एवं ज्ञानस्वरूप पूषादेवले हाम्रो मङ्गल गरून्। गरुडदेव (तार्क्ष्य), जसको चक्र कुनै बाधाद्वारा रोकिँदैन, उहाँले हाम्रो रक्षा र कल्याण गरून्। गुरु बृहस्पतिदेवले हामीलाई स्वस्ति (मङ्गल एवं कल्याण) प्रदान गरून्।",
+          "meaning_en": "(Yajurveda २५।१९) May Indra, renowned for immense glory, bestow auspiciousness upon us. May Pushan, the all-knowing nourisher, grant us well-being. May Tarksya (Garuda), whose celestial wheel is unobstructed, protect us from all harm. May Brihaspati, the lord of wisdom, grant us peace, prosperity, and auspiciousness.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "1.7",
+          "sanskrit": "पृषदश्वा मरुतः पृश्निमातरः शुभंयावानो विदथेषु जग्मयः । अग्निजिह्वा मनवः सूरचक्षसो विश्वे नो देवा अवसा गमन्निह ॥७॥",
+          "meaning_ne": "(यजुर्वेद २५।२०) चित्कबारे घोडा चढ्ने, माता पृश्निका पुत्र मरुद्गण (वायुदेवताहरू), जो यज्ञ-अनुष्ठानहरूमा सहभागी हुन्छन् र शोभा बढाउँछन्; अनि अग्निस्वरूप जिह्वा भएका, सूर्यसरह दिव्य दृष्टि भएका र मननशील समस्त विश्वेदेवहरू हाम्रो रक्षाका लागि यहाँ आगमन गरून्।",
+          "meaning_en": "(Yajurveda २५।२०) May the Maruts (storm gods), riders of spotted horses, sons of Prishni, who adorn sacred assemblies, along with all the Vishvedevas (universal gods) who possess Agni as their tongue, human wisdom, and sun-like vision, come here with their divine protection to aid us.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "1.8",
+          "sanskrit": "भद्रं कर्णेभिः शृणुयाम देवा भद्रं पश्येमाक्षभिर्यजत्राः । स्थिरैरङ्गैस्तुष्टुवांसस्तनूभिर्व्यशेम देवहितं यदायुः ॥८॥",
+          "meaning_ne": "(यजुर्वेद २५।२१) हे पूजनीय देवगण! हामी हाम्रा कानले केवल शुभ र कल्याणकारी कुराहरू मात्र सुनौँ। हामी हाम्रा आँखाले केवल पवित्र र सत्य कुराहरू मात्र देखौँ। हाम्रा अङ्ग-प्रत्यङ्ग तथा शरीर सुदृढ र स्वस्थ रहून्, र ईश्वरद्वारा निर्धारित पूरा आयुसम्म हामी प्रभुको स्तुति गर्दै जीवनयापन गर्न सकौँ।",
+          "meaning_en": "(Yajurveda २५।२१) O worshipful Gods! May we hear with our ears what is auspicious and good. May we see with our eyes what is pure and divine. With strong and healthy limbs and bodies, may we sing your praises and enjoy the full lifespan allotted to us by the Divine.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "1.9",
+          "sanskrit": "शतमिन्नु शरदो अन्ति देवा यत्रा नश्चक्रा जरसं तनूनाम् । पुत्रासो यत्र पितरो भवन्ति मा नो मध्या रीरिषतायुर्गन्तोः ॥९॥",
+          "meaning_ne": "(यजुर्वेद २५।२२) हे देवगण! १०० शरद (वर्ष) को आयु हाम्रा सामु विद्यमान छ, जहाँ हजुरहरूले हाम्रा शरीरलाई वृद्धावस्था प्राप्त गराउनुहुन्छ र जहाँ हाम्रा छोराहरू स्वयं पिता बन्दछन्। कृपया हाम्रा यात्राको बीचमा नै हाम्रो आयुलाई क्षीण वा नष्ट नगराइदिनुहोस्।",
+          "meaning_en": "(Yajurveda २५।२२) O Gods! Before us lies a lifespan of a hundred autumns, wherein our bodies gradually age and our sons grow to become fathers themselves. Please do not cut short our lifespan in the middle of our journey.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "1.10",
+          "sanskrit": "अदितिर्द्यौरदितिरन्तरिक्षमदितिर्माता स पिता स पुत्रः । विश्वे देवा अदितिः पञ्च जना अदितिर्जातमदितिर्जनित्वम् ॥१०॥",
+          "meaning_ne": "(यजुर्वेद २५।२३) अदिति (अखण्ड, असीम परमेश्वर/प्रकृति) नै द्युलोक हुनुहुन्छ, अदिति नै अन्तरिक्ष हुनुहुन्छ। अदिति नै माता, पिता र पुत्र हुनुहुन्छ। सबै देवगण, पञ्चजन (पाँचै वर्गका मानिसहरू), जे जति जन्मिसकेका छन् र जे जति पछि जन्मिनेछन्—ती सबै केवल अदिति (परमब्रह्म) कै स्वरूप हुन्।",
+          "meaning_en": "(Yajurveda २५।२३) Aditi (the boundless, infinite Divine Nature/Supreme Being) is the heavens, Aditi is the mid-space. Aditi is the mother, the father, and the child. Aditi is all the Gods, all five classes of beings, all that has been born, and all that is yet to be born.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title_ne": "शान्ति मन्त्र",
+      "title_en": "Peace invocations",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "2.1",
+          "sanskrit": "द्यौः शान्तिरन्तरिक्षं शान्तिः पृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः । वनस्पतयः शान्तिर्विश्वेदेवाः शान्तिर्ब्रह्म शान्तिः सर्वं शान्तिः शान्तिरेव शान्तिः सा मा शान्तिरेधि ॥",
+          "meaning_ne": "(यजुर्वेद ३६।१७) द्युलोकमा शान्ति होस्, अन्तरिक्षमा शान्ति होस्, पृथ्वीमा शान्ति होस्, जलमा शान्ति होस्, औषधिहरूमा शान्ति होस्, वनस्पतिहरूमा शान्ति होस्, विश्वेदेवहरूमा शान्ति होस्, परब्रह्ममा शान्ति होस्, सम्पूर्ण चराचर जगत्मा शान्ति होस्, र त्यो परम शान्ति मलाई पनि प्राप्त होस्।",
+          "meaning_en": "(Yajurveda ३६।१७) May peace prevail in the heavens, peace in mid-space, peace on earth, peace in the waters, peace in plants and herbs, peace in trees and forests, peace in all divine beings, peace in Brahma, peace in the entire universe. May that divine peace come to me as well.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "2.2",
+          "sanskrit": "यतोयतः समीहसे ततो नोऽभयं कुरु । शन्नः कुरु प्रजाभ्योऽभयं नः पशुभ्यः ॥ सुशान्तिर्भवतु ॥",
+          "meaning_ne": "(यजुर्वेद ३६।२२) हे ईश्वर! हजुर जस-जसबाट चाहनुहुन्छ, ती सबैबाट हामीलाई भयमुक्त गराउनुहोस्। हाम्रा प्रजा (सन्तति/मानवजाति) को कल्याण गर्नुहोस् र हाम्रा पशुधनलाई निर्भय बनाउनुहोस्। सर्वत्र उत्तम शान्ति होस्।",
+          "meaning_en": "(Yajurveda ३६।२२) O Lord! From whatever directions You deem fit, grant us fearlessness. Bestow well-being upon our people and progeny, and grant safety and protection to our animals. May there be perfect peace everywhere.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title_ne": "गणपति तथा अम्बिका मन्त्र",
+      "title_en": "Ganapati and Ambika mantras",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "3.1",
+          "sanskrit": "गणानां त्वा गणपतिं हवामहे प्रियाणां त्वा प्रियपतिं हवामहे निधीनां त्वा निधिपतिं हवामहे वसो मम । अहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
+          "meaning_ne": "हे गणहरूका स्वामी गणपति! हामी हजुरको आवाहन गर्दछौँ। प्रियजनहरूका स्वामी! हामी हजुरको आवाहन गर्दछौँ। निधि (सम्पत्ति) का स्वामी! हामी हजुरको आवाहन गर्दछौँ। हजुर हाम्रा परम धन हुनुहुन्छ।",
+          "meaning_en": "O Lord of celestial groups (Ganapati), we invoke You! O Lord of beloved ones, we invoke You! O Treasurer of divine treasures, we invoke You! You are our supreme wealth.",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "3.2",
+          "sanskrit": "अम्बे अम्बिकेऽम्बालिके न मा नयति कश्चन । ससस्त्यश्वकः सुभद्रिकां काम्पीलवासिनीम् ॥",
+          "meaning_ne": "हे अम्बा, अम्बिका, अम्बालिका (जगन्माताहरू)! हजुरहरूको अनुग्रहले कसैले पनि हामीलाई दुष्मार्ग वा दुःखमा लैजान सक्दैन।",
+          "meaning_en": "O Divine Mothers (Amba, Ambika, Ambalika)! By Your divine grace, no one can lead us astray or into suffering.",
+          "audio_file": null
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "title_ne": "सस्वर पाठ",
+      "title_en": "Accented (svara) text",
+      "shlokas": [
+        {
+          "verse_number": 1,
+          "verse_label": "4.1",
+          "sanskrit": "आ नो᳚ भ॒द्राः क॒रत॑वो य॒न्तु वि॒श्वतोऽद॑ब्धासो॒ अप॑रीतास उ॒द्भिदः॑ । दे॒वा नो॒ यथा॒ सद॒मिद्वृ॒धे अस॒न्नप्रायुवो रिक्॒षता॑रो दि॒वेदि॑वे ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 2,
+          "verse_label": "4.2",
+          "sanskrit": "दे॒वानां᳚ भ॒द्रा सु॒मति॑ऋजूय॒तां दे॒वानां᳚ रा॒तिर॒भि नो॒ नि व॑र्तताम् । दे॒वानां᳚ स॒ख्यमुप॑सेदिमा व॒यं दे॒वा न॒ आयुः॒ प्र ति॑रन्तु जी॒वसे॑ ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 3,
+          "verse_label": "4.3",
+          "sanskrit": "तान्पूर्वे॑या नि॒विद्आ᳚ हूमहे व॒यं भगं᳚ मि॒त्रमदि॑तिं॒ दक्ष॑म॒स्रिध॑म् । अ॒र्य॒मणं॒ वरु॑णं॒ सोम॑म॒श्विना॒ सर॑स्वती नः सु॒भगा॒ मय॑स्करत् ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 4,
+          "verse_label": "4.4",
+          "sanskrit": "तन्नो᳚ वा॒तो मयो॒भु वा॑तु भे॒षजं तन्मा॒ता पृ॑थि॒वी तत्पि॒ता द्यौः । तद्ग्रावा᳚णः सोम॒सुतो᳚ मयो॒भुव॒स्तद॑श्विना शृणुतं धिष्ण्या यु॒वम् ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 5,
+          "verse_label": "4.5",
+          "sanskrit": "तमीशा᳚नं॒ जग॑तस्त॒स्थुष॒स्पतिं᳚ धियञ्जि॒न्वमव॑से हूमहे व॒यम् । पू॒षा नो॒ यथा॒ वेद॑सा॒मस॑द्वृ॒धे र॑क्षि॒ता पा॒युरद॑ब्धः स्व॒स्तये᳚ ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 6,
+          "verse_label": "4.6",
+          "sanskrit": "स्व॒स्ति न इन्द्रो᳚ वृ॒द्धश्र॑वाः स्व॒स्ति नः॑ पू॒षा वि॒श्ववे॑दाः । स्व॒स्ति न॒स्तार्क्ष्यो᳚ अरि॑ष्टनेमिः स्व॒स्ति नो॒ बृह॒स्पति॑र्दधातु ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 7,
+          "verse_label": "4.7",
+          "sanskrit": "पृष॑दश्वा म॒रुतः॒ पृश्नि॑मातरः शुभं॒यावा᳚नो वि॒दथे᳚षु॒ जग्म॑यः । अ॒ग्निजि॑ह्वा मन॑वः॒ सू॒रचक्षसो॒ विश्वे᳚ नो दे॒वा अव॒सा ग॑मन्नि॒ह ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 8,
+          "verse_label": "4.8",
+          "sanskrit": "भ॒द्रं कर्णे᳚भिः शृणुयाम देवा भ॒द्रं प॑श्येमा॒क्षभि॑र्यजत्राः । स्थि॒रैरङ्गै᳚स्तुष्टु॒वांस॑स्त॒नूभि॒र्व्यशे॑म दे॒विहि॑तं॒ यदायुः ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 9,
+          "verse_label": "4.9",
+          "sanskrit": "श॒तमिन्नु श॒रदो॒ अन्ति॑ देवा॒ यत्रा᳚ नश्च॒क्रा ज॒रसं᳚ त॒नूना᳚म् । पु॒त्रासो॒ यत्र॑ पि॒तरो॒ भव॑न्ति मा नो᳚ म॒ध्या री॑रिषता॒युर्गन्तोः᳚ ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 10,
+          "verse_label": "4.10",
+          "sanskrit": "अदि॑ति॒र्द्यौरदि॑तिर॒न्तरि॑क्ष॒मदि॑तिर्मा॒ता स पि॒ता स पु॒त्रः । वि॒श्वे᳚ दे॒वा अदि॑तिः॒ पञ्च॒ जना॒ अदि॑तिर्जा॒तमदि॑ति॒र्जनि॑त्वम् ॥",
+          "audio_file": null
+        },
+        {
+          "verse_number": 11,
+          "verse_label": "इति",
+          "sanskrit": "(शुक्ल यजुर्वेद २५ । १४–२३) ॥ इति स्वस्तिवाचनम् ॥",
+          "audio_file": null
+        }
+      ]
+    }
+  ]
+}
