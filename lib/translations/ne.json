@@ -4112,7 +4112,7 @@
   "documents": {
     "eyebrow": "ई-पाठ — ग्रन्थ तथा स्तोत्र",
     "page_title": "ई-पाठ",
-    "page_subtitle": "संस्कृत श्लोक, अर्थ र श्रवणसहित",
+    "page_subtitle": "मन्त्र, स्तोत्र तथा वैदिक ग्रन्थ — संस्कृत श्लोक, अर्थ र श्रवणसहित",
     "back_to_list": "सबै ग्रन्थ",
     "chapters_count": "{{count}} अध्याय",
     "shlokas_count": "{{count}} श्लोक",
@@ -4133,13 +4133,7 @@
     "source": "स्रोत",
     "category_tabs_label": "ग्रन्थका प्रकार",
     "category": {
-      "all": "सबै",
-      "mantra": "मन्त्र",
-      "stotram": "स्तोत्र",
-      "shruti": "श्रुति",
-      "gita": "गीता",
-      "upanishad": "उपनिषद्",
-      "scripture": "ग्रन्थ"
+      "all": "सबै"
     },
     "empty_category": "यस वर्गमा हाल कुनै ग्रन्थ छैन।",
     "chapter_nav": "अध्यायहरू",

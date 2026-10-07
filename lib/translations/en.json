@@ -4112,7 +4112,7 @@
   "documents": {
     "eyebrow": "Scriptures & Stotram",
     "page_title": "Documents",
-    "page_subtitle": "Sanskrit verses with meaning and audio",
+    "page_subtitle": "Mantras, stotras, and Vedic texts — Sanskrit verses with meaning and audio",
     "back_to_list": "All documents",
     "chapters_count": "{{count}} chapters",
     "shlokas_count": "{{count}} verses",
@@ -4133,13 +4133,7 @@
     "source": "Source",
     "category_tabs_label": "Document categories",
     "category": {
-      "all": "All",
-      "mantra": "Mantra",
-      "stotram": "Stotram",
-      "shruti": "Shruti",
-      "gita": "Gita",
-      "upanishad": "Upanishad",
-      "scripture": "Scripture"
+      "all": "All"
     },
     "empty_category": "No documents in this category yet.",
     "chapter_nav": "Chapters",
