@@ -8,23 +8,40 @@ enough; nothing needs to be run by hand.
 
 ## Category
 
-`category` picks which tab a document lands on in the app's `/documents`
-library. Six values:
+`category` is the library group a document belongs to. `subcategory` is the
+topic chip inside that group (ids match the app's
+`src/lib/document-categories.ts`). Both power `/documents`.
 
-- `mantra` — a single short verse (Gayatri Mantra, Vakratunda Mahakaya).
-- `stotram` — a multi-verse hymn or ashtakam (Shiva Tandava Stotram,
-  Pashupatyashtakam, Sri Rudram, the Rudrashtadhyayi).
-- `shruti` — the four Vedas (Rigveda, Yajurveda, Samaveda, Atharvaveda).
-- `gita` — any Gita (Bhagavad Gita, Ashtavakra Gita, Avadhuta Gita, Kapila
-  Gita, Sriram Gita, Sruti Gita, Uddhava Gita, Vibhishana Gita).
-- `upanishad` — a principal or minor Upanishad, or a closely tied commentary
-  (the Gaudapada Karika on the Mandukya Upanishad).
-- `scripture` — everything else seeded chapter by chapter: itihasa (the
-  Valmiki Ramayana, the Mahabharata), Ayurvedic samhitas (Charaka Samhita),
-  and other larger canonical texts not covered above (the Vijnana Bhairava
-  Tantra).
+Groups:
 
-If omitted, it defaults to `stotram`.
+- `veda` — the four Vedas and the rest of Shruti (`rigveda`, `yajurveda`,
+  `samaveda`, `atharvaveda`, `shakha`, `brahmana`, `aranyaka`).
+- `upanishad` — a principal Upanishad, or a closely tied text (`isha`, `kena`,
+  `katha`, `prasna`, `mundaka`, `mandukya`, `taittiriya`, `aitareya`,
+  `chandogya`, `brihadaranyaka`, `shvetashvatara`, `adi`).
+- `mantra` — a short verse (`vaidik`, `bija`, `devata`, `gayatri`,
+  `mahamrityunjaya`, `shanti`, `graha`, `nakshatra`, `prayojana`).
+- `stotram` — a hymn, sahasranama, ashtakam, or chalisa (`shiva`, `vishnu`,
+  `devi`, `ganesha`, `surya`, `hanuman`, `lakshmi`, `saraswati`, `navagraha`,
+  `sahasranama`, `kavacha`, `ashtakam`, `chalisa`).
+- `puja` — ritual procedure (`nityakarma`, `puja-vidhi`, `karmakanda`,
+  `svasti-shanti`, `griha-shanti`, `vastu-shanti`, `graha-shanti`,
+  `nakshatra-shanti`, `rudri`, `rudrabhisheka`, `homa`, `agnihotra`,
+  `shraddha`, `sanskara`, `vivaha`, `grihapravesh`, `ayushya`, `pitri`).
+- `gita` — Bhagavad Gita and the other Gitas (`bhagavad`, `bhashya`, `nepali`,
+  `sanskrit`, `by-chapter`, `other`).
+- `purana` — a Purana, and the itihasa kept in this library (the Valmiki
+  Ramayana, the Mahabharata, the Vijnana Bhairava Tantra). Topic ids:
+  `bhagavata`, `vishnu`, `shiva`, `devi-bhagavata`, `markandeya`, `garuda`,
+  `skanda`, `padma`, `bhavishya`, `adi`.
+- `darshana` — the six darshanas and related shastra (`sankhya`, `yoga`,
+  `nyaya`, `vaisheshika`, `purva-mimamsa`, `vedanta`, `brahmasutra`,
+  `bhashya`, `tantra`).
+- `shastra` — Ayurveda, jyotisha, and vastu (`ayurveda`, `jyotish`,
+  `samhita`, `hora`, `ganita`, `muhurta`, `prashna`, `vastu`,
+  `dharmashastra`, `smriti`).
+
+If `category` is omitted, it defaults to `stotram`. `subcategory` is optional.
 
 ## Shape
 
@@ -32,7 +49,8 @@ If omitted, it defaults to `stotram`.
 {
   "slug": "vishnu-sahasranama",       // unique, URL-safe — becomes /documents/<slug>
   "order_index": 10,                   // list-page sort order, ascending
-  "category": "stotram",               // "mantra" | "stotram" | "scripture" — powers the /documents tabs
+  "category": "stotram",               // library group — see Category above
+  "subcategory": "vishnu",             // topic chip inside that group
   "title_sa": "श्री विष्णुसहस्रनामस्तोत्रम्",   // Devanagari Sanskrit title
   "title_ne": "श्री विष्णु सहस्रनाम स्तोत्र",
   "title_en": "Shri Vishnu Sahasranama Stotram",

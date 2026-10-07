@@ -24,6 +24,7 @@ from engine.astronomy.paths import documents_db_path, documents_source_dir
 
 _ADDED_COLUMNS: list[tuple[str, str]] = [
     ("category", "TEXT NOT NULL DEFAULT 'stotram'"),
+    ("subcategory", "TEXT"),
     ("inline_chapters", "INTEGER NOT NULL DEFAULT 0"),
 ]
 
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS documents (
     slug            TEXT PRIMARY KEY,
     order_index     INTEGER NOT NULL DEFAULT 0,
     category        TEXT NOT NULL DEFAULT 'stotram',
+    subcategory     TEXT,
     title_sa        TEXT NOT NULL,
     title_ne        TEXT NOT NULL,
     title_en        TEXT NOT NULL,
@@ -229,15 +231,16 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     conn.execute(
         """
         INSERT INTO documents
-            (slug, order_index, category, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
+            (slug, order_index, category, subcategory, title_sa, title_ne, title_en, subtitle_ne, subtitle_en,
              description_ne, description_en, source_ne, source_en, cover_image,
              has_chapters, inline_chapters, chapter_count, shloka_count, full_audio_key)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             slug,
             manifest.get("order_index", 0),
             manifest.get("category", "stotram"),
+            manifest.get("subcategory") or None,
             manifest["title_sa"],
             manifest["title_ne"],
             manifest["title_en"],
@@ -313,10 +316,13 @@ def content_version() -> str:
 
 
 def _row_to_document_summary(row: sqlite3.Row) -> dict[str, Any]:
+    # subcategory is optional on databases created before the library groups.
+    subcategory = row["subcategory"] if "subcategory" in row.keys() else None
     return {
         "slug": row["slug"],
         "order_index": row["order_index"],
         "category": row["category"],
+        "subcategory": subcategory,
         "title_sa": row["title_sa"],
         "title_ne": row["title_ne"],
         "title_en": row["title_en"],

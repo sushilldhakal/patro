@@ -1,7 +1,8 @@
 {
   "slug": "charaka-samhita",
   "order_index": 110,
-  "category": "scripture",
+  "category": "shastra",
+  "subcategory": "ayurveda",
   "title_sa": "चरकसंहिता",
   "title_ne": "चरक संहिता",
   "title_en": "Charaka Samhita",
