@@ -37,11 +37,13 @@ from services import documents_db, response_cache
 
 router = APIRouter(tags=["documents"])
 
-# Static reference text: an hour in the browser, a day at the edge, and a week
-# of stale-while-revalidate to shield the origin — same profile as the other
-# deterministic-content routes in response_cache. The content-hash suffix in
-# each cache key (not the URL) is what actually invalidates on a content edit.
-_CACHE_CONTROL = response_cache.DEFAULT_CACHE_CONTROL
+# Static reference text, but the URL never changes when a manifest is added or
+# edited (the content-hash suffix lives only in the server-side cache key). A
+# day-long browser/edge TTL plus a week of stale-while-revalidate therefore hid
+# new documents from returning visitors and Cloudflare after a deploy. Keep the
+# TTL short so a new document or tab appears within minutes; the gzip disk cache
+# in response_cache still protects the origin.
+_CACHE_CONTROL = "public, max-age=300, s-maxage=300, stale-while-revalidate=300"
 
 
 def _resolve_asset_url(key: str | None) -> str | None:
