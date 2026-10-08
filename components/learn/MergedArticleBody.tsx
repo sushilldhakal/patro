@@ -9,7 +9,7 @@
  */
 
 import { useEffect, useRef } from "react";
-import { findNodeHandle, Platform, Pressable, ScrollView, View } from "react-native";
+import { Platform, Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -75,16 +75,18 @@ export function MergedArticleBody({
     const target = chapterRefs.current[slug];
     const scroller = scrollRef?.current;
     if (!target || !scroller) return;
-    /* `findNodeHandle` throws on react-native-web instead of returning a
-       handle — jumping to a chapter is a convenience, not core content, so a
+    /* Native refs don't resolve on react-native-web — jumping to a chapter is a convenience, not core content, so a
        platform that can't resolve it just skips the scroll rather than
        crashing the page. Native (iOS/Android) always has a handle here. */
     try {
       if (Platform.OS === "web") return;
-      const scrollerHandle = findNodeHandle(scroller);
-      if (!scrollerHandle) return;
+      /* measureLayout wants a native ref, not a numeric node handle (newer RN
+         warns on the latter). The scroll view's inner content view shares the
+         scroll origin, so the measured y is the scroll offset. */
+      const content = (scroller as unknown as { getInnerViewRef?: () => unknown }).getInnerViewRef?.();
+      if (!content) return;
       target.measureLayout(
-        scrollerHandle,
+        content as Parameters<View["measureLayout"]>[0],
         (_x, y) => scroller.scrollTo({ y: Math.max(y - 12, 0), animated: true }),
         () => {},
       );
