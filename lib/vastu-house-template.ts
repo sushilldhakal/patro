@@ -1,5 +1,5 @@
 import { VASTU_PADAS, type CardinalWall, type VastuDirectionId, type VastuPada } from "@/lib/vastu";
-import { IDEAL_SIZE, type PlotSize, type SpaceAssignment, type SpaceKind } from "@/lib/vastu-plan";
+import type { PlotSize, SpaceAssignment } from "@/lib/vastu-plan";
 
 /**
  * The classical courtyard house, as a fixed template — no solver.
@@ -58,17 +58,17 @@ function cuts(total: number, alindra: number): [number, number, number, number] 
  * every room keeps the full short dimension (and, on an outer block, its
  * piece of the exterior wall). Proportional to each kind's ideal area, with
  * a floor so a toilet beside a bedroom is still drawn as a room. */
-function shareBlock(rect: Rect, kinds: SpaceKind[]): Rect[] {
-  if (kinds.length <= 1) return [rect];
+function shareBlock(rect: Rect, minAreas: number[]): Rect[] {
+  if (minAreas.length <= 1) return [rect];
   const alongW = rect.w >= rect.h;
   const span = alongW ? rect.w : rect.h;
-  const weights = kinds.map((k) => Math.max(IDEAL_SIZE[k].minArea, 1));
+  const weights = minAreas.map((a) => Math.max(a, 1));
   const total = weights.reduce((a, b) => a + b, 0);
   // Floor first, then share the surplus by weight — clamping each share and
   // rescaling afterwards (the obvious way) just shrinks the floor back out
   // again, which drew a toilet as an 0.8 m slot beside a bedroom.
-  const floor = span / (kinds.length * 2.5);
-  const surplus = span - floor * kinds.length;
+  const floor = span / (minAreas.length * 2.5);
+  const surplus = span - floor * minAreas.length;
   const out: Rect[] = [];
   let at = alongW ? rect.x : rect.y;
   for (const w of weights) {
@@ -149,7 +149,7 @@ export function houseTemplate(
     if (here.length === 0) continue;
     const pieces = shareBlock(
       block.rect,
-      here.map((row) => row.kind),
+      here.map((row) => row.min_area),
     );
     here.forEach((row, i) => rooms.push({ ...row, rect: pieces[i]! }));
   }

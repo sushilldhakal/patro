@@ -1837,6 +1837,8 @@
         "brahma_path": "A passage must not cross the Brahmasthan; it should wrap around.",
         "toilet_zone": "A toilet must not sit in the north-east, south-west, or Brahmasthan."
       },
+      "sketch_loading": "Preparing the sketch…",
+      "sketch_error": "Couldn't load the sketch. Check your connection and try again.",
       "cannot_fit_heading": "Could not fit",
       "cannot_fit_blurb": "These rooms need more space at a usable size. Add a storey, remove rooms, or enlarge the plot.",
       "room_size": "{{w}} × {{h}} m",

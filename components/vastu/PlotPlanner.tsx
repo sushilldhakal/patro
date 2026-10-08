@@ -18,18 +18,9 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { CARDINAL_WALLS, type CardinalWall } from "@/lib/vastu";
+import { useVastuSketch } from "@/lib/use-vastu-sketch";
 import {
-  CARDINAL_WALLS,
-  ENTRANCE_PREFERRED_CORNER,
-  HASTA_METERS,
-  ayadiAuspicious,
-  ayadiRemainder,
-  metersToHasta,
-  nearestAuspiciousWidthHasta,
-  type CardinalWall,
-} from "@/lib/vastu";
-import {
-  assignVastuSpaces,
   assignmentsOnStorey,
   clampStoreys,
   kindCounts,
@@ -165,33 +156,15 @@ export function PlotPlanner() {
 
   const footprint = useMemo(() => ({ width: breadthM, height: lengthM }), [breadthM, lengthM]);
 
-  // No server round-trip and no placement solver: each requested room is
-  // dropped into its own classical compass zone (SPACE_ZONE_RULES), which is
-  // all a rough sketch is claiming to show. `leftover` is what the zones
-  // genuinely can't seat at a usable size on this plot.
-  const { assignments, leftover } = useMemo(
-    () => assignVastuSpaces(house, footprint),
-    [house, footprint],
-  );
+  // Zone placement, the Āyādi check and the entrance corner all come from the
+  // server (POST /vastu/sketch); this component only lays out what it returns.
+  const sketchQuery = useVastuSketch({ widthM: breadthM, depthM: lengthM, facing: plot.facing }, house);
+  const sketch = sketchQuery.data;
+  const assignments = useMemo(() => sketch?.assignments ?? [], [sketch]);
+  const leftover = useMemo(() => sketch?.leftover ?? [], [sketch]);
   const counts = useMemo(() => kindCounts(leftover), [leftover]);
-
-  const ayadi = useMemo(() => {
-    const lengthHasta = metersToHasta(footprint.height);
-    const widthHasta = metersToHasta(footprint.width);
-    const remainder = ayadiRemainder(widthHasta);
-    const auspicious = ayadiAuspicious(remainder);
-    const suggestedHasta = auspicious ? null : nearestAuspiciousWidthHasta(widthHasta);
-    return {
-      lengthHasta,
-      widthHasta,
-      remainder,
-      auspicious,
-      suggestedHasta,
-      suggestedMeters: suggestedHasta === null ? null : suggestedHasta * HASTA_METERS,
-    };
-  }, [footprint]);
-
-  const preferredCorner = ENTRANCE_PREFERRED_CORNER[plot.facing];
+  const ayadi = sketch?.ayadi ?? null;
+  const preferredCorner = sketch?.entrance.preferred_corner;
   const sketchSize = Math.min(MAX_SKETCH, Math.max(240, width - SKETCH_CHROME));
 
   return (
@@ -258,6 +231,12 @@ export function PlotPlanner() {
             {t("vastu.plan.layout_blurb")}
           </Text>
 
+          {!sketch && (
+            <Text className="mb-4 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              {sketchQuery.isError ? t("vastu.plan.sketch_error") : t("vastu.plan.sketch_loading")}
+            </Text>
+          )}
+
           {leftover.length > 0 && (
             <View className="mb-4 rounded-lg border border-border bg-background px-3 py-2.5">
               <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
@@ -320,6 +299,7 @@ export function PlotPlanner() {
           </Text>
         </View>
 
+        {ayadi && preferredCorner && (
         <View className="gap-3">
           <View className="rounded-xl border border-border bg-card p-3.5">
             <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
@@ -328,11 +308,11 @@ export function PlotPlanner() {
             <View className="mt-2 gap-1.5">
               <InfoRow
                 label={t("vastu.plot.footprint_length_label")}
-                value={`${digits(footprint.height.toFixed(1))} ${t("vastu.plot.unit_m")} · ${digits(ayadi.lengthHasta.toFixed(1))} ${t("vastu.plot.unit_hasta")}`}
+                value={`${digits(footprint.height.toFixed(1))} ${t("vastu.plot.unit_m")} · ${digits(ayadi.length_hasta.toFixed(1))} ${t("vastu.plot.unit_hasta")}`}
               />
               <InfoRow
                 label={t("vastu.plot.footprint_width_label")}
-                value={`${digits(footprint.width.toFixed(1))} ${t("vastu.plot.unit_m")} · ${digits(ayadi.widthHasta.toFixed(1))} ${t("vastu.plot.unit_hasta")}`}
+                value={`${digits(footprint.width.toFixed(1))} ${t("vastu.plot.unit_m")} · ${digits(ayadi.width_hasta.toFixed(1))} ${t("vastu.plot.unit_hasta")}`}
               />
               <InfoRow
                 label={t("vastu.plot.ayadi_remainder_label")}
@@ -348,11 +328,11 @@ export function PlotPlanner() {
             >
               {t(ayadi.auspicious ? "vastu.plot.ayadi_auspicious" : "vastu.plot.ayadi_inauspicious")}
             </Text>
-            {ayadi.suggestedHasta !== null && ayadi.suggestedMeters !== null && (
+            {ayadi.suggested_hasta !== null && ayadi.suggested_meters !== null && (
               <Text className="mt-1 text-sm text-foreground" style={nepaliTextStyle(13)}>
                 {t("vastu.plot.ayadi_suggestion", {
-                  hasta: digits(ayadi.suggestedHasta),
-                  meters: digits(ayadi.suggestedMeters.toFixed(1)),
+                  hasta: digits(ayadi.suggested_hasta),
+                  meters: digits(ayadi.suggested_meters.toFixed(1)),
                 })}
               </Text>
             )}
@@ -376,6 +356,7 @@ export function PlotPlanner() {
             </Text>
           </View>
         </View>
+        )}
       </View>
     </View>
   );

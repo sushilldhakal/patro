@@ -1,5 +1,7 @@
 import { Platform } from "react-native";
 import Constants from "expo-constants";
+import type { PlannedSpace, SpaceAssignment } from "@/lib/vastu-plan";
+import type { VastuDirectionId } from "@/lib/vastu";
 import {
   appendBirthInstantParams,
   appendInstantParams,
@@ -3068,4 +3070,60 @@ export async function streamKundaliReport(
   const fromCache = res.headers.get("X-Report-Cache") === "hit";
   await consumeNdjsonResponse(res, onRecord);
   return { fromCache };
+}
+
+// ─── Vastu plot sketch ───────────────────────────────────────────────────────
+// Which compass zone each requested room sits in, the Āyādi width check and the
+// preferred entrance corner are all computed by `POST /vastu/sketch`; the
+// client only draws the result.
+
+export interface VastuSketchRequest {
+  /** East–West plot size, metres. */
+  plot_width: number;
+  /** North–South plot size, metres. */
+  plot_depth: number;
+  facing: "north" | "east" | "south" | "west";
+  plan: {
+    bedrooms: number;
+    toilets: number;
+    bathrooms: number;
+    combined: number;
+    master_bedroom: number;
+    extras: string[];
+    mode: "strict" | "flexible";
+    storeys: number;
+    floors: Record<string, string>;
+  };
+}
+
+export interface VastuAyadi {
+  length_hasta: number;
+  width_hasta: number;
+  remainder: number;
+  auspicious: boolean;
+  suggested_hasta: number | null;
+  suggested_meters: number | null;
+}
+
+export interface VastuSketchResponse {
+  storeys: 1 | 2 | 3;
+  assignments: SpaceAssignment[];
+  leftover: PlannedSpace[];
+  ayadi: VastuAyadi;
+  entrance: { facing: VastuSketchRequest["facing"]; preferred_corner: VastuDirectionId };
+}
+
+export async function fetchVastuSketch(
+  body: VastuSketchRequest,
+  signal?: AbortSignal,
+): Promise<VastuSketchResponse> {
+  const path = "/vastu/sketch";
+  const res = await fetch(`${DATA_BASE}${path}`, {
+    method: "POST",
+    signal,
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  return res.json();
 }
