@@ -68,6 +68,11 @@ If `category` is omitted, it defaults to `stotram`. `subcategory` is optional.
   // one-line change here instead of touching every shloka.
   "audio_prefix": "documents/vishnu-sahasranama",
 
+  // Optional. When a verse's audio_file is null, build the R2 key from the
+  // chapter (mandala), sukta, and the verse's place inside that sukta.
+  // {mandala:02d} is at least two digits, so 1 → 01 and 120 stays 120.
+  // "audio_template": "{mandala:02d}/rigveda_{mandala:02d}_{sukta:02d}_{verse:02d}.mp3",
+
   // Optional: one continuous recording of the whole document (joined onto
   // audio_prefix the same way a verse's audio_file is, or a full URL). Powers
   // a "play full recording" control separate from the per-verse players —
@@ -115,3 +120,11 @@ chapter/verse_number.
 
 No migration, no manual DB step, no restart script — just the JSON file and
 the audio in R2.
+
+## Puranas
+
+The Purana library is not copied into this folder. `services/purana_documents.py`
+reads the CSV dataset in `calender-patro/purana/` (override with
+`PURANA_SOURCE_DIR`) and seeds one chaptered document per file into the same
+`documents` table, category `purana`. Verse text is served by the API; the
+app does not ship the CSVs.

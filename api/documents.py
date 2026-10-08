@@ -45,6 +45,14 @@ router = APIRouter(tags=["documents"])
 # in response_cache still protects the origin.
 _CACHE_CONTROL = "public, max-age=300, s-maxage=300, stale-while-revalidate=300"
 
+# The *list* is what changes when a document is added, so browsers never reuse
+# it without asking the server first (``no-cache``: revalidate every time — the
+# server answers from its gzip disk cache, so this is cheap), and the edge keeps
+# it only briefly. Adding a document then shows up on the next page load with no
+# manual cache-busting.
+_LIST_CACHE_CONTROL = "no-cache, max-age=0, must-revalidate"
+_LIST_CDN_CACHE_CONTROL = "public, s-maxage=30"
+
 
 def _resolve_asset_url(key: str | None) -> str | None:
     """Turn a stored R2 object key into a playable URL.
@@ -89,7 +97,13 @@ def list_documents(request: Request):
         return {"count": len(documents), "documents": documents}
 
     cache_key = f"documents_list_v{documents_db.content_version()}"
-    return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+    return response_cache.serve_cached_json(
+        request,
+        cache_key,
+        build,
+        cache_control=_LIST_CACHE_CONTROL,
+        cdn_cache_control=_LIST_CDN_CACHE_CONTROL,
+    )
 
 
 @router.get("/documents/{slug}")

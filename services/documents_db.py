@@ -136,8 +136,14 @@ def _manifest_paths() -> list[Path]:
 
 
 def _content_version(paths: list[Path]) -> str:
+    from services.purana_documents import PURANA_IMPORT_VERSION, purana_source_paths
+
     digest = hashlib.sha256()
     for path in paths:
+        digest.update(path.name.encode("utf-8"))
+        digest.update(path.read_bytes())
+    digest.update(PURANA_IMPORT_VERSION)
+    for path in purana_source_paths():
         digest.update(path.name.encode("utf-8"))
         digest.update(path.read_bytes())
     return digest.hexdigest()
@@ -149,16 +155,54 @@ def _default_audio_file(chapter_number: int | None, verse_number: int) -> str:
     return f"{verse_number}.mp3"
 
 
-def _resolve_audio_key(audio_prefix: str | None, shloka: dict[str, Any]) -> str | None:
-    if "audio_file" in shloka:
-        audio_file = shloka["audio_file"]
-        if audio_file is None:
-            return None
-        audio_file = str(audio_file).strip()
-        if not audio_file:
-            return None
+def _verse_in_sukta(shloka: dict[str, Any]) -> int:
+    """The shloka's place inside its sukta.
+
+    ``verse_number`` runs through the whole chapter (a Rigveda mandala numbers
+    its riks straight through). The human label is ``{sukta}.{verse}`` — ``120.2`` is the
+    second rik of sukta 120 — which is what the audio filenames count.
+    """
+    label = shloka.get("verse_label")
+    if isinstance(label, str) and "." in label:
+        tail = label.rsplit(".", 1)[-1]
+        if tail.isdigit():
+            return int(tail)
+    return int(shloka["verse_number"])
+
+
+def _audio_file_from_template(template: str, shloka: dict[str, Any]) -> str | None:
+    mandala = shloka.get("chapter_number")
+    sukta = shloka.get("sukta_number")
+    if mandala is None or sukta is None:
+        return None
+    try:
+        return template.format(
+            mandala=int(mandala),
+            sukta=int(sukta),
+            verse=_verse_in_sukta(shloka),
+        )
+    except (KeyError, ValueError, IndexError):
+        return None
+
+
+def _resolve_audio_key(
+    audio_prefix: str | None,
+    shloka: dict[str, Any],
+    audio_template: str | None = None,
+) -> str | None:
+    audio_file: str | None
+    if "audio_file" in shloka and shloka["audio_file"]:
+        audio_file = str(shloka["audio_file"]).strip() or None
+    elif audio_template:
+        # An explicit null audio_file means "no clip" unless the document
+        # names every verse from a template (the Rigveda files in R2).
+        audio_file = _audio_file_from_template(audio_template, shloka)
+    elif "audio_file" in shloka:
+        return None
     else:
         audio_file = _default_audio_file(shloka.get("chapter_number"), shloka["verse_number"])
+    if not audio_file:
+        return None
     if audio_file.startswith("http://") or audio_file.startswith("https://"):
         return audio_file
     prefix = (audio_prefix or "").strip().strip("/")
@@ -183,6 +227,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     has_chapters = bool(manifest.get("has_chapters"))
     inline_chapters = bool(manifest.get("inline_chapters"))
     audio_prefix = manifest.get("audio_prefix")
+    audio_template = manifest.get("audio_template") or None
     full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
     chapters = manifest.get("chapters") or []
 
@@ -199,7 +244,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
             global_order += 1
             shloka_count += 1
             audio_key = _resolve_audio_key(
-                audio_prefix, {**shloka, "chapter_number": chapter_number}
+                audio_prefix,
+                {**shloka, "chapter_number": chapter_number},
+                audio_template,
             )
             rows.append(
                 (
@@ -294,6 +341,10 @@ def ensure_seeded() -> None:
             for path in paths:
                 manifest = json.loads(path.read_text(encoding="utf-8"))
                 _seed_from_manifest(conn, manifest)
+
+            from services.purana_documents import seed_puranas
+
+            seed_puranas(conn)
 
             conn.execute(
                 "INSERT INTO documents_meta (key, value) VALUES ('version', ?) "

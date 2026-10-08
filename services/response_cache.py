@@ -145,8 +145,13 @@ def serve_cached_json(
     build: Callable[[], Any],
     *,
     cache_control: str = DEFAULT_CACHE_CONTROL,
+    cdn_cache_control: str | None = None,
 ) -> Response:
-    """Serve a deterministic payload from the gzip disk cache, computing once."""
+    """Serve a deterministic payload from the gzip disk cache, computing once.
+
+    ``cdn_cache_control`` lets the edge cache on a different policy than the
+    browser (default: the same as ``cache_control``).
+    """
     compressed = read_cached_bytes(cache_key)
     if compressed is None:
         with _build_lock(cache_key):
@@ -164,7 +169,7 @@ def serve_cached_json(
         "Cache-Control": cache_control,
         # Cloudflare and other CDNs honour CDN-Cache-Control over Cache-Control,
         # letting the edge cache aggressively while browsers follow max-age.
-        "CDN-Cache-Control": cache_control,
+        "CDN-Cache-Control": cdn_cache_control or cache_control,
         "Vary": "Accept-Encoding",
     }
     if "gzip" in request.headers.get("accept-encoding", "").lower():
