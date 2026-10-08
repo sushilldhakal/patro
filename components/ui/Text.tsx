@@ -17,6 +17,10 @@ function themedTextColor(className: string | undefined, colors: ThemeColors): st
   if (/\btext-muted-foreground\b/.test(className)) return colors.mutedForeground;
   if (/\btext-secondary-foreground\b/.test(className)) return "#ffffff";
   if (/\btext-secondary\b/.test(className)) return colors.secondary;
+  /* Check this before `text-primary`. `\btext-primary\b` also matches
+     `text-primary-foreground`, which would paint the label the same orange
+     as a `bg-primary` button. */
+  if (/\btext-primary-foreground\b/.test(className)) return "#ffffff";
   if (/\btext-primary\b/.test(className)) return colors.primary;
   if (/\btext-destructive\b/.test(className)) return colors.destructive;
   /* Without this, `text-danger` fell through to the foreground default below
