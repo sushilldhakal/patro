@@ -1,146 +1,51 @@
-import { Pressable, View } from "react-native";
-import { Text } from "@/components/ui/Text";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { Card } from "@/components/ui/Card";
+import { View } from "react-native";
+import { QuickLinkSection, type QuickLink } from "@/components/home/QuickLinkTile";
 import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
 import { useLocale } from "@/lib/i18n";
-import { useThemeColors } from "@/lib/theme-context";
 
-import type { MobileNavIcon } from "@/lib/mobile-nav";
-
-type LinkItem = {
-  href: string;
-  titleNe: string;
-  titleEn: string;
-  blurbNe?: string;
-  blurbEn?: string;
-  icon: MobileNavIcon;
-};
-
-const GRAHA_LINKS: LinkItem[] = [
-  {
-    href: "/gochar",
-    titleNe: "गोचर",
-    titleEn: "Gochar",
-    blurbNe: "ग्रह गोचर र प्रवेश",
-    blurbEn: "Transits & ingress",
-    icon: "git-branch-outline",
-  },
-  {
-    href: "/panchanga/graha-asta",
-    titleNe: "ग्रह अस्त",
-    titleEn: "Heliacal set",
-    icon: "sunny-outline",
-  },
-  {
-    href: "/panchanga/graha-vakri",
-    titleNe: "ग्रह वक्री",
-    titleEn: "Retrograde",
-    icon: "refresh-outline",
-  },
-  {
-    href: "/panchanga/chandra-grahan",
-    titleNe: "चन्द्र ग्रहण",
-    titleEn: "Lunar eclipse",
-    icon: "moon-outline",
-  },
-  {
-    href: "/panchanga/surya-grahan",
-    titleNe: "सूर्य ग्रहण",
-    titleEn: "Solar eclipse",
-    icon: "ellipse-outline",
-  },
+const GRAHA_PAGES: { href: string; key: string; icon: QuickLink["icon"] }[] = [
+  { href: "/gochar", key: "gochar", icon: "route" },
+  { href: "/panchanga/graha-asta", key: "graha-asta", icon: "sunrise" },
+  { href: "/panchanga/graha-vakri", key: "graha-vakri", icon: "rotate-ccw" },
+  { href: "/panchanga/chandra-grahan", key: "chandra-grahan", icon: "moon-star" },
+  { href: "/panchanga/surya-grahan", key: "surya-grahan", icon: "eclipse" },
 ];
 
-function SectionTitle({ ne, en }: { ne: string; en: string }) {
-  const { pick } = useLocale();
-  return (
-    <Text className="mb-2 mt-4 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
-      {pick(ne, en)}
-    </Text>
-  );
-}
-
-function LinkGrid({ items }: { items: LinkItem[] }) {
-  const { pick } = useLocale();
-  const router = useRouter();
-  const colors = useThemeColors();
-
-  return (
-    <View className="flex-row flex-wrap gap-2">
-      {items.map((item) => (
-        <Pressable
-          key={item.href}
-          onPress={() => router.push(item.href as never)}
-          className="min-w-[46%] flex-1 active:opacity-85"
-        >
-          <Card className="min-h-[88px] gap-1 p-3">
-            <Ionicons name={item.icon} size={20} color={colors.secondary} />
-            <Text className="text-sm font-semibold text-foreground">{pick(item.titleNe, item.titleEn)}</Text>
-            {item.blurbNe ? (
-              <Text className="text-[12px] leading-snug text-muted-foreground">
-                {pick(item.blurbNe, item.blurbEn ?? item.blurbNe)}
-              </Text>
-            ) : null}
-          </Card>
-        </Pressable>
-      ))}
-    </View>
-  );
-}
-
-/** Categorized links — mirrors web PanchangaDirectory. */
+/** Categorised link grid — web `PanchangaDirectory`: transition elements → planets → daily tables → sait. */
 export function PanchangaDirectoryMobile() {
-  const { pick } = useLocale();
-  const router = useRouter();
+  const { t, pick } = useLocale();
 
-  const spanLinks: LinkItem[] = ELEMENT_META.filter((e) => e.kind === "span").map((e) => ({
+  const spans: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "span").map((e) => ({
     href: `/panchanga/element/${e.id}`,
-    titleNe: e.titleNe,
-    titleEn: e.titleEn,
-    blurbNe: e.blurbNe,
-    blurbEn: e.blurbEn,
-    icon: "arrow-forward-circle-outline",
+    label: pick(e.titleNe, e.titleEn),
+    description: pick(e.blurbNe, e.blurbEn),
+    icon: "moon-star",
   }));
-
-  const tableLinks: LinkItem[] = ELEMENT_META.filter((e) => e.kind === "table").map((e) => ({
+  const graha: QuickLink[] = GRAHA_PAGES.map((g) => ({
+    href: g.href,
+    label: t(`sidebar_nav.items.${g.key}.label`),
+    description: t(`sidebar_nav.items.${g.key}.blurb`),
+    icon: g.icon,
+  }));
+  const tables: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "table").map((e) => ({
     href: `/panchanga/element/${e.id}`,
-    titleNe: e.titleNe,
-    titleEn: e.titleEn,
-    blurbNe: e.blurbNe,
-    blurbEn: e.blurbEn,
-    icon: "grid-outline",
+    label: pick(e.titleNe, e.titleEn),
+    description: pick(e.blurbNe, e.blurbEn),
+    icon: "calendar-clock",
   }));
-
-  const saitLinks: LinkItem[] = CEREMONY_META.map((c) => ({
-    href: `/sait/${c.id}`,
-    titleNe: c.titleNe,
-    titleEn: c.titleEn,
-    icon: "heart-outline",
+  const sait: QuickLink[] = CEREMONY_META.map((c) => ({
+    href: c.id === "vivah" ? "/vivah-sait" : `/sait/${c.id}`,
+    label: t(`sait.categories.${c.id}`),
+    description: t("sidebar_nav.items.sait_moment.blurb"),
+    icon: "heart-handshake",
   }));
 
   return (
-    <View className="gap-1 pb-6">
-      <SectionTitle ne="संक्रमण तत्त्व" en="Transition elements" />
-      <LinkGrid items={spanLinks} />
-
-      <SectionTitle ne="ग्रह विवरण" en="Planet details" />
-      <LinkGrid items={GRAHA_LINKS} />
-
-      <SectionTitle ne="दैनिक तालिका" en="Daily tables" />
-      <LinkGrid items={tableLinks} />
-
-      <SectionTitle ne="शुभ मुहूर्त" en="Auspicious muhurta" />
-      <LinkGrid items={saitLinks} />
-
-      <Pressable onPress={() => router.push("/vivah-sait" as never)} className="mt-2">
-        <Card className="border-secondary/30 bg-secondary/5 p-3">
-          <Text className="text-sm font-semibold text-secondary">
-            {pick("विवाह साइत (विस्तृत)", "Marriage muhurta (full)")}
-          </Text>
-        </Card>
-      </Pressable>
+    <View className="gap-8 pb-6">
+      <QuickLinkSection title={t("sidebar_nav.sections.spans.title")} links={spans} />
+      <QuickLinkSection title={t("sidebar_nav.sections.graha.title")} links={graha} />
+      <QuickLinkSection title={t("sidebar_nav.sections.tables.title")} links={tables} />
+      <QuickLinkSection title={t("sidebar_nav.sections.sait.title")} links={sait} />
     </View>
   );
 }
