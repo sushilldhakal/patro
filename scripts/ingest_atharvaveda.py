@@ -154,8 +154,9 @@ def build_manifest() -> dict[str, Any]:
 
     return {
         "slug": "atharvaveda",
-        "order_index": 102,
-        "category": "scripture",
+        "order_index": 103,
+        "category": "veda",
+        "subcategory": "atharvaveda",
         "title_sa": TITLE_SA,
         "title_ne": TITLE_NE,
         "title_en": TITLE_EN,
@@ -168,6 +169,16 @@ def build_manifest() -> dict[str, Any]:
         "cover_image": None,
         "has_chapters": True,
         "inline_chapters": False,
+        # R2: documents/atharvaveda/{kanda}/{kanda}_{sukta}_{verse}.mp3
+        # Clips run through kanda 15 where the files actually exist; kandas
+        # 16–20 have no audio. See audio_coverage for the short tails.
+        "audio_prefix": "documents/atharvaveda",
+        "audio_template": "{mandala:02d}/atharvaveda_{mandala:02d}_{sukta:03d}_{verse:03d}.mp3",
+        "audio_coverage": {
+            "through_mandala": 14,
+            "sukta_caps": {"8": {"10": 12}, "13": {"5": 0, "6": 0, "7": 0, "8": 0, "9": 0}},
+            "partial": {"15": {"1": 8, "2": 28, "3": 11, "4": 2, "5": 16, "6": 6}},
+        },
         "chapters": chapters,
     }
 

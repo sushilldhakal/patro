@@ -69,9 +69,22 @@ If `category` is omitted, it defaults to `stotram`. `subcategory` is optional.
   "audio_prefix": "documents/vishnu-sahasranama",
 
   // Optional. When a verse's audio_file is null, build the R2 key from the
-  // chapter (mandala), sukta, and the verse's place inside that sukta.
+  // fields the pattern names. A field is required only if it appears here.
   // {mandala:02d} is at least two digits, so 1 → 01 and 120 stays 120.
+  // {verse} is the verse's place inside its sukta (Rigveda) or, when the
+  // label has no dot, its verse_number inside the chapter (Yajurveda).
+  // {index:04d} is the verse's place in the whole document, 1-based
+  // (Samaveda: samaveda_0001.mp3 … samaveda_1875.mp3).
   // "audio_template": "{mandala:02d}/rigveda_{mandala:02d}_{sukta:02d}_{verse:02d}.mp3",
+  // "audio_template": "yajurveda_{mandala}_{verse:02d}.mp3",
+  // "audio_template": "samaveda_{index:04d}.mp3",
+  // "audio_template": "{mandala:02d}/atharvaveda_{mandala:02d}_{sukta:03d}_{verse:03d}.mp3",
+
+  // Optional. Limits which template verses get a clip when the upload stops
+  // early. through_mandala keeps earlier chapters whole. sukta_caps shortens
+  // a sukta inside those chapters (0 = no clips). partial lists one later
+  // chapter sukta-by-sukta; unlisted suktas there have no clip.
+  // "audio_coverage": {"through_mandala": 14, "partial": {"15": {"2": 17}}},
 
   // Optional: one continuous recording of the whole document (joined onto
   // audio_prefix the same way a verse's audio_file is, or a full URL). Powers

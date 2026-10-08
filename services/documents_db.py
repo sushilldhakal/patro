@@ -17,6 +17,7 @@ import hashlib
 import json
 import sqlite3
 import threading
+from string import Formatter
 from pathlib import Path
 from typing import Any
 
@@ -171,18 +172,74 @@ def _verse_in_sukta(shloka: dict[str, Any]) -> int:
 
 
 def _audio_file_from_template(template: str, shloka: dict[str, Any]) -> str | None:
-    mandala = shloka.get("chapter_number")
-    sukta = shloka.get("sukta_number")
-    if mandala is None or sukta is None:
-        return None
+    """Fill ``audio_template`` from whichever fields the pattern names.
+
+    Rigveda uses ``{mandala}``, ``{sukta}`` and ``{verse}``. Yajurveda names
+    each mantra ``yajurveda_{adhyaya}_{mantra}.mp3`` (no sukta). Samaveda is
+    one sequence across the whole samhita, ``samaveda_{index:04d}.mp3``.
+    A field is required only when the template actually contains it.
+    """
+    needed = {name for _, name, _, _ in Formatter().parse(template) if name}
+    values: dict[str, int] = {}
+    if "mandala" in needed:
+        mandala = shloka.get("chapter_number")
+        if mandala is None:
+            return None
+        values["mandala"] = int(mandala)
+    if "sukta" in needed:
+        sukta = shloka.get("sukta_number")
+        if sukta is None:
+            return None
+        values["sukta"] = int(sukta)
+    if "verse" in needed:
+        if "verse_number" not in shloka:
+            return None
+        values["verse"] = _verse_in_sukta(shloka)
+    if "index" in needed:
+        index = shloka.get("index")
+        if index is None:
+            return None
+        values["index"] = int(index)
     try:
-        return template.format(
-            mandala=int(mandala),
-            sukta=int(sukta),
-            verse=_verse_in_sukta(shloka),
-        )
+        return template.format(**values)
     except (KeyError, ValueError, IndexError):
         return None
+
+
+def _audio_in_coverage(shloka: dict[str, Any], coverage: dict[str, Any] | None) -> bool:
+    """Whether this verse has a clip, when the upload stops partway through.
+
+    ``through_mandala`` includes every earlier chapter in full. ``sukta_caps``
+    shortens individual suktas inside those chapters (a cap of 0 means that
+    sukta has no clips). ``partial`` lists a later chapter sukta by sukta;
+    anything not named there has no clip. Omit coverage to keep every verse.
+    """
+    if not coverage:
+        return True
+    mandala = shloka.get("chapter_number")
+    if mandala is None:
+        return True
+    mandala = int(mandala)
+    sukta = shloka.get("sukta_number")
+    sukta_i = int(sukta) if sukta is not None else None
+    verse = _verse_in_sukta(shloka) if "verse_number" in shloka else None
+
+    partial = coverage.get("partial") or {}
+    if str(mandala) in partial:
+        if sukta_i is None or verse is None:
+            return False
+        cap = partial[str(mandala)].get(str(sukta_i))
+        return cap is not None and verse <= int(cap)
+
+    through = coverage.get("through_mandala")
+    if through is not None and mandala > int(through):
+        return False
+    caps = (coverage.get("sukta_caps") or {}).get(str(mandala)) or {}
+    if sukta_i is not None and str(sukta_i) in caps:
+        if verse is None:
+            return False
+        return verse <= int(caps[str(sukta_i)])
+    return True
 
 
 def _resolve_audio_key(
@@ -228,6 +285,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
     inline_chapters = bool(manifest.get("inline_chapters"))
     audio_prefix = manifest.get("audio_prefix")
     audio_template = manifest.get("audio_template") or None
+    audio_coverage = manifest.get("audio_coverage") or None
     full_audio_key = _resolve_full_audio_key(audio_prefix, manifest.get("full_audio_file"))
     chapters = manifest.get("chapters") or []
 
@@ -243,11 +301,12 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         for shloka in chapter.get("shlokas") or []:
             global_order += 1
             shloka_count += 1
-            audio_key = _resolve_audio_key(
-                audio_prefix,
-                {**shloka, "chapter_number": chapter_number},
-                audio_template,
-            )
+            positioned = {**shloka, "chapter_number": chapter_number, "index": global_order}
+            audio_key = _resolve_audio_key(audio_prefix, positioned, audio_template)
+            # An explicit audio_file is a real clip. Coverage only limits keys
+            # the template would otherwise invent past the end of the upload.
+            if audio_template and not shloka.get("audio_file") and not _audio_in_coverage(positioned, audio_coverage):
+                audio_key = None
             rows.append(
                 (
                     slug,

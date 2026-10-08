@@ -142,7 +142,8 @@ def build_manifest() -> dict[str, Any]:
     return {
         "slug": "yajurveda",
         "order_index": 101,
-        "category": "scripture",
+        "category": "veda",
+        "subcategory": "yajurveda",
         "title_sa": TITLE_SA,
         "title_ne": TITLE_NE,
         "title_en": TITLE_EN,
@@ -158,6 +159,10 @@ def build_manifest() -> dict[str, Any]:
         "cover_image": None,
         "has_chapters": True,
         "inline_chapters": False,
+        # R2: documents/yajurveda/yajurveda_{adhyaya}_{mantra}.mp3
+        # (mantra is 2 digits minimum: yajurveda_1_01.mp3 … yajurveda_40_17.mp3).
+        "audio_prefix": "documents/yajurveda",
+        "audio_template": "yajurveda_{mandala}_{verse:02d}.mp3",
         "chapters": chapters,
     }
 
