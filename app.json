@@ -252,6 +252,8 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "Vedic Patro uses your location while the app is open to calculate panchanga, sunrise and muhurta for your place, and to align the 3D sky compass with true north. You can search a city instead. We do not use location in the background or for advertising.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
           "isIosBackgroundLocationEnabled": false,
           "isAndroidBackgroundLocationEnabled": false
         }

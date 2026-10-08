@@ -22,7 +22,7 @@ The native project is configured for store builds. Remaining work is **accounts,
 
 Stores fetch the privacy URL. Ship the web app so `/privacy` and `/terms` return 200.
 
-Also deploy `public/.well-known/apple-app-site-association` and `assetlinks.json`. Replace `APPLE_TEAM_ID` and `REPLACE_WITH_PLAY_APP_SIGNING_SHA256` after you have them (`eas credentials`). Reload nginx so `/.well-known/` is not redirected to `index.html` (see `nepali-holiday-api/deploy/nginx-vedicpatro.conf`).
+Also deploy `public/.well-known/apple-app-site-association` and `assetlinks.json`. The Apple file now uses team `H6AS5X74R2`; the live site still serves the old `APPLE_TEAM_ID` placeholder until that deploy. Play’s `assetlinks.json` still needs `REPLACE_WITH_PLAY_APP_SIGNING_SHA256` (`eas credentials`). Reload nginx so `/.well-known/` is not redirected to `index.html` (see `nepali-holiday-api/deploy/nginx-vedicpatro.conf`).
 
 Redeploy the API so `POST /auth/apple` and `DELETE /auth/me` exist before you submit.
 
@@ -119,5 +119,5 @@ Demo account: create one on production and put email/password in the notes.
 - [ ] Feature graphic uploaded on Play  
 - [ ] No `expo-dev-client` / debug menu in the production binary (production profile)  
 - [ ] Support email `support@vedicpatro.com` receives mail  
-- [ ] Apple Team ID substituted in the AASA file  
+- [ ] Website redeployed so `/.well-known/apple-app-site-association` shows `H6AS5X74R2` (source file is already updated)  
 - [ ] Play signing SHA-256 substituted in assetlinks.json  

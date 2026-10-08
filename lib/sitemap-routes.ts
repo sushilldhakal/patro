@@ -32,6 +32,7 @@ export const SITEMAP_ROUTES: SitemapRoute[] = [
   { path: "/jyotish/kundali-milan", ne: "कुण्डली मिलान", en: "Kundali milan", icon: "heart", group: "jyotish" },
   { path: "/vastu", ne: "वास्तु", en: "Vastu", icon: "compass", group: "tools" },
   { path: "/learn", ne: "सिकाइ", en: "Learn", icon: "book-open", group: "learn" },
+  { path: "/documents", ne: "ई-पाठ", en: "Documents", icon: "file-text", group: "tools" },
   { path: "/suryakranti", ne: "सूर्यक्रान्ति", en: "Sun times", icon: "sunrise", group: "panchanga" },
   { path: "/abhijit-muhurta", ne: "अभिजित्", en: "Abhijit", icon: "sparkles", group: "panchanga" },
   { path: "/panchak-patro", ne: "पञ्चक", en: "Panchak", icon: "calendar-clock", group: "panchanga" },

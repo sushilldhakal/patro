@@ -81,6 +81,7 @@ export const DRAWER_MAIN_LINKS: DrawerNavItem[] = [
   { id: "panchanga-year", href: "/panchanga/year", labelNe: "वार्षिक पञ्चाङ्ग चक्र", labelEn: "Annual almanac wheel", icon: resolveDrawerIcon("patro", "panchanga-year") },
   { id: "vastu", href: "/vastu", labelNe: "वास्तु", labelEn: "Vastu", icon: resolveDrawerIcon("main", "vastu") },
   { id: "learn", href: "/learn", labelNe: "सिकाइ", labelEn: "Learn", icon: resolveDrawerIcon("main", "learn") },
+  { id: "documents", href: "/documents", labelNe: "ई-पाठ", labelEn: "Documents", icon: resolveDrawerIcon("main", "documents") },
   { id: "shanti", href: "/shanti-vidhi", labelNe: "शान्ति विधि", labelEn: "Shanti vidhi", icon: resolveDrawerIcon("main", "shanti") },
   { id: "more", href: "/more", labelNe: "थप", labelEn: "More", icon: resolveDrawerIcon("main", "more") },
 ];

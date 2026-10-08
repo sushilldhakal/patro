@@ -88,6 +88,7 @@ const MAIN: Record<string, DrawerIconName> = {
   home: "home",
   panchanga: "star",
   learn: "book-open",
+  documents: "file-text",
   vastu: "compass",
   shanti: "flower-2",
   more: "ellipsis",
