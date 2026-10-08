@@ -10,6 +10,7 @@
     --tw-muted: 240 235 227;
     --tw-muted-foreground: 92 74 58;
     --tw-primary: 217 119 6;
+    --tw-primary-foreground: 255 255 255;
     --tw-secondary: 11 86 90;
     --tw-secondary-foreground: 255 255 255;
     --tw-destructive: 198 40 40;
@@ -43,10 +44,11 @@
     --tw-muted: 10 53 56;
     --tw-muted-foreground: 198 195 190;
     --tw-primary: 230 126 34;
+    --tw-primary-foreground: 26 20 16;
     --tw-secondary: 212 160 23;
-    --tw-secondary-foreground: 255 255 255;
-    --tw-destructive: 198 40 40;
-    --tw-danger: 198 40 40;
+    --tw-secondary-foreground: 26 20 16;
+    --tw-destructive: 255 138 128;
+    --tw-danger: 255 138 128;
     --tw-border: 26 85 88;
     --tw-accent: 212 160 23;
     --tw-surface-inset: 10 53 56;
@@ -60,8 +62,17 @@
     --secondary: #d4a017;
     --color-success: #2e7d32;
     --color-warning: #e67e22;
-    --color-danger: #c62828;
+    --color-danger: #ff8a80;
     --brand-teal: #2e7d32;
+  }
+
+  /* Browser controls keep a black user-agent color and do not inherit it.
+     Dark surfaces then hide the label. Utilities such as text-foreground still win. */
+  button,
+  input,
+  textarea,
+  select {
+    color: inherit;
   }
 }
 

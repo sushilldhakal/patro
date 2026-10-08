@@ -23,7 +23,7 @@ module.exports = {
         muted: "rgb(var(--tw-muted) / <alpha-value>)",
         "muted-foreground": "rgb(var(--tw-muted-foreground) / <alpha-value>)",
         primary: "rgb(var(--tw-primary) / <alpha-value>)",
-        "primary-foreground": "#ffffff",
+        "primary-foreground": "rgb(var(--tw-primary-foreground) / <alpha-value>)",
         secondary: "rgb(var(--tw-secondary) / <alpha-value>)",
         "secondary-foreground": "rgb(var(--tw-secondary-foreground) / <alpha-value>)",
         destructive: "rgb(var(--tw-destructive) / <alpha-value>)",

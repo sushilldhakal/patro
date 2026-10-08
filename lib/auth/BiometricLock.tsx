@@ -23,6 +23,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { authenticateBiometric, biometricLabel, getBiometricInfo, type BiometricInfo } from "@/lib/auth/biometrics";
 import { deviceStore } from "@/lib/device-store";
 import { useLocale } from "@/lib/i18n";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
 const ENABLED_KEY = "device:biometric_lock";
@@ -190,7 +191,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 className="mt-6 flex-row items-center gap-2 rounded-xl bg-secondary px-6 py-3 active:opacity-80"
               >
-                <Ionicons name={info.kind === "fingerprint" ? "finger-print" : "scan-outline"} size={18} color="#ffffff" />
+                <Ionicons name={info.kind === "fingerprint" ? "finger-print" : "scan-outline"} size={18} color={inkOn(colors.secondary)} />
                 <Text className="text-base font-semibold text-secondary-foreground">
                   {pick(`${label} प्रयोग गर्नुहोस्`, `Unlock with ${label}`)}
                 </Text>

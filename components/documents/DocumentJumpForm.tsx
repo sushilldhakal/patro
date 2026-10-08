@@ -3,6 +3,7 @@ import { Pressable, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
 interface Props {
@@ -83,7 +84,7 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
           accessibilityRole="button"
           className="h-11 flex-row items-center gap-1.5 rounded-lg bg-secondary px-4"
         >
-          <Ionicons name="search" size={15} color="#ffffff" />
+          <Ionicons name="search" size={15} color={inkOn(colors.secondary)} />
           <Text className="text-sm font-semibold text-secondary-foreground">{t("documents.jump_button")}</Text>
         </Pressable>
       </View>

@@ -491,7 +491,7 @@ function WheelDock({
               }}
               accessibilityLabel={pick("अहिलेको समय", "Current time")}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#1a1205" }}>{pick("आज", "Now")}</Text>
+              <Text style={{ fontSize: 14, fontWeight: "700", color: "#ffffff" }}>{pick("आज", "Now")}</Text>
             </Pressable>
           ) : null}
           <PlanetSelectMenu

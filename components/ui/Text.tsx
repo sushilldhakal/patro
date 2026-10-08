@@ -1,6 +1,6 @@
 import { Text as RNText, type TextProps as RNTextProps } from "react-native";
 import { useThemeColors } from "@/lib/theme-context";
-import type { ThemeColors } from "@/lib/theme";
+import { inkOn, relativeLuminance, type ThemeColors } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 type Props = RNTextProps & { className?: string };
@@ -15,12 +15,17 @@ function themedTextColor(className: string | undefined, colors: ThemeColors): st
   if (/\btext-\[#/.test(className)) return undefined;
   if (/\btext-\[/.test(className)) return undefined;
   if (/\btext-muted-foreground\b/.test(className)) return colors.mutedForeground;
-  if (/\btext-secondary-foreground\b/.test(className)) return "#ffffff";
+  if (/\btext-secondary-foreground\b/.test(className)) return inkOn(colors.secondary);
   if (/\btext-secondary\b/.test(className)) return colors.secondary;
   /* Check this before `text-primary`. `\btext-primary\b` also matches
      `text-primary-foreground`, which would paint the label the same orange
      as a `bg-primary` button. */
-  if (/\btext-primary-foreground\b/.test(className)) return "#ffffff";
+  /* Dark-mode primary is a light orange. White type on it is hard to read. */
+  if (/\btext-primary-foreground\b/.test(className)) {
+    return relativeLuminance(colors.background) < 0.2 && relativeLuminance(colors.primary) > 0.2
+      ? "#1a1410"
+      : "#ffffff";
+  }
   if (/\btext-primary\b/.test(className)) return colors.primary;
   if (/\btext-destructive\b/.test(className)) return colors.destructive;
   /* Without this, `text-danger` fell through to the foreground default below

@@ -241,7 +241,7 @@ export const patroCard =
   "overflow-hidden rounded-xl bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]";
 
 export const patroSecBand =
-  "flex flex-wrap items-baseline gap-2.5 border-b border-border bg-secondary/[0.09] px-4 py-2.5 dark:bg-secondary/20";
+  "flex flex-wrap items-baseline gap-2.5 border-b border-border bg-secondary/[0.09] px-4 py-2.5 text-foreground dark:bg-secondary/20";
 
 export const patroHeroPill =
   "text-sm font-semibold leading-none whitespace-nowrap rounded-full border border-white/20 bg-white/10 px-2.5 py-1.5 text-white";

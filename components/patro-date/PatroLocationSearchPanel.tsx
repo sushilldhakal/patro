@@ -21,6 +21,7 @@ import {
   searchNepalCities,
 } from "@/lib/cities/nepal-cities";
 import { cityToLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 
@@ -134,11 +135,11 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
         className="h-10 flex-row items-center justify-center gap-2 rounded-lg bg-secondary active:opacity-90"
       >
         {geoLoading ? (
-          <ActivityIndicator color="#ffffff" size="small" />
+          <ActivityIndicator color={inkOn(colors.secondary)} size="small" />
         ) : (
-          <Ionicons name="locate-outline" size={16} color="#ffffff" />
+          <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
         )}
-        <Text className="text-sm font-semibold text-white">
+        <Text className="text-sm font-semibold text-secondary-foreground">
           {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
         </Text>
       </Pressable>

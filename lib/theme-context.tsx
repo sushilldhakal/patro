@@ -83,7 +83,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     <ThemeContext.Provider value={value}>
       <View
         className={cn("flex-1 bg-background", resolvedTheme === "dark" && "dark")}
-        style={[nativeWindThemeVars(resolvedTheme), { flex: 1 }]}
+        style={[nativeWindThemeVars(resolvedTheme), { flex: 1, color: colors.foreground }]}
       >
         {children}
       </View>

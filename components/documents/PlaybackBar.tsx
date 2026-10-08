@@ -7,6 +7,7 @@ import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale, useTranslation } from "@/lib/i18n";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
 function formatTime(seconds: number): string {
@@ -51,7 +52,7 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
         className="flex-row items-center gap-3"
       >
         <View className="h-10 w-10 items-center justify-center rounded-full bg-secondary">
-          <Ionicons name="play" size={20} color="#ffffff" style={{ marginLeft: 2 }} />
+          <Ionicons name="play" size={20} color={inkOn(colors.secondary)} style={{ marginLeft: 2 }} />
         </View>
         <View className="min-w-0 flex-1">
           <Text className="text-sm font-semibold" numberOfLines={1}>
@@ -75,7 +76,7 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           accessibilityLabel={t(full.playing ? "documents.pause_verse" : "documents.play_full_recording")}
           className="h-10 w-10 items-center justify-center rounded-full bg-secondary"
         >
-          <Ionicons name={full.playing ? "pause" : "play"} size={20} color="#ffffff" style={full.playing ? undefined : { marginLeft: 2 }} />
+          <Ionicons name={full.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={full.playing ? undefined : { marginLeft: 2 }} />
         </Pressable>
         <View className="min-w-0 flex-1">
           <Text className="text-xs font-semibold text-muted-foreground" numberOfLines={1}>
@@ -142,7 +143,7 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           className="h-10 w-10 items-center justify-center rounded-full bg-secondary"
           style={{ opacity: activeShloka.audio_url ? 1 : 0.4 }}
         >
-          <Ionicons name={verse.playing ? "pause" : "play"} size={20} color="#ffffff" style={verse.playing ? undefined : { marginLeft: 2 }} />
+          <Ionicons name={verse.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={verse.playing ? undefined : { marginLeft: 2 }} />
         </Pressable>
         <Pressable
           onPress={audio.nextVerse}

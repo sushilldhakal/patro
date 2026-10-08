@@ -1,6 +1,28 @@
 export const APP_NAME_NE = "वैदिक पात्रो";
 export const APP_NAME_EN = "Vedic Patro";
 
+function channelLinear(channel: number): number {
+  const c = channel / 255;
+  return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+}
+
+/** 0 = black, 1 = white. Used to pick ink that stays readable on a fill. */
+export function relativeLuminance(hex: string): number {
+  const normalized = hex.replace("#", "");
+  const r = parseInt(normalized.slice(0, 2), 16);
+  const g = parseInt(normalized.slice(2, 4), 16);
+  const b = parseInt(normalized.slice(4, 6), 16);
+  return 0.2126 * channelLinear(r) + 0.7152 * channelLinear(g) + 0.0722 * channelLinear(b);
+}
+
+/**
+ * Label color for a solid fill. Dark-mode secondary is gold, so white type
+ * vanishes on it; light-mode secondary is teal, so it still wants white.
+ */
+export function inkOn(fill: string): string {
+  return relativeLuminance(fill) > 0.35 ? "#1a1410" : "#ffffff";
+}
+
 /** Hex (#rrggbb) → rgba for native styles where Tailwind opacity modifiers are unreliable. */
 export function colorWithAlpha(hex: string, alpha: number): string {
   const normalized = hex.replace("#", "");
@@ -93,8 +115,8 @@ export const darkTheme: ThemeColors = {
   mutedForeground: "rgba(248,246,242,0.72)",
   primary: "#e67e22",
   secondary: "#d4a017",
-  destructive: "#c62828",
-  danger: "#c62828",
+  destructive: "#ff8a80",
+  danger: "#ff8a80",
   border: "#1a5558",
   surfaceInset: "#0a3538",
   surfaceMuted: "#093032",

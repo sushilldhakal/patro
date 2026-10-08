@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/Text";
 import type { Shloka } from "@/lib/documents/api";
 import { useLocale, useTranslation } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 
@@ -88,7 +89,7 @@ function ShlokaCardImpl({
             <Ionicons
               name={isPlaying ? "pause" : "play"}
               size={18}
-              color={isActive ? "#ffffff" : colors.secondary}
+              color={isActive ? inkOn(colors.secondary) : colors.secondary}
               style={isPlaying ? undefined : { marginLeft: 2 }}
             />
           </Pressable>

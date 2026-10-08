@@ -31,7 +31,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
         aria-label={pick(`${inactive.ne} मा बदल्नुहोस्`, `Switch to ${inactive.en}`)}
-        className={cn(btnClass, "rounded-md border border-border bg-card hover:bg-muted")}
+        className={cn(btnClass, "rounded-md border border-border bg-card text-foreground hover:bg-muted")}
         style={shellStyle}
       >
         {pick(inactive.ne, inactive.en)}
@@ -57,7 +57,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
             onClick={() => onModeChange?.(o.value)}
             className={cn(
               btnClass,
-              active ? "bg-primary text-primary-foreground" : "bg-card hover:bg-muted",
+              active ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-muted",
             )}
             style={shellStyle}
           >
