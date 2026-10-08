@@ -19,7 +19,6 @@ export const FLOATING_NAV = [
   { href: "/dainikkranti", ne: "दैनिक", en: "Transit", icon: "moon-outline" as MobileNavIcon },
   { href: "/vastu", ne: "वास्तु", en: "Vastu", icon: "compass-outline" as MobileNavIcon },
   { href: "/learn", ne: "सिकाइ", en: "Learn", icon: "book-outline" as MobileNavIcon },
-  { href: "/offline", ne: "अफलाइन", en: "Offline", icon: "cloud-download-outline" as MobileNavIcon },
 ] as const;
 
 /** Secondary links — header drawer only. */

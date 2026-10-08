@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
@@ -129,11 +129,23 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [browseEra]);
 
+  // Writing params before the navigator has mounted throws, so wait for it, and
+  // skip the very first run (nothing has changed yet).
+  const navReady = Boolean(useRootNavigationState()?.key);
+  const browseWritten = useRef(false);
   useEffect(() => {
-    if (pendingBrowse.current) return;
-    router.setParams({ era: browseEra, year: String(year), month: String(month) } as never);
+    if (!navReady || pendingBrowse.current) return;
+    if (!browseWritten.current) {
+      browseWritten.current = true;
+      return;
+    }
+    try {
+      router.setParams({ era: browseEra, year: String(year), month: String(month) } as never);
+    } catch {
+      /* navigator not ready yet; the next browse change will write it */
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [browseEra, year, month]);
+  }, [navReady, browseEra, year, month]);
 
   const prevBm = useMemo(
     () => shiftPatroBrowseMonth(browseEra, year, month, -1),

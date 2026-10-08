@@ -5,12 +5,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
 import { AccountMenu } from "@/components/auth/AccountMenu";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
-import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { cn } from "@/lib/utils";
@@ -37,7 +34,6 @@ export function AppHeader() {
   const colors = useThemeColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isCalendarWide } = useBreakpoint();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const go = (href: string) => {
@@ -73,14 +69,7 @@ export function AppHeader() {
           <BrandMark onPress={() => go("/")} centered />
         </View>
 
-        {/* Narrow: account only; language/theme in drawer. ≥992px: lang + theme before sign-in (web tablet). */}
         <View className="flex-1 flex-row items-center justify-end gap-2">
-          {isCalendarWide ? (
-            <>
-              <LanguageSwitcher />
-              <ThemeSwitcher />
-            </>
-          ) : null}
           <AccountMenu />
         </View>
       </View>
@@ -89,7 +78,6 @@ export function AppHeader() {
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         onNavigate={go}
-        showPreferences={!isCalendarWide}
       />
     </View>
   );
@@ -99,12 +87,10 @@ function NavDrawer({
   open,
   onClose,
   onNavigate,
-  showPreferences = true,
 }: {
   open: boolean;
   onClose: () => void;
   onNavigate: (href: string) => void;
-  showPreferences?: boolean;
 }) {
   const { pick } = useLocale();
   const colors = useThemeColors();
@@ -177,16 +163,13 @@ function NavDrawer({
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <MobileNavMenu onNavigate={onNavigate} />
-        </ScrollView>
-
-        {showPreferences ? (
           <View
-            className="border-t border-border px-4 py-4"
+            className="border-t border-border py-4"
             style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}
           >
-            <MenuPreferences />
+            <MenuPreferences onNavigate={onNavigate} />
           </View>
-        ) : null}
+        </ScrollView>
       </Animated.View>
     </Modal>
   );
