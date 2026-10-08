@@ -243,3 +243,64 @@ class VastuHousePlanResponse(BaseModel):
     validation: ValidationReportOut
     vastu_relaxed: list[PlanConflictOut] = Field(default_factory=list)
     score: ScoreOut
+
+
+# ── POST /vastu/sketch — compass-zone assignment for the plot sketch + Āyādi ──
+
+class SketchPlanInput(BaseModel):
+    bedrooms: int = Field(default=3, ge=1, le=5)
+    toilets: int = Field(default=1, ge=1, le=5)
+    bathrooms: int = Field(default=0, ge=0, le=5)
+    combined: int = Field(default=0, ge=0, le=5)
+    master_bedroom: int = Field(default=1, ge=1, le=5)
+    extras: list[str] = Field(default_factory=lambda: ["living", "kitchen", "dining", "puja"])
+    mode: Literal["strict", "flexible"] = "flexible"
+    storeys: int = Field(default=1, ge=1, le=3)
+    floors: dict[str, Literal["any", "ground", "first", "third"]] = Field(default_factory=dict)
+
+
+class VastuSketchRequest(BaseModel):
+    """Plot size in metres, North–South ``plot_depth`` by East–West ``plot_width``."""
+
+    plot_width: float = Field(gt=0, le=1000)
+    plot_depth: float = Field(gt=0, le=1000)
+    facing: Literal["north", "east", "south", "west"] = "east"
+    plan: SketchPlanInput = Field(default_factory=SketchPlanInput)
+
+
+class SketchAssignmentOut(BaseModel):
+    id: str
+    kind: str
+    index: int | None = None
+    zone: str
+    fit: Literal["preferred", "acceptable", "shared"]
+    storey: int
+    min_area: float
+
+
+class SketchLeftoverOut(BaseModel):
+    id: str
+    kind: str
+    index: int | None = None
+
+
+class AyadiOut(BaseModel):
+    length_hasta: float
+    width_hasta: float
+    remainder: int
+    auspicious: bool
+    suggested_hasta: int | None = None
+    suggested_meters: float | None = None
+
+
+class EntranceOut(BaseModel):
+    facing: Literal["north", "east", "south", "west"]
+    preferred_corner: str
+
+
+class VastuSketchResponse(BaseModel):
+    storeys: int
+    assignments: list[SketchAssignmentOut]
+    leftover: list[SketchLeftoverOut]
+    ayadi: AyadiOut
+    entrance: EntranceOut

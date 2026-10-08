@@ -6,6 +6,9 @@
 * ``GET  /vastu/rooms/{subject}/detail`` → the fuller mapping form, with matched phrases, for audit
 * ``POST /vastu/analyze``            → same rooms shape, for just the requested house's rooms,
                                         plus light requirement-sanity issues. No room placement.
+* ``POST /vastu/sketch``            → compass-zone assignment for each requested room (what the
+                                        clients draw in the courtyard sketch) plus the Āyādi width
+                                        check and preferred entrance corner. Pure computation.
 * ``POST /vastu/house-plan``         → the real deliverable: a full placed floor plan (rooms,
                                         walls, doors, windows, stair, score) — engine.vedic.vastu.
 
@@ -22,7 +25,9 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from engine.vedic.vastu import sketch as vastu_sketch
 from engine.vedic.vastu.rooms import HouseRequirement
+from engine.vedic.vastu.sketch_rules import SPACE_ZONE_RULES
 from services import vastu_api
 from services import vastu_house_plan
 from services import vastu_rules_db as db
@@ -32,6 +37,8 @@ from services.vastu_schemas import (
     VastuAnalyzeResponse,
     VastuHousePlanRequest,
     VastuHousePlanResponse,
+    VastuSketchRequest,
+    VastuSketchResponse,
 )
 
 router = APIRouter(tags=["vastu"])
@@ -112,3 +119,27 @@ def vastu_house_plan_route(body: VastuHousePlanRequest, request: Request):
         return json.loads(VastuHousePlanResponse.model_validate(result).model_dump_json())
 
     return serve_cached_json(request, cache_key, build)
+
+
+@router.post("/vastu/sketch", response_model=VastuSketchResponse)
+def vastu_sketch_route(body: VastuSketchRequest) -> VastuSketchResponse:
+    unknown = sorted({k for k in body.plan.extras if k not in SPACE_ZONE_RULES})
+    if unknown:
+        raise HTTPException(status_code=422, detail=f"Unknown room kind(s): {', '.join(unknown)}")
+    bad_floors = sorted(k for k in body.plan.floors if k not in SPACE_ZONE_RULES)
+    if bad_floors:
+        raise HTTPException(status_code=422, detail=f"Unknown room kind(s) in floors: {', '.join(bad_floors)}")
+    p = body.plan
+    plan = vastu_sketch.HousePlan(
+        bedrooms=p.bedrooms,
+        toilets=p.toilets,
+        bathrooms=p.bathrooms,
+        combined=p.combined,
+        master_bedroom=p.master_bedroom,
+        extras=tuple(p.extras),
+        mode=p.mode,
+        storeys=p.storeys,
+        floors=dict(p.floors),
+    )
+    plot = vastu_sketch.PlotSize(width=body.plot_width, height=body.plot_depth)
+    return VastuSketchResponse.model_validate(vastu_sketch.build_sketch(plan, plot, body.facing))
