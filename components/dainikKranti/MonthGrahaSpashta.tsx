@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { TableHeader, TableRow } from "@/components/ui/DataTable";
+import { TableHeader, TableRow, TableScrollShell } from "@/components/ui/DataTable";
 import {
   PATRO_PLANET_KEYS,
   PATRO_PLANET_NE,
@@ -166,7 +166,10 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   if (embedded) {
     return (
       <View className="overflow-hidden rounded-lg border border-border">
-        {table}
+        {/* Own horizontal scroller — see MonthLagnaMatrix; the footnote stays put. */}
+        <TableScrollShell bordered={false} rounded={false} className="max-w-full">
+          {table}
+        </TableScrollShell>
         {footnote}
       </View>
     );

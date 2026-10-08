@@ -6,7 +6,7 @@ import { RASHI_COLUMNS_EN, RASHI_COLUMNS_NE } from "@/lib/dainikKranti/month-pat
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
-import { TableHeader, TableHeaderCell, TableRow } from "@/components/ui/DataTable";
+import { TableHeader, TableHeaderCell, TableRow, TableScrollShell } from "@/components/ui/DataTable";
 import { PatroTableShell } from "./PatroTableShell";
 
 type Props = {
@@ -100,7 +100,16 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
     </View>
   );
 
-  if (embedded) return table;
+  /* Embedded in an accordion there is no PatroTableShell around it, and a table
+     with fifteen min-width columns needs its own horizontal scroller or it just
+     clips at the screen edge. */
+  if (embedded) {
+    return (
+      <TableScrollShell bordered={false} rounded={false} className="max-w-full">
+        {table}
+      </TableScrollShell>
+    );
+  }
 
   return (
     <PatroTableShell

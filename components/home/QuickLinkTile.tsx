@@ -50,10 +50,14 @@ export function QuickLinkTile({ link }: { link: QuickLink }) {
       onPress={() => router.push(link.href as never)}
       accessibilityRole="button"
       className="flex-row items-center justify-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm active:opacity-80"
-      style={{ maxWidth: "100%" }}
+      style={{ maxWidth: "100%", alignSelf: "flex-start" }}
     >
       <AppNavIcon name={link.icon} size={20} color={colors.danger} />
-      <Text className="shrink text-sm font-bold text-foreground" style={nepaliTextStyle(14)} numberOfLines={1}>
+      {/* No numberOfLines / shrink: the chip is content-sized, and a single-line,
+          shrinkable Text came out a pixel narrower than the bold Devanagari it had
+          to draw, so iOS ellipsised it ("बिदा तथा…"). Let the label take its
+          natural width; only a label wider than the screen wraps. */}
+      <Text className="text-sm font-bold text-foreground" style={[nepaliTextStyle(14), { flexShrink: 1, paddingRight: 2 }]}>
         {link.label}
       </Text>
     </Pressable>
