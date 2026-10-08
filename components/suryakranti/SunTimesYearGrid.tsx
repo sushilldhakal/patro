@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { LucideNative } from "@/components/icons/LucideNative";
+import { __iconNode as SunriseNode } from "lucide-react/dist/esm/icons/sunrise";
+import { __iconNode as SunsetNode } from "lucide-react/dist/esm/icons/sunset";
 import { useQuery } from "@tanstack/react-query";
 import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -232,13 +235,13 @@ function SunTimesLegend() {
   return (
     <View className="flex-row flex-wrap gap-3 border-b border-border px-4 pb-2.5 pt-3.5">
       <View className="flex-row items-center gap-1">
-        <Ionicons name="arrow-up" size={13} color={colors.primary} />
+        <LucideNative node={SunriseNode} size={16} color={colors.primary} />
         <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("सूर्योदय", "Sunrise")}
         </Text>
       </View>
       <View className="flex-row items-center gap-1">
-        <Ionicons name="arrow-down" size={13} color={colors.destructive} />
+        <LucideNative node={SunsetNode} size={16} color="#3b82f6" />
         <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("सूर्यास्त", "Sunset")}
         </Text>
@@ -390,7 +393,7 @@ function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
         width: 96,
         header: (
           <View className="flex-row items-center gap-1">
-            <Ionicons name="arrow-up" size={14} color={colors.primary} />
+            <LucideNative node={SunriseNode} size={16} color={colors.primary} />
             <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(11)}>
               {pick("सूर्योदय", "Sunrise")}
             </Text>
@@ -404,7 +407,7 @@ function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
         width: 96,
         header: (
           <View className="flex-row items-center gap-1">
-            <Ionicons name="arrow-down" size={14} color={colors.destructive} />
+            <LucideNative node={SunsetNode} size={16} color="#3b82f6" />
             <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(11)}>
               {pick("सूर्यास्त", "Sunset")}
             </Text>
@@ -478,10 +481,7 @@ function SunTimesYearAccordion({
   }, [defaultMonth, isLoading, layout.year]);
 
   return (
-    <View
-      className="mx-3 mb-3 overflow-hidden rounded-lg border border-border bg-card"
-      style={{ borderColor: colors.border }}
-    >
+    <View className="px-3 pb-3">
       {monthLabels.map((name, idx) => {
         const month = idx + 1;
         const monthLen = getMonthLength(month);
@@ -502,7 +502,7 @@ function SunTimesYearAccordion({
               onPress={() => setOpenMonth(open ? null : value)}
               accessibilityRole="button"
               accessibilityState={{ expanded: open }}
-              className="flex-row items-center justify-between px-3 py-3 active:opacity-80"
+              className="flex-row items-center justify-between px-1 py-3 active:opacity-80"
             >
               <Text className="flex-1 pr-2 text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
                 {name}
@@ -512,7 +512,7 @@ function SunTimesYearAccordion({
                 </Text>
               </Text>
               <Ionicons
-                name={open ? "chevron-down" : "chevron-forward"}
+                name={open ? "chevron-up" : "chevron-down"}
                 size={18}
                 color={colors.mutedForeground}
               />

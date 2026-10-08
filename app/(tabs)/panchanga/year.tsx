@@ -72,7 +72,7 @@ function shiftAnchorMonths(centre: Date, delta: number): Date {
  * nakshatras is something you watch rather than infer.
  */
 export default function PanchangaYearScreen() {
-  const { pick, digits } = useLocale();
+  const { pick, digits, lang } = useLocale();
   const { isCompact, isTablet, height: screenH } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [dateNavHeight, setDateNavHeight] = useState(88);
@@ -332,7 +332,7 @@ export default function PanchangaYearScreen() {
   }, [play.dir, adDateStr, location.params, isToday, tz, clockUserAdjusted, wheelData, setClock]);
 
   const monthNe = current ? (BS_MONTHS_NE[current.bsMonth - 1] ?? "") : "";
-  const locationLabel = displayLocationLabel(location, current?.p?.location?.name);
+  const locationLabel = displayLocationLabel(location, current?.p?.location?.name, lang);
   const playbackRateLabel = useMemo(() => {
     if (play.dir === 0) return undefined;
     return formatWheelPlaybackRate(play.speed, (n) => String(digits(n)), pick);

@@ -9,7 +9,7 @@
 
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import Slider from "@react-native-community/slider";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { Text } from "@/components/ui/Text";

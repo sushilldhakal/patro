@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import type { Ionicons } from "@expo/vector-icons";
+import type { Ionicons } from "@/components/icons/Ionicons";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -37,7 +37,9 @@ export type DrawerIconName =
   | "shield"
   | "file-text"
   | "user"
-  | "chevron-right";
+  | "chevron-right"
+  | "log-in"
+  | "user-plus";
 
 const PATRO: Record<string, DrawerIconName> = {
   holidays: "party-popper",
@@ -138,6 +140,8 @@ export const DRAWER_IONICONS: Record<DrawerIconName, IoniconName> = {
   "file-text": "document-text-outline",
   user: "person-outline",
   "chevron-right": "chevron-forward",
+  "log-in": "log-in-outline",
+  "user-plus": "person-add-outline",
 };
 
 const SPAN_IDS = new Set(["tithi", "nakshatra", "yoga", "karana", "chandra-rashi"]);

@@ -29,3 +29,15 @@ export const SAIT_CATEGORY_LABELS: Record<SaitCategoryId, { ne: string; en: stri
   "agni-jurne": { ne: "अग्नि जुर्ने", en: "Agni jurne" },
   annaprasan: { ne: "अन्नप्रासन", en: "Annaprasan" },
 };
+
+/**
+ * Vās (residence) categories are decided by a deterministic day-level formula
+ * (Śiva-vāsa / Agni-vāsa on the tithi + weekday), not a time-resolved lagna
+ * window — so they have no per-day muhūrta detail.
+ */
+export const VAS_SAIT_CATEGORIES: ReadonlySet<string> = new Set(["rudri-jurne", "agni-jurne"]);
+
+/** True for lagna-based ceremonies that expose per-day muhūrta detail. */
+export function isMuhurtaSaitCategory(category: string): boolean {
+  return !VAS_SAIT_CATEGORIES.has(category);
+}

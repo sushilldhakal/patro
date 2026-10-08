@@ -4,8 +4,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ActivityIndicator, Modal, Pressable, ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
@@ -8,6 +9,7 @@ import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
 import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
+import { SiteFooter } from "@/components/branding/SiteFooter";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
 import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
@@ -496,6 +498,7 @@ export default function HomeScreen() {
         </View>
 
         <PatroFooterNote paddingHorizontal={contentInset} />
+        <SiteFooter />
       </ScrollView>
 
     </>

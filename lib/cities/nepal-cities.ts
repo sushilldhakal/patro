@@ -221,3 +221,55 @@ export function nearestNepalCity(
   }
   return { city: best, distanceKm: bestKm };
 }
+
+/** Coordinates are stored rounded to 4 dp, so an exact-ish match is enough. */
+function isSameCoord(a: number, b: number): boolean {
+  return Math.abs(a - b) < 0.005;
+}
+
+/** Curated district matching a stored location — by coordinates, else by name. */
+export function findNepalCity(
+  name: string | undefined | null,
+  lat?: number | null,
+  lon?: number | null,
+): NepalCity | undefined {
+  if (lat != null && lon != null) {
+    const byCoord = NEPAL_CITIES.find(
+      (c) => isSameCoord(c.lat, lat) && isSameCoord(c.lon, lon),
+    );
+    if (byCoord) return byCoord;
+  }
+
+  const needle = name?.trim();
+  if (!needle) return undefined;
+  const lower = needle.toLowerCase();
+  return NEPAL_CITIES.find(
+    (c) =>
+      c.name_ne === needle ||
+      c.name_ne.split(" ")[0] === needle ||
+      c.name_en.toLowerCase() === lower ||
+      c.hq_en?.toLowerCase() === lower ||
+      nepalCityEnglishLabel(c).toLowerCase() === lower,
+  );
+}
+
+/**
+ * Re-render a stored location label in the active language. Labels are frozen
+ * at pick time ("काठमाडौँ, NP"), so without this a Nepali pick stayed in
+ * Devanagari after switching to English (and vice versa). Only the city part is
+ * rewritten, and only for the curated districts — cities from the geocoding
+ * backend have no Nepali name to switch to, so their label is returned as-is.
+ */
+export function localizeNepalCityLabel(
+  label: string,
+  lang: string,
+  lat?: number | null,
+  lon?: number | null,
+): string {
+  const [head, ...rest] = label.split(",");
+  const city = findNepalCity(head, lat, lon);
+  if (!city) return label;
+  const localized = nepalCityLabel(city, lang.slice(0, 2) === "en" ? "en" : "ne");
+  return [localized, ...rest].join(",");
+}
+

@@ -1,6 +1,9 @@
 import type { RefObject } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { setPageScroller } from "@/lib/page-scroll";
+import { SiteFooter } from "@/components/branding/SiteFooter";
+import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -36,8 +39,8 @@ export function AppShell({
     <View className="mb-4 flex-row items-start justify-between gap-3 py-1">
       <View className="min-w-0 flex-1">
         <Text
-          className="text-xl font-bold text-foreground"
-          style={[nepaliTextStyle(20), { paddingTop: 2, paddingBottom: 2 }]}
+          className="text-2xl font-bold text-foreground"
+          style={[nepaliTextStyle(24), { paddingTop: 2, paddingBottom: 2 }]}
         >
           {title}
         </Text>
@@ -97,6 +100,8 @@ export function AppShell({
     >
       {header}
       {children}
+      <RelatedPageLinks />
+      <SiteFooter />
     </ScrollView>
   );
 }

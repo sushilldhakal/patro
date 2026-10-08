@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@/lib/ayanamsha";
 import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";

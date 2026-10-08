@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { AppShell } from "@/components/AppShell";

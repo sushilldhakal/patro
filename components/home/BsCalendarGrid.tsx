@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import type { CalendarDay } from "@/lib/api";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { FestivalListSheet } from "@/components/home/FestivalListSheet";
@@ -66,9 +67,15 @@ export function BsCalendarGrid({
   const { isCompact, isPhone, isTablet } = useBreakpoint();
   const { onLayout, colWidth } = useCalendarGridWidth();
   const col = (extra?: object) => calendarColStyle(colWidth, extra);
-  const metaSize = isPhone ? 10 : isTablet ? 12 : 10;
-  const metaTextStyle = lang === "en" ? undefined : nepaliTextStyle(metaSize);
-  const tithiRowMinH = lang === "en" ? 14 : nepaliLineHeight(metaSize) + 3;
+  /* Web draws the tithi/festival line at 10.8px, line-height 13.6. The app-wide
+     13px Devanagari floor made it wrap-truncate ("द्वि…") in a 47px column, so
+     opt out of the floor here and keep web's size. */
+  const metaSize = isPhone ? 10.8 : isTablet ? 12 : 10.8;
+  const metaTextStyle =
+    lang === "en"
+      ? undefined
+      : { ...nepaliTextStyle(metaSize, { dense: true }), lineHeight: Math.round(metaSize * 1.5) };
+  const tithiRowMinH = lang === "en" ? 14 : Math.round(metaSize * 1.5) + 3;
   const dayNumSize = isPhone ? 24 : isCompact ? 22 : isTablet ? 30 : 24;
   const dayNumStyle =
     lang === "en"
@@ -77,7 +84,7 @@ export function BsCalendarGrid({
           lineHeight: dayNumSize + (isPhone ? 4 : isCompact ? 6 : 8),
         }
       : nepaliDayNumberStyle(dayNumSize);
-  const cellMinH = isPhone ? 80 : isCompact ? 84 : isTablet ? 104 : 96;
+  const cellMinH = isPhone ? 74 : isCompact ? 84 : isTablet ? 104 : 96;
 
   const [festivalDialog, setFestivalDialog] = useState<{
     day: CalendarDay;
@@ -201,7 +208,7 @@ export function BsCalendarGrid({
 
                   <View
                     className="w-full flex-row items-start justify-center"
-                    style={{ minHeight: tithiRowMinH, paddingRight: tithiIdx != null ? 14 : 0 }}
+                    style={{ minHeight: tithiRowMinH, paddingRight: tithiIdx != null ? 8 : 0 }}
                   >
                     {tithi ? (
                       <Text

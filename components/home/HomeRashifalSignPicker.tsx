@@ -8,7 +8,7 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { getRashiName } from "@/lib/rashi-i18n";

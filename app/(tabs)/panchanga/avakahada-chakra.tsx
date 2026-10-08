@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";
 import { Text } from "@/components/ui/Text";

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import {
   BS_MONTH_NAMES,
@@ -106,9 +106,9 @@ function LocationChip({
   onPress: () => void;
 }) {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { pick, lang } = useLocale();
   const safeLocation = location ?? DEFAULT_PANCHANGA_LOCATION;
-  const label = displayLocationLabel(safeLocation);
+  const label = displayLocationLabel(safeLocation, undefined, lang);
   return (
     <Pressable
       onPress={onPress}

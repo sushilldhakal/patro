@@ -1,6 +1,7 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter, usePathname } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
@@ -38,8 +39,8 @@ export function FloatingNavBar() {
           elevation: 12,
         }}
         className={cn(
-          "flex-row items-stretch rounded-[24px] border border-border/80 bg-card/95",
-          isTablet ? "px-1.5 py-1.5" : "px-1 py-1",
+          "flex-row items-stretch gap-0.5 rounded-2xl border border-border bg-background/90",
+          "p-1",
         )}
       >
         {FLOATING_NAV.map((item) => {
@@ -49,9 +50,8 @@ export function FloatingNavBar() {
               key={item.href}
               onPress={() => router.push(item.href as never)}
               className={cn(
-                "min-w-0 flex-1 items-center justify-center rounded-[20px]",
-                isTablet ? "px-1 py-2" : "px-0.5 py-1.5",
-                active && "bg-tab-active",
+                "min-w-0 flex-1 items-center justify-center gap-1 rounded-xl px-1 py-1.5",
+                active && "bg-secondary/10",
               )}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
@@ -59,14 +59,13 @@ export function FloatingNavBar() {
               <Ionicons
                 name={item.icon}
                 size={iconSize}
-                color={active ? colors.primary : colors.mutedForeground}
+                color={active ? colors.secondary : colors.mutedForeground}
               />
               <Text
                 numberOfLines={1}
                 className={cn(
-                  "mt-0.5 text-center font-medium",
-                  isTablet ? "text-[12px]" : "text-[12px]",
-                  active ? "font-bold text-primary" : "text-muted-foreground",
+                  "text-center font-medium",
+                  active ? "text-secondary" : "text-muted-foreground",
                 )}
                 style={[nepaliTextStyle(isTablet ? 11 : 10), { paddingTop: 0 }]}
               >

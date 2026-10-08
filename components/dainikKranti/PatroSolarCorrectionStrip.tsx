@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";

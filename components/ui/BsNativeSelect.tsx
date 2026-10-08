@@ -7,7 +7,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";

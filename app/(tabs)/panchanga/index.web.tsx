@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   fetchCivilTimeline,
@@ -60,7 +61,7 @@ function parseAdStr(s: string): Date {
 }
 
 export default function PanchangaScreen() {
-  const { pick, t } = useLocale();
+  const { pick, t, lang } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width, isTablet, isCompact } = useBreakpoint();
@@ -119,7 +120,7 @@ export default function PanchangaScreen() {
   const sunset = wheelData ? getSunset(wheelData) : data ? getSunset(data) : undefined;
   const effectiveTimezone = resolveTimeZone(data?.location?.timezone, location.params.timezone);
   const isToday = adDateStr === todayAdStringInTimezone(new Date(), effectiveTimezone);
-  const locationLabel = displayLocationLabel(location, data?.location?.name);
+  const locationLabel = displayLocationLabel(location, data?.location?.name, lang);
   const chartAd = data ? chartDateAd(data, adDateStr) : adDateStr;
   const todayAd = todayAdStringInTimezone(new Date(), effectiveTimezone);
 

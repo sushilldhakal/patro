@@ -1,5 +1,7 @@
-import { View, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -24,7 +26,7 @@ export function KundaliLoginPrompt({
   onLogin,
   onSignup,
 }: Props) {
-  const { pick } = useLocale();
+  const { pick, t } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -42,8 +44,19 @@ export function KundaliLoginPrompt({
         {pick(bodyNe, bodyEn)}
       </Text>
       <View className="mt-6 flex-row flex-wrap items-center justify-center gap-3">
-        <Button label={pick("लगइन", "Log in")} size="lg" onPress={onLogin} />
-        <Button label={pick("साइन अप", "Sign up")} size="lg" variant="outline" onPress={onSignup} />
+        <Button
+          label={t("kundali.login")}
+          size="lg"
+          onPress={onLogin}
+          icon={<AppNavIcon name="log-in" size={16} color="#ffffff" />}
+        />
+        <Button
+          label={t("kundali.signup")}
+          size="lg"
+          variant="outline"
+          onPress={onSignup}
+          icon={<AppNavIcon name="user-plus" size={16} color={colors.foreground} />}
+        />
       </View>
     </View>
   );

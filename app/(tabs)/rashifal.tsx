@@ -1,11 +1,14 @@
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useLocalSearchParams } from "expo-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
-import { HomeRashifalSignPicker } from "@/components/home/HomeRashifalSignPicker";
-import { GrahaBanner } from "@/components/graha/GrahaPageParts";
+import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
+import { formatRashiDisplay } from "@/lib/rashi-i18n";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
@@ -23,13 +26,11 @@ import {
 import { profileChartParams } from "@/lib/kundali/profile-chart";
 import { instantCacheKey } from "@/lib/instant-query";
 import { useLocale } from "@/lib/i18n";
-import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import {
   RASHIFAL_PERIOD_ICON,
   rashifalRangeLabel,
   rashifalStepDate,
 } from "@/lib/rashifal-ui";
-import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@/lib/utils";
@@ -56,9 +57,8 @@ export default function RashifalScreen() {
     ? (params.period as RashifalPeriod)
     : "daily";
 
-  const { pick, lang, digits } = useLocale();
+  const { pick, lang, digits, t } = useLocale();
   const colors = useThemeColors();
-  const { isTablet } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
@@ -132,26 +132,27 @@ export default function RashifalScreen() {
     : generalQ.isFetching && !generalQ.data;
   const error = selectedProfile ? personalQ.isError : generalQ.isError;
 
-  const defaultSignId = generalQ.data?.frame?.sun_sign;
+  const moonRef = useMemo(() => {
+    const d = generalQ.data;
+    if (!d) return undefined;
+    const label = formatRashiDisplay(d.moon_label, d.moon_label_en, lang);
+    return label ? t("rashifal.moon_at_sunrise", { sign: label }) : undefined;
+  }, [generalQ.data, lang, t]);
 
   return (
     <AppShell title={pick("राशिफल", "Rashifal")} showHeader={false}>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-          paddingBottom: floatingNavBottomPadding(isTablet),
-          gap: 16,
-        }}
-      >
-        <GrahaBanner
-          icon="sparkles-outline"
-          title={pick("राशिफल", "Rashifal")}
-          blurb={pick(
-            "सूर्योदय पञ्चाङ्ग, चन्द्रबल र गोचरमा आधारित गणितीय राशिफल",
-            "Computed rashifal from sunrise panchanga, chandrabala & transits",
-          )}
+      {/* AppShell already supplies the page scroller and horizontal padding —
+          a second ScrollView + padding here is what made this screen inset more
+          than every other page. */}
+      <View className="gap-4">
+        <PatroPageHeader
+          icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
+          title={t("rashifal.title")}
+          subtitle={t("rashifal.subtitle")}
         />
+        <Text className="-mt-2 text-xs uppercase tracking-widest text-muted-foreground" style={nepaliTextStyle(12)}>
+          {t("rashifal.eyebrow")}
+        </Text>
 
         <PanchangaDateNav
           date={date}
@@ -225,18 +226,30 @@ export default function RashifalScreen() {
         ) : selectedProfile && personalQ.data ? (
           <RashifalPersonalCard name={selectedProfile.full_name} personal={personalQ.data} />
         ) : generalQ.data?.signs?.length ? (
-          <HomeRashifalSignPicker
-            signs={generalQ.data.signs}
-            period={period}
-            defaultSignId={defaultSignId}
-            contentInset={PAGE_HORIZONTAL_PADDING}
-          />
+          <View className="gap-4">
+            {period !== "daily" ? (
+              <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                {t(`rashifal.period_intro.${period}`)}
+              </Text>
+            ) : null}
+            {moonRef ? (
+              <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                {moonRef}
+              </Text>
+            ) : null}
+            <Text className="text-center text-xs text-muted-foreground" style={nepaliTextStyle(13)}>
+              {t("rashifal.method_note")}
+            </Text>
+            {generalQ.data.signs.map((sign) => (
+              <RashifalSignCard key={sign.id} sign={sign} period={period} />
+            ))}
+          </View>
         ) : (
           <Text className="py-8 text-center text-sm text-muted-foreground">
             {pick("यस अवधिको राशिफल उपलब्ध छैन।", "Rashifal unavailable for this period.")}
           </Text>
         )}
-      </ScrollView>
+      </View>
     </AppShell>
   );
 }

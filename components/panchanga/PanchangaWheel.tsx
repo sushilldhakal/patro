@@ -3,7 +3,7 @@ import { Modal, Pressable, StatusBar, View } from "react-native";
 import { Text } from "@/components/ui/Text"
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Slider from "@react-native-community/slider";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import type { PanchangaDay } from "@/lib/api";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
@@ -657,10 +657,19 @@ function WheelBody({
     setPicked(next);
   }, []);
 
+  /* Latest zoom for `handleZoom`, so it can keep one identity (see below). */
+  const zoomRef = useRef(1);
+  zoomRef.current = zoom;
+  /* Stable identity: an inline arrow here rebuilt the chart's PanResponder on
+     every parent render — including mid-gesture — which is how the wheel
+     stopped responding. */
+  const handlePan = useCallback((x: number, y: number) => setPan({ x, y }), []);
+
   const handleZoom = useCallback(
     (next: number) => {
       const z = Math.max(0.55, Math.min(14, next));
       if (z <= 1) {
+        zoomRef.current = z;
         setZoom(z);
         setPan({ x: 0, y: 0 });
         return;
@@ -678,11 +687,12 @@ function WheelBody({
        * should do. (The pinch gesture is unaffected: it calls this too, but
        * always follows up with its own `onPan` in the same frame, which
        * overwrites this with its focal-anchored value.) */
-      const ratio = z / zoom;
+      const ratio = z / zoomRef.current;
+      zoomRef.current = z;
       setZoom(z);
       setPan((p) => ({ x: p.x * ratio, y: p.y * ratio }));
     },
-    [zoom],
+    [],
   );
 
   const toggleExpanded = useCallback(() => {
@@ -849,7 +859,7 @@ function WheelBody({
           zoom={zoom}
           onZoom={handleZoom}
           pan={pan}
-          onPan={(x, y) => setPan({ x, y })}
+          onPan={handlePan}
           lineTarget={lineTarget}
           onLineTargetChange={setLineTarget}
         />
@@ -941,7 +951,14 @@ function WheelBody({
         {wheelShell}
       </View>
 
-      <WheelPanel sel={picked} open={!!picked} num={digits} onClose={() => setPicked(null)} />
+      {/* No detail dialog for a नक्षत्र tap — the wheel only highlights it. The
+          राशि panel stays. */}
+      <WheelPanel
+        sel={picked?.type === "rashi" ? picked : null}
+        open={picked?.type === "rashi"}
+        num={digits}
+        onClose={() => setPicked(null)}
+      />
 
       <Modal
         visible={expanded}

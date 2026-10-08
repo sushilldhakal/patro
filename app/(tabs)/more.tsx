@@ -1,6 +1,7 @@
-import { Linking, Platform, Pressable, Share, Text, View } from "react-native";
+import { Linking, Platform, Pressable, Share, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
-import { AppShell, LangToggle } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useBreakpoint } from "@/lib/responsive";
 import { Card } from "@/components/ui/Card";
@@ -126,11 +127,6 @@ export default function MoreScreen() {
 
   return (
     <AppShell title={pick("थप", "More")} showHeader={false}>
-      {!isCalendarWide ? (
-        <View className="mb-3 flex-row justify-end">
-          <LangToggle />
-        </View>
-      ) : null}
       <View className={isTablet ? "flex-row flex-wrap gap-4" : "gap-4"}>
         {(["main", "panchanga", "jyotish", "tools"] as const).map((group) => {
           const routes = routesByGroup(group);

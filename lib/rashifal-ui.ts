@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import type { Ionicons } from "@expo/vector-icons";
+import type { Ionicons } from "@/components/icons/Ionicons";
 import type { NavataraTone, RashifalDomainKey, RashifalPeriod } from "@/lib/api";
 import type { AppLanguage } from "@/lib/i18n";
 import { addCivilDays, parseCivilIsoToDate } from "@/lib/patro-day";

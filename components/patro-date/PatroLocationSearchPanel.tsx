@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import * as Location from "expo-location";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/lib/i18n";

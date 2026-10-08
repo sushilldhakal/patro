@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   fetchPanchanga,
@@ -43,7 +43,7 @@ import {
 } from "@/components/panchanga/use-panchanga-mode";
 import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
 import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
-import { LoadingState } from "@/components/ui/States";
+import { ErrorState, LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
@@ -69,7 +69,7 @@ function parseAdStr(s: string): Date {
 }
 
 export default function PanchangaScreen() {
-  const { pick, t } = useLocale();
+  const { pick, t, lang } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width, isTablet, isCompact } = useBreakpoint();
@@ -133,7 +133,7 @@ export default function PanchangaScreen() {
   const sunset = wheelData ? getSunset(wheelData) : data ? getSunset(data) : undefined;
   const effectiveTimezone = resolveTimeZone(data?.location?.timezone, location.params.timezone);
   const isToday = adDateStr === todayAdStringInTimezone(new Date(), effectiveTimezone);
-  const locationLabel = displayLocationLabel(location, data?.location?.name);
+  const locationLabel = displayLocationLabel(location, data?.location?.name, lang);
   const chartAd = data ? chartDateAd(data, adDateStr) : adDateStr;
   const todayAd = todayAdStringInTimezone(new Date(), effectiveTimezone);
 
@@ -194,6 +194,28 @@ export default function PanchangaScreen() {
     wheelData,
     setClock,
   ]);
+
+  const failed = ready && !wheelData && !data && (udayaQuery.isError || instantQuery.isError);
+  if (failed) {
+    return (
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerStyle={{
+          paddingBottom: floatingNavBottomPadding(isTablet),
+          paddingHorizontal: pagePadH,
+          paddingTop: isCompact ? 12 : 16,
+        }}
+      >
+        <ErrorState
+          message={pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
+          onRetry={() => {
+            void udayaQuery.refetch();
+            void instantQuery.refetch();
+          }}
+        />
+      </ScrollView>
+    );
+  }
 
   if (!ready || (udayaQuery.isLoading && !wheelData)) {
     return (

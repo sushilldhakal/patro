@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pressable, Switch, Text, TextInput, View } from "react-native";
+import { Pressable, Switch, TextInput, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { Button } from "@/components/ui/Button";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";

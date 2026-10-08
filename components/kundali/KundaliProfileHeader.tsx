@@ -1,5 +1,6 @@
-import { ScrollView, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
 import type { Profile } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { formatProfileBirthLabel } from "@/lib/kundali/profile-chart";

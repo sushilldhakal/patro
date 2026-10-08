@@ -4,7 +4,7 @@ import {
   Pressable,
   View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { KundaliSection } from "@/components/kundali/KundaliSections";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";

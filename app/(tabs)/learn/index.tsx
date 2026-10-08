@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { Text } from "@/components/ui/Text";
 import {
@@ -127,7 +127,7 @@ function Chip({
         style={nepaliTextStyle(14)}
       >
         {label}
-        {count != null ? ` (${digits(count)})` : ""}
+        {count != null ? ` (${count})` : ""}
       </Text>
     </Pressable>
   );
@@ -204,7 +204,7 @@ export default function LearnScreen() {
     [activeCategory, normalizedQuery],
   );
 
-  const resultsLine = isFiltering ? t("learn_page.results_count", { count: digits(filteredTopics.length) }) : null;
+  const resultsLine = isFiltering ? t("learn_page.results_count", { count: filteredTopics.length }) : null;
 
   return (
     <AppShell showHeader={false} title={pick("सिकाइ", "Learn")}>
@@ -233,13 +233,13 @@ export default function LearnScreen() {
             <View className="flex-row items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Ionicons name="school-outline" size={16} color={colors.secondary} />
               <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
-                {t("learn_page.learning_paths_count", { count: digits(liveModuleCount) })}
+                {t("learn_page.learning_paths_count", { count: liveModuleCount })}
               </Text>
             </View>
             <View className="flex-row items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Ionicons name="book-outline" size={16} color={colors.secondary} />
               <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
-                {t("learn_page.articles_count", { count: digits(PUBLISHED_TOPICS.length) })}
+                {t("learn_page.articles_count", { count: PUBLISHED_TOPICS.length })}
               </Text>
             </View>
           </View>
@@ -345,8 +345,8 @@ export default function LearnScreen() {
                       </Text>
                       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
                         {pick(module.blurb.ne, module.blurb.en)} ·{" "}
-                        {t("learn_page.articles_count", { count: digits(moduleTopics.length) })}
-                        {upcoming > 0 ? ` · ${t("learn_page.more_coming", { count: digits(upcoming) })}` : ""}
+                        {t("learn_page.articles_count", { count: moduleTopics.length })}
+                        {upcoming > 0 ? ` · ${t("learn_page.more_coming", { count: upcoming })}` : ""}
                       </Text>
                     </View>
                   </View>

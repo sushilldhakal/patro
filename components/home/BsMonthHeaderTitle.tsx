@@ -4,7 +4,7 @@ import { PatroDateNav } from "@/components/patro-date/PatroDateNav";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useLocale } from "@/lib/i18n";
 import { Pressable, Text } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { HomePatroView } from "./PatroViewToggle";

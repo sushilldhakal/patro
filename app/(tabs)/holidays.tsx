@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
+import { SeoContentSection } from "@/components/seo/SeoContentSection";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
-import { AppShell, LangToggle } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { Text } from "@/components/ui/Text";
 import { apiKeys, fetchFestivals, fetchHolidays, type Festival, type Holiday } from "@/lib/api";
@@ -74,7 +77,7 @@ function toRow(
 }
 
 export default function HolidaysScreen() {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { isCalendarWide } = useBreakpoint();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -133,11 +136,11 @@ export default function HolidaysScreen() {
 
   return (
     <AppShell title={pick("बिदा तथा पर्व", "Holidays")} showHeader={false}>
-      {!isCalendarWide ? (
-        <View className="mb-3 flex-row justify-end">
-          <LangToggle />
-        </View>
-      ) : null}
+      <PatroPageHeader
+        icon={<AppNavIcon name="party-popper" size={24} color={colors.secondary} />}
+        title={t("holidays.page_title")}
+        subtitle={t("holidays.page_subtitle")}
+      />
 
       <PatroYearNavBlock
         era={era}
@@ -312,6 +315,7 @@ export default function HolidaysScreen() {
               )}
         </TableScrollShell>
       )}
+      <SeoContentSection route="holidays" />
     </AppShell>
   );
 }

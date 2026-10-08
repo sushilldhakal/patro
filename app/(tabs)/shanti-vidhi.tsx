@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
@@ -23,7 +24,7 @@ function toAdStr(d: Date): string {
 }
 
 export default function ShantiVidhiScreen() {
-  const { pick } = useLocale();
+  const { pick, t, digits } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const timezone = resolveTimeZone(undefined, location.params.timezone);
@@ -46,18 +47,24 @@ export default function ShantiVidhiScreen() {
 
   return (
     <AppShell title={pick("शान्ति विधि", "Shanti Vidhi")} showHeader={false}>
+      <PatroPageHeader
+        icon={<Ionicons name="flame-outline" size={28} color={colors.secondary} />}
+        title={t("shanti_vidhi.title")}
+        subtitle={t("shanti_vidhi.subtitle")}
+      />
+
       <View className="overflow-hidden rounded-2xl border border-border">
         <View className="flex-row items-center gap-1.5 border-b border-border px-4 py-3">
           <Ionicons name="person-outline" size={16} color={colors.secondary} />
           <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
-            {pick("जन्म विवरण", "Birth details")}
+            {t("shanti_vidhi.birth_section")}
           </Text>
           <Text
             className="ml-auto text-xs text-muted-foreground"
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >
-            {pick("मिति · समय · स्थान", "Date · time · place")}
+            {t("shanti_vidhi.birth_meta")}
           </Text>
         </View>
 

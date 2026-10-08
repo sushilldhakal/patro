@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import type { GestureResponderEvent, PanResponderGestureState } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Canvas } from "@/components/sky3d/GeocentricSkyCanvas";
 import { SheetSection } from "@/components/ui/OverlaySheet";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
@@ -325,7 +325,8 @@ export function AakashGocharSky({
     [timeZone],
   );
 
-  const [mode, setMode] = useState<SkyMode>("globe");
+  /* Opens on the space view, as on web. */
+  const [mode, setMode] = useState<SkyMode>("space");
   const [playing, setPlaying] = useState(true);
   const [speedIndex, setSpeedIndex] = useState(DEFAULT_STEP_INDEX);
   const [reverse, setReverse] = useState(false);
@@ -2049,7 +2050,10 @@ export function AakashGocharSky({
         <View pointerEvents="none" style={{ position: "absolute", inset: 0 }}>
         <Canvas
           camera={{ position: [0, 14, 22], fov: 50, near: 0.05, far: 1200 }}
-          gl={{ antialias: true, alpha: true }}
+          /* A 3x phone renders 9 pixels per point at the default; capping the ratio
+             at 1.5 roughly halves the fill cost with no visible loss on a star map. */
+          dpr={[1, 1.5]}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           onCreated={({ gl }) => {
             glRef.current = gl;
           }}

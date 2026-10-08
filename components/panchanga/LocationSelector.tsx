@@ -12,7 +12,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { Text } from "@/components/ui/Text"
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import * as Location from "expo-location";
 import { useQuery } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -138,7 +138,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
 
-  const label = displayLocationLabel(location);
+  const label = displayLocationLabel(location, undefined, lang);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(query.trim()), 300);

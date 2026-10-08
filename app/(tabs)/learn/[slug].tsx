@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { LearnArticleView } from "@/components/learn/LearnArticleView";
 import { Text } from "@/components/ui/Text";

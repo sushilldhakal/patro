@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { LEARN_LIBRARY_BY_SLUG, type LibraryTopic } from "@/lib/learn/learn-library";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";

@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { LucideNative } from "@/components/icons/LucideNative";
+import { __iconNode as SunriseNode } from "lucide-react/dist/esm/icons/sunrise";
+import { __iconNode as SunsetNode } from "lucide-react/dist/esm/icons/sunset";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { Text } from "@/components/ui/Text";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
@@ -196,13 +198,13 @@ export function TodayHighlightCard({
           <View className="mt-2 flex-row flex-wrap items-center gap-x-4 gap-y-1">
             {sunrise ? (
               <View className="flex-row items-center gap-1.5">
-                <Ionicons name="sunny-outline" size={16} color="#d98a00" />
+                <LucideNative node={SunriseNode} size={16} color="#d98a00" />
                 <Text className="text-sm text-foreground">{sunrise}</Text>
               </View>
             ) : null}
             {sunset ? (
               <View className="flex-row items-center gap-1.5">
-                <Ionicons name="partly-sunny-outline" size={16} color="#d98a00" />
+                <LucideNative node={SunsetNode} size={16} color="#d98a00" />
                 <Text className="text-sm text-foreground">{sunset}</Text>
               </View>
             ) : null}

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
@@ -56,8 +56,7 @@ function PanchakPeriodCard({
 
   const Boundary = ({ label, bs, time, ad }: { label: string; bs: string; time: string; ad: string }) => (
     <View
-      style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }}
-      className="flex-1 rounded-xl border px-3.5 py-3"
+      className="flex-1 rounded-xl border border-border/70 bg-muted/20 px-3.5 py-3"
     >
       <Text className="mb-1.5 text-sm font-semibold uppercase tracking-wider text-foreground" style={nepaliTextStyle(14)}>
         {label}

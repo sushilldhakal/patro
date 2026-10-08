@@ -1,4 +1,8 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { useThemeColors } from "@/lib/theme-context";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { Text } from "@/components/ui/Text";
 import { AppShell } from "@/components/AppShell";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -45,24 +49,30 @@ function LegalBody({
 }
 
 export function PrivacyDocument() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
+  const colors = useThemeColors();
   return (
-    <AppShell
-      title={pick("गोपनीयता नीति", "Privacy Policy")}
-      subtitle={pick(`अद्यावधिक: ${LEGAL_UPDATED}`, `Updated: ${LEGAL_UPDATED}`)}
-    >
+    <AppShell title={t("legal.privacy_title")} showHeader={false}>
+      <PatroPageHeader
+        icon={<Ionicons name="shield-outline" size={24} color={colors.secondary} />}
+        title={t("legal.privacy_title")}
+        subtitle={t("legal.updated", { date: LEGAL_UPDATED })}
+      />
       <LegalBody intro={PRIVACY_INTRO} sections={PRIVACY_SECTIONS} />
     </AppShell>
   );
 }
 
 export function TermsDocument() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
+  const colors = useThemeColors();
   return (
-    <AppShell
-      title={pick("प्रयोगका सर्त", "Terms of Use")}
-      subtitle={pick(`अद्यावधिक: ${LEGAL_UPDATED}`, `Updated: ${LEGAL_UPDATED}`)}
-    >
+    <AppShell title={t("legal.terms_title")} showHeader={false}>
+      <PatroPageHeader
+        icon={<Ionicons name="document-text-outline" size={24} color={colors.secondary} />}
+        title={t("legal.terms_title")}
+        subtitle={t("legal.updated", { date: LEGAL_UPDATED })}
+      />
       <LegalBody intro={TERMS_INTRO} sections={TERMS_SECTIONS} />
     </AppShell>
   );

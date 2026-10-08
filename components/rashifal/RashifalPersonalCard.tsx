@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { getRashiName } from "@/lib/rashi-i18n";
 import { useLocale } from "@/lib/i18n";

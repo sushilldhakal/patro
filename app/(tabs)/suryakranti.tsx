@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SunTimesYearGrid } from "@/components/suryakranti/SunTimesYearGrid";
@@ -12,7 +12,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { resolveLocationTimezone, usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 export default function SuryakrantiScreen() {
-  const { pick } = useLocale();
+  const { pick, t, digits } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -20,6 +20,15 @@ export default function SuryakrantiScreen() {
 
   return (
     <AppShell title={pick("सूर्य क्रान्ति", "Sun Revolution")} showHeader={false}>
+      <View className="mb-3">
+        <Text className="text-xl font-bold leading-tight text-foreground" style={nepaliTextStyle(20)}>
+          {t("sun_times.title")}
+        </Text>
+        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          {t("sun_times.subtitle", { year: digits(year) })}
+        </Text>
+      </View>
+
       <PatroYearNavBlock
         era={era}
         onEraChange={setEra}

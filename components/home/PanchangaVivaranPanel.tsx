@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import {
@@ -161,7 +162,7 @@ function GocharPlanetCard({
 }
 
 function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }) {
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   const router = useRouter();
   const abhijit = getAbhijitMuhurta(p);
   const isEn = lang === "en";
@@ -170,19 +171,19 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
     <View className="mt-2.5 border-t border-border/60 pt-2.5">
       {abhijit ? (
         <Text className="text-sm leading-snug text-foreground">
-          <Text className="font-semibold">{pick("अभिजित् मुहूर्त", "Abhijit Muhurta")} </Text>
+          <Text className="font-semibold">{t("abhijit.title")} </Text>
           <Text className="font-num font-semibold" style={nepaliTextStyle(14)}>
             {abhijit.rangeDisplay}
             {abhijit.noonDisplay
               ? isEn
                 ? ` (noon ${abhijit.noonDisplay})`
-                : ` (${pick("मध्यान्ह", "noon")} ${abhijit.noonDisplay})`
+                : ` (${t("abhijit.noon_short")} ${abhijit.noonDisplay})`
               : ""}
           </Text>
         </Text>
       ) : (
         <Text className="text-sm text-muted-foreground">
-          {pick("अभिजित् मुहूर्त उपलब्ध छैन।", "Abhijit muhurta unavailable.")}
+          {t("abhijit.unavailable")}
         </Text>
       )}
       {selectedAd ? (
@@ -191,7 +192,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
           className="mt-3 items-center rounded-lg border border-border py-2.5"
         >
           <Text className="text-sm font-semibold text-foreground">
-            {pick("पञ्चाङ्ग विवरण", "Panchanga detail")}
+            {t("panchanga.detail_title")}
           </Text>
         </Pressable>
       ) : null}
@@ -205,11 +206,11 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
   const [vivaranWrapWidth, setVivaranWrapWidth] = useState(0);
   const [gocharWrapWidth, setGocharWrapWidth] = useState(0);
   const vivaranTileW = useMemo(
-    () => wrapTileWidth(vivaranWrapWidth, VIVARAN_WRAP_GAP, VIVARAN_MIN_TILE, 1, 3),
+    () => wrapTileWidth(vivaranWrapWidth, VIVARAN_WRAP_GAP, VIVARAN_MIN_TILE, 2, 2),
     [vivaranWrapWidth],
   );
   const gocharTileW = useMemo(
-    () => wrapTileWidth(gocharWrapWidth, GOCHAR_WRAP_GAP, GOCHAR_MIN_TILE, 2, 4),
+    () => wrapTileWidth(gocharWrapWidth, GOCHAR_WRAP_GAP, GOCHAR_MIN_TILE, 2, 3),
     [gocharWrapWidth],
   );
 
@@ -286,7 +287,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
         ))}
       </View>
 
-      {planets.length > 0 || solarCards.length > 0 ? (
+      {planets.length > 0 ? (
         <View className="mt-2.5 border-t border-border/60 pt-2.5">
           <Text className="mb-1.5 text-sm font-bold text-foreground">
             {pick("ग्रह गोचर", "Planet positions")}
@@ -312,14 +313,17 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
                 tileWidth={gocharTileW}
               />
             ))}
+          </View>
+        </View>
+      ) : null}
+
+      {solarCards.length > 0 ? (
+        <View className={planets.length > 0 ? "mt-1.5 border-t border-border/60 pt-2" : "mt-2.5 border-t border-border/60 pt-2"}>
+          <View className="flex-row" style={{ gap: GOCHAR_WRAP_GAP }}>
             {solarCards.map(({ label, value }) => (
-              <GocharSolarCard
-                key={label}
-                title={label}
-                value={value}
-                insetBg={colors.surfaceInset}
-                tileWidth={gocharTileW}
-              />
+              <View key={label} style={{ flex: 1 }}>
+                <GocharSolarCard title={label} value={value} insetBg={colors.surfaceInset} tileWidth="100%" />
+              </View>
             ))}
           </View>
         </View>

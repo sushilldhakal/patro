@@ -13,7 +13,7 @@
 import { useMemo, useState } from "react";
 import { View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";

@@ -1,7 +1,7 @@
 import type { RefObject } from "react";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import {
   LEARN_LIBRARY_BY_SLUG,
@@ -92,17 +92,17 @@ export function LearnArticleView({
   return (
     <View className="gap-4">
       {/* Hero: category eyebrow, title, summary — as web's article header. */}
-      <View className="gap-1.5 rounded-2xl border border-border bg-card p-5">
+      <View className="items-center gap-2 rounded-2xl border border-border bg-card px-5 py-10">
         <Text
-          className="text-xs font-semibold uppercase tracking-wide text-secondary"
+          className="text-center text-xs font-semibold uppercase tracking-widest text-secondary"
           style={nepaliTextStyle(12)}
         >
           {section ? pick(section.title.ne, section.title.en) : ""}
         </Text>
-        <Text className="text-2xl font-bold leading-tight text-foreground" style={nepaliTextStyle(24)}>
+        <Text className="text-center text-3xl font-bold leading-tight text-foreground" style={nepaliTextStyle(30)}>
           {pick(topic.title.ne, topic.title.en)}
         </Text>
-        <Text className="text-base leading-relaxed text-foreground/80" style={nepaliTextStyle(16)}>
+        <Text className="mt-2 text-center text-base leading-relaxed text-muted-foreground" style={nepaliTextStyle(16)}>
           {pick(topic.summary.ne, topic.summary.en)}
         </Text>
       </View>

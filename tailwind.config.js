@@ -53,6 +53,19 @@ module.exports = {
         num: ["NotoSansDevanagari_400Regular"],
         "num-bold": ["NotoSansDevanagari_700Bold"],
       },
+      /* Web (Tailwind 4) accepts any `/N` alpha; v3's scale skips 8, 12, 15, 18, 35,
+         45, 55, 65, 85 — so `bg-secondary/8` etc. silently drew nothing here. */
+      opacity: {
+        8: "0.08",
+        12: "0.12",
+        15: "0.15",
+        18: "0.18",
+        35: "0.35",
+        45: "0.45",
+        55: "0.55",
+        65: "0.65",
+        85: "0.85",
+      },
       borderRadius: {
         lg: "8px",
         xl: "12px",

@@ -11,7 +11,7 @@
  */
 
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";

@@ -13,6 +13,8 @@ type SectionNavProps = {
 
 type Props = {
   eyebrow?: string;
+  /** Icon beside the title, as web's `<h1>` row. */
+  icon?: ReactNode;
   title?: string;
   subtitle?: string;
   headerRight?: ReactNode;
@@ -24,6 +26,7 @@ type Props = {
 /** Kundali pages — panchanga sidebar rail at ≥992px (web parity). */
 export function KundaliPageShell({
   eyebrow,
+  icon,
   title,
   subtitle,
   headerRight,
@@ -55,12 +58,15 @@ export function KundaliPageShell({
                 {eyebrow}
               </Text>
             ) : null}
-            <Text
-              className="text-xl font-bold text-foreground"
-              style={[nepaliTextStyle(20), { paddingTop: 2, paddingBottom: 2 }]}
-            >
-              {title}
-            </Text>
+            <View className="flex-row items-center gap-2.5">
+              {icon}
+              <Text
+                className="shrink text-xl font-bold text-foreground"
+                style={[nepaliTextStyle(20), { paddingTop: 2, paddingBottom: 2 }]}
+              >
+                {title}
+              </Text>
+            </View>
             {subtitle ? (
               <Text
                 className="mt-1 text-sm text-muted-foreground"

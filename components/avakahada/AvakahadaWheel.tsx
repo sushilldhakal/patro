@@ -10,7 +10,7 @@ import Svg, {
   Stop,
   Text as SvgText,
 } from "react-native-svg";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { AVAKAHADA, type Gana, type NakshatraRow } from "@/lib/avakahada-data";
 import {

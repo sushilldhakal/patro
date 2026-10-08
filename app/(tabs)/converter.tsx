@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { SeoContentSection } from "@/components/seo/SeoContentSection";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { Pressable, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
-import { AppShell, LangToggle } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { StatCard } from "@/components/ui/StatCard";
 import { Text } from "@/components/ui/Text";
@@ -27,7 +30,7 @@ const WEEKDAY_NE: Record<string, string> = {
 type Mode = "ad-to-bs" | "bs-to-ad";
 
 export default function ConverterScreen() {
-  const { pick, digits } = useLocale();
+  const { pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width, isCalendarWide } = useBreakpoint();
   const today = todayAdString();
@@ -65,18 +68,19 @@ export default function ConverterScreen() {
 
   // Web grid: grid-cols-2 / sm:grid-cols-3 / lg:grid-cols-4
   const cols = width >= 1024 ? 4 : width >= 640 ? 3 : 2;
-  const tileWidth = `${(100 / cols - 1.5).toFixed(2)}%`;
+  /* percent widths + a 12px gap: leave ~4% per gap or the last tile wraps. */
+  const tileWidth = `${((100 - 4 * (cols - 1)) / cols).toFixed(2)}%`;
 
   return (
     <AppShell
       title={pick("मिति रूपान्तर", "Date Converter")}
       showHeader={false}
     >
-      {!isCalendarWide ? (
-        <View className="mb-3 flex-row justify-end">
-          <LangToggle />
-        </View>
-      ) : null}
+      <PatroPageHeader
+        icon={<AppNavIcon name="arrow-left-right" size={24} color={colors.secondary} />}
+        title={t("converter.title")}
+        subtitle={t("converter.subtitle")}
+      />
 
       <View className="mb-4 w-fit flex-row self-start overflow-hidden rounded-xl border border-border">
         {(["ad-to-bs", "bs-to-ad"] as const).map((m) => {
@@ -116,7 +120,7 @@ export default function ConverterScreen() {
             className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
             style={nepaliTextStyle(11)}
           >
-            {mode === "ad-to-bs" ? pick("ईस्वी मिति", "AD date") : pick("विक्रम मिति", "BS date")}
+            {mode === "ad-to-bs" ? t("converter.ad_date") : t("converter.bs_date")}
           </Text>
           <TextInput
             value={mode === "ad-to-bs" ? adInput : bsInput}
@@ -135,7 +139,7 @@ export default function ConverterScreen() {
             className="rounded-lg border px-3 py-2.5 text-sm"
           />
         </View>
-        <Button label={pick("रूपान्तर", "Convert")} variant="secondary" onPress={submit} />
+        <Button label={t("converter.convert")} variant="secondary" onPress={submit} />
       </View>
 
       {isError ? (
@@ -147,10 +151,7 @@ export default function ConverterScreen() {
           className="mb-4 rounded-xl border p-4"
         >
           <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
-            {pick(
-              "मिति रूपान्तर गर्न सकिएन। ढाँचा YYYY-MM-DD मिलाउनुहोस्।",
-              "Could not convert that date. Use the YYYY-MM-DD format.",
-            )}
+            {t("converter.error")}
           </Text>
         </View>
       ) : null}
@@ -173,18 +174,18 @@ export default function ConverterScreen() {
             </Text>
           </View>
           <View className="flex-row flex-wrap gap-3">
-            <StatCard width={tileWidth} highlight label={pick("विक्रम मिति", "BS date")} value={adResult.bs_date} />
-            <StatCard width={tileWidth} label={pick("विक्रम वर्ष", "BS year")} value={digits(adResult.bs_year)} />
+            <StatCard width={tileWidth} highlight label={t("converter.bs_date")} value={adResult.bs_date} />
+            <StatCard width={tileWidth} label={t("converter.bs_year")} value={digits(adResult.bs_year)} />
             <StatCard
               width={tileWidth}
-              label={pick("विक्रम महिना", "BS month")}
+              label={t("converter.bs_month")}
               value={pick(adResult.bs_month_name_ne ?? "", adResult.bs_month_name ?? "")}
             />
-            <StatCard width={tileWidth} label={pick("गते", "BS day")} value={digits(adResult.bs_day)} />
-            <StatCard width={tileWidth} label={pick("ईस्वी मिति", "AD date")} value={adResult.ad_date} />
+            <StatCard width={tileWidth} label={t("converter.bs_day")} value={digits(adResult.bs_day)} />
+            <StatCard width={tileWidth} label={t("converter.ad_date")} value={adResult.ad_date} />
             <StatCard
               width={tileWidth}
-              label={pick("बार", "Weekday")}
+              label={t("converter.weekday")}
               value={pick(WEEKDAY_NE[adResult.weekday] ?? adResult.weekday, adResult.weekday)}
             />
           </View>
@@ -203,23 +204,24 @@ export default function ConverterScreen() {
             </Text>
           </View>
           <View className="flex-row flex-wrap gap-3">
-            <StatCard width={tileWidth} highlight label={pick("ईस्वी मिति", "AD date")} value={bsResult.ad_date} />
-            <StatCard width={tileWidth} label={pick("विक्रम मिति", "BS date")} value={bsResult.bs_date} />
+            <StatCard width={tileWidth} highlight label={t("converter.ad_date")} value={bsResult.ad_date} />
+            <StatCard width={tileWidth} label={t("converter.bs_date")} value={bsResult.bs_date} />
             <StatCard
               width={tileWidth}
-              label={pick("विक्रम महिना", "BS month")}
+              label={t("converter.bs_month")}
               value={pick(bsResult.bs_month_name_ne ?? "", bsResult.bs_month_name ?? "")}
             />
-            <StatCard width={tileWidth} label={pick("गते", "BS day")} value={digits(bsResult.bs_day)} />
-            <StatCard width={tileWidth} label={pick("विक्रम वर्ष", "BS year")} value={digits(bsResult.bs_year)} />
+            <StatCard width={tileWidth} label={t("converter.bs_day")} value={digits(bsResult.bs_day)} />
+            <StatCard width={tileWidth} label={t("converter.bs_year")} value={digits(bsResult.bs_year)} />
             <StatCard
               width={tileWidth}
-              label={pick("बार", "Weekday")}
+              label={t("converter.weekday")}
               value={pick(WEEKDAY_NE[bsResult.weekday] ?? bsResult.weekday, bsResult.weekday)}
             />
           </View>
         </View>
       ) : null}
+      <SeoContentSection route="converter" />
     </AppShell>
   );
 }

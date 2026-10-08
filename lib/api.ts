@@ -1854,8 +1854,51 @@ export const fetchSaitPersonalize = (
   return get<SaitPersonalizeResponse>(path);
 };
 
-export const saitDetailKey = (year: number, category: string, location?: LocationParams) =>
-  ["sait", "detail", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const;
+/** Normalise an exclude list into a stable comma string (sorted, deduped). */
+const saitExcludeParam = (excludeRules?: string[]) =>
+  excludeRules && excludeRules.length > 0 ? [...new Set(excludeRules)].sort().join(",") : "";
+
+export type BratabandhaNakshatraMode = "classical" | "nepali" | "liberal";
+
+export interface SaitMonthEntry {
+  month: number;
+  month_name_ne: string;
+  days: number[];
+}
+
+export interface SaitResponse {
+  bs_year: number;
+  category: string;
+  category_label_ne: string;
+  months: SaitMonthEntry[];
+}
+
+export const saitKeys = {
+  entries: (year: number, category: string, location?: LocationParams) =>
+    ["sait", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const,
+};
+
+/** Day-level listing for the deterministic (Vās) ceremonies. */
+export const fetchSait = (year: number, category: string, location?: LocationParams) =>
+  get<SaitResponse>(withSaitCache(appendLocation(`/nepal/sait/${year}/${category}`, location)));
+
+export const saitDetailKey = (
+  year: number,
+  category: string,
+  location?: LocationParams,
+  excludeRules?: string[],
+  nakshatraMode?: string | null,
+) =>
+  [
+    "sait",
+    "detail",
+    SAIT_CACHE_VERSION,
+    year,
+    category,
+    locationCacheKey(location),
+    saitExcludeParam(excludeRules),
+    nakshatraMode && nakshatraMode !== "classical" ? nakshatraMode : "",
+  ] as const;
 
 export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, era: "bs" | "ad" = "ad") =>
   get<GrahaSthitiResponse>(
@@ -1934,10 +1977,22 @@ export const fetchElementSpans = (
 export const fetchTropicalSeasons = (location?: LocationParams) =>
   get<TropicalSeasonsResponse>(appendLocation("/seasons/tropical", location));
 
-export const fetchSaitDetail = (year: number, category: string, location?: LocationParams) =>
-  get<SaitDetailResponse>(
-    withSaitCache(appendLocation(`/nepal/sait/${year}/${category}/detail`, location)),
-  );
+export const fetchSaitDetail = (
+  year: number,
+  category: string,
+  location?: LocationParams,
+  excludeRules?: string[],
+  nakshatraMode?: string | null,
+) => {
+  let path = appendLocation(`/nepal/sait/${year}/${category}/detail`, location);
+  const params = new URLSearchParams();
+  const exclude = saitExcludeParam(excludeRules);
+  if (exclude) params.set("exclude", exclude);
+  if (nakshatraMode && nakshatraMode !== "classical") params.set("nakshatra_mode", nakshatraMode);
+  const qs = params.toString();
+  if (qs) path = `${path}${path.includes("?") ? "&" : "?"}${qs}`;
+  return get<SaitDetailResponse>(withSaitCache(path));
+};
 
 export function timeShort(v: PanchangaDay["sunrise"]): string {
   if (!v) return "—";

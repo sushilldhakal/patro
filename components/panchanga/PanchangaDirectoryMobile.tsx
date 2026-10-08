@@ -17,8 +17,8 @@ export function PanchangaDirectoryMobile() {
 
   const spans: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "span").map((e) => ({
     href: `/panchanga/element/${e.id}`,
-    label: pick(e.titleNe, e.titleEn),
-    description: pick(e.blurbNe, e.blurbEn),
+    label: t(`panchanga_elements.${e.id}.title`),
+    description: t(`panchanga_elements.${e.id}.blurb`),
     icon: "moon-star",
   }));
   const graha: QuickLink[] = GRAHA_PAGES.map((g) => ({
@@ -29,8 +29,8 @@ export function PanchangaDirectoryMobile() {
   }));
   const tables: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "table").map((e) => ({
     href: `/panchanga/element/${e.id}`,
-    label: pick(e.titleNe, e.titleEn),
-    description: pick(e.blurbNe, e.blurbEn),
+    label: t(`panchanga_elements.${e.id}.title`),
+    description: t(`panchanga_elements.${e.id}.blurb`),
     icon: "calendar-clock",
   }));
   const sait: QuickLink[] = CEREMONY_META.map((c) => ({

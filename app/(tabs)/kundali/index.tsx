@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { useThemeColors } from "@/lib/theme-context";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { ActivityIndicator, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import {
@@ -15,7 +18,8 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 export default function KundaliScreen() {
-  const { pick } = useLocale();
+  const { pick, t } = useLocale();
+  const colors = useThemeColors();
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
@@ -34,17 +38,14 @@ export default function KundaliScreen() {
   return (
     <>
       <KundaliPageShell
-        eyebrow={pick("ज्योतिष", "Jyotish")}
-        title={pick("जन्मकुण्डली", "Birth chart")}
-        subtitle={
-          isAuthenticated
-            ? pick("सेभ गरिएका प्रोफाइलबाट कुण्डली बनाउनुहोस्।", "Generate kundali from saved profiles.")
-            : pick("कुण्डली बनाउन लगइन गर्नुहोस्।", "Log in to create and view kundali profiles.")
-        }
+        eyebrow={t("kundali.eyebrow")}
+        icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
+        title={t("kundali.title")}
+        subtitle={isAuthenticated ? t("kundali.subtitle_auth") : t("kundali.login_required")}
         headerRight={
           isAuthenticated ? (
             <Button
-              label={pick("प्रोफाइल थप", "Add profile")}
+              label={t("kundali.add_profile")}
               size="sm"
               onPress={() => pickerRef.current?.openAdd()}
             />
@@ -60,10 +61,10 @@ export default function KundaliScreen() {
           </View>
         ) : !isAuthenticated ? (
           <KundaliLoginPrompt
-            titleNe="कुण्डलीका लागि लगइन"
-            titleEn="Log in for kundali"
-            bodyNe="प्रोफाइल बनाउन र जन्मकुण्डली हेर्न खाता चाहिन्छ।"
-            bodyEn="An account is required to save profiles and view birth charts."
+            titleNe={t("kundali.login_prompt_title")}
+            titleEn={t("kundali.login_prompt_title")}
+            bodyNe={t("kundali.login_prompt_body")}
+            bodyEn={t("kundali.login_prompt_body")}
             onLogin={() => openAuth("login")}
             onSignup={() => openAuth("signup")}
           />

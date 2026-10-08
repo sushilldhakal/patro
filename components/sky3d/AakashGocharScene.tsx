@@ -1829,6 +1829,10 @@ const ecliptic_STEPS = 180;
  * the view allows, so nothing visibly steps.
  */
 const BELT_ANGLE_STEP = 0.005;
+/** Simulated seconds per real second above which heavy per-frame work is throttled (1 hour/s). */
+const FAST_SIM_SECONDS = 3600;
+/** Minimum real seconds between belt/star re-projections while playing fast. */
+const BELT_FAST_INTERVAL_S = 0.1;
 
 /** Segments in the little arc that calls out the obliquity. */
 const TILT_ARC_STEPS = 24;
@@ -2898,6 +2902,8 @@ export function AakashGocharScene({
    * years. `null` forces the next frame to rebuild.
    */
   const lastBelt = useRef<{ mode: SkyMode; lst: number; ayan: number; eps: number } | null>(null);
+  /** Clock time of the last belt/star re-projection — throttles it during fast play. */
+  const lastBeltAt = useRef(-1);
   /** The obliquity the two tropic circles are currently drawn at. */
   const tropicEps = useRef(Number.NaN);
   const labels = useRef<ScreenLabel[]>([]);
@@ -3809,7 +3815,16 @@ export function AakashGocharScene({
     lastSample.current += delta;
     lastLabelPush.current += delta;
     const hudDue = lastSample.current > 0.2;
-    const labelsDue = lastLabelPush.current > 1 / 12;
+    /* Each label push re-renders the whole sky overlay in React. At calendar
+       speeds every name moves every frame, so slow the push down as the clock
+       speeds up — names are unreadable at that rate anyway. */
+    const labelInterval =
+      !s.playing || Math.abs(s.secondsPerRealSecond) < FAST_SIM_SECONDS
+        ? 1 / 12
+        : Math.abs(s.secondsPerRealSecond) < 86400 * 30
+          ? 0.25
+          : 0.5;
+    const labelsDue = lastLabelPush.current > labelInterval;
     const collect = Boolean(toggles.labels) && labelsDue;
     const collected: ScreenLabel[] = [];
     // Second column of the camera's world matrix: which way is up on screen.
@@ -4081,12 +4096,24 @@ export function AakashGocharScene({
     const beltLst = horizon ? quantizeDeg(lst) : 0;
     const beltAyan = quantizeDeg(ayan);
     const beltEps = quantizeDeg(eps);
-    const beltMoved =
+    const beltChanged =
       !lastBelt.current ||
       lastBelt.current.mode !== mode ||
       lastBelt.current.lst !== beltLst ||
       lastBelt.current.ayan !== beltAyan ||
       lastBelt.current.eps !== beltEps;
+    /* Past an hour a second the dome wheels by a degree or more per frame, so every
+       frame re-projected the whole star field (thousands of points) and the page
+       crawled. Re-project at ~10Hz instead — at that speed the stars are a blur
+       anyway — and always at once for a mode change or when the sim is slow/paused. */
+    const fastSim = s.playing && Math.abs(s.secondsPerRealSecond) >= FAST_SIM_SECONDS;
+    const beltMoved =
+      beltChanged &&
+      (!fastSim ||
+        !lastBelt.current ||
+        lastBelt.current.mode !== mode ||
+        state.clock.elapsedTime - lastBeltAt.current >= BELT_FAST_INTERVAL_S);
+    if (beltMoved) lastBeltAt.current = state.clock.elapsedTime;
 
     /**
      * The sphere the fixed stars are drawn on, for whichever view is live.

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { Text } from "@/components/ui/Text";
 import { fetchYogaReference, type YogaReferenceEntry } from "@/lib/api";

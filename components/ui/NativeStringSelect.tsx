@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Platform, Pressable, Text, View, type ViewStyle } from "react-native";
+import { Platform, Pressable, View, type ViewStyle } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { Picker } from "@react-native-picker/picker";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";

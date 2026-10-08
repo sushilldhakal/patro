@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { DocumentBackLink } from "@/components/documents/DocumentBackLink";

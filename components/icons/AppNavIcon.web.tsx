@@ -29,6 +29,8 @@ import Star from "lucide-react/dist/esm/icons/star";
 import Sun from "lucide-react/dist/esm/icons/sun";
 import Sunrise from "lucide-react/dist/esm/icons/sunrise";
 import User from "lucide-react/dist/esm/icons/user";
+import LogIn from "lucide-react/dist/esm/icons/log-in";
+import UserPlus from "lucide-react/dist/esm/icons/user-plus";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 
 const LUCIDE: Record<DrawerIconName, LucideIcon> = {
@@ -62,6 +64,8 @@ const LUCIDE: Record<DrawerIconName, LucideIcon> = {
   "file-text": FileText,
   user: User,
   "chevron-right": ChevronRight,
+  "log-in": LogIn,
+  "user-plus": UserPlus,
 };
 
 /** Same Lucide set as `dhakal-patro` MobileNavMenu — Ionicons fonts fail on Expo web. */

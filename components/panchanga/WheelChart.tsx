@@ -1,5 +1,5 @@
-import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
-import { PanResponder, Pressable, StyleSheet, View } from "react-native";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Animated, PanResponder, Pressable, StyleSheet, View } from "react-native";
 import Svg, {
   Circle,
   ClipPath,
@@ -509,8 +509,22 @@ function WheelChartImpl({
   const pinchRef = useRef<PinchGesture | null>(null);
   const pinchingRef = useRef(false);
   const [box, setBox] = useState({ w: 0, h: 0 });
+  /* Live drag rotation, degrees, applied as a transform on the drawing — the
+     wheel is ~900 SVG nodes, so re-rendering it per finger-move (what setting
+     `spin` state did) starved the JS thread and made the wheel lag and drop
+     gestures. The real `spin` is committed once, on release. */
+  const dragRot = useRef(new Animated.Value(0)).current;
+  const dragRotate = useMemo(
+    () => dragRot.interpolate({ inputRange: [-360, 360], outputRange: ["-360deg", "360deg"] }),
+    [dragRot],
+  );
+  /* New spin committed → the geometry already carries the rotation; drop the
+     transform in the same frame so there is no double-rotated flash. */
+  useLayoutEffect(() => {
+    dragRot.setValue(0);
+  }, [spin, dragRot]);
   const dragRef = useRef<
-    | { mode: "r"; spin0: number; angle0: number; moved: boolean }
+    | { mode: "r"; spin0: number; angle0: number; moved: boolean; latest: number }
     | { mode: "p"; pan0x: number; pan0y: number; moved: boolean }
     | null
   >(null);
@@ -656,6 +670,7 @@ function WheelChartImpl({
               spin0: spinRef.current,
               angle0: angleAt(x, y),
               moved: false,
+              latest: spinRef.current,
             };
           }
         },
@@ -664,6 +679,8 @@ function WheelChartImpl({
           const layout = layoutRef.current;
           if (touches.length >= 2 && layout.w > 0) {
             pinchingRef.current = true;
+            const rotating = dragRef.current;
+            if (rotating?.mode === "r" && rotating.moved) onSpin(rotating.latest);
             dragRef.current = null;
             const dist = touchPageDistance(touches);
             const centroid = touchCentroidInView(touches, layout.pageX, layout.pageY);
@@ -705,11 +722,15 @@ function WheelChartImpl({
           if (delta > 180) delta -= 360;
           if (delta < -180) delta += 360;
           if (Math.abs(delta) > 1.2) drag.moved = true;
-          onSpin(drag.spin0 + delta);
+          drag.latest = drag.spin0 + delta;
+          /* Spin increases counter-clockwise on screen (see `pol`), CSS rotate
+             is clockwise — hence the sign. */
+          dragRot.setValue(-delta);
         },
         onPanResponderRelease: (evt, gestureState) => {
           const drag = dragRef.current;
           const wasPinching = pinchingRef.current;
+          if (drag?.mode === "r" && drag.moved && !wasPinching) onSpin(drag.latest);
           dragRef.current = null;
           pinchRef.current = null;
           pinchingRef.current = false;
@@ -720,12 +741,15 @@ function WheelChartImpl({
           pickFromTouch(touch.x, touch.y);
         },
         onPanResponderTerminate: () => {
+          const drag = dragRef.current;
+          if (drag?.mode === "r" && drag.moved) onSpin(drag.latest);
+          else dragRot.setValue(0);
           dragRef.current = null;
           pinchRef.current = null;
           pinchingRef.current = false;
         },
       }),
-    [angleAt, onPan, onSpin, onZoom, pickFromTouch, pickPlanetAt, syncLayout, touchFromEvent],
+    [angleAt, dragRot, onPan, onSpin, onZoom, pickFromTouch, pickPlanetAt, syncLayout, touchFromEvent],
   );
 
   const pol = useCallback(
@@ -1322,6 +1346,7 @@ function WheelChartImpl({
           transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale: zoom }],
         }}
       >
+        <Animated.View style={{ flex: 1, transform: [{ rotate: dragRotate }] }} pointerEvents="none">
         <Svg viewBox="42 42 916 916" width="100%" height="100%" pointerEvents="none">
         <Circle cx={CX} cy={CY} r={R.bsOut} fill="none" stroke={W_RIM} strokeWidth={1.4} />
         {[R.bsIn, R.nakOut, R.nakIn, R.padaIn, R_KAR_I, R.rashiOut, R.rashiIn].map((rad, k) => (
@@ -1345,6 +1370,7 @@ function WheelChartImpl({
         {markerNodes}
         {hits}
       </Svg>
+        </Animated.View>
         <Pressable
           onPressIn={(e) => pickRingAtLocal(e.nativeEvent.locationX, e.nativeEvent.locationY)}
           style={[StyleSheet.absoluteFill, { zIndex: 1 }]}

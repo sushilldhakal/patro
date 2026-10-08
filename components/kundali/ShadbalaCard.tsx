@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View, type ViewStyle } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { ShadbalaChart } from "@/components/kundali/ShadbalaChart";

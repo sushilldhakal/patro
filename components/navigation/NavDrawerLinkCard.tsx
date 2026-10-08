@@ -1,4 +1,5 @@
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
+import { Pressable, useWindowDimensions, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import type { ReactNode } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useThemeColors } from "@/lib/theme-context";

@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
@@ -408,7 +408,7 @@ export default function VastuScreen() {
   }
 
   return (
-    <AppShell title={t("vastu.title")}>
+    <AppShell title={t("vastu.title")} showHeader={false}>
       <PatroPageHeader
         icon={<Ionicons name="compass-outline" size={28} color={colors.secondary} />}
         title={t("vastu.title")}

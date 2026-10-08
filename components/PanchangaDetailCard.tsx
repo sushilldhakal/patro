@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import type { PanchangaDay } from "@/lib/api";
 import { timeShort } from "@/lib/api";

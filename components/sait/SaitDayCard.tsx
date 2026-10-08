@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { SuitabilityBadge } from "@/components/sait/SaitSuitability";
 import { Text } from "@/components/ui/Text";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";

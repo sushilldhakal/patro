@@ -1,6 +1,6 @@
 import { memo, useMemo } from "react";
 import { Pressable, Text as RNText, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import type { Shloka } from "@/lib/documents/api";
 import { useLocale, useTranslation } from "@/lib/i18n";

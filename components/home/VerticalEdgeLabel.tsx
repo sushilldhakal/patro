@@ -1,4 +1,5 @@
-import { Platform, Text, View, type TextStyle } from "react-native";
+import { Platform, View, type TextStyle } from "react-native";
+import { Text } from "@/components/ui/Text";
 
 /** Web `w-[1.375rem]` — sun/festival edge column. */
 export const CALENDAR_EDGE_STRIP_WIDTH = 22;

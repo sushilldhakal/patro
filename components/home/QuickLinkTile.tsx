@@ -49,7 +49,7 @@ export function QuickLinkTile({ link }: { link: QuickLink }) {
     <Pressable
       onPress={() => router.push(link.href as never)}
       accessibilityRole="button"
-      className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 active:opacity-80"
+      className="flex-row items-center justify-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm active:opacity-80"
       style={{ maxWidth: "100%" }}
     >
       <AppNavIcon name={link.icon} size={20} color={colors.danger} />

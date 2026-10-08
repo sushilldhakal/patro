@@ -13,7 +13,7 @@
 import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import Slider from "@react-native-community/slider";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { Text } from "@/components/ui/Text";

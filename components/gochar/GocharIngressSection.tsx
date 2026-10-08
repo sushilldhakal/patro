@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { Text } from "@/components/ui/Text";
 import type { GocharIngressEvent } from "@/lib/api";

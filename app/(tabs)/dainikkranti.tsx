@@ -1,7 +1,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { AppShell } from "@/components/AppShell";

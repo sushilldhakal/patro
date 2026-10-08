@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useQuery } from "@tanstack/react-query";
 import { PanchangaDetailCard } from "@/components/PanchangaDetailCard";
 import { ErrorState, LoadingState } from "@/components/ui/States";

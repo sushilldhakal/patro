@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { showAsta, showVakri } from "@/lib/graha-status";
 import { useThemeColors } from "@/lib/theme-context";

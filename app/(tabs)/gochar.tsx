@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { View } from "react-native";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { GocharIngressSection } from "@/components/gochar/GocharIngressSection";
 import { GocharPlanetDeepDive } from "@/components/gochar/GocharPlanetDeepDive";
 import { GocharSkySection } from "@/components/gochar/GocharSkySection";
-import { GrahaBanner } from "@/components/graha/GrahaPageParts";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
@@ -30,7 +31,7 @@ function toAdStr(d: Date): string {
 }
 
 export default function GocharScreen() {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -103,13 +104,10 @@ export default function GocharScreen() {
 
   return (
     <AppShell title={pick("गोचर", "Gochar")} showHeader={false}>
-      <GrahaBanner
-        icon="planet-outline"
-        title={pick("गोचर", "Gochar")}
-        blurb={pick(
-          "प्रत्यक्ष ग्रह गोचर — स्थिति, आगामी प्रवेश र वक्री",
-          "Live planetary transits — positions, upcoming ingresses & retrogrades",
-        )}
+      <PatroPageHeader
+        icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
+        title={t("gochar.page_title")}
+        subtitle={t("gochar.page_subtitle")}
       />
 
       <PanchangaDateNav

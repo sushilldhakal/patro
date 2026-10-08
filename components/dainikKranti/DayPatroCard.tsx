@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import type { CalendarDay } from "@/lib/api";
 import { formatTimeShort } from "@/lib/panchanga-format";
 import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@/lib/dainikKranti/month-patro-tables";
@@ -73,13 +73,16 @@ function CardField({
   label,
   value,
   sub,
+  wide,
 }: {
   label: string;
   value: ReactNode;
   sub?: string | null;
+  /** Spans both columns (web `col-span-2`). */
+  wide?: boolean;
 }) {
   return (
-    <View className="min-w-0 flex-1" style={{ maxWidth: "48%" }}>
+    <View className="min-w-0" style={{ width: wide ? "100%" : "48%" }}>
       <Text className="text-xs text-muted-foreground">{label}</Text>
       <View>{typeof value === "string" ? <Text className="text-sm text-foreground">{value}</Text> : value}</View>
       {sub ? <Text className="text-xs leading-tight text-muted-foreground">{sub}</Text> : null}
@@ -98,7 +101,7 @@ export function DayPatroCard({
   notes,
 }: Props) {
   const colors = useThemeColors();
-  const { pick, digits, lang } = useLocale();
+  const { pick, digits, lang, t } = useLocale();
   const isEn = lang === "en";
   const det = day.panchanga;
   const tithiEnd = angaEnd(det?.tithi?.end ?? det?.tithi?.end_local_time, digits, isEn);
@@ -148,7 +151,7 @@ export function DayPatroCard({
         {isToday ? (
           <View className="rounded-full bg-secondary px-2 py-0.5">
             <Text className="text-xs font-semibold text-secondary-foreground">
-              {pick("आज", "Today")}
+              {t("dainik.today")}
             </Text>
           </View>
         ) : null}
@@ -156,22 +159,22 @@ export function DayPatroCard({
 
       <View className="mt-3 flex-row flex-wrap gap-x-3 gap-y-2.5">
         <CardField
-          label={pick("तिथि", "Tithi")}
+          label={t("dainik.tithi")}
           value={`${pakshaShort(day, isEn)} ${pick(day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) ?? "—"}`}
           sub={tithiEnd ? pick(`${tithiEnd} सम्म`, `until ${tithiEnd}`) : null}
         />
         <CardField
-          label={pick("नक्षत्र", "Nakshatra")}
+          label={t("dainik.nakshatra")}
           value={pick(day.nakshatra_ne ?? day.nakshatra ?? "—", day.nakshatra ?? day.nakshatra_ne ?? "—")}
           sub={nakEnd ? pick(`${nakEnd} सम्म`, `until ${nakEnd}`) : null}
         />
         <CardField
-          label={pick("योग", "Yoga")}
+          label={t("dainik.yoga")}
           value={pick(day.yoga_ne ?? day.yoga ?? "—", day.yoga ?? day.yoga_ne ?? "—")}
           sub={yogaEnd ? pick(`${yogaEnd} सम्म`, `until ${yogaEnd}`) : null}
         />
         <CardField
-          label={pick("करण", "Karana")}
+          label={t("dainik.karana")}
           value={pick(day.karana_ne ?? day.karana ?? "—", day.karana ?? day.karana_ne ?? "—")}
           sub={karanaEnd ? pick(`${karanaEnd} सम्म`, `until ${karanaEnd}`) : null}
         />
@@ -179,42 +182,26 @@ export function DayPatroCard({
 
       <View className="mt-3 flex-row flex-wrap gap-x-3 gap-y-2.5 rounded-lg bg-muted/40 p-2.5">
         <CardField
-          label={pick("सूर्योदय", "Sunrise")}
+          wide
+          label={t("dainik.sun_rise_set_sign")}
           value={
-            <Text className="text-amber-600 dark:text-amber-400">
-              {day.sunrise ? digits(formatTimeShort(day.sunrise) ?? day.sunrise) : "—"}
-            </Text>
+            <View className="min-w-0">
+              <Text className="font-num text-sm text-foreground">
+                {`${day.sunrise ? digits(formatTimeShort(day.sunrise) ?? day.sunrise) : "—"}/${day.sunset ? digits(formatTimeShort(day.sunset) ?? day.sunset) : "—"}`}
+              </Text>
+              <Text className="text-xs leading-tight text-muted-foreground">
+                {sunRashi ? `${sunRashi}${det?.ayana_mark ? ` ${det.ayana_mark}` : ""}` : "—"}
+              </Text>
+            </View>
           }
         />
-        <CardField
-          label={pick("सूर्यास्त", "Sunset")}
-          value={
-            <Text className="text-indigo-600 dark:text-indigo-400">
-              {day.sunset ? digits(formatTimeShort(day.sunset) ?? day.sunset) : "—"}
-            </Text>
-          }
-        />
-        <CardField
-          label={pick("सूर्य राशि", "Sun sign")}
-          value={
-            <Text>
-              {sunRashi || "—"}
-              {det?.ayana_mark ? (
-                <Text className="text-xs"> {det.ayana_mark}</Text>
-              ) : null}
-            </Text>
-          }
-        />
-        <CardField
-          label={pick("चन्द्र राशि", "Moon sign")}
-          value={moonRashi || "—"}
-        />
+        <CardField label={t("dainik.moon_sign")} value={moonRashi || "—"} />
       </View>
 
       {(transits?.length ?? 0) > 0 ? (
         <View className="mt-3">
           <Text className="text-xs text-muted-foreground">
-            {pick("ग्रहचार / उदयास्त", "Transits / rise-set")}
+            {t("dainik.transits_rise_set")}
           </Text>
           <View className="mt-1 gap-0.5">
             {transits!.map((ev, i) => (
@@ -230,7 +217,7 @@ export function DayPatroCard({
 
       {hasFestival ? (
         <View className="mt-3 rounded-lg bg-rose-500/5 px-2.5 py-2">
-          <Text className="text-xs text-muted-foreground">{pick("पर्व", "Festival")}</Text>
+          <Text className="text-xs text-muted-foreground">{t("dainik.festival")}</Text>
           <Text className="text-sm text-rose-600 dark:text-rose-300">
             {day.festivals.join(" · ")}
           </Text>

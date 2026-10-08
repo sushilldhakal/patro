@@ -1,4 +1,5 @@
-import { ImageBackground, Text, View } from "react-native";
+import { ImageBackground, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocale } from "@/lib/i18n";
 import {

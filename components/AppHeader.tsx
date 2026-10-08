@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, Modal, Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { Animated, Easing, Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
 import { AccountMenu } from "@/components/auth/AccountMenu";

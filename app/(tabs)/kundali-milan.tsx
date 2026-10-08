@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { ActivityIndicator, Modal, Pressable, ScrollView, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { ActivityIndicator, Modal, Pressable, ScrollView, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { EMPTY_PROFILE, ProfileForm } from "@/components/auth/ProfileForm";
@@ -24,7 +26,8 @@ import { fetchKundaliMilan, milanKeys, type MilanPersonQuery } from "@/lib/api";
 import { profileChartParams } from "@/lib/kundali/profile-chart";
 
 export default function KundaliMilanScreen() {
-  const { lang, pick } = useLocale();
+  const { lang, pick, t } = useLocale();
+  const colors = useThemeColors();
   const queryClient = useQueryClient();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
@@ -56,17 +59,14 @@ export default function KundaliMilanScreen() {
   return (
     <>
       <KundaliPageShell
-        eyebrow={pick("ज्योतिष", "Jyotish")}
-        title={pick("कुण्डली मिलान", "Kundali Milan")}
-        subtitle={
-          isAuthenticated
-            ? pick("दुई प्रोफाइल छानेर विवाह योग्यता हेर्नुहोस्।", "Pick two profiles for marriage compatibility.")
-            : pick("मिलानका लागि लगइन गर्नुहोस्।", "Log in to use chart matching.")
-        }
+        eyebrow={t("milan.eyebrow")}
+        icon={<AppNavIcon name="heart" size={28} color={colors.secondary} />}
+        title={t("milan.title")}
+        subtitle={isAuthenticated ? t("milan.subtitle_auth") : t("milan.login_required")}
         headerRight={
           isAuthenticated ? (
             <Button
-              label={pick("प्रोफाइल थप", "Add profile")}
+              label={t("kundali.add_profile")}
               size="sm"
               onPress={() => setAddOpen(true)}
             />
@@ -80,10 +80,10 @@ export default function KundaliMilanScreen() {
         ) : !isAuthenticated ? (
           <KundaliLoginPrompt
             icon="heart-outline"
-            titleNe="मिलानका लागि लगइन"
-            titleEn="Log in for matching"
-            bodyNe="कुण्डली मिलान गर्न सेभ गरिएका प्रोफाइल चाहिन्छ।"
-            bodyEn="Saved profiles are required for kundali matching."
+            titleNe={t("milan.login_prompt_title")}
+            titleEn={t("milan.login_prompt_title")}
+            bodyNe={t("milan.login_prompt_body")}
+            bodyEn={t("milan.login_prompt_body")}
             onLogin={() => openAuth("login")}
             onSignup={() => openAuth("signup")}
           />

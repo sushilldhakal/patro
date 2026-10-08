@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ActivityIndicator, Pressable, Switch, View } from "react-native";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -27,13 +27,21 @@ export function SaitRulesSection({
   rules,
   engineVersion,
   defaultOpen = false,
+  enabledRuleIds,
+  onToggleRule,
+  busy = false,
 }: {
   method?: { ne?: string; en?: string } | null;
   rules?: SaitRule[] | null;
   engineVersion?: string;
   defaultOpen?: boolean;
+  /** Ids currently applied. A toggleable rule not listed here is treated as ON. */
+  enabledRuleIds?: Set<string> | null;
+  onToggleRule?: (id: string, enabled: boolean) => void;
+  /** Recomputing indicator while a custom-rule fetch is in flight. */
+  busy?: boolean;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const [open, setOpen] = useState(defaultOpen);
@@ -42,6 +50,10 @@ export function SaitRulesSection({
   if (!intro && (!rules || rules.length === 0)) return null;
 
   const ruleCount = rules?.length ?? 0;
+  const togglingEnabled = Boolean(onToggleRule);
+  const offCount = togglingEnabled
+    ? (rules ?? []).filter((r) => r.id && !(enabledRuleIds?.has(r.id) ?? true)).length
+    : 0;
   const cols = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
@@ -57,12 +69,23 @@ export function SaitRulesSection({
             {pick("यो सूची कसरी बनेको हो", "How this list is generated")}
           </Text>
           <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
-            {pick(
-              `${digits(ruleCount)} शास्त्रीय नियम · स्रोतसहित`,
-              `${ruleCount} classical rules · with sources`,
-            )}
+            {offCount > 0
+              ? pick(
+                  `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`,
+                  `${offCount} of ${ruleCount} rules switched off`,
+                )
+              : togglingEnabled
+                ? pick(
+                    `${digits(ruleCount)} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने`,
+                    `${ruleCount} classical rules · switch off any your tradition skips`,
+                  )
+                : pick(
+                    `${digits(ruleCount)} शास्त्रीय नियम · स्रोतसहित`,
+                    `${ruleCount} classical rules · with sources`,
+                  )}
           </Text>
         </View>
+        {busy ? <ActivityIndicator size="small" color={colors.secondary} /> : null}
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
           size={18}
@@ -81,15 +104,29 @@ export function SaitRulesSection({
             </Text>
           ) : null}
 
+          {togglingEnabled ? (
+            <View className="flex-row items-start gap-1.5">
+              <Ionicons name="information-circle-outline" size={14} color={colors.mutedForeground} />
+              <Text className="flex-1 text-xs leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+                {t("sait.switch_off_a_rule_your_community_doesn_t_follow_the_dat")}
+              </Text>
+            </View>
+          ) : null}
+
           {rules && rules.length > 0 ? (
             <View className="flex-row flex-wrap gap-3">
-              {rules.map((r, i) => (
+              {rules.map((r, i) => {
+                const toggleable = Boolean(r.id && togglingEnabled);
+                const enabled = r.id ? (enabledRuleIds?.has(r.id) ?? true) : true;
+                const off = toggleable && !enabled;
+                return (
                 <View
                   key={r.id ?? i}
                   style={{
                     width: cardWidth as never,
                     backgroundColor: colors.surfaceInset,
                     borderColor: colors.border,
+                    opacity: off ? 0.55 : 1,
                   }}
                   className="gap-2 rounded-lg border p-3.5"
                 >
@@ -111,6 +148,15 @@ export function SaitRulesSection({
                     >
                       {pick(r.ne, r.en)}
                     </Text>
+                    {toggleable ? (
+                      <Switch
+                        value={enabled}
+                        onValueChange={(v) => {
+                          if (r.id) onToggleRule?.(r.id, v);
+                        }}
+                        trackColor={{ true: colors.secondary }}
+                      />
+                    ) : null}
                   </View>
 
                   {r.shloka || r.source || r.gloss ? (
@@ -142,7 +188,8 @@ export function SaitRulesSection({
                     </View>
                   ) : null}
                 </View>
-              ))}
+                );
+              })}
             </View>
           ) : null}
 

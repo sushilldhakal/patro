@@ -1,4 +1,10 @@
-import { Text as RNText, type TextProps as RNTextProps } from "react-native";
+import { StyleSheet, Text as RNText, type TextProps as RNTextProps } from "react-native";
+import {
+  NOTO_DEVANAGARI_BOLD,
+  NOTO_DEVANAGARI_MEDIUM,
+  NOTO_DEVANAGARI_REGULAR,
+  NOTO_DEVANAGARI_SEMIBOLD,
+} from "@/lib/fonts";
 import { useThemeColors } from "@/lib/theme-context";
 import { inkOn, relativeLuminance, type ThemeColors } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -40,16 +46,51 @@ function themedTextColor(className: string | undefined, colors: ThemeColors): st
   return colors.foreground;
 }
 
+/**
+ * Custom fonts on iOS/Android ignore `fontWeight` — a weight needs its own font
+ * file. `nepaliTextStyle` pins the Regular file, so every `font-bold` heading
+ * rendered at regular weight (the main reason the app looked lighter than web).
+ * Pick the file that matches the requested weight instead.
+ */
+const NOTO_FAMILIES = new Set([
+  NOTO_DEVANAGARI_REGULAR,
+  NOTO_DEVANAGARI_MEDIUM,
+  NOTO_DEVANAGARI_SEMIBOLD,
+  NOTO_DEVANAGARI_BOLD,
+]);
+
+function weightFamily(weight: string | number | undefined, className?: string): string | undefined {
+  let w: number | undefined;
+  if (weight === "bold") w = 700;
+  else if (weight != null && weight !== "normal") w = Number(weight);
+  if (w == null || Number.isNaN(w)) {
+    if (className) {
+      if (/\bfont-(?:bold|extrabold|black)\b/.test(className)) w = 700;
+      else if (/\bfont-semibold\b/.test(className)) w = 600;
+      else if (/\bfont-medium\b/.test(className)) w = 500;
+    }
+  }
+  if (w == null) return undefined;
+  if (w >= 700) return NOTO_DEVANAGARI_BOLD;
+  if (w >= 600) return NOTO_DEVANAGARI_SEMIBOLD;
+  if (w >= 500) return NOTO_DEVANAGARI_MEDIUM;
+  return undefined;
+}
+
 /** Default Text — always applies theme foreground unless a palette utility is used. */
 export function Text({ className, style, ...props }: Props) {
   const colors = useThemeColors();
   const color = themedTextColor(className, colors);
+  const flat = StyleSheet.flatten(style) as { fontFamily?: string; fontWeight?: string | number } | undefined;
+  const family = !flat?.fontFamily || NOTO_FAMILIES.has(flat.fontFamily)
+    ? weightFamily(flat?.fontWeight, className)
+    : undefined;
 
   return (
     <RNText
       {...props}
       className={cn("font-sans", className)}
-      style={[color ? { color } : undefined, style]}
+      style={[color ? { color } : undefined, style, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
     />
   );
 }

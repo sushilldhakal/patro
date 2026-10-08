@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { localizeNepalCityLabel } from "@/lib/cities/nepal-cities";
 import * as SecureStore from "expo-secure-store";
 import { searchCities, type LocationParams } from "@/lib/api";
 import { NEPAL_CITIES, nepalCityEnglishLabel } from "@/lib/cities/nepal-cities";
@@ -112,15 +113,19 @@ async function backfillCoords(loc: PanchangaLocation): Promise<PanchangaLocation
   }
 }
 
+/**
+ * Reads the saved place from SecureStore only — no network. A stored city id with
+ * no coordinates is repaired afterwards by `backfillCoords`; waiting for that
+ * lookup here left the Panchanga screen on a spinner whenever the connection was
+ * slow or down.
+ */
 async function readStoredLocation(): Promise<PanchangaLocation> {
   try {
     const raw = await SecureStore.getItemAsync(STORAGE_KEY);
     if (!raw) return DEFAULT_PANCHANGA_LOCATION;
     const parsed = JSON.parse(raw) as PanchangaLocation;
     if (!parsed?.label || !parsed?.params) return DEFAULT_PANCHANGA_LOCATION;
-
-    const healed = await backfillCoords(healStoredLocation(parsed));
-    /* Write the repair back so the lookup above happens once, not every launch. */
+    const healed = healStoredLocation(parsed);
     if (JSON.stringify(healed) !== raw) {
       SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(healed)).catch(() => {});
     }
@@ -130,6 +135,8 @@ async function readStoredLocation(): Promise<PanchangaLocation> {
   }
 }
 
+const BACKFILL_TIMEOUT_MS = 4000;
+
 export function usePanchangaLocation(initial?: PanchangaLocation) {
   const [location, setLocationState] = useState<PanchangaLocation>(
     initial ?? DEFAULT_PANCHANGA_LOCATION,
@@ -138,10 +145,26 @@ export function usePanchangaLocation(initial?: PanchangaLocation) {
 
   useEffect(() => {
     if (initial) return;
+    let active = true;
     readStoredLocation().then((stored) => {
+      if (!active) return;
       setLocationState(stored);
       setReady(true);
+      // Repair missing coordinates in the background, with a deadline.
+      if (stored.params.city_id != null && !hasCoords(stored)) {
+        void Promise.race([
+          backfillCoords(stored),
+          new Promise<PanchangaLocation>((resolve) => setTimeout(() => resolve(stored), BACKFILL_TIMEOUT_MS)),
+        ]).then((healed) => {
+          if (!active || healed === stored) return;
+          setLocationState((cur) => (cur.label === stored.label ? healed : cur));
+          SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(healed)).catch(() => {});
+        });
+      }
     });
+    return () => {
+      active = false;
+    };
   }, [initial]);
 
   const setLocation = useCallback((next: PanchangaLocation) => {
@@ -195,14 +218,16 @@ const GENERIC_API_LOCATION_NAMES = new Set(["custom"]);
 export function displayLocationLabel(
   location: PanchangaLocation | null | undefined,
   apiName?: string | null,
+  lang = "ne",
 ): string {
   const name = apiName?.trim();
+  const lat = location?.params.lat;
+  const lon = location?.params.lon;
   if (name && !GENERIC_API_LOCATION_NAMES.has(name.toLowerCase())) {
-    return name;
+    return localizeNepalCityLabel(name, lang, lat, lon).split(",")[0]!.trim();
   }
-  if (!location?.label) {
-    return DEFAULT_PANCHANGA_LOCATION.label.split(",")[0] ?? "Kathmandu";
-  }
-  const parts = location.label.split(",").map((s) => s.trim());
-  return parts[0] ?? location.label;
+  const label = location?.label || DEFAULT_PANCHANGA_LOCATION.label;
+  /* A curated Nepal city is shown in the reader's language (काठमाडौँ / Kathmandu),
+     as on web; anything else keeps its own name. */
+  return localizeNepalCityLabel(label, lang, lat, lon).split(",")[0]!.trim();
 }

@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import Animated, { useSharedValue } from "react-native-reanimated";
 import Svg, {
   Circle,

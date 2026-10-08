@@ -1,13 +1,20 @@
 import { useMemo } from "react";
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
 import { SaitRulesSection, type SaitRule } from "@/components/sait/SaitRulesSection";
 import { Text } from "@/components/ui/Text";
-import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
+import type {
+  BratabandhaNakshatraMode,
+  SaitDetailDay,
+  SaitPersonalizeDay,
+  SaitSuitability,
+} from "@/lib/api";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { BS_MONTH_NAMES } from "@/lib/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -32,6 +39,14 @@ export function SaitCeremonyLayout({
   method,
   rules,
   engineVersion,
+  enabledRuleIds,
+  onToggleRule,
+  rulesBusy,
+  nakshatraMode,
+  onNakshatraModeChange,
+  count,
+  notice,
+  children,
   days = [],
   profileControl,
   suitabilityByDay,
@@ -53,6 +68,18 @@ export function SaitCeremonyLayout({
   method?: { ne?: string; en?: string } | null;
   rules?: SaitRule[] | null;
   engineVersion?: string;
+  /** Applied (ON) toggleable rule ids; enables per-rule switches when set. */
+  enabledRuleIds?: Set<string> | null;
+  onToggleRule?: (id: string, enabled: boolean) => void;
+  rulesBusy?: boolean;
+  /** Bratabandha nakṣatra tradition selector. */
+  nakshatraMode?: BratabandhaNakshatraMode | null;
+  onNakshatraModeChange?: (mode: BratabandhaNakshatraMode) => void;
+  /** Total for the summary line; falls back to `days.length`. */
+  count?: number;
+  notice?: React.ReactNode;
+  /** Replaces the day-card list (the date-only Vās categories). */
+  children?: React.ReactNode;
   days?: SaitDetailDay[];
   /** Profile picker + legend, shown below the year/location row. */
   profileControl?: React.ReactNode;
@@ -66,7 +93,7 @@ export function SaitCeremonyLayout({
   /** Rendered after the day list (the classical sources card). */
   footer?: React.ReactNode;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width } = useBreakpoint();
@@ -84,16 +111,59 @@ export function SaitCeremonyLayout({
   const cols = width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
+  const displayCount = count ?? days.length;
   const countText = countLabel
-    ? countLabel(days.length, year)
+    ? countLabel(displayCount, year)
     : pick(
-        `${digits(year)} मा ${digits(days.length)} शुभ दिन`,
-        `${days.length} auspicious days in ${year}`,
+        `${digits(year)} मा ${digits(displayCount)} शुभ दिन`,
+        `${displayCount} auspicious days in ${year}`,
       );
 
   return (
     <AppShell title={title} showHeader={false}>
-      <SaitRulesSection method={method} rules={rules} engineVersion={engineVersion} />
+      <PatroPageHeader
+        icon={<AppNavIcon name="heart-handshake" size={24} color={colors.secondary} />}
+        title={title}
+        subtitle={subtitle}
+      />
+
+      <SaitRulesSection
+        method={method}
+        rules={rules}
+        engineVersion={engineVersion}
+        enabledRuleIds={enabledRuleIds}
+        onToggleRule={onToggleRule}
+        busy={rulesBusy}
+      />
+
+      {nakshatraMode && onNakshatraModeChange ? (
+        <View className="mb-4 gap-1.5">
+          <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+            {t("sait.nakshatra_tradition")}
+          </Text>
+          <View className="flex-row flex-wrap gap-1 self-start rounded-lg border border-border bg-card p-0.5">
+            {(["classical", "nepali", "liberal"] as const).map((id) => {
+              const active = nakshatraMode === id;
+              return (
+                <Pressable
+                  key={id}
+                  onPress={() => onNakshatraModeChange(id)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: active }}
+                  className={active ? "rounded-md bg-primary px-2.5 py-1.5" : "rounded-md px-2.5 py-1.5 active:bg-muted"}
+                >
+                  <Text
+                    className={active ? "text-xs font-semibold text-primary-foreground" : "text-xs font-semibold text-muted-foreground"}
+                    style={nepaliTextStyle(12)}
+                  >
+                    {t(`sait.nakshatra_modes.${id}`)}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
 
       <PatroYearNavBlock
         era={era}
@@ -104,6 +174,12 @@ export function SaitCeremonyLayout({
         onLocationChange={onLocationChange}
       />
 
+      {!loading && displayCount > 0 ? (
+        <Text className="mb-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          {countText}
+        </Text>
+      ) : null}
+
       {profileControl ? (
         <View
           style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }}
@@ -113,13 +189,11 @@ export function SaitCeremonyLayout({
         </View>
       ) : null}
 
-      {!loading && days.length > 0 ? (
-        <Text className="mb-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-          {countText}
-        </Text>
-      ) : null}
+      {notice}
 
-      {loading ? (
+      {children ? (
+        children
+      ) : loading ? (
         <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
@@ -175,7 +249,7 @@ export function SaitCeremonyLayout({
       >
         <Ionicons name="grid-outline" size={14} color={colors.primary} />
         <Text style={{ color: colors.primary }} className="text-sm underline">
-          {pick("सबै संस्कारका साइत", "All ceremonies")}
+          {t("sait.all_ceremonies")}
         </Text>
       </Pressable>
     </AppShell>

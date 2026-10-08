@@ -1,4 +1,7 @@
 import { useMemo, useState } from "react";
+import { useThemeColors } from "@/lib/theme-context";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -44,7 +47,8 @@ function sceneHeightFor(screenH: number, safeAreaTop: number, isTablet: boolean)
  * play walks the real gochar forward rather than an approximation of it.
  */
 export default function AakashGocharScreen() {
-  const { pick } = useLocale();
+  const { pick, lang } = useLocale();
+  const colors = useThemeColors();
   const { height: screenH, isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const { location, setLocation } = usePanchangaLocation();
@@ -100,6 +104,14 @@ export default function AakashGocharScreen() {
     <View className="flex-1 bg-background">
       <AppHeader />
       <AppShell title={pick("३D आकाश गोचर", "3D Aakash Gochar")} showHeader={false}>
+        <PatroPageHeader
+          icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
+          title={pick("३D आकाश गोचर", "3D Aakash Gochar")}
+          subtitle={`${pick(
+            "भूकेन्द्रित दृष्टिकोणबाट प्रत्यक्ष ग्रह गोचर",
+            "Live graha transits from the geocentric standpoint",
+          )} · ${displayLocationLabel(location, undefined, lang)}`}
+        />
         <PanchangaDateNav
           date={date}
           onDateChange={setDate}
@@ -154,7 +166,7 @@ export default function AakashGocharScreen() {
           </Text>
           </View>
 
-        <PatroFooterNote locationLabel={displayLocationLabel(location)} />
+        <PatroFooterNote locationLabel={displayLocationLabel(location, undefined, lang)} />
       </AppShell>
       <FloatingNavBar />
     </View>

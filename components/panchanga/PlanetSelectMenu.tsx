@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View, useWindowDimensions } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@/lib/graha-details";

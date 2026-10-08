@@ -1,6 +1,6 @@
 import { Pressable, View } from "react-native";
 import Slider from "@react-native-community/slider";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/Text";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";

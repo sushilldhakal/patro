@@ -15,7 +15,7 @@
  */
 
 import { Pressable, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { LEARN_DIAGRAMS } from "@/lib/learn/learn-diagrams";
 import { useLocale } from "@/lib/i18n";

@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter, Redirect } from "expo-router";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
@@ -151,7 +151,7 @@ function SpanBoundary({
 }
 
 function SpanList({ spans, elementId }: { spans: ElementSpan[]; elementId: string }) {
-  const { lang, pick } = useLocale();
+  const { lang, pick, t } = useLocale();
   const width = useGridWidth(1, 2, 4);
 
   return (
@@ -167,17 +167,15 @@ function SpanList({ spans, elementId }: { spans: ElementSpan[]; elementId: strin
                 </Text>
                 {s.paksha ? (
                   <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-                    {s.paksha === "shukla"
-                      ? pick("शुक्ल पक्ष", "Shukla paksha")
-                      : pick("कृष्ण पक्ष", "Krishna paksha")}
+                    {s.paksha === "shukla" ? t("common.paksha_shukla") : t("common.paksha_krishna")}
                   </Text>
                 ) : null}
               </View>
             </View>
           </View>
           <View className="gap-1.5">
-            <SpanBoundary label={pick("सुरु", "Begins")} stamp={s.begins} tone="begin" />
-            <SpanBoundary label={pick("अन्त्य", "Ends")} stamp={s.ends} tone="end" />
+            <SpanBoundary label={t("common.begins")} stamp={s.begins} tone="begin" />
+            <SpanBoundary label={t("common.ends")} stamp={s.ends} tone="end" />
           </View>
         </Card>
       ))}
@@ -463,7 +461,7 @@ function NavataraBalamElementView({
 
 export default function ElementScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
-  const { pick, lang, digits } = useLocale();
+  const { pick, lang, digits, t } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
@@ -565,8 +563,8 @@ export default function ElementScreen() {
     <AppShell title={pick(meta.titleNe, meta.titleEn)} showHeader={false}>
       <GrahaBanner
         icon="sparkles-outline"
-        title={pick(meta.titleNe, meta.titleEn)}
-        blurb={pick(meta.blurbNe, meta.blurbEn)}
+        title={t(`panchanga_elements.${meta.id}.title`)}
+        blurb={t(`panchanga_elements.${meta.id}.blurb`)}
       />
 
       {isSpan ? (

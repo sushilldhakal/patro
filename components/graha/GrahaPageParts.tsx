@@ -1,5 +1,5 @@
 import { Pressable, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
@@ -14,7 +14,7 @@ import {
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
-/** Page banner — icon tile plus title and blurb, as on the web graha pages. */
+/** Page banner — icon tile plus title and blurb, as on the web graha pages (`GrahaBanner`). */
 export function GrahaBanner({
   icon,
   title,

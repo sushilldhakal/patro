@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useAuth } from "@/lib/auth/AuthContext";
 import type { Profile } from "@/lib/auth/client";

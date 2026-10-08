@@ -1,6 +1,8 @@
 import { useEffect, useMemo } from "react";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
+import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@/components/icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
@@ -135,7 +137,7 @@ export default function AbhijitMuhurtaScreen() {
   const { era, setEra, year, setYear, month, setMonth, stepMonth, goToday } = usePatroMonthBrowse();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
 
@@ -170,6 +172,12 @@ export default function AbhijitMuhurtaScreen() {
 
   return (
     <AppShell title={pick("अभिजित् मुहूर्त", "Abhijit Moment")} showHeader={false}>
+      <PatroPageHeader
+        icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
+        title={t("abhijit.title")}
+        subtitle={t("abhijit.subtitle")}
+      />
+
       <PatroMonthYearNavBlock
         era={era}
         onEraChange={setEra}

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
@@ -13,7 +14,7 @@ import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
 import type { PatroBrowseEra } from "@/lib/patro-era";
 import { isGregorianBrowseEra } from "@/lib/patro-era";
 
-const TABS = ["panchanga", "muhurta", "sait"] as const;
+const TABS = ["panchanga", "sait", "muhurta"] as const;
 type TabId = (typeof TABS)[number];
 
 type Props = {
@@ -53,7 +54,7 @@ export function PanchangaAsidePanel({
   location,
   browseEra = "bs",
 }: Props) {
-  const { pick } = useLocale();
+  const { pick, t } = useLocale();
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("panchanga");
 
@@ -100,7 +101,7 @@ export function PanchangaAsidePanel({
               onPress={() => setTab(id)}
               className={cn(
                 "min-h-10 flex-1 items-center justify-center border-b-2 px-1 py-2.5",
-                tab === id ? "border-primary bg-tab-active" : "border-transparent",
+                tab === id ? "border-secondary bg-tab-active/70" : "border-transparent",
               )}
             >
               <Text
@@ -109,10 +110,7 @@ export function PanchangaAsidePanel({
                   tab === id ? "font-bold text-foreground" : "text-muted-foreground",
                 )}
               >
-                {pick(
-                  id === "panchanga" ? "पञ्चाङ्ग" : id === "muhurta" ? "मुहूर्त" : "साइत",
-                  id === "panchanga" ? "Panchanga" : id === "muhurta" ? "Muhurta" : "Sait",
-                )}
+                {t(`panchanga.tabs.${id}`)}
               </Text>
             </Pressable>
           ))}

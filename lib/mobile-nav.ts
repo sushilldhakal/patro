@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react";
-import type { Ionicons } from "@expo/vector-icons";
+import type { Ionicons } from "@/components/icons/Ionicons";
 
 export type MobileNavIcon = ComponentProps<typeof Ionicons>["name"];
 
@@ -14,7 +14,7 @@ export type MobileNavIcon = ComponentProps<typeof Ionicons>["name"];
  */
 export const FLOATING_NAV = [
   { href: "/", ne: "गृह", en: "Home", icon: "home-outline" as MobileNavIcon },
-  { href: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: "sunny-outline" as MobileNavIcon },
+  { href: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: "star-outline" as MobileNavIcon },
   { href: "/kundali", ne: "कुण्डली", en: "Kundali", icon: "sparkles-outline" as MobileNavIcon },
   { href: "/dainikkranti", ne: "दैनिक", en: "Transit", icon: "moon-outline" as MobileNavIcon },
   { href: "/vastu", ne: "वास्तु", en: "Vastu", icon: "compass-outline" as MobileNavIcon },

@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Text } from "@/components/ui/Text";
 import { useQuery } from "@tanstack/react-query";
 import type { LocationParams, SaitMonthAllResponse } from "@/lib/api";
 import { apiKeys, fetchSaitMonthAll } from "@/lib/api";
