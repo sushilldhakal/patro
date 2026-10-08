@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { deviceStore } from "@/lib/device-store";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import type { MonthBrowseEra } from "@/lib/api";
 
@@ -21,26 +22,44 @@ import type { MonthBrowseEra } from "@/lib/api";
  *    load right now, since the generic fetch error would otherwise look like
  *    a bug rather than "no connection".
  */
+const PROMPT_DISMISSED_KEY = "device:offline_prompt_dismissed";
+
 export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthBrowseEra }) {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const { isOnline, isYearAvailableOffline, downloadYear } = useOfflineData();
   const [dismissedYears, setDismissedYears] = useState<Set<number>>(new Set());
+  // null = still reading the saved choice. "Later" is remembered on this device
+  // for good; the Offline tab in the bottom bar stays available.
+  const [dismissedForever, setDismissedForever] = useState<boolean | null>(null);
+  useEffect(() => {
+    let active = true;
+    void deviceStore.get<boolean>(PROMPT_DISMISSED_KEY).then((v) => {
+      if (active) setDismissedForever(Boolean(v));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   const [downloadingYear, setDownloadingYear] = useState<number | null>(null);
   const [downloadError, setDownloadError] = useState<number | null>(null);
 
   const relevant = era === "bs";
   const available = useMemo(() => (relevant ? isYearAvailableOffline(year) : true), [relevant, isYearAvailableOffline, year]);
 
-  if (!relevant || available || dismissedYears.has(year)) return null;
+  if (!relevant || available || dismissedYears.has(year) || dismissedForever !== false) return null;
 
   const dismiss = () => setDismissedYears((prev) => new Set(prev).add(year));
+  const later = () => {
+    setDismissedForever(true);
+    void deviceStore.set(PROMPT_DISMISSED_KEY, true);
+  };
 
   if (!isOnline) {
     return (
       <View
         style={{ borderColor: colors.border, backgroundColor: colors.card }}
-        className="mb-3 flex-row items-start gap-2.5 rounded-xl border px-3 py-2.5"
+        className="flex-row items-start gap-2.5 rounded-xl border px-3 py-2.5"
       >
         <Ionicons name="cloud-offline-outline" size={18} color={colors.mutedForeground} style={{ marginTop: 1 }} />
         <Text className="flex-1 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
@@ -61,7 +80,7 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
   return (
     <View
       style={{ borderColor: colors.border, backgroundColor: colors.card }}
-      className="mb-3 flex-row items-center gap-2.5 rounded-xl border px-3 py-2.5"
+      className="flex-row items-center gap-2.5 rounded-xl border px-3 py-2.5"
     >
       <Ionicons name="download-outline" size={18} color={colors.secondary} />
       <Text className="flex-1 text-xs text-foreground" style={nepaliTextStyle(12)}>
@@ -97,9 +116,9 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
               {pick("डाउनलोड", "Download")}
             </Text>
           </Pressable>
-          <Pressable onPress={dismiss} hitSlop={8} className="px-1">
+          <Pressable onPress={later} hitSlop={8} className="px-1">
             <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick("पछि", "Not now")}
+              {pick("पछि", "Later")}
             </Text>
           </Pressable>
         </>

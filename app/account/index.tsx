@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, Pressable, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, Switch, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { EMPTY_PROFILE, ProfileForm, profileToInput } from "@/components/auth/Pr
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { useBiometricLock } from "@/lib/auth/BiometricLock";
 import {
   apiResendVerification,
   deleteProfile,
@@ -28,6 +29,7 @@ export default function AccountScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, loading: authLoading, refreshUser, deleteAccount } = useAuth();
+  const biometric = useBiometricLock();
   const [editing, setEditing] = useState<Profile | "new" | null>(null);
   const [resent, setResent] = useState(false);
 
@@ -255,9 +257,34 @@ export default function AccountScreen() {
         </View>
       )}
 
+      {biometric.available ? (
+        <View className="mt-8 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5">
+          <View className="flex-1 flex-row items-center gap-3 pr-3">
+            <Ionicons name="finger-print-outline" size={18} color={colors.secondary} />
+            <View className="flex-1">
+              <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+                {pick(`${biometric.label} ले खोल्नुहोस्`, `Unlock with ${biometric.label}`)}
+              </Text>
+              <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+                {pick(
+                  "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
+                  "You stay signed in; the app asks for biometrics when opened.",
+                )}
+              </Text>
+            </View>
+          </View>
+          <Switch
+            value={biometric.enabled}
+            onValueChange={(on) => void biometric.setEnabled(on)}
+            trackColor={{ true: colors.secondary }}
+            accessibilityLabel={pick("बायोमेट्रिक लक", "Biometric lock")}
+          />
+        </View>
+      ) : null}
+
       <Pressable
         onPress={() => router.push("/account/offline-data" as never)}
-        className="mt-8 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
+        className="mt-3 flex-row items-center justify-between rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
       >
         <View className="flex-1 flex-row items-center gap-3 pr-3">
           <Ionicons name="download-outline" size={18} color={colors.secondary} />

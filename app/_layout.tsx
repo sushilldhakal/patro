@@ -23,6 +23,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LocaleProvider } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
@@ -124,7 +125,9 @@ export default function RootLayout() {
             >
               <OfflineDataProvider>
                 <AuthProvider>
-                  <RootShell ready={ready} onboarded={onboarded} onOnboarded={() => setOnboarded(true)} />
+                  <BiometricLockProvider>
+                    <RootShell ready={ready} onboarded={onboarded} onOnboarded={() => setOnboarded(true)} />
+                  </BiometricLockProvider>
                 </AuthProvider>
               </OfflineDataProvider>
             </PersistQueryClientProvider>

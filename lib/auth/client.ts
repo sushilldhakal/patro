@@ -46,11 +46,14 @@ export const tokenStore = {
       storageGet(REFRESH_KEY),
     ]);
   },
-  set(tokens: TokenPair) {
+  /** Updates the in-memory cache at once; the returned promise settles when both tokens are durable. */
+  set(tokens: TokenPair): Promise<void> {
     accessToken = tokens.access_token;
     refreshToken = tokens.refresh_token;
-    void storageSet(ACCESS_KEY, tokens.access_token);
-    void storageSet(REFRESH_KEY, tokens.refresh_token);
+    return Promise.all([
+      storageSet(ACCESS_KEY, tokens.access_token),
+      storageSet(REFRESH_KEY, tokens.refresh_token),
+    ]).then(() => undefined);
   },
   clear() {
     accessToken = null;
@@ -86,17 +89,40 @@ async function raw(path: string, init: RequestInit = {}): Promise<Response> {
   });
 }
 
-async function tryRefresh(): Promise<boolean> {
-  if (!refreshToken) return false;
-  const res = await raw("/auth/refresh", {
-    method: "POST",
-    body: JSON.stringify({ refresh_token: refreshToken }),
+/**
+ * The server rotates refresh tokens (each is single-use), so two requests that
+ * 401 together must share ONE refresh — the second would present a token the
+ * first already revoked and sign the user out.
+ */
+let refreshInFlight: Promise<boolean> | null = null;
+
+function tryRefresh(): Promise<boolean> {
+  refreshInFlight ??= doRefresh().finally(() => {
+    refreshInFlight = null;
   });
-  if (!res.ok) {
+  return refreshInFlight;
+}
+
+async function doRefresh(): Promise<boolean> {
+  if (!refreshToken) return false;
+  let res: Response;
+  try {
+    res = await raw("/auth/refresh", {
+      method: "POST",
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+  } catch {
+    // Offline / DNS / timeout: the session is fine, we just can't reach the server.
+    return false;
+  }
+  // Only a definitive rejection ends the session. A 5xx or gateway hiccup must not.
+  if (res.status === 401 || res.status === 403) {
     tokenStore.clear();
     return false;
   }
-  tokenStore.set((await res.json()) as TokenPair);
+  if (!res.ok) return false;
+  // Await persistence: the old token is already revoked, so losing the new one logs the user out.
+  await tokenStore.set((await res.json()) as TokenPair);
   return true;
 }
 

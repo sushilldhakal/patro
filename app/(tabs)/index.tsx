@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
@@ -10,6 +10,11 @@ import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
 import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
+import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
+import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
+import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
+import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
+import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
 import {
@@ -42,7 +47,7 @@ import {
 import { useLocale } from "@/lib/i18n";
 import { floatingNavBottomPadding, homeContentInset } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
-import { isGregorianBrowseEra } from "@/lib/patro-era";
+import { PATRO_BROWSE_ERAS, isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
 import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
@@ -76,7 +81,6 @@ function mergeMonthFromApi(
 }
 
 export default function HomeScreen() {
-  const router = useRouter();
   const colors = useThemeColors();
   const { pick, digits, lang } = useLocale();
   const { width, isTablet, isPhone } = useBreakpoint();
@@ -92,11 +96,44 @@ export default function HomeScreen() {
     goToday: goTodayBrowse,
   } = usePatroMonthBrowse();
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
+  const [dayOpen, setDayOpen] = useState(false);
   const [patroView, setPatroView] = useState<HomePatroView>("calendar");
-  const scrollRef = useRef<ScrollView | null>(null);
-  const [asideOffsetY, setAsideOffsetY] = useState(0);
   const todayAd = todayAdString();
   const splitAside = width >= ASIDE_SIDEBAR_SPLIT;
+
+  // The browsed era/year/month lives in the address (?era=&year=&month=), like the
+  // website, so a shared link reopens the same month and it survives a relaunch.
+  const urlParams = useLocalSearchParams<{ era?: string; year?: string; month?: string }>();
+  const router = useRouter();
+  const pendingBrowse = useRef<{ era: PatroBrowseEra; year: number; month: number } | null>(
+    (() => {
+      const y = Number(urlParams.year);
+      const m = Number(urlParams.month);
+      const e = (urlParams.era ?? "bs") as PatroBrowseEra;
+      if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) return null;
+      if (!(PATRO_BROWSE_ERAS as readonly string[]).includes(e)) return null;
+      return { era: e, year: y, month: m };
+    })(),
+  );
+
+  useEffect(() => {
+    const target = pendingBrowse.current;
+    if (!target) return;
+    if (browseEra !== target.era) {
+      setBrowseEra(target.era);
+      return;
+    }
+    setYear(target.year);
+    setMonth(target.month);
+    pendingBrowse.current = null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [browseEra]);
+
+  useEffect(() => {
+    if (pendingBrowse.current) return;
+    router.setParams({ era: browseEra, year: String(year), month: String(month) } as never);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [browseEra, year, month]);
 
   const prevBm = useMemo(
     () => shiftPatroBrowseMonth(browseEra, year, month, -1),
@@ -113,15 +150,16 @@ export default function HomeScreen() {
     ? true
     : !(month === 12 && year >= BS_SUPPORTED_END_YEAR);
 
-  const handleSelectDay = useCallback((day: CalendarDay) => {
-    if (day.outsideMonth) return;
-    setSelectedDay(day);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedDay || splitAside || asideOffsetY <= 0) return;
-    scrollRef.current?.scrollTo({ y: Math.max(0, asideOffsetY - 72), animated: true });
-  }, [selectedDay, splitAside, asideOffsetY]);
+  // Tapping a day opens its detail window (as on the website). On a wide split
+  // layout the side panel already shows it, so only the selection changes.
+  const handleSelectDay = useCallback(
+    (day: CalendarDay) => {
+      if (day.outsideMonth) return;
+      setSelectedDay(day);
+      if (!splitAside) setDayOpen(true);
+    },
+    [splitAside],
+  );
 
   const monthQueries = useQueries({
     queries: [
@@ -294,24 +332,6 @@ export default function HomeScreen() {
         location={location}
         onLocationChange={setLocation}
       />
-
-      <OfflineDownloadPrompt year={year} era={browseEra} />
-
-      <Pressable
-        onPress={() => router.push("/aakash-gochar")}
-        className="mb-3 flex-row items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-2.5 active:opacity-80"
-        accessibilityRole="button"
-        accessibilityLabel={pick("३D आकाश गोचर", "3D Aakash Gochar")}
-      >
-        <Ionicons name="planet-outline" size={20} color={colors.secondary} />
-        <Text className="flex-1 text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
-          {pick("३D आकाश गोचर", "3D Aakash Gochar")}
-        </Text>
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
-          {pick("भूकेन्द्रित", "Geocentric")}
-        </Text>
-        <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
-      </Pressable>
     </View>
   );
 
@@ -402,31 +422,82 @@ export default function HomeScreen() {
     </View>
   );
 
+  const leftColumn = (
+    <View className="min-w-0 flex-1">
+      {calendarBlock}
+
+      <View className="mt-3 gap-3" style={{ paddingHorizontal: contentInset }}>
+        {isPhone ? (
+          <TodayHighlightCard
+            selectedDay={selectedDay}
+            selectedAdDate={asideAdDate}
+            todayAd={todayAd}
+            isAdCalendar={isGregorianBrowseEra(browseEra)}
+            year={year}
+            month={month}
+            location={location.params}
+            p={panchangaQ.data}
+            onOpenDay={() => {
+              if (!selectedDay) {
+                const day = monthDays.find((d) => d.date_ad === asideAdDate);
+                if (day) setSelectedDay(day);
+              }
+              setDayOpen(true);
+            }}
+          />
+        ) : null}
+        <AakashGocharEntryCard />
+        <OfflineDownloadPrompt year={year} era={browseEra} />
+      </View>
+    </View>
+  );
+
   return (
-    <ScrollView
-      ref={scrollRef}
-      className="flex-1 bg-background"
-      contentContainerClassName="mx-auto w-full max-w-[1400px]"
-      contentContainerStyle={{
-        paddingBottom: floatingNavBottomPadding(isTablet),
-        paddingHorizontal: isPhone ? 0 : contentInset,
-        paddingTop: isPhone ? 12 : 16,
-      }}
-    >
-      <View className={splitAside ? "flex-row items-start gap-5" : "gap-5"}>
-        {calendarBlock}
-        <View onLayout={(e) => setAsideOffsetY(e.nativeEvent.layout.y)}>{asideBlock}</View>
-      </View>
+    <>
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerClassName="mx-auto w-full max-w-[1400px]"
+        contentContainerStyle={{
+          paddingBottom: floatingNavBottomPadding(isTablet),
+          paddingHorizontal: isPhone ? 0 : contentInset,
+          paddingTop: isPhone ? 12 : 16,
+        }}
+      >
+        <View className={splitAside ? "flex-row items-start gap-5" : "gap-5"}>
+          {leftColumn}
+          {isPhone ? null : asideBlock}
+        </View>
 
-      <View className="mt-6">
-        <HomeRashifalSection
-          dateAd={asideAdDate}
-          location={location.params}
-          contentInset={contentInset}
-        />
-      </View>
+        <View className="mt-6">
+          <HomeRashifalSection
+            dateAd={asideAdDate}
+            location={location.params}
+            contentInset={contentInset}
+          />
+        </View>
 
-      <PatroFooterNote paddingHorizontal={contentInset} />
-    </ScrollView>
+        <View className="mt-8" style={{ paddingHorizontal: contentInset }}>
+          <HomeQuickLinks />
+        </View>
+
+        <View className="mt-4" style={{ paddingHorizontal: contentInset }}>
+          <PanchangaDirectoryMobile />
+        </View>
+
+        <PatroFooterNote paddingHorizontal={contentInset} />
+      </ScrollView>
+
+      <BottomSheetModal visible={dayOpen} onClose={() => setDayOpen(false)} maxHeight="92%">
+        <View className="flex-row items-center justify-between px-4 pb-1 pt-2">
+          <Text className="text-base font-bold text-foreground">{pick("दिन विवरण", "Day detail")}</Text>
+          <Pressable onPress={() => setDayOpen(false)} hitSlop={10} accessibilityRole="button" accessibilityLabel={pick("बन्द", "Close")}>
+            <Ionicons name="close" size={22} color={colors.mutedForeground} />
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
+          {asideBlock}
+        </ScrollView>
+      </BottomSheetModal>
+    </>
   );
 }

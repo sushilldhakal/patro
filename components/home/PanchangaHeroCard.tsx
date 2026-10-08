@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { ImageBackground, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocale } from "@/lib/i18n";
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/lib/bs-calendar";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import { MONTH_HERO_COLORS } from "@/lib/theme";
+import { bsMonthArt } from "@/lib/month-art";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatPakshaLabel, getPanchangaDetail } from "@/lib/panchanga-format";
@@ -129,9 +130,14 @@ export function PanchangaHeroCard({
 
   return (
     <View className="overflow-hidden rounded-xl shadow-lg">
-      <LinearGradient colors={[base, "#061f21"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+      <ImageBackground
+        source={bsMonthArt(heroMonth)}
+        resizeMode="cover"
+        style={{ backgroundColor: base }}
+        accessibilityIgnoresInvertColors
+      >
         <LinearGradient
-          colors={colors.heroOverlay as unknown as [string, string, ...string[]]}
+          colors={["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ padding: 22 }}
@@ -165,7 +171,7 @@ export function PanchangaHeroCard({
             ) : null}
           </View>
         </LinearGradient>
-      </LinearGradient>
+      </ImageBackground>
     </View>
   );
 }
