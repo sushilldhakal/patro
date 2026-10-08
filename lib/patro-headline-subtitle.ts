@@ -109,6 +109,26 @@ export function formatPatroCivilDayLabel(
   return `${digitFn(day)} ${monthName} ${yearLabel}`;
 }
 
+/**
+ * The other era's civil day for a day headline: a Gregorian line while
+ * browsing BS, a BS line while browsing a Gregorian era (web
+ * `formatPatroDayCrossEraSubtitle`).
+ */
+export function formatPatroDayCrossEraSubtitle(
+  dateAdIso: string,
+  era: PatroBrowseEra,
+  lang: string,
+  digitFn: (n: number | string) => string = String,
+): string {
+  if (isGregorianBrowseEra(era)) {
+    const bs = adToBS(parseCivilIsoToDate(dateAdIso));
+    const isEn = lang.slice(0, 2) === "en";
+    const monthLabel = isEn ? BS_MONTHS_SHORT[bs.month - 1] : BS_MONTHS_NE[bs.month - 1];
+    return `${monthLabel} ${digitFn(bs.day)}, ${digitFn(bs.year)} ${isEn ? "BS" : "वि.सं."}`;
+  }
+  return formatPatroCivilDayLabel(dateAdIso, lang, digitFn);
+}
+
 /** Default digit fn for Nepali UI headlines. */
 export function patroHeadlineDigits(lang: string): (n: number | string) => string {
   return lang.slice(0, 2) === "en" ? String : toNepaliDigits;

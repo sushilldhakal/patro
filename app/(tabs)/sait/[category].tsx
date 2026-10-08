@@ -9,6 +9,7 @@ import { fetchSaitDetail, saitDetailKey } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { isGregorianBrowseEra } from "@/lib/patro-era";
+import { SaitSources } from "@/components/sait/SaitSources";
 import { SAIT_CATEGORY_LABELS, type SaitCategoryId } from "@/lib/sait-data";
 import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
@@ -76,6 +77,7 @@ export default function SaitCategoryScreen() {
       }
       suitabilityByDay={personalize.suitabilityByDay}
       personalizeByDay={personalize.personalizeByDay}
+      footer={id ? <SaitSources category={id} /> : null}
       loading={detailQuery.isLoading && !detailQuery.data}
       emptyLabel={pick(
         `यस वर्ष ${labels.ne}को साइत भेटिएन।`,

@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { setPageScroller } from "@/lib/page-scroll";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -80,7 +81,10 @@ export function AppShell({
 
   return (
     <ScrollView
-      ref={scrollRef}
+      ref={(node) => {
+        if (scrollRef) scrollRef.current = node;
+        setPageScroller(node);
+      }}
       className="flex-1 bg-background"
       contentContainerClassName="mx-auto w-full max-w-[1400px]"
       contentContainerStyle={{

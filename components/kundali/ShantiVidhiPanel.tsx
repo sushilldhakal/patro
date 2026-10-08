@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -20,6 +20,7 @@ import {
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
+import { scrollViewIntoView } from "@/lib/page-scroll";
 
 function InfoTile({
   icon,
@@ -197,6 +198,11 @@ export function ShantiVidhiPanel({
     () => getGrahaShanti(selectedKey) ?? NAVAGRAHA_SHANTI[0],
     [selectedKey],
   );
+  const detailRef = useRef<View>(null);
+  const selectAndScroll = (key: string) => {
+    setSelectedKey(key);
+    requestAnimationFrame(() => scrollViewIntoView(detailRef.current));
+  };
   const findings = useMemo(() => grahaShanti?.findings ?? [], [grahaShanti]);
   const criticalFindings = useMemo(() => findings.filter((f) => f.tier === "critical"), [findings]);
   const coreFindings = useMemo(() => findings.filter((f) => f.tier === "core"), [findings]);
@@ -227,14 +233,14 @@ export function ShantiVidhiPanel({
           <ShantiFindingsGroup
             title={t("kundali.x.shanti_tier_critical")}
             findings={criticalFindings}
-            onSelect={setSelectedKey}
+            onSelect={selectAndScroll}
             defaultOpen
             cardWidth={cardWidth}
           />
           <ShantiFindingsGroup
             title={t("kundali.x.shanti_tier_core")}
             findings={coreFindings}
-            onSelect={setSelectedKey}
+            onSelect={selectAndScroll}
             defaultOpen={criticalFindings.length === 0}
             cardWidth={cardWidth}
           />
@@ -282,7 +288,7 @@ export function ShantiVidhiPanel({
       </View>
 
       {/* selected graha detail */}
-      <View className="overflow-hidden rounded-2xl border border-border">
+      <View ref={detailRef} collapsable={false} className="overflow-hidden rounded-2xl border border-border">
         <LinearGradient
           colors={[`${graha.colorHex}1f`, "transparent"]}
           start={{ x: 0, y: 0 }}

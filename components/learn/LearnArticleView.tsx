@@ -91,12 +91,18 @@ export function LearnArticleView({
 
   return (
     <View className="gap-4">
-      <View className="gap-1">
-        <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {section ? `${pick(section.title.ne, section.title.en)} · ` : ""}
+      {/* Hero: category eyebrow, title, summary — as web's article header. */}
+      <View className="gap-1.5 rounded-2xl border border-border bg-card p-5">
+        <Text
+          className="text-xs font-semibold uppercase tracking-wide text-secondary"
+          style={nepaliTextStyle(12)}
+        >
+          {section ? pick(section.title.ne, section.title.en) : ""}
+        </Text>
+        <Text className="text-2xl font-bold leading-tight text-foreground" style={nepaliTextStyle(24)}>
           {pick(topic.title.ne, topic.title.en)}
         </Text>
-        <Text className="text-sm leading-snug text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-base leading-relaxed text-foreground/80" style={nepaliTextStyle(16)}>
           {pick(topic.summary.ne, topic.summary.en)}
         </Text>
       </View>

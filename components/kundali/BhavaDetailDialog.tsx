@@ -271,6 +271,10 @@ export function BhavaDetailDialog({ houses, houseNumber, reference, onClose }: P
       variant="bottom"
       maxHeight="90%"
       sheetStyle={{
+        /* A definite height: the body below is a flex-1 ScrollView, which has
+           nothing to fill (collapses to zero) inside a sheet that only has a
+           max-height. */
+        height: "88%",
         backgroundColor: colors.card,
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
@@ -404,8 +408,11 @@ function BhavaDetailBody({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="shrink-0 border-b border-border bg-card"
-        contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 8, gap: 4 }}
+        /* A ScrollView grows by default; in the now fixed-height sheet that
+           stretched the tab row to fill it. Pin it to its content height. */
+        style={{ flexGrow: 0, flexShrink: 0 }}
+        className="border-b border-border bg-card"
+        contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 8, gap: 4, alignItems: "center" }}
       >
         {tabs.map((t) => (
           <Pressable

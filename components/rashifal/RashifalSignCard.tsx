@@ -12,6 +12,7 @@ import {
   rashifalToneText,
   toNepaliDigits,
 } from "@/lib/rashifal-ui";
+import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -172,22 +173,7 @@ export function RashifalSignCard({ sign, period }: Props) {
             </View>
           ))}
 
-          {sign.gochar?.length ? (
-            <View className="mt-3 flex-row flex-wrap gap-1.5 border-t border-border/60 pt-3">
-              {sign.gochar.map((row) => (
-                <View
-                  key={row.graha}
-                  className={cn(
-                    "flex-row items-center gap-1 rounded-md px-1.5 py-0.5",
-                    row.vedha_by ? "bg-tone-neutral" : row.favourable ? "bg-tone-good" : "bg-tone-bad",
-                  )}
-                >
-                  <Text className="text-[12px] font-semibold">{ne ? row.graha_ne : row.graha_en}</Text>
-                  <Text className="text-[12px] font-semibold opacity-80">{digits(row.house)}</Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
+          {sign.gochar?.length ? <RashifalGocharChips rows={sign.gochar} /> : null}
 
           {lord ? (
             <Text className="mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">

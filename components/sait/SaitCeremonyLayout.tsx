@@ -39,6 +39,7 @@ export function SaitCeremonyLayout({
   loading,
   emptyLabel,
   countLabel,
+  footer,
 }: {
   title: string;
   subtitle: string;
@@ -62,6 +63,8 @@ export function SaitCeremonyLayout({
   loading: boolean;
   emptyLabel?: string;
   countLabel?: (count: number, year: number) => string;
+  /** Rendered after the day list (the classical sources card). */
+  footer?: React.ReactNode;
 }) {
   const { lang, pick, digits } = useLocale();
   const colors = useThemeColors();
@@ -163,6 +166,8 @@ export function SaitCeremonyLayout({
           {emptyLabel ?? pick("यस वर्ष कुनै शुभ दिन भेटिएन।", "No auspicious days found this year.")}
         </Text>
       )}
+
+      {footer}
 
       <Pressable
         onPress={() => router.push("/panchanga/details" as never)}

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { BsCalendarGrid } from "@/components/home/BsCalendarGrid";
@@ -12,9 +11,7 @@ import { PatroFooterNote } from "@/components/branding/PatroFooterNote";
 import { HomeRashifalSection } from "@/components/home/HomeRashifalSection";
 import { AakashGocharEntryCard } from "@/components/home/AakashGocharEntryCard";
 import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
-import { TodayHighlightCard } from "@/components/home/TodayHighlightCard";
 import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
-import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
 import {
@@ -52,7 +49,7 @@ import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
+import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 const ASIDE_SIDEBAR_SPLIT = 1280;
@@ -81,7 +78,6 @@ function mergeMonthFromApi(
 }
 
 export default function HomeScreen() {
-  const colors = useThemeColors();
   const { pick, digits, lang } = useLocale();
   const { width, isTablet, isPhone } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -96,7 +92,8 @@ export default function HomeScreen() {
     goToday: goTodayBrowse,
   } = usePatroMonthBrowse();
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
-  const [dayOpen, setDayOpen] = useState(false);
+  const asideRef = useRef<View>(null);
+  const scrollToAsideRef = useRef(false);
   const [patroView, setPatroView] = useState<HomePatroView>("calendar");
   const todayAd = todayAdString();
   const splitAside = width >= ASIDE_SIDEBAR_SPLIT;
@@ -168,10 +165,18 @@ export default function HomeScreen() {
     (day: CalendarDay) => {
       if (day.outsideMonth) return;
       setSelectedDay(day);
-      if (!splitAside) setDayOpen(true);
+      /* Below the wide split the panchanga sits under the calendar (web puts it
+         there too), so bring it into view instead of opening a sheet. */
+      if (!splitAside) scrollToAsideRef.current = true;
     },
     [splitAside],
   );
+
+  useEffect(() => {
+    if (!scrollToAsideRef.current || !selectedDay) return;
+    scrollToAsideRef.current = false;
+    requestAnimationFrame(() => scrollViewIntoView(asideRef.current, 72));
+  }, [selectedDay]);
 
   const monthQueries = useQueries({
     queries: [
@@ -347,8 +352,14 @@ export default function HomeScreen() {
     </View>
   );
 
+  /* `flex-1` only means something beside the aside (a row). In the stacked
+     (phone / narrow) layout the parent has no fixed height, so flex-1 can
+     collapse the column to nothing and the panchanga card below paints over the
+     calendar — size to content there instead. */
+  const columnClass = splitAside ? "min-w-0 flex-1" : "min-w-0 w-full";
+
   const calendarBlock = (
-    <View className="min-w-0 flex-1">
+    <View className={columnClass}>
       {monthHeaderBlock}
 
       {monthLoading ? (
@@ -435,29 +446,10 @@ export default function HomeScreen() {
   );
 
   const leftColumn = (
-    <View className="min-w-0 flex-1">
+    <View className={columnClass}>
       {calendarBlock}
 
       <View className="mt-3 gap-3" style={{ paddingHorizontal: contentInset }}>
-        {isPhone ? (
-          <TodayHighlightCard
-            selectedDay={selectedDay}
-            selectedAdDate={asideAdDate}
-            todayAd={todayAd}
-            isAdCalendar={isGregorianBrowseEra(browseEra)}
-            year={year}
-            month={month}
-            location={location.params}
-            p={panchangaQ.data}
-            onOpenDay={() => {
-              if (!selectedDay) {
-                const day = monthDays.find((d) => d.date_ad === asideAdDate);
-                if (day) setSelectedDay(day);
-              }
-              setDayOpen(true);
-            }}
-          />
-        ) : null}
         <AakashGocharEntryCard />
         <OfflineDownloadPrompt year={year} era={browseEra} />
       </View>
@@ -467,6 +459,7 @@ export default function HomeScreen() {
   return (
     <>
       <ScrollView
+        ref={setPageScroller}
         className="flex-1 bg-background"
         contentContainerClassName="mx-auto w-full max-w-[1400px]"
         contentContainerStyle={{
@@ -477,8 +470,14 @@ export default function HomeScreen() {
       >
         <View className={splitAside ? "flex-row items-start gap-5" : "gap-5"}>
           {leftColumn}
-          {isPhone ? null : asideBlock}
+          {splitAside ? asideBlock : null}
         </View>
+
+        {splitAside ? null : (
+          <View ref={asideRef} collapsable={false} className="mt-5">
+            {asideBlock}
+          </View>
+        )}
 
         <View className="mt-6">
           <HomeRashifalSection
@@ -499,17 +498,6 @@ export default function HomeScreen() {
         <PatroFooterNote paddingHorizontal={contentInset} />
       </ScrollView>
 
-      <BottomSheetModal visible={dayOpen} onClose={() => setDayOpen(false)} maxHeight="92%">
-        <View className="flex-row items-center justify-between px-4 pb-1 pt-2">
-          <Text className="text-base font-bold text-foreground">{pick("दिन विवरण", "Day detail")}</Text>
-          <Pressable onPress={() => setDayOpen(false)} hitSlop={10} accessibilityRole="button" accessibilityLabel={pick("बन्द", "Close")}>
-            <Ionicons name="close" size={22} color={colors.mutedForeground} />
-          </Pressable>
-        </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
-          {asideBlock}
-        </ScrollView>
-      </BottomSheetModal>
     </>
   );
 }

@@ -12,6 +12,7 @@ import {
   rashifalToneText,
   toNepaliDigits,
 } from "@/lib/rashifal-ui";
+import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { civilIsoFromDate } from "@/lib/patro-day";
 import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
@@ -179,35 +180,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
               </Text>
             </View>
           ))}
-          {personal.gochar?.length ? (
-            <View className="mt-3 flex-row flex-wrap gap-1.5 border-t border-border/60 pt-3">
-              {personal.gochar.map((row) => (
-                <View
-                  key={row.graha}
-                  className={cn(
-                    "flex-row items-center gap-1 rounded-md px-1.5 py-0.5",
-                    row.vedha_by ? "bg-tone-neutral" : row.favourable ? "bg-tone-good" : "bg-tone-bad",
-                  )}
-                >
-                  <Text className="text-[12px] font-semibold">
-                    {ne ? row.graha_ne : row.graha_en}
-                  </Text>
-                  <Text className="text-[12px] font-semibold tabular-nums opacity-80">
-                    {toNepaliDigits(row.house, lang)}
-                  </Text>
-                  {row.vedha_by ? (
-                    <Ionicons name="close-circle-outline" size={11} color={colors.mutedForeground} />
-                  ) : null}
-                  {row.retrograde ? (
-                    <Ionicons name="refresh-outline" size={11} color={colors.mutedForeground} />
-                  ) : null}
-                  {row.combust ? (
-                    <Ionicons name="flame-outline" size={11} color={colors.mutedForeground} />
-                  ) : null}
-                </View>
-              ))}
-            </View>
-          ) : null}
+          {personal.gochar?.length ? <RashifalGocharChips rows={personal.gochar} /> : null}
 
           {lord ? (
             <Text className="mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">

@@ -1,6 +1,7 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { ScrollView, View } from "react-native";
 import { usePathname } from "expo-router";
+import { setPageScroller } from "@/lib/page-scroll";
 import {
   floatingNavBottomPadding,
   normalizeMobilePathname,
@@ -40,6 +41,7 @@ function ShellMainScroll({
 }) {
   return (
     <ScrollView
+      ref={setPageScroller}
       className="min-h-0 min-w-0 flex-1 bg-background"
       contentContainerStyle={contentContainerStyle}
       showsVerticalScrollIndicator={false}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Pressable, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import { Pressable, View, type GestureResponderEvent } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from "react-native-svg";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
@@ -81,6 +81,16 @@ function arrowHeadPoints(x1: number, y1: number, x2: number, y2: number, size = 
   const p2x = x2 - size * Math.cos(angle + spread);
   const p2y = y2 - size * Math.sin(angle + spread);
   return `${x2},${y2} ${p1x},${p1y} ${p2x},${p2y}`;
+}
+
+function pointInPolygon(x: number, y: number, pts: ReadonlyArray<readonly [number, number]>): boolean {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const [xi, yi] = pts[i]!;
+    const [xj, yj] = pts[j]!;
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
 }
 
 function formatHouseList(houses: number[], lang: "ne" | "en", digits: (v: number) => string): string {
@@ -199,6 +209,70 @@ export function D1Chart({ houses }: Props) {
     setSelected((prev) => (prev && prev.key === key && prev.house === house ? null : { key, house }));
   };
 
+  /* Where every graha glyph sits, in viewBox units — the same arithmetic the
+     render loop uses, kept here so taps can be resolved without depending on
+     react-native-svg's own hit testing. */
+  const planetSlots = useMemo(() => {
+    const out: { key: string; house: number; x: number; y: number; r: number }[] = [];
+    for (const [houseStr, points] of Object.entries(NI_HOUSE_POLYGONS)) {
+      const houseNum = Number(houseStr);
+      const planets = byHouse.get(houseNum)?.planets ?? [];
+      if (planets.length === 0) continue;
+      const [cx, cy] = polygonCentroid(points);
+      const layout = planetGridLayout(points, planets.length);
+      planets.forEach((planet, i) => {
+        const row = Math.floor(i / layout.columns);
+        const rowStart = row * layout.columns;
+        const itemsInRow = Math.min(layout.columns, planets.length - rowStart);
+        const col = i - rowStart;
+        out.push({
+          key: planet.key,
+          house: houseNum,
+          x: cx + (col - (itemsInRow - 1) / 2) * layout.colGap,
+          y: cy + row * layout.rowGap - layout.fontSize * 0.3,
+          r: Math.max(layout.fontSize * 0.9, 12),
+        });
+      });
+    }
+    return out;
+  }, [byHouse]);
+
+  const [chartSize, setChartSize] = useState(0);
+
+  /* One tap handler for the whole चक्र: a graha glyph under the finger opens
+     its aspect panel, anywhere else in a house opens that house's detail
+     sheet. SVG-level onPress is unreliable on iOS for transparent shapes. */
+  const onChartPress = useCallback(
+    (e: GestureResponderEvent) => {
+      if (chartSize <= 0) return;
+      const scale = 300 / chartSize;
+      const x = e.nativeEvent.locationX * scale;
+      const y = e.nativeEvent.locationY * scale;
+
+      let best: (typeof planetSlots)[number] | undefined;
+      let bestD = Infinity;
+      for (const slot of planetSlots) {
+        const d = Math.hypot(slot.x - x, slot.y - y);
+        if (d <= slot.r && d < bestD) {
+          best = slot;
+          bestD = d;
+        }
+      }
+      if (best && reference?.grahaDrishti[best.key]) {
+        togglePlanet(best.key, best.house);
+        return;
+      }
+      for (const [houseStr, points] of Object.entries(NI_HOUSE_POLYGONS)) {
+        const houseNum = Number(houseStr);
+        if (byHouse.has(houseNum) && pointInPolygon(x, y, points)) {
+          setOpenHouse(houseNum);
+          return;
+        }
+      }
+    },
+    [chartSize, planetSlots, reference, byHouse],
+  );
+
   /* Square, and the full width of the column. `height={280}` against a
      viewBox 300 units square letterboxed the चक्र: `meet` scales by the
      smaller ratio, so on a ~340 px phone column the whole chart — glyphs
@@ -206,8 +280,14 @@ export function D1Chart({ houses }: Props) {
      shrank again on the way to the screen. An `aspectRatio` box lets it use
      the width it has. */
   return (
-    <View className="w-full items-center" style={{ width: "100%", aspectRatio: 1 }}>
-      <Svg width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}>
+    <View className="w-full items-center">
+    <Pressable
+      onPress={onChartPress}
+      onLayout={(e) => setChartSize(e.nativeEvent.layout.width)}
+      accessibilityRole="button"
+      style={{ width: "100%", aspectRatio: 1 }}
+    >
+      <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}>
         <Rect x={0} y={0} width={300} height={300} rx={4} fill={colors.card} stroke={colors.border} strokeWidth={1.5} />
         <Line x1={0} y1={0} x2={300} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
         <Line x1={300} y1={0} x2={0} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
@@ -324,6 +404,7 @@ export function D1Chart({ houses }: Props) {
             );
           })}
       </Svg>
+    </Pressable>
       {showLegend ? <GrahaStatusLegend className="mt-2 w-full" /> : null}
       {selected && reference && (
         <DrishtiPanel selected={selected} reference={reference} onClose={() => setSelected(null)} />

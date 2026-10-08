@@ -10,11 +10,11 @@ export const KUNDALI_SECTIONS = [
   { id: "kundali-dasha-vimshottari", i18nKey: "dasha_system_vimshottari" as const },
   { id: "kundali-dasha-tribhagi", i18nKey: "dasha_system_tribhagi" as const },
   { id: "kundali-dasha-yogini", i18nKey: "dasha_system_yogini" as const },
+  { id: "kundali-shanti", i18nKey: "nav_shanti_vidhi" as const },
   { id: "kundali-shadbala", i18nKey: "nav_shadbala" as const },
   { id: "kundali-bhava-bala", i18nKey: "nav_bhava_bala" as const },
   { id: "kundali-ashtakavarga", i18nKey: "nav_ashtakavarga" as const },
   { id: "kundali-vimshopaka", i18nKey: "nav_vimshopaka" as const },
-  { id: "kundali-shanti", i18nKey: "nav_shanti_vidhi" as const },
   { id: "kundali-report", i18nKey: "nav_analysis" as const },
 ] as const;
 
@@ -65,14 +65,16 @@ export const KUNDALI_NAV_GROUPS = [
   {
     id: "kundali-dasha",
     i18nKey: "nav_dasha" as const,
-    children: DASHA_TAB_SECTIONS.map(({ id, i18nKey }) => ({ id, i18nKey })),
+    children: [
+      ...DASHA_TAB_SECTIONS.map(({ id, i18nKey }) => ({ id, i18nKey })),
+      { id: "kundali-shanti" as const, i18nKey: "nav_shanti_vidhi" as const },
+    ],
   },
   {
     id: "kundali-bala",
     i18nKey: "nav_bala" as const,
     children: BALA_TAB_SECTIONS.map(({ id, i18nKey }) => ({ id, i18nKey })),
   },
-  { id: "kundali-shanti", i18nKey: "nav_shanti_vidhi" as const },
   { id: "kundali-report", i18nKey: "nav_analysis" as const },
 ] as const;
 
@@ -104,7 +106,7 @@ export function contentSectionId(id: KundaliSectionId): KundaliContentSectionId 
 }
 
 export function navGroupIdForSection(id: KundaliSectionId): string | null {
-  if (dashaSystemFromSection(id)) return "kundali-dasha";
+  if (dashaSystemFromSection(id) || id === "kundali-shanti") return "kundali-dasha";
   if (isBalaSection(id)) return "kundali-bala";
   return null;
 }
@@ -116,7 +118,7 @@ export function defaultChildForGroup(groupId: string): KundaliSectionId | null {
 }
 
 export function isGroupActive(groupId: string, activeId: KundaliSectionId): boolean {
-  if (groupId === "kundali-dasha") return dashaSystemFromSection(activeId) != null;
+  if (groupId === "kundali-dasha") return dashaSystemFromSection(activeId) != null || activeId === "kundali-shanti";
   if (groupId === "kundali-bala") return isBalaSection(activeId);
   return activeId === groupId;
 }

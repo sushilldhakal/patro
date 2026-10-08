@@ -108,10 +108,17 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
   }, [lagnaDisplay, lang, digits]);
 
   const avakahadaShloka = useMemo(() => {
-    if (!avakahada || !lagnaDisplay?.nameNe || !moonRow) return undefined;
+    /* Lagna name: the instant-lagna display first, else the chart's own lagna
+       rashi — so the shloka never silently disappears on a payload shape the
+       display helper cannot read. */
+    const lagnaRashiNe =
+      lagnaDisplay?.nameNe ||
+      (detail.lagnaRashi != null ? formatRashiByNumber(detail.lagnaRashi, "ne") : undefined);
+    const moonRashi = moonRow?.vargaRashi;
+    if (!avakahada || !lagnaRashiNe || lagnaRashiNe === "—" || moonRashi == null) return undefined;
     return generateAvakahadaShloka({
-      lagnaRashiNe: lagnaDisplay.nameNe,
-      moonRashiNe: formatRashiByNumber(moonRow.vargaRashi, "ne"),
+      lagnaRashiNe,
+      moonRashiNe: formatRashiByNumber(moonRashi, "ne"),
       nakshatraNe: avakahada.nakshatra.ne,
       aksharaNe: avakahada.akshara.ne,
       ganaNe: avakahada.gana.ne,
@@ -121,7 +128,7 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
       vashyaNe: avakahada.vashya.ne,
       payaNe: avakahada.nakshatraPaya.ne,
     });
-  }, [avakahada, lagnaDisplay, moonRow]);
+  }, [avakahada, lagnaDisplay, moonRow, detail.lagnaRashi]);
 
   const vaaraNe = getVaaraNe(data, data.weekday);
   const vaaraEn = getVaaraEn(data, data.weekday);

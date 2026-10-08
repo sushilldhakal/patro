@@ -41,6 +41,8 @@ import {
   defaultClockForTimezone,
   usePanchangaClock,
 } from "@/components/panchanga/use-panchanga-mode";
+import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
+import { LearnMoreCard } from "@/components/learn/LearnMoreCard";
 import { LoadingState } from "@/components/ui/States";
 import { useInPanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -333,6 +335,12 @@ export default function PanchangaScreen() {
             <FestivalsSection p={data} />
           </View>
         ) : null}
+
+        <GocharPromoCard />
+        <LearnMoreCard
+          heading={t("panchanga.learn_heading")}
+          slugs={["what-is-panchang", "tithi", "nakshatra", "yoga", "karana", "hora"]}
+        />
       </View>
     </ScrollView>
   );

@@ -1,3 +1,4 @@
+import { SaitSources } from "@/components/sait/SaitSources";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
@@ -55,6 +56,7 @@ export default function VivahSaitScreen() {
       suitabilityByDay={personalize.suitabilityByDay}
       personalizeByDay={personalize.personalizeByDay}
       loading={detailQuery.isLoading && !detailQuery.data}
+      footer={<SaitSources category="vivah" />}
       emptyLabel={pick(
         "यस वर्ष विवाहको साइत भेटिएन।",
         "No marriage muhurta found for this year.",

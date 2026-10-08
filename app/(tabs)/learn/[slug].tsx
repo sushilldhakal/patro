@@ -37,19 +37,18 @@ export default function LearnArticleScreen() {
     <AppShell
       scroll
       scrollRef={scrollRef}
-      headerRight={
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={8}
-          className="h-10 w-10 items-center justify-center rounded-lg active:bg-muted"
-          accessibilityLabel={pick("पछाडि", "Back")}
-        >
-          <Ionicons name="chevron-back" size={22} color={colors.foreground} />
-        </Pressable>
-      }
+      showHeader={false}
       title={topic ? pick(topic.title.ne, topic.title.en) : pick("सिकाइ", "Learn")}
-      subtitle={pick("वैदिक पात्रो — मोबाइल लेख", "Vedic Patro — native article")}
     >
+      {/* Web's "← Learn" link above the article. */}
+      <Pressable
+        onPress={() => router.push("/learn")}
+        accessibilityRole="button"
+        className="mb-3 flex-row items-center gap-1.5 self-start py-1 active:opacity-70"
+      >
+        <Ionicons name="arrow-back" size={16} color={colors.mutedForeground} />
+        <Text className="text-sm text-muted-foreground">{pick("सिकाइ", "Learn")}</Text>
+      </Pressable>
       {valid && slug ? (
         <LearnArticleView slug={slug} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (

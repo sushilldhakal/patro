@@ -286,3 +286,13 @@ export function adjacentPublishedTopics(slug: string): {
     next: i >= 0 && i < PUBLISHED_TOPICS.length - 1 ? PUBLISHED_TOPICS[i + 1]! : null,
   };
 }
+
+/**
+ * Outlined-but-unwritten articles per section — web keeps these as `planned`
+ * entries; the hub only needs the count for its "N more being written" line.
+ */
+const PLANNED_COUNT_BY_SECTION: Record<string, number> = { start: 8, panchanga: 3 };
+
+export function plannedCountInSection(sectionId: string): number {
+  return PLANNED_COUNT_BY_SECTION[sectionId] ?? 0;
+}

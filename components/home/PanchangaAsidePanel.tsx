@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { PanchangaHeroCard } from "./PanchangaHeroCard";
+import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
 import { SaitAsidePanel } from "./SaitAsidePanel";
@@ -72,8 +72,8 @@ export function PanchangaAsidePanel({
     : undefined;
 
   return (
-    <View className="gap-3">
-      <View className="flex-row items-baseline justify-between border-b border-border px-1 pb-3 pt-1">
+    <View className="overflow-hidden rounded-2xl border border-border bg-card">
+      <View className="flex-row items-baseline gap-2.5 border-b border-border px-4 py-3.5">
         <Text className="flex-1 text-lg font-bold text-foreground">
           {isSelectedToday ? pick("आजको पञ्चाङ्ग", "Today's Panchanga") : pick("पञ्चाङ्ग", "Panchanga")}
         </Text>
@@ -82,18 +82,17 @@ export function PanchangaAsidePanel({
         </Pressable>
       </View>
 
-      <PanchangaHeroCard
-        month={month}
-        year={year}
-        browseEra={browseEra}
-        isAdCalendar={isAdCalendar}
-        selectedAd={selectedAd}
+      <TodayHighlightCard
+        selectedDay={contextDay}
+        selectedAdDate={selectedAd}
         todayAd={todayAd}
+        isAdCalendar={isAdCalendar}
+        year={year}
+        month={month}
         p={activeP}
-        contextDay={contextDay}
       />
 
-      <View className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <View className="overflow-hidden bg-card">
         <View className="flex-row border-b border-border bg-surface-muted">
           {TABS.map((id) => (
             <Pressable
