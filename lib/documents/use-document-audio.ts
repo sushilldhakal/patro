@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import type { Shloka } from "@/lib/documents/api";
 
@@ -10,8 +10,19 @@ export type AudioMode = "full" | "verse" | null;
  * floating transport bar stay in step. Mirrors the web `useDocumentPlayback`.
  */
 export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null | undefined) {
-  const versePlayer = useAudioPlayer(null, { updateInterval: 250 });
-  const verseStatus = useAudioPlayerStatus(versePlayer);
+  // Two verse players used in turn: while one sounds, the other already holds the
+  // next verse, so a clip ends and the next starts with no loading pause (the web
+  // gets the same effect from sample-accurate Web Audio scheduling).
+  const playerA = useAudioPlayer(null, { updateInterval: 100 });
+  const playerB = useAudioPlayer(null, { updateInterval: 100 });
+  const statusA = useAudioPlayerStatus(playerA);
+  const statusB = useAudioPlayerStatus(playerB);
+  const [slot, setSlot] = useState<0 | 1>(0);
+  const versePlayer = slot === 0 ? playerA : playerB;
+  const verseStatus = slot === 0 ? statusA : statusB;
+  const standbyPlayer = slot === 0 ? playerB : playerA;
+  /** Verse id currently loaded (paused) in the standby player. */
+  const standbyFor = useRef<number | null>(null);
   const fullPlayer = useAudioPlayer(fullAudioUrl ? { uri: fullAudioUrl } : null, {
     updateInterval: 250,
   });
@@ -35,17 +46,50 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
   const order = useMemo(() => shlokas.map((s) => s.id), [shlokas]);
   const byId = useMemo(() => new Map(shlokas.map((s) => [s.id, s])), [shlokas]);
 
+  const nextAudioAfter = useCallback(
+    (id: number): Shloka | null => {
+      const i = order.indexOf(id);
+      for (let j = i + 1; j < order.length; j++) {
+        const candidate = byId.get(order[j]!);
+        if (candidate?.audio_url) return candidate;
+      }
+      return null;
+    },
+    [order, byId],
+  );
+
+  /** Load the verse after `id` into `player` (paused) so it is ready the instant the current clip ends. */
+  const preloadAfter = useCallback(
+    (id: number, player: typeof playerA) => {
+      const next = nextAudioAfter(id);
+      if (!next?.audio_url) {
+        standbyFor.current = null;
+        return;
+      }
+      try {
+        player.pause();
+        player.replace({ uri: next.audio_url });
+        standbyFor.current = next.id;
+      } catch {
+        standbyFor.current = null;
+      }
+    },
+    [nextAudioAfter],
+  );
+
   const playVerse = useCallback(
     (id: number) => {
       const shloka = byId.get(id);
       if (!shloka?.audio_url) return;
       fullPlayer.pause();
+      standbyPlayer.pause();
       setMode("verse");
       setActiveVerseId(id);
       versePlayer.replace({ uri: shloka.audio_url });
       versePlayer.play();
+      preloadAfter(id, standbyPlayer);
     },
-    [byId, fullPlayer, versePlayer],
+    [byId, fullPlayer, standbyPlayer, versePlayer, preloadAfter],
   );
 
   const toggleVerse = useCallback(
@@ -77,12 +121,22 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
     [activeVerseId, order, byId, playVerse],
   );
 
-  // When a clip ends, roll on to the next verse — unless that verse's
-  // meaning is open (the listener is reading, not listening straight through).
+  // When a clip ends, hand straight over to the pre-loaded next verse — unless the
+  // listener has this verse's meaning open (reading, not listening straight through).
   useEffect(() => {
     if (mode !== "verse" || !verseStatus.didJustFinish || activeVerseId == null) return;
     if (openMeaningIds.has(activeVerseId)) return;
-    stepVerse(1);
+    const next = nextAudioAfter(activeVerseId);
+    if (!next) return;
+    if (standbyFor.current === next.id) {
+      const finished = versePlayer;
+      standbyPlayer.play();
+      setSlot((v) => (v === 0 ? 1 : 0));
+      setActiveVerseId(next.id);
+      preloadAfter(next.id, finished);
+    } else {
+      playVerse(next.id);
+    }
   }, [verseStatus.didJustFinish]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startFull = useCallback(() => {
@@ -170,13 +224,14 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
   useEffect(
     () => () => {
       try {
-        versePlayer.pause();
+        playerA.pause();
+        playerB.pause();
         fullPlayer.pause();
       } catch {
         /* player already released */
       }
     },
-    [versePlayer, fullPlayer],
+    [playerA, playerB, fullPlayer],
   );
 
   const verseIndex = activeVerseId == null ? -1 : order.indexOf(activeVerseId);

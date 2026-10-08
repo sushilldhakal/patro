@@ -14,7 +14,14 @@
  */
 
 import { equationOfTime, PERIHELION, VERNAL } from "@/lib/sky3d/day-mechanics";
-import { cam, chapterState, kf, PI2, zoomToDistance, type Chapter } from "./chapter-kit";
+import {
+  cam,
+  chapterState,
+  kf,
+  PI2,
+  zoomToDistance,
+  type Chapter,
+} from "./chapter-kit";
 
 const SOLAR_DAYS = 8;
 
@@ -78,6 +85,8 @@ const stellar: Chapter = {
     primeMeridian: true,
     trueSun: true,
     planetOrbit: true,
+    degrees: true,
+    siderealClock: true,
     ...cam(-5, 20, 30, 40),
   }),
   frames: [
@@ -88,11 +97,16 @@ const stellar: Chapter = {
         siderealArc: false,
         trueSun: false,
         planetOrbit: false,
+        degrees: false,
+        siderealClock: false,
         highlight: "",
         eccentricity: 0,
         tiltDeg: 0,
         ...cam(-5, 20, 30, 80),
       },
+      /* Copilot reaches this 1ms after play. `from: 1` keeps t=0 on the
+         defaults — the original's paused opening — instead of stepping the
+         booleans the instant the chapter loads. */
       { at: 1, from: 1 },
     ),
     kf({ orbitalPosition: 0.135 }, { at: "8s", from: 0, ease: "linear" }),
@@ -103,8 +117,9 @@ const stellar: Chapter = {
       { orbitalPosition: 2 / (SOLAR_DAYS + 1), ...cam(0, 20, 0.1, 80) },
       { at: "14s", duration: "1s", ease: "quadInOut" },
     ),
-    kf({ siderealArc: true }, { at: "15s", duration: "1s" }),
+    kf({ siderealArc: true, degrees: true }, { at: "15s", duration: "1s" }),
     kf({ orbitalPosition: 3 / (SOLAR_DAYS + 1) }, { at: "19s", from: "15s", ease: "quadInOut" }),
+    kf({ siderealClock: true }, { at: "20s" }),
     kf({ highlight: "stellar-day-arc" }, { at: "29s", duration: 1 }),
     kf({ highlight: "" }, { at: "35s", duration: 1 }),
     kf({ orbitalPosition: 8 / (SOLAR_DAYS + 1) }, { at: "35s", from: "19s", ease: "linear" }),
@@ -134,6 +149,7 @@ const stellar: Chapter = {
 
 const solar: Chapter = {
   id: "solar",
+  audioAliases: ["solar-days"],
   titleKey: "solar",
   partKey: "part_day",
   defaults: base({
@@ -143,11 +159,12 @@ const solar: Chapter = {
     ...cam(-5, 20, 30, 40),
   }),
   frames: [
-    kf({ orbitalPosition: pos(5) }, { at: 1, duration: 1 }),
+    kf({ orbitalPosition: pos(5), degrees: false }, { at: 1, duration: 1 }),
     kf({ highlight: "solar-day-arc" }, { at: "8s", duration: 1 }),
     kf({ highlight: "" }, { at: "12s", duration: 1 }),
     kf({ orbitalPosition: pos(8) }, { at: "00:20", from: 1, ease: "linear" }),
     kf({ ...cam(0, 20, 0.1, 80) }, { at: "00:22", duration: "3s", ease: "quadInOut" }),
+    kf({ degrees: true }, { at: "00:23", duration: 1 }),
     kf({ orbitalPosition: 1 + 1 / (SOLAR_DAYS + 1) }, { at: "00:30", from: "00:25", ease: "linear" }),
     kf(
       { orbitalPosition: 1 + 2 / (SOLAR_DAYS + 1), cameraDistance: zoomToDistance(60) },
@@ -179,6 +196,8 @@ const elliptic: Chapter = {
         orbitalPosition: pos(5),
         meanSun: false,
         meanArc: false,
+        meanClock: false,
+        degrees: false,
         monthRing: false,
       },
       { at: 1, duration: 1 },
@@ -195,12 +214,21 @@ const elliptic: Chapter = {
     kf({ highlightControl: "" }, { at: "44s", duration: 1 }),
     kf({ orbitalPosition: 12.15 }, { at: "02:40", from: "00:43", ease: "linear" }),
     kf({ cameraTarget: "planet", highlight: "solar-clock" }, { at: "01:21", duration: 1 }),
-    kf({ highlight: "", trueSun: false, planetOrbit: false }, { at: "01:25", duration: 1 }),
+    kf(
+      { highlight: "", trueSun: false, planetOrbit: false },
+      { at: "01:25", duration: 1 },
+    ),
     kf({ cameraDistance: zoomToDistance(40) }, { at: "01:30", duration: "6s", ease: "quadInOut" }),
+    /* The mean arc arrives on its own, and the true Sun's goes: this is the
+       beat where the two are being compared, so only one is drawn. The mean
+       *Sun* does not appear until 02:44 — that is a separate beat, and turning
+       it on early gave the reader the answer before the question. */
     kf(
       {
         meanArc: true,
+        meanClock: true,
         solarArc: false,
+        solarClock: false,
         highlight: "mean-day-arc",
       },
       { at: "02:11", duration: 1 },
@@ -210,7 +238,7 @@ const elliptic: Chapter = {
     kf({ trueSun: true, planetOrbit: true }, { at: "02:26", duration: 1 }),
     kf({ meanSun: true, trueSun: false }, { at: "02:44", duration: 1 }),
     kf({ orbitalPosition: 13 + pos(0) }, { at: "03:02", from: "02:52", ease: "linear" }),
-    kf({ trueSun: true, solarArc: true }, { at: "03:02", duration: 1 }),
+    kf({ trueSun: true, solarArc: true, solarClock: true }, { at: "03:02", duration: 1 }),
     kf({ eccentricity: 0 }, { at: "03:10", duration: "1s", ease: "quadInOut" }),
     kf({ eccentricity: 0.5 }, { at: "03:13", duration: "1s", ease: "quadInOut" }),
     kf({ orbitalPosition: 13 + pos(7, 0.5) }, { at: "03:26", from: "03:13", ease: "linear" }),
@@ -239,7 +267,10 @@ const axial: Chapter = {
     ...cam(0, 20, 0.1, 20),
   }),
   frames: [
-    kf({ orbitalPosition: 0, solarArc: true, meanArc: true }, { at: 1, duration: 1 }),
+    kf(
+      { orbitalPosition: 0, solarArc: true, meanArc: true, solarClock: false, meanClock: false },
+      { at: 1, duration: 1 },
+    ),
     kf({ ...cam(0, 0, 20, 20) }, { at: "00:05", duration: "4s", ease: "quadInOut" }),
     kf({ tiltDeg: 40, axis: true }, { at: "00:07", duration: "2s", ease: "quadInOut" }),
     kf({ cameraTarget: "meanSun" }, { at: "00:20", duration: 1 }),
@@ -269,6 +300,7 @@ const axial: Chapter = {
     kf({ ...cam(40, 0.1, 0.1, 40) }, { at: "03:03", duration: "2s", ease: "quadInOut" }),
     kf({ orbitalPosition: 4 + pos(5, 0, 40 * (Math.PI / 180)) }, { at: "03:10", from: "03:04", ease: "quadInOut" }),
     kf({ ...cam(0.2, 40, 0.1, 40) }, { at: "03:10", duration: "2s", ease: "quadInOut" }),
+    kf({ solarClock: true, meanClock: true }, { at: "03:20", duration: 1 }),
     kf({ handsOff: true }, { at: "03:31", from: "03:20" }),
   ],
 };
@@ -287,12 +319,18 @@ const reality: Chapter = {
     ...cam(0, 20, 20, 20),
   }),
   frames: [
-    kf({ orbitalPosition: 0 }, { at: 1, duration: 1 }),
+    kf(
+      { orbitalPosition: 0, solarClock: false, meanClock: false },
+      { at: 1, duration: 1 },
+    ),
     kf({ eccentricity: 0.0167, eotWedge: true }, { at: "00:18", duration: "1s", ease: "quadInOut" }),
     kf({ tiltDeg: 23.439, axis: true }, { at: "00:21", duration: "1s", ease: "quadInOut" }),
     kf({ graphOpen: true }, { at: "00:26", duration: 1 }),
     kf({ orbitalPosition: 2 + 356 / 365 }, { at: "00:40", from: 1, ease: "linear" }),
-    kf({ ...cam(20, 30, 0.1, 30), cameraFollow: true }, { at: "00:43", duration: "2s", ease: "quadInOut" }),
+    kf(
+      { ...cam(20, 30, 0.1, 30), cameraFollow: true },
+      { at: "00:43", duration: "2s", ease: "quadInOut" },
+    ),
     kf({ orbitalPosition: 3 + 356 / 365 }, { at: "01:08", from: "00:42", ease: "linear" }),
     kf({ orbitalPosition: 3 + 259 / 365 }, { at: "01:15", duration: "4s", ease: "quadInOut" }),
     kf({ cameraFollow: false }, { at: "01:21", duration: 1 }),
@@ -300,6 +338,10 @@ const reality: Chapter = {
     kf({ orbitalPosition: 5 }, { at: "02:00", from: "01:20", ease: "linear" }),
     kf({ graphOpen: false }, { at: "02:00", duration: 1 }),
     kf({ cameraFollow: true }, { at: "02:03", duration: 1 }),
+    /* `solarDaysPerYear: 0` stops the spin dead — the original's `daysPerYear:
+       0`. The subject for the next minute is the shape of the orbit, and a
+       globe turning nine times across it is a strobe over the top of that. The
+       two faces are already off, so nothing is left reading a frozen clock. */
     kf(
       { ...cam(20, 0.1, 0.1, 40), planetOrbit: false, eotWedge: false, solarDaysPerYear: 0 },
       { at: "02:07", duration: "2s", ease: "quadInOut" },
@@ -317,6 +359,8 @@ const reality: Chapter = {
         eccentricity: 0.0167,
         tiltDeg: 23.439,
         solarDaysPerYear: SOLAR_DAYS,
+        solarClock: true,
+        meanClock: true,
       },
       { at: "03:02", duration: "2s", ease: "quadInOut" },
     ),
@@ -328,7 +372,8 @@ const reality: Chapter = {
  * The original lab's own `/playground` — free camera, no snap-back.
  *
  * Kept for a track that stops at the day. The full syllabus ends on the
- * calendar half's free stop instead.
+ * calendar half's free stop instead, which opens with the belts and the Moon
+ * already showing because by then they have all been introduced.
  */
 export const DAY_PLAYGROUND: Chapter = {
   id: "playground",

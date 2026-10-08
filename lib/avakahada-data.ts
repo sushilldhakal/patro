@@ -173,3 +173,84 @@ export const BHAUMA_DOSHA_SHLOKAS: string[] = [
 
 export const ABHIJIT_NOTE =
   "अभिजित् — उत्तराषाढाको चौथो पाउ र श्रवणको सुरुको १५ भागमध्ये १ भाग मिलेर बन्ने अन्तरकालीन (२८औँ) नक्षत्र हो; नामाक्षर: जु, जे, जो, ख।";
+
+/* ── अवकहडा श्लोक — templated Anushtup-metre verse from a birth profile ─── */
+
+const LAGNA_SAPTAMI: Record<string, string> = {
+  मेष: "मेषलग्ने", वृष: "वृषलग्ने", मिथुन: "मिथुनलग्ने", कर्कट: "कर्कटलग्ने",
+  सिंह: "सिंहलग्ने", कन्या: "कन्यालग्ने", तुला: "तुलालग्ने", वृश्चिक: "वृश्चिकलग्ने",
+  धनु: "धनुर्लग्ने", मकर: "मकरलग्ने", कुम्भ: "कुम्भलग्ने", मीन: "मीनलग्ने",
+};
+
+const RASHI_SAPTAMI: Record<string, string> = {
+  मेष: "मेषराशौ", वृष: "वृषराशौ", मिथुन: "मिथुनराशौ", कर्कट: "कर्कटराशौ",
+  सिंह: "सिंहराशौ", कन्या: "कन्याराशौ", तुला: "तुलाराशौ", वृश्चिक: "वृश्चिकराशौ",
+  धनु: "धनुराशौ", मकर: "मकराशौ", कुम्भ: "कुम्भराशौ", मीन: "मीनराशौ",
+};
+
+const NAKSHATRA_SAPTAMI: Record<string, string> = {
+  अश्विनी: "अश्विनीपदे", भरणी: "भरणीपदे", कृत्तिका: "कृत्तिकापदे", रोहिणी: "रोहिणीपदे",
+  मृगशिरा: "मृगशिरसि", आर्द्रा: "आर्द्रापदे", पुनर्वसु: "पुनर्वसुपदे", पुष्य: "पुष्यपदे",
+  आश्लेषा: "आश्लेषापदे", मघा: "मघापदे", पूर्वाफाल्गुनी: "पूर्वाफाल्गुन्यां", उत्तराफाल्गुनी: "उत्तराफाल्गुन्यां",
+  हस्त: "हस्तपदे", चित्रा: "चित्रापदे", स्वाती: "स्वातीपदे", विशाखा: "विशाखापदे",
+  अनुराधा: "अनुराधापदे", ज्येष्ठा: "ज्येष्ठापदे", मूल: "मूलपदे", पूर्वाषाढा: "पूर्वाषाढापदे",
+  उत्तराषाढा: "उत्तराषाढापदे", श्रवण: "श्रवणपदे", धनिष्ठा: "धनिष्ठापदे", शतभिषा: "शतभिषापदे",
+  पूर्वाभाद्रपदा: "पूर्वाभाद्रपदे", उत्तराभाद्रपदा: "उत्तराभाद्रपदे", रेवती: "रेवतीपदे",
+};
+
+const NADI_TRITIYA: Record<string, string> = {
+  आद्य: "चाद्यनाड्यां",
+  मध्य: "च मध्यनाड्यां",
+  अन्त्य: "चान्त्यनाड्यां",
+};
+
+/** योनि words whose सप्तमी needs sandhi beyond the plain `${word}योनौ` suffix. */
+const YONI_SAPTAMI_OVERRIDE: Record<string, string> = {
+  गौ: "गोयोनौ",
+};
+
+export interface AvakahadaShlokaInput {
+  /** लग्न राशि, e.g. "सिंह". */
+  lagnaRashiNe: string;
+  /** चन्द्र राशि, e.g. "कुम्भ". */
+  moonRashiNe: string;
+  /** जन्म नक्षत्र, e.g. "पूर्वाभाद्रपदा". */
+  nakshatraNe: string;
+  /** नामाक्षर, e.g. "दा". */
+  aksharaNe: string;
+  /** गण — देव/मनुष्य/राक्षस. */
+  ganaNe: string;
+  /** नाडी — आद्य/मध्य/अन्त्य. */
+  nadiNe: string;
+  /** योनि, e.g. "सिंह", "अज", "गौ". */
+  yoniNe: string;
+  /** वर्ण — विप्र/क्षत्रिय/वैश्य/शूद्र (the API's `jati` field, not `varna`). */
+  varnaNe: string;
+  /** वश्य — चतुष्पद/मानव/जलचर/वनचर/कीट. */
+  vashyaNe: string;
+  /** पाय — सुवर्ण/स्वर्ण/रजत/ताम्र/लोह. */
+  payaNe: string;
+}
+
+/**
+ * Builds the classical two-verse (Anushtup metre) अवकहडा श्लोक from a birth
+ * profile's already-computed avakahada fields — a grammar-table fill, not a
+ * new astrological computation. Falls back to a plain suffix (e.g.
+ * `${word}लग्ने`) for any value outside the fixed dictionaries above, so an
+ * unexpected raw string never throws — it just reads slightly less polished.
+ */
+export function generateAvakahadaShloka(input: AvakahadaShlokaInput): string {
+  const lagna = LAGNA_SAPTAMI[input.lagnaRashiNe] ?? `${input.lagnaRashiNe}लग्ने`;
+  const rashi = RASHI_SAPTAMI[input.moonRashiNe] ?? `${input.moonRashiNe}राशौ`;
+  const nakshatra = NAKSHATRA_SAPTAMI[input.nakshatraNe] ?? `${input.nakshatraNe}पदे`;
+  const nadi = NADI_TRITIYA[input.nadiNe] ?? `च ${input.nadiNe}नाड्यां`;
+  const yoni = YONI_SAPTAMI_OVERRIDE[input.yoniNe] ?? `${input.yoniNe}योनौ`;
+
+  return [
+    `${lagna} ${rashi} ${nakshatra} जनिः।`,
+    `${input.aksharaNe}-अक्षरे ${input.ganaNe}गणे ${nadi} सुशोभने॥१॥`,
+    "",
+    `${yoni} ${input.varnaNe}वर्णे ${input.vashyaNe}वश्यसंयुते।`,
+    `${input.payaNe}पादेन जातस्य सर्वसम्पत्प्रदायकः॥२॥`,
+  ].join("\n");
+}

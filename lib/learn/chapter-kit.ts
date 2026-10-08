@@ -20,16 +20,14 @@ import type {
   SimToggles,
 } from "@/components/learn/playground/DaySimScene";
 import { LEGAL_SITE } from "@/lib/legal-copy";
-import type { Keyframe } from "./chapter-player";
+import { interval, type Keyframe } from "./chapter-player";
 
 /**
  * Everything a chapter can move.
  *
- * Web's scene also has independent `siderealClock`/`solarClock`/`meanClock`/
- * `degrees` toggles; this scene ties a clock face's label to its arc
- * (`siderealArc`/`solarArc`/`meanArc`) directly, so those don't exist here —
- * a chapter turns the arc on and the face rides along, same as the arc's
- * meridian tick already does.
+ * The layer flags come straight from {@link SimToggles}, so a chapter can turn
+ * on anything the scene can draw — राशि, नक्षत्र, महिना, Moon, the three clock
+ * faces, the degrees readout — without this type ever needing to grow.
  */
 export type ChapterSimState = {
   /** The chapter has given the instruments back — keyframes stop driving. */
@@ -80,6 +78,11 @@ export type Chapter = {
    * from there is found without being renamed first.
    */
   audioAliases?: string[];
+  /**
+   * An explicit recording URL, for narration that lives somewhere the
+   * track/chapter-id convention cannot name. Normally left off.
+   */
+  audio?: string;
   /** Free explore — no keyframe takeover, no snap-back. Every track ends on one. */
   free?: boolean;
   defaults: ChapterSimState;
@@ -97,10 +100,11 @@ export type Chapter = {
  * `use-chapter-track.ts`.
  */
 export function chapterAudioSources(track: string, chapter: Chapter, lang: string): string[] {
+  if (chapter.audio) return [chapter.audio];
   const root = `${LEGAL_SITE}/learn/audio`;
   const names = [chapter.id, ...(chapter.audioAliases ?? [])];
   const paths = names.flatMap((name) => [`${root}/${lang}/${track}/${name}`, `${root}/${track}/${name}`]);
-  return paths.flatMap((n) => [`${n}.mp3`, `${n}.ogg`]);
+  return paths.flatMap((n) => [`${n}.mp3`, `${n}.ogg`, `${n}.m4a`]);
 }
 
 export const PI2 = Math.PI * 2;
@@ -176,9 +180,32 @@ export function chapterState(partial: Partial<ChapterSimState> = {}): ChapterSim
     solarArc: false,
     meanArc: false,
     primeMeridian: true,
+    /* The faces ride their arcs, so mean and solar need no separate beat —
+       they appear when their arc does. The sidereal one is the exception:
+       the original lab draws the stellar arc first and only names the clock
+       on it a few seconds later, which is a beat of the script. */
+    siderealClock: false,
+    solarClock: true,
+    meanClock: true,
+    degrees: false,
     ...OFF_BELTS,
     ...partial,
   };
+}
+
+/**
+ * Where a chapter's \`handsOff\` flips from "not started" to a genuine
+ * hand-back: the earliest keyframe that sets \`handsOff: false\`. \`null\` when
+ * every \`handsOff\` the chapter samples is the real thing. Mirrors web.
+ */
+export function firstActiveAt(chapter: Chapter): number | null {
+  let best: number | null = null;
+  for (const frame of chapter.frames) {
+    if (frame.state.handsOff !== false) continue;
+    const { from } = interval(frame.meta);
+    if (best === null || from < best) best = from;
+  }
+  return best;
 }
 
 export function cameraFromChapter(s: ChapterSimState): CameraState {
@@ -205,6 +232,10 @@ export function togglesFromChapter(s: ChapterSimState): SimToggles {
     moon: s.moon,
     moonTrail: s.moonTrail,
     moonLap: s.moonLap,
+    siderealClock: s.siderealClock,
+    solarClock: s.solarClock,
+    meanClock: s.meanClock,
+    degrees: s.degrees,
     moonSightline: s.moonSightline,
   };
 }

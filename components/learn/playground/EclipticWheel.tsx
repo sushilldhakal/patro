@@ -270,7 +270,10 @@ export function GuideGrid({
   planeInnerR = 0,
   planeOpacity = 0.7,
   planeY = -0.05,
+  showPlane = true,
 }: {
+  /** Draw the filled disc under the lines. Off = the polar mesh alone. */
+  showPlane?: boolean;
   visible?: boolean;
   innerR?: number;
   planeInnerR?: number;
@@ -283,7 +286,7 @@ export function GuideGrid({
   return (
     <group visible={visible} position={[0, planeY, 0]}>
       <primitive object={grid} />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} renderOrder={-1} raycast={() => {}}>
+      <mesh visible={showPlane} rotation={[-Math.PI / 2, 0, 0]} renderOrder={-1} raycast={() => {}}>
         {planeInnerR > 0 ? (
           <ringGeometry args={[planeInnerR, NAK_OUTER, 64]} />
         ) : (

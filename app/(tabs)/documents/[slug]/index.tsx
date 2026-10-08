@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { useMemo, useState } from "react";
+import { FlatList, Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +24,15 @@ import { useLocale } from "@/lib/i18n";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useThemeColors } from "@/lib/theme-context";
 
-function DocHeader({ doc }: { doc: DocumentDetail }) {
+function DocHeader({
+  doc,
+  chapterPills,
+  onJumpChapter,
+}: {
+  doc: DocumentDetail;
+  chapterPills?: number[];
+  onJumpChapter?: (n: number) => void;
+}) {
   const { t, lang, digits } = useLocale();
   const title = lang === "ne" ? doc.title_ne || doc.title_en : doc.title_en || doc.title_ne;
   const subtitle = lang === "ne" ? doc.subtitle_ne || doc.subtitle_en : doc.subtitle_en || doc.subtitle_ne;
@@ -47,6 +55,25 @@ function DocHeader({ doc }: { doc: DocumentDetail }) {
           {t("documents.chapters_count", { count: digits(doc.chapter_count) })} ·{" "}
           {t("documents.shlokas_count", { count: digits(doc.shloka_count) })}
         </Text>
+      ) : null}
+      {chapterPills && chapterPills.length > 1 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mt-3 grow-0"
+          accessibilityLabel={t("documents.chapter_nav")}
+        >
+          {chapterPills.map((n) => (
+            <Pressable
+              key={n}
+              onPress={() => onJumpChapter?.(n)}
+              accessibilityRole="button"
+              className="mr-1.5 h-9 w-9 items-center justify-center rounded-full border border-border active:opacity-70"
+            >
+              <Text className="text-sm font-bold text-muted-foreground">{digits(n)}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
       ) : null}
     </View>
   );
@@ -103,15 +130,17 @@ export default function DocumentDetailScreen() {
 
   const shlokas = useMemo(() => (doc ? flattenShlokas(doc) : []), [doc]);
   const audio = useDocumentAudio(shlokas, doc?.full_audio_url);
+  const [jumpKey, setJumpKey] = useState<{ key: string; nonce: number } | null>(null);
 
+  const inlineChapters = useMemo(
+    () => (doc?.inline_chapters ? doc.chapters.filter((c) => (c.shlokas?.length ?? 0) > 0) : []),
+    [doc],
+  );
   const rows = useMemo(() => {
     if (!doc) return [];
-    if (doc.inline_chapters) {
-      const chapters = doc.chapters.filter((c) => (c.shlokas?.length ?? 0) > 0);
-      if (chapters.length > 1) return inlineChapterRows(chapters);
-    }
+    if (inlineChapters.length > 1) return inlineChapterRows(inlineChapters);
     return versesToRows(shlokas);
-  }, [doc, shlokas]);
+  }, [doc, inlineChapters, shlokas]);
 
   if (docQ.isLoading) {
     return (
@@ -172,7 +201,23 @@ export default function DocumentDetailScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <DocumentReader rows={rows} audio={audio} documentTitle={title} header={<DocHeader doc={doc} />} />
+      <DocumentReader
+        rows={rows}
+        audio={audio}
+        documentTitle={title}
+        scrollToKey={jumpKey}
+        header={
+          <DocHeader
+            doc={doc}
+            chapterPills={
+              inlineChapters.length > 1
+                ? inlineChapters.map((c) => c.number).filter((n): n is number => n != null)
+                : undefined
+            }
+            onJumpChapter={(n) => setJumpKey({ key: `chapter-${n}`, nonce: Date.now() })}
+          />
+        }
+      />
     </View>
   );
 }

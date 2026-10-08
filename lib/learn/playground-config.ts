@@ -2,7 +2,7 @@
  * What the playground shows, per Learn topic.
  *
  * One scene serves every topic — building a bespoke 3D scene per article would
- * mean one per article. What changes is the *configuration*: which layers open
+ * mean seventy of them. What changes is the *configuration*: which layers open
  * on, what the play button actually moves, and where the camera starts. So a
  * topic about the day opens spinning the planet with the day-arcs showing,
  * while one about sankranti opens creeping round the rashi belt with the arcs
@@ -80,6 +80,12 @@ export const MODE_LAYERS: Record<PlaygroundMode, SimToggles> = {
     moonTrail: false,
     moonLap: false,
     moonSightline: false,
+    /* The three faces open with their arcs, which is how every topic
+       outside the guided tour has always drawn them. */
+    siderealClock: true,
+    solarClock: true,
+    meanClock: true,
+    degrees: false,
   },
   year: {
     grid: false,
@@ -101,6 +107,12 @@ export const MODE_LAYERS: Record<PlaygroundMode, SimToggles> = {
     moonTrail: true,
     moonLap: true,
     moonSightline: true,
+    /* The three faces open with their arcs, which is how every topic
+       outside the guided tour has always drawn them. */
+    siderealClock: true,
+    solarClock: true,
+    meanClock: true,
+    degrees: false,
   },
   sun: {
     grid: false,
@@ -122,6 +134,12 @@ export const MODE_LAYERS: Record<PlaygroundMode, SimToggles> = {
     moonTrail: false,
     moonLap: false,
     moonSightline: false,
+    /* The three faces open with their arcs, which is how every topic
+       outside the guided tour has always drawn them. */
+    siderealClock: true,
+    solarClock: true,
+    meanClock: true,
+    degrees: false,
   },
   tilt: {
     grid: true,
@@ -145,6 +163,12 @@ export const MODE_LAYERS: Record<PlaygroundMode, SimToggles> = {
     moonTrail: false,
     moonLap: false,
     moonSightline: false,
+    /* The three faces open with their arcs, which is how every topic
+       outside the guided tour has always drawn them. */
+    siderealClock: true,
+    solarClock: true,
+    meanClock: true,
+    degrees: false,
   },
 };
 
@@ -209,85 +233,80 @@ export const PLAYGROUND_BY_SLUG: Record<string, PlaygroundConfig> = {
   /* ── the day itself ──────────────────────────────────────────────── */
   /* The ported lab on its own, for the topic that is only about the day. */
   "what-is-a-day": { mode: "day", guided: "day" },
-  /* The syllabus page: one scene, the day through ध्रुव तारा. */
-  "earth-rotation-day": { mode: "day", guided: "calendar" },
+  /* The day lab, on its own: six narrated chapters through free play — this
+     page is a day explainer, not the full calendar syllabus (that content
+     lives at `guided: "calendar"`, kept for a future page that wants it). */
+  "earth-rotation-day": { mode: "day", guided: "day" },
+  "sidereal-time": { mode: "day", layers: { siderealArc: true, solarArc: false } },
+  vara: { mode: "day", layers: { eotWedge: false } },
   "how-we-calculate": { mode: "day" },
-  /* होरा divides the day into twenty-four graha hours, so the topic's own
-     subject is the rotation the three arcs measure. */
-  hora: { mode: "day" },
+  "calc-sunrise": { mode: "day" },
+  "calc-sunset": { mode: "day" },
+  "time-scales": { mode: "day" },
+  "mean-vs-true-motion": { mode: "day" },
 
   /* ── the year and the orbit ──────────────────────────────────────── */
+  "solar-year": { mode: "year" },
+  "nepali-calendar-basics": { mode: "year" },
+  "bikram-sambat": { mode: "year" },
   "bs-calendar": { mode: "year" },
-  "solar-system": { mode: "year" },
-  /* `calendar-differences` and `adhik-maas` are not here on purpose — they get
-     the सौरमान/चान्द्रमान study instead. See {@link TWO_SYSTEMS_SLUGS}. */
-
-  /* ── the Moon: तिथि and its two irregularities ───────────────────── */
-  tithi: {
-    mode: "year",
-    layers: { moon: true, moonLap: true, moonSightline: true, nakshatraBelt: true },
-  },
-  "tithi-vriddhi": { mode: "year", layers: { moon: true, moonLap: true } },
-  "tithi-kshaya": { mode: "year", layers: { moon: true, moonLap: true } },
+  sauramana: { mode: "year" },
+  "year-begins-baisakh": { mode: "sun" },
+  "sidereal-vs-tropical": { mode: "year", layers: { nakshatraBelt: true } },
+  "solar-longitude": { mode: "sun" },
 
   /* ── the Sun along the belt ──────────────────────────────────────── */
   sankranti: { mode: "sun" },
-  "astronomy-basics": { mode: "sun" },
-  ayanamsha: { mode: "sun", layers: { nakshatraBelt: true } },
-  "what-is-panchang": {
-    mode: "sun",
-    /* पञ्चाङ्ग's five limbs are all read off the Sun's and the Moon's
-       longitudes, so both sightlines open lit. */
-    layers: { nakshatraBelt: true, moon: true, moonSightline: true },
-  },
+  "calc-sankranti": { mode: "sun" },
+  "mesha-sankranti": { mode: "sun" },
+  "makara-sankranti": { mode: "sun" },
+  "karka-sankranti": { mode: "sun" },
+  rashi: { mode: "sun" },
+  "zodiac-belt": { mode: "sun" },
   nakshatra: {
+    mode: "sun",
     /* The नक्षत्र a पञ्चाङ्ग names is the Moon's, so this topic opens with the
        Moon and its sightline rather than the Sun's. */
+    layers: { nakshatraBelt: true, moon: true, moonSightline: true },
+  },
+  "calc-nakshatra": {
     mode: "sun",
     layers: { nakshatraBelt: true, moon: true, moonSightline: true },
   },
+  ecliptic: { mode: "sun" },
 
-  /* ── ग्रहण ───────────────────────────────────────────────────────── */
-  /* The sim decides an eclipse the way an almanac does — is the Moon inside
-     the latitude limit at syzygy — so राहु and केतु travelling round the node
-     line is the topic's own subject, not decoration. */
-  eclipses: {
+  /* ── the Moon, and the limbs read off it ─────────────────────────── */
+  "lunar-month": {
     mode: "year",
-    layers: { moon: true, moonTrail: true, moonSightline: true },
+    /* The lap arc is the subject: one sidereal round, then the extra arc a
+       synodic month still needs. */
+    layers: { moonLap: true, nakshatraBelt: true, monthRing: false },
   },
+  tithi: {
+    mode: "year",
+    /* A तिथि is the gap between two sightlines, so both open lit. */
+    layers: { moon: true, moonSightline: true, sightline: true, moonLap: false },
+  },
+  "five-limbs-together": {
+    mode: "sun",
+    /* Everything the almanac reads, at once — this topic is the assembly. */
+    layers: { nakshatraBelt: true, moon: true, moonSightline: true, moonTrail: true },
+  },
+  "what-is-panchang": { mode: "sun", layers: { moon: true, moonSightline: true } },
+  "geocentric-heliocentric": { mode: "year", layers: { sunOrbit: true } },
 
   /* ── the tilt and what it causes ─────────────────────────────────── */
+  "axial-tilt": { mode: "tilt" },
+  "why-seasons": { mode: "tilt" },
+  "equinox-solstice": { mode: "tilt" },
+  "uttarayana-dakshinayana": { mode: "tilt" },
+  declination: { mode: "tilt" },
+  "celestial-equator": { mode: "tilt" },
   "ritu-drift": { mode: "tilt" },
 };
 
 export function playgroundFor(slug: string): PlaygroundConfig | undefined {
   return PLAYGROUND_BY_SLUG[slug];
-}
-
-/**
- * Topics that carry the सौरमान/चान्द्रमान study instead of the day playground.
- *
- * A different scene answering a different question: the playground is a model
- * you set the dials on, while `TwoSystemsStudy` runs the *real* ephemeris over
- * the actual current year and lays the two ladders — twelve सङ्क्रान्ति against
- * however many औंसी fit inside them — on one timeline. Only that second scene
- * can end on the ~11-day shortfall by measuring it, which is what these two
- * topics are for.
- *
- * The two sets are deliberately disjoint. Both scenes are WebGL canvases and
- * both animate; putting a pair of them in one scrolling article costs two live
- * GL contexts and two render loops on a device that has better uses for both.
- * So each topic gets whichever scene argues its own point, and never both.
- *
- * The web places this scene differently — on its geocentric-vs-heliocentric and
- * retrograde chapters, which have no counterpart in this app's topic list. The
- * scene is the same; where it earns its place is not, because the two Learn
- * libraries hold different articles.
- */
-export const TWO_SYSTEMS_SLUGS = new Set(["calendar-differences", "adhik-maas"]);
-
-export function hasTwoSystems(slug: string): boolean {
-  return TWO_SYSTEMS_SLUGS.has(slug);
 }
 
 /** The config resolved into the full state the playground opens with. */

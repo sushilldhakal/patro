@@ -1,21 +1,10 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
-import Svg, { G, Line, Polygon, Rect, Text as SvgText } from "react-native-svg";
 import type { GocharGraha } from "@/lib/api";
-import {
-  buildPlanetsByRashi,
-  formatGocharBsLabel,
-  RASHI_NE,
-} from "@/lib/dainikKranti/gochar-display";
-import {
-  GOCHAR_RASHI_TO_HOUSE,
-  NI_HOUSE_POLYGONS,
-  polygonCentroid,
-} from "@/lib/kundali/north-indian-layout";
+import { buildGocharBhavaHouses, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";
+import { D1Chart } from "@/components/panchanga/D1Chart";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
-import { useThemeColors } from "@/lib/theme-context";
-import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 
 type GrahaRow = GocharGraha & { key: string };
 
@@ -42,8 +31,6 @@ export function GocharKundaliChart({
   hideTitle,
 }: Props) {
   const { pick } = useLocale();
-  const colors = useThemeColors();
-  const planetsByRashi = buildPlanetsByRashi(grahas);
   const dateLabel = formatGocharBsLabel(dateBs, dateAd);
 
   return (
@@ -78,53 +65,7 @@ export function GocharKundaliChart({
           {pick("विवरण उपलब्ध छैन।", "No details available.")}
         </Text>
       ) : (
-        /* Square and full-width — see `D1Chart`'s note; same letterboxing. */
-        <View className="w-full items-center" style={{ width: "100%", aspectRatio: 1 }}>
-          <Svg width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("गोचर कुण्डली", "Transit chart")}>
-            <Rect x={0} y={0} width={300} height={300} rx={2} fill={colors.card} />
-            {RASHI_NE.map((rashiNe, idx) => {
-              const rashiNo = idx + 1;
-              const house = GOCHAR_RASHI_TO_HOUSE[rashiNo]!;
-              const points = NI_HOUSE_POLYGONS[house]!;
-              const [cx, cy] = polygonCentroid(points);
-              const planets = planetsByRashi[rashiNo] ?? [];
-              const planetLine = planets.join(" ");
-              return (
-                <G key={rashiNe}>
-                  {planetLine ? (
-                    <SvgText
-                      x={cx}
-                      y={cy - 6}
-                      fill={colors.foreground}
-                      fontSize={12}
-                      fontWeight="600"
-                      textAnchor="middle"
-                      {...nepaliSvgTextCenter}
-                    >
-                      {planetLine}
-                    </SvgText>
-                  ) : null}
-                  <SvgText
-                    x={cx}
-                    y={cy + (planetLine ? 14 : 4)}
-                    fill={colors.mutedForeground}
-                    fontSize={11}
-                    textAnchor="middle"
-                    {...nepaliSvgTextCenter}
-                  >
-                    {rashiNe}
-                  </SvgText>
-                </G>
-              );
-            })}
-            <G fill="none" stroke={colors.border} strokeWidth={1.75}>
-              <Rect x={0} y={0} width={300} height={300} rx={2} />
-              <Line x1={0} y1={0} x2={300} y2={300} />
-              <Line x1={300} y1={0} x2={0} y2={300} />
-              <Polygon points="150,0 300,150 150,300 0,150" />
-            </G>
-          </Svg>
-        </View>
+        <D1Chart houses={buildGocharBhavaHouses(grahas)} />
       )}
 
       {dateLabel ? (

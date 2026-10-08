@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import type { ShadbalaResponse, VimshottariResponse } from "@/lib/api";
+import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@/lib/api";
 import type { GrahaKey } from "@/lib/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -20,32 +20,6 @@ import {
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
-
-const SHADBALA_STATUS_NE: Record<string, string> = {
-  Exceptional: "उत्कृष्ट",
-  Strong: "बलियो",
-  Adequate: "पर्याप्त",
-  Borderline: "सीमान्त",
-  Weak: "कमजोर",
-};
-
-/** Graha name (English / Vedic) → NAVAGRAHA_SHANTI key. */
-const LORD_KEY: Record<string, string> = {
-  sun: "sun", surya: "sun",
-  moon: "moon", chandra: "moon",
-  mars: "mars", mangal: "mars", mangala: "mars", kuja: "mars",
-  mercury: "mercury", budha: "mercury", budh: "mercury",
-  jupiter: "jupiter", guru: "jupiter", brihaspati: "jupiter",
-  venus: "venus", shukra: "venus", sukra: "venus",
-  saturn: "saturn", shani: "saturn", sani: "saturn",
-  rahu: "rahu",
-  ketu: "ketu",
-};
-
-function lordToKey(name?: string): string | undefined {
-  if (!name) return undefined;
-  return LORD_KEY[name.toLowerCase().replace(/[^a-z]/g, "")];
-}
 
 function InfoTile({
   icon,
@@ -80,111 +54,157 @@ function InfoTile({
   );
 }
 
-function RecommendationCard({
-  heading,
-  grahaKey,
-  detail,
+const REMEDY_BADGE: Record<GrahaShantiFinding["remedy"], { border: string; bg: string; text: string }> = {
+  shanti: { border: "#0b565a", bg: "#0b565a1a", text: "#0b565a" },
+  strengthen: { border: "#10b98166", bg: "#10b9811a", text: "#059669" },
+  pacify: { border: "#f59e0b66", bg: "#f59e0b1a", text: "#d97706" },
+  pacify_transit: { border: "#f59e0b66", bg: "#f59e0b1a", text: "#d97706" },
+  soothe: { border: "#0ea5e966", bg: "#0ea5e91a", text: "#0284c7" },
+};
+
+/**
+ * One trigger of the server-computed classical 4-step Graha Shanti decision
+ * process (see `GrahaShantiFinding`) — not a client-side heuristic.
+ */
+function ShantiFindingCard({
+  finding,
   onSelect,
   width,
 }: {
-  heading: string;
-  grahaKey?: string;
-  detail?: string;
+  finding: GrahaShantiFinding;
   onSelect: (key: string) => void;
   width: string;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
-  const graha = grahaKey ? getGrahaShanti(grahaKey) : undefined;
+  const graha = getGrahaShanti(finding.graha);
+  const nameNe = graha?.nameNe ?? finding.grahaNe;
+  const nameEn = graha?.nameEn ?? finding.graha;
+  const badge = REMEDY_BADGE[finding.remedy];
 
   return (
-    <View
-      style={{ width: width as never }}
-      className="rounded-xl border border-border bg-card p-4"
-    >
-      <Text
-        className="text-xs uppercase tracking-wide text-muted-foreground"
-        style={nepaliTextStyle(11)}
-      >
-        {heading}
+    <View style={{ width: width as never }} className="rounded-xl border border-border bg-card p-4">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <Text
+          className="shrink text-xs uppercase tracking-wide text-muted-foreground"
+          style={nepaliTextStyle(11)}
+        >
+          {pick(finding.stepTitleNe, finding.stepTitleEn)}
+        </Text>
+        <View
+          style={{ borderColor: badge.border, backgroundColor: badge.bg }}
+          className="rounded-full border px-2.5 py-0.5"
+        >
+          <Text className="text-xs font-semibold" style={[nepaliTextStyle(12), { color: badge.text }]}>
+            {t(`kundali.x.shanti_remedy_${finding.remedy}`)}
+          </Text>
+        </View>
+      </View>
+      <View className="mt-1.5 flex-row items-center gap-2">
+        <GrahaPlanetIcon graha={finding.graha as GrahaKey} size={28} />
+        <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+          {pick(nameNe, nameEn)}
+        </Text>
+      </View>
+      <Text className="mt-1 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        {pick(finding.reasonNe, finding.reasonEn)}
       </Text>
-      {graha ? (
-        <>
-          <View className="mt-1 flex-row flex-wrap items-center gap-2">
-            <GrahaPlanetIcon graha={graha.key as GrahaKey} size={28} />
-            <Text
-              className="text-lg font-bold text-foreground"
-              style={nepaliTextStyle(18)}
-            >
-              {pick(graha.nameNe, graha.nameEn)}
-            </Text>
-          </View>
-          {detail ? (
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
-              {detail}
-            </Text>
-          ) : null}
-          <Pressable
-            onPress={() => onSelect(graha.key)}
-            style={{ backgroundColor: colorWithAlpha("#0b565a", 0.1) }}
-            className="mt-3 flex-row items-center gap-1.5 self-start rounded-lg border border-secondary px-3 py-1.5 active:opacity-80"
-          >
-            <Ionicons name="arrow-down-circle-outline" size={14} color={colors.secondary} />
-            <Text className="text-sm text-secondary" style={nepaliTextStyle(13)}>
-              {pick(`${graha.nameNe} शान्ति हेर्नुहोस्`, `View ${graha.nameEn} shanti`)}
-            </Text>
-          </Pressable>
-        </>
-      ) : (
-        <Text className="mt-1 text-sm text-muted-foreground">—</Text>
-      )}
+      <Pressable
+        onPress={() => onSelect(finding.graha)}
+        style={{ backgroundColor: colorWithAlpha("#0b565a", 0.1) }}
+        className="mt-3 flex-row items-center gap-1.5 self-start rounded-lg border border-secondary px-3 py-1.5 active:opacity-80"
+      >
+        <Ionicons name="arrow-down-circle-outline" size={14} color={colors.secondary} />
+        <Text className="text-sm text-secondary" style={nepaliTextStyle(13)}>
+          {pick(`${nameNe} शान्ति हेर्नुहोस्`, `View ${nameEn} shanti`)}
+        </Text>
+      </Pressable>
     </View>
   );
 }
 
 /**
- * Navagraha Shanti recommendations + reference, driven by an already-computed
- * Vimshottari dasha and Shadbala for a chart. Used standalone (shanti-vidhi
- * screen) and embeddable in a kundali. No data fetching of its own.
+ * One tier ("critical" or "core") of findings, collapsible so a chart with
+ * many simultaneous afflictions (a real stellium can produce 8-12 findings)
+ * doesn't dump every card on the user at once.
+ */
+function ShantiFindingsGroup({
+  title,
+  findings,
+  onSelect,
+  defaultOpen,
+  cardWidth,
+}: {
+  title: string;
+  findings: GrahaShantiFinding[];
+  onSelect: (key: string) => void;
+  defaultOpen: boolean;
+  cardWidth: string;
+}) {
+  const { digits } = useLocale();
+  const colors = useThemeColors();
+  const [open, setOpen] = useState(defaultOpen);
+  if (findings.length === 0) return null;
+  return (
+    <View>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        className="flex-row items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 active:opacity-80"
+      >
+        <Text className="flex-1 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          {title} ({digits(findings.length)})
+        </Text>
+        <Ionicons name={open ? "chevron-up" : "chevron-down"} size={16} color={colors.mutedForeground} />
+      </Pressable>
+      {open ? (
+        <View className="mt-3 flex-row flex-wrap gap-3">
+          {findings.map((finding, idx) => (
+            <ShantiFindingCard
+              key={`${finding.step}-${finding.graha}-${finding.remedy}-${idx}`}
+              finding={finding}
+              onSelect={onSelect}
+              width={cardWidth}
+            />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/**
+ * Navagraha Shanti recommendations + reference. `grahaShanti` is the
+ * server-computed classical 4-step decision (dasha assessment, Lagnesha/
+ * Yogakaraka strength, Rahu-Ketu-Saturn affliction, Saturn's Sade Sati/
+ * Dhaiya transit) — see `GrahaShantiRecommendation` in `lib/api.ts`. Used
+ * standalone (shanti-vidhi screen) and embedded in each kundali. No data
+ * fetching of its own.
  */
 export function ShantiVidhiPanel({
-  vimshottari,
-  shadbala,
+  grahaShanti,
   isError = false,
 }: {
-  vimshottari?: VimshottariResponse;
-  shadbala?: ShadbalaResponse;
+  grahaShanti?: GrahaShantiRecommendation;
   isError?: boolean;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const [selectedKey, setSelectedKey] = useState("saturn");
-  const [nowMs] = useState(() => Date.now());
   const graha = useMemo(
     () => getGrahaShanti(selectedKey) ?? NAVAGRAHA_SHANTI[0],
     [selectedKey],
   );
-
-  // current Mahadasha lord = the sequence period containing "now"
-  const currentDasha = useMemo(() => {
-    const seq = vimshottari?.sequence ?? [];
-    const period = seq.find((p) => {
-      const s = new Date(p.start).getTime();
-      const e = new Date(p.end).getTime();
-      return Number.isFinite(s) && Number.isFinite(e) && s <= nowMs && nowMs < e;
-    });
-    const key = lordToKey(period?.lord ?? vimshottari?.mahadasha_lord);
-    return { key, period };
-  }, [vimshottari, nowMs]);
-
-  const weakest = shadbala?.summary.weakest;
-  const weakestKey = lordToKey(weakest?.key) ?? weakest?.key;
+  const findings = useMemo(() => grahaShanti?.findings ?? [], [grahaShanti]);
+  const criticalFindings = useMemo(() => findings.filter((f) => f.tier === "critical"), [findings]);
+  const coreFindings = useMemo(() => findings.filter((f) => f.tier === "core"), [findings]);
 
   // Web uses sm:grid-cols-2 for the recommendation/tile grids and
   // grid-cols-3 / sm:grid-cols-5 / lg:grid-cols-9 for the graha selector.
   const cardWidth = width >= 640 ? "49%" : "100%";
-  const tileWidth = width >= 1024 ? "24%" : width >= 640 ? "49%" : "100%";
+  const tileWidth = width >= 1024 ? "32%" : width >= 640 ? "49%" : "100%";
   const selectorCols = width >= 1024 ? 9 : width >= 640 ? 5 : 3;
   const selectorWidth = `${(100 / selectorCols - 1.5).toFixed(2)}%`;
 
@@ -192,61 +212,42 @@ export function ShantiVidhiPanel({
 
   return (
     <View className="gap-4">
+      {/* recommendations from this chart — server-computed 4-step decision */}
       {isError ? (
         <View
           style={{ backgroundColor: colorWithAlpha("#c62828", 0.1) }}
           className="rounded-lg border border-destructive/30 p-3"
         >
           <Text className="text-sm text-destructive" style={nepaliTextStyle(14)}>
-            {pick(
-              "गणना ल्याउन सकिएन। मिति/समय/स्थान जाँचेर पुनः प्रयास गर्नुहोस्।",
-              "Could not load the calculation. Check date/time/place and try again.",
-            )}
+            {t("kundali.x.shanti_load_error")}
           </Text>
         </View>
-      ) : (
-        <View className="flex-row flex-wrap gap-3">
-          <RecommendationCard
-            width={cardWidth}
-            heading={pick("वर्तमान महादशा (विंशोत्तरी)", "Current Mahadasha (Vimshottari)")}
-            grahaKey={currentDasha.key}
-            detail={
-              currentDasha.period
-                ? pick(
-                    `${currentDasha.period.lord_ne} महादशा चलिरहेको — यसको शान्ति उपयुक्त।`,
-                    `${currentDasha.period.lord} Mahadasha is running — its shanti is suitable.`,
-                  )
-                : vimshottari?.mahadasha_lord_ne
-                  ? pick(
-                      `${vimshottari.mahadasha_lord_ne} महादशा (जन्मकालीन)।`,
-                      `${vimshottari.mahadasha_lord ?? vimshottari.mahadasha_lord_ne} Mahadasha (at birth).`,
-                    )
-                  : undefined
-            }
+      ) : findings.length > 0 ? (
+        <View className="gap-3">
+          <ShantiFindingsGroup
+            title={t("kundali.x.shanti_tier_critical")}
+            findings={criticalFindings}
             onSelect={setSelectedKey}
+            defaultOpen
+            cardWidth={cardWidth}
           />
-          <RecommendationCard
-            width={cardWidth}
-            heading={pick("सबैभन्दा बलहीन ग्रह (षड्बल)", "Weakest planet (Shadbala)")}
-            grahaKey={weakestKey}
-            detail={
-              weakest
-                ? pick(
-                    `${weakest.name_ne}: बल ${digits((weakest.ratio * 100).toFixed(0))}% (${SHADBALA_STATUS_NE[weakest.status] ?? weakest.status}) — बल बढाउन शान्ति गर्नुहोस्।`,
-                    `${weakest.name ?? weakest.name_ne}: strength ${(weakest.ratio * 100).toFixed(0)}% (${weakest.status}) — do shanti to strengthen it.`,
-                  )
-                : undefined
-            }
+          <ShantiFindingsGroup
+            title={t("kundali.x.shanti_tier_core")}
+            findings={coreFindings}
             onSelect={setSelectedKey}
+            defaultOpen={criticalFindings.length === 0}
+            cardWidth={cardWidth}
           />
         </View>
+      ) : (
+        <View className="rounded-lg border border-border bg-card p-3">
+          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            {t("kundali.x.shanti_findings_empty")}
+          </Text>
+        </View>
       )}
-
       <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-        {pick(
-          "गणना जन्म समयको ग्रहस्थिति (विंशोत्तरी महादशा) र ग्रह बल (षड्बल) मा आधारित छ। यो सामान्य मार्गदर्शन हो — विधिवत् उपायका लागि योग्य ज्योतिषीसँग परामर्श गर्नुहोस्।",
-          "The calculation is based on the birth-time planetary positions (Vimshottari mahadasha) and planetary strength (Shadbala). This is general guidance — consult a qualified astrologer for formal remedies.",
-        )}
+        {t("kundali.x.shanti_basis_note")}
       </Text>
 
       {/* graha selector */}
@@ -308,6 +309,12 @@ export function ShantiVidhiPanel({
                   {pick(graha.vaaraNe, graha.vaaraEn)}
                 </Text>
               </View>
+              <View className="flex-row items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1">
+                <Ionicons name="time-outline" size={12} color={colors.mutedForeground} />
+                <Text className="text-xs text-foreground" style={nepaliTextStyle(11)}>
+                  {pick(graha.shubhSamayaNe, graha.shubhSamayaEn)}
+                </Text>
+              </View>
               <View className="flex-row items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
                 <View
                   style={{ backgroundColor: graha.colorHex }}
@@ -328,7 +335,7 @@ export function ShantiVidhiPanel({
               className="mb-1 text-xs uppercase tracking-wide text-muted-foreground"
               style={nepaliTextStyle(11)}
             >
-              {pick("बीज मन्त्र", "Beeja Mantra")}
+              {t("kundali.x.shanti_beeja_mantra_heading")}
             </Text>
             <Text
               className="text-lg font-semibold leading-relaxed text-foreground"
@@ -338,10 +345,72 @@ export function ShantiVidhiPanel({
             </Text>
             <Text className="mt-1.5 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick(
-                `जप संख्या: ${digits(graha.japa)} पटक`,
-                `Japa count: ${digits(graha.japa)} times`,
+                `जप संख्या: ${digits(graha.japa)} पटक (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} पटक)`,
+                `Japa count: ${digits(graha.japa)} times (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} times)`,
               )}
             </Text>
+            <View className="mt-3 border-t border-border pt-3">
+              <Text
+                className="mb-1 text-xs uppercase tracking-wide text-muted-foreground"
+                style={nepaliTextStyle(11)}
+              >
+                {t("kundali.x.shanti_vedic_mantra_heading")}
+              </Text>
+              <Text className="text-sm leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+                {graha.vedicMantra}
+              </Text>
+            </View>
+            <View className="mt-3 border-t border-border pt-3">
+              <Text
+                className="mb-1 text-xs uppercase tracking-wide text-muted-foreground"
+                style={nepaliTextStyle(11)}
+              >
+                {t("kundali.x.shanti_tantrik_mantra_heading")}
+              </Text>
+              <Text
+                className="text-lg font-semibold leading-relaxed text-foreground"
+                style={nepaliTextStyle(18)}
+              >
+                {graha.tantrikMantra}
+              </Text>
+            </View>
+          </View>
+
+          {/* stotram + yantra */}
+          <View className="gap-3">
+            <View className="rounded-xl border border-border bg-card p-4">
+              <View className="mb-1 flex-row items-center gap-1.5">
+                <Ionicons name="book-outline" size={16} color={colors.secondary} />
+                <Text
+                  className="text-xs uppercase tracking-wide text-muted-foreground"
+                  style={nepaliTextStyle(11)}
+                >
+                  {t("kundali.x.shanti_stotram_heading")}
+                </Text>
+              </View>
+              <Text className="text-base italic leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
+                {graha.stotram}
+              </Text>
+            </View>
+            <View className="rounded-xl border border-border bg-card p-4">
+              <Text
+                className="mb-2 text-center text-xs uppercase tracking-wide text-muted-foreground"
+                style={nepaliTextStyle(11)}
+              >
+                {t("kundali.x.shanti_yantra_heading")}
+              </Text>
+              <View className="mx-auto w-32 flex-row flex-wrap gap-1">
+                {graha.yantraGrid.map((n, i) => (
+                  <View
+                    key={i}
+                    style={{ width: "31%", aspectRatio: 1 }}
+                    className="items-center justify-center rounded border border-border bg-background"
+                  >
+                    <Text className="text-sm font-semibold text-foreground">{digits(n)}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
           </View>
 
           {/* tiles */}
@@ -349,27 +418,53 @@ export function ShantiVidhiPanel({
             <InfoTile
               width={tileWidth}
               icon="leaf-outline"
-              label={pick("समिधा (हवन काठ)", "Samidha (homa wood)")}
+              label={t("kundali.x.shanti_samidha_heading")}
               value={pick(graha.samidhaNe, graha.samidhaEn)}
             />
             <InfoTile
               width={tileWidth}
               icon="diamond-outline"
-              label={pick("रत्न", "Gem")}
+              label={t("kundali.x.shanti_gem")}
               value={pick(graha.gemNe, graha.gemEn)}
             />
             <InfoTile
               width={tileWidth}
               icon="sparkles-outline"
-              label={pick("धातु", "Metal")}
+              label={t("kundali.x.shanti_metal")}
               value={pick(graha.metalNe, graha.metalEn)}
             />
             <InfoTile
               width={tileWidth}
               icon="flame-outline"
-              label={pick("अधिदेवता", "Deity")}
+              label={t("kundali.x.shanti_deity")}
               value={pick(graha.adhidevataNe, graha.adhidevataEn)}
             />
+            <InfoTile
+              width={tileWidth}
+              icon="person-outline"
+              label={t("kundali.x.shanti_pratyadhidevata")}
+              value={pick(graha.pratyadhidevataNe, graha.pratyadhidevataEn)}
+            />
+            <InfoTile
+              width={tileWidth}
+              icon="compass-outline"
+              label={t("kundali.x.shanti_disha")}
+              value={pick(graha.dishaNe, graha.dishaEn)}
+            />
+            <InfoTile
+              width={tileWidth}
+              icon="flower-outline"
+              label={t("kundali.x.shanti_pooja")}
+              value={pick(graha.poojaNe, graha.poojaEn)}
+            />
+          </View>
+
+          {/* gem-wearing method */}
+          <View className="rounded-lg border border-border bg-card p-3">
+            <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="font-semibold text-foreground">{t("kundali.x.shanti_gem_detail_label")}</Text>{" "}
+              {pick(graha.gemDetailNe, graha.gemDetailEn)}
+            </Text>
           </View>
 
           {/* daan */}
@@ -377,7 +472,7 @@ export function ShantiVidhiPanel({
             <View className="mb-2 flex-row items-center gap-1.5">
               <Ionicons name="gift-outline" size={16} color={colors.secondary} />
               <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
-                {pick("दान सामग्री", "Donation items")}
+                {t("kundali.x.shanti_donation_items")}
               </Text>
             </View>
             <View className="flex-row flex-wrap gap-2">
@@ -396,7 +491,7 @@ export function ShantiVidhiPanel({
 
           <View className="rounded-lg border border-border bg-card p-3">
             <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-              <Text className="font-semibold text-foreground">{pick("उपयोग:", "Use:")}</Text>{" "}
+              <Text className="font-semibold text-foreground">{t("kundali.x.shanti_use_label")}</Text>{" "}
               {pick(graha.remedyNe, graha.remedyEn)}
             </Text>
           </View>
@@ -406,7 +501,7 @@ export function ShantiVidhiPanel({
       {/* full reference table */}
       <View>
         <Text className="mb-3 text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
-          {pick("नवग्रह शान्ति तालिका", "Navagraha Shanti table")}
+          {t("kundali.x.shanti_reference_table")}
         </Text>
         <TableScrollShell>
           <TableHeader>
@@ -447,10 +542,7 @@ export function ShantiVidhiPanel({
           })}
         </TableScrollShell>
         <Text className="mt-2 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-          {pick(
-            "सूचना: माथिका विवरण शास्त्रीय नवग्रह शान्ति परम्परामा आधारित छन्। रत्नधारण वा विधिवत् हवन गर्नुअघि योग्य ज्योतिषी/पुरोहितसँग परामर्श गर्नुहोस्।",
-            "Note: the details above are based on the classical Navagraha Shanti tradition. Consult a qualified astrologer/priest before wearing gems or performing a formal homa.",
-          )}
+          {t("kundali.x.shanti_disclaimer")}
         </Text>
       </View>
     </View>

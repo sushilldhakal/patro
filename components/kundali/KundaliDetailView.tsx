@@ -15,6 +15,7 @@ import {
   UpagrahaTable,
   YogaList,
 } from "@/components/kundali/KundaliSections";
+import { KundaliSources } from "@/components/kundali/KundaliSources";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { KundaliReport } from "@/components/kundali/KundaliReport";
 import type { KundaliDetailResponse, LocationParams } from "@/lib/api";
@@ -148,6 +149,8 @@ export function KundaliDetailView({
         </KundaliSection>
       ) : null}
 
+      {show("kundali-yoga") ? <KundaliSources kind="yoga" /> : null}
+
       {show("kundali-dasha") &&
       (detail.dasha || detail.tribhagiDasha || detail.yoginiDasha) ? (
         <KundaliSection title={pick("दशा", "Dasha")} subtitle={pick("दशा प्रणाली", "Dasha systems")} icon="time-outline">
@@ -161,6 +164,8 @@ export function KundaliDetailView({
           />
         </KundaliSection>
       ) : null}
+
+      {show("kundali-dasha") && (detail.dasha || detail.tribhagiDasha || detail.yoginiDasha) ? <KundaliSources kind="dasha" /> : null}
 
       {show("kundali-shadbala") ? (
         <KundaliSection
@@ -177,6 +182,8 @@ export function KundaliDetailView({
           />
         </KundaliSection>
       ) : null}
+
+      {show("kundali-shadbala") ? <KundaliSources kind="shadbala" /> : null}
 
       {show("kundali-bhava-bala") ? (
         <KundaliSection title={pick("भाव बल", "Bhava bala")} icon="stats-chart-outline">
@@ -196,6 +203,8 @@ export function KundaliDetailView({
         </KundaliSection>
       ) : null}
 
+      {show("kundali-bhava-bala") ? <KundaliSources kind="bhavabala" /> : null}
+
       {show("kundali-ashtakavarga") ? (
         <KundaliSection title={pick("अष्टकवर्ग", "Ashtakavarga")} icon="apps-outline">
           {balaTabs}
@@ -208,6 +217,8 @@ export function KundaliDetailView({
           )}
         </KundaliSection>
       ) : null}
+
+      {show("kundali-ashtakavarga") ? <KundaliSources kind="ashtakavarga" /> : null}
 
       {show("kundali-vimshopaka") ? (
         <KundaliSection
@@ -226,15 +237,19 @@ export function KundaliDetailView({
         </KundaliSection>
       ) : null}
 
+      {show("kundali-vimshopaka") ? <KundaliSources kind="vimshopaka" /> : null}
+
       {show("kundali-shanti") ? (
         <KundaliSection
           title={pick("शान्ति विधि", "Shanti vidhi")}
           subtitle={pick("नवग्रह शान्ति उपाय", "Navagraha remedial measures")}
           icon="flame-outline"
         >
-          <ShantiVidhiPanel vimshottari={detail.dasha ?? undefined} shadbala={detail.shadbala} />
+          <ShantiVidhiPanel grahaShanti={detail.grahaShanti} />
         </KundaliSection>
       ) : null}
+
+      {show("kundali-shanti") ? <KundaliSources kind="shanti" /> : null}
 
       {show("kundali-report") && birthMoment ? (
         <KundaliReport

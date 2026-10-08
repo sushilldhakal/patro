@@ -1,4 +1,6 @@
 import type { GocharGraha } from "@/lib/api";
+import type { BhavaHouse, BhavaPlanetEntry } from "@/lib/bhava";
+import { formatRashiByNumber } from "@/lib/rashi-i18n";
 import { adToBS } from "@/lib/bs-calendar";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
 import { formatBsIsoDateNepali, toNepaliDigits } from "@/lib/panchanga-format";
@@ -66,6 +68,50 @@ export function buildPlanetsByRashi(
     (out[num] ??= []).push(grahaChartLabel(g.key, g));
   }
   return out;
+}
+
+/** Inverse of GOCHAR_RASHI_TO_HOUSE — which rashi sits in a given gochar slot. */
+const HOUSE_TO_GOCHAR_RASHI: Record<number, number> = Object.fromEntries(
+  Object.entries(GOCHAR_RASHI_TO_HOUSE).map(([rashi, house]) => [house, Number(rashi)]),
+);
+
+/**
+ * Synthesizes a `BhavaHouse[]` from today's gochar (fixed rashi→slot)
+ * positions so the shared `D1Chart` — and its tap-a-house detail dialog and
+ * graha aspect arrows — can render the transit chart too. Mirrors web's
+ * `buildGocharBhavaHouses`. There is no natal lagna here: "house 1" is just
+ * the rashi the fixed Surya-patro convention slots there.
+ */
+export function buildGocharBhavaHouses(
+  grahas: Array<GocharGraha & { key: string }>,
+): BhavaHouse[] {
+  const houses: BhavaHouse[] = Array.from({ length: 12 }, (_, i) => {
+    const house = i + 1;
+    const rashi = HOUSE_TO_GOCHAR_RASHI[house] ?? house;
+    return {
+      house,
+      rashi,
+      rashiNe: formatRashiByNumber(rashi, "ne"),
+      isLagna: house === 1,
+      planets: [],
+    };
+  });
+
+  for (const g of grahas) {
+    const rashi = rashiNoFromGraha(g);
+    if (rashi == null) continue;
+    const house = GOCHAR_RASHI_TO_HOUSE[rashi];
+    if (house == null) continue;
+    const entry: BhavaPlanetEntry = {
+      key: g.key,
+      labelNe: grahaChartLabel(g.key, g),
+      isRetrograde: g.is_retrograde,
+      isCombust: g.is_combust,
+    };
+    houses[house - 1]!.planets.push(entry);
+  }
+
+  return houses;
 }
 
 /** पापाशाः — पाप ग्रहको गोचर कुण्डली घर (जस्तै म.८, रा.५, के.११) */

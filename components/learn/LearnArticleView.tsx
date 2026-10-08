@@ -14,9 +14,8 @@ import { DATA_ARTICLES } from "@/lib/learn/articles";
 import { MergedArticleBody } from "@/components/learn/MergedArticleBody";
 import { ArticleBody } from "@/components/learn/article-render";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
-import { hasTwoSystems, playgroundFor } from "@/lib/learn/playground-config";
+import { playgroundFor } from "@/lib/learn/playground-config";
 import { DayPlayground } from "@/components/learn/playground/DayPlayground";
-import { TwoSystemsStudy } from "@/components/learn/playground/TwoSystemsStudy";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
@@ -74,11 +73,13 @@ export function LearnArticleView({
   const merged = MERGED_BY_SLUG[slug];
   const data = DATA_ARTICLES[slug];
   const { prev, next } = adjacentPublishedTopics(slug);
-  /* Not every topic gets one, and that is the point: a topic with no entry in
-     the config is one the sim cannot honestly illustrate. The two sets are
-     disjoint — no guide carries two WebGL canvases. */
+  /* Not every topic gets one: a topic with no entry in the config is one the
+     sim cannot honestly illustrate. Same map as web. */
   const playground = playgroundFor(slug);
-  const twoSystems = hasTwoSystems(slug);
+  /* A topic with a guided (narrated) tour explains itself through the
+     playground and its voiceover — the written prose below it would be saying
+     the same thing twice. Same rule as web's LearnArticle. */
+  const hasGuidedTour = Boolean(playground?.guided);
 
   if (!topic || (!merged && !data)) {
     return (
@@ -100,6 +101,17 @@ export function LearnArticleView({
         </Text>
       </View>
 
+      {/* Above the prose, as on web: a topic that has a playground is one you
+          can watch, and the reader should meet it before the words. */}
+      {playground ? (
+        <DayPlayground
+          key={slug}
+          config={playground}
+          title={pick(`${topic.title.ne} · आकाश`, `${topic.title.en} · sky`)}
+        />
+      ) : null}
+
+      {hasGuidedTour ? null : (
       <View className="rounded-2xl border border-border bg-card p-4">
         {merged ? (
           <MergedArticleBody page={merged} scrollRef={scrollRef} initialChapter={initialChapter} />
@@ -107,19 +119,7 @@ export function LearnArticleView({
           <ArticleBody article={data} />
         ) : null}
       </View>
-
-      {/* Below the prose rather than inside it: the playground is the whole
-          guide's instrument, not one figure in an argument, and every one of
-          its layers reaches past whatever chapter it would otherwise sit in. */}
-      {playground ? (
-        <DayPlayground
-          config={playground}
-          title={pick(`${topic.title.ne} · आकाश`, `${topic.title.en} · sky`)}
-        />
-      ) : null}
-      {twoSystems ? (
-        <TwoSystemsStudy title={pick(`${topic.title.ne} · सौरमान र चान्द्रमान`, `${topic.title.en} · two systems`)} />
-      ) : null}
+      )}
 
       <View className="flex-row gap-2">
         {prev ? (

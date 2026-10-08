@@ -7,7 +7,7 @@ import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
-import { fetchShadbala, fetchVimshottari, shadbalaKeys, vimshottariKeys } from "@/lib/api";
+import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { instantFromCivilIso } from "@/lib/instant-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -38,15 +38,9 @@ export default function ShantiVidhiScreen() {
     [adDateStr, clock],
   );
 
-  const vimshottariQ = useQuery({
-    queryKey: vimshottariKeys.atTime(birthMoment, location.params),
-    queryFn: () => fetchVimshottari(birthMoment, location.params),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const shadbalaQ = useQuery({
-    queryKey: shadbalaKeys.atTime(birthMoment, location.params),
-    queryFn: () => fetchShadbala(birthMoment, location.params),
+  const detailQ = useQuery({
+    queryKey: kundaliDetailKeys.atTime(birthMoment, location.params),
+    queryFn: () => fetchKundaliDetail(birthMoment, location.params),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -79,11 +73,7 @@ export default function ShantiVidhiScreen() {
             adDateStr={adDateStr}
           />
 
-          <ShantiVidhiPanel
-            vimshottari={vimshottariQ.data}
-            shadbala={shadbalaQ.data}
-            isError={vimshottariQ.isError && shadbalaQ.isError}
-          />
+          <ShantiVidhiPanel grahaShanti={detailQ.data?.grahaShanti} isError={detailQ.isError} />
         </View>
       </View>
     </AppShell>

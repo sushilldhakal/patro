@@ -152,6 +152,27 @@ export function DayChapterBar({
         >
           <Ionicons name="play-skip-forward" size={22} color={player.ended && !isLast ? "#fde68a" : "#fff"} />
         </Pressable>
+        {/* Live in every chapter, not only once the script hands off: a reader
+            who pauses mid-narration and wants to nudge the animation themselves
+            needs it the whole time. Pressing it pauses narration and hands the
+            clock to the reader. */}
+        {free || !onOrbitToggle ? null : (
+          <Pressable
+            onPress={onOrbitToggle}
+            accessibilityRole="button"
+            accessibilityState={{ selected: Boolean(orbitPlaying) }}
+            accessibilityLabel={
+              orbitPlaying ? (lang === "en" ? "Pause orbit" : "कक्ष रोक्नुहोस्") : (lang === "en" ? "Run orbit" : "कक्ष चलाउनुहोस्")
+            }
+            className="h-10 w-10 items-center justify-center active:opacity-70"
+          >
+            <Ionicons
+              name={orbitPlaying ? "planet" : "planet-outline"}
+              size={22}
+              color={orbitPlaying ? "#fde68a" : "#fff"}
+            />
+          </Pressable>
+        )}
       </View>
 
       <BottomSheetModal

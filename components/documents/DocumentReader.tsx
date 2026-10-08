@@ -21,6 +21,8 @@ interface Props {
   scrollToLabel?: string | null;
   /** Bumped by the caller to re-trigger scrollToLabel for the same label. */
   scrollNonce?: number;
+  /** Scroll to a row by its key (chapter jump pills). */
+  scrollToKey?: { key: string; nonce: number } | null;
 }
 
 /**
@@ -35,6 +37,7 @@ export function DocumentReader({
   footer,
   scrollToLabel,
   scrollNonce,
+  scrollToKey,
 }: Props) {
   const { t, lang, digits } = useLocale();
   const listRef = useRef<FlatList<ReaderRow>>(null);
@@ -68,6 +71,12 @@ export function DocumentReader({
       return () => clearTimeout(id);
     }
   }, [scrollToLabel, scrollNonce, rows, scrollToIndex]);
+
+  useEffect(() => {
+    if (!scrollToKey) return;
+    const i = rows.findIndex((r) => r.key === scrollToKey.key);
+    if (i >= 0) listRef.current?.scrollToIndex({ index: i, viewPosition: 0, animated: true });
+  }, [scrollToKey, rows]);
 
   const onPlay = useCallback(
     (shloka: Shloka) => {

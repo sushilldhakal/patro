@@ -260,6 +260,19 @@ export type SimToggles = {
   moonLap: boolean;
   /** Earth → Moon → नक्षत्र belt: the Moon's own nakshatra, read off the sky. */
   moonSightline: boolean;
+  /* ── the three clock faces ─────────────────────────────────────────
+     Each rides its own arc, so a face is only ever drawn when the arc it
+     belongs to is. Separating them from the arcs is what lets a chapter show
+     two arcs while reading one clock. */
+  /** The sidereal (नाक्षत्र) clock face, on the stellar arc. */
+  siderealClock: boolean;
+  /** The true-Sun clock face, on the solar arc. */
+  solarClock: boolean;
+  /** The mean-time clock face, on the mean arc. */
+  meanClock: boolean;
+  /** The globe's rotation so far, in degrees, pinned above the planet — and
+   *  the ecliptic polar mesh the degrees are read against. */
+  degrees: boolean;
 };
 
 export type CameraState = { yaw: number; pitch: number; distance: number };
@@ -562,6 +575,7 @@ function DaySimScene({
   const vSun = useRef(new THREE.Vector3());
   const vTmp = useRef(new THREE.Vector3());
   const vAnchor = useRef(new THREE.Vector3());
+  const vCamUp = useRef(new THREE.Vector3());
   const vMoon = useRef(new THREE.Vector3());
   const yAxis = useRef(new THREE.Vector3(0, 1, 0));
   const scratch = useRef(new THREE.Vector3());
@@ -1381,11 +1395,20 @@ function DaySimScene({
         );
       };
       const ct = clockText.current;
-      if (toggles.meanArc) push("c-mean", "clock", ct.mean, tick(0, 1.75), false, { tone: "mean" });
-      if (toggles.solarArc)
+      if (toggles.meanArc && toggles.meanClock)
+        push("c-mean", "clock", ct.mean, tick(0, 1.75), false, { tone: "mean" });
+      if (toggles.solarArc && toggles.solarClock)
         push("c-solar", "clock", ct.solar, tick(-eot, 2.45), false, { tone: "solar" });
-      if (toggles.siderealArc)
+      if (toggles.siderealArc && toggles.siderealClock)
         push("c-sidereal", "clock", ct.sidereal, tick(-spin, 3.15), false, { tone: "sidereal" });
+      if (toggles.degrees) {
+        /* Billboarded: straight up in the camera's own frame, so the number sits
+           on top of the disc on screen rather than stuck to the geographic pole. */
+        const deg = Math.round((((day % 1) + 1) % 1) * 360);
+        const up = vCamUp.current.set(0, 1, 0).transformDirection(cam.matrixWorld);
+        anchor.copy(planetPos).addScaledVector(up, PLANET_R * 2.4);
+        push("c-deg", "body", `${deg}°`, anchor, false);
+      }
     }
     labels.end();
 
@@ -1424,15 +1447,19 @@ function DaySimScene({
         means anything when it holds still. It sits outside the frame root, on
         the origin, which is where the focused body now is.
 
-        **Equatorial, not ecliptic.** The planet's orbit *defines* the ecliptic,
-        so laying the grid in that same plane would leave every body permanently
-        flat in it and nothing could ever be seen to rise or dip. Declination —
-        the whole of the equinoxes and the solstices — is height above the
-        *equator*, which is this scene's y = 0.
+        **Ecliptic, one mesh.** It takes the same quaternion as the belts, so the
+        axial-tilt slider moves it with them instead of leaving a straight line
+        across the equator. Lines only — a filled disc would be a second
+        surface — and only while डिग्री is on.
       */}
-      <group ref={gridRoot}>
+      <group ref={gridRoot} quaternion={solarPlaneQ}>
         <group rotation={[0, beltZeroDeg * (Math.PI / 180), 0]}>
-          <GuideGrid visible={toggles.grid} innerR={focusRadius} planeInnerR={focusRadius} />
+          <GuideGrid
+            visible={toggles.degrees}
+            showPlane={false}
+            innerR={focusRadius}
+            planeInnerR={focusRadius}
+          />
         </group>
       </group>
 

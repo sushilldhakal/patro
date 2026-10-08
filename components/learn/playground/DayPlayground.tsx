@@ -78,6 +78,7 @@ import { useChapterTrack } from "@/lib/learn/use-chapter-track";
 import { mixMeddle, type Meddle } from "@/lib/learn/chapter-player";
 import {
   cameraFromChapter,
+  firstActiveAt,
   togglesFromChapter,
   type Chapter,
   type ChapterSimState,
@@ -136,7 +137,7 @@ const GROUPS = {
   year: ["planetOrbit", "monthRing", "rashiBelt"],
   sun: ["trueSun", "sightline", "sunOrbit"],
   day: ["siderealArc", "solarArc", "meanArc", "primeMeridian"],
-  tilt: ["sunOrbit", "grid", "eotWedge", "meanSun", "axis"],
+  tilt: ["degrees", "sunOrbit", "grid", "eotWedge", "meanSun", "axis"],
   moon: ["moon", "moonTrail", "moonLap", "moonSightline"],
 } satisfies Record<string, (keyof SimToggles)[]>;
 
@@ -290,6 +291,15 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
   const playingStateRef = useRef(false);
   const handsOffOffset = useRef(0);
   const wasHandsOff = useRef(false);
+  /**
+   * The reader pressed the orbit button mid-narration. `s.handsOff` alone only
+   * goes true at the very end of a chapter, so a reader who wants to nudge the
+   * animation themselves the rest of the time has no such moment. This is that
+   * moment on demand: folded into the `handsOff` the frame loop branches on, it
+   * hands the clock and camera to the reader. Cleared when the chapter changes
+   * or narration resumes.
+   */
+  const userDriving = useRef(false);
   tourWelcomeRef.current = Boolean(tour?.showWelcome);
   tourFreeRef.current = freePlay;
   playingStateRef.current = playing;
@@ -300,7 +310,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       const dpy = s.solarDaysPerYear + 1;
       const guidedDay = s.orbitalPosition * dpy;
       const welcome = tourWelcomeRef.current;
-      const handsOff = s.handsOff;
+      const handsOff = s.handsOff || userDriving.current;
 
       if (welcome || handsOff) {
         clock.current.playing = welcome ? true : playingStateRef.current;
@@ -346,6 +356,15 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
   }, [setTourFrame]);
 
   const tourState = tour?.state;
+  const tourPlaying = tour?.playing;
+  /* Narration resuming is what gives the script the clock back after
+     {@link userDriving} took it; without this the orbit toggle stayed stuck on
+     and fought the keyframes the moment narration moved again. */
+  useEffect(() => {
+    if (!tourPlaying) return;
+    userDriving.current = false;
+    setPlaying(false);
+  }, [tourPlaying]);
   const tourChapterId = tour?.chapter.id;
   /* The chapter object itself, for the reset below. Held in a ref so the
      reset stays keyed on the *id* — it must run when the chapter changes and
@@ -356,6 +375,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
     cameraMeddle.current = null;
     handsOffOffset.current = 0;
     wasHandsOff.current = false;
+    userDriving.current = false;
     const ch = tourChapterRef.current;
     if (!ch) return;
     const s = ch.defaults;
@@ -394,7 +414,17 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
     setPreset(tourState.planet === "earth" ? "" : tourState.planet);
   }, [tourState, tour?.chapter.free]);
 
-  const tourHandsOff = Boolean(tourState?.handsOff);
+  /* Where `handsOff` flips from "not started" to a genuine hand-back. The
+     welcome chapter opens on `handsOff: true` (its quiet start), the same value
+     a chapter's end samples to; read raw, that made the free-running clock think
+     the chapter had already finished on frame one. */
+  const chapterActiveAt = useMemo(
+    () => (tour ? firstActiveAt(tour.chapter) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tour?.chapter],
+  );
+  const tourHandsOff =
+    Boolean(tourState?.handsOff) && (chapterActiveAt === null || (tour?.time ?? 0) >= chapterActiveAt);
   /**
    * What the chrome shows during a chapter.
    *
@@ -408,15 +438,15 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
    * are driving the orbit is a control that does nothing, so it waits for
    * the chapter to hand the instruments back.
    */
-  const showHud = !lesson || Boolean(tourState?.hud);
-  const showReadings = !lesson || Boolean(tourState?.readings);
-  const showTransport = !lesson || tourHandsOff;
+  const showHud = (!lesson && !freePlay) || Boolean(tourState?.hud);
+  const showReadings = (!lesson && !freePlay) || Boolean(tourState?.readings);
+  const showTransport = !lesson && !freePlay;
   const wasTourHandsOff = useRef(false);
   useEffect(() => {
-    const on = Boolean(lesson && tourState?.handsOff);
+    const on = Boolean(lesson && tourHandsOff);
     if (on && !wasTourHandsOff.current) setPlaying(true);
     wasTourHandsOff.current = on;
-  }, [lesson, tourState?.handsOff]);
+  }, [lesson, tourHandsOff]);
 
   const onSample = useCallback((s: SceneSample) => {
     setSample(s);
@@ -709,7 +739,10 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
   );
 
   /** One titled section of layer switches in the controls sheet. */
-  const layerGroup = (heading: string, items: [keyof SimToggles, string][]) => (
+  const layerGroup = (
+    heading: string,
+    items: ([keyof SimToggles, string] | [keyof SimToggles, string, keyof SimToggles])[],
+  ) => (
     <View className="gap-1.5" key={heading}>
       <Text
         className="text-[12px] font-bold uppercase tracking-wide"
@@ -718,13 +751,14 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         {heading}
       </Text>
       <View className="flex-row flex-wrap gap-1.5">
-        {items.map(([k, label]) =>
+        {items.map(([k, label, needs]) =>
           chip(
             toggles[k],
             label,
             () => setToggle(k),
             k,
-            planetBody !== "earth" && (GROUPS.moon as readonly string[]).includes(k),
+            (planetBody !== "earth" && (GROUPS.moon as readonly string[]).includes(k)) ||
+              (needs !== undefined && !toggles[needs]),
           ),
         )}
       </View>
@@ -859,6 +893,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
           Every layer stays individually reachable; the toolbar's group chips are
           a shortcut, not a replacement. */}
       {layerGroup(pick("मार्गदर्शक", "Guides"), [
+        ["degrees", pick("डिग्री", "Degree")],
         ["grid", pick("ग्रिड", "Grid")],
         ["planetOrbit", pick("कक्ष", "Orbit")],
         ["sunOrbit", pick("सूर्यपथ", "Sun path")],
@@ -875,6 +910,9 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         ["siderealArc", pick("नाक्षत्र चाप", "Sidereal arc")],
         ["solarArc", pick("सौर चाप", "Solar arc")],
         ["meanArc", pick("माध्य चाप", "Mean arc")],
+        ["siderealClock", pick("नाक्षत्र घडी", "Sidereal clock"), "siderealArc"],
+        ["solarClock", pick("सौर घडी", "Solar clock"), "solarArc"],
+        ["meanClock", pick("माध्य घडी", "Mean-time clock"), "meanArc"],
         ["sightline", pick("दृष्टिरेखा", "Sightline")],
         ["moonSightline", pick("चन्द्र दृष्टिरेखा", "Moon sightline")],
         ["moonTrail", pick("चन्द्रपथ", "Moon trail")],
@@ -1190,8 +1228,17 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         {tour ? (
           <DayChapterBar
             player={tour}
-            orbitPlaying={freePlay ? playing : undefined}
-            onOrbitToggle={freePlay ? () => setPlaying((v) => !v) : undefined}
+            orbitPlaying={playing}
+            onOrbitToggle={() => {
+              setPlaying((v) => {
+                const next = !v;
+                if (lesson) {
+                  userDriving.current = next;
+                  if (next) tour?.pause();
+                }
+                return next;
+              });
+            }}
           />
         ) : null}
 

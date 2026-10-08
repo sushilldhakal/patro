@@ -9,6 +9,7 @@ import {
   kundaliLabel,
   type KundaliI18nKey,
 } from "@/lib/kundali/kundali-i18n";
+import { generateAvakahadaShloka } from "@/lib/avakahada-data";
 import { useLocale } from "@/lib/i18n";
 import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -53,7 +54,7 @@ type Props = {
 };
 
 export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
-  const { lang, digits } = useLocale();
+  const { lang, digits, pick } = useLocale();
   const colors = useThemeColors();
   const t = (key: KundaliI18nKey) => kundaliLabel(key, lang);
   const ayanamshaInfo = getAyanamshaModeInfo(ayanamshaMode);
@@ -105,6 +106,22 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
         : lagnaDisplay.degree;
     return deg ? `${name} ${deg}°` : name;
   }, [lagnaDisplay, lang, digits]);
+
+  const avakahadaShloka = useMemo(() => {
+    if (!avakahada || !lagnaDisplay?.nameNe || !moonRow) return undefined;
+    return generateAvakahadaShloka({
+      lagnaRashiNe: lagnaDisplay.nameNe,
+      moonRashiNe: formatRashiByNumber(moonRow.vargaRashi, "ne"),
+      nakshatraNe: avakahada.nakshatra.ne,
+      aksharaNe: avakahada.akshara.ne,
+      ganaNe: avakahada.gana.ne,
+      nadiNe: avakahada.nadi.ne,
+      yoniNe: avakahada.yoni.ne,
+      varnaNe: avakahada.jati.ne,
+      vashyaNe: avakahada.vashya.ne,
+      payaNe: avakahada.nakshatraPaya.ne,
+    });
+  }, [avakahada, lagnaDisplay, moonRow]);
 
   const vaaraNe = getVaaraNe(data, data.weekday);
   const vaaraEn = getVaaraEn(data, data.weekday);
@@ -244,6 +261,19 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
             <TraitRow label={t("yoni")} value={pickBi(lang, avakahada.yoni)} />
             <TraitRow label={t("jati")} value={pickBi(lang, avakahada.jati)} />
           </View>
+          {avakahadaShloka ? (
+            <View className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+              <Text
+                className="mb-1 text-xs uppercase tracking-wide text-muted-foreground"
+                style={nepaliTextStyle(12)}
+              >
+                {pick("अवकहडा श्लोक", "Avakahada Shloka")}
+              </Text>
+              <Text className="text-sm italic leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+                {avakahadaShloka}
+              </Text>
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>

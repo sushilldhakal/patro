@@ -2621,6 +2621,33 @@ export interface VimshopakaData {
   method: string;
 }
 
+/** Remedy shape for one `GrahaShantiFinding` — never mix a gem into a "pacify" remedy or a daan into "strengthen". */
+export type GrahaShantiRemedy = "shanti" | "strengthen" | "pacify" | "pacify_transit" | "soothe";
+
+/** "critical" — an active dasha/transit, or a yoga on a luminary or the Lagnesha. "core" — a real but less time-pressured affliction. */
+export type GrahaShantiTier = "critical" | "core";
+
+/**
+ * One trigger of the classical 4-step Graha Shanti decision process —
+ * server-computed from the same chart used for shadbala/yogas, not a
+ * client-side heuristic. Same shape as web.
+ */
+export interface GrahaShantiFinding {
+  step: 1 | 2 | 3 | 4;
+  stepTitleNe: string;
+  stepTitleEn: string;
+  graha: string;
+  grahaNe: string;
+  remedy: GrahaShantiRemedy;
+  reasonNe: string;
+  reasonEn: string;
+  tier: GrahaShantiTier;
+}
+
+export interface GrahaShantiRecommendation {
+  findings: GrahaShantiFinding[];
+}
+
 export interface KundaliDetailResponse {
   panchanga: PanchangaDay;
   shadbala: ShadbalaResponse;
@@ -2632,6 +2659,7 @@ export interface KundaliDetailResponse {
   vimshopaka: VimshopakaData | null;
   ashtakavarga: AshtakavargaData | null;
   yogas: KundaliYoga[];
+  grahaShanti: GrahaShantiRecommendation;
   vargaCharts: VargaCharts;
   upagrahas: UpagrahaDetailRow[];
   avakahada: JanmaAvakahadaData | null;
@@ -2693,6 +2721,14 @@ export const kundaliDetailKeys = {
     ] as const,
 };
 
+/**
+ * Cloudflare caches /kundali/detail by full URL with no origin cache-control,
+ * so a previously-viewed chart keeps serving its pre-change JSON from the edge.
+ * Bump on a chart/yoga engine change so every request gets a fresh cache key.
+ * Same value as web's `KUNDALI_ENGINE_VERSION`.
+ */
+export const KUNDALI_ENGINE_VERSION = (extra.kundaliEngineVersion as string) ?? "5";
+
 export const fetchKundaliDetail = (
   moment: InstantQuery,
   location?: LocationParams,
@@ -2700,6 +2736,7 @@ export const fetchKundaliDetail = (
 ) => {
   const params = appendInstantParams(new URLSearchParams(), moment);
   if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
+  params.set("ev", KUNDALI_ENGINE_VERSION);
   return get<KundaliDetailResponse>(
     appendLocation(`/kundali/detail?${params.toString()}`, location),
   );
