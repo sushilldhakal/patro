@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-ro
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { BsCalendarGrid } from "@/components/home/BsCalendarGrid";
+import { HomeAuspiciousTimes } from "@/components/home/HomeAuspiciousTimes";
 import { PanchangaAsidePanel } from "@/components/home/PanchangaAsidePanel";
 import { PanchangaMonthGrid } from "@/components/home/PanchangaMonthGrid";
 import { type HomePatroView } from "@/components/home/PatroViewToggle";
@@ -480,6 +481,10 @@ export default function HomeScreen() {
             {asideBlock}
           </View>
         )}
+
+        <View className="mt-6" style={{ paddingHorizontal: contentInset }}>
+          <HomeAuspiciousTimes p={panchangaQ.data} />
+        </View>
 
         <View className="mt-6">
           <HomeRashifalSection

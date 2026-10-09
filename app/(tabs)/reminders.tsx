@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 import { Alert, Linking, Pressable, Switch, View } from "react-native";
 import { AppShell } from "@/components/AppShell";
 import { AuthDialog } from "@/components/auth/AuthDialog";
@@ -8,6 +9,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
@@ -108,6 +110,8 @@ export default function RemindersScreen() {
   const [online, setOnline] = useState(true);
   const [busy, setBusy] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const params = useLocalSearchParams<{ window?: string }>();
+  const [initialKey, setInitialKey] = useState<string | undefined>(undefined);
 
   const reload = useCallback(async () => {
     const [perm, cachedProfiles, cachedRules, settings, count, net] = await Promise.all([
@@ -147,6 +151,14 @@ export default function RemindersScreen() {
     if (!isAuthenticated) return;
     void reload().then(() => refresh());
   }, [isAuthenticated, reload, refresh]);
+
+  // Arriving from a bell on the home page's शुभ/अशुभ list opens the sheet on that window.
+  useEffect(() => {
+    if (!isAuthenticated || !params.window) return;
+    if (!WINDOW_OPTIONS.some((o) => o.key === params.window)) return;
+    setInitialKey(params.window);
+    setSheetOpen(true);
+  }, [isAuthenticated, params.window]);
 
   const saveBriefing = async (next: BriefingSettings) => {
     setBriefing(next);
@@ -356,6 +368,7 @@ export default function RemindersScreen() {
         onClose={() => setSheetOpen(false)}
         profiles={profiles}
         online={online}
+        initialKey={initialKey}
         onCreated={async () => {
           setSheetOpen(false);
           await afterRemindersChanged(l, true);
@@ -371,12 +384,14 @@ function AddReminderSheet({
   onClose,
   profiles,
   online,
+  initialKey,
   onCreated,
 }: {
   visible: boolean;
   onClose: () => void;
   profiles: CachedProfile[];
   online: boolean;
+  initialKey?: string;
   onCreated: () => Promise<void>;
 }) {
   const { pick, lang } = useLocale();
@@ -388,11 +403,24 @@ function AddReminderSheet({
   const [profileId, setProfileId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const options = WINDOW_OPTIONS.filter((o) => o.kind === kind);
+  useEffect(() => {
+    const opt = WINDOW_OPTIONS.find((o) => o.key === initialKey);
+    if (visible && opt) {
+      setKind(opt.kind);
+      setWindowKey(opt.key);
+    }
+  }, [visible, initialKey]);
 
-  const pickKind = (next: WindowKind) => {
-    setKind(next);
-    setWindowKey(WINDOW_OPTIONS.find((o) => o.kind === next)!.key);
+  const selectOptions = WINDOW_OPTIONS.map((o) => ({
+    value: o.key,
+    label: `${o.kind === "shubh" ? pick("शुभ", "Shubh") : pick("अशुभ", "Ashubh")} · ${pick(o.ne, o.en)}`,
+  }));
+
+  const pickWindow = (key: string) => {
+    const opt = WINDOW_OPTIONS.find((o) => o.key === key);
+    if (!opt) return;
+    setWindowKey(opt.key);
+    setKind(opt.kind);
   };
 
   const save = async () => {
@@ -431,14 +459,15 @@ function AddReminderSheet({
           {pick("नयाँ रिमाइन्डर", "New reminder")}
         </Text>
 
-        <View className="flex-row gap-2">
-          <Chip label={pick("अशुभ समय", "Ashubh")} active={kind === "ashubh"} onPress={() => pickKind("ashubh")} />
-          <Chip label={pick("शुभ समय", "Shubh")} active={kind === "shubh"} onPress={() => pickKind("shubh")} />
-        </View>
-        <View className="flex-row flex-wrap gap-2">
-          {options.map((o) => (
-            <Chip key={o.key} label={pick(o.ne, o.en)} active={windowKey === o.key} onPress={() => setWindowKey(o.key)} />
-          ))}
+        <View>
+          <Text className="text-caption mb-1.5 text-muted-foreground">{pick("शुभ / अशुभ समय", "Shubh / Ashubh window")}</Text>
+          <NativeStringSelect
+            value={windowKey}
+            options={selectOptions}
+            onChange={pickWindow}
+            ariaLabel={pick("समय छान्नुहोस्", "Choose a window")}
+            minWidth={240}
+          />
         </View>
 
         <View>
