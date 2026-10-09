@@ -1,6 +1,5 @@
 import { Pressable, View } from "react-native";
-import { usePathname, useRouter } from "expo-router";
-import { pushHref } from "@/lib/push-href";
+import { useRouter } from "expo-router";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Text } from "@/components/ui/Text";
 import type { DrawerIconName } from "@/lib/drawer-icons";
@@ -19,11 +18,10 @@ export type QuickLink = {
  */
 export function QuickLinkTile({ link }: { link: QuickLink }) {
   const router = useRouter();
-  const pathname = usePathname();
   const colors = useThemeColors();
   return (
     <Pressable
-      onPress={() => pushHref(router, pathname, link.href)}
+      onPress={() => router.push(link.href as never)}
       accessibilityRole="button"
       className="flex-row items-center justify-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 shadow-sm active:opacity-80"
       style={{ maxWidth: "100%", alignSelf: "flex-start" }}

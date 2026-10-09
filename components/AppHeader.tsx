@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, Modal, Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { useRouter, usePathname } from "expo-router";
-import { pushHref } from "@/lib/push-href";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VedicPatroMark } from "@/components/branding/VedicPatroMark";
@@ -35,13 +34,12 @@ export function AppHeader() {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
-  const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const go = (href: string) => {
     setMenuOpen(false);
-    pushHref(router, pathname, href);
+    router.push(href as never);
   };
 
   return (
