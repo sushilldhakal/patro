@@ -60,7 +60,19 @@ so an offline lookup of, say, BS 1500 works on web and not on mobile.
 
 ---
 
-## 3. Still computed in a client
+## 3. Kept in the mobile app on purpose (offline mode)
+
+Some logic stays in `vedic-patro-mobile` because the app must work with no
+network: the bundled BS month table and `bs-calendar.ts`/`local-calendar.ts`
+(used by the AD↔BS converter fallback and the home grid), and a copy of the Vastu
+sketch rules (`lib/vastu-offline.ts`, the fallback when `POST /vastu/sketch` is
+unreachable). These are copies, not alternatives: the server stays the source of
+truth, the Vastu copy is the original code the server's golden test was generated
+from, and the BS table was checked against the server (section 2). Everything
+else the app shows offline comes from responses downloaded from this API
+(`lib/offline/`, see the mobile README).
+
+## 4. Still computed in a client
 
 Ordered by how much it matters, not how easy it is. None of these is wrong today;
 each is a second copy that can drift.
@@ -106,7 +118,7 @@ tables, Nepali-digit formatting, `birth-date.ts` input masking, SVG path
 helpers (`hora*Path`, `annularSectorPath`, `vastuWheelPoint`), colour and tone
 maps (`sait-suitability.ts`, `navatara-bala.ts` label translation).
 
-## 4. Finding more
+## 5. Finding more
 
 ```bash
 # in each client: files doing arithmetic that is not drawing
