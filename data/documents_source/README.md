@@ -107,6 +107,7 @@ If `category` is omitted, it defaults to `stotram`. `subcategory` is optional.
           "meaning_ne": "...",
           "meaning_en": "...",
           "audio_file": "1.mp3",       // joined onto audio_prefix; omit to disable audio for this verse
+          "veda_cite": "rigveda:1.1.3", // optional; which samhita verse this quotes. Shown as a small caption. Audio is filled from that verse when the clip exists.
           "audio_duration_seconds": 14.2  // optional, used only as an initial scrubber hint
         }
       ]

@@ -39,6 +39,9 @@ _ADDED_SHLOKA_COLUMNS: list[tuple[str, str]] = [
     ("sukta_rishi", "TEXT"),
     ("sukta_devata", "TEXT"),
     ("sukta_chhanda", "TEXT"),
+    # Which Veda verse this shloka quotes, e.g. "rigveda:1.1.3". Null when it
+    # isn't a quotation from the four samhitas.
+    ("veda_cite", "TEXT"),
 ]
 
 _SCHEMA = """
@@ -77,6 +80,7 @@ CREATE TABLE IF NOT EXISTS shlokas (
     sukta_rishi             TEXT,
     sukta_devata            TEXT,
     sukta_chhanda           TEXT,
+    veda_cite               TEXT,
     sanskrit                TEXT NOT NULL,
     transliteration         TEXT,
     meaning_ne              TEXT,
@@ -320,6 +324,7 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
                     shloka.get("sukta_rishi"),
                     shloka.get("sukta_devata"),
                     shloka.get("sukta_chhanda"),
+                    shloka.get("veda_cite"),
                     shloka["sanskrit"],
                     shloka.get("transliteration"),
                     shloka.get("meaning_ne"),
@@ -369,9 +374,9 @@ def _seed_from_manifest(conn: sqlite3.Connection, manifest: dict[str, Any]) -> N
         INSERT INTO shlokas
             (document_slug, global_order, chapter_number, chapter_title_ne, chapter_title_en,
              verse_number, verse_label, sukta_number, sukta_rishi, sukta_devata, sukta_chhanda,
-             sanskrit, transliteration, meaning_ne, meaning_en,
+             veda_cite, sanskrit, transliteration, meaning_ne, meaning_en,
              audio_key, audio_duration_seconds, full_audio_start, full_audio_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         rows,
     )
@@ -466,6 +471,7 @@ def _shloka_row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
         "sukta_rishi": r["sukta_rishi"],
         "sukta_devata": r["sukta_devata"],
         "sukta_chhanda": r["sukta_chhanda"],
+        "veda_cite": r["veda_cite"] if "veda_cite" in r.keys() else None,
         "sanskrit": r["sanskrit"],
         "transliteration": r["transliteration"],
         "meaning_ne": r["meaning_ne"],

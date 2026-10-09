@@ -29,7 +29,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अ॒ग्निमी᳚ळे पु॒रोहि॑तं य॒ज्ञस्य॑ दे॒वमृ॒त्विज᳚म् । होता᳚रं रत्न॒धात॑मम् ॥ १.००१.०१",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_01.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_01.mp3",
+          "veda_cite": "rigveda:1.1.1"
         },
         {
           "verse_number": 2,
@@ -39,7 +40,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अ॒ग्निः पूर्वे᳚भि॒रृषि॑भि॒रीड्यो॒ नूत॑नैरु॒त । स दे॒वाँ एह व॑क्षति ॥ १.००१.०२",
-          "audio_file": null
+          "audio_file": "documents/rigveda/01/rigveda_01_01_02.mp3",
+          "veda_cite": "rigveda:1.1.2"
         },
         {
           "verse_number": 3,
@@ -49,7 +51,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अ॒ग्निना᳚ र॒यिम॑श्नव॒त्पोष॑मे॒व दि॒वेदि॑वे । य॒शसं᳚ वी॒रव॑त्तमम् ॥ १.००१.०३",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_03.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_03.mp3",
+          "veda_cite": "rigveda:1.1.3"
         },
         {
           "verse_number": 4,
@@ -59,7 +62,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्ने॒ यं य॒ज्ञम॑ध्व॒रं वि॒श्वतः॑ परि॒भूरसि॑ । स इद्दे॒वेषु॑ गच्छति ॥ १.००१.०४",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_04.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_04.mp3",
+          "veda_cite": "rigveda:1.1.4"
         },
         {
           "verse_number": 5,
@@ -69,7 +73,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अ॒ग्निर्होता᳚ क॒विक्र॑तुः स॒त्यश्चि॒त्रश्र॑वस्तमः । दे॒वो दे॒वेभि॒रा ग॑मत् ॥ १.००१.०५",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_05.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_05.mp3",
+          "veda_cite": "rigveda:1.1.5"
         },
         {
           "verse_number": 6,
@@ -79,7 +84,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "यद॒ङ्ग दा॒शुषे॒ त्वमग्ने᳚ भ॒द्रं क॑रि॒ष्यसि॑ । तवेत्तत्स॒त्यम॑ङ्गिरः ॥ १.००१.०६",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_06.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_06.mp3",
+          "veda_cite": "rigveda:1.1.6"
         },
         {
           "verse_number": 7,
@@ -89,7 +95,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "उप॑ त्वाग्ने दि॒वेदि॑वे॒ दोषा᳚वस्तर्धि॒या व॒यम् । नमो॒ भर᳚न्त॒ एम॑सि ॥ १.००१.०७",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_07.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_07.mp3",
+          "veda_cite": "rigveda:1.1.7"
         },
         {
           "verse_number": 8,
@@ -99,7 +106,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "राज᳚न्तमध्व॒राणां᳚ गो॒पामृ॒तस्य॒ दीदि॑विम् । वर्ध॑मानं॒ स्वे दमे᳚ ॥ १.००१.०८",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_08.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_08.mp3",
+          "veda_cite": "rigveda:1.1.8"
         },
         {
           "verse_number": 9,
@@ -109,7 +117,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "स नः॑ पि॒तेव॑ सू॒नवेऽग्ने᳚ सूपाय॒नो भ॑व । सच॑स्वा नः स्व॒स्तये᳚ ॥ १.००१.०९",
-          "audio_file": null
+          "audio_file": "documents/rigveda/01/rigveda_01_01_09.mp3",
+          "veda_cite": "rigveda:1.1.9"
         }
       ]
     },
@@ -126,7 +135,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् । होतारं रत्नधातमम् ॥ १.००१.०१",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_01.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_01.mp3",
+          "veda_cite": "rigveda:1.1.1"
         },
         {
           "verse_number": 2,
@@ -136,7 +146,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्निः पूर्वेभिरृषिभिरीड्यो नूतनैरुत । स देवाँ एह वक्षति ॥ १.००१.०२",
-          "audio_file": null
+          "audio_file": "documents/rigveda/01/rigveda_01_01_02.mp3",
+          "veda_cite": "rigveda:1.1.2"
         },
         {
           "verse_number": 3,
@@ -146,7 +157,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्निना रयिमश्नवत्पोषमेव दिवेदिवे । यशसं वीरवत्तमम् ॥ १.००१.०३",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_03.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_03.mp3",
+          "veda_cite": "rigveda:1.1.3"
         },
         {
           "verse_number": 4,
@@ -156,7 +168,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्ने यं यज्ञमध्वरं विश्वतः परिभूरसि । स इद्देवेषु गच्छति ॥ १.००१.०४",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_04.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_04.mp3",
+          "veda_cite": "rigveda:1.1.4"
         },
         {
           "verse_number": 5,
@@ -166,7 +179,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "अग्निर्होता कविक्रतुः सत्यश्चित्रश्रवस्तमः । देवो देवेभिरा गमत् ॥ १.००१.०५",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_05.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_05.mp3",
+          "veda_cite": "rigveda:1.1.5"
         },
         {
           "verse_number": 6,
@@ -176,7 +190,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "यदङ्ग दाशुषे त्वमग्ने भद्रं करिष्यसि । तवेत्तत्सत्यमङ्गिरः ॥ १.००१.०६",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_06.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_06.mp3",
+          "veda_cite": "rigveda:1.1.6"
         },
         {
           "verse_number": 7,
@@ -186,7 +201,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "उप त्वाग्ने दिवेदिवे दोषावस्तर्धिया वयम् । नमो भरन्त एमसि ॥ १.००१.०७",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_07.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_07.mp3",
+          "veda_cite": "rigveda:1.1.7"
         },
         {
           "verse_number": 8,
@@ -196,7 +212,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "राजन्तमध्वराणां गोपामृतस्य दीदिविम् । वर्धमानं स्वे दमे ॥ १.००१.०८",
-          "audio_file": "documents/rigveda/01/rigveda_01_01_08.mp3"
+          "audio_file": "documents/rigveda/01/rigveda_01_01_08.mp3",
+          "veda_cite": "rigveda:1.1.8"
         },
         {
           "verse_number": 9,
@@ -206,7 +223,8 @@
           "sukta_devata": "Agni",
           "sukta_chhanda": "Gayatri",
           "sanskrit": "स नः पितेव सूनवेऽग्ने सूपायनो भव । सचस्वा नः स्वस्तये ॥ १.००१.०९",
-          "audio_file": null
+          "audio_file": "documents/rigveda/01/rigveda_01_01_09.mp3",
+          "veda_cite": "rigveda:1.1.9"
         }
       ]
     }

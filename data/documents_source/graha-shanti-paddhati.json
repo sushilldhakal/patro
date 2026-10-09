@@ -85,7 +85,8 @@
      "verse_number": 11,
      "verse_label": "1.10",
      "sanskrit": "ॐ व्रतेन दीक्षामाप्नोति दीक्षयाऽऽप्नोति दक्षिणाम् । दक्षिणा श्रद्धामाप्नोति श्रद्धया सत्यमाप्यते ॥",
-     "audio_file": "documents/yajurveda/yajurveda_19_30.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_19_30.mp3",
+     "veda_cite": "yajurveda:19.30"
     }
    ]
   },
@@ -98,73 +99,85 @@
      "verse_number": 1,
      "verse_label": "2.1",
      "sanskrit": "स्वस्तिवाचनम्— ॐ आ नो भद्राः क्रतवो यन्तु विश्वतोऽदब्धासो अपरीतास उद्भिदः । देवा नो यथा सदमिद् वृधे असन्नप्रायुवो रक्षितारो दिवे दिवे ॥१॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_01.mp3",
+     "veda_cite": "rigveda:1.89.1"
     },
     {
      "verse_number": 2,
      "verse_label": "2.2",
      "sanskrit": "देवानां भद्रा सुमतिर्ऋजूयतां देवानां रातिरभि नो निवर्तताम् । देवानां सख्यमुपसेदिमा वयं देवा न आयुः प्रतिरन्तु जीवसे ॥२॥",
-     "audio_file": "documents/yajurveda/yajurveda_25_15.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_25_15.mp3",
+     "veda_cite": "yajurveda:25.15"
     },
     {
      "verse_number": 3,
      "verse_label": "2.3",
      "sanskrit": "तान् पूर्वया निविदा हूमहे वयं भगं मित्रमदितिं दक्षमस्रिधम् । अर्यमणं वरुणꣳ सोममश्विना सरस्वती नः सुभगा मयस्करत् ॥३॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_03.mp3",
+     "veda_cite": "rigveda:1.89.3"
     },
     {
      "verse_number": 4,
      "verse_label": "2.4",
      "sanskrit": "तन्नो वातो मयोभु वातु भेषजं तन्माता पृथिवी तत्पिता द्यौः । तद् ग्रावाणः सोमसुतो मयोभुवस्तदश्विना शृणुतं धिष्ण्या युवम् ॥४॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_89_04.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_89_04.mp3",
+     "veda_cite": "rigveda:1.89.4"
     },
     {
      "verse_number": 5,
      "verse_label": "2.5",
      "sanskrit": "तमीशानं जगतस्तस्थुषस्पतिं धियंजिन्वमवसे हूमहे वयम् । पूषा नो यथा वेदसामसद् वृधे रक्षिता पायुरदब्धः स्वस्तये ॥५॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_89_05.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_89_05.mp3",
+     "veda_cite": "rigveda:1.89.5"
     },
     {
      "verse_number": 6,
      "verse_label": "2.6",
      "sanskrit": "स्वस्ति न इन्द्रो वृद्धश्रवाः स्वस्ति नः पूषा विश्ववेदाः । स्वस्ति नस्तार्क्ष्यो अरिष्टनेमिः स्वस्ति नो बृहस्पतिर्दधातु ॥६॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_89_06.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_89_06.mp3",
+     "veda_cite": "rigveda:1.89.6"
     },
     {
      "verse_number": 7,
      "verse_label": "2.7",
      "sanskrit": "पृषदश्वा मरुतः पृश्निमातरः शुभंयावानो विदथेषु जग्मयः । अग्निजिह्वा मनवः सूरचक्षसो विश्वे नो देवा अवसा गमन्निह ॥७॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_07.mp3",
+     "veda_cite": "rigveda:1.89.7"
     },
     {
      "verse_number": 8,
      "verse_label": "2.8",
      "sanskrit": "भद्रं कर्णेभिः शृणुयाम देवा भद्रं पश्येमाक्षभिर्यजत्राः । स्थिरैरङ्गैस्तुष्टुवाꣳसस्तनूभिर्व्यशेमहि देवहितं यदायुः ॥८॥",
-     "audio_file": "documents/samaveda/samaveda_1874.mp3"
+     "audio_file": "documents/samaveda/samaveda_1874.mp3",
+     "veda_cite": "samaveda:1874"
     },
     {
      "verse_number": 9,
      "verse_label": "2.9",
      "sanskrit": "शतमिन्नु शरदो अन्ति देवा यत्रा नश्चक्रा जरसं तनूनाम् । पुत्रासो यत्र पितरो भवन्ति मा नो मध्या रीरिषतायुर्गन्तोः ॥९॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_89_09.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_89_09.mp3",
+     "veda_cite": "rigveda:1.89.9"
     },
     {
      "verse_number": 10,
      "verse_label": "2.10",
      "sanskrit": "अदितिर्द्यौरदितिरन्तरिक्षमदितिर्माता स पिता स पुत्रः । विश्वे देवा अदितिः पञ्चजना अदितिर्जातमदितिर्जनित्वम् ॥१०॥",
-     "audio_file": "documents/atharvaveda/07/atharvaveda_07_006_001.mp3"
+     "audio_file": "documents/atharvaveda/07/atharvaveda_07_006_001.mp3",
+     "veda_cite": "atharvaveda:7.6.1"
     },
     {
      "verse_number": 11,
      "verse_label": "2.11",
      "sanskrit": "द्यौः शान्तिरन्तरिक्षꣳ शान्तिः पृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः । वनस्पतयः शान्तिर्विश्वे देवाः शान्तिर्ब्रह्म शान्तिः सर्वꣳ शान्तिः शान्तिरेव शान्तिः सा मा शान्तिरेधि ॥११॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_36_17.mp3",
+     "veda_cite": "yajurveda:36.17"
     },
     {
      "verse_number": 12,
      "verse_label": "2.12",
      "sanskrit": "यतो यतः समीहसे ततो नो अभयं कुरु । शं नः कुरु प्रजाभ्योऽभयं नः पशुभ्यः ॥१२॥",
-     "audio_file": "documents/yajurveda/yajurveda_36_22.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_36_22.mp3",
+     "veda_cite": "yajurveda:36.22"
     },
     {
      "verse_number": 13,
@@ -291,7 +304,8 @@
      "verse_number": 4,
      "verse_label": "3.3",
      "sanskrit": "ॐ मही द्यौः पृथिवी च नः इमं यज्ञं मिमिक्षताम् । पिपृतां नो भरीमभिः ॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_22_13.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_22_13.mp3",
+     "veda_cite": "rigveda:1.22.13"
     },
     {
      "verse_number": 5,
@@ -345,7 +359,8 @@
      "verse_number": 13,
      "verse_label": "3.11",
      "sanskrit": "सूर्यनमस्कारः— ॐ आकृष्णेन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_35_02.mp3",
+     "veda_cite": "rigveda:1.35.2"
     },
     {
      "verse_number": 14,
@@ -376,7 +391,8 @@
      "verse_number": 1,
      "verse_label": "4.1",
      "sanskrit": "गणेशध्यानम्— ॐ गणानां त्वा गणपतिꣳ हवामहे प्रियाणां त्वा प्रियपतिꣳ हवामहे निधीनां त्वा निधिपतिꣳ हवामहे वसो मम । आहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.19"
     },
     {
      "verse_number": 2,
@@ -400,7 +416,8 @@
      "verse_number": 5,
      "verse_label": "4.5",
      "sanskrit": "ॐ अम्बे अम्बिकेऽम्बालिके न मा नयति कश्चन । ससस्त्यश्वकः सुभद्रिकां काम्पीलवासिनीम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.18"
     },
     {
      "verse_number": 6,
@@ -425,7 +442,8 @@
      "verse_number": 1,
      "verse_label": "5.1",
      "sanskrit": "भूमिस्पर्शः— ॐ भूरसि भूमिरस्यदितिरसि विश्वधाया विश्वस्य भुवनस्य धर्त्री । पृथिवीं यच्छ पृथिवीं दृꣳह पृथिवीं मा हिꣳसीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_18.mp3",
+     "veda_cite": "yajurveda:13.18"
     },
     {
      "verse_number": 2,
@@ -443,7 +461,8 @@
      "verse_number": 4,
      "verse_label": "5.3",
      "sanskrit": "धान्यप्रक्षेपः— ॐ ओषधयः समवदन्त सोमेन सह राज्ञा । यस्मै कृणोति ब्राह्मणस्तꣳ राजन् पारयामसि ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_12_96.mp3",
+     "veda_cite": "yajurveda:12.96"
     },
     {
      "verse_number": 5,
@@ -455,7 +474,8 @@
      "verse_number": 6,
      "verse_label": "5.4",
      "sanskrit": "कलशस्थापनम्— ॐ आजिघ्र कलशं मह्या त्वा विशन्त्विन्दवः । पुनरूर्जा निवर्तस्व सा नः सहस्रं धुक्ष्वोरुधारा पयस्वती पुनर्मा विशताद् रयिः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_8_42.mp3",
+     "veda_cite": "yajurveda:8.42"
     },
     {
      "verse_number": 7,
@@ -473,7 +493,8 @@
      "verse_number": 9,
      "verse_label": "5.6",
      "sanskrit": "कलशे जलपूरणम्— ॐ वरुणस्योत्तम्भनमसि वरुणस्य स्कम्भसर्जनी स्थो वरुणस्य ऋतसदन्यसि वरुणस्य ऋतसदनमसि वरुणस्य ऋतसदनमासीद ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_4_36.mp3",
+     "veda_cite": "yajurveda:4.36"
     },
     {
      "verse_number": 10,
@@ -497,7 +518,8 @@
      "verse_number": 13,
      "verse_label": "5.9",
      "sanskrit": "कलशे गन्धप्रक्षेपः— ॐ त्वां गन्धर्वा अखनँस्त्वामिन्द्रस्त्वां बृहस्पतिः । त्वामोषधे सोमो राजा विद्वान् यक्ष्मादमुच्यत ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_12_98.mp3",
+     "veda_cite": "yajurveda:12.98"
     },
     {
      "verse_number": 14,
@@ -515,7 +537,8 @@
      "verse_number": 16,
      "verse_label": "5.11",
      "sanskrit": "कलशे धान्यप्रक्षेपः— ॐ धान्यमसि धिनुहि देवान् प्राणाय त्वोदानाय त्वा व्यानाय त्वा । दीर्घामनु प्रसितिमायुषे धां देवो वः सविता हिरण्यपाणिः प्रति गृभ्णात्वच्छिद्रेण पाणिना चक्षुषे त्वा महीनां पयोऽसि ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_1_20.mp3",
+     "veda_cite": "yajurveda:1.20"
     },
     {
      "verse_number": 17,
@@ -533,7 +556,8 @@
      "verse_number": 19,
      "verse_label": "5.13",
      "sanskrit": "कलशे सर्वौषधिप्रक्षेपः— ॐ या ओषधीः पूर्वा जाता देवेभ्यस्त्रियुगं पुरा । मनै नु बभ्रूणामहꣳ शतं धामानि सप्त च ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_97_01.mp3",
+     "veda_cite": "rigveda:10.97.1"
     },
     {
      "verse_number": 20,
@@ -551,7 +575,8 @@
      "verse_number": 22,
      "verse_label": "5.15",
      "sanskrit": "कलशे दूर्वाप्रक्षेपः— ॐ काण्डात्काण्डात्प्ररोहन्ती परुषः परुषस्परि । एवा नो दूर्वे प्र तनु सहस्रेण शतेन च ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_20.mp3",
+     "veda_cite": "yajurveda:13.20"
     },
     {
      "verse_number": 23,
@@ -569,7 +594,8 @@
      "verse_number": 25,
      "verse_label": "5.17",
      "sanskrit": "कलशे आम्रपल्लवप्रक्षेपः— ॐ अश्वत्थे वो निषदनं पर्णे वो वसतिष्कृता । गोभाज इत्किलासथ यत्सनवथ पूरुषम् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_97_05.mp3",
+     "veda_cite": "rigveda:10.97.5"
     },
     {
      "verse_number": 26,
@@ -587,7 +613,8 @@
      "verse_number": 28,
      "verse_label": "5.19",
      "sanskrit": "कलशे पूगीफलप्रक्षेपः— ॐ याः फलिनीर्या अफला अपुष्पा याश्च पुष्पिणीः । बृहस्पतिप्रसूतास्ता नो मुञ्चन्त्वꣳहसः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_97_15.mp3",
+     "veda_cite": "rigveda:10.97.15"
     },
     {
      "verse_number": 29,
@@ -599,13 +626,15 @@
      "verse_number": 30,
      "verse_label": "5.20",
      "sanskrit": "कलशे पञ्चरत्नप्रक्षेपः— ॐ परि वाजपतिः कविरग्निर्हव्यान्यक्रमीत् । दधद्रत्नानि दाशुषे ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/04/rigveda_04_15_03.mp3",
+     "veda_cite": "rigveda:4.15.3"
     },
     {
      "verse_number": 31,
      "verse_label": "5.21",
      "sanskrit": "कलशे हिरण्यप्रक्षेपः— ॐ हिरण्यगर्भः समवर्तताग्रे भूतस्य जातः पतिरेक आसीत् । स दाधार पृथिवीं द्यामुतेमां कस्मै देवाय हविषा विधेम ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_121_01.mp3",
+     "veda_cite": "rigveda:10.121.1"
     },
     {
      "verse_number": 32,
@@ -635,7 +664,8 @@
      "verse_number": 36,
      "verse_label": "5.24",
      "sanskrit": "कलशे पूर्णपात्रम्— ॐ पूर्णा दर्वि परापत सुपूर्णा पुनरापत । वस्नेव विक्रीणावहा इषमूर्जꣳ शतक्रतो ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_3_49.mp3",
+     "veda_cite": "yajurveda:3.49"
     },
     {
      "verse_number": 37,
@@ -647,7 +677,8 @@
      "verse_number": 38,
      "verse_label": "5.25",
      "sanskrit": "कलशे नारिकेलम्— ॐ श्रीश्च ते लक्ष्मीश्च पत्न्यावहोरात्रे पार्श्वे नक्षत्राणि रूपमश्विनौ व्यात्तम् । इष्णन्निषाणामुं म इषाण सर्वलोकं म इषाण ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:31.22"
     },
     {
      "verse_number": 39,
@@ -659,7 +690,8 @@
      "verse_number": 40,
      "verse_label": "5.26",
      "sanskrit": "कलशे दीपकः— ॐ अग्निर्ज्योतिर्ज्योतिरग्निः स्वाहा सूर्यो ज्योतिर्ज्योतिः सूर्यः स्वाहा । अग्निर्वर्चो ज्योतिर्वर्चः स्वाहा सूर्यो वर्चो ज्योतिर्वर्चः स्वाहा । ज्योतिः सूर्यः सूर्यो ज्योतिः स्वाहा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_3_09.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_3_09.mp3",
+     "veda_cite": "yajurveda:3.9"
     },
     {
      "verse_number": 41,
@@ -671,7 +703,8 @@
      "verse_number": 42,
      "verse_label": "5.27",
      "sanskrit": "कलशावाहनम्— ॐ तत्त्वा यामि ब्रह्मणा वन्दमानस्तदा शास्ते यजमानो हविर्भिः । अहेडमानो वरुणेह बोध्युरुशꣳस मा न आयुः प्र मोषीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_49.mp3",
+     "veda_cite": "yajurveda:18.49"
     },
     {
      "verse_number": 43,
@@ -774,7 +807,8 @@
      "verse_number": 7,
      "verse_label": "6.6",
      "sanskrit": "ब्राह्मणध्यानम्— ॐ ब्रह्म जज्ञानं प्रथमं पुरस्ताद् वि सीमतः सुरुचो वेन आवः । स बुध्न्या उपमा अस्य विष्ठाः सतश्च योनिमसतश्च वि वः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_03.mp3",
+     "veda_cite": "yajurveda:13.3"
     },
     {
      "verse_number": 8,
@@ -954,43 +988,50 @@
      "verse_number": 37,
      "verse_label": "6.34",
      "sanskrit": "ऋग्वेदमन्त्रः— ॐ द्रविणोदा द्रविणसस्तुरस्य द्रविणोदाः सनरस्य प्र यꣳसत् । द्रविणोदा वीरवतीमिषं नो द्रविणोदा रासते दीर्घमायुः ॥१॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_96_08.mp3",
+     "veda_cite": "rigveda:1.96.8"
     },
     {
      "verse_number": 38,
      "verse_label": "6.35",
      "sanskrit": "सविता पश्चातात् सविता पुरस्तात् सवितोत्तरात्तात् सविताधरात्तात् । सविता नः सुवतु सर्वतातिꣳ सविता नो रासतां दीर्घमायुः ॥२॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_36_14.mp3",
+     "veda_cite": "rigveda:10.36.14"
     },
     {
      "verse_number": 39,
      "verse_label": "6.36",
      "sanskrit": "नवो नवो भवति जायमानोऽह्नां केतुरुषसामेत्यग्रम् । भागं देवेभ्यो वि दधात्यायन् प्र चन्द्रमास्तिरते दीर्घमायुः ॥३॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_85_19.mp3",
+     "veda_cite": "rigveda:10.85.19"
     },
     {
      "verse_number": 40,
      "verse_label": "6.37",
      "sanskrit": "उच्चा दिवि दक्षिणावन्तो अस्थुर्ये अश्वदाः सह ते सूर्येण । हिरण्यदा अमृतत्वं भजन्ते वासोदाः सोम प्र तिरन्त आयुः ॥४॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_107_02.mp3",
+     "veda_cite": "rigveda:10.107.2"
     },
     {
      "verse_number": 41,
      "verse_label": "6.38",
      "sanskrit": "यजुर्वेदमन्त्रः— ॐ भद्रं कर्णेभिः शृणुयाम देवा भद्रं पश्येमाक्षभिर्यजत्राः । स्थिरैरङ्गैस्तुष्टुवाꣳसस्तनूभिर्व्यशेमहि देवहितं यदायुः ॥१॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_25_21.mp3",
+     "veda_cite": "yajurveda:25.21"
     },
     {
      "verse_number": 42,
      "verse_label": "6.39",
      "sanskrit": "देवानां भद्रा सुमतिर्ऋजूयतां देवानां रातिरभि नो निवर्तताम् । देवानां सख्यमुपसेदिमा वयं देवा न आयुः प्रतिरन्तु जीवसे ॥२॥",
-     "audio_file": "documents/yajurveda/yajurveda_25_15.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_25_15.mp3",
+     "veda_cite": "yajurveda:25.15"
     },
     {
      "verse_number": 43,
      "verse_label": "6.40",
      "sanskrit": "दीर्घायुस्त ओषधे खनिता यस्मै च त्वा खनाम्यहम् । अथो त्वं दीर्घायुर्भूत्वा शतवल्शा विरोहतात् ॥३॥",
-     "audio_file": "documents/yajurveda/yajurveda_12_100.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_12_100.mp3",
+     "veda_cite": "yajurveda:12.100"
     },
     {
      "verse_number": 44,
@@ -1008,13 +1049,15 @@
      "verse_number": 46,
      "verse_label": "6.43",
      "sanskrit": "अथर्ववेदमन्त्रः— ॐ धाता रातिः सवितेदं जुषन्तां प्रजापतिर्निधिपतिर्नो अग्निः । त्वष्टा विष्णुः प्रजया संरराणो यजमानाय द्रविणं दधातु ॥१॥",
-     "audio_file": null
+     "audio_file": "documents/atharvaveda/07/atharvaveda_07_017_004.mp3",
+     "veda_cite": "atharvaveda:7.17.4"
     },
     {
      "verse_number": 47,
      "verse_label": "6.44",
      "sanskrit": "येन देवं सवितारं परि देवा अधारयन् । तेनेमं ब्रह्मणस्पते परि राष्ट्राय धत्तन ॥२॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "atharvaveda:19.24.1"
     },
     {
      "verse_number": 48,
@@ -1026,7 +1069,8 @@
      "verse_number": 49,
      "verse_label": "6.46",
      "sanskrit": "उच्चैर्घोषो दुन्दुभिः सत्वनायन् वानस्पत्यः संभृत उस्रियाभिः । वाचं क्षुणुवानो दमयन् त्सपत्नान् सिंह इव जेष्यन्नभि तस्तनीहि ॥४॥",
-     "audio_file": "documents/atharvaveda/05/atharvaveda_05_020_001.mp3"
+     "audio_file": "documents/atharvaveda/05/atharvaveda_05_020_001.mp3",
+     "veda_cite": "atharvaveda:5.20.1"
     },
     {
      "verse_number": 50,
@@ -1188,7 +1232,8 @@
      "verse_number": 76,
      "verse_label": "6.71",
      "sanskrit": "ॐ पुनन्तु मा देवजनाः पुनन्तु मनसा धियः । पुनन्तु विश्वा भूतानि जातवेदः पुनीहि मा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_19_39.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_19_39.mp3",
+     "veda_cite": "yajurveda:19.39"
     },
     {
      "verse_number": 77,
@@ -1206,7 +1251,8 @@
      "verse_number": 79,
      "verse_label": "6.74",
      "sanskrit": "ॐ यथेमां वाचं कल्याणीमावदानि जनेभ्यः । ब्रह्मराजन्याभ्याꣳ शूद्राय चार्याय च स्वाय चारणाय च । प्रियो देवानां दक्षिणायै दातुरिह भूयासमयं मे कामः समृद्ध्यतामुप मादो नमतु ॥",
-     "audio_file": "documents/yajurveda/yajurveda_26_02.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_26_02.mp3",
+     "veda_cite": "yajurveda:26.2"
     },
     {
      "verse_number": 80,
@@ -1224,7 +1270,8 @@
      "verse_number": 82,
      "verse_label": "6.77",
      "sanskrit": "ॐ सत्रस्य ऋद्धिरस्यगन्म ज्योतिरमृता अभूम । दिवं पृथिव्या अध्याऽरुहामाविदाम देवान् त्स्वर्ज्योतिः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_8_52.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_8_52.mp3",
+     "veda_cite": "yajurveda:8.52"
     },
     {
      "verse_number": 83,
@@ -1236,7 +1283,8 @@
      "verse_number": 84,
      "verse_label": "6.79",
      "sanskrit": "ब्राह्मणः— ॐ आयुष्मते स्वस्ति । ॐ आयुष्मते स्वस्ति । ॐ आयुष्मते स्वस्ति । ॐ स्वस्ति न इन्द्रो वृद्धश्रवाः स्वस्ति नः पूषा विश्ववेदाः । स्वस्ति नस्तार्क्ष्यो अरिष्टनेमिः स्वस्ति नो बृहस्पतिर्दधातु ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_06.mp3",
+     "veda_cite": "rigveda:1.89.6"
     },
     {
      "verse_number": 85,
@@ -1254,7 +1302,8 @@
      "verse_number": 87,
      "verse_label": "6.82",
      "sanskrit": "ॐ श्रीश्च ते लक्ष्मीश्च पत्न्यावहोरात्रे पार्श्वे नक्षत्राणि रूपमश्विनौ व्यात्तम् । इष्णन्निषाणामुं म इषाण सर्वलोकं म इषाण ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:31.22"
     },
     {
      "verse_number": 88,
@@ -1272,7 +1321,8 @@
      "verse_number": 90,
      "verse_label": "6.85",
      "sanskrit": "ॐ शतमिन्नु शरदो अन्ति देवा यत्रा नश्चक्रा जरसं तनूनाम् । पुत्रासो यत्र पितरो भवन्ति मा नो मध्या रीरिषतायुर्गन्तोः ॥",
-     "audio_file": "documents/rigveda/01/rigveda_01_89_09.mp3"
+     "audio_file": "documents/rigveda/01/rigveda_01_89_09.mp3",
+     "veda_cite": "rigveda:1.89.9"
     },
     {
      "verse_number": 91,
@@ -1290,7 +1340,8 @@
      "verse_number": 93,
      "verse_label": "6.88",
      "sanskrit": "ॐ मनसः काममाकूतिं वाचः सत्यमशीय । पशूनाꣳ रूपमन्नस्य रसो यशः श्रीः श्रयतां मयि स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_39_04.mp3",
+     "veda_cite": "yajurveda:39.4"
     },
     {
      "verse_number": 94,
@@ -1326,7 +1377,8 @@
      "verse_number": 99,
      "verse_label": "6.94",
      "sanskrit": "ॐ प्रति पन्थामपद्महि स्वस्तिगामनेहसम् । येन विश्वाः परि द्विषो वृणक्ति विन्दते वसु ॥ ॐ पुण्याहवाचनं समृद्धिरस्तु ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_4_29.mp3",
+     "veda_cite": "yajurveda:4.29"
     },
     {
      "verse_number": 100,
@@ -1394,7 +1446,8 @@
      "verse_number": 2,
      "verse_label": "8.1",
      "sanskrit": "१. ब्रह्माणम् (मध्यवेदीको ईशान कोणमा, रातो वर्णको स्तम्भमा)— ॐ ब्रह्म जज्ञानं प्रथमं पुरस्ताद् वि सीमतः सुरुचो वेन आवः । स बुध्न्या उपमा अस्य विष्ठाः सतश्च योनिमसतश्च वि वः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_03.mp3",
+     "veda_cite": "yajurveda:13.3"
     },
     {
      "verse_number": 3,
@@ -1430,7 +1483,8 @@
      "verse_number": 8,
      "verse_label": "8.7",
      "sanskrit": "४. इन्द्रम् (वायव्य कोणमा, पीत वर्णको स्तम्भमा)— ॐ त्रातारमिन्द्रमवितारमिन्द्रꣳ हवे हवे सुहवꣳ शूरमिन्द्रम् । ह्वयामि शक्रं पुरुहूतमिन्द्रꣳ स्वस्ति नो मघवा धात्विन्द्रः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/06/rigveda_06_47_09.mp3",
+     "veda_cite": "rigveda:6.47.9"
     },
     {
      "verse_number": 9,
@@ -1442,7 +1496,8 @@
      "verse_number": 10,
      "verse_label": "8.9",
      "sanskrit": "५. सूर्यम् (बाहिर ईशान कोणमा, रातो वर्णको स्तम्भमा)— ॐ आकृष्णेन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_35_02.mp3",
+     "veda_cite": "rigveda:1.35.2"
     },
     {
      "verse_number": 11,
@@ -1454,7 +1509,8 @@
      "verse_number": 12,
      "verse_label": "8.11",
      "sanskrit": "६. गणेशम् (ईशान र पूर्वको बीचमा, श्वेत वर्णको स्तम्भमा)— ॐ गणानां त्वा गणपतिꣳ हवामहे प्रियाणां त्वा प्रियपतिꣳ हवामहे निधीनां त्वा निधिपतिꣳ हवामहे वसो मम । आहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.19"
     },
     {
      "verse_number": 13,
@@ -1478,7 +1534,8 @@
      "verse_number": 16,
      "verse_label": "8.15",
      "sanskrit": "८. नागराजम् (आग्नेय कोणमा, कालो वर्णको स्तम्भमा)— ॐ नमोऽस्तु सर्पेभ्यो ये के च पृथिवीमनु । ये अन्तरिक्षे ये दिवि तेभ्यः सर्पेभ्यो नमः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_06.mp3",
+     "veda_cite": "yajurveda:13.6"
     },
     {
      "verse_number": 17,
@@ -1538,7 +1595,8 @@
      "verse_number": 26,
      "verse_label": "8.25",
      "sanskrit": "१३. अष्टवसून् (पश्चिम र वायव्यको बीचमा, श्वेत वर्णको स्तम्भमा)— ॐ वसुभ्यस्त्वा रुद्रेभ्यस्त्वादित्येभ्यस्त्वा संजानाथां द्यावापृथिवी मित्रावरुणौ त्वा वृष्ट्यावताम् । व्यन्तु वयो क्तꣳ रिहाणा मरुतां पृषतीर्गच्छ वशा पृश्निर्भूत्वा दिवं गच्छ ततो नो वृष्टिमावह । चक्षुष्पा अग्नेऽसि चक्षुर्मे पाहि ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_2_16.mp3",
+     "veda_cite": "yajurveda:2.16"
     },
     {
      "verse_number": 27,
@@ -1550,7 +1608,8 @@
      "verse_number": 28,
      "verse_label": "8.27",
      "sanskrit": "१४. धनदम् (वायव्य कोणमा, पीत वर्णको स्तम्भमा)— ॐ सोमो धेनुꣳ सोमो अर्वन्तमाशुꣳ सोमो वीरं कर्मण्यं ददाति । सादन्यं विदथ्यꣳ सभेयं पितृश्रवणं यो ददाशदस्मै ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_91_20.mp3",
+     "veda_cite": "rigveda:1.91.20"
     },
     {
      "verse_number": 29,
@@ -1562,7 +1621,8 @@
      "verse_number": 30,
      "verse_label": "8.29",
      "sanskrit": "१५. गुरुम् (उत्तर र वायव्यको बीचमा, पीत वर्णको स्तम्भमा)— ॐ बृहस्पते अति यदर्यो अर्हाद् द्युमद्विभाति क्रतुमज्जनेषु । यद्दीदयच्छवस ऋतप्रजात तदस्मासु द्रविणं धेहि चित्रम् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/02/rigveda_02_23_15.mp3",
+     "veda_cite": "rigveda:2.23.15"
     },
     {
      "verse_number": 31,
@@ -1593,7 +1653,8 @@
      "verse_number": 1,
      "verse_label": "9.1",
      "sanskrit": "ॐ अम्बे अम्बिकेऽम्बालिके न मा नयति कश्चन । ससस्त्यश्वकः सुभद्रिकां काम्पीलवासिनीम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.18"
     },
     {
      "verse_number": 2,
@@ -1617,7 +1678,8 @@
      "verse_number": 5,
      "verse_label": "9.4",
      "sanskrit": "१. गणेशम्— ॐ गणानां त्वा गणपतिꣳ हवामहे प्रियाणां त्वा प्रियपतिꣳ हवामहे निधीनां त्वा निधिपतिꣳ हवामहे वसो मम । आहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.19"
     },
     {
      "verse_number": 6,
@@ -1635,7 +1697,8 @@
      "verse_number": 8,
      "verse_label": "9.7",
      "sanskrit": "१. गौरीम्— ॐ आयं गौः पृश्निरक्रमीदसदन् मातरं पुरः । पितरं च प्रयन्त्स्वः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_189_01.mp3",
+     "veda_cite": "rigveda:10.189.1"
     },
     {
      "verse_number": 9,
@@ -1671,7 +1734,8 @@
      "verse_number": 14,
      "verse_label": "9.13",
      "sanskrit": "३. शचीम्— ॐ निवेशनः सङ्गमनो वसूनां विश्वा रूपाभि चष्टे शचीभिः । देव इव सविता सत्यधर्मेन्द्रो न तस्थौ समरे पथीनाम् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_12_66.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_12_66.mp3",
+     "veda_cite": "yajurveda:12.66"
     },
     {
      "verse_number": 15,
@@ -1689,7 +1753,8 @@
      "verse_number": 17,
      "verse_label": "9.16",
      "sanskrit": "४. मेधाम्— ॐ मेधां मे वरुणो ददातु मेधामग्निः प्रजापतिः । मेधामिन्द्रश्च वायुश्च मेधां धाता ददातु मे स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_32_15.mp3",
+     "veda_cite": "yajurveda:32.15"
     },
     {
      "verse_number": 18,
@@ -1743,7 +1808,8 @@
      "verse_number": 26,
      "verse_label": "9.25",
      "sanskrit": "७. जयाम्— ॐ बह्वीनां पिता बहुरस्य पुत्रश्चिश्चा कृणोति समनावगत्य । इषुधिः सङ्काः पृतनाश्च सर्वाः पृष्ठे निनद्धो जयति प्रसूतः ॥",
-     "audio_file": "documents/rigveda/06/rigveda_06_75_05.mp3"
+     "audio_file": "documents/rigveda/06/rigveda_06_75_05.mp3",
+     "veda_cite": "rigveda:6.75.5"
     },
     {
      "verse_number": 27,
@@ -1761,7 +1827,8 @@
      "verse_number": 29,
      "verse_label": "9.28",
      "sanskrit": "८. देवसेनाम्— ॐ इन्द्र आसां नेता बृहस्पतिर्दक्षिणा यज्ञः पुर एतु सोमः । देवसेनानामभिभञ्जतीनां जयन्तीनां मरुतो यन्त्वग्रम् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_103_08.mp3",
+     "veda_cite": "rigveda:10.103.8"
     },
     {
      "verse_number": 30,
@@ -1779,7 +1846,8 @@
      "verse_number": 32,
      "verse_label": "9.31",
      "sanskrit": "९. स्वधाम्— ॐ पितृभ्यः स्वधायिभ्यः स्वधा नमः पितामहेभ्यः स्वधायिभ्यः स्वधा नमः प्रपितामहेभ्यः स्वधायिभ्यः स्वधा नमः । अक्षन् पितरोऽमीमदन्त पितरोऽतीतृपन्त पितरः पितरः शुन्धध्वम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_19_36.mp3",
+     "veda_cite": "yajurveda:19.36"
     },
     {
      "verse_number": 33,
@@ -1797,7 +1865,8 @@
      "verse_number": 35,
      "verse_label": "9.34",
      "sanskrit": "१०. स्वाहाम्— ॐ स्वाहा प्राणेभ्यः साधिपतिकेभ्यः । पृथिव्यै स्वाहाऽग्नये स्वाहाऽन्तरिक्षाय स्वाहा वायवे स्वाहा । दिवे स्वाहा सूर्याय स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_39_01.mp3",
+     "veda_cite": "yajurveda:39.1"
     },
     {
      "verse_number": 36,
@@ -1815,7 +1884,8 @@
      "verse_number": 38,
      "verse_label": "9.37",
      "sanskrit": "११. मातृः— ॐ आपो अस्मान् मातरः शुन्धयन्तु घृतेन नो घृतप्वः पुनन्तु । विश्वꣳ हि रिप्रं प्रवहन्ति देवीरुदिदाभ्यः शुचिरा पूत एमि । दीक्षातपसोस्तनूरसि तां त्वा शिवाꣳ शग्मां परिदधे भद्रं वर्णं पुष्यन् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_17_10.mp3",
+     "veda_cite": "rigveda:10.17.10"
     },
     {
      "verse_number": 39,
@@ -1833,7 +1903,8 @@
      "verse_number": 41,
      "verse_label": "9.40",
      "sanskrit": "१२. लोकमातृः— ॐ रयिश्च मे रायश्च मे पुष्टं च मे पुष्टिश्च मे विभु च मे प्रभु च मे पूर्णं च मे पूर्णतरं च मे कुयवं च मे क्षितं च मे ऽन्नं च मे क्षुच्च मे यज्ञेन कल्पन्ताम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_10.mp3",
+     "veda_cite": "yajurveda:18.10"
     },
     {
      "verse_number": 42,
@@ -1869,7 +1940,8 @@
      "verse_number": 47,
      "verse_label": "9.46",
      "sanskrit": "१४. पुष्टिम्— ॐ अङ्गान्यात्मन् भिषजा तदश्विनात्मानमङ्गैः समधात् सरस्वती । इन्द्रस्य रूपꣳ शतमानमायुश्चन्द्रेण ज्योतिरमृतं दधानाः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_19_93.mp3",
+     "veda_cite": "yajurveda:19.93"
     },
     {
      "verse_number": 48,
@@ -1887,7 +1959,8 @@
      "verse_number": 50,
      "verse_label": "9.49",
      "sanskrit": "१५. तुष्टिम्— ॐ जातवेदसे सुनवाम सोममरातीयतो निदहाति वेदः । स नः पर्षदति दुर्गाणि विश्वा नावेव सिन्धुं दुरितात्यग्निः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_99_01.mp3",
+     "veda_cite": "rigveda:1.99.1"
     },
     {
      "verse_number": 51,
@@ -1905,7 +1978,8 @@
      "verse_number": 53,
      "verse_label": "9.52",
      "sanskrit": "१६. आत्मनः कुलदेवताम्— ॐ प्राणाय स्वाहा अपानाय स्वाहा व्यानाय स्वाहा । चक्षुषे स्वाहा श्रोत्राय स्वाहा वाचे स्वाहा मनसे स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_22_23.mp3",
+     "veda_cite": "yajurveda:22.23"
     },
     {
      "verse_number": 54,
@@ -1972,7 +2046,8 @@
      "verse_number": 6,
      "verse_label": "10.6",
      "sanskrit": "२. लक्ष्मीम्— ॐ श्रीश्च ते लक्ष्मीश्च पत्न्यावहोरात्रे पार्श्वे नक्षत्राणि रूपमश्विनौ व्यात्तम् । इष्णन्निषाणामुं म इषाण सर्वलोकं म इषाण ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:31.22"
     },
     {
      "verse_number": 7,
@@ -1990,7 +2065,8 @@
      "verse_number": 9,
      "verse_label": "10.9",
      "sanskrit": "३. धृतिम्— ॐ भद्रं कर्णेभिः शृणुयाम देवा भद्रं पश्येमाक्षभिर्यजत्राः । स्थिरैरङ्गैस्तुष्टुवाꣳसस्तनूभिर्व्यशेमहि देवहितं यदायुः ॥",
-     "audio_file": "documents/samaveda/samaveda_1874.mp3"
+     "audio_file": "documents/samaveda/samaveda_1874.mp3",
+     "veda_cite": "samaveda:1874"
     },
     {
      "verse_number": 10,
@@ -2008,7 +2084,8 @@
      "verse_number": 12,
      "verse_label": "10.12",
      "sanskrit": "४. मेधाम्— ॐ मेधां मे वरुणो ददातु मेधामग्निः प्रजापतिः । मेधामिन्द्रश्च वायुश्च मेधां धाता ददातु मे स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_32_15.mp3",
+     "veda_cite": "yajurveda:32.15"
     },
     {
      "verse_number": 13,
@@ -2026,7 +2103,8 @@
      "verse_number": 15,
      "verse_label": "10.15",
      "sanskrit": "५. स्वाहाम्— ॐ प्राणाय स्वाहा अपानाय स्वाहा व्यानाय स्वाहा । चक्षुषे स्वाहा श्रोत्राय स्वाहा वाचे स्वाहा मनसे स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_22_23.mp3",
+     "veda_cite": "yajurveda:22.23"
     },
     {
      "verse_number": 16,
@@ -2044,7 +2122,8 @@
      "verse_number": 18,
      "verse_label": "10.18",
      "sanskrit": "६. प्रज्ञाम्— ॐ आयं गौः पृश्निरक्रमीदसदन् मातरं पुरः । पितरं च प्रयन्त्स्वः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_189_01.mp3",
+     "veda_cite": "rigveda:10.189.1"
     },
     {
      "verse_number": 19,
@@ -2062,7 +2141,8 @@
      "verse_number": 21,
      "verse_label": "10.21",
      "sanskrit": "७. सरस्वतीम्— ॐ पावका नः सरस्वती वाजेभिर्वाजिनीवती । यज्ञं वष्टु धियावसुः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_03_10.mp3",
+     "veda_cite": "rigveda:1.3.10"
     },
     {
      "verse_number": 22,
@@ -2117,19 +2197,22 @@
      "verse_number": 4,
      "verse_label": "11.4",
      "sanskrit": "ॐ आयुष्यं वर्चस्यꣳ रायस्पोषमौद्भिदम् । इदꣳ हिरण्यं वर्चस्वज्जैत्रायाविशतादु माम् ॥४॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:34.50"
     },
     {
      "verse_number": 5,
      "verse_label": "11.5",
      "sanskrit": "न तद्रक्षाꣳसि न पिशाचास्तरन्ति देवानामोजः प्रथमजꣳ ह्येतत् । यो बिभर्ति दाक्षायणꣳ हिरण्यꣳ स देवेषु कृणुते दीर्घमायुः । स मनुष्येषु कृणुते दीर्घमायुः ॥५॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:34.51"
     },
     {
      "verse_number": 6,
      "verse_label": "11.6",
      "sanskrit": "यदाबध्नन् दाक्षायणा हिरण्यꣳ शतानीकाय सुमनस्यमानाः । तन्म आबध्नामि शतशारदायायुष्माञ्जरदष्टिर्यथासम् ॥६॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:34.52"
     },
     {
      "verse_number": 7,
@@ -2280,13 +2363,15 @@
      "verse_number": 23,
      "verse_label": "12.13",
      "sanskrit": "यजमानः— ॐ उपास्मै गायता नरः पवमानायेन्दवे । अभि देवाꣳ इयक्षते ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/09/rigveda_09_11_01.mp3",
+     "veda_cite": "rigveda:9.11.1"
     },
     {
      "verse_number": 24,
      "verse_label": "12.14",
      "sanskrit": "ॐ इडामग्ने पुरुदꣳसꣳ सनिं गोः शश्वत्तमꣳ हवमानाय साध । स्यान्नः सूनुस्तनयो विजावाग्ने सा ते सुमतिर्भूत्वस्मे ॥",
-     "audio_file": "documents/yajurveda/yajurveda_12_51.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_12_51.mp3",
+     "veda_cite": "yajurveda:12.51"
     },
     {
      "verse_number": 25,
@@ -2334,13 +2419,15 @@
      "verse_number": 32,
      "verse_label": "12.22",
      "sanskrit": "विसर्जनम्— ॐ वाजे वाजेऽवत वाजिनो नो धनेषु विप्रा अमृता ऋतज्ञाः । अस्य मध्वः पिबत मादयध्वं तृप्ता यात पथिभिर्देवयानैः ॥१॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_38_08.mp3",
+     "veda_cite": "rigveda:7.38.8"
     },
     {
      "verse_number": 33,
      "verse_label": "12.23",
      "sanskrit": "ॐ आ मा वाजस्य प्रसवो जगम्यादेमे द्यावापृथिवी विश्वरूपे । आ मा गन्तां पितरा मातरा चा मा सोमोऽमृतत्वेन गम्यात् ॥२॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_9_19.mp3",
+     "veda_cite": "yajurveda:9.19"
     },
     {
      "verse_number": 34,
@@ -2432,25 +2519,29 @@
      "verse_number": 2,
      "verse_label": "14.1",
      "sanskrit": "गोमूत्रम्— ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_36_03.mp3",
+     "veda_cite": "yajurveda:36.3"
     },
     {
      "verse_number": 3,
      "verse_label": "14.2",
      "sanskrit": "गोमयम्— ॐ मा नस्तोके तनये मा न आयुषि मा नो गोषु मा नो अश्वेषु रीरिषः । मा नो वीरान् रुद्र भामिनो वधीर्हविष्मन्तः सदमित् त्वा हवामहे ॥",
-     "audio_file": "documents/yajurveda/yajurveda_16_16.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_16_16.mp3",
+     "veda_cite": "yajurveda:16.16"
     },
     {
      "verse_number": 4,
      "verse_label": "14.3",
      "sanskrit": "दुग्धम्— ॐ आप्यायस्व समेतु ते विश्वतः सोम वृष्ण्यम् । भवा वाजस्य सङ्गथे ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_12_112.mp3",
+     "veda_cite": "yajurveda:12.112"
     },
     {
      "verse_number": 5,
      "verse_label": "14.4",
      "sanskrit": "दधि— ॐ दधिक्राव्णो अकारिषं जिष्णोरश्वस्य वाजिनः । सुरभि नो मुखा करत्प्र ण आयूꣳषि तारिषत् ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_39_06.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_39_06.mp3",
+     "veda_cite": "rigveda:4.39.6"
     },
     {
      "verse_number": 6,
@@ -2498,7 +2589,8 @@
      "verse_number": 13,
      "verse_label": "14.11",
      "sanskrit": "प्रार्थना— ॐ स्वस्ति न इन्द्रो वृद्धश्रवाः स्वस्ति नः पूषा विश्ववेदाः । स्वस्ति नस्तार्क्ष्यो अरिष्टनेमिः स्वस्ति नो बृहस्पतिर्दधातु ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_06.mp3",
+     "veda_cite": "rigveda:1.89.6"
     },
     {
      "verse_number": 14,
@@ -2584,7 +2676,8 @@
      "verse_number": 5,
      "verse_label": "16.4",
      "sanskrit": "प्रधानकलशस्थापनम्— ॐ मही द्यौः पृथिवी च न इमं यज्ञं मिमिक्षताम् । पिपृतां नो भरीमभिः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_22_13.mp3",
+     "veda_cite": "rigveda:1.22.13"
     },
     {
      "verse_number": 6,
@@ -2627,7 +2720,8 @@
      "verse_number": 5,
      "verse_label": "17.4",
      "sanskrit": "१. सूर्यम्— ॐ आकृष्णेन रजसा वर्तमानो निवेशयन्नमृतं मर्त्यं च । हिरण्ययेन सविता रथेना देवो याति भुवनानि पश्यन् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_35_02.mp3",
+     "veda_cite": "rigveda:1.35.2"
     },
     {
      "verse_number": 6,
@@ -2651,7 +2745,8 @@
      "verse_number": 9,
      "verse_label": "17.7",
      "sanskrit": "२. चन्द्रम्— ॐ इमं देवा असपत्नꣳ सुवध्वं महते क्षत्राय महते ज्यैष्ठ्याय महते जानराज्यायेन्द्रस्येन्द्रियाय । इमममुष्य पुत्रममुष्यै पुत्रमस्यै विश एष वोऽमी राजा सोमोऽस्माकं ब्राह्मणानाꣳ राजा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_10_18.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_10_18.mp3",
+     "veda_cite": "yajurveda:10.18"
     },
     {
      "verse_number": 10,
@@ -2675,7 +2770,8 @@
      "verse_number": 13,
      "verse_label": "17.10",
      "sanskrit": "३. भौमम्— ॐ अग्निर्मूर्धा दिवः ककुत्पतिः पृथिव्या अयम् । अपाꣳ रेताꣳसि जिन्वति ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/08/rigveda_08_44_16.mp3",
+     "veda_cite": "rigveda:8.44.16"
     },
     {
      "verse_number": 14,
@@ -2723,7 +2819,8 @@
      "verse_number": 21,
      "verse_label": "17.16",
      "sanskrit": "५. बृहस्पतिम्— ॐ बृहस्पते अति यदर्यो अर्हाद् द्युमद्विभाति क्रतुमज्जनेषु । यद्दीदयच्छवस ऋतप्रजात तदस्मासु द्रविणं धेहि चित्रम् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/02/rigveda_02_23_15.mp3",
+     "veda_cite": "rigveda:2.23.15"
     },
     {
      "verse_number": 22,
@@ -2747,7 +2844,8 @@
      "verse_number": 25,
      "verse_label": "17.19",
      "sanskrit": "६. शुक्रम्— ॐ अन्नात्परिस्रुतो रसं ब्रह्मणा व्यपिबत् क्षत्रं पयः सोमं प्रजापतिः । ऋतेन सत्यमिन्द्रियं विपानꣳ शुक्रमन्धस इन्द्रस्येन्द्रियमिदं पयोऽमृतं मधु ॥",
-     "audio_file": "documents/yajurveda/yajurveda_19_75.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_19_75.mp3",
+     "veda_cite": "yajurveda:19.75"
     },
     {
      "verse_number": 26,
@@ -2771,7 +2869,8 @@
      "verse_number": 29,
      "verse_label": "17.22",
      "sanskrit": "७. शनिम्— ॐ शं नो देवीरभिष्टय आपो भवन्तु पीतये । शंयोरभि स्रवन्तु नः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_09_04.mp3",
+     "veda_cite": "rigveda:10.9.4"
     },
     {
      "verse_number": 30,
@@ -2795,7 +2894,8 @@
      "verse_number": 33,
      "verse_label": "17.25",
      "sanskrit": "८. राहुम्— ॐ कया नश्चित्र आ भुवदूती सदावृधः सखा । कया शचिष्ठया वृता ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/04/rigveda_04_31_01.mp3",
+     "veda_cite": "rigveda:4.31.1"
     },
     {
      "verse_number": 34,
@@ -2819,7 +2919,8 @@
      "verse_number": 37,
      "verse_label": "17.28",
      "sanskrit": "९. केतुम्— ॐ केतुं कृण्वन्नकेतवे पेशो मर्या अपेशसे । समुषद्भिरजायथाः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_06_03.mp3",
+     "veda_cite": "rigveda:1.6.3"
     },
     {
      "verse_number": 38,
@@ -2843,13 +2944,15 @@
      "verse_number": 41,
      "verse_label": "17.31",
      "sanskrit": "१. ईश्वरम् (सूर्यको दायाँ)— ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् । उर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय मामृतात् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_59_12.mp3",
+     "veda_cite": "rigveda:7.59.12"
     },
     {
      "verse_number": 42,
      "verse_label": "17.32",
      "sanskrit": "२. उमाम् (चन्द्रको दायाँ)— ॐ श्रीश्च ते लक्ष्मीश्च पत्न्यावहोरात्रे पार्श्वे नक्षत्राणि रूपमश्विनौ व्यात्तम् । इष्णन्निषाणामुं म इषाण सर्वलोकं म इषाण ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:31.22"
     },
     {
      "verse_number": 43,
@@ -2861,13 +2964,15 @@
      "verse_number": 44,
      "verse_label": "17.34",
      "sanskrit": "४. विष्णुम् (बुधको दायाँ)— ॐ विष्णोरराटमसि विष्णोः श्नप्त्रे स्थो विष्णोः स्यूरसि विष्णोर्ध्रुवोऽसि वैष्णवमसि विष्णवे त्वा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_5_21.mp3",
+     "veda_cite": "yajurveda:5.21"
     },
     {
      "verse_number": 45,
      "verse_label": "17.35",
      "sanskrit": "५. ब्रह्माणम् (गुरुको दायाँ)— ॐ ब्रह्म जज्ञानं प्रथमं पुरस्ताद् वि सीमतः सुरुचो वेन आवः । स बुध्न्या उपमा अस्य विष्ठाः सतश्च योनिमसतश्च वि वः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_03.mp3",
+     "veda_cite": "yajurveda:13.3"
     },
     {
      "verse_number": 46,
@@ -2885,7 +2990,8 @@
      "verse_number": 48,
      "verse_label": "17.38",
      "sanskrit": "८. कालम् (राहुको दायाँ)— ॐ कार्षिरसि समुद्रस्य त्वाक्षित्या उन्नयामि । समापो अद्भिरग्मत समोषधीभिरोषधीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_6_28.mp3",
+     "veda_cite": "yajurveda:6.28"
     },
     {
      "verse_number": 49,
@@ -2927,7 +3033,8 @@
      "verse_number": 55,
      "verse_label": "17.44",
      "sanskrit": "५. इन्द्रम् (गुरुको बायाँ)— ॐ त्रातारमिन्द्रमवितारमिन्द्रꣳ हवे हवे सुहवꣳ शूरमिन्द्रम् । ह्वयामि शक्रं पुरुहूतमिन्द्रꣳ स्वस्ति नो मघवा धात्विन्द्रः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/06/rigveda_06_47_09.mp3",
+     "veda_cite": "rigveda:6.47.9"
     },
     {
      "verse_number": 56,
@@ -2939,19 +3046,22 @@
      "verse_number": 57,
      "verse_label": "17.46",
      "sanskrit": "७. प्रजापतिम् (शनिको बायाँ)— ॐ प्रजापते न त्वदेतान्यन्यो विश्वा रूपाणि परि ता बभूव । यत्कामास्ते जुहुमस्तन्नो अस्तु वयꣳ स्याम पतयो रयीणाम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.65"
     },
     {
      "verse_number": 58,
      "verse_label": "17.47",
      "sanskrit": "८. सर्पम् (राहुको बायाँ)— ॐ नमोऽस्तु सर्पेभ्यो ये के च पृथिवीमनु । ये अन्तरिक्षे ये दिवि तेभ्यः सर्पेभ्यो नमः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_06.mp3",
+     "veda_cite": "yajurveda:13.6"
     },
     {
      "verse_number": 59,
      "verse_label": "17.48",
      "sanskrit": "९. ब्रह्माणम् (केतुको बायाँ)— ॐ ब्रह्म जज्ञानं प्रथमं पुरस्ताद् वि सीमतः सुरुचो वेन आवः । स बुध्न्या उपमा अस्य विष्ठाः सतश्च योनिमसतश्च वि वः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_03.mp3",
+     "veda_cite": "yajurveda:13.3"
     },
     {
      "verse_number": 60,
@@ -2963,7 +3073,8 @@
      "verse_number": 61,
      "verse_label": "17.49",
      "sanskrit": "१. गणेशम् (राहुको उत्तर)— ॐ गणानां त्वा गणपतिꣳ हवामहे प्रियाणां त्वा प्रियपतिꣳ हवामहे निधीनां त्वा निधिपतिꣳ हवामहे वसो मम । आहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.19"
     },
     {
      "verse_number": 62,
@@ -2975,13 +3086,15 @@
      "verse_number": 63,
      "verse_label": "17.51",
      "sanskrit": "३. वायुम् (सूर्यको उत्तर)— ॐ आ नो नियुद्भिः शतिनीभिरध्वरꣳ सहस्रिणीभिरुप याहि यज्ञम् । वायो अस्मिन्त्सवने मादयस्व यूयं पात स्वस्तिभिः सदा नः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_92_05.mp3",
+     "veda_cite": "rigveda:7.92.5"
     },
     {
      "verse_number": 64,
      "verse_label": "17.52",
      "sanskrit": "४. आकाशम् (शुक्रको पूर्व)— ॐ घृतं घृतपावानः पिबत वसां वसापावानः पिबतान्तरिक्षस्य हविरसि स्वाहा । दिशः प्रदिश आदिशो विदिश उद्दिशो दिग्भ्यः स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_6_19.mp3",
+     "veda_cite": "yajurveda:6.19"
     },
     {
      "verse_number": 65,
@@ -2999,7 +3112,8 @@
      "verse_number": 67,
      "verse_label": "17.54",
      "sanskrit": "१. इन्द्रम् (मण्डलको पूर्व)— ॐ त्रातारमिन्द्रमवितारमिन्द्रꣳ हवे हवे सुहवꣳ शूरमिन्द्रम् । ह्वयामि शक्रं पुरुहूतमिन्द्रꣳ स्वस्ति नो मघवा धात्विन्द्रः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/06/rigveda_06_47_09.mp3",
+     "veda_cite": "rigveda:6.47.9"
     },
     {
      "verse_number": 68,
@@ -3023,13 +3137,15 @@
      "verse_number": 71,
      "verse_label": "17.58",
      "sanskrit": "५. वरुणम् (मण्डलको पश्चिम)— ॐ तत्त्वा यामि ब्रह्मणा वन्दमानस्तदा शास्ते यजमानो हविर्भिः । अहेडमानो वरुणेह बोध्युरुशꣳस मा न आयुः प्र मोषीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_49.mp3",
+     "veda_cite": "yajurveda:18.49"
     },
     {
      "verse_number": 72,
      "verse_label": "17.59",
      "sanskrit": "६. वायुम् (मण्डलको वायव्य)— ॐ आ नो नियुद्भिः शतिनीभिरध्वरꣳ सहस्रिणीभिरुप याहि यज्ञम् । वायो अस्मिन्त्सवने मादयस्व यूयं पात स्वस्तिभिः सदा नः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_92_05.mp3",
+     "veda_cite": "rigveda:7.92.5"
     },
     {
      "verse_number": 73,
@@ -3041,7 +3157,8 @@
      "verse_number": 74,
      "verse_label": "17.61",
      "sanskrit": "८. ईशानम् (मण्डलको ईशान)— ॐ तमीशानं जगतस्तस्थुषस्पतिं धियंजिन्वमवसे हूमहे वयम् । पूषा नो यथा वेदसामसद् वृधे रक्षिता पायुरदब्धः स्वस्तये ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_05.mp3",
+     "veda_cite": "rigveda:1.89.5"
     },
     {
      "verse_number": 75,
@@ -3072,7 +3189,8 @@
      "verse_number": 1,
      "verse_label": "18.1",
      "sanskrit": "ॐ वास्तोष्पते प्रति जानीह्यस्मान्त्स्वावेशो अनमीवो भवा नः । यत्त्वेमहे प्रति तन्नो जुषस्व शं नो भव द्विपदे शं चतुष्पदे ॥",
-     "audio_file": "documents/rigveda/07/rigveda_07_54_01.mp3"
+     "audio_file": "documents/rigveda/07/rigveda_07_54_01.mp3",
+     "veda_cite": "rigveda:7.54.1"
     },
     {
      "verse_number": 2,
@@ -3109,7 +3227,8 @@
      "verse_number": 1,
      "verse_label": "19.1",
      "sanskrit": "ॐ नमोऽस्तु सर्पेभ्यो ये के च पृथिवीमनु । ये अन्तरिक्षे ये दिवि तेभ्यः सर्पेभ्यो नमः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_13_06.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_13_06.mp3",
+     "veda_cite": "yajurveda:13.6"
     },
     {
      "verse_number": 2,
@@ -3152,7 +3271,8 @@
      "verse_number": 2,
      "verse_label": "20.1",
      "sanskrit": "आवाहनम्— ॐ असंख्याता सहस्राणि ये रुद्रा अधि भूम्याम् । तेषाꣳ सहस्रयोजनेऽव धन्वानि तन्मसि ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:16.54"
     },
     {
      "verse_number": 3,
@@ -3176,7 +3296,8 @@
      "verse_number": 6,
      "verse_label": "20.5",
      "sanskrit": "आह्वानम्— ॐ सहस्रशीर्षा पुरुषः सहस्राक्षः सहस्रपात् । स भूमिꣳ सर्वतः स्पृत्वात्यतिष्ठद्दशाङ्गुलम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_01.mp3",
+     "veda_cite": "yajurveda:31.1"
     },
     {
      "verse_number": 7,
@@ -3188,7 +3309,8 @@
      "verse_number": 8,
      "verse_label": "20.7",
      "sanskrit": "आसनम्— ॐ पुरुष एवेदꣳ सर्वं यद्भूतं यच्च भाव्यम् । उतामृतत्वस्येशानो यदन्नेनातिरोहति ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_02.mp3",
+     "veda_cite": "yajurveda:31.2"
     },
     {
      "verse_number": 9,
@@ -3200,7 +3322,8 @@
      "verse_number": 10,
      "verse_label": "20.9",
      "sanskrit": "पाद्यम्— ॐ एतावानस्य महिमातो ज्यायाꣳश्च पूरुषः । पादोऽस्य विश्वा भूतानि त्रिपादस्यामृतं दिवि ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_03.mp3",
+     "veda_cite": "rigveda:10.90.3"
     },
     {
      "verse_number": 11,
@@ -3212,7 +3335,8 @@
      "verse_number": 12,
      "verse_label": "20.11",
      "sanskrit": "अर्घ्यम्— ॐ त्रिपादूर्ध्व उदैत्पुरुषः पादोऽस्येहाभवत्पुनः । ततो विष्वङ् व्यक्रामत्साशनानशने अभि ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_04.mp3",
+     "veda_cite": "rigveda:10.90.4"
     },
     {
      "verse_number": 13,
@@ -3224,7 +3348,8 @@
      "verse_number": 14,
      "verse_label": "20.13",
      "sanskrit": "आचमनम्— ॐ ततो विराडजायत विराजो अधि पूरुषः । स जातो अत्यरिच्यत पश्चाद्भूमिमथो पुरः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_05.mp3",
+     "veda_cite": "yajurveda:31.5"
     },
     {
      "verse_number": 15,
@@ -3236,7 +3361,8 @@
      "verse_number": 16,
      "verse_label": "20.15",
      "sanskrit": "स्नानम्— ॐ तस्माद्यज्ञात्सर्वहुतः सम्भृतं पृषदाज्यम् । पशूꣳस्ताꣳश्चक्रे वायव्यानारण्या ग्राम्याश्च ये ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_06.mp3",
+     "veda_cite": "yajurveda:31.6"
     },
     {
      "verse_number": 17,
@@ -3248,7 +3374,8 @@
      "verse_number": 18,
      "verse_label": "20.17",
      "sanskrit": "दुग्धस्नानम्— ॐ पयः पृथिव्यां पय ओषधीषु पयो दिव्यन्तरिक्षे पयोधाः । पयस्वतीः प्रदिशः सन्तु मह्यम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_36.mp3",
+     "veda_cite": "yajurveda:18.36"
     },
     {
      "verse_number": 19,
@@ -3260,7 +3387,8 @@
      "verse_number": 20,
      "verse_label": "20.19",
      "sanskrit": "दधिस्नानम्— ॐ दधिक्राव्णो अकारिषं जिष्णोरश्वस्य वाजिनः । सुरभि नो मुखा करत्प्र ण आयूꣳषि तारिषत् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/04/rigveda_04_39_06.mp3",
+     "veda_cite": "rigveda:4.39.6"
     },
     {
      "verse_number": 21,
@@ -3272,7 +3400,8 @@
      "verse_number": 22,
      "verse_label": "20.21",
      "sanskrit": "घृतस्नानम्— ॐ घृतं मिमिक्षे घृतमस्य योनिर्घृते श्रितो घृतम्वस्य धाम । अनुष्वधमा वह मादयस्व स्वाहाकृतं वृषभ वक्षि हव्यम् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/02/rigveda_02_03_11.mp3",
+     "veda_cite": "rigveda:2.3.11"
     },
     {
      "verse_number": 23,
@@ -3296,7 +3425,8 @@
      "verse_number": 26,
      "verse_label": "20.25",
      "sanskrit": "शर्करास्नानम्— ॐ अपाꣳ रसमुद्वयसꣳ सूर्ये सन्तꣳ समाहितम् । अपाꣳ रसस्य यो रसस्तं वो गृह्णाम्युत्तममुपयामगृहीतोऽसीन्द्राय त्वा जुष्टं गृह्णाम्येष ते योनिरिन्द्राय त्वा जुष्टतमम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_9_03.mp3",
+     "veda_cite": "yajurveda:9.3"
     },
     {
      "verse_number": 27,
@@ -3308,7 +3438,8 @@
      "verse_number": 28,
      "verse_label": "20.27",
      "sanskrit": "पञ्चामृतस्नानम्— ॐ पञ्च नद्यः सरस्वतीमपि यन्ति सस्रोतसः । सरस्वती तु पञ्चधा सो देशेऽभवत्सरित् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_34_11.mp3",
+     "veda_cite": "yajurveda:34.11"
     },
     {
      "verse_number": 29,
@@ -3320,7 +3451,8 @@
      "verse_number": 30,
      "verse_label": "20.29",
      "sanskrit": "गन्धोदकस्नानम्— ॐ अꣳशुना ते अꣳशुः पृच्यतां परुषा परुः । गन्धस्ते सोममवतु मदाय रसो अच्युतः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_20_27.mp3",
+     "veda_cite": "yajurveda:20.27"
     },
     {
      "verse_number": 31,
@@ -3332,7 +3464,8 @@
      "verse_number": 32,
      "verse_label": "20.31",
      "sanskrit": "शुद्धोदकस्नानम्— ॐ शुद्धवालः सर्वशुद्धवालो मणिवालस्त आश्विनाः । श्येतः श्येताक्षोऽरुणस्ते रुद्राय पशुपतये कर्णा यामा अवलिप्ता रौद्रा नभोरूपाः पार्जन्याः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_24_03.mp3",
+     "veda_cite": "yajurveda:24.3"
     },
     {
      "verse_number": 33,
@@ -3356,7 +3489,8 @@
      "verse_number": 36,
      "verse_label": "20.34",
      "sanskrit": "ॐ तस्माद्यज्ञात्सर्वहुत ऋचः सामानि जज्ञिरे । छन्दाꣳसि जज्ञिरे तस्माद्यजुस्तस्मादजायत ॥ (वस्त्र चढाउनु।)",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_09.mp3",
+     "veda_cite": "rigveda:10.90.9"
     },
     {
      "verse_number": 37,
@@ -3380,25 +3514,29 @@
      "verse_number": 40,
      "verse_label": "20.38",
      "sanskrit": "ॐ तस्मादश्वा अजायन्त ये के चोभयादतः । गावो ह जज्ञिरे तस्मात्तस्माज्जाता अजावयः ॥ (जनै पहिराउनु।)",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_10.mp3",
+     "veda_cite": "rigveda:10.90.10"
     },
     {
      "verse_number": 41,
      "verse_label": "20.39",
      "sanskrit": "चन्दनम्— ॐ तं यज्ञं बर्हिषि प्रौक्षन् पुरुषं जातमग्रतः । तेन देवा अयजन्त साध्या ऋषयश्च ये ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_07.mp3",
+     "veda_cite": "rigveda:10.90.7"
     },
     {
      "verse_number": 42,
      "verse_label": "20.40",
      "sanskrit": "ॐ त्वां गन्धर्वा अखनँस्त्वामिन्द्रस्त्वां बृहस्पतिः । त्वामोषधे सोमो राजा विद्वान् यक्ष्मादमुच्यत ॥ (चन्दन चढाउनु।)",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_12_98.mp3",
+     "veda_cite": "yajurveda:12.98"
     },
     {
      "verse_number": 43,
      "verse_label": "20.41",
      "sanskrit": "अक्षताः— ॐ अक्षन्नमीमदन्त ह्यव प्रिया अधूषत । अस्तोषत स्वभानवो विप्रा नविष्ठया मती योजा न्विन्द्र ते हरी ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_82_02.mp3",
+     "veda_cite": "rigveda:1.82.2"
     },
     {
      "verse_number": 44,
@@ -3410,13 +3548,15 @@
      "verse_number": 45,
      "verse_label": "20.43",
      "sanskrit": "सुगन्धद्रव्यम्— ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् । उर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय मामृतात् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_59_12.mp3",
+     "veda_cite": "rigveda:7.59.12"
     },
     {
      "verse_number": 46,
      "verse_label": "20.44",
      "sanskrit": "ॐ अꣳशुना ते अꣳशुः पृच्यतां परुषा परुः । गन्धस्ते सोममवतु मदाय रसो अच्युतः ॥ (इत्र चढाउनु।)",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_20_27.mp3",
+     "veda_cite": "yajurveda:20.27"
     },
     {
      "verse_number": 47,
@@ -3440,7 +3580,8 @@
      "verse_number": 50,
      "verse_label": "20.48",
      "sanskrit": "पुष्पम् / पुष्पमाला— ॐ ओषधीः प्रति मोदध्वं पुष्पवतीः प्रसूवरीः । अश्वा इव सजित्वरीर्वीरुधः पारयिष्णवः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_97_03.mp3",
+     "veda_cite": "rigveda:10.97.3"
     },
     {
      "verse_number": 51,
@@ -3452,7 +3593,8 @@
      "verse_number": 52,
      "verse_label": "20.50",
      "sanskrit": "दूर्वा— ॐ काण्डात्काण्डात्प्ररोहन्ती परुषः परुषस्परि । एवा नो दूर्वे प्र तनु सहस्रेण शतेन च ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_20.mp3",
+     "veda_cite": "yajurveda:13.20"
     },
     {
      "verse_number": 53,
@@ -3464,7 +3606,8 @@
      "verse_number": 54,
      "verse_label": "20.52",
      "sanskrit": "बिल्वपत्रम्— ॐ नमो बिल्मिने च कवचिने च नमो वर्मिणे च वरूथिने च नमः श्रुताय च श्रुतसेनाय च नमो दुन्दुभ्याय चाहनन्याय च ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:16.35"
     },
     {
      "verse_number": 55,
@@ -3476,7 +3619,8 @@
      "verse_number": 56,
      "verse_label": "20.54",
      "sanskrit": "सौभाग्यद्रव्यम्— ॐ अहिरिव भोगैः पर्येति बाहुं ज्याया हेतिं परिबाधमानः । हस्तघ्नो विश्वा वयुनानि विद्वान् पुमान् पुमाꣳसं परि पातु विश्वतः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/06/rigveda_06_75_14.mp3",
+     "veda_cite": "rigveda:6.75.14"
     },
     {
      "verse_number": 57,
@@ -3500,7 +3644,8 @@
      "verse_number": 60,
      "verse_label": "20.58",
      "sanskrit": "सिन्दूरम्— ॐ सिन्धोरिव प्राध्वने शूघनासो वातप्रमियः पतयन्ति यह्वाः । घृतस्य धारा अरुषो न वाजी काष्ठा भिन्दन्नूर्मिभिः पिन्वमानः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/04/rigveda_04_58_07.mp3",
+     "veda_cite": "rigveda:4.58.7"
     },
     {
      "verse_number": 61,
@@ -3512,7 +3657,8 @@
      "verse_number": 62,
      "verse_label": "20.60",
      "sanskrit": "धूपः— ॐ धूरसि धूर्व धूर्वन्तं धूर्वतं योऽस्मान् धूर्वति तं धूर्वं यं वयं धूर्वामः । देवानामसि वह्नितमꣳ सस्नितमं पप्रितमं जुष्टतमं देवहूतमम् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_1_08.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_1_08.mp3",
+     "veda_cite": "yajurveda:1.8"
     },
     {
      "verse_number": 63,
@@ -3524,7 +3670,8 @@
      "verse_number": 64,
      "verse_label": "20.62",
      "sanskrit": "दीपः— ॐ अग्निर्ज्योतिर्ज्योतिरग्निः स्वाहा सूर्यो ज्योतिर्ज्योतिः सूर्यः स्वाहा । अग्निर्वर्चो ज्योतिर्वर्चः स्वाहा सूर्यो वर्चो ज्योतिर्वर्चः स्वाहा । ज्योतिः सूर्यः सूर्यो ज्योतिः स्वाहा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_3_09.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_3_09.mp3",
+     "veda_cite": "yajurveda:3.9"
     },
     {
      "verse_number": 65,
@@ -3536,7 +3683,8 @@
      "verse_number": 66,
      "verse_label": "20.64",
      "sanskrit": "नैवेद्यम्— ॐ नाभ्या आसीदन्तरिक्षꣳ शीर्ष्णो द्यौः समवर्तत । पद्भ्यां भूमिर्दिशः श्रोत्रात्तथा लोकाꣳ अकल्पयन् ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_14.mp3",
+     "veda_cite": "rigveda:10.90.14"
     },
     {
      "verse_number": 67,
@@ -3554,7 +3702,8 @@
      "verse_number": 69,
      "verse_label": "20.67",
      "sanskrit": "ऋतुफलम्— ॐ याः फलिनीर्या अफला अपुष्पा याश्च पुष्पिणीः । बृहस्पतिप्रसूतास्ता नो मुञ्चन्त्वꣳहसः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_97_15.mp3",
+     "veda_cite": "rigveda:10.97.15"
     },
     {
      "verse_number": 70,
@@ -3566,7 +3715,8 @@
      "verse_number": 71,
      "verse_label": "20.69",
      "sanskrit": "ताम्बूलम्— ॐ यत्पुरुषेण हविषा देवा यज्ञमतन्वत । वसन्तोऽस्यासीदाज्यं ग्रीष्म इध्मः शरद्धविः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_14.mp3",
+     "veda_cite": "yajurveda:31.14"
     },
     {
      "verse_number": 72,
@@ -3578,7 +3728,8 @@
      "verse_number": 73,
      "verse_label": "20.71",
      "sanskrit": "दक्षिणा— ॐ हिरण्यगर्भः समवर्तताग्रे भूतस्य जातः पतिरेक आसीत् । स दाधार पृथिवीं द्यामुतेमां कस्मै देवाय हविषा विधेम ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_121_01.mp3",
+     "veda_cite": "rigveda:10.121.1"
     },
     {
      "verse_number": 74,
@@ -3590,19 +3741,22 @@
      "verse_number": 75,
      "verse_label": "20.73",
      "sanskrit": "कर्पूरारती— ॐ आ रात्रि पार्थिवꣳ रजः पितुरप्रायि धामभिः । दिवः सदाꣳसि बृहती वि तिष्ठस आ त्वेषं वर्तते तमः ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:34.32"
     },
     {
      "verse_number": 76,
      "verse_label": "20.74",
      "sanskrit": "ॐ इदꣳ हविः प्रजननं मे अस्तु दशवीरꣳ सर्वगणꣳ स्वस्तये । आत्मसनि प्रजासनि पशुसनि लोकसन्यभयसनि । अग्निः प्रजां बहुलं मे करोत्वन्नं पयो रेतो अस्मासु धत्त ॥",
-     "audio_file": "documents/yajurveda/yajurveda_19_48.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_19_48.mp3",
+     "veda_cite": "yajurveda:19.48"
     },
     {
      "verse_number": 77,
      "verse_label": "20.75",
      "sanskrit": "ॐ अग्निर्देवता वातो देवता सूर्यो देवता चन्द्रमा देवता वसवो देवता रुद्रा देवता आदित्या देवता मरुतो देवता विश्वे देवा देवता बृहस्पतिर्देवतेन्द्रो देवता वरुणो देवता ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:14.20"
     },
     {
      "verse_number": 78,
@@ -3614,7 +3768,8 @@
      "verse_number": 79,
      "verse_label": "20.77",
      "sanskrit": "जलारती (शान्तिपाठः)— ॐ द्यौः शान्तिरन्तरिक्षꣳ शान्तिः पृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः । वनस्पतयः शान्तिर्विश्वे देवाः शान्तिर्ब्रह्म शान्तिः सर्वꣳ शान्तिः शान्तिरेव शान्तिः सा मा शान्तिरेधि ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_36_17.mp3",
+     "veda_cite": "yajurveda:36.17"
     }
    ]
   },
@@ -3633,7 +3788,8 @@
      "verse_number": 2,
      "verse_label": "21.2",
      "sanskrit": "विश्वकर्मावाहनम्— ॐ विश्वकर्मन् हविषा वर्धनेन त्रातारमिन्द्रमकृणोरवध्यम् । तस्मै विशः समनमन्त पूर्वीरयमुग्रो विहव्यो यथासत् ॥ उपयामगृहीतोऽसीन्द्राय त्वा विश्वकर्मण एष ते योनिरिन्द्राय त्वा विश्वकर्मणे ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_8_46.mp3",
+     "veda_cite": "yajurveda:8.46"
     },
     {
      "verse_number": 3,
@@ -3675,7 +3831,8 @@
      "verse_number": 9,
      "verse_label": "21.9",
      "sanskrit": "मध्य मेखला (ब्रह्मा)— ॐ ब्रह्म जज्ञानं प्रथमं पुरस्ताद् वि सीमतः सुरुचो वेन आवः । स बुध्न्या उपमा अस्य विष्ठाः सतश्च योनिमसतश्च वि वः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_03.mp3",
+     "veda_cite": "yajurveda:13.3"
     },
     {
      "verse_number": 10,
@@ -3711,7 +3868,8 @@
      "verse_number": 15,
      "verse_label": "21.15",
      "sanskrit": "योन्यावाहनम्— ॐ क्षत्रस्य योनिरसि क्षत्रस्य नाभिरसि । मा त्वा हिꣳसीन्मा मा हिꣳसीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_20_01.mp3",
+     "veda_cite": "yajurveda:20.1"
     },
     {
      "verse_number": 16,
@@ -3735,7 +3893,8 @@
      "verse_number": 19,
      "verse_label": "21.19",
      "sanskrit": "कण्ठावाहनम्— ॐ नीलग्रीवाः शितिकण्ठाः शर्वा अधः क्षमाचराः । तेषाꣳ सहस्रयोजनेऽव धन्वानि तन्मसि ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:16.57"
     },
     {
      "verse_number": 20,
@@ -3759,7 +3918,8 @@
      "verse_number": 23,
      "verse_label": "21.23",
      "sanskrit": "नाभ्यावाहनम्— ॐ नाभिर्मे चित्तं विज्ञानं पायुर्मेऽपचितिर्भसत् । आनन्दनन्दावाण्डौ मे भगः सौभाग्यं पसः । जङ्घाभ्यां पद्भ्यां धर्मोऽस्मि विशि राजा प्रतिष्ठितः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_20_09.mp3",
+     "veda_cite": "yajurveda:20.9"
     },
     {
      "verse_number": 24,
@@ -3783,7 +3943,8 @@
      "verse_number": 27,
      "verse_label": "21.27",
      "sanskrit": "वास्तुपुरुषावाहनम् (कुण्डको नैर्ऋत्य कोणमा)— ॐ वास्तोष्पते प्रति जानीह्यस्मान्त्स्वावेशो अनमीवो भवा नः । यत्त्वेमहे प्रति तन्नो जुषस्व शं नो भव द्विपदे शं चतुष्पदे ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_54_01.mp3",
+     "veda_cite": "rigveda:7.54.1"
     },
     {
      "verse_number": 28,
@@ -3843,13 +4004,15 @@
      "verse_number": 37,
      "verse_label": "21.35",
      "sanskrit": "भूमिकूर्मानन्तपूजनम्— ॐ भूरसि भूमिरस्यदितिरसि विश्वधाया विश्वस्य भुवनस्य धर्त्री । पृथिवीं यच्छ पृथिवीं दृꣳह पृथिवीं मा हिꣳसीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_13_18.mp3",
+     "veda_cite": "yajurveda:13.18"
     },
     {
      "verse_number": 38,
      "verse_label": "21.36",
      "sanskrit": "ॐ यस्य कूर्मो गृहे हविस्तमग्ने वर्धया त्वम् । तस्मै देवा अधि ब्रुवन्नयं च ब्रह्मणस्पतिः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_17_52.mp3",
+     "veda_cite": "yajurveda:17.52"
     },
     {
      "verse_number": 39,
@@ -3879,19 +4042,22 @@
      "verse_number": 43,
      "verse_label": "21.40",
      "sanskrit": "ॐ यद्देवा देवहेडनं देवासश्चकृमा वयम् । अग्निर्मा तस्मादेनसो विश्वान्मुञ्चत्वꣳहसः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_20_14.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_20_14.mp3",
+     "veda_cite": "yajurveda:20.14"
     },
     {
      "verse_number": 44,
      "verse_label": "21.41",
      "sanskrit": "यदि दिवा यदि नक्तमेनाꣳसि चकृमा वयम् । वायुर्मा तस्मादेनसो विश्वान्मुञ्चत्वꣳहसः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_20_15.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_20_15.mp3",
+     "veda_cite": "yajurveda:20.15"
     },
     {
      "verse_number": 45,
      "verse_label": "21.42",
      "sanskrit": "यदि जाग्रद् यदि स्वप्न एनाꣳसि चकृमा वयम् । सूर्यो मा तस्मादेनसो विश्वान्मुञ्चत्वꣳहसः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_20_16.mp3",
+     "veda_cite": "yajurveda:20.16"
     },
     {
      "verse_number": 46,
@@ -3909,7 +4075,8 @@
      "verse_number": 48,
      "verse_label": "21.44",
      "sanskrit": "ॐ मा नस्तोके तनये मा न आयुषि मा नो गोषु मा नो अश्वेषु रीरिषः । मा नो वीरान् रुद्र भामिनो वधीर्हविष्मन्तः सदमित् त्वा हवामहे ॥",
-     "audio_file": "documents/yajurveda/yajurveda_16_16.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_16_16.mp3",
+     "veda_cite": "yajurveda:16.16"
     },
     {
      "verse_number": 49,
@@ -4319,7 +4486,8 @@
      "verse_number": 13,
      "verse_label": "23.12",
      "sanskrit": "२. ॐ स त्वं नो अग्नेऽवमो भवोती नेदिष्ठो अस्या उषसो व्युष्टौ । अव यक्ष्व नो वरुणꣳ रराणो वीहि मृडीकꣳ सुहवो न एधि स्वाहा ॥ इदमग्नीवरुणाभ्यां न मम ।",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_21_04.mp3",
+     "veda_cite": "yajurveda:21.4"
     },
     {
      "verse_number": 14,
@@ -4337,7 +4505,8 @@
      "verse_number": 16,
      "verse_label": "23.15",
      "sanskrit": "५. ॐ उदुत्तमं वरुण पाशमस्मदवाधमं वि मध्यमꣳ श्रथाय । अथा वयमादित्य व्रते तवानागसो अदितये स्याम स्वाहा ॥ इदं वरुणायादित्यायादितये च न मम ।",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_24_15.mp3",
+     "veda_cite": "rigveda:1.24.15"
     },
     {
      "verse_number": 17,
@@ -4368,97 +4537,113 @@
      "verse_number": 2,
      "verse_label": "24.1",
      "sanskrit": "१. सहस्रशीर्षा पुरुषः सहस्राक्षः सहस्रपात् । स भूमिꣳ सर्वतः स्पृत्वात्यतिष्ठद्दशाङ्गुलम् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_01.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_01.mp3",
+     "veda_cite": "yajurveda:31.1"
     },
     {
      "verse_number": 3,
      "verse_label": "24.2",
      "sanskrit": "२. पुरुष एवेदꣳ सर्वं यद्भूतं यच्च भाव्यम् । उतामृतत्वस्येशानो यदन्नेनातिरोहति ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_02.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_02.mp3",
+     "veda_cite": "yajurveda:31.2"
     },
     {
      "verse_number": 4,
      "verse_label": "24.3",
      "sanskrit": "३. एतावानस्य महिमातो ज्यायाꣳश्च पूरुषः । पादोऽस्य विश्वा भूतानि त्रिपादस्यामृतं दिवि ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_03.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_03.mp3",
+     "veda_cite": "yajurveda:31.3"
     },
     {
      "verse_number": 5,
      "verse_label": "24.4",
      "sanskrit": "४. त्रिपादूर्ध्व उदैत्पुरुषः पादोऽस्येहाभवत्पुनः । ततो विष्वङ् व्यक्रामत्साशनानशने अभि ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_04.mp3",
+     "veda_cite": "rigveda:10.90.4"
     },
     {
      "verse_number": 6,
      "verse_label": "24.5",
      "sanskrit": "५. ततो विराडजायत विराजो अधि पूरुषः । स जातो अत्यरिच्यत पश्चाद्भूमिमथो पुरः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_05.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_05.mp3",
+     "veda_cite": "yajurveda:31.5"
     },
     {
      "verse_number": 7,
      "verse_label": "24.6",
      "sanskrit": "६. तस्माद्यज्ञात्सर्वहुतः सम्भृतं पृषदाज्यम् । पशूꣳस्ताꣳश्चक्रे वायव्यानारण्या ग्राम्याश्च ये ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_31_06.mp3",
+     "veda_cite": "yajurveda:31.6"
     },
     {
      "verse_number": 8,
      "verse_label": "24.7",
      "sanskrit": "७. तस्माद्यज्ञात्सर्वहुत ऋचः सामानि जज्ञिरे । छन्दाꣳसि जज्ञिरे तस्माद्यजुस्तस्मादजायत ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_09.mp3",
+     "veda_cite": "rigveda:10.90.9"
     },
     {
      "verse_number": 9,
      "verse_label": "24.8",
      "sanskrit": "८. तस्मादश्वा अजायन्त ये के चोभयादतः । गावो ह जज्ञिरे तस्मात्तस्माज्जाता अजावयः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_08.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_08.mp3",
+     "veda_cite": "yajurveda:31.8"
     },
     {
      "verse_number": 10,
      "verse_label": "24.9",
      "sanskrit": "९. तं यज्ञं बर्हिषि प्रौक्षन् पुरुषं जातमग्रतः । तेन देवा अयजन्त साध्या ऋषयश्च ये ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_09.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_09.mp3",
+     "veda_cite": "yajurveda:31.9"
     },
     {
      "verse_number": 11,
      "verse_label": "24.10",
      "sanskrit": "१०. यत्पुरुषं व्यदधुः कतिधा व्यकल्पयन् । मुखं किमस्य कौ बाहू का ऊरू पादा उच्येते ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/10/rigveda_10_90_11.mp3",
+     "veda_cite": "rigveda:10.90.11"
     },
     {
      "verse_number": 12,
      "verse_label": "24.11",
      "sanskrit": "११. ब्राह्मणोऽस्य मुखमासीद् बाहू राजन्यः कृतः । ऊरू तदस्य यद्वैश्यः पद्भ्याꣳ शूद्रो अजायत ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_11.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_11.mp3",
+     "veda_cite": "yajurveda:31.11"
     },
     {
      "verse_number": 13,
      "verse_label": "24.12",
      "sanskrit": "१२. चन्द्रमा मनसो जातश्चक्षोः सूर्यो अजायत । श्रोत्राद्वायुश्च प्राणश्च मुखादग्निरजायत ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_12.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_12.mp3",
+     "veda_cite": "yajurveda:31.12"
     },
     {
      "verse_number": 14,
      "verse_label": "24.13",
      "sanskrit": "१३. नाभ्या आसीदन्तरिक्षꣳ शीर्ष्णो द्यौः समवर्तत । पद्भ्यां भूमिर्दिशः श्रोत्रात्तथा लोकाꣳ अकल्पयन् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_13.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_13.mp3",
+     "veda_cite": "yajurveda:31.13"
     },
     {
      "verse_number": 15,
      "verse_label": "24.14",
      "sanskrit": "१४. यत्पुरुषेण हविषा देवा यज्ञमतन्वत । वसन्तोऽस्यासीदाज्यं ग्रीष्म इध्मः शरद्धविः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_14.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_14.mp3",
+     "veda_cite": "yajurveda:31.14"
     },
     {
      "verse_number": 16,
      "verse_label": "24.15",
      "sanskrit": "१५. सप्तास्यासन् परिधयस्त्रिः सप्त समिधः कृताः । देवा यद्यज्ञं तन्वानाः अबध्नन् पुरुषं पशुम् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_31_15.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_31_15.mp3",
+     "veda_cite": "yajurveda:31.15"
     },
     {
      "verse_number": 17,
      "verse_label": "24.16",
      "sanskrit": "१६. यज्ञेन यज्ञमयजन्त देवास्तानि धर्माणि प्रथमान्यासन् । ते ह नाकं महिमानः सचन्त यत्र पूर्वे साध्याः सन्ति देवाः ॥",
-     "audio_file": "documents/atharvaveda/07/atharvaveda_07_005_001.mp3"
+     "audio_file": "documents/atharvaveda/07/atharvaveda_07_005_001.mp3",
+     "veda_cite": "atharvaveda:7.5.1"
     }
    ]
   },
@@ -4616,7 +4801,8 @@
      "verse_number": 7,
      "verse_label": "26.6",
      "sanskrit": "दशदिक्पालादीनां बलिदानम्— १. इन्द्रम् (पूर्व)— ॐ त्रातारमिन्द्रमवितारमिन्द्रꣳ हवे हवे सुहवꣳ शूरमिन्द्रम् । ह्वयामि शक्रं पुरुहूतमिन्द्रꣳ स्वस्ति नो मघवा धात्विन्द्रः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/06/rigveda_06_47_09.mp3",
+     "veda_cite": "rigveda:6.47.9"
     },
     {
      "verse_number": 8,
@@ -4664,7 +4850,8 @@
      "verse_number": 15,
      "verse_label": "26.14",
      "sanskrit": "दशदिक्पालादीनां बलिदानम्— ५. वरुणम् (पश्चिम)— ॐ तत्त्वा यामि ब्रह्मणा वन्दमानस्तदा शास्ते यजमानो हविर्भिः । अहेडमानो वरुणेह बोध्युरुशꣳस मा न आयुः प्र मोषीः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_49.mp3",
+     "veda_cite": "yajurveda:18.49"
     },
     {
      "verse_number": 16,
@@ -4676,7 +4863,8 @@
      "verse_number": 17,
      "verse_label": "26.16",
      "sanskrit": "दशदिक्पालादीनां बलिदानम्— ६. वायुम् (वायव्य कोण)— ॐ आ नो नियुद्भिः शतिनीभिरध्वरꣳ सहस्रिणीभिरुप याहि यज्ञम् । वायो अस्मिन्त्सवने मादयस्व यूयं पात स्वस्तिभिः सदा नः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/07/rigveda_07_92_05.mp3",
+     "veda_cite": "rigveda:7.92.5"
     },
     {
      "verse_number": 18,
@@ -4700,7 +4888,8 @@
      "verse_number": 21,
      "verse_label": "26.20",
      "sanskrit": "दशदिक्पालादीनां बलिदानम्— ८. ईशानम् (ईशान कोण)— ॐ तमीशानं जगतस्तस्थुषस्पतिं धियंजिन्वमवसे हूमहे वयम् । पूषा नो यथा वेदसामसद् वृधे रक्षिता पायुरदब्धः स्वस्तये ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_89_05.mp3",
+     "veda_cite": "rigveda:1.89.5"
     },
     {
      "verse_number": 22,
@@ -4760,7 +4949,8 @@
      "verse_number": 31,
      "verse_label": "26.30",
      "sanskrit": "गणपतिबलिदानम्— बलिदानमन्त्रः— ॐ गणानां त्वा गणपतिꣳ हवामहे प्रियाणां त्वा प्रियपतिꣳ हवामहे निधीनां त्वा निधिपतिꣳ हवामहे वसो मम । आहमजानि गर्भधमा त्वमजासि गर्भधम् ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:23.19"
     },
     {
      "verse_number": 32,
@@ -4802,7 +4992,8 @@
      "verse_number": 38,
      "verse_label": "26.36",
      "sanskrit": "ॐ भूताय त्वा नारातये स्वरभिविख्येषं दृꣳहन्तां दुर्याः पृथिव्यामुर्वन्तरिक्षमन्वेमि । पृथिव्यास्त्वा नाभौ सादयाम्यदित्या उपस्थेऽग्ने हव्यꣳ रक्ष ॥",
-     "audio_file": "documents/yajurveda/yajurveda_1_11.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_1_11.mp3",
+     "veda_cite": "yajurveda:1.11"
     },
     {
      "verse_number": 39,
@@ -4833,91 +5024,106 @@
      "verse_number": 2,
      "verse_label": "27.2",
      "sanskrit": "१. ॐ समुद्रादूर्मिर्मधुमाँ उदारदुपाꣳशुना सममृतत्वमानट् । घृतस्य नाम गुह्यं यदस्ति जिह्वा देवानाममृतस्य नाभिः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_89.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_89.mp3",
+     "veda_cite": "yajurveda:17.89"
     },
     {
      "verse_number": 3,
      "verse_label": "27.3",
      "sanskrit": "२. वयं नाम प्र ब्रवामा घृतस्यास्मिन् यज्ञे धारयामा नमोभिः । उप ब्रह्मा शृणवच्छस्यमानं चतुःशृङ्गोऽवमीद् गौर एतत् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_90.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_90.mp3",
+     "veda_cite": "yajurveda:17.90"
     },
     {
      "verse_number": 4,
      "verse_label": "27.4",
      "sanskrit": "३. चत्वारि शृङ्गा त्रयो अस्य पादा द्वे शीर्षे सप्त हस्तासो अस्य । त्रिधा बद्धो वृषभो रोरवीति महो देवो मर्त्याꣳ आ विवेश ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_03.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_03.mp3",
+     "veda_cite": "rigveda:4.58.3"
     },
     {
      "verse_number": 5,
      "verse_label": "27.5",
      "sanskrit": "४. त्रिधा हितं पणिभिर्गुह्यमानं गवि देवासो घृतमन्वविन्दन् । इन्द्र एकं सूर्य एकं जजान वेनादेकं स्वधया निष्टतक्षुः ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_04.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_04.mp3",
+     "veda_cite": "rigveda:4.58.4"
     },
     {
      "verse_number": 6,
      "verse_label": "27.6",
      "sanskrit": "५. एता अर्षन्ति हृद्यात् समुद्राच्छतव्रजा रिपुणा नावचक्षे । घृतस्य धारा अभि चाकशीमि हिरण्ययो वेतसो मध्य आसाम् ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_05.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_05.mp3",
+     "veda_cite": "rigveda:4.58.5"
     },
     {
      "verse_number": 7,
      "verse_label": "27.7",
      "sanskrit": "६. सम्यक् स्रवन्ति सरितो न धेना अन्तर्हृदा मनसा पूयमानाः । एते अर्षन्त्यूर्मयो घृतस्य मृगा इव क्षिपणोरीषमाणाः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_94.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_94.mp3",
+     "veda_cite": "yajurveda:17.94"
     },
     {
      "verse_number": 8,
      "verse_label": "27.8",
      "sanskrit": "७. सिन्धोरिव प्राध्वने शूघनासो वातप्रमियः पतयन्ति यह्वाः । घृतस्य धारा अरुषो न वाजी काष्ठा भिन्दन्नूर्मिभिः पिन्वमानः ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_07.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_07.mp3",
+     "veda_cite": "rigveda:4.58.7"
     },
     {
      "verse_number": 9,
      "verse_label": "27.9",
      "sanskrit": "८. अभि प्रवन्त समनेव योषाः कल्याण्यः स्मयमानासो अग्निम् । घृतस्य धाराः समिधो नसन्त ता जुषाणो हर्यति जातवेदाः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_96.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_96.mp3",
+     "veda_cite": "yajurveda:17.96"
     },
     {
      "verse_number": 10,
      "verse_label": "27.10",
      "sanskrit": "९. कन्या इव वहतुमेतवा उ अञ्ज्यञ्जाना अभि चाकशीमि । यत्र सोमः सूयते यत्र यज्ञो घृतस्य धारा अभि तत्पवन्ते ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_09.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_09.mp3",
+     "veda_cite": "rigveda:4.58.9"
     },
     {
      "verse_number": 11,
      "verse_label": "27.11",
      "sanskrit": "१०. अभ्यर्षत सुष्टुतिं गव्यमाजिमस्मासु भद्रा द्रविणानि धत्त । इमं यज्ञं नयत देवता नो घृतस्य धारा मधुमत् पवन्ते ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_10.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_10.mp3",
+     "veda_cite": "rigveda:4.58.10"
     },
     {
      "verse_number": 12,
      "verse_label": "27.12",
      "sanskrit": "११. धामन्ते विश्वं भुवनमधि श्रितमन्तः समुद्रे हृद्यन्तरायुषि । अपामनीके समिथे य आभृतस्तमश्याम मधुमन्तं त ऊर्मिम् ॥",
-     "audio_file": "documents/rigveda/04/rigveda_04_58_11.mp3"
+     "audio_file": "documents/rigveda/04/rigveda_04_58_11.mp3",
+     "veda_cite": "rigveda:4.58.11"
     },
     {
      "verse_number": 13,
      "verse_label": "27.13",
      "sanskrit": "१२. पुनस्त्वादित्या रुद्रा वसवः समिन्धतां पुनर्ब्रह्माणो वसुनीथ यज्ञैः । घृतेन त्वं तन्वं वर्धयस्व सत्याः सन्तु यजमानस्य कामाः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_12_44.mp3",
+     "veda_cite": "yajurveda:12.44"
     },
     {
      "verse_number": 14,
      "verse_label": "27.14",
      "sanskrit": "१३. सप्त ते अग्ने समिधः सप्त जिह्वाः सप्त ऋषयः सप्त धाम प्रियाणि । सप्त होत्राः सप्तधा त्वा यजन्ति सप्त योनीरा पृणस्व घृतेन स्वाहा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_79.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_79.mp3",
+     "veda_cite": "yajurveda:17.79"
     },
     {
      "verse_number": 15,
      "verse_label": "27.15",
      "sanskrit": "१४. मूर्धानं दिवो अरतिं पृथिव्या वैश्वानरमृत आ जातमग्निम् । कविꣳ सम्राजमतिथिं जनानामासन्ना पात्रं जनयन्त देवाः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_7_24.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_7_24.mp3",
+     "veda_cite": "yajurveda:7.24"
     },
     {
      "verse_number": 16,
      "verse_label": "27.16",
      "sanskrit": "१५. पूर्णा दर्वि परापत सुपूर्णा पुनरापत । वस्नेव विक्रीणावहा इषमूर्जꣳ शतक्रतो स्वाहा ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_3_49.mp3",
+     "veda_cite": "yajurveda:3.49"
     }
    ]
   },
@@ -4936,37 +5142,43 @@
      "verse_number": 2,
      "verse_label": "28.1",
      "sanskrit": "१. सप्त ते अग्ने समिधः सप्त जिह्वाः सप्त ऋषयः सप्त धाम प्रियाणि । सप्त होत्राः सप्तधा त्वा यजन्ति सप्त योनीरा पृणस्व घृतेन स्वाहा ॥१॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_79.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_79.mp3",
+     "veda_cite": "yajurveda:17.79"
     },
     {
      "verse_number": 3,
      "verse_label": "28.2",
      "sanskrit": "२. घृतं मिमिक्षे घृतमस्य योनिर्घृते श्रितो घृतम्वस्य धाम । अनुष्वधमा वह मादयस्व स्वाहाकृतं वृषभ वक्षि हव्यम् ॥२॥",
-     "audio_file": "documents/rigveda/02/rigveda_02_03_11.mp3"
+     "audio_file": "documents/rigveda/02/rigveda_02_03_11.mp3",
+     "veda_cite": "rigveda:2.3.11"
     },
     {
      "verse_number": 4,
      "verse_label": "28.3",
      "sanskrit": "३. अनाधृष्यो जातवेदा अनिष्टृतो विराडग्ने क्षत्रभृद्दीदिहीह । विश्वा आशाः प्रमुञ्चन् मानुषीर्भियः शिवेभिरद्य परि पाहि नो वृधे ॥३॥",
-     "audio_file": "documents/yajurveda/yajurveda_27_07.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_27_07.mp3",
+     "veda_cite": "yajurveda:27.7"
     },
     {
      "verse_number": 5,
      "verse_label": "28.4",
      "sanskrit": "४. बृहस्पते सवितर्बोधयैनꣳ सꣳशितं चित्सन्तरां सꣳशिशाधि । वर्धयैनं महते सौभगाय विश्वे एनमनु मदन्तु देवाः ॥४॥",
-     "audio_file": "documents/yajurveda/yajurveda_27_08.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_27_08.mp3",
+     "veda_cite": "yajurveda:27.8"
     },
     {
      "verse_number": 6,
      "verse_label": "28.5",
      "sanskrit": "५. इदं विष्णुर्विचक्रमे त्रेधा निदधे पदम् । समूढमस्य पाꣳसुरे स्वाहा ॥५॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_5_15.mp3",
+     "veda_cite": "yajurveda:5.15"
     },
     {
      "verse_number": 7,
      "verse_label": "28.6",
      "sanskrit": "६. ॐ वसोः पवित्रमसि शतधारं वसोः पवित्रमसि सहस्रधारम् । देवस्त्वा सविता पुनातु वसोः पवित्रेण शतधारेण सुप्वा कामधुक्षः ॥६॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_1_03.mp3",
+     "veda_cite": "yajurveda:1.3"
     },
     {
      "verse_number": 8,
@@ -5124,7 +5336,8 @@
      "verse_number": 1,
      "verse_label": "30.1",
      "sanskrit": "पुष्पाञ्जलिः— ॐ यज्ञेन यज्ञमयजन्त देवास्तानि धर्माणि प्रथमान्यासन् । ते ह नाकं महिमानः सचन्त यत्र पूर्वे साध्याः सन्ति देवाः ॥",
-     "audio_file": null
+     "audio_file": "documents/rigveda/01/rigveda_01_164_50.mp3",
+     "veda_cite": "rigveda:1.164.50"
     },
     {
      "verse_number": 2,
@@ -5142,7 +5355,8 @@
      "verse_number": 4,
      "verse_label": "30.4",
      "sanskrit": "ॐ विश्वतश्चक्षुरुत विश्वतोमुखो विश्वतोबाहुरुत विश्वतस्पात् । सं बाहुभ्यां धमति सं पतत्रैर्द्यावाभूमी जनयन् देव एकः ॥",
-     "audio_file": "documents/yajurveda/yajurveda_17_19.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_17_19.mp3",
+     "veda_cite": "yajurveda:17.19"
     },
     {
      "verse_number": 5,
@@ -5161,7 +5375,8 @@
      "verse_number": 1,
      "verse_label": "31.1",
      "sanskrit": "प्रदक्षिणा— ॐ ये तीर्थानि प्रचरन्ति सृकाहस्ता निषङ्गिणः । तेषाꣳ सहस्रयोजनेऽव धन्वानि तन्मसि ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:16.61"
     },
     {
      "verse_number": 2,
@@ -5272,73 +5487,85 @@
      "verse_number": 2,
      "verse_label": "34.1",
      "sanskrit": "ॐ पयः पृथिव्यां पय ओषधीषु पयो दिव्यन्तरिक्षे पयोधाः । पयस्वतीः प्रदिशः सन्तु मह्यम् ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_18_36.mp3",
+     "veda_cite": "yajurveda:18.36"
     },
     {
      "verse_number": 3,
      "verse_label": "34.2",
      "sanskrit": "ॐ पञ्च नद्यः सरस्वतीमपि यन्ति सस्रोतसः । सरस्वती तु पञ्चधा सो देशेऽभवत्सरित् ॥",
-     "audio_file": "documents/yajurveda/yajurveda_34_11.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_34_11.mp3",
+     "veda_cite": "yajurveda:34.11"
     },
     {
      "verse_number": 4,
      "verse_label": "34.3",
      "sanskrit": "ॐ वरुणस्योत्तम्भनमसि वरुणस्य स्कम्भसर्जनी स्थो वरुणस्य ऋतसदन्यसि वरुणस्य ऋतसदनमसि वरुणस्य ऋतसदनमासीद ॥",
-     "audio_file": "documents/yajurveda/yajurveda_4_36.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_4_36.mp3",
+     "veda_cite": "yajurveda:4.36"
     },
     {
      "verse_number": 5,
      "verse_label": "34.4",
      "sanskrit": "ॐ पुनन्तु मा देवजनाः पुनन्तु मनसा धियः । पुनन्तु विश्वा भूतानि जातवेदः पुनीहि मा ॥",
-     "audio_file": "documents/yajurveda/yajurveda_19_39.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_19_39.mp3",
+     "veda_cite": "yajurveda:19.39"
     },
     {
      "verse_number": 6,
      "verse_label": "34.5",
      "sanskrit": "ॐ देवस्य त्वा सवितुः प्रसवेऽश्विनोर्बाहुभ्यां पूष्णो हस्ताभ्याम् । सरस्वत्यै वाचो यन्तुर्यन्त्रे दधामि बृहस्पतेष्ट्वा साम्राज्येनाभिषिञ्चाम्यसौ ॥",
-     "audio_file": "documents/yajurveda/yajurveda_9_30.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_9_30.mp3",
+     "veda_cite": "yajurveda:9.30"
     },
     {
      "verse_number": 7,
      "verse_label": "34.6",
      "sanskrit": "ॐ देवस्य त्वा सवितुः प्रसवेऽश्विनोर्बाहुभ्यां पूष्णो हस्ताभ्याम् । सरस्वत्यै वाचो यन्तुर्यन्त्रेणाग्नेः साम्राज्येनाभिषिञ्चामि ॥",
-     "audio_file": "documents/yajurveda/yajurveda_18_37.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_18_37.mp3",
+     "veda_cite": "yajurveda:18.37"
     },
     {
      "verse_number": 8,
      "verse_label": "34.7",
      "sanskrit": "ॐ देवस्य त्वा सवितुः प्रसवेऽश्विनोर्बाहुभ्यां पूष्णो हस्ताभ्याम् । अश्विनोर्भैषज्येन तेजसे ब्रह्मवर्चसायाभिषिञ्चामि सरस्वत्यै भैषज्येन वीर्यायान्नाद्यायाभिषिञ्चामीन्द्रस्येन्द्रियेण बलाय श्रियै यशसेऽभिषिञ्चामि ॥",
-     "audio_file": "documents/yajurveda/yajurveda_20_03.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_20_03.mp3",
+     "veda_cite": "yajurveda:20.3"
     },
     {
      "verse_number": 9,
      "verse_label": "34.8",
      "sanskrit": "ॐ विश्वानि देव सवितर्दुरितानि परा सुव । यद्भद्रं तन्न आ सुव ॥",
-     "audio_file": "documents/rigveda/05/rigveda_05_82_05.mp3"
+     "audio_file": "documents/rigveda/05/rigveda_05_82_05.mp3",
+     "veda_cite": "rigveda:5.82.5"
     },
     {
      "verse_number": 10,
      "verse_label": "34.9",
      "sanskrit": "ॐ धामच्छदग्निरिन्द्रो ब्रह्मा देवो बृहस्पतिः । सचेतसो विश्वे देवा यज्ञं प्रावन्तु नः शुभे ॥",
-     "audio_file": null
+     "audio_file": null,
+     "veda_cite": "yajurveda:18.76"
     },
     {
      "verse_number": 11,
      "verse_label": "34.10",
      "sanskrit": "ॐ त्वं यविष्ठ दाशुषो नॄँः पाहि शृणुधी गिरः । रक्षा तोकमुत त्मना ॥",
-     "audio_file": "documents/rigveda/08/rigveda_08_84_03.mp3"
+     "audio_file": "documents/rigveda/08/rigveda_08_84_03.mp3",
+     "veda_cite": "rigveda:8.84.3"
     },
     {
      "verse_number": 12,
      "verse_label": "34.11",
      "sanskrit": "ॐ अन्नपतेऽन्नस्य नो देह्यनमीवस्य शुष्मिणः । प्र प्र दातारं तारिष ऊर्जं नो धेहि द्विपदे चतुष्पदे ॥",
-     "audio_file": "documents/yajurveda/yajurveda_11_83.mp3"
+     "audio_file": "documents/yajurveda/yajurveda_11_83.mp3",
+     "veda_cite": "yajurveda:11.83"
     },
     {
      "verse_number": 13,
      "verse_label": "34.12",
      "sanskrit": "ॐ द्यौः शान्तिरन्तरिक्षꣳ शान्तिः पृथिवी शान्तिरापः शान्तिरोषधयः शान्तिः । वनस्पतयः शान्तिर्विश्वे देवाः शान्तिर्ब्रह्म शान्तिः सर्वꣳ शान्तिः शान्तिरेव शान्तिः सा मा शान्तिरेधि ॥ ॐ शान्तिः शान्तिः शान्तिः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_36_17.mp3",
+     "veda_cite": "yajurveda:36.17"
     }
    ]
   },
@@ -5363,7 +5590,8 @@
      "verse_number": 3,
      "verse_label": "35.2",
      "sanskrit": "मन्त्रः— ॐ रूपेण वो रूपमभ्यागां तुथो वो विश्ववेदा विभजतु । ऋतस्य पथा प्रेत चन्द्रदक्षिणा वि स्वः पश्य व्यन्तरिक्षं यतस्व सदस्यैः ॥",
-     "audio_file": null
+     "audio_file": "documents/yajurveda/yajurveda_7_45.mp3",
+     "veda_cite": "yajurveda:7.45"
     },
     {
      "verse_number": 4,
