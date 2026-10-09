@@ -39,7 +39,7 @@ export function buildAtTimeDatetime(adDate: string, clock: string): string {
   // so carry the minutes into the hour and keep the result within the day.
   const total = Math.min(
     23 * 60 + 59,
-    Math.max(0, (Number(hh) || 0) * 60 + (Number(mm) || 0)),
+    Math.max(0, (Number(hh ?? 12) || 0) * 60 + (Number(mm) || 0)),
   );
   const h = String(Math.floor(total / 60)).padStart(2, "0");
   const m = String(total % 60).padStart(2, "0");
