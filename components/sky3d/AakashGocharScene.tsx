@@ -1831,6 +1831,13 @@ const ecliptic_STEPS = 180;
 const BELT_ANGLE_STEP = 0.005;
 /** Simulated seconds per real second above which heavy per-frame work is throttled (1 hour/s). */
 const FAST_SIM_SECONDS = 3600;
+/**
+ * Above this (a week per second) every name and trail moves several degrees a
+ * frame. Names pushed to React a few times a second then trail the bodies they
+ * label and read as lag, and re-sweeping the trails costs a graha's worth of
+ * orbital maths every frame, so both are dropped until the clock slows down.
+ */
+const VERY_FAST_SIM_SECONDS = 7 * 86400;
 /** Minimum real seconds between belt/star re-projections while playing fast. */
 const BELT_FAST_INTERVAL_S = 0.1;
 
@@ -3825,7 +3832,8 @@ export function AakashGocharScene({
           ? 0.25
           : 0.5;
     const labelsDue = lastLabelPush.current > labelInterval;
-    const collect = Boolean(toggles.labels) && labelsDue;
+    const veryFast = s.playing && Math.abs(s.secondsPerRealSecond) >= VERY_FAST_SIM_SECONDS;
+    const collect = Boolean(toggles.labels) && labelsDue && !veryFast;
     const collected: ScreenLabel[] = [];
     // Second column of the camera's world matrix: which way is up on screen.
     screenUp.current.setFromMatrixColumn(state.camera.matrixWorld, 1).normalize();
@@ -5494,7 +5502,7 @@ export function AakashGocharScene({
     /* At the fast speeds the epoch turns over faster than a sweep can finish;
        letting it restart would mean only the Moon ever got redrawn, so a sweep
        always runs to the end before the next one begins. */
-    if (epoch !== lastTrailKey.current && !sweeping) {
+    if (epoch !== lastTrailKey.current && !sweeping && !veryFast) {
       lastTrailKey.current = epoch;
       trailCursor.current = 0;
       trailBaseDt.current = dtDays;
@@ -5534,6 +5542,9 @@ export function AakashGocharScene({
         labels.current = culled;
         labelsChanged = true;
       }
+    } else if (veryFast && labels.current.length > 0) {
+      labels.current = [];
+      labelsChanged = true;
     }
 
     if (hudDue) lastSample.current = 0;
