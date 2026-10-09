@@ -2682,6 +2682,12 @@
     "sat_long": "Saturday"
   },
   "sun_times_cta": "Sun Revolution — Annual sunrise & sunset",
+  "home_veda": {
+    "title": "Today's Veda mantra",
+    "meaning": "Meaning",
+    "play": "Play",
+    "pause": "Pause"
+  },
   "home_quick": {
     "holidays_desc": "Public holidays & festivals",
     "converter_desc": "BS ↔ AD dates",
