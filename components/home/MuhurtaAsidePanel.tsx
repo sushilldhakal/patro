@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { elementHref } from "@/lib/panchanga-elements";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
+import { pushHref } from "@/lib/push-href";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { ApiHoraSlot, NavataraRow, PanchangaDay, UdayaLagnaRow } from "@/lib/api";
@@ -300,6 +301,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
+  const pathname = usePathname();
   const [subTab, setSubTab] = useState<MuhurtaSubTab>("tarabal");
   const tara = getTarabalaTable(p);
   const chandra = getChandrabalamTable(p);
@@ -359,7 +361,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
       {subTab === "pushkara" ? <PushkaraList p={p} /> : null}
 
       <Pressable
-        onPress={() => router.push(elementHref(ELEMENT_ID[subTab]) as never)}
+        onPress={() => pushHref(router, pathname, elementHref(ELEMENT_ID[subTab]))}
         accessibilityRole="link"
         className="items-center rounded-lg border border-border py-2.5 active:opacity-80"
       >
