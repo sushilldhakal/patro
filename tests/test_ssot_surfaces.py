@@ -33,6 +33,7 @@ def test_meta_capabilities_exposes_limits_and_cache_version():
     assert body["ephemeris_signed_max"] == PATRO_EPHEMERIS_SIGNED_MAX
     assert body["cache_payload_version"] == CACHE_PAYLOAD_VERSION
     assert "festival_stack_min_year" in body
+    assert body["offline_max_years"] == 90
 
 
 def test_month_calendar_ships_abhijit_and_grid_meta():

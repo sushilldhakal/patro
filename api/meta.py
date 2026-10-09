@@ -44,6 +44,11 @@ def provenance():
     return payload
 
 
+# Widest BS-year window a client may download for offline use. Owned here so the
+# apps ask the host instead of hardcoding it.
+OFFLINE_MAX_YEARS = 90
+
+
 @router.get("/meta/capabilities")
 def capabilities():
     """What this host can compute — year bounds, cache version, festival floor.
@@ -58,6 +63,7 @@ def capabilities():
     return {
         **browse_limits(),
         "cache_payload_version": CACHE_PAYLOAD_VERSION,
+        "offline_max_years": OFFLINE_MAX_YEARS,
     }
 
 
