@@ -33,7 +33,7 @@ export function SunriseSunsetIcon({
       style={[{ width: w, height: h }, style]}
     >
       <Svg width={w} height={h} viewBox={`0 0 ${vbW} ${vbH}`}>
-        <G rotation={variant === "set" ? 180 : 0} origin={`${vbW / 2}, ${vbH / 2}`}>
+        <G transform={variant === "set" ? `rotate(180 ${vbW / 2} ${vbH / 2})` : undefined}>
           <Path d={SUNRISE_ICON_PATH} fill={color} />
         </G>
       </Svg>
@@ -63,7 +63,7 @@ export function SunTimelineMarker({
 
   return (
     <G transform={`translate(${left}, ${top}) scale(${scale})`}>
-      <G rotation={variant === "set" ? 180 : 0} origin={`${vbW / 2}, ${vbH / 2}`}>
+      <G transform={variant === "set" ? `rotate(180 ${vbW / 2} ${vbH / 2})` : undefined}>
         <Path d={SUNRISE_ICON_PATH} fill={fill} />
       </G>
     </G>

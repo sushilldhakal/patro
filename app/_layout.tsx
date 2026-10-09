@@ -177,6 +177,8 @@ function RootShell({
         <Stack
           screenOptions={{
             headerShown: false,
+            animation: "fade_from_bottom",
+            animationDuration: 220,
             contentStyle: { backgroundColor: colors.background },
           }}
         />
@@ -184,8 +186,11 @@ function RootShell({
       {ready ? <ThemedStatusBar /> : null}
       {!ready ? (
         <View
-          pointerEvents="none"
-          style={[StyleSheet.absoluteFill, styles.fontGate, { backgroundColor: colors.background }]}
+          style={[
+            StyleSheet.absoluteFill,
+            styles.fontGate,
+            { backgroundColor: colors.background, pointerEvents: "none" },
+          ]}
         >
           <VedicPatroLoader />
         </View>

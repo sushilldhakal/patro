@@ -32,6 +32,7 @@ export default function TabsLayout() {
       tabBar={() => <FloatingNavBar />}
       screenOptions={{
         headerShown: false,
+        animation: "fade",
         sceneStyle: { backgroundColor: "transparent", flex: 1 },
         tabBarStyle: {
           position: "absolute",

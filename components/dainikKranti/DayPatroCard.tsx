@@ -123,7 +123,7 @@ export function DayPatroCard({
   return (
     <View
       className={cn(
-        "rounded-xl border bg-card p-3.5 shadow-sm",
+        "rounded-xl border bg-card p-3.5",
         isToday
           ? "border-secondary/60 bg-secondary/10"
           : hasFestival
