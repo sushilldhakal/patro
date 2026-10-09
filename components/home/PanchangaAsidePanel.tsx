@@ -75,11 +75,11 @@ export function PanchangaAsidePanel({
   return (
     <View className="overflow-hidden rounded-2xl border border-border bg-card">
       <View className="flex-row items-baseline gap-2.5 border-b border-border px-4 py-3.5">
-        <Text className="flex-1 text-lg font-bold text-foreground">
+        <Text className="text-title flex-1 font-bold text-foreground">
           {isSelectedToday ? pick("आजको पञ्चाङ्ग", "Today's Panchanga") : pick("पञ्चाङ्ग", "Panchanga")}
         </Text>
         <Pressable onPress={() => router.push({ pathname: "/panchanga", params: { date: selectedAd } })}>
-          <Text className="text-xs text-secondary">{pick("पूरा विवरण →", "Full detail →")}</Text>
+          <Text className="text-caption text-secondary">{pick("पूरा विवरण →", "Full detail →")}</Text>
         </Pressable>
       </View>
 
@@ -106,7 +106,7 @@ export function PanchangaAsidePanel({
             >
               <Text
                 className={cn(
-                  "text-center text-xs font-semibold",
+                  "text-caption text-center font-semibold",
                   tab === id ? "font-bold text-foreground" : "text-muted-foreground",
                 )}
               >
@@ -135,7 +135,7 @@ export function PanchangaAsidePanel({
             activeP ? (
               <MuhurtaAsidePanel p={activeP} />
             ) : (
-              <Text className="py-6 text-center text-sm text-muted-foreground">
+              <Text className="text-body py-6 text-center text-muted-foreground">
                 {pick("मुहूर्त विवरण उपलब्ध छैन।", "Muhurta details unavailable.")}
               </Text>
             )

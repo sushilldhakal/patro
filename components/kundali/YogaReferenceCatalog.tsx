@@ -78,16 +78,16 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
       filtered.map((e) => ({
         key: e.yogaId,
         cells: [
-          <Text key="id" className="font-num text-[12px] text-muted-foreground">
+          <Text key="id" className="text-caption font-num text-muted-foreground">
             {e.yogaId}
           </Text>,
-          <Text key="n" className="text-[12px] font-semibold text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="n" className="text-caption font-semibold text-foreground" style={nepaliTextStyle(11)}>
             {entryName(e, lang)}
           </Text>,
-          <Text key="d" className="text-[12px] leading-snug text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="d" className="text-caption text-foreground" style={nepaliTextStyle(11)}>
             {entryDefinition(e, lang)}
           </Text>,
-          <Text key="r" className="text-[12px] leading-snug text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="r" className="text-caption text-foreground" style={nepaliTextStyle(11)}>
             {entryResult(e, lang)}
           </Text>,
         ],
@@ -104,10 +104,10 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
         accessibilityState={{ expanded: open }}
       >
         <View className="min-w-0 flex-1">
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
             {kundaliLabel("yoga_reference_catalog", lang)}
           </Text>
-          <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
             {pick(
               "बी. वी. रमनको “Three Hundred Important Combinations”, भाग I",
               'B. V. Raman\'s "Three Hundred Important Combinations", Part I',
@@ -124,13 +124,13 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
       {open ? (
         <View className="border-t border-border p-3">
           {error ? (
-            <Text className="py-6 text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body py-6 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
               {kundaliLabel("yoga_reference_load_error", lang)}
             </Text>
           ) : !entries ? (
             <View className="flex-row items-center justify-center gap-2 py-6">
               <ActivityIndicator color={colors.secondary} />
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                 {kundaliLabel("loading", lang)}
               </Text>
             </View>
@@ -143,7 +143,7 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
                   onChangeText={setQuery}
                   placeholder={pick("नाम, नियम वा फलले खोज्नुहोस्…", "Search by name, rule or result…")}
                   placeholderTextColor={colors.mutedForeground}
-                  className="min-w-0 flex-1 text-sm text-foreground"
+                  className="text-body min-w-0 flex-1 text-foreground"
                   style={nepaliTextStyle(14)}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -152,14 +152,14 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
               </View>
 
               {filtered.length === 0 ? (
-                <Text className="py-6 text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body py-6 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
                   {kundaliLabel("yoga_reference_no_match", lang)}
                 </Text>
               ) : (
                 <DataTable compact columns={columns} rows={tableRows} />
               )}
 
-              <Text className="mt-2 px-1 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className="text-caption mt-2 px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
                 {kundaliLabel("yoga_reference_grouped_ids_note", lang)}
               </Text>
             </>

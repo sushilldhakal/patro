@@ -39,11 +39,11 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
 
   return (
     <View className="rounded-xl border border-border bg-card p-4 shadow-sm">
-      <Text className="mb-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+      <Text className="text-caption mb-1 uppercase tracking-[0.12em] text-muted-foreground">
         {pick("क्षणिक मुहूर्त", "Muhurta now")}
       </Text>
       {instantLabel ? (
-        <Text className="mb-3 text-sm text-foreground">
+        <Text className="text-body mb-3 text-foreground">
           {pick(`${digits(instantTime)} बजेको अवस्था`, `Status at ${digits(instantTime)}`)}
         </Text>
       ) : null}
@@ -60,14 +60,14 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
                 active ? "bg-secondary/20" : "bg-muted/40",
               )}
             >
-              <Text className="text-sm font-semibold text-foreground">{pick(label, labelEn)}</Text>
-              <Text className="shrink-0 text-right text-sm font-semibold">
+              <Text className="text-body font-semibold text-foreground">{pick(label, labelEn)}</Text>
+              <Text className="text-body shrink-0 text-right font-semibold">
                 {active ? (
-                  <Text className="text-xs font-bold uppercase tracking-wide text-secondary">
+                  <Text className="text-caption font-bold uppercase tracking-wide text-secondary">
                     {pick("सक्रिय", "Active")}
                   </Text>
                 ) : (
-                  <Text className="font-mono text-xs">{range ?? "—"}</Text>
+                  <Text className="text-caption font-mono">{range ?? "—"}</Text>
                 )}
               </Text>
             </View>
@@ -84,10 +84,10 @@ export function EphemerisModeBanner({ p, clock }: Props) {
   const civil = p.before_sunrise_of_civil_day;
   return (
     <View className="rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3">
-      <Text className="text-sm font-semibold text-foreground">
+      <Text className="text-body font-semibold text-foreground">
         {pick("समय-आधारित पञ्चाङ्ग", "Time-based reading")}
       </Text>
-      <Text className="mt-1 text-sm leading-relaxed text-foreground">
+      <Text className="text-body mt-1 leading-relaxed text-foreground">
         {time
           ? pick(
               `${digits(time)} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।`,

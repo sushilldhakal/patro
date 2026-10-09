@@ -57,7 +57,7 @@ export function PanchangaSection({
       )}
     >
       <View className="flex flex-row items-baseline justify-center gap-2.5 border-b border-border bg-secondary/[0.09] px-3 py-2 dark:bg-secondary/20">
-        <Text className="m-0 text-sm font-bold text-foreground">{title}</Text>
+        <Text className="text-body m-0 font-bold text-foreground">{title}</Text>
       </View>
       {children}
     </View>
@@ -71,7 +71,7 @@ function rowLabel(labelKey?: string, label?: string, t?: (k: string) => string) 
 
 function QuadLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <Text className={cn("pt-0.5 text-xs font-semibold md:text-sm", className)} style={nepaliTextStyle(12)}>
+    <Text className={cn("text-body pt-0.5 font-semibold", className)} style={nepaliTextStyle(12)}>
       {children}
     </Text>
   );
@@ -89,7 +89,7 @@ function QuadValue({
   return (
     <View
       className={cn(
-        "min-w-0 flex flex-row items-baseline gap-x-1.5 gap-y-0.5 text-sm leading-snug",
+        "text-body min-w-0 flex flex-row items-baseline gap-x-1.5 gap-y-0.5",
         nowrap ? "flex-nowrap" : "flex-wrap",
         className,
       )}
@@ -126,7 +126,7 @@ export function PanchangaGroupLabel({
   return (
     <Text
       className={cn(
-        "m-0 w-full basis-full pt-1 text-center text-sm font-semibold text-muted-foreground first:pt-0",
+        "text-body m-0 w-full basis-full pt-1 text-center font-semibold text-muted-foreground first:pt-0",
         className,
       )}
       style={nepaliTextStyle(14)}
@@ -166,9 +166,9 @@ export function PanchangaBalamCard({
       <View className="flex-row items-start gap-2">
         {icon ? <View className="shrink-0 pt-0.5">{icon}</View> : null}
         <View className="min-w-0 flex-1 gap-1">
-          <Text className="text-sm font-bold leading-snug text-foreground">{titleLine}</Text>
+          <Text className="text-body font-bold text-foreground">{titleLine}</Text>
           {subtitleLine ? (
-            <Text className="text-xs font-semibold leading-snug text-muted-foreground">{subtitleLine}</Text>
+            <Text className="text-caption font-semibold text-muted-foreground">{subtitleLine}</Text>
           ) : null}
         </View>
       </View>
@@ -199,9 +199,9 @@ export function PanchangaLagnaCard({
       )}
       style={{ backgroundColor: bg }}
     >
-      <Text className="text-sm font-bold leading-snug text-foreground">{titleLine}</Text>
+      <Text className="text-body font-bold text-foreground">{titleLine}</Text>
       {footerLine ? (
-        <Text className="text-xs font-semibold leading-snug text-muted-foreground">{footerLine}</Text>
+        <Text className="text-caption font-semibold text-muted-foreground">{footerLine}</Text>
       ) : null}
     </View>
   );
@@ -232,17 +232,17 @@ export function PanchangaTimingCard({
     >
       <Text
         className={cn(
-          "text-sm font-semibold",
+          "text-body font-semibold",
           highlight ? "text-success" : "text-muted-foreground",
         )}
       >
         {label}
       </Text>
       {time ? (
-        <Text className="font-mono text-sm font-semibold tabular-nums text-foreground">{time}</Text>
+        <Text className="text-body font-mono font-semibold tabular-nums text-foreground">{time}</Text>
       ) : null}
       {note ? (
-        <Text className="text-xs font-mono text-muted-foreground">{note}</Text>
+        <Text className="text-caption font-mono text-muted-foreground">{note}</Text>
       ) : null}
     </View>
   );
@@ -387,18 +387,18 @@ export function UptoValue({
       )}
     >
       <Text className="min-w-0 shrink flex-row flex-wrap items-baseline gap-1">
-        {sym ? <Text className="shrink-0 text-sm text-foreground">{sym}</Text> : null}
+        {sym ? <Text className="text-body shrink-0 text-foreground">{sym}</Text> : null}
         <Text className="font-semibold" style={nepaliTextStyle(14)}>
           {name}
         </Text>
         {badge ? (
-          <Text className="rounded-full bg-secondary/15 px-1.5 py-0.5 text-xs font-semibold text-secondary dark:text-accent">
+          <Text className="text-caption rounded-full bg-secondary/15 px-1.5 py-0.5 font-semibold text-secondary dark:text-accent">
             {badge}
           </Text>
         ) : null}
       </Text>
       {endTime ? (
-        <Text className="shrink-0 text-xs font-mono font-semibold text-foreground">
+        <Text className="text-caption shrink-0 font-mono font-semibold text-foreground">
           {endTime} {t("sections.until")}
         </Text>
       ) : null}
@@ -418,7 +418,7 @@ export function TimingRange({
   const { t } = useTranslation();
   if (!start || !end) {
     return (
-      <Text className="text-xs text-muted-foreground">
+      <Text className="text-caption text-muted-foreground">
         {t("sections.dash")} {t("sections.not_available")}
       </Text>
     );
@@ -426,7 +426,7 @@ export function TimingRange({
   return (
     <Text
       className={cn(
-        "font-mono text-xs font-semibold md:text-sm",
+        "text-body font-mono font-semibold",
         variant === "good" && "text-[var(--color-success)]",
         variant === "bad" && "text-destructive",
         variant === "neutral" && "text-foreground",
@@ -468,19 +468,19 @@ export function DenseListRow({
   return (
     <View
       className={cn(
-        "px-2 py-1 text-sm leading-snug",
+        "text-body px-2 py-1",
         highlight && "font-semibold text-success",
         className,
       )}
     >
       <View className="flex-row items-baseline justify-between gap-x-2">
         <Text className="min-w-0 flex-1 text-foreground">{label}</Text>
-        <Text className="shrink-0 font-mono text-xs font-semibold tabular-nums text-foreground md:text-sm">
+        <Text className="text-body shrink-0 font-mono font-semibold tabular-nums text-foreground">
           {time ?? "—"}
         </Text>
       </View>
       {note ? (
-        <Text className="mt-0.5 text-xs leading-tight text-foreground/90">{note}</Text>
+        <Text className="text-caption mt-0.5 text-foreground/90">{note}</Text>
       ) : null}
     </View>
   );
@@ -498,7 +498,7 @@ export function PanchangaSubBlock({
 }) {
   return (
     <View className={cn("border-b border-border px-3 py-1.5 last:border-b-0", className)}>
-      <Text className="m-0 mb-1 text-xs font-semibold text-foreground md:text-sm">{title}</Text>
+      <Text className="text-body m-0 mb-1 font-semibold text-foreground">{title}</Text>
       {children}
     </View>
   );
@@ -520,8 +520,8 @@ export function PairedTimingTable({
   return (
     <View>
       <TableHeader className="px-2 py-1">
-        <Text className="min-w-0 flex-1 text-xs font-semibold text-foreground md:text-sm">{leftTitle}</Text>
-        <Text className="min-w-0 flex-1 border-l border-border/60 pl-2 text-xs font-semibold text-foreground md:text-sm">
+        <Text className="text-body min-w-0 flex-1 font-semibold text-foreground">{leftTitle}</Text>
+        <Text className="text-body min-w-0 flex-1 border-l border-border/60 pl-2 font-semibold text-foreground">
           {rightTitle}
         </Text>
       </TableHeader>
@@ -569,19 +569,19 @@ function PairedTimingCell({
       <View className="flex-row items-start justify-between gap-1">
         <Text
           className={cn(
-            "min-w-0 flex-1 text-sm leading-snug text-foreground",
+            "text-body min-w-0 flex-1 text-foreground",
             highlight && "font-semibold text-success",
           )}
           numberOfLines={2}
         >
           {label}
         </Text>
-        <Text className="shrink-0 font-mono text-xs font-semibold tabular-nums leading-snug text-foreground">
+        <Text className="text-caption shrink-0 font-mono font-semibold tabular-nums text-foreground">
           {time}
         </Text>
       </View>
       {note ? (
-        <Text className="mt-0.5 text-xs leading-tight text-foreground/90" numberOfLines={2}>
+        <Text className="text-caption mt-0.5 text-foreground/90" numberOfLines={2}>
           {note}
         </Text>
       ) : null}

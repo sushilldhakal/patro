@@ -22,8 +22,8 @@ export default function DayDetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="border-b border-border py-3" style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}>
-        <Text className="text-xl font-bold text-foreground">{pick("दिन विवरण", "Day detail")}</Text>
-        <Text className="text-sm text-muted-foreground">{ad}</Text>
+        <Text className="text-title font-bold text-foreground">{pick("दिन विवरण", "Day detail")}</Text>
+        <Text className="text-body text-muted-foreground">{ad}</Text>
       </View>
       <ScrollView contentContainerStyle={{ padding: PAGE_HORIZONTAL_PADDING }}>
         {query.isLoading ? (

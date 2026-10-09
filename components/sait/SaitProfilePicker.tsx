@@ -40,7 +40,7 @@ export function SaitProfilePicker({
   const label = (
     <View className="flex-row items-center gap-1.5">
       <Ionicons name="person-outline" size={15} color={colors.secondary} />
-      <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(13)}>
         {pick("आफ्नो प्रोफाइलअनुसार", "Personalise")}
       </Text>
     </View>
@@ -57,7 +57,7 @@ export function SaitProfilePicker({
           >
             <Text
               style={{ color: colors.primary, ...nepaliTextStyle(12) }}
-              className="text-xs font-semibold"
+              className="text-caption font-semibold"
             >
               {pick("प्रोफाइल छान्न लग-इन गर्नुहोस्", "Sign in to pick your profile")}
             </Text>
@@ -72,7 +72,7 @@ export function SaitProfilePicker({
     return (
       <View className="flex-row flex-wrap items-center gap-2">
         {label}
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick(
             "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
             "No saved profiles — add one in your account.",
@@ -95,7 +95,7 @@ export function SaitProfilePicker({
   const sheet = (
     <View>
       <View className="border-b border-border px-4 py-3">
-        <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
           {pick("प्रोफाइल छान्नुहोस्", "Choose a profile")}
         </Text>
       </View>
@@ -118,7 +118,7 @@ export function SaitProfilePicker({
                   color: active ? colors.secondary : colors.foreground,
                   ...nepaliTextStyle(14),
                 }}
-                className="shrink text-sm"
+                className="text-body shrink"
               >
                 {opt.name}
               </Text>
@@ -144,7 +144,7 @@ export function SaitProfilePicker({
         >
           <Text
             numberOfLines={1}
-            className="shrink text-sm text-foreground"
+            className="text-body shrink text-foreground"
             style={nepaliTextStyle(13)}
           >
             {buttonLabel}

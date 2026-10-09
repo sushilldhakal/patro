@@ -20,11 +20,11 @@ export function AakashGocharEntryCard() {
     >
       <Ionicons name="planet-outline" size={20} color={colors.secondary} />
       <View className="min-w-0 flex-1">
-        <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
           {pick("३D आकाश गोचर", "3D Aakash Gochar")}
         </Text>
       </View>
-      <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+      <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
         {pick("भूकेन्द्रित", "Geocentric")}
       </Text>
       <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />

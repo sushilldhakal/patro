@@ -123,7 +123,7 @@ function Chip({
         <Ionicons name={icon} size={14} color={active ? colors.card : colors.secondary} />
       ) : null}
       <Text
-        className={cn("text-sm font-semibold", active ? "text-white" : "text-foreground")}
+        className={cn("text-body font-semibold", active ? "text-white" : "text-foreground")}
         style={nepaliTextStyle(14)}
       >
         {label}
@@ -148,14 +148,14 @@ function TopicCard({ topic, onOpen }: { topic: LibraryTopic; onOpen: (slug: stri
           <Ionicons name={topic.icon} size={20} color={colors.secondary} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold leading-snug text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
             {pick(topic.title.ne, topic.title.en)}
           </Text>
         </View>
         {section ? (
           <View className="shrink rounded-full border border-secondary/25 bg-secondary/10 px-2.5 py-0.5">
             <Text
-              className="text-[11px] font-semibold uppercase tracking-wide text-secondary"
+              className="text-caption font-semibold uppercase tracking-wide text-secondary"
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >
@@ -164,11 +164,11 @@ function TopicCard({ topic, onOpen }: { topic: LibraryTopic; onOpen: (slug: stri
           </View>
         ) : null}
       </View>
-      <Text className="px-5 pt-3 text-sm leading-relaxed text-foreground/80" style={nepaliTextStyle(14)}>
+      <Text className="text-body px-5 pt-3 leading-relaxed text-foreground/80" style={nepaliTextStyle(14)}>
         {pick(topic.summary.ne, topic.summary.en)}
       </Text>
       <View className="mt-4 flex-row items-center justify-between border-t border-border/70 px-5 py-3">
-        <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
           {t("learn_page.read_detail")}
         </Text>
         <Ionicons name="arrow-forward" size={16} color={colors.secondary} />
@@ -214,31 +214,31 @@ export default function LearnScreen() {
           <View className="mb-4 flex-row items-center gap-2 self-start rounded-full border border-secondary/25 bg-secondary/10 px-3.5 py-1.5">
             <Ionicons name="book-outline" size={14} color={colors.secondary} />
             <Text
-              className="text-xs font-semibold uppercase tracking-wide text-secondary"
+              className="text-caption font-semibold uppercase tracking-wide text-secondary"
               style={nepaliTextStyle(12)}
             >
               {t("learn_page.eyebrow")}
             </Text>
           </View>
-          <Text className="text-3xl font-bold tracking-tight text-foreground" style={nepaliTextStyle(30)}>
+          <Text className="text-display font-bold tracking-tight text-foreground" style={nepaliTextStyle(30)}>
             {t("learn_page.title")}
           </Text>
-          <Text className="text-3xl font-bold tracking-tight text-secondary" style={nepaliTextStyle(30)}>
+          <Text className="text-display font-bold tracking-tight text-secondary" style={nepaliTextStyle(30)}>
             {t("learn_page.title_accent")}
           </Text>
-          <Text className="mt-3 text-base leading-relaxed text-foreground/80" style={nepaliTextStyle(16)}>
+          <Text className="text-body mt-3 leading-relaxed text-foreground/80" style={nepaliTextStyle(16)}>
             {t("learn_page.subtitle")}
           </Text>
           <View className="mt-4 flex-row flex-wrap gap-3">
             <View className="flex-row items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Ionicons name="school-outline" size={16} color={colors.secondary} />
-              <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                 {t("learn_page.learning_paths_count", { count: liveModuleCount })}
               </Text>
             </View>
             <View className="flex-row items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
               <Ionicons name="book-outline" size={16} color={colors.secondary} />
-              <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                 {t("learn_page.articles_count", { count: PUBLISHED_TOPICS.length })}
               </Text>
             </View>
@@ -253,7 +253,7 @@ export default function LearnScreen() {
               placeholderTextColor={colors.mutedForeground}
               accessibilityLabel={t("learn_page.search_label")}
               autoCorrect={false}
-              className="h-12 flex-1 px-2.5 text-base text-foreground"
+              className="text-body h-12 flex-1 px-2.5 text-foreground"
               style={nepaliTextStyle(16)}
             />
             {query ? (
@@ -293,7 +293,7 @@ export default function LearnScreen() {
             })}
           </View>
           {resultsLine ? (
-            <Text className="text-base text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
               {resultsLine}
             </Text>
           ) : null}
@@ -301,10 +301,10 @@ export default function LearnScreen() {
 
         {filteredTopics.length === 0 ? (
           <View className="items-center rounded-2xl border border-dashed border-border bg-card/40 px-6 py-12">
-            <Text className="text-base text-foreground" style={nepaliTextStyle(16)}>
+            <Text className="text-body text-foreground" style={nepaliTextStyle(16)}>
               {t("learn_page.no_topics")}
             </Text>
-            <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
               {t("learn_page.no_topics_hint")}
             </Text>
             <Pressable
@@ -314,7 +314,7 @@ export default function LearnScreen() {
               }}
               className="mt-4 active:opacity-80"
             >
-              <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(14)}>
+              <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
                 {t("learn_page.clear_filters")}
               </Text>
             </Pressable>
@@ -340,10 +340,10 @@ export default function LearnScreen() {
                       <Ionicons name={firstSection?.icon ?? "book-outline"} size={20} color={colors.secondary} />
                     </View>
                     <View className="min-w-0 flex-1">
-                      <Text className="text-2xl font-bold text-foreground" style={nepaliTextStyle(24)}>
+                      <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
                         {pick(module.title.ne, module.title.en)}
                       </Text>
-                      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                         {pick(module.blurb.ne, module.blurb.en)} ·{" "}
                         {t("learn_page.articles_count", { count: moduleTopics.length })}
                         {upcoming > 0 ? ` · ${t("learn_page.more_coming", { count: upcoming })}` : ""}
@@ -361,7 +361,7 @@ export default function LearnScreen() {
                               <View className="min-w-0 flex-1 flex-row items-center gap-2">
                                 <Ionicons name={section.icon} size={16} color={colors.secondary} />
                                 <Text
-                                  className="shrink text-sm font-bold text-foreground"
+                                  className="text-body shrink font-bold text-foreground"
                                   style={nepaliTextStyle(14)}
                                   numberOfLines={1}
                                 >
@@ -369,7 +369,7 @@ export default function LearnScreen() {
                                 </Text>
                               </View>
                               <Pressable onPress={() => setActiveCategory(section.id)} hitSlop={6}>
-                                <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(14)}>
+                                <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
                                   {t("learn_page.view_category")}
                                 </Text>
                               </Pressable>

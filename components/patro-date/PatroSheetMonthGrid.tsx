@@ -32,7 +32,7 @@ export function PatroSheetMonthGrid({ month, monthOptions, onMonthChange }: Prop
             <Text
               numberOfLines={1}
               className={cn(
-                "text-sm font-semibold",
+                "text-body font-semibold",
                 selected ? "text-secondary-foreground" : "text-foreground",
               )}
               style={[

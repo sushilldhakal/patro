@@ -183,7 +183,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
           {showLock ? (
             <>
               <Ionicons name="lock-closed-outline" size={44} color={colors.secondary} />
-              <Text className="mt-4 text-lg font-bold text-foreground">
+              <Text className="text-title mt-4 font-bold text-foreground">
                 {pick("वैदिक पात्रो लक गरिएको छ", "Vedic Patro is locked")}
               </Text>
               <Pressable
@@ -192,7 +192,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
                 className="mt-6 flex-row items-center gap-2 rounded-xl bg-secondary px-6 py-3 active:opacity-80"
               >
                 <Ionicons name={info.kind === "fingerprint" ? "finger-print" : "scan-outline"} size={18} color={inkOn(colors.secondary)} />
-                <Text className="text-base font-semibold text-secondary-foreground">
+                <Text className="text-body font-semibold text-secondary-foreground">
                   {pick(`${label} प्रयोग गर्नुहोस्`, `Unlock with ${label}`)}
                 </Text>
               </Pressable>
@@ -204,7 +204,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 className="mt-5 py-2 active:opacity-70"
               >
-                <Text className="text-sm text-muted-foreground">{pick("साइन आउट", "Sign out")}</Text>
+                <Text className="text-body text-muted-foreground">{pick("साइन आउट", "Sign out")}</Text>
               </Pressable>
             </>
           ) : null}

@@ -95,7 +95,7 @@ export default function SaitCategoryScreen() {
   if (!category || !labels) {
     return (
       <AppShell title={pick("साइत", "Sait")}>
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("यो संस्कार फेला परेन।", "That ceremony was not found.")}
         </Text>
       </AppShell>
@@ -126,7 +126,7 @@ export default function SaitCategoryScreen() {
         content?.requiresBirthDate ? (
           <View className="mb-3 flex-row gap-2.5 rounded-xl border border-border border-l-2 border-l-secondary bg-card p-3.5">
             <Ionicons name="information-circle-outline" size={16} color={colors.secondary} />
-            <Text className="flex-1 text-sm text-danger" style={nepaliTextStyle(14)}>
+            <Text className="text-body flex-1 text-danger" style={nepaliTextStyle(14)}>
               {t("sait.requires_birth_date")}
             </Text>
           </View>
@@ -152,14 +152,14 @@ export default function SaitCategoryScreen() {
     >
       {!isMuhurta ? (
         datesQuery.isLoading && !datesQuery.data ? (
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         ) : datesQuery.data && datesQuery.data.months.length > 0 ? (
           <View className="gap-2">
             {datesQuery.data.months.map((m) => (
               <View key={m.month} className="gap-2 rounded-xl border border-border bg-card p-3.5">
-                <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
                   {lang === "en" ? t("sait.month_number", { month: digits(m.month) }) : m.month_name_ne}
                 </Text>
                 <View className="flex-row flex-wrap gap-1.5">
@@ -177,7 +177,7 @@ export default function SaitCategoryScreen() {
                         className="h-8 min-w-8 items-center justify-center rounded-md px-2"
                       >
                         <Text
-                          className="font-num text-sm font-semibold"
+                          className="text-body font-num font-semibold"
                           style={{ color: style ? style.fg : "#2e7d32" }}
                         >
                           {digits(d)}
@@ -191,7 +191,7 @@ export default function SaitCategoryScreen() {
           </View>
         ) : (
           <View className="rounded-xl border border-dashed border-border bg-card px-6 py-12">
-            <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
               {t("sait.no_dates_year")}
             </Text>
           </View>

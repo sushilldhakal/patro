@@ -15,7 +15,7 @@ export function DocumentBackLink({ href, label }: { href: string; label: string 
       className="mb-3 flex-row items-center gap-1.5 self-start py-1"
     >
       <Ionicons name="arrow-back" size={16} color={colors.mutedForeground} />
-      <Text className="text-sm text-muted-foreground">{label}</Text>
+      <Text className="text-body text-muted-foreground">{label}</Text>
     </Pressable>
   );
 }

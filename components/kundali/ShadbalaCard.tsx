@@ -94,7 +94,7 @@ function StatusBadge({ status }: { status: ShadbalaStatus }) {
       }}
       className="self-end rounded-full border px-2 py-0.5"
     >
-      <Text style={{ color, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
+      <Text style={{ color, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
         {pick(STATUS_LABEL[status].ne, STATUS_LABEL[status].en)}
       </Text>
     </View>
@@ -117,7 +117,7 @@ function GlanceTile({
       className="rounded-xl border bg-card p-3"
     >
       <Text
-        className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        className="text-caption mb-1.5 font-semibold uppercase tracking-wide text-muted-foreground"
         style={nepaliTextStyle(11)}
       >
         {label}
@@ -285,13 +285,13 @@ export function ShadbalaCard({
       <View>
         {!compactHeader ? (
           <Text
-            className="mb-1 text-sm font-semibold uppercase tracking-wide text-foreground"
+            className="text-body mb-1 font-semibold uppercase tracking-wide text-foreground"
             style={nepaliTextStyle(13)}
           >
             {kundaliLabel("shadbala_planetary_strength_virupas", lang)}
           </Text>
         ) : null}
-        <Text className="mb-3 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption mb-3 text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick("पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", data.method)}
         </Text>
 
@@ -299,13 +299,13 @@ export function ShadbalaCard({
           <GlanceTile layout={tileLayout} label={kundaliLabel("strongest_planet", lang)}>
             <View className="flex-row flex-wrap items-center gap-2">
               <GrahaPlanetIcon graha={summary.strongest.key as GrahaKey} size={28} />
-              <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(17)}>
+              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
                 {lang === "en" ? summary.strongest.name : summary.strongest.name_ne}
               </Text>
             </View>
             <View className="mt-1 flex-row flex-wrap items-center gap-2">
               <StatusBadge status={summary.strongest.status} />
-              <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
                 {pick(
                   `${digits(summary.strongest.ratio.toFixed(2))}× आवश्यक`,
                   `${summary.strongest.ratio.toFixed(2)}x required`,
@@ -317,13 +317,13 @@ export function ShadbalaCard({
           <GlanceTile layout={tileLayout} label={kundaliLabel("weakest_planet", lang)}>
             <View className="flex-row flex-wrap items-center gap-2">
               <GrahaPlanetIcon graha={summary.weakest.key as GrahaKey} size={28} />
-              <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(17)}>
+              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
                 {lang === "en" ? summary.weakest.name : summary.weakest.name_ne}
               </Text>
             </View>
             <View className="mt-1 flex-row flex-wrap items-center gap-2">
               <StatusBadge status={summary.weakest.status} />
-              <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
                 {pick(
                   `${digits(summary.weakest.ratio.toFixed(2))}× आवश्यक`,
                   `${summary.weakest.ratio.toFixed(2)}x required`,
@@ -333,20 +333,20 @@ export function ShadbalaCard({
           </GlanceTile>
 
           <GlanceTile layout={tileLayout} label={kundaliLabel("average_rupas", lang)}>
-            <Text className="font-num text-2xl font-bold text-foreground" style={nepaliTextStyle(22)}>
+            <Text className="text-display font-num font-bold text-foreground" style={nepaliTextStyle(22)}>
               {digits(summary.average_rupas.toFixed(2))}
             </Text>
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
               {digits(summary.average_virupas.toFixed(2))} {kundaliLabel("virupas", lang)}
             </Text>
           </GlanceTile>
 
           <GlanceTile layout={tileLayout} label={kundaliLabel("planets_meeting_threshold", lang)}>
-            <Text className="font-num text-2xl font-bold text-foreground" style={nepaliTextStyle(22)}>
+            <Text className="text-display font-num font-bold text-foreground" style={nepaliTextStyle(22)}>
               {digits(summary.meeting_threshold)}
-              <Text className="text-sm text-muted-foreground"> / {digits(summary.total_planets)}</Text>
+              <Text className="text-body text-muted-foreground"> / {digits(summary.total_planets)}</Text>
             </Text>
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
               {kundaliLabel("adequate_or_stronger", lang)}
             </Text>
             <View className="mt-2 flex-row flex-wrap gap-1.5">
@@ -364,7 +364,7 @@ export function ShadbalaCard({
                   >
                     <Text
                       style={{ color: active ? color : colors.mutedForeground, ...nepaliTextStyle(10) }}
-                      className="text-[12px]"
+                      className="text-caption"
                     >
                       {pick(STATUS_LABEL[s].ne, STATUS_LABEL[s].en)} {digits(summary.counts[s])}
                     </Text>
@@ -379,7 +379,7 @@ export function ShadbalaCard({
       <ShadbalaChart planets={ordered} selectedKey={selectedKey} onSelect={setSelectedKey} yuddha={yuddha} />
 
       <View>
-        <Text className="mb-2 text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mb-2 font-semibold text-foreground" style={nepaliTextStyle(13)}>
           {kundaliLabel("shadbala_table", lang)}
         </Text>
 
@@ -592,13 +592,13 @@ export function ShadbalaCard({
           </View>
         </TableScrollShell>
 
-        <Text className="mt-2 text-xs leading-relaxed text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption mt-2 leading-relaxed text-muted-foreground" style={nepaliTextStyle(11)}>
           {kundaliLabel("virupas_per_bala_note", lang)}
           {bhavaBala ? ` ${kundaliLabel("bhava_pct_row_note", lang)}` : null}
         </Text>
 
         {hasYuddhaActivity && yuddha ? (
-          <Text className="mt-1 text-xs text-amber-600" style={nepaliTextStyle(11)}>
+          <Text className="text-caption mt-1 text-amber-600" style={nepaliTextStyle(11)}>
             {kundaliLabel("graha_yuddha_detected", lang)}{" "}
             {yuddha.wars
               .map((w) =>

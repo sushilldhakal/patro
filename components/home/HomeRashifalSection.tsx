@@ -94,13 +94,13 @@ export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Prop
     <View className="gap-3" style={{ paddingHorizontal: contentInset }}>
       <View className="items-center gap-1">
         <Text
-          className="text-sm font-bold uppercase tracking-wider text-muted-foreground"
+          className="text-body font-bold uppercase tracking-wider text-muted-foreground"
           style={nepaliTextStyle(13)}
         >
           {pick("राशिफल", "Rashifal")}
         </Text>
         {monthLabel ? (
-          <Text className="text-xs font-semibold text-secondary" style={nepaliTextStyle(12)}>
+          <Text className="text-caption font-semibold text-secondary" style={nepaliTextStyle(12)}>
             {monthLabel}
           </Text>
         ) : null}
@@ -124,14 +124,14 @@ export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Prop
       {!loading && hasContent ? (
         <View className="flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
           <Pressable onPress={() => router.push("/jyotish/rashifal")}>
-            <Text className="text-sm font-semibold text-secondary">
+            <Text className="text-body font-semibold text-secondary">
               {hasUsableProfile
                 ? pick("पूरा राशिफल →", "Full rashifal →")
                 : pick("आफ्नो राशिफल →", "Your rashifal →")}
             </Text>
           </Pressable>
           <Pressable onPress={() => router.push({ pathname: "/jyotish/rashifal", params: { period: "daily" } })}>
-            <Text className="text-sm font-semibold text-muted-foreground">
+            <Text className="text-body font-semibold text-muted-foreground">
               {pick("दैनिक", "Daily")}
             </Text>
           </Pressable>

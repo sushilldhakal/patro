@@ -65,10 +65,10 @@ export function SaitRulesSection({
       >
         <Ionicons name="document-text-outline" size={16} color={colors.secondary} />
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(15)}>
             {pick("यो सूची कसरी बनेको हो", "How this list is generated")}
           </Text>
-          <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(13)}>
             {offCount > 0
               ? pick(
                   `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`,
@@ -97,7 +97,7 @@ export function SaitRulesSection({
         <View className="gap-4 border-t border-border px-4 py-4">
           {intro ? (
             <Text
-              className="text-sm leading-relaxed text-foreground"
+              className="text-body leading-relaxed text-foreground"
               style={nepaliTextStyle(14)}
             >
               {intro}
@@ -107,7 +107,7 @@ export function SaitRulesSection({
           {togglingEnabled ? (
             <View className="flex-row items-start gap-1.5">
               <Ionicons name="information-circle-outline" size={14} color={colors.mutedForeground} />
-              <Text className="flex-1 text-xs leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className="text-caption flex-1 leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
                 {t("sait.switch_off_a_rule_your_community_doesn_t_follow_the_dat")}
               </Text>
             </View>
@@ -137,13 +137,13 @@ export function SaitRulesSection({
                     >
                       <Text
                         style={{ color: colors.secondary }}
-                        className="font-num text-xs font-bold"
+                        className="text-caption font-num font-bold"
                       >
                         {digits(i + 1)}
                       </Text>
                     </View>
                     <Text
-                      className="flex-1 text-sm font-semibold leading-snug text-foreground"
+                      className="text-body flex-1 font-semibold text-foreground"
                       style={nepaliTextStyle(14)}
                     >
                       {pick(r.ne, r.en)}
@@ -163,7 +163,7 @@ export function SaitRulesSection({
                     <View className="gap-1.5 border-t border-border pt-2.5">
                       {r.source ? (
                         <Text
-                          className="text-xs font-semibold text-muted-foreground"
+                          className="text-caption font-semibold text-muted-foreground"
                           style={nepaliTextStyle(11)}
                         >
                           {pick(r.source.ne, r.source.en)}
@@ -171,7 +171,7 @@ export function SaitRulesSection({
                       ) : null}
                       {r.shloka ? (
                         <Text
-                          className="text-sm italic leading-relaxed text-foreground"
+                          className="text-body italic leading-relaxed text-foreground"
                           style={nepaliTextStyle(14)}
                         >
                           {r.shloka}
@@ -179,7 +179,7 @@ export function SaitRulesSection({
                       ) : null}
                       {r.gloss ? (
                         <Text
-                          className="text-xs leading-relaxed text-muted-foreground"
+                          className="text-caption leading-relaxed text-muted-foreground"
                           style={nepaliTextStyle(12)}
                         >
                           {pick(r.gloss.ne, r.gloss.en)}
@@ -196,7 +196,7 @@ export function SaitRulesSection({
           {engineVersion ? (
             <View className="flex-row items-center gap-1.5 pt-2">
               <Ionicons name="information-circle-outline" size={13} color={colors.mutedForeground} />
-              <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
                 {pick("मुहूर्त इन्जिन", "Muhurta engine")} {engineVersion}
               </Text>
             </View>

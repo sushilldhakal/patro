@@ -44,7 +44,7 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
       <View className="flex-row items-end gap-2">
         {currentChapter == null ? (
           <View>
-            <Text className="mb-1 text-xs font-semibold text-muted-foreground">{t("documents.jump_chapter_label")}</Text>
+            <Text className="text-caption mb-1 font-semibold text-muted-foreground">{t("documents.jump_chapter_label")}</Text>
             <TextInput
               value={chapterInput}
               onChangeText={(v) => {
@@ -55,13 +55,13 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
               returnKeyType="go"
               onSubmitEditing={submit}
               accessibilityLabel={t("documents.jump_chapter_label")}
-              className="h-11 w-20 rounded-lg border px-3 text-base"
+              className="text-body h-11 w-20 rounded-lg border px-3"
               style={inputStyle}
             />
           </View>
         ) : null}
         <View>
-          <Text className="mb-1 text-xs font-semibold text-muted-foreground">{t("documents.jump_verse_label")}</Text>
+          <Text className="text-caption mb-1 font-semibold text-muted-foreground">{t("documents.jump_verse_label")}</Text>
           <TextInput
             value={verseInput}
             onChangeText={(v) => {
@@ -75,7 +75,7 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
             returnKeyType="go"
             onSubmitEditing={submit}
             accessibilityLabel={t("documents.jump_verse_label")}
-            className="h-11 w-32 rounded-lg border px-3 text-base"
+            className="text-body h-11 w-32 rounded-lg border px-3"
             style={inputStyle}
           />
         </View>
@@ -85,10 +85,10 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
           className="h-11 flex-row items-center gap-1.5 rounded-lg bg-secondary px-4"
         >
           <Ionicons name="search" size={15} color={inkOn(colors.secondary)} />
-          <Text className="text-sm font-semibold text-secondary-foreground">{t("documents.jump_button")}</Text>
+          <Text className="text-body font-semibold text-secondary-foreground">{t("documents.jump_button")}</Text>
         </Pressable>
       </View>
-      {notFound ? <Text className="mt-2 text-xs text-destructive">{t("documents.jump_not_found")}</Text> : null}
+      {notFound ? <Text className="text-caption mt-2 text-destructive">{t("documents.jump_not_found")}</Text> : null}
     </View>
   );
 }

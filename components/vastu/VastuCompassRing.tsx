@@ -105,7 +105,7 @@ export function VastuCompassRing({ size }: { size: number }) {
             <ArcLabel
               bearing={dir.bearing}
               radius={DIR16_LABEL_R}
-              fontSize={11}
+              fontSize={15}
               fontFamily={NOTO_DEVANAGARI_BOLD}
             >
               {dir.abbr}
@@ -152,7 +152,7 @@ export function VastuCompassRing({ size }: { size: number }) {
               <ArcLabel
                 bearing={bearing}
                 radius={DEG_LABEL_R}
-                fontSize={7}
+                fontSize={15}
                 fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                 fillOpacity={0.8}
               >

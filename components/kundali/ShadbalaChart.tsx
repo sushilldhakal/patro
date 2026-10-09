@@ -125,10 +125,10 @@ export function ShadbalaChart({
     <View className="gap-4">
       <View className="gap-3">
         <View>
-          <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
             {kundaliLabel("strength_skyline", lang)}
           </Text>
-          <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
             {kundaliLabel("strength_skyline_hint", lang)}
           </Text>
         </View>
@@ -143,7 +143,7 @@ export function ShadbalaChart({
                 className="rounded-full px-3 py-1 active:opacity-80"
               >
                 <Text
-                  className="text-sm font-semibold"
+                  className="text-body font-semibold"
                   style={{ color: active ? colors.background : colors.mutedForeground }}
                 >
                   {kundaliLabel(item.labelKey, lang)}
@@ -164,7 +164,7 @@ export function ShadbalaChart({
               <Text
                 key={tick}
                 numberOfLines={1}
-                className="font-num absolute right-0 text-xs text-muted-foreground"
+                className="text-caption font-num absolute right-0 text-muted-foreground"
                 style={{ bottom: `${(tick / yMax) * 100}%`, transform: [{ translateY: 6 }] }}
               >
                 {formatScaleValue(tick, scale, digits)}
@@ -211,7 +211,7 @@ export function ShadbalaChart({
                   <GrahaPlanetIcon graha={planet.key as GrahaKey} size={16} />
                   <Text
                     numberOfLines={1}
-                    className="max-w-full text-xs font-semibold text-foreground"
+                    className="text-caption max-w-full font-semibold text-foreground"
                     style={nepaliTextStyle(10)}
                   >
                     {planetLabel(planet)}
@@ -226,14 +226,14 @@ export function ShadbalaChart({
           {BALA_STACK.map((bala) => (
             <View key={bala.key} className="flex-row items-center gap-1.5">
               <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: bala.color }} />
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
                 {pick(bala.ne, bala.en)}
               </Text>
             </View>
           ))}
           <View className="flex-row items-center gap-1.5">
             <View style={{ width: 16, borderTopWidth: 1, borderStyle: "dashed", borderTopColor: colors.accent }} />
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
               {kundaliLabel("required_minimum", lang)}
             </Text>
           </View>
@@ -241,7 +241,7 @@ export function ShadbalaChart({
       </View>
 
       <View>
-        <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+        <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
           {kundaliLabel("select_a_planet", lang)}
         </Text>
         <View className="flex-row flex-wrap gap-1.5">
@@ -260,7 +260,7 @@ export function ShadbalaChart({
               >
                 <GrahaPlanetIcon graha={planet.key as GrahaKey} size={14} />
                 <Text
-                  className="text-sm font-semibold"
+                  className="text-body font-semibold"
                   style={{ color: active ? colors.foreground : colors.mutedForeground }}
                 >
                   {planetLabel(planet)}
@@ -355,7 +355,7 @@ function PlanetColumn({
         }}
       >
         <View className="flex-row items-center gap-0.5">
-          <Text numberOfLines={1} className="font-num text-xs font-semibold text-foreground">
+          <Text numberOfLines={1} className="text-caption font-num font-semibold text-foreground">
             {labelValue}
           </Text>
           <Ionicons
@@ -403,12 +403,12 @@ function PlanetInspector({
       <View className="flex-row flex-wrap items-baseline justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <GrahaPlanetIcon graha={planet.key as GrahaKey} size={22} />
-          <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
             {name}
           </Text>
         </View>
         <Text
-          className="font-num text-sm font-semibold"
+          className="text-body font-num font-semibold"
           style={{ color: meets ? colors.primary : colors.destructive }}
         >
           {kundaliLabelVars("of_required", lang, {
@@ -424,11 +424,11 @@ function PlanetInspector({
           const signed = value < 0 ? `−${Math.abs(value).toFixed(1)}` : value.toFixed(1);
           return (
             <View key={bala.key} className="flex-row items-center gap-2">
-              <Text className="w-20 shrink-0 text-sm font-semibold text-foreground" style={nepaliTextStyle(12)} numberOfLines={1}>
+              <Text className="text-body w-20 shrink-0 font-semibold text-foreground" style={nepaliTextStyle(12)} numberOfLines={1}>
                 {pick(bala.ne, bala.en)}
               </Text>
               <Meter value={value} max={maxBala} color={bala.color} />
-              <Text className="font-num w-14 shrink-0 text-right text-sm text-foreground">{digits(signed)}</Text>
+              <Text className="text-body font-num w-14 shrink-0 text-right text-foreground">{digits(signed)}</Text>
             </View>
           );
         })}
@@ -482,7 +482,7 @@ function SubBalaList({
 }) {
   return (
     <View>
-      <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+      <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
         {title}
       </Text>
       <View className="gap-1.5">
@@ -490,11 +490,11 @@ function SubBalaList({
           const signed = row.value < 0 ? `−${Math.abs(row.value).toFixed(1)}` : row.value.toFixed(1);
           return (
             <View key={row.key} className="flex-row items-center gap-2">
-              <Text className="w-24 shrink-0 text-sm text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+              <Text className="text-body w-24 shrink-0 text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
                 {row.label}
               </Text>
               <Meter value={row.value} max={max} color={color} />
-              <Text className="font-num w-12 shrink-0 text-right text-sm text-muted-foreground">{digits(signed)}</Text>
+              <Text className="text-body font-num w-12 shrink-0 text-right text-muted-foreground">{digits(signed)}</Text>
             </View>
           );
         })}

@@ -64,7 +64,7 @@ function Chip({
   const text = tone === "sattva" ? VASTU_INK.text : tone === "tamas" ? VASTU_INK.background : color;
   return (
     <View className="rounded-full px-2.5 py-1" style={{ backgroundColor: background }}>
-      <Text className="text-xs font-semibold" style={[nepaliTextStyle(12), { color: text }]}>
+      <Text className="text-caption font-semibold" style={[nepaliTextStyle(12), { color: text }]}>
         {label}
       </Text>
     </View>
@@ -81,10 +81,10 @@ function PadaStatusMark({ status }: { status: "good" | "ok" | "bad" | "mixed" })
   if (status === "mixed") {
     return (
       <View className="ml-1 items-center">
-        <Text className="text-[9px] font-extrabold leading-[10px]" style={{ color: "#2f6b3c" }}>
+        <Text className="text-caption font-extrabold" style={{ color: "#2f6b3c" }}>
           +
         </Text>
-        <Text className="text-[9px] font-extrabold leading-[10px]" style={{ color: "#8f2f28" }}>
+        <Text className="text-caption font-extrabold" style={{ color: "#8f2f28" }}>
           −
         </Text>
       </View>
@@ -137,7 +137,7 @@ function PadaLinks({
           >
             <Text
               className={cn(
-                "text-xs font-semibold",
+                "text-caption font-semibold",
                 active ? "text-foreground" : "text-muted-foreground",
               )}
               style={nepaliTextStyle(12)}
@@ -158,29 +158,29 @@ function VastuSources() {
   const { t, digits } = useLocale();
   return (
     <View className="rounded-xl border border-border bg-muted/40 p-3.5">
-      <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {t("vastu.sources.heading")}
       </Text>
-      <Text className="mt-1.5 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body mt-1.5 text-muted-foreground" style={nepaliTextStyle(13)}>
         {t("vastu.sources.blurb")}
       </Text>
       <View className="mt-4 gap-4">
         {VASTU_SOURCE_IDS.map((id, i) => (
           <View key={id} className="flex-row gap-3">
             <Text
-              className="w-5 shrink-0 text-sm font-semibold text-muted-foreground"
+              className="text-body w-5 shrink-0 font-semibold text-muted-foreground"
               style={nepaliTextStyle(13)}
             >
               {digits(i + 1)}.
             </Text>
             <View className="min-w-0 flex-1 gap-1">
-              <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
                 {t(`vastu.sources.${id}.credit`)}
               </Text>
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t(`vastu.sources.${id}.edition`)}
               </Text>
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t(`vastu.sources.${id}.used`)}
               </Text>
             </View>
@@ -204,7 +204,7 @@ function DetailRow({
   return (
     <View className="flex-row gap-3">
       <Text
-        className="w-[96px] shrink-0 text-sm font-semibold text-muted-foreground"
+        className="text-body w-[96px] shrink-0 font-semibold text-muted-foreground"
         style={nepaliTextStyle(13)}
       >
         {label}
@@ -212,7 +212,7 @@ function DetailRow({
       <View className="min-w-0 flex-1">
         {typeof children === "string" ? (
           <Text
-            className={cn("text-sm", danger ? "text-danger" : "text-foreground")}
+            className={cn("text-body", danger ? "text-danger" : "text-foreground")}
             style={nepaliTextStyle(13)}
           >
             {children}
@@ -241,7 +241,7 @@ function ZoneDetail({
   return (
     <View className="rounded-2xl border bg-card p-4" style={{ borderColor: `${color}66` }}>
       <View className="flex-row flex-wrap items-center gap-2">
-        <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
           {t(`${zone.copyPrefix}.name`)}
         </Text>
         <Chip color={VASTU_INK.line} label={t(`vastu.labels.kind.${zone.kind}`)} />
@@ -267,7 +267,7 @@ function ZoneDetail({
       </View>
 
       {zone.kind !== "dir16" && zone.kind !== "pada" ? (
-        <Text className="mt-3 text-sm text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-3 text-foreground" style={nepaliTextStyle(13)}>
           {t(`${zone.copyPrefix}.importance`)}
         </Text>
       ) : null}
@@ -312,7 +312,7 @@ function ZoneDetail({
               style={{ borderColor: `${VASTU_ELEMENT_COLOR[parent16.element]}66` }}
             >
               <Text
-                className="text-xs font-semibold text-muted-foreground"
+                className="text-caption font-semibold text-muted-foreground"
                 style={nepaliTextStyle(12)}
               >
                 {parent16.abbr} · {t(parent16.attrKey)}
@@ -346,13 +346,13 @@ function SectionCard({
       <View className="flex-row items-center gap-1.5 border-b border-border px-4 py-3">
         <Ionicons name={icon} size={16} color={colors.secondary} />
         <Text
-          className="min-w-0 flex-1 text-sm font-semibold text-foreground"
+          className="text-body min-w-0 flex-1 font-semibold text-foreground"
           style={nepaliTextStyle(14)}
         >
           {title}
         </Text>
         {meta ? (
-          <Text className="shrink-0 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body shrink-0 text-muted-foreground" style={nepaliTextStyle(13)}>
             {meta}
           </Text>
         ) : null}
@@ -418,16 +418,16 @@ export default function VastuScreen() {
       <View className="mb-4 overflow-hidden rounded-2xl border border-border">
         <View className="flex-row flex-wrap items-center gap-1.5 border-b border-border px-4 py-3">
           <Ionicons name="compass-outline" size={16} color={colors.secondary} />
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
             {t("vastu.plan.heading")}
           </Text>
-          <Text className="ml-auto text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body ml-auto text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.plan.hint")}
           </Text>
         </View>
 
         <View className="gap-4 p-3">
-          <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.wheel.blurb")}
           </Text>
 
@@ -445,7 +445,7 @@ export default function VastuScreen() {
               <View className="flex-row flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2">
                 <Ionicons name="compass-outline" size={16} color={colors.secondary} />
                 <View className="min-w-0 flex-1">
-                  <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+                  <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
                     {t("vastu.compass.live")}
                     {facing
                       ? ` ${t("vastu.compass.facing", {
@@ -458,7 +458,7 @@ export default function VastuScreen() {
                       : ""}
                   </Text>
                   {compass.drifting ? (
-                    <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+                    <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
                       {t("vastu.compass.drifting")}
                     </Text>
                   ) : null}
@@ -493,7 +493,7 @@ export default function VastuScreen() {
                 >
                   <Text
                     className={cn(
-                      "text-sm font-semibold",
+                      "text-body font-semibold",
                       active ? "text-foreground" : "text-muted-foreground",
                     )}
                     style={nepaliTextStyle(13)}
@@ -524,7 +524,7 @@ export default function VastuScreen() {
                 >
                   <Text
                     className={cn(
-                      "text-sm font-semibold",
+                      "text-body font-semibold",
                       active ? "text-foreground" : "text-muted-foreground",
                     )}
                     style={nepaliTextStyle(13)}
@@ -543,7 +543,7 @@ export default function VastuScreen() {
       </View>
 
       <View className="mb-4 rounded-xl border border-border bg-muted/40 p-3.5">
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.note")}
         </Text>
       </View>
@@ -553,7 +553,7 @@ export default function VastuScreen() {
       </View>
 
       <SectionCard icon="home-outline" title={t("vastu.rooms.heading")} meta={t("vastu.rooms.ideal")}>
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.rooms.blurb")}
         </Text>
         {VASTU_ROOMS.map((room) => {
@@ -569,11 +569,11 @@ export default function VastuScreen() {
                 <Text className="font-semibold text-foreground" style={nepaliTextStyle(15)}>
                   {t(`vastu.room.${room.id}.name`)}
                 </Text>
-                <Text className="text-sm font-semibold" style={[nepaliTextStyle(13), { color }]}>
+                <Text className="text-body font-semibold" style={[nepaliTextStyle(13), { color }]}>
                   {t(`vastu.dir.${room.direction}.name`)}
                 </Text>
               </View>
-              <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t(`vastu.room.${room.id}.note`)}
               </Text>
             </View>
@@ -582,7 +582,7 @@ export default function VastuScreen() {
       </SectionCard>
 
       <SectionCard icon="warning-outline" title={t("vastu.dosha.heading")}>
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.dosha.blurb")}
         </Text>
         {VASTU_DOSHAS.map((id) => (
@@ -595,7 +595,7 @@ export default function VastuScreen() {
             </View>
             <View className="mt-2 flex-row items-start gap-2">
               <Ionicons name="build-outline" size={16} color={colors.secondary} style={{ marginTop: 3 }} />
-              <Text className="min-w-0 flex-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body min-w-0 flex-1 text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t(`vastu.dosha.${id}.remedy`)}
               </Text>
             </View>
@@ -605,14 +605,14 @@ export default function VastuScreen() {
 
       <BottomSheetModal visible={alignOpen} onClose={() => setAlignOpen(false)}>
         <View className="gap-3 p-4">
-          <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
             {t("vastu.compass.dialog_title")}
           </Text>
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.compass.dialog_body")}
           </Text>
           {compassError ? (
-            <Text className="text-sm text-danger" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-danger" style={nepaliTextStyle(13)}>
               {compassError}
             </Text>
           ) : null}

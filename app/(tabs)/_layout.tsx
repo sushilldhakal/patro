@@ -6,11 +6,8 @@ import { FloatingNavBar } from "@/components/FloatingNavBar";
 import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
-import { useTheme } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
 
 export default function TabsLayout() {
-  const { resolvedTheme } = useTheme();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const tabBarHeight = floatingNavTabBarHeight(isTablet, insets.bottom);
@@ -18,10 +15,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       layout={({ children }) => (
-        <View
-          className={cn("flex-1 bg-background", resolvedTheme === "dark" && "dark")}
-          style={{ flex: 1 }}
-        >
+        <View className="flex-1 bg-background" style={{ flex: 1 }}>
           <AppHeader />
           <View className="min-h-0 flex-1">{children}</View>
         </View>
@@ -32,7 +26,6 @@ export default function TabsLayout() {
       tabBar={() => <FloatingNavBar />}
       screenOptions={{
         headerShown: false,
-        animation: "fade",
         sceneStyle: { backgroundColor: "transparent", flex: 1 },
         tabBarStyle: {
           position: "absolute",

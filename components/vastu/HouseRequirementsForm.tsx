@@ -44,7 +44,7 @@ function Field({
   return (
     <View className="min-w-0 flex-1 basis-[45%]">
       <Text
-        className="mb-1 text-xs font-semibold text-muted-foreground"
+        className="text-caption mb-1 font-semibold text-muted-foreground"
         style={nepaliTextStyle(12)}
       >
         {label}
@@ -81,7 +81,7 @@ function SpaceChip({
     >
       <Text
         className={cn(
-          "text-xs font-semibold",
+          "text-caption font-semibold",
           on ? "text-secondary-foreground" : "text-muted-foreground",
         )}
         style={nepaliTextStyle(12)}
@@ -146,10 +146,10 @@ export function HouseRequirementsForm({
   return (
     <View className="gap-4">
       <View>
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("vastu.plan.requirements_heading")}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.plan.requirements_blurb")}
         </Text>
       </View>
@@ -210,7 +210,7 @@ export function HouseRequirementsForm({
 
       <View>
         <Text
-          className="mb-2 text-xs font-semibold text-muted-foreground"
+          className="text-caption mb-2 font-semibold text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {t("vastu.plan.essential")}
@@ -238,17 +238,17 @@ export function HouseRequirementsForm({
             color={combineKitchenDining ? colors.secondary : colors.mutedForeground}
           />
           <View className="min-w-0 flex-1">
-            <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
               {t("vastu.plan.combine_kitchen_dining")}
             </Text>
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
               {t("vastu.plan.combine_kitchen_dining_note")}
             </Text>
           </View>
         </Pressable>
 
         <Text
-          className="mb-2 mt-3 text-xs font-semibold text-muted-foreground"
+          className="text-caption mb-2 mt-3 font-semibold text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {t("vastu.plan.optional")}

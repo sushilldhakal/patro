@@ -120,7 +120,7 @@ export function RituSeasons({
     >
       <Ionicons name="help-circle-outline" size={13} color={colors.secondary} />
       <Text
-        className="text-xs font-semibold"
+        className="text-caption font-semibold"
         style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
       >
         {pick("ऋतु किन सर्छ?", "Why do seasons shift?")}
@@ -141,7 +141,7 @@ export function RituSeasons({
         <View className="mb-4 flex-row flex-wrap items-center justify-end gap-2">
           {south ? (
             <Text
-              className="text-xs font-semibold"
+              className="text-caption font-semibold"
               style={{ color: colors.primary, ...nepaliTextStyle(12) }}
             >
               {pick(" · दक्षिणी गोलार्ध", " · Southern hemisphere")}
@@ -175,7 +175,7 @@ export function RituSeasons({
               )}
             >
               <Text
-                className="text-sm font-bold uppercase tracking-wider"
+                className="text-body font-bold uppercase tracking-wider"
                 style={{
                   color: item.isCurrent ? colors.secondary : colors.mutedForeground,
                   ...nepaliTextStyle(13),
@@ -185,9 +185,9 @@ export function RituSeasons({
               </Text>
 
               <View className="flex-row items-center gap-3">
-                <Text className="text-lg leading-none">{RITU_SEASON_EMOJI[seasonKey]}</Text>
+                <Text className="text-title">{RITU_SEASON_EMOJI[seasonKey]}</Text>
                 <View className="min-w-0 flex-1">
-                  <Text className="text-xl font-bold leading-tight text-foreground" style={nepaliTextStyle(20)}>
+                  <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
                     {rituSeasonLabel(seasonKey, lang)}
                   </Text>
                 </View>
@@ -195,22 +195,22 @@ export function RituSeasons({
                   className="h-[46px] w-[46px] items-center justify-center gap-px rounded-lg"
                   style={{ backgroundColor: `${colors.secondary}21` }}
                 >
-                  <Text className="font-num text-base font-bold leading-none text-accent">
+                  <Text className="text-body font-num font-bold text-accent">
                     {digits(item.startBs.day)}
                   </Text>
-                  <Text className="text-sm font-semibold leading-none text-accent" style={nepaliTextStyle(13)}>
+                  <Text className="text-body font-semibold text-accent" style={nepaliTextStyle(13)}>
                     {monthLabel}
                   </Text>
                 </View>
               </View>
 
               <View className="flex-row items-baseline justify-between gap-2">
-                <Text className="min-w-0 flex-1 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
                   {markerKey
                     ? `${rituMarkerLabel(markerKey, lang)} · ${pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}`
                     : pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}
                 </Text>
-                <Text className="shrink-0 font-num text-xs text-muted-foreground">
+                <Text className="text-caption shrink-0 font-num text-muted-foreground">
                   {fmtAd(item.startAd, lang)} {pick("देखि", "from")}
                 </Text>
               </View>
@@ -227,11 +227,11 @@ export function RituSeasons({
                     />
                   </View>
                   <View className="flex-row items-baseline justify-between gap-2">
-                    <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                    <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                       {digits(item.progress.elapsed)} / {digits(item.progress.total)}{" "}
                       {pick("दिन", "days")}
                     </Text>
-                    <Text className="font-num text-xs font-semibold text-foreground">
+                    <Text className="text-caption font-num font-semibold text-foreground">
                       {digits(Math.round(item.progress.pct))}%
                     </Text>
                   </View>
@@ -243,7 +243,7 @@ export function RituSeasons({
       </View>
 
       {south ? (
-        <Text className="mx-0.5 mt-2.5 text-sm leading-normal text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body mx-0.5 mt-2.5 leading-normal text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(
             "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
             "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",

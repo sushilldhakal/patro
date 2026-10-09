@@ -51,11 +51,11 @@ export default function VerifyEmailScreen() {
         ) : status === "ok" ? (
           <>
             <Ionicons name="checkmark-circle" size={48} color={colors.accent} />
-            <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+            <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
               {pick("इमेल प्रमाणित भयो", "Email verified")}
             </Text>
             <Text
-              className="text-center text-sm text-muted-foreground"
+              className="text-body text-center text-muted-foreground"
               style={nepaliTextStyle(14)}
             >
               {pick(
@@ -72,11 +72,11 @@ export default function VerifyEmailScreen() {
         ) : (
           <>
             <Ionicons name="close-circle" size={48} color={colors.destructive} />
-            <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+            <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
               {pick("प्रमाणीकरण असफल", "Verification failed")}
             </Text>
             <Text
-              className="text-center text-sm text-muted-foreground"
+              className="text-body text-center text-muted-foreground"
               style={nepaliTextStyle(14)}
             >
               {message}

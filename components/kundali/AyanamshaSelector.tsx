@@ -25,7 +25,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
     <View className="mb-4 overflow-hidden rounded-xl border border-border bg-card">
       <View className="border-b border-border bg-secondary/10 px-3.5 py-2.5">
         <Text
-          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {pick("अयनांश", "Ayanamsha")}
@@ -47,7 +47,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
               >
                 <Text
                   style={{ color: active ? "#ffffff" : colors.foreground, ...nepaliTextStyle(13) }}
-                  className="text-sm"
+                  className="text-body"
                 >
                   {pick(m.labelNe, m.label)}
                   {m.id === "nepal" ? " ⭐" : ""}
@@ -56,7 +56,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
             );
           })}
         </View>
-        <Text className="text-sm leading-snug text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
           {pick(current.labelNe, current.label)} — {pick(current.taglineNe, current.tagline)}
           {!matchesPanchangaAngas(mode)
             ? pick(

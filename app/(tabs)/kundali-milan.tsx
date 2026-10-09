@@ -89,7 +89,7 @@ export default function KundaliMilanScreen() {
           />
         ) : (
           <View className="gap-4">
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("वर र कन्याका प्रोफाइल छान्नुहोस्।", "Select profiles for groom and bride.")}
             </Text>
 
@@ -113,7 +113,7 @@ export default function KundaliMilanScreen() {
             {boyProfile && girlProfile ? (
               !boyQuery || !girlQuery ? (
                 <Card className="gap-2">
-                  <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                     {pick(
                       "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
                       "Both profiles need a birth date — add one in your account.",
@@ -123,7 +123,7 @@ export default function KundaliMilanScreen() {
               ) : milanQuery.isLoading && !milanQuery.data ? (
                 <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12">
                   <ActivityIndicator />
-                  <Text className="mt-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
                     {pick("मिलान गणना हुँदै…", "Matching the charts…")}
                   </Text>
                 </View>
@@ -135,7 +135,7 @@ export default function KundaliMilanScreen() {
                 />
               ) : (
                 <Card>
-                  <Text className="text-sm text-destructive" style={nepaliTextStyle(14)}>
+                  <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
                     {pick(
                       "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
                       "Could not load the match. Please try again shortly.",
@@ -226,11 +226,11 @@ function MilanSlot({
           <Text className="font-medium text-foreground" style={nepaliTextStyle(15)}>
             {profile.full_name}
           </Text>
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
             {profile.birth_date || "—"}
             {profile.birth_time ? ` · ${profile.birth_time}` : ""}
           </Text>
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
             {profile.location_label || profile.city || "—"}
           </Text>
         </Pressable>
@@ -269,7 +269,7 @@ function ProfilePickModal({
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color={colors.foreground} />
           </Pressable>
-          <Text className="ml-3 text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body ml-3 font-semibold text-foreground" style={nepaliTextStyle(16)}>
             {title}
           </Text>
         </View>
@@ -277,7 +277,7 @@ function ProfilePickModal({
           {isLoading ? (
             <ActivityIndicator />
           ) : (profiles ?? []).length === 0 ? (
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।", "No profiles — add one first.")}
             </Text>
           ) : (
@@ -291,7 +291,7 @@ function ProfilePickModal({
                   <Text className="font-semibold text-foreground" style={nepaliTextStyle(16)}>
                     {p.full_name}
                   </Text>
-                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+                  <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
                     {p.birth_date || "—"}
                   </Text>
                 </Pressable>

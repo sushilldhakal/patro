@@ -190,11 +190,11 @@ function DayTimelineBand({
       : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise");
   return (
     <div className={patroSecBand}>
-      <h2 className={cn("m-0", "text-sm", "font-bold")}>{pick("दिन-चक्र", "Day cycle")}</h2>
-      <span className="text-sm text-base uppercase tracking-wider">
+      <h2 className={cn("m-0", "text-body", "font-bold")}>{pick("दिन-चक्र", "Day cycle")}</h2>
+      <span className="text-body uppercase tracking-wider">
         {subtitle}
       </span>
-      <span className="ml-auto inline-flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-base normal-case tracking-normal">
+      <span className="text-body ml-auto inline-flex flex-wrap items-center gap-x-2.5 gap-y-1.5 normal-case tracking-normal">
         <span className="inline-flex items-center gap-1.5">
           <i className="inline-block h-2.5 w-2.5 rounded-[3px] bg-success/34 not-italic" />
           {pick("शुभ", "Good")}
@@ -544,9 +544,9 @@ export function DayTimeline({
                               tr.cls === "shubha"
                                 ? pgxSegnameGood
                                 : laneCount > 2
-                                  ? cn(pgxSegnameBad, "text-sm")
+                                  ? cn(pgxSegnameBad, "text-body")
                                   : laneCount > 1
-                                    ? cn(pgxSegnameBad, "text-sm")
+                                    ? cn(pgxSegnameBad, "text-body")
                                     : pgxSegnameBad
                             }
                             textAnchor="middle"
@@ -659,7 +659,7 @@ export function DayTimeline({
           {tracks.map((tr, ti) => (
             <span
               key={tr.key}
-              className="absolute right-1.5 -translate-y-1/2 whitespace-nowrap text-sm font-bold leading-none text-foreground [font-family:Noto Sans Devanagari,sans-serif] sm:text-sm"
+              className="text-body absolute right-1.5 -translate-y-1/2 whitespace-nowrap font-bold text-foreground [font-family:Noto Sans Devanagari,sans-serif]"
               style={{ top: `${((trackY(ti) + BAND / 2) / H) * 100}%` }}
             >
               {tr.ne}
@@ -695,8 +695,8 @@ export function DayTimeline({
       {p && planets.length > 0 && (
         <div className={cn("flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5")}>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="text-sm font-bold leading-tight">{pick("ग्रह", "Planets")}</span>
-            <span className="text-sm text-base leading-snug">
+            <span className="text-body font-bold">{pick("ग्रह", "Planets")}</span>
+            <span className="text-body">
               {getPlanetsAnchorLabel(p, lang)}
             </span>
           </div>
@@ -769,7 +769,7 @@ export function DayTimeline({
                   >
                     <div className="flex min-w-0 flex-col gap-1">
                       <div className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                        <span className="flex items-center gap-1 text-sm font-bold leading-tight">
+                        <span className="text-body flex items-center gap-1 font-bold">
                           {planetKey !== "lagna" && isGrahaKey(planetKey) ? (
                             <GrahaPlanetIcon graha={planetKey} size={18} />
                           ) : null}
@@ -781,12 +781,12 @@ export function DayTimeline({
                             size={13}
                           />
                         </span>
-                        <span className={cn(patroMono, "min-w-0 text-sm tabular-nums leading-tight break-all [overflow-wrap:anywhere]")}>
+                        <span className={cn(patroMono, "text-body min-w-0 tabular-nums break-all [overflow-wrap:anywhere]")}>
                           {coordText}
                         </span>
                       </div>
                     {(nakWithPada || lordText) && (
-                      <div className="flex items-baseline justify-between gap-1.5 text-sm leading-tight">
+                      <div className="text-body flex items-baseline justify-between gap-1.5">
                         <span className="min-w-0 truncate">{nakWithPada}</span>
                         {lordText ? (
                           <span
@@ -827,7 +827,7 @@ function PeriodCards({
   const accent = tone === "danger" ? "var(--color-danger)" : "var(--color-success)";
   return (
     <div className="flex flex-col gap-2 border-t border-border px-4 py-3">
-      <span className="text-sm font-bold leading-tight" style={{ color: accent }}>
+      <span className="text-body font-bold" style={{ color: accent }}>
         {title}
       </span>
       <ol className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
@@ -842,16 +842,16 @@ function PeriodCards({
           >
             <div className="flex min-w-0 items-start gap-1.5">
               <span
-                className="mt-px inline-flex h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1 text-sm font-bold text-white"
+                className="text-body mt-px inline-flex h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1 font-bold text-white"
                 style={{ background: accent }}
               >
                 {it.n}
               </span>
-              <span className="min-w-0 text-sm font-semibold leading-snug [font-family:Noto Sans Devanagari,sans-serif]">
+              <span className="text-body min-w-0 font-semibold [font-family:Noto Sans Devanagari,sans-serif]">
                 {it.label}
               </span>
             </div>
-            <span className="mt-auto text-sm font-semibold tabular-nums [font-family:Noto Sans Devanagari,sans-serif]">
+            <span className="text-body mt-auto font-semibold tabular-nums [font-family:Noto Sans Devanagari,sans-serif]">
               {it.time}
             </span>
           </li>

@@ -61,7 +61,7 @@ export interface HouseGridLayout {
 }
 
 export function planetGridLayout(points: Point[], count: number): HouseGridLayout {
-  if (count <= 0) return { columns: 0, rows: 0, fontSize: 13, colGap: 0, rowGap: 0 };
+  if (count <= 0) return { columns: 0, rows: 0, fontSize: 15, colGap: 0, rowGap: 0 };
 
   const { width, height } = polygonBounds(points);
   const isKite = Math.abs(width - height) < 1;

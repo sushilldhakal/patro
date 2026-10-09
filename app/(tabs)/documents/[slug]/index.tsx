@@ -41,17 +41,17 @@ function DocHeader({
   return (
     <View className="mb-4">
       <DocumentBackLink href="/documents" label={t("documents.back_to_list")} />
-      <Text className="text-sm font-medium text-secondary">{doc.title_sa}</Text>
-      <Text className="mt-1 text-2xl font-bold">{title}</Text>
-      {subtitle ? <Text className="mt-1 text-sm text-muted-foreground">{subtitle}</Text> : null}
-      {description ? <Text className="mt-2 text-sm text-muted-foreground">{description}</Text> : null}
+      <Text className="text-body font-medium text-secondary">{doc.title_sa}</Text>
+      <Text className="text-display mt-1 font-bold">{title}</Text>
+      {subtitle ? <Text className="text-body mt-1 text-muted-foreground">{subtitle}</Text> : null}
+      {description ? <Text className="text-body mt-2 text-muted-foreground">{description}</Text> : null}
       {source ? (
-        <Text className="mt-2 text-xs text-muted-foreground">
+        <Text className="text-caption mt-2 text-muted-foreground">
           {t("documents.source")}: {source}
         </Text>
       ) : null}
       {doc.has_chapters ? (
-        <Text className="mt-3 text-xs font-semibold text-muted-foreground">
+        <Text className="text-caption mt-3 font-semibold text-muted-foreground">
           {t("documents.chapters_count", { count: digits(doc.chapter_count) })} ·{" "}
           {t("documents.shlokas_count", { count: digits(doc.shloka_count) })}
         </Text>
@@ -70,7 +70,7 @@ function DocHeader({
               accessibilityRole="button"
               className="mr-1.5 h-9 w-9 items-center justify-center rounded-full border border-border active:opacity-70"
             >
-              <Text className="text-sm font-bold text-muted-foreground">{digits(n)}</Text>
+              <Text className="text-body font-bold text-muted-foreground">{digits(n)}</Text>
             </Pressable>
           ))}
         </ScrollView>
@@ -92,19 +92,19 @@ function ChapterRow({ slug, chapter }: { slug: string; chapter: DocumentChapter 
       className="mb-2 flex-row items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3.5 active:opacity-80"
     >
       <View className="h-10 w-10 items-center justify-center rounded-full bg-secondary/10">
-        <Text className="text-sm font-bold text-secondary">{digits(chapter.number)}</Text>
+        <Text className="text-body font-bold text-secondary">{digits(chapter.number)}</Text>
       </View>
       <View className="min-w-0 flex-1">
-        <Text className="text-sm font-semibold" numberOfLines={1}>
+        <Text className="text-body font-semibold" numberOfLines={1}>
           {t("documents.chapter_label", { number: digits(chapter.number) })}
         </Text>
         {title ? (
-          <Text className="text-sm text-muted-foreground" numberOfLines={1}>
+          <Text className="text-body text-muted-foreground" numberOfLines={1}>
             {title}
           </Text>
         ) : null}
         {chapter.shloka_count != null ? (
-          <Text className="mt-0.5 text-xs text-muted-foreground">
+          <Text className="text-caption mt-0.5 text-muted-foreground">
             {t("documents.shlokas_count", { count: digits(chapter.shloka_count) })}
           </Text>
         ) : null}
@@ -155,7 +155,7 @@ export default function DocumentDetailScreen() {
       <View className="flex-1 bg-background" style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16 }}>
         <DocumentBackLink href="/documents" label={t("documents.back_to_list")} />
         {isNotFound(docQ.error) ? (
-          <Text className="text-sm text-muted-foreground">{t("documents.not_found")}</Text>
+          <Text className="text-body text-muted-foreground">{t("documents.not_found")}</Text>
         ) : (
           <ErrorState message={t("documents.load_error")} onRetry={() => void docQ.refetch()} />
         )}

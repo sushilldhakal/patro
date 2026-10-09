@@ -101,7 +101,7 @@ function ChartPanel({
       <View className="flex-row flex-wrap items-end gap-2 rounded-xl border border-border bg-muted/30 p-3">
         <View className="min-w-[7.5rem] flex-1 gap-1">
           <Text
-            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+            className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
             style={nepaliTextStyle(11)}
           >
             {pick("आधार", "Anchor")}
@@ -116,7 +116,7 @@ function ChartPanel({
         </View>
         <View className="min-w-[9rem] flex-1 gap-1">
           <Text
-            className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+            className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
             style={nepaliTextStyle(11)}
           >
             {pick("वर्ग", "Division")}
@@ -133,11 +133,11 @@ function ChartPanel({
       </View>
 
       <View className="items-center gap-3 rounded-2xl border border-border bg-card p-4">
-        <Text className="text-center text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-center font-bold text-foreground" style={nepaliTextStyle(14)}>
           {pick(anchorLabel.labelNe, anchorLabel.labelEn)} · {varga.short} — {pick(varga.labelNe, varga.labelEn)}
         </Text>
         {houses.length > 0 ? <D1Chart houses={houses} /> : (
-          <Text className="py-8 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body py-8 text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("यो चक्रका लागi पर्याप्त डेटा छैन।", "Not enough data for this chart.")}
           </Text>
         )}
@@ -166,7 +166,7 @@ function ChartPanel({
                         color: active ? "#ffffff" : colors.foreground,
                         ...nepaliTextStyle(13),
                       }}
-                      className="text-sm font-semibold"
+                      className="text-body font-semibold"
                     >
                       {t === "graha" ? pick("ग्रह", "Graha") : pick("भाव", "Bhava")}
                     </Text>
@@ -175,7 +175,7 @@ function ChartPanel({
               })}
             </View>
             <Text
-              className="border-t border-border px-3 py-1.5 text-center text-xs text-muted-foreground"
+              className="text-caption border-t border-border px-3 py-1.5 text-center text-muted-foreground"
               style={nepaliTextStyle(12)}
               numberOfLines={1}
             >

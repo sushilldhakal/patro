@@ -2,7 +2,7 @@ import { memo, useMemo } from "react";
 import { Pressable, Text as RNText, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import type { Shloka } from "@/lib/documents/api";
+import { formatVedaCite, type Shloka } from "@/lib/documents/api";
 import { useLocale, useTranslation } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { inkOn } from "@/lib/theme";
@@ -42,6 +42,7 @@ function ShlokaCardImpl({
   const isClosing = shloka.verse_label.startsWith("इति") || shloka.verse_label === "ध्यानम्";
   // Procedure text (टीका / सामग्री) is instructions, not a mantra.
   const isNote = /^(टीका|सामग्री)/.test(shloka.verse_label);
+  const vedaCite = formatVedaCite(shloka.veda_cite, lang);
 
   const tokens = useMemo(() => shloka.sanskrit.split(/(\s+)/), [shloka.sanskrit]);
   const wordIdx = useMemo(
@@ -95,14 +96,23 @@ function ShlokaCardImpl({
           </Pressable>
         ) : (
           <View className="mt-0.5 h-10 w-10 items-center justify-center">
-            <Text className="text-xs font-semibold text-muted-foreground">{shloka.verse_label}</Text>
+            <Text className="text-caption font-semibold text-muted-foreground">{shloka.verse_label}</Text>
           </View>
         )}
 
         <View className="min-w-0 flex-1">
-          {canPlay ? (
-            <View className="self-start rounded-md bg-muted px-1.5 py-0.5">
-              <Text className="text-xs font-semibold text-muted-foreground">{shloka.verse_label}</Text>
+          {canPlay || vedaCite ? (
+            <View className="flex-row items-start justify-between gap-3">
+              {canPlay ? (
+                <View className="self-start rounded-md bg-muted px-1.5 py-0.5">
+                  <Text className="text-caption font-semibold text-muted-foreground">{shloka.verse_label}</Text>
+                </View>
+              ) : (
+                <View />
+              )}
+              {vedaCite ? (
+                <Text className="ml-auto shrink text-right text-caption text-muted-foreground">{vedaCite}</Text>
+              ) : null}
             </View>
           ) : null}
           <RNText
@@ -123,7 +133,7 @@ function ShlokaCardImpl({
             )}
           </RNText>
           {lang !== "ne" && shloka.transliteration ? (
-            <Text className="mt-1.5 text-sm italic text-muted-foreground">{shloka.transliteration}</Text>
+            <Text className="text-body mt-1.5 italic text-muted-foreground">{shloka.transliteration}</Text>
           ) : null}
 
           {isActive ? (
@@ -143,7 +153,7 @@ function ShlokaCardImpl({
                 accessibilityState={{ expanded: meaningOpen }}
                 className="flex-row items-center gap-1 self-start py-2"
               >
-                <Text className="text-xs font-semibold text-secondary">{t("documents.meaning")}</Text>
+                <Text className="text-caption font-semibold text-secondary">{t("documents.meaning")}</Text>
                 <Ionicons name={meaningOpen ? "chevron-up" : "chevron-down"} size={14} color={colors.secondary} />
               </Pressable>
               {meaningOpen ? (
@@ -152,7 +162,7 @@ function ShlokaCardImpl({
                   style={
                     lang === "ne"
                       ? [nepaliTextStyle(16), { color: colors.foreground }]
-                      : { color: colors.foreground, fontSize: 16, lineHeight: 24 }
+                      : { color: colors.foreground, fontSize: 18, lineHeight: 24 }
                   }
                 >
                   {meaning}

@@ -66,7 +66,7 @@ function WebStringSelect({ value, options, onChange, ariaLabel, minWidth = 96 }:
       <span
         style={{
           flex: 1,
-          fontSize: 14,
+          fontSize: 15,
           color: colors.foreground,
           pointerEvents: "none",
           overflow: "hidden",
@@ -155,7 +155,7 @@ export function NativeStringSelect(props: Props) {
         )}
         style={{ minWidth: props.minWidth ?? 96, width: "100%" }}
       >
-        <Text numberOfLines={1} className="min-w-0 flex-1 text-sm text-foreground">
+        <Text numberOfLines={1} className="text-body min-w-0 flex-1 text-foreground">
           {selected?.label ?? "—"}
         </Text>
         <Ionicons name="chevron-down" size={14} color={colors.mutedForeground} />
@@ -180,13 +180,13 @@ export function NativeStringSelect(props: Props) {
           }}
         >
           <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
-            <Text style={{ fontSize: 16, color: colors.mutedForeground }}>{pick("रद्द", "Cancel")}</Text>
+            <Text style={{ fontSize: 18, color: colors.mutedForeground }}>{pick("रद्द", "Cancel")}</Text>
           </Pressable>
           <Text
             style={{
               flex: 1,
               textAlign: "center",
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: "600",
               color: colors.foreground,
             }}
@@ -200,7 +200,7 @@ export function NativeStringSelect(props: Props) {
             }}
             style={{ minWidth: 72, alignItems: "flex-end" }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "600", color: colors.primary }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
               {pick("भयो", "Done")}
             </Text>
           </Pressable>

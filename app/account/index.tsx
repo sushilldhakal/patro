@@ -84,7 +84,7 @@ export default function AccountScreen() {
       <AppShell title={pick("खाता", "Account")}>
         <View className="items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12">
           <Ionicons name="person-circle-outline" size={40} color={colors.mutedForeground} />
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("खाता हेर्न लगइन गर्नुहोस्।", "Log in to view your account.")}
           </Text>
           <Button
@@ -102,10 +102,10 @@ export default function AccountScreen() {
           <View className="flex-1 flex-row items-center gap-3 pr-3">
             <Ionicons name="download-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
                 {pick("अफलाइन डाटा", "Offline Data")}
               </Text>
-              <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
                 {pick(
                   "लगइन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
                   "Offline calendar data can be managed without logging in.",
@@ -133,7 +133,7 @@ export default function AccountScreen() {
           <View className="flex-1">
             <Text
               style={{ color: colors.primary, ...nepaliTextStyle(14) }}
-              className="text-sm"
+              className="text-body"
             >
               {pick(
                 "इमेल प्रमाणित गर्न बाँकी छ। तपाईंको इनबक्स जाँच्नुहोस्।",
@@ -150,7 +150,7 @@ export default function AccountScreen() {
             >
               <Text
                 style={{ color: colors.primary, opacity: resent ? 0.6 : 1, ...nepaliTextStyle(13) }}
-                className="text-sm font-semibold underline"
+                className="text-body font-semibold underline"
               >
                 {resent
                   ? pick("पुनः पठाइयो", "Verification email sent")
@@ -162,7 +162,7 @@ export default function AccountScreen() {
       ) : null}
 
       <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-lg font-semibold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className="text-title font-semibold text-foreground" style={nepaliTextStyle(18)}>
           {pick("प्रोफाइलहरू", "Profiles")}
         </Text>
         {editing === null ? (
@@ -175,7 +175,7 @@ export default function AccountScreen() {
       </View>
 
       {profilesQuery.isError ? (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="mb-4 text-sm">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body mb-4">
           {pick("प्रोफाइल लोड गर्न सकिएन।", "Could not load your profiles.")}
         </Text>
       ) : null}
@@ -197,7 +197,7 @@ export default function AccountScreen() {
         </View>
       ) : profiles.length === 0 ? (
         <View className="rounded-lg border border-dashed border-border py-10">
-          <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("अझै कुनै प्रोफाइल छैन।", "No profiles yet.")}
           </Text>
         </View>
@@ -212,7 +212,7 @@ export default function AccountScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text
                     numberOfLines={1}
-                    className="shrink text-base font-semibold text-foreground"
+                    className="text-body shrink font-semibold text-foreground"
                     style={nepaliTextStyle(15)}
                   >
                     {p.full_name}
@@ -225,7 +225,7 @@ export default function AccountScreen() {
                       <Ionicons name="star" size={10} color={colors.secondary} />
                       <Text
                         style={{ color: colors.secondary, ...nepaliTextStyle(10) }}
-                        className="text-[12px] font-semibold"
+                        className="text-caption font-semibold"
                       >
                         {pick("पूर्वनिर्धारित", "Default")}
                       </Text>
@@ -234,7 +234,7 @@ export default function AccountScreen() {
                 </View>
                 <Text
                   numberOfLines={1}
-                  className="mt-0.5 text-sm text-muted-foreground"
+                  className="text-body mt-0.5 text-muted-foreground"
                   style={nepaliTextStyle(13)}
                 >
                   {[
@@ -262,10 +262,10 @@ export default function AccountScreen() {
           <View className="flex-1 flex-row items-center gap-3 pr-3">
             <Ionicons name="finger-print-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
                 {pick(`${biometric.label} ले खोल्नुहोस्`, `Unlock with ${biometric.label}`)}
               </Text>
-              <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
                 {pick(
                   "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
                   "You stay signed in; the app asks for biometrics when opened.",
@@ -289,10 +289,10 @@ export default function AccountScreen() {
         <View className="flex-1 flex-row items-center gap-3 pr-3">
           <Ionicons name="download-outline" size={18} color={colors.secondary} />
           <View className="flex-1">
-            <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
               {pick("अफलाइन डाटा", "Offline Data")}
             </Text>
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
               {pick(
                 "इन्टरनेट बिना पात्रो हेर्न वर्षहरू व्यवस्थापन गर्नुहोस्।",
                 "Manage the calendar years downloaded for offline use.",
@@ -304,10 +304,10 @@ export default function AccountScreen() {
       </Pressable>
 
       <View className="mt-10 border-t border-border pt-6">
-        <Text className="text-base font-semibold text-destructive" style={nepaliTextStyle(16)}>
+        <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(16)}>
           {pick("खाता मेटाउनुहोस्", "Delete account")}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(
             "खाता र सबै कुण्डली प्रोफाइल स्थायी रूपमा मेटिनेछन्। यो फिर्ता हुँदैन।",
             "Your account and all kundali profiles will be permanently deleted. This cannot be undone.",
@@ -343,7 +343,7 @@ export default function AccountScreen() {
           }}
           className="mt-3 self-start rounded-lg border border-destructive px-4 py-2.5 active:opacity-80"
         >
-          <Text className="text-sm font-semibold text-destructive" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-destructive" style={nepaliTextStyle(14)}>
             {pick("खाता मेटाउनुहोस्", "Delete account")}
           </Text>
         </Pressable>

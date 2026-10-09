@@ -299,10 +299,10 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
       style={active ? { backgroundColor: "#d8c84a" } : undefined}
     >
       <Text
-        className="text-[12px] font-semibold"
+        className="text-caption font-semibold"
         style={[
           nepaliTextStyle(11),
-          { color: active ? "#1a1500" : "rgba(255,255,255,0.7)", fontSize: 11 },
+          { color: active ? "#1a1500" : "rgba(255,255,255,0.7)", fontSize: 15 },
         ]}
       >
         {label}
@@ -313,14 +313,14 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
   const readout = (k: string, v: string, tone?: string) => (
     <View key={k} className="rounded-lg border border-white/15 px-2.5 py-1.5">
       <Text
-        className="text-[12px] font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 9 }]}
+        className="text-caption font-bold uppercase tracking-wide"
+        style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
       >
         {k}
       </Text>
       <Text
-        className="text-[13px] font-bold"
-        style={[nepaliTextStyle(13), { color: tone ?? "#ffffff", fontSize: 13 }]}
+        className="text-caption font-bold"
+        style={[nepaliTextStyle(13), { color: tone ?? "#ffffff", fontSize: 15 }]}
       >
         {v}
       </Text>
@@ -337,12 +337,12 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
       {!fullscreen ? (
         <View className="flex-row items-center justify-between border-b border-border/60 px-3 py-2">
           <Text
-            className="flex-1 text-xs font-bold uppercase tracking-wide text-secondary"
+            className="text-caption flex-1 font-bold uppercase tracking-wide text-secondary"
             style={nepaliTextStyle(11)}
           >
             {title ?? pick("सौरमान र चान्द्रमान", "Sauramāna and Chāndramāna")}
           </Text>
-          <Text className="text-[12px] text-muted-foreground" style={nepaliTextStyle(10)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(10)}>
             {pick("घुमाउन तान्नुहोस्", "Drag to rotate")}
           </Text>
         </View>
@@ -419,8 +419,8 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             >
               <View className="rounded-full border border-amber-400/60 bg-amber-500/25 px-3 py-1">
                 <Text
-                  className="text-[12px] font-bold"
-                  style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 12 }]}
+                  className="text-caption font-bold"
+                  style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 15 }]}
                 >
                   {`${pick("सङ्क्रान्ति", "Sankranti")} · ${
                     ne ? year.solar[flash.index]?.nameNe : year.solar[flash.index]?.name
@@ -475,7 +475,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               pointerEvents="none"
               className="absolute bottom-2.5 left-2.5 rounded-lg bg-black/70 px-2 py-1"
             >
-              <Text className="text-[12px] font-bold" style={{ color: "#f1f5f9", fontSize: 11 }}>
+              <Text className="text-caption font-bold" style={{ color: "#f1f5f9", fontSize: 15 }}>
                 {`${perf.fps.toFixed(0)} fps · worst ${perf.worstMs.toFixed(0)} ms`}
               </Text>
             </View>
@@ -534,8 +534,8 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             accessibilityLabel={pick("वर्षभरि सार्नुहोस्", "Scrub through the year")}
           />
           <Text
-            className="text-[12px]"
-            style={{ color: "rgba(255,255,255,0.6)", fontSize: 11 }}
+            className="text-caption"
+            style={{ color: "rgba(255,255,255,0.6)", fontSize: 15 }}
           >
             {`${num(Math.max(0, Math.floor(dayOfYear)))}/${num(Math.round(year.yearDays))}`}
           </Text>
@@ -593,15 +593,15 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             <View className="gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2.5">
               <View>
                 <Text
-                  className="text-[12px] font-semibold"
-                  style={[nepaliTextStyle(11), { color: "#bae6fd", fontSize: 11 }]}
+                  className="text-caption font-semibold"
+                  style={[nepaliTextStyle(11), { color: "#bae6fd", fontSize: 15 }]}
                 >
                   {pick("औंसीदेखि चन्द्र हिँडेको", "Moon travelled since amavasya")}
                 </Text>
                 <View className="mt-0.5 flex-row flex-wrap items-center gap-1.5">
                   <Text
-                    className="text-[15px] font-bold"
-                    style={{ color: "#ffffff", fontSize: 15 }}
+                    className="text-body font-bold"
+                    style={{ color: "#ffffff", fontSize: 18 }}
                   >
                     {`${num(travelled.moon.toFixed(1))}°`}
                   </Text>
@@ -613,12 +613,12 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                     }}
                   >
                     <Text
-                      className="text-[12px] font-bold"
+                      className="text-caption font-bold"
                       style={[
                         nepaliTextStyle(10),
                         {
                           color: travelled.moon >= 360 ? "#d1fae5" : "rgba(255,255,255,0.6)",
-                          fontSize: 10,
+                          fontSize: 15,
                         },
                       ]}
                     >
@@ -635,8 +635,8 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   </View>
                 </View>
                 <Text
-                  className="mt-0.5 text-[12px] leading-snug"
-                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 11 }]}
+                  className="text-caption mt-0.5"
+                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
                 >
                   {pick(
                     "एक फेरो — नक्षत्र मास — ठ्याक्कै ३६०°, २७.३ दिन। तर त्यतिन्जेल पृथ्वी सूर्यवरिपरि ~२९° सरिसक्छ, त्यसैले चन्द्र फेरि सूर्यको छेउमा पुग्दैन; भेट्न अझै ~२९° चाहिन्छ। त्यही हो चान्द्र मास: ~३८९°, २९.५ दिन। कक्षमा पहिलो फेरो भित्री रेखा, त्यसपछिको बढी भाग बाहिरी हरियो चापमा देखिन्छ।",
@@ -647,14 +647,14 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
 
               <View className="border-t border-white/10 pt-2">
                 <Text
-                  className="text-[12px] font-semibold"
-                  style={[nepaliTextStyle(11), { color: "#fde68a", fontSize: 11 }]}
+                  className="text-caption font-semibold"
+                  style={[nepaliTextStyle(11), { color: "#fde68a", fontSize: 15 }]}
                 >
                   {pick("यो वर्षमा सूर्य हिँडेको", "Sun travelled this year")}
                 </Text>
                 <Text
-                  className="mt-0.5 text-[15px] font-bold"
-                  style={{ color: "#ffffff", fontSize: 15 }}
+                  className="text-body mt-0.5 font-bold"
+                  style={{ color: "#ffffff", fontSize: 18 }}
                 >
                   {`${num(travelled.sunThisYear.toFixed(1))}° / ${num(360)}°  ·  ${pick(
                     "सूर्यबाट",
@@ -662,8 +662,8 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   )} ${num(distanceAu.toFixed(4))} AU`}
                 </Text>
                 <Text
-                  className="mt-0.5 text-[12px] leading-snug"
-                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 11 }]}
+                  className="text-caption mt-0.5"
+                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
                 >
                   {pick(
                     "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले बि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
@@ -692,7 +692,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
       <View>
         {body}
         <Text
-          className="text-xs leading-snug text-muted-foreground"
+          className="text-caption text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {pick(
@@ -734,10 +734,10 @@ function Chain({ tone, steps }: { tone: "sun" | "moon"; steps: string[] }) {
       {steps.map((s, i) => (
         <Text
           key={s}
-          className="text-[12px] font-semibold"
+          className="text-caption font-semibold"
           style={[
             nepaliTextStyle(10),
-            { color: sun ? "#fde68a" : "#bae6fd", fontSize: 10, marginTop: i > 0 ? 2 : 0 },
+            { color: sun ? "#fde68a" : "#bae6fd", fontSize: 15, marginTop: i > 0 ? 2 : 0 },
           ]}
         >
           {i > 0 ? "↓ " : ""}
@@ -779,14 +779,14 @@ function DriftLadder({
     <View className="gap-1">
       <View className="flex-row flex-wrap items-baseline justify-between gap-x-3">
         <Text
-          className="text-[12px]"
-          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.6)", fontSize: 11 }]}
+          className="text-caption"
+          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.6)", fontSize: 15 }]}
         >
           {pick("एउटै समयरेखा", "One shared timeline")}
         </Text>
         <Text
-          className="text-[12px]"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.6)", fontSize: 10 }]}
+          className="text-caption"
+          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.6)", fontSize: 15 }]}
         >
           {pick(
             `सौर वर्ष ${num(span.toFixed(0))} दिन · १२ चान्द्र मास ${num(
@@ -815,8 +815,8 @@ function DriftLadder({
             >
               <Text
                 numberOfLines={1}
-                className="text-[12px] font-semibold"
-                style={[nepaliTextStyle(9), { color: "#fffbeb", fontSize: 9 }]}
+                className="text-caption font-semibold"
+                style={[nepaliTextStyle(9), { color: "#fffbeb", fontSize: 15 }]}
               >
                 {ne ? m.nameNe : m.name}
               </Text>
@@ -848,8 +848,8 @@ function DriftLadder({
               >
                 <Text
                   numberOfLines={1}
-                  className="text-[12px] font-semibold"
-                  style={{ color: "#f0f9ff", fontSize: 9 }}
+                  className="text-caption font-semibold"
+                  style={{ color: "#f0f9ff", fontSize: 15 }}
                 >
                   {num(i + 1)}
                 </Text>
@@ -877,8 +877,8 @@ function DriftLadder({
           >
             <Text
               numberOfLines={1}
-              className="px-1 text-[12px] font-semibold"
-              style={[nepaliTextStyle(9), { color: "#f0f9ff", fontSize: 9 }]}
+              className="text-caption px-1 font-semibold"
+              style={[nepaliTextStyle(9), { color: "#f0f9ff", fontSize: 15 }]}
             >
               {pick(
                 `१२ चान्द्र मास = ${num(year.twelveLunarDays.toFixed(0))} दिन`,
@@ -891,7 +891,7 @@ function DriftLadder({
               className="absolute inset-y-0 right-0 items-center justify-center"
               style={{ width: pct(shortfall), backgroundColor: "rgba(52,211,153,0.35)" }}
             >
-              <Text className="text-[12px] font-bold" style={{ color: "#ecfdf5", fontSize: 9 }}>
+              <Text className="text-caption font-bold" style={{ color: "#ecfdf5", fontSize: 15 }}>
                 {num(shortfall.toFixed(0))}
               </Text>
             </View>
@@ -928,8 +928,8 @@ function LadderKey({ color, children }: { color: string; children: React.ReactNo
     <View className="flex-row items-center gap-1.5">
       <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: color }} />
       <Text
-        className="flex-1 text-[12px]"
-        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 10 }]}
+        className="text-caption flex-1"
+        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
       >
         {children}
       </Text>

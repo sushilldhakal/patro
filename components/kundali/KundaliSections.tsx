@@ -61,11 +61,11 @@ export function KundaliSection({
       <View className="flex-row items-center gap-2 border-b border-border px-4 py-3">
         {icon ? <Ionicons name={icon} size={16} color={colors.secondary} /> : null}
         <View className="min-w-0 flex-1">
-          <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
             {title}
           </Text>
           {subtitle ? (
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
               {subtitle}
             </Text>
           ) : null}
@@ -120,21 +120,21 @@ export function GrahaAstroTable({
       cells: [
         <GrahaInlineChildren grahaKey={e.key} size={20}>
           <Text
-            className="text-xs font-semibold text-foreground"
+            className="text-caption font-semibold text-foreground"
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >
             {grahaName(e.key, lang)}
           </Text>
           {e.retrograde ? (
-            <Text style={{ color: colors.danger }} className="text-[12px] font-bold">
+            <Text style={{ color: colors.danger }} className="text-caption font-bold">
               ↺
             </Text>
           ) : null}
-          {combust ? <Text className="text-[12px]">🔥</Text> : null}
+          {combust ? <Text className="text-caption">🔥</Text> : null}
         </GrahaInlineChildren>,
         <RashiInline key="r" rashiNum={e.vargaRashi} lang={lang} size={18} textSize={12} />,
-        <Text key="d" className="font-num text-xs text-foreground">
+        <Text key="d" className="text-caption font-num text-foreground">
           {dms}
         </Text>,
         <NakshatraInline index={e.nakshatraIndex} lang={lang} pada={e.pada} digits={digits} size={16} textSize={11} />,
@@ -143,7 +143,7 @@ export function GrahaAstroTable({
           <Text style={nepaliTextStyle(11)}>/</Text>
           <GrahaInline grahaKey={e.subLord} label={grahaName(e.subLord, lang)} size={14} textSize={11} />
         </View>,
-        <Text key="l" className="font-num text-xs text-foreground">
+        <Text key="l" className="text-caption font-num text-foreground">
           {point?.longitude != null ? digits(point.longitude.toFixed(2)) : "—"}
         </Text>,
       ],
@@ -206,7 +206,7 @@ export function BhavaTable({
         key: String(r.house),
         highlight: r.house === 1,
         cells: [
-          <Text key="h" className="font-num text-[12px] font-semibold text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="h" className="text-caption font-num font-semibold text-foreground" style={nepaliTextStyle(11)}>
             {digits(r.house)}
             {r.badge ? (
               <Text className="text-muted-foreground"> ({formatHouseBadge(r.badge, lang)})</Text>
@@ -268,7 +268,7 @@ export function UpagrahaTable({ rows }: { rows: UpagrahaDetailRow[] }) {
         cells: [
           lang === "en" ? (r.name ?? r.key) : (r.name_ne ?? r.name ?? r.key),
           <RashiInline key="rash" rashiNum={r.dms.rashiNum} lang={lang} size={16} textSize={11} />,
-          <Text key="d" className="font-num text-xs text-foreground">
+          <Text key="d" className="text-caption font-num text-foreground">
             {digits(r.dms.deg)}° {digits(r.dms.min)}′ {digits(r.dms.sec)}″
           </Text>,
           <NakshatraInline index={r.nakshatraIndex} lang={lang} pada={r.pada} digits={digits} size={16} />,
@@ -294,7 +294,7 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
 
   if (!present.length) {
     return (
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
         {pick("यस कुण्डलीमा कुनै प्रमुख योग भेटिएन।", "No major yogas found in this chart.")}
       </Text>
     );
@@ -311,7 +311,7 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
             className="rounded-lg border border-border bg-background p-3"
           >
             <View className="flex-row flex-wrap items-center gap-2">
-              <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
                 {lang === "en" ? y.nameEn : y.nameNe}
               </Text>
               <View
@@ -320,14 +320,14 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
               >
                 <Text
                   style={{ color: nature.tone, ...nepaliTextStyle(10) }}
-                  className="text-[12px] font-bold"
+                  className="text-caption font-bold"
                 >
                   {pick(nature.ne, nature.en)}
                 </Text>
               </View>
             </View>
             <Text
-              className="mt-1 text-sm leading-relaxed text-muted-foreground"
+              className="text-body mt-1 leading-relaxed text-muted-foreground"
               style={nepaliTextStyle(13)}
             >
               {lang === "en" ? y.descEn : y.descNe}
@@ -368,10 +368,10 @@ export function AvakahadaCard({ data }: { data: JanmaAvakahadaData }) {
     <View className="flex-row flex-wrap">
       {rows.map((r) => (
         <View key={r.label} style={{ width: "50%" }} className="gap-0.5 pb-3 pr-3">
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
             {r.label}
           </Text>
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
             {r.value}
           </Text>
         </View>

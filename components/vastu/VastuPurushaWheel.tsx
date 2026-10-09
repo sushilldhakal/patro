@@ -226,7 +226,7 @@ export function PadaCodeLabel({
           y={y}
           textAnchor="end"
           {...nepaliSvgTextCenter}
-          fontSize={12}
+          fontSize={15}
           fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
           fillOpacity={0.92}
         >
@@ -239,7 +239,7 @@ export function PadaCodeLabel({
               y={y - 4.6}
               textAnchor="middle"
               {...nepaliSvgTextCenter}
-              fontSize={8}
+              fontSize={15}
               fontFamily={NOTO_DEVANAGARI_BOLD}
               fill={STATUS_MARK.good}
             >
@@ -250,7 +250,7 @@ export function PadaCodeLabel({
               y={y + 4.6}
               textAnchor="middle"
               {...nepaliSvgTextCenter}
-              fontSize={8}
+              fontSize={15}
               fontFamily={NOTO_DEVANAGARI_BOLD}
               fill={STATUS_MARK.bad}
             >
@@ -263,7 +263,7 @@ export function PadaCodeLabel({
             y={y}
             textAnchor="middle"
             {...nepaliSvgTextCenter}
-            fontSize={9}
+            fontSize={15}
             fontFamily={NOTO_DEVANAGARI_BOLD}
             fill={STATUS_MARK[status]}
           >
@@ -513,7 +513,7 @@ export function VastuPurushaWheel({
                 <ArcLabel
                   bearing={band.bearing}
                   radius={GUNA_LABEL_R}
-                  fontSize={10}
+                  fontSize={15}
                   fontFamily={NOTO_DEVANAGARI_BOLD}
                   fill={labelFill}
                 >
@@ -538,7 +538,7 @@ export function VastuPurushaWheel({
                 <ArcLabel
                   bearing={point.bearing}
                   radius={DIR16_LABEL_R + 11}
-                  fontSize={11}
+                  fontSize={15}
                   fontFamily={NOTO_DEVANAGARI_BOLD}
                 >
                   {point.abbr}
@@ -546,7 +546,7 @@ export function VastuPurushaWheel({
                 <ArcLabel
                   bearing={point.bearing}
                   radius={DIR16_LABEL_R - 11}
-                  fontSize={9}
+                  fontSize={15}
                   fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                 >
                   {attr}
@@ -588,7 +588,7 @@ export function VastuPurushaWheel({
                 <ArcLabel
                   bearing={pada.bearing}
                   radius={DEITY_LABEL_R}
-                  fontSize={9}
+                  fontSize={15}
                   fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                 >
                   {t(`vastu.pada.${pada.id}.name`)}
@@ -615,7 +615,7 @@ export function VastuPurushaWheel({
                   {...nepaliSvgTextCenter}
                   fill={VASTU_INK.text}
                   fillOpacity={0.88}
-                  fontSize={12}
+                  fontSize={15}
                   fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                 >
                   {t(`vastu.pada.${devata.id}.name`)}
@@ -685,7 +685,7 @@ export function VastuPurushaWheel({
                 pointerEvents="none"
                 fill={VASTU_INK.text}
                 fillOpacity={active ? 1 : 0.82}
-                fontSize={11}
+                fontSize={15}
                 fontFamily={active ? NOTO_DEVANAGARI_BOLD : NOTO_DEVANAGARI_SEMIBOLD}
               >
                 {t(`vastu.dir.${dir.id}.name`)}
@@ -704,7 +704,7 @@ export function VastuPurushaWheel({
               pointerEvents="none"
               fill={VASTU_INK.text}
               fillOpacity={0.9}
-              fontSize={16}
+              fontSize={18}
               fontFamily={NOTO_DEVANAGARI_BOLD}
             >
               {t("vastu.dir.center.deity")}
@@ -807,7 +807,7 @@ export function VastuPurushaWheel({
                   <ArcLabel
                     bearing={bearing}
                     radius={DEG_LABEL_R}
-                    fontSize={7}
+                    fontSize={15}
                     fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                     fillOpacity={0.8}
                   >
@@ -849,7 +849,7 @@ export function VastuPurushaWheel({
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: VASTU_ELEMENT_COLOR[element] }}
             />
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {t(`vastu.element.${element}`)}
             </Text>
           </View>
@@ -862,7 +862,7 @@ export function VastuPurushaWheel({
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: VASTU_GUNA_COLOR[guna] }}
             />
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {t(`vastu.wheel.organ.${guna}`)}
             </Text>
           </View>

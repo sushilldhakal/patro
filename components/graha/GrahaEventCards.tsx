@@ -43,7 +43,7 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
           visible ? "bg-emerald-500/10" : "bg-muted/30",
         )}
       >
-        <Text className="min-w-0 flex-1 text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <Text className="text-body min-w-0 flex-1 font-bold text-foreground" style={nepaliTextStyle(16)}>
           {typeLabel}
         </Text>
         <View
@@ -53,7 +53,7 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
           )}
         >
           <Text
-            className="text-xs font-bold"
+            className="text-caption font-bold"
             style={{
               color: visible ? colors.secondary : colors.mutedForeground,
               ...nepaliTextStyle(11),
@@ -94,10 +94,10 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
 function EclipseDetailRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-baseline justify-between gap-2">
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <Text className="font-num text-sm font-semibold text-foreground">{value}</Text>
+      <Text className="text-body font-num font-semibold text-foreground">{value}</Text>
     </View>
   );
 }
@@ -113,14 +113,14 @@ export function StampLine({
   const { digits } = useLocale();
   if (!stamp) {
     return (
-      <Text className="text-xs text-muted-foreground">
+      <Text className="text-caption text-muted-foreground">
         {label}: —
       </Text>
     );
   }
   const date = stamp.date_bs ?? stamp.date_ad ?? stamp.date ?? "";
   return (
-    <Text className="text-sm text-foreground">
+    <Text className="text-body text-foreground">
       <Text className="font-semibold">{label}: </Text>
       {digits(date)} · {digits(stamp.time_short)}
     </Text>
@@ -148,15 +148,15 @@ export function GrahaPeriodCard({
   return (
     <Card className="mb-2 gap-1 p-3">
       {titleNe ? (
-        <Text className="text-xs font-bold uppercase text-muted-foreground">
+        <Text className="text-caption font-bold uppercase text-muted-foreground">
           {pick(titleNe, titleEn ?? titleNe)}
         </Text>
       ) : null}
-      <Text className="text-base font-semibold text-foreground">{grahaNe}</Text>
+      <Text className="text-body font-semibold text-foreground">{grahaNe}</Text>
       <StampLine label={pick("सुरु", "Start")} stamp={start} />
       <StampLine label={pick("अन्त", "End")} stamp={end} />
       {extraNe ? (
-        <Text className="text-xs text-muted-foreground">{pick(extraNe, extraEn ?? extraNe)}</Text>
+        <Text className="text-caption text-muted-foreground">{pick(extraNe, extraEn ?? extraNe)}</Text>
       ) : null}
     </Card>
   );
@@ -173,9 +173,9 @@ export function SimpleEventCard({
 }) {
   return (
     <Card className="mb-2 gap-1 p-3">
-      <Text className="text-base font-semibold text-foreground">{title}</Text>
-      {subtitle ? <Text className="text-sm text-muted-foreground">{subtitle}</Text> : null}
-      {body ? <Text className="text-sm text-foreground">{body}</Text> : null}
+      <Text className="text-body font-semibold text-foreground">{title}</Text>
+      {subtitle ? <Text className="text-body text-muted-foreground">{subtitle}</Text> : null}
+      {body ? <Text className="text-body text-foreground">{body}</Text> : null}
     </Card>
   );
 }
@@ -184,7 +184,7 @@ export function EmptyHint({ ne, en }: { ne: string; en: string }) {
   const { pick } = useLocale();
   return (
     <View className="py-8">
-      <Text className="text-center text-sm text-muted-foreground">{pick(ne, en)}</Text>
+      <Text className="text-body text-center text-muted-foreground">{pick(ne, en)}</Text>
     </View>
   );
 }

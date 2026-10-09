@@ -56,11 +56,11 @@ export default function ShantiVidhiScreen() {
       <View className="overflow-hidden rounded-2xl border border-border">
         <View className="flex-row items-center gap-1.5 border-b border-border px-4 py-3">
           <Ionicons name="person-outline" size={16} color={colors.secondary} />
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
             {t("shanti_vidhi.birth_section")}
           </Text>
           <Text
-            className="ml-auto text-xs text-muted-foreground"
+            className="text-caption ml-auto text-muted-foreground"
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >

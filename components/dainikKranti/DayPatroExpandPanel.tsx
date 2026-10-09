@@ -41,7 +41,7 @@ function SectionHeading({
   return (
     <View className="mb-2 flex-row items-center gap-2">
       <Ionicons name={icon} size={16} color={colors.secondary} />
-      <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+      <Text className="text-body font-semibold uppercase tracking-wide text-muted-foreground">
         {children}
       </Text>
     </View>
@@ -74,12 +74,12 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
                   <View className="items-center">
                     <RashiGlyphIcon name={rne} number={num} size={22} />
                   </View>
-                  <Text className="text-center text-xs text-muted-foreground">
+                  <Text className="text-caption text-center text-muted-foreground">
                     {pick(rne, RASHI_COLUMNS_EN[i])}
                   </Text>
                   <Text
                     className={cn(
-                      "mt-1 text-center font-num text-xs tabular-nums sm:text-sm",
+                      "text-body mt-1 text-center font-num tabular-nums",
                       late ? "text-amber-700 dark:text-amber-300" : "text-foreground",
                     )}
                   >
@@ -110,7 +110,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
                 >
                   <View className="flex-row items-center gap-1.5">
                     <GrahaPlanetIcon graha={grahaKey} size={20} />
-                    <Text className="text-sm font-semibold text-foreground">
+                    <Text className="text-body font-semibold text-foreground">
                       {pick(PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
                     </Text>
                     <GrahaStatusBadges
@@ -120,7 +120,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
                       size={11}
                     />
                   </View>
-                  <Text className="mt-0.5 font-num text-xs tabular-nums sm:text-sm">
+                  <Text className="text-body mt-0.5 font-num tabular-nums">
                     <Text className="text-foreground">
                       {isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe}
                     </Text>{" "}
@@ -141,7 +141,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       {notes.length > 0 ? (
         <View className="w-full min-w-0 gap-1.5">
           {notes.map((n) => (
-            <Text key={`${n.kind}-${n.text}`} className="text-sm text-foreground">
+            <Text key={`${n.kind}-${n.text}`} className="text-body text-foreground">
               {pick(n.text, n.textEn ?? n.text)}
             </Text>
           ))}

@@ -28,7 +28,7 @@ export function HoraTodayDiagram() {
   if (loading || !slots || slots.length === 0) {
     return (
       <View className="min-h-[140px] items-center justify-center rounded-2xl border border-border bg-card">
-        <Text className="text-sm text-muted-foreground">{pick("लोड हुँदैछ…", "Loading…")}</Text>
+        <Text className="text-body text-muted-foreground">{pick("लोड हुँदैछ…", "Loading…")}</Text>
       </View>
     );
   }
@@ -44,13 +44,13 @@ export function HoraTodayDiagram() {
             style={{ backgroundColor: PLANET_COLOR[current.planet] ?? "#94a3b8" }}
           />
           <View className="min-w-0 flex-1">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
               {pick("अहिलेको होरा", "Current hora")}
             </Text>
-            <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+            <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
               {pick(current.planet_ne, current.planet_en)}
             </Text>
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
               {current.start_local_time_short} – {current.end_local_time_short} ·{" "}
               {current.tone === "good" ? pick("शुभ", "Auspicious") : pick("अशुभ", "Inauspicious")}
             </Text>
@@ -75,12 +75,12 @@ export function HoraTodayDiagram() {
                   style={{ backgroundColor: PLANET_COLOR[slot.planet] ?? "#94a3b8" }}
                 />
                 <Text
-                  className={cn("text-[11px] font-semibold", active ? "text-primary" : "text-foreground")}
+                  className={cn("text-caption font-semibold", active ? "text-primary" : "text-foreground")}
                   numberOfLines={1}
                 >
                   {lang === "en" ? slot.planet_en : slot.planet_ne}
                 </Text>
-                <Text className="font-num text-[10px] text-muted-foreground">
+                <Text className="text-caption font-num text-muted-foreground">
                   {slot.start_local_time_short}
                 </Text>
               </View>

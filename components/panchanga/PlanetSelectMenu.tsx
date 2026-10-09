@@ -139,7 +139,7 @@ export function PlanetSelectMenu({
                     style={{
                       flex: 1,
                       color: W_INK,
-                      fontSize: 15,
+                      fontSize: 18,
                       fontWeight: active ? "700" : "500",
                       lineHeight: nepaliLineHeight(15),
                     }}

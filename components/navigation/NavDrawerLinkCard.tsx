@@ -39,7 +39,7 @@ export function NavDrawerLinkCard({
       </View>
       <Text
         className={cn(
-          "w-full text-center text-[13px] font-bold leading-tight text-foreground",
+          "text-caption w-full text-center font-bold text-foreground",
           active && "text-secondary",
         )}
         numberOfLines={2}
@@ -68,7 +68,7 @@ export function DrawerNavSection({
     >
       <View className="mb-3">
         <Text
-          className="text-[14px] font-semibold tracking-wide text-foreground"
+          className="text-caption font-semibold tracking-wide text-foreground"
           style={lang === "en" ? undefined : nepaliTextStyle(14)}
         >
           {title}

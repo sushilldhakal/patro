@@ -174,13 +174,13 @@ export default function HolidaysScreen() {
                   color: active ? colors.secondary : colors.mutedForeground,
                   ...nepaliTextStyle(13),
                 }}
-                className="text-sm font-semibold"
+                className="text-body font-semibold"
               >
                 {pick(item.ne, item.en)}
               </Text>
               {item.count > 0 ? (
                 <View className="rounded-full bg-muted px-1.5 py-0.5">
-                  <Text className="text-xs text-muted-foreground">{digits(item.count)}</Text>
+                  <Text className="text-caption text-muted-foreground">{digits(item.count)}</Text>
                 </View>
               ) : null}
             </Pressable>
@@ -195,7 +195,7 @@ export default function HolidaysScreen() {
           onChangeText={setFilter}
           placeholder={pick("पर्व खोज्नुहोस्…", "Search festivals…")}
           placeholderTextColor={colors.mutedForeground}
-          style={{ flex: 1, paddingVertical: 9, color: colors.foreground, fontSize: 14 }}
+          style={{ flex: 1, paddingVertical: 9, color: colors.foreground, fontSize: 15 }}
         />
         {filter ? (
           <Pressable onPress={() => setFilter("")} hitSlop={8}>
@@ -212,7 +212,7 @@ export default function HolidaysScreen() {
           }}
           className="rounded-xl border p-4"
         >
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
             {pick(
               "डाटा लोड गर्न सकिएन। API लाई केही बेर लाग्न सक्छ।",
               "Failed to load data. The API may need a moment to warm up.",
@@ -220,7 +220,7 @@ export default function HolidaysScreen() {
           </Text>
         </View>
       ) : loading ? (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : (
@@ -236,7 +236,7 @@ export default function HolidaysScreen() {
                 >
                   <Text
                     numberOfLines={2}
-                    className="shrink text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                    className="text-caption shrink font-semibold uppercase tracking-wide text-muted-foreground"
                     style={nepaliTextStyle(11)}
                   >
                     {pick(col.ne, col.en)}
@@ -255,7 +255,7 @@ export default function HolidaysScreen() {
 
               {rows.length === 0 ? (
                 <View className="px-4 py-8">
-                  <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                     {pick("कुनै नतिजा भेटिएन।", "No results found.")}
                   </Text>
                 </View>
@@ -272,7 +272,7 @@ export default function HolidaysScreen() {
                         return (
                           <TableCell key={col.key} width={col.width} align="left">
                             <View className="self-start rounded-full bg-muted px-2 py-0.5">
-                              <Text className="text-xs capitalize text-foreground" style={nepaliTextStyle(11)}>
+                              <Text className="text-caption capitalize text-foreground" style={nepaliTextStyle(11)}>
                                 {row.type}
                               </Text>
                             </View>
@@ -287,7 +287,7 @@ export default function HolidaysScreen() {
                                 <Ionicons name="flag" size={11} color={colors.destructive} />
                                 <Text
                                   style={{ color: colors.destructive, ...nepaliTextStyle(11) }}
-                                  className="text-xs font-semibold"
+                                  className="text-caption font-semibold"
                                 >
                                   {pick("हो", "Yes")}
                                 </Text>
@@ -303,7 +303,7 @@ export default function HolidaysScreen() {
                           <Text
                             numberOfLines={2}
                             style={nepaliTextStyle(13)}
-                            className={cn("text-sm text-foreground", mono && "font-num text-xs")}
+                            className={cn("text-body text-foreground", mono && "text-caption font-num")}
                           >
                             {value}
                           </Text>

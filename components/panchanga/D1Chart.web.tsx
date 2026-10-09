@@ -94,26 +94,26 @@ function DrishtiPanel({
   return (
     <div className="mt-3 w-full max-w-[340px] mx-auto space-y-2 text-left">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground">
+        <p className="text-body font-semibold text-foreground">
           {pick(`${name}को दृष्टि: ${houseList} भावमा`, `${name}'s aspect: houses ${houseList}`)}
         </p>
         <button
           type="button"
           onClick={onClose}
           aria-label={pick("बन्द गर्नुहोस्", "Close")}
-          className="shrink-0 text-muted-foreground hover:text-foreground text-sm leading-none"
+          className="text-body shrink-0 text-muted-foreground hover:text-foreground"
         >
           ✕
         </button>
       </div>
       <div className="rounded-lg border border-border bg-card/40 p-3">
         <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</span>
-          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-sm font-semibold leading-none ${badgeCls}`}>
+          <span className="text-body font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</span>
+          <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-body font-semibold leading-none ${badgeCls}`}>
             {badge}
           </span>
         </div>
-        <p className="text-sm leading-relaxed">{pick(info.summaryNe, info.summaryEn)}</p>
+        <p className="text-body leading-relaxed">{pick(info.summaryNe, info.summaryEn)}</p>
       </div>
     </div>
   );
@@ -191,7 +191,7 @@ export function D1Chart({ houses }: Props) {
                   x={cx}
                   y={cy - (hasPlanets ? 12 : 0)}
                   textAnchor="middle"
-                  className={house.isLagna ? "fill-secondary text-sm font-semibold" : "fill-muted-foreground text-sm font-semibold"}
+                  className={house.isLagna ? "text-body fill-secondary font-semibold" : "text-body fill-muted-foreground font-semibold"}
                 >
                   {digits(house.rashi)} {pick(house.rashiNe, RASHI_EN[house.rashi - 1] ?? house.rashiNe)}
                 </text>

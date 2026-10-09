@@ -139,7 +139,7 @@ function AshtakavargaMatrix({
 
   return (
     <View className="gap-2">
-      <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
         {title}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
@@ -216,7 +216,7 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
 
   return (
     <View className="gap-2">
-      <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
         {kundaliLabel("shodhya_pinda", lang)}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
@@ -285,13 +285,13 @@ export function AshtakavargaCard({
     <View className="gap-6">
       {!compactHeader ? (
         <Text
-          className="text-sm font-semibold uppercase tracking-wide text-foreground"
+          className="text-body font-semibold uppercase tracking-wide text-foreground"
           style={nepaliTextStyle(13)}
         >
           {kundaliLabel("ashtakavarga", lang)}
         </Text>
       ) : null}
-      <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
         {kundaliLabel("ashtakavarga_intro", lang)}
       </Text>
 

@@ -19,10 +19,10 @@ export function PatroTableShell({ titleNe, titleEn, subtitle, subtitleEn, childr
   return (
     <View className={cn("overflow-hidden rounded-xl border border-border", className)}>
       <View className="border-b border-border px-4 py-3">
-        <Text className="text-sm font-semibold text-foreground">{pick(titleNe, titleEn ?? titleNe)}</Text>
-        {titleEn && lang === "ne" ? <Text className="mt-0.5 text-sm text-muted-foreground">{titleEn}</Text> : null}
+        <Text className="text-body font-semibold text-foreground">{pick(titleNe, titleEn ?? titleNe)}</Text>
+        {titleEn && lang === "ne" ? <Text className="text-body mt-0.5 text-muted-foreground">{titleEn}</Text> : null}
         {subtitle ? (
-          <Text className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <Text className="text-body mt-1 leading-relaxed text-muted-foreground">
             {pick(subtitle, subtitleEn ?? subtitle)}
           </Text>
         ) : null}

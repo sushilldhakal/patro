@@ -59,13 +59,13 @@ export function PatroSolarCorrectionStrip({ deshaantar, akshamsha, belaantar, cl
               size={14}
               color={item.key === "belaantar" ? colors.secondary : colors.mutedForeground}
             />
-            <Text className="text-xs font-semibold text-foreground">
+            <Text className="text-caption font-semibold text-foreground">
               {pick(item.ne, item.en)}
             </Text>
           </View>
           <Text
             className={cn(
-              "mt-1 font-num text-xs tabular-nums sm:text-sm",
+              "text-body mt-1 font-num tabular-nums",
               item.key === "belaantar"
                 ? "text-amber-800 dark:text-amber-200"
                 : "text-foreground",

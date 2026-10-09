@@ -83,12 +83,12 @@ export const PlaygroundLabelText = memo(function PlaygroundLabelText({
       {glyph}
       <Text
         numberOfLines={1}
-        className="text-[12px] font-semibold"
+        className="text-caption font-semibold"
         style={[
           nepaliTextStyle(10),
           {
             color: labelColor(label),
-            fontSize: 10,
+            fontSize: 15,
             textAlign: "center",
             textShadowColor: "rgba(0,0,0,0.95)",
             textShadowRadius: 3,

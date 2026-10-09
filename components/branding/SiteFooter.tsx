@@ -11,7 +11,7 @@ export function SiteFooter() {
   const router = useRouter();
   const link = (label: string, onPress: () => void) => (
     <Pressable onPress={onPress} accessibilityRole="link" hitSlop={6} className="active:opacity-70">
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
         {label}
       </Text>
     </Pressable>

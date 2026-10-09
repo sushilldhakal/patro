@@ -25,18 +25,18 @@ function LegalBody({
   const { pick } = useLocale();
   return (
     <View className="gap-8 pb-8">
-      <Text className="text-base leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
+      <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
         {pick(intro.ne, intro.en)}
       </Text>
       {sections.map((section) => (
         <View key={section.heading.en} className="gap-2">
-          <Text className="text-lg font-semibold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-title font-semibold text-foreground" style={nepaliTextStyle(18)}>
             {pick(section.heading.ne, section.heading.en)}
           </Text>
           {section.body.map((para) => (
             <Text
               key={para.en}
-              className="text-base leading-relaxed text-muted-foreground"
+              className="text-body leading-relaxed text-muted-foreground"
               style={nepaliTextStyle(15)}
             >
               {pick(para.ne, para.en)}

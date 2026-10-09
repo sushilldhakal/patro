@@ -102,7 +102,7 @@ export function GocharRashyadiBlock({
         {startVersion ? (
           <View style={colStyle}>
             <Text
-              className="text-sm font-semibold leading-snug text-secondary"
+              className="text-body font-semibold text-secondary"
               style={nepaliTextStyle(14)}
             >
               {startVersion}
@@ -113,7 +113,7 @@ export function GocharRashyadiBlock({
         <View style={colStyle}>
           <Text
             className={cn(
-              "text-sm font-semibold leading-snug text-foreground",
+              "text-body font-semibold text-foreground",
               layout === "three" && "text-center",
             )}
             style={nepaliTextStyle(14)}
@@ -126,7 +126,7 @@ export function GocharRashyadiBlock({
           <View style={colStyle}>
             <Text
               className={cn(
-                "text-sm font-semibold leading-snug text-secondary",
+                "text-body font-semibold text-secondary",
                 layout !== "one" && "text-right",
               )}
               style={nepaliTextStyle(14)}

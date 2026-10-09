@@ -42,7 +42,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       {paragraphs.length > 0 ? (
         <View className="gap-3">
           {paragraphs.map((p, i) => (
-            <Text key={i} className="text-[15px] leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
+            <Text key={i} className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
               {p}
             </Text>
           ))}
@@ -50,7 +50,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       ) : null}
       {faqs.length > 0 ? (
         <View className="gap-4">
-          <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
             {t("seo_faq.section_title")}
           </Text>
           {faqs.map((f) => (
@@ -58,7 +58,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
               <Text className="font-semibold text-foreground" style={nepaliTextStyle(15)}>
                 {f.q}
               </Text>
-              <Text className="mt-1 text-[15px] leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
+              <Text className="text-body mt-1 leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
                 {f.a}
               </Text>
             </View>

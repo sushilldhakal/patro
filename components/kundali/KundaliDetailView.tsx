@@ -82,7 +82,7 @@ export function KundaliDetailView({
             }}
           >
             <Text
-              className={cn("text-sm font-semibold", selected ? "text-foreground" : "text-muted-foreground")}
+              className={cn("text-body font-semibold", selected ? "text-foreground" : "text-muted-foreground")}
               style={nepaliTextStyle(13)}
             >
               {kundaliLabel(tab.i18nKey, lang)}
@@ -121,7 +121,7 @@ export function KundaliDetailView({
           {detail.upagrahas?.length ? (
             <View className="mt-3 border-t border-border px-3 pt-3">
               <Text
-                className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                className="text-caption mb-2 font-semibold uppercase tracking-wider text-muted-foreground"
                 style={nepaliTextStyle(11)}
               >
                 {pick("उपग्रह", "Upagrahas")}
@@ -141,7 +141,7 @@ export function KundaliDetailView({
           {hasPresentYogas ? (
             <YogaList yogas={detail.yogas} />
           ) : (
-            <Text className="mb-1 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body mb-1 text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("यस कुण्डलीमा कुनै प्रमुख योग भेटिएन।", "No major yogas found in this chart.")}
             </Text>
           )}
@@ -196,7 +196,7 @@ export function KundaliDetailView({
               combustion={detail.combustion}
             />
           ) : (
-            <Text className="py-8 text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}
@@ -211,7 +211,7 @@ export function KundaliDetailView({
           {detail.ashtakavarga ? (
             <AshtakavargaCard data={detail.ashtakavarga} compactHeader />
           ) : (
-            <Text className="py-8 text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}
@@ -230,7 +230,7 @@ export function KundaliDetailView({
           {detail.vimshopaka && detail.vimshopaka.classifications.length > 0 ? (
             <VimshopakaCard data={detail.vimshopaka} compactHeader />
           ) : (
-            <Text className="py-8 text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}

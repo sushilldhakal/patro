@@ -65,25 +65,25 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
       style={{ backgroundColor: PANEL_BG }}
     >
       <Text
-        className="text-center text-sm font-semibold tracking-[0.16em]"
+        className="text-body text-center font-semibold tracking-[0.16em]"
         style={{ color: INK_MUTED }}
       >
         {pick("वैदिक समय", "Vedic time")}
       </Text>
       <Text
-        className="mt-3.5 text-center font-mono text-5xl font-bold leading-none tracking-tight"
+        className="text-display mt-3.5 text-center font-mono font-bold tracking-tight"
         style={{ color: INK }}
       >
         {digits(pad2(gh))}
         <Text style={{ color: "rgba(245,245,241,0.40)" }}>:</Text>
         {digits(pad2(pa))}
         <Text style={{ color: "rgba(245,245,241,0.40)" }}>:</Text>
-        <Text className="text-sm" style={{ color: INK_SOFT }}>
+        <Text className="text-body" style={{ color: INK_SOFT }}>
           {digits(pad2(vi))}
         </Text>
       </Text>
       <Text
-        className="mt-2 text-center text-sm font-semibold tracking-wide"
+        className="text-body mt-2 text-center font-semibold tracking-wide"
         style={{ color: panchangAccent }}
       >
         {pick("घडी : पला : विपला", "Ghati : Pala : Vipala")}
@@ -92,16 +92,16 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
       <View className="mx-5 my-3.5 h-px" style={{ backgroundColor: "rgba(255,255,255,0.12)" }} />
 
       <Text
-        className="text-center font-mono text-xl font-bold leading-none"
+        className="text-title text-center font-mono font-bold"
         style={{ color: INK }}
       >
         {digits(pad2(hh))}:{digits(pad2(mm))}
-        <Text className="text-sm" style={{ color: INK_SOFT }}>
+        <Text className="text-body" style={{ color: INK_SOFT }}>
           :{digits(pad2(ss))}
         </Text>
       </Text>
       <Text
-        className="mt-2 text-center text-sm font-semibold tracking-wide"
+        className="text-body mt-2 text-center font-semibold tracking-wide"
         style={{ color: INK_DIM }}
       >
         {pick("घण्टा : मिनेट", "Hour : Minute")}
@@ -111,7 +111,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         {sunrise ? (
           <View className="flex-row items-center gap-1.5">
             <Ionicons name="sunny-outline" size={14} color={INK_BODY} />
-            <Text className="text-center font-mono text-sm" style={{ color: INK_BODY }}>
+            <Text className="text-body text-center font-mono" style={{ color: INK_BODY }}>
               {sunrise}
             </Text>
           </View>
@@ -119,7 +119,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         {sunset ? (
           <View className="flex-row items-center gap-1.5">
             <Ionicons name="moon-outline" size={14} color={INK_BODY} />
-            <Text className="text-center font-mono text-sm" style={{ color: INK_BODY }}>
+            <Text className="text-body text-center font-mono" style={{ color: INK_BODY }}>
               {sunset}
             </Text>
           </View>

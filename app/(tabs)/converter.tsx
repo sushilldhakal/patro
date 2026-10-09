@@ -95,7 +95,7 @@ export default function ConverterScreen() {
             >
               <Text
                 style={{ color: active ? "#ffffff" : colors.foreground }}
-                className="text-sm font-semibold"
+                className="text-body font-semibold"
               >
                 {m === "ad-to-bs" ? "AD" : "BS"}
               </Text>
@@ -106,7 +106,7 @@ export default function ConverterScreen() {
               />
               <Text
                 style={{ color: active ? "#ffffff" : colors.foreground }}
-                className="text-sm font-semibold"
+                className="text-body font-semibold"
               >
                 {m === "ad-to-bs" ? "BS" : "AD"}
               </Text>
@@ -118,7 +118,7 @@ export default function ConverterScreen() {
       <View className="mb-4 flex-row flex-wrap items-end gap-3">
         <View className="min-w-[176px] flex-1 gap-1">
           <Text
-            className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+            className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
             style={nepaliTextStyle(11)}
           >
             {mode === "ad-to-bs" ? t("converter.ad_date") : t("converter.bs_date")}
@@ -137,7 +137,7 @@ export default function ConverterScreen() {
               color: colors.foreground,
               fontFamily: "FiraCode_400Regular",
             }}
-            className="rounded-lg border px-3 py-2.5 text-sm"
+            className="text-body rounded-lg border px-3 py-2.5"
           />
         </View>
         <Button label={t("converter.convert")} variant="secondary" onPress={submit} />
@@ -151,7 +151,7 @@ export default function ConverterScreen() {
           }}
           className="mb-4 rounded-xl border p-4"
         >
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
             {t("converter.error")}
           </Text>
         </View>
@@ -162,14 +162,14 @@ export default function ConverterScreen() {
           <View className="flex-row items-center gap-3">
             <Text
               style={{ color: colors.secondary }}
-              className="font-num text-2xl font-bold"
+              className="text-display font-num font-bold"
             >
               {adResult.ad_date}
             </Text>
             <Ionicons name="arrow-forward" size={18} color={colors.foreground} />
             <Text
               style={{ color: colors.secondary }}
-              className="font-num text-2xl font-bold"
+              className="text-display font-num font-bold"
             >
               {adResult.bs_date}
             </Text>
@@ -196,11 +196,11 @@ export default function ConverterScreen() {
       {mode === "bs-to-ad" && bsResult ? (
         <View className="gap-4">
           <View className="flex-row items-center gap-3">
-            <Text style={{ color: colors.secondary }} className="font-num text-2xl font-bold">
+            <Text style={{ color: colors.secondary }} className="text-display font-num font-bold">
               {bsResult.bs_date}
             </Text>
             <Ionicons name="arrow-forward" size={18} color={colors.foreground} />
-            <Text style={{ color: colors.secondary }} className="font-num text-2xl font-bold">
+            <Text style={{ color: colors.secondary }} className="text-display font-num font-bold">
               {bsResult.ad_date}
             </Text>
           </View>

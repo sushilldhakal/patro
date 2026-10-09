@@ -39,14 +39,14 @@ export function AppShell({
     <View className="mb-4 flex-row items-start justify-between gap-3 py-1">
       <View className="min-w-0 flex-1">
         <Text
-          className="text-2xl font-bold text-foreground"
+          className="text-display font-bold text-foreground"
           style={[nepaliTextStyle(24), { paddingTop: 2, paddingBottom: 2 }]}
         >
           {title}
         </Text>
         {subtitle ? (
           <Text
-            className="mt-1 text-sm text-muted-foreground"
+            className="text-body mt-1 text-muted-foreground"
             style={[nepaliTextStyle(14), { paddingTop: 1 }]}
           >
             {subtitle}

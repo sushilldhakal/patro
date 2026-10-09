@@ -90,7 +90,7 @@ export function HomeRashifalSignPicker({
               <View className="items-center">
                 <RashiGlyphIcon name={getRashiName(sign.id, lang)} number={sign.id} size={32} />
               </View>
-              <Text className="text-center text-xs font-semibold leading-tight text-foreground" numberOfLines={1}>
+              <Text className="text-caption text-center font-semibold text-foreground" numberOfLines={1}>
                 {name}
               </Text>
               <View className="flex-row items-center gap-0.5 px-0.5">
@@ -100,7 +100,7 @@ export function HomeRashifalSignPicker({
                     style={{ width: `${pct}%` }}
                   />
                 </View>
-                <Text className={cn("shrink-0 text-[12px] font-bold tabular-nums", rashifalToneText(sign.tone))}>
+                <Text className={cn("text-caption shrink-0 font-bold tabular-nums", rashifalToneText(sign.tone))}>
                   {toNepaliDigits(pct, lang)}
                 </Text>
               </View>

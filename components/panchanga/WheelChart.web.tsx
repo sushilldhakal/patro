@@ -329,7 +329,7 @@ function WheelChartImpl({
             textAnchor="middle"
             dominantBaseline="central"
             className={wRashiGlyph}
-            style={{ fontSize: 27 }}
+            style={{ fontSize: 28 }}
           >
             {rs.sym}
           </text>
@@ -468,7 +468,7 @@ function WheelChartImpl({
           textAnchor="middle"
           dominantBaseline="central"
           className={wLabel}
-          style={{ fontSize: 14, fill: "#f9c800" }}
+          style={{ fontSize: 15, fill: "#f9c800" }}
           transform={
             normDeg(targetLon + spin) > 90 && normDeg(targetLon + spin) < 270
               ? `rotate(180 ${CX} ${CY - (R.bsOut + 5)})`

@@ -32,7 +32,7 @@ export function KundaliSubTabs<T extends string>({
             className="rounded-lg px-3 py-1.5 active:opacity-80"
           >
             <Text
-              className={cn("text-sm", active ? "font-semibold text-foreground" : "text-muted-foreground")}
+              className={cn("text-body", active ? "font-semibold text-foreground" : "text-muted-foreground")}
               style={nepaliTextStyle(13)}
             >
               {item.label}

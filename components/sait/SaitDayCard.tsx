@@ -83,19 +83,19 @@ export function SaitDayCard({
         >
           <Text
             style={{ color: colors.secondary, ...nepaliTextStyle(10) }}
-            className="text-[12px] font-semibold uppercase tracking-wider"
+            className="text-caption font-semibold uppercase tracking-wider"
           >
             {monthLabel}
           </Text>
-          <Text className="font-num text-3xl font-bold text-foreground">{digits(d.bs_day)}</Text>
+          <Text className="text-display font-num font-bold text-foreground">{digits(d.bs_day)}</Text>
         </View>
 
         <View className="min-w-0 flex-1 justify-center gap-1.5">
           <View className="flex-row flex-wrap items-baseline gap-x-2">
-            <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+            <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
               {pick(d.weekday_ne, d.weekday_en)}
             </Text>
-            <Text className="font-num text-xs text-muted-foreground">{d.gregorian}</Text>
+            <Text className="text-caption font-num text-muted-foreground">{d.gregorian}</Text>
           </View>
 
           <View
@@ -103,7 +103,7 @@ export function SaitDayCard({
             className="flex-row items-center gap-1.5 self-start rounded-md px-2 py-1"
           >
             <Ionicons name="time-outline" size={13} color={colors.secondary} />
-            <Text style={{ color: colors.secondary }} className="font-num text-xs font-semibold">
+            <Text style={{ color: colors.secondary }} className="text-caption font-num font-semibold">
               {digits(d.window_start)} – {digits(d.window_end)}
               {overnight ? pick(" (भोलि)", " (next day)") : ""}
             </Text>
@@ -114,12 +114,12 @@ export function SaitDayCard({
       <View className="flex-row flex-wrap border-t border-border pt-3">
         {rows.map((r) => (
           <View key={r.label} style={{ width: "50%" }} className="gap-0.5 pb-2 pr-3">
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
               {r.label}
             </Text>
             <Text
               numberOfLines={1}
-              className="text-sm font-semibold text-foreground"
+              className="text-body font-semibold text-foreground"
               style={nepaliTextStyle(13)}
             >
               {r.value}
@@ -132,7 +132,7 @@ export function SaitDayCard({
         <View className="mt-3 border-t border-border pt-2.5">
           <View className="flex-row flex-wrap items-center gap-1.5">
             <Text
-              className="text-xs font-semibold text-muted-foreground"
+              className="text-caption font-semibold text-muted-foreground"
               style={nepaliTextStyle(11)}
             >
               {pick("ग्रह शुद्धि", "Graha Śuddhi")}
@@ -148,11 +148,11 @@ export function SaitDayCard({
                 >
                   <Text
                     style={{ color: tone.fg, ...nepaliTextStyle(11) }}
-                    className="text-xs font-semibold"
+                    className="text-caption font-semibold"
                   >
                     {pick(name?.ne ?? p.planet, name?.en ?? p.planet)}
                   </Text>
-                  <Text style={{ color: tone.fg }} className="font-num text-xs font-semibold">
+                  <Text style={{ color: tone.fg }} className="text-caption font-num font-semibold">
                     {digits(p.house)}
                   </Text>
                 </View>
@@ -161,7 +161,7 @@ export function SaitDayCard({
           </View>
           <Text
             style={{ color: SHUDDHI_TONE_STYLE[shuddhi.tone].fg, ...nepaliTextStyle(11) }}
-            className="mt-1.5 text-xs font-semibold"
+            className="text-caption mt-1.5 font-semibold"
           >
             {pick(SHUDDHI_SUMMARY[shuddhi.tone].ne, SHUDDHI_SUMMARY[shuddhi.tone].en)}
             <Text className="font-normal text-muted-foreground">
@@ -178,7 +178,7 @@ export function SaitDayCard({
             <View className="flex-row items-center gap-1">
               <Ionicons name="compass-outline" size={13} color={colors.mutedForeground} />
               <Text
-                className="text-xs font-semibold text-muted-foreground"
+                className="text-caption font-semibold text-muted-foreground"
                 style={nepaliTextStyle(11)}
               >
                 {pick("कुम्भ चक्र", "Kumbha Chakra")}
@@ -190,7 +190,7 @@ export function SaitDayCard({
             >
               <Text
                 style={{ color: SHUDDHI_TONE_STYLE[kumbha.tone].fg, ...nepaliTextStyle(11) }}
-                className="text-xs font-semibold"
+                className="text-caption font-semibold"
               >
                 {pick(kumbha.zone_ne, kumbha.zone_en)}
               </Text>
@@ -198,7 +198,7 @@ export function SaitDayCard({
           </View>
           <Text
             style={{ color: SHUDDHI_TONE_STYLE[kumbha.tone].fg, ...nepaliTextStyle(11) }}
-            className="mt-1.5 text-xs font-semibold"
+            className="text-caption mt-1.5 font-semibold"
           >
             {pick(kumbha.effect_ne, kumbha.effect_en)}
             <Text className="font-normal text-muted-foreground">
@@ -215,7 +215,7 @@ export function SaitDayCard({
             <View className="flex-row items-center gap-1">
               <Ionicons name="happy-outline" size={13} color={colors.mutedForeground} />
               <Text
-                className="text-xs font-semibold text-muted-foreground"
+                className="text-caption font-semibold text-muted-foreground"
                 style={nepaliTextStyle(11)}
               >
                 {pick("अन्नप्राशन उमेर महिना", "Annaprāśana age month")}
@@ -227,7 +227,7 @@ export function SaitDayCard({
             >
               <Text
                 style={{ color: SHUDDHI_TONE_STYLE[annaMonth.tone].fg }}
-                className="font-num text-xs font-semibold"
+                className="text-caption font-num font-semibold"
               >
                 {pick(
                   `${digits(annaMonth.ordinal_month)} औँ महिना`,
@@ -238,7 +238,7 @@ export function SaitDayCard({
           </View>
           <Text
             style={{ color: SHUDDHI_TONE_STYLE[annaMonth.tone].fg, ...nepaliTextStyle(11) }}
-            className="mt-1.5 text-xs font-semibold"
+            className="text-caption mt-1.5 font-semibold"
           >
             {annaMonth.matches
               ? pick("बच्चाको सही उमेर महिना", "The child's right age month")

@@ -34,11 +34,11 @@ export function KundaliLoginPrompt({
       <View className="mb-4 h-14 w-14 items-center justify-center rounded-full bg-secondary/15">
         <Ionicons name={icon} size={28} color={colors.secondary} />
       </View>
-      <Text className="text-center text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+      <Text className="text-title text-center font-bold text-foreground" style={nepaliTextStyle(20)}>
         {pick(titleNe, titleEn)}
       </Text>
       <Text
-        className="mt-2 max-w-md text-center text-sm text-muted-foreground"
+        className="text-body mt-2 max-w-md text-center text-muted-foreground"
         style={nepaliTextStyle(14)}
       >
         {pick(bodyNe, bodyEn)}

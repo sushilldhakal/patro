@@ -88,14 +88,14 @@ const wheelCornerBtnStyle = {
 
 const headEyebrowStyle = {
   color: W_INK_FAINT,
-  fontSize: 12,
+  fontSize: 15,
   fontWeight: "600" as const,
   letterSpacing: 1.6,
   textTransform: "uppercase" as const,
 };
 const headTitleStyle = {
   color: W_INK,
-  fontSize: 18,
+  fontSize: 22,
   fontWeight: "700" as const,
   /* Devanagari line box, not a Latin one — 24 for 18 px cropped the matras. */
   lineHeight: nepaliLineHeight(18),
@@ -103,7 +103,7 @@ const headTitleStyle = {
 };
 const headSubStyle = {
   color: W_INK_DIM,
-  fontSize: 14,
+  fontSize: 15,
   marginTop: 4,
 };
 
@@ -212,7 +212,7 @@ function WheelCalendarModal({
           <Text
             style={{
               color: colors.foreground,
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: "700",
               lineHeight: nepaliLineHeight(16),
             }}
@@ -389,7 +389,7 @@ function WheelRangeDock({
           <Ionicons name="play-forward" size={15} color={W_INK} />
         </Pressable>
 
-        <Text style={{ color: W_INK, fontSize: 13, fontWeight: "600", flexShrink: 0 }}>
+        <Text style={{ color: W_INK, fontSize: 15, fontWeight: "600", flexShrink: 0 }}>
           {digits(dayLabel)}
           <Text style={{ color: W_INK_DIM }}>
             /{digits(totalLabel)}
@@ -469,9 +469,9 @@ function WheelDock({
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0 }}>
-          <Text style={{ color: W_INK_DIM, fontSize: 14, flexShrink: 0 }}>{pick("समय", "Time")}</Text>
+          <Text style={{ color: W_INK_DIM, fontSize: 15, flexShrink: 0 }}>{pick("समय", "Time")}</Text>
           <GhatiScrubber value={scrubG} onChange={onScrubChange} trackWidth={scrubTrackWidth} />
-          <Text style={{ color: W_INK, minWidth: 52, textAlign: "center", fontSize: 14, fontWeight: "600" }}>
+          <Text style={{ color: W_INK, minWidth: 52, textAlign: "center", fontSize: 15, fontWeight: "600" }}>
             {digits(scrubClock)}
           </Text>
         </View>
@@ -491,7 +491,7 @@ function WheelDock({
               }}
               accessibilityLabel={pick("अहिलेको समय", "Current time")}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#ffffff" }}>{pick("आज", "Now")}</Text>
+              <Text style={{ fontSize: 15, fontWeight: "700", color: "#ffffff" }}>{pick("आज", "Now")}</Text>
             </Pressable>
           ) : null}
           <PlanetSelectMenu
@@ -764,7 +764,7 @@ function WheelBody({
 
   const renderHeader = (fullscreen?: boolean) => {
     const eyebrow = compactHead
-      ? { ...headEyebrowStyle, fontSize: 10, letterSpacing: 1.2 }
+      ? { ...headEyebrowStyle, fontSize: 15, letterSpacing: 1.2 }
       : headEyebrowStyle;
     const title = compactHead
       ? {
@@ -775,7 +775,7 @@ function WheelBody({
         }
       : headTitleStyle;
     const sub = compactHead
-      ? { ...headSubStyle, fontSize: 12, marginTop: 2 }
+      ? { ...headSubStyle, fontSize: 15, marginTop: 2 }
       : headSubStyle;
     const top = fullscreen ? insets.top + 6 : compactHead ? 8 : 10;
 
@@ -808,7 +808,7 @@ function WheelBody({
           <Text
             style={{
               color: "#f9c800",
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: "700",
               marginTop: 4,
             }}
@@ -887,12 +887,12 @@ function WheelBody({
       >
         <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
           <View className={wheelLegendDot} style={{ backgroundColor: W_ACCENT }} />
-          <Text style={{ fontSize: 13, color: W_INK_DIM }}>
+          <Text style={{ fontSize: 15, color: W_INK_DIM }}>
             {pick("वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
           </Text>
         </View>
         {!isTablet && !fullscreen ? (
-          <Text style={{ fontSize: 12, color: W_INK_FAINT }}>
+          <Text style={{ fontSize: 15, color: W_INK_FAINT }}>
             {pick("घुमाउन तान्नुहोस् · जुम गर्नुहोस् · दुई औंलाले सार्नुहोस्", "Drag to rotate · pinch to zoom · two fingers to pan")}
           </Text>
         ) : null}
@@ -900,11 +900,11 @@ function WheelBody({
           <>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: "#f2a81d" }} />
-              <Text style={{ fontSize: 13, color: W_INK_DIM }}>{pick("सूर्य राशि", "Sun sign")}</Text>
+              <Text style={{ fontSize: 15, color: W_INK_DIM }}>{pick("सूर्य राशि", "Sun sign")}</Text>
             </View>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: "#d3dce4" }} />
-              <Text style={{ fontSize: 13, color: W_INK_DIM }}>{pick("चन्द्र राशि", "Moon sign")}</Text>
+              <Text style={{ fontSize: 15, color: W_INK_DIM }}>{pick("चन्द्र राशि", "Moon sign")}</Text>
             </View>
           </>
         ) : null}

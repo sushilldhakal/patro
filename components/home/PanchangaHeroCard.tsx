@@ -145,20 +145,20 @@ export function PanchangaHeroCard({
         >
           <View className="flex-row items-start justify-between gap-3">
             <View className="min-w-0 flex-1">
-              <Text className="text-sm font-semibold tracking-widest text-white/70">
+              <Text className="text-body font-semibold tracking-widest text-white/70">
                 {(isToday ? pick("आज", "TODAY") : (weekdayNe ?? "")).toUpperCase()}
               </Text>
-              <Text className="mt-2 text-4xl font-bold leading-tight text-white md:text-3xl">
+              <Text className="text-display mt-2 font-bold text-white">
                 {displayHeroDate}
               </Text>
-              <Text className="mt-0.5 text-sm text-white/90">
+              <Text className="text-body mt-0.5 text-white/90">
                 {weekdayNe}
                 {`, ${vikramEraLabel} ${digits(patroYearForLabel)}`}
                 {samvatsaraLabel ? (
                   <Text className="text-white/75">{` · ${samvatsaraLabel}`}</Text>
                 ) : null}
               </Text>
-              <Text className="mt-1.5 text-xs text-white/70">{adDisplay}</Text>
+              <Text className="text-caption mt-1.5 text-white/70">{adDisplay}</Text>
             </View>
 
             {(paksha || tithi || topFestName) ? (
@@ -200,7 +200,7 @@ function HeroPill({ label, kind }: { label: string; kind?: "public" | "festival"
     >
       <Text
         style={{ color: text, ...nepaliTextStyle(14) }}
-        className="text-sm font-semibold"
+        className="text-body font-semibold"
         numberOfLines={2}
       >
         {label}

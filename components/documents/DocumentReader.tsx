@@ -94,11 +94,11 @@ export function DocumentReader({
         return (
           <View className="mb-3 mt-5 flex-row items-center gap-3">
             <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary/10">
-              <Text className="text-base font-bold text-secondary">{digits(n)}</Text>
+              <Text className="text-body font-bold text-secondary">{digits(n)}</Text>
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="text-lg font-bold">{t("documents.chapter_label", { number: digits(n) })}</Text>
-              {title ? <Text className="text-sm text-muted-foreground">{title}</Text> : null}
+              <Text className="text-title font-bold">{t("documents.chapter_label", { number: digits(n) })}</Text>
+              {title ? <Text className="text-body text-muted-foreground">{title}</Text> : null}
             </View>
           </View>
         );
@@ -111,11 +111,11 @@ export function DocumentReader({
         ].filter(Boolean);
         return (
           <View className="mb-2 mt-3">
-            <Text className="text-sm font-bold text-secondary" style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
+            <Text className="text-body font-bold text-secondary" style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
               {t("documents.sukta_label", { number: digits(item.number) })}
             </Text>
             {parts.length ? (
-              <Text className="mt-0.5 text-xs text-muted-foreground" style={lang === "ne" ? nepaliTextStyle(13) : undefined}>
+              <Text className="text-caption mt-0.5 text-muted-foreground" style={lang === "ne" ? nepaliTextStyle(13) : undefined}>
                 {parts.join(" · ")}
               </Text>
             ) : null}

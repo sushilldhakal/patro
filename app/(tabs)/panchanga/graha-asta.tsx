@@ -59,19 +59,19 @@ function StampLine({
     <View className="flex-row items-start justify-between gap-2">
       <Text
         style={{ color: tone === "asta" ? colors.danger : colors.accent, ...nepaliTextStyle(13) }}
-        className="text-sm font-semibold"
+        className="text-body font-semibold"
       >
         {label}
       </Text>
       {stamp ? (
-        <Text className="text-right text-sm">
+        <Text className="text-body text-right">
           <Text className="font-num font-semibold text-foreground">
             {digits(stampDate(stamp, lang))}
           </Text>
           <Text className="font-num text-muted-foreground"> · {digits(stamp.time_short)}</Text>
         </Text>
       ) : (
-        <Text className="text-right text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-right text-muted-foreground" style={nepaliTextStyle(13)}>
           {pick("वर्ष बाहिर", "outside year")}
         </Text>
       )}
@@ -97,11 +97,11 @@ function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
       <StampLine label={pick("अस्त आरम्भ", "Asta begins")} stamp={period.start} tone="asta" />
       <StampLine label={pick("उदय (अन्त्य)", "Udaya (ends)")} stamp={period.end} tone="udaya" />
       <View className="flex-row items-baseline justify-between gap-2 border-t border-border pt-1">
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {hemi}
         </Text>
         {period.duration_days != null ? (
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
             {pick(`${digits(period.duration_days)} दिन`, `${period.duration_days} days`)}
           </Text>
         ) : null}
@@ -156,7 +156,7 @@ export default function GrahaAstaScreen() {
       />
 
       {query.isLoading && !query.data ? (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : query.data ? (
@@ -179,7 +179,7 @@ export default function GrahaAstaScreen() {
                   periods.map((p, i) => <PeriodCard key={i} period={p} />)
                 ) : (
                   <Text
-                    className="px-2 py-1.5 text-sm text-muted-foreground"
+                    className="text-body px-2 py-1.5 text-muted-foreground"
                     style={nepaliTextStyle(14)}
                   >
                     {pick("यस वर्ष अस्त छैन।", "No asta this year.")}
@@ -190,7 +190,7 @@ export default function GrahaAstaScreen() {
           })}
         </View>
       ) : (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
           {pick("ल्याउन सकिएन।", "Could not load.")}
         </Text>
       )}

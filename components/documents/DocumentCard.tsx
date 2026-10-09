@@ -27,20 +27,20 @@ export function DocumentCard({ doc }: { doc: DocumentSummary }) {
         </View>
         <Ionicons name="chevron-forward" size={18} color={colors.mutedForeground} />
       </View>
-      <Text className="mt-3 text-lg font-semibold">{title}</Text>
-      {subtitle ? <Text className="mt-0.5 text-sm text-muted-foreground">{subtitle}</Text> : null}
+      <Text className="text-title mt-3 font-semibold">{title}</Text>
+      {subtitle ? <Text className="text-body mt-0.5 text-muted-foreground">{subtitle}</Text> : null}
       {description ? (
-        <Text className="mt-2 text-sm text-muted-foreground" numberOfLines={2}>
+        <Text className="text-body mt-2 text-muted-foreground" numberOfLines={2}>
           {description}
         </Text>
       ) : null}
       <View className="mt-3 flex-row items-center gap-3">
         {doc.has_chapters ? (
-          <Text className="text-xs font-semibold text-muted-foreground">
+          <Text className="text-caption font-semibold text-muted-foreground">
             {t("documents.chapters_count", { count: digits(doc.chapter_count) })}
           </Text>
         ) : null}
-        <Text className="text-xs font-semibold text-muted-foreground">
+        <Text className="text-caption font-semibold text-muted-foreground">
           {t("documents.shlokas_count", { count: digits(doc.shloka_count) })}
         </Text>
       </View>

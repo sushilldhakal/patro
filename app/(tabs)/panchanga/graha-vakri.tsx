@@ -33,14 +33,14 @@ function EventRow({ ev, index }: { ev: GrahaVakriEvent; index: number }) {
   return (
     <TableRow rowIndex={index} className="items-center justify-between gap-2 rounded-md px-2.5 py-1.5">
       <View className="flex-row items-center gap-1.5">
-        <Text style={{ color: tone }} className="text-sm font-semibold">
+        <Text style={{ color: tone }} className="text-body font-semibold">
           {isVakri ? "↺" : "→"}
         </Text>
-        <Text style={{ color: tone, ...nepaliTextStyle(13) }} className="text-sm font-semibold">
+        <Text style={{ color: tone, ...nepaliTextStyle(13) }} className="text-body font-semibold">
           {isVakri ? pick("वक्री", "Retrograde") : pick("मार्गी", "Direct")}
         </Text>
       </View>
-      <Text className="text-right text-sm">
+      <Text className="text-body text-right">
         <Text className="font-num font-semibold text-foreground">{digits(dateLabel)}</Text>
         {timeLabel ? (
           <Text className="font-num text-muted-foreground"> · {digits(timeLabel)}</Text>
@@ -96,7 +96,7 @@ export default function GrahaVakriScreen() {
       />
 
       {query.isLoading && !query.data ? (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : query.data ? (
@@ -118,7 +118,7 @@ export default function GrahaVakriScreen() {
                   events.map((ev, i) => <EventRow key={i} ev={ev} index={i} />)
                 ) : (
                   <Text
-                    className="px-2 py-1.5 text-sm text-muted-foreground"
+                    className="text-body px-2 py-1.5 text-muted-foreground"
                     style={nepaliTextStyle(14)}
                   >
                     {pick("यस वर्ष वक्री हुँदैन।", "No retrograde this year.")}
@@ -129,7 +129,7 @@ export default function GrahaVakriScreen() {
           })}
         </View>
       ) : (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
           {pick("ल्याउन सकिएन।", "Could not load.")}
         </Text>
       )}

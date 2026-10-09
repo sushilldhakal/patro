@@ -38,7 +38,7 @@ export function PatroYearEraToggle({ era, onEraChange, compact, className }: Pro
     >
       <Text
         numberOfLines={1}
-        className={cn("font-semibold text-muted-foreground", compact ? "text-[12px]" : "text-xs")}
+        className={cn("font-semibold text-muted-foreground", compact ? "text-caption" : "text-caption")}
         style={nepaliTextStyle(compact ? 10 : 12)}
       >
         {targetLabel}

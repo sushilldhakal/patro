@@ -121,7 +121,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           onChangeText={setQuery}
           placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
           placeholderTextColor={colors.mutedForeground}
-          className="h-10 flex-1 text-sm text-foreground"
+          className="text-body h-10 flex-1 text-foreground"
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="search"
@@ -139,17 +139,17 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
         ) : (
           <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
         )}
-        <Text className="text-sm font-semibold text-secondary-foreground">
+        <Text className="text-body font-semibold text-secondary-foreground">
           {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
         </Text>
       </Pressable>
 
-      {geoError ? <Text className="text-sm text-destructive">{geoError}</Text> : null}
+      {geoError ? <Text className="text-body text-destructive">{geoError}</Text> : null}
     </View>
   );
 
   const listFooter = (
-    <Text className="px-4 py-2 text-center text-xs text-muted-foreground">
+    <Text className="text-caption px-4 py-2 text-center text-muted-foreground">
       {pick("स्थान परिवर्तन तुरुन्त लागू हुन्छ।", "Location changes apply immediately.")}
     </Text>
   );
@@ -185,7 +185,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           ListEmptyComponent={
             emptyMessage ? (
               <View className="items-center justify-center px-4 py-8">
-                <Text className="text-center text-sm text-muted-foreground">{emptyMessage}</Text>
+                <Text className="text-body text-center text-muted-foreground">{emptyMessage}</Text>
               </View>
             ) : null
           }
@@ -200,8 +200,8 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
                   selected && "bg-secondary/10",
                 )}
               >
-                <Text className="text-sm font-semibold text-foreground">{cityLabel(item)}</Text>
-                <Text className="text-xs text-muted-foreground">
+                <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
+                <Text className="text-caption text-muted-foreground">
                   {item.admin1_name ? `${item.admin1_name}, ` : ""}
                   {item.country}
                 </Text>
@@ -216,7 +216,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
   const listBody =
     debouncedQuery.length < 2 ? (
       <View className="items-center justify-center px-4 py-8">
-        <Text className="text-center text-sm text-muted-foreground">
+        <Text className="text-body text-center text-muted-foreground">
           {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
         </Text>
       </View>
@@ -226,7 +226,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
       </View>
     ) : results.length === 0 ? (
       <View className="items-center justify-center px-4 py-8">
-        <Text className="text-center text-sm text-muted-foreground">
+        <Text className="text-body text-center text-muted-foreground">
           {pick("कुनै सहर भेटिएन", "No city found")}
         </Text>
       </View>
@@ -247,8 +247,8 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
                 selected && "bg-secondary/10",
               )}
             >
-              <Text className="text-sm font-semibold text-foreground">{cityLabel(item)}</Text>
-              <Text className="text-xs text-muted-foreground">
+              <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
+              <Text className="text-caption text-muted-foreground">
                 {item.admin1_name ? `${item.admin1_name}, ` : ""}
                 {item.country}
               </Text>

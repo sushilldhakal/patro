@@ -76,7 +76,7 @@ function pickLabel(form: ProfileInput): string {
 
 function FieldLabel({ children }: { children: string }) {
   return (
-    <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+    <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
       {children}
     </Text>
   );
@@ -104,7 +104,7 @@ function FieldInput({
       placeholderTextColor={colors.mutedForeground}
       keyboardType={keyboardType}
       maxLength={maxLength}
-      className="rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground"
+      className="text-body rounded-lg border border-border bg-card px-3 py-2.5 text-foreground"
       style={nepaliTextStyle(14)}
     />
   );
@@ -128,7 +128,7 @@ function OptionChip({
       )}
     >
       <Text
-        className={cn("text-sm", active ? "font-semibold text-secondary" : "text-foreground")}
+        className={cn("text-body", active ? "font-semibold text-secondary" : "text-foreground")}
         style={nepaliTextStyle(14)}
       >
         {label}
@@ -222,7 +222,7 @@ export function ProfileForm({
             onChangeText={(v) => set("email", v)}
             placeholder="you@example.com"
             placeholderTextColor={colors.mutedForeground}
-            className="rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground"
+            className="text-body rounded-lg border border-border bg-card px-3 py-2.5 text-foreground"
             style={nepaliTextStyle(14)}
           />
         </View>
@@ -252,7 +252,7 @@ export function ProfileForm({
         <FieldLabel>{pick("जन्म स्थान", "Birth place")}</FieldLabel>
         <LocationSelector location={birthLocation} onLocationChange={onLocationChange} />
         {form.country ? (
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
             {form.country}
             {form.timezone ? ` · ${form.timezone}` : ""}
           </Text>
@@ -299,13 +299,13 @@ export function ProfileForm({
 
       <View className="flex-row items-center gap-2">
         <Switch value={!!form.is_default} onValueChange={(v) => set("is_default", v)} />
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
           {pick("पूर्वनिर्धारित प्रोफाइल", "Set as default profile")}
         </Text>
       </View>
 
       {error ? (
-        <Text className="text-sm text-destructive" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
           {error}
         </Text>
       ) : null}

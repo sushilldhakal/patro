@@ -436,7 +436,7 @@ function RingLabel({
               <TSpan
                 key={`${row}-${i}`}
                 x={CX}
-                dy={i === 0 ? -0.55 * (stack.length - 1) * fontSize : 1.1 * fontSize}
+                dy={i === 0 ? -0.55 * (stack.length - 1) * fontSize : 15 * fontSize}
               >
                 {row}
               </TSpan>
@@ -996,7 +996,7 @@ function WheelChartImpl({
             textAnchor="middle"
             alignmentBaseline="middle"
             fill="#f9c800"
-            fontSize={14}
+            fontSize={15}
             fontFamily={FONT}
             {...(normDeg(targetLon + spin) > 90 && normDeg(targetLon + spin) < 270
               ? { transform: `rotate(180 ${CX} ${CY - (R.bsOut + 5)})` }
@@ -1263,7 +1263,7 @@ function WheelChartImpl({
         }
 
         core.push(
-          <SvgText key={`pn${i}`} x={px} y={py + planetR + 9} textAnchor="middle" fill={W_INK_DIM} fontSize={8.5} fontFamily={FONT} pointerEvents="none">
+          <SvgText key={`pn${i}`} x={px} y={py + planetR + 9} textAnchor="middle" fill={W_INK_DIM} fontSize={15} fontFamily={FONT} pointerEvents="none">
             {g.ne}
           </SvgText>,
         );

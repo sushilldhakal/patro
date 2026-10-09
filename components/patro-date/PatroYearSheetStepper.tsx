@@ -182,12 +182,12 @@ export function PatroYearSheetStepper({
         className="mx-2 mt-2 flex-row items-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2.5 active:bg-muted"
       >
         <Ionicons name="keypad-outline" size={18} color={colors.secondary} />
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {manualLabel}
         </Text>
       </Pressable>
       <Text
-        className="mt-1.5 px-4 text-center text-xs text-muted-foreground"
+        className="text-caption mt-1.5 px-4 text-center text-muted-foreground"
         numberOfLines={1}
         style={nepaliTextStyle(11)}
       >
@@ -205,7 +205,7 @@ export function PatroYearSheetStepper({
             style={{ height: 44 }}
           >
             <Pressable onPress={commitManual} hitSlop={8}>
-              <Text className="text-base font-semibold text-primary" style={nepaliTextStyle(16)}>
+              <Text className="text-body font-semibold text-primary" style={nepaliTextStyle(16)}>
                 {pick("भयो", "Done")}
               </Text>
             </Pressable>
@@ -216,7 +216,7 @@ export function PatroYearSheetStepper({
         onPress={switchEra}
         className="flex-row items-center justify-center rounded-md border border-border bg-card px-3 py-2.5 active:bg-muted"
       >
-        <Text className="text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick(`${targetLabel} मा जानुहोस्`, `Switch to ${targetLabel}`)}
         </Text>
       </Pressable>
@@ -238,10 +238,10 @@ export function PatroYearSheetStepper({
           accessibilityLabel={pick("वर्ष छान्नुहोस्", "Choose year")}
           className="h-9 min-w-[7.5rem] flex-1 flex-row items-center justify-center gap-1 rounded-md border border-border bg-card px-2 active:bg-muted"
         >
-          <Text className="font-num text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-num font-semibold text-foreground" style={nepaliTextStyle(16)}>
             {digits(clamped)}
           </Text>
-          <Text className="text-xs font-medium text-muted-foreground">{eraShort}</Text>
+          <Text className="text-caption font-medium text-muted-foreground">{eraShort}</Text>
           <Ionicons name="chevron-down" size={14} color={colors.mutedForeground} />
         </Pressable>
 
@@ -270,16 +270,16 @@ export function PatroYearSheetStepper({
       >
             <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
               <Pressable onPress={() => setPickerOpen(false)} hitSlop={8}>
-                <Text className="text-base text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+                <Text className="text-body text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
               </Pressable>
-              <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+              <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(16)}>
                 {pick("वर्ष", "Year")}
               </Text>
               <Pressable
                 onPress={manualMode ? commitManual : () => setPickerOpen(false)}
                 hitSlop={8}
               >
-                <Text className="text-base font-semibold text-primary">
+                <Text className="text-body font-semibold text-primary">
                   {manualMode ? pick("भयो", "Done") : " "}
                 </Text>
               </Pressable>
@@ -287,7 +287,7 @@ export function PatroYearSheetStepper({
 
             {manualMode ? (
               <View className="gap-3 px-4 py-4">
-                <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                   {pick("वर्ष नम्बर टाइप गर्नुहोस्", "Type the year number")}
                 </Text>
                 <TextInput
@@ -303,7 +303,7 @@ export function PatroYearSheetStepper({
                     Platform.OS === "ios" ? YEAR_MANUAL_INPUT_ACCESSORY_ID : undefined
                   }
                   onSubmitEditing={commitManual}
-                  className="h-12 rounded-md border border-border bg-card px-3 text-center font-num text-xl font-bold text-foreground"
+                  className="text-title h-12 rounded-md border border-border bg-card px-3 text-center font-num font-bold text-foreground"
                   style={[
                     { color: colors.foreground, borderColor: colors.border },
                     nepaliTextStyle(20),
@@ -350,7 +350,7 @@ export function PatroYearSheetStepper({
                       >
                         <Text
                           className={cn(
-                            "text-center font-num text-base font-semibold",
+                            "text-body text-center font-num font-semibold",
                             selected ? "text-secondary-foreground" : "text-foreground",
                           )}
                         >

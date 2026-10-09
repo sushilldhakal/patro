@@ -112,10 +112,10 @@ function ComponentTile({
   const signed = value < 0 ? `−${abs}` : abs;
   return (
     <View style={{ backgroundColor: colorWithAlpha(colors.muted, 0.3) }} className="flex-1 rounded-xl border border-border px-2.5 py-2">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)} numberOfLines={1}>
+      <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)} numberOfLines={1}>
         {label}
       </Text>
-      <Text className="mt-1 font-num text-sm font-semibold text-foreground" numberOfLines={1}>
+      <Text className="text-body mt-1 font-num font-semibold text-foreground" numberOfLines={1}>
         {digits(signed)}
       </Text>
       <View className="mt-2">
@@ -143,7 +143,7 @@ function StrengthBadge({ band, isStrongest, lang }: { band: StrengthBand; isStro
   const textColor = band === "weak" ? colors.destructive : isGood ? colors.primary : colors.mutedForeground;
   return (
     <View style={style} className="shrink-0 rounded-full border px-2.5 py-0.5">
-      <Text style={{ color: textColor }} className="text-sm font-semibold">
+      <Text style={{ color: textColor }} className="text-body font-semibold">
         {label}
       </Text>
     </View>
@@ -201,10 +201,10 @@ export function BhavaBalaChart({
   return (
     <View className="gap-4">
       <View>
-        <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
           {kundaliLabel("explore_houses", lang)}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
           {kundaliLabel("explore_houses_hint", lang)}
         </Text>
       </View>
@@ -232,7 +232,7 @@ export function BhavaBalaChart({
         <LegendSwatch colorToken="mutedForeground" label={kundaliLabel("average_strength", lang)} />
         <LegendSwatch colorToken="destructive" label={lang === "en" ? "Weak" : "कमजोर"} />
       </View>
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
         {kundaliLabel("explore_houses_legend", lang)}
       </Text>
     </View>
@@ -244,7 +244,7 @@ function LegendSwatch({ colorToken, label }: { colorToken: "primary" | "mutedFor
   return (
     <View className="flex-row items-center gap-2">
       <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors[colorToken] }} />
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
         {label}
       </Text>
     </View>
@@ -303,7 +303,7 @@ function BhavaDiamond({
                   y={ny}
                   textAnchor="middle"
                   fill={colors.mutedForeground}
-                  fontSize={9}
+                  fontSize={15}
                   fontWeight="600"
                   onPress={svgOnPress(() => onSelectHouse(houseNum))}
                 >
@@ -314,7 +314,7 @@ function BhavaDiamond({
                   y={cy + 3}
                   textAnchor="middle"
                   fill={scoreColor(band)}
-                  fontSize={15}
+                  fontSize={18}
                   fontWeight="700"
                   onPress={svgOnPress(() => onSelectHouse(houseNum))}
                 >
@@ -378,15 +378,15 @@ function HouseInspector({
       <View className="flex-row items-start justify-between gap-3">
         <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1.5">
           <View style={{ backgroundColor: colors.primary }} className="h-7 w-7 items-center justify-center rounded-full">
-            <Text style={{ color: colors.background }} className="text-sm font-bold">
+            <Text style={{ color: colors.background }} className="text-body font-bold">
               {digits(house.house)}
             </Text>
           </View>
-          <Text className="text-xl font-semibold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-title font-semibold text-foreground" style={nepaliTextStyle(18)}>
             {formatRashiByNumber(rashi, lang)}
           </Text>
           {classical ? (
-            <Text className="text-base font-normal text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body font-normal text-muted-foreground" style={nepaliTextStyle(14)}>
               · {pick(classical.ne, classical.en)}
             </Text>
           ) : null}
@@ -412,16 +412,16 @@ function HouseInspector({
       </View>
 
       <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1.5">
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
           {kundaliLabel("ruled_by", lang)}
         </Text>
         <GrahaInline grahaKey={lordKey} label={lordName} size={16} textSize={12} />
         {classes.length > 0 ? (
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
             · {classes.map((cls) => kundaliLabel(cls, lang)).join(" · ")}
           </Text>
         ) : null}
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
           · {kundaliLabelVars("house_rank", lang, { rank: digits(rank), total: digits(totalHouses) })}
         </Text>
         <StrengthBadge band={band} isStrongest={isStrongest} lang={lang} />
@@ -429,11 +429,11 @@ function HouseInspector({
 
       <View>
         <View className="flex-row items-baseline justify-between gap-3">
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
             {kundaliLabel("nav_bhava_bala", lang)}
           </Text>
           <Text
-            className="font-num text-sm font-semibold"
+            className="text-body font-num font-semibold"
             style={{ color: band === "strong" ? colors.primary : band === "weak" ? colors.destructive : colors.mutedForeground }}
           >
             {kundaliLabelVars("virupas_rupas", lang, {
@@ -455,25 +455,25 @@ function HouseInspector({
 
       <View className="gap-3">
         <View>
-          <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+          <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
             {kundaliLabel("signifies", lang)}
           </Text>
           {signifies.length > 0 ? (
             <View className="flex-row flex-wrap gap-1.5">
               {signifies.map((item) => (
                 <Chip key={item}>
-                  <Text className="text-sm text-foreground" style={nepaliTextStyle(12)}>
+                  <Text className="text-body text-foreground" style={nepaliTextStyle(12)}>
                     {item}
                   </Text>
                 </Chip>
               ))}
             </View>
           ) : (
-            <Text className="text-sm text-muted-foreground">—</Text>
+            <Text className="text-body text-muted-foreground">—</Text>
           )}
         </View>
         <View>
-          <Text className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+          <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
             {kundaliLabel("occupants", lang)}
           </Text>
           {occupants.length > 0 ? (
@@ -489,7 +489,7 @@ function HouseInspector({
               })}
             </View>
           ) : (
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
               {kundaliLabel("no_occupants", lang)}
             </Text>
           )}

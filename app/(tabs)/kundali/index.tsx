@@ -55,7 +55,7 @@ export default function KundaliScreen() {
         {authLoading ? (
           <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12">
             <ActivityIndicator />
-            <Text className="mt-2 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick("लोड हुँदै…", "Loading…")}
             </Text>
           </View>
@@ -70,7 +70,7 @@ export default function KundaliScreen() {
           />
         ) : (
           <View className="gap-4">
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
               {pick(
                 "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
                 "Select a profile or add a new one.",

@@ -60,7 +60,7 @@ export function KundaliSidebarSubnav({
             >
               <Text
                 className={cn(
-                  "text-xs leading-snug",
+                  "text-caption",
                   active ? "font-semibold text-secondary" : "text-muted-foreground",
                 )}
                 style={nepaliTextStyle(12)}
@@ -94,7 +94,7 @@ export function KundaliSidebarSubnav({
               >
                 <Text
                   className={cn(
-                    "text-xs leading-snug",
+                    "text-caption",
                     active ? "font-semibold text-secondary" : "text-muted-foreground",
                   )}
                   style={nepaliTextStyle(12)}
@@ -106,7 +106,7 @@ export function KundaliSidebarSubnav({
                 onPress={() => setExpandedId(expanded ? null : group.id)}
                 className="px-2 py-1.5"
               >
-                <Text className="text-xs text-muted-foreground">{expanded ? "▾" : "▸"}</Text>
+                <Text className="text-caption text-muted-foreground">{expanded ? "▾" : "▸"}</Text>
               </Pressable>
             </View>
             {expanded
@@ -125,7 +125,7 @@ export function KundaliSidebarSubnav({
                     >
                       <Text
                         className={cn(
-                          "text-xs leading-snug",
+                          "text-caption",
                           childActive ? "font-semibold text-primary" : "text-muted-foreground",
                         )}
                         style={nepaliTextStyle(12)}

@@ -53,7 +53,7 @@ export function KundaliSectionNav({
     return (
       <View className={cn("overflow-hidden rounded-2xl border border-border bg-card", className)}>
         <Text
-          className="border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          className="text-caption border-b border-border px-4 py-3 font-semibold uppercase tracking-wider text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {pick("कुण्डली खण्ड", "Chart sections")}
@@ -75,7 +75,7 @@ export function KundaliSectionNav({
                   style={active ? { borderWidth: 1, borderColor: `${colors.secondary}40` } : undefined}
                 >
                   <Text
-                    className={cn("text-sm", active ? "font-semibold text-secondary" : "text-foreground")}
+                    className={cn("text-body", active ? "font-semibold text-secondary" : "text-foreground")}
                     style={nepaliTextStyle(14)}
                   >
                     {kundaliSectionLabel(group, lang)}
@@ -98,7 +98,7 @@ export function KundaliSectionNav({
                         >
                           <Text
                             className={cn(
-                              "text-sm",
+                              "text-body",
                               childActive ? "font-semibold text-primary" : "text-muted-foreground",
                             )}
                             style={nepaliTextStyle(13)}
@@ -147,7 +147,7 @@ export function KundaliSectionNav({
               className="rounded-full border px-3 py-1.5 active:opacity-80"
             >
               <Text
-                className={cn("text-xs whitespace-nowrap", active ? "font-semibold text-secondary" : "text-foreground")}
+                className={cn("text-caption whitespace-nowrap", active ? "font-semibold text-secondary" : "text-foreground")}
                 style={nepaliTextStyle(12)}
               >
                 {kundaliSectionLabel(group, lang)}
@@ -176,7 +176,7 @@ export function KundaliSectionNav({
                 className="rounded-full border border-dashed px-3 py-1.5 active:opacity-80"
               >
                 <Text
-                  className={cn("text-xs whitespace-nowrap", active ? "font-semibold text-primary" : "text-foreground")}
+                  className={cn("text-caption whitespace-nowrap", active ? "font-semibold text-primary" : "text-foreground")}
                   style={nepaliTextStyle(12)}
                 >
                   {kundaliSectionLabel(child, lang)}

@@ -727,10 +727,10 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       )}
     >
       <Text
-        className="text-[12px] font-semibold"
+        className="text-caption font-semibold"
         style={[
           nepaliTextStyle(11),
-          { color: active ? "#04070d" : "rgba(255,255,255,0.65)", fontSize: 11 },
+          { color: active ? "#04070d" : "rgba(255,255,255,0.65)", fontSize: 15 },
         ]}
       >
         {label}
@@ -745,8 +745,8 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
   ) => (
     <View className="gap-1.5" key={heading}>
       <Text
-        className="text-[12px] font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 10 }]}
+        className="text-caption font-bold uppercase tracking-wide"
+        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
       >
         {heading}
       </Text>
@@ -777,14 +777,14 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
     <View className="gap-1" key={label}>
       <View className="flex-row items-baseline justify-between gap-2">
         <Text
-          className="text-[12px] font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 10 }]}
+          className="text-caption font-bold uppercase tracking-wide"
+          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
         >
           {label}
         </Text>
         <Text
-          className="text-[12px] font-semibold"
-          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.9)", fontSize: 11 }]}
+          className="text-caption font-semibold"
+          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.9)", fontSize: 15 }]}
         >
           {display}
         </Text>
@@ -843,8 +843,8 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
           scrolling row, and a picker wheel for a one-press choice is worse. */}
       <View className="gap-1.5">
         <Text
-          className="text-[12px] font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 10 }]}
+          className="text-caption font-bold uppercase tracking-wide"
+          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
         >
           {pick("ग्रह", "Planet")}
         </Text>
@@ -924,8 +924,8 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
           says what to do with the numbers. */}
       <View className="gap-1.5 border-t border-white/10 pt-2.5">
         <Text
-          className="text-[12px] font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 10 }]}
+          className="text-caption font-bold uppercase tracking-wide"
+          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
         >
           {pick("मापन", "Measure")}
         </Text>
@@ -998,12 +998,12 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       {!fullscreen ? (
         <View className="flex-row items-center justify-between border-b border-border/60 px-3 py-2">
           <Text
-            className="flex-1 text-xs font-bold uppercase tracking-wide text-secondary"
+            className="text-caption flex-1 font-bold uppercase tracking-wide text-secondary"
             style={nepaliTextStyle(11)}
           >
             {title ?? pick("आकाश प्रयोगशाला", "Sky playground")}
           </Text>
-          <Text className="text-[12px] text-muted-foreground" style={nepaliTextStyle(10)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(10)}>
             {pick("घुमाउन तान्नुहोस्", "Drag to rotate")}
           </Text>
         </View>
@@ -1077,12 +1077,12 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
             pointerEvents="none"
             className="absolute bottom-2.5 left-2.5 rounded-lg bg-black/70 px-2 py-1"
           >
-            <Text className="text-[12px] font-bold" style={{ color: perfTone(perf), fontSize: 11 }}>
+            <Text className="text-caption font-bold" style={{ color: perfTone(perf), fontSize: 15 }}>
               {`${perf.fps.toFixed(0)} fps · worst ${perf.worstMs.toFixed(0)} ms`}
             </Text>
             <Text
-              className="text-[12px]"
-              style={{ color: "rgba(255,255,255,0.55)", fontSize: 10 }}
+              className="text-caption"
+              style={{ color: "rgba(255,255,255,0.55)", fontSize: 15 }}
             >
               {`${perf.drawCalls} draws · ${(perf.triangles / 1000).toFixed(1)}k tris`}
             </Text>
@@ -1098,20 +1098,20 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
             style={{ top: overlayTop }}
           >
             <Text
-              className="text-[12px] font-bold uppercase tracking-wide"
-              style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 9 }]}
+              className="text-caption font-bold uppercase tracking-wide"
+              style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
             >
               {pick("सूर्य राशि · महिना", "Sun's rashi · month")}
             </Text>
             <Text
-              className="text-[13px] font-bold"
-              style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 13 }]}
+              className="text-caption font-bold"
+              style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 15 }]}
             >
               {`${rashiNames[rashi]} · ${monthNames[rashi]}`}
             </Text>
             <Text
-              className="text-[13px] font-bold"
-              style={[nepaliTextStyle(13), { color: TONE.solar, fontSize: 13 }]}
+              className="text-caption font-bold"
+              style={[nepaliTextStyle(13), { color: TONE.solar, fontSize: 15 }]}
             >
               {`${eotMinutes >= 0 ? "+" : "−"}${num(Math.abs(eotMinutes).toFixed(1))} ${pick(
                 "मिनेट",
@@ -1129,8 +1129,8 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
           >
             <View className="rounded-full border border-amber-400/60 bg-amber-500/25 px-3 py-1">
               <Text
-                className="text-[12px] font-bold"
-                style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 12 }]}
+                className="text-caption font-bold"
+                style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 15 }]}
               >
                 {`${pick("सङ्क्रान्ति", "Sankranti")} · ${rashiNames[flash]} · ${
                   monthNames[flash]
@@ -1339,22 +1339,22 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
             ).map(([tone, label, time, unit, count, gap, length]) => (
               <View key={tone} className="gap-0.5 rounded-lg border border-white/15 px-2.5 py-1.5">
                 <Text
-                  className="text-[12px] font-bold uppercase tracking-wide"
-                  style={[nepaliTextStyle(9), { color: TONE[tone], fontSize: 9 }]}
+                  className="text-caption font-bold uppercase tracking-wide"
+                  style={[nepaliTextStyle(9), { color: TONE[tone], fontSize: 15 }]}
                 >
                   {label}
                 </Text>
                 <Text
-                  className="text-[13px] font-bold"
-                  style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 13 }]}
+                  className="text-caption font-bold"
+                  style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 15 }]}
                 >
                   {num(time)}
                 </Text>
                 <Text
-                  className="text-[12px]"
+                  className="text-caption"
                   style={[
                     nepaliTextStyle(10),
-                    { color: "rgba(255,255,255,0.45)", fontSize: 10 },
+                    { color: "rgba(255,255,255,0.45)", fontSize: 15 },
                   ]}
                 >
                   {`${unit} ${num(count)}${gap ? ` · ${gap}` : ""}`}
@@ -1363,8 +1363,8 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
                     mean day's flat 24h is what the other two are measured
                     against, so leaving it as prose said nothing. */}
                 <Text
-                  className="text-[12px] font-semibold"
-                  style={[nepaliTextStyle(10), { color: TONE[tone], fontSize: 10 }]}
+                  className="text-caption font-semibold"
+                  style={[nepaliTextStyle(10), { color: TONE[tone], fontSize: 15 }]}
                 >
                   {`${pick("लम्बाइ", "lasts")} ${lengthLabel(length)}`}
                 </Text>

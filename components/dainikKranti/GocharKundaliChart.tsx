@@ -37,7 +37,7 @@ export function GocharKundaliChart({
     <View className={cn("rounded-xl border border-border p-4", className)}>
       {!hideTitle ? (
         <View className="mb-2 flex-row items-center gap-1.5">
-          <Text className="text-sm font-semibold text-foreground">
+          <Text className="text-body font-semibold text-foreground">
             ✦ {pick("गोचर कुण्डली", "Transit Chart")}
           </Text>
         </View>
@@ -45,23 +45,23 @@ export function GocharKundaliChart({
 
       <View className={cn("gap-2", hideTitle ? undefined : "mb-3")}>
         <View className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-          <Text className="font-num text-base leading-relaxed text-foreground">
+          <Text className="text-body font-num leading-relaxed text-foreground">
             {papanshaLine || pick("पापाशाः—", "Papashah —")}
           </Text>
         </View>
         {gapanshaLine ? (
           <View className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-            <Text className="font-num text-base leading-relaxed text-foreground">{gapanshaLine}</Text>
+            <Text className="text-body font-num leading-relaxed text-foreground">{gapanshaLine}</Text>
           </View>
         ) : null}
       </View>
 
       {loading ? (
-        <Text className="py-8 text-center text-sm text-muted-foreground">
+        <Text className="text-body py-8 text-center text-muted-foreground">
           {pick("लोड हुँदैछ…", "Loading…")}
         </Text>
       ) : grahas.length === 0 ? (
-        <Text className="py-8 text-center text-sm text-muted-foreground">
+        <Text className="text-body py-8 text-center text-muted-foreground">
           {pick("विवरण उपलब्ध छैन।", "No details available.")}
         </Text>
       ) : (
@@ -69,7 +69,7 @@ export function GocharKundaliChart({
       )}
 
       {dateLabel ? (
-        <Text className="mt-2 text-center text-sm text-muted-foreground">
+        <Text className="text-body mt-2 text-center text-muted-foreground">
           {pick(`${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}
         </Text>
       ) : null}

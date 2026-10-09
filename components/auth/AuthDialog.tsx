@@ -195,7 +195,7 @@ export function AuthDialog({
           }}
         >
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-            <Text style={{ fontSize: 16, color: colors.mutedForeground }}>
+            <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
               {pick("रद्द", "Cancel")}
             </Text>
           </Pressable>
@@ -203,7 +203,7 @@ export function AuthDialog({
             style={{
               flex: 1,
               textAlign: "center",
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: "600",
               color: colors.foreground,
             }}
@@ -211,7 +211,7 @@ export function AuthDialog({
             {title}
           </Text>
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", color: colors.primary }}>
+            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
               {pick("भयो", "Done")}
             </Text>
           </Pressable>
@@ -228,7 +228,7 @@ export function AuthDialog({
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           >
-            <Text className="text-sm text-muted-foreground">{desc}</Text>
+            <Text className="text-body text-muted-foreground">{desc}</Text>
 
             {mode !== "forgot" ? (
               <View className="mt-4">
@@ -278,8 +278,8 @@ export function AuthDialog({
               />
             ) : null}
 
-            {error ? <Text className="mt-3 text-sm text-danger">{error}</Text> : null}
-            {notice ? <Text className="mt-3 text-sm text-accent">{notice}</Text> : null}
+            {error ? <Text className="text-body mt-3 text-danger">{error}</Text> : null}
+            {notice ? <Text className="text-body mt-3 text-accent">{notice}</Text> : null}
 
             <Pressable
               onPress={onSubmit}
@@ -288,18 +288,18 @@ export function AuthDialog({
               style={busy ? { opacity: 0.6 } : undefined}
             >
               {busy ? <ActivityIndicator color="#fff" size="small" /> : null}
-              <Text className="text-base font-semibold text-primary-foreground">{submitLabel}</Text>
+              <Text className="text-body font-semibold text-primary-foreground">{submitLabel}</Text>
             </Pressable>
 
             <View className="mt-5 items-center gap-2 pb-4">
               {mode === "login" ? (
                 <>
                   <Pressable onPress={() => reset("forgot")}>
-                    <Text className="text-sm text-muted-foreground">
+                    <Text className="text-body text-muted-foreground">
                       {pick("पासवर्ड बिर्सनुभयो?", "Forgot your password?")}
                     </Text>
                   </Pressable>
-                  <Text className="text-sm text-muted-foreground">
+                  <Text className="text-body text-muted-foreground">
                     {pick("नयाँ हुनुहुन्छ?", "New here?")}{" "}
                     <Text className="font-semibold text-secondary" onPress={() => reset("signup")}>
                       {pick("खाता खोल्नुहोस्", "Create account")}
@@ -308,7 +308,7 @@ export function AuthDialog({
                 </>
               ) : null}
               {mode === "signup" ? (
-                <Text className="text-sm text-muted-foreground">
+                <Text className="text-body text-muted-foreground">
                   {pick("पहिले नै खाता छ?", "Already have an account?")}{" "}
                   <Text className="font-semibold text-secondary" onPress={() => reset("login")}>
                     {pick("लग-इन", "Sign in")}
@@ -317,13 +317,13 @@ export function AuthDialog({
               ) : null}
               {mode === "forgot" ? (
                 <Pressable onPress={() => reset("login")}>
-                  <Text className="text-sm text-muted-foreground">
+                  <Text className="text-body text-muted-foreground">
                     {pick("लग-इनमा फर्कनुहोस्", "Back to sign in")}
                   </Text>
                 </Pressable>
               ) : null}
               {mode !== "forgot" ? (
-                <Text className="mt-2 px-4 text-center text-xs leading-relaxed text-muted-foreground">
+                <Text className="text-caption mt-2 px-4 text-center leading-relaxed text-muted-foreground">
                   {pick(
                     "जारी राखेर तपाईं गोपनीयता नीति र प्रयोगका सर्त मान्नुहुन्छ।",
                     "By continuing you agree to the Privacy Policy and Terms of Use.",
@@ -366,10 +366,10 @@ function Field({
   const Input = email ? EmailTextInput : props.secureTextEntry ? PasswordInput : TextInput;
   return (
     <View className="mt-3 gap-1.5">
-      <Text className="text-sm text-foreground">{label}</Text>
+      <Text className="text-body text-foreground">{label}</Text>
       <Input
         placeholderTextColor={colors.mutedForeground}
-        className="h-12 rounded-lg border px-3 text-base text-foreground"
+        className="text-body h-12 rounded-lg border px-3 text-foreground"
         style={{
           backgroundColor: colors.background,
           borderColor: colors.border,

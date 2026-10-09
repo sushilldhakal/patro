@@ -44,13 +44,13 @@ function OptionCard({
     >
       <Ionicons name={icon} size={22} color={selected ? colors.secondary : colors.mutedForeground} />
       <Text
-        className="text-center text-sm font-semibold"
+        className="text-body text-center font-semibold"
         style={{ color: selected ? colors.secondary : colors.foreground }}
       >
         {title}
       </Text>
       {subtitle ? (
-        <Text className="text-center text-xs text-muted-foreground">{subtitle}</Text>
+        <Text className="text-caption text-center text-muted-foreground">{subtitle}</Text>
       ) : null}
     </Pressable>
   );
@@ -59,7 +59,7 @@ function OptionCard({
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <View className="mt-7 gap-3">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
         {label}
       </Text>
       <View className="flex-row gap-3">{children}</View>
@@ -112,7 +112,7 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
           accessibilityRole="button"
           accessibilityLabel={ne ? "छोड्नुहोस्" : "Skip tour"}
         >
-          <Text className="text-sm font-semibold text-muted-foreground">
+          <Text className="text-body font-semibold text-muted-foreground">
             {ne ? "छोड्नुहोस्" : "Skip"}
           </Text>
         </Pressable>
@@ -124,8 +124,8 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
         >
           <Ionicons name={step.icon} size={44} color={colors.secondary} />
         </View>
-        <Text className="text-center text-2xl font-bold text-foreground">{title}</Text>
-        <Text className="text-center text-base text-muted-foreground">{body}</Text>
+        <Text className="text-display text-center font-bold text-foreground">{title}</Text>
+        <Text className="text-body text-center text-muted-foreground">{body}</Text>
         <View className="mt-2 flex-row gap-2">
           {TOUR_STEPS.map((_, i) => (
             <View
@@ -140,7 +140,7 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
         onPress={() => (last ? onDone() : setIndex(index + 1))}
         className="items-center rounded-lg bg-primary px-5 py-3.5 active:opacity-80"
       >
-        <Text className="text-base font-semibold" style={{ color: "#ffffff" }}>
+        <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
           {last ? (ne ? "सुरु गर्नुहोस्" : "Start exploring") : ne ? "अर्को" : "Next"}
         </Text>
       </Pressable>
@@ -196,12 +196,12 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={{ padding: 24, paddingTop: 64, paddingBottom: 40 }}
     >
-      <Text className="text-2xl font-bold text-foreground">वैदिक पात्रोमा स्वागत छ</Text>
-      <Text className="mt-1 text-base text-foreground">Welcome to Vedic Patro</Text>
-      <Text className="mt-2 text-sm text-muted-foreground">
+      <Text className="text-display font-bold text-foreground">वैदिक पात्रोमा स्वागत छ</Text>
+      <Text className="text-body mt-1 text-foreground">Welcome to Vedic Patro</Text>
+      <Text className="text-body mt-2 text-muted-foreground">
         सुरु गर्नु अघि केही रोजाइहरू मिलाऔं। पछि सेटिङबाट यी सबै परिवर्तन गर्न सकिन्छ।
       </Text>
-      <Text className="mt-1 text-sm text-muted-foreground">
+      <Text className="text-body mt-1 text-muted-foreground">
         Let's set a few preferences before you start — you can change all of these later in
         Settings.
       </Text>
@@ -277,13 +277,13 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       </Section>
 
       {dataMode === "offline" ? (
-        <Text className="mt-3 text-xs text-muted-foreground">
+        <Text className="text-caption mt-3 text-muted-foreground">
           {isOnline
             ? "अर्को स्क्रिनमा कुन वर्षदेखि कुन वर्षसम्म चाहिने छान्नुहोस् (बढीमा ९० वर्षको अन्तर)। डाउनलोड सुरु गर्नु अघि कति डाटा लाग्छ देखाइनेछ। · Next, choose which years you need (at most a 90-year span). You'll see how much data it takes before anything downloads."
             : "इन्टरनेट जोडिएपछि वर्ष छान्न सकिनेछ। · You can pick your years once you're connected to the internet."}
         </Text>
       ) : (
-        <Text className="mt-3 text-xs text-muted-foreground">
+        <Text className="text-caption mt-3 text-muted-foreground">
           पछि जुनसुकै बेला सेटिङबाट वर्ष छानेर डाउनलोड गर्न सकिनेछ। · You can still choose years to
           download later from Offline Data in settings.
         </Text>
@@ -295,7 +295,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
         className="mt-8 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 active:opacity-80 disabled:opacity-60"
       >
         {submitting ? <ActivityIndicator size="small" color="#ffffff" /> : null}
-        <Text className="text-base font-semibold" style={{ color: "#ffffff" }}>
+        <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
           अगाडि बढ्नुहोस् · Get Started
         </Text>
       </Pressable>

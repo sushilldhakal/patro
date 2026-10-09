@@ -101,7 +101,7 @@ export default function KundaliDetailScreen() {
     <View className="mb-4 flex-row flex-wrap items-center justify-between gap-3">
       <Pressable onPress={() => router.back()} className="flex-row items-center gap-1.5 active:opacity-70">
         <Ionicons name="arrow-back" size={18} color={colors.foreground} />
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("सबै कुण्डली", "All charts")}
         </Text>
       </Pressable>
@@ -129,7 +129,7 @@ export default function KundaliDetailScreen() {
       return (
         <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-16">
           <ActivityIndicator />
-          <Text className="mt-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         </View>
@@ -152,10 +152,10 @@ export default function KundaliDetailScreen() {
     if (profilesError || (!profilesLoading && !profile)) {
       return (
         <Card>
-          <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
             {pick("प्रोफाइल फेला परेन।", "Profile not found.")}
           </Text>
-          <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
             {pick("प्रोफाइल मेटिएको वा लिङ्क गलत हुन सक्छ।", "The profile may have been removed or the link is wrong.")}
           </Text>
         </Card>
@@ -168,10 +168,10 @@ export default function KundaliDetailScreen() {
       return (
         <View className="items-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16">
           <Ionicons name="time-outline" size={40} color={colors.mutedForeground} />
-          <Text className="mt-4 text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body mt-4 font-semibold text-foreground" style={nepaliTextStyle(16)}>
             {pick("जन्म मिति छैन", "No birth date")}
           </Text>
-          <Text className="mt-2 max-w-md text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-2 max-w-md text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick(
               "कुण्डली बनाउन जन्म मिति, समय र स्थान थप्नुहोस्।",
               "Add birth date, time and place to generate the chart.",
@@ -188,7 +188,7 @@ export default function KundaliDetailScreen() {
       return (
         <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-16">
           <ActivityIndicator />
-          <Text className="mt-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("कुण्डली गणना हुँदै…", "Computing the chart…")}
           </Text>
         </View>
@@ -198,7 +198,7 @@ export default function KundaliDetailScreen() {
     if (!detail) {
       return (
         <Card>
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
             {pick(
               "कुण्डली ल्याउन सकिएन। मिति/समय/स्थान जाँचेर पुनः प्रयास गर्नुहोस्।",
               "Could not load the chart. Check the date, time and place and try again.",
@@ -258,12 +258,12 @@ export default function KundaliDetailScreen() {
         >
           <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
             <Pressable onPress={() => setEditOpen(false)} hitSlop={8} className="min-w-[4.5rem] active:opacity-70">
-              <Text className="text-base text-muted-foreground" style={nepaliTextStyle(15)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(15)}>
                 {pick("रद्द", "Cancel")}
               </Text>
             </Pressable>
             <Text
-              className="min-w-0 flex-1 text-center text-base font-semibold text-foreground"
+              className="text-body min-w-0 flex-1 text-center font-semibold text-foreground"
               style={nepaliTextStyle(16)}
               numberOfLines={1}
             >

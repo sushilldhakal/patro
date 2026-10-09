@@ -236,7 +236,7 @@ export function CompassControl({
             }}
           >
             <Text
-              className="text-[13px] font-bold"
+              className="text-caption font-bold"
               style={[
                 nepaliTextStyle(13, { dense: true }),
                 { color: p.az === 0 ? "#ff8a8a" : "rgba(255,255,255,0.85)" },

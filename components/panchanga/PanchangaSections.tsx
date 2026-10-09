@@ -182,7 +182,7 @@ export function SunMoonSamvatSection({ p }: { p: PanchangaDay }) {
         </PanchangaFieldCell>
       </PanchangaTableBody>
       {solar?.ishtakaal_note_ne ? (
-        <Text className="m-0 border-t border-border px-4 py-2 text-sm leading-snug text-muted-foreground">
+        <Text className="text-body m-0 border-t border-border px-4 py-2 text-muted-foreground">
           {solar.ishtakaal_note_ne}
         </Text>
       ) : null}
@@ -324,7 +324,7 @@ function BalamKindBlock({
     <View className="flex flex-col gap-2 border-b border-border/80 px-4 py-3 last:border-b-0">
       <PanchangaGroupLabel className="px-0 pt-0">{label}</PanchangaGroupLabel>
       {moonRef ? (
-        <Text className="m-0 text-center text-sm text-muted-foreground">{moonRef}</Text>
+        <Text className="text-body m-0 text-center text-muted-foreground">{moonRef}</Text>
       ) : null}
       <BalamCardGrid
         cards={cards}
@@ -513,7 +513,7 @@ function DualValueDisplay({
   return (
     <View className="flex flex-col gap-0.5">
       {showStrike && pauranikLabel ? (
-        <Text className="line-through text-base">{pauranikLabel}</Text>
+        <Text className="text-body line-through">{pauranikLabel}</Text>
       ) : null}
       <Text className="font-semibold">{vedicLabel ?? pauranikLabel}</Text>
     </View>
@@ -591,7 +591,7 @@ function MuhurtaTimingValue({
       }
     >
       {lines.map((line) => (
-        <Text key={line} className="text-sm text-base leading-snug">
+        <Text key={line} className="text-body">
           {line}
         </Text>
       ))}
@@ -707,7 +707,7 @@ function NivasTimedSegments({
               <Text className="font-semibold">
                 {subtitle ? `${name} (${subtitle})` : name}
                 {" "}
-                <Text className="text-sm font-mono font-semibold text-foreground">
+                <Text className="text-body font-mono font-semibold text-foreground">
                   {t("sections.nivas_from")} {fromTime} {t("sections.nivas_to_full_night")}
                 </Text>
               </Text>
@@ -719,7 +719,7 @@ function NivasTimedSegments({
               />
             )}
             {seg.until_full_night && idx === segments.length - 1 && segments.length > 1 && !endTime ? (
-              <Text className="text-sm font-mono font-semibold text-foreground">
+              <Text className="text-body font-mono font-semibold text-foreground">
                 {t("sections.nivas_to_full_night")}
               </Text>
             ) : null}
@@ -788,7 +788,7 @@ export function DinVisheshSection({ p }: { p: PanchangaDay }) {
         {labels.map((label) => (
           <Text
             key={label}
-            className="text-sm font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
+            className="text-body font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
             style={nepaliTextStyle(14)}
           >
             {label}
@@ -809,23 +809,23 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
   return (
     <View className="rounded-xl bg-card p-4 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
       <View className="flex items-baseline gap-2 mb-2">
-        <Text className="text-base font-bold m-0">{t("sections.planet_positions")}</Text>
-        <Text className="text-sm">{getPlanetsAnchorLabel(p, lang)}</Text>
+        <Text className="text-body font-bold m-0">{t("sections.planet_positions")}</Text>
+        <Text className="text-body">{getPlanetsAnchorLabel(p, lang)}</Text>
       </View>
       <View className="flex flex-col">
         {lagna && (
           <View className="flex items-center gap-3 py-2 border-b border-border">
-            <Text className="w-8 h-8 rounded-lg flex items-center justify-center text-base bg-secondary/11 text-secondary dark:text-accent shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
+            <Text className="text-body w-8 h-8 rounded-lg flex items-center justify-center bg-secondary/11 text-secondary dark:text-accent shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
               {pick("लग्न", "ASC")}
             </Text>
             <View className="min-w-0 flex-1">
-              <Text className="text-sm font-semibold">{t("sections.lagna")}</Text>
-              <Text className="text-sm">
+              <Text className="text-body font-semibold">{t("sections.lagna")}</Text>
+              <Text className="text-body">
                 {formatRashiDisplay(lagna.nameNe, undefined, lang) ?? lagna.nameNe}
               </Text>
             </View>
             {lagna.degree && (
-              <Text className="font-mono text-sm font-semibold text-foreground whitespace-nowrap">
+              <Text className="text-body font-mono font-semibold text-foreground whitespace-nowrap">
                 {lagna.degree}°
               </Text>
             )}
@@ -839,16 +839,16 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
             <GrahaPlanetIcon graha={key as GrahaKey} size={32} />
             <View className="min-w-0 flex-1">
               <View className="flex-row flex-wrap items-center gap-1.5">
-                <Text className="text-sm font-semibold">{pick(label, labelEn)}</Text>
+                <Text className="text-body font-semibold">{pick(label, labelEn)}</Text>
                 <GrahaStatusBadges planetKey={key} isRetrograde={isRetrograde} isCombust={isCombust} />
               </View>
               {(rashiNe || rashiEn) ? (
-                <Text className="text-sm">
+                <Text className="text-body">
                   {formatRashiDisplay(rashiNe, rashiEn, lang) ?? pick(rashiNe ?? "", rashiEn ?? "")}
                 </Text>
               ) : null}
             </View>
-            <Text className="font-mono text-sm font-semibold text-foreground">
+            <Text className="text-body font-mono font-semibold text-foreground">
               {coords}
             </Text>
           </View>
@@ -871,8 +871,8 @@ export function FestivalsSection({ p }: { p: PanchangaDay }) {
             key={f.id}
             className={
               f.is_public_holiday
-                ? "text-sm font-semibold px-2.5 py-1.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
-                : "text-sm font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
+                ? "text-body font-semibold px-2.5 py-1.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
+                : "text-body font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
             }
             style={nepaliTextStyle(14)}
           >

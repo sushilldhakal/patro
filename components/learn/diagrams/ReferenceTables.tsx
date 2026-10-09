@@ -36,7 +36,7 @@ const GRAHA_ROWS = [
 
 function TableCaption({ children }: { children: string }) {
   return (
-    <Text className="text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(11)}>
+    <Text className="text-caption font-semibold text-muted-foreground" style={nepaliTextStyle(11)}>
       {children}
     </Text>
   );
@@ -192,7 +192,7 @@ export function KaranaReferenceTable() {
     <View className="gap-1.5">
       <TableCaption>{pick("११ करण — तिथिको आधा (६° कोण); महिनामा ६० करण", "11 Karanas — half a tithi (6° angle); 60 karanas per month")}</TableCaption>
       <LearnTable headers={[pick("#", "#"), pick("करण", "Karana"), pick("प्रकार", "Type"), pick("टिप्पणी", "Note")]} rows={rows} />
-      <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+      <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
         {pick(
           "क्रम: किंस्तुघ्न → (बव…विष्टि)×८ → शकुनि → चतुष्पद → नाग → किंस्तुघ्न — जम्मा ६० करण/महिना।",
           "Order: Kimstughna → (Bava…Vishti)×8 → Shakuni → Chatushpada → Naga → Kimstughna — 60 karanas/month in all.",

@@ -152,7 +152,7 @@ function WheelHead({
       <div className={wheelHeadTitle}>{title}</div>
       <div className={wheelHeadSub}>{sub}</div>
       {playRate ? (
-        <div className="mt-1 text-sm font-bold tabular-nums text-[#f9c800]">{playRate}</div>
+        <div className="text-body mt-1 font-bold tabular-nums text-[#f9c800]">{playRate}</div>
       ) : null}
     </div>
   );
@@ -781,10 +781,10 @@ function PanchangaWheelBody({
       />
       <div className="relative z-[141] w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
-          <h2 className="text-base font-bold text-foreground">{pick("मिति र समय", "Date and time")}</h2>
+          <h2 className="text-body font-bold text-foreground">{pick("मिति र समय", "Date and time")}</h2>
           <button
             type="button"
-            className="text-sm text-muted-foreground"
+            className="text-body text-muted-foreground"
             onClick={() => setCalendarOpen(false)}
           >
             {pick("बन्द", "Close")}

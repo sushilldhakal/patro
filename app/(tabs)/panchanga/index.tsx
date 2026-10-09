@@ -328,7 +328,7 @@ export default function PanchangaScreen() {
                 className="h-9 flex-row items-center gap-2 self-start rounded-xl border border-border bg-card px-4 active:bg-muted"
               >
                 <Ionicons name="calendar-outline" size={16} color={colors.foreground} />
-                <Text className="text-sm font-semibold text-foreground">
+                <Text className="text-body font-semibold text-foreground">
                   {t("panchanga.year_link")}
                 </Text>
               </Pressable>
@@ -338,7 +338,7 @@ export default function PanchangaScreen() {
 
         {isError ? (
           <View className="rounded-xl border border-destructive/20 bg-destructive/10 p-4">
-            <Text className="text-sm text-destructive">
+            <Text className="text-body text-destructive">
               {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
             </Text>
           </View>

@@ -227,7 +227,7 @@ export function SkyTimeSheet({
         <Ionicons name="chevron-up" size={15} color="rgba(255,255,255,0.55)" />
       </Pressable>
       <Text
-        className="text-xl font-bold"
+        className="text-title font-bold"
         style={[nepaliTextStyle(20, { dense: true }), { color: "#ffffff", fontVariant: ["tabular-nums"] }]}
       >
         {digits(plain(field))}
@@ -244,7 +244,7 @@ export function SkyTimeSheet({
   );
 
   const sep = (glyph: string) => (
-    <Text className="text-xl font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
+    <Text className="text-title font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
       {glyph}
     </Text>
   );
@@ -263,7 +263,7 @@ export function SkyTimeSheet({
       <Ionicons name={icon} size={22} color="#ffffff" />
       <Text
         numberOfLines={1}
-        className="text-[11px] font-semibold"
+        className="text-caption font-semibold"
         style={[nepaliTextStyle(11, { dense: true }), { color: "rgba(255,255,255,0.75)" }]}
       >
         {label}
@@ -308,7 +308,7 @@ export function SkyTimeSheet({
         </View>
 
         <Text
-          className="mb-1 mt-4 text-center text-sm font-semibold"
+          className="text-body mb-1 mt-4 text-center font-semibold"
           style={[nepaliTextStyle(13, { dense: true }), { color: "rgba(255,255,255,0.9)" }]}
         >
           {speedLabel}
@@ -389,7 +389,7 @@ export function SkyTimeSheet({
             {DAY_PERIODS.map((band) => (
               <Text
                 key={band.id}
-                className="text-[10px]"
+                className="text-caption"
                 style={[
                   nepaliTextStyle(10, { dense: true }),
                   {

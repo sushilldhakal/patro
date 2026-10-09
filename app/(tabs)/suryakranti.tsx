@@ -21,10 +21,10 @@ export default function SuryakrantiScreen() {
   return (
     <AppShell title={pick("सूर्य क्रान्ति", "Sun Revolution")} showHeader={false}>
       <View className="mb-3">
-        <Text className="text-xl font-bold leading-tight text-foreground" style={nepaliTextStyle(20)}>
+        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
           {t("sun_times.title")}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
           {t("sun_times.subtitle", { year: digits(year) })}
         </Text>
       </View>
@@ -52,11 +52,11 @@ export default function SuryakrantiScreen() {
       >
         <View className="flex-row items-center gap-2">
           <Ionicons name="calendar-outline" size={15} color={colors.secondary} />
-          <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
             {pick("अयन", "Ayana")}
           </Text>
         </View>
-        <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(
             "प्रत्येक दिनको उ वा द सूर्योदयको बेला सूर्य कुन राशिमा छ भन्ने आधारमा तय हुन्छ — वर्षमा दुई पटक सङ्क्रान्तिमा परिवर्तन।",
             "Each day's N or S mark follows the Sun's sign at sunrise — it changes twice a year at sankranti.",

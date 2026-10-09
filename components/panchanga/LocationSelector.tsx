@@ -70,7 +70,7 @@ function LocationResultsList({
   if (debouncedQuery.length < 2) {
     return (
       <View className="flex-1 items-center justify-center px-4">
-        <Text className="text-center text-sm text-muted-foreground">
+        <Text className="text-body text-center text-muted-foreground">
           {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
         </Text>
       </View>
@@ -88,7 +88,7 @@ function LocationResultsList({
   if (results.length === 0) {
     return (
       <View className="flex-1 items-center justify-center px-4">
-        <Text className="text-center text-sm text-muted-foreground">
+        <Text className="text-body text-center text-muted-foreground">
           {pick("कुनै सहर भेटिएन", "No city found")}
         </Text>
       </View>
@@ -113,8 +113,8 @@ function LocationResultsList({
               selected && "bg-secondary/10",
             )}
           >
-            <Text className="text-sm font-semibold text-foreground">{cityLabel(item)}</Text>
-            <Text className="text-xs text-muted-foreground">
+            <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
+            <Text className="text-caption text-muted-foreground">
               {item.admin1_name ? `${item.admin1_name}, ` : ""}
               {item.country}
             </Text>
@@ -228,7 +228,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
         style={[{ height: chipH, maxHeight: chipH }, style]}
       >
         <Ionicons name="location-outline" size={13} color={colors.secondary} />
-        <Text numberOfLines={1} className="text-xs font-medium text-foreground">
+        <Text numberOfLines={1} className="text-caption font-medium text-foreground">
           {label}
         </Text>
       </Pressable>
@@ -254,7 +254,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
             }}
           >
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-              <Text style={{ fontSize: 16, color: colors.mutedForeground }}>
+              <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
                 {pick("रद्द", "Cancel")}
               </Text>
             </Pressable>
@@ -262,7 +262,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
               style={{
                 flex: 1,
                 textAlign: "center",
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: "600",
                 color: colors.foreground,
               }}
@@ -270,7 +270,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
               {pick("स्थान", "Location")}
             </Text>
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.primary }}>
+              <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
                 {pick("भयो", "Done")}
               </Text>
             </Pressable>
@@ -285,7 +285,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
                 onChangeText={setQuery}
                 placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
                 placeholderTextColor={colors.mutedForeground}
-                className="h-10 flex-1 text-sm text-foreground"
+                className="text-body h-10 flex-1 text-foreground"
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="search"
@@ -303,12 +303,12 @@ export function LocationSelector({ location, onLocationChange, className, style 
               ) : (
                 <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
               )}
-              <Text className="text-sm font-semibold text-secondary-foreground">
+              <Text className="text-body font-semibold text-secondary-foreground">
                 {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
               </Text>
             </Pressable>
 
-            {geoError ? <Text className="text-sm text-destructive">{geoError}</Text> : null}
+            {geoError ? <Text className="text-body text-destructive">{geoError}</Text> : null}
           </View>
 
           <LocationResultsList

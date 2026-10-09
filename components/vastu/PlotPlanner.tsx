@@ -72,7 +72,7 @@ function DimensionInput({
   const colors = useThemeColors();
   return (
     <View className="min-w-0 flex-1">
-      <Text className="mb-1 text-xs font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-caption mb-1 font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
         {label}
       </Text>
       <TextInput
@@ -82,7 +82,7 @@ function DimensionInput({
         accessibilityLabel={label}
         placeholderTextColor={colors.mutedForeground}
         className={cn(
-          "rounded-lg border bg-card px-3 py-2.5 text-sm text-foreground",
+          "text-body rounded-lg border bg-card px-3 py-2.5 text-foreground",
           invalid ? "border-danger" : "border-border",
         )}
         style={nepaliTextStyle(14)}
@@ -94,10 +94,10 @@ function DimensionInput({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row justify-between gap-2">
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <Text className="shrink text-right text-sm text-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body shrink text-right text-foreground" style={nepaliTextStyle(13)}>
         {value}
       </Text>
     </View>
@@ -170,13 +170,13 @@ export function PlotPlanner() {
   return (
     <View className="overflow-hidden rounded-2xl border border-border">
       <View className="border-b border-border px-4 py-3">
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("vastu.plot.heading")}
         </Text>
       </View>
 
       <View className="gap-4 p-4">
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.plot.blurb")}
         </Text>
 
@@ -199,7 +199,7 @@ export function PlotPlanner() {
 
         <View>
           <Text
-            className="mb-1 text-xs font-semibold text-muted-foreground"
+            className="text-caption mb-1 font-semibold text-muted-foreground"
             style={nepaliTextStyle(12)}
           >
             {t("vastu.plot.facing_label")}
@@ -216,7 +216,7 @@ export function PlotPlanner() {
         </View>
 
         {hasError && (
-          <Text className="text-sm text-danger" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-danger" style={nepaliTextStyle(13)}>
             {t("vastu.plot.range_error", { min: digits(MIN_M), max: digits(MAX_M) })}
           </Text>
         )}
@@ -224,25 +224,25 @@ export function PlotPlanner() {
         <HouseRequirementsForm plan={house} onChange={updateHouse} />
 
         <View className="rounded-xl border border-border bg-card p-3.5">
-          <Text className="text-base font-semibold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
             {t("vastu.plan.layout_heading")}
           </Text>
-          <Text className="mb-4 mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mb-4 mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.plan.layout_blurb")}
           </Text>
 
           {!sketch && (
-            <Text className="mb-4 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body mb-4 text-muted-foreground" style={nepaliTextStyle(13)}>
               {sketchQuery.isError ? t("vastu.plan.sketch_error") : t("vastu.plan.sketch_loading")}
             </Text>
           )}
 
           {leftover.length > 0 && (
             <View className="mb-4 rounded-lg border border-border bg-background px-3 py-2.5">
-              <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
                 {t("vastu.plan.cannot_fit_heading")}
               </Text>
-              <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t("vastu.plan.cannot_fit_blurb")}
               </Text>
               <View className="mt-2 flex-row flex-wrap gap-1.5">
@@ -255,7 +255,7 @@ export function PlotPlanner() {
                   return (
                     <View key={row.id} className="rounded-md border border-border px-2 py-0.5">
                       <Text
-                        className="text-xs font-semibold text-foreground"
+                        className="text-caption font-semibold text-foreground"
                         style={nepaliTextStyle(12)}
                       >
                         {name}
@@ -272,7 +272,7 @@ export function PlotPlanner() {
               <View key={storey} className="min-w-0">
                 {storeys > 1 && (
                   <Text
-                    className="mb-2 text-sm font-semibold text-foreground"
+                    className="text-body mb-2 font-semibold text-foreground"
                     style={nepaliTextStyle(13)}
                   >
                     {t(`vastu.plan.floor.${storeyPref(storey)}`)}
@@ -288,13 +288,13 @@ export function PlotPlanner() {
             ))}
           </View>
 
-          <Text className="mt-4 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mt-4 text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.sketch.disclaimer")}
           </Text>
-          <Text className="mt-4 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body mt-4 text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.plot.buffer_note")}
           </Text>
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
             {t("vastu.plot.marma_note")}
           </Text>
         </View>
@@ -302,7 +302,7 @@ export function PlotPlanner() {
         {ayadi && preferredCorner && (
         <View className="gap-3">
           <View className="rounded-xl border border-border bg-card p-3.5">
-            <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
               {t("vastu.plot.ayadi_heading")}
             </Text>
             <View className="mt-2 gap-1.5">
@@ -321,7 +321,7 @@ export function PlotPlanner() {
             </View>
             <Text
               className={cn(
-                "mt-2 text-sm font-semibold",
+                "text-body mt-2 font-semibold",
                 ayadi.auspicious ? "text-emerald-600 dark:text-emerald-400" : "text-danger",
               )}
               style={nepaliTextStyle(13)}
@@ -329,29 +329,29 @@ export function PlotPlanner() {
               {t(ayadi.auspicious ? "vastu.plot.ayadi_auspicious" : "vastu.plot.ayadi_inauspicious")}
             </Text>
             {ayadi.suggested_hasta !== null && ayadi.suggested_meters !== null && (
-              <Text className="mt-1 text-sm text-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body mt-1 text-foreground" style={nepaliTextStyle(13)}>
                 {t("vastu.plot.ayadi_suggestion", {
                   hasta: digits(ayadi.suggested_hasta),
                   meters: digits(ayadi.suggested_meters.toFixed(1)),
                 })}
               </Text>
             )}
-            <Text className="mt-2 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(13)}>
               {t("vastu.plot.ayadi_disclaimer")}
             </Text>
           </View>
 
           <View className="rounded-xl border border-border bg-card p-3.5">
-            <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
               {t("vastu.plot.entrance_heading")}
             </Text>
-            <Text className="mt-2 text-sm text-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body mt-2 text-foreground" style={nepaliTextStyle(13)}>
               {t("vastu.plot.entrance_note", {
                 wall: t(`vastu.dir.${plot.facing}.name`),
                 corner: t(`vastu.dir.${preferredCorner}.name`),
               })}
             </Text>
-            <Text className="mt-2 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(13)}>
               {t("vastu.plot.entrance_disclaimer")}
             </Text>
           </View>

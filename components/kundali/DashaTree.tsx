@@ -146,12 +146,12 @@ function MomentLine({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row flex-wrap gap-x-2">
       <Text
-        className="w-14 shrink-0 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        className="text-caption w-14 shrink-0 font-semibold uppercase tracking-wide text-muted-foreground"
         style={nepaliTextStyle(11)}
       >
         {label}
       </Text>
-      <Text className="min-w-0 flex-1 text-sm text-foreground/90" style={nepaliTextStyle(13)}>
+      <Text className="text-body min-w-0 flex-1 text-foreground/90" style={nepaliTextStyle(13)}>
         {value}
       </Text>
     </View>
@@ -208,7 +208,7 @@ function DashaDurationGrid({
             <View key={col.ne} className="min-w-[56px] flex-1 border-r border-border/50 px-1.5 py-1 last:border-r-0">
               <Text
                 numberOfLines={2}
-                className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground"
+                className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
                 style={nepaliTextStyle(10)}
               >
                 {lang === "en" ? col.en : col.ne}
@@ -219,7 +219,7 @@ function DashaDurationGrid({
         <View className="flex-row">
           {values.map((value, i) => (
             <View key={DURATION_COLS[i]!.ne} className="min-w-[56px] flex-1 border-r border-border/50 px-1.5 py-1 last:border-r-0">
-              <Text className="font-num text-sm text-foreground/90">{digits(value)}</Text>
+              <Text className="text-body font-num text-foreground/90">{digits(value)}</Text>
             </View>
           ))}
         </View>
@@ -345,10 +345,10 @@ function DashaNode({
               <View style={{ width: 14 }} />
             )}
             <DashaLordIcon lord={span.lord} system={system} size={18} />
-            <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
               {displayLordName(span, lang, system)}
             </Text>
-            <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
               {levelLabel} · {digits(duration)}
             </Text>
             {running ? (
@@ -356,7 +356,7 @@ function DashaNode({
                 style={{ backgroundColor: colorWithAlpha(colors.secondary, 0.15) }}
                 className="rounded-full px-2 py-0.5"
               >
-                <Text style={{ color: colors.secondary }} className="text-xs font-bold">
+                <Text style={{ color: colors.secondary }} className="text-caption font-bold">
                   {kundaliLabel("dasha_running", lang)}
                 </Text>
               </View>
@@ -440,7 +440,7 @@ function ChainStackRow({
     <View className="px-4 py-3">
       <View className="flex-row flex-wrap items-center gap-2">
         <DashaLordIcon lord={span.lord} system={system} size={26} />
-        <Text className="flex-1 text-base font-bold text-foreground" style={nepaliTextStyle(15)}>
+        <Text className="text-body flex-1 font-bold text-foreground" style={nepaliTextStyle(15)}>
           {displayLordName(span, lang, system)}
           <Text className="font-normal text-muted-foreground"> — {pick(LEVEL_LABELS[level]!.ne, LEVEL_LABELS[level]!.en)}</Text>
         </Text>
@@ -449,7 +449,7 @@ function ChainStackRow({
             style={{ backgroundColor: colorWithAlpha(colors.secondary, 0.15) }}
             className="shrink-0 rounded-full px-2 py-0.5"
           >
-            <Text style={{ color: colors.secondary }} className="text-xs font-bold">
+            <Text style={{ color: colors.secondary }} className="text-caption font-bold">
               {pick("चलिरहेको", "Running")}
             </Text>
           </View>
@@ -458,26 +458,26 @@ function ChainStackRow({
       <View className="mt-1.5 gap-1 pl-1">
         <View className="flex-row items-center gap-1.5">
           <Ionicons name="arrow-forward" size={14} color={colors.mutedForeground} />
-          <Text className="text-sm text-foreground/80" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-foreground/80" style={nepaliTextStyle(13)}>
             {formatDashaMoment(span.start, lang, timeZone, digits)}
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5">
           <Ionicons name="arrow-forward" size={14} color={colors.foreground} />
-          <Text className="text-sm text-foreground/80" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-foreground/80" style={nepaliTextStyle(13)}>
             {formatDashaMoment(span.end, lang, timeZone, digits)}
           </Text>
         </View>
       </View>
       <View className="mt-1.5 flex-row flex-wrap gap-x-5 gap-y-1 pl-1">
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
           {pick("कुल", "Total")} —{" "}
           <Text className="font-semibold text-foreground">
             {digits(formatDashaDuration(span.end.getTime() - span.start.getTime(), lang))}
           </Text>
         </Text>
         {running && (
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
             {pick("बाँकी", "Left")} —{" "}
             <Text className="font-semibold text-foreground">
               {digits(formatDashaDuration(span.end.getTime() - now, lang))}
@@ -595,12 +595,12 @@ export function DashaTree({
       {knownPath.length > 0 && (
         <View className="gap-2">
           <View className="flex-row flex-wrap items-center justify-between gap-2">
-            <Text className="text-sm font-bold uppercase tracking-wide text-secondary" style={nepaliTextStyle(13)}>
+            <Text className="text-body font-bold uppercase tracking-wide text-secondary" style={nepaliTextStyle(13)}>
               {kundaliLabel("dasha_running_now", lang)}
             </Text>
             {yoginiCycle ? (
               <View className="rounded-full border border-border/60 bg-card px-2 py-0.5">
-                <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(12)}>
+                <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
                   {pick(`चक्र: ${digits(yoginiCycle)}`, `Cycle: ${digits(yoginiCycle)}`)}
                 </Text>
               </View>
@@ -622,18 +622,18 @@ export function DashaTree({
       {timelineStart && timelineEnd ? (
         <View className="flex-row flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
           <View className="flex-row flex-wrap items-center gap-x-1">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
               {kundaliLabel("dasha_from", lang)}
             </Text>
-            <Text className="text-sm text-foreground/90" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-foreground/90" style={nepaliTextStyle(13)}>
               {formatDashaMoment(timelineStart, lang, timeZone, digits)}
             </Text>
           </View>
           <View className="flex-row flex-wrap items-center gap-x-1">
-            <Text className="text-xs font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
               {kundaliLabel("dasha_to", lang)}
             </Text>
-            <Text className="text-sm text-foreground/90" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-foreground/90" style={nepaliTextStyle(13)}>
               {formatDashaMoment(timelineEnd, lang, timeZone, digits)}
             </Text>
           </View>
@@ -642,7 +642,7 @@ export function DashaTree({
 
       <View>
         <Text
-          className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+          className="text-body mb-2 font-semibold uppercase tracking-wide text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {kundaliLabel("dasha_full_timeline", lang)}

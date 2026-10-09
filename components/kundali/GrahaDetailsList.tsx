@@ -93,17 +93,17 @@ export function GrahaDetailsList({
         const dmsLine = (
           <View key="dms" className="flex-row items-center gap-1">
             <Text
-              className="font-num text-[12px] font-semibold text-foreground"
+              className="text-caption font-num font-semibold text-foreground"
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >
               {digits(String(row.dms.deg).padStart(2, "0"))}°
             </Text>
             <RashiGlyphIcon number={row.dms.rashiNum} size={14} />
-            <Text className="text-[12px] text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+            <Text className="text-caption text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
               {formatRashiByNumber(row.dms.rashiNum, lang)}
             </Text>
-            <Text className="font-num text-[12px] text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+            <Text className="text-caption font-num text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
               {digits(String(row.dms.min).padStart(2, "0"))}′{digits(String(row.dms.sec).padStart(2, "0"))}″
             </Text>
           </View>
@@ -126,7 +126,7 @@ export function GrahaDetailsList({
           cells: [
             <GrahaInlineChildren key="g" grahaKey={row.key} size={18}>
               <Text
-                className="text-[12px] font-semibold text-foreground"
+                className="text-caption font-semibold text-foreground"
                 style={nepaliTextStyle(11)}
                 numberOfLines={1}
               >
@@ -138,7 +138,7 @@ export function GrahaDetailsList({
                   className="flex-row items-center gap-0.5 rounded-full px-1 py-px"
                 >
                   <Ionicons name="refresh" size={10} color={colors.secondary} />
-                  <Text style={{ color: colors.secondary }} className="text-[12px] font-bold">
+                  <Text style={{ color: colors.secondary }} className="text-caption font-bold">
                     {pick("व", "R")}
                   </Text>
                 </View>
@@ -147,7 +147,7 @@ export function GrahaDetailsList({
             dmsLine,
             <Text
               key="b"
-              className="text-center font-num text-[12px] font-semibold text-foreground"
+              className="text-caption text-center font-num font-semibold text-foreground"
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >

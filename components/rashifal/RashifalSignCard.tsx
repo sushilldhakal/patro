@@ -48,7 +48,7 @@ function LuckyRow({
   return (
     <View className="min-w-0 flex-1 flex-row items-center gap-1.5">
       <Ionicons name={icon} size={14} color={colors.mutedForeground} />
-      <Text className="min-w-0 flex-1 text-xs font-semibold text-foreground" numberOfLines={1}>
+      <Text className="text-caption min-w-0 flex-1 font-semibold text-foreground" numberOfLines={1}>
         {value}
       </Text>
     </View>
@@ -77,10 +77,10 @@ export function RashifalSignCard({ sign, period }: Props) {
       <View className="flex-row items-start gap-3 border-b border-border bg-secondary/10 px-4 py-3">
         <RashiGlyphIcon name={getRashiName(sign.id, lang)} number={sign.id} size={36} />
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
             {displayName}
           </Text>
-          <Text className="mt-1 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
             {sign.syllables_ne}
           </Text>
         </View>
@@ -91,13 +91,13 @@ export function RashifalSignCard({ sign, period }: Props) {
         <View className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
           <View className={cn("h-full rounded-full", rashifalToneBar(sign.tone))} style={{ width: `${pct}%` }} />
         </View>
-        <Text className={cn("text-xs font-bold tabular-nums", rashifalToneText(sign.tone))}>
+        <Text className={cn("text-caption font-bold tabular-nums", rashifalToneText(sign.tone))}>
           {digits(pct)}%
         </Text>
       </View>
 
       {grade ? (
-        <Text className="border-b border-border/60 px-4 pb-2 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <Text className="text-caption border-b border-border/60 px-4 pb-2 font-semibold uppercase tracking-wide text-muted-foreground">
           {grade}
         </Text>
       ) : null}
@@ -111,7 +111,7 @@ export function RashifalSignCard({ sign, period }: Props) {
               <View key={domain.key} className="mb-2 w-1/3 min-w-0 px-1">
                 <View className="flex-row items-center gap-1">
                   <Ionicons name={icon} size={14} color={colors.mutedForeground} />
-                  <Text className="flex-1 text-[12px] font-semibold text-muted-foreground" numberOfLines={1}>
+                  <Text className="text-caption flex-1 font-semibold text-muted-foreground" numberOfLines={1}>
                     {label}
                   </Text>
                 </View>
@@ -127,7 +127,7 @@ export function RashifalSignCard({ sign, period }: Props) {
         </View>
       ) : null}
 
-      <Text className="px-4 py-3.5 text-sm leading-relaxed text-foreground/90" style={nepaliTextStyle(14)}>
+      <Text className="text-body px-4 py-3.5 leading-relaxed text-foreground/90" style={nepaliTextStyle(14)}>
         {prediction}
       </Text>
 
@@ -148,7 +148,7 @@ export function RashifalSignCard({ sign, period }: Props) {
         onPress={() => setOpen((v) => !v)}
         className="flex-row items-center justify-between border-t border-border px-4 py-2.5 active:opacity-80"
       >
-        <Text className="text-xs font-semibold text-muted-foreground">
+        <Text className="text-caption font-semibold text-muted-foreground">
           {pick("किन यस्तो?", "Why this reading?")}
         </Text>
         <Ionicons
@@ -162,13 +162,13 @@ export function RashifalSignCard({ sign, period }: Props) {
         <View className="border-t border-border bg-surface-muted px-4 py-3">
           {sign.components?.map((component) => (
             <View key={component.key} className="mb-1.5 flex-row items-baseline gap-2">
-              <Text className="w-24 shrink-0 text-xs font-semibold text-foreground">
+              <Text className="text-caption w-24 shrink-0 font-semibold text-foreground">
                 {ne ? component.label_ne : component.label_en}
               </Text>
-              <Text className="min-w-0 flex-1 text-xs text-muted-foreground">
+              <Text className="text-caption min-w-0 flex-1 text-muted-foreground">
                 {ne ? component.note_ne : component.note_en}
               </Text>
-              <Text className={cn("shrink-0 text-xs font-bold tabular-nums", rashifalToneText(component.tone))}>
+              <Text className={cn("text-caption shrink-0 font-bold tabular-nums", rashifalToneText(component.tone))}>
                 {toNepaliDigits(component.percent, lang)}
               </Text>
             </View>
@@ -177,7 +177,7 @@ export function RashifalSignCard({ sign, period }: Props) {
           {sign.gochar?.length ? <RashifalGocharChips rows={sign.gochar} /> : null}
 
           {lord ? (
-            <Text className="mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+            <Text className="text-caption mt-3 border-t border-border/60 pt-3 text-muted-foreground">
               {pick(
                 `${lord.lord_ne} · ${lord.house} · ${lord.sign_ne}`,
                 `${lord.lord_en} · house ${lord.house} · ${lord.sign_en}`,
@@ -186,7 +186,7 @@ export function RashifalSignCard({ sign, period }: Props) {
           ) : null}
 
           {period !== "daily" && sign.best_day && sign.weak_day ? (
-            <Text className="mt-2 text-xs text-muted-foreground">
+            <Text className="text-caption mt-2 text-muted-foreground">
               {pick(
                 `उत्तम: ${sign.best_day.date_bs ?? sign.best_day.date_ad} · कमजोर: ${sign.weak_day.date_bs ?? sign.weak_day.date_ad}`,
                 `Best: ${sign.best_day.date_ad} · Weak: ${sign.weak_day.date_ad}`,
@@ -195,7 +195,7 @@ export function RashifalSignCard({ sign, period }: Props) {
           ) : null}
 
           {remedy ? (
-            <Text className="mt-2 text-xs font-medium text-foreground/80">
+            <Text className="text-caption mt-2 font-medium text-foreground/80">
               {pick("उपाय", "Remedy")}: {remedy}
             </Text>
           ) : null}

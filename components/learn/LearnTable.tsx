@@ -21,7 +21,7 @@ export function LearnTable({
             {headers.map((h, i) => (
               <View key={i} className="min-w-[104px] px-3 py-2">
                 <Text
-                  className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="text-caption font-bold uppercase tracking-wide text-muted-foreground"
                   style={nepaliTextStyle(10)}
                 >
                   {h}
@@ -36,7 +36,7 @@ export function LearnTable({
             >
               {row.map((cell, ci) => (
                 <View key={ci} className="min-w-[104px] px-3 py-2">
-                  <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+                  <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
                     {cell}
                   </Text>
                 </View>
@@ -46,7 +46,7 @@ export function LearnTable({
         </View>
       </ScrollView>
       {caption ? (
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {caption}
         </Text>
       ) : null}

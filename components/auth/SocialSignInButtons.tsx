@@ -132,7 +132,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
   return (
     <View className="gap-3">
       {showGoogleSetupHint ? (
-        <Text className="text-xs leading-relaxed text-muted-foreground">
+        <Text className="text-caption leading-relaxed text-muted-foreground">
           {googleSignInSetupMessage()}
         </Text>
       ) : null}
@@ -168,7 +168,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
           ) : (
             <Ionicons name="logo-google" size={18} color="#EA4335" />
           )}
-          <Text className="text-base font-semibold text-foreground">
+          <Text className="text-body font-semibold text-foreground">
             {pick("गुगलबाट जारी राख्नुहोस्", "Continue with Google")}
           </Text>
         </Pressable>
@@ -192,7 +192,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
           ) : (
             <Ionicons name="logo-facebook" size={18} color="#1877F2" />
           )}
-          <Text className="text-base font-semibold text-foreground">
+          <Text className="text-body font-semibold text-foreground">
             {pick("फेसबुकबाट जारी राख्नुहोस्", "Continue with Facebook")}
           </Text>
         </Pressable>
@@ -201,7 +201,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
       {showGoogle || facebookSignInEnabled || showApple ? (
         <View className="flex-row items-center gap-3 py-0.5">
           <View className="h-px flex-1" style={{ backgroundColor: colors.border }} />
-          <Text className="text-xs text-muted-foreground">{pick("वा", "or")}</Text>
+          <Text className="text-caption text-muted-foreground">{pick("वा", "or")}</Text>
           <View className="h-px flex-1" style={{ backgroundColor: colors.border }} />
         </View>
       ) : null}

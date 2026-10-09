@@ -10,7 +10,7 @@ import { useLocale } from "@/lib/i18n";
  */
 export function PatroFooterNote({
   locationLabel,
-  className = "mt-7 text-center text-sm text-muted-foreground",
+  className = "text-body mt-7 text-center text-muted-foreground",
   paddingHorizontal,
 }: {
   locationLabel?: string;

@@ -33,11 +33,11 @@ import { useThemeColors } from "@/lib/theme-context";
 function TraitRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="min-w-[9rem] flex-row flex-wrap items-baseline gap-1">
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <Text className="text-sm text-muted-foreground">:</Text>
-      <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body text-muted-foreground">:</Text>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
         {value}
       </Text>
     </View>
@@ -162,13 +162,13 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
     >
       <View className="mb-3 flex-row flex-wrap items-center justify-between gap-2">
         <Text
-          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {t("birth_panchanga")}
         </Text>
         <View className="rounded-full border border-border bg-card px-2.5 py-1">
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
             {lang === "en" ? ayanamshaInfo.label : ayanamshaInfo.labelNe}
           </Text>
         </View>
@@ -241,9 +241,9 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
 
       {avakahada ? (
         <View className="mt-4 border-t border-border/70 pt-4">
-          <Text className="mb-2 text-sm leading-snug" style={nepaliTextStyle(14)}>
+          <Text className="text-body mb-2" style={nepaliTextStyle(14)}>
             <Text
-              className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+              className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
               style={nepaliTextStyle(12)}
             >
               {t("avakahada")}
@@ -272,12 +272,12 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
           {avakahadaShloka ? (
             <View className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
               <Text
-                className="mb-1 text-xs uppercase tracking-wide text-muted-foreground"
+                className="text-caption mb-1 uppercase tracking-wide text-muted-foreground"
                 style={nepaliTextStyle(12)}
               >
                 {pick("अवकहडा श्लोक", "Avakahada Shloka")}
               </Text>
-              <Text className="text-sm italic leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body italic leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
                 {avakahadaShloka}
               </Text>
             </View>

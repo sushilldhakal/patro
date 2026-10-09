@@ -52,7 +52,7 @@ export function KundaliPageShell({
           <View className="min-w-0 flex-1">
             {eyebrow ? (
               <Text
-                className="mb-1.5 text-xs uppercase tracking-[0.12em] text-muted-foreground"
+                className="text-caption mb-1.5 uppercase tracking-[0.12em] text-muted-foreground"
                 style={[nepaliTextStyle(12), { paddingTop: 2 }]}
               >
                 {eyebrow}
@@ -61,7 +61,7 @@ export function KundaliPageShell({
             <View className="flex-row items-center gap-2.5">
               {icon}
               <Text
-                className="shrink text-xl font-bold text-foreground"
+                className="text-title shrink font-bold text-foreground"
                 style={[nepaliTextStyle(20), { paddingTop: 2, paddingBottom: 2 }]}
               >
                 {title}
@@ -69,7 +69,7 @@ export function KundaliPageShell({
             </View>
             {subtitle ? (
               <Text
-                className="mt-1 text-sm text-muted-foreground"
+                className="text-body mt-1 text-muted-foreground"
                 style={[nepaliTextStyle(14), { paddingTop: 1 }]}
               >
                 {subtitle}

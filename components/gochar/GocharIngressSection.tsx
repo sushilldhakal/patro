@@ -70,12 +70,12 @@ export function GocharIngressSection({
           <View className="min-w-0 flex-1">
             <Text
               style={{ letterSpacing: 1.2, ...nepaliTextStyle(11) }}
-              className="text-xs font-bold uppercase text-muted-foreground"
+              className="text-caption font-bold uppercase text-muted-foreground"
             >
               {pick("के परिवर्तन हुँदैछ", "What's changing")}
             </Text>
             <Text
-              className="mt-0.5 text-base font-bold text-foreground"
+              className="text-body mt-0.5 font-bold text-foreground"
               style={nepaliTextStyle(16)}
             >
               {pick("आगामी गोचर घटनाहरू", "Upcoming transit events")}
@@ -86,7 +86,7 @@ export function GocharIngressSection({
               <NavBtn icon="chevron-back" onPress={onPrevMonth!} />
               <Text
                 numberOfLines={1}
-                className="min-w-[86px] text-center text-sm font-bold text-foreground"
+                className="text-body min-w-[86px] text-center font-bold text-foreground"
                 style={nepaliTextStyle(13)}
               >
                 {browseMonthLabel}
@@ -117,7 +117,7 @@ export function GocharIngressSection({
                   color: active ? colors.secondary : colors.mutedForeground,
                   ...nepaliTextStyle(12),
                 }}
-                className="text-xs font-bold"
+                className="text-caption font-bold"
               >
                 {pick(f.ne, f.en)} ({digits(counts[f.id])})
               </Text>
@@ -133,11 +133,11 @@ export function GocharIngressSection({
         contentContainerStyle={{ paddingVertical: 4 }}
       >
         {loading ? (
-          <Text className="px-2 py-6 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body px-2 py-6 text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         ) : visible.length === 0 ? (
-          <Text className="px-2 py-6 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body px-2 py-6 text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("यस महिनामा कुनै आगामी गोचर छैन।", "No upcoming transits this month.")}
           </Text>
         ) : (
@@ -156,13 +156,13 @@ export function GocharIngressSection({
                   <View className="bg-secondary px-1 py-0.5">
                     <Text
                       numberOfLines={1}
-                      className="text-center text-[12px] font-bold text-secondary-foreground"
+                      className="text-caption text-center font-bold text-secondary-foreground"
                       style={nepaliTextStyle(10)}
                     >
                       {chip.month}
                     </Text>
                   </View>
-                  <Text className="py-0.5 text-center font-num text-sm font-bold text-foreground">
+                  <Text className="text-body py-0.5 text-center font-num font-bold text-foreground">
                     {chip.day}
                   </Text>
                 </View>
@@ -170,11 +170,11 @@ export function GocharIngressSection({
                 <GrahaPlanetIcon graha={ev.graha as GrahaKey} size={22} />
 
                 <View className="min-w-0 flex-1">
-                  <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
                     {ingressGrahaLabel(ev, lang)}
                   </Text>
                   <Text
-                    className="mt-0.5 text-sm font-semibold text-foreground"
+                    className="text-body mt-0.5 font-semibold text-foreground"
                     style={nepaliTextStyle(13)}
                   >
                     {ingressEventDetail(ev, lang)}
@@ -183,7 +183,7 @@ export function GocharIngressSection({
 
                 <Text
                   style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
-                  className="shrink-0 text-xs font-bold"
+                  className="text-caption shrink-0 font-bold"
                 >
                   {rel}
                 </Text>

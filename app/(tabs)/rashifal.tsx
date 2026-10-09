@@ -150,7 +150,7 @@ export default function RashifalScreen() {
           title={t("rashifal.title")}
           subtitle={t("rashifal.subtitle")}
         />
-        <Text className="-mt-2 text-xs uppercase tracking-widest text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption -mt-2 uppercase tracking-widest text-muted-foreground" style={nepaliTextStyle(12)}>
           {t("rashifal.eyebrow")}
         </Text>
 
@@ -195,7 +195,7 @@ export default function RashifalScreen() {
                 />
                 {active ? (
                   <Text
-                    className="text-[12px] font-bold text-foreground"
+                    className="text-caption font-bold text-foreground"
                     style={nepaliTextStyle(10)}
                     numberOfLines={1}
                   >
@@ -209,7 +209,7 @@ export default function RashifalScreen() {
 
         <RashifalProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={handleSelectProfile} />
         {profileError ? (
-          <Text className="text-center text-xs text-destructive">
+          <Text className="text-caption text-center text-destructive">
             {pick("जन्म मिति र स्थान प्रोफाइलमा भर्नुहोस्।", "Add birth date and place to the profile.")}
           </Text>
         ) : null}
@@ -228,16 +228,16 @@ export default function RashifalScreen() {
         ) : generalQ.data?.signs?.length ? (
           <View className="gap-4">
             {period !== "daily" ? (
-              <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
                 {t(`rashifal.period_intro.${period}`)}
               </Text>
             ) : null}
             {moonRef ? (
-              <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
                 {moonRef}
               </Text>
             ) : null}
-            <Text className="text-center text-xs text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-caption text-center text-muted-foreground" style={nepaliTextStyle(13)}>
               {t("rashifal.method_note")}
             </Text>
             {generalQ.data.signs.map((sign) => (
@@ -245,7 +245,7 @@ export default function RashifalScreen() {
             ))}
           </View>
         ) : (
-          <Text className="py-8 text-center text-sm text-muted-foreground">
+          <Text className="text-body py-8 text-center text-muted-foreground">
             {pick("यस अवधिको राशिफल उपलब्ध छैन।", "Rashifal unavailable for this period.")}
           </Text>
         )}

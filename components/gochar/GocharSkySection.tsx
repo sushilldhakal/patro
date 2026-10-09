@@ -31,7 +31,7 @@ const PLANET_STRIPE: Record<GrahaKey, string> = {
 
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
-    <Text className="text-sm leading-snug" style={nepaliTextStyle(13)}>
+    <Text className="text-body" style={nepaliTextStyle(13)}>
       <Text className="text-muted-foreground">{label}</Text>{" "}
       <Text className="font-semibold text-foreground">{value}</Text>
     </Text>
@@ -58,17 +58,17 @@ export function GocharSkySection({
       <View className="border-b border-border bg-muted/30 px-4 py-4">
         <Text
           style={{ color: colors.secondary, letterSpacing: 1.2, ...nepaliTextStyle(11) }}
-          className="text-xs font-bold uppercase"
+          className="text-caption font-bold uppercase"
         >
           {pick("आकाश एक नजरमा", "The sky at a glance")}
         </Text>
         <Text
-          className="mt-1.5 text-lg font-bold leading-snug text-foreground"
+          className="text-title mt-1.5 font-bold text-foreground"
           style={nepaliTextStyle(18)}
         >
           {pick("प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
         </Text>
-        <Text className="mt-1 text-sm font-semibold text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-1 font-semibold text-muted-foreground" style={nepaliTextStyle(13)}>
           {dateLabel}
         </Text>
       </View>
@@ -99,15 +99,15 @@ export function GocharSkySection({
               <View className="flex-row items-center gap-2.5 border-b border-border bg-muted/25 py-2.5 pl-4 pr-3">
                 <GrahaPlanetIcon graha={key} size={32} />
                 <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-x-1.5">
-                  <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
                     {name}
                   </Text>
-                  <Text className="text-sm font-bold text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
                     {rashi}
                   </Text>
-                  <Text className="font-num text-sm text-foreground">{deg}</Text>
+                  <Text className="text-body font-num text-foreground">{deg}</Text>
                   {g.is_retrograde ? (
-                    <Text style={{ color: colors.danger }} className="text-xs font-bold">
+                    <Text style={{ color: colors.danger }} className="text-caption font-bold">
                       ℞
                     </Text>
                   ) : null}
@@ -119,7 +119,7 @@ export function GocharSkySection({
                   >
                     <Text
                       style={{ color: colors.primary, ...nepaliTextStyle(10) }}
-                      className="text-[12px] font-bold"
+                      className="text-caption font-bold"
                     >
                       {pick("उच्च", "Exalted")}
                     </Text>
@@ -138,7 +138,7 @@ export function GocharSkySection({
               {untilAd ? (
                 <View className="border-t border-border bg-muted/15 py-2 pl-4 pr-3">
                   <Text
-                    className="text-sm leading-snug text-muted-foreground"
+                    className="text-body text-muted-foreground"
                     style={nepaliTextStyle(12)}
                   >
                     {lang === "en"

@@ -51,13 +51,13 @@ function SidebarLink({
       }
     >
       <Text
-        className={cn("text-sm leading-snug", active ? "font-semibold text-secondary" : "font-medium text-foreground")}
+        className={cn("text-body", active ? "font-semibold text-secondary" : "font-medium text-foreground")}
         style={nepaliTextStyle(14)}
       >
         {pick(item.labelNe, item.labelEn)}
       </Text>
       {item.blurbNe ? (
-        <Text className="mt-0.5 text-[12px] leading-snug text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick(item.blurbNe, item.blurbEn ?? item.blurbNe)}
         </Text>
       ) : null}
@@ -127,7 +127,7 @@ function SidebarSection({
         />
         <Text
           className={cn(
-            "min-w-0 flex-1 text-sm font-bold uppercase tracking-wide",
+            "text-body min-w-0 flex-1 font-bold uppercase tracking-wide",
             hasActiveItem ? "text-secondary" : "text-muted-foreground",
           )}
           style={nepaliTextStyle(14)}
@@ -170,7 +170,7 @@ export function PanchangaSidebarNav({
   const body = (
     <>
       <Text
-        className="border-b border-border px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        className="text-caption border-b border-border px-4 py-3 font-semibold uppercase tracking-wider text-muted-foreground"
         style={nepaliTextStyle(12)}
       >
         {pick("पञ्चाङ्ग", "Panchanga")}

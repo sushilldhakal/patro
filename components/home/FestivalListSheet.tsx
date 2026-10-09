@@ -50,12 +50,12 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
         }}
       >
         <Text
-          className="text-base font-bold text-foreground"
+          className="text-body font-bold text-foreground"
           style={lang === "en" ? undefined : nepaliTextStyle(16)}
         >
           {pick("चाडपर्व", "Festivals")}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={lang === "en" ? undefined : nepaliTextStyle(14)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={lang === "en" ? undefined : nepaliTextStyle(14)}>
           {weekday} · {pick("वि.सं.", "BS")} {digits(day.day)} · {adDate}
         </Text>
       </View>
@@ -66,7 +66,7 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
             className="rounded-lg border border-border bg-muted/40 px-3 py-2.5"
           >
             <Text
-              className="text-sm font-semibold leading-snug text-foreground"
+              className="text-body font-semibold text-foreground"
               style={lang === "en" ? undefined : nepaliTextStyle(14)}
             >
               {name}

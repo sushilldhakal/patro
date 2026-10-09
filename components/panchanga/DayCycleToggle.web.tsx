@@ -23,7 +23,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
   const inactive = OPTIONS.find((o) => o.value !== mode) ?? OPTIONS[0]!;
   const shellStyle = { height, maxHeight: height, fontSize, lineHeight };
   const btnClass =
-    "inline-flex items-center justify-center px-2.5 font-semibold leading-none transition-colors";
+    "inline-flex items-center justify-center px-2.5 font-semibold transition-colors";
 
   if (isCompact) {
     return (

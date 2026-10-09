@@ -298,7 +298,7 @@ function SunRiseSetSignValue({
   const { times, sign } = sunRiseSetSignParts(day, sunRashi, ayanaMark, dg);
   return (
     <View className="min-w-0">
-      <Text className="font-num whitespace-nowrap text-sm leading-snug text-foreground">{times}</Text>
+      <Text className="text-body font-num whitespace-nowrap text-foreground">{times}</Text>
       <Text className={subLineClass}>{sign}</Text>
     </View>
   );
@@ -646,26 +646,26 @@ export default function DainikKrantiScreen() {
 
       <View className="mb-4 gap-1">
         <View className="flex-row flex-wrap items-baseline gap-x-3 gap-y-1">
-          <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
             {monthLabel} · {pakshaLabel}
           </Text>
           {monthQ.data?.year_bs ? (
-            <Text className="text-sm text-muted-foreground">
+            <Text className="text-body text-muted-foreground">
               {digits(monthQ.data.year_bs)} {pick("बि.सं.", "BS")}
             </Text>
           ) : null}
           {ritu ? (
-            <Text className="text-sm text-muted-foreground">
+            <Text className="text-body text-muted-foreground">
               · {pick("ऋतु", "Ritu")}: {ritu}
             </Text>
           ) : null}
           {allDays.length ? (
-            <Text className="text-xs text-muted-foreground">
+            <Text className="text-caption text-muted-foreground">
               · {digits(days.length)} {pick("दिन", "days")}
             </Text>
           ) : null}
         </View>
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(
             "पक्ष अनुसार दैनिक पञ्चाङ्ग — तिथि, नक्षत्र, योग, करण, सूर्योदय/अस्त, पर्व र ग्रह गोचर।",
             "Daily panchanga by paksha — tithi, nakshatra, yoga, karana, sunrise/sunset, festivals and planetary transits.",
@@ -675,7 +675,7 @@ export default function DainikKrantiScreen() {
 
       {monthHasAdhik && adhik?.month_name ? (
         <View className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">
-          <Text className="text-sm leading-relaxed text-amber-700 dark:text-amber-300" style={nepaliTextStyle(14)}>
+          <Text className="text-body leading-relaxed text-amber-700 dark:text-amber-300" style={nepaliTextStyle(14)}>
             <Text className="font-semibold">{pick("अधिक मास:", "Adhik Maas:")}</Text>
             {pick(
               ` यस वर्ष अधिक ${lunarMonthNe(adhik.month_name)} मास परेको छ — त्यसैले यो महिनामा अधिक र शुद्ध पक्षहरू छुट्टाछुट्टै देखाइएका छन्। (अधिक मास = मलमास / पुरुषोत्तम मास; यसमा सङ्क्रान्ति पर्दैन।)`,
@@ -695,13 +695,13 @@ export default function DainikKrantiScreen() {
             <View className="gap-3">
               {monthQ.isError ? (
                 <View className="rounded-xl border border-border py-8">
-                  <Text className="text-center text-sm text-muted-foreground">
+                  <Text className="text-body text-center text-muted-foreground">
                     {pick("विवरण ल्याउन सकिएन। पुनः प्रयास गर्नुहोस्।", "Could not load details. Please try again.")}
                   </Text>
                 </View>
               ) : days.length === 0 ? (
                 <View className="rounded-xl border border-border py-8">
-                  <Text className="text-center text-sm text-muted-foreground">
+                  <Text className="text-body text-center text-muted-foreground">
                     {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
                   </Text>
                 </View>
@@ -711,7 +711,7 @@ export default function DainikKrantiScreen() {
                   return (
                     <Fragment key={d.date_ad}>
                       {segLabel ? (
-                        <Text className="px-0.5 pt-2 text-sm font-bold text-secondary" style={nepaliTextStyle(14)}>
+                        <Text className="text-body px-0.5 pt-2 font-bold text-secondary" style={nepaliTextStyle(14)}>
                           {segLabel}
                         </Text>
                       ) : null}
@@ -753,7 +753,7 @@ export default function DainikKrantiScreen() {
               value="lagna-month"
               title={pick("दैनिक लग्न आरम्भ समयतालिका (पूरा महिना)", "Daily lagna start timetable (full month)")}
             >
-              <Text className="mb-3 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body mb-3 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
                 {pick(
                   "प्रत्येक गते सूर्योदयदेखि अर्को सूर्योदयसम्म कुन राशि कहिले लग्नमा आउँछ।",
                   "For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise.",
@@ -774,7 +774,7 @@ export default function DainikKrantiScreen() {
               value="graha-month"
               title={pick("उदयकालिक सूर्यादिग्रहस्पष्ट (पूरा महिना)", "Planetary positions at sunrise (full month)")}
             >
-              <Text className="mb-3 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body mb-3 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
                 {pick(
                   "सूर्योदयको क्षणमा ग्रहहरूको राश्यादि स्थिति र दैनिक बेलान्तर।",
                   "The planets' rashi positions at the moment of sunrise, and the daily time-difference.",
@@ -802,7 +802,7 @@ export default function DainikKrantiScreen() {
               <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-border p-3">
                 <SunriseSunsetIcon variant="rise" size={20} color="#f59e0b" />
                 <View>
-                  <Text className="text-sm text-muted-foreground">{pick("सूर्योदय", "Sunrise")}</Text>
+                  <Text className="text-body text-muted-foreground">{pick("सूर्योदय", "Sunrise")}</Text>
                   <Text className="font-num font-semibold text-foreground">
                     {refDay.sunrise ? digits(formatTimeShort(refDay.sunrise) ?? refDay.sunrise) : "—"}
                   </Text>
@@ -811,7 +811,7 @@ export default function DainikKrantiScreen() {
               <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-border p-3">
                 <SunriseSunsetIcon variant="set" size={20} color="#6366f1" />
                 <View>
-                  <Text className="text-sm text-muted-foreground">{pick("सूर्यास्त", "Sunset")}</Text>
+                  <Text className="text-body text-muted-foreground">{pick("सूर्यास्त", "Sunset")}</Text>
                   <Text className="font-num font-semibold text-foreground">
                     {refDay.sunset ? digits(formatTimeShort(refDay.sunset) ?? refDay.sunset) : "—"}
                   </Text>
@@ -832,29 +832,29 @@ export default function DainikKrantiScreen() {
           />
 
           <View className="rounded-xl border border-border p-4">
-            <Text className="mb-2 text-sm font-semibold text-foreground">
+            <Text className="text-body mb-2 font-semibold text-foreground">
               {pick("ग्रह गोचर र अर्को सङ्क्रान्ति", "Planetary transits & next sankranti")}
             </Text>
             {grahas.length === 0 ? (
-              <Text className="text-sm text-muted-foreground">
+              <Text className="text-body text-muted-foreground">
                 {gocharQ.isLoading ? pick("लोड हुँदैछ…", "Loading…") : pick("विवरण उपलब्ध छैन।", "No details available.")}
               </Text>
             ) : (
               <View className="gap-1.5">
                 {grahas.map((g) => (
                   <View key={g.key} className="flex-row items-baseline justify-between gap-2">
-                    <Text className="flex-1 text-sm text-foreground" style={nepaliTextStyle(14)}>
+                    <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
                       {pick(g.name_ne, grahaTableEn(g.key, g.name_vedic ?? g.name_ne))}{" "}
                       {pick(grahaRashiNe(g) ?? "", g.rashi ?? grahaRashiNe(g) ?? "")}
                     </Text>
                     {g.next_pada_entry ? (
-                      <Text className="shrink-0 text-right text-sm text-muted-foreground">
+                      <Text className="text-body shrink-0 text-right text-muted-foreground">
                         {pick(g.next_pada_entry.label_ne ?? "", g.next_pada_entry.to_rashi ?? g.next_pada_entry.label_ne ?? "")}
                         {"\n"}
                         {digits(g.next_pada_entry.entry_time_local_short ?? g.next_pada_entry.entry_time_local ?? "")}
                       </Text>
                     ) : g.next_rashi_entry ? (
-                      <Text className="shrink-0 text-right text-sm text-muted-foreground">
+                      <Text className="text-body shrink-0 text-right text-muted-foreground">
                         → {pick(g.next_rashi_entry.to_rashi_ne ?? rashiEnToNe(g.next_rashi_entry.to_rashi) ?? g.next_rashi_entry.to_rashi ?? "", g.next_rashi_entry.to_rashi ?? g.next_rashi_entry.to_rashi_ne ?? "")}
                         {"\n"}
                         {digits(g.next_rashi_entry.entry_time_local)}
@@ -867,21 +867,21 @@ export default function DainikKrantiScreen() {
           </View>
 
           <View className="rounded-xl border border-border bg-muted/30 p-4">
-            <Text className="mb-2 text-sm font-semibold text-foreground">
+            <Text className="text-body mb-2 font-semibold text-foreground">
               {pakshaLabel} {pick("कर्तव्य", "duties")}
             </Text>
             <View className="gap-2">
               {effectivePaksha === "all" ? (
                 <>
-                  <Text className="text-sm leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
                     {pick(KARTAVYA.krishna.ne, KARTAVYA.krishna.en)}
                   </Text>
-                  <Text className="text-sm leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
                     {pick(KARTAVYA.shukla.ne, KARTAVYA.shukla.en)}
                   </Text>
                 </>
               ) : (
-                <Text className="text-sm leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
                   {pick(KARTAVYA[effectivePaksha].ne, KARTAVYA[effectivePaksha].en)}
                 </Text>
               )}
@@ -890,11 +890,11 @@ export default function DainikKrantiScreen() {
 
           <View className="rounded-xl border border-border">
             <View className="flex-row flex-wrap items-center gap-1.5 border-b border-border px-4 py-3">
-              <Text className="text-sm font-semibold text-foreground">
+              <Text className="text-body font-semibold text-foreground">
                 ✦ {pick("ग्रह स्पष्ट, उदयास्त र गोचर सङ्केत", "Planet positions, rise-set & transit legend")}
               </Text>
               {gocharQ.data?.date_ad ? (
-                <Text className="ml-auto text-sm text-muted-foreground">
+                <Text className="text-body ml-auto text-muted-foreground">
                   {pick(
                     `${formatGocharBsLabel(gocharQ.data.date_bs, gocharQ.data.date_ad) ?? fmtAd(gocharQ.data.date_ad, false)} को स्थिति`,
                     `Position on ${formatGocharBsLabel(gocharQ.data.date_bs, gocharQ.data.date_ad) ?? fmtAd(gocharQ.data.date_ad, true)}`,
@@ -905,11 +905,11 @@ export default function DainikKrantiScreen() {
 
             <View className="gap-6 p-4">
               <View>
-                <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-foreground">
+                <Text className="text-body mb-2 font-semibold uppercase tracking-wide text-foreground">
                   {pick("ग्रह स्पष्ट (अंश° कला′ विकला″)", "Planet positions (deg° kala′ vikala″)")}
                 </Text>
                 {grahas.length === 0 ? (
-                  <Text className="text-sm text-muted-foreground">
+                  <Text className="text-body text-muted-foreground">
                     {gocharQ.isLoading ? pick("लोड हुँदैछ…", "Loading…") : pick("विवरण उपलब्ध छैन।", "No details available.")}
                   </Text>
                 ) : (
@@ -918,12 +918,12 @@ export default function DainikKrantiScreen() {
                       const m = motionNe(g);
                       return (
                         <View key={g.key} className="min-w-[45%] flex-row flex-wrap items-baseline gap-1.5">
-                          <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+                          <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                             {pick(g.name_ne, grahaTableEn(g.key, g.name_vedic ?? g.name_ne))}
                           </Text>
-                          <Text className="text-sm">{pick(grahaRashiNe(g) ?? "", g.rashi ?? grahaRashiNe(g) ?? "")}</Text>
+                          <Text className="text-body">{pick(grahaRashiNe(g) ?? "", g.rashi ?? grahaRashiNe(g) ?? "")}</Text>
                           {g.dms_in_rashi ? (
-                            <Text className="font-num text-sm text-foreground">{digits(g.dms_in_rashi)}</Text>
+                            <Text className="text-body font-num text-foreground">{digits(g.dms_in_rashi)}</Text>
                           ) : null}
                           <View
                             className={cn(
@@ -933,7 +933,7 @@ export default function DainikKrantiScreen() {
                           >
                             <Text
                               className={cn(
-                                "text-xs",
+                                "text-caption",
                                 m.vakri ? "text-rose-600 dark:text-rose-300" : "text-emerald-600 dark:text-emerald-300",
                               )}
                             >
@@ -945,7 +945,7 @@ export default function DainikKrantiScreen() {
                     })}
                   </View>
                 )}
-                <Text className="mt-2 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body mt-2 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
                   {pick(
                     "प्रत्येक पक्षको आरम्भमा ग्रहहरूको स्पष्ट स्थान अंश°, कला′, विकला″ (र प्रति-विकला) मा दिइन्छ। वक्री = उल्टो गति, मार्गी = सुल्टो गति।",
                     "At the start of each paksha, each planet's exact position is given in degrees°, kala′, vikala″ (and prati-vikala). Vakri = retrograde, Margi = direct.",
@@ -955,16 +955,16 @@ export default function DainikKrantiScreen() {
 
               <View className="gap-6 md:flex-row">
                 <View className="flex-1">
-                  <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-foreground">
+                  <Text className="text-body mb-2 font-semibold uppercase tracking-wide text-foreground">
                     {pick("ग्रह उदयास्त सङ्केत", "Planet rise-set symbols")}
                   </Text>
                   <View className="gap-1.5">
                     {UDAYAST_LEGEND.map((it) => (
                       <View key={it.code} className="flex-row gap-2">
                         <View className="w-24 shrink-0 rounded bg-muted px-1.5 py-0.5">
-                          <Text className="text-xs font-semibold text-secondary">{it.code}</Text>
+                          <Text className="text-caption font-semibold text-secondary">{it.code}</Text>
                         </View>
-                        <Text className="flex-1 text-sm text-foreground" style={nepaliTextStyle(14)}>
+                        <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
                           {pick(it.full, it.fullEn)} — {pick(it.meaning, it.meaningEn)}
                         </Text>
                       </View>
@@ -973,22 +973,22 @@ export default function DainikKrantiScreen() {
                 </View>
 
                 <View className="flex-1">
-                  <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-foreground">
+                  <Text className="text-body mb-2 font-semibold uppercase tracking-wide text-foreground">
                     {pick("गोचर / पापशान्ति घर-सङ्केत", "Transit / Papashanti house symbols")}
                   </Text>
                   <View className="gap-1.5">
                     {GOCHAR_LEGEND.map((it) => (
                       <View key={it.code} className="flex-row gap-2">
                         <View className="w-20 shrink-0 rounded bg-muted px-1.5 py-0.5">
-                          <Text className="text-xs font-semibold text-secondary">{it.code}</Text>
+                          <Text className="text-caption font-semibold text-secondary">{it.code}</Text>
                         </View>
-                        <Text className="flex-1 text-sm text-foreground" style={nepaliTextStyle(14)}>
+                        <Text className="text-body flex-1 text-foreground" style={nepaliTextStyle(14)}>
                           {pick(it.meaning, it.meaningEn)}
                         </Text>
                       </View>
                     ))}
                   </View>
-                  <Text className="mt-3 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body mt-3 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
                     {pick(
                       "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ।",
                       "Dasha bracket: Vimshottari dasha remaining at birth. Time correction: symbols like “u” or “0” indicate zero degrees/kala.",
@@ -1043,9 +1043,9 @@ function DesktopPatroTable({
 }: DesktopProps) {
   const colors = useThemeColors();
   const isEn = lang === "en";
-  const th = "text-sm font-semibold text-foreground";
-  const thWrap = "text-sm font-semibold leading-tight text-foreground";
-  const subLine = "text-xs leading-tight text-muted-foreground";
+  const th = "text-body font-semibold text-foreground";
+  const thWrap = "text-body font-semibold text-foreground";
+  const subLine = "text-caption text-muted-foreground";
 
   return (
     <TableScrollShell stretch={false} className="w-full rounded-xl">
@@ -1087,13 +1087,13 @@ function DesktopPatroTable({
 
         {isError ? (
           <View className="py-8">
-            <Text className="text-center text-sm text-muted-foreground">
+            <Text className="text-body text-center text-muted-foreground">
               {pick("विवरण ल्याउन सकिएन।", "Could not load details.")}
             </Text>
           </View>
         ) : days.length === 0 ? (
           <View className="py-8">
-            <Text className="text-center text-sm text-muted-foreground">
+            <Text className="text-body text-center text-muted-foreground">
               {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
             </Text>
           </View>
@@ -1117,7 +1117,7 @@ function DesktopPatroTable({
               <Fragment key={d.date_ad}>
                 {segLabel ? (
                   <View className="border-b border-border bg-muted/70 px-3 py-2.5">
-                    <Text className="text-sm font-bold text-secondary" style={nepaliTextStyle(14)}>
+                    <Text className="text-body font-bold text-secondary" style={nepaliTextStyle(14)}>
                       {segLabel}
                     </Text>
                   </View>
@@ -1148,9 +1148,9 @@ function DesktopPatroTable({
                       {isToday ? (
                         <View className="h-1.5 w-1.5 rounded-full bg-secondary" accessibilityElementsHidden />
                       ) : null}
-                      <Text className={cn("font-num text-base font-bold leading-none", (isSaturday || hasFestival) && "text-rose-600")}>
+                      <Text className={cn("text-body font-num font-bold", (isSaturday || hasFestival) && "text-rose-600")}>
                         {digits(d.day)}{" "}
-                        <Text className="text-xs font-normal text-muted-foreground">{digits(fmtAd(d.date_ad, isEn))}</Text>
+                        <Text className="text-caption font-normal text-muted-foreground">{digits(fmtAd(d.date_ad, isEn))}</Text>
                       </Text>
                     </View>
                     <Text className={cn(subLine, isSaturday && "text-rose-600")}>
@@ -1198,7 +1198,7 @@ function DesktopPatroTable({
                   <TableCell width={DAINIK_COL_TRANSIT}>
                     {(transitsByBsDay[d.day]?.length ?? 0) > 0 ? (
                       transitsByBsDay[d.day]!.map((ev, i) => (
-                        <Text key={i} className="text-sm leading-tight">
+                        <Text key={i} className="text-body">
                           {pick(ev.labelNe, ev.labelEn)} {pick(ev.planetNe, ev.planetEn)}
                           {ev.time ? ` ${digits(ev.time)}` : ""}
                         </Text>
@@ -1208,7 +1208,7 @@ function DesktopPatroTable({
                     )}
                   </TableCell>
                   <TableCell width={DAINIK_FESTIVAL_COL_W}>
-                    <Text className={hasFestival ? "text-sm text-rose-600" : undefined}>
+                    <Text className={hasFestival ? "text-body text-rose-600" : undefined}>
                       {hasFestival ? d.festivals.join(" · ") : "—"}
                     </Text>
                   </TableCell>

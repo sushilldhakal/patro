@@ -30,7 +30,7 @@ export function AccountMenu() {
           accessibilityRole="button"
         >
           <Ionicons name="person-outline" size={15} color={colors.foreground} />
-          <Text className="text-sm font-semibold text-foreground">{pick("लग-इन", "Sign in")}</Text>
+          <Text className="text-body font-semibold text-foreground">{pick("लग-इन", "Sign in")}</Text>
         </Pressable>
         <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
       </>
@@ -46,7 +46,7 @@ export function AccountMenu() {
         className="h-8 w-8 items-center justify-center rounded-full bg-secondary/15 active:opacity-80"
         accessibilityLabel={pick("खाता मेनु", "Account menu")}
       >
-        <Text className="text-sm font-bold text-secondary">{initial}</Text>
+        <Text className="text-body font-bold text-secondary">{initial}</Text>
       </Pressable>
 
       <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
@@ -67,14 +67,14 @@ export function AccountMenu() {
               <Ionicons name="person-circle-outline" size={28} color={colors.secondary} />
             </View>
             <View className="min-w-0 flex-1">
-              <Text numberOfLines={1} className="text-base font-semibold text-foreground">
+              <Text numberOfLines={1} className="text-body font-semibold text-foreground">
                 {user.email}
               </Text>
               <View className="mt-0.5 flex-row items-center gap-1">
                 {user.is_verified ? (
                   <Ionicons name="checkmark-circle" size={13} color={colors.primary} />
                 ) : null}
-                <Text className="text-xs text-muted-foreground">
+                <Text className="text-caption text-muted-foreground">
                   {user.is_verified
                     ? pick("प्रमाणित", "Verified")
                     : pick("इमेल प्रमाणित भएको छैन", "Email not verified")}
@@ -91,7 +91,7 @@ export function AccountMenu() {
             className="mx-2 mt-2 flex-row items-center gap-3 rounded-xl px-4 py-3.5 active:bg-muted"
           >
             <Ionicons name="person-outline" size={20} color={colors.foreground} />
-            <Text className="text-base text-foreground">
+            <Text className="text-body text-foreground">
               {pick("खाता र प्रोफाइल", "Account & profiles")}
             </Text>
           </Pressable>
@@ -103,7 +103,7 @@ export function AccountMenu() {
             className="mx-2 flex-row items-center gap-3 rounded-xl px-4 py-3.5 active:bg-muted"
           >
             <Ionicons name="log-out-outline" size={20} color={colors.foreground} />
-            <Text className="text-base text-foreground">{pick("लग-आउट", "Sign out")}</Text>
+            <Text className="text-body text-foreground">{pick("लग-आउट", "Sign out")}</Text>
           </Pressable>
         </View>
       </Modal>

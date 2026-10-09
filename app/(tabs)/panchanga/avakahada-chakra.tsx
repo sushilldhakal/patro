@@ -187,7 +187,7 @@ export default function AvakahadaScreen() {
       headerRight={<Ionicons name="grid-outline" size={26} color={colors.secondary} />}
     >
       <View className="mb-4 rounded-lg border border-border bg-muted/40 px-4 py-3">
-        <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(
             "अभिजित् — उत्तराषाढाको चौथो पाउ र श्रवणको सुरुको १५ भागमध्ये १ भाग मिलेर बन्ने अन्तरकालीन (२८औँ) नक्षत्र हो; नामाक्षर: जु, जे, जो, ख।",
             "Abhijit — the intercalary 28th nakshatra formed by the last quarter of Uttara Ashadha and the first 15th of Shravana; name syllables: Ju, Je, Jo, Kha.",
@@ -208,7 +208,7 @@ export default function AvakahadaScreen() {
             "Search nakshatra, syllable, rashi, yoni…",
           )}
           placeholderTextColor={colors.mutedForeground}
-          style={{ flex: 1, paddingVertical: 10, color: colors.foreground, fontSize: 14 }}
+          style={{ flex: 1, paddingVertical: 10, color: colors.foreground, fontSize: 15 }}
         />
         {query ? (
           <Pressable onPress={() => setQuery("")} hitSlop={8}>
@@ -248,7 +248,7 @@ export default function AvakahadaScreen() {
 
           {rows.length === 0 ? (
             <View className="px-4 py-8">
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
                 {pick("कुनै नतिजा भेटिएन।", "No results found.")}
               </Text>
             </View>
@@ -256,7 +256,7 @@ export default function AvakahadaScreen() {
             rows.map((row, rowIndex) => (
               <TableRow key={row.index} rowIndex={rowIndex}>
                 <TableCell width={COLUMNS[0].width}>
-                  <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+                  <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
                     {digits(row.index)}. {row.label}
                   </Text>
                 </TableCell>
@@ -270,7 +270,7 @@ export default function AvakahadaScreen() {
                         key={`${row.index}-${i}`}
                         className="min-w-[28px] items-center rounded-md border border-border bg-card px-1.5 py-0.5"
                       >
-                        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+                        <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
                           {a}
                         </Text>
                       </View>
@@ -287,7 +287,7 @@ export default function AvakahadaScreen() {
                   >
                     <Text
                       style={{ color: ganaTone[row.gana].fg, ...nepaliTextStyle(12) }}
-                      className="text-sm font-semibold"
+                      className="text-body font-semibold"
                     >
                       {localizeGana(row.gana, lang)}
                     </Text>
@@ -303,28 +303,28 @@ export default function AvakahadaScreen() {
       <AvakahadaWheel highlighted={query.trim() ? rows : undefined} />
 
       <View className="mt-5 gap-4">
-        <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
           {pick("भौमदोष (मङ्गली) विचार", "Bhoomadosha (Mangal) considerations")}
         </Text>
         <View className={width >= 640 ? "flex-row gap-3" : "gap-3"}>
           <View className="flex-1 rounded-xl border border-border p-4">
-            <Text className="mb-2 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body mb-2 font-semibold text-foreground" style={nepaliTextStyle(14)}>
               {pick("नामाक्षर वर्ग र शत्रु वर्ग", "Name-syllable groups and enemy groups")}
             </Text>
             <View className="gap-1.5">
               {MANGLI_VARGAS.map((v) => (
                 <View key={v.varga} className="flex-row items-center gap-2">
-                  <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                     {localizeVarga(v.varga, lang)}
                   </Text>
-                  <Text className="text-xs text-muted-foreground">⚔</Text>
-                  <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className="text-caption text-muted-foreground">⚔</Text>
+                  <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
                     {localizeVarga(v.shatru, lang)}
                   </Text>
                 </View>
               ))}
             </View>
-            <Text className="mt-3 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption mt-3 text-muted-foreground" style={nepaliTextStyle(12)}>
               {pick(
                 "वर र वधूको नामाक्षर वर्ग परस्पर शत्रु परेमा भौमदोष (मङ्गली) मानिन्छ।",
                 "Bhoomadosha (Mangal) is considered when bride and groom name-syllable groups are mutual enemies.",
@@ -332,14 +332,14 @@ export default function AvakahadaScreen() {
             </Text>
           </View>
           <View className="flex-1 rounded-xl border border-border p-4">
-            <Text className="mb-2 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body mb-2 font-semibold text-foreground" style={nepaliTextStyle(14)}>
               {pick("श्लोक", "Shloka")}
             </Text>
             <View className="gap-3">
               {BHAUMA_DOSHA_SHLOKAS.map((s, i) => (
                 <Text
                   key={i}
-                  className="text-sm leading-relaxed text-muted-foreground"
+                  className="text-body leading-relaxed text-muted-foreground"
                   style={nepaliTextStyle(14)}
                 >
                   {s}
@@ -348,7 +348,7 @@ export default function AvakahadaScreen() {
             </View>
           </View>
         </View>
-        <Text className="text-xs leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick(
             "टिप्पणी: मङ्गल लग्न, ४, ७, ८ वा १२ भावमा परेमा भौमदोष लाग्छ; शनि दृष्टि, गुरु/शुक्र/चन्द्रको स्थिति, केन्द्रगत राहु आदिले दोष परिहार हुन सक्छ (माथिका श्लोक हेर्नुहोस्)।",
             "Note: Mangal in lagna, 4th, 7th, 8th or 12th causes bhoomadosha; Saturn's aspect, Jupiter/Venus/Moon placement, kendragata Rahu etc. can cancel it (see shloka above).",

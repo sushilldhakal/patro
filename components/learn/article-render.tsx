@@ -69,14 +69,14 @@ function BlockView({ block, lang }: { block: Block; lang: "ne" | "en" }) {
   switch (block.kind) {
     case "lede":
       return (
-        <Text className="text-base leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
+        <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
           {richText(pick(lang, block.text))}
         </Text>
       );
 
     case "para":
       return (
-        <Text className="mt-3 text-base leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
+        <Text className="text-body mt-3 leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
           {richText(pick(lang, block.text))}
         </Text>
       );
@@ -183,7 +183,7 @@ function SeeAlso({ slugs, lang }: { slugs: string[]; lang: "ne" | "en" }) {
           onPress={() => router.push(`/learn/${topic!.slug}` as never)}
           className="flex-row items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3 active:opacity-80"
         >
-          <Text className="min-w-0 flex-1 text-sm font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+          <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
             {pick(lang, topic!.title)}
           </Text>
           <Ionicons name="arrow-forward" size={16} color={colors.secondary} />
@@ -219,14 +219,14 @@ export function ArticleBody({
         return (
           <View className="mb-6 gap-1" key={section.title.en || section.title.ne}>
             <View className="flex-row flex-wrap items-baseline gap-x-2 border-b border-border pb-2">
-              <Text className="font-num text-xs font-bold uppercase tracking-wider text-secondary">
+              <Text className="text-caption font-num font-bold uppercase tracking-wider text-secondary">
                 {pick(lang, kicker)}
               </Text>
-              <Text className="flex-1 text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+              <Text className="text-title flex-1 font-bold text-foreground" style={nepaliTextStyle(18)}>
                 {pick(lang, section.title)}
               </Text>
               {gloss ? (
-                <Text className="text-xs uppercase tracking-wide text-muted-foreground">{gloss}</Text>
+                <Text className="text-caption uppercase tracking-wide text-muted-foreground">{gloss}</Text>
               ) : null}
             </View>
             {section.blocks.map((block, bi) => (

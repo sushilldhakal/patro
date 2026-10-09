@@ -62,7 +62,7 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
         className="flex-row items-start gap-2.5 rounded-xl border px-3 py-2.5"
       >
         <Ionicons name="cloud-offline-outline" size={18} color={colors.mutedForeground} style={{ marginTop: 1 }} />
-        <Text className="flex-1 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption flex-1 text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick(
             "तपाईं अफलाइन हुनुहुन्छ र यो वर्षको पात्रो पहिले डाउनलोड गरिएको छैन। इन्टरनेटमा जोडिनुहोस्, वा अनलाइन हुँदा भविष्यको लागि डाउनलोड गर्नुहोस्।",
             "You're offline and this year's calendar hasn't been downloaded yet. Connect to the internet, or download it in advance next time you're online.",
@@ -83,14 +83,14 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
       className="flex-row items-center gap-2.5 rounded-xl border px-3 py-2.5"
     >
       <Ionicons name="download-outline" size={18} color={colors.secondary} />
-      <Text className="flex-1 text-xs text-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-caption flex-1 text-foreground" style={nepaliTextStyle(12)}>
         {pick(
           "यो वर्षको पात्रो अफलाइन प्रयोगको लागि डाउनलोड गर्ने हो?",
           "Download this year's calendar for offline use?",
         )}
       </Text>
       {downloadError === year ? (
-        <Text className="text-xs text-destructive" style={nepaliTextStyle(12)}>
+        <Text className="text-caption text-destructive" style={nepaliTextStyle(12)}>
           {pick("असफल", "Failed")}
         </Text>
       ) : null}
@@ -112,12 +112,12 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
             }}
             className="rounded-lg bg-primary px-3 py-1.5 active:opacity-80"
           >
-            <Text className="text-xs font-semibold text-primary-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption font-semibold text-primary-foreground" style={nepaliTextStyle(12)}>
               {pick("डाउनलोड", "Download")}
             </Text>
           </Pressable>
           <Pressable onPress={later} hitSlop={8} className="px-1">
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {pick("पछि", "Later")}
             </Text>
           </Pressable>

@@ -39,7 +39,7 @@ export function LearnMoreCard({
     >
       <View className="mb-3 flex-row items-center gap-2">
         <Ionicons name="book-outline" size={16} color={colors.secondary} />
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {resolvedHeading}
         </Text>
       </View>
@@ -60,7 +60,7 @@ export function LearnMoreCard({
             </View>
             <Text
               numberOfLines={1}
-              className="min-w-0 flex-1 text-sm text-foreground"
+              className="text-body min-w-0 flex-1 text-foreground"
               style={nepaliTextStyle(14)}
             >
               {pick(topic.title.ne, topic.title.en)}

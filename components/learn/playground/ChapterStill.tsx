@@ -60,7 +60,7 @@ export function ChapterStill({
         style={{ width: "100%", aspectRatio: 1 }}
       />
       {caption ? (
-        <Text className="px-2 py-1.5 text-xs leading-snug text-white/70" style={nepaliTextStyle(11)}>
+        <Text className="text-caption px-2 py-1.5 text-white/70" style={nepaliTextStyle(11)}>
           {caption}
         </Text>
       ) : null}
@@ -90,7 +90,7 @@ export function ChapterTip({ tipKey }: { tipKey: string }) {
       pointerEvents="none"
       className="absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/20 bg-black/75 px-3.5 py-1.5"
     >
-      <Text className="text-xs font-semibold text-white/85" style={nepaliTextStyle(11)}>
+      <Text className="text-caption font-semibold text-white/85" style={nepaliTextStyle(11)}>
         {chapterLabel(tipKey, lang)}
       </Text>
     </View>

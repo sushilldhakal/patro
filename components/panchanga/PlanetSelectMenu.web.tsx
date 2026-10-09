@@ -101,7 +101,7 @@ export function PlanetSelectMenu({
                           onSelect(i);
                           setOpen(false);
                         }}
-                        className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[15px] text-[#eaf3f1]"
+                        className="text-body flex w-full items-center gap-2.5 px-3 py-2 text-left text-[#eaf3f1]"
                         style={{
                           background: active ? "rgba(198,40,40,0.28)" : "transparent",
                           fontWeight: active ? 700 : 500,

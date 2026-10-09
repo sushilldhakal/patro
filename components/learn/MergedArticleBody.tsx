@@ -36,7 +36,7 @@ function ChapterBody({ slug, offset }: { slug: string; offset: number }): { node
 function ChapterComingSoon() {
   const { pick } = useLocale();
   return (
-    <Text className="text-sm italic text-muted-foreground" style={nepaliTextStyle(13)}>
+    <Text className="text-body italic text-muted-foreground" style={nepaliTextStyle(13)}>
       {pick("यो अध्याय छिट्टै आउँदैछ।", "This chapter is coming soon.")}
     </Text>
   );
@@ -107,14 +107,14 @@ export function MergedArticleBody({
   return (
     <View className="gap-6">
       <View className="gap-1.5 rounded-xl border border-border bg-muted/20 p-3">
-        <Text className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        <Text className="text-caption font-bold uppercase tracking-wide text-muted-foreground">
           {pick("यस पृष्ठमा", "On this page")}
         </Text>
         <View className="gap-1">
           {chapters.map(({ part }, i) => (
             <Pressable key={part.slug} onPress={() => jumpTo(part.slug)} className="flex-row gap-2 py-0.5 active:opacity-70">
-              <Text className="font-num text-xs text-secondary">{toNepaliIndex(lang, i + 1)}</Text>
-              <Text className="flex-1 text-xs text-foreground" style={nepaliTextStyle(12)}>
+              <Text className="text-caption font-num text-secondary">{toNepaliIndex(lang, i + 1)}</Text>
+              <Text className="text-caption flex-1 text-foreground" style={nepaliTextStyle(12)}>
                 {pick(part.title.ne, part.title.en)}
               </Text>
             </Pressable>
@@ -130,7 +130,7 @@ export function MergedArticleBody({
           }}
           className="gap-1"
         >
-          <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
             {pick(part.title.ne, part.title.en)}
           </Text>
           {node}

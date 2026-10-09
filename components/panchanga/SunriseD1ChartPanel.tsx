@@ -20,10 +20,10 @@ export function SunriseD1ChartPanel({ p }: Props) {
 
   return (
     <View className="rounded-xl border border-border bg-card p-3 shadow-sm">
-      <Text className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <Text className="text-caption font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {pick("D1 चक्र", "D1 chart")}
       </Text>
-      <Text className="mt-1 text-sm text-muted-foreground">{anchor}</Text>
+      <Text className="text-body mt-1 text-muted-foreground">{anchor}</Text>
       <View className="mt-2">
         <D1Chart houses={houses} />
       </View>

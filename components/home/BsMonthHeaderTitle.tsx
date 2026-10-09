@@ -60,7 +60,7 @@ export function BsMonthHeaderTitle({
       className="h-[30px] shrink-0 flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted"
     >
       <Ionicons name="swap-horizontal" size={14} color={colors.foreground} />
-      <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {nextViewLabel}
       </Text>
     </Pressable>

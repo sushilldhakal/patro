@@ -29,8 +29,8 @@ interface WheelPanelProps {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-center justify-between gap-3 border-b border-white/10 py-2.5">
-      <Text className="text-xs text-[#c8e0e2]/65">{label}</Text>
-      <Text className="max-w-[58%] text-right text-sm font-semibold text-[#c8e0e2]">{value}</Text>
+      <Text className="text-caption text-[#c8e0e2]/65">{label}</Text>
+      <Text className="text-body max-w-[58%] text-right font-semibold text-[#c8e0e2]">{value}</Text>
     </View>
   );
 }
@@ -54,19 +54,19 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
       <>
         <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3 pt-4">
           <View className="min-w-0 flex-1">
-            <Text className="text-xs font-semibold uppercase tracking-widest text-[#4ecdc4]">
+            <Text className="text-caption font-semibold uppercase tracking-widest text-[#4ecdc4]">
               {pick("नक्षत्र", "Nakshatra")} · {num(sel.i + 1)}
             </Text>
-            <Text className="mt-1 text-2xl font-bold text-[#c8e0e2]">{pick(ico.ne, ico.en)}</Text>
-            {isEnglish ? <Text className="mt-1 text-xs text-[#c8e0e2]/65">{ico.en}</Text> : null}
-            <Text className="mt-2 text-sm text-[#c8e0e2]/65">{ico.sym_ne}</Text>
+            <Text className="text-display mt-1 font-bold text-[#c8e0e2]">{pick(ico.ne, ico.en)}</Text>
+            {isEnglish ? <Text className="text-caption mt-1 text-[#c8e0e2]/65">{ico.en}</Text> : null}
+            <Text className="text-body mt-2 text-[#c8e0e2]/65">{ico.sym_ne}</Text>
           </View>
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
             accessibilityLabel={pick("बन्द", "Close")}
           >
-            <Text className="text-base text-[#c8e0e2]/65">✕</Text>
+            <Text className="text-body text-[#c8e0e2]/65">✕</Text>
           </Pressable>
         </View>
         <ScrollView className="max-h-80 px-4 py-3">
@@ -97,18 +97,18 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
       <>
         <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3 pt-4">
           <View className="min-w-0 flex-1">
-            <Text className="text-xs font-semibold uppercase tracking-widest text-[#4ecdc4]">
+            <Text className="text-caption font-semibold uppercase tracking-widest text-[#4ecdc4]">
               {pick("राशि", "Rashi")} · {num(sel.i + 1)}
             </Text>
-            <Text className="mt-1 text-2xl font-bold text-[#c8e0e2]">{pick(rs.ne, rs.en)}</Text>
-            {isEnglish ? <Text className="mt-1 text-xs text-[#c8e0e2]/65">{rs.en}</Text> : null}
+            <Text className="text-display mt-1 font-bold text-[#c8e0e2]">{pick(rs.ne, rs.en)}</Text>
+            {isEnglish ? <Text className="text-caption mt-1 text-[#c8e0e2]/65">{rs.en}</Text> : null}
           </View>
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
             accessibilityLabel={pick("बन्द", "Close")}
           >
-            <Text className="text-base text-[#c8e0e2]/65">✕</Text>
+            <Text className="text-body text-[#c8e0e2]/65">✕</Text>
           </Pressable>
         </View>
         <ScrollView className="max-h-80 px-4 py-3">
@@ -130,8 +130,8 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
           />
           <Row label={pick("पद", "Padas")} value={pick(`${num(9)} पद`, `${num(9)} padas`)} />
           <View className="mt-3 rounded-lg bg-black/25 p-3">
-            <Text className="text-xs font-semibold text-[#c8e0e2]">{pick("नक्षत्रहरू", "Nakshatras")}</Text>
-            <Text className="mt-1 text-sm leading-5 text-[#c8e0e2]/70">{nakIn.join(" · ")}</Text>
+            <Text className="text-caption font-semibold text-[#c8e0e2]">{pick("नक्षत्रहरू", "Nakshatras")}</Text>
+            <Text className="text-body mt-1 leading-5 text-[#c8e0e2]/70">{nakIn.join(" · ")}</Text>
           </View>
         </ScrollView>
       </>

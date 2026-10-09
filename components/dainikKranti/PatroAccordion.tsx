@@ -24,7 +24,7 @@ export function PatroAccordionItem({ value, title, children, defaultOpen }: Item
         accessibilityState={{ expanded: open }}
         className="flex-row items-center justify-between py-3 active:opacity-80"
       >
-        <Text className="flex-1 pr-2 text-base font-semibold text-foreground">{title}</Text>
+        <Text className="text-body flex-1 pr-2 font-semibold text-foreground">{title}</Text>
         <Ionicons
           name={open ? "chevron-down" : "chevron-forward"}
           size={18}

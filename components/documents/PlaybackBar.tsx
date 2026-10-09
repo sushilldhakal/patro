@@ -55,10 +55,10 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           <Ionicons name="play" size={20} color={inkOn(colors.secondary)} style={{ marginLeft: 2 }} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-sm font-semibold" numberOfLines={1}>
+          <Text className="text-body font-semibold" numberOfLines={1}>
             {t(full.available ? "documents.play_full_recording" : "documents.play_through")}
           </Text>
-          <Text className="text-xs text-muted-foreground" numberOfLines={1}>
+          <Text className="text-caption text-muted-foreground" numberOfLines={1}>
             {documentTitle}
           </Text>
         </View>
@@ -79,11 +79,11 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           <Ionicons name={full.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={full.playing ? undefined : { marginLeft: 2 }} />
         </Pressable>
         <View className="min-w-0 flex-1">
-          <Text className="text-xs font-semibold text-muted-foreground" numberOfLines={1}>
+          <Text className="text-caption font-semibold text-muted-foreground" numberOfLines={1}>
             {t("documents.play_full_recording")}
           </Text>
           <View className="flex-row items-center gap-2">
-            <Text className="w-9 text-[10px] text-muted-foreground">{formatTime(full.currentTime)}</Text>
+            <Text className="text-caption w-9 text-muted-foreground">{formatTime(full.currentTime)}</Text>
             <Slider
               style={{ flex: 1, height: 28 }}
               minimumValue={0}
@@ -95,7 +95,7 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
               thumbTintColor={colors.secondary}
               accessibilityLabel={t("documents.seek")}
             />
-            <Text className="w-9 text-right text-[10px] text-muted-foreground">{formatTime(full.duration)}</Text>
+            <Text className="text-caption w-9 text-right text-muted-foreground">{formatTime(full.duration)}</Text>
           </View>
         </View>
       </View>,
@@ -113,14 +113,14 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
     <View>
       {activeShloka.audio_url ? (
         <View className="mb-1.5 flex-row items-center gap-2">
-          <Text className="w-9 text-right text-[10px] text-muted-foreground">{formatTime(verse.currentTime)}</Text>
+          <Text className="text-caption w-9 text-right text-muted-foreground">{formatTime(verse.currentTime)}</Text>
           <View className="h-1 flex-1 overflow-hidden rounded-full bg-border">
             <View
               className="h-full bg-secondary"
               style={{ width: `${verse.duration > 0 ? Math.min(100, (verse.currentTime / verse.duration) * 100) : 0}%` }}
             />
           </View>
-          <Text className="w-9 text-[10px] text-muted-foreground">{formatTime(verse.duration)}</Text>
+          <Text className="text-caption w-9 text-muted-foreground">{formatTime(verse.duration)}</Text>
         </View>
       ) : null}
       <View className="flex-row items-center gap-2">
@@ -157,10 +157,10 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           <Ionicons name="play-skip-forward" size={18} color={colors.mutedForeground} />
         </Pressable>
         <View className="min-w-0 flex-1">
-          <Text className="text-xs font-semibold text-muted-foreground" numberOfLines={1}>
+          <Text className="text-caption font-semibold text-muted-foreground" numberOfLines={1}>
             {documentTitle}
           </Text>
-          <Text className="text-sm font-semibold" numberOfLines={1}>
+          <Text className="text-body font-semibold" numberOfLines={1}>
             {t("documents.now_playing", { label: activeShloka.verse_label })}
             {meaning ? ` — ${meaning}` : ""}
           </Text>

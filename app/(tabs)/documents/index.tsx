@@ -55,7 +55,7 @@ export default function DocumentsScreen() {
           selected ? "border border-border bg-card shadow-sm" : "border border-transparent",
         )}
       >
-        <Text className={cn("text-sm font-semibold", selected ? "text-foreground" : "text-muted-foreground")}>
+        <Text className={cn("text-body font-semibold", selected ? "text-foreground" : "text-muted-foreground")}>
           {label}
           {count != null ? `  ${digits(count)}` : ""}
         </Text>
@@ -75,7 +75,7 @@ export default function DocumentsScreen() {
       ) : docsQ.isError ? (
         <ErrorState message={t("documents.load_error")} onRetry={() => void docsQ.refetch()} />
       ) : documents.length === 0 ? (
-        <Text className="text-sm text-muted-foreground">{t("documents.empty")}</Text>
+        <Text className="text-body text-muted-foreground">{t("documents.empty")}</Text>
       ) : (
         <>
           <View
@@ -91,10 +91,10 @@ export default function DocumentsScreen() {
           {visible.map(({ group, docs }, i) => (
             <View key={group.id} className="mb-5">
               <View className="mb-3 flex-row items-end justify-between border-b border-border pb-2">
-                <Text className="text-lg font-bold">
+                <Text className="text-title font-bold">
                   {digits(i + 1)}. {group.emoji} {lang === "ne" ? group.ne : group.en}
                 </Text>
-                <Text className="text-xs font-semibold text-muted-foreground">{digits(docs.length)}</Text>
+                <Text className="text-caption font-semibold text-muted-foreground">{digits(docs.length)}</Text>
               </View>
               {docs.map((doc) => (
                 <DocumentCard key={doc.slug} doc={doc} />

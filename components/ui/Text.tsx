@@ -19,7 +19,14 @@ function themedTextColor(className: string | undefined, colors: ThemeColors): st
   if (!className) return colors.foreground;
   if (PALETTE_COLOR_CLASS.test(className)) return undefined;
   if (/\btext-\[#/.test(className)) return undefined;
-  if (/\btext-\[/.test(className)) return undefined;
+  /* Arbitrary *colours* (`text-[var(--x)]`, `text-[color:...]`) stay with NativeWind.
+     Arbitrary *sizes* (`text-caption`, `text-caption`, `text-[length:...]`) are not
+     colours — returning here for them left the text with no colour at all, which
+     rendered black on dark surfaces. */
+  const arbitrary = className.match(/\btext-\[([^\]]*)\]/);
+  if (arbitrary && !/^(?:length:)?-?\d*\.?\d+(?:px|rem|em|%|vw|vh|pt)?$/.test(arbitrary[1])) {
+    return undefined;
+  }
   if (/\btext-muted-foreground\b/.test(className)) return colors.mutedForeground;
   if (/\btext-secondary-foreground\b/.test(className)) return inkOn(colors.secondary);
   if (/\btext-secondary\b/.test(className)) return colors.secondary;
@@ -77,20 +84,33 @@ function weightFamily(weight: string | number | undefined, className?: string): 
   return undefined;
 }
 
+const TYPE_SCALE = /\btext-(?:caption|body|title|display)\b/;
+
+/** Drop inline fontSize / lineHeight so only the four global classes set type. */
+function withoutInlineType(style: RNTextProps["style"]): RNTextProps["style"] {
+  if (style == null) return style;
+  const flat = StyleSheet.flatten(style);
+  if (!flat) return style;
+  const { fontSize: _size, lineHeight: _line, ...rest } = flat;
+  return rest;
+}
+
 /** Default Text — always applies theme foreground unless a palette utility is used. */
 export function Text({ className, style, ...props }: Props) {
   const colors = useThemeColors();
-  const color = themedTextColor(className, colors);
-  const flat = StyleSheet.flatten(style) as { fontFamily?: string; fontWeight?: string | number } | undefined;
+  const sized = TYPE_SCALE.test(className ?? "") ? className : cn("text-body", className);
+  const color = themedTextColor(sized, colors);
+  const typeStyle = withoutInlineType(style);
+  const flat = StyleSheet.flatten(typeStyle) as { fontFamily?: string; fontWeight?: string | number } | undefined;
   const family = !flat?.fontFamily || NOTO_FAMILIES.has(flat.fontFamily)
-    ? weightFamily(flat?.fontWeight, className)
+    ? weightFamily(flat?.fontWeight, sized)
     : undefined;
 
   return (
     <RNText
       {...props}
-      className={cn("font-sans", className)}
-      style={[color ? { color } : undefined, style, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
+      className={cn("font-sans", sized)}
+      style={[color ? { color } : undefined, typeStyle, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
     />
   );
 }

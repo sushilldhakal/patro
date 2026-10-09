@@ -138,7 +138,7 @@ export function SaitCeremonyLayout({
 
       {nakshatraMode && onNakshatraModeChange ? (
         <View className="mb-4 gap-1.5">
-          <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
             {t("sait.nakshatra_tradition")}
           </Text>
           <View className="flex-row flex-wrap gap-1 self-start rounded-lg border border-border bg-card p-0.5">
@@ -153,7 +153,7 @@ export function SaitCeremonyLayout({
                   className={active ? "rounded-md bg-primary px-2.5 py-1.5" : "rounded-md px-2.5 py-1.5 active:bg-muted"}
                 >
                   <Text
-                    className={active ? "text-xs font-semibold text-primary-foreground" : "text-xs font-semibold text-muted-foreground"}
+                    className={active ? "text-caption font-semibold text-primary-foreground" : "text-caption font-semibold text-muted-foreground"}
                     style={nepaliTextStyle(12)}
                   >
                     {t(`sait.nakshatra_modes.${id}`)}
@@ -175,7 +175,7 @@ export function SaitCeremonyLayout({
       />
 
       {!loading && displayCount > 0 ? (
-        <Text className="mb-3 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body mb-3 text-muted-foreground" style={nepaliTextStyle(14)}>
           {countText}
         </Text>
       ) : null}
@@ -194,7 +194,7 @@ export function SaitCeremonyLayout({
       {children ? (
         children
       ) : loading ? (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : days.length > 0 ? (
@@ -207,10 +207,10 @@ export function SaitCeremonyLayout({
             return (
               <View key={month} className="gap-3">
                 <View className="flex-row items-end justify-between gap-3">
-                  <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+                  <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
                     {monthLabel}
                   </Text>
-                  <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+                  <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
                     {pick(`${digits(monthDays.length)} दिन`, `${monthDays.length} days`)}
                   </Text>
                 </View>
@@ -234,7 +234,7 @@ export function SaitCeremonyLayout({
         </View>
       ) : (
         <Text
-          className="py-8 text-center text-sm text-muted-foreground"
+          className="text-body py-8 text-center text-muted-foreground"
           style={nepaliTextStyle(14)}
         >
           {emptyLabel ?? pick("यस वर्ष कुनै शुभ दिन भेटिएन।", "No auspicious days found this year.")}
@@ -248,7 +248,7 @@ export function SaitCeremonyLayout({
         className="mt-6 flex-row items-center gap-1.5 self-start"
       >
         <Ionicons name="grid-outline" size={14} color={colors.primary} />
-        <Text style={{ color: colors.primary }} className="text-sm underline">
+        <Text style={{ color: colors.primary }} className="text-body underline">
           {t("sait.all_ceremonies")}
         </Text>
       </Pressable>

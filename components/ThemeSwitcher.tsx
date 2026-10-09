@@ -51,7 +51,7 @@ export function ThemeSwitcher({ className, showLabel }: { className?: string; sh
                 color={selected ? colors.secondary : colors.mutedForeground}
               />
               <Text
-                className="text-xs font-semibold"
+                className="text-caption font-semibold"
                 style={{ color: selected ? colors.secondary : colors.foreground }}
               >
                 {pick(o.ne, o.en)}

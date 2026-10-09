@@ -21,6 +21,13 @@
     --tw-surface-muted: 243 238 230;
     --tw-tab-active: 217 119 6;
 
+    /* The only four text sizes in the app. Components use text-caption,
+       text-body, text-title, and text-display — nothing else. */
+    --text-caption: 15px;
+    --text-body: 18px;
+    --text-title: 22px;
+    --text-display: 28px;
+
     /* Semantic tokens used by panchanga SVG (timeline + wheel) */
     --off-white: #f8f6f2;
     --ink: #1a1410;
@@ -54,6 +61,11 @@
     --tw-surface-inset: 10 53 56;
     --tw-surface-muted: 9 48 50;
     --tw-tab-active: 230 126 34;
+
+    --text-caption: 15px;
+    --text-body: 18px;
+    --text-title: 22px;
+    --text-display: 28px;
 
     --background: #082628;
     --foreground: #f8f6f2;

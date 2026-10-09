@@ -84,10 +84,10 @@ function GradeLegend({ lang }: { lang: "ne" | "en" }) {
         return (
           <View key={g} className="flex-row items-center gap-1.5">
             <View style={{ backgroundColor: colors.bg }} className="h-2.5 w-2.5 rounded-sm" />
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
               {label}
             </Text>
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
               {GRADE_RANGE[g]}
             </Text>
           </View>
@@ -135,12 +135,12 @@ export function VimshopakaCard({
   return (
     <View className="gap-3">
       {!compactHeader ? (
-        <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
           {kundaliLabel("vimshopaka_bala", lang)}
         </Text>
       ) : null}
       <View className="px-4">
-        <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick(introNe, introEn)}
         </Text>
       </View>
@@ -156,7 +156,7 @@ export function VimshopakaCard({
             key: p.key,
             cells: [
               <GrahaInlineChildren key="g" grahaKey={p.key} size={22}>
-                <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)} numberOfLines={1}>
+                <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)} numberOfLines={1}>
                   {name}
                 </Text>
               </GrahaInlineChildren>,
@@ -164,7 +164,7 @@ export function VimshopakaCard({
                 const s = p.scores[c.key];
                 if (!s) {
                   return (
-                    <Text key={c.key} className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+                    <Text key={c.key} className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
                       —
                     </Text>
                   );

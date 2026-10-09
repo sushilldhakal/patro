@@ -58,7 +58,7 @@ export function GocharRashyadiTable({
           className,
         )}
       >
-        <Text className="text-sm text-muted-foreground">{pick("लोड हुँदैछ…", "Loading…")}</Text>
+        <Text className="text-body text-muted-foreground">{pick("लोड हुँदैछ…", "Loading…")}</Text>
       </View>
     );
   }
@@ -67,14 +67,14 @@ export function GocharRashyadiTable({
     <View className={cn("overflow-hidden rounded-xl border border-border bg-muted/15", className)}>
       <View className="border-b border-border bg-muted/40 px-3 py-2.5">
         {!hideVersionHeader ? (
-          <Text className="text-sm font-semibold leading-snug text-secondary" style={nepaliTextStyle(14)}>
+          <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
             {segment.versionNe}
           </Text>
         ) : null}
-        <Text className={cn("text-sm text-foreground", !hideVersionHeader && "mt-0.5")} style={nepaliTextStyle(14)}>
+        <Text className={cn("text-body text-foreground", !hideVersionHeader && "mt-0.5")} style={nepaliTextStyle(14)}>
           {segment.labelNe}
           {segment.bsDay != null ? (
-            <Text className="text-sm text-muted-foreground">
+            <Text className="text-body text-muted-foreground">
               {" "}
               ({digits(segment.bsDay)}
               {pick(" गते", "")})
@@ -82,7 +82,7 @@ export function GocharRashyadiTable({
           ) : null}
         </Text>
         {segment.moonRashiNe ? (
-          <Text className="mt-1 text-sm text-muted-foreground">
+          <Text className="text-body mt-1 text-muted-foreground">
             {pick("च.रा.", "Moon")}:{" "}
             <Text className="text-foreground">{segment.moonRashiNe}</Text>
           </Text>
@@ -95,7 +95,7 @@ export function GocharRashyadiTable({
             <View className="w-10 px-1 py-2" />
             {RASHYADI_PLANET_KEYS.map((key) => (
               <View key={key} className="min-w-[2.25rem] px-1 py-2">
-                <Text className="text-center text-sm font-bold text-foreground">
+                <Text className="text-body text-center font-bold text-foreground">
                   {RASHYADI_PLANET_ABBREV[key]}
                 </Text>
               </View>
@@ -104,7 +104,7 @@ export function GocharRashyadiTable({
 
           <View className="flex-row border-b border-border/60">
             <View className="w-10 items-center justify-center px-1 py-2">
-              <Text className="text-center text-sm font-semibold">{digits(segment.pakshaDayCount)}</Text>
+              <Text className="text-body text-center font-semibold">{digits(segment.pakshaDayCount)}</Text>
             </View>
             {RASHYADI_PLANET_KEYS.map((key) => (
               <View key={`${segment.id}-hdr-${key}`} className="min-w-[2.25rem] px-1 py-2" />
@@ -119,7 +119,7 @@ export function GocharRashyadiTable({
               className="border-b border-border/60 last:border-b-0"
             >
               <View className="w-10 items-center justify-center px-1 py-2">
-                <Text className="text-center text-xs font-semibold">
+                <Text className="text-caption text-center font-semibold">
                   {rowLabelFor(segment, rowKey)}
                 </Text>
               </View>
@@ -127,7 +127,7 @@ export function GocharRashyadiTable({
                 const row = planets[key];
                 return (
                   <View key={`${segment.id}-${key}-${rowKey}`} className="min-w-[2.25rem] px-1 py-2">
-                    <Text className="text-center font-num text-sm tabular-nums text-foreground">
+                    <Text className="text-body text-center font-num tabular-nums text-foreground">
                       {row ? rashyadiCellValue(row, rowKey) : "—"}
                     </Text>
                   </View>
@@ -138,7 +138,7 @@ export function GocharRashyadiTable({
         </View>
       </TableScrollShell>
 
-      <Text className="border-t border-border/60 px-3 py-1.5 text-xs text-muted-foreground">
+      <Text className="text-caption border-t border-border/60 px-3 py-1.5 text-muted-foreground">
         {pick(
           "अं=अंश · ग=कला · वि=विकला · प्र=तटपरा · त्र=प्रतितत्परा",
           "Deg=degree · Ka=kala · Vi=vikala · Pr=prati-tatpara · Tr=prati-vikala",

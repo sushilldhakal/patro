@@ -146,19 +146,19 @@ export default function AakashGocharScreen() {
         )}
 
         <View className="mt-3 gap-2">
-          <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
             {pick(
               "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
               "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
             )}
           </Text>
-          <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
             {pick(
               "«यहाँबाट आकाश» दृश्यमा माथिको स्थान र मिति-समय अनुसार क्षितिज बन्छ — राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
               "In “Sky from here” the horizon is built from the location and date-time above — the rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
             )}
           </Text>
-          <Text className="text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
             {pick(
               "गति रेखाले ४५ दिन अघि र पछिको बाटो देखाउँछ — मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। कुनै पनि ग्रह छोएर नजिक पुग्न सकिन्छ; «पूरा दृश्य» ले फेरि सिङ्गो सौर्यमण्डल देखाउँछ।",
               "The trail draws 45 days either side of the moment on screen — when Mars or Saturn turns vakri you can watch the loop close on itself. Tap any graha to fly in close to it; “Zoom out” pulls back to the whole system.",

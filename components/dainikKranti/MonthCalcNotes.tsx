@@ -67,7 +67,7 @@ function KindBadge({ kind }: { kind: CalcNote["kind"] }) {
     >
       <Text
         className={cn(
-          "text-xs font-semibold",
+          "text-caption font-semibold",
           kind === "late_night" && "text-amber-700 dark:text-amber-300",
           kind === "ingress" && "text-indigo-700 dark:text-indigo-300",
           kind === "udayast" && "text-emerald-700 dark:text-emerald-300",
@@ -105,11 +105,11 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   }, [notes]);
 
   const notesTable = loading ? (
-    <Text className="px-4 py-8 text-center text-sm text-muted-foreground">
+    <Text className="text-body px-4 py-8 text-center text-muted-foreground">
       {pick("लोड हुँदैछ…", "Loading…")}
     </Text>
   ) : groups.length === 0 ? (
-    <Text className="px-4 py-8 text-center text-sm text-muted-foreground">
+    <Text className="text-body px-4 py-8 text-center text-muted-foreground">
       {pick("यस महिनामा विशेष गणना सूचना छैन।", "No special calculation notes this month.")}
     </Text>
   ) : (
@@ -117,10 +117,10 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
       <View className="min-w-full">
         <TableHeader>
           <View className={cn("w-14 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-xs font-semibold">{pick("गते", "Date")}</Text>
+            <Text className="text-caption font-semibold">{pick("गते", "Date")}</Text>
           </View>
           <View className={cn("flex-1 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-xs font-semibold">{pick("सूचना", "Notes")}</Text>
+            <Text className="text-caption font-semibold">{pick("सूचना", "Notes")}</Text>
           </View>
         </TableHeader>
         {groups.map((group, groupIndex) => (
@@ -138,7 +138,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
                 <View key={`${note.kind}-${note.text}`} className="flex-row flex-wrap items-center gap-1">
                   {i > 0 ? <Text className="text-muted-foreground">·</Text> : null}
                   <KindBadge kind={note.kind} />
-                  <Text className="text-sm text-foreground">
+                  <Text className="text-body text-foreground">
                     {pick(note.text, note.textEn ?? note.text)}
                   </Text>
                 </View>
@@ -152,7 +152,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
 
   const legend = (
     <View className={cn(!embedded && "rounded-xl border border-border p-4", embedded && "mt-4 border-t border-border pt-4")}>
-      <Text className="mb-2 text-sm font-semibold uppercase tracking-wide text-foreground">
+      <Text className="text-body mb-2 font-semibold uppercase tracking-wide text-foreground">
         {pick("ग्रह उदयास्त सङ्केत", "Planet rise-set symbols")}
       </Text>
       <View className="gap-1.5">
@@ -160,10 +160,10 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
           <View key={it.code} className="flex-row gap-2">
             <View className="w-24 shrink-0">
               <View className="rounded bg-muted px-1.5 py-0.5">
-                <Text className="text-xs font-semibold text-secondary">{it.code}</Text>
+                <Text className="text-caption font-semibold text-secondary">{it.code}</Text>
               </View>
             </View>
-            <Text className="flex-1 text-sm text-foreground">
+            <Text className="text-body flex-1 text-foreground">
               <Text className="font-medium">{pick(it.full, it.fullEn)}</Text>
               {" — "}
               {pick(it.meaning, it.meaningEn)}
@@ -171,7 +171,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
           </View>
         ))}
       </View>
-      <Text className="mt-4 text-sm leading-relaxed text-muted-foreground">
+      <Text className="text-body mt-4 leading-relaxed text-muted-foreground">
         {pick(
           "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन्।",
           "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",

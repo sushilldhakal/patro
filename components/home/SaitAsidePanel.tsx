@@ -26,7 +26,7 @@ function formatSaitDays(
   accent: string,
 ) {
   if (!days.length) {
-    return <Text className="text-sm text-muted-foreground">—</Text>;
+    return <Text className="text-body text-muted-foreground">—</Text>;
   }
 
   return (
@@ -36,7 +36,7 @@ function formatSaitDays(
         return (
           <Text
             key={`${day}-${i}`}
-            className="text-sm font-semibold text-foreground"
+            className="text-body font-semibold text-foreground"
             style={hl ? { color: accent, fontWeight: "800" } : undefined}
           >
             {i > 0 ? ", " : ""}
@@ -88,11 +88,11 @@ export function SaitAsidePanel({
   if (error && !data) {
     return (
       <View className="gap-2 py-4">
-        <Text className="text-center text-sm text-muted-foreground">
+        <Text className="text-body text-center text-muted-foreground">
           {pick("साइत डाटा लोड गर्न सकिएन।", "Could not load sait data.")}
         </Text>
         <Pressable onPress={retry} className="self-center rounded-md bg-secondary px-3 py-1.5">
-          <Text className="text-sm font-semibold text-secondary-foreground">
+          <Text className="text-body font-semibold text-secondary-foreground">
             {pick("पुनः प्रयास", "Retry")}
           </Text>
         </Pressable>
@@ -102,7 +102,7 @@ export function SaitAsidePanel({
 
   return (
     <View className="gap-2">
-      <Text className="text-xs font-semibold text-muted-foreground">{monthName}</Text>
+      <Text className="text-caption font-semibold text-muted-foreground">{monthName}</Text>
       <View className="gap-1">
         {SAIT_CATEGORIES.map((cat) => {
           const days = cats?.[cat.id] ?? [];
@@ -113,7 +113,7 @@ export function SaitAsidePanel({
               className="flex-row items-center gap-2 rounded-md px-2.5 py-2"
               style={{ backgroundColor: colors.surfaceInset }}
             >
-              <Text className="w-[42%] shrink-0 text-sm font-bold leading-snug text-foreground">
+              <Text className="text-body w-[42%] shrink-0 font-bold text-foreground">
                 {pick(labels.ne, labels.en)}
               </Text>
               <View className="min-w-0 flex-1">
@@ -124,7 +124,7 @@ export function SaitAsidePanel({
         })}
       </View>
       {!anyDates ? (
-        <Text className="py-4 text-center text-sm text-muted-foreground">
+        <Text className="text-body py-4 text-center text-muted-foreground">
           {pick(
             "यस महिना कुनै साइत उपलब्ध छैन।",
             "No sait dates are available for this month.",

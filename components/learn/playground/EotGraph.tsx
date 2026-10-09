@@ -176,8 +176,8 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
               }}
             />
             <Text
-              className="text-[12px]"
-              style={[nepaliTextStyle(10), { color: "rgba(226,232,240,0.8)", fontSize: 10 }]}
+              className="text-caption"
+              style={[nepaliTextStyle(10), { color: "rgba(226,232,240,0.8)", fontSize: 15 }]}
             >
               {item.label}
             </Text>
@@ -213,7 +213,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
                   x={px}
                   y={H - 8}
                   textAnchor="middle"
-                  fontSize={8}
+                  fontSize={15}
                   fill={INK}
                   fillOpacity={0.55}
                 >
@@ -243,7 +243,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
                   x={plotL - 6}
                   y={py + 3}
                   textAnchor="end"
-                  fontSize={8}
+                  fontSize={15}
                   fill={INK}
                   fillOpacity={active ? 0.95 : 0.5}
                   fontWeight={active ? "700" : "400"}
@@ -269,8 +269,8 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
         </Svg>
       </View>
       <Text
-        className="mt-1.5 text-[12px] leading-snug"
-        style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.5)", fontSize: 11 }]}
+        className="text-caption mt-1.5"
+        style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
       >
         {pick(
           "घडीभन्दा घामको समय कति अगाडि/पछाडि छ। उत्केन्द्रता शून्य पार्नुहोस् — एउटा लहर बाँकी रहन्छ; अक्ष झुकाव शून्य पार्नुहोस् — अर्को।",

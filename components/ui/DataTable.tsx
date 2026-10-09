@@ -5,7 +5,6 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import {
   tableHeaderCellPadding,
-  tableHeaderFontSize,
   tableHeaderTextStyle,
   nepaliTextStyle,
 } from "@/lib/nepali-text";
@@ -75,27 +74,25 @@ function resolveWidthLayout(
 /** Standard header label — use inside `TableHeaderCell` or DataTable default headers. */
 export function TableHeaderLabel({
   children,
-  compact,
-  fontSize,
   numberOfLines = 2,
   uppercase = true,
   className,
 }: {
   children: ReactNode;
+  /** @deprecated Size is text-caption. Kept so existing callers still type-check. */
   compact?: boolean;
-  /** Override default compact/normal header size. */
+  /** @deprecated Size is text-caption. */
   fontSize?: number;
   numberOfLines?: number;
   uppercase?: boolean;
   className?: string;
 }) {
-  const size = fontSize ?? tableHeaderFontSize(compact);
   return (
     <Text
       numberOfLines={numberOfLines}
-      style={tableHeaderTextStyle(size)}
+      style={tableHeaderTextStyle()}
       className={cn(
-        "font-semibold text-muted-foreground",
+        "text-caption font-semibold text-muted-foreground",
         uppercase ? "uppercase tracking-wide" : "tracking-normal",
         className,
       )}
@@ -399,7 +396,7 @@ export function TableCell({
       className={cn("justify-center", alignClass, className)}
     >
       {typeof children === "string" || typeof children === "number" ? (
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
           {children}
         </Text>
       ) : (

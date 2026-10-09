@@ -215,7 +215,7 @@ export function BsDateTimePicker({
             >
               <Text
                 className={cn(
-                  "text-xs font-semibold uppercase tracking-tight",
+                  "text-caption font-semibold uppercase tracking-tight",
                   i === 0 || i === 6 ? "text-destructive/80" : "text-muted-foreground",
                 )}
               >
@@ -264,7 +264,7 @@ export function BsDateTimePicker({
                   <Text
                     className={cn(
                       "font-num font-semibold",
-                      isTablet ? "text-xs" : "text-sm",
+                      isTablet ? "text-caption" : "text-body",
                       isSelected
                         ? "text-secondary-foreground"
                         : isWeekend
@@ -283,7 +283,7 @@ export function BsDateTimePicker({
 
       {showTime && hourAriaLabel && minuteAriaLabel ? (
         <View className="gap-1.5 border-t border-border pt-2.5">
-          <Text className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          <Text className="text-caption text-center font-semibold uppercase tracking-widest text-muted-foreground">
             {pick("समय", "Time")}
           </Text>
           <View className="flex-row items-center justify-center gap-1.5">
@@ -294,7 +294,7 @@ export function BsDateTimePicker({
               onChange={(h) => setTime(h, minute, meridiem)}
               minWidth={56}
             />
-            <Text className="font-num text-sm font-semibold text-muted-foreground">:</Text>
+            <Text className="text-body font-num font-semibold text-muted-foreground">:</Text>
             <BsNativeSelect
               value={minute}
               options={minuteOptions}
@@ -314,7 +314,7 @@ export function BsDateTimePicker({
                 >
                   <Text
                     className={cn(
-                      "text-sm font-bold",
+                      "text-body font-bold",
                       meridiem === mer ? "text-secondary-foreground" : "text-foreground",
                     )}
                   >
@@ -336,14 +336,14 @@ export function BsDateTimePicker({
             live ? "min-w-[8rem] flex-1" : "flex-1",
           )}
         >
-          <Text className="text-sm font-semibold text-foreground">{pick("आज", "Today")}</Text>
+          <Text className="text-body font-semibold text-foreground">{pick("आज", "Today")}</Text>
         </Pressable>
         {!live ? (
           <Pressable
             onPress={commit}
             className="h-9 flex-1 items-center justify-center rounded-md bg-secondary active:opacity-90"
           >
-            <Text className="text-sm font-semibold text-secondary-foreground">{pick("भयो", "Done")}</Text>
+            <Text className="text-body font-semibold text-secondary-foreground">{pick("भयो", "Done")}</Text>
           </Pressable>
         ) : null}
       </View>

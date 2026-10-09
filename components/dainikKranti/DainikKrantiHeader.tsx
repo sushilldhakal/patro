@@ -66,7 +66,7 @@ function PakshaSegToggle({
         >
           <Text
             className={cn(
-              "text-xs font-semibold",
+              "text-caption font-semibold",
               value === opt ? "text-secondary-foreground" : "text-muted-foreground",
             )}
             style={nepaliTextStyle(12)}

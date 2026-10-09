@@ -90,7 +90,7 @@ export function DashaSystemPanel({
             >
               <Text
                 className={
-                  selected ? "text-sm font-semibold text-foreground" : "text-sm text-muted-foreground"
+                  selected ? "text-body font-semibold text-foreground" : "text-body text-muted-foreground"
                 }
                 style={nepaliTextStyle(13)}
               >
@@ -112,7 +112,7 @@ export function DashaSystemPanel({
             }
           >
             <Text
-              className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+              className="text-caption mb-1 font-semibold uppercase tracking-wider text-muted-foreground"
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >
@@ -131,13 +131,13 @@ export function DashaSystemPanel({
               return (
                 <View className="flex-row flex-wrap items-center gap-2">
                   {grahaKey ? <GrahaPlanetIcon graha={grahaKey} size={28} /> : null}
-                  <Text className="text-base font-bold leading-tight text-foreground" style={nepaliTextStyle(16)}>
+                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
                     {lordLabel}
                   </Text>
                 </View>
               );
             })()}
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
               {pick(
                 `${kundaliLabel("dasha_balance", lang)}: ${digits(dasha.balance_label)}`,
                 `${kundaliLabel("dasha_balance", lang)}: ${dasha.balance_label}`,
@@ -156,7 +156,7 @@ export function DashaSystemPanel({
           cycleYears={current.id === "yogini" ? yogini?.cycle_years : undefined}
         />
       ) : (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {kundaliLabel("dasha_unavailable", lang)}
         </Text>
       )}

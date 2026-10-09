@@ -148,21 +148,21 @@ export function TodayHighlightCard({
   return (
     <View nativeID="home-today-highlight" className="bg-card px-4 py-4">
       <View className="flex-row items-start gap-3">
-        <Text className="min-w-[56px] text-[44px] font-bold leading-[50px] text-danger">
+        <Text className="text-display min-w-[56px] font-bold text-danger">
           {dayNumber != null ? digits(dayNumber) : "—"}
         </Text>
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
             {monthName} {digits(yearNumber)}
           </Text>
-          <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
             {weekday}
           </Text>
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
             {crossEraLine}
           </Text>
           {nsLabel ? (
-            <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
               {nsLabel}
             </Text>
           ) : null}
@@ -171,16 +171,16 @@ export function TodayHighlightCard({
 
       <View className="mt-3.5 border-t border-border pt-3">
         <Text
-          className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+          className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
           style={nepaliTextStyle(11)}
         >
           {isToday ? pick("आज विशेष", "Special today") : daysAwayLabel(daysAway, lang, digits)}
         </Text>
-        <Text className="mt-1 text-base font-bold leading-snug text-danger" style={nepaliTextStyle(16)}>
+        <Text className="text-body mt-1 font-bold text-danger" style={nepaliTextStyle(16)}>
           {specialTitle}
         </Text>
         {specialSubtitle ? (
-          <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
             {specialSubtitle}
           </Text>
         ) : null}
@@ -188,7 +188,7 @@ export function TodayHighlightCard({
         {phaseLabel && tithiIndex != null ? (
           <View className="mt-3 flex-row items-center gap-2">
             <CalendarMoonPhaseIcon tithiIndex={tithiIndex} size={24} title={phaseLabel} />
-            <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
               {phaseLabel}
             </Text>
           </View>
@@ -199,13 +199,13 @@ export function TodayHighlightCard({
             {sunrise ? (
               <View className="flex-row items-center gap-1.5">
                 <LucideNative node={SunriseNode} size={16} color="#d98a00" />
-                <Text className="text-sm text-foreground">{sunrise}</Text>
+                <Text className="text-body text-foreground">{sunrise}</Text>
               </View>
             ) : null}
             {sunset ? (
               <View className="flex-row items-center gap-1.5">
                 <LucideNative node={SunsetNode} size={16} color="#d98a00" />
-                <Text className="text-sm text-foreground">{sunset}</Text>
+                <Text className="text-body text-foreground">{sunset}</Text>
               </View>
             ) : null}
           </View>

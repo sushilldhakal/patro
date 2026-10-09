@@ -236,29 +236,29 @@ function SunTimesLegend() {
     <View className="flex-row flex-wrap gap-3 border-b border-border px-4 pb-2.5 pt-3.5">
       <View className="flex-row items-center gap-1">
         <LucideNative node={SunriseNode} size={16} color={colors.primary} />
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("सूर्योदय", "Sunrise")}
         </Text>
       </View>
       <View className="flex-row items-center gap-1">
         <LucideNative node={SunsetNode} size={16} color="#3b82f6" />
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("सूर्यास्त", "Sunset")}
         </Text>
       </View>
       <View className="flex-row items-center gap-1">
-        <Text style={{ color: AYANA_NORTH }} className="text-xs font-bold">
+        <Text style={{ color: AYANA_NORTH }} className="text-caption font-bold">
           {pick("उ", "N")}
         </Text>
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("उत्तरायण", "Uttarayana")}
         </Text>
       </View>
       <View className="flex-row items-center gap-1">
-        <Text style={{ color: AYANA_SOUTH }} className="text-xs font-bold">
+        <Text style={{ color: AYANA_SOUTH }} className="text-caption font-bold">
           {pick("द", "S")}
         </Text>
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {pick("दक्षिणायन", "Dakshinayana")}
         </Text>
       </View>
@@ -283,7 +283,7 @@ function SunTimesYearMatrix({
         <View className="flex-row border-b border-border">
           <Text
             style={{ width: DAY_COL, ...nepaliTextStyle(HEADER_FONT) }}
-            className="border-r border-border bg-card px-1 py-2.5 text-center text-sm font-bold text-foreground"
+            className="text-body border-r border-border bg-card px-1 py-2.5 text-center font-bold text-foreground"
           >
             {pick("दिन", "Day")}
           </Text>
@@ -296,7 +296,7 @@ function SunTimesYearMatrix({
               <Text
                 numberOfLines={2}
                 style={{ ...nepaliTextStyle(HEADER_FONT), textAlign: "center" }}
-                className="text-xs font-bold leading-snug text-foreground"
+                className="text-caption font-bold text-foreground"
               >
                 {name || " "}
               </Text>
@@ -310,7 +310,7 @@ function SunTimesYearMatrix({
             <View key={day} className="flex-row border-b border-border">
               <Text
                 style={{ width: DAY_COL, ...nepaliTextStyle(DAY_ROW_FONT) }}
-                className="border-r border-border bg-card px-1 py-2.5 text-center font-num text-sm font-bold text-foreground"
+                className="text-body border-r border-border bg-card px-1 py-2.5 text-center font-num font-bold text-foreground"
               >
                 {digits(day)}
               </Text>
@@ -342,7 +342,7 @@ function SunTimesYearMatrix({
                       adjustsFontSizeToFit
                       minimumFontScale={0.85}
                       style={{ color: colors.primary, ...nepaliTextStyle(CELL_FONT) }}
-                      className="text-center font-num font-semibold leading-snug"
+                      className="text-center font-num font-semibold "
                     >
                       {cell?.sunriseDisplay ?? "—"}
                       {cell?.ayanaMark ? (
@@ -363,7 +363,7 @@ function SunTimesYearMatrix({
                       adjustsFontSizeToFit
                       minimumFontScale={0.85}
                       style={{ color: colors.destructive, ...nepaliTextStyle(CELL_FONT) }}
-                      className="text-center font-num font-semibold leading-snug"
+                      className="text-center font-num font-semibold "
                     >
                       {cell?.sunsetDisplay ?? "—"}
                     </Text>
@@ -394,7 +394,7 @@ function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
         header: (
           <View className="flex-row items-center gap-1">
             <LucideNative node={SunriseNode} size={16} color={colors.primary} />
-            <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(11)}>
               {pick("सूर्योदय", "Sunrise")}
             </Text>
           </View>
@@ -408,7 +408,7 @@ function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
         header: (
           <View className="flex-row items-center gap-1">
             <LucideNative node={SunsetNode} size={16} color="#3b82f6" />
-            <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(11)}>
               {pick("सूर्यास्त", "Sunset")}
             </Text>
           </View>
@@ -504,9 +504,9 @@ function SunTimesYearAccordion({
               accessibilityState={{ expanded: open }}
               className="flex-row items-center justify-between px-1 py-3 active:opacity-80"
             >
-              <Text className="flex-1 pr-2 text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+              <Text className="text-body flex-1 pr-2 font-semibold text-foreground" style={nepaliTextStyle(16)}>
                 {name}
-                <Text className="text-sm font-normal text-muted-foreground">
+                <Text className="text-body font-normal text-muted-foreground">
                   {" "}
                   {pick(`${digits(monthLen)} दिन`, `${monthLen} days`)}
                 </Text>
@@ -573,13 +573,13 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
       <SunTimesLegend />
 
       {query.isLoading && !query.data ? (
-        <Text className="px-4 py-8 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body px-4 py-8 text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : query.isError ? (
         <Text
           style={{ color: colors.destructive, ...nepaliTextStyle(14) }}
-          className="px-4 py-8 text-sm"
+          className="text-body px-4 py-8"
         >
           {pick("ल्याउन सकिएन।", "Could not load.")}
         </Text>

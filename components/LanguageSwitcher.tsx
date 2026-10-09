@@ -19,7 +19,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <Text className="text-xs font-semibold text-foreground">{label}</Text>
+      <Text className="text-caption font-semibold text-foreground">{label}</Text>
     </Pressable>
   );
 }

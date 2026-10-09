@@ -436,16 +436,16 @@ export default function PanchangaYearScreen() {
 
         {windowError ? (
           <View className="rounded-xl border border-destructive/20 bg-destructive/10 p-4">
-            <Text className="text-sm text-destructive" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-destructive" style={nepaliTextStyle(13)}>
               {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load the panchanga.")}
             </Text>
           </View>
         ) : windowFetching ? (
-          <Text className="px-1 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         ) : total ? (
-          <Text className="px-1 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="text-caption px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
             {windowLabel} · {pick(`${digits(total)} दिन`, `${total} days`)}
           </Text>
         ) : null}

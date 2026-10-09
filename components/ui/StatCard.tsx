@@ -29,19 +29,19 @@ export function StatCard({
       className="gap-1 rounded-xl border p-4"
     >
       <Text
-        className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
         style={nepaliTextStyle(11)}
       >
         {label}
       </Text>
       <Text
-        className="text-base font-semibold leading-snug text-foreground"
+        className="text-body font-semibold text-foreground"
         style={nepaliTextStyle(16)}
       >
         {value ?? "—"}
       </Text>
       {sub ? (
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
           {sub}
         </Text>
       ) : null}

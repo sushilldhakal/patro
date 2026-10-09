@@ -124,7 +124,7 @@ function LegendItem({ swatch, label }: { swatch: React.ReactNode; label: string 
   return (
     <View className="flex-row items-center gap-1.5">
       {swatch}
-      <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11, { dense: true })}>
+      <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11, { dense: true })}>
         {label}
       </Text>
     </View>
@@ -296,7 +296,7 @@ export function HouseSketch({
                         textAnchor="middle"
                         fill={VASTU_INK.text}
                         fillOpacity={0.7}
-                        fontSize={7.5 * fs}
+                        fontSize={15 * fs}
                         fontFamily={NOTO_DEVANAGARI_REGULAR}
                       >
                         {roomSize(room.rect)}
@@ -313,7 +313,7 @@ export function HouseSketch({
                   y={courtCy - 7 * fs}
                   textAnchor="middle"
                   fill={VASTU_INK.text}
-                  fontSize={10 * fs}
+                  fontSize={15 * fs}
                   fontFamily={NOTO_DEVANAGARI_BOLD}
                 >
                   {t("vastu.sketch.brahmasthan")}
@@ -324,7 +324,7 @@ export function HouseSketch({
                   textAnchor="middle"
                   fill={VASTU_INK.text}
                   fillOpacity={0.75}
-                  fontSize={8 * fs}
+                  fontSize={15 * fs}
                   fontFamily={NOTO_DEVANAGARI_REGULAR}
                 >
                   {roomSize(court)}
@@ -334,7 +334,7 @@ export function HouseSketch({
                   y={courtCy + 14 * fs}
                   textAnchor="middle"
                   fill={DOOR_COLOR}
-                  fontSize={8 * fs}
+                  fontSize={15 * fs}
                   fontFamily={NOTO_DEVANAGARI_SEMIBOLD}
                 >
                   {t("vastu.sketch.open_to_sky")}
@@ -369,7 +369,7 @@ export function HouseSketch({
 
       <View className="mt-2 gap-2">
         <Text
-          className="text-center text-sm font-semibold text-foreground"
+          className="text-body text-center font-semibold text-foreground"
           style={nepaliTextStyle(13)}
         >
           {t("vastu.sketch.door_pada", {
@@ -427,7 +427,7 @@ export function HouseSketch({
           {(["rule_court", "rule_alindra", "rule_flow", "rule_door"] as const).map((rule) => (
             <Text
               key={rule}
-              className="text-xs text-muted-foreground"
+              className="text-caption text-muted-foreground"
               style={nepaliTextStyle(11, { dense: true })}
             >
               {t(`vastu.sketch.${rule}`)}

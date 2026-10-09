@@ -77,7 +77,7 @@ function NavataraAsideList({
 
   if (!rows.length) {
     return (
-      <Text className="py-6 text-center text-sm text-muted-foreground">
+      <Text className="text-body py-6 text-center text-muted-foreground">
         {pick("विवरण उपलब्ध छैन।", "Details unavailable.")}
       </Text>
     );
@@ -86,7 +86,7 @@ function NavataraAsideList({
   return (
     <View>
       {moonLabel || moonLabelEn ? (
-        <Text className="mb-2 text-sm font-semibold text-foreground">
+        <Text className="text-body mb-2 font-semibold text-foreground">
           {pick(moonRefNe, moonRefEn)}:{" "}
           <Text style={{ color: colors.accent }} className="font-bold">
             {pick(moonLabel ?? moonLabelEn ?? "", moonLabelEn ?? moonLabel ?? "")}
@@ -109,10 +109,10 @@ function NavataraAsideList({
                 borderColor: isMoon ? colors.accent : undefined,
               }}
             >
-              <Text className="w-full text-center text-xs font-bold leading-tight text-foreground">
+              <Text className="text-caption w-full text-center font-bold text-foreground">
                 {pick(row.name, row.name_en ?? row.name)}
               </Text>
-              <Text className="w-full text-center font-num text-xs font-semibold leading-snug text-foreground">
+              <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
                 {formatNavataraTara(row.tara, lang)}
                 <Text className="opacity-55"> / </Text>
                 {formatNavataraQuality(row.quality, lang)}
@@ -133,7 +133,7 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
 
   if (!segments.length || sunriseMin == null) {
     return (
-      <Text className="py-6 text-center text-sm text-muted-foreground">
+      <Text className="text-body py-6 text-center text-muted-foreground">
         {pick("चौघडिया उपलब्ध छैन।", "Choghadiya unavailable.")}
       </Text>
     );
@@ -152,10 +152,10 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
             className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
             style={{ backgroundColor: toneBg(colors, tone === "good" ? "good" : tone === "bad" ? "bad" : "neutral") }}
           >
-            <Text className="w-full text-center text-xs font-bold leading-tight text-foreground">
+            <Text className="text-caption w-full text-center font-bold text-foreground">
               {pick(seg.name, CHOGHADIYA_EN[seg.name] ?? seg.name)}
             </Text>
-            <Text className="w-full text-center font-num text-xs font-semibold leading-snug text-foreground">
+            <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
               {range}
               <Text className="opacity-55"> / </Text>
               {pick(qualityNe, qualityEn)}
@@ -174,7 +174,7 @@ function HoraList({ p }: { p: PanchangaDay }) {
 
   if (!slots.length) {
     return (
-      <Text className="py-6 text-center text-sm text-muted-foreground">
+      <Text className="text-body py-6 text-center text-muted-foreground">
         {pick("होरा उपलब्ध छैन।", "Hora unavailable.")}
       </Text>
     );
@@ -200,13 +200,13 @@ function HoraSlot({ slot, colors }: { slot: ApiHoraSlot; colors: ThemeColors }) 
       className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
       style={{ backgroundColor: toneBg(colors, tone) }}
     >
-      <Text className="w-full text-center text-xs font-bold leading-tight text-foreground">
+      <Text className="text-caption w-full text-center font-bold text-foreground">
         {pick(
           slot.planet_ne,
           GRAHA_NAME[slot.planet as GrahaKey]?.en ?? slot.planet_en ?? slot.planet ?? slot.planet_ne,
         )}
       </Text>
-      <Text className="w-full text-center font-num text-xs font-semibold leading-snug text-foreground">
+      <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
         {start} – {end}
         <Text className="opacity-55"> / </Text>
         {pick(slot.quality_ne, slot.tone === "bad" ? "Inauspicious" : "Auspicious")}
@@ -222,7 +222,7 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
 
   if (!rows?.length) {
     return (
-      <Text className="py-6 text-center text-sm text-muted-foreground">
+      <Text className="text-body py-6 text-center text-muted-foreground">
         {pick("पुष्कर नवांश उपलब्ध छैन।", "Pushkara navamsha unavailable.")}
       </Text>
     );
@@ -269,10 +269,10 @@ function PushkaraSlot({
       className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
       style={{ backgroundColor: toneBg(colors, hasPushkara ? "good" : "neutral") }}
     >
-      <Text className="w-full text-center text-xs font-bold leading-tight text-foreground">
+      <Text className="text-caption w-full text-center font-bold text-foreground">
         {pick(row.name_ne ?? row.name ?? "—", row.name ?? row.name_ne ?? "—")}
       </Text>
-      <Text className="w-full text-center font-num text-xs font-semibold leading-snug text-foreground">
+      <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
         {hasPushkara ? times : range}
         <Text className="opacity-55"> / </Text>
         {hasPushkara ? pushkaraLabel : "—"}
@@ -310,7 +310,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
           >
             <Text
               className={cn(
-                "text-center text-[12px] font-semibold leading-tight",
+                "text-caption text-center font-semibold",
                 subTab === tab.id ? "font-bold text-foreground" : "text-muted-foreground",
               )}
             >
@@ -320,7 +320,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
         ))}
       </View>
 
-      <Text className="text-sm leading-snug text-muted-foreground">{pick(hint.ne, hint.en)}</Text>
+      <Text className="text-body text-muted-foreground">{pick(hint.ne, hint.en)}</Text>
 
       {subTab === "tarabal" ? (
         <NavataraAsideList

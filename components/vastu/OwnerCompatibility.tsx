@@ -139,13 +139,13 @@ export function OwnerCompatibility() {
     <View className="rounded-xl border border-border bg-card p-3.5">
       <View className="flex-row flex-wrap items-center gap-1.5">
         <Ionicons name="calendar-outline" size={16} color={colors.secondary} />
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("vastu.plot.owner_heading")}
         </Text>
       </View>
 
       <View className="mt-3 gap-4">
-        <Text className="text-sm text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
           {t("vastu.plot.owner_blurb")}
         </Text>
 
@@ -156,7 +156,7 @@ export function OwnerCompatibility() {
             <View className="gap-3">
               <View>
                 <Text
-                  className="mb-1 text-xs font-semibold text-muted-foreground"
+                  className="text-caption mb-1 font-semibold text-muted-foreground"
                   style={nepaliTextStyle(12)}
                 >
                   {t("vastu.plot.construction_date_label")}
@@ -190,7 +190,7 @@ export function OwnerCompatibility() {
               </View>
               <View>
                 <Text
-                  className="mb-1 text-xs font-semibold text-muted-foreground"
+                  className="text-caption mb-1 font-semibold text-muted-foreground"
                   style={nepaliTextStyle(12)}
                 >
                   {t("vastu.plot.construction_place_label")}
@@ -200,25 +200,25 @@ export function OwnerCompatibility() {
             </View>
 
             {isLoading && (
-              <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
                 {t("vastu.plot.owner_loading")}
               </Text>
             )}
             {isError && (
-              <Text className="text-sm text-danger" style={nepaliTextStyle(13)}>
+              <Text className="text-body text-danger" style={nepaliTextStyle(13)}>
                 {t("vastu.plot.owner_error")}
               </Text>
             )}
 
             {row && (
               <View className={cn("rounded-xl border border-border p-3.5", patroNavataraToneBg(row.tone))}>
-                <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+                <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
                   {t("vastu.plot.owner_nakshatra_label")}: {pick(row.name, row.name_en ?? row.name)}
                 </Text>
-                <Text className="mt-1 text-sm font-semibold text-foreground" style={nepaliTextStyle(13)}>
+                <Text className="text-body mt-1 font-semibold text-foreground" style={nepaliTextStyle(13)}>
                   {t("vastu.plot.construction_result", { tone: t(TONE_LABEL_KEY[row.tone]) })}
                 </Text>
-                <Text className="mt-2 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+                <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(13)}>
                   {t("vastu.plot.construction_disclaimer")}
                 </Text>
               </View>

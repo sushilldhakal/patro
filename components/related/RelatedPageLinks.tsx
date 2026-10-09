@@ -75,7 +75,7 @@ export function RelatedPageLinks() {
     <View className="mt-10 border-t border-border pt-8" accessibilityLabel={t("related_pages.aria")}>
       <View className="mb-3 flex-row items-center gap-2">
         <AppNavIcon name="compass" size={16} color={colors.secondary} />
-        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("related_pages.heading")}
         </Text>
       </View>
@@ -95,11 +95,11 @@ export function RelatedPageLinks() {
               )}
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="text-sm font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+              <Text className="text-body font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
                 {card.label}
               </Text>
               {card.description ? (
-                <Text className="mt-0.5 text-xs leading-snug text-muted-foreground" numberOfLines={2} style={nepaliTextStyle(12)}>
+                <Text className="text-caption mt-0.5 text-muted-foreground" numberOfLines={2} style={nepaliTextStyle(12)}>
                   {card.description}
                 </Text>
               ) : null}

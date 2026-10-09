@@ -22,12 +22,12 @@ export function ErrorState({
   const { pick } = useLocale();
   return (
     <View className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-      <Text className="text-sm text-destructive">
+      <Text className="text-body text-destructive">
         {message ?? pick("डाटा लोड गर्न सकिएन।", "Could not load data.")}
       </Text>
       {onRetry ? (
         <Pressable onPress={onRetry} className="mt-3 self-start rounded-lg bg-primary px-4 py-2">
-          <Text className="text-sm font-semibold text-primary-foreground">
+          <Text className="text-body font-semibold text-primary-foreground">
             {pick("पुनः प्रयास", "Retry")}
           </Text>
         </Pressable>

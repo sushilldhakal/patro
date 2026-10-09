@@ -94,22 +94,22 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
 
   return (
     <View className="rounded-xl border border-border bg-card p-4 shadow-sm">
-      <Text className="mb-2 text-base font-bold text-foreground">
+      <Text className="text-body mb-2 font-bold text-foreground">
         {pick("आगामी ग्रह-गोचर", "Planetary events")}
       </Text>
 
       {isLoading ? (
-        <Text className="py-4 text-sm text-muted-foreground">{pick("लोड हुँदै…", "Loading…")}</Text>
+        <Text className="text-body py-4 text-muted-foreground">{pick("लोड हुँदै…", "Loading…")}</Text>
       ) : null}
 
       {isError ? (
-        <Text className="py-4 text-sm text-muted-foreground">
+        <Text className="text-body py-4 text-muted-foreground">
           {pick("ग्रह-गोचर लोड गर्न सकिएन।", "Could not load planetary events.")}
         </Text>
       ) : null}
 
       {!isLoading && !isError && events.length === 0 ? (
-        <Text className="py-4 text-sm text-muted-foreground">
+        <Text className="text-body py-4 text-muted-foreground">
           {pick("कुनै आगामी गोचर छैन।", "No upcoming transits.")}
         </Text>
       ) : null}
@@ -129,10 +129,10 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
               }}
             >
               <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
-                <Text className="text-sm font-semibold text-foreground">{pick(e.ne, e.en)}</Text>
-                <Text className="font-mono text-sm font-semibold text-foreground">{e.time}</Text>
+                <Text className="text-body font-semibold text-foreground">{pick(e.ne, e.en)}</Text>
+                <Text className="text-body font-mono font-semibold text-foreground">{e.time}</Text>
               </View>
-              <Text className="shrink-0 font-mono text-sm font-semibold text-foreground">
+              <Text className="text-body shrink-0 font-mono font-semibold text-foreground">
                 {e.rel <= 0
                   ? pick("आज", "Today")
                   : pick(`${digits(e.rel)} दिन`, `${digits(e.rel)}d`)}

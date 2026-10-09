@@ -45,7 +45,7 @@ function GlanceTile({
   return (
     <View style={[{ borderColor: colors.border }, layout]} className="rounded-xl border bg-card p-3">
       <Text
-        className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+        className="text-caption mb-1.5 font-semibold uppercase tracking-wide text-muted-foreground"
         style={nepaliTextStyle(11)}
       >
         {label}
@@ -63,10 +63,10 @@ function HouseSummary({ house, lang, digits }: { house: BhavaBalaHouse; lang: "n
 
   return (
     <>
-      <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(17)}>
+      <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
         {houseLabel}
       </Text>
-      <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+      <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
         {kundaliLabel("lord", lang)} {lordName} · {digits(house.percent.toFixed(1))}%
       </Text>
     </>
@@ -172,11 +172,11 @@ export function BhavaBalaCard({
       />
 
       {!compactHeader ? (
-        <Text className="text-sm font-semibold uppercase tracking-wide text-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body font-semibold uppercase tracking-wide text-foreground" style={nepaliTextStyle(13)}>
           {kundaliLabel("bhava_bala_house_strength_virupas", lang)}
         </Text>
       ) : null}
-      <Text className="text-xs leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-caption leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
         {intro}
       </Text>
 

@@ -17,8 +17,8 @@ type Props = {
   embedded?: boolean;
 };
 
-const th = "text-sm font-semibold";
-const td = "px-2 py-2 text-center font-num text-sm tabular-nums";
+const th = "text-body font-semibold";
+const td = "text-body px-2 py-2 text-center font-num tabular-nums";
 
 export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: Props) {
   const { pick, digits } = useLocale();
@@ -27,20 +27,20 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
     <View className="min-w-full">
       <TableHeader>
         <TableHeaderCell minWidth={48} className={cn(th, "pl-3")}>
-          <Text className="text-sm font-semibold text-foreground">{pick("गते", "Date")}</Text>
+          <Text className="text-body font-semibold text-foreground">{pick("गते", "Date")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
-          <Text className="text-sm font-semibold text-foreground">{pick("बा.", "Day")}</Text>
+          <Text className="text-body font-semibold text-foreground">{pick("बा.", "Day")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
-          <Text className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+          <Text className="text-body font-semibold text-amber-600 dark:text-amber-400">
             {pick("सु.उ.", "Rise")}
           </Text>
         </TableHeaderCell>
         {RASHI_COLUMNS_NE.map((rne, i) => (
           <TableHeaderCell key={rne} minWidth={60} className={cn(th, patroStickyHeadCell, "items-center")}>
             <RashiGlyphIcon name={rne} number={i + 1} size={20} />
-            <Text className="text-center text-sm font-semibold text-foreground">
+            <Text className="text-body text-center font-semibold text-foreground">
               {pick(rne, RASHI_COLUMNS_EN[i])}
             </Text>
           </TableHeaderCell>
@@ -49,13 +49,13 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
 
       {loading ? (
         <View className="py-8">
-          <Text className="text-center text-sm text-muted-foreground">
+          <Text className="text-body text-center text-muted-foreground">
             {pick("लोड हुँदैछ…", "Loading…")}
           </Text>
         </View>
       ) : empty || rows.length === 0 ? (
         <View className="py-8">
-          <Text className="text-center text-sm text-muted-foreground">
+          <Text className="text-body text-center text-muted-foreground">
             {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
           </Text>
         </View>

@@ -22,7 +22,7 @@ function BrandMark({ onPress, centered }: { onPress: () => void; centered?: bool
       className={cn("min-w-0 flex-row items-center gap-2.5 active:opacity-80", centered && "justify-center")}
     >
       <VedicPatroMark size={42} />
-      <Text className="text-base font-bold" numberOfLines={1} style={[nepaliTextStyle(16), { paddingVertical: 2 }]}>
+      <Text className="text-body font-bold" numberOfLines={1} style={[nepaliTextStyle(16), { paddingVertical: 2 }]}>
         <Text className="text-secondary">{pick("वैदिक", "Vedic")}</Text>
         <Text className="text-foreground"> {pick("पात्रो", "Patro")}</Text>
       </Text>
@@ -152,11 +152,11 @@ function NavDrawer({
         >
           <VedicPatroMark size={40} />
           <View className="min-w-0 flex-1">
-            <Text className="text-base font-bold">
+            <Text className="text-body font-bold">
               <Text className="text-secondary">{pick("वैदिक", "Vedic")}</Text>
               <Text className="text-foreground"> {pick("पात्रो", "Patro")}</Text>
             </Text>
-            <Text className="text-xs text-muted-foreground">
+            <Text className="text-caption text-muted-foreground">
               {pick("नेपाली पात्रो र पञ्चाङ्ग", "Nepali calendar and Panchanga")}
             </Text>
           </View>

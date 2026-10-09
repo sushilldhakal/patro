@@ -15,7 +15,7 @@ type Props = PressableProps & {
 
 /**
  * Same buttons as web's shadcn `Button`: the default is the *teal* secondary
- * colour (not the orange primary), h-8 / h-9 / h-10 with `text-sm` labels.
+ * colour (not the orange primary), h-8 / h-9 / h-10 with `text-body` labels.
  */
 export function Button({
   label,
@@ -54,7 +54,7 @@ export function Button({
       {...props}
     >
       {icon ? <View>{icon}</View> : null}
-      <Text className={cn("text-sm", textVariants[variant], textClassName)}>{label}</Text>
+      <Text className={cn("text-body", textVariants[variant], textClassName)}>{label}</Text>
     </Pressable>
   );
 }

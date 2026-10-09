@@ -29,18 +29,18 @@ export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
     <View className="absolute inset-0 z-20 items-center justify-center bg-black/55 px-6">
       <View className="max-w-md items-center">
         <Text
-          className="text-xs font-semibold uppercase tracking-[2px] text-white/55"
+          className="text-caption font-semibold uppercase tracking-[2px] text-white/55"
           style={nepaliTextStyle(11)}
         >
           {chapterLabel("eyebrow", lang)}
         </Text>
         <Text
-          className="mt-2 text-center text-3xl font-semibold tracking-tight text-white"
+          className="text-display mt-2 text-center font-semibold tracking-tight text-white"
           style={nepaliTextStyle(28)}
         >
           {chapterLabel(player.track.titleKey, lang)}
         </Text>
-        <Text className="mt-2 text-center text-sm text-white/70" style={nepaliTextStyle(14)}>
+        <Text className="text-body mt-2 text-center text-white/70" style={nepaliTextStyle(14)}>
           {chapterLabel(player.track.subtitleKey, lang)}
         </Text>
         <Pressable
@@ -52,7 +52,7 @@ export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
           <Ionicons name="play" size={28} color="#000" style={{ marginLeft: 3 }} />
         </Pressable>
         <Text
-          className="mt-3 text-xs font-semibold uppercase tracking-[1.5px] text-white/70"
+          className="text-caption mt-3 font-semibold uppercase tracking-[1.5px] text-white/70"
           style={nepaliTextStyle(11)}
         >
           {chapterLabel("begin", lang)}
@@ -98,8 +98,8 @@ export function DayChapterBar({
             thumbTintColor={GOLD}
           />
           <View className="-mt-1 flex-row items-center justify-between">
-            <Text className="font-num text-xs text-white/45">{digits(formatChapterClock(player.time))}</Text>
-            <Text className="font-num text-xs text-white/45">{digits(formatChapterClock(player.duration))}</Text>
+            <Text className="text-caption font-num text-white/45">{digits(formatChapterClock(player.time))}</Text>
+            <Text className="text-caption font-num text-white/45">{digits(formatChapterClock(player.duration))}</Text>
           </View>
         </View>
       )}
@@ -109,7 +109,7 @@ export function DayChapterBar({
           onPress={() => setTocOpen(true)}
           className="max-w-full flex-row items-center gap-1.5 px-2 py-1 active:opacity-70"
         >
-          <Text className="max-w-[220px] text-sm font-semibold text-white/90" numberOfLines={1} style={nepaliTextStyle(13)}>
+          <Text className="text-body max-w-[220px] font-semibold text-white/90" numberOfLines={1} style={nepaliTextStyle(13)}>
             {chapterLabel("chapter", lang)} {digits(player.index + 1)}: {chapterLabel(player.chapter.titleKey, lang)}
           </Text>
           <Ionicons name="chevron-up" size={14} color="rgba(255,255,255,0.5)" />
@@ -184,14 +184,14 @@ export function DayChapterBar({
       >
         <View className="max-h-full">
           <View className="border-b border-white/10 px-4 py-3">
-            <Text className="text-sm font-semibold text-white">{chapterLabel("chapter", lang)}</Text>
+            <Text className="text-body font-semibold text-white">{chapterLabel("chapter", lang)}</Text>
           </View>
           <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ paddingVertical: 4 }}>
             {parts.map((part, pi) => (
               <View key={part.partKey ?? `p-${pi}`}>
                 {part.partKey ? (
                   <Text
-                    className="px-4 pb-0.5 pt-2.5 text-[10px] font-semibold uppercase tracking-[1.2px] text-white/35"
+                    className="text-caption px-4 pb-0.5 pt-2.5 font-semibold uppercase tracking-[1.2px] text-white/35"
                     style={nepaliTextStyle(10)}
                   >
                     {chapterLabel(part.partKey, lang)}
@@ -207,9 +207,9 @@ export function DayChapterBar({
                     className="flex-row items-center gap-2 px-4 py-2 active:opacity-70"
                     style={index === player.index ? { backgroundColor: "rgba(255,255,255,0.12)" } : undefined}
                   >
-                    <Text className="font-num w-6 shrink-0 text-xs text-white/40">{digits(index + 1)}</Text>
+                    <Text className="text-caption font-num w-6 shrink-0 text-white/40">{digits(index + 1)}</Text>
                     <Text
-                      className="flex-1 text-sm font-semibold"
+                      className="text-body flex-1 font-semibold"
                       style={{ color: index === player.index ? "#fff" : "rgba(255,255,255,0.7)", ...nepaliTextStyle(13) }}
                       numberOfLines={1}
                     >

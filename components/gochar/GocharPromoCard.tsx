@@ -22,10 +22,10 @@ export function GocharPromoCard() {
           <Ionicons name="planet-outline" size={24} color={colors.secondary} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
             {t("gochar.promo_title")}
           </Text>
-          <Text className="mt-1.5 text-sm leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-1.5 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick(
               "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
               "Seen the day's panchang? Now check where the planets are moving and how today's transits affect your sign.",
@@ -34,7 +34,7 @@ export function GocharPromoCard() {
         </View>
       </View>
       <View className="mt-4 flex-row items-center gap-1.5 self-start rounded-xl bg-secondary px-4 py-2">
-        <Text className="text-sm font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
           {t("gochar.promo_cta")}
         </Text>
         <Ionicons name="arrow-forward" size={16} color="#ffffff" />

@@ -83,9 +83,9 @@ function CardField({
 }) {
   return (
     <View className="min-w-0" style={{ width: wide ? "100%" : "48%" }}>
-      <Text className="text-xs text-muted-foreground">{label}</Text>
-      <View>{typeof value === "string" ? <Text className="text-sm text-foreground">{value}</Text> : value}</View>
-      {sub ? <Text className="text-xs leading-tight text-muted-foreground">{sub}</Text> : null}
+      <Text className="text-caption text-muted-foreground">{label}</Text>
+      <View>{typeof value === "string" ? <Text className="text-body text-foreground">{value}</Text> : value}</View>
+      {sub ? <Text className="text-caption text-muted-foreground">{sub}</Text> : null}
     </View>
   );
 }
@@ -133,24 +133,24 @@ export function DayPatroCard({
     >
       <View className="flex-row items-start justify-between gap-3">
         <View className="flex-row items-baseline gap-2">
-          <Text className={cn("font-num text-2xl font-bold leading-none", dayColor)}>
+          <Text className={cn("text-display font-num font-bold", dayColor)}>
             {digits(day.day)}
           </Text>
           <View>
             <Text
               className={cn(
-                "text-sm font-semibold leading-tight",
+                "text-body font-semibold",
                 isSaturday && "text-rose-600 dark:text-rose-400",
               )}
             >
               {pick(day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday)}
             </Text>
-            <Text className="text-xs text-muted-foreground">{digits(fmtAd(day.date_ad))}</Text>
+            <Text className="text-caption text-muted-foreground">{digits(fmtAd(day.date_ad))}</Text>
           </View>
         </View>
         {isToday ? (
           <View className="rounded-full bg-secondary px-2 py-0.5">
-            <Text className="text-xs font-semibold text-secondary-foreground">
+            <Text className="text-caption font-semibold text-secondary-foreground">
               {t("dainik.today")}
             </Text>
           </View>
@@ -186,10 +186,10 @@ export function DayPatroCard({
           label={t("dainik.sun_rise_set_sign")}
           value={
             <View className="min-w-0">
-              <Text className="font-num text-sm text-foreground">
+              <Text className="text-body font-num text-foreground">
                 {`${day.sunrise ? digits(formatTimeShort(day.sunrise) ?? day.sunrise) : "—"}/${day.sunset ? digits(formatTimeShort(day.sunset) ?? day.sunset) : "—"}`}
               </Text>
-              <Text className="text-xs leading-tight text-muted-foreground">
+              <Text className="text-caption text-muted-foreground">
                 {sunRashi ? `${sunRashi}${det?.ayana_mark ? ` ${det.ayana_mark}` : ""}` : "—"}
               </Text>
             </View>
@@ -200,12 +200,12 @@ export function DayPatroCard({
 
       {(transits?.length ?? 0) > 0 ? (
         <View className="mt-3">
-          <Text className="text-xs text-muted-foreground">
+          <Text className="text-caption text-muted-foreground">
             {t("dainik.transits_rise_set")}
           </Text>
           <View className="mt-1 gap-0.5">
             {transits!.map((ev, i) => (
-              <Text key={i} className="text-sm leading-tight">
+              <Text key={i} className="text-body">
                 <Text className="text-foreground">{pick(ev.labelNe, ev.labelEn)} </Text>
                 <Text className="text-secondary">{pick(ev.planetNe, ev.planetEn)}</Text>
                 {ev.time ? <Text> {digits(ev.time)}</Text> : null}
@@ -217,8 +217,8 @@ export function DayPatroCard({
 
       {hasFestival ? (
         <View className="mt-3 rounded-lg bg-rose-500/5 px-2.5 py-2">
-          <Text className="text-xs text-muted-foreground">{t("dainik.festival")}</Text>
-          <Text className="text-sm text-rose-600 dark:text-rose-300">
+          <Text className="text-caption text-muted-foreground">{t("dainik.festival")}</Text>
+          <Text className="text-body text-rose-600 dark:text-rose-300">
             {day.festivals.join(" · ")}
           </Text>
         </View>
@@ -237,7 +237,7 @@ export function DayPatroCard({
               size={16}
               color={colors.secondary}
             />
-            <Text className="text-sm font-semibold text-secondary">
+            <Text className="text-body font-semibold text-secondary">
               {isExpanded
                 ? pick("विवरण लुकाउनुहोस्", "Hide details")
                 : pick("लग्न · ग्रहस्पष्ट · थप विवरण", "Lagna · planets & more")}

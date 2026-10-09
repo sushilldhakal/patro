@@ -133,15 +133,15 @@ function SpanBoundary({
       className="gap-0.5 rounded-md px-2 py-1.5"
     >
       <View className="flex-row items-center justify-between gap-2">
-        <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
+        <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
           {label}
         </Text>
-        <Text className="font-num text-sm text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-num text-foreground" style={nepaliTextStyle(14)}>
           {digits(stamp.time_label)}
         </Text>
       </View>
       <Text
-        className="text-sm font-semibold leading-snug text-foreground"
+        className="text-body font-semibold text-foreground"
         style={nepaliTextStyle(14)}
       >
         {formatElementStampDisplay(stamp, lang)}
@@ -162,11 +162,11 @@ function SpanList({ spans, elementId }: { spans: ElementSpan[]; elementId: strin
             <ElementSpanIcon elementId={elementId} span={s} size={34} />
             <View className="min-w-0 flex-1">
               <View className="flex-row items-baseline justify-between gap-2">
-                <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
+                <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
                   {lang === "en" ? s.name : s.name_ne}
                 </Text>
                 {s.paksha ? (
-                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+                  <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
                     {s.paksha === "shukla" ? t("common.paksha_shukla") : t("common.paksha_krishna")}
                   </Text>
                 ) : null}
@@ -219,7 +219,7 @@ function ToneRow({
         <Text
           numberOfLines={2}
           style={{ color: tone.fg, ...nepaliTextStyle(14) }}
-          className="shrink text-sm font-semibold"
+          className="text-body shrink font-semibold"
         >
           {label}
         </Text>
@@ -228,7 +228,7 @@ function ToneRow({
             style={{ backgroundColor: colorWithAlpha("#0b565a", 0.2) }}
             className="rounded-full px-1.5 py-px"
           >
-            <Text style={{ color: colors.secondary, ...nepaliTextStyle(12) }} className="text-sm font-bold">
+            <Text style={{ color: colors.secondary, ...nepaliTextStyle(12) }} className="text-body font-bold">
               {badge}
             </Text>
           </View>
@@ -237,7 +237,7 @@ function ToneRow({
       {trailing ? (
         <Text
           style={{ color: tone.fg, ...nepaliTextStyle(14) }}
-          className="shrink-0 font-num text-sm opacity-90"
+          className="text-body shrink-0 font-num opacity-90"
         >
           {trailing}
         </Text>
@@ -254,7 +254,7 @@ function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: stri
 
   if (data.length === 0) {
     return (
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
         {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
       </Text>
     );
@@ -267,7 +267,7 @@ function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: stri
           <Text
             key={key}
             style={{ width: legendColWidth as never, ...nepaliTextStyle(14) }}
-            className="text-sm leading-snug text-muted-foreground"
+            className="text-body text-muted-foreground"
           >
             {choghadiyaLegendMarker(TONE_BY_KEY[key])} {choghadiyaLegendLabel(key, lang)}
           </Text>
@@ -319,7 +319,7 @@ function TableView({
     return (
       <View className="gap-2">
         {anchor ? (
-          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("चन्द्र राशि", "Moon sign")}:{" "}
             <Text className="font-bold text-foreground">{anchor}</Text>
           </Text>
@@ -362,7 +362,7 @@ function TableView({
     }
     if (rows.length === 0) {
       return (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
         </Text>
       );
@@ -397,7 +397,7 @@ function TableView({
   }
 
   return (
-    <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+    <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
       {pick("डाटा उपलब्ध छैन।", "No data available.")}
     </Text>
   );
@@ -439,7 +439,7 @@ function NavataraBalamElementView({
 
   if (!cards.length) {
     return (
-      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
         {pick("डाटा उपलब्ध छैन।", "No data available.")}
       </Text>
     );
@@ -448,7 +448,7 @@ function NavataraBalamElementView({
   return (
     <View className="gap-2">
       {moonRef ? (
-        <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(13)}>
           {moonRef}
         </Text>
       ) : null}
@@ -523,7 +523,7 @@ export default function ElementScreen() {
     return (
       <AppShell title={pick("अज्ञात तत्त्व", "Unknown element")}>
         <Pressable onPress={() => router.push("/panchanga/details" as never)}>
-          <Text style={{ color: colors.primary }} className="text-sm underline">
+          <Text style={{ color: colors.primary }} className="text-body underline">
             {pick("पञ्चाङ्ग विवरणमा फर्कनुहोस्", "Back to panchanga details")}
           </Text>
         </Pressable>

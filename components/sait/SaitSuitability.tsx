@@ -15,7 +15,7 @@ export function SuitabilityBadge({ suitability }: { suitability: SaitSuitability
       className="flex-row items-center gap-1 rounded-md px-1.5 py-0.5"
     >
       <View style={{ backgroundColor: s.dot }} className="h-1.5 w-1.5 rounded-full" />
-      <Text style={{ color: s.fg, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
+      <Text style={{ color: s.fg, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
         {pick(s.ne, s.en)}
       </Text>
     </View>
@@ -31,7 +31,7 @@ export function SuitabilityLegend({
   const { pick, digits } = useLocale();
   return (
     <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
-      <Text className="text-xs font-medium text-foreground" style={nepaliTextStyle(11)}>
+      <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(11)}>
         {pick("तपाईंको प्रोफाइलअनुसार", "For your profile")}
       </Text>
       {SUITABILITY_ORDER.map((k) => {
@@ -39,11 +39,11 @@ export function SuitabilityLegend({
         return (
           <View key={k} className="flex-row items-center gap-1">
             <View style={{ backgroundColor: s.dot }} className="h-2 w-2 rounded-full" />
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
               {pick(s.ne, s.en)}
             </Text>
             {counts ? (
-              <Text className="font-num text-xs text-muted-foreground">· {digits(counts[k])}</Text>
+              <Text className="text-caption font-num text-muted-foreground">· {digits(counts[k])}</Text>
             ) : null}
           </View>
         );

@@ -228,22 +228,10 @@ export function getSecondaryCellDate(
   const ad = parseCivilIsoToDate(day.date_ad);
   const isEn = lang.slice(0, 2) === "en";
 
-  if (primaryDate === "ad") {
-    const bs = adToBS(ad);
-    if (!isFirstCell && bs.day !== 1) return { day: bs.day };
-    const name = isEn ? BS_MONTH_NAMES[bs.month - 1] : BS_MONTHS_NE[bs.month - 1];
-    return {
-      day: bs.day,
-      monthLabel: name,
-      monthLabelShort: isEn ? BS_MONTHS_SHORT[bs.month - 1] : name,
-    };
-  }
-
-  const adDay = civilIsoDayOfMonth(day.date_ad);
-  if (!isFirstCell && adDay !== 1) return { day: adDay };
-  const { month } = parseCivilIso(day.date_ad);
-  const name = isEn ? AD_MONTHS_SHORT[month - 1] : AD_MONTHS_SHORT_NE[month - 1];
-  return { day: adDay, monthLabel: name, monthLabelShort: name };
+  /* Day number only: the month is already in the grid header, so a month name
+     on the first cell or on a 1st just repeats it. */
+  if (primaryDate === "ad") return { day: adToBS(ad).day };
+  return { day: civilIsoDayOfMonth(day.date_ad) };
 }
 
 const FESTIVAL_SUBSUMED_BY: Record<string, string> = {

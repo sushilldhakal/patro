@@ -47,17 +47,17 @@ export default function LearnArticleScreen() {
         className="mb-3 flex-row items-center gap-1.5 self-start py-1 active:opacity-70"
       >
         <Ionicons name="arrow-back" size={16} color={colors.mutedForeground} />
-        <Text className="text-sm text-muted-foreground">{pick("सिकाइ", "Learn")}</Text>
+        <Text className="text-body text-muted-foreground">{pick("सिकाइ", "Learn")}</Text>
       </Pressable>
       {valid && slug ? (
         <LearnArticleView slug={slug} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (
         <View className="items-center justify-center py-12">
-          <Text className="text-center text-sm text-muted-foreground">
+          <Text className="text-body text-center text-muted-foreground">
             {pick("लेख फेला परेन।", "Article not found.")}
           </Text>
           <Pressable onPress={() => router.replace("/learn")} className="mt-4 active:opacity-80">
-            <Text className="text-sm font-semibold text-primary">{pick("सिकाइमा फर्कनुहोस्", "Back to Learn")}</Text>
+            <Text className="text-body font-semibold text-primary">{pick("सिकाइमा फर्कनुहोस्", "Back to Learn")}</Text>
           </Pressable>
         </View>
       )}

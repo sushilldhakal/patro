@@ -70,7 +70,7 @@ export function PatroSheetDayTimeFields({
   return (
     <View className="gap-3 pt-1">
       <View className="flex-row items-center justify-center gap-2">
-        <Text className="text-sm font-semibold text-muted-foreground">{pick("गते", "Day")}</Text>
+        <Text className="text-body font-semibold text-muted-foreground">{pick("गते", "Day")}</Text>
         <BsNativeSelect
           value={day}
           options={dayOptions}
@@ -82,7 +82,7 @@ export function PatroSheetDayTimeFields({
 
       {showTime ? (
         <View className="gap-2">
-          <Text className="text-center text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <Text className="text-caption text-center font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {pick("समय", "Time")}
           </Text>
           <View className="flex-row items-center justify-center gap-2">
@@ -93,7 +93,7 @@ export function PatroSheetDayTimeFields({
               onChange={(h) => setTime(h, minute, meridiem)}
               minWidth={64}
             />
-            <Text className="font-num text-base font-semibold text-muted-foreground">:</Text>
+            <Text className="text-body font-num font-semibold text-muted-foreground">:</Text>
             <BsNativeSelect
               value={minute}
               options={minuteOptions}
@@ -113,7 +113,7 @@ export function PatroSheetDayTimeFields({
                 >
                   <Text
                     className={cn(
-                      "text-sm font-bold",
+                      "text-body font-bold",
                       meridiem === mer ? "text-secondary-foreground" : "text-foreground",
                     )}
                   >

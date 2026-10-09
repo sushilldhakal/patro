@@ -304,7 +304,7 @@ function EventMarker({
       {isSun ? (
         <SunHalfIcon x={x} y={SUNLINE_Y} variant={kind === "sunset" ? "set" : "rise"} C={C} />
       ) : (
-        <SvgText x={x} y={MOON_EMOJI_Y} textAnchor="middle" fontSize={14}>
+        <SvgText x={x} y={MOON_EMOJI_Y} textAnchor="middle" fontSize={15}>
           {moonEmoji}
         </SvgText>
       )}
@@ -313,7 +313,7 @@ function EventMarker({
         y={isSun ? MARKER_TIME_Y : MOON_TIME_Y}
         textAnchor={anchor}
         fill={isSun ? C.sun : C.muted}
-        fontSize={10}
+        fontSize={15}
         fontFamily={FONT}
       >
         {digits(clock)}
@@ -377,8 +377,8 @@ export function DayTimeline({
     return (
       <Card className="w-full overflow-hidden p-0">
         <View className="border-b border-border px-4 py-2.5">
-          <Text className="text-sm font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
-          <Text className="text-xs text-muted-foreground">
+          <Text className="text-body font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
+          <Text className="text-caption text-muted-foreground">
             {isCivil
               ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
               : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
@@ -477,13 +477,13 @@ export function DayTimeline({
         <Rect key={`night-${i}`} x={gx(a)} y={RULER_H - 8} width={Math.max(0, gx(b) - gx(a))} height={H - RULER_H + 2} fill={C.night} />
       ))}
 
-      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={11} fontFamily={FONT} textAnchor="end">
+      <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end">
         {pick("घण्टा", "Hour")}
       </SvgText>
       {/* घडी counts from sunrise, so it means nothing on a midnight-anchored
           chart — web drops the row there and so does this. */}
       {!isCivil && (
-        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={11} fontFamily={FONT} textAnchor="end" opacity={0.75}>
+        <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end" opacity={0.75}>
           {pick("घडी", "Ghati")}
         </SvgText>
       )}
@@ -492,7 +492,7 @@ export function DayTimeline({
       {data.civilHourTicks.map(({ hour, g }) => (
         <G key={`h-${hour}-${g}`}>
           <Line x1={gx(g)} y1={30} x2={gx(g)} y2={24} stroke={C.tick} strokeWidth={1} />
-          <SvgText x={gx(g)} y={18} fill={C.fg} fontSize={10} fontFamily={FONT} textAnchor="middle">
+          <SvgText x={gx(g)} y={18} fill={C.fg} fontSize={15} fontFamily={FONT} textAnchor="middle">
             {digits(hour)}
           </SvgText>
         </G>
@@ -501,7 +501,7 @@ export function DayTimeline({
       {!isCivil && GHATI_TICKS.map((g) => (
         <G key={`g-${g}`}>
           <Line x1={gx(g)} y1={30} x2={gx(g)} y2={36} stroke={C.tick} strokeWidth={1} />
-          <SvgText x={gx(g)} y={48} fill={C.muted} fontSize={10} fontFamily={FONT_SM} textAnchor="middle">
+          <SvgText x={gx(g)} y={48} fill={C.muted} fontSize={15} fontFamily={FONT_SM} textAnchor="middle">
             {digits(g)}
           </SvgText>
         </G>
@@ -534,7 +534,7 @@ export function DayTimeline({
               x={8}
               y={y + BAND / 2 + 4}
               fill={C.fg}
-              fontSize={11}
+              fontSize={15}
               fontFamily={FONT}
               fontWeight="700"
               {...nepaliSvgTextCenter}
@@ -580,7 +580,7 @@ export function DayTimeline({
                         x={(x + x2) / 2}
                         y={y + BAND / 2 + 4}
                         fill={s.bad ? C.danger : C.fg}
-                        fontSize={10}
+                        fontSize={15}
                         fontFamily={FONT}
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
@@ -594,7 +594,7 @@ export function DayTimeline({
                         x={clampX((x + x2) / 2, 8)}
                         y={labelY}
                         fill={tr.cls === "shubha" ? "#2ea078" : C.danger}
-                        fontSize={10}
+                        fontSize={15}
                         fontFamily={FONT}
                         textAnchor="middle"
                         {...nepaliSvgTextCenter}
@@ -647,7 +647,7 @@ export function DayTimeline({
               return (
                 <G key={`cut-${si}`}>
                   <TransitionArrow x2={x2} y={y} C={C} />
-                  <SvgText x={clampX(x2, 22)} y={y + BAND + 16} fill={C.fg} fontSize={9} fontFamily={FONT_SM} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
+                  <SvgText x={clampX(x2, 22)} y={y + BAND + 16} fill={C.fg} fontSize={15} fontFamily={FONT_SM} textAnchor="middle" opacity={tr.cls === "lagna" ? 0.9 : 1}>
                     {time}
                   </SvgText>
                 </G>
@@ -661,7 +661,7 @@ export function DayTimeline({
         <G>
           <Line x1={gx(nowG)} y1={RULER_H - 6} x2={gx(nowG)} y2={H - 4} stroke={C.now} strokeWidth={1.4} />
           <Rect x={clampX(gx(nowG), 30) - 48} y={RULER_H - 22} width={100} height={17} rx={9} fill={C.now} />
-          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill="#fff" fontSize={9} fontFamily={FONT} textAnchor="middle">
+          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill="#fff" fontSize={15} fontFamily={FONT} textAnchor="middle">
             {nowLabel} {tLabel(nowG)}
           </SvgText>
         </G>
@@ -678,8 +678,8 @@ export function DayTimeline({
       }}
     >
       <View className="border-b border-border px-4 py-2.5">
-        <Text className="text-sm font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
-        <Text className="text-xs text-muted-foreground">
+        <Text className="text-body font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
+        <Text className="text-caption text-muted-foreground">
           {isCivil
               ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
               : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
@@ -753,8 +753,8 @@ export function DayTimeline({
       {p && planets.length > 0 ? (
         <View className="gap-2 border-t border-border px-4 py-3">
           <View className="gap-0.5">
-            <Text className="text-sm font-bold text-foreground">{pick("ग्रह", "Planets")}</Text>
-            <Text className="text-sm text-muted-foreground">{getPlanetsAnchorLabel(p, lang)}</Text>
+            <Text className="text-body font-bold text-foreground">{pick("ग्रह", "Planets")}</Text>
+            <Text className="text-body text-muted-foreground">{getPlanetsAnchorLabel(p, lang)}</Text>
           </View>
           <View className="flex-row flex-wrap" style={{ gap: PLANET_CARD_GAP }}>
             {planets.map(
@@ -823,7 +823,7 @@ export function DayTimeline({
                           <GrahaPlanetIcon graha={planetKey} size={18} />
                         ) : null}
                         <Text
-                          className="shrink-0 text-sm font-bold text-foreground"
+                          className="text-body shrink-0 font-bold text-foreground"
                           numberOfLines={1}
                           style={nepaliTextStyle(14)}
                         >
@@ -836,17 +836,17 @@ export function DayTimeline({
                           size={13}
                         />
                       </View>
-                      <Text className="min-w-0 text-sm font-semibold text-foreground" numberOfLines={1}>
+                      <Text className="text-body min-w-0 font-semibold text-foreground" numberOfLines={1}>
                         {coordText}
                       </Text>
                     </View>
                     {(nakWithPada || lordText) && (
                       <View className="flex-row items-baseline justify-between gap-1.5">
-                        <Text className="min-w-0 flex-1 text-sm text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+                        <Text className="text-body min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
                           {nakWithPada}
                         </Text>
                         {lordText ? (
-                          <Text className="shrink-0 text-sm font-semibold text-secondary" numberOfLines={1}>
+                          <Text className="text-body shrink-0 font-semibold text-secondary" numberOfLines={1}>
                             {lordText}
                           </Text>
                         ) : null}
@@ -880,7 +880,7 @@ function PeriodCards({
 
   return (
     <View className="gap-2 border-t border-border px-4 py-3">
-      <Text className="text-sm font-bold" style={{ color: accent }}>
+      <Text className="text-body font-bold" style={{ color: accent }}>
         {title}
       </Text>
       <View className="flex-row flex-wrap" style={{ gap: PERIOD_CARD_GAP }}>
@@ -895,13 +895,13 @@ function PeriodCards({
                 className="mt-px h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1"
                 style={{ backgroundColor: accent }}
               >
-                <Text className="text-xs font-bold text-white">{it.n}</Text>
+                <Text className="text-caption font-bold text-white">{it.n}</Text>
               </View>
-              <Text className="min-w-0 flex-1 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+              <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
                 {it.label}
               </Text>
             </View>
-            <Text className="text-sm font-semibold text-foreground">{it.time}</Text>
+            <Text className="text-body font-semibold text-foreground">{it.time}</Text>
           </View>
         ))}
       </View>
@@ -913,7 +913,7 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   return (
     <View className="flex-row items-center gap-1">
       <View className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: color }} />
-      <Text className="text-xs text-muted-foreground">{label}</Text>
+      <Text className="text-caption text-muted-foreground">{label}</Text>
     </View>
   );
 }

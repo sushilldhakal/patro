@@ -41,10 +41,10 @@ function TopicNavCard({
           <Ionicons name="chevron-back" size={18} color={colors.secondary} />
         ) : null}
         <View className={`min-w-0 flex-1 ${direction === "next" ? "items-end" : ""}`}>
-          <Text className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+          <Text className="text-caption font-bold uppercase tracking-wide text-muted-foreground">
             {direction === "prev" ? pick("अघिल्लो", "Previous") : pick("अर्को", "Next")}
           </Text>
-          <Text numberOfLines={2} className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text numberOfLines={2} className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
             {pick(topic.title.ne, topic.title.en)}
           </Text>
         </View>
@@ -94,15 +94,15 @@ export function LearnArticleView({
       {/* Hero: category eyebrow, title, summary — as web's article header. */}
       <View className="items-center gap-2 rounded-2xl border border-border bg-card px-5 py-10">
         <Text
-          className="text-center text-xs font-semibold uppercase tracking-widest text-secondary"
+          className="text-caption text-center font-semibold uppercase tracking-widest text-secondary"
           style={nepaliTextStyle(12)}
         >
           {section ? pick(section.title.ne, section.title.en) : ""}
         </Text>
-        <Text className="text-center text-3xl font-bold leading-tight text-foreground" style={nepaliTextStyle(30)}>
+        <Text className="text-display text-center font-bold text-foreground" style={nepaliTextStyle(30)}>
           {pick(topic.title.ne, topic.title.en)}
         </Text>
-        <Text className="mt-2 text-center text-base leading-relaxed text-muted-foreground" style={nepaliTextStyle(16)}>
+        <Text className="text-body mt-2 text-center leading-relaxed text-muted-foreground" style={nepaliTextStyle(16)}>
           {pick(topic.summary.ne, topic.summary.en)}
         </Text>
       </View>
@@ -145,7 +145,7 @@ export function LearnArticleView({
         className="flex-row items-center justify-center gap-1.5 py-3 active:opacity-80"
       >
         <Ionicons name="book-outline" size={16} color={colors.secondary} />
-        <Text className="text-sm font-semibold text-secondary" style={nepaliTextStyle(14)}>
+        <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
           {pick("सबै विषय", "All topics")}
         </Text>
       </Pressable>

@@ -193,7 +193,7 @@ export function PatroDateSheet({
     >
             <View className="items-center border-b border-border px-4 pb-3 pt-4">
               <Text
-                className="text-base font-semibold text-foreground"
+                className="text-body font-semibold text-foreground"
                 style={lang === "en" ? undefined : nepaliTextStyle(16)}
               >
                 {headerTitle}
@@ -214,7 +214,7 @@ export function PatroDateSheet({
               >
                 <Text
                   className={cn(
-                    "text-sm font-bold",
+                    "text-body font-bold",
                     tab === "date" ? "text-secondary-foreground" : "text-foreground",
                   )}
                   style={nepaliTextStyle(14)}
@@ -235,7 +235,7 @@ export function PatroDateSheet({
               >
                 <Text
                   className={cn(
-                    "text-sm font-bold",
+                    "text-body font-bold",
                     tab === "location" ? "text-secondary-foreground" : "text-foreground",
                   )}
                   style={nepaliTextStyle(14)}
@@ -287,13 +287,13 @@ export function PatroDateSheet({
                 )}
               >
                 <Text
-                  className="text-center text-xs font-medium text-muted-foreground"
+                  className="text-caption text-center font-medium text-muted-foreground"
                   style={nepaliTextStyle(12)}
                 >
                   {pick("वर्ष", "Year")}
                 </Text>
                 <Text
-                  className="text-center font-num text-2xl font-bold text-foreground"
+                  className="text-display text-center font-num font-bold text-foreground"
                   style={nepaliTextStyle(24)}
                 >
                   {previewDisplay} {previewEraLabel}
@@ -306,7 +306,7 @@ export function PatroDateSheet({
                 onPress={handleDone}
                 className="h-10 w-full items-center justify-center rounded-lg bg-secondary active:opacity-90"
               >
-                <Text className="text-sm font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
+                <Text className="text-body font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>

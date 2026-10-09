@@ -49,26 +49,13 @@ export type NepaliTextOptions = {
   dense?: boolean;
 };
 
+/** Font family and Android matra padding. Size comes from text-caption|body|title|display. */
 export function nepaliTextStyle(
-  requestedSize: number,
-  { dense = false }: NepaliTextOptions = {},
+  _requestedSize?: number,
+  _options?: NepaliTextOptions,
 ): TextStyle {
-  const fontSize = dense ? requestedSize : Math.max(MIN_NEPALI_FONT_SIZE, requestedSize);
-  const lineHeight = nepaliLineHeight(fontSize);
   return {
     fontFamily: NOTO_DEVANAGARI_REGULAR,
-    fontSize,
-    lineHeight,
-    /* Android is told to keep the font's own ascent/descent padding, which is
-       what reserves the room the matras need.
-     *
-     * iOS used to get a `paddingTop` of 2–3 px instead. That was a workaround
-     * for a line box too short to hold the upper matras — it shoved the glyph
-     * down so the tops survived, at the cost of pushing the lower matras and
-     * descenders into (or past) the bottom edge, which is the other half of
-     * the clipping. With {@link NEPALI_LINE_HEIGHT_RATIO} tall enough to hold
-     * both, iOS centres the glyph in the box on its own and the shove is not
-     * only unnecessary, it is the bug. */
     ...(Platform.OS === "android" ? { includeFontPadding: true } : {}),
   };
 }
@@ -77,13 +64,9 @@ export function nepaliTextStyle(
  * All data-table column headers should use this (via `TableHeaderLabel` in DataTable).
  * Extra top inset avoids Devanagari matras clipped by `overflow-hidden` on table shells.
  */
-export function tableHeaderTextStyle(requestedSize: number): TextStyle {
-  const fontSize = Math.max(MIN_NEPALI_FONT_SIZE, requestedSize);
-  const lineHeight = tableHeaderLineHeight(fontSize);
+export function tableHeaderTextStyle(_requestedSize?: number): TextStyle {
   return {
     fontFamily: NOTO_DEVANAGARI_REGULAR,
-    fontSize,
-    lineHeight,
     paddingTop: 5,
     paddingBottom: 2,
     ...(Platform.OS === "android"
@@ -107,9 +90,9 @@ export function tableHeaderFontSize(compact?: boolean): number {
 }
 
 /** Large day numbers in Nepali — Noto Sans Devanagari (matches web). */
-export function nepaliDayNumberStyle(fontSize: number): TextStyle {
+export function nepaliDayNumberStyle(_fontSize?: number): TextStyle {
   return {
-    ...nepaliTextStyle(fontSize),
+    ...nepaliTextStyle(),
     fontFamily: NOTO_DEVANAGARI_BOLD,
   };
 }

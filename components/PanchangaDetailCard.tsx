@@ -8,8 +8,8 @@ import { Card } from "./ui/Card";
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-start justify-between gap-3 border-b border-border/60 py-2.5">
-      <Text className="flex-1 text-sm text-muted-foreground">{label}</Text>
-      <Text className="flex-1 text-right text-sm font-medium text-foreground">{value}</Text>
+      <Text className="text-body flex-1 text-muted-foreground">{label}</Text>
+      <Text className="text-body flex-1 text-right font-medium text-foreground">{value}</Text>
     </View>
   );
 }
@@ -21,17 +21,17 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
   return (
     <Card className="gap-0 p-0">
       <View className="border-b border-border/60 px-4 py-3">
-        <Text className="text-lg font-bold text-foreground">
+        <Text className="text-title font-bold text-foreground">
           {data.display?.bs_ne && lang === "ne"
             ? data.display.bs_ne
             : data.date_bs ?? data.date_ad ?? "—"}
         </Text>
-        <Text className="text-sm text-muted-foreground">
+        <Text className="text-body text-muted-foreground">
           {data.display?.gregorian_en ?? data.date_ad}
           {data.weekday ? ` · ${data.weekday}` : ""}
         </Text>
         {data.samvatsara ? (
-          <Text className="mt-1 text-sm text-primary">
+          <Text className="text-body mt-1 text-primary">
             {t(data.samvatsara.name_ne, data.samvatsara.name_en)}
           </Text>
         ) : null}
@@ -52,7 +52,7 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
       </View>
       {data.muhurta ? (
         <View className="border-t border-border/60 px-4 py-2">
-          <Text className="mb-1 text-sm font-semibold text-foreground">
+          <Text className="text-body mb-1 font-semibold text-foreground">
             {pick("मुहूर्त", "Muhurta")}
           </Text>
           {data.muhurta.rahu_kalam ? (
@@ -71,11 +71,11 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
       ) : null}
       {data.festivals?.length ? (
         <View className="border-t border-border/60 px-4 py-3">
-          <Text className="mb-2 text-sm font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("पर्व / बिदा", "Festivals / Holidays")}
           </Text>
           {data.festivals.map((f, i) => (
-            <Text key={`${f.name}-${i}`} className="py-0.5 text-sm text-foreground">
+            <Text key={`${f.name}-${i}`} className="text-body py-0.5 text-foreground">
               • {t(f.name_ne, f.name)}
             </Text>
           ))}

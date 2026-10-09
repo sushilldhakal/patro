@@ -123,8 +123,19 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
 
   // When a clip ends, hand straight over to the pre-loaded next verse — unless the
   // listener has this verse's meaning open (reading, not listening straight through).
+  /* Native raises `didJustFinish`; expo-audio on web never does (its `onended`
+     emits nothing), so autoplay silently stopped after one verse in the browser.
+     The browser does fire `pause` as a clip ends, which arrives as
+     playing=false with the position at the duration — treat that as finished too. */
+  const verseEnded =
+    verseStatus.didJustFinish ||
+    (verseStatus.isLoaded &&
+      !verseStatus.playing &&
+      verseStatus.duration > 0 &&
+      verseStatus.currentTime >= verseStatus.duration - 0.25);
+
   useEffect(() => {
-    if (mode !== "verse" || !verseStatus.didJustFinish || activeVerseId == null) return;
+    if (mode !== "verse" || !verseEnded || activeVerseId == null) return;
     if (openMeaningIds.has(activeVerseId)) return;
     const next = nextAudioAfter(activeVerseId);
     if (!next) return;
@@ -137,7 +148,7 @@ export function useDocumentAudio(shlokas: Shloka[], fullAudioUrl: string | null 
     } else {
       playVerse(next.id);
     }
-  }, [verseStatus.didJustFinish]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [verseEnded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const startFull = useCallback(() => {
     versePlayer.pause();

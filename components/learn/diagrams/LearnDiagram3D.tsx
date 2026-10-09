@@ -147,12 +147,12 @@ export function LearnDiagram3D({
       {!fullscreen ? (
         <View className="flex-row items-center justify-between border-b border-border/60 px-3 py-2">
           <Text
-            className="flex-1 text-xs font-bold uppercase tracking-wide text-secondary"
+            className="text-caption flex-1 font-bold uppercase tracking-wide text-secondary"
             style={nepaliTextStyle(11)}
           >
             {title}
           </Text>
-          <Text className="text-[12px] text-muted-foreground" style={nepaliTextStyle(10)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(10)}>
             {pick("घुमाउन तान्नुहोस्", "Drag to rotate")}
           </Text>
         </View>
@@ -189,7 +189,7 @@ export function LearnDiagram3D({
           {labels.map((label) => (
             <Text
               key={label.id}
-              className="absolute text-[12px] font-semibold"
+              className="text-caption absolute font-semibold"
               style={[
                 nepaliTextStyle(label.size ?? 10),
                 {
@@ -227,8 +227,8 @@ export function LearnDiagram3D({
             style={{ top: overlayTop }}
           >
             <Text
-              className="text-[12px] font-bold"
-              style={[nepaliTextStyle(11), { color: DIAGRAM_LABEL_COLOR.rashi, fontSize: 11 }]}
+              className="text-caption font-bold"
+              style={[nepaliTextStyle(11), { color: DIAGRAM_LABEL_COLOR.rashi, fontSize: 15 }]}
             >
               {title}
             </Text>
@@ -247,10 +247,10 @@ export function LearnDiagram3D({
                   style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: item.color }}
                 />
                 <Text
-                  className="text-[12px]"
+                  className="text-caption"
                   style={[
                     nepaliTextStyle(9),
-                    { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 9, opacity: 0.68 },
+                    { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 15, opacity: 0.68 },
                   ]}
                 >
                   {item.label}
@@ -287,10 +287,10 @@ export function LearnDiagram3D({
           <View pointerEvents="none" className="absolute inset-x-0 bottom-2 items-center">
             <View className="rounded-full bg-black/45 px-3 py-1">
               <Text
-                className="text-[12px]"
+                className="text-caption"
                 style={[
                   nepaliTextStyle(10),
-                  { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 10, opacity: 0.68 },
+                  { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 15, opacity: 0.68 },
                 ]}
               >
                 {pick(
@@ -333,14 +333,14 @@ export function LearnDiagram3D({
                 className="rounded-lg border border-border/70 bg-muted/30 px-2 py-1"
               >
                 <Text
-                  className="text-[12px] uppercase tracking-wide text-muted-foreground"
-                  style={[nepaliTextStyle(9), { fontSize: 9 }]}
+                  className="text-caption uppercase tracking-wide text-muted-foreground"
+                  style={[nepaliTextStyle(9), { fontSize: 15 }]}
                 >
                   {r.k}
                 </Text>
                 <Text
                   className={cn(
-                    "text-[12px] font-bold",
+                    "text-caption font-bold",
                     r.tone === "accent" && "text-secondary",
                     r.tone === "warn" && "text-primary",
                   )}
@@ -356,7 +356,7 @@ export function LearnDiagram3D({
         {slider ? (
           <View className="gap-1">
             <Text
-              className="text-[12px] font-semibold text-foreground"
+              className="text-caption font-semibold text-foreground"
               style={nepaliTextStyle(11)}
             >
               {slider.label}
@@ -412,10 +412,10 @@ export function LearnDiagram3D({
                 >
                   <Text
                     className={cn(
-                      "text-[12px] font-semibold",
+                      "text-caption font-semibold",
                       active ? "text-secondary" : "text-muted-foreground",
                     )}
-                    style={[nepaliTextStyle(10), { fontSize: 10 }]}
+                    style={[nepaliTextStyle(10), { fontSize: 15 }]}
                   >
                     {p.label}
                   </Text>
@@ -430,7 +430,7 @@ export function LearnDiagram3D({
 
       {caption && !fullscreen ? (
         <Text
-          className="border-t border-border/60 px-3 py-2 text-xs leading-snug text-muted-foreground"
+          className="text-caption border-t border-border/60 px-3 py-2 text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
           {caption}

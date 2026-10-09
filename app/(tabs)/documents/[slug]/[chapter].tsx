@@ -67,7 +67,7 @@ export default function DocumentChapterScreen() {
   );
 
   if (!valid || (chapterQ.isError && isNotFound(chapterQ.error))) {
-    return frame(<Text className="text-sm text-muted-foreground">{t("documents.not_found")}</Text>);
+    return frame(<Text className="text-body text-muted-foreground">{t("documents.not_found")}</Text>);
   }
   if (chapterQ.isError) {
     return frame(<ErrorState message={t("documents.load_error")} onRetry={() => void chapterQ.refetch()} />);
@@ -90,22 +90,22 @@ export default function DocumentChapterScreen() {
     <View className="mb-2">
       <DocumentBackLink href={backHref} label={backLabel} />
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="flex-1 text-sm font-medium text-secondary" numberOfLines={1}>
+        <Text className="text-body flex-1 font-medium text-secondary" numberOfLines={1}>
           {docTitle}
         </Text>
         {numbers.length > 0 ? (
-          <Text className="text-xs font-semibold text-muted-foreground">
+          <Text className="text-caption font-semibold text-muted-foreground">
             {t("documents.chapter_progress", { current: digits(chapterNumber), total: digits(numbers.length) })}
           </Text>
         ) : null}
       </View>
       <View className="mb-4 mt-2 flex-row items-center gap-3">
         <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary/10">
-          <Text className="text-base font-bold text-secondary">{digits(chapterNumber)}</Text>
+          <Text className="text-body font-bold text-secondary">{digits(chapterNumber)}</Text>
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-2xl font-bold">{t("documents.chapter_label", { number: digits(chapterNumber) })}</Text>
-          {chapterTitle ? <Text className="text-base font-semibold text-muted-foreground">{chapterTitle}</Text> : null}
+          <Text className="text-display font-bold">{t("documents.chapter_label", { number: digits(chapterNumber) })}</Text>
+          {chapterTitle ? <Text className="text-body font-semibold text-muted-foreground">{chapterTitle}</Text> : null}
         </View>
       </View>
       <DocumentJumpForm
@@ -129,7 +129,7 @@ export default function DocumentChapterScreen() {
           className="flex-row items-center gap-1.5 rounded-full border border-border px-3.5 py-2"
         >
           <Ionicons name="chevron-back" size={16} color={colors.secondary} />
-          <Text className="text-sm font-semibold">{t("documents.prev_chapter")}</Text>
+          <Text className="text-body font-semibold">{t("documents.prev_chapter")}</Text>
         </Pressable>
       ) : (
         <View />
@@ -140,7 +140,7 @@ export default function DocumentChapterScreen() {
           accessibilityRole="button"
           className="flex-row items-center gap-1.5 rounded-full border border-border px-3.5 py-2"
         >
-          <Text className="text-sm font-semibold">{t("documents.next_chapter")}</Text>
+          <Text className="text-body font-semibold">{t("documents.next_chapter")}</Text>
           <Ionicons name="chevron-forward" size={16} color={colors.secondary} />
         </Pressable>
       ) : (

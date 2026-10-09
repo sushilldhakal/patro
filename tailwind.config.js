@@ -8,6 +8,13 @@ module.exports = {
   presets: [require("nativewind/preset")],
   darkMode: "class",
   theme: {
+    /* Replaces Tailwind's default scale. Pixel values match --text-* in global.css. */
+    fontSize: {
+      caption: ["15px", { lineHeight: "24px" }],
+      body: ["18px", { lineHeight: "29px" }],
+      title: ["22px", { lineHeight: "36px" }],
+      display: ["28px", { lineHeight: "45px" }],
+    },
     extend: {
       screens: {
         xs: "400px",

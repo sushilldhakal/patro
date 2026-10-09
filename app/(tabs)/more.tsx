@@ -49,7 +49,7 @@ function ActionRow({
       className="flex-row items-center gap-3 border-b border-border/40 py-3 active:opacity-80"
     >
       <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className="flex-1 text-sm font-medium text-foreground">{label}</Text>
+      <Text className="text-body flex-1 font-medium text-foreground">{label}</Text>
       <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
     </Pressable>
   );
@@ -72,7 +72,7 @@ function RouteRow({
       className="flex-row items-center gap-3 border-b border-border/40 py-3 active:opacity-80"
     >
       <AppNavIcon name={icon} size={20} color={colors.secondary} />
-      <Text className="flex-1 text-sm font-medium text-foreground">{label}</Text>
+      <Text className="text-body flex-1 font-medium text-foreground">{label}</Text>
       <AppNavIcon name="chevron-right" size={16} color={colors.mutedForeground} />
     </Pressable>
   );
@@ -134,7 +134,7 @@ export default function MoreScreen() {
           const title = GROUP_TITLE[group];
           return (
             <Card key={group} className={isTablet ? "min-w-[45%] flex-1" : ""}>
-              <Text className="mb-2 text-base font-semibold text-foreground">
+              <Text className="text-body mb-2 font-semibold text-foreground">
                 {pick(title.ne, title.en)}
               </Text>
               {routes.map((r) => (
@@ -148,7 +148,7 @@ export default function MoreScreen() {
         })}
 
         <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
-          <Text className="mb-2 text-base font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("पञ्चाङ्ग तत्त्व", "Panchanga elements")}
           </Text>
           {elementRoutes.map((r) => (
@@ -157,7 +157,7 @@ export default function MoreScreen() {
         </Card>
 
         <Card className={isTablet ? "min-w-[45%] flex-1" : ""}>
-          <Text className="mb-2 text-base font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("सिकाइ लेख", "Learn articles")}
           </Text>
           <RouteRow
@@ -171,7 +171,7 @@ export default function MoreScreen() {
         </Card>
 
         <Card className={isTablet ? "w-full" : ""}>
-          <Text className="mb-2 text-base font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("शुभ साइत", "Ceremony muhurta")}
           </Text>
           {saitRoutes.map((r) => (
@@ -180,11 +180,11 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="mb-2 text-base font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("सेटिङ", "Settings")}
           </Text>
           <View className="flex-row items-center justify-between gap-3 border-b border-border/40 py-3">
-            <Text className="text-sm font-medium text-foreground">{pick("थिम", "Theme")}</Text>
+            <Text className="text-body font-medium text-foreground">{pick("थिम", "Theme")}</Text>
             <ThemeSwitcher showLabel />
           </View>
           <ActionRow
@@ -216,7 +216,7 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="mb-2 text-base font-semibold text-foreground">
+          <Text className="text-body mb-2 font-semibold text-foreground">
             {pick("कानुनी", "Legal")}
           </Text>
           <RouteRow path="/privacy" label={pick("गोपनीयता नीति", "Privacy Policy")} icon="shield" />
@@ -224,11 +224,11 @@ export default function MoreScreen() {
         </Card>
 
         <Card>
-          <Text className="mb-1 text-sm font-semibold text-foreground">
+          <Text className="text-body mb-1 font-semibold text-foreground">
             {pick("संस्करण", "Version")} {APP_VERSION}
           </Text>
-          <Text className="font-mono text-xs text-muted-foreground">{API_BASE}</Text>
-          <Text className="mt-2 text-xs text-muted-foreground">{SUPPORT_EMAIL}</Text>
+          <Text className="text-caption font-mono text-muted-foreground">{API_BASE}</Text>
+          <Text className="text-caption mt-2 text-muted-foreground">{SUPPORT_EMAIL}</Text>
         </Card>
       </View>
     </AppShell>

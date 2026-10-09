@@ -19,16 +19,16 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
       >
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
           <Ionicons name="cloud-download-outline" size={18} color={colors.foreground} />
-          <Text className="text-sm text-foreground">{pick("अफलाइन डाउनलोड", "Offline download")}</Text>
+          <Text className="text-body text-foreground">{pick("अफलाइन डाउनलोड", "Offline download")}</Text>
         </View>
         <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </Pressable>
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{pick("भाषा", "Language")}</Text>
+        <Text className="text-body text-foreground">{pick("भाषा", "Language")}</Text>
         <LanguageSwitcher />
       </View>
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{pick("थिम", "Theme")}</Text>
+        <Text className="text-body text-foreground">{pick("थिम", "Theme")}</Text>
         <ThemeSwitcher showLabel />
       </View>
     </View>

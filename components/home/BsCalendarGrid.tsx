@@ -233,7 +233,7 @@ export function BsCalendarGrid({
                     {isToday ? (
                       <View className="rounded-full bg-secondary px-1.5 py-0.5">
                         <Text
-                          className="text-[12px] font-bold text-secondary-foreground"
+                          className="text-caption font-bold text-secondary-foreground"
                           style={lang === "en" ? undefined : nepaliTextStyle(10)}
                         >
                           {pick("आज", "Today")}
@@ -269,7 +269,7 @@ export function BsCalendarGrid({
                           }}
                           className="rounded-full bg-secondary px-1 py-px"
                         >
-                          <Text className="font-num text-[12px] font-bold text-secondary-foreground">
+                          <Text className="text-caption font-num font-bold text-secondary-foreground">
                             +{digits(extraFestCount)}
                           </Text>
                         </Pressable>
@@ -285,7 +285,7 @@ export function BsCalendarGrid({
                       }}
                       className="mx-auto mt-auto rounded-full bg-secondary px-1.5 py-0.5"
                     >
-                      <Text className="font-num text-[12px] font-bold text-secondary-foreground">
+                      <Text className="text-caption font-num font-bold text-secondary-foreground">
                         +{digits(festCount)}
                       </Text>
                     </Pressable>

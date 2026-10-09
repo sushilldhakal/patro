@@ -150,16 +150,16 @@ export default function GocharScreen() {
           </View>
         </View>
       ) : gocharQ.isError ? (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
           {pick("गोचर ल्याउन सकिएन।", "Could not load transits.")}
         </Text>
       ) : (
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       )}
 
-      <Text className="mt-4 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body mt-4 text-muted-foreground" style={nepaliTextStyle(13)}>
         {pick(
           "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",
           "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",

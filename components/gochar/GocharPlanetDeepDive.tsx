@@ -81,14 +81,14 @@ export function GocharPlanetDeepDive({
       <View className="border-b border-border px-4 py-4">
         <Text
           style={{ letterSpacing: 1.4, ...nepaliTextStyle(11) }}
-          className="text-xs font-bold uppercase text-muted-foreground"
+          className="text-caption font-bold uppercase text-muted-foreground"
         >
           {pick("विस्तृत अध्ययन", "Deep dive")}
         </Text>
-        <Text className="mt-1 text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className="text-title mt-1 font-bold text-foreground" style={nepaliTextStyle(18)}>
           {pick("ग्रह छान्नुहोस्", "Pick a planet")}
         </Text>
-        <Text className="mt-1 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
           {pick("वर्तमान स्थिति, सीमा र वक्री", "Current position, windows & retrograde")}
         </Text>
       </View>
@@ -117,7 +117,7 @@ export function GocharPlanetDeepDive({
                   color: active ? colors.secondary : colors.foreground,
                   ...nepaliTextStyle(10),
                 }}
-                className="text-[12px] font-bold"
+                className="text-caption font-bold"
               >
                 {pick(GRAHA_NAME[key].ne, GRAHA_NAME[key].en)}
               </Text>
@@ -129,11 +129,11 @@ export function GocharPlanetDeepDive({
       <View className="border-t border-border px-4 py-4">
         <View className="flex-row flex-wrap items-center gap-2">
           <GrahaPlanetIcon graha={selected} size={36} />
-          <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
             {name}
           </Text>
           {g.name_vedic ? (
-            <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
               ({g.name_vedic})
             </Text>
           ) : null}
@@ -144,7 +144,7 @@ export function GocharPlanetDeepDive({
             >
               <Text
                 style={{ color: colors.primary, ...nepaliTextStyle(11) }}
-                className="text-xs font-bold"
+                className="text-caption font-bold"
               >
                 {pick("उच्च", "Exalted")}
               </Text>
@@ -169,14 +169,14 @@ export function GocharPlanetDeepDive({
             className="mt-4 rounded-xl p-3.5"
           >
             <Text
-              className="text-xs font-bold uppercase tracking-wide text-muted-foreground"
+              className="text-caption font-bold uppercase tracking-wide text-muted-foreground"
               style={nepaliTextStyle(11)}
             >
               {pick("हालका सीमाहरू", "Current windows")}
             </Text>
             <View className="mt-2 gap-1">
               {windows.map((w) => (
-                <Text key={w} className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+                <Text key={w} className="text-body text-foreground" style={nepaliTextStyle(14)}>
                   •  {w}
                 </Text>
               ))}
@@ -195,12 +195,12 @@ function Detail({ width, label, value }: { width: string; label: string; value: 
       className="rounded-lg border border-border bg-background px-3 py-2.5"
     >
       <Text
-        className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground"
+        className="text-caption font-bold uppercase tracking-wide text-muted-foreground"
         style={nepaliTextStyle(10)}
       >
         {label}
       </Text>
-      <Text className="mt-1 text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body mt-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {value}
       </Text>
     </View>

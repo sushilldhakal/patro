@@ -68,7 +68,7 @@ function WebSelect({ value, options, onChange, ariaLabel, minWidth = 72 }: Selec
       </select>
       <span
         style={{
-          fontSize: 14,
+          fontSize: 15,
           fontWeight: 600,
           color: colors.foreground,
           pointerEvents: "none",
@@ -210,10 +210,10 @@ export function BsMonthYearNav({
         accessibilityLabel={pick("मिति बदल्नुहोस्", "Change date")}
         className="h-[30px] flex-row items-center gap-1 rounded-lg border border-border bg-card px-2.5 active:bg-muted"
       >
-        <Text numberOfLines={1} className="text-sm font-semibold text-foreground">
+        <Text numberOfLines={1} className="text-body font-semibold text-foreground">
           {monthLabel}
         </Text>
-        <Text className="font-num text-sm font-semibold text-foreground">{yearLabel}</Text>
+        <Text className="text-body font-num font-semibold text-foreground">{yearLabel}</Text>
         <Ionicons name="chevron-down" size={12} color={colors.mutedForeground} />
       </Pressable>
 
@@ -236,7 +236,7 @@ export function BsMonthYearNav({
               }}
             >
               <Pressable onPress={() => setOpen(false)} hitSlop={8} style={{ minWidth: 72 }}>
-                <Text style={{ fontSize: 16, color: colors.mutedForeground }}>
+                <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
                   {pick("रद्द", "Cancel")}
                 </Text>
               </Pressable>
@@ -244,7 +244,7 @@ export function BsMonthYearNav({
                 style={{
                   flex: 1,
                   textAlign: "center",
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: "600",
                   color: colors.foreground,
                 }}
@@ -260,7 +260,7 @@ export function BsMonthYearNav({
                 hitSlop={8}
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
-                <Text style={{ fontSize: 16, fontWeight: "600", color: colors.primary }}>
+                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>
@@ -330,7 +330,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
         )}
         style={{ minWidth: rest.minWidth ?? 72 }}
       >
-        <Text numberOfLines={1} className="min-w-0 flex-1 text-sm font-semibold text-foreground">
+        <Text numberOfLines={1} className="text-body min-w-0 flex-1 font-semibold text-foreground">
           {selected?.label ?? "—"}
         </Text>
         <Ionicons name="chevron-down" size={12} color={colors.mutedForeground} />
@@ -360,7 +360,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
               }}
             >
               <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
-                <Text style={{ fontSize: 16, color: colors.mutedForeground }}>
+                <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
                   {pick("रद्द", "Cancel")}
                 </Text>
               </Pressable>
@@ -368,7 +368,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 style={{
                   flex: 1,
                   textAlign: "center",
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: "600",
                   color: colors.foreground,
                 }}
@@ -382,7 +382,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 }}
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
-                <Text style={{ fontSize: 16, fontWeight: "600", color: colors.primary }}>
+                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>

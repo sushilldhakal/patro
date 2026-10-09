@@ -17,11 +17,11 @@ export function PatroPageHeader({
     <View className="mb-4 flex-row items-start gap-3">
       <View className="mt-0.5 shrink-0">{icon}</View>
       <View className="min-w-0 flex-1">
-        <Text className="text-2xl font-bold text-foreground" style={nepaliTextStyle(24)}>
+        <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
           {title}
         </Text>
         {subtitle ? (
-          <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
             {subtitle}
           </Text>
         ) : null}

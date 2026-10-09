@@ -169,7 +169,7 @@ export function VedicPatroLoader({
       <View className="overflow-hidden rounded-[22%] shadow-md" style={{ width: size, height: size }}>
         <LoaderSvg size={size} />
       </View>
-      {shown ? <Text className="text-sm text-muted-foreground">{shown}</Text> : null}
+      {shown ? <Text className="text-body text-muted-foreground">{shown}</Text> : null}
     </View>
   );
 }

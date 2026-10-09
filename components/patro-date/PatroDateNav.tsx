@@ -120,7 +120,7 @@ function LocationChip({
       className="h-[30px] w-[6.75rem] shrink-0 flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted"
     >
       <Ionicons name="location-outline" size={13} color={colors.secondary} />
-      <Text numberOfLines={1} className="min-w-0 flex-1 text-sm font-medium text-foreground">
+      <Text numberOfLines={1} className="text-body min-w-0 flex-1 font-medium text-foreground">
         {label}
       </Text>
     </Pressable>
@@ -249,7 +249,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
       className={cn(
         patroMonthChipShell,
         "shrink-0 overflow-hidden active:opacity-90",
-        mode === "year" && "w-[2.85rem] sm:w-[3.75rem]",
+        mode === "year" && "w-[3.5rem] sm:w-[3.75rem]",
       )}
     >
       {mode === "year" ? (
@@ -266,7 +266,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
             </Text>
           </View>
           <View className={patroMonthChipDay} style={patroMonthChipBodyBoxStyle({ narrow: isNarrow })}>
-            <Text className="font-num text-sm font-bold leading-none text-foreground sm:text-base">
+            <Text className="text-body font-num font-bold text-foreground">
               {digits(year)}
             </Text>
           </View>
@@ -300,8 +300,8 @@ export function PatroDateNav(props: PatroDateNavProps) {
               className={cn(
                 "font-num font-bold text-foreground",
                 mode === "year-month-time"
-                  ? "text-sm leading-none sm:text-base"
-                  : "text-xs leading-snug tracking-tight sm:text-sm",
+                  ? "text-body"
+                  : "text-body tracking-tight",
               )}
             >
               {mode === "year-month-time" ? digits(day) : monthChipSpan(year, month, era, digits)}
@@ -370,7 +370,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.8}
-        className="min-w-0 flex-1 text-center font-num text-sm font-semibold text-foreground"
+        className="text-body min-w-0 flex-1 text-center font-num font-semibold text-foreground"
       >
         {isCompact && mode === "year-month-time" ? dateChipLabelCompact : dateChipLabel}
       </Text>
@@ -386,10 +386,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
     mobileToolbarLower ?? (!hideNavLocation ? locationChip : null);
 
   const navControlsPhone = (
-    <View
-      className="min-w-0 flex-1 flex-row items-center gap-1"
-      style={isNarrow ? { marginTop: -8 } : undefined}
-    >
+    <View className="min-w-0 flex-1 flex-row items-center gap-1">
       {onPrev ? <StepBtn disabled={prevDisabled} onPress={onPrev} icon="chevron-back" compact={isPhone} /> : null}
       {dateChip}
       {onNext ? <StepBtn disabled={nextDisabled} onPress={onNext} icon="chevron-forward" compact={isPhone} /> : null}
@@ -397,9 +394,9 @@ export function PatroDateNav(props: PatroDateNavProps) {
   );
 
   const navRowPhone = resolvedToolbarLower ? (
-    <View className="flex-row items-start gap-2">
+    <View className="min-h-[30px] flex-row items-center gap-2">
       {navControlsPhone}
-      <View className="shrink-0 items-end justify-end self-start">{resolvedToolbarLower}</View>
+      <View className="shrink-0 items-end justify-center">{resolvedToolbarLower}</View>
     </View>
   ) : (
     <View className="flex-row items-center justify-between gap-2">
@@ -444,13 +441,16 @@ export function PatroDateNav(props: PatroDateNavProps) {
         <View className="min-w-0 flex-1">
           {isCompact ? (
             <View className="gap-1.5">
-              <View className="flex-row items-start gap-2">
-                <View className="min-w-0 flex-1 shrink">{headlineCompact}</View>
-                {mobileToolbar ? (
-                  <View className="h-[30px] shrink-0 items-center justify-end self-start">
-                    {mobileToolbar}
-                  </View>
-                ) : null}
+              {/* Rows are independent: each is at least one 30px control tall and
+                  centres its children, so no control's height sets another's
+                  (and no negative margin is needed to hide the difference). */}
+              <View className="min-h-[30px] flex-row items-center gap-2">
+                {/* marginBottom cancels the empty line-height under the letters so the
+                    visible gap to the date row matches the toolbar-to-location gap. */}
+                <View className="min-w-0 flex-1 shrink self-end" style={{ marginBottom: -10 }}>
+                  {headlineCompact}
+                </View>
+                {mobileToolbar ? <View className="shrink-0 justify-center">{mobileToolbar}</View> : null}
               </View>
               {!mobileToolbar && toolbar ? (
                 <View className="flex-row justify-end">{toolbar}</View>

@@ -4,13 +4,13 @@ export const wheelHead =
   "pointer-events-none absolute top-4 left-4 right-32 z-20";
 
 export const wheelHeadEyebrow =
-  "text-sm font-semibold uppercase tracking-[0.16em] text-[var(--w-ink-faint)]";
+  "text-body font-semibold uppercase tracking-[0.16em] text-[var(--w-ink-faint)]";
 
 export const wheelHeadTitle =
-  "mt-1.5 text-lg font-bold leading-tight text-[var(--w-ink)] max-[720px]:text-xl [&_.yr]:font-num [&_.yr]:text-[var(--w-accent)]";
+  "text-title mt-1.5 font-bold text-[var(--w-ink)] max-[720px]: [&_.yr]:font-num [&_.yr]:text-[var(--w-accent)]";
 
 export const wheelHeadSub =
-  "mt-1.5 font-num text-sm text-base text-[var(--w-ink-dim)]";
+  "text-body mt-1.5 font-num text-[var(--w-ink-dim)]";
 
 export const wheelDock =
   "absolute bottom-[18px] left-1/2 z-[22] flex w-max max-w-[calc(100%-1rem)] -translate-x-1/2 items-center gap-3.5 rounded-full border border-[var(--w-surface-border)] bg-[color-mix(in_srgb,var(--w-surface)_94%,#112c2a)] px-4 py-2.5 text-[var(--w-ink)] shadow-[0_10px_30px_rgba(0,0,0,0.55)] backdrop-blur-md max-[720px]:gap-2 max-[720px]:px-2.5 max-[720px]:py-1.5 max-[480px]:gap-1.5 max-[480px]:px-2 max-[480px]:py-1";
@@ -24,30 +24,30 @@ export const wheelDockSep =
   "h-[26px] w-px shrink-0 bg-[var(--w-surface-border)] max-[720px]:h-5 max-[480px]:h-4";
 
 export const wheelIconBtn =
-  "grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-[var(--w-surface-border)] bg-transparent text-sm text-[var(--w-ink)] transition-colors hover:border-[var(--w-accent)] max-[720px]:h-7 max-[720px]:w-7 max-[720px]:text-xs max-[480px]:h-6 max-[480px]:w-6 max-[480px]:text-sm";
+  "text-body grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-full border border-[var(--w-surface-border)] bg-transparent text-[var(--w-ink)] transition-colors hover:border-[var(--w-accent)] max-[720px]:h-7 max-[720px]:w-7 max-[720px]: max-[480px]:h-6 max-[480px]:w-6 max-[480px]:";
 
 /** Native: use inline styles — `transition-*` / `animate-*` trigger Reanimated strict-mode warnings. */
 export const wheelIconBtnNative =
-  "grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--w-surface-border)] bg-transparent text-sm text-[var(--w-ink)]";
+  "text-body grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--w-surface-border)] bg-transparent text-[var(--w-ink)]";
 
 export const wheelDockLabel =
-  "whitespace-nowrap text-sm text-base text-[var(--w-ink-dim)] max-[720px]:hidden";
+  "text-body whitespace-nowrap text-[var(--w-ink-dim)] max-[720px]:hidden";
 
 export const wheelDockVal =
-  "min-w-[58px] shrink-0 text-center font-num text-sm font-semibold tabular-nums text-[var(--w-ink)] max-[720px]:min-w-[44px] max-[720px]:text-sm max-[480px]:min-w-[38px] max-[480px]:text-sm";
+  "text-body min-w-[58px] shrink-0 text-center font-num font-semibold tabular-nums text-[var(--w-ink)] max-[720px]:min-w-[44px] max-[720px]: max-[480px]:min-w-[38px] max-[480px]:";
 
 /** Inline editable field inside the dock (jump-to-day / jump-to-time). */
 export const wheelDockEditInput =
-  "rounded-md border border-[var(--w-accent)] bg-[color-mix(in_srgb,var(--w-surface)_92%,#112c2a)] px-1.5 py-0.5 text-center font-num text-sm font-semibold tabular-nums text-[var(--w-ink)] outline-none [color-scheme:dark] max-[720px]:text-sm max-[480px]:text-sm";
+  "text-body rounded-md border border-[var(--w-accent)] bg-[color-mix(in_srgb,var(--w-surface)_92%,#112c2a)] px-1.5 py-0.5 text-center font-num font-semibold tabular-nums text-[var(--w-ink)] outline-none [color-scheme:dark] max-[720px]: max-[480px]:";
 
 export const wheelDockTodayBtn =
-  "h-[30px] shrink-0 cursor-pointer rounded-full border-none bg-[var(--w-accent)] px-4 text-sm font-bold text-[#1a1205] active:translate-y-px max-[720px]:h-7 max-[720px]:px-2.5 max-[720px]:text-sm max-[480px]:h-6 max-[480px]:px-2 max-[480px]:text-sm";
+  "text-body h-[30px] shrink-0 cursor-pointer rounded-full border-none bg-[var(--w-accent)] px-4 font-bold text-[#1a1205] active:translate-y-px max-[720px]:h-7 max-[720px]:px-2.5 max-[720px]: max-[480px]:h-6 max-[480px]:px-2 max-[480px]:";
 
 export const wheelLegend =
   "pointer-events-none absolute bottom-[18px] left-4 z-20 flex flex-col gap-1.5 max-[720px]:hidden";
 
 export const wheelLegendRow =
-  "flex items-center gap-1.5 text-sm text-base text-[var(--w-ink-dim)]";
+  "text-body flex items-center gap-1.5 text-[var(--w-ink-dim)]";
 
 export const wheelLegendDot = "h-2 w-2 shrink-0 rounded-full";
 
@@ -59,16 +59,16 @@ export function wheelTip(show: boolean) {
 }
 
 export const wheelTipKind =
-  "text-sm font-semibold uppercase tracking-[0.12em] text-[var(--w-accent)]";
+  "text-body font-semibold uppercase tracking-[0.12em] text-[var(--w-accent)]";
 
 export const wheelTipTitle =
-  "mt-0.5 text-base font-bold leading-tight text-[var(--w-ink)]";
+  "text-body mt-0.5 font-bold text-[var(--w-ink)]";
 
 export const wheelTipRow =
-  "mt-1 flex justify-between gap-3 text-xs text-base text-[var(--w-ink-dim)] [&_b]:font-semibold [&_b]:text-[var(--w-ink)]";
+  "text-body mt-1 flex justify-between gap-3 text-[var(--w-ink-dim)] [&_b]:font-semibold [&_b]:text-[var(--w-ink)]";
 
 export const wheelTipSym =
-  "mt-1 text-sm font-normal text-[var(--w-ink-dim)]";
+  "text-body mt-1 font-normal text-[var(--w-ink-dim)]";
 
 export function wheelPanel(open: boolean) {
   return cn(
@@ -84,19 +84,19 @@ export const wheelPanelIco =
   "grid h-14 w-14 shrink-0 place-items-center text-[var(--w-ink)] [&_svg]:h-full [&_svg]:w-full [&_.ax]:stroke-[var(--w-accent)] [&_.ax-f]:fill-[var(--w-accent)] [&_.ax-f]:stroke-none [&_.fx]:fill-current [&_.fx]:stroke-none";
 
 export const wheelPanelGlyph =
-  "w-14 shrink-0 text-center text-5xl leading-none text-[var(--w-ink)]";
+  "text-display w-14 shrink-0 text-center text-[var(--w-ink)]";
 
 export const wheelPanelKind =
-  "text-sm font-semibold uppercase tracking-[0.14em] text-[var(--w-accent)]";
+  "text-body font-semibold uppercase tracking-[0.14em] text-[var(--w-accent)]";
 
 export const wheelPanelTitle =
-  "m-0 mt-0.5 text-2xl font-bold leading-tight text-[var(--w-ink)]";
+  "text-display m-0 mt-0.5 font-bold text-[var(--w-ink)]";
 
 export const wheelPanelSub =
-  "mt-1 font-num text-xs text-base text-[var(--w-ink-dim)]";
+  "text-body mt-1 font-num text-[var(--w-ink-dim)]";
 
 export const wheelPanelClose =
-  "ml-auto grid h-[30px] w-[30px] shrink-0 cursor-pointer place-items-center rounded-lg border border-[var(--w-surface-border)] bg-transparent text-base leading-none text-[var(--w-ink-dim)] hover:border-[var(--w-accent)] hover:text-[var(--w-ink)]";
+  "text-body ml-auto grid h-[30px] w-[30px] shrink-0 cursor-pointer place-items-center rounded-lg border border-[var(--w-surface-border)] bg-transparent text-[var(--w-ink-dim)] hover:border-[var(--w-accent)] hover:text-[var(--w-ink)]";
 
 export const wheelPanelBody = "overflow-y-auto px-[18px] py-3.5 pb-5";
 
@@ -106,10 +106,10 @@ export const wheelDlRow =
   "flex justify-between gap-3.5 border-b border-[var(--pn-ring-soft)] py-2.5 last:border-b-0";
 
 export const wheelDlK =
-  "text-xs text-base text-[var(--w-ink-dim)]";
+  "text-body text-[var(--w-ink-dim)]";
 
 export const wheelDlV =
-  "whitespace-nowrap text-right text-sm font-semibold text-[var(--w-ink)]";
+  "text-body whitespace-nowrap text-right font-semibold text-[var(--w-ink)]";
 
 export const wheelDlVMono = cn(wheelDlV, "font-num tabular-nums");
 
@@ -117,7 +117,7 @@ export const wheelPanelCons =
   "mt-3.5 flex items-center gap-3.5 rounded-lg bg-black/22 p-3.5";
 
 export const wheelPanelConsTxt =
-  "w-full font-num text-sm text-base leading-normal text-[var(--w-ink-dim)] [&_b]:mb-0.5 [&_b]:block [&_b]:text-xs [&_b]:font-semibold [&_b]:text-[var(--w-ink)]";
+  "text-body w-full font-num leading-normal text-[var(--w-ink-dim)] [&_b]:mb-0.5 [&_b]:block [&_b]: [&_b]:font-semibold [&_b]:text-[var(--w-ink)]";
 
 /* ── Wheel stage / SVG shell (`.pn-wheel` vars stay on parent) ── */
 
@@ -163,4 +163,4 @@ export const wheelYearScrubBtnActive =
 
 /** Current playback-speed badge (e.g. 8×) shown while autoplaying. */
 export const wheelYearScrubSpeed =
-  "shrink-0 font-num text-sm font-bold leading-none tabular-nums text-[var(--w-accent)] tracking-tight max-[480px]:text-sm";
+  "text-body shrink-0 font-num font-bold tabular-nums text-[var(--w-accent)] tracking-tight max-[480px]:";

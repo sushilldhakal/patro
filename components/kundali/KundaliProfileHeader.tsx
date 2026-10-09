@@ -24,14 +24,14 @@ function MetaItem({
       <View className="mb-0.5 flex-row items-center gap-1">
         <Ionicons name={icon} size={10} color={colors.mutedForeground} />
         <Text
-          className="text-[12px] font-semibold uppercase tracking-wider text-muted-foreground"
+          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
           style={nepaliTextStyle(10)}
         >
           {label}
         </Text>
       </View>
       <Text
-        className={mono ? "font-num text-xs font-semibold text-foreground" : "text-sm font-semibold text-foreground"}
+        className={mono ? "text-caption font-num font-semibold text-foreground" : "text-body font-semibold text-foreground"}
         style={nepaliTextStyle(mono ? 12 : 14)}
       >
         {value}
@@ -63,13 +63,13 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
           </View>
           <View className="min-w-0 flex-1">
             <Text
-              className="mb-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+              className="text-caption mb-0.5 font-semibold uppercase tracking-wider text-muted-foreground"
               style={nepaliTextStyle(12)}
             >
               {pick("जन्मकुण्डली", "Birth chart")}
             </Text>
             <View className="flex-row flex-wrap items-center gap-1.5">
-              <Text className="text-lg font-bold text-foreground sm:text-xl" style={nepaliTextStyle(18)}>
+              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
                 {profile.full_name}
               </Text>
               {profile.is_default ? (
@@ -77,7 +77,7 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
               ) : null}
             </View>
             {profile.gender ? (
-              <Text className="mt-0.5 text-sm capitalize text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className="text-body mt-0.5 capitalize text-muted-foreground" style={nepaliTextStyle(13)}>
                 {profile.gender}
               </Text>
             ) : null}

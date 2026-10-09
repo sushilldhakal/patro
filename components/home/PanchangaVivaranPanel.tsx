@@ -57,18 +57,18 @@ function VivaranCell({
       className={cn("min-w-0 rounded-lg p-2.5", wide && "col-span-2")}
       style={{ backgroundColor: insetBg }}
     >
-      <Text className="text-sm uppercase tracking-widest text-muted-foreground">{label}</Text>
+      <Text className="text-body uppercase tracking-widest text-muted-foreground">{label}</Text>
       <Text
         className={cn(
-          "mt-1 text-base font-semibold leading-snug text-foreground",
-          mono && "font-num text-sm",
+          "text-body mt-1 font-semibold text-foreground",
+          mono && "text-body font-num",
         )}
         style={mono ? nepaliTextStyle(14) : undefined}
       >
         {value ?? "—"}
       </Text>
       {hint ? (
-        <Text className="mt-0.5 text-sm leading-snug text-muted-foreground">{hint}</Text>
+        <Text className="text-body mt-0.5 text-muted-foreground">{hint}</Text>
       ) : null}
     </View>
   );
@@ -95,10 +95,10 @@ function GocharSolarCard({
         flexShrink: 0,
       }}
     >
-      <Text className="text-sm font-semibold leading-tight text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {title}
       </Text>
-      <Text className="font-num text-sm font-semibold leading-tight text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body font-num font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {value}
       </Text>
     </View>
@@ -136,7 +136,7 @@ function GocharPlanetCard({
     >
       <View className="min-w-0 flex-row flex-wrap items-center gap-x-1 gap-y-0.5">
         <Text
-          className="min-w-0 shrink text-sm font-semibold leading-tight text-foreground"
+          className="text-body min-w-0 shrink font-semibold text-foreground"
           style={nepaliTextStyle(14)}
         >
           {label}
@@ -154,7 +154,7 @@ function GocharPlanetCard({
           size={12}
         />
       </View>
-      <Text className="font-num text-sm font-semibold leading-tight text-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-body font-num font-semibold text-foreground" style={nepaliTextStyle(14)}>
         {degree}
       </Text>
     </View>
@@ -170,7 +170,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
   return (
     <View className="mt-2.5 border-t border-border/60 pt-2.5">
       {abhijit ? (
-        <Text className="text-sm leading-snug text-foreground">
+        <Text className="text-body text-foreground">
           <Text className="font-semibold">{t("abhijit.title")} </Text>
           <Text className="font-num font-semibold" style={nepaliTextStyle(14)}>
             {abhijit.rangeDisplay}
@@ -182,7 +182,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
           </Text>
         </Text>
       ) : (
-        <Text className="text-sm text-muted-foreground">
+        <Text className="text-body text-muted-foreground">
           {t("abhijit.unavailable")}
         </Text>
       )}
@@ -191,7 +191,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
           onPress={() => router.push({ pathname: "/panchanga", params: { date: selectedAd } })}
           className="mt-3 items-center rounded-lg border border-border py-2.5"
         >
-          <Text className="text-sm font-semibold text-foreground">
+          <Text className="text-body font-semibold text-foreground">
             {t("panchanga.detail_title")}
           </Text>
         </Pressable>
@@ -289,7 +289,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
 
       {planets.length > 0 ? (
         <View className="mt-2.5 border-t border-border/60 pt-2.5">
-          <Text className="mb-1.5 text-sm font-bold text-foreground">
+          <Text className="text-body mb-1.5 font-bold text-foreground">
             {pick("ग्रह गोचर", "Planet positions")}
           </Text>
           <View

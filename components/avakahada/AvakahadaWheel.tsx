@@ -273,7 +273,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       >
         <Text
           style={{ color: W_INK, ...nepaliTextStyle(12) }}
-          className="text-center text-xs font-bold"
+          className="text-caption text-center font-bold"
         >
           {row.index}. {row.nakshatraLabel}
         </Text>
@@ -284,20 +284,20 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
               className="flex-row justify-between gap-1 border-b py-0.5"
               style={{ borderBottomColor: W_SEP_SOFT }}
             >
-              <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-[12px]">
+              <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption">
                 {pick(RING_LABELS[attr.id].ne, RING_LABELS[attr.id].en)}
               </Text>
               <Text
                 numberOfLines={1}
                 style={{ color: W_INK, ...nepaliTextStyle(9) }}
-                className="shrink text-[12px] font-semibold"
+                className="text-caption shrink font-semibold"
               >
                 {attrValue(attr.id, row, lang)}
               </Text>
             </View>
           ))}
         </View>
-        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="mt-1 text-[12px]">
+        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption mt-1">
           {vairiLine}
         </Text>
       </ScrollView>
@@ -315,7 +315,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
     <View className="items-center px-1 py-1">
       <Text
         style={{ color: W_ACCENT, ...nepaliTextStyle(10) }}
-        className="text-center text-[12px] font-bold uppercase tracking-wide"
+        className="text-caption text-center font-bold uppercase tracking-wide"
       >
         {label}
       </Text>
@@ -326,7 +326,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
         >
           <Text
             style={{ color: GANA_PILL[row.gana].fg, ...nepaliTextStyle(13) }}
-            className="text-[13px] font-bold"
+            className="text-caption font-bold"
           >
             {value}
           </Text>
@@ -334,7 +334,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       ) : (
         <Text
           style={{ color: W_INK, ...nepaliTextStyle(15) }}
-          className="mt-0.5 text-center text-[15px] font-bold"
+          className="text-body mt-0.5 text-center font-bold"
         >
           {value}
         </Text>
@@ -342,7 +342,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       {ring === "pada" && padaIndex != null ? (
         <Text
           style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
-          className="mt-1 text-center text-[12px]"
+          className="text-caption mt-1 text-center"
         >
           {pick(
             `चरण ${padaIndex + 1} · ${localizeRashi(row.charanRashis[padaIndex]!, lang)}`,
@@ -352,13 +352,13 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       ) : null}
       <Text
         style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
-        className="mt-1 text-center text-[12px]"
+        className="text-caption mt-1 text-center"
         numberOfLines={2}
       >
         {row.index}. {row.nakshatraLabel}
       </Text>
       {ring === "yoni" ? (
-        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-[12px]">
+        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption">
           {vairiLine}
         </Text>
       ) : null}
@@ -567,10 +567,10 @@ export function AvakahadaWheel({ highlighted }: Props) {
   return (
     <View className="mt-2 overflow-hidden rounded-2xl border border-border bg-card">
       <View className="px-4 pt-4">
-        <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
           {pick("अवकहडा चक्र — चक्र दृश्य", "Avakahada Chakra — wheel view")}
         </Text>
-        <Text className="mt-0.5 text-sm text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(13)}>
           {pick(
             "बाहिरबाट भित्र: नक्षत्र → नामाक्षर (१०८ चरण) → राशि → स्वामी → वर्ण → वश्य → योनि → गण → नाडी",
             "Outside to inside: nakshatra → name syllable (108 charans) → rashi → lord → varna → vashya → yoni → gana → nadi",
@@ -595,14 +595,14 @@ export function AvakahadaWheel({ highlighted }: Props) {
               style={{ borderColor: W_SURFACE_BORDER }}
               className="rounded-md border px-2 py-1 active:opacity-70"
             >
-              <Text style={{ color: W_INK_DIM }} className="text-[12px] font-semibold">
+              <Text style={{ color: W_INK_DIM }} className="text-caption font-semibold">
                 1:1
               </Text>
             </Pressable>
           ) : null}
           <Text
             style={{ color: W_INK_DIM, fontFamily: NUM_FONT }}
-            className="min-w-[42px] text-center text-[12px] font-semibold"
+            className="text-caption min-w-[42px] text-center font-semibold"
           >
             {digits(Math.round(zoom * 100))}%
           </Text>
@@ -705,13 +705,13 @@ export function AvakahadaWheel({ highlighted }: Props) {
                 <View className="items-center px-1">
                   <Text
                     style={{ color: W_ACCENT, ...nepaliTextStyle(16) }}
-                    className="text-base font-bold"
+                    className="text-body font-bold"
                   >
                     {pick("अवकहडा", "Avakahada")}
                   </Text>
                   <Text
                     style={{ color: W_INK, ...nepaliTextStyle(10) }}
-                    className="mt-1 text-center text-[12px] font-semibold"
+                    className="text-caption mt-1 text-center font-semibold"
                   >
                     {pick(
                       "वलय छुनुहोस् — नक्षत्र, अक्षर, राशि, वर्ण, वश्य, योनि, गण, नाडी",
@@ -726,7 +726,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
       </View>
 
       <View className="flex-row flex-wrap items-center gap-x-3.5 gap-y-2 px-4 pb-4">
-        <Text className="text-xs font-semibold text-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
           {pick("गण रङ:", "Gana colors:")}
         </Text>
         {ganas.map((g) => (
@@ -735,22 +735,22 @@ export function AvakahadaWheel({ highlighted }: Props) {
               style={{ backgroundColor: GANA_FILL[g] }}
               className="h-3 w-3 rounded-[3px] border border-border"
             />
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {localizeGana(g, lang)}
             </Text>
           </View>
         ))}
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick(
             "· भित्री ७ वलय: राशि, स्वामी, वर्ण, वश्य, योनि, गण, नाडी",
             "· 7 inner rings: rashi, lord, varna, vashya, yoni, gana, nadi",
           )}
         </Text>
-        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick("· जुम गरेपछि तानेर सार्न सकिन्छ", "· Drag to pan when zoomed")}
         </Text>
         {hasFilter ? (
-          <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
             {pick(
               `· खोजमा ${digits(highlightSet.size)} नक्षत्र`,
               `· ${highlightSet.size} nakshatras in search`,

@@ -59,10 +59,10 @@ export default function ResetPasswordScreen() {
       <AppShell title={pick("पासवर्ड रिसेट", "Reset password")}>
         <View className="items-center gap-3 py-12">
           <Ionicons name="checkmark-circle" size={48} color={colors.accent} />
-          <Text className="text-xl font-bold text-foreground" style={nepaliTextStyle(20)}>
+          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
             {pick("पासवर्ड परिवर्तन भयो", "Password updated")}
           </Text>
-          <Text className="text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("अब नयाँ पासवर्डले लगइन गर्न सक्नुहुन्छ।", "You can now log in with the new password.")}
           </Text>
         </View>
@@ -77,7 +77,7 @@ export default function ResetPasswordScreen() {
     placeholder?: string,
   ) => (
     <View className="gap-1.5">
-      <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(13)}>
+      <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(13)}>
         {label}
       </Text>
       <PasswordInput
@@ -91,7 +91,7 @@ export default function ResetPasswordScreen() {
           backgroundColor: colors.background,
           color: colors.foreground,
         }}
-        className="rounded-lg border px-3 py-2.5 text-base"
+        className="text-body rounded-lg border px-3 py-2.5"
       />
     </View>
   );
@@ -109,7 +109,7 @@ export default function ResetPasswordScreen() {
         {field(pick("पासवर्ड दोहोर्‍याउनुहोस्", "Confirm password"), confirm, setConfirm)}
 
         {error ? (
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-sm">
+          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
             {error}
           </Text>
         ) : null}

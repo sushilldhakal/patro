@@ -54,7 +54,7 @@ export const KundaliProfilePicker = forwardRef<
     return (
       <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-6">
         <ActivityIndicator />
-        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("प्रोफाइल लोड हुँदै…", "Loading profiles…")}
         </Text>
       </View>
@@ -63,7 +63,7 @@ export const KundaliProfilePicker = forwardRef<
 
   if (isError) {
     return (
-      <Text className="rounded-xl border border-border bg-card px-4 py-4 text-sm text-destructive">
+      <Text className="text-body rounded-xl border border-border bg-card px-4 py-4 text-destructive">
         {pick("प्रोफाइल लोड गर्न सकिएन", "Could not load profiles")}
       </Text>
     );
@@ -75,10 +75,10 @@ export const KundaliProfilePicker = forwardRef<
     <>
       {list.length === 0 ? (
         <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10">
-          <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
             {pick("अहिले कुनै प्रोफाइल छैन", "No profiles yet")}
           </Text>
-          <Text className="mt-1 max-w-md text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-body mt-1 max-w-md text-center text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick(
               "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
               "Save birth details once, then generate kundali quickly.",
@@ -191,7 +191,7 @@ function ProfileCard({
             ) : null}
           </View>
           {genderLabel ? (
-            <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
               {genderLabel}
             </Text>
           ) : null}
@@ -236,10 +236,10 @@ function DetailRow({
   return (
     <View className="flex-row items-start gap-1.5">
       <Ionicons name={icon} size={14} color={colors.mutedForeground} style={{ marginTop: 2 }} />
-      <Text className="shrink-0 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-caption shrink-0 text-muted-foreground" style={nepaliTextStyle(12)}>
         {label}:
       </Text>
-      <Text className="min-w-0 flex-1 text-xs text-foreground" style={nepaliTextStyle(12)}>
+      <Text className="text-caption min-w-0 flex-1 text-foreground" style={nepaliTextStyle(12)}>
         {value}
       </Text>
     </View>
@@ -267,13 +267,13 @@ export function ProfileFormModal({
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
           <Pressable onPress={onClose} hitSlop={8}>
-            <Text className="text-base text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+            <Text className="text-body text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
           </Pressable>
           <View className="min-w-0 flex-1 px-3">
-            <Text className="text-center text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
+            <Text className="text-body text-center font-semibold text-foreground" style={nepaliTextStyle(16)}>
               {title}
             </Text>
-            <Text className="text-center text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-caption text-center text-muted-foreground" style={nepaliTextStyle(12)}>
               {subtitle}
             </Text>
           </View>
