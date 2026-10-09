@@ -84,7 +84,12 @@ export function PanchangaTabsShell({
    * link pushed from another tab (home → graha-asta, element tables, grahan…)
    * landed on the daily page. For this tab the tree below is identical for
    * every route; only styles, the optional rail sibling and `scrollEnabled`
-   * change, so the Stack (and the screen just pushed) survives. */
+   * change, so the Stack (and the screen just pushed) survives.
+   *
+   * On a plain route the ScrollView is only a fixed-size host: scrolling is off
+   * and its content container is `flex: 1` (a definite height), because the
+   * screen inside — the daily page — is itself a flex-1 ScrollView and would
+   * collapse to zero height, a blank page, in a content-sized container. */
   if (stableTree) {
     return (
       <PanchangaTabsShellContext.Provider value={shellRoute}>
@@ -133,7 +138,7 @@ export function PanchangaTabsShell({
                           paddingTop: 12,
                           paddingBottom: scrollBottom,
                         }
-                    : { flexGrow: 1 }
+                    : { flex: 1 }
                 }
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
