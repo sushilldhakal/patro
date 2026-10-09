@@ -36,6 +36,7 @@ export const PANCHANGA_SHELL_PATH_TEMPLATES = [
   "/panchanga/surya-grahan",
   "/panchanga/chandra-grahan",
   "/sait/$category",
+  "/vivah-sait",
 ] as const;
 
 function matchesTemplate(pathname: string, template: string): boolean {
