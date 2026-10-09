@@ -24,22 +24,22 @@ const LIGHT_TW_VARS = {
 } as const;
 
 const DARK_TW_VARS = {
-  "--tw-background": "8 38 40",
-  "--tw-foreground": "255 255 255",
-  "--tw-card": "11 61 64",
-  "--tw-muted": "10 53 56",
-  "--tw-muted-foreground": "198 195 190",
-  "--tw-primary": "230 126 34",
+  "--tw-background": "15 18 32",
+  "--tw-foreground": "243 239 232",
+  "--tw-card": "23 28 49",
+  "--tw-muted": "20 25 41",
+  "--tw-muted-foreground": "166 171 192",
+  "--tw-primary": "245 158 66",
   "--tw-primary-foreground": "26 20 16",
-  "--tw-secondary": "212 160 23",
+  "--tw-secondary": "232 195 106",
   "--tw-secondary-foreground": "26 20 16",
-  "--tw-destructive": "255 138 128",
-  "--tw-danger": "255 138 128",
-  "--tw-border": "26 85 88",
-  "--tw-accent": "212 160 23",
-  "--tw-surface-inset": "10 53 56",
-  "--tw-surface-muted": "9 48 50",
-  "--tw-tab-active": "230 126 34",
+  "--tw-destructive": "255 143 133",
+  "--tw-danger": "255 143 133",
+  "--tw-border": "39 46 74",
+  "--tw-accent": "232 195 106",
+  "--tw-surface-inset": "20 25 41",
+  "--tw-surface-muted": "18 22 38",
+  "--tw-tab-active": "245 158 66",
 } as const;
 
 export function nativeWindThemeVars(resolvedTheme: "light" | "dark") {
