@@ -450,8 +450,12 @@ export function AakashGocharSky({
       driving the view. */
   const requestCamera = useCallback(() => {
     void (async () => {
-      const granted =
-        cameraPermission?.granted || (await requestCameraPermission())?.granted;
+      let granted: boolean | undefined;
+      try {
+        granted = cameraPermission?.granted || (await requestCameraPermission())?.granted;
+      } catch {
+        granted = false;
+      }
       // Denied, or no back camera to ask for — the dial stays a gyro-only
       // compass rather than opening onto a black rectangle.
       if (granted) setArMode(true);

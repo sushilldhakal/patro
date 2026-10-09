@@ -151,12 +151,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [applyUser]);
 
   const deleteAccount = useCallback(async () => {
+    // Only sign out locally once the server confirmed the deletion. On failure
+    // the user stays signed in (tokens are untouched) and can retry.
+    await apiDeleteAccount();
     authEpoch.current += 1;
-    try {
-      await apiDeleteAccount();
-    } finally {
-      applyUser(null);
-    }
+    applyUser(null);
   }, [applyUser]);
 
   const value = useMemo<AuthContextValue>(

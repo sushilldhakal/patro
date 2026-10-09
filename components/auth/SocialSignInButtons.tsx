@@ -54,7 +54,9 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
 
   useEffect(() => {
     if (Platform.OS !== "ios") return;
-    void AppleAuthentication.isAvailableAsync().then(setAppleAvailable);
+    AppleAuthentication.isAvailableAsync()
+      .then(setAppleAvailable)
+      .catch(() => setAppleAvailable(false));
   }, []);
 
   useEffect(() => {

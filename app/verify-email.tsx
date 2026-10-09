@@ -28,9 +28,11 @@ export default function VerifyEmailScreen() {
   useEffect(() => {
     if (!token) return;
     apiVerifyEmail(token)
-      .then(async () => {
+      .then(() => {
         setStatus("ok");
-        await refreshUser();
+        // The email is verified at this point; a failed profile refresh must not
+        // turn that into an error screen.
+        void Promise.resolve(refreshUser()).catch(() => {});
       })
       .catch(() => {
         setStatus("error");
