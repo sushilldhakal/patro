@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import type { ScrollView, View } from "react-native";
+import { usePathname } from "expo-router";
 
 /**
  * The page's main vertical scroller, registered by `AppShell` and the panchanga
@@ -24,4 +26,28 @@ export function scrollViewIntoView(target: View | null, offset = 12) {
     (_x, y) => host.scrollTo({ y: Math.max(y - offset, 0), animated: true }),
     () => {},
   );
+}
+
+export function scrollPageToTop(animated = false) {
+  scroller?.scrollTo({ y: 0, animated });
+}
+
+/**
+ * Returns a ref-callback pair for a page ScrollView that jumps back to the top
+ * whenever the route changes. Tab screens stay mounted, so without this a page
+ * opened from a link kept whatever scroll offset it was left at.
+ */
+export function useScrollToTopOnRouteChange() {
+  const pathname = usePathname();
+  const node = useRef<ScrollView | null>(null);
+  const last = useRef(pathname);
+  useEffect(() => {
+    if (last.current === pathname) return;
+    last.current = pathname;
+    node.current?.scrollTo({ y: 0, animated: false });
+  }, [pathname]);
+  return (n: ScrollView | null) => {
+    node.current = n;
+    setPageScroller(n);
+  };
 }

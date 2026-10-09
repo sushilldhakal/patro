@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ScrollView, View, useWindowDimensions } from "react-native";
 import { floatingNavBottomPadding, PANCHANGA_SIDEBAR_MIN_WIDTH, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
+import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { useThemeColors } from "@/lib/theme-context";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
@@ -36,6 +37,7 @@ export function PanchangaSplitShell({
   const colors = useThemeColors();
   const { isTablet } = useBreakpoint();
   const showSidebar = useShowPanchangaSidebar();
+  const pageScrollRef = useScrollToTopOnRouteChange();
 
   const mainInner = (
     <View className={mainScroll ? "gap-4" : "min-h-0 flex-1"}>{children}</View>
@@ -50,6 +52,7 @@ export function PanchangaSplitShell({
     if (mainScroll) {
       return (
         <ScrollView
+          ref={pageScrollRef}
           className="flex-1 bg-background"
           contentContainerClassName="mx-auto w-full max-w-[1600px] pt-4"
           contentContainerStyle={mainPadding}
@@ -68,6 +71,7 @@ export function PanchangaSplitShell({
 
   const mainColumn = mainScroll ? (
     <ScrollView
+      ref={pageScrollRef}
       className="flex-1 bg-background"
       contentContainerClassName="mx-auto w-full max-w-[1600px] pt-4"
       contentContainerStyle={mainPadding}

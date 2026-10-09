@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
+import { scrollPageToTop } from "@/lib/page-scroll";
 import {
   DEFAULT_KUNDALI_SECTION,
   parseKundaliSectionFromHash,
@@ -26,6 +27,7 @@ export function useKundaliSection() {
 
   const setSection = useCallback((id: KundaliSectionId) => {
     setSectionState(id);
+    scrollPageToTop();
     if (Platform.OS === "web" && typeof window !== "undefined") {
       const url = `${window.location.pathname}${window.location.search}#${id}`;
       window.history.replaceState(null, "", url);

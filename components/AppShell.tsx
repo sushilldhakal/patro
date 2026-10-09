@@ -1,7 +1,7 @@
 import type { RefObject } from "react";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { setPageScroller } from "@/lib/page-scroll";
+import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
@@ -31,6 +31,7 @@ export function AppShell({
   panchangaSidebar?: boolean;
 }) {
   const { isTablet } = useBreakpoint();
+  const pageScrollRef = useScrollToTopOnRouteChange();
   const inShell = useInPanchangaTabsShell();
   const shellScrollHost = usePanchangaTabsShellScrollHost();
   const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
@@ -86,7 +87,7 @@ export function AppShell({
     <ScrollView
       ref={(node) => {
         if (scrollRef) scrollRef.current = node;
-        setPageScroller(node);
+        pageScrollRef(node);
       }}
       className="flex-1 bg-background"
       contentContainerClassName="mx-auto w-full max-w-[1400px]"
