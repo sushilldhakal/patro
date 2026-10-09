@@ -21,7 +21,7 @@ export default function TabsLayout() {
         </View>
       )}
       screenLayout={({ route, children }) => (
-        <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")}>{children}</PanchangaTabsShell>
+        <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>
       )}
       tabBar={() => <FloatingNavBar />}
       screenOptions={{

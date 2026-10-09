@@ -62,15 +62,30 @@ function isPanchangaShellRoute(pathname: string): boolean {
  * Wraps tab screens so the panchanga sidebar stays mounted across shell-route
  * navigations (web `PanchangaShellLayout` parity).
  */
+/** Tabs whose screens are a nested navigator — their leaf route is only known from the URL. */
+const NESTED_TAB_NAMES = new Set(["panchanga", "kundali", "learn", "documents"]);
+
 export function PanchangaTabsShell({
   children,
   stableTree = false,
+  routeName,
 }: {
   children: ReactNode;
+  /** The tab route this wrapper belongs to (`route.name`). */
+  routeName?: string;
   /** True for the panchanga tab itself: keep one element tree whatever the route (see below). */
   stableTree?: boolean;
 }) {
-  const pathname = normalizeMobilePathname(usePathname());
+  const livePathname = normalizeMobilePathname(usePathname());
+  /* A flat tab (gochar, holidays, …) is wrapped once per tab, so decide from the
+   * tab's own route rather than the global URL: otherwise a wrapper can read the
+   * previous page's path for a frame and render without the sidebar rail. */
+  const pathname =
+    routeName && !NESTED_TAB_NAMES.has(routeName) && !routeName.includes("[")
+      ? routeName === "index"
+        ? "/"
+        : `/${routeName}`
+      : livePathname;
   const colors = useThemeColors();
   const { isTablet } = useBreakpoint();
   const wideEnough = useShowPanchangaSidebar();
