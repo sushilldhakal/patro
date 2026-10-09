@@ -478,6 +478,14 @@ def main() -> None:
         for v in missing[:12]:
             print(" -", v["chapter"], v["sanskrit"][:80], "| iast:", bool(v["transliteration"]), "| en:", bool(v["meaning_en"]))
     doc = build_document(verses)
+    if OUT.exists():
+        previous = json.loads(OUT.read_text(encoding="utf-8"))
+        for key in ("category", "subcategory", "order_index"):
+            if previous.get(key) not in (None, ""):
+                doc[key] = previous[key]
+    from link_sri_rudram_audio import link_sri_rudram
+
+    doc = link_sri_rudram(doc)
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT}")
     print("chapters:", [(c["number"], len(c["shlokas"])) for c in doc["chapters"]])
