@@ -44,9 +44,10 @@ def provenance():
     return payload
 
 
-# Widest BS-year window a client may download for offline use. Owned here so the
-# apps ask the host instead of hardcoding it.
-OFFLINE_MAX_YEARS = 90
+# Widest BS-year span (last year minus first year, so 2000..2090 is 90) a client
+# may download for offline use. Owned here so the apps ask the host instead of
+# hardcoding it.
+OFFLINE_MAX_SPAN_YEARS = 90
 
 
 @router.get("/meta/capabilities")
@@ -63,7 +64,7 @@ def capabilities():
     return {
         **browse_limits(),
         "cache_payload_version": CACHE_PAYLOAD_VERSION,
-        "offline_max_years": OFFLINE_MAX_YEARS,
+        "offline_max_span_years": OFFLINE_MAX_SPAN_YEARS,
     }
 
 
