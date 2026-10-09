@@ -461,6 +461,11 @@ function NavataraBalamElementView({
 
 export default function ElementScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
+  return <ElementScreenView name={name} />;
+}
+
+/** Shared by `/panchanga/element/[name]` and the static `/panchanga/<table>` routes. */
+export function ElementScreenView({ name }: { name: string | undefined }) {
   const { pick, lang, digits, t } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();

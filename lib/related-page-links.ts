@@ -5,7 +5,7 @@
  * (this app's paths).
  */
 
-import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META, elementHref } from "@/lib/panchanga-elements";
 import { LEARN_LIBRARY_BY_SLUG, PUBLISHED_TOPICS } from "@/lib/learn/learn-library";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 
@@ -160,6 +160,8 @@ export function resolveSitePageId(pathname: string): string | null {
   if (!shouldShowRelatedLinks(path)) return null;
   if (path.startsWith("/learn/")) return `learn:${path.split("/")[2]}`;
   if (path.startsWith("/panchanga/element/")) return `element:${path.split("/").pop()}`;
+  const tableId = path.match(/^\/panchanga\/(choghadiya|hora|lagna|chandrabala|tarabala|panchaka-rahita|pushkara)$/)?.[1];
+  if (tableId) return `element:${tableId}`;
   if (path.startsWith("/sait/")) return `sait:${path.split("/").pop()}`;
   const entry = Object.entries(SITE_LINK_PATH).find(([, p]) => p === path);
   return entry ? entry[0] : null;
@@ -212,7 +214,7 @@ export function getRelatedLearnSlugs(pageId: string, limit = RELATED_LEARN_LIMIT
 }
 
 export function siteLinkHref(linkId: string): string {
-  if (linkId.startsWith("element:")) return `/panchanga/element/${linkId.slice(8)}`;
+  if (linkId.startsWith("element:")) return elementHref(linkId.slice(8));
   if (linkId.startsWith("sait:")) {
     const c = linkId.slice(5);
     return c === "vivah" ? "/vivah-sait" : `/sait/${c}`;

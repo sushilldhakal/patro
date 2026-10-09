@@ -130,3 +130,18 @@ export const CEREMONY_META: CeremonyMeta[] = [
   { id: "agni-jurne", titleNe: "अग्नि जुर्ने", titleEn: "Agni homa" },
   { id: "annaprasan", titleNe: "अन्नप्राशन", titleEn: "Annaprashan" },
 ];
+
+/** Daily tables with their own static route (`/panchanga/<id>`); the rest use `/panchanga/element/<id>`. */
+const STATIC_TABLE_IDS = new Set([
+  "choghadiya",
+  "hora",
+  "lagna",
+  "chandrabala",
+  "tarabala",
+  "panchaka-rahita",
+  "pushkara",
+]);
+
+export function elementHref(id: string): string {
+  return STATIC_TABLE_IDS.has(id) ? `/panchanga/${id}` : `/panchanga/element/${id}`;
+}

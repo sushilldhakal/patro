@@ -1,4 +1,4 @@
-import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_META, elementHref } from "@/lib/panchanga-elements";
 import { resolveDrawerIcon, type DrawerIconName } from "@/lib/drawer-icons";
 
 export type DrawerNavItem = {
@@ -42,7 +42,7 @@ function elementItems(kind: "span" | "table"): DrawerNavItem[] {
   const section = kind === "span" ? "spans" : "tables";
   return ELEMENT_META.filter((e) => e.kind === kind).map((e) => ({
     id: e.id,
-    href: `/panchanga/element/${e.id}`,
+    href: elementHref(e.id),
     labelNe: e.titleNe,
     labelEn: e.titleEn,
     icon: resolveDrawerIcon(section, e.id),

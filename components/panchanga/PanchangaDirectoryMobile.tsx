@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { QuickLinkSection, type QuickLink } from "@/components/home/QuickLinkTile";
-import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_META, elementHref } from "@/lib/panchanga-elements";
 import { useLocale } from "@/lib/i18n";
 
 const GRAHA_PAGES: { href: string; key: string; icon: QuickLink["icon"] }[] = [
@@ -16,7 +16,7 @@ export function PanchangaDirectoryMobile() {
   const { t, pick } = useLocale();
 
   const spans: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "span").map((e) => ({
-    href: `/panchanga/element/${e.id}`,
+    href: elementHref(e.id),
     label: t(`panchanga_elements.${e.id}.title`),
     description: t(`panchanga_elements.${e.id}.blurb`),
     icon: "moon-star",
@@ -28,7 +28,7 @@ export function PanchangaDirectoryMobile() {
     icon: g.icon,
   }));
   const tables: QuickLink[] = ELEMENT_META.filter((e) => e.kind === "table").map((e) => ({
-    href: `/panchanga/element/${e.id}`,
+    href: elementHref(e.id),
     label: t(`panchanga_elements.${e.id}.title`),
     description: t(`panchanga_elements.${e.id}.blurb`),
     icon: "calendar-clock",

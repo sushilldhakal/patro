@@ -1,4 +1,4 @@
-import { ELEMENT_META, CEREMONY_META } from "@/lib/panchanga-elements";
+import { ELEMENT_META, CEREMONY_META, elementHref } from "@/lib/panchanga-elements";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 
 export type PanchangaSidebarItem = {
@@ -20,7 +20,7 @@ export type PanchangaSidebarSection = {
 function elementItems(kind: "span" | "table"): PanchangaSidebarItem[] {
   return ELEMENT_META.filter((e) => e.kind === kind).map((e) => ({
     id: e.id,
-    href: `/panchanga/element/${e.id}`,
+    href: elementHref(e.id),
     labelNe: e.titleNe,
     labelEn: e.titleEn,
     blurbNe: e.blurbNe,

@@ -23,7 +23,7 @@ import {
   SITEMAP_SAIT_CATEGORIES,
   type SitemapRoute,
 } from "@/lib/sitemap-routes";
-import { CEREMONY_META, ELEMENT_BY_ID } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID, elementHref } from "@/lib/panchanga-elements";
 import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
 import {
   learnTopicDrawerIcon,
@@ -107,7 +107,7 @@ export default function MoreScreen() {
   const elementRoutes = SITEMAP_ELEMENT_IDS.map((id) => {
     const meta = ELEMENT_BY_ID[id];
     return {
-      path: `/panchanga/element/${id}`,
+      path: elementHref(id),
       label: meta ? pick(meta.titleNe, meta.titleEn) : id,
       icon: resolveElementDrawerIcon(id),
     };

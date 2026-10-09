@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { elementHref } from "@/lib/panchanga-elements";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
@@ -358,7 +359,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
       {subTab === "pushkara" ? <PushkaraList p={p} /> : null}
 
       <Pressable
-        onPress={() => router.push(`/panchanga/element/${ELEMENT_ID[subTab]}` as never)}
+        onPress={() => router.push(elementHref(ELEMENT_ID[subTab]) as never)}
         accessibilityRole="link"
         className="items-center rounded-lg border border-border py-2.5 active:opacity-80"
       >
