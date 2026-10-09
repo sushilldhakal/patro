@@ -78,30 +78,25 @@ export function PanchangaTabsShell({
   const showRail = shellRoute && wideEnough;
   const scrollBottom = floatingNavBottomPadding(isTablet);
 
-  /* The panchanga tab hosts a nested Stack. Switching this wrapper between
-   * View (plain route) and ScrollView (shell route) is an element-type change,
-   * so React remounted the whole Stack and it fell back to `/panchanga` — every
-   * link pushed from another tab (home → graha-asta, element tables, grahan…)
-   * landed on the daily page. For this tab the tree below is identical for
-   * every route; only styles, the optional rail sibling and `scrollEnabled`
-   * change, so the Stack (and the screen just pushed) survives.
-   *
-   * On a plain route the ScrollView is only a fixed-size host: scrolling is off
-   * and its content container is `flex: 1` (a definite height), because the
-   * screen inside — the daily page — is itself a flex-1 ScrollView and would
-   * collapse to zero height, a blank page, in a content-sized container. */
+  /* The panchanga tab hosts a nested Stack, so this wrapper must not change
+   * element type between routes: a View↔ScrollView swap remounted the whole
+   * Stack and dropped it back on `/panchanga`, and flipping a ScrollView's
+   * content sizing under a freshly pushed screen left it blank on iPad.
+   * For this tab the host is therefore always plain Views, and never a scroll
+   * host — every screen in it scrolls itself (`AppShell`, or the daily page's
+   * own ScrollView). Only the padding and the optional sidebar rail change. */
   if (stableTree) {
     return (
-      <PanchangaTabsShellContext.Provider value={shellRoute}>
-        <PanchangaTabsShellScrollContext.Provider value={shellRoute}>
+      <PanchangaTabsShellContext.Provider value={showRail}>
+        <PanchangaTabsShellScrollContext.Provider value={false}>
           <View
             className="min-h-0 flex-1"
             style={
-              shellRoute
+              showRail
                 ? {
                     backgroundColor: colors.background,
-                    paddingHorizontal: showRail ? PAGE_HORIZONTAL_PADDING : 0,
-                    paddingTop: showRail ? 16 : 0,
+                    paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+                    paddingTop: 16,
                   }
                 : undefined
             }
@@ -124,27 +119,9 @@ export function PanchangaTabsShell({
                   </ScrollView>
                 </View>
               ) : null}
-              <ScrollView
-                key="main"
-                ref={shellRoute ? setPageScroller : undefined}
-                className="min-h-0 min-w-0 flex-1"
-                scrollEnabled={shellRoute}
-                contentContainerStyle={
-                  shellRoute
-                    ? showRail
-                      ? { paddingBottom: scrollBottom }
-                      : {
-                          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-                          paddingTop: 12,
-                          paddingBottom: scrollBottom,
-                        }
-                    : { flex: 1 }
-                }
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-              >
+              <View key="main" className="min-h-0 min-w-0 flex-1">
                 {children}
-              </ScrollView>
+              </View>
             </View>
           </View>
         </PanchangaTabsShellScrollContext.Provider>
