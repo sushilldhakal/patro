@@ -30,6 +30,7 @@ import {
   NAK_OUTER,
 } from "@/components/learn/EclipticWheel";
 import type { GrahaKey } from "@/lib/graha-details";
+import { liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 import {
   DEG,
   eclipticToVec3,
@@ -3871,14 +3872,9 @@ export function AakashGocharScene({
      * itself, so a graha sitting right on the skyline is not called "below"
      * merely because its label hangs under it.
      */
-    const project = (
-      label: Omit<ScreenLabel, "x" | "y">,
-      at: [number, number, number],
-      anchor: [number, number, number] = at,
-    ) => {
-      if (behindEarth(at)) return;
-      let x: number;
-      let y: number;
+    /** Canvas-pixel position of a world point, or null if it is off screen / behind. */
+    const screenPos = (at: [number, number, number]): { x: number; y: number } | null => {
+      if (behindEarth(at)) return null;
       if (horizon) {
         scratch.current.set(at[0], at[1], at[2]);
         const hit = projectHorizon(
@@ -3889,17 +3885,24 @@ export function AakashGocharScene({
           height,
           scratch.current,
         );
-        if (!hit) return;
-        x = hit.x;
-        y = hit.y;
-      } else {
-        scratch.current.set(at[0], at[1], at[2]).project(state.camera);
-        if (scratch.current.z > 1) return;
-        x = (scratch.current.x * 0.5 + 0.5) * width;
-        y = (-scratch.current.y * 0.5 + 0.5) * height;
-        if (x < -60 || y < -30 || x > width + 60 || y > height + 30) return;
+        return hit ? { x: hit.x, y: hit.y } : null;
       }
-      collected.push({ ...label, x, y, ...(belowSky(anchor) ? { below: true } : {}) });
+      scratch.current.set(at[0], at[1], at[2]).project(state.camera);
+      if (scratch.current.z > 1) return null;
+      const x = (scratch.current.x * 0.5 + 0.5) * width;
+      const y = (-scratch.current.y * 0.5 + 0.5) * height;
+      if (x < -60 || y < -30 || x > width + 60 || y > height + 30) return null;
+      return { x, y };
+    };
+
+    const project = (
+      label: Omit<ScreenLabel, "x" | "y">,
+      at: [number, number, number],
+      anchor: [number, number, number] = at,
+    ) => {
+      const pos = screenPos(at);
+      if (!pos) return;
+      collected.push({ ...label, x: pos.x, y: pos.y, ...(belowSky(anchor) ? { below: true } : {}) });
     };
 
     /* ── bodies ─────────────────────────────────────────────────────── */
@@ -3989,17 +3992,23 @@ export function AakashGocharScene({
 
       // A DOM label has no depth test, so the ground cannot hide it the way it
       // hides the body — {@link labelVisible} has to do it by hand.
-      if (collect && labelVisible(at)) {
+      /* Every frame, straight into shared values: the name has to ride on its
+         disc, which the 12Hz React label list cannot do while the sky moves. */
+      const live = liveGrahaLabels[key];
+      let liveShown = false;
+      if (toggles.labels && labelVisible(at)) {
         /* Hung below the disc rather than pinned to the centre. A fixed pixel
            nudge cannot do this once a body can be anything from a speck to
            half the screen: the offset has to be the body's own radius. */
         const up = screenUp.current;
-        project(
-          { id: `g-${key}`, kind: "graha", key },
-          [at[0] - up.x * drawnR, at[1] - up.y * drawnR, at[2] - up.z * drawnR],
-          at,
-        );
+        const pos = screenPos([at[0] - up.x * drawnR, at[1] - up.y * drawnR, at[2] - up.z * drawnR]);
+        if (pos) {
+          live.x.value = pos.x;
+          live.y.value = pos.y;
+          liveShown = true;
+        }
       }
+      live.on.value = liveShown ? 1 : 0;
 
       /* ── the selected graha, marked against the belt ─────────────────
          Two readings the belt cannot give on its own: where along it the

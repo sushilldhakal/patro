@@ -48,6 +48,8 @@ import { formatRashiByNumber, getRashiList } from "@/lib/rashi-i18n";
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 import { GRAHA_COLOR, normalizeDeg } from "@/lib/sky3d/geocentric-model";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { LIVE_GRAHA_KEYS, liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 /* The one zoom→field-of-view mapping, shared with the scene. This file used to
    keep a hand-copy of it, which is exactly the kind of thing that drifts: the
    degrees the HUD prints have to be the degrees the camera is actually at. */
@@ -2150,6 +2152,7 @@ export function AakashGocharSky({
 
         {/* Labels ride over the canvas rather than in it — real Devanagari type,
             positioned from the scene's own projection of each anchor. */}
+        {toggles.labels ? <LiveGrahaNames /> : null}
         {toggles.labels && sample ? (
           <SkyLabels
             labels={sample.labels}
@@ -2504,6 +2507,39 @@ function formatPoleYear(
   return bs < 0 ? `${abs} बि.सं. पूर्व` : `${abs} बि.सं.`;
 }
 
+/** One graha's name, riding its disc: position comes from shared values, not React state. */
+function LiveGrahaName({ grahaKey }: { grahaKey: GrahaKey }) {
+  const { lang } = useLocale();
+  const live = liveGrahaLabels[grahaKey];
+  const style = useAnimatedStyle(() => ({
+    opacity: live.on.value,
+    transform: [{ translateX: live.x.value - 45 }, { translateY: live.y.value + 10 }],
+  }));
+  return (
+    <Animated.Text
+      numberOfLines={1}
+      className="text-caption font-bold"
+      style={[
+        { position: "absolute", left: 0, top: 0, width: 90, textAlign: "center", color: GRAHA_COLOR[grahaKey] },
+        nepaliTextStyle(10, { dense: true }),
+        style,
+      ]}
+    >
+      {lang === "en" ? GRAHA_NAME[grahaKey].en : GRAHA_NAME[grahaKey].ne}
+    </Animated.Text>
+  );
+}
+
+function LiveGrahaNames() {
+  return (
+    <View style={{ position: "absolute", inset: 0 }} pointerEvents="none">
+      {LIVE_GRAHA_KEYS.map((key) => (
+        <LiveGrahaName key={key} grahaKey={key} />
+      ))}
+    </View>
+  );
+}
+
 const SkyLabels = memo(function SkyLabels({
   labels,
   scale = 1,
@@ -2840,21 +2876,6 @@ const SkyLabels = memo(function SkyLabels({
               numberOfLines={1}
             >
               {lang === "en" ? label.text : (label.textNe ?? label.text)}
-            </Text>
-          );
-        }
-        if (label.kind === "graha" && label.key) {
-          return (
-            <Text
-              key={label.id}
-              style={[
-                { position: "absolute", left: label.x - 45, top: label.y + 10, width: 90, textAlign: "center", color: GRAHA_COLOR[label.key] },
-                nepaliTextStyle(10, { dense: true }),
-              ]}
-              className="text-caption font-bold"
-              numberOfLines={1}
-            >
-              {lang === "en" ? GRAHA_NAME[label.key].en : GRAHA_NAME[label.key].ne}
             </Text>
           );
         }
