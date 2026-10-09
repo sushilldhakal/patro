@@ -28,9 +28,11 @@ redeploying invalidates exactly the cached entries that changed.
 
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Any
+from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 
 import config
 from services import documents_db, response_cache
@@ -154,3 +156,76 @@ def document_chapter_detail(slug: str, chapter_number: int, request: Request):
 
     cache_key = f"documents_chapter_v{documents_db.content_version()}_{slug}_{chapter_number}"
     return response_cache.serve_cached_json(request, cache_key, build, cache_control=_CACHE_CONTROL)
+
+
+_VEDA_NAMES = {
+    "rigveda": ("ऋग्वेद", "Rigveda"),
+    "yajurveda": ("यजुर्वेद", "Yajurveda"),
+    "samaveda": ("सामवेद", "Samaveda"),
+    "atharvaveda": ("अथर्ववेद", "Atharvaveda"),
+}
+
+
+def _veda_source_parts(slug: str, shloka: dict[str, Any]) -> list[dict[str, Any]]:
+    """The citation trail — "मण्डल 3 » सूक्त 27 » मन्त्र 1" — as structured parts.
+
+    The mantra number is the verse's place *within its sukta* (the last part of
+    its ``verse_label``, ``27.1`` → 1), not its running number in the chapter.
+    Only the Rigveda and Atharvaveda are cited by sukta.
+    """
+    parts: list[dict[str, Any]] = [
+        {
+            "label_ne": shloka.get("chapter_title_ne"),
+            "label_en": shloka.get("chapter_title_en"),
+            "value": None,
+        }
+    ]
+    label = str(shloka.get("verse_label") or "")
+    if slug in ("rigveda", "atharvaveda") and shloka.get("sukta_number") is not None:
+        parts.append({"label_ne": "सूक्त", "label_en": "Sukta", "value": shloka["sukta_number"]})
+    mantra = label.rsplit(".", 1)[-1] if label else str(shloka["verse_number"])
+    parts.append({"label_ne": "मन्त्र", "label_en": "Mantra", "value": mantra})
+    return parts
+
+
+@router.get("/veda/daily")
+def veda_daily(
+    request: Request,
+    day: date | None = Query(None, alias="date", description="YYYY-MM-DD (default: today in Nepal)"),
+):
+    """Today's Veda mantra — Sanskrit, meaning where there is one, and its audio.
+
+    Same mantra for everyone on a given date (see
+    :func:`documents_db.daily_veda_shloka`), drawn only from verses that have a
+    recording. ``read_slug`` / ``read_chapter`` / ``read_verse`` locate it in the
+    reader so the app can link to the passage it came from.
+    """
+    when = day or datetime.now(ZoneInfo("Asia/Kathmandu")).date()
+
+    def build():
+        shloka = documents_db.daily_veda_shloka(when)
+        if shloka is None:
+            raise HTTPException(status_code=404, detail="No mantra available")
+        slug = shloka.pop("document_slug")
+        chapter_number = shloka.pop("chapter_number")
+        source_parts = _veda_source_parts(slug, shloka)
+        shloka.pop("chapter_title_ne", None)
+        shloka.pop("chapter_title_en", None)
+        summary = documents_db.document_summary_lite(slug) or {}
+        ne, en = _VEDA_NAMES[slug]
+        return {
+            "date": when.isoformat(),
+            "veda": {"slug": slug, "name_ne": ne, "name_en": en},
+            "source_ne": summary.get("source_ne"),
+            "source_en": summary.get("source_en"),
+            "source_parts": source_parts,
+            "read_slug": slug,
+            "read_chapter": chapter_number,
+            "read_verse": shloka["verse_label"],
+            "shloka": _resolve_shloka(dict(shloka)),
+        }
+
+    cache_key = f"veda_daily_f2_v{documents_db.content_version()}_{when.isoformat()}"
+    return response_cache.serve_cached_json(
+        request, cache_key, build, cache_control="public, max-age=3600, s-maxage=3600"
+    )

@@ -155,6 +155,65 @@ class Profile(Base):
 
 Index("ix_email_tokens_user_kind", EmailToken.user_id, EmailToken.kind)
 
+class Device(Base):
+    """A phone that can receive notifications (Expo push token) for a user.
+
+    Registered now so server push can be added later without a client release;
+    today the app delivers reminders and the daily briefing as *local*
+    notifications and only uses this to know which devices a user has.
+    """
+
+    __tablename__ = "devices"
+    __table_args__ = (UniqueConstraint("push_token", name="uq_devices_push_token"),)
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    push_token: Mapped[str] = mapped_column(String(255), nullable=False)
+    platform: Mapped[str] = mapped_column(String(16), nullable=False)  # "ios" | "android"
+    timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    locale: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
+    )
+
+
+class Reminder(Base):
+    """A reminder *rule* for a शुभ/अशुभ window ("10 min before Rahu Kaal").
+
+    A rule, not a date: window times differ every day, so each device
+    materialises the rule against that day's real times. The server copy is
+    what lets a reinstall or a second phone restore the user's reminders.
+    """
+
+    __tablename__ = "reminders"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    profile_id: Mapped[str | None] = mapped_column(
+        ForeignKey("profiles.id", ondelete="CASCADE"), nullable=True
+    )
+    window_kind: Mapped[str] = mapped_column(String(8), nullable=False)  # "shubh" | "ashubh"
+    window_key: Mapped[str] = mapped_column(String(48), nullable=False)
+    lead_minutes: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    # Comma-separated 0-6 (Sunday=0); empty means every day.
+    weekdays: Mapped[str] = mapped_column(String(20), default="", nullable=False)
+    label: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=_now, nullable=False
+    )
+
+
 
 class SaitCache(Base):
     """Persisted computed auspicious-date (साइत) / muhūrta listings.

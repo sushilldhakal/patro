@@ -1,0 +1,271 @@
+{
+  "version": "1",
+  "weekday": {
+    "Sunday": {
+      "do_ne": [
+        "सूर्यलाई जल अर्पण गर्नुहोस् र सूर्योदयमा उठ्नुहोस्।"
+      ],
+      "do_en": [
+        "Offer water to the Sun and rise at sunrise."
+      ],
+      "dont_ne": [
+        "अहंकार र हतारमा निर्णय नगर्नुहोस्; अधिकारीसँग विवाद टार्नुहोस्।"
+      ],
+      "dont_en": [
+        "Don't decide in haste or pride; avoid disputes with authority."
+      ]
+    },
+    "Monday": {
+      "do_ne": [
+        "शिवको पूजा, दूध वा जल अर्पण गर्नुहोस्; मन शान्त राख्नुहोस्।"
+      ],
+      "do_en": [
+        "Worship Shiva, offer milk or water; keep the mind calm."
+      ],
+      "dont_ne": [
+        "भावनामा बगेर ठूला आर्थिक निर्णय नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Avoid big money decisions made on emotion."
+      ]
+    },
+    "Tuesday": {
+      "do_ne": [
+        "हनुमान/कार्तिकेयको स्मरण गर्नुहोस्; साहस चाहिने काम सुरु गर्नुहोस्।"
+      ],
+      "do_en": [
+        "Remember Hanuman/Kartikeya; start tasks that need courage."
+      ],
+      "dont_ne": [
+        "रिसमा बोल्न वा विवादमा पर्न बच्नुहोस्; ऋण लेनदेन नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Avoid anger and disputes; avoid taking or giving loans."
+      ]
+    },
+    "Wednesday": {
+      "do_ne": [
+        "गणेश/विष्णुको स्मरण; पढाइ, लेखाइ र व्यापारिक कुराकानीका लागि राम्रो।"
+      ],
+      "do_en": [
+        "Remember Ganesha/Vishnu; good for study, writing and business talks."
+      ],
+      "dont_ne": [
+        "हतारमा सम्झौतामा हस्ताक्षर नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Don't sign agreements in a hurry."
+      ]
+    },
+    "Thursday": {
+      "do_ne": [
+        "गुरु/विष्णुको पूजा; ज्ञान, शिक्षा र दानका लागि शुभ।"
+      ],
+      "do_en": [
+        "Worship the guru/Vishnu; favourable for learning and charity."
+      ],
+      "dont_ne": [
+        "गुरु वा ठूलाबडाको अनादर नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Don't disrespect teachers or elders."
+      ]
+    },
+    "Friday": {
+      "do_ne": [
+        "लक्ष्मीको पूजा; सफाइ, सजावट र कला/सम्बन्धका काम राम्रा।"
+      ],
+      "do_en": [
+        "Worship Lakshmi; good for cleaning, decor, arts and relationships."
+      ],
+      "dont_ne": [
+        "फजुल खर्च र विलासमा नबगौँ।"
+      ],
+      "dont_en": [
+        "Avoid wasteful spending and excess."
+      ]
+    },
+    "Saturday": {
+      "do_ne": [
+        "शनि/हनुमानको स्मरण; अनुशासन, सेवा र दानका लागि राम्रो।"
+      ],
+      "do_en": [
+        "Remember Shani/Hanuman; good for discipline, service and charity."
+      ],
+      "dont_ne": [
+        "नयाँ ठूलो काम वा यात्रा हतारमा सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Don't begin big new ventures or travel in haste."
+      ]
+    }
+  },
+  "tithi": {
+    "ekadashi": {
+      "do_ne": [
+        "एकादशी व्रत — सात्त्विक आहार, विष्णु स्मरण।"
+      ],
+      "do_en": [
+        "Ekadashi — fast or eat sattvic, remember Vishnu."
+      ],
+      "dont_ne": [
+        "अन्न (चामल) सेवन र तामसिक भोजन नगर्नुहोस् (व्रत गरे)।"
+      ],
+      "dont_en": [
+        "If fasting, avoid grains and tamasic food."
+      ]
+    },
+    "purnima": {
+      "do_ne": [
+        "पूर्णिमा — दान, सत्यनारायण पूजा र चन्द्र दर्शन।"
+      ],
+      "do_en": [
+        "Purnima — charity, Satyanarayan puja, moon-gazing."
+      ],
+      "careful_ne": [
+        "मन चञ्चल हुन सक्छ; भावुक निर्णयमा सावधानी।"
+      ],
+      "careful_en": [
+        "The mind can be restless; be careful with emotional decisions."
+      ]
+    },
+    "aausi": {
+      "do_ne": [
+        "औंसी — पितृ तर्पण/स्मरण र दान।"
+      ],
+      "do_en": [
+        "Amavasya — ancestor remembrance (tarpan) and charity."
+      ],
+      "dont_ne": [
+        "नयाँ शुभ काम वा ठूलो लगानी सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Avoid starting new auspicious work or big investments."
+      ]
+    },
+    "chaturthi": {
+      "do_ne": [
+        "गणेश पूजा गर्नुहोस्।"
+      ],
+      "do_en": [
+        "Worship Ganesha."
+      ],
+      "dont_ne": [
+        "रिक्ता तिथि — शुभ कार्य आरम्भ नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Rikta tithi — don't begin auspicious work."
+      ]
+    },
+    "navami": {
+      "dont_ne": [
+        "रिक्ता तिथि — शुभ कार्य आरम्भ नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Rikta tithi — don't begin auspicious work."
+      ]
+    },
+    "chaturdashi": {
+      "dont_ne": [
+        "रिक्ता तिथि — शुभ कार्य आरम्भ नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Rikta tithi — don't begin auspicious work."
+      ]
+    },
+    "trayodashi": {
+      "do_ne": [
+        "प्रदोषमा शिव पूजा गर्नुहोस्।"
+      ],
+      "do_en": [
+        "Worship Shiva at pradosh (dusk)."
+      ]
+    }
+  },
+  "karana": {
+    "vishti": {
+      "dont_ne": [
+        "विष्टि (भद्रा) करणमा शुभ कार्य आरम्भ नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Avoid starting auspicious work during Vishti (Bhadra) karana."
+      ]
+    }
+  },
+  "windows": {
+    "abhijit": {
+      "do_ne": [
+        "अभिजित् मुहूर्तमा नयाँ काम सुरु गर्न शुभ।"
+      ],
+      "do_en": [
+        "Abhijit muhurta is good for starting new work."
+      ]
+    },
+    "rahu_kalam": {
+      "dont_ne": [
+        "राहु कालमा नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।"
+      ],
+      "dont_en": [
+        "Don't start new work, travel or purchases during Rahu Kaal."
+      ]
+    },
+    "yamaganda": {
+      "careful_ne": [
+        "यमगण्डमा शुभ कार्य आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+        "Avoid beginning auspicious work during Yamaganda."
+      ]
+    },
+    "gulika": {
+      "careful_ne": [
+        "गुलिक कालमा दोहोरिने काम ठीक, नयाँ आरम्भ नगर्नुहोस्।"
+      ],
+      "careful_en": [
+        "Gulika Kaal suits repeating tasks, not new beginnings."
+      ]
+    }
+  },
+  "personal": {
+    "best": {
+      "do_ne": [
+        "आजको ग्रहस्थिति तपाईंको कुण्डलीसँग अति अनुकूल छ — महत्त्वपूर्ण काम अघि बढाउनुहोस्।"
+      ],
+      "do_en": [
+        "Today's sky strongly favours your chart — move important matters forward."
+      ]
+    },
+    "good": {
+      "do_ne": [
+        "आजको ग्रहस्थिति तपाईंका लागि अनुकूल छ।"
+      ],
+      "do_en": [
+        "Today's sky is favourable for you."
+      ]
+    },
+    "neutral": {
+      "do_ne": [
+        "सामान्य दिन — नियमित काममा ध्यान दिनुहोस्।"
+      ],
+      "do_en": [
+        "An ordinary day — keep to your routine."
+      ]
+    },
+    "bad": {
+      "careful_ne": [
+        "आज ग्रहस्थिति त्यति अनुकूल छैन — ठूला निर्णय र जोखिम टार्नुहोस्।"
+      ],
+      "careful_en": [
+        "Today's sky is less favourable — postpone big decisions and risks."
+      ]
+    },
+    "worst": {
+      "careful_ne": [
+        "आज ग्रहस्थिति प्रतिकूल छ — सावधानी अपनाउनुहोस्, विवाद र यात्रा टार्नुहोस्।"
+      ],
+      "careful_en": [
+        "Today's sky is adverse — take care, avoid disputes and travel."
+      ]
+    }
+  }
+}

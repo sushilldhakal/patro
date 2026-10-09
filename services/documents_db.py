@@ -13,6 +13,8 @@ document and redeploying is enough — no manual "bump the version" step.
 
 from __future__ import annotations
 
+from datetime import date
+
 import hashlib
 import json
 import sqlite3
@@ -624,3 +626,60 @@ def get_chapter_shlokas(slug: str, chapter_number: int) -> dict[str, Any] | None
         "title_en": first["chapter_title_en"],
         "shlokas": [_shloka_row_to_dict(r) for r in shloka_rows],
     }
+
+
+VEDA_SLUGS = ("rigveda", "yajurveda", "samaveda", "atharvaveda")
+
+#: Mantras a card can show comfortably — and, being picked only among verses
+#: with a recording, every one of them has audio.
+_DAILY_MIN_CHARS = 20
+_DAILY_MAX_CHARS = 260
+
+
+def daily_veda_shloka(day: "date") -> dict[str, Any] | None:
+    """The mantra of the day: one verse that has audio, the same for everyone.
+
+    The Veda rotates by day (so all four come round evenly); the chapter is
+    drawn in proportion to how many eligible verses it holds, and the verse
+    uniformly within it — from a generator seeded on the date, so a given date
+    always gives the same mantra on every server and every device.
+    """
+    import random
+
+    ensure_seeded()
+    rng = random.Random(f"veda-daily:{day.isoformat()}")
+    slug = VEDA_SLUGS[day.toordinal() % len(VEDA_SLUGS)]
+    eligible = (
+        "document_slug = ? AND audio_key IS NOT NULL AND audio_key != '' "
+        "AND length(sanskrit) BETWEEN ? AND ?"
+    )
+    args = (slug, _DAILY_MIN_CHARS, _DAILY_MAX_CHARS)
+    with _connect() as conn:
+        chapters = conn.execute(
+            f"SELECT chapter_number, COUNT(*) AS n FROM shlokas WHERE {eligible} "
+            "GROUP BY chapter_number ORDER BY chapter_number",
+            args,
+        ).fetchall()
+        total = sum(r["n"] for r in chapters)
+        if total == 0:
+            return None
+        pick = rng.randrange(total)
+        chapter_number = chapters[-1]["chapter_number"]
+        for row in chapters:
+            if pick < row["n"]:
+                chapter_number = row["chapter_number"]
+                break
+            pick -= row["n"]
+        row = conn.execute(
+            f"SELECT * FROM shlokas WHERE {eligible} AND chapter_number = ? "
+            "ORDER BY global_order ASC LIMIT 1 OFFSET ?",
+            (*args, chapter_number, pick),
+        ).fetchone()
+    if row is None:
+        return None
+    shloka = _shloka_row_to_dict(row)
+    shloka["document_slug"] = slug
+    shloka["chapter_number"] = row["chapter_number"]
+    shloka["chapter_title_ne"] = row["chapter_title_ne"]
+    shloka["chapter_title_en"] = row["chapter_title_en"]
+    return shloka

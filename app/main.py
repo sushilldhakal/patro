@@ -209,9 +209,11 @@ app.include_router(documents.router, prefix=_version_prefix)
 
 if config.auth_database_enabled():
     from app.routers import auth as auth_router
+    from app.routers import guidance as guidance_router
     from app.routers import profiles as profiles_router
     app.include_router(auth_router.router)
     app.include_router(profiles_router.router)
+    app.include_router(guidance_router.router)
 elif config.local_dev_mode():
     logger.info("PATRO_LOCAL_DEV — auth/profile routes not mounted")
 else:
