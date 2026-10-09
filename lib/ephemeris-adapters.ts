@@ -35,8 +35,14 @@ export function isEphemerisPanchanga(p: PanchangaDay | undefined): boolean {
 
 export function buildAtTimeDatetime(adDate: string, clock: string): string {
   const [hh, mm] = clock.split(":");
-  const h = String(hh ?? "12").padStart(2, "0");
-  const m = String(mm ?? "00").padStart(2, "0");
+  // A rounded-up source clock can read "16:60"; the API rejects that with a 400,
+  // so carry the minutes into the hour and keep the result within the day.
+  const total = Math.min(
+    23 * 60 + 59,
+    Math.max(0, (Number(hh) || 0) * 60 + (Number(mm) || 0)),
+  );
+  const h = String(Math.floor(total / 60)).padStart(2, "0");
+  const m = String(total % 60).padStart(2, "0");
   return `${adDate}T${h}:${m}:00`;
 }
 
