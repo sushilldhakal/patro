@@ -73,21 +73,20 @@ export function GrahaDetailsList({
   if (rows.length === 0) return null;
 
   const columns: Column[] = [
-    { key: "graha", ne: "ग्रह", en: "Graha", width: 96 },
-    { key: "rashi_lon", ne: "राशि / स्पष्ट", en: "Rashi / Long.", width: 148 },
-    { key: "bhava", ne: "भाव", en: "Bhava", width: 48 },
-    { key: "nak", ne: "नक्षत्र (पद)", en: "Nak (pada)", width: 120 },
-    { key: "lord_sub", ne: "नक्षत्रेश / उप", en: "Lord / Sub", width: 132 },
-    { key: "owner", ne: "स्वामी", en: "Owner", width: 108 },
-    { key: "rel", ne: "सम्बन्ध", en: "Relation", width: 80 },
-    { key: "dignity", ne: "स्थिति", en: "Dignity", width: 80 },
-    { key: "rules", ne: "स्वामित्व", en: "Rules", width: 72 },
+    { key: "graha", ne: "ग्रह", en: "Graha", width: 116 },
+    { key: "rashi_lon", ne: "राशि / स्पष्ट", en: "Rashi / Long.", width: 196 },
+    { key: "bhava", ne: "भाव", en: "Bhava", width: 64 },
+    { key: "nak", ne: "नक्षत्र (पद)", en: "Nak (pada)", width: 168 },
+    { key: "lord_sub", ne: "नक्षत्रेश / उप", en: "Lord / Sub", width: 164 },
+    { key: "owner", ne: "स्वामी", en: "Owner", width: 132 },
+    { key: "rel", ne: "सम्बन्ध", en: "Relation", width: 96 },
+    { key: "dignity", ne: "स्थिति", en: "Dignity", width: 96 },
+    { key: "rules", ne: "स्वामित्व", en: "Rules", width: 88 },
   ];
 
   return (
     <DataTable
       compact
-      stretch
       columns={columns}
       rows={rows.map((row) => {
         const dmsLine = (
@@ -95,15 +94,14 @@ export function GrahaDetailsList({
             <Text
               className="text-caption font-num font-semibold text-foreground"
               style={nepaliTextStyle(11)}
-              numberOfLines={1}
             >
               {digits(String(row.dms.deg).padStart(2, "0"))}°
             </Text>
             <RashiGlyphIcon number={row.dms.rashiNum} size={14} />
-            <Text className="text-caption text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+            <Text className="text-caption text-foreground" style={nepaliTextStyle(11)}>
               {formatRashiByNumber(row.dms.rashiNum, lang)}
             </Text>
-            <Text className="text-caption font-num text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+            <Text className="text-caption font-num text-foreground" style={nepaliTextStyle(11)}>
               {digits(String(row.dms.min).padStart(2, "0"))}′{digits(String(row.dms.sec).padStart(2, "0"))}″
             </Text>
           </View>
@@ -128,7 +126,6 @@ export function GrahaDetailsList({
               <Text
                 className="text-caption font-semibold text-foreground"
                 style={nepaliTextStyle(11)}
-                numberOfLines={1}
               >
                 {grahaLabel(row.key, lang)}
               </Text>
@@ -149,7 +146,6 @@ export function GrahaDetailsList({
               key="b"
               className="text-caption text-center font-num font-semibold text-foreground"
               style={nepaliTextStyle(11)}
-              numberOfLines={1}
             >
               {digits(row.bhava)}
             </Text>,

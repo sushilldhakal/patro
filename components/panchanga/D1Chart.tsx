@@ -273,6 +273,13 @@ export function D1Chart({ houses }: Props) {
     [chartSize, planetSlots, reference, byHouse],
   );
 
+  /* On a wide column (iPad) the viewBox is scaled up, and the text with it —
+     the rashi labels and graha glyphs ballooned. Past phone width, hold the
+     rendered size of the text instead of letting it grow with the chart. */
+  const wide = chartSize > 380;
+  const houseLabelSize = wide ? (13 * 300) / chartSize : 15;
+  const glyphCap = wide ? (15 * 300) / chartSize : Infinity;
+
   /* Square, and the full width of the column. `height={280}` against a
      viewBox 300 units square letterboxed the चक्र: `meet` scales by the
      smaller ratio, so on a ~340 px phone column the whole chart — glyphs
@@ -325,7 +332,7 @@ export function D1Chart({ houses }: Props) {
                   x={cx}
                   y={cy - (hasPlanets ? 12 : 0)}
                   fill={house.isLagna ? colors.secondary : colors.mutedForeground}
-                  fontSize={15}
+                  fontSize={houseLabelSize}
                   fontWeight="600"
                   textAnchor="middle"
                   onPress={svgOnPress(() => setOpenHouse(houseNum))}
@@ -361,7 +368,7 @@ export function D1Chart({ houses }: Props) {
                       x={x}
                       y={y}
                       fill={isSelected ? colors.secondary : colors.foreground}
-                      fontSize={layout.fontSize}
+                      fontSize={Math.min(layout.fontSize, glyphCap)}
                       fontWeight={isSelected ? "700" : "400"}
                       textAnchor="middle"
                       onPress={svgOnPress(onPlanetPress)}

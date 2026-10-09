@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -102,8 +102,18 @@ export function TableHeaderLabel({
   );
 }
 
+/** A column that never shrinks below `width`, and shares any spare room in proportion to it. */
+function growColumn(width: number) {
+  return { flexGrow: width, flexShrink: 0, flexBasis: width };
+}
+
 function headerCellStyle(
-  layout: { width: number } | { flex: number; minWidth: number } | { minWidth: number } | undefined,
+  layout:
+    | { width: number }
+    | { flex: number; minWidth: number }
+    | { minWidth: number }
+    | { flexGrow: number; flexShrink: number; flexBasis: number }
+    | undefined,
   compact?: boolean,
 ) {
   const pad = tableHeaderCellPadding(compact);
@@ -124,43 +134,42 @@ export function DataTable({
   columns,
   rows,
   compact = false,
-  stretch,
 }: {
   columns: TableColumn[];
   rows: { key: string; cells: React.ReactNode[]; highlight?: boolean }[];
   compact?: boolean;
-  /** When false, fixed column widths + horizontal scroll (no squashing). */
+  /** @deprecated Columns never squash any more: they keep their width and the table scrolls sideways. */
   stretch?: boolean;
 }) {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const { isDark } = useTheme();
-  const { fill } = useTableLayout(stretch);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const cellPx = compact ? 6 : 10;
   const cellPy = compact ? 5 : 8;
   const bodySize = compact ? 12 : 13;
-  const headerMaxLines = fill ? (compact ? 2 : 2) : 1;
-  const bodyMaxLines = fill ? (compact ? 3 : 2) : 1;
-  const tableMinWidth = fill
-    ? undefined
-    : columns.reduce((sum, c) => sum + c.width, 0) + cellPx * 2;
+  /* Every column keeps at least its declared width, so no cell is squeezed into
+     an ellipsis. A table wider than its container scrolls sideways; a narrower
+     one is stretched to fill it, spare room shared in proportion to width. */
+  const neededWidth = columns.reduce((sum, c) => sum + c.width, 0);
+  const tableWidth = Math.max(neededWidth, viewportWidth);
 
   const tableInner = (
-    <View className={fill ? "w-full" : undefined} style={tableMinWidth != null ? { minWidth: tableMinWidth } : undefined}>
+    <View style={{ width: tableWidth }}>
       <View
-        className="w-full flex-row border-b border-border"
+        className="flex-row border-b border-border"
         style={{ backgroundColor: tableHeaderBackground(colors, isDark) }}
       >
         {columns.map((c) => (
           <View
             key={c.key}
             style={[
-              ...headerCellStyle(columnFlexStyle(fill, c.width), compact),
+              ...headerCellStyle(growColumn(c.width), compact),
               { alignItems: "flex-start" as const },
             ]}
           >
             {c.header ?? (
-              <TableHeaderLabel compact={compact} numberOfLines={headerMaxLines} uppercase={!compact}>
+              <TableHeaderLabel compact={compact} numberOfLines={2} uppercase={!compact}>
                 {pick(c.ne, c.en)}
               </TableHeaderLabel>
             )}
@@ -173,18 +182,14 @@ export function DataTable({
             <View
               key={ci}
               style={{
-                ...columnFlexStyle(fill, columns[ci]?.width ?? 90),
+                ...growColumn(columns[ci]?.width ?? 90),
                 paddingHorizontal: cellPx,
                 paddingVertical: cellPy,
                 justifyContent: "center",
               }}
             >
               {typeof cell === "string" || typeof cell === "number" ? (
-                <Text
-                  className="text-foreground"
-                  style={nepaliTextStyle(bodySize)}
-                  numberOfLines={bodyMaxLines}
-                >
+                <Text className="text-foreground" style={nepaliTextStyle(bodySize)}>
                   {cell}
                 </Text>
               ) : (
@@ -198,9 +203,14 @@ export function DataTable({
   );
 
   return (
-    <TableScrollShell stretch={stretch} scroll={!fill}>
-      {tableInner}
-    </TableScrollShell>
+    <View
+      className="w-full overflow-hidden rounded-xl border border-border bg-card"
+      onLayout={(e) => setViewportWidth(e.nativeEvent.layout.width)}
+    >
+      <ScrollView horizontal showsHorizontalScrollIndicator nestedScrollEnabled>
+        {tableInner}
+      </ScrollView>
+    </View>
   );
 }
 
