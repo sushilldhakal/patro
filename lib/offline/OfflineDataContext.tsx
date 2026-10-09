@@ -1,5 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";
+import { tokenStore } from "@/lib/auth/client";
+import { notifStore } from "@/lib/notifications/store";
+import { syncNotifications } from "@/lib/notifications/sync";
 import { useNetworkStatus } from "@/lib/offline/network-status";
 import { clearOfflineHttp, offlineHttpSummary } from "@/lib/offline/offline-http";
 import { clearDownloadedYears, listDownloadedYears } from "@/lib/offline/offline-store";
@@ -179,6 +182,11 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
           onProgress: setProgress,
           shouldContinue: () => runningRef.current,
         });
+        /* A finished pack is the moment to top up the account's daily-guidance
+           cache too, so reminders and the briefing keep working offline. */
+        if (tokenStore.access || tokenStore.refresh) {
+          void notifStore.getLang().then((lang) => syncNotifications({ lang, force: true }));
+        }
         return result;
       } finally {
         runningRef.current = false;

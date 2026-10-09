@@ -119,7 +119,7 @@ async function backfillCoords(loc: PanchangaLocation): Promise<PanchangaLocation
  * lookup here left the Panchanga screen on a spinner whenever the connection was
  * slow or down.
  */
-async function readStoredLocation(): Promise<PanchangaLocation> {
+export async function readStoredLocation(): Promise<PanchangaLocation> {
   try {
     const raw = await SecureStore.getItemAsync(STORAGE_KEY);
     if (!raw) return DEFAULT_PANCHANGA_LOCATION;

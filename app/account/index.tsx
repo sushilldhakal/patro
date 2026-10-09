@@ -16,6 +16,7 @@ import {
   updateProfile,
   type Profile,
 } from "@/lib/auth/client";
+import { afterProfileDeleted } from "@/lib/notifications/triggers";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
@@ -24,7 +25,7 @@ import { useThemeColors } from "@/lib/theme-context";
 const ACCOUNT_PROFILES_KEY = ["account-profiles"] as const;
 
 export default function AccountScreen() {
-  const { pick } = useLocale();
+  const { pick, lang } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -57,6 +58,7 @@ export default function AccountScreen() {
           style: "destructive",
           onPress: async () => {
             await deleteProfile(p.id);
+            void afterProfileDeleted(lang === "en" ? "en" : "ne");
             reloadProfiles();
           },
         },

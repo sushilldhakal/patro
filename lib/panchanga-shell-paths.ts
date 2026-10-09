@@ -15,6 +15,7 @@ export const PANCHANGA_SHELL_PATH_TEMPLATES = [
   "/converter",
   "/holidays",
   "/ritu",
+  "/reminders",
   "/kundali",
   "/kundali/$profileId",
   "/jyotish/kundali-milan",

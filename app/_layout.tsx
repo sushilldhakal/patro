@@ -27,6 +27,8 @@ import { ThemeProvider, useTheme } from "@/lib/theme-context";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { BiometricLockProvider } from "@/lib/auth/BiometricLock";
 import { OfflineDataProvider } from "@/lib/offline/OfflineDataContext";
+import { NotificationsRuntime } from "@/components/notifications/NotificationsRuntime";
+import "@/lib/notifications/background";
 import { OnboardingScreen } from "@/components/onboarding/OnboardingScreen";
 import { isOnboardingComplete } from "@/lib/onboarding-storage";
 import { loadCalendarEraPreference } from "@/lib/patro-era-preference";
@@ -183,6 +185,7 @@ function RootShell({
           }}
         />
       )}
+      {ready && onboarded ? <NotificationsRuntime /> : null}
       {ready ? <ThemedStatusBar /> : null}
       {!ready ? (
         <View

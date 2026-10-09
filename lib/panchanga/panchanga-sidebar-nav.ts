@@ -51,6 +51,7 @@ export const PANCHANGA_SIDEBAR_SECTIONS: PanchangaSidebarSection[] = [
       { id: "dainikkranti", href: "/dainikkranti", labelNe: "दैनिक क्रान्ति", labelEn: "Daily transits" },
       { id: "panchak-patro", href: "/panchak-patro", labelNe: "पञ्चक पात्रो", labelEn: "Panchak calendar" },
       { id: "ritu", href: "/ritu", labelNe: "ऋतु", labelEn: "Seasons" },
+      { id: "reminders", href: "/reminders", labelNe: "रिमाइन्डर", labelEn: "Reminders" },
     ],
   },
   {

@@ -35,14 +35,10 @@
         "NSFaceIDUsageDescription": "Vedic Patro uses Face ID so you can open the app and your saved account without typing a password. Your face data never leaves the device.",
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": [
-              "vedicpatro"
-            ]
+            "CFBundleURLSchemes": ["vedicpatro"]
           },
           {
-            "CFBundleURLSchemes": [
-              "fb1044570391345268"
-            ]
+            "CFBundleURLSchemes": ["fb1044570391345268"]
           }
         ],
         "LSApplicationQueriesSchemes": [
@@ -142,7 +138,10 @@
         "android.permission.INTERNET",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.RECEIVE_BOOT_COMPLETED"
       ],
       "blockedPermissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
@@ -272,7 +271,14 @@
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
         }
-      ]
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#073f43"
+        }
+      ],
+      "expo-background-task"
     ],
     "experiments": {
       "typedRoutes": true,

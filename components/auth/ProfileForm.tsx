@@ -5,6 +5,7 @@ import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { Button } from "@/components/ui/Button";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
 import { formatDateInput, formatTimeInput } from "@/lib/birth-date";
+import { afterProfileSaved } from "@/lib/notifications/triggers";
 import {
   createProfile,
   updateProfile,
@@ -148,7 +149,7 @@ export function ProfileForm({
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
 }) {
-  const { pick } = useLocale();
+  const { pick, lang } = useLocale();
   const colors = useThemeColors();
   const [form, setForm] = useState<ProfileInput>(initial);
   const [birthLocation, setBirthLocation] = useState<PanchangaLocation>(() => inputToLocation(initial));
@@ -188,6 +189,7 @@ export function ProfileForm({
       const saved = existing
         ? await updateProfile(existing.id, payload)
         : await createProfile(payload);
+      void afterProfileSaved(lang === "en" ? "en" : "ne", !existing);
       onSaved(saved);
     } catch {
       setError(pick("प्रोफाइल सेभ गर्न सकिएन", "Could not save profile"));

@@ -22,6 +22,7 @@ const patroItems: DrawerNavItem[] = [
   { id: "suryakranti", href: "/suryakranti", labelNe: "सूर्यक्रान्ति", labelEn: "Sun times", icon: resolveDrawerIcon("patro", "suryakranti") },
   { id: "panchak-patro", href: "/panchak-patro", labelNe: "पञ्चक पात्रो", labelEn: "Panchak", icon: resolveDrawerIcon("patro", "panchak-patro") },
   { id: "ritu", href: "/ritu", labelNe: "ऋतु", labelEn: "Seasons", icon: resolveDrawerIcon("patro", "ritu") },
+  { id: "reminders", href: "/reminders", labelNe: "रिमाइन्डर", labelEn: "Reminders", icon: "calendar-clock" },
 ];
 
 const jyotishItems: DrawerNavItem[] = [
