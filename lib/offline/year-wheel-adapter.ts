@@ -29,6 +29,10 @@ function yearWheelDayToCalendarDay(day: YearWheelCalendarDay): CalendarDay {
   const sunset = typeof p?.sunset === "string" ? p.sunset : p?.sunset?.local_time_short;
 
   return {
+    // The wheel keeps the slimmed per-day state (planets, angas, lagna); month
+    // screens that read `panchanga.*` (gochar, dainik kranti) need it too.
+    // Same server object the month endpoint embeds; the two typings just name it differently.
+    panchanga: p as unknown as CalendarDay["panchanga"],
     day: day.day,
     date_ad: day.date_ad,
     weekday: WEEKDAYS_NE[weekdayIdx]!,
@@ -77,5 +81,7 @@ export function yearWheelToMonthCalendar(yearWheel: YearWheelCalendar, month: nu
     month_bs: month,
     calendar: days,
     month_length: monthMeta.month_length,
+    first_weekday: monthMeta.first_weekday,
+    limits: monthMeta.limits,
   };
 }

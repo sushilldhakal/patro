@@ -1,5 +1,6 @@
 // Documents (स्तोत्र / शास्त्र) — Sanskrit scripture text, meanings and
 // per-verse audio. Mirrors dhakal-patro/src/lib/documents-api.ts.
+import { offlineAwareGet } from "@/lib/offline/offline-http";
 import { DATA_BASE } from "@/lib/api";
 import type { DocumentCategoryId } from "@/lib/documents/categories";
 
@@ -82,9 +83,11 @@ export class DocumentsApiError extends Error {
 }
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${DATA_BASE}${path}`);
-  if (!res.ok) throw new DocumentsApiError(res.status, path);
-  return res.json() as Promise<T>;
+  return offlineAwareGet<T>(
+    path,
+    () => fetch(`${DATA_BASE}${path}`),
+    (res) => new DocumentsApiError(res.status, path),
+  );
 }
 
 // Keep in step with DOCUMENTS_LIST_CACHE_VERSION in the web client.

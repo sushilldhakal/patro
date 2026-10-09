@@ -10,7 +10,7 @@ import { GocharSkySection } from "@/components/gochar/GocharSkySection";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { Text } from "@/components/ui/Text";
-import { apiKeys, fetchGochar, fetchGocharIngress, fetchMonthCalendar, gocharKeys } from "@/lib/api";
+import { apiKeys, fetchGochar, fetchGocharIngress, gocharKeys } from "@/lib/api";
 import { adToBS, bsToAD, BS_MONTH_NAMES, BS_MONTHS_NE, getBSMonthLength, shiftBsMonth } from "@/lib/bs-calendar";
 import { formatGocharPatroDate } from "@/lib/gochar-page-utils";
 import type { GrahaKey } from "@/lib/graha-details";
@@ -22,6 +22,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -53,7 +54,7 @@ export default function GocharScreen() {
 
   const monthQ = useQuery({
     queryKey: apiKeys.month(bs.year, bs.month, location.params, "bs"),
-    queryFn: () => fetchMonthCalendar(bs.year, bs.month, location.params, { era: "bs" }),
+    queryFn: () => fetchMonthCalendarOffline(bs.year, bs.month, location.params, { era: "bs" }),
     staleTime: 1000 * 60 * 30,
     placeholderData: keepPreviousData,
   });

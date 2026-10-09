@@ -25,6 +25,12 @@ async function openDb(): Promise<SQLite.SQLiteDatabase> {
       downloaded_at INTEGER NOT NULL,
       PRIMARY KEY (year, location_key)
     );
+    CREATE TABLE IF NOT EXISTS offline_http (
+      key TEXT PRIMARY KEY,
+      payload TEXT NOT NULL,
+      bytes INTEGER NOT NULL,
+      downloaded_at INTEGER NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS offline_meta (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL

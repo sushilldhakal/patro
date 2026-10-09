@@ -28,7 +28,6 @@ import {
   apiKeys,
   fetchGochar,
   fetchGocharIngress,
-  fetchMonthCalendar,
   fetchSpecialMonths,
   gocharKeys,
   specialMonthsKeys,
@@ -63,6 +62,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@/lib/utils";
+import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 type Phase = "krishna" | "shukla";
 
@@ -410,7 +410,7 @@ export default function DainikKrantiScreen() {
 
   const monthQ = useQuery({
     queryKey: apiKeys.month(year, month, location.params),
-    queryFn: () => fetchMonthCalendar(year, month, location.params),
+    queryFn: () => fetchMonthCalendarOffline(year, month, location.params),
     staleTime: 1000 * 60 * 30,
   });
 

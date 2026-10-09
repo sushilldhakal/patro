@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import { offlineAwareGet } from "@/lib/offline/offline-http";
 import Constants from "expo-constants";
 import type { PlannedSpace, SpaceAssignment } from "@/lib/vastu-plan";
 import type { VastuDirectionId } from "@/lib/vastu";
@@ -39,6 +40,8 @@ export interface PatroApiLimits {
   bbs_url_year_max: number;
   festival_stack_min_year: number;
   cache_payload_version?: number;
+  /** Widest BS-year window a client may download for offline use. */
+  offline_max_span_years?: number;
 }
 
 export const patroCapabilitiesKey = ["meta", "capabilities"] as const;
@@ -491,10 +494,14 @@ function withSaitCache(path: string): string {
   return `${path}${sep}sv=${SAIT_CACHE_VERSION}`;
 }
 
+// Every public read goes through here, so a response saved by the offline
+// download (lib/offline) answers the same request when there is no network.
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${DATA_BASE}${path}`);
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
-  return res.json();
+  return offlineAwareGet<T>(
+    path,
+    () => fetch(`${DATA_BASE}${path}`),
+    (res) => new Error(`API ${res.status}: ${path}`),
+  );
 }
 
 export interface CalendarDayAnga {
@@ -1069,6 +1076,8 @@ export interface YearWheelMonth {
   month_name_ne?: string;
   month_start_ad?: string;
   month_length: number;
+  first_weekday?: number;
+  limits?: PatroApiLimits;
 }
 
 /** One day of the year-wheel payload — the trimmed wheel state, nothing else. */
@@ -1098,10 +1107,11 @@ export const yearWheelKeys = {
     ["panchanga", "year-wheel", PANCHANGA_CACHE_VERSION, year, locationKey(loc)] as const,
 };
 
+export const yearWheelRequestPath = (year: number, location?: LocationParams) =>
+  appendLocation(withCache(`/panchanga/year/${year}?wheel=true&era=bs`), location);
+
 export const fetchYearWheelCalendar = (year: number, location?: LocationParams) =>
-  get<YearWheelCalendar>(
-    appendLocation(withCache(`/panchanga/year/${year}?wheel=true&era=bs`), location),
-  );
+  get<YearWheelCalendar>(yearWheelRequestPath(year, location));
 
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
   get<PanchangaDay>(

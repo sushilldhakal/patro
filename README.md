@@ -14,6 +14,34 @@ React Native (Expo) app for **Vedic Patro** — calendar, panchanga, holidays, a
 - **Fonts**: Mukta (UI) + Fira Code (dates), matching the web app
 - Learn articles are **native React Native screens** (bilingual prose, in-app links). **Do not** embed vedicpatro.com or other site pages in a WebView for in-app content.
 
+## Offline mode
+
+Chosen at onboarding or any time from **Account → Offline Data**. The user picks
+a BS year range (at most a 90-year span, e.g. 2000–2090; the cap comes from the
+server's `GET /meta/capabilities` → `offline_max_span_years`), ticks what to include, and
+**sees the size before anything downloads** — `estimatePackSize` downloads one real
+sample year and scales it up, so the number is what this server actually sends.
+Only after the user agrees does `runPackDownload` fetch the rest.
+
+How it works (`lib/offline/`):
+
+- Every public read goes through `get()` → `offlineAwareGet`. Online it behaves as
+  before; with no connection (or a 5xx) the saved response for the *same request*
+  is returned, so every screen whose data was downloaded works with no per-screen code.
+- A download calls the app's own `fetch*` functions inside a capture
+  (`beginCapture`), so what is saved is exactly what screens ask for. Cache-busting
+  params (`cv`, `sv`, `gv`, `v`) are ignored in the key (`offline-key.ts`).
+- Groups: calendar & festivals & sait (required), planets/eclipses/timings, daily
+  detail (large, opt-in), scripture texts (no audio). Sign-in data (kundali,
+  personal rashifal, profiles) is never downloaded.
+- Interrupted downloads resume (finished work is skipped), pausing when offline or
+  off Wi-Fi if "Wi-Fi only" is on.
+- On-device fallbacks for things that cannot be pre-downloaded: the AD↔BS converter
+  (`offline/convert-fallback.ts`, uses the bundled month table) and the Vastu planner
+  (`vastu-offline.ts`, kept identical to the server's `POST /vastu/sketch`).
+- Not covered offline: arbitrary-instant lookups (`/panchanga/at-time`), city search,
+  Vastu/learn media, and anything outside the downloaded years/location.
+
 ## Breakpoints
 
 | Name | Width | Layout |

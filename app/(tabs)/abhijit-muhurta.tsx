@@ -9,7 +9,7 @@ import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNa
 import { SunriseSunsetIcon } from "@/components/panchanga/SunriseSunsetIcon";
 import { Text } from "@/components/ui/Text";
 import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
-import { apiKeys, fetchMonthCalendar, type CalendarDay } from "@/lib/api";
+import { apiKeys, type CalendarDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
@@ -22,6 +22,7 @@ import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 type AbhijitRow = {
   day: CalendarDay;
@@ -149,7 +150,7 @@ export default function AbhijitMuhurtaScreen() {
   const monthQ = useQuery({
     queryKey: apiKeys.month(year, month, location.params),
     queryFn: () =>
-      fetchMonthCalendar(year, month, location.params, { era: "bs" }),
+      fetchMonthCalendarOffline(year, month, location.params, { era: "bs" }),
     staleTime: 1000 * 60 * 60,
   });
 

@@ -9,7 +9,11 @@ export const PATRO_BBS_BROWSE_YEAR_MAX = 13201;
 export const PATRO_AD_BROWSE_YEAR_MAX = 17191;
 export const PATRO_BC_BROWSE_YEAR_MAX = 13201;
 
+/** Bootstrap until `GET /meta/capabilities` brings `offline_max_span_years`. */
+export const OFFLINE_MAX_SPAN_BOOTSTRAP = 90;
+
 let live = {
+  offlineMaxSpan: OFFLINE_MAX_SPAN_BOOTSTRAP,
   bsMax: PATRO_BS_BROWSE_YEAR_MAX,
   bbsMax: PATRO_BBS_BROWSE_YEAR_MAX,
   adMax: PATRO_AD_BROWSE_YEAR_MAX,
@@ -22,13 +26,20 @@ export function applyPatroApiLimits(c: {
   bbs_url_year_max?: number;
   ad_year_max?: number;
   bc_year_max?: number;
+  offline_max_span_years?: number;
 }): void {
   live = {
+    offlineMaxSpan: c.offline_max_span_years ?? live.offlineMaxSpan,
     bsMax: c.ephemeris_signed_max ?? live.bsMax,
     bbsMax: c.bbs_url_year_max ?? live.bbsMax,
     adMax: c.ad_year_max ?? live.adMax,
     bcMax: c.bc_year_max ?? live.bcMax,
   };
+}
+
+/** Widest BS-year window the host allows for an offline download. */
+export function maxOfflineSpanYears(): number {
+  return live.offlineMaxSpan;
 }
 
 const NATIVE_SELECT_YEAR_RADIUS = 100;

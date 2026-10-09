@@ -1,3 +1,5 @@
+import { deviceStore } from "@/lib/device-store";
+import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -155,7 +157,7 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
 export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
   const { setPreference, colors } = useTheme();
   const { setLang } = useLocale();
-  const { isOnline, startInstallDownload } = useOfflineData();
+  const { isOnline } = useOfflineData();
 
   const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
   const [tour, setTour] = useState(false);
@@ -177,7 +179,9 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       setCachedCalendarEraPreference(era);
       await Promise.all([setStoredCalendarEraPreference(era), setStoredDataMode(dataMode)]);
       await setOnboardingComplete();
-      if (dataMode === "offline") void startInstallDownload();
+      // Which years to keep (and how big that is) is asked on the Offline Data
+      // screen, which opens right after onboarding.
+      if (dataMode === "offline") await deviceStore.set(OFFLINE_SETUP_PENDING_KEY, true);
       setTour(true);
     } finally {
       setSubmitting(false);
@@ -275,13 +279,13 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       {dataMode === "offline" ? (
         <Text className="mt-3 text-xs text-muted-foreground">
           {isOnline
-            ? "करिब ८० वर्षको पात्रो अफलाइन प्रयोगको लागि डाउनलोड हुनेछ (करिब १००–१५० MB)। · About 80 years of calendar data will download for offline use (roughly 100–150MB)."
-            : "इन्टरनेट जोडिएपछि डाउनलोड सुरु हुनेछ। · Download will start once you're connected to the internet."}
+            ? "अर्को स्क्रिनमा कुन वर्षदेखि कुन वर्षसम्म चाहिने छान्नुहोस् (बढीमा ९० वर्षको अन्तर)। डाउनलोड सुरु गर्नु अघि कति डाटा लाग्छ देखाइनेछ। · Next, choose which years you need (at most a 90-year span). You'll see how much data it takes before anything downloads."
+            : "इन्टरनेट जोडिएपछि वर्ष छान्न सकिनेछ। · You can pick your years once you're connected to the internet."}
         </Text>
       ) : (
         <Text className="mt-3 text-xs text-muted-foreground">
-          पछि जुनसुकै बेला वर्ष छान्दा डाउनलोड गर्न सकिनेछ। · You can still download individual years
-          later, whenever you browse to them.
+          पछि जुनसुकै बेला सेटिङबाट वर्ष छानेर डाउनलोड गर्न सकिनेछ। · You can still choose years to
+          download later from Offline Data in settings.
         </Text>
       )}
 

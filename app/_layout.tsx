@@ -1,6 +1,8 @@
 import "../global.css";
 import "@/lib/quiet-native-gl-logs";
-import { Stack } from "expo-router";
+import { Stack, useRootNavigationState, useRouter } from "expo-router";
+import { deviceStore } from "@/lib/device-store";
+import { OFFLINE_SETUP_PENDING_KEY } from "@/lib/offline/offline-setup";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, View } from "react-native";
 import { QueryClient } from "@tanstack/react-query";
@@ -149,6 +151,23 @@ function RootShell({
 }) {
   const { colors } = useTheme();
   usePatroCapabilities();
+  const router = useRouter();
+  const navState = useRootNavigationState();
+
+  // Someone who chose "offline" at onboarding lands on the Offline Data screen
+  // once, to pick their years and see the size before anything downloads.
+  useEffect(() => {
+    if (!ready || onboarded !== true || !navState?.key) return;
+    let active = true;
+    void deviceStore.get<boolean>(OFFLINE_SETUP_PENDING_KEY).then(async (pending) => {
+      if (!active || !pending) return;
+      await deviceStore.set(OFFLINE_SETUP_PENDING_KEY, false);
+      router.push("/account/offline-data");
+    });
+    return () => {
+      active = false;
+    };
+  }, [ready, onboarded, navState?.key, router]);
 
   return (
     <>

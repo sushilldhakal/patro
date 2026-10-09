@@ -1,106 +1,139 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";
 import { useNetworkStatus } from "@/lib/offline/network-status";
+import { clearOfflineHttp, offlineHttpSummary } from "@/lib/offline/offline-http";
+import { clearDownloadedYears, listDownloadedYears } from "@/lib/offline/offline-store";
 import {
-  clearDownloadedYears,
-  downloadYear as downloadYearOnce,
-  downloadYearRange,
-  listDownloadedYears,
-  type DownloadRangeProgress,
-  type DownloadedYearsSummary,
-} from "@/lib/offline/offline-store";
-import { computeDefaultInstallRange, type YearRange } from "@/lib/offline/offline-range";
-import { getStoredDataMode } from "@/lib/onboarding-storage";
+  clearSavedPacks,
+  estimatePackSize,
+  readSavedPacks,
+  runPackDownload,
+  type PackGroupId,
+  type PackProgress,
+  type PackSelection,
+  type PackSizeEstimate,
+  type SavedPack,
+} from "@/lib/offline/offline-pack";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { locationCacheKey, type LocationParams } from "@/lib/api";
+import { getCurrentBs } from "@/lib/bs-calendar";
 
-const INSTALL_STATE_KEY = "install_prefetch_v1";
 const WIFI_ONLY_PREF_KEY = "offline_wifi_only_v1";
 
-interface InstallState {
-  done: boolean;
-  range: YearRange;
-}
-
-const IDLE_PROGRESS: DownloadRangeProgress = {
+const IDLE_PROGRESS: PackProgress = {
   status: "idle",
-  total: 0,
   completed: 0,
-  skipped: 0,
+  total: 0,
   currentYear: null,
+  currentGroup: null,
+  bytes: 0,
+  skippedRequests: 0,
   error: null,
 };
 
-const EMPTY_SUMMARY: DownloadedYearsSummary = {
+export interface OfflineSummary {
+  /** BS years whose calendar is saved for the current location. */
+  years: number[];
+  minYear: number | null;
+  maxYear: number | null;
+  /** Everything saved on the device, all locations. */
+  bytes: number;
+  requests: number;
+  groups: PackGroupId[];
+}
+
+const EMPTY_SUMMARY: OfflineSummary = {
   years: [],
   minYear: null,
   maxYear: null,
-  count: 0,
-  approxBytes: 0,
+  bytes: 0,
+  requests: 0,
+  groups: [],
 };
+
+function summarize(pack: SavedPack | undefined, totals: { count: number; bytes: number }): OfflineSummary {
+  const years = new Set<number>();
+  const groups = new Set<PackGroupId>();
+  for (const key of pack?.done ?? []) {
+    const [head, group] = key.split(":");
+    if (group) groups.add(group as PackGroupId);
+    if (group === "calendar" && head !== "once") years.add(Number(head));
+  }
+  const sorted = [...years].sort((a, b) => a - b);
+  return {
+    years: sorted,
+    minYear: sorted[0] ?? null,
+    maxYear: sorted[sorted.length - 1] ?? null,
+    bytes: totals.bytes,
+    requests: totals.count,
+    groups: [...groups],
+  };
+}
 
 interface OfflineDataContextValue {
   isOnline: boolean;
   isWifi: boolean;
-  /** Years actually on disk right now, for the location the provider is tracking. */
-  summary: DownloadedYearsSummary;
-  /** The BS year window the app tries to have downloaded by default. */
-  installRange: YearRange;
-  /** Progress of the automatic first-install (or resumed) background download. */
-  initialDownload: DownloadRangeProgress;
+  summary: OfflineSummary;
+  /** The pack being measured or downloaded right now, or the last one's result. */
+  progress: PackProgress;
+  /** A saved pack for this location that was started but not finished. */
+  unfinished: SavedPack | null;
   wifiOnly: boolean;
   setWifiOnly: (value: boolean) => void;
+  /** Selection helper: the location the pack will be saved for. */
+  selectionFor: (startYear: number, endYear: number, groups: PackGroupId[]) => PackSelection;
+  /** Measures a sample so the real download size can be shown before the user agrees. */
+  estimate: (selection: PackSelection) => Promise<PackSizeEstimate>;
+  /** Downloads the selection. Call only after the user has seen the size and agreed. */
+  startDownload: (selection: PackSelection) => Promise<PackProgress>;
+  resumeDownload: () => Promise<void>;
+  cancelDownload: () => void;
   isYearAvailableOffline: (year: number) => boolean;
-  refreshSummary: () => Promise<void>;
-  /** Explicit single-year download, e.g. from the "download for offline use" prompt. */
+  /** One year's calendar group — the "download for offline use" prompt on the home screen. */
   downloadYear: (year: number) => Promise<void>;
-  /** Explicit range download, e.g. from the Offline Data settings screen. */
-  downloadRange: (
-    range: YearRange,
-    onProgress?: (progress: DownloadRangeProgress) => void,
-  ) => Promise<DownloadRangeProgress>;
-  /**
-   * Kicks off the default install-range download. Downloading offline data is
-   * the user's choice, not something the app does on its own — this is only
-   * called from the onboarding screen once someone picks "offline", and is
-   * auto-resumed on later launches solely to finish a download that specific
-   * choice started (see the effect below), never for someone who chose online.
-   */
-  startInstallDownload: () => Promise<void>;
+  refreshSummary: () => Promise<void>;
   clearOfflineData: () => Promise<void>;
 }
 
 const OfflineDataContext = createContext<OfflineDataContextValue | null>(null);
 
 /**
- * Owns the on-disk BS-year calendar cache and exposes the read/write API the
- * calendar screens, the onboarding screen, and the Offline Data settings
- * screen use. Never downloads anything on its own — `startInstallDownload`
- * only runs when the onboarding screen calls it (the user chose "offline"),
- * or to resume that same choice's download after an interruption.
- *
- * Tracks its own `usePanchangaLocation()` instance, matching how every other
- * screen in the app reads that location independently from SecureStore — so a
- * location change made elsewhere is only picked up here on next mount, same as
- * everywhere else. Fine for the common case (one home location); a user who
- * frequently switches cities may need to re-open the app for a location switch
- * to reflect during a single session here.
+ * Owns what is saved for offline use and the download that saves it. Nothing
+ * is downloaded unless the user picked a window and agreed to its size
+ * (`startDownload`); an interrupted download of that agreed window is
+ * resumed on a later launch, never anything else.
  */
 export function OfflineDataProvider({ children }: { children: React.ReactNode }) {
   const { isOnline, isWifi } = useNetworkStatus();
   const { location } = usePanchangaLocation();
-  const [summary, setSummary] = useState<DownloadedYearsSummary>(EMPTY_SUMMARY);
-  const [installRange, setInstallRange] = useState<YearRange>(() => computeDefaultInstallRange());
-  const [initialDownload, setInitialDownload] = useState<DownloadRangeProgress>(IDLE_PROGRESS);
+  const [summary, setSummary] = useState<OfflineSummary>(EMPTY_SUMMARY);
+  const [progress, setProgress] = useState<PackProgress>(IDLE_PROGRESS);
+  const [unfinished, setUnfinished] = useState<SavedPack | null>(null);
   const [wifiOnly, setWifiOnlyState] = useState(true);
 
   const runningRef = useRef(false);
-  const installDoneRef = useRef(false);
   const locationRef = useRef(location);
   locationRef.current = location;
+  const wifiOnlyRef = useRef(wifiOnly);
+  wifiOnlyRef.current = wifiOnly;
 
   const refreshSummary = useCallback(async () => {
-    const next = await listDownloadedYears(locationRef.current.params);
+    const [packs, totals, legacy] = await Promise.all([
+      readSavedPacks(),
+      offlineHttpSummary(),
+      listDownloadedYears(locationRef.current.params),
+    ]);
+    const mine = packs[locationCacheKey(locationRef.current.params)];
+    const next = summarize(mine, totals);
+    if (legacy.years.length > 0) {
+      const years = [...new Set([...next.years, ...legacy.years])].sort((a, b) => a - b);
+      next.years = years;
+      next.minYear = years[0] ?? null;
+      next.maxYear = years[years.length - 1] ?? null;
+      next.bytes += legacy.approxBytes;
+    }
     setSummary(next);
+    setUnfinished(mine && !mine.finished ? mine : null);
   }, []);
 
   useEffect(() => {
@@ -118,50 +151,61 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
     void writeJsonMeta(WIFI_ONLY_PREF_KEY, value);
   }, []);
 
-  const startInstallDownload = useCallback(async () => {
-    if (runningRef.current || installDoneRef.current) return;
-    runningRef.current = true;
+  const selectionFor = useCallback(
+    (startYear: number, endYear: number, groups: PackGroupId[]): PackSelection => {
+      const params: LocationParams | undefined = locationRef.current.params;
+      return { startYear, endYear, groups, location: params, locationKey: locationCacheKey(params) };
+    },
+    [],
+  );
+
+  const estimate = useCallback(async (selection: PackSelection) => {
+    setProgress({ ...IDLE_PROGRESS, status: "measuring" });
     try {
-      const stored = await readJsonMeta<InstallState>(INSTALL_STATE_KEY);
-      if (stored?.done) {
-        installDoneRef.current = true;
-        return;
-      }
-      const range = stored?.range ?? computeDefaultInstallRange();
-      setInstallRange(range);
-
-      const result = await downloadYearRange(range.startYear, range.endYear, {
-        location: locationRef.current.params,
-        wifiOnly,
-        onProgress: setInitialDownload,
-        shouldContinue: () => runningRef.current,
-      });
-
-      if (result.status === "done") {
-        installDoneRef.current = true;
-        await writeJsonMeta<InstallState>(INSTALL_STATE_KEY, { done: true, range });
-      } else {
-        await writeJsonMeta<InstallState>(INSTALL_STATE_KEY, { done: false, range });
-      }
-      await refreshSummary();
+      return await estimatePackSize(selection, getCurrentBs().year, setProgress);
     } finally {
-      runningRef.current = false;
+      setProgress(IDLE_PROGRESS);
+      await refreshSummary();
     }
-  }, [wifiOnly, refreshSummary]);
+  }, [refreshSummary]);
 
-  // Resumes an in-progress download only for someone who already opted into
-  // offline mode at onboarding — never starts one on its own for anyone else.
+  const startDownload = useCallback(
+    async (selection: PackSelection) => {
+      if (runningRef.current) return progress;
+      runningRef.current = true;
+      try {
+        const result = await runPackDownload(selection, {
+          wifiOnly: wifiOnlyRef.current,
+          onProgress: setProgress,
+          shouldContinue: () => runningRef.current,
+        });
+        return result;
+      } finally {
+        runningRef.current = false;
+        await refreshSummary();
+      }
+    },
+    [progress, refreshSummary],
+  );
+
+  const resumeDownload = useCallback(async () => {
+    if (!unfinished) return;
+    await startDownload({ ...unfinished.selection, location: locationRef.current.params });
+  }, [unfinished, startDownload]);
+
+  const cancelDownload = useCallback(() => {
+    runningRef.current = false;
+  }, []);
+
+  // Picks an agreed-but-unfinished download back up when the connection allows —
+  // only ever one the user already confirmed.
   useEffect(() => {
+    if (!unfinished || runningRef.current) return;
     if (!isOnline) return;
     if (wifiOnly && !isWifi) return;
-    let cancelled = false;
-    getStoredDataMode().then((mode) => {
-      if (!cancelled && mode === "offline") void startInstallDownload();
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [isOnline, isWifi, wifiOnly, startInstallDownload]);
+    void resumeDownload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unfinished?.updatedAt, isOnline, isWifi, wifiOnly]);
 
   useEffect(
     () => () => {
@@ -175,60 +219,55 @@ export function OfflineDataProvider({ children }: { children: React.ReactNode })
 
   const downloadYear = useCallback(
     async (year: number) => {
-      await downloadYearOnce(year, locationRef.current.params);
-      await refreshSummary();
+      await startDownload(selectionFor(year, year, ["calendar"]));
     },
-    [refreshSummary],
-  );
-
-  const downloadRange = useCallback(
-    async (range: YearRange, onProgress?: (progress: DownloadRangeProgress) => void) => {
-      const result = await downloadYearRange(range.startYear, range.endYear, {
-        location: locationRef.current.params,
-        onProgress,
-      });
-      await refreshSummary();
-      return result;
-    },
-    [refreshSummary],
+    [startDownload, selectionFor],
   );
 
   const clearOfflineData = useCallback(async () => {
+    runningRef.current = false;
+    await clearOfflineHttp();
+    await clearSavedPacks();
     await clearDownloadedYears(locationRef.current.params);
-    await writeJsonMeta<InstallState>(INSTALL_STATE_KEY, { done: false, range: installRange });
-    installDoneRef.current = false;
+    setProgress(IDLE_PROGRESS);
     await refreshSummary();
-  }, [refreshSummary, installRange]);
+  }, [refreshSummary]);
 
   const value = useMemo<OfflineDataContextValue>(
     () => ({
       isOnline,
       isWifi,
       summary,
-      installRange,
-      initialDownload,
+      progress,
+      unfinished,
       wifiOnly,
       setWifiOnly,
+      selectionFor,
+      estimate,
+      startDownload,
+      resumeDownload,
+      cancelDownload,
       isYearAvailableOffline,
-      refreshSummary,
       downloadYear,
-      downloadRange,
-      startInstallDownload,
+      refreshSummary,
       clearOfflineData,
     }),
     [
       isOnline,
       isWifi,
       summary,
-      installRange,
-      initialDownload,
+      progress,
+      unfinished,
       wifiOnly,
       setWifiOnly,
+      selectionFor,
+      estimate,
+      startDownload,
+      resumeDownload,
+      cancelDownload,
       isYearAvailableOffline,
-      refreshSummary,
       downloadYear,
-      downloadRange,
-      startInstallDownload,
+      refreshSummary,
       clearOfflineData,
     ],
   );

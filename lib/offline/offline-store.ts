@@ -1,4 +1,5 @@
-import { fetchYearWheelCalendar, locationCacheKey, type LocationParams, type YearWheelCalendar } from "@/lib/api";
+import { fetchYearWheelCalendar, locationCacheKey, yearWheelRequestPath, type LocationParams, type YearWheelCalendar } from "@/lib/api";
+import { getOfflineResponse } from "@/lib/offline/offline-http";
 import { getOfflineDb, OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
 import { isCurrentlyOnline, isCurrentlyOnWifi } from "@/lib/offline/network-status";
 
@@ -25,6 +26,16 @@ export async function getCachedYear(
   location?: LocationParams,
 ): Promise<YearWheelCalendar | null> {
   if (!OFFLINE_STORE_SUPPORTED) return null;
+  // Current store: the raw response saved by an offline pack.
+  const saved = await getOfflineResponse(yearWheelRequestPath(year, location));
+  if (saved) {
+    try {
+      return JSON.parse(saved) as YearWheelCalendar;
+    } catch {
+      /* fall through to the older table */
+    }
+  }
+  // Older installs saved whole years in their own table; still honoured.
   const db = await getOfflineDb();
   const row = await db.getFirstAsync<{ payload: string }>(
     "SELECT payload FROM bs_year_cache WHERE year = ? AND location_key = ?",

@@ -9,7 +9,8 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
 import { StatCard } from "@/components/ui/StatCard";
 import { Text } from "@/components/ui/Text";
-import { apiKeys, fetchAdToBs, fetchBsToAd } from "@/lib/api";
+import { apiKeys } from "@/lib/api";
+import { convertAdToBs, convertBsToAd } from "@/lib/offline/convert-fallback";
 import { adToBS, todayAdString } from "@/lib/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -45,14 +46,14 @@ export default function ConverterScreen() {
 
   const adToBsQ = useQuery({
     queryKey: apiKeys.convertAd(adDate),
-    queryFn: () => fetchAdToBs(adDate),
+    queryFn: () => convertAdToBs(adDate),
     enabled: mode === "ad-to-bs" && !!adDate,
     staleTime: Infinity,
   });
 
   const bsToAdQ = useQuery({
     queryKey: apiKeys.convertBs(bsDate),
-    queryFn: () => fetchBsToAd(bsDate),
+    queryFn: () => convertBsToAd(bsDate),
     enabled: mode === "bs-to-ad" && !!bsDate,
     staleTime: Infinity,
   });

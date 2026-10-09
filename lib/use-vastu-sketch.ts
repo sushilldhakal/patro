@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchVastuSketch, type VastuSketchRequest } from "@/lib/api";
+import { localVastuSketch } from "@/lib/vastu-offline";
 import type { CardinalWall } from "@/lib/vastu";
 import type { HousePlan } from "@/lib/vastu-plan";
 
@@ -49,7 +50,18 @@ export function useVastuSketch(
 
   return useQuery({
     queryKey: ["vastu", "sketch", settled],
-    queryFn: ({ signal }) => fetchVastuSketch(settled, signal),
+    queryFn: async ({ signal }) => {
+      try {
+        return await fetchVastuSketch(settled, signal);
+      } catch (err) {
+        // A real answer from the server (bad input) or a cancelled request is
+        // surfaced as-is; no connection means the planner still works from the
+        // on-device copy, which is the point of offline mode.
+        const message = err instanceof Error ? err.message : "";
+        if (message.startsWith("API 4") || (err instanceof Error && err.name === "AbortError")) throw err;
+        return localVastuSketch(settled);
+      }
+    },
     enabled,
     placeholderData: keepPreviousData,
     staleTime: Infinity,
