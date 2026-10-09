@@ -455,6 +455,7 @@ export default function HomeScreen() {
 
       <View className="mt-3 gap-3" style={{ paddingHorizontal: contentInset }}>
         <AakashGocharEntryCard />
+        <HomeVedaMantra dateAd={todayAd} />
         <OfflineDownloadPrompt year={year} era={browseEra} />
       </View>
     </View>
@@ -485,10 +486,6 @@ export default function HomeScreen() {
 
         <View className="mt-6" style={{ paddingHorizontal: contentInset }}>
           <HomeAuspiciousTimes p={panchangaQ.data} />
-        </View>
-
-        <View className="mt-6" style={{ paddingHorizontal: contentInset }}>
-          <HomeVedaMantra dateAd={todayAd} />
         </View>
 
         <View className="mt-6">
