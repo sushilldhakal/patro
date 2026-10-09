@@ -15,6 +15,7 @@ import {
   polygonCentroid,
 } from "@/lib/kundali/north-indian-layout";
 import { useLocale } from "@/lib/i18n";
+import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
@@ -187,6 +188,7 @@ function DrishtiPanel({
 
 export function D1Chart({ houses }: Props) {
   const { pick, digits } = useLocale();
+  const { isTablet } = useBreakpoint();
   const colors = useThemeColors();
   const byHouse = useMemo(() => new Map(houses.map((h) => [h.house, h])), [houses]);
   const showLegend = useMemo(() => bhavaHousesHaveStatusMarks(houses), [houses]);
@@ -292,7 +294,7 @@ export function D1Chart({ houses }: Props) {
       onPress={onChartPress}
       onLayout={(e) => setChartSize(e.nativeEvent.layout.width)}
       accessibilityRole="button"
-      style={{ width: "100%", maxWidth: 400, aspectRatio: 1 }}
+      style={{ width: isTablet ? "90%" : "100%", aspectRatio: 1 }}
     >
       <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}>
         <Rect x={0} y={0} width={300} height={300} rx={4} fill={colors.card} stroke={colors.border} strokeWidth={1.5} />

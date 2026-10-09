@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 const MIN_M = 3;
 const MAX_M = 100;
 /** Widest the sketch is ever drawn, matching the web copy's max-w-[900px]. */
-const MAX_SKETCH = 560;
+const MAX_SKETCH = 900;
 /** Page padding + card padding the sketch sits inside. */
 const SKETCH_CHROME = 56;
 
@@ -106,7 +106,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 export function PlotPlanner() {
   const { t, digits } = useLocale();
-  const { width } = useBreakpoint();
+  const { width, isTablet } = useBreakpoint();
   const [plot, setPlot] = useState<PlotState>(DEFAULT_PLOT_STATE);
   const [house, setHouse] = useState<HousePlan>(DEFAULT_HOUSE_PLAN);
 
@@ -165,7 +165,8 @@ export function PlotPlanner() {
   const counts = useMemo(() => kindCounts(leftover), [leftover]);
   const ayadi = sketch?.ayadi ?? null;
   const preferredCorner = sketch?.entrance.preferred_corner;
-  const sketchSize = Math.min(MAX_SKETCH, Math.max(240, width - SKETCH_CHROME));
+  /* iPad: 10% under the full size. */
+  const sketchSize = Math.round(Math.min(MAX_SKETCH, Math.max(240, width - SKETCH_CHROME)) * (isTablet ? 0.9 : 1));
 
   return (
     <View className="overflow-hidden rounded-2xl border border-border">

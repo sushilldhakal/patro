@@ -50,8 +50,6 @@ import { cn } from "@/lib/utils";
 const COMPASS_TIMEOUT_MS = 4000;
 /** Page padding the wheel sits inside. */
 const WHEEL_CHROME = 40;
-/** Cap so the wheel stays phone-sized on iPad instead of filling the column. */
-const MAX_WHEEL = 440;
 
 function Chip({
   color,
@@ -367,7 +365,7 @@ function SectionCard({
 export default function VastuScreen() {
   const { t, digits } = useLocale();
   const colors = useThemeColors();
-  const { width } = useBreakpoint();
+  const { width, isTablet } = useBreakpoint();
   const [selected, setSelected] = useState<VastuSelectionId>("northeast");
   const [alignOpen, setAlignOpen] = useState(false);
   const [compassLive, setCompassLive] = useState(false);
@@ -388,7 +386,8 @@ export default function VastuScreen() {
   }, [compassLive, compass.heading, t]);
 
   const facing = compass.heading != null ? vastuDir16(vastuDir16AtBearing(compass.heading)) : null;
-  const wheelSize = Math.min(MAX_WHEEL, Math.max(280, width - WHEEL_CHROME));
+  /* iPad: 10% under the full column width. */
+  const wheelSize = Math.round(Math.max(280, width - WHEEL_CHROME) * (isTablet ? 0.9 : 1));
 
   function onSelect(id: VastuSelectionId) {
     setSelected(id);
