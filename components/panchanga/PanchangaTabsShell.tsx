@@ -62,7 +62,14 @@ function isPanchangaShellRoute(pathname: string): boolean {
  * Wraps tab screens so the panchanga sidebar stays mounted across shell-route
  * navigations (web `PanchangaShellLayout` parity).
  */
-export function PanchangaTabsShell({ children }: { children: ReactNode }) {
+export function PanchangaTabsShell({
+  children,
+  stableTree = false,
+}: {
+  children: ReactNode;
+  /** True for the panchanga tab itself: keep one element tree whatever the route (see below). */
+  stableTree?: boolean;
+}) {
   const pathname = normalizeMobilePathname(usePathname());
   const colors = useThemeColors();
   const { isTablet } = useBreakpoint();
@@ -70,6 +77,75 @@ export function PanchangaTabsShell({ children }: { children: ReactNode }) {
   const shellRoute = isPanchangaShellRoute(pathname);
   const showRail = shellRoute && wideEnough;
   const scrollBottom = floatingNavBottomPadding(isTablet);
+
+  /* The panchanga tab hosts a nested Stack. Switching this wrapper between
+   * View (plain route) and ScrollView (shell route) is an element-type change,
+   * so React remounted the whole Stack and it fell back to `/panchanga` — every
+   * link pushed from another tab (home → graha-asta, element tables, grahan…)
+   * landed on the daily page. For this tab the tree below is identical for
+   * every route; only styles, the optional rail sibling and `scrollEnabled`
+   * change, so the Stack (and the screen just pushed) survives. */
+  if (stableTree) {
+    return (
+      <PanchangaTabsShellContext.Provider value={shellRoute}>
+        <PanchangaTabsShellScrollContext.Provider value={shellRoute}>
+          <View
+            className="min-h-0 flex-1"
+            style={
+              shellRoute
+                ? {
+                    backgroundColor: colors.background,
+                    paddingHorizontal: showRail ? PAGE_HORIZONTAL_PADDING : 0,
+                    paddingTop: showRail ? 16 : 0,
+                  }
+                : undefined
+            }
+          >
+            <View className="min-h-0 flex-1 flex-row" style={{ gap: showRail ? SHELL_SIDEBAR_GAP : 0 }}>
+              {showRail ? (
+                <View
+                  key="rail"
+                  className="min-h-0"
+                  style={{
+                    width: PANCHANGA_SIDEBAR_RAIL_WIDTH,
+                    paddingBottom: 12,
+                    borderRightWidth: 1,
+                    borderRightColor: colors.border,
+                    backgroundColor: colors.background,
+                  }}
+                >
+                  <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
+                    <PanchangaSidebarNav className="w-full border-0" />
+                  </ScrollView>
+                </View>
+              ) : null}
+              <ScrollView
+                key="main"
+                ref={shellRoute ? setPageScroller : undefined}
+                className="min-h-0 min-w-0 flex-1"
+                scrollEnabled={shellRoute}
+                contentContainerStyle={
+                  shellRoute
+                    ? showRail
+                      ? { paddingBottom: scrollBottom }
+                      : {
+                          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
+                          paddingTop: 12,
+                          paddingBottom: scrollBottom,
+                        }
+                    : { flexGrow: 1 }
+                }
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                {children}
+              </ScrollView>
+            </View>
+          </View>
+        </PanchangaTabsShellScrollContext.Provider>
+      </PanchangaTabsShellContext.Provider>
+    );
+  }
 
   if (!shellRoute) {
     return (

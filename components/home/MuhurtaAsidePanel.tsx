@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { ApiHoraSlot, NavataraRow, PanchangaDay, UdayaLagnaRow } from "@/lib/api";
@@ -38,6 +39,15 @@ const SUB_TABS: { id: MuhurtaSubTab; ne: string; en: string }[] = [
   { id: "hora", ne: "होरा", en: "Hora" },
   { id: "pushkara", ne: "पुष्कर", en: "Pushkara" },
 ];
+
+/** Sub-tab → its full page under /panchanga/element/. */
+const ELEMENT_ID: Record<MuhurtaSubTab, string> = {
+  tarabal: "tarabala",
+  chandrabal: "chandrabala",
+  choghadiya: "choghadiya",
+  hora: "hora",
+  pushkara: "pushkara",
+};
 
 const HINTS: Record<MuhurtaSubTab, { ne: string; en: string }> = {
   tarabal: { ne: "कामको प्रतिफल र सफलता हेर्न।", en: "See outcome and success of work." },
@@ -288,6 +298,7 @@ type Props = {
 export function MuhurtaAsidePanel({ p }: Props) {
   const { pick } = useLocale();
   const colors = useThemeColors();
+  const router = useRouter();
   const [subTab, setSubTab] = useState<MuhurtaSubTab>("tarabal");
   const tara = getTarabalaTable(p);
   const chandra = getChandrabalamTable(p);
@@ -345,6 +356,16 @@ export function MuhurtaAsidePanel({ p }: Props) {
       {subTab === "choghadiya" ? <ChoghadiyaList p={p} /> : null}
       {subTab === "hora" ? <HoraList p={p} /> : null}
       {subTab === "pushkara" ? <PushkaraList p={p} /> : null}
+
+      <Pressable
+        onPress={() => router.push(`/panchanga/element/${ELEMENT_ID[subTab]}` as never)}
+        accessibilityRole="link"
+        className="items-center rounded-lg border border-border py-2.5 active:opacity-80"
+      >
+        <Text className="text-body font-semibold text-foreground">
+          {pick("पूरा तालिका हेर्नुहोस् →", "View full table →")}
+        </Text>
+      </Pressable>
     </View>
   );
 }

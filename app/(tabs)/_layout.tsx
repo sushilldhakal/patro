@@ -20,8 +20,8 @@ export default function TabsLayout() {
           <View className="min-h-0 flex-1">{children}</View>
         </View>
       )}
-      screenLayout={({ children }) => (
-        <PanchangaTabsShell>{children}</PanchangaTabsShell>
+      screenLayout={({ route, children }) => (
+        <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")}>{children}</PanchangaTabsShell>
       )}
       tabBar={() => <FloatingNavBar />}
       screenOptions={{
