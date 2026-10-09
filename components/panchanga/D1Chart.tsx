@@ -292,7 +292,7 @@ export function D1Chart({ houses }: Props) {
       onPress={onChartPress}
       onLayout={(e) => setChartSize(e.nativeEvent.layout.width)}
       accessibilityRole="button"
-      style={{ width: "100%", aspectRatio: 1 }}
+      style={{ width: "100%", maxWidth: 400, aspectRatio: 1 }}
     >
       <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}>
         <Rect x={0} y={0} width={300} height={300} rx={4} fill={colors.card} stroke={colors.border} strokeWidth={1.5} />

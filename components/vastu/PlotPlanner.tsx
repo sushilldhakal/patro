@@ -45,7 +45,7 @@ import { cn } from "@/lib/utils";
 const MIN_M = 3;
 const MAX_M = 100;
 /** Widest the sketch is ever drawn, matching the web copy's max-w-[900px]. */
-const MAX_SKETCH = 900;
+const MAX_SKETCH = 560;
 /** Page padding + card padding the sketch sits inside. */
 const SKETCH_CHROME = 56;
 

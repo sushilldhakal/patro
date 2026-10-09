@@ -50,6 +50,8 @@ import { cn } from "@/lib/utils";
 const COMPASS_TIMEOUT_MS = 4000;
 /** Page padding the wheel sits inside. */
 const WHEEL_CHROME = 40;
+/** Cap so the wheel stays phone-sized on iPad instead of filling the column. */
+const MAX_WHEEL = 440;
 
 function Chip({
   color,
@@ -386,7 +388,7 @@ export default function VastuScreen() {
   }, [compassLive, compass.heading, t]);
 
   const facing = compass.heading != null ? vastuDir16(vastuDir16AtBearing(compass.heading)) : null;
-  const wheelSize = Math.max(280, width - WHEEL_CHROME);
+  const wheelSize = Math.min(MAX_WHEEL, Math.max(280, width - WHEEL_CHROME));
 
   function onSelect(id: VastuSelectionId) {
     setSelected(id);
