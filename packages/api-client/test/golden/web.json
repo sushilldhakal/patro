@@ -78,16 +78,16 @@
   "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3"
  ],
  "fetchGrahaAstaYear#0": [
-  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3"
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&language=ne&year=2083&gv=3"
  ],
  "fetchGrahaVakriYear#0": [
-  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3"
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&language=ne&year=2083&gv=3"
  ],
  "fetchEclipseYear#0": [
-  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3"
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&language=ne&year=2083&gv=3"
  ],
  "fetchPanchakYear#0": [
-  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne"
+  "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083"
  ],
  "fetchMonthCalendar#0": [
   "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703"
@@ -102,7 +102,7 @@
   "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703"
  ],
  "fetchYearSunTimes#0": [
-  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne"
+  "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083"
  ],
  "fetchSait#0": [
   "/api/v1/nepal/sait/2083/vivah?sv=14"
@@ -216,16 +216,16 @@
   "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&city_id=1283240"
  ],
  "fetchGrahaAstaYear#1": [
-  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&language=ne&year=2083&gv=3&city_id=1283240"
  ],
  "fetchGrahaVakriYear#1": [
-  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&language=ne&year=2083&gv=3&city_id=1283240"
  ],
  "fetchEclipseYear#1": [
-  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&language=ne&year=2083&gv=3&city_id=1283240"
  ],
  "fetchPanchakYear#1": [
-  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&city_id=1283240"
+  "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchMonthCalendar#1": [
   "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city_id=1283240"
@@ -240,7 +240,7 @@
   "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city_id=1283240"
  ],
  "fetchYearSunTimes#1": [
-  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&city_id=1283240"
+  "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchSait#1": [
   "/api/v1/nepal/sait/2083/vivah?city_id=1283240&sv=14"
@@ -354,16 +354,16 @@
   "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchGrahaAstaYear#2": [
-  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&language=ne&year=2083&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchGrahaVakriYear#2": [
-  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&language=ne&year=2083&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchEclipseYear#2": [
-  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&language=ne&year=2083&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchakYear#2": [
-  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchMonthCalendar#2": [
   "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -378,7 +378,7 @@
   "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchYearSunTimes#2": [
-  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchSait#2": [
   "/api/v1/nepal/sait/2083/vivah?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&sv=14"
@@ -492,16 +492,16 @@
   "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&city=Pokhara"
  ],
  "fetchGrahaAstaYear#3": [
-  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&language=ne&year=2083&gv=3&city=Pokhara"
  ],
  "fetchGrahaVakriYear#3": [
-  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&language=ne&year=2083&gv=3&city=Pokhara"
  ],
  "fetchEclipseYear#3": [
-  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&language=ne&year=2083&gv=3&city=Pokhara"
  ],
  "fetchPanchakYear#3": [
-  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&city=Pokhara"
+  "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city=Pokhara"
  ],
  "fetchMonthCalendar#3": [
   "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city=Pokhara"
@@ -516,7 +516,7 @@
   "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city=Pokhara"
  ],
  "fetchYearSunTimes#3": [
-  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&city=Pokhara"
+  "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city=Pokhara"
  ],
  "fetchSait#3": [
   "/api/v1/nepal/sait/2083/vivah?city=Pokhara&sv=14"
@@ -630,16 +630,16 @@
   "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&lat=28.2&lon=83.98"
  ],
  "fetchGrahaAstaYear#4": [
-  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&language=ne&year=2083&gv=3&lat=28.2&lon=83.98"
  ],
  "fetchGrahaVakriYear#4": [
-  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&language=ne&year=2083&gv=3&lat=28.2&lon=83.98"
  ],
  "fetchEclipseYear#4": [
-  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&language=ne&year=2083&gv=3&lat=28.2&lon=83.98"
  ],
  "fetchPanchakYear#4": [
-  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&lat=28.2&lon=83.98"
+  "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"
  ],
  "fetchMonthCalendar#4": [
   "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=28.2&lon=83.98"
@@ -654,7 +654,7 @@
   "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchYearSunTimes#4": [
-  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"
  ],
  "fetchSait#4": [
   "/api/v1/nepal/sait/2083/vivah?lat=28.2&lon=83.98&sv=14"

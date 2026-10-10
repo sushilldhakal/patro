@@ -12,26 +12,36 @@
  */
 import type {
   BhavaReferencePayload,
+  CitiesSearchResponse,
   ConvertAdToBs,
   ConvertBsToAd,
   DashaSystem,
   DashaTreeNode,
+  EclipseYearResponse,
   ElementDayResponse,
+  GocharIngressResponse,
+  GrahaAstaResponse,
+  GrahaVakriResponse,
   JanmaRashi,
   KundaliDetailResponse,
   KundaliMilanResponse,
   LocationParams,
   MilanPersonQuery,
   NearestCityResponse,
+  PanchakYearResponse,
   PanchangaDay,
+  SaitDetailResponse,
+  SaitMonthAllResponse,
   SaitPersonalizeResponse,
   SaitResponse,
   ShadbalaResponse,
   SpecialMonthsResponse,
+  SunYearResponse,
   TropicalSeasonsResponse,
   VimshottariResponse,
   YogaReferenceResponse,
 } from "./types";
+import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
 import {
   appendBirthInstantParams,
@@ -375,3 +385,121 @@ export const fetchKundaliMilan = (
   if (options?.lang) params.set("lang", options.lang);
   return get<KundaliMilanResponse>(`/kundali/milan?${params.toString()}`);
 };
+
+// ─── Era-aware year listings ─────────────────────────────────────────────────
+
+/**
+ * `era`, `language` and the optional `year`, in that order — the order the
+ * mobile app's offline downloads were saved under.
+ */
+export function eraQuery(era: Era = "bs", year?: number): string {
+  const language = era === "ad" || era === "bc" ? "en" : "ne";
+  const params = new URLSearchParams({ era, language });
+  if (year != null) params.set("year", String(year));
+  return params.toString();
+}
+
+export const fetchGrahaAstaYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+  get<GrahaAstaResponse>(
+    appendLocation(
+      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${eraQuery(era, year)}`),
+      location,
+    ),
+  );
+
+export const fetchGrahaVakriYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+  get<GrahaVakriResponse>(
+    appendLocation(
+      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${eraQuery(era, year)}`),
+      location,
+    ),
+  );
+
+export const fetchEclipseYear = (
+  kind: "solar" | "lunar",
+  year: number,
+  location?: LocationParams,
+  era: Era = "bs",
+) =>
+  get<EclipseYearResponse>(
+    appendLocation(
+      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${eraQuery(era, year)}`),
+      location,
+    ),
+  );
+
+export const fetchPanchakYear = (year: number, location?: LocationParams, era: Era = "bs") =>
+  get<PanchakYearResponse>(
+    appendLocation(`/nepal/panchak/year/${year}?${eraQuery(era, year)}`, location),
+  );
+
+export const fetchYearSunTimes = (year: number, era: Era = "bs", location?: LocationParams) =>
+  get<SunYearResponse>(
+    appendLocation(`/panchanga/year/${year}/sun?${eraQuery(era, year)}`, location),
+  );
+
+// ─── Cities ───────────────────────────────────────────────────────────────────
+
+export const cityKeys = {
+  search: (q: string, country?: string) => ["cities", "search", q, country ?? "all"] as const,
+  popular: () => ["cities", "popular"] as const,
+};
+
+export const searchCities = (q: string, limit = 15, country?: string) => {
+  const params = new URLSearchParams({ q, limit: String(limit) });
+  if (country) params.set("country", country);
+  return get<CitiesSearchResponse>(`/nepal/cities/search?${params.toString()}`);
+};
+
+// ─── Sait ─────────────────────────────────────────────────────────────────────
+
+export const fetchSaitDetail = (
+  year: number,
+  category: string,
+  location?: LocationParams,
+  excludeRules?: string[],
+  nakshatraMode?: string | null,
+) => {
+  let path = appendLocation(`/nepal/sait/${year}/${category}/detail`, location);
+  const params = new URLSearchParams();
+  const exclude = excludeParam(excludeRules);
+  if (exclude) params.set("exclude", exclude);
+  if (nakshatraMode && nakshatraMode !== "classical") params.set("nakshatra_mode", nakshatraMode);
+  const qs = params.toString();
+  if (qs) path = `${path}${path.includes("?") ? "&" : "?"}${qs}`;
+  return get<SaitDetailResponse>(withSaitCacheVersion(path));
+};
+
+export const fetchSaitMonthAll = async (
+  year: number,
+  month: number,
+  location?: LocationParams,
+): Promise<SaitMonthAllResponse> => {
+  const data = await get<SaitMonthAllResponse>(
+    withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/month/${month}`, location)),
+  );
+  if (!data?.categories || typeof data.categories !== "object") {
+    throw new Error(`Invalid sait response for ${year}/${month}`);
+  }
+  return data;
+};
+
+// ─── Gochar ───────────────────────────────────────────────────────────────────
+
+export const fetchGocharIngress = (
+  from: string,
+  to: string,
+  location?: LocationParams,
+  options?: { level?: "pada" | "nakshatra" | "rashi" | "patro" | "udayast"; era?: Era },
+) => {
+  const params = new URLSearchParams();
+  params.set("from", from);
+  params.set("to", to);
+  params.set("era", options?.era ?? "ad");
+  params.set("level", options?.level ?? "pada");
+  return get<GocharIngressResponse>(
+    appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location),
+  );
+};
+
+

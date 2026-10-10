@@ -26,12 +26,10 @@ import {
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
   withPanchangaCacheVersion,
-  withSaitCacheVersion,
   withGrahaCacheVersion,
   GRAHA_CACHE_VERSION,
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
-  excludeParam,
   ApiError,
   locationCacheKey,
 } from "@vedic-patro/api-client";
@@ -72,32 +70,33 @@ export {
   fetchDashaChildren,
   milanKeys,
   fetchKundaliMilan,
+  fetchGrahaAstaYear,
+  fetchGrahaVakriYear,
+  fetchEclipseYear,
+  fetchPanchakYear,
+  fetchYearSunTimes,
+  cityKeys,
+  searchCities,
+  fetchSaitDetail,
+  fetchSaitMonthAll,
+  fetchGocharIngress,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   RashifalPersonal,
-  SaitMonthAllResponse,
   ElementSpansResponse,
   ReportRecord,
   RashifalPeriod,
   VastuSketchRequest,
   PatroApiLimits,
   City,
-  CitiesSearchResponse,
   CivilTimeline,
-  GocharIngressResponse,
   GocharResponse,
   GrahaSthitiResponse,
-  GrahaAstaResponse,
-  GrahaVakriResponse,
-  EclipseYearResponse,
-  PanchakYearResponse,
   RawMonthDay,
-  SunYearResponse,
   UpcomingFestivalsResponse,
-  SaitDetailResponse,
   SaitAboutCategory,
   SaitAboutResponse,
   ElementInfo,
@@ -412,20 +411,6 @@ configureApiClient({
   locationKey: webLocationKey,
 });
 
-export const cityKeys = {
-  search: (q: string, country?: string) => ["cities", "search", q, country ?? "all"] as const,
-  popular: () => ["cities", "popular"] as const,
-};
-
-export const searchCities = (q: string, limit = 15, country?: string) => {
-  const params = new URLSearchParams({
-    q,
-    limit: String(limit),
-  });
-  if (country) params.set("country", country);
-  return get<CitiesSearchResponse>(`/nepal/cities/search?${params.toString()}`);
-};
-
 export const fetchPopularCities = () =>
   get<{ count: number; cities: City[] }>("/nepal/cities/popular");
 
@@ -677,22 +662,6 @@ export const fetchGochar = (
 export const fetchGocharJd = (jdUt: number, location?: LocationParams) =>
   get<GocharResponse>(appendLocation(`/nepal/gochar/jd/${jdUt}`, location));
 
-export const fetchGocharIngress = (
-  from: string,
-  to: string,
-  location?: LocationParams,
-  options?: { level?: "pada" | "nakshatra" | "rashi" | "patro" | "udayast"; era?: Era }
-) => {
-  const params = new URLSearchParams();
-  params.set("from", from);
-  params.set("to", to);
-  params.set("era", options?.era ?? "ad");
-  params.set("level", options?.level ?? "pada");
-  return get<GocharIngressResponse>(
-    appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location)
-  );
-};
-
 export const grahaDetailKeys = {
   sthiti: (dateKey: string, apiEra: Era, location?: LocationParams) =>
     ["graha", "sthiti", GRAHA_CACHE_VERSION, apiEra, dateKey, locationCacheKey(location)] as const,
@@ -742,66 +711,9 @@ export function grahaSthitiRequestForDisplay(
   return { dateKey: dateAd, apiEra: displayEra };
 }
 
-export const fetchGrahaAstaYear = (
-  year: number,
-  location?: LocationParams,
-  era: Era = "bs",
-) => {
-  const query = buildApiQuery({ era, language: getLanguageForEra(era), year });
-  return get<GrahaAstaResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${query.toString()}`),
-      location,
-    ),
-  );
-};
-
-/**
- * Forwards `era` + a positive `year`; the backend resolves them via EraMiddleware.
- */
-export const fetchGrahaVakriYear = (
-  year: number,
-  location?: LocationParams,
-  era: Era = "bs",
-) => {
-  const query = buildApiQuery({ era, language: getLanguageForEra(era), year });
-  return get<GrahaVakriResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${query.toString()}`),
-      location,
-    ),
-  );
-};
-
-export const fetchEclipseYear = (
-  kind: "solar" | "lunar",
-  year: number,
-  location?: LocationParams,
-  era: Era = "bs",
-) => {
-  const query = buildApiQuery({ era, language: getLanguageForEra(era), year });
-  return get<EclipseYearResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${query.toString()}`),
-      location,
-    ),
-  );
-};
-
 export const panchakKeys = {
   year: (year: number, location?: LocationParams, era: Era = "bs") =>
     ["panchak", era, year, locationCacheKey(location)] as const,
-};
-
-export const fetchPanchakYear = (
-  year: number,
-  location?: LocationParams,
-  era: Era = "bs",
-) => {
-  const query = buildApiQuery({ era, language: getLanguageForEra(era), year });
-  return get<PanchakYearResponse>(
-    appendLocation(`/nepal/panchak/year/${year}?${query.toString()}`, location),
-  );
 };
 
 function parsePakshaName(label?: string): string | undefined {
@@ -968,18 +880,6 @@ export const sunYearKeys = {
     ["sun-times", "year", SUN_YEAR_DATA_VERSION, era, year, locationCacheKey(location)] as const,
 };
 
-/** Forwards positive `year` + {@link Era}; backend resolves the Julian year span. */
-export const fetchYearSunTimes = (
-  year: number,
-  era: Era,
-  location?: LocationParams,
-) => {
-  const query = buildApiQuery({ era, language: getLanguageForEra(era), year });
-  return get<SunYearResponse>(
-    appendLocation(`/panchanga/year/${year}/sun?${query.toString()}`, location),
-  );
-};
-
 export const fetchCalendarHeader = (year: number, month: number) =>
   get<CalendarHeader>(`/calendar/header/${year}/${month}`);
 
@@ -1039,32 +939,8 @@ export const saitKeys = {
 
 export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");
 
-export const fetchSaitDetail = (
-  year: number,
-  category: string,
-  location?: LocationParams,
-  excludeRules?: string[],
-  nakshatraMode?: string | null,
-) => {
-  const exclude = excludeParam(excludeRules);
-  let path = appendLocation(`/nepal/sait/${year}/${category}/detail`, location);
-  const params = new URLSearchParams();
-  if (exclude) params.set("exclude", exclude);
-  if (nakshatraMode && nakshatraMode !== "classical") {
-    params.set("nakshatra_mode", nakshatraMode);
-  }
-  const qs = params.toString();
-  if (qs) path = `${path}${path.includes("?") ? "&" : "?"}${qs}`;
-  return get<SaitDetailResponse>(withSaitCacheVersion(path));
-};
-
 export const saitMonthAllKey = (year: number, month: number, location?: LocationParams) =>
   ["sait", "month-all", SAIT_CACHE_VERSION, year, month, locationCacheKey(location)] as const;
-
-export const fetchSaitMonthAll = (year: number, month: number, location?: LocationParams) =>
-  get<SaitMonthAllResponse>(
-    withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/month/${month}`, location)),
-  );
 
 export const fetchSaitAbout = () => get<SaitAboutResponse>("/nepal/sait/about");
 export const fetchSaitAboutCategory = (category: string) =>

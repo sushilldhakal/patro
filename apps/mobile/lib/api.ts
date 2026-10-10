@@ -18,11 +18,9 @@ import {
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
   withPanchangaCacheVersion,
-  withSaitCacheVersion,
   withGrahaCacheVersion,
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
-  excludeParam,
   ApiError,
   locationCacheKey,
 } from "@vedic-patro/api-client";
@@ -63,29 +61,30 @@ export {
   fetchDashaChildren,
   milanKeys,
   fetchKundaliMilan,
+  fetchGrahaAstaYear,
+  fetchGrahaVakriYear,
+  fetchEclipseYear,
+  fetchPanchakYear,
+  fetchYearSunTimes,
+  cityKeys,
+  searchCities,
+  fetchSaitDetail,
+  fetchSaitMonthAll,
+  fetchGocharIngress,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   RashifalPersonal,
-  SaitMonthAllResponse,
   ElementSpansResponse,
   ReportRecord,
   RashifalPeriod,
   VastuSketchRequest,
   PatroApiLimits,
-  CitiesSearchResponse,
   CivilTimeline,
-  GocharIngressResponse,
   GocharResponse,
   GrahaSthitiResponse,
-  GrahaAstaResponse,
-  GrahaVakriResponse,
-  EclipseYearResponse,
-  PanchakYearResponse,
-  SunYearResponse,
-  SaitDetailResponse,
   ElementSpanRange,
   RashifalBlock,
   PanchangaDay,
@@ -363,16 +362,6 @@ async function offlineAwareJson<T>(path: string): Promise<T> {
   );
 }
 
-export const cityKeys = {
-  search: (q: string, country?: string) => ["cities", "search", q, country ?? "all"] as const,
-};
-
-export const searchCities = (q: string, limit = 15, country?: string) => {
-  const params = new URLSearchParams({ q, limit: String(limit) });
-  if (country) params.set("country", country);
-  return get<CitiesSearchResponse>(`/nepal/cities/search?${params.toString()}`);
-};
-
 function locationKey(loc?: LocationParams): string {
   const l = loc ?? DEFAULT_LOCATION;
   return [l.city_id, l.lat, l.lon, l.timezone].join(":");
@@ -577,45 +566,6 @@ export const gocharKeys = {
 export const fetchGochar = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
   get<GocharResponse>(appendLocation(`/nepal/gochar/${date}?era=${era}`, location));
 
-export const fetchGocharIngress = (
-  from: string,
-  to: string,
-  location?: LocationParams,
-  options?: { level?: "pada" | "nakshatra" | "rashi" | "patro" | "udayast"; era?: "bs" | "ad" },
-) => {
-  const params = new URLSearchParams();
-  params.set("from", from);
-  params.set("to", to);
-  params.set("era", options?.era ?? "ad");
-  params.set("level", options?.level ?? "pada");
-  return get<GocharIngressResponse>(
-    appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location),
-  );
-};
-
-export const fetchSaitMonthAll = async (
-  year: number,
-  month: number,
-  location?: LocationParams,
-): Promise<SaitMonthAllResponse> => {
-  const data = await get<SaitMonthAllResponse>(
-    withSaitCacheVersion(appendLocation(`/nepal/sait/${year}/month/${month}`, location)),
-  );
-  if (!data?.categories || typeof data.categories !== "object") {
-    throw new Error(`Invalid sait response for ${year}/${month}`);
-  }
-  return data;
-};
-
-function buildEraQuery(
-  era: import("@/lib/patro-era").PatroBrowseEra = "bs",
-  year?: number,
-): string {
-  const language = era === "ad" || era === "bc" ? "en" : "ne";
-  const params = new URLSearchParams({ era, language });
-  if (year != null) params.set("year", String(year));
-  return params.toString();
-}
 
 export const grahaDetailKeys = {
   sthiti: (dateKey: string, era: string, location?: LocationParams) =>
@@ -663,53 +613,6 @@ export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, era
     appendLocation(withGrahaCacheVersion(`/nepal/graha-sthiti/${dateKey}?era=${era}`), location),
   );
 
-export const fetchGrahaAstaYear = (year: number, location?: LocationParams, era: "bs" | "ad" = "bs") =>
-  get<GrahaAstaResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-asta/year/${year}?${buildEraQuery(era, year)}`),
-      location,
-    ),
-  );
-
-export const fetchGrahaVakriYear = (year: number, location?: LocationParams, era: "bs" | "ad" = "bs") =>
-  get<GrahaVakriResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/graha-vakri/year/${year}?${buildEraQuery(era, year)}`),
-      location,
-    ),
-  );
-
-export const fetchEclipseYear = (
-  kind: "solar" | "lunar",
-  year: number,
-  location?: LocationParams,
-  era: import("@/lib/patro-era").PatroBrowseEra = "bs",
-) =>
-  get<EclipseYearResponse>(
-    appendLocation(
-      withGrahaCacheVersion(`/nepal/eclipse/${kind}/year/${year}?${buildEraQuery(era, year)}`),
-      location,
-    ),
-  );
-
-export const fetchPanchakYear = (
-  year: number,
-  location?: LocationParams,
-  era: "bs" | "ad" | "bbs" = "bs",
-) =>
-  get<PanchakYearResponse>(
-    appendLocation(`/nepal/panchak/year/${year}?${buildEraQuery(era, year)}`, location),
-  );
-
-export const fetchYearSunTimes = (
-  year: number,
-  era: "bs" | "ad" | "bbs" = "bs",
-  location?: LocationParams,
-) =>
-  get<SunYearResponse>(
-    appendLocation(`/panchanga/year/${year}/sun?${buildEraQuery(era, year)}`, location),
-  );
-
 /** Span-kind elements (tithi, nakshatra, yoga, karana…) over a whole month. */
 export const fetchElementSpans = (
   name: string,
@@ -725,23 +628,6 @@ export const fetchElementSpans = (
   return get<ElementSpansResponse>(
     appendLocation(withPanchangaCacheVersion(`/panchanga/element/${name}/spans?${query.toString()}`), location),
   );
-};
-
-export const fetchSaitDetail = (
-  year: number,
-  category: string,
-  location?: LocationParams,
-  excludeRules?: string[],
-  nakshatraMode?: string | null,
-) => {
-  let path = appendLocation(`/nepal/sait/${year}/${category}/detail`, location);
-  const params = new URLSearchParams();
-  const exclude = excludeParam(excludeRules);
-  if (exclude) params.set("exclude", exclude);
-  if (nakshatraMode && nakshatraMode !== "classical") params.set("nakshatra_mode", nakshatraMode);
-  const qs = params.toString();
-  if (qs) path = `${path}${path.includes("?") ? "&" : "?"}${qs}`;
-  return get<SaitDetailResponse>(withSaitCacheVersion(path));
 };
 
 export function timeShort(v: PanchangaDay["sunrise"]): string {
