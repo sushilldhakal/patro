@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { MuhurtaNowBlock, PanchangaDay } from "@/lib/api";
-import { formatTimeShort } from "@/lib/panchanga-format.web";
+import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 

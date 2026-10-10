@@ -1,5 +1,5 @@
-import { PATRO_PBBS_ABBR_NE } from "@/lib/patro-year-axis";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { PATRO_PBBS_ABBR_NE } from "@vedic-patro/domain/patro-year-axis";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 /** Bikram Sambat epoch begins at Gregorian 57 BCE (वि.सं. १). */
 export const BS_EPOCH_BCE = 57;

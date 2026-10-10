@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PatroMonthYearNav } from "@/components/patro-date/PatroMonthYearNav";
-import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { patroSegBtn } from "@/lib/patro-classes";

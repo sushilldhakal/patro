@@ -8,7 +8,7 @@ import {
   getPlanetRows,
   getPlanetsAnchorLabel,
   getSunriseLagnaRow,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {

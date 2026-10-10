@@ -21,7 +21,7 @@ import {
   type PatroDayFetchState,
   type ResolvedPatroDayFields,
 } from "@/lib/patro-day-url";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import {
   locationSearchFingerprint,
   patroDayBrowseNavigateSearch,

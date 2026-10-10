@@ -15,7 +15,7 @@ import {
   adMonthLabel,
   bsMonthLabel,
 } from "@/lib/patro-month-labels";
-import { isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
+import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@/lib/samvatsara";
 import { displayLocationLabel, DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
@@ -38,8 +38,8 @@ import { patroEraShortLabel } from "./patro-era-labels";
 import type { PatroDateNavProps } from "./types";
 import { usePatroDateSheet } from "./use-patro-date-sheet";
 
-function chipMonthLabel(month: number, lang: string, era: PatroBrowseEra): string {
-  if (isGregorianBrowseEra(era)) {
+function chipMonthLabel(month: number, lang: string, era: Era): string {
+  if (isGregorianEra(era)) {
     return AD_MONTHS_SHORT[month - 1]!.toUpperCase();
   }
   if (lang === "en") return BS_MONTHS_SHORT[month - 1]!.toUpperCase();
@@ -49,10 +49,10 @@ function chipMonthLabel(month: number, lang: string, era: PatroBrowseEra): strin
 function monthChipSpan(
   year: number,
   month: number,
-  era: PatroBrowseEra,
+  era: Era,
   digits: (n: number) => string,
 ): string {
-  if (isGregorianBrowseEra(era)) {
+  if (isGregorianEra(era)) {
     const len = new Date(year, month, 0).getDate();
     return `${digits(1)}-${digits(len)}`;
   }
@@ -60,12 +60,12 @@ function monthChipSpan(
   return `${digits(1)}-${digits(length)}`;
 }
 
-function buildMonthOptions(era: PatroBrowseEra, lang: string) {
+function buildMonthOptions(era: Era, lang: string) {
   return Array.from({ length: 12 }, (_, i) => {
     const m = i + 1;
     return {
       value: m,
-      label: isGregorianBrowseEra(era) ? adMonthLabel(m, lang) : bsMonthLabel(m, lang),
+      label: isGregorianEra(era) ? adMonthLabel(m, lang) : bsMonthLabel(m, lang),
     };
   });
 }
@@ -173,7 +173,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
   const eraShort = patroEraShortLabel(era, pick);
   const headlineEra = vikramEra ?? era;
-  const samvatsaraInfo = !isGregorianBrowseEra(era)
+  const samvatsaraInfo = !isGregorianEra(era)
     ? resolveSamvatsaraForPatroYear(
         headlineEra,
         year,
@@ -187,7 +187,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
   const monthTitle =
     mode === "year"
       ? null
-      : isGregorianBrowseEra(era)
+      : isGregorianEra(era)
         ? adMonthLabel(month, lang)
         : lang === "en"
           ? BS_MONTH_NAMES[month - 1]!
@@ -196,8 +196,8 @@ export function PatroDateNav(props: PatroDateNavProps) {
   const monthTitleShort =
     mode === "year"
       ? null
-      : lang === "en" || isGregorianBrowseEra(era)
-        ? (isGregorianBrowseEra(era)
+      : lang === "en" || isGregorianEra(era)
+        ? (isGregorianEra(era)
             ? AD_MONTHS_SHORT[month - 1]!
             : BS_MONTHS_SHORT[month - 1]!
           ).toUpperCase()

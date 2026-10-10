@@ -33,7 +33,7 @@ import { useTranslation } from "react-i18next";
 import { DrawerClose } from "@/components/ui/drawer";
 import { NavDrawerLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { parseEraFromUrl } from "@/lib/era";
+import { parseEraFromUrl } from "@vedic-patro/domain/era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { elementTitle } from "@/lib/panchanga-i18n";

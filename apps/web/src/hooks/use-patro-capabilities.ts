@@ -5,7 +5,7 @@ import {
   patroCapabilitiesKey,
   type PatroApiLimits,
 } from "@/lib/api";
-import { applyPatroApiLimits } from "@/lib/patro-year-axis";
+import { applyPatroApiLimits } from "@vedic-patro/domain/patro-year-axis";
 
 /** Keep picker/year gates in step with the host. Bootstrap constants until this lands. */
 export function usePatroCapabilities() {

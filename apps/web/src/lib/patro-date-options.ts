@@ -4,21 +4,21 @@ import {
   getSupportedAdBounds,
 } from "@vedic-patro/domain/bs-calendar";
 import { fetchPanchangaDay, type LocationParams } from "@/lib/api";
-import { getLanguageForEra } from "@/lib/era";
+import { getLanguageForEra } from "@vedic-patro/domain/era";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import { DEFAULT_PANCHANGA_LOCATION } from "@/components/panchanga/use-panchanga-location";
 import {
   civilAnchorFromPanchangaDay,
   parseCivilIsoToDate,
 } from "@vedic-patro/domain/patro-day";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import {
   bbsFromSigned,
   getPatroLimits,
   isBbsSigned,
   signedPatroYearFromBrowse,
   stepPatroSignedYear,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 
 const AD_BOUNDS = getSupportedAdBounds();
 

@@ -3,7 +3,7 @@ import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { CalendarDay } from "@/lib/api";
-import { formatTimeShort } from "@/lib/panchanga-format";
+import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
 import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@/lib/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";

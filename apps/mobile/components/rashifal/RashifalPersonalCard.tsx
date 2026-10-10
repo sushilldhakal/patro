@@ -16,7 +16,7 @@ import {
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
-import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useThemeColors } from "@/lib/theme-context";
 
 type Props = {

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { ElongationStudy } from "@/components/tithi-mechanics/TithiMechanics";
 import { HeliocentricOrbitStudy } from "@/components/learn/HeliocentricOrbitStudy";
 import { EarthRotationDiagram } from "@/components/learn/EarthRotationDiagram";

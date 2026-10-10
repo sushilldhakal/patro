@@ -13,13 +13,13 @@ import { MONTH_HERO_COLORS } from "@/lib/theme";
 import { bsMonthArt } from "@/lib/month-art";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatPakshaLabel, getPanchangaDetail } from "@/lib/panchanga-format";
+import { formatPakshaLabel, getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 import {
   formatGregorianFromDateParts,
   formatPatroCivilDayLabel,
   patroHeadlineDigits,
-} from "@/lib/patro-headline-subtitle";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+} from "@vedic-patro/domain/patro-headline-subtitle";
+import { type Era } from "@vedic-patro/domain/era";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@/lib/samvatsara";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
@@ -27,7 +27,7 @@ import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 type Props = {
   month: number;
   year: number;
-  browseEra?: PatroBrowseEra;
+  browseEra?: Era;
   isAdCalendar?: boolean;
   selectedAd: string;
   todayAd: string;
@@ -104,7 +104,7 @@ export function PanchangaHeroCard({
     p?.date_parts?.vikram?.year ??
     (p?.bs_date && typeof p.bs_date === "object" ? p.bs_date.year : year);
   const patroEraForLabel =
-    (p?.date_parts?.vikram?.era as PatroBrowseEra | undefined) ??
+    (p?.date_parts?.vikram?.era as Era | undefined) ??
     (p?.bs_date && typeof p.bs_date === "object" && p.bs_date.year < 0 ? "bbs" : browseEra);
   const vikramEraLabel = patroEraShortLabel(patroEraForLabel, pick);
   const samvatsaraInfo = resolveSamvatsaraForPatroYear(

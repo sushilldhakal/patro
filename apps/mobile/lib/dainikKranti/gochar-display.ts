@@ -3,7 +3,7 @@ import type { BhavaHouse, BhavaPlanetEntry } from "@vedic-patro/domain/bhava";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
-import { formatBsIsoDateNepali, toNepaliDigits } from "@/lib/panchanga-format";
+import { formatBsIsoDateNepali, toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 export const RASHI_NE = [
   "मेष", "वृष", "मिथुन", "कर्क", "सिंह", "कन्या",

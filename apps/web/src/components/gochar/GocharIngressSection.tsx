@@ -12,7 +12,7 @@ import {
 } from "@/lib/gochar-page-utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { PatroDayMonthChip } from "@/components/patro-date/PatroDayMonthChip";

@@ -1,6 +1,6 @@
 import type { MouseEvent, PointerEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@/lib/era";
+import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/era";
 import { cn } from "@/lib/utils";
 import { patroEraShortLabel } from "./patro-era-short-label";
 

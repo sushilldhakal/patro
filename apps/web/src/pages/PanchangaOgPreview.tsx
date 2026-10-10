@@ -18,7 +18,7 @@ import {
   getVaaraEn,
   getVaaraNe,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 
 /**
  * Headless render target for the Open Graph share image. The backend points

@@ -20,7 +20,7 @@ import {
   getSunrise,
   getTarabalaTable,
   getUdayaLagna,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import {

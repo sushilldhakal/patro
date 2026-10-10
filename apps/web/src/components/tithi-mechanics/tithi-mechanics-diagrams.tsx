@@ -21,7 +21,7 @@ import {
   tmTravelHead,
   tmVline,
 } from "@/lib/diagram-classes";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_TITHIS, tithiNum } from "@/lib/tithi-wheel-data";
 import { tmAmLegend, tmCal, tmCalCellDup, tmCalGap, tmCalGate, tmCalNo, tmCalTithi, tmDiagramSvg, tmLegAdhik } from "@/lib/learn-classes";

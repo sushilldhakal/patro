@@ -9,8 +9,8 @@ import {
 import {
   BBS_URL_YEAR_MAX,
   BBS_URL_YEAR_MIN,
-} from "@/lib/patro-year-axis";
-import type { Era } from "@/lib/era";
+} from "@vedic-patro/domain/patro-year-axis";
+import type { Era } from "@vedic-patro/domain/era";
 import { adToBS, BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
 import {
   buildAdCalendarGridDays,
@@ -19,9 +19,9 @@ import {
   getSecondaryCellDate,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@/lib/local-calendar";
-import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
-import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/local-calendar";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
+import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/domain/panchanga-format";
 import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
 import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";

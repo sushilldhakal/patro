@@ -7,7 +7,7 @@ import {
 import { rashiNoFromGraha } from "@/lib/dainikKranti/gochar-display";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
 import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { GRAHA_KEY_TO_TRANSIT_ABBREV } from "./rashyadi";
 
 function isMoonIngress(ev: GocharIngressEvent): boolean {

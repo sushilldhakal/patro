@@ -5,7 +5,7 @@ import {
   getInstantLagna,
   getPlanetRows,
   resolveLagnaSiderealLongitude,
-} from "./panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 
 function lagnaRashiNumber(p: PanchangaDay): number | undefined {
   const lagna = getInstantLagna(p);

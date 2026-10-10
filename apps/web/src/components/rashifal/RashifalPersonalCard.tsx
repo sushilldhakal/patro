@@ -9,7 +9,7 @@ import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import type { RashifalPersonal } from "@/lib/api";
 import { formatBsCivilIsoLong } from "@vedic-patro/domain/bs-calendar";
 import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
-import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import {
   RASHIFAL_DOMAIN_ICON,
   RASHIFAL_LUCKY_ICON,

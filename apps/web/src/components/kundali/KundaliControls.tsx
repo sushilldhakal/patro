@@ -7,7 +7,7 @@ import {
   getBSMonthLength,
   getSupportedAdBounds,
 } from "@vedic-patro/domain/bs-calendar";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";

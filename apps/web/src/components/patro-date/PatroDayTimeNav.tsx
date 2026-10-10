@@ -3,11 +3,11 @@ import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
-import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
+import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { cn } from "@/lib/utils";
 import {
   buildAdDayOptions,
@@ -20,7 +20,7 @@ import {
   pickBrowseVikramDate,
   stepBrowseVikramDay,
 } from "@/lib/patro-date-options";
-import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
+import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "./patro-month-labels";
 import { PatroDateNavCore } from "./PatroDateNavCore";

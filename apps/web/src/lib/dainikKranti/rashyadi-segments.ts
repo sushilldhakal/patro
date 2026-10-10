@@ -5,7 +5,7 @@ import {
   type IngressBrowseMonth,
 } from "@/lib/dainikKranti/ingress-day-match";
 import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import {
   GRAHA_KEY_TO_TRANSIT_ABBREV,
   RASHYADI_PLANET_KEYS,

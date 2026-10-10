@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@/lib/api";
-import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLagnaRow } from "@/lib/panchanga-format.web";
+import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLagnaRow } from "@vedic-patro/domain/panchanga-format";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";

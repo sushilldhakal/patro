@@ -11,17 +11,17 @@ import {
   bsMonthLabel,
   isGregorianEraBrowse,
 } from "./patro-month-labels";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { resolveSamvatsaraForPatroYear } from "@/lib/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";
 import {
   isValidBrowseYear,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 
 import { formatClockParts, parseClockParts } from "@/components/panchanga/use-panchanga-mode";
 import { BsHeadline } from "@/components/BsHeadline";

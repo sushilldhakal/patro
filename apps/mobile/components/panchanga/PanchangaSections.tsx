@@ -1,3 +1,4 @@
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { PanchangaDay } from "@/lib/api";
@@ -30,7 +31,7 @@ import {
   getSunriseDisplay,
   getSunsetDisplay,
   getVaaraNe,
-  formatRashiDisplay,
+
   formatSpanEndTime,
   getChandrabalamTable,
   getNakshatraPadaSpans,
@@ -42,7 +43,7 @@ import {
   formatTimeRangeShort,
   getNivasShool,
   toNepaliDigits,
-} from "@/lib/panchanga-format.web";
+} from "@vedic-patro/domain/panchanga-format";
 import type { NivasShoolSegment, UdayaLagnaRow } from "@/lib/api";
 import { resolveSamvatsaraForBsYear } from "@/lib/samvatsara";
 import {

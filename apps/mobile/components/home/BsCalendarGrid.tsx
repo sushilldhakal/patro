@@ -5,7 +5,7 @@ import type { CalendarDay } from "@/lib/api";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { FestivalListSheet } from "@/components/home/FestivalListSheet";
 import { useLocale } from "@/lib/i18n";
-import { getSecondaryCellDate } from "@/lib/local-calendar";
+import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { nepaliDayNumberStyle, nepaliLineHeight, nepaliTextStyle } from "@/lib/nepali-text";
 import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { useBreakpoint } from "@/lib/responsive";

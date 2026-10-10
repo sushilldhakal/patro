@@ -32,7 +32,7 @@ import {
   getChandrabalamTable,
   getTarabalaTable,
   formatElementStampDisplay,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import {
   ElementDayRowIcon,

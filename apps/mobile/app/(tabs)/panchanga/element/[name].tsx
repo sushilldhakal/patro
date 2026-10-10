@@ -49,12 +49,12 @@ import {
   formatElementStampDisplay,
   getChandrabalamTable,
   getTarabalaTable,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";

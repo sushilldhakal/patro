@@ -28,7 +28,7 @@ import { useTranslation } from "react-i18next";
 
 import { useLocale } from "@/i18n/locale";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@/lib/utils";
 import { edPlayBtn, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";
 import { edScrub } from "@/lib/diagram-classes";

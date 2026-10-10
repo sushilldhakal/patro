@@ -2,7 +2,7 @@ import type { CalendarDay, GocharIngressEvent, PlanetInfo } from "@/lib/api";
 import { RASHI_NE, rashiNoFromGraha } from "@/lib/dainikKranti/gochar-display";
 import type { GocharGraha } from "@/lib/api";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { GRAHA_KEY_TO_TRANSIT_ABBREV } from "./rashyadi";
 
 const RASHI_EN = [

@@ -1,4 +1,4 @@
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
@@ -30,7 +30,7 @@ import type { PatroDateSheetController, PatroSheetTab } from "./use-patro-date-s
 type Props = {
   sheet: PatroDateSheetController;
   mode: PatroDateNavMode;
-  era: PatroBrowseEra;
+  era: Era;
   year: number;
   month: number;
   day: number;

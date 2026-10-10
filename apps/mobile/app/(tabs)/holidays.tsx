@@ -11,7 +11,7 @@ import { Text } from "@/components/ui/Text";
 import { apiKeys, fetchFestivals, fetchHolidays, type Festival, type Holiday } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatHolidayBsDisplay } from "@/lib/panchanga-format";
+import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";

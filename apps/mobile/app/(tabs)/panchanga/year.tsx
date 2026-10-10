@@ -20,7 +20,7 @@ import {
   getBSMonthLength,
   shiftBsMonth,
 } from "@vedic-patro/domain/bs-calendar";
-import { formatTimeShort, getSunrise } from "@/lib/panchanga-format";
+import { formatTimeShort, getSunrise } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {

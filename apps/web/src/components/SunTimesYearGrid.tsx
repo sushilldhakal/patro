@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Sunrise, Sunset } from "lucide-react";
-import { getLanguageForEra, type Era } from "@/lib/era";
+import { getLanguageForEra, type Era } from "@vedic-patro/domain/era";
 import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
@@ -19,7 +19,7 @@ import {
   type SunYearResponse,
   type LocationParams,
 } from "@/lib/api";
-import { formatClockNepali, formatAyanaMarkShort, formatTimeShort, isAyanaNorthMark } from "@/lib/panchanga-format";
+import { formatClockNepali, formatAyanaMarkShort, formatTimeShort, isAyanaNorthMark } from "@vedic-patro/domain/panchanga-format";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import {
   Accordion,

@@ -3,13 +3,8 @@ import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { clampBrowseYear, isValidBrowseYear } from "@/lib/patro-browse-years";
 import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
-import {
-  defaultBrowseEraForLang,
-  patroBrowseTodayEra,
-  readCalendarEraForLang,
-  type PatroBrowseEra,
-} from "@/lib/patro-era";
-import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
+import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/era";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 
 function positiveInt(y: number): number {
   const t = Math.trunc(y);
@@ -23,7 +18,7 @@ function positiveMonth(m: number): number {
   return t;
 }
 
-function defaultMonthBrowseParts(era: PatroBrowseEra): { year: number; month: number } {
+function defaultMonthBrowseParts(era: Era): { year: number; month: number } {
   if (era === "bs" || era === "bbs") return getCurrentBs();
   const today = new Date();
   return { year: today.getFullYear(), month: today.getMonth() + 1 };
@@ -32,16 +27,16 @@ function defaultMonthBrowseParts(era: PatroBrowseEra): { year: number; month: nu
 /** Month + year browse in the active era — syncs era/year/month when UI language changes (web parity). */
 export function usePatroMonthBrowse() {
   const { lang } = useLocale();
-  const baseEra = readCalendarEraForLang(lang);
+  const baseEra = defaultEraForLanguage(lang);
 
-  const [era, setEraState] = useState<PatroBrowseEra>(() => getCachedCalendarEraPreference() ?? baseEra);
+  const [era, setEraState] = useState<Era>(() => getCachedCalendarEraPreference() ?? baseEra);
   const [year, setYearState] = useState(() => defaultMonthBrowseParts(era).year);
   const [month, setMonthState] = useState(() => defaultMonthBrowseParts(era).month);
   const [syncedLang, setSyncedLang] = useState(lang);
 
   if (lang !== syncedLang) {
     setSyncedLang(lang);
-    const nextEra = defaultBrowseEraForLang(lang);
+    const nextEra = defaultEraForLanguage(lang);
     setEraState(nextEra);
     const next = defaultMonthBrowseParts(nextEra);
     setYearState(next.year);
@@ -54,7 +49,7 @@ export function usePatroMonthBrowse() {
     setYearState(clampBrowseYear(era, n));
   };
 
-  const setEra = (next: PatroBrowseEra) => {
+  const setEra = (next: Era) => {
     setEraState(next);
     setYearState((y) => clampBrowseYear(next, y));
   };

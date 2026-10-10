@@ -12,7 +12,7 @@ import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { nepaliLineHeight } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
-import { getPanchangaDetail } from "@/lib/panchanga-format";
+import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";

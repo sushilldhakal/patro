@@ -26,7 +26,7 @@ import {
   getHoraDaySlots,
   getTarabalaTable,
   getUdayaLagna,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 import type { ThemeColors } from "@/lib/theme";
 import { cn } from "@/lib/utils";

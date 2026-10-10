@@ -18,7 +18,7 @@
 import { useTranslation } from "react-i18next";
 
 import { useLocale } from "@/i18n/locale";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 const W = 560;
 const H = 226;

@@ -1,7 +1,7 @@
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 
-/** @deprecated use {@link PatroBrowseEra} */
-export type MonthBrowseEra = PatroBrowseEra;
+/** @deprecated use {@link Era} */
+export type MonthBrowseEra = Era;
 
 /** Bootstrap until `GET /meta/capabilities` arrives. */
 export const PATRO_BS_BROWSE_YEAR_MAX = 17247;
@@ -44,7 +44,7 @@ export function maxOfflineSpanYears(): number {
 
 const NATIVE_SELECT_YEAR_RADIUS = 100;
 
-export function maxBrowseYearForEra(era: PatroBrowseEra): number {
+export function maxBrowseYearForEra(era: Era): number {
   switch (era) {
     case "bbs":
       return live.bbsMax;
@@ -57,21 +57,21 @@ export function maxBrowseYearForEra(era: PatroBrowseEra): number {
   }
 }
 
-export function isValidBrowseYear(era: PatroBrowseEra, year: number): boolean {
+export function isValidBrowseYear(era: Era, year: number): boolean {
   return Number.isFinite(year) && year >= 1 && year <= maxBrowseYearForEra(era);
 }
 
-export function clampBrowseYear(era: PatroBrowseEra, year: number): number {
+export function clampBrowseYear(era: Era, year: number): number {
   const max = maxBrowseYearForEra(era);
   return Math.min(Math.max(1, Math.trunc(year)), max);
 }
 
-export { togglePatroBrowseEra as toggleBrowseEra } from "@/lib/patro-era";
-export { toggleBrowseEraForLang } from "@/lib/patro-era";
+export { togglePatroBrowseEra as toggleBrowseEra } from "@vedic-patro/domain/era";
+export { toggleEraForLanguage } from "@vedic-patro/domain/era";
 
 /** Windowed year list for pickers (~201 years around selection). */
 export function windowedBrowseYears(
-  era: PatroBrowseEra,
+  era: Era,
   currentYear: number,
   radius = NATIVE_SELECT_YEAR_RADIUS,
 ): number[] {
@@ -85,7 +85,7 @@ export function windowedBrowseYears(
 }
 
 export function browseYearSelectOptions(
-  era: PatroBrowseEra,
+  era: Era,
   currentYear: number,
   digits: (n: number) => string,
 ): { value: number; label: string }[] {

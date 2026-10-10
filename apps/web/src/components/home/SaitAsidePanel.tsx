@@ -12,7 +12,7 @@ import {
   BS_MONTHS_NE,
   bsToAD,
 } from "@vedic-patro/domain/bs-calendar";
-import { getBsMonthsOverlappingAdMonth } from "@/lib/local-calendar";
+import { getBsMonthsOverlappingAdMonth } from "@vedic-patro/domain/local-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroEmpty } from "@/lib/patro-classes";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";

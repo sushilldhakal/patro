@@ -8,8 +8,8 @@ import {
   formatGregorianFromDateParts,
   formatPatroCivilDayLabel,
   patroHeadlineDigits,
-} from "@/lib/patro-headline-subtitle";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+} from "@vedic-patro/domain/patro-headline-subtitle";
+import { type Era } from "@vedic-patro/domain/era";
 import type { ReactNode } from "react";
 
 function toAdStr(d: Date): string {
@@ -30,8 +30,8 @@ type Props = {
   className?: string;
   location?: import("@/lib/use-panchanga-location").PanchangaLocation;
   onLocationChange?: (location: import("@/lib/use-panchanga-location").PanchangaLocation) => void;
-  era?: PatroBrowseEra;
-  onEraChange?: (era: PatroBrowseEra) => void;
+  era?: Era;
+  onEraChange?: (era: Era) => void;
   /** Udaya day payload — drives headline (वि.सं., संवत्सर, AD) from server. */
   wheelData?: PanchangaDay;
   /** Civil AD for headline fallback; defaults from `date`. */
@@ -65,7 +65,7 @@ export function PanchangaDateNav({
   onNext: onNextProp,
   crossEraSubtitleOverride,
 }: Props) {
-  const [browseEra, setBrowseEra] = useState<PatroBrowseEra>(eraProp);
+  const [browseEra, setBrowseEra] = useState<Era>(eraProp);
   const handleEraChange = onEraChange ?? setBrowseEra;
   const fallback = usePanchangaLocation();
   const location = locationProp ?? fallback.location;
@@ -92,7 +92,7 @@ export function PanchangaDateNav({
     return formatPatroCivilDayLabel(toAdStr(date), lang, digitFn);
   }, [gregorian, wheelData?.date_ad, adDateStr, date, lang, digitFn]);
 
-  const vikramEra = (vikram?.era as PatroBrowseEra | undefined) ?? browseEra;
+  const vikramEra = (vikram?.era as Era | undefined) ?? browseEra;
 
   const stepDay = (delta: number) => {
     const next = new Date(date);

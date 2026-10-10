@@ -11,8 +11,7 @@ import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
-import type { PatroBrowseEra } from "@/lib/patro-era";
-import { isGregorianBrowseEra } from "@/lib/patro-era";
+import { type Era, isGregorianEra } from "@vedic-patro/domain/era";
 
 const TABS = ["panchanga", "sait", "muhurta"] as const;
 type TabId = (typeof TABS)[number];
@@ -33,7 +32,7 @@ type Props = {
   saitError?: boolean;
   onSaitRetry?: () => void;
   location?: LocationParams;
-  browseEra?: PatroBrowseEra;
+  browseEra?: Era;
 };
 
 export function PanchangaAsidePanel({
@@ -67,7 +66,7 @@ export function PanchangaAsidePanel({
 
   const isSelectedToday = selectedAd === todayAd;
   const highlightDay = contextDay?.day;
-  const isAdCalendar = isGregorianBrowseEra(browseEra);
+  const isAdCalendar = isGregorianEra(browseEra);
   const activeP = panchangaMatchesAside(p, selectedAd, { year, month, isAdCalendar }, contextDay)
     ? p
     : undefined;

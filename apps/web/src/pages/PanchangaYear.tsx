@@ -20,7 +20,7 @@ import {
   shiftBsMonth,
 } from "@vedic-patro/domain/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { formatTimeShort, getSunrise, toNepaliDigits } from "@/lib/panchanga-format";
+import { formatTimeShort, getSunrise, toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
@@ -49,7 +49,7 @@ import {
   WHEEL_PLAY_BASE_MS,
 } from "@vedic-patro/domain/wheel-year-playback";
 import { buildPatroBrowseYearOptions, pickBrowseVikramDate } from "@/lib/patro-date-options";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import {
   currentPatroDayLinkSearch,

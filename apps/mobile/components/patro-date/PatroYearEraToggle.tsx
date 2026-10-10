@@ -2,17 +2,13 @@ import { Pressable } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import {
-  isGregorianBrowseEra,
-  toggleBrowseEraForLang,
-  type PatroBrowseEra,
-} from "@/lib/patro-era";
+import { isGregorianEra, toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { patroEraShortLabel } from "./patro-era-labels";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  era: PatroBrowseEra;
-  onEraChange: (era: PatroBrowseEra) => void;
+  era: Era;
+  onEraChange: (era: Era) => void;
   compact?: boolean;
   className?: string;
 };
@@ -20,10 +16,10 @@ type Props = {
 /** BS↔BBS / AD↔BC — matches web {@link PatroYearEraToggle} inline variant. */
 export function PatroYearEraToggle({ era, onEraChange, compact, className }: Props) {
   const { pick, lang } = useLocale();
-  if (isGregorianBrowseEra(era) && lang !== "en") return null;
-  if (!isGregorianBrowseEra(era) && lang === "en") return null;
+  if (isGregorianEra(era) && lang !== "en") return null;
+  if (!isGregorianEra(era) && lang === "en") return null;
 
-  const targetEra = toggleBrowseEraForLang(era, lang);
+  const targetEra = toggleEraForLanguage(era, lang);
   const targetLabel = patroEraShortLabel(targetEra, pick);
 
   return (

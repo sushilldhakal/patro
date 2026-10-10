@@ -11,7 +11,7 @@ import {
   getSunrise,
   RASHI_SYM,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { getRashiName, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 export function getWheelRashis(): WheelRashi[] {

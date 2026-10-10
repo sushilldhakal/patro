@@ -1,13 +1,13 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 
 const ONBOARDING_DONE_KEY = "onboardingCompleted";
 const ONBOARDING_ERA_KEY = "onboardingCalendarEra";
 const ONBOARDING_OFFLINE_KEY = "onboardingOfflineMode";
 
 /** Only BS or AD is offered at onboarding — BBS/BC stay reachable from the in-page era toggle. */
-export type OnboardingCalendarEra = Extract<PatroBrowseEra, "ad" | "bs">;
+export type OnboardingCalendarEra = Extract<Era, "ad" | "bs">;
 export type OnboardingDataMode = "offline" | "online";
 
 async function readItem(key: string): Promise<string | null> {

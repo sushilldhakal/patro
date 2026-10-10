@@ -20,9 +20,9 @@ import {
   type CalendarDayAnga,
   type PanchangaDay,
 } from "@/lib/api";
-import { getLanguageForEra } from "@/lib/era";
+import { getLanguageForEra } from "@vedic-patro/domain/era";
 import { formatBsDateKey } from "@vedic-patro/domain/patro-day";
-import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@/lib/panchanga-format";
+import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@vedic-patro/domain/panchanga-format";
 import {
   getRashiName,
   resolveRashiDisplay,

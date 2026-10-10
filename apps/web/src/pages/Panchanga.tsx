@@ -19,7 +19,7 @@ import {
   fetchEphemerisPanchangaDay,
   isEphemerisPanchanga,
 } from "@/lib/ephemeris-adapters";
-import { formatTimeShort, getSunrise, getSunset } from "@/lib/panchanga-format";
+import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
@@ -56,7 +56,7 @@ import {
 } from "@/components/panchanga/PanchangaSections";
 import { useRouteLoading } from "@/lib/route-loading";
 import { buildPatroBrowseYearOptions, pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 
 /** Panchanga scrubs date/time in-place; never block the whole page with the route overlay. */
 const PANCHANGA_ROUTE_LOADING = false;

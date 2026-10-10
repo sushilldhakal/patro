@@ -1,5 +1,5 @@
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
-import { getPanchangaDetail } from "@/lib/panchanga-format";
+import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 
 const TITHI_BASE = [
   "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी",

@@ -26,7 +26,7 @@ import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { useRouteLoading } from "@/lib/route-loading";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { formatHolidayBsDisplay } from "@/lib/panchanga-format";
+import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "../lib/utils";
 
 const routeApi = getRouteApi("/panchanga-shell/holidays");

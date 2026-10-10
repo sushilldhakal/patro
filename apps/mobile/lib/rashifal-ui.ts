@@ -3,7 +3,7 @@ import type { Ionicons } from "@/components/icons/Ionicons";
 import type { NavataraTone, RashifalDomainKey, RashifalPeriod } from "@/lib/api";
 import type { AppLanguage } from "@/lib/i18n";
 import { addCivilDays, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 
 export type RashifalDomainIcon = ComponentProps<typeof Ionicons>["name"];
 

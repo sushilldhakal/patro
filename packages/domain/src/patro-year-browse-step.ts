@@ -1,4 +1,4 @@
-import { isDescendingEra, type Era } from "@/lib/era";
+import { isDescendingEra, type Era } from "./era";
 
 export function stepPatroBrowseYear(era: Era, year: number, direction: "prev" | "next"): number {
   const towardPast = direction === "prev";

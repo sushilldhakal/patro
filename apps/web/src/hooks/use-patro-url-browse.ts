@@ -7,7 +7,7 @@ import {
   parseEraFromUrl,
   type EraSelection,
   type Language,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import {
   locationSearchFingerprint,
   locationToSearch,

@@ -1,9 +1,9 @@
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import {
   isValidBrowseYear,
   maxBrowseYearForEra,
   signedPatroYearFromBrowse,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 import { getBSMonthLength, bsToAD } from "@vedic-patro/domain/bs-calendar";
 import { getAdMonthLength } from "@/lib/patro-date-options";
 import { formatCivilIsoParts, civilIsoFromDate } from "@vedic-patro/domain/patro-day";

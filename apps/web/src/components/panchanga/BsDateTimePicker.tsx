@@ -17,14 +17,14 @@ import {
 import { fetchMonthCalendar, type LocationParams } from "@/lib/api";
 import { DEFAULT_PANCHANGA_LOCATION } from "@/components/panchanga/use-panchanga-location";
 import { PatroYearPickerPopover } from "@/components/patro-date/PatroYearPickerPopover";
-import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
+import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { stepBrowseVikramMonth } from "@/lib/patro-date-options";
 import { useLocale } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
 import { BsNativeSelect } from "@/components/BsNativeSelect";
 import { PopoverClose } from "@/components/ui/popover";
 import { formatClockParts, parseClockParts } from "@/components/panchanga/use-panchanga-mode";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
 const WEEKDAYS_EN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];

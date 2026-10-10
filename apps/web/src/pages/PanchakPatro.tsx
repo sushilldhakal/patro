@@ -18,13 +18,13 @@ import {
   panchakVarietyFromStartAd,
 } from "@/lib/panchak/panchak-types";
 import { fetchPanchakYear, panchakKeys } from "@/lib/api";
-import { formatBsMonthDayPatro } from "@/lib/panchanga-format";
+import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
 import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
 import { patroNoteBox } from "@/lib/patro-classes";
 import { fmtAdShort } from "@/lib/date-format";
 import { cn } from "@/lib/utils";
-import { formatBrowsePatroYear } from "@/lib/patro-year-axis";
+import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
 
 const routeApi = getRouteApi("/panchanga-shell/panchak-patro");
 

@@ -15,7 +15,7 @@ import {
 import type { PanchangaDay } from "@/lib/api";
 import { fetchPanchangaAtTimeForDay, fetchPanchangaAtTimeJd, panchangaKeys } from "@/lib/api";
 import type { PatroDayFetchState } from "@/lib/patro-day-url";
-import { getPanchangaDetail } from "@/lib/panchanga-format";
+import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { parseClockParts } from "./use-panchanga-mode";
 import {
@@ -67,7 +67,7 @@ import {
 import { cn } from "@/lib/utils";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import type { LocationParams } from "@/lib/api";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import {

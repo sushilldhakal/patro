@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { edBodyLabel, edScrub, hoEarthGroup, motBaseDot, motEarthGlow, motEarthLabel, motEclipseBannerType, motEclipseGlowType, motHeightPost, motLegendLabel, motMoon, motMoonEclipsing, motMoonHaloDir, motMoonLabel, motMoonSubmerged, motNode, motNodeDot, motNodeLabel, motNodeLine, motNodeTrack, motOrbit, motPlaneFace, motPlaneLabel, motPlaneRim, motSeasonBanner, motShadowDot, motShadowLabel, motSunBeamAligned, motSunLabel, motSunLineAligned, motSunOutlineAligned, motTiltArc, motTiltLabel, motTiltRef } from "@/lib/diagram-classes";
 import { motSliderLabel, motSliderRow, tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap, edSvg } from "@/lib/learn-classes";
 import { Pause, Play } from "lucide-react";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 
 /**

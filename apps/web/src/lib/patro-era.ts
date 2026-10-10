@@ -8,9 +8,9 @@
 import i18n from "@/i18n";
 import { normalizeLang } from "@/i18n/locale";
 import { getStoredLanguage } from "@/lib/user-preferences";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 
-export type { Era, Language } from "@/lib/era";
+export type { Era, Language } from "@vedic-patro/domain/era";
 
 /** Browse era in share URLs — same four codes as {@link Era}. */
 export type CalendarEra = Era;
@@ -31,7 +31,7 @@ export function validatePatroBrowseMonth(rawMonth: number | undefined): number |
 /** Era-aware year + month keys shared by month-browse patro routes. */
 export interface PatroMonthBrowseSearch {
   era?: CalendarEra;
-  language?: import("@/lib/era").Language;
+  language?: import("@vedic-patro/domain/era").Language;
   year?: number;
   month?: number;
 }
@@ -39,6 +39,6 @@ export interface PatroMonthBrowseSearch {
 /** Era-aware year key shared by year-browse patro routes. */
 export interface PatroYearBrowseSearch {
   era?: CalendarEra;
-  language?: import("@/lib/era").Language;
+  language?: import("@vedic-patro/domain/era").Language;
   year?: number;
 }

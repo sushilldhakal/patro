@@ -7,9 +7,9 @@ import { useLocale } from "@/lib/i18n";
 import {
   formatPatroYearGregorianRange,
   patroHeadlineDigits,
-} from "@/lib/patro-headline-subtitle";
-import type { PatroBrowseEra } from "@/lib/patro-era";
-import { stepPatroBrowseYear } from "@/lib/patro-year-browse-step";
+} from "@vedic-patro/domain/patro-headline-subtitle";
+import { type Era } from "@vedic-patro/domain/era";
+import { stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
@@ -17,8 +17,8 @@ import { cn } from "@/lib/utils";
 import { PatroDateNav } from "./PatroDateNav";
 
 export type PatroYearBrowseNavProps = {
-  era: PatroBrowseEra;
-  onEraChange: (era: PatroBrowseEra) => void;
+  era: Era;
+  onEraChange: (era: Era) => void;
   year: number;
   onYearChange: (year: number) => void;
   /** API `gregorian_range` for the cross-era headline line. */

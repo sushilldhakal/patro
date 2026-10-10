@@ -1,6 +1,6 @@
 import type { GocharGraha, PlanetInfo } from "@/lib/api";
 import { rashiNoFromGraha } from "@/lib/dainikKranti/gochar-display";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 /** Gochar spashta table — चन्द्र बाहेक (दैनिक च.रा. कोलमबाट)। */
 export const RASHYADI_PLANET_KEYS = [

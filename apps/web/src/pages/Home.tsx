@@ -24,7 +24,7 @@ import { adToBS, bsToAdOrNull, getCurrentBs } from "@vedic-patro/domain/bs-calen
 import { cn } from "@/lib/utils";
 import { patroAsideLink, patroAsideTab } from "@/lib/patro-classes";
 import { canonicalCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { getLanguageForEra } from "@/lib/era";
+import { getLanguageForEra } from "@vedic-patro/domain/era";
 import {
   patroDayFetchFromApiDateAd,
   patroDayFetchFromBrowseGridParts,

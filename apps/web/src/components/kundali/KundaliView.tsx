@@ -26,7 +26,7 @@ import {
   getSuryaRashi,
   getVaaraNe,
   formatTithiWithPaksha,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 // DivisionalChartCompare stays a static import: it belongs to the default

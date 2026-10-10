@@ -25,7 +25,7 @@ import {
   getLanguageForEra,
   parseEraFromUrl,
   type EraSelection,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import { locationSearchFingerprint, locationToSearch, patroRouteLinkSearch, sameLocationParams, searchToLocation, validateLocationSearch } from "@/lib/url-state";
 import type { CalendarEra } from "@/lib/patro-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";

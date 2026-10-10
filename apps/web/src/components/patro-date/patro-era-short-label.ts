@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 
 /** Short era label for chips, headlines, and the year-picker era toggle. */
 export function patroEraShortLabel(era: Era, t: TFunction): string {

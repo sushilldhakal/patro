@@ -6,7 +6,7 @@ import {
   type DocumentCategoryId,
 } from "@/lib/document-categories";
 import type { DocumentCategoryTab, DocumentSummary } from "@/lib/documents-api";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@/lib/utils";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 

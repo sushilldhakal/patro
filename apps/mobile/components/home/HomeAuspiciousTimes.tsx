@@ -7,7 +7,7 @@ import type { PanchangaDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { WINDOW_OPTIONS } from "@/lib/notifications/types";
-import { getMuhurtaRows } from "@/lib/panchanga-format";
+import { getMuhurtaRows } from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 
 const GOOD = "#2e8b57";

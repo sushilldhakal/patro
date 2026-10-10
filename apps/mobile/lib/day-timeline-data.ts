@@ -12,7 +12,7 @@ import {
   getSunrise,
   getSunset,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 

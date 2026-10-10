@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { cn } from "@/lib/utils";
 import { PatroDateNavCore } from "./PatroDateNavCore";
 import { usePatroMonthHeadlineSubtitle } from "./use-patro-month-headline-subtitle";

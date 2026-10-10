@@ -26,7 +26,7 @@ import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
 import { formatProfileBirthLabel, profileChartParams, profileLocation } from "@/lib/kundali/profile-chart";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

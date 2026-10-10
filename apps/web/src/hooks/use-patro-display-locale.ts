@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { normalizeLang, resolveActiveLang } from "@/i18n/locale";
-import type { Language } from "@/lib/era";
+import type { Language } from "@vedic-patro/domain/era";
 
 /** Patro date nav: URL `language` overrides i18n for labels and digits. */
 export function usePatroDisplayLocale(urlLanguage?: Language) {

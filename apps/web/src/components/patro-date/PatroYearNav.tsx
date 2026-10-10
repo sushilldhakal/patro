@@ -12,10 +12,10 @@ import {
   type PatroMobileYearSheetDraft as MobileYearDraft,
 } from "./PatroDateSheet";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";
-import { isValidBrowseYear } from "@/lib/patro-year-axis";
+import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { usePatroDateSheet } from "./use-patro-date-sheet";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
-import { stepPatroBrowseYear } from "@/lib/patro-year-browse-step";
+import { stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step";
 import { patroBrowseTodayEra, patroBrowseTodayYear } from "@/hooks/use-patro-year-browse";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import {
@@ -32,7 +32,7 @@ import { isGregorianEraBrowse } from "./patro-month-labels";
 import {
   getLanguageForEra,
   type Era,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import { resolveSamvatsaraForPatroYear } from "@/lib/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
 import { patroEraShortLabel } from "./patro-era-short-label";
@@ -53,7 +53,7 @@ export type PatroYearNavProps = {
   todayAd?: string;
   /** Override chip “go to today”; default sets year via {@link patroBrowseTodayYear}. */
   onToday?: () => void;
-  displayLanguage?: import("@/lib/era").Language;
+  displayLanguage?: import("@vedic-patro/domain/era").Language;
   location?: PanchangaLocation;
   onLocationChange?: (location: PanchangaLocation) => void;
   className?: string;

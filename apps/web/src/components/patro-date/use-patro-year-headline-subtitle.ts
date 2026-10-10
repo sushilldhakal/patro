@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { fetchFestivals } from "@/lib/api";
-import { formatPatroYearGregorianRange } from "@/lib/patro-headline-subtitle";
+import { formatPatroYearGregorianRange } from "@vedic-patro/domain/patro-headline-subtitle";
 import { isGregorianEraBrowse } from "./patro-month-labels";
 
 /**

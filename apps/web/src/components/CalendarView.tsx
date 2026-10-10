@@ -16,7 +16,7 @@ import {
   BS_FESTIVAL_STACK_MIN_YEAR,
   getPatroLimits,
   maxBrowseYearForEra,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
 import { civilIsoFromDate, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
@@ -24,7 +24,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PanchangaMonthGrid } from "@/components/panchanga/PanchangaMonthGrid";
 import { buildPatroDaySearch } from "@/lib/url-state";
-import { getLanguageForEra } from "@/lib/era";
+import { getLanguageForEra } from "@vedic-patro/domain/era";
 import {
   patroDayFetchFromApiBsParts,
   patroDayFetchFromApiDateAd,
@@ -38,8 +38,8 @@ import {
   mergeEnrichedDays,
   shiftAdMonth,
   uniqueBsMonths,
-} from "@/lib/local-calendar";
-import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
+} from "@vedic-patro/domain/local-calendar";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { PatroMonthYearNav } from "@/components/patro-date";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-short-label";
 import { isGregorianEraBrowse } from "@/components/patro-date/patro-month-labels";

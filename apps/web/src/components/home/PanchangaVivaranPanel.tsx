@@ -22,7 +22,7 @@ import {
   getSunriseDisplay,
   getSunsetDisplay,
   isAyanaNorthMark,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
 import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";

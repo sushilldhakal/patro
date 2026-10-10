@@ -18,7 +18,7 @@ import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
 import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
@@ -59,8 +59,8 @@ export function SaitCeremonyLayout({
   title: string;
   subtitle: string;
   /** Browse era, owned by the page (web `usePatroYearDataPage().yearBrowse`). */
-  era: PatroBrowseEra;
-  onEraChange: (era: PatroBrowseEra) => void;
+  era: Era;
+  onEraChange: (era: Era) => void;
   year: number;
   onYearChange: (year: number) => void;
   location: PanchangaLocation;

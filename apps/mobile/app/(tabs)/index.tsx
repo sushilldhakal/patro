@@ -43,12 +43,12 @@ import {
   buildLocalMonthDays,
   getBsMonthsOverlappingAdMonth,
   mergeEnrichedDays,
-} from "@/lib/local-calendar";
+} from "@vedic-patro/domain/local-calendar";
 import { useLocale } from "@/lib/i18n";
 import { floatingNavBottomPadding, homeContentInset } from "@/lib/mobile-nav";
-import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
-import { PATRO_BROWSE_ERAS, isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
-import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
+import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
+import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/era";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
@@ -73,7 +73,7 @@ function mergeMonthFromApi(
   lang: string,
   festivals: Festival[] | undefined,
 ) {
-  const local = isGregorianBrowseEra(era)
+  const local = isGregorianEra(era)
     ? buildLocalAdMonthDays(year, month)
     : buildLocalMonthDays(year, month);
   let merged = calendar?.length ? mergeEnrichedDays(local, calendar) : local;
@@ -107,13 +107,13 @@ export default function HomeScreen() {
   // website, so a shared link reopens the same month and it survives a relaunch.
   const urlParams = useLocalSearchParams<{ era?: string; year?: string; month?: string }>();
   const router = useRouter();
-  const pendingBrowse = useRef<{ era: PatroBrowseEra; year: number; month: number } | null>(
+  const pendingBrowse = useRef<{ era: Era; year: number; month: number } | null>(
     (() => {
       const y = Number(urlParams.year);
       const m = Number(urlParams.month);
-      const e = (urlParams.era ?? "bs") as PatroBrowseEra;
+      const e = (urlParams.era ?? "bs") as Era;
       if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) return null;
-      if (!(PATRO_BROWSE_ERAS as readonly string[]).includes(e)) return null;
+      if (!(ERAS as readonly string[]).includes(e)) return null;
       return { era: e, year: y, month: m };
     })(),
   );
@@ -157,10 +157,10 @@ export default function HomeScreen() {
     () => shiftPatroBrowseMonth(browseEra, year, month, 1),
     [browseEra, year, month],
   );
-  const canFetchPrev = isGregorianBrowseEra(browseEra)
+  const canFetchPrev = isGregorianEra(browseEra)
     ? !(year === 1 && month === 1)
     : !(month === 1 && year <= BS_SUPPORTED_START_YEAR);
-  const canFetchNext = isGregorianBrowseEra(browseEra)
+  const canFetchNext = isGregorianEra(browseEra)
     ? true
     : !(month === 12 && year >= BS_SUPPORTED_END_YEAR);
 
@@ -208,7 +208,7 @@ export default function HomeScreen() {
   const [prevQ, currentQ, nextQ] = monthQueries;
 
   const festivalYears = useMemo(() => {
-    if (isGregorianBrowseEra(browseEra)) {
+    if (isGregorianEra(browseEra)) {
       const overlapping = getBsMonthsOverlappingAdMonth(year, month);
       const years = new Set(overlapping.map((m) => m.year));
       years.add(adToBS(new Date(`${todayAd}T12:00:00`)).year);
@@ -252,8 +252,8 @@ export default function HomeScreen() {
       current: currentQ.data?.calendar,
       next: nextQ.data?.calendar,
     };
-    if (isGregorianBrowseEra(browseEra)) {
-      let grid = buildAdCalendarGridDays(year, month, enriched);
+    if (isGregorianEra(browseEra)) {
+      let grid = buildAdCalendarGridDays(year, month, [...(enriched.prev ?? []), ...(enriched.current ?? []), ...(enriched.next ?? [])]);
       if (yearFestivals?.length) grid = applyHolidaysToDays(grid, yearFestivals, lang);
       return grid;
     }
@@ -272,7 +272,7 @@ export default function HomeScreen() {
   ]);
 
   const viewingCurrentMonth = useMemo(() => {
-    if (isGregorianBrowseEra(browseEra)) {
+    if (isGregorianEra(browseEra)) {
       const d = new Date(`${todayAd}T12:00:00`);
       return year === d.getFullYear() && month === d.getMonth() + 1;
     }
@@ -404,7 +404,7 @@ export default function HomeScreen() {
           publicHolidayDates={publicHolidayDates}
           onSelectDay={handleSelectDay}
           isEnriching={monthFetching}
-          primaryDate={isGregorianBrowseEra(browseEra) ? "ad" : "bs"}
+          primaryDate={isGregorianEra(browseEra) ? "ad" : "bs"}
         />
       )}
     </View>

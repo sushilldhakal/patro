@@ -20,11 +20,11 @@ import {
   formatTimeShort,
   getSunrise,
   getSunset,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import {
   formatPatroDayCrossEraSubtitle,
   patroHeadlineDigits,
-} from "@/lib/patro-headline-subtitle";
+} from "@vedic-patro/domain/patro-headline-subtitle";
 import {
   tithiIndexFromCalendarDay,
   tithiIndexFromPanchanga,

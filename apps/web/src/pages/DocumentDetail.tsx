@@ -20,7 +20,7 @@ import {
   type DocumentChapter,
   type DocumentDetailSearch,
 } from "@/lib/documents-api";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
 
 function chapterAnchor(number: number) {

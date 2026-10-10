@@ -8,7 +8,7 @@ import {
   rashiNumberFromName,
   resolveRashiDisplay,
 } from "@vedic-patro/domain/rashi-i18n";
-import { formatBsIsoDateNepali, toNepaliDigits } from "@/lib/panchanga-format";
+import { formatBsIsoDateNepali, toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 
 export const GRAHA_CHART_LABEL: Record<string, string> = {

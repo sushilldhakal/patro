@@ -19,7 +19,7 @@ import {
   isValidBrowseYear,
   maxBrowseYearForEra,
 } from "@/lib/patro-browse-years";
-import { toggleBrowseEraForLang, type PatroBrowseEra } from "@/lib/patro-era";
+import { toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 import { patroEraShortLabel } from "./patro-era-labels";
@@ -36,9 +36,9 @@ type YearOption = { value: number; label: string };
 const YEAR_MANUAL_INPUT_ACCESSORY_ID = "patro-year-manual-input-accessory";
 
 type Props = {
-  era: PatroBrowseEra;
+  era: Era;
   year: number;
-  onEraChange: (era: PatroBrowseEra) => void;
+  onEraChange: (era: Era) => void;
   onYearChange: (year: number) => void;
   onYearTypingPreviewChange?: (preview: string | null) => void;
   onYearInputFocus?: () => void;
@@ -119,7 +119,7 @@ export function PatroYearSheetStepper({
   }, [pickerOpen, clamped]);
 
   const switchEra = () => {
-    const next = toggleBrowseEraForLang(era, lang);
+    const next = toggleEraForLanguage(era, lang);
     onEraChange(next);
     onYearChange(clampBrowseYear(next, year));
   };
@@ -163,7 +163,7 @@ export function PatroYearSheetStepper({
     });
   };
 
-  const targetEra = toggleBrowseEraForLang(era, lang);
+  const targetEra = toggleEraForLanguage(era, lang);
   const targetLabel = patroEraShortLabel(targetEra, pick);
   const manualLabel = pick("हातले लेख्नुहोस्", "Enter manually");
   const eraShort = patroEraShortLabel(era, pick);

@@ -14,9 +14,9 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@/lib/panchanga-format";
-import { daysDiffFromAd, formatNepalSambatDisplay } from "@/lib/panchanga-format.web";
-import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@/lib/patro-headline-subtitle";
+import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
+import { daysDiffFromAd, formatNepalSambatDisplay } from "@vedic-patro/domain/panchanga-format";
+import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
 

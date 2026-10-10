@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 /* TwoZeroPoints still calls bilingualText for the one label built around a
    formatted number; everything else now comes from the catalogue. */
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
 const INK = "currentColor";

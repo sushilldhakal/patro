@@ -2,14 +2,14 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { fetchFestivals, fetchMonthCalendar, locationCacheKey } from "@/lib/api";
 import { isGregorianEraBrowse } from "./patro-month-labels";
 import {
   formatPatroAdRangeHeadlineSubtitle,
   formatPatroMonthCrossEraSubtitle,
   formatPatroYearGregorianRange,
-} from "@/lib/patro-headline-subtitle";
+} from "@vedic-patro/domain/patro-headline-subtitle";
 import { canonicalCivilIso } from "@vedic-patro/domain/patro-day";
 
 export function usePatroMonthHeadlineSubtitle(

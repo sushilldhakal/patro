@@ -8,7 +8,7 @@ import {
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePatroYearUrlBrowse } from "@/hooks/use-patro-url-browse";
 import type { LocationParams } from "@/lib/api";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
 

@@ -3,7 +3,7 @@
 // VITE_API_BASE_URL for a split host (e.g. http://localhost:8080 in dev).
 import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
-import { getLanguageForEra } from "@/lib/era";
+import { getLanguageForEra } from "@vedic-patro/domain/era";
 import {
   buildPatroDayApiQuery,
   patroDayFetchFromApiDateAd,

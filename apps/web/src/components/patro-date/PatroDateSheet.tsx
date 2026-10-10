@@ -22,13 +22,13 @@ import { patroMobilePickerBtn, patroMonthNavBtn } from "@/lib/patro-classes";
 import { BsNativeSelect } from "@/components/BsNativeSelect";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { browseYearRangeBounds, windowedBrowseYearSelectOptions } from "@/lib/patro-browse-year-items";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import { buildAdDayOptions, buildBsDayOptions } from "@/lib/patro-date-options";
 import {
   isValidBrowseYear,
   signedPatroYearFromBrowse,
   stepPatroSignedYear,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 import { cn } from "@/lib/utils";
 import { sameLocationParams } from "@/lib/url-state";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";

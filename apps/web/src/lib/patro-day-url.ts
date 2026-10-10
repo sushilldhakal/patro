@@ -12,7 +12,7 @@ import {
   isEra,
   type Era,
   type Language,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 

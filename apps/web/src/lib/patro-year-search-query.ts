@@ -1,5 +1,5 @@
-import { ERA_CODES, type Era } from "@/lib/era";
-import { getPatroLimits } from "@/lib/patro-year-axis";
+import { ERA_CODES, type Era } from "@vedic-patro/domain/era";
+import { getPatroLimits } from "@vedic-patro/domain/patro-year-axis";
 
 const DEVANAGARI_TO_ASCII: Record<string, string> = {
   "०": "0",

@@ -20,7 +20,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   abhijitFromCalendarDay,
   formatClockNepali,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import {
   searchToLocation,

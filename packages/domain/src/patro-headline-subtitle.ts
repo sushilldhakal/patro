@@ -11,16 +11,16 @@ import {
   BS_MONTHS_SHORT,
   BS_MONTHS_NE,
   adToBS,
-} from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@/lib/era";
-import { bsMonthHasOfflineData, getLocalMonthMeta } from "@/lib/local-calendar";
+} from "./bs-calendar";
+import type { Era } from "./era";
+import { bsMonthHasOfflineData, getLocalMonthMeta } from "./local-calendar";
 import {
   formatCivilYearLabel,
   formatPatroYearGregorianRange,
   parseCivilIso,
   parseCivilIsoToDate,
-} from "@vedic-patro/domain/patro-day";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+} from "./patro-day";
+import { toNepaliDigits } from "./panchanga-format";
 
 function isGregorianEraBrowse(era: Era): boolean {
   return era === "ad" || era === "bc";

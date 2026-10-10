@@ -1,3 +1,8 @@
+import {
+  formatRashiByNumber,
+  rashiNumberFromName,
+  resolveRashiDisplay,
+} from "@vedic-patro/domain/rashi-i18n";
 import type {
   CalendarDay,
   CalendarDayDetail,
@@ -11,10 +16,8 @@ import {
   formatTimeShort,
   formatVedicPatroTime,
   longitudeToDegreeCells,
-  rashiNeFromNumber,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
-import { formatRashiByNumber, resolveRashiDisplay, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
+} from "@vedic-patro/domain/panchanga-format";
 
 export const RASHI_COLUMNS_NE = [
   "मेष", "वृष", "मिथुन", "कर्कट", "सिंह", "कन्या",
@@ -109,7 +112,7 @@ function planetDegreeCells(info: PlanetInfo): string {
 
 function planetRashiNe(info: PlanetInfo): string | undefined {
   if (info.rashi_ne) return info.rashi_ne;
-  if (info.rashi_no != null) return rashiNeFromNumber(info.rashi_no);
+  if (info.rashi_no != null) return formatRashiByNumber(info.rashi_no, "ne");
   return info.rashi_name ?? info.rashi;
 }
 
@@ -224,7 +227,7 @@ export function buildCalcNotes(
         formatTimeShort(span.start_local_time) ??
         formatTimeShort(span.start_hours_clock);
       if (!raw || !isLateNightPatroTime(raw, day.sunrise)) continue;
-      const rashiNe = span.name_ne ?? rashiNeFromNumber(span.number);
+      const rashiNe = span.name_ne ?? (span.number ? formatRashiByNumber(span.number, "ne") : undefined);
       const rashiEn = span.name ??
         (span.number ? RASHI_COLUMNS_EN[span.number - 1] : undefined);
       const clock = formatVedicPatroTime(raw, day.sunrise);

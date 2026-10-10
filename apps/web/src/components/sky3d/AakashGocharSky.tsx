@@ -47,7 +47,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { GocharGraha, VedicStarPosition } from "@/lib/api";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   BS_MONTH_NAMES,

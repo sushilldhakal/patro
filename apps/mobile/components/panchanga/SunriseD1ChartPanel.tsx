@@ -5,7 +5,7 @@ import type { PanchangaDay } from "@/lib/api";
 import { D1Chart } from "@/components/panchanga/D1Chart";
 import { useLocale } from "@/lib/i18n";
 import { buildPanchangaD1Houses } from "@/lib/panchanga-sunrise-d1";
-import { getPlanetsAnchorLabel } from "@/lib/panchanga-format";
+import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
 
 type Props = {
   p: PanchangaDay;

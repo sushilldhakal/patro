@@ -1,6 +1,6 @@
 /** Month name tables for patro nav UI — labels only, no conversion or month lengths. */
 
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 
 export const BS_MONTH_NAMES = [
   "Baisakh", "Jestha", "Ashadh", "Shrawan", "Bhadra", "Ashwin",

@@ -15,7 +15,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 import { BsNativeSelect } from "@/components/ui/BsNativeSelect";
 import { PatroYearEraToggle } from "@/components/patro-date/PatroYearEraToggle";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 import { formatClockParts, from12h, parseClockParts, to12h } from "@/components/panchanga/use-panchanga-mode";
 
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
@@ -40,8 +40,8 @@ type Props = {
   live?: boolean;
   /** Bottom sheet: web-style picker; outer sheet owns Done. */
   embeddedInSheet?: boolean;
-  browseEra?: PatroBrowseEra;
-  onBrowseEraChange?: (era: PatroBrowseEra) => void;
+  browseEra?: Era;
+  onBrowseEraChange?: (era: Era) => void;
 };
 
 export function BsDateTimePicker({

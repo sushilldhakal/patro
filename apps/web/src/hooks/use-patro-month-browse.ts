@@ -6,13 +6,13 @@ import {
   defaultEraForLanguage,
   type Era,
   type Language,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import { patroBrowseTodayEra } from "@/hooks/use-patro-year-browse";
-import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
+import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import {
   isValidBrowseYear,
   maxBrowseYearForEra,
-} from "@/lib/patro-year-axis";
+} from "@vedic-patro/domain/patro-year-axis";
 
 function positiveInt(y: number): number {
   const t = Math.trunc(y);

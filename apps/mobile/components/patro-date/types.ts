@@ -1,4 +1,4 @@
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 
 import type { SamvatsaraPayload } from "@/lib/samvatsara";
 
@@ -21,8 +21,8 @@ export type PatroDateNavModeProps =
     };
 
 export type PatroDateNavBaseProps = {
-  era: PatroBrowseEra;
-  onEraChange: (era: PatroBrowseEra) => void;
+  era: Era;
+  onEraChange: (era: Era) => void;
   year: number;
   onYearChange: (year: number) => void;
   location: import("@/lib/use-panchanga-location").PanchangaLocation;
@@ -34,7 +34,7 @@ export type PatroDateNavBaseProps = {
   nextDisabled?: boolean;
   crossEraSubtitle?: string;
   /** Resolved Vikram parts from API (`date_parts.vikram`) — headline + samvatsara era. */
-  vikramEra?: PatroBrowseEra;
+  vikramEra?: Era;
   samvatsara?: SamvatsaraPayload | null;
   toolbar?: React.ReactNode;
   /** Phone row 1 right slot (e.g. day-cycle toggle on panchanga). */

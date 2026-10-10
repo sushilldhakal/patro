@@ -1,6 +1,6 @@
 import { parseBirthDateParts } from "@vedic-patro/domain/birth-date";
 import type { Profile } from "@/lib/auth/client";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import {
   instantFromEraParts,
   type InstantQuery,

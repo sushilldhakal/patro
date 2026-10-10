@@ -56,7 +56,7 @@ import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";

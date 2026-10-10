@@ -1,5 +1,5 @@
 import type { GhadiPalaVipala } from "@/lib/api";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 export function formatGhadiPalaVipala(
   { ghadi, pala, vipala }: GhadiPalaVipala,

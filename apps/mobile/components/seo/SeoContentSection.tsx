@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { translateList, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 type SeoRoute = "converter" | "panchanga" | "holidays";
 

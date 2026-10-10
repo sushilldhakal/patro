@@ -14,12 +14,12 @@
  * and for BS ≥ 1 on CE civil dates.
  */
 
-import type { Era } from "@/lib/era";
+import type { Era } from "./era";
 
 /**
  * Bootstrap until `GET /meta/capabilities` arrives. Functions below read the
  * live copy (`getPatroLimits`); do not treat these constants as the host's
- * installed ephemeris window.
+ * installed ephemeris range.
  */
 export const PATRO_SIGNED_YEAR_MIN = -13202;
 export const PATRO_SIGNED_YEAR_MAX = 17248;

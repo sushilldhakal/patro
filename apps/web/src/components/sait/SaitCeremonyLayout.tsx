@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
-import type { Era } from "@/lib/era";
+import type { Era } from "@vedic-patro/domain/era";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
 import { SaitRulesSection, type SaitRule } from "@/components/sait/SaitRulesSection";

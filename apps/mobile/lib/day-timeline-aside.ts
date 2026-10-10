@@ -1,5 +1,5 @@
 import type { PanchangaDay } from "@/lib/api";
-import { getPanchangaDetail, getSunrise, toNepaliDigits } from "@/lib/panchanga-format";
+import { getPanchangaDetail, getSunrise, toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 export const CHOGHADIYA_EN: Record<string, string> = {
   उद्वेग: "Udvega",

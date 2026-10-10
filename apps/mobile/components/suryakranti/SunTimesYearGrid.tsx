@@ -23,8 +23,8 @@ import {
   formatTimeShort,
   isAyanaNorthMark,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
-import { browseEraToApi, isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
+} from "@vedic-patro/domain/panchanga-format";
+import { eraToApi, isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
@@ -530,7 +530,7 @@ function SunTimesYearAccordion({
 }
 
 type Props = {
-  era: PatroBrowseEra;
+  era: Era;
   year: number;
   locationParams: LocationParams;
   timeZone: string;
@@ -544,8 +544,8 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
   const showMatrix = width >= BREAKPOINTS.calendarWide;
   const isEnglish = lang === "en";
   const nepaliDigits = !isEnglish;
-  const isGregorianEra = isGregorianBrowseEra(era);
-  const apiEra = browseEraToApi(era);
+  const gregorianEra = isGregorianEra(era);
+  const apiEra = eraToApi(era);
   const todayAd = todayAdStringInTimezone(new Date(), timeZone);
 
   const query = useQuery({
@@ -555,18 +555,18 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
   });
 
   const grid = useMemo(() => {
-    if (isGregorianEra) {
+    if (gregorianEra) {
       return buildAdYearGrid(query.data ? [query.data] : [], year, nepaliDigits, isEnglish);
     }
     return buildBsYearGrid(query.data?.months, nepaliDigits, isEnglish);
-  }, [query.data, isGregorianEra, year, nepaliDigits, isEnglish]);
+  }, [query.data, gregorianEra, year, nepaliDigits, isEnglish]);
 
   const layout = useMemo((): CalendarLayout => {
-    if (isGregorianEra) {
+    if (gregorianEra) {
       return layoutFromGregorianData(query.data, year, isEnglish);
     }
     return layoutFromVikramMonths(query.data?.months, year, isEnglish, todayAd);
-  }, [isGregorianEra, query.data, year, isEnglish, todayAd]);
+  }, [gregorianEra, query.data, year, isEnglish, todayAd]);
 
   return (
     <View className="overflow-hidden rounded-xl border border-border bg-card">

@@ -19,7 +19,7 @@ import {
   getPlanetRows,
   getPlanetsAnchorLabel,
   getSunriseLagnaRow,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import {
   buildCivilTimelineData,
   buildDayTimelineData,

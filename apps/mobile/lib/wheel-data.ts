@@ -1,13 +1,14 @@
+import { formatRashiDisplayNe } from "@vedic-patro/domain/rashi-i18n";
 import type { PanchangaDay, LagnaSpan } from "@/lib/api";
 import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import {
-  formatRashiDisplayNe,
+
   getLagnaSpans,
   getPanchangaDetail,
   getSunrise,
   RASHI_SYM,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 
 const RASHI_NE = [
   "मेष", "वृष", "मिथुन", "कर्कट", "सिंह", "कन्या",

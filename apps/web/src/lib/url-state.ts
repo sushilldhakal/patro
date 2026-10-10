@@ -5,7 +5,7 @@ import {
   parseEraFromUrl,
   type Era,
   type EraSelection,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 import {
   readCalendarEra,
   validatePatroBrowseMonth,

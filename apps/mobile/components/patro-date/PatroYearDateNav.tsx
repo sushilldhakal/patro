@@ -1,13 +1,13 @@
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 import { PatroYearBrowseNav, type PatroYearBrowseNavProps } from "./PatroYearBrowseNav";
 
 type Props = Omit<
   PatroYearBrowseNavProps,
   "era" | "onEraChange" | "year" | "onYearChange"
 > & {
-  era?: PatroBrowseEra;
-  onEraChange?: (era: PatroBrowseEra) => void;
+  era?: Era;
+  onEraChange?: (era: Era) => void;
   year: number;
   onYearChange: (year: number) => void;
   className?: string;

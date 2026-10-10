@@ -2,12 +2,12 @@ import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { cn } from "@/lib/utils";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";
-import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@/lib/patro-year-axis";
+import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { parsePatroYearSearchQuery } from "@/lib/patro-year-search-query";
 import { PatroYearEraToggle } from "./PatroYearEraToggle";
 

@@ -47,7 +47,7 @@ import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { geocentricPointAt } from "@/lib/sky3d/orbital-model";
 import {
   buildYearLadders,

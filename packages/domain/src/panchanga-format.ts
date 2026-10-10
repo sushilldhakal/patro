@@ -1,15 +1,16 @@
-import type { CalendarDay, ElementStamp, Festival, NivasShoolBlock, PanchangaDay } from "./api";
-import { adToBS, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import type { ApiHoraSlot, BalamBlock, NakshatraPadaSpan, NavataraTableBlock, PanchakaSegment, RashiSpan, UdayaLagnaRow } from "@vedic-patro/api-client";
+import type { CalendarDay, ElementStamp, Festival, NivasShoolBlock, PanchangaDay } from "@vedic-patro/api-client";
+import { adToBS, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "./bs-calendar";
+import { GRAHA_NAME, type GrahaKey } from "./graha-details";
 import {
   formatRashiDisplay,
   formatRashiDisplayNe,
   getRashiName,
   rashiNeFromNumber,
-} from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { formatLocaleDigits } from "@/i18n/digits";
-import { normalizeLang, pickLocale } from "@/i18n/locale";
+} from "./rashi-i18n";
+import { NAKSHATRA_ICONS } from "./nakshatra-icons";
+import { formatLocaleDigits } from "./locale";
+import { normalizeLang, pickLocale } from "./locale";
 import {
   addDaysCivilIso,
   civilDayDiffIso,
@@ -18,14 +19,14 @@ import {
   parseCivilIso,
   parseCivilIsoToDate,
   positiveGregorianCivilIso,
-} from "@vedic-patro/domain/patro-day";
+} from "./patro-day";
 import {
   formatGregorianEraYearLabel,
   formatGregorianFromDateParts,
-} from "@/lib/patro-headline-subtitle";
+} from "./patro-headline-subtitle";
 
-export function toNepaliDigits(value: string | number): string {
-  return formatLocaleDigits(value);
+export function toNepaliDigits(value: string | number, lang?: string): string {
+  return formatLocaleDigits(value, lang);
 }
 
 export function formatTimeShort(time?: string | null): string | undefined {
@@ -38,10 +39,10 @@ export function formatTimeShort(time?: string | null): string | undefined {
 }
 
 /** Clock time with Nepali digits (e.g. ०७:३२). */
-export function formatClockNepali(time?: string | null): string | undefined {
+export function formatClockNepali(time?: string | null, lang?: string): string | undefined {
   if (!time) return undefined;
   const short = formatTimeShort(time) ?? time;
-  return toNepaliDigits(short);
+  return toNepaliDigits(short, lang);
 }
 
 export type AyanaMark = "उ" | "द";
@@ -83,7 +84,7 @@ export function formatGhatiEnd(clock?: string | null): string | undefined {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
-type AngaDetail = {
+export type AngaDetail = {
   name_ne?: string;
   name?: string;
   end_ghati_clock?: string;
@@ -314,12 +315,12 @@ export function getSunset(p: PanchangaDay): string | undefined {
   return p.sun?.sunset;
 }
 
-export function getSunriseDisplay(p: PanchangaDay): string | undefined {
-  return formatClockNepali(getSunrise(p));
+export function getSunriseDisplay(p: PanchangaDay, lang?: string): string | undefined {
+  return formatClockNepali(getSunrise(p), lang);
 }
 
-export function getSunsetDisplay(p: PanchangaDay): string | undefined {
-  return formatClockNepali(getSunset(p));
+export function getSunsetDisplay(p: PanchangaDay, lang?: string): string | undefined {
+  return formatClockNepali(getSunset(p), lang);
 }
 
 type SolarCorrection = {
@@ -1255,7 +1256,7 @@ export function formatSpanEndTime(span?: SpanEndBlock | null): string | undefine
 export function getChandraRashiSpans(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   const spans = (detail?.chandra_rashi_spans ?? p.chandra_rashi_spans) as
-    | import("@/lib/api").RashiSpan[]
+    | RashiSpan[]
     | undefined;
   return spans?.length ? spans : undefined;
 }
@@ -1263,7 +1264,7 @@ export function getChandraRashiSpans(p: PanchangaDay) {
 export function getNakshatraPadaSpans(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   const spans = (detail?.nakshatra_pada_spans ?? p.nakshatra_pada_spans) as
-    | import("@/lib/api").NakshatraPadaSpan[]
+    | NakshatraPadaSpan[]
     | undefined;
   return spans?.length ? spans : undefined;
 }
@@ -1289,35 +1290,35 @@ export function getSuryaNakshatra(p: PanchangaDay) {
 export function getChandrabalam(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   // Always from udaya (sunrise→next-sunrise) daily payload in detail.raw
-  return (detail?.chandrabalam ?? p.chandrabalam) as import("@/lib/api").BalamBlock | undefined;
+  return (detail?.chandrabalam ?? p.chandrabalam) as BalamBlock | undefined;
 }
 
 export function getTarabalam(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
-  return (detail?.tarabalam ?? p.tarabalam) as import("@/lib/api").BalamBlock | undefined;
+  return (detail?.tarabalam ?? p.tarabalam) as BalamBlock | undefined;
 }
 
 export function getTarabalaTable(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
-  return (p.tarabala_table ?? detail?.tarabala_table) as import("@/lib/api").NavataraTableBlock | undefined;
+  return (p.tarabala_table ?? detail?.tarabala_table) as NavataraTableBlock | undefined;
 }
 
 export function getChandrabalamTable(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   return (p.chandrabala_table ?? detail?.chandrabala_table) as
-    | import("@/lib/api").NavataraTableBlock
+    | NavataraTableBlock
     | undefined;
 }
 
 export function getHoraSlots(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
-  const block = (p.hora ?? detail?.hora) as import("@/lib/api").ApiHoraSlot[] | undefined;
+  const block = (p.hora ?? detail?.hora) as ApiHoraSlot[] | undefined;
   return Array.isArray(block) ? block : [];
 }
 
 export function getHoraDaySlots(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
-  const block = (p.hora_day ?? detail?.hora_day) as import("@/lib/api").ApiHoraSlot[] | undefined;
+  const block = (p.hora_day ?? detail?.hora_day) as ApiHoraSlot[] | undefined;
   if (Array.isArray(block) && block.length) return block;
   return getHoraSlots(p).filter((slot) => slot.phase === "day");
 }
@@ -1325,7 +1326,7 @@ export function getHoraDaySlots(p: PanchangaDay) {
 export function getPanchakaRahita(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   const rows = (detail?.panchaka_rahita ?? p.panchaka_rahita) as
-    | import("@/lib/api").PanchakaSegment[]
+    | PanchakaSegment[]
     | undefined;
   return rows?.length ? rows : undefined;
 }
@@ -1333,23 +1334,24 @@ export function getPanchakaRahita(p: PanchangaDay) {
 export function getUdayaLagna(p: PanchangaDay) {
   const detail = getPanchangaDetail(p);
   const rows = (detail?.udaya_lagna ?? p.udaya_lagna ?? detail?.lagna_spans ?? p.lagna_spans) as
-    | import("@/lib/api").UdayaLagnaRow[]
+    | UdayaLagnaRow[]
     | undefined;
   return rows?.length ? rows : undefined;
 }
 
-export function formatShortClock(time?: string | null): string | undefined {
+export function formatShortClock(time?: string | null, lang?: string): string | undefined {
   if (!time) return undefined;
   const t = formatTimeShort(time) ?? time.slice(0, 5);
-  return toNepaliDigits(t);
+  return toNepaliDigits(t, lang);
 }
 
 export function formatTimeRangeShort(
   start?: string | null,
-  end?: string | null
+  end?: string | null,
+  lang?: string,
 ): string | undefined {
-  const a = formatShortClock(start);
-  const b = formatShortClock(end);
+  const a = formatShortClock(start, lang);
+  const b = formatShortClock(end, lang);
   if (!a || !b) return undefined;
   return `${a} → ${b}`;
 }

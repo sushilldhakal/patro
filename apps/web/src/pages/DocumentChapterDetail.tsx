@@ -19,7 +19,7 @@ import {
   type DocumentDetailSearch,
   type Shloka,
 } from "@/lib/documents-api";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { suktaAttribution } from "@/lib/sukta-attribution";
 import { useRouteLoading } from "@/lib/route-loading";
 

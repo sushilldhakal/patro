@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 /* The figures that still call bilingualText are the ones whose text is built
    around a formatted number, so they are not single catalogue strings. */
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 const INK = "currentColor";
 const SUN = "#dddd00";

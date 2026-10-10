@@ -4,13 +4,12 @@ import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import {
-  buildPanchangaDetailCells,
   formatPatroSignedCorrection,
   getAbhijitMuhurta,
   getPlanetGocharLines,
   getSolarCorrections,
-  type PanchangaDetailCell,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
+import { buildPanchangaDetailCells, type PanchangaDetailCell } from "@/lib/panchanga-detail-cells";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";

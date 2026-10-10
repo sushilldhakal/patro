@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { CalendarDay } from "@/lib/api";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { getSecondaryCellDate } from "@/lib/local-calendar";
+import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { cn } from "@/lib/utils";
 import {
   Dialog,

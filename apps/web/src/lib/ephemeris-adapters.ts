@@ -5,7 +5,7 @@ import {
   type PanchangaDay,
 } from "@/lib/api";
 import type { PatroDayFetchState } from "@/lib/patro-day-url";
-import { getLagnaSpans } from "@/lib/panchanga-format";
+import { getLagnaSpans } from "@vedic-patro/domain/panchanga-format";
 
 /** Ensure at-time lagna_spans are available for chart + cards (top-level and detail). */
 export function normalizeEphemerisDay(raw: PanchangaDay): PanchangaDay {

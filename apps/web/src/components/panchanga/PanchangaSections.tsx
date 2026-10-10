@@ -43,7 +43,7 @@ import {
   getSunriseHours,
   angaEndDayOffset,
   dayOffsetLabel,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { NivasShoolSegment } from "@/lib/api";
 import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";

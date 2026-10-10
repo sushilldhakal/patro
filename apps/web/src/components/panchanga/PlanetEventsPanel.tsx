@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { fetchGocharJd, gocharKeys, type GocharNextEntry, type LocationParams } from "@/lib/api";
 import {
   formatClockNepali,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";

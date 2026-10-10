@@ -1,7 +1,7 @@
-import type { PatroBrowseEra } from "@/lib/patro-era";
+import { type Era } from "@vedic-patro/domain/era";
 import { useLocale } from "@/lib/i18n";
 
-export function patroEraShortLabel(era: PatroBrowseEra, pick: (ne: string, en: string) => string): string {
+export function patroEraShortLabel(era: Era, pick: (ne: string, en: string) => string): string {
   switch (era) {
     case "ad":
       return pick("ई.सं.", "AD");
@@ -15,7 +15,7 @@ export function patroEraShortLabel(era: PatroBrowseEra, pick: (ne: string, en: s
 }
 
 export function patroEraToggleLabel(
-  era: PatroBrowseEra,
+  era: Era,
   pick: (ne: string, en: string) => string,
   lang: "ne" | "en",
 ): string {
@@ -30,7 +30,7 @@ export function patroEraToggleLabel(
 }
 
 export function patroEraYearSectionTitle(
-  era: PatroBrowseEra,
+  era: Era,
   pick: (ne: string, en: string) => string,
 ): string {
   switch (era) {
@@ -45,7 +45,7 @@ export function patroEraYearSectionTitle(
   }
 }
 
-export function usePatroEraLabels(era: PatroBrowseEra) {
+export function usePatroEraLabels(era: Era) {
   const { pick, lang } = useLocale();
   return {
     short: patroEraShortLabel(era, pick),

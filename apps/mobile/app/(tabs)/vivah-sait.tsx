@@ -5,7 +5,7 @@ import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SuitabilityLegend } from "@/components/sait/SaitSuitability";
 import { fetchSaitDetail, saitDetailKey } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { isGregorianBrowseEra } from "@/lib/patro-era";
+import { isGregorianEra } from "@vedic-patro/domain/era";
 import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -62,7 +62,7 @@ export default function VivahSaitScreen() {
         "No marriage muhurta found for this year.",
       )}
       countLabel={(count, y) =>
-        isGregorianBrowseEra(era)
+        isGregorianEra(era)
           ? pick(
               `ई.सं. ${digits(y)} मा ${digits(count)} विवाह साइत`,
               `${count} marriage muhurtas in ${y} AD`,

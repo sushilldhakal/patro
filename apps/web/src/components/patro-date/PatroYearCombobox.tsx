@@ -10,11 +10,11 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from "@/components/ui/combobox";
-import type { Era, Language } from "@/lib/era";
+import type { Era, Language } from "@vedic-patro/domain/era";
 import { cn } from "@/lib/utils";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
-import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@/lib/patro-year-axis";
+import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { parsePatroYearSearchQuery } from "@/lib/patro-year-search-query";
 import { PatroYearEraToggle } from "./PatroYearEraToggle";
 

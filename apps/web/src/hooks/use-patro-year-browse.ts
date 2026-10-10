@@ -6,7 +6,7 @@ import {
   defaultEraForLanguage,
   type Era,
   type Language,
-} from "@/lib/era";
+} from "@vedic-patro/domain/era";
 
 function positiveInt(y: number): number {
   const t = Math.trunc(y);

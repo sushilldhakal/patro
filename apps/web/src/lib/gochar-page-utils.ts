@@ -8,10 +8,10 @@ import {
   BS_MONTHS_NE,
   BS_MONTHS_SHORT,
 } from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@/lib/era";
-import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
-import { formatBsIsoDateNepali } from "@/lib/panchanga-format";
-import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
+import type { Era } from "@vedic-patro/domain/era";
+import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
+import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
+import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate, canonicalCivilIso, formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import {

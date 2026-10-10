@@ -12,7 +12,7 @@ import {
   getSunrise,
   getTarabalaTable,
   getUdayaLagna,
-} from "@/lib/panchanga-format.web";
+} from "@vedic-patro/domain/panchanga-format";
 
 export type BalamCardItem = {
   key: string;

@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@/lib/kundali/profile-chart";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@/lib/utils";
 

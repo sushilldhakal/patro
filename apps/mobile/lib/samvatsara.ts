@@ -1,7 +1,6 @@
 /** Nepal Bikram Sambat samvatsara (60-year Jovian cycle) — mirrors backend true-Jupiter rules. */
 
-import type { PatroBrowseEra } from "@/lib/patro-era";
-import { isGregorianBrowseEra } from "@/lib/patro-era";
+import { type Era, isGregorianEra } from "@vedic-patro/domain/era";
 
 export interface SamvatsaraInfo {
   key: string;
@@ -145,14 +144,14 @@ export function resolveSamvatsaraForBsYear(
 }
 
 /** Signed patro year used by `samvatsara-table.json` (BS positive, BBS negative). */
-export function signedPatroYearForSamvatsara(era: PatroBrowseEra, browseYear: number): number | undefined {
-  if (isGregorianBrowseEra(era)) return undefined;
+export function signedPatroYearForSamvatsara(era: Era, browseYear: number): number | undefined {
+  if (isGregorianEra(era)) return undefined;
   if (era === "bbs") return -browseYear;
   return browseYear;
 }
 
 export function resolveSamvatsaraForPatroYear(
-  era: PatroBrowseEra,
+  era: Era,
   browseYear: number,
   payload?: SamvatsaraPayload | null,
 ): SamvatsaraInfo | undefined {

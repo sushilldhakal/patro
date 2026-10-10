@@ -11,9 +11,9 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { mapPanchakPeriod, type PanchakPeriod } from "@/lib/panchak/panchak-patro-data";
 import { PANCHAK_VARIETIES, panchakVarietyFromStartAd } from "@/lib/panchak/panchak-types";
-import { formatBsMonthDayPatro } from "@/lib/panchanga-format";
-import { browseEraToApi } from "@/lib/patro-era";
-import { formatBrowsePatroYear } from "@/lib/patro-headline-subtitle";
+import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
+import { eraToApi } from "@vedic-patro/domain/era";
+import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
 import { patroNoteBox } from "@/lib/patro-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
@@ -157,7 +157,7 @@ export default function PanchakPatroScreen() {
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const en = lang === "en";
-  const apiEra = browseEraToApi(era);
+  const apiEra = eraToApi(era);
 
   const yearLabel = useMemo(
     () => formatBrowsePatroYear(era, year, lang, digits),

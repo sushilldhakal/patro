@@ -1,5 +1,5 @@
-import type { Era } from "@/lib/era";
-import type { CalendarDay, Festival, Holiday } from "./api";
+import type { Era } from "./era";
+import type { CalendarDay, Festival, Holiday } from "@vedic-patro/api-client";
 import {
   AD_MONTHS_SHORT,
   AD_MONTHS_SHORT_NE,
@@ -12,7 +12,7 @@ import {
   adToBS,
   bsToAD,
   getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+} from "./bs-calendar";
 import { patroBrowseYearWithinEphemeris } from "./patro-year-axis";
 import { shiftPatroBrowseMonth } from "./patro-year-browse-step";
 import {
@@ -22,7 +22,7 @@ import {
   parseCivilIso,
   parseCivilIsoToDate,
   civilIsoFromDate,
-} from "@vedic-patro/domain/patro-day";
+} from "./patro-day";
 
 const WEEKDAYS_NE = [
   "आइतवार",

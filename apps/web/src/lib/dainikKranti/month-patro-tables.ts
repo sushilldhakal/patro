@@ -18,7 +18,7 @@ import {
   formatVedicPatroTime,
   longitudeToDegreeCells,
   toNepaliDigits,
-} from "@/lib/panchanga-format";
+} from "@vedic-patro/domain/panchanga-format";
 import { formatRashiByNumber, rashiNeFromNumber, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 const GRAHA_EN_BY_KEY: Record<string, string> = {

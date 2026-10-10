@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 /* PakshaStrip still calls bilingualText for its one caption built around a
    formatted number; everything else now comes from the catalogue. */
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
-import { toNepaliDigits } from "@/lib/panchanga-format";
+import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 const INK = "currentColor";
 const MARK = "#f59e0b";

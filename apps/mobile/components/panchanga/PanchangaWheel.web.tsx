@@ -15,7 +15,7 @@ import ZoomIn from "lucide-react/dist/esm/icons/zoom-in";
 import ZoomOut from "lucide-react/dist/esm/icons/zoom-out";
 import type { PanchangaDay } from "@/lib/api";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
-import { getPanchangaDetail } from "@/lib/panchanga-format.web";
+import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
   buildWheelDetail,
