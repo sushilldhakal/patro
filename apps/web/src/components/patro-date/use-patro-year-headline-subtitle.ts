@@ -36,7 +36,7 @@ export function usePatroYearHeadlineSubtitle(
 
   const festivalsQ = useQuery({
     queryKey: ["patro-headline-year", era, year] as const,
-    queryFn: () => fetchFestivals(year, undefined, era),
+    queryFn: () => fetchFestivals(year, { era }),
     enabled: needsApi,
     staleTime: 1000 * 60 * 30,
   });

@@ -78,24 +78,23 @@ export {
   fetchGrahaSthiti,
   panchakKeys,
   saitKeys,
+  fetchHolidays,
+  fetchFestivals,
+  elementKeys,
+  fetchElementSpans,
+  fetchVastuSketch,
+  streamKundaliReport,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   RashifalPersonal,
-  ElementSpansResponse,
-  ReportRecord,
   RashifalPeriod,
-  VastuSketchRequest,
-  ElementSpanRange,
   RashifalBlock,
   PanchangaDay,
   MonthCalendar,
   CalendarDay,
-  HolidaysResponse,
-  FestivalsResponse,
-  VastuSketchResponse,
   MonthBrowseEra,
   YearWheelCalendar,
 } from "@vedic-patro/api-client";
@@ -365,6 +364,7 @@ function locationKey(loc?: LocationParams): string {
 
 configureApiClient({
   baseUrl: API_BASE,
+  dataBaseUrl: DATA_BASE,
   get: offlineAwareJson,
   appendLocation: appLocationQuery,
   locationKey,
@@ -479,14 +479,6 @@ export const fetchTodayPanchanga = (location?: LocationParams) => {
   );
 };
 
-export const fetchHolidays = (year: number) =>
-  get<HolidaysResponse>(withPanchangaCacheVersion(`/nepal/holidays?year=${year}&era=bs`));
-
-export const fetchFestivals = (year: number, language: "ne" | "en" = "ne") =>
-  get<FestivalsResponse>(
-    withPanchangaCacheVersion(`/nepal/festivals?year=${year}&era=bs&language=${language}`),
-  );
-
 // ─── Rashifal ────────────────────────────────────────────────────────────────
 
 export const rashifalKeys = {
@@ -544,127 +536,13 @@ export function fetchPersonalRashifal(
   );
 }
 
-export const elementKeys = {
-  day: (name: string, date: string, location?: LocationParams) =>
-    ["element", "day", name, date, locationCacheKey(location)] as const,
-  spans: (name: string, range: ElementSpanRange, location?: LocationParams) =>
-    [
-      "element",
-      "spans",
-      name,
-      range.era,
-      range.year,
-      range.month,
-      locationCacheKey(location),
-    ] as const,
-};
-
 export const sunTimesKeys = {
   year: (year: number, era: string, location?: LocationParams) =>
     ["sun-times", "year", era, year, locationCacheKey(location)] as const,
-};
-
-/** Span-kind elements (tithi, nakshatra, yoga, karana…) over a whole month. */
-export const fetchElementSpans = (
-  name: string,
-  range: ElementSpanRange,
-  location?: LocationParams,
-) => {
-  // The era middleware turns era + year + month into the JD span server-side.
-  const query = new URLSearchParams({
-    era: range.era,
-    year: String(range.year),
-    month: String(range.month),
-  });
-  return get<ElementSpansResponse>(
-    appendLocation(withPanchangaCacheVersion(`/panchanga/element/${name}/spans?${query.toString()}`), location),
-  );
 };
 
 export function timeShort(v: PanchangaDay["sunrise"]): string {
   if (!v) return "—";
   if (typeof v === "string") return v.slice(0, 5);
   return v.local_time_short?.slice(0, 5) ?? "—";
-}
-
-function parseNdjsonLines(text: string, onRecord: (record: ReportRecord) => void) {
-  const lines = text.split("\n");
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (line) onRecord(JSON.parse(line) as ReportRecord);
-  }
-}
-
-async function consumeNdjsonResponse(
-  res: Response,
-  onRecord: (record: ReportRecord) => void,
-): Promise<void> {
-  if (res.body && typeof res.body.getReader === "function") {
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    const flush = (chunk: string, final = false) => {
-      buffer += chunk;
-      let nl: number;
-      while ((nl = buffer.indexOf("\n")) >= 0) {
-        const line = buffer.slice(0, nl).trim();
-        buffer = buffer.slice(nl + 1);
-        if (line) onRecord(JSON.parse(line) as ReportRecord);
-      }
-      if (final && buffer.trim()) {
-        onRecord(JSON.parse(buffer.trim()) as ReportRecord);
-        buffer = "";
-      }
-    };
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      flush(decoder.decode(value, { stream: true }));
-    }
-    flush(decoder.decode(), true);
-    return;
-  }
-  parseNdjsonLines(await res.text(), onRecord);
-}
-
-/** Stream kundali report NDJSON — same contract as web `streamKundaliReport`. */
-export async function streamKundaliReport(
-  moment: InstantQuery,
-  location: LocationParams | undefined,
-  options: { ayanamsha?: string; lang?: string; force?: boolean } | undefined,
-  onRecord: (record: ReportRecord) => void,
-  signal?: AbortSignal,
-): Promise<{ fromCache: boolean }> {
-  const params = appendInstantParams(new URLSearchParams(), moment);
-  if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
-  if (options?.lang) params.set("lang", options.lang);
-  if (options?.force) params.set("force", "true");
-  const path = appendLocation(`/kundali/report?${params.toString()}`, location);
-
-  const res = await fetch(`${DATA_BASE}${path}`, {
-    signal,
-    headers: { Accept: "application/x-ndjson" },
-  });
-  if (!res.ok) {
-    throw new Error(`API ${res.status}: ${path}`);
-  }
-
-  const fromCache = res.headers.get("X-Report-Cache") === "hit";
-  await consumeNdjsonResponse(res, onRecord);
-  return { fromCache };
-}
-
-export async function fetchVastuSketch(
-  body: VastuSketchRequest,
-  signal?: AbortSignal,
-): Promise<VastuSketchResponse> {
-  const path = "/vastu/sketch";
-  const res = await fetch(`${DATA_BASE}${path}`, {
-    method: "POST",
-    signal,
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
-  return res.json();
 }

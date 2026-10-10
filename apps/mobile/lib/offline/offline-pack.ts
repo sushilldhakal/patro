@@ -191,8 +191,8 @@ function calendarTasks(year: number, location: LocationParams | undefined): Task
   const tasks: Task[] = [
     () => wheelFor(year, location),
     () => fetchHolidays(year),
-    () => fetchFestivals(year, "ne"),
-    () => fetchFestivals(year, "en"),
+    () => fetchFestivals(year, { language: "ne" }),
+    () => fetchFestivals(year, { language: "en" }),
     () => fetchSpecialMonths(year),
   ];
   for (let month = 1; month <= 12; month += 1) {

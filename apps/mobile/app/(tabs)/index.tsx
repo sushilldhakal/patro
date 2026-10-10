@@ -222,7 +222,7 @@ export default function HomeScreen() {
   const festivalQueries = useQuery({
     queryKey: ["festivals-home", ...festivalYears, lang],
     queryFn: async () => {
-      const lists = await Promise.all(festivalYears.map((y) => fetchFestivals(y, lang === "en" ? "en" : "ne")));
+      const lists = await Promise.all(festivalYears.map((y) => fetchFestivals(y, { language: lang === "en" ? "en" : "ne" })));
       const byKey = new Map<string, (typeof lists)[0]["festivals"][0]>();
       for (const res of lists) {
         for (const f of res.festivals ?? []) {

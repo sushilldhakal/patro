@@ -20,11 +20,15 @@ import type {
   DashaTreeNode,
   EclipseYearResponse,
   ElementDayResponse,
+  ElementSpanRange,
+  ElementSpansResponse,
+  FestivalsResponse,
   GocharIngressResponse,
   GocharResponse,
   GrahaAstaResponse,
   GrahaSthitiResponse,
   GrahaVakriResponse,
+  HolidaysResponse,
   JanmaRashi,
   KundaliDetailResponse,
   KundaliMilanResponse,
@@ -34,6 +38,7 @@ import type {
   PanchakYearResponse,
   PanchangaDay,
   PatroApiLimits,
+  ReportRecord,
   SaitDetailResponse,
   SaitMonthAllResponse,
   SaitPersonalizeResponse,
@@ -42,6 +47,8 @@ import type {
   SpecialMonthsResponse,
   SunYearResponse,
   TropicalSeasonsResponse,
+  VastuSketchRequest,
+  VastuSketchResponse,
   VimshottariResponse,
   YogaReferenceResponse,
 } from "./types";
@@ -100,6 +107,8 @@ export async function apiErrorFrom(res: Response, path: string): Promise<ApiErro
 export interface ApiTransport {
   /** Unversioned API base (`…/api`), for the few calls outside the versioned data base. */
   baseUrl: string;
+  /** Versioned data base (`…/api/v1`), for requests that are not a plain GET. */
+  dataBaseUrl: string;
   /** GET a path under the versioned data base (`/panchanga/…`) and parse the JSON. */
   get<T>(path: string): Promise<T>;
   /** Append the location query this app sends (its exact form is part of the URL contract). */
@@ -572,5 +581,139 @@ export const saitKeys = {
   entries: (year: number, category: string, location?: LocationParams) =>
     ["sait", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const,
 };
+
+
+
+// ─── Holidays and festivals ───────────────────────────────────────────────────
+// The server defaults `language` from `era` (bs → ne, ad → en), so it is only
+// sent when it differs — e.g. English festival names for a BS year.
+
+export const fetchHolidays = (year: number, era: Era = "bs") =>
+  get<HolidaysResponse>(withPanchangaCacheVersion(`/nepal/holidays?year=${year}&era=${era}`));
+
+export const fetchFestivals = (
+  year: number,
+  options: { era?: Era; language?: "ne" | "en"; month?: number } = {},
+) => {
+  const era = options.era ?? "bs";
+  const language = options.language ?? (era === "ad" || era === "bc" ? "en" : "ne");
+  let path = `/nepal/festivals?year=${year}&era=${era}&language=${language}`;
+  if (options.month != null) path += `&month=${options.month}`;
+  return get<FestivalsResponse>(withPanchangaCacheVersion(path));
+};
+
+// ─── Panchanga elements ───────────────────────────────────────────────────────
+
+export const elementKeys = {
+  list: () => ["element", "list"] as const,
+  spans: (name: string, range: ElementSpanRange, location?: LocationParams) =>
+    ["element", "spans", name, range.era, range.year, range.month, locationCacheKey(location)] as const,
+  month: (name: string, bsYear: number, bsMonth: number, location?: LocationParams) =>
+    ["element", "month", name, bsYear, bsMonth, locationCacheKey(location)] as const,
+  day: (name: string, date: string, location?: LocationParams) =>
+    ["element", "day", name, date, locationCacheKey(location)] as const,
+};
+
+export const fetchElementSpans = (
+  name: string,
+  range: ElementSpanRange,
+  location?: LocationParams,
+): Promise<ElementSpansResponse> => {
+  // The era middleware turns era + year + month into the JD span server-side.
+  const query = new URLSearchParams({
+    era: range.era,
+    year: String(range.year),
+    month: String(range.month),
+  });
+  return get<ElementSpansResponse>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/element/${name}/spans?${query.toString()}`),
+      location,
+    ),
+  );
+};
+
+// ─── Vastu ────────────────────────────────────────────────────────────────────
+
+export async function fetchVastuSketch(
+  body: VastuSketchRequest,
+  signal?: AbortSignal,
+): Promise<VastuSketchResponse> {
+  const path = "/vastu/sketch";
+  const res = await fetch(`${current().dataBaseUrl}${path}`, {
+    method: "POST",
+    signal,
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await apiErrorFrom(res, path);
+  return res.json();
+}
+
+// ─── Kundali report (NDJSON stream) ───────────────────────────────────────────
+
+function parseNdjsonLines(text: string, onRecord: (record: ReportRecord) => void) {
+  for (const raw of text.split("\n")) {
+    const line = raw.trim();
+    if (line) onRecord(JSON.parse(line) as ReportRecord);
+  }
+}
+
+/**
+ * Hands each NDJSON record to `onRecord` as it arrives. React Native's fetch
+ * has no readable body stream, so there the whole response is read and split.
+ */
+async function consumeNdjsonResponse(res: Response, onRecord: (record: ReportRecord) => void) {
+  if (res.body && typeof res.body.getReader === "function") {
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    const flush = (chunk: string, final = false) => {
+      buffer += chunk;
+      let nl: number;
+      while ((nl = buffer.indexOf("\n")) >= 0) {
+        const line = buffer.slice(0, nl).trim();
+        buffer = buffer.slice(nl + 1);
+        if (line) onRecord(JSON.parse(line) as ReportRecord);
+      }
+      if (final && buffer.trim()) {
+        onRecord(JSON.parse(buffer.trim()) as ReportRecord);
+        buffer = "";
+      }
+    };
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      flush(decoder.decode(value, { stream: true }));
+    }
+    flush(decoder.decode(), true);
+    return;
+  }
+  parseNdjsonLines(await res.text(), onRecord);
+}
+
+export async function streamKundaliReport(
+  moment: InstantQuery,
+  location: LocationParams | undefined,
+  options: { ayanamsha?: string; lang?: string; force?: boolean } | undefined,
+  onRecord: (record: ReportRecord) => void,
+  signal?: AbortSignal,
+): Promise<{ fromCache: boolean }> {
+  const params = appendInstantParams(new URLSearchParams(), moment);
+  if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
+  if (options?.lang) params.set("lang", options.lang);
+  if (options?.force) params.set("force", "true");
+  const path = appendLocation(`/kundali/report?${params.toString()}`, location);
+
+  const res = await fetch(`${current().dataBaseUrl}${path}`, {
+    signal,
+    headers: { Accept: "application/x-ndjson" },
+  });
+  if (!res.ok) throw await apiErrorFrom(res, path);
+
+  const fromCache = res.headers.get("X-Report-Cache") === "hit";
+  await consumeNdjsonResponse(res, onRecord);
+  return { fromCache };
+}
 
 

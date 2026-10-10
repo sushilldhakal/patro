@@ -213,7 +213,7 @@ export function Holidays() {
 
   const festivalsQ = useQuery({
     queryKey: holidayKeys.festivals(yearBrowse.year, yearBrowse.era),
-    queryFn: () => fetchFestivals(yearBrowse.year, undefined, yearBrowse.era),
+    queryFn: () => fetchFestivals(yearBrowse.year, { era: yearBrowse.era }),
     staleTime: 1000 * 60 * 60,
   });
 

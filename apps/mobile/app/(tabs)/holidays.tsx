@@ -93,7 +93,7 @@ export default function HolidaysScreen() {
 
   const festivalsQ = useQuery({
     queryKey: apiKeys.festivals(year, lang),
-    queryFn: () => fetchFestivals(year, lang),
+    queryFn: () => fetchFestivals(year, { language: lang }),
     staleTime: 1000 * 60 * 60,
   });
 

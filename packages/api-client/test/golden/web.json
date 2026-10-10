@@ -702,16 +702,16 @@
   "/api/v1/nepal/patro/2083/6?cv=4703"
  ],
  "fetchHolidays": [
-  "/api/v1/nepal/holidays?era=bs&year=2083&language=ne&cv=4703"
+  "/api/v1/nepal/holidays?year=2083&era=bs&cv=4703"
  ],
  "fetchHolidays-ad": [
-  "/api/v1/nepal/holidays?era=ad&year=2026&language=en&cv=4703"
+  "/api/v1/nepal/holidays?year=2026&era=ad&cv=4703"
  ],
  "fetchFestivals": [
-  "/api/v1/nepal/festivals?era=bs&year=2083&language=ne&cv=4703"
+  "/api/v1/nepal/festivals?year=2083&era=bs&language=ne&cv=4703"
  ],
  "fetchFestivals-month": [
-  "/api/v1/nepal/festivals?era=bs&year=2083&language=ne&month=6&cv=4703"
+  "/api/v1/nepal/festivals?year=2083&era=bs&language=ne&month=6&cv=4703"
  ],
  "fetchUpcomingFestivals": [
   "/api/v1/nepal/festivals/upcoming?days=30&limit=10&holidays_only=true"
