@@ -19,10 +19,11 @@
  * every era's label alongside the Julian Day it computed from.
  */
 
-/** The four eras. All of them take a **positive** year — the era carries the sign. */
-export const ERA_CODES = ["ad", "bc", "bs", "bbs"] as const;
+import { ERAS, type Era } from "@vedic-patro/domain/era";
 
-export type Era = (typeof ERA_CODES)[number];
+export type { Era };
+/** The four eras. All of them take a **positive** year — the era carries the sign. */
+export const ERA_CODES = ERAS;
 
 export type Language = "en" | "ne";
 

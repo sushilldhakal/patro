@@ -24,7 +24,7 @@ import {
   parseFloorPref,
   type HousePlan,
   type SpaceKind,
-} from "@/lib/vastu-plan";
+} from "@vedic-patro/domain/vastu-plan";
 
 export const HOUSE_KEY = "vp.vastu.house";
 export const PLOT_KEY = "vp.vastu.plot";

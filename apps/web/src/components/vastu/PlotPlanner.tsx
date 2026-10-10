@@ -13,7 +13,7 @@ import {
   storeyPref,
   type HousePlan,
   type StoreyId,
-} from "@/lib/vastu-plan";
+} from "@vedic-patro/domain/vastu-plan";
 import { HouseRequirementsForm, readPlan } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";

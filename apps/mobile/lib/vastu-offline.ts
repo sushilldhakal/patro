@@ -20,7 +20,7 @@ import {
   type VastuMode,
   type SpaceKind,
   type StoreyId,
-} from "@/lib/vastu-plan";
+} from "@vedic-patro/domain/vastu-plan";
 
 type SpaceAssignment = PlannedSpace & {
   zone: VastuDirectionId;

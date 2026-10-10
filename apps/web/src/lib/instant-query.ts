@@ -11,18 +11,10 @@
  * new callers should use this.
  */
 
-import type { Era } from "@/lib/era";
+import type { Era, InstantQuery } from "@vedic-patro/domain/era";
 import { parseCivilIso } from "@/lib/patro-day";
 
-/** A civil day in `inputEra`, plus the local time of day on it. */
-export type InstantQuery = {
-  inputEra: Era;
-  year: number;
-  month: number;
-  day: number;
-  /** Observer-local `HH:MM`. */
-  clock: string;
-};
+export type { Era, InstantQuery };
 
 /**
  * Moment from a civil `YYYY-MM-DD` the backend already gave us, plus a clock.

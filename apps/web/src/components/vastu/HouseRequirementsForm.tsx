@@ -13,7 +13,7 @@ import {
   type HousePlan,
   type SpaceKind,
   type VastuMode,
-} from "@/lib/vastu-plan";
+} from "@vedic-patro/domain/vastu-plan";
 import { cn } from "@/lib/utils";
 
 const PLAN_KEY = "vp.vastu.house";

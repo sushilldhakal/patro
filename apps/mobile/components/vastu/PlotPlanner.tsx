@@ -27,7 +27,7 @@ import {
   storeyPref,
   type HousePlan,
   type StoreyId,
-} from "@/lib/vastu-plan";
+} from "@vedic-patro/domain/vastu-plan";
 import {
   DEFAULT_PLOT_STATE,
   readStoredHousePlan,
@@ -36,7 +36,7 @@ import {
   writeStoredPlot,
   type PlotState,
 } from "@/lib/vastu-storage";
-import { DEFAULT_HOUSE_PLAN } from "@/lib/vastu-plan";
+import { DEFAULT_HOUSE_PLAN } from "@vedic-patro/domain/vastu-plan";
 import { HouseRequirementsForm } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";

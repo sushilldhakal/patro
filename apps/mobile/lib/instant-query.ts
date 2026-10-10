@@ -7,19 +7,10 @@
  * into a Julian Day; this module converts nothing.
  */
 
+import type { Era, InstantQuery } from "@vedic-patro/domain/era";
 import { parseCivilIso } from "@/lib/patro-day";
 
-export type Era = "ad" | "bc" | "bs" | "bbs";
-
-/** A civil day in `inputEra`, plus the local time of day on it. */
-export type InstantQuery = {
-  inputEra: Era;
-  year: number;
-  month: number;
-  day: number;
-  /** Observer-local `HH:MM`. */
-  clock: string;
-};
+export type { Era, InstantQuery };
 
 /** Moment from a civil `YYYY-MM-DD` the backend already gave us, plus a clock. */
 export function instantFromCivilIso(dateAd: string, clock: string): InstantQuery {
