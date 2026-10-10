@@ -12,6 +12,14 @@ echo "==> Pulling latest code (${DEPLOY_REF})"
 git fetch origin "${DEPLOY_REF}"
 git reset --hard "origin/${DEPLOY_REF}"
 
+# Bash keeps reading the copy of this script it started with, so changes that
+# the pull above just brought in would only take effect on the *next* deploy.
+# Re-run the freshly pulled script once so every deploy uses its own steps.
+if [[ "${DEPLOY_REEXEC:-0}" != "1" ]]; then
+  export DEPLOY_REEXEC=1
+  exec bash "${APP_DIR}/scripts/deploy.sh" "$@"
+fi
+
 echo "==> Installing dependencies"
 source .venv/bin/activate
 pip install --upgrade pip -q
