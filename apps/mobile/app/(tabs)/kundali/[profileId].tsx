@@ -18,7 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
-import { type AyanamshaMode } from "@/shared/ayanamsha";
+import { type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { getStoredAyanamshaMode, setStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";

@@ -9,7 +9,7 @@ import {
   splitJanmaPhala,
   type JanmaPhalaGrahaCol,
   type JanmaPhalaRow,
-} from "@/shared/janma-phala-tables";
+} from "@vedic-patro/domain/janma-phala-tables";
 import { JanmaPhalaChartSummary } from "@/components/kundali/JanmaPhalaChartSummary";
 import {
   Table,

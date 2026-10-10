@@ -15,7 +15,7 @@
 
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { CARDINAL_WALLS, type CardinalWall } from "@/shared/vastu";
+import { CARDINAL_WALLS, type CardinalWall } from "@vedic-patro/domain/vastu";
 import {
   DEFAULT_HOUSE_PLAN,
   FLOOR_SPACES,

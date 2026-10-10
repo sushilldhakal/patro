@@ -43,7 +43,7 @@ import {
   type VastuGunaId,
   type VastuPadaId,
   type VastuSelectionId,
-} from "@/shared/vastu";
+} from "@vedic-patro/domain/vastu";
 import { cn } from "@/lib/utils";
 
 /** How long to wait for a first heading before calling the compass unusable. */

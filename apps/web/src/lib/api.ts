@@ -2,7 +2,7 @@
 // browser never makes a cross-origin request (no CORS). Override with
 // VITE_API_BASE_URL for a split host (e.g. http://localhost:8080 in dev).
 import type { PlannedSpace, SpaceAssignment } from "@/lib/vastu-plan";
-import type { VastuDirectionId } from "@/shared/vastu";
+import type { VastuDirectionId } from "@vedic-patro/domain/vastu";
 import { buildApiQuery, getLanguageForEra, type Era } from "@/lib/era";
 import {
   appendInstantParams,

@@ -10,7 +10,7 @@
  * the change here.
  */
 import type { VastuSketchRequest, VastuSketchResponse } from "@/lib/api";
-import type { CardinalWall, VastuDirectionId } from "@/shared/vastu";
+import type { CardinalWall, VastuDirectionId } from "@vedic-patro/domain/vastu";
 import {
   clampStoreys,
   type FloorPref,

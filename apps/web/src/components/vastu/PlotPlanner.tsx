@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
-import { CARDINAL_WALLS, type CardinalWall } from "@/shared/vastu";
+import { CARDINAL_WALLS, type CardinalWall } from "@vedic-patro/domain/vastu";
 import { useVastuSketch } from "@/lib/use-vastu-sketch";
 import {
   assignmentsOnStorey,

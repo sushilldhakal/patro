@@ -13,7 +13,7 @@ import {
   TERMS_INTRO,
   TERMS_SECTIONS,
   type LegalSection,
-} from "@/shared/legal-copy";
+} from "@vedic-patro/domain/legal-copy";
 
 function LegalBody({
   intro,

@@ -1,7 +1,7 @@
 import { Linking, Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
-import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@/shared/legal-copy";
+import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 

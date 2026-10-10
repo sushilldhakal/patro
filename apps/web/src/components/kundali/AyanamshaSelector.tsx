@@ -4,7 +4,7 @@ import {
   getAyanamshaModeInfo,
   matchesPanchangaAngas,
   type AyanamshaMode,
-} from "@/shared/ayanamsha";
+} from "@vedic-patro/domain/ayanamsha";
 import { cn } from "@/lib/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 

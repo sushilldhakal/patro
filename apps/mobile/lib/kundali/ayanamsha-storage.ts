@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { AYANAMSHA_MODES, type AyanamshaMode } from "@/shared/ayanamsha";
+import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 
 export const AYANAMSHA_STORAGE_KEY = "dhakalPatroAyanamshaMode";
 

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
-import { getAyanamshaModeInfo, type AyanamshaMode } from "@/shared/ayanamsha";
+import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";
 import { normalizeEphemerisDay } from "@/lib/ephemeris-adapters";
 import {

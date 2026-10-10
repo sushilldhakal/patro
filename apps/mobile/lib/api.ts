@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { offlineAwareGet } from "@/lib/offline/offline-http";
 import Constants from "expo-constants";
 import type { PlannedSpace, SpaceAssignment } from "@/lib/vastu-plan";
-import type { VastuDirectionId } from "@/shared/vastu";
+import type { VastuDirectionId } from "@vedic-patro/domain/vastu";
 import {
   appendBirthInstantParams,
   appendInstantParams,

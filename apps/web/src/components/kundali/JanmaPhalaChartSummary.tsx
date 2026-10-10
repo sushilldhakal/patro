@@ -1,4 +1,4 @@
-import type { JanmaPhalaHintPart } from "@/shared/janma-phala-tables";
+import type { JanmaPhalaHintPart } from "@vedic-patro/domain/janma-phala-tables";
 import { cn } from "@/lib/utils";
 
 export function JanmaPhalaChartSummary({

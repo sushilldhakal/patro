@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Keeps src/shared portable between the website and the mobile app: plain
-// TypeScript that imports only from inside src/shared. See src/shared/README.md.
+// Keeps packages/domain portable between the website and the mobile app:
+// plain TypeScript that imports only from inside this package.
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const root = new URL("../src/shared/", import.meta.url).pathname;
+const root = new URL("../src/", import.meta.url).pathname;
 const problems = [];
 
 function walk(dir) {
@@ -17,21 +17,21 @@ function walk(dir) {
 
 function check(path) {
   const rel = relative(root, path);
-  if (path.endsWith(".tsx")) problems.push(`${rel}: shared files must be .ts (no JSX)`);
+  if (path.endsWith(".tsx")) problems.push(`${rel}: domain files must be .ts (no JSX)`);
   const text = readFileSync(path, "utf8");
   for (const m of text.matchAll(/(?:from|import)\s*\(?\s*["']([^"']+)["']/g)) {
     if (!m[1].startsWith("./") && !m[1].startsWith("../")) {
-      problems.push(`${rel}: imports "${m[1]}" — shared files may only import from src/shared`);
+      problems.push(`${rel}: imports "${m[1]}" — domain files may only import from this package`);
     }
   }
   if (/\b(window|document|localStorage|navigator)\./.test(text)) {
-    problems.push(`${rel}: uses a browser API — keep platform code out of src/shared`);
+    problems.push(`${rel}: uses a browser API — keep platform code out of packages/domain`);
   }
 }
 
 walk(root);
 if (problems.length) {
-  console.error("src/shared check failed:\n  " + problems.join("\n  "));
+  console.error("packages/domain check failed:\n  " + problems.join("\n  "));
   process.exit(1);
 }
-console.log("src/shared ok");
+console.log("packages/domain ok");

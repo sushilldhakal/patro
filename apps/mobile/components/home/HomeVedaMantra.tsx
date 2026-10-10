@@ -11,7 +11,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { activeTokenAt, buildWordTrack } from "@/shared/word-tracking";
+import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
 
 function sourceLine(data: VedaDaily, lang: "ne" | "en", digits: (v: string | number) => string): string {
   const ne = lang === "ne";

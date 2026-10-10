@@ -17,7 +17,7 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { LEGAL_SITE } from "@/shared/legal-copy";
+import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { chapterLabel } from "@/lib/learn/chapter-labels";
 
 /**

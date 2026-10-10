@@ -29,7 +29,7 @@ import {
   type VastuGunaId,
   type VastuPadaId,
   type VastuSelectionId,
-} from "@/shared/vastu";
+} from "@vedic-patro/domain/vastu";
 import { cn } from "@/lib/utils";
 
 function Chip({

@@ -13,7 +13,7 @@ import {
   GRAHA_ANCHOR_ORDER,
   VARGA_OPTIONS,
   vargaOption,
-} from "@/shared/varga-display";
+} from "@vedic-patro/domain/varga-display";
 import { GRAHA_NAME } from "@/lib/graha-details";
 import { cn } from "@/lib/utils";
 

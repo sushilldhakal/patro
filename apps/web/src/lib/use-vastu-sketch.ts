@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchVastuSketch, type VastuSketchRequest } from "@/lib/api";
-import type { CardinalWall } from "@/shared/vastu";
+import type { CardinalWall } from "@vedic-patro/domain/vastu";
 import type { HousePlan } from "@/lib/vastu-plan";
 
 /** How long the plot/requirements must sit still before the sketch is re-asked for. */

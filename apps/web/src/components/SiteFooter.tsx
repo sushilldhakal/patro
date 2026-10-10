@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@/shared/legal-copy";
+import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 
 export function SiteFooter() {
   const { t } = useTranslation();

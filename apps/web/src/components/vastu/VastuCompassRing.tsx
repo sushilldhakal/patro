@@ -10,7 +10,7 @@ import {
   evenBearings,
   vastuElementAtBearing,
   vastuWheelPoint,
-} from "@/shared/vastu";
+} from "@vedic-patro/domain/vastu";
 import { RING_SIZE, R_HOUSE } from "@/lib/vastu-ring";
 import {
   ArcLabel,

@@ -5,7 +5,7 @@ import {
   getAyanamshaModeInfo,
   matchesPanchangaAngas,
   type AyanamshaMode,
-} from "@/shared/ayanamsha";
+} from "@vedic-patro/domain/ayanamsha";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";

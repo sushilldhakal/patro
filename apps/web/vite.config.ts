@@ -141,6 +141,8 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         "@tanstack/history",
         "react-i18next",
         "i18next",
+        // Workspace packages ship TypeScript source, so SSR must bundle them.
+        /^@vedic-patro\//,
       ],
     },
     optimizeDeps: {

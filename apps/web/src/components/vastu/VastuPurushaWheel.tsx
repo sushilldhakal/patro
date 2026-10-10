@@ -23,7 +23,7 @@ import {
   vastuWheelPoint,
   type VastuGunaId,
   type VastuSelectionId,
-} from "@/shared/vastu";
+} from "@vedic-patro/domain/vastu";
 import { cn } from "@/lib/utils";
 
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
