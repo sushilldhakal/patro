@@ -1,5 +1,5 @@
 import type { PanchakPeriodResponse } from "@/lib/api";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 
 export interface PanchakMoment {
   bsYear: number;

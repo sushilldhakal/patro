@@ -4,7 +4,7 @@ import {
   AD_MONTH_NAMES_NE,
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import {
   getLagnaSpans,
   getPanchangaDetail,

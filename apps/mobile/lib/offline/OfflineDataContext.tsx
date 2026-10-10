@@ -19,7 +19,7 @@ import {
 } from "@/lib/offline/offline-pack";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { locationCacheKey, type LocationParams } from "@/lib/api";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 
 const WIFI_ONLY_PREF_KEY = "offline_wifi_only_v1";
 

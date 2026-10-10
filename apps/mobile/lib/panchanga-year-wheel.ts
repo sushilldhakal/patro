@@ -11,11 +11,10 @@ import type { PanchangaDay, YearWheelCalendar } from "@/lib/api";
 import {
   adToBS,
   bsToAD,
-  BS_SUPPORTED_END_YEAR,
-  BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   shiftBsMonth,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 
 export interface YearWheelDay {
   /** 1-based position in the year — what the scrub slider carries. */

@@ -7,7 +7,7 @@ import {
   BS_MONTHS_NE,
   adToBS,
   bsMonthLabel,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import { MONTH_HERO_COLORS } from "@/lib/theme";
 import { bsMonthArt } from "@/lib/month-art";

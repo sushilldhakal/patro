@@ -9,7 +9,7 @@ import { DayTimeline } from "@/components/panchanga/DayTimeline";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE, adToBS } from "@vedic-patro/domain/bs-calendar";
 import {
   formatTimeShort,
   getPanchangaDetail,

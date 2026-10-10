@@ -20,7 +20,7 @@ import { formatClockParts, parseClockParts } from "@/components/panchanga/use-pa
 import { useLocale } from "@/i18n/locale";
 import { patroMobilePickerBtn, patroMonthNavBtn } from "@/lib/patro-classes";
 import { BsNativeSelect } from "@/components/BsNativeSelect";
-import { getBSMonthLength } from "@/lib/bs-calendar";
+import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { browseYearRangeBounds, windowedBrowseYearSelectOptions } from "@/lib/patro-browse-year-items";
 import type { Era } from "@/lib/era";
 import { buildAdDayOptions, buildBsDayOptions } from "@/lib/patro-date-options";

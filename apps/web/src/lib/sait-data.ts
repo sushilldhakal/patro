@@ -10,7 +10,7 @@ import {
   BS_SUPPORTED_END_YEAR,
   BS_SUPPORTED_START_YEAR,
   getCurrentBs,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 
 export type SaitCategoryId =
   | "vivah"

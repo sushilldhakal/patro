@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import type { SelectOption } from "@/components/ui/BsNativeSelect";
-import { getBSMonthLength } from "@/lib/bs-calendar";
+import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { clampBrowseYear } from "@/lib/patro-browse-years";
 import type { PatroBrowseEra } from "@/lib/patro-era";
 import type { PatroDateNavMode } from "./types";

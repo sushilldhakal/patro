@@ -9,7 +9,7 @@ import {
   type DashaSystem,
   type DashaTreeNode,
 } from "@/lib/api";
-import { formatDashaMoment } from "@/lib/bs-calendar";
+import { formatDashaMoment } from "@vedic-patro/domain/bs-calendar";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import {
   DASHA_LORD_EN,

@@ -11,7 +11,7 @@ import {
   BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   shiftBsMonth,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 
 export interface YearWheelDay {
   index: number;

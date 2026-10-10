@@ -67,7 +67,7 @@ import {
   wheelYearScrubSpeed,
 } from "@/lib/wheel-classes";
 import { cn } from "@/lib/utils";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 
 function bsMonthEnOf(ne: string): string {

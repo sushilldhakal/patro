@@ -20,7 +20,7 @@ import {
   type PanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
-import { adToBS, bsToAdOrNull, getCurrentBs } from "../lib/bs-calendar";
+import { adToBS, bsToAdOrNull, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { cn } from "@/lib/utils";
 import { patroAsideLink, patroAsideTab } from "@/lib/patro-classes";
 import { canonicalCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";

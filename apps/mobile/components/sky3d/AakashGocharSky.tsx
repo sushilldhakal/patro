@@ -35,7 +35,7 @@ import {
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
   WEEKDAYS_SHORT_NE,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
 import { bikramFromSun } from "@/lib/sky3d/bikram-solar";

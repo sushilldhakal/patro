@@ -2,7 +2,7 @@ import {
   bsToAdOrNull,
   getBSMonthLength,
   getSupportedAdBounds,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { fetchPanchangaDay, type LocationParams } from "@/lib/api";
 import { getLanguageForEra } from "@/lib/era";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";

@@ -1,5 +1,5 @@
 import calendarData from "./bs-calendar-data.json"
-import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "@vedic-patro/domain/patro-day"
+import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "./patro-day"
 
 export const BS_MONTH_NAMES = [
   "Baisakh", "Jestha", "Ashadh", "Shrawan", "Bhadra", "Ashwin",
@@ -496,4 +496,59 @@ export function formatZonedAdMoment(
   const monthNe = AD_MONTH_NAMES_NE[z.month - 1]
   const weekdayNe = WEEKDAY_FULL_NE[z.weekday] ?? ""
   return `${monthNe} ${digits(z.day)}, ${digits(z.year)}, ${weekdayNe} ${digits(time)}`
+}
+
+export function todayAdString(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Devanagari digits for Nepali UI. */
+export function toNepaliDigits(value: string | number): string {
+  const map: Record<string, string> = {
+    "0": "०", "1": "१", "2": "२", "3": "३", "4": "४",
+    "5": "५", "6": "६", "7": "७", "8": "८", "9": "९",
+  };
+  return String(value).replace(/[0-9]/g, (d) => map[d] ?? d);
+}
+
+export function formatDigits(value: string | number, lang: "ne" | "en"): string {
+  return lang === "ne" ? toNepaliDigits(value) : String(value);
+}
+
+
+/**
+ * Dasha period boundary — Bikram Sambat (Nepali) when lang is ne, Gregorian AD when en.
+ * Uses the chart place timezone so begin/end match the web kundali dasha view.
+ */
+export function formatDashaInstant(
+  date: Date,
+  lang: "ne" | "en",
+  timeZone?: string,
+): string {
+  if (Number.isNaN(date.getTime())) return "";
+  const z = getZonedParts(date, timeZone);
+  const civil = new Date(z.year, z.month - 1, z.day);
+  if (lang === "en") {
+    return `${AD_MONTHS_SHORT[z.month - 1]} ${z.day}, ${z.year}`;
+  }
+  const bs = adToBS(civil);
+  return `${BS_MONTHS_NE[bs.month - 1]} ${toNepaliDigits(bs.day)}, ${toNepaliDigits(bs.year)}`;
+}
+
+
+/** Dasha begin/end line — BS in Nepali, AD in English. */
+export function formatDashaMoment(
+  date: Date,
+  lang: "ne" | "en",
+  timeZone?: string,
+  digits?: (v: string | number) => string,
+): string {
+  if (lang === "en") {
+    return formatZonedAdMoment(date, { timeZone, digits });
+  }
+  return formatZonedBsMoment(date, { lang: "ne", timeZone, digits });
 }

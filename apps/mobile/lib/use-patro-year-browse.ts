@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 import { defaultBrowseEraForLang, type PatroBrowseEra } from "@/lib/patro-era";

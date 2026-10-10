@@ -46,7 +46,7 @@ import {
 } from "@/lib/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { NivasShoolSegment } from "@/lib/api";
-import { shortWeekdayNe } from "@/lib/bs-calendar";
+import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";
 import { resolveSamvatsaraForBsYear } from "@/lib/samvatsara";
 import {
   findCurrentUdayaLagna,

@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { maxOfflineSpanYears } from "@/lib/patro-browse-years";
 import { useOfflineData } from "@/lib/offline/OfflineDataContext";
 import { OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";

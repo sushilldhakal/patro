@@ -13,7 +13,7 @@ import { useLocale } from "@/i18n/locale";
 import { grahaName } from "@/lib/graha-i18n";
 import { cn } from "@/lib/utils";
 import { formatBsIsoDateNepali } from "@/lib/panchanga-format";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { parsePatroDayDateKey } from "@vedic-patro/domain/patro-day";
 import {

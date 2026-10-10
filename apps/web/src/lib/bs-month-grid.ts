@@ -1,5 +1,5 @@
 import type { CalendarDay } from "@/lib/api";
-import { bsToAdOrNull, getBSMonthLength } from "@/lib/bs-calendar";
+import { bsToAdOrNull, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { civilIsoFromDate, civilIsoWeekday } from "@vedic-patro/domain/patro-day";
 
 /** True when Vikram month day 1 maps via the embedded JSON table (not BBS-only). */

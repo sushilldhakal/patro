@@ -1,5 +1,5 @@
 import type { MuhurtaNowBlock, PanchangaDay } from "@/lib/api";
-import { formatBsDateLong } from "@/lib/bs-calendar";
+import { formatBsDateLong } from "@vedic-patro/domain/bs-calendar";
 import { formatTimeShort } from "@/lib/panchanga-format";
 import { cn } from "@/lib/utils";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";

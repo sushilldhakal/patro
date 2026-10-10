@@ -40,7 +40,7 @@ import {
   type HistorySection,
 } from "@/lib/history/surya-siddhanta-history";
 import { formatBbse } from "@/lib/history/era-dates";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocaleDigits } from "@/i18n/digits";
 
 function SectionBody({ section }: { section: HistorySection }) {

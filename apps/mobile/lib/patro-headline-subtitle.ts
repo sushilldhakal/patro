@@ -4,7 +4,7 @@ import {
   AD_MONTH_NAMES,
   AD_MONTH_NAMES_NE,
 } from "@/lib/patro-month-labels";
-import { adToBS, bsToAD, BS_MONTHS_NE, getBSMonthLength } from "@/lib/bs-calendar";
+import { adToBS, bsToAD, BS_MONTHS_NE, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { BS_MONTHS_SHORT } from "@/lib/patro-month-labels";
 import { isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
 import { parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";

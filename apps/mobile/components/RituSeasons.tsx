@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { fetchTropicalSeasons, seasonsKeys } from "@/lib/api";
-import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
 import { nepaliTextStyle } from "@/lib/nepali-text";

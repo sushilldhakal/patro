@@ -9,7 +9,7 @@ import {
   DEFAULT_PANCHANGA_LOCATION,
   type PanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
-import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { AD_MONTH_NAMES, AD_MONTH_NAMES_NE, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 
 /** Map a saved profile era onto the API's four-era grammar. */
 export function profileBirthEra(p: Profile): Era {

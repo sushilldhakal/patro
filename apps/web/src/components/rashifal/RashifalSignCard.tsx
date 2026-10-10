@@ -12,7 +12,7 @@ import type {
   RashifalPeriod,
   RashifalSignBlock,
 } from "@/lib/api";
-import { formatBsCivilIsoLong } from "@/lib/bs-calendar";
+import { formatBsCivilIsoLong } from "@vedic-patro/domain/bs-calendar";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import {
   RASHIFAL_DOMAIN_ICON,

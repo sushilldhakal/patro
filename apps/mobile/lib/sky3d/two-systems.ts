@@ -15,7 +15,7 @@
  */
 
 import { normalizeDeg, RASHI_ARC } from "@/lib/sky3d/geocentric-model";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { ayanamsa, geocentricPointAt, julianDay } from "@/lib/sky3d/orbital-model";
 
 /**

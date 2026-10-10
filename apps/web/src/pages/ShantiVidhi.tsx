@@ -11,7 +11,7 @@ import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 
 function nowMoment(clock: string, pickerEra: "bs" | "ad"): InstantQuery {
   if (pickerEra === "bs") {

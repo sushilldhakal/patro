@@ -1,5 +1,5 @@
 import type { CalendarDay, ElementStamp, PanchangaDay } from "./api";
-import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "./bs-calendar";
+import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { GRAHA_NAME, RASHI_EN_NAMES, type GrahaKey } from "@/lib/graha-details";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { formatLocaleDigits, normalizeLang, pickLocale } from "@/lib/i18n-locale.web";

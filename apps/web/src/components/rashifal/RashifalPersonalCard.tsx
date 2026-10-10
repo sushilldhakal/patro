@@ -7,7 +7,7 @@ import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon"
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import type { RashifalPersonal } from "@/lib/api";
-import { formatBsCivilIsoLong } from "@/lib/bs-calendar";
+import { formatBsCivilIsoLong } from "@vedic-patro/domain/bs-calendar";
 import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
 import {

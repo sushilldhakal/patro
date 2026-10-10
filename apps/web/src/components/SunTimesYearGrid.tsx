@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Sunrise, Sunset } from "lucide-react";
 import { getLanguageForEra, type Era } from "@/lib/era";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   fetchYearSunTimes,

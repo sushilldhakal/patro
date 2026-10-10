@@ -18,7 +18,7 @@ import {
   BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   shiftBsMonth,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatTimeShort, getSunrise, toNepaliDigits } from "@/lib/panchanga-format";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";

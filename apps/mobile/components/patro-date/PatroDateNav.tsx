@@ -6,7 +6,7 @@ import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
   getBSMonthLength,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {

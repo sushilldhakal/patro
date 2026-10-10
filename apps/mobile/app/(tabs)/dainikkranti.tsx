@@ -37,12 +37,11 @@ import {
 import {
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
-  BS_SUPPORTED_END_YEAR,
-  BS_SUPPORTED_START_YEAR,
   getCurrentBs,
   shiftBsMonth,
   todayAdString,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import { buildGapanshaLine, buildPapanshaDisplayLine } from "@/lib/dainikKranti/gapansha";
 import { ingressEventBsDayForMonth } from "@/lib/dainikKranti/ingress-day-match";
 import { grahaRashiNe, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";

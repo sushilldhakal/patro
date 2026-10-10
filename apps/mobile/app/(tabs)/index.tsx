@@ -31,11 +31,10 @@ import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
 import { OfflineDownloadPrompt } from "@/components/offline/OfflineDownloadPrompt";
 import {
-  BS_SUPPORTED_END_YEAR,
-  BS_SUPPORTED_START_YEAR,
   adToBS,
   todayAdString,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import {
   applyHolidaysToDays,
   buildAdCalendarGridDays,

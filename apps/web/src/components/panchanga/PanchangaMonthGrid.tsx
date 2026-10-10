@@ -11,7 +11,7 @@ import {
   BBS_URL_YEAR_MIN,
 } from "@/lib/patro-year-axis";
 import type { Era } from "@/lib/era";
-import { adToBS, BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_SHORT_NE } from "@/lib/bs-calendar";
+import { adToBS, BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
 import {
   buildAdCalendarGridDays,
   buildCalendarGridDays,

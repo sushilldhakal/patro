@@ -8,7 +8,7 @@ import {
   GrahaDescription,
 } from "@/components/graha/GrahaPageParts";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { Text } from "@/components/ui/Text";
 import { fetchGrahaVakriYear, grahaDetailKeys, type GrahaVakriEvent } from "@/lib/api";

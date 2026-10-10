@@ -11,7 +11,12 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
-import { BS_MONTHS_NE, BS_MONTH_NAMES, BS_SUPPORTED_END_YEAR, getBSMonthLength } from "@/lib/bs-calendar";
+import {
+  BS_MONTHS_NE,
+  BS_MONTH_NAMES,
+  getBSMonthLength,
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR } from "@/lib/bs-range";
 
 const SAMPLE_YEARS = 10;
 const LONGEST = 2; // Asar

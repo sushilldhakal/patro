@@ -28,11 +28,10 @@
 
 import {
   BS_MONTH_NAMES,
-  BS_SUPPORTED_END_YEAR,
-  BS_SUPPORTED_START_YEAR,
   adToBS,
   bsToAD,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import { daysSinceJ2000 } from "@/lib/sky3d/orbital-model";
 
 /** Sidereal year, days — the Sun's own return to the same star. */

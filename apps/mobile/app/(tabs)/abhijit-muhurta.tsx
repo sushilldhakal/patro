@@ -8,7 +8,7 @@ import { AppShell } from "@/components/AppShell";
 import { PatroMonthYearNavBlock } from "@/components/patro-date/PatroMonthYearNavBlock";
 import { SunriseSunsetIcon } from "@/components/panchanga/SunriseSunsetIcon";
 import { Text } from "@/components/ui/Text";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { apiKeys, type CalendarDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

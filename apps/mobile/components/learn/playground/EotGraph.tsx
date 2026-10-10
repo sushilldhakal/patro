@@ -18,7 +18,7 @@ import Svg, { Circle, G, Line, Path, Text as SvgText } from "react-native-svg";
 
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {

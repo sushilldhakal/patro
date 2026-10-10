@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { View } from "react-native";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import {
   formatPatroYearGregorianRange,

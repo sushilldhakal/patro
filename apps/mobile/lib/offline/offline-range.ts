@@ -1,4 +1,7 @@
-import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, getCurrentBs } from "@/lib/bs-calendar";
+import {
+  getCurrentBs,
+} from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 
 /** ~80 years total, centered on the BS year the app was opened in. */
 export const OFFLINE_YEARS_BACK = 40;

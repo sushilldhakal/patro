@@ -6,7 +6,7 @@ import { tmCardCap, tmCardPadLg, edControls, edPlayBtn, edPresets, edPreset, edR
 import { Pause, Play } from "lucide-react";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getWheelRashis } from "@/lib/wheel-data";
 import { SunEarthMoonOrbit } from "./SunEarthMoonOrbit";
 import {

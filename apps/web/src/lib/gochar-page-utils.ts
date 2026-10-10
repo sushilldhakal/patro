@@ -7,7 +7,7 @@ import {
   adMonthLabel,
   BS_MONTHS_NE,
   BS_MONTHS_SHORT,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import type { Era } from "@/lib/era";
 import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
 import { formatBsIsoDateNepali } from "@/lib/panchanga-format";

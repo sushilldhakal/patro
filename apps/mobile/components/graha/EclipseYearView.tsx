@@ -10,7 +10,7 @@ import { EclipseCard, EmptyHint } from "@/components/graha/GrahaEventCards";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { fetchEclipseYear, grahaDetailKeys } from "@/lib/api";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { useLocale } from "@/lib/i18n";

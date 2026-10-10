@@ -17,7 +17,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { Text } from "@/components/ui/Text";
-import { adToBS, bsToAD, getBSMonthLength, shiftBsMonth } from "@/lib/bs-calendar";
+import { adToBS, bsToAD, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */

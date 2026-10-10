@@ -11,7 +11,7 @@ import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
   adToBS,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@/lib/panchanga-format";

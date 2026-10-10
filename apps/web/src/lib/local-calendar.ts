@@ -12,7 +12,7 @@ import {
   adToBS,
   bsToAD,
   getBSMonthLength,
-} from "./bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { patroBrowseYearWithinEphemeris } from "./patro-year-axis";
 import { shiftPatroBrowseMonth } from "./patro-year-browse-step";
 import {

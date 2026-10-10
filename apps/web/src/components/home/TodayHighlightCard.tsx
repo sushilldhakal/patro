@@ -10,7 +10,7 @@ import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
   adToBS,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { civilIsoWeekday, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import {
   formatClockNepali,

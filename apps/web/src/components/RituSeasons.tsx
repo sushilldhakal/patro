@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Sprout, HelpCircle } from "lucide-react";
-import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { fetchTropicalSeasons, seasonsKeys } from "@/lib/api";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {

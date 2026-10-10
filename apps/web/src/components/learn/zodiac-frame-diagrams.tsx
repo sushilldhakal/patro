@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
    formatted number; everything else now comes from the catalogue. */
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@/lib/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
 const INK = "currentColor";
 const TROPICAL = "#35d05a";

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { BsNativeSelect } from "@/components/ui/BsNativeSelect";
-import { getBSMonthLength } from "@/lib/bs-calendar";
+import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import {
   formatClockParts,

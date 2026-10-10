@@ -8,7 +8,7 @@ import {
   bsMonthLabel,
   bsToAD,
   getBSMonthLength,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";

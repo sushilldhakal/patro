@@ -16,7 +16,7 @@ import { SeasonsScene } from "@/components/learn/diagrams/SeasonsScene";
 import { SunEarthMoonScene } from "@/components/learn/diagrams/SunEarthMoonScene";
 import { TithiAngleScene } from "@/components/learn/diagrams/TithiAngleScene";
 import { Text } from "@/components/ui/Text";
-import { bsMonthLabel } from "@/lib/bs-calendar";
+import { bsMonthLabel } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { DIAGRAM_COLOR } from "@/lib/learn/diagram-theme";
 import {

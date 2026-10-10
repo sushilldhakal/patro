@@ -11,7 +11,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Text } from "@/components/ui/Text";
 import { apiKeys } from "@/lib/api";
 import { convertAdToBs, convertBsToAd } from "@/lib/offline/convert-fallback";
-import { adToBS, todayAdString } from "@/lib/bs-calendar";
+import { adToBS, todayAdString } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

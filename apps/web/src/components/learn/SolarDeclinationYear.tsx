@@ -34,7 +34,7 @@ import { useTranslation } from "react-i18next";
 
 import { useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@/lib/panchanga-format";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { solarMonthStarts } from "@/lib/sky3d/day-mechanics";
 
 const W = 560;

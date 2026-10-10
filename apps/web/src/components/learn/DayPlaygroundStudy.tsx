@@ -43,7 +43,7 @@ import earthToonUrl from "@/assets/graha/earth-orig.png";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { cn } from "@/lib/utils";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { edRo, edRoK, edRoV } from "@/lib/learn-classes";
 import { edScrub } from "@/lib/diagram-classes";

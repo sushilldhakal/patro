@@ -13,7 +13,7 @@ import {
   type Era,
   type Language,
 } from "@/lib/era";
-import { adToBS } from "@/lib/bs-calendar";
+import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 
 export type PatroDisplayContext = {

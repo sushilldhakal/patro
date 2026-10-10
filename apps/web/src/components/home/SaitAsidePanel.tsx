@@ -11,7 +11,7 @@ import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
   bsToAD,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { getBsMonthsOverlappingAdMonth } from "@/lib/local-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroEmpty } from "@/lib/patro-classes";

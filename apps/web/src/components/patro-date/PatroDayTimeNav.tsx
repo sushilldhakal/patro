@@ -6,7 +6,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import type { Era, Language } from "@/lib/era";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
-import { adToBS } from "@/lib/bs-calendar";
+import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
 import { cn } from "@/lib/utils";
 import {

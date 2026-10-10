@@ -8,7 +8,7 @@ import {
   adToBS,
   bsMonthLabel,
   getBSMonthLength,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import {
   bsMonthGridOffline,
   bsMonthHasOfflineTable,

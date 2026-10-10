@@ -4,7 +4,7 @@ import {
   maxBrowseYearForEra,
   signedPatroYearFromBrowse,
 } from "@/lib/patro-year-axis";
-import { getBSMonthLength, bsToAD } from "@/lib/bs-calendar";
+import { getBSMonthLength, bsToAD } from "@vedic-patro/domain/bs-calendar";
 import { getAdMonthLength } from "@/lib/patro-date-options";
 import { formatCivilIsoParts, civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 

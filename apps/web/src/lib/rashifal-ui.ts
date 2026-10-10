@@ -19,7 +19,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { NavataraTone, RashifalDomainKey, RashifalPeriod } from "@/lib/api";
-import { formatBsCivilIsoRange } from "@/lib/bs-calendar";
+import { formatBsCivilIsoRange } from "@vedic-patro/domain/bs-calendar";
 import { addCivilDays, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 /**

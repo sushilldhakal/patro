@@ -10,7 +10,7 @@ import {
   fetchCivilTimeline,
   panchangaKeys,
 } from "@/lib/api";
-import { adToBS, bsToAD } from "@/lib/bs-calendar";
+import { adToBS, bsToAD } from "@vedic-patro/domain/bs-calendar";
 import {
   buildAtTimeDatetime,
   chartDateAd,

@@ -1,5 +1,5 @@
 import type { PanchangaDay, LagnaSpan } from "@/lib/api";
-import { BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import {
   formatRashiDisplayNe,
   getLagnaSpans,

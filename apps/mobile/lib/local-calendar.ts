@@ -6,7 +6,7 @@ import {
   bsToAD,
   getBSMonthLength,
   shiftBsMonth,
-} from "./bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import {
   AD_MONTHS_SHORT,
   AD_MONTHS_SHORT_NE,

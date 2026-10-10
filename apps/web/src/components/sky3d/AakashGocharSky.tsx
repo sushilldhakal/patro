@@ -54,7 +54,7 @@ import {
   BS_MONTHS_NE,
   bsMonthLabel,
   WEEKDAYS_SHORT_NE,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import {
   dragScaleForZoom,
   fovForZoom,

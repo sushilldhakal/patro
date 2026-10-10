@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { adToBS, bsToAD, getBSMonthLength } from "@/lib/bs-calendar";
+import { adToBS, bsToAD, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import type { PanchangaDay } from "@/lib/api";
 import { PatroDateNav } from "@/components/patro-date/PatroDateNav";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";

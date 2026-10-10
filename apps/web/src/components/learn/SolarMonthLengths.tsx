@@ -29,7 +29,7 @@ import {
   BS_MONTH_NAMES,
   BS_SUPPORTED_END_YEAR,
   getBSMonthLength,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 
 const W = 560;
 const H = 210;

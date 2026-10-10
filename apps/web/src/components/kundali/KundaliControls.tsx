@@ -6,7 +6,7 @@ import {
   BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   getSupportedAdBounds,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";

@@ -15,7 +15,7 @@ import type {
 } from "@/lib/api";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
-import { BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { PatroBrowseEra } from "@/lib/patro-era";

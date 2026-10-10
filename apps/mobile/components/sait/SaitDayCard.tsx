@@ -3,7 +3,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { SuitabilityBadge } from "@/components/sait/SaitSuitability";
 import { Text } from "@/components/ui/Text";
 import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/api";
-import { BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";

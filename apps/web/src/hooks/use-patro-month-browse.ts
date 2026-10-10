@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale } from "@/i18n/locale";
-import { adToBS, getCurrentBs } from "@/lib/bs-calendar";
+import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import {
   defaultEraForLanguage,
   type Era,

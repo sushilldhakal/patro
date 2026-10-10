@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowRight, ChevronRight } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { dashaExpandKeys, fetchDashaChildren, type DashaSystem, type DashaTreeNode } from "@/lib/api";
-import { formatZonedAdMoment, formatZonedBsMoment } from "@/lib/bs-calendar";
+import { formatZonedAdMoment, formatZonedBsMoment } from "@vedic-patro/domain/bs-calendar";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import {
   DASHA_LORD_EN,

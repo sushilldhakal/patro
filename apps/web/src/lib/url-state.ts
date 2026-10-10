@@ -22,7 +22,7 @@ import {
   parsePatroDayUrl,
   type PatroDayFetchState,
 } from "@/lib/patro-day-url";
-import { getCurrentBs } from "@/lib/bs-calendar";
+import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import {
   normalizePatroBrowseRange,
   type PatroBrowseRange,

@@ -21,7 +21,7 @@
 import { useTranslation } from "react-i18next";
 
 import { useLocale } from "@/i18n/locale";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
+import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
 /* The viewBox is wider than the wheel on purpose: the four marker labels sit
    outside the month ring, and at a square viewBox the two side ones ran off

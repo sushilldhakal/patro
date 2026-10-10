@@ -8,7 +8,7 @@ import {
   DEFAULT_PANCHANGA_LOCATION,
   type PanchangaLocation,
 } from "@/lib/use-panchanga-location";
-import { AD_MONTH_NAMES, BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { AD_MONTH_NAMES, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 
 export type ProfileBirthEra = InstantQuery["inputEra"];
 

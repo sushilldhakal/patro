@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { useQuery } from "@tanstack/react-query";
 import type { LocationParams, SaitMonthAllResponse } from "@/lib/api";
 import { apiKeys, fetchSaitMonthAll } from "@/lib/api";
-import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
+import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS } from "@/lib/sait-data";
 import { useThemeColors } from "@/lib/theme-context";

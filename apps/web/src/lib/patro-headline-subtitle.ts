@@ -11,7 +11,7 @@ import {
   BS_MONTHS_SHORT,
   BS_MONTHS_NE,
   adToBS,
-} from "@/lib/bs-calendar";
+} from "@vedic-patro/domain/bs-calendar";
 import type { Era } from "@/lib/era";
 import { bsMonthHasOfflineData, getLocalMonthMeta } from "@/lib/local-calendar";
 import {

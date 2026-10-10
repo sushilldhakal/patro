@@ -1,5 +1,5 @@
 import type { GocharGraha } from "@/lib/api";
-import { adToBS } from "@/lib/bs-calendar";
+import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import type { BhavaHouse, BhavaPlanetEntry } from "@vedic-patro/domain/bhava";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
 import {

@@ -22,7 +22,7 @@ import {
   WheelGlyph,
 } from "@/components/panchanga/WheelGlyph";
 import { useLocale } from "@/lib/i18n";
-import { getBSMonthLength } from "@/lib/bs-calendar";
+import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import {
   bsMonthsForWheel,
   GRAHA_META,
