@@ -43,7 +43,6 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
-const RASHIFAL_TIMES = ["06:00", "07:00", "08:00", "09:00"] as const;
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -145,7 +144,7 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
         <View className="flex-row items-center justify-between gap-3">
           <View className="min-w-0 flex-1">
             <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
-              {pick("हरेक दिन आजको राशिफल", "Today's rashifal every day")}
+              {pick("हरेक दिन बिहान ७ बजे आजको राशिफल", "Today's rashifal every day at 7 am")}
             </Text>
             <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
               {signedIn
@@ -158,11 +157,6 @@ function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; 
 
         {settings.enabled ? (
           <>
-            <View className="flex-row flex-wrap gap-2">
-              {RASHIFAL_TIMES.map((time) => (
-                <Chip key={time} label={time} active={settings.time === time} onPress={() => save({ ...settings, time })} />
-              ))}
-            </View>
             {!signedIn ? (
               <View className="flex-row flex-wrap gap-2">
                 <Chip

@@ -67,15 +67,18 @@ export const DEFAULT_BRIEFING: BriefingSettings = { enabled: {}, time: "06:00" }
 /** The daily rashifal notification — works signed in (personal) and signed out (general). */
 export interface RashifalSettings {
   enabled: boolean;
-  /** Local "HH:MM" in the place the rashifal is for. */
+  /** Local "HH:MM" in the place the rashifal is for. Always {@link RASHIFAL_NOTIFICATION_TIME}. */
   time: string;
   /** Signed-out choice: rashi id 1–12. Null falls back to the day's moon sign. */
   guestSignId: number | null;
 }
 
+/** The daily rashifal notification always fires at 7 am local time. */
+export const RASHIFAL_NOTIFICATION_TIME = "07:00";
+
 export const DEFAULT_RASHIFAL_SETTINGS: RashifalSettings = {
   enabled: true,
-  time: "07:00",
+  time: RASHIFAL_NOTIFICATION_TIME,
   guestSignId: null,
 };
 

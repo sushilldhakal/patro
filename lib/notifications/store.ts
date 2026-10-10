@@ -6,6 +6,7 @@ import {
   type GuidanceRange,
   type RashifalCache,
   DEFAULT_RASHIFAL_SETTINGS,
+  RASHIFAL_NOTIFICATION_TIME,
   type RashifalSettings,
   type ReminderRule,
 } from "./types";
@@ -44,6 +45,7 @@ export const notifStore = {
     return {
       ...DEFAULT_RASHIFAL_SETTINGS,
       ...((await deviceStore.get<RashifalSettings>(KEYS.rashifalSettings)) ?? {}),
+      time: RASHIFAL_NOTIFICATION_TIME,
     };
   },
   setRashifalSettings: (settings: RashifalSettings) => deviceStore.set(KEYS.rashifalSettings, settings),
