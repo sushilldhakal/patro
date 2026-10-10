@@ -22,7 +22,7 @@ import {
 } from "@/lib/local-calendar";
 import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
 import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@/lib/panchanga-format";
-import { nakshatraShortLabel } from "@/lib/nakshatra-short";
+import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
 import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { cn } from "@/lib/utils";

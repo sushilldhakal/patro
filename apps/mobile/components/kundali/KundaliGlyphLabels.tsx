@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

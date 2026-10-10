@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import type { BhavaBalaData, BhavaBalaHouse, VargaCharts } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { BhavaBalaChart } from "@/components/kundali/BhavaBalaChart";
 import {

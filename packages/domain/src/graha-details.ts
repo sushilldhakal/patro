@@ -4,7 +4,7 @@
  * see /kundali/detail.
  */
 
-import type { GrahaDignity, GrahaRelation } from "@/lib/api";
+import type { GrahaDignity, GrahaRelation } from "@vedic-patro/api-client";
 
 /** Nine grahas keyed the same way as the API planet blocks. */
 export type GrahaKey =
@@ -72,3 +72,8 @@ export const DIGNITY_LABELS: Record<GrahaDignity, { ne: string; en: string }> = 
   enemy_house: { ne: "शत्रु गृह", en: "Enemy's sign" },
   debilitated: { ne: "नीच", en: "Debilitated" },
 };
+
+export const RASHI_EN_NAMES = [
+  "Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
+  "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena",
+] as const;

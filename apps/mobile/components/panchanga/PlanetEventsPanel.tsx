@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/Text"
 import { useQuery } from "@tanstack/react-query";
 import { fetchGochar, gocharKeys, type LocationParams } from "@/lib/api";
 import { formatClockNepali } from "@/lib/panchanga-format.web";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 
 const GRAHA_ORDER = [

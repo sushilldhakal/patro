@@ -12,7 +12,7 @@
  * north of the ecliptic; from the south side the same ring reads backwards.
  */
 
-import { GRAHA_DETAIL_ORDER, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_DETAIL_ORDER, type GrahaKey } from "@vedic-patro/domain/graha-details";
 
 export const DEG = Math.PI / 180;
 

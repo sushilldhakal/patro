@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 
 const PLANET_EN: Record<string, string> = {
   sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",

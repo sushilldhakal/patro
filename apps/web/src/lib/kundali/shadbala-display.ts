@@ -1,5 +1,5 @@
 import type { ShadbalaPlanet, YuddhaData } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { bilingualText, type Lang } from "@/i18n/locale";
 
 /** Classical display order for the seven tara grahas. */

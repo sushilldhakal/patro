@@ -10,7 +10,7 @@ import { patroCard } from "@/lib/patro-classes";
 import { useRouteLoading } from "@/lib/route-loading";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { CEREMONY_META } from "@/lib/panchanga-elements";
-import { isMuhurtaSaitCategory, type SaitCategoryId } from "@/lib/sait-data";
+import { isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";

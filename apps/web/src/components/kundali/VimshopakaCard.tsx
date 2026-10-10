@@ -1,7 +1,7 @@
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import type { VimshopakaData, VimshopakaGrade } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import {
   Table,

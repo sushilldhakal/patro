@@ -6,7 +6,7 @@ import {
   formatClockNepali,
 } from "@/lib/panchanga-format";
 import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";

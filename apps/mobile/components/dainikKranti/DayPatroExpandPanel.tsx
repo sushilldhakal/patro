@@ -14,7 +14,7 @@ import {
   type LagnaMatrixRow,
 } from "@/lib/dainikKranti/month-patro-tables";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";

@@ -4,7 +4,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { ShadbalaPlanet, YuddhaData } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   BALA_STACK,
   KALA_SUBS,

@@ -9,7 +9,7 @@ import {
   GRAHA_NAME,
   RELATION_LABELS,
   type GrahaKey,
-} from "@/lib/graha-details";
+} from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";

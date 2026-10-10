@@ -8,7 +8,7 @@ import { GrahaDetailsList } from "@/components/kundali/GrahaDetailsList";
 import { BhavaTable, KundaliSection } from "@/components/kundali/KundaliSections";
 import type { VargaCharts } from "@/lib/api";
 import { buildBhavaChart } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

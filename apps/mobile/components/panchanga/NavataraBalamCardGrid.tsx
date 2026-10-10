@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { BalamCardItem } from "@/lib/balam-cards";
 import { findCurrentBalamCard } from "@/lib/balam-cards";
-import { formatNavataraQuality, formatNavataraTara } from "@/lib/navatara-bala";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import { PanchangaBalamCard, panchangaCardGrid } from "./PanchangaLayout";
 
 export function NavataraBalamCardGrid({

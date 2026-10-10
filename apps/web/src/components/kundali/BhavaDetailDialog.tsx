@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { useMediaQuery, BELOW_MD_MQ } from "@/hooks/use-media-query";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { BhavaReferencePayload } from "@/lib/api";
 import {
   HOUSE_ORDINAL_NE,

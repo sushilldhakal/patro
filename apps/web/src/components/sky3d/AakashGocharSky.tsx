@@ -48,7 +48,7 @@ import {
 } from "lucide-react";
 import type { GocharGraha, VedicStarPosition } from "@/lib/api";
 import type { Era } from "@/lib/era";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,

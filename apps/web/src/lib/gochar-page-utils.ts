@@ -1,7 +1,7 @@
 import type { GocharGraha, GocharIngressEvent } from "@/lib/api";
 import type { CalendarDay } from "@/lib/api";
-import type { GrahaKey } from "@/lib/graha-details";
-import { GRAHA_NAME } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
 import {
   adToBS,
   adMonthLabel,

@@ -21,7 +21,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { SaitSources } from "@/components/sait/SaitSources";
-import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@/lib/sait-data";
+import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
 import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";

@@ -1,7 +1,7 @@
-import type { NavataraTone } from "@/lib/api";
-import { normalizeLang } from "@/i18n/locale";
+import type { NavataraRow, NavataraTone } from "@vedic-patro/api-client";
+import { normalizeLang } from "./locale";
 
-export type { NavataraRow, NavataraTableBlock, NavataraTone } from "@/lib/api";
+export type { NavataraRow, NavataraTableBlock, NavataraTone } from "@vedic-patro/api-client";
 
 export function navataraSlotTone(tone: NavataraTone): "good" | "bad" | "neutral" {
   if (tone === "best" || tone === "good") return "good";
@@ -87,7 +87,7 @@ export function computeNavataraMeta(
   moonIdx: number,
   targetIdx: number,
   cycleSize: number,
-): Pick<import("@/lib/api").NavataraRow, "tara" | "quality" | "tone" | "tara_num"> {
+): Pick<NavataraRow, "tara" | "quality" | "tone" | "tara_num"> {
   const taraNum = computeNavataraNumber(moonIdx, targetIdx, cycleSize);
   const row = NAVATARA_TYPES.find((t) => t.id === taraNum) ?? NAVATARA_TYPES[0];
   return { tara: row.tara, quality: row.quality, tone: row.tone, tara_num: taraNum };

@@ -7,7 +7,7 @@ import {
   type TableColumn,
 } from "@/components/ui/DataTable";
 import type { VimshopakaData, VimshopakaGrade } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

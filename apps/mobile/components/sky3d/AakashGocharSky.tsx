@@ -27,7 +27,7 @@ import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { Text } from "@/components/ui/Text";
 import type { GocharGraha, VedicStarPosition } from "@/lib/api";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   adToBS,
   bsMonthLabel,

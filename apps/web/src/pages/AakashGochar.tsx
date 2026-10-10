@@ -27,7 +27,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { fetchGochar, gocharKeys } from "@/lib/api";
 import type { Era } from "@/lib/era";
 import { formatGocharPatroDate } from "@/lib/gochar-page-utils";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import { toAdStr } from "@vedic-patro/domain/patro-day";
 import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";

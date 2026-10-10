@@ -12,7 +12,7 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { Text } from "@/components/ui/Text";
 import { fetchGrahaVakriYear, grahaDetailKeys, type GrahaVakriEvent } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

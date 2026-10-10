@@ -2,7 +2,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import type { SaitCategoryId } from "@/lib/sait-data";
+import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 
 type SaitSourceId = "brihat_samhita" | "dharma_sindhu" | "muhurta_chintamani";
 

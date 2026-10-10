@@ -15,7 +15,7 @@
  * Angles in degrees unless a name says otherwise.
  */
 
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { normalizeDeg } from "@/lib/sky3d/geocentric-model";
 
 const RAD = Math.PI / 180;

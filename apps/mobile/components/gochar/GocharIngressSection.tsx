@@ -15,7 +15,7 @@ import {
   relativeDayLabel,
   type IngressFilter,
 } from "@/lib/gochar-page-utils";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";

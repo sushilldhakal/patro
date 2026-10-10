@@ -1,4 +1,4 @@
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
 import { cn } from "@/lib/utils";
 

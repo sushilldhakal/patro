@@ -1,6 +1,6 @@
-import type { Lang } from "@/i18n/locale";
-import { normalizeLang } from "@/i18n/locale";
-import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
+import type { Lang } from "./locale";
+import { normalizeLang } from "./locale";
+import { findNakshatraIcon, NAKSHATRA_ICONS } from "./nakshatra-icons";
 
 /** Compact Latin labels for month-grid cells (English UI). */
 const NAKSHATRA_SHORT_EN: readonly string[] = [

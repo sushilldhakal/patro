@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@/lib/api";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   formatDegreeInRashi,
   getPlanetRows,

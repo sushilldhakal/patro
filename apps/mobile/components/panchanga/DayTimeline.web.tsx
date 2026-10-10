@@ -3,7 +3,7 @@ import type { CivilTimeline, PanchangaDay } from "@/lib/api";
 import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLagnaRow } from "@/lib/panchanga-format.web";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
   buildCivilTimelineData,

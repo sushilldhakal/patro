@@ -1,6 +1,6 @@
 import type { GocharGraha } from "@/lib/api";
-import type { GrahaKey } from "@/lib/graha-details";
-import { GRAHA_NAME, GRAHA_DETAIL_ORDER } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME, GRAHA_DETAIL_ORDER } from "@vedic-patro/domain/graha-details";
 import {
   formatGocharPatroDate,
   grahaExalted,

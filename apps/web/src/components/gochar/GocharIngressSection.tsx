@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   countIngressByFilter,
   daysFromRef,

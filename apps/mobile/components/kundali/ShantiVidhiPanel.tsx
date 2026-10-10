@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@/lib/api";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

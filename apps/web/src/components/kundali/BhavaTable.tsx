@@ -8,7 +8,7 @@ import {
   type BhavaTableRow,
   RASHI_QUALITIES,
 } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import {
   Table,

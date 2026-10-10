@@ -29,7 +29,7 @@ import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@/lib/api";
 import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@/lib/shanti/navagraha-shanti";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 
 const th = "whitespace-nowrap text-xs font-semibold";
 

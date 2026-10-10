@@ -19,7 +19,7 @@ import type {
   ShadbalaStatus,
   YuddhaData,
 } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { KALA_SUBS, STHANA_SUBS, orderShadbalaPlanets, yuddhaVirupasForPlanet } from "@/lib/kundali/shadbala-display";

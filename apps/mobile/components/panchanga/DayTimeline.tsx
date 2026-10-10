@@ -10,7 +10,7 @@ import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { SunTimelineMarker } from "@/components/panchanga/SunriseSunsetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";

@@ -10,7 +10,7 @@ import { bhavaReferenceKeys, fetchBhavaReference } from "@/lib/api";
 import { buildBhavaChart, houseClasses, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import { splitList } from "@/lib/kundali/bhava-detail";
 import { NI_HOUSE_POLYGONS, pointsToSvg, polygonCentroid, type Point } from "@/lib/kundali/north-indian-layout";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";

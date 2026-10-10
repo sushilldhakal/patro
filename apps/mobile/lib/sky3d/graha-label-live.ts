@@ -1,5 +1,5 @@
 import { makeMutable, type SharedValue } from "react-native-reanimated";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 
 /**
  * Where each graha's name sits on screen, written by the scene every frame and

@@ -9,7 +9,7 @@ import type {
   ShadbalaStatus,
   YuddhaData,
 } from "@/lib/api";
-import { type GrahaKey } from "@/lib/graha-details";
+import { type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { ShadbalaChart, type ShadbalaScale } from "@/components/kundali/ShadbalaChart";
 import {

@@ -1,6 +1,6 @@
 import type { CalendarDay, ElementStamp, Festival, NivasShoolBlock, PanchangaDay } from "./api";
 import { adToBS, AD_MONTHS_SHORT, BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   formatRashiDisplay,
   formatRashiDisplayNe,

@@ -12,7 +12,7 @@
  * same way it places anything else.
  */
 
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { VedicStarPosition } from "@/lib/api";
 import { GEO_BODY_ORDER } from "@/lib/sky3d/orbital-model";
 import {

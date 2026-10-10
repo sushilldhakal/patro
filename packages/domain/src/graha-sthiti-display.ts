@@ -1,28 +1,7 @@
-import type { GrahaSthitiRow } from "@/lib/api";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
-
-export function siderealRashiNumber(fullDegree: number): number {
-  const lon = ((fullDegree % 360) + 360) % 360;
-  return Math.floor(lon / 30) + 1;
-}
-
-export function grahaKeyFromLordNe(ne: string): GrahaKey | null {
-  const trimmed = ne.trim();
-  if (!trimmed) return null;
-  for (const key of Object.keys(GRAHA_NAME) as GrahaKey[]) {
-    if (GRAHA_NAME[key].ne === trimmed) return key;
-  }
-  for (const [neLord, enLord] of Object.entries(NAK_LORD_EN)) {
-    if (neLord === trimmed) {
-      for (const key of Object.keys(GRAHA_NAME) as GrahaKey[]) {
-        if (GRAHA_NAME[key].en === enLord) return key;
-      }
-    }
-  }
-  return null;
-}
+import type { GrahaSthitiRow } from "@vedic-patro/api-client";
+import { GRAHA_NAME, type GrahaKey } from "./graha-details";
+import { getRashiName } from "./rashi-i18n";
+import { NAK_LORD_EN } from "./wheel-locale";
 
 function dmsParts(deg: number): { deg: number; minute: number; sec: number } {
   const d = deg % 30;
@@ -79,8 +58,7 @@ export function grahaSthitiRekhamsha(row: GrahaSthitiRow, lang: string): string 
 }
 
 export function grahaSthitiShara(row: GrahaSthitiRow, lang: string): string {
-  if (lang === "en") return row.shara_deg != null ? formatSharaEn(row.shara_deg) : "—";
-  return row.shara ?? "—";
+  return lang === "en" ? formatSharaEn(row.shara_deg) : row.shara;
 }
 
 export function grahaSthitiNakshatra(row: GrahaSthitiRow, lang: string): string {
@@ -88,11 +66,9 @@ export function grahaSthitiNakshatra(row: GrahaSthitiRow, lang: string): string 
 }
 
 export function grahaSthitiLord(row: GrahaSthitiRow, lang: string): string {
-  const ne = row.nakshatra_lord_ne ?? "";
-  return lang === "en" ? grahaLordEn(ne) : ne;
+  return lang === "en" ? grahaLordEn(row.nakshatra_lord_ne) : row.nakshatra_lord_ne;
 }
 
 export function grahaSthitiSubLord(row: GrahaSthitiRow, lang: string): string {
-  const ne = row.sub_lord_ne ?? "";
-  return lang === "en" ? grahaLordEn(ne) : ne;
+  return lang === "en" ? grahaLordEn(row.sub_lord_ne) : row.sub_lord_ne;
 }

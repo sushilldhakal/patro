@@ -12,13 +12,13 @@ import {
   ghatiToCivilClockLabel,
   getSunriseMinutes,
 } from "@/lib/day-timeline-aside";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import {
   formatNavataraQuality,
   formatNavataraTara,
   navataraSlotTone,
-} from "@/lib/navatara-bala";
+} from "@vedic-patro/domain/navatara-bala";
 import {
   formatClockNepali,
   formatTimeRangeShort,

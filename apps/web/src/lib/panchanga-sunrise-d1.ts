@@ -1,6 +1,6 @@
 import type { PanchangaDay } from "@/lib/api";
 import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   getInstantLagna,
   getPlanetRows,

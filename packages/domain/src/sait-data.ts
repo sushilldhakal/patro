@@ -10,7 +10,7 @@ import {
   BS_SUPPORTED_END_YEAR,
   BS_SUPPORTED_START_YEAR,
   getCurrentBs,
-} from "@vedic-patro/domain/bs-calendar";
+} from "./bs-calendar";
 
 export type SaitCategoryId =
   | "vivah"
@@ -69,3 +69,14 @@ export const VAS_SAIT_CATEGORIES: ReadonlySet<string> = new Set([
 export function isMuhurtaSaitCategory(category: string): boolean {
   return !VAS_SAIT_CATEGORIES.has(category);
 }
+
+export const SAIT_CATEGORY_LABELS: Record<SaitCategoryId, { ne: string; en: string }> = {
+  vivah: { ne: "विवाह", en: "Vivah" },
+  bratabandha: { ne: "ब्रतबन्ध", en: "Bratabandha" },
+  "griha-aarambha": { ne: "गृह आराम्भ", en: "Griha Aarambha" },
+  "griha-pravesh": { ne: "गृह प्रवेश", en: "Griha Pravesh" },
+  "byaparik-pratisthan": { ne: "व्यापारिक प्रतिष्ठान", en: "Business inauguration" },
+  "rudri-jurne": { ne: "रुद्री जुर्ने", en: "Rudri jurne" },
+  "agni-jurne": { ne: "अग्नि जुर्ने", en: "Agni jurne" },
+  annaprasan: { ne: "अन्नप्रासन", en: "Annaprasan" },
+};

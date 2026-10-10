@@ -43,7 +43,7 @@ import Revati from "@/assets/nakshatras/revati.svg";
 
 import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { tithiIndexFromElementSpan } from "@/lib/tithi-wheel-data";

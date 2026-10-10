@@ -1,4 +1,4 @@
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { HoraPlanetKey } from "@/lib/hora-data";
 import sunUrl from "@/assets/graha/sun.svg?url";
 import moonUrl from "@/assets/graha/moon.svg?url";

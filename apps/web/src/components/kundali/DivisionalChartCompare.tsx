@@ -14,7 +14,7 @@ import {
   VARGA_OPTIONS,
   vargaOption,
 } from "@vedic-patro/domain/varga-display";
-import { GRAHA_NAME } from "@/lib/graha-details";
+import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
 import { cn } from "@/lib/utils";
 
 type PanelConfig = {

@@ -9,7 +9,7 @@ import Rahu from "@/assets/graha/rahu.svg";
 import Saturn from "@/assets/graha/saturn.svg";
 import Sun from "@/assets/graha/sun.svg";
 import Venus from "@/assets/graha/venus.svg";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 
 type SvgIcon = FC<ComponentProps<typeof Svg>>;
 

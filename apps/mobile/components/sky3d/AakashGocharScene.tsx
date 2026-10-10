@@ -29,7 +29,7 @@ import {
   NAK_INNER,
   NAK_OUTER,
 } from "@/components/learn/EclipticWheel";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { liveGrahaLabels } from "@/lib/sky3d/graha-label-live";
 import {
   DEG,

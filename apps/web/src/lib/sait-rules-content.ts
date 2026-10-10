@@ -7,7 +7,7 @@
  * computation — NOT the Nepal Panchanga Nirnayak Samiti list or any external
  * listing. Keep the wording in sync with the engine (patro).
  */
-import type { SaitCategoryId } from "@/lib/sait-data";
+import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 
 export interface BilingualText {
   ne: string;

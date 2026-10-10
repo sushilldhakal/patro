@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { useLocale } from "@/i18n/locale";
 import type { ShadbalaPlanet, YuddhaData } from "@/lib/api";
-import { type GrahaKey } from "@/lib/graha-details";
+import { type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import {
   BALA_STACK,

@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { grahaName } from "@/lib/graha-i18n";
 
 /** Matrix column order + labels (display only — scores come from the API). */

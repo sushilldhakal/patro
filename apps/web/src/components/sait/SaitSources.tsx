@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
-import type { SaitCategoryId } from "@/lib/sait-data";
+import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
 
 type SaitSourceId = "brihat_samhita" | "dharma_sindhu" | "muhurta_chintamani";
 

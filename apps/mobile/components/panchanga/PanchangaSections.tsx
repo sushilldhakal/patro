@@ -66,7 +66,7 @@ import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseI
 import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

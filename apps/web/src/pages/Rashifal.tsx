@@ -34,7 +34,7 @@ import {
   type RashifalBlock,
   type RashifalPeriod,
 } from "@/lib/api";
-import { formatNavataraQuality, formatNavataraTara } from "@/lib/navatara-bala";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 
 const routeApi = getRouteApi("/panchanga-shell/jyotish/rashifal");

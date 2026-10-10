@@ -11,7 +11,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
 import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
-import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import type { BhavaReferencePayload } from "@/lib/api";
 import {
   HOUSE_ORDINAL_NE,

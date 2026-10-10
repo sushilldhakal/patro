@@ -15,7 +15,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { searchToLocation } from "@/lib/url-state";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   fetchGocharIngress,
   fetchGocharJd,

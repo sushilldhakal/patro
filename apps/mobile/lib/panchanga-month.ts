@@ -1,5 +1,5 @@
 import type { CalendarDay } from "@/lib/api";
-import { nakshatraShortLabel } from "@/lib/nakshatra-short";
+import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
 
 type Lang = "ne" | "en";
 

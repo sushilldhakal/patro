@@ -24,7 +24,7 @@ import {
   NakshatraInline,
   RashiInline,
 } from "@/components/kundali/KundaliGlyphLabels";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { kundaliLabel, type KundaliI18nKey } from "@/lib/kundali/kundali-i18n";
 import { useLocale } from "@/lib/i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";

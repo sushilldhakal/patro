@@ -18,7 +18,7 @@ import {
   polygonCentroid,
   type Point,
 } from "@/lib/kundali/north-indian-layout";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { Button } from "@/components/ui/button";

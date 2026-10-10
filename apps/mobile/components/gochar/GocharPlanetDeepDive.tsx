@@ -10,7 +10,7 @@ import {
   motionLabel,
   speedTone,
 } from "@/lib/gochar-page-utils";
-import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
+import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

@@ -13,7 +13,7 @@ import { Text } from "@/components/ui/Text";
 import { apiKeys, fetchGochar, fetchGocharIngress, gocharKeys } from "@/lib/api";
 import { adToBS, bsToAD, BS_MONTH_NAMES, BS_MONTHS_NE, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
 import { formatGocharPatroDate } from "@/lib/gochar-page-utils";
-import type { GrahaKey } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { applyPatroApiLimits } from "@/lib/patro-browse-years";

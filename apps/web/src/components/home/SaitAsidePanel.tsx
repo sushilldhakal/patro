@@ -4,7 +4,7 @@ import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { fetchSaitMonthAll, saitMonthAllKey } from "@/lib/api";
-import { SAIT_CATEGORIES } from "@/lib/sait-data";
+import { SAIT_CATEGORIES } from "@vedic-patro/domain/sait-data";
 import {
   AD_MONTH_NAMES,
   AD_MONTH_NAMES_NE,

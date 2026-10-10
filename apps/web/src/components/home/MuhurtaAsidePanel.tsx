@@ -21,8 +21,8 @@ import {
   getTarabalaTable,
   getUdayaLagna,
 } from "@/lib/panchanga-format";
-import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { formatNavataraQuality, formatNavataraTara } from "@/lib/navatara-bala";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import {
   patroEmpty,
   patroMiniSubTab,

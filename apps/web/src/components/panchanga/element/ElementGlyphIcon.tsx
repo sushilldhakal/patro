@@ -1,5 +1,5 @@
-import type { GrahaKey } from "@/lib/graha-details";
-import { GRAHA_NAME } from "@/lib/graha-details";
+import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { grahaKeyFromName, HORA_TO_GRAHA } from "@/lib/graha-planet-icons";
