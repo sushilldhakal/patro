@@ -161,9 +161,9 @@ export function PatroYearSheetStepper({
   };
 
   const targetEra = toggleEraForLanguage(era, lang);
-  const targetLabel = patroEraShortLabel(targetEra, pick);
+  const targetLabel = patroEraShortLabel(targetEra, lang);
   const manualLabel = pick("हातले लेख्नुहोस्", "Enter manually");
-  const eraShort = patroEraShortLabel(era, pick);
+  const eraShort = patroEraShortLabel(era, lang);
   const rangeHint = pick(
     `${digits(yearWindowStart)}–${digits(yearWindowEnd)} (${digits(clamped)} छानिएको)`,
     `${yearWindowStart}–${yearWindowEnd} (${clamped} selected)`,

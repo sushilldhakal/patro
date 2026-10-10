@@ -35,7 +35,7 @@ import {
 } from "@vedic-patro/domain/era";
 import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
-import { patroEraShortLabel } from "./patro-era-short-label";
+import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { usePatroYearHeadlineSubtitle } from "./use-patro-year-headline-subtitle";
 
 export type PatroYearNavProps = {
@@ -80,7 +80,7 @@ export function PatroYearNav({
 }: PatroYearNavProps) {
   const { t } = useTranslation();
   const { lang, digits } = usePatroDisplayLocale(displayLanguage);
-  const chipEra = patroEraShortLabel(era, t);
+  const chipEra = patroEraShortLabel(era);
   const chipYear = year;
   const vikramHeadline = `${digits(year)} ${chipEra}`;
   const isGregorianEra = getLanguageForEra(era) === "en";

@@ -37,7 +37,7 @@ import {
   YearStepper,
 } from "./PatroDateSheet";
 import { PatroYearEraToggle } from "./PatroYearEraToggle";
-import { patroEraShortLabel } from "./patro-era-short-label";
+import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { windowedBrowseYearSelectOptions } from "@/lib/patro-browse-year-items";
 import { monthLengthInBrowseEra } from "@vedic-patro/domain/patro-browse-range";
 import { PatroYearCombobox } from "./PatroYearCombobox";
@@ -589,7 +589,7 @@ export function PatroDateNavCore({
     </span>
   ) : (
     <span className="font-num font-semibold text-secondary dark:text-secondary">
-      {digits(year)} {patroEraShortLabel(headlineEra, t)}
+      {digits(year)} {patroEraShortLabel(headlineEra)}
     </span>
   );
 

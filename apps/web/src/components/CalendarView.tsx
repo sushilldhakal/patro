@@ -41,7 +41,7 @@ import {
 } from "@vedic-patro/domain/local-calendar";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { PatroMonthYearNav } from "@/components/patro-date";
-import { patroEraShortLabel } from "@/components/patro-date/patro-era-short-label";
+import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import { BsCalendarGrid } from "./BsCalendarGrid";
@@ -521,7 +521,7 @@ export function CalendarView({
   const nextPatroView: HomePatroView = patroView === "calendar" ? "panchanga" : "calendar";
   const calendarTabLabel = isGregorian
     ? t("calendar.mode_ad")
-    : patroEraShortLabel(era, t);
+    : patroEraShortLabel(era);
   const nextPatroLabel =
     nextPatroView === "panchanga" ? t("calendar.mode_panchanga") : calendarTabLabel;
 

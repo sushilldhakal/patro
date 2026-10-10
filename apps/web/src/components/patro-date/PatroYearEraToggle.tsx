@@ -2,7 +2,7 @@ import type { MouseEvent, PointerEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/era";
 import { cn } from "@vedic-patro/domain/utils";
-import { patroEraShortLabel } from "./patro-era-short-label";
+import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 
 /**
  * Keep the press from reaching the combobox popup, which dismisses on an
@@ -50,7 +50,7 @@ export function PatroYearEraToggle({
   const targetEra = togglePatroBrowseEra(era);
   if (targetEra == null) return null;
 
-  const targetLabel = patroEraShortLabel(targetEra, t);
+  const targetLabel = patroEraShortLabel(targetEra);
 
   if (variant === "dropdown") {
     return (

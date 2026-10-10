@@ -158,7 +158,7 @@ export function PatroDateSheet({
   };
 
   const showYearPreview = tab === "date" && yearTypingPreview !== null && keyboardHeight > 0;
-  const previewEraLabel = patroEraShortLabel(draft.era, pick);
+  const previewEraLabel = patroEraShortLabel(draft.era, lang);
   const previewDigits = yearTypingPreview?.replace(/[^\d]/g, "") ?? "";
   const previewDisplay = previewDigits.length > 0 ? digits(previewDigits) : pick("—", "—");
 

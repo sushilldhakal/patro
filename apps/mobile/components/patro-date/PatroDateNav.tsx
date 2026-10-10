@@ -171,7 +171,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
   const monthOptions = useMemo(() => buildMonthOptions(era, lang), [era, lang]);
 
-  const eraShort = patroEraShortLabel(era, pick);
+  const eraShort = patroEraShortLabel(era, lang);
   const headlineEra = vikramEra ?? era;
   const samvatsaraInfo = !isGregorianEra(era)
     ? resolveSamvatsaraForPatroYear(
@@ -321,7 +321,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
         <Text className="font-num" style={secondary}>
           {digits(year)}
         </Text>
-        {` ${patroEraShortLabel(headlineEra, pick)}`}
+        {` ${patroEraShortLabel(headlineEra, lang)}`}
       </Text>
     );
     return (

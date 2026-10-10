@@ -20,7 +20,7 @@ export function PatroYearEraToggle({ era, onEraChange, compact, className }: Pro
   if (!isGregorianEra(era) && lang === "en") return null;
 
   const targetEra = toggleEraForLanguage(era, lang);
-  const targetLabel = patroEraShortLabel(targetEra, pick);
+  const targetLabel = patroEraShortLabel(targetEra, lang);
 
   return (
     <Pressable

@@ -106,7 +106,7 @@ export function PanchangaHeroCard({
   const patroEraForLabel =
     (p?.date_parts?.vikram?.era as Era | undefined) ??
     (p?.bs_date && typeof p.bs_date === "object" && p.bs_date.year < 0 ? "bbs" : browseEra);
-  const vikramEraLabel = patroEraShortLabel(patroEraForLabel, pick);
+  const vikramEraLabel = patroEraShortLabel(patroEraForLabel, lang);
   const samvatsaraInfo = resolveSamvatsaraForPatroYear(
     patroEraForLabel,
     patroYearForLabel,

@@ -1,18 +1,8 @@
 import { type Era } from "@vedic-patro/domain/era";
+import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { useLocale } from "@/lib/i18n";
 
-export function patroEraShortLabel(era: Era, pick: (ne: string, en: string) => string): string {
-  switch (era) {
-    case "ad":
-      return pick("ई.सं.", "AD");
-    case "bc":
-      return pick("ई.पू.", "BC");
-    case "bbs":
-      return pick("पू.वि.सं.", "B.B.S.");
-    case "bs":
-      return pick("वि.सं.", "B.S.");
-  }
-}
+export { patroEraShortLabel };
 
 export function patroEraToggleLabel(
   era: Era,
@@ -48,7 +38,7 @@ export function patroEraYearSectionTitle(
 export function usePatroEraLabels(era: Era) {
   const { pick, lang } = useLocale();
   return {
-    short: patroEraShortLabel(era, pick),
+    short: patroEraShortLabel(era, lang),
     toggle: patroEraToggleLabel(era, pick, lang),
     yearSection: patroEraYearSectionTitle(era, pick),
   };
