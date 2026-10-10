@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useRouter } from "expo-router";
@@ -9,7 +9,9 @@ import type { VedaDaily } from "@/lib/documents/api";
 import { useVedaDaily } from "@/lib/documents/use-veda-daily";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { activeTokenAt, buildWordTrack } from "@/lib/documents/word-tracking";
 
 function sourceLine(data: VedaDaily, lang: "ne" | "en", digits: (v: string | number) => string): string {
   const ne = lang === "ne";
@@ -21,11 +23,39 @@ function sourceLine(data: VedaDaily, lang: "ne" | "en", digits: (v: string | num
   return [ne ? data.veda.name_ne : data.veda.name_en, ...parts].join(" » ");
 }
 
-function PlayButton({ url }: { url: string }) {
+function PlayButton({
+  playing,
+  onToggle,
+}: {
+  playing: boolean;
+  onToggle: () => void;
+}) {
   const { pick } = useLocale();
   const colors = useThemeColors();
-  const player = useAudioPlayer({ uri: url });
+  return (
+    <Pressable
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("सुन्नुहोस्", "Play")}
+      className="h-11 w-11 items-center justify-center rounded-full active:opacity-80"
+      style={{ backgroundColor: colors.secondary }}
+    >
+      <Ionicons name={playing ? "pause" : "play"} size={22} color={inkOn(colors.secondary)} />
+    </Pressable>
+  );
+}
+
+/** Today's Veda mantra — Sanskrit, meaning when there is one, audio, and a link to where it comes from. */
+export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
+  const { pick, lang, digits } = useLocale();
+  const colors = useThemeColors();
+  const router = useRouter();
+  const { data } = useVedaDaily(dateAd);
+  const audioUrl = data?.shloka.audio_url ?? null;
+  // 100 ms status ticks so the word highlight follows the chant smoothly.
+  const player = useAudioPlayer(audioUrl ? { uri: audioUrl } : null, { updateInterval: 100 });
   const status = useAudioPlayerStatus(player);
+  const wordTrack = useMemo(() => buildWordTrack(data?.shloka.sanskrit ?? ""), [data?.shloka.sanskrit]);
 
   useEffect(() => {
     // Recitation should be audible with the iPhone's silent switch on.
@@ -38,7 +68,7 @@ function PlayButton({ url }: { url: string }) {
     }).catch(() => {});
   }, []);
 
-  const toggle = () => {
+  const toggleAudio = () => {
     if (status.playing) {
       player.pause();
       return;
@@ -49,26 +79,10 @@ function PlayButton({ url }: { url: string }) {
     player.play();
   };
 
-  return (
-    <Pressable
-      onPress={toggle}
-      accessibilityRole="button"
-      accessibilityLabel={status.playing ? pick("रोक्नुहोस्", "Pause") : pick("सुन्नुहोस्", "Play")}
-      className="h-11 w-11 items-center justify-center rounded-full active:opacity-80"
-      style={{ backgroundColor: colors.secondary }}
-    >
-      <Ionicons name={status.playing ? "pause" : "play"} size={22} color="#ffffff" />
-    </Pressable>
-  );
-}
-
-/** Today's Veda mantra — Sanskrit, meaning when there is one, audio, and a link to where it comes from. */
-export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
-  const { pick, lang, digits } = useLocale();
-  const colors = useThemeColors();
-  const router = useRouter();
-  const { data } = useVedaDaily(dateAd);
   if (!data) return null;
+
+  const progress = status.playing && status.duration > 0 ? status.currentTime / status.duration : -1;
+  const activeToken = activeTokenAt(wordTrack, progress);
 
   const l = lang === "en" ? "en" : "ne";
   const { shloka } = data;
@@ -86,11 +100,19 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
         <Text className="text-body min-w-0 flex-1 font-bold" style={[nepaliTextStyle(16), { color: colors.secondary }]}>
           {pick("आजको वेद मन्त्र", "Today's Veda mantra")}
         </Text>
-        {shloka.audio_url ? <PlayButton url={shloka.audio_url} /> : null}
+        {shloka.audio_url ? <PlayButton playing={status.playing} onToggle={toggleAudio} /> : null}
       </View>
 
       <Text className="text-foreground" style={nepaliTextStyle(21)} selectable>
-        {shloka.sanskrit}
+        {wordTrack.tokens.map((tok, i) =>
+          i === activeToken ? (
+            <Text key={i} style={{ backgroundColor: "rgba(250,204,21,0.45)" }}>
+              {tok}
+            </Text>
+          ) : (
+            tok
+          ),
+        )}
       </Text>
 
       {meaning ? (
