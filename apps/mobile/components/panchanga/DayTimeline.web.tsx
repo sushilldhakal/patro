@@ -4,7 +4,7 @@ import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLa
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import type { GrahaKey } from "@/lib/graha-details";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
   buildCivilTimelineData,
   buildDayTimelineData,

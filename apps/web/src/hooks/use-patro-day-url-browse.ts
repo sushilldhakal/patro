@@ -7,7 +7,7 @@ import {
   civilIsoFromDate,
   formatCivilIsoParts,
   parseCivilIsoToDate,
-} from "@/lib/patro-day";
+} from "@vedic-patro/domain/patro-day";
 import {
   parsePatroDayUrl,
   patroDayFetchFromApiBsParts,

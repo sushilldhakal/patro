@@ -24,7 +24,7 @@ import {
   rashifalRangeLabel,
   rashifalStepDate,
 } from "@/lib/rashifal-ui";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { searchToLocation } from "@/lib/url-state";
 import {
   RASHIFAL_PERIODS,

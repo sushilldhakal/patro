@@ -15,7 +15,7 @@ import {
   formatDashaDurationParts,
   type DashaLord,
   type DashaSpan,
-} from "@/lib/dasha";
+} from "@vedic-patro/domain/dasha";
 import { cn } from "@/lib/utils";
 
 /** Catalogue keys, outermost dasha level first. */

@@ -7,11 +7,11 @@ import { Text } from "@/components/ui/Text";
 import { GrahaInline } from "@/components/kundali/KundaliGlyphLabels";
 import type { BhavaBalaData, BhavaBalaHouse, BhavaReferencePayload, VargaCharts } from "@/lib/api";
 import { bhavaReferenceKeys, fetchBhavaReference } from "@/lib/api";
-import { buildBhavaChart, houseClasses, type BhavaHouse } from "@/lib/bhava";
+import { buildBhavaChart, houseClasses, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import { splitList } from "@/lib/kundali/bhava-detail";
 import { NI_HOUSE_POLYGONS, pointsToSvg, polygonCentroid, type Point } from "@/lib/kundali/north-indian-layout";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { formatRashiByNumber, rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -80,9 +80,7 @@ function buildD1Houses(
         rashi: entry.vargaRashi,
         isRetrograde: entry.retrograde ?? false,
         isCombust: combustion?.[entry.key] ?? false,
-      })),
-    rashiNeFromNumber,
-  );
+      })));
 }
 
 function Meter({ value, max, color }: { value: number; max: number; color: string }) {

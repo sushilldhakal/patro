@@ -34,7 +34,7 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@/lib/utils";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 function toAdStr(d: Date): string {

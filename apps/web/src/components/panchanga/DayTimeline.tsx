@@ -10,7 +10,7 @@ import {
   getSunriseLagnaRow,
 } from "@/lib/panchanga-format";
 import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
   buildCivilTimelineData,
   buildDayTimelineData,

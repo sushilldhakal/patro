@@ -20,7 +20,7 @@ import {
   type LocationParams,
 } from "@/lib/api";
 import { formatClockNepali, formatAyanaMarkShort, formatTimeShort, isAyanaNorthMark } from "@/lib/panchanga-format";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import {
   Accordion,
   AccordionContent,

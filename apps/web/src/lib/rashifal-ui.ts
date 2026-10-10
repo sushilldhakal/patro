@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import type { NavataraTone, RashifalDomainKey, RashifalPeriod } from "@/lib/api";
 import { formatBsCivilIsoRange } from "@/lib/bs-calendar";
-import { addCivilDays, parseCivilIsoToDate } from "@/lib/patro-day";
+import { addCivilDays, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 /**
  * Period tabs are icon-only on the page, so each icon has to carry the whole

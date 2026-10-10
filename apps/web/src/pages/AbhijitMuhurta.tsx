@@ -15,13 +15,13 @@ import {
   usePanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
 import { useRouteLoading } from "@/lib/route-loading";
-import { civilIsoDayOfMonth } from "@/lib/patro-day";
+import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   abhijitFromCalendarDay,
   formatClockNepali,
 } from "@/lib/panchanga-format";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import {
   searchToLocation,
 } from "@/lib/url-state";

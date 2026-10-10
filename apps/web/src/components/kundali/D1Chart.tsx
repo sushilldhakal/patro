@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@/lib/bhava";
+import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import { useTranslation } from "react-i18next";
 import {
   NI_HOUSE_POLYGONS,

@@ -1,10 +1,9 @@
 import type { PanchangaDay } from "@/lib/api";
-import { buildBhavaChart, type BhavaHouse } from "@/lib/bhava";
+import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import type { GrahaKey } from "@/lib/graha-details";
 import {
   getInstantLagna,
   getPlanetRows,
-  rashiNeFromNumber,
   resolveLagnaSiderealLongitude,
 } from "./panchanga-format";
 
@@ -43,7 +42,7 @@ export function buildPanchangaD1Houses(p: PanchangaDay | null | undefined): Bhav
   });
 
   if (!planetRashis.length) return null;
-  return buildBhavaChart(lagnaRashi, planetRashis, rashiNeFromNumber);
+  return buildBhavaChart(lagnaRashi, planetRashis);
 }
 
 /** @deprecated Use buildPanchangaD1Houses */

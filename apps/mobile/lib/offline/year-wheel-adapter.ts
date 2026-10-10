@@ -1,5 +1,5 @@
 import type { CalendarDay, MonthCalendar, YearWheelCalendar, YearWheelCalendarDay } from "@/lib/api";
-import { parseCivilIsoToDate } from "@/lib/patro-day";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"] as const;
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;

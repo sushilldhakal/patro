@@ -7,11 +7,10 @@ import { D1Chart } from "@/components/panchanga/D1Chart";
 import { GrahaDetailsList } from "@/components/kundali/GrahaDetailsList";
 import { BhavaTable, KundaliSection } from "@/components/kundali/KundaliSections";
 import type { VargaCharts } from "@/lib/api";
-import { buildBhavaChart } from "@/lib/bhava";
+import { buildBhavaChart } from "@vedic-patro/domain/bhava";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import {
@@ -43,7 +42,7 @@ function buildDivisionalHouses(
       isCombust: combustion[e.key] ?? false,
     }));
 
-  return buildBhavaChart(anchorEntry.vargaRashi, planetRashis, rashiNeFromNumber);
+  return buildBhavaChart(anchorEntry.vargaRashi, planetRashis);
 }
 
 function useAnchorOptions(vargaCharts: VargaCharts): ChartAnchor[] {

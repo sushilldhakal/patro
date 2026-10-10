@@ -18,7 +18,7 @@ import {
   maxBrowseYearForEra,
 } from "@/lib/patro-year-axis";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
-import { civilIsoFromDate, parseCivilIso, parseCivilIsoToDate } from "@/lib/patro-day";
+import { civilIsoFromDate, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";

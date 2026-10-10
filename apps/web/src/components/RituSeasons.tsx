@@ -17,7 +17,7 @@ import {
   resolveLocationTimezone,
   type PanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { cn } from "@/lib/utils";
 
 /**

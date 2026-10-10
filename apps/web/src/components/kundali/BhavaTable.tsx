@@ -7,7 +7,7 @@ import {
   formatHouseBadge,
   type BhavaTableRow,
   RASHI_QUALITIES,
-} from "@/lib/bhava";
+} from "@vedic-patro/domain/bhava";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import {

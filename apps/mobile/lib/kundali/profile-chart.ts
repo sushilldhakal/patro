@@ -1,4 +1,4 @@
-import { parseBirthDateParts } from "@/lib/birth-date";
+import { parseBirthDateParts } from "@vedic-patro/domain/birth-date";
 import type { Profile } from "@/lib/auth/client";
 import {
   instantFromEraParts,

@@ -13,7 +13,7 @@
 
 import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
-import { parseCivilIso } from "@/lib/patro-day";
+import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 
 export type { Era, InstantQuery };
 export {

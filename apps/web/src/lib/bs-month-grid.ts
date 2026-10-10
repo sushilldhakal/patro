@@ -1,6 +1,6 @@
 import type { CalendarDay } from "@/lib/api";
 import { bsToAdOrNull, getBSMonthLength } from "@/lib/bs-calendar";
-import { civilIsoFromDate, civilIsoWeekday } from "@/lib/patro-day";
+import { civilIsoFromDate, civilIsoWeekday } from "@vedic-patro/domain/patro-day";
 
 /** True when Vikram month day 1 maps via the embedded JSON table (not BBS-only). */
 export function bsMonthHasOfflineTable(year: number, month: number): boolean {

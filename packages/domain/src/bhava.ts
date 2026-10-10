@@ -1,6 +1,6 @@
 /** Whole-sign house (bhava) mapping, derived from the Lagna's rashi. */
 
-import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "./rashi-i18n";
 
 export interface BhavaPlanetEntry {
   key: string;

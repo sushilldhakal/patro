@@ -19,7 +19,7 @@ import {
   formatPatroYearGregorianRange,
   parseCivilIso,
   parseCivilIsoToDate,
-} from "@/lib/patro-day";
+} from "@vedic-patro/domain/patro-day";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 
 function isGregorianEraBrowse(era: Era): boolean {

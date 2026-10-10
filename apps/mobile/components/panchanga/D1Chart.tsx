@@ -5,9 +5,9 @@ import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from "react-nati
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { Text } from "@/components/ui/Text";
-import type { BhavaHouse } from "@/lib/bhava";
-import { aspectHousesFor, drishtiTargetHouses } from "@/lib/bhava";
-import { bhavaHousesHaveStatusMarks } from "@/lib/graha-status";
+import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import { aspectHousesFor, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
+import { bhavaHousesHaveStatusMarks } from "@vedic-patro/domain/graha-status";
 import {
   NI_HOUSE_POLYGONS,
   planetGridLayout,

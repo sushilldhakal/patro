@@ -17,11 +17,11 @@ import type { GrahaKey } from "@/lib/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { applyPatroApiLimits } from "@/lib/patro-browse-years";
-import { formatBsDateKey } from "@/lib/patro-day";
+import { formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 function toAdStr(d: Date): string {

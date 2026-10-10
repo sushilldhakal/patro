@@ -11,7 +11,7 @@ import {
 import { useLocale } from "@/i18n/locale";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@/lib/utils";
-import { localTimeShortFromIso } from "@/lib/time-format";
+import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
 import {
   fetchEclipseYear,
   grahaDetailKeys,

@@ -24,7 +24,7 @@ import {
   type PanchangaLocation,
 } from "@/lib/use-panchanga-location";
 import { cn } from "@/lib/utils";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 const DAY = 86_400_000;
 

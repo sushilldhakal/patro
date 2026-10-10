@@ -6,7 +6,7 @@ import {
 } from "@/lib/patro-year-axis";
 import { getBSMonthLength, bsToAD } from "@/lib/bs-calendar";
 import { getAdMonthLength } from "@/lib/patro-date-options";
-import { formatCivilIsoParts, civilIsoFromDate } from "@/lib/patro-day";
+import { formatCivilIsoParts, civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 
 /** Inclusive month–year span in URL browse coordinates (positive year, era carries BC/BBS). */
 export type PatroBrowseRange = {

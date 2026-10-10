@@ -9,7 +9,7 @@ import {
   DASHA_LORD_NE,
   dashaMahadashaGrahaKey,
   type DashaLord,
-} from "@/lib/dasha";
+} from "@vedic-patro/domain/dasha";
 import { cn } from "@/lib/utils";
 
 type DashaTab = {

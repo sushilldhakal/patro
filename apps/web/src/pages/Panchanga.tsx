@@ -12,7 +12,7 @@ import {
   locationCacheKey,
   panchangaKeys,
 } from "@/lib/api";
-import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate, parseCivilIso } from "@/lib/patro-day";
+import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate, parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { adToBS, BS_MONTHS_NE } from "@/lib/bs-calendar";
 import { isGregorianEraBrowse } from "@/components/patro-date/patro-month-labels";
 import {
@@ -20,7 +20,7 @@ import {
   isEphemerisPanchanga,
 } from "@/lib/ephemeris-adapters";
 import { formatTimeShort, getSunrise, getSunset } from "@/lib/panchanga-format";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PatroDayTimeNav } from "@/components/patro-date";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";

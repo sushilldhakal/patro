@@ -35,7 +35,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { formatWheelPlaybackRate } from "@vedic-patro/domain/wheel-year-playback";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 /** Slowest tick; the scrub's speed multiplier divides into it. */
 const PLAY_BASE_MS = 900;

@@ -7,7 +7,7 @@ import {
 import { adToBS, bsToAD, BS_MONTHS_NE, getBSMonthLength } from "@/lib/bs-calendar";
 import { BS_MONTHS_SHORT } from "@/lib/patro-month-labels";
 import { isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
-import { parseCivilIso, parseCivilIsoToDate } from "@/lib/patro-day";
+import { parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 
 function formatGregorianEraYearLabel(

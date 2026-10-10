@@ -16,7 +16,7 @@ import {
   formatHouseBadge,
   type BhavaTableRow,
   RASHI_QUALITIES,
-} from "@/lib/bhava";
+} from "@vedic-patro/domain/bhava";
 import {
   GrahaInline,
   GrahaInlineChildren,
@@ -29,7 +29,7 @@ import { kundaliLabel, type KundaliI18nKey } from "@/lib/kundali/kundali-i18n";
 import { useLocale } from "@/lib/i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiByNumber, rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -182,9 +182,7 @@ export function BhavaTable({
     return buildBhavaTable(
       anchorEntry.vargaRashi,
       planetRashis,
-      vargaCharts.ownedRashis,
-      rashiNeFromNumber,
-    );
+      vargaCharts.ownedRashis);
   }, [division, anchorKey, vargaCharts]);
 
   if (rows.length === 0) return null;

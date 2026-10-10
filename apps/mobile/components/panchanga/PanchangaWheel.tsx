@@ -15,7 +15,7 @@ import { useLocale } from "@/lib/i18n";
 import { getPanchangaDetail } from "@/lib/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { useThemeColors } from "@/lib/theme-context";
 import {
   buildWheelDetail,

@@ -11,7 +11,7 @@ import {
   BS_MONTHS_NE,
   adToBS,
 } from "@/lib/bs-calendar";
-import { civilIsoWeekday, parseCivilIsoToDate } from "@/lib/patro-day";
+import { civilIsoWeekday, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import {
   formatClockNepali,
   daysDiffFromAd,

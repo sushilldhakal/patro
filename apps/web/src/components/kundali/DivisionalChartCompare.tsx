@@ -6,7 +6,7 @@ import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { GrahaDetailsList } from "@/components/kundali/GrahaDetailsList";
 import { BhavaTable } from "@/components/kundali/BhavaTable";
 import type { VargaCharts } from "@/lib/api";
-import { buildBhavaChart, type BhavaHouse } from "@/lib/bhava";
+import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import {
   type ChartAnchor,
   CHART_ANCHOR_LABELS,

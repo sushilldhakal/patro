@@ -10,7 +10,7 @@ import {
   houseClasses,
   type BhavaHouse,
   type HouseClass,
-} from "@/lib/bhava";
+} from "@vedic-patro/domain/bhava";
 import { splitList } from "@/lib/kundali/bhava-detail";
 import {
   NI_HOUSE_POLYGONS,

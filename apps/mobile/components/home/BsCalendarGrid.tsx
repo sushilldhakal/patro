@@ -7,7 +7,7 @@ import { FestivalListSheet } from "@/components/home/FestivalListSheet";
 import { useLocale } from "@/lib/i18n";
 import { getSecondaryCellDate } from "@/lib/local-calendar";
 import { nepaliDayNumberStyle, nepaliLineHeight, nepaliTextStyle } from "@/lib/nepali-text";
-import { civilIsoDayOfMonth } from "@/lib/patro-day";
+import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";

@@ -18,7 +18,7 @@ import {
   isEphemerisPanchanga,
 } from "@/lib/ephemeris-adapters";
 import { formatTimeShort, getSunrise, getSunset } from "@/lib/panchanga-format.web";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
 import { DayCycleToggle, type DayCycleMode } from "@/components/panchanga/DayCycleToggle";

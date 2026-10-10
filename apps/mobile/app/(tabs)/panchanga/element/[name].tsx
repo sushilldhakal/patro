@@ -57,7 +57,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 function clockFromGhati(sunriseMin: number | null, g: number): string | null {
   if (sunriseMin == null) return null;

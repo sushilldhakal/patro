@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { BhavaHouse } from "@/lib/bhava";
-import { aspectHousesFor, drishtiTargetHouses } from "@/lib/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import { aspectHousesFor, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
-import { bhavaHousesHaveStatusMarks } from "@/lib/graha-status";
+import { bhavaHousesHaveStatusMarks } from "@vedic-patro/domain/graha-status";
 import {
   NI_HOUSE_POLYGONS,
   planetGridLayout,

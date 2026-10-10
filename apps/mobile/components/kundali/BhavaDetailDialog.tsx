@@ -9,8 +9,8 @@ import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
-import type { BhavaHouse } from "@/lib/bhava";
-import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@/lib/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import { houseBadge, formatHouseBadge, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
 import { GRAHA_NAME, GRAHA_ICON, type GrahaKey } from "@/lib/graha-details";
 import type { BhavaReferencePayload } from "@/lib/api";
 import {

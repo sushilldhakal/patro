@@ -7,7 +7,7 @@ import { formatTimeShort } from "@/lib/panchanga-format";
 import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@/lib/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
-import { parseCivilIso } from "@/lib/patro-day";
+import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { DayPatroExpandPanel } from "./DayPatroExpandPanel";

@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { Card } from "@/components/ui/Card";
 import { useLocale } from "@/lib/i18n";
 import type { AstaStamp, EclipseEvent } from "@/lib/api";
-import { localTimeShortFromIso } from "@/lib/time-format";
+import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";

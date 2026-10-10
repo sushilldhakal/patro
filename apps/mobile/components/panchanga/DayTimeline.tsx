@@ -29,7 +29,7 @@ import {
   TL_RASHI_EN,
   type TimelineRowData,
 } from "@/lib/day-timeline-data";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_CHART_SM } from "@/lib/fonts";
 import { useTheme } from "@/lib/theme-context";

@@ -5,7 +5,7 @@ import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import type { CalendarDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { parseCivilIsoToDate } from "@/lib/patro-day";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { useThemeColors } from "@/lib/theme-context";
 
 type Props = {

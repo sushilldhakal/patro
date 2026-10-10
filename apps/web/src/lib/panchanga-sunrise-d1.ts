@@ -1,5 +1,5 @@
 import type { PanchangaDay } from "@/lib/api";
-import { buildBhavaChart, type BhavaHouse } from "@/lib/bhava";
+import { buildBhavaChart, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import type { GrahaKey } from "@/lib/graha-details";
 import {
   getInstantLagna,

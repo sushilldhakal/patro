@@ -11,7 +11,7 @@ import { useElementPageUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
 import { cn } from "@/lib/utils";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
-import { clockFromGhati, parseHHMM } from "@/lib/time-format";
+import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/time-format";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
@@ -40,7 +40,7 @@ import {
   RashiGlyphIcon,
   NakshatraGlyphIcon,
 } from "@/components/panchanga/element/ElementGlyphIcon";
-import { todayAdStringInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
   elementKeys,
   fetchElementDay,

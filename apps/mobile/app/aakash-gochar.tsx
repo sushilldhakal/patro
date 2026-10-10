@@ -20,7 +20,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 /** Roughly what the date chrome above the scene occupies. */
 const DATE_NAV_HEIGHT = 132;

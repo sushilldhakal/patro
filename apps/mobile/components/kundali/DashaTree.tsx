@@ -20,7 +20,7 @@ import {
   formatDashaDurationParts,
   type DashaLord,
   type DashaSpan,
-} from "@/lib/dasha";
+} from "@vedic-patro/domain/dasha";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

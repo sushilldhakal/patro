@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/Text";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { Button } from "@/components/ui/Button";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
-import { formatDateInput, formatTimeInput } from "@/lib/birth-date";
+import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
 import { afterProfileSaved } from "@/lib/notifications/triggers";
 import {
   createProfile,

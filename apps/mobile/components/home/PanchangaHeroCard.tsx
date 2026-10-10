@@ -22,7 +22,7 @@ import {
 import type { PatroBrowseEra } from "@/lib/patro-era";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@/lib/samvatsara";
-import { parseCivilIsoToDate } from "@/lib/patro-day";
+import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 type Props = {
   month: number;

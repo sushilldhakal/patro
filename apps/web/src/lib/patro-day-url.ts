@@ -14,7 +14,7 @@ import {
   type Language,
 } from "@/lib/era";
 import { adToBS } from "@/lib/bs-calendar";
-import { parseCivilIso } from "@/lib/patro-day";
+import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 
 export type PatroDisplayContext = {
   era: Era;

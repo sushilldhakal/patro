@@ -10,7 +10,7 @@ import { DEFAULT_PANCHANGA_LOCATION } from "@/components/panchanga/use-panchanga
 import {
   civilAnchorFromPanchangaDay,
   parseCivilIsoToDate,
-} from "@/lib/patro-day";
+} from "@vedic-patro/domain/patro-day";
 import type { Era } from "@/lib/era";
 import {
   bbsFromSigned,

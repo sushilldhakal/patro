@@ -5,8 +5,8 @@
  * server-side — see `BhavaReferencePayload` in `@/lib/api`, sourced from
  * nepali-holiday-api's `engine/vedic/bhava_reference.py`. */
 
-import type { BhavaHouse } from "@/lib/bhava";
-import { drishtiTargetHouses } from "@/lib/bhava";
+import type { BhavaHouse } from "@vedic-patro/domain/bhava";
+import { drishtiTargetHouses } from "@vedic-patro/domain/bhava";
 
 /** Sanskrit ordinal house names, 1st house first — used in dialog titles
  * ("भाव २ — द्वितीय भाव"). Pure i18n labels, not classical content, so they

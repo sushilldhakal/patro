@@ -12,7 +12,7 @@ import {
   AD_MONTHS_SHORT_NE,
   BS_MONTHS_SHORT,
 } from "./patro-month-labels";
-import { civilIsoDayOfMonth, parseCivilIso, parseCivilIsoToDate } from "./patro-day";
+import { civilIsoDayOfMonth, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"] as const;
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;

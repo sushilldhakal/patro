@@ -16,7 +16,7 @@ import type { PanchangaDay } from "@/lib/api";
 import { fetchPanchangaAtTimeForDay, fetchPanchangaAtTimeJd, panchangaKeys } from "@/lib/api";
 import type { PatroDayFetchState } from "@/lib/patro-day-url";
 import { getPanchangaDetail } from "@/lib/panchanga-format";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { parseClockParts } from "./use-panchanga-mode";
 import {
   buildWheelDetail,

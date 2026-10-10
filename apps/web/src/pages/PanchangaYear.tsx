@@ -21,7 +21,7 @@ import {
 } from "@/lib/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatTimeShort, getSunrise, toNepaliDigits } from "@/lib/panchanga-format";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
@@ -33,7 +33,7 @@ import {
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroPanchangaUrlBrowse } from "@/hooks/use-patro-url-browse";
-import { civilIsoFromDate } from "@/lib/patro-day";
+import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 import { patroDayFetchFromApiBsParts } from "@/lib/patro-day-url";
 import {
   buildYearWheelDays,

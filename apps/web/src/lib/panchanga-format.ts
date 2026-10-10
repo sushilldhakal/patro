@@ -18,7 +18,7 @@ import {
   parseCivilIso,
   parseCivilIsoToDate,
   positiveGregorianCivilIso,
-} from "@/lib/patro-day";
+} from "@vedic-patro/domain/patro-day";
 import {
   formatGregorianEraYearLabel,
   formatGregorianFromDateParts,

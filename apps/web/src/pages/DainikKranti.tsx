@@ -21,7 +21,7 @@ import {
   type PanchangaDay,
 } from "@/lib/api";
 import { getLanguageForEra } from "@/lib/era";
-import { formatBsDateKey } from "@/lib/patro-day";
+import { formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@/lib/panchanga-format";
 import {
   getRashiName,

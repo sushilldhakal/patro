@@ -1,5 +1,5 @@
 import { G, Path } from "react-native-svg";
-import { showAsta, showVakri } from "@/lib/graha-status";
+import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 import { FLAME_PATH, ROTATE_CCW_PATHS } from "@/lib/graha-status-marks-paths";
 
 type Props = {

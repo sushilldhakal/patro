@@ -1,7 +1,7 @@
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
-import { showAsta, showVakri } from "@/lib/graha-status";
+import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 
 type Props = {
   /** Graha key ("sun" … "ketu"); gates which markers are allowed. */

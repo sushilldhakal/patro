@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { VargaChartEntry, VargaCharts } from "@/lib/api";
-import { rashiToHouse } from "@/lib/bhava";
+import { rashiToHouse } from "@vedic-patro/domain/bhava";
 import {
   DIGNITY_LABELS,
   GRAHA_NAME,

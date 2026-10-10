@@ -10,7 +10,7 @@ import {
 } from "@/components/kundali/KundaliGlyphLabels";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { VargaChartEntry, VargaCharts } from "@/lib/api";
-import { rashiToHouse } from "@/lib/bhava";
+import { rashiToHouse } from "@vedic-patro/domain/bhava";
 import {
   DIGNITY_LABELS,
   GRAHA_NAME,

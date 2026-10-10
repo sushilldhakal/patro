@@ -14,7 +14,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
 import { patroCard } from "@/lib/patro-classes";
-import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@/lib/patro-day";
+import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 const GRAHA_ORDER = [
   "sun",

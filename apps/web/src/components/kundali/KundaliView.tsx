@@ -28,7 +28,7 @@ import {
   formatTithiWithPaksha,
 } from "@/lib/panchanga-format";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { resolveTimeZone } from "@/lib/zoned-time";
+import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 // DivisionalChartCompare stays a static import: it belongs to the default
 // landing tab (kundali-overview), so it should arrive with the route chunk
 // rather than costing that first view an extra chunk fetch. Every other
@@ -36,7 +36,7 @@ import { resolveTimeZone } from "@/lib/zoned-time";
 // React.lazy chunk, fetched only when that section is actually shown.
 import { DivisionalChartCompare } from "@/components/kundali/DivisionalChartCompare";
 import type { GrahaAstroPoint } from "@/components/kundali/GrahaAstroTable";
-import { d1AllJanmaPhalaBhavas } from "@/lib/bhava";
+import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/bhava";
 import { ENGINE_KEY_TO_REF_ID } from "@/lib/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";

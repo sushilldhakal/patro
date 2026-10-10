@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CityAutocomplete } from "@/components/auth/CityAutocomplete";
-import { formatDateInput, formatTimeInput } from "@/lib/birth-date";
+import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   createProfile,

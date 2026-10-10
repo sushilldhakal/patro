@@ -22,7 +22,7 @@ import {
   parseCivilIso,
   parseCivilIsoToDate,
   civilIsoFromDate,
-} from "./patro-day";
+} from "@vedic-patro/domain/patro-day";
 
 const WEEKDAYS_NE = [
   "आइतवार",

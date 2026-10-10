@@ -14,14 +14,14 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatPatroMonthCrossEraSubtitle } from "@/lib/patro-headline-subtitle";
 import { abhijitFromCalendarDay, formatClockNepali } from "@/lib/panchanga-format";
-import { civilIsoDayOfMonth } from "@/lib/patro-day";
+import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { applyMonthLimits } from "@/lib/use-patro-capabilities";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 type AbhijitRow = {

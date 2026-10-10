@@ -27,7 +27,7 @@ import {
 import { browseEraToApi, isGregorianBrowseEra, type PatroBrowseEra } from "@/lib/patro-era";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 const DAY_COL = 48;
 const MONTH_COL = 84;

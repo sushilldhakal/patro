@@ -54,7 +54,7 @@ import {
 } from "@/lib/dainikKranti/month-patro-tables";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatBsDateKey, parseCivilIso } from "@/lib/patro-day";
+import { formatBsDateKey, parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { formatTimeShort, formatVedicPatroTime } from "@/lib/panchanga-format";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";

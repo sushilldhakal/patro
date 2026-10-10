@@ -1,5 +1,5 @@
 import calendarData from "./bs-calendar-data.json"
-import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "./patro-day"
+import { civilGregorianToUtcMs, parseCivilIso, toAdStr } from "@vedic-patro/domain/patro-day"
 
 export const BS_MONTH_NAMES = [
   "Baisakh", "Jestha", "Ashadh", "Shrawan", "Bhadra", "Ashwin",

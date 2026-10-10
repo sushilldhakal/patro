@@ -24,7 +24,7 @@ import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
 import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@/lib/panchanga-format";
 import { nakshatraShortLabel } from "@/lib/nakshatra-short";
 import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
-import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@/lib/patro-day";
+import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { cn } from "@/lib/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

@@ -9,7 +9,7 @@ import {
   DASHA_LORD_NE,
   dashaMahadashaGrahaKey,
   type DashaLord,
-} from "@/lib/dasha";
+} from "@vedic-patro/domain/dasha";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

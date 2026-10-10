@@ -10,7 +10,7 @@ import {
   formatPatroMonthCrossEraSubtitle,
   formatPatroYearGregorianRange,
 } from "@/lib/patro-headline-subtitle";
-import { canonicalCivilIso } from "@/lib/patro-day";
+import { canonicalCivilIso } from "@vedic-patro/domain/patro-day";
 
 export function usePatroMonthHeadlineSubtitle(
   era: Era,

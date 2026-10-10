@@ -13,7 +13,7 @@ import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
 import { formatBsIsoDateNepali } from "@/lib/panchanga-format";
 import { formatPatroCivilDayLabel } from "@/lib/patro-headline-subtitle";
 import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
-import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate, canonicalCivilIso, formatBsDateKey } from "@/lib/patro-day";
+import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate, canonicalCivilIso, formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import {
   ingressEventBsDayForMonth,
   ingressEventRowDateAd,

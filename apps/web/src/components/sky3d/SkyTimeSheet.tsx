@@ -25,7 +25,7 @@ import {
   getBSMonthLength,
   shiftBsMonth,
 } from "@/lib/bs-calendar";
-import { civilGregorianToUtcMs } from "@/lib/patro-day";
+import { civilGregorianToUtcMs } from "@vedic-patro/domain/patro-day";
 import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@/lib/patro-year-axis";
 import { nearestStepIndex, TIME_STEPS } from "@/lib/sky3d/time-steps";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";

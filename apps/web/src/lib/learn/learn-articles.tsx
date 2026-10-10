@@ -30,7 +30,7 @@ import {
 } from "@/components/panchanga/use-panchanga-location";
 import { fetchPanchangaDay, panchangaKeys } from "@/lib/api";
 import { AD_DISPLAY, patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
-import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale, bilingualNode } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
 import {

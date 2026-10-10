@@ -19,11 +19,11 @@ import {
   usePanchangaLocation,
   type PanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
-import { todayAdStringInTimezone } from "@/lib/zoned-time";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { adToBS, bsToAdOrNull, getCurrentBs } from "../lib/bs-calendar";
 import { cn } from "@/lib/utils";
 import { patroAsideLink, patroAsideTab } from "@/lib/patro-classes";
-import { canonicalCivilIso, parseCivilIsoToDate } from "@/lib/patro-day";
+import { canonicalCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { getLanguageForEra } from "@/lib/era";
 import {
   patroDayFetchFromApiDateAd,

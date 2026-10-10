@@ -21,7 +21,7 @@ import {
   stepBrowseVikramDay,
 } from "@/lib/patro-date-options";
 import { signedPatroYearFromBrowse } from "@/lib/patro-year-axis";
-import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@/lib/patro-day";
+import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
 import { isGregorianEraBrowse } from "./patro-month-labels";
 import { PatroDateNavCore } from "./PatroDateNavCore";
 

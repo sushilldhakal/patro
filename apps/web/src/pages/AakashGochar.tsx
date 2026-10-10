@@ -29,13 +29,13 @@ import type { Era } from "@/lib/era";
 import { formatGocharPatroDate } from "@/lib/gochar-page-utils";
 import type { GrahaKey } from "@/lib/graha-details";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
-import { toAdStr } from "@/lib/patro-day";
+import { toAdStr } from "@vedic-patro/domain/patro-day";
 import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";
 import {
   clockStringInTimezone,
   todayAdStringInTimezone,
   zonedWallTimeToInstant,
-} from "@/lib/zoned-time";
+} from "@vedic-patro/domain/zoned-time";
 
 /** Canvas height when the page is not fullscreen. */
 const SCENE_HEIGHT = 560;

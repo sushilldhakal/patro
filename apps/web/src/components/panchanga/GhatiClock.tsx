@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sunrise, Moon } from "lucide-react";
-import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@/lib/zoned-time";
+import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
 function parseTimeToMinutes(time?: string): number | null {

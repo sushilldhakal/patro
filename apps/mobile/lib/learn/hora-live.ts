@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPanchanga, panchangaKeys, type ApiHoraSlot } from "@/lib/api";
 import { usePanchangaLocation, resolveLocationTimezone } from "@/lib/use-panchanga-location";
-import { minutesSinceMidnightInTimezone, todayAdStringInTimezone } from "@/lib/zoned-time";
+import { minutesSinceMidnightInTimezone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 /** "6:03 AM" / "12:41 PM" → minutes since midnight. */
 function parseClockToMinutes(short: string): number | null {
