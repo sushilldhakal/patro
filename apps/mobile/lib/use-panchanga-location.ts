@@ -1,85 +1,50 @@
 import { useCallback, useEffect, useState } from "react";
-import { localizeNepalCityLabel } from "@vedic-patro/domain/cities/nepal-cities";
 import * as SecureStore from "expo-secure-store";
-import { searchCities, type LocationParams } from "@/lib/api";
-import { NEPAL_CITIES, nepalCityEnglishLabel } from "@vedic-patro/domain/cities/nepal-cities";
+import { searchCities } from "@/lib/api";
+import {
+  DEFAULT_PANCHANGA_LOCATION as BASE_DEFAULT_LOCATION,
+  displayLocationLabel as displayFullLocationLabel,
+  hasCoords,
+  healStoredLocation as healSharedLocation,
+  type PanchangaLocation,
+} from "@vedic-patro/domain/panchanga-location";
 import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
+
+export {
+  cityToLocation,
+  coordsToLocation,
+  hasCoords,
+  resolveLocationTimezone,
+  type PanchangaLocation,
+} from "@vedic-patro/domain/panchanga-location";
 
 const STORAGE_KEY = "vedicPatroLocation";
 
-export interface PanchangaLocation {
-  label: string;
-  params: LocationParams;
-}
-
 const DEFAULT_CITY_ID = 1283240;
 
+/* Coordinates ride along with the city_id: client-side geometry (the 3D sky's
+   observer frame and its "you are here" pin) has no way to turn an id into a
+   place, and without them it silently falls back to a fixed point. */
 export const DEFAULT_PANCHANGA_LOCATION: PanchangaLocation = {
-  label: "Kathmandu, NP",
-  /* Coordinates ride along with the city_id: client-side geometry (the 3D sky's
-     observer frame and its "you are here" pin) has no way to turn an id into a
-     place, and without them it silently falls back to a fixed point. */
+  ...BASE_DEFAULT_LOCATION,
   params: {
-    city_id: DEFAULT_CITY_ID,
+    ...BASE_DEFAULT_LOCATION.params,
     lat: KATHMANDU.lat,
     lon: KATHMANDU.lon,
     timezone: "Asia/Kathmandu",
   },
 };
 
-export function resolveLocationTimezone(location: PanchangaLocation): string {
-  return location.params.timezone ?? "Asia/Kathmandu";
-}
-
-function hasDevanagari(value: string): boolean {
-  return /[\u0900-\u097F]/.test(value);
-}
-
-/** True once the location can drive client-side geometry, not just an API call. */
-export function hasCoords(loc: PanchangaLocation): boolean {
-  return loc.params.lat != null && loc.params.lon != null;
-}
-
+/**
+ * The shared repair of old stored places, plus the app's own: entries written
+ * before places carried coordinates hold a bare default city_id, which can be
+ * filled in from here (anything else needs `backfillCoords` below).
+ */
 function healStoredLocation(loc: PanchangaLocation): PanchangaLocation {
-  const { params } = loc;
-
-  /* Entries written before cityToLocation started attaching coordinates hold a
-     bare city_id. The default one we can fill in from here; anything else needs
-     the lookup in backfillCoords below. */
-  if (!hasCoords(loc) && params.city_id === DEFAULT_CITY_ID) {
-    return { ...loc, params: { ...params, lat: KATHMANDU.lat, lon: KATHMANDU.lon } };
+  if (!hasCoords(loc) && loc.params.city_id === DEFAULT_CITY_ID) {
+    return { ...loc, params: { ...loc.params, lat: KATHMANDU.lat, lon: KATHMANDU.lon } };
   }
-
-  if (!params.city || !hasDevanagari(params.city)) return loc;
-
-  if (params.lat != null && params.lon != null) {
-    return {
-      ...loc,
-      params: {
-        lat: params.lat,
-        lon: params.lon,
-        timezone: params.timezone ?? "Asia/Kathmandu",
-      },
-    };
-  }
-
-  const needle = params.city.trim();
-  const match = NEPAL_CITIES.find(
-    (c) =>
-      c.name_ne === needle ||
-      c.name_ne.startsWith(needle) ||
-      needle.startsWith(c.name_ne.split(" ")[0]!),
-  );
-  if (!match) return loc;
-
-  return {
-    label: `${nepalCityEnglishLabel(match)}, NP`,
-    params: {
-      lat: match.lat,
-      lon: match.lon,
-      timezone: "Asia/Kathmandu",
-    },
-  };
+  return healSharedLocation(loc);
 }
 
 /**
@@ -175,59 +140,13 @@ export function usePanchangaLocation(initial?: PanchangaLocation) {
   return { location, setLocation, ready };
 }
 
-export function cityToLocation(city: {
-  id: number;
-  ascii_name: string;
-  name: string;
-  country: string;
-  timezone?: string;
-  lat?: number;
-  lon?: number;
-  local?: boolean;
-}): PanchangaLocation {
-  const displayName = city.name || city.ascii_name;
-  const label = `${displayName}, ${city.country}`;
-  if (city.local && city.lat != null && city.lon != null) {
-    return {
-      label,
-      params: {
-        lat: city.lat,
-        lon: city.lon,
-        timezone: city.timezone ?? "Asia/Kathmandu",
-      },
-    };
-  }
-  return {
-    label,
-    params: {
-      city_id: city.id,
-      // Both, not just city_id: the id is the backend's own for this city (not
-      // the curated NEPAL_CITIES namespace above, which isn't valid here), so
-      // its coordinates are consistent with it — and client-side geometry that
-      // needs real lat/lon (the 3D sky's observer marker) has nowhere else to
-      // get them, since there's no "look up a city by id" endpoint to call
-      // later from just a city_id.
-      ...(city.lat != null && city.lon != null ? { lat: city.lat, lon: city.lon } : {}),
-      ...(city.timezone ? { timezone: city.timezone } : {}),
-    },
-  };
-}
-
-const GENERIC_API_LOCATION_NAMES = new Set(["custom"]);
-
+/** Short place name (city only) for the app's compact headers. */
 export function displayLocationLabel(
   location: PanchangaLocation | null | undefined,
   apiName?: string | null,
   lang = "ne",
 ): string {
-  const name = apiName?.trim();
-  const lat = location?.params.lat;
-  const lon = location?.params.lon;
-  if (name && !GENERIC_API_LOCATION_NAMES.has(name.toLowerCase())) {
-    return localizeNepalCityLabel(name, lang, lat, lon).split(",")[0]!.trim();
-  }
-  const label = location?.label || DEFAULT_PANCHANGA_LOCATION.label;
-  /* A curated Nepal city is shown in the reader's language (काठमाडौँ / Kathmandu),
-     as on web; anything else keeps its own name. */
-  return localizeNepalCityLabel(label, lang, lat, lon).split(",")[0]!.trim();
+  return displayFullLocationLabel(location ?? DEFAULT_PANCHANGA_LOCATION, apiName, lang)
+    .split(",")[0]!
+    .trim();
 }
