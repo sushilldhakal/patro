@@ -9,5 +9,11 @@
   },
   "dependencies": {
     "@vedic-patro/domain": "*"
+  },
+  "scripts": {
+    "test": "node test/url-golden.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

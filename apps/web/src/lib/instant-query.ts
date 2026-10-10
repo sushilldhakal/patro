@@ -11,10 +11,16 @@
  * new callers should use this.
  */
 
-import type { Era, InstantQuery } from "@vedic-patro/domain/era";
+import type { Era } from "@vedic-patro/domain/era";
+import type { InstantQuery } from "@vedic-patro/domain/instant";
 import { parseCivilIso } from "@/lib/patro-day";
 
 export type { Era, InstantQuery };
+export {
+  appendBirthInstantParams,
+  appendInstantParams,
+  instantCacheKey,
+} from "@vedic-patro/domain/instant";
 
 /**
  * Moment from a civil `YYYY-MM-DD` the backend already gave us, plus a clock.
@@ -36,45 +42,3 @@ export function instantFromEraParts(
 }
 
 /** Stable cache key. Two spellings of one moment must not produce two keys. */
-export function instantCacheKey(q: InstantQuery): string {
-  return `${q.inputEra}:${q.year}-${q.month}-${q.day}@${q.clock}`;
-}
-
-/** Write a moment onto a query string, optionally under a per-person prefix. */
-export function appendInstantParams(
-  params: URLSearchParams,
-  q: InstantQuery,
-  prefix = "",
-): URLSearchParams {
-  if (prefix) {
-    // Milan addresses two people in one request, so neither can use the
-    // request-wide era context — each carries its own namespaced era + parts,
-    // resolved server-side by `instant_for_parts`.
-    params.set(`${prefix}era`, q.inputEra);
-    params.set(`${prefix}year`, String(q.year));
-    params.set(`${prefix}month`, String(q.month));
-    params.set(`${prefix}day`, String(q.day));
-    params.set(`${prefix}clock`, q.clock);
-    return params;
-  }
-  params.set("inputEra", q.inputEra);
-  params.set("era", q.inputEra);
-  params.set("year", String(q.year));
-  params.set("month", String(q.month));
-  params.set("day", String(q.day));
-  params.set("clock", q.clock);
-  return params;
-}
-
-/** Namespaced birth-moment params for rashifal / sait personalize. */
-export function appendBirthInstantParams(
-  params: URLSearchParams,
-  q: InstantQuery,
-): URLSearchParams {
-  params.set("birth_era", q.inputEra);
-  params.set("birth_year", String(q.year));
-  params.set("birth_month", String(q.month));
-  params.set("birth_day", String(q.day));
-  params.set("birth_clock", q.clock);
-  return params;
-}

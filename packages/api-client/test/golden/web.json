@@ -1,0 +1,758 @@
+{
+ "fetchNearestCity#0": [
+  "/api/v1/nepal/cities/nearest?lat=27.7&lon=85.3&country=NP"
+ ],
+ "searchCities#0": [
+  "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
+ ],
+ "fetchTodayPanchanga#0": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703"
+ ],
+ "fetchPanchangaDay0#0": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00"
+ ],
+ "fetchRashifal0#0": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703"
+ ],
+ "fetchPersonalRashifal0#0": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+ ],
+ "fetchPanchangaAtTimeForDay0#0": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703"
+ ],
+ "fetchPanchangaDay1#0": [
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00"
+ ],
+ "fetchRashifal1#0": [
+  "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703"
+ ],
+ "fetchPersonalRashifal1#0": [
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+ ],
+ "fetchPanchangaAtTimeForDay1#0": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703"
+ ],
+ "fetchPanchangaDay2#0": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00"
+ ],
+ "fetchRashifal2#0": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703"
+ ],
+ "fetchPersonalRashifal2#0": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+ ],
+ "fetchPanchangaAtTimeForDay2#0": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703"
+ ],
+ "fetchPanchangaCivilDay#0": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight"
+ ],
+ "fetchNepalPanchanga#0": [
+  "/api/v1/nepal/panchanga/2026-10-10?era=ad"
+ ],
+ "fetchCivilTimeline#0": [
+  "/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703"
+ ],
+ "fetchPanchangaAtTime#0": [
+  "/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703"
+ ],
+ "fetchPanchangaAtTimeJd#0": [
+  "/api/v1/panchanga/at-time?jd=2461324.5&clock=06%3A30&cv=4703"
+ ],
+ "fetchTropicalSeasons#0": [
+  "/api/v1/seasons/tropical"
+ ],
+ "fetchVimshottari#0": [
+  "/api/v1/kundali/vimshottari?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=lahiri&cycles=2"
+ ],
+ "fetchGochar#0": [
+  "/api/v1/nepal/gochar/2026-10-10?era=ad"
+ ],
+ "fetchGocharJd#0": [
+  "/api/v1/nepal/gochar/jd/2461324.5"
+ ],
+ "fetchGocharIngress#0": [
+  "/api/v1/nepal/gochar/ingress?from=2026-04-14&to=2027-04-13&era=bs&level=rashi"
+ ],
+ "fetchGrahaSthiti#0": [
+  "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3"
+ ],
+ "fetchGrahaAstaYear#0": [
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3"
+ ],
+ "fetchGrahaVakriYear#0": [
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3"
+ ],
+ "fetchEclipseYear#0": [
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3"
+ ],
+ "fetchPanchakYear#0": [
+  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne"
+ ],
+ "fetchMonthCalendar#0": [
+  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703"
+ ],
+ "fetchMonthCalendar-opts#0": [
+  "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703"
+ ],
+ "fetchYearCalendar#0": [
+  "/api/v1/panchanga/year/2083?full=true&cv=4703"
+ ],
+ "fetchYearWheelCalendar#0": [
+  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703"
+ ],
+ "fetchYearSunTimes#0": [
+  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne"
+ ],
+ "fetchSait#0": [
+  "/api/v1/nepal/sait/2083/vivah?sv=14"
+ ],
+ "fetchSaitDetail#0": [
+  "/api/v1/nepal/sait/2083/vivah/detail?exclude=a%2Cb&nakshatra_mode=janma&sv=14"
+ ],
+ "fetchSaitPersonalize#0": [
+  "/api/v1/nepal/sait/2083/vivah/personalize?birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&gender=male"
+ ],
+ "fetchSaitMonthAll#0": [
+  "/api/v1/nepal/sait/2083/month/6?sv=14"
+ ],
+ "fetchElementSpans#0": [
+  "/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703"
+ ],
+ "fetchElementMonth#0": [
+  "/api/v1/panchanga/element/tithi/month/2083/6?cv=4703"
+ ],
+ "fetchElementDay#0": [
+  "/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703"
+ ],
+ "fetchKundali#0": [
+  "/api/v1/kundali/2026-10-10?era=ad"
+ ],
+ "fetchShadbala#0": [
+  "/api/v1/shadbala?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30"
+ ],
+ "fetchKundaliDetail#0": [
+  "/api/v1/kundali/detail?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=raman&ev=5"
+ ],
+ "streamKundaliReport#0": [
+  "/api/v1/kundali/report?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lang=ne"
+ ],
+ "fetchNearestCity#1": [
+  "/api/v1/nepal/cities/nearest?lat=27.7&lon=85.3&country=NP"
+ ],
+ "searchCities#1": [
+  "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
+ ],
+ "fetchTodayPanchanga#1": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaDay0#1": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+ ],
+ "fetchRashifal0#1": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city_id=1283240"
+ ],
+ "fetchPersonalRashifal0#1": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+ ],
+ "fetchPanchangaAtTimeForDay0#1": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaDay1#1": [
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+ ],
+ "fetchRashifal1#1": [
+  "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city_id=1283240"
+ ],
+ "fetchPersonalRashifal1#1": [
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+ ],
+ "fetchPanchangaAtTimeForDay1#1": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaDay2#1": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&city_id=1283240"
+ ],
+ "fetchRashifal2#1": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city_id=1283240"
+ ],
+ "fetchPersonalRashifal2#1": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+ ],
+ "fetchPanchangaAtTimeForDay2#1": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaCivilDay#1": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&city_id=1283240"
+ ],
+ "fetchNepalPanchanga#1": [
+  "/api/v1/nepal/panchanga/2026-10-10?era=ad&city_id=1283240"
+ ],
+ "fetchCivilTimeline#1": [
+  "/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaAtTime#1": [
+  "/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city_id=1283240"
+ ],
+ "fetchPanchangaAtTimeJd#1": [
+  "/api/v1/panchanga/at-time?jd=2461324.5&clock=06%3A30&cv=4703&city_id=1283240"
+ ],
+ "fetchTropicalSeasons#1": [
+  "/api/v1/seasons/tropical?city_id=1283240"
+ ],
+ "fetchVimshottari#1": [
+  "/api/v1/kundali/vimshottari?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=lahiri&cycles=2&city_id=1283240"
+ ],
+ "fetchGochar#1": [
+  "/api/v1/nepal/gochar/2026-10-10?era=ad&city_id=1283240"
+ ],
+ "fetchGocharJd#1": [
+  "/api/v1/nepal/gochar/jd/2461324.5?city_id=1283240"
+ ],
+ "fetchGocharIngress#1": [
+  "/api/v1/nepal/gochar/ingress?from=2026-04-14&to=2027-04-13&era=bs&level=rashi&city_id=1283240"
+ ],
+ "fetchGrahaSthiti#1": [
+  "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&city_id=1283240"
+ ],
+ "fetchGrahaAstaYear#1": [
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+ ],
+ "fetchGrahaVakriYear#1": [
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+ ],
+ "fetchEclipseYear#1": [
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&city_id=1283240"
+ ],
+ "fetchPanchakYear#1": [
+  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&city_id=1283240"
+ ],
+ "fetchMonthCalendar#1": [
+  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city_id=1283240"
+ ],
+ "fetchMonthCalendar-opts#1": [
+  "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&city_id=1283240"
+ ],
+ "fetchYearCalendar#1": [
+  "/api/v1/panchanga/year/2083?full=true&cv=4703&city_id=1283240"
+ ],
+ "fetchYearWheelCalendar#1": [
+  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city_id=1283240"
+ ],
+ "fetchYearSunTimes#1": [
+  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&city_id=1283240"
+ ],
+ "fetchSait#1": [
+  "/api/v1/nepal/sait/2083/vivah?city_id=1283240&sv=14"
+ ],
+ "fetchSaitDetail#1": [
+  "/api/v1/nepal/sait/2083/vivah/detail?city_id=1283240&exclude=a%2Cb&nakshatra_mode=janma&sv=14"
+ ],
+ "fetchSaitPersonalize#1": [
+  "/api/v1/nepal/sait/2083/vivah/personalize?city_id=1283240&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&gender=male"
+ ],
+ "fetchSaitMonthAll#1": [
+  "/api/v1/nepal/sait/2083/month/6?city_id=1283240&sv=14"
+ ],
+ "fetchElementSpans#1": [
+  "/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&city_id=1283240"
+ ],
+ "fetchElementMonth#1": [
+  "/api/v1/panchanga/element/tithi/month/2083/6?cv=4703&city_id=1283240"
+ ],
+ "fetchElementDay#1": [
+  "/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&city_id=1283240"
+ ],
+ "fetchKundali#1": [
+  "/api/v1/kundali/2026-10-10?era=ad&city_id=1283240"
+ ],
+ "fetchShadbala#1": [
+  "/api/v1/shadbala?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&city_id=1283240"
+ ],
+ "fetchKundaliDetail#1": [
+  "/api/v1/kundali/detail?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=raman&ev=5&city_id=1283240"
+ ],
+ "streamKundaliReport#1": [
+  "/api/v1/kundali/report?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lang=ne&city_id=1283240"
+ ],
+ "fetchNearestCity#2": [
+  "/api/v1/nepal/cities/nearest?lat=27.7&lon=85.3&country=NP"
+ ],
+ "searchCities#2": [
+  "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
+ ],
+ "fetchTodayPanchanga#2": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaDay0#2": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchRashifal0#2": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPersonalRashifal0#2": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaAtTimeForDay0#2": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaDay1#2": [
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchRashifal1#2": [
+  "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPersonalRashifal1#2": [
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaAtTimeForDay1#2": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaDay2#2": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchRashifal2#2": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPersonalRashifal2#2": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaAtTimeForDay2#2": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaCivilDay#2": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchNepalPanchanga#2": [
+  "/api/v1/nepal/panchanga/2026-10-10?era=ad&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchCivilTimeline#2": [
+  "/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaAtTime#2": [
+  "/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchangaAtTimeJd#2": [
+  "/api/v1/panchanga/at-time?jd=2461324.5&clock=06%3A30&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchTropicalSeasons#2": [
+  "/api/v1/seasons/tropical?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchVimshottari#2": [
+  "/api/v1/kundali/vimshottari?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=lahiri&cycles=2&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGochar#2": [
+  "/api/v1/nepal/gochar/2026-10-10?era=ad&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGocharJd#2": [
+  "/api/v1/nepal/gochar/jd/2461324.5?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGocharIngress#2": [
+  "/api/v1/nepal/gochar/ingress?from=2026-04-14&to=2027-04-13&era=bs&level=rashi&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGrahaSthiti#2": [
+  "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGrahaAstaYear#2": [
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchGrahaVakriYear#2": [
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchEclipseYear#2": [
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchPanchakYear#2": [
+  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchMonthCalendar#2": [
+  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchMonthCalendar-opts#2": [
+  "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchYearCalendar#2": [
+  "/api/v1/panchanga/year/2083?full=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchYearWheelCalendar#2": [
+  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchYearSunTimes#2": [
+  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchSait#2": [
+  "/api/v1/nepal/sait/2083/vivah?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&sv=14"
+ ],
+ "fetchSaitDetail#2": [
+  "/api/v1/nepal/sait/2083/vivah/detail?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&exclude=a%2Cb&nakshatra_mode=janma&sv=14"
+ ],
+ "fetchSaitPersonalize#2": [
+  "/api/v1/nepal/sait/2083/vivah/personalize?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&gender=male"
+ ],
+ "fetchSaitMonthAll#2": [
+  "/api/v1/nepal/sait/2083/month/6?lat=27.7&lon=85.3&timezone=Asia%2FKathmandu&sv=14"
+ ],
+ "fetchElementSpans#2": [
+  "/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchElementMonth#2": [
+  "/api/v1/panchanga/element/tithi/month/2083/6?cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchElementDay#2": [
+  "/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchKundali#2": [
+  "/api/v1/kundali/2026-10-10?era=ad&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchShadbala#2": [
+  "/api/v1/shadbala?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchKundaliDetail#2": [
+  "/api/v1/kundali/detail?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=raman&ev=5&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "streamKundaliReport#2": [
+  "/api/v1/kundali/report?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lang=ne&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+ ],
+ "fetchNearestCity#3": [
+  "/api/v1/nepal/cities/nearest?lat=27.7&lon=85.3&country=NP"
+ ],
+ "searchCities#3": [
+  "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
+ ],
+ "fetchTodayPanchanga#3": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaDay0#3": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+ ],
+ "fetchRashifal0#3": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city=Pokhara"
+ ],
+ "fetchPersonalRashifal0#3": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+ ],
+ "fetchPanchangaAtTimeForDay0#3": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaDay1#3": [
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+ ],
+ "fetchRashifal1#3": [
+  "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city=Pokhara"
+ ],
+ "fetchPersonalRashifal1#3": [
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+ ],
+ "fetchPanchangaAtTimeForDay1#3": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaDay2#3": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&city=Pokhara"
+ ],
+ "fetchRashifal2#3": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city=Pokhara"
+ ],
+ "fetchPersonalRashifal2#3": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+ ],
+ "fetchPanchangaAtTimeForDay2#3": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaCivilDay#3": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&city=Pokhara"
+ ],
+ "fetchNepalPanchanga#3": [
+  "/api/v1/nepal/panchanga/2026-10-10?era=ad&city=Pokhara"
+ ],
+ "fetchCivilTimeline#3": [
+  "/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaAtTime#3": [
+  "/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&city=Pokhara"
+ ],
+ "fetchPanchangaAtTimeJd#3": [
+  "/api/v1/panchanga/at-time?jd=2461324.5&clock=06%3A30&cv=4703&city=Pokhara"
+ ],
+ "fetchTropicalSeasons#3": [
+  "/api/v1/seasons/tropical?city=Pokhara"
+ ],
+ "fetchVimshottari#3": [
+  "/api/v1/kundali/vimshottari?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=lahiri&cycles=2&city=Pokhara"
+ ],
+ "fetchGochar#3": [
+  "/api/v1/nepal/gochar/2026-10-10?era=ad&city=Pokhara"
+ ],
+ "fetchGocharJd#3": [
+  "/api/v1/nepal/gochar/jd/2461324.5?city=Pokhara"
+ ],
+ "fetchGocharIngress#3": [
+  "/api/v1/nepal/gochar/ingress?from=2026-04-14&to=2027-04-13&era=bs&level=rashi&city=Pokhara"
+ ],
+ "fetchGrahaSthiti#3": [
+  "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&city=Pokhara"
+ ],
+ "fetchGrahaAstaYear#3": [
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+ ],
+ "fetchGrahaVakriYear#3": [
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+ ],
+ "fetchEclipseYear#3": [
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&city=Pokhara"
+ ],
+ "fetchPanchakYear#3": [
+  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&city=Pokhara"
+ ],
+ "fetchMonthCalendar#3": [
+  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city=Pokhara"
+ ],
+ "fetchMonthCalendar-opts#3": [
+  "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&city=Pokhara"
+ ],
+ "fetchYearCalendar#3": [
+  "/api/v1/panchanga/year/2083?full=true&cv=4703&city=Pokhara"
+ ],
+ "fetchYearWheelCalendar#3": [
+  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city=Pokhara"
+ ],
+ "fetchYearSunTimes#3": [
+  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&city=Pokhara"
+ ],
+ "fetchSait#3": [
+  "/api/v1/nepal/sait/2083/vivah?city=Pokhara&sv=14"
+ ],
+ "fetchSaitDetail#3": [
+  "/api/v1/nepal/sait/2083/vivah/detail?city=Pokhara&exclude=a%2Cb&nakshatra_mode=janma&sv=14"
+ ],
+ "fetchSaitPersonalize#3": [
+  "/api/v1/nepal/sait/2083/vivah/personalize?city=Pokhara&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&gender=male"
+ ],
+ "fetchSaitMonthAll#3": [
+  "/api/v1/nepal/sait/2083/month/6?city=Pokhara&sv=14"
+ ],
+ "fetchElementSpans#3": [
+  "/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&city=Pokhara"
+ ],
+ "fetchElementMonth#3": [
+  "/api/v1/panchanga/element/tithi/month/2083/6?cv=4703&city=Pokhara"
+ ],
+ "fetchElementDay#3": [
+  "/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&city=Pokhara"
+ ],
+ "fetchKundali#3": [
+  "/api/v1/kundali/2026-10-10?era=ad&city=Pokhara"
+ ],
+ "fetchShadbala#3": [
+  "/api/v1/shadbala?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&city=Pokhara"
+ ],
+ "fetchKundaliDetail#3": [
+  "/api/v1/kundali/detail?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=raman&ev=5&city=Pokhara"
+ ],
+ "streamKundaliReport#3": [
+  "/api/v1/kundali/report?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lang=ne&city=Pokhara"
+ ],
+ "fetchNearestCity#4": [
+  "/api/v1/nepal/cities/nearest?lat=27.7&lon=85.3&country=NP"
+ ],
+ "searchCities#4": [
+  "/api/v1/nepal/cities/search?q=kath&limit=15&country=NP"
+ ],
+ "fetchTodayPanchanga#4": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaDay0#4": [
+  "/api/v1/panchanga/today?era=bs&language=ne&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+ ],
+ "fetchRashifal0#4": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPersonalRashifal0#4": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaAtTimeForDay0#4": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaDay1#4": [
+  "/api/v1/panchanga/jd/2461324.5?era=ad&language=en&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+ ],
+ "fetchRashifal1#4": [
+  "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPersonalRashifal1#4": [
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaAtTimeForDay1#4": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaDay2#4": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&festivals=true&detail=true&cv=4703&clock=06%3A00&lat=28.2&lon=83.98"
+ ],
+ "fetchRashifal2#4": [
+  "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPersonalRashifal2#4": [
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaAtTimeForDay2#4": [
+  "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaCivilDay#4": [
+  "/api/v1/panchanga/today?era=bs&language=ne&inputEra=ad&year=2026&month=10&day=10&festivals=true&detail=true&cv=4703&reference=midnight&lat=28.2&lon=83.98"
+ ],
+ "fetchNepalPanchanga#4": [
+  "/api/v1/nepal/panchanga/2026-10-10?era=ad&lat=28.2&lon=83.98"
+ ],
+ "fetchCivilTimeline#4": [
+  "/api/v1/panchanga/2026-10-10?era=ad&detail=false&civil=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaAtTime#4": [
+  "/api/v1/panchanga/at-time?datetime=2026-10-10T06%3A30&ayanamsha=lahiri&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchangaAtTimeJd#4": [
+  "/api/v1/panchanga/at-time?jd=2461324.5&clock=06%3A30&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchTropicalSeasons#4": [
+  "/api/v1/seasons/tropical?lat=28.2&lon=83.98"
+ ],
+ "fetchVimshottari#4": [
+  "/api/v1/kundali/vimshottari?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=lahiri&cycles=2&lat=28.2&lon=83.98"
+ ],
+ "fetchGochar#4": [
+  "/api/v1/nepal/gochar/2026-10-10?era=ad&lat=28.2&lon=83.98"
+ ],
+ "fetchGocharJd#4": [
+  "/api/v1/nepal/gochar/jd/2461324.5?lat=28.2&lon=83.98"
+ ],
+ "fetchGocharIngress#4": [
+  "/api/v1/nepal/gochar/ingress?from=2026-04-14&to=2027-04-13&era=bs&level=rashi&lat=28.2&lon=83.98"
+ ],
+ "fetchGrahaSthiti#4": [
+  "/api/v1/nepal/graha-sthiti/2026-10-10?era=ad&gv=3&lat=28.2&lon=83.98"
+ ],
+ "fetchGrahaAstaYear#4": [
+  "/api/v1/nepal/graha-asta/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+ ],
+ "fetchGrahaVakriYear#4": [
+  "/api/v1/nepal/graha-vakri/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+ ],
+ "fetchEclipseYear#4": [
+  "/api/v1/nepal/eclipse/solar/year/2083?era=bs&year=2083&language=ne&gv=3&lat=28.2&lon=83.98"
+ ],
+ "fetchPanchakYear#4": [
+  "/api/v1/nepal/panchak/year/2083?era=bs&year=2083&language=ne&lat=28.2&lon=83.98"
+ ],
+ "fetchMonthCalendar#4": [
+  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchMonthCalendar-opts#4": [
+  "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchYearCalendar#4": [
+  "/api/v1/panchanga/year/2083?full=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchYearWheelCalendar#4": [
+  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchYearSunTimes#4": [
+  "/api/v1/panchanga/year/2083/sun?era=bs&year=2083&language=ne&lat=28.2&lon=83.98"
+ ],
+ "fetchSait#4": [
+  "/api/v1/nepal/sait/2083/vivah?lat=28.2&lon=83.98&sv=14"
+ ],
+ "fetchSaitDetail#4": [
+  "/api/v1/nepal/sait/2083/vivah/detail?lat=28.2&lon=83.98&exclude=a%2Cb&nakshatra_mode=janma&sv=14"
+ ],
+ "fetchSaitPersonalize#4": [
+  "/api/v1/nepal/sait/2083/vivah/personalize?lat=28.2&lon=83.98&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&gender=male"
+ ],
+ "fetchSaitMonthAll#4": [
+  "/api/v1/nepal/sait/2083/month/6?lat=28.2&lon=83.98&sv=14"
+ ],
+ "fetchElementSpans#4": [
+  "/api/v1/panchanga/element/tithi/spans?era=bs&year=2083&month=6&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchElementMonth#4": [
+  "/api/v1/panchanga/element/tithi/month/2083/6?cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchElementDay#4": [
+  "/api/v1/panchanga/element/tithi/day/2026-10-10?era=ad&cv=4703&lat=28.2&lon=83.98"
+ ],
+ "fetchKundali#4": [
+  "/api/v1/kundali/2026-10-10?era=ad&lat=28.2&lon=83.98"
+ ],
+ "fetchShadbala#4": [
+  "/api/v1/shadbala?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lat=28.2&lon=83.98"
+ ],
+ "fetchKundaliDetail#4": [
+  "/api/v1/kundali/detail?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&ayanamsha=raman&ev=5&lat=28.2&lon=83.98"
+ ],
+ "streamKundaliReport#4": [
+  "/api/v1/kundali/report?inputEra=bs&era=bs&year=2050&month=5&day=12&clock=06%3A30&lang=ne&lat=28.2&lon=83.98"
+ ],
+ "fetchPopularCities": [
+  "/api/v1/nepal/cities/popular"
+ ],
+ "fetchJanmaRashi": [
+  "/api/v1/panchanga/rashifal/janma?birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+ ],
+ "fetchCalendarHeader": [
+  "/api/v1/calendar/header/2083/6"
+ ],
+ "fetchPatroMonth": [
+  "/api/v1/nepal/patro/2083/6?cv=4703"
+ ],
+ "fetchHolidays": [
+  "/api/v1/nepal/holidays?era=bs&year=2083&language=ne&cv=4703"
+ ],
+ "fetchHolidays-ad": [
+  "/api/v1/nepal/holidays?era=ad&year=2026&language=en&cv=4703"
+ ],
+ "fetchFestivals": [
+  "/api/v1/nepal/festivals?era=bs&year=2083&language=ne&cv=4703"
+ ],
+ "fetchFestivals-month": [
+  "/api/v1/nepal/festivals?era=bs&year=2083&language=ne&month=6&cv=4703"
+ ],
+ "fetchUpcomingFestivals": [
+  "/api/v1/nepal/festivals/upcoming?days=30&limit=10&holidays_only=true"
+ ],
+ "fetchSaitYears": [
+  "/api/v1/nepal/sait/years"
+ ],
+ "fetchSaitAbout": [
+  "/api/v1/nepal/sait/about"
+ ],
+ "fetchSaitAboutCategory": [
+  "/api/v1/nepal/sait/vivah/about"
+ ],
+ "fetchElements": [
+  "/api/v1/panchanga/elements?cv=4703"
+ ],
+ "fetchAdToBs": [
+  "/api/v1/convert/ad-to-bs/2026-10-10"
+ ],
+ "fetchBsToAd": [
+  "/api/v1/convert/bs-to-ad/2083-06-24"
+ ],
+ "fetchSpecialMonths": [
+  "/api/v1/nepal/special-months/2083"
+ ],
+ "fetchYogaReference": [
+  "/api/v1/kundali/yogas/reference?v=3"
+ ],
+ "fetchBhavaReference": [
+  "/api/v1/kundali/reference/bhava?v=26"
+ ],
+ "fetchDashaChildren": [
+  "/api/v1/kundali/dasha/expand?lord=Sun&start=2020-01-01&end=2026-01-01&system=vimshottari"
+ ],
+ "fetchKundaliMilan": [
+  "/api/v1/kundali/milan?boy_era=bs&boy_year=2050&boy_month=5&boy_day=12&boy_clock=06%3A30&girl_era=bs&girl_year=2050&girl_month=5&girl_day=12&girl_clock=06%3A30&lang=ne"
+ ],
+ "fetchVastuSketch": [
+  "POST /api/v1/vastu/sketch {\"plot\":{\"width\":10,\"depth\":12}}"
+ ],
+ "fetchPatroCapabilities": [
+  "/api/meta/capabilities"
+ ]
+}
