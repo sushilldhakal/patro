@@ -29,7 +29,7 @@ import { kundaliLabel, type KundaliI18nKey } from "@/lib/kundali/kundali-i18n";
 import { useLocale } from "@/lib/i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiByNumber, rashiNeFromNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber, rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 

@@ -12,7 +12,7 @@ import {
   localizeVashya,
   localizeYoni,
   rowMetaFromCharans,
-} from "@/lib/avakahada-locale";
+} from "@vedic-patro/domain/avakahada-locale";
 import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import { patroWheelShell, GANA_PILL_CLASS, GANA_SWATCH_CLASS } from "@/lib/patro-classes";
 import {

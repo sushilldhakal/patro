@@ -6,7 +6,7 @@ import {
 } from "@/lib/dainikKranti/ingress-day-match";
 import { rashiNoFromGraha } from "@/lib/dainikKranti/gochar-display";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
-import { rashiNumberFromName } from "@/lib/rashi-i18n";
+import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { GRAHA_KEY_TO_TRANSIT_ABBREV } from "./rashyadi";
 

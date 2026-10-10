@@ -3,7 +3,7 @@
  * Order matches {@link rashiNumberFromName} and {@link NAKSHATRA_ICONS}.
  */
 import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { rashiNumberFromName } from "@/lib/rashi-i18n";
+import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 import rashiMesha from "@/assets/rashi/mesha.svg?url";
 import rashiVrishabha from "@/assets/rashi/vrishabha.svg?url";

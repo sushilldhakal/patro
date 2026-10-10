@@ -48,7 +48,7 @@ import {
   localizeRashi,
   localizeVarga,
   sanjnaTitle,
-} from "@/lib/avakahada-locale";
+} from "@vedic-patro/domain/avakahada-locale";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";
 
 const ganaTone: Record<Gana, string> = {

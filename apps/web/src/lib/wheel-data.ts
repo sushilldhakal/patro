@@ -12,7 +12,7 @@ import {
   RASHI_SYM,
   toNepaliDigits,
 } from "@/lib/panchanga-format";
-import { getRashiName, rashiNumberFromName } from "@/lib/rashi-i18n";
+import { getRashiName, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 export function getWheelRashis(): WheelRashi[] {
   return Array.from({ length: 12 }, (_, i) => ({

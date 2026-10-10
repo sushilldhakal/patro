@@ -21,7 +21,7 @@ import {
   localizeNadi,
   localizeNakshatra,
   localizeVarga,
-} from "@/lib/avakahada-locale";
+} from "@vedic-patro/domain/avakahada-locale";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

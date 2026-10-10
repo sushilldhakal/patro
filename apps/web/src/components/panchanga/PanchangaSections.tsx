@@ -44,7 +44,7 @@ import {
   angaEndDayOffset,
   dayOffsetLabel,
 } from "@/lib/panchanga-format";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { NivasShoolSegment } from "@/lib/api";
 import { shortWeekdayNe } from "@/lib/bs-calendar";
 import { resolveSamvatsaraForBsYear } from "@/lib/samvatsara";

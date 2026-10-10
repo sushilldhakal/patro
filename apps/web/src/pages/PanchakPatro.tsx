@@ -20,7 +20,7 @@ import {
 import { fetchPanchakYear, panchakKeys } from "@/lib/api";
 import { formatBsMonthDayPatro } from "@/lib/panchanga-format";
 import { useLocale } from "@/i18n/locale";
-import { isEnglishLocale } from "@/lib/avakahada-locale";
+import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
 import { patroNoteBox } from "@/lib/patro-classes";
 import { fmtAdShort } from "@/lib/date-format";
 import { cn } from "@/lib/utils";

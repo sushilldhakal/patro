@@ -26,7 +26,7 @@ import { formatTimeShort, formatVedicPatroTime, getRituDisplay } from "@/lib/pan
 import {
   getRashiName,
   resolveRashiDisplay,
-} from "@/lib/rashi-i18n";
+} from "@vedic-patro/domain/rashi-i18n";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "@/components/PageShell";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";

@@ -14,7 +14,7 @@ import {
   rashiNeFromNumber,
   toNepaliDigits,
 } from "@/lib/panchanga-format";
-import { formatRashiByNumber, resolveRashiDisplay, rashiNumberFromName } from "@/lib/rashi-i18n";
+import { formatRashiByNumber, resolveRashiDisplay, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 export const RASHI_COLUMNS_NE = [
   "मेष", "वृष", "मिथुन", "कर्कट", "सिंह", "कन्या",

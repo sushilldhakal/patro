@@ -14,7 +14,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { RashiRing } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 
 const RATE = 50.2879 / 3600; // deg / BS year
 const BS_AYAN_ZERO = 342;

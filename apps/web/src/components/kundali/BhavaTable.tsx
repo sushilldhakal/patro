@@ -9,7 +9,7 @@ import {
   RASHI_QUALITIES,
 } from "@/lib/bhava";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import {
   Table,
   TableBody,

@@ -83,7 +83,7 @@ import { bikramFromSun } from "@/lib/sky3d/bikram-solar";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@/lib/sky3d/geocentric-model";
 import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";

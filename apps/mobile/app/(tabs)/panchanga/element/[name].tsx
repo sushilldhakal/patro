@@ -50,7 +50,7 @@ import {
   getChandrabalamTable,
   getTarabalaTable,
 } from "@/lib/panchanga-format";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";

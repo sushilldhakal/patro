@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { configureLocale } from "@vedic-patro/domain/locale";
 import en from "@vedic-patro/i18n/en.json";
 import ne from "@vedic-patro/i18n/ne.json";
 import {
@@ -53,6 +54,12 @@ function translate(lang: AppLanguage, key: string, vars?: TranslateVars): string
   const value = lookup(BUNDLES[lang], key) ?? lookup(BUNDLES.ne, key);
   return typeof value === "string" ? interpolate(value, vars) : key;
 }
+
+// Shared domain code asks for catalogue keys and the default language through this.
+configureLocale({
+  currentLanguage: () => "ne",
+  translate: (key, lng) => translate(lng, key),
+});
 
 /** Read a key that holds a list (the SEO FAQ blocks) rather than a string. */
 export function translateList<T>(lang: AppLanguage, key: string): T[] {

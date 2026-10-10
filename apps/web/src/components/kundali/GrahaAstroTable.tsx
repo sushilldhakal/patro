@@ -5,7 +5,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import type { VargaChartEntry } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   Table,

@@ -8,7 +8,7 @@ import { adToBS, BS_MONTH_NAMES, BS_MONTHS_NE } from "@/lib/bs-calendar";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { parseCivilIsoToDate } from "@/lib/patro-day";
-import { resolveRashiDisplay, toWesternRashi } from "@/lib/rashi-i18n";
+import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 
 export type IngressFilter = "all" | "rashi" | "nakshatra" | "retrograde" | "asta";
 

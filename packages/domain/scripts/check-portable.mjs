@@ -19,10 +19,13 @@ function check(path) {
   const rel = relative(root, path);
   if (path.endsWith(".tsx")) problems.push(`${rel}: domain files must be .ts (no JSX)`);
   const text = readFileSync(path, "utf8");
-  for (const m of text.matchAll(/(?:from|import)\s*\(?\s*["']([^"']+)["']/g)) {
-    if (!m[1].startsWith("./") && !m[1].startsWith("../")) {
-      problems.push(`${rel}: imports "${m[1]}" — domain files may only import from this package`);
-    }
+  for (const m of text.matchAll(/(import|export)(\s+type)?\b[^;]*?\bfrom\s*["']([^"']+)["']|import\s*\(?\s*["']([^"']+)["']/g)) {
+    const spec = m[3] ?? m[4];
+    if (spec.startsWith("./") || spec.startsWith("../")) continue;
+    // API response types are the one thing domain code may name from outside —
+    // type-only, so there is no runtime edge between the packages.
+    if (spec === "@vedic-patro/api-client" && m[2]) continue;
+    problems.push(`${rel}: imports "${spec}" — domain files may only import from this package (plus \`import type\` from @vedic-patro/api-client)`);
   }
   if (/\b(window|document|localStorage|navigator)\./.test(text)) {
     problems.push(`${rel}: uses a browser API — keep platform code out of packages/domain`);

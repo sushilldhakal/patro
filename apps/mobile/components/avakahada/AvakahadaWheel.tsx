@@ -23,7 +23,7 @@ import {
   localizeVashya,
   localizeYoni,
   rowMetaFromCharans,
-} from "@/lib/avakahada-locale";
+} from "@vedic-patro/domain/avakahada-locale";
 import { useLocale } from "@/lib/i18n";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";

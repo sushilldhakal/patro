@@ -8,7 +8,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";

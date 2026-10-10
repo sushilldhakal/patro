@@ -27,7 +27,7 @@ import { ChevronDown, ChevronUp, Maximize2, Minimize2, Pause, Play, RotateCcw } 
 import { useTranslation } from "react-i18next";
 
 import { useLocale } from "@/i18n/locale";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import { cn } from "@/lib/utils";
 import { edPlayBtn, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";

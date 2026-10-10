@@ -2,7 +2,7 @@ import { Fragment, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { AshtakutaResult, KutaRow } from "@/lib/api";
-import { isEnglishLocale } from "@/lib/avakahada-locale";
+import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
 import {
   Table,
   TableBody,

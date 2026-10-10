@@ -42,7 +42,7 @@ import Uttarabhadrapada from "@/assets/nakshatras/uttarabhadrapada.svg";
 import Revati from "@/assets/nakshatras/revati.svg";
 
 import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { rashiNumberFromName } from "@/lib/rashi-i18n";
+import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";

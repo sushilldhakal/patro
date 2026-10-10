@@ -11,7 +11,7 @@ import { buildBhavaChart } from "@/lib/bhava";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { rashiNeFromNumber } from "@/lib/rashi-i18n";
+import { rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import {

@@ -6,7 +6,7 @@ import { Pause, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
-import { getRashiList } from "@/lib/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { RashiGlyph } from "./rashi-icons";
 
 /**

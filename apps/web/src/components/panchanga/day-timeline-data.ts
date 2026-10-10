@@ -13,10 +13,10 @@ import {
   getSunset,
   toNepaliDigits,
 } from "@/lib/panchanga-format";
-import { toWesternRashi } from "@/lib/rashi-i18n";
+import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { resolveRashiDisplay } from "@/lib/rashi-i18n";
+import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 
 /**
  * Devanagari → English for tithi / nakshatra / yoga / karana names. The daily

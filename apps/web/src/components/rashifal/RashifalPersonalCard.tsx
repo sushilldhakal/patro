@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useLocale } from "@/i18n/locale";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import type { RashifalPersonal } from "@/lib/api";
 import { formatBsCivilIsoLong } from "@/lib/bs-calendar";
 import { civilIsoFromDate } from "@/lib/patro-day";

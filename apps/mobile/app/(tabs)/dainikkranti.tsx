@@ -56,7 +56,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatBsDateKey, parseCivilIso } from "@/lib/patro-day";
 import { formatTimeShort, formatVedicPatroTime } from "@/lib/panchanga-format";
-import { resolveRashiDisplay } from "@/lib/rashi-i18n";
+import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";

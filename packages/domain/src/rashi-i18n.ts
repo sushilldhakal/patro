@@ -1,5 +1,6 @@
-import i18n from "@/i18n";
-import { normalizeLang, type Lang } from "@/i18n/locale";
+import { normalizeLang, translateKey, type Lang } from "./locale";
+
+export { normalizeLang, type Lang };
 
 export const RASHI_COUNT = 12;
 
@@ -73,8 +74,7 @@ export function rashiNumberFromName(name?: string | null): number | undefined {
 
 /** Localized rashi name for index 1–12 from `rashis.*` in ne.json / en.json. */
 export function getRashiName(num: number, lang?: string | Lang): string {
-  const lng = lang ? normalizeLang(lang) : normalizeLang(i18n.language);
-  return i18n.t(`rashis.${num}`, { lng });
+  return translateKey(`rashis.${num}`, lang);
 }
 
 /** All 12 rashi names in order for the given language. */

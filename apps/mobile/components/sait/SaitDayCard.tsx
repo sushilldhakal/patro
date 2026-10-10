@@ -6,7 +6,7 @@ import type { SaitDetailDay, SaitPersonalizeDay, SaitSuitability } from "@/lib/a
 import { BS_MONTH_NAMES } from "@/lib/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import {
   SHUDDHI_PLANET_LABEL,
   SHUDDHI_SUMMARY,

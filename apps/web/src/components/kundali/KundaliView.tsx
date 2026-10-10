@@ -40,7 +40,7 @@ import { d1AllJanmaPhalaBhavas } from "@/lib/bhava";
 import { ENGINE_KEY_TO_REF_ID } from "@/lib/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WHEEL_YOGAS } from "@/lib/tithi-wheel-data";

@@ -35,7 +35,7 @@ import {
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroAsideLink } from "@/lib/patro-classes";
 import { cn } from "@/lib/utils";
-import { resolveRashiDisplay } from "@/lib/rashi-i18n";
+import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 
 interface Props {
   day: CalendarDay | null;

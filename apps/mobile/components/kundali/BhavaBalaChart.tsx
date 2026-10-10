@@ -11,7 +11,7 @@ import { buildBhavaChart, houseClasses, type BhavaHouse } from "@/lib/bhava";
 import { splitList } from "@/lib/kundali/bhava-detail";
 import { NI_HOUSE_POLYGONS, pointsToSvg, polygonCentroid, type Point } from "@/lib/kundali/north-indian-layout";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { formatRashiByNumber, rashiNeFromNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber, rashiNeFromNumber } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

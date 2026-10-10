@@ -20,7 +20,7 @@ import {
 } from "@/lib/kundali/north-indian-layout";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 

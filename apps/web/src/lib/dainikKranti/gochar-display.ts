@@ -7,7 +7,7 @@ import {
   rashiNeFromApiEn,
   rashiNumberFromName,
   resolveRashiDisplay,
-} from "@/lib/rashi-i18n";
+} from "@vedic-patro/domain/rashi-i18n";
 import { formatBsIsoDateNepali, toNepaliDigits } from "@/lib/panchanga-format";
 
 

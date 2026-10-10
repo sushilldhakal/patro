@@ -17,7 +17,7 @@ import {
   computeAspectedBy,
   splitList,
 } from "@/lib/kundali/bhava-detail";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 
 function grahaName(key: string, lang: "ne" | "en"): string {
   const entry = GRAHA_NAME[key as GrahaKey];

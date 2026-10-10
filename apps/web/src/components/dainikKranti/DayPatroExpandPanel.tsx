@@ -10,7 +10,7 @@ import {
 } from "@/lib/dainikKranti/month-patro-tables";
 import { PatroSolarCorrectionStrip } from "@/components/dainikKranti/PatroSolarCorrectionStrip";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import { getRashiList } from "@/lib/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";

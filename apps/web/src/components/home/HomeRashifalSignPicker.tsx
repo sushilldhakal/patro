@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
 import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";

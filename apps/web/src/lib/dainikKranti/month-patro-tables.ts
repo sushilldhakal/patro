@@ -19,7 +19,7 @@ import {
   longitudeToDegreeCells,
   toNepaliDigits,
 } from "@/lib/panchanga-format";
-import { formatRashiByNumber, rashiNeFromNumber, rashiNumberFromName } from "@/lib/rashi-i18n";
+import { formatRashiByNumber, rashiNeFromNumber, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 
 const GRAHA_EN_BY_KEY: Record<string, string> = {
   sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",

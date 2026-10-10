@@ -2,6 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { getStoredLanguage } from "@/lib/user-preferences";
 
+import { configureLocale, type Lang } from "@vedic-patro/domain/locale";
 import ne from "@vedic-patro/i18n/ne.json";
 
 function clientInitialLng(): string {
@@ -25,6 +26,11 @@ void i18n.use(initReactI18next).init({
   react: {
     useSuspense: false,
   },
+});
+
+configureLocale({
+  currentLanguage: () => i18n.language,
+  translate: (key, lng: Lang) => i18n.t(key, { lng }),
 });
 
 let enLoadPromise: Promise<void> | null = null;

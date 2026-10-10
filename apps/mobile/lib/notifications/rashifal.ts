@@ -8,7 +8,7 @@ import {
 import type { Profile } from "@/lib/auth/client";
 import { instantCacheKey } from "@/lib/instant-query";
 import { profileChartParams } from "@/lib/kundali/profile-chart";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { notifStore } from "./store";
 import type { RashifalCache, RashifalDayEntry, RashifalSettings } from "./types";
 

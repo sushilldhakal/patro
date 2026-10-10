@@ -4,7 +4,7 @@ import {
   ingressEventRowDateAd,
   type IngressBrowseMonth,
 } from "@/lib/dainikKranti/ingress-day-match";
-import { rashiNumberFromName } from "@/lib/rashi-i18n";
+import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 import { toNepaliDigits } from "@/lib/panchanga-format";
 import {
   GRAHA_KEY_TO_TRANSIT_ABBREV,

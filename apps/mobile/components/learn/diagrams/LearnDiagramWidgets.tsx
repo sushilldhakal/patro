@@ -34,7 +34,7 @@ import {
   yearAngleFromDay,
 } from "@/lib/learn/sun-earth-moon-math";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 
 /* Framing offsets: the Sun sits off to one side in these two scenes, so the

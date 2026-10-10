@@ -4,7 +4,7 @@ import {
   PATRO_PLANET_NE,
   type GrahaSpashtaRow,
 } from "@/lib/dainikKranti/month-patro-tables";
-import { getRashiList } from "@/lib/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";

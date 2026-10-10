@@ -11,7 +11,7 @@ import {
 import { Ionicons } from "@/components/icons/Ionicons";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { RashifalPeriod, RashifalSignBlock } from "@/lib/api";

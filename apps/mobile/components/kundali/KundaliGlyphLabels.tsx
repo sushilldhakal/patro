@@ -5,7 +5,7 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 export function isGrahaKey(key: string): key is GrahaKey {

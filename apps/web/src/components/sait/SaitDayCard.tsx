@@ -2,7 +2,7 @@ import { Baby, Clock3, Compass } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { BS_MONTH_NAMES } from "@/lib/bs-calendar";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 import type {
   SaitDetailDay,

@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, type Lang } from "@/i18n/locale";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import {
   bhavaReferenceKeys,

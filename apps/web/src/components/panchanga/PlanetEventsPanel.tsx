@@ -5,9 +5,9 @@ import { fetchGocharJd, gocharKeys, type GocharNextEntry, type LocationParams } 
 import {
   formatClockNepali,
 } from "@/lib/panchanga-format";
-import { toWesternRashi } from "@/lib/rashi-i18n";
+import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { resolveRashiDisplay } from "@/lib/rashi-i18n";
+import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";

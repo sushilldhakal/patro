@@ -35,7 +35,7 @@ import {
   sunSiderealLonFromEarthNu,
   yearAngleFromDay,
 } from "@/lib/learn/sun-earth-moon-math";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 
 const SUN_R = 0.2;
 const EARTH_R = 0.085;

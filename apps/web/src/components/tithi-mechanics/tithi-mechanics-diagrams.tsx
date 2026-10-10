@@ -22,7 +22,7 @@ import {
   tmVline,
 } from "@/lib/diagram-classes";
 import { toNepaliDigits } from "@/lib/panchanga-format";
-import { getRashiList } from "@/lib/rashi-i18n";
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_TITHIS, tithiNum } from "@/lib/tithi-wheel-data";
 import { tmAmLegend, tmCal, tmCalCellDup, tmCalGap, tmCalGate, tmCalNo, tmCalTithi, tmDiagramSvg, tmLegAdhik } from "@/lib/learn-classes";
 import { TmLegendDot, TmNewMoon, TmSun } from "./diagram-glyphs";

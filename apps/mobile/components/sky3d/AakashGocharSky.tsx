@@ -44,7 +44,7 @@ import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
-import { formatRashiByNumber, getRashiList } from "@/lib/rashi-i18n";
+import { formatRashiByNumber, getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 import { GRAHA_COLOR, normalizeDeg } from "@/lib/sky3d/geocentric-model";

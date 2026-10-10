@@ -26,7 +26,7 @@ import {
   getVaaraEn,
   getVaaraNe,
 } from "@/lib/panchanga-format.web";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
 import { useThemeColors } from "@/lib/theme-context";
 

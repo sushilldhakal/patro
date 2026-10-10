@@ -1,6 +1,6 @@
 import type { GrahaSthitiRow } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
-import { getRashiName } from "@/lib/rashi-i18n";
+import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 
 function dmsParts(deg: number): { deg: number; minute: number; sec: number } {

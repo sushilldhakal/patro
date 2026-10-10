@@ -6,7 +6,7 @@ import {
   formatRashiDisplayNe,
   getRashiName,
   rashiNeFromNumber,
-} from "@/lib/rashi-i18n";
+} from "@vedic-patro/domain/rashi-i18n";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { normalizeLang, pickLocale } from "@/i18n/locale";

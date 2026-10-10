@@ -33,7 +33,7 @@ import {
   getTarabalaTable,
   formatElementStampDisplay,
 } from "@/lib/panchanga-format";
-import { formatRashiDisplay } from "@/lib/rashi-i18n";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import {
   ElementDayRowIcon,
   ElementSpanIcon,

@@ -1,6 +1,6 @@
 import type { GocharGraha } from "@/lib/api";
 import type { BhavaHouse, BhavaPlanetEntry } from "@/lib/bhava";
-import { formatRashiByNumber } from "@/lib/rashi-i18n";
+import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { adToBS } from "@/lib/bs-calendar";
 import { GOCHAR_RASHI_TO_HOUSE } from "@/lib/kundali/north-indian-layout";
 import { formatBsIsoDateNepali, toNepaliDigits } from "@/lib/panchanga-format";
