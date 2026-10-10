@@ -1,27 +1,47 @@
 #!/usr/bin/env bash
-# Remote deploy script — called by GitHub Actions over SSH.
+# API deploy — run by the repo-root scripts/deploy.sh (GitHub Actions over SSH).
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/home/ubuntu/patro}"
+# Called by the repo-root scripts/deploy.sh after it has pulled the monorepo.
+REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
+APP_DIR="${REPO_DIR}/apps/api"
 SERVICE_NAME="nepali-holiday-api"
-DEPLOY_REF="${DEPLOY_REF:-main}"
 
 cd "${APP_DIR}"
 
-echo "==> Pulling latest code (${DEPLOY_REF})"
-git fetch origin "${DEPLOY_REF}"
-git reset --hard "origin/${DEPLOY_REF}"
-
-# Bash keeps reading the copy of this script it started with, so changes that
-# the pull above just brought in would only take effect on the *next* deploy.
-# Re-run the freshly pulled script once so every deploy uses its own steps.
-if [[ "${DEPLOY_REEXEC:-0}" != "1" ]]; then
-  export DEPLOY_REEXEC=1
-  exec bash "${APP_DIR}/scripts/deploy.sh" "$@"
-fi
+# ── One-time move to the monorepo layout ─────────────────────────────────────
+# The API used to live at the repo root. Its runtime files are not in git
+# (cities.db, the .se1 ephemeris, the SQLite caches), so moving the code left
+# them behind at the root; carry them over instead of rebuilding them.
+for dir in data cache; do
+  if [[ -d "${REPO_DIR}/${dir}" ]]; then
+    echo "==> Moving runtime files ${REPO_DIR}/${dir} → ${APP_DIR}/${dir}"
+    mkdir -p "${APP_DIR}/${dir}"
+    shopt -s dotglob nullglob
+    for entry in "${REPO_DIR}/${dir}"/*; do
+      dest="${APP_DIR}/${dir}/$(basename "${entry}")"
+      if [[ ! -e "${dest}" ]]; then
+        # Same filesystem: a rename, so the still-running old process keeps
+        # writing to the same files until the restart below.
+        mv "${entry}" "${dest}"
+      elif [[ -d "${entry}" ]]; then
+        rsync -a --ignore-existing "${entry}/" "${dest}/"
+      fi
+    done
+    shopt -u dotglob nullglob
+    rm -rf "${REPO_DIR:?}/${dir}"
+  fi
+done
+# config/__init__.py loads .env from this directory; the real one stays at the
+# repo root (systemd reads it from there too).
+for env in .env .env.local; do
+  if [[ -f "${REPO_DIR}/${env}" && ! -e "${APP_DIR}/${env}" ]]; then
+    ln -s "../../${env}" "${APP_DIR}/${env}"
+  fi
+done
 
 echo "==> Installing dependencies"
-source .venv/bin/activate
+source "${REPO_DIR}/.venv/bin/activate"
 pip install --upgrade pip -q
 if [[ -f ephemeris_provision/setup.py ]]; then
   pip install -r requirements.txt -q
@@ -40,18 +60,29 @@ fi
 echo "==> Installing Swiss Ephemeris .se1 files (idempotent; also runs via requirements.txt)"
 python scripts/install_ephemeris.py --extended
 
-echo "==> Installing systemd unit (if changed)"
-UNIT_SRC="deploy/${SERVICE_NAME}.service"
-UNIT_DST="/etc/systemd/system/${SERVICE_NAME}.service"
-if [[ -f "${UNIT_SRC}" ]] && ! cmp -s "${UNIT_SRC}" "${UNIT_DST}"; then
-  if sudo -n true 2>/dev/null; then
-    [[ -f "${UNIT_DST}" ]] && sudo cp "${UNIT_DST}" "${UNIT_DST}.bak"
-    sudo install -m 644 "${UNIT_SRC}" "${UNIT_DST}"
-    sudo systemctl daemon-reload
-    echo "    Updated ${UNIT_DST} (previous copy kept as .bak)"
-  else
-    echo "WARNING: no passwordless sudo — ${UNIT_DST} not updated" >&2
+echo "==> Installing systemd units (if changed)"
+install_unit() {
+  local name="$1" required="$2"
+  local src="deploy/${name}" dst="/etc/systemd/system/${name}"
+  # Optional units (the Facebook post timer) are only kept up to date where
+  # they were installed by hand; this never enables one.
+  [[ "${required}" == "1" || -f "${dst}" ]] || return 0
+  cmp -s "${src}" "${dst}" && return 0
+  if ! sudo -n true 2>/dev/null; then
+    echo "WARNING: no passwordless sudo — ${dst} not updated" >&2
+    return 0
   fi
+  [[ -f "${dst}" ]] && sudo cp "${dst}" "${dst}.bak"
+  sudo install -m 644 "${src}" "${dst}"
+  echo "    Updated ${dst} (previous copy kept as .bak)"
+  UNITS_CHANGED=1
+}
+UNITS_CHANGED=0
+install_unit "${SERVICE_NAME}.service" 1
+install_unit vedicpatro-fb-daily.service 0
+install_unit vedicpatro-fb-daily.timer 0
+if [[ "${UNITS_CHANGED}" == "1" ]]; then
+  sudo systemctl daemon-reload
 fi
 
 echo "==> Restarting service"

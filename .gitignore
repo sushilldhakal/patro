@@ -1,3 +1,8 @@
 node_modules/
 .turbo/
 .DS_Store
+
+# Runtime files on the server (not in git)
+.venv/
+.env
+.deploy/

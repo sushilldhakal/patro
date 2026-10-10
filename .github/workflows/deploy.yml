@@ -1,8 +1,18 @@
 name: Deploy to Oracle VM
 
+# One deploy for the whole monorepo. scripts/deploy.sh on the VM pulls main and
+# deploys only what changed: the API (apps/api) and/or the website (apps/web +
+# packages). The mobile app ships through EAS, so app-only pushes deploy nothing.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "apps/mobile/**"
+      - "**/*.md"
+
+concurrency:
+  group: deploy-vm
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -15,5 +25,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
           script_stop: true
+          command_timeout: 25m
           script: |
+            export VITE_GA_MEASUREMENT_ID="${{ secrets.VITE_GA_MEASUREMENT_ID }}"
             bash /home/ubuntu/patro/scripts/deploy.sh

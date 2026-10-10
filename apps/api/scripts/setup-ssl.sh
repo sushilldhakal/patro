@@ -3,7 +3,7 @@
 # Requires DNS pointing at this VM (or use sslip.io — see PATRO_API_DOMAIN below).
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/home/ubuntu/patro}"
+APP_DIR="${APP_DIR:-/home/ubuntu/patro/apps/api}"
 SERVICE_NAME="nepali-holiday-api"
 PUBLIC_IP="${PUBLIC_IP:-$(curl -sf ifconfig.me || true)}"
 

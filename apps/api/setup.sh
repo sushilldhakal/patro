@@ -4,7 +4,8 @@
 set -euo pipefail
 
 REPO_URL="${REPO_URL:-git@github.com:sushilldhakal/patro.git}"
-APP_DIR="${APP_DIR:-/home/ubuntu/patro}"
+REPO_DIR="${REPO_DIR:-/home/ubuntu/patro}"
+APP_DIR="${REPO_DIR}/apps/api"
 SERVICE_NAME="nepali-holiday-api"
 
 echo "==> Installing system packages"
@@ -12,26 +13,28 @@ sudo apt-get update -qq
 sudo apt-get install -y python3 python3-pip python3-venv git curl
 
 echo "==> Cloning repository"
-if [[ -d "${APP_DIR}/.git" ]]; then
-  echo "    Repository already exists at ${APP_DIR}, pulling latest"
-  git -C "${APP_DIR}" pull origin main
+if [[ -d "${REPO_DIR}/.git" ]]; then
+  echo "    Repository already exists at ${REPO_DIR}, pulling latest"
+  git -C "${REPO_DIR}" pull origin main
 else
-  git clone "${REPO_URL}" "${APP_DIR}"
+  git clone "${REPO_URL}" "${REPO_DIR}"
 fi
 
 cd "${APP_DIR}"
 
 echo "==> Creating virtual environment"
-python3 -m venv .venv
-source .venv/bin/activate
+# The virtualenv and .env live at the repo root (monorepo); the API runs from apps/api.
+python3 -m venv "${REPO_DIR}/.venv"
+source "${REPO_DIR}/.venv/bin/activate"
 pip install --upgrade pip
 pip install -r requirements.txt
 
 echo "==> Configuring environment"
-if [[ ! -f .env ]]; then
-  cp .env.example .env
-  echo "    Created .env from .env.example — review ${APP_DIR}/.env"
+if [[ ! -f "${REPO_DIR}/.env" ]]; then
+  cp .env.example "${REPO_DIR}/.env"
+  echo "    Created .env from .env.example — review ${REPO_DIR}/.env"
 fi
+ln -sfn ../../.env .env
 mkdir -p cache data
 if [[ ! -f data/cities.db ]] || ! python -c "from services.cities_db import needs_cities_reimport; raise SystemExit(1 if needs_cities_reimport() else 0)"; then
   echo "==> Building cities.db (GeoNames global + full Nepal coverage)"
