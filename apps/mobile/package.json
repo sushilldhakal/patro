@@ -83,7 +83,8 @@
     "three": "^0.185.1",
     "@vedic-patro/domain": "*",
     "@vedic-patro/i18n": "*",
-    "@vedic-patro/design-tokens": "*"
+    "@vedic-patro/design-tokens": "*",
+    "@vedic-patro/api-client": "*"
   },
   "expo": {
     "autolinking": {
