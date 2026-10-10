@@ -1,7 +1,6 @@
 /** Choghadiya muhurta labels — names and qualities from ne.json / en.json. */
 
-import i18n from "@/i18n";
-import { normalizeLang, type Lang } from "@/i18n/locale";
+import { normalizeLang, translateKey, type Lang } from "./locale";
 
 export type ChoghadiyaTone = "good" | "bad" | "neutral";
 
@@ -39,7 +38,7 @@ export const TONE_BY_KEY: Record<ChoghadiyaTypeKey, ChoghadiyaTone> = {
 };
 
 function resolveLng(lang?: string | Lang): Lang {
-  return lang ? normalizeLang(lang) : normalizeLang(i18n.language);
+  return lang ? normalizeLang(lang) : normalizeLang();
 }
 
 function typeKey(nameNe: string): string | undefined {
@@ -56,14 +55,14 @@ export function choghadiyaTone(nameNe: string, bad?: boolean): ChoghadiyaTone {
 export function choghadiyaName(nameNe: string, lang?: string | Lang): string {
   const key = typeKey(nameNe);
   if (!key) return nameNe;
-  return i18n.t(`choghadiya.types.${key}.name`, { lng: resolveLng(lang) });
+  return translateKey(`choghadiya.types.${key}.name`, resolveLng(lang));
 }
 
 /** Full quality description, e.g. `Excellent (Highly Auspicious)`. */
 export function choghadiyaQuality(nameNe: string, lang?: string | Lang, bad?: boolean): string {
   const key = typeKey(nameNe);
   const lng = resolveLng(lang);
-  if (key) return i18n.t(`choghadiya.types.${key}.quality`, { lng });
+  if (key) return translateKey(`choghadiya.types.${key}.quality`, lng);
   return choghadiyaToneLabel(nameNe, lng, bad);
 }
 
@@ -71,9 +70,9 @@ export function choghadiyaQuality(nameNe: string, lang?: string | Lang, bad?: bo
 export function choghadiyaToneLabel(nameNe: string, lang?: string | Lang, bad?: boolean): string {
   const lng = resolveLng(lang);
   const tone = choghadiyaTone(nameNe, bad);
-  if (tone === "good") return i18n.t("choghadiya.quality_good", { lng });
-  if (tone === "bad") return i18n.t("choghadiya.quality_bad", { lng });
-  return i18n.t("choghadiya.quality_neutral", { lng });
+  if (tone === "good") return translateKey("choghadiya.quality_good", lng);
+  if (tone === "bad") return translateKey("choghadiya.quality_bad", lng);
+  return translateKey("choghadiya.quality_neutral", lng);
 }
 
 /** Full row label, e.g. `Amrita — Excellent (Highly Auspicious)`. */
@@ -89,7 +88,7 @@ export function choghadiyaLegendMarker(tone: ChoghadiyaTone): string {
 
 export function choghadiyaLegendLabel(typeKey: ChoghadiyaTypeKey, lang?: string | Lang): string {
   const lng = resolveLng(lang);
-  const name = i18n.t(`choghadiya.types.${typeKey}.name`, { lng });
-  const quality = i18n.t(`choghadiya.types.${typeKey}.quality`, { lng });
+  const name = translateKey(`choghadiya.types.${typeKey}.name`, lng);
+  const quality = translateKey(`choghadiya.types.${typeKey}.quality`, lng);
   return `${name} — ${quality}`;
 }

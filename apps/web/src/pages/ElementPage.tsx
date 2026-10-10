@@ -27,7 +27,7 @@ import {
   choghadiyaLegendMarker,
   choghadiyaRowLabel,
   choghadiyaTone,
-} from "@/lib/choghadiya-display";
+} from "@vedic-patro/domain/choghadiya-display";
 import {
   getChandrabalamTable,
   getTarabalaTable,

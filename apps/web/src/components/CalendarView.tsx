@@ -42,7 +42,7 @@ import {
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { PatroMonthYearNav } from "@/components/patro-date";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-short-label";
-import { isGregorianEraBrowse } from "@/components/patro-date/patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import { BsCalendarGrid } from "./BsCalendarGrid";
 import { VedicPatroLoader } from "./VedicPatroLoader";

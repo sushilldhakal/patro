@@ -1,3 +1,5 @@
+import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useEffect, useMemo, useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@/lib/api";
 import { formatDegreeInRashi, getPlanetRows, getPlanetsAnchorLabel, getSunriseLagnaRow } from "@vedic-patro/domain/panchanga-format";
@@ -10,10 +12,8 @@ import {
   buildDayTimelineData,
   dualTimeAtGhati,
   needleGhatiOnVedicChart,
-  CHOGHADIYA_EN,
-  TL_RASHI_EN,
   type TimelineRowData,
-} from "@/lib/day-timeline-data";
+} from "@vedic-patro/domain/day-timeline-data";
 import { useLocale } from "@/lib/i18n";
 import { patroCard, patroMdRail, patroMono, patroSecBand, patroSkel } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -248,7 +248,7 @@ export function DayTimeline({
   const isCivil = mode === "Calendar Day";
   const data = useMemo(() => {
     if (isCivil) return civil ? buildCivilTimelineData(civil, p) : null;
-    return p ? buildDayTimelineData(p, dateAd) : null;
+    return p ? buildDayTimelineData(p) : null;
   }, [isCivil, civil, p, dateAd]);
   const planets = useMemo(() => {
     if (!p) return [];
@@ -285,7 +285,7 @@ export function DayTimeline({
         row.kind === "choghadiya"
           ? data.choghadiya.map((c) => ({
               ne: c.name,
-              en: CHOGHADIYA_EN[c.name] ?? c.name,
+              en: choghadiyaName(c.name, "en"),
               fromG: c.startG,
               toG: c.endG,
               bad: c.bad,
@@ -724,7 +724,7 @@ export function DayTimeline({
                 const isLagna = planetKey === "lagna";
                 const rashiL = pick(
                   rashiNe ?? "—",
-                  rashiEn ?? TL_RASHI_EN[rashiNe ?? ""] ?? rashiNe ?? "—",
+                  rashiEn ?? (rashiNe ? formatRashiDisplay(rashiNe, undefined, "en") : undefined) ?? rashiNe ?? "—",
                 );
                 const coordText =
                   siderealLongitude != null

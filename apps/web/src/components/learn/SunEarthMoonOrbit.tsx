@@ -23,7 +23,7 @@ import {
   sunDirFromEarth,
   sunSiderealLonFromEarthNu,
   yearAngleFromDay,
-} from "./sun-earth-moon-math";
+} from "@/components/learn/sun-earth-moon-math";
 
 interface Props {
   day: number;

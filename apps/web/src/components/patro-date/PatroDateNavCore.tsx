@@ -10,7 +10,7 @@ import {
   adMonthLabel,
   bsMonthLabel,
   isGregorianEraBrowse,
-} from "./patro-month-labels";
+} from "@vedic-patro/domain/patro-month-labels";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { useTranslation } from "react-i18next";

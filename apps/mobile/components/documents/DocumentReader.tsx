@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
 import type { Shloka } from "@/lib/documents/api";
-import { suktaAttribution } from "@/lib/documents/sukta-attribution";
+import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
 import type { ReaderRow } from "@/lib/documents/rows";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";

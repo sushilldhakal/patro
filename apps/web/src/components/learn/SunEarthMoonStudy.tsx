@@ -19,7 +19,7 @@ import {
   rashiIndexFromLon,
   sunSiderealLonFromEarthNu,
   yearAngleFromDay,
-} from "./sun-earth-moon-math";
+} from "@/components/learn/sun-earth-moon-math";
 
 /** Scrub presets — catalogue keys, resolved at render rather than module load. */
 const PRESETS = [

@@ -6,12 +6,12 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   buildDayTimelineData,
   ghatiToCivilClockLabel,
-} from "@/components/panchanga/day-timeline-data";
+} from "@vedic-patro/domain/day-timeline-data";
 import {
   choghadiyaName,
   choghadiyaTone,
   choghadiyaToneLabel,
-} from "@/lib/choghadiya-display";
+} from "@vedic-patro/domain/choghadiya-display";
 import {
   formatClockNepali,
   formatTimeRangeShort,

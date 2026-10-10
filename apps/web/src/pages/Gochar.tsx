@@ -33,7 +33,7 @@ import {
   adMonthLabel,
   bsMonthLabel,
   isGregorianEraBrowse,
-} from "@/components/patro-date/patro-month-labels";
+} from "@vedic-patro/domain/patro-month-labels";
 import {
   pickAdDate,
   pickBrowseVikramDate,

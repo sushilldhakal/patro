@@ -42,7 +42,7 @@ import {
   choghadiyaTone,
   CHOGHADIYA_TYPE_KEYS,
   TONE_BY_KEY,
-} from "@/lib/choghadiya-display";
+} from "@vedic-patro/domain/choghadiya-display";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";

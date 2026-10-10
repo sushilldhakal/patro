@@ -19,7 +19,7 @@ import {
   resolveLocationTimezone,
   usePanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
-import { isGregorianEraBrowse } from "@/components/patro-date/patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useLocale, bilingualText } from "@/i18n/locale";

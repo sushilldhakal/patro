@@ -1,4 +1,4 @@
-import type { ApiHoraSlot, CivilTimeline, PanchangaDay } from "@/lib/api";
+import type { ApiHoraSlot, CivilTimeline, PanchangaDay } from "@vedic-patro/api-client";
 import {
   formatPakshaNepaliDisplay,
   getAuspiciousWindows,
@@ -12,11 +12,11 @@ import {
   getSunrise,
   getSunset,
   toNepaliDigits,
-} from "@vedic-patro/domain/panchanga-format";
-import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
-import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
-import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
+} from "./panchanga-format";
+import { toWesternRashi } from "./rashi-i18n";
+import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "./tithi-wheel-data";
+import { NAKSHATRA_ICONS } from "./nakshatra-icons";
+import { resolveRashiDisplay } from "./rashi-i18n";
 
 /**
  * Devanagari → English for tithi / nakshatra / yoga / karana names. The daily

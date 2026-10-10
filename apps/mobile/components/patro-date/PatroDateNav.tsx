@@ -14,7 +14,7 @@ import {
   BS_MONTHS_SHORT,
   adMonthLabel,
   bsMonthLabel,
-} from "@/lib/patro-month-labels";
+} from "@vedic-patro/domain/patro-month-labels";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { displayLocationLabel, DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";

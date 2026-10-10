@@ -4,7 +4,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { fetchFestivals, fetchMonthCalendar, locationCacheKey } from "@/lib/api";
-import { isGregorianEraBrowse } from "./patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import {
   formatPatroAdRangeHeadlineSubtitle,
   formatPatroMonthCrossEraSubtitle,

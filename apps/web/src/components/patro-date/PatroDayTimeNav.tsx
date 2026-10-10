@@ -22,7 +22,7 @@ import {
 } from "@/lib/patro-date-options";
 import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { addCivilDays, civilPartsFromPickerDate, parseCivilIsoToDate, toAdStr } from "@vedic-patro/domain/patro-day";
-import { isGregorianEraBrowse } from "./patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { PatroDateNavCore } from "./PatroDateNavCore";
 
 export type PatroDayTimeNavProps = {

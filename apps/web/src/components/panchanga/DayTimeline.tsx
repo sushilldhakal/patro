@@ -17,8 +17,8 @@ import {
   dualTimeAtGhati,
   needleGhatiOnVedicChart,
   type TimelineRowData,
-} from "./day-timeline-data";
-import { choghadiyaName } from "@/lib/choghadiya-display";
+} from "@vedic-patro/domain/day-timeline-data";
+import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroCard, patroMono, patroSecBand, patroSkel } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";

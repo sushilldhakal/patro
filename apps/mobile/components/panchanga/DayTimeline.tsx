@@ -1,3 +1,5 @@
+import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
+import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View, type LayoutChangeEvent } from "react-native"
@@ -23,12 +25,10 @@ import {
 import {
   buildCivilTimelineData,
   buildDayTimelineData,
-  CHOGHADIYA_EN,
   dualTimeAtGhati,
   needleGhatiOnVedicChart,
-  TL_RASHI_EN,
   type TimelineRowData,
-} from "@/lib/day-timeline-data";
+} from "@vedic-patro/domain/day-timeline-data";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_CHART_SM } from "@/lib/fonts";
@@ -354,7 +354,7 @@ export function DayTimeline({
   const isCivil = mode === "Calendar Day";
   const data = useMemo(() => {
     if (isCivil) return civil ? buildCivilTimelineData(civil, p) : null;
-    return p ? buildDayTimelineData(p, dateAd) : null;
+    return p ? buildDayTimelineData(p) : null;
   }, [isCivil, civil, p, dateAd]);
   const planets = useMemo(() => {
     if (!p) return [];
@@ -397,7 +397,7 @@ export function DayTimeline({
         row.kind === "choghadiya"
           ? data.choghadiya.map((c) => ({
               ne: c.name,
-              en: CHOGHADIYA_EN[c.name] ?? c.name,
+              en: choghadiyaName(c.name, "en"),
               fromG: c.startG,
               toG: c.endG,
               bad: c.bad,
@@ -780,7 +780,7 @@ export function DayTimeline({
                 const isLagna = planetKey === "lagna";
                 const rashiL = pick(
                   rashiNe ?? "—",
-                  rashiEn ?? TL_RASHI_EN[rashiNe ?? ""] ?? rashiNe ?? "—",
+                  rashiEn ?? (rashiNe ? formatRashiDisplay(rashiNe, undefined, "en") : undefined) ?? rashiNe ?? "—",
                 );
                 const coordText =
                   siderealLongitude != null

@@ -20,7 +20,7 @@ import {
   type Shloka,
 } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { suktaAttribution } from "@/lib/sukta-attribution";
+import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
 import { useRouteLoading } from "@/lib/route-loading";
 
 interface SuktaGroup {

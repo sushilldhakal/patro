@@ -4,7 +4,7 @@ import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { fetchFestivals } from "@/lib/api";
 import { formatPatroYearGregorianRange } from "@vedic-patro/domain/patro-headline-subtitle";
-import { isGregorianEraBrowse } from "./patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 
 /**
  * Gregorian year span under Vikram year headlines (PatroYearNav).

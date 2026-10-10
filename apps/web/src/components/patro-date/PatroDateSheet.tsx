@@ -34,7 +34,7 @@ import { sameLocationParams } from "@/lib/url-state";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { PatroDateSheetState } from "./use-patro-date-sheet";
 import { PatroYearPickerPopover } from "./PatroYearPickerPopover";
-import { isGregorianEraBrowse } from "./patro-month-labels";
+import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 
 /** Month picker for the sheet: 12 buttons, three to a row, no dropdown. */
 export function MonthGridPicker({
