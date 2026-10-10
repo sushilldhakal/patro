@@ -99,7 +99,7 @@
   "/api/v1/panchanga/year/2083?full=true&cv=4703"
  ],
  "fetchYearWheelCalendar#0": [
-  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703"
+  "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703"
  ],
  "fetchYearSunTimes#0": [
   "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083"
@@ -237,7 +237,7 @@
   "/api/v1/panchanga/year/2083?full=true&cv=4703&city_id=1283240"
  ],
  "fetchYearWheelCalendar#1": [
-  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city_id=1283240"
+  "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city_id=1283240"
  ],
  "fetchYearSunTimes#1": [
   "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city_id=1283240"
@@ -375,7 +375,7 @@
   "/api/v1/panchanga/year/2083?full=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchYearWheelCalendar#2": [
-  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchYearSunTimes#2": [
   "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -513,7 +513,7 @@
   "/api/v1/panchanga/year/2083?full=true&cv=4703&city=Pokhara"
  ],
  "fetchYearWheelCalendar#3": [
-  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&city=Pokhara"
+  "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&city=Pokhara"
  ],
  "fetchYearSunTimes#3": [
   "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&city=Pokhara"
@@ -651,7 +651,7 @@
   "/api/v1/panchanga/year/2083?full=true&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchYearWheelCalendar#4": [
-  "/api/v1/panchanga/year/2083?era=bs&wheel=true&cv=4703&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/year/2083?wheel=true&era=bs&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchYearSunTimes#4": [
   "/api/v1/panchanga/year/2083/sun?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"

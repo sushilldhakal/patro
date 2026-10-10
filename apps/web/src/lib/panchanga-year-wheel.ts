@@ -3,7 +3,7 @@
  * as the mobile app so window slicing and indexing stay in sync.
  */
 
-import type { PanchangaDay, YearCalendar } from "@/lib/api";
+import type { PanchangaDay, YearWheelCalendar } from "@/lib/api";
 import {
   adToBS,
   bsToAD,
@@ -29,7 +29,7 @@ function parseBsDate(value?: string): { year: number; month: number; day: number
   return { year: y, month: m, day: d };
 }
 
-export function buildYearWheelDays(payload?: YearCalendar): YearWheelDay[] {
+export function buildYearWheelDays(payload?: YearWheelCalendar): YearWheelDay[] {
   if (!payload?.calendar?.length) return [];
 
   const months = [...(payload.months ?? [])].sort((a, b) => a.month_bs - b.month_bs);

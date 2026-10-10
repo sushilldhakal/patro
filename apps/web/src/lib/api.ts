@@ -90,6 +90,8 @@ export {
   fetchElementSpans,
   fetchVastuSketch,
   streamKundaliReport,
+  yearWheelKeys,
+  fetchYearWheelCalendar,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
@@ -728,23 +730,6 @@ export const fetchYearCalendar = async (
     })),
   };
 };
-
-/** React Query key for slim year-wheel calendar payloads. */
-export const yearWheelKeys = {
-  year: (year: number, location?: LocationParams, era: Era = "bs") =>
-    [
-      "panchanga",
-      "year-wheel",
-      PANCHANGA_CACHE_VERSION,
-      era,
-      year,
-      locationCacheKey(location),
-    ] as const,
-};
-
-/** Whole BS year of wheel-only panchanga state (~one network call per year). */
-export const fetchYearWheelCalendar = (year: number, location?: LocationParams, era: Era = "bs") =>
-  fetchYearCalendar(year, location, { wheel: true, era });
 
 // Bump when year sun-times payload logic changes (invalidates React Query + IDB).
 export const SUN_YEAR_DATA_VERSION = 16;

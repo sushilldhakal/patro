@@ -55,6 +55,7 @@ import type {
   VastuSketchRequest,
   VastuSketchResponse,
   VimshottariResponse,
+  YearWheelCalendar,
   YogaReferenceResponse,
 } from "./types";
 import type { Era } from "@vedic-patro/domain/era";
@@ -790,3 +791,28 @@ export const fetchMonthCalendarRaw = (
     appendLocation(withPanchangaCacheVersion(`${base}?${params.toString()}`), location),
   );
 };
+
+// ─── Year wheel ───────────────────────────────────────────────────────────────
+
+export const yearWheelKeys = {
+  year: (year: number, location?: LocationParams, era: Era = "bs") =>
+    ["panchanga", "year-wheel", PANCHANGA_CACHE_VERSION, era, year, locationCacheKey(location)] as const,
+};
+
+/**
+ * The slim whole-year payload the wheel draws from (`wheel=true`): each day
+ * once, trimmed to wheel state, months as metadata only. This exact URL is the
+ * key the app's offline download stores the year under.
+ */
+export const yearWheelRequestPath = (year: number, location?: LocationParams, era: Era = "bs") =>
+  appendLocation(
+    withPanchangaCacheVersion(
+      `/panchanga/year/${year}?wheel=true${era === "bs" || era === "bbs" ? `&era=${era}` : ""}`,
+    ),
+    location,
+  );
+
+export const fetchYearWheelCalendar = (year: number, location?: LocationParams, era: Era = "bs") =>
+  get<YearWheelCalendar>(yearWheelRequestPath(year, location, era));
+
+

@@ -87,6 +87,9 @@ export {
   fetchElementSpans,
   fetchVastuSketch,
   streamKundaliReport,
+  yearWheelKeys,
+  fetchYearWheelCalendar,
+  yearWheelRequestPath,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
@@ -97,7 +100,6 @@ import type {
   MonthCalendar,
   CalendarDay,
   MonthBrowseEra,
-  YearWheelCalendar,
 } from "@vedic-patro/api-client";
 export type {
   LocationParams,
@@ -437,17 +439,6 @@ function normalizeMonthDay(day: CalendarDay): CalendarDay {
     chandra_rashi_ne: day.chandra_rashi_ne ?? nestedRashi.ne,
   };
 }
-
-export const yearWheelKeys = {
-  year: (year: number, loc?: LocationParams) =>
-    ["panchanga", "year-wheel", PANCHANGA_CACHE_VERSION, year, locationKey(loc)] as const,
-};
-
-export const yearWheelRequestPath = (year: number, location?: LocationParams) =>
-  appendLocation(withPanchangaCacheVersion(`/panchanga/year/${year}?wheel=true&era=bs`), location);
-
-export const fetchYearWheelCalendar = (year: number, location?: LocationParams) =>
-  get<YearWheelCalendar>(yearWheelRequestPath(year, location));
 
 export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
   get<PanchangaDay>(
