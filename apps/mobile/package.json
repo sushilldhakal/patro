@@ -82,7 +82,8 @@
     "tailwindcss": "^3.4.17",
     "three": "^0.185.1",
     "@vedic-patro/domain": "*",
-    "@vedic-patro/i18n": "*"
+    "@vedic-patro/i18n": "*",
+    "@vedic-patro/design-tokens": "*"
   },
   "expo": {
     "autolinking": {

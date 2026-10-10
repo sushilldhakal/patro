@@ -12,7 +12,9 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "web": "npm run dev -w @vedic-patro/web",
-    "mobile": "npm run start -w @vedic-patro/mobile"
+    "mobile": "npm run start -w @vedic-patro/mobile",
+    "tokens": "npm run generate -w @vedic-patro/design-tokens",
+    "i18n": "npm run generate -w @vedic-patro/i18n"
   },
   "devDependencies": {
     "turbo": "^2.5.8"

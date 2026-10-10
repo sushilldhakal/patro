@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    /* tokens:light:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 248 246 242;
     --tw-foreground: 26 20 16;
     --tw-card: 255 255 255;
@@ -14,14 +15,14 @@
     --tw-secondary: 11 86 90;
     --tw-secondary-foreground: 255 255 255;
     --tw-destructive: 198 40 40;
-    --tw-danger: 198 40 40;
     --tw-border: 232 223 208;
     --tw-accent: 46 125 50;
     --tw-surface-inset: 245 240 232;
     --tw-surface-muted: 243 238 230;
     --tw-tab-active: 217 119 6;
-    /* राशि / नक्षत्र glyph colour — the one place that controls every glyph. */
     --tw-glyph: 26 20 16;
+    --tw-danger: 198 40 40;
+    /* tokens:light:end */
 
     /* The only four text sizes in the app. Components use text-caption,
        text-body, text-title, and text-display — nothing else. */
@@ -47,6 +48,7 @@
   }
 
   .dark {
+    /* tokens:dark:start — generated from packages/design-tokens, run `npm run tokens` */
     --tw-background: 15 18 32;
     --tw-foreground: 243 239 232;
     --tw-card: 23 28 49;
@@ -57,13 +59,14 @@
     --tw-secondary: 232 195 106;
     --tw-secondary-foreground: 26 20 16;
     --tw-destructive: 255 143 133;
-    --tw-danger: 255 143 133;
     --tw-border: 39 46 74;
     --tw-accent: 232 195 106;
     --tw-surface-inset: 20 25 41;
     --tw-surface-muted: 18 22 38;
     --tw-tab-active: 245 158 66;
     --tw-glyph: 243 239 232;
+    --tw-danger: 255 143 133;
+    /* tokens:dark:end */
 
     --text-caption: 15px;
     --text-body: 18px;

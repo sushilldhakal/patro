@@ -1,3 +1,4 @@
+import { brand, dark, light, withAlpha } from "@vedic-patro/design-tokens";
 export const APP_NAME_NE = "वैदिक पात्रो";
 export const APP_NAME_EN = "Vedic Patro";
 
@@ -71,7 +72,7 @@ export type ThemeColors = {
   surfaceToday: string;
   surfaceTintDanger: string;
   tabActive: string;
-  /** Colour of the single-colour राशि / नक्षत्र glyphs (mirrors --tw-glyph in global.css). */
+  /** Colour of the single-colour राशि / नक्षत्र glyphs. */
   glyph: string;
   accent: string;
   toneBest: string;
@@ -81,57 +82,59 @@ export type ThemeColors = {
   heroOverlay: readonly [string, string, string];
 };
 
+// Colours come from @vedic-patro/design-tokens; only the derived tints live here.
 export const lightTheme: ThemeColors = {
-  background: "#f8f6f2",
-  foreground: "#1a1410",
-  text: "#1a1410",
-  textMuted: "#1a1410",
-  card: "#ffffff",
-  muted: "#f0ebe3",
-  mutedForeground: "#1a1410",
-  primary: "#d97706",
-  secondary: "#0b565a",
-  destructive: "#c62828",
-  danger: "#c62828",
-  border: "#e8dfd0",
-  surfaceInset: "#f5f0e8",
-  surfaceMuted: "#f3eee6",
-  surfaceToday: "rgba(198, 40, 40, 0.14)",
-  surfaceTintDanger: "rgba(198, 40, 40, 0.07)",
-  tabActive: "rgba(217, 119, 6, 0.12)",
-  glyph: "#1a1410",
-  accent: "#2e7d32",
-  toneBest: "rgba(46, 125, 50, 0.14)",
-  toneGood: "rgba(46, 125, 50, 0.09)",
-  toneNeutral: "#f5f0e8",
-  toneBad: "rgba(198, 40, 40, 0.08)",
+  background: light.background,
+  foreground: light.foreground,
+  text: light.foreground,
+  textMuted: light.foreground,
+  card: light.card,
+  muted: light.muted,
+  // Native muted text stays full ink for contrast on small Devanagari type.
+  mutedForeground: light.foreground,
+  primary: light.primary,
+  secondary: light.secondary,
+  destructive: light.destructive,
+  danger: light.destructive,
+  border: light.border,
+  surfaceInset: light.surfaceInset,
+  surfaceMuted: light.surfaceMuted,
+  surfaceToday: withAlpha(brand.vermilion, 0.14),
+  surfaceTintDanger: withAlpha(brand.vermilion, 0.07),
+  tabActive: withAlpha(light.tabActive, 0.12),
+  glyph: light.glyph,
+  accent: light.accent,
+  toneBest: withAlpha(brand.green, 0.14),
+  toneGood: withAlpha(brand.green, 0.09),
+  toneNeutral: light.surfaceInset,
+  toneBad: withAlpha(brand.vermilion, 0.08),
   heroOverlay: ["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"],
 };
 
 export const darkTheme: ThemeColors = {
-  background: "#0f1220",
-  foreground: "#f3efe8",
-  text: "#f3efe8",
-  textMuted: "rgba(243,239,232,0.88)",
-  card: "#171c31",
-  muted: "#141929",
-  mutedForeground: "#a6abc0",
-  primary: "#f59e42",
-  secondary: "#e8c36a",
-  destructive: "#ff8f85",
-  danger: "#ff8f85",
-  border: "#272e4a",
-  surfaceInset: "#141929",
-  surfaceMuted: "#121626",
-  surfaceToday: "rgba(198, 40, 40, 0.22)",
-  surfaceTintDanger: "rgba(198, 40, 40, 0.12)",
-  tabActive: "rgba(245, 158, 66, 0.16)",
-  glyph: "#f3efe8",
-  accent: "#e8c36a",
-  toneBest: "rgba(232, 195, 106, 0.18)",
-  toneGood: "rgba(46, 125, 50, 0.14)",
-  toneNeutral: "#141929",
-  toneBad: "rgba(198, 40, 40, 0.14)",
+  background: dark.background,
+  foreground: dark.foreground,
+  text: dark.foreground,
+  textMuted: withAlpha(dark.foreground, 0.88),
+  card: dark.card,
+  muted: dark.muted,
+  mutedForeground: dark.mutedForeground,
+  primary: dark.primary,
+  secondary: dark.secondary,
+  destructive: dark.destructive,
+  danger: dark.destructive,
+  border: dark.border,
+  surfaceInset: dark.surfaceInset,
+  surfaceMuted: dark.surfaceMuted,
+  surfaceToday: withAlpha(brand.vermilion, 0.22),
+  surfaceTintDanger: withAlpha(brand.vermilion, 0.12),
+  tabActive: withAlpha(dark.tabActive, 0.16),
+  glyph: dark.glyph,
+  accent: dark.accent,
+  toneBest: withAlpha(dark.accent, 0.18),
+  toneGood: withAlpha(brand.green, 0.14),
+  toneNeutral: dark.surfaceInset,
+  toneBad: withAlpha(brand.vermilion, 0.14),
   heroOverlay: ["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"],
 };
 

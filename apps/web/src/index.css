@@ -99,7 +99,7 @@
 }
 
 :root {
-  /* Vedic Patro palette */
+  /* tokens:palette:start — generated from packages/design-tokens, run `npm run tokens` */
   --brand-saffron: #d97706;
   --brand-saffron-bright: #e67e22;
   --brand-saffron-pressed: #b45309;
@@ -112,6 +112,17 @@
   --brand-blue: #0b565a;
   --brand-blue-pressed: #084548;
   --off-white: #f8f6f2;
+  --ink: #1a1410;
+  --ink-muted: #5c4a3a;
+  --midnight: #0f1220;
+  --midnight-card: #171c31;
+  --midnight-popover: #0b0e1a;
+  --midnight-line: #272e4a;
+  --foam: #f3efe8;
+  --dark-saffron: #f59e42;
+  --dark-gold: #e8c36a;
+  --dark-vermilion: #ff8f85;
+  /* tokens:palette:end */
   
   /* Legacy aliases used across components */
   --brand-yellow: var(--brand-gold);
@@ -123,19 +134,9 @@
   --parchment: var(--off-white);
   --parchment-card: #ffffff;
   --parchment-border: color-mix(in srgb, var(--brand-gold) 32%, var(--off-white));
-  --ink: #1a1410;
-  --ink-muted: #5c4a3a;
   --silver: color-mix(in srgb, var(--brand-gold) 22%, #d8d4cc);
   --slate-input: #4a4540;
 
-  --midnight: #0f1220;
-  --midnight-card: #171c31;
-  --midnight-popover: #0b0e1a;
-  --midnight-line: #272e4a;
-  --foam: #f3efe8;
-  --dark-saffron: #f59e42;
-  --dark-gold: #e8c36a;
-  --dark-vermilion: #ff8f85;
 
   --color-success: var(--brand-green);
   --color-warning: var(--brand-saffron-bright);

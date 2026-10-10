@@ -1,0 +1,17 @@
+{
+  "name": "@vedic-patro/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Colours, the mobile type scale and radii for the website and the mobile app.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "tsx scripts/generate-css.ts",
+    "lint": "tsx scripts/generate-css.ts --check"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.8"
+  }
+}
