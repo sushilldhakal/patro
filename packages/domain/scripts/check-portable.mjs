@@ -29,7 +29,7 @@ function check(path) {
     if (["clsx", "tailwind-merge", "three", "healpix-ts"].includes(spec)) continue;
     problems.push(`${rel}: imports "${spec}" — domain files may only import from this package (plus \`import type\` from @vedic-patro/api-client)`);
   }
-  if (/\b(window|document|localStorage|navigator)\./.test(text)) {
+  if (/\b(window|document|localStorage|navigator)\.[A-Za-z_]/.test(text)) {
     problems.push(`${rel}: uses a browser API — keep platform code out of packages/domain`);
   }
 }

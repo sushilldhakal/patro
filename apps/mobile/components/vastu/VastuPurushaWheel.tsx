@@ -15,6 +15,7 @@
  * it is a printed chart, not a themed surface.
  */
 
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
 import { useId, type ReactNode } from "react";
 import Svg, {
   Circle,
@@ -68,7 +69,7 @@ const press = (fn: () => void) => fn as never;
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
  * CX/CY rather than taking them as props, so anything reusing them has to
  * share this exact centre, not merely this size. */
-export const WHEEL_SIZE = 620;
+export { WHEEL_SIZE };
 const CX = WHEEL_SIZE / 2;
 const CY = WHEEL_SIZE / 2;
 const PURUSHA_OPACITY = 0.2;

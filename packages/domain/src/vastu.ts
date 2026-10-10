@@ -661,3 +661,6 @@ export function evenBearings(count: number, first: number): number[] {
   const step = 360 / count;
   return Array.from({ length: count }, (_, i) => first + i * step);
 }
+
+/** Side of the square the Vastu Purusha wheel is drawn in (SVG user units). */
+export const WHEEL_SIZE = 620;

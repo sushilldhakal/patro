@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from "react";
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
 import {
@@ -29,7 +30,7 @@ import { cn } from "@vedic-patro/domain/utils";
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
  * CX/CY rather than taking them as props, so anything reusing them has to
  * share this exact centre, not merely this size. */
-export const WHEEL_SIZE = 620;
+export { WHEEL_SIZE };
 const CX = WHEEL_SIZE / 2;
 const CY = WHEEL_SIZE / 2;
 const PURUSHA_OPACITY = 0.2;

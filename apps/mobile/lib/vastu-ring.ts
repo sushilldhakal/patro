@@ -1,4 +1,4 @@
-import { WHEEL_SIZE } from "@/components/vastu/VastuPurushaWheel";
+import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
 
 /**
  * Geometry shared between the compass ring and whatever is drawn inside it.

@@ -20,7 +20,7 @@ import { ArticleBody } from "./article-render";
 import { MERGED_BY_SLUG, type MergedPage } from "./merged-pages";
 import { useLocale } from "@/i18n/locale";
 import { tmChapter, tmChapterNav, tmChapterNavLabel, tmChapterTitle } from "@/lib/learn-classes";
-import { DATA_ARTICLES } from "./articles";
+import { DATA_ARTICLES } from "@vedic-patro/domain/learn/articles/index";
 import {
   adjacentTopicMetas,
   LEARN_CATEGORIES,
