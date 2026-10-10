@@ -12,7 +12,7 @@ import {
 } from "@/lib/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { formatRashiByNumber } from "@/lib/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   Table,
   TableBody,

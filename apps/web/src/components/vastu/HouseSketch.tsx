@@ -10,7 +10,7 @@ import {
   type CardinalWall,
 } from "@vedic-patro/domain/vastu";
 import { RING_SIZE, houseBoxInRing } from "@/lib/vastu-ring";
-import { houseTemplate, type Rect, type TemplateRoom } from "@/lib/vastu-house-template";
+import { houseTemplate, type Rect, type TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
 import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
 import { VastuCompassRing } from "./VastuCompassRing";
 

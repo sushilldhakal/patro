@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MoonPhaseIcon } from "./MoonPhaseIcon";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { getBSMonthLength } from "@/lib/bs-calendar";
 import {
   bsMonthsForWheel,

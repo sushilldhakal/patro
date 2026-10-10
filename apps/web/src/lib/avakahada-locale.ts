@@ -1,5 +1,5 @@
-import type { Gana, Nadi, NakshatraRow } from "@/lib/avakahada-data";
-import { RASHI_META } from "@/lib/avakahada-data";
+import type { Gana, Nadi, NakshatraRow } from "@vedic-patro/domain/avakahada-data";
+import { RASHI_META } from "@vedic-patro/domain/avakahada-data";
 import { resolveRashiDisplay } from "@/lib/rashi-i18n";
 
 export function isEnglishLocale(lang?: string): boolean {

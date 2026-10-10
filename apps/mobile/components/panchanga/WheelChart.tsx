@@ -15,7 +15,7 @@ import Svg, {
   TSpan,
 } from "react-native-svg";
 import { MoonPhaseIcon } from "./MoonPhaseIcon";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   NAKSHATRA_GLYPHS,
   RASHI_GLYPHS,

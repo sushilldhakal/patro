@@ -28,13 +28,13 @@ import {
   patroStickyHeadCorner,
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
-import { findNakshatraIcon } from "@/lib/nakshatra-icons";
+import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import {
   AVAKAHADA,
   MANGLI_VARGAS,
   BHAUMA_DOSHA_SHLOKAS,
   type Gana,
-} from "@/lib/avakahada-data";
+} from "@vedic-patro/domain/avakahada-data";
 import {
   formatRashiSwami,
   formatSanjnaMukha,

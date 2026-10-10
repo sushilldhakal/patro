@@ -1,7 +1,7 @@
 import type { GrahaSthitiRow } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { getRashiName } from "@/lib/rashi-i18n";
-import { NAK_LORD_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 
 export function siderealRashiNumber(fullDegree: number): number {
   const lon = ((fullDegree % 360) + 360) % 360;

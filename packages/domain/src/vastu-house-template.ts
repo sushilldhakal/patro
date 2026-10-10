@@ -1,5 +1,5 @@
-import { VASTU_PADAS, type CardinalWall, type VastuDirectionId, type VastuPada } from "@vedic-patro/domain/vastu";
-import type { PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import { VASTU_PADAS, type CardinalWall, type VastuDirectionId, type VastuPada } from "./vastu";
+import type { PlotSize, SpaceAssignment } from "./vastu-plan";
 
 /**
  * The classical courtyard house, as a fixed template — no solver.

@@ -80,7 +80,7 @@ import {
 } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { bikramFromSun } from "@/lib/sky3d/bikram-solar";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatRashiByNumber } from "@/lib/rashi-i18n";

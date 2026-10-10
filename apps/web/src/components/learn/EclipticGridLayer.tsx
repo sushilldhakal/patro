@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { semeclipticGrid, semGridNakLabelCur, semGridNakLine, semGridNakSegVariant, semGridRashiLabelCur, semGridRashiLine, semGridRashiSegVariant } from "@/lib/diagram-classes";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { getWheelRashis } from "@/lib/wheel-data";
 import {
   NAKSHATRA_SPAN_DEG,

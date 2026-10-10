@@ -40,7 +40,7 @@ import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
 import { bikramFromSun } from "@/lib/sky3d/bikram-solar";
 import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";

@@ -28,7 +28,7 @@ import {
   WHEEL_RASHIS,
   type WheelDetail,
 } from "@/lib/wheel-data";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
 import { WheelPanel } from "./WheelPanel";
@@ -68,7 +68,7 @@ import {
 } from "@/lib/wheel-classes";
 import { cn } from "@/lib/utils";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
-import { NAK_LORD_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 
 function bsMonthEnOf(ne: string): string {
   const i = BS_MONTHS_NE.indexOf(ne);

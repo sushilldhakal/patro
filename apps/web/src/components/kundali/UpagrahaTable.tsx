@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { UpagrahaDetailRow } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { formatRashiByNumber } from "@/lib/rashi-i18n";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   Table,
   TableBody,

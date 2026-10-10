@@ -1,4 +1,4 @@
-import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@/lib/moon-phase-svg";
+import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@vedic-patro/domain/moon-phase-svg";
 
 interface MoonPhaseIconProps {
   /** Moon–sun elongation in degrees (0° new, 180° full). */

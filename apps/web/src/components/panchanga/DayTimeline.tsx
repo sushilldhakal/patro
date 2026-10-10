@@ -24,7 +24,7 @@ import { patroCard, patroMono, patroSecBand, patroSkel } from "@/lib/patro-class
 import { cn } from "@/lib/utils";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
-import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@/lib/sunrise-icon-art";
+import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import {
   pgTlAxis,
   pgTlEventTimeMoon,

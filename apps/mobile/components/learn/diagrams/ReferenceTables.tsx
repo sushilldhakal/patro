@@ -11,9 +11,9 @@ import { LearnTable } from "@/components/learn/LearnTable";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { WHEEL_RASHIS, RASHI_LORDS, RASHI_ELEM, PADA_AKSHAR } from "@/lib/wheel-data";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WHEEL_TITHIS, WHEEL_YOGAS, KAR_MOV, KAR_FIX_NAMES, KARANA_EN } from "@/lib/tithi-wheel-data";
-import { NAK_LORD_EN, TATTVA_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 
 const YOGA_EN = [
   "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda",

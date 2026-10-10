@@ -5,7 +5,7 @@ import {
   isNewMoonElongation,
   moonPhaseLitPath,
   normElongation,
-} from "@/lib/moon-phase-svg";
+} from "@vedic-patro/domain/moon-phase-svg";
 
 interface MoonPhaseDiscProps {
   /** Moon–sun elongation in degrees (0° औंसी, 180° पूर्णिमा). */

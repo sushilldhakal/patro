@@ -12,7 +12,7 @@ import Svg, {
 } from "react-native-svg";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import { AVAKAHADA, type Gana, type NakshatraRow } from "@/lib/avakahada-data";
+import { AVAKAHADA, type Gana, type NakshatraRow } from "@vedic-patro/domain/avakahada-data";
 import {
   localizeGana,
   localizeLord,

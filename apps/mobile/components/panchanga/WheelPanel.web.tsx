@@ -1,4 +1,4 @@
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import {
   bsMonthsForWheel,
   PADA_AKSHAR,
@@ -8,7 +8,7 @@ import {
 } from "@/lib/wheel-data";
 import type { WheelPick } from "./WheelChart";
 import { useLocale } from "@/lib/i18n";
-import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
 import {
   wheelDl,

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ZoomIn, ZoomOut } from "lucide-react";
-import { AVAKAHADA, type Gana, type NakshatraRow } from "@/lib/avakahada-data";
+import { AVAKAHADA, type Gana, type NakshatraRow } from "@vedic-patro/domain/avakahada-data";
 import {
   localizeGana,
   localizeLord,
@@ -13,7 +13,7 @@ import {
   localizeYoni,
   rowMetaFromCharans,
 } from "@/lib/avakahada-locale";
-import { findNakshatraIcon } from "@/lib/nakshatra-icons";
+import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import { patroWheelShell, GANA_PILL_CLASS, GANA_SWATCH_CLASS } from "@/lib/patro-classes";
 import {
   avWheelAttrVal,

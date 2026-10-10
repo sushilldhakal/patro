@@ -1,5 +1,5 @@
 import { Circle, G, Path } from "react-native-svg";
-import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@/lib/moon-phase-svg";
+import { isNewMoonElongation, moonPhaseLitPath, normElongation } from "@vedic-patro/domain/moon-phase-svg";
 
 interface MoonPhaseIconProps {
   elongation: number;

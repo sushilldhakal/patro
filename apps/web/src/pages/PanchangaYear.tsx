@@ -47,7 +47,7 @@ import {
   formatWheelPlaybackRate,
   WHEEL_MAX_PLAY_SPEED,
   WHEEL_PLAY_BASE_MS,
-} from "@/lib/wheel-year-playback";
+} from "@vedic-patro/domain/wheel-year-playback";
 import { buildPatroBrowseYearOptions, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import type { Era } from "@/lib/era";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";

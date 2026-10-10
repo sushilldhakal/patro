@@ -41,7 +41,7 @@ import Purvabhadrapada from "@/assets/nakshatras/purvabhadrapada.svg";
 import Uttarabhadrapada from "@/assets/nakshatras/uttarabhadrapada.svg";
 import Revati from "@/assets/nakshatras/revati.svg";
 
-import { findNakshatraIcon, NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { rashiNumberFromName } from "@/lib/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@/lib/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";

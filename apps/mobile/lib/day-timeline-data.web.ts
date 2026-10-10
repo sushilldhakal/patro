@@ -14,7 +14,7 @@ import {
   toNepaliDigits,
 } from "@/lib/panchanga-format";
 import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 
 /** Devanagari rashi names → English, for the timeline graha row. */
 export const TL_RASHI_EN: Record<string, string> = {

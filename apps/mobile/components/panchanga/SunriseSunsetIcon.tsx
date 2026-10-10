@@ -1,7 +1,7 @@
 import type { ViewStyle } from "react-native";
 import { View } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
-import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@/lib/sunrise-icon-art";
+import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 
 export type SunHorizonVariant = "rise" | "set";
 

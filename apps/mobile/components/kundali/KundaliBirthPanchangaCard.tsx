@@ -10,9 +10,9 @@ import {
   kundaliLabel,
   type KundaliI18nKey,
 } from "@/lib/kundali/kundali-i18n";
-import { generateAvakahadaShloka } from "@/lib/avakahada-data";
+import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
 import { useLocale } from "@/lib/i18n";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import {
   formatTithiWithPaksha,

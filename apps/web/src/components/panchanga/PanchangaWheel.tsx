@@ -29,7 +29,7 @@ import {
   getWheelRashis,
   type WheelDetail,
 } from "@/lib/wheel-data";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WheelChart, type WheelHover } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -66,7 +66,7 @@ import {
 } from "@/lib/wheel-classes";
 import { cn } from "@/lib/utils";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@/lib/bs-calendar";
-import { NAK_LORD_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 import type { Era } from "@/lib/era";
 import type { LocationParams } from "@/lib/api";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";

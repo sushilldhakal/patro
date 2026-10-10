@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { patroMono } from "@/lib/patro-classes";
 import {
   KAR_FIX_NAMES,
@@ -9,7 +9,7 @@ import {
   WHEEL_YOGAS,
 } from "@/lib/tithi-wheel-data";
 import { PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@/lib/wheel-data";
-import { NAK_LORD_EN, TATTVA_EN } from "@/lib/wheel-locale";
+import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   learnRefCaption,

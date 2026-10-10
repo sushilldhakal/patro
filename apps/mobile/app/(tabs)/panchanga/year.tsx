@@ -33,7 +33,7 @@ import {
 } from "@/lib/panchanga-year-wheel";
 import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
-import { formatWheelPlaybackRate } from "@/lib/wheel-year-playback";
+import { formatWheelPlaybackRate } from "@vedic-patro/domain/wheel-year-playback";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@/lib/zoned-time";
 

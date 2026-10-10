@@ -9,7 +9,7 @@ import {
   BHAUMA_DOSHA_SHLOKAS,
   MANGLI_VARGAS,
   type Gana,
-} from "@/lib/avakahada-data";
+} from "@vedic-patro/domain/avakahada-data";
 import {
   formatRashiSwami,
   formatSanjnaMukha,

@@ -18,7 +18,7 @@ import { useLocale } from "@/lib/i18n";
 import { patroCard, patroMdRail, patroMono, patroSecBand, patroSkel } from "@/lib/patro-classes";
 import { cn } from "@/lib/utils";
 import { DayCycleToggle, type DayCycleMode } from "@/components/panchanga/DayCycleToggle";
-import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@/lib/sunrise-icon-art";
+import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 import {
   pgTlAxis,
   pgTlEventTimeMoon,

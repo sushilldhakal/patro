@@ -1,4 +1,4 @@
-import { findNakshatraIcon, NAKSHATRA_ICONS } from "@/lib/nakshatra-icons";
+import { findNakshatraIcon, NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 
 /** Compact Latin labels for month-grid cells (English UI). */
 const NAKSHATRA_SHORT_EN: readonly string[] = [

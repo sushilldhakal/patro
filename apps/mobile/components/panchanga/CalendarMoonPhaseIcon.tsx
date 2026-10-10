@@ -1,6 +1,6 @@
 import { Circle, G, Path, Svg } from "react-native-svg";
 import { useTheme } from "@/lib/theme-context";
-import { elongationFromTithiIndex, moonPhaseLitPath } from "@/lib/moon-phase-svg";
+import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/moon-phase-svg";
 
 type Props = {
   /** Wheel tithi index 0–29 (0 = शुक्ल प्रतिपदा … 14 = पूर्णिमा … 29 = औंसी). */
