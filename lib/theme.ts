@@ -71,6 +71,8 @@ export type ThemeColors = {
   surfaceToday: string;
   surfaceTintDanger: string;
   tabActive: string;
+  /** Colour of the single-colour राशि / नक्षत्र glyphs (mirrors --tw-glyph in global.css). */
+  glyph: string;
   accent: string;
   toneBest: string;
   toneGood: string;
@@ -97,6 +99,7 @@ export const lightTheme: ThemeColors = {
   surfaceToday: "rgba(198, 40, 40, 0.14)",
   surfaceTintDanger: "rgba(198, 40, 40, 0.07)",
   tabActive: "rgba(217, 119, 6, 0.12)",
+  glyph: "#1a1410",
   accent: "#2e7d32",
   toneBest: "rgba(46, 125, 50, 0.14)",
   toneGood: "rgba(46, 125, 50, 0.09)",
@@ -123,6 +126,7 @@ export const darkTheme: ThemeColors = {
   surfaceToday: "rgba(198, 40, 40, 0.22)",
   surfaceTintDanger: "rgba(198, 40, 40, 0.12)",
   tabActive: "rgba(245, 158, 66, 0.16)",
+  glyph: "#f3efe8",
   accent: "#e8c36a",
   toneBest: "rgba(232, 195, 106, 0.18)",
   toneGood: "rgba(46, 125, 50, 0.14)",

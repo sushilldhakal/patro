@@ -21,6 +21,7 @@ const LIGHT_TW_VARS = {
   "--tw-surface-inset": "245 240 232",
   "--tw-surface-muted": "243 238 230",
   "--tw-tab-active": "217 119 6",
+  "--tw-glyph": "26 20 16",
 } as const;
 
 const DARK_TW_VARS = {
@@ -40,6 +41,7 @@ const DARK_TW_VARS = {
   "--tw-surface-inset": "20 25 41",
   "--tw-surface-muted": "18 22 38",
   "--tw-tab-active": "245 158 66",
+  "--tw-glyph": "243 239 232",
 } as const;
 
 export function nativeWindThemeVars(resolvedTheme: "light" | "dark") {

@@ -48,6 +48,7 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { tithiIndexFromElementSpan } from "@/lib/tithi-wheel-data";
 import { View } from "react-native";
+import { useThemeColors } from "@/lib/theme-context";
 
 type SvgIcon = FC<ComponentProps<typeof Svg>>;
 
@@ -119,11 +120,13 @@ export function RashiGlyphIcon({
   number?: number | null;
   size?: number;
 }) {
+  const colors = useThemeColors();
   const idx = rashiIconIndex(name, number);
   if (idx == null) return null;
   const Icon = RASHI_GLYPH_ICONS[idx];
   if (!Icon) return null;
-  return <Icon width={size} height={size} />;
+  // The artwork is `currentColor`; without a colour react-native-svg draws it black.
+  return <Icon width={size} height={size} color={colors.glyph} />;
 }
 
 export function NakshatraGlyphIcon({
@@ -135,11 +138,12 @@ export function NakshatraGlyphIcon({
   number?: number | null;
   size?: number;
 }) {
+  const colors = useThemeColors();
   const idx = nakshatraIconIndex(name, number);
   if (idx == null) return null;
   const Icon = NAKSHATRA_GLYPH_ICONS[idx];
   if (!Icon) return null;
-  return <Icon width={size} height={size} />;
+  return <Icon width={size} height={size} color={colors.glyph} />;
 }
 
 function grahaKeyFromLabel(raw?: string | null): GrahaKey | undefined {
