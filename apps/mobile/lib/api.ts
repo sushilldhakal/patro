@@ -12,6 +12,9 @@ import type { InstantQuery } from "@vedic-patro/domain/instant";
 import {
   appendLocation,
   configureApiClient,
+  fetchMonthCalendarRaw,
+  fetchPersonalRashifalForDay,
+  fetchRashifalForDay,
   get,
 } from "@vedic-patro/api-client";
 
@@ -89,9 +92,7 @@ export {
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
-  RashifalPersonal,
   RashifalPeriod,
-  RashifalBlock,
   PanchangaDay,
   MonthCalendar,
   CalendarDay,
@@ -405,21 +406,8 @@ export const fetchMonthCalendar = async (
   location?: LocationParams,
   options?: { era?: MonthBrowseEra },
 ): Promise<MonthCalendar> => {
-  const era = options?.era ?? "bs";
-  const language = languageForBrowseEra(era);
-  const base =
-    era === "ad"
-      ? `/panchanga/ad/${year}/${month}`
-      : era === "bc"
-        ? `/panchanga/bc/${year}/${month}`
-        : `/panchanga/${year}/${month}`;
-  const data = await get<MonthCalendar>(
-    appendLocation(withPanchangaCacheVersion(`${base}?full=true&era=${era}&language=${language}`), location),
-  );
-  return {
-    ...data,
-    calendar: data.calendar.map(normalizeMonthDay),
-  };
+  const data = await fetchMonthCalendarRaw(year, month, location, options);
+  return { ...data, calendar: data.calendar.map(normalizeMonthDay) };
 };
 
 function normalizeMonthDay(day: CalendarDay): CalendarDay {
@@ -469,16 +457,6 @@ export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?:
     ),
   );
 
-export const fetchTodayPanchanga = (location?: LocationParams) => {
-  const today = new Date().toISOString().split("T")[0];
-  return get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${today}?era=ad&festivals=true&detail=true`),
-      location,
-    ),
-  );
-};
-
 // ─── Rashifal ────────────────────────────────────────────────────────────────
 
 export const rashifalKeys = {
@@ -503,17 +481,8 @@ export const rashifalKeys = {
     ] as const,
 };
 
-export function fetchRashifal(
-  dateAd: string,
-  period: RashifalPeriod,
-  location?: LocationParams,
-) {
-  // `date` is an AD civil date. Without an explicit era the API reads it as BS
-  // (era defaults to bs), which silently returns a rashifal ~57 years off.
-  const params = new URLSearchParams({ date: dateAd, era: "ad", period });
-  return get<RashifalBlock>(
-    appendLocation(withPanchangaCacheVersion(`/panchanga/rashifal?${params.toString()}`), location),
-  );
+export function fetchRashifal(dateAd: string, period: RashifalPeriod, location?: LocationParams) {
+  return fetchRashifalForDay(new URLSearchParams({ date: dateAd, era: "ad" }), period, location);
 }
 
 export function fetchPersonalRashifal(
@@ -522,18 +491,7 @@ export function fetchPersonalRashifal(
   birth: { moment: InstantQuery; birthLat: number; birthLon: number; birthTz: string },
   location?: LocationParams,
 ) {
-  const params = new URLSearchParams({
-    date: dateAd,
-    era: "ad",
-    period,
-    birth_lat: String(birth.birthLat),
-    birth_lon: String(birth.birthLon),
-    birth_tz: birth.birthTz,
-  });
-  appendBirthInstantParams(params, birth.moment);
-  return get<RashifalPersonal>(
-    appendLocation(withPanchangaCacheVersion(`/panchanga/rashifal/personal?${params.toString()}`), location),
-  );
+  return fetchPersonalRashifalForDay(new URLSearchParams({ date: dateAd, era: "ad" }), period, birth, location);
 }
 
 export const sunTimesKeys = {

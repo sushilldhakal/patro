@@ -3,10 +3,7 @@
 // VITE_API_BASE_URL for a split host (e.g. http://localhost:8080 in dev).
 import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
-import { buildApiQuery, getLanguageForEra } from "@/lib/era";
-import {
-  appendBirthInstantParams,
-} from "@/lib/instant-query";
+import { getLanguageForEra } from "@/lib/era";
 import {
   buildPatroDayApiQuery,
   patroDayFetchFromApiDateAd,
@@ -19,6 +16,9 @@ import {
   apiErrorFrom,
   appendLocation,
   configureApiClient,
+  fetchMonthCalendarRaw,
+  fetchPersonalRashifalForDay,
+  fetchRashifalForDay,
   get,
 } from "@vedic-patro/api-client";
 
@@ -95,7 +95,6 @@ export {
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
-  RashifalPersonal,
   RashifalPeriod,
   City,
   GocharResponse,
@@ -105,7 +104,6 @@ import type {
   SaitAboutResponse,
   ElementInfo,
   ElementMonthResponse,
-  RashifalBlock,
   EraDateParts,
   PanchangaDay,
   MonthCalendar,
@@ -495,11 +493,7 @@ export function fetchRashifal(
   period: RashifalPeriod,
   location?: LocationParams,
 ) {
-  const qs = buildPatroDayApiQuery(state, {
-    period,
-    cv: PANCHANGA_CACHE_VERSION,
-  }).toString();
-  return get<RashifalBlock>(appendLocation(`/panchanga/rashifal?${qs}`, location));
+  return fetchRashifalForDay(buildPatroDayApiQuery(state), period, location);
 }
 
 /**
@@ -513,15 +507,7 @@ export function fetchPersonalRashifal(
   birth: { moment: InstantQuery; birthLat: number; birthLon: number; birthTz: string },
   location?: LocationParams,
 ) {
-  const qs = buildPatroDayApiQuery(state, {
-    period,
-    birth_lat: birth.birthLat,
-    birth_lon: birth.birthLon,
-    birth_tz: birth.birthTz,
-    cv: PANCHANGA_CACHE_VERSION,
-  });
-  appendBirthInstantParams(qs, birth.moment);
-  return get<RashifalPersonal>(appendLocation(`/panchanga/rashifal/personal?${qs.toString()}`, location));
+  return fetchPersonalRashifalForDay(buildPatroDayApiQuery(state), period, birth, location);
 }
 
 /**
@@ -697,37 +683,10 @@ export const fetchMonthCalendar = async (
   year: number,
   month: number,
   location?: LocationParams,
-  options?: {
-    clock?: string;
-    full?: boolean;
-    excludeInternational?: boolean;
-    era?: Era;
-  },
+  options?: { clock?: string; full?: boolean; excludeInternational?: boolean; era?: Era },
 ): Promise<MonthCalendar> => {
-  const full = options?.full !== false;
-  const era = options?.era ?? "bs";
-  // Year/month live in the path — omit from query so EraMiddleware does not run
-  // to_jd() on mirrored params (that gate returned 400 for some BBS months).
-  const params = buildApiQuery({
-    era,
-    language: getLanguageForEra(era),
-  });
-  if (full) params.set("full", "true");
-  if (options?.clock) params.set("clock", options.clock);
-  if (options?.excludeInternational) params.set("exclude_international", "true");
-  const qs = params.toString();
-  const base =
-    era === "ad"
-      ? `/panchanga/ad/${year}/${month}`
-      : era === "bc"
-        ? `/panchanga/bc/${year}/${month}`
-        : `/panchanga/${year}/${month}`;
-  const path = appendLocation(withPanchangaCacheVersion(`${base}${qs ? `?${qs}` : ""}`), location);
-  const data = await get<MonthCalendar & { calendar: RawMonthDay[] }>(path);
-  return {
-    ...data,
-    calendar: data.calendar.map(normalizeMonthDay),
-  };
+  const data = await fetchMonthCalendarRaw(year, month, location, options);
+  return { ...data, calendar: data.calendar.map(normalizeMonthDay) };
 };
 
 export const fetchYearCalendar = async (

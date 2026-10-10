@@ -15,7 +15,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703"
  ],
  "fetchPersonalRashifal0#0": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703"
  ],
  "fetchPanchangaAtTimeForDay0#0": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703"
@@ -27,7 +27,7 @@
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703"
  ],
  "fetchPersonalRashifal1#0": [
-  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703"
  ],
  "fetchPanchangaAtTimeForDay1#0": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703"
@@ -39,7 +39,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703"
  ],
  "fetchPersonalRashifal2#0": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703"
  ],
  "fetchPanchangaAtTimeForDay2#0": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703"
@@ -90,7 +90,7 @@
   "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083"
  ],
  "fetchMonthCalendar#0": [
-  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703"
+  "/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703"
  ],
  "fetchMonthCalendar-opts#0": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703"
@@ -153,7 +153,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city_id=1283240"
  ],
  "fetchPersonalRashifal0#1": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaAtTimeForDay0#1": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city_id=1283240"
@@ -165,7 +165,7 @@
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city_id=1283240"
  ],
  "fetchPersonalRashifal1#1": [
-  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaAtTimeForDay1#1": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city_id=1283240"
@@ -177,7 +177,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city_id=1283240"
  ],
  "fetchPersonalRashifal2#1": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city_id=1283240"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city_id=1283240"
  ],
  "fetchPanchangaAtTimeForDay2#1": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city_id=1283240"
@@ -228,7 +228,7 @@
   "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city_id=1283240"
  ],
  "fetchMonthCalendar#1": [
-  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city_id=1283240"
+  "/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&city_id=1283240"
  ],
  "fetchMonthCalendar-opts#1": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&city_id=1283240"
@@ -291,7 +291,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPersonalRashifal0#2": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaAtTimeForDay0#2": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -303,7 +303,7 @@
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPersonalRashifal1#2": [
-  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaAtTimeForDay1#2": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -315,7 +315,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPersonalRashifal2#2": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchPanchangaAtTimeForDay2#2": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -366,7 +366,7 @@
   "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchMonthCalendar#2": [
-  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
+  "/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
  ],
  "fetchMonthCalendar-opts#2": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&lat=27.7&lon=85.3&timezone=Asia%2FKathmandu"
@@ -429,7 +429,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&city=Pokhara"
  ],
  "fetchPersonalRashifal0#3": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaAtTimeForDay0#3": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&city=Pokhara"
@@ -441,7 +441,7 @@
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&city=Pokhara"
  ],
  "fetchPersonalRashifal1#3": [
-  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaAtTimeForDay1#3": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&city=Pokhara"
@@ -453,7 +453,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&city=Pokhara"
  ],
  "fetchPersonalRashifal2#3": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&city=Pokhara"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&city=Pokhara"
  ],
  "fetchPanchangaAtTimeForDay2#3": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&city=Pokhara"
@@ -504,7 +504,7 @@
   "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&city=Pokhara"
  ],
  "fetchMonthCalendar#3": [
-  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&city=Pokhara"
+  "/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&city=Pokhara"
  ],
  "fetchMonthCalendar-opts#3": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&city=Pokhara"
@@ -567,7 +567,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&period=monthly&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPersonalRashifal0#4": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaAtTimeForDay0#4": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&cv=4703&lat=28.2&lon=83.98"
@@ -579,7 +579,7 @@
   "/api/v1/panchanga/rashifal?era=ad&language=en&period=monthly&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPersonalRashifal1#4": [
-  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/rashifal/personal?era=ad&language=en&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaAtTimeForDay1#4": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&jd=2461324.5&cv=4703&lat=28.2&lon=83.98"
@@ -591,7 +591,7 @@
   "/api/v1/panchanga/rashifal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=monthly&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPersonalRashifal2#4": [
-  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&cv=4703&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/rashifal/personal?era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&period=daily&birth_lat=27.7&birth_lon=85.3&birth_tz=Asia%2FKathmandu&birth_era=bs&birth_year=2050&birth_month=5&birth_day=12&birth_clock=06%3A30&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchPanchangaAtTimeForDay2#4": [
   "/api/v1/panchanga/at-time?cv=4703&clock=06%3A30&ayanamsha=lahiri&era=bs&language=ne&inputEra=bs&year=2083&month=6&day=24&cv=4703&lat=28.2&lon=83.98"
@@ -642,7 +642,7 @@
   "/api/v1/nepal/panchak/year/2083?era=bs&language=ne&year=2083&lat=28.2&lon=83.98"
  ],
  "fetchMonthCalendar#4": [
-  "/api/v1/panchanga/2083/6?era=bs&language=ne&full=true&cv=4703&lat=28.2&lon=83.98"
+  "/api/v1/panchanga/2083/6?full=true&era=bs&language=ne&cv=4703&lat=28.2&lon=83.98"
  ],
  "fetchMonthCalendar-opts#4": [
   "/api/v1/panchanga/ad/2026/10?era=ad&language=en&clock=06%3A00&exclude_international=true&cv=4703&lat=28.2&lon=83.98"

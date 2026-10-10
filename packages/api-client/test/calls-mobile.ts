@@ -14,7 +14,6 @@ L.forEach((loc, i) => {
   add("fetchMonthCalendar-ad" + s, () => a.fetchMonthCalendar(2026, 10, loc, { era: "ad" }));
   add("fetchYearWheelCalendar" + s, () => a.fetchYearWheelCalendar(2083, loc));
   add("fetchPanchanga" + s, () => a.fetchPanchanga("2026-10-10", "ad", loc));
-  add("fetchTodayPanchanga" + s, () => a.fetchTodayPanchanga(loc));
   add("fetchPanchangaAtTime" + s, () => a.fetchPanchangaAtTime("2026-10-10T06:30", loc, { ayanamsha: "lahiri" }));
   add("fetchCivilTimeline" + s, () => a.fetchCivilTimeline("2026-10-10", "ad", loc));
   add("fetchHolidays" + s, () => a.fetchHolidays(2083));

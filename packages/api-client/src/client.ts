@@ -34,10 +34,15 @@ import type {
   KundaliMilanResponse,
   LocationParams,
   MilanPersonQuery,
+  MonthCalendar,
   NearestCityResponse,
   PanchakYearResponse,
   PanchangaDay,
   PatroApiLimits,
+  RashifalBlock,
+  RashifalPeriod,
+  RashifalPersonal,
+  RawMonthDay,
   ReportRecord,
   SaitDetailResponse,
   SaitMonthAllResponse,
@@ -717,3 +722,71 @@ export async function streamKundaliReport(
 }
 
 
+
+// ─── Rashifal ─────────────────────────────────────────────────────────────────
+// The day is passed as query params because the apps address a day
+// differently: the website by era-aware day state (era, language, input date),
+// the app by an AD civil date (`date`, `era=ad`). Without an explicit era the
+// API reads a bare date as BS, which silently returns a rashifal ~57 years off.
+
+export function fetchRashifalForDay(day: URLSearchParams, period: RashifalPeriod, location?: LocationParams) {
+  const params = new URLSearchParams(day);
+  params.set("period", period);
+  return get<RashifalBlock>(
+    appendLocation(withPanchangaCacheVersion(`/panchanga/rashifal?${params.toString()}`), location),
+  );
+}
+
+export function fetchPersonalRashifalForDay(
+  day: URLSearchParams,
+  period: RashifalPeriod,
+  birth: { moment: InstantQuery; birthLat: number; birthLon: number; birthTz: string },
+  location?: LocationParams,
+) {
+  const params = new URLSearchParams(day);
+  params.set("period", period);
+  params.set("birth_lat", String(birth.birthLat));
+  params.set("birth_lon", String(birth.birthLon));
+  params.set("birth_tz", birth.birthTz);
+  appendBirthInstantParams(params, birth.moment);
+  return get<RashifalPersonal>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/rashifal/personal?${params.toString()}`),
+      location,
+    ),
+  );
+}
+
+// ─── Month calendar ───────────────────────────────────────────────────────────
+
+/**
+ * One month of the calendar grid, as the server sends it. Each app turns the
+ * rows into its own CalendarDay (they differ in which day number they show for
+ * an AD month), so this returns the raw rows.
+ */
+export const fetchMonthCalendarRaw = (
+  year: number,
+  month: number,
+  location?: LocationParams,
+  options?: { era?: Era; full?: boolean; clock?: string; excludeInternational?: boolean },
+) => {
+  const era = options?.era ?? "bs";
+  const language = era === "ad" || era === "bc" ? "en" : "ne";
+  // Year/month live in the path — not in the query, so the era middleware does
+  // not run to_jd() on mirrored params (that returned 400 for some BBS months).
+  const params = new URLSearchParams();
+  if (options?.full !== false) params.set("full", "true");
+  params.set("era", era);
+  params.set("language", language);
+  if (options?.clock) params.set("clock", options.clock);
+  if (options?.excludeInternational) params.set("exclude_international", "true");
+  const base =
+    era === "ad"
+      ? `/panchanga/ad/${year}/${month}`
+      : era === "bc"
+        ? `/panchanga/bc/${year}/${month}`
+        : `/panchanga/${year}/${month}`;
+  return get<MonthCalendar & { calendar: RawMonthDay[] }>(
+    appendLocation(withPanchangaCacheVersion(`${base}?${params.toString()}`), location),
+  );
+};
