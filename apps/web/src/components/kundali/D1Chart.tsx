@@ -8,7 +8,7 @@ import {
   pointsToSvg,
   polygonCentroid,
 } from "@vedic-patro/domain/kundali/north-indian-layout";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, type Lang } from "@/i18n/locale";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";

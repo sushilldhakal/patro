@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { PatroTableShell } from "./PatroTableShell";
 import {
   Table,

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { ChevronDown, Info, Loader2, ScrollText } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { Switch } from "@/components/ui/switch";
 
 export interface SaitRule {

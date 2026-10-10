@@ -27,7 +27,7 @@ import {
   patroMonthNavShell,
   patroMobileStepBtn,
 } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { isGregorianEraBrowse } from "./patro-month-labels";
 import {
   getLanguageForEra,

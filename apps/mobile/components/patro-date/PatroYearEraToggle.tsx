@@ -4,7 +4,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { isGregorianEra, toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { patroEraShortLabel } from "./patro-era-labels";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   era: Era;

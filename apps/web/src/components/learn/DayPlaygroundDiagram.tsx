@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { importWithRetry } from "@/lib/lazy-route";
 
-import type { PlaygroundConfig } from "@/lib/learn/playground-config";
+import type { PlaygroundConfig } from "@vedic-patro/domain/learn/playground-config";
 
 const Study = lazy(() =>
   importWithRetry(() => import("./DayPlaygroundStudy")).then((m) => ({

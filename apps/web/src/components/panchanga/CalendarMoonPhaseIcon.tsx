@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import type { CSSProperties } from "react";
 import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/moon-phase-svg";
 

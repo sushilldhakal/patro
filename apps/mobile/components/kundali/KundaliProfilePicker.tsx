@@ -22,7 +22,7 @@ import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-que
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const PROFILE_GRID_GUTTER = 6;
 

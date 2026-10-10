@@ -5,7 +5,7 @@ import type { RashifalGocharRow } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { toNepaliDigits } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /**
  * The nine-graha gochar strip inside "why this reading?" — one chip per graha

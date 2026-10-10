@@ -24,7 +24,7 @@ import {
   type VastuGunaId,
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
  * CX/CY rather than taking them as props, so anything reusing them has to

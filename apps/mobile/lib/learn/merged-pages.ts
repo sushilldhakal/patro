@@ -14,7 +14,7 @@
  * used to be rather than at the top of a long page.
  */
 
-import type { Bi } from "./article-schema";
+import type { Bi } from "@vedic-patro/domain/learn/article-schema";
 
 /** One chapter of a merged page. */
 export interface MergedPart {

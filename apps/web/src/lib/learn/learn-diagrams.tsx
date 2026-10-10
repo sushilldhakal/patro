@@ -1,3 +1,4 @@
+import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
 /**
  * Diagram slots available to data-driven articles.
  *
@@ -121,6 +122,6 @@ export const LEARN_DIAGRAMS = {
   "table-tithi": TithiReferenceTable,
   "table-yoga": YogaReferenceTable,
   "table-karana": KaranaReferenceTable,
-} satisfies Record<string, () => React.ReactNode>;
+} satisfies Partial<Record<DiagramId, () => React.ReactNode>>;
 
-export type DiagramId = keyof typeof LEARN_DIAGRAMS;
+export type { DiagramId };

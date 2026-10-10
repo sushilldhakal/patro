@@ -84,7 +84,7 @@ import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@vedic-patro/domain/sky3d/geocentric-model";
 import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import {

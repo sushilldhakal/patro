@@ -1,6 +1,6 @@
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import type { SaitSuitability } from "@/lib/api";
 import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 

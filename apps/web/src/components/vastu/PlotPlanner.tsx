@@ -17,7 +17,7 @@ import {
 import { HouseRequirementsForm, readPlan } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const HOUSE_KEY = "vp.vastu.house";
 

@@ -11,7 +11,7 @@ import {
 import { grahaRashiDisplay } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   gochar: Record<string, GocharGraha>;

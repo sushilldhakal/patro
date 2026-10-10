@@ -30,7 +30,7 @@ import {
   type VastuPadaId,
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function Chip({
   color,

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
 import { edScrub } from "@/lib/diagram-classes";

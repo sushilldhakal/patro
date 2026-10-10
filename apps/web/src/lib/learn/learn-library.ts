@@ -27,7 +27,7 @@ import {
   Workflow,
 } from "lucide-react";
 
-import type { Bi } from "./article-schema";
+import type { Bi } from "@vedic-patro/domain/learn/article-schema";
 
 /**
  * The Learn library — the single source of truth for what exists in the

@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useTheme, type ThemePreference } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const BTN =
   "h-9 items-center justify-center rounded-lg border border-border bg-card active:bg-muted shrink-0";

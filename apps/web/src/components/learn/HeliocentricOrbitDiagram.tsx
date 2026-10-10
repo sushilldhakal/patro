@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { edBodyLabel, edRay, hoCalloutNe, hoEarthGroup, hoEquator, hoFocusAphelion, hoFocusLabel, hoFocusLine, hoMarkerDetail, hoMarkerDot, hoMarkerNe, hoMarkerTag, hoNorthPole, hoOrbitDir, hoOrbitEllipse, hoOrbitGuide, hoPoleAxis, hoPoleLabel, hoSunRay, hoSweep, hoTiltArc, hoTiltRef } from "@/lib/diagram-classes";

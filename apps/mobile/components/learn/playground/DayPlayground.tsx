@@ -55,7 +55,7 @@ import { useLocale } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme-context";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
@@ -73,7 +73,7 @@ import {
   resolvePlayground,
   SPEED_MULTIPLIERS,
   type PlaygroundConfig,
-} from "@/lib/learn/playground-config";
+} from "@vedic-patro/domain/learn/playground-config";
 import { useChapterTrack } from "@/lib/learn/use-chapter-track";
 import { mixMeddle, type Meddle } from "@vedic-patro/domain/learn/chapter-player";
 import {
@@ -82,8 +82,8 @@ import {
   togglesFromChapter,
   type Chapter,
   type ChapterSimState,
-} from "@/lib/learn/chapter-kit";
-import { trackFor } from "@/lib/learn/chapter-tracks";
+} from "@vedic-patro/domain/learn/chapter-kit";
+import { trackFor } from "@vedic-patro/domain/learn/chapter-tracks";
 import { DayChapterBar, DayChapterWelcome } from "@/components/learn/playground/DayChapterPlayer";
 import { ChapterOverlay } from "@/components/learn/playground/ChapterOverlay";
 import { ChapterStill, ChapterTip } from "@/components/learn/playground/ChapterStill";

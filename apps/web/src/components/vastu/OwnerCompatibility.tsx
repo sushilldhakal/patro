@@ -15,7 +15,7 @@ import { fetchJanmaRashi, fetchPanchangaDay, type NavataraTone } from "@/lib/api
 import { patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { bilingualText, useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function todayIso(): string {
   const n = new Date();

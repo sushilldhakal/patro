@@ -10,7 +10,7 @@ import {
   type RashyadiRowKey,
   type RashyadiSegment,
 } from "@vedic-patro/domain/dainikKranti/rashyadi";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/i18n/locale";
 
 type GrahaRow = GocharGraha & { key: string };

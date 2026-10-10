@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface BsHeadlineProps {
   /** Nepali BS year / era label (month is on the month chip, not here). */

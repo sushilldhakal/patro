@@ -9,7 +9,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import { useElementPageUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { patroCard, patroGoodBadTone } from "@/lib/patro-classes";
 import { clockFromGhati, parseHHMM } from "@vedic-patro/domain/time-format";
 import { PatroDayTimeNav, PatroMonthYearNav } from "@/components/patro-date";

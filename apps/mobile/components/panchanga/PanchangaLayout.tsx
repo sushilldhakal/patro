@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { useTranslation } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme-context";

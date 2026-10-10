@@ -1,6 +1,6 @@
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   graha: GrahaKey;

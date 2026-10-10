@@ -21,7 +21,7 @@ import {
 } from "@/lib/patro-browse-years";
 import { toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { patroEraShortLabel } from "./patro-era-labels";
 
 const YEAR_ROW_HEIGHT = 44;

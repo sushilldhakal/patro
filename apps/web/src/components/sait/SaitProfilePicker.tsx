@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { UserRound } from "lucide-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listProfiles, type Profile } from "@/lib/auth/client";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { importWithRetry } from "@/lib/lazy-route";
 
 const LazyAuthDialog = lazy(() =>

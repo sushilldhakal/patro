@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text"
 import type { GocharGraha } from "@/lib/api";
 import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/panchanga/D1Chart";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 
 type GrahaRow = GocharGraha & { key: string };

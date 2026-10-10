@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import type { SelectOption } from "@/components/ui/BsNativeSelect";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   month: number;

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function DataUnavailablePanel({
   message,

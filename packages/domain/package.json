@@ -9,5 +9,9 @@
   },
   "scripts": {
     "lint": "node scripts/check-portable.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
   }
 }

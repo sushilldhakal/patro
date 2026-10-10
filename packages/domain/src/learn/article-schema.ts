@@ -13,7 +13,7 @@
  * match `toNepaliDigits` output elsewhere.
  */
 
-import type { DiagramId } from "./learn-diagrams";
+import type { DiagramId } from "./diagram-ids";
 
 /** Bilingual string — Nepali first, English second. */
 export interface Bi {

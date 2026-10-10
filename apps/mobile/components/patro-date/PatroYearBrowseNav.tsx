@@ -13,7 +13,7 @@ import { stepPatroBrowseYear } from "@vedic-patro/domain/patro-year-browse-step"
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { PatroDateNav } from "./PatroDateNav";
 
 export type PatroYearBrowseNavProps = {

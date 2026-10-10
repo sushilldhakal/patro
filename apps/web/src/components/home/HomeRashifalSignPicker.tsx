@@ -11,7 +11,7 @@ import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";
 import type { RashifalSignBlock } from "@/lib/api";
 

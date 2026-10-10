@@ -5,7 +5,7 @@ import { CalendarHeart, Info } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { patroCard } from "@/lib/patro-classes";
 import { useRouteLoading } from "@/lib/route-loading";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";

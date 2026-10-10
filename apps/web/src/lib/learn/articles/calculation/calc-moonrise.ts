@@ -1,4 +1,4 @@
-import type { ArticleData } from "../../article-schema";
+import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 
 export const calcMoonrise: ArticleData = {
   slug: "calc-moonrise",

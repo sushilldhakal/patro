@@ -3,7 +3,7 @@ import { Crosshair, Loader2, Search } from "lucide-react";
 import type { City } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/i18n/locale";
 import { cityItemLabel, cityLabel } from "./city-labels";
 import { useCitySearch } from "./use-city-search";

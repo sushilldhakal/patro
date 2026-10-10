@@ -20,7 +20,7 @@ import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-pa
 import { displayLocationLabel, DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   patroMonthChipDay,
   patroMonthChipHead,

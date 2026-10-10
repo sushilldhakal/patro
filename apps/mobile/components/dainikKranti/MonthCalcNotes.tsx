@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { PatroTableShell } from "./PatroTableShell";
 import { useLocale } from "@/lib/i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";

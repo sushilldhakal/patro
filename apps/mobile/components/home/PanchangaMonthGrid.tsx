@@ -15,7 +15,7 @@ import { nepaliDayNumberStyle, nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import {

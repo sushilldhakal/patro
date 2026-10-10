@@ -30,7 +30,7 @@ import {
   patroErrorBox,
   patroSkel,
 } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const routeApi = getRouteApi("/panchanga-shell/abhijit-muhurta");
 

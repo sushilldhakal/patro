@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { TableScrollShell } from "@/components/ui/DataTable";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   titleNe: string;

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Pause, Play } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
 import {
   Accordion,

@@ -15,7 +15,7 @@ import {
   vargaOption,
 } from "@vedic-patro/domain/varga-display";
 import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type PanelConfig = {
   anchor: ChartAnchor;

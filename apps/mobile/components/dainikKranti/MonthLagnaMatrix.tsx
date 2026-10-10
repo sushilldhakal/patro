@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { TableHeader, TableHeaderCell, TableRow, TableScrollShell } from "@/components/ui/DataTable";

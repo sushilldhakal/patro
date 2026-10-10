@@ -49,7 +49,7 @@ import {
   patroStickyHeadCell,
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import {
   Accordion,

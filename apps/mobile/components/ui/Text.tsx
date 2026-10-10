@@ -7,7 +7,7 @@ import {
 } from "@/lib/fonts";
 import { useThemeColors } from "@/lib/theme-context";
 import { inkOn, relativeLuminance, type ThemeColors } from "@/lib/theme";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = RNTextProps & { className?: string };
 

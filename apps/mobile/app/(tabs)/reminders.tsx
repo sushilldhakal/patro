@@ -40,7 +40,7 @@ import {
 import { todayIn } from "@/lib/notifications/zoned";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];

@@ -11,7 +11,7 @@ import {
 } from "@/hooks/use-patro-year-data-page";
 import { useLocale } from "@/i18n/locale";
 import { grahaName } from "@/lib/graha-i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { formatLocaleDigits } from "@/i18n/digits";

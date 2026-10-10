@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Shared pill button — follows app background/border in light and dark. */
 export const socialSignInButtonClass = cn(

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /**
  * Mount this with `key={src}`.

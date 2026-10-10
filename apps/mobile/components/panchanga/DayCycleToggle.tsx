@@ -4,7 +4,7 @@ import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
 
 export type DayCycleMode = "Day-Night" | "Calendar Day";

@@ -27,7 +27,7 @@ import { DIAGRAM_CANVAS_BG, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-them
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export type DiagramReadout = { k: string; v: string; tone?: "accent" | "warn" };
 export type DiagramLegendItem = { color: string; label: string };

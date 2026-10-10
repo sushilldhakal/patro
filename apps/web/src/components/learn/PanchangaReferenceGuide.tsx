@@ -22,7 +22,7 @@ import {
   learnRefWrap,
   tmCardCap,
 } from "@/lib/learn-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /* Catalogue keys, not text: this table is built at module level, above any hook. */
 const GRAHA_ROWS = [

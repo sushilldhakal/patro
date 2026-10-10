@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { ensureEnglishBundle } from "@/i18n";
 import { useLocale } from "@/i18n/locale";
 import { setStoredLanguage } from "@/lib/user-preferences";

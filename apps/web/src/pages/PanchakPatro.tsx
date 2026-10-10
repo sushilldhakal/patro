@@ -23,7 +23,7 @@ import { useLocale } from "@/i18n/locale";
 import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
 import { patroNoteBox } from "@/lib/patro-classes";
 import { fmtAdShort } from "@/lib/date-format";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
 
 const routeApi = getRouteApi("/panchanga-shell/panchak-patro");

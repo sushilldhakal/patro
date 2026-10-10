@@ -38,7 +38,7 @@ import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   location: PanchangaLocation;

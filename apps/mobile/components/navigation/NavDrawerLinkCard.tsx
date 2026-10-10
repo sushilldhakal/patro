@@ -5,7 +5,7 @@ import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 
 /** Compact drawer tile — 3 per row under 540px, 4 per row above. */

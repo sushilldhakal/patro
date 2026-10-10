@@ -29,7 +29,7 @@ import {
   tithiIndexFromCalendarDay,
   tithiIndexFromPanchanga,
 } from "@vedic-patro/domain/tithi-wheel-data";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const WEEKDAY_NE = [
   "आइतबार",

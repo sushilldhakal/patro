@@ -25,7 +25,7 @@ import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/doma
 import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";

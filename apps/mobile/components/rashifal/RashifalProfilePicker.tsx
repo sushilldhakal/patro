@@ -8,7 +8,7 @@ import type { Profile } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 type Props = {

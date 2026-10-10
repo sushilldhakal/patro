@@ -52,7 +52,7 @@ import {
   type Bi,
   type Block,
   type Cell,
-} from "./article-schema";
+} from "@vedic-patro/domain/learn/article-schema";
 
 function pick(lang: Lang, value: Bi): string {
   return lang === "en" ? value.en || value.ne : value.ne || value.en;
@@ -267,7 +267,7 @@ function BlockView({ block, lang }: { block: Block; lang: Lang }) {
       );
 
     case "diagram": {
-      const Diagram = LEARN_DIAGRAMS[block.id];
+      const Diagram = LEARN_DIAGRAMS[block.id as keyof typeof LEARN_DIAGRAMS];
       if (!Diagram) return null;
       return (
         <div className="mt-5">

@@ -1,4 +1,4 @@
-import { cn } from "./utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export const pgxNightwash =
   "fill-[color-mix(in_srgb,var(--brand-teal)_7%,transparent)] dark:fill-[color-mix(in_srgb,var(--foreground)_8%,transparent)]";

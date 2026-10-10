@@ -11,7 +11,7 @@ import {
   type IngressFilter,
 } from "@vedic-patro/domain/gochar-page-utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";

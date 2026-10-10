@@ -12,7 +12,7 @@ import { ErrorState, LoadingState } from "@/components/ui/States";
 import { DOCUMENT_CATEGORY_GROUPS, isDocumentCategoryId } from "@/lib/documents/categories";
 import { documentsKeys, fetchDocuments } from "@/lib/documents/api";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export default function DocumentsScreen() {
   const { t, lang, digits } = useLocale();

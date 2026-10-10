@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { RASHIFAL_FLAG_ICON, toNepaliDigits } from "@/lib/rashifal-ui";
 import type { RashifalGocharRow } from "@/lib/api";
 

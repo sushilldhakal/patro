@@ -1,4 +1,4 @@
-import { cn } from "./utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Interactive study / tithi diagram SVG classes. */
 

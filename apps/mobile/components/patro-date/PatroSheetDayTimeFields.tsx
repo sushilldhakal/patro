@@ -10,7 +10,7 @@ import {
   parseClockParts,
   to12h,
 } from "@/components/panchanga/use-panchanga-mode";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   year: number;

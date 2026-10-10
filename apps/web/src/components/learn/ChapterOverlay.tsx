@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
 import { LEARN_DIAGRAMS } from "@/lib/learn/learn-diagrams";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function ChapterOverlay({
   id,

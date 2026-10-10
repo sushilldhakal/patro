@@ -3,7 +3,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   planetKey?: string;

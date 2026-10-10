@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const BTN =
   "h-9 items-center justify-center rounded-lg border border-border bg-card active:bg-muted shrink-0";

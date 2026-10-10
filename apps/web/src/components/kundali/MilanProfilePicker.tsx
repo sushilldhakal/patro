@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { ProfileForm, EMPTY_PROFILE, profileToInput } from "@/components/auth/ProfileForm";
 import { listProfiles, type Profile } from "@/lib/auth/client";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export interface MilanProfilePickerHandle {
   openAdd: () => void;

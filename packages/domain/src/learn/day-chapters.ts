@@ -13,7 +13,7 @@
  * is what runs the two halves as one syllabus.
  */
 
-import { equationOfTime, PERIHELION, VERNAL } from "@vedic-patro/domain/sky3d/day-mechanics";
+import { equationOfTime, PERIHELION, VERNAL } from "../sky3d/day-mechanics";
 import {
   cam,
   chapterState,

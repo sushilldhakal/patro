@@ -6,7 +6,7 @@ import {
 } from "@/lib/graha-detail-descriptions";
 import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
 import { patroCard } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function GrahaBanner({
   icon,

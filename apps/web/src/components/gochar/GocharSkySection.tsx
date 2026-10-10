@@ -7,7 +7,7 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroCard, patroMono } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const PLANET_STRIPE: Record<GrahaKey, string> = {
   sun: "bg-amber-500",

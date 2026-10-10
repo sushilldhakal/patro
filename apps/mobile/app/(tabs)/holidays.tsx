@@ -23,7 +23,7 @@ import {
   TableCell,
 } from "@/components/ui/DataTable";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Tab = "holidays" | "festivals";
 type SortDir = "asc" | "desc";

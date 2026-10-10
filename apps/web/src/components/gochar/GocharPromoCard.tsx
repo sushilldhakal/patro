@@ -5,7 +5,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   location: PanchangaLocation;

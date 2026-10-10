@@ -36,7 +36,7 @@ import {
   SITE_LINK_BLURB_KEY,
   SITE_LINK_LABEL_KEY,
 } from "@/lib/related-page-links";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const SITE_LINK_ICONS: Record<string, LucideIcon> = {
   panchanga: CalendarClock,

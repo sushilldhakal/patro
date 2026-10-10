@@ -33,7 +33,7 @@ import {
 } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 

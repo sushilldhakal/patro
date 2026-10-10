@@ -5,7 +5,7 @@ import {
   formatGocharBsLabel,
 } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/kundali/D1Chart";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { Sparkles } from "lucide-react";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";

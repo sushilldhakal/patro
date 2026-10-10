@@ -13,7 +13,7 @@ import { pickLocale, useLocale } from "@/i18n/locale";
 import { setMediaHandlers, setMediaMetadata, setMediaPlaybackState } from "@/lib/media-session";
 import { patroCard, patroSecBand } from "@/lib/patro-classes";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function sourceLine(data: VedaDaily, lang: string, digits: (v: string | number) => string): string {
   const parts = data.source_parts.map((part) => {

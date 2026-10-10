@@ -7,7 +7,7 @@ import {
   PATRO_PLANET_NE,
   type GrahaSpashtaRow,
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 import {
   patroStickyHeadCell,

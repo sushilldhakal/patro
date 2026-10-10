@@ -19,7 +19,7 @@ import {
   type PanchangaLocation,
 } from "@/lib/use-panchanga-location";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export const EMPTY_PROFILE: ProfileInput = {
   full_name: "",

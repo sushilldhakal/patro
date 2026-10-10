@@ -8,7 +8,7 @@ import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
 import { SaitAsidePanel } from "./SaitAsidePanel";
 import type { CalendarDay, LocationParams, PanchangaDay, SaitMonthAllResponse } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
 import { type Era, isGregorianEra } from "@vedic-patro/domain/era";

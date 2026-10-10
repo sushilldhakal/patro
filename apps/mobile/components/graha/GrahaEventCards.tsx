@@ -6,7 +6,7 @@ import type { AstaStamp, EclipseEvent } from "@/lib/api";
 import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function renderedEclipseDate(ev: EclipseEvent): string {
   const label = ev.date_jd_date?.trim();

@@ -1,6 +1,6 @@
 import { Clock, Globe2, Navigation } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   deshaantar?: string;

@@ -32,7 +32,7 @@ import {
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 

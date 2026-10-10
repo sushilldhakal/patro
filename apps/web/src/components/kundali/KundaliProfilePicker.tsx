@@ -14,7 +14,7 @@ import { ProfileForm, EMPTY_PROFILE, profileToInput } from "@/components/auth/Pr
 import { type Profile } from "@/lib/auth/client";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { preloadPanchangaRoute } from "@/lib/panchanga-route-preload";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export interface KundaliProfilePickerHandle {
   openAdd: () => void;

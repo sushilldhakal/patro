@@ -4,7 +4,7 @@ import type { CalendarDay } from "@/lib/api";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   Dialog,
   DialogContent,

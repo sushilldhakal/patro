@@ -27,7 +27,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
-import { cn } from "../lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const routeApi = getRouteApi("/panchanga-shell/holidays");
 

@@ -46,7 +46,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { formatRashiByNumber, getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { useTheme } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { GRAHA_COLOR, normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 import Animated, { useAnimatedStyle } from "react-native-reanimated";
 import { LIVE_GRAHA_KEYS, liveGrahaLabels } from "@/lib/sky3d/graha-label-live";

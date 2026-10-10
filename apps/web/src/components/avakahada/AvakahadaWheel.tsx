@@ -32,7 +32,7 @@ import {
   avWheelTheme,
 } from "@/lib/av-wheel-classes";
 import { wheelIconBtn } from "@/lib/wheel-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const CX = 310;
 const CY = 310;

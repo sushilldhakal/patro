@@ -22,7 +22,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { tmCardCap, tmCardPadLg } from "@/lib/learn-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Accent = "teal" | "amber" | "sky";
 

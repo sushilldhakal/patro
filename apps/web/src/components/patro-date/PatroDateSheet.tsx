@@ -29,7 +29,7 @@ import {
   signedPatroYearFromBrowse,
   stepPatroSignedYear,
 } from "@vedic-patro/domain/patro-year-axis";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { sameLocationParams } from "@/lib/url-state";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { PatroDateSheetState } from "./use-patro-date-sheet";

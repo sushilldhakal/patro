@@ -11,7 +11,7 @@ import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   CALENDAR_GRID_GAP,
   calendarColStyle,

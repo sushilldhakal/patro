@@ -1,6 +1,6 @@
 import { useInPanchangaShell } from "@/components/panchanga/PanchangaShellLayout";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
-import { cn } from "../lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   children: React.ReactNode;

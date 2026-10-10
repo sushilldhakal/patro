@@ -13,7 +13,7 @@ import { buildPanchangaDetailCells, type PanchangaDetailCell } from "@/lib/panch
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 const VIVARAN_WRAP_GAP = 8;

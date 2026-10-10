@@ -1,3 +1,4 @@
+import type { DiagramId } from "@vedic-patro/domain/learn/diagram-ids";
 /**
  * Diagram slots available to data-driven articles.
  *
@@ -140,4 +141,4 @@ export const LEARN_DIAGRAMS: Record<string, ComponentType> = {
   "table-karana": KaranaReferenceTable,
 };
 
-export type DiagramId = keyof typeof LEARN_DIAGRAMS;
+export type { DiagramId };

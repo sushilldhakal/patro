@@ -16,7 +16,7 @@ import { hrefForLearnSlug } from "@/lib/learn/learn-href";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface LearnModule {
   id: string;

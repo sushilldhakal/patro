@@ -1,6 +1,6 @@
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 
 type Props = {

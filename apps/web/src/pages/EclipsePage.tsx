@@ -10,7 +10,7 @@ import {
 } from "@/hooks/use-patro-year-data-page";
 import { useLocale } from "@/i18n/locale";
 import { patroCard } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
 import {
   fetchEclipseYear,

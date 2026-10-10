@@ -1,6 +1,6 @@
 import { findNakshatraIcon } from "@vedic-patro/domain/nakshatra-icons";
 import { nakshatraIcon } from "@/lib/learn-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   name?: string | null;

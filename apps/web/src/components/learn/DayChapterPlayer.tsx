@@ -25,9 +25,9 @@ import {
 import { formatChapterClock } from "@vedic-patro/domain/learn/chapter-player";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { edScrub } from "@/lib/diagram-classes";
-import { chapterParts } from "@/lib/learn/chapter-tracks";
+import { chapterParts } from "@vedic-patro/domain/learn/chapter-tracks";
 import type { DayChapterPlayer } from "@/hooks/use-chapter-track";
 
 export function DayChapterWelcome({

@@ -1,7 +1,7 @@
 import type { TextStyle, ViewStyle } from "react-native";
 import { NOTO_DEVANAGARI_REGULAR } from "./fonts";
 import { nepaliLineHeight } from "./nepali-text";
-import { cn } from "./utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Tabular monospace numerals (replaces legacy `.mono`). */
 export const patroMono = "font-num tabular-nums";

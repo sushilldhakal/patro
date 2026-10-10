@@ -18,7 +18,7 @@ import {
   type PanchangaLocation,
 } from "@/components/panchanga/use-panchanga-location";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /**
  * ऋतु — the six traditional Nepali seasons, driven by the Sun's APPARENT TROPICAL

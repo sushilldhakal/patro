@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { tmCardPadLg, tmCardCap, tmDiagramSvg } from "@/lib/learn-classes";
 import earthUrl from "@/assets/earth.svg?url";
 import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";

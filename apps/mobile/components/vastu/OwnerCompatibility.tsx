@@ -30,7 +30,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const TONE_LABEL_KEY: Record<NavataraTone, string> = {
   best: "vastu.plot.tone.best",

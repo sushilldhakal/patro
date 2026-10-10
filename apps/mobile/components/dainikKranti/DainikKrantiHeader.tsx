@@ -5,7 +5,7 @@ import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { PatroMonthYearNav } from "@/components/patro-date/PatroMonthYearNav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { patroSegBtn } from "@/lib/patro-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";

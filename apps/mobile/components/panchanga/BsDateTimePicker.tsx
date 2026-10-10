@@ -12,7 +12,7 @@ import {
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { BsNativeSelect } from "@/components/ui/BsNativeSelect";
 import { PatroYearEraToggle } from "@/components/patro-date/PatroYearEraToggle";
 import { type Era } from "@vedic-patro/domain/era";

@@ -16,7 +16,7 @@ import {
   type DashaLord,
   type DashaSpan,
 } from "@vedic-patro/domain/dasha";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Catalogue keys, outermost dasha level first. */
 const LEVEL_LABELS: string[] = [

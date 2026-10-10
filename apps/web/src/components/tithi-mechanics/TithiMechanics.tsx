@@ -5,7 +5,7 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/tithi-wheel-data";
 import { ElongationDiagram, EARTH_ARC_SYNODIC, earthOrbitDegFromLunarDay } from "./ElongationDiagram";
 import { SYNODIC_MONTH } from "@/components/learn/sun-earth-moon-math";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { edScrub } from "@/lib/diagram-classes";
 import { AdhikMassDiagram, SunriseTimeline } from "./tithi-mechanics-diagrams";
 import { useLocale, bilingualText } from "@/i18n/locale";

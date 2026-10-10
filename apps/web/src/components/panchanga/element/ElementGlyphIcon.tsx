@@ -6,7 +6,7 @@ import { grahaKeyFromName, HORA_TO_GRAHA } from "@/lib/graha-planet-icons";
 import type { HoraPlanetKey } from "@/lib/hora-data";
 import { nakshatraGlyphUrl, rashiGlyphUrl } from "@/lib/element-glyph-urls";
 import { tithiIndexFromElementSpan } from "@vedic-patro/domain/tithi-wheel-data";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type ImgProps = {
   src: string;

@@ -1,4 +1,4 @@
-import { cn } from "./utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export const wheelHead =
   "pointer-events-none absolute left-4 z-20 max-w-[min(100%-2rem,28rem)]";

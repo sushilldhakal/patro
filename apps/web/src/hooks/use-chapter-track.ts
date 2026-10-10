@@ -14,8 +14,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useLocale } from "@/i18n/locale";
 import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
-import { chapterAudioSources, type Chapter, type ChapterSimState } from "@/lib/learn/chapter-kit";
-import type { ChapterTrack } from "@/lib/learn/chapter-tracks";
+import { chapterAudioSources, type Chapter, type ChapterSimState } from "@vedic-patro/domain/learn/chapter-kit";
+import type { ChapterTrack } from "@vedic-patro/domain/learn/chapter-tracks";
 
 export type DayChapterPlayer = {
   track: ChapterTrack;
@@ -159,7 +159,7 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
     const el = audioRef.current;
     setHasAudio(false);
     if (!el) return;
-    const sources = chapterAudioSources(trackId, chapter, lang);
+    const sources = chapterAudioSources(trackId, chapter, lang, `${import.meta.env.BASE_URL}learn/audio`);
     let cancelled = false;
     const onReady = () => setHasAudio(true);
     const onError = () => setHasAudio(false);

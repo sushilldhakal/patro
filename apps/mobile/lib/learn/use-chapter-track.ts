@@ -14,14 +14,15 @@
  * {@link @/lib/learn/chapter-tracks} — and drives whatever chapters are in it.
  */
 
+import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AppState } from "react-native";
 import { createAudioPlayer, type AudioPlayer, type AudioStatus } from "expo-audio";
 
 import { useLocale } from "@/lib/i18n";
 import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
-import { chapterAudioSources, type Chapter, type ChapterSimState } from "./chapter-kit";
-import type { ChapterTrack } from "./chapter-tracks";
+import { chapterAudioSources, type Chapter, type ChapterSimState } from "@vedic-patro/domain/learn/chapter-kit";
+import type { ChapterTrack } from "@vedic-patro/domain/learn/chapter-tracks";
 
 /** See the cast's own comment at the call site. */
 function audioPlayerEvents(player: AudioPlayer): {
@@ -150,7 +151,7 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
     const player = audioRef.current;
     setHasAudio(false);
     if (!player) return;
-    const sources = chapterAudioSources(trackId, chapter, lang);
+    const sources = chapterAudioSources(trackId, chapter, lang, `${LEGAL_SITE}/learn/audio`);
     let cancelled = false;
     void (async () => {
       for (const src of sources) {

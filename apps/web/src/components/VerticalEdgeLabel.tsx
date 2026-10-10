@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Patro-style upright vertical text along a cell edge (md+ layouts). */
 export function VerticalEdgeLabel({

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = PressableProps & {
   label: string;

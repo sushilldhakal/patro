@@ -15,7 +15,7 @@ import type {
   SaitPersonalizeDay,
   SaitSuitability,
 } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   title: string;

@@ -8,7 +8,7 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { adToBS } from "@vedic-patro/domain/bs-calendar";
 import { formatGregorianFromDateParts, formatPatroCivilDayLabel, formatPatroDayCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   buildAdDayOptions,
   buildBsDayOptions,

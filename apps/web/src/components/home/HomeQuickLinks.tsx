@@ -21,7 +21,7 @@ import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-pat
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const QUICK_LINKS = [
   { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: PartyPopper },

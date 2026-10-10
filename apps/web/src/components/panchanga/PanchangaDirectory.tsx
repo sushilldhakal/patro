@@ -15,7 +15,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
 import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function SectionTitle({ titleKey, className }: { titleKey: string; className?: string }) {
   const { t } = useTranslation();

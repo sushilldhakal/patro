@@ -5,7 +5,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import type { NavataraTone, RashifalPeriod, RashifalSignBlock } from "@/lib/api";
 import {
   RASHIFAL_DOMAIN_ICON,

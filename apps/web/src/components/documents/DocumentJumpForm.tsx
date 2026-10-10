@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { documentsListSearch, type DocumentCategoryTab } from "@/lib/documents-api";
 
 /** Same id convention ShlokaCard gives every verse's <section>. */

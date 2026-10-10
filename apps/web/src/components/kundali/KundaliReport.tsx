@@ -19,7 +19,7 @@ import {
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Status = "idle" | "streaming" | "done" | "error";
 

@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
 import type { Ionicons } from "@/components/icons/Ionicons";
 
-import type { Bi } from "./article-schema";
+import type { Bi } from "@vedic-patro/domain/learn/article-schema";
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 

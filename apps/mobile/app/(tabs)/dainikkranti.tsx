@@ -60,7 +60,7 @@ import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 
 type Phase = "krishna" | "shukla";

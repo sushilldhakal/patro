@@ -14,7 +14,7 @@ import Slider from "@react-native-community/slider";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { Text } from "@/components/ui/Text";
 import { formatChapterClock } from "@vedic-patro/domain/learn/chapter-player";
-import { chapterParts } from "@/lib/learn/chapter-tracks";
+import { chapterParts } from "@vedic-patro/domain/learn/chapter-tracks";
 import { chapterLabel } from "@/lib/learn/chapter-labels";
 import type { DayChapterPlayer } from "@/lib/learn/use-chapter-track";
 import { useLocale } from "@/lib/i18n";

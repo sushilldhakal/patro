@@ -12,7 +12,7 @@ import {
 } from "@/hooks/use-patro-year-data-page";
 import { useLocale } from "@/i18n/locale";
 import { grahaName } from "@/lib/graha-i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   fetchGrahaVakriYear,
   grahaDetailKeys,

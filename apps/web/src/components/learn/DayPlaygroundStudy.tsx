@@ -42,7 +42,7 @@ import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
 import earthToonUrl from "@/assets/graha/earth-orig.png";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { edRo, edRoK, edRoV } from "@/lib/learn-classes";
@@ -68,7 +68,7 @@ import {
   resolvePlayground,
   SPEED_MULTIPLIERS,
   type PlaygroundConfig,
-} from "@/lib/learn/playground-config";
+} from "@vedic-patro/domain/learn/playground-config";
 import { useChapterTrack } from "@/hooks/use-chapter-track";
 import {
   cameraFromChapter,
@@ -76,8 +76,8 @@ import {
   togglesFromChapter,
   type Chapter,
   type ChapterSimState,
-} from "@/lib/learn/chapter-kit";
-import { trackFor } from "@/lib/learn/chapter-tracks";
+} from "@vedic-patro/domain/learn/chapter-kit";
+import { trackFor } from "@vedic-patro/domain/learn/chapter-tracks";
 import { DayChapterBar, DayChapterWelcome } from "./DayChapterPlayer";
 import { ChapterOverlay } from "./ChapterOverlay";
 import { ChapterStill, ChapterTip } from "./ChapterStill";

@@ -11,7 +11,7 @@ import * as SystemUI from "expo-system-ui";
 import { colorScheme as nativeWindColorScheme } from "nativewind";
 import { darkTheme, lightTheme, type ThemeColors } from "@/lib/theme";
 import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   getStoredThemePreference,
   setStoredThemePreference,

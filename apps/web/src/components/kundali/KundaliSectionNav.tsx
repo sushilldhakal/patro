@@ -13,7 +13,7 @@ import {
   Star,
 } from "lucide-react";
 import type { DashaSystem } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export const KUNDALI_SECTIONS = [
   { id: "kundali-overview", labelKey: "kundali.nav_overview", icon: "overview" as const },

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { prefersRedirectSignIn, startGoogleRedirect } from "@/lib/auth/google-redirect";
 import { socialSignInButtonClass } from "./social-sign-in-styles";
 import { useIsDarkTheme } from "./useIsDarkTheme";

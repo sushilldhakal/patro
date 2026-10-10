@@ -13,7 +13,7 @@ import {
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "../components/PageShell";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import {
   LEARN_CATEGORIES,
   LEARN_TOPICS,

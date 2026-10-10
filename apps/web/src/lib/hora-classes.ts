@@ -1,4 +1,4 @@
-import { cn } from "./utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Scope for `--hora-*` tokens (keep on outer shell). */
 export const horaTheme = "hora-theme";

@@ -5,7 +5,7 @@ import {
   matchesPanchangaAngas,
   type AyanamshaMode,
 } from "@vedic-patro/domain/ayanamsha";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
 interface Props {

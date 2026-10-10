@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { patroCard } from "@/lib/patro-classes";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type GrahaGroupedEventCardsProps<T> = {
   order: readonly string[];

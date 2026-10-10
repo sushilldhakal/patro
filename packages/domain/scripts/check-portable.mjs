@@ -25,6 +25,8 @@ function check(path) {
     // API response types are the one thing domain code may name from outside —
     // type-only, so there is no runtime edge between the packages.
     if (spec === "@vedic-patro/api-client" && m[2]) continue;
+    // Pure-JS helpers with no platform code.
+    if (spec === "clsx" || spec === "tailwind-merge") continue;
     problems.push(`${rel}: imports "${spec}" — domain files may only import from this package (plus \`import type\` from @vedic-patro/api-client)`);
   }
   if (/\b(window|document|localStorage|navigator)\./.test(text)) {

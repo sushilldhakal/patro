@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useMemo, useRef } from "react";
 import { edBodyLabel, hoEarthGroup, hoEquator, hoOrbitDir, hoPoleAxis, semEarthGlow, semMoonLabelKey, semMoonOrbit, semMoonOrbitGuide, semOrbit, semOrbitGuide, semRadiusLine, semSunLonMarker, semSunLonRay, semTidalMarker } from "@/lib/diagram-classes";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";

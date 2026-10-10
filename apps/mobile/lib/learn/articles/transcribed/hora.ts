@@ -1,4 +1,4 @@
-import type { ArticleData } from "../../article-schema";
+import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 
 /**
  * Transcribed from web's hand-written `HoraArticle` — see `what-is-panchang.ts`

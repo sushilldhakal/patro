@@ -28,7 +28,7 @@ import {
   type SpaceKind,
   type VastuMode,
 } from "@vedic-patro/domain/vastu-plan";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function Field({
   label,

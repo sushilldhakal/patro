@@ -17,7 +17,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroEmpty } from "@/lib/patro-classes";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { patroYearLinkSearch } from "@/lib/url-state";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   /** BS year of the month the calendar is currently showing. */

@@ -11,7 +11,7 @@ import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 function BrandMark({ onPress, centered }: { onPress: () => void; centered?: boolean }) {

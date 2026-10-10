@@ -16,7 +16,7 @@ import {
 import { useLocale } from "@/lib/i18n";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 

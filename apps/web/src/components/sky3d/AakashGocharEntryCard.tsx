@@ -6,7 +6,7 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, Orbit } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function AakashGocharEntryCard({ className }: { className?: string }) {
   const { lang } = useLocale();

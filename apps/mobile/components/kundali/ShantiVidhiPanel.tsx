@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/DataTable";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { scrollViewIntoView } from "@/lib/page-scroll";
 
 function InfoTile({

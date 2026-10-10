@@ -12,7 +12,7 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from "@/components/ui/combobox";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { cityItemLabel, cityLabel } from "./city-labels";
 import { useCitySearch } from "./use-city-search";
 import { useLocale } from "@/i18n/locale";

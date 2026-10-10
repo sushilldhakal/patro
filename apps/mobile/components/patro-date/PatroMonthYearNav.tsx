@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { PatroDateNav } from "./PatroDateNav";
 import type { PatroDateNavProps } from "./types";
 

@@ -20,8 +20,8 @@ import type {
   CameraTarget,
   PlaygroundGlobe,
   SimToggles,
-} from "@/components/learn/DaySimScene";
-import { interval, type Keyframe } from "@vedic-patro/domain/learn/chapter-player";
+} from "./sim-types";
+import { interval, type Keyframe } from "./chapter-player";
 
 /**
  * Everything a chapter can move.
@@ -319,9 +319,14 @@ export function togglesFromChapter(s: ChapterSimState): SimToggles {
  *
  * @see `public/learn/audio/README.md` for the full list of filenames.
  */
-export function chapterAudioSources(track: string, chapter: Chapter, lang: string): string[] {
+export function chapterAudioSources(
+  track: string,
+  chapter: Chapter,
+  lang: string,
+  /** Where the recordings are served from, e.g. `${base}learn/audio` — differs per app. */
+  root: string,
+): string[] {
   if (chapter.audio) return [chapter.audio];
-  const root = `${import.meta.env.BASE_URL}learn/audio`;
   const names = [chapter.id, ...(chapter.audioAliases ?? [])];
   /* Language first, then the shared folder: a topic recorded in both wins over
      one recorded once, and an alias only ever answers when the chapter's own

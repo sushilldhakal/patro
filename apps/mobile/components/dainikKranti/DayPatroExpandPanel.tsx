@@ -14,7 +14,7 @@ import {
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 

@@ -2,7 +2,7 @@ import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patr
 import { useTranslation } from "react-i18next";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   Table,

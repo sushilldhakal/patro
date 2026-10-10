@@ -14,7 +14,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Section tabs nested under जन्मकुण्डली — mirrors web `KundaliSidebarSubnav`. */
 export function KundaliSidebarSubnav({

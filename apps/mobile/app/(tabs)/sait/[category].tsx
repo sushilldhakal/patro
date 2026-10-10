@@ -16,7 +16,7 @@ import {
 } from "@/lib/api";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

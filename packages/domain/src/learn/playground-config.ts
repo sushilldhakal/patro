@@ -16,7 +16,7 @@
  * which is the right default for the ones the sim cannot honestly illustrate.
  */
 
-import type { CameraState, SimParams, SimToggles } from "@/components/learn/DaySimScene";
+import type { CameraState, SimParams, SimToggles } from "./sim-types";
 import type { TrackId } from "./chapter-tracks";
 
 /**

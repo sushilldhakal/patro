@@ -5,7 +5,7 @@ import {
   type GrahaSpashtaRow,
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import {

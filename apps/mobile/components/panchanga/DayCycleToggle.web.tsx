@@ -1,7 +1,7 @@
 import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export type DayCycleMode = "Day-Night" | "Calendar Day";
 

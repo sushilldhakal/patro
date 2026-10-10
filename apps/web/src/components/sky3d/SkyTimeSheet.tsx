@@ -30,7 +30,7 @@ import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domai
 import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */
 const DAY_ORIGIN_SEC = 4 * 3600;

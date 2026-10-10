@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** One body's astronomical readout — sidereal longitude plus equatorial extras. */
 export type GrahaAstroPoint = {

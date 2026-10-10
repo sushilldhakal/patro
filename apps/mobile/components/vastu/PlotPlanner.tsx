@@ -40,7 +40,7 @@ import { DEFAULT_HOUSE_PLAN } from "@vedic-patro/domain/vastu-plan";
 import { HouseRequirementsForm } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const MIN_M = 3;
 const MAX_M = 100;

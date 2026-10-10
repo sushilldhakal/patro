@@ -12,7 +12,7 @@ import {
   type RashyadiRowKey,
   type RashyadiSegment,
 } from "@vedic-patro/domain/dainikKranti/rashyadi";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 

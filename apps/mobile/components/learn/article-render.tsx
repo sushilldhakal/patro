@@ -22,7 +22,7 @@ import {
   type Bi,
   type Block,
   type Cell,
-} from "@/lib/learn/article-schema";
+} from "@vedic-patro/domain/learn/article-schema";
 import { richText } from "@/components/learn/inline-richtext";
 import {
   LearnCalc,

@@ -13,7 +13,7 @@ import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon"
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import type { RashifalPeriod, RashifalSignBlock } from "@/lib/api";
 import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";

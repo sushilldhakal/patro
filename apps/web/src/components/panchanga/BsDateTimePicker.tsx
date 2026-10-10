@@ -20,7 +20,7 @@ import { PatroYearPickerPopover } from "@/components/patro-date/PatroYearPickerP
 import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
 import { stepBrowseVikramMonth } from "@/lib/patro-date-options";
 import { useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { BsNativeSelect } from "@/components/BsNativeSelect";
 import { PopoverClose } from "@/components/ui/popover";
 import { formatClockParts, parseClockParts } from "@/components/panchanga/use-panchanga-mode";

@@ -24,7 +24,7 @@ import {
   isAyanaNorthMark,
 } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";
 import { Button } from "@/components/ui/button";
 

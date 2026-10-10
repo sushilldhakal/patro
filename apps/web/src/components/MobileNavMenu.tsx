@@ -48,7 +48,7 @@ import {
   patroRouteLinkSearch,
 } from "@/lib/url-state";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Promoted into the Main row so they are not repeated in later groups. */
 const DRAWER_MAIN_PROMOTED_IDS = new Set([

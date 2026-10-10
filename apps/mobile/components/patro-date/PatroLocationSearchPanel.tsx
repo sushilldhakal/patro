@@ -23,7 +23,7 @@ import {
 import { cityToLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function cityLabel(city: City): string {
   return city.name || city.ascii_name;

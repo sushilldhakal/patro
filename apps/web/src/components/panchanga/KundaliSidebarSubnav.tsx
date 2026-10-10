@@ -10,7 +10,7 @@ import {
   parseKundaliSectionFromHash,
   type KundaliSectionId,
 } from "@/components/kundali/KundaliSectionNav";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 function isGroupActive(groupId: string, activeId: KundaliSectionId): boolean {
   if (groupId === "kundali-dasha") return dashaSystemFromSection(activeId) != null || activeId === "kundali-shanti";

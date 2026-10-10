@@ -11,7 +11,7 @@ import {
 import { useBreakpoint } from "@/lib/responsive";
 import { tableHeaderBackground, tableRowBackground } from "@/lib/theme";
 import { useTheme, useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 export type TableColumn = {
   key: string;

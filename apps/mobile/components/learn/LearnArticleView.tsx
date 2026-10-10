@@ -14,7 +14,7 @@ import { DATA_ARTICLES } from "@/lib/learn/articles";
 import { MergedArticleBody } from "@/components/learn/MergedArticleBody";
 import { ArticleBody } from "@/components/learn/article-render";
 import { hrefForLearnSlug } from "@/lib/learn/learn-href";
-import { playgroundFor } from "@/lib/learn/playground-config";
+import { playgroundFor } from "@vedic-patro/domain/learn/playground-config";
 import { DayPlayground } from "@/components/learn/playground/DayPlayground";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

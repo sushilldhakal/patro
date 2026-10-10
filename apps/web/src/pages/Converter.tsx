@@ -13,7 +13,7 @@ import { useRouteLoading } from "@/lib/route-loading";
 import { formatLocaleDigits } from "@/i18n/digits";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { StatCard } from "../components/StatCard";
-import { cn } from "../lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 const WEEKDAY_NE: Record<string, string> = {
   Sunday: "आइतबार",

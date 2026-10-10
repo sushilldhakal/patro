@@ -20,7 +20,7 @@
 
 import type { ReactNode } from "react";
 
-import type { Bi } from "./article-schema";
+import type { Bi } from "@vedic-patro/domain/learn/article-schema";
 
 /** One chapter of a merged page. */
 export interface MergedPart {

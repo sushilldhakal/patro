@@ -1,4 +1,4 @@
-import { cn } from "../lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   label: string;

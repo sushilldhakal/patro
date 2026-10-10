@@ -7,7 +7,7 @@ import { useLocale, useTranslation } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@/lib/utils";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   shloka: Shloka;
