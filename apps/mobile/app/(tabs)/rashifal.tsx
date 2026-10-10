@@ -112,7 +112,7 @@ export default function RashifalScreen() {
 
   const windowSource = selectedProfile ? personalQ.data : generalQ.data;
   const rangeLabel = useMemo(
-    () => rashifalRangeLabel(windowSource, period, lang, digits),
+    () => rashifalRangeLabel(windowSource, period, lang),
     [windowSource, period, lang, digits],
   );
 

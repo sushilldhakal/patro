@@ -75,8 +75,8 @@ export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Prop
 
   const loading = hasUsableProfile ? personalQ.isLoading : generalQ.isLoading;
   const monthLabel = hasUsableProfile
-    ? rashifalMonthLabel(personalQ.data, lang, digits)
-    : rashifalMonthLabel(generalQ.data, lang, digits);
+    ? rashifalMonthLabel(personalQ.data, lang)
+    : rashifalMonthLabel(generalQ.data, lang);
 
   const sunSign: RashifalSignBlock | undefined =
     generalQ.data?.signs?.length && generalQ.data.frame?.sun_sign
