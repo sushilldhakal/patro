@@ -1,34 +1,21 @@
 /**
- * Related navigation at the bottom of patro pages — port of web's
- * `related-page-links.ts`: peers from the same sidebar group, plus learn
- * articles. Ids and groups are identical; only the route table differs
- * (this app's paths).
+ * Related navigation at the bottom of patro pages — this app's route table and
+ * icons; the grouping logic is shared (packages/domain).
  */
 
-import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { elementHref } from "@/lib/element-routes";
-import { LEARN_LIBRARY_BY_SLUG, PUBLISHED_TOPICS } from "@/lib/learn/learn-library";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 
-export const RELATED_LINK_LIMIT = 6;
-export const RELATED_LEARN_LIMIT = 3;
+export {
+  RELATED_LEARN_LIMIT,
+  RELATED_LINK_LIMIT,
+  SITE_LINK_GROUPS,
+  getRelatedLearnSlugs,
+  getRelatedSiteLinkIds,
+  type SiteLinkGroupKey,
+} from "@vedic-patro/domain/related-page-links";
+
 export const RELATED_CARD_LIMIT = 6;
-
-const SPAN_IDS = ELEMENT_META.filter((e) => e.kind === "span").map((e) => `element:${e.id}`);
-const TABLE_IDS = ELEMENT_META.filter((e) => e.kind === "table").map((e) => `element:${e.id}`);
-const SAIT_IDS = CEREMONY_META.map((c) => `sait:${c.id}`);
-
-export const SITE_LINK_GROUPS = {
-  patro: ["holidays", "converter", "suryakranti", "panchanga-year", "dainikkranti", "panchak-patro", "ritu"],
-  jyotish: ["avakahada-chakra", "abhijit-muhurta", "kundali", "kundali-milan", "rashifal"],
-  daily: ["panchanga", "panchanga-year", "dainikkranti", "gochar", "aakash-gochar", "abhijit-muhurta"],
-  graha: ["gochar", "aakash-gochar", "graha-asta", "graha-vakri", "chandra-grahan", "surya-grahan"],
-  spans: SPAN_IDS,
-  tables: TABLE_IDS,
-  sait: SAIT_IDS,
-} as const;
-
-export type SiteLinkGroupKey = keyof typeof SITE_LINK_GROUPS;
 
 /** This app's route for each static site link id. */
 export const SITE_LINK_PATH: Record<string, string> = {
@@ -166,52 +153,6 @@ export function resolveSitePageId(pathname: string): string | null {
   if (path.startsWith("/sait/")) return `sait:${path.split("/").pop()}`;
   const entry = Object.entries(SITE_LINK_PATH).find(([, p]) => p === path);
   return entry ? entry[0] : null;
-}
-
-function primaryGroup(pageId: string): SiteLinkGroupKey {
-  if (pageId.startsWith("element:")) {
-    const el = ELEMENT_BY_ID[pageId.slice(8)];
-    return el?.kind === "span" ? "spans" : "tables";
-  }
-  if (pageId.startsWith("sait:")) return "sait";
-  if (pageId.startsWith("learn:")) return "daily";
-  if ((SITE_LINK_GROUPS.graha as readonly string[]).includes(pageId)) return "graha";
-  if ((SITE_LINK_GROUPS.jyotish as readonly string[]).includes(pageId)) return "jyotish";
-  if ((SITE_LINK_GROUPS.patro as readonly string[]).includes(pageId)) return "patro";
-  return "daily";
-}
-
-function pickCircular(group: readonly string[], currentId: string, limit: number): string[] {
-  const filtered = group.filter((id) => id !== currentId);
-  if (!filtered.length) return [];
-  if (!group.includes(currentId)) return filtered.slice(0, limit);
-  const idx = group.indexOf(currentId);
-  const out: string[] = [];
-  for (let i = 1; i <= group.length && out.length < limit; i++) {
-    const id = group[(idx + i) % group.length]!;
-    if (id !== currentId && !out.includes(id)) out.push(id);
-  }
-  return out;
-}
-
-export function getRelatedSiteLinkIds(pageId: string, limit = RELATED_LINK_LIMIT): string[] {
-  if (pageId.startsWith("learn:")) return pickCircular(SITE_LINK_GROUPS.daily, "panchanga", limit);
-  return pickCircular(SITE_LINK_GROUPS[primaryGroup(pageId)], pageId, limit);
-}
-
-export function getRelatedLearnSlugs(pageId: string, limit = RELATED_LEARN_LIMIT): string[] {
-  if (pageId.startsWith("learn:")) {
-    const slug = pageId.slice(6);
-    const topic = LEARN_LIBRARY_BY_SLUG[slug];
-    if (!topic) return [];
-    return PUBLISHED_TOPICS.filter((t) => t.section === topic.section && t.slug !== slug)
-      .slice(0, limit)
-      .map((t) => t.slug);
-  }
-  const mapped = PAGE_LEARN_SLUGS[pageId];
-  if (mapped?.length) return mapped.slice(0, limit);
-  if (pageId.startsWith("sait:")) return ["what-is-panchang", "five-limbs-together"].slice(0, limit);
-  return [];
 }
 
 export function siteLinkHref(linkId: string): string {
