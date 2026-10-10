@@ -1,39 +1,24 @@
 import { Platform } from "react-native";
 import { offlineAwareGet } from "@/lib/offline/offline-http";
 import Constants from "expo-constants";
-import type { PlannedSpace, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
-import type { VastuDirectionId } from "@vedic-patro/domain/vastu";
 import {
   appendBirthInstantParams,
   appendInstantParams,
   instantCacheKey,
-  type InstantQuery,
 } from "@/lib/instant-query";
+import type { Era, InstantQuery } from "@vedic-patro/domain/era";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   JanmaRashi,
   RashifalPersonal,
-  CivilTimelineSeg,
-  CivilTimelineBand,
-  CivilTimelineHora,
-  CivilTimelineLagna,
-  TropicalSeasonBoundary,
   VimshottariResponse,
-  GocharNextEntry,
-  VedicStarPosition,
-  GrahaVakriEvent,
-  SunYearMonth,
   SaitResponse,
   SaitPersonalizeResponse,
   SaitMonthAllResponse,
   ElementSpansResponse,
   SpecialMonthsResponse,
-  ShadbalaStatus,
-  ShadbalaBreakdown,
-  ShadbalaSubBalas,
-  ShadbalaSummaryRef,
   VargaCharts,
   AshtakavargaData,
   BhavaBalaData,
@@ -51,31 +36,38 @@ import type {
   DashaSystem,
   KundaliMilanResponse,
   ReportRecord,
-  LagnaSpan,
-  RashiSpan,
-  NakshatraPadaSpan,
-  BalamBlock,
-  NavataraTone,
-  NavataraTableBlock,
   RashifalPeriod,
-  RashifalComponent,
-  RashifalDomain,
-  RashifalGocharRow,
-  RashifalLordBlock,
-  RashifalHoraWindow,
-  RashifalDayMarker,
-  RashifalFrame,
-  ApiHoraSlot,
-  UdayaLagnaRow,
-  MuhurtaNowBlock,
-  PlanetInfo,
-  Festival,
-  LunarLayer,
-  Holiday,
   ConvertAdToBs,
   ConvertBsToAd,
   VastuSketchRequest,
-  VastuAyadi,
+  PatroApiLimits,
+  CitiesSearchResponse,
+  NearestCityResponse,
+  CivilTimeline,
+  TropicalSeasonsResponse,
+  GocharIngressResponse,
+  GocharResponse,
+  GrahaSthitiResponse,
+  GrahaAstaResponse,
+  GrahaVakriResponse,
+  EclipseYearResponse,
+  PanchakYearResponse,
+  SunYearResponse,
+  SaitDetailResponse,
+  ElementDayResponse,
+  ElementSpanRange,
+  ShadbalaResponse,
+  KundaliDetailResponse,
+  MilanPersonQuery,
+  RashifalBlock,
+  PanchangaDay,
+  MonthCalendar,
+  CalendarDay,
+  HolidaysResponse,
+  FestivalsResponse,
+  VastuSketchResponse,
+  MonthBrowseEra,
+  YearWheelCalendar,
 } from "@vedic-patro/api-client";
 export type {
   LocationParams,
@@ -212,6 +204,78 @@ export type {
   ConvertBsToAd,
   VastuSketchRequest,
   VastuAyadi,
+  PatroApiLimits,
+  City,
+  CitiesSearchResponse,
+  NearestCityResponse,
+  CivilTimeline,
+  TropicalSeasonsResponse,
+  GocharIngressEvent,
+  GocharIngressResponse,
+  GocharGraha,
+  GocharResponse,
+  GrahaSthitiRow,
+  GrahaSthitiResponse,
+  AstaStamp,
+  GrahaAstaPeriod,
+  GrahaAstaResponse,
+  GrahaVakriResponse,
+  EclipseEvent,
+  EclipseYearResponse,
+  PanchakMomentResponse,
+  PanchakPeriodResponse,
+  PanchakYearResponse,
+  RawMonthDay,
+  SunYearResponse,
+  UpcomingFestival,
+  UpcomingFestivalsResponse,
+  SaitDetailDay,
+  SaitDetailResponse,
+  SaitRuleItem,
+  SaitAboutCategory,
+  SaitAboutResponse,
+  ElementInfo,
+  ElementMonthDay,
+  ElementMonthResponse,
+  ElementDayResponse,
+  ElementSpanRange,
+  ShadbalaPlanet,
+  ShadbalaResponse,
+  KundaliDetailResponse,
+  MilanPersonQuery,
+  SuryaNakshatra,
+  RashifalSignBlock,
+  RashifalIngress,
+  RashifalBlock,
+  PanchakaSegment,
+  NivasShoolDirection,
+  NivasShoolSegment,
+  NivasShoolBlock,
+  PanchangaAtTime,
+  EraDateSpelling,
+  EraDateParts,
+  PanchangaDay,
+  MonthCalendar,
+  YearCalendar,
+  CalendarDayAnga,
+  CalendarDayDetail,
+  CalendarDay,
+  PatroMonth,
+  PatroDay,
+  HolidaysResponse,
+  FestivalsResponse,
+  KundaliResponse,
+  CalendarHeader,
+  VastuSketchResponse,
+  PatroSolarCorrection,
+  PanchangaAnga,
+  PlanetBlock,
+  SolarCorrection,
+  MonthBrowseEra,
+  YearWheelMonth,
+  YearWheelCalendarDay,
+  YearWheelCalendar,
+  TropicalSeasonSegment,
 } from "@vedic-patro/api-client";
 
 export {
@@ -241,139 +305,12 @@ export const DATA_BASE = `${API_BASE}/${API_VERSION}`;
 export const PANCHANGA_CACHE_VERSION = "4703";
 export const SAIT_CACHE_VERSION = "14";
 
-export interface PatroApiLimits {
-  signed_year_min: number;
-  signed_year_max: number;
-  ephemeris_signed_min: number;
-  ephemeris_signed_max: number;
-  ad_year_min: number;
-  ad_year_max: number;
-  bc_year_min: number;
-  bc_year_max: number;
-  bbs_url_year_max: number;
-  festival_stack_min_year: number;
-  cache_payload_version?: number;
-  /** Widest BS-year window a client may download for offline use. */
-  offline_max_span_years?: number;
-}
-
 /** Host-owned year bounds and cache version — not mirrored in the client. */
 export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
   const res = await fetch(`${API_BASE}/meta/capabilities`);
   if (!res.ok) throw new Error(`API ${res.status}: /meta/capabilities`);
   return res.json();
 };
-
-export interface RashifalSignBlock {
-  index: number;
-  id: number;
-  name: string;
-  name_en: string;
-  title_en: string;
-  syllables_ne: string;
-  score: number;
-  percent: number;
-  stars: number;
-  tone?: NavataraTone;
-  grade?: "full" | "medium" | "small" | "nil";
-  grade_ne?: string;
-  grade_en?: string;
-  mean_score?: number;
-  tara?: string;
-  quality?: string;
-  tara_num?: number;
-  house_from_moon?: number;
-  moorti?: string;
-  moorti_ne?: string;
-  moorti_en?: string;
-  lucky_lord?: string;
-  lucky_lord_ne?: string;
-  lucky_lord_en?: string;
-  lucky_color_ne: string;
-  lucky_color_en: string;
-  lucky_number_ne: string;
-  lucky_number_en: string;
-  lucky_direction_ne?: string;
-  lucky_direction_en?: string;
-  lucky_time?: RashifalHoraWindow | null;
-  rashi_lord?: RashifalLordBlock;
-  components?: RashifalComponent[];
-  domains?: RashifalDomain[];
-  gochar?: RashifalGocharRow[];
-  ashtakavarga?: { score: number; sav: number; sav_trikona: number; sav_kendra: number };
-  cycle?: { score: number; graha: string; graha_ne: string; graha_en: string; house: number };
-  days_in_period?: number;
-  best_day?: RashifalDayMarker;
-  weak_day?: RashifalDayMarker;
-  remedy_ne?: string;
-  remedy_en?: string;
-  prediction_ne: string;
-  prediction_en: string;
-}
-
-export interface RashifalBlock {
-  period: RashifalPeriod;
-  anchor?: string;
-  method?: Record<string, unknown>;
-  moon_index?: number;
-  moon_label?: string;
-  moon_label_en?: string;
-  signs: RashifalSignBlock[];
-  frame?: RashifalFrame;
-  ingress?: unknown[];
-  range_start_ad?: string;
-  range_end_ad?: string;
-  bs_year?: number;
-  bs_month?: number;
-  bs_month_name_ne?: string;
-  bs_month_name_en?: string;
-  days_computed?: number;
-}
-
-export interface NivasShoolDirection {
-  direction_ne?: string;
-  direction_en?: string;
-}
-
-export interface NivasShoolSegment extends NivasShoolDirection {
-  key?: string;
-  symbol?: string;
-  name_en?: string;
-  name_ne?: string;
-  subtitle_en?: string;
-  subtitle_ne?: string;
-  is_auspicious?: boolean;
-  end_local_time_short?: string;
-  until_full_night?: boolean;
-  till_full_night?: boolean;
-  start_local_time_short?: string;
-  loka?: string;
-}
-
-export interface NivasShoolBlock {
-  homahuti?: { current?: NivasShoolSegment; segments?: NivasShoolSegment[] };
-  disha_shool?: NivasShoolDirection & { auspicious_directions?: NivasShoolDirection[] };
-  rahu_vasa?: NivasShoolDirection;
-  agnivasa?: { current?: NivasShoolSegment; segments?: NivasShoolSegment[] };
-  shivavasa?: { current?: NivasShoolSegment; segments?: NivasShoolSegment[] };
-  chandra_vasa?: { current?: NivasShoolSegment; segments?: NivasShoolSegment[] };
-  bhadravasa?: { active?: boolean; segments?: NivasShoolSegment[] };
-  kumbha_chakra?: { current?: NivasShoolSegment; segments?: NivasShoolSegment[] };
-}
-
-export interface PanchakaSegment {
-  name?: string;
-  name_ne?: string;
-  good?: boolean;
-  start_local_time_short?: string;
-  end_local_time_short?: string;
-  start_local_time?: string;
-  end_local_time?: string;
-  start_hours_clock?: string;
-  end_hours_clock?: string;
-  label_ne?: string;
-  label_en?: string;
-}
 
 export const DEFAULT_LOCATION: LocationParams = {
   city_id: 1283240,
@@ -412,351 +349,6 @@ async function get<T>(path: string): Promise<T> {
   );
 }
 
-export interface CalendarDayAnga {
-  name?: string;
-  name_ne?: string;
-  end?: string;
-  end_local_time?: string;
-  end_hours_clock?: string;
-}
-
-export type PatroSolarCorrection = {
-  minutes?: number;
-  seconds?: number;
-  sign?: "dhan" | "rin";
-  sign_ne?: string;
-  label_ne?: string;
-  name_ne?: string;
-};
-
-export interface CalendarDayDetail {
-  paksha?: string;
-  paksha_ne?: string;
-  aayan?: string;
-  aayan_ne?: string;
-  ayana_mark?: "उ" | "द";
-  tithi?: CalendarDayAnga;
-  nakshatra?: CalendarDayAnga;
-  yoga?: CalendarDayAnga;
-  karana?: CalendarDayAnga;
-  surya_rashi?: string;
-  surya_rashi_ne?: string;
-  chandra_rashi?: string;
-  chandra_rashi_ne?: string;
-  chandra_rashi_spans?: RashiSpan[];
-  ritu_ne?: string;
-  sun?: { sunrise?: string; sunset?: string; noon?: string };
-  moon?: { rise?: string; set?: string };
-  dinamaan?: string;
-  lunar_month?: LunarLayer & { name_ne?: string };
-  udaya_lagna?: Array<{ rashi?: string; rashi_ne?: string; name_en?: string; name_ne?: string }>;
-  lagna_spans?: LagnaSpan[];
-  planets?: Record<string, PlanetInfo>;
-  planets_anchor?: {
-    type?: string;
-    local_time?: string;
-    label_ne?: string;
-    label_en?: string;
-  };
-  jd_ut?: number;
-  solar_corrections?: {
-    belaantar?: PatroSolarCorrection;
-    deshaantar?: PatroSolarCorrection;
-    akshamsha?: PatroSolarCorrection;
-    ishtakaal_note_ne?: string;
-    ishtakaal_note_en?: string;
-    sunrise_includes_corrections?: boolean;
-  };
-  lunar_calendar?: {
-    adhik_maas?: { year_has_adhik?: boolean; name?: string; name_ne?: string };
-    amanta?: LunarLayer;
-    purnimant?: LunarLayer;
-    festival_masa?: string;
-  };
-}
-
-export interface CalendarDay {
-  day: number;
-  date_ad: string;
-  weekday: string;
-  weekday_en?: string;
-  weekday_ne?: string;
-  tithi: string;
-  tithi_ne?: string;
-  nakshatra?: string;
-  nakshatra_ne?: string;
-  paksha?: string;
-  paksha_ne?: string;
-  yoga?: string;
-  yoga_ne?: string;
-  karana?: string;
-  karana_ne?: string;
-  chandra_rashi?: string;
-  chandra_rashi_ne?: string;
-  sunrise?: string;
-  sunset?: string;
-  moonrise?: string;
-  moonset?: string;
-  festivals: string[];
-  is_public_holiday?: boolean;
-  outsideMonth?: boolean;
-  panchanga?: CalendarDayDetail;
-  abhijit?: {
-    start_time?: string;
-    end_time?: string;
-    solar_noon?: string;
-    is_auspicious?: boolean;
-  };
-}
-
-export interface MonthCalendar {
-  year_bs: number;
-  month_bs: number;
-  calendar: CalendarDay[];
-  month_length?: number;
-  first_weekday?: number;
-  limits?: PatroApiLimits;
-}
-
-type PanchangaAnga = {
-  name?: string;
-  name_ne?: string;
-  end_local_time?: string;
-  end_hours_clock?: string;
-  end_ghati_clock?: string;
-  next?: PanchangaAnga;
-};
-
-type PlanetBlock = {
-  longitude?: number;
-  rashi?: number;
-  rashi_name?: string;
-  rashi_ne?: string;
-  deg_in_rashi?: number;
-  dms_in_rashi?: string;
-};
-
-type SolarCorrection = {
-  minutes?: number;
-  seconds?: number;
-  sign?: "dhan" | "rin";
-  sign_ne?: string;
-};
-
-/** One day in one era. `year` is always >= 1 — the era carries the sign. */
-export type EraDateSpelling = {
-  era: import("@/lib/patro-era").PatroBrowseEra | string;
-  year: number;
-  month: number;
-  day: number;
-};
-
-/** Backend era-correct rendering of a civil day (vikram + gregorian for the same JD). */
-export type EraDateParts = EraDateSpelling & {
-  jd: number;
-  vikram: EraDateSpelling;
-  gregorian: EraDateSpelling;
-};
-
-export interface PanchangaDay {
-  mode?: "ephemeris" | "udaya";
-  date_bs?: string;
-  date_ad?: string;
-  panchanga_date_ad?: string;
-  /** Local wall-clock instant used for ephemeris queries, e.g. "2026-07-22 14:30". */
-  query_instant_local?: string;
-  before_sunrise_of_civil_day?: boolean;
-  weekday?: string;
-  location?: { name?: string; city_id?: number; lat?: number; lon?: number; timezone?: string };
-  lagna?: { name?: string; name_ne?: string; degree_in_rashi?: number; longitude?: number };
-  lagna_spans?: LagnaSpan[];
-  chandra_rashi?: { name_ne?: string; number?: number; name?: string } | string;
-  chandra_rashi_spans?: RashiSpan[];
-  nakshatra_pada_spans?: NakshatraPadaSpan[];
-  muhurta_now?: {
-    rahu_kalam?: MuhurtaNowBlock;
-    yamaganda?: MuhurtaNowBlock;
-    gulika?: MuhurtaNowBlock;
-    abhijit?: MuhurtaNowBlock;
-  };
-  tithi?: PanchangaAnga;
-  nakshatra?: PanchangaAnga;
-  yoga?: PanchangaAnga;
-  karana?: PanchangaAnga;
-  paksha?: { label_ne?: string; label_en?: string };
-  paksha_ne?: string;
-  sunrise?: { local_time_short?: string } | string;
-  sunset?: { local_time_short?: string } | string;
-  moonrise?: { local?: string; local_time_short?: string };
-  moonset?: { local?: string; local_time_short?: string };
-  sun?: { sunrise?: string; sunset?: string };
-  moon?: { rise?: string; set?: string };
-  ritu?: { name?: string; name_ne?: string; season?: string } | string;
-  ritu_ne?: string;
-  planets?: Record<string, PlanetBlock | string>;
-  planets_anchor?: { type?: string; label_ne?: string; label_en?: string; local_time?: string };
-  solar_corrections?: {
-    belaantar?: SolarCorrection;
-    deshaantar?: SolarCorrection;
-  };
-  tarabala_table?: NavataraTableBlock;
-  chandrabala_table?: NavataraTableBlock;
-  hora?: ApiHoraSlot[];
-  hora_day?: ApiHoraSlot[];
-  udaya_lagna?: UdayaLagnaRow[];
-  samvatsara?: {
-    key?: string;
-    name_ne?: string;
-    name_en?: string;
-    cycle?: number;
-    deity?: string;
-    index?: number;
-  };
-  festivals?: Array<{
-    id?: string;
-    name?: string;
-    name_ne?: string;
-    name_en?: string;
-    is_public_holiday?: boolean;
-    bs_start_date?: string;
-    start_date?: string;
-  }>;
-  is_public_holiday?: boolean;
-  bs_date?: { year: number; month: number; day: number; month_name_ne?: string };
-  date_parts?: EraDateParts;
-  detail?: {
-    tithi?: PanchangaAnga;
-    nakshatra?: PanchangaAnga;
-    yoga?: PanchangaAnga;
-    karana?: PanchangaAnga;
-    sunrise?: { local_time_short?: string };
-    sunset?: { local_time_short?: string };
-    moonrise?: { local?: string; local_time_short?: string };
-    moonset?: { local?: string; local_time_short?: string };
-    planets?: Record<string, PlanetBlock | string>;
-    planets_anchor?: { type?: string };
-    solar_corrections?: {
-      belaantar?: SolarCorrection;
-      deshaantar?: SolarCorrection;
-    };
-    muhurta?: PanchangaDay["muhurta"];
-    ritu?: { name?: string; name_ne?: string; season?: string };
-    ritu_pauranik?: { name?: string; name_ne?: string; season?: string };
-    choghadiya?: Array<{ name_ne: string; start_g: number; end_g: number; bad?: boolean }>;
-    hora?: ApiHoraSlot[];
-    hora_day?: ApiHoraSlot[];
-    tarabala_table?: NavataraTableBlock;
-    chandrabala_table?: NavataraTableBlock;
-    udaya_lagna?: UdayaLagnaRow[];
-    lagna_spans?: LagnaSpan[];
-    day_ghati?: number;
-    vaara?: { name_ne?: string; name_english?: string; number?: number };
-    paksha?: { name?: string; label_ne?: string; label_en?: string };
-    weekday?: { name_ne?: string; name_english?: string };
-    muhurta_now?: PanchangaDay["muhurta_now"];
-    instant_lagna?: PanchangaDay["lagna"];
-    nivas_shool?: NivasShoolBlock;
-    chandrabalam?: BalamBlock;
-    tarabalam?: BalamBlock;
-    panchaka_rahita?: PanchakaSegment[];
-    chandra_rashi?: PanchangaDay["chandra_rashi"];
-    lagna?: PanchangaDay["lagna"];
-  };
-  muhurta?: {
-    rahu_kalam?: { start_time?: string; end_time?: string };
-    abhijit?: { start_time?: string; end_time?: string; solar_noon?: string; is_auspicious?: boolean };
-    yamaganda?: { start_time?: string; end_time?: string };
-    gulika?: { start_time?: string; end_time?: string };
-    inauspicious_timings?: Array<{
-      key?: string;
-      name_ne?: string;
-      name_en?: string;
-      segments?: Array<{
-        start_local_time_short?: string;
-        end_local_time_short?: string;
-        until_full_night?: boolean;
-      }>;
-    }>;
-  };
-  display?: { bs_ne?: string; gregorian_en?: string; ns_ne?: string };
-  nivas_shool?: NivasShoolBlock;
-  surya_rashi?: { name?: string; name_ne?: string };
-  surya_rashi_ne?: string;
-  surya_nakshatra?: { name?: string; name_ne?: string };
-  chandra_balam?: BalamBlock | unknown;
-  chandrabalam?: BalamBlock;
-  tara_balam?: BalamBlock | unknown;
-  tarabalam?: BalamBlock;
-  panchaka?: unknown;
-  panchaka_rahita?: PanchakaSegment[];
-  din_vishesh?: unknown;
-}
-
-export interface HolidaysResponse {
-  bs_year?: number;
-  era?: string;
-  gregorian_range?: { start: string; end: string };
-  count: number;
-  holidays: Holiday[];
-}
-
-export interface FestivalsResponse {
-  bs_year?: number;
-  era?: string;
-  gregorian_range?: { start: string; end: string };
-  count: number;
-  festivals: Festival[];
-}
-
-export interface CivilTimeline {
-  anchor: "civil";
-  date_ad: string;
-  sunrise_min: number;
-  sunset_min: number | null;
-  moonrise_min: number | null;
-  moonset_min: number | null;
-  weekday_ne?: string | null;
-  weekday_en?: string | null;
-  paksha_ne?: string | null;
-  rows: {
-    tithi: CivilTimelineSeg[];
-    nakshatra: CivilTimelineSeg[];
-    yoga: CivilTimelineSeg[];
-    karana: CivilTimelineSeg[];
-  };
-  choghadiya: CivilTimelineBand[];
-  hora: CivilTimelineHora[];
-  lagna: CivilTimelineLagna[];
-  planets?: PanchangaDay["planets"];
-  planets_anchor?: unknown;
-}
-
-export interface City {
-  id: number;
-  name: string;
-  ascii_name: string;
-  lat: number;
-  lon: number;
-  country: string;
-  population: number;
-  timezone: string;
-  admin1?: string | null;
-  admin1_name?: string | null;
-  local?: boolean;
-}
-
-export interface CitiesSearchResponse {
-  query: string;
-  count: number;
-  cities: City[];
-}
-
-export interface NearestCityResponse {
-  lat: number;
-  lon: number;
-  city: City;
-}
-
 export const cityKeys = {
   search: (q: string, country?: string) => ["cities", "search", q, country ?? "all"] as const,
 };
@@ -791,8 +383,6 @@ export const panchangaKeys = {
   civil: (date: string, loc?: LocationParams) =>
     ["panchanga", "civil", PANCHANGA_CACHE_VERSION, date, locationKey(loc)] as const,
 };
-
-export type MonthBrowseEra = import("@/lib/patro-era").PatroBrowseEra;
 
 function languageForBrowseEra(era: MonthBrowseEra): "en" | "ne" {
   return era === "ad" || era === "bc" ? "en" : "ne";
@@ -862,40 +452,6 @@ function normalizeMonthDay(day: CalendarDay): CalendarDay {
     chandra_rashi: day.chandra_rashi ?? nestedRashi.en,
     chandra_rashi_ne: day.chandra_rashi_ne ?? nestedRashi.ne,
   };
-}
-
-/** One BS month's metadata in the year-wheel payload (no per-day grid). */
-export interface YearWheelMonth {
-  year_bs: number;
-  month_bs: number;
-  month_name?: string;
-  month_name_ne?: string;
-  month_start_ad?: string;
-  month_length: number;
-  first_weekday?: number;
-  limits?: PatroApiLimits;
-}
-
-/** One day of the year-wheel payload — the trimmed wheel state, nothing else. */
-export interface YearWheelCalendarDay {
-  day: number;
-  date_ad: string;
-  sunrise?: string;
-  sunset?: string;
-  panchanga?: PanchangaDay;
-}
-
-/**
- * A whole BS year of wheel state in one response. `wheel=true` trims each day to
- * what the wheel actually draws (angas, planets, lagna, rashi spans) and drops
- * the duplicated per-day month grids — the difference between ~2 MB and ~20 MB.
- */
-export interface YearWheelCalendar {
-  year_bs: number;
-  year_length: number;
-  location?: PanchangaDay["location"];
-  months: YearWheelMonth[];
-  calendar: YearWheelCalendarDay[];
 }
 
 export const yearWheelKeys = {
@@ -1010,89 +566,6 @@ export function fetchPersonalRashifal(
   );
 }
 
-export interface GocharIngressEvent {
-  graha: string;
-  graha_ne: string;
-  level: string;
-  to_rashi?: string;
-  to_rashi_ne?: string;
-  from_rashi?: string;
-  from_rashi_ne?: string;
-  to_nakshatra?: string;
-  to_nakshatra_ne?: string;
-  to_pada?: number;
-  to_pada_ne?: string;
-  label_ne?: string;
-  entry_time_local: string;
-  entry_time_local_short?: string;
-  entry_time_utc?: string;
-  entry_date_ad?: string;
-  /** Vedic day (sunrise–sunrise) civil date — patro गते row key. */
-  entry_vedic_date_ad?: string;
-  /** BS patro date key when the civil AD fields are omitted (BCE / JD path). */
-  entry_jd_date?: string;
-  entry_vedic_jd_date?: string;
-  entry_jd?: number;
-  entry_vedic_jd?: number;
-  event?: "udaya" | "asta";
-  hemisphere?: "east" | "west";
-  motion_ne?: string;
-}
-
-export interface GocharIngressResponse {
-  from_date_ad: string;
-  to_date_ad: string;
-  level: string;
-  location?: Record<string, unknown>;
-  events: GocharIngressEvent[];
-}
-
-export interface GocharGraha {
-  name_ne: string;
-  name_vedic?: string;
-  symbol: string;
-  rashi?: string;
-  rashi_ne?: string;
-  rashi_no?: number;
-  deg_in_rashi?: number;
-  dms_in_rashi?: string;
-  dms_absolute?: string;
-  longitude?: number;
-  speed_deg_day?: number;
-  motion?: string;
-  is_retrograde?: boolean;
-  /** अस्त — combust (within the Sun's combustion orb). */
-  is_combust?: boolean;
-  next_rashi_entry?: GocharNextEntry | null;
-  next_nakshatra_entry?: GocharNextEntry | null;
-  next_pada_entry?: GocharNextEntry | null;
-  nakshatra?: string;
-  nakshatra_ne?: string;
-  nakshatra_no?: number;
-  nakshatra_lord?: string;
-  nakshatra_lord_ne?: string;
-  nakshatra_lord_en?: string;
-  sub_lord?: string;
-  sub_lord_ne?: string;
-  sub_lord_en?: string;
-  pada?: number;
-  is_exalted?: boolean;
-}
-
-export interface GocharResponse {
-  date_ad: string;
-  date_bs?: string;
-  /**
-   * The frame the longitudes below are sidereal in — where the start of मेष
-   * stands against the equinox on this date. Optional: older cached responses
-   * predate the field.
-   */
-  ayanamsa?: { name: string; degrees: number };
-  gochar: Record<string, GocharGraha>;
-  /** Optional: older cached responses predate the field. */
-  vedic_stars?: VedicStarPosition[];
-}
-
 export const gocharKeys = {
   day: (date: string, era: string, location?: LocationParams) =>
     ["gochar", date, era, locationCacheKey(location)] as const,
@@ -1160,204 +633,6 @@ function buildEraQuery(
 function withGrahaCache(path: string): string {
   const sep = path.includes("?") ? "&" : "?";
   return `${path}${sep}gv=${GRAHA_CACHE_VERSION}`;
-}
-
-export interface GrahaSthitiRow {
-  graha: string;
-  name_ne: string;
-  name_vedic?: string;
-  symbol: string;
-  /** `21° कन्या 53′ 14″` — degree in sign with Nepali rashi name. */
-  rekhamsha: string;
-  rashi_ne: string;
-  nakshatra: string;
-  nakshatra_ne: string;
-  pada: number;
-  pada_ne?: string;
-  nakshatra_lord_ne?: string;
-  sub_lord_ne?: string;
-  full_degree: number;
-  /** `04° द. 45′ 02″` — signed ecliptic latitude (शर), north/south. */
-  shara?: string;
-  shara_deg?: number;
-  speed_deg_day: number;
-  is_retrograde: boolean;
-  is_combust: boolean;
-  right_ascension?: number;
-  declination?: number;
-}
-
-export interface GrahaSthitiResponse {
-  date_ad: string;
-  date_bs: string;
-  timezone?: string;
-  sunrise_local?: string;
-  rows: GrahaSthitiRow[];
-}
-
-/** A localized timestamp for an asta / vakri period boundary. */
-export interface AstaStamp {
-  iso?: string;
-  jd?: number;
-  /** Era-rendered day label from {@link jd} (EraMiddleware). */
-  date?: string;
-  date_ad?: string;
-  date_bs?: string | null;
-  time_short: string;
-}
-
-export interface GrahaAstaPeriod {
-  graha: string;
-  graha_ne: string;
-  start: AstaStamp | null;
-  end: AstaStamp | null;
-  duration_days: number | null;
-  hemisphere?: "east" | "west" | null;
-}
-
-export interface GrahaAstaResponse {
-  bs_year?: number;
-  ad_year?: number;
-  gregorian_range?: { start: string; end: string };
-  grahas?: string[];
-  periods: GrahaAstaPeriod[];
-}
-
-export interface GrahaVakriResponse {
-  bs_year?: number;
-  gregorian_range?: { start: string; end: string };
-  grahas?: string[];
-  events: GrahaVakriEvent[];
-}
-
-export interface EclipseEvent {
-  kind?: "solar" | "lunar";
-  type?: string;
-  type_ne?: string;
-  type_en?: string;
-  max_utc?: string;
-  max_local?: string;
-  date_jd_date?: string;
-  date_ad?: string;
-  date_bs?: string | null;
-  visible?: boolean;
-  begin_local?: string | null;
-  end_local?: string | null;
-  penumbral_begin_local?: string | null;
-  penumbral_end_local?: string | null;
-  /** @deprecated use max_local */
-  maximum_time_local_short?: string;
-  /** @deprecated use visible boolean */
-  visible_ne?: string;
-  visible_en?: string;
-}
-
-export interface EclipseYearResponse {
-  bs_year?: number;
-  kind?: "solar" | "lunar";
-  gregorian_range?: { start: string; end: string };
-  events: EclipseEvent[];
-}
-
-export interface PanchakMomentResponse {
-  /** Full AD instant with the Nepal offset, e.g. "2026-04-13T04:03:00+05:45". */
-  iso: string;
-  /** Legacy; prefer `iso`. */
-  date_ad?: string;
-  bs_year: number;
-  bs_month: number;
-  bs_day: number;
-  time_en: string;
-  time_ne: string;
-  time_short?: string;
-}
-
-export interface PanchakPeriodResponse {
-  start: PanchakMomentResponse;
-  end: PanchakMomentResponse;
-  duration_ne: string;
-  duration_en: string;
-}
-
-export interface PanchakYearResponse {
-  bs_year?: number;
-  ad_year?: number;
-  count: number;
-  gregorian_range?: { start: string; end: string };
-  periods: PanchakPeriodResponse[];
-}
-
-export interface ElementSpanRange {
-  era: "bs" | "ad" | "bbs";
-  year: number;
-  month: number;
-}
-
-export interface ElementDayResponse {
-  element: string;
-  label_ne: string;
-  label_en: string;
-  date_ad: string;
-  /** Local sunrise for the day — ghati-based rows are anchored to it. */
-  sunrise?: string;
-  data: unknown;
-}
-
-export interface SunYearResponse {
-  year_bs: number;
-  months: SunYearMonth[];
-}
-
-/** @deprecated Legacy shape; API returns {@link TropicalSeasonsResponse.boundaries}. */
-export interface TropicalSeasonSegment {
-  name_ne?: string;
-  name_en?: string;
-  start_ad?: string;
-  end_ad?: string;
-}
-
-export interface TropicalSeasonsResponse {
-  timezone?: string;
-  latitude?: number;
-  southern_hemisphere: boolean;
-  boundaries: TropicalSeasonBoundary[];
-  /** @deprecated */
-  segments?: TropicalSeasonSegment[];
-}
-
-export interface SaitDetailDay {
-  bs_month: number;
-  bs_day: number;
-  bs_month_name_ne: string;
-  gregorian: string;
-  weekday_en: string;
-  weekday_ne: string;
-  window_start: string;
-  window_end: string;
-  tithi_num?: number;
-  tithi_en: string;
-  tithi_ne: string;
-  paksha?: string;
-  paksha_ne?: string;
-  nakshatra_num?: number;
-  nakshatra_en: string;
-  nakshatra_ne: string;
-  yoga_en?: string;
-  yoga_ne?: string;
-  karana_en?: string;
-  karana_ne?: string;
-  lagna_en?: string;
-  lagna_ne?: string;
-  lunar_month_en?: string | null;
-  lunar_month_ne?: string | null;
-}
-
-export interface SaitDetailResponse {
-  bs_year: number;
-  category: string;
-  category_label_ne: string;
-  engine_version?: string;
-  days: SaitDetailDay[];
 }
 
 export const grahaDetailKeys = {
@@ -1600,39 +875,6 @@ export const fetchVimshottari = (
   );
 };
 
-export interface ShadbalaPlanet {
-  key: string;
-  name: string;
-  name_ne: string;
-  total_virupas: number;
-  rupas: number;
-  required: number;
-  ratio: number;
-  status: ShadbalaStatus;
-  top_bala: string;
-  weakest_bala: string;
-  breakdown: ShadbalaBreakdown;
-  sub_balas?: ShadbalaSubBalas;
-  ishta_phala?: number;
-  kashta_phala?: number;
-}
-
-export interface ShadbalaResponse {
-  planets: ShadbalaPlanet[];
-  summary: {
-    strongest: ShadbalaSummaryRef;
-    weakest: ShadbalaSummaryRef;
-    average_rupas: number;
-    average_virupas: number;
-    meeting_threshold: number;
-    total_planets: number;
-    counts: Record<ShadbalaStatus, number>;
-  };
-  method: string;
-  location?: Record<string, unknown>;
-  query_instant?: string;
-}
-
 export const shadbalaKeys = {
   atTime: (moment: InstantQuery, location?: LocationParams) =>
     ["shadbala", "at-time", instantCacheKey(moment), locationCacheKey(location)] as const,
@@ -1673,52 +915,6 @@ export function fetchBhavaReference(): Promise<BhavaReferencePayload> {
   return get<BhavaReferencePayload>(
     `/kundali/reference/bhava?v=${BHAVA_REFERENCE_VERSION}`,
   );
-}
-
-export interface KundaliDetailResponse {
-  panchanga: PanchangaDay;
-  shadbala: ShadbalaResponse;
-  dasha: DashaTreeResponse | null;
-  tribhagiDasha: DashaTreeResponse | null;
-  yoginiDasha: DashaTreeResponse | null;
-  yuddha: YuddhaData;
-  bhavaBala: BhavaBalaData | null;
-  vimshopaka: VimshopakaData | null;
-  ashtakavarga: AshtakavargaData | null;
-  yogas: KundaliYoga[];
-  grahaShanti: GrahaShantiRecommendation;
-  vargaCharts: VargaCharts;
-  upagrahas: UpagrahaDetailRow[];
-  avakahada: JanmaAvakahadaData | null;
-  birthMeta: KundaliBirthMeta;
-  combustion: Record<string, boolean | null>;
-  lagnaRashi: number | null;
-  ayanamsha: string;
-  location?: Record<string, unknown>;
-  birth_instant: string;
-}
-
-export interface KundaliDetailResponse {
-  panchanga: PanchangaDay;
-  shadbala: ShadbalaResponse;
-  dasha: DashaTreeResponse | null;
-  tribhagiDasha: DashaTreeResponse | null;
-  yoginiDasha: DashaTreeResponse | null;
-  yuddha: YuddhaData;
-  bhavaBala: BhavaBalaData | null;
-  vimshopaka: VimshopakaData | null;
-  ashtakavarga: AshtakavargaData | null;
-  yogas: KundaliYoga[];
-  vargaCharts: VargaCharts;
-  upagrahas: UpagrahaDetailRow[];
-  avakahada: JanmaAvakahadaData | null;
-  birthMeta: KundaliBirthMeta;
-  combustion: Record<string, boolean | null>;
-  lagnaRashi: number | null;
-  ayanamsha: string;
-  location?: Record<string, unknown>;
-  birth_instant: string;
-  bhavaReference?: BhavaReferencePayload;
 }
 
 export const kundaliDetailKeys = {
@@ -1764,14 +960,6 @@ export const fetchDashaChildren = (
     `/kundali/dasha/expand?${params.toString()}`,
   );
 };
-
-export interface MilanPersonQuery {
-  /** Birth moment: a civil day in some era plus the local clock. */
-  moment: InstantQuery;
-  lat?: number;
-  lon?: number;
-  timezone?: string;
-}
 
 export const milanKeys = {
   match: (
@@ -1876,14 +1064,6 @@ export async function streamKundaliReport(
   const fromCache = res.headers.get("X-Report-Cache") === "hit";
   await consumeNdjsonResponse(res, onRecord);
   return { fromCache };
-}
-
-export interface VastuSketchResponse {
-  storeys: 1 | 2 | 3;
-  assignments: SpaceAssignment[];
-  leftover: PlannedSpace[];
-  ayadi: VastuAyadi;
-  entrance: { facing: VastuSketchRequest["facing"]; preferred_corner: VastuDirectionId };
 }
 
 export async function fetchVastuSketch(

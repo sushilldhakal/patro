@@ -535,8 +535,10 @@ function resolvePlanetsRecord(
   p: PanchangaDay,
 ): Record<string, PlanetDetail | string> | undefined {
   const detail = getPanchangaDetail(p);
-  const fromDetail = detail?.planets;
-  const fromTop = p.planets;
+  // The panchanga payload's `rashi` is the 1–12 number (engine/astronomy/
+  // planets.py), not the name the shared PlanetInfo type describes.
+  const fromDetail = detail?.planets as Record<string, PlanetDetail | string> | undefined;
+  const fromTop = p.planets as Record<string, PlanetDetail | string> | undefined;
   if (isInstantPlanetsMode(p)) {
     return fromDetail ?? fromTop;
   }
