@@ -250,3 +250,8 @@ export function isPatroDayDateKey(v: unknown): v is string {
 }
 
 export type PatroDayEra = "bs" | "ad";
+
+/** Days in a Gregorian month (`month` is 1–12). */
+export function getAdMonthLength(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}

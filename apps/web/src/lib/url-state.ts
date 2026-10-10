@@ -26,7 +26,7 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import {
   normalizePatroBrowseRange,
   type PatroBrowseRange,
-} from "@/lib/patro-browse-range";
+} from "@vedic-patro/domain/patro-browse-range";
 
 /**
  * Shareable URL state.

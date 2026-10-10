@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { SelectOption } from "@/components/ui/BsNativeSelect";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { clampBrowseYear } from "@/lib/patro-browse-years";
+import { clampBrowseYear } from "@vedic-patro/domain/patro-browse-range";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";

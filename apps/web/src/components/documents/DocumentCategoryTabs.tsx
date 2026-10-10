@@ -4,7 +4,7 @@ import {
   DOCUMENT_CATEGORY_GROUPS,
   type DocumentCategoryGroup,
   type DocumentCategoryId,
-} from "@/lib/document-categories";
+} from "@vedic-patro/domain/document-categories";
 import type { DocumentCategoryTab, DocumentSummary } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";

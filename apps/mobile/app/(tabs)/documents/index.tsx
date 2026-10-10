@@ -9,7 +9,7 @@ import { AppShell } from "@/components/AppShell";
 import { DocumentCard } from "@/components/documents/DocumentCard";
 import { Text } from "@/components/ui/Text";
 import { ErrorState, LoadingState } from "@/components/ui/States";
-import { DOCUMENT_CATEGORY_GROUPS, isDocumentCategoryId } from "@/lib/documents/categories";
+import { DOCUMENT_CATEGORY_GROUPS, isDocumentCategoryId } from "@vedic-patro/domain/document-categories";
 import { documentsKeys, fetchDocuments } from "@/lib/documents/api";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";

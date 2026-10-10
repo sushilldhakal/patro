@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { adToBS, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
-import { clampBrowseYear, isValidBrowseYear } from "@/lib/patro-browse-years";
+import { clampBrowseYear } from "@vedic-patro/domain/patro-browse-range";
+import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/era";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";

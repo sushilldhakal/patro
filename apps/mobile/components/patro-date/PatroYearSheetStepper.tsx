@@ -13,12 +13,9 @@ import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import {
-  browseYearSelectOptions,
-  clampBrowseYear,
-  isValidBrowseYear,
-  maxBrowseYearForEra,
-} from "@/lib/patro-browse-years";
+import { browseYearSelectOptions } from "@/lib/patro-browse-years";
+import { clampBrowseYear, maxBrowseYearForEraOrDefault as maxBrowseYearForEra } from "@vedic-patro/domain/patro-browse-range";
+import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";

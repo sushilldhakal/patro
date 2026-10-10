@@ -6,7 +6,7 @@ import {
   isDocumentCategoryId,
   isTopicOf,
   type DocumentCategoryId,
-} from "@/lib/document-categories";
+} from "@vedic-patro/domain/document-categories";
 
 /**
  * Scripture text and meanings don't change under a reader's feet — the backend

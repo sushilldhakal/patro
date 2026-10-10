@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { GRAHA_DRISHTI } from "../src/lib/kundali/graha-drishti.ts";
-import { HOUSE_INFO, RASHI_LORD } from "../src/lib/kundali/bhava-detail.ts";
+import { HOUSE_INFO, RASHI_LORD } from "../../../packages/domain/src/kundali/bhava-detail.ts";
 import { BHAVESH_PHALA } from "../src/lib/kundali/bhavesh-phala.ts";
 import { GRAHA_KARAKATVA, GRAHA_HOUSE_SARAVALI, RATING_LABEL } from "../src/lib/kundali/graha-karakatva.ts";
 import { LAL_KITAB_HOUSE, LAL_KITAB_FIXED_LORD } from "../src/lib/kundali/lal-kitab.ts";

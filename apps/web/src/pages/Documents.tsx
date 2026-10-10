@@ -9,7 +9,7 @@ import {
   DocumentCategoryTabs,
   documentsInGroup,
 } from "@/components/documents/DocumentCategoryTabs";
-import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryId } from "@/lib/document-categories";
+import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryId } from "@vedic-patro/domain/document-categories";
 import {
   documentsKeys,
   fetchDocuments,

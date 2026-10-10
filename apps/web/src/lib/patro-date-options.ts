@@ -12,6 +12,9 @@ import {
   parseCivilIsoToDate,
 } from "@vedic-patro/domain/patro-day";
 import type { Era } from "@vedic-patro/domain/era";
+import { getAdMonthLength } from "@vedic-patro/domain/patro-day";
+
+export { getAdMonthLength };
 import {
   bbsFromSigned,
   getPatroLimits,
@@ -154,10 +157,6 @@ export function isAtMaxBsDay(year: number, month: number, day: number): boolean 
     month === 12 &&
     day === getBSMonthLength(year, month)
   );
-}
-
-export function getAdMonthLength(year: number, month: number): number {
-  return new Date(year, month, 0).getDate();
 }
 
 export function buildAdDayOptions(

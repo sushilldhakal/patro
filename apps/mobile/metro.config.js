@@ -4,10 +4,11 @@ const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 
 /** One Three.js build for the whole bundle (avoids cjs + esm double-load warning). */
-const THREE_ENTRY = path.resolve(
-  __dirname,
-  "node_modules/three/build/three.module.js",
-);
+// npm hoists three to the repo root once another workspace depends on it.
+const THREE_ENTRY = [
+  path.resolve(__dirname, "node_modules/three/build/three.module.js"),
+  path.resolve(__dirname, "../../node_modules/three/build/three.module.js"),
+].find((candidate) => require("fs").existsSync(candidate));
 
 const config = getDefaultConfig(__dirname);
 

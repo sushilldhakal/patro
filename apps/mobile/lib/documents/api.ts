@@ -2,7 +2,7 @@
 // per-verse audio. Mirrors dhakal-patro/src/lib/documents-api.ts.
 import { offlineAwareGet } from "@/lib/offline/offline-http";
 import { DATA_BASE } from "@/lib/api";
-import type { DocumentCategoryId } from "@/lib/documents/categories";
+import type { DocumentCategoryId } from "@vedic-patro/domain/document-categories";
 
 /** Scripture text rarely changes; keep it fresh for an hour once fetched. */
 export const DOCUMENTS_STALE_TIME = 60 * 60 * 1000;

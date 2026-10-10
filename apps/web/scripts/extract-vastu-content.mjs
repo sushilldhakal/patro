@@ -29,7 +29,7 @@ import {
   VASTU_DIR16,
   VASTU_PADA_IDS,
   VASTU_INNER4,
-} from "../src/lib/vastu.ts";
+} from "../../../packages/domain/src/vastu.ts";
 import { strings } from "@vedic-patro/i18n/strings";
 
 const VERSION = "2026.09.01.2"; // .2: added family/servant/library/combined via vastu.plan.why.*

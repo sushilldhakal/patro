@@ -1,12 +1,12 @@
-import type { Era } from "@vedic-patro/domain/era";
+import type { Era } from "./era";
 import {
   isValidBrowseYear,
   maxBrowseYearForEra,
   signedPatroYearFromBrowse,
-} from "@vedic-patro/domain/patro-year-axis";
-import { getBSMonthLength, bsToAD } from "@vedic-patro/domain/bs-calendar";
-import { getAdMonthLength } from "@/lib/patro-date-options";
-import { formatCivilIsoParts, civilIsoFromDate } from "@vedic-patro/domain/patro-day";
+} from "./patro-year-axis";
+import { getBSMonthLength, bsToAD } from "./bs-calendar";
+import { getAdMonthLength } from "./patro-day";
+import { formatCivilIsoParts, civilIsoFromDate } from "./patro-day";
 
 /** Inclusive month–year span in URL browse coordinates (positive year, era carries BC/BBS). */
 export type PatroBrowseRange = {
