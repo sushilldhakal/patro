@@ -1,5 +1,8 @@
 # Surya Panchanga API
 
+> Part of the Vedic Patro monorepo — run these commands from `apps/api/`. See the root README.
+
+
 **Panchanga computation engine as a service** — structured astronomical time-state JSON for any client (web, mobile, print). Not a UI or PDF generator.
 
 JPL (NASA's Jet Propulsion Laboratory, Lahiri ayanamsa), Kathmandu default observer.
@@ -20,7 +23,7 @@ uvicorn app:app --host 0.0.0.0 --port 8080 --reload
 
 Local base URL: `http://localhost:8080`
 
-**Localhost without the server Postgres / panchanga SQLite:** create `nepali-holiday-api/.env.local` with:
+**Localhost without the server Postgres / panchanga SQLite:** create `apps/api/.env.local` with:
 
 ```bash
 PATRO_LOCAL_DEV=true
