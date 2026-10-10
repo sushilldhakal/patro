@@ -18,7 +18,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { CARDINAL_WALLS, type CardinalWall } from "@/lib/vastu";
+import { CARDINAL_WALLS, type CardinalWall } from "@/shared/vastu";
 import { useVastuSketch } from "@/lib/use-vastu-sketch";
 import {
   assignmentsOnStorey,

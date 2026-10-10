@@ -1,4 +1,4 @@
-import { VASTU_PADAS, type CardinalWall, type VastuDirectionId, type VastuPada } from "@/lib/vastu";
+import { VASTU_PADAS, type CardinalWall, type VastuDirectionId, type VastuPada } from "@/shared/vastu";
 import type { PlotSize, SpaceAssignment } from "@/lib/vastu-plan";
 
 /**

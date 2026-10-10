@@ -20,7 +20,7 @@ import {
   VARGA_OPTIONS,
   vargaOption,
   type ChartAnchor,
-} from "@/lib/varga-display";
+} from "@/shared/varga-display";
 
 type PanelConfig = { anchor: ChartAnchor; division: number };
 

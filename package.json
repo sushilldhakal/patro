@@ -11,14 +11,16 @@
     "web": "expo start --web",
     "dev:ios": "expo run:ios",
     "dev:android": "expo run:android",
-    "lint": "tsc --noEmit",
+    "lint": "npm run shared:check && tsc --noEmit",
     "icons": "node scripts/generate-icons.mjs",
     "postinstall": "node scripts/generate-icons.mjs",
     "build:android": "eas build --platform android --profile production",
     "build:ios": "eas build --platform ios --profile production",
     "build:preview": "eas build --profile preview --platform all",
     "submit:android": "eas submit --platform android --profile production",
-    "submit:ios": "eas submit --platform ios --profile production"
+    "submit:ios": "eas submit --platform ios --profile production",
+    "shared:sync": "node scripts/sync-shared.mjs",
+    "shared:check": "node scripts/sync-shared.mjs --check"
   },
   "dependencies": {
     "@expo-google-fonts/fira-code": "^0.4.1",

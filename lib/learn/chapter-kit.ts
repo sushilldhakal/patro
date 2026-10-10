@@ -19,7 +19,7 @@ import type {
   PlaygroundGlobe,
   SimToggles,
 } from "@/components/learn/playground/DaySimScene";
-import { LEGAL_SITE } from "@/lib/legal-copy";
+import { LEGAL_SITE } from "@/shared/legal-copy";
 import { interval, type Keyframe } from "./chapter-player";
 
 /**

@@ -20,7 +20,7 @@ import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { KundaliReport } from "@/components/kundali/KundaliReport";
 import type { KundaliDetailResponse, LocationParams } from "@/lib/api";
 import type { InstantQuery } from "@/lib/instant-query";
-import type { AyanamshaMode } from "@/lib/ayanamsha";
+import type { AyanamshaMode } from "@/shared/ayanamsha";
 import {
   BALA_TAB_SECTIONS,
   contentSectionId,

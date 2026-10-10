@@ -1,3 +1,5 @@
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
 /** Display labels for divisional charts — all varga math lives in the API. */
 
 export type ChartAnchor =
@@ -24,7 +26,10 @@ export const GRAHA_ANCHOR_ORDER: ChartAnchor[] = [
   "ketu",
 ];
 
-export const CHART_ANCHOR_LABELS: Record<ChartAnchor, { labelNe: string; labelEn: string }> = {
+export const CHART_ANCHOR_LABELS: Record<
+  ChartAnchor,
+  { labelNe: string; labelEn: string }
+> = {
   lagna: { labelNe: "लग्न", labelEn: "Lagna" },
   sun: { labelNe: "सूर्य", labelEn: "Sun" },
   moon: { labelNe: "चन्द्र", labelEn: "Moon" },

@@ -26,7 +26,7 @@ import {
   evenBearings,
   vastuElementAtBearing,
   vastuWheelPoint,
-} from "@/lib/vastu";
+} from "@/shared/vastu";
 import { RING_SIZE, R_HOUSE } from "@/lib/vastu-ring";
 import {
   ArcLabel,

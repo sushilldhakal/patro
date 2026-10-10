@@ -1,7 +1,8 @@
-/** Graha-in-house classical phala — Purusha & Stree janma tables (static śāstra
- * reference). Mirrors dhakal-patro (web) src/lib/kundali/janma-phala-tables.ts. */
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
+/** Graha-in-house classical phala — Purusha & Stree janma tables (static śāstra reference). */
 
-/** Minimal shape of a translate function, so this data module stays hook-free. */
+/** Minimal shape of react-i18next's `t`, so this data module stays hook-free. */
 type TFn = (key: string, opts?: Record<string, unknown>) => string;
 
 export type JanmaPhalaGrahaCol = { id: string; /** Catalogue key for the column header. */ labelKey: string };

@@ -57,7 +57,7 @@ import {
   vastuWheelPoint,
   type VastuGunaId,
   type VastuSelectionId,
-} from "@/lib/vastu";
+} from "@/shared/vastu";
 
 /**
  * `react-native-svg` types `onPress` as an unsatisfiable intersection; it works

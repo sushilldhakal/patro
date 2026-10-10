@@ -1,3 +1,5 @@
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
 /**
  * Estimated word-by-word position inside a verse's audio. There is no
  * forced-alignment data, so each word's start is weighted by its character

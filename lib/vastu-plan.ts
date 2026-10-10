@@ -1,4 +1,4 @@
-import type { VastuDirectionId } from "@/lib/vastu";
+import type { VastuDirectionId } from "@/shared/vastu";
 
 export type VastuMode = "strict" | "flexible";
 /** Ground, first, and the top (third) storey of a 3-level house. */

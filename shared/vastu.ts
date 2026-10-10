@@ -1,12 +1,12 @@
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
 /**
  * वास्तु reference data — structure only.
  *
  * Every label lives in the bilingual catalogue under `vastu.*`, same as the
  * rest of the app; what is here is the part that is not copy: where each
  * direction sits on the compass, which element it carries, and which direction
- * each room belongs to. The web app keeps an identical copy at
- * `dhakal-patro/src/lib/vastu.ts` so both platforms draw the same wheel from
- * the same numbers.
+ * each room belongs to.
  */
 
 export type VastuElementId = "earth" | "water" | "fire" | "air" | "space";

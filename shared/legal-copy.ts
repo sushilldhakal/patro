@@ -1,6 +1,7 @@
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
 /**
- * Twin of dhakal-patro/src/lib/legal-copy.ts — keep the two in lockstep.
- * Store listing URLs point at https://www.vedicpatro.com/privacy and /terms.
+ * Canonical URLs: https://www.vedicpatro.com/privacy and /terms
  */
 export const LEGAL_UPDATED = "27 August 2026";
 export const LEGAL_CONTACT_EMAIL = "support@vedicpatro.com";
@@ -65,8 +66,8 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     heading: { ne: "गति, जाइरो र कम्पास", en: "Motion, gyroscope and compass" },
     body: [
       {
-        ne: "आकाश गोचरमा फोन तेर्साउँदा र घुमाउँदा आकाश सँगै फर्न एक्सेलेरोमिटर, जाइरो र कम्पास प्रयोग हुन्छ। यो स्ट्रिम यसै फोनमा रहन्छ — बचत हुँदैन, हाम्रो सर्भरमा पठाइँदैन।",
-        en: "In Aakash Gochar, the accelerometer, gyroscope and compass turn the sky as you tilt and turn the phone. This stream stays on the phone — it is not stored and is not sent to our servers.",
+        ne: "आकाश गोचरमा फोन तेर्साउँदा र घुमाउँदा आकाश सँगै फर्न, र वास्तु चक्र ब्रह्मस्थानमा मिलाउन, एक्सेलेरोमिटर, जाइरो र कम्पास प्रयोग हुन्छ। यो स्ट्रिम यसै फोनमा रहन्छ — बचत हुँदैन, हाम्रो सर्भरमा पठाइँदैन।",
+        en: "The accelerometer, gyroscope and compass turn the Aakash Gochar sky as you tilt the phone, and align the Vastu wheel when you stand in the Brahmasthan. This stream stays on the phone — it is not stored and is not sent to our servers.",
       },
       {
         ne: "सेन्सर नचलाए हातले आकाश तान्न सकिन्छ।",

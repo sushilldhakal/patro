@@ -1,3 +1,5 @@
+// GENERATED from dhakal-patro/src/shared — do not edit here.
+// Change it in the website repo, then run `npm run shared:sync`.
 export type AyanamshaMode = "nepal" | "lahiri" | "raman" | "kp" | "true_citra";
 
 export interface AyanamshaModeInfo {
@@ -52,6 +54,13 @@ export const AYANAMSHA_MODES: AyanamshaModeInfo[] = [
   },
 ];
 
+/**
+ * True when the mode's zodiac matches the API's panchanga angas, which are
+ * always computed in Lahiri (Nepal Panchang uses a Lahiri-equivalent
+ * ayanamsha). For other modes the graha/lagna longitudes come back shifted,
+ * so nakshatra-derived fields must be recomputed from the longitude instead
+ * of read from the Lahiri anga blocks.
+ */
 export function matchesPanchangaAngas(mode: AyanamshaMode): boolean {
   return mode === "nepal" || mode === "lahiri";
 }
