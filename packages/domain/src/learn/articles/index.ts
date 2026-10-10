@@ -72,12 +72,27 @@ import { rightAscension } from "./deeper/right-ascension";
 import { skyRotation } from "./deeper/sky-rotation";
 import { zodiacBelt } from "./deeper/zodiac-belt";
 
+import { astronomyBasics } from "./chapters/astronomy-basics";
+import { ayanamsha } from "./chapters/ayanamsha";
+import { calendarDifferences } from "./chapters/calendar-differences";
+import { eclipses } from "./chapters/eclipses";
+import { hora } from "./chapters/hora";
+import { howWeCalculate } from "./chapters/how-we-calculate";
+import { karana } from "./chapters/karana";
+import { nakshatra } from "./chapters/nakshatra";
+import { rituDrift } from "./chapters/ritu-drift";
+import { sankranti } from "./chapters/sankranti";
+import { solarSystem } from "./chapters/solar-system";
+import { tithiVriddhiKshaya } from "./chapters/tithi-vriddhi-kshaya";
+import { tithi } from "./chapters/tithi";
+import { whatIsPanchang } from "./chapters/what-is-panchang";
+import { yoga } from "./chapters/yoga";
+
 /**
  * Every data-driven article body, keyed by slug.
  *
- * Articles still written as React components live in `learn-articles.tsx` and
- * are wired up in `learn-topics.tsx`; both kinds render inside the same shell,
- * so an old article can be converted to data one at a time.
+ * Every chapter is data; the website's history chapter alone keeps its own
+ * layout over the shared history data (see `learn-topics.tsx`).
  */
 export const SHARED_ARTICLES: ArticleData[] = [
   /* Foundation */
@@ -160,6 +175,23 @@ export const SHARED_ARTICLES: ArticleData[] = [
   rightAscension,
   zodiacBelt,
   skyRotation,
+
+  /* Guides — the long chapters merged pages are built from */
+  astronomyBasics,
+  ayanamsha,
+  calendarDifferences,
+  eclipses,
+  hora,
+  howWeCalculate,
+  karana,
+  nakshatra,
+  rituDrift,
+  sankranti,
+  solarSystem,
+  tithiVriddhiKshaya,
+  tithi,
+  whatIsPanchang,
+  yoga,
 ];
 
 export const DATA_ARTICLES: Record<string, ArticleData | undefined> = Object.fromEntries(

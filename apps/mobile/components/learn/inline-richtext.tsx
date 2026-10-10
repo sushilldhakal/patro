@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
+import { router } from "expo-router";
 import { Text } from "@/components/ui/Text";
 
 /**
- * `**strong**`, `*teal*`, `~amber~` and `` `numeric` `` → styled spans.
+ * `**strong**`, `*teal*`, `~amber~` and `` `numeric` `` → styled spans, and
+ * `[[slug|label]]` → an in-app link to another Learn article.
  *
  * Native port of web's `richText()` (`src/lib/learn/article-render.tsx`) — same
  * regex, same marker meanings, RN nested `<Text>` instead of DOM spans.
@@ -11,7 +13,7 @@ import { Text } from "@/components/ui/Text";
  * markers are left as literal text rather than swallowed, which keeps a typo
  * in one article from eating the rest of its paragraph.
  */
-const INLINE_RE = /\*\*([^*]+)\*\*|\*([^*]+)\*|~([^~]+)~|`([^`]+)`/g;
+const INLINE_RE = /\*\*([^*]+)\*\*|\*([^*]+)\*|~([^~]+)~|`([^`]+)`|\[\[([\w-]+)\|([^\]]+)\]\]/g;
 
 export function richText(text: string): ReactNode {
   const parts: ReactNode[] = [];
@@ -22,7 +24,7 @@ export function richText(text: string): ReactNode {
     const at = match.index ?? 0;
     if (at > last) parts.push(text.slice(last, at));
 
-    const [, strong, teal, amber, num] = match;
+    const [, strong, teal, amber, num, linkSlug, linkLabel] = match;
     if (strong !== undefined) {
       parts.push(
         <Text key={key++} className="font-semibold text-foreground">
@@ -45,6 +47,16 @@ export function richText(text: string): ReactNode {
       parts.push(
         <Text key={key++} className="font-num text-foreground">
           {num}
+        </Text>,
+      );
+    } else if (linkSlug !== undefined) {
+      parts.push(
+        <Text
+          key={key++}
+          className="font-semibold text-secondary"
+          onPress={() => router.push(`/learn/${linkSlug}` as never)}
+        >
+          {linkLabel}
         </Text>,
       );
     }

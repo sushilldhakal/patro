@@ -14,8 +14,12 @@ import {
   SunriseTimeline,
 } from "@/components/tithi-mechanics/tithi-mechanics-diagrams";
 import { AyanamshaWheel } from "@/components/learn/AyanamshaWheel";
+import { HoraLiveDiagram } from "@/components/learn/HoraLiveDiagram";
+import { ServerPipelineDiagram } from "@/components/learn/ServerPipelineDiagram";
 import {
-  EclipticBeltStudy,  PrecessionSkyStudy,
+  ComputationReferenceTables,
+  EclipticBeltStudy,
+  PrecessionSkyStudy,
 } from "@/components/learn/ComputationSkyDiagrams";
 import { EarthRotationDiagram } from "@/components/learn/EarthRotationDiagram";
 import { EclipseStudy } from "@/components/learn/EclipseStudy";
@@ -102,10 +106,13 @@ export const LEARN_DIAGRAMS = {
   "equinox-precession": EquinoxPrecession,
   "precession-cone": PrecessionCone,
   "precession-sky": PrecessionSkyStudy,
+  "computation-reference": ComputationReferenceTables,
+  "server-pipeline": ServerPipelineDiagram,
 
   /* Moon */
   "tithi-elongation": () => <ElongationStudy />,
   "moon-phases": MoonPhasesStrip,
+  "hora-live": HoraLiveDiagram,
   "moon-orbit-tilt": MoonOrbitTiltStudy,
   "adhik-maas": AdhikMassDiagram,
   "sunrise-vriddhi": () => <SunriseTimeline mode="vriddhi" />,

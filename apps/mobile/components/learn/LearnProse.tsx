@@ -198,11 +198,24 @@ export function LearnCalc({
 }
 
 /** Looks up a diagram by id from the shared registry and renders it inline. */
-export function LearnDiagramBlock({ id, caption }: { id: DiagramId; caption?: ReactNode }) {
+export function LearnDiagramBlock({
+  id,
+  caption,
+  heading,
+}: {
+  id: DiagramId;
+  caption?: ReactNode;
+  heading?: ReactNode;
+}) {
   const Diagram = LEARN_DIAGRAMS[id];
   if (!Diagram) return null;
   return (
     <View className="mt-1 gap-1.5">
+      {heading ? (
+        <Text className="text-caption font-bold uppercase tracking-wide text-foreground" style={nepaliTextStyle(11)}>
+          {heading}
+        </Text>
+      ) : null}
       <Diagram />
       {caption ? (
         <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>

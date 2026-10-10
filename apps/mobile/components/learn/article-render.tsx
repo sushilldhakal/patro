@@ -129,6 +129,7 @@ function BlockView({ block, lang }: { block: Block; lang: "ne" | "en" }) {
             caption={block.caption ? pick(lang, block.caption) : undefined}
             headers={block.headers.map((h) => pick(lang, h))}
             rows={block.rows.map((row) => row.map((cell) => richText(cellText(lang, cell))))}
+            highlightRow={block.highlightRow}
           />
         </View>
       );
@@ -158,7 +159,13 @@ function BlockView({ block, lang }: { block: Block; lang: "ne" | "en" }) {
       );
 
     case "diagram":
-      return <LearnDiagramBlock id={block.id} caption={block.caption ? pick(lang, block.caption) : undefined} />;
+      return (
+        <LearnDiagramBlock
+          id={block.id}
+          heading={block.heading ? pick(lang, block.heading) : undefined}
+          caption={block.caption ? pick(lang, block.caption) : undefined}
+        />
+      );
   }
 }
 

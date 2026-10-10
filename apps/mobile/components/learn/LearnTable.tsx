@@ -8,10 +8,12 @@ export function LearnTable({
   caption,
   headers,
   rows,
+  highlightRow,
 }: {
   caption?: ReactNode;
   headers: ReactNode[];
   rows: ReactNode[][];
+  highlightRow?: number;
 }) {
   return (
     <View className="gap-1.5">
@@ -32,7 +34,7 @@ export function LearnTable({
           {rows.map((row, ri) => (
             <View
               key={ri}
-              className={`flex-row ${ri % 2 === 1 ? "bg-muted/15" : ""} border-t border-border`}
+              className={`flex-row ${highlightRow === ri ? "bg-secondary/10" : ri % 2 === 1 ? "bg-muted/15" : ""} border-t border-border`}
             >
               {row.map((cell, ci) => (
                 <View key={ci} className="min-w-[104px] px-3 py-2">

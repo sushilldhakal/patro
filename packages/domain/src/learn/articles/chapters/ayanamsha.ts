@@ -1,11 +1,14 @@
-import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
+import type { ArticleData } from "../../article-schema";
 
-/** Transcribed from web's hand-written `Ayanamsha` — see `what-is-panchang.ts` header note. */
+/** Chapter text — written once, read by the website and the app. */
 export const ayanamsha: ArticleData = {
   slug: "ayanamsha",
   sections: [
     {
-      title: { ne: "सायन र निरयन — एउटै आकाश, दुई शून्य", en: "Tropical vs sidereal — one sky, two zeros" },
+      title: {
+        ne: "सायन र निरयन — एउटै आकाश, दुई शून्य",
+        en: "Tropical vs sidereal — one sky, two zeros",
+      },
       eyebrow: "Tropical vs sidereal zero",
       blocks: [
         {
@@ -18,7 +21,10 @@ export const ayanamsha: ArticleData = {
       ],
     },
     {
-      title: { ne: "अयनांश चक्र", en: "The ayanamsha wheel" },
+      title: {
+        ne: "अयनांश चक्र",
+        en: "The ayanamsha wheel",
+      },
       eyebrow: "Interactive: the precessing equinox",
       blocks: [
         {
@@ -28,25 +34,37 @@ export const ayanamsha: ArticleData = {
             en: "In the wheel below the outer **12 signs are fixed to the star-clusters** (sidereal). Press **▶ play** — as the years advance, Earth's axial precession drags the ~tropical zero (equinox)~ backward relative to the stars; the growing ~amber wedge~ is the ayanamsha. The lower slider moves a single *planet* — see how the same sky position reads as a different sign in sidereal vs tropical.",
           },
         },
-        { kind: "diagram", id: "ayanamsha-wheel" },
+        {
+          kind: "diagram",
+          id: "ayanamsha-wheel",
+        },
       ],
     },
     {
-      title: { ne: "किन सर्छ — अयन चलन", en: "Why it drifts — precession" },
+      title: {
+        ne: "किन सर्छ — अयन चलन",
+        en: "Why it drifts — precession",
+      },
       eyebrow: "Precession of the equinoxes",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "पृथ्वी ठ्याक्क सिधा घुम्दैन — लठ्ठा (lattu) झैँ यसको अक्ष ठूलो वृत्तमा बिस्तारै *डुल्छ*। एक फेरो पूरा गर्न झन्डै **२५,८०० वर्ष** लाग्छ, अर्थात् विषुव बिन्दु प्रति वर्ष करिब **५०.३″** (हरेक **७२ वर्ष** मा १°) पछाडि सर्छ। त्यसैले अयनांश पनि वर्षेनि बढ्छ — आज लाहिरीमा झन्डै **२४°**।",
-            en: "The Earth does not spin perfectly upright — like a spinning top its axis slowly *wobbles* in a large circle. One full loop takes about **25,800 years**, i.e. the equinox point moves back about **50.3″** per year (1° every **72 years**). So the ayanamsha grows year by year — today about **24°** in Lahiri.",
+            ne: "पृथ्वी ठ्याक्क सिधा घुम्दैन — लठ्ठा (lattu) झैँ यसको अक्ष ठूलो वृत्तमा बिस्तारै *डुल्छ*। एक फेरो पूरा गर्न झन्डै **२५८०० वर्ष** लाग्छ, अर्थात् विषुव बिन्दु प्रति वर्ष करिब **५०.३″** (हरेक **∼७२ वर्ष** मा १°) पछाडि सर्छ। त्यसैले अयनांश पनि वर्षेनि बढ्छ — आज लाहिरीमा झन्डै **२४°**।",
+            en: "The Earth does not spin perfectly upright — like a spinning top its axis slowly *wobbles* in a large circle. One full loop takes about **25,800 years**, i.e. the equinox point moves back about **50.3″** per year (1° every **∼72 years**). So the ayanamsha grows year by year — today about **24°** in Lahiri.",
           },
         },
-        { kind: "diagram", id: "precession-cone" },
+        {
+          kind: "diagram",
+          id: "precession-cone",
+        },
       ],
     },
     {
-      title: { ne: "तीन प्रमुख प्रणाली", en: "Three main systems" },
+      title: {
+        ne: "तीन प्रमुख प्रणाली",
+        en: "Three main systems",
+      },
       eyebrow: "Lahiri · Raman · KP",
       blocks: [
         {
@@ -60,24 +78,33 @@ export const ayanamsha: ArticleData = {
           kind: "keys",
           items: [
             {
-              h: { ne: "लाहिरी (Lahiri)", en: "Lahiri" },
+              h: {
+                ne: "लाहिरी (Lahiri)",
+                en: "Lahiri",
+              },
               p: {
-                ne: "भारत सरकारको आधिकारिक (चित्रा-पक्ष) — धेरैजसो पञ्चाङ्गको पूर्वनिर्धारित; आज करिब २४°।",
-                en: "India's official system (Chitra-paksha) — the default in most almanacs; about 24° today.",
+                ne: "भारत सरकारको आधिकारिक (चित्रा-पक्ष) — धेरैजसो पञ्चाङ्गको पूर्वनिर्धारित; आज ∼२४°।",
+                en: "India's official system (Chitra-paksha) — the default in most almanacs; ∼24° today.",
               },
             },
             {
-              h: { ne: "रमन (Raman)", en: "Raman" },
+              h: {
+                ne: "रमन (Raman)",
+                en: "Raman",
+              },
               p: {
                 ne: "बी.वी. रमनद्वारा प्रचलित — लाहिरीभन्दा झन्डै १.३° कम।",
                 en: "Popularised by B. V. Raman — about 1.3° less than Lahiri.",
               },
             },
             {
-              h: { ne: "कृष्णमूर्ति (KP)", en: "Krishnamurti (KP)" },
+              h: {
+                ne: "कृष्णमूर्ति (KP)",
+                en: "Krishnamurti (KP)",
+              },
               p: {
-                ne: "के.एस. कृष्णमूर्ति पद्धति — लाहिरीभन्दा अति थोरै (करिब ६′) कम; सूक्ष्म भविष्यवाणीमा।",
-                en: "The K. S. Krishnamurti system — a tiny amount (about 6′) less than Lahiri; used in fine prediction.",
+                ne: "के.एस. कृष्णमूर्ति पद्धति — लाहिरीभन्दा अति थोरै (∼६′) कम; सूक्ष्म भविष्यवाणीमा।",
+                en: "The K. S. Krishnamurti system — a tiny amount (∼6′) less than Lahiri; used in fine prediction.",
               },
             },
           ],
@@ -85,7 +112,7 @@ export const ayanamsha: ArticleData = {
         {
           kind: "note",
           text: {
-            ne: "पश्चिमी ज्योतिष प्रायः **सायन** चलाउँछ, नेपाली–वैदिक ज्योतिष **निरयन**। यस एपको कुण्डली पृष्ठमा तपाईं आफैँ अयनांश प्रणाली रोज्न सक्नुहुन्छ र फरक आफ्नै आँखाले हेर्न सक्नुहुन्छ।",
+            ne: "पश्चिमी ज्योतिष प्रायः **सायन** चलाउँछ, नेपाली–वैदिक वैदिक ज्योतिष **निरयन**। यस एपको कुण्डली पृष्ठमा तपाईं आफैँ अयनांश प्रणाली रोज्न सक्नुहुन्छ र फरक आफ्नै आँखाले हेर्न सक्नुहुन्छ।",
             en: "Western astrology mostly uses **tropical**, Nepali–Vedic astrology uses **sidereal**. On this app's kundali page you can pick the ayanamsha system yourself and see the difference with your own eyes.",
           },
         },

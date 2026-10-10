@@ -1,11 +1,14 @@
-import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
+import type { ArticleData } from "../../article-schema";
 
-/** Transcribed from web's hand-written `Yoga` — see `what-is-panchang.ts` header note. */
+/** Chapter text — written once, read by the website and the app. */
 export const yoga: ArticleData = {
   slug: "yoga",
   sections: [
     {
-      title: { ne: "सूर्य + चन्द्रको जोड", en: "Sum of Sun + Moon" },
+      title: {
+        ne: "सूर्य + चन्द्रको जोड",
+        en: "Sum of Sun + Moon",
+      },
       eyebrow: "Sun + Moon longitude",
       blocks: [
         {
@@ -18,7 +21,10 @@ export const yoga: ArticleData = {
       ],
     },
     {
-      title: { ne: "किन महत्त्व", en: "Why it matters" },
+      title: {
+        ne: "किन महत्त्व",
+        en: "Why it matters",
+      },
       eyebrow: "Why it matters",
       blocks: [
         {

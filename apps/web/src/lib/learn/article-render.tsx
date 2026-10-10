@@ -2,8 +2,8 @@
  * Renderer for data-driven Learn articles.
  *
  * Owns every piece of markup an article can produce, so article files stay
- * pure data. Markup and classes match the hand-built articles in
- * `learn-articles.tsx` — the two render identically inside the same shell.
+ * pure data. Chapters that used to be hand-built components render through
+ * here too, with the same classes, so every article looks alike.
  */
 
 import { Fragment, type ReactNode } from "react";
@@ -12,6 +12,7 @@ import { ArrowRight } from "lucide-react";
 import { useLocale, type Lang } from "@/i18n/locale";
 import {
   learnRefCaption,
+  learnRefHighlightRow,
   learnRefTable,
   learnRefWrap,
   tmCardCap,
@@ -43,6 +44,7 @@ import {
   tmSection,
   tmSeeAlso,
   tmSeeAlsoItem,
+  ssPhasesHeading,
 } from "@/lib/learn-classes";
 import { LEARN_DIAGRAMS } from "./learn-diagrams";
 import { LEARN_LIBRARY_BY_SLUG } from "./learn-library";
@@ -85,13 +87,14 @@ function eyebrowLabel(lang: Lang, eyebrow: Bi | string | undefined): string | nu
 /* ------------------------------------------------------------------ */
 
 /**
- * `**strong**`, `*teal*`, `~amber~` and `` `numeric` `` → styled spans.
+ * `**strong**`, `*teal*`, `~amber~` and `` `numeric` `` → styled spans, and
+ * `[[slug|label]]` → a link to another Learn article (teal, like a key term).
  *
  * Ordered so `**` is consumed before the single-asterisk rule. Unmatched
  * markers are left as literal text rather than swallowed, which keeps a
  * typo in one article from eating the rest of its paragraph.
  */
-const INLINE_RE = /\*\*([^*]+)\*\*|\*([^*]+)\*|~([^~]+)~|`([^`]+)`/g;
+const INLINE_RE = /\*\*([^*]+)\*\*|\*([^*]+)\*|~([^~]+)~|`([^`]+)`|\[\[([\w-]+)\|([^\]]+)\]\]/g;
 
 function richText(text: string): ReactNode {
   const parts: ReactNode[] = [];
@@ -102,7 +105,7 @@ function richText(text: string): ReactNode {
     const at = match.index;
     if (at > last) parts.push(text.slice(last, at));
 
-    const [, strong, teal, amber, num] = match;
+    const [, strong, teal, amber, num, linkSlug, linkLabel] = match;
     if (strong !== undefined) {
       parts.push(
         <b key={key++} className={tmInkStrong}>
@@ -126,6 +129,12 @@ function richText(text: string): ReactNode {
         <span key={key++} className={tmInkNum}>
           {num}
         </span>,
+      );
+    } else if (linkSlug !== undefined) {
+      parts.push(
+        <Link key={key++} to="/learn/$slug" params={{ slug: linkSlug }} className={tmInkTeal}>
+          {linkLabel}
+        </Link>,
       );
     }
     last = at + match[0].length;
@@ -169,7 +178,12 @@ function BlockView({ block, lang }: { block: Block; lang: Lang }) {
             <div className={tmFcard} key={card.label.en || card.label.ne}>
               <div className="big">
                 {cellText(lang, card.big)}
-                {card.unit && <span className="u"> {pick(lang, card.unit)}</span>}
+                {card.unit && (
+                  <span className="u">
+                    {/^[°′″%]/.test(pick(lang, card.unit)) ? "" : " "}
+                    {pick(lang, card.unit)}
+                  </span>
+                )}
               </div>
               <div className="lbl">{richText(pick(lang, card.label))}</div>
               <div className="desc">{richText(pick(lang, card.desc))}</div>
@@ -210,7 +224,7 @@ function BlockView({ block, lang }: { block: Block; lang: Lang }) {
             </thead>
             <tbody>
               {block.rows.map((row, ri) => (
-                <tr key={ri}>
+                <tr key={ri} className={block.highlightRow === ri ? learnRefHighlightRow : undefined}>
                   {row.map((cell, ci) => (
                     <td key={ci}>{richText(cellText(lang, cell))}</td>
                   ))}
@@ -271,6 +285,7 @@ function BlockView({ block, lang }: { block: Block; lang: Lang }) {
       if (!Diagram) return null;
       return (
         <div className="mt-5">
+          {block.heading && <p className={ssPhasesHeading}>{pick(lang, block.heading)}</p>}
           <Diagram />
           {block.caption && <p className={tmCardCap}>{pick(lang, block.caption)}</p>}
         </div>

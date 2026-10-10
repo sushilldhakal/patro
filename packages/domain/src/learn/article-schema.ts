@@ -48,8 +48,8 @@ export type Block =
       kind: "formula";
       cards: { big: Cell; unit?: Bi; label: Bi; desc: Bi }[];
     }
-  /** Reference table. `rows` cells may be plain or bilingual. */
-  | { kind: "table"; caption?: Bi; headers: Bi[]; rows: Cell[][] }
+  /** Reference table. `rows` cells may be plain or bilingual; `highlightRow` tints one row. */
+  | { kind: "table"; caption?: Bi; headers: Bi[]; rows: Cell[][]; highlightRow?: number }
   /** Bulleted or numbered list. */
   | { kind: "list"; ordered?: boolean; items: Bi[] }
   /** Monospace ASCII figure (zodiac belts, hierarchy trees). */
@@ -77,7 +77,7 @@ export type Block =
       caption?: Bi;
     }
   /** An interactive/SVG diagram from the diagram registry. */
-  | { kind: "diagram"; id: DiagramId; caption?: Bi }
+  | { kind: "diagram"; id: DiagramId; caption?: Bi; heading?: Bi }
   /** Centred closing aside. */
   | { kind: "note"; text: Bi };
 

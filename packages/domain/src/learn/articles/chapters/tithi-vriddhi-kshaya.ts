@@ -1,18 +1,21 @@
-import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
+import type { ArticleData } from "../../article-schema";
 
-/** Transcribed from web's hand-written `TithiVriddhiKshaya` — see `what-is-panchang.ts` header note. */
+/** Chapter text — written once, read by the website and the app. */
 export const tithiVriddhiKshaya: ArticleData = {
   slug: "tithi-vriddhi-kshaya",
   sections: [
     {
-      title: { ne: "एउटै तिथि दुई दिन — वृद्धि", en: "One tithi, two days — vriddhi" },
+      title: {
+        ne: "एउटै तिथि दुई दिन — वृद्धि",
+        en: "One tithi, two days — vriddhi",
+      },
       eyebrow: "Repeated tithi",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "जब चन्द्र *मन्द गतिमा* (करिब १०.७°/दिन) हिँड्छ, एउटै १२° को तिथि–खण्डले **लगातार दुई सूर्योदय** समेट्छ। दुवै बिहान त्यही तिथि चलिरहेकाले पात्रोमा त्यो तिथि ~दुई दिन~ देखिन्छ।",
-            en: "When the Moon moves *slowly* (about 10.7°/day), a single 12° tithi-segment spans **two consecutive sunrises**. Since the same tithi is running on both mornings, the calendar shows that tithi on ~two days~.",
+            ne: "जब चन्द्र *मन्द गतिमा* (∼१०.७°/दिन) हिँड्छ, एउटै १२° को तिथि–खण्डले **लगातार दुई सूर्योदय** समेट्छ। दुवै बिहान त्यही तिथि चलिरहेकाले पात्रोमा त्यो तिथि ~दुई दिन~ देखिन्छ।",
+            en: "When the Moon moves *slowly* (∼10.7°/day), a single 12° tithi-segment spans **two consecutive sunrises**. Since the same tithi is running on both mornings, the calendar shows that tithi on ~two days~.",
           },
         },
         {
@@ -26,14 +29,17 @@ export const tithiVriddhiKshaya: ArticleData = {
       ],
     },
     {
-      title: { ne: "हराएको तिथि — क्षय", en: "A skipped tithi — kshaya" },
+      title: {
+        ne: "हराएको तिथि — क्षय",
+        en: "A skipped tithi — kshaya",
+      },
       eyebrow: "Skipped tithi",
       blocks: [
         {
           kind: "lede",
           text: {
-            ne: "उल्टो, जब चन्द्र *द्रुत गतिमा* (करिब १४.३°/दिन) हिँड्छ, कुनै १२° को तिथि–खण्ड **दुई सूर्योदयको बीचमै** पूरै सकिन्छ। कुनै पनि सूर्योदयमा त्यो तिथि नभेटिएकाले त्यो ~क्षय~ भई पात्रोबाट हराउँछ।",
-            en: "Conversely, when the Moon moves *fast* (about 14.3°/day), a 12° tithi-segment finishes entirely **between two sunrises**. Since that tithi is present at no sunrise, it is ~skipped (kshaya)~ and disappears from the calendar.",
+            ne: "उल्टो, जब चन्द्र *द्रुत गतिमा* (∼१४.३°/दिन) हिँड्छ, कुनै १२° को तिथि–खण्ड **दुई सूर्योदयको बीचमै** पूरै सकिन्छ। कुनै पनि सूर्योदयमा त्यो तिथि नभेटिएकाले त्यो ~क्षय~ भई पात्रोबाट हराउँछ।",
+            en: "Conversely, when the Moon moves *fast* (∼14.3°/day), a 12° tithi-segment finishes entirely **between two sunrises**. Since that tithi is present at no sunrise, it is ~skipped (kshaya)~ and disappears from the calendar.",
           },
         },
         {
@@ -47,7 +53,10 @@ export const tithiVriddhiKshaya: ArticleData = {
       ],
     },
     {
-      title: { ne: "एउटै नियमका दुई पक्ष", en: "Two sides of one rule" },
+      title: {
+        ne: "एउटै नियमका दुई पक्ष",
+        en: "Two sides of one rule",
+      },
       eyebrow: "Two sides of one rule",
       blocks: [
         {

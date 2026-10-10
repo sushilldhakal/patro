@@ -1,20 +1,3 @@
-import {
-  AstronomyBasics,
-  SolarSystem,
-  CalendarDifferences,
-  WhatIsPanchang,
-  TithiArticle,
-  TithiVriddhiKshaya,
-  Nakshatra,
-  Yoga,
-  Karana,
-  Sankranti,
-  HoraArticle,
-  Eclipses,
-  Ayanamsha,
-  RituDrift,
-} from "./learn-articles";
-import { HowWeCalculateArticle } from "@/components/learn/HowWeCalculateStudy";
 import { SuryaSiddhantaHistory } from "@/components/learn/SuryaSiddhantaHistory";
 import { ArticleBody } from "./article-render";
 import { MERGED_BY_SLUG, type MergedPage } from "./merged-pages";
@@ -41,28 +24,13 @@ export interface LearnTopic extends LearnTopicMeta {
 }
 
 /**
- * Article bodies still written as React components.
+ * Article bodies that are still React components rather than data.
  *
- * New articles should be data (see `articles/`); these predate that format and
- * keep working unchanged. A slug found here wins over a data article, so a
- * conversion is: add the data file, delete the entry here.
+ * The history chapter keeps its own layout (sticky contents list on desktop, an
+ * accordion on phones) over the shared history data; every other chapter is data.
+ * A slug found here wins over a data article.
  */
 const COMPONENT_CONTENT_BY_SLUG: Record<string, () => React.ReactNode> = {
-  "astronomy-basics": AstronomyBasics,
-  "solar-system": SolarSystem,
-  "calendar-differences": CalendarDifferences,
-  "ritu-drift": RituDrift,
-  "what-is-panchang": WhatIsPanchang,
-  tithi: TithiArticle,
-  "tithi-vriddhi-kshaya": TithiVriddhiKshaya,
-  nakshatra: Nakshatra,
-  yoga: Yoga,
-  karana: Karana,
-  sankranti: Sankranti,
-  hora: HoraArticle,
-  eclipses: Eclipses,
-  ayanamsha: Ayanamsha,
-  "how-we-calculate": HowWeCalculateArticle,
   history: SuryaSiddhantaHistory,
 };
 

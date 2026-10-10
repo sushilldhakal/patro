@@ -1,11 +1,14 @@
-import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
+import type { ArticleData } from "../../article-schema";
 
-/** Transcribed from web's hand-written `Sankranti` — see `what-is-panchang.ts` header note. */
+/** Chapter text — written once, read by the website and the app. */
 export const sankranti: ArticleData = {
   slug: "sankranti",
   sections: [
     {
-      title: { ne: "राशि परिवर्तनको क्षण", en: "The moment the sign changes" },
+      title: {
+        ne: "राशि परिवर्तनको क्षण",
+        en: "The moment the sign changes",
+      },
       eyebrow: "Sun enters a sign",
       blocks: [
         {
@@ -18,25 +21,40 @@ export const sankranti: ArticleData = {
       ],
     },
     {
-      title: { ne: "प्रमुख सङ्क्रान्ति", en: "Notable ones" },
+      title: {
+        ne: "प्रमुख सङ्क्रान्ति",
+        en: "Notable ones",
+      },
       eyebrow: "Notable ones",
       blocks: [
         {
           kind: "keys",
           items: [
             {
-              h: { ne: "मेष सङ्क्रान्ति", en: "Mesha Sankranti" },
-              p: { ne: "बैशाख १ — नेपाली नयाँ वर्ष।", en: "Baisakh 1 — Nepali New Year." },
+              h: {
+                ne: "मेष सङ्क्रान्ति",
+                en: "Mesha Sankranti",
+              },
+              p: {
+                ne: "बैशाख १ — नेपाली नयाँ वर्ष।",
+                en: "Baisakh 1 — Nepali New Year.",
+              },
             },
             {
-              h: { ne: "मकर सङ्क्रान्ति", en: "Makar Sankranti" },
+              h: {
+                ne: "मकर सङ्क्रान्ति",
+                en: "Makar Sankranti",
+              },
               p: {
                 ne: "माघे सङ्क्रान्ति — सूर्य उत्तरायण हुने पर्व।",
                 en: "Maghe Sankranti — the festival when the Sun turns north (Uttarayana).",
               },
             },
             {
-              h: { ne: "महिनाको आधार", en: "Basis of months" },
+              h: {
+                ne: "महिनाको आधार",
+                en: "Basis of months",
+              },
               p: {
                 ne: "हरेक सङ्क्रान्ति = नयाँ सौर महिनाको सुरुवात।",
                 en: "Every sankranti = the start of a new solar month.",

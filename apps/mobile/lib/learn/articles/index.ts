@@ -1,54 +1,30 @@
 import type { ArticleData } from "@vedic-patro/domain/learn/article-schema";
 import { SHARED_ARTICLES } from "@vedic-patro/domain/learn/articles/index";
-
-/**
- * Hand-transcribed chapters — web has these as JSX components
- * (`learn-articles.tsx`, `HowWeCalculateStudy.tsx`, `SuryaSiddhantaHistory.tsx`),
- * not data files, so they cannot be copied. See `transcribed/what-is-panchang.ts`
- * header note.
- */
-import { astronomyBasics } from "./transcribed/astronomy-basics";
-import { ayanamsha } from "./transcribed/ayanamsha";
-import { calendarDifferences } from "./transcribed/calendar-differences";
-import { eclipses } from "./transcribed/eclipses";
-import { history } from "./transcribed/history";
-import { hora } from "./transcribed/hora";
-import { howWeCalculate } from "./transcribed/how-we-calculate";
-import { karana } from "./transcribed/karana";
-import { nakshatra } from "./transcribed/nakshatra";
-import { rituDrift } from "./transcribed/ritu-drift";
-import { sankranti } from "./transcribed/sankranti";
-import { solarSystem } from "./transcribed/solar-system";
-import { tithi } from "./transcribed/tithi";
-import { tithiVriddhiKshaya } from "./transcribed/tithi-vriddhi-kshaya";
-import { whatIsPanchang } from "./transcribed/what-is-panchang";
-import { yoga } from "./transcribed/yoga";
+import { buildHistoryArticle } from "@vedic-patro/domain/learn/history-article";
 
 /**
  * Every data-driven article body, keyed by slug: the chapters shared with the
- * website, then the app's hand-transcribed ones.
+ * website, plus the history chapter, which the website lays out itself and the
+ * app renders from the same history data.
+ *
+ * Built on first use so the history copy can read the catalogue once it is set up.
  */
-const ALL: ArticleData[] = [
-  ...SHARED_ARTICLES,
-  /* Hand-transcribed chapters */
-  whatIsPanchang,
-  calendarDifferences,
-  tithi,
-  tithiVriddhiKshaya,
-  nakshatra,
-  yoga,
-  karana,
-  sankranti,
-  hora,
-  eclipses,
-  ayanamsha,
-  rituDrift,
-  astronomyBasics,
-  solarSystem,
-  howWeCalculate,
-  history,
-];
+let cache: Record<string, ArticleData | undefined> | null = null;
 
-export const DATA_ARTICLES: Record<string, ArticleData | undefined> = Object.fromEntries(
-  ALL.map((article) => [article.slug, article]),
+function all(): Record<string, ArticleData | undefined> {
+  cache ??= Object.fromEntries(
+    [...SHARED_ARTICLES, buildHistoryArticle()].map((article) => [article.slug, article]),
+  );
+  return cache;
+}
+
+export const DATA_ARTICLES: Record<string, ArticleData | undefined> = new Proxy(
+  {} as Record<string, ArticleData | undefined>,
+  {
+    get: (_target, slug: string) => all()[slug],
+    has: (_target, slug: string) => slug in all(),
+    ownKeys: () => Reflect.ownKeys(all()),
+    getOwnPropertyDescriptor: (_target, slug: string) =>
+      slug in all() ? { enumerable: true, configurable: true, value: all()[slug] } : undefined,
+  },
 );

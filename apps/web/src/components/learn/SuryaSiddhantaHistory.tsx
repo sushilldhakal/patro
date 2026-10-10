@@ -38,8 +38,8 @@ import {
   HISTORY_SOURCE,
   SURYA_SIDDHANTA_HISTORY,
   type HistorySection,
-} from "@/lib/history/surya-siddhanta-history";
-import { formatBbse } from "@/lib/history/era-dates";
+} from "@vedic-patro/domain/history/surya-siddhanta-history";
+import { formatBbse } from "@vedic-patro/domain/history/era-dates";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocaleDigits } from "@/i18n/digits";
 
