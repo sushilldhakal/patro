@@ -1,5 +1,5 @@
 {
-  "name": "dhakal-patro",
+  "name": "@vedic-patro/web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -19,7 +19,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "chapters:check": "TSX_TSCONFIG_PATH=./tsconfig.app.json tsx scripts/check-chapters.ts",
-    "shared:check": "node scripts/check-shared.mjs"
+    "shared:check": "node scripts/check-shared.mjs",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -37,8 +38,8 @@
     "lucide-react": "^1.17.0",
     "next-themes": "^0.4.6",
     "radix-ui": "^1.5.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-helmet-async": "^3.0.0",
     "react-i18next": "^17.0.8",
     "shadcn": "^4.11.0",

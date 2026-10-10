@@ -1,0 +1,9 @@
+{
+  "name": "@vedic-patro/api",
+  "private": true,
+  "description": "FastAPI + Swiss Ephemeris. Python, not Node — this file only lets Turborepo run its tests with the rest of the repo.",
+  "scripts": {
+    "test": "python -m pytest -q",
+    "dev": "uvicorn app:app --reload --port 8000"
+  }
+}

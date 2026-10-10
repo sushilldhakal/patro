@@ -1,5 +1,5 @@
 {
-  "name": "vedic-patro-mobile",
+  "name": "@vedic-patro/mobile",
   "version": "1.1.0",
   "main": "expo-router/entry",
   "private": true,
@@ -11,7 +11,7 @@
     "web": "expo start --web",
     "dev:ios": "expo run:ios",
     "dev:android": "expo run:android",
-    "lint": "npm run shared:check && tsc --noEmit",
+    "lint": "tsc --noEmit",
     "icons": "node scripts/generate-icons.mjs",
     "postinstall": "node scripts/generate-icons.mjs",
     "build:android": "eas build --platform android --profile production",
@@ -19,8 +19,7 @@
     "build:preview": "eas build --profile preview --platform all",
     "submit:android": "eas submit --platform android --profile production",
     "submit:ios": "eas submit --platform ios --profile production",
-    "shared:sync": "node scripts/sync-shared.mjs",
-    "shared:check": "node scripts/sync-shared.mjs --check"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@expo-google-fonts/fira-code": "^0.4.1",

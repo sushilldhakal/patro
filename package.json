@@ -1,0 +1,23 @@
+{
+  "name": "vedic-patro",
+  "private": true,
+  "packageManager": "npm@10.9.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "web": "npm run dev -w @vedic-patro/web",
+    "mobile": "npm run start -w @vedic-patro/mobile"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.8"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
