@@ -16,7 +16,6 @@ import {
   RITU_SEASON_EMOJI,
   RITU_SEASON_KEYS,
 } from "@/lib/ritu-display";
-import { rituMarkerLabel, rituSeasonLabel } from "@/lib/ritu-labels";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import {
@@ -55,7 +54,7 @@ export function RituSeasons({
   showToolbar?: boolean;
 }) {
   const router = useRouter();
-  const { pick, digits, lang } = useLocale();
+  const { pick, digits, lang, t } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const tz = resolveLocationTimezone(location);
@@ -188,7 +187,7 @@ export function RituSeasons({
                 <Text className="text-title">{RITU_SEASON_EMOJI[seasonKey]}</Text>
                 <View className="min-w-0 flex-1">
                   <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
-                    {rituSeasonLabel(seasonKey, lang)}
+                    {t(`ritu.${seasonKey}`)}
                   </Text>
                 </View>
                 <View
@@ -207,7 +206,7 @@ export function RituSeasons({
               <View className="flex-row items-baseline justify-between gap-2">
                 <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
                   {markerKey
-                    ? `${rituMarkerLabel(markerKey, lang)} · ${pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}`
+                    ? `${t(markerKey)} · ${pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}`
                     : pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}
                 </Text>
                 <Text className="text-caption shrink-0 font-num text-muted-foreground">
