@@ -26,7 +26,7 @@ function check(path) {
     // type-only, so there is no runtime edge between the packages.
     if (spec === "@vedic-patro/api-client" && m[2]) continue;
     // Pure-JS helpers with no platform code.
-    if (spec === "clsx" || spec === "tailwind-merge") continue;
+    if (["clsx", "tailwind-merge", "three", "healpix-ts"].includes(spec)) continue;
     problems.push(`${rel}: imports "${spec}" — domain files may only import from this package (plus \`import type\` from @vedic-patro/api-client)`);
   }
   if (/\b(window|document|localStorage|navigator)\./.test(text)) {

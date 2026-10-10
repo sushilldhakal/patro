@@ -75,7 +75,7 @@ import {
   type PlaygroundLabel,
 } from "@/components/learn/playground/playground-labels";
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
-import { makeEarthMaterial } from "@/lib/sky3d/earth-material";
+import { makeEarthMaterial } from "@vedic-patro/domain/sky3d/earth-material";
 import {
   equationOfTime,
   euclideanModulo,

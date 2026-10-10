@@ -70,7 +70,7 @@ import {
 } from "@vedic-patro/domain/sky3d/orbital-model";
 import { RASHI_ICONS } from "@/lib/sky3d/rashi-icons";
 import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
-import { SOLAR_STATIONS } from "@/lib/sky3d/sky-geometry";
+import { SOLAR_STATIONS } from "@vedic-patro/domain/sky3d/sky-geometry";
 import { POLE_STARS } from "@vedic-patro/domain/sky3d/pole-stars";
 import {
   SKY_BY_ID,

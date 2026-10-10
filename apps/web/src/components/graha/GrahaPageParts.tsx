@@ -3,7 +3,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   GRAHA_PAGE_DESCRIPTIONS,
   type GrahaPageDescription,
-} from "@/lib/graha-detail-descriptions";
+} from "@vedic-patro/domain/graha-detail-descriptions";
 import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";

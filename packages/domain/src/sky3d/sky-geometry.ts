@@ -7,7 +7,7 @@
  * here and transformed in the render loop.
  */
 
-import { NAKSHATRA_ARC, RASHI_ARC } from "@vedic-patro/domain/sky3d/geocentric-model";
+import { NAKSHATRA_ARC, RASHI_ARC } from "./geocentric-model";
 
 /** A point on the celestial sphere in ecliptic coordinates, degrees. */
 export type eclipticPoint = { lon: number; lat: number };
@@ -385,7 +385,7 @@ const LOCAL_MAX_LINES = 400;
 export function buildLocalGridPairs(
   altStepMin: number | null,
   azStepMin: number | null,
-  window: GridWindow,
+  win: GridWindow,
   out: HorizonPoint[],
 ): number {
   let n = 0;
@@ -402,10 +402,10 @@ export function buildLocalGridPairs(
 
   let lines = 0;
   if (altStepMin) {
-    const altFrom = Math.ceil((window.altLo * 60) / altStepMin) * altStepMin;
+    const altFrom = Math.ceil((win.altLo * 60) / altStepMin) * altStepMin;
     for (
       let altMin = altFrom;
-      altMin <= window.altHi * 60;
+      altMin <= win.altHi * 60;
       altMin += altStepMin
     ) {
       if (lines >= LOCAL_MAX_LINES) break;
@@ -414,10 +414,10 @@ export function buildLocalGridPairs(
       const alt = altMin * ARCMIN;
       for (let i = 0; i < LOCAL_SEGMENTS; i += 1) {
         const a =
-          window.azLo + ((window.azHi - window.azLo) * i) / LOCAL_SEGMENTS;
+          win.azLo + ((win.azHi - win.azLo) * i) / LOCAL_SEGMENTS;
         const b =
-          window.azLo +
-          ((window.azHi - window.azLo) * (i + 1)) / LOCAL_SEGMENTS;
+          win.azLo +
+          ((win.azHi - win.azLo) * (i + 1)) / LOCAL_SEGMENTS;
         push(alt, a);
         push(alt, b);
       }
@@ -425,19 +425,19 @@ export function buildLocalGridPairs(
   }
 
   if (azStepMin) {
-    const azFrom = Math.ceil((window.azLo * 60) / azStepMin) * azStepMin;
+    const azFrom = Math.ceil((win.azLo * 60) / azStepMin) * azStepMin;
     lines = 0;
-    for (let azMin = azFrom; azMin <= window.azHi * 60; azMin += azStepMin) {
+    for (let azMin = azFrom; azMin <= win.azHi * 60; azMin += azStepMin) {
       if (lines >= LOCAL_MAX_LINES) break;
       if (isCardinalAz(azMin)) continue;
       lines += 1;
       const az = azMin * ARCMIN;
       for (let i = 0; i < LOCAL_SEGMENTS; i += 1) {
         const a =
-          window.altLo + ((window.altHi - window.altLo) * i) / LOCAL_SEGMENTS;
+          win.altLo + ((win.altHi - win.altLo) * i) / LOCAL_SEGMENTS;
         const b =
-          window.altLo +
-          ((window.altHi - window.altLo) * (i + 1)) / LOCAL_SEGMENTS;
+          win.altLo +
+          ((win.altHi - win.altLo) * (i + 1)) / LOCAL_SEGMENTS;
         push(a, az);
         push(b, az);
       }

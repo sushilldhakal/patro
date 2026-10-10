@@ -12,6 +12,11 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "three": "^0.185.1",
+    "healpix-ts": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.4"
   }
 }

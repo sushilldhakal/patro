@@ -47,7 +47,16 @@ export const HIPS_ORDER_MIN = 0;
 export const HIPS_MAX_LOCAL_ORDER = 3;
 
 /** Where the downloaded tiles live — mirrors the HiPS server's own layout. */
-const HIPS_BASE_URL = `${import.meta.env.BASE_URL}sky3d/milkyway-hips`;
+let HIPS_BASE_URL = "";
+
+/**
+ * Where the Milky Way HiPS tiles are served from. The website serves them from
+ * its own `public/` folder, the app from the production host (or the dev proxy),
+ * so each app sets this once at start-up before any tile is requested.
+ */
+export function configureHipsBaseUrl(baseUrl: string): void {
+  HIPS_BASE_URL = baseUrl;
+}
 
 /**
  * `obs_copyright` / `hips_copyright` from `properties.txt`, verbatim: the

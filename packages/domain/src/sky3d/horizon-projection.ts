@@ -275,7 +275,7 @@ export function horizonConeRadiusDeg(fovDeg: number, width: number, height: numb
  *
  * The grid ruler uses it to walk only the lines that can reach the frame, and
  * the fine cage tiers to build only the piece of sphere in view. Both would
- * otherwise be doing whole-sky work for a one-degree window.
+ * otherwise be doing whole-sky work for a one-degree patch.
  *
  * The azimuth half-width is a deliberate over-estimate: meridians crowd
  * together towards the poles, so a cone that reaches high altitudes spans far
@@ -300,7 +300,7 @@ export function horizonViewWindow(
   const centreAz = (Math.atan2(forward.x, -forward.z) * 180) / Math.PI;
   const cone = Math.min(179, horizonConeRadiusDeg(fovDeg, width, height) * 1.06);
   /* Right up to the pole, not half a degree short of it. The fine cage is
-     built only inside this window, so clipping it at 89.5° meant the last
+     built only inside this range, so clipping it at 89.5° meant the last
      circles — 89°30′, 89°40′, 89°45′, the ones a one-degree field centred on
      the zenith is entirely made of — were never generated, and the middle of
      the grid came out empty. */

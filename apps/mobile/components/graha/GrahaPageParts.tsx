@@ -3,14 +3,11 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
-import { GRAHA_PAGE_DESCRIPTIONS } from "@/lib/graha-page-descriptions";
+import { GRAHA_PAGE_DESCRIPTIONS } from "@vedic-patro/domain/graha-detail-descriptions";
+import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
+import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import {
-  descriptionBlocksFrom,
-  elementDescriptionBlocks,
-  ELEMENT_SECTION_LABELS,
-} from "@/lib/panchanga-element-descriptions";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -61,9 +58,15 @@ export function GrahaBanner({
 
 /** "About" block — what / how / meaning, keyed by graha page id. */
 export function GrahaDescription({ pageId }: { pageId: string }) {
-  const { lang, pick } = useLocale();
+  const { lang, pick, t } = useLocale();
   const colors = useThemeColors();
-  const blocks = descriptionBlocksFrom(GRAHA_PAGE_DESCRIPTIONS, pageId, lang);
+  const desc = GRAHA_PAGE_DESCRIPTIONS[pageId];
+  const blocks = desc
+    ? (["what", "how", "meaning"] as const).map((section) => ({
+        section,
+        body: bilingualText(lang, desc[section].ne, desc[section].en),
+      }))
+    : [];
   if (!blocks.length) return null;
 
   return (
@@ -77,7 +80,7 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
       {blocks.map((b) => (
         <View key={b.section} className="gap-1">
           <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
-            {pick(ELEMENT_SECTION_LABELS[b.section].ne, ELEMENT_SECTION_LABELS[b.section].en)}
+            {t(`element_page.section_${b.section}`)}
           </Text>
           <Text
             className="text-body leading-relaxed text-muted-foreground"
@@ -93,7 +96,7 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
 
 /** Element page "About" block — same content as web `ElementDescription`. */
 export function ElementDescription({ elementId }: { elementId: string }) {
-  const { lang, pick } = useLocale();
+  const { lang, pick, t } = useLocale();
   const colors = useThemeColors();
   const blocks = elementDescriptionBlocks(elementId, lang);
   if (!blocks.length) return null;
@@ -109,7 +112,7 @@ export function ElementDescription({ elementId }: { elementId: string }) {
       {blocks.map((b) => (
         <View key={b.section} className="gap-1">
           <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
-            {pick(ELEMENT_SECTION_LABELS[b.section].ne, ELEMENT_SECTION_LABELS[b.section].en)}
+            {t(`element_page.section_${b.section}`)}
           </Text>
           <Text
             className="text-body leading-relaxed text-muted-foreground"

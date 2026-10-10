@@ -17,6 +17,7 @@
  * a few times a second via `onSample`.
  */
 
+import "@/lib/sky3d/hips-config";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -88,7 +89,7 @@ import {
   RASHI_DIVIDERS,
   RASHI_LABEL_LAT,
   type eclipticPoint,
-} from "@/lib/sky3d/sky-geometry";
+} from "@vedic-patro/domain/sky3d/sky-geometry";
 import { flattenAsterisms, NAKSHATRA_ASTERISMS, precessionSinceJ2000, starOverlayNames } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { VEDIC_CONSTELLATION_LINKS } from "@vedic-patro/domain/sky3d/vedic-constellations";
 import { cultureStarLabel, flattenSkyCulture } from "@vedic-patro/domain/sky3d/sky-culture";
@@ -122,8 +123,8 @@ import {
   projectHorizonRaw,
   injectHorizonFisheyeIn,
   projectHorizon,
-} from "@/lib/sky3d/horizon-projection";
-import { buildGridLabels } from "@/lib/sky3d/grid-labels";
+} from "@vedic-patro/domain/sky3d/horizon-projection";
+import { buildGridLabels } from "@vedic-patro/domain/sky3d/grid-labels";
 import {
   makeMoonMaterial,
   MOON_EARTHSHINE,
@@ -131,8 +132,8 @@ import {
   MOON_PHASE_FOV_WIDE,
   MOON_UNLIT_FAR,
   type MoonMaterial,
-} from "@/lib/sky3d/moon-material";
-import { makeEarthMaterial } from "@/lib/sky3d/earth-material";
+} from "@vedic-patro/domain/sky3d/moon-material";
+import { makeEarthMaterial } from "@vedic-patro/domain/sky3d/earth-material";
 import { applyNadirStereographicUVs, prepareKathmanduGround } from "@/lib/sky3d/terrain";
 import {
   buildHipsTileOutline,
@@ -153,14 +154,14 @@ import {
   writeHipsDebugSnapshot,
   type HipsDebugTile,
   type HipsTileEntry,
-} from "@/lib/sky3d/hips";
+} from "@vedic-patro/domain/sky3d/hips";
 import {
   evaluateHipsTiles,
   getHipsTileScreenSizePx,
   HIPS_TILE_REFINE_PIXELS,
   type HipsLodFrame,
   type HipsLodLeaf,
-} from "@/lib/sky3d/hips-lod";
+} from "@vedic-patro/domain/sky3d/hips-lod";
 import earthToonUrl from "@/assets/graha/earth-orig.png";
 import milkyWayUrl from "@/assets/milkyway.png";
 import kathmanduUrl from "@/assets/kathmandu.jpeg?url";

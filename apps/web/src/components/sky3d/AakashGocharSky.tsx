@@ -96,7 +96,7 @@ import {
 } from "@vedic-patro/domain/sky3d/orbital-model";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
 import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
-import { SOLAR_STATIONS } from "@/lib/sky3d/sky-geometry";
+import { SOLAR_STATIONS } from "@vedic-patro/domain/sky3d/sky-geometry";
 import { POLE_STARS } from "@vedic-patro/domain/sky3d/pole-stars";
 import {
   AakashGocharScene,
@@ -108,7 +108,7 @@ import {
   type SkySample,
   type ViewState,
 } from "@/components/sky3d/AakashGocharScene";
-import { HIPS_ATTRIBUTION, readHipsDebugSnapshot, type HipsDebugSnapshot } from "@/lib/sky3d/hips";
+import { HIPS_ATTRIBUTION, readHipsDebugSnapshot, type HipsDebugSnapshot } from "@vedic-patro/domain/sky3d/hips";
 import { CompassControl } from "@/components/sky3d/CompassControl";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import compassNeedle from "@/assets/compass.svg?raw";
