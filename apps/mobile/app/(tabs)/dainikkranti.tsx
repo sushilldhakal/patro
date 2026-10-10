@@ -485,7 +485,7 @@ export default function DainikKrantiScreen() {
   const gocharReady = Boolean(allDays.length > 0);
 
   const gocharQ = useQuery({
-    queryKey: gocharKeys.day(gocharAnchor, "bs", location.params),
+    queryKey: gocharKeys.dayLegacy(gocharAnchor, "bs", location.params),
     queryFn: () => fetchGochar(gocharAnchor, "bs", location.params),
     enabled: gocharReady,
     staleTime: 1000 * 60 * 30,

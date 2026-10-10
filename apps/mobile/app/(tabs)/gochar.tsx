@@ -46,7 +46,7 @@ export default function GocharScreen() {
   const bs = useMemo(() => adToBS(date), [date]);
 
   const gocharQ = useQuery({
-    queryKey: gocharKeys.day(dateAd, "ad", location.params),
+    queryKey: gocharKeys.dayLegacy(dateAd, "ad", location.params),
     queryFn: () => fetchGochar(dateAd, "ad", location.params),
     staleTime: 1000 * 60 * 30,
     placeholderData: keepPreviousData,

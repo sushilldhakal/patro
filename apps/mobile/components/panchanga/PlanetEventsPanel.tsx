@@ -63,7 +63,7 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
   const refDate = useMemo(() => new Date(`${dateAd}T12:00:00`), [dateAd]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: gocharKeys.day(dateAd, "ad", location),
+    queryKey: gocharKeys.dayLegacy(dateAd, "ad", location),
     queryFn: () => fetchGochar(dateAd, "ad", location),
     staleTime: 1000 * 60 * 60,
   });

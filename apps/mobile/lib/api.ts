@@ -18,7 +18,6 @@ import {
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
   withPanchangaCacheVersion,
-  withGrahaCacheVersion,
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
   ApiError,
@@ -71,6 +70,14 @@ export {
   fetchSaitDetail,
   fetchSaitMonthAll,
   fetchGocharIngress,
+  fetchPatroCapabilities,
+  fetchCivilTimeline,
+  gocharKeys,
+  fetchGochar,
+  grahaDetailKeys,
+  fetchGrahaSthiti,
+  panchakKeys,
+  saitKeys,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
@@ -81,10 +88,6 @@ import type {
   ReportRecord,
   RashifalPeriod,
   VastuSketchRequest,
-  PatroApiLimits,
-  CivilTimeline,
-  GocharResponse,
-  GrahaSthitiResponse,
   ElementSpanRange,
   RashifalBlock,
   PanchangaDay,
@@ -328,13 +331,6 @@ export const API_BASE =
 export const API_VERSION = (extra.apiVersion as string) ?? "v1";
 export const DATA_BASE = `${API_BASE}/${API_VERSION}`;
 
-/** Host-owned year bounds and cache version — not mirrored in the client. */
-export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
-  const res = await fetch(`${API_BASE}/meta/capabilities`);
-  if (!res.ok) throw new Error(`API ${res.status}: /meta/capabilities`);
-  return res.json();
-};
-
 export const DEFAULT_LOCATION: LocationParams = {
   city_id: 1283240,
   timezone: "Asia/Kathmandu",
@@ -368,6 +364,7 @@ function locationKey(loc?: LocationParams): string {
 }
 
 configureApiClient({
+  baseUrl: API_BASE,
   get: offlineAwareJson,
   appendLocation: appLocationQuery,
   locationKey,
@@ -482,11 +479,6 @@ export const fetchTodayPanchanga = (location?: LocationParams) => {
   );
 };
 
-export const fetchCivilTimeline = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
-  get<{ civil_timeline: CivilTimeline }>(
-    appendLocation(withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&detail=false&civil=true`), location),
-  ).then((r) => r.civil_timeline);
-
 export const fetchHolidays = (year: number) =>
   get<HolidaysResponse>(withPanchangaCacheVersion(`/nepal/holidays?year=${year}&era=bs`));
 
@@ -552,32 +544,6 @@ export function fetchPersonalRashifal(
   );
 }
 
-export const gocharKeys = {
-  day: (date: string, era: string, location?: LocationParams) =>
-    ["gochar", date, era, locationCacheKey(location)] as const,
-  ingress: (
-    from: string,
-    to: string,
-    level: string,
-    location?: LocationParams,
-  ) => ["gochar", "ingress", from, to, level, locationCacheKey(location)] as const,
-};
-
-export const fetchGochar = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
-  get<GocharResponse>(appendLocation(`/nepal/gochar/${date}?era=${era}`, location));
-
-
-export const grahaDetailKeys = {
-  sthiti: (dateKey: string, era: string, location?: LocationParams) =>
-    ["graha", "sthiti", dateKey, era, locationCacheKey(location)] as const,
-  asta: (year: number, location?: LocationParams, era = "bs") =>
-    ["graha", "asta", era, year, locationCacheKey(location)] as const,
-  vakri: (year: number, location?: LocationParams, era = "bs") =>
-    ["graha", "vakri", era, year, locationCacheKey(location)] as const,
-  eclipse: (kind: "solar" | "lunar", year: number, location?: LocationParams, era = "bs") =>
-    ["graha", "eclipse", kind, era, year, locationCacheKey(location)] as const,
-};
-
 export const elementKeys = {
   day: (name: string, date: string, location?: LocationParams) =>
     ["element", "day", name, date, locationCacheKey(location)] as const,
@@ -593,25 +559,10 @@ export const elementKeys = {
     ] as const,
 };
 
-export const panchakKeys = {
-  year: (year: number, location?: LocationParams, era = "bs") =>
-    ["panchak", era, year, locationCacheKey(location)] as const,
-};
-
 export const sunTimesKeys = {
   year: (year: number, era: string, location?: LocationParams) =>
     ["sun-times", "year", era, year, locationCacheKey(location)] as const,
 };
-
-export const saitKeys = {
-  entries: (year: number, category: string, location?: LocationParams) =>
-    ["sait", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const,
-};
-
-export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, era: "bs" | "ad" = "ad") =>
-  get<GrahaSthitiResponse>(
-    appendLocation(withGrahaCacheVersion(`/nepal/graha-sthiti/${dateKey}?era=${era}`), location),
-  );
 
 /** Span-kind elements (tithi, nakshatra, yoga, karana…) over a whole month. */
 export const fetchElementSpans = (

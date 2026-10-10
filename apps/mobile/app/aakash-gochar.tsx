@@ -89,7 +89,7 @@ export default function AakashGocharScreen() {
   }, [location.params]);
 
   const query = useQuery({
-    queryKey: gocharKeys.day(dateAd, "ad", location.params),
+    queryKey: gocharKeys.dayLegacy(dateAd, "ad", location.params),
     queryFn: () => fetchGochar(dateAd, "ad", location.params),
     /* Without this, `isLoading` goes true on every date change (no data yet
        under the new key), which swaps AakashGocharSky out for the spinner —

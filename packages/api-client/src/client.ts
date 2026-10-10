@@ -13,6 +13,7 @@
 import type {
   BhavaReferencePayload,
   CitiesSearchResponse,
+  CivilTimeline,
   ConvertAdToBs,
   ConvertBsToAd,
   DashaSystem,
@@ -20,7 +21,9 @@ import type {
   EclipseYearResponse,
   ElementDayResponse,
   GocharIngressResponse,
+  GocharResponse,
   GrahaAstaResponse,
+  GrahaSthitiResponse,
   GrahaVakriResponse,
   JanmaRashi,
   KundaliDetailResponse,
@@ -30,6 +33,7 @@ import type {
   NearestCityResponse,
   PanchakYearResponse,
   PanchangaDay,
+  PatroApiLimits,
   SaitDetailResponse,
   SaitMonthAllResponse,
   SaitPersonalizeResponse,
@@ -94,6 +98,8 @@ export async function apiErrorFrom(res: Response, path: string): Promise<ApiErro
 // ─── Transport ────────────────────────────────────────────────────────────────
 
 export interface ApiTransport {
+  /** Unversioned API base (`…/api`), for the few calls outside the versioned data base. */
+  baseUrl: string;
   /** GET a path under the versioned data base (`/panchanga/…`) and parse the JSON. */
   get<T>(path: string): Promise<T>;
   /** Append the location query this app sends (its exact form is part of the URL contract). */
@@ -500,6 +506,71 @@ export const fetchGocharIngress = (
   return get<GocharIngressResponse>(
     appendLocation(`/nepal/gochar/ingress?${params.toString()}`, location),
   );
+};
+
+
+
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
+/** Host-owned year bounds and cache version — not mirrored in the client. */
+export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
+  const path = "/meta/capabilities";
+  const res = await fetch(`${current().baseUrl}${path}`);
+  if (!res.ok) throw await apiErrorFrom(res, path);
+  return res.json();
+};
+
+// ─── Day panchanga ────────────────────────────────────────────────────────────
+
+export const fetchCivilTimeline = (date: string, era: Era = "ad", location?: LocationParams) =>
+  get<{ civil_timeline: CivilTimeline }>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&detail=false&civil=true`),
+      location,
+    ),
+  ).then((r) => r.civil_timeline);
+
+// ─── Gochar and graha detail ──────────────────────────────────────────────────
+
+export const gocharKeys = {
+  day: (jdUt: number, location?: LocationParams) =>
+    ["gochar", "jd", jdUt, locationCacheKey(location)] as const,
+  dayLegacy: (date: string, era: string, location?: LocationParams) =>
+    ["gochar", date, era, locationCacheKey(location)] as const,
+  ingress: (from: string, to: string, level: string, location?: LocationParams) =>
+    ["gochar", "ingress", from, to, level, locationCacheKey(location)] as const,
+  ingressEra: (from: string, to: string, level: string, era: string, location?: LocationParams) =>
+    ["gochar", "ingress", from, to, level, era, locationCacheKey(location)] as const,
+};
+
+export const fetchGochar = (date: string, era: Era = "ad", location?: LocationParams) =>
+  get<GocharResponse>(appendLocation(`/nepal/gochar/${date}?era=${era}`, location));
+
+export const grahaDetailKeys = {
+  sthiti: (dateKey: string, apiEra: string, location?: LocationParams) =>
+    ["graha", "sthiti", GRAHA_CACHE_VERSION, apiEra, dateKey, locationCacheKey(location)] as const,
+  asta: (year: number, location?: LocationParams, era: string = "bs") =>
+    ["graha", "asta", GRAHA_CACHE_VERSION, era, year, locationCacheKey(location)] as const,
+  vakri: (year: number, location?: LocationParams, era: string = "bs") =>
+    ["graha", "vakri", GRAHA_CACHE_VERSION, era, year, locationCacheKey(location)] as const,
+  eclipse: (kind: "solar" | "lunar", year: number, location?: LocationParams, era: string = "bs") =>
+    ["graha", "eclipse", GRAHA_CACHE_VERSION, kind, era, year, locationCacheKey(location)] as const,
+};
+
+export const fetchGrahaSthiti = (dateKey: string, location?: LocationParams, apiEra: Era = "ad") =>
+  get<GrahaSthitiResponse>(
+    appendLocation(withGrahaCacheVersion(`/nepal/graha-sthiti/${dateKey}?era=${apiEra}`), location),
+  );
+
+export const panchakKeys = {
+  year: (year: number, location?: LocationParams, era: string = "bs") =>
+    ["panchak", era, year, locationCacheKey(location)] as const,
+};
+
+export const saitKeys = {
+  years: () => ["sait", "years"] as const,
+  entries: (year: number, category: string, location?: LocationParams) =>
+    ["sait", SAIT_CACHE_VERSION, year, category, locationCacheKey(location)] as const,
 };
 
 
