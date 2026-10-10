@@ -1,6 +1,6 @@
 /**
- * Expands the single bilingual catalogue (src/i18n/strings.ts) into the
- * per-language bundles the apps actually load.
+ * Expands the single bilingual catalogue (src/strings.ts) into the per-language
+ * bundles the website and the mobile app load.
  *
  * One authoring file means a string can never exist in one language and be
  * missing in the other, but i18next wants a separate resource tree per
@@ -14,24 +14,15 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, relative } from "node:path";
 
-import { strings, type Translatable } from "../src/i18n/strings";
+import { strings, type Translatable } from "../src/strings";
 
 type Lang = "ne" | "en";
 const LANGS: Lang[] = ["ne", "en"];
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-/** Mobile lives in a sibling repo; skip it when it is not checked out. */
-const MOBILE_ROOT = resolve(root, "../dhakal-patro-mobile");
-
-const targets = (lang: Lang): string[] => {
-  const paths = [resolve(root, `src/i18n/${lang}.json`)];
-  if (existsSync(MOBILE_ROOT)) {
-    // Not lib/i18n/, which would collide with the lib/i18n.tsx runtime module.
-    paths.push(resolve(MOBILE_ROOT, `lib/translations/${lang}.json`));
-  }
-  return paths;
-};
+/** One copy of each bundle; the website and the mobile app both import it from this package. */
+const targets = (lang: Lang): string[] => [resolve(root, `src/${lang}.json`)];
 
 type Tree = { [key: string]: Tree | string | string[] | object[] };
 
@@ -91,7 +82,7 @@ function validate(): void {
     }
   }
   if (problems.length) {
-    throw new Error(`src/i18n/strings.ts has ${problems.length} problem(s):\n  ${problems.join("\n  ")}`);
+    throw new Error(`packages/i18n/src/strings.ts has ${problems.length} problem(s):\n  ${problems.join("\n  ")}`);
   }
 }
 
@@ -163,7 +154,7 @@ for (const lang of LANGS) {
 if (check && stale) {
   console.error(
     `\n${stale} bundle(s) out of date. Run \`npm run i18n\` and commit the result. ` +
-      `Never edit ne.json/en.json directly — they are generated from src/i18n/strings.ts.`,
+      `Never edit ne.json/en.json directly — they are generated from packages/i18n/src/strings.ts.`,
   );
   process.exit(1);
 }

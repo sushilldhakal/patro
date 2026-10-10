@@ -4,7 +4,7 @@ import fs from "node:fs";
 
 const [mapPath, ...files] = process.argv.slice(2);
 const map = JSON.parse(fs.readFileSync(mapPath, "utf8"));
-const ne = JSON.parse(fs.readFileSync("src/i18n/ne.json", "utf8"));
+const ne = JSON.parse(fs.readFileSync("../../packages/i18n/src/ne.json", "utf8"));
 
 const flat = new Set();
 (function walk(obj, prefix) {

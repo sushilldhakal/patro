@@ -21,8 +21,8 @@ function flatten(tree, prefix = "", out = {}) {
   return out;
 }
 
-const ne = flatten(JSON.parse(readFileSync(resolve(root, "src/i18n/ne.json"), "utf8")));
-const en = flatten(JSON.parse(readFileSync(resolve(root, "src/i18n/en.json"), "utf8")));
+const ne = flatten(JSON.parse(readFileSync(resolve(root, "../../packages/i18n/src/ne.json"), "utf8")));
+const en = flatten(JSON.parse(readFileSync(resolve(root, "../../packages/i18n/src/en.json"), "utf8")));
 
 const byPair = new Map();
 for (const key of Object.keys(ne)) {

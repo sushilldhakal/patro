@@ -30,7 +30,7 @@ import {
   VASTU_PADA_IDS,
   VASTU_INNER4,
 } from "../src/lib/vastu.ts";
-import { strings } from "../src/i18n/strings.ts";
+import { strings } from "@vedic-patro/i18n/strings";
 
 const VERSION = "2026.09.01.2"; // .2: added family/servant/library/combined via vastu.plan.why.*
 const SOURCES = ["mayamata", "manasara", "vishvakarma", "samarangana", "aparajita"];

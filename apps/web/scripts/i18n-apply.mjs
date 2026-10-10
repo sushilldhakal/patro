@@ -5,7 +5,7 @@
  *
  * The map is `{ "<catalogue key>": { "ne": "…", "en": "…" } }`. Every call site
  * whose pair matches an entry is rewritten to `t("<key>")`, and keys that are
- * not in src/i18n/strings.ts yet get appended to their namespace section.
+ * not in packages/i18n/src/strings.ts yet get appended to their namespace section.
  *
  * Matching is on the exact pair rather than on position, so a pair that appears
  * in six places collapses to one key and a near-duplicate that differs only in
@@ -37,7 +37,7 @@ if (!mapPath || (files.length === 0 && !keysOnly)) {
 }
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const CATALOGUE = resolve(root, "src/i18n/strings.ts");
+const CATALOGUE = resolve(root, "../../packages/i18n/src/strings.ts");
 
 const map = JSON.parse(readFileSync(mapPath, "utf8"));
 
@@ -173,7 +173,7 @@ if (duplicatePairs.length) {
 }
 
 console.log(`\n${replacedTotal} call site(s) rewritten, ${usedKeys.size} key(s) used.`);
-console.log(`${toAdd.length} key(s) ${dry ? "would be" : ""} added to src/i18n/strings.ts.`);
+console.log(`${toAdd.length} key(s) ${dry ? "would be" : ""} added to packages/i18n/src/strings.ts.`);
 if (toAdd.length) console.log(`  ${toAdd.join("\n  ")}`);
 
 const reused = [...usedKeys].filter((k) => existing.has(k)).sort();

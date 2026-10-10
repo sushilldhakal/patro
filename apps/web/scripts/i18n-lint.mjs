@@ -73,7 +73,7 @@ if (perFile.length > 30) console.log(`  … and ${perFile.length - 30} more file
 if (total > BASELINE) {
   console.error(
     `\nThis is ${total - BASELINE} more than the baseline. New copy belongs in ` +
-      `src/i18n/strings.ts and should be read with t("key"), not written inline.`,
+      `packages/i18n/src/strings.ts and should be read with t("key"), not written inline.`,
   );
   process.exit(1);
 }

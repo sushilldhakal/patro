@@ -14,7 +14,7 @@ import { dirname, join, relative, resolve } from "node:path";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = resolve(root, "src");
 
-const catalogue = JSON.parse(readFileSync(resolve(root, "src/i18n/ne.json"), "utf8"));
+const catalogue = JSON.parse(readFileSync(resolve(root, "../../packages/i18n/src/ne.json"), "utf8"));
 
 function flatten(node, prefix = "", out = new Set()) {
   for (const [key, value] of Object.entries(node)) {

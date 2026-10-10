@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from "react";
 
-import en from "@/lib/translations/en.json";
-import ne from "@/lib/translations/ne.json";
+import en from "@vedic-patro/i18n/en.json";
+import ne from "@vedic-patro/i18n/ne.json";
 import {
   DEFAULT_LANGUAGE,
   getStoredLanguage,

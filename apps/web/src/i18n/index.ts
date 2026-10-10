@@ -2,7 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { getStoredLanguage } from "@/lib/user-preferences";
 
-import ne from "./ne.json";
+import ne from "@vedic-patro/i18n/ne.json";
 
 function clientInitialLng(): string {
   if (typeof window === "undefined") return "ne";
@@ -34,7 +34,7 @@ export function ensureEnglishBundle(): Promise<void> {
     return Promise.resolve();
   }
   if (!enLoadPromise) {
-    enLoadPromise = import("./en.json").then((mod) => {
+    enLoadPromise = import("@vedic-patro/i18n/en.json").then((mod) => {
       i18n.addResourceBundle("en", "translation", mod.default, true, true);
       // `lng` may already be "en" (restored from storage), in which case nothing
       // else emits languageChanged once the bundle lands — components would keep

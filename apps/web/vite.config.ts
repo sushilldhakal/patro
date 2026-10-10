@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process"
 function manualChunkId(id: string): string | undefined {
   if (id.includes("samvatsara-table.json")) return "samvatsara-data"
   if (id.includes("bs-calendar-data.json")) return "bs-calendar-data"
-  if (id.includes("/src/i18n/ne.json")) return "i18n-ne"
+  if (id.includes("/packages/i18n/src/ne.json")) return "i18n-ne"
 
   if (!id.includes("node_modules")) return
 
@@ -33,12 +33,13 @@ function manualChunkId(id: string): string | undefined {
 
 /**
  * Regenerate ne.json / en.json whenever the bilingual catalogue changes, so
- * editing a string in src/i18n/strings.ts hot-reloads like any other source
+ * editing a string in packages/i18n/src/strings.ts hot-reloads like any other source
  * file. Runs as a subprocess because the script reads strings.ts through a
  * fresh module graph — an in-process import would serve a cached copy.
  */
 function i18nBundles(): Plugin {
-  const catalogue = path.resolve(__dirname, "src/i18n/strings.ts")
+  const i18nPackage = path.resolve(__dirname, "../../packages/i18n")
+  const catalogue = path.join(i18nPackage, "src/strings.ts")
   return {
     name: "i18n-bundles",
     apply: "serve",
@@ -46,8 +47,8 @@ function i18nBundles(): Plugin {
       server.watcher.add(catalogue)
       server.watcher.on("change", (file) => {
         if (path.resolve(file) !== catalogue) return
-        const result = spawnSync("npx", ["tsx", "scripts/generate-i18n.ts"], {
-          cwd: __dirname,
+        const result = spawnSync("npx", ["tsx", "scripts/generate.ts"], {
+          cwd: i18nPackage,
           encoding: "utf8",
         })
         if (result.status !== 0) {

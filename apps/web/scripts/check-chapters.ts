@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 
 import { CHAPTER_TRACKS } from "../src/lib/learn/chapter-tracks";
 import { compileChapter } from "../src/lib/learn/chapter-player";
-import { strings } from "../src/i18n/strings";
+import { strings } from "@vedic-patro/i18n/strings";
 import type { Chapter, ChapterSimState } from "../src/lib/learn/chapter-kit";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");

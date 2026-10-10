@@ -1,7 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import ne from "./ne.json";
-import en from "./en.json";
+import ne from "@vedic-patro/i18n/ne.json";
+import en from "@vedic-patro/i18n/en.json";
 
 let initialized = false;
 
