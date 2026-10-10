@@ -10,8 +10,15 @@ User=ubuntu
 Group=ubuntu
 WorkingDirectory=/home/ubuntu/patro
 Environment=PYTHONUNBUFFERED=1
+# Worker processes. Uvicorn reads WEB_CONCURRENCY when --workers is not given.
+# Panchanga/kundali maths is CPU-bound, so one process serialises every
+# uncached request; size this to the VM's cores (2–4). A WEB_CONCURRENCY line
+# in .env overrides this default (EnvironmentFile wins over Environment).
+Environment=WEB_CONCURRENCY=2
 EnvironmentFile=-/home/ubuntu/patro/.env
-ExecStart=/home/ubuntu/patro/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+# Loopback only: nginx (and Cloudflare in front of it) is the public entry
+# point. Binding 0.0.0.0 let anyone reach the API directly on :8000.
+ExecStart=/home/ubuntu/patro/.venv/bin/uvicorn app:app --host 127.0.0.1 --port 8000
 Restart=always
 RestartSec=5
 KillMode=mixed

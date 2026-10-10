@@ -32,6 +32,20 @@ fi
 echo "==> Installing Swiss Ephemeris .se1 files (idempotent; also runs via requirements.txt)"
 python scripts/install_ephemeris.py --extended
 
+echo "==> Installing systemd unit (if changed)"
+UNIT_SRC="deploy/${SERVICE_NAME}.service"
+UNIT_DST="/etc/systemd/system/${SERVICE_NAME}.service"
+if [[ -f "${UNIT_SRC}" ]] && ! cmp -s "${UNIT_SRC}" "${UNIT_DST}"; then
+  if sudo -n true 2>/dev/null; then
+    [[ -f "${UNIT_DST}" ]] && sudo cp "${UNIT_DST}" "${UNIT_DST}.bak"
+    sudo install -m 644 "${UNIT_SRC}" "${UNIT_DST}"
+    sudo systemctl daemon-reload
+    echo "    Updated ${UNIT_DST} (previous copy kept as .bak)"
+  else
+    echo "WARNING: no passwordless sudo — ${UNIT_DST} not updated" >&2
+  fi
+fi
+
 echo "==> Restarting service"
 sudo systemctl restart "${SERVICE_NAME}"
 
