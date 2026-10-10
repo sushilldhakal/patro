@@ -10,7 +10,7 @@ import {
   planetGridLayout,
   pointsToSvg,
   polygonCentroid,
-} from "@/lib/kundali/north-indian-layout";
+} from "@vedic-patro/domain/kundali/north-indian-layout";
 import { useLocale } from "@/lib/i18n";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { bhavaReferenceKeys, fetchBhavaReference, type BhavaReferencePayload } from "@/lib/api";

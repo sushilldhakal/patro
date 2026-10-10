@@ -27,7 +27,7 @@ import {
   solarMonthStarts,
   PERIHELION,
   VERNAL,
-} from "@/lib/sky3d/day-mechanics";
+} from "@vedic-patro/domain/sky3d/day-mechanics";
 
 const W = 336;
 const H = 400;

@@ -30,7 +30,7 @@ import { formatGocharPatroDate } from "@vedic-patro/domain/gochar-page-utils";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import { toAdStr } from "@vedic-patro/domain/patro-day";
-import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import {
   clockStringInTimezone,
   todayAdStringInTimezone,

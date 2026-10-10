@@ -16,7 +16,7 @@ import {
   type ReportMeta,
   type ReportSection,
 } from "@/lib/api";
-import type { InstantQuery } from "@/lib/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { cn } from "@/lib/utils";

@@ -3,7 +3,7 @@
  * group, plus optional learn-article slugs.
  */
 
-import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { LEARN_TOPICS_BY_SLUG, topicsInCategory } from "@/lib/learn/learn-topics-meta";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { Era } from "@vedic-patro/domain/era";

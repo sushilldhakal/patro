@@ -7,7 +7,7 @@
  * here and transformed in the render loop.
  */
 
-import { NAKSHATRA_ARC, RASHI_ARC } from "@/lib/sky3d/geocentric-model";
+import { NAKSHATRA_ARC, RASHI_ARC } from "@vedic-patro/domain/sky3d/geocentric-model";
 
 /** A point on the celestial sphere in ecliptic coordinates, degrees. */
 export type eclipticPoint = { lon: number; lat: number };

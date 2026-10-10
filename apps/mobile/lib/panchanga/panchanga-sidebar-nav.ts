@@ -1,4 +1,7 @@
-import { ELEMENT_META, CEREMONY_META, elementHref } from "@/lib/panchanga-elements";
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { translateKey } from "@vedic-patro/domain/locale";
+import { ELEMENT_META, CEREMONY_META } from "@vedic-patro/domain/panchanga-elements";
+import { elementHref } from "@/lib/element-routes";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 
 export type PanchangaSidebarItem = {
@@ -21,10 +24,10 @@ function elementItems(kind: "span" | "table"): PanchangaSidebarItem[] {
   return ELEMENT_META.filter((e) => e.kind === kind).map((e) => ({
     id: e.id,
     href: elementHref(e.id),
-    labelNe: e.titleNe,
-    labelEn: e.titleEn,
-    blurbNe: e.blurbNe,
-    blurbEn: e.blurbEn,
+    labelNe: elementTitle(e.id, "ne"),
+    labelEn: elementTitle(e.id, "en"),
+    blurbNe: elementBlurb(e.id, "ne"),
+    blurbEn: elementBlurb(e.id, "en"),
   }));
 }
 
@@ -32,8 +35,8 @@ function ceremonyItems(): PanchangaSidebarItem[] {
   return CEREMONY_META.map((c) => ({
     id: c.id,
     href: c.id === "vivah" ? "/vivah-sait" : `/sait/${c.id}`,
-    labelNe: c.titleNe,
-    labelEn: c.titleEn,
+    labelNe: translateKey(`sait.categories.${c.id}`, "ne"),
+    labelEn: translateKey(`sait.categories.${c.id}`, "en"),
   }));
 }
 

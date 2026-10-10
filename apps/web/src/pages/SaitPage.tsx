@@ -9,15 +9,15 @@ import { cn } from "@/lib/utils";
 import { patroCard } from "@/lib/patro-classes";
 import { useRouteLoading } from "@/lib/route-loading";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
-import { CEREMONY_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META } from "@vedic-patro/domain/panchanga-elements";
 import { isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
+import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SaitSources } from "@/components/sait/SaitSources";
 import { SuitabilityLegend } from "@/components/sait/sait-suitability";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability";
+import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 import {
   fetchSait,
   fetchSaitDetail,

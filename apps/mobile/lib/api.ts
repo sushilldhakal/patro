@@ -5,7 +5,7 @@ import {
   appendBirthInstantParams,
   appendInstantParams,
   instantCacheKey,
-} from "@/lib/instant-query";
+} from "@vedic-patro/domain/instant-query";
 import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
 

@@ -5,7 +5,8 @@ import { useRouter } from "expo-router";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
 import { SaitDayCard } from "@/components/sait/SaitDayCard";
-import { SaitRulesSection, type SaitRule } from "@/components/sait/SaitRulesSection";
+import { SaitRulesSection } from "@/components/sait/SaitRulesSection";
+import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import { Text } from "@/components/ui/Text";
 import type {
   BratabandhaNakshatraMode,
@@ -66,7 +67,7 @@ export function SaitCeremonyLayout({
   location: PanchangaLocation;
   onLocationChange: (loc: PanchangaLocation) => void;
   method?: { ne?: string; en?: string } | null;
-  rules?: SaitRule[] | null;
+  rules?: SaitRuleEntry[] | null;
   engineVersion?: string;
   /** Applied (ON) toggleable rule ids; enables per-rule switches when set. */
   enabledRuleIds?: Set<string> | null;

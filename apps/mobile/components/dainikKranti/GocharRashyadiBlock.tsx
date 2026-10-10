@@ -1,7 +1,7 @@
 import { View, type ViewStyle } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { GocharGraha } from "@/lib/api";
-import type { RashyadiSegment } from "@/lib/dainikKranti/rashyadi";
+import type { RashyadiSegment } from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

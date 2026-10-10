@@ -58,7 +58,7 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { KATHMANDU } from "@/lib/sky3d/horizon";
+import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
 import {
   atLonInto,
   BELT_MID,
@@ -88,7 +88,7 @@ import {
   PERIHELION,
   VERNAL,
   VERNAL_FROM_PERIHELION,
-} from "@/lib/sky3d/day-mechanics";
+} from "@vedic-patro/domain/sky3d/day-mechanics";
 
 const PI2 = Math.PI * 2;
 

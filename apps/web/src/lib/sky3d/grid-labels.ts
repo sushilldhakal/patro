@@ -29,7 +29,7 @@
 
 import * as THREE from "three";
 
-import { altAzToVec3 } from "@/lib/sky3d/horizon";
+import { altAzToVec3 } from "@vedic-patro/domain/sky3d/horizon";
 import { horizonViewWindow, projectHorizonRaw } from "@/lib/sky3d/horizon-projection";
 
 /**

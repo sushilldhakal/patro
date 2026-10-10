@@ -3,7 +3,8 @@ import { Text } from "@/components/ui/Text";
 import type { SaitSuitability } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { SUITABILITY_ORDER, SUITABILITY_STYLE } from "@/lib/sait-suitability";
+import { SUITABILITY_ORDER } from "@vedic-patro/domain/sait-suitability";
+import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
 
 /** A small verdict chip shown on a personalised day. */
 export function SuitabilityBadge({ suitability }: { suitability: SaitSuitability }) {

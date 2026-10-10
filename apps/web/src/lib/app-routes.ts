@@ -11,8 +11,8 @@
  * NOT enumerated here — they expand from their own metadata (learn-topics-meta.ts,
  * panchanga-elements.ts) in public-indexable-paths.ts, same as before.
  */
-import { PANCHANGA_SHELL_PATHS } from "@/lib/panchanga-shell-paths";
-import { isKundaliRoute } from "@/lib/kundali/kundali-routes";
+import { PANCHANGA_SHELL_PATHS } from "@vedic-patro/domain/panchanga-shell-paths";
+import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";
 
 export type SitemapChangefreq = "daily" | "weekly" | "monthly";
 

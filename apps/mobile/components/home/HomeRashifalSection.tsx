@@ -13,7 +13,7 @@ import {
   type LocationParams,
   type RashifalSignBlock,
 } from "@/lib/api";
-import { instantCacheKey } from "@/lib/instant-query";
+import { instantCacheKey } from "@vedic-patro/domain/instant-query";
 import { profileChartParams } from "@/lib/kundali/profile-chart";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useLocale } from "@/lib/i18n";

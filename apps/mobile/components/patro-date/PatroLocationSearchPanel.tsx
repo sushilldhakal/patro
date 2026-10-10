@@ -19,7 +19,7 @@ import {
   nearestNepalCity,
   nepalCityToCity,
   searchNepalCities,
-} from "@/lib/cities/nepal-cities";
+} from "@vedic-patro/domain/cities/nepal-cities";
 import { cityToLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";

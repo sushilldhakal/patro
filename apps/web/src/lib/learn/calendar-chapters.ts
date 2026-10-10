@@ -27,7 +27,7 @@
  * path {@link ./chapter-kit#chapterAudioSources} names.
  */
 
-import { solarMonthStarts } from "@/lib/sky3d/day-mechanics";
+import { solarMonthStarts } from "@vedic-patro/domain/sky3d/day-mechanics";
 import { cam, chapterState, kf, type Chapter } from "./chapter-kit";
 
 /** The real year. Everything in this half is measured against it. */

@@ -16,7 +16,7 @@ import {
   HOUSE_LORD_TITLE_NE,
   computeAspectedBy,
   splitList,
-} from "@/lib/kundali/bhava-detail";
+} from "@vedic-patro/domain/kundali/bhava-detail";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 
 function grahaName(key: string, lang: "ne" | "en"): string {

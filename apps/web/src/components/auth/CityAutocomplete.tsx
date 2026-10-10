@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MapPin, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { searchCities, type City } from "@/lib/api";
-import { nepalCityToCity, searchNepalCities } from "@/lib/cities/nepal-cities";
+import { nepalCityToCity, searchNepalCities } from "@vedic-patro/domain/cities/nepal-cities";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
 export interface CitySelection {

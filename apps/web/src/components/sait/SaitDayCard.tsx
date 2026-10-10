@@ -11,7 +11,7 @@ import type {
   SaitShuddhiTone,
   SaitSuitability,
 } from "@/lib/api";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability";
+import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 import { SuitabilityBadge } from "@/components/sait/sait-suitability";
 
 /**

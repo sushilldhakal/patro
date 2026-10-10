@@ -12,11 +12,11 @@ import {
 import {
   mapPanchakPeriod,
   type PanchakPeriod,
-} from "@/lib/panchak/panchak-patro-data";
+} from "@vedic-patro/domain/panchak/panchak-patro-data";
 import {
   PANCHAK_VARIETIES,
   panchakVarietyFromStartAd,
-} from "@/lib/panchak/panchak-types";
+} from "@vedic-patro/domain/panchak/panchak-types";
 import { fetchPanchakYear, panchakKeys } from "@/lib/api";
 import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";

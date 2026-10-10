@@ -24,7 +24,7 @@ import {
   type RashifalPeriod,
 } from "@/lib/api";
 import { profileChartParams } from "@/lib/kundali/profile-chart";
-import { instantCacheKey } from "@/lib/instant-query";
+import { instantCacheKey } from "@vedic-patro/domain/instant-query";
 import { useLocale } from "@/lib/i18n";
 import {
   RASHIFAL_PERIOD_ICON,

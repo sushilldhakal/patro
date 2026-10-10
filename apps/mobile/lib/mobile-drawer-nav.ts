@@ -1,4 +1,7 @@
-import { CEREMONY_META, ELEMENT_META, elementHref } from "@/lib/panchanga-elements";
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { translateKey } from "@vedic-patro/domain/locale";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
+import { elementHref } from "@/lib/element-routes";
 import { resolveDrawerIcon, type DrawerIconName } from "@/lib/drawer-icons";
 
 export type DrawerNavItem = {
@@ -44,8 +47,8 @@ function elementItems(kind: "span" | "table"): DrawerNavItem[] {
   return ELEMENT_META.filter((e) => e.kind === kind).map((e) => ({
     id: e.id,
     href: elementHref(e.id),
-    labelNe: e.titleNe,
-    labelEn: e.titleEn,
+    labelNe: elementTitle(e.id, "ne"),
+    labelEn: elementTitle(e.id, "en"),
     icon: resolveDrawerIcon(section, e.id),
   }));
 }
@@ -54,8 +57,8 @@ function saitItems(): DrawerNavItem[] {
   return CEREMONY_META.map((c) => ({
     id: c.id,
     href: c.id === "vivah" ? "/vivah-sait" : `/sait/${c.id}`,
-    labelNe: c.titleNe,
-    labelEn: c.titleEn,
+    labelNe: translateKey(`sait.categories.${c.id}`, "ne"),
+    labelEn: translateKey(`sait.categories.${c.id}`, "en"),
     icon: resolveDrawerIcon("sait", c.id),
   }));
 }

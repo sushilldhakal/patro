@@ -58,7 +58,10 @@ function translate(lang: AppLanguage, key: string, vars?: TranslateVars): string
 // Shared domain code asks for catalogue keys and the default language through this.
 configureLocale({
   currentLanguage: () => "ne",
-  translate: (key, lng) => translate(lng, key),
+  translate: (key, lng) => {
+    const value = lookup(BUNDLES[lng], key) ?? lookup(BUNDLES.ne, key);
+    return typeof value === "string" ? value : undefined;
+  },
 });
 
 /** Read a key that holds a list (the SEO FAQ blocks) rather than a string. */

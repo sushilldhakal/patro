@@ -1,3 +1,4 @@
+import { elementTitle } from "@vedic-patro/domain/panchanga-i18n";
 import { useMemo, useState, type ReactNode } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -44,7 +45,7 @@ import {
 } from "@/lib/choghadiya-display";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { ELEMENT_BY_ID } from "@/lib/panchanga-elements";
+import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
 import {
   formatElementStampDisplay,
   getChandrabalamTable,
@@ -565,7 +566,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
   };
 
   return (
-    <AppShell title={pick(meta.titleNe, meta.titleEn)} showHeader={false}>
+    <AppShell title={elementTitle(meta.id, lang)} showHeader={false}>
       <GrahaBanner
         icon="sparkles-outline"
         title={t(`panchanga_elements.${meta.id}.title`)}

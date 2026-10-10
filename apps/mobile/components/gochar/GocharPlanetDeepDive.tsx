@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { Text } from "@/components/ui/Text";
 import type { GocharGraha } from "@/lib/api";
-import { grahaRashiNe } from "@/lib/dainikKranti/gochar-display";
+import { grahaRashiNe } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import {
   formatGocharPatroDate,
   grahaExalted,

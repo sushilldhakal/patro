@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { localizeNepalCityLabel } from "@/lib/cities/nepal-cities";
+import { localizeNepalCityLabel } from "@vedic-patro/domain/cities/nepal-cities";
 import * as SecureStore from "expo-secure-store";
 import { searchCities, type LocationParams } from "@/lib/api";
-import { NEPAL_CITIES, nepalCityEnglishLabel } from "@/lib/cities/nepal-cities";
-import { KATHMANDU } from "@/lib/sky3d/horizon";
+import { NEPAL_CITIES, nepalCityEnglishLabel } from "@vedic-patro/domain/cities/nepal-cities";
+import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
 
 const STORAGE_KEY = "vedicPatroLocation";
 

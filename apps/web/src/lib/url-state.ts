@@ -16,7 +16,7 @@ import {
 import type { PatroMonthBrowse } from "@/hooks/use-patro-month-browse";
 import type { PatroYearBrowse } from "@/hooks/use-patro-year-browse";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { ELEMENT_BY_ID } from "@/lib/panchanga-elements";
+import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
 import {
   buildPatroDayPageSearch,
   parsePatroDayUrl,

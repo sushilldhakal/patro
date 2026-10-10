@@ -9,7 +9,7 @@ import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@/lib/shanti/navagraha-shanti";
+import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/shanti/navagraha-shanti";
 import {
   TableHeader,
   TableHeaderCell,

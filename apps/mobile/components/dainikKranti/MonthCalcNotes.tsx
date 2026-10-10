@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
-import type { CalcNote } from "@/lib/dainikKranti/month-patro-tables";
+import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { PatroTableShell } from "./PatroTableShell";
 import { useLocale } from "@/lib/i18n";

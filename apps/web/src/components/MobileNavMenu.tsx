@@ -36,8 +36,8 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { parseEraFromUrl } from "@vedic-patro/domain/era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCurrentRitu } from "@/lib/ritu-display";
-import { elementTitle } from "@/lib/panchanga-i18n";
-import { defaultPanchakPatroYear } from "@/lib/panchak/panchak-patro-data";
+import { elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import { resolveSidebarLinkPath } from "@/lib/panchanga-route-preload";
 import {
   getPanchangaSidebarSections,

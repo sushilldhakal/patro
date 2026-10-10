@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { CalendarDay } from "@/lib/api";
 import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
-import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@/lib/dainikKranti/month-patro-tables";
+import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import { parseCivilIso } from "@vedic-patro/domain/patro-day";

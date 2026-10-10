@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@/lib/api";
-import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@/lib/shanti/navagraha-shanti";
+import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/shanti/navagraha-shanti";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";

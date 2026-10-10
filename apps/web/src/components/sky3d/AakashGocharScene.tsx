@@ -37,7 +37,7 @@ import {
   NAKSHATRA_ARC,
   normalizeDeg,
   RASHI_ARC,
-} from "@/lib/sky3d/geocentric-model";
+} from "@vedic-patro/domain/sky3d/geocentric-model";
 import {
   altAzToVec3,
   eclipticToAltAz,
@@ -45,7 +45,7 @@ import {
   lstDeg,
   obliquity,
   type Observer,
-} from "@/lib/sky3d/horizon";
+} from "@vedic-patro/domain/sky3d/horizon";
 import {
   ayanamsa,
   bodyRadius,
@@ -60,7 +60,7 @@ import {
   type GeoBody,
   type SkyCalibration,
   type OuterPlanetKey,
-} from "@/lib/sky3d/orbital-model";
+} from "@vedic-patro/domain/sky3d/orbital-model";
 import {
   BAND_EDGES,
   COMPASS_POINTS,
@@ -89,17 +89,18 @@ import {
   RASHI_LABEL_LAT,
   type eclipticPoint,
 } from "@/lib/sky3d/sky-geometry";
-import { flattenAsterisms, NAKSHATRA_ASTERISMS, precessionSinceJ2000, starOverlayNames } from "@/lib/sky3d/nakshatra-stars";
-import { VEDIC_CONSTELLATION_LINKS } from "@/lib/sky3d/vedic-constellations";
-import { cultureStarLabel, flattenSkyCulture } from "@/lib/sky3d/sky-culture";
-import { NEBULA_SOURCES, flattenNebulae } from "@/lib/sky3d/nebulae";
-import { flattenBackgroundStars } from "@/lib/sky3d/background-stars";
+import { flattenAsterisms, NAKSHATRA_ASTERISMS, precessionSinceJ2000, starOverlayNames } from "@vedic-patro/domain/sky3d/nakshatra-stars";
+import { VEDIC_CONSTELLATION_LINKS } from "@vedic-patro/domain/sky3d/vedic-constellations";
+import { cultureStarLabel, flattenSkyCulture } from "@vedic-patro/domain/sky3d/sky-culture";
+import { flattenNebulae } from "@vedic-patro/domain/sky3d/nebulae";
+import { NEBULA_SOURCES } from "@/lib/sky3d/nebula-sources";
+import { flattenBackgroundStars } from "@vedic-patro/domain/sky3d/background-stars";
 import {
   placedPoleStars,
   poleStarEpoch,
   poleTrackPoints,
   reigningPoleStar,
-} from "@/lib/sky3d/pole-stars";
+} from "@vedic-patro/domain/sky3d/pole-stars";
 import type { VedicStarPosition } from "@/lib/api";
 import {
   SKY_TEXTURE_KEYS,
@@ -114,7 +115,7 @@ import {
   GLOBE_R,
   SPACE_FOV,
   type SkyMode,
-} from "@/lib/sky3d/sky-zoom";
+} from "@vedic-patro/domain/sky3d/sky-zoom";
 import {
   createHorizonFisheyeUniforms,
   horizonViewWindow,

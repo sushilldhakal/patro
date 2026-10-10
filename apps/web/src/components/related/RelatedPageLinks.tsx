@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { elementBlurb, elementTitle } from "@/lib/panchanga-i18n";
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
 import { LEARN_TOPICS_BY_SLUG } from "@/lib/learn/learn-topics-meta";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {

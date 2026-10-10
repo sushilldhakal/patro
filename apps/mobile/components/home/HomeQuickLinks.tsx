@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { QuickLinkSection, type QuickLink } from "@/components/home/QuickLinkTile";
 import { useLocale } from "@/lib/i18n";
-import { defaultPanchakPatroYear } from "@/lib/panchak/panchak-patro-data";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 
 /** Shortcut tiles under the calendar — same two groups and order as the web home. */
 export function HomeQuickLinks() {

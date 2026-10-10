@@ -3,7 +3,7 @@ import type { Profile } from "@/lib/auth/client";
 import {
   instantFromEraParts,
   type InstantQuery,
-} from "@/lib/instant-query";
+} from "@vedic-patro/domain/instant-query";
 import {
   DEFAULT_PANCHANGA_LOCATION,
   type PanchangaLocation,

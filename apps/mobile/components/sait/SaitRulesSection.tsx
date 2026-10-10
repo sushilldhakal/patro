@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, Switch, View } from "react-native";
+import { translateKey } from "@vedic-patro/domain/locale";
+import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -8,14 +10,25 @@ import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
-export interface SaitRule {
+/** A rule with its catalogue keys resolved into both languages. */
+interface ResolvedRule {
   id?: string;
   ne: string;
   en: string;
   source?: { ne: string; en: string };
-  /** Sanskrit verse (Devanāgarī) the rule derives from. */
   shloka?: string;
   gloss?: { ne: string; en: string };
+}
+
+function resolveRule(r: SaitRuleEntry): ResolvedRule {
+  const both = (key: string) => ({ ne: translateKey(key, "ne"), en: translateKey(key, "en") });
+  return {
+    id: r.id,
+    ...both(r.text),
+    source: r.source ? both(r.source) : undefined,
+    shloka: r.shloka,
+    gloss: r.gloss ? both(r.gloss) : undefined,
+  };
 }
 
 /**
@@ -24,7 +37,7 @@ export interface SaitRule {
  */
 export function SaitRulesSection({
   method,
-  rules,
+  rules: ruleEntries,
   engineVersion,
   defaultOpen = false,
   enabledRuleIds,
@@ -32,7 +45,7 @@ export function SaitRulesSection({
   busy = false,
 }: {
   method?: { ne?: string; en?: string } | null;
-  rules?: SaitRule[] | null;
+  rules?: SaitRuleEntry[] | null;
   engineVersion?: string;
   defaultOpen?: boolean;
   /** Ids currently applied. A toggleable rule not listed here is treated as ON. */
@@ -46,6 +59,7 @@ export function SaitRulesSection({
   const { width } = useBreakpoint();
   const [open, setOpen] = useState(defaultOpen);
 
+  const rules = useMemo(() => ruleEntries?.map(resolveRule), [ruleEntries]);
   const intro = method ? pick(method.ne ?? "", method.en ?? "") : "";
   if (!intro && (!rules || rules.length === 0)) return null;
 

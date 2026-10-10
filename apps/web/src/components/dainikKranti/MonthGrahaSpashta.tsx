@@ -3,7 +3,7 @@ import {
   PATRO_PLANET_KEYS,
   PATRO_PLANET_NE,
   type GrahaSpashtaRow,
-} from "@/lib/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";

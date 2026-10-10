@@ -26,7 +26,7 @@ import CompassNeedle from "@/assets/compass.svg";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { normalizeDeg } from "@/lib/sky3d/geocentric-model";
+import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 import { COMPASS_POINTS } from "@/lib/sky3d/sky-geometry";
 
 export const DIAL_SIZE = 64;

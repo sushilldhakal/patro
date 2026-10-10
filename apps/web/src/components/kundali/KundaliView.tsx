@@ -15,7 +15,7 @@ import {
   type PlanetInfo,
 } from "@/lib/api";
 import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
-import { instantCacheKey, type InstantQuery } from "@/lib/instant-query";
+import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/instant-query";
 import { formatMomentDateLabel } from "@/lib/kundali/profile-chart";
 import {
   getInstantLagna,
@@ -37,7 +37,7 @@ import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { DivisionalChartCompare } from "@/components/kundali/DivisionalChartCompare";
 import type { GrahaAstroPoint } from "@/components/kundali/GrahaAstroTable";
 import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/bhava";
-import { ENGINE_KEY_TO_REF_ID } from "@/lib/kundali/yoga-reference-map";
+import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { formatGhadiPalaVipala } from "@vedic-patro/domain/birth-panchanga-meta";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
@@ -275,14 +275,7 @@ export function KundaliView({
 
   // 162-reference ids that are formed in this chart — hidden from the reference
   // catalog so a present yoga only shows in the "कुण्डली योग" table above it.
-  const presentRefIds = useMemo(() => {
-    const ids = new Set<string>();
-    for (const y of detail?.yogas ?? []) {
-      const refId = ENGINE_KEY_TO_REF_ID[y.key];
-      if (y.present && refId) ids.add(refId);
-    }
-    return ids;
-  }, [detail]);
+  const presentRefIds = useMemo(() => buildPresentYogaRefIds(detail?.yogas ?? []), [detail]);
 
   const astroLagna = useMemo<GrahaAstroPoint | undefined>(() => {
     if (lagna?.longitude == null) return undefined;

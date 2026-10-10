@@ -3,8 +3,8 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
-import { defaultPanchakPatroYear } from "@/lib/panchak/panchak-patro-data";
-import { isKundaliRoute } from "@/lib/kundali/kundali-routes";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
+import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";
 import {
   preloadAllPanchangaRoutes,
   preloadPanchangaRoute,
@@ -19,7 +19,7 @@ import {
   KundaliSidebarSubnav,
   parseKundaliSectionFromHash,
 } from "@/components/panchanga/KundaliSidebarSubnav";
-import { parseKundaliProfileId } from "@/lib/kundali/kundali-routes";
+import { parseKundaliProfileId } from "@vedic-patro/domain/kundali/kundali-routes";
 import {
   buildPageSearch,
   getLanguageForEra,

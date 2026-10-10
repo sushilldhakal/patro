@@ -49,7 +49,7 @@ import { edRo, edRoK, edRoV } from "@/lib/learn-classes";
 import { edScrub } from "@/lib/diagram-classes";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
-import { NAKSHATRA_ASTERISMS, NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
+import { NAKSHATRA_ASTERISMS, NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { NakshatraIcon } from "@/components/nakshatra/NakshatraIcon";
 import {
   clocks,
@@ -61,8 +61,8 @@ import {
   PERIHELION,
   PLANET_PRESETS,
   VERNAL,
-} from "@/lib/sky3d/day-mechanics";
-import { mixMeddle, type Meddle } from "@/lib/learn/chapter-player";
+} from "@vedic-patro/domain/sky3d/day-mechanics";
+import { mixMeddle, type Meddle } from "@vedic-patro/domain/learn/chapter-player";
 import { adjacentTopicMetas } from "@/lib/learn/learn-topics-meta";
 import {
   resolvePlayground,

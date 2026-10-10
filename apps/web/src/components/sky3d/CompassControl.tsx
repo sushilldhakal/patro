@@ -23,7 +23,7 @@ import compassNeedle from "@/assets/compass.svg?raw";
 import cameraGlyph from "@/assets/camera.svg?raw";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { COMPASS_POINTS } from "@/lib/sky3d/sky-geometry";
-import { normalizeDeg } from "@/lib/sky3d/geocentric-model";
+import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 
 const DIAL_SIZE = 64;
 const RADIUS = DIAL_SIZE / 2;

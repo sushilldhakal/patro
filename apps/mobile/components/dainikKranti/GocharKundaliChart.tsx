@@ -1,7 +1,7 @@
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { GocharGraha } from "@/lib/api";
-import { buildGocharBhavaHouses, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";
+import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/panchanga/D1Chart";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";

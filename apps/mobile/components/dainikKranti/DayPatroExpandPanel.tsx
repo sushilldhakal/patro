@@ -1,3 +1,4 @@
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
@@ -7,12 +8,10 @@ import { PatroSolarCorrectionStrip } from "@/components/dainikKranti/PatroSolarC
 import {
   PATRO_PLANET_KEYS,
   PATRO_PLANET_NE,
-  RASHI_COLUMNS_EN,
-  RASHI_COLUMNS_NE,
   type CalcNote,
   type GrahaSpashtaRow,
   type LagnaMatrixRow,
-} from "@/lib/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
             {pick("दैनिक लग्न आरम्भ (बजे)", "Daily lagna start")}
           </SectionHeading>
           <View className="flex-row flex-wrap gap-2">
-            {RASHI_COLUMNS_NE.map((rne, i) => {
+            {getRashiList("ne").map((rne, i) => {
               const num = i + 1;
               const val = lagna.times[num];
               const late =
@@ -75,7 +74,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
                     <RashiGlyphIcon name={rne} number={num} size={22} />
                   </View>
                   <Text className="text-caption text-center text-muted-foreground">
-                    {pick(rne, RASHI_COLUMNS_EN[i])}
+                    {pick(rne, getRashiList("en")[i])}
                   </Text>
                   <Text
                     className={cn(

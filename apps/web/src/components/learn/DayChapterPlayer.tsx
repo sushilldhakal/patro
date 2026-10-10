@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 
-import { formatChapterClock } from "@/lib/learn/chapter-player";
+import { formatChapterClock } from "@vedic-patro/domain/learn/chapter-player";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
 import { cn } from "@/lib/utils";

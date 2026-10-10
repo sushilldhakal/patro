@@ -1,8 +1,8 @@
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import type { LagnaMatrixRow } from "@/lib/dainikKranti/month-patro-tables";
-import { RASHI_COLUMNS_EN, RASHI_COLUMNS_NE } from "@/lib/dainikKranti/month-patro-tables";
+import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
@@ -37,11 +37,11 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
             {pick("सु.उ.", "Rise")}
           </Text>
         </TableHeaderCell>
-        {RASHI_COLUMNS_NE.map((rne, i) => (
+        {getRashiList("ne").map((rne, i) => (
           <TableHeaderCell key={rne} minWidth={60} className={cn(th, patroStickyHeadCell, "items-center")}>
             <RashiGlyphIcon name={rne} number={i + 1} size={20} />
             <Text className="text-body text-center font-semibold text-foreground">
-              {pick(rne, RASHI_COLUMNS_EN[i])}
+              {pick(rne, getRashiList("en")[i])}
             </Text>
           </TableHeaderCell>
         ))}
@@ -79,7 +79,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
               <View className={cn(td, "min-w-[3.5rem] text-amber-600 dark:text-amber-400")}>
                 <Text>{row.sunrise ? digits(row.sunrise) : "—"}</Text>
               </View>
-              {RASHI_COLUMNS_NE.map((_, i) => {
+              {getRashiList("ne").map((_, i) => {
                 const num = i + 1;
                 const val = row.times[num];
                 const late = val?.includes("२५") || val?.includes("२६") || val?.includes("२७");

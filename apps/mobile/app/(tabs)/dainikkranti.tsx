@@ -42,15 +42,15 @@ import {
   todayAdString,
 } from "@vedic-patro/domain/bs-calendar";
 import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
-import { buildGapanshaLine, buildPapanshaDisplayLine } from "@/lib/dainikKranti/gapansha";
+import { buildGapanshaLine, buildPapanshaDisplayLine } from "@vedic-patro/domain/dainikKranti/gapansha";
 import { ingressEventBsDayForMonth } from "@vedic-patro/domain/dainikKranti/ingress-day-match";
-import { grahaRashiNe, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";
-import { buildRashyadiRangeTables } from "@/lib/dainikKranti/rashyadi-segments";
+import { grahaRashiNe, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
+import { buildRashyadiRangeTables } from "@vedic-patro/domain/dainikKranti/rashyadi-segments";
 import {
   buildCalcNotes,
   buildGrahaSpashtaMatrix,
   buildLagnaMatrix,
-} from "@/lib/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatBsDateKey, parseCivilIso } from "@vedic-patro/domain/patro-day";

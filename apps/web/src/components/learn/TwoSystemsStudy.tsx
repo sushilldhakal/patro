@@ -34,7 +34,7 @@ import { edPlayBtn, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes"
 import { edScrub } from "@/lib/diagram-classes";
 import { useFullscreen } from "@/lib/use-fullscreen";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
-import { geocentricPointAt } from "@/lib/sky3d/orbital-model";
+import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
 import {
   buildYearLadders,
   dtFromDate,
@@ -47,7 +47,7 @@ import {
   SIDEREAL_MONTH,
   SIDEREAL_YEAR,
   TITHI_ARC,
-} from "@/lib/sky3d/two-systems";
+} from "@vedic-patro/domain/sky3d/two-systems";
 import Scene, {
   type CameraState,
   type Focus,

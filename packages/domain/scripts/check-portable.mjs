@@ -19,8 +19,8 @@ function check(path) {
   const rel = relative(root, path);
   if (path.endsWith(".tsx")) problems.push(`${rel}: domain files must be .ts (no JSX)`);
   const text = readFileSync(path, "utf8");
-  for (const m of text.matchAll(/(import|export)(\s+type)?\b[^;]*?\bfrom\s*["']([^"']+)["']|import\s*\(?\s*["']([^"']+)["']/g)) {
-    const spec = m[3] ?? m[4];
+  for (const m of text.matchAll(/^[ \t]*(import|export)(\s+type)?\s*(?:\{[^}]*\}|\*(?:\s+as\s+[\w$]+)?|[\w$]+(?:\s*,\s*\{[^}]*\})?)\s*from\s*["']([^"']+)["']|^[ \t]*import\s+["']([^"']+)["']|\bimport\s*\(\s*["']([^"']+)["']\s*\)/gm)) {
+    const spec = m[3] ?? m[4] ?? m[5];
     if (spec.startsWith("./") || spec.startsWith("../")) continue;
     // API response types are the one thing domain code may name from outside —
     // type-only, so there is no runtime edge between the packages.

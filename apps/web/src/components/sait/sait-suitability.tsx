@@ -2,7 +2,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import type { SaitSuitability } from "@/lib/api";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability";
+import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 
 /** A small verdict chip shown on a personalised day. */
 export function SuitabilityBadge({

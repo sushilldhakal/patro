@@ -8,7 +8,7 @@ import {
   motionLabel,
   speedTone,
 } from "@vedic-patro/domain/gochar-page-utils";
-import { grahaRashiDisplay } from "@/lib/dainikKranti/gochar-display";
+import { grahaRashiDisplay } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@/lib/utils";

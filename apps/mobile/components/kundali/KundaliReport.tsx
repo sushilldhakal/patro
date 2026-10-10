@@ -17,7 +17,7 @@ import {
   type ReportMeta,
   type ReportSection,
 } from "@/lib/api";
-import type { InstantQuery } from "@/lib/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import {
   bilingualKundali,
   kundaliLabel,

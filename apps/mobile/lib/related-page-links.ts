@@ -5,7 +5,8 @@
  * (this app's paths).
  */
 
-import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META, elementHref } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
+import { elementHref } from "@/lib/element-routes";
 import { LEARN_LIBRARY_BY_SLUG, PUBLISHED_TOPICS } from "@/lib/learn/learn-library";
 import type { DrawerIconName } from "@/lib/drawer-icons";
 

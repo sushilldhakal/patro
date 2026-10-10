@@ -1,5 +1,5 @@
 import { LEARN_TOPIC_METAS } from "@/lib/learn/learn-topics-meta";
-import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { PRERENDER_EXTRA_PATHS, STATIC_SITEMAP_ENTRIES, type SitemapChangefreq } from "@/lib/app-routes";
 
 export type SitemapEntry = {

@@ -21,7 +21,7 @@ import type {
   PlaygroundGlobe,
   SimToggles,
 } from "@/components/learn/DaySimScene";
-import { interval, type Keyframe } from "./chapter-player";
+import { interval, type Keyframe } from "@vedic-patro/domain/learn/chapter-player";
 
 /**
  * Everything a chapter can move.

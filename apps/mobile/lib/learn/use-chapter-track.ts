@@ -19,7 +19,7 @@ import { AppState } from "react-native";
 import { createAudioPlayer, type AudioPlayer, type AudioStatus } from "expo-audio";
 
 import { useLocale } from "@/lib/i18n";
-import { compileChapter, parseTime } from "./chapter-player";
+import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
 import { chapterAudioSources, type Chapter, type ChapterSimState } from "./chapter-kit";
 import type { ChapterTrack } from "./chapter-tracks";
 

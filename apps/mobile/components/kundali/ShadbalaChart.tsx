@@ -10,7 +10,7 @@ import {
   KALA_SUBS,
   STHANA_SUBS,
   yuddhaVirupasForPlanet,
-} from "@/lib/kundali/shadbala-display";
+} from "@vedic-patro/domain/kundali/shadbala-display";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -108,7 +108,7 @@ export function ShadbalaChart({
   onSelect: (key: string) => void;
   yuddha?: YuddhaData;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const [scale, setScale] = useState<ShadbalaScale>("virupas");
 
@@ -227,7 +227,7 @@ export function ShadbalaChart({
             <View key={bala.key} className="flex-row items-center gap-1.5">
               <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: bala.color }} />
               <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
-                {pick(bala.ne, bala.en)}
+                {t(bala.label)}
               </Text>
             </View>
           ))}
@@ -380,7 +380,7 @@ function PlanetInspector({
   meets: boolean;
   yuddha?: YuddhaData;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const maxBala = Math.max(...BALA_STACK.map((bala) => Math.abs(planet.breakdown[bala.breakdownKey])), 1);
   const sthanaMax = Math.max(...STHANA_SUBS.map((row) => Math.abs(planet.sub_balas?.sthana?.[row.key] ?? 0)), 1);
@@ -425,7 +425,7 @@ function PlanetInspector({
           return (
             <View key={bala.key} className="flex-row items-center gap-2">
               <Text className="text-body w-20 shrink-0 font-semibold text-foreground" style={nepaliTextStyle(12)} numberOfLines={1}>
-                {pick(bala.ne, bala.en)}
+                {t(bala.label)}
               </Text>
               <Meter value={value} max={maxBala} color={bala.color} />
               <Text className="text-body font-num w-14 shrink-0 text-right text-foreground">{digits(signed)}</Text>
@@ -440,7 +440,7 @@ function PlanetInspector({
             title={pick("स्थान", "Sthana")}
             rows={STHANA_SUBS.map((row) => ({
               key: row.key,
-              label: pick(row.ne, row.en),
+              label: t(row.label),
               value: planet.sub_balas?.sthana?.[row.key] ?? 0,
             }))}
             max={sthanaMax}
@@ -451,7 +451,7 @@ function PlanetInspector({
             title={pick("काल", "Kala")}
             rows={KALA_SUBS.map((row) => ({
               key: row.key,
-              label: pick(row.ne, row.en),
+              label: t(row.label),
               value:
                 row.key === "yuddha" && yuddha
                   ? yuddhaVirupasForPlanet(planet, yuddha)

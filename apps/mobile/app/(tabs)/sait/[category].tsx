@@ -15,14 +15,14 @@ import {
   type BratabandhaNakshatraMode,
 } from "@/lib/api";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability";
+import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
 import { cn } from "@/lib/utils";
 import { useThemeColors } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { SaitSources } from "@/components/sait/SaitSources";
 import { SAIT_CATEGORY_LABELS, isMuhurtaSaitCategory, type SaitCategoryId } from "@vedic-patro/domain/sait-data";
-import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
+import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";

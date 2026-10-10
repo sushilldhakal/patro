@@ -1,29 +1,13 @@
+import { PANCHANGA_SHELL_PATHS } from "@vedic-patro/domain/panchanga-shell-paths";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 
 /**
- * Path templates for routes inside the web `panchangaShellRoute` layout.
- * Keep in sync with `panchangaShellChildRoutes` in dhakal-patro/src/router.tsx.
- * (`/panchanga/year` used to be left out because the shell wrapper remounted the
- * panchanga Stack; the wrapper is stable now, so it is in.)
+ * Routes the app shows inside the panchanga shell: everything the website's
+ * `panchangaShellChildRoutes` has, plus the tab routes that only exist in the app.
  */
-export const PANCHANGA_SHELL_PATH_TEMPLATES = [
-  "/panchanga/year",
-  "/panchanga/avakahada-chakra",
+const APP_ONLY_SHELL_PATHS = [
   "/rashifal",
-  "/jyotish/rashifal",
-  "/dainikkranti",
-  "/converter",
-  "/holidays",
-  "/ritu",
   "/reminders",
-  "/kundali",
-  "/kundali/$profileId",
-  "/jyotish/kundali-milan",
-  "/suryakranti",
-  "/abhijit-muhurta",
-  "/panchak-patro",
-  "/panchanga/details",
-  "/panchanga/element/$name",
   "/panchanga/choghadiya",
   "/panchanga/hora",
   "/panchanga/lagna",
@@ -31,14 +15,13 @@ export const PANCHANGA_SHELL_PATH_TEMPLATES = [
   "/panchanga/tarabala",
   "/panchanga/panchaka-rahita",
   "/panchanga/pushkara",
-  "/gochar",
-  "/panchanga/graha-asta",
-  "/panchanga/graha-vakri",
-  "/panchanga/surya-grahan",
-  "/panchanga/chandra-grahan",
-  "/sait/$category",
   "/vivah-sait",
 ] as const;
+
+export const PANCHANGA_SHELL_PATH_TEMPLATES: readonly string[] = [
+  ...PANCHANGA_SHELL_PATHS,
+  ...APP_ONLY_SHELL_PATHS,
+];
 
 function matchesTemplate(pathname: string, template: string): boolean {
   const pathSegments = pathname.split("/");

@@ -4,7 +4,7 @@ import type { Era } from "@vedic-patro/domain/era";
 import {
   instantFromEraParts,
   type InstantQuery,
-} from "@/lib/instant-query";
+} from "@vedic-patro/domain/instant-query";
 import {
   DEFAULT_PANCHANGA_LOCATION,
   type PanchangaLocation,

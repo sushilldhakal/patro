@@ -11,7 +11,7 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import type { InstantQuery } from "@/lib/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 
 const BS_YEARS = Array.from(
   { length: BS_SUPPORTED_END_YEAR - BS_SUPPORTED_START_YEAR + 1 },

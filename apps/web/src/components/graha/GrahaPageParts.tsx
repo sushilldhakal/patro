@@ -4,7 +4,7 @@ import {
   GRAHA_PAGE_DESCRIPTIONS,
   type GrahaPageDescription,
 } from "@/lib/graha-detail-descriptions";
-import { elementDescriptionBlocks } from "@/lib/panchanga-i18n";
+import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@/lib/utils";
 

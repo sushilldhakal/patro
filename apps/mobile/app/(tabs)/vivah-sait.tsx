@@ -6,7 +6,7 @@ import { SuitabilityLegend } from "@/components/sait/SaitSuitability";
 import { fetchSaitDetail, saitDetailKey } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { isGregorianEra } from "@vedic-patro/domain/era";
-import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
+import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";

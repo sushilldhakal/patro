@@ -28,8 +28,8 @@ import { memo, useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import { useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { DEG, beltDivisions, eclipticToVec3, normalizeDeg } from "@/lib/sky3d/geocentric-model";
-import { geocentricPointAt } from "@/lib/sky3d/orbital-model";
+import { DEG, beltDivisions, eclipticToVec3, normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
+import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
 import {
   longitudeTravelled,
   siderealLon,
@@ -37,7 +37,7 @@ import {
   SIDEREAL_MONTH,
   SYNODIC_MONTH,
   TITHI_ARC,
-} from "@/lib/sky3d/two-systems";
+} from "@vedic-patro/domain/sky3d/two-systems";
 
 export type Focus = "solar" | "lunar" | "both";
 

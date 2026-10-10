@@ -5,7 +5,7 @@ import {
   NEPAL_CITIES,
   localizeNepalCityLabel,
   nepalCityEnglishLabel,
-} from "@/lib/cities/nepal-cities";
+} from "@vedic-patro/domain/cities/nepal-cities";
 import { sameLocationParams } from "@/lib/url-state";
 
 const STORAGE_KEY = "dhakalPatroLocation";

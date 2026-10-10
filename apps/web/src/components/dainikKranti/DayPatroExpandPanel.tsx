@@ -7,7 +7,7 @@ import {
   type CalcNote,
   type GrahaSpashtaRow,
   type LagnaMatrixRow,
-} from "@/lib/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { PatroSolarCorrectionStrip } from "@/components/dainikKranti/PatroSolarCorrectionStrip";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";

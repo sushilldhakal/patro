@@ -7,7 +7,7 @@ import {
   planetGridLayout,
   pointsToSvg,
   polygonCentroid,
-} from "@/lib/kundali/north-indian-layout";
+} from "@vedic-patro/domain/kundali/north-indian-layout";
 import { cn } from "@/lib/utils";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, type Lang } from "@/i18n/locale";

@@ -9,7 +9,7 @@ import {
   rashyadiCellValue,
   type RashyadiRowKey,
   type RashyadiSegment,
-} from "@/lib/dainikKranti/rashyadi";
+} from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/i18n/locale";
 

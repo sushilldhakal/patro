@@ -17,7 +17,7 @@ import { PanchangaLocationProvider } from "./components/panchanga/use-panchanga-
 import { Home } from "./pages/Home";
 import { lazyRoute } from "./lib/lazy-route";
 import { RouteLoadingProvider } from "./lib/route-loading";
-import { PANCHANGA_SHELL_PATHS as PANCHANGA_SHELL_PATHS_CANONICAL } from "@/lib/panchanga-shell-paths";
+import { PANCHANGA_SHELL_PATHS as PANCHANGA_SHELL_PATHS_CANONICAL } from "@vedic-patro/domain/panchanga-shell-paths";
 import {
   validateAbhijitSearch,
   validateDainikKrantiSearch,

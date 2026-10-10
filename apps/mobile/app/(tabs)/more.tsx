@@ -1,3 +1,5 @@
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { translateKey } from "@vedic-patro/domain/locale";
 import { Linking, Platform, Pressable, Share, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter } from "expo-router";
@@ -23,7 +25,8 @@ import {
   SITEMAP_SAIT_CATEGORIES,
   type SitemapRoute,
 } from "@/lib/sitemap-routes";
-import { CEREMONY_META, ELEMENT_BY_ID, elementHref } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
+import { elementHref } from "@/lib/element-routes";
 import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
 import {
   learnTopicDrawerIcon,
@@ -92,7 +95,7 @@ function routesByGroup(group: SitemapRoute["group"]) {
 }
 
 export default function MoreScreen() {
-  const { pick } = useLocale();
+  const { pick, lang } = useLocale();
   const { isTablet } = useBreakpoint();
 
   const learnExtra = SITEMAP_LEARN_SLUGS.map((slug) => {
@@ -108,7 +111,7 @@ export default function MoreScreen() {
     const meta = ELEMENT_BY_ID[id];
     return {
       path: elementHref(id),
-      label: meta ? pick(meta.titleNe, meta.titleEn) : id,
+      label: meta ? elementTitle(id, lang) : id,
       icon: resolveElementDrawerIcon(id),
     };
   });
@@ -118,7 +121,7 @@ export default function MoreScreen() {
     const path = id === "vivah" ? "/vivah-sait" : `/sait/${id}`;
     return {
       path,
-      label: meta ? pick(meta.titleNe, meta.titleEn) : id,
+      label: meta ? translateKey(`sait.categories.${id}`, lang) : id,
       icon: resolveDrawerIcon("sait", id),
     };
   });

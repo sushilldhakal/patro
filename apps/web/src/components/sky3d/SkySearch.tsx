@@ -18,7 +18,7 @@ import {
   skyTargetsOfKind,
   type SkyTarget,
   type SkyTargetKind,
-} from "@/lib/sky3d/sky-catalogue";
+} from "@vedic-patro/domain/sky3d/sky-catalogue";
 import { cn } from "@/lib/utils";
 
 /** Which face of the panel is showing, when nothing has been typed. */

@@ -59,7 +59,7 @@ import { cn } from "@/lib/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
-import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
+import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import {
   clocks,
   dayCounts,
@@ -68,14 +68,14 @@ import {
   PERIHELION,
   PLANET_PRESETS,
   VERNAL,
-} from "@/lib/sky3d/day-mechanics";
+} from "@vedic-patro/domain/sky3d/day-mechanics";
 import {
   resolvePlayground,
   SPEED_MULTIPLIERS,
   type PlaygroundConfig,
 } from "@/lib/learn/playground-config";
 import { useChapterTrack } from "@/lib/learn/use-chapter-track";
-import { mixMeddle, type Meddle } from "@/lib/learn/chapter-player";
+import { mixMeddle, type Meddle } from "@vedic-patro/domain/learn/chapter-player";
 import {
   cameraFromChapter,
   firstActiveAt,

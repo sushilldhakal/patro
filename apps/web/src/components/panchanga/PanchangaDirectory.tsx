@@ -12,8 +12,8 @@ import { useTranslation } from "react-i18next";
 import { QuickLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
-import { elementBlurb, elementTitle } from "@/lib/panchanga-i18n";
-import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
+import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 import { cn } from "@/lib/utils";
 

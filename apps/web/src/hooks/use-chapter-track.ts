@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useLocale } from "@/i18n/locale";
-import { compileChapter, parseTime } from "@/lib/learn/chapter-player";
+import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
 import { chapterAudioSources, type Chapter, type ChapterSimState } from "@/lib/learn/chapter-kit";
 import type { ChapterTrack } from "@/lib/learn/chapter-tracks";
 

@@ -18,7 +18,7 @@ import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mo
 import { NavataraBalamCardGrid } from "@/components/panchanga/NavataraBalamCardGrid";
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
-import { ELEMENT_BY_ID } from "@/lib/panchanga-elements";
+import { ELEMENT_BY_ID } from "@vedic-patro/domain/panchanga-elements";
 import { getChandraBalamCards, getTaraBalamCards } from "@vedic-patro/domain/balam-cards";
 import {
   CHOGHADIYA_TYPE_KEYS,

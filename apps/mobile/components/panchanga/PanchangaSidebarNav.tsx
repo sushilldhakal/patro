@@ -5,7 +5,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { usePathname, useRouter } from "expo-router";
 import { KundaliSidebarSubnav } from "@/components/kundali/KundaliSidebarSubnav";
 import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
-import { parseKundaliProfileId } from "@/lib/kundali/kundali-routes";
+import { parseKundaliProfileId } from "@vedic-patro/domain/kundali/kundali-routes";
 import {
   findActivePanchangaSidebarSection,
   isPanchangaSidebarItemActive,

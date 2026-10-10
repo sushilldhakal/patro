@@ -11,13 +11,13 @@ import {
   type BhavaHouse,
   type HouseClass,
 } from "@vedic-patro/domain/bhava";
-import { splitList } from "@/lib/kundali/bhava-detail";
+import { splitList } from "@vedic-patro/domain/kundali/bhava-detail";
 import {
   NI_HOUSE_POLYGONS,
   pointsToSvg,
   polygonCentroid,
   type Point,
-} from "@/lib/kundali/north-indian-layout";
+} from "@vedic-patro/domain/kundali/north-indian-layout";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";

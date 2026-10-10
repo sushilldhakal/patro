@@ -13,7 +13,7 @@ import {
   planetGridLayout,
   pointsToSvg,
   polygonCentroid,
-} from "@/lib/kundali/north-indian-layout";
+} from "@vedic-patro/domain/kundali/north-indian-layout";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";

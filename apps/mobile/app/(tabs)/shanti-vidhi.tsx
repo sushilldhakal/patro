@@ -10,7 +10,7 @@ import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mo
 import { Text } from "@/components/ui/Text";
 import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
-import { instantFromCivilIso } from "@/lib/instant-query";
+import { instantFromCivilIso } from "@vedic-patro/domain/instant-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";

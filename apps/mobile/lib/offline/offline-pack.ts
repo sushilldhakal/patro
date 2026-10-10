@@ -22,7 +22,7 @@ import {
   type YearWheelCalendar,
 } from "@/lib/api";
 import { fetchDocumentChapter, fetchDocumentDetail, fetchDocuments } from "@/lib/documents/api";
-import { ELEMENT_META } from "@/lib/panchanga-elements";
+import { ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { formatBsDateKey } from "@vedic-patro/domain/patro-day";
 import { SITEMAP_SAIT_CATEGORIES } from "@/lib/sitemap-routes";
 import { OFFLINE_STORE_SUPPORTED, readJsonMeta, writeJsonMeta } from "@/lib/offline/offline-db";

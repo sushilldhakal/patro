@@ -9,7 +9,7 @@ import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SaitSources } from "@/components/sait/SaitSources";
 import { SuitabilityLegend } from "@/components/sait/sait-suitability";
-import { SAIT_RULES_CONTENT } from "@/lib/sait-rules-content";
+import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import {
   fetchSaitDetail,
   fetchSaitPersonalize,

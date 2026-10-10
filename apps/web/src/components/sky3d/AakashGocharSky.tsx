@@ -61,16 +61,16 @@ import {
   HORIZON_ZOOM_MAX,
   HORIZON_ZOOM_MIN,
   SPACE_FOV,
-} from "@/lib/sky3d/sky-zoom";
+} from "@vedic-patro/domain/sky3d/sky-zoom";
 import {
   DEFAULT_STEP_INDEX,
   nearestStepIndex,
   TIME_STEPS,
-} from "@/lib/sky3d/time-steps";
+} from "@vedic-patro/domain/sky3d/time-steps";
 import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { SkySearch } from "@/components/sky3d/SkySearch";
-import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@/lib/sky3d/sky-catalogue";
+import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/domain/sky3d/sky-catalogue";
 import {
   localFavourites,
   pushRecent,
@@ -79,25 +79,25 @@ import {
   syncFavourites,
 } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { bikramFromSun } from "@/lib/sky3d/bikram-solar";
+import { bikramFromSun } from "@vedic-patro/domain/sky3d/bikram-solar";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { NAKSHATRA_SHORT } from "@/lib/sky3d/nakshatra-stars";
+import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@/lib/utils";
-import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@/lib/sky3d/geocentric-model";
-import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";
+import { GRAHA_COLOR, normalizeDeg, rashiOfLongitude } from "@vedic-patro/domain/sky3d/geocentric-model";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import {
   ayanamsa,
   calibrate,
   daysSinceJ2000,
   GEO_BODY_ORDER,
   type SkyCalibration,
-} from "@/lib/sky3d/orbital-model";
+} from "@vedic-patro/domain/sky3d/orbital-model";
 import { RashiSkyGlyph } from "@/lib/sky3d/rashi-icons";
 import { getZonedTimeParts } from "@vedic-patro/domain/zoned-time";
 import { SOLAR_STATIONS } from "@/lib/sky3d/sky-geometry";
-import { POLE_STARS } from "@/lib/sky3d/pole-stars";
+import { POLE_STARS } from "@vedic-patro/domain/sky3d/pole-stars";
 import {
   AakashGocharScene,
   type SceneToggles,

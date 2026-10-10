@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   buildGocharBhavaHouses,
   formatGocharBsLabel,
-} from "@/lib/dainikKranti/gochar-display";
+} from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";

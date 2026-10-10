@@ -28,9 +28,14 @@ void i18n.use(initReactI18next).init({
   },
 });
 
+const MISSING = "\u0000missing";
+
 configureLocale({
   currentLanguage: () => i18n.language,
-  translate: (key, lng: Lang) => i18n.t(key, { lng }),
+  translate: (key, lng: Lang) => {
+    const value = i18n.t(key, { lng, defaultValue: MISSING });
+    return value === MISSING ? undefined : value;
+  },
 });
 
 let enLoadPromise: Promise<void> | null = null;

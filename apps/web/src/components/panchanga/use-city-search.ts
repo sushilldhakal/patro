@@ -7,7 +7,7 @@ import {
   nearestNepalCity,
   nepalCityToCity,
   searchNepalCities,
-} from "@/lib/cities/nepal-cities";
+} from "@vedic-patro/domain/cities/nepal-cities";
 import { useLocale } from "@/i18n/locale";
 import { cityToLocation, type PanchangaLocation } from "./use-panchanga-location";
 

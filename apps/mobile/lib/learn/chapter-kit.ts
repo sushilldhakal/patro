@@ -20,7 +20,7 @@ import type {
   SimToggles,
 } from "@/components/learn/playground/DaySimScene";
 import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
-import { interval, type Keyframe } from "./chapter-player";
+import { interval, type Keyframe } from "@vedic-patro/domain/learn/chapter-player";
 
 /**
  * Everything a chapter can move.

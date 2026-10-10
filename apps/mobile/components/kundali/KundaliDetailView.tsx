@@ -19,7 +19,7 @@ import { KundaliSources } from "@/components/kundali/KundaliSources";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { KundaliReport } from "@/components/kundali/KundaliReport";
 import type { KundaliDetailResponse, LocationParams } from "@/lib/api";
-import type { InstantQuery } from "@/lib/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import {
   BALA_TAB_SECTIONS,
@@ -33,7 +33,7 @@ import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
-import { buildPresentYogaRefIds } from "@/lib/kundali/yoga-reference-map";
+import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 type Props = {

@@ -12,7 +12,7 @@ import {
   STHANA_SUBS,
   grahaDisplayName,
   yuddhaVirupasForPlanet,
-} from "@/lib/kundali/shadbala-display";
+} from "@vedic-patro/domain/kundali/shadbala-display";
 import { cn } from "@/lib/utils";
 
 export type ShadbalaScale = "virupas" | "rupas" | "absolute" | "required";

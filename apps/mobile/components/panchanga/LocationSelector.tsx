@@ -28,7 +28,7 @@ import {
   nearestNepalCity,
   nepalCityToCity,
   searchNepalCities,
-} from "@/lib/cities/nepal-cities";
+} from "@vedic-patro/domain/cities/nepal-cities";
 import {
   cityToLocation,
   displayLocationLabel,

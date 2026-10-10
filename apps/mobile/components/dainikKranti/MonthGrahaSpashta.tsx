@@ -1,13 +1,12 @@
+import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { TableHeader, TableRow, TableScrollShell } from "@/components/ui/DataTable";
 import {
   PATRO_PLANET_KEYS,
   PATRO_PLANET_NE,
-  RASHI_COLUMNS_EN,
-  RASHI_COLUMNS_NE,
   type GrahaSpashtaRow,
-} from "@/lib/dainikKranti/month-patro-tables";
+} from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import {
@@ -157,8 +156,8 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   const footnote = (
     <Text className="text-body border-t border-border px-4 py-2 leading-relaxed text-muted-foreground">
       {pick(
-        `राशिहरू: ${RASHI_COLUMNS_NE.join(", ")}। प्रत्येक ग्रहको कोष्ठकमा राशि अंश|कला|विकला — जस्तै वृष १३|६|२९ = वृष राशि, १३ अंश ६ कला २९ विकला।`,
-        `Signs: ${RASHI_COLUMNS_EN.join(", ")}. Each planet's bracket shows sign deg|kala|vikala — e.g. Vrishabha 13|6|29 = Vrishabha sign, 13 deg 6 kala 29 vikala.`,
+        `राशिहरू: ${getRashiList("ne").join(", ")}। प्रत्येक ग्रहको कोष्ठकमा राशि अंश|कला|विकला — जस्तै वृष १३|६|२९ = वृष राशि, १३ अंश ६ कला २९ विकला।`,
+        `Signs: ${getRashiList("en").join(", ")}. Each planet's bracket shows sign deg|kala|vikala — e.g. Vrishabha 13|6|29 = Vrishabha sign, 13 deg 6 kala 29 vikala.`,
       )}
     </Text>
   );

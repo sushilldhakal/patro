@@ -11,7 +11,7 @@ import {
   rashyadiCellValue,
   type RashyadiRowKey,
   type RashyadiSegment,
-} from "@/lib/dainikKranti/rashyadi";
+} from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";

@@ -1,4 +1,4 @@
-import { CEREMONY_META, ELEMENT_META } from "@/lib/panchanga-elements";
+import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 
 export interface PanchangaSidebarItem {
   id: string;

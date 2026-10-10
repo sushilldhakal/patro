@@ -43,7 +43,7 @@ import * as THREE from "three";
 import rahuIconUrl from "@/assets/graha/rahu.svg?url";
 import ketuIconUrl from "@/assets/graha/ketu.svg?url";
 import earthToonUrl from "@/assets/graha/earth-orig.png";
-import { KATHMANDU } from "@/lib/sky3d/horizon";
+import { KATHMANDU } from "@vedic-patro/domain/sky3d/horizon";
 import { makeEarthMaterial } from "@/lib/sky3d/earth-material";
 import { atLonInto } from "@/lib/sky3d/ecliptic-position";
 import {
@@ -68,7 +68,7 @@ import {
   PERIHELION,
   VERNAL,
   VERNAL_FROM_PERIHELION,
-} from "@/lib/sky3d/day-mechanics";
+} from "@vedic-patro/domain/sky3d/day-mechanics";
 
 const PI2 = Math.PI * 2;
 

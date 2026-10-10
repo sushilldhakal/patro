@@ -9,7 +9,7 @@
  * it is a step you can name, and it is the same step पछाडि and अगाडि move by.
  */
 
-import { nearestStepIndex, TIME_STEPS } from "@/lib/sky3d/time-steps";
+import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
 
 export function sliderToRate(slider: number): number {
   const notch = Math.round(slider);

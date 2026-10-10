@@ -5,7 +5,7 @@ import { Flame, UserSearch } from "lucide-react";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
 import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
-import type { InstantQuery } from "@/lib/instant-query";
+import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import { KundaliControls } from "@/components/kundali/KundaliControls";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";

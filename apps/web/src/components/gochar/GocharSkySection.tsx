@@ -2,7 +2,7 @@ import type { GocharGraha } from "@/lib/api";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GRAHA_NAME, GRAHA_DETAIL_ORDER } from "@vedic-patro/domain/graha-details";
 import { grahaExalted, grahaNakshatraLine, formatGocharPatroDate, motionLabel } from "@vedic-patro/domain/gochar-page-utils";
-import { grahaRashiDisplay } from "@/lib/dainikKranti/gochar-display";
+import { grahaRashiDisplay } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";

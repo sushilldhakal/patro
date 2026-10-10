@@ -7,12 +7,8 @@ import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import {
-  SHUDDHI_PLANET_LABEL,
-  SHUDDHI_SUMMARY,
-  SHUDDHI_TONE_STYLE,
-  SUITABILITY_STYLE,
-} from "@/lib/sait-suitability";
+import { SHUDDHI_TONE_STYLE, SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
+import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -21,6 +17,8 @@ import { useThemeColors } from "@/lib/theme-context";
  * panchāṅga that made the day survive the rules. When a profile is selected the
  * card also carries the native verdict and the reason behind it.
  */
+const SHUDDHI_PLANET_TO_GRAHA: Record<string, string> = { guru: "jupiter", shukra: "venus" };
+
 export function SaitDayCard({
   d,
   width,
@@ -32,7 +30,7 @@ export function SaitDayCard({
   suitability?: SaitSuitability;
   personalize?: SaitPersonalizeDay;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
 
   const shuddhi = personalize?.shuddhi ?? null;
@@ -139,7 +137,7 @@ export function SaitDayCard({
             </Text>
             {shuddhi.planets.map((p) => {
               const tone = SHUDDHI_TONE_STYLE[p.tone];
-              const name = SHUDDHI_PLANET_LABEL[p.planet];
+              const name = GRAHA_NAME[(SHUDDHI_PLANET_TO_GRAHA[p.planet] ?? p.planet) as GrahaKey];
               return (
                 <View
                   key={p.planet}
@@ -163,7 +161,7 @@ export function SaitDayCard({
             style={{ color: SHUDDHI_TONE_STYLE[shuddhi.tone].fg, ...nepaliTextStyle(11) }}
             className="text-caption mt-1.5 font-semibold"
           >
-            {pick(SHUDDHI_SUMMARY[shuddhi.tone].ne, SHUDDHI_SUMMARY[shuddhi.tone].en)}
+            {t(`sait.x.shuddhi_${shuddhi.tone}`)}
             <Text className="font-normal text-muted-foreground">
               {" "}
               {pick("(जन्म राशिबाट भाव)", "(house from janma rāśi)")}

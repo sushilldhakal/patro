@@ -22,7 +22,7 @@ import type {
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
-import { KALA_SUBS, STHANA_SUBS, orderShadbalaPlanets, yuddhaVirupasForPlanet } from "@/lib/kundali/shadbala-display";
+import { KALA_SUBS, STHANA_SUBS, orderShadbalaPlanets, yuddhaVirupasForPlanet } from "@vedic-patro/domain/kundali/shadbala-display";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
@@ -232,7 +232,7 @@ export function ShadbalaCard({
   /** When true, omit in-card title (parent KundaliSection already shows षड्बल). */
   compactHeader?: boolean;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const { width: windowWidth } = useBreakpoint();
   const [contentWidth, setContentWidth] = useState(0);
@@ -437,7 +437,7 @@ export function ShadbalaCard({
                   <MatrixRow
                     key={row.key}
                     rowIndex={matrixRowIndex++}
-                    label={pick(row.ne, row.en)}
+                    label={t(row.label)}
                     planets={ordered}
                     selectedKey={selectedKey}
                     value={(p) => fmt(p.sub_balas?.sthana?.[row.key], digits)}
@@ -467,7 +467,7 @@ export function ShadbalaCard({
                   <MatrixRow
                     key={row.key}
                     rowIndex={matrixRowIndex++}
-                    label={pick(row.ne, row.en)}
+                    label={t(row.label)}
                     planets={ordered}
                     selectedKey={selectedKey}
                     value={(p) =>

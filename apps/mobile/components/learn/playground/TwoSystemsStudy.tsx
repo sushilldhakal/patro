@@ -48,7 +48,7 @@ import { nativeWindThemeVars } from "@/lib/nativewind-theme-vars";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@/lib/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { geocentricPointAt } from "@/lib/sky3d/orbital-model";
+import { geocentricPointAt } from "@vedic-patro/domain/sky3d/orbital-model";
 import {
   buildYearLadders,
   dtFromDate,
@@ -61,7 +61,7 @@ import {
   SIDEREAL_MONTH,
   SIDEREAL_YEAR,
   TITHI_ARC,
-} from "@/lib/sky3d/two-systems";
+} from "@vedic-patro/domain/sky3d/two-systems";
 import type { PlaygroundLabel } from "@/components/learn/playground/playground-labels";
 import { PlaygroundLabelText } from "@/components/learn/playground/PlaygroundLabelText";
 import PerfMeter, { type PerfSample } from "@/components/learn/playground/PerfMeter";

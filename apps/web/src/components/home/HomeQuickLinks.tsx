@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { type ReactNode } from "react";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
-import { defaultPanchakPatroYear } from "@/lib/panchak/panchak-patro-data";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale, bilingualText } from "@/i18n/locale";

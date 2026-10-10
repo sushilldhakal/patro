@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { elementHref } from "@/lib/panchanga-elements";
+import { elementHref } from "@/lib/element-routes";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";

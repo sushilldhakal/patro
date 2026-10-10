@@ -19,7 +19,7 @@ import {
   grahaDisplayName,
   orderShadbalaPlanets,
   yuddhaVirupasForPlanet,
-} from "@/lib/kundali/shadbala-display";
+} from "@vedic-patro/domain/kundali/shadbala-display";
 import {
   Table,
   TableBody,

@@ -11,22 +11,25 @@ export type Lang = "en" | "ne";
 export type LocaleRuntime = {
   /** The app's current UI language code, used when a caller passes none. */
   currentLanguage: () => string | undefined;
-  /** Catalogue lookup (`rashis.3`) in a given language. */
-  translate: (key: string, lng: Lang) => string;
+  /** Catalogue lookup (`rashis.3`) in a given language; `undefined` when the key is missing. */
+  translate: (key: string, lng: Lang) => string | undefined;
 };
 
 let runtime: LocaleRuntime = {
   currentLanguage: () => "ne",
-  translate: (key) => key,
+  translate: () => undefined,
 };
 
 export function configureLocale(next: LocaleRuntime): void {
   runtime = next;
 }
 
-/** Catalogue lookup in the given language (or the current one). */
-export function translateKey(key: string, lang?: string): string {
-  return runtime.translate(key, normalizeLang(lang));
+/**
+ * Catalogue lookup in the given language (or the current one). A missing key
+ * gives `fallback`, or the key itself when none is passed.
+ */
+export function translateKey(key: string, lang?: string, fallback?: string): string {
+  return runtime.translate(key, normalizeLang(lang)) ?? fallback ?? key;
 }
 
 /** Normalize any i18n language code to the two supported UI languages. */

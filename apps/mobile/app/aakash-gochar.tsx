@@ -18,7 +18,7 @@ import { fetchGochar, gocharKeys } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { KATHMANDU, type Observer } from "@/lib/sky3d/horizon";
+import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
