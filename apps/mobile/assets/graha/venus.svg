@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-venus" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#9fd0e8"/>
+      <stop offset="100%" stop-color="#3f8db5"/>
+    </radialGradient>
+    <clipPath id="graha-venus-clip">
+      <circle cx="24" cy="24" r="17.28"/>
+    </clipPath>
+  </defs>
+  <circle cx="24" cy="24" r="17.28" fill="url(#graha-venus)"/>
+  <g clip-path="url(#graha-venus-clip)" opacity="0.5" fill="#cfeaf6">
+    <ellipse cx="21.12" cy="19.2" rx="7.68" ry="2.4"/>
+    <ellipse cx="27.84" cy="27.84" rx="6.24" ry="2.16"/>
+  </g>
+</svg>

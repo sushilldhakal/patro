@@ -1,0 +1,10 @@
+{
+  "expo.jsEngine": "hermes",
+  "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
+  "expo.inlineModules.watchedDirectories": "[]",
+  "expo.inlineModules.xcodeProjectTargets": "{\"mainTarget\":\"VedicPatro\",\"targets\":[]}",
+  "expo.camera.barcode-scanner-enabled": "false",
+  "ios.forceStaticLinking": "[]",
+  "apple.privacyManifestAggregationEnabled": "true",
+  "EXPO_USE_PRECOMPILED_MODULES": "true"
+}

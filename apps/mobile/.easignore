@@ -1,0 +1,9 @@
+# Let EAS prebuild fresh native projects for the current SDK.
+# Local android/ and ios/ are leftover from SDK 54 and break Play AABs.
+/android
+/ios
+/dist
+/dist-web
+/web-build
+/.expo
+/store/assets

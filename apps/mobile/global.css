@@ -1,0 +1,215 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --tw-background: 248 246 242;
+    --tw-foreground: 26 20 16;
+    --tw-card: 255 255 255;
+    --tw-muted: 240 235 227;
+    --tw-muted-foreground: 92 74 58;
+    --tw-primary: 217 119 6;
+    --tw-primary-foreground: 255 255 255;
+    --tw-secondary: 11 86 90;
+    --tw-secondary-foreground: 255 255 255;
+    --tw-destructive: 198 40 40;
+    --tw-danger: 198 40 40;
+    --tw-border: 232 223 208;
+    --tw-accent: 46 125 50;
+    --tw-surface-inset: 245 240 232;
+    --tw-surface-muted: 243 238 230;
+    --tw-tab-active: 217 119 6;
+    /* राशि / नक्षत्र glyph colour — the one place that controls every glyph. */
+    --tw-glyph: 26 20 16;
+
+    /* The only four text sizes in the app. Components use text-caption,
+       text-body, text-title, and text-display — nothing else. */
+    --text-caption: 15px;
+    --text-body: 18px;
+    --text-title: 22px;
+    --text-display: 28px;
+
+    /* Semantic tokens used by panchanga SVG (timeline + wheel) */
+    --off-white: #f8f6f2;
+    --ink: #1a1410;
+    --ink-muted: #5c4a3a;
+    --parchment-card: #ffffff;
+    --background: var(--off-white);
+    --foreground: var(--ink);
+    --card: var(--parchment-card);
+    --muted-foreground: var(--ink-muted);
+    --secondary: #0b565a;
+    --color-success: #2e7d32;
+    --color-warning: #e67e22;
+    --color-danger: #c62828;
+    --brand-teal: #2e7d32;
+  }
+
+  .dark {
+    --tw-background: 15 18 32;
+    --tw-foreground: 243 239 232;
+    --tw-card: 23 28 49;
+    --tw-muted: 20 25 41;
+    --tw-muted-foreground: 166 171 192;
+    --tw-primary: 245 158 66;
+    --tw-primary-foreground: 26 20 16;
+    --tw-secondary: 232 195 106;
+    --tw-secondary-foreground: 26 20 16;
+    --tw-destructive: 255 143 133;
+    --tw-danger: 255 143 133;
+    --tw-border: 39 46 74;
+    --tw-accent: 232 195 106;
+    --tw-surface-inset: 20 25 41;
+    --tw-surface-muted: 18 22 38;
+    --tw-tab-active: 245 158 66;
+    --tw-glyph: 243 239 232;
+
+    --text-caption: 15px;
+    --text-body: 18px;
+    --text-title: 22px;
+    --text-display: 28px;
+
+    --background: #0f1220;
+    --foreground: #f3efe8;
+    --card: #171c31;
+    --muted-foreground: #a6abc0;
+    --secondary: #e8c36a;
+    --color-success: #2e7d32;
+    --color-warning: #f59e42;
+    --color-danger: #ff8f85;
+    --brand-teal: #2e7d32;
+  }
+
+  /* Browser controls keep a black user-agent color and do not inherit it.
+     Dark surfaces then hide the label. Utilities such as text-foreground still win. */
+  button,
+  input,
+  textarea,
+  select {
+    color: inherit;
+  }
+}
+
+/* ── Panchanga wheel + timeline (web parity) ─────────────── */
+:root {
+  --brand-saffron: #d97706;
+  --brand-saffron-bright: #e67e22;
+  --brand-vermilion: #c62828;
+  --brand-gold: #d4a017;
+  --brand-green: #2e7d32;
+  --brand-teal: #0b565a;
+  --brand-yellow: var(--brand-gold);
+  --pn-num: "Noto Sans Devanagari", sans-serif;
+}
+
+.pn-wheel {
+  --pn-font: var(--font-sans);
+  --pn-num: "Noto Sans Devanagari", sans-serif;
+  --pn-ring-soft: color-mix(in srgb, #8fbfc1 18%, transparent);
+  --w-sky-0: #112c2a;
+  --w-sky-1: #0a1a1b;
+  --w-sky-2: #050c0d;
+  --w-surface: #0b1416;
+  --w-surface-border: color-mix(in srgb, #8fbfc1 28%, transparent);
+  --w-band: color-mix(in srgb, var(--brand-green) 30%, #0a1618);
+  --w-band-alt: color-mix(in srgb, var(--brand-green) 44%, #0b181a);
+  --w-rashi: color-mix(in srgb, var(--brand-green) 22%, #091315);
+  --w-rashi-alt: color-mix(in srgb, var(--brand-green) 34%, #0a1518);
+  --w-pada: #0d2024;
+  --w-pada-alt: #112a2f;
+  --w-sep: color-mix(in srgb, #8fbfc1 42%, transparent);
+  --w-sep-soft: color-mix(in srgb, #8fbfc1 16%, transparent);
+  --w-rim: color-mix(in srgb, #a9d4d4 50%, transparent);
+  --w-ink: #eaf3f1;
+  --w-ink-dim: #a7c4c3;
+  --w-ink-faint: #84a3a2;
+  --w-accent: var(--brand-vermilion);
+  --w-accent-soft: color-mix(in srgb, var(--brand-vermilion) 22%, transparent);
+  color: var(--w-ink);
+}
+
+.pn-wheel .wheel-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--w-accent) 0%,
+    var(--w-accent) var(--fill, 50%),
+    color-mix(in srgb, var(--w-ink) 28%, transparent) var(--fill, 50%)
+  );
+  outline: none;
+}
+
+.pn-wheel .wheel-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--w-accent);
+  border: 3px solid var(--w-surface);
+  cursor: grab;
+  box-shadow: 0 0 12px var(--w-accent-soft);
+}
+
+.pn-wheel .wheel-scrub:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+
+.pn-wheel .wheel-scrub::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--w-accent);
+  border: 3px solid var(--w-surface);
+  cursor: grab;
+}
+
+.hora-theme {
+  --hora-ink: var(--foreground);
+  --hora-ink-dim: color-mix(in srgb, var(--muted-foreground) 88%, transparent);
+  --hora-yellow: var(--brand-gold);
+}
+
+.hora-theme .hora-vertical-scrub {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    to top,
+    var(--brand-gold) 0%,
+    var(--brand-gold) var(--fill, 50%),
+    color-mix(in srgb, var(--foreground) 14%, transparent) var(--fill, 50%)
+  );
+  outline: none;
+}
+
+.hora-theme .hora-vertical-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  border: 2px solid var(--card);
+  cursor: grab;
+}
+
+.hora-theme .hora-vertical-scrub:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.06);
+}
+
+.hora-theme .hora-vertical-scrub::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  border: 2px solid var(--card);
+  cursor: grab;
+}
+

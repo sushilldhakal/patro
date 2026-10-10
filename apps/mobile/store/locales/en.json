@@ -1,0 +1,12 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Vedic Patro",
+    "NSLocationWhenInUseUsageDescription": "Vedic Patro uses your location while the app is open to calculate panchanga, sunrise and muhurta for your place, and to align the 3D sky compass with true north. You can search a city instead. We do not use location in the background or for advertising.",
+    "NSCameraUsageDescription": "Vedic Patro uses the camera only in Aakash Gochar to show the live sky behind the sky map. We do not take photos, record video, or upload camera data. You can use the sky map without the camera.",
+    "NSMotionUsageDescription": "Vedic Patro uses motion and compass in Aakash Gochar so the sky turns as you tilt and turn the phone. This data stays on your device and is not stored or sent to our servers. You can drag the sky by hand instead.",
+    "NSFaceIDUsageDescription": "Vedic Patro can use Face ID to unlock saved sign-in details on this device."
+  },
+  "android": {
+    "app_name": "Vedic Patro"
+  }
+}
