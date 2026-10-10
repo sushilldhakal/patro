@@ -38,6 +38,7 @@ export default function AccountScreen() {
     queryKey: ACCOUNT_PROFILES_KEY,
     queryFn: listProfiles,
     enabled: Boolean(user),
+    staleTime: 60_000,
   });
 
   const profiles = profilesQuery.data ?? [];

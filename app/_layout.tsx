@@ -46,7 +46,11 @@ const QUERY_GC_TIME = 1000 * 60 * 60 * 24 * 7;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60_000,
+      // Almost everything here is keyed by date + place (panchanga, calendar,
+      // festivals, documents) and does not change once computed, so a query is
+      // reused for an hour instead of being refetched every time a screen
+      // remounts. Account data (profiles) sets its own shorter staleTime.
+      staleTime: 60 * 60_000,
       gcTime: QUERY_GC_TIME,
       retry: 2,
     },

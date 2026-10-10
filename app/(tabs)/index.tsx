@@ -52,6 +52,7 @@ import { PATRO_BROWSE_ERAS, isGregorianBrowseEra, type PatroBrowseEra } from "@/
 import { shiftPatroBrowseMonth } from "@/lib/patro-year-browse-step";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
+import { useDeferredMount } from "@/lib/use-deferred-mount";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
@@ -82,6 +83,7 @@ function mergeMonthFromApi(
 }
 
 export default function HomeScreen() {
+  const belowFoldReady = useDeferredMount();
   const { pick, digits, lang } = useLocale();
   const { width, isTablet, isPhone } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -488,25 +490,31 @@ export default function HomeScreen() {
           <HomeAuspiciousTimes p={panchangaQ.data} />
         </View>
 
-        <View className="mt-6">
-          <HomeRashifalSection
-            dateAd={asideAdDate}
-            location={location.params}
-            contentInset={contentInset}
-          />
-        </View>
+        {/* Below the fold: drawn after the first screen, so the calendar and
+            today's panchanga appear first and their requests go out first. */}
+        {belowFoldReady ? (
+          <>
+            <View className="mt-6">
+              <HomeRashifalSection
+                dateAd={asideAdDate}
+                location={location.params}
+                contentInset={contentInset}
+              />
+            </View>
 
-        <View className="mt-8" style={{ paddingHorizontal: contentInset }}>
-          <HomeQuickLinks />
-        </View>
+            <View className="mt-8" style={{ paddingHorizontal: contentInset }}>
+              <HomeQuickLinks />
+            </View>
 
-        <View className="mt-4" style={{ paddingHorizontal: contentInset }}>
-          <PanchangaDirectoryMobile />
-        </View>
+            <View className="mt-4" style={{ paddingHorizontal: contentInset }}>
+              <PanchangaDirectoryMobile />
+            </View>
 
-        <PatroFooterNote paddingHorizontal={contentInset} />
-        <SiteFooter />
-      </ScrollView>
+            <PatroFooterNote paddingHorizontal={contentInset} />
+            <SiteFooter />
+            </>
+          ) : null}
+        </ScrollView>
 
     </>
   );
