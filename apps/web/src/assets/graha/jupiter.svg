@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-jupiter" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#c98a4e"/>
+      <stop offset="100%" stop-color="#7c441c"/>
+    </radialGradient>
+    <clipPath id="graha-jupiter-clip">
+      <circle cx="24" cy="24" r="17.28"/>
+    </clipPath>
+  </defs>
+  <circle cx="24" cy="24" r="17.28" fill="url(#graha-jupiter)"/>
+  <g clip-path="url(#graha-jupiter-clip)" opacity="0.55">
+    <rect x="0" y="13.44" width="48" height="4.32" fill="#8a5226"/>
+    <rect x="0" y="22.08" width="48" height="5.76" fill="#9c6634"/>
+    <rect x="0" y="30.72" width="48" height="3.84" fill="#7a431f"/>
+    <ellipse cx="28.8" cy="24.96" rx="3.36" ry="2.4" fill="#cf7d4a"/>
+  </g>
+</svg>

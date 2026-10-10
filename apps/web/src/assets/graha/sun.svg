@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-sun" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffd56b"/>
+      <stop offset="100%" stop-color="#f08a14"/>
+    </radialGradient>
+  </defs>
+  <g stroke="#f6a623" stroke-width="2.4" stroke-linecap="round">
+    <line x1="24" y1="7.68" x2="24" y2="1.92"/>
+    <line x1="32.54" y1="9.46" x2="36.62" y2="4.54"/>
+    <line x1="38.54" y1="15.46" x2="43.46" y2="11.38"/>
+    <line x1="40.32" y1="24" x2="46.08" y2="24"/>
+    <line x1="38.54" y1="32.54" x2="43.46" y2="36.62"/>
+    <line x1="32.54" y1="38.54" x2="36.62" y2="43.46"/>
+    <line x1="24" y1="40.32" x2="24" y2="46.08"/>
+    <line x1="15.46" y1="38.54" x2="11.38" y2="43.46"/>
+    <line x1="9.46" y1="32.54" x2="4.54" y2="36.62"/>
+    <line x1="7.68" y1="24" x2="1.92" y2="24"/>
+    <line x1="9.46" y1="15.46" x2="4.54" y2="11.38"/>
+    <line x1="15.46" y1="9.46" x2="11.38" y2="4.54"/>
+  </g>
+  <circle cx="24" cy="24" r="14.4" fill="url(#graha-sun)"/>
+</svg>

@@ -1,0 +1,31 @@
+# Social crawlers need the live chart share image at /og-image (and the
+# /api/og-image alias). Keep them unrestricted so Facebook/Twitter can fetch
+# og:image even though /api/ is disallowed for general bots below.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: *
+Allow: /
+Allow: /og-image
+Allow: /api/og-image
+
+Disallow: /account
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /kundali/
+Disallow: /api/
+
+Sitemap: https://www.vedicpatro.com/sitemap.xml
+
+# LLM / AI crawlers — site overview and key links
+# https://llmstxt.org/
+# llms.txt: https://www.vedicpatro.com/llms.txt

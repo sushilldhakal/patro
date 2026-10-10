@@ -1,0 +1,682 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Extra-small breakpoint (min-width). Tailwind ships sm/md/lg/xl/2xl but no
+     xs, so `xs:` did nothing before this. Set to 400px so it fires on large
+     phones (iPhone 14 Pro Max = 430px) and up — not just tablets. Remember it's
+     mobile-first: `xs:text-sm` applies from 400px UPWARD (desktop too),
+     so pair it with `md:`/`lg:` overrides to keep the bump phone-only. Also
+     enables `max-xs:` (< 400px) for the smallest phones. */
+  --breakpoint-xs: 25rem;
+  --font-devanagari: "Noto Sans Devanagari", sans-serif;
+  --font-sans: var(--font-devanagari);
+  --font-heading: var(--font-devanagari);
+  --font-en: "Noto Sans Devanagari", sans-serif;
+  --font-mono: "Fira Code", monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius-base) - 4px);
+  --radius-md: calc(var(--radius-base) - 2px);
+  --radius-lg: var(--radius-base);
+  --radius-xl: calc(var(--radius-base) + 4px);
+  --radius-2xl: 16px;
+  --font-num: var(--pn-num);
+  /* Global text scale — the ONLY font sizes used across the app. Prefer the
+     named utilities (text-xs … text-4xl); avoid arbitrary text-[Npx] values.
+     text-xs is for the smallest labels; use up to text-4xl for headings. */
+  --text-xs: 0.675rem; /* 10.8px — tiny labels for small mobile devices */
+  --text-xs--line-height: calc(0.85 / 0.675);
+  --text-sm: 0.875rem; /* 14px */
+  --text-sm--line-height: calc(1.25 / 0.875);
+  --text-base: 1rem; /* 16px */
+  --text-base--line-height: calc(1.5 / 1);
+  --text-lg: 1.125rem; /* 18px */
+  --text-lg--line-height: calc(1.75 / 1.125);
+  --text-xl: 1.25rem; /* 20px */
+  --text-xl--line-height: calc(1.75 / 1.25);
+  --text-2xl: 1.5rem; /* 24px */
+  --text-2xl--line-height: calc(2 / 1.5);
+  --text-3xl: 1.875rem; /* 30px */
+  --text-3xl--line-height: calc(2.25 / 1.875);
+  --text-4xl: 2.25rem; /* 36px */
+  --text-4xl--line-height: calc(2.5 / 2.25);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-surface-inset: color-mix(in srgb, var(--foreground) 3%, var(--card));
+  --color-surface-muted: color-mix(in srgb, var(--foreground) 2.5%, var(--card));
+  --color-surface-hover: color-mix(in srgb, var(--brand-saffron) 7%, var(--card));
+  --color-surface-today: color-mix(in srgb, var(--brand-vermilion) 14%, var(--card));
+  --color-surface-today-hover: color-mix(in srgb, var(--brand-vermilion) 22%, var(--card));
+  --color-surface-tint-danger: color-mix(in srgb, var(--color-danger) 7%, var(--card));
+  --color-surface-tint-teal: color-mix(in srgb, var(--brand-green) 9%, var(--card));
+  --color-chip-public: color-mix(in srgb, var(--color-danger) 12%, var(--card));
+  --color-chip-festival: color-mix(in srgb, var(--brand-green) 14%, var(--card));
+  --color-tab-active: color-mix(in srgb, var(--brand-saffron) 12%, var(--card));
+  --color-tab-hover: color-mix(in srgb, var(--brand-saffron) 6%, var(--card));
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--card));
+  --color-error-surface: color-mix(in srgb, var(--color-danger) 10%, var(--card));
+  --color-gochar-chip: color-mix(in srgb, var(--brand-gold) 28%, var(--card));
+  --color-gochar-chip-dark: color-mix(in srgb, var(--brand-gold) 18%, var(--muted));
+  --color-fest-today: color-mix(in srgb, var(--brand-vermilion) 8%, transparent);
+  --color-hol-tile-public: color-mix(in srgb, var(--color-danger) 11%, var(--card));
+  --color-hol-tile-festival: color-mix(in srgb, var(--brand-green) 13%, var(--card));
+  --color-tone-best: color-mix(in srgb, var(--brand-green) 12%, var(--card));
+  --color-tone-good: color-mix(in srgb, var(--brand-green) 8%, var(--card));
+  --color-tone-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
+  --color-tone-bad: color-mix(in srgb, var(--color-danger) 6%, var(--card));
+  --color-tone-worst: color-mix(in srgb, var(--color-danger) 10%, var(--card));
+  --color-slot-good: color-mix(in srgb, var(--brand-green) 10%, var(--card));
+  --color-slot-bad: color-mix(in srgb, var(--color-danger) 8%, var(--card));
+  --color-slot-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
+  --color-badge-good: color-mix(in srgb, var(--brand-green) 16%, var(--card));
+  --color-badge-bad: color-mix(in srgb, var(--color-danger) 12%, var(--card));
+  --color-badge-neutral: color-mix(in srgb, var(--foreground) 8%, var(--card));
+  --color-pushkara-hit: color-mix(in srgb, var(--brand-green) 10%, var(--card));
+  --color-panchang: var(--brand-green);
+  --color-overlay: color-mix(in srgb, var(--foreground) 35%, transparent);
+  --color-success: var(--color-success);
+  --shadow-ring-soft: 0 0 0 1px var(--pn-ring-soft);
+}
+
+:root {
+  /* Vedic Patro palette */
+  --brand-saffron: #d97706;
+  --brand-saffron-bright: #e67e22;
+  --brand-saffron-pressed: #b45309;
+  --brand-vermilion: #c62828;
+  --brand-vermilion-pressed: #9e1f1f;
+  --brand-gold: #d4a017;
+  --brand-gold-pressed: #b8860b;
+  --brand-green: #2e7d32;
+  --brand-green-pressed: #1b5e20;
+  --brand-blue: #0b565a;
+  --brand-blue-pressed: #084548;
+  --off-white: #f8f6f2;
+  
+  /* Legacy aliases used across components */
+  --brand-yellow: var(--brand-gold);
+  --brand-yellow-pressed: var(--brand-gold-pressed);
+  --brand-teal: var(--brand-green);
+  --brand-teal-pressed: var(--brand-green-pressed);
+  --brand-teal-deep: var(--brand-blue-pressed);
+
+  --parchment: var(--off-white);
+  --parchment-card: #ffffff;
+  --parchment-border: color-mix(in srgb, var(--brand-gold) 32%, var(--off-white));
+  --ink: #1a1410;
+  --ink-muted: #5c4a3a;
+  --silver: color-mix(in srgb, var(--brand-gold) 22%, #d8d4cc);
+  --slate-input: #4a4540;
+
+  --midnight: #0f1220;
+  --midnight-card: #171c31;
+  --midnight-popover: #0b0e1a;
+  --midnight-line: #272e4a;
+  --foam: #f3efe8;
+  --dark-saffron: #f59e42;
+  --dark-gold: #e8c36a;
+  --dark-vermilion: #ff8f85;
+
+  --color-success: var(--brand-green);
+  --color-warning: var(--brand-saffron-bright);
+  --color-danger: var(--brand-vermilion);
+  --color-info: var(--brand-blue);
+
+  --font-devanagari: "Noto Sans Devanagari", sans-serif;
+  --font-sans: var(--font-devanagari);
+  --font-heading: var(--font-devanagari);
+  --font-en: "Noto Sans Devanagari", sans-serif;
+  --font-mono: "Fira Code", monospace;
+
+  /* Typography is driven entirely by the Tailwind text scale (--text-xs …
+     --text-4xl in @theme). Base body text = --text-sm (14px). */
+
+  --tracking-tight: -0.01em;
+  --tracking-eyebrow: 0.12em;
+
+  --radius-base: 0.3rem;
+  --radius-pill: 999px;
+
+  --shadow-xs: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.09);
+  --shadow-sm: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.18),
+    0px 1px 2px -1px hsl(28.125 25% 25.098% / 0.18);
+  --shadow-md: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.18),
+    0px 2px 4px -1px hsl(28.125 25% 25.098% / 0.18);
+  --shadow-lg: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.18),
+    0px 4px 6px -1px hsl(28.125 25% 25.098% / 0.18);
+
+  --motion-fast: 120ms;
+  --motion-standard: 200ms;
+  --motion-slow: 320ms;
+  --motion-spring-interactive: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --background: var(--off-white);
+  --foreground: var(--ink);
+  --card: var(--parchment-card);
+  --card-foreground: var(--ink);
+  --popover: var(--parchment-card);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand-saffron);
+  --primary-foreground: #ffffff;
+  --secondary: var(--brand-blue);
+  --secondary-foreground: #ffffff;
+  --muted: color-mix(in srgb, var(--brand-gold) 18%, var(--off-white));
+  --muted-foreground: var(--ink-muted);
+  --accent: var(--brand-gold);
+  --accent-foreground: var(--ink);
+  --destructive: var(--color-danger);
+  --destructive-foreground: #ffffff;
+  --border: var(--silver);
+  --input: var(--slate-input);
+  --ring: var(--brand-saffron);
+  --sidebar-accent: var(--brand-saffron);
+
+  --pn-font: var(--font-devanagari);
+  --pn-num: var(--font-devanagari);
+  --pn-ring-soft: color-mix(in srgb, var(--brand-gold) 28%, transparent);
+
+  --chart-4: var(--brand-blue);
+  --chart-5: var(--brand-saffron-bright);
+}
+
+/* राशि / नक्षत्र glyph colour — one place for every glyph in the app. */
+:root {
+  --glyph-color: var(--foreground);
+}
+.glyph-icon {
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: var(--glyph-color);
+  -webkit-mask: var(--glyph-src) center / contain no-repeat;
+  mask: var(--glyph-src) center / contain no-repeat;
+}
+
+.dark {
+  --background: var(--midnight);
+  --foreground: var(--foam);
+  --card: var(--midnight-card);
+  --card-foreground: var(--foam);
+  --popover: var(--midnight-popover);
+  --popover-foreground: var(--foam);
+  --primary: var(--dark-saffron);
+  --primary-foreground: #1a1410;
+  --secondary: var(--dark-gold);
+  --secondary-foreground: #1a1410;
+  --muted: color-mix(in srgb, var(--midnight-line) 40%, var(--midnight));
+  --muted-foreground: #a6abc0;
+  --accent: var(--dark-gold);
+  --accent-foreground: var(--ink);
+  --destructive: var(--dark-vermilion);
+  --destructive-foreground: #1a1410;
+  --border: var(--midnight-line);
+  --input: color-mix(in srgb, var(--foam) 18%, var(--midnight-card));
+  --ring: var(--dark-gold);
+  --sidebar-accent: var(--dark-saffron);
+
+  --parchment-border: color-mix(in srgb, var(--dark-gold) 20%, var(--midnight-card));
+  --silver: color-mix(in srgb, var(--dark-gold) 14%, var(--midnight-card));
+
+  --chart-4: var(--dark-gold);
+  --chart-5: var(--dark-saffron);
+
+  --shadow-xs: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.09);
+  --shadow-sm: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
+    0px 1px 2px -1px hsl(0 0% 10.196% / 0.18);
+  --shadow-md: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
+    0px 2px 4px -1px hsl(0 0% 10.196% / 0.18);
+  --shadow-lg: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
+    0px 4px 6px -1px hsl(0 0% 10.196% / 0.18);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html[lang="en"] {
+    --pn-font: var(--font-en);
+    --font-sans: var(--font-en);
+    --font-heading: var(--font-en);
+    --pn-num: "Fira Code", monospace;
+  }
+
+  html:not([lang="en"]) {
+    --pn-font: var(--font-devanagari);
+    --font-sans: var(--font-devanagari);
+    --font-heading: var(--font-devanagari);
+    --pn-num: var(--font-devanagari);
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--pn-font);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    transition: background var(--motion-slow) var(--easing-standard);
+    -webkit-font-smoothing: antialiased;
+  }
+  button {
+    font-family: var(--pn-font);
+  }
+}
+
+.font-num,
+.font-mono {
+  font-family: var(--pn-num) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pn-drift {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-30px, 24px);
+  }
+}
+
+/* ── Panchanga Chakra (cosmic wheel) ─────────────────────── */
+.pn-wheel {
+  --pn-font: var(--font-sans);
+  --pn-ring-soft: color-mix(in srgb, #8fbfc1 18%, transparent);
+  --w-sky-0: #112c2a;
+  --w-sky-1: #0a1a1b;
+  --w-sky-2: #050c0d;
+  --w-surface: #0b1416;
+  --w-surface-border: color-mix(in srgb, #8fbfc1 28%, transparent);
+  --w-band: color-mix(in srgb, var(--brand-green) 30%, #0a1618);
+  --w-band-alt: color-mix(in srgb, var(--brand-green) 44%, #0b181a);
+  --w-rashi: color-mix(in srgb, var(--brand-green) 22%, #091315);
+  --w-rashi-alt: color-mix(in srgb, var(--brand-green) 34%, #0a1518);
+  --w-pada: #0d2024;
+  --w-pada-alt: #112a2f;
+  --w-sep: color-mix(in srgb, #8fbfc1 42%, transparent);
+  --w-sep-soft: color-mix(in srgb, #8fbfc1 16%, transparent);
+  --w-rim: color-mix(in srgb, #a9d4d4 50%, transparent);
+  --w-ink: #eaf3f1;
+  --w-ink-dim: #a7c4c3;
+  --w-ink-faint: #84a3a2;
+  --w-accent: var(--brand-vermilion);
+  --w-accent-soft: color-mix(in srgb, var(--brand-vermilion) 22%, transparent);
+  color: var(--w-ink);
+}
+
+.pn-wheel .wheel-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--w-accent) 0%,
+    var(--w-accent) var(--fill, 50%),
+    color-mix(in srgb, var(--w-ink) 28%, transparent) var(--fill, 50%)
+  );
+  outline: none;
+}
+.pn-wheel .wheel-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--w-accent);
+  border: 3px solid var(--w-surface);
+  cursor: grab;
+  box-shadow: 0 0 12px var(--w-accent-soft);
+}
+@media (max-width: 720px) {
+  .pn-wheel .wheel-scrub::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+  }
+}
+@media (max-width: 480px) {
+  .pn-wheel .wheel-scrub::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+}
+.pn-wheel .wheel-scrub:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+.pn-wheel .wheel-scrub::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--w-accent);
+  border: 3px solid var(--w-surface);
+  cursor: grab;
+}
+@media (max-width: 720px) {
+  .pn-wheel .wheel-scrub::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border-width: 2px;
+  }
+}
+@media (max-width: 480px) {
+  .pn-wheel .wheel-scrub::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ── Hora ring card (Design 6) ───────────────────────────── */
+.hora-theme {
+  --hora-ink: var(--foreground);
+  --hora-ink-dim: color-mix(in srgb, var(--muted-foreground) 88%, transparent);
+  --hora-ink-faint: color-mix(in srgb, var(--muted-foreground) 72%, transparent);
+  --hora-yellow: var(--brand-gold);
+}
+.dark .hora-theme,
+.dark .hora-theme {
+  --hora-ink: var(--foam);
+  --hora-ink-dim: color-mix(in srgb, var(--foam) 62%, transparent);
+  --hora-ink-faint: color-mix(in srgb, var(--foam) 40%, transparent);
+  --hora-yellow: var(--brand-gold);
+}
+
+@keyframes hora-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(24px, 18px) scale(1.06); }
+}
+
+.hora-theme .hora-vertical-scrub {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  flex: 1 1 0;
+  min-height: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    to top,
+    var(--brand-gold) 0%,
+    var(--brand-gold) var(--fill, 50%),
+    color-mix(in srgb, var(--foreground) 14%, transparent) var(--fill, 50%)
+  );
+  outline: none;
+}
+.dark .hora-theme .hora-vertical-scrub {
+  background: linear-gradient(
+    to top,
+    var(--hora-yellow) 0%,
+    var(--hora-yellow) var(--fill, 50%),
+    color-mix(in srgb, var(--foam) 18%, transparent) var(--fill, 50%)
+  );
+}
+.hora-theme .hora-vertical-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  border: 2px solid var(--card);
+  cursor: grab;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--brand-gold) 55%, transparent);
+}
+.dark .hora-theme .hora-vertical-scrub::-webkit-slider-thumb {
+  background: var(--hora-yellow);
+  border-color: #1a1408;
+}
+.hora-theme .hora-vertical-scrub:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.06);
+}
+.hora-theme .hora-vertical-scrub::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  border: 2px solid var(--card);
+  cursor: grab;
+}
+.dark .hora-theme .hora-vertical-scrub::-moz-range-thumb {
+  background: var(--hora-yellow);
+  border-color: #1a1408;
+}
+
+/* ── Tithi mechanics (calendar embed) ────────────────────── */
+
+/* The tokens carry a second selector, `.tm-tokens`, for the study overlays:
+   a fullscreen playground is portalled to <body>, so it sits outside the
+   `.tm-page` subtree and every `var(--tm-*)` in it would resolve to nothing —
+   which silently blanked the scrub tracks, whose whole track is a gradient
+   built from `--tm-amber`. `.tm-tokens` hands over the variables alone; the
+   parchment background and the starfield ::before stay on `.tm-page`, because
+   the overlay paints its own night sky. */
+.tm-page,
+.tm-tokens {
+  --tm-sky-0: var(--parchment-card);
+  --tm-sky-1: var(--parchment);
+  --tm-sky-2: var(--background);
+  --tm-ink: var(--foreground);
+  --tm-ink-dim: color-mix(in srgb, var(--muted-foreground) 90%, transparent);
+  --tm-ink-faint: color-mix(in srgb, var(--muted-foreground) 75%, transparent);
+  --tm-ring: color-mix(in srgb, var(--brand-green) 45%, transparent);
+  --tm-ring-soft: color-mix(in srgb, var(--brand-green) 14%, transparent);
+  --tm-teal: var(--brand-green);
+  --tm-amber: var(--brand-saffron-bright);
+  --tm-gold: var(--brand-gold);
+  --tm-card: var(--card);
+  --tm-border: var(--border);
+}
+.dark .tm-page,
+.dark .tm-tokens {
+  --tm-sky-0: #171c31;
+  --tm-sky-1: #0f1220;
+  --tm-sky-2: #0b0e1a;
+  --tm-ink: var(--foam);
+  --tm-ink-dim: color-mix(in srgb, var(--foam) 78%, transparent);
+  --tm-ink-faint: color-mix(in srgb, var(--foam) 60%, transparent);
+  --tm-ring: color-mix(in srgb, var(--brand-green) 50%, transparent);
+  --tm-ring-soft: color-mix(in srgb, var(--brand-green) 16%, transparent);
+  --tm-teal: var(--brand-green);
+  --tm-amber: var(--brand-saffron-bright);
+  --tm-gold: var(--brand-gold);
+  --tm-card: color-mix(in srgb, var(--midnight-card) 86%, transparent);
+  --tm-border: color-mix(in srgb, var(--brand-gold) 18%, transparent);
+}
+.dark .tm-page {
+  background:
+    radial-gradient(1100px 760px at 72% 12%, var(--tm-sky-0) 0%, var(--tm-sky-1) 46%, var(--tm-sky-2) 100%),
+    var(--tm-sky-2);
+  box-shadow: none;
+}
+.tm-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+}
+.dark .tm-page::before {
+  opacity: 0.6;
+  background:
+    radial-gradient(1.2px 1.2px at 18% 22%, rgba(233, 243, 241, 0.5), transparent),
+    radial-gradient(1px 1px at 72% 16%, rgba(233, 243, 241, 0.4), transparent),
+    radial-gradient(1.4px 1.4px at 84% 64%, rgba(233, 243, 241, 0.45), transparent);
+}
+
+/* Native select overlay — iOS wheel picker on tap */
+.patro-native-select {
+  -webkit-tap-highlight-color: transparent;
+  font-size: 16px;
+}
+
+.ed-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(
+    90deg,
+    var(--tm-amber) 0%,
+    var(--tm-amber) var(--fill, 24%),
+    color-mix(in srgb, var(--tm-ink) 20%, transparent) var(--fill, 24%)
+  );
+}
+.ed-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: var(--tm-amber);
+  border: 2px solid var(--card);
+}
+.ed-scrub::-moz-range-thumb {
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: var(--tm-amber);
+  border: 2px solid var(--card);
+}
+
+/* Same control on a dark panel — the 3D playground's own chrome.
+
+   `.ed-scrub` is built for the light article body: its empty track is
+   `--tm-ink` at 20% and its thumb is ringed in `--card`, both of which vanish
+   against a near-black panel. These override only the two colours, so the
+   geometry and the `--fill` contract stay shared. */
+.ed-scrub-dark {
+  background: linear-gradient(
+    90deg,
+    var(--tm-amber) 0%,
+    var(--tm-amber) var(--fill, 0%),
+    rgba(255, 255, 255, 0.24) var(--fill, 0%)
+  );
+}
+.ed-scrub-dark::-webkit-slider-thumb {
+  border-color: rgba(0, 0, 0, 0.6);
+}
+.ed-scrub-dark::-moz-range-thumb {
+  border-color: rgba(0, 0, 0, 0.6);
+}
+
+/* ── Shloka player scrubber — Documents reader's floating transport bar ── */
+.shloka-scrub {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--secondary) 0%,
+    var(--secondary) var(--fill, 0%),
+    var(--border) var(--fill, 0%)
+  );
+}
+.shloka-scrub::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: var(--secondary);
+  border: 2px solid var(--card);
+}
+.shloka-scrub::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: var(--secondary);
+  border: 2px solid var(--card);
+}
+
+/* ── Sky time-rate slider — Aakash Gochar transport row + time sheet ── */
+.sky-time-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  touch-action: none;
+}
+.sky-time-slider:focus {
+  outline: none;
+}
+.sky-time-slider--thin {
+  height: 22px;
+}
+.sky-time-slider--thin::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: #5c5c5e;
+}
+.sky-time-slider--thin::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: #5c5c5e;
+}
+.sky-time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7.5px;
+  border-radius: 50%;
+  border: none;
+  background: #e8eef8;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.sky-time-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: #e8eef8;
+}
+
+/* ── Avakahada Chakra wheel ───────────────────────────────── */
+.av-wheel {
+  --av-gana-dev: color-mix(in srgb, var(--brand-green) 38%, #0b181a);
+  --av-gana-nar: color-mix(in srgb, var(--brand-blue) 32%, #0b181a);
+  --av-gana-rak: color-mix(in srgb, var(--brand-vermilion) 28%, #0b181a);
+  --av-hub-center: #0f2224;
+  --av-hub-edge: #091315;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

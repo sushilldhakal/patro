@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-moon" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#eef1f5"/>
+      <stop offset="100%" stop-color="#b9bfc7"/>
+    </radialGradient>
+    <clipPath id="graha-moon-clip">
+      <circle cx="24" cy="24" r="17.28"/>
+    </clipPath>
+  </defs>
+  <circle cx="24" cy="24" r="17.28" fill="url(#graha-moon)"/>
+  <g clip-path="url(#graha-moon-clip)" opacity="0.4" fill="#9aa1ab">
+    <circle cx="19.68" cy="21.6" r="2.88"/>
+    <circle cx="26.64" cy="25.92" r="2.16"/>
+    <circle cx="24.48" cy="30.72" r="2.4"/>
+    <circle cx="20.88" cy="28.8" r="1.44"/>
+  </g>
+</svg>

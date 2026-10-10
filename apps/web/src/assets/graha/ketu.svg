@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-ketu" cx="38%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#b06080"/>
+      <stop offset="55%" stop-color="#601828"/>
+      <stop offset="100%" stop-color="#1c0408"/>
+    </radialGradient>
+    <clipPath id="graha-ketu-clip">
+      <circle cx="24" cy="24" r="16.8"/>
+    </clipPath>
+  </defs>
+  <circle cx="24" cy="24" r="16.8" fill="url(#graha-ketu)"/>
+  <g clip-path="url(#graha-ketu-clip)" opacity="0.4" fill="#d08098">
+    <circle cx="19" cy="21" r="2.5"/>
+    <circle cx="27" cy="26" r="1.8"/>
+    <circle cx="23" cy="30" r="2"/>
+  </g>
+</svg>

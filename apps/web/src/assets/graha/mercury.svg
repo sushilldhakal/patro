@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-mercury" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#bcc1c8"/>
+      <stop offset="100%" stop-color="#71767e"/>
+    </radialGradient>
+    <clipPath id="graha-mercury-clip">
+      <circle cx="24" cy="24" r="17.28"/>
+    </clipPath>
+  </defs>
+  <circle cx="24" cy="24" r="17.28" fill="url(#graha-mercury)"/>
+  <g clip-path="url(#graha-mercury-clip)" opacity="0.45" fill="#5f646b">
+    <circle cx="20.16" cy="21.12" r="3.36"/>
+    <circle cx="28.8" cy="28.8" r="2.4"/>
+    <circle cx="26.88" cy="18.24" r="1.44"/>
+  </g>
+</svg>

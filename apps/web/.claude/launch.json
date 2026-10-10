@@ -1,0 +1,50 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dhakal-patro",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "dhakal-patro-lan",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/sushildhakal/Desktop/calender-patro/dhakal-patro && VITE_API_BASE_URL=/api npm run dev -- --host 0.0.0.0 --port 5173 --strictPort"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "dhakal-patro-verify",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "--port", "5199", "--strictPort"],
+      "port": 5199
+    },
+    {
+      "name": "dhakal-patro-jd",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/sushildhakal/Desktop/calender-patro/dhakal-patro && VITE_API_BASE_URL=http://localhost:8081 npm run dev -- --port 5175 --strictPort"
+      ],
+      "port": 5175
+    },
+    {
+      "name": "dhakal-patro-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4199", "--strictPort"],
+      "port": 4199
+    },
+    {
+      "name": "dhakal-patro-mobile-web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/sushildhakal/Desktop/calender-patro/dhakal-patro-mobile && npx expo start --web --port 8082"
+      ],
+      "port": 8082
+    }
+  ]
+}

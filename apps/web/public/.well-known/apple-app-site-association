@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "H6AS5X74R2.com.vedicpatro.mobile",
+        "paths": ["*"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["H6AS5X74R2.com.vedicpatro.mobile"]
+  }
+}

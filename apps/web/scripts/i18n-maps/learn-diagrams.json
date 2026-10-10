@@ -1,0 +1,638 @@
+{
+  "common.days": {
+    "ne": "दिन",
+    "en": "days"
+  },
+  "grahas.earth": {
+    "ne": "पृथ्वी",
+    "en": "Earth"
+  },
+  "grahas.jupiter": {
+    "ne": "बृहस्पति",
+    "en": "Jupiter"
+  },
+  "grahas.ketu": {
+    "ne": "केतु",
+    "en": "Ketu"
+  },
+  "grahas.mercury": {
+    "ne": "बुध",
+    "en": "Mercury"
+  },
+  "grahas.moon": {
+    "ne": "चन्द्र",
+    "en": "Moon"
+  },
+  "grahas.rahu": {
+    "ne": "राहु",
+    "en": "Rahu"
+  },
+  "grahas.saturn": {
+    "ne": "शनि",
+    "en": "Saturn"
+  },
+  "grahas.sun": {
+    "ne": "सूर्य",
+    "en": "Sun"
+  },
+  "grahas.venus": {
+    "ne": "शुक्र",
+    "en": "Venus"
+  },
+  "learn.diagrams.autumn_equinox": {
+    "ne": "शरद् विषुव",
+    "en": "autumn equinox"
+  },
+  "learn.diagrams.belt_latitude_mercury": {
+    "ne": "±७°",
+    "en": "±7°"
+  },
+  "learn.diagrams.belt_latitude_moon": {
+    "ne": "±५.१°",
+    "en": "±5.1°"
+  },
+  "learn.diagrams.belt_latitude_sun": {
+    "ne": "परिभाषाले नै ०°",
+    "en": "0° by definition"
+  },
+  "learn.diagrams.belt_total_width": {
+    "ne": "राशि पट्टी — जम्मा ~१८° चौडा",
+    "en": "the zodiac belt — about 18° wide in all"
+  },
+  "learn.diagrams.belt_width_caption": {
+    "ne": "सूर्य परिभाषाले नै क्रान्तिवृत्तमा हुन्छ — त्यसको शर सधैँ ०°। बाँकी सबै भने अलिअलि माथितल हुन्छन्: चन्द्र ±५.१°, बुध ±७° सम्म। सबैलाई समेट्न क्रान्तिवृत्तको दुवैतिर करिब ९° को पेटी चाहिन्छ, र त्यही राशि पट्टी हो। त्यसैले राशिचक्र रेखा होइन, पट्टी हो।",
+    "en": "The Sun is on the ecliptic by definition — its latitude is always 0°. Everything else strays: the Moon by ±5.1°, Mercury by as much as ±7°. Containing all of them takes a band about 9° either side of the ecliptic, and that band is the zodiac belt. Which is why the zodiac is a belt rather than a line."
+  },
+  "learn.diagrams.belt_width_label": {
+    "ne": "राशि पट्टीको चौडाइ — क्रान्तिवृत्तको दुवैतिर ~९°",
+    "en": "The width of the zodiac belt — about 9° either side of the ecliptic"
+  },
+  "learn.diagrams.celestial_equator": {
+    "ne": "खगोलीय विषुवत् रेखा",
+    "en": "celestial equator"
+  },
+  "learn.diagrams.city_kathmandu": {
+    "ne": "काठमाडौँ",
+    "en": "Kathmandu"
+  },
+  "learn.diagrams.city_sydney": {
+    "ne": "सिड्नी",
+    "en": "Sydney"
+  },
+  "learn.diagrams.country_britain": {
+    "ne": "बेलायत",
+    "en": "Britain"
+  },
+  "learn.diagrams.country_greece": {
+    "ne": "ग्रीस",
+    "en": "Greece"
+  },
+  "learn.diagrams.country_italy_spain_portugal": {
+    "ne": "इटाली, स्पेन, पोर्चुगल",
+    "en": "Italy, Spain, Portugal"
+  },
+  "learn.diagrams.country_russia": {
+    "ne": "रुस",
+    "en": "Russia"
+  },
+  "learn.diagrams.day_length_caption": {
+    "ne": "सूर्योदयको समीकरणले दिने H भनेको आधा दिन हो। स्थानीय मध्याह्न ठीक बीचमा पर्छ, सूर्योदय मध्याह्न − H मा र सूर्यास्त मध्याह्न + H मा — त्यसैले एउटै गणनाले दुवै दिन्छ र दिनमान सिधै २H हुन्छ। काठमाडौँमा H ग्रीष्म अयनान्तमा ~६घ ५५मि र शीत अयनान्तमा ~५घ १३मि हुन्छ।",
+    "en": "The H that the sunrise equation gives you is half a day. Local noon sits in the middle, sunrise at noon − H and sunset at noon + H — so one solve gives both, and day length is simply 2H. At Kathmandu H runs about 6h 55m at the summer solstice and 5h 13m at the winter one."
+  },
+  "learn.diagrams.day_length_label": {
+    "ne": "दिनमान = २H — स्थानीय मध्याह्नको दुवैतिर बराबर घण्टा कोण",
+    "en": "Day length = 2H — the hour angle on either side of local noon"
+  },
+  "learn.diagrams.eclipse_event_lunar": {
+    "ne": "चन्द्रग्रहण",
+    "en": "lunar eclipse"
+  },
+  "learn.diagrams.eclipse_event_solar": {
+    "ne": "सूर्यग्रहण",
+    "en": "solar eclipse"
+  },
+  "learn.diagrams.eclipse_phase_full_moon": {
+    "ne": "पूर्णिमा",
+    "en": "full moon"
+  },
+  "learn.diagrams.eclipse_phase_new_moon": {
+    "ne": "औंसी",
+    "en": "new moon"
+  },
+  "learn.diagrams.eclipse_season_caption": {
+    "ne": "ग्रहण हुन सूर्य चन्द्रकक्षको पात नजिक हुनुपर्छ, र सूर्य त्यति नजिक करिब ३४ दिन बस्छ — त्यही ग्रहण ऋतु हो। औंसी र पूर्णिमाबीच सधैँ करिब १४ दिनको फासला हुने भएकाले, ३४ दिनको झ्यालले प्रायः दुवै समात्छ: औंसीमा सूर्यग्रहण र पूर्णिमामा चन्द्रग्रहण। त्यसैले ग्रहण एक्लै नआई जोडीमा आउँछन्।",
+    "en": "An eclipse needs the Sun near a node of the Moon's orbit, and the Sun stays that close for about 34 days — that window is the eclipse season. Since a new Moon and a full Moon are always about 14 days apart, a 34-day window almost always catches both: a solar eclipse at new Moon and a lunar one at full. That is why eclipses arrive in pairs rather than singly."
+  },
+  "learn.diagrams.eclipse_season_label": {
+    "ne": "ग्रहण ऋतुको ~३४ दिनको झ्याल, र त्यसभित्र पर्ने औंसी–पूर्णिमा जोडी",
+    "en": "The ~34-day eclipse window and the new–full Moon pair it catches"
+  },
+  "learn.diagrams.ecliptic_cross_caption": {
+    "ne": "एउटै गोलामा दुई बृहत् वृत्त भए दुई ठाउँमा काटिनैपर्छ, र यी ठ्याक्कै २३.४४° को कोणमा काटिन्छन् — त्यही अक्ष झुकाव हो। काटिने ती दुई बिन्दु नै विषुव हुन्, र विषुवत् रेखाबाट सबैभन्दा टाढा पुग्ने दुई बिन्दु अयनान्त। अर्थात् चारै मौसमी बिन्दु अलग–अलग तथ्य होइनन् — दुई वृत्त कहाँ भेटिन्छन् र कहाँ सबैभन्दा टाढा हुन्छन्, त्यही मात्र हो।",
+    "en": "Two great circles on one sphere must cross twice, and these cross at exactly 23.44° — the axial tilt. Those crossings are the equinoxes, and the points farthest from the equator are the solstices. So the four seasonal markers are not four separate facts: they are where two circles meet and where they are farthest apart."
+  },
+  "learn.diagrams.ecliptic_cross_label": {
+    "ne": "क्रान्तिवृत्त र खगोलीय विषुवत् रेखा — दुई ठाउँमा काटिन्छन्, र २३.४४° सम्म टाढा जान्छन्",
+    "en": "The ecliptic and the celestial equator — crossing twice, parting by 23.44°"
+  },
+  "learn.diagrams.ecliptic_curve": {
+    "ne": "क्रान्तिवृत्त",
+    "en": "the ecliptic"
+  },
+  "learn.diagrams.ecliptic_latitude_zero": {
+    "ne": "क्रान्तिवृत्त — शर ०°",
+    "en": "the ecliptic — latitude 0°"
+  },
+  "learn.diagrams.ecliptic_longitude_axis": {
+    "ne": "क्रान्तिवृत्तीय देशान्तर ०° → ३६०° →",
+    "en": "ecliptic longitude 0° → 360° →"
+  },
+  "learn.diagrams.graha_mars": {
+    "ne": "मंगल",
+    "en": "Mars"
+  },
+  "learn.diagrams.graha_meaning_jupiter": {
+    "ne": "गुरु, ज्ञान — बिहीवार",
+    "en": "Teacher, knowledge — Thursday"
+  },
+  "learn.diagrams.graha_meaning_ketu": {
+    "ne": "छाया ग्रह — मोक्ष, आध्यात्म",
+    "en": "Shadow planet — moksha, spirituality"
+  },
+  "learn.diagrams.graha_meaning_mars": {
+    "ne": "साहस, भाइ — मङ्गलवार, होरा",
+    "en": "Courage, siblings — Tuesday, hora"
+  },
+  "learn.diagrams.graha_meaning_mercury": {
+    "ne": "बुद्धि, वाणी — बुधवार",
+    "en": "Intellect, speech — Wednesday"
+  },
+  "learn.diagrams.graha_meaning_moon": {
+    "ne": "मन, माता — तिथि, नक्षत्र, पक्ष",
+    "en": "Mind, mother — tithi, nakshatra, paksha"
+  },
+  "learn.diagrams.graha_meaning_rahu": {
+    "ne": "छाया ग्रह — ग्रहण, अप्रत्याशित परिवर्तन",
+    "en": "Shadow planet — eclipses, sudden change"
+  },
+  "learn.diagrams.graha_meaning_saturn": {
+    "ne": "कर्म, धैर्य — शनिवार",
+    "en": "Karma, patience — Saturday"
+  },
+  "learn.diagrams.graha_meaning_sun": {
+    "ne": "आत्मा, पिता, अधिकार — राशि र सङ्क्रान्तिको माप",
+    "en": "Soul, father, authority — measures rashi and sankranti"
+  },
+  "learn.diagrams.graha_meaning_venus": {
+    "ne": "प्रेम, सौन्दर्य — शुक्रवार",
+    "en": "Love, beauty — Friday"
+  },
+  "learn.diagrams.gregorian_jump_caption": {
+    "ne": "जुलियन नियमको जम्मा भएको त्रुटि मिलाउन अक्टोबर १५८२ बाट दस दिन एकैचोटि हटाइयो — ४ गतेको भोलिपल्ट सिधै १५ गते भयो, र बीचका दस दिन कहीँ पनि अस्तित्वमा आएनन्। तर सबैले एकैचोटि अपनाएनन्, र त्रुटि चलिरहेकै हुनाले पछि अपनाउनेले झन् धेरै दिन हटाउनुपर्‍यो — बेलायतले ११, रुसले १३।",
+    "en": "Ten days were struck from October 1582 to clear the accumulated Julian error: the 4th was followed directly by the 15th, and the days between never existed anywhere. Adoption was not simultaneous, though, and because the error kept accruing, later adopters had to remove more days — eleven for Britain, thirteen for Russia."
+  },
+  "learn.diagrams.gregorian_jump_label": {
+    "ne": "अक्टोबर १५८२ मा हटाइएका दस दिन, र देशैपिच्छे फरक अपनाउने साल",
+    "en": "The ten days removed from October 1582, and the staggered adoption that followed"
+  },
+  "learn.diagrams.gregorian_jump_lost_days": {
+    "ne": "१० दिन हटाइयो — यी कहिल्यै भएनन्",
+    "en": "ten days removed — these never happened"
+  },
+  "learn.diagrams.gregorian_jump_month": {
+    "ne": "अक्टोबर १५८२",
+    "en": "October 1582"
+  },
+  "learn.diagrams.hierarchy_caption": {
+    "ne": "तीन गति, तीन धारा, एउटा मिति। पृथ्वीको घुर्णनले दिन र वार, सूर्यको राशि–गतिले सङ्क्रान्ति र सौर महिना, चन्द्र–सूर्य कोणले तिथि, पक्ष र चान्द्र मास — बीचका दुई धारा नै सौरमान र चान्द्रमान हुन्, र तीनै मिलेर पञ्चाङ्ग बन्छ।",
+    "en": "Three motions, three streams, one date. Earth's spin gives the day and the vaara, the Sun's travel through the zodiac gives sankranti and the solar month, the Moon's angle from the Sun gives tithi, paksha and the lunar month — the middle two streams are exactly sauramāna and chāndramāna, and all three together make the panchanga."
+  },
+  "learn.diagrams.hierarchy_converge": {
+    "ne": "पञ्चाङ्ग",
+    "en": "Panchanga"
+  },
+  "learn.diagrams.hierarchy_driver_earth": {
+    "ne": "आफ्नै अक्षमा घुर्णन",
+    "en": "spin on its own axis"
+  },
+  "learn.diagrams.hierarchy_driver_moon": {
+    "ne": "सूर्यसँगको कोणीय दूरी",
+    "en": "angular gap from the Sun"
+  },
+  "learn.diagrams.hierarchy_driver_sun": {
+    "ne": "राशिचक्रमा वार्षिक गति",
+    "en": "annual path through the zodiac"
+  },
+  "learn.diagrams.hierarchy_mana_lunar": {
+    "ne": "चान्द्रमान",
+    "en": "Chāndramāna"
+  },
+  "learn.diagrams.hierarchy_mana_solar": {
+    "ne": "सौरमान",
+    "en": "Sauramāna"
+  },
+  "learn.diagrams.hierarchy_result": {
+    "ne": "एउटा बि.सं. मिति",
+    "en": "One Bikram Sambat date"
+  },
+  "learn.diagrams.hierarchy_result_fields": {
+    "ne": "वर्ष · महिना · गते · तिथि · वार",
+    "en": "year · month · gate · tithi · vaara"
+  },
+  "learn.diagrams.hierarchy_rule_boundary": {
+    "ne": "सीमा पार",
+    "en": "boundary crossed"
+  },
+  "learn.diagrams.hierarchy_rule_month_count": {
+    "ne": "३० तिथि",
+    "en": "30 tithis"
+  },
+  "learn.diagrams.hierarchy_rule_one_turn": {
+    "ne": "१ फेरो",
+    "en": "1 turn"
+  },
+  "learn.diagrams.hierarchy_rule_paksha_count": {
+    "ne": "१५ तिथि",
+    "en": "15 tithis"
+  },
+  "learn.diagrams.hierarchy_rule_rashi_span": {
+    "ne": "३०° को भाग",
+    "en": "30° segment"
+  },
+  "learn.diagrams.hierarchy_rule_tithi_span": {
+    "ne": "हरेक १२°",
+    "en": "every 12°"
+  },
+  "learn.diagrams.hierarchy_stacked_aria": {
+    "ne": "आकाशीय गतिबाट पञ्चाङ्ग र बि.सं. मितिसम्मको क्रम।",
+    "en": "The chain from celestial motion to the panchanga and a Bikram Sambat date."
+  },
+  "learn.diagrams.hierarchy_step_lunar_month": {
+    "ne": "चान्द्र मास",
+    "en": "Lunar month"
+  },
+  "learn.diagrams.hierarchy_step_paksha": {
+    "ne": "पक्ष",
+    "en": "Pakṣa"
+  },
+  "learn.diagrams.hierarchy_step_rashi": {
+    "ne": "राशि",
+    "en": "Rāśi"
+  },
+  "learn.diagrams.hierarchy_step_sankranti": {
+    "ne": "सङ्क्रान्ति",
+    "en": "Saṅkrānti"
+  },
+  "learn.diagrams.hierarchy_step_solar_month": {
+    "ne": "सौर महिना · गते",
+    "en": "Solar month · gate"
+  },
+  "learn.diagrams.hierarchy_step_vaara": {
+    "ne": "वार",
+    "en": "Vāra"
+  },
+  "learn.diagrams.hierarchy_top": {
+    "ne": "आकाशीय गति",
+    "en": "Celestial motion"
+  },
+  "learn.diagrams.hierarchy_wide_aria": {
+    "ne": "पृथ्वी, सूर्य र चन्द्रको गतिबाट दिन, सौर महिना र चान्द्र मास बन्छन्, र तीनै मिलेर पञ्चाङ्ग र बि.सं. मिति बनाउँछन्।",
+    "en": "Earth's, the Sun's and the Moon's motions produce the day, the solar month and the lunar month; together they make the panchanga and a Bikram Sambat date."
+  },
+  "learn.diagrams.hora_cycle_caption": {
+    "ne": "सात ग्रह परम्परागत परिक्रमा–कालको क्रममा चक्रमा बस्छन्, र दिनको हरेक घण्टा (होरा) क्रमको अर्को ग्रहले चलाउँछ। एक दिनमा २४ होरा हुन्छन्, र २४ ÷ ७ ले ३ बाँकी छाड्छ — त्यसैले भोलिको पहिलो होरा चक्रमा तीन स्थान अगाडि पर्छ। सूर्यबाट तीन–तीन गन्दै जानुहोस्: सूर्य → चन्द्र → मंगल → बुध → बृहस्पति → शुक्र → शनि। बारको क्रम मनपरी होइन, यही गणनाबाट आएको हो।",
+    "en": "The seven grahas sit in a ring ordered by classical orbital period, and each hour of the day — each hora — is ruled by the next one along. A day holds 24 horas, and 24 ÷ 7 leaves 3, so tomorrow's first hora lands three places further round. Count in threes from the Sun: Sun → Moon → Mars → Mercury → Jupiter → Venus → Saturn. The weekday order is not arbitrary; it is that arithmetic."
+  },
+  "learn.diagrams.hora_cycle_label": {
+    "ne": "सात ग्रहको होरा चक्र र त्यसबाट निस्कने बारको क्रम",
+    "en": "The seven-graha hora cycle and the weekday order it generates"
+  },
+  "learn.diagrams.hora_cycle_remainder": {
+    "ne": "२४ ÷ ७ → बाँकी ३",
+    "en": "24 ÷ 7 → remainder 3"
+  },
+  "learn.diagrams.hora_cycle_step": {
+    "ne": "→ ३ स्थान अगाडि",
+    "en": "→ 3 places along"
+  },
+  "learn.diagrams.hora_ring_jupiter": {
+    "ne": "बृहस्पति",
+    "en": "Jup"
+  },
+  "learn.diagrams.hora_ring_mercury": {
+    "ne": "बुध",
+    "en": "Mer"
+  },
+  "learn.diagrams.hora_ring_saturn": {
+    "ne": "शनि",
+    "en": "Sat"
+  },
+  "learn.diagrams.hora_ring_venus": {
+    "ne": "शुक्र",
+    "en": "Ven"
+  },
+  "learn.diagrams.local_noon": {
+    "ne": "स्थानीय मध्याह्न",
+    "en": "local noon"
+  },
+  "learn.diagrams.manda_row_manda": {
+    "ne": "+ मन्द संस्कार",
+    "en": "+ manda correction"
+  },
+  "learn.diagrams.manda_row_manda_note": {
+    "ne": "कक्ष हामीमा केन्द्रित छैन — एक फेरोमा एक लहर",
+    "en": "orbit not centred on us — one wave per revolution"
+  },
+  "learn.diagrams.manda_row_mean": {
+    "ne": "मध्यम ग्रह",
+    "en": "mean planet"
+  },
+  "learn.diagrams.manda_row_mean_note": {
+    "ne": "एकनास वृत्ताकार गति",
+    "en": "uniform circular motion"
+  },
+  "learn.diagrams.manda_row_shighra": {
+    "ne": "+ शीघ्र संस्कार = स्फुट ग्रह",
+    "en": "+ shighra = true planet"
+  },
+  "learn.diagrams.manda_row_shighra_note": {
+    "ne": "हाम्रो आफ्नै गति — यहीँबाट वक्री लूप",
+    "en": "our own motion — this is where retrograde comes from"
+  },
+  "learn.diagrams.manda_shighra_caption": {
+    "ne": "मध्यम ग्रह एकनास गतिले वृत्तमा हिँड्छ — गणना गर्न सजिलो, तर आकाशमा गलत। दुई संस्कारले मिलाउँछन्: मन्द संस्कारले कक्ष हामीमा केन्द्रित नभएको कुरा सम्हाल्छ, जसले एक फेरोमा एउटा लहर दिन्छ; शीघ्र संस्कारले हाम्रो आफ्नै परिक्रमा सम्हाल्छ, र वक्री लूप यहीँबाट निस्कन्छ। दुवै क्रमशः लगाएपछि बाँकी रहन्छ स्फुट ग्रह — वास्तविक स्थिति।",
+    "en": "A mean planet moves at a dead-constant rate around a circle: easy to compute and wrong on the sky. Two corrections repair it. The manda term accounts for the orbit not being centred on us, giving one wave per revolution; the shighra term accounts for our own orbital motion, and that is where the retrograde loop comes from. Applied in turn they leave the true position — the sphuta graha."
+  },
+  "learn.diagrams.manda_shighra_label": {
+    "ne": "मध्यम ग्रहमा मन्द र शीघ्र संस्कार थपेर स्फुट ग्रह",
+    "en": "Manda and shighra corrections turning a mean planet into a true one"
+  },
+  "learn.diagrams.moonrise_none": {
+    "ne": "यो दिन चन्द्रोदय छैन",
+    "en": "no moonrise this day"
+  },
+  "learn.diagrams.moonrise_slip_caption": {
+    "ne": "चन्द्रमा आफ्नै कक्षमा दैनिक ~१३° सर्ने भएकाले लगातार दुई चन्द्रोदयबीच ~२४ घण्टा ५० मिनेट लाग्छ — अर्थात् एक दिनभन्दा सधैँ बढी। त्यसैले ढिलाइ जम्मा हुँदै गएर कुनै दिन पूरै नाघ्छ र त्यो दिन चन्द्रोदयै हुँदैन। उल्टो भने सम्भव छैन: अन्तराल २४ घण्टाभन्दा लामो हुनाले एउटै दिनमा दुई चन्द्रोदय कहिल्यै पर्दैनन्।",
+    "en": "The Moon moves about 13° along its own orbit each day, so successive moonrises are about 24h 50m apart — always more than one civil day. The slip therefore accumulates until it steps clean over a day, which then has no moonrise at all. The reverse cannot happen: because the interval exceeds 24 hours, two moonrises never fall inside one day."
+  },
+  "learn.diagrams.moonrise_slip_label": {
+    "ne": "चन्द्रोदय हरेक दिन ~५० मिनेट ढिलो — कुनै दिन दुई पटक, कुनै दिन एकै पटक पनि होइन",
+    "en": "Moonrise slips ~50 minutes a day — some days get two, some get none"
+  },
+  "learn.diagrams.one_civil_day": {
+    "ne": "एक दिन",
+    "en": "one civil day"
+  },
+  "learn.diagrams.one_revolution_axis": {
+    "ne": "एक परिक्रमा →",
+    "en": "one revolution →"
+  },
+  "learn.diagrams.orbit_aphelion": {
+    "ne": "अपसौर (टाढा)",
+    "en": "Aphelion (farthest)"
+  },
+  "learn.diagrams.orbit_direction": {
+    "ne": "↺ वामावर्त (वास्तविक दिशा)",
+    "en": "↺ counter-clockwise (the true direction)"
+  },
+  "learn.diagrams.orbit_north_pole": {
+    "ne": "उत्तर",
+    "en": "North"
+  },
+  "learn.diagrams.orbit_perihelion": {
+    "ne": "उपसौर (नजिक)",
+    "en": "Perihelion (nearest)"
+  },
+  "learn.diagrams.orbit_speed": {
+    "ne": "गति",
+    "en": "Speed"
+  },
+  "learn.diagrams.orbit_speed_fast": {
+    "ne": "छिटो",
+    "en": "faster"
+  },
+  "learn.diagrams.orbit_speed_mean": {
+    "ne": "मध्यम",
+    "en": "mean"
+  },
+  "learn.diagrams.orbit_speed_slow": {
+    "ne": "ढिलो",
+    "en": "slower"
+  },
+  "learn.diagrams.orbit_sun_focus": {
+    "ne": "सूर्य (केन्द्रबिन्दु)",
+    "en": "Sun (at the focus)"
+  },
+  "learn.diagrams.paksha_krishna": {
+    "ne": "कृष्ण पक्ष",
+    "en": "Krishna paksha"
+  },
+  "learn.diagrams.paksha_shukla": {
+    "ne": "शुक्ल पक्ष",
+    "en": "Shukla paksha"
+  },
+  "learn.diagrams.paksha_strip_caption": {
+    "ne": "एक चान्द्र मास औंसीबाट सुरु भई पूर्णिमा हुँदै फेरि औंसीमा टुङ्गिन्छ। बढ्दो आधा शुक्ल पक्ष, घट्दो आधा कृष्ण पक्ष — प्रत्येकमा पन्ध्र तिथि। त्यसैले तिथिको गणना १ देखि ३० सम्म एकपटक होइन, १ देखि १५ सम्म दुई पटक चल्छ, र पन्ध्रौँ तिथिको नाम पक्षअनुसार फरक हुन्छ: शुक्लको पूर्णिमा, कृष्णको औंसी।",
+    "en": "A lunation runs from new Moon through full and back to new. The waxing half is Shukla paksha and the waning half Krishna, fifteen tithis each — so the count runs 1 to 15 twice rather than 1 to 30 once, and the fifteenth takes a different name in each half: पूर्णिमा in the bright, औंसी in the dark."
+  },
+  "learn.diagrams.paksha_strip_label": {
+    "ne": "शुक्ल र कृष्ण पक्ष — एक चान्द्र मासका दुई आधा",
+    "en": "Shukla and Krishna paksha — the two halves of one lunation"
+  },
+  "learn.diagrams.paksha_tithi_range": {
+    "ne": "तिथि १ → १५",
+    "en": "tithi 1 → 15"
+  },
+  "learn.diagrams.phase_full_short": {
+    "ne": "पूर्णिमा",
+    "en": "full"
+  },
+  "learn.diagrams.phase_new_short": {
+    "ne": "औंसी",
+    "en": "new"
+  },
+  "learn.diagrams.ray_angle_caption": {
+    "ne": "दुवैतिर किरणको पुञ्ज उही चौडाइको छ — सूर्यले पठाएको ऊर्जा उही हो। ठाडो पर्दा त्यो सानो क्षेत्रमा केन्द्रित हुन्छ, छड्के पर्दा फराकिलो क्षेत्रमा फिँजिन्छ, र प्रति वर्ग मिटर ताप घट्छ। ऋतु बनाउने यही हो: झुकावले वर्षभरि किरणको कोण बदल्छ, दूरीले होइन।",
+    "en": "The beam is the same width on both sides — the Sun is sending the same energy. Arriving steeply it concentrates on a short footprint; arriving at a slant it spreads across a long one, and the heat per square metre drops. This is what makes the seasons: the tilt changes the angle of the light through the year, not the distance."
+  },
+  "learn.diagrams.ray_angle_label": {
+    "ne": "उही मात्राको किरण ठाडो र छड्के कोणमा — फरक क्षेत्रफलमा फिँजिन्छ",
+    "en": "The same quantity of light arriving steeply and at a slant — spread over different areas"
+  },
+  "learn.diagrams.ray_slant": {
+    "ne": "छड्के किरण",
+    "en": "slanting rays"
+  },
+  "learn.diagrams.ray_slant_result": {
+    "ne": "कम ताप → जाडो",
+    "en": "less heat → winter"
+  },
+  "learn.diagrams.ray_steep": {
+    "ne": "ठाडो किरण",
+    "en": "steep rays"
+  },
+  "learn.diagrams.ray_steep_result": {
+    "ne": "बढी ताप → गर्मी",
+    "en": "more heat → summer"
+  },
+  "learn.diagrams.retrograde_caption": {
+    "ne": "पृथ्वी भित्री कक्षमा छिटो हिँड्छ, मंगल बाहिरी कक्षमा ढिलो। बराबर समयका अन्तरालमा पृथ्वीबाट मंगलतिर तानिएका दृष्टिरेखा हेर्नुहोस् — उछिनुअघि अगाडि सर्छन्, उछिन्ने बेला पछाडि सर्छन्, अनि फेरि अगाडि। आकाशमा देखिने त्यो फन्को दृष्टिरेखाले बनाएको हो; मंगल कहिल्यै पछाडि हिँड्दैन।",
+    "en": "Earth runs fast on the inner orbit, Mars slowly on the outer one. Follow the sightlines drawn from Earth to Mars at equal intervals: they sweep forward before the overtaking, backward through it, then forward again. The loop you see on the sky is made by those sightlines — Mars never actually moves backwards."
+  },
+  "learn.diagrams.retrograde_earth_faster": {
+    "ne": "पृथ्वी — छिटो",
+    "en": "Earth — faster"
+  },
+  "learn.diagrams.retrograde_label": {
+    "ne": "वक्री गति — पृथ्वीले उछिन्दा दृष्टिरेखा पछाडि सर्छ",
+    "en": "Retrograde motion — the sightline slides backwards as Earth overtakes"
+  },
+  "learn.diagrams.retrograde_mars_slower": {
+    "ne": "मंगल — ढिलो",
+    "en": "Mars — slower"
+  },
+  "learn.diagrams.retrograde_red_span": {
+    "ne": "रातो खण्ड = वक्री — दृष्टिरेखा पछाडि सर्दै",
+    "en": "red span = retrograde — the sightline sliding back"
+  },
+  "learn.diagrams.retrograde_star_backdrop": {
+    "ne": "स्थिर ताराको पृष्ठभूमि — यहाँ देखिने बाटो",
+    "en": "the fixed-star backdrop — the apparent path"
+  },
+  "learn.diagrams.scene_loading": {
+    "ne": "आकाश तयार हुँदैछ…",
+    "en": "Preparing the sky…"
+  },
+  "learn.diagrams.sidereal_day_caption": {
+    "ne": "पृथ्वीको एउटा दाग सुरुमा सूर्य र टाढाको तारा दुवैको सिधामा छ। एक पूरा घुर्णन (२३घ ५६मि) पछि त्यो दाग फेरि ताराकै सिधामा आइपुग्छ — तारा यति टाढा छ कि दिशा बदलिँदैन। तर त्यति बेरमा पृथ्वी कक्षमा ~१° सरिसकेको हुन्छ, त्यसैले सूर्यलाई फेरि ठीक माथि ल्याउन त्यो १° थप घुम्नुपर्छ, जुन करिब ४ मिनेट हो। चित्रमा कोण देखिने बनाउन बढाइएको छ।",
+    "en": "A mark on Earth starts lined up with both the Sun and a distant star. After one full rotation — 23h 56m — the mark points at the star again, because the star is far enough away that its direction has not changed. But Earth has moved about 1° along its orbit in that time, so it must turn that extra 1° to bring the Sun overhead again: roughly four minutes. The angle is exaggerated here to be visible."
+  },
+  "learn.diagrams.sidereal_day_label": {
+    "ne": "नाक्षत्र दिन र सौर दिनको फरक — कक्षमा सरेको १° ले थपिने ४ मिनेट",
+    "en": "Sidereal versus solar day — the four minutes added by 1° of orbital motion"
+  },
+  "learn.diagrams.sidereal_day_total": {
+    "ne": "२३घ ५६मि (नाक्षत्र दिन) + ४मि = २४ घण्टा (सौर दिन)",
+    "en": "23h 56m (sidereal day) + 4m = 24 hours (solar day)"
+  },
+  "learn.diagrams.sidereal_panel_one_rotation": {
+    "ne": "२३घ ५६मि पछि — एक पूरा घुर्णन",
+    "en": "after 23h 56m — one full rotation"
+  },
+  "learn.diagrams.sidereal_panel_start": {
+    "ne": "सुरु — दुवै सूर्य र ताराको सिधामा",
+    "en": "start — lined up on both Sun and star"
+  },
+  "learn.diagrams.sidereal_scale_zero": {
+    "ne": "निरयन — शून्य ताराको सापेक्ष स्थिर (बैशाख १)",
+    "en": "sidereal — zero fixed against the stars (बैशाख १)"
+  },
+  "learn.diagrams.sidereal_star_direction": {
+    "ne": "टाढाको ताराको दिशा — दुवै चित्रमा उही",
+    "en": "direction to the distant star — the same in both"
+  },
+  "learn.diagrams.spring_equinox": {
+    "ne": "वसन्त विषुव",
+    "en": "spring equinox"
+  },
+  "learn.diagrams.summer_solstice": {
+    "ne": "ग्रीष्म अयनान्त",
+    "en": "summer solstice"
+  },
+  "learn.diagrams.sunrise_sample_caption": {
+    "ne": "तिथि जुनसुकै घडीमा सुरु र अन्त्य हुन सक्छ, तर पात्रोलाई दिनको एउटै नाम चाहिन्छ। नियम सरल छ — सूर्योदयको क्षणमा जुन तिथि चलिरहेको हुन्छ, त्यही दिनभरिको तिथि। त्यसैले सूर्योदयअघि सकिने तिथिले दिन पाउँदैन। यही एउटा नियमबाट तिथि स्थानसापेक्ष बन्छ, किनभने सूर्योदय आफैँ स्थानसापेक्ष छ।",
+    "en": "A tithi can start and end at any hour, but a calendar needs one name per day. The rule is simply this: whichever tithi is running at the moment of sunrise is the tithi for that whole day. A tithi that ends before sunrise therefore never gets a day of its own. That one rule is what makes tithi local, because sunrise itself is local."
+  },
+  "learn.diagrams.sunrise_sample_label": {
+    "ne": "सूर्योदयमा जुन तिथि चलिरहेको छ, त्यही दिनभरिको तिथि",
+    "en": "The tithi running at sunrise is the tithi for the whole day"
+  },
+  "learn.diagrams.sunset": {
+    "ne": "सूर्यास्त",
+    "en": "sunset"
+  },
+  "learn.diagrams.tithi_chaturthi": {
+    "ne": "चतुर्थी",
+    "en": "Chaturthi"
+  },
+  "learn.diagrams.tithi_ended_after_sunrise": {
+    "ne": "सूर्योदयपछि सकियो → पुरानै तिथि",
+    "en": "ended after sunrise → same tithi"
+  },
+  "learn.diagrams.tithi_ended_before_sunrise": {
+    "ne": "सूर्योदयअघि सकियो → अर्को तिथि",
+    "en": "ended before sunrise → next tithi"
+  },
+  "learn.diagrams.tithi_tritiya": {
+    "ne": "तृतीया",
+    "en": "Tritiya"
+  },
+  "learn.diagrams.tithi_zones_caption": {
+    "ne": "तिथि सकिने क्षण पूरै पृथ्वीका लागि एउटै हो — यहाँ २२:०० UTC। फरक पर्ने कुरा त्यो क्षण कुन ठाउँको सूर्योदयभन्दा अगाडि पर्छ कि पछाडि भन्ने मात्र हो। काठमाडौँमा सीमा सूर्योदयअघि परेकाले त्यो दिनले अर्को तिथि पाउँछ; सिड्नीमा सूर्योदयपछि परेकाले पुरानै तिथि रहन्छ। दुवै सही छन् — फरक खगोलशास्त्रमा होइन, सूर्योदयको नियममा छ।",
+    "en": "The tithi ends at one absolute moment for the whole planet — 22:00 UTC here. All that differs is whether that moment falls before or after each place's sunrise. At Kathmandu it lands before dawn, so that day takes the next tithi; at Sydney it lands after, so the day keeps the earlier one. Both are right; the difference is in the sunrise rule, not in the astronomy."
+  },
+  "learn.diagrams.tithi_zones_label": {
+    "ne": "एउटै तिथि–सीमा दुई सहरमा — सूर्योदयको कुन तिर पर्छ भन्नेले उत्तर बदल्छ",
+    "en": "One tithi boundary, two cities — which side of sunrise it falls on changes the answer"
+  },
+  "learn.diagrams.tropical_scale_zero": {
+    "ne": "सायन — शून्य वसन्त विषुवमा",
+    "en": "tropical — zero at the spring equinox"
+  },
+  "learn.diagrams.two_zeros_caption": {
+    "ne": "दुवै राशिचक्र उही क्रान्तिवृत्तमा ०° देखि ३६०° सम्म चल्छन् — फरक केवल शून्य कहाँ राखिएको छ भन्नेमा। सायन शून्य वसन्त विषुवमा अड्किएको छ; निरयन शून्य ताराको सापेक्ष स्थिर छ र अहिले त्योभन्दा ~२४° पछाडि पर्छ। यही एउटा फरकबाट सबै कुरा निस्कन्छ: नयाँ वर्ष विषुवभन्दा ~२४ दिन पछि किन पर्छ, मकर सङ्क्रान्ति शीत अयनान्तभन्दा ~२४ दिन पछि किन पर्छ — सबै यही अयनांश हो, फरक एकाइमा पढिएको।",
+    "en": "Both zodiacs run 0° to 360° along the same ecliptic; all that differs is where the zero was put. The tropical zero is pinned to the spring equinox, the sidereal zero to the stars — and the second now sits about 24° behind the first. Everything else follows from that single offset: why the new year falls ~24 days after the equinox, why Makara Sankranti falls ~24 days after the winter solstice. It is one gap, read in different units."
+  },
+  "learn.diagrams.two_zeros_label": {
+    "ne": "सायन र निरयन राशिचक्रका दुई शून्य बिन्दु, बीचमा ~२४° को अयनांश",
+    "en": "The tropical and sidereal zeros on one ruler, with the ~24° ayanamsha between them"
+  },
+  "learn.diagrams.winter_solstice": {
+    "ne": "शीत अयनान्त",
+    "en": "winter solstice"
+  },
+  "learn.diagrams.year_length_caption": {
+    "ne": "जुलियन नियमले वर्षमा ३६५.२५ दिन मान्छ, वास्तविक सायन वर्ष ३६५.२४२२ को हो — वर्षेनि ०.००७८ दिन बढी। एक जीवनकालमा बेवास्ता गर्न मिल्ने यही सानो रकमले १२८ वर्षमा एक दिन र १५८२ सम्ममा दस दिन बनाइदियो। ग्रेगोरियन सुधारले हरेक चार शताब्दीमा तीन लीप दिन घटाएर औसत ३६५.२४२५ मा झार्छ — अब एक दिन बिग्रन करिब ३,००० वर्ष लाग्छ।",
+    "en": "The Julian rule calls a year 365.25 days when the true tropical year is 365.2422 — an overpayment of 0.0078 days annually. That amount, negligible over a lifetime, becomes a full day in 128 years and ten days by 1582. The Gregorian correction drops three leap days every four centuries, bringing the mean to 365.2425 — now it takes about 3,000 years to lose a day."
+  },
+  "learn.diagrams.year_length_excess_unit": {
+    "ne": "दिन/वर्ष",
+    "en": "d/yr"
+  },
+  "learn.diagrams.year_length_gregorian_drift": {
+    "ne": "ग्रेगोरियन: ~१ दिन प्रति ~३,००० वर्ष",
+    "en": "Gregorian: ~1 day per ~3,000 years"
+  },
+  "learn.diagrams.year_length_label": {
+    "ne": "जुलियन, ग्रेगोरियन र वास्तविक वर्षको लम्बाइ — र त्यसको जोडिँदो त्रुटि",
+    "en": "Julian, Gregorian and true year lengths, and the error each accumulates"
+  },
+  "learn.diagrams.year_length_row_gregorian": {
+    "ne": "ग्रेगोरियन औसत",
+    "en": "Gregorian mean"
+  },
+  "learn.diagrams.year_length_row_julian": {
+    "ne": "जुलियन औसत",
+    "en": "Julian mean"
+  },
+  "learn.diagrams.year_length_row_true": {
+    "ne": "वास्तविक सायन वर्ष",
+    "en": "true tropical year"
+  },
+  "learn.diagrams.year_length_zero_error": {
+    "ne": "शून्य त्रुटि",
+    "en": "zero error"
+  },
+  "learn.playground.day": {
+    "ne": "दिन",
+    "en": "Day"
+  },
+  "panchanga.wheel.sunrise": {
+    "ne": "सूर्योदय",
+    "en": "sunrise"
+  },
+  "tithi": {
+    "ne": "तिथि",
+    "en": "Tithi"
+  }
+}

@@ -1,0 +1,1726 @@
+{
+  "common.exit_fullscreen": {
+    "ne": "सामान्य दृश्य",
+    "en": "Exit fullscreen"
+  },
+  "common.fullscreen": {
+    "ne": "पूर्ण स्क्रिन",
+    "en": "Fullscreen"
+  },
+  "dainik.sign": {
+    "ne": "राशि",
+    "en": "sign"
+  },
+  "learn.krishna": {
+    "ne": "कृष्ण",
+    "en": "Krishna"
+  },
+  "learn.pause": {
+    "ne": "रोक्नुहोस्",
+    "en": "Pause"
+  },
+  "learn.play": {
+    "ne": "चलाउनुहोस्",
+    "en": "Play"
+  },
+  "learn.playground.drag_hint": {
+    "ne": "तान्नुहोस् — घुमाउन · स्क्रोल — नजिक/टाढा",
+    "en": "Drag to orbit · scroll to zoom"
+  },
+  "learn.playground.fullscreen_notice": {
+    "ne": "पूर्ण स्क्रिनमा खुलेको छ — बन्द गर्न Esc थिच्नुहोस्",
+    "en": "Open in fullscreen — press Esc to close"
+  },
+  "learn.playground.sankranti": {
+    "ne": "सङ्क्रान्ति",
+    "en": "Sankranti"
+  },
+  "learn.shukla": {
+    "ne": "शुक्ल",
+    "en": "Shukla"
+  },
+  "learn.study.autumn_equinox": {
+    "ne": "शरद् विषुव",
+    "en": "Autumn equinox"
+  },
+  "learn.study.ayanamsha.aria": {
+    "ne": "अयनांश चक्र",
+    "en": "The ayanamsha wheel"
+  },
+  "learn.study.ayanamsha.caption_agrees": {
+    "ne": "एउटै ग्रह अहिले निरयनमा {{nirayana}} र सायनमा पनि {{sayana}} मा पर्छ — त्यसैले कुण्डलीमा कुन प्रणाली रोजियो भन्ने महत्त्वपूर्ण।",
+    "en": "Right now the same graha sits in {{nirayana}} sidereally and in {{sayana}} tropically too — but the system chosen for a kundali still matters."
+  },
+  "learn.study.ayanamsha.caption_angle": {
+    "ne": "बिन्दु — सायन शून्य — ताराका सापेक्ष पछाडि सर्छ। यी दुई शून्यबीचको कोण नै अयनांश हो।",
+    "en": "point — the sayana zero — drifts backward against the stars. The angle between those two zeros is the ayanamsha."
+  },
+  "learn.study.ayanamsha.caption_differs": {
+    "ne": "एउटै ग्रह त्यसैले निरयनमा {{nirayana}} भए पनि सायनमा {{sayana}} मा पर्न सक्छ — त्यसैले कुण्डलीमा कुन प्रणाली रोजियो भन्ने महत्त्वपूर्ण।",
+    "en": "So the same graha can sit in {{nirayana}} sidereally and yet in {{sayana}} tropically — which is why the system chosen for a kundali matters."
+  },
+  "learn.study.ayanamsha.caption_lead": {
+    "ne": "बाहिरी १२ राशि तारापुञ्जमा अडिएका छन् (",
+    "en": "The outer twelve rashis are anchored to the star clusters ("
+  },
+  "learn.study.ayanamsha.caption_wobble": {
+    "ne": ")। पृथ्वीको अक्ष बिस्तारै घुम्दा (अयन चलन)",
+    "en": "). As Earth’s axis slowly turns (precession), the"
+  },
+  "learn.study.ayanamsha.graha": {
+    "ne": "ग्रह",
+    "en": "Graha"
+  },
+  "learn.study.ayanamsha.graha_rashi": {
+    "ne": "ग्रह राशि",
+    "en": "Graha rashi"
+  },
+  "learn.study.ayanamsha.legend_ayanamsha": {
+    "ne": "अयनांश — दुईबीचको कोण",
+    "en": "Ayanamsha — the angle between the two"
+  },
+  "learn.study.ayanamsha.legend_nirayana": {
+    "ne": "निरयन — तारापुञ्जमा अडिएको",
+    "en": "Nirayana — anchored to the star clusters"
+  },
+  "learn.study.ayanamsha.legend_sayana": {
+    "ne": "सायन — ऋतु/विषुवमा अडिएको",
+    "en": "Sayana — anchored to the seasons and equinox"
+  },
+  "learn.study.ayanamsha.nirayana": {
+    "ne": "निरयन",
+    "en": "nirayana"
+  },
+  "learn.study.ayanamsha.nirayana_zero": {
+    "ne": "निरयन ०°",
+    "en": "Nirayana 0°"
+  },
+  "learn.study.ayanamsha.nirayana_zero_sub": {
+    "ne": "(मेष आरम्भ · तारा)",
+    "en": "(start of Mesha · stars)"
+  },
+  "learn.study.ayanamsha.preset_today": {
+    "ne": "↺ आज",
+    "en": "↺ Today"
+  },
+  "learn.study.ayanamsha.sayana_zero": {
+    "ne": "सायन ०°",
+    "en": "Sayana 0°"
+  },
+  "learn.study.ayanamsha.slider_graha": {
+    "ne": "● ग्रह — निरयन देशान्तर (एउटै आकाश-स्थान, दुई पढाइ)",
+    "en": "● Graha — sidereal longitude (one place in the sky, two readings)"
+  },
+  "learn.study.ayanamsha.slider_year": {
+    "ne": "वर्ष — अक्ष-चलनले विषुव बिन्दु सर्छ ({{from}} → {{to}} बि.सं.)",
+    "en": "Year — precession moves the equinox point ({{from}} → {{to}} BS)"
+  },
+  "learn.study.ayanamsha.spring_equinox_point": {
+    "ne": "वसन्त-विषुव",
+    "en": "spring equinox"
+  },
+  "learn.study.ayanamsha.system": {
+    "ne": "प्रणाली",
+    "en": "System"
+  },
+  "learn.study.ayanamsha.system_kp": {
+    "ne": "कृष्णमूर्ति (KP)",
+    "en": "Krishnamurti (KP)"
+  },
+  "learn.study.ayanamsha.system_lahiri": {
+    "ne": "लाहिरी",
+    "en": "Lahiri"
+  },
+  "learn.study.ayanamsha.system_raman": {
+    "ne": "रमन",
+    "en": "Raman"
+  },
+  "learn.study.calc.belt_lede_grid": {
+    "ne": "१२ राशि + २७ नक्षत्र",
+    "en": "12-rashi + 27-nakshatra"
+  },
+  "learn.study.calc.belt_lede_intro": {
+    "ne": "तलको चित्र",
+    "en": "The diagram below is a"
+  },
+  "learn.study.calc.belt_lede_readouts": {
+    "ne": "को जाल — सूर्यको निरयन देशान्तर अनुसार कुन खण्ड उज्यालो हुन्छ हेर्नुहोस्। वर्ष स्लाइडर / चलाउनुहोस् ले सूर्यलाई पट्टीमा सार्छ; पढाइमा सूर्य राशि, नक्षत्र, तिथि कोण (चन्द्र−सूर्य) देखिन्छ — यही कोण सर्भरमा तिथि बनाउँछ।",
+    "en": "grid — watch which sector lights up from the Sun’s sidereal longitude. The year slider and play button move the Sun along the belt; the readouts show the Sun sign, the nakshatra, and the tithi angle (Moon − Sun) — the same angle the server turns into a tithi."
+  },
+  "learn.study.calc.belt_lede_scene": {
+    "ne": "दृश्य हो: पृथ्वी बीचमा, सूर्य दूर (दिशा मात्र), चन्द्रको कक्ष, र बाहिर",
+    "en": "teaching view: Earth at the centre, the Sun as a direction only, the Moon’s orbit, and an outer"
+  },
+  "learn.study.calc.belt_note": {
+    "ne": "यो चित्र शिक्षाका लागि सरलीकृत कक्ष हो; उत्पादनमा स्विस एफेमेरिसले जेपीएल ग्रहपात, अपवर्तन र अवलोककको उचाइ प्रयोग गर्छ।",
+    "en": "The orbits here are simplified for teaching; in production Swiss Ephemeris uses the JPL ephemeris, refraction, and the observer’s elevation."
+  },
+  "learn.study.calc.belt_title": {
+    "ne": "पृथ्वी, कक्षा र राशि–नक्षत्र पट्टी",
+    "en": "Earth, ecliptic & the rashi belt"
+  },
+  "learn.study.calc.col_calc": {
+    "ne": "गणना",
+    "en": "Calculation"
+  },
+  "learn.study.calc.col_happens": {
+    "ne": "के हुन्छ",
+    "en": "What happens"
+  },
+  "learn.study.calc.col_how": {
+    "ne": "कसरी",
+    "en": "How"
+  },
+  "learn.study.calc.col_stage": {
+    "ne": "चरण",
+    "en": "Stage"
+  },
+  "learn.study.calc.col_step": {
+    "ne": "क्रम",
+    "en": "Step"
+  },
+  "learn.study.calc.col_topic": {
+    "ne": "विषय",
+    "en": "Topic"
+  },
+  "learn.study.calc.col_what": {
+    "ne": "के गणना",
+    "en": "What"
+  },
+  "learn.study.calc.eclipse_caption": {
+    "ne": "ग्रहण — विधि",
+    "en": "Eclipse — method"
+  },
+  "learn.study.calc.eclipse_display_stage": {
+    "ne": "पात्रो प्रदर्शन",
+    "en": "Patro display"
+  },
+  "learn.study.calc.eclipse_display_what": {
+    "ne": "नेपाली लेबल, बि.सं./ई.सं. मिति, त्यो नागरिक दिनको दैनिक पञ्चाङ्ग लिङ्क",
+    "en": "Nepali labels, BS/AD dates, and a link to that civil day’s panchanga"
+  },
+  "learn.study.calc.eclipse_global_stage": {
+    "ne": "विश्वव्यापी चरम",
+    "en": "Global maximum"
+  },
+  "learn.study.calc.eclipse_global_what": {
+    "ne": "अर्को/अघिल्लो ग्रहणको चरम जुलियन दिन — सूर्य: सूर्य–चन्द्र पङ्क्ति; चन्द्र: पूर्णिमा पृथ्वीको छायाँबाट",
+    "en": "Maximum JD of the next/previous eclipse — solar: Sun–Moon alignment; lunar: Full Moon in Earth’s shadow"
+  },
+  "learn.study.calc.eclipse_lede_and": {
+    "ne": "र",
+    "en": "and"
+  },
+  "learn.study.calc.eclipse_lede_routines": {
+    "ne": "स्विस एफेमेरिसका समर्पित ग्रहण विधिबाट — ज्यामितीय युति र छाया शंकु, जेपीएल ग्रहपातमाथि। पर्व/पञ्चाङ्ग दृश्यले वर्षभरि गएका र आउने सूची देखाउँछ।",
+    "en": "use the dedicated Swiss Ephemeris eclipse routines on the JPL ephemeris — geometric syzygy and shadow cones. The festival and panchanga views list the past and upcoming eclipses of the year."
+  },
+  "learn.study.calc.eclipse_lunar_local_stage": {
+    "ne": "स्थानीय चन्द्र",
+    "en": "Lunar local"
+  },
+  "learn.study.calc.eclipse_lunar_local_what": {
+    "ne": "चरम / उपछाया सुरुमा चन्द्र क्षितिजमाथि — देखिने झण्डा",
+    "en": "Moon above the horizon at maximum / penumbral start → the visible flag"
+  },
+  "learn.study.calc.eclipse_note": {
+    "ne": "ग्रहण समय विश्वव्यापी समय/जुलियन दिनमा शुद्ध; स्थानीय पात्रो मिति = तपाईंको समय क्षेत्र + वैदिक सूर्योदय नियम (उदयअघिको रात्रि घटना अघिल्लो पञ्चाङ्ग दिनमा) जहाँ लागू हुन्छ।",
+    "en": "Eclipse instants are exact in UT/JD; the local patro date applies your timezone plus the vedic sunrise rule (a night event before sunrise belongs to the previous panchanga day) where that applies."
+  },
+  "learn.study.calc.eclipse_solar_local_stage": {
+    "ne": "स्थानीय सूर्य खोज",
+    "en": "Solar local search"
+  },
+  "learn.study.calc.eclipse_solar_local_what": {
+    "ne": "विश्वव्यापी चरम नजिक स्थानीय चरम — नदेखिए अर्को ग्रहणसम्म अगाडि",
+    "en": "Local maximum near the global maximum — if it is invisible, advance to the next eclipse"
+  },
+  "learn.study.calc.eclipse_title": {
+    "ne": "ग्रहण कसरी गणना हुन्छ",
+    "en": "How eclipses are computed"
+  },
+  "learn.study.calc.eclipse_type_what": {
+    "ne": "सूर्य: पूर्ण, वलयाकार, मिश्र, आंशिक; चन्द्र: पूर्ण, आंशिक, उपछाया — ग्रहपातको सङ्केतबाट",
+    "en": "Solar: total, annular, hybrid, partial; lunar: total, partial, penumbral — from the ephemeris flags"
+  },
+  "learn.study.calc.eclipse_visibility_stage": {
+    "ne": "स्थानीय दृश्यता",
+    "en": "Local visibility"
+  },
+  "learn.study.calc.eclipse_visibility_what": {
+    "ne": "अवलोकक (देशान्तर, अक्षांश, उचाइ) दिएपछि स्थानीय सम्पर्क समय — केही ठाउँमा आंशिक/पूर्ण देखिन्छ कि छैन",
+    "en": "Given the observer (lon, lat, elevation): local contact times, and whether the eclipse is visible at all"
+  },
+  "learn.study.calc.formula_karana_big": {
+    "ne": "(चन्द्र − सूर्य) ÷ 6°",
+    "en": "(Moon − Sun) ÷ 6°"
+  },
+  "learn.study.calc.formula_karana_desc": {
+    "ne": "तिथिको आधा — ११ नाम + अन्तिम स्थिर करणहरू",
+    "en": "Half of a tithi — eleven names plus the fixed tail karanas"
+  },
+  "learn.study.calc.formula_karana_range": {
+    "ne": "→ करण",
+    "en": "→ karana"
+  },
+  "learn.study.calc.formula_nakshatra_big": {
+    "ne": "चन्द्र ÷ (360/27)",
+    "en": "Moon ÷ (360/27)"
+  },
+  "learn.study.calc.formula_nakshatra_desc": {
+    "ne": "चन्द्रको λ; पद = नक्षत्र भित्रको बाँकी ÷ ३°२०′",
+    "en": "Moon λ; pada = remainder inside the nakshatra ÷ 3°20′"
+  },
+  "learn.study.calc.formula_nakshatra_grid_desc": {
+    "ne": "२७ नक्षत्र, प्रत्येक १३°२०′, ४ पद",
+    "en": "27 nakshatras of 13°20′, four padas each"
+  },
+  "learn.study.calc.formula_nakshatra_range": {
+    "ne": "→ नक्षत्र + पद",
+    "en": "→ nakshatra + pada"
+  },
+  "learn.study.calc.formula_rashi_index_desc": {
+    "ne": "लाहिरी निरयन देशान्तर λ लाई ३०° मा भाग — मेष ०° देखि मीन सम्म",
+    "en": "Lahiri sidereal longitude λ split into 30° sectors — Mesha 0° through Meena"
+  },
+  "learn.study.calc.formula_rashi_index_lbl": {
+    "ne": "राशि सूचकाङ्क",
+    "en": "Rashi index"
+  },
+  "learn.study.calc.formula_tithi_big": {
+    "ne": "(चन्द्र − सूर्य) ÷ 12°",
+    "en": "(Moon − Sun) ÷ 12°"
+  },
+  "learn.study.calc.formula_tithi_desc": {
+    "ne": "१२° = एक तिथि; शुक्ल/कृष्ण पक्ष चन्द्रको कोणान्तरबाट",
+    "en": "12° per tithi; shukla/krishna paksha from the lunar elongation"
+  },
+  "learn.study.calc.formula_tithi_range": {
+    "ne": "→ तिथि १–३०",
+    "en": "→ tithi 1–30"
+  },
+  "learn.study.calc.formula_yoga_big": {
+    "ne": "(सूर्य + चन्द्र) ÷ (360/27)",
+    "en": "(Sun + Moon) ÷ (360/27)"
+  },
+  "learn.study.calc.formula_yoga_desc": {
+    "ne": "२७ योग — देशान्तर जोड ३६०° मा बेरेर",
+    "en": "27 yogas — the longitude sum wrapped to 360°"
+  },
+  "learn.study.calc.formula_yoga_range": {
+    "ne": "→ योग",
+    "en": "→ yoga"
+  },
+  "learn.study.calc.foundation_lede_calendars": {
+    "ne": "(ग्रेगोरियन, ई.पू., वा बि.सं. ठेगाना), र त्यो दिनको",
+    "en": "(Gregorian, BCE, or BS from the URL), and its"
+  },
+  "learn.study.calc.foundation_lede_clock": {
+    "ne": "। स्थानीय घडी आईएएनए समय क्षेत्रबाट; उदय/अस्तका लागि साँचो क्षितिज, अपवर्तन र क्षितिज झुकाव समावेश।",
+    "en": ". The local clock comes from the IANA timezone; rise and set include the true horizon, refraction, and horizon dip."
+  },
+  "learn.study.calc.foundation_lede_coords": {
+    "ne": "(अक्षांश, देशान्तर, समय क्षेत्र, उचाइ),",
+    "en": "(latitude, longitude, timezone, elevation), the chosen"
+  },
+  "learn.study.calc.foundation_lede_intro": {
+    "ne": "हरेक गणना एउटै सूत्रबाट सुरु हुन्छ:",
+    "en": "Every run starts the same way: the"
+  },
+  "learn.study.calc.foundation_lede_place": {
+    "ne": "अवलोककको स्थान",
+    "en": "observer’s place"
+  },
+  "learn.study.calc.foundation_title": {
+    "ne": "आधार — स्थान, समय, ग्रहपात",
+    "en": "Foundation — place, time, ephemeris"
+  },
+  "learn.study.calc.frontend_lede_formats": {
+    "ne": "स्वरूप",
+    "en": "formats"
+  },
+  "learn.study.calc.frontend_lede_intro": {
+    "ne": "मुख्यतया एपीआईबाट आएको गणित",
+    "en": "mostly"
+  },
+  "learn.study.calc.frontend_lede_server": {
+    "ne": "गर्छ — नेपाली अङ्क, ठेगाना ब्राउज, लेआउट। तिथि/नक्षत्र समय, उदय/अस्त, ग्रह, गोचर प्रवेश, ग्रहण, मुहूर्त, पर्व, साइत, कुण्डली बल — उत्पादनमा सर्भर-पक्ष ग्रहपातबाट; ब्राउजरले स्थान फेरि गणना गर्दैन।",
+    "en": "the numbers that come from the API — Nepali digits, URL browsing, layout. Tithi/nakshatra times, rise and set, grahas, gochar ingress, eclipses, muhurtas, festivals, sait, and kundali strengths all come from the server-side ephemeris in production; the browser does not recompute positions."
+  },
+  "learn.study.calc.frontend_note": {
+    "ne": "क्यास भएको वर्ष/दिनपछि सादा प्राप्ति छिटो हुन सक्छ — गणना पहिले नै भइसकेको पेलोड।",
+    "en": "Once a year or a day is cached, plain GETs can be fast — the payload has already been computed."
+  },
+  "learn.study.calc.frontend_title": {
+    "ne": "यो वेबसाइट के देखाउँछ",
+    "en": "What this site displays"
+  },
+  "learn.study.calc.gochar_caption": {
+    "ne": "गोचर — मुख्य चरण",
+    "en": "Gochar — main steps"
+  },
+  "learn.study.calc.gochar_combust_calc": {
+    "ne": "ग्रह सूर्य नजिक — कोणीय दूरीको सीमा (ग्रहअनुसार फरक)",
+    "en": "Graha close to the Sun — angular separation limits that differ per graha"
+  },
+  "learn.study.calc.gochar_combust_topic": {
+    "ne": "अस्त",
+    "en": "Combust (asta)"
+  },
+  "learn.study.calc.gochar_events_calc": {
+    "ne": "चयनित महिनाका ई.सं. सीमाभित्र सबै प्रवेश/स्थान घटना → स्थानीय समय + बि.सं. दिन",
+    "en": "Every ingress/station event inside the browsed month’s AD bounds → local time + BS day"
+  },
+  "learn.study.calc.gochar_events_topic": {
+    "ne": "आगामी घटना सूची",
+    "en": "Upcoming event list"
+  },
+  "learn.study.calc.gochar_ingress_calc": {
+    "ne": "देशान्तर ०°, ३०°, … काट्ने — पहिले मोटो समय खोज, त्यसपछि द्विभाजन (~१५ मिनेट सहिष्णुता)",
+    "en": "Longitude crossing 0°, 30°, … — a coarse time scan, then bisection (~15 minute tolerance)"
+  },
+  "learn.study.calc.gochar_ingress_topic": {
+    "ne": "अर्को राशि प्रवेश",
+    "en": "Next sign entry"
+  },
+  "learn.study.calc.gochar_lede_intro": {
+    "ne": "= कुनै क्षणमा प्रत्येक ग्रह कुन",
+    "en": "is where each graha sits in the"
+  },
+  "learn.study.calc.gochar_lede_slots": {
+    "ne": "निरयन राशि / नक्षत्र / पद",
+    "en": "sidereal rashi / nakshatra / pada"
+  },
+  "learn.study.calc.gochar_lede_snapshot": {
+    "ne": "मा छ र कहिले अर्को मा प्रवेश गर्छ। पात्रो गोचर सामान्यतः स्थानीय सूर्योदय मा झलक; प्रवेश सूची महिनाभरका काट्ने घटना।",
+    "en": "at a chosen instant, and when it enters the next one. The patro gochar page is normally a snapshot at local sunrise (udaya); ingress lists collect the boundary crossings through the browsed month."
+  },
+  "learn.study.calc.gochar_nakshatra_calc": {
+    "ne": "उही द्विभाजन — नक्षत्र सूचकाङ्क वा पद खण्ड परिवर्तन",
+    "en": "The same bisection, for when the nakshatra index or pada slot changes"
+  },
+  "learn.study.calc.gochar_nakshatra_topic": {
+    "ne": "अर्को नक्षत्र / पद",
+    "en": "Next nakshatra / pada"
+  },
+  "learn.study.calc.gochar_position_calc": {
+    "ne": "प्रत्येक ग्रहको लाहिरी निरयन देशान्तर → राशि (÷३०°), नक्षत्र (÷१३°२०′), पद (÷३°२०′); केतु = राहु + १८०°",
+    "en": "Lahiri sidereal longitude per graha → rashi (÷30°), nakshatra (÷13°20′), pada (÷3°20′); Ketu = Rahu + 180°"
+  },
+  "learn.study.calc.gochar_position_topic": {
+    "ne": "वर्तमान स्थिति",
+    "en": "Current position"
+  },
+  "learn.study.calc.gochar_retro_calc": {
+    "ne": "क्रान्तिवृत्तीय देशान्तरको गति चिन्ह — मंगल…शनि; राहु/केतु सधैँ वक्री परम्परा",
+    "en": "Sign of the ecliptic speed — Mars through Saturn; Rahu/Ketu retrograde by convention"
+  },
+  "learn.study.calc.gochar_retro_topic": {
+    "ne": "वक्री / मार्गी",
+    "en": "Retrograde / direct"
+  },
+  "learn.study.calc.gochar_station_calc": {
+    "ne": "गति चिन्ह फेरिने क्षणको खोज (प्रवेश दायराभित्र)",
+    "en": "Search for the instant the speed changes sign inside the ingress window"
+  },
+  "learn.study.calc.gochar_station_topic": {
+    "ne": "वक्री/मार्गी स्थान",
+    "en": "Retrograde stations"
+  },
+  "learn.study.calc.gochar_title": {
+    "ne": "ग्रह गोचर कसरी गणना हुन्छ",
+    "en": "How graha gochar is computed"
+  },
+  "learn.study.calc.key_ecliptic_h": {
+    "ne": "कक्षा (क्रान्तिवृत्त)",
+    "en": "Ecliptic plane"
+  },
+  "learn.study.calc.key_ecliptic_p": {
+    "ne": "सूर्य, चन्द्र र ग्रहहरू प्रायः एउटै तल्लो कक्षीय तलमा हिँड्छन् — पृथ्वीको वरिपरि “राशि पट्टी” यही कक्षाको ३६०° कोठा हो।",
+    "en": "The Sun, Moon and planets move near one flat plane — the “rashi belt” around Earth is how we partition that 360° circle."
+  },
+  "learn.study.calc.key_lagna_p": {
+    "ne": "पूर्व क्षितिजमा उदाउँदै गरेको कक्षीय बिन्दु — तपाईंको अक्षांश, देशान्तर र घण्टाअनुसार ग्रहपातबाट लग्न कोण निकालिन्छ।",
+    "en": "The ecliptic point rising on the eastern horizon — computed from your latitude, longitude, and clock time via the ephemeris ascendant."
+  },
+  "learn.study.calc.key_nakshatra_p": {
+    "ne": "उही कक्षामा २७ भाग, प्रत्येक १३°२०′ — चन्द्रको नक्षत्र यही सूक्ष्म जालबाट।",
+    "en": "The same circle split into 27 parts of 13°20′ each — the Moon’s nakshatra comes from this finer grid."
+  },
+  "learn.study.calc.key_patro_kundali_h": {
+    "ne": "पात्रो र कुण्डली",
+    "en": "Patro vs kundali"
+  },
+  "learn.study.calc.key_patro_kundali_p": {
+    "ne": "गोचर पृष्ठ = यात्रा तालिका + प्रवेश; कुण्डली = जन्म क्षण / वर्गीय चार्ट — उही निरयन इन्जिन, फरक अङ्कुर समय।",
+    "en": "Gochar pages show transits and ingress; kundali uses birth time and divisional charts — same sidereal engine, different anchor."
+  },
+  "learn.study.calc.key_sankranti_h": {
+    "ne": "सङ्क्रान्ति",
+    "en": "Sankranti"
+  },
+  "learn.study.calc.key_sankranti_p": {
+    "ne": "निरयन सूर्य जब ०°, ३०°, ६०°… काट्छ — द्विभाजनले काट्ने क्षण खोजिन्छ; मेष/मकर वर्षारम्भ र ऋतु यहीबाट।",
+    "en": "When the sidereal Sun crosses 0°, 30°, 60°… — bisection finds the crossing instant; Mesha/Makara year starts and the ritus follow from it."
+  },
+  "learn.study.calc.key_speed_h": {
+    "ne": "ढिलो र छिटो ग्रह",
+    "en": "Slow vs fast grahas"
+  },
+  "learn.study.calc.key_speed_p": {
+    "ne": "चन्द्र/बुध छिटो — राशि बदल्न दिन/हप्ता; शनि/राहु महिना/वर्ष। खोज सञ्झ्याल ग्रहअनुसार ठूलो राखिन्छ ताकि वक्री घुम्ती पनि नछुटोस्।",
+    "en": "Moon/Mercury change signs in days; Saturn/Rahu in months or years. Search windows are widened so retrograde loops are not missed."
+  },
+  "learn.study.calc.key_swiss_h": {
+    "ne": "स्विस एफेमेरिस (जेपीएल)",
+    "en": "Swiss Ephemeris (JPL)"
+  },
+  "learn.study.calc.key_swiss_p": {
+    "ne": "सूर्य, चन्द्र, ग्रह, पातका ज्यामितीय स्थान — गति, उदय/अस्त, अयनांश सहित। सबै निरयन देशान्तर लाहिरी अयनांश घटाएर।",
+    "en": "Geometric positions for Sun, Moon, planets, and nodes — speeds, rise/set, ayanamsa. Sidereal longitudes subtract Lahiri ayanamsa."
+  },
+  "learn.study.calc.key_udaya_day_h": {
+    "ne": "उदय–आधारित दिन",
+    "en": "Sunrise-anchored day"
+  },
+  "learn.study.calc.key_udaya_day_p": {
+    "ne": "पात्रो/पञ्चाङ्गको मुख्य दिन = स्थानीय सूर्योदयदेखि अर्को सूर्योदयसम्म (वैकल्पिक: नागरिक मध्यरातको झलक)।",
+    "en": "Patro/panchanga days usually run from local sunrise to the next sunrise (optional civil-midnight snapshot)."
+  },
+  "learn.study.calc.panchanga_lede_anchor": {
+    "ne": "= तपाईंको स्थानमा सूर्योदय भएको क्षणमा; नक्षत्र/योग/करण पनि उही निरयन देशान्तरबाट।",
+    "en": "is the tithi at the moment of sunrise at your place; nakshatra, yoga, and karana come from the same sidereal longitudes."
+  },
+  "learn.study.calc.panchanga_lede_end_times": {
+    "ne": ": ग्रहपातमा चन्द्र−सूर्य (वा चन्द्र मात्र) कोण सीमा काट्ने क्षण द्विआधारी खोज — चक्र र समयरेखा यही सीमा जुलियन दिन प्रयोग गर्छ।",
+    "en": ": a binary search on the ephemeris for the instant Moon−Sun (or the Moon alone) crosses the next boundary — the wheels and timelines use those boundary Julian Days."
+  },
+  "learn.study.calc.panchanga_lede_limbs": {
+    "ne": "पञ्चाङ्गका अङ्ग",
+    "en": "Panchanga limbs"
+  },
+  "learn.study.calc.panchanga_lede_source": {
+    "ne": "सबै निरयन देशान्तरबाट — चन्द्र र सूर्यको कोणीय अन्तर वा जोड।",
+    "en": "all come from sidereal longitudes — the angular difference or sum of Moon and Sun."
+  },
+  "learn.study.calc.panchanga_note": {
+    "ne": "कुनै घण्टामा झलक चाहिन्छ भने उही ग्रहपात क्षणमा अङ्ग पुन: गणना — नागरिक मध्यरात दिन भने दुई उदय पेलोड बीच मिलाइन्छ (देखाउन मात्र, दोस्रो ग्रहपात पास होइन)।",
+    "en": "A snapshot at a given clock time recomputes the limbs at that instant — a civil-midnight day interpolates between two sunrise payloads for display only, not as a second ephemeris pass."
+  },
+  "learn.study.calc.panchanga_title": {
+    "ne": "पञ्चाङ्ग कसरी गणना हुन्छ",
+    "en": "How panchanga is computed"
+  },
+  "learn.study.calc.precession_lede_ayanamsha": {
+    "ne": "को शंकुमा डुल्दा विषुव बिन्दु तारापुञ्ज माथि पछाडि सर्छ — अयनांश (लाहिरी)। एपीआईमा प्रत्येक क्षणको लाहिरी अयनांश स्विस एफेमेरिसबाट; दैनिक पेलोडमा उदय जुलियन दिनमा पनि लेखिन्छ।",
+    "en": "cone, so the equinox point drifts backward against the star clusters — the Lahiri ayanamsha. The API reads Lahiri ayanamsha from Swiss Ephemeris for each instant; the daily payload also stores it at the sunrise Julian Day."
+  },
+  "learn.study.calc.precession_lede_cycle": {
+    "ne": "२६,००० वर्ष",
+    "en": "~26,000-year"
+  },
+  "learn.study.calc.precession_lede_diagrams": {
+    "ne": "पहिलो ठूलो चित्र: निरयन राशि चक्र स्थिर, विषुवत् रेखा र विषुव काट अयन चलन सँग घुम्छ। दोस्रो: ध्रुव तारा बदल्दै अक्ष शंकु — अयनांश किन वर्षेनि बढ्छ।",
+    "en": "First large diagram: the sidereal rashi ring stays fixed while the equator and the equinox cross rotate with precession. Second: the axis cone changing pole stars — why ayanamsha grows every year."
+  },
+  "learn.study.calc.precession_lede_seasons": {
+    "ne": "ले कक्षासँग झुकिएको छ — त्यसैले वसन्त/शरद विषुव र ग्रीष्म/हेमन्त अयनान्त बन्छन्। अक्ष लट्टु झैँ",
+    "en": "to the ecliptic — that is what creates the spring and autumn equinoxes and the summer and winter solstices. The axis wobbles like a top on a"
+  },
+  "learn.study.calc.precession_lede_tilt": {
+    "ne": "पृथ्वीको धुरी",
+    "en": "Earth’s axis is tilted"
+  },
+  "learn.study.calc.precession_title": {
+    "ne": "झुकाव, विषुव र अयन चलन",
+    "en": "Tilt, equinox & precession"
+  },
+  "learn.study.calc.rashi_lede_range": {
+    "ne": "— मेष ०° देखि मीन ३५०°–३६०° सम्म। यो",
+    "en": "wide — from Mesha 0° to Meena 350°–360°. This"
+  },
+  "learn.study.calc.rashi_lede_sectors": {
+    "ne": "भनेको क्रान्तिवृत्त मार्गमा बाँडिएका १२ बराबर खण्ड, प्रत्येक",
+    "en": "is one of twelve equal sectors along the ecliptic, each"
+  },
+  "learn.study.calc.rashi_lede_sidereal": {
+    "ne": "चक्र तारापुञ्जसँग जोडिएको छ; पश्चिमी राशिफलको “सूर्य राशि” प्रायः सायन हुन्छ, नेपाली पात्रो/पञ्चाङ्ग निरयन।",
+    "en": "zodiac is tied to the star clusters; the “Sun sign” of Western horoscopes is usually tropical (sayana), while Nepali patro and panchanga are sidereal."
+  },
+  "learn.study.calc.rashi_title": {
+    "ne": "राशि भनेको के?",
+    "en": "What is rashi?"
+  },
+  "learn.study.calc.step_daylen_how": {
+    "ne": "उदय–अस्त–अर्को उदयको अवधि",
+    "en": "Durations between sunrise, sunset, and next sunrise"
+  },
+  "learn.study.calc.step_daylen_what": {
+    "ne": "दिनमान · रात्रिमान",
+    "en": "Dinamana · ratrimana"
+  },
+  "learn.study.calc.step_grahas_how": {
+    "ne": "प्रत्येक ग्रहको देशान्तर, राशि, नक्षत्र, पद, गति",
+    "en": "Each graha’s longitude, rashi, nakshatra, pada, and speed"
+  },
+  "learn.study.calc.step_grahas_what": {
+    "ne": "९ ग्रह उदयमा",
+    "en": "Nine grahas at sunrise"
+  },
+  "learn.study.calc.step_lagna_how": {
+    "ne": "दिनभर लग्नले ३०° राशि सीमा काट्ने",
+    "en": "The ascendant crossing 30° rashi boundaries through the day"
+  },
+  "learn.study.calc.step_lagna_what": {
+    "ne": "लग्न अवधि",
+    "en": "Lagna spans"
+  },
+  "learn.study.calc.step_limbs_how": {
+    "ne": "निरयन सूत्र + सीमा खोज",
+    "en": "Sidereal formulas + boundary search"
+  },
+  "learn.study.calc.step_limbs_what": {
+    "ne": "पक्ष; तिथि/नक्षत्र/योग/करण + अन्त",
+    "en": "Paksha; limbs + end times"
+  },
+  "learn.study.calc.step_month_how": {
+    "ne": "सूर्य–चन्द्र पक्ष नियम; अधिक/क्षय मास",
+    "en": "Sun–Moon phase rules; adhik/kshaya maas"
+  },
+  "learn.study.calc.step_month_what": {
+    "ne": "चान्द्र/पूर्णिमान्त मास",
+    "en": "Amanta / purnimanta month"
+  },
+  "learn.study.calc.step_moonrise_how": {
+    "ne": "उदयपछिको चन्द्र उदय/अस्त",
+    "en": "Lunar rise/set after today’s sunrise"
+  },
+  "learn.study.calc.step_moonrise_what": {
+    "ne": "चन्द्र उदय/अस्त",
+    "en": "Moonrise / moonset"
+  },
+  "learn.study.calc.step_muhurta_how": {
+    "ne": "उदय–अर्को उदय विभाजन — परम्परागत खण्ड",
+    "en": "Sunrise→next sunrise divided by traditional rules"
+  },
+  "learn.study.calc.step_muhurta_what": {
+    "ne": "मुहूर्त, चौघडी, होरा",
+    "en": "Muhurta, choghadiya, hora"
+  },
+  "learn.study.calc.step_noon_how": {
+    "ne": "स्थानीय मध्याह्न जुलियन दिन; सूर्योदयमा अयनांश",
+    "en": "Local noon JD; ayanamsa stored at sunrise"
+  },
+  "learn.study.calc.step_noon_what": {
+    "ne": "मध्याह्न, लाहिरी अयनांश",
+    "en": "Madhyahna, Lahiri ayanamsa"
+  },
+  "learn.study.calc.step_rise_how": {
+    "ne": "स्विस उदय/अस्त — अवलोककको अक्षांश/देशान्तर, अपवर्तन",
+    "en": "Swiss rise/set for the observer’s lat/lon, with refraction"
+  },
+  "learn.study.calc.step_rise_what": {
+    "ne": "सूर्योदय, सूर्यास्त, अर्को उदय",
+    "en": "Sunrise, sunset, next sunrise"
+  },
+  "learn.study.calc.step_samvat_how": {
+    "ne": "सङ्क्रान्ति वर्ष + चान्द्र मास नियम",
+    "en": "Sankranti year + lunar month conventions"
+  },
+  "learn.study.calc.step_samvat_what": {
+    "ne": "सम्वत्सर, बि.सं./ने.सं.",
+    "en": "Samvatsara, BS/NS labels"
+  },
+  "learn.study.calc.step_tithi_how": {
+    "ne": "उदय जुलियन दिनमा चन्द्र−सूर्य → तिथि सूचकाङ्क",
+    "en": "Moon−Sun at the sunrise JD → tithi index"
+  },
+  "learn.study.calc.step_tithi_what": {
+    "ne": "उदय तिथि, वार",
+    "en": "Udaya tithi, vara"
+  },
+  "learn.study.calc.steps_caption": {
+    "ne": "एक पञ्चाङ्ग दिन — गणनाको क्रम (विधि)",
+    "en": "One panchanga day — calculation order (method)"
+  },
+  "learn.study.calc.summary_lede_ayanamsha": {
+    "ne": ", लाहिरी अयनांश) मा हुन्छ। रियाक्ट एप",
+    "en": ", Lahiri ayanamsa)."
+  },
+  "learn.study.calc.summary_lede_frontend": {
+    "ne": "एपीआई बोलाएर लेबल देखाउँछ — उही ग्रहपात फेरि चलाउँदैन।",
+    "en": "calls the API and formats the labels — it does not re-run the ephemeris."
+  },
+  "learn.study.calc.summary_lede_intro": {
+    "ne": "भारी खगोलशास्त्र र पञ्चाङ्ग गणना",
+    "en": "Heavy astronomy and panchanga math runs in"
+  },
+  "learn.study.calc.summary_lede_stack": {
+    "ne": "(फास्टएपीआई +",
+    "en": "(FastAPI +"
+  },
+  "learn.study.calc.summary_title": {
+    "ne": "सारांश",
+    "en": "Summary"
+  },
+  "learn.study.calc.swiss_jpl": {
+    "ne": "स्विस एफेमेरिस / जेपीएल",
+    "en": "Swiss Ephemeris / JPL"
+  },
+  "learn.study.calc.term_civil_day": {
+    "ne": "नागरिक दिन",
+    "en": "civil day"
+  },
+  "learn.study.calc.term_end_times": {
+    "ne": "अङ्ग समाप्ति समय",
+    "en": "Limb end times"
+  },
+  "learn.study.calc.term_geocentric": {
+    "ne": "भूकेन्द्रित",
+    "en": "geocentric"
+  },
+  "learn.study.calc.term_gochar": {
+    "ne": "गोचर",
+    "en": "Gochar"
+  },
+  "learn.study.calc.term_jd": {
+    "ne": "जुलियन दिन",
+    "en": "Julian Day"
+  },
+  "learn.study.calc.term_lunar_eclipse": {
+    "ne": "चन्द्रग्रहण",
+    "en": "lunar eclipses"
+  },
+  "learn.study.calc.term_nirayana": {
+    "ne": "निरयन",
+    "en": "sidereal (nirayana)"
+  },
+  "learn.study.calc.term_solar_eclipse": {
+    "ne": "सूर्यग्रहण",
+    "en": "Solar eclipses"
+  },
+  "learn.study.calc.term_udaya_tithi": {
+    "ne": "उदय तिथि",
+    "en": "Udaya tithi"
+  },
+  "learn.study.calc.vedic_patro": {
+    "ne": "वेदिक पात्रो",
+    "en": "Vedic Patro"
+  },
+  "learn.study.circumpolar.aria": {
+    "ne": "काठमाडौँको अक्षांशबाट आकाश — कुन तारा कहिल्यै अस्ताउँदैनन् र कुन कहिल्यै उदाउँदैनन्",
+    "en": "The sky from Kathmandu's latitude — which stars never set and which never rise"
+  },
+  "learn.study.circumpolar.caption": {
+    "ne": "आकाशी ध्रुव क्षितिजभन्दा ठ्याक्कै अक्षांश जति (काठमाडौँमा २७.७°) माथि हुन्छ, र हरेक तारा त्यही अक्षको वरिपरि वृत्त काट्छ। वृत्त पूरै क्षितिजमाथि परे तारा कहिल्यै अस्ताउँदैन; पूरै तल परे कहिल्यै उदाउँदैन। काठमाडौँको सीमा ±६२.३° हो — सप्तर्षि र क्रक्स दुवै यही सीमाको छेउछाउ पर्छन्, त्यसैले सप्तर्षिको पुच्छर वर्षको केही समय क्षितिजमुनि जान्छ र क्रक्सको माथिल्लो तारा दक्षिणी क्षितिजमा अलिकति देखिन्छ।",
+    "en": "The celestial pole stands above the horizon by exactly the observer's latitude — 27.7° at Kathmandu — and every star circles that axis. A circle entirely above the horizon never sets; entirely below, it never rises. Kathmandu's limits are ±62.3°, and both the Saptarishi and Crux straddle them: the Dipper's tail dips below the horizon for part of the year, and the top of Crux does clear the southern horizon by a few degrees."
+  },
+  "learn.study.circumpolar.celestial_pole": {
+    "ne": "खगोलीय ध्रुव",
+    "en": "celestial pole"
+  },
+  "learn.study.circumpolar.crux_range": {
+    "ne": "क्रक्स: क्रान्ति −५७° … −६३°",
+    "en": "Crux: dec −57° … −63°"
+  },
+  "learn.study.circumpolar.horizon": {
+    "ne": "क्षितिज",
+    "en": "horizon"
+  },
+  "learn.study.circumpolar.never_rises": {
+    "ne": "क्रान्ति < −६२.३° — कहिल्यै उदाउँदैन",
+    "en": "dec < −62.3° — never rises"
+  },
+  "learn.study.circumpolar.never_sets": {
+    "ne": "क्रान्ति > +६२.३° — कहिल्यै अस्ताउँदैन",
+    "en": "dec > +62.3° — never sets"
+  },
+  "learn.study.circumpolar.north": {
+    "ne": "उत्तर",
+    "en": "N"
+  },
+  "learn.study.circumpolar.rises_and_sets": {
+    "ne": "बीचमा — उदाउँछ र अस्ताउँछ",
+    "en": "in between — rises and sets"
+  },
+  "learn.study.circumpolar.saptarishi_range": {
+    "ne": "सप्तर्षि: क्रान्ति +४९° … +६२°",
+    "en": "Saptarishi: dec +49° … +62°"
+  },
+  "learn.study.circumpolar.south": {
+    "ne": "दक्षिण",
+    "en": "S"
+  },
+  "learn.study.declination.aria": {
+    "ne": "सूर्यको क्रान्ति वर्षभरि — विषुवमा शून्य, अयनान्तमा चरम",
+    "en": "The Sun's declination through the year — zero at the equinoxes, extreme at the solstices"
+  },
+  "learn.study.declination.caption": {
+    "ne": "एउटै वक्र, दुई फरक बिन्दु — विषुव त्यहाँ जहाँ वक्रले शून्य काट्छ (सूर्य विषुवत् रेखामा, दिन–रात बराबर, उत्तर–दक्षिण गति सबैभन्दा छिटो), अयनान्त त्यहाँ जहाँ वक्र फर्किन्छ (क्रान्ति ±२३.४४°, सबैभन्दा लामो र छोटो दिन)। तल बि.सं. महिना — चारै बिन्दु महिनाको सीमामा पर्दैनन्, र शताब्दीयौँमा सर्दै जान्छन्।",
+    "en": "One curve, two different points — an equinox is where it crosses zero (the Sun on the celestial equator, day equal to night, north–south motion at its fastest); a solstice is where it turns (declination ±23.44°, the longest and shortest day). The बि.सं. months run underneath: none of the four lands on a month boundary, and over centuries they drift against them."
+  },
+  "learn.study.declination.dakshinayana": {
+    "ne": "दक्षिणायन",
+    "en": "Dakshinayana"
+  },
+  "learn.study.declination.uttarayana": {
+    "ne": "उत्तरायण",
+    "en": "Uttarayana"
+  },
+  "learn.study.declination.when_autumn_equinox": {
+    "ne": "~असोज ६–७",
+    "en": "~23 Sep"
+  },
+  "learn.study.declination.when_spring_equinox": {
+    "ne": "~चैत ६–७",
+    "en": "~21 Mar"
+  },
+  "learn.study.declination.when_summer_solstice": {
+    "ne": "~असार ६–७",
+    "en": "~21 Jun"
+  },
+  "learn.study.declination.when_winter_solstice": {
+    "ne": "~पुष ६–७",
+    "en": "~22 Dec"
+  },
+  "learn.study.eclipse.caption_controls": {
+    "ne": "माथिको चन्द्र बटनले चन्द्र/पृथ्वी चलाउँछ; पात-चक्र बटन वा स्लाइडरले मात्र पात रेखा सार्छ।",
+    "en": "The Moon button above animates the Moon and Earth; the node-cycle button or slider moves only the node line."
+  },
+  "learn.study.eclipse.caption_moon_pace": {
+    "ne": "चन्द्रले ~{{days}} दिनमा एक राशि पार गर्छ;",
+    "en": "The Moon goes once around the belt in about {{days}} days;"
+  },
+  "learn.study.eclipse.caption_next": {
+    "ne": "अर्को ग्रहण ~{{days}} दिनमा।",
+    "en": "The next eclipse is about {{days}} days away."
+  },
+  "learn.study.eclipse.caption_nodes_drift": {
+    "ne": "भने आकाशमा बिस्तारै घडीको दिशामा घुम्छन् (~{{perYear}}°/वर्ष, ~{{years}} वर्षे पूरा चक्र) — चन्द्रभन्दा लगभग {{factor}} गुणा ढिलो।",
+    "en": "drift slowly clockwise across the sky (~{{perYear}}°/year, a full cycle in ~{{years}} years) — roughly {{factor}} times slower than the Moon."
+  },
+  "learn.study.eclipse.caption_when": {
+    "ne": "ग्रहण तब हुन्छ जब पूर्णिमा/औंसी पात रेखा नजिक पर्छ — वर्षमा झन्डै दुई पटक ({{lunar}} चन्द्र, {{solar}} सूर्य यस चक्रमा)।",
+    "en": "An eclipse happens when a full moon or new moon falls near that node line — roughly twice a year ({{lunar}} lunar, {{solar}} solar in this cycle)."
+  },
+  "learn.study.eclipse.day_lunar_month": {
+    "ne": "दिन · चान्द्र महिना",
+    "en": "Day · lunar month"
+  },
+  "learn.study.eclipse.krishna_paksha": {
+    "ne": "कृष्ण पक्ष",
+    "en": "Krishna paksha"
+  },
+  "learn.study.eclipse.moon_phase": {
+    "ne": "चन्द्र चरण",
+    "en": "Moon phase"
+  },
+  "learn.study.eclipse.next_lunar": {
+    "ne": "अर्को चन्द्रग्रहण →",
+    "en": "Next lunar eclipse →"
+  },
+  "learn.study.eclipse.next_solar": {
+    "ne": "अर्को सूर्यग्रहण →",
+    "en": "Next solar eclipse →"
+  },
+  "learn.study.eclipse.node_angle": {
+    "ne": "पात कोण",
+    "en": "Node angle"
+  },
+  "learn.study.eclipse.node_cycle": {
+    "ne": "पात-चक्र",
+    "en": "Node cycle"
+  },
+  "learn.study.eclipse.node_cycle_value": {
+    "ne": "{{days}} दिन · {{percent}}%",
+    "en": "{{days}} d · {{percent}}%"
+  },
+  "learn.study.eclipse.play_nodes": {
+    "ne": "पात चलाउनुहोस्",
+    "en": "Play the nodes"
+  },
+  "learn.study.eclipse.rahu_ketu": {
+    "ne": "राहु–केतु",
+    "en": "Rahu–Ketu"
+  },
+  "learn.study.eclipse.shukla_paksha": {
+    "ne": "शुक्ल पक्ष",
+    "en": "Shukla paksha"
+  },
+  "learn.study.eclipse.slider_moon": {
+    "ne": "चन्द्र · पृथ्वी र चन्द्र (छिटो)",
+    "en": "Moon · Earth and Moon (fast)"
+  },
+  "learn.study.eclipse.slider_nodes": {
+    "ne": "राहु–केतु · पात-चक्र (ढिलो · घडीको दिशा)",
+    "en": "Rahu–Ketu · node cycle (slow · clockwise)"
+  },
+  "learn.study.eclipse.state": {
+    "ne": "अवस्था",
+    "en": "State"
+  },
+  "learn.study.eclipse.status_none": {
+    "ne": "ग्रहण छैन",
+    "en": "No eclipse"
+  },
+  "learn.study.eclipse.status_partial": {
+    "ne": "खण्डग्रास",
+    "en": "Partial eclipse"
+  },
+  "learn.study.eclipse.status_penumbral": {
+    "ne": "उपछाया ग्रहण",
+    "en": "Penumbral eclipse"
+  },
+  "learn.study.eclipse.status_solar": {
+    "ne": "सूर्यग्रहण",
+    "en": "Solar eclipse"
+  },
+  "learn.study.eclipse.status_total": {
+    "ne": "पूर्ण ग्रहण",
+    "en": "Total eclipse"
+  },
+  "learn.study.eclipse.to_start": {
+    "ne": "सुरुमा",
+    "en": "Back to start"
+  },
+  "learn.study.eot.aria": {
+    "ne": "समयको समीकरण — वर्षभरि साँचो सौर समय र माध्य सौर समयबीचको फरक",
+    "en": "The equation of time — true solar time minus mean solar time across a year"
+  },
+  "learn.study.eot.caption": {
+    "ne": "घडीभन्दा घामको समय कति अगाडि/पछाडि छ। उत्केन्द्रता शून्य पार्नुहोस् — एउटा लहर बाँकी रहन्छ; अक्ष झुकाव शून्य पार्नुहोस् — अर्को।",
+    "en": "How far a sundial runs ahead of or behind a clock. Zero the eccentricity and one wave survives; zero the tilt and the other does."
+  },
+  "learn.study.eot.sundial_early": {
+    "ne": "घाम अगाडि",
+    "en": "Sundial Early"
+  },
+  "learn.study.eot.sundial_late": {
+    "ne": "घाम पछाडि",
+    "en": "Sundial Late"
+  },
+  "learn.study.equinox.aria": {
+    "ne": "अयन चलन — विषुव सर्ने चित्र",
+    "en": "Precession — how the equinox shifts"
+  },
+  "learn.study.equinox.ayanamsha_from_mesha": {
+    "ne": "अयनांश (मेष ०° बाट)",
+    "en": "Ayanamsha (from Mesha 0°)"
+  },
+  "learn.study.equinox.caption_fixed": {
+    "ne": "स्थिर",
+    "en": "fixed"
+  },
+  "learn.study.equinox.caption_lead": {
+    "ne": "बाहिरी १२ राशि ताराका सापेक्ष",
+    "en": "The outer twelve rashis stay"
+  },
+  "learn.study.equinox.caption_point_zero": {
+    "ne": "वसन्त-विषुव (Point 0)",
+    "en": "spring equinox (Point 0)"
+  },
+  "learn.study.equinox.caption_tail": {
+    "ne": "बिस्तारै राशिचक्रमा पछाडि सर्छ — प्रति ~{{years}} वर्षमा १°। त्यसैले आज विषुव {{rashi}} मा छ, अनि सायन ऋतु निरयन महिनासँग बिस्तारै फरक पर्दै जान्छ।",
+    "en": "slides slowly backward through the zodiac — about 1° every {{years}} years. So today the equinox sits in {{rashi}}, and the tropical seasons keep drifting away from the sidereal months."
+  },
+  "learn.study.equinox.caption_wobble": {
+    "ne": "छन् (निरयन)। पृथ्वीको अक्ष लट्टू झैँ घुम्दा",
+    "en": "against the stars (nirayana). As Earth’s axis wobbles like a top, the"
+  },
+  "learn.study.equinox.equinox_now": {
+    "ne": "विषुव अहिले",
+    "en": "Equinox now"
+  },
+  "learn.study.equinox.gloss_fall_equinox": {
+    "ne": "Fall Equinox",
+    "en": "Fall Equinox"
+  },
+  "learn.study.equinox.gloss_summer_solstice": {
+    "ne": "Summer Solstice",
+    "en": "Summer Solstice"
+  },
+  "learn.study.equinox.gloss_winter_solstice": {
+    "ne": "Winter Solstice",
+    "en": "Winter Solstice"
+  },
+  "learn.study.equinox.hemanta_solstice": {
+    "ne": "हेमन्त अयनान्त",
+    "en": "Winter solstice"
+  },
+  "learn.study.equinox.legend_ecliptic": {
+    "ne": "क्रान्तिवृत्त (ecliptic)",
+    "en": "Ecliptic"
+  },
+  "learn.study.equinox.legend_equator": {
+    "ne": "खगोलीय विषुवत् (Celestial Equator)",
+    "en": "Celestial equator"
+  },
+  "learn.study.equinox.point_zero": {
+    "ne": "Point 0",
+    "en": "Point 0"
+  },
+  "learn.study.equinox.preset_bs_start": {
+    "ne": "बि.सं. आरम्भ",
+    "en": "Start of BS"
+  },
+  "learn.study.equinox.preset_now": {
+    "ne": "↺ अहिले",
+    "en": "↺ Now"
+  },
+  "learn.study.equinox.shift_since_bs0": {
+    "ne": "विषुव सरेको (बि.सं. ० देखि)",
+    "en": "Equinox shift (since BS 0)"
+  },
+  "learn.study.equinox.slider": {
+    "ne": "वर्ष — अक्ष-चलनले विषुव सर्छ (बि.सं. {{from}} → {{to}}; एक पूरा फेरो ~{{cycle}} वर्ष)",
+    "en": "Year — precession shifts the equinox (BS {{from}} → {{to}}; one full turn ≈ {{cycle}} years)"
+  },
+  "learn.study.history.era_bbse": {
+    "ne": "पू.वि.सं.",
+    "en": "BBSE"
+  },
+  "learn.study.history.era_bs": {
+    "ne": "वि.सं.",
+    "en": "BS"
+  },
+  "learn.study.history.era_bs_today": {
+    "ne": "(आज {{year}})",
+    "en": "(today {{year}})"
+  },
+  "learn.study.history.lede": {
+    "ne": "८,८०० वर्ष पुरानो वैदिक पञ्चाङ्ग परम्परा — {{epoch}} को ग्रहसंयोगदेखि युग चक्र, नक्षत्र स्थानान्तरण, र विश्वका पात्रोहरूमा प्रभावसम्म। सबै मिति पू.वि.सं. (~३०००–५८ ई.पू.) वा वि.सं. (५७ ई.पू. देखि) मा प्रस्तुत।",
+    "en": "An 8,800-year-old Vedic panchanga tradition — from the planetary conjunction of {{epoch}} through the yuga cycles and the shift of the nakshatras, to its influence on calendars around the world. All dates are given in BBSE (~3000–58 BCE) or BS (from 57 BCE)."
+  },
+  "learn.study.history.toc_aria": {
+    "ne": "इतिहासका विषय",
+    "en": "History topics"
+  },
+  "learn.study.history.toc_title": {
+    "ne": "विषयसूची",
+    "en": "Contents"
+  },
+  "learn.study.history.topics": {
+    "ne": "विषयहरू",
+    "en": "Topics"
+  },
+  "learn.study.history.transcript_lead": {
+    "ne": "यो अध्याय",
+    "en": "This chapter is a Nepali transcript of the"
+  },
+  "learn.study.history.transcript_link": {
+    "ne": "वृत्तचित्र",
+    "en": "documentary"
+  },
+  "learn.study.history.transcript_rest": {
+    "ne": " को नेपाली प्रतिलेख हो — शैक्षिक उद्देश्यका लागि। विज्ञान र इतिहासका दावीहरू स्वतन्त्र रूपमा प्रमाणित गर्न सिफारिस गरिन्छ।",
+    "en": ", published here for educational purposes. Readers are encouraged to verify its scientific and historical claims independently."
+  },
+  "learn.study.lunar_gap.after_years": {
+    "ne": "{{years}} वर्षपछि",
+    "en": "after {{years}} yr"
+  },
+  "learn.study.lunar_gap.aria": {
+    "ne": "चान्द्र वर्ष सौर वर्षभन्दा वर्षेनि ११ दिन छोटो — तीन वर्षमा फरक एक महिना नाघ्छ",
+    "en": "A lunar year falls 11 days short of a solar year — in three years the gap exceeds a month"
+  },
+  "learn.study.lunar_gap.caption": {
+    "ne": "बाह्र चान्द्र मास ३५४.४ दिनको हुन्छ, सौर वर्ष ३६५.२४ — हरेक वर्ष १०.८७ दिनको घाटा। घाटा जम्मा हुँदै जान्छ, र तेस्रो वर्षसम्ममा ३२.६ दिन पुग्छ, जुन एउटा चान्द्र मासभन्दै लामो। त्यही बेला एक अधिक मास थपेर हिसाब मिलाइन्छ — यही चान्द्र–सौर पात्रोको मूल व्यवस्था हो।",
+    "en": "Twelve lunar months make 354.4 days against a solar year of 365.24 — a shortfall of 10.87 days each year. It accumulates, and by the third year it reaches 32.6 days, longer than a lunar month itself. That is when an extra month is inserted to settle the account — the central mechanism of a lunisolar calendar."
+  },
+  "learn.study.lunar_gap.legend_drift": {
+    "ne": "फरक {{days}} दिन/वर्ष",
+    "en": "gap {{days}} d/yr"
+  },
+  "learn.study.lunar_gap.legend_lunar_months": {
+    "ne": "१२ चान्द्र मास ३५४.४",
+    "en": "12 lunar months 354.4"
+  },
+  "learn.study.lunar_gap.legend_solar_year": {
+    "ne": "सौर वर्ष ३६५.२४",
+    "en": "solar year 365.24"
+  },
+  "learn.study.lunar_gap.three_year_total": {
+    "ne": "३ वर्षमा {{days}} दिन — एक चान्द्र मासभन्दा लामो → अधिक मास",
+    "en": "{{days}} days in 3 years — longer than a lunar month → adhika māsa"
+  },
+  "learn.study.medium": {
+    "ne": "मध्यम",
+    "en": "Medium"
+  },
+  "learn.study.month_lengths.aphelion": {
+    "ne": "अपसौर — सूर्य ढिलो",
+    "en": "aphelion — Sun slowest"
+  },
+  "learn.study.month_lengths.aria": {
+    "ne": "बाह्र नेपाली महिनाको लम्बाइ — उपसौर नजिक छोटो, अपसौर नजिक लामो",
+    "en": "The lengths of the twelve Nepali months — short near perihelion, long near aphelion"
+  },
+  "learn.study.month_lengths.caption": {
+    "ne": "एक सौर मास भनेको दिनको गन्ती होइन — राशि पट्टीमा सूर्यले पार गर्ने ३०° हो। उपसौर नजिक (पुष–माघ) सूर्य छिटो हिँड्छ, त्यसैले ती ३० अंश कम दिनमै सकिन्छन्; अपसौर नजिक (असार) ढिलो, र महिना लामो हुन्छ। यही कारण नेपाली महिना २९ देखि ३२ दिनसम्मको हुन्छ।",
+    "en": "A solar month is not a count of days but 30° of the Sun's travel along the zodiac. Near perihelion (पुष–माघ) the Sun moves fastest, so those 30° take fewer days; near aphelion (असार) it is slowest and the month stretches. That is why a Nepali month runs anywhere from 29 to 32 days."
+  },
+  "learn.study.month_lengths.perihelion": {
+    "ne": "उपसौर — सूर्य छिटो",
+    "en": "perihelion — Sun fastest"
+  },
+  "learn.study.orbit.autumnal_equinox": {
+    "ne": "शरद विषुव",
+    "en": "Autumnal equinox"
+  },
+  "learn.study.orbit.caption_direction": {
+    "ne": "वामावर्त",
+    "en": "counter-clockwise"
+  },
+  "learn.study.orbit.caption_lead": {
+    "ne": "सूर्य एउटा केन्द्रबिन्दु (focus) मा छ — पृथ्वी वास्तविक दीर्घवृत्तमा",
+    "en": "The Sun sits at one focus — Earth orbits the true ellipse"
+  },
+  "learn.study.orbit.caption_rest": {
+    "ne": "घुम्छ। नजिक हुँदा छिटो (उपसौर / हिमतिर), टाढा हुँदा ढिलो (अपसौर / ग्रीष्मतिर) — यसैले केही महिनामा दिन छिटो बित्छ। ध्रुव {{tilt}}° ढल्किएकाले सङ्क्रान्तिमा लामो/छोटो दिन र विषुवमा बराबर दिन–रात हुन्छ।",
+    "en": "Faster when near (perihelion / around winter), slower when far (aphelion / around summer) — which is why some months pass more quickly. Because the pole is tilted {{tilt}}°, solstices give long and short days while equinoxes give equal day and night."
+  },
+  "learn.study.orbit.day_of_year": {
+    "ne": "वर्षको दिन (लगभग)",
+    "en": "Day of year (approx)"
+  },
+  "learn.study.orbit.distance_from_sun": {
+    "ne": "सूर्यदेखि दूरी",
+    "en": "Distance from Sun"
+  },
+  "learn.study.orbit.event_season": {
+    "ne": "घटना · ऋतु",
+    "en": "Event · season"
+  },
+  "learn.study.orbit.far_slow": {
+    "ne": "टाढा · ढिलो",
+    "en": "Far · slow"
+  },
+  "learn.study.orbit.mean_angle": {
+    "ne": "माध्य कोण (वर्ष)",
+    "en": "Mean angle (year)"
+  },
+  "learn.study.orbit.near_fast": {
+    "ne": "नजिक · छिटो",
+    "en": "Near · fast"
+  },
+  "learn.study.orbit.season_autumn": {
+    "ne": "शरद ऋतु",
+    "en": "Autumn"
+  },
+  "learn.study.orbit.season_spring": {
+    "ne": "वसंत ऋतु",
+    "en": "Spring"
+  },
+  "learn.study.orbit.season_summer": {
+    "ne": "ग्रीष्म ऋतु",
+    "en": "Summer"
+  },
+  "learn.study.orbit.season_winter": {
+    "ne": "हिम ऋतु",
+    "en": "Winter"
+  },
+  "learn.study.orbit.summer_solstice": {
+    "ne": "ग्रीष्म सङ्क्रान्ति",
+    "en": "Summer solstice"
+  },
+  "learn.study.orbit.vernal_equinox": {
+    "ne": "वसंत विषुव",
+    "en": "Vernal equinox"
+  },
+  "learn.study.orbit.winter_solstice": {
+    "ne": "हिम सङ्क्रान्ति",
+    "en": "Winter solstice"
+  },
+  "learn.study.phases.amavasya_roman": {
+    "ne": "Aunsi",
+    "en": "Aunsi"
+  },
+  "learn.study.phases.first_quarter": {
+    "ne": "प्रथम चौथी",
+    "en": "First quarter"
+  },
+  "learn.study.phases.first_quarter_roman": {
+    "ne": "First quarter",
+    "en": "First quarter"
+  },
+  "learn.study.phases.krishna_moon": {
+    "ne": "कृष्ण पक्षको चन्द्र",
+    "en": "Krishna paksha"
+  },
+  "learn.study.phases.krishna_moon_roman": {
+    "ne": "Krishna paksha",
+    "en": "Krishna paksha"
+  },
+  "learn.study.phases.last_quarter": {
+    "ne": "अन्तिम चौथी",
+    "en": "Last quarter"
+  },
+  "learn.study.phases.last_quarter_roman": {
+    "ne": "Last quarter",
+    "en": "Last quarter"
+  },
+  "learn.study.phases.next_amavasya": {
+    "ne": "पुनः औंसी",
+    "en": "Punah Aunsi"
+  },
+  "learn.study.phases.next_amavasya_roman": {
+    "ne": "Punah Aunsi",
+    "en": "Punah Aunsi"
+  },
+  "learn.study.phases.purnima_roman": {
+    "ne": "Purnima",
+    "en": "Purnima"
+  },
+  "learn.study.phases.shukla_moon": {
+    "ne": "शुक्ल पक्षको चन्द्र",
+    "en": "Shukla paksha"
+  },
+  "learn.study.phases.shukla_moon_roman": {
+    "ne": "Shukla paksha",
+    "en": "Shukla paksha"
+  },
+  "learn.study.pipeline.api_name": {
+    "ne": "नेपाली-होलिडे-एपीआई",
+    "en": "nepali-holiday-api"
+  },
+  "learn.study.pipeline.api_transport": {
+    "ne": "वेदिक पात्रो → एचटीटीपी",
+    "en": "Vedic Patro → HTTP"
+  },
+  "learn.study.pipeline.caption": {
+    "ne": "अनुरोध → स्थान र समय → स्विस एफेमेरिस → पञ्चाङ्ग अङ्ग → उदय–आधारित दैनिक सेट → पात्रो, पर्व, साइत, कुण्डली",
+    "en": "Request → place & time → Swiss Ephemeris → panchanga limbs → sunrise-anchored day → patro, festivals, sait, kundali"
+  },
+  "learn.study.pipeline.grahas_note": {
+    "ne": "९ ग्रह — स्पष्ट स्थान उदयमा",
+    "en": "9 grahas — positions at sunrise"
+  },
+  "learn.study.pipeline.group_angas": {
+    "ne": "पञ्चाङ्ग अङ्ग",
+    "en": "Panchanga angas"
+  },
+  "learn.study.pipeline.group_apps": {
+    "ne": "उत्पादन",
+    "en": "Products"
+  },
+  "learn.study.pipeline.group_daily": {
+    "ne": "दैनिक सेट",
+    "en": "Daily assembly"
+  },
+  "learn.study.pipeline.group_foundation": {
+    "ne": "आधार",
+    "en": "Foundation"
+  },
+  "learn.study.pipeline.group_raw": {
+    "ne": "खगोलीय मात्रा",
+    "en": "Raw astronomy"
+  },
+  "learn.study.pipeline.node_at_time": {
+    "ne": "कुनै क्षण",
+    "en": "at-time"
+  },
+  "learn.study.pipeline.node_civil_timeline": {
+    "ne": "नागरिक समयरेखा",
+    "en": "Civil timeline"
+  },
+  "learn.study.pipeline.node_eclipses": {
+    "ne": "ग्रहण",
+    "en": "Eclipses"
+  },
+  "learn.study.pipeline.node_end_times": {
+    "ne": "अन्त समय\n(द्विभाजन)",
+    "en": "End times\n(bisection)"
+  },
+  "learn.study.pipeline.node_ephemeris": {
+    "ne": "स्विस एफेमेरिस\nलाहिरी अयनांश",
+    "en": "Swiss Ephemeris\nLahiri ayanamsa"
+  },
+  "learn.study.pipeline.node_festivals": {
+    "ne": "पर्व नियम",
+    "en": "Festival rules"
+  },
+  "learn.study.pipeline.node_five_angas": {
+    "ne": "तिथि · नक्षत्र\nयोग · करण · वार",
+    "en": "Tithi · nakshatra\nYoga · karana · vara"
+  },
+  "learn.study.pipeline.node_gochar": {
+    "ne": "गोचर · वक्री",
+    "en": "Gochar · retrograde"
+  },
+  "learn.study.pipeline.node_julian_day": {
+    "ne": "जुलियन दिन\nई.सं. / बि.सं. / ई.पू.",
+    "en": "Julian day\nAD / BS / BCE"
+  },
+  "learn.study.pipeline.node_kundali": {
+    "ne": "कुण्डली · दशा",
+    "en": "Kundali · dasha"
+  },
+  "learn.study.pipeline.node_lagna": {
+    "ne": "लग्न · राशि",
+    "en": "Lagna · rashi"
+  },
+  "learn.study.pipeline.node_longitudes": {
+    "ne": "निरयन देशान्तर",
+    "en": "Sidereal longitudes"
+  },
+  "learn.study.pipeline.node_observer": {
+    "ne": "अवलोकक\n(काठमाडौँ समय)",
+    "en": "Observer\n(Kathmandu TZ)"
+  },
+  "learn.study.pipeline.node_panchanga_day": {
+    "ne": "उदय → अर्को उदय\n(पञ्चाङ्ग दिन)",
+    "en": "Sunrise → next sunrise\n(panchanga day)"
+  },
+  "learn.study.pipeline.node_patro": {
+    "ne": "महिना / वर्ष",
+    "en": "Month / year grids"
+  },
+  "learn.study.pipeline.node_rise_set": {
+    "ne": "उदय / अस्त",
+    "en": "Rise / set"
+  },
+  "learn.study.pipeline.node_sait": {
+    "ne": "साइत स्क्यान",
+    "en": "Sait scan"
+  },
+  "learn.study.precession.aria": {
+    "ne": "अयन चलन शंकु",
+    "en": "The precession cone"
+  },
+  "learn.study.precession.axial_tilt": {
+    "ne": "अक्ष झुकाव",
+    "en": "Axial tilt"
+  },
+  "learn.study.precession.caption_cycle": {
+    "ne": "वरिपरि बिस्तारै घुम्छ — पूरा एक फेरो ~{{years}} वर्ष। त्यसैले उत्तर ध्रुवले फरक-फरक",
+    "en": "— one full turn takes about {{years}} years. That is why the north pole keeps pointing at a different"
+  },
+  "learn.study.precession.caption_lead": {
+    "ne": "पृथ्वीको अक्ष {{tilt}}° झुकेरै रहन्छ तर लठ्ठाझैँ",
+    "en": "Earth’s axis stays tilted at {{tilt}}° but, like a spinning top, slowly circles the"
+  },
+  "learn.study.precession.caption_stars": {
+    "ne": "देखाउँछ — कुनै बेला थुबन, अहिले ध्रुव, र ~{{year}} बि.सं. मा अभिजित। ऋतु-आधारित",
+    "en": "over time — Thuban once, Polaris today, and Vega around {{year}} BS. The season-based"
+  },
+  "learn.study.precession.caption_tail": {
+    "ne": "राशिचक्रमा घुम्दै जान्छ — यही अयन चलन ले माथिको अयनांश खाँडो बढाउँछ।",
+    "en": "keeps sliding around the zodiac — this precession is what widens the ayanamsha gap shown above."
+  },
+  "learn.study.precession.cycle_years": {
+    "ne": "{{years}} वर्ष",
+    "en": "{{years}} years"
+  },
+  "learn.study.precession.ecliptic_pole": {
+    "ne": "क्रान्तिवृत्त ध्रुव",
+    "en": "ecliptic pole"
+  },
+  "learn.study.precession.equinox_line": {
+    "ne": "विषुव रेखा",
+    "en": "equinox line"
+  },
+  "learn.study.precession.equinox_to_rashi": {
+    "ne": "विषुव → राशि",
+    "en": "Equinox → rashi"
+  },
+  "learn.study.precession.equinox_to_rashi_value": {
+    "ne": "विषुव → {{rashi}}",
+    "en": "Equinox → {{rashi}}"
+  },
+  "learn.study.precession.legend_axis": {
+    "ne": "अक्ष ({{tilt}}°)",
+    "en": "Axis ({{tilt}}°)"
+  },
+  "learn.study.precession.north_pole": {
+    "ne": "उत्तर ध्रुव",
+    "en": "North pole"
+  },
+  "learn.study.precession.one_cycle": {
+    "ne": "एक चक्र",
+    "en": "One cycle"
+  },
+  "learn.study.precession.pole_path": {
+    "ne": "ध्रुव-पथ",
+    "en": "Pole path"
+  },
+  "learn.study.precession.pole_star": {
+    "ne": "ध्रुव तारा",
+    "en": "pole star"
+  },
+  "learn.study.precession.slider": {
+    "ne": "↻ अयन चलन — एक पूरा चक्र = {{years}} वर्ष",
+    "en": "↻ Precession — one full cycle = {{years}} years"
+  },
+  "learn.study.precession.star_alderamin": {
+    "ne": "अल्डेरामिन",
+    "en": "Alderamin"
+  },
+  "learn.study.precession.star_deneb": {
+    "ne": "डेनेब",
+    "en": "Deneb"
+  },
+  "learn.study.precession.star_errai": {
+    "ne": "एर्राई",
+    "en": "Errai"
+  },
+  "learn.study.precession.star_kochab": {
+    "ne": "कोचाब",
+    "en": "Kochab"
+  },
+  "learn.study.precession.star_polaris": {
+    "ne": "ध्रुव",
+    "en": "Polaris"
+  },
+  "learn.study.precession.star_thuban": {
+    "ne": "थुबन",
+    "en": "Thuban"
+  },
+  "learn.study.precession.star_vega": {
+    "ne": "अभिजित",
+    "en": "Vega"
+  },
+  "learn.study.ritu.aria": {
+    "ne": "छ ऋतु, बाह्र महिना र चार सायन बिन्दु एउटै चक्रमा",
+    "en": "The six ṛtus, twelve months and four tropical markers on one wheel"
+  },
+  "learn.study.ritu.caption": {
+    "ne": "ऋतुको नाम महिनाले दिन्छ, तर ऋतु बनाउने कुरा सूर्यको उत्तर–दक्षिण यात्रा हो। दुई फरक ढाँचा भएकाले चारै सायन बिन्दु (हरियो = विषुव, सुन्तला = अयनान्त) महिनाको सीमामा नभई बीचमा पर्छन् — ग्रीष्म अयनान्त असारभित्र, जेठ–असारको सन्धिमा होइन। अयन चलनले हरेक ७२ वर्षमा १° का दरले यी बिन्दु सार्दै लैजान्छ; त्यसैले ऋतुको कुरा गर्दा महिना होइन, उत्तरायण–दक्षिणायन नै भरपर्दो सन्दर्भ हो।",
+    "en": "The ṛtus take their names from the months, but what makes a ṛtu is the Sun's north–south journey. Because those are two different frames, all four tropical markers (green = equinox, amber = solstice) fall inside a month rather than on its boundary — the summer solstice sits within असार, not at the जेठ–असार seam. Precession moves these markers 1° every 72 years, which is why the dependable reference for a ṛtu argument is Uttarāyaṇa and Dakṣiṇāyana, not the months."
+  },
+  "learn.study.ritu.grishma": {
+    "ne": "ग्रीष्म",
+    "en": "Grīṣma"
+  },
+  "learn.study.ritu.hemanta": {
+    "ne": "हेमन्त",
+    "en": "Hemanta"
+  },
+  "learn.study.ritu.sharad": {
+    "ne": "शरद्",
+    "en": "Śarad"
+  },
+  "learn.study.ritu.shishira": {
+    "ne": "शिशिर",
+    "en": "Śiśira"
+  },
+  "learn.study.ritu.six_ritus": {
+    "ne": "छ ऋतु",
+    "en": "Six ṛtus"
+  },
+  "learn.study.ritu.two_months_each": {
+    "ne": "प्रत्येक दुई महिना",
+    "en": "two months each"
+  },
+  "learn.study.ritu.varsha": {
+    "ne": "वर्षा",
+    "en": "Varṣā"
+  },
+  "learn.study.ritu.vasanta": {
+    "ne": "वसन्त",
+    "en": "Vasanta"
+  },
+  "learn.study.sem.caption_adhika_masa": {
+    "ne": "अधिक मास",
+    "en": "Adhika Masa"
+  },
+  "learn.study.sem.caption_drift": {
+    "ne": "देखाउँछ — सूर्य नयाँ राशि वा नक्षत्रमा प्रवेश गर्दा ग्रिड सीमा पार हुन्छ (सङ्क्रान्ति)। पृथ्वीले सूर्यको १ फेरो (~{{yearDays}} दिन) लगाउँदा चन्द्रले ~{{moonLaps}} फेरो लगाउँछ — त्यसैले १२ चान्द्र महिना सकिँदा वर्ष ~{{remainingDays}} दिन बाँकी रहन्छ, जसले",
+    "en": "as seen from Earth — when the Sun enters a new rashi or nakshatra it crosses a grid boundary (sankranti). While Earth makes one orbit of the Sun (~{{yearDays}} days) the Moon makes ~{{moonLaps}} orbits — so after twelve lunar months about {{remainingDays}} days of the year are left over, which gives rise to"
+  },
+  "learn.study.sem.caption_lead": {
+    "ne": "बाहिरी {{rashis}} राशि र {{nakshatras}} नक्षत्रको ग्रिडले पृथ्वीबाट देखिने",
+    "en": "The outer grid of {{rashis}} rashis and {{nakshatras}} nakshatras shows the"
+  },
+  "learn.study.sem.caption_sun_position": {
+    "ne": "सूर्यको स्थिति",
+    "en": "Sun's position"
+  },
+  "learn.study.sem.caption_tail": {
+    "ne": "जन्माउँछ।",
+    "en": "."
+  },
+  "learn.study.sem.preset_after_3_months": {
+    "ne": "३ महिनापछि",
+    "en": "After 3 months"
+  },
+  "learn.study.sem.preset_after_6_months": {
+    "ne": "६ महिनापछि",
+    "en": "After 6 months"
+  },
+  "learn.study.sem.preset_year_end": {
+    "ne": "वर्ष अन्त्य",
+    "en": "Year end"
+  },
+  "learn.study.sem.preset_year_start": {
+    "ne": "वर्षारम्भ",
+    "en": "Year start"
+  },
+  "learn.study.solar_eclipse.annular": {
+    "ne": "वलयाकार (ring of fire)",
+    "en": "Annular (ring of fire)"
+  },
+  "learn.study.solar_eclipse.banner_annular": {
+    "ne": "● वलयाकार ग्रहण — वलयच्छायाँ (antumbra) पृथ्वीमा",
+    "en": "● Annular eclipse — antumbra on Earth"
+  },
+  "learn.study.solar_eclipse.banner_partial": {
+    "ne": "खण्डग्रास — उपछायाँ मात्र",
+    "en": "Partial — penumbra only"
+  },
+  "learn.study.solar_eclipse.banner_total": {
+    "ne": "● पूर्ण सूर्यग्रहण — प्रच्छायाँ पृथ्वीमा",
+    "en": "● Total solar eclipse — umbra on Earth"
+  },
+  "learn.study.solar_eclipse.caption_antumbra": {
+    "ne": "पुग्छ → वलयाकार “आगोको औँठी”। फराकिलो",
+    "en": "reaches instead → an annular “ring of fire”. The much wider"
+  },
+  "learn.study.solar_eclipse.caption_lead": {
+    "ne": "सूर्यग्रहण सधैँ औंसी मा हुन्छ — चन्द्र सूर्य र पृथ्वीको बीचमा आउँदा त्यसको",
+    "en": "A solar eclipse always falls on a new moon — when the Moon passes between the Sun and Earth, its"
+  },
+  "learn.study.solar_eclipse.caption_penumbra": {
+    "ne": "ले ठूलो क्षेत्रमा खण्डग्रास दिन्छ। समय स्लाइडरले छायाँलाई पृथ्वीमाथि सार्छ — त्यही नै पूर्णताको मार्ग हो।",
+    "en": "gives a partial eclipse over a large area. The time slider moves the shadow across Earth — that track is the path of totality."
+  },
+  "learn.study.solar_eclipse.caption_umbra": {
+    "ne": "पृथ्वीको सानो भागमा पर्छ। चन्द्र नजिक (perigee) हुँदा प्रच्छायाँले पृथ्वी छुन्छ → पूर्ण ग्रहण; टाढा (apogee) हुँदा प्रच्छायाँ अपुग हुन्छ र",
+    "en": "lands on a small part of Earth. With the Moon near (perigee) the umbra reaches the surface → a total eclipse; with the Moon far (apogee) the umbra falls short and the"
+  },
+  "learn.study.solar_eclipse.coverage": {
+    "ne": "सूर्य आवरण",
+    "en": "Sun covered"
+  },
+  "learn.study.solar_eclipse.dist_apogee": {
+    "ne": "टाढा · apogee",
+    "en": "Far · apogee"
+  },
+  "learn.study.solar_eclipse.dist_perigee": {
+    "ne": "नजिक · perigee",
+    "en": "Near · perigee"
+  },
+  "learn.study.solar_eclipse.inset_annular": {
+    "ne": "वलयाकार · औँठी",
+    "en": "Annular · ring"
+  },
+  "learn.study.solar_eclipse.inset_title": {
+    "ne": "पृथ्वीबाट देखिने दृश्य",
+    "en": "What an observer on Earth sees"
+  },
+  "learn.study.solar_eclipse.inset_total": {
+    "ne": "पूर्ण · सूर्यमुकुट",
+    "en": "Total · corona"
+  },
+  "learn.study.solar_eclipse.legend_antumbra": {
+    "ne": "वलयच्छाया (antumbra) — वलयाकार",
+    "en": "Antumbra — annular"
+  },
+  "learn.study.solar_eclipse.legend_penumbra": {
+    "ne": "उपछाया (penumbra) — खण्डग्रास",
+    "en": "Penumbra — partial"
+  },
+  "learn.study.solar_eclipse.legend_umbra": {
+    "ne": "प्रच्छाया (umbra) — पूर्ण",
+    "en": "Umbra — total"
+  },
+  "learn.study.solar_eclipse.moon_distance": {
+    "ne": "चन्द्र दूरी",
+    "en": "Moon distance"
+  },
+  "learn.study.solar_eclipse.preset_annular": {
+    "ne": "वलयाकार →",
+    "en": "Annular →"
+  },
+  "learn.study.solar_eclipse.preset_partial": {
+    "ne": "खण्डग्रास →",
+    "en": "Partial →"
+  },
+  "learn.study.solar_eclipse.preset_total": {
+    "ne": "पूर्ण ग्रहण →",
+    "en": "Total eclipse →"
+  },
+  "learn.study.solar_eclipse.slider_distance": {
+    "ne": "⟺ चन्द्र दूरी — perigee (पूर्ण) ↔ apogee (वलयाकार)",
+    "en": "⟺ Moon distance — perigee (total) ↔ apogee (annular)"
+  },
+  "learn.study.solar_eclipse.slider_time": {
+    "ne": "छायाँ सर्दै — समय (पृथ्वीमाथि मार्ग)",
+    "en": "Shadow sweep — time (its track across Earth)"
+  },
+  "learn.study.solar_eclipse.term_antumbra": {
+    "ne": "वलयच्छायाँ (antumbra)",
+    "en": "antumbra"
+  },
+  "learn.study.solar_eclipse.term_penumbra": {
+    "ne": "उपछायाँ",
+    "en": "penumbra"
+  },
+  "learn.study.solar_eclipse.term_umbra": {
+    "ne": "प्रच्छायाँ (umbra)",
+    "en": "umbra"
+  },
+  "learn.study.solar_eclipse.total": {
+    "ne": "पूर्ण सूर्यग्रहण",
+    "en": "Total solar eclipse"
+  },
+  "learn.study.spring_equinox": {
+    "ne": "वसन्त विषुव",
+    "en": "Spring equinox"
+  },
+  "learn.study.summer_solstice": {
+    "ne": "ग्रीष्म अयनान्त",
+    "en": "Summer solstice"
+  },
+  "learn.study.two_systems.adhik_maas_gap": {
+    "ne": "अधिक मासले पुर्ने खाडल",
+    "en": "the gap an adhik maas fills"
+  },
+  "learn.study.two_systems.back_to_year_start": {
+    "ne": "वर्षारम्भमा फर्कनुहोस्",
+    "en": "Back to year start"
+  },
+  "learn.study.two_systems.belt_pinned_to_stars": {
+    "ne": "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले बि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
+    "en": "The rashi belt is pinned to the stars, so a BS year is exactly 360° — the 365.26-day sidereal year. The orbit is an ellipse, not a circle: 0.983–1.017 AU (3.4%), and the Sun moves fastest when nearest — which is why a solar month runs 29 to 32 days. The scene exaggerates that gap 6× so the eye can see it."
+  },
+  "learn.study.two_systems.chain_angular_gap": {
+    "ne": "☀️🌙 कोणीय दूरी",
+    "en": "☀️🌙 angular gap"
+  },
+  "learn.study.two_systems.chain_enters_rashi": {
+    "ne": "राशिमा प्रवेश",
+    "en": "enters a rashi"
+  },
+  "learn.study.two_systems.chain_lunar_month": {
+    "ne": "चान्द्र मास",
+    "en": "lunar month"
+  },
+  "learn.study.two_systems.chain_new_solar_month": {
+    "ne": "नयाँ सौर महिना",
+    "en": "new solar month"
+  },
+  "learn.study.two_systems.chain_paksha": {
+    "ne": "शुक्ल / कृष्ण पक्ष",
+    "en": "shukla / krishna paksha"
+  },
+  "learn.study.two_systems.chain_sankranti": {
+    "ne": "सङ्क्रान्ति",
+    "en": "sankranti"
+  },
+  "learn.study.two_systems.chain_sun": {
+    "ne": "☀️ सूर्य",
+    "en": "☀️ Sun"
+  },
+  "learn.study.two_systems.chain_tithi_arc": {
+    "ne": "हरेक {{degrees}}° = १ तिथि",
+    "en": "every {{degrees}}° = 1 tithi"
+  },
+  "learn.study.two_systems.focus_both": {
+    "ne": "☀️🌙 दुवै",
+    "en": "☀️🌙 Both"
+  },
+  "learn.study.two_systems.focus_lunar": {
+    "ne": "🌙 चान्द्रमान",
+    "en": "🌙 Chāndramāna"
+  },
+  "learn.study.two_systems.focus_solar": {
+    "ne": "☀️ सौरमान",
+    "en": "☀️ Sauramāna"
+  },
+  "learn.study.two_systems.from_sun": {
+    "ne": "सूर्यबाट",
+    "en": "from Sun"
+  },
+  "learn.study.two_systems.ladder_summary": {
+    "ne": "सौर वर्ष {{solarDays}} दिन · १२ चान्द्र मास {{lunarDays}} दिन → ~{{gapDays}} दिनको खाडल",
+    "en": "Solar year {{solarDays}} d · 12 lunar months {{lunarDays}} d → a ~{{gapDays}} day gap"
+  },
+  "learn.study.two_systems.legend_lunar_months": {
+    "ne": "चान्द्र मास — औंसीबाट औंसी · वर्षभित्र अहिलेसम्म {{begun}}",
+    "en": "Lunar months — amavasya to amavasya · {{begun}} begun so far this year"
+  },
+  "learn.study.two_systems.legend_remaining_gap": {
+    "ne": "बाँकी खाडल — अधिक मासले पुर्छ",
+    "en": "The remaining gap — what an adhik maas fills"
+  },
+  "learn.study.two_systems.legend_solar_months": {
+    "ne": "सौर महिना — सङ्क्रान्तिबाट सङ्क्रान्ति",
+    "en": "Solar months — sankranti to sankranti"
+  },
+  "learn.study.two_systems.model_caveat": {
+    "ne": "यी अङ्क यही दृश्यको खगोलीय मोडेलबाट आउँछन् — सङ्क्रान्ति र तिथिको कोण सही, तर कुन तिथि कुन दिनको भन्ने सूर्योदय नियम यहाँ लागू हुँदैन। दैनिक पञ्चाङ्ग नै आधिकारिक हो।",
+    "en": "These readings come from this view's own astronomical model — the sankranti and the tithi angle are right, but the sunrise rule that assigns a tithi to a civil day is not applied here. The daily panchanga remains authoritative."
+  },
+  "learn.study.two_systems.moon_in_rashi": {
+    "ne": "चन्द्र राशिमा",
+    "en": "Moon in rashi"
+  },
+  "learn.study.two_systems.moon_sun_angle": {
+    "ne": "चन्द्र–सूर्य कोण",
+    "en": "Moon–Sun angle"
+  },
+  "learn.study.two_systems.moon_travelled": {
+    "ne": "औंसीदेखि चन्द्र हिँडेको",
+    "en": "Moon travelled since amavasya"
+  },
+  "learn.study.two_systems.one_timeline": {
+    "ne": "एउटै समयरेखा",
+    "en": "One shared timeline"
+  },
+  "learn.study.two_systems.readings": {
+    "ne": "विवरण",
+    "en": "Readings"
+  },
+  "learn.study.two_systems.sidereal_lap_done": {
+    "ne": "नक्षत्र मास पूरा +{{degrees}}°",
+    "en": "sidereal lap done +{{degrees}}°"
+  },
+  "learn.study.two_systems.sidereal_lap_remaining": {
+    "ne": "३६०° सम्म {{degrees}}° बाँकी",
+    "en": "{{degrees}}° to the 360° lap"
+  },
+  "learn.study.two_systems.sidereal_vs_synodic": {
+    "ne": "एक फेरो — नक्षत्र मास — ठ्याक्कै ३६०°, २७.३ दिन। तर त्यतिन्जेल पृथ्वी सूर्यवरिपरि ~२९° सरिसक्छ, त्यसैले चन्द्र फेरि सूर्यको छेउमा पुग्दैन; भेट्न अझै ~२९° चाहिन्छ। त्यही हो चान्द्र मास: ~३८९°, २९.५ दिन। कक्षमा पहिलो फेरो भित्री रेखा, त्यसपछिको बढी भाग बाहिरी हरियो चापमा देखिन्छ।",
+    "en": "One lap — the sidereal month — is exactly 360° in 27.3 days. By then Earth has moved ~29° around the Sun, so the Moon is not beside the Sun again; it needs ~29° more to catch up. That is the synodic month: ~389° in 29.5 days. On the orbit, the first lap is the inner line and the overshoot is the outer green arc."
+  },
+  "learn.study.two_systems.solar_month_gate": {
+    "ne": "सौर महिना · गते",
+    "en": "Solar month · gate"
+  },
+  "learn.study.two_systems.sun_in_rashi": {
+    "ne": "सूर्य राशिमा",
+    "en": "Sun in rashi"
+  },
+  "learn.study.two_systems.sun_travelled": {
+    "ne": "यो वर्षमा सूर्य हिँडेको",
+    "en": "Sun travelled this year"
+  },
+  "learn.study.two_systems.tithi_paksha": {
+    "ne": "तिथि · पक्ष",
+    "en": "Tithi · paksha"
+  },
+  "learn.study.two_systems.twelve_lunar_months_days": {
+    "ne": "१२ चान्द्र मास = {{days}} दिन",
+    "en": "12 lunar months = {{days}} d"
+  },
+  "learn.study.winter_solstice": {
+    "ne": "शीत अयनान्त",
+    "en": "Winter solstice"
+  },
+  "learn.study.year": {
+    "ne": "वर्ष",
+    "en": "Year"
+  },
+  "learn.study.year_before_bs": {
+    "ne": "{{year}} बि.सं. पूर्व",
+    "en": "{{year}} before BS"
+  },
+  "learn.study.year_bs": {
+    "ne": "{{year}} बि.सं.",
+    "en": "{{year}} BS"
+  },
+  "panchanga.day_cycle.now": {
+    "ne": "अहिले",
+    "en": "Now"
+  }
+}

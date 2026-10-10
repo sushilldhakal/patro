@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6da8a"/>
+      <stop offset=".5" stop-color="#e6b94d"/>
+      <stop offset="1" stop-color="#c79126"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="38%" cy="34%" r="75%">
+      <stop offset="0" stop-color="#fbe9b6"/>
+      <stop offset=".55" stop-color="#ecc25e"/>
+      <stop offset="1" stop-color="#cf9a2c"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffe6a0" stop-opacity=".9"/>
+      <stop offset="55%" stop-color="#f4c95e" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#f4c95e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e6a6f"/>
+      <stop offset="1" stop-color="#073f43"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .wrays{transform-box:view-box;transform-origin:50px 50px;animation:vp-spinR 30s linear infinite;}
+    .dots{transform-box:view-box;transform-origin:50px 50px;animation:vp-spin 48s linear infinite;}
+    .ring2{transform-box:view-box;transform-origin:50px 50px;animation:vp-spinR 60s linear infinite;}
+    .sunw{transform-box:view-box;transform-origin:50px 50px;animation:vp-pulse 3.4s ease-in-out infinite;}
+    .halow{transform-box:view-box;transform-origin:50px 50px;animation:vp-glow 3.4s ease-in-out infinite;}
+    @keyframes vp-spin{to{transform:rotate(360deg);}}
+    @keyframes vp-spinR{to{transform:rotate(-360deg);}}
+    @keyframes vp-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+    @keyframes vp-glow{0%,100%{opacity:.4;}50%{opacity:.85;}}
+    @media (prefers-reduced-motion:reduce){.wrays,.dots,.ring2,.sunw,.halow{animation:none!important;}}
+  </style>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <g transform="translate(26 26) scale(4.6)">
+    <circle class="ring2" cx="50" cy="50" r="44" fill="none" stroke="url(#g)" stroke-width="1.4" opacity=".5"/>
+    <circle cx="50" cy="50" r="33" fill="none" stroke="url(#g)" stroke-width="1.4" opacity=".5"/>
+    <g class="dots">
+      <circle cx="50.00" cy="10.00" r="3.00" fill="url(#g)"/>
+      <circle cx="60.35" cy="11.36" r="2.83" fill="url(#g)"/>
+      <circle cx="70.00" cy="15.36" r="2.67" fill="url(#g)"/>
+      <circle cx="78.28" cy="21.72" r="2.50" fill="url(#g)"/>
+      <circle cx="84.64" cy="30.00" r="2.33" fill="url(#g)"/>
+      <circle cx="88.64" cy="39.65" r="2.17" fill="url(#g)"/>
+      <circle cx="90.00" cy="50.00" r="2.00" fill="url(#g)"/>
+      <circle cx="88.64" cy="60.35" r="1.83" fill="url(#g)"/>
+      <circle cx="84.64" cy="70.00" r="1.67" fill="url(#g)"/>
+      <circle cx="78.28" cy="78.28" r="1.50" fill="url(#g)"/>
+      <circle cx="70.00" cy="84.64" r="1.33" fill="url(#g)"/>
+      <circle cx="60.35" cy="88.64" r="1.17" fill="url(#g)"/>
+      <circle cx="50.00" cy="90.00" r="1.00" fill="url(#g)"/>
+      <circle cx="39.65" cy="88.64" r="1.17" fill="url(#g)"/>
+      <circle cx="30.00" cy="84.64" r="1.33" fill="url(#g)"/>
+      <circle cx="21.72" cy="78.28" r="1.50" fill="url(#g)"/>
+      <circle cx="15.36" cy="70.00" r="1.67" fill="url(#g)"/>
+      <circle cx="11.36" cy="60.35" r="1.83" fill="url(#g)"/>
+      <circle cx="10.00" cy="50.00" r="2.00" fill="url(#g)"/>
+      <circle cx="11.36" cy="39.65" r="2.17" fill="url(#g)"/>
+      <circle cx="15.36" cy="30.00" r="2.33" fill="url(#g)"/>
+      <circle cx="21.72" cy="21.72" r="2.50" fill="url(#g)"/>
+      <circle cx="30.00" cy="15.36" r="2.67" fill="url(#g)"/>
+      <circle cx="39.65" cy="11.36" r="2.83" fill="url(#g)"/>
+    </g>
+    <circle class="halow" cx="50" cy="50" r="24" fill="url(#halo)"/>
+    <g class="wrays">
+      <path d="M49.04 32.03 L50.00 22.00 L50.96 32.03 Z" fill="url(#g)"/>
+      <path d="M58.15 33.95 L64.00 25.75 L59.82 34.92 Z" fill="url(#g)"/>
+      <path d="M65.08 40.18 L74.25 36.00 L66.05 41.85 Z" fill="url(#g)"/>
+      <path d="M67.97 49.04 L78.00 50.00 L67.97 50.96 Z" fill="url(#g)"/>
+      <path d="M66.05 58.15 L74.25 64.00 L65.08 59.82 Z" fill="url(#g)"/>
+      <path d="M59.82 65.08 L64.00 74.25 L58.15 66.05 Z" fill="url(#g)"/>
+      <path d="M50.96 67.97 L50.00 78.00 L49.04 67.97 Z" fill="url(#g)"/>
+      <path d="M41.85 66.05 L36.00 74.25 L40.18 65.08 Z" fill="url(#g)"/>
+      <path d="M34.92 59.82 L25.75 64.00 L33.95 58.15 Z" fill="url(#g)"/>
+      <path d="M32.03 50.96 L22.00 50.00 L32.03 49.04 Z" fill="url(#g)"/>
+      <path d="M33.95 41.85 L25.75 36.00 L34.92 40.18 Z" fill="url(#g)"/>
+      <path d="M40.18 34.92 L36.00 25.75 L41.85 33.95 Z" fill="url(#g)"/>
+    </g>
+    <g class="sunw">
+      <circle cx="50" cy="50" r="16" fill="url(#sun)"/>
+      <circle cx="50" cy="50" r="4.4" fill="#073f43" opacity=".8"/>
+    </g>
+  </g>
+</svg>

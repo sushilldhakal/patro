@@ -1,0 +1,17 @@
+{
+  "name": "Dhakal Patro (Vite frontend)",
+  "install": "npm ci",
+  "ports": [
+    {
+      "name": "vite",
+      "port": 5173
+    }
+  ],
+  "terminals": [
+    {
+      "name": "vite-dev",
+      "command": "VITE_API_BASE_URL=https://www.vedicpatro.com/api npm run dev -- --host 0.0.0.0 --port 5173 --strictPort",
+      "description": "Vite dev server on http://localhost:5173. The Panchanga/Kundali backend lives in a separate repo (patro, FastAPI), so this points VITE_API_BASE_URL at the live API. To develop against a local backend instead, drop VITE_API_BASE_URL and run `npm run dev` (vite.config.ts proxies /api to http://localhost:8080)."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <defs>
+    <radialGradient id="graha-saturn" cx="38%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#e6c265"/>
+      <stop offset="100%" stop-color="#b07f1f"/>
+    </radialGradient>
+  </defs>
+  <g transform="rotate(-20 24 24)">
+    <ellipse cx="24" cy="24" rx="24" ry="7.2" fill="none" stroke="#caa64e" stroke-width="2.4" opacity="0.9"/>
+  </g>
+  <circle cx="24" cy="24" r="14.4" fill="url(#graha-saturn)"/>
+  <g transform="rotate(-20 24 24)">
+    <path d="M0 24a 24 7.2 0 0 0 48 0" fill="none" stroke="#e6cf86" stroke-width="2.4"/>
+  </g>
+</svg>

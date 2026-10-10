@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6da8a"></stop><stop offset=".5" stop-color="#e6b94d"></stop><stop offset="1" stop-color="#c79126"></stop></linearGradient>
+  <radialGradient id="sun" cx="38%" cy="34%" r="75%"><stop offset="0" stop-color="#fbe9b6"></stop><stop offset=".55" stop-color="#ecc25e"></stop><stop offset="1" stop-color="#cf9a2c"></stop></radialGradient>
+  <radialGradient id="halo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe6a0" stop-opacity=".9"></stop><stop offset="55%" stop-color="#f4c95e" stop-opacity=".35"></stop><stop offset="100%" stop-color="#f4c95e" stop-opacity="0"></stop></radialGradient>
+  <mask id="cres"><rect width="100" height="100" fill="black"></rect><circle cx="46.3" cy="50" r="41.5" fill="white"></circle><circle cx="68.3" cy="50" r="36.6" fill="black"></circle></mask>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0e6a6f"></stop><stop offset="1" stop-color="#073f43"></stop></linearGradient>
+</defs>
+<style>
+  .rays{transform-box:view-box;transform-origin:63.4px 50px;animation:vp-spin 26s linear infinite;}
+  .sun{transform-box:view-box;transform-origin:63.4px 50px;animation:vp-pulse 3.4s ease-in-out infinite;}
+  .halo{transform-box:view-box;transform-origin:63.4px 50px;animation:vp-glow 3.4s ease-in-out infinite;}
+  .crescent{animation:vp-cres 6s ease-in-out infinite;}
+  @keyframes vp-spin{to{transform:rotate(360deg);}}
+  @keyframes vp-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+  @keyframes vp-glow{0%,100%{opacity:.4;}50%{opacity:.85;}}
+  @keyframes vp-cres{0%,100%{opacity:.92;}50%{opacity:1;}}
+  @media (prefers-reduced-motion:reduce){.rays,.sun,.halo,.crescent{animation:none!important;}}
+</style>
+<rect width="512" height="512" rx="116" fill="url(#bg)"></rect>
+<svg x="6" y="6" width="500" height="500" viewBox="0 0 100 100">
+  <path class="crescent" d="M46.3 8.5 A41.5 41.5 0 1 0 46.3 91.5 A41.5 41.5 0 1 0 46.3 8.5 Z" mask="url(#cres)" fill="url(#g)"></path>
+  <circle class="halo" cx="63.4" cy="50" r="29.3" fill="url(#halo)"></circle>
+  <g class="rays"><path d="M62.13 30.54 L63.40 18.30 L64.67 30.54 Z" fill="url(#g)"></path><path d="M69.67 31.54 L75.53 20.71 L72.02 32.51 Z" fill="url(#g)"></path><path d="M76.26 35.34 L85.82 27.58 L78.06 37.14 Z" fill="url(#g)"></path><path d="M80.89 41.38 L92.69 37.87 L81.86 43.73 Z" fill="url(#g)"></path><path d="M82.86 48.73 L95.10 50.00 L82.86 51.27 Z" fill="url(#g)"></path><path d="M81.86 56.27 L92.69 62.13 L80.89 58.62 Z" fill="url(#g)"></path><path d="M78.06 62.86 L85.82 72.42 L76.26 64.66 Z" fill="url(#g)"></path><path d="M72.02 67.49 L75.53 79.29 L69.67 68.46 Z" fill="url(#g)"></path><path d="M64.67 69.46 L63.40 81.70 L62.13 69.46 Z" fill="url(#g)"></path><path d="M57.13 68.46 L51.27 79.29 L54.78 67.49 Z" fill="url(#g)"></path><path d="M50.54 64.66 L40.98 72.42 L48.74 62.86 Z" fill="url(#g)"></path><path d="M45.91 58.62 L34.11 62.13 L44.94 56.27 Z" fill="url(#g)"></path><path d="M43.94 51.27 L31.70 50.00 L43.94 48.73 Z" fill="url(#g)"></path><path d="M44.94 43.73 L34.11 37.87 L45.91 41.38 Z" fill="url(#g)"></path><path d="M48.74 37.14 L40.98 27.58 L50.54 35.34 Z" fill="url(#g)"></path><path d="M54.78 32.51 L51.27 20.71 L57.13 31.54 Z" fill="url(#g)"></path></g>
+  <g class="sun"><circle cx="63.4" cy="50" r="17.7" fill="url(#sun)"></circle><circle cx="63.4" cy="50" r="17.7" fill="none" stroke="#073f43" stroke-width="1.2" opacity=".18"></circle></g>
+</svg>
+</svg>

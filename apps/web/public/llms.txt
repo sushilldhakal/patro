@@ -1,0 +1,42 @@
+# Vedic Patro
+
+> Complete Nepali calendar (Vikram Samvat) with Surya Panchanga, BS/AD date converter, public holidays, festivals, and Janma Kundali — primarily for Nepal, in Nepali and English.
+
+Vedic Patro (वैदिक पात्रो) is a free web application at https://www.vedicpatro.com. Panchanga and calendar calculations use astronomical ephemeris with a default location of Kathmandu, Nepal.
+
+## Core tools
+
+- [Home — Nepali calendar](https://www.vedicpatro.com/): Bikram Sambat monthly calendar with festivals and tithi
+- [Surya Panchanga](https://www.vedicpatro.com/panchanga): Daily panchanga — tithi, nakshatra, yoga, karana, sunrise/sunset
+- [Annual Panchanga wheel](https://www.vedicpatro.com/panchanga/year): Year-at-a-glance panchanga chart
+- [BS ↔ AD converter](https://www.vedicpatro.com/converter): Convert between Bikram Sambat and Gregorian dates
+- [Public holidays](https://www.vedicpatro.com/holidays): Nepal public holidays and festivals by year
+- [Suryakranti (sun transit)](https://www.vedicpatro.com/suryakranti): Solar ingress (sankranti) times for the year
+- [Abhijit Muhurta](https://www.vedicpatro.com/abhijit-muhurta): Daily abhijit muhurta window
+- [Dainik Kranti](https://www.vedicpatro.com/dainikkranti): Daily planetary longitudes and gochar tables
+- [Avakahada Chakra](https://www.vedicpatro.com/panchanga/avakahada-chakra): Avakahada chakra for the day
+- [Ṛtu (seasons)](https://www.vedicpatro.com/ritu): Nepali six-season calendar
+- [Panchak Patro](https://www.vedicpatro.com/panchak-patro): Panchak periods reference
+
+## Jyotish
+
+- [Janma Kundali](https://www.vedicpatro.com/kundali): Birth chart generator (requires sign-in to save profiles)
+- [Kundali Milan](https://www.vedicpatro.com/jyotish/kundali-milan): Chart compatibility (guna milan)
+
+## Learn — astronomy & panchanga reference
+
+- [Learn hub](https://www.vedicpatro.com/learn): Articles on calendars, panchanga, and eclipses
+- [History of calendars](https://www.vedicpatro.com/learn/history): Surya Siddhanta and Nepali calendar history
+- [What is Panchang?](https://www.vedicpatro.com/learn/what-is-panchang): The five limbs of panchanga
+- [How Tithi is calculated](https://www.vedicpatro.com/learn/tithi): Moon–Sun elongation and tithi
+- [BS calendar explained](https://www.vedicpatro.com/learn/bs-calendar): Solar vs lunar months in Vikram Samvat
+- [Ayanamsha](https://www.vedicpatro.com/learn/ayanamsha): Lahiri, Raman, and KP ayanamsha
+- [Eclipses](https://www.vedicpatro.com/learn/eclipses): Solar and lunar eclipse mechanics
+
+## Crawling & usage
+
+- [Sitemap](https://www.vedicpatro.com/sitemap.xml): All public indexable URLs
+- [Robots.txt](https://www.vedicpatro.com/robots.txt): Crawl rules (`/account`, `/kundali/*` profiles, and `/api/` are disallowed)
+- Languages: Nepali (default) and English — toggle in the site header
+- API: Backend at `/api/` (not intended for bulk scraping; use the public pages above)
+- Attribution: Please cite "Vedic Patro" (vedicpatro.com) when quoting panchanga or calendar data

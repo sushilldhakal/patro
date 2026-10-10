@@ -1,0 +1,615 @@
+# =============================================================================
+# VedicPatro — Master Sanskrit Śloka Inventory
+# =============================================================================
+# Canonical database of every Sanskrit śloka / mantra / verse currently present
+# in the codebase. Intended as the master source for future TTS generation.
+#
+# Text is preserved EXACTLY as it appears in the source — Unicode, danda (।),
+# double danda (॥), punctuation and any ellipses (...) are NOT edited, corrected
+# or normalized. Entries flagged for review are described in report.md.
+#
+# Field notes:
+#   id        — stable kebab/snake slug for this verse
+#   title     — first pada / short label (Devanāgarī)
+#   category  — one of the project's śloka categories
+#   source    — the app screen / feature where the text is used
+#   citation  — the classical scripture reference recorded in-code (if any)
+#   location  — source file path (single occurrence)
+#   locations — list of source file paths (when the SAME text appears in >1 file)
+#   occurrences — number of times the string is referenced (when >1 in one file)
+#   meter     — left blank when unknown
+#   incomplete — true when the source string is abridged (contains "...")
+#   language  — sanskrit
+#   text      — the verse, verbatim
+# =============================================================================
+
+shlokas:
+
+  # ---------------------------------------------------------------------------
+  # NAVAGRAHA BĪJA (BEEJA) MANTRAS
+  # Source: Śānti-vidhi panel (per-graha remedial mantra).
+  # File: src/lib/shanti/navagraha-shanti.ts  (rendered by ShantiVidhiPanel.tsx)
+  # ---------------------------------------------------------------------------
+
+  - id: navagraha_beej_surya
+    title: सूर्य बीज मन्त्र
+    category: surya
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः
+
+  - id: navagraha_beej_chandra
+    title: चन्द्र बीज मन्त्र
+    category: chandra
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ श्रां श्रीं श्रौं सः चन्द्राय नमः
+
+  - id: navagraha_beej_mangala
+    title: मंगल (भौम) बीज मन्त्र
+    category: mangala
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ क्रां क्रीं क्रौं सः भौमाय नमः
+
+  - id: navagraha_beej_budha
+    title: बुध बीज मन्त्र
+    category: budha
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः
+
+  - id: navagraha_beej_guru
+    title: गुरु (बृहस्पति) बीज मन्त्र
+    category: guru
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः
+
+  - id: navagraha_beej_shukra
+    title: शुक्र बीज मन्त्र
+    category: shukra
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ द्रां द्रीं द्रौं सः शुक्राय नमः
+
+  - id: navagraha_beej_shani
+    title: शनि बीज मन्त्र
+    category: shani
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः
+
+  - id: navagraha_beej_rahu
+    title: राहु बीज मन्त्र
+    category: rahu
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः
+
+  - id: navagraha_beej_ketu
+    title: केतु बीज मन्त्र
+    category: ketu
+    source: kundali/shanti-vidhi
+    location: src/lib/shanti/navagraha-shanti.ts
+    meter:
+    language: sanskrit
+    text: |
+      ॐ स्रां स्रीं स्रौं सः केतवे नमः
+
+  # ---------------------------------------------------------------------------
+  # BHAUMA-DOṢA (MĀNGALI) ŚLOKAS
+  # Source: Avakahada Chakra / Kundali Milan (Mangal-dosha classification).
+  # File: src/lib/avakahada-data.ts  (BHAUMA_DOSHA_SHLOKAS)
+  # ---------------------------------------------------------------------------
+
+  - id: bhauma_dosha_lagne_vyaye
+    title: लग्ने व्यये च पाताले
+    category: marriage
+    source: avakahada-chakra / kundali-milan
+    citation: Standard Bhauma-doṣa (Māngali) śloka
+    location: src/lib/avakahada-data.ts
+    meter:
+    language: sanskrit
+    text: |
+      लग्ने (१) व्यये (१२) च पाताले (४) जामित्रे (७) चाष्टमे (८) कुजे। पत्नीं हन्ति स्वभर्तारं भर्ता भार्यां न संशयः॥
+
+  - id: bhauma_dosha_jamitre_sauri
+    title: जामित्रे च यदा सौरिः
+    category: marriage
+    source: avakahada-chakra / kundali-milan
+    citation: Standard Bhauma-doṣa (Māngali) śloka — cancellation clause
+    location: src/lib/avakahada-data.ts
+    meter:
+    language: sanskrit
+    text: |
+      जामित्रे च यदा सौरिर्लग्ने वा हिबुकेऽथ वा। नवमे द्वादशे चैव भौमदोषो न विद्यते॥
+
+  - id: bhauma_dosha_chandra_bhrigu
+    title: चन्द्रभृगू द्वितीये न मङ्गली
+    category: marriage
+    source: avakahada-chakra / kundali-milan
+    citation: Standard Bhauma-doṣa (Māngali) śloka — cancellation clause
+    location: src/lib/avakahada-data.ts
+    meter:
+    language: sanskrit
+    # NOTE: "र्न मङ्गली" flagged for manual review (possible OCR/typo) — see report.md
+    text: |
+      चन्द्रभृगू द्वितीये न मङ्गली, यस्य जीवः। न मङ्गली केन्द्रगते च राहौ, र्न मङ्गली मङ्गलराहुयोगे॥
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — VIVĀHA (MARRIAGE)
+  # Source: /sait vivāha rule explanations.
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT.vivah)
+  # ---------------------------------------------------------------------------
+
+  - id: mc_1_34_mahadosha
+    title: जन्मार्क्षमासतिथयो व्यतिपातभद्रा
+    category: marriage
+    source: sait/vivah · sait/bratabandha · sait/griha-aarambha (mahā-doṣa rule)
+    citation: Muhūrta Chintāmaṇi 1.34
+    location: src/lib/sait-rules-content.ts
+    occurrences: 5   # constant MC_1_34_SHLOKA reused across yoga/karaṇa rules of 3 ceremonies
+    meter:
+    language: sanskrit
+    text: |
+      जन्मार्क्षमासतिथयो व्यतिपातभद्रा वैधृत्यमापितृदिनानि तिथिक्षयद्वौ । न्यूनार्द्धिमासकुलिकप्रहराधपाता विष्कम्भमृद्व्यतिगतित्रयमेव वर्ज्यम् ॥ ३४ ॥
+
+  - id: vivah_month_mrig_magha
+    title: मृग-माघ-फाल्गुन-वैशाख-ज्येष्ठ-आषाढेषु
+    category: marriage
+    source: sait/vivah (month rule)
+    citation: Muhūrta Chintāmaṇi 6 (comm. on 14)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      मृग-माघ-फाल्गुन-वैशाख-ज्येष्ठ-आषाढेषु... विवाहः शुभः
+
+  - id: vivah_solar_month_mesha_vrisha
+    title: मेषवृषमिथुनवृश्चिकमकरकुम्भे
+    category: marriage
+    source: sait/vivah (solar-month rule)
+    citation: Muhūrta Chintāmaṇi 6.14
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      मेषवृषमिथुनवृश्चिकमकरकुम्भे स्थिते सवितरि... विवाहः शुभः ॥
+
+  - id: vivah_tithi_pakshrandhra
+    title: चतुर्थी षष्ठी अष्टमी नवमी
+    category: marriage
+    source: sait/vivah (tithi rule)
+    citation: Muhūrta Chintāmaṇi 1.36
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    # NOTE: "पक्षरन्ध्रसंज्ञिस्ततियो" flagged for manual review — see report.md
+    text: |
+      चतुर्थी षष्ठी अष्टमी नवमी द्वादशी चतुर्दशी एताः पक्षरन्ध्रसंज्ञिस्ततियो ज्ञेयाः ।
+
+  - id: vivah_nakshatra_mrigashira
+    title: मृगशीर्षहस्तमूलानुराधा मघारोहिणी रेवती
+    category: marriage
+    source: sait/vivah (nakṣatra rule)
+    citation: Muhūrta Chintāmaṇi 6.55
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      मृगशीर्षहस्तमूलानुराधा मघारोहिणी रेवती । उत्तरात्रयस्वात्यः स्युर्विवाहे दश सप्त च ॥
+
+  - id: vivah_karana_bhadra
+    title: शुक्ले पूर्वार्धोऽष्टम्यर्कैकदश्या
+    category: marriage
+    source: sait/vivah (karaṇa / Bhadrā rule)
+    citation: Muhūrta Chintāmaṇi 1.43
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      शुक्ले पूर्वार्धोऽष्टम्यर्कैकदश्या चतुर्ध्या परार्धं । कृष्णेऽन्त्यार्धं स्यात्तृतीयादशम्योः पूर्वभागे सप्तमीशम्भुतिथ्योः ॥
+
+  - id: latta_saptashta_bana
+    title: सप्ताष्टबाणनगाब्धिभूतवेदेषु
+    category: marriage
+    source: sait/vivah · sait/bratabandha (Latta doṣa rule)
+    citation: Muhūrta Chintāmaṇi 6.59
+    location: src/lib/sait-rules-content.ts
+    occurrences: 2
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      सप्ताष्टबाणनगाब्धिभूतवेदेषु... लत्ताख्याः
+
+  - id: graha_tatrastat_prak
+    title: तत्रास्तात्प्राक् सप्ताहं वार्धक्यम्
+    category: marriage
+    source: sait/vivah · sait/bratabandha · sait/griha-aarambha (graha bāla/vṛddha rule)
+    citation: Dharma Sindhu (Śukra-asta-varjya)
+    location: src/lib/sait-rules-content.ts
+    occurrences: 3
+    meter:
+    language: sanskrit
+    text: |
+      तत्रास्तात्प्राक् सप्ताहं वार्धक्यम् । उदयोत्तरं सप्ताहं बाल्यमिति मध्यमः पक्षः ॥
+
+  - id: simhastha_magha_nakshatra
+    title: मघानक्षत्रगते सिंहाशगते च गुरौ
+    category: marriage
+    source: sait/vivah · sait/bratabandha (Simhastha Guru rule)
+    citation: Dharma Sindhu (Simhastha-varjya)
+    location: src/lib/sait-rules-content.ts
+    occurrences: 2
+    meter:
+    language: sanskrit
+    text: |
+      मघानक्षत्रगते सिंहाशगते च गुरौ सर्वदेशेषु सर्वमाङ्गलिककर्मणां निषेधः ॥
+
+  - id: vivah_kshaya_paksha
+    title: त्रयोदश दिने पक्षे
+    category: marriage
+    source: sait/vivah (kṣaya-pakṣa rule)
+    citation: Muhūrta Chintāmaṇi 1 (comm. on 48)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      त्रयोदश दिने पक्षे यस्मिन् पक्षे तिथिक्षयद्वयम् ... पक्षे विनष्टे सकलं विनष्टमित्याहुराचार्याः समस्ताः ॥
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — BRATABANDHA (UPANAYANA)
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT.bratabandha)
+  # (Shared verses mc_1_34_mahadosha, latta_saptashta_bana, graha_tatrastat_prak,
+  #  simhastha_magha_nakshatra are listed once above with all their sources.)
+  # ---------------------------------------------------------------------------
+
+  - id: bratabandha_season_magha
+    title: माघफल्गुनवैशाखज्येष्ठाषाढेषु शोभनम्
+    category: bratabandha
+    source: sait/bratabandha (season rule)
+    citation: Muhūrta Chintāmaṇi (Upanayana)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      माघफल्गुनवैशाखज्येष्ठाषाढेषु शोभनम्। उदीच्यगेऽर्के...
+
+  - id: bratabandha_tithi_dashaikadashi
+    title: दशैकादशी द्वादशी द्वितीया
+    category: bratabandha
+    source: sait/bratabandha (tithi rule)
+    citation: Muhūrta Chintāmaṇi (Upanayana tithi)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      दशैकादशी द्वादशी द्वितीया तृतीया पञ्चमी दशमीषु।
+
+  - id: bratabandha_nakshatra_hastashvi
+    title: हस्ताश्विपुष्यमृगसौम्यमघोत्तरात्रयं
+    category: bratabandha
+    source: sait/bratabandha (nakṣatra rule)
+    citation: Muhūrta Chintāmaṇi (Upanayana nakṣatra)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      हस्ताश्विपुष्यमृगसौम्यमघोत्तरात्रयं... मूलं चरं च खलु पुष्यपुनर्वसू च।
+
+  - id: bratabandha_vara_kshititanaya
+    title: क्षितितनयदिवसवारो न शुभकृत्
+    category: bratabandha
+    source: sait/bratabandha (vāra rule)
+    citation: Bṛhat Saṃhitā 1.4 · Muhūrta Chintāmaṇi
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      क्षितितनयदिवसवारो न शुभकृदिति पितामहोक्ते।
+
+  - id: bratabandha_time_upanayana_aparahna
+    title: उपनयनमपराह्वे न कार्यम्
+    category: bratabandha
+    source: sait/bratabandha (time-window rule)
+    citation: Muhūrta Chintāmaṇi (Upanayana time)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      उपनयनमपराह्वे न कार्यम्।
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — GṚHA-ĀRAMBHA (HOUSE-CONSTRUCTION START)
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT."griha-aarambha")
+  # Mapped to the closest listed category: grihapravesh.
+  # ---------------------------------------------------------------------------
+
+  - id: griha_adhikmasa_upakarma
+    title: उपाकर्मोत्सर्जने अष्टकाश्राद्धानि
+    category: grihapravesh
+    source: sait/griha-aarambha (Adhik-māsa / Malmāsa rule)
+    citation: Dharma Sindhu — Malmāse Varjyāni (Kāśīnātha Upādhyāya)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      उपाकर्मोत्सर्जने अष्टकाश्राद्धानि गृहप्रवेशचूडामौञ्जीबंधविवाहास्तीर्थादि-यात्रा वास्तुकर्मैतान्यधिवर्ज्यानि ।
+
+  - id: griha_daytime_naktam
+    title: भौमार्कवाररहितैस्तिथिभिश्च शिष्टैः
+    category: grihapravesh
+    source: sait/griha-aarambha (daytime / दिवाकाल rule)
+    citation: Muhūrta Chintāmaṇi 12.18 [९३४] (Vāstu Prakaraṇa · daytime instruction)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      भौमार्कवाररहितैस्तिथिभिश्च शिष्टै-
+      रिक्ताममानुजपितृन् विरजैस्तु विष्टिम् ।
+      नक्तं च विद्धमपहाय सुलग्नयोगै-
+      स्तद्वद्विधाय खननादि गृहारम्भणम् ॥ १८ ॥ [९३४]
+
+  - id: griha_solar_month_meshe_vrishe
+    title: मेषे वृषे च सिंहे च वृश्चिके
+    category: grihapravesh
+    source: sait/griha-aarambha (solar-month rule)
+    citation: Muhūrta Chintāmaṇi — Vāstu 12.16 · Vasiṣṭha’s view
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      मेषे वृषे च सिंहे च वृश्चिके मकरे घटे । एतेषु मासेषु गृहं कृतं धनसुखप्रदम् ॥
+
+  - id: griha_nakshatra_mridu
+    title: मृदुकुध्रुववारुणमारुतधनिष्ठाकरतिष्यैः
+    category: grihapravesh
+    source: sait/griha-aarambha (nakṣatra rule)
+    citation: Muhūrta Chintāmaṇi — Vāstu 12.15 (Ācārya Śrīrāma / Rāma Daivajña)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    incomplete: true
+    language: sanskrit
+    text: |
+      मृदुकुध्रुववारुणमारुतधनिष्ठाकरतिष्यैः । गृहमारम्भणं शुभदं...
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — BYĀPĀRIK PRATIṢṬHĀN (BUSINESS / SHOP OPENING)
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT."byaparik-pratisthan")
+  # ---------------------------------------------------------------------------
+
+  - id: byaparik_nakshatra_217
+    title: पूर्वाद्वित्रयकृशानुपार्यमभे
+    category: vivah
+    source: sait/byaparik-pratisthan (nakṣatra / trade rule)
+    citation: Muhūrta Chintāmaṇi 2.17 [३४२] (Nakṣatra Prakaraṇam)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      पूर्वाद्वित्रयकृशानुपार्यमभे केन्द्रत्रिकोणे शुभैः
+      षट्त्र्यायप्रयवश्विभैर्विना घटतनुं स्रग्विक्रयः सत्तिथौ ।
+      रिक्ताभौमघटालमन्विना च विपणिसैंन्ध्रुवक्षिप्रमै-
+      लग्ने चन्द्रसिते व्ययाष्टरहितैः पापैः शुभैद्र्व्यार्यखे ॥ १७ ॥ [३४२]
+
+  - id: byaparik_rikta_tithi
+    title: नंदा भद्रा च जया च रिक्ता
+    category: vivah
+    source: sait/byaparik-pratisthan (riktā tithi rule)
+    citation: Muhūrta Chintāmaṇi 1.4 [२८५]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      नंदा भद्रा च जया च रिक्ता पूर्णेति तिथ्योऽशुभमध्यशस्ताः ॥ [२८५]
+
+  - id: byaparik_paksharandhra
+    title: चतुर्थी षष्ठी अष्टमी नवमी द्वादशी चतुर्दशी
+    category: vivah
+    source: sait/byaparik-pratisthan (pakṣa-randhra tithi rule)
+    citation: Muhūrta Chintāmaṇi 1.36 [३१०]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      चतुर्थी षष्ठी अष्टमी नवमी द्वादशी चतुर्दशी एताः पक्षरन्ध्रसंज्ञिस्ततियो ज्ञेयाः ॥ [३१०]
+
+  - id: byaparik_adhimasa
+    title: वृद्धत्वस्तशिशुत्वइज्यसितयोर्योनाधिमासे
+    category: vivah
+    source: sait/byaparik-pratisthan (Adhik-māsa rule)
+    citation: Muhūrta Chintāmaṇi 1.47 [३३८]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      वृद्धत्वस्तशिशुत्वइज्यसितयोर्योनाधिमासे तथा ॥ ४७ ॥ [३३८]
+
+  - id: byaparik_sankranti
+    title: विवाहादिषु कार्येषु नाड्यः षोडश षोडश
+    category: vivah
+    source: sait/byaparik-pratisthan (Sankrānti rule)
+    citation: Muhūrta Chintāmaṇi 1.18 [२७२]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      विवाहादिषु कार्येषु नाड्यः षोडश षोडश ॥ [२७२]
+
+  - id: byaparik_lagna_217
+    title: रिक्ताभौमघटालमन्विना च विपणि
+    category: vivah
+    source: sait/byaparik-pratisthan (lagna rule)
+    citation: Muhūrta Chintāmaṇi 2.17 [३४२] (lagna / Kumbha bar)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      रिक्ताभौमघटालमन्विना च विपणिसैंन्ध्रुवक्षिप्रमै-
+      लग्ने चन्द्रसिते व्ययाष्टरहितैः पापैः शुभैद्र्व्यार्यखे ॥ १७ ॥ [३४२]
+
+  - id: byaparik_graha_146_147
+    title: वाप्यारामडागतडागकूपभवनारम्भप्रतिष्ठे
+    category: vivah
+    source: sait/byaparik-pratisthan (Guru/Śukra leniency)
+    citation: Muhūrta Chintāmaṇi 1.46–47 [३३८]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      वाप्यारामडागतडागकूपभवनारम्भप्रतिष्ठे व्रता-
+      रम्भोत्सर्गवधूप्रवेशनमहादानानि सोमाष्टके ॥ ४६ ॥
+      वृद्धत्वस्तशिशुत्वइज्यसितयोर्योनाधिमासे तथा ॥ ४७ ॥ [३३८]
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — RUDRI / RUDRĀBHĪṢEKA (ŚIVA-VĀSA)
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT."rudri-jurne")
+  # ---------------------------------------------------------------------------
+
+  - id: rudri_shiva_vasa_formula
+    title: पक्षस्य द्विगुणीं तिथिं पञ्चभिस्तु समन्वितम्
+    category: vivah
+    source: sait/rudri-jurne (Śiva-vāsa formula)
+    citation: Muhūrta Chintāmaṇi / Dharma Sindhu [३३८]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      पक्षस्य द्विगुणीं तिथिं पञ्चभिस्तु समन्वितम्।
+      सप्तभिस्तु हरेद्भागं शेषं शिवनिवासकम् ॥ [३३८]
+
+  - id: rudri_vyatipata
+    title: व्यतीपाते तथा पाते वर्जयेच्छुभम्
+    category: vivah
+    source: sait/rudri-jurne (Vyatīpāta / Vaidhṛti)
+    citation: Muhūrta Chintāmaṇi / Dharma Sindhu [३६२]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      व्यतीपाते तथा पाते… वर्जयेच्छुभम् ॥ [३६२]
+
+  - id: rudri_bhadra_vishti
+    title: न कुर्यान्मङ्गलं विष्ट्यां जीवितार्थी कदाचन
+    category: vivah
+    source: sait/rudri-jurne (Bhadrā / Viṣṭi)
+    citation: Dharma Sindhu / Muhūrta tradition [३७१]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      न कुर्यान्मङ्गलं विष्ट्यां जीवितार्थी कदाचन ॥ [३७१]
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — AGNI-JURNE (AGNI-VĀSA / HAVANA)
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT."agni-jurne")
+  # ---------------------------------------------------------------------------
+
+  - id: agni_vasa_236
+    title: सैका तिथिवारयुता कृताप्ता
+    category: vivah
+    source: sait/agni-jurne (Agni-vāsa formula)
+    citation: Muhūrta Chintāmaṇi 2.36 [४५८] (Agnyādhāna Prakaraṇa)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      सैका तिथिवारयुता कृताप्ता शेषे गुणेऽग्ने भुवि वह्निवासः ।
+      सौख्याय होमे शशिगुग्मशेषे प्राणार्थनाशौ दिवि भूतले च ॥ ३६ ॥ [४५८]
+
+  - id: agni_vasa_phala_piyushadhara
+    title: तिथिवारयुतिः सैका वेदभक्तावशेषकात्
+    category: vivah
+    source: sait/agni-jurne (remainder → abode → fruit)
+    citation: Muhūrta Chintāmaṇi 2.36 · Pīyūṣadhārā [४५८]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      तिथिवारयुतिः सैका वेदभक्तावशेषकात् ।
+      निवासोऽग्नेर्व्यौम्नि रूपे वित्तप्राणविनाशकः ॥
+      पाताले द्विकशेषेण धनसंचयनाशकः ।
+      गुणवेदावशेषेण भूमौ विपुलसौख्यदः ॥ [४५८]
+
+  # ---------------------------------------------------------------------------
+  # MUHŪRTA / SĀIT ŚLOKAS — ANNAPRĀŚANA
+  # File: src/lib/sait-rules-content.ts  (SAIT_RULES_CONTENT.annaprasan)
+  # ---------------------------------------------------------------------------
+
+  - id: annaprasan_516
+    title: युग्ममासे पुंसोऽयुग्मे स्त्रीणां
+    category: vivah
+    source: sait/annaprasan (month / tithi / nakṣatra / vāra)
+    citation: Muhūrta Chintāmaṇi 5.16 (Saṃskāra Prakaraṇa)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      युग्ममासे पुंसोऽयुग्मे स्त्रीणां मृदुलघुचरस्थिरोडुषु ।
+      रिक्तानन्दाष्टमीदर्शद्वादशीार्ककुजार्किभिर्विना ॥ १६ ॥
+
+  - id: annaprasan_517
+    title: केन्द्रत्रिकोणायगतैः शुभैः
+    category: vivah
+    source: sait/annaprasan (lagna-śuddhi)
+    citation: Muhūrta Chintāmaṇi 5.17 (Saṃskāra Prakaraṇa)
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      केन्द्रत्रिकोणायगतैः शुभैः खेटैः खशून्यगे ।
+      पापैरुपचयस्थैश्च लग्नेन्दुमृतिषष्ठगैः ॥ १७ ॥
+
+  - id: annaprasan_janmatara
+    title: जन्मार्क्षमासतिथयो व्यतिपातभद्रा
+    category: vivah
+    source: sait/annaprasan (janma-tārā 1/10/19/25)
+    citation: Muhūrta Chintāmaṇi 1.34 [२८४]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      जन्मार्क्षमासतिथयो व्यतिपातभद्रा वैधृत्यमापितृदिनानि तिथिक्षयद्वौ ।
+      न्यूनार्द्धिमासकुलिकप्रहराधपाता विष्कम्भमृद्व्यतिगतित्रयमेव वर्ज्यम् ॥ ३४ ॥
+
+  - id: annaprasan_purvahna
+    title: पूर्वाह्णे दैवकृत्यं स्यान्मध्याह्ने मानुषं तथा
+    category: vivah
+    source: sait/annaprasan (daytime / pūrvāhṇa)
+    citation: Muhūrta Chintāmaṇi · Pīyūṣadhārā [६८२]
+    location: src/lib/sait-rules-content.ts
+    meter:
+    language: sanskrit
+    text: |
+      पूर्वाह्णे दैवकृत्यं स्यान्मध्याह्ने मानुषं तथा ॥ [६८२]
