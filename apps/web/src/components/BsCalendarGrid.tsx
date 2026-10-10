@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];

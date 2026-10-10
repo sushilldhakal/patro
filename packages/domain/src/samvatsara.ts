@@ -1,5 +1,5 @@
-import type { Era } from "@vedic-patro/domain/era";
-import { signedFromBbs } from "@vedic-patro/domain/patro-year-axis";
+import type { Era } from "./era";
+import { signedFromBbs } from "./patro-year-axis";
 import SAMVATSARA_TABLE from "./samvatsara-table.json";
 
 /** Nepal Bikram Sambat samvatsara (60-year Jovian cycle) — mirrors backend true-Jupiter rules. */

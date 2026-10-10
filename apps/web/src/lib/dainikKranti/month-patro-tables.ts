@@ -9,7 +9,7 @@ import {
   ingressEventBsDayForMonth,
   ingressEventRowDateAd,
   type IngressBrowseMonth,
-} from "@/lib/dainikKranti/ingress-day-match";
+} from "@vedic-patro/domain/dainikKranti/ingress-day-match";
 import { canonicalCivilIso } from "@vedic-patro/domain/patro-day";
 import {
   dmsInRashiToDegreeCells,

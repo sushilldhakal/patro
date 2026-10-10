@@ -16,7 +16,7 @@ import {
   bsMonthLabel,
 } from "@/lib/patro-month-labels";
 import { isGregorianEra, type Era } from "@vedic-patro/domain/era";
-import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@/lib/samvatsara";
+import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { displayLocationLabel, DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";

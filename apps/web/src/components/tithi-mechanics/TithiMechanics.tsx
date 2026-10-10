@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pause, Play } from "lucide-react";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
-import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@/lib/tithi-wheel-data";
+import { moonIllumination, WHEEL_TITHIS, tithiIndexFromElongation, tithiNum, tithiPaksha, tithiPakshaEn } from "@vedic-patro/domain/tithi-wheel-data";
 import { ElongationDiagram, EARTH_ARC_SYNODIC, earthOrbitDegFromLunarDay } from "./ElongationDiagram";
 import { SYNODIC_MONTH } from "@/components/learn/sun-earth-moon-math";
 import { cn } from "@/lib/utils";

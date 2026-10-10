@@ -23,18 +23,8 @@ import {
 } from "@/components/panchanga/WheelGlyph";
 import { useLocale } from "@/lib/i18n";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import {
-  bsMonthsForWheel,
-  GRAHA_META,
-  GREG_NE,
-  normDeg,
-  PADA_AKSHAR,
-  type WheelDetail,
-  type WheelMarkers,
-  type WheelTweaks,
-  WHEEL_RASHIS,
-} from "@/lib/wheel-data";
-import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 
@@ -825,7 +815,7 @@ function WheelChartImpl({
       const L0 = i * 30;
       const L1 = (i + 1) * 30;
       const Lm = L0 + 15;
-      const rs = WHEEL_RASHIS[i]!;
+      const rs = getWheelRashis()[i]!;
       const isHot = hover?.type === "rashi" && hover.i === i;
       const isSel = sel?.type === "rashi" && sel.i === i;
       rashiSegs.push(

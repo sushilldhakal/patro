@@ -7,7 +7,7 @@ import { Pause, Play } from "lucide-react";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
-import { getWheelRashis } from "@/lib/wheel-data";
+import { getWheelRashis } from "@vedic-patro/domain/wheel-data";
 import { SunEarthMoonOrbit } from "./SunEarthMoonOrbit";
 import {
   SYNODIC_MONTH,

@@ -23,7 +23,7 @@ import {
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { getMonthDayChandraRashi, getMonthDayNakshatra } from "@vedic-patro/domain/panchanga-format";
 import { nakshatraShortLabel } from "@vedic-patro/domain/nakshatra-short";
-import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { cn } from "@/lib/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";

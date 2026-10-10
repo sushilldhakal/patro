@@ -3,7 +3,7 @@ import {
   ingressEventBsDayForMonth,
   ingressEventRowDateAd,
   type IngressBrowseMonth,
-} from "@/lib/dainikKranti/ingress-day-match";
+} from "@vedic-patro/domain/dainikKranti/ingress-day-match";
 import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import {

@@ -3,8 +3,8 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
 import { getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";
-import { normalizeEphemerisDay } from "@/lib/ephemeris-adapters";
+import { formatGhadiPalaVipala } from "@vedic-patro/domain/birth-panchanga-meta";
+import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
 import {
   formatChoghadiyaAtBirth,
   kundaliLabel,
@@ -27,7 +27,7 @@ import {
   getVaaraNe,
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { useThemeColors } from "@/lib/theme-context";
 
 function TraitRow({ label, value }: { label: string; value: string }) {

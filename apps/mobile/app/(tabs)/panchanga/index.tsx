@@ -11,12 +11,8 @@ import {
   panchangaKeys,
 } from "@/lib/api";
 import { adToBS, bsToAD } from "@vedic-patro/domain/bs-calendar";
-import {
-  buildAtTimeDatetime,
-  chartDateAd,
-  fetchEphemerisPanchangaDay,
-  isEphemerisPanchanga,
-} from "@/lib/ephemeris-adapters";
+import { buildAtTimeDatetime, fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
+import { chartDateAd, isEphemerisPanchanga } from "@vedic-patro/domain/ephemeris-adapters";
 import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PanchangaDateNav } from "@/components/panchanga/PanchangaDateNav";

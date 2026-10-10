@@ -46,7 +46,7 @@ import { rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { tithiIndexFromElementSpan } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromElementSpan } from "@vedic-patro/domain/tithi-wheel-data";
 import { View } from "react-native";
 import { useThemeColors } from "@/lib/theme-context";
 

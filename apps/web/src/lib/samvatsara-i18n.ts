@@ -1,6 +1,6 @@
 import i18n from "@/i18n";
 import { normalizeLang, type Lang } from "@/i18n/locale";
-import type { SamvatsaraInfo } from "@/lib/samvatsara";
+import type { SamvatsaraInfo } from "@vedic-patro/domain/samvatsara";
 
 /** Localized samvatsara name from `samvatsara_names.*` keys. */
 export function samvatsaraName(info: SamvatsaraInfo, lang?: string | Lang): string {

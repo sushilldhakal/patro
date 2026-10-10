@@ -1,5 +1,5 @@
-import type { CalendarDay, PanchangaDay } from "@/lib/api";
-import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
+import type { CalendarDay, PanchangaDay } from "@vedic-patro/api-client";
+import { getPanchangaDetail } from "./panchanga-format";
 
 const TITHI_BASE = [
   "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी",
@@ -170,7 +170,7 @@ function calendarDayKrishna(day: CalendarDay): boolean {
   return /कृष्ण|krishna/i.test(day.paksha_ne ?? day.paksha ?? "");
 }
 
-/** Wheel tithi index 0–29 from a month-grid day. */
+/** Wheel tithi index 0–29 from a month-grid {@link CalendarDay}. */
 export function tithiIndexFromCalendarDay(day: CalendarDay): number | undefined {
   const nameNe = normalizeTithiName(day.tithi_ne ?? day.tithi);
   if (!nameNe) return undefined;

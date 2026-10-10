@@ -132,7 +132,7 @@ export function PanchangaDateNav({
       onNext={onNextProp ?? (() => stepDay(1))}
       crossEraSubtitle={crossEraSubtitleOverride ?? crossEraSubtitle}
       vikramEra={vikramEra}
-      samvatsara={wheelData?.samvatsara as import("@/lib/samvatsara").SamvatsaraPayload | undefined}
+      samvatsara={wheelData?.samvatsara as import("@vedic-patro/domain/samvatsara").SamvatsaraPayload | undefined}
       toolbar={toolbar}
       mobileToolbar={mobileToolbar}
       hideNavLocation={hideNavLocation}

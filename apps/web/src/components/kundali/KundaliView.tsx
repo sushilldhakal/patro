@@ -14,7 +14,7 @@ import {
   type PanchangaDay,
   type PlanetInfo,
 } from "@/lib/api";
-import { normalizeEphemerisDay } from "@/lib/ephemeris-adapters";
+import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
 import { instantCacheKey, type InstantQuery } from "@/lib/instant-query";
 import { formatMomentDateLabel } from "@/lib/kundali/profile-chart";
 import {
@@ -39,11 +39,11 @@ import type { GrahaAstroPoint } from "@/components/kundali/GrahaAstroTable";
 import { d1AllJanmaPhalaBhavas } from "@vedic-patro/domain/bhava";
 import { ENGINE_KEY_TO_REF_ID } from "@/lib/kundali/yoga-reference-map";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
-import { formatGhadiPalaVipala } from "@/lib/birth-panchanga-meta";
+import { formatGhadiPalaVipala } from "@vedic-patro/domain/birth-panchanga-meta";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { generateAvakahadaShloka } from "@vedic-patro/domain/avakahada-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import {
   BALA_TAB_SECTIONS,
   contentSectionId,

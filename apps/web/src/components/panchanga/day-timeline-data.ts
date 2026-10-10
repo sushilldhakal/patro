@@ -14,7 +14,7 @@ import {
   toNepaliDigits,
 } from "@vedic-patro/domain/panchanga-format";
 import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
-import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 

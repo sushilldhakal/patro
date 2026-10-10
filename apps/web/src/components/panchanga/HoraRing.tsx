@@ -56,7 +56,7 @@ import {
   horaVerticalScrub,
 } from "@/lib/hora-classes";
 import { cn } from "@/lib/utils";
-import { buildWheelDetail } from "@/lib/wheel-data";
+import { buildWheelDetail } from "@vedic-patro/domain/wheel-data";
 import { PlanetIcon } from "./hora/PlanetIcon";
 
 const LS_KEY = "dhakalHoraRing.v1";

@@ -43,7 +43,7 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
 import { buildGapanshaLine, buildPapanshaDisplayLine } from "@/lib/dainikKranti/gapansha";
-import { ingressEventBsDayForMonth } from "@/lib/dainikKranti/ingress-day-match";
+import { ingressEventBsDayForMonth } from "@vedic-patro/domain/dainikKranti/ingress-day-match";
 import { grahaRashiNe, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";
 import { buildRashyadiRangeTables } from "@/lib/dainikKranti/rashyadi-segments";
 import {

@@ -1,33 +1,27 @@
 /**
- * The BS year flattened into an ordered list of days, so the year wheel can be
- * driven by a single index.
- *
- * Everything the scrub needs — which day, which month, which AD date, and the
- * wheel state itself — comes from the one bulk response, so playing through a
- * year is pure local indexing rather than 365 fetches.
+ * BS year flattened into ordered days for the annual wheel scrub — same module
+ * as the mobile app so window slicing and indexing stay in sync.
  */
 
-import type { PanchangaDay, YearWheelCalendar } from "@/lib/api";
+import type { PanchangaDay, YearWheelCalendar } from "@vedic-patro/api-client";
 import {
   adToBS,
   bsToAD,
+  BS_SUPPORTED_END_YEAR,
+  BS_SUPPORTED_START_YEAR,
   getBSMonthLength,
   shiftBsMonth,
-} from "@vedic-patro/domain/bs-calendar";
-import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
+} from "./bs-calendar";
 
 export interface YearWheelDay {
-  /** 1-based position in the year — what the scrub slider carries. */
   index: number;
   dateAd: string;
   bsYear: number;
   bsMonth: number;
   bsDay: number;
-  /** Absent only if the payload skipped this day; the wheel shows its skeleton. */
   p?: PanchangaDay;
 }
 
-/** "2083-01-01" → { year: 2083, month: 1, day: 1 }; null on anything else. */
 function parseBsDate(value?: string): { year: number; month: number; day: number } | null {
   if (!value) return null;
   const [y, m, d] = value.split("-").map(Number);
@@ -38,8 +32,6 @@ function parseBsDate(value?: string): { year: number; month: number; day: number
 export function buildYearWheelDays(payload?: YearWheelCalendar): YearWheelDay[] {
   if (!payload?.calendar?.length) return [];
 
-  /* The calendar is in order, so walking the month lengths alongside it gives
-     every day its BS month even when a row carries no date_bs of its own. */
   const months = [...(payload.months ?? [])].sort((a, b) => a.month_bs - b.month_bs);
   let monthIdx = 0;
   let dayInMonth = 0;
@@ -52,21 +44,22 @@ export function buildYearWheelDays(payload?: YearWheelCalendar): YearWheelDay[] 
       dayInMonth = 1;
     }
 
-    const parsed = parseBsDate(row.panchanga?.date_bs);
+    const embedded = row.panchanga as PanchangaDay | undefined;
+    const parsed = parseBsDate(embedded?.date_bs);
+
     const walked = months[monthIdx];
 
     return {
       index: i + 1,
-      dateAd: row.date_ad ?? row.panchanga?.date_ad ?? "",
+      dateAd: row.date_ad ?? embedded?.date_ad ?? "",
       bsYear: parsed?.year ?? payload.year_bs,
       bsMonth: parsed?.month ?? walked?.month_bs ?? 1,
       bsDay: parsed?.day ?? row.day ?? dayInMonth,
-      p: row.panchanga,
+      p: embedded,
     };
   });
 }
 
-/** 1-based index of an AD date within the list, or null when it falls outside. */
 export function yearWheelIndexOfAdDate(days: YearWheelDay[], dateAd: string): number | null {
   const found = days.findIndex((d) => d.dateAd === dateAd);
   return found < 0 ? null : found + 1;
@@ -82,20 +75,9 @@ function adDateStr(d: Date): string {
 export interface WheelWindowBounds {
   startAd: string;
   endAd: string;
-  /** BS years the window touches — one, or two when it straddles Chaitra/Baishakh. */
   years: number[];
 }
 
-/**
- * The scrub window: the same day `monthsBack` BS months back through the same
- * day `monthsFwd` months on — at the default 1/1, Shrawan 17 gives Ashar 17 →
- * Bhadra 17, about 60 days. Playback grows the offsets at whichever edge it is
- * running into, which is how the window keeps going.
- *
- * A short month clamps the endpoint to its last day (Magh 30 back into a
- * 29-day Poush lands on Poush 29), so the window never names a date that
- * doesn't exist, and both ends stay inside the years the BS tables cover.
- */
 export function wheelWindowBounds(
   centre: Date,
   monthsBack = 1,
@@ -117,14 +99,12 @@ export function wheelWindowBounds(
   return { startAd: adDateStr(start), endAd: adDateStr(end), years };
 }
 
-/** Keeps a shifted month inside the range the BS tables actually cover. */
 function clampBsMonth(at: { year: number; month: number }): { year: number; month: number } {
   if (at.year < BS_SUPPORTED_START_YEAR) return { year: BS_SUPPORTED_START_YEAR, month: 1 };
   if (at.year > BS_SUPPORTED_END_YEAR) return { year: BS_SUPPORTED_END_YEAR, month: 12 };
   return at;
 }
 
-/** True once an edge has run into the end of what the BS tables cover. */
 export function wheelWindowAtLimit({ startAd, endAd }: WheelWindowBounds): {
   start: boolean;
   end: boolean;
@@ -137,7 +117,6 @@ export function wheelWindowAtLimit({ startAd, endAd }: WheelWindowBounds): {
   };
 }
 
-/** The window's days, in order, renumbered 1..n for the scrub. */
 export function sliceWheelWindow(
   days: YearWheelDay[],
   { startAd, endAd }: Pick<WheelWindowBounds, "startAd" | "endAd">,

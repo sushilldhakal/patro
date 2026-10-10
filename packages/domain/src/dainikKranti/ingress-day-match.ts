@@ -1,5 +1,6 @@
-import type { CalendarDay, GocharIngressEvent } from "@/lib/api";
-import { canonicalCivilIso, parsePatroDayDateKey } from "@vedic-patro/domain/patro-day";
+import type { CalendarDay, GocharIngressEvent } from "@vedic-patro/api-client";
+import { canonicalCivilIso } from "../patro-day";
+import { parsePatroDayDateKey } from "../patro-day";
 
 export type IngressBrowseMonth = { year: number; month: number };
 

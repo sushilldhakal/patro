@@ -42,7 +42,7 @@ import {
   wheelWindowBounds,
   yearWheelIndexOfAdDate,
   type YearWheelDay,
-} from "@/lib/panchanga-year-wheel";
+} from "@vedic-patro/domain/panchanga-year-wheel";
 import {
   formatWheelPlaybackRate,
   WHEEL_MAX_PLAY_SPEED,

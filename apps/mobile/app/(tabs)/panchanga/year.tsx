@@ -30,7 +30,7 @@ import {
   wheelWindowBounds,
   yearWheelIndexOfAdDate,
   type YearWheelDay,
-} from "@/lib/panchanga-year-wheel";
+} from "@vedic-patro/domain/panchanga-year-wheel";
 import { useBreakpoint } from "@/lib/responsive";
 import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { formatWheelPlaybackRate } from "@vedic-patro/domain/wheel-year-playback";

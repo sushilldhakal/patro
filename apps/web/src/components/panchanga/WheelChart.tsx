@@ -13,9 +13,9 @@ import {
   type WheelDetail,
   type WheelMarkers,
   type WheelTweaks,
-} from "@/lib/wheel-data";
+} from "@vedic-patro/domain/wheel-data";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { wheelSvg, wheelSvgWrap } from "@/lib/wheel-classes";
 import { cn } from "@/lib/utils";
 import { NAKSHATRA_GLYPHS, RASHI_GLYPHS } from "@/lib/wheel-glyph-art";

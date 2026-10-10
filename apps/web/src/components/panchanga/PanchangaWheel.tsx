@@ -28,7 +28,7 @@ import {
   scrubGToAtTimeQuery,
   getWheelRashis,
   type WheelDetail,
-} from "@/lib/wheel-data";
+} from "@vedic-patro/domain/wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WheelChart, type WheelHover } from "./WheelChart";
 import { PlanetSelectMenu } from "./PlanetSelectMenu";

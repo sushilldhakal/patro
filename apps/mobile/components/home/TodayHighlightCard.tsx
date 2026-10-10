@@ -18,7 +18,7 @@ import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@ve
 import { daysDiffFromAd, formatNepalSambatDisplay } from "@vedic-patro/domain/panchanga-format";
 import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 
 const WEEKDAY_NE = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

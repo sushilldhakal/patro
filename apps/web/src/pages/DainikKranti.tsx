@@ -62,7 +62,7 @@ import { GocharKundaliChart } from "@/components/dainikKranti/GocharKundaliChart
 import { GocharRashyadiTable } from "@/components/dainikKranti/GocharRashyadiTables";
 import { buildRashyadiRangeTables } from "@/lib/dainikKranti/rashyadi-segments";
 import { buildGapanshaLine, buildPapanshaDisplayLine } from "@/lib/dainikKranti/gapansha";
-import { ingressEventBsDayForMonth } from "@/lib/dainikKranti/ingress-day-match";
+import { ingressEventBsDayForMonth } from "@vedic-patro/domain/dainikKranti/ingress-day-match";
 import { grahaRashiNe, formatGocharBsLabel } from "@/lib/dainikKranti/gochar-display";
 import { MonthLagnaMatrix } from "@/components/dainikKranti/MonthLagnaMatrix";
 import { MonthGrahaSpashta } from "@/components/dainikKranti/MonthGrahaSpashta";

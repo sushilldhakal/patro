@@ -17,17 +17,8 @@ import type { PanchangaDay } from "@/lib/api";
 import { fetchPanchangaAtTime, panchangaKeys } from "@/lib/api";
 import { getPanchangaDetail } from "@vedic-patro/domain/panchanga-format";
 import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
-import {
-  buildWheelDetail,
-  buildWheelMarkers,
-  buildWheelMarkersAtTime,
-  buildWheelMarkersFromDetail,
-  DEFAULT_WHEEL_TWEAKS,
-  gClock,
-  scrubGToDatetime,
-  WHEEL_RASHIS,
-  type WheelDetail,
-} from "@/lib/wheel-data";
+import { buildWheelDetail, buildWheelMarkers, buildWheelMarkersAtTime, buildWheelMarkersFromDetail, DEFAULT_WHEEL_TWEAKS, gClock, getWheelRashis, type WheelDetail } from "@vedic-patro/domain/wheel-data";
+import { scrubGToDatetime } from "@/lib/wheel-scrub";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { WheelChart, type WheelHover, type WheelPick } from "./WheelChart";
@@ -559,7 +550,7 @@ function PanchangaWheelBody({
         </div>
       );
     } else {
-      const rs = WHEEL_RASHIS[hover.i]!;
+      const rs = getWheelRashis()[hover.i]!;
       tipNode = (
         <div className={wheelTip(true)} style={{ left: tip.x, top: tip.y }}>
           <div className={wheelTipKind}>{pick("राशि", "Rashi")} · {num(hover.i + 1)}</div>

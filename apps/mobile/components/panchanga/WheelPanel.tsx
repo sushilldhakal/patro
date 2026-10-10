@@ -2,13 +2,7 @@ import { Pressable, ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal"
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import {
-  bsMonthsForWheel,
-  PADA_AKSHAR,
-  RASHI_ELEM,
-  RASHI_LORDS,
-  WHEEL_RASHIS,
-} from "@/lib/wheel-data";
+import { bsMonthsForWheel, PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/wheel-data";
 import type { WheelPick } from "./WheelChart";
 import { useLocale } from "@/lib/i18n";
 import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
@@ -47,8 +41,8 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
     const ri1 = Math.floor((L1 - 0.01) / 30);
     const rashiSpan =
       ri0 === ri1
-        ? pick(WHEEL_RASHIS[ri0]!.ne, WHEEL_RASHIS[ri0]!.en)
-        : `${pick(WHEEL_RASHIS[ri0]!.ne, WHEEL_RASHIS[ri0]!.en)}–${pick(WHEEL_RASHIS[ri1]!.ne, WHEEL_RASHIS[ri1]!.en)}`;
+        ? pick(getWheelRashis()[ri0]!.ne, getWheelRashis()[ri0]!.en)
+        : `${pick(getWheelRashis()[ri0]!.ne, getWheelRashis()[ri0]!.en)}–${pick(getWheelRashis()[ri1]!.ne, getWheelRashis()[ri1]!.en)}`;
 
     body = (
       <>
@@ -82,7 +76,7 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
       </>
     );
   } else if (sel?.type === "rashi") {
-    const rs = WHEEL_RASHIS[sel.i]!;
+    const rs = getWheelRashis()[sel.i]!;
     const nakIn: string[] = [];
     for (let i = 0; i < 27; i++) {
       const L0 = i * (360 / 27);

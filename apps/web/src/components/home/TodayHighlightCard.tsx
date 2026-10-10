@@ -28,7 +28,7 @@ import {
 import {
   tithiIndexFromCalendarDay,
   tithiIndexFromPanchanga,
-} from "@/lib/tithi-wheel-data";
+} from "@vedic-patro/domain/tithi-wheel-data";
 import { cn } from "@/lib/utils";
 
 const WEEKDAY_NE = [

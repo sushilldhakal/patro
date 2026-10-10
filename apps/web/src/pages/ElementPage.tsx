@@ -19,7 +19,7 @@ import { NavataraBalamCardGrid } from "@/components/panchanga/NavataraBalamCardG
 import { useRouteLoading } from "@/lib/route-loading";
 import { searchToLocation } from "@/lib/url-state";
 import { ELEMENT_BY_ID } from "@/lib/panchanga-elements";
-import { getChandraBalamCards, getTaraBalamCards } from "@/lib/balam-cards";
+import { getChandraBalamCards, getTaraBalamCards } from "@vedic-patro/domain/balam-cards";
 import {
   CHOGHADIYA_TYPE_KEYS,
   TONE_BY_KEY,

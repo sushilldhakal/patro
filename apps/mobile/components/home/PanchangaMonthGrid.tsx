@@ -13,7 +13,7 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliDayNumberStyle, nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { cn } from "@/lib/utils";
 import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";

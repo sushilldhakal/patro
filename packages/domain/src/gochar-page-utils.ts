@@ -1,23 +1,23 @@
-import type { GocharGraha, GocharIngressEvent } from "@/lib/api";
-import type { CalendarDay } from "@/lib/api";
-import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
+import type { GocharGraha, GocharIngressEvent } from "@vedic-patro/api-client";
+import type { CalendarDay } from "@vedic-patro/api-client";
+import type { GrahaKey } from "./graha-details";
+import { GRAHA_NAME } from "./graha-details";
 import {
   adToBS,
   adMonthLabel,
   BS_MONTHS_NE,
   BS_MONTHS_SHORT,
-} from "@vedic-patro/domain/bs-calendar";
-import type { Era } from "@vedic-patro/domain/era";
-import { signedPatroYearFromBrowse } from "@vedic-patro/domain/patro-year-axis";
-import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
-import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
-import { resolveRashiDisplay, toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
-import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate, canonicalCivilIso, formatBsDateKey } from "@vedic-patro/domain/patro-day";
+} from "./bs-calendar";
+import type { Era } from "./era";
+import { signedPatroYearFromBrowse } from "./patro-year-axis";
+import { formatBsIsoDateNepali } from "./panchanga-format";
+import { formatPatroCivilDayLabel } from "./patro-headline-subtitle";
+import { resolveRashiDisplay, toWesternRashi } from "./rashi-i18n";
+import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate, canonicalCivilIso, formatBsDateKey } from "./patro-day";
 import {
   ingressEventBsDayForMonth,
   ingressEventRowDateAd,
-} from "@/lib/dainikKranti/ingress-day-match";
+} from "./dainikKranti/ingress-day-match";
 
 export type IngressFilter = "all" | "rashi" | "nakshatra" | "retrograde" | "asta";
 

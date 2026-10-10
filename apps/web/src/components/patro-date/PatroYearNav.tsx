@@ -33,7 +33,7 @@ import {
   getLanguageForEra,
   type Era,
 } from "@vedic-patro/domain/era";
-import { resolveSamvatsaraForPatroYear } from "@/lib/samvatsara";
+import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
 import { patroEraShortLabel } from "./patro-era-short-label";
 import { usePatroYearHeadlineSubtitle } from "./use-patro-year-headline-subtitle";

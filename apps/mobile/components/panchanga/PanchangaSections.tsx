@@ -45,13 +45,13 @@ import {
   toNepaliDigits,
 } from "@vedic-patro/domain/panchanga-format";
 import type { NivasShoolSegment, UdayaLagnaRow } from "@/lib/api";
-import { resolveSamvatsaraForBsYear } from "@/lib/samvatsara";
+import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/samvatsara";
 import {
   findCurrentUdayaLagna,
   getChandraBalamCards,
   getTaraBalamCards,
   type BalamCardItem,
-} from "@/lib/balam-cards";
+} from "@vedic-patro/domain/balam-cards";
 import {
   PanchangaFieldCell,
   PanchangaGroupLabel,
@@ -68,7 +68,7 @@ import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
-import { tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 

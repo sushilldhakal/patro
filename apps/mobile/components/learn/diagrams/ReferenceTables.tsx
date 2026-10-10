@@ -10,9 +10,9 @@ import { Text } from "@/components/ui/Text";
 import { LearnTable } from "@/components/learn/LearnTable";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { WHEEL_RASHIS, RASHI_LORDS, RASHI_ELEM, PADA_AKSHAR } from "@/lib/wheel-data";
+import { getWheelRashis, RASHI_LORDS, RASHI_ELEM, PADA_AKSHAR } from "@vedic-patro/domain/wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
-import { WHEEL_TITHIS, WHEEL_YOGAS, KAR_MOV, KAR_FIX_NAMES, KARANA_EN } from "@/lib/tithi-wheel-data";
+import { WHEEL_TITHIS, WHEEL_YOGAS, KAR_MOV, KAR_FIX_NAMES, KARANA_EN } from "@vedic-patro/domain/tithi-wheel-data";
 import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 
 const YOGA_EN = [
@@ -49,7 +49,7 @@ export function RashiReferenceTable() {
       <TableCaption>{pick("१२ राशि — प्रत्येक ३०° (जम्मा ३६०°)", "12 Rashis — each 30° (360° total)")}</TableCaption>
       <LearnTable
         headers={[pick("#", "#"), pick("राशि", "Rashi"), "°", pick("स्वामी", "Lord"), pick("तत्त्व", "Element")]}
-        rows={WHEEL_RASHIS.map((r, i) => [
+        rows={getWheelRashis().map((r, i) => [
           digits(i + 1),
           pick(r.ne, r.en),
           `${digits(i * 30)}°–${digits((i + 1) * 30)}°`,

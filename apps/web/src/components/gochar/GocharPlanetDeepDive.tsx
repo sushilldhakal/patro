@@ -7,7 +7,7 @@ import {
   grahaNakshatraLine,
   motionLabel,
   speedTone,
-} from "@/lib/gochar-page-utils";
+} from "@vedic-patro/domain/gochar-page-utils";
 import { grahaRashiDisplay } from "@/lib/dainikKranti/gochar-display";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { useLocale, bilingualText } from "@/i18n/locale";

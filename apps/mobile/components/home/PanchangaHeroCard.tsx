@@ -21,7 +21,7 @@ import {
 } from "@vedic-patro/domain/patro-headline-subtitle";
 import { type Era } from "@vedic-patro/domain/era";
 import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
-import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@/lib/samvatsara";
+import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 type Props = {

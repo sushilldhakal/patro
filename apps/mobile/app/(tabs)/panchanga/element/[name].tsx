@@ -33,7 +33,7 @@ import {
   type PanchangaDay,
   type PushkaraNavamshaHit,
 } from "@/lib/api";
-import { getChandraBalamCards, getTaraBalamCards } from "@/lib/balam-cards";
+import { getChandraBalamCards, getTaraBalamCards } from "@vedic-patro/domain/balam-cards";
 import {
   choghadiyaLegendLabel,
   choghadiyaLegendMarker,

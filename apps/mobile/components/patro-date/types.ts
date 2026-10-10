@@ -1,6 +1,6 @@
 import { type Era } from "@vedic-patro/domain/era";
 
-import type { SamvatsaraPayload } from "@/lib/samvatsara";
+import type { SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 
 /** The only three date chrome variants — used across phone and tablet. */
 export type PatroDateNavMode = "year" | "year-month" | "year-month-time";

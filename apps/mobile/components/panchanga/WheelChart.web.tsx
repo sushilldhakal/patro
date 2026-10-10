@@ -2,18 +2,8 @@ import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { MoonPhaseIcon } from "./MoonPhaseIcon";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
-import {
-  bsMonthsForWheel,
-  GRAHA_META,
-  GREG_NE,
-  normDeg,
-  PADA_AKSHAR,
-  type WheelDetail,
-  type WheelMarkers,
-  type WheelTweaks,
-  WHEEL_RASHIS,
-} from "@/lib/wheel-data";
-import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type WheelDetail, type WheelMarkers, type WheelTweaks, getWheelRashis } from "@vedic-patro/domain/wheel-data";
+import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { wheelSvg, wheelSvgWrap } from "@/lib/wheel-classes";
 import {
   wDaytick,
@@ -310,7 +300,7 @@ function WheelChartImpl({
       const L0 = i * 30;
       const L1 = (i + 1) * 30;
       const Lm = L0 + 15;
-      const rs = WHEEL_RASHIS[i]!;
+      const rs = getWheelRashis()[i]!;
       const isHot = hover?.type === "rashi" && hover.i === i;
       const isSel = sel?.type === "rashi" && sel.i === i;
       rashiSegs.push(

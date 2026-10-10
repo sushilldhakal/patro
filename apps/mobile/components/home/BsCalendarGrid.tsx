@@ -10,7 +10,7 @@ import { nepaliDayNumberStyle, nepaliLineHeight, nepaliTextStyle } from "@/lib/n
 import { civilIsoDayOfMonth } from "@vedic-patro/domain/patro-day";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { tithiIndexFromCalendarDay } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { cn } from "@/lib/utils";
 import {
   CALENDAR_GRID_GAP,

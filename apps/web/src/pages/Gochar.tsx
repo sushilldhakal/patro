@@ -26,7 +26,7 @@ import {
   buildGocharIngressMonthList,
   ingressFetchRangeForBrowseMonth,
   ingressGocharFetchEra,
-} from "@/lib/gochar-page-utils";
+} from "@vedic-patro/domain/gochar-page-utils";
 import { formatBsIsoDateNepali } from "@vedic-patro/domain/panchanga-format";
 import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import {

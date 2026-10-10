@@ -47,13 +47,13 @@ import {
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { NivasShoolSegment } from "@/lib/api";
 import { shortWeekdayNe } from "@vedic-patro/domain/bs-calendar";
-import { resolveSamvatsaraForBsYear } from "@/lib/samvatsara";
+import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/samvatsara";
 import {
   findCurrentUdayaLagna,
   getChandraBalamCards,
   getTaraBalamCards,
   type BalamCardItem,
-} from "@/lib/balam-cards";
+} from "@vedic-patro/domain/balam-cards";
 import type { UdayaLagnaRow } from "@/lib/api";
 import {
   PanchangaFieldCell,
@@ -69,7 +69,7 @@ import {
 import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
-import { tithiIndexFromPanchanga } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 
 type AngaEnd = {
   name_ne?: string;

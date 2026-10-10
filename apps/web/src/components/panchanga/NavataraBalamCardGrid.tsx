@@ -1,5 +1,5 @@
-import type { BalamCardItem } from "@/lib/balam-cards";
-import { findCurrentBalamCard } from "@/lib/balam-cards";
+import type { BalamCardItem } from "@vedic-patro/domain/balam-cards";
+import { findCurrentBalamCard } from "@vedic-patro/domain/balam-cards";
 import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { PanchangaBalamCard, panchangaCardGrid } from "./PanchangaLayout";

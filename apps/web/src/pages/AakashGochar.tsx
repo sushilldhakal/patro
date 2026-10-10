@@ -26,7 +26,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { fetchGochar, gocharKeys } from "@/lib/api";
 import type { Era } from "@vedic-patro/domain/era";
-import { formatGocharPatroDate } from "@/lib/gochar-page-utils";
+import { formatGocharPatroDate } from "@vedic-patro/domain/gochar-page-utils";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { pickAdDate, pickBrowseVikramDate } from "@/lib/patro-date-options";
 import { toAdStr } from "@vedic-patro/domain/patro-day";

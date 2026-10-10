@@ -1,6 +1,7 @@
-import type { GhadiPalaVipala } from "@/lib/api";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import type { GhadiPalaVipala } from "@vedic-patro/api-client";
+import { toNepaliDigits } from "./panchanga-format";
 
+/** Display formatting for the server-computed ghadi/pala/vipala kalas. */
 export function formatGhadiPalaVipala(
   { ghadi, pala, vipala }: GhadiPalaVipala,
   lang?: string,

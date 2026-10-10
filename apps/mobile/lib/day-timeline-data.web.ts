@@ -13,7 +13,7 @@ import {
   getSunset,
   toNepaliDigits,
 } from "@vedic-patro/domain/panchanga-format";
-import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@/lib/tithi-wheel-data";
+import { KARANA_EN, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 
 /** Devanagari rashi names → English, for the timeline graha row. */

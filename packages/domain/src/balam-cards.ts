@@ -4,7 +4,7 @@ import type {
   NavataraTableBlock,
   PanchangaDay,
   UdayaLagnaRow,
-} from "@/lib/api";
+} from "@vedic-patro/api-client";
 import {
   formatShortClock,
   getChandrabalamTable,
@@ -12,7 +12,7 @@ import {
   getSunrise,
   getTarabalaTable,
   getUdayaLagna,
-} from "@vedic-patro/domain/panchanga-format";
+} from "./panchanga-format";
 
 export type BalamCardItem = {
   key: string;

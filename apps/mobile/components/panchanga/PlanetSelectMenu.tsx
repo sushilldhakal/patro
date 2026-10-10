@@ -4,7 +4,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@vedic-patro/domain/graha-details";
-import { GRAHA_META, type WheelGraha } from "@/lib/wheel-data";
+import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliLineHeight } from "@/lib/nepali-text";
 

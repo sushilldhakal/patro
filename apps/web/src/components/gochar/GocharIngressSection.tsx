@@ -9,7 +9,7 @@ import {
   relativeDayLabel,
   type GocharIngressRow,
   type IngressFilter,
-} from "@/lib/gochar-page-utils";
+} from "@vedic-patro/domain/gochar-page-utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@/lib/utils";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";

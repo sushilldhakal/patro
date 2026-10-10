@@ -7,8 +7,8 @@ import {
   KARANA_EN,
   WHEEL_TITHIS,
   WHEEL_YOGAS,
-} from "@/lib/tithi-wheel-data";
-import { PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@/lib/wheel-data";
+} from "@vedic-patro/domain/tithi-wheel-data";
+import { PADA_AKSHAR, RASHI_ELEM, RASHI_LORDS, getWheelRashis } from "@vedic-patro/domain/wheel-data";
 import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {

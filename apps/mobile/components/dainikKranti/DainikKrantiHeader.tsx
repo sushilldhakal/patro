@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { patroSegBtn } from "@/lib/patro-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import type { SamvatsaraPayload } from "@/lib/samvatsara";
+import type { SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { type PanchangaLocation } from "@/lib/use-panchanga-location";
 
 export type PakshaFilter = "all" | "krishna" | "shukla";

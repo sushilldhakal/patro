@@ -5,7 +5,7 @@ import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseI
 import { grahaKeyFromName, HORA_TO_GRAHA } from "@/lib/graha-planet-icons";
 import type { HoraPlanetKey } from "@/lib/hora-data";
 import { nakshatraGlyphUrl, rashiGlyphUrl } from "@/lib/element-glyph-urls";
-import { tithiIndexFromElementSpan } from "@/lib/tithi-wheel-data";
+import { tithiIndexFromElementSpan } from "@vedic-patro/domain/tithi-wheel-data";
 import { cn } from "@/lib/utils";
 
 type ImgProps = {

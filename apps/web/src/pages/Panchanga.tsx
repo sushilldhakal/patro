@@ -15,10 +15,8 @@ import {
 import { civilAnchorFromPanchangaDay, civilPartsFromPickerDate, parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { adToBS, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { isGregorianEraBrowse } from "@/components/patro-date/patro-month-labels";
-import {
-  fetchEphemerisPanchangaDay,
-  isEphemerisPanchanga,
-} from "@/lib/ephemeris-adapters";
+import { fetchEphemerisPanchangaDay } from "@/lib/ephemeris-adapters";
+import { isEphemerisPanchanga } from "@vedic-patro/domain/ephemeris-adapters";
 import { formatTimeShort, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { PatroDayTimeNav } from "@/components/patro-date";

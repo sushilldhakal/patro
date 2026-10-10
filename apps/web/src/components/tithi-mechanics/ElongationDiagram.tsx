@@ -8,7 +8,7 @@ import { SYNODIC_MONTH, TROPICAL_YEAR } from "@/components/learn/sun-earth-moon-
 import {
   tithiIndexFromElongation,
   tithiNum,
-} from "@/lib/tithi-wheel-data";
+} from "@vedic-patro/domain/tithi-wheel-data";
 import { MoonPhaseDisc } from "./MoonPhaseDisc";
 
 const RAD = Math.PI / 180;

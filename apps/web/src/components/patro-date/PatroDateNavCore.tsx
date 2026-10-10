@@ -15,7 +15,7 @@ import type { Era, Language } from "@vedic-patro/domain/era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { resolveSamvatsaraForPatroYear } from "@/lib/samvatsara";
+import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";

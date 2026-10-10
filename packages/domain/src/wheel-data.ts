@@ -1,18 +1,18 @@
-import type { PanchangaDay, LagnaSpan } from "@/lib/api";
+import type { PanchangaDay, LagnaSpan } from "@vedic-patro/api-client";
 import {
   AD_MONTH_NAMES,
   AD_MONTH_NAMES_NE,
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
-} from "@vedic-patro/domain/bs-calendar";
+} from "./bs-calendar";
 import {
   getLagnaSpans,
   getPanchangaDetail,
   getSunrise,
   RASHI_SYM,
   toNepaliDigits,
-} from "@vedic-patro/domain/panchanga-format";
-import { getRashiName, rashiNumberFromName } from "@vedic-patro/domain/rashi-i18n";
+} from "./panchanga-format";
+import { getRashiName, rashiNumberFromName } from "./rashi-i18n";
 
 export function getWheelRashis(): WheelRashi[] {
   return Array.from({ length: 12 }, (_, i) => ({
