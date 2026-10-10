@@ -3,7 +3,7 @@
  * the Vāstu Puruṣa faint in the middle. The native counterpart of the web
  * app's `src/components/vastu/VastuCompassRing.tsx`, band for band.
  *
- * Its geometry (RING_SIZE, R_HOUSE) lives in `@/lib/vastu-ring` so that
+ * Its geometry (RING_SIZE, R_HOUSE) lives in `@vedic-patro/domain/vastu-ring` so that
  * whatever is drawn inside the ring is positioned off the same numbers, and
  * its labels reuse the wheel's own `ArcLabel`/`PadaCodeLabel`/`RingSeparators`
  * — which close over the wheel's centre, hence RING_SIZE === WHEEL_SIZE.
@@ -27,7 +27,7 @@ import {
   vastuElementAtBearing,
   vastuWheelPoint,
 } from "@vedic-patro/domain/vastu";
-import { RING_SIZE, R_HOUSE } from "@/lib/vastu-ring";
+import { RING_SIZE, R_HOUSE } from "@vedic-patro/domain/vastu-ring";
 import {
   ArcLabel,
   PadaCodeLabel,

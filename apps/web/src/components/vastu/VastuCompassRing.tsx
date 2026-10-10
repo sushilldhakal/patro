@@ -11,7 +11,7 @@ import {
   vastuElementAtBearing,
   vastuWheelPoint,
 } from "@vedic-patro/domain/vastu";
-import { RING_SIZE, R_HOUSE } from "@/lib/vastu-ring";
+import { RING_SIZE, R_HOUSE } from "@vedic-patro/domain/vastu-ring";
 import {
   ArcLabel,
   PadaCodeLabel,
@@ -26,7 +26,7 @@ import {
  * blueprint; the blueprint is gone but the ring is the part that made the
  * drawing readable as Vāstu, so it now frames the zoning sketch instead.
  *
- * Its geometry (RING_SIZE, R_HOUSE) lives in `@/lib/vastu-ring` so that
+ * Its geometry (RING_SIZE, R_HOUSE) lives in `@vedic-patro/domain/vastu-ring` so that
  * whatever is drawn inside the ring is positioned off the same numbers.
  */
 const CX = RING_SIZE / 2;

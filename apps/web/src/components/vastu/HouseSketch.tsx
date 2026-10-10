@@ -9,7 +9,7 @@ import {
   vastuElementTint,
   type CardinalWall,
 } from "@vedic-patro/domain/vastu";
-import { RING_SIZE, houseBoxInRing } from "@/lib/vastu-ring";
+import { RING_SIZE, houseBoxInRing } from "@vedic-patro/domain/vastu-ring";
 import { houseTemplate, type Rect, type TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
 import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
 import { VastuCompassRing } from "./VastuCompassRing";

@@ -23,11 +23,11 @@ git checkout apps/mobile/store/assets/feature-graphic.png   # postinstall regene
 Commit trailers: `Co-Authored-By` + `Claude-Session` lines as in earlier commits.
 
 ## What stays per app on purpose (not duplication)
-Tailwind class tables with different tokens (`patro-classes`, `wheel-classes`, `timeline-classes`, `wheel-svg-classes`); asset/texture loading (`sky-textures`, `nebula-sources`, `hips-config`, `month-art`, `wheel-glyph-art`); the 3D sun-earth-moon maths (unit space in the app, pixel space on web); API request modules and storage; React hooks; route tables, icon maps, app-only nav (`panchanga-sidebar-nav`, `related-page-links` paths); mobile-only `panchanga-detail-cells`, `wheel-scrub`, `sait-suitability-style`, `element-routes`, `panchanga-shell-paths`, `bs-range` (1700–2200 picker limits).
+Tailwind class tables with different tokens (`patro-classes`, `wheel-classes`, `timeline-classes`, `wheel-svg-classes`); asset/texture loading (`sky-textures`, `nebula-sources`, `hips-config`, `month-art`, `wheel-glyph-art`, `hips-config` (each app sets its own tile base URL)); the 3D sun-earth-moon maths (unit space in the app, pixel space on web); API request modules and storage; React hooks; route tables, icon maps, app-only nav (`panchanga-sidebar-nav`, `related-page-links` paths); mobile-only `panchanga-detail-cells`, `wheel-scrub`, `sait-suitability-style`, `element-routes`, `panchanga-shell-paths`, `bs-range` (1700–2200 picker limits).
 
 ## Still open
 - Visual review of the converted Learn pages in a browser (text/structure verified, pixels not).
-- Remaining same-named duplicates are hooks or asset/UI files; re-run `scripts/monorepo-tools/closure.py` to list any pair still movable.
+- closure.py now reports nothing movable except `sky3d/hips-config`, which stays per app on purpose (different tile base URL). The rest are hooks, platform or asset/UI files.
 - Stale web scripts `extract-bhava-reference-content.mjs`, `extract-vastu-content.mjs` point at files that no longer exist (pre-existing).
 - `apps/web/src/lib/learn/learn-topics-meta.ts` and mobile `learn-library.ts` map the shared library icons per app.
 
