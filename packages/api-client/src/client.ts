@@ -12,7 +12,9 @@
  */
 import type {
   BhavaReferencePayload,
+  CalendarHeader,
   CitiesSearchResponse,
+  City,
   CivilTimeline,
   ConvertAdToBs,
   ConvertBsToAd,
@@ -20,8 +22,11 @@ import type {
   DashaTreeNode,
   EclipseYearResponse,
   ElementDayResponse,
+  ElementInfo,
+  ElementMonthResponse,
   ElementSpanRange,
   ElementSpansResponse,
+  EraDateParts,
   FestivalsResponse,
   GocharIngressResponse,
   GocharResponse,
@@ -32,6 +37,7 @@ import type {
   JanmaRashi,
   KundaliDetailResponse,
   KundaliMilanResponse,
+  KundaliResponse,
   LocationParams,
   MilanPersonQuery,
   MonthCalendar,
@@ -39,11 +45,14 @@ import type {
   PanchakYearResponse,
   PanchangaDay,
   PatroApiLimits,
+  PatroMonth,
   RashifalBlock,
   RashifalPeriod,
   RashifalPersonal,
   RawMonthDay,
   ReportRecord,
+  SaitAboutCategory,
+  SaitAboutResponse,
   SaitDetailResponse,
   SaitMonthAllResponse,
   SaitPersonalizeResponse,
@@ -52,19 +61,20 @@ import type {
   SpecialMonthsResponse,
   SunYearResponse,
   TropicalSeasonsResponse,
+  UpcomingFestivalsResponse,
   VastuSketchRequest,
   VastuSketchResponse,
   VimshottariResponse,
   YearWheelCalendar,
   YogaReferenceResponse,
 } from "./types";
-import type { Era } from "@vedic-patro/domain/era";
-import type { InstantQuery } from "@vedic-patro/domain/instant";
 import {
   appendBirthInstantParams,
   appendInstantParams,
   instantCacheKey,
 } from "@vedic-patro/domain/instant";
+import type { Era } from "@vedic-patro/domain/era";
+import type { InstantQuery } from "@vedic-patro/domain/instant";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
 // Appended to cacheable URLs so a backend/engine change mints fresh CDN objects
@@ -815,4 +825,198 @@ export const yearWheelRequestPath = (year: number, location?: LocationParams, er
 export const fetchYearWheelCalendar = (year: number, location?: LocationParams, era: Era = "bs") =>
   get<YearWheelCalendar>(yearWheelRequestPath(year, location, era));
 
+// ─── Endpoints only one app calls so far ─────────────────────────────────────
+// Kept here anyway so every endpoint is written once; the other app can use them.
 
+export const fetchPopularCities = () =>
+  get<{ count: number; cities: City[] }>("/nepal/cities/popular");
+
+export const fetchNepalPanchanga = (dateAd: string, location?: LocationParams) =>
+  get<PanchangaDay>(
+    appendLocation(`/nepal/panchanga/${dateAd}?era=ad`, location)
+  );
+
+export const fetchGocharJd = (jdUt: number, location?: LocationParams) =>
+  get<GocharResponse>(appendLocation(`/nepal/gochar/jd/${jdUt}`, location));
+
+/** Ephemeris panchanga at observer-local `clock` on civil day `jd_ut` (0h UT). */
+export const fetchPanchangaAtTimeJd = (
+  jdUt: number,
+  clock: string,
+  location?: LocationParams,
+  options?: { ayanamsha?: string },
+) => {
+  const params = new URLSearchParams();
+  params.set("jd", String(jdUt));
+  params.set("clock", clock);
+  if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
+  return get<PanchangaDay>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
+      location,
+    ),
+  );
+};
+
+export const fetchCalendarHeader = (year: number, month: number) =>
+  get<CalendarHeader>(`/calendar/header/${year}/${month}`);
+
+// ─── Patro ────────────────────────────────────────────────────────────────────
+
+export const patroKeys = {
+  month: (year: number, month: number) => ["patro", "month", year, month] as const,
+};
+
+export const fetchPatroMonth = (year: number, month: number) =>
+  get<PatroMonth>(withPanchangaCacheVersion(`/nepal/patro/${year}/${month}`));
+
+// ─── Holidays & Festivals ─────────────────────────────────────────────────────
+
+export const holidayKeys = {
+  holidays: (year: number, era: Era = "bs") => ["holidays", era, year] as const,
+  festivals: (year: number, era: Era = "bs", month?: number) =>
+    month != null
+      ? (["festivals", era, year, month] as const)
+      : (["festivals", era, year] as const),
+  upcoming: (days = 90, limit = 15, holidaysOnly = false) =>
+    ["festivals", "upcoming", days, limit, holidaysOnly] as const,
+};
+
+/** Next festivals from today (observer TZ), across the BS-year boundary. */
+export const fetchUpcomingFestivals = (
+  days = 90,
+  limit = 15,
+  holidaysOnly = false
+) => {
+  const params = new URLSearchParams({
+    days: String(days),
+    limit: String(limit),
+  });
+  if (holidaysOnly) params.set("holidays_only", "true");
+  return get<UpcomingFestivalsResponse>(`/nepal/festivals/upcoming?${params}`);
+};
+
+export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");
+
+export const saitMonthAllKey = (year: number, month: number, location?: LocationParams) =>
+  ["sait", "month-all", SAIT_CACHE_VERSION, year, month, locationCacheKey(location)] as const;
+
+export const fetchSaitAbout = () => get<SaitAboutResponse>("/nepal/sait/about");
+
+export const fetchSaitAboutCategory = (category: string) =>
+  get<SaitAboutCategory>(`/nepal/sait/${category}/about`);
+
+export const fetchElements = () =>
+  get<{ elements: ElementInfo[] }>(withPanchangaCacheVersion("/panchanga/elements")).then(
+    (r) => r.elements,
+  );
+
+export const fetchElementMonth = (
+  name: string,
+  bsYear: number,
+  bsMonth: number,
+  location?: LocationParams,
+) =>
+  get<ElementMonthResponse>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/element/${name}/month/${bsYear}/${bsMonth}`),
+      location,
+    ),
+  );
+
+// ─── Convertor ────────────────────────────────────────────────────────────────
+
+export const convertorKeys = {
+  adToBs: (date: string) => ["convert", "ad-to-bs", date] as const,
+  bsToAd: (date: string) => ["convert", "bs-to-ad", date] as const,
+};
+
+// ─── Kundali ──────────────────────────────────────────────────────────────────
+
+export const kundaliKeys = {
+  udaya: (date: string, era: string, location?: LocationParams) =>
+    ["kundali", "udaya", date, era, locationCacheKey(location)] as const,
+  atTime: (datetime: string, location?: LocationParams, ayanamsha?: string) =>
+    ["kundali", "at-time", datetime, locationCacheKey(location), ayanamsha ?? "lahiri"] as const,
+};
+
+export const fetchKundali = (
+  date: string,
+  era: "bs" | "ad" = "ad",
+  location?: LocationParams
+) =>
+  get<KundaliResponse>(
+    appendLocation(`/kundali/${date}?era=${era}`, location)
+  );
+
+// Bump when year sun-times payload logic changes (invalidates React Query + IDB).
+export const SUN_YEAR_DATA_VERSION = 16;
+
+export const sunYearKeys = {
+  year: (year: number, era: Era, location?: LocationParams) =>
+    ["sun-times", "year", SUN_YEAR_DATA_VERSION, era, year, locationCacheKey(location)] as const,
+};
+
+/** Date key + API era for graha-sthiti — positive y/m/d in the path, era on the query. */
+export function grahaSthitiRequestForDisplay(
+  displayEra: Era,
+  dateAd: string,
+  dateParts?: Pick<EraDateParts, "vikram" | "gregorian"> | null,
+): { dateKey: string; apiEra: Era } {
+  if (displayEra === "ad" || displayEra === "bc") {
+    const g = dateParts?.gregorian;
+    if (g?.year && g.month && g.day) {
+      return {
+        dateKey: `${String(g.year).padStart(4, "0")}-${String(g.month).padStart(2, "0")}-${String(g.day).padStart(2, "0")}`,
+        apiEra: g.era,
+      };
+    }
+    return { dateKey: dateAd, apiEra: displayEra };
+  }
+  const v = dateParts?.vikram;
+  if (v?.year && v.month && v.day && (v.era === "bs" || v.era === "bbs")) {
+    return {
+      dateKey: `${v.year}-${String(v.month).padStart(2, "0")}-${String(v.day).padStart(2, "0")}`,
+      apiEra: v.era,
+    };
+  }
+  return { dateKey: dateAd, apiEra: displayEra };
+}
+
+export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
+  get<PanchangaDay>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true`),
+      location,
+    ),
+  );
+
+export function timeShort(v: PanchangaDay["sunrise"]): string {
+  if (!v) return "—";
+  if (typeof v === "string") return v.slice(0, 5);
+  return v.local_time_short?.slice(0, 5) ?? "—";
+}
+
+// ─── Rashifal ────────────────────────────────────────────────────────────────
+
+export const rashifalKeys = {
+  block: (dateAd: string, period: RashifalPeriod, loc?: LocationParams) =>
+    ["rashifal", PANCHANGA_CACHE_VERSION, dateAd, period, locationCacheKey(loc)] as const,
+  personal: (
+    dateAd: string,
+    period: RashifalPeriod,
+    profileId: string,
+    loc?: LocationParams,
+    birthKey?: string,
+  ) =>
+    [
+      "rashifal",
+      "personal",
+      PANCHANGA_CACHE_VERSION,
+      dateAd,
+      period,
+      profileId,
+      birthKey ?? "",
+      locationCacheKey(loc),
+    ] as const,
+};

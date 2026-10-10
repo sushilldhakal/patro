@@ -26,7 +26,6 @@ import {
 import {
   withPanchangaCacheVersion,
   PANCHANGA_CACHE_VERSION,
-  SAIT_CACHE_VERSION,
   locationCacheKey,
 } from "@vedic-patro/api-client";
 export {
@@ -92,28 +91,41 @@ export {
   streamKundaliReport,
   yearWheelKeys,
   fetchYearWheelCalendar,
+  fetchPopularCities,
+  fetchNepalPanchanga,
+  fetchGocharJd,
+  fetchPanchangaAtTimeJd,
+  fetchCalendarHeader,
+  patroKeys,
+  fetchPatroMonth,
+  holidayKeys,
+  fetchUpcomingFestivals,
+  fetchSaitYears,
+  saitMonthAllKey,
+  fetchSaitAbout,
+  fetchSaitAboutCategory,
+  fetchElements,
+  fetchElementMonth,
+  convertorKeys,
+  kundaliKeys,
+  fetchKundali,
+  SUN_YEAR_DATA_VERSION,
+  sunYearKeys,
+  grahaSthitiRequestForDisplay,
+  fetchPanchanga,
+  timeShort,
+  rashifalKeys,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   RashifalPeriod,
-  City,
-  GocharResponse,
   RawMonthDay,
-  UpcomingFestivalsResponse,
-  SaitAboutCategory,
-  SaitAboutResponse,
-  ElementInfo,
-  ElementMonthResponse,
-  EraDateParts,
   PanchangaDay,
   MonthCalendar,
   YearCalendar,
   CalendarDay,
-  PatroMonth,
-  KundaliResponse,
-  CalendarHeader,
 } from "@vedic-patro/api-client";
 export type {
   LocationParams,
@@ -397,9 +409,6 @@ configureApiClient({
   locationKey: webLocationKey,
 });
 
-export const fetchPopularCities = () =>
-  get<{ count: number; cities: City[] }>("/nepal/cities/popular");
-
 // ─── Panchanga ────────────────────────────────────────────────────────────────
 
 export const panchangaKeys = {
@@ -530,11 +539,6 @@ export const fetchPanchangaCivilDay = (
     { reference: "midnight" },
   );
 
-export const fetchNepalPanchanga = (dateAd: string, location?: LocationParams) =>
-  get<PanchangaDay>(
-    appendLocation(`/nepal/panchanga/${dateAd}?era=ad`, location)
-  );
-
 /** Ephemeris panchanga at observer-local `clock` on the browsed civil day. */
 export const fetchPanchangaAtTimeForDay = (
   dayState: PatroDayFetchState,
@@ -570,54 +574,6 @@ export const fetchPanchangaAtTimeForDay = (
     ),
   );
 };
-
-/** Ephemeris panchanga at observer-local `clock` on civil day `jd_ut` (0h UT). */
-export const fetchPanchangaAtTimeJd = (
-  jdUt: number,
-  clock: string,
-  location?: LocationParams,
-  options?: { ayanamsha?: string },
-) => {
-  const params = new URLSearchParams();
-  params.set("jd", String(jdUt));
-  params.set("clock", clock);
-  if (options?.ayanamsha) params.set("ayanamsha", options.ayanamsha);
-  return get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/at-time?${params.toString()}`),
-      location,
-    ),
-  );
-};
-
-export const fetchGocharJd = (jdUt: number, location?: LocationParams) =>
-  get<GocharResponse>(appendLocation(`/nepal/gochar/jd/${jdUt}`, location));
-
-/** Date key + API era for graha-sthiti — positive y/m/d in the path, era on the query. */
-export function grahaSthitiRequestForDisplay(
-  displayEra: Era,
-  dateAd: string,
-  dateParts?: Pick<EraDateParts, "vikram" | "gregorian"> | null,
-): { dateKey: string; apiEra: Era } {
-  if (displayEra === "ad" || displayEra === "bc") {
-    const g = dateParts?.gregorian;
-    if (g?.year && g.month && g.day) {
-      return {
-        dateKey: `${String(g.year).padStart(4, "0")}-${String(g.month).padStart(2, "0")}-${String(g.day).padStart(2, "0")}`,
-        apiEra: g.era,
-      };
-    }
-    return { dateKey: dateAd, apiEra: displayEra };
-  }
-  const v = dateParts?.vikram;
-  if (v?.year && v.month && v.day && (v.era === "bs" || v.era === "bbs")) {
-    return {
-      dateKey: `${v.year}-${String(v.month).padStart(2, "0")}-${String(v.day).padStart(2, "0")}`,
-      apiEra: v.era,
-    };
-  }
-  return { dateKey: dateAd, apiEra: displayEra };
-}
 
 function parsePakshaName(label?: string): string | undefined {
   if (!label) return undefined;
@@ -730,101 +686,3 @@ export const fetchYearCalendar = async (
     })),
   };
 };
-
-// Bump when year sun-times payload logic changes (invalidates React Query + IDB).
-export const SUN_YEAR_DATA_VERSION = 16;
-
-export const sunYearKeys = {
-  year: (year: number, era: Era, location?: LocationParams) =>
-    ["sun-times", "year", SUN_YEAR_DATA_VERSION, era, year, locationCacheKey(location)] as const,
-};
-
-export const fetchCalendarHeader = (year: number, month: number) =>
-  get<CalendarHeader>(`/calendar/header/${year}/${month}`);
-
-// ─── Patro ────────────────────────────────────────────────────────────────────
-
-export const patroKeys = {
-  month: (year: number, month: number) => ["patro", "month", year, month] as const,
-};
-
-export const fetchPatroMonth = (year: number, month: number) =>
-  get<PatroMonth>(withPanchangaCacheVersion(`/nepal/patro/${year}/${month}`));
-
-// ─── Holidays & Festivals ─────────────────────────────────────────────────────
-
-export const holidayKeys = {
-  holidays: (year: number, era: Era = "bs") => ["holidays", era, year] as const,
-  festivals: (year: number, era: Era = "bs", month?: number) =>
-    month != null
-      ? (["festivals", era, year, month] as const)
-      : (["festivals", era, year] as const),
-  upcoming: (days = 90, limit = 15, holidaysOnly = false) =>
-    ["festivals", "upcoming", days, limit, holidaysOnly] as const,
-};
-
-/** Next festivals from today (observer TZ), across the BS-year boundary. */
-export const fetchUpcomingFestivals = (
-  days = 90,
-  limit = 15,
-  holidaysOnly = false
-) => {
-  const params = new URLSearchParams({
-    days: String(days),
-    limit: String(limit),
-  });
-  if (holidaysOnly) params.set("holidays_only", "true");
-  return get<UpcomingFestivalsResponse>(`/nepal/festivals/upcoming?${params}`);
-};
-
-export const fetchSaitYears = () => get<{ years: number[] }>("/nepal/sait/years");
-
-export const saitMonthAllKey = (year: number, month: number, location?: LocationParams) =>
-  ["sait", "month-all", SAIT_CACHE_VERSION, year, month, locationCacheKey(location)] as const;
-
-export const fetchSaitAbout = () => get<SaitAboutResponse>("/nepal/sait/about");
-export const fetchSaitAboutCategory = (category: string) =>
-  get<SaitAboutCategory>(`/nepal/sait/${category}/about`);
-
-export const fetchElements = () =>
-  get<{ elements: ElementInfo[] }>(withPanchangaCacheVersion("/panchanga/elements")).then(
-    (r) => r.elements,
-  );
-
-export const fetchElementMonth = (
-  name: string,
-  bsYear: number,
-  bsMonth: number,
-  location?: LocationParams,
-) =>
-  get<ElementMonthResponse>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/element/${name}/month/${bsYear}/${bsMonth}`),
-      location,
-    ),
-  );
-
-// ─── Convertor ────────────────────────────────────────────────────────────────
-
-export const convertorKeys = {
-  adToBs: (date: string) => ["convert", "ad-to-bs", date] as const,
-  bsToAd: (date: string) => ["convert", "bs-to-ad", date] as const,
-};
-
-// ─── Kundali ──────────────────────────────────────────────────────────────────
-
-export const kundaliKeys = {
-  udaya: (date: string, era: string, location?: LocationParams) =>
-    ["kundali", "udaya", date, era, locationCacheKey(location)] as const,
-  atTime: (datetime: string, location?: LocationParams, ayanamsha?: string) =>
-    ["kundali", "at-time", datetime, locationCacheKey(location), ayanamsha ?? "lahiri"] as const,
-};
-
-export const fetchKundali = (
-  date: string,
-  era: "bs" | "ad" = "ad",
-  location?: LocationParams
-) =>
-  get<KundaliResponse>(
-    appendLocation(`/kundali/${date}?era=${era}`, location)
-  );

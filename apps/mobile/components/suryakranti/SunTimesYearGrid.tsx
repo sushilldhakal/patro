@@ -9,7 +9,7 @@ import { Text } from "@/components/ui/Text";
 import { DataTable, type TableColumn } from "@/components/ui/DataTable";
 import {
   fetchYearSunTimes,
-  sunTimesKeys,
+  sunYearKeys,
   type LocationParams,
   type SunYearDay,
   type SunYearMonth,
@@ -549,7 +549,7 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
   const todayAd = todayAdStringInTimezone(new Date(), timeZone);
 
   const query = useQuery({
-    queryKey: sunTimesKeys.year(year, apiEra, locationParams),
+    queryKey: sunYearKeys.year(year, apiEra, locationParams),
     queryFn: () => fetchYearSunTimes(year, apiEra, locationParams),
     staleTime: 1000 * 60 * 60,
   });

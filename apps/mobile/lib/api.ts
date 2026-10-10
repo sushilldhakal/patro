@@ -20,11 +20,9 @@ import {
 
 // Requests shared with the other app — see packages/api-client/src/client.ts.
 import {
-  withPanchangaCacheVersion,
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
   ApiError,
-  locationCacheKey,
 } from "@vedic-patro/api-client";
 export {
   withPanchangaCacheVersion,
@@ -90,13 +88,36 @@ export {
   yearWheelKeys,
   fetchYearWheelCalendar,
   yearWheelRequestPath,
+  fetchPopularCities,
+  fetchNepalPanchanga,
+  fetchGocharJd,
+  fetchPanchangaAtTimeJd,
+  fetchCalendarHeader,
+  patroKeys,
+  fetchPatroMonth,
+  holidayKeys,
+  fetchUpcomingFestivals,
+  fetchSaitYears,
+  saitMonthAllKey,
+  fetchSaitAbout,
+  fetchSaitAboutCategory,
+  fetchElements,
+  fetchElementMonth,
+  convertorKeys,
+  kundaliKeys,
+  fetchKundali,
+  SUN_YEAR_DATA_VERSION,
+  sunYearKeys,
+  grahaSthitiRequestForDisplay,
+  fetchPanchanga,
+  timeShort,
+  rashifalKeys,
 } from "@vedic-patro/api-client";
 
 // Shared with the other app — see packages/api-client.
 import type {
   LocationParams,
   RashifalPeriod,
-  PanchangaDay,
   MonthCalendar,
   CalendarDay,
   MonthBrowseEra,
@@ -440,38 +461,6 @@ function normalizeMonthDay(day: CalendarDay): CalendarDay {
   };
 }
 
-export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?: LocationParams) =>
-  get<PanchangaDay>(
-    appendLocation(
-      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true`),
-      location,
-    ),
-  );
-
-// ─── Rashifal ────────────────────────────────────────────────────────────────
-
-export const rashifalKeys = {
-  block: (dateAd: string, period: RashifalPeriod, loc?: LocationParams) =>
-    ["rashifal", PANCHANGA_CACHE_VERSION, dateAd, period, locationKey(loc)] as const,
-  personal: (
-    dateAd: string,
-    period: RashifalPeriod,
-    profileId: string,
-    loc?: LocationParams,
-    birthKey?: string,
-  ) =>
-    [
-      "rashifal",
-      "personal",
-      PANCHANGA_CACHE_VERSION,
-      dateAd,
-      period,
-      profileId,
-      birthKey ?? "",
-      locationKey(loc),
-    ] as const,
-};
-
 export function fetchRashifal(dateAd: string, period: RashifalPeriod, location?: LocationParams) {
   return fetchRashifalForDay(new URLSearchParams({ date: dateAd, era: "ad" }), period, location);
 }
@@ -483,15 +472,4 @@ export function fetchPersonalRashifal(
   location?: LocationParams,
 ) {
   return fetchPersonalRashifalForDay(new URLSearchParams({ date: dateAd, era: "ad" }), period, birth, location);
-}
-
-export const sunTimesKeys = {
-  year: (year: number, era: string, location?: LocationParams) =>
-    ["sun-times", "year", era, year, locationCacheKey(location)] as const,
-};
-
-export function timeShort(v: PanchangaDay["sunrise"]): string {
-  if (!v) return "—";
-  if (typeof v === "string") return v.slice(0, 5);
-  return v.local_time_short?.slice(0, 5) ?? "—";
 }
