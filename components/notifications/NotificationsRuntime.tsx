@@ -6,7 +6,6 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import {
   registerNotificationRefreshTask,
-  unregisterNotificationRefreshTask,
 } from "@/lib/notifications/background";
 import { ensureNotificationChannels, installForegroundHandler } from "@/lib/notifications/channels";
 import { registerThisDevice, unregisterThisDevice } from "@/lib/notifications/register-device";
@@ -19,10 +18,12 @@ if (Platform.OS !== "web") installForegroundHandler();
 /**
  * Keeps the local notification schedule in step with the account.
  *
- * Signed in: sync on login and every time the app comes to the foreground, and
- * register the daily background refresh. Signed out: cancel everything and
- * forget the account's cached guidance. A tapped notification opens the
- * Reminders screen. Renders nothing.
+ * Signed in or out: sync on launch and every time the app comes to the
+ * foreground, and register the daily background refresh, so the daily rashifal
+ * notification keeps arriving for guests too. Signing out cancels the account's
+ * notifications and forgets its cached guidance first. A tapped notification
+ * opens the Rashifal screen (rashifal) or the Reminders screen (everything
+ * else). Renders nothing.
  */
 export function NotificationsRuntime() {
   const { isAuthenticated, loading } = useAuth();
@@ -34,20 +35,24 @@ export function NotificationsRuntime() {
 
   useEffect(() => {
     if (Platform.OS === "web" || loading) return;
-    if (!isAuthenticated) {
+    const run = async () => {
+      if (isAuthenticated) {
+        wasAuthenticated.current = true;
+        await syncNotifications({ lang: langRef.current });
+        await registerThisDevice(langRef.current);
+        return;
+      }
       if (wasAuthenticated.current) {
         wasAuthenticated.current = false;
-        void unregisterThisDevice();
-        void cancelAllNotifications();
-        void notifStore.clearAccountData();
-        void unregisterNotificationRefreshTask();
+        await unregisterThisDevice();
+        await cancelAllNotifications();
+        await notifStore.clearAccountData();
       }
-      return;
-    }
-    wasAuthenticated.current = true;
+      await syncNotifications({ lang: langRef.current });
+    };
     void ensureNotificationChannels();
     void registerNotificationRefreshTask();
-    void syncNotifications({ lang: langRef.current }).then(() => registerThisDevice(langRef.current));
+    void run().catch(() => {});
 
     const sub = AppState.addEventListener("change", (state) => {
       if (state === "active") void syncNotifications({ lang: langRef.current });
@@ -57,13 +62,16 @@ export function NotificationsRuntime() {
 
   // Wording follows the app language: rebuild the schedule when it changes.
   useEffect(() => {
-    if (Platform.OS === "web" || !isAuthenticated) return;
-    void syncNotifications({ lang: langRef.current });
-  }, [lang, isAuthenticated]);
+    if (Platform.OS === "web" || loading) return;
+    void syncNotifications({ lang: langRef.current }).catch(() => {});
+  }, [lang, loading]);
 
   useEffect(() => {
     if (Platform.OS === "web") return;
-    const open = () => router.push("/reminders" as never);
+    const open = (response: Notifications.NotificationResponse) => {
+      const type = response.notification.request.content.data?.type;
+      router.push((type === "rashifal" ? "/rashifal" : "/reminders") as never);
+    };
     const sub = Notifications.addNotificationResponseReceivedListener(open);
     return () => sub.remove();
   }, [router]);

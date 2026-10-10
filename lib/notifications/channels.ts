@@ -3,6 +3,7 @@ import * as Notifications from "expo-notifications";
 
 export const CHANNEL_DAILY = "daily-guidance";
 export const CHANNEL_REMINDERS = "reminders";
+export const CHANNEL_RASHIFAL = "rashifal";
 
 let ready: Promise<void> | null = null;
 
@@ -12,6 +13,11 @@ export function ensureNotificationChannels(): Promise<void> {
   ready ??= (async () => {
     await Notifications.setNotificationChannelAsync(CHANNEL_DAILY, {
       name: "Daily guidance",
+      importance: Notifications.AndroidImportance.DEFAULT,
+      lightColor: "#073f43",
+    });
+    await Notifications.setNotificationChannelAsync(CHANNEL_RASHIFAL, {
+      name: "Daily rashifal",
       importance: Notifications.AndroidImportance.DEFAULT,
       lightColor: "#073f43",
     });

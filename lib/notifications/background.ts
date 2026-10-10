@@ -17,7 +17,6 @@ if (Platform.OS !== "web") {
   TaskManager.defineTask(NOTIFICATION_REFRESH_TASK, async () => {
     try {
       await tokenStore.load();
-      if (!tokenStore.access && !tokenStore.refresh) return BackgroundTask.BackgroundTaskResult.Success;
       await syncNotifications({ lang: await notifStore.getLang() });
       return BackgroundTask.BackgroundTaskResult.Success;
     } catch {

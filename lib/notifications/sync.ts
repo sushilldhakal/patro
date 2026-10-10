@@ -1,10 +1,11 @@
 import { Platform } from "react-native";
-import { listProfiles } from "@/lib/auth/client";
+import { listProfiles, tokenStore, type Profile } from "@/lib/auth/client";
 import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { DEFAULT_PANCHANGA_LOCATION, readStoredLocation } from "@/lib/use-panchanga-location";
 import { fetchDailyGuidance, listReminders } from "./api";
 import { getNotificationPermission } from "./permissions";
 import { planNotifications } from "./plan";
+import { syncRashifalCache } from "./rashifal";
 import { applySchedule, NOTIFICATION_BUDGET } from "./scheduler";
 import { notifStore, type CachedProfile } from "./store";
 import type { GuidanceRange } from "./types";
@@ -41,17 +42,24 @@ export async function syncNotifications(options: {
   if (Platform.OS === "web") return { scheduled: 0, online: false, permission: "denied" };
   await notifStore.setLang(lang);
 
+  const signedIn = Boolean(tokenStore.access || tokenStore.refresh);
+  const permission = await getNotificationPermission();
+  // Guests with notifications off have nothing to schedule — skip the network.
+  if (!signedIn && permission !== "granted") return { scheduled: 0, online: false, permission };
+
   const online = await isCurrentlyOnline();
   const location = await readStoredLocation().catch(() => DEFAULT_PANCHANGA_LOCATION);
   const tz = location.params.timezone ?? "Asia/Kathmandu";
   const today = todayIn(tz);
 
-  let profiles: CachedProfile[] = await notifStore.getProfiles();
-  let reminders = await notifStore.getReminders();
+  let profiles: CachedProfile[] = signedIn ? await notifStore.getProfiles() : [];
+  let reminders = signedIn ? await notifStore.getReminders() : [];
+  let fullProfiles: Profile[] | null = null;
 
-  if (online) {
+  if (online && signedIn) {
     try {
-      profiles = (await listProfiles()).map((p) => ({ id: p.id, full_name: p.full_name }));
+      fullProfiles = await listProfiles();
+      profiles = fullProfiles.map((p) => ({ id: p.id, full_name: p.full_name }));
       await notifStore.setProfiles(profiles);
     } catch {
       /* keep the cached list */
@@ -61,6 +69,27 @@ export async function syncNotifications(options: {
       await notifStore.setReminders(reminders);
     } catch {
       /* keep the cached rules */
+    }
+  }
+
+  const rashifalSettings = await notifStore.getRashifalSettings();
+  let rashifalCache = null;
+  if (rashifalSettings.enabled) {
+    try {
+      rashifalCache = await syncRashifalCache({
+        online,
+        force,
+        today,
+        timezone: tz,
+        location: location.params,
+        settings: rashifalSettings,
+        // Signed in but offline: no fresh profiles, so only a cache already
+        // built for them is used (the key check inside rejects a mismatch).
+        profiles: fullProfiles,
+        signedIn,
+      });
+    } catch {
+      /* the rashifal notification is an extra — never block the rest */
     }
   }
 
@@ -79,7 +108,6 @@ export async function syncNotifications(options: {
     guidance[profile.id] = range;
   }
 
-  const permission = await getNotificationPermission();
   if (permission !== "granted") return { scheduled: 0, online, permission };
 
   const planned = planNotifications({
@@ -89,6 +117,7 @@ export async function syncNotifications(options: {
     guidance,
     reminders,
     briefing: await notifStore.getBriefing(),
+    rashifal: { settings: rashifalSettings, cache: rashifalCache },
     budget: NOTIFICATION_BUDGET,
   });
   const scheduled = await applySchedule(planned);

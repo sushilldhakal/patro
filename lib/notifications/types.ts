@@ -64,6 +64,38 @@ export interface BriefingSettings {
 
 export const DEFAULT_BRIEFING: BriefingSettings = { enabled: {}, time: "06:00" };
 
+/** The daily rashifal notification — works signed in (personal) and signed out (general). */
+export interface RashifalSettings {
+  enabled: boolean;
+  /** Local "HH:MM" in the place the rashifal is for. */
+  time: string;
+  /** Signed-out choice: rashi id 1–12. Null falls back to the day's moon sign. */
+  guestSignId: number | null;
+}
+
+export const DEFAULT_RASHIFAL_SETTINGS: RashifalSettings = {
+  enabled: true,
+  time: "07:00",
+  guestSignId: null,
+};
+
+/** One day of cached rashifal text, both languages so a language switch needs no refetch. */
+export interface RashifalDayEntry {
+  sign_ne: string;
+  sign_en: string;
+  text_ne: string;
+  text_en: string;
+}
+
+export interface RashifalCache {
+  /** Who/where it was fetched for — a change in any part invalidates the cache. */
+  key: string;
+  personal: boolean;
+  timezone: string;
+  /** Civil date (AD) → entry. */
+  days: Record<string, RashifalDayEntry>;
+}
+
 /**
  * Every window the API can list for a day (`windows[].key`), in the order the
  * panchanga page shows them. Some only occur on certain days (भद्रा, गण्ड मूल,

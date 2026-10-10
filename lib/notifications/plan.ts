@@ -1,4 +1,12 @@
-import type { GuidanceDay, GuidanceRange, GuidanceWindow, ReminderRule, BriefingSettings } from "./types";
+import type {
+  GuidanceDay,
+  GuidanceRange,
+  GuidanceWindow,
+  ReminderRule,
+  BriefingSettings,
+  RashifalCache,
+  RashifalSettings,
+} from "./types";
 import { WINDOW_OPTIONS } from "./types";
 import { weekdayOf, zonedInstant } from "./zoned";
 
@@ -8,7 +16,7 @@ import { weekdayOf, zonedInstant } from "./zoned";
  * about; `scheduler.ts` is the thin layer that hands the result to the OS.
  */
 
-export type NotificationChannel = "daily-guidance" | "reminders";
+export type NotificationChannel = "daily-guidance" | "reminders" | "rashifal";
 
 export interface PlannedNotification {
   id: string;
@@ -31,6 +39,7 @@ export interface PlanInput {
   guidance: Record<string, GuidanceRange | null | undefined>;
   reminders: ReminderRule[];
   briefing: BriefingSettings;
+  rashifal?: { settings: RashifalSettings; cache: RashifalCache | null };
   /** The OS caps pending notifications (iOS: 64) — keep to the nearest `budget`. */
   budget: number;
 }
@@ -84,7 +93,7 @@ function reminderCopy(
 }
 
 export function planNotifications(input: PlanInput): PlannedNotification[] {
-  const { now, lang, profiles, guidance, reminders, briefing, budget } = input;
+  const { now, lang, profiles, guidance, reminders, briefing, rashifal, budget } = input;
   const out: PlannedNotification[] = [];
 
   for (const profile of profiles) {
@@ -102,6 +111,25 @@ export function planNotifications(input: PlanInput): PlannedNotification[] {
         body: briefingBody(day, lang),
         channel: "daily-guidance",
         data: { type: "briefing", profileId: profile.id, date: day.date },
+      });
+    }
+  }
+
+  if (rashifal?.settings.enabled && rashifal.cache) {
+    const { cache, settings } = rashifal;
+    for (const [date, entry] of Object.entries(cache.days)) {
+      const fireAt = zonedInstant(date, settings.time, cache.timezone);
+      if (fireAt.getTime() <= now.getTime()) continue;
+      const sign = lang === "ne" ? entry.sign_ne : entry.sign_en;
+      const head = lang === "ne" ? "आजको राशिफल" : "Today's rashifal";
+      const text = lang === "ne" ? entry.text_ne || entry.text_en : entry.text_en || entry.text_ne;
+      out.push({
+        id: `rashifal:${date}`,
+        fireAt,
+        title: sign ? `${head} · ${sign}` : head,
+        body: clip(text),
+        channel: "rashifal",
+        data: { type: "rashifal", date },
       });
     }
   }

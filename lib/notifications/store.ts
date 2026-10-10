@@ -4,6 +4,9 @@ import {
   DEFAULT_BRIEFING,
   type BriefingSettings,
   type GuidanceRange,
+  type RashifalCache,
+  DEFAULT_RASHIFAL_SETTINGS,
+  type RashifalSettings,
   type ReminderRule,
 } from "./types";
 
@@ -12,6 +15,8 @@ const KEYS = {
   profiles: "notif:profiles",
   reminders: "notif:reminders",
   briefing: "notif:briefing",
+  rashifalSettings: "notif:rashifal_settings",
+  rashifalCache: "notif:rashifal_cache",
   lang: "notif:lang",
   deviceId: "notif:device_id",
   guidance: (profileId: string) => `notif:guidance:${profileId}`,
@@ -35,6 +40,17 @@ export const notifStore = {
   },
   setBriefing: (settings: BriefingSettings) => deviceStore.set(KEYS.briefing, settings),
 
+  async getRashifalSettings(): Promise<RashifalSettings> {
+    return {
+      ...DEFAULT_RASHIFAL_SETTINGS,
+      ...((await deviceStore.get<RashifalSettings>(KEYS.rashifalSettings)) ?? {}),
+    };
+  },
+  setRashifalSettings: (settings: RashifalSettings) => deviceStore.set(KEYS.rashifalSettings, settings),
+
+  getRashifalCache: () => deviceStore.get<RashifalCache>(KEYS.rashifalCache),
+  setRashifalCache: (cache: RashifalCache) => deviceStore.set(KEYS.rashifalCache, cache),
+
   async getLang(): Promise<"ne" | "en"> {
     return (await deviceStore.get<"ne" | "en">(KEYS.lang)) ?? "ne";
   },
@@ -53,7 +69,7 @@ export const notifStore = {
     const profiles = await this.getProfiles();
     await Promise.all(profiles.map((p) => this.removeGuidance(p.id)));
     await Promise.all(
-      [KEYS.profiles, KEYS.reminders, KEYS.briefing, KEYS.deviceId].map((k) => deviceStore.remove(k)),
+      [KEYS.profiles, KEYS.reminders, KEYS.briefing, KEYS.deviceId, KEYS.rashifalCache].map((k) => deviceStore.remove(k)),
     );
   },
 };

@@ -15,13 +15,20 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { createReminder, deleteReminder, listReminders, updateReminder } from "@/lib/notifications/api";
-import { getNotificationPermission, type NotifPermission } from "@/lib/notifications/permissions";
+import { getRashiList } from "@/lib/rashi-i18n";
+import {
+  ensureNotificationPermission,
+  getNotificationPermission,
+  type NotifPermission,
+} from "@/lib/notifications/permissions";
 import { pendingNotificationCount } from "@/lib/notifications/scheduler";
 import { notifStore, type CachedProfile } from "@/lib/notifications/store";
 import { syncNotifications } from "@/lib/notifications/sync";
 import { afterRemindersChanged } from "@/lib/notifications/triggers";
 import {
   DEFAULT_BRIEFING,
+  DEFAULT_RASHIFAL_SETTINGS,
+  type RashifalSettings,
   LEAD_MINUTE_OPTIONS,
   WINDOW_OPTIONS,
   type BriefingSettings,
@@ -36,6 +43,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
+const RASHIFAL_TIMES = ["06:00", "07:00", "08:00", "09:00"] as const;
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -51,7 +59,7 @@ function Chip({ label, active, onPress }: { label: string; active: boolean; onPr
       )}
     >
       <Text
-        className={cn("text-body font-semibold", active ? "text-white" : "text-foreground")}
+        className={cn("text-body font-semibold", active ? "text-secondary-foreground" : "text-foreground")}
         style={nepaliTextStyle(13)}
       >
         {label}
@@ -90,6 +98,95 @@ function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
             ))}
           </View>
         ))}
+    </View>
+  );
+}
+
+/** Daily rashifal notification: personal when signed in, the chosen rashi's general rashifal for guests. */
+function RashifalNotificationCard({ signedIn, onChanged }: { signedIn: boolean; onChanged: () => void }) {
+  const { pick, lang } = useLocale();
+  const l = lang === "en" ? "en" : "ne";
+  const [settings, setSettings] = useState<RashifalSettings>(DEFAULT_RASHIFAL_SETTINGS);
+  const [permission, setPermission] = useState<NotifPermission>("undetermined");
+  const [busy, setBusy] = useState(false);
+  const rashis = useMemo(() => getRashiList(l), [l]);
+
+  useEffect(() => {
+    void Promise.all([notifStore.getRashifalSettings(), getNotificationPermission()]).then(([s, perm]) => {
+      setSettings(s);
+      setPermission(perm);
+    });
+  }, []);
+
+  const save = async (next: RashifalSettings) => {
+    setSettings(next);
+    setBusy(true);
+    try {
+      await notifStore.setRashifalSettings(next);
+      if (next.enabled) {
+        const granted = await ensureNotificationPermission();
+        setPermission(granted ? "granted" : await getNotificationPermission());
+      }
+      await syncNotifications({ lang: l, force: true });
+    } catch {
+      /* the schedule is rebuilt on the next foreground sync */
+    } finally {
+      setBusy(false);
+      onChanged();
+    }
+  };
+
+  const showOff = permission === "denied" && settings.enabled;
+
+  return (
+    <View>
+      <SectionTitle>{pick("दैनिक राशिफल सूचना", "Daily rashifal notification")}</SectionTitle>
+      <Card className="gap-4">
+        <View className="flex-row items-center justify-between gap-3">
+          <View className="min-w-0 flex-1">
+            <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+              {pick("हरेक दिन आजको राशिफल", "Today's rashifal every day")}
+            </Text>
+            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(13)}>
+              {signedIn
+                ? pick("तपाईंको प्रोफाइलको व्यक्तिगत राशिफल।", "Personal rashifal from your default profile.")
+                : pick("तलबाट आफ्नो राशि छान्नुहोस्।", "Pick your rashi below.")}
+            </Text>
+          </View>
+          <Switch value={settings.enabled} disabled={busy} onValueChange={(on) => save({ ...settings, enabled: on })} />
+        </View>
+
+        {settings.enabled ? (
+          <>
+            <View className="flex-row flex-wrap gap-2">
+              {RASHIFAL_TIMES.map((time) => (
+                <Chip key={time} label={time} active={settings.time === time} onPress={() => save({ ...settings, time })} />
+              ))}
+            </View>
+            {!signedIn ? (
+              <View className="flex-row flex-wrap gap-2">
+                <Chip
+                  label={pick("आजको चन्द्र राशि", "Today's moon sign")}
+                  active={settings.guestSignId == null}
+                  onPress={() => save({ ...settings, guestSignId: null })}
+                />
+                {rashis.map((name, i) => (
+                  <Chip
+                    key={name}
+                    label={name}
+                    active={settings.guestSignId === i + 1}
+                    onPress={() => save({ ...settings, guestSignId: i + 1 })}
+                  />
+                ))}
+              </View>
+            ) : null}
+          </>
+        ) : null}
+
+        {showOff ? (
+          <Button label={pick("सेटिङ खोल्नुहोस्", "Open Settings")} onPress={() => void Linking.openSettings()} />
+        ) : null}
+      </Card>
     </View>
   );
 }
@@ -252,6 +349,9 @@ export default function RemindersScreen() {
             onSignup={() => setAuthOpen(true)}
           />
           <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
+          <View className="mt-6">
+            <RashifalNotificationCard signedIn={false} onChanged={() => {}} />
+          </View>
         </>
       ) : (
         <View className="gap-6">
@@ -268,6 +368,8 @@ export default function RemindersScreen() {
               />
             </Card>
           ) : null}
+
+          <RashifalNotificationCard signedIn onChanged={() => void reload()} />
 
           <View>
             <SectionTitle>{pick("दैनिक सूचना", "Daily briefing")}</SectionTitle>

@@ -1,6 +1,6 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
-import { CHANNEL_DAILY, CHANNEL_REMINDERS, ensureNotificationChannels } from "./channels";
+import { CHANNEL_DAILY, CHANNEL_RASHIFAL, CHANNEL_REMINDERS, ensureNotificationChannels } from "./channels";
 import type { PlannedNotification } from "./plan";
 
 /** iOS keeps at most 64 pending local notifications; stay under it. */
@@ -41,7 +41,12 @@ async function doApply(planned: PlannedNotification[]): Promise<number> {
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: n.fireAt,
-          channelId: n.channel === "reminders" ? CHANNEL_REMINDERS : CHANNEL_DAILY,
+          channelId:
+            n.channel === "reminders"
+              ? CHANNEL_REMINDERS
+              : n.channel === "rashifal"
+                ? CHANNEL_RASHIFAL
+                : CHANNEL_DAILY,
         },
       });
       scheduled += 1;
