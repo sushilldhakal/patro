@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CalendarClock } from "lucide-react";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import {
   DEFAULT_PANCHANGA_LOCATION,

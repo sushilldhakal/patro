@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale } from "@/i18n/locale";
 import { patroRouteLinkSearch } from "@/lib/url-state";

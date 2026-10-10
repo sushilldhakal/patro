@@ -17,7 +17,7 @@ import { useLocale } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroAsideTab } from "@/lib/patro-classes";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import type { Profile } from "@/lib/auth/client";
 import {
   RASHIFAL_PERIOD_ICON,

@@ -11,7 +11,7 @@ import {
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
 import { PageShell } from "@/components/PageShell";
 import { AYANAMSHA_MODES, getAyanamshaModeInfo, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
-import { formatProfileBirthLabel, profileChartParams } from "@/lib/kundali/profile-chart";
+import { formatProfileBirthLabel, profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { useLocale } from "@/i18n/locale";
 import {
   fetchKundaliMilan,

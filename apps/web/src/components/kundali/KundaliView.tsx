@@ -16,7 +16,7 @@ import {
 } from "@/lib/api";
 import { normalizeEphemerisDay } from "@vedic-patro/domain/ephemeris-adapters";
 import { instantCacheKey, type InstantQuery } from "@vedic-patro/domain/instant-query";
-import { formatMomentDateLabel } from "@/lib/kundali/profile-chart";
+import { formatMomentDateLabel } from "@vedic-patro/domain/kundali/profile-chart";
 import {
   getInstantLagna,
   getLagnaDisplay,

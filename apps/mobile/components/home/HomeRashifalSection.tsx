@@ -14,7 +14,7 @@ import {
   type RashifalSignBlock,
 } from "@/lib/api";
 import { instantCacheKey } from "@vedic-patro/domain/instant-query";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useLocale } from "@/lib/i18n";
 import { rashifalMonthLabel } from "@/lib/rashifal-ui";

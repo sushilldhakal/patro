@@ -8,7 +8,7 @@ import {
   type SaitSuitability,
 } from "@/lib/api";
 import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 
 /**
  * Native (profile-based) sait personalisation, shared by the vivah screen and

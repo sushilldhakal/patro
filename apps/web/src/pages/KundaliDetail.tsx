@@ -35,7 +35,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@/lib/kundali/profile-chart";
+import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/domain/kundali/profile-chart";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/domain/utils";

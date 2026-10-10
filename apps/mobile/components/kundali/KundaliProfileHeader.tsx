@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { Profile } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
-import { formatProfileBirthLabel } from "@/lib/kundali/profile-chart";
+import { formatProfileBirthLabel } from "@vedic-patro/domain/kundali/profile-chart";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 

@@ -19,7 +19,7 @@ import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { Text } from "@/components/ui/Text";
 import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import {
   DEFAULT_PANCHANGA_LOCATION,
   resolveLocationTimezone,

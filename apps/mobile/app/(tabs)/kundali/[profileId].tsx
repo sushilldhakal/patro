@@ -23,7 +23,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useLocale } from "@/lib/i18n";
 import { getStoredAyanamshaMode, setStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
-import { formatProfileBirthLabel, profileChartParams, profileLocation } from "@/lib/kundali/profile-chart";
+import { formatProfileBirthLabel, profileChartParams, profileLocation } from "@vedic-patro/domain/kundali/profile-chart";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";

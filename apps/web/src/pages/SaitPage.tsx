@@ -30,7 +30,7 @@ import {
   type SaitSuitability,
 } from "@/lib/api";
 import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 
 const routeApi = getRouteApi("/panchanga-shell/sait/$category");
 

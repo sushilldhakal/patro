@@ -12,44 +12,9 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from
 const ACCESS_KEY = "dhakalPatroAccessToken";
 const REFRESH_KEY = "dhakalPatroRefreshToken";
 
-export interface TokenPair {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_in: number;
-}
+import type { AuthUser, Profile, ProfileInput, TokenPair } from "@vedic-patro/api-client";
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  is_verified: boolean;
-  created_at: string;
-}
-
-export interface Profile {
-  id: string;
-  full_name: string;
-  phone: string | null;
-  email: string | null;
-  gender: string | null;
-  country: string | null;
-  city: string | null;
-  location_label: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  timezone: string | null;
-  birth_date: string | null;
-  birth_time: string | null;
-  birth_era: string | null;
-  notes: string | null;
-  is_default: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export type ProfileInput = Partial<Omit<Profile, "id" | "created_at" | "updated_at">> & {
-  full_name: string;
-};
+export type { AuthUser, Profile, ProfileInput, TokenPair };
 
 // ─── Token storage ──────────────────────────────────────────────────────────────
 

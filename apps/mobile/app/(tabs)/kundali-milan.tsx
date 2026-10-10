@@ -23,7 +23,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
 import { fetchKundaliMilan, milanKeys, type MilanPersonQuery } from "@/lib/api";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 
 export default function KundaliMilanScreen() {
   const { lang, pick, t } = useLocale();

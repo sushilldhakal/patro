@@ -23,7 +23,7 @@ import {
   rashifalKeys,
   type RashifalPeriod,
 } from "@/lib/api";
-import { profileChartParams } from "@/lib/kundali/profile-chart";
+import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { instantCacheKey } from "@vedic-patro/domain/instant-query";
 import { useLocale } from "@/lib/i18n";
 import {
