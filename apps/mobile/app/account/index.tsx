@@ -21,6 +21,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 const ACCOUNT_PROFILES_KEY = ["account-profiles"] as const;
 
@@ -222,7 +223,7 @@ export default function AccountScreen() {
                   </Text>
                   {p.is_default ? (
                     <View
-                      style={{ backgroundColor: colorWithAlpha("#0b565a", 0.15) }}
+                      style={{ backgroundColor: colorWithAlpha(brand.blue, 0.15) }}
                       className="flex-row items-center gap-1 rounded-full px-2 py-0.5"
                     >
                       <Ionicons name="star" size={10} color={colors.secondary} />

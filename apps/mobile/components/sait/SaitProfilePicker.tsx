@@ -13,6 +13,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /**
  * Lets a signed-in user pick one of their saved profiles so the sait dates get
@@ -109,7 +110,7 @@ export function SaitProfilePicker({
                 onSelect(opt.id ? (profiles?.find((p) => p.id === opt.id) ?? null) : null);
                 setSheetOpen(false);
               }}
-              style={active ? { backgroundColor: colorWithAlpha("#0b565a", 0.1) } : undefined}
+              style={active ? { backgroundColor: colorWithAlpha(brand.blue, 0.1) } : undefined}
               className="flex-row items-center justify-between gap-3 border-b border-border px-4 py-3.5 active:opacity-80"
             >
               <Text

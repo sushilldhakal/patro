@@ -1,5 +1,6 @@
 import type { SaitShuddhiTone, SaitSuitability } from "@/lib/api";
 import { SUITABILITY_STYLE as SUITABILITY_LABELS } from "@vedic-patro/domain/sait-suitability";
+import { brand } from "@vedic-patro/design-tokens";
 
 type Tone = { dot: string; bg: string; fg: string; ring: string; ne: string; en: string };
 
@@ -11,9 +12,9 @@ type Tone = { dot: string; bg: string; fg: string; ring: string; ne: string; en:
  */
 const NATIVE_COLOURS: Record<SaitSuitability, Pick<Tone, "dot" | "bg" | "fg" | "ring">> = {
   favourable: {
-    dot: "#2e7d32",
+    dot: brand.green,
     bg: "rgba(46,125,50,0.12)",
-    fg: "#2e7d32",
+    fg: brand.green,
     ring: "rgba(46,125,50,0.5)",
   },
   neutral: {
@@ -23,9 +24,9 @@ const NATIVE_COLOURS: Record<SaitSuitability, Pick<Tone, "dot" | "bg" | "fg" | "
     ring: "rgba(120,120,120,0.35)",
   },
   avoid: {
-    dot: "#c62828",
+    dot: brand.vermilion,
     bg: "rgba(198,40,40,0.12)",
-    fg: "#c62828",
+    fg: brand.vermilion,
     ring: "rgba(198,40,40,0.4)",
   },
 };
@@ -39,7 +40,7 @@ export const SUITABILITY_STYLE = Object.fromEntries(
 
 /** Chip colours for the graha-shuddhi / kumbha / anna-month tone flags. */
 export const SHUDDHI_TONE_STYLE: Record<SaitShuddhiTone, { bg: string; fg: string }> = {
-  good: { bg: "rgba(46,125,50,0.12)", fg: "#2e7d32" },
-  shanti: { bg: "rgba(230,126,34,0.15)", fg: "#b45309" },
-  avoid: { bg: "rgba(198,40,40,0.12)", fg: "#c62828" },
+  good: { bg: "rgba(46,125,50,0.12)", fg: brand.green },
+  shanti: { bg: "rgba(230,126,34,0.15)", fg: brand.saffronPressed },
+  avoid: { bg: "rgba(198,40,40,0.12)", fg: brand.vermilion },
 };

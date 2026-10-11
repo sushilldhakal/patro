@@ -11,6 +11,7 @@ import {
   TableScrollShell,
 } from "@/components/ui/DataTable";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 const KUTA_LABELS: Record<string, { en: string; ne: string }> = {
   varna: { en: "Varna", ne: "वर्ण" },
@@ -26,8 +27,8 @@ const KUTA_LABELS: Record<string, { en: string; ne: string }> = {
 const RECOMMENDATION_TONE: Record<AshtakutaResult["recommendation"], string> = {
   excellent: "#059669",
   very_good: "#0284c7",
-  middling: "#d97706",
-  inauspicious: "#c62828",
+  middling: brand.saffron,
+  inauspicious: brand.vermilion,
 };
 
 function formatObtained(n: number): string {

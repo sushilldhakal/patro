@@ -21,6 +21,7 @@ import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { scrollViewIntoView } from "@/lib/page-scroll";
+import { brand } from "@vedic-patro/design-tokens";
 
 function InfoTile({
   icon,
@@ -56,10 +57,10 @@ function InfoTile({
 }
 
 const REMEDY_BADGE: Record<GrahaShantiFinding["remedy"], { border: string; bg: string; text: string }> = {
-  shanti: { border: "#0b565a", bg: "#0b565a1a", text: "#0b565a" },
+  shanti: { border: brand.blue, bg: "#0b565a1a", text: brand.blue },
   strengthen: { border: "#10b98166", bg: "#10b9811a", text: "#059669" },
-  pacify: { border: "#f59e0b66", bg: "#f59e0b1a", text: "#d97706" },
-  pacify_transit: { border: "#f59e0b66", bg: "#f59e0b1a", text: "#d97706" },
+  pacify: { border: "#f59e0b66", bg: "#f59e0b1a", text: brand.saffron },
+  pacify_transit: { border: "#f59e0b66", bg: "#f59e0b1a", text: brand.saffron },
   soothe: { border: "#0ea5e966", bg: "#0ea5e91a", text: "#0284c7" },
 };
 
@@ -112,7 +113,7 @@ function ShantiFindingCard({
       </Text>
       <Pressable
         onPress={() => onSelect(finding.graha)}
-        style={{ backgroundColor: colorWithAlpha("#0b565a", 0.1) }}
+        style={{ backgroundColor: colorWithAlpha(brand.blue, 0.1) }}
         className="mt-3 flex-row items-center gap-1.5 self-start rounded-lg border border-secondary px-3 py-1.5 active:opacity-80"
       >
         <Ionicons name="arrow-down-circle-outline" size={14} color={colors.secondary} />
@@ -221,7 +222,7 @@ export function ShantiVidhiPanel({
       {/* recommendations from this chart — server-computed 4-step decision */}
       {isError ? (
         <View
-          style={{ backgroundColor: colorWithAlpha("#c62828", 0.1) }}
+          style={{ backgroundColor: colorWithAlpha(brand.vermilion, 0.1) }}
           className="rounded-lg border border-destructive/30 p-3"
         >
           <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
@@ -266,7 +267,7 @@ export function ShantiVidhiPanel({
               onPress={() => setSelectedKey(g.key)}
               style={{
                 width: selectorWidth as never,
-                backgroundColor: active ? colorWithAlpha("#0b565a", 0.1) : colors.card,
+                backgroundColor: active ? colorWithAlpha(brand.blue, 0.1) : colors.card,
                 borderColor: active ? colors.secondary : colors.border,
               }}
               className="items-center gap-1 rounded-xl border p-3 active:opacity-80"

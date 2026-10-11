@@ -1,15 +1,9 @@
 import { useWindowDimensions } from "react-native";
+import { breakpoints, size } from "@vedic-patro/design-tokens";
 
 export type Breakpoint = "phone" | "largePhone" | "tablet" | "desktop";
 
-export const BREAKPOINTS = {
-  xs: 400,
-  sm: 640,
-  md: 768,
-  calendarWide: 992,
-  lg: 1024,
-  xl: 1280,
-} as const;
+export const BREAKPOINTS = breakpoints;
 
 export function useBreakpoint() {
   const { width, height } = useWindowDimensions();
@@ -33,9 +27,9 @@ export function useBreakpoint() {
     columns: width >= BREAKPOINTS.lg ? 2 : 1,
     calendarCellSize:
       width >= BREAKPOINTS.lg
-        ? Math.min(72, Math.floor((width - 320) / 14))
+        ? Math.min(size.calendarCell.desktop, Math.floor((width - 320) / 14))
         : width >= BREAKPOINTS.md
-          ? Math.min(64, Math.floor((width - 200) / 10))
-          : Math.min(52, Math.floor((width - 48) / 7)),
+          ? Math.min(size.calendarCell.tablet, Math.floor((width - 200) / 10))
+          : Math.min(size.calendarCell.phone, Math.floor((width - 48) / 7)),
   };
 }

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/DataTable";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
+import { brand } from "@vedic-patro/design-tokens";
 
 type Tab = "holidays" | "festivals";
 type SortDir = "asc" | "desc";
@@ -207,8 +208,8 @@ export default function HolidaysScreen() {
       {isError ? (
         <View
           style={{
-            backgroundColor: colorWithAlpha("#c62828", 0.1),
-            borderColor: colorWithAlpha("#c62828", 0.2),
+            backgroundColor: colorWithAlpha(brand.vermilion, 0.1),
+            borderColor: colorWithAlpha(brand.vermilion, 0.2),
           }}
           className="rounded-xl border p-4"
         >

@@ -16,6 +16,7 @@ import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { colorWithAlpha } from "@/lib/theme";
+import { brand } from "@vedic-patro/design-tokens";
 
 export type ShadbalaScale = "virupas" | "rupas" | "absolute" | "required";
 
@@ -444,7 +445,7 @@ function PlanetInspector({
               value: planet.sub_balas?.sthana?.[row.key] ?? 0,
             }))}
             max={sthanaMax}
-            color="#d97706"
+            color={brand.saffron}
             digits={digits}
           />
           <SubBalaList
@@ -458,7 +459,7 @@ function PlanetInspector({
                   : (planet.sub_balas?.kala?.[row.key] ?? 0),
             }))}
             max={kalaMax}
-            color="#0b565a"
+            color={brand.blue}
             digits={digits}
           />
         </View>

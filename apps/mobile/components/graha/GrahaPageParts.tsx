@@ -10,6 +10,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /** Page banner — icon tile plus title and blurb, as on the web graha pages (`GrahaBanner`). */
 export function GrahaBanner({
@@ -32,7 +33,7 @@ export function GrahaBanner({
     >
       <View className="flex-row items-start gap-4">
         <View
-          style={{ backgroundColor: colorWithAlpha("#0b565a", 0.15) }}
+          style={{ backgroundColor: colorWithAlpha(brand.blue, 0.15) }}
           className="h-11 w-11 shrink-0 items-center justify-center rounded-xl"
         >
           <Ionicons name={icon} size={24} color={colors.secondary} />
@@ -165,7 +166,7 @@ export function GrahaColumnCard({
       className="mb-3 overflow-hidden rounded-xl border bg-card"
     >
       <View
-        style={{ backgroundColor: colorWithAlpha("#0b565a", 0.09) }}
+        style={{ backgroundColor: colorWithAlpha(brand.blue, 0.09) }}
         className="flex-row items-baseline justify-between gap-2 border-b border-border px-3 py-2"
       >
         <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>

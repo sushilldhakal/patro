@@ -23,6 +23,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
+import { brand } from "@vedic-patro/design-tokens";
 
 type AbhijitRow = {
   day: CalendarDay;
@@ -59,8 +60,8 @@ function AbhijitDayCard({
       style={{
         width: width as never,
         minHeight: 148,
-        borderColor: isToday ? colorWithAlpha("#0b565a", 0.5) : colors.border,
-        backgroundColor: isToday ? colorWithAlpha("#0b565a", 0.1) : colors.card,
+        borderColor: isToday ? colorWithAlpha(brand.blue, 0.5) : colors.border,
+        backgroundColor: isToday ? colorWithAlpha(brand.blue, 0.1) : colors.card,
       }}
       className="rounded-xl border p-3"
     >
@@ -74,7 +75,7 @@ function AbhijitDayCard({
         </Text>
         {isToday ? (
           <View
-            style={{ backgroundColor: colorWithAlpha("#0b565a", 0.2) }}
+            style={{ backgroundColor: colorWithAlpha(brand.blue, 0.2) }}
             className="shrink-0 rounded-full px-2 py-0.5"
           >
             <Text
@@ -197,8 +198,8 @@ export default function AbhijitMuhurtaScreen() {
       {todayRow ? (
         <View
           style={{
-            borderColor: colorWithAlpha("#0b565a", 0.3),
-            backgroundColor: colorWithAlpha("#0b565a", 0.1),
+            borderColor: colorWithAlpha(brand.blue, 0.3),
+            backgroundColor: colorWithAlpha(brand.blue, 0.1),
           }}
           className="mt-4 gap-4 overflow-hidden rounded-2xl border p-5"
         >

@@ -26,6 +26,7 @@ import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
+import { brand } from "@vedic-patro/design-tokens";
 
 export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
@@ -178,7 +179,7 @@ export default function SaitCategoryScreen() {
                       >
                         <Text
                           className="text-body font-num font-semibold"
-                          style={{ color: style ? style.fg : "#2e7d32" }}
+                          style={{ color: style ? style.fg : brand.green }}
                         >
                           {digits(d)}
                         </Text>

@@ -13,6 +13,7 @@ import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useTheme } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 const PLANET_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 
@@ -38,7 +39,7 @@ function gradeColors(grade: VimshopakaGrade, dark: boolean): { bg: string; fg: s
     case "mediocre":
       return { bg: colorWithAlpha(dark ? "#38bdf8" : "#0ea5e9", 0.15), fg: dark ? "#38bdf8" : "#0284c7" };
     case "little":
-      return { bg: colorWithAlpha(dark ? "#fbbf24" : "#f59e0b", 0.15), fg: dark ? "#fbbf24" : "#d97706" };
+      return { bg: colorWithAlpha(dark ? "#fbbf24" : "#f59e0b", 0.15), fg: dark ? "#fbbf24" : brand.saffron };
     case "incapable":
       return { bg: colorWithAlpha(dark ? "#f87171" : "#ef4444", 0.15), fg: dark ? "#f87171" : "#dc2626" };
   }

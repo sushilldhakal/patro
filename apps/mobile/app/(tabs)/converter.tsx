@@ -17,6 +17,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 const WEEKDAY_NE: Record<string, string> = {
   Sunday: "आइतबार",
@@ -146,8 +147,8 @@ export default function ConverterScreen() {
       {isError ? (
         <View
           style={{
-            backgroundColor: colorWithAlpha("#c62828", 0.1),
-            borderColor: colorWithAlpha("#c62828", 0.2),
+            backgroundColor: colorWithAlpha(brand.vermilion, 0.1),
+            borderColor: colorWithAlpha(brand.vermilion, 0.2),
           }}
           className="mb-4 rounded-xl border p-4"
         >

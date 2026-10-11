@@ -32,6 +32,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 export function grahaName(key: string, lang: "ne" | "en"): string {
   const meta = GRAHA_NAME[key as GrahaKey];
@@ -280,10 +281,10 @@ export function UpagrahaTable({ rows }: { rows: UpagrahaDetailRow[] }) {
 /* ── yogas ─────────────────────────────────────────────────────────────── */
 
 const YOGA_NATURE: Record<KundaliYoga["nature"], { ne: string; en: string; tone: string }> = {
-  auspicious: { ne: "शुभ", en: "Auspicious", tone: "#2e7d32" },
-  inauspicious: { ne: "अशुभ", en: "Inauspicious", tone: "#c62828" },
-  mixed: { ne: "मिश्रित", en: "Mixed", tone: "#d97706" },
-  caution: { ne: "सावधानी", en: "Caution", tone: "#d97706" },
+  auspicious: { ne: "शुभ", en: "Auspicious", tone: brand.green },
+  inauspicious: { ne: "अशुभ", en: "Inauspicious", tone: brand.vermilion },
+  mixed: { ne: "मिश्रित", en: "Mixed", tone: brand.saffron },
+  caution: { ne: "सावधानी", en: "Caution", tone: brand.saffron },
 };
 
 export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {

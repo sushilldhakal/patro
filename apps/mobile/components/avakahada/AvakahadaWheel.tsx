@@ -28,6 +28,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
 import { useBreakpoint } from "@/lib/responsive";
+import { brand } from "@vedic-patro/design-tokens";
 
 /**
  * react-native-svg types `Defs` without `children` and `onPress` as an
@@ -76,7 +77,7 @@ const W_SEP_SOFT = "rgba(143,191,193,0.16)";
 const W_INK = "#eaf3f1";
 const W_INK_DIM = "#a7c4c3";
 const W_INK_FAINT = "#84a3a2";
-const W_ACCENT = "#c62828";
+const W_ACCENT = brand.vermilion;
 const W_PADA = "#0d2024";
 const W_PADA_ALT = "#112a2f";
 const W_SURFACE_BORDER = "rgba(143,191,193,0.28)";

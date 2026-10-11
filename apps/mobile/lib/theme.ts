@@ -1,4 +1,11 @@
-import { brand, dark, light, withAlpha } from "@vedic-patro/design-tokens";
+import {
+  brand,
+  mobileRoles,
+  monthHero,
+  neutral,
+  tintRgba,
+  withAlpha,
+} from "@vedic-patro/design-tokens";
 export const APP_NAME_NE = "वैदिक पात्रो";
 export const APP_NAME_EN = "Vedic Patro";
 
@@ -21,17 +28,11 @@ export function relativeLuminance(hex: string): number {
  * vanishes on it; light-mode secondary is teal, so it still wants white.
  */
 export function inkOn(fill: string): string {
-  return relativeLuminance(fill) > 0.35 ? "#1a1410" : "#ffffff";
+  return relativeLuminance(fill) > 0.35 ? brand.ink : neutral.white;
 }
 
 /** Hex (#rrggbb) → rgba for native styles where Tailwind opacity modifiers are unreliable. */
-export function colorWithAlpha(hex: string, alpha: number): string {
-  const normalized = hex.replace("#", "");
-  const r = parseInt(normalized.slice(0, 2), 16);
-  const g = parseInt(normalized.slice(2, 4), 16);
-  const b = parseInt(normalized.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
+export const colorWithAlpha = withAlpha;
 
 /** Table header/zebra colors — use via `@/components/ui/DataTable`, not directly. */
 export function tableHeaderBackground(colors: ThemeColors, isDark: boolean): string {
@@ -82,7 +83,10 @@ export type ThemeColors = {
   heroOverlay: readonly [string, string, string];
 };
 
-// Colours come from @vedic-patro/design-tokens; only the derived tints live here.
+// Colours come from @vedic-patro/design-tokens; only the app's own choices live here.
+const light = mobileRoles("light");
+const dark = mobileRoles("dark");
+
 export const lightTheme: ThemeColors = {
   background: light.background,
   foreground: light.foreground,
@@ -95,22 +99,24 @@ export const lightTheme: ThemeColors = {
   primary: light.primary,
   secondary: light.secondary,
   destructive: light.destructive,
-  danger: light.destructive,
+  danger: light.danger,
   border: light.border,
   surfaceInset: light.surfaceInset,
   surfaceMuted: light.surfaceMuted,
-  surfaceToday: withAlpha(brand.vermilion, 0.14),
-  surfaceTintDanger: withAlpha(brand.vermilion, 0.07),
-  tabActive: withAlpha(light.tabActive, 0.12),
+  surfaceToday: tintRgba("surfaceToday"),
+  surfaceTintDanger: tintRgba("surfaceTintDanger"),
+  tabActive: tintRgba("tabActive"),
   glyph: light.glyph,
   accent: light.accent,
-  toneBest: withAlpha(brand.green, 0.14),
-  toneGood: withAlpha(brand.green, 0.09),
+  toneBest: tintRgba("toneBest"),
+  toneGood: tintRgba("toneGood"),
   toneNeutral: light.surfaceInset,
-  toneBad: withAlpha(brand.vermilion, 0.08),
+  toneBad: tintRgba("toneBad"),
   heroOverlay: ["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"],
 };
 
+// On midnight the app lays its tints on a little stronger than the website's
+// mixes so they still read on a phone screen outdoors.
 export const darkTheme: ThemeColors = {
   background: dark.background,
   foreground: dark.foreground,
@@ -122,7 +128,7 @@ export const darkTheme: ThemeColors = {
   primary: dark.primary,
   secondary: dark.secondary,
   destructive: dark.destructive,
-  danger: dark.destructive,
+  danger: dark.danger,
   border: dark.border,
   surfaceInset: dark.surfaceInset,
   surfaceMuted: dark.surfaceMuted,
@@ -139,17 +145,4 @@ export const darkTheme: ThemeColors = {
 };
 
 /** Month hero base tones — matches web month art palette when images unavailable. */
-export const MONTH_HERO_COLORS: Record<number, string> = {
-  1: "#0b565a",
-  2: "#084548",
-  3: "#1b5e20",
-  4: "#2e7d32",
-  5: "#b45309",
-  6: "#c62828",
-  7: "#0b565a",
-  8: "#084548",
-  9: "#1b5e20",
-  10: "#2e7d32",
-  11: "#b45309",
-  12: "#c62828",
-};
+export const MONTH_HERO_COLORS: Record<number, string> = monthHero;

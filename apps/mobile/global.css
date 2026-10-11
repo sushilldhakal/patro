@@ -8,43 +8,40 @@
     --tw-background: 248 246 242;
     --tw-foreground: 26 20 16;
     --tw-card: 255 255 255;
-    --tw-muted: 240 235 227;
+    --tw-muted: 242 231 203;
     --tw-muted-foreground: 92 74 58;
     --tw-primary: 217 119 6;
     --tw-primary-foreground: 255 255 255;
     --tw-secondary: 11 86 90;
     --tw-secondary-foreground: 255 255 255;
     --tw-destructive: 198 40 40;
-    --tw-border: 232 223 208;
+    --tw-border: 215 201 164;
     --tw-accent: 46 125 50;
-    --tw-surface-inset: 245 240 232;
-    --tw-surface-muted: 243 238 230;
+    --tw-surface-inset: 248 248 248;
+    --tw-surface-muted: 249 249 249;
     --tw-tab-active: 217 119 6;
     --tw-glyph: 26 20 16;
     --tw-danger: 198 40 40;
     /* tokens:light:end */
 
-    /* The only four text sizes in the app. Components use text-caption,
-       text-body, text-title, and text-display — nothing else. */
+    /* The only four text sizes in the app (text-caption, text-body,
+       text-title, text-display), and the plain variables the panchanga SVG
+       (timeline + wheel) reads on the web build. */
+    /* tokens:css-light:start — generated from packages/design-tokens, run `npm run tokens` */
     --text-caption: 15px;
     --text-body: 18px;
     --text-title: 22px;
     --text-display: 28px;
-
-    /* Semantic tokens used by panchanga SVG (timeline + wheel) */
-    --off-white: #f8f6f2;
-    --ink: #1a1410;
-    --ink-muted: #5c4a3a;
-    --parchment-card: #ffffff;
-    --background: var(--off-white);
-    --foreground: var(--ink);
-    --card: var(--parchment-card);
-    --muted-foreground: var(--ink-muted);
+    --background: #f8f6f2;
+    --foreground: #1a1410;
+    --card: #ffffff;
+    --muted-foreground: #5c4a3a;
     --secondary: #0b565a;
     --color-success: #2e7d32;
     --color-warning: #e67e22;
     --color-danger: #c62828;
     --brand-teal: #2e7d32;
+    /* tokens:css-light:end */
   }
 
   .dark {
@@ -52,7 +49,7 @@
     --tw-background: 15 18 32;
     --tw-foreground: 243 239 232;
     --tw-card: 23 28 49;
-    --tw-muted: 20 25 41;
+    --tw-muted: 25 29 49;
     --tw-muted-foreground: 166 171 192;
     --tw-primary: 245 158 66;
     --tw-primary-foreground: 26 20 16;
@@ -61,18 +58,18 @@
     --tw-destructive: 255 143 133;
     --tw-border: 39 46 74;
     --tw-accent: 232 195 106;
-    --tw-surface-inset: 20 25 41;
-    --tw-surface-muted: 18 22 38;
+    --tw-surface-inset: 30 34 54;
+    --tw-surface-muted: 29 33 54;
     --tw-tab-active: 245 158 66;
     --tw-glyph: 243 239 232;
     --tw-danger: 255 143 133;
     /* tokens:dark:end */
 
+    /* tokens:css-dark:start — generated from packages/design-tokens, run `npm run tokens` */
     --text-caption: 15px;
     --text-body: 18px;
     --text-title: 22px;
     --text-display: 28px;
-
     --background: #0f1220;
     --foreground: #f3efe8;
     --card: #171c31;
@@ -82,6 +79,7 @@
     --color-warning: #f59e42;
     --color-danger: #ff8f85;
     --brand-teal: #2e7d32;
+    /* tokens:css-dark:end */
   }
 
   /* Browser controls keep a black user-agent color and do not inherit it.
@@ -96,19 +94,25 @@
 
 /* ── Panchanga wheel + timeline (web parity) ─────────────── */
 :root {
+  /* tokens:palette:start — generated from packages/design-tokens, run `npm run tokens` */
+  --off-white: #f8f6f2;
+  --ink: #1a1410;
+  --ink-muted: #5c4a3a;
   --brand-saffron: #d97706;
   --brand-saffron-bright: #e67e22;
   --brand-vermilion: #c62828;
   --brand-gold: #d4a017;
   --brand-green: #2e7d32;
+  --pn-num: "Noto Sans Devanagari", sans-serif;
+  /* tokens:palette:end */
   --brand-teal: #0b565a;
   --brand-yellow: var(--brand-gold);
-  --pn-num: "Noto Sans Devanagari", sans-serif;
 }
 
 .pn-wheel {
   --pn-font: var(--font-sans);
   --pn-num: "Noto Sans Devanagari", sans-serif;
+  /* tokens:wheel:start — generated from packages/design-tokens, run `npm run tokens` */
   --pn-ring-soft: color-mix(in srgb, #8fbfc1 18%, transparent);
   --w-sky-0: #112c2a;
   --w-sky-1: #0a1a1b;
@@ -129,6 +133,7 @@
   --w-ink-faint: #84a3a2;
   --w-accent: var(--brand-vermilion);
   --w-accent-soft: color-mix(in srgb, var(--brand-vermilion) 22%, transparent);
+  /* tokens:wheel:end */
   color: var(--w-ink);
 }
 

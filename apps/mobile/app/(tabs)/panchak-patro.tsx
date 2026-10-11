@@ -20,8 +20,9 @@ import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
+import { brand } from "@vedic-patro/design-tokens";
 
-const AMBER_600 = "#d97706";
+const AMBER_600 = brand.saffron;
 const AMBER_BADGE_BG = "rgba(245,158,11,0.1)";
 const AMBER_BADGE_BORDER = "rgba(245,158,11,0.4)";
 

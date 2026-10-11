@@ -27,6 +27,7 @@ import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type Wheel
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
+import { brand } from "@vedic-patro/design-tokens";
 
 const DEG = Math.PI / 180;
 const CX = 500;
@@ -51,7 +52,7 @@ const W_SEP = "rgba(143,191,193,0.42)";
 /** var(--w-sep-soft) — color-mix(#8fbfc1 16%, transparent) */
 const W_SEP_SOFT = "rgba(143,191,193,0.16)";
 /** var(--w-accent) — var(--brand-vermilion) */
-const W_ACCENT = "#c62828";
+const W_ACCENT = brand.vermilion;
 /** var(--w-ink) */
 const W_INK = "#eaf3f1";
 /** var(--w-ink-dim) */

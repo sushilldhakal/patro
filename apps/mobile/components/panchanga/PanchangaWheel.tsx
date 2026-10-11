@@ -34,6 +34,7 @@ import {
   wheelLegendRow,
 } from "@/lib/wheel-classes";
 import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
+import { brand } from "@vedic-patro/design-tokens";
 
 export type { YearWheelScrub };
 
@@ -47,7 +48,7 @@ export type WheelCalendarPick = {
 };
 
 const W_BG = "#061f21";
-const W_ACCENT = "#c62828";
+const W_ACCENT = brand.vermilion;
 const W_INK = "#eaf3f1";
 const W_INK_DIM = "rgba(234, 243, 241, 0.65)";
 const W_INK_FAINT = "rgba(234, 243, 241, 0.45)";

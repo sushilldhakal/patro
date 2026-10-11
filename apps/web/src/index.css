@@ -5,13 +5,62 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Extra-small breakpoint (min-width). Tailwind ships sm/md/lg/xl/2xl but no
-     xs, so `xs:` did nothing before this. Set to 400px so it fires on large
-     phones (iPhone 14 Pro Max = 430px) and up — not just tablets. Remember it's
-     mobile-first: `xs:text-sm` applies from 400px UPWARD (desktop too),
-     so pair it with `md:`/`lg:` overrides to keep the bump phone-only. Also
-     enables `max-xs:` (< 400px) for the smallest phones. */
+  /* Breakpoints, text scale, radii and tinted surfaces come from
+     packages/design-tokens. `xs` (400px) fires on large phones and up;
+     the text scale is the ONLY font sizes used — prefer the named utilities
+     (text-xs … text-4xl), avoid arbitrary text-[Npx] values. */
+  /* tokens:tailwind-theme:start — generated from packages/design-tokens, run `npm run tokens` */
   --breakpoint-xs: 25rem;
+  --text-xs: 0.675rem; /* 10.8px */
+  --text-xs--line-height: 1.2593;
+  --text-sm: 0.875rem; /* 14px */
+  --text-sm--line-height: 1.4286;
+  --text-base: 1rem; /* 16px */
+  --text-base--line-height: 1.5;
+  --text-lg: 1.125rem; /* 18px */
+  --text-lg--line-height: 1.5556;
+  --text-xl: 1.25rem; /* 20px */
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.5rem; /* 24px */
+  --text-2xl--line-height: 1.3333;
+  --text-3xl: 1.875rem; /* 30px */
+  --text-3xl--line-height: 1.2;
+  --text-4xl: 2.25rem; /* 36px */
+  --text-4xl--line-height: 1.1111;
+  --radius-sm: calc(var(--radius-base) - 4px);
+  --radius-md: calc(var(--radius-base) - 2px);
+  --radius-lg: var(--radius-base);
+  --radius-xl: calc(var(--radius-base) + 4px);
+  --radius-2xl: 16px;
+  --color-surface-inset: color-mix(in srgb, var(--foreground) 3%, var(--card));
+  --color-surface-muted: color-mix(in srgb, var(--foreground) 2.5%, var(--card));
+  --color-surface-hover: color-mix(in srgb, var(--brand-saffron) 7%, var(--card));
+  --color-surface-today: color-mix(in srgb, var(--brand-vermilion) 14%, var(--card));
+  --color-surface-today-hover: color-mix(in srgb, var(--brand-vermilion) 22%, var(--card));
+  --color-surface-tint-danger: color-mix(in srgb, var(--color-danger) 7%, var(--card));
+  --color-surface-tint-teal: color-mix(in srgb, var(--brand-green) 9%, var(--card));
+  --color-chip-public: color-mix(in srgb, var(--color-danger) 12%, var(--card));
+  --color-chip-festival: color-mix(in srgb, var(--brand-green) 14%, var(--card));
+  --color-tab-active: color-mix(in srgb, var(--brand-saffron) 12%, var(--card));
+  --color-tab-hover: color-mix(in srgb, var(--brand-saffron) 6%, var(--card));
+  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--card));
+  --color-error-surface: color-mix(in srgb, var(--color-danger) 10%, var(--card));
+  --color-gochar-chip: color-mix(in srgb, var(--brand-gold) 28%, var(--card));
+  --color-hol-tile-public: color-mix(in srgb, var(--color-danger) 11%, var(--card));
+  --color-hol-tile-festival: color-mix(in srgb, var(--brand-green) 13%, var(--card));
+  --color-tone-best: color-mix(in srgb, var(--brand-green) 12%, var(--card));
+  --color-tone-good: color-mix(in srgb, var(--brand-green) 8%, var(--card));
+  --color-tone-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
+  --color-tone-bad: color-mix(in srgb, var(--color-danger) 6%, var(--card));
+  --color-tone-worst: color-mix(in srgb, var(--color-danger) 10%, var(--card));
+  --color-slot-good: color-mix(in srgb, var(--brand-green) 10%, var(--card));
+  --color-slot-bad: color-mix(in srgb, var(--color-danger) 8%, var(--card));
+  --color-slot-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
+  --color-badge-good: color-mix(in srgb, var(--brand-green) 16%, var(--card));
+  --color-badge-bad: color-mix(in srgb, var(--color-danger) 12%, var(--card));
+  --color-badge-neutral: color-mix(in srgb, var(--foreground) 8%, var(--card));
+  --color-pushkara-hit: color-mix(in srgb, var(--brand-green) 10%, var(--card));
+  /* tokens:tailwind-theme:end */
   --font-devanagari: "Noto Sans Devanagari", sans-serif;
   --font-sans: var(--font-devanagari);
   --font-heading: var(--font-devanagari);
@@ -35,63 +84,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius-base) - 4px);
-  --radius-md: calc(var(--radius-base) - 2px);
-  --radius-lg: var(--radius-base);
-  --radius-xl: calc(var(--radius-base) + 4px);
-  --radius-2xl: 16px;
   --font-num: var(--pn-num);
-  /* Global text scale — the ONLY font sizes used across the app. Prefer the
-     named utilities (text-xs … text-4xl); avoid arbitrary text-[Npx] values.
-     text-xs is for the smallest labels; use up to text-4xl for headings. */
-  --text-xs: 0.675rem; /* 10.8px — tiny labels for small mobile devices */
-  --text-xs--line-height: calc(0.85 / 0.675);
-  --text-sm: 0.875rem; /* 14px */
-  --text-sm--line-height: calc(1.25 / 0.875);
-  --text-base: 1rem; /* 16px */
-  --text-base--line-height: calc(1.5 / 1);
-  --text-lg: 1.125rem; /* 18px */
-  --text-lg--line-height: calc(1.75 / 1.125);
-  --text-xl: 1.25rem; /* 20px */
-  --text-xl--line-height: calc(1.75 / 1.25);
-  --text-2xl: 1.5rem; /* 24px */
-  --text-2xl--line-height: calc(2 / 1.5);
-  --text-3xl: 1.875rem; /* 30px */
-  --text-3xl--line-height: calc(2.25 / 1.875);
-  --text-4xl: 2.25rem; /* 36px */
-  --text-4xl--line-height: calc(2.5 / 2.25);
   --color-warning: var(--color-warning);
   --color-danger: var(--color-danger);
-  --color-surface-inset: color-mix(in srgb, var(--foreground) 3%, var(--card));
-  --color-surface-muted: color-mix(in srgb, var(--foreground) 2.5%, var(--card));
-  --color-surface-hover: color-mix(in srgb, var(--brand-saffron) 7%, var(--card));
-  --color-surface-today: color-mix(in srgb, var(--brand-vermilion) 14%, var(--card));
-  --color-surface-today-hover: color-mix(in srgb, var(--brand-vermilion) 22%, var(--card));
-  --color-surface-tint-danger: color-mix(in srgb, var(--color-danger) 7%, var(--card));
-  --color-surface-tint-teal: color-mix(in srgb, var(--brand-green) 9%, var(--card));
-  --color-chip-public: color-mix(in srgb, var(--color-danger) 12%, var(--card));
-  --color-chip-festival: color-mix(in srgb, var(--brand-green) 14%, var(--card));
-  --color-tab-active: color-mix(in srgb, var(--brand-saffron) 12%, var(--card));
-  --color-tab-hover: color-mix(in srgb, var(--brand-saffron) 6%, var(--card));
-  --color-warning-surface: color-mix(in srgb, var(--color-warning) 10%, var(--card));
-  --color-error-surface: color-mix(in srgb, var(--color-danger) 10%, var(--card));
-  --color-gochar-chip: color-mix(in srgb, var(--brand-gold) 28%, var(--card));
   --color-gochar-chip-dark: color-mix(in srgb, var(--brand-gold) 18%, var(--muted));
   --color-fest-today: color-mix(in srgb, var(--brand-vermilion) 8%, transparent);
-  --color-hol-tile-public: color-mix(in srgb, var(--color-danger) 11%, var(--card));
-  --color-hol-tile-festival: color-mix(in srgb, var(--brand-green) 13%, var(--card));
-  --color-tone-best: color-mix(in srgb, var(--brand-green) 12%, var(--card));
-  --color-tone-good: color-mix(in srgb, var(--brand-green) 8%, var(--card));
-  --color-tone-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
-  --color-tone-bad: color-mix(in srgb, var(--color-danger) 6%, var(--card));
-  --color-tone-worst: color-mix(in srgb, var(--color-danger) 10%, var(--card));
-  --color-slot-good: color-mix(in srgb, var(--brand-green) 10%, var(--card));
-  --color-slot-bad: color-mix(in srgb, var(--color-danger) 8%, var(--card));
-  --color-slot-neutral: color-mix(in srgb, var(--foreground) 4%, var(--card));
-  --color-badge-good: color-mix(in srgb, var(--brand-green) 16%, var(--card));
-  --color-badge-bad: color-mix(in srgb, var(--color-danger) 12%, var(--card));
-  --color-badge-neutral: color-mix(in srgb, var(--foreground) 8%, var(--card));
-  --color-pushkara-hit: color-mix(in srgb, var(--brand-green) 10%, var(--card));
   --color-panchang: var(--brand-green);
   --color-overlay: color-mix(in srgb, var(--foreground) 35%, transparent);
   --color-success: var(--color-success);
@@ -133,31 +130,50 @@
 
   --parchment: var(--off-white);
   --parchment-card: #ffffff;
-  --parchment-border: color-mix(in srgb, var(--brand-gold) 32%, var(--off-white));
-  --silver: color-mix(in srgb, var(--brand-gold) 22%, #d8d4cc);
-  --slate-input: #4a4540;
 
 
-  --color-success: var(--brand-green);
-  --color-warning: var(--brand-saffron-bright);
-  --color-danger: var(--brand-vermilion);
-  --color-info: var(--brand-blue);
-
+  /* tokens:theme-light:start — generated from packages/design-tokens, run `npm run tokens` */
+  --color-success: #2e7d32;
+  --color-warning: #e67e22;
+  --color-danger: #c62828;
+  --color-info: #0b565a;
   --font-devanagari: "Noto Sans Devanagari", sans-serif;
   --font-sans: var(--font-devanagari);
   --font-heading: var(--font-devanagari);
   --font-en: "Noto Sans Devanagari", sans-serif;
   --font-mono: "Fira Code", monospace;
-
-  /* Typography is driven entirely by the Tailwind text scale (--text-xs …
-     --text-4xl in @theme). Base body text = --text-sm (14px). */
-
   --tracking-tight: -0.01em;
   --tracking-eyebrow: 0.12em;
-
   --radius-base: 0.3rem;
   --radius-pill: 999px;
-
+  --motion-fast: 120ms;
+  --motion-standard: 200ms;
+  --motion-slow: 320ms;
+  --motion-spring-interactive: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --background: #f8f6f2;
+  --foreground: #1a1410;
+  --card: #ffffff;
+  --card-foreground: #1a1410;
+  --popover: #ffffff;
+  --popover-foreground: #1a1410;
+  --primary: #d97706;
+  --primary-foreground: #ffffff;
+  --secondary: #0b565a;
+  --secondary-foreground: #ffffff;
+  --muted: #f2e7cb;
+  --muted-foreground: #5c4a3a;
+  --accent: #d4a017;
+  --accent-foreground: #1a1410;
+  --destructive: #c62828;
+  --destructive-foreground: #ffffff;
+  --border: #d7c9a4;
+  --input: #4a4540;
+  --ring: #d97706;
+  --sidebar-accent: #d97706;
+  --parchment-border: #ecdaac;
+  --chart-4: #0b565a;
+  --chart-5: #e67e22;
   --shadow-xs: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.09);
   --shadow-sm: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.18),
     0px 1px 2px -1px hsl(28.125 25% 25.098% / 0.18);
@@ -165,40 +181,11 @@
     0px 2px 4px -1px hsl(28.125 25% 25.098% / 0.18);
   --shadow-lg: 0px 2px 3px 0px hsl(28.125 25% 25.098% / 0.18),
     0px 4px 6px -1px hsl(28.125 25% 25.098% / 0.18);
-
-  --motion-fast: 120ms;
-  --motion-standard: 200ms;
-  --motion-slow: 320ms;
-  --motion-spring-interactive: cubic-bezier(0.34, 1.3, 0.64, 1);
-  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
-
-  --background: var(--off-white);
-  --foreground: var(--ink);
-  --card: var(--parchment-card);
-  --card-foreground: var(--ink);
-  --popover: var(--parchment-card);
-  --popover-foreground: var(--ink);
-  --primary: var(--brand-saffron);
-  --primary-foreground: #ffffff;
-  --secondary: var(--brand-blue);
-  --secondary-foreground: #ffffff;
-  --muted: color-mix(in srgb, var(--brand-gold) 18%, var(--off-white));
-  --muted-foreground: var(--ink-muted);
-  --accent: var(--brand-gold);
-  --accent-foreground: var(--ink);
-  --destructive: var(--color-danger);
-  --destructive-foreground: #ffffff;
-  --border: var(--silver);
-  --input: var(--slate-input);
-  --ring: var(--brand-saffron);
-  --sidebar-accent: var(--brand-saffron);
+  /* tokens:theme-light:end */
 
   --pn-font: var(--font-devanagari);
   --pn-num: var(--font-devanagari);
   --pn-ring-soft: color-mix(in srgb, var(--brand-gold) 28%, transparent);
-
-  --chart-4: var(--brand-blue);
-  --chart-5: var(--brand-saffron-bright);
 }
 
 /* राशि / नक्षत्र glyph colour — one place for every glyph in the app. */
@@ -214,33 +201,30 @@
 }
 
 .dark {
-  --background: var(--midnight);
-  --foreground: var(--foam);
-  --card: var(--midnight-card);
-  --card-foreground: var(--foam);
-  --popover: var(--midnight-popover);
-  --popover-foreground: var(--foam);
-  --primary: var(--dark-saffron);
+  /* tokens:theme-dark:start — generated from packages/design-tokens, run `npm run tokens` */
+  --background: #0f1220;
+  --foreground: #f3efe8;
+  --card: #171c31;
+  --card-foreground: #f3efe8;
+  --popover: #0b0e1a;
+  --popover-foreground: #f3efe8;
+  --primary: #f59e42;
   --primary-foreground: #1a1410;
-  --secondary: var(--dark-gold);
+  --secondary: #e8c36a;
   --secondary-foreground: #1a1410;
-  --muted: color-mix(in srgb, var(--midnight-line) 40%, var(--midnight));
+  --muted: #191d31;
   --muted-foreground: #a6abc0;
-  --accent: var(--dark-gold);
-  --accent-foreground: var(--ink);
-  --destructive: var(--dark-vermilion);
+  --accent: #e8c36a;
+  --accent-foreground: #1a1410;
+  --destructive: #ff8f85;
   --destructive-foreground: #1a1410;
-  --border: var(--midnight-line);
-  --input: color-mix(in srgb, var(--foam) 18%, var(--midnight-card));
-  --ring: var(--dark-gold);
-  --sidebar-accent: var(--dark-saffron);
-
-  --parchment-border: color-mix(in srgb, var(--dark-gold) 20%, var(--midnight-card));
-  --silver: color-mix(in srgb, var(--dark-gold) 14%, var(--midnight-card));
-
-  --chart-4: var(--dark-gold);
-  --chart-5: var(--dark-saffron);
-
+  --border: #272e4a;
+  --input: #3f4252;
+  --ring: #e8c36a;
+  --sidebar-accent: #f59e42;
+  --parchment-border: #413d3c;
+  --chart-4: #e8c36a;
+  --chart-5: #f59e42;
   --shadow-xs: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.09);
   --shadow-sm: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
     0px 1px 2px -1px hsl(0 0% 10.196% / 0.18);
@@ -248,6 +232,7 @@
     0px 2px 4px -1px hsl(0 0% 10.196% / 0.18);
   --shadow-lg: 0px 2px 3px 0px hsl(0 0% 10.196% / 0.18),
     0px 4px 6px -1px hsl(0 0% 10.196% / 0.18);
+  /* tokens:theme-dark:end */
 }
 
 @layer base {
@@ -301,6 +286,7 @@
 /* ── Panchanga Chakra (cosmic wheel) ─────────────────────── */
 .pn-wheel {
   --pn-font: var(--font-sans);
+  /* tokens:wheel:start — generated from packages/design-tokens, run `npm run tokens` */
   --pn-ring-soft: color-mix(in srgb, #8fbfc1 18%, transparent);
   --w-sky-0: #112c2a;
   --w-sky-1: #0a1a1b;
@@ -321,6 +307,7 @@
   --w-ink-faint: #84a3a2;
   --w-accent: var(--brand-vermilion);
   --w-accent-soft: color-mix(in srgb, var(--brand-vermilion) 22%, transparent);
+  /* tokens:wheel:end */
   color: var(--w-ink);
 }
 

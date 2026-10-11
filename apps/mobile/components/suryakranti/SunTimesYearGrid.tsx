@@ -28,6 +28,7 @@ import { eraToApi, isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { brand } from "@vedic-patro/design-tokens";
 
 const DAY_COL = 48;
 const MONTH_COL = 84;
@@ -37,8 +38,8 @@ const CELL_FONT_AYANA = 11;
 const HEADER_FONT = 12;
 const DAY_ROW_FONT = 13;
 
-const AYANA_NORTH = "#2e7d32";
-const AYANA_SOUTH = "#c62828";
+const AYANA_NORTH = brand.green;
+const AYANA_SOUTH = brand.vermilion;
 
 const GREGORIAN_MONTH_SHORT_EN = [
   "Jan",

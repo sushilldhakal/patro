@@ -45,8 +45,9 @@ import { Button } from "@/components/ui/button";
 import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { currentPatroDayLinkSearch } from "@/lib/url-state";
 import { smoothScrollToElement } from "@/lib/scroll";
+import { minWidthQuery } from "@vedic-patro/design-tokens";
 
-const ASIDE_SIDEBAR_MQ = "(min-width: 1280px)";
+const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 const PANCHANGA_SCROLL_OFFSET = 72; // sticky header (h-16) + small gap
 
 const routeApi = getRouteApi("/");

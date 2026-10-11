@@ -9,6 +9,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /** A rule with its catalogue keys resolved into both languages. */
 interface ResolvedRule {
@@ -146,7 +147,7 @@ export function SaitRulesSection({
                 >
                   <View className="flex-row items-start gap-2">
                     <View
-                      style={{ backgroundColor: colorWithAlpha("#0b565a", 0.15) }}
+                      style={{ backgroundColor: colorWithAlpha(brand.blue, 0.15) }}
                       className="h-6 w-6 items-center justify-center rounded-md"
                     >
                       <Text

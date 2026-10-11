@@ -8,6 +8,7 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { inkOn, relativeLuminance, type ThemeColors } from "@/lib/theme";
 import { cn } from "@vedic-patro/domain/utils";
+import { brand } from "@vedic-patro/design-tokens";
 
 type Props = RNTextProps & { className?: string };
 
@@ -36,7 +37,7 @@ function themedTextColor(className: string | undefined, colors: ThemeColors): st
   /* Dark-mode primary is a light orange. White type on it is hard to read. */
   if (/\btext-primary-foreground\b/.test(className)) {
     return relativeLuminance(colors.background) < 0.2 && relativeLuminance(colors.primary) > 0.2
-      ? "#1a1410"
+      ? brand.ink
       : "#ffffff";
   }
   if (/\btext-primary\b/.test(className)) return colors.primary;

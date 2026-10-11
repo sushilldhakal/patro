@@ -59,6 +59,7 @@ import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-head
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { brand } from "@vedic-patro/design-tokens";
 
 function clockFromGhati(sunriseMin: number | null, g: number): string | null {
   if (sunriseMin == null) return null;
@@ -130,7 +131,7 @@ function SpanBoundary({
 
   return (
     <View
-      style={{ backgroundColor: colorWithAlpha(tone === "begin" ? "#2e7d32" : "#c62828", 0.1) }}
+      style={{ backgroundColor: colorWithAlpha(tone === "begin" ? brand.green : brand.vermilion, 0.1) }}
       className="gap-0.5 rounded-md px-2 py-1.5"
     >
       <View className="flex-row items-center justify-between gap-2">
@@ -205,9 +206,9 @@ function ToneRow({
 }) {
   const colors = useThemeColors();
   const tone = bad
-    ? { bg: colorWithAlpha("#c62828", 0.1), fg: colors.danger }
+    ? { bg: colorWithAlpha(brand.vermilion, 0.1), fg: colors.danger }
     : good
-      ? { bg: colorWithAlpha("#2e7d32", 0.12), fg: colors.accent }
+      ? { bg: colorWithAlpha(brand.green, 0.12), fg: colors.accent }
       : { bg: colors.surfaceInset, fg: colors.foreground };
 
   return (
@@ -226,7 +227,7 @@ function ToneRow({
         </Text>
         {badge ? (
           <View
-            style={{ backgroundColor: colorWithAlpha("#0b565a", 0.2) }}
+            style={{ backgroundColor: colorWithAlpha(brand.blue, 0.2) }}
             className="rounded-full px-1.5 py-px"
           >
             <Text style={{ color: colors.secondary, ...nepaliTextStyle(12) }} className="text-body font-bold">

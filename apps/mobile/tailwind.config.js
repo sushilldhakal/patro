@@ -1,3 +1,11 @@
+/**
+ * Sizes, breakpoints, fonts, radii and fixed colours come from
+ * @vedic-patro/design-tokens (generated JSON, since this file is CommonJS);
+ * theme colours are the `--tw-*` channels `npm run tokens` writes into
+ * global.css and lib/nativewind-theme-vars.ts injects on native.
+ */
+const tokens = require("@vedic-patro/design-tokens/mobile-tailwind.json");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -8,21 +16,10 @@ module.exports = {
   presets: [require("nativewind/preset")],
   darkMode: "class",
   theme: {
-    /* Replaces Tailwind's default scale. Pixel values match --text-* in global.css. */
-    fontSize: {
-      caption: ["15px", { lineHeight: "24px" }],
-      body: ["18px", { lineHeight: "29px" }],
-      title: ["22px", { lineHeight: "36px" }],
-      display: ["28px", { lineHeight: "45px" }],
-    },
+    /* Replaces Tailwind's default scale: the app's only four text sizes. */
+    fontSize: tokens.fontSize,
     extend: {
-      screens: {
-        xs: "400px",
-        sm: "640px",
-        md: "768px",
-        lg: "1024px",
-        xl: "1280px",
-      },
+      screens: tokens.screens,
       colors: {
         background: "rgb(var(--tw-background) / <alpha-value>)",
         foreground: "rgb(var(--tw-foreground) / <alpha-value>)",
@@ -40,26 +37,13 @@ module.exports = {
         ring: "rgb(var(--tw-primary) / <alpha-value>)",
         saffron: "rgb(var(--tw-primary) / <alpha-value>)",
         vermilion: "rgb(var(--tw-destructive) / <alpha-value>)",
-        gold: "#d4a017",
+        ...tokens.colors,
         "surface-inset": "rgb(var(--tw-surface-inset) / <alpha-value>)",
         "surface-muted": "rgb(var(--tw-surface-muted) / <alpha-value>)",
-        "surface-today": "rgba(198, 40, 40, 0.14)",
-        "surface-today-hover": "rgba(198, 40, 40, 0.22)",
-        "surface-hover": "rgba(217, 119, 6, 0.07)",
-        "surface-tint-danger": "rgba(198, 40, 40, 0.07)",
         "tab-active": "rgba(var(--tw-tab-active) / 0.12)",
         "tab-hover": "rgba(var(--tw-tab-active) / 0.06)",
-        "fest-today": "rgba(198, 40, 40, 0.08)",
       },
-      fontFamily: {
-        sans: ["NotoSansDevanagari_400Regular"],
-        medium: ["NotoSansDevanagari_500Medium"],
-        semibold: ["NotoSansDevanagari_600SemiBold"],
-        bold: ["NotoSansDevanagari_700Bold"],
-        mono: ["FiraCode_400Regular"],
-        num: ["NotoSansDevanagari_400Regular"],
-        "num-bold": ["NotoSansDevanagari_700Bold"],
-      },
+      fontFamily: tokens.fontFamily,
       /* Web (Tailwind 4) accepts any `/N` alpha; v3's scale skips 8, 12, 15, 18, 35,
          45, 55, 65, 85 — so `bg-secondary/8` etc. silently drew nothing here. */
       opacity: {
@@ -73,10 +57,7 @@ module.exports = {
         65: "0.65",
         85: "0.85",
       },
-      borderRadius: {
-        lg: "8px",
-        xl: "12px",
-      },
+      borderRadius: tokens.borderRadius,
     },
   },
   plugins: [],

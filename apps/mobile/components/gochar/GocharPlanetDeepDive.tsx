@@ -16,6 +16,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 function windowLine(
   labelNe: string,
@@ -105,7 +106,7 @@ export function GocharPlanetDeepDive({
                 width: pickerWidth as never,
                 borderColor: active ? colors.secondary : colors.border,
                 backgroundColor: active
-                  ? colorWithAlpha("#0b565a", 0.15)
+                  ? colorWithAlpha(brand.blue, 0.15)
                   : colors.surfaceInset,
               }}
               className="items-center gap-1 rounded-xl border px-1.5 py-2 active:opacity-80"

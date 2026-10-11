@@ -9,6 +9,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { brand } from "@vedic-patro/design-tokens";
 
 export function FloatingNavBar() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export function FloatingNavBar() {
           maxWidth: barMaxWidth,
           alignSelf: "center",
           width: "100%",
-          shadowColor: "#1a1410",
+          shadowColor: brand.ink,
           shadowOffset: { width: 0, height: 6 },
           shadowOpacity: 0.12,
           shadowRadius: 16,

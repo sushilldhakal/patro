@@ -21,6 +21,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /** ~15 calendar-day rows visible; additional events scroll inside the panel. */
 const INGRESS_VISIBLE_DAY_ROWS = 15;
@@ -107,7 +108,7 @@ export function GocharIngressSection({
               style={{
                 borderColor: active ? colors.secondary : colors.border,
                 backgroundColor: active
-                  ? colorWithAlpha("#0b565a", 0.15)
+                  ? colorWithAlpha(brand.blue, 0.15)
                   : colors.background,
               }}
               className="rounded-lg border px-2 py-1.5 active:opacity-80"

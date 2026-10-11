@@ -11,6 +11,7 @@ import { SHUDDHI_TONE_STYLE, SUITABILITY_STYLE } from "@/lib/sait-suitability-st
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /**
  * One qualifying muhūrta day: the representative clean window plus the
@@ -97,7 +98,7 @@ export function SaitDayCard({
           </View>
 
           <View
-            style={{ backgroundColor: colorWithAlpha("#0b565a", 0.12) }}
+            style={{ backgroundColor: colorWithAlpha(brand.blue, 0.12) }}
             className="flex-row items-center gap-1.5 self-start rounded-md px-2 py-1"
           >
             <Ionicons name="time-outline" size={13} color={colors.secondary} />

@@ -52,8 +52,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroMdRail, patroSegBtn } from "@/lib/patro-classes";
 import { ArrowLeftRight } from "lucide-react";
+import { minWidthQuery } from "@vedic-patro/design-tokens";
 
-const ASIDE_SIDEBAR_MQ = "(min-width: 1280px)";
+const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 
 function anchorDateForBrowseMonth(
   browseYear: number,

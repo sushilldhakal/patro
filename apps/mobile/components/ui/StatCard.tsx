@@ -3,6 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { brand } from "@vedic-patro/design-tokens";
 
 /** Label + value tile — mirrors the web StatCard. */
 export function StatCard({
@@ -23,8 +24,8 @@ export function StatCard({
     <View
       style={{
         ...(width ? { width: width as never } : {}),
-        borderColor: highlight ? colorWithAlpha("#0b565a", 0.4) : colors.border,
-        backgroundColor: highlight ? colorWithAlpha("#0b565a", 0.05) : colors.card,
+        borderColor: highlight ? colorWithAlpha(brand.blue, 0.4) : colors.border,
+        backgroundColor: highlight ? colorWithAlpha(brand.blue, 0.05) : colors.card,
       }}
       className="gap-1 rounded-xl border p-4"
     >
