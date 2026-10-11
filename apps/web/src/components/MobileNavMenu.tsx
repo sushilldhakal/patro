@@ -2,31 +2,7 @@ import type { LinkProps } from "@tanstack/react-router";
 import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
-  ArrowLeftRight,
-  BookMarked,
-  BookOpen,
-  CalendarClock,
-  CalendarDays,
-  CalendarRange,
-  Clock3,
-  Compass,
-  Eclipse,
-  Grid3x3,
-  Heart,
-  HeartHandshake,
-  Home,
-  Layers,
-  Moon,
-  MoonStar,
-  Orbit,
-  PartyPopper,
-  RotateCcw,
-  Route,
-  Sparkles,
   Sprout,
-  Star,
-  Sunrise,
-  Sun,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -49,6 +25,7 @@ import {
 } from "@/lib/url-state";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { featureIcon, navEntryIcon } from "@/lib/nav-icons";
 
 /** Promoted into the Main row so they are not repeated in later groups. */
 const DRAWER_MAIN_PROMOTED_IDS = new Set([
@@ -58,50 +35,6 @@ const DRAWER_MAIN_PROMOTED_IDS = new Set([
   "rashifal",
   "panchanga-year",
 ]);
-
-const PATRO_ITEM_ICONS: Record<string, LucideIcon> = {
-  holidays: PartyPopper,
-  converter: ArrowLeftRight,
-  suryakranti: Sunrise,
-  "panchanga-year": CalendarRange,
-  dainikkranti: Moon,
-  "panchak-patro": CalendarClock,
-  ritu: Sprout,
-};
-
-const JYOTISH_ITEM_ICONS: Record<string, LucideIcon> = {
-  avakahada: Grid3x3,
-  abhijit: Sparkles,
-  kundali: Sparkles,
-  "kundali-milan": Heart,
-  rashifal: Sun,
-};
-
-const SPAN_ITEM_ICONS: Record<string, LucideIcon> = {
-  tithi: Moon,
-  nakshatra: Star,
-  yoga: Sparkles,
-  karana: Layers,
-  "chandra-rashi": MoonStar,
-};
-
-const TABLE_ITEM_ICONS: Record<string, LucideIcon> = {
-  choghadiya: Clock3,
-  hora: Clock3,
-  lagna: Sunrise,
-  chandrabala: MoonStar,
-  tarabala: Star,
-  "panchaka-rahita": CalendarClock,
-  pushkara: Sparkles,
-};
-
-const GRAHA_ITEM_ICONS: Record<string, LucideIcon> = {
-  gochar: Route,
-  "graha-asta": Sunrise,
-  "graha-vakri": RotateCcw,
-  "chandra-grahan": MoonStar,
-  "surya-grahan": Eclipse,
-};
 
 function itemSearch(
   item: PanchangaSidebarItem,
@@ -119,16 +52,6 @@ function itemSearch(
     ? resolveSidebarLinkPath(item.to, item.params)
     : item.to;
   return patroRouteLinkSearch(path, location, era, urlBrowse) as Record<string, unknown>;
-}
-
-function resolveIcon(sectionId: string, itemId: string): LucideIcon {
-  if (sectionId === "patro") return PATRO_ITEM_ICONS[itemId] ?? CalendarDays;
-  if (sectionId === "jyotish") return JYOTISH_ITEM_ICONS[itemId] ?? Sparkles;
-  if (sectionId === "spans") return SPAN_ITEM_ICONS[itemId] ?? MoonStar;
-  if (sectionId === "tables") return TABLE_ITEM_ICONS[itemId] ?? CalendarClock;
-  if (sectionId === "graha") return GRAHA_ITEM_ICONS[itemId] ?? Orbit;
-  if (sectionId === "sait") return HeartHandshake;
-  return CalendarDays;
 }
 
 function NavSection({
@@ -227,34 +150,34 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
     <nav className="flex flex-col gap-1 pb-3 pt-2" aria-label={t("sidebar_nav.nav_aria")}>
       <NavSection title={bilingualText(lang, "मुख्य", "Main")}>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/" label={t("home")} icon={Home} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/" label={t("home")} icon={featureIcon("home")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/panchanga" search={patroRouteLinkSearch("/panchanga", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("nav.surya_panchanga")} icon={Star} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/panchanga" search={patroRouteLinkSearch("/panchanga", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("nav.surya_panchanga")} icon={featureIcon("panchanga")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/kundali" label={t("sidebar_nav.items.kundali.label")} icon={Sparkles} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/kundali" label={t("sidebar_nav.items.kundali.label")} icon={featureIcon("kundali")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/dainikkranti" search={patroRouteLinkSearch("/dainikkranti", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.dainikkranti.label")} icon={Moon} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/dainikkranti" search={patroRouteLinkSearch("/dainikkranti", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.dainikkranti.label")} icon={featureIcon("dainikkranti")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/jyotish/kundali-milan" label={t("sidebar_nav.items.kundali-milan.label")} icon={Heart} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/jyotish/kundali-milan" label={t("sidebar_nav.items.kundali-milan.label")} icon={featureIcon("kundali-milan")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/jyotish/rashifal" label={t("nav.jyotish_rashifal")} icon={Sun} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/jyotish/rashifal" label={t("nav.jyotish_rashifal")} icon={featureIcon("rashifal")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/panchanga/year" search={patroRouteLinkSearch("/panchanga/year", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.panchanga-year.label")} icon={CalendarRange} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/panchanga/year" search={patroRouteLinkSearch("/panchanga/year", location, era, { year: urlBrowse.year, month: urlBrowse.month })} label={t("sidebar_nav.items.panchanga-year.label")} icon={featureIcon("panchanga-year")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/vastu" label={t("nav.vastu")} icon={Compass} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/vastu" label={t("nav.vastu")} icon={featureIcon("vastu")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/learn" label={t("nav.learn")} icon={BookOpen} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/learn" label={t("nav.learn")} icon={featureIcon("learn")} onClick={onNavigate} />
         </DrawerClose>
         <DrawerClose asChild>
-          <NavDrawerLinkCard to="/documents" label={t("nav.documents")} icon={BookMarked} onClick={onNavigate} />
+          <NavDrawerLinkCard to="/documents" label={t("nav.documents")} icon={featureIcon("documents")} onClick={onNavigate} />
         </DrawerClose>
       </NavSection>
 
@@ -269,7 +192,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
               year: urlBrowse.year,
               month: urlBrowse.month,
             });
-            const icon = resolveIcon(section.id, item.id);
+            const icon = navEntryIcon(section.id, item.id);
 
             if (item.id === "ritu") {
               return (

@@ -50,7 +50,8 @@
     "@vedic-patro/domain": "*",
     "@vedic-patro/i18n": "*",
     "@vedic-patro/api-client": "*",
-    "@vedic-patro/design-tokens": "*"
+    "@vedic-patro/design-tokens": "*",
+    "@vedic-patro/icons": "*"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

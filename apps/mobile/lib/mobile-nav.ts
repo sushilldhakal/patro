@@ -1,7 +1,4 @@
-import type { ComponentProps } from "react";
-import type { Ionicons } from "@/components/icons/Ionicons";
-
-export type MobileNavIcon = ComponentProps<typeof Ionicons>["name"];
+import { FEATURE_ICON } from "@vedic-patro/icons";
 
 /**
  * Primary floating bottom nav — matches web header sections, सिकाइ last.
@@ -13,19 +10,12 @@ export type MobileNavIcon = ComponentProps<typeof Ionicons>["name"];
  * bottom nav, which has always used these.
  */
 export const FLOATING_NAV = [
-  { href: "/", ne: "गृह", en: "Home", icon: "home-outline" as MobileNavIcon },
-  { href: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: "star-outline" as MobileNavIcon },
-  { href: "/kundali", ne: "कुण्डली", en: "Kundali", icon: "sparkles-outline" as MobileNavIcon },
-  { href: "/dainikkranti", ne: "दैनिक", en: "Transit", icon: "moon-outline" as MobileNavIcon },
-  { href: "/vastu", ne: "वास्तु", en: "Vastu", icon: "compass-outline" as MobileNavIcon },
-  { href: "/learn", ne: "सिकाइ", en: "Learn", icon: "book-outline" as MobileNavIcon },
-] as const;
-
-/** Secondary links — header drawer only. */
-export const DRAWER_NAV_EXTRA = [
-  { href: "/holidays", ne: "बिदा तथा पर्व", en: "Holidays", icon: "flag-outline" as MobileNavIcon },
-  { href: "/converter", ne: "रूपान्तरण", en: "Converter", icon: "swap-horizontal-outline" as MobileNavIcon },
-  { href: "/more", ne: "थप", en: "More", icon: "ellipsis-horizontal-outline" as MobileNavIcon },
+  { href: "/", ne: "गृह", en: "Home", icon: FEATURE_ICON.home },
+  { href: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: FEATURE_ICON.panchanga },
+  { href: "/kundali", ne: "कुण्डली", en: "Kundali", icon: FEATURE_ICON.kundali },
+  { href: "/dainikkranti", ne: "दैनिक", en: "Transit", icon: FEATURE_ICON.dainikkranti },
+  { href: "/vastu", ne: "वास्तु", en: "Vastu", icon: FEATURE_ICON.vastu },
+  { href: "/learn", ne: "सिकाइ", en: "Learn", icon: FEATURE_ICON.learn },
 ] as const;
 
 export const FLOATING_NAV_BOTTOM_PADDING = 84;

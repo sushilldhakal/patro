@@ -10,7 +10,7 @@ export type SitemapRoute = {
 };
 
 export const SITEMAP_ROUTES: SitemapRoute[] = [
-  { path: "/", ne: "गृह", en: "Home", icon: "home", group: "main" },
+  { path: "/", ne: "गृह", en: "Home", icon: "house", group: "main" },
   { path: "/panchanga", ne: "पञ्चाङ्ग", en: "Panchanga", icon: "star", group: "main" },
   { path: "/panchanga/year", ne: "वार्षिक चक्र", en: "Year wheel", icon: "calendar-range", group: "panchanga" },
   { path: "/panchanga/details", ne: "पञ्चाङ्ग विवरण", en: "Panchanga details", icon: "grid-3x3", group: "panchanga" },

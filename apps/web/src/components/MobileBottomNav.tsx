@@ -1,5 +1,4 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Star, Sparkles, Moon, Compass, BookOpen } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import {
   isDainikkrantiTabRoute,
@@ -10,6 +9,7 @@ import {
 } from "@/lib/app-routes";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
+import { featureIcon } from "@/lib/nav-icons";
 
 type Tab = {
   to: string;
@@ -23,38 +23,38 @@ type Tab = {
 // Home · Panchanga · Kundali · Dainik Kranti · Vastu · Learn — primary
 // destinations. Kept in sync with the hamburger nav in Header.tsx.
 const TABS: Tab[] = [
-  { to: "/", icon: Home, ne: "गृह", en: "Home", match: (p) => p === "/" },
+  { to: "/", icon: featureIcon("home"), ne: "गृह", en: "Home", match: (p) => p === "/" },
   {
     to: "/panchanga",
-    icon: Star,
+    icon: featureIcon("panchanga"),
     ne: "पञ्चाङ्ग",
     en: "Panchanga",
     match: isPanchangaTabRoute,
   },
   {
     to: "/kundali",
-    icon: Sparkles,
+    icon: featureIcon("kundali"),
     ne: "कुण्डली",
     en: "Kundali",
     match: isJyotishRoute,
   },
   {
     to: "/dainikkranti",
-    icon: Moon,
+    icon: featureIcon("dainikkranti"),
     ne: "दैनिक",
     en: "Daily",
     match: isDainikkrantiTabRoute,
   },
   {
     to: "/vastu",
-    icon: Compass,
+    icon: featureIcon("vastu"),
     ne: "वास्तु",
     en: "Vastu",
     match: isVastuRoute,
   },
   {
     to: "/learn",
-    icon: BookOpen,
+    icon: featureIcon("learn"),
     ne: "सिकाइ",
     en: "Learn",
     match: isLearnRoute,

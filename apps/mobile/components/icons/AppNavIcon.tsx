@@ -1,4 +1,4 @@
-import type { DrawerIconName } from "@/lib/drawer-icons";
+import type { NavIconName } from "@vedic-patro/icons";
 import { LucideNative, type LucideIconNode } from "./LucideNative";
 import { __iconNode as ArrowLeftRightNode } from "lucide-react/dist/esm/icons/arrow-left-right";
 import { __iconNode as BookOpenNode } from "lucide-react/dist/esm/icons/book-open";
@@ -15,7 +15,8 @@ import { __iconNode as Flower2Node } from "lucide-react/dist/esm/icons/flower-2"
 import { __iconNode as Grid3x3Node } from "lucide-react/dist/esm/icons/grid-3x3";
 import { __iconNode as HeartNode } from "lucide-react/dist/esm/icons/heart";
 import { __iconNode as HeartHandshakeNode } from "lucide-react/dist/esm/icons/heart-handshake";
-import { __iconNode as HomeNode } from "lucide-react/dist/esm/icons/home";
+import { __iconNode as HouseNode } from "lucide-react/dist/esm/icons/house";
+import { __iconNode as BookMarkedNode } from "lucide-react/dist/esm/icons/book-marked";
 import { __iconNode as LayersNode } from "lucide-react/dist/esm/icons/layers";
 import { __iconNode as MoonNode } from "lucide-react/dist/esm/icons/moon";
 import { __iconNode as MoonStarNode } from "lucide-react/dist/esm/icons/moon-star";
@@ -33,8 +34,9 @@ import { __iconNode as LogInNode } from "lucide-react/dist/esm/icons/log-in";
 import { __iconNode as UserPlusNode } from "lucide-react/dist/esm/icons/user-plus";
 import { __iconNode as UserNode } from "lucide-react/dist/esm/icons/user";
 
-const LUCIDE: Record<DrawerIconName, LucideIconNode> = {
-  home: HomeNode,
+const LUCIDE: Record<NavIconName, LucideIconNode> = {
+  house: HouseNode,
+  "book-marked": BookMarkedNode,
   star: StarNode,
   "book-open": BookOpenNode,
   compass: CompassNode,
@@ -74,7 +76,7 @@ export function AppNavIcon({
   size,
   color,
 }: {
-  name: DrawerIconName;
+  name: NavIconName;
   size: number;
   color: string;
 }) {

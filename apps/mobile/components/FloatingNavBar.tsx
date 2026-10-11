@@ -1,7 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useRouter, usePathname } from "expo-router";
-import { Ionicons } from "@/components/icons/Ionicons";
+import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocale } from "@/lib/i18n";
 import { FLOATING_NAV, isNavActive } from "@/lib/mobile-nav";
@@ -57,7 +57,7 @@ export function FloatingNavBar() {
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
             >
-              <Ionicons
+              <AppNavIcon
                 name={item.icon}
                 size={iconSize}
                 color={active ? colors.secondary : colors.mutedForeground}

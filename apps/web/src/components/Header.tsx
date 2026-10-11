@@ -4,16 +4,10 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Star,
   Sparkles,
-  BookOpen,
-  BookMarked,
-  Compass,
   Sun,
   Moon,
   Menu,
   ChevronDown,
-  Sunrise,
-  Grid3x3,
-  Heart,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -33,26 +27,27 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { isJyotishRoute, isPanchangaRoute } from "@/lib/app-routes";
 import { useLocale } from "@/i18n/locale";
+import { featureIcon } from "@/lib/nav-icons";
 
 const PANCHANGA_LINKS = [
-  { to: "/panchanga" as const, labelKey: "nav.surya_panchanga", icon: Star },
-  { to: "/suryakranti" as const, labelKey: "nav.suryakranti", icon: Sunrise },
-  { to: "/abhijit-muhurta" as const, labelKey: "nav.abhijit_muhurta", icon: Sparkles },
-  { to: "/dainikkranti" as const, labelKey: "nav.dainikkranti", icon: Moon },
-  { to: "/panchanga/avakahada-chakra" as const, labelKey: "nav.avakahada_chakra", icon: Grid3x3 },
+  { to: "/panchanga" as const, labelKey: "nav.surya_panchanga", icon: featureIcon("panchanga") },
+  { to: "/suryakranti" as const, labelKey: "nav.suryakranti", icon: featureIcon("suryakranti") },
+  { to: "/abhijit-muhurta" as const, labelKey: "nav.abhijit_muhurta", icon: featureIcon("abhijit") },
+  { to: "/dainikkranti" as const, labelKey: "nav.dainikkranti", icon: featureIcon("dainikkranti") },
+  { to: "/panchanga/avakahada-chakra" as const, labelKey: "nav.avakahada_chakra", icon: featureIcon("avakahada") },
 ] as const;
 
 const JYOTISH_LINKS = [
-  { to: "/kundali" as const, labelKey: "nav.jyotish_kundali", icon: Sparkles },
-  { to: "/jyotish/kundali-milan" as const, labelKey: "nav.jyotish_kundali_milan", icon: Heart },
-  { to: "/jyotish/rashifal" as const, labelKey: "nav.jyotish_rashifal", icon: Sun },
+  { to: "/kundali" as const, labelKey: "nav.jyotish_kundali", icon: featureIcon("kundali") },
+  { to: "/jyotish/kundali-milan" as const, labelKey: "nav.jyotish_kundali_milan", icon: featureIcon("kundali-milan") },
+  { to: "/jyotish/rashifal" as const, labelKey: "nav.jyotish_rashifal", icon: featureIcon("rashifal") },
 ] as const;
 
 // Order matters — these render after the पञ्चाङ्ग and ज्योतिष dropdowns.
 const NAV = [
-  { to: "/vastu" as const, labelKey: "nav.vastu", icon: Compass },
-  { to: "/learn" as const, labelKey: "nav.learn", icon: BookOpen },
-  { to: "/documents" as const, labelKey: "nav.documents", icon: BookMarked },
+  { to: "/vastu" as const, labelKey: "nav.vastu", icon: featureIcon("vastu") },
+  { to: "/learn" as const, labelKey: "nav.learn", icon: featureIcon("learn") },
+  { to: "/documents" as const, labelKey: "nav.documents", icon: featureIcon("documents") },
 ] as const;
 
 const desktopLinkClass =

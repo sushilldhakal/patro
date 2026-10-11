@@ -14,7 +14,8 @@ import Flower2 from "lucide-react/dist/esm/icons/flower-2";
 import Grid3x3 from "lucide-react/dist/esm/icons/grid-3x3";
 import Heart from "lucide-react/dist/esm/icons/heart";
 import HeartHandshake from "lucide-react/dist/esm/icons/heart-handshake";
-import Home from "lucide-react/dist/esm/icons/home";
+import House from "lucide-react/dist/esm/icons/house";
+import BookMarked from "lucide-react/dist/esm/icons/book-marked";
 import Layers from "lucide-react/dist/esm/icons/layers";
 import Moon from "lucide-react/dist/esm/icons/moon";
 import MoonStar from "lucide-react/dist/esm/icons/moon-star";
@@ -31,10 +32,11 @@ import Sunrise from "lucide-react/dist/esm/icons/sunrise";
 import User from "lucide-react/dist/esm/icons/user";
 import LogIn from "lucide-react/dist/esm/icons/log-in";
 import UserPlus from "lucide-react/dist/esm/icons/user-plus";
-import type { DrawerIconName } from "@/lib/drawer-icons";
+import type { NavIconName } from "@vedic-patro/icons";
 
-const LUCIDE: Record<DrawerIconName, LucideIcon> = {
-  home: Home,
+const LUCIDE: Record<NavIconName, LucideIcon> = {
+  house: House,
+  "book-marked": BookMarked,
   star: Star,
   "book-open": BookOpen,
   compass: Compass,
@@ -74,7 +76,7 @@ export function AppNavIcon({
   size,
   color,
 }: {
-  name: DrawerIconName;
+  name: NavIconName;
   size: number;
   color: string;
 }) {

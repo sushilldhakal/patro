@@ -1,11 +1,7 @@
 import {
   CalendarClock,
-  Eclipse,
   HeartHandshake,
   MoonStar,
-  RotateCcw,
-  Route,
-  Sunrise,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +12,7 @@ import { elementBlurb, elementTitle } from "@vedic-patro/domain/panchanga-i18n";
 import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { patroElementLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
 import { cn } from "@vedic-patro/domain/utils";
+import { featureIcon } from "@/lib/nav-icons";
 
 function SectionTitle({ titleKey, className }: { titleKey: string; className?: string }) {
   const { t } = useTranslation();
@@ -60,11 +57,11 @@ function DirectoryCard({
 }
 
 const GRAHA_PAGES = [
-  { to: "/gochar" as const, labelKey: "sidebar_nav.items.gochar.label", blurbKey: "sidebar_nav.items.gochar.blurb", icon: Route },
-  { to: "/panchanga/graha-asta" as const, labelKey: "sidebar_nav.items.graha-asta.label", blurbKey: "sidebar_nav.items.graha-asta.blurb", icon: Sunrise },
-  { to: "/panchanga/graha-vakri" as const, labelKey: "sidebar_nav.items.graha-vakri.label", blurbKey: "sidebar_nav.items.graha-vakri.blurb", icon: RotateCcw },
-  { to: "/panchanga/chandra-grahan" as const, labelKey: "sidebar_nav.items.chandra-grahan.label", blurbKey: "sidebar_nav.items.chandra-grahan.blurb", icon: MoonStar },
-  { to: "/panchanga/surya-grahan" as const, labelKey: "sidebar_nav.items.surya-grahan.label", blurbKey: "sidebar_nav.items.surya-grahan.blurb", icon: Eclipse },
+  { to: "/gochar" as const, labelKey: "sidebar_nav.items.gochar.label", blurbKey: "sidebar_nav.items.gochar.blurb", icon: featureIcon("gochar") },
+  { to: "/panchanga/graha-asta" as const, labelKey: "sidebar_nav.items.graha-asta.label", blurbKey: "sidebar_nav.items.graha-asta.blurb", icon: featureIcon("graha-asta") },
+  { to: "/panchanga/graha-vakri" as const, labelKey: "sidebar_nav.items.graha-vakri.label", blurbKey: "sidebar_nav.items.graha-vakri.blurb", icon: featureIcon("graha-vakri") },
+  { to: "/panchanga/chandra-grahan" as const, labelKey: "sidebar_nav.items.chandra-grahan.label", blurbKey: "sidebar_nav.items.chandra-grahan.blurb", icon: featureIcon("chandra-grahan") },
+  { to: "/panchanga/surya-grahan" as const, labelKey: "sidebar_nav.items.surya-grahan.label", blurbKey: "sidebar_nav.items.surya-grahan.blurb", icon: featureIcon("surya-grahan") },
 ];
 
 /** Categorized link grid: transition elements → graha detail → daily tables → shubha muhurta. */

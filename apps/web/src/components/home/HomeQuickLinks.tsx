@@ -1,16 +1,9 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import {
-  ArrowLeftRight,
   BookMarked,
   CalendarClock,
-  CalendarRange,
-  Grid3x3,
-  Heart,
   Moon,
-  PartyPopper,
-  Sparkles,
   Sprout,
-  Sunrise,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -22,16 +15,17 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { featureIcon } from "@/lib/nav-icons";
 
 const QUICK_LINKS = [
-  { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: PartyPopper },
-  { group: "patro", to: "/converter" as const, labelKey: "nav.converter", icon: ArrowLeftRight },
-  { group: "patro", to: "/suryakranti" as const, labelKey: "nav.suryakranti", icon: Sunrise },
-  { group: "patro", to: "/panchanga/year" as const, labelKey: "panchanga_year.title", icon: CalendarRange },
-  { group: "jyotish", to: "/panchanga/avakahada-chakra" as const, labelKey: "nav.avakahada_chakra", icon: Grid3x3 },
-  { group: "jyotish", to: "/abhijit-muhurta" as const, labelKey: "nav.abhijit_muhurta", icon: Sparkles },
-  { group: "jyotish", to: "/kundali" as const, labelKey: "home_quick.kundali_build_title", icon: Sparkles },
-  { group: "jyotish", to: "/jyotish/kundali-milan" as const, labelKey: "home_quick.kundali_milan_title", icon: Heart },
+  { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: featureIcon("holidays") },
+  { group: "patro", to: "/converter" as const, labelKey: "nav.converter", icon: featureIcon("converter") },
+  { group: "patro", to: "/suryakranti" as const, labelKey: "nav.suryakranti", icon: featureIcon("suryakranti") },
+  { group: "patro", to: "/panchanga/year" as const, labelKey: "panchanga_year.title", icon: featureIcon("panchanga-year") },
+  { group: "jyotish", to: "/panchanga/avakahada-chakra" as const, labelKey: "nav.avakahada_chakra", icon: featureIcon("avakahada") },
+  { group: "jyotish", to: "/abhijit-muhurta" as const, labelKey: "nav.abhijit_muhurta", icon: featureIcon("abhijit") },
+  { group: "jyotish", to: "/kundali" as const, labelKey: "home_quick.kundali_build_title", icon: featureIcon("kundali") },
+  { group: "jyotish", to: "/jyotish/kundali-milan" as const, labelKey: "home_quick.kundali_milan_title", icon: featureIcon("kundali-milan") },
 ] as const satisfies {
   group: "patro" | "jyotish";
   to: string;

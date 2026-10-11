@@ -84,7 +84,8 @@
     "@vedic-patro/domain": "*",
     "@vedic-patro/i18n": "*",
     "@vedic-patro/design-tokens": "*",
-    "@vedic-patro/api-client": "*"
+    "@vedic-patro/api-client": "*",
+    "@vedic-patro/icons": "*"
   },
   "expo": {
     "autolinking": {

@@ -1,0 +1,19 @@
+{
+  "name": "@vedic-patro/icons",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Icon identity shared by the website and the mobile app: which Lucide icon means what, plus size and stroke conventions. Each app keeps its own renderer.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@vedic-patro/design-tokens": "*"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.8"
+  }
+}
