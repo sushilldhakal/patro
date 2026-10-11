@@ -15,6 +15,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { rowLabelFor } from "@vedic-patro/domain/dainikKranti/gochar-rows";
 
 type GrahaRow = GocharGraha & { key: string };
 
@@ -27,11 +28,6 @@ type TableProps = {
   /** When true, omit the paksha version line (shown in GocharRashyadiBlock header row). */
   hideVersionHeader?: boolean;
 };
-
-function rowLabelFor(segment: RashyadiSegment, key: RashyadiRowKey): string {
-  if (key === "rashi") return segment.monthInitialLabel;
-  return RASHYADI_ROW_LABEL[key];
-}
 
 export function GocharRashyadiTable({
   segment,

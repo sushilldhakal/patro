@@ -22,17 +22,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
+import { dampHeading } from "@vedic-patro/domain/compass-heading";
+export { dampHeading } from "@vedic-patro/domain/compass-heading";
 
 export type CompassPermissionState = "unnecessary" | "prompt-required" | "granted" | "denied";
 
 /** `accuracy` at or below this reads as "wave the phone in a figure eight". */
 const DRIFT_ACCURACY = 1;
-
-/** Shortest-path blend so 359° → 1° does not swing the long way. */
-export function dampHeading(prev: number, next: number, k = 0.28): number {
-  const delta = ((next - prev + 540) % 360) - 180;
-  return (prev + delta * k + 360) % 360;
-}
 
 export function useCompassHeading(active: boolean): {
   heading: number | null;

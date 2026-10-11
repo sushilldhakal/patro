@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
+import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
 
 export function PanchangaSection({
   titleKey,
@@ -35,11 +36,6 @@ export function PanchangaSection({
       {children}
     </section>
   );
-}
-
-function rowLabel(labelKey?: string, label?: string, t?: (k: string) => string) {
-  if (labelKey && t) return t(labelKey);
-  return label ?? "";
 }
 
 function QuadLabel({ children, className }: { children: React.ReactNode; className?: string }) {

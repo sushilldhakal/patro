@@ -65,7 +65,6 @@ import {
   wheelPlayRateBadge,
 } from "@/lib/wheel-classes";
 import { cn } from "@vedic-patro/domain/utils";
-import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 import type { Era } from "@vedic-patro/domain/era";
 import type { LocationParams } from "@/lib/api";
@@ -76,11 +75,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-function bsMonthEnOf(ne: string): string {
-  const i = BS_MONTHS_NE.indexOf(ne);
-  return i >= 0 ? BS_MONTH_NAMES[i] : ne;
-}
+import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
 
 const wheelDockIcon = "h-3.5 w-3.5 max-[480px]:h-3 max-[480px]:w-3";
 

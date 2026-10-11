@@ -18,6 +18,7 @@ import { HouseRequirementsForm, readPlan } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";
 import { cn } from "@vedic-patro/domain/utils";
+import { parseDimension } from "@vedic-patro/domain/vastu-plot-input";
 
 const HOUSE_KEY = "vp.vastu.house";
 
@@ -85,11 +86,6 @@ function readPlot(): PlotState {
 
 const selectClass =
   "h-9 min-w-0 rounded-lg border border-border bg-card px-2 text-sm text-foreground cursor-pointer";
-
-function parseDimension(raw: string): number | null {
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : null;
-}
 
 function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);

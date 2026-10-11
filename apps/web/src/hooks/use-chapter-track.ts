@@ -13,9 +13,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useLocale } from "@/i18n/locale";
-import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
+import { compileChapter,} from "@vedic-patro/domain/learn/chapter-player";
 import { chapterAudioSources, type Chapter, type ChapterSimState } from "@vedic-patro/domain/learn/chapter-kit";
 import type { ChapterTrack } from "@vedic-patro/domain/learn/chapter-tracks";
+import { stepped } from "@vedic-patro/domain/learn/chapter-track";
+export { chapterDurationMs } from "@vedic-patro/domain/learn/chapter-track";
 
 export type DayChapterPlayer = {
   track: ChapterTrack;
@@ -44,27 +46,6 @@ export type DayChapterPlayer = {
   dismissWelcome: () => void;
   setOnFrame: (fn: (s: ChapterSimState) => void) => void;
 };
-
-/**
- * Did anything *step* between two samples?
- *
- * Numbers ease every frame and are written straight to the scene's refs by the
- * frame callback, so they must not force a React render — at sixty a second
- * that was resetting focus and layers under the reader's hand. Everything else
- * — layer flags, camera target, the overlay id, the highlight — changes rarely
- * and has to reach React the moment it does.
- *
- * Testing "is not a number" rather than listing the keys is what keeps this
- * correct as chapters gain state: a new flag is covered the day it is added.
- */
-function stepped(next: ChapterSimState, prev: ChapterSimState): boolean {
-  for (const key of Object.keys(next) as (keyof ChapterSimState)[]) {
-    const v = next[key];
-    if (typeof v === "number") continue;
-    if (v !== prev[key]) return true;
-  }
-  return false;
-}
 
 export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | null {
   const { lang } = useLocale();
@@ -368,12 +349,3 @@ const BLANK: Chapter = {
   defaults: {} as ChapterSimState,
   frames: [],
 };
-
-export function chapterDurationMs(chapter: Chapter): number {
-  let max = 0;
-  for (const frame of chapter.frames) {
-    const at = parseTime(frame.meta.at);
-    if (at > max) max = at;
-  }
-  return max;
-}

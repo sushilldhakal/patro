@@ -28,12 +28,7 @@ import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
 import { brand } from "@vedic-patro/design-tokens";
-
-const DEG = Math.PI / 180;
-const CX = 500;
-const CY = 500;
-
-const ORBIT_SCALE = 0.58;
+import { DEG, CX, CY, ORBIT_SCALE, planetHitRadius, planetSvgPosition } from "@vedic-patro/domain/wheel-chart-geometry";
 
 const R_YOGA_I = 140;
 const R_YOGA_O = 178; // shared boundary with rashi inner / core
@@ -281,28 +276,6 @@ function touchPageDistance(touches: readonly { pageX: number; pageY: number }[])
   const t0 = touches[0]!;
   const t1 = touches[1]!;
   return Math.hypot(t1.pageX - t0.pageX, t1.pageY - t0.pageY);
-}
-
-function planetSvgPosition(lon: number, orbit: number, spinDeg: number): [number, number] {
-  const a = (lon + spinDeg) * DEG;
-  return [CX - orbit * ORBIT_SCALE * Math.sin(a), CY - orbit * ORBIT_SCALE * Math.cos(a)];
-}
-
-function planetVisualRadius(index: number): number {
-  const meta = GRAHA_META[index];
-  if (!meta) return 8;
-  if ("big" in meta && meta.big) return 15;
-  if (index === 1) return 10;
-  return 8;
-}
-
-/** Svg-space hit radius per graha (glow, label, and finger slop). */
-function planetHitRadius(index: number): number {
-  const r = planetVisualRadius(index);
-  if (index === 0) return r + 26;
-  // Saturn, Rahu, Ketu share the outer rim and often sit near each other.
-  if (index >= 6) return r + 32;
-  return r + 24;
 }
 
 const WHEEL_TAP_SLOP_PX = 14;

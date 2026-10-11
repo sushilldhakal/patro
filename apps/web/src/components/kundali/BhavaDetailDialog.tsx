@@ -18,6 +18,7 @@ import {
   splitList,
 } from "@vedic-patro/domain/kundali/bhava-detail";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
+import { subsetsOf3 } from "@vedic-patro/domain/kundali/bhava-detail";
 
 function grahaName(key: string, lang: "ne" | "en"): string {
   const entry = GRAHA_NAME[key as GrahaKey];
@@ -31,20 +32,6 @@ function joinNames(keys: string[], lang: "ne" | "en"): string {
 
 function yutiKey(keys: string[]): string {
   return [...keys].sort().join("+");
-}
-
-/** Every 3-element subset of `keys` — houses rarely hold more than 3-4
- * grahas, so this stays small in practice. */
-function subsetsOf3(keys: string[]): string[][] {
-  const out: string[][] = [];
-  for (let i = 0; i < keys.length; i++) {
-    for (let j = i + 1; j < keys.length; j++) {
-      for (let k = j + 1; k < keys.length; k++) {
-        out.push([keys[i], keys[j], keys[k]]);
-      }
-    }
-  }
-  return out;
 }
 
 type TabId = "summary" | "lord" | "drishti" | "rules";

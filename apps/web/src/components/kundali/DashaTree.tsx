@@ -14,9 +14,9 @@ import {
   formatDashaDuration,
   formatDashaDurationParts,
   type DashaLord,
-  type DashaSpan,
 } from "@vedic-patro/domain/dasha";
 import { cn } from "@vedic-patro/domain/utils";
+import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
 
 /** Catalogue keys, outermost dasha level first. */
 const LEVEL_LABELS: string[] = [
@@ -205,19 +205,6 @@ function DashaDurationGrid({
       </table>
     </div>
   );
-}
-
-/** Span with the pre-computed children the API embedded (down to pratyantar). */
-type SpanWithChildren = DashaSpan & { childNodes?: DashaTreeNode[]; lordNe: string };
-
-function toSpan(node: DashaTreeNode): SpanWithChildren {
-  return {
-    lord: (node.lord as DashaLord) ?? "ketu",
-    lordNe: node.lord_ne,
-    start: new Date(node.start),
-    end: new Date(node.end),
-    childNodes: node.children,
-  };
 }
 
 function displayLordName(span: SpanWithChildren, lang: string, system: DashaSystem): string {

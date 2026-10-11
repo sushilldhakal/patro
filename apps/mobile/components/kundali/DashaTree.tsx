@@ -26,6 +26,7 @@ import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
 
 const LEVEL_LABELS: { ne: string; en: string }[] = [
   { ne: "महादशा", en: "Maha Dasha" },
@@ -75,18 +76,6 @@ function lordBorderColor(lord: string, system: DashaSystem): string {
 
 function lordDotColor(lord: string, system: DashaSystem): string {
   return lordBorderColor(lord, system);
-}
-
-type SpanWithChildren = DashaSpan & { childNodes?: DashaTreeNode[]; lordNe: string };
-
-function toSpan(node: DashaTreeNode): SpanWithChildren {
-  return {
-    lord: (node.lord as DashaLord) ?? "ketu",
-    lordNe: node.lord_ne,
-    start: new Date(node.start),
-    end: new Date(node.end),
-    childNodes: node.children,
-  };
 }
 
 function displayLordName(span: SpanWithChildren, lang: "ne" | "en", system: DashaSystem): string {

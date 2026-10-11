@@ -30,6 +30,7 @@ import {
   wTwName,
   wYogaLbl,
 } from "@/lib/wheel-svg-classes";
+import { planetVisualRadius, planetHitRadius } from "@vedic-patro/domain/wheel-chart-geometry";
 
 const DEG = Math.PI / 180;
 const CX = 500;
@@ -94,21 +95,6 @@ function applyPinchTransform(
       y: p.y + (centroid.y - pinch.centroid0y),
     },
   };
-}
-
-function planetVisualRadius(index: number): number {
-  const meta = GRAHA_META[index];
-  if (!meta) return 8;
-  if ("big" in meta && meta.big) return 15;
-  if (index === 1) return 10;
-  return 8;
-}
-
-function planetHitRadius(index: number): number {
-  const r = planetVisualRadius(index);
-  if (index === 0) return r + 26;
-  if (index >= 6) return r + 32;
-  return r + 24;
 }
 
 /** Scale factor applied to all planet orbit radii to leave room for the inner yoga/karana/tithi rings. */

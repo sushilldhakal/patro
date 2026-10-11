@@ -6,18 +6,7 @@ import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 import { defaultEraForLanguage, patroBrowseTodayEra, type Era } from "@vedic-patro/domain/era";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
-
-function positiveInt(y: number): number {
-  const t = Math.trunc(y);
-  return t >= 1 ? t : 1;
-}
-
-function positiveMonth(m: number): number {
-  const t = Math.trunc(m);
-  if (t < 1) return 1;
-  if (t > 12) return 12;
-  return t;
-}
+import { positiveInt, positiveMonth } from "@vedic-patro/domain/patro-browse-params";
 
 function defaultMonthBrowseParts(era: Era): { year: number; month: number } {
   if (era === "bs" || era === "bbs") return getCurrentBs();

@@ -16,29 +16,19 @@ import {
   NI_HOUSE_POLYGONS,
   pointsToSvg,
   polygonCentroid,
-  type Point,
 } from "@vedic-patro/domain/kundali/north-indian-layout";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@vedic-patro/domain/utils";
-
-const CHART_CENTER: Point = [150, 150];
+import { type StrengthBand, strengthBand, houseNumberPos, rashiFromMadhya, clampPct } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 const HOUSE_CLASS_LABEL: Record<HouseClass, string> = {
   kendra: "kundali.kendra",
   trikona: "kundali.trikona",
   dusthana: "kundali.dusthana",
   upachaya: "kundali.upachaya",
 };
-
-type StrengthBand = "strong" | "average" | "weak";
-
-function strengthBand(percent: number): StrengthBand {
-  if (percent >= 100) return "strong";
-  if (percent >= 80) return "average";
-  return "weak";
-}
 
 function scoreFillClass(band: StrengthBand): string {
   if (band === "strong") return "fill-primary";
@@ -50,30 +40,6 @@ function scoreTextClass(band: StrengthBand): string {
   if (band === "strong") return "text-primary";
   if (band === "weak") return "text-destructive";
   return "text-muted-foreground";
-}
-
-function farthestFromCenter(points: Point[], center: Point): Point {
-  return points.reduce((best, point) => {
-    const dist = (point[0] - center[0]) ** 2 + (point[1] - center[1]) ** 2;
-    const bestDist = (best[0] - center[0]) ** 2 + (best[1] - center[1]) ** 2;
-    return dist > bestDist ? point : best;
-  });
-}
-
-function houseNumberPos(points: Point[]): Point {
-  const [cx, cy] = polygonCentroid(points);
-  const [ox, oy] = farthestFromCenter(points, CHART_CENTER);
-  return [cx + (ox - cx) * 0.58, cy + (oy - cy) * 0.58];
-}
-
-function rashiFromMadhya(madhyaLongitude: number): number {
-  const lon = ((madhyaLongitude % 360) + 360) % 360;
-  return Math.floor(lon / 30) + 1;
-}
-
-function clampPct(value: number, max: number): number {
-  if (max <= 0) return 0;
-  return Math.min(100, Math.max(0, (value / max) * 100));
 }
 
 function buildD1Houses(

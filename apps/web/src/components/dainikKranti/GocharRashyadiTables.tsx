@@ -5,13 +5,12 @@ import {
   RASHYADI_PLANET_ABBREV,
   RASHYADI_PLANET_KEYS,
   RASHYADI_ROW_KEYS,
-  RASHYADI_ROW_LABEL,
   rashyadiCellValue,
-  type RashyadiRowKey,
   type RashyadiSegment,
 } from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/i18n/locale";
+import { rowLabelFor } from "@vedic-patro/domain/dainikKranti/gochar-rows";
 
 type GrahaRow = GocharGraha & { key: string };
 
@@ -22,11 +21,6 @@ type TableProps = {
   loading?: boolean;
   className?: string;
 };
-
-function rowLabelFor(segment: RashyadiSegment, key: RashyadiRowKey): string {
-  if (key === "rashi") return segment.monthInitialLabel;
-  return RASHYADI_ROW_LABEL[key];
-}
 
 export function GocharRashyadiTable({
   segment,

@@ -13,18 +13,7 @@ import {
   isValidBrowseYear,
   maxBrowseYearForEra,
 } from "@vedic-patro/domain/patro-year-axis";
-
-function positiveInt(y: number): number {
-  const t = Math.trunc(y);
-  return t >= 1 ? t : 1;
-}
-
-function positiveMonth(m: number): number {
-  const t = Math.trunc(m);
-  if (t < 1) return 1;
-  if (t > 12) return 12;
-  return t;
-}
+import { positiveInt, positiveMonth } from "@vedic-patro/domain/patro-browse-params";
 
 function calendarEraAsEra(raw: ReturnType<typeof useCalendarEra>): Era {
   return raw === "bbs" || raw === "bs" || raw === "ad" ? raw : "bs";

@@ -16,6 +16,7 @@
  */
 
 import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
+import { CX, CY, annulusPath } from "@vedic-patro/domain/vastu-purusha-wheel";
 import { useId, type ReactNode } from "react";
 import Svg, {
   Circle,
@@ -70,8 +71,6 @@ const press = (fn: () => void) => fn as never;
  * CX/CY rather than taking them as props, so anything reusing them has to
  * share this exact centre, not merely this size. */
 export { WHEEL_SIZE };
-const CX = WHEEL_SIZE / 2;
-const CY = WHEEL_SIZE / 2;
 const PURUSHA_OPACITY = 0.2;
 
 /**
@@ -112,17 +111,6 @@ function normBearing(bearing: number): number {
 /** Annular sector spanning `halfAngle` degrees on each side of `bearing`, around this wheel's own centre. */
 function annularSectorPath(bearing: number, halfAngle: number, outerR: number, innerR: number): string {
   return annularSectorPathAt(bearing, halfAngle, outerR, innerR, CX, CY);
-}
-
-function annulusPath(outerR: number, innerR: number): string {
-  return [
-    `M ${(CX + outerR).toFixed(2)} ${CY}`,
-    `A ${outerR} ${outerR} 0 1 1 ${(CX - outerR).toFixed(2)} ${CY}`,
-    `A ${outerR} ${outerR} 0 1 1 ${(CX + outerR).toFixed(2)} ${CY}`,
-    `M ${(CX + innerR).toFixed(2)} ${CY}`,
-    `A ${innerR} ${innerR} 0 1 0 ${(CX - innerR).toFixed(2)} ${CY}`,
-    `A ${innerR} ${innerR} 0 1 0 ${(CX + innerR).toFixed(2)} ${CY}`,
-  ].join(" ");
 }
 
 const COMPASS_16 = VASTU_DIR16.map((d) => ({

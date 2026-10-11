@@ -1,8 +1,8 @@
 name: CI
 
 # Type-checks both apps and checks the shared packages (portable domain code,
-# generated i18n bundles and design-token blocks up to date) on every push and
-# pull request.
+# generated i18n bundles and design-token output up to date, unit tests, the
+# request URL contract and the OpenAPI contract) on every push and pull request.
 on:
   push:
     branches: [main]
@@ -20,4 +20,21 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npx turbo run typecheck
       - run: npx turbo run lint --filter=./packages/*
-      - run: npm test -w @vedic-patro/api-client
+      - run: npx turbo run test --filter=./packages/*
+      - run: npm run check:shared
+
+  api-contract:
+    # The TypeScript client is checked against contracts/openapi.json; this
+    # fails if that file no longer matches the FastAPI routes.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # The ephemeris download (-e ./ephemeris_provision) is not needed to build the schema.
+      - run: grep -v '^-e ' requirements.txt > /tmp/requirements-schema.txt && pip install -r /tmp/requirements-schema.txt
+      - run: python scripts/export_openapi.py --check

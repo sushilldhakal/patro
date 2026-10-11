@@ -1,24 +1,9 @@
-import type { MuhurtaNowBlock, PanchangaDay } from "@/lib/api";
+import type { PanchangaDay } from "@/lib/api";
 import { formatBsDateLong } from "@vedic-patro/domain/bs-calendar";
-import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
-
-function parseAdStr(s: string): Date {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
-
-function windowLabel(
-  block: MuhurtaNowBlock | null | undefined,
-  digits: (v: string | number) => string,
-): string | undefined {
-  if (!block) return undefined;
-  const start = formatTimeShort(block.start_time ?? block.start_local);
-  const end = formatTimeShort(block.end_time ?? block.end_local);
-  if (start && end) return `${digits(start)} – ${digits(end)}`;
-  return start ? digits(start) : undefined;
-}
+import { windowLabel } from "@vedic-patro/domain/muhurta-now";
+import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
 
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [

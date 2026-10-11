@@ -62,8 +62,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
-
-type Phase = "krishna" | "shukla";
+import { type Phase, defaultMobilePaksha, embedRashi, phaseOf, pakshaShort, lunarMonthNe, pakshaSegmentOf, weekdayLabel, dowOf } from "@vedic-patro/domain/dainikKranti/day-helpers";
 
 const RASHI_NE = [
   "मेष", "वृष", "मिथुन", "कर्क", "सिंह", "कन्या",
@@ -119,21 +118,6 @@ const GOCHAR_LEGEND = [
   { code: "रा.५ के.११", meaning: "राहु पाँचौँ र केतु एघारौँ घरमा रहेको।", meaningEn: "Rahu is in the fifth and Ketu in the eleventh house." },
 ];
 
-const LUNAR_MONTH_NE: Record<string, string> = {
-  baisakh: "वैशाख", baishakh: "वैशाख", vaisakha: "वैशाख", vaishakha: "वैशाख",
-  jestha: "ज्येष्ठ", jyeshtha: "ज्येष्ठ", jyestha: "ज्येष्ठ",
-  ashadh: "आषाढ", ashadha: "आषाढ", asar: "आषाढ",
-  shrawan: "श्रावण", shrawn: "श्रावण", shravan: "श्रावण", shravana: "श्रावण",
-  bhadra: "भाद्रपद", bhadau: "भाद्रपद", bhadrapada: "भाद्रपद",
-  ashwin: "आश्विन", ashwina: "आश्विन", aswin: "आश्विन",
-  kartik: "कार्तिक", kartika: "कार्तिक",
-  mangsir: "मार्गशीर्ष", margashir: "मार्गशीर्ष", margashirsha: "मार्गशीर्ष", margasirsa: "मार्गशीर्ष",
-  poush: "पौष", paush: "पौष", pausha: "पौष", push: "पौष",
-  magh: "माघ", magha: "माघ",
-  falgun: "फाल्गुन", phalgun: "फाल्गुन", phalguna: "फाल्गुन",
-  chaitra: "चैत्र", chait: "चैत्र", chaitya: "चैत्र",
-};
-
 function rashiEnToNe(en?: string): string | undefined {
   if (!en) return undefined;
   const i = RASHI_EN.findIndex((r) => r.toLowerCase() === en.toLowerCase());
@@ -156,58 +140,6 @@ function grahaTableEn(key: string, fallback?: string): string {
   return GRAHA_TABLE_EN[key.toLowerCase()] ?? fallback ?? key;
 }
 
-
-function phaseOf(day: CalendarDay): Phase | undefined {
-  if (day.paksha === "shukla" || day.paksha_ne?.includes("शुक्ल")) return "shukla";
-  if (day.paksha === "krishna" || day.paksha_ne?.includes("कृष्ण")) return "krishna";
-  return undefined;
-}
-
-function defaultMobilePaksha(days: CalendarDay[], todayAd: string): Phase {
-  const today = days.find((d) => d.date_ad === todayAd);
-  const phase = today ? phaseOf(today) : undefined;
-  return phase === "krishna" || phase === "shukla" ? phase : "shukla";
-}
-
-function pakshaShort(day: CalendarDay, isEn = false): string {
-  const p = phaseOf(day);
-  if (isEn) return p === "shukla" ? "Shukla" : p === "krishna" ? "Krishna" : "";
-  return p === "shukla" ? "शुक्ल" : p === "krishna" ? "कृष्ण" : "";
-}
-
-function lunarMonthNe(en?: string, isEn = false): string | undefined {
-  if (!en) return undefined;
-  if (isEn) return en.charAt(0).toUpperCase() + en.slice(1);
-  const key = en.toLowerCase().replace(/[^a-z]/g, "");
-  return LUNAR_MONTH_NE[key] ?? en;
-}
-
-type PakshaSegment = { key: string; label: string };
-
-function pakshaSegmentOf(day: CalendarDay, adhikMonthEn?: string, isEn = false): PakshaSegment {
-  const lc = day.panchanga?.lunar_calendar;
-  const layer = lc?.purnimant ?? lc?.amanta ?? day.panchanga?.lunar_month;
-  const lunarEn = layer?.name;
-  const lunar = lunarMonthNe(lunarEn, isEn) ?? lunarEn ?? "";
-  const isAdhik = layer?.is_adhik === true || layer?.type === "adhik";
-  const adhikName = lc?.adhik_maas?.name ?? adhikMonthEn;
-  const isShuddha =
-    !isAdhik &&
-    Boolean(adhikName) &&
-    Boolean(lunarEn) &&
-    lunarEn!.toLowerCase() === adhikName!.toLowerCase();
-  const prefix = isAdhik ? (isEn ? "Adhik " : "अधिक ") : isShuddha ? (isEn ? "Shuddha " : "शुद्ध ") : "";
-  const phase = phaseOf(day);
-  const phaseLabel = isEn
-    ? phase === "shukla" ? "Shukla" : phase === "krishna" ? "Krishna" : ""
-    : phase === "shukla" ? "शुक्ल" : phase === "krishna" ? "कृष्ण" : "";
-  const pakshaWord = isEn ? (phaseLabel ? " Paksha" : "") : "पक्ष";
-  return {
-    key: `${prefix}${lunar}|${phase ?? ""}`,
-    label: `${prefix}${lunar} ${phaseLabel}${pakshaWord}`.trim(),
-  };
-}
-
 function adDayOfMonth(dateAd: string): number {
   try {
     return parseCivilIso(dateAd).day;
@@ -220,17 +152,6 @@ function adDayOfMonth(dateAd: string): number {
 function fmtAd(dateAd: string, _isEn: boolean): string {
   const day = adDayOfMonth(dateAd);
   return day > 0 ? String(day) : dateAd;
-}
-
-function dowOf(dateAd: string): number {
-  const d = new Date(`${dateAd}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? -1 : d.getDay();
-}
-
-function embedRashi(labelNe: string, rashiNe?: string): string {
-  if (!rashiNe) return labelNe;
-  const out = labelNe.replace(/\s*मा\s*$/u, ` ${rashiNe}मा`);
-  return out === labelNe ? `${labelNe} ${rashiNe}` : out;
 }
 
 function motionNe(g: { motion?: string; is_retrograde?: boolean }) {
@@ -261,11 +182,6 @@ const DAINIK_TABLE_WIDTH =
   DAINIK_MOON_COL_W +
   DAINIK_COL_TRANSIT +
   DAINIK_FESTIVAL_COL_W;
-
-function weekdayLabel(day: CalendarDay, isEn: boolean): string {
-  if (isEn) return day.weekday_en ?? day.weekday ?? day.weekday_ne ?? "—";
-  return day.weekday_ne ?? day.weekday ?? "—";
-}
 
 function sunRiseSetSignParts(
   day: CalendarDay,

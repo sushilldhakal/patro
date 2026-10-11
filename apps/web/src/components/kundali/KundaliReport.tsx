@@ -20,6 +20,7 @@ import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { cn } from "@vedic-patro/domain/utils";
+import { localizeItemLabel } from "@vedic-patro/domain/kundali/report-labels";
 
 type Status = "idle" | "streaming" | "done" | "error";
 
@@ -107,16 +108,6 @@ function FactorList({ factors }: { factors?: string[] }) {
       )}
     </div>
   );
-}
-
-/** Prefer Nepali label when the API sends "English (नेपाली)" pairs. */
-function localizeItemLabel(label: string, isEnglish: boolean): string {
-  if (isEnglish) return label;
-  const paired = label.match(/^(.+?) \(([^)]+)\)$/);
-  if (paired) return paired[2].trim();
-  const house = label.match(/^House (\d+) \(([^)]+)\)$/i);
-  if (house) return `${house[2]} भाव`;
-  return label;
 }
 
 function ItemCard({ item }: { item: ReportItem }) {

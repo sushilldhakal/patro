@@ -11,6 +11,7 @@ import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { DayPatroExpandPanel } from "./DayPatroExpandPanel";
+import { dowOf } from "@vedic-patro/domain/dainikKranti/day-helpers";
 
 export type TransitEvent = {
   planetNe: string;
@@ -40,11 +41,6 @@ function fmtAd(dateAd: string): string {
     if (Number.isNaN(d.getTime())) return dateAd;
     return String(d.getDate());
   }
-}
-
-function dowOf(dateAd: string): number {
-  const d = new Date(`${dateAd}T00:00:00`);
-  return Number.isNaN(d.getTime()) ? -1 : d.getDay();
 }
 
 function phaseOf(day: CalendarDay): "krishna" | "shukla" | undefined {

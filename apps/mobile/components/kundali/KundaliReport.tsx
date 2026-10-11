@@ -29,6 +29,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { localizeItemLabel } from "@vedic-patro/domain/kundali/report-labels";
 
 type Status = "idle" | "streaming" | "done" | "error";
 
@@ -45,15 +46,6 @@ const CONFIDENCE_TONE: Record<ReportConfidence, string> = {
   mixed: "border-amber-500/30 bg-amber-500/15",
   tentative: "border-border bg-muted/40",
 };
-
-function localizeItemLabel(label: string, isEnglish: boolean): string {
-  if (isEnglish) return label;
-  const paired = label.match(/^(.+?) \(([^)]+)\)$/);
-  if (paired) return paired[2].trim();
-  const house = label.match(/^House (\d+) \(([^)]+)\)$/i);
-  if (house) return `${house[2]} भाव`;
-  return label;
-}
 
 function ConfidenceBadge({ level }: { level: ReportConfidence }) {
   const { lang } = useLocale();

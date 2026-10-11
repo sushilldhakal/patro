@@ -41,6 +41,7 @@ import { HouseRequirementsForm } from "./HouseRequirementsForm";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";
 import { cn } from "@vedic-patro/domain/utils";
+import { parseDimension } from "@vedic-patro/domain/vastu-plot-input";
 
 const MIN_M = 3;
 const MAX_M = 100;
@@ -48,11 +49,6 @@ const MAX_M = 100;
 const MAX_SKETCH = 900;
 /** Page padding + card padding the sketch sits inside. */
 const SKETCH_CHROME = 56;
-
-function parseDimension(raw: string): number | null {
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : null;
-}
 
 function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);

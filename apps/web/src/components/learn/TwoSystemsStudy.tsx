@@ -55,6 +55,7 @@ import Scene, {
   type SceneLabel,
   type SceneSample,
 } from "./TwoSystemsScene";
+import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
 const CANVAS_BG = "#050a10";
 const GOLD = "#d8c84a";
@@ -67,12 +68,6 @@ const FOCUS_CHIPS: { id: Focus; key: string }[] = [
   { id: "lunar", key: "learn.study.two_systems.focus_lunar" },
   { id: "both", key: "learn.study.two_systems.focus_both" },
 ];
-
-function clampPitch(p: number) {
-  /* North of the ecliptic only — from the south side the zodiac runs backwards
-     and every rashi reads in reverse order, which is never worth showing. */
-  return Math.min(1.45, Math.max(0.12, p));
-}
 
 export function TwoSystemsStudy() {
   const { t } = useTranslation();

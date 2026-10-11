@@ -113,6 +113,7 @@ import { CompassControl } from "@/components/sky3d/CompassControl";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import compassNeedle from "@/assets/compass.svg?raw";
 import { useDeviceOrientation, type OrientationSample } from "@/lib/sky3d/device-orientation";
+import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
 const Scene = memo(AakashGocharScene);
 
@@ -1239,7 +1240,6 @@ export function AakashGocharSky({
     setAimed(null);
     setToggles((t) => (t.lockCenter ? { ...t, lockCenter: false } : t));
   }, []);
-
 
   /** Select outright — the picker names a graha, so it never toggles it off. */
   const setSelected = useCallback(
@@ -2632,26 +2632,6 @@ export function AakashGocharSky({
       )}
     </>
   );
-}
-
-/**
- * The year a star takes its turn as pole star, in the reader's era. Nepali gets
- * बिक्रम सम्वत्, which is where every other year in the app is quoted.
- */
-function formatPoleYear(
-  year: number | undefined,
-  lang: string,
-  digits: (v: string | number) => string,
-): string {
-  if (year == null) return "";
-  if (lang === "en") {
-    return year < 0
-      ? `${Math.abs(year).toLocaleString("en-US")} BC`
-      : `AD ${year.toLocaleString("en-US")}`;
-  }
-  const bs = year + 57;
-  const abs = digits(Math.abs(bs).toLocaleString("en-US"));
-  return bs < 0 ? `${abs} बि.सं. पूर्व` : `${abs} बि.सं.`;
 }
 
 /** Absolutely placed, centred on the anchor, and never wrapping. */

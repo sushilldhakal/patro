@@ -2,13 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Sunrise, Moon } from "lucide-react";
 import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale, bilingualText } from "@/i18n/locale";
-
-function parseTimeToMinutes(time?: string): number | null {
-  if (!time) return null;
-  const m = time.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return null;
-  return Number(m[1]) * 60 + Number(m[2]);
-}
+import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");

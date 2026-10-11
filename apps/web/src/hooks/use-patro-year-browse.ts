@@ -7,19 +7,11 @@ import {
   type Era,
   type Language,
 } from "@vedic-patro/domain/era";
-
-function positiveInt(y: number): number {
-  const t = Math.trunc(y);
-  return t >= 1 ? t : 1;
-}
+import { defaultBrowseYear } from "@vedic-patro/domain/patro-browse-params";
+import { positiveInt } from "@vedic-patro/domain/patro-browse-params";
 
 function calendarEraAsEra(raw: ReturnType<typeof useCalendarEra>): Era {
   return raw === "bbs" || raw === "bs" || raw === "ad" ? raw : "bs";
-}
-
-function defaultBrowseYear(era: Era): number {
-  if (era === "bs" || era === "bbs") return getCurrentBs().year;
-  return new Date().getFullYear();
 }
 
 /** Same AD-year leak as {@link coerceMonthBrowseFromUrl} — year-only browse URLs. */

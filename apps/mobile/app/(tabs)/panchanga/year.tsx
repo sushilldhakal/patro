@@ -36,6 +36,7 @@ import { computeYearWheelStageHeight } from "@/lib/wheel-layout";
 import { formatWheelPlaybackRate } from "@vedic-patro/domain/wheel-year-playback";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
 
 /** Slowest tick; the scrub's speed multiplier divides into it. */
 const PLAY_BASE_MS = 900;
@@ -50,18 +51,6 @@ function toAdStr(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
-}
-
-function parseAdStr(s: string): Date {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
-
-/** Move the window's centre a whole BS month, keeping the day of the month. */
-function shiftAnchorMonths(centre: Date, delta: number): Date {
-  const bs = adToBS(centre);
-  const next = shiftBsMonth(bs.year, bs.month, delta);
-  return bsToAD(next.year, next.month, Math.min(bs.day, getBSMonthLength(next.year, next.month)));
 }
 
 /**

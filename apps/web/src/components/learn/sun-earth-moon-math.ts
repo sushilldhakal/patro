@@ -1,3 +1,4 @@
+import { eccentricAnomaly } from "@vedic-patro/domain/learn/kepler";
 /**
  * Simplified Sun–Earth–Moon system (Keplerian elliptical orbits) used to compare
  * the ~365-day solar year (12 solar months) against the ~12.37 lunar months
@@ -44,12 +45,6 @@ export const BS_MONTHS = [
   "फागुन",
   "चैत्र",
 ] as const;
-
-function eccentricAnomaly(Mrad: number, e: number): number {
-  let E = Mrad;
-  for (let i = 0; i < 10; i++) E = Mrad + e * Math.sin(E);
-  return E;
-}
 
 function trueAnomalyFromE(E: number, e: number): number {
   return 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));

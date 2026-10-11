@@ -17,15 +17,10 @@ import {
   grahaDetailKeys,
   type EclipseEvent,
 } from "@/lib/api";
+import { renderedEclipseDate } from "@vedic-patro/domain/eclipse-date";
 
 const suryaRouteApi = getRouteApi("/panchanga-shell/panchanga/surya-grahan");
 const chandraRouteApi = getRouteApi("/panchanga-shell/panchanga/chandra-grahan");
-
-function renderedEclipseDate(ev: EclipseEvent): string {
-  const label = ev.date_jd_date?.trim();
-  if (label) return label;
-  return ev.date_bs ?? ev.date_ad ?? "";
-}
 
 function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }) {
   const { digits, lang } = useLocale();

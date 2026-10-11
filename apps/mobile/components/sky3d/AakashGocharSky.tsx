@@ -102,6 +102,7 @@ import CompassNeedle from "@/assets/compass.svg";
 import { CompassControl, DIAL_SIZE } from "@/components/sky3d/CompassControl";
 import { useDeviceOrientation } from "@/lib/sky3d/device-orientation";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
 const Scene = memo(AakashGocharScene);
 
@@ -1472,7 +1473,6 @@ export function AakashGocharSky({
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
 
-
   // Fullscreen gives the sky the whole window and floats the controls over it.
   const canvasHeight = fullscreen ? windowHeight : height;
   /* The drag handler is built once and needs the *current* canvas height to
@@ -2485,30 +2485,6 @@ export function AakashGocharSky({
       </View>
     </Modal>
   );
-}
-
-/**
- * The text over the canvas. Memoised, and fed an array the scene only replaces
- * when a label has actually moved a pixel: the HUD clock ticks five times a
- * second, and re-rendering fifty Devanagari labels alongside it would stutter
- * the very animation they are labelling.
- */
-/**
- * The year a star takes its turn as pole star, in the reader's era. Nepali gets
- * बिक्रम सम्वत्, which is where every other year in the app is quoted.
- */
-function formatPoleYear(
-  year: number | undefined,
-  lang: string,
-  digits: (v: string | number) => string,
-): string {
-  if (year == null) return "";
-  if (lang === "en") {
-    return year < 0 ? `${Math.abs(year).toLocaleString("en-US")} BC` : `AD ${year.toLocaleString("en-US")}`;
-  }
-  const bs = year + 57;
-  const abs = digits(Math.abs(bs).toLocaleString("en-US"));
-  return bs < 0 ? `${abs} बि.सं. पूर्व` : `${abs} बि.सं.`;
 }
 
 /** One graha's name, riding its disc: position comes from shared values, not React state. */

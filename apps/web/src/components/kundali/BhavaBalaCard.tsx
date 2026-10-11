@@ -14,21 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 
 const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
 const td = "px-2.5 py-1.5 text-sm";
 const num = "text-right font-mono tabular-nums";
-
-function fmtNum(
-  value: number | undefined,
-  digits: (v: string | number) => string,
-  places = 2,
-): string {
-  if (value == null) return "—";
-  const abs = Math.abs(value).toFixed(places);
-  const signed = value < 0 ? `−${abs}` : abs;
-  return digits(signed);
-}
 
 function GlanceTile({
   label,

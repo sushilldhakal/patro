@@ -7,12 +7,7 @@ import { localTimeShortFromIso } from "@vedic-patro/domain/time-format";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
-
-function renderedEclipseDate(ev: EclipseEvent): string {
-  const label = ev.date_jd_date?.trim();
-  if (label) return label;
-  return ev.date_bs ?? ev.date_ad ?? "";
-}
+import { renderedEclipseDate } from "@vedic-patro/domain/eclipse-date";
 
 function eclipseMaxTime(ev: EclipseEvent): string | null {
   return localTimeShortFromIso(ev.max_local) ?? ev.maximum_time_local_short ?? null;
@@ -101,7 +96,6 @@ function EclipseDetailRow({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
-
 
 export function StampLine({
   label,

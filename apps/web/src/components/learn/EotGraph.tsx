@@ -28,6 +28,7 @@ import {
   PERIHELION,
   VERNAL,
 } from "@vedic-patro/domain/sky3d/day-mechanics";
+import { type Pt, withZeroCrossings, formatDuration } from "@vedic-patro/domain/learn/eot-graph";
 
 const W = 336;
 const H = 400;
@@ -39,27 +40,8 @@ const GRID = "#1a4a7c";
 const LATE = "hsla(3, 80%, 55%, 0.5)";
 const EARLY = "hsla(60, 100%, 43%, 0.5)";
 
-type Pt = { t: number; minutes: number };
-
 function eotYearCurve(e: number, tilt: number): Pt[] {
   return eotCurve(e, tilt).map((p) => ({ t: p.day / 365, minutes: p.minutes }));
-}
-
-/** Insert the exact zero-crossing so the late/early fills meet the axis cleanly. */
-function withZeroCrossings(pts: Pt[]): Pt[] {
-  const out: Pt[] = [];
-  for (let i = 0; i < pts.length; i += 1) {
-    const cur = pts[i]!;
-    if (i > 0) {
-      const prev = pts[i - 1]!;
-      if (prev.minutes * cur.minutes < 0) {
-        const u = prev.minutes / (prev.minutes - cur.minutes);
-        out.push({ t: prev.t + u * (cur.t - prev.t), minutes: 0 });
-      }
-    }
-    out.push(cur);
-  }
-  return out;
 }
 
 function areaPath(
@@ -89,16 +71,6 @@ function durationTicks(peakMin: number): { minutes: number; sec: number }[] {
     out.push({ minutes: s / 60, sec: s });
   }
   return out;
-}
-
-function formatDuration(sec: number, num: (v: number | string) => string): string {
-  if (Math.abs(sec) < 30) return `${num(0)}s`;
-  const sign = sec < 0 ? "−" : "";
-  const n = Math.abs(sec);
-  const hours = Math.floor(n / 3600);
-  const minutes = Math.floor((n - hours * 3600) / 60);
-  if (hours !== 0) return `${sign}${num(hours)}h${minutes ? `${num(minutes)}m` : ""}`;
-  return `${sign}${num(minutes)}m`;
 }
 
 export interface EotGraphProps {

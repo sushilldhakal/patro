@@ -17,6 +17,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, type Ref } from "react";
 import * as THREE from "three";
+import { makeLine, ellipseGeometry, disposeObject } from "@vedic-patro/domain/learn/ecliptic-wheel-geometry";
 
 const PI2 = Math.PI * 2;
 
@@ -45,33 +46,6 @@ export function atLon(lonDeg: number, radius: number) {
 export function atLonInto(out: THREE.Vector3, lonDeg: number, radius: number) {
   const a = lonDeg * (Math.PI / 180);
   return out.set(radius * Math.cos(a), 0, -radius * Math.sin(a));
-}
-
-function ellipseGeometry(semiMajor: number, semiMinor: number, segments = 128) {
-  const pts: number[] = [];
-  for (let i = 0; i <= segments; i += 1) {
-    const a = (i / segments) * PI2;
-    pts.push(semiMajor * Math.cos(a), 0, -semiMinor * Math.sin(a));
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-  return g;
-}
-
-function makeLine(geometry: THREE.BufferGeometry, color: number, opacity: number) {
-  return new THREE.Line(
-    geometry,
-    /* Never writes depth — every line here is a diagram mark and two of them
-       crossing must both survive. It still *tests*, so a body in front hides
-       it. */
-    new THREE.LineBasicMaterial({
-      color,
-      transparent: true,
-      opacity,
-      depthTest: true,
-      depthWrite: false,
-    }),
-  );
 }
 
 /**
@@ -242,16 +216,6 @@ function buildNakHighlight() {
   m.rotation.x = -Math.PI / 2;
   m.renderOrder = 5;
   return m;
-}
-
-function disposeObject(root: THREE.Object3D) {
-  root.traverse((o) => {
-    const mesh = o as THREE.Mesh;
-    mesh.geometry?.dispose?.();
-    const mat = mesh.material as THREE.Material | THREE.Material[] | undefined;
-    if (Array.isArray(mat)) mat.forEach((m) => m.dispose());
-    else mat?.dispose?.();
-  });
 }
 
 /**

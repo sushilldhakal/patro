@@ -98,6 +98,7 @@ import type {
   CameraState,
   PlaygroundGlobe,
 } from "@vedic-patro/domain/learn/sim-types";
+import { PI2, AXIS_Y, ellipseGeometry, focalEllipseGeometry, makeLine, composeMoonPlane } from "@vedic-patro/domain/learn/day-sim-geometry";
 
 export type {
   CameraTarget,
@@ -107,8 +108,6 @@ export type {
   CameraState,
   PlaygroundGlobe,
 };
-
-const PI2 = Math.PI * 2;
 
 /** Radius of the mean orbit. Everything else is scaled against this. */
 export const MEAN_DISTANCE = 10;
@@ -174,18 +173,6 @@ const ECLIPSE_ELONG_WINDOW_DEG = 1.5;
 const NODAL_PERIOD_DAYS = 6793.48;
 const NODAL_LAPS_PER_YEAR = 365.256363 / NODAL_PERIOD_DAYS;
 
-/**
- * The Moon's orbital plane against the ecliptic.
- *
- * The real inclination is ~5.14°. At this scene's compressed orbit that lift
- * is only a fraction of the planet's radius, so the Moon no longer clears the
- * disc at every syzygy the way a 60-radii orbit would. The honest angle is
- * still the right one to draw: राहु and केतु *are* those two crossings, and
- * exaggerating the tilt made the orbit a different object from the one they
- * live on.
- */
-const MOON_INCLINATION = 5.14 * (Math.PI / 180);
-
 /** Synodic laps per year — new moon to new moon, one fewer than sidereal. */
 const MOON_SYNODIC_PER_YEAR = MOON_LAPS_PER_YEAR - 1;
 
@@ -225,17 +212,6 @@ const COLOR = {
   axis: 0xdfe7f2,
 } as const;
 
-const MOON_INCL_Q = new THREE.Quaternion().setFromAxisAngle(
-  new THREE.Vector3(1, 0, 0),
-  MOON_INCLINATION,
-);
-const AXIS_Y = new THREE.Vector3(0, 1, 0);
-
-
-
-
-
-
 export type SceneSample = {
   day: number;
   /** Equation of time in minutes. */
@@ -271,39 +247,6 @@ function useArcGeometry(inner: number, outer: number) {
   );
 }
 
-/** Ellipse in the XZ plane, as a closed line. Equal radii give a circle. */
-function ellipseGeometry(semiMajor: number, semiMinor: number, segments = 128) {
-  const pts: number[] = [];
-  for (let i = 0; i <= segments; i += 1) {
-    const a = (i / segments) * PI2;
-    pts.push(semiMajor * Math.cos(a), 0, -semiMinor * Math.sin(a));
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-  return g;
-}
-
-/**
- * The orbit ellipse drawn about its **focus**, not its centre.
- *
- * Centring it on the Sun is what made raising the eccentricity look like it did
- * nothing: the semi-minor axis is `a√(1−e²)`, so even e = 0.4 flattens the
- * outline by only 8% — an eccentric orbit really is very nearly circular. What
- * eccentricity actually *shows* is the Sun sitting off-centre, by `a·e`, which
- * a centre-drawn ellipse hides completely.
- */
-function focalEllipseGeometry(semiMajor: number, e: number, segments = 128) {
-  const pts: number[] = [];
-  for (let i = 0; i <= segments; i += 1) {
-    const theta = (i / segments) * PI2;
-    const r = orbitDistance(semiMajor, e, theta);
-    pts.push(r * Math.cos(theta), 0, -r * Math.sin(theta));
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
-  return g;
-}
-
 /**
  * Truncate a full ring to `angle`, by index count rather than by rebuilding.
  *
@@ -313,39 +256,6 @@ function focalEllipseGeometry(semiMajor: number, e: number, segments = 128) {
 function setRingArc(mesh: THREE.Mesh, angle: number, segments: number) {
   const frac = angle >= PI2 ? 1 : euclideanModulo(angle, PI2) / PI2;
   mesh.geometry.setDrawRange(0, Math.max(1, Math.round(frac * segments)) * 6);
-}
-
-function makeLine(geometry: THREE.BufferGeometry, color: number, opacity: number) {
-  return new THREE.Line(
-    geometry,
-    new THREE.LineBasicMaterial({
-      color,
-      transparent: true,
-      opacity,
-      depthTest: true,
-      depthWrite: false,
-    }),
-  );
-}
-
-/**
- * Tip the Moon's plane around a travelling node line.
- *
- * `rotY(Ω) · rotX(i) · rotY(-Ω)` leaves longitudes in the parent frame alone
- * and only tilts around the diameter at Ω — so the Moon keeps the longitude it
- * already had, while the two crossings (राहु at Ω, केतु at Ω+180°) stay on the
- * ecliptic and drift with Ω.
- */
-function composeMoonPlane(
-  out: THREE.Quaternion,
-  solar: THREE.Quaternion,
-  omegaRad: number,
-  qNode: THREE.Quaternion,
-  qNodeInv: THREE.Quaternion,
-) {
-  qNode.setFromAxisAngle(AXIS_Y, omegaRad);
-  qNodeInv.copy(qNode).invert();
-  return out.copy(solar).multiply(qNode).multiply(MOON_INCL_Q).multiply(qNodeInv);
 }
 
 /**
@@ -438,7 +348,6 @@ export interface SceneProps {
    */
   planetBody?: PlaygroundGlobe;
 }
-
 
 function DaySimScene({
   clock,

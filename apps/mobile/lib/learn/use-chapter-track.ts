@@ -23,6 +23,8 @@ import { useLocale } from "@/lib/i18n";
 import { compileChapter, parseTime } from "@vedic-patro/domain/learn/chapter-player";
 import { chapterAudioSources, type Chapter, type ChapterSimState } from "@vedic-patro/domain/learn/chapter-kit";
 import type { ChapterTrack } from "@vedic-patro/domain/learn/chapter-tracks";
+import { stepped } from "@vedic-patro/domain/learn/chapter-track";
+export { chapterDurationMs } from "@vedic-patro/domain/learn/chapter-track";
 
 /** See the cast's own comment at the call site. */
 function audioPlayerEvents(player: AudioPlayer): {
@@ -53,23 +55,6 @@ export type DayChapterPlayer = {
   dismissWelcome: () => void;
   setOnFrame: (fn: (s: ChapterSimState) => void) => void;
 };
-
-/**
- * Did anything *step* between two samples?
- *
- * Numbers ease every frame and are written straight to the scene's refs by the
- * frame callback, so they must not force a React render. Everything else —
- * layer flags, camera target, the overlay id, the highlight — changes rarely
- * and has to reach React the moment it does.
- */
-function stepped(next: ChapterSimState, prev: ChapterSimState): boolean {
-  for (const key of Object.keys(next) as (keyof ChapterSimState)[]) {
-    const v = next[key];
-    if (typeof v === "number") continue;
-    if (v !== prev[key]) return true;
-  }
-  return false;
-}
 
 export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | null {
   const { lang } = useLocale();
@@ -331,12 +316,3 @@ const BLANK: Chapter = {
   defaults: {} as ChapterSimState,
   frames: [],
 };
-
-export function chapterDurationMs(chapter: Chapter): number {
-  let max = 0;
-  for (const frame of chapter.frames) {
-    const at = parseTime(frame.meta.at);
-    if (at > max) max = at;
-  }
-  return max;
-}

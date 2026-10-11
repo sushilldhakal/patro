@@ -4,17 +4,7 @@ import type { MuhurtaNowBlock, PanchangaDay } from "@/lib/api";
 import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/lib/i18n";
-
-function windowLabel(
-  block: MuhurtaNowBlock | null | undefined,
-  digits: (v: string | number) => string,
-): string | undefined {
-  if (!block) return undefined;
-  const start = formatTimeShort(block.start_time ?? block.start_local);
-  const end = formatTimeShort(block.end_time ?? block.end_local);
-  if (start && end) return `${digits(start)} – ${digits(end)}`;
-  return start ? digits(start) : undefined;
-}
+import { windowLabel } from "@vedic-patro/domain/muhurta-now";
 
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [

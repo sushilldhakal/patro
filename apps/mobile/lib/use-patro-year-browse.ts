@@ -3,12 +3,7 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { getCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 import { defaultEraForLanguage, type Era } from "@vedic-patro/domain/era";
-
-/** Year the browse opens on for an era — BS/BBS count in BS, AD/BC in Gregorian. */
-function defaultBrowseYear(era: Era): number {
-  if (era === "bs" || era === "bbs") return getCurrentBs().year;
-  return new Date().getFullYear();
-}
+import { defaultBrowseYear } from "@vedic-patro/domain/patro-browse-params";
 
 /**
  * Shared year-browse state for yearly pages (suryakranti, holidays, sait, …).

@@ -18,6 +18,7 @@ import {
   selectionRingStyle,
   useCalendarGridWidth,
 } from "./calendar-grid-layout";
+import { moonPhaseTitle, getPakshaPhase } from "@vedic-patro/domain/month-grid-moon";
 
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const WEEKDAYS_SHORT = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
@@ -26,20 +27,6 @@ function chunk<T>(items: T[], size: number): T[][] {
   const rows: T[][] = [];
   for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size));
   return rows;
-}
-
-type PakshaPhase = "shukla" | "krishna";
-
-function getPakshaPhase(day: CalendarDay): PakshaPhase | undefined {
-  if (day.paksha === "shukla" || day.paksha_ne?.includes("शुक्ल")) return "shukla";
-  if (day.paksha === "krishna" || day.paksha_ne?.includes("कृष्ण")) return "krishna";
-  return undefined;
-}
-
-function moonPhaseTitle(phase: PakshaPhase | undefined, isEn: boolean): string | undefined {
-  if (phase === "shukla") return isEn ? "Shukla paksha (waxing moon)" : "शुक्ल पक्ष";
-  if (phase === "krishna") return isEn ? "Krishna paksha (waning moon)" : "कृष्ण पक्ष";
-  return undefined;
 }
 
 type Props = {

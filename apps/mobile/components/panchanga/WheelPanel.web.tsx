@@ -21,11 +21,7 @@ import {
   wheelPanelSub,
   wheelPanelTitle,
 } from "@/lib/wheel-classes";
-
-function bsMonthEnOf(ne: string): string {
-  const i = BS_MONTHS_NE.indexOf(ne);
-  return i >= 0 ? BS_MONTH_NAMES[i] : ne;
-}
+import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
 
 interface WheelPanelProps {
   sel: WheelPick | null;

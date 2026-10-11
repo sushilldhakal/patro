@@ -11,19 +11,9 @@ import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 
 const GLANCE_GAP = 8;
-
-function fmtNum(
-  value: number | undefined,
-  digits: (v: string | number) => string,
-  places = 2,
-): string {
-  if (value == null) return "—";
-  const abs = Math.abs(value).toFixed(places);
-  const signed = value < 0 ? `−${abs}` : abs;
-  return digits(signed);
-}
 
 function glanceTileLayout(contentWidth: number, twoCol: boolean): ViewStyle {
   if (!twoCol) return { width: "100%" };

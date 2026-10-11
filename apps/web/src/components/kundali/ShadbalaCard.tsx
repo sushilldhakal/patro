@@ -29,6 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
 
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
@@ -49,13 +50,6 @@ const STATUS_STYLES: Record<ShadbalaStatus, string> = {
 const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
 const td = "px-2.5 py-1.5 text-sm";
 const num = "text-right font-mono tabular-nums";
-
-function fmt(value: number | undefined, digits: (v: string | number) => string, places = 2): string {
-  if (value == null) return "—";
-  const abs = Math.abs(value).toFixed(places);
-  const signed = value < 0 ? `−${abs}` : abs;
-  return digits(signed);
-}
 
 const STATUS_LABEL: Record<ShadbalaStatus, string> = {
   Exceptional: "kundali.x.status_exceptional",

@@ -24,3 +24,17 @@
   * Rashi columns in the dainik-kranti tables use rashi-i18n (English "Aries..." not "Mesha...").
   * Mobile keeps app-only presentation: lib/sait-suitability-style.ts (native colours), lib/element-routes.ts, lib/panchanga-shell-paths.ts (adds the app-only tab routes), lib/sky3d/nebula-sources.ts, sky-textures.ts (per-platform assets).
   * bikram-solar on mobile now spans the web table range (BS 60-3000 via the shared calendar) -- NOTE for review: its precomputed table is larger than before.
+
+## Design tokens, icons, API client, shared helpers (October 2026)
+
+Visible in the app (web is the design's source of truth; review before the release notes):
+- Colours: `muted`, `border`, `surfaceInset` and `surfaceMuted` now use the website's values in both themes (light muted #f0ebe3 → #f2e7cb, border #e8dfd0 → #d7c9a4, inset/muted surfaces are a 3% / 2.5% ink tint of the card; dark muted #141929 → #191d31). Light-theme tone tints match the website's mixes (toneBest 14% → 12%, toneGood 9% → 8%, toneBad 8% → 6%).
+- Kept on purpose (platform choices, in `mobileRoles()` / `lib/theme.ts`): the app's `accent` is the positive tone (green on light, gold on dark), native muted text stays full ink on light, dark-theme tints stay stronger, cards keep the rounder 8/12 px radii, and the four larger text sizes (15/18/22/28 px).
+- Icons: the drawer's Documents entry is the website's book-marked icon (was file-text); the floating tab bar draws through `AppNavIcon` from the shared feature map (same Lucide artwork as before).
+- Panchanga sections: anga end times show the website's भोलि / पर्सि prefix when the anga ends on a later day.
+- Kundali copy: the app reads the shared catalogue; three labels take the website's wording (surya_nakshatra "Surya Nakshatra", loading "लोड हुँदैछ…", mahadasha_at_birth "महादशा सुरु (जन्मकालीन)").
+
+Not visible, but behaviour:
+- Network: every request has a 120 s timeout (the API proxy's own limit); a timeout or "could not connect" is a `NetworkError` (a `TypeError`), so the offline download still answers it. Data errors now carry the backend's `detail` in the app too.
+- Accounts (website): concurrent 401s share one token refresh and only a 401/403 from `/auth/refresh` signs the user out (the app already did this). Account errors are `ApiError`s, so React Query no longer retries 4xx account failures.
+- Language: a stored language value is parsed case-insensitively in the app too (as on the website).

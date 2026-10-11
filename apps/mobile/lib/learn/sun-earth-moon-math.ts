@@ -1,3 +1,4 @@
+import { eccentricAnomaly } from "@vedic-patro/domain/learn/kepler";
 /**
  * Simplified Sun–Earth–Moon orbit math (shared with web learn diagrams).
  */
@@ -13,12 +14,6 @@ export const SEM = {
   moonOrbitA: 0.22,
   moonOrbitE: 0.12,
 } as const;
-
-function eccentricAnomaly(Mrad: number, e: number): number {
-  let E = Mrad;
-  for (let i = 0; i < 10; i++) E = Mrad + e * Math.sin(E);
-  return E;
-}
 
 function trueAnomalyFromE(E: number, e: number): number {
   return 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));

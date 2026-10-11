@@ -45,6 +45,7 @@ import {
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu";
 import { cn } from "@vedic-patro/domain/utils";
+import { gunaTone } from "@vedic-patro/domain/vastu-guna";
 
 /** How long to wait for a first heading before calling the compass unusable. */
 const COMPASS_TIMEOUT_MS = 4000;
@@ -69,12 +70,6 @@ function Chip({
       </Text>
     </View>
   );
-}
-
-function gunaTone(guna: VastuGunaId): "sattva" | "tamas" | "tint" {
-  if (guna === "sattva") return "sattva";
-  if (guna === "tamas") return "tamas";
-  return "tint";
 }
 
 function PadaStatusMark({ status }: { status: "good" | "ok" | "bad" | "mixed" }) {

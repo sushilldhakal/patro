@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser.web";
+import { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
+export { defaultClockForTimezone } from "@vedic-patro/domain/panchanga-mode";
 
 export type PanchangaDataMode = "udaya" | "instant";
 
@@ -7,18 +9,6 @@ const CLOCK_KEY = "dhakalPatroPanchClock";
 
 function pad2(n: number) {
   return String(n).padStart(2, "0");
-}
-
-export function defaultClockForTimezone(timezone: string): string {
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: timezone,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
-  const h = parts.find((p) => p.type === "hour")?.value ?? "12";
-  const m = parts.find((p) => p.type === "minute")?.value ?? "00";
-  return formatClockParts(Number(h) % 24, Number(m));
 }
 
 export function parseClockParts(clock: string): { hour: number; minute: number } {

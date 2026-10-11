@@ -44,13 +44,7 @@ import {
   wTwName,
   wYogaLbl,
 } from "@/lib/wheel-svg-classes";
-
-const DEG = Math.PI / 180;
-const CX = 500;
-const CY = 500;
-
-/** Scale factor applied to all planet orbit radii to leave room for the inner yoga/karana/tithi rings. */
-const ORBIT_SCALE = 0.58;
+import { DEG, CX, CY, ORBIT_SCALE, planetHitRadius, planetSvgPosition } from "@vedic-patro/domain/wheel-chart-geometry";
 
 /**
  * Every inner ring shares a boundary with its neighbour, so no dead band opens
@@ -96,26 +90,6 @@ const R = {
  */
 const RASHI_GLYPH_SIZE = 30;
 const NAK_GLYPH_SIZE = 26;
-
-function planetVisualRadius(index: number): number {
-  const meta = GRAHA_META[index];
-  if (!meta) return 8;
-  if ("big" in meta && meta.big) return 15;
-  if (index === 1) return 10;
-  return 8;
-}
-
-function planetHitRadius(index: number): number {
-  const r = planetVisualRadius(index);
-  if (index === 0) return r + 26;
-  if (index >= 6) return r + 32;
-  return r + 24;
-}
-
-function planetSvgPosition(lon: number, orbit: number, spinDeg: number): [number, number] {
-  const a = (lon + spinDeg) * DEG;
-  return [CX - orbit * ORBIT_SCALE * Math.sin(a), CY - orbit * ORBIT_SCALE * Math.cos(a)];
-}
 
 export type WheelHover = { type: "nak"; i: number } | { type: "rashi"; i: number };
 

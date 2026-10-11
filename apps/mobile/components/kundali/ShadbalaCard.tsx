@@ -28,6 +28,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
 
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
@@ -74,13 +75,6 @@ function glanceTileLayout(contentWidth: number, cols: 1 | 2 | 4): ViewStyle {
   }
   const w = Math.floor((contentWidth - GLANCE_GAP * (cols - 1)) / cols);
   return { width: w };
-}
-
-function fmt(value: number | undefined, digits: (v: string | number) => string, places = 2): string {
-  if (value == null) return "—";
-  const abs = Math.abs(value).toFixed(places);
-  const signed = value < 0 ? `−${abs}` : abs;
-  return digits(signed);
 }
 
 function StatusBadge({ status }: { status: ShadbalaStatus }) {

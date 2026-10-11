@@ -71,6 +71,7 @@ import Scene, {
   type SceneClock,
   type SceneSample,
 } from "@/components/learn/playground/TwoSystemsScene";
+import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
 const CANVAS_BG = "#050a10";
 const CARD_HEIGHT = 320;
@@ -102,12 +103,6 @@ const FOCUS_CHIPS: { id: Focus; ne: string; en: string }[] = [
 
 const MIN_DISTANCE = 9;
 const MAX_DISTANCE = 34;
-
-function clampPitch(p: number) {
-  /* North of the ecliptic only — from the south side the zodiac runs backwards
-     and every rashi reads in reverse order, which is never worth showing. */
-  return Math.min(1.45, Math.max(0.12, p));
-}
 
 function clampDistance(d: number) {
   return Math.min(MAX_DISTANCE, Math.max(MIN_DISTANCE, d));

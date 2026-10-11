@@ -11,13 +11,10 @@ import {
 } from "@/lib/api";
 import {
   adToBS,
-  bsToAD,
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
   BS_SUPPORTED_END_YEAR,
   BS_SUPPORTED_START_YEAR,
-  getBSMonthLength,
-  shiftBsMonth,
 } from "@vedic-patro/domain/bs-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatTimeShort, getSunrise, toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
@@ -58,6 +55,7 @@ import {
   searchToLocation,
   type PanchangaSearch,
 } from "@/lib/url-state";
+import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
 
 const PLAY_BASE_MS = WHEEL_PLAY_BASE_MS;
 const MAX_PLAY_SPEED = WHEEL_MAX_PLAY_SPEED;
@@ -69,17 +67,6 @@ const routeApi = getRouteApi("/panchanga-shell/panchanga/year");
 
 function toAdStr(d: Date): string {
   return civilIsoFromDate(d);
-}
-
-function parseAdStr(s: string): Date {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
-
-function shiftAnchorMonths(centre: Date, delta: number): Date {
-  const bs = adToBS(centre);
-  const next = shiftBsMonth(bs.year, bs.month, delta);
-  return bsToAD(next.year, next.month, Math.min(bs.day, getBSMonthLength(next.year, next.month)));
 }
 
 function isLegacyYearRangeSearch(search: PanchangaSearch & { to?: number; toMonth?: number }): boolean {

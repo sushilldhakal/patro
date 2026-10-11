@@ -15,6 +15,7 @@ import {
   PANCHANGA_TIMING_HIGHLIGHT_BORDER,
 } from "@/lib/panchanga-card-colors";
 import { TableHeader, TableRow } from "@/components/ui/DataTable";
+import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
 
 /** Paired label|value columns — always on native (phones fit compact 2×2 rows). */
 export function usePanchangaLayoutWide(): boolean {
@@ -62,11 +63,6 @@ export function PanchangaSection({
       {children}
     </View>
   );
-}
-
-function rowLabel(labelKey?: string, label?: string, t?: (k: string) => string) {
-  if (labelKey && t) return t(labelKey);
-  return label ?? "";
 }
 
 function QuadLabel({ children, className }: { children: React.ReactNode; className?: string }) {

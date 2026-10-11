@@ -5,6 +5,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
+import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
 
 const PANEL_BG = "#07080d";
 const INK = "#f5f5f1";
@@ -12,13 +13,6 @@ const INK_MUTED = "rgba(245,245,241,0.55)";
 const INK_DIM = "rgba(245,245,241,0.50)";
 const INK_SOFT = "rgba(245,245,241,0.65)";
 const INK_BODY = "rgba(245,245,241,0.80)";
-
-function parseTimeToMinutes(time?: string): number | null {
-  if (!time) return null;
-  const m = time.match(/(\d{1,2}):(\d{2})/);
-  if (!m) return null;
-  return Number(m[1]) * 60 + Number(m[2]);
-}
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");

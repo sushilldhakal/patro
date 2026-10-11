@@ -31,27 +31,14 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { VedicPatroLoader } from "@/components/VedicPatroLoader";
 import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
+import { type PakshaPhase, getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
 
 const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
 const WEEKDAYS_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAYS_EN_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-type PakshaPhase = "shukla" | "krishna";
-
-function getPakshaPhase(day: CalendarDay): PakshaPhase | undefined {
-  if (day.paksha === "shukla" || day.paksha_ne?.includes("शुक्ल")) return "shukla";
-  if (day.paksha === "krishna" || day.paksha_ne?.includes("कृष्ण")) return "krishna";
-  return undefined;
-}
-
 function formatTithiLabel(day: CalendarDay, isEn: boolean): string {
   return isEn ? (day.tithi ?? day.tithi_ne ?? "—") : (day.tithi_ne ?? day.tithi ?? "—");
-}
-
-function moonPhaseTitle(phase: PakshaPhase | undefined, isEn: boolean): string | undefined {
-  if (phase === "shukla") return isEn ? "Shukla paksha (waxing moon)" : "शुक्ल पक्ष";
-  if (phase === "krishna") return isEn ? "Krishna paksha (waning moon)" : "कृष्ण पक्ष";
-  return undefined;
 }
 
 interface Props {
