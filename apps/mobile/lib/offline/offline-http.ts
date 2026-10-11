@@ -134,11 +134,11 @@ async function readSaved<T>(path: string): Promise<T | null> {
 export async function offlineAwareGet<T>(
   path: string,
   request: () => Promise<Response>,
-  errorFor: (res: Response) => Error,
+  errorFor: (res: Response) => Error | Promise<Error>,
 ): Promise<T> {
   if (!OFFLINE_STORE_SUPPORTED) {
     const res = await request();
-    if (!res.ok) throw errorFor(res);
+    if (!res.ok) throw await errorFor(res);
     return res.json();
   }
 
@@ -167,7 +167,7 @@ export async function offlineAwareGet<T>(
       const saved = await readSaved<T>(path);
       if (saved != null) return saved;
     }
-    throw errorFor(res);
+    throw await errorFor(res);
   }
 
   if (captureDepth > 0) {

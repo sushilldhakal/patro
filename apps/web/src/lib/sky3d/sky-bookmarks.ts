@@ -17,7 +17,8 @@
  * is, and a stored copy of that would go stale the moment either changed.
  */
 
-import { authFetch } from "@/lib/auth/client";
+import "@/lib/auth/client";
+import { fetchSkyFavourites, putSkyFavourites } from "@vedic-patro/api-client";
 
 const FAVOURITES_KEY = "vp.sky.favourites";
 const RECENTS_KEY = "vp.sky.recents";
@@ -32,8 +33,6 @@ const RECENTS_MAX = 12;
  * working and nothing is lost. When the route is added server-side this starts
  * syncing on its own, with no change here.
  */
-const FAVOURITES_ENDPOINT = "/profiles/sky-favourites";
-
 function readIds(key: string): string[] {
   if (typeof localStorage === "undefined") return [];
   try {
@@ -89,7 +88,7 @@ export async function syncFavourites(signedIn: boolean): Promise<string[]> {
   const local = localFavourites();
   if (!signedIn) return local;
   try {
-    const remote = await authFetch<{ ids?: string[] }>(FAVOURITES_ENDPOINT);
+    const remote = await fetchSkyFavourites();
     const merged = [...new Set([...(remote.ids ?? []), ...local])];
     saveLocalFavourites(merged);
     if (merged.length !== (remote.ids ?? []).length) void putFavourites(merged, true);
@@ -104,10 +103,7 @@ export async function putFavourites(ids: string[], signedIn: boolean): Promise<v
   saveLocalFavourites(ids);
   if (!signedIn) return;
   try {
-    await authFetch(FAVOURITES_ENDPOINT, {
-      method: "PUT",
-      body: JSON.stringify({ ids }),
-    });
+    await putSkyFavourites(ids);
   } catch {
     /* Offline, or the route is not there yet. The browser copy is written
        either way, so the star stays lit and the next sync will carry it up. */

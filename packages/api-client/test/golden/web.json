@@ -754,5 +754,66 @@
  ],
  "fetchPatroCapabilities": [
   "/api/meta/capabilities"
+ ],
+ "fetchDocuments": [
+  "/api/v1/documents?v=6"
+ ],
+ "fetchDocumentDetail": [
+  "/api/v1/documents/hanuman%20chalisa"
+ ],
+ "fetchDocumentChapter": [
+  "/api/v1/documents/bhagavad-gita/chapters/3"
+ ],
+ "fetchVedaDaily": [
+  "/api/v1/veda/daily?date=2026-10-10"
+ ],
+ "apiSignup": [
+  "POST /api/auth/signup {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"
+ ],
+ "apiLogin": [
+  "POST /api/auth/login {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"
+ ],
+ "apiGoogle": [
+  "POST /api/auth/google {\"id_token\":\"google-id-token\"}"
+ ],
+ "apiFacebook": [
+  "POST /api/auth/facebook {\"access_token\":\"fb-access-token\"}"
+ ],
+ "apiForgotPassword": [
+  "POST /api/auth/forgot-password {\"email\":\"a@b.np\"}"
+ ],
+ "apiResetPassword": [
+  "POST /api/auth/reset-password {\"token\":\"reset-token\",\"password\":\"pw654321\"}"
+ ],
+ "apiVerifyEmail": [
+  "POST /api/auth/verify-email {\"token\":\"verify-token\"}"
+ ],
+ "apiMe": [
+  "/api/auth/me"
+ ],
+ "apiResendVerification": [
+  "POST /api/auth/resend-verification"
+ ],
+ "listProfiles": [
+  "/api/profiles"
+ ],
+ "createProfile": [
+  "POST /api/profiles {\"name\":\"राम\",\"birth_era\":\"bs\",\"birth_year\":2050}"
+ ],
+ "updateProfile": [
+  "PATCH /api/profiles/p-1 {\"name\":\"Ram\"}"
+ ],
+ "deleteProfile": [
+  "DELETE /api/profiles/p-1"
+ ],
+ "apiDeleteAccount": [
+  "DELETE /api/auth/me"
+ ],
+ "apiLogout": [],
+ "syncFavourites": [
+  "/api/profiles/sky-favourites"
+ ],
+ "putFavourites": [
+  "PUT /api/profiles/sky-favourites {\"ids\":[\"M31\",\"M42\"]}"
  ]
 }

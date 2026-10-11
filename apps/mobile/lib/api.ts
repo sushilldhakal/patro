@@ -22,7 +22,11 @@ import {
 import {
   PANCHANGA_CACHE_VERSION,
   SAIT_CACHE_VERSION,
-  ApiError,
+  apiErrorFrom,
+  fetchWithTimeout,
+  apiBases,
+  DEFAULT_API_VERSION,
+  PRODUCTION_API_BASE,
 } from "@vedic-patro/api-client";
 export {
   withPanchangaCacheVersion,
@@ -344,15 +348,16 @@ const extra = Constants.expoConfig?.extra ?? {};
 // Canonical host (www) — the apex `vedicpatro.com` 301-redirects to www, which
 // native fetch follows silently but the browser blocks on cross-origin (the
 // redirect carries no CORS header). Hitting www directly avoids the hop.
-const CONFIGURED_API_BASE = (extra.apiBaseUrl as string) ?? "https://www.vedicpatro.com/api";
+const CONFIGURED_API_BASE = (extra.apiBaseUrl as string) ?? PRODUCTION_API_BASE;
 // On the *web* build in dev, the production API sends no CORS headers, so a
 // cross-origin browser fetch is blocked. Route through the same-origin `/api`
 // Metro dev proxy instead (see metro.config.js). Native and web-production hit
 // the real host directly.
-export const API_BASE =
-  Platform.OS === "web" && __DEV__ ? "/api" : CONFIGURED_API_BASE;
-export const API_VERSION = (extra.apiVersion as string) ?? "v1";
-export const DATA_BASE = `${API_BASE}/${API_VERSION}`;
+export const API_VERSION = (extra.apiVersion as string) ?? DEFAULT_API_VERSION;
+export const { baseUrl: API_BASE, dataBaseUrl: DATA_BASE } = apiBases(
+  Platform.OS === "web" && __DEV__ ? "/api" : CONFIGURED_API_BASE,
+  API_VERSION,
+);
 
 export const DEFAULT_LOCATION: LocationParams = {
   city_id: 1283240,
@@ -376,8 +381,8 @@ function appLocationQuery(path: string, location?: LocationParams): string {
 async function offlineAwareJson<T>(path: string): Promise<T> {
   return offlineAwareGet<T>(
     path,
-    () => fetch(`${DATA_BASE}${path}`),
-    (res) => new ApiError(res.status, undefined, path),
+    () => fetchWithTimeout(`${DATA_BASE}${path}`, path),
+    (res) => apiErrorFrom(res, path),
   );
 }
 

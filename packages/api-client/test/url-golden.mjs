@@ -26,7 +26,7 @@ const stubs = {
   "react-native": `export const Platform = { OS: "ios", select: (o) => o.ios ?? o.default }; export default {};`,
   "expo-constants": `export default { expoConfig: { extra: { apiBaseUrl: "https://www.vedicpatro.com/api", apiVersion: "v1" } } };`,
   // Requests still go through fetch, so the URL is recorded the same way.
-  "@/lib/offline/offline-http": `export async function offlineAwareGet(path, doFetch, errorFor) { const res = await doFetch(); if (!res.ok) throw errorFor(res); return res.json(); }`,
+  "@/lib/offline/offline-http": `export async function offlineAwareGet(path, doFetch, errorFor) { const res = await doFetch(); if (!res.ok) throw await errorFor(res); return res.json(); }`,
 };
 
 const tryFile = (p) =>

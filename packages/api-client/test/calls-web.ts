@@ -76,3 +76,39 @@ add("fetchDashaChildren", () => a.fetchDashaChildren("Sun", "2020-01-01", "2026-
 add("fetchKundaliMilan", () => a.fetchKundaliMilan({ moment, location: { city_id: 1 } }, { moment, location: { lat: 1, lon: 2 } }, { lang: "ne" }));
 add("fetchVastuSketch", () => a.fetchVastuSketch({ plot: { width: 10, depth: 12 } }));
 add("fetchPatroCapabilities", () => a.fetchPatroCapabilities());
+
+// ─── Documents ───────────────────────────────────────────────────────────────
+import * as docs from "@/lib/documents-api";
+const d: any = docs;
+add("fetchDocuments", () => d.fetchDocuments());
+add("fetchDocumentDetail", () => d.fetchDocumentDetail("hanuman chalisa"));
+add("fetchDocumentChapter", () => d.fetchDocumentChapter("bhagavad-gita", 3));
+add("fetchVedaDaily", () => d.fetchVedaDaily("2026-10-10"));
+
+// ─── Auth and profiles (method and body are part of the record) ──────────────
+import * as auth from "@/lib/auth/client";
+const au: any = auth;
+add("apiSignup", () => au.apiSignup("a@b.np", "pw123456"));
+add("apiLogin", () => au.apiLogin("a@b.np", "pw123456"));
+add("apiGoogle", () => au.apiGoogle("google-id-token"));
+add("apiFacebook", () => au.apiFacebook("fb-access-token"));
+add("apiForgotPassword", () => au.apiForgotPassword("a@b.np"));
+add("apiResetPassword", () => au.apiResetPassword("reset-token", "pw654321"));
+add("apiVerifyEmail", () => au.apiVerifyEmail("verify-token"));
+add("apiMe", () => au.apiMe());
+add("apiResendVerification", () => au.apiResendVerification());
+add("listProfiles", () => au.listProfiles());
+add("createProfile", () => au.createProfile({ name: "राम", birth_era: "bs", birth_year: 2050 }));
+add("updateProfile", () => au.updateProfile("p-1", { name: "Ram" }));
+add("deleteProfile", () => au.deleteProfile("p-1"));
+add("apiDeleteAccount", () => au.apiDeleteAccount());
+add("apiLogout", async () => {
+  await au.tokenStore.set({ access_token: "acc", refresh_token: "ref", token_type: "bearer" });
+  await au.apiLogout();
+});
+
+// ─── Sky favourites (account-backed when signed in) ─────────────────────────
+import * as sky from "@/lib/sky3d/sky-bookmarks";
+const sk: any = sky;
+add("syncFavourites", () => sk.syncFavourites(true));
+add("putFavourites", () => sk.putFavourites(["M31", "M42"], true));

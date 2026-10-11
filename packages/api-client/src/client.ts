@@ -75,6 +75,7 @@ import {
 } from "@vedic-patro/domain/instant";
 import type { Era } from "@vedic-patro/domain/era";
 import type { InstantQuery } from "@vedic-patro/domain/instant";
+import { apiErrorFrom, fetchWithTimeout, requestJson } from "./http";
 
 // ─── Cache versions ───────────────────────────────────────────────────────────
 // Appended to cacheable URLs so a backend/engine change mints fresh CDN objects
@@ -90,32 +91,22 @@ export const KUNDALI_ENGINE_VERSION = "5";
 export const BHAVA_REFERENCE_VERSION = "26";
 export const YOGA_REFERENCE_VERSION = "3";
 
-// ─── Errors ───────────────────────────────────────────────────────────────────
+// ─── Base URLs ────────────────────────────────────────────────────────────────
 
-/** Error from a failed API call, carrying the backend's own explanation. */
-export class ApiError extends Error {
-  status: number;
-  /** The backend's `detail` — e.g. why a date is out of range. */
-  detail: string | undefined;
+/** The production API (canonical www host: the apex 301-redirects, which a cross-origin browser fetch cannot follow). */
+export const PRODUCTION_API_BASE = "https://www.vedicpatro.com/api";
 
-  constructor(status: number, detail: string | undefined, path: string) {
-    super(detail ? `API ${status}: ${detail}` : `API ${status}: ${path}`);
-    this.name = "ApiError";
-    this.status = status;
-    this.detail = detail;
-  }
-}
+/** Public, cacheable data lives under a version segment so an engine bump becomes new CDN objects. */
+export const DEFAULT_API_VERSION = "v1";
 
-/** Reads the backend's `detail` from an error response, if it sent one. */
-export async function apiErrorFrom(res: Response, path: string): Promise<ApiError> {
-  let detail: string | undefined;
-  try {
-    const body = await res.clone().json();
-    if (typeof body?.detail === "string") detail = body.detail;
-  } catch {
-    /* non-JSON error body */
-  }
-  return new ApiError(res.status, detail, path);
+/**
+ * The two bases every request is built on, from an app's configured base:
+ * `baseUrl` (…/api — accounts, meta) and `dataBaseUrl` (…/api/v1 — data).
+ * Trailing slashes are dropped so `${base}/v1` never becomes `…/api//v1`.
+ */
+export function apiBases(base: string, version: string = DEFAULT_API_VERSION): { baseUrl: string; dataBaseUrl: string } {
+  const baseUrl = base.replace(/\/+$/, "") || "/api";
+  return { baseUrl, dataBaseUrl: `${baseUrl}/${version}` };
 }
 
 // ─── Transport ────────────────────────────────────────────────────────────────
@@ -142,6 +133,16 @@ export function configureApiClient(next: ApiTransport): void {
 function current(): ApiTransport {
   if (!transport) throw new Error("configureApiClient() must run before any API request");
   return transport;
+}
+
+/** The unversioned API base (`…/api`) the app configured. */
+export function apiBaseUrl(): string {
+  return current().baseUrl;
+}
+
+/** The versioned data base (`…/api/v1`) the app configured. */
+export function apiDataBaseUrl(): string {
+  return current().dataBaseUrl;
 }
 
 export function get<T>(path: string): Promise<T> {
@@ -539,10 +540,7 @@ export const fetchGocharIngress = (
 
 /** Host-owned year bounds and cache version — not mirrored in the client. */
 export const fetchPatroCapabilities = async (): Promise<PatroApiLimits> => {
-  const path = "/meta/capabilities";
-  const res = await fetch(`${current().baseUrl}${path}`);
-  if (!res.ok) throw await apiErrorFrom(res, path);
-  return res.json();
+  return requestJson<PatroApiLimits>(current().baseUrl, "/meta/capabilities");
 };
 
 // ─── Day panchanga ────────────────────────────────────────────────────────────
@@ -656,7 +654,7 @@ export async function fetchVastuSketch(
   signal?: AbortSignal,
 ): Promise<VastuSketchResponse> {
   const path = "/vastu/sketch";
-  const res = await fetch(`${current().dataBaseUrl}${path}`, {
+  const res = await fetchWithTimeout(`${current().dataBaseUrl}${path}`, path, {
     method: "POST",
     signal,
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -721,7 +719,7 @@ export async function streamKundaliReport(
   if (options?.force) params.set("force", "true");
   const path = appendLocation(`/kundali/report?${params.toString()}`, location);
 
-  const res = await fetch(`${current().dataBaseUrl}${path}`, {
+  const res = await fetchWithTimeout(`${current().dataBaseUrl}${path}`, path, {
     signal,
     headers: { Accept: "application/x-ndjson" },
   });

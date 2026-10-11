@@ -13,13 +13,15 @@ import {
 } from "@/lib/patro-day-url";
 
 import {
-  apiErrorFrom,
   appendLocation,
   configureApiClient,
   fetchMonthCalendarRaw,
   fetchPersonalRashifalForDay,
   fetchRashifalForDay,
   get,
+  requestJson,
+  apiBases,
+  DEFAULT_API_VERSION,
 } from "@vedic-patro/api-client";
 
 // Requests shared with the other app — see packages/api-client/src/client.ts.
@@ -345,27 +347,23 @@ export {
   RASHIFAL_DOMAINS,
 } from "@vedic-patro/api-client";
 
-/** Strip trailing slashes so `${BASE}/${API_VERSION}` never becomes `…/api//v1`. */
-const BASE = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/+$/, "") || "/api";
-
 // Public, cacheable data endpoints live under a version segment (…/api/v1/…) so
 // a backend engine bump (v1 → v2) becomes a brand-new CDN object — no Cloudflare
 // purge needed. Auth/profile calls stay on the unversioned API_BASE.
-const API_VERSION = import.meta.env.VITE_API_VERSION ?? "v1";
-const DATA_BASE = `${BASE}/${API_VERSION}`;
+const { baseUrl: BASE, dataBaseUrl: DATA_BASE } = apiBases(
+  import.meta.env.VITE_API_BASE_URL ?? "/api",
+  import.meta.env.VITE_API_VERSION ?? DEFAULT_API_VERSION,
+);
 
 /** Unversioned base — used by the auth client (/auth, /profiles). */
 export const API_BASE = BASE;
 /** Versioned base for public, cacheable data endpoints. */
 export const API_DATA_BASE = DATA_BASE;
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${DATA_BASE}${path}`);
-  // A 400 is usually a date the engine can't compute (out of era range, beyond
-  // the ephemeris); the ApiError carries the backend's explanation.
-  if (!res.ok) throw await apiErrorFrom(res, path);
-  return res.json();
-}
+// A 400 is usually a date the engine can't compute (out of era range, beyond
+// the ephemeris); the ApiError carries the backend's explanation. Timeouts and
+// "could not connect" come back as NetworkError / TimeoutError.
+const fetchJson = <T,>(path: string): Promise<T> => requestJson<T>(DATA_BASE, path);
 
 function webLocationKey(location?: LocationParams): string {
   if (!location) return "default";

@@ -2,18 +2,23 @@
   "name": "@vedic-patro/api-client",
   "version": "0.0.0",
   "private": true,
-  "description": "Typed requests to the Vedic Patro API \u2014 response types and query keys shared by the website and the mobile app.",
+  "description": "Typed client for the Vedic Patro API, shared by the website and the mobile app: request/response contracts, requests, auth, errors, timeouts and query keys.",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./contracts": "./src/types.ts",
+    "./openapi.json": "./contracts/openapi.json"
   },
   "dependencies": {
     "@vedic-patro/domain": "*"
   },
   "scripts": {
-    "test": "node test/url-golden.mjs"
+    "test": "node test/url-golden.mjs && node test/openapi-contract.mjs && node --import tsx --test test/*.test.ts",
+    "test:urls": "node test/url-golden.mjs",
+    "test:openapi": "node test/openapi-contract.mjs"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.8"
   }
 }

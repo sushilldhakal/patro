@@ -478,5 +478,71 @@
  ],
  "fetchPatroCapabilities": [
   "https://www.vedicpatro.com/api/meta/capabilities"
+ ],
+ "fetchDocuments": [
+  "https://www.vedicpatro.com/api/v1/documents?v=6"
+ ],
+ "fetchDocumentDetail": [
+  "https://www.vedicpatro.com/api/v1/documents/hanuman%20chalisa"
+ ],
+ "fetchDocumentChapter": [
+  "https://www.vedicpatro.com/api/v1/documents/bhagavad-gita/chapters/3"
+ ],
+ "fetchVedaDaily": [
+  "https://www.vedicpatro.com/api/v1/veda/daily?date=2026-10-10"
+ ],
+ "apiSignup": [
+  "POST https://www.vedicpatro.com/api/auth/signup {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"
+ ],
+ "apiLogin": [
+  "POST https://www.vedicpatro.com/api/auth/login {\"email\":\"a@b.np\",\"password\":\"pw123456\"}"
+ ],
+ "apiGoogle": [
+  "POST https://www.vedicpatro.com/api/auth/google {\"id_token\":\"google-id-token\"}"
+ ],
+ "apiFacebook": [
+  "POST https://www.vedicpatro.com/api/auth/facebook {\"access_token\":\"fb-access-token\"}"
+ ],
+ "apiForgotPassword": [
+  "POST https://www.vedicpatro.com/api/auth/forgot-password {\"email\":\"a@b.np\"}"
+ ],
+ "apiResetPassword": [
+  "POST https://www.vedicpatro.com/api/auth/reset-password {\"token\":\"reset-token\",\"password\":\"pw654321\"}"
+ ],
+ "apiVerifyEmail": [
+  "POST https://www.vedicpatro.com/api/auth/verify-email {\"token\":\"verify-token\"}"
+ ],
+ "apiMe": [
+  "https://www.vedicpatro.com/api/auth/me"
+ ],
+ "apiResendVerification": [
+  "POST https://www.vedicpatro.com/api/auth/resend-verification"
+ ],
+ "listProfiles": [
+  "https://www.vedicpatro.com/api/profiles"
+ ],
+ "createProfile": [
+  "POST https://www.vedicpatro.com/api/profiles {\"name\":\"राम\",\"birth_era\":\"bs\",\"birth_year\":2050}"
+ ],
+ "updateProfile": [
+  "PATCH https://www.vedicpatro.com/api/profiles/p-1 {\"name\":\"Ram\"}"
+ ],
+ "deleteProfile": [
+  "DELETE https://www.vedicpatro.com/api/profiles/p-1"
+ ],
+ "apiDeleteAccount": [
+  "DELETE https://www.vedicpatro.com/api/auth/me"
+ ],
+ "apiLogout": [
+  "POST https://www.vedicpatro.com/api/auth/logout {\"refresh_token\":\"ref\"}"
+ ],
+ "apiApple": [
+  "POST https://www.vedicpatro.com/api/auth/apple {\"identity_token\":\"apple-identity-token\",\"email\":\"a@b.np\"}"
+ ],
+ "syncFavourites": [
+  "https://www.vedicpatro.com/api/profiles/sky-favourites"
+ ],
+ "putFavourites": [
+  "PUT https://www.vedicpatro.com/api/profiles/sky-favourites {\"ids\":[\"M31\",\"M42\"]}"
  ]
 }
