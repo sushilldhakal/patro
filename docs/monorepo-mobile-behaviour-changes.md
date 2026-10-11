@@ -36,5 +36,9 @@ Visible in the app (web is the design's source of truth; review before the relea
 
 Not visible, but behaviour:
 - Network: every request has a 120 s timeout (the API proxy's own limit); a timeout or "could not connect" is a `NetworkError` (a `TypeError`), so the offline download still answers it. Data errors now carry the backend's `detail` in the app too.
-- Accounts (website): concurrent 401s share one token refresh and only a 401/403 from `/auth/refresh` signs the user out (the app already did this). Account errors are `ApiError`s, so React Query no longer retries 4xx account failures.
+- Accounts (both apps, one shared flow in `packages/api-client/src/auth.ts`, covered by `test/auth.test.ts` against a fake server that rotates refresh tokens like the API):
+  * Requests that 401 together share one refresh; website tabs take turns through Web Locks, and a tab whose refresh is rejected because another tab rotated first adopts that tab's tokens instead of signing out. A request that 401s after someone else refreshed retries without rotating again.
+  * Only a 401/403 from `/auth/refresh` ends the session, and only if the store still holds the rejected token. The website used to sign out on any refresh failure (a 5xx too); now no connection reaches the caller as `NetworkError` and a server error as `AuthError` 5xx, with the session kept. (The app already kept the session; it used to see these as a 401.)
+  * Signing out (or into another account) while a refresh is in flight no longer brings the old session back: the late refresh is discarded and its new token revoked. Both apps had this race before.
+  * Account errors are `ApiError`s, so React Query no longer retries 4xx account failures.
 - Language: a stored language value is parsed case-insensitively in the app too (as on the website).

@@ -32,6 +32,16 @@ export const tokenStore = {
     removeLocalStorageItem(ACCESS_KEY);
     removeLocalStorageItem(REFRESH_KEY);
   },
+  /**
+   * Tabs share these tokens, and a refresh token is single-use: refreshes take
+   * turns across tabs (Web Locks), so one tab never presents a token another
+   * just rotated. Where Web Locks are missing, each tab still refreshes once
+   * and recovers if another tab rotated first (see packages/api-client/src/auth.ts).
+   */
+  withRefreshLock<T>(run: () => Promise<T>): Promise<T> {
+    const locks = typeof navigator !== "undefined" ? navigator.locks : undefined;
+    return locks ? locks.request("vedic-patro-auth-refresh", run) : run();
+  },
 };
 
 configureAuth({ tokens: tokenStore });

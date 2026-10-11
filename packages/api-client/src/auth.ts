@@ -11,7 +11,7 @@
  * the `baseUrl` each app gives `configureApiClient`.
  */
 import { apiBaseUrl } from "./client";
-import { ApiError, errorDetail, fetchWithTimeout, NetworkError } from "./http";
+import { ApiError, errorDetail, fetchWithTimeout } from "./http";
 import type { AuthUser, Profile, ProfileInput, TokenPair } from "./types";
 
 /** Where the app keeps the session's tokens. `access`/`refresh` are read synchronously. */
@@ -21,6 +21,12 @@ export interface TokenStore {
   /** Store a fresh pair. May settle later (durable storage); the getters update at once. */
   set(tokens: TokenPair): void | Promise<void>;
   clear(): void;
+  /**
+   * Run a token refresh exclusively across everything that shares this store —
+   * on the website, every open tab (they share localStorage). Optional: a store
+   * used by one process only needs no lock.
+   */
+  withRefreshLock?<T>(run: () => Promise<T>): Promise<T>;
 }
 
 let tokens: TokenStore | null = null;
@@ -66,60 +72,87 @@ async function postNoContent(path: string, body: unknown): Promise<void> {
 }
 
 // ─── Session refresh ──────────────────────────────────────────────────────────
+//
+// Access tokens are short-lived JWTs; refresh tokens are single-use and rotated
+// by every /auth/refresh (apps/api/app/routers/auth.py). The rules below follow
+// from that:
+//
+// - One refresh at a time. Requests that 401 together share one refresh, and
+//   on the website tabs take turns through `withRefreshLock` — a second refresh
+//   would present a token the first already revoked.
+// - A request that 401s after someone else already refreshed (another request,
+//   another tab) just retries with the new access token.
+// - Only the server saying the refresh token is no good (401/403) ends the
+//   session, and only if the store still holds that token. No connection or a
+//   server error leaves the session alone and reaches the caller as such
+//   (NetworkError / AuthError 5xx), not as "signed out".
+// - A refresh that completes after the session was cleared or replaced (sign
+//   out during the request) is discarded and its new token revoked, so it
+//   cannot bring the old session back.
 
-/**
- * The server rotates refresh tokens (each is single-use), so requests that
- * 401 together must share ONE refresh — a second would present a token the
- * first already revoked and sign the user out.
- */
-let refreshInFlight: Promise<boolean> | null = null;
+type RefreshOutcome = "refreshed" | "rejected";
 
-function tryRefresh(): Promise<boolean> {
-  refreshInFlight ??= doRefresh().finally(() => {
+let refreshInFlight: Promise<RefreshOutcome> | null = null;
+
+/** Refresh the session once for everyone who saw `staleAccess` rejected. */
+function refreshSession(staleAccess: string | null): Promise<RefreshOutcome> {
+  refreshInFlight ??= (async () => {
+    const t = store();
+    const run = () => doRefresh(t, staleAccess);
+    return t.withRefreshLock ? t.withRefreshLock(run) : run();
+  })().finally(() => {
     refreshInFlight = null;
   });
   return refreshInFlight;
 }
 
-async function doRefresh(): Promise<boolean> {
-  const t = store();
-  const refresh_token = t.refresh;
-  if (!refresh_token) return false;
-  let res: Response;
-  try {
-    res = await raw("/auth/refresh", { method: "POST", body: JSON.stringify({ refresh_token }) });
-  } catch (error) {
-    // Offline / DNS / timeout: the session is fine, the server just can't be reached.
-    if (error instanceof NetworkError) return false;
-    throw error;
-  }
-  // Only a definitive rejection ends the session; a 5xx or gateway hiccup must not.
+async function doRefresh(t: TokenStore, staleAccess: string | null): Promise<RefreshOutcome> {
+  // Someone refreshed while this request was in the air (or while we waited for the lock).
+  if (t.access && t.access !== staleAccess) return "refreshed";
+  const sent = t.refresh;
+  if (!sent) return "rejected";
+
+  // A NetworkError (offline, DNS, timeout) propagates: the session is untouched.
+  const res = await raw("/auth/refresh", { method: "POST", body: JSON.stringify({ refresh_token: sent }) });
+
   if (res.status === 401 || res.status === 403) {
-    t.clear();
-    return false;
+    // Another tab rotated the token while ours was being rejected: use theirs.
+    if (t.refresh && t.refresh !== sent) return "refreshed";
+    // The server rejected the token we hold: the session is over.
+    if (t.refresh === sent) t.clear();
+    return "rejected";
   }
-  if (!res.ok) return false;
+  // A 5xx or gateway hiccup: keep the session, report the server error.
+  if (!res.ok) throw await authErrorFrom(res, "/auth/refresh");
+
+  const pair = (await res.json()) as TokenPair;
+  if (t.refresh !== sent) {
+    // Signed out (or into another account) while this refresh was in the air.
+    void raw("/auth/logout", { method: "POST", body: JSON.stringify({ refresh_token: pair.refresh_token }) }).catch(
+      () => undefined,
+    );
+    return "rejected";
+  }
   // Await durable storage: the old token is already revoked, so losing the new one signs the user out.
-  await t.set((await res.json()) as TokenPair);
-  return true;
+  await t.set(pair);
+  return "refreshed";
 }
 
 /** Authenticated request with one refresh-and-retry on a 401. Returns the parsed JSON. */
 export async function authFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const withAuth = (): RequestInit => {
-    const access = store().access;
-    return {
+  const send = (access: string | null) =>
+    raw(path, {
       ...init,
       headers: {
         ...(init.headers ?? {}),
         ...(access ? { Authorization: `Bearer ${access}` } : {}),
       },
-    };
-  };
+    });
 
-  let res = await raw(path, withAuth());
-  if (res.status === 401 && (await tryRefresh())) {
-    res = await raw(path, withAuth());
+  const sentAccess = store().access;
+  let res = await send(sentAccess);
+  if (res.status === 401 && (await refreshSession(sentAccess)) === "refreshed") {
+    res = await send(store().access);
   }
   if (!res.ok) throw await authErrorFrom(res, path);
   if (res.status === 204) return undefined as T;
