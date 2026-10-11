@@ -1,18 +1,17 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-/** Matches the web app's i18next storage key so the two stay recognisable. */
-export const LANGUAGE_STORAGE_KEY = "i18nextLng";
+import {
+  DEFAULT_LANGUAGE,
+  LANGUAGE_STORAGE_KEY,
+  parseStoredLanguage as parseLanguage,
+  type Lang,
+} from "@vedic-patro/domain/locale";
 
-export type AppLanguage = "ne" | "en";
+/** Same key, default and parsing as the website (shared in domain/locale). */
+export { DEFAULT_LANGUAGE, LANGUAGE_STORAGE_KEY };
 
-export const DEFAULT_LANGUAGE: AppLanguage = "ne";
-
-function parseLanguage(raw: string | null): AppLanguage | null {
-  if (!raw) return null;
-  const code = raw.slice(0, 2);
-  return code === "en" ? "en" : code === "ne" ? "ne" : null;
-}
+export type AppLanguage = Lang;
 
 export async function getStoredLanguage(): Promise<AppLanguage | null> {
   try {

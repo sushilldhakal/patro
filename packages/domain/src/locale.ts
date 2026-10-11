@@ -71,3 +71,21 @@ export function formatLocaleDigits(value: string | number, lang?: string): strin
   if (!usesDevanagariDigits(lang)) return String(value);
   return toDevanagariDigits(value);
 }
+
+// ─── Language selection (both apps) ───────────────────────────────────────────
+
+/** The UI languages, Nepali first: it is the default and the fallback for missing copy. */
+export const SUPPORTED_LANGUAGES: readonly Lang[] = ["ne", "en"];
+
+/** New visitors read Nepali; missing English copy falls back to Nepali. */
+export const DEFAULT_LANGUAGE: Lang = "ne";
+
+/** Where the chosen language is stored (i18next's LanguageDetector key, kept on both apps). */
+export const LANGUAGE_STORAGE_KEY = "i18nextLng";
+
+/** A stored language value ("en", "en-US", "NE") → a supported language, or null when unset/unknown. */
+export function parseStoredLanguage(raw: string | null | undefined): Lang | null {
+  if (!raw) return null;
+  const code = raw.slice(0, 2).toLowerCase();
+  return code === "en" ? "en" : code === "ne" ? "ne" : null;
+}

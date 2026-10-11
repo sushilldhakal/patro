@@ -10,7 +10,6 @@ import {
   formatPakshaNepaliDisplay,
   formatShakaYear,
   formatTimeShort,
-  formatGhatiEnd,
   getDinVisheshLabels,
   getMuhurtaRows,
   getMoonriseDisplay,
@@ -40,9 +39,8 @@ import {
   formatTimeRangeShort,
   getNivasShool,
   toNepaliDigits,
-  getSunriseHours,
-  angaEndDayOffset,
-  dayOffsetLabel,
+  angaEndOrigin,
+  angaEndWithDay,
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { NivasShoolSegment } from "@/lib/api";
@@ -82,27 +80,6 @@ type AngaEnd = {
 type Anga = AngaEnd & {
   next?: AngaEnd;
 };
-
-function angaEndTime(anga?: AngaEnd | null): string | undefined {
-  if (!anga) return undefined;
-  const t =
-    formatTimeShort(anga.end_local_time) ??
-    formatTimeShort(anga.end_hours_clock) ??
-    formatGhatiEnd(anga.end_ghati_clock);
-  return t ? toNepaliDigits(t) : undefined;
-}
-
-/** End-time with a भोलि / पर्सि prefix when the transition falls on a later day. */
-function angaEndWithDay(
-  anga: Anga | AngaEnd | null | undefined,
-  sunriseHours: number | undefined,
-  lang: string,
-): string | undefined {
-  const time = angaEndTime(anga);
-  if (!time) return undefined;
-  const label = dayOffsetLabel(angaEndDayOffset(anga, sunriseHours), lang);
-  return label ? `${label} ${time}` : time;
-}
 
 function AngaCell({ anga, sunriseHours }: { anga?: Anga | null; sunriseHours?: number }) {
   const { lang } = useLocale();
@@ -217,7 +194,7 @@ export function PanchangCoreSection({ p }: { p: PanchangaDay }) {
   const tithiIdx = tithiIndexFromPanchanga(p);
   // दिन-रात payloads measure anga end-times from midnight (not sunrise), so the
   // भोलि/पर्सि day-offset must count from a 00:00 origin — pass 0 in that mode.
-  const sunriseHours = p.boundary === "midnight" ? 0 : getSunriseHours(p);
+  const sunriseHours = angaEndOrigin(p);
 
   return (
     <PanchangaSection titleKey="sections.panchang_core">

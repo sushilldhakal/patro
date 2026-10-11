@@ -1559,6 +1559,212 @@ export const strings = {
     en: "The integrated mathematical evaluation of Vimshopaka Bala that determines a planet's actual capacity to give results.",
   },
 
+  /* Kundali copy the app used to keep in its own table (lib/kundali/kundali-i18n.ts). */
+  "kundali.pada": {
+    ne: "पद",
+    en: "Pada",
+  },
+  "kundali.choghadiya_shubha": {
+    ne: "शुभ",
+    en: "auspicious",
+  },
+  "kundali.choghadiya_ashubha": {
+    ne: "अशुभ",
+    en: "inauspicious",
+  },
+  "kundali.choghadiya_samanya": {
+    ne: "सामान्य",
+    en: "neutral",
+  },
+  "kundali.yoga_reference_catalog": {
+    ne: "योग सन्दर्भ सूची (१६२ संयोग)",
+    en: "Yoga reference catalog (162 combinations)",
+  },
+  "kundali.yoga_reference_load_error": {
+    ne: "सन्दर्भ सूची लोड हुन सकेन।",
+    en: "Could not load the reference catalog.",
+  },
+  "kundali.yoga_reference_no_match": {
+    ne: "कुनै मिल्ने संयोग भेटिएन।",
+    en: "No matching combination.",
+  },
+  "kundali.yoga_reference_grouped_ids_note": {
+    ne: "स्रोतअनुसार समूह ID (जस्तै ३३–४४, ७५–१०६) यथावत् राखिएको छ।",
+    en: "Grouped IDs (e.g. 33–44, 75–106) are kept as in the source.",
+  },
+  "kundali.dasha_begin": {
+    ne: "आरम्भ",
+    en: "Begin",
+  },
+  "kundali.dasha_end": {
+    ne: "अन्त",
+    en: "End",
+  },
+  "kundali.dasha_from": {
+    ne: "देखि",
+    en: "From",
+  },
+  "kundali.dasha_to": {
+    ne: "सम्म",
+    en: "To",
+  },
+  "kundali.dasha_maha": {
+    ne: "महादशा",
+    en: "Maha Dasha",
+  },
+  "kundali.dasha_running": {
+    ne: "चलिरहेको",
+    en: "Running",
+  },
+  "kundali.dasha_running_now": {
+    ne: "चलिरहेको दशा",
+    en: "Running dasha",
+  },
+  "kundali.dasha_total": {
+    ne: "कुल",
+    en: "Total",
+  },
+  "kundali.dasha_left": {
+    ne: "बाँकी",
+    en: "Left",
+  },
+  "kundali.dasha_full_timeline": {
+    ne: "पूरा समयरेखा",
+    en: "Full timeline",
+  },
+  "kundali.dasha_balance": {
+    ne: "बाँकी अवधि",
+    en: "Balance",
+  },
+  "kundali.dasha_unavailable": {
+    ne: "दशा विवरण उपलब्ध छैन।",
+    en: "Dasha details are not available.",
+  },
+  "kundali.dasha_system_vimshottari": {
+    ne: "विंशोत्तरी",
+    en: "Vimshottari",
+  },
+  "kundali.dasha_system_tribhagi": {
+    ne: "त्रिभागि",
+    en: "Tribhagi",
+  },
+  "kundali.dasha_system_yogini": {
+    ne: "योगिनी",
+    en: "Yogini",
+  },
+  "kundali.scale_virupas": {
+    ne: "विरुप",
+    en: "Virupas",
+  },
+  "kundali.scale_rupas": {
+    ne: "रूप",
+    en: "Rupas",
+  },
+  "kundali.virupas_per_bala_note": {
+    ne: "प्रत्येक बलका विरुप; स्थान र काल विस्तार गर्नुहोस् (काल अन्तर्गत युद्ध)। दुई tara graha १° भित्र हुँदा युद्ध गणना हुन्छ — धेरैजसो कुण्डलीमा ०.०० देखिन्छ किनभने युद्ध दुर्लभ हुन्छ।",
+    en: "Virupas per bala; expand Sthana and Kala for component strengths (Yuddha under Kala). Yuddha is computed when two tara grahas are within 1° — most charts show 0.00 because wars are rare.",
+  },
+  "kundali.bhava_pct_row_note": {
+    ne: "भाव (%) ले प्रत्येक ग्रहले शासन गर्ने भावको औसत शक्ति देखाउँछ; पूर्ण तालिकाका लागि भाव बल हेर्नुहोस्।",
+    en: "Bhava (in %) is the mean house-strength of bhavas ruled by each planet; see the Bhava Bala submenu for the full house table.",
+  },
+  "kundali.bhava_bala_intro": {
+    ne: "भावाधिपति (स्वामीको षड्बल) + भाव दिशा + भाव दृष्टि। समपूर्ण राशि भाव; {{ref}} विरुप (७ रूप) = १००%।",
+    en: "Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; {{ref}} virupas (7 rupas) = 100%.",
+  },
+  "kundali.bhava_percent": {
+    ne: "भाव (%)",
+    en: "Bhava (%)",
+  },
+  "kundali.ashtakavarga_intro": {
+    ne: "पाराशरी बिन्दु तालिका प्रति राशि। सर्व* ले सात ग्रहको योग जोड्छ (लग्न बाहेक)। शोध्य चартमा त्रिकोण र एकाधिपत्य शोधन लागू हुन्छ।",
+    en: "Parashari bindu tables per rashi. Sarv* sums the seven grahas (excludes Lagna). Reduced charts apply Trikona then Ekadhipatya Shodhana.",
+  },
+  "kundali.report_title": {
+    ne: "ज्योतिष विश्लेषण",
+    en: "Astrological Analysis",
+  },
+  "kundali.report_intro": {
+    ne: "तपाईंको जन्म मिति, समय र स्थानबाट स्वतः तयार पारिएको सरल, सन्तुलित विश्लेषण — स्वभाव, करियर, सम्बन्ध, स्वास्थ्य, समय र योग। हरेक खण्डमा कति भरपर्दो छ भन्ने देखाइन्छ।",
+    en: "A balanced reading built automatically from birth date, time and place — nature, career, relationships, health, timing and yogas. Each section shows how dependable it is.",
+  },
+  "kundali.report_regenerate": {
+    ne: "पुन: बनाउनुहोस्",
+    en: "Regenerate",
+  },
+  "kundali.report_streaming_progress": {
+    ne: "{{total}} मध्ये {{done}} लेखिँदै…",
+    en: "Writing {{done}}/{{total}}…",
+  },
+  "kundali.report_streaming_reading": {
+    ne: "कुण्डली पढिँदै…",
+    en: "Reading the chart…",
+  },
+  "kundali.report_confidence_label": {
+    ne: "कति भरपर्दो:",
+    en: "Confidence:",
+  },
+  "kundali.report_confidence_strong": {
+    ne: "बलियो",
+    en: "Strong",
+  },
+  "kundali.report_confidence_moderate": {
+    ne: "मध्यम",
+    en: "Moderate",
+  },
+  "kundali.report_confidence_mixed": {
+    ne: "मिश्रित / सशर्त",
+    en: "Mixed / conditional",
+  },
+  "kundali.report_confidence_tentative": {
+    ne: "अनिश्चित",
+    en: "Tentative",
+  },
+  "kundali.report_factors_based": {
+    ne: "{{count}} कुरामा आधारित",
+    en: "Based on {{count}} factors",
+  },
+  "kundali.report_idle_hint": {
+    ne: "व्यक्तित्व, करियर, सम्बन्ध, स्वास्थ्य, दशा-समय र योग — प्रत्येक अन्तर्दृष्टि विश्वास स्तरसहित।",
+    en: "Personality, career, relationships, health, dasha timing and yogas — each insight with a confidence level.",
+  },
+  "kundali.report_loaded_from_cache": {
+    ne: "सुरक्षित विवरणबाट लोड — जन्म मिति, समय र स्थान उही छ।",
+    en: "Loaded from saved report — birth date, time and place unchanged.",
+  },
+  "kundali.report_error_generic": {
+    ne: "विवरण बनाउन सकिएन।",
+    en: "Could not generate the report.",
+  },
+  "kundali.report_meta_lagna": {
+    ne: "लग्न",
+    en: "Lagna",
+  },
+  "kundali.report_meta_nakshatra": {
+    ne: "नक्षत्र",
+    en: "Nakshatra",
+  },
+  "kundali.report_meta_sun": {
+    ne: "सूर्य",
+    en: "Sun",
+  },
+  "kundali.report_meta_mahadasha": {
+    ne: "महादशा",
+    en: "Mahadasha",
+  },
+  "kundali.report_meta_moon_sign": {
+    ne: "चन्द्र राशि",
+    en: "Moon sign",
+  },
+  "kundali.report_meta_pada": {
+    ne: "चरण {{pada}}",
+    en: "pada {{pada}}",
+  },
+  "kundali.report_meta_antar_ends": {
+    ne: "अन्तर समाप्त {{date}}",
+    en: "antar ends {{date}}",
+  },
+
   /* ── milan ───────────────────────────────────────────────────────────── */
   "milan.eyebrow": { ne: "नेपाली पात्रो · ज्योतिष · कुण्डली मिलन", en: "Nepali Patro · Jyotish · Kundali Milan" },
   "milan.title": { ne: "कुण्डली मिलन", en: "Kundali Milan" },

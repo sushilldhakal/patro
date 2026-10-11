@@ -214,6 +214,39 @@ export function dayOffsetLabel(offset: number, lang?: string): string {
   return isEn ? `+${offset}d` : `+${toNepaliDigits(offset)} दिन`;
 }
 
+/**
+ * An anga's end clock (HH:MM, Devanagari digits) from whichever end field the
+ * payload carries: local time, hours from sunrise, or ghati.
+ */
+export function angaEndClock(anga?: AngaEndLike | null): string | undefined {
+  if (!anga) return undefined;
+  const t =
+    formatTimeShort(anga.end_local_time) ??
+    formatTimeShort(anga.end_hours_clock) ??
+    formatGhatiEnd(anga.end_ghati_clock);
+  return t ? toNepaliDigits(t) : undefined;
+}
+
+/**
+ * The hour the day's anga end-times count from, for {@link angaEndDayOffset}:
+ * sunrise normally, 0 for दिन-रात payloads (they measure from midnight).
+ */
+export function angaEndOrigin(p: PanchangaDay): number | undefined {
+  return p.boundary === "midnight" ? 0 : getSunriseHours(p);
+}
+
+/** End time with a भोलि / पर्सि prefix when the transition falls on a later day. */
+export function angaEndWithDay(
+  anga: AngaEndLike | null | undefined,
+  originHours: number | undefined,
+  lang: string,
+): string | undefined {
+  const time = angaEndClock(anga);
+  if (!time) return undefined;
+  const label = dayOffsetLabel(angaEndDayOffset(anga, originHours), lang);
+  return label ? `${label} ${time}` : time;
+}
+
 function patroAngaEndClockLocalized(anga: AngaPatro, lang?: string): string | undefined {
   const t =
     formatTimeShort(anga.end_local_time) ??

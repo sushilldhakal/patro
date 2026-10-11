@@ -43,6 +43,8 @@ import {
   formatTimeRangeShort,
   getNivasShool,
   toNepaliDigits,
+  angaEndOrigin,
+  angaEndWithDay,
 } from "@vedic-patro/domain/panchanga-format";
 import type { NivasShoolSegment, UdayaLagnaRow } from "@/lib/api";
 import { resolveSamvatsaraForBsYear } from "@vedic-patro/domain/samvatsara";
@@ -84,30 +86,22 @@ type Anga = AngaEnd & {
   next?: AngaEnd;
 };
 
-function angaEndTime(anga?: AngaEnd | null): string | undefined {
-  if (!anga) return undefined;
-  const t =
-    formatTimeShort(anga.end_local_time) ??
-    formatTimeShort(anga.end_hours_clock) ??
-    formatGhatiEnd(anga.end_ghati_clock);
-  return t ? toNepaliDigits(t) : undefined;
-}
 
-function AngaCell({ anga }: { anga?: Anga | null }) {
-  const { pick } = useLocale();
+function AngaCell({ anga, sunriseHours }: { anga?: Anga | null; sunriseHours?: number }) {
+  const { pick, lang } = useLocale();
   if (!anga) return <Text>—</Text>;
   const name = pick(anga.name_ne ?? anga.name ?? "—", anga.name ?? anga.name_ne ?? "—");
   const next = anga.next;
   const nextName = next?.name_ne ?? next?.name;
   return (
     <>
-      <UptoValue name={name} endTime={angaEndTime(anga)} />
+      <UptoValue name={name} endTime={angaEndWithDay(anga, sunriseHours, lang)} />
       {nextName ? (
         // The next anga now carries its own end time — on a kshaya-tithi day
         // this is where the skipped tithi's ending shows (e.g. प्रतिपदा … सम्म).
         <UptoValue
           name={pick(nextName, next?.name ?? next?.name_ne ?? nextName)}
-          endTime={angaEndTime(next)}
+          endTime={angaEndWithDay(next, sunriseHours, lang)}
         />
       ) : null}
     </>
@@ -211,21 +205,24 @@ export function PanchangCoreSection({ p }: { p: PanchangaDay }) {
   const karana = (instant ? p.karana : detail?.karana ?? p.karana) as Anga | undefined;
   const paksha = formatPakshaLabel(p, lang) ?? formatPakshaNepaliDisplay(p);
   const tithiIdx = tithiIndexFromPanchanga(p);
+  // दिन-रात payloads measure anga end-times from midnight (not sunrise), so the
+  // भोलि/पर्सि day-offset must count from a 00:00 origin.
+  const sunriseHours = angaEndOrigin(p);
 
   return (
     <PanchangaSection titleKey="sections.panchang_core">
       <PanchangaTableBody>
         <PanchangaFieldCell labelKey="tithi">
-          <AngaCell anga={tithi} />
+          <AngaCell anga={tithi} sunriseHours={sunriseHours} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="nakshatra">
-          <AngaCell anga={nakshatra} />
+          <AngaCell anga={nakshatra} sunriseHours={sunriseHours} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.yoga">
-          <AngaCell anga={yoga} />
+          <AngaCell anga={yoga} sunriseHours={sunriseHours} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.karana">
-          <AngaCell anga={karana} />
+          <AngaCell anga={karana} sunriseHours={sunriseHours} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.weekday" nowrap>
           <Text className="font-semibold">
