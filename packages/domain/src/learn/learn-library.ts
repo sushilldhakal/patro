@@ -464,3 +464,73 @@ export function assertLearnLibrary(sections: { id: string }[], topics: TopicLike
     }
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Learning paths on the hub                                           */
+/* ------------------------------------------------------------------ */
+
+/** A learning path on the Learn hub: a few library sections read together. */
+export interface LearnModule {
+  id: string;
+  title: Bi;
+  blurb: Bi;
+  sections: string[];
+}
+
+/** The hub's six learning paths, in order (both apps). */
+export const LEARN_MODULES: LearnModule[] = [
+  {
+    id: "basics",
+    title: { ne: "पहिले बुझ्ने कुरा", en: "Start Here" },
+    blurb: {
+      ne: "पात्रो, पञ्चाङ्ग र विक्रम सम्वत् बुझ्ने आधार।",
+      en: "The base ideas behind the patro, panchanga and Bikram Sambat.",
+    },
+    sections: ["start"],
+  },
+  {
+    id: "sky-sun",
+    title: { ne: "आकाश, पृथ्वी र सूर्य", en: "Sky, Earth and Sun" },
+    blurb: {
+      ne: "दिन, ऋतु, राशि, सङ्क्रान्ति र अयनांश एउटै प्रवाहमा।",
+      en: "Day, seasons, rashi, sankranti and ayanamsha in one flow.",
+    },
+    sections: ["earth-sky", "sun"],
+  },
+  {
+    id: "moon-panchanga",
+    title: { ne: "चन्द्र र पञ्चाङ्ग", en: "Moon and Panchanga" },
+    blurb: {
+      ne: "तिथि, पक्ष, मास र पञ्चाङ्गका पाँच अङ्ग।",
+      en: "Tithi, paksha, months and the five limbs of the panchanga.",
+    },
+    sections: ["moon", "panchanga"],
+  },
+  {
+    id: "calculation",
+    title: { ne: "गणना कसरी हुन्छ", en: "How Calculation Works" },
+    blurb: {
+      ne: "सूर्योदय, तिथि, नक्षत्र र स्थानअनुसार फरक पर्ने कारण।",
+      en: "Sunrise, tithi, nakshatra and why location changes the answer.",
+    },
+    sections: ["calculation"],
+  },
+  {
+    id: "deeper",
+    title: { ne: "अलि गहिरो खगोल", en: "Deeper Astronomy" },
+    blurb: {
+      ne: "वक्री गति, अयन चलन, ध्रुव तारा र ग्रहण।",
+      en: "Retrograde motion, precession, pole stars and eclipses.",
+    },
+    sections: ["deeper"],
+  },
+  {
+    id: "comparison",
+    title: { ne: "तुलना र इतिहास", en: "Comparison and History" },
+    blurb: {
+      ne: "नेपाली, वैदिक र ग्रेगोरियन पात्रो, अनि सूर्य सिद्धान्त।",
+      en: "Nepali, Vedic and Gregorian calendars, plus Surya Siddhanta.",
+    },
+    sections: ["comparison"],
+  },
+];

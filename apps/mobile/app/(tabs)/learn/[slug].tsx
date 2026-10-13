@@ -1,13 +1,11 @@
 import { useRef } from "react";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
+import { useLearnArticle } from "@vedic-patro/features/learn";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { LearnArticleView } from "@/components/learn/LearnArticleView";
 import { Text } from "@/components/ui/Text";
-import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
-import { RETIRED_SLUG_REDIRECTS } from "@/lib/learn/merged-pages";
-import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -18,30 +16,22 @@ function resolveSlug(raw: string | string[] | undefined): string | undefined {
   return undefined;
 }
 
+/** Learn article — the app's drawing of `useLearnArticle` (@vedic-patro/features). */
 export default function LearnArticleScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const scrollRef = useRef<ScrollView>(null);
   const params = useLocalSearchParams<{ slug: string | string[]; chapter?: string }>();
-  const slug = resolveSlug(params.slug);
-  const { t, pick } = useLocale();
+  const article = useLearnArticle(resolveSlug(params.slug));
+  const { copy } = article;
 
-  const retiredTo = slug ? RETIRED_SLUG_REDIRECTS[slug] : undefined;
-  if (retiredTo) {
-    const [to, chapter] = retiredTo.split("#");
-    return <Redirect href={chapter ? `/learn/${to}?chapter=${chapter}` : `/learn/${to}`} />;
+  if (article.redirect) {
+    const { slug, anchor } = article.redirect;
+    return <Redirect href={anchor ? `/learn/${slug}?chapter=${anchor}` : `/learn/${slug}`} />;
   }
 
-  const topic = slug ? LEARN_LIBRARY_BY_SLUG[slug] : undefined;
-  const valid = Boolean(topic && topic.status === "published");
-
   return (
-    <AppShell
-      scroll
-      scrollRef={scrollRef}
-      showHeader={false}
-      title={topic ? pick(topic.title.ne, topic.title.en) : t("nav.learn")}
-    >
+    <AppShell scroll scrollRef={scrollRef} showHeader={false} title={copy.navTitle}>
       {/* Web's "← Learn" link above the article. */}
       <Pressable
         onPress={() => router.push("/learn")}
@@ -49,18 +39,16 @@ export default function LearnArticleScreen() {
         className={cn(learnPageClasses.backLink, "mb-8 flex-row self-start active:opacity-70")}
       >
         <Ionicons name="arrow-back" size={16} color={colors.foreground} />
-        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{t("nav.learn")}</Text>
+        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{copy.backToHub}</Text>
       </Pressable>
-      {valid && slug ? (
-        <LearnArticleView slug={slug} scrollRef={scrollRef} initialChapter={params.chapter} />
+      {article.topic ? (
+        <LearnArticleView article={article} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (
         <View className={cn(learnPageClasses.notFound, "justify-center")}>
-          <Text className="text-center text-sm text-foreground">
-            {t("ui.learn.article_not_found")}
-          </Text>
+          <Text className="text-center text-sm text-foreground">{copy.notFound}</Text>
           <Pressable onPress={() => router.replace("/learn")} className={cn(learnPageClasses.inlineLink, "flex-row active:opacity-80")}>
             <Ionicons name="arrow-back" size={16} color={colors.secondary} />
-            <Text className={learnPageClasses.inlineLinkText}>{t("ui.learn.back_to_learn")}</Text>
+            <Text className={learnPageClasses.inlineLinkText}>{copy.backHub}</Text>
           </Pressable>
         </View>
       )}

@@ -1,18 +1,11 @@
 import { Link, Navigate, useParams } from "@tanstack/react-router";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLearnArticle } from "@vedic-patro/features/learn";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { DayPlaygroundDiagram } from "@/components/learn/DayPlaygroundDiagram";
-import { playgroundFor } from "@vedic-patro/domain/learn/playground-config";
 import { cn } from "@vedic-patro/domain/utils";
 import { useRouteLoading } from "@/lib/route-loading";
 import { PageShell } from "../components/PageShell";
-import { PART_REDIRECTS } from "@/lib/learn/merged-pages";
-import {
-  LEARN_CATEGORIES,
-  LEARN_TOPICS_BY_SLUG,
-  adjacentTopics,
-} from "@/lib/learn/learn-topics";
+import { LEARN_TOPICS_BY_SLUG } from "@/lib/learn/learn-topics";
 import {
   tmHero,
   tmHeroEyebrow,
@@ -23,114 +16,52 @@ import {
 } from "@/lib/learn-classes";
 import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 
-/**
- * Where a retired slug went.
- *
- * Two kinds. `MERGED_SLUGS` are articles absorbed wholesale into another —
- * they land at the top of the page that took them over. `PART_REDIRECTS` is
- * generated from the merged-page map: those slugs became *chapters* of a long
- * page, so they land on their own anchor inside it rather than at the top of
- * something several screens long.
- *
- * Both matter because merging is how this section keeps improving, and every
- * merge orphans a URL that is already in someone's history or a search index.
- */
-const MERGED_SLUGS: Record<string, string> = {
-  "lunar-eclipse": "geocentric-heliocentric#eclipses",
-  "solar-eclipse": "geocentric-heliocentric#eclipses",
-  equinoxes: "axial-tilt#equinox-solstice",
-  solstices: "axial-tilt#equinox-solstice",
-  "sankranti-vs-solstice": "sidereal-vs-tropical#uttarayana-dakshinayana",
-  "twelve-rashis": "rashi",
-  "solar-vs-lunar-calendar": "bikram-sambat#bs-calendar",
-  "sidereal-vs-tropical-year": "sidereal-vs-tropical",
-  "tithi-vriddhi": "tithi#tithi-vriddhi-kshaya",
-  "tithi-kshaya": "tithi#tithi-vriddhi-kshaya",
-  "adhik-maas": "tithi#adhik-kshaya-maas",
-  "kshaya-maas": "tithi#adhik-kshaya-maas",
-  ...PART_REDIRECTS,
-};
-
-/** Split a "page#anchor" target into router params. */
-function redirectTarget(to: string): { slug: string; hash?: string } {
-  const [slug, hash] = to.split("#");
-  return { slug: slug!, hash };
-}
-
+/** Learn article — the website's drawing of `useLearnArticle` (@vedic-patro/features). */
 export function LearnArticle() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
   useRouteLoading(false);
   const { slug } = useParams({ strict: false }) as { slug?: string };
+  const article = useLearnArticle(slug);
+  const { copy, topic, prev, next } = article;
 
-  if (slug && MERGED_SLUGS[slug]) {
-    const { slug: to, hash } = redirectTarget(MERGED_SLUGS[slug]!);
-    return <Navigate to="/learn/$slug" params={{ slug: to }} hash={hash} replace />;
+  if (article.redirect) {
+    return <Navigate to="/learn/$slug" params={{ slug: article.redirect.slug }} hash={article.redirect.anchor} replace />;
   }
-
-  const topic = slug ? LEARN_TOPICS_BY_SLUG[slug] : undefined;
 
   if (!topic) {
     return (
       <PageShell>
         <div className={cn(learnPageClasses.notFound, "text-center")}>
-          <p>{t("learn_page.topic_not_found")}</p>
-          <Link
-            to="/learn"
-            className={cn(learnPageClasses.inlineLink, "inline-flex")}
-          >
-            <ArrowLeft className="size-4" /> {t("learn_page.back_hub")}
+          <p>{copy.notFound}</p>
+          <Link to="/learn" className={cn(learnPageClasses.inlineLink, "inline-flex")}>
+            <ArrowLeft className="size-4" /> {copy.backHub}
           </Link>
         </div>
       </PageShell>
     );
   }
 
-  const playgroundConfig = playgroundFor(topic.slug);
-  const category = LEARN_CATEGORIES.find((c) => c.id === topic.category);
-  const { prev, next } = adjacentTopics(topic.slug);
-  const Content = topic.Content;
-  /* A topic with a guided (narrated) tour explains itself through the
-     playground and its voiceover — the written prose/diagrams below it
-     would just be saying the same thing twice, over video that already
-     says it. Topics whose playground has no `guided` track (most of them)
-     still need the prose; it is the only explanation they have. */
-  const hasGuidedTour = Boolean(playgroundConfig?.guided);
+  const Content = LEARN_TOPICS_BY_SLUG[topic.slug]?.Content;
 
   return (
     <PageShell>
-      <Link
-        to="/learn"
-        className={cn(learnPageClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
-      >
-        <ArrowLeft className="size-4" /> {t("learn_page.eyebrow")}
+      <Link to="/learn" className={cn(learnPageClasses.backLink, "inline-flex transition-colors hover:text-foreground")}>
+        <ArrowLeft className="size-4" /> {copy.backToHub}
       </Link>
 
       <article className={cn(tmPageShell, learnPageClasses.articleCard)}>
         <div className={tmWrap}>
           <header className={tmHero}>
-            <div className={tmHeroEyebrow}>
-              {category ? bilingualText(lang, category.ne, category.en) : ""}
-            </div>
-            <h1 className={tmHeroTitle}>{bilingualText(lang, topic.titleNe, topic.titleEn)}</h1>
-            <p className={tmHeroSub}>{bilingualText(lang, topic.summary, topic.summaryEn)}</p>
+            <div className={tmHeroEyebrow}>{topic.sectionLabel}</div>
+            <h1 className={tmHeroTitle}>{topic.title}</h1>
+            <p className={tmHeroSub}>{topic.summary}</p>
           </header>
 
-          {/* The playground sits above the prose, not buried in it: a topic
-              that has one is a topic you can watch, and the reader should meet
-              it before the words. Its opening state is the topic's own. */}
-          {playgroundConfig ? (
-            <DayPlaygroundDiagram
-              /* Keyed by slug: moving to another topic remounts the playground
-                 on that topic's own opening state, rather than carrying the
-                 last one's layers and camera across. */
-              key={topic.slug}
-              slug={topic.slug}
-              config={playgroundConfig}
-            />
-          ) : null}
+          {/* The playground sits above the prose: a topic you can watch should
+              be met before the words. Keyed by slug so another topic remounts
+              it on its own opening state. */}
+          {article.playground ? <DayPlaygroundDiagram key={topic.slug} slug={topic.slug} config={article.playground} /> : null}
 
-          {hasGuidedTour ? null : <Content />}
+          {article.hasGuidedTour || !Content ? null : <Content />}
 
           <nav className={cn(learnPageClasses.navRow, "mt-12")}>
             {prev ? (
@@ -141,12 +72,8 @@ export function LearnArticle() {
               >
                 <ArrowLeft className="size-4 shrink-0 text-secondary" />
                 <span className="min-w-0">
-                  <span className={cn(learnPageClasses.navKicker, "block")}>
-                    {t("learn_page.prev")}
-                  </span>
-                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>
-                    {bilingualText(lang, prev.titleNe, prev.titleEn)}
-                  </span>
+                  <span className={cn(learnPageClasses.navKicker, "block")}>{copy.prev}</span>
+                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>{prev.title}</span>
                 </span>
               </Link>
             ) : (
@@ -159,12 +86,8 @@ export function LearnArticle() {
                 className={cn(learnPageClasses.navCard, "group flex-1 justify-end text-right transition-colors hover:border-secondary/60")}
               >
                 <span className="min-w-0">
-                  <span className={cn(learnPageClasses.navKicker, "block")}>
-                    {t("learn_page.next")}
-                  </span>
-                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>
-                    {bilingualText(lang, next.titleNe, next.titleEn)}
-                  </span>
+                  <span className={cn(learnPageClasses.navKicker, "block")}>{copy.next}</span>
+                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>{next.title}</span>
                 </span>
                 <ArrowRight className="size-4 shrink-0 text-secondary" />
               </Link>
@@ -174,11 +97,8 @@ export function LearnArticle() {
           </nav>
 
           <div className="mt-6 text-center">
-            <Link
-              to="/learn"
-              className={cn(learnPageClasses.inlineLink, "inline-flex")}
-            >
-              <BookOpen className="size-4" /> {t("learn_page.all_topics")}
+            <Link to="/learn" className={cn(learnPageClasses.inlineLink, "inline-flex")}>
+              <BookOpen className="size-4" /> {copy.allTopics}
             </Link>
           </div>
         </div>

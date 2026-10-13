@@ -17,7 +17,8 @@ export type { TopicStatus };
 type IoniconName = ComponentProps<typeof Ionicons>["name"];
 
 /** The shared Learn library with the app's Ionicons in place of the site's Lucide icons. */
-const ICONS: Record<LearnIconKey, IoniconName> = {
+/** Library icon key → this app's icon. */
+export const LEARN_ICONS: Record<LearnIconKey, IoniconName> = {
   ArrowLeftRight: "book-outline",
   Axis3d: "sync-outline",
   Calculator: "calculator-outline",
@@ -50,12 +51,12 @@ export type LibrarySection = DomainSection<IoniconName>;
 
 export const LEARN_SECTIONS: LibrarySection[] = DOMAIN_SECTIONS.map((s) => ({
   ...s,
-  icon: ICONS[s.icon],
+  icon: LEARN_ICONS[s.icon],
 }));
 
 export const LEARN_LIBRARY: LibraryTopic[] = DOMAIN_LIBRARY.map((t) => ({
   ...t,
-  icon: ICONS[t.icon],
+  icon: LEARN_ICONS[t.icon],
 }));
 
 const views = buildLearnViews(LEARN_SECTIONS, LEARN_LIBRARY);

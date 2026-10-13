@@ -2598,6 +2598,7 @@
     "prev": "अघिल्लो",
     "next": "अर्को",
     "all_topics": "सबै विषय हेर्नुहोस्",
+    "playground_title": "{{title}} · आकाश",
     "read_detail": "विस्तृत पढ्नुहोस्",
     "articles_count": "{{count}} लेख",
     "more_coming": "अन्य {{count}} लेख तयारीमा"
@@ -3234,7 +3235,12 @@
     "promo_title": "ग्रह गोचर (Gochar)",
     "promo_cta": "गोचर पृष्ठ खोल्नुहोस्",
     "view_more": "थप हेर्नुहोस्",
-    "load_error": "यस दिनको गोचर डाटा लोड गर्न सकिएन।"
+    "load_error": "यस दिनको गोचर डाटा लोड गर्न सकिएन।",
+    "filter_all": "सबै",
+    "filter_rashi": "राशि",
+    "filter_nakshatra": "नक्षत्र",
+    "filter_asta": "अस्त",
+    "filter_retrograde": "वक्री"
   },
   "grahas": {
     "sun": "सूर्य",
@@ -4107,6 +4113,7 @@
       "current_windows": "हालका सीमाहरू",
       "deep_dive": "विस्तृत अध्ययन",
       "exalted": "उच्च",
+      "gochar": "गोचर",
       "live_graha_positions": "प्रत्यक्ष ग्रह स्थिति",
       "motion": "गति",
       "no_upcoming_transits_this_month": "यस महिनामा कुनै आगामी गोचर छैन।",

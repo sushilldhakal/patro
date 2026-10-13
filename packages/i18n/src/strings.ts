@@ -4505,6 +4505,7 @@ export const strings = {
   "learn_page.prev": { ne: "अघिल्लो", en: "Previous" },
   "learn_page.next": { ne: "अर्को", en: "Next" },
   "learn_page.all_topics": { ne: "सबै विषय हेर्नुहोस्", en: "View all topics" },
+  "learn_page.playground_title": { ne: "{{title}} · आकाश", en: "{{title}} · sky" },
   "learn_page.read_detail": { ne: "विस्तृत पढ्नुहोस्", en: "Read in full" },
   "learn_page.articles_count": { ne: "{{count}} लेख", en: "{{count}} articles" },
   "learn_page.more_coming": { ne: "अन्य {{count}} लेख तयारीमा", en: "{{count}} more being written" },
@@ -5234,6 +5235,11 @@ export const strings = {
   "gochar.promo_cta": { ne: "गोचर पृष्ठ खोल्नुहोस्", en: "Open gochar page" },
   "gochar.view_more": { ne: "थप हेर्नुहोस्", en: "View more" },
   "gochar.load_error": { ne: "यस दिनको गोचर डाटा लोड गर्न सकिएन।", en: "Could not load gochar data for this day." },
+  "gochar.filter_all": { ne: "सबै", en: "All" },
+  "gochar.filter_rashi": { ne: "राशि", en: "Sign" },
+  "gochar.filter_nakshatra": { ne: "नक्षत्र", en: "Nakshatra" },
+  "gochar.filter_asta": { ne: "अस्त", en: "Combust" },
+  "gochar.filter_retrograde": { ne: "वक्री", en: "Retrograde" },
 
   /* ── grahas ──────────────────────────────────────────────────────────── */
   "grahas.sun": { ne: "सूर्य", en: "Sun" },
@@ -6579,17 +6585,9 @@ export const strings = {
     ne: "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
     en: "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
   },
-  "ui.aakash_gochar.in_sky_from_here_the_horizon": {
-    ne: "«यहाँबाट आकाश» दृश्यमा माथिको स्थान र मिति-समय अनुसार क्षितिज बन्छ — राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
-    en: "In “Sky from here” the horizon is built from the location and date-time above — the rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
-  },
   "ui.aakash_gochar.live_graha_transits_from_the_geocentric": {
     ne: "भूकेन्द्रित दृष्टिकोणबाट प्रत्यक्ष ग्रह गोचर",
     en: "Live graha transits from the geocentric standpoint",
-  },
-  "ui.aakash_gochar.the_trail_draws_45_days_either": {
-    ne: "गति रेखाले ४५ दिन अघि र पछिको बाटो देखाउँछ — मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। कुनै पनि ग्रह छोएर नजिक पुग्न सकिन्छ; «पूरा दृश्य» ले फेरि सिङ्गो सौर्यमण्डल देखाउँछ।",
-    en: "The trail draws 45 days either side of the moment on screen — when Mars or Saturn turns vakri you can watch the loop close on itself. Tap any graha to fly in close to it; “Zoom out” pulls back to the whole system.",
   },
 
   /* ── ui.account ─────────────────────────────────────────────────────────── */
@@ -6743,7 +6741,6 @@ export const strings = {
   "ui.common.bride": { ne: "कन्या", en: "Bride" },
   "ui.common.change_location": { ne: "स्थान बदल्नुहोस्", en: "Change location" },
   "ui.common.close": { ne: "बन्द गर्नुहोस्", en: "Close" },
-  "ui.common.could_not_load": { ne: "ल्याउन सकिएन।", en: "Could not load." },
   "ui.common.could_not_load_panchanga": { ne: "पञ्चाङ्ग लोड गर्न सकिएन।", en: "Could not load panchanga." },
   "ui.common.earth_s_axis": { ne: "पृथ्वीको अक्ष", en: "Earth's axis" },
   "ui.common.enter_accurate_birth_date_time_and": {
@@ -6813,7 +6810,6 @@ export const strings = {
   "ui.day.day_detail": { ne: "दिन विवरण", en: "Day detail" },
 
   /* ── ui.gochar ──────────────────────────────────────────────────────────── */
-  "ui.gochar.could_not_load_transits": { ne: "गोचर ल्याउन सकिएन।", en: "Could not load transits." },
   "ui.gochar.current_position_windows_retrograde": {
     ne: "वर्तमान स्थिति, सीमा र वक्री",
     en: "Current position, windows & retrograde",
@@ -7091,14 +7087,12 @@ export const strings = {
   "ui.learn.after_1_sidereal_rotation": { ne: "१ नाक्षत्र घूर्णन पछि", en: "After 1 sidereal rotation" },
   "ui.learn.after_3_years": { ne: "३ वर्षमा जम्मा", en: "After 3 years" },
   "ui.learn.after_n_years": { ne: "{{n}} वर्षपछि", en: "after {{n}} years" },
-  "ui.learn.all_topics": { ne: "सबै विषय", en: "All topics" },
   "ui.learn.angle": { ne: "कोण", en: "Angle" },
   "ui.learn.angle_deg": { ne: "कोण {{deg}}°", en: "Angle {{deg}}°" },
   "ui.learn.aphelion": { ne: "अपसौर", en: "Aphelion" },
   "ui.learn.aphelion_farthest": { ne: "अपसौर — सबैभन्दा टाढा", en: "Aphelion — farthest" },
   "ui.learn.aphelion_july": { ne: "अपसौर (जुलाई)", en: "Aphelion (July)" },
   "ui.learn.aries_0_sidereal": { ne: "मेष ०° (निरयन)", en: "Aries 0° (sidereal)" },
-  "ui.learn.article_not_found": { ne: "लेख फेला परेन।", en: "Article not found." },
   "ui.learn.at_full_moon_earth_s_shadow": {
     ne: "पूर्णिमामा पृथ्वीको छायाँ चन्द्रतिर जान्छ। झुकावका कारण चन्द्र प्रायः त्यो छायाँभन्दा माथि वा तलबाट गुज्रन्छ; पात नजिक परेको पूर्णिमामा मात्र चन्द्र छायाँभित्र पस्छ — चन्द्र ग्रहण।",
     en: "At full moon Earth's shadow stretches away from the Sun. The tilt usually carries the Moon clear of it; only at a full moon near a node does the Moon enter the shadow — a lunar eclipse.",
@@ -7112,7 +7106,6 @@ export const strings = {
   "ui.learn.axis_23_44": { ne: "अक्ष २३.४४°", en: "Axis 23.44°" },
   "ui.learn.ayanamsha_from_mesha": { ne: "अयनांश (मेषबाट)", en: "Ayanamsha (from Mesha)" },
   "ui.learn.ayanamsha_gap": { ne: "अयनांश खाडल", en: "Ayanamsha gap" },
-  "ui.learn.back_to_learn": { ne: "सिकाइमा फर्कनुहोस्", en: "Back to Learn" },
   "ui.learn.belt_width_needed": { ne: "राशि पट्टीको चौडाइ", en: "Belt width needed" },
   "ui.learn.bs_0": { ne: "वि.सं. ०", en: "BS 0" },
   "ui.learn.bs_date": { ne: "बि.सं. मिति", en: "BS date" },

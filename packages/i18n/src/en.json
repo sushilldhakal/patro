@@ -2598,6 +2598,7 @@
     "prev": "Previous",
     "next": "Next",
     "all_topics": "View all topics",
+    "playground_title": "{{title}} · sky",
     "read_detail": "Read in full",
     "articles_count": "{{count}} articles",
     "more_coming": "{{count}} more being written"
@@ -3234,7 +3235,12 @@
     "promo_title": "Planetary Transits (Gochar)",
     "promo_cta": "Open gochar page",
     "view_more": "View more",
-    "load_error": "Could not load gochar data for this day."
+    "load_error": "Could not load gochar data for this day.",
+    "filter_all": "All",
+    "filter_rashi": "Sign",
+    "filter_nakshatra": "Nakshatra",
+    "filter_asta": "Combust",
+    "filter_retrograde": "Retrograde"
   },
   "grahas": {
     "sun": "Sun",
@@ -4070,9 +4076,7 @@
   "ui": {
     "aakash_gochar": {
       "earth_sits_at_the_centre_and": "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
-      "in_sky_from_here_the_horizon": "In “Sky from here” the horizon is built from the location and date-time above — the rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
       "live_graha_transits_from_the_geocentric": "Live graha transits from the geocentric standpoint",
-      "the_trail_draws_45_days_either": "The trail draws 45 days either side of the moment on screen — when Mars or Saturn turns vakri you can watch the loop close on itself. Tap any graha to fly in close to it; “Zoom out” pulls back to the whole system.",
       "could_not_load_graha_details_from": "Could not load graha details from the server — the sky is running on its own model, so positions may be approximate.",
       "drag_to_swing_the_sky_and": "Drag to swing the sky and scroll to zoom; on a touchscreen, drag with one finger and pinch with two.",
       "pick_any_graha_in_the_sky": "Pick any graha — in the sky or on a card below — to draw its trail 45 days either side of the moment on screen; when Mars or Saturn turns vakri you can watch the loop close on itself. The crosshair button then keeps the camera centred on it — or on your own place on the globe, if that is what you point it at.",
@@ -4168,7 +4172,6 @@
       "bride": "Bride",
       "change_location": "Change location",
       "close": "Close",
-      "could_not_load": "Could not load.",
       "could_not_load_panchanga": "Could not load panchanga.",
       "earth_s_axis": "Earth's axis",
       "enter_accurate_birth_date_time_and": "Enter accurate birth date, time, and place.",
@@ -4216,7 +4219,6 @@
       "day_detail": "Day detail"
     },
     "gochar": {
-      "could_not_load_transits": "Could not load transits.",
       "current_position_windows_retrograde": "Current position, windows & retrograde",
       "current_windows": "Current windows",
       "deep_dive": "Deep dive",
@@ -4395,14 +4397,12 @@
       "after_1_sidereal_rotation": "After 1 sidereal rotation",
       "after_3_years": "After 3 years",
       "after_n_years": "after {{n}} years",
-      "all_topics": "All topics",
       "angle": "Angle",
       "angle_deg": "Angle {{deg}}°",
       "aphelion": "Aphelion",
       "aphelion_farthest": "Aphelion — farthest",
       "aphelion_july": "Aphelion (July)",
       "aries_0_sidereal": "Aries 0° (sidereal)",
-      "article_not_found": "Article not found.",
       "at_full_moon_earth_s_shadow": "At full moon Earth's shadow stretches away from the Sun. The tilt usually carries the Moon clear of it; only at a full moon near a node does the Moon enter the shadow — a lunar eclipse.",
       "at_new_moon_the_moon_passes": "At new moon the Moon passes between Sun and Earth, but its orbit is tilted 5.1°, so its shadow usually sails above or below us. Only when the line of nodes points at the Sun does the shadow land — that is a solar eclipse.",
       "axial_tilt": "Axial tilt",
@@ -4410,7 +4410,6 @@
       "axis_23_44": "Axis 23.44°",
       "ayanamsha_from_mesha": "Ayanamsha (from Mesha)",
       "ayanamsha_gap": "Ayanamsha gap",
-      "back_to_learn": "Back to Learn",
       "belt_width_needed": "Belt width needed",
       "bs_0": "BS 0",
       "bs_date": "BS date",

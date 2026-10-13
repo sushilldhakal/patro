@@ -2598,6 +2598,7 @@
     "prev": "Previous",
     "next": "Next",
     "all_topics": "View all topics",
+    "playground_title": "{{title}} · sky",
     "read_detail": "Read in full",
     "articles_count": "{{count}} articles",
     "more_coming": "{{count}} more being written"
@@ -3234,7 +3235,12 @@
     "promo_title": "Planetary Transits (Gochar)",
     "promo_cta": "Open gochar page",
     "view_more": "View more",
-    "load_error": "Could not load gochar data for this day."
+    "load_error": "Could not load gochar data for this day.",
+    "filter_all": "All",
+    "filter_rashi": "Sign",
+    "filter_nakshatra": "Nakshatra",
+    "filter_asta": "Combust",
+    "filter_retrograde": "Retrograde"
   },
   "grahas": {
     "sun": "Sun",
@@ -4107,6 +4113,7 @@
       "current_windows": "Current windows",
       "deep_dive": "Deep dive",
       "exalted": "Exalted",
+      "gochar": "Gochar",
       "live_graha_positions": "Live graha positions",
       "motion": "Motion",
       "no_upcoming_transits_this_month": "No upcoming transits this month.",
