@@ -4843,7 +4843,6 @@
       "not_this_child_s_age_month": "यो बच्चाको उमेर महिना होइन",
       "personalise": "आफ्नो प्रोफाइलअनुसार",
       "sign_in_to_pick_your_profile": "प्रोफाइल छान्न लग-इन गर्नुहोस्",
-      "that_ceremony_was_not_found": "यो संस्कार फेला परेन।",
       "the_child_s_right_age_month": "बच्चाको सही उमेर महिना",
       "month_ordinal_month": "{{ordinal_month}} औँ महिना",
       "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
@@ -4921,11 +4920,6 @@
     },
     "ui": {
       "could_not_load_data": "डाटा लोड गर्न सकिएन।"
-    },
-    "vivah_sait": {
-      "auspicious_marriage_windows_computed_from_the": "शास्त्रीय नियमबाट गणना गरिएका विवाहका शुभ मुहूर्त",
-      "marriage_sait": "विवाह साइत",
-      "no_marriage_muhurta_found_for_this": "यस वर्ष विवाहको साइत भेटिएन।"
     },
     "day_detail_modal": {
       "back": "फर्कनुहोस्",

@@ -4843,7 +4843,6 @@
       "not_this_child_s_age_month": "Not this child's age month",
       "personalise": "Personalise",
       "sign_in_to_pick_your_profile": "Sign in to pick your profile",
-      "that_ceremony_was_not_found": "That ceremony was not found.",
       "the_child_s_right_age_month": "The child's right age month",
       "month_ordinal_month": "month {{ordinal_month}}",
       "offcount_of_rulecount_rules_switched_off": "{{offCount}} of {{ruleCount}} rules switched off",
@@ -4921,11 +4920,6 @@
     },
     "ui": {
       "could_not_load_data": "Could not load data."
-    },
-    "vivah_sait": {
-      "auspicious_marriage_windows_computed_from_the": "Auspicious marriage windows computed from the classical rules",
-      "marriage_sait": "Marriage Sait",
-      "no_marriage_muhurta_found_for_this": "No marriage muhurta found for this year."
     },
     "day_detail_modal": {
       "back": "Back",

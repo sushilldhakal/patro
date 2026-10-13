@@ -7770,7 +7770,6 @@ export const strings = {
   "ui.sait.not_this_child_s_age_month": { ne: "यो बच्चाको उमेर महिना होइन", en: "Not this child's age month" },
   "ui.sait.personalise": { ne: "आफ्नो प्रोफाइलअनुसार", en: "Personalise" },
   "ui.sait.sign_in_to_pick_your_profile": { ne: "प्रोफाइल छान्न लग-इन गर्नुहोस्", en: "Sign in to pick your profile" },
-  "ui.sait.that_ceremony_was_not_found": { ne: "यो संस्कार फेला परेन।", en: "That ceremony was not found." },
   "ui.sait.the_child_s_right_age_month": { ne: "बच्चाको सही उमेर महिना", en: "The child's right age month" },
 
   /* ── ui.sky3d ───────────────────────────────────────────────────────────── */
@@ -7843,16 +7842,6 @@ export const strings = {
   "ui.ui.could_not_load_data": { ne: "डाटा लोड गर्न सकिएन।", en: "Could not load data." },
 
 
-  /* ── ui.vivah_sait ──────────────────────────────────────────────────────── */
-  "ui.vivah_sait.auspicious_marriage_windows_computed_from_the": {
-    ne: "शास्त्रीय नियमबाट गणना गरिएका विवाहका शुभ मुहूर्त",
-    en: "Auspicious marriage windows computed from the classical rules",
-  },
-  "ui.vivah_sait.marriage_sait": { ne: "विवाह साइत", en: "Marriage Sait" },
-  "ui.vivah_sait.no_marriage_muhurta_found_for_this": {
-    ne: "यस वर्ष विवाहको साइत भेटिएन।",
-    en: "No marriage muhurta found for this year.",
-  },
 
   /* ── ui.aakash_gochar ───────────────────────────────────────────────────── */
   "ui.aakash_gochar.could_not_load_graha_details_from": {

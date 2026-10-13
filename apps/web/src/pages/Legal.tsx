@@ -1,62 +1,37 @@
 import { FileText, Shield } from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { PageHeader, PageShell } from "@/components/PageShell";
-import { useLocale } from "@/i18n/locale";
+import { useLegalPage, type LegalKind } from "@vedic-patro/features/legal";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";
 import { cn } from "@vedic-patro/domain/utils";
-import {
-  LEGAL_UPDATED,
-  PRIVACY_INTRO,
-  PRIVACY_SECTIONS,
-  TERMS_INTRO,
-  TERMS_SECTIONS,
-  type LegalSection,
-} from "@vedic-patro/domain/legal-copy";
+import { PageHeader, PageShell } from "@/components/PageShell";
 
-function LegalBody({ intro, sections }: { intro: { ne: string; en: string }; sections: LegalSection[] }) {
-  const { lang } = useLocale();
-  const pick = (v: { ne: string; en: string }) => (lang === "en" ? v.en : v.ne);
+/** Privacy / terms — the website's drawing of `useLegalPage` (@vedic-patro/features). */
+function LegalPage({ kind }: { kind: LegalKind }) {
+  const page = useLegalPage(kind);
+  const Icon = kind === "privacy" ? Shield : FileText;
   return (
-    <div className={cn(legalClasses.wrap, legalClasses.text, "space-y-8")}>
-      <p className={legalClasses.intro}>{pick(intro)}</p>
-      {sections.map((section) => (
-        <section key={section.heading.en} className="space-y-3">
-          <h2 className={legalClasses.heading}>{pick(section.heading)}</h2>
-          {section.body.map((para) => (
-            <p key={para.en} className={legalClasses.para}>
-              {pick(para)}
-            </p>
-          ))}
-        </section>
-      ))}
-    </div>
+    <PageShell showRelatedLinks={false}>
+      <PageHeader icon={<Icon className="h-6 w-6 text-secondary" />} title={page.title} subtitle={page.updated} />
+      <div className={cn(legalClasses.wrap, legalClasses.text, "space-y-8")}>
+        <p className={legalClasses.intro}>{page.intro}</p>
+        {page.sections.map((section) => (
+          <section key={section.key} className="space-y-3">
+            <h2 className={legalClasses.heading}>{section.heading}</h2>
+            {section.paragraphs.map((para) => (
+              <p key={para.key} className={legalClasses.para}>
+                {para.text}
+              </p>
+            ))}
+          </section>
+        ))}
+      </div>
+    </PageShell>
   );
 }
 
 export function Privacy() {
-  const { t } = useTranslation();
-  return (
-    <PageShell showRelatedLinks={false}>
-      <PageHeader
-        icon={<Shield className="h-6 w-6 text-secondary" />}
-        title={t("legal.privacy_title")}
-        subtitle={t("legal.updated", { date: LEGAL_UPDATED })}
-      />
-      <LegalBody intro={PRIVACY_INTRO} sections={PRIVACY_SECTIONS} />
-    </PageShell>
-  );
+  return <LegalPage kind="privacy" />;
 }
 
 export function Terms() {
-  const { t } = useTranslation();
-  return (
-    <PageShell showRelatedLinks={false}>
-      <PageHeader
-        icon={<FileText className="h-6 w-6 text-secondary" />}
-        title={t("legal.terms_title")}
-        subtitle={t("legal.updated", { date: LEGAL_UPDATED })}
-      />
-      <LegalBody intro={TERMS_INTRO} sections={TERMS_SECTIONS} />
-    </PageShell>
-  );
+  return <LegalPage kind="terms" />;
 }

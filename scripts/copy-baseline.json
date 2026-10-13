@@ -7,7 +7,6 @@
   "apps/mobile/app/(tabs)/panchanga/element/[name].tsx": 2,
   "apps/mobile/app/(tabs)/panchanga/year.tsx": 1,
   "apps/mobile/app/(tabs)/reminders.tsx": 2,
-  "apps/mobile/app/(tabs)/vivah-sait.tsx": 6,
   "apps/mobile/app/account/offline-data.tsx": 19,
   "apps/mobile/components/auth/ProfileForm.tsx": 1,
   "apps/mobile/components/avakahada/AvakahadaWheel.tsx": 14,
