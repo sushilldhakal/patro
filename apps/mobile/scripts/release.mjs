@@ -109,7 +109,8 @@ async function main() {
   if (builds.ios) console.log(`  iOS build    ${builds.ios.last}  →  ${builds.ios.next}   (automatic)`);
   if (builds.android) console.log(`  Android code ${builds.android.last}  →  ${builds.android.next}   (automatic)`);
   console.log(`  platforms    ${platform}`);
-  console.log(`  submit to    ${submitProfile ? `profile "${submitProfile}"` : "iOS → TestFlight · Android → internal track (draft)"}`);
+  const where = [platform !== "android" && "iOS → TestFlight", platform !== "ios" && "Android → internal track (draft)"].filter(Boolean).join(" · ");
+  console.log(`  submit to    ${submitProfile ? `profile "${submitProfile}"` : where}`);
   if (bumped && !existsSync(join(root, "store", `release-notes-${next}.md`))) {
     console.log(`  note         store/release-notes-${next}.md does not exist yet`);
   }
