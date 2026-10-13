@@ -7,9 +7,6 @@ node_modules/
 .env
 .deploy/
 
-# design-parity screenshots
-scripts/design-parity/out/
-
 # Generated runtime data (large; not in git)
 /data/
 /cache/

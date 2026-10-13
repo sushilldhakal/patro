@@ -17,9 +17,7 @@ Hand-typed values outside the token tables are at zero. Three lines keep a `desi
 
 How the tokens got there (`scripts/monorepo-tools/`): `palette.mts` clustered the 332 distinct hex colours both apps had typed in (colours within 14 RGB steps merged) into `packages/design-tokens/src/illustration.ts`; `rgba.mts` turned `"rgba(r,g,b,a)"` strings into `withAlpha(token, a)`. Both are one-off tools and are kept as a record.
 
-Visual comparison: `npm run check:parity` screenshots the same route in the website and in the app's web build (phone 390 and desktop 1280, light and dark) and reports the share of differing pixels. Playwright is a devDependency. CI installs the browser and fails a page when more than 45% of its pixels differ. Measured on 12 October 2026, the highest share is 0.36, on आकाश गोचर, where the sky is a live 3D scene. Home, the yearly wheel and Vastu sit between 0.17 and 0.32 because the app keeps its floating tab bar and its own header. Every mapped page is under that line.
-
-CI also runs `npx turbo run lint` for both apps (the website's ESLint, the app's typecheck). `@expo/vector-icons` stays: unmapped icon names and the font load still use it, and everything mapped goes through `@vedic-patro/icons`. Native iOS and Android font rasterisation is not what this comparison sees.
+CI also runs `npx turbo run lint` for both apps (the website's ESLint, the app's typecheck). `@expo/vector-icons` stays: unmapped icon names and the font load still use it, and everything mapped goes through `@vedic-patro/icons`. Visual parity between the website and the app is checked by eye; there is no automated screenshot comparison.
 
 ## Shared class maps (the page design itself)
 
