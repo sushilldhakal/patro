@@ -28,3 +28,4 @@ email-validator>=2.1.0
 # Auto-downloads Swiss .se1 (BBS 13201 … AD 17191) on pip install; needs network once.
 # Deploy MUST include the ephemeris_provision/ directory (see repo). Keep last.
 -e ./ephemeris_provision
+redis>=5.0.0

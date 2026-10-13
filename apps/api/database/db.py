@@ -27,8 +27,16 @@ def get_engine() -> Engine:
     url = config.database_url()
     if not url:
         raise RuntimeError("DATABASE_URL is not configured")
-    # pool_pre_ping avoids stale connections after the DB restarts.
-    return create_engine(url, pool_pre_ping=True, future=True)
+    # pool_pre_ping avoids stale connections after the DB restarts. The pool is
+    # per worker process, so (WEB_CONCURRENCY × (pool + overflow)) must stay under
+    # Postgres max_connections (100): the 10-worker default is 10 × 5 = 50.
+    return create_engine(
+        url,
+        pool_pre_ping=True,
+        pool_size=config.db_pool_size(),
+        max_overflow=config.db_max_overflow(),
+        future=True,
+    )
 
 
 @lru_cache(maxsize=1)

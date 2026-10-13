@@ -1,8 +1,8 @@
 [Unit]
 Description=Nepali Holiday API (FastAPI + Uvicorn)
 Documentation=https://github.com/sushilldhakal/patro/tree/main/apps/api
-After=network-online.target
-Wants=network-online.target
+After=network-online.target redis-server.service
+Wants=network-online.target redis-server.service
 
 [Service]
 Type=simple
@@ -11,10 +11,11 @@ Group=ubuntu
 WorkingDirectory=/home/ubuntu/patro/apps/api
 Environment=PYTHONUNBUFFERED=1
 # Worker processes. Uvicorn reads WEB_CONCURRENCY when --workers is not given.
-# Panchanga/kundali maths is CPU-bound, so one process serialises every
-# uncached request; size this to the VM's cores (2–4). A WEB_CONCURRENCY line
-# in .env overrides this default (EnvironmentFile wins over Environment).
-Environment=WEB_CONCURRENCY=2
+# One process serialises every uncached request, and the maths is CPU-bound, so
+# several workers let cache hits and cold builds run side by side. Redis shares
+# the cache between them. A WEB_CONCURRENCY line in .env overrides this default
+# (EnvironmentFile wins over Environment) — that is the knob to turn.
+Environment=WEB_CONCURRENCY=10
 EnvironmentFile=-/home/ubuntu/patro/.env
 # Loopback only: nginx (and Cloudflare in front of it) is the public entry
 # point. Binding 0.0.0.0 let anyone reach the API directly on :8000.

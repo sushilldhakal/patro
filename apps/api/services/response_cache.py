@@ -24,6 +24,7 @@ from fastapi import HTTPException, Request
 from fastapi.responses import Response
 
 from engine.astronomy.location import ObserverLocation
+from services import redis_cache
 from services.blob_db_cache import db_available, load_blob, save_blob
 from services.panchanga_cache import CACHE_PAYLOAD_VERSION, resolve_cache_keys
 
@@ -93,27 +94,35 @@ def _path(cache_key: str) -> Path:
 
 
 def read_cached_bytes(cache_key: str) -> bytes | None:
-    # Shared Postgres is the primary store (survives cold starts, shared across
-    # instances); the file is the local-dev fallback when DATABASE_URL is unset.
-    # The versioned filename doubles as the DB key.
+    # Tiers, fastest first: Redis (shared by every worker, bounded LRU) →
+    # Postgres (primary store, survives restarts) → disk (local-dev fallback
+    # when DATABASE_URL is unset). The versioned filename doubles as the key.
     path = _path(cache_key)
+    hit = redis_cache.get_bytes(path.name)
+    if hit is not None:
+        return hit
     if db_available():
-        return load_blob(path.name)
-    try:
-        return path.read_bytes()
-    except FileNotFoundError:
-        return None
+        data = load_blob(path.name)
+    else:
+        try:
+            data = path.read_bytes()
+        except FileNotFoundError:
+            data = None
+    if data is not None:
+        redis_cache.set_bytes(path.name, data)  # backfill so the next read is a Redis hit
+    return data
 
 
 def write_cached_bytes(cache_key: str, payload: Any) -> bytes:
     path = _path(cache_key)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     compressed = gzip.compress(raw, compresslevel=6)
+    redis_cache.set_bytes(path.name, compressed)
     if db_available():
         save_blob(path.name, compressed)
         return compressed
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name + ".tmp")
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident()}.tmp")  # unique per writer
     tmp.write_bytes(compressed)
     os.replace(tmp, path)  # atomic — concurrent readers never see partial files
     return compressed
@@ -124,8 +133,8 @@ def write_cached_bytes(cache_key: str, payload: Any) -> bytes:
 # when every visitor asks for the current year at once), only the first computes
 # the 0.8–30 s payload; the rest wait and then read the freshly written bytes.
 # The keyspace is bounded (cities × years × variants), so retaining a lock per
-# key seen is negligible memory. Single-process only — with multiple workers each
-# still collapses its own stampede, cutting duplicate computes N-fold per worker.
+# key seen is negligible memory. This lock is per process; redis_cache.build_lock
+# extends the same idea across worker processes.
 _build_locks: dict[str, threading.Lock] = {}
 _build_locks_guard = threading.Lock()
 
@@ -159,11 +168,21 @@ def serve_cached_json(
             # we waited, turning our expensive compute into a cheap disk read.
             compressed = read_cached_bytes(cache_key)
             if compressed is None:
-                try:
-                    payload = build()
-                except ValueError as exc:
-                    raise HTTPException(status_code=400, detail=str(exc)) from exc
-                compressed = write_cached_bytes(cache_key, payload)
+                # Cross-worker: only one process builds a missing key; the others
+                # wait for its result instead of repeating a multi-second build.
+                with redis_cache.build_lock(cache_key) as owner:
+                    if not owner:
+                        compressed = redis_cache.wait_for(lambda: read_cached_bytes(cache_key))
+                    else:
+                        # Owner re-check: another worker may have finished and
+                        # released between our first read and taking the lock.
+                        compressed = read_cached_bytes(cache_key)
+                    if compressed is None:
+                        try:
+                            payload = build()
+                        except ValueError as exc:
+                            raise HTTPException(status_code=400, detail=str(exc)) from exc
+                        compressed = write_cached_bytes(cache_key, payload)
 
     headers = {
         "Cache-Control": cache_control,

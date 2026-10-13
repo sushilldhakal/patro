@@ -86,6 +86,15 @@ def warm_holiday_cache() -> list[int]:
         logger.info("Startup precompute disabled (PRECOMPUTE_ON_STARTUP=false)")
         return []
 
+    # With many workers each process boots and would run this same warm. One
+    # worker per window does it (the caches are shared); the rest skip. Without
+    # Redis every worker warms, as before.
+    from services import redis_cache
+
+    if not redis_cache.claim_once("startup-warm", ttl=int(os.environ.get("WARM_CLAIM_TTL_S", "900"))):
+        logger.info("Startup warm already claimed by another worker — skipping")
+        return []
+
     start_year, end_year = resolve_precompute_years()
     generated = precompute_bs_range(start_year, end_year, DEFAULT_LOCATION)
     if generated:

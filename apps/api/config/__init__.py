@@ -60,6 +60,26 @@ def database_url() -> str | None:
     return (os.getenv("DATABASE_URL") or "").strip() or None
 
 
+def redis_url() -> str | None:
+    """Shared cache server, e.g. ``redis://127.0.0.1:6379/0``. Unset → no Redis.
+
+    Redis is an optional L1 in front of the Postgres/disk caches: when it is
+    unset or unreachable every cache path behaves exactly as it did before.
+    """
+    value = os.getenv("REDIS_URL", "").strip()
+    return value or None
+
+
+def db_pool_size() -> int:
+    """SQLAlchemy connections kept open per worker process (``DB_POOL_SIZE``)."""
+    return max(int(os.getenv("DB_POOL_SIZE", "3")), 1)
+
+
+def db_max_overflow() -> int:
+    """Extra burst connections per worker (``DB_MAX_OVERFLOW``)."""
+    return max(int(os.getenv("DB_MAX_OVERFLOW", "2")), 0)
+
+
 def postgres_cache_enabled() -> bool:
     """Use Postgres for shared gzip blob caches (year/month/sait).
 
