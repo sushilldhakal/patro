@@ -60,6 +60,7 @@ import { buildWheelDetail } from "@vedic-patro/domain/wheel-data";
 import { PlanetIcon } from "./hora/PlanetIcon";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const LS_KEY = "dhakalHoraRing.v1";
 const PROG_STEPS = 10_000;
 
@@ -321,17 +322,17 @@ export function HoraRing({ p, isToday, timezone }: Props) {
     <div className="relative mx-auto aspect-[960/900] w-full max-w-[640px]">
       <div className={horaStatusBar} aria-live="polite">
         <div>
-          <span className={horaStatusLabel}>{bilingualText(lang, "वार", "Day")}</span>
+          <span className={horaStatusLabel}>{tFor(lang, "panchanga.hora.day")}</span>
           <span className={horaStatusVal}>{bilingualText(lang, week.day, week.en)}</span>
         </div>
         <div>
-          <span className={horaStatusLabel}>{bilingualText(lang, "होरा", "Hora")}</span>
+          <span className={horaStatusLabel}>{tFor(lang, "panchanga.hora.hora")}</span>
           <span className={cn(horaStatusVal, "font-num tabular-nums")}>
             {horaPad(gii + 1)} / 24
           </span>
         </div>
         <div>
-          <span className={horaStatusLabel}>{bilingualText(lang, "स्वामी", "Lord")}</span>
+          <span className={horaStatusLabel}>{tFor(lang, "panchanga.wheel.lord")}</span>
           <span className={horaStatusVal} style={{ color: ruler.color }}>
             {bilingualText(lang, HORA_DEVA[rulerKey], ruler.en)}
           </span>
@@ -477,7 +478,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
       <button
         type="button"
         className={horaControlBtn}
-        title={expanded ? bilingualText(lang, "सामान्य दृश्य", "Exit fullscreen") : bilingualText(lang, "पूर्ण स्क्रिन", "Fullscreen")}
+        title={expanded ? tFor(lang, "common.exit_fullscreen") : tFor(lang, "common.fullscreen")}
         aria-pressed={expanded}
         onClick={toggleExpanded}
       >
@@ -487,7 +488,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
       <button
         type="button"
         className={horaPlayBtn}
-        aria-label={playing ? bilingualText(lang, "रोक्नुहोस्", "Pause") : bilingualText(lang, "चलाउनुहोस्", "Play")}
+        aria-label={playing ? tFor(lang, "panchanga.hora.pause") : tFor(lang, "panchanga.hora.play")}
         onClick={() => {
           const next = !playing;
           setPlaying(next);
@@ -513,7 +514,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
           max={PROG_STEPS - 1}
           step={1}
           value={progStep}
-          aria-label={bilingualText(lang, "हप्ता होरा स्लाइडर", "Week hora slider")}
+          aria-label={tFor(lang, "panchanga.hora.slider_aria")}
           className={horaVerticalScrub}
           style={{ "--fill": `${prog * 100}%` } as React.CSSProperties}
           onPointerDown={() => {
@@ -560,13 +561,13 @@ export function HoraRing({ p, isToday, timezone }: Props) {
             {!expanded ? (
               <div className="w-full max-w-[640px]">
                 <div className="flex items-center justify-center gap-2.5 text-xs font-semibold uppercase tracking-eyebrow-wide text-secondary before:h-px before:w-[22px] before:bg-secondary/70 before:content-[''] dark:text-[var(--hora-yellow)] dark:before:bg-[var(--hora-yellow)]/70">
-                  {bilingualText(lang, "होरा · ग्रहीय होरा", "Hora · Planetary Hours")}
+                  {tFor(lang, "panchanga.hora.title")}
                 </div>
                 <h2 className="mt-3.5 text-[clamp(28px,4vw,40px)] font-bold leading-tight tracking-tight text-foreground dark:text-[var(--hora-ink)]">
-                  {bilingualText(lang, "एक हप्ता,", "One week,")}
+                  {tFor(lang, "panchanga.hora.one_week")}
                   <br />
                   <span className="text-secondary dark:text-[var(--hora-yellow)]">
-                    {bilingualText(lang, "निरन्तर होरा", "unbroken hora")}
+                    {tFor(lang, "panchanga.hora.unbroken_hora")}
                   </span>
                 </h2>
                 {bilingualNode(lang, <p className="mx-auto mt-3.5 max-w-[600px] text-sm leading-relaxed dark:text-[var(--hora-ink-dim)] [&_em]:italic [&_em]:text-foreground dark:[&_em]:text-[var(--hora-ink)] [&_span]:font-semibold [&_span]:text-foreground dark:[&_span]:text-[var(--hora-ink)]">
@@ -591,7 +592,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
 
             <div className="w-full max-w-[440px] text-left">
               <div className="mb-2.5 text-center text-sm font-semibold uppercase tracking-eyebrow-wide dark:text-[var(--hora-ink-faint)]">
-                {bilingualText(lang, "सात दिन · भित्र → बाहिर", "Seven days · inner → outer")}
+                {tFor(lang, "panchanga.hora.seven_days")}
               </div>
               {HORA_WEEK.map((w, i) => {
                 const P = HORA_PLANETS[w.ruler];

@@ -32,6 +32,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const AYANAMSHA_KEY = "dhakalPatroAyanamshaMode";
 
 function loadSavedAyanamshaMode(): AyanamshaMode {
@@ -116,9 +117,7 @@ function BirthDetailsTable({ role, profile, person, ayanamsha, lang }: BirthDeta
   rows.push({ label: t("milan.timezone"), value: profile.timezone || "—" });
   rows.push({
     label: t("milan.ayanamsha"),
-    value: en
-      ? `${ayanamshaLabel(ayanamsha, lang)} / Chitrapaksha`
-      : `${ayanamshaLabel(ayanamsha, lang)} / चित्रपक्ष`,
+    value: tFor((en) ? "en" : "ne", "ui.kundali_milan.lang_chitrapaksha", { lang: ayanamshaLabel(ayanamsha, lang) }),
   });
 
   if (person) {

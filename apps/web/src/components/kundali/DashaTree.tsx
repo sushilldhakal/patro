@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowRight, ChevronRight } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { dashaExpandKeys, fetchDashaChildren, type DashaSystem, type DashaTreeNode } from "@/lib/api";
 import { formatZonedAdMoment, formatZonedBsMoment } from "@vedic-patro/domain/bs-calendar";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
@@ -19,6 +19,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Catalogue keys, outermost dasha level first. */
 const LEVEL_LABELS: string[] = [
   "kundali.maha_dasha",
@@ -554,7 +555,7 @@ export function DashaTree({
             </p>
             {yoginiCycle ? (
               <span className={cn(kundaliDetailClasses.dashaTree.cycleChip, kundaliDetailClasses.dashaTree.cycleChipText)}>
-                {bilingualText(lang, `चक्र: ${digits(yoginiCycle)}`, `Cycle: ${digits(yoginiCycle)}`)}
+                {tFor(lang, "ui.kundali.cycle_yoginicycle", { yoginiCycle: digits(yoginiCycle) })}
               </span>
             ) : null}
           </div>

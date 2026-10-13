@@ -9,6 +9,7 @@ import { getPlanetRows, getPlanetsAnchorLabel } from "@vedic-patro/domain/pancha
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const DANGER = "#b4412f";
 const SUCCESS = "#2f7d4f";
 
@@ -99,8 +100,8 @@ export function PeriodsCard({ p, appLink }: { p: PanchangaDay | undefined; appLi
   return (
     <>
       <div style={{ display: "flex", gap: 14, flex: "1 1 auto", minHeight: 0, paddingTop: 6 }}>
-        <PeriodColumn title={bilingualText(lang, "अशुभ समय", "Inauspicious periods")} color={DANGER} rows={ashubha} />
-        <PeriodColumn title={bilingualText(lang, "शुभ समय", "Auspicious periods")} color={SUCCESS} rows={shubha} />
+        <PeriodColumn title={tFor(lang, "panchanga.day_cycle.inauspicious_periods")} color={DANGER} rows={ashubha} />
+        <PeriodColumn title={tFor(lang, "panchanga.day_cycle.auspicious_periods")} color={SUCCESS} rows={shubha} />
       </div>
       <OgFooter appLink={appLink} />
     </>
@@ -137,7 +138,7 @@ export function D1Card({ p, appLink }: { p: PanchangaDay | undefined; appLink: s
     <>
       <div style={{ display: "flex", gap: 14, flex: "1 1 auto", minHeight: 0, paddingTop: 6 }}>
         <Panel>
-          <div className="text-xl font-extrabold text-ill-teal15">{bilingualText(lang, "D1 चक्र", "D1 chart")}</div>
+          <div className="text-xl font-extrabold text-ill-teal15">{tFor(lang, "panchanga.d1_chart")}</div>
           <div className="text-base font-medium text-ill-gray58b" style={{ paddingBottom: 4 }}>
             {getPlanetsAnchorLabel(p, lang)}
           </div>
@@ -148,7 +149,7 @@ export function D1Card({ p, appLink }: { p: PanchangaDay | undefined; appLink: s
         </Panel>
         <Panel>
           <div className="text-xl font-extrabold text-ill-teal15" style={{ paddingBottom: 4 }}>
-            {bilingualText(lang, "ग्रह स्थिति", "Planet positions")}
+            {tFor(lang, "sections.planet_positions")}
           </div>
           <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", flex: "1 1 auto", justifyContent: "space-between" }}>
             {rows.map((r) => (

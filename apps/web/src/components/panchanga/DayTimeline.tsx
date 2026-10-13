@@ -55,6 +55,7 @@ import {
 } from "@/lib/timeline-classes";
 import { type ChartSegment, assignLanes, segmentsFromRow, minutesOnVedicChart } from "@vedic-patro/domain/day-timeline-layout";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GRAHA_KEYS = new Set<string>([
   "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
 ]);
@@ -193,7 +194,7 @@ export function DayCycleToggle({
           size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm,
         )}
         role="radiogroup"
-        aria-label={bilingualText(lang, "दिन सीमा", "Day boundary")}
+        aria-label={tFor(lang, "panchanga.day_cycle.day_boundary")}
       >
         {options.map((o) => (
           <button
@@ -231,22 +232,22 @@ function DayTimelineBand({
   const { lang } = useLocale();
   const subtitle =
     mode === "Calendar Day"
-      ? bilingualText(lang, "पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
-      : bilingualText(lang, "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise");
+      ? tFor(lang, "ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
+      : tFor(lang, "ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise");
   return (
     <div className={patroSecBand}>
-      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{bilingualText(lang, "दिन-चक्र", "Day cycle")}</h2>
+      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{tFor(lang, "panchanga.day_cycle.title")}</h2>
       <span className={panchangaPageClasses.dayCycle.bandSubtitle}>
         {subtitle}
       </span>
       <span className={cn("inline-flex", panchangaPageClasses.dayCycle.bandLegend, "normal-case tracking-normal")}>
         <span className={cn("inline-flex", panchangaPageClasses.dayCycle.legendItem)}>
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-success/34 not-italic")} />
-          {bilingualText(lang, "शुभ", "Good")}
+          {tFor(lang, "panchanga.day_cycle.good")}
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-danger/30 not-italic")} />
-          {bilingualText(lang, "अशुभ", "Bad")}
+          {tFor(lang, "panchanga.day_cycle.bad")}
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-secondary/22 not-italic")} />
-          {bilingualText(lang, "रात", "Night")}
+          {tFor(lang, "panchanga.day_cycle.night")}
         </span>
         {showToggle && <DayCycleToggle mode={mode} onModeChange={onModeChange} />}
       </span>
@@ -380,7 +381,7 @@ export function DayTimeline({
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
   let nowG: number | null = null;
-  let nowLabel = bilingualText(lang, "अहिले", "Now");
+  let nowLabel = tFor(lang, "panchanga.day_cycle.now");
   const anchorAd = p?.panchanga_date_ad ?? p?.date_ad ?? dateAd;
   const chartMins = minutesOnVedicChart(p?.query_instant_local, anchorAd ?? "", needleClock);
 
@@ -399,7 +400,7 @@ export function DayTimeline({
       mins = minutesSinceMidnightInTimezone(now, timeZone);
     } else if (showNeedle && chartMins != null) {
       mins = chartMins % (24 * 60);
-      nowLabel = bilingualText(lang, "छानिएको समय", "Chosen time");
+      nowLabel = tFor(lang, "panchanga.day_cycle.chosen_time");
     }
     if (mins != null) nowG = Math.max(0, Math.min(60, mins / 24));
   } else if (showNeedle && needleClock && chartMins != null) {
@@ -419,7 +420,7 @@ export function DayTimeline({
   } else if (showNeedle && chartMins != null) {
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
     if (nowG != null) {
-      nowLabel = bilingualText(lang, "छानिएको समय", "Chosen time");
+      nowLabel = tFor(lang, "panchanga.day_cycle.chosen_time");
     }
   }
 
@@ -439,7 +440,7 @@ export function DayTimeline({
           className={cn("block", "h-auto", "w-full", "min-w-[768px]")}
           preserveAspectRatio="xMinYMid meet"
           role="img"
-          aria-label={bilingualText(lang, "पूर्ण दिन पञ्चाङ्ग चित्र", "Full panchanga day chart")}
+          aria-label={tFor(lang, "ui.panchanga.full_panchanga_day_chart")}
         >
           {nightBands.map(([a, b], i) => (
             <rect
@@ -453,11 +454,11 @@ export function DayTimeline({
           ))}
 
           <text x={X0 - 10} y={isCivil ? 34 : 20} className={pgxScaleLabelDim()} textAnchor="end">
-            {bilingualText(lang, "घण्टा", "Hour")}
+            {tFor(lang, "panchanga.hour_aria")}
           </text>
           {!isCivil && (
             <text x={X0 - 10} y={47} className={pgxScaleLabelDim(true)} textAnchor="end">
-              {bilingualText(lang, "घडी", "Ghati")}
+              {tFor(lang, "panchanga.day_cycle.ghati")}
             </text>
           )}
           <line x1={X0} y1={30} x2={X1} y2={30} className={pgTlAxis} />
@@ -733,7 +734,7 @@ export function DayTimeline({
       {!chartOnly && data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
-          title={bilingualText(lang, "अशुभ समय", "Inauspicious periods")}
+          title={tFor(lang, "panchanga.day_cycle.inauspicious_periods")}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
             label: bilingualText(lang, a.detailNe, a.detailEn),
@@ -745,7 +746,7 @@ export function DayTimeline({
       {!chartOnly && data.shubha.length > 0 && (
         <PeriodCards
           tone="success"
-          title={bilingualText(lang, "शुभ समय", "Auspicious periods")}
+          title={tFor(lang, "panchanga.day_cycle.auspicious_periods")}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
             label: bilingualText(lang, s.name, s.nameEn),
@@ -757,7 +758,7 @@ export function DayTimeline({
       {!chartOnly && p && planets.length > 0 && (
         <div className={cn("flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5")}>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-sm font-bold leading-tight">{bilingualText(lang, "ग्रह", "Planets")}</span>
+            <span className="text-sm font-bold leading-tight">{tFor(lang, "panchanga.day_cycle.planets")}</span>
             <span className="min-w-0 text-sm leading-snug break-words [overflow-wrap:anywhere]">
               {getPlanetsAnchorLabel(p, lang)}
             </span>
@@ -816,7 +817,7 @@ export function DayTimeline({
                   labelL,
                   coordText,
                   nakWithPada,
-                  lordText && `${bilingualText(lang, "नक्षत्रेश / उप", "Lord / Sub")} ${lordText}`,
+                  lordText && `${tFor(lang, "panchanga.day_cycle.lord_sub")} ${lordText}`,
                 ]
                   .filter(Boolean)
                   .join(" · ")}
@@ -852,7 +853,7 @@ export function DayTimeline({
                       {lordText ? (
                         <span
                           className="min-w-0 break-words font-semibold text-secondary [overflow-wrap:anywhere]"
-                          title={bilingualText(lang, "नक्षत्रेश / उप स्वामी", "Nakshatra lord / sub-lord")}
+                          title={tFor(lang, "panchanga.day_cycle.lord_sub_title")}
                         >
                           {lordText}
                         </span>

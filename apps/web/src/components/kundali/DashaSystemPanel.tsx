@@ -13,6 +13,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type DashaTab = {
   id: DashaSystem;
   /** Catalogue key for the tab label. */
@@ -125,7 +126,7 @@ export function DashaSystemPanel({
                     </span>
                   </p>
                   <p className={kundaliDetailClasses.dashaSystem.balance}>
-                    {bilingualText(lang, `बाँकी अवधि: ${dasha.balance_label}`, `Balance: ${dasha.balance_label}`)}
+                    {tFor(lang, "ui.kundali.balance_balance_label", { balance_label: dasha.balance_label })}
                   </p>
                 </>
               );

@@ -6,6 +6,7 @@ import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { bilingualText, useLocale } from "@/i18n/locale";
 
 import { brand, midnight, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   grahas: WheelGraha[];
   selected: number;
@@ -53,8 +54,8 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
         onClick={openMenu}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={bilingualText(lang, "ग्रह छान्नुहोस्", "Select a planet")}
-        title={`${bilingualText(lang, "ग्रह छान्नुहोस्", "Select a planet")} · ${bilingualText(lang, selectedLabel.ne, selectedLabel.en)}`}
+        aria-label={tFor(lang, "kundali.select_a_planet")}
+        title={`${tFor(lang, "kundali.select_a_planet")} · ${bilingualText(lang, selectedLabel.ne, selectedLabel.en)}`}
         className={
           className ??
           "flex h-9 w-9 items-center justify-center rounded-full border border-wheel-control-border bg-wheel-control shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
@@ -68,7 +69,7 @@ export function PlanetSelectMenu({ grahas, selected, onSelect, className, iconSi
             <>
               <button
                 type="button"
-                aria-label={bilingualText(lang, "बन्द गर्नुहोस्", "Close")}
+                aria-label={tFor(lang, "ui.common.close")}
                 className="fixed inset-0 z-[80] cursor-default bg-transparent"
                 onClick={() => setOpen(false)}
               />

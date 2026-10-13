@@ -59,6 +59,7 @@ import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-yea
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const PLAY_BASE_MS = WHEEL_PLAY_BASE_MS;
 const MAX_PLAY_SPEED = WHEEL_MAX_PLAY_SPEED;
 const EXTEND_MARGIN_PLAY = 45;
@@ -492,7 +493,7 @@ export function PanchangaYear() {
           </div>
         ) : windowFetching ? (
           <p className={panchangaYearClasses.status}>
-            {bilingualText(lang, "लोड हुँदै…", "Loading…")}
+            {tFor(lang, "common.loading")}
           </p>
         ) : total ? (
           <p className={panchangaYearClasses.status}>

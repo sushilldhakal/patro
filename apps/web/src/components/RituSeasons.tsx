@@ -21,6 +21,7 @@ import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { cn } from "@vedic-patro/domain/utils";
 import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * ऋतु — the six traditional Nepali seasons, driven by the Sun's APPARENT TROPICAL
  * longitude (sāyana), i.e. the actual equinoxes and solstices — NOT by the
@@ -214,7 +215,7 @@ export function RituSeasons({
                   </div>
                   <div className={cn("flex text-sm", rituClasses.progressRow)}>
                     <span className={rituClasses.progressText}>
-                      {dg(item.progress.elapsed)} / {dg(item.progress.total)} {bilingualText(lang, "दिन", "days")}
+                      {dg(item.progress.elapsed)} / {dg(item.progress.total)} {tFor(lang, "common.days")}
                     </span>
                     <span className={cn("mono", rituClasses.progressPct)}>
                       {dg(Math.round(item.progress.pct))}%
@@ -229,10 +230,7 @@ export function RituSeasons({
 
       {south && (
         <p className={rituClasses.southNote}>
-          {bilingualText(lang, 
-            "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
-            "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",
-          )}
+          {tFor(lang, "ritu.southern_hemisphere_note")}
         </p>
       )}
     </div>

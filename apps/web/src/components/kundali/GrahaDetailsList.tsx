@@ -24,6 +24,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Row = VargaChartEntry & {
   bhava: number;
   ownerBhava?: number;
@@ -164,7 +165,7 @@ export function GrahaDetailsList({
                 {row.ownerBhava != null && (
                   <span>
                     {" "}
-                    {bilingualText(lang, `(भाव ${digits(row.ownerBhava)})`, `(bhava ${digits(row.ownerBhava)})`)}
+                    {tFor(lang, "ui.kundali.bhava_ownerbhava", { ownerBhava: digits(row.ownerBhava) })}
                   </span>
                 )}
               </TableCell>
@@ -180,7 +181,7 @@ export function GrahaDetailsList({
               </TableCell>
               <TableCell className={td}>
                 {row.rulesBhavas.length > 0
-                  ? bilingualText(lang, `भाव ${row.rulesBhavas.map((h) => digits(h)).join(", ")}`, `Bhava ${row.rulesBhavas.map((h) => digits(h)).join(", ")}`)
+                  ? tFor(lang, "ui.kundali.bhava_value", { value: row.rulesBhavas.map((h) => digits(h)).join(", ") })
                   : "—"}
               </TableCell>
             </TableRow>

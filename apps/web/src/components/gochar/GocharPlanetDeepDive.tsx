@@ -14,6 +14,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   gochar: Record<string, GocharGraha>;
   selected: GrahaKey;
@@ -73,13 +74,13 @@ export function GocharPlanetDeepDive({ gochar, selected, onSelect }: Props) {
     <section className={cn("shadow-ring-soft", gocharClasses.deepCard)}>
       <div className={gocharClasses.deepHead}>
         <p className={cn("m-0", gocharClasses.deepEyebrow)}>
-          {bilingualText(lang, "विस्तृत अध्ययन", "Deep dive")}
+          {tFor(lang, "ui.gochar.deep_dive")}
         </p>
         <h2 className={cn("mb-0 break-words", gocharClasses.deepTitle)}>
-          {bilingualText(lang, "ग्रह छान्नुहोस्", "Pick a planet")}
+          {tFor(lang, "ui.gochar.pick_a_planet")}
         </h2>
         <p className={cn("mb-0 break-words", gocharClasses.deepSubtitle)}>
-          {bilingualText(lang, "वर्तमान स्थिति, सीमा र वक्री", "Current position, windows & retrograde")}
+          {tFor(lang, "ui.gochar.current_position_windows_retrograde")}
         </p>
       </div>
 
@@ -121,22 +122,22 @@ export function GocharPlanetDeepDive({ gochar, selected, onSelect }: Props) {
           </h3>
           {grahaExalted(selected, g) ? (
             <span className={cn(gocharClasses.detailBadge, gocharClasses.detailBadgeText)}>
-              {bilingualText(lang, "उच्च", "Exalted")}
+              {tFor(lang, "ui.gochar.exalted")}
             </span>
           ) : null}
         </div>
 
         <div className={cn("grid sm:grid-cols-2 lg:grid-cols-4", gocharClasses.factGrid)}>
-          <Detail label={bilingualText(lang, "राशि", "Sign")} value={`${rashi} ${deg}`} />
-          <Detail label={bilingualText(lang, "नक्षत्र", "Nakshatra")} value={grahaNakshatraLine(g, lang)} />
-          <Detail label={bilingualText(lang, "गति", "Motion")} value={motionLabel(g, lang)} />
-          <Detail label={bilingualText(lang, "वेग", "Speed")} value={speedTone(g, lang)} />
+          <Detail label={tFor(lang, "ui.gochar.sign")} value={`${rashi} ${deg}`} />
+          <Detail label={tFor(lang, "nakshatra")} value={grahaNakshatraLine(g, lang)} />
+          <Detail label={tFor(lang, "ui.gochar.motion")} value={motionLabel(g, lang)} />
+          <Detail label={tFor(lang, "ui.gochar.speed")} value={speedTone(g, lang)} />
         </div>
 
         {windows.length > 0 ? (
           <div className={gocharClasses.windowsBox}>
             <p className={cn("m-0", gocharClasses.windowsTitle)}>
-              {bilingualText(lang, "हालका सीमाहरू", "Current windows")}
+              {tFor(lang, "ui.gochar.current_windows")}
             </p>
             <ul className={cn("mb-0 list-disc space-y-1 pl-4", gocharClasses.windowsList, gocharClasses.windowsItem)}>
               {windows.map((w) => (

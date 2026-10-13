@@ -24,6 +24,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Row = VargaChartEntry & {
   bhava: number;
   ownerBhava?: number;
@@ -31,7 +32,7 @@ type Row = VargaChartEntry & {
 };
 
 function grahaLabel(key: string, lang: "ne" | "en"): string {
-  if (key === "lagna") return lang === "en" ? "Ascendant" : "लग्न";
+  if (key === "lagna") return tFor(lang, "ui.kundali.ascendant");
   const meta = GRAHA_NAME[key as GrahaKey];
   if (!meta) return key;
   return lang === "en" ? meta.en : meta.ne;

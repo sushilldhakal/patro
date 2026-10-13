@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CityAutocomplete } from "@/components/auth/CityAutocomplete";
 import { formatDateInput, formatTimeInput } from "@vedic-patro/domain/birth-date";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import {
   createProfile,
   updateProfile,
@@ -14,6 +14,7 @@ import {
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const labelClass = accountClasses.label;
 const fieldWrap = cn("flex flex-col", accountClasses.field);
 
@@ -169,7 +170,7 @@ export function ProfileForm({
           <Input
             value={form.birth_date ?? ""}
             onChange={(e) => set("birth_date", formatDateInput(e.target.value))}
-            placeholder={bilingualText(lang, "वर्ष-महिना-दिन", "YYYY-MM-DD")}
+            placeholder={tFor(lang, "ui.auth.yyyy_mm_dd")}
             inputMode="numeric"
             maxLength={10}
           />
@@ -179,7 +180,7 @@ export function ProfileForm({
           <Input
             value={form.birth_time ?? ""}
             onChange={(e) => set("birth_time", formatTimeInput(e.target.value))}
-            placeholder={bilingualText(lang, "घण्टा:मिनेट", "HH:MM")}
+            placeholder={tFor(lang, "ui.auth.hh_mm")}
             inputMode="numeric"
             maxLength={5}
           />

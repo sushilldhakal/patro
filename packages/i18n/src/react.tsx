@@ -23,6 +23,7 @@ import { formatLocaleDigits } from "@vedic-patro/domain/locale";
 import {
   ensureBundle,
   getLanguage,
+  getStateKey,
   getRequestedLanguage,
   getT,
   hasBundle,
@@ -37,9 +38,10 @@ import {
 
 export type { Lang, TFunction, TranslateOptions };
 
-/** The language the UI is in; re-renders the caller when it changes. */
+/** The language the UI is in; re-renders the caller when it (or a loaded bundle) changes. */
 export function useLanguage(): Lang {
-  return useSyncExternalStore(subscribe, getLanguage, getLanguage);
+  const state = useSyncExternalStore(subscribe, getStateKey, getStateKey);
+  return state.slice(0, 2) as Lang;
 }
 
 // ─── i18next-shaped handle ──────────────────────────────────────────────────

@@ -13,6 +13,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GLANCE_GAP = 8;
 
 function glanceTileLayout(contentWidth: number, twoCol: boolean): ViewStyle {
@@ -43,7 +44,7 @@ function GlanceTile({
 
 function HouseSummary({ house, lang, digits }: { house: BhavaBalaHouse; lang: "ne" | "en"; digits: (v: string | number) => string }) {
   const houseLabel =
-    lang === "en" ? `House ${digits(house.house)}` : `भाव ${digits(house.house)}`;
+    tFor(lang, "ui.kundali.house_house_2", { house: digits(house.house) });
   const lord = GRAHA_NAME[house.lordKey as GrahaKey];
   const lordName = lord ? (lang === "en" ? lord.en : lord.ne) : house.lordKey;
 
@@ -88,7 +89,7 @@ export function BhavaBalaCard({
   }, [data.referenceVirupas, lang, digits]);
 
   const houseLabel = (house: number) =>
-    lang === "en" ? `House ${digits(house)}` : `भाव ${digits(house)}`;
+    tFor(lang, "ui.kundali.house_house_2", { house: digits(house) });
 
   const columns: Column[] = [
     { key: "house", ne: "भाव", en: "House", width: 72 },

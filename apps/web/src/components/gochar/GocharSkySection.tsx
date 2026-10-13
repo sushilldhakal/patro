@@ -10,6 +10,7 @@ import { patroCard, patroMono } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const PLANET_STRIPE: Record<GrahaKey, string> = {
   sun: "bg-amber-500",
   moon: "bg-slate-400",
@@ -54,10 +55,10 @@ export function GocharSkySection({
     <section className={cn(patroCard, gocharClasses.skyCard, "shadow-ring-soft")}>
       <div className={gocharClasses.skyHead}>
         <p className={cn("m-0", gocharClasses.skyEyebrow)}>
-          {bilingualText(lang, "आकाश एक नजरमा", "The sky at a glance")}
+          {tFor(lang, "ui.gochar.the_sky_at_a_glance")}
         </p>
         <h2 className={cn("mb-0", gocharClasses.skyTitle)}>
-          {bilingualText(lang, "प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
+          {tFor(lang, "ui.gochar.live_graha_positions")}
         </h2>
         <p className={cn("mb-0", gocharClasses.skyDate)}>{dateLabel}</p>
       </div>
@@ -122,7 +123,7 @@ export function GocharSkySection({
                 </div>
                 {exalted ? (
                   <span className={cn(gocharClasses.exaltedBadge, gocharClasses.exaltedBadgeText)}>
-                    {bilingualText(lang, "उच्च", "Exalted")}
+                    {tFor(lang, "ui.gochar.exalted")}
                   </span>
                 ) : null}
               </div>
@@ -130,11 +131,11 @@ export function GocharSkySection({
               {/* Card body */}
               <div className={cn("flex flex-col px-3", gocharClasses.planetBody)}>
                 <MetaRow
-                  label={bilingualText(lang, "नक्षत्र", "Nakshatra")}
+                  label={tFor(lang, "nakshatra")}
                   value={grahaNakshatraLine(g, lang, digits)}
                 />
                 <MetaRow
-                  label={bilingualText(lang, "गति", "Motion")}
+                  label={tFor(lang, "ui.gochar.motion")}
                   value={motionLabel(g, lang)}
                 />
               </div>
@@ -143,9 +144,7 @@ export function GocharSkySection({
               {untilAd ? (
                 <div className={cn("mt-auto px-3", gocharClasses.planetFooter)}>
                   <p className={cn("m-0", gocharClasses.planetFooterText)}>
-                    {lang === "en"
-                      ? `In ${rashiUntil} until ${formatGocharPatroDate(untilAd, lang)}`
-                      : `${rashiUntil} मा ${formatGocharPatroDate(untilAd, lang)} सम्म`}
+                    {tFor(lang, "ui.gochar.in_rashiuntil_until_lang", { rashiUntil, lang: formatGocharPatroDate(untilAd, lang) })}
                   </p>
                 </div>
               ) : null}

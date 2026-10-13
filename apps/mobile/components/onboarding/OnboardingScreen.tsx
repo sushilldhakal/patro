@@ -18,6 +18,7 @@ import {
 import { setCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 
 import { neutral } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 function OptionCard({
   selected,
   onPress,
@@ -111,10 +112,10 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
           onPress={onDone}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel={ne ? "छोड्नुहोस्" : "Skip tour"}
+          accessibilityLabel={tFor((ne) ? "ne" : "en", "ui.onboarding.skip_tour")}
         >
           <Text className="text-body font-semibold text-muted-foreground">
-            {ne ? "छोड्नुहोस्" : "Skip"}
+            {tFor((ne) ? "ne" : "en", "ui.onboarding.skip")}
           </Text>
         </Pressable>
       </View>
@@ -142,7 +143,7 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
         className="items-center rounded-lg bg-primary px-5 py-3.5 active:opacity-80"
       >
         <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-          {last ? (ne ? "सुरु गर्नुहोस्" : "Start exploring") : ne ? "अर्को" : "Next"}
+          {last ? (tFor((ne) ? "ne" : "en", "ui.onboarding.start_exploring")) : tFor((ne) ? "ne" : "en", "learn_page.next")}
         </Text>
       </Pressable>
     </View>

@@ -27,6 +27,7 @@ import { patroNavataraRow } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type MuhurtaSubTab = "tarabal" | "chandrabal" | "choghadiya" | "hora" | "pushkara";
 
 const SUB_TABS: { id: MuhurtaSubTab; labelKey: string }[] = [
@@ -186,7 +187,7 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
     return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.pushkara_unavailable")}</p>;
   }
 
-  const pushkaraLabel = bilingualText(lang, "पुष्कर", "Pushkara");
+  const pushkaraLabel = tFor(lang, "common.pushkara");
 
   return (
     <ul className="m-0 grid list-none grid-cols-3 gap-1 p-0">

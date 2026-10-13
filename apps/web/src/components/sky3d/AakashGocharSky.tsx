@@ -116,6 +116,7 @@ import { useDeviceOrientation, type OrientationSample } from "@/lib/sky3d/device
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
 import { effect, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const Scene = memo(AakashGocharScene);
 
 const CANVAS_BG = wheel.sky2;
@@ -2706,7 +2707,6 @@ const SkyLabels = memo(function SkyLabels({
   onAimLabel?: (label: ScreenLabel) => void;
 }) {
   const { lang, digits } = useLocale();
-  const pick = (ne: string, en: string) => bilingualText(lang, ne, en);
   const rashiColor = LABEL_COLOR.rashi;
   const nakColor = flatBelts ? illustration.sky70 : LABEL_COLOR.nakshatra;
   const monthColor = LABEL_COLOR.month;
@@ -2949,8 +2949,8 @@ const SkyLabels = memo(function SkyLabels({
               style={{ ...labelBox(label.x, label.y, 120, -16), color: LABEL_COLOR.axis }}
             >
               {label.text === "earth"
-                ? pick("पृथ्वीको अक्ष", "Earth's axis")
-                : pick("कक्षाको लम्ब", "Orbit's perpendicular")}
+                ? tFor(lang, "ui.common.earth_s_axis")
+                : tFor(lang, "ui.sky3d.orbit_s_perpendicular")}
             </span>
           );
         }
@@ -3032,8 +3032,8 @@ const SkyLabels = memo(function SkyLabels({
               style={{ ...labelBox(label.x, label.y, 110, -7), color: LABEL_COLOR.tropic }}
             >
               {label.text === "cancer"
-                ? pick("कर्कट रेखा · २३.४४°उ", "Tropic of Cancer · 23.44°N")
-                : pick("मकर रेखा · २३.४४°द", "Tropic of Capricorn · 23.44°S")}
+                ? tFor(lang, "ui.sky3d.tropic_of_cancer_23_44_n")
+                : tFor(lang, "ui.sky3d.tropic_of_capricorn_23_44_s")}
             </span>
           );
         }

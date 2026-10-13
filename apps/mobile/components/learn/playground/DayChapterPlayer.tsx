@@ -21,12 +21,13 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
 import { brand, illustration, neutral, spaceUnit, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GOLD = illustration.amber61;
 
 const PLAY_NUDGE = 0.75 * spaceUnit;
 
 export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
-  const { lang, pick } = useLocale();
+  const { lang } = useLocale();
   if (!player.showWelcome) return null;
   return (
     <View className="absolute inset-0 z-20 items-center justify-center bg-black/55 px-6">
@@ -134,7 +135,7 @@ export function DayChapterBar({
           onPress={free ? onOrbitToggle : ended ? () => { player.seek(0); player.play(); } : player.toggle}
           accessibilityRole="button"
           accessibilityLabel={
-            ended ? chapterLabel("replay", lang) : playing ? (lang === "en" ? "Pause" : "रोक्नुहोस्") : (lang === "en" ? "Play" : "चलाउनुहोस्")
+            ended ? chapterLabel("replay", lang) : playing ? (tFor(lang, "panchanga.hora.pause")) : (tFor(lang, "panchanga.hora.play"))
           }
           className="h-12 w-12 items-center justify-center active:opacity-70"
         >
@@ -165,7 +166,7 @@ export function DayChapterBar({
             accessibilityRole="button"
             accessibilityState={{ selected: Boolean(orbitPlaying) }}
             accessibilityLabel={
-              orbitPlaying ? (lang === "en" ? "Pause orbit" : "कक्ष रोक्नुहोस्") : (lang === "en" ? "Run orbit" : "कक्ष चलाउनुहोस्")
+              orbitPlaying ? (tFor(lang, "ui.learn.pause_orbit")) : (tFor(lang, "ui.learn.run_orbit"))
             }
             className="h-10 w-10 items-center justify-center active:opacity-70"
           >

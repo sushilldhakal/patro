@@ -6,6 +6,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { Switch } from "@/components/ui/switch";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 export interface SaitRule {
   /** Stable id matching the engine's toggleable rules; when set the rule can be switched off. */
   id?: string;
@@ -74,10 +75,10 @@ export function SaitRulesSection({
           </span>
           <span className={cn("block", saitClasses.rulesSubtitle)}>
             {offCount > 0
-              ? bilingualText(lang, `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`, `${digits(offCount)} of ${digits(ruleCount)} rules switched off`)
+              ? tFor(lang, "ui.sait.offcount_of_rulecount_rules_switched_off", { ruleCount: digits(ruleCount), offCount: digits(offCount) })
               : togglingEnabled
-                ? bilingualText(lang, `${digits(ruleCount)} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने`, `${digits(ruleCount)} classical rules · switch off any your tradition skips`)
-                : bilingualText(lang, `${digits(ruleCount)} शास्त्रीय नियम · स्रोतसहित`, `${digits(ruleCount)} classical rules · with sources`)}
+                ? tFor(lang, "ui.sait.rulecount_classical_rules_switch_off_any", { ruleCount: digits(ruleCount) })
+                : tFor(lang, "ui.sait.rulecount_classical_rules_with_sources", { ruleCount: digits(ruleCount) })}
           </span>
         </span>
         {busy ? (

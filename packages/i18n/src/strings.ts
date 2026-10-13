@@ -7936,6 +7936,197 @@ export const strings = {
     ne: "यस वर्ष विवाहको साइत भेटिएन।",
     en: "No marriage muhurta found for this year.",
   },
+
+  /* ── ui.aakash_gochar ───────────────────────────────────────────────────── */
+  "ui.aakash_gochar.could_not_load_graha_details_from": {
+    ne: "सर्भरबाट ग्रह विवरण ल्याउन सकिएन — आकाश आफ्नै गणितमा चलिरहेको छ, त्यसैले स्थिति अनुमानित हुन सक्छ।",
+    en: "Could not load graha details from the server — the sky is running on its own model, so positions may be approximate.",
+  },
+  "ui.aakash_gochar.drag_to_swing_the_sky_and": {
+    ne: "माउसले तानेर आकाश घुमाउनुहोस्, स्क्रोल गरेर नजिक-टाढा गर्नुहोस्; टचस्क्रिनमा दुई औंलाले पनि हुन्छ।",
+    en: "Drag to swing the sky and scroll to zoom; on a touchscreen, drag with one finger and pinch with two.",
+  },
+  "ui.aakash_gochar.pick_any_graha_in_the_sky": {
+    ne: "कुनै पनि ग्रह — आकाशमा वा तलको कार्डमा — छानेपछि त्यसको ४५ दिन अघि र पछिको गति रेखा देखिन्छ; मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। क्रसहेयर थिचे क्यामेरा त्यही ग्रहमा केन्द्रित रहन्छ — वा गोलामा रहेको आफ्नै स्थान छाने त्यसैमा।",
+    en: "Pick any graha — in the sky or on a card below — to draw its trail 45 days either side of the moment on screen; when Mars or Saturn turns vakri you can watch the loop close on itself. The crosshair button then keeps the camera centred on it — or on your own place on the globe, if that is what you point it at.",
+  },
+  "ui.aakash_gochar.the_graha_details_below_come_from": {
+    ne: "तलका ग्रह विवरण माथि छानिएको मिति र स्थानका लागि सर्भरबाट आउँछन्, र आकाश पनि तिनै अंकमा जोडिएको छ — मिति वा स्थान फेर्दा दुवै सँगै फेरिन्छन्। तर «चलाउनुहोस्» थिचेर समय अघि बढाउँदा आकाश मात्र हिँड्छ; विवरण छानिएकै मितिको रहन्छ।",
+    en: "The graha details below come from the server for the date and place chosen above, and the sky is pinned to those same numbers — change either and both follow. Pressing play moves the sky alone, though: the details stay with the chosen date.",
+  },
+  "ui.aakash_gochar.the_rashi_belt_tips_with_your": {
+    ne: "राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
+    en: "The rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
+  },
+  "ui.aakash_gochar.the_red_marker_on_the_globe": {
+    ne: "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।",
+    en: "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works.",
+  },
+
+  /* ── ui.common ──────────────────────────────────────────────────────────── */
+  "ui.common.rest_and_last": { ne: "{{rest}} र {{last}}", en: "{{rest}} and {{last}}" },
+
+  /* ── ui.dainik_kranti ───────────────────────────────────────────────────── */
+  "ui.dainik_kranti.lagna_planets_for_day_day": {
+    ne: "{{day}} गतेको लग्न र ग्रहस्पष्ट",
+    en: "Lagna & planets for day {{day}}",
+  },
+  "ui.dainik_kranti.until_end": { ne: "{{end}} सम्म", en: "until {{end}}" },
+
+  /* ── ui.day_detail_modal ────────────────────────────────────────────────── */
+  "ui.day_detail_modal.back": { ne: "फर्कनुहोस्", en: "Back" },
+  "ui.day_detail_modal.karan": { ne: "करण", en: "Karan" },
+  "ui.day_detail_modal.moon_sign": { ne: "चन्द्रराशि", en: "Moon sign" },
+  "ui.day_detail_modal.see_full_panchanga": { ne: "पूर्ण पञ्चाङ्ग हेर्नुहोस् →", en: "See full panchanga →" },
+  "ui.day_detail_modal.yog": { ne: "योग", en: "Yog" },
+
+  /* ── ui.gochar ──────────────────────────────────────────────────────────── */
+  "ui.gochar.in_rashi_until_lang": { ne: "{{rashi}} मा {{lang}} सम्म", en: "In {{rashi}} until {{lang}}" },
+  "ui.gochar.in_rashiuntil_until_lang": {
+    ne: "{{rashiUntil}} मा {{lang}} सम्म",
+    en: "In {{rashiUntil}} until {{lang}}",
+  },
+
+  /* ── ui.home ────────────────────────────────────────────────────────────── */
+  "ui.home.choose_rashi": { ne: "राशि छान्नुहोस्", en: "Choose rashi" },
+  "ui.home.waning_half_moon": { ne: "घट्दो अर्धचन्द्र", en: "Waning half moon" },
+  "ui.home.waning_moon": { ne: "घट्दो चन्द्र", en: "Waning moon" },
+  "ui.home.waxing_half_moon": { ne: "बढ्दो अर्धचन्द्र", en: "Waxing half moon" },
+  "ui.home.waxing_moon": { ne: "बढ्दो चन्द्र", en: "Waxing moon" },
+
+  /* ── ui.kundali ─────────────────────────────────────────────────────────── */
+  "ui.kundali.ascendant": { ne: "लग्न", en: "Ascendant" },
+  "ui.kundali.balance_balance_label": { ne: "बाँकी अवधि: {{balance_label}}", en: "Balance: {{balance_label}}" },
+  "ui.kundali.bhava_ownerbhava": { ne: "(भाव {{ownerBhava}})", en: "(bhava {{ownerBhava}})" },
+  "ui.kundali.bhava_value": { ne: "भाव {{value}}", en: "Bhava {{value}}" },
+  "ui.kundali.house_house_2": { ne: "भाव {{house}}", en: "House {{house}}" },
+  "ui.kundali.house_housenum": { ne: "भाव {{houseNum}}", en: "House {{houseNum}}" },
+  "ui.kundali.karakatva_shloka": { ne: "कारकत्व श्लोक", en: "Karakatva shloka" },
+  "ui.kundali.karakatva_subjects": { ne: "कारकत्व विषयहरू", en: "Karakatva subjects" },
+  "ui.kundali.lang_in_house_house_value": {
+    ne: "भाव {{house}}{{value}} मा {{lang}}को फल",
+    en: "{{lang}} in house {{house}}{{value}}",
+  },
+  "ui.kundali.no_classical_shloka_is_available_for": {
+    ne: "यो भाव-ग्रह संयोजनको लागि शास्त्रीय श्लोक अहिले उपलब्ध छैन।",
+    en: "No classical shloka is available for this house-graha combination yet.",
+  },
+  "ui.kundali.no_graha_here_see_the_placement_2": {
+    ne: "कुनै ग्रह छैन — राशि स्वामी {{lang}}को स्थिति हेर्नुहोस्।",
+    en: "No graha here — see the placement of {{lang}}, this house's ruling graha.",
+  },
+  "ui.kundali.none": { ne: "कोही छैन", en: "None" },
+  "ui.kundali.pada_pada": { ne: "पद {{pada}}", en: "Pada {{pada}}" },
+  "ui.kundali.sign_lord_lang_wasn_t_found": {
+    ne: "राशि स्वामी {{lang}} यो D1 चार्टमा फेला परेन।",
+    en: "Sign lord {{lang}} wasn't found placed in this D1 chart.",
+  },
+  "ui.kundali.significance": { ne: "ग्रहको महत्व", en: "Significance" },
+  "ui.kundali.this_house_has_no_occupying_graha_2": {
+    ne: "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{lang}}को स्थिति हेर्नुहोस्।",
+    en: "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{lang}}, this house's fixed (pakka ghar) lord.",
+  },
+
+  /* ── ui.kundali_milan ───────────────────────────────────────────────────── */
+  "ui.kundali_milan.lang_chitrapaksha": { ne: "{{lang}} / चित्रपक्ष", en: "{{lang}} / Chitrapaksha" },
+
+  /* ── ui.learn ───────────────────────────────────────────────────────────── */
+  "ui.learn.adhik": { ne: "अधिक ", en: "Adhik " },
+  "ui.learn.ayanamsha_ayan_value_days": {
+    ne: "अयनांश ~{{AYAN}}° ≈ ~{{value}} दिन",
+    en: "ayanamsha ~{{AYAN}}° ≈ ~{{value}} days",
+  },
+  "ui.learn.eclipse_season_value_days": { ne: "ग्रहण ऋतु — ~{{value}} दिन", en: "eclipse season — ~{{value}} days" },
+  "ui.learn.julian_1_day_per_value_years": {
+    ne: "जुलियन: ~१ दिन प्रति {{value}} वर्ष → {{value2}} सम्ममा १० दिन",
+    en: "Julian: ~1 day per {{value}} years → ten days by {{value2}}",
+  },
+  "ui.learn.one_lunation_value_days": { ne: "एक चान्द्र मास — {{value}} दिन", en: "one lunation — {{value}} days" },
+  "ui.learn.pause_orbit": { ne: "कक्ष रोक्नुहोस्", en: "Pause orbit" },
+  "ui.learn.run_orbit": { ne: "कक्ष चलाउनुहोस्", en: "Run orbit" },
+  "ui.learn.that_value_value2_more_minutes_of": {
+    ne: "त्यो ~{{value}}° = ~{{value2}} मिनेट थप घुर्णन",
+    en: "that ~{{value}}° = ~{{value2}} more minutes of spin",
+  },
+  "ui.learn.tithi_ends_value_utc": { ne: "तिथि सकिने क्षण — {{value}} UTC", en: "tithi ends — {{value}} UTC" },
+  "ui.learn.value_days": { ne: "~{{value}} दिन", en: "~{{value}} days" },
+  "ui.learn.value_minutes_later_each_day": {
+    ne: "हरेक दिन ~{{value}} मिनेट ढिलो →",
+    en: "~{{value}} minutes later each day →",
+  },
+  "ui.learn.value_still_to_go": { ne: "अझै ~{{value}}° बाँकी", en: "~{{value}}° still to go" },
+
+  /* ── ui.mobile_bottom_nav ───────────────────────────────────────────────── */
+  "ui.mobile_bottom_nav.primary_navigation": { ne: "मुख्य नेभिगेसन", en: "Primary navigation" },
+
+  /* ── ui.notifications ───────────────────────────────────────────────────── */
+  "ui.notifications.a_good_time_to_begin_important": {
+    ne: "महत्त्वपूर्ण काम सुरु गर्न शुभ समय।",
+    en: "A good time to begin important work.",
+  },
+  "ui.notifications.avoid_starting_new_work_travel_or": {
+    ne: "नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।",
+    en: "Avoid starting new work, travel or purchases.",
+  },
+  "ui.notifications.starts_in_lead_min": { ne: "{{lead}} मिनेटमा सुरु", en: "Starts in {{lead}} min" },
+  "ui.notifications.starts_now": { ne: "अहिलेदेखि", en: "Starts now" },
+  "ui.notifications.today_s_rashifal": { ne: "आजको राशिफल", en: "Today's rashifal" },
+
+  /* ── ui.onboarding ──────────────────────────────────────────────────────── */
+  "ui.onboarding.skip": { ne: "छोड्नुहोस्", en: "Skip" },
+  "ui.onboarding.skip_tour": { ne: "छोड्नुहोस्", en: "Skip tour" },
+  "ui.onboarding.start_exploring": { ne: "सुरु गर्नुहोस्", en: "Start exploring" },
+
+  /* ── ui.panchanga ───────────────────────────────────────────────────────── */
+  "ui.panchanga.drag_to_rotate_scroll_to_zoom": {
+    ne: "घुमाउन तान्नुहोस् · स्क्रोल गरेर जुम गर्नुहोस्",
+    en: "Drag to rotate · scroll to zoom",
+  },
+  "ui.panchanga.pick_date_and_time": { ne: "मिति र समय छान्नुहोस्", en: "Pick date and time" },
+  "ui.panchanga.this_time_is_before_sunrise_on": {
+    ne: " यो समय {{viewedDateLabel}} को सूर्योदय अघि भएकाले {{viewedDateLabel2}} को वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
+    en: " This time is before sunrise on {{viewedDateLabel}}, so {{viewedDateLabel2}}'s Vedic day almanac is shown.",
+  },
+
+  /* ── ui.reminders ───────────────────────────────────────────────────────── */
+  "ui.reminders.careful": { ne: "सावधानी", en: "Careful" },
+  "ui.reminders.do": { ne: "गर्नुहोस्", en: "Do" },
+  "ui.reminders.don_t": { ne: "नगर्नुहोस्", en: "Don't" },
+
+  /* ── ui.sait ────────────────────────────────────────────────────────────── */
+  "ui.sait.month_ordinal_month": { ne: "{{ordinal_month}} औँ महिना", en: "month {{ordinal_month}}" },
+  "ui.sait.offcount_of_rulecount_rules_switched_off": {
+    ne: "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
+    en: "{{offCount}} of {{ruleCount}} rules switched off",
+  },
+  "ui.sait.rulecount_classical_rules_switch_off_any": {
+    ne: "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
+    en: "{{ruleCount}} classical rules · switch off any your tradition skips",
+  },
+  "ui.sait.rulecount_classical_rules_with_sources": {
+    ne: "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित",
+    en: "{{ruleCount}} classical rules · with sources",
+  },
+
+  /* ── ui.sky3d ───────────────────────────────────────────────────────────── */
+  "ui.sky3d.daylight": { ne: "दिनको उज्यालो", en: "Daylight" },
+  "ui.sky3d.decrease_day": { ne: "दिन घटाउनुहोस्", en: "Decrease day" },
+  "ui.sky3d.decrease_hour": { ne: "घण्टा घटाउनुहोस्", en: "Decrease hour" },
+  "ui.sky3d.decrease_minute": { ne: "मिनेट घटाउनुहोस्", en: "Decrease minute" },
+  "ui.sky3d.decrease_month": { ne: "महिना घटाउनुहोस्", en: "Decrease month" },
+  "ui.sky3d.decrease_second": { ne: "सेकेन्ड घटाउनुहोस्", en: "Decrease second" },
+  "ui.sky3d.decrease_year": { ne: "वर्ष घटाउनुहोस्", en: "Decrease year" },
+  "ui.sky3d.favourite": { ne: "पसन्दमा राख्नुहोस्", en: "Favourite" },
+  "ui.sky3d.increase_day": { ne: "दिन बढाउनुहोस्", en: "Increase day" },
+  "ui.sky3d.increase_hour": { ne: "घण्टा बढाउनुहोस्", en: "Increase hour" },
+  "ui.sky3d.increase_minute": { ne: "मिनेट बढाउनुहोस्", en: "Increase minute" },
+  "ui.sky3d.increase_month": { ne: "महिना बढाउनुहोस्", en: "Increase month" },
+  "ui.sky3d.increase_second": { ne: "सेकेन्ड बढाउनुहोस्", en: "Increase second" },
+  "ui.sky3d.increase_year": { ne: "वर्ष बढाउनुहोस्", en: "Increase year" },
+  "ui.sky3d.next_night": { ne: "अर्को रात", en: "Next night" },
+  "ui.sky3d.previous_night": { ne: "अघिल्लो रात", en: "Previous night" },
+  "ui.sky3d.realtime_speed": { ne: "वास्तविक गति", en: "Realtime speed" },
+  "ui.sky3d.set_time_to_now": { ne: "अहिलेको समय", en: "Set time to now" },
 } satisfies Record<string, Translatable>;
 
 export type StringKey = keyof typeof strings;

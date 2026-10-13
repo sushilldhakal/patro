@@ -12,6 +12,7 @@ import {
   type LearnTopicMeta,
 } from "./learn-topics-meta";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type { LearnCategory, LearnTopicMeta };
 export { LEARN_CATEGORIES, LEARN_TOPIC_METAS };
 
@@ -81,9 +82,9 @@ function MergedBody({ page }: { page: MergedPage }) {
 
   return (
     <>
-      <nav className={tmChapterNav} aria-label={lang === "en" ? "On this page" : "यस पृष्ठमा"}>
+      <nav className={tmChapterNav} aria-label={tFor(lang, "ui.learn.on_this_page")}>
         <span className={tmChapterNavLabel}>
-          {lang === "en" ? "On this page" : "यस पृष्ठमा"}
+          {tFor(lang, "ui.learn.on_this_page")}
         </span>
         <ol>
           {chapters.map(({ part }, i) => (

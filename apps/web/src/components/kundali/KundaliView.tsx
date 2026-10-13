@@ -57,6 +57,7 @@ import {
 } from "@/components/kundali/KundaliSectionNav";
 import { KundaliSubTabs } from "@/components/kundali/KundaliSubTabs";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GrahaAstroTable = lazy(() =>
   import("@/components/kundali/GrahaAstroTable").then((m) => ({ default: m.GrahaAstroTable })),
 );
@@ -463,7 +464,7 @@ export function KundaliView({
             {panchangSummary?.nakshatra ? (
               <DetailTraitRow
                 label={t("kundali.nakshatra")}
-                value={`${bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en)} · ${bilingualText(lang, `पद ${digits(panchangSummary.nakshatra.pada)}`, `Pada ${digits(panchangSummary.nakshatra.pada)}`)}`}
+                value={`${bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en)} · ${tFor(lang, "ui.kundali.pada_pada", { pada: digits(panchangSummary.nakshatra.pada) })}`}
               />
             ) : null}
             {panchangSummary?.yoga ? (
@@ -550,7 +551,7 @@ export function KundaliView({
                 <span className={kundaliDetailClasses.birth.avakahadaName}>
                   {pickBi(janmaAvakahada.nakshatra)}
                   <span className="mx-1">·</span>
-                  {bilingualText(lang, `पद ${digits(janmaAvakahada.pada)}`, `Pada ${digits(janmaAvakahada.pada)}`)}
+                  {tFor(lang, "ui.kundali.pada_pada", { pada: digits(janmaAvakahada.pada) })}
                 </span>
               </p>
               <div className={cn(kundaliDetailClasses.birth.traits, "flex")}>
@@ -594,7 +595,7 @@ export function KundaliView({
           <StatTile
             label={t("kundali.nakshatra_moon")}
             value={panchangSummary.nakshatra ? bilingualText(lang, panchangSummary.nakshatra.ne, panchangSummary.nakshatra.en) : "—"}
-            sub={panchangSummary.nakshatra ? bilingualText(lang, `पद ${digits(panchangSummary.nakshatra.pada)}`, `Pada ${digits(panchangSummary.nakshatra.pada)}`) : undefined}
+            sub={panchangSummary.nakshatra ? tFor(lang, "ui.kundali.pada_pada", { pada: digits(panchangSummary.nakshatra.pada) }) : undefined}
           />
           <StatTile
             label={t("kundali.tithi")}

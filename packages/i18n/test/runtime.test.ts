@@ -65,3 +65,11 @@ test("English waits for its bundle, then falls back to Nepali per key", async ()
   off();
   await setLanguage("ne");
 });
+
+test("tFor reads a named language and fetches its bundle when missing", async () => {
+  const { tFor, getStateKey } = await import("../src/runtime");
+  assert.equal(tFor("ne", "greet", { name: "x" }), "नमस्ते x");
+  assert.equal(tFor(undefined, "only_ne"), "नेपाली मात्र");
+  const before = getStateKey();
+  assert.match(before, /^ne:\d+$/);
+});

@@ -41,9 +41,10 @@ import {
 } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 export function grahaName(key: string, lang: "ne" | "en"): string {
   const meta = GRAHA_NAME[key as GrahaKey];
-  if (key === "lagna") return lang === "en" ? "Ascendant" : "लग्न";
+  if (key === "lagna") return tFor(lang, "ui.kundali.ascendant");
   if (!meta) return key;
   return lang === "en" ? meta.en : meta.ne;
 }

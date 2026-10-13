@@ -4,10 +4,11 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   location: PanchangaLocation;
   className?: string;
@@ -45,11 +46,7 @@ export function GocharPromoCard({ location, className, compact }: Props) {
             </h2>
             {!compact ? (
               <p className={cn("mb-0", gocharClasses.promoBody)}>
-                {bilingualText(
-                  lang,
-                  "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
-                  "Seen the day's panchang? Now check where the planets are moving and how today's transits affect your sign.",
-                )}
+                {tFor(lang, "ui.gochar.seen_the_day_s_panchang_now")}
               </p>
             ) : null}
           </div>

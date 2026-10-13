@@ -10,7 +10,7 @@ import {
 import { Sunrise, Sunset } from "lucide-react";
 import { getLanguageForEra, type Era } from "@vedic-patro/domain/era";
 import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import {
   fetchYearSunTimes,
   sunYearKeys,
@@ -39,7 +39,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { patroSkel, patroStickyHeadCell, patroStickyHeadRow } from "@/lib/patro-classes";
 import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
 
-
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Display-only month headings for Gregorian-era grids (not calendar conversion). */
 const GREGORIAN_MONTH_SHORT_EN = [
   "Jan",
@@ -439,11 +439,11 @@ function SunTimesLegend({
           {t("sun_times.col_sunset")}
         </span>
         <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
-          <span className={ayanaNorthClass}>{bilingualText(lang, "उ", "N")}</span>
+          <span className={ayanaNorthClass}>{tFor(lang, "ui.suryakranti.n")}</span>
           {t("sun_times.north_ayana")}
         </span>
         <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
-          <span className={ayanaSouthClass}>{bilingualText(lang, "द", "S")}</span>
+          <span className={ayanaSouthClass}>{tFor(lang, "ui.suryakranti.s")}</span>
           {t("sun_times.south_ayana")}
         </span>
       </div>

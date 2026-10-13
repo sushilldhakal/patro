@@ -11,7 +11,7 @@ import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-locat
 import { usePatroDayUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { searchToLocation } from "@/lib/url-state";
@@ -42,6 +42,7 @@ import {
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const routeApi = getRouteApi("/panchanga-shell/gochar");
 
 export function Gochar() {
@@ -333,11 +334,7 @@ export function Gochar() {
       )}
 
       <p className={gocharClasses.mutedText}>
-        {bilingualText(
-          lang,
-          "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",
-          "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",
-        )}
+        {tFor(lang, "ui.gochar.positions_are_computed_at_local_sunrise")}
       </p>
     </PageShell>
   );

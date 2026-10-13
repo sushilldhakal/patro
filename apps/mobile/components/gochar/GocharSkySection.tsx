@@ -20,6 +20,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { illustration } from "@vedic-patro/design-tokens";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Left stripe colour per graha — matches the web PLANET_STRIPE palette. */
 const PLANET_STRIPE: Record<GrahaKey, string> = {
   sun: illustration.orange50,
@@ -134,9 +135,7 @@ export function GocharSkySection({
               {untilAd ? (
                 <View className={gocharClasses.planetFooter}>
                   <Text className={gocharClasses.planetFooterText} style={nepaliTextStyle()}>
-                    {lang === "en"
-                      ? `In ${rashi} until ${formatGocharPatroDate(untilAd, lang)}`
-                      : `${rashi} मा ${formatGocharPatroDate(untilAd, lang)} सम्म`}
+                    {tFor(lang, "ui.gochar.in_rashi_until_lang", { rashi, lang: formatGocharPatroDate(untilAd, lang) })}
                   </Text>
                 </View>
               ) : null}

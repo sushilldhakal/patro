@@ -43,6 +43,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -78,9 +79,9 @@ function SectionTitle({ children }: { children: string }) {
 
 function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
   const rows: { label: string; lines: string[]; tone: string }[] = [
-    { label: lang === "ne" ? "गर्नुहोस्" : "Do", lines: lang === "ne" ? day.do_ne : day.do_en, tone: illustration.green36 },
-    { label: lang === "ne" ? "नगर्नुहोस्" : "Don't", lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: illustration.red46 },
-    { label: lang === "ne" ? "सावधानी" : "Careful", lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: illustration.orange45b },
+    { label: tFor(lang, "ui.reminders.do"), lines: lang === "ne" ? day.do_ne : day.do_en, tone: illustration.green36 },
+    { label: tFor(lang, "ui.reminders.don_t"), lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: illustration.red46 },
+    { label: tFor(lang, "ui.reminders.careful"), lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: illustration.orange45b },
   ];
   return (
     <View className="gap-2">

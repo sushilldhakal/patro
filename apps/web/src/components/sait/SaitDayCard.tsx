@@ -15,6 +15,7 @@ import type {
 import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 import { SuitabilityBadge } from "@/components/sait/sait-suitability";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * One qualifying muhūrta day: the representative clean window plus the
  * panchāṅga that made the day survive the rules.
@@ -199,7 +200,7 @@ export function SaitDayCard({
                 saitClasses.toneChipText[annaMonth.tone],
               )}
             >
-              {bilingualText(lang, `${digits(annaMonth.ordinal_month)} औँ महिना`, `month ${digits(annaMonth.ordinal_month)}`)}
+              {tFor(lang, "ui.sait.month_ordinal_month", { ordinal_month: digits(annaMonth.ordinal_month) })}
             </span>
           </div>
           <p className={cn("m-0", saitClasses.summary, saitClasses.toneText[annaMonth.tone])}>

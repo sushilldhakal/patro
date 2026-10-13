@@ -16,6 +16,7 @@ import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifa
 import type { RashifalSignBlock } from "@/lib/api";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   signs: RashifalSignBlock[];
   /** Pre-select (e.g. Sun's sign for the current BS month). */
@@ -89,7 +90,7 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
     <div className="grid items-start gap-3 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-4">
       <nav
         className={cn("w-full min-w-0 max-w-[22rem] shrink-0 justify-self-start md:sticky md:top-20", homeClasses.pickerGrid)}
-        aria-label={lang === "ne" ? "राशि छान्नुहोस्" : "Choose rashi"}
+        aria-label={tFor(lang, "ui.home.choose_rashi")}
       >
         <ul className="m-0 grid list-none grid-cols-3 gap-2.5 p-0">
           {signs.map((sign, index) => {

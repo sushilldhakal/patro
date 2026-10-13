@@ -6,6 +6,7 @@ import { windowLabel } from "@vedic-patro/domain/muhurta-now";
 import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [
     { key: "rahu_kalam", label: "राहु काल", labelEn: "Rahu Kalam" },
@@ -32,11 +33,11 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
   return (
     <div className={panchangaPageClasses.aside.card}>
       <div className={panchangaPageClasses.aside.muhurtaEyebrow}>
-        {bilingualText(lang, "क्षणिक मुहूर्त", "Moment now")}
+        {tFor(lang, "panchanga.muhurta_now.title")}
       </div>
       {instantLabel && (
         <p className={panchangaPageClasses.aside.muhurtaInstant}>
-          {bilingualText(lang, `${digits(instantTime)} बजेको अवस्था`, `Status at ${digits(instantTime)}`)}
+          {tFor(lang, "ui.panchanga.status_at_instanttime", { instantTime: digits(instantTime) })}
         </p>
       )}
       <ul className={cn("m-0 list-none p-0", panchangaPageClasses.aside.muhurtaList)}>
@@ -59,7 +60,7 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
               <span className={panchangaPageClasses.aside.muhurtaValue}>
                 {active ? (
                   <span className={panchangaPageClasses.aside.muhurtaActive}>
-                    {bilingualText(lang, "सक्रिय", "Active")}
+                    {tFor(lang, "panchanga.muhurta_now.active")}
                   </span>
                 ) : (
                   <span className={panchangaPageClasses.aside.muhurtaRange}>
@@ -86,7 +87,7 @@ export function EphemerisModeBanner({ p, clock, viewedDateAd }: Props) {
   return (
     <div className={panchangaPageClasses.aside.banner}>
       <p className={panchangaPageClasses.aside.bannerTitle}>
-        {bilingualText(lang, "समय-आधारित पञ्चाङ्ग", "Time-based reading")}
+        {tFor(lang, "panchanga.muhurta_now.time_based_reading")}
       </p>
       <p className={panchangaPageClasses.aside.bannerBody}>
         {time ? (
@@ -102,21 +103,12 @@ export function EphemerisModeBanner({ p, clock, viewedDateAd }: Props) {
             </>,
           )
         ) : (
-          bilingualText(lang, 
-            "तोकिएको समयको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
-            "Tithi, nakshatra, yoga and karana from the actual planetary positions at the chosen time. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
-          )
+          tFor(lang, "panchanga.muhurta_now.ephemeris_no_time")
         )}
         {civil &&
           (viewedDateLabel
-            ? bilingualText(lang, 
-                ` यो समय ${viewedDateLabel} को सूर्योदय अघि भएकाले ${viewedDateLabel} को वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।`,
-                ` This time is before sunrise on ${viewedDateLabel}, so ${viewedDateLabel}'s Vedic day almanac is shown.`,
-              )
-            : bilingualText(lang, 
-                " यो समय हेर्दै गरेको मितिको सूर्योदय अघि भएकाले सोही मितिको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
-                " This time is before sunrise on the viewed date, so that date's Vedic day almanac is shown.",
-              ))}
+            ? tFor(lang, "ui.panchanga.this_time_is_before_sunrise_on", { viewedDateLabel, viewedDateLabel2: viewedDateLabel })
+            : tFor(lang, "panchanga.muhurta_now.before_sunrise_generic"))}
       </p>
     </div>
   );

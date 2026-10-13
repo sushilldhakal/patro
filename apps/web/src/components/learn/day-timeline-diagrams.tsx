@@ -19,6 +19,7 @@ import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const INK = "currentColor";
 const SUN = illustration.amber43;
 const MOON = illustration.sky84;
@@ -145,11 +146,11 @@ export function SiderealSolarDay() {
         strokeWidth={1.3}
       />
       <text x={panels[1]!.cx + 54} y={cy - 46} className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `अझै ~${n(1)}° बाँकी`, `~${n(1)}° still to go`)}
+        {tFor(lang, "ui.learn.value_still_to_go", { value: n(1) })}
       </text>
 
       <text x={W / 2} y={H - 26} textAnchor="middle" className="text-diagram-xs font-semibold" style={{ fill: MARK }}>
-        {bilingualText(lang, `त्यो ~${n(1)}° = ~${n(4)} मिनेट थप घुर्णन`, `that ~${n(1)}° = ~${n(4)} more minutes of spin`)}
+        {tFor(lang, "ui.learn.that_value_value2_more_minutes_of", { value: n(1), value2: n(4) })}
       </text>
       <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-80">
         {t("learn.diagrams.sidereal_day_total")}
@@ -325,7 +326,7 @@ export function MoonriseSlip() {
       ))}
 
       <text x={L} y={H - 12} className="fill-current text-diagram-2xs font-semibold opacity-70">
-        {bilingualText(lang, `हरेक दिन ~${n(50)} मिनेट ढिलो →`, `~${n(50)} minutes later each day →`)}
+        {tFor(lang, "ui.learn.value_minutes_later_each_day", { value: n(50) })}
       </text>
     </Frame>
   );
@@ -450,7 +451,7 @@ export function TithiAcrossZones() {
       caption={t("learn.diagrams.tithi_zones_caption")}
     >
       <text x={W / 2} y={20} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-75">
-        {bilingualText(lang, `तिथि सकिने क्षण — ${n("22:00")} UTC`, `tithi ends — ${n("22:00")} UTC`)}
+        {tFor(lang, "ui.learn.tithi_ends_value_utc", { value: n("22:00") })}
       </text>
 
       {places.map((p, i) => {

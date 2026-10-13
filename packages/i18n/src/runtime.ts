@@ -53,8 +53,12 @@ export function toLang(code: string | null | undefined): Lang {
 
 // ─── Bundles ─────────────────────────────────────────────────────────────────
 
+/** Bumped whenever a bundle arrives, so hooks re-render even when the language itself did not change. */
+let version = 0;
+
 export function registerBundle(lang: Lang, bundle: Bundle): void {
   bundles[lang] = bundle;
+  version++;
   emit();
 }
 
@@ -92,6 +96,11 @@ function emit(): void {
  */
 export function getLanguage(): Lang {
   return hasBundle(requested) ? requested : FALLBACK_LANGUAGE;
+}
+
+/** Changes on any language or bundle change — what the React hooks watch. */
+export function getStateKey(): string {
+  return `${getLanguage()}:${version}`;
 }
 
 /** The language the reader picked, even while its bundle is loading. */
@@ -162,6 +171,18 @@ export function translate(lang: Lang, key: string, options: TranslateOptions = {
 export function translateList<T>(lang: Lang, key: string): T[] {
   const value = lookupKey(lang, key);
   return Array.isArray(value) ? (value as T[]) : [];
+}
+
+/**
+ * Catalogue lookup in a language the caller names — a component told to show
+ * English by its props or URL. If that language's bundle is not loaded yet it
+ * is fetched (hooks re-render when it lands) and Nepali shows meanwhile.
+ * `undefined` means the current language.
+ */
+export function tFor(code: string | null | undefined, key: string, options?: TranslateOptions): string {
+  const lang = code ? toLang(code) : getLanguage();
+  if (!hasBundle(lang)) void ensureBundle(lang);
+  return translate(lang, key, options);
 }
 
 const translators = new Map<Lang, TFunction>();

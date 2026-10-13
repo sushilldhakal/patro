@@ -21,6 +21,7 @@ import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { chapterLabel } from "@/lib/learn/chapter-labels";
 
 import { neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Mount this with `key={src}` — the "did it load" flag has to start false
  * again for each new picture, and a fresh mount is how that is said without
@@ -49,7 +50,7 @@ export function ChapterStill({
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={lang === "en" ? "Close" : "बन्द गर्नुहोस्"}
+        accessibilityLabel={tFor(lang, "ui.common.close")}
         className="absolute right-1 top-1 z-10 h-6 w-6 items-center justify-center rounded-full bg-black/60 active:opacity-70"
       >
         <Ionicons name="close" size={12} color={withAlpha(neutral.white, 0.8)} />

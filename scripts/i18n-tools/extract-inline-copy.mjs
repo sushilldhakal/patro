@@ -6,11 +6,14 @@
  *   node scripts/i18n-tools/extract-inline-copy.mjs            dry run: print what would move
  *   node scripts/i18n-tools/extract-inline-copy.mjs --write    rewrite the files and the catalogue
  *
- * What it converts: `pick("नेपाली", "English")` and
- * `pick(`${n} दिन`, `${n} days`)` where `pick` is the one from `useLocale()`
- * (resolved with the type checker, so a local `pick` with a URL language
- * override is left alone). Each becomes `t("key")` / `t("key", { n })`, and `t`
- * is added to the same `useLocale()` destructuring when it is not there yet.
+ * What it converts (Nepali text first, English second, same `${values}` in both):
+ *  - `pick("नेपाली", "English")` where `pick` is the one from `useLocale()`
+ *    (resolved with the type checker) → `t("key")`, adding `t` to the same
+ *    destructuring when it is not there yet;
+ *  - `bilingualText(lang, "ने", "en")`, `pickLocale(lang, …)`, a language
+ *    ternary (`lang === "en" ? "en" : "ने"`), and calls to a local two-argument
+ *    helper built from one of those → `tFor(lang, "key")`, which reads the
+ *    catalogue in exactly the language the old code picked.
  *
  * Keys: a pair already in the catalogue keeps its existing key. A new pair is
  * `ui.<area>.<slug>`, where the area is the page or component folder; a pair
@@ -114,9 +117,49 @@ function placeholderName(expr, used) {
   return candidate;
 }
 
-const sites = []; // { file, start, end, pair, values, area, pattern edits }
+const sites = []; // { file, start, end, ne, en, values, area, app, lang: null (useLocale t) | expression text (tFor) }
 const patternEdits = new Map(); // file → Set(pos) where `t, ` must be added
-const skipped = { otherPick: 0, tShadowed: 0, mismatched: 0 };
+const skipped = { otherPick: 0, tShadowed: 0, mismatched: 0, scope: 0 };
+const DEV = /[ऀ-ॿ]/;
+const LATIN = /[A-Za-z]/;
+
+/** A Nepali/English pair of text nodes as catalogue text, or null when it is not copy. */
+function pairFrom(neNode, enNode, sf) {
+  const pa = templateParts(neNode, sf);
+  const pb = templateParts(enNode, sf);
+  if (!pa || !pb) return null; // data, not copy
+  if (!DEV.test(pa.text) || DEV.test(pb.text)) return null; // Nepali first, English second
+  if ((pa.text + pb.text).includes("{{")) return null;
+  if ([...pa.values].sort().join("\u0002") !== [...pb.values].sort().join("\u0002")) {
+    skipped.mismatched++;
+    return null;
+  }
+  const used = new Set();
+  const names = pa.values.map((expr) => placeholderName(expr, used));
+  const nameOf = (expr, taken) => {
+    const i = pa.values.findIndex((e, k) => e === expr && !taken.has(k));
+    taken.add(i);
+    return names[i];
+  };
+  const render = (p) => {
+    const taken = new Set();
+    return p.text.replace(/\u0001(\d+)\u0001/g, (_, i) => `{{${nameOf(p.values[Number(i)], taken)}}}`);
+  };
+  return { ne: render(pa), en: render(pb), values: names.map((name, i) => [name, pa.values[i]]) };
+}
+
+/** `lang === "en"` → { id: "lang", en: true }; `lang !== "ne"` likewise; `isEnglish` → { expr }. */
+function languageTest(cond, sf) {
+  let c = cond;
+  while (ts.isParenthesizedExpression(c)) c = c.expression;
+  if (ts.isBinaryExpression(c) && [ts.SyntaxKind.EqualsEqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsEqualsToken].includes(c.operatorToken.kind)) {
+    const [side, lit] = ts.isStringLiteral(c.right) ? [c.left, c.right] : ts.isStringLiteral(c.left) ? [c.right, c.left] : [];
+    if (!lit || !["en", "ne"].includes(lit.text)) return null;
+    const eq = c.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken;
+    return { trueIsEnglish: (lit.text === "en") === eq, langExpr: side.getText(sf) };
+  }
+  return { generic: true };
+}
 
 for (const project of PROJECTS) {
   const cfgPath = join(root, project.tsconfig);
@@ -125,70 +168,127 @@ for (const project of PROJECTS) {
   const checker = program.getTypeChecker();
   const inScope = (file) => project.dirs.some((d) => file.startsWith(join(root, d) + sep));
 
+  /** Identifiers in `expr` mean the same thing at `site` (so the expression can move there). */
+  const sameAtSite = (expr, site) => {
+    let ok = true;
+    const visitId = (n) => {
+      if (ts.isIdentifier(n) && !(ts.isPropertyAccessExpression(n.parent) && n.parent.name === n)) {
+        const here = checker.getSymbolAtLocation(n);
+        const there = checker.getSymbolsInScope(site, ts.SymbolFlags.Value | ts.SymbolFlags.Alias).find((s) => s.name === n.text);
+        if (!here || here !== there) ok = false;
+      }
+      ts.forEachChild(n, visitId);
+    };
+    visitId(expr);
+    return ok;
+  };
+
+  const push = (sf, node, pair, lang) =>
+    sites.push({ file: sf.fileName, start: node.getStart(sf), end: node.getEnd(), ...pair, lang, area: areaOf(sf.fileName), app: project.app });
+
   for (const sf of program.getSourceFiles()) {
     if (!inScope(sf.fileName) || sf.fileName.includes("node_modules")) continue;
+    if (/\btFor\b/.test(sf.text) && !/import \{[^}]*\btFor\b[^}]*\} from "@vedic-patro\/i18n\/runtime"/.test(sf.text)) continue;
     const visit = (n) => {
-      if (isPickCall(n)) handle(n, sf);
+      if (isPickCall(n)) handlePick(n, sf);
+      else if (ts.isCallExpression(n) && ts.isIdentifier(n.expression) && ["bilingualText", "pickLocale"].includes(n.expression.text) && n.arguments.length === 3) {
+        // bilingualText(lang, "ने", "en") / pickLocale(lang, …): the same pick, from the catalogue.
+        const pair = pairFrom(n.arguments[1], n.arguments[2], sf);
+        if (pair) push(sf, n, pair, n.arguments[0].getText(sf));
+      } else if (ts.isConditionalExpression(n)) {
+        handleTernary(n, sf);
+      }
       ts.forEachChild(n, visit);
     };
     visit(sf);
   }
 
-  function handle(call, sf) {
-    const [a, b] = call.arguments;
-    const pa = templateParts(a, sf);
-    const pb = templateParts(b, sf);
-    if (!pa || !pb) return; // data, not copy
-    if (!/[ऀ-ॿ]/.test(pa.text + pb.text) && !/[A-Za-z]/.test(pb.text)) return;
-    if ((pa.text + pb.text).includes("{{")) return;
-    if ([...pa.values].sort().join("\u0002") !== [...pb.values].sort().join("\u0002")) {
-      skipped.mismatched++;
-      return;
+  function handleTernary(n, sf) {
+    const test = languageTest(n.condition, sf);
+    if (!test) return;
+    // Which branch is Nepali decides how the language is written.
+    let pair = pairFrom(n.whenTrue, n.whenFalse, sf);
+    let trueIsNepali = true;
+    if (!pair) {
+      pair = pairFrom(n.whenFalse, n.whenTrue, sf);
+      trueIsNepali = false;
     }
+    if (!pair) return;
+    let lang;
+    if (!test.generic && test.trueIsEnglish === !trueIsNepali) lang = test.langExpr;
+    else {
+      const cond = n.condition.getText(sf);
+      lang = `(${cond}) ? "${trueIsNepali ? "ne" : "en"}" : "${trueIsNepali ? "en" : "ne"}"`;
+    }
+    push(sf, n, pair, lang);
+  }
+
+  function handlePick(call, sf) {
+    const pair = pairFrom(call.arguments[0], call.arguments[1], sf);
+    if (!pair) return;
     const sym = checker.getSymbolAtLocation(call.expression);
-    const pattern = useLocalePattern(sym?.declarations?.[0]);
+    const decl = sym?.declarations?.[0];
+    const pattern = useLocalePattern(decl);
     if (!pattern) {
-      skipped.otherPick++;
+      // A local helper: `const pick = (ne, en) => bilingualText(lang, ne, en)` (or pickLocale, or a lang ternary).
+      const lang = localPickLanguage(decl, call, sf);
+      if (lang) push(sf, call, pair, lang);
+      else skipped.otherPick++;
       return;
     }
     // `t` at the call site must be the useLocale/useTranslation one, or free to add.
     const tSym = checker.getSymbolsInScope(call, ts.SymbolFlags.Value).find((s) => s.name === "t");
-    let addT = false;
-    if (tSym) {
-      if (!useLocalePattern(tSym.declarations?.[0])) {
-        skipped.tShadowed++;
-        return;
-      }
-    } else {
-      addT = true;
+    if (tSym && !useLocalePattern(tSym.declarations?.[0])) {
+      skipped.tShadowed++;
+      return;
     }
-    // Name the values once, from the Nepali template's order.
-    const used = new Set();
-    const names = pa.values.map((expr) => placeholderName(expr, used));
-    const nameOf = (expr, taken) => {
-      const i = pa.values.findIndex((e, k) => e === expr && !taken.has(k));
-      taken.add(i);
-      return names[i];
-    };
-    const render = (p) => {
-      const taken = new Set();
-      return p.text.replace(/\u0001(\d+)\u0001/g, (_, i) => `{{${nameOf(p.values[Number(i)], taken)}}}`);
-    };
-    sites.push({
-      file: sf.fileName,
-      start: call.getStart(sf),
-      end: call.getEnd(),
-      ne: render(pa),
-      en: render(pb),
-      values: names.map((name, i) => [name, pa.values[i]]),
-      area: areaOf(sf.fileName),
-      app: project.app,
-    });
-    if (addT) {
+    push(sf, call, pair, null);
+    if (!tSym) {
       const set = patternEdits.get(sf.fileName) ?? new Set();
       set.add(pattern.elements[0].getStart(sf));
       patternEdits.set(sf.fileName, set);
     }
+  }
+
+  /** The language expression a local two-argument pick helper uses, if it can be read off its body. */
+  function localPickLanguage(decl, call, sf) {
+    if (!decl) return null;
+    let fn = null;
+    if (ts.isVariableDeclaration(decl) && decl.initializer && (ts.isArrowFunction(decl.initializer) || ts.isFunctionExpression(decl.initializer))) fn = decl.initializer;
+    else if (ts.isFunctionDeclaration(decl)) fn = decl;
+    if (!fn || fn.parameters.length !== 2) return null;
+    const [pNe, pEn] = fn.parameters.map((p) => p.name.getText(sf));
+    let body = fn.body;
+    if (ts.isBlock(body)) {
+      if (body.statements.length !== 1 || !ts.isReturnStatement(body.statements[0])) return null;
+      body = body.statements[0].expression;
+    }
+    while (body && ts.isParenthesizedExpression(body)) body = body.expression;
+    if (!body) return null;
+    let langNode = null;
+    if (ts.isCallExpression(body) && ts.isIdentifier(body.expression) && ["bilingualText", "pickLocale"].includes(body.expression.text) && body.arguments.length === 3) {
+      if (body.arguments[1].getText(sf) !== pNe || body.arguments[2].getText(sf) !== pEn) return null;
+      langNode = body.arguments[0];
+      if (!sameAtSite(langNode, call)) {
+        skipped.scope++;
+        return null;
+      }
+      return langNode.getText(sf);
+    }
+    if (ts.isConditionalExpression(body)) {
+      const t = body.whenTrue.getText(sf);
+      const f = body.whenFalse.getText(sf);
+      const test = languageTest(body.condition, sf);
+      if (!test || ![pNe, pEn].includes(t) || ![pNe, pEn].includes(f) || t === f) return null;
+      if (!sameAtSite(body.condition, call)) {
+        skipped.scope++;
+        return null;
+      }
+      const trueIsEnglish = t === pEn;
+      if (!test.generic && test.trueIsEnglish === trueIsEnglish) return test.langExpr;
+      return `(${body.condition.getText(sf)}) ? "${trueIsEnglish ? "en" : "ne"}" : "${trueIsEnglish ? "ne" : "en"}"`;
+    }
+    return null;
   }
 }
 
@@ -263,11 +363,17 @@ for (const file of new Set([...bySite.keys(), ...patternEdits.keys()])) {
     const vars = s.values.length
       ? `, { ${s.values.map(([name, expr]) => (name === expr ? name : `${name}: ${expr}`)).join(", ")} }`
       : "";
-    edits.push([s.start, s.end, `t(${lit(key)}${vars})`]);
+    edits.push([s.start, s.end, s.lang === null ? `t(${lit(key)}${vars})` : `tFor(${s.lang}, ${lit(key)}${vars})`]);
   }
   for (const pos of patternEdits.get(file) ?? []) edits.push([pos, pos, "t, "]);
   edits.sort((x, y) => y[0] - x[0]);
   for (const [start, end, text] of edits) src = src.slice(0, start) + text + src.slice(end);
+  if ((bySite.get(file) ?? []).some((s) => s.lang !== null) && !/import \{[^}]*\btFor\b/.test(src)) {
+    // After the last import statement.
+    const imports = [...src.matchAll(/^import[\s\S]*?from\s+["'][^"']+["'];?\s*$/gm)];
+    const at = imports.length ? imports.at(-1).index + imports.at(-1)[0].length : 0;
+    src = src.slice(0, at) + `\nimport { tFor } from "@vedic-patro/i18n/runtime";` + src.slice(at);
+  }
   writeFileSync(file, src);
 }
 

@@ -9,8 +9,9 @@ import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { Sparkles } from "lucide-react";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type GrahaRow = GocharGraha & { key: string };
 
 type Props = {
@@ -72,7 +73,7 @@ export function GocharKundaliChart({
       ) : null}
 
       {dateLabel ? (
-        <p className={dainikKrantiClasses.chartDate}>{bilingualText(lang, `${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}</p>
+        <p className={dainikKrantiClasses.chartDate}>{tFor(lang, "ui.dainik_kranti.position_on_datelabel", { dateLabel })}</p>
       ) : null}
     </div>
   );

@@ -23,10 +23,11 @@ import {
   currentPatroYearLinkSearch,
   patroRouteLinkSearch,
 } from "@/lib/url-state";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { featureIcon, navEntryIcon } from "@/lib/nav-icons";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Promoted into the Main row so they are not repeated in later groups. */
 const DRAWER_MAIN_PROMOTED_IDS = new Set([
   "kundali",
@@ -148,7 +149,7 @@ export function MobileNavMenu({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav className="flex flex-col gap-1 pb-3 pt-2" aria-label={t("sidebar_nav.nav_aria")}>
-      <NavSection title={bilingualText(lang, "मुख्य", "Main")}>
+      <NavSection title={tFor(lang, "ui.navigation.main")}>
         <DrawerClose asChild>
           <NavDrawerLinkCard to="/" label={t("home")} icon={featureIcon("home")} onClick={onNavigate} />
         </DrawerClose>

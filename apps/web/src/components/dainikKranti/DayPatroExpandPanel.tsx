@@ -18,6 +18,7 @@ import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const PLANET_EN: Record<string, string> = {
   sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",
   venus: "Venus", saturn: "Saturn", rahu: "Rahu",
@@ -49,9 +50,9 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
   const { lang } = useLocale();
   const isEn = lang === "en";
   const tabs = [
-    lagna && { id: "lagna", label: bilingualText(lang, "लग्न", "Lagna") },
-    graha && { id: "graha", label: bilingualText(lang, "ग्रह", "Planets") },
-    notes.length > 0 && { id: "notes", label: bilingualText(lang, "टिप्पणी", "Notes") },
+    lagna && { id: "lagna", label: tFor(lang, "kundali.report.meta_lagna") },
+    graha && { id: "graha", label: tFor(lang, "panchanga.day_cycle.planets") },
+    notes.length > 0 && { id: "notes", label: tFor(lang, "ui.common.notes") },
   ].filter(Boolean) as { id: string; label: string }[];
   const [picked, setPicked] = useState(tabs[0]?.id);
   const tab = tabs.some((x) => x.id === picked) ? picked : tabs[0]?.id;

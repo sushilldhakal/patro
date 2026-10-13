@@ -22,7 +22,7 @@ import {
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { fetchGochar, gocharKeys } from "@/lib/api";
 import type { Era } from "@vedic-patro/domain/era";
@@ -39,12 +39,12 @@ import {
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Canvas height when the page is not fullscreen. */
 const SCENE_HEIGHT = 560;
 
 export function AakashGochar() {
   const { lang } = useLocale();
-  const pick = (ne: string, en: string) => bilingualText(lang, ne, en);
 
   const { location, setLocation } = usePanchangaLocation();
   /* The HUD names this zone on screen, and the default location carries no
@@ -278,11 +278,8 @@ export function AakashGochar() {
     <PageShell>
       <PageHeader
         icon={<Orbit className="size-7 text-secondary" strokeWidth={1.75} aria-hidden />}
-        title={pick("३D आकाश गोचर", "3D Aakash Gochar")}
-        subtitle={`${pick(
-          "भूकेन्द्रित दृष्टिकोणबाट प्रत्यक्ष ग्रह गोचर",
-          "Live graha transits from the geocentric standpoint",
-        )} · ${locationLabel}`}
+        title={tFor(lang, "sidebar_nav.items.aakash-gochar.label")}
+        subtitle={`${tFor(lang, "ui.aakash_gochar.live_graha_transits_from_the_geocentric")} · ${locationLabel}`}
       />
 
       <PatroDayTimeNav
@@ -338,10 +335,7 @@ export function AakashGochar() {
         <p className={cn("m-0 flex items-start", gocharClasses.skyNotice)}>
           <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
           <span>
-            {pick(
-              "सर्भरबाट ग्रह विवरण ल्याउन सकिएन — आकाश आफ्नै गणितमा चलिरहेको छ, त्यसैले स्थिति अनुमानित हुन सक्छ।",
-              "Could not load graha details from the server — the sky is running on its own model, so positions may be approximate.",
-            )}
+            {tFor(lang, "ui.aakash_gochar.could_not_load_graha_details_from")}
           </span>
         </p>
       ) : null}
@@ -363,40 +357,22 @@ export function AakashGochar() {
 
       <div className={cn("flex flex-col", gocharClasses.footnoteStack)}>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
-            "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.earth_sits_at_the_centre_and")}
         </p>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
-            "The rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.the_rashi_belt_tips_with_your")}
         </p>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "कुनै पनि ग्रह — आकाशमा वा तलको कार्डमा — छानेपछि त्यसको ४५ दिन अघि र पछिको गति रेखा देखिन्छ; मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। क्रसहेयर थिचे क्यामेरा त्यही ग्रहमा केन्द्रित रहन्छ — वा गोलामा रहेको आफ्नै स्थान छाने त्यसैमा।",
-            "Pick any graha — in the sky or on a card below — to draw its trail 45 days either side of the moment on screen; when Mars or Saturn turns vakri you can watch the loop close on itself. The crosshair button then keeps the camera centred on it — or on your own place on the globe, if that is what you point it at.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.pick_any_graha_in_the_sky")}
         </p>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "तलका ग्रह विवरण माथि छानिएको मिति र स्थानका लागि सर्भरबाट आउँछन्, र आकाश पनि तिनै अंकमा जोडिएको छ — मिति वा स्थान फेर्दा दुवै सँगै फेरिन्छन्। तर «चलाउनुहोस्» थिचेर समय अघि बढाउँदा आकाश मात्र हिँड्छ; विवरण छानिएकै मितिको रहन्छ।",
-            "The graha details below come from the server for the date and place chosen above, and the sky is pinned to those same numbers — change either and both follow. Pressing play moves the sky alone, though: the details stay with the chosen date.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.the_graha_details_below_come_from")}
         </p>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।",
-            "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.the_red_marker_on_the_globe")}
         </p>
         <p className={cn("m-0", gocharClasses.footnote)}>
-          {pick(
-            "माउसले तानेर आकाश घुमाउनुहोस्, स्क्रोल गरेर नजिक-टाढा गर्नुहोस्; टचस्क्रिनमा दुई औंलाले पनि हुन्छ।",
-            "Drag to swing the sky and scroll to zoom; on a touchscreen, drag with one finger and pinch with two.",
-          )}
+          {tFor(lang, "ui.aakash_gochar.drag_to_swing_the_sky_and")}
         </p>
       </div>
     </PageShell>

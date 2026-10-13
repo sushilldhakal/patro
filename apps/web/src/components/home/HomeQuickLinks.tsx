@@ -13,11 +13,12 @@ import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLink
 import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { featureIcon } from "@/lib/nav-icons";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const QUICK_LINKS = [
   { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: featureIcon("holidays") },
   { group: "patro", to: "/converter" as const, labelKey: "nav.converter", icon: featureIcon("converter") },
@@ -217,7 +218,7 @@ export function HomeQuickLinks({
         className,
       )}
     >
-      <LinkCategory title={bilingualText(lang, "पात्रो तथा मिति", "Patro & dates")}>
+      <LinkCategory title={tFor(lang, "sidebar_nav.sections.patro.title")}>
         {QUICK_LINKS.filter(({ group }) => group === "patro").map(({ to, labelKey, icon }) => (
           <QuickLinkCard
             key={to}
@@ -232,7 +233,7 @@ export function HomeQuickLinks({
         <RituQuickLink location={location} />
       </LinkCategory>
 
-      <LinkCategory title={bilingualText(lang, "ज्योतिष तथा मुहूर्त", "Jyotish & moment")}>
+      <LinkCategory title={tFor(lang, "sidebar_nav.sections.jyotish.title")}>
         {QUICK_LINKS.filter(({ group }) => group === "jyotish").map(({ to, labelKey, icon }) => (
           <QuickLinkCard
             key={to}

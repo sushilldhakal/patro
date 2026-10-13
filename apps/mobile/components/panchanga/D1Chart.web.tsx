@@ -16,6 +16,7 @@ import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { bhavaReferenceKeys, fetchBhavaReference, type BhavaReferencePayload } from "@/lib/api";
 import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const PLANET_ABBR_NE: Record<string, string> = {
   sun: "सू",
   moon: "चं",
@@ -49,7 +50,7 @@ function formatHouseList(houses: number[], lang: "ne" | "en", digits: (v: number
   if (parts.length <= 1) return parts.join("");
   const last = parts[parts.length - 1];
   const rest = parts.slice(0, -1).join(", ");
-  return lang === "en" ? `${rest} and ${last}` : `${rest} र ${last}`;
+  return tFor(lang, "ui.common.rest_and_last", { rest, last });
 }
 
 /** "क्रूर (छाया) दृष्टि" / "Malefic (Shadow) Aspect" — pure display logic over

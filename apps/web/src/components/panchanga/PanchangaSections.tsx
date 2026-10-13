@@ -71,6 +71,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type AngaEnd = {
   name_ne?: string;
   name?: string;
@@ -815,7 +816,7 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
                 "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
               )}
             >
-              {bilingualText(lang, "लग्न", "ASC")}
+              {tFor(lang, "panchanga.asc")}
             </span>
             <div className={panchangaPageClasses.sections.lagnaBody}>
               <div className={panchangaPageClasses.sections.lagnaTitle}>{t("sections.lagna")}</div>

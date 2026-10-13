@@ -15,6 +15,7 @@ import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const SOLAR = 30.44;
 const SYN = 29.53;
 const DAYS = 95;
@@ -42,7 +43,7 @@ const LUNAR_NAME = [
 function labelFor(i: number, lang: "ne" | "en") {
   const name = (idx: number) => (lang === "en" ? LUNAR_NAME[idx]?.en ?? LUNAR_NAME.at(-1)!.en : LUNAR_NAME[idx]?.ne ?? LUNAR_NAME.at(-1)!.ne);
   if (i < ADHIK) return name(i);
-  if (i === ADHIK) return `${lang === "en" ? "Adhik " : "अधिक "}${name(i)}`;
+  if (i === ADHIK) return `${tFor(lang, "ui.learn.adhik")}${name(i)}`;
   return name(i - 1);
 }
 

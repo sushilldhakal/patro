@@ -82,6 +82,7 @@ import {
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { type Phase, defaultMobilePaksha, embedRashi, phaseOf, pakshaShort, lunarMonthNe, pakshaSegmentOf, weekdayLabel, dowOf } from "@vedic-patro/domain/dainikKranti/day-helpers";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const COL_SPAN = 10;
 
 const routeApi = getRouteApi("/panchanga-shell/dainikkranti");
@@ -370,7 +371,7 @@ function MoonRashiValue({
   return (
     <>
       <div>{label}</div>
-      {end ? <div className={subLine}>{bilingualText(lang, `${end} सम्म`, `until ${end}`)}</div> : null}
+      {end ? <div className={subLine}>{tFor(lang, "ui.dainik_kranti.until_end", { end })}</div> : null}
     </>
   );
 }
@@ -499,22 +500,22 @@ function DayPatroCard({
               <span>{pakshaShort(day, isEn)}</span> {bilingualText(lang, day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) ?? "—"}
             </>
           }
-          sub={tithiEnd ? bilingualText(lang, `${tithiEnd} सम्म`, `until ${tithiEnd}`) : null}
+          sub={tithiEnd ? tFor(lang, "ui.dainik_kranti.until_tithiend", { tithiEnd }) : null}
         />
         <CardField
           label={t("dainik.nakshatra")}
           value={bilingualText(lang, day.nakshatra_ne ?? day.nakshatra, day.nakshatra ?? day.nakshatra_ne) ?? "—"}
-          sub={nakEnd ? bilingualText(lang, `${nakEnd} सम्म`, `until ${nakEnd}`) : null}
+          sub={nakEnd ? tFor(lang, "ui.dainik_kranti.until_nakend", { nakEnd }) : null}
         />
         <CardField
           label={t("dainik.yoga")}
           value={bilingualText(lang, day.yoga_ne ?? day.yoga, day.yoga ?? day.yoga_ne) ?? "—"}
-          sub={yogaEnd ? bilingualText(lang, `${yogaEnd} सम्म`, `until ${yogaEnd}`) : null}
+          sub={yogaEnd ? tFor(lang, "ui.dainik_kranti.until_yogaend", { yogaEnd }) : null}
         />
         <CardField
           label={t("dainik.karana")}
           value={bilingualText(lang, day.karana_ne ?? day.karana, day.karana ?? day.karana_ne) ?? "—"}
-          sub={karanaEnd ? bilingualText(lang, `${karanaEnd} सम्म`, `until ${karanaEnd}`) : null}
+          sub={karanaEnd ? tFor(lang, "ui.dainik_kranti.until_karanaend", { karanaEnd }) : null}
         />
       </div>
 
@@ -989,7 +990,7 @@ export function DainikKranti() {
           ) : null}
         </div>
         <p className={dainikKrantiClasses.metaText}>
-          {bilingualText(lang, "पक्ष अनुसार दैनिक पञ्चाङ्ग — तिथि, नक्षत्र, योग, करण, सूर्योदय/अस्त, पर्व र ग्रह गोचर।", "Daily panchanga by paksha — tithi, nakshatra, yoga, karana, sunrise/sunset, festivals and planetary transits.",)}
+          {tFor(lang, "ui.dainikkranti.daily_panchanga_by_paksha_tithi_nakshatra")}
         </p>
       </div>
 
@@ -1106,7 +1107,7 @@ export function DainikKranti() {
                       role="button"
                       tabIndex={0}
                       aria-expanded={isExpanded}
-                      aria-label={bilingualText(lang, `${dg(d.day)} गतेको लग्न र ग्रहस्पष्ट`, `Lagna & planets for day ${dg(d.day)}`)}
+                      aria-label={tFor(lang, "ui.dainik_kranti.lagna_planets_for_day_day", { day: dg(d.day) })}
                       onClick={() => toggleDayExpand(d.date_ad)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
@@ -1146,19 +1147,19 @@ export function DainikKranti() {
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div><span>{pakshaShort(d, isEn)}</span> {bilingualText(lang, d.tithi_ne ?? d.tithi, d.tithi ?? d.tithi_ne) ?? "—"}</div>
-                        {tithiEnd ? <div className={subLine}>{bilingualText(lang, `${tithiEnd} सम्म`, `until ${tithiEnd}`)}</div> : null}
+                        {tithiEnd ? <div className={subLine}>{tFor(lang, "ui.dainik_kranti.until_tithiend", { tithiEnd })}</div> : null}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div>{bilingualText(lang, d.nakshatra_ne ?? d.nakshatra, d.nakshatra ?? d.nakshatra_ne) ?? "—"}</div>
-                        {nakEnd ? <div className={subLine}>{bilingualText(lang, `${nakEnd} सम्म`, `until ${nakEnd}`)}</div> : null}
+                        {nakEnd ? <div className={subLine}>{tFor(lang, "ui.dainik_kranti.until_nakend", { nakEnd })}</div> : null}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div>{bilingualText(lang, d.yoga_ne ?? d.yoga, d.yoga ?? d.yoga_ne) ?? "—"}</div>
-                        {yogaEnd ? <div className={subLine}>{bilingualText(lang, `${yogaEnd} सम्म`, `until ${yogaEnd}`)}</div> : null}
+                        {yogaEnd ? <div className={subLine}>{tFor(lang, "ui.dainik_kranti.until_yogaend", { yogaEnd })}</div> : null}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div>{bilingualText(lang, d.karana_ne ?? d.karana, d.karana ?? d.karana_ne) ?? "—"}</div>
-                        {karanaEnd ? <div className={subLine}>{bilingualText(lang, `${karanaEnd} सम्म`, `until ${karanaEnd}`)}</div> : null}
+                        {karanaEnd ? <div className={subLine}>{tFor(lang, "ui.dainik_kranti.until_karanaend", { karanaEnd })}</div> : null}
                       </TableCell>
                       <TableCell className={cn(sunColW, "align-top", dainikKrantiClasses.cellText)}>
                         <SunRiseSetSignValue day={d} sunRashi={sunRashi} ayanaMark={det?.ayana_mark} dg={dg} />
@@ -1222,7 +1223,7 @@ export function DainikKranti() {
             </AccordionTrigger>
             <AccordionContent className={dainikKrantiClasses.accordionBody}>
               <p className={dainikKrantiClasses.accordionIntro}>
-                {bilingualText(lang, "प्रत्येक गते सूर्योदयदेखि अर्को सूर्योदयसम्म कुन राशि कहिले लग्नमा आउँछ।", "For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise.",)}
+                {tFor(lang, "ui.dainikkranti.for_each_day_which_rashi_rises")}
               </p>
               <div className={cn(dainikKrantiClasses.accordionTable, "overflow-x-auto")}>
                 <MonthLagnaMatrix
@@ -1241,7 +1242,7 @@ export function DainikKranti() {
             </AccordionTrigger>
             <AccordionContent className={dainikKrantiClasses.accordionBody}>
               <p className={dainikKrantiClasses.accordionIntro}>
-                {bilingualText(lang, "सूर्योदयको क्षणमा ग्रहहरूको राश्यादि स्थिति र दैनिक बेलान्तर।", "The planets' rashi positions at the moment of sunrise, and the daily time-difference.",)}
+                {tFor(lang, "ui.dainikkranti.the_planets_rashi_positions_at_the")}
               </p>
               <MonthGrahaSpashta
                 embedded

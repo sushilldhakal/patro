@@ -21,6 +21,7 @@ import {
 } from "@/lib/api";
 import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Catalogue key for each planet's two-letter glyph label. */
 const PLANET_ABBR_KEY: Record<string, string> = {
   sun: "kundali.x.abbr_sun",
@@ -49,7 +50,7 @@ function formatHouseList(houses: number[], lang: Lang, digits: (v: number) => st
   if (parts.length <= 1) return parts.join("");
   const last = parts[parts.length - 1];
   const rest = parts.slice(0, -1).join(", ");
-  return lang === "en" ? `${rest} and ${last}` : `${rest} र ${last}`;
+  return tFor(lang, "ui.common.rest_and_last", { rest, last });
 }
 
 /** "क्रूर (छाया) दृष्टि" / "Malefic (Shadow) Aspect" — pure display logic over
@@ -95,16 +96,12 @@ function DrishtiPanel({
     <div className="mt-3 w-full max-w-[340px] mx-auto space-y-2 text-left">
       <div className="flex items-center justify-between gap-2">
         <p className={kundaliDetailClasses.prose.heading}>
-          {bilingualText(
-            lang,
-            `${name}को दृष्टि: ${houseList} भावमा`,
-            `${name}'s aspect: houses ${houseList}`,
-          )}
+          {tFor(lang, "ui.panchanga.name_s_aspect_houses_houselist", { name, houseList })}
         </p>
         <button
           type="button"
           onClick={onClose}
-          aria-label={bilingualText(lang, "बन्द गर्नुहोस्", "Close")}
+          aria-label={tFor(lang, "ui.common.close")}
           className="shrink-0 text-muted-foreground hover:text-foreground text-sm leading-none"
         >
           ✕
@@ -113,7 +110,7 @@ function DrishtiPanel({
       <div className={kundaliDetailClasses.parts.aspectCard}>
         <div className={cn("flex", kundaliDetailClasses.parts.aspectHead)}>
           <span className={kundaliDetailClasses.prose.heading}>
-            {bilingualText(lang, "दृष्टिको फल", "Aspect effect")}
+            {tFor(lang, "ui.panchanga.aspect_effect")}
           </span>
           <span
             className={cn(
@@ -219,7 +216,7 @@ export function D1Chart({ houses, size }: Props) {
               tabIndex={house ? 0 : undefined}
               aria-label={
                 house
-                  ? bilingualText(lang, `भाव ${digits(houseNum)}`, `House ${digits(houseNum)}`)
+                  ? tFor(lang, "ui.kundali.house_housenum", { houseNum: digits(houseNum) })
                   : undefined
               }
               className={house ? "cursor-pointer outline-none" : undefined}

@@ -24,6 +24,7 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Headless render target for the Open Graph share image. The backend points
  * Playwright at this route and screenshots the #og-capture element to produce
@@ -277,20 +278,20 @@ function SummaryPanel({ p }: { p: PanchangaDay | undefined }) {
     if (!a) return { value: "—", upto: "" };
     const name = bilingualText(lang, a.name_ne ?? a.name ?? "—", a.name ?? a.name_ne ?? "—");
     const end = formatTimeShort(a.end_local_time);
-    return { value: name, upto: end ? `${toNepaliDigits(end)} ${bilingualText(lang, "सम्म", "until")}` : "" };
+    return { value: name, upto: end ? `${toNepaliDigits(end)} ${tFor(lang, "sections.until")}` : "" };
   };
 
   const rows: { label: string; value: string; upto?: string }[] = [
-    { label: bilingualText(lang, "तिथि", "Tithi"), ...angaRow("tithi") },
-    { label: bilingualText(lang, "नक्षत्र", "Nakshatra"), ...angaRow("nakshatra") },
-    { label: bilingualText(lang, "योग", "Yoga"), ...angaRow("yoga") },
-    { label: bilingualText(lang, "करण", "Karana"), ...angaRow("karana") },
+    { label: tFor(lang, "tithi"), ...angaRow("tithi") },
+    { label: tFor(lang, "nakshatra"), ...angaRow("nakshatra") },
+    { label: tFor(lang, "kundali.yoga"), ...angaRow("yoga") },
+    { label: tFor(lang, "kundali.karana"), ...angaRow("karana") },
     {
-      label: bilingualText(lang, "सूर्योदय", "Sunrise"),
+      label: tFor(lang, "kundali.sunrise"),
       value: (p && getSunriseDisplay(p)) || "—",
     },
     {
-      label: bilingualText(lang, "सूर्यास्त", "Sunset"),
+      label: tFor(lang, "kundali.sunset"),
       value: (p && getSunsetDisplay(p)) || "—",
     },
   ];

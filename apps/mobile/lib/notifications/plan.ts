@@ -10,6 +10,7 @@ import type {
 import { WINDOW_OPTIONS } from "./types";
 import { weekdayOf, zonedInstant } from "./zoned";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Pure planning: cached guidance + reminder rules + settings → the notifications
  * to schedule. No I/O, so it is the same on every platform and easy to reason
@@ -83,12 +84,12 @@ function reminderCopy(
   const range = w.end ? `${w.start}–${w.end}` : w.start;
   const when =
     lead === 0
-      ? lang === "ne" ? "अहिलेदेखि" : "Starts now"
-      : lang === "ne" ? `${lead} मिनेटमा सुरु` : `Starts in ${lead} min`;
+      ? tFor(lang, "ui.notifications.starts_now")
+      : tFor(lang, "ui.notifications.starts_in_lead_min", { lead });
   const advice =
     w.kind === "shubh"
-      ? lang === "ne" ? "महत्त्वपूर्ण काम सुरु गर्न शुभ समय।" : "A good time to begin important work."
-      : lang === "ne" ? "नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।" : "Avoid starting new work, travel or purchases.";
+      ? tFor(lang, "ui.notifications.a_good_time_to_begin_important")
+      : tFor(lang, "ui.notifications.avoid_starting_new_work_travel_or");
   return { title: `${name} · ${when}`, body: `${range}\n${advice}` };
 }
 
@@ -121,7 +122,7 @@ export function planNotifications(input: PlanInput): PlannedNotification[] {
       const fireAt = zonedInstant(date, settings.time, cache.timezone);
       if (fireAt.getTime() <= now.getTime()) continue;
       const sign = lang === "ne" ? entry.sign_ne : entry.sign_en;
-      const head = lang === "ne" ? "आजको राशिफल" : "Today's rashifal";
+      const head = tFor(lang, "ui.notifications.today_s_rashifal");
       const text = lang === "ne" ? entry.text_ne || entry.text_en : entry.text_en || entry.text_ne;
       out.push({
         id: `rashifal:${date}`,

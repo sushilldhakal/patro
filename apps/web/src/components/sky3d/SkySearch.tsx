@@ -21,6 +21,7 @@ import {
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /** Which face of the panel is showing, when nothing has been typed. */
 type Pane =
   | { view: "home" }
@@ -74,12 +75,12 @@ export function SkySearch({
       case "favourites":
         return {
           rows: favourites.map((id) => byId.get(id)).filter((t): t is SkyTarget => !!t),
-          empty: pick("अझै कुनै मनपर्ने छैन", "No favourites yet"),
+          empty: tFor(lang, "ui.sky3d.no_favourites_yet"),
         };
       case "recents":
         return {
           rows: recentIds.map((id) => byId.get(id)).filter((t): t is SkyTarget => !!t),
-          empty: pick("अझै केही हेरिएको छैन", "Nothing looked at yet"),
+          empty: tFor(lang, "ui.sky3d.nothing_looked_at_yet"),
         };
       case "kind":
         return { rows: skyTargetsOfKind(pane.kind, extra), empty: "" };
@@ -120,7 +121,7 @@ export function SkySearch({
       </button>
       <button
         type="button"
-        aria-label={pick("पसन्दमा राख्नुहोस्", "Favourite")}
+        aria-label={tFor(lang, "ui.sky3d.favourite")}
         onClick={() => onToggleFavourite(t.id)}
         className="grid size-7 shrink-0 place-items-center rounded-lg text-white/35 transition-colors hover:bg-white/10 hover:text-white"
       >
@@ -157,8 +158,8 @@ export function SkySearch({
           ref={inputRef}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={pick("ग्रह, तारा, नक्षत्र…", "Planet, star, constellation…")}
-          aria-label={pick("आकाशमा खोज्नुहोस्", "Search the sky")}
+          placeholder={tFor(lang, "ui.sky3d.planet_star_constellation")}
+          aria-label={tFor(lang, "ui.sky3d.search_the_sky")}
           /* text-base, not text-sm: iOS Safari auto-zooms the whole page —
              canvas included — into any input under 16px on focus, which is
              what read as "the 3D animation zooms in" the moment search
@@ -168,7 +169,7 @@ export function SkySearch({
         {query ? (
           <button
             type="button"
-            aria-label={pick("खाली गर्नुहोस्", "Clear")}
+            aria-label={tFor(lang, "ui.sky3d.clear")}
             onClick={() => {
               setQuery("");
               inputRef.current?.focus();
@@ -180,7 +181,7 @@ export function SkySearch({
         ) : (
           <button
             type="button"
-            aria-label={pick("खोज बन्द गर्नुहोस्", "Close search")}
+            aria-label={tFor(lang, "ui.sky3d.close_search")}
             onClick={onClose}
             className="grid size-5 shrink-0 place-items-center rounded text-white/45 hover:text-white"
           >
@@ -195,24 +196,24 @@ export function SkySearch({
             <div className="flex flex-col">{results.map(row)}</div>
           ) : (
             <p className="m-0 px-2.5 py-3 text-center text-xs text-white/45">
-              {pick("केही भेटिएन", "Nothing found")}
+              {tFor(lang, "ui.sky3d.nothing_found")}
             </p>
           )
         ) : pane.view === "home" ? (
           <div className="flex flex-col">
-            {shortcut("favourites", <Star className="size-4" />, pick("मनपर्ने", "Favourites"), favourites.length, () =>
+            {shortcut("favourites", <Star className="size-4" />, tFor(lang, "ui.sky3d.favourites"), favourites.length, () =>
               setPane({ view: "favourites" }),
             )}
-            {shortcut("recents", <Clock className="size-4" />, pick("हालैको", "Recents"), recentIds.length, () =>
+            {shortcut("recents", <Clock className="size-4" />, tFor(lang, "ui.sky3d.recents"), recentIds.length, () =>
               setPane({ view: "recents" }),
             )}
-            {shortcut("browse", <List className="size-4" />, pick("सूची", "Browse"), null, () =>
+            {shortcut("browse", <List className="size-4" />, tFor(lang, "ui.sky3d.browse"), null, () =>
               setPane({ view: "browse" }),
             )}
           </div>
         ) : pane.view === "browse" ? (
           <div className="flex flex-col">
-            {back(pick("पछाडि", "Back"), { view: "home" })}
+            {back(tFor(lang, "ui.sky3d.back"), { view: "home" })}
             {SKY_KINDS.map((k) =>
               shortcut(
                 k.kind,
@@ -226,7 +227,7 @@ export function SkySearch({
         ) : (
           <div className="flex flex-col">
             {back(
-              pick("पछाडि", "Back"),
+              tFor(lang, "ui.sky3d.back"),
               pane.view === "kind" ? { view: "browse" } : { view: "home" },
             )}
             {rows.length ? (

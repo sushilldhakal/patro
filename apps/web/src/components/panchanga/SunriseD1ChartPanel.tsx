@@ -4,10 +4,11 @@ import { D1Chart } from "@/components/kundali/D1Chart";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1";
 import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   p: PanchangaDay;
 };
@@ -22,7 +23,7 @@ export function SunriseD1ChartPanel({ p }: Props) {
   return (
     <div className={panchangaPageClasses.aside.card}>
       <div className={panchangaPageClasses.aside.eyebrow}>
-        {bilingualText(lang, "D1 चक्र", "D1 chart")}
+        {tFor(lang, "panchanga.d1_chart")}
       </div>
       <p className={panchangaPageClasses.aside.anchor}>{anchor}</p>
       <div className={panchangaPageClasses.aside.body}>

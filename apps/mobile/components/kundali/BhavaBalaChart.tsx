@@ -21,6 +21,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { type StrengthBand, strengthBand, houseNumberPos, rashiFromMadhya, clampPct } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 import { colorWithAlpha } from "@/lib/theme";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Under plain `tsc` this project's `moduleSuffixes` (".web" first) resolves
  * react-native-svg's *web* type declarations even for this native-only file,
@@ -99,7 +100,7 @@ function StrengthBadge({ band, isStrongest, lang }: { band: StrengthBand; isStro
     : band === "strong"
       ? kundaliLabel("report_confidence_strong", lang)
       : band === "weak"
-        ? lang === "en" ? "Weak" : "कमजोर"
+        ? tFor(lang, "kundali.x.status_weak")
         : kundaliLabel("average_strength", lang);
   const isGood = isStrongest || band === "strong";
   const box = isGood ? kundaliDetailClasses.bhavaChart.badgeGood : band === "weak" ? kundaliDetailClasses.bhavaChart.badgeWeak : kundaliDetailClasses.bhavaChart.badgeAvg;
@@ -193,7 +194,7 @@ export function BhavaBalaChart({
       <View className={kundaliDetailClasses.bhavaChart.legend}>
         <LegendSwatch colorToken="primary" label={kundaliLabel("report_confidence_strong", lang)} />
         <LegendSwatch colorToken="mutedForeground" label={kundaliLabel("average_strength", lang)} />
-        <LegendSwatch colorToken="destructive" label={lang === "en" ? "Weak" : "कमजोर"} />
+        <LegendSwatch colorToken="destructive" label={tFor(lang, "kundali.x.status_weak")} />
       </View>
       <Text className={kundaliDetailClasses.prose.muted} style={nepaliTextStyle(12)}>
         {kundaliLabel("explore_houses_legend", lang)}

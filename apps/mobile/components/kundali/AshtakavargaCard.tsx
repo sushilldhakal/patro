@@ -21,6 +21,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const ASHTAKAVARGA_TARGETS = [
   "lagna",
   "sun",
@@ -58,7 +59,7 @@ function binduFor(row: AshtakavargaSignRow, target: Target): number {
 }
 
 function targetLabel(target: Target, lang: "ne" | "en"): string {
-  if (target === "lagna") return lang === "en" ? "Ascendant" : "लग्न";
+  if (target === "lagna") return tFor(lang, "ui.kundali.ascendant");
   const meta = GRAHA_NAME[target as GrahaKey];
   return meta ? (lang === "en" ? meta.en : meta.ne) : target;
 }

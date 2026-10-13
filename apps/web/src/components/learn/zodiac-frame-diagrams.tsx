@@ -11,11 +11,12 @@ import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* TwoZeroPoints still calls bilingualText for the one label built around a
    formatted number; everything else now comes from the catalogue. */
-import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
+import { useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const INK = "currentColor";
 const TROPICAL = illustration.green51;
 const SIDEREAL = illustration.orange50;
@@ -120,7 +121,7 @@ export function TwoZeroPoints() {
       <line x1={x(0)} y1={58} x2={x(0)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
       <line x1={x(AYAN)} y1={58} x2={x(AYAN)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
       <text x={x(AYAN) + 8} y={88} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
-        {bilingualText(lang, `अयनांश ~${n(AYAN)}° ≈ ~${n(24)} दिन`, `ayanamsha ~${n(AYAN)}° ≈ ~${n(24)} days`)}
+        {tFor(lang, "ui.learn.ayanamsha_ayan_value_days", { AYAN: n(AYAN), value: n(24) })}
       </text>
     </Frame>
   );

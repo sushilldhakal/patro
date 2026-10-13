@@ -12,6 +12,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { featureIcon } from "@/lib/nav-icons";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Tab = {
   to: string;
   icon: LucideIcon;
@@ -73,7 +74,7 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      aria-label={bilingualText(lang, "मुख्य नेभिगेसन", "Primary navigation")}
+      aria-label={tFor(lang, "ui.mobile_bottom_nav.primary_navigation")}
       className={cn(shellClasses.navOuter, "fixed inset-x-0 bottom-0 z-50 pb-[max(0.5rem,env(safe-area-inset-bottom))] pointer-events-none lg:hidden")}
     >
       <div className={cn("pointer-events-auto mx-auto flex shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md", shellClasses.navBar)}>

@@ -32,6 +32,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const WEEKDAY_NE = [
   "आइतबार",
   "सोमबार",
@@ -62,12 +63,12 @@ type Props = {
 };
 
 function moonPhasePhrase(index: number, lang: string): string {
-  if (index === 14) return bilingualText(lang, "पूर्णिमा", "Full moon");
-  if (index === 29) return bilingualText(lang, "औंसी", "New moon");
-  if (index >= 6 && index <= 8) return bilingualText(lang, "बढ्दो अर्धचन्द्र", "Waxing half moon");
-  if (index >= 21 && index <= 23) return bilingualText(lang, "घट्दो अर्धचन्द्र", "Waning half moon");
-  if (index < 14) return bilingualText(lang, "बढ्दो चन्द्र", "Waxing moon");
-  return bilingualText(lang, "घट्दो चन्द्र", "Waning moon");
+  if (index === 14) return tFor(lang, "ui.learn.full_moon");
+  if (index === 29) return tFor(lang, "ui.learn.new_moon");
+  if (index >= 6 && index <= 8) return tFor(lang, "ui.home.waxing_half_moon");
+  if (index >= 21 && index <= 23) return tFor(lang, "ui.home.waning_half_moon");
+  if (index < 14) return tFor(lang, "ui.home.waxing_moon");
+  return tFor(lang, "ui.home.waning_moon");
 }
 
 function daysAwayLabel(
@@ -188,7 +189,7 @@ export function TodayHighlightCard({
 
   const specialTitle = festivals.length
     ? festivals.join(" / ")
-    : tithi || bilingualText(lang, "यस दिनको पञ्चाङ्ग", "This day's panchanga");
+    : tithi || tFor(lang, "ui.home.this_day_s_panchanga");
   const pakshaShort = (() => {
     const stripped = paksha.replace(/\s*पक्ष/g, "").replace(/\s*paksha/gi, "").trim();
     if (monthName && stripped.toLowerCase().startsWith(monthName.toLowerCase())) {
@@ -230,7 +231,7 @@ export function TodayHighlightCard({
       <div className={homeClasses.highlightSpecial}>
         <div className={cn(homeClasses.highlightKicker, "text-xs")}>
           {isToday
-            ? bilingualText(lang, "आज विशेष", "Special today")
+            ? tFor(lang, "ui.home.special_today")
             : daysAwayLabel(daysAway, lang, digits)}
         </div>
         <div className={homeClasses.highlightTitle}>{specialTitle}</div>

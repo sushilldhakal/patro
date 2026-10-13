@@ -17,6 +17,7 @@ import { patroCard } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const GRAHA_ORDER = [
   "sun",
   "moon",
@@ -109,7 +110,7 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
   return (
     <div className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
       <div className={`flex ${panchangaPageClasses.aside.eventsHead}`}>
-        <h2 className={panchangaPageClasses.aside.eventsTitle}>{bilingualText(lang, "आगामी ग्रह-गोचर", "Planetary events")}</h2>
+        <h2 className={panchangaPageClasses.aside.eventsTitle}>{tFor(lang, "panchanga.planet_events.title")}</h2>
         {browseLocation ? (
           <Link
             to="/gochar"
@@ -122,18 +123,18 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
       </div>
 
       {isLoading && (
-        <div className={panchangaPageClasses.aside.eventsStatus}>{bilingualText(lang, "लोड हुँदै…", "Loading…")}</div>
+        <div className={panchangaPageClasses.aside.eventsStatus}>{tFor(lang, "common.loading")}</div>
       )}
 
       {isError && (
         <div className={panchangaPageClasses.aside.eventsStatus}>
-          {bilingualText(lang, "ग्रह-गोचर लोड गर्न सकिएन।", "Could not load planetary events.")}
+          {tFor(lang, "panchanga.planet_events.load_error")}
         </div>
       )}
 
       {!isLoading && !isError && events.length === 0 && (
         <div className={panchangaPageClasses.aside.eventsStatus}>
-          {bilingualText(lang, "कुनै आगामी गोचर छैन।", "No upcoming transits.")}
+          {tFor(lang, "panchanga.planet_events.no_upcoming")}
         </div>
       )}
 
@@ -152,8 +153,8 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
               </span>
               <span className={panchangaPageClasses.aside.eventsRel}>
                 {e.rel === 0
-                  ? bilingualText(lang, "आज", "Today")
-                  : bilingualText(lang, `${digits(e.rel)} दिन`, `${digits(e.rel)}d`)}
+                  ? tFor(lang, "today")
+                  : tFor(lang, "ui.panchanga.rel_d", { rel: digits(e.rel) })}
               </span>
             </div>
           ))}

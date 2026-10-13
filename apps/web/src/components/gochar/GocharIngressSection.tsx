@@ -18,6 +18,7 @@ import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { PatroDayMonthChip } from "@/components/patro-date/PatroDayMonthChip";
 import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const FILTERS: { id: IngressFilter; ne: string; en: string }[] = [
   { id: "all", ne: "सबै", en: "All" },
   { id: "rashi", ne: "राशि", en: "Sign" },
@@ -65,10 +66,10 @@ export function GocharIngressSection({
       <div className={cn("flex shrink-0 flex-col sm:flex-row sm:items-start sm:justify-between", gocharClasses.ingressHead)}>
         <div className="min-w-0">
           <p className={cn("m-0", gocharClasses.ingressEyebrow)}>
-            {bilingualText(lang, "के परिवर्तन हुँदैछ", "What's changing")}
+            {tFor(lang, "ui.gochar.what_s_changing")}
           </p>
           <h2 className={cn("mb-0 break-words", gocharClasses.ingressTitle)}>
-            {bilingualText(lang, "आगामी गोचर घटनाहरू", "Upcoming transit events")}
+            {tFor(lang, "ui.gochar.upcoming_transit_events")}
           </h2>
         </div>
         {showMonthNav ? (
@@ -76,7 +77,7 @@ export function GocharIngressSection({
             <button
               type="button"
               className={cn("flex transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40", gocharClasses.navButton)}
-              aria-label={bilingualText(lang, "अघिल्लो महिना", "Previous month")}
+              aria-label={tFor(lang, "calendar.prev_month")}
               disabled={prevMonthDisabled}
               onClick={onPrevMonth}
             >
@@ -88,7 +89,7 @@ export function GocharIngressSection({
             <button
               type="button"
               className={cn("flex transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40", gocharClasses.navButton)}
-              aria-label={bilingualText(lang, "अर्को महिना", "Next month")}
+              aria-label={tFor(lang, "calendar.next_month")}
               disabled={nextMonthDisabled}
               onClick={onNextMonth}
             >
@@ -124,10 +125,10 @@ export function GocharIngressSection({
 
       <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-y-contain", gocharClasses.ingressList)}>
         {loading ? (
-          <p className={gocharClasses.ingressStatus}>{bilingualText(lang, "लोड हुँदै…", "Loading…")}</p>
+          <p className={gocharClasses.ingressStatus}>{tFor(lang, "common.loading")}</p>
         ) : visible.length === 0 ? (
           <p className={gocharClasses.ingressStatus}>
-            {bilingualText(lang, "यस महिनामा कुनै आगामी गोचर छैन।", "No upcoming transits this month.")}
+            {tFor(lang, "ui.gochar.no_upcoming_transits_this_month")}
           </p>
         ) : (
           <ul className="m-0 list-none p-0">

@@ -14,6 +14,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 const m = kundaliDetailClasses.milanResult;
 
 const KUTA_LABELS: Record<KutaRow["id"], { en: string; ne: string }> = {
@@ -46,10 +47,10 @@ function KutaDetailPanel({
   return (
     <div className={m.panel}>
       <p className={m.panelTitle}>
-        {label ? (en ? label.en : label.ne) : kuta.id} {en ? "Kuta Details" : "कूट विवरण"}
+        {label ? (en ? label.en : label.ne) : kuta.id} {tFor((en) ? "en" : "ne", "kundali.x.kuta_details_heading")}
       </p>
       <p className={m.panelPoints}>
-        {en ? label?.en : label?.ne} {en ? "Kuta Points" : "कूट अङ्क"}:{" "}
+        {en ? label?.en : label?.ne} {tFor((en) ? "en" : "ne", "kundali.x.kuta_points_label")}:{" "}
         <span className={m.panelPointsValue}>
           {formatObtained(kuta.obtained)}/{kuta.max}
         </span>
@@ -171,12 +172,12 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="w-8" />
-              <TableHead>{en ? "Guna" : "गुण"}</TableHead>
-              <TableHead className="text-center">{en ? "Max" : "अधिकतम"}</TableHead>
-              <TableHead className="text-center">{en ? "Obt" : "प्राप्त"}</TableHead>
+              <TableHead>{tFor((en) ? "en" : "ne", "milan.guna")}</TableHead>
+              <TableHead className="text-center">{tFor((en) ? "en" : "ne", "kundali.x.milan_col_max")}</TableHead>
+              <TableHead className="text-center">{tFor((en) ? "en" : "ne", "kundali.x.milan_col_obtained")}</TableHead>
               <TableHead>{boyName}</TableHead>
               <TableHead>{girlName}</TableHead>
-              <TableHead>{en ? "Area of Life" : "जीवन क्षेत्र"}</TableHead>
+              <TableHead>{tFor((en) ? "en" : "ne", "kundali.x.milan_col_area_of_life")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -218,7 +219,7 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
           </TableBody>
         </Table>
         <p className={m.tableFootnote}>
-          *{en ? "Max — Maximum Point · Obt — Obtained Point" : "अधिकतम — अधिकतम अङ्क · प्राप्त — प्राप्त अङ्क"}
+          *{tFor((en) ? "en" : "ne", "kundali.x.milan_points_footnote")}
         </p>
       </section>
 

@@ -9,13 +9,14 @@ import {
   vedaDailyKeys,
   type VedaDaily,
 } from "@/lib/documents-api";
-import { pickLocale, useLocale } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { setMediaHandlers, setMediaMetadata, setMediaPlaybackState } from "@/lib/media-session";
 import { patroCard, patroSecBand } from "@/lib/patro-classes";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 function sourceLine(data: VedaDaily, lang: string, digits: (v: string | number) => string): string {
   const parts = data.source_parts.map((part) => {
     const label = (lang === "en" ? part.label_en : part.label_ne) ?? "";
@@ -168,7 +169,7 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
             hash={anchor}
             className={cn(homeClasses.vedaMore, "no-underline hover:underline")}
           >
-            {pickLocale(lang, "थप पढ्नुहोस् →", "Read more →")}
+            {tFor(lang, "ui.home.read_more")}
           </Link>
           <span className={homeClasses.vedaSource}>{sourceLine(data, lang, digits)}</span>
         </div>

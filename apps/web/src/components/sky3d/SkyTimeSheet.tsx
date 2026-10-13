@@ -33,6 +33,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
 import { effect, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */
@@ -342,7 +343,7 @@ export function SkyTimeSheet({
   /* Named in the units the step is actually in — "१ दिन/से", not "×86400". */
   const activeStep = TIME_STEPS[nearestStepIndex(timeRate)];
   const speedLabel = paused
-    ? pick("रोकिएको", "Paused")
+    ? tFor(lang, "ui.sky3d.paused")
     : `${timeRate < 0 ? "◀◀ " : "▶▶ "}${pick(activeStep.ne, activeStep.en)}`;
 
   const stepper = (
@@ -376,7 +377,7 @@ export function SkyTimeSheet({
     <div className="absolute inset-0 z-50 flex flex-col justify-end">
       <button
         type="button"
-        aria-label={pick("बन्द गर्नुहोस्", "Close")}
+        aria-label={tFor(lang, "ui.common.close")}
         className="absolute inset-0 cursor-default bg-black/40"
         onClick={onClose}
       />
@@ -392,40 +393,40 @@ export function SkyTimeSheet({
           <div className="flex items-center gap-0.5">
             {stepper(
               "year",
-              pick("वर्ष बढाउनुहोस्", "Increase year"),
-              pick("वर्ष घटाउनुहोस्", "Decrease year"),
+              tFor(lang, "ui.sky3d.increase_year"),
+              tFor(lang, "ui.sky3d.decrease_year"),
               true,
             )}
             <Sep>/</Sep>
             {stepper(
               "month",
-              pick("महिना बढाउनुहोस्", "Increase month"),
-              pick("महिना घटाउनुहोस्", "Decrease month"),
+              tFor(lang, "ui.sky3d.increase_month"),
+              tFor(lang, "ui.sky3d.decrease_month"),
             )}
             <Sep>/</Sep>
             {stepper(
               "day",
-              pick("दिन बढाउनुहोस्", "Increase day"),
-              pick("दिन घटाउनुहोस्", "Decrease day"),
+              tFor(lang, "ui.sky3d.increase_day"),
+              tFor(lang, "ui.sky3d.decrease_day"),
             )}
           </div>
           <div className="flex items-center gap-0.5">
             {stepper(
               "hour",
-              pick("घण्टा बढाउनुहोस्", "Increase hour"),
-              pick("घण्टा घटाउनुहोस्", "Decrease hour"),
+              tFor(lang, "ui.sky3d.increase_hour"),
+              tFor(lang, "ui.sky3d.decrease_hour"),
             )}
             <Sep>:</Sep>
             {stepper(
               "minute",
-              pick("मिनेट बढाउनुहोस्", "Increase minute"),
-              pick("मिनेट घटाउनुहोस्", "Decrease minute"),
+              tFor(lang, "ui.sky3d.increase_minute"),
+              tFor(lang, "ui.sky3d.decrease_minute"),
             )}
             <Sep>:</Sep>
             {stepper(
               "second",
-              pick("सेकेन्ड बढाउनुहोस्", "Increase second"),
-              pick("सेकेन्ड घटाउनुहोस्", "Decrease second"),
+              tFor(lang, "ui.sky3d.increase_second"),
+              tFor(lang, "ui.sky3d.decrease_second"),
             )}
           </div>
         </div>
@@ -435,7 +436,7 @@ export function SkyTimeSheet({
         </p>
         <div className="flex items-center gap-2">
           <IconRound
-            label={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+            label={playing ? tFor(lang, "panchanga.hora.pause") : tFor(lang, "panchanga.hora.play")}
             onPress={onTogglePlay}
           >
             {playing ? <Pause className="size-5 fill-white" /> : <Play className="size-5 fill-white" />}
@@ -446,11 +447,11 @@ export function SkyTimeSheet({
             max={RATE_NOTCHES}
             step={1}
             value={Math.round(rateToSlider(timeRate))}
-            aria-label={pick("गति", "Speed")}
+            aria-label={tFor(lang, "learn.diagrams.orbit_speed")}
             className="sky-time-slider sky-time-slider--thin min-w-0 flex-1"
             onChange={(e) => onTimeRate(sliderToRate(Number(e.target.value)))}
           />
-          <IconRound label={pick("वास्तविक गति", "Realtime speed")} onPress={onResetRate}>
+          <IconRound label={tFor(lang, "ui.sky3d.realtime_speed")} onPress={onResetRate}>
             <RotateCcw className="size-5" />
           </IconRound>
         </div>
@@ -458,17 +459,17 @@ export function SkyTimeSheet({
         <div className="mt-4 grid grid-cols-3 gap-2">
           <NavAction
             icon={<SkipBack className="size-6" />}
-            label={pick("अघिल्लो रात", "Previous night")}
+            label={tFor(lang, "ui.sky3d.previous_night")}
             onPress={() => onApplyMs(timeMs - 86_400_000)}
           />
           <NavAction
             icon={<History className="size-6" />}
-            label={pick("अहिलेको समय", "Set time to now")}
+            label={tFor(lang, "ui.sky3d.set_time_to_now")}
             onPress={() => onApplyMs(Date.now())}
           />
           <NavAction
             icon={<SkipForward className="size-6" />}
-            label={pick("अर्को रात", "Next night")}
+            label={tFor(lang, "ui.sky3d.next_night")}
             onPress={() => onApplyMs(timeMs + 86_400_000)}
           />
         </div>
@@ -480,7 +481,7 @@ export function SkyTimeSheet({
             max={86_399}
             step={1}
             value={daySecToSlider(daySec)}
-            aria-label={pick("दिनको उज्यालो", "Daylight")}
+            aria-label={tFor(lang, "ui.sky3d.daylight")}
             className="sky-time-slider sky-time-slider--day w-full"
             onChange={(e) => {
               const sec = sliderToDaySec(Number(e.target.value));

@@ -4072,7 +4072,13 @@
       "earth_sits_at_the_centre_and": "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
       "in_sky_from_here_the_horizon": "«यहाँबाट आकाश» दृश्यमा माथिको स्थान र मिति-समय अनुसार क्षितिज बन्छ — राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
       "live_graha_transits_from_the_geocentric": "भूकेन्द्रित दृष्टिकोणबाट प्रत्यक्ष ग्रह गोचर",
-      "the_trail_draws_45_days_either": "गति रेखाले ४५ दिन अघि र पछिको बाटो देखाउँछ — मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। कुनै पनि ग्रह छोएर नजिक पुग्न सकिन्छ; «पूरा दृश्य» ले फेरि सिङ्गो सौर्यमण्डल देखाउँछ।"
+      "the_trail_draws_45_days_either": "गति रेखाले ४५ दिन अघि र पछिको बाटो देखाउँछ — मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। कुनै पनि ग्रह छोएर नजिक पुग्न सकिन्छ; «पूरा दृश्य» ले फेरि सिङ्गो सौर्यमण्डल देखाउँछ।",
+      "could_not_load_graha_details_from": "सर्भरबाट ग्रह विवरण ल्याउन सकिएन — आकाश आफ्नै गणितमा चलिरहेको छ, त्यसैले स्थिति अनुमानित हुन सक्छ।",
+      "drag_to_swing_the_sky_and": "माउसले तानेर आकाश घुमाउनुहोस्, स्क्रोल गरेर नजिक-टाढा गर्नुहोस्; टचस्क्रिनमा दुई औंलाले पनि हुन्छ।",
+      "pick_any_graha_in_the_sky": "कुनै पनि ग्रह — आकाशमा वा तलको कार्डमा — छानेपछि त्यसको ४५ दिन अघि र पछिको गति रेखा देखिन्छ; मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। क्रसहेयर थिचे क्यामेरा त्यही ग्रहमा केन्द्रित रहन्छ — वा गोलामा रहेको आफ्नै स्थान छाने त्यसैमा।",
+      "the_graha_details_below_come_from": "तलका ग्रह विवरण माथि छानिएको मिति र स्थानका लागि सर्भरबाट आउँछन्, र आकाश पनि तिनै अंकमा जोडिएको छ — मिति वा स्थान फेर्दा दुवै सँगै फेरिन्छन्। तर «चलाउनुहोस्» थिचेर समय अघि बढाउँदा आकाश मात्र हिँड्छ; विवरण छानिएकै मितिको रहन्छ।",
+      "the_rashi_belt_tips_with_your": "राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
+      "the_red_marker_on_the_globe": "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।"
     },
     "account": {
       "add_profile": "प्रोफाइल थप",
@@ -4172,7 +4178,8 @@
       "retry": "पुनः प्रयास",
       "saving": "सेभ हुँदै…",
       "start": "सुरु",
-      "theme": "थिम"
+      "theme": "थिम",
+      "rest_and_last": "{{rest}} र {{last}}"
     },
     "converter": {
       "date_converter": "मिति रूपान्तर"
@@ -4188,7 +4195,9 @@
       "until_karanaend": "{{karanaEnd}} सम्म",
       "until_nakend": "{{nakEnd}} सम्म",
       "until_tithiend": "{{tithiEnd}} सम्म",
-      "until_yogaend": "{{yogaEnd}} सम्म"
+      "until_yogaend": "{{yogaEnd}} सम्म",
+      "lagna_planets_for_day_day": "{{day}} गतेको लग्न र ग्रहस्पष्ट",
+      "until_end": "{{end}} सम्म"
     },
     "dainikkranti": {
       "adhik_maas": "अधिक मास:",
@@ -4226,7 +4235,9 @@
       "speed": "वेग",
       "the_sky_at_a_glance": "आकाश एक नजरमा",
       "upcoming_transit_events": "आगामी गोचर घटनाहरू",
-      "what_s_changing": "के परिवर्तन हुँदैछ"
+      "what_s_changing": "के परिवर्तन हुँदैछ",
+      "in_rashi_until_lang": "{{rashi}} मा {{lang}} सम्म",
+      "in_rashiuntil_until_lang": "{{rashiUntil}} मा {{lang}} सम्म"
     },
     "graha": {
       "about": "परिचय",
@@ -4254,7 +4265,12 @@
       "this_day_s_panchanga": "यस दिनको पञ्चाङ्ग",
       "today_s_panchanga": "आजको पञ्चाङ्ग",
       "view_full_table": "पूरा तालिका हेर्नुहोस् →",
-      "you_re_offline_and_this_calendar": "तपाईं अफलाइन हुनुहुन्छ र यो पात्रो अझै डाउनलोड गरिएको छैन।"
+      "you_re_offline_and_this_calendar": "तपाईं अफलाइन हुनुहुन्छ र यो पात्रो अझै डाउनलोड गरिएको छैन।",
+      "choose_rashi": "राशि छान्नुहोस्",
+      "waning_half_moon": "घट्दो अर्धचन्द्र",
+      "waning_moon": "घट्दो चन्द्र",
+      "waxing_half_moon": "बढ्दो अर्धचन्द्र",
+      "waxing_moon": "बढ्दो चन्द्र"
     },
     "kundali": {
       "a_graha_s_actual_effect_depends": "ग्रहको वास्तविक प्रभाव यसको भावेशत्व, बल, दृष्टि, संयोजन, अस्त/वक्री जस्ता अवस्थामा भर पर्छ — तल दिइएको सामान्य शुभ/पाप वर्गीकरण एउटा आधारभूत सिद्धान्त मात्र हो, अनिवार्य नियम होइन।",
@@ -4348,7 +4364,23 @@
       "total_guna_match": "कुल गुण मिलान",
       "upagrahas": "उपग्रह",
       "viewing": "हेर्दै",
-      "what_is_lal_kitab_s_sustha": "लाल किताबको सुस्थ/दुःस्थ नियम के हो?"
+      "what_is_lal_kitab_s_sustha": "लाल किताबको सुस्थ/दुःस्थ नियम के हो?",
+      "ascendant": "लग्न",
+      "balance_balance_label": "बाँकी अवधि: {{balance_label}}",
+      "bhava_ownerbhava": "(भाव {{ownerBhava}})",
+      "bhava_value": "भाव {{value}}",
+      "house_house_2": "भाव {{house}}",
+      "house_housenum": "भाव {{houseNum}}",
+      "karakatva_shloka": "कारकत्व श्लोक",
+      "karakatva_subjects": "कारकत्व विषयहरू",
+      "lang_in_house_house_value": "भाव {{house}}{{value}} मा {{lang}}को फल",
+      "no_classical_shloka_is_available_for": "यो भाव-ग्रह संयोजनको लागि शास्त्रीय श्लोक अहिले उपलब्ध छैन।",
+      "no_graha_here_see_the_placement_2": "कुनै ग्रह छैन — राशि स्वामी {{lang}}को स्थिति हेर्नुहोस्।",
+      "none": "कोही छैन",
+      "pada_pada": "पद {{pada}}",
+      "sign_lord_lang_wasn_t_found": "राशि स्वामी {{lang}} यो D1 चार्टमा फेला परेन।",
+      "significance": "ग्रहको महत्व",
+      "this_house_has_no_occupying_graha_2": "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{lang}}को स्थिति हेर्नुहोस्।"
     },
     "kundali_milan": {
       "both_profiles_need_a_birth_date": "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
@@ -4358,7 +4390,8 @@
       "groom_profile": "वरको प्रोफाइल",
       "matching_the_charts": "मिलान गणना हुँदै…",
       "no_profiles_add_one_first": "कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।",
-      "select_profiles_for_groom_and_bride": "वर र कन्याका प्रोफाइल छान्नुहोस्।"
+      "select_profiles_for_groom_and_bride": "वर र कन्याका प्रोफाइल छान्नुहोस्।",
+      "lang_chitrapaksha": "{{lang}} / चित्रपक्ष"
     },
     "learn": {
       "a_solar_month_is_not_a": "सौर महिना दिनको गन्ती होइन — यो राशि पट्टीमा सूर्यको ३०° यात्रा हो। पृथ्वीको कक्ष अण्डाकार भएकाले उपसौर (पुष–माघ) नजिक सूर्यको देखिने गति छिटो हुन्छ, त्यसैले त्यो ३०° छिटो पार हुन्छ — छोटो महिना। अपसौर (असार) नजिक गति सुस्त हुन्छ — लामो महिना। यो तथ्याङ्क पात्रोले नै प्रयोग गर्ने तालिकाबाटै आएको हो।",
@@ -4665,7 +4698,19 @@
       "your_angle_2": "चलाउनुभएको कोण",
       "yr": "वर्ष",
       "zoom_in": "नजिक",
-      "zoom_out": "टाढा"
+      "zoom_out": "टाढा",
+      "adhik": "अधिक ",
+      "ayanamsha_ayan_value_days": "अयनांश ~{{AYAN}}° ≈ ~{{value}} दिन",
+      "eclipse_season_value_days": "ग्रहण ऋतु — ~{{value}} दिन",
+      "julian_1_day_per_value_years": "जुलियन: ~१ दिन प्रति {{value}} वर्ष → {{value2}} सम्ममा १० दिन",
+      "one_lunation_value_days": "एक चान्द्र मास — {{value}} दिन",
+      "pause_orbit": "कक्ष रोक्नुहोस्",
+      "run_orbit": "कक्ष चलाउनुहोस्",
+      "that_value_value2_more_minutes_of": "त्यो ~{{value}}° = ~{{value2}} मिनेट थप घुर्णन",
+      "tithi_ends_value_utc": "तिथि सकिने क्षण — {{value}} UTC",
+      "value_days": "~{{value}} दिन",
+      "value_minutes_later_each_day": "हरेक दिन ~{{value}} मिनेट ढिलो →",
+      "value_still_to_go": "अझै ~{{value}}° बाँकी"
     },
     "more": {
       "ceremony_muhurta": "शुभ साइत",
@@ -4730,7 +4775,10 @@
       "this_time_is_before_today_s": " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
       "tithi_nakshatra_yoga_and_karana_from": "{{time}} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
       "value_padas": "{{value}} पद",
-      "windows_where_each_graha_is_combust": "ग्रहहरू सूर्यको नजिक परेर अस्त हुने र पुनः उदय हुने अवधिहरू।"
+      "windows_where_each_graha_is_combust": "ग्रहहरू सूर्यको नजिक परेर अस्त हुने र पुनः उदय हुने अवधिहरू।",
+      "drag_to_rotate_scroll_to_zoom": "घुमाउन तान्नुहोस् · स्क्रोल गरेर जुम गर्नुहोस्",
+      "pick_date_and_time": "मिति र समय छान्नुहोस्",
+      "this_time_is_before_sunrise_on": " यो समय {{viewedDateLabel}} को सूर्योदय अघि भएकाले {{viewedDateLabel2}} को वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।"
     },
     "patro_date": {
       "choose_year": "वर्ष छान्नुहोस्",
@@ -4799,7 +4847,10 @@
       "shubh_ashubh_window": "शुभ / अशुभ समय",
       "today_s_guidance": "आजको मार्गदर्शन",
       "today_s_moon_sign": "आजको चन्द्र राशि",
-      "today_s_rashifal_every_day_at": "हरेक दिन बिहान ७ बजे आजको राशिफल"
+      "today_s_rashifal_every_day_at": "हरेक दिन बिहान ७ बजे आजको राशिफल",
+      "careful": "सावधानी",
+      "do": "गर्नुहोस्",
+      "don_t": "नगर्नुहोस्"
     },
     "reset_password": {
       "back_home": "गृहपृष्ठ",
@@ -4832,7 +4883,11 @@
       "personalise": "आफ्नो प्रोफाइलअनुसार",
       "sign_in_to_pick_your_profile": "प्रोफाइल छान्न लग-इन गर्नुहोस्",
       "that_ceremony_was_not_found": "यो संस्कार फेला परेन।",
-      "the_child_s_right_age_month": "बच्चाको सही उमेर महिना"
+      "the_child_s_right_age_month": "बच्चाको सही उमेर महिना",
+      "month_ordinal_month": "{{ordinal_month}} औँ महिना",
+      "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
+      "rulecount_classical_rules_switch_off_any": "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
+      "rulecount_classical_rules_with_sources": "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित"
     },
     "sky3d": {
       "amavasya_moon_between_sun_and_earth": "औंसी · चन्द्र सूर्य–पृथ्वीको बीचमा",
@@ -4876,7 +4931,25 @@
       "tropic_of_cancer_23_44_n": "कर्कट रेखा · २३.४४°उ",
       "tropic_of_capricorn_23_44_s": "मकर रेखा · २३.४४°द",
       "vedic_stars": "वैदिक तारा",
-      "view_controls": "दृश्य नियन्त्रण"
+      "view_controls": "दृश्य नियन्त्रण",
+      "daylight": "दिनको उज्यालो",
+      "decrease_day": "दिन घटाउनुहोस्",
+      "decrease_hour": "घण्टा घटाउनुहोस्",
+      "decrease_minute": "मिनेट घटाउनुहोस्",
+      "decrease_month": "महिना घटाउनुहोस्",
+      "decrease_second": "सेकेन्ड घटाउनुहोस्",
+      "decrease_year": "वर्ष घटाउनुहोस्",
+      "favourite": "पसन्दमा राख्नुहोस्",
+      "increase_day": "दिन बढाउनुहोस्",
+      "increase_hour": "घण्टा बढाउनुहोस्",
+      "increase_minute": "मिनेट बढाउनुहोस्",
+      "increase_month": "महिना बढाउनुहोस्",
+      "increase_second": "सेकेन्ड बढाउनुहोस्",
+      "increase_year": "वर्ष बढाउनुहोस्",
+      "next_night": "अर्को रात",
+      "previous_night": "अघिल्लो रात",
+      "realtime_speed": "वास्तविक गति",
+      "set_time_to_now": "अहिलेको समय"
     },
     "suryakranti": {
       "n": "उ",
@@ -4899,6 +4972,28 @@
       "auspicious_marriage_windows_computed_from_the": "शास्त्रीय नियमबाट गणना गरिएका विवाहका शुभ मुहूर्त",
       "marriage_sait": "विवाह साइत",
       "no_marriage_muhurta_found_for_this": "यस वर्ष विवाहको साइत भेटिएन।"
+    },
+    "day_detail_modal": {
+      "back": "फर्कनुहोस्",
+      "karan": "करण",
+      "moon_sign": "चन्द्रराशि",
+      "see_full_panchanga": "पूर्ण पञ्चाङ्ग हेर्नुहोस् →",
+      "yog": "योग"
+    },
+    "mobile_bottom_nav": {
+      "primary_navigation": "मुख्य नेभिगेसन"
+    },
+    "notifications": {
+      "a_good_time_to_begin_important": "महत्त्वपूर्ण काम सुरु गर्न शुभ समय।",
+      "avoid_starting_new_work_travel_or": "नयाँ काम, यात्रा वा खरिद सुरु नगर्नुहोस्।",
+      "starts_in_lead_min": "{{lead}} मिनेटमा सुरु",
+      "starts_now": "अहिलेदेखि",
+      "today_s_rashifal": "आजको राशिफल"
+    },
+    "onboarding": {
+      "skip": "छोड्नुहोस्",
+      "skip_tour": "छोड्नुहोस्",
+      "start_exploring": "सुरु गर्नुहोस्"
     }
   }
 }

@@ -1,9 +1,10 @@
 import { Flame, RotateCcw } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Props = {
   /** Graha key ("sun" … "ketu"); gates which markers are allowed. */
   planetKey?: string;
@@ -30,12 +31,12 @@ export function GrahaStatusBadges({ planetKey, isRetrograde, isCombust, classNam
   return (
     <span className={cn(grahaClasses.statusRow, "inline-flex", className)}>
       {vakri && (
-        <span className="inline-flex" title={bilingualText(lang, "वक्री", "Retrograde")} aria-label={bilingualText(lang, "वक्री", "Retrograde")}>
+        <span className="inline-flex" title={tFor(lang, "common.retrograde")} aria-label={tFor(lang, "common.retrograde")}>
           <RotateCcw className="text-secondary" style={{ width: px, height: px }} strokeWidth={2.5} aria-hidden />
         </span>
       )}
       {asta && (
-        <span className="inline-flex" title={bilingualText(lang, "अस्त", "Combust")} aria-label={bilingualText(lang, "अस्त", "Combust")}>
+        <span className="inline-flex" title={tFor(lang, "common.combust")} aria-label={tFor(lang, "common.combust")}>
           <Flame className="text-destructive" style={{ width: px, height: px }} strokeWidth={2.5} aria-hidden />
         </span>
       )}
@@ -109,11 +110,11 @@ export function GrahaStatusLegend({ className }: { className?: string }) {
     >
       <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <RotateCcw className="size-3.5 text-secondary" aria-hidden />
-        {bilingualText(lang, "वक्री", "Retrograde")}
+        {tFor(lang, "common.retrograde")}
       </span>
       <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <Flame className="size-3.5 text-destructive" aria-hidden />
-        {bilingualText(lang, "अस्त", "Combust")}
+        {tFor(lang, "common.combust")}
       </span>
     </p>
   );

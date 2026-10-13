@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sunrise, Moon } from "lucide-react";
 import { getZonedTimeParts, minutesSinceMidnightInTimezone } from "@vedic-patro/domain/zoned-time";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useLocale } from "@/i18n/locale";
 import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
 
 import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
@@ -58,7 +59,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
       />
 
       <div className="text-sm font-semibold tracking-eyebrow-wide text-ill-brand-off-white/55">
-        {bilingualText(lang, "वैदिक समय", "Vedic time")}
+        {tFor(lang, "panchanga.vedic_time")}
       </div>
       <div className="font-mono font-bold text-5xl leading-none mt-3.5 tracking-tight tabular-nums">
         {digits(pad2(gh))}
@@ -68,7 +69,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         <span className="text-sm text-ill-brand-off-white/65">{digits(pad2(vi))}</span>
       </div>
       <div className="text-sm font-semibold tracking-wide text-panchang mt-2">
-        {bilingualText(lang, "घडी : पला : विपला", "Ghati : Pala : Vipala")}
+        {tFor(lang, "panchanga.ghati_pala_vipala")}
       </div>
 
       <div className="h-px bg-white/12 mx-5 my-3.5" />
@@ -78,7 +79,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         <span className="text-sm text-ill-brand-off-white/65">:{digits(pad2(ss))}</span>
       </div>
       <div className="text-sm font-semibold tracking-wide text-ill-brand-off-white/50 mt-2">
-        {bilingualText(lang, "घण्टा : मिनेट", "Hour : Minute")}
+        {tFor(lang, "panchanga.hour_minute")}
       </div>
 
       <div className="flex justify-center gap-4 mt-3.5 text-sm font-mono text-ill-brand-off-white/80">
