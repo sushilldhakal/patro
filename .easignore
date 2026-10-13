@@ -1,29 +1,48 @@
-# EAS packs the whole monorepo (the git root), so this file lives here, not in
-# apps/mobile. The phone build only needs apps/mobile + packages/*; drop the
-# heavy web/API payload. Every package.json stays so the workspace lockfile
-# still installs.
+# NOTE: EAS uses this file INSTEAD of .gitignore (it does not merge them), and it
+# packs the whole monorepo from the git root. So everything .gitignore excludes
+# has to be repeated here, plus the heavy web/API payload the phone build skips.
 
-# Website static assets (3D sky tiles, learn images) — mobile fetches sky tiles remotely.
+# ── Same as .gitignore ──
+.git
+node_modules
+**/node_modules
+.turbo
+**/.turbo
+.DS_Store
+.venv
+**/.venv
+venv
+.env
+.env.local
+**/.env
+**/.env.local
+.deploy
+scripts/design-parity/out
+/data
+/cache
+__pycache__
+*.pyc
+*.egg-info
+**/.expo
+**/dist
+**/web-build
+.pytest_cache
+**/.pytest_cache
+.claude
+
+# ── Not needed for the phone build ──
+# Website static assets (mobile fetches the 3D sky tiles remotely).
 /apps/web/public
-
-# API data (databases, source JSON, ephemeris) and Python tests/caches.
+# API data, tests and caches.
 /apps/api/data
 /apps/api/tests
 /apps/api/cache
-**/__pycache__
-**/*.pyc
-
 # Store submission material, not part of the app binary.
 /apps/mobile/store/builds
 /apps/mobile/store/screenshots
 /apps/mobile/store/assets
 /apps/mobile/store/secrets
-
-# Let EAS prebuild fresh native projects for the current SDK.
-# Local android/ and ios/ are leftover from SDK 54 and break Play AABs.
+# Stale native projects — EAS prebuilds fresh ones for the current SDK.
 /apps/mobile/android
 /apps/mobile/ios
-/apps/mobile/dist
 /apps/mobile/dist-web
-/apps/mobile/web-build
-/apps/mobile/.expo
