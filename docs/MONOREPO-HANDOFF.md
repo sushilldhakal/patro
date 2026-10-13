@@ -36,7 +36,7 @@ Backend tests (`cd apps/api && python -m pytest -q`) need `data/cities.db` (`pyt
 Commit trailers: `Co-Authored-By` + `Claude-Session` lines as in earlier commits.
 
 ## What stays per app on purpose (not duplication)
-Tailwind class tables with different tokens (`patro-classes`, `wheel-classes`, `timeline-classes`, `wheel-svg-classes`); asset/texture loading (`sky-textures`, `nebula-sources`, `hips-config`, `month-art`, `wheel-glyph-art`, `hips-config` (each app sets its own tile base URL)); the 3D sun-earth-moon maths (unit space in the app, pixel space on web); API request modules and storage; React hooks; route tables, icon maps, app-only nav (`panchanga-sidebar-nav`, `related-page-links` paths); mobile-only `panchanga-detail-cells`, `wheel-scrub`, `sait-suitability-style`, `element-routes`, `panchanga-shell-paths`, `bs-range` (1700–2200 picker limits).
+Tailwind class tables with different tokens (`patro-classes`, `wheel-classes`, `timeline-classes`, `wheel-svg-classes`); asset/texture loading (`sky-textures`, `nebula-sources`, `hips-config`, `wheel-glyph-art`, `hips-config` (each app sets its own tile base URL)); the 3D sun-earth-moon maths (unit space in the app, pixel space on web); API request modules and storage; React hooks; route tables, icon maps, app-only nav (`panchanga-sidebar-nav`, `related-page-links` paths); mobile-only `panchanga-detail-cells`, `wheel-scrub`, `sait-suitability-style`, `element-routes`, `panchanga-shell-paths`, `bs-range` (1700–2200 picker limits).
 
 ## Tools for moving duplicates into domain
 `scripts/monorepo-tools/hoist.mts <web file> <mobile file> <domain module> names` moves top-level helpers that are identical in both files, with everything they depend on, and imports them back; it refuses unless the whole closure is the same text in both, has no JSX/hooks and only portable imports. `adopt.mts <file> <module> names` replaces a third copy with the domain one, refusing if any constant the domain copy reads is declared differently in that file. About 80 helpers (~4.7k duplicated lines: 3D sky builders and terrain, learn-diagram geometry, timeline lanes, kundali chart scales, avakahada/vastu wheel geometry, DainikKranti day helpers) moved this way.
@@ -46,7 +46,7 @@ Left per app because the two copies differ (review if the behaviour should match
 ## Still open
 - Visual review of the converted Learn pages in a browser (text/structure verified, pixels not).
 - closure.py now reports nothing movable except `sky3d/hips-config`, which stays per app on purpose (different tile base URL). The rest are hooks, platform or asset/UI files.
-- Stale web scripts `extract-bhava-reference-content.mjs`, `extract-vastu-content.mjs` point at files that no longer exist (pre-existing).
+- `apps/web/scripts/extract-vastu-content.mjs` is a one-off content-extraction pipeline (kept as a record; not part of any build).
 - `apps/web/src/lib/learn/learn-topics-meta.ts` and mobile `learn-library.ts` map the shared library icons per app.
 
 ## Behaviour changes the app picked up from web
