@@ -1,5 +1,31 @@
 {
   "app_name": "Dhakal Patro",
+  "offline": {
+    "group": {
+      "calendar": {
+        "name": "Calendar, festivals & sait",
+        "hint": "Month calendar, holidays, festivals, sait, special months"
+      },
+      "sky": {
+        "name": "Planets, eclipses & timings",
+        "hint": "Gochar, asta/vakri, eclipses, panchak, sun times, tithi/nakshatra spans"
+      },
+      "daily": {
+        "name": "Daily detail",
+        "hint": "Every day's panchanga, muhurta, gochar and rashifal (can be very large)"
+      },
+      "documents": {
+        "name": "Scripture texts",
+        "hint": "All texts (audio is not included)"
+      }
+    },
+    "range_unavailable": "Only BS {{start}}–{{end}} is available.",
+    "span_too_long": "You can download at most a {{max}}-year span.",
+    "pick_years_hint": "Choose BS years. At most a {{max}}-year span (for example 2000 to 2090).",
+    "years_selected": "{{count}} years selected.",
+    "estimate_note": "For {{years}} years, estimated from a measured sample year ({{sample}}); the real size can differ a little.",
+    "skipped": "{{count}} requests the server couldn't answer were skipped."
+  },
   "reminders": {
     "login_prompt_title": "Sign in for reminders",
     "login_prompt_body": "Sign in to set reminders and daily guidance notifications."
@@ -4091,31 +4117,23 @@
       "the_red_marker_on_the_globe": "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works."
     },
     "account": {
-      "add_profile": "Add profile",
       "all_downloaded_data_will_be_removed": "All downloaded data will be removed from this device. You can download it again later.",
       "biometric_lock": "Biometric lock",
       "check_download_size": "Check download size",
       "clear": "Clear",
       "clear_offline_data": "Clear offline data?",
       "clear_offline_data_2": "Clear offline data",
-      "could_not_delete_account": "Could not delete account",
-      "could_not_load_your_profiles": "Could not load your profiles.",
       "currently_on_this_device": "Currently on this device",
-      "delete": "Delete",
-      "delete_account": "Delete account?",
-      "delete_profile": "Delete profile?",
       "download_complete_these_years_now_work": "Download complete. These years now work without internet.",
       "download_over_wi_fi_only": "Download over Wi-Fi only",
       "downloading": "Downloading…",
       "enter_both_years": "Enter both years.",
       "from_bs": "From (BS)",
-      "full_name_will_be_permanently_removed": "\"{{full_name}}\" will be permanently removed.",
       "go_home": "Go home",
       "length_years_bytes_stored": "{{length}} years · {{bytes}} stored",
       "log_in_to_view_your_account": "Log in to view your account.",
       "manage_the_calendar_years_downloaded_for": "Manage the calendar years downloaded for offline use.",
       "measuring_size": "Measuring size…",
-      "no_profiles_yet": "No profiles yet.",
       "nothing_downloaded_yet": "Nothing downloaded yet.",
       "offline_calendar_data_can_be_managed": "Offline calendar data can be managed without logging in.",
       "offline_data": "Offline Data",
@@ -4123,22 +4141,17 @@
       "ok_download_totalbytes": "OK — download {{totalBytes}}",
       "paused_continues_when_the_connection_is": "Paused — continues when the connection is back",
       "pick_the_years_to_keep_on": "Pick the years to keep on this device so every public page works without internet.",
-      "please_try_again": "Please try again.",
-      "profiles": "Profiles",
-      "resend_verification_email": "Resend verification email",
       "resume_unfinished_download": "Resume unfinished download",
       "something_went_wrong": "Something went wrong",
       "the_first_year_must_not_be": "The first year must not be after the last.",
       "to_bs": "To (BS)",
       "total_to_download": "Total to download",
       "unlock_with_label": "Unlock with {{label}}",
-      "verification_email_sent": "Verification email sent",
       "waits_for_wi_fi_before_downloading": "Waits for Wi-Fi before downloading, to save mobile data.",
       "what_to_include": "What to include",
       "which_years_do_you_need": "Which years do you need?",
       "you_re_offline_downloading_needs_an": "You're offline. Downloading needs an internet connection.",
-      "you_stay_signed_in_the_app": "You stay signed in; the app asks for biometrics when opened.",
-      "your_email_is_not_verified_yet": "Your email is not verified yet. Check your inbox."
+      "you_stay_signed_in_the_app": "You stay signed in; the app asks for biometrics when opened."
     },
     "app_header": {
       "nepali_calendar_and_panchanga": "Nepali calendar and Panchanga"

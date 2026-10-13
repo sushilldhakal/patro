@@ -1,5 +1,31 @@
 {
   "app_name": "वैदिक पात्रो",
+  "offline": {
+    "group": {
+      "calendar": {
+        "name": "पात्रो, चाडपर्व र साइत",
+        "hint": "महिनाको पात्रो, बिदा, चाडपर्व, साइत, अधिक मास"
+      },
+      "sky": {
+        "name": "ग्रह, ग्रहण र समय तालिका",
+        "hint": "गोचर, अस्त/वक्री, ग्रहण, पञ्चक, सूर्य समय, तिथि/नक्षत्र अवधि"
+      },
+      "daily": {
+        "name": "दैनिक विवरण",
+        "hint": "हरेक दिनको पञ्चाङ्ग, मुहूर्त, गोचर र राशिफल (धेरै ठूलो हुन सक्छ)"
+      },
+      "documents": {
+        "name": "स्तोत्र र शास्त्र पाठ",
+        "hint": "सबै पाठ (अडियो समावेश छैन)"
+      }
+    },
+    "range_unavailable": "वि.सं. {{start}} देखि {{end}} सम्म मात्र उपलब्ध छ।",
+    "span_too_long": "बढीमा {{max}} वर्षको अन्तर मात्र डाउनलोड गर्न सकिन्छ।",
+    "pick_years_hint": "वि.सं. मा वर्ष छान्नुहोस्। बढीमा {{max}} वर्षको अन्तर (जस्तै २००० देखि २०९० सम्म)।",
+    "years_selected": "{{count}} वर्ष छानिएको छ।",
+    "estimate_note": "{{years}} वर्षको लागि। एउटा नमूना वर्ष ({{sample}}) नापेर अनुमान गरिएको; वास्तविक आकार थोरै फरक पर्न सक्छ।",
+    "skipped": "{{count}} अनुरोध सर्भरले उपलब्ध गराएन र छोडियो।"
+  },
   "reminders": {
     "login_prompt_title": "रिमाइन्डरका लागि लग-इन",
     "login_prompt_body": "रिमाइन्डर र दैनिक सूचना सेट गर्न लग-इन गर्नुहोस्।"
@@ -4091,31 +4117,23 @@
       "the_red_marker_on_the_globe": "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।"
     },
     "account": {
-      "add_profile": "प्रोफाइल थप",
       "all_downloaded_data_will_be_removed": "डाउनलोड गरिएको सबै डाटा यो यन्त्रबाट हटाइनेछ। तपाईं पुनः डाउनलोड गर्न सक्नुहुन्छ।",
       "biometric_lock": "बायोमेट्रिक लक",
       "check_download_size": "डाउनलोडको आकार हेर्नुहोस्",
       "clear": "हटाउनुहोस्",
       "clear_offline_data": "अफलाइन डाटा हटाउने?",
       "clear_offline_data_2": "अफलाइन डाटा हटाउनुहोस्",
-      "could_not_delete_account": "खाता मेटाउन सकिएन",
-      "could_not_load_your_profiles": "प्रोफाइल लोड गर्न सकिएन।",
       "currently_on_this_device": "हाल यो यन्त्रमा",
-      "delete": "मेट्नुहोस्",
-      "delete_account": "खाता मेटाउने?",
-      "delete_profile": "प्रोफाइल मेट्ने?",
       "download_complete_these_years_now_work": "डाउनलोड पूरा भयो। अब इन्टरनेट बिना पनि चल्छ।",
       "download_over_wi_fi_only": "वाइफाइमा मात्र डाउनलोड गर्नुहोस्",
       "downloading": "डाउनलोड हुँदैछ…",
       "enter_both_years": "दुवै वर्ष लेख्नुहोस्।",
       "from_bs": "देखि (वि.सं.)",
-      "full_name_will_be_permanently_removed": "\"{{full_name}}\" स्थायी रूपमा मेटिनेछ।",
       "go_home": "गृहपृष्ठ",
       "length_years_bytes_stored": "{{length}} वर्ष · {{bytes}} भण्डारण",
       "log_in_to_view_your_account": "खाता हेर्न लगइन गर्नुहोस्।",
       "manage_the_calendar_years_downloaded_for": "इन्टरनेट बिना पात्रो हेर्न वर्षहरू व्यवस्थापन गर्नुहोस्।",
       "measuring_size": "आकार नापिँदैछ…",
-      "no_profiles_yet": "अझै कुनै प्रोफाइल छैन।",
       "nothing_downloaded_yet": "अझै केही डाउनलोड गरिएको छैन।",
       "offline_calendar_data_can_be_managed": "लगइन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
       "offline_data": "अफलाइन डाटा",
@@ -4123,22 +4141,17 @@
       "ok_download_totalbytes": "ठीक छ, {{totalBytes}} डाउनलोड गर्नुहोस्",
       "paused_continues_when_the_connection_is": "रोकिएको छ — इन्टरनेट/वाइफाइ फर्किँदा जारी हुन्छ",
       "pick_the_years_to_keep_on": "इन्टरनेट बिना सबै सार्वजनिक पेजहरू चलाउन वर्षहरू छान्नुहोस्।",
-      "please_try_again": "पुनः प्रयास गर्नुहोस्।",
-      "profiles": "प्रोफाइलहरू",
-      "resend_verification_email": "पुनः पठाउनुहोस्",
       "resume_unfinished_download": "अधुरो डाउनलोड जारी राख्नुहोस्",
       "something_went_wrong": "त्रुटि भयो",
       "the_first_year_must_not_be": "सुरु वर्ष अन्तिम वर्षभन्दा पहिले हुनुपर्छ।",
       "to_bs": "सम्म (वि.सं.)",
       "total_to_download": "डाउनलोड गर्नुपर्ने कुल डाटा",
       "unlock_with_label": "{{label}} ले खोल्नुहोस्",
-      "verification_email_sent": "पुनः पठाइयो",
       "waits_for_wi_fi_before_downloading": "मोबाइल डाटा बचत गर्न डाउनलोडले वाइफाइको पर्खनेछ।",
       "what_to_include": "के-के डाउनलोड गर्ने?",
       "which_years_do_you_need": "कुन वर्षदेखि कुन वर्षसम्म?",
       "you_re_offline_downloading_needs_an": "तपाईं अफलाइन हुनुहुन्छ। डाउनलोड गर्न इन्टरनेट चाहिन्छ।",
-      "you_stay_signed_in_the_app": "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
-      "your_email_is_not_verified_yet": "इमेल प्रमाणित गर्न बाँकी छ। तपाईंको इनबक्स जाँच्नुहोस्।"
+      "you_stay_signed_in_the_app": "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।"
     },
     "app_header": {
       "nepali_calendar_and_panchanga": "नेपाली पात्रो र पञ्चाङ्ग"

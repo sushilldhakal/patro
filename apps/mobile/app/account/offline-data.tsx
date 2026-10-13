@@ -21,32 +21,9 @@ function formatBytes(bytes: number): string {
   return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB`;
 }
 
-const GROUP_LABELS: Record<PackGroupId, { ne: string; en: string; hintNe: string; hintEn: string }> = {
-  calendar: {
-    ne: "पात्रो, चाडपर्व र साइत",
-    en: "Calendar, festivals & sait",
-    hintNe: "महिनाको पात्रो, बिदा, चाडपर्व, साइत, अधिक मास",
-    hintEn: "Month calendar, holidays, festivals, sait, special months",
-  },
-  sky: {
-    ne: "ग्रह, ग्रहण र समय तालिका",
-    en: "Planets, eclipses & timings",
-    hintNe: "गोचर, अस्त/वक्री, ग्रहण, पञ्चक, सूर्य समय, तिथि/नक्षत्र अवधि",
-    hintEn: "Gochar, asta/vakri, eclipses, panchak, sun times, tithi/nakshatra spans",
-  },
-  daily: {
-    ne: "दैनिक विवरण",
-    en: "Daily detail",
-    hintNe: "हरेक दिनको पञ्चाङ्ग, मुहूर्त, गोचर र राशिफल (धेरै ठूलो हुन सक्छ)",
-    hintEn: "Every day's panchanga, muhurta, gochar and rashifal (can be very large)",
-  },
-  documents: {
-    ne: "स्तोत्र र शास्त्र पाठ",
-    en: "Scripture texts",
-    hintNe: "सबै पाठ (अडियो समावेश छैन)",
-    hintEn: "All texts (audio is not included)",
-  },
-};
+/** Copy keys for each download group (`offline.group.<id>.name` / `.hint`). */
+const groupName = (id: PackGroupId) => `offline.group.${id}.name`;
+const groupHint = (id: PackGroupId) => `offline.group.${id}.hint`;
 
 function parseYear(raw: string): number | null {
   const n = Number(raw.trim());
@@ -87,7 +64,7 @@ function YearInput({
 }
 
 export default function OfflineDataScreen() {
-  const { t, pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const colors = useThemeColors();
   const {
     isOnline,
@@ -129,15 +106,9 @@ export default function OfflineDataScreen() {
     if (startYear == null || endYear == null) return t("ui.account.enter_both_years");
     if (startYear > endYear) return t("ui.account.the_first_year_must_not_be");
     if (startYear < bounds.startYear || endYear > bounds.endYear)
-      return pick(
-        `वि.सं. ${digits(bounds.startYear)} देखि ${digits(bounds.endYear)} सम्म मात्र उपलब्ध छ।`,
-        `Only BS ${bounds.startYear}–${bounds.endYear} is available.`,
-      );
+      return t("offline.range_unavailable", { start: digits(bounds.startYear), end: digits(bounds.endYear) });
     if (endYear - startYear > maxSpan)
-      return pick(
-        `बढीमा ${digits(maxSpan)} वर्षको अन्तर मात्र डाउनलोड गर्न सकिन्छ।`,
-        `You can download at most a ${maxSpan}-year span.`,
-      );
+      return t("offline.span_too_long", { max: digits(maxSpan) });
     return null;
   })();
 
@@ -276,10 +247,7 @@ export default function OfflineDataScreen() {
           {t("ui.account.which_years_do_you_need")}
         </Text>
         <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-          {pick(
-            `वि.सं. मा वर्ष छान्नुहोस्। बढीमा ${digits(maxSpan)} वर्षको अन्तर (जस्तै २००० देखि २०९० सम्म)।`,
-            `Choose BS years. At most a ${maxSpan}-year span (for example 2000 to 2090).`,
-          )}
+          {t("offline.pick_years_hint", { max: digits(maxSpan) })}
         </Text>
         <View className="mt-3 flex-row gap-3">
           <YearInput label={t("ui.account.from_bs")} value={from} onChange={(v) => { setFrom(v); setMeasured(null); }} invalid={rangeProblem != null} />
@@ -291,10 +259,7 @@ export default function OfflineDataScreen() {
           </Text>
         ) : (
           <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
-            {pick(
-              `${digits(endYear! - startYear! + 1)} वर्ष छानिएको छ।`,
-              `${endYear! - startYear! + 1} years selected.`,
-            )}
+            {t("offline.years_selected", { count: digits(endYear! - startYear! + 1) })}
           </Text>
         )}
 
@@ -303,7 +268,6 @@ export default function OfflineDataScreen() {
         </Text>
         {PACK_GROUPS.map((g) => {
           const on = groups.includes(g.id);
-          const label = GROUP_LABELS[g.id];
           return (
             <Pressable
               key={g.id}
@@ -321,10 +285,10 @@ export default function OfflineDataScreen() {
               />
               <View className="flex-1">
                 <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
-                  {pick(label.ne, label.en)}
+                  {t(groupName(g.id))}
                 </Text>
                 <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
-                  {pick(label.hintNe, label.hintEn)}
+                  {t(groupHint(g.id))}
                 </Text>
               </View>
               {est?.perGroup[g.id] ? (
@@ -345,10 +309,7 @@ export default function OfflineDataScreen() {
               {formatBytes(est.totalBytes)}
             </Text>
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                `${digits(est.years)} वर्षको लागि। एउटा नमूना वर्ष (${digits(est.sampleYear)}) नापेर अनुमान गरिएको; वास्तविक आकार थोरै फरक पर्न सक्छ।`,
-                `For ${est.years} years, estimated from a measured sample year (${est.sampleYear}); the real size can differ a little.`,
-              )}
+              {t("offline.estimate_note", { years: digits(est.years), sample: digits(est.sampleYear) })}
             </Text>
           </View>
         ) : null}
@@ -411,15 +372,12 @@ export default function OfflineDataScreen() {
           </View>
           <Text className="text-caption mt-2 text-muted-foreground" style={nepaliTextStyle(12)}>
             {progress.currentYear != null ? `${digits(progress.currentYear)} · ` : ""}
-            {progress.currentGroup ? pick(GROUP_LABELS[progress.currentGroup].ne, GROUP_LABELS[progress.currentGroup].en) : ""}
+            {progress.currentGroup ? t(groupName(progress.currentGroup)) : ""}
             {progress.bytes > 0 ? ` · ${formatBytes(progress.bytes)}` : ""}
           </Text>
           {progress.skippedRequests > 0 ? (
             <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                `${digits(progress.skippedRequests)} अनुरोध सर्भरले उपलब्ध गराएन र छोडियो।`,
-                `${progress.skippedRequests} requests the server couldn't answer were skipped.`,
-              )}
+              {t("offline.skipped", { count: digits(progress.skippedRequests) })}
             </Text>
           ) : null}
           {running ? (

@@ -25,6 +25,46 @@ export const strings = {
   /* ── app_name ────────────────────────────────────────────────────────── */
   "app_name": { ne: "वैदिक पात्रो", en: "Dhakal Patro" },
 
+  /* ── offline (the app's offline data page) ──────────────────────────────── */
+  "offline.group.calendar.name": { ne: "पात्रो, चाडपर्व र साइत", en: "Calendar, festivals & sait" },
+  "offline.group.calendar.hint": {
+    ne: "महिनाको पात्रो, बिदा, चाडपर्व, साइत, अधिक मास",
+    en: "Month calendar, holidays, festivals, sait, special months",
+  },
+  "offline.group.sky.name": { ne: "ग्रह, ग्रहण र समय तालिका", en: "Planets, eclipses & timings" },
+  "offline.group.sky.hint": {
+    ne: "गोचर, अस्त/वक्री, ग्रहण, पञ्चक, सूर्य समय, तिथि/नक्षत्र अवधि",
+    en: "Gochar, asta/vakri, eclipses, panchak, sun times, tithi/nakshatra spans",
+  },
+  "offline.group.daily.name": { ne: "दैनिक विवरण", en: "Daily detail" },
+  "offline.group.daily.hint": {
+    ne: "हरेक दिनको पञ्चाङ्ग, मुहूर्त, गोचर र राशिफल (धेरै ठूलो हुन सक्छ)",
+    en: "Every day's panchanga, muhurta, gochar and rashifal (can be very large)",
+  },
+  "offline.group.documents.name": { ne: "स्तोत्र र शास्त्र पाठ", en: "Scripture texts" },
+  "offline.group.documents.hint": { ne: "सबै पाठ (अडियो समावेश छैन)", en: "All texts (audio is not included)" },
+  "offline.range_unavailable": {
+    ne: "वि.सं. {{start}} देखि {{end}} सम्म मात्र उपलब्ध छ।",
+    en: "Only BS {{start}}–{{end}} is available.",
+  },
+  "offline.span_too_long": {
+    ne: "बढीमा {{max}} वर्षको अन्तर मात्र डाउनलोड गर्न सकिन्छ।",
+    en: "You can download at most a {{max}}-year span.",
+  },
+  "offline.pick_years_hint": {
+    ne: "वि.सं. मा वर्ष छान्नुहोस्। बढीमा {{max}} वर्षको अन्तर (जस्तै २००० देखि २०९० सम्म)।",
+    en: "Choose BS years. At most a {{max}}-year span (for example 2000 to 2090).",
+  },
+  "offline.years_selected": { ne: "{{count}} वर्ष छानिएको छ।", en: "{{count}} years selected." },
+  "offline.estimate_note": {
+    ne: "{{years}} वर्षको लागि। एउटा नमूना वर्ष ({{sample}}) नापेर अनुमान गरिएको; वास्तविक आकार थोरै फरक पर्न सक्छ।",
+    en: "For {{years}} years, estimated from a measured sample year ({{sample}}); the real size can differ a little.",
+  },
+  "offline.skipped": {
+    ne: "{{count}} अनुरोध सर्भरले उपलब्ध गराएन र छोडियो।",
+    en: "{{count}} requests the server couldn't answer were skipped.",
+  },
+
   /* ── reminders ───────────────────────────────────────────────────────── */
   "reminders.login_prompt_title": { ne: "रिमाइन्डरका लागि लग-इन", en: "Sign in for reminders" },
   "reminders.login_prompt_body": {
@@ -6600,7 +6640,6 @@ export const strings = {
   },
 
   /* ── ui.account ─────────────────────────────────────────────────────────── */
-  "ui.account.add_profile": { ne: "प्रोफाइल थप", en: "Add profile" },
   "ui.account.all_downloaded_data_will_be_removed": {
     ne: "डाउनलोड गरिएको सबै डाटा यो यन्त्रबाट हटाइनेछ। तपाईं पुनः डाउनलोड गर्न सक्नुहुन्छ।",
     en: "All downloaded data will be removed from this device. You can download it again later.",
@@ -6610,12 +6649,7 @@ export const strings = {
   "ui.account.clear": { ne: "हटाउनुहोस्", en: "Clear" },
   "ui.account.clear_offline_data": { ne: "अफलाइन डाटा हटाउने?", en: "Clear offline data?" },
   "ui.account.clear_offline_data_2": { ne: "अफलाइन डाटा हटाउनुहोस्", en: "Clear offline data" },
-  "ui.account.could_not_delete_account": { ne: "खाता मेटाउन सकिएन", en: "Could not delete account" },
-  "ui.account.could_not_load_your_profiles": { ne: "प्रोफाइल लोड गर्न सकिएन।", en: "Could not load your profiles." },
   "ui.account.currently_on_this_device": { ne: "हाल यो यन्त्रमा", en: "Currently on this device" },
-  "ui.account.delete": { ne: "मेट्नुहोस्", en: "Delete" },
-  "ui.account.delete_account": { ne: "खाता मेटाउने?", en: "Delete account?" },
-  "ui.account.delete_profile": { ne: "प्रोफाइल मेट्ने?", en: "Delete profile?" },
   "ui.account.download_complete_these_years_now_work": {
     ne: "डाउनलोड पूरा भयो। अब इन्टरनेट बिना पनि चल्छ।",
     en: "Download complete. These years now work without internet.",
@@ -6624,10 +6658,6 @@ export const strings = {
   "ui.account.downloading": { ne: "डाउनलोड हुँदैछ…", en: "Downloading…" },
   "ui.account.enter_both_years": { ne: "दुवै वर्ष लेख्नुहोस्।", en: "Enter both years." },
   "ui.account.from_bs": { ne: "देखि (वि.सं.)", en: "From (BS)" },
-  "ui.account.full_name_will_be_permanently_removed": {
-    ne: "\"{{full_name}}\" स्थायी रूपमा मेटिनेछ।",
-    en: "\"{{full_name}}\" will be permanently removed.",
-  },
   "ui.account.go_home": { ne: "गृहपृष्ठ", en: "Go home" },
   "ui.account.length_years_bytes_stored": {
     ne: "{{length}} वर्ष · {{bytes}} भण्डारण",
@@ -6639,7 +6669,6 @@ export const strings = {
     en: "Manage the calendar years downloaded for offline use.",
   },
   "ui.account.measuring_size": { ne: "आकार नापिँदैछ…", en: "Measuring size…" },
-  "ui.account.no_profiles_yet": { ne: "अझै कुनै प्रोफाइल छैन।", en: "No profiles yet." },
   "ui.account.nothing_downloaded_yet": { ne: "अझै केही डाउनलोड गरिएको छैन।", en: "Nothing downloaded yet." },
   "ui.account.offline_calendar_data_can_be_managed": {
     ne: "लगइन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
@@ -6662,9 +6691,6 @@ export const strings = {
     ne: "इन्टरनेट बिना सबै सार्वजनिक पेजहरू चलाउन वर्षहरू छान्नुहोस्।",
     en: "Pick the years to keep on this device so every public page works without internet.",
   },
-  "ui.account.please_try_again": { ne: "पुनः प्रयास गर्नुहोस्।", en: "Please try again." },
-  "ui.account.profiles": { ne: "प्रोफाइलहरू", en: "Profiles" },
-  "ui.account.resend_verification_email": { ne: "पुनः पठाउनुहोस्", en: "Resend verification email" },
   "ui.account.resume_unfinished_download": { ne: "अधुरो डाउनलोड जारी राख्नुहोस्", en: "Resume unfinished download" },
   "ui.account.something_went_wrong": { ne: "त्रुटि भयो", en: "Something went wrong" },
   "ui.account.the_first_year_must_not_be": {
@@ -6674,7 +6700,6 @@ export const strings = {
   "ui.account.to_bs": { ne: "सम्म (वि.सं.)", en: "To (BS)" },
   "ui.account.total_to_download": { ne: "डाउनलोड गर्नुपर्ने कुल डाटा", en: "Total to download" },
   "ui.account.unlock_with_label": { ne: "{{label}} ले खोल्नुहोस्", en: "Unlock with {{label}}" },
-  "ui.account.verification_email_sent": { ne: "पुनः पठाइयो", en: "Verification email sent" },
   "ui.account.waits_for_wi_fi_before_downloading": {
     ne: "मोबाइल डाटा बचत गर्न डाउनलोडले वाइफाइको पर्खनेछ।",
     en: "Waits for Wi-Fi before downloading, to save mobile data.",
@@ -6688,10 +6713,6 @@ export const strings = {
   "ui.account.you_stay_signed_in_the_app": {
     ne: "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
     en: "You stay signed in; the app asks for biometrics when opened.",
-  },
-  "ui.account.your_email_is_not_verified_yet": {
-    ne: "इमेल प्रमाणित गर्न बाँकी छ। तपाईंको इनबक्स जाँच्नुहोस्।",
-    en: "Your email is not verified yet. Check your inbox.",
   },
 
   /* ── ui.app_header ──────────────────────────────────────────────────────── */

@@ -1,5 +1,31 @@
 {
   "app_name": "Dhakal Patro",
+  "offline": {
+    "group": {
+      "calendar": {
+        "name": "Calendar, festivals & sait",
+        "hint": "Month calendar, holidays, festivals, sait, special months"
+      },
+      "sky": {
+        "name": "Planets, eclipses & timings",
+        "hint": "Gochar, asta/vakri, eclipses, panchak, sun times, tithi/nakshatra spans"
+      },
+      "daily": {
+        "name": "Daily detail",
+        "hint": "Every day's panchanga, muhurta, gochar and rashifal (can be very large)"
+      },
+      "documents": {
+        "name": "Scripture texts",
+        "hint": "All texts (audio is not included)"
+      }
+    },
+    "range_unavailable": "Only BS {{start}}–{{end}} is available.",
+    "span_too_long": "You can download at most a {{max}}-year span.",
+    "pick_years_hint": "Choose BS years. At most a {{max}}-year span (for example 2000 to 2090).",
+    "years_selected": "{{count}} years selected.",
+    "estimate_note": "For {{years}} years, estimated from a measured sample year ({{sample}}); the real size can differ a little.",
+    "skipped": "{{count}} requests the server couldn't answer were skipped."
+  },
   "reminders": {
     "login_prompt_title": "Sign in for reminders",
     "login_prompt_body": "Sign in to set reminders and daily guidance notifications."

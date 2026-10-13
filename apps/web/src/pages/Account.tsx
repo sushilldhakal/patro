@@ -1,18 +1,10 @@
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Plus, Star, Trash2, Pencil, MailWarning, Loader2 } from "lucide-react";
+import { useAccountPage } from "@vedic-patro/features/account";
 import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useAuth } from "@/lib/auth/AuthContext";
-import {
-  listProfiles,
-  updateProfile,
-  deleteProfile,
-  apiResendVerification,
-  type Profile,
-} from "@/lib/auth/client";
 import {
   ProfileForm,
   EMPTY_PROFILE,
@@ -22,138 +14,109 @@ import { accountClasses } from "@vedic-patro/design-tokens/classes/account-class
 import { cn } from "@vedic-patro/domain/utils";
 
 export function Account() {
-  const { t } = useTranslation();
-  const { user, loading: authLoading, refreshUser, deleteAccount } = useAuth();
+  const auth = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const profilesQuery = useQuery({
-    queryKey: ["account-profiles"],
-    queryFn: listProfiles,
-    enabled: !!user,
-  });
-  const profiles = profilesQuery.data ?? [];
-  const loading = profilesQuery.isLoading;
-  const [editing, setEditing] = useState<Profile | "new" | null>(null);
-  const error = profilesQuery.isError ? t("account_page.load_error") : null;
-  const [resent, setResent] = useState(false);
-
-  const reloadProfiles = () => void queryClient.invalidateQueries({ queryKey: ["account-profiles"] });
+  const page = useAccountPage({ auth });
+  const { status, user, copy, editing, verification } = page;
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (status === "signed-out") {
       void navigate({ to: "/" });
     }
-  }, [authLoading, user, navigate]);
+  }, [status, navigate]);
 
-  async function onDelete(id: string) {
-    if (!confirm(t("account_page.delete_confirm"))) return;
-    await deleteProfile(id);
-    reloadProfiles();
-  }
+  useRouteLoading(status !== "ready" || page.listStatus === "loading");
 
-  async function onMakeDefault(p: Profile) {
-    await updateProfile(p.id, { is_default: true });
-    reloadProfiles();
-  }
-
-  useRouteLoading(authLoading || !user || loading);
-
-  if (authLoading || !user) {
+  if (status !== "ready" || !user) {
     return null;
   }
 
   return (
     <div className={cn("px-4 py-8", accountClasses.column)}>
       <header className={accountClasses.header}>
-        <h1 className={accountClasses.title}>{t("account_page.title")}</h1>
+        <h1 className={accountClasses.title}>{copy.title}</h1>
         <p className={accountClasses.subtitle}>{user.email}</p>
       </header>
 
-      {!user.is_verified && (
+      {verification.needed && (
         <div className={cn("flex", accountClasses.banner)}>
           <MailWarning className={cn("size-4 text-amber-600 dark:text-amber-400", accountClasses.bannerIcon)} />
           <div className="flex-1">
             <p className={accountClasses.bannerText}>
-              {t("account_page.verify_email")}
+              {copy.verifyEmail}
             </p>
             <button
               type="button"
-              disabled={resent}
+              disabled={verification.sent}
               className={cn("hover:underline disabled:opacity-60", accountClasses.bannerAction)}
-              onClick={async () => {
-                await apiResendVerification();
-                setResent(true);
-              }}
+              onClick={verification.resend}
             >
-              {resent ? t("account_page.resent") : t("account_page.resend")}
+              {verification.label}
             </button>
           </div>
         </div>
       )}
 
       <div className={cn("flex", accountClasses.sectionRow)}>
-        <h2 className={accountClasses.sectionTitle}>{t("account_page.profiles_title")}</h2>
+        <h2 className={accountClasses.sectionTitle}>{copy.profilesTitle}</h2>
         {editing === null && (
-          <Button size="sm" onClick={() => setEditing("new")}>
+          <Button size="sm" onClick={page.startNew}>
             <Plus className="size-3.5" />
-            {t("account_page.add_profile")}
+            {copy.addProfile}
           </Button>
         )}
       </div>
 
-      {error && <p className={accountClasses.errorText}>{error}</p>}
+      {page.loadError && <p className={accountClasses.errorText}>{page.loadError}</p>}
 
       {editing !== null ? (
         <ProfileForm
           initial={editing === "new" ? EMPTY_PROFILE : profileToInput(editing)}
-          onCancel={() => setEditing(null)}
-          onSaved={() => {
-            setEditing(null);
-            reloadProfiles();
-            void refreshUser();
-          }}
+          onCancel={page.cancelEdit}
+          onSaved={() => void page.onProfileSaved()}
           existing={editing === "new" ? undefined : editing}
         />
-      ) : loading ? (
+      ) : page.listStatus === "loading" ? (
         <div className={cn("flex justify-center", accountClasses.loadingBox)}>
           <Loader2 className="size-5 animate-spin" />
         </div>
-      ) : profiles.length === 0 ? (
+      ) : page.listStatus === "empty" ? (
         <div className={cn(accountClasses.emptyBox, accountClasses.emptyText)}>
-          {t("account_page.no_profiles")}
+          {copy.noProfiles}
         </div>
       ) : (
         <ul className={cn("flex flex-col", accountClasses.profileList)}>
-          {profiles.map((p) => (
+          {page.profiles.map(({ profile: p, name, isDefault, meta }) => (
             <li
               key={p.id}
               className={cn("flex", accountClasses.profileRow)}
             >
               <div className={accountClasses.profileBody}>
                 <div className={cn("flex", accountClasses.profileNameRow)}>
-                  <p className={cn("truncate", accountClasses.profileName)}>{p.full_name}</p>
-                  {p.is_default && (
+                  <p className={cn("truncate", accountClasses.profileName)}>{name}</p>
+                  {isDefault && (
                     <span className={cn("inline-flex", accountClasses.defaultBadge, accountClasses.defaultBadgeText)}>
-                      <Star className="size-3" /> {t("account_page.default")}
+                      <Star className="size-3" /> {copy.defaultBadge}
                     </span>
                   )}
                 </div>
                 <p className={cn("truncate", accountClasses.profileMeta)}>
-                  {[p.location_label || p.city, p.birth_date && `${p.birth_date}${p.birth_time ? " " + p.birth_time : ""}`]
-                    .filter(Boolean)
-                    .join(" · ") || t("account_page.no_birth_details")}
+                  {meta}
                 </p>
               </div>
               <div className={cn("flex", accountClasses.profileActions)}>
-                {!p.is_default && (
-                  <Button variant="ghost" size="icon-sm" title={t("account_page.make_default")} onClick={() => onMakeDefault(p)}>
+                {!isDefault && (
+                  <Button variant="ghost" size="icon-sm" title={copy.makeDefault} onClick={() => void page.makeDefault(p)}>
                     <Star className="size-4" />
                   </Button>
                 )}
-                <Button variant="ghost" size="icon-sm" title={t("account_page.edit")} onClick={() => setEditing(p)}>
+                <Button variant="ghost" size="icon-sm" title={copy.edit} onClick={() => page.startEdit(p)}>
                   <Pencil className="size-4" />
                 </Button>
-                <Button variant="ghost" size="icon-sm" title={t("account_page.delete")} onClick={() => onDelete(p.id)}>
+                <Button variant="ghost" size="icon-sm" title={copy.delete}
+                  onClick={() => {
+                    if (confirm(copy.deleteProfileConfirm)) void page.removeProfile(p);
+                  }}>
                   <Trash2 className="size-4 text-destructive" />
                 </Button>
               </div>
@@ -163,23 +126,19 @@ export function Account() {
       )}
 
       <div className={accountClasses.dangerZone}>
-        <h2 className={accountClasses.dangerTitle}>{t("account_page.delete_account")}</h2>
-        <p className={accountClasses.dangerBody}>{t("account_page.delete_account_confirm")}</p>
+        <h2 className={accountClasses.dangerTitle}>{copy.deleteAccount}</h2>
+        <p className={accountClasses.dangerBody}>{copy.deleteAccountConfirm}</p>
         <Button
           variant="outline"
           size="sm"
           className={cn("hover:bg-destructive/10", accountClasses.dangerButton, accountClasses.dangerButtonText)}
           onClick={async () => {
-            if (!confirm(t("account_page.delete_account_confirm"))) return;
-            try {
-              await deleteAccount();
-              void navigate({ to: "/" });
-            } catch {
-              alert(t("account_page.delete_account_error"));
-            }
+            if (!confirm(copy.deleteAccountConfirm)) return;
+            if (await page.deleteAccount()) void navigate({ to: "/" });
+            else alert(copy.deleteAccountError);
           }}
         >
-          {t("account_page.delete_account")}
+          {copy.deleteAccount}
         </Button>
       </div>
     </div>

@@ -2,7 +2,6 @@
   "apps/mobile/app/_layout.tsx": 2,
   "apps/mobile/app/(tabs)/dainikkranti.tsx": 81,
   "apps/mobile/app/(tabs)/more.tsx": 6,
-  "apps/mobile/app/account/offline-data.tsx": 19,
   "apps/mobile/components/auth/ProfileForm.tsx": 1,
   "apps/mobile/components/avakahada/AvakahadaWheel.tsx": 14,
   "apps/mobile/components/dainikKranti/DayPatroCard.tsx": 5,
