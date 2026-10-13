@@ -128,7 +128,7 @@ function ShlokaCardImpl({
                 <Text
                   key={i}
                   className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "mt-0 text-foreground")}
-                  style={{ backgroundColor: withAlpha(illustration.amber53, 0.45) }}
+                  style={[nepaliTextStyle(), { backgroundColor: withAlpha(illustration.amber53, 0.45) }]}
                 >
                   {tok}
                 </Text>
@@ -141,14 +141,13 @@ function ShlokaCardImpl({
             <Text className={documentsClasses.verseTranslit}>{shloka.transliteration}</Text>
           ) : null}
 
-          {isActive ? (
-            <View className={documentsClasses.verseProgress}>
-              <View
-                className={documentsClasses.verseProgressFill}
-                style={{ width: `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%` }}
-              />
-            </View>
-          ) : null}
+          {/* Always mounted: mounting it on play would grow the card and shift the list. */}
+          <View className={documentsClasses.verseProgress} style={{ opacity: isActive ? 1 : 0 }}>
+            <View
+              className={documentsClasses.verseProgressFill}
+              style={{ width: `${isActive ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : 0}%` }}
+            />
+          </View>
 
           {meaning ? (
             <View className={documentsClasses.verseMeaningWrap}>
