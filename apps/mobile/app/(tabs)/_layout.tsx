@@ -1,4 +1,5 @@
-import { Tabs } from "expo-router";
+import { Tabs, usePathname, useRouter } from "expo-router";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppHeader } from "@/components/AppHeader";
@@ -7,18 +8,45 @@ import { PanchangaTabsShell } from "@/components/panchanga/PanchangaTabsShell";
 import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 
+/** Width of the left-edge strip that starts a swipe-back, in points. */
+const EDGE_SWIPE_WIDTH = 28;
+
+/**
+ * Tab screens have no stack of their own, so there's no native swipe-back.
+ * A drag that starts at the left edge and travels right goes back one step
+ * (or home when there's nothing to go back to).
+ */
+function useEdgeSwipeBack() {
+  const router = useRouter();
+  const pathname = usePathname();
+  return Gesture.Pan()
+    .runOnJS(true)
+    .hitSlop({ left: 0, width: EDGE_SWIPE_WIDTH })
+    .activeOffsetX(16)
+    .failOffsetY([-24, 24])
+    .onEnd((e) => {
+      if (e.translationX < 72 && e.velocityX < 600) return;
+      if (router.canGoBack()) router.back();
+      else if (pathname !== "/") router.replace("/");
+    });
+}
+
 export default function TabsLayout() {
+  const swipeBack = useEdgeSwipeBack();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const tabBarHeight = floatingNavTabBarHeight(isTablet, insets.bottom);
 
   return (
     <Tabs
+      backBehavior="history"
       layout={({ children }) => (
-        <View className="flex-1 bg-background" style={{ flex: 1 }}>
-          <AppHeader />
-          <View className="min-h-0 flex-1">{children}</View>
-        </View>
+        <GestureDetector gesture={swipeBack}>
+          <View className="flex-1 bg-background" style={{ flex: 1 }}>
+            <AppHeader />
+            <View className="min-h-0 flex-1">{children}</View>
+          </View>
+        </GestureDetector>
       )}
       screenLayout={({ route, children }) => (
         <PanchangaTabsShell stableTree={route.name.startsWith("panchanga")} routeName={route.name}>{children}</PanchangaTabsShell>

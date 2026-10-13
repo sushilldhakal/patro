@@ -52,7 +52,7 @@ export const spec = {
   // ── Page layout ───────────────────────────────────────────────────────────
   /** Page content column. */
   pageShell: "mx-auto max-w-page space-y-8 px-4 py-8 sm:px-6",
-  pageHeaderRow: "flex items-start gap-3",
+  pageHeaderRow: "flex flex-row items-start gap-3",
   /** Space between a page's sections. */
   sectionStack: "space-y-8",
 
