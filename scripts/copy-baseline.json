@@ -1,11 +1,9 @@
 {
   "apps/mobile/app/_layout.tsx": 2,
-  "apps/mobile/app/(tabs)/abhijit-muhurta.tsx": 1,
   "apps/mobile/app/(tabs)/dainikkranti.tsx": 81,
   "apps/mobile/app/(tabs)/kundali/[profileId].tsx": 2,
   "apps/mobile/app/(tabs)/learn/index.tsx": 12,
   "apps/mobile/app/(tabs)/more.tsx": 6,
-  "apps/mobile/app/(tabs)/panchak-patro.tsx": 11,
   "apps/mobile/app/(tabs)/panchanga/avakahada-chakra.tsx": 10,
   "apps/mobile/app/(tabs)/panchanga/element/[name].tsx": 2,
   "apps/mobile/app/(tabs)/panchanga/year.tsx": 1,

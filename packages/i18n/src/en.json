@@ -4734,12 +4734,6 @@
       "later": "Later",
       "you_re_offline_and_this_year": "You're offline and this year's calendar hasn't been downloaded yet. Connect to the internet, or download it in advance next time you're online."
     },
-    "panchak_patro": {
-      "could_not_load_panchak_details": "Could not load Panchak details.",
-      "panchak_details_for_yearlabel_are_not": "Panchak details for {{yearLabel}} are not available yet.",
-      "panchak_patro_yearlabel": "Panchak Patro {{yearLabel}}",
-      "panchak_windows_for_yearlabel": "Panchak windows for {{yearLabel}}"
-    },
     "panchanga": {
       "aspect_effect": "Aspect effect",
       "back_to_panchanga_details": "Back to panchanga details",

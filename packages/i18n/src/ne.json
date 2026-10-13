@@ -4734,12 +4734,6 @@
       "later": "पछि",
       "you_re_offline_and_this_year": "तपाईं अफलाइन हुनुहुन्छ र यो वर्षको पात्रो पहिले डाउनलोड गरिएको छैन। इन्टरनेटमा जोडिनुहोस्, वा अनलाइन हुँदा भविष्यको लागि डाउनलोड गर्नुहोस्।"
     },
-    "panchak_patro": {
-      "could_not_load_panchak_details": "पञ्चक विवरण लोड गर्न सकिएन।",
-      "panchak_details_for_yearlabel_are_not": "{{yearLabel}} का लागि पञ्चक विवरण उपलब्ध छैन।",
-      "panchak_patro_yearlabel": "पञ्चक पात्रो {{yearLabel}}",
-      "panchak_windows_for_yearlabel": "{{yearLabel}} का पञ्चक अवधिहरू"
-    },
     "panchanga": {
       "aspect_effect": "दृष्टिको फल",
       "back_to_panchanga_details": "पञ्चाङ्ग विवरणमा फर्कनुहोस्",

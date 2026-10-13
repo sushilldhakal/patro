@@ -7598,20 +7598,6 @@ export const strings = {
     en: "You're offline and this year's calendar hasn't been downloaded yet. Connect to the internet, or download it in advance next time you're online.",
   },
 
-  /* ── ui.panchak_patro ───────────────────────────────────────────────────── */
-  "ui.panchak_patro.could_not_load_panchak_details": {
-    ne: "पञ्चक विवरण लोड गर्न सकिएन।",
-    en: "Could not load Panchak details.",
-  },
-  "ui.panchak_patro.panchak_details_for_yearlabel_are_not": {
-    ne: "{{yearLabel}} का लागि पञ्चक विवरण उपलब्ध छैन।",
-    en: "Panchak details for {{yearLabel}} are not available yet.",
-  },
-  "ui.panchak_patro.panchak_patro_yearlabel": { ne: "पञ्चक पात्रो {{yearLabel}}", en: "Panchak Patro {{yearLabel}}" },
-  "ui.panchak_patro.panchak_windows_for_yearlabel": {
-    ne: "{{yearLabel}} का पञ्चक अवधिहरू",
-    en: "Panchak windows for {{yearLabel}}",
-  },
 
   /* ── ui.panchanga ───────────────────────────────────────────────────────── */
   "ui.panchanga.aspect_effect": { ne: "दृष्टिको फल", en: "Aspect effect" },
