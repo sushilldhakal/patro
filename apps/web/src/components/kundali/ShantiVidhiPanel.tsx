@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useRef } from "react";
+import { Trans } from "@vedic-patro/i18n/react";
+import { useShantiVidhiPanel, type ShantiFindingCard as ShantiFindingCardData } from "@vedic-patro/features/shanti";
 import {
   Flame,
   Gem,
@@ -26,8 +27,6 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 import type { GrahaShantiFinding, GrahaShantiRecommendation } from "@/lib/api";
-import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/shanti/navagraha-shanti";
-import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
@@ -35,6 +34,17 @@ import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali
 const sh = kundaliDetailClasses.shanti;
 
 const th = "whitespace-nowrap text-xs font-semibold";
+
+type TileKey = ReturnType<typeof useShantiVidhiPanel>["detail"]["tiles"][number]["key"];
+const TILE_ICONS: Record<TileKey, React.ReactNode> = {
+  samidha: <TreePine className="h-4 w-4" />,
+  gem: <Gem className="h-4 w-4" />,
+  metal: <Sparkles className="h-4 w-4" />,
+  deity: <Flame className="h-4 w-4" />,
+  pratyadhidevata: <UserRound className="h-4 w-4" />,
+  disha: <Compass className="h-4 w-4" />,
+  pooja: <Flower2 className="h-4 w-4" />,
+};
 
 function InfoTile({
   icon,
@@ -69,89 +79,38 @@ const REMEDY_BADGE_CLASS: Record<GrahaShantiFinding["remedy"], string> = {
  * process (see `GrahaShantiFinding`) — not a client-side heuristic.
  */
 function ShantiFindingCard({
-  finding,
+  card,
   onSelect,
 }: {
-  finding: GrahaShantiFinding;
+  card: ShantiFindingCardData;
   onSelect: (key: string) => void;
 }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const graha = getGrahaShanti(finding.graha);
-  const nameNe = graha?.nameNe ?? finding.grahaNe;
-  const nameEn = graha?.nameEn ?? finding.graha;
   return (
     <div className={sh.finding}>
       <div className={cn(sh.findingHead, "flex")}>
-        <span className={sh.findingStep}>
-          {bilingualText(lang, finding.stepTitleNe, finding.stepTitleEn)}
-        </span>
+        <span className={sh.findingStep}>{card.step}</span>
         <span
           className={cn(
             sh.remedyBadge,
             sh.remedyBadgeText,
-            REMEDY_BADGE_CLASS[finding.remedy],
+            REMEDY_BADGE_CLASS[card.remedy],
           )}
         >
-          {t(`kundali.x.shanti_remedy_${finding.remedy}`)}
+          {card.remedyLabel}
         </span>
       </div>
       <div className={cn(sh.findingGraha, "flex")}>
-        <GrahaPlanetIcon graha={finding.graha as GrahaKey} size={28} />
-        <span className={sh.findingName}>{bilingualText(lang, nameNe, nameEn)}</span>
+        <GrahaPlanetIcon graha={card.graha as GrahaKey} size={28} />
+        <span className={sh.findingName}>{card.name}</span>
       </div>
-      <p className={sh.findingReason}>{bilingualText(lang, finding.reasonNe, finding.reasonEn)}</p>
+      <p className={sh.findingReason}>{card.reason}</p>
       <button
         type="button"
-        onClick={() => onSelect(finding.graha)}
+        onClick={() => onSelect(card.graha)}
         className={cn(sh.findingButton, sh.findingButtonText, "inline-flex transition-colors hover:bg-secondary/20")}
       >
-        <ArrowDownToLine className="h-3.5 w-3.5" /> {bilingualText(lang, `${nameNe} शान्ति हेर्नुहोस्`, `View ${nameEn} shanti`)}
+        <ArrowDownToLine className="h-3.5 w-3.5" /> {card.viewLabel}
       </button>
-    </div>
-  );
-}
-
-/**
- * One tier ("critical" or "core") of findings, collapsible so a chart with
- * many simultaneous afflictions (a real stellium can produce 8-12 findings)
- * doesn't dump every card on the user at once.
- */
-function ShantiFindingsGroup({
-  title,
-  findings,
-  onSelect,
-  defaultOpen,
-}: {
-  title: string;
-  findings: GrahaShantiFinding[];
-  onSelect: (key: string) => void;
-  defaultOpen: boolean;
-}) {
-  const { digits } = useLocale();
-  const [open, setOpen] = useState(defaultOpen);
-  if (findings.length === 0) return null;
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className={cn(sh.groupToggle, sh.groupToggleText, "flex w-full transition-colors hover:bg-muted")}
-      >
-        <span>{title} ({digits(findings.length)})</span>
-        {open ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
-      </button>
-      {open && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {findings.map((finding, idx) => (
-            <ShantiFindingCard
-              key={`${finding.step}-${finding.graha}-${finding.remedy}-${idx}`}
-              finding={finding}
-              onSelect={onSelect}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -171,101 +130,95 @@ export function ShantiVidhiPanel({
   grahaShanti?: GrahaShantiRecommendation;
   isError?: boolean;
 }) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const [selectedKey, setSelectedKey] = useState("saturn");
   const detailRef = useRef<HTMLDivElement>(null);
-  const graha = useMemo(() => getGrahaShanti(selectedKey) ?? NAVAGRAHA_SHANTI[0], [selectedKey]);
-  const findings = useMemo(() => grahaShanti?.findings ?? [], [grahaShanti]);
-  const criticalFindings = useMemo(() => findings.filter((f) => f.tier === "critical"), [findings]);
-  const coreFindings = useMemo(() => findings.filter((f) => f.tier === "core"), [findings]);
-
-  const selectAndScroll = (key: string) => {
-    setSelectedKey(key);
-    requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
-  };
+  const panel = useShantiVidhiPanel({
+    grahaShanti,
+    isError,
+    scrollToDetail: () => detailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+  });
+  const { detail, copy } = panel;
 
   return (
     <div className={sh.root}>
       {/* recommendations from this chart — server-computed 4-step decision */}
-      {isError ? (
-        <div className={cn(sh.errorBox, sh.errorText)}>
-          {t("kundali.x.shanti_load_error")}
-        </div>
-      ) : findings.length > 0 ? (
+      {panel.status === "error" ? (
+        <div className={cn(sh.errorBox, sh.errorText)}>{copy.loadError}</div>
+      ) : panel.status === "findings" ? (
         <div className="space-y-3">
-          <ShantiFindingsGroup
-            title={t("kundali.x.shanti_tier_critical")}
-            findings={criticalFindings}
-            onSelect={selectAndScroll}
-            defaultOpen
-          />
-          <ShantiFindingsGroup
-            title={t("kundali.x.shanti_tier_core")}
-            findings={coreFindings}
-            onSelect={selectAndScroll}
-            defaultOpen={criticalFindings.length === 0}
-          />
+          {panel.groups.map((group) => (
+            // One tier of findings, collapsible so a chart with many
+            // simultaneous afflictions doesn't dump every card at once.
+            <div key={group.tier}>
+              <button
+                type="button"
+                onClick={group.toggle}
+                className={cn(sh.groupToggle, sh.groupToggleText, "flex w-full transition-colors hover:bg-muted")}
+              >
+                <span>{group.title}</span>
+                {group.open ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
+              </button>
+              {group.open && (
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {group.cards.map((card) => (
+                    <ShantiFindingCard key={card.key} card={card} onSelect={panel.selectFinding} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       ) : (
-        <div className={cn(sh.emptyBox, sh.emptyText)}>
-          {t("kundali.x.shanti_findings_empty")}
-        </div>
+        <div className={cn(sh.emptyBox, sh.emptyText)}>{copy.empty}</div>
       )}
-      <p className={sh.basisNote}>
-        {t("kundali.x.shanti_basis_note")}
-      </p>
+      <p className={sh.basisNote}>{copy.basisNote}</p>
 
       {/* graha selector */}
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 lg:grid-cols-9">
-        {NAVAGRAHA_SHANTI.map((g) => {
-          const active = g.key === selectedKey;
-          return (
-            <button
-              key={g.key}
-              type="button"
-              onClick={() => setSelectedKey(g.key)}
-              className={cn(
-                sh.selector,
-                "flex flex-col transition-colors",
-                active
-                  ? cn(sh.selectorActive, sh.selectorTextActive)
-                  : cn(sh.selectorIdle, sh.selectorTextIdle, "hover:bg-muted"),
-              )}
-            >
-              <GrahaPlanetIcon graha={g.key as GrahaKey} size={28} />
-              <span className={sh.selectorText}>{bilingualText(lang, g.nameNe, g.nameEn)}</span>
-            </button>
-          );
-        })}
+        {panel.selector.map((g) => (
+          <button
+            key={g.key}
+            type="button"
+            onClick={() => panel.select(g.key)}
+            className={cn(
+              sh.selector,
+              "flex flex-col transition-colors",
+              g.active
+                ? cn(sh.selectorActive, sh.selectorTextActive)
+                : cn(sh.selectorIdle, sh.selectorTextIdle, "hover:bg-muted"),
+            )}
+          >
+            <GrahaPlanetIcon graha={g.key as GrahaKey} size={28} />
+            <span className={sh.selectorText}>{g.name}</span>
+          </button>
+        ))}
       </div>
 
       {/* selected graha detail */}
       <section ref={detailRef} className={cn(sh.detail, "scroll-mt-20")}>
         <header
           className={cn(sh.detailHead, "flex")}
-          style={{ background: `linear-gradient(90deg, ${graha.colorHex}1f, transparent)` }}
+          style={{ background: `linear-gradient(90deg, ${detail.colorHex}1f, transparent)` }}
         >
           <span
             className="flex w-1.5 self-stretch rounded-full shadow"
-            style={{ backgroundColor: graha.colorHex }}
+            style={{ backgroundColor: detail.colorHex }}
             aria-hidden
           />
-          <GrahaPlanetIcon graha={graha.key as GrahaKey} size={40} className="shrink-0" />
+          <GrahaPlanetIcon graha={detail.key as GrahaKey} size={40} className="shrink-0" />
           <div className="flex-1">
-            <h2 className={sh.detailTitle}>{bilingualText(lang, `${graha.nameNe} शान्ति`, `${graha.nameEn} Shanti`)}</h2>
-            <p className={sh.detailSubtitle}>{bilingualText(lang, graha.nameEn, graha.nameNe)}</p>
+            <h2 className={sh.detailTitle}>{detail.title}</h2>
+            <p className={sh.detailSubtitle}>{detail.subtitle}</p>
           </div>
           <div className={cn(sh.pills, "flex", sh.pillText)}>
             <span className={cn(sh.pill, "inline-flex")}>
-              <CalendarDays className="h-3.5 w-3.5" /> {bilingualText(lang, graha.vaaraNe, graha.vaaraEn)}
+              <CalendarDays className="h-3.5 w-3.5" /> {detail.vaara}
             </span>
             <span className={cn(sh.pill, "inline-flex")}>
-              <Clock className="h-3.5 w-3.5" /> {bilingualText(lang, graha.shubhSamayaNe, graha.shubhSamayaEn)}
+              <Clock className="h-3.5 w-3.5" /> {detail.samaya}
             </span>
             <span className={cn(sh.pill, "inline-flex gap-1.5")}>
-              <span className={sh.colorDot} style={{ backgroundColor: graha.colorHex }} />
-              {bilingualText(lang, graha.colorNe, graha.colorEn)}
+              <span className={sh.colorDot} style={{ backgroundColor: detail.colorHex }} />
+              {detail.color}
             </span>
           </div>
         </header>
@@ -273,20 +226,22 @@ export function ShantiVidhiPanel({
         <div className={cn(sh.detailBody, "space-y-5")}>
           {/* mantra + japa */}
           <div className={sh.mantraBox}>
-            <div className={sh.mantraLabel}>{t("kundali.x.shanti_beeja_mantra_heading")}</div>
-            <p className={sh.mantraBig}>{graha.beejMantra}</p>
+            <div className={sh.mantraLabel}>{copy.beejaHeading}</div>
+            <p className={sh.mantraBig}>{detail.beejMantra}</p>
             <p className={sh.japa}>
-              {bilingualNode(lang, <>जप संख्या: <span className={sh.japaValue}>{digits(graha.japa)}</span> पटक ({t("kundali.x.shanti_kaliyuga_japa")}: <span className={sh.japaValue}>{digits(graha.japa * 4)}</span> पटक)</>,
-                <>Japa count: <span className={sh.japaValue}>{digits(graha.japa)}</span> times ({t("kundali.x.shanti_kaliyuga_japa")}: <span className={sh.japaValue}>{digits(graha.japa * 4)}</span> times)</>,
-              )}
+              <Trans
+                i18nKey={detail.japaLine.i18nKey}
+                values={detail.japaLine.values}
+                components={{ v: <span className={sh.japaValue} /> }}
+              />
             </p>
             <div className={sh.mantraSection}>
-              <div className={sh.mantraLabel}>{t("kundali.x.shanti_vedic_mantra_heading")}</div>
-              <p className={sh.vedic}>{graha.vedicMantra}</p>
+              <div className={sh.mantraLabel}>{copy.vedicHeading}</div>
+              <p className={sh.vedic}>{detail.vedicMantra}</p>
             </div>
             <div className={sh.mantraSection}>
-              <div className={sh.mantraLabel}>{t("kundali.x.shanti_tantrik_mantra_heading")}</div>
-              <p className={sh.mantraBig}>{graha.tantrikMantra}</p>
+              <div className={sh.mantraLabel}>{copy.tantrikHeading}</div>
+              <p className={sh.mantraBig}>{detail.tantrikMantra}</p>
             </div>
           </div>
 
@@ -294,19 +249,19 @@ export function ShantiVidhiPanel({
           <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
             <div className={sh.stotramBox}>
               <div className={cn(sh.stotramHead, sh.tileLabel, "flex")}>
-                <BookOpenText className="h-4 w-4 text-secondary" /> {t("kundali.x.shanti_stotram_heading")}
+                <BookOpenText className="h-4 w-4 text-secondary" /> {copy.stotramHeading}
               </div>
-              <p className={sh.stotram}>{graha.stotram}</p>
+              <p className={sh.stotram}>{detail.stotram}</p>
             </div>
             <div className={sh.stotramBox}>
-              <div className={sh.yantraLabel}>{t("kundali.x.shanti_yantra_heading")}</div>
+              <div className={sh.yantraLabel}>{copy.yantraHeading}</div>
               <div className="mx-auto grid w-32 grid-cols-3 gap-1">
-                {graha.yantraGrid.map((n, i) => (
+                {detail.yantra.map((n, i) => (
                   <div
                     key={i}
                     className={cn(sh.yantraCell, sh.yantraText, "flex aspect-square")}
                   >
-                    {digits(n)}
+                    {n}
                   </div>
                 ))}
               </div>
@@ -315,28 +270,23 @@ export function ShantiVidhiPanel({
 
           {/* tiles */}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <InfoTile icon={<TreePine className="h-4 w-4" />} label={t("kundali.x.shanti_samidha_heading")} value={bilingualText(lang, graha.samidhaNe, graha.samidhaEn)} />
-            <InfoTile icon={<Gem className="h-4 w-4" />} label={t("kundali.x.shanti_gem")} value={bilingualText(lang, graha.gemNe, graha.gemEn)} />
-            <InfoTile icon={<Sparkles className="h-4 w-4" />} label={t("kundali.x.shanti_metal")} value={bilingualText(lang, graha.metalNe, graha.metalEn)} />
-            <InfoTile icon={<Flame className="h-4 w-4" />} label={t("kundali.x.shanti_deity")} value={bilingualText(lang, graha.adhidevataNe, graha.adhidevataEn)} />
-            <InfoTile icon={<UserRound className="h-4 w-4" />} label={t("kundali.x.shanti_pratyadhidevata")} value={bilingualText(lang, graha.pratyadhidevataNe, graha.pratyadhidevataEn)} />
-            <InfoTile icon={<Compass className="h-4 w-4" />} label={t("kundali.x.shanti_disha")} value={bilingualText(lang, graha.dishaNe, graha.dishaEn)} />
-            <InfoTile icon={<Flower2 className="h-4 w-4" />} label={t("kundali.x.shanti_pooja")} value={bilingualText(lang, graha.poojaNe, graha.poojaEn)} />
+            {detail.tiles.map((tile) => (
+              <InfoTile key={tile.key} icon={TILE_ICONS[tile.key]} label={tile.label} value={tile.value} />
+            ))}
           </div>
 
           {/* gem-wearing method */}
           <p className={cn(sh.noteBox, sh.noteText)}>
-            <span className={sh.noteLabel}>{t("kundali.x.shanti_gem_detail_label")}</span>{" "}
-            {bilingualText(lang, graha.gemDetailNe, graha.gemDetailEn)}
+            <span className={sh.noteLabel}>{copy.gemDetailLabel}</span> {detail.gemDetail}
           </p>
 
           {/* daan */}
           <div>
             <div className={cn(sh.donationHead, sh.donationTitle, "flex")}>
-              <HandCoins className="h-4 w-4 text-secondary" /> {t("kundali.x.shanti_donation_items")}
+              <HandCoins className="h-4 w-4 text-secondary" /> {copy.donationItems}
             </div>
             <div className={cn(sh.donationList, "flex")}>
-              {(lang === "en" ? graha.daanEn ?? graha.daan : graha.daan).map((item, idx) => (
+              {detail.daan.map((item, idx) => (
                 <span key={`${item}-${idx}`} className={cn(sh.donationChip, sh.donationChipText)}>
                   {item}
                 </span>
@@ -345,58 +295,51 @@ export function ShantiVidhiPanel({
           </div>
 
           <p className={cn(sh.noteBox, sh.noteText)}>
-            <span className={sh.noteLabel}>{t("kundali.x.shanti_use_label")}</span> {bilingualText(lang, graha.remedyNe, graha.remedyEn)}
+            <span className={sh.noteLabel}>{copy.useLabel}</span> {detail.remedy}
           </p>
         </div>
       </section>
 
       {/* full reference table */}
       <div>
-        <h3 className={sh.refTitle}>{t("kundali.x.shanti_reference_table")}</h3>
+        <h3 className={sh.refTitle}>{copy.referenceTitle}</h3>
         <div className={sh.refTable}>
           <Table>
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
-                <TableHead className={th}>{t("learn.playground.planet")}</TableHead>
-                <TableHead className={th}>{t("kundali.day")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_beeja_mantra_column")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_japa_column")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_samidha_column")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_gem")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_metal")}</TableHead>
-                <TableHead className={th}>{t("kundali.x.shanti_daan_column")}</TableHead>
+                {panel.reference.columns.map((label) => (
+                  <TableHead key={label} className={th}>{label}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {NAVAGRAHA_SHANTI.map((g) => (
+              {panel.reference.rows.map((g) => (
                 <TableRow
                   key={g.key}
-                  className={cn("cursor-pointer", g.key === selectedKey && "bg-secondary/10 hover:bg-secondary/15")}
-                  onClick={() => setSelectedKey(g.key)}
+                  className={cn("cursor-pointer", g.active && "bg-secondary/10 hover:bg-secondary/15")}
+                  onClick={() => panel.select(g.key)}
                 >
                   <TableCell className="whitespace-nowrap font-semibold text-foreground">
                     <span className="inline-flex items-center gap-2">
                       <GrahaPlanetIcon graha={g.key as GrahaKey} size={22} />
-                      {bilingualText(lang, g.nameNe, g.nameEn)}
+                      {g.name}
                     </span>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap">{bilingualText(lang, g.vaaraNe, g.vaaraEn)}</TableCell>
+                  <TableCell className="whitespace-nowrap">{g.vaara}</TableCell>
                   <TableCell className="whitespace-nowrap">{g.beejMantra}</TableCell>
-                  <TableCell className="whitespace-nowrap">{digits(g.japa)}</TableCell>
-                  <TableCell className="whitespace-nowrap">{bilingualText(lang, g.samidhaNe, g.samidhaEn)}</TableCell>
-                  <TableCell className="whitespace-nowrap">{bilingualText(lang, g.gemNe, g.gemEn)}</TableCell>
-                  <TableCell className="whitespace-nowrap">{bilingualText(lang, g.metalNe, g.metalEn)}</TableCell>
+                  <TableCell className="whitespace-nowrap">{g.japa}</TableCell>
+                  <TableCell className="whitespace-nowrap">{g.samidha}</TableCell>
+                  <TableCell className="whitespace-nowrap">{g.gem}</TableCell>
+                  <TableCell className="whitespace-nowrap">{g.metal}</TableCell>
                   <TableCell className="max-w-56">
-                    <span className={kundaliDetailClasses.prose.small}>{bilingualText(lang, Array.isArray(g.daan) ? g.daan.join(", ") : g.daan, Array.isArray(g.daanEn) ? g.daanEn.join(", ") : g.daanEn)}</span>
+                    <span className={kundaliDetailClasses.prose.small}>{g.daan}</span>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
-        <p className={sh.refNote}>
-          {t("kundali.x.shanti_disclaimer")}
-        </p>
+        <p className={sh.refNote}>{copy.disclaimer}</p>
       </div>
     </div>
   );

@@ -840,6 +840,9 @@
       "shanti_use_label": "Use:",
       "shanti_vedic_mantra_heading": "Vedic Mantra",
       "shanti_yantra_heading": "Yantra",
+      "shanti_view": "View {{name}} shanti",
+      "shanti_title": "{{name}} Shanti",
+      "shanti_japa_line": "Japa count: <v>{{japa}}</v> times ({{kaliyuga}}: <v>{{japa4}}</v> times)",
       "status_adequate": "Adequate",
       "status_borderline": "Borderline",
       "status_exceptional": "Exceptional",
@@ -3272,7 +3275,9 @@
     "filter_rashi": "Sign",
     "filter_nakshatra": "Nakshatra",
     "filter_asta": "Combust",
-    "filter_retrograde": "Retrograde"
+    "filter_retrograde": "Retrograde",
+    "window_until": "{{label}} until {{when}}",
+    "pada_n": "Pada {{n}}"
   },
   "grahas": {
     "sun": "Sun",

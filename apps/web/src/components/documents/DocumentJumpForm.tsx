@@ -1,17 +1,12 @@
-import { useState, type FormEvent } from "react";
+import type { FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { shlokaAnchor, useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@vedic-patro/domain/utils";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { documentsListSearch, type DocumentCategoryTab } from "@/lib/documents-api";
-
-/** Same id convention ShlokaCard gives every verse's <section>. */
-function shlokaAnchor(verseLabel: string) {
-  return `shloka-${verseLabel.trim().replace(/\s+/g, "-")}`;
-}
 
 interface Props {
   slug: string;
@@ -36,90 +31,65 @@ interface Props {
  * same reference already printed next to each verse.
  */
 export function DocumentJumpForm({ slug, category, topic, chapterNumbers, currentChapter }: Props) {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [chapterInput, setChapterInput] = useState(
-    currentChapter != null ? String(currentChapter) : "",
-  );
-  const [verseInput, setVerseInput] = useState("");
-  const [notFound, setNotFound] = useState(false);
+  const form = useDocumentJumpForm({
+    chapterNumbers,
+    currentChapter,
+    onJump: (chapter, verse) => {
+      const hash = verse ? shlokaAnchor(verse) : undefined;
+      // Within the open chapter: scroll in place.
+      if (currentChapter != null && chapter === currentChapter) {
+        const el = hash ? document.getElementById(hash) : null;
+        if (!el) return false;
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        return true;
+      }
+      navigate({
+        to: "/documents/$slug/$chapter",
+        params: { slug, chapter: String(chapter) },
+        search: category ? documentsListSearch(category, topic) : undefined,
+        hash,
+      });
+      return true;
+    },
+  });
+  const { copy } = form;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setNotFound(false);
-
-    const chapterNum = currentChapter ?? Number(chapterInput);
-    // currentChapter is already known-valid (we're rendering it) — only a
-    // typed chapter number needs checking against the document's real list.
-    if (currentChapter == null && !chapterNumbers.includes(chapterNum)) {
-      setNotFound(true);
-      return;
-    }
-
-    const verse = verseInput.trim();
-    const hash = verse ? shlokaAnchor(verse) : undefined;
-
-    if (currentChapter != null && chapterNum === currentChapter) {
-      if (!hash) return;
-      const el = document.getElementById(hash);
-      if (!el) {
-        setNotFound(true);
-        return;
-      }
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
-    }
-
-    navigate({
-      to: "/documents/$slug/$chapter",
-      params: { slug, chapter: String(chapterNum) },
-      search: category ? documentsListSearch(category, topic) : undefined,
-      hash,
-    });
+    form.submit();
   };
 
   return (
     <form onSubmit={handleSubmit} className={documentsClasses.jumpForm}>
-      {currentChapter == null ? (
+      {form.showChapter ? (
         <label className={documentsClasses.jumpField}>
-          <span className={documentsClasses.jumpLabel}>
-            {t("documents.jump_chapter_label")}
-          </span>
+          <span className={documentsClasses.jumpLabel}>{copy.chapterLabel}</span>
           <Input
             inputMode="numeric"
-            value={chapterInput}
-            onChange={(e) => {
-              setChapterInput(e.target.value);
-              setNotFound(false);
-            }}
+            value={form.chapterInput}
+            onChange={(e) => form.setChapterInput(e.target.value)}
             className={documentsClasses.jumpChapterInput}
-            aria-label={t("documents.jump_chapter_label")}
+            aria-label={copy.chapterLabel}
           />
         </label>
       ) : null}
       <label className={documentsClasses.jumpField}>
-        <span className={documentsClasses.jumpLabel}>
-          {t("documents.jump_verse_label")}
-        </span>
+        <span className={documentsClasses.jumpLabel}>{copy.verseLabel}</span>
         <Input
-          value={verseInput}
-          onChange={(e) => {
-            setVerseInput(e.target.value);
-            setNotFound(false);
-          }}
-          placeholder={t("documents.jump_verse_placeholder")}
+          value={form.verseInput}
+          onChange={(e) => form.setVerseInput(e.target.value)}
+          placeholder={copy.versePlaceholder}
           className={documentsClasses.jumpVerseInput}
-          aria-label={t("documents.jump_verse_label")}
+          aria-label={copy.verseLabel}
         />
       </label>
       <Button type="submit" size="sm" variant="secondary" className="gap-1.5">
         <Search className="size-3.5" />
-        {t("documents.jump_button")}
+        {copy.button}
       </Button>
-      {notFound ? (
-        <p className={cn("basis-full", documentsClasses.jumpError)}>
-          {t("documents.jump_not_found")}
-        </p>
+      {form.notFound ? (
+        <p className={cn("basis-full", documentsClasses.jumpError)}>{copy.notFound}</p>
       ) : null}
     </form>
   );

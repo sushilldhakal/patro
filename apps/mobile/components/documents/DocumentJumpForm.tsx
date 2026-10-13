@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useDocumentJumpForm } from "@vedic-patro/features/documents";
 import { TextInput, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
@@ -20,70 +19,52 @@ interface Props {
 
 /** "Go to chapter & verse" — matches a verse's printed `verse_label` exactly. */
 export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Props) {
-  const { t } = useLocale();
   const colors = useThemeColors();
-  const [chapterInput, setChapterInput] = useState("");
-  const [verseInput, setVerseInput] = useState("");
-  const [notFound, setNotFound] = useState(false);
-
-  const submit = () => {
-    const chapter = currentChapter ?? Number(chapterInput);
-    if (currentChapter == null && !chapterNumbers.includes(chapter)) {
-      setNotFound(true);
-      return;
-    }
-    if (currentChapter != null && !verseInput.trim()) return;
-    setNotFound(!onJump(chapter, verseInput.trim()));
-  };
+  const form = useDocumentJumpForm({ chapterNumbers, currentChapter, onJump });
+  const { copy } = form;
 
   return (
     <View>
       <View className={documentsClasses.jumpForm}>
-        {currentChapter == null ? (
+        {form.showChapter ? (
           <View className={documentsClasses.jumpField}>
-            <Text className={documentsClasses.jumpLabel}>{t("documents.jump_chapter_label")}</Text>
+            <Text className={documentsClasses.jumpLabel}>{copy.chapterLabel}</Text>
             <TextInput
-              value={chapterInput}
-              onChangeText={(v) => {
-                setChapterInput(v);
-                setNotFound(false);
-              }}
+              value={form.chapterInput}
+              onChangeText={form.setChapterInput}
               keyboardType="number-pad"
               returnKeyType="go"
-              onSubmitEditing={submit}
-              accessibilityLabel={t("documents.jump_chapter_label")}
+              onSubmitEditing={form.submit}
+              accessibilityLabel={copy.chapterLabel}
               className={cn(documentsClasses.jumpInput, documentsClasses.jumpChapterInput)}
             />
           </View>
         ) : null}
         <View className={documentsClasses.jumpField}>
-          <Text className={documentsClasses.jumpLabel}>{t("documents.jump_verse_label")}</Text>
+          <Text className={documentsClasses.jumpLabel}>{copy.verseLabel}</Text>
           <TextInput
-            value={verseInput}
-            onChangeText={(v) => {
-              setVerseInput(v);
-              setNotFound(false);
-            }}
-            placeholder={t("documents.jump_verse_placeholder")}
+            value={form.verseInput}
+            onChangeText={form.setVerseInput}
+            placeholder={copy.versePlaceholder}
             placeholderTextColor={colors.mutedForeground}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="go"
-            onSubmitEditing={submit}
-            accessibilityLabel={t("documents.jump_verse_label")}
+            onSubmitEditing={form.submit}
+            accessibilityLabel={copy.verseLabel}
             className={cn(documentsClasses.jumpInput, documentsClasses.jumpVerseInput)}
           />
         </View>
         <Button
           size="sm"
           variant="secondary"
-          label={t("documents.jump_button")}
-          onPress={submit}
+          label={copy.button}
+          onPress={form.submit}
           className="gap-1.5"
           icon={<Ionicons name="search" size={14} color={inkOn(colors.secondary)} />}
         />
       </View>
-      {notFound ? <Text className={cn("mt-2", documentsClasses.jumpError)}>{t("documents.jump_not_found")}</Text> : null}
+      {form.notFound ? <Text className={cn("mt-2", documentsClasses.jumpError)}>{copy.notFound}</Text> : null}
     </View>
   );
 }

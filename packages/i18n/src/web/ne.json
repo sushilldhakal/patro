@@ -840,6 +840,9 @@
       "shanti_use_label": "उपयोग:",
       "shanti_vedic_mantra_heading": "वैदिक मन्त्र",
       "shanti_yantra_heading": "यन्त्र",
+      "shanti_view": "{{name}} शान्ति हेर्नुहोस्",
+      "shanti_title": "{{name}} शान्ति",
+      "shanti_japa_line": "जप संख्या: <v>{{japa}}</v> पटक ({{kaliyuga}}: <v>{{japa4}}</v> पटक)",
       "status_adequate": "पर्याप्त",
       "status_borderline": "सीमान्त",
       "status_exceptional": "उत्कृष्ट",
@@ -3272,7 +3275,9 @@
     "filter_rashi": "राशि",
     "filter_nakshatra": "नक्षत्र",
     "filter_asta": "अस्त",
-    "filter_retrograde": "वक्री"
+    "filter_retrograde": "वक्री",
+    "window_until": "{{label}} {{when}} सम्म",
+    "pada_n": "पद {{n}}"
   },
   "grahas": {
     "sun": "सूर्य",

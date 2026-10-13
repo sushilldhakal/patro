@@ -1297,6 +1297,12 @@ export const strings = {
   "kundali.x.shanti_use_label": { ne: "उपयोग:", en: "Use:" },
   "kundali.x.shanti_vedic_mantra_heading": { ne: "वैदिक मन्त्र", en: "Vedic Mantra" },
   "kundali.x.shanti_yantra_heading": { ne: "यन्त्र", en: "Yantra" },
+  "kundali.x.shanti_view": { ne: "{{name}} शान्ति हेर्नुहोस्", en: "View {{name}} shanti" },
+  "kundali.x.shanti_title": { ne: "{{name}} शान्ति", en: "{{name}} Shanti" },
+  "kundali.x.shanti_japa_line": {
+    ne: "जप संख्या: <v>{{japa}}</v> पटक ({{kaliyuga}}: <v>{{japa4}}</v> पटक)",
+    en: "Japa count: <v>{{japa}}</v> times ({{kaliyuga}}: <v>{{japa4}}</v> times)",
+  },
   "kundali.x.status_adequate": { ne: "पर्याप्त", en: "Adequate" },
   "kundali.x.status_borderline": { ne: "सीमान्त", en: "Borderline" },
   "kundali.x.status_exceptional": { ne: "उत्कृष्ट", en: "Exceptional" },
@@ -5289,6 +5295,8 @@ export const strings = {
   "gochar.filter_nakshatra": { ne: "नक्षत्र", en: "Nakshatra" },
   "gochar.filter_asta": { ne: "अस्त", en: "Combust" },
   "gochar.filter_retrograde": { ne: "वक्री", en: "Retrograde" },
+  "gochar.window_until": { ne: "{{label}} {{when}} सम्म", en: "{{label}} until {{when}}" },
+  "gochar.pada_n": { ne: "पद {{n}}", en: "Pada {{n}}" },
 
   /* ── grahas ──────────────────────────────────────────────────────────── */
   "grahas.sun": { ne: "सूर्य", en: "Sun" },
@@ -6995,10 +7003,6 @@ export const strings = {
   "ui.kundali.house": { ne: "भाव", en: "house" },
   "ui.kundali.house_house": { ne: "भाव {{house}}", en: "house {{house}}" },
   "ui.kundali.house_lordhouse": { ne: "{{lordHouse}}औँ भाव", en: "house {{lordHouse}}" },
-  "ui.kundali.japa_count_japa_times_value_value2": {
-    ne: "जप संख्या: {{japa}} पटक ({{value}}: {{value2}} पटक)",
-    en: "Japa count: {{japa}} times ({{value}}: {{value2}} times)",
-  },
   "ui.kundali.kundali_yogas": { ne: "कुण्डली योग", en: "Kundali yogas" },
   "ui.kundali.kuta_details": { ne: "कूट विवरण", en: "Kuta details" },
   "ui.kundali.kuta_points": { ne: "कूट अङ्क", en: "Kuta points" },
@@ -7899,7 +7903,6 @@ export const strings = {
   "ui.day_detail_modal.yog": { ne: "योग", en: "Yog" },
 
   /* ── ui.gochar ──────────────────────────────────────────────────────────── */
-  "ui.gochar.in_rashi_until_lang": { ne: "{{rashi}} मा {{lang}} सम्म", en: "In {{rashi}} until {{lang}}" },
   "ui.gochar.in_rashiuntil_until_lang": {
     ne: "{{rashiUntil}} मा {{lang}} सम्म",
     en: "In {{rashiUntil}} until {{lang}}",

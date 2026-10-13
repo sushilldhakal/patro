@@ -840,6 +840,9 @@
       "shanti_use_label": "उपयोग:",
       "shanti_vedic_mantra_heading": "वैदिक मन्त्र",
       "shanti_yantra_heading": "यन्त्र",
+      "shanti_view": "{{name}} शान्ति हेर्नुहोस्",
+      "shanti_title": "{{name}} शान्ति",
+      "shanti_japa_line": "जप संख्या: <v>{{japa}}</v> पटक ({{kaliyuga}}: <v>{{japa4}}</v> पटक)",
       "status_adequate": "पर्याप्त",
       "status_borderline": "सीमान्त",
       "status_exceptional": "उत्कृष्ट",
@@ -3272,7 +3275,9 @@
     "filter_rashi": "राशि",
     "filter_nakshatra": "नक्षत्र",
     "filter_asta": "अस्त",
-    "filter_retrograde": "वक्री"
+    "filter_retrograde": "वक्री",
+    "window_until": "{{label}} {{when}} सम्म",
+    "pada_n": "पद {{n}}"
   },
   "grahas": {
     "sun": "सूर्य",
@@ -4326,7 +4331,6 @@
       "the_sky_at_a_glance": "आकाश एक नजरमा",
       "upcoming_transit_events": "आगामी गोचर घटनाहरू",
       "what_s_changing": "के परिवर्तन हुँदैछ",
-      "in_rashi_until_lang": "{{rashi}} मा {{lang}} सम्म",
       "in_rashiuntil_until_lang": "{{rashiUntil}} मा {{lang}} सम्म"
     },
     "graha": {
@@ -4392,7 +4396,6 @@
       "house": "भाव",
       "house_house": "भाव {{house}}",
       "house_lordhouse": "{{lordHouse}}औँ भाव",
-      "japa_count_japa_times_value_value2": "जप संख्या: {{japa}} पटक ({{value}}: {{value2}} पटक)",
       "kundali_yogas": "कुण्डली योग",
       "kuta_details": "कूट विवरण",
       "kuta_points": "कूट अङ्क",
