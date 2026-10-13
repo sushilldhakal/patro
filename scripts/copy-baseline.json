@@ -3,8 +3,6 @@
   "apps/mobile/app/(tabs)/dainikkranti.tsx": 81,
   "apps/mobile/app/(tabs)/kundali/[profileId].tsx": 2,
   "apps/mobile/app/(tabs)/more.tsx": 6,
-  "apps/mobile/app/(tabs)/panchanga/element/[name].tsx": 2,
-  "apps/mobile/app/(tabs)/panchanga/year.tsx": 1,
   "apps/mobile/app/(tabs)/reminders.tsx": 2,
   "apps/mobile/app/account/offline-data.tsx": 19,
   "apps/mobile/components/auth/ProfileForm.tsx": 1,
@@ -136,8 +134,6 @@
   "apps/web/src/lib/patro-year-search-query.ts": 13,
   "apps/web/src/lib/seo.ts": 11,
   "apps/web/src/pages/DainikKranti.tsx": 62,
-  "apps/web/src/pages/ElementPage.tsx": 2,
   "apps/web/src/pages/PanchangaOgPreview.tsx": 13,
-  "apps/web/src/pages/PanchangaYear.tsx": 1,
   "apps/web/src/router.tsx": 4
 }

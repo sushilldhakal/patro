@@ -1,74 +1,33 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Link, useParams, useSearch } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { ArrowLeft } from "lucide-react";
+import { useDocumentDetail } from "@vedic-patro/features/documents";
 import { PageShell } from "@/components/PageShell";
 import { ChapterCard } from "@/components/documents/ChapterCard";
 import { DocumentJumpForm } from "@/components/documents/DocumentJumpForm";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
-import { ShlokaCard } from "@/components/documents/ShlokaCard";
+import { ReaderRows } from "@/components/documents/ReaderRows";
 import { useDocumentPlayback } from "@/hooks/use-document-playback";
-import { bilingualText, useLocale } from "@/i18n/locale";
-import { ApiError } from "@/lib/api";
-import {
-  DOCUMENTS_STALE_TIME,
-  documentsKeys,
-  documentsListSearch,
-  fetchDocumentDetail,
-  flattenShlokas,
-  type DocumentChapter,
-  type DocumentDetailSearch,
-} from "@/lib/documents-api";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { documentsListSearch, type DocumentDetailSearch } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
-function chapterAnchor(number: number) {
-  return `chapter-${number}`;
-}
+const SHELL = "min-w-0 max-w-full [overflow-wrap:anywhere]";
 
-function chapterNumbersOf(chapters: DocumentChapter[]): number[] {
-  return chapters.map((c) => c.number).filter((n): n is number => n != null);
-}
-
+/** A document — the website's drawing of `useDocumentDetail` (@vedic-patro/features). */
 export function DocumentDetail() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
   const { slug } = useParams({ strict: false }) as { slug?: string };
   // Which list-page tab this document was opened from (see DocumentCard) — so
   // "back to list" returns there instead of always resetting to "all".
   const { category, topic } = useSearch({ strict: false }) as DocumentDetailSearch;
-  const num = (n: number) => (lang === "ne" ? toNepaliDigits(String(n)) : String(n));
+  const page = useDocumentDetail(slug);
+  const { doc, copy } = page;
 
-  const docQ = useQuery({
-    queryKey: documentsKeys.detail(slug ?? ""),
-    queryFn: () => fetchDocumentDetail(slug!),
-    enabled: Boolean(slug),
-    staleTime: DOCUMENTS_STALE_TIME,
-    retry: (count, error) => !(error instanceof ApiError && error.status === 404) && count < 2,
-  });
+  useRouteLoading(page.status === "loading");
 
-  useRouteLoading(docQ.isLoading);
-
-  const doc = docQ.data;
-  const shlokas = useMemo(() => (doc ? flattenShlokas(doc) : []), [doc]);
-  const {
-    player,
-    versePlayer,
-    fullAudio,
-    mode,
-    startFull,
-    switchToFull,
-    activeShloka,
-    fullRecordingControls,
-  } = useDocumentPlayback(shlokas, doc?.full_audio_url);
-
-  const inlineChapters = useMemo(() => {
-    if (!doc?.inline_chapters) return [];
-    return doc.chapters.filter((chapter) => (chapter.shlokas?.length ?? 0) > 0);
-  }, [doc]);
+  const { player, versePlayer, fullAudio, mode, startFull, switchToFull, activeShloka, fullRecordingControls } =
+    useDocumentPlayback(page.shlokas, page.fullAudioUrl);
 
   useEffect(() => {
     if (!doc) return;
@@ -85,116 +44,67 @@ export function DocumentDetail() {
       search={documentsListSearch(category ?? "all", topic)}
       className={cn(documentsClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
     >
-      <ArrowLeft className="size-4" /> {t("documents.back_to_list")}
+      <ArrowLeft className="size-4" /> {copy.backToList}
     </Link>
   );
 
-  if (!slug || (docQ.isError && !docQ.isLoading)) {
+  if (page.status === "not-found" || page.status === "error") {
     return (
-      <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+      <PageShell showRelatedLinks={false} className={SHELL}>
         {backLink}
-        <p className={documentsClasses.notFound}>{t("documents.not_found")}</p>
+        <p className={documentsClasses.notFound}>{copy.notFound}</p>
       </PageShell>
     );
   }
 
-  if (!doc) {
+  if (!doc || !page.header) {
     return (
-      <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere]">
+      <PageShell showRelatedLinks={false} className={SHELL}>
         {backLink}
       </PageShell>
     );
   }
 
-  const title = bilingualText(lang, doc.title_ne, doc.title_en);
-  const subtitle = bilingualText(lang, doc.subtitle_ne, doc.subtitle_en);
-  const description = bilingualText(lang, doc.description_ne, doc.description_en);
-  const source = bilingualText(lang, doc.source_ne, doc.source_en);
-
-  const header = (
+  const { header } = page;
+  const headerBlock = (
     <header className={cn(documentsClasses.header, "space-y-1.5")}>
-      <p className={documentsClasses.headerSanskrit}>{doc.title_sa}</p>
-      <h1 className={documentsClasses.headerTitle}>{title}</h1>
-      {subtitle ? <p className={documentsClasses.headerSubtitle}>{subtitle}</p> : null}
-      {description ? <p className={documentsClasses.headerDescription}>{description}</p> : null}
-      {source ? (
-        <p className={documentsClasses.headerSource}>
-          {t("documents.source")}: {source}
-        </p>
-      ) : null}
+      <p className={documentsClasses.headerSanskrit}>{header.sanskrit}</p>
+      <h1 className={documentsClasses.headerTitle}>{header.title}</h1>
+      {header.subtitle ? <p className={documentsClasses.headerSubtitle}>{header.subtitle}</p> : null}
+      {header.description ? <p className={documentsClasses.headerDescription}>{header.description}</p> : null}
+      {header.source ? <p className={documentsClasses.headerSource}>{header.source}</p> : null}
     </header>
   );
+  const stats = page.stats ? (
+    <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
+      <span>{page.stats[0]}</span>
+      <span aria-hidden="true">·</span>
+      <span>{page.stats[1]}</span>
+    </div>
+  ) : null;
 
-  const playback = (
-    <>
-      {fullAudio.audioElement}
-      <PlaybackBar
-        mode={mode}
-        hasFullRecording={Boolean(doc.full_audio_url)}
-        documentTitle={title}
-        onStartFull={startFull}
-        onPlayThrough={
-          shlokas.some((s) => s.audio_url)
-            ? () => {
-                const first = shlokas.find((s) => s.audio_url);
-                if (first) versePlayer.play(first.id);
-              }
-            : undefined
-        }
-        fullPlaying={fullAudio.playing}
-        fullCurrentTime={fullAudio.currentTime}
-        fullDuration={fullAudio.duration}
-        onToggleFull={fullAudio.toggle}
-        onSeekFull={fullAudio.seek}
-        activeShloka={activeShloka}
-        versePlaying={mode === "verse" && player.playing}
-        verseCurrentTime={player.currentTime}
-        verseDuration={player.duration}
-        hasNext={player.hasNext}
-        hasPrev={player.hasPrev}
-        onToggleVerse={() => activeShloka && versePlayer.toggle(activeShloka.id)}
-        onNext={versePlayer.next}
-        onPrev={versePlayer.prev}
-        onSwitchToFull={switchToFull}
-      />
-    </>
-  );
+  const hasFullRecording = Boolean(page.fullAudioUrl);
+  const playThrough = page.shlokas.find((s) => s.audio_url);
 
   // Paginated books (Gita, Ashtavakra): chapter cards, then a separate route
   // for verses. Inline-chapter documents stay on this page.
-  if (doc.has_chapters && !doc.inline_chapters) {
-    const hasFullRecording = Boolean(doc.full_audio_url);
+  if (page.layout === "chapters") {
     return (
-      <PageShell showRelatedLinks={false} className={`min-w-0 max-w-full [overflow-wrap:anywhere] ${hasFullRecording ? "pb-28" : ""}`}>
+      <PageShell showRelatedLinks={false} className={`${SHELL} ${hasFullRecording ? "pb-28" : ""}`}>
         {backLink}
-        {header}
-        <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
-          <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
-          <span aria-hidden="true">·</span>
-          <span>{t("documents.shlokas_count", { count: num(doc.shloka_count) })}</span>
-        </div>
-        <DocumentJumpForm
-          slug={doc.slug}
-          category={category}
-          topic={topic}
-          chapterNumbers={chapterNumbersOf(doc.chapters)}
-        />
+        {headerBlock}
+        {stats}
+        <DocumentJumpForm slug={doc.slug} category={category} topic={topic} chapterNumbers={page.chapterNumbers} />
         <div className="space-y-2">
-          {doc.chapters.map((chapter) => (
-            <ChapterCard
-              key={chapter.number ?? "single"}
-              slug={doc.slug}
-              chapter={chapter}
-              category={category}
-              topic={topic}
-            />
+          {page.chapters.map((card) => (
+            <ChapterCard key={card.number} slug={doc.slug} card={card} category={category} topic={topic} />
           ))}
         </div>
         {fullAudio.audioElement}
         <PlaybackBar
           mode={mode === "verse" ? null : mode}
           hasFullRecording={hasFullRecording}
-          documentTitle={title}
+          documentTitle={page.title}
           onStartFull={startFull}
           fullPlaying={fullAudio.playing}
           fullCurrentTime={fullAudio.currentTime}
@@ -217,107 +127,51 @@ export function DocumentDetail() {
   }
 
   return (
-    <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere] pb-28">
+    <PageShell showRelatedLinks={false} className={`${SHELL} pb-28`}>
       {backLink}
-      {header}
+      {headerBlock}
+      {stats}
 
-      {doc.has_chapters ? (
-        <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
-          <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
-          <span aria-hidden="true">·</span>
-          <span>{t("documents.shlokas_count", { count: num(doc.shloka_count) })}</span>
-        </div>
-      ) : null}
-
-      {inlineChapters.length > 1 ? (
-        <nav aria-label={t("documents.chapter_nav")} className="flex gap-1.5 overflow-x-auto pb-1">
-          {inlineChapters.map((chapter) =>
-            chapter.number == null ? null : (
-              <a
-                key={chapter.number}
-                href={`#${chapterAnchor(chapter.number)}`}
-                className={cn(documentsClasses.chapterPill, documentsClasses.chapterPillText, "transition-colors hover:border-secondary/60 hover:text-secondary")}
-              >
-                {num(chapter.number)}
-              </a>
-            ),
-          )}
+      {page.chapterPills.length > 0 ? (
+        <nav aria-label={copy.chapterNav} className="flex gap-1.5 overflow-x-auto pb-1">
+          {page.chapterPills.map((pill) => (
+            <a
+              key={pill.number}
+              href={`#${pill.anchor}`}
+              className={cn(documentsClasses.chapterPill, documentsClasses.chapterPillText, "transition-colors hover:border-secondary/60 hover:text-secondary")}
+            >
+              {pill.label}
+            </a>
+          ))}
         </nav>
       ) : null}
 
-      {inlineChapters.length > 1 ? (
-        <div className="space-y-10">
-          {inlineChapters.map((chapter) => (
-            <InlineChapterSection
-              key={chapter.number ?? "single"}
-              chapter={chapter}
-              num={num}
-              versePlayer={versePlayer}
-              fullRecording={fullRecordingControls}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {shlokas.map((shloka) => (
-            <ShlokaCard
-              key={shloka.id}
-              shloka={shloka}
-              player={versePlayer}
-              fullRecording={fullRecordingControls}
-            />
-          ))}
-        </div>
-      )}
+      <ReaderRows rows={page.rows} versePlayer={versePlayer} fullRecording={fullRecordingControls} />
 
-      {playback}
+      {fullAudio.audioElement}
+      <PlaybackBar
+        mode={mode}
+        hasFullRecording={hasFullRecording}
+        documentTitle={page.title}
+        onStartFull={startFull}
+        onPlayThrough={playThrough ? () => versePlayer.play(playThrough.id) : undefined}
+        fullPlaying={fullAudio.playing}
+        fullCurrentTime={fullAudio.currentTime}
+        fullDuration={fullAudio.duration}
+        onToggleFull={fullAudio.toggle}
+        onSeekFull={fullAudio.seek}
+        activeShloka={activeShloka}
+        versePlaying={mode === "verse" && player.playing}
+        verseCurrentTime={player.currentTime}
+        verseDuration={player.duration}
+        hasNext={player.hasNext}
+        hasPrev={player.hasPrev}
+        onToggleVerse={() => activeShloka && versePlayer.toggle(activeShloka.id)}
+        onNext={versePlayer.next}
+        onPrev={versePlayer.prev}
+        onSwitchToFull={switchToFull}
+      />
     </PageShell>
-  );
-}
-
-function InlineChapterSection({
-  chapter,
-  num,
-  versePlayer,
-  fullRecording,
-}: {
-  chapter: DocumentChapter;
-  num: (n: number) => string;
-  versePlayer: ReturnType<typeof useDocumentPlayback>["versePlayer"];
-  fullRecording: ReturnType<typeof useDocumentPlayback>["fullRecordingControls"];
-}) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const title = bilingualText(lang, chapter.title_ne, chapter.title_en);
-  const shlokas = chapter.shlokas ?? [];
-
-  return (
-    <section
-      id={chapter.number != null ? chapterAnchor(chapter.number) : undefined}
-      className="scroll-mt-24 space-y-3"
-    >
-      {chapter.number != null ? (
-        <header className={documentsClasses.statsRow}>
-          <span className={cn(documentsClasses.chapterBubble, documentsClasses.chapterBubbleText)}>
-            {num(chapter.number)}
-          </span>
-          <div className="min-w-0">
-            <h2 className={documentsClasses.chapterHeading}>
-              {t("documents.chapter_label", { number: num(chapter.number) })}
-            </h2>
-            {title ? <p className={documentsClasses.chapterHeadingSub}>{title}</p> : null}
-          </div>
-        </header>
-      ) : null}
-      {shlokas.map((shloka) => (
-        <ShlokaCard
-          key={shloka.id}
-          shloka={shloka}
-          player={versePlayer}
-          fullRecording={fullRecording}
-        />
-      ))}
-    </section>
   );
 }
 

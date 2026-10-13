@@ -1727,6 +1727,7 @@
     "back": "Back to day view",
     "title": "Annual Almanac wheel",
     "error": "Could not load almanac for this date.",
+    "window_days": "{{count}} days",
     "scrub_label": "Scrub through the year",
     "loading_year": "Loading year data…",
     "year_from_cache": "Loaded from device cache",

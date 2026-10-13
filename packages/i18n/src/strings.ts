@@ -3304,6 +3304,7 @@ export const strings = {
   "panchanga_year.back": { ne: "दिन हेराइमा फर्कनुहोस्", en: "Back to day view" },
   "panchanga_year.title": { ne: "वार्षिक पञ्चाङ्ग चक्र", en: "Annual Almanac wheel" },
   "panchanga_year.error": { ne: "यस मितिको पञ्चाङ्ग लोड गर्न सकिएन।", en: "Could not load almanac for this date." },
+  "panchanga_year.window_days": { ne: "{{count}} दिन", en: "{{count}} days" },
   "panchanga_year.scrub_label": { ne: "वर्षभरि चलाउनुहोस्", en: "Scrub through the year" },
   "panchanga_year.loading_year": { ne: "वर्ष डाटा लोड हुँदै…", en: "Loading year data…" },
   "panchanga_year.year_from_cache": { ne: "यन्त्र क्यासबाट लोड भयो", en: "Loaded from device cache" },
@@ -7588,8 +7589,6 @@ export const strings = {
 
   /* ── ui.panchanga ───────────────────────────────────────────────────────── */
   "ui.panchanga.aspect_effect": { ne: "दृष्टिको फल", en: "Aspect effect" },
-  "ui.panchanga.back_to_panchanga_details": { ne: "पञ्चाङ्ग विवरणमा फर्कनुहोस्", en: "Back to panchanga details" },
-  "ui.panchanga.could_not_load_the_panchanga": { ne: "पञ्चाङ्ग लोड गर्न सकिएन।", en: "Could not load the panchanga." },
   "ui.panchanga.current_nakshatra_tithi": { ne: "वर्तमान नक्षत्र · तिथि", en: "Current nakshatra · tithi" },
   "ui.panchanga.date_and_time": { ne: "मिति र समय", en: "Date and time" },
   "ui.panchanga.drag_to_rotate_pinch_to_zoom": {
@@ -7609,22 +7608,12 @@ export const strings = {
     ne: "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
     en: "Full panchanga timeline · sunrise to sunrise",
   },
-  "ui.panchanga.moon_nakshatra_at_sunrise_moonlabel": {
-    ne: "सूर्योदयमा चन्द्र नक्षत्र: {{moonLabel}}",
-    en: "Moon nakshatra at sunrise: {{moonLabel}}",
-  },
-  "ui.panchanga.moon_sign_at_sunrise_moonlabel": {
-    ne: "सूर्योदयमा चन्द्र राशि: {{moonLabel}}",
-    en: "Moon sign at sunrise: {{moonLabel}}",
-  },
   "ui.panchanga.muhurta_now": { ne: "क्षणिक मुहूर्त", en: "Muhurta now" },
   "ui.panchanga.name_s_aspect_houses_houselist": {
     ne: "{{name}}को दृष्टि: {{houseList}} भावमा",
     en: "{{name}}'s aspect: houses {{houseList}}",
   },
   "ui.panchanga.nepali_patro_panchanga_wheel": { ne: "पञ्चाङ्ग चक्र", en: "Nepali Patro · Panchanga Wheel" },
-  "ui.panchanga.no_data_available": { ne: "डाटा उपलब्ध छैन।", en: "No data available." },
-  "ui.panchanga.no_entries_for_this_day": { ne: "यो दिनका लागि प्रविष्टि छैन।", en: "No entries for this day." },
   "ui.panchanga.north_indian_d1_chart": { ne: "उत्तर भारतीय D1 चक्र", en: "North Indian D1 chart" },
   "ui.panchanga.now": { ne: "आज", en: "Now" },
   "ui.panchanga.padas": { ne: "पद", en: "Padas" },
