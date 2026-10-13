@@ -56,7 +56,7 @@ export const patroDateClasses = {
 
   // ── App year stepper and location search (bottom sheet) ───────────────────
   chipHeadLabel: "w-full text-center font-bold tracking-wide text-secondary-foreground",
-  locationChipLabel: "min-w-0 flex-1 text-sm font-medium text-foreground",
+  locationChipLabel: "min-w-0 flex-1 text-base text-foreground",
   pickerChipLabel: "min-w-0 flex-1 text-center font-num text-sm font-semibold text-foreground",
   stepBtn: "shrink-0 items-center justify-center rounded-lg border border-border bg-card",
   stepperPin: "border-b border-border bg-card",

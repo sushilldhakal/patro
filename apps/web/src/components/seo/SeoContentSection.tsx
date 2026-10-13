@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { cn } from "@vedic-patro/domain/utils";
 import { getRouteFaqs, seoYearVars } from "@/lib/seo";
+import { seoClasses } from "@vedic-patro/design-tokens/classes/seo-classes";
 
 type SeoRoute = "converter" | "panchanga" | "holidays";
 
@@ -23,18 +25,18 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       {paragraphs.length > 0 && (
         <div className="space-y-3 text-muted-foreground">
           {paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
+            <p key={i} className={seoClasses.introParagraph}>{p}</p>
           ))}
         </div>
       )}
       {faqs.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-foreground">{t("seo_faq.section_title")}</h2>
+          <h2 className={seoClasses.faqTitle}>{t("seo_faq.section_title")}</h2>
           <dl className="space-y-4">
             {faqs.map((f) => (
               <div key={f.q}>
-                <dt className="font-semibold text-foreground">{f.q}</dt>
-                <dd className="mt-1 text-muted-foreground">{f.a}</dd>
+                <dt className={seoClasses.question}>{f.q}</dt>
+                <dd className={cn("mt-1", seoClasses.answer)}>{f.a}</dd>
               </div>
             ))}
           </dl>

@@ -3,6 +3,8 @@ import { Text } from "@/components/ui/Text";
 import { translateList, useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
+import { cn } from "@vedic-patro/domain/utils";
+import { seoClasses } from "@vedic-patro/design-tokens/classes/seo-classes";
 
 type SeoRoute = "converter" | "panchanga" | "holidays";
 
@@ -42,7 +44,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       {paragraphs.length > 0 ? (
         <View className="gap-3">
           {paragraphs.map((p, i) => (
-            <Text key={i} className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
+            <Text key={i} className={seoClasses.introParagraph} style={nepaliTextStyle(15)}>
               {p}
             </Text>
           ))}
@@ -50,15 +52,15 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       ) : null}
       {faqs.length > 0 ? (
         <View className="gap-4">
-          <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className={seoClasses.faqTitle} style={nepaliTextStyle(18)}>
             {t("seo_faq.section_title")}
           </Text>
           {faqs.map((f) => (
             <View key={f.q}>
-              <Text className="font-semibold text-foreground" style={nepaliTextStyle(15)}>
+              <Text className={seoClasses.question} style={nepaliTextStyle(15)}>
                 {f.q}
               </Text>
-              <Text className="text-body mt-1 leading-relaxed text-muted-foreground" style={nepaliTextStyle(15)}>
+              <Text className={cn("mt-1", seoClasses.answer)} style={nepaliTextStyle(15)}>
                 {f.a}
               </Text>
             </View>

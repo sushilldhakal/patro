@@ -275,7 +275,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
             </Text>
           </View>
           <View className={patroMonthChipDay} style={patroMonthChipBodyBoxStyle({ narrow: isNarrow })}>
-            <Text className="text-body font-num font-bold text-foreground">
+            <Text className="text-xs sm:text-sm font-num font-bold text-foreground">
               {digits(year)}
             </Text>
           </View>
@@ -309,8 +309,8 @@ export function PatroDateNav(props: PatroDateNavProps) {
               className={cn(
                 "font-num font-bold text-foreground",
                 mode === "year-month-time"
-                  ? "text-body"
-                  : "text-body tracking-tight",
+                  ? "text-xs sm:text-sm"
+                  : "text-xs tracking-tight sm:text-sm",
               )}
             >
               {mode === "year-month-time" ? digits(day) : monthChipSpan(year, month, era, digits)}

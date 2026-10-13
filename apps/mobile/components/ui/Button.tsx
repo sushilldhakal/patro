@@ -16,7 +16,7 @@ type Props = PressableProps & {
 
 /**
  * Same buttons as web's shadcn `Button`: the default is the *teal* secondary
- * colour (not the orange primary), h-8 / h-9 / h-10 with `text-body` labels.
+ * colour (not the orange primary), h-8 / h-9 / h-10 with `text-sm` labels (weight 400, like the web).
  */
 export function Button({
   label,
@@ -41,10 +41,10 @@ export function Button({
     secondary: "bg-secondary",
   };
   const textVariants = {
-    default: "text-secondary-foreground font-medium",
-    outline: "text-foreground font-medium",
-    ghost: "text-foreground font-medium",
-    secondary: "text-secondary-foreground font-medium",
+    default: "text-secondary-foreground",
+    outline: "text-foreground",
+    ghost: "text-foreground",
+    secondary: "text-secondary-foreground",
   };
 
   return (
@@ -55,7 +55,7 @@ export function Button({
       {...props}
     >
       {icon ? <View>{icon}</View> : null}
-      <Text className={cn("text-body", textVariants[variant], textClassName)}>{label}</Text>
+      <Text className={cn("text-sm", textVariants[variant], textClassName)}>{label}</Text>
     </Pressable>
   );
 }
