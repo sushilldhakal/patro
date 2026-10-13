@@ -3,15 +3,16 @@ import { Pressable, View } from "react-native";
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import type { VedaDaily } from "@/lib/documents/api";
 import { useVedaDaily } from "@/lib/documents/use-veda-daily";
 import { useLocale } from "@/lib/i18n";
-import { nepaliTextStyle } from "@/lib/nepali-text";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
+import { cn } from "@vedic-patro/domain/utils";
+import { patroSecBand } from "@/lib/patro-classes";
 
 function sourceLine(data: VedaDaily, lang: "ne" | "en", digits: (v: string | number) => string): string {
   const ne = lang === "ne";
@@ -37,10 +38,9 @@ function PlayButton({
       onPress={onToggle}
       accessibilityRole="button"
       accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("सुन्नुहोस्", "Play")}
-      className="h-11 w-11 items-center justify-center rounded-full active:opacity-80"
-      style={{ backgroundColor: colors.secondary }}
+      className={cn(homeClasses.vedaPlay, "active:opacity-80")}
     >
-      <Ionicons name={playing ? "pause" : "play"} size={22} color={inkOn(colors.secondary)} />
+      <Ionicons name={playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} />
     </Pressable>
   );
 }
@@ -48,7 +48,6 @@ function PlayButton({
 /** Today's Veda mantra — Sanskrit, meaning when there is one, audio, and a link to where it comes from. */
 export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
   const { pick, lang, digits } = useLocale();
-  const colors = useThemeColors();
   const router = useRouter();
   const { data } = useVedaDaily(dateAd);
   const audioUrl = data?.shloka.audio_url ?? null;
@@ -95,45 +94,45 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
     } as never);
 
   return (
-    <Card className="gap-3">
-      <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-body min-w-0 flex-1 font-bold" style={[nepaliTextStyle(16), { color: colors.secondary }]}>
+    <View className="overflow-hidden rounded-xl border border-foreground/10 bg-card">
+      <View className={cn(patroSecBand, "flex-row items-center")}>
+        <Text className={homeClasses.vedaTitle}>
           {pick("आजको वेद मन्त्र", "Today's Veda mantra")}
         </Text>
         {shloka.audio_url ? <PlayButton playing={status.playing} onToggle={toggleAudio} /> : null}
       </View>
 
-      <Text className="text-foreground" style={nepaliTextStyle(21)} selectable>
-        {wordTrack.tokens.map((tok, i) =>
-          i === activeToken ? (
-            <Text key={i} style={{ backgroundColor: "rgba(250,204,21,0.45)" }}>
-              {tok}
-            </Text>
-          ) : (
-            tok
-          ),
-        )}
-      </Text>
+      <View className={homeClasses.vedaBody}>
+        <Text className={homeClasses.vedaSanskrit} selectable>
+          {wordTrack.tokens.map((tok, i) =>
+            i === activeToken ? (
+              <Text key={i} className={homeClasses.vedaWord}>
+                {tok}
+              </Text>
+            ) : (
+              tok
+            ),
+          )}
+        </Text>
 
-      {meaning ? (
-        <View className="gap-1">
-          <Text className="text-caption font-bold text-muted-foreground">{pick("अर्थ", "Meaning")}</Text>
-          <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
-            {meaning}
+        {meaning ? (
+          <View className={homeClasses.vedaMeaning}>
+            <Text className={homeClasses.vedaMeaningLabel}>{pick("अर्थ", "Meaning")}</Text>
+            <Text className={homeClasses.vedaMeaningText}>{meaning}</Text>
+          </View>
+        ) : null}
+
+        <View className={homeClasses.vedaFooter}>
+          <Pressable onPress={openSource} accessibilityRole="link" hitSlop={8} className="active:opacity-70">
+            <Text className={homeClasses.vedaMore}>
+              {pick("थप पढ्नुहोस् →", "Read more →")}
+            </Text>
+          </Pressable>
+          <Text className={homeClasses.vedaSource}>
+            {sourceLine(data, l, digits)}
           </Text>
         </View>
-      ) : null}
-
-      <View className="flex-row items-end justify-between gap-3">
-        <Pressable onPress={openSource} accessibilityRole="link" hitSlop={8} className="active:opacity-70">
-          <Text className="text-body font-semibold" style={[nepaliTextStyle(14), { color: colors.secondary }]}>
-            {pick("थप पढ्नुहोस् →", "Read more →")}
-          </Text>
-        </Pressable>
-        <Text className="text-caption min-w-0 flex-1 text-right text-muted-foreground" style={nepaliTextStyle(11)}>
-          {sourceLine(data, l, digits)}
-        </Text>
       </View>
-    </Card>
+    </View>
   );
 }

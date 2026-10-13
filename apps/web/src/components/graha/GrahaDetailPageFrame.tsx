@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { cn } from "@vedic-patro/domain/utils";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { PageShell } from "@/components/PageShell";
 import { GrahaBanner, GrahaDescription } from "@/components/graha/GrahaPageParts";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
@@ -32,7 +34,7 @@ export function GrahaDetailPageFrame({
         blurbKey={banner.blurbKey}
       />
 
-      {nav ? <div className="space-y-3">{nav}</div> : null}
+      {nav ? <div className={cn(grahaClasses.navStack, "flex flex-col")}>{nav}</div> : null}
 
       {children}
 

@@ -11,6 +11,7 @@ import { type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const N = 9;
 const SPAN = 1.1;
 const MOON_R = 0.055;
@@ -25,7 +26,7 @@ function MoonPhase({ x, f }: { x: number; f: number }) {
       <pointLight position={[lightR * Math.cos(angle), 0, lightR * Math.sin(angle)]} intensity={2.2} distance={0} decay={0} />
       <mesh>
         <sphereGeometry args={[MOON_R, 20, 20]} />
-        <meshStandardMaterial color={"#cbd5e1"} roughness={0.9} />
+        <meshStandardMaterial color={illustration.sky84} roughness={0.9} />
       </mesh>
     </group>
   );
@@ -49,11 +50,11 @@ const PakshaStripScene = memo(function PakshaStripScene({ onLabels: _onLabels }:
       </mesh>
       <mesh position={[-SPAN / 4, -0.14, 0]}>
         <boxGeometry args={[SPAN / 2 - 0.05, 0.006, 0.006]} />
-        <meshBasicMaterial color={"#4ade80"} transparent opacity={0.6} />
+        <meshBasicMaterial color={illustration.green58} transparent opacity={0.6} />
       </mesh>
       <mesh position={[SPAN / 4, -0.14, 0]}>
         <boxGeometry args={[SPAN / 2 - 0.05, 0.006, 0.006]} />
-        <meshBasicMaterial color={"#60a5fa"} transparent opacity={0.6} />
+        <meshBasicMaterial color={illustration.sky68b} transparent opacity={0.6} />
       </mesh>
     </>
   );
@@ -70,8 +71,8 @@ export function PakshaStripDiagram() {
       frame={{ width: 1.5, height: 0.4 }}
       idleSpin={0}
       legend={[
-        { color: "#4ade80", label: pick("शुक्ल पक्ष — तिथि १–१५", "Shukla paksha — tithi 1–15") },
-        { color: "#60a5fa", label: pick("कृष्ण पक्ष — तिथि १६–३०", "Krishna paksha — tithi 16–30") },
+        { color: illustration.green58, label: pick("शुक्ल पक्ष — तिथि १–१५", "Shukla paksha — tithi 1–15") },
+        { color: illustration.sky68b, label: pick("कृष्ण पक्ष — तिथि १६–३०", "Krishna paksha — tithi 16–30") },
       ]}
       readouts={[
         { k: pick("देखाइएका चरण", "Phases shown"), v: digits(N) },

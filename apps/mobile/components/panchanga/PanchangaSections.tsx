@@ -1,3 +1,4 @@
+import { cn } from "@vedic-patro/domain/utils";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
@@ -64,6 +65,7 @@ import {
   TimingRange,
   UptoValue,
   panchangaCardGrid,
+  panchangaSectionNote,
 } from "./PanchangaLayout";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { NavataraBalamCardGrid } from "./NavataraBalamCardGrid";
@@ -73,6 +75,7 @@ import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 type AngaEnd = {
   name_ne?: string;
@@ -130,55 +133,55 @@ export function SunMoonSamvatSection({ p }: { p: PanchangaDay }) {
       <PanchangaTableBody>
         <PanchangaFieldCell labelKey="sections.sunrise" nowrap>
           <Text>🌅</Text>
-          <Text className="font-mono font-semibold">{getSunriseDisplay(p) ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.mono}>{getSunriseDisplay(p) ?? "—"}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.sunset" nowrap>
           <Text>🌇</Text>
-          <Text className="font-mono font-semibold">{getSunsetDisplay(p) ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.mono}>{getSunsetDisplay(p) ?? "—"}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.moonrise" nowrap>
           <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={16} />
-          <Text className="font-mono font-semibold">{getMoonriseDisplay(p, lang) ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.mono}>{getMoonriseDisplay(p, lang) ?? "—"}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.moonset" nowrap>
           <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={16} />
-          <Text className="font-mono font-semibold">{getMoonsetDisplay(p, lang) ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.mono}>{getMoonsetDisplay(p, lang) ?? "—"}</Text>
         </PanchangaFieldCell>
         {belaantar ? (
           <PanchangaFieldCell labelKey="sections.equation_of_time" nowrap>
-            <Text className="font-mono font-semibold">{belaantar}</Text>
+            <Text className={panchangaPageClasses.sections.mono}>{belaantar}</Text>
           </PanchangaFieldCell>
         ) : null}
         {deshaantar ? (
           <PanchangaFieldCell labelKey="sections.longitude_correction" nowrap>
-            <Text className="font-mono font-semibold">{deshaantar}</Text>
+            <Text className={panchangaPageClasses.sections.mono}>{deshaantar}</Text>
           </PanchangaFieldCell>
         ) : null}
         <PanchangaFieldCell labelKey="sections.paksha" nowrap>
-          <Text className="font-semibold">{pakshaLabel}</Text>
+          <Text className={panchangaPageClasses.sections.strong}>{pakshaLabel}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.vikram" nowrap>
-          <Text className="font-semibold">
+          <Text className={panchangaPageClasses.sections.strong}>
             {bs?.year && bs.day && (bs.month_name_ne || bs.month_name)
               ? `${digits(bs.year)} ${pick(bs.month_name_ne ?? bs.month_name ?? "", bs.month_name ?? bs.month_name_ne ?? "")} ${digits(bs.day)}`
               : (p.display?.bs_ne ?? "—")}
           </Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.samvatsara" nowrap>
-          <Text className="font-semibold">
+          <Text className={panchangaPageClasses.sections.strong}>
             {samvatsara ? pick(samvatsara.name_ne, samvatsara.name_en) : "—"}
           </Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.shaka" nowrap>
-          <Text className="font-semibold">{shaka ? digits(shaka) : "—"}</Text>
+          <Text className={panchangaPageClasses.sections.strong}>{shaka ? digits(shaka) : "—"}</Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.nepal_sambat" nowrap>
-          <Text className="font-semibold">{ns ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.strong}>{ns ?? "—"}</Text>
         </PanchangaFieldCell>
       </PanchangaTableBody>
       {solar?.ishtakaal_note_ne ? (
-        <Text className="text-body m-0 border-t border-border px-4 py-2 text-muted-foreground">
-          {solar.ishtakaal_note_ne}
+        <Text className={panchangaSectionNote}>
+          {pick(solar.ishtakaal_note_ne ?? "", solar.ishtakaal_note_en ?? solar.ishtakaal_note_ne ?? "")}
         </Text>
       ) : null}
     </PanchangaSection>
@@ -225,13 +228,13 @@ export function PanchangCoreSection({ p }: { p: PanchangaDay }) {
           <AngaCell anga={karana} sunriseHours={sunriseHours} />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.weekday" nowrap>
-          <Text className="font-semibold">
+          <Text className={panchangaPageClasses.sections.strong}>
             {pick(getVaaraNe(p, p.weekday) ?? "—", getVaaraEn(p, p.weekday) ?? "—")}
           </Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.paksha" nowrap>
           <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={16} />
-          <Text className="font-semibold">{paksha ?? "—"}</Text>
+          <Text className={panchangaPageClasses.sections.strong}>{paksha ?? "—"}</Text>
         </PanchangaFieldCell>
       </PanchangaTableBody>
     </PanchangaSection>
@@ -264,7 +267,7 @@ export function RashiSection({ p }: { p: PanchangaDay }) {
               label={nakName ? `${nakName} — ${padaLabel} ${t("sections.pada_unit")}` : "—"}
               nowrap
             >
-              <Text className="font-mono font-semibold">
+              <Text className={panchangaPageClasses.sections.mono}>
                 {endTime ? `${endTime} ${t("sections.until")}` : "—"}
               </Text>
             </PanchangaFieldCell>
@@ -319,10 +322,10 @@ function BalamKindBlock({
   if (!cards.length) return null;
 
   return (
-    <View className="flex flex-col gap-2 border-b border-border/80 px-4 py-3 last:border-b-0">
+    <View className={cn("flex flex-col", panchangaPageClasses.sections.balamBlock)}>
       <PanchangaGroupLabel className="px-0 pt-0">{label}</PanchangaGroupLabel>
       {moonRef ? (
-        <Text className="text-body m-0 text-center text-muted-foreground">{moonRef}</Text>
+        <Text className={panchangaPageClasses.sections.moonRef}>{moonRef}</Text>
       ) : null}
       <BalamCardGrid
         cards={cards}
@@ -473,7 +476,7 @@ function UdayaLagnaCard({
     <Text>
       {rashi}
       {timeRange ? (
-        <Text className="font-mono font-semibold tabular-nums"> {timeRange}</Text>
+        <Text className={panchangaPageClasses.sections.monoTabular}> {timeRange}</Text>
       ) : null}
     </Text>
   );
@@ -482,7 +485,7 @@ function UdayaLagnaCard({
     pushkaraTimes.length > 0 ? (
       <Text>
         {pushkaraLabel}{" "}
-        <Text className="font-mono tabular-nums text-foreground">{pushkaraTimes}</Text>
+        <Text className={panchangaPageClasses.sections.monoPlain}>{pushkaraTimes}</Text>
       </Text>
     ) : undefined;
 
@@ -509,11 +512,11 @@ function DualValueDisplay({
   }
 
   return (
-    <View className="flex flex-col gap-0.5">
+    <View className={cn("flex flex-col", panchangaPageClasses.sections.dual)}>
       {showStrike && pauranikLabel ? (
-        <Text className="text-body line-through">{pauranikLabel}</Text>
+        <Text className={panchangaPageClasses.sections.strike}>{pauranikLabel}</Text>
       ) : null}
-      <Text className="font-semibold">{vedicLabel ?? pauranikLabel}</Text>
+      <Text className={panchangaPageClasses.sections.strong}>{vedicLabel ?? pauranikLabel}</Text>
     </View>
   );
 }
@@ -543,17 +546,17 @@ export function RituSection({ p }: { p: PanchangaDay }) {
           />
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.dinamana" nowrap>
-          <Text className="font-mono font-semibold">
+          <Text className={panchangaPageClasses.sections.mono}>
             {formatDurationFull(p, "dinamaan", lang) ?? "—"}
           </Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.ratrimana" nowrap>
-          <Text className="font-mono font-semibold">
+          <Text className={panchangaPageClasses.sections.mono}>
             {formatDurationFull(p, "ratrimana", lang) ?? "—"}
           </Text>
         </PanchangaFieldCell>
         <PanchangaFieldCell labelKey="sections.madhyahna" nowrap>
-          <Text className="font-mono font-semibold">
+          <Text className={panchangaPageClasses.sections.mono}>
             {formatMadhyahnaDisplay(p, lang) ?? "—"}
           </Text>
         </PanchangaFieldCell>
@@ -584,12 +587,20 @@ function MuhurtaTimingValue({
     <View
       className={
         variant === "good"
-          ? "flex flex-col gap-1 text-emerald-800 dark:text-emerald-300"
-          : "flex flex-col gap-1 text-rose-800 dark:text-rose-300"
+          ? cn("flex flex-col", panchangaPageClasses.sections.timingGood)
+          : cn("flex flex-col", panchangaPageClasses.sections.timingBad)
       }
     >
       {lines.map((line) => (
-        <Text key={line} className="text-body">
+        <Text
+          key={line}
+          className={cn(
+            panchangaPageClasses.sections.timingLine,
+            variant === "good"
+              ? "text-emerald-800 dark:text-emerald-300"
+              : "text-rose-800 dark:text-rose-300",
+          )}
+        >
           {line}
         </Text>
       ))}
@@ -663,7 +674,7 @@ function NivasDirectionValue({
   const { pick } = useLocale();
   if (!segment) return <Text>—</Text>;
   const name = pick(segment.name_ne ?? segment.name_en ?? "—", segment.name_en ?? segment.name_ne ?? "—");
-  return <Text className="font-semibold">{name}</Text>;
+  return <Text className={panchangaPageClasses.sections.strong}>{name}</Text>;
 }
 
 function NivasTimedSegments({
@@ -680,7 +691,7 @@ function NivasTimedSegments({
   if (!segments?.length) return <Text>—</Text>;
 
   return (
-    <View className="flex flex-col gap-1 min-w-0">
+    <View className={cn("flex flex-col", panchangaPageClasses.sections.nivasList)}>
       {segments.map((seg, idx) => {
         const name = pick(seg.name_ne ?? seg.name_en ?? "—", seg.name_en ?? seg.name_ne ?? "—");
         const subtitle = showSubtitle
@@ -700,12 +711,12 @@ function NivasTimedSegments({
           : undefined;
 
         return (
-          <View key={`${name}-${idx}`} className="min-w-0">
+          <View key={`${name}-${idx}`} className={panchangaPageClasses.sections.nivasItem}>
             {fromTime && !endTime ? (
-              <Text className="font-semibold">
+              <Text className={panchangaPageClasses.sections.strong}>
                 {subtitle ? `${name} (${subtitle})` : name}
                 {" "}
-                <Text className="text-body font-mono font-semibold text-foreground">
+                <Text className={panchangaPageClasses.sections.nivasTime}>
                   {t("sections.nivas_from")} {fromTime} {t("sections.nivas_to_full_night")}
                 </Text>
               </Text>
@@ -716,8 +727,12 @@ function NivasTimedSegments({
                 badge={gunaLabel}
               />
             )}
-            {seg.until_full_night && idx === segments.length - 1 && segments.length > 1 && !endTime ? (
-              <Text className="text-body font-mono font-semibold text-foreground">
+            {seg.until_full_night &&
+            idx === segments.length - 1 &&
+            segments.length > 1 &&
+            !endTime &&
+            !fromTime ? (
+              <Text className={panchangaPageClasses.sections.nivasTime}>
                 {t("sections.nivas_to_full_night")}
               </Text>
             ) : null}
@@ -786,7 +801,7 @@ export function DinVisheshSection({ p }: { p: PanchangaDay }) {
         {labels.map((label) => (
           <Text
             key={label}
-            className="text-body font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
+            className={panchangaPageClasses.sections.chipFestival}
             style={nepaliTextStyle(14)}
           >
             {label}
@@ -805,25 +820,25 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
   if (!planets.length && !lagna) return null;
 
   return (
-    <View className="rounded-xl bg-card p-4 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
-      <View className="flex items-baseline gap-2 mb-2">
-        <Text className="text-body font-bold m-0">{t("sections.planet_positions")}</Text>
-        <Text className="text-body">{getPlanetsAnchorLabel(p, lang)}</Text>
+    <View className={panchangaPageClasses.sections.planetsPanel}>
+      <View className={cn("flex flex-col", panchangaPageClasses.sections.planetsHead)}>
+        <Text className={panchangaPageClasses.sections.planetsTitle}>{t("sections.planet_positions")}</Text>
+        <Text className={panchangaPageClasses.sections.planetsAnchor}>{getPlanetsAnchorLabel(p, lang)}</Text>
       </View>
-      <View className="flex flex-col">
+      <View className={cn("flex", panchangaPageClasses.sections.planetsList)}>
         {lagna && (
-          <View className="flex items-center gap-3 py-2 border-b border-border">
-            <Text className="text-body w-8 h-8 rounded-lg flex items-center justify-center bg-secondary/11 text-secondary dark:text-accent shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
+          <View className={cn("flex", panchangaPageClasses.sections.lagnaRow)}>
+            <Text className={cn("flex", panchangaPageClasses.sections.lagnaBadge)}>
               {pick("लग्न", "ASC")}
             </Text>
-            <View className="min-w-0 flex-1">
-              <Text className="text-body font-semibold">{t("sections.lagna")}</Text>
-              <Text className="text-body">
+            <View className={panchangaPageClasses.sections.lagnaBody}>
+              <Text className={panchangaPageClasses.sections.lagnaTitle}>{t("sections.lagna")}</Text>
+              <Text className={panchangaPageClasses.sections.lagnaSign}>
                 {formatRashiDisplay(lagna.nameNe, undefined, lang) ?? lagna.nameNe}
               </Text>
             </View>
             {lagna.degree && (
-              <Text className="text-body font-mono font-semibold text-foreground whitespace-nowrap">
+              <Text className={panchangaPageClasses.sections.planetCoords}>
                 {lagna.degree}°
               </Text>
             )}
@@ -832,21 +847,21 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
         {planets.map(({ key, label, labelEn, rashiNe, rashiEn, coords, isRetrograde, isCombust }) => (
           <View
             key={key}
-            className="flex flex-row flex-wrap items-start gap-x-3 gap-y-1 py-2 border-b border-border last:border-0"
+            className={cn("flex", panchangaPageClasses.sections.planetRow)}
           >
             <GrahaPlanetIcon graha={key as GrahaKey} size={32} />
-            <View className="min-w-0 flex-1">
-              <View className="flex-row flex-wrap items-center gap-1.5">
-                <Text className="text-body font-semibold">{pick(label, labelEn)}</Text>
+            <View className={panchangaPageClasses.sections.planetBody}>
+              <View className={panchangaPageClasses.sections.planetNameRow}>
+                <Text className={panchangaPageClasses.sections.planetName}>{pick(label, labelEn)}</Text>
                 <GrahaStatusBadges planetKey={key} isRetrograde={isRetrograde} isCombust={isCombust} />
               </View>
               {(rashiNe || rashiEn) ? (
-                <Text className="text-body">
+                <Text className={panchangaPageClasses.sections.planetRashi}>
                   {formatRashiDisplay(rashiNe, rashiEn, lang) ?? pick(rashiNe ?? "", rashiEn ?? "")}
                 </Text>
               ) : null}
             </View>
-            <Text className="text-body font-mono font-semibold text-foreground">
+            <Text className={panchangaPageClasses.sections.nivasTime}>
               {coords}
             </Text>
           </View>
@@ -869,8 +884,8 @@ export function FestivalsSection({ p }: { p: PanchangaDay }) {
             key={f.id}
             className={
               f.is_public_holiday
-                ? "text-body font-semibold px-2.5 py-1.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
-                : "text-body font-semibold px-2.5 py-1.5 rounded-full bg-secondary/12 text-secondary dark:text-accent border border-secondary/20"
+                ? panchangaPageClasses.sections.chipHoliday
+                : panchangaPageClasses.sections.chipFestival
             }
             style={nepaliTextStyle(14)}
           >

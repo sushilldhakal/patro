@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
@@ -12,19 +12,11 @@ import { apiKeys, fetchFestivals, fetchHolidays, type Festival, type Holiday } f
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
-import {
-  TableHeader,
-  TableHeaderCell,
-  TableRow,
-  TableScrollShell,
-  TableCell,
-} from "@/components/ui/DataTable";
-import { useBreakpoint } from "@/lib/responsive";
+import { TableScrollShell, tableColumnLayout, useTableFillLayout } from "@/components/ui/DataTable";
 import { cn } from "@vedic-patro/domain/utils";
-import { brand } from "@vedic-patro/design-tokens";
+import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 
 type Tab = "holidays" | "festivals";
 type SortDir = "asc" | "desc";
@@ -42,17 +34,17 @@ type Row = {
 const HOLIDAY_COLUMNS = [
   { key: "name", ne: "नाम", en: "Name", width: 200 },
   { key: "bsDate", ne: "वि.सं. मिति", en: "BS Date", width: 160 },
-  { key: "adDate", ne: "ई.सं. मिति", en: "AD Date", width: 118 },
-  { key: "days", ne: "दिन", en: "Days", width: 62 },
-  { key: "type", ne: "प्रकार", en: "Type", width: 108 },
+  { key: "adDate", ne: "ई.सं. मिति", en: "AD Date", width: 124 },
+  { key: "days", ne: "दिन", en: "Days", width: 80 },
+  { key: "type", ne: "प्रकार", en: "Type", width: 124 },
 ] as const;
 
 const FESTIVAL_COLUMNS = [
   { key: "name", ne: "नाम", en: "Name", width: 200 },
   { key: "bsDate", ne: "वि.सं. मिति", en: "BS Date", width: 160 },
-  { key: "adDate", ne: "ई.सं. मिति", en: "AD Date", width: 118 },
-  { key: "type", ne: "प्रकार", en: "Type", width: 108 },
-  { key: "isPublic", ne: "सरकारी बिदा", en: "Gov't Holiday", width: 118 },
+  { key: "adDate", ne: "ई.सं. मिति", en: "AD Date", width: 124 },
+  { key: "type", ne: "प्रकार", en: "Type", width: 124 },
+  { key: "isPublic", ne: "सरकारी बिदा", en: "Gov't Holiday", width: 124 },
 ] as const;
 
 function toRow(
@@ -80,7 +72,6 @@ function toRow(
 export default function HolidaysScreen() {
   const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
-  const { isCalendarWide } = useBreakpoint();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const [tab, setTab] = useState<Tab>("holidays");
   const [filter, setFilter] = useState("");
@@ -131,19 +122,21 @@ export default function HolidaysScreen() {
     );
 
   const tabs = [
-    { id: "holidays" as const, ne: "सरकारी बिदा", en: "Government Holidays", icon: "flag-outline" as const, count: holidays.length },
-    { id: "festivals" as const, ne: "सबै पर्वहरू", en: "All Festivals", icon: "sparkles-outline" as const, count: festivals.length },
+    { id: "holidays" as const, ne: "सरकारी बिदा", en: "Government Holidays", icon: "flag" as const, count: holidays.length },
+    { id: "festivals" as const, ne: "सबै पर्वहरू", en: "All Festivals", icon: "party-popper" as const, count: festivals.length },
   ];
 
   return (
     <AppShell title={pick("बिदा तथा पर्व", "Holidays")} showHeader={false}>
       <PatroPageHeader
+        className="mb-8"
         icon={<AppNavIcon name="party-popper" size={24} color={colors.secondary} />}
         title={t("holidays.page_title")}
         subtitle={t("holidays.page_subtitle")}
       />
 
       <PatroYearNavBlock
+        className="mb-8"
         era={era}
         onEraChange={setEra}
         year={year}
@@ -151,37 +144,34 @@ export default function HolidaysScreen() {
         gregorianRange={gregorianRange}
       />
 
-      <View className="mb-4 flex-row gap-1 border-b border-border">
+      <View className={cn("mb-8", holidaysClasses.tabBar)}>
         {tabs.map((item) => {
           const active = tab === item.id;
+          const tint = active ? colors.secondary : colors.foreground;
           return (
             <Pressable
               key={item.id}
               onPress={() => setTab(item.id)}
-              style={{
-                borderBottomWidth: 2,
-                borderBottomColor: active ? colors.secondary : "transparent",
-                marginBottom: -1,
-              }}
-              className="flex-row items-center gap-2 px-4 py-2.5 active:opacity-70"
+              className={cn(
+                holidaysClasses.tab,
+                "active:opacity-70",
+                active ? holidaysClasses.tabActive : holidaysClasses.tabIdle,
+              )}
             >
-              <Ionicons
-                name={item.icon}
-                size={15}
-                color={active ? colors.secondary : colors.mutedForeground}
-              />
+              {item.icon === "party-popper" ? (
+                <AppNavIcon name="party-popper" size={16} color={tint} />
+              ) : (
+                <Ionicons name="flag-outline" size={16} color={tint} />
+              )}
               <Text
-                style={{
-                  color: active ? colors.secondary : colors.mutedForeground,
-                  ...nepaliTextStyle(13),
-                }}
-                className="text-body font-semibold"
+                style={nepaliTextStyle()}
+                className={cn(holidaysClasses.tabLabel, active ? holidaysClasses.tabLabelActive : holidaysClasses.tabLabelIdle)}
               >
                 {pick(item.ne, item.en)}
               </Text>
               {item.count > 0 ? (
-                <View className="rounded-full bg-muted px-1.5 py-0.5">
-                  <Text className="text-caption text-muted-foreground">{digits(item.count)}</Text>
+                <View className={holidaysClasses.tabCount}>
+                  <Text className={holidaysClasses.tabCountText}>{digits(item.count)}</Text>
                 </View>
               ) : null}
             </Pressable>
@@ -189,14 +179,14 @@ export default function HolidaysScreen() {
         })}
       </View>
 
-      <View className="mb-4 max-w-sm flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
-        <Ionicons name="search" size={16} color={colors.mutedForeground} />
+      <View className={cn("mb-8 flex-row items-center gap-2 px-3", holidaysClasses.searchBox)}>
+        <Ionicons name="search" size={16} color={colors.foreground} />
         <TextInput
+          className={cn("flex-1", holidaysClasses.searchInput)}
           value={filter}
           onChangeText={setFilter}
           placeholder={pick("पर्व खोज्नुहोस्…", "Search festivals…")}
           placeholderTextColor={colors.mutedForeground}
-          style={{ flex: 1, paddingVertical: 9, color: colors.foreground, fontSize: 15 }}
         />
         {filter ? (
           <Pressable onPress={() => setFilter("")} hitSlop={8}>
@@ -206,14 +196,8 @@ export default function HolidaysScreen() {
       </View>
 
       {isError ? (
-        <View
-          style={{
-            backgroundColor: colorWithAlpha(brand.vermilion, 0.1),
-            borderColor: colorWithAlpha(brand.vermilion, 0.2),
-          }}
-          className="rounded-xl border p-4"
-        >
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <View className={cn("mb-8", holidaysClasses.errorBox)}>
+          <Text className={holidaysClasses.errorText} style={nepaliTextStyle()}>
             {pick(
               "डाटा लोड गर्न सकिएन। API लाई केही बेर लाग्न सक्छ।",
               "Failed to load data. The API may need a moment to warm up.",
@@ -221,102 +205,122 @@ export default function HolidaysScreen() {
           </Text>
         </View>
       ) : loading ? (
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="mb-8 text-sm text-muted-foreground" style={nepaliTextStyle()}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : (
-        <TableScrollShell stretch scroll={false}>
-          <TableHeader className="border-b border-border">
-            {columns.map((col) => {
-              const active = sort.key === col.key;
-              return (
-                <TableHeaderCell
-                  key={col.key}
-                  width={col.width}
-                  onPress={() => toggleSort(col.key as keyof Row)}
-                >
-                  <Text
-                    numberOfLines={2}
-                    className="text-caption shrink font-semibold uppercase tracking-wide text-muted-foreground"
-                    style={nepaliTextStyle(11)}
-                  >
-                    {pick(col.ne, col.en)}
-                  </Text>
-                  <Ionicons
-                    name={
-                      active ? (sort.dir === "asc" ? "chevron-up" : "chevron-down") : "swap-vertical"
-                    }
-                    size={11}
-                    color={active ? colors.foreground : colors.mutedForeground}
-                  />
-                </TableHeaderCell>
-              );
-            })}
-          </TableHeader>
+        <View className="mb-8">
+          <TableScrollShell className="bg-transparent">
+            <View className={cn("w-full flex-row", holidaysClasses.tableHead)}>
+              {columns.map((col) => {
+                const active = sort.key === col.key;
+                return (
+                  <HolidayHeaderCell key={col.key} width={col.width} onPress={() => toggleSort(col.key as keyof Row)}>
+                    <Text
+                      numberOfLines={1}
+                      className={cn("shrink", holidaysClasses.headText)}
+                      style={nepaliTextStyle()}
+                    >
+                      {pick(col.ne, col.en)}
+                    </Text>
+                    <Ionicons
+                      name={active ? (sort.dir === "asc" ? "chevron-up" : "chevron-down") : "swap-vertical"}
+                      size={12}
+                      color={colors.foreground}
+                      style={active ? undefined : { opacity: 0.4 }}
+                    />
+                  </HolidayHeaderCell>
+                );
+              })}
+            </View>
 
-              {rows.length === 0 ? (
-                <View className="px-4 py-8">
-                  <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-                    {pick("कुनै नतिजा भेटिएन।", "No results found.")}
-                  </Text>
-                </View>
-              ) : (
-                rows.map((row, rowIndex) => (
-                  <TableRow
-                    key={row.key}
-                    rowIndex={rowIndex}
-                    borderTop={false}
-                    className="border-b border-border"
-                  >
-                    {columns.map((col) => {
-                      if (col.key === "type") {
-                        return (
-                          <TableCell key={col.key} width={col.width} align="left">
-                            <View className="self-start rounded-full bg-muted px-2 py-0.5">
-                              <Text className="text-caption capitalize text-foreground" style={nepaliTextStyle(11)}>
-                                {row.type}
+            {rows.length === 0 ? (
+              <View className={holidaysClasses.emptyCell}>
+                <Text className={holidaysClasses.emptyText} style={nepaliTextStyle()}>
+                  {pick("कुनै नतिजा भेटिएन।", "No results found.")}
+                </Text>
+              </View>
+            ) : (
+              rows.map((row) => (
+                <View key={row.key} className={cn("w-full flex-row", holidaysClasses.row)}>
+                  {columns.map((col) => {
+                    if (col.key === "type") {
+                      return (
+                        <HolidayCell key={col.key} width={col.width}>
+                          <View className={cn("self-start", holidaysClasses.typeBadge)}>
+                            <Text className={holidaysClasses.typeBadgeText} style={nepaliTextStyle()}>
+                              {row.type}
+                            </Text>
+                          </View>
+                        </HolidayCell>
+                      );
+                    }
+                    if (col.key === "isPublic") {
+                      return (
+                        <HolidayCell key={col.key} width={col.width}>
+                          {row.isPublic ? (
+                            <View className={holidaysClasses.govtFlag}>
+                              <Ionicons name="flag-outline" size={12} color={colors.destructive} />
+                              <Text className={holidaysClasses.govtFlagText} style={nepaliTextStyle()}>
+                                {pick("हो", "Yes")}
                               </Text>
                             </View>
-                          </TableCell>
-                        );
-                      }
-                      if (col.key === "isPublic") {
-                        return (
-                          <TableCell key={col.key} width={col.width} align="left">
-                            {row.isPublic ? (
-                              <View className="flex-row items-center gap-1">
-                                <Ionicons name="flag" size={11} color={colors.destructive} />
-                                <Text
-                                  style={{ color: colors.destructive, ...nepaliTextStyle(11) }}
-                                  className="text-caption font-semibold"
-                                >
-                                  {pick("हो", "Yes")}
-                                </Text>
-                              </View>
-                            ) : null}
-                          </TableCell>
-                        );
-                      }
-                      const mono = col.key === "bsDate" || col.key === "adDate";
-                      const value = row[col.key as keyof Row] as string;
-                      return (
-                        <TableCell key={col.key} width={col.width} align="left">
-                          <Text
-                            numberOfLines={2}
-                            style={nepaliTextStyle(13)}
-                            className={cn("text-body text-foreground", mono && "text-caption font-num")}
-                          >
-                            {value}
-                          </Text>
-                        </TableCell>
+                          ) : null}
+                        </HolidayCell>
                       );
-                    })}
-                  </TableRow>
-                ))
-              )}
-        </TableScrollShell>
+                    }
+                    const mono = col.key === "bsDate" || col.key === "adDate";
+                    const value = row[col.key as keyof Row] as string;
+                    return (
+                      <HolidayCell key={col.key} width={col.width}>
+                        <Text
+                          style={nepaliTextStyle()}
+                          className={col.key === "name" ? holidaysClasses.cellName : mono ? holidaysClasses.cellMono : holidaysClasses.cellText}
+                        >
+                          {value}
+                        </Text>
+                      </HolidayCell>
+                    );
+                  })}
+                </View>
+              ))
+            )}
+          </TableScrollShell>
+        </View>
       )}
       <SeoContentSection route="holidays" />
     </AppShell>
+  );
+}
+
+/* Web table cells are `px-4 py-3`; the shared TableCell pads 10/8, so the
+   rows here are built from the same column layout with the web padding. */
+function HolidayHeaderCell({
+  width,
+  onPress,
+  children,
+}: {
+  width: number;
+  onPress: () => void;
+  children: ReactNode;
+}) {
+  const { fill } = useTableFillLayout();
+  return (
+    <Pressable
+      onPress={onPress}
+      style={tableColumnLayout(fill, width)}
+      className={cn("flex-row items-center gap-1 active:opacity-70", holidaysClasses.headCell)}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
+function HolidayCell({ width, children }: { width: number; children?: ReactNode }) {
+  const { fill } = useTableFillLayout();
+  return (
+    <View style={tableColumnLayout(fill, width)} className={cn("items-start justify-center", holidaysClasses.cell)}>
+      {children}
+    </View>
   );
 }

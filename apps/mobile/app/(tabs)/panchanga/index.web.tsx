@@ -44,6 +44,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING, PANCHANGA_SIDEBAR_SPLIT, PANCHANGA_SIDEBAR_WIDTH } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
+import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -168,7 +170,7 @@ export default function PanchangaScreen() {
 
   return (
     <ScrollView
-      className="mx-auto w-full max-w-[1400px] flex-1 bg-background pb-16 pt-4"
+      className="mx-auto w-full max-w-page flex-1 bg-background pb-16 pt-4"
       contentContainerStyle={{
         paddingBottom: floatingNavBottomPadding(isTablet),
         paddingHorizontal: PAGE_HORIZONTAL_PADDING,
@@ -179,7 +181,7 @@ export default function PanchangaScreen() {
         className="mt-2 gap-4"
         style={splitSidebar ? { flexDirection: "row", alignItems: "flex-start", gap: 20 } : undefined}
       >
-        <View className="min-w-0 flex-1 gap-4">
+        <View className={cn("flex-1", panchangaPageClasses.page.mainColumn)}>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}
@@ -214,7 +216,7 @@ export default function PanchangaScreen() {
         </View>
 
         <View
-          className={splitSidebar ? "min-w-0 gap-4 xl:sticky xl:top-[76px] xl:self-start" : "min-w-0 w-full gap-4"}
+          className={cn(panchangaPageClasses.page.aside, splitSidebar ? "xl:sticky xl:top-[76px] xl:self-start" : "w-full")}
           style={
             splitSidebar
               ? { width: PANCHANGA_SIDEBAR_WIDTH, flexShrink: 0, alignSelf: "flex-start" }
@@ -232,7 +234,7 @@ export default function PanchangaScreen() {
         </View>
       </View>
 
-      <View className="mt-4 gap-4">
+      <View className={panchangaPageClasses.page.sections}>
         {wheelData || showWheelSkeleton ? (
           <>
             <PanchangaWheel
@@ -260,10 +262,10 @@ export default function PanchangaScreen() {
             {wheelData ? (
               <Pressable
                 onPress={() => router.push("/panchanga/year")}
-                className="h-9 flex-row items-center gap-2 self-start rounded-xl border border-border bg-card px-4 active:bg-muted"
+                className={cn("flex-row active:bg-muted", panchangaPageClasses.page.yearLink)}
               >
                 <Ionicons name="calendar-outline" size={16} color={colors.foreground} />
-                <Text className="text-body font-semibold text-foreground">
+                <Text className={panchangaPageClasses.page.yearLinkText}>
                   {t("panchanga.year_link")}
                 </Text>
               </Pressable>
@@ -272,15 +274,15 @@ export default function PanchangaScreen() {
         ) : null}
 
         {isError ? (
-          <View className="rounded-xl border border-destructive/20 bg-destructive/10 p-4">
-            <Text className="text-body text-destructive">
+          <View className={panchangaPageClasses.page.errorBox}>
+            <Text className={panchangaPageClasses.page.errorText}>
               {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
             </Text>
           </View>
         ) : null}
 
         {data ? (
-          <View className="gap-3">
+          <View className={panchangaPageClasses.page.sectionStack}>
             <SunMoonSamvatSection p={data} />
             <PanchangCoreSection p={data} />
             <RashiSection p={data} />

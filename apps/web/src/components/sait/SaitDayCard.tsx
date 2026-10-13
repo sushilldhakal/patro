@@ -4,6 +4,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type {
   SaitDetailDay,
   SaitPersonalizeDay,
@@ -23,18 +24,6 @@ const SHUDDHI_PLANET_LABEL: Record<SaitShuddhiPlanet["planet"], string> = {
   moon: "grahas.moon",
   guru: "kundali.x.graha_guru",
   shukra: "grahas.venus",
-};
-
-const SHUDDHI_TONE_TEXT: Record<SaitShuddhiTone, string> = {
-  good: "text-success dark:text-success",
-  shanti: "text-warning",
-  avoid: "text-danger",
-};
-
-const SHUDDHI_TONE_CHIP: Record<SaitShuddhiTone, string> = {
-  good: "bg-success/12 text-success-foreground dark:text-success",
-  shanti: "bg-warning/15 text-warning",
-  avoid: "bg-danger/12 text-danger",
 };
 
 const SHUDDHI_SUMMARY: Record<SaitShuddhiTone, string> = {
@@ -80,61 +69,61 @@ export function SaitDayCard({
   return (
     <article
       className={cn(
-        "flex flex-col rounded-xl border border-border bg-card p-4",
+        saitClasses.card,
         "animate-in fade-in fill-mode-both",
         suitability ? SUITABILITY_STYLE[suitability].ring : null,
       )}
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
     >
       {suitability ? (
-        <div className="flex justify-end pb-1.5">
+        <div className={saitClasses.cardBadgeRow}>
           <SuitabilityBadge suitability={suitability} />
         </div>
       ) : null}
-      <div className="flex items-stretch gap-3 pb-3">
-        <div className="flex min-w-[4.25rem] flex-col items-center justify-center rounded-lg bg-surface-inset px-2 py-2.5">
-          <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-secondary">
+      <div className={saitClasses.cardHead}>
+        <div className={saitClasses.dateBox}>
+          <span className={saitClasses.dateMonth}>
             {monthLabel}
           </span>
-          <span className="font-num text-3xl font-bold leading-none tracking-tight text-foreground">
+          <span className={saitClasses.dateDay}>
             {digits(d.bs_day)}
           </span>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <h3 className="m-0 text-base font-bold leading-tight text-foreground">
+        <div className={saitClasses.headBody}>
+          <div className={saitClasses.titleRow}>
+            <h3 className={cn("m-0", saitClasses.weekday)}>
               {bilingualText(lang, d.weekday_ne, d.weekday_en)}
             </h3>
-            <span className="font-num text-sm text-muted-foreground">{d.gregorian}</span>
+            <span className={saitClasses.gregorian}>{d.gregorian}</span>
           </div>
 
-          <div className="inline-flex w-fit max-w-full items-center gap-1.5 rounded-md bg-secondary/12 px-2 py-1 text-sm font-semibold text-secondary">
+          <div className={cn(saitClasses.windowChip, "inline-flex w-fit", saitClasses.windowText)}>
             <Clock3 className="size-3.5 shrink-0 opacity-80" aria-hidden />
-            <span className="font-num tabular-nums">
+            <span className={saitClasses.windowTime}>
               {digits(d.window_start)} – {digits(d.window_end)}
               {overnight ? ` (${t("sait.1")})` : ""}
             </span>
-            <span className="hidden text-xs font-medium text-secondary/80 sm:inline">
+            <span className={cn("hidden sm:inline", saitClasses.windowNote)}>
               {t("sait.lagna_window")}
             </span>
           </div>
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-border pt-3 sm:grid-cols-3">
+      <dl className={cn("grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3", saitClasses.facts)}>
         {rows.map((r) => (
-          <div key={r.label} className="flex flex-col gap-0.5">
-            <dt className="text-xs text-muted-foreground">{r.label}</dt>
-            <dd className="m-0 truncate text-sm font-semibold text-foreground">{r.value}</dd>
+          <div key={r.label} className={saitClasses.factItem}>
+            <dt className={saitClasses.factLabel}>{r.label}</dt>
+            <dd className={cn("m-0 truncate", saitClasses.factValue)}>{r.value}</dd>
           </div>
         ))}
       </dl>
 
       {shuddhi && shuddhi.planets.length > 0 ? (
-        <div className="mt-3 border-t border-border pt-2.5">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground">
+        <div className={saitClasses.block}>
+          <div className={saitClasses.blockRow}>
+            <span className={saitClasses.blockLabel}>
               {t("sait.graha_uddhi")}
             </span>
             {shuddhi.planets.map((p) => (
@@ -142,8 +131,13 @@ export function SaitDayCard({
                 key={p.planet}
                 title={bilingualText(lang, p.rashi_ne, p.rashi_en)}
                 className={cn(
-                  "font-num inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums",
-                  SHUDDHI_TONE_CHIP[p.tone],
+                  saitClasses.chip,
+                  "inline-flex",
+                  saitClasses.chipGap,
+                  saitClasses.chipText,
+                  saitClasses.chipNum,
+                  saitClasses.toneChip[p.tone],
+                  saitClasses.toneChipText[p.tone],
                 )}
               >
                 {t(SHUDDHI_PLANET_LABEL[p.planet])}
@@ -151,9 +145,9 @@ export function SaitDayCard({
               </span>
             ))}
           </div>
-          <p className={cn("m-0 mt-1.5 text-xs font-semibold", SHUDDHI_TONE_TEXT[shuddhi.tone])}>
+          <p className={cn("m-0", saitClasses.summary, saitClasses.toneText[shuddhi.tone])}>
             {t(SHUDDHI_SUMMARY[shuddhi.tone])}
-            <span className="ml-1 font-normal text-muted-foreground">
+            <span className={cn("ml-1", saitClasses.summaryNote)}>
               {t("sait.house_from_janma_r_i")}
             </span>
           </p>
@@ -161,24 +155,27 @@ export function SaitDayCard({
       ) : null}
 
       {kumbha ? (
-        <div className="mt-3 border-t border-border pt-2.5">
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+        <div className={saitClasses.block}>
+          <div className={saitClasses.blockRowLoose}>
+            <span className={cn(saitClasses.blockIconLabel, "inline-flex", saitClasses.blockLabel)}>
               <Compass className="size-3.5 shrink-0 opacity-80" aria-hidden />
               {t("sait.kumbha_chakra")}
             </span>
             <span
               className={cn(
-                "inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-semibold",
-                SHUDDHI_TONE_CHIP[kumbha.tone],
+                saitClasses.chip,
+                "inline-flex",
+                saitClasses.chipText,
+                saitClasses.toneChip[kumbha.tone],
+                saitClasses.toneChipText[kumbha.tone],
               )}
             >
               {bilingualText(lang, kumbha.zone_ne, kumbha.zone_en)}
             </span>
           </div>
-          <p className={cn("m-0 mt-1.5 text-xs font-semibold", SHUDDHI_TONE_TEXT[kumbha.tone])}>
+          <p className={cn("m-0", saitClasses.summary, saitClasses.toneText[kumbha.tone])}>
             {bilingualText(lang, kumbha.effect_ne, kumbha.effect_en)}
-            <span className="ml-1 font-normal text-muted-foreground">
+            <span className={cn("ml-1", saitClasses.summaryNote)}>
               {t("sait.counted_from_the_sun")}
             </span>
           </p>
@@ -186,22 +183,26 @@ export function SaitDayCard({
       ) : null}
 
       {annaMonth ? (
-        <div className="mt-3 border-t border-border pt-2.5">
-          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+        <div className={saitClasses.block}>
+          <div className={saitClasses.blockRowLoose}>
+            <span className={cn(saitClasses.blockIconLabel, "inline-flex", saitClasses.blockLabel)}>
               <Baby className="size-3.5 shrink-0 opacity-80" aria-hidden />
               {t("sait.annapr_ana_age_month")}
             </span>
             <span
               className={cn(
-                "font-num inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums",
-                SHUDDHI_TONE_CHIP[annaMonth.tone],
+                saitClasses.chip,
+                "inline-flex",
+                saitClasses.chipText,
+                saitClasses.chipNum,
+                saitClasses.toneChip[annaMonth.tone],
+                saitClasses.toneChipText[annaMonth.tone],
               )}
             >
               {bilingualText(lang, `${digits(annaMonth.ordinal_month)} औँ महिना`, `month ${digits(annaMonth.ordinal_month)}`)}
             </span>
           </div>
-          <p className={cn("m-0 mt-1.5 text-xs font-semibold", SHUDDHI_TONE_TEXT[annaMonth.tone])}>
+          <p className={cn("m-0", saitClasses.summary, saitClasses.toneText[annaMonth.tone])}>
             {annaMonth.matches
               ? t("sait.the_child_s_right_age_month")
               : t("sait.not_this_child_s_age_month")}

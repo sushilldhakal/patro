@@ -1,4 +1,5 @@
-import { View } from "react-native";
+import { Link } from "expo-router";
+import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { PatroYearNavBlock } from "@/components/patro-date/PatroYearNavBlock";
@@ -8,28 +9,44 @@ import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
-import { useThemeColors } from "@/lib/theme-context";
-import { resolveLocationTimezone, usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { useTheme } from "@/lib/theme-context";
+import { cn } from "@vedic-patro/domain/utils";
+import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
+import { displayLocationLabel, resolveLocationTimezone, usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 export default function SuryakrantiScreen() {
-  const { pick, t, digits } = useLocale();
-  const colors = useThemeColors();
+  const { pick, t, digits, lang } = useLocale();
+  const { colors, isDark } = useTheme();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const timeZone = resolveLocationTimezone(location);
 
+  const ayanaBody = t("sun_times.ayana_body");
+  /* `<north>…</north>` / `<south>…</south>` mark the coloured terms (web `Trans`). */
+  const ayanaParts = ayanaBody.split(/(<north>.*?<\/north>|<south>.*?<\/south>)/g).filter(Boolean);
+  const locationLabel = displayLocationLabel(location, undefined, lang);
+
   return (
     <AppShell title={pick("सूर्य क्रान्ति", "Sun Revolution")} showHeader={false}>
-      <View className="mb-3">
-        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
+      <View className="mb-4">
+        <Link href="/" asChild>
+          <Pressable accessibilityRole="link" className={cn("flex-row self-start", sunTimesClasses.backLink)}>
+            <Ionicons name="arrow-back" size={14} color={colors.foreground} />
+            <Text className={sunTimesClasses.backLinkText} style={nepaliTextStyle()}>
+              {t("common.back_home")}
+            </Text>
+          </Pressable>
+        </Link>
+        <Text className={sunTimesClasses.title} style={nepaliTextStyle()}>
           {t("sun_times.title")}
         </Text>
-        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={sunTimesClasses.subtitle} style={nepaliTextStyle()}>
           {t("sun_times.subtitle", { year: digits(year) })}
         </Text>
       </View>
 
       <PatroYearNavBlock
+        className="mb-0"
         era={era}
         onEraChange={setEra}
         year={year}
@@ -46,22 +63,27 @@ export default function SuryakrantiScreen() {
         timeZone={timeZone}
       />
 
-      <View
-        style={{ borderColor: colors.border }}
-        className="mt-4 gap-3 rounded-2xl border bg-card p-4"
-      >
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="calendar-outline" size={15} color={colors.secondary} />
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
-            {pick("अयन", "Ayana")}
+      <View className={cn("mb-16 mt-4 gap-3", sunTimesClasses.ayanaCard)}>
+        <View className={cn("flex-row", sunTimesClasses.ayanaTitleRow)}>
+          <Ionicons name="calendar-outline" size={16} color={isDark ? colors.primary : colors.secondary} />
+          <Text className={sunTimesClasses.ayanaTitle} style={nepaliTextStyle()}>
+            {t("sun_times.ayana_title")}
           </Text>
         </View>
-        <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-          {pick(
-            "प्रत्येक दिनको उ वा द सूर्योदयको बेला सूर्य कुन राशिमा छ भन्ने आधारमा तय हुन्छ — वर्षमा दुई पटक सङ्क्रान्तिमा परिवर्तन।",
-            "Each day's N or S mark follows the Sun's sign at sunrise — it changes twice a year at sankranti.",
-          )}
+        <Text className={sunTimesClasses.ayanaBody} style={nepaliTextStyle()}>
+          {ayanaParts.map((part, i) => {
+            const north = /^<north>(.*)<\/north>$/.exec(part);
+            const south = /^<south>(.*)<\/south>$/.exec(part);
+            if (north) return <Text key={i} className={sunTimesClasses.ayanaNorth}>{north[1]}</Text>;
+            if (south) return <Text key={i} className={sunTimesClasses.ayanaSouth}>{south[1]}</Text>;
+            return part;
+          })}
         </Text>
+        {locationLabel ? (
+          <Text className={sunTimesClasses.ayanaLocation} style={nepaliTextStyle()}>
+            {t("location.label")}: {locationLabel}
+          </Text>
+        ) : null}
       </View>
     </AppShell>
   );

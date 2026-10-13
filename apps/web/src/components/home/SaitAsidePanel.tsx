@@ -14,10 +14,10 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import { getBsMonthsOverlappingAdMonth } from "@vedic-patro/domain/local-calendar";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { patroEmpty } from "@/lib/patro-classes";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { patroYearLinkSearch } from "@/lib/url-state";
 import { cn } from "@vedic-patro/domain/utils";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type Props = {
   /** BS year of the month the calendar is currently showing. */
@@ -112,16 +112,16 @@ export function SaitAsidePanel({
   const anyDates = Object.values(cats).some((d) => d.length > 0);
 
   return (
-    <div className="flex flex-col gap-2">
-      <p className="text-xs font-semibold text-muted-foreground">{monthName}</p>
+    <div className={homeClasses.saitStack}>
+      <p className={homeClasses.saitMonth}>{monthName}</p>
 
       {isLoading ? (
-        <div className="h-48 animate-pulse rounded-md bg-muted" />
+        <div className={cn("animate-pulse", homeClasses.saitSkeleton)} />
       ) : isError ? (
-        <p className={patroEmpty}>{t("sait.no_data")}</p>
+        <p className={cn("m-0", homeClasses.saitEmpty)}>{t("sait.no_data")}</p>
       ) : (
         <>
-          <ul className="m-0 flex list-none flex-col gap-1 p-0">
+          <ul className={cn("m-0 list-none p-0", homeClasses.saitList)}>
             {SAIT_CATEGORIES.map((cat) => {
               const days = cats[cat.id] ?? [];
               return (
@@ -130,12 +130,12 @@ export function SaitAsidePanel({
                     to="/sait/$category"
                     params={{ category: cat.id }}
                     search={patroYearLinkSearch(location, year, "bs")}
-                    className="flex items-center gap-2 rounded-md bg-surface-inset px-2.5 py-2 text-sm leading-snug transition-colors hover:bg-surface-hover"
+                    className={cn(homeClasses.saitRow, "text-sm leading-snug transition-colors hover:bg-surface-hover")}
                   >
-                    <span className="shrink-0 font-bold text-foreground">
+                    <span className={homeClasses.saitName}>
                       {t(`sait.categories.${cat.id}`)}
                     </span>
-                    <span className="font-num min-w-0 flex-1 text-right text-sm font-semibold text-foreground">
+                    <span className={cn("min-w-0 flex-1", homeClasses.saitDays)}>
                       {days.length ? (
                         days.map((day, i) => {
                           const hl = highlightDay === day;
@@ -144,7 +144,7 @@ export function SaitAsidePanel({
                               {i > 0 ? ", " : ""}
                               <span
                                 className={cn(
-                                  hl && "font-extrabold text-accent underline underline-offset-2",
+                                  hl && cn(homeClasses.saitHighlight, "underline-offset-2"),
                                 )}
                               >
                                 {digits(day)}
@@ -153,7 +153,7 @@ export function SaitAsidePanel({
                           );
                         })
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className={homeClasses.saitDaysNone}>—</span>
                       )}
                     </span>
                     <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
@@ -164,7 +164,7 @@ export function SaitAsidePanel({
           </ul>
 
           {!anyDates ? (
-            <p className={patroEmpty}>{t("sait.no_month_dates")}</p>
+            <p className={cn("m-0", homeClasses.saitEmpty)}>{t("sait.no_month_dates")}</p>
           ) : null}
         </>
       )}

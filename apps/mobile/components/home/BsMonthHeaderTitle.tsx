@@ -6,8 +6,13 @@ import { useLocale } from "@/lib/i18n";
 import { Pressable, Text } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useThemeColors } from "@/lib/theme-context";
+import { useBreakpoint } from "@/lib/responsive";
+import { isGregorianEra } from "@vedic-patro/domain/era";
+import { cn } from "@vedic-patro/domain/utils";
+import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { HomePatroView } from "./PatroViewToggle";
+import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 type Props = {
   year: number;
@@ -48,22 +53,53 @@ export function BsMonthHeaderTitle({
   onBrowseEraChange,
 }: Props) {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t, lang } = useLocale();
+  const { isCompact } = useBreakpoint();
 
+  const calendarTabLabel = isGregorianEra(browseEra) ? t("calendar.mode_ad") : patroEraShortLabel(browseEra, lang);
   const nextView: HomePatroView = patroView === "calendar" ? "panchanga" : "calendar";
-  const nextViewLabel = nextView === "panchanga" ? pick("पञ्चाङ्ग", "Panchanga") : pick("वि.सं.", "B.S.");
+  const nextViewLabel = nextView === "panchanga" ? t("calendar.mode_panchanga") : calendarTabLabel;
 
-  const viewToggle = (
+  /* Web: below md a single swap button (`h-8 px-2 text-sm font-semibold`); md+ a segmented radiogroup. */
+  const viewToggleButton = (
     <Pressable
       onPress={() => onPatroViewChange(nextView)}
-      accessibilityLabel={pick("पात्रो प्रकार बदल्नुहोस्", "Switch patro type")}
-      className="h-[30px] shrink-0 flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted"
+      accessibilityLabel={t("calendar.patro_mode_switch")}
+      className={cn(calendarClasses.viewSwap, "active:bg-muted")}
     >
       <Ionicons name="swap-horizontal" size={14} color={colors.foreground} />
-      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <Text className={calendarClasses.viewSwapText} style={nepaliTextStyle()}>
         {nextViewLabel}
       </Text>
     </Pressable>
+  );
+
+  const viewToggleSegmented = (
+    <View
+      accessibilityRole="radiogroup"
+      accessibilityLabel={t("calendar.patro_mode_aria")}
+      className={calendarClasses.viewSegGroup}
+    >
+      {(["calendar", "panchanga"] as const).map((view) => {
+        const active = patroView === view;
+        return (
+          <Pressable
+            key={view}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: active }}
+            onPress={() => onPatroViewChange(view)}
+            className={cn("h-[26px] items-center justify-center rounded-md px-3", active && "bg-secondary")}
+          >
+            <Text
+              className={cn("text-xs font-semibold", active ? "text-secondary-foreground" : "text-foreground")}
+              style={nepaliTextStyle()}
+            >
+              {view === "calendar" ? calendarTabLabel : t("calendar.mode_panchanga")}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 
   return (
@@ -84,8 +120,8 @@ export function BsMonthHeaderTitle({
         prevDisabled={prevDisabled}
         nextDisabled={nextDisabled}
         crossEraSubtitle={crossEraSubtitle}
-        toolbar={viewToggle}
-        mobileToolbar={viewToggle}
+        toolbar={isCompact ? undefined : viewToggleSegmented}
+        mobileToolbar={viewToggleButton}
       />
     </View>
   );

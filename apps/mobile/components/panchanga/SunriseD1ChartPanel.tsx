@@ -7,6 +7,8 @@ import { useLocale } from "@/lib/i18n";
 import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1";
 import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
 
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+
 type Props = {
   p: PanchangaDay;
 };
@@ -19,12 +21,12 @@ export function SunriseD1ChartPanel({ p }: Props) {
   if (!houses) return null;
 
   return (
-    <View className="rounded-xl border border-border bg-card p-3 shadow-sm">
-      <Text className="text-caption font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <View className={panchangaPageClasses.aside.card}>
+      <Text className={panchangaPageClasses.aside.eyebrow}>
         {pick("D1 चक्र", "D1 chart")}
       </Text>
-      <Text className="text-body mt-1 text-muted-foreground">{anchor}</Text>
-      <View className="mt-2">
+      <Text className={panchangaPageClasses.aside.anchor}>{anchor}</Text>
+      <View className={panchangaPageClasses.aside.body}>
         <D1Chart houses={houses} />
       </View>
     </View>

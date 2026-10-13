@@ -3,20 +3,19 @@ import { Text } from "@/components/ui/Text";
 import type { SaitSuitability } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { SUITABILITY_ORDER } from "@vedic-patro/domain/sait-suitability";
-import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
+import { SUITABILITY_ORDER, SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
+import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 /** A small verdict chip shown on a personalised day. */
 export function SuitabilityBadge({ suitability }: { suitability: SaitSuitability }) {
   const { pick } = useLocale();
   const s = SUITABILITY_STYLE[suitability];
+  const tone = saitClasses.suitability[suitability];
   return (
-    <View
-      style={{ backgroundColor: s.bg }}
-      className="flex-row items-center gap-1 rounded-md px-1.5 py-0.5"
-    >
-      <View style={{ backgroundColor: s.dot }} className="h-1.5 w-1.5 rounded-full" />
-      <Text style={{ color: s.fg, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
+    <View className={cn(saitClasses.badge, tone.box)}>
+      <View className={cn(saitClasses.badgeDot, tone.dot)} />
+      <Text style={nepaliTextStyle()} className={cn(saitClasses.badgeText, tone.text)}>
         {pick(s.ne, s.en)}
       </Text>
     </View>
@@ -31,20 +30,20 @@ export function SuitabilityLegend({
 }) {
   const { pick, digits } = useLocale();
   return (
-    <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
-      <Text className="text-caption font-medium text-foreground" style={nepaliTextStyle(11)}>
+    <View className={saitClasses.legend}>
+      <Text className={cn(saitClasses.legendText, saitClasses.legendTitle)} style={nepaliTextStyle()}>
         {pick("तपाईंको प्रोफाइलअनुसार", "For your profile")}
       </Text>
       {SUITABILITY_ORDER.map((k) => {
         const s = SUITABILITY_STYLE[k];
         return (
-          <View key={k} className="flex-row items-center gap-1">
-            <View style={{ backgroundColor: s.dot }} className="h-2 w-2 rounded-full" />
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+          <View key={k} className={saitClasses.legendItem}>
+            <View className={cn(saitClasses.legendDot, saitClasses.suitability[k].dot)} />
+            <Text className={saitClasses.legendText} style={nepaliTextStyle()}>
               {pick(s.ne, s.en)}
             </Text>
             {counts ? (
-              <Text className="text-caption font-num text-muted-foreground">· {digits(counts[k])}</Text>
+              <Text className={cn(saitClasses.legendText, saitClasses.legendCount)} style={nepaliTextStyle()}>· {digits(counts[k])}</Text>
             ) : null}
           </View>
         );

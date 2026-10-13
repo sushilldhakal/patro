@@ -6,7 +6,46 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./mobile-tailwind.json": "./generated/mobile-tailwind.json"
+    "./mobile-tailwind.json": "./generated/mobile-tailwind.json",
+    "./classes/patro-classes": {
+      "import": "./src/classes/patro-classes.ts",
+      "default": "./src/classes/patro-classes.ts"
+    },
+    "./classes/timeline-classes": {
+      "import": "./src/classes/timeline-classes.ts",
+      "default": "./src/classes/timeline-classes.ts"
+    },
+    "./classes/wheel-classes": {
+      "import": "./src/classes/wheel-classes.ts",
+      "default": "./src/classes/wheel-classes.ts"
+    },
+    "./classes/wheel-svg-classes": {
+      "import": "./src/classes/wheel-svg-classes.ts",
+      "default": "./src/classes/wheel-svg-classes.ts"
+    },
+    "./classes/learn-classes": {
+      "import": "./src/classes/learn-classes.ts",
+      "default": "./src/classes/learn-classes.ts"
+    },
+    "./classes/hora-classes": {
+      "import": "./src/classes/hora-classes.ts",
+      "default": "./src/classes/hora-classes.ts"
+    },
+    "./classes/av-wheel-classes": {
+      "import": "./src/classes/av-wheel-classes.ts",
+      "default": "./src/classes/av-wheel-classes.ts"
+    },
+    "./classes/diagram-classes": {
+      "import": "./src/classes/diagram-classes.ts",
+      "default": "./src/classes/diagram-classes.ts"
+    },
+    "./classes/*": {
+      "import": "./src/classes/*.ts",
+      "default": "./src/classes/*.ts"
+    }
+  },
+  "dependencies": {
+    "@vedic-patro/domain": "*"
   },
   "scripts": {
     "generate": "tsx scripts/generate-css.ts",

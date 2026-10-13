@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
@@ -42,9 +42,13 @@ export function KundaliSidebarSubnav({
         : null;
   const [expandedId, setExpandedId] = useState<string | null>(activeGroup);
 
-  useEffect(() => {
+  // Opening a section expands its group. Adjusting state while rendering (not in
+  // an effect) means the group is already open on the render that shows the section.
+  const [seenActiveGroup, setSeenActiveGroup] = useState(activeGroup);
+  if (activeGroup !== seenActiveGroup) {
+    setSeenActiveGroup(activeGroup);
     if (activeGroup) setExpandedId(activeGroup);
-  }, [activeGroup]);
+  }
 
   return (
     <ul className="ml-2 flex flex-col gap-0.5 border-l border-border/70 pl-2 pb-1">

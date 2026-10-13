@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
@@ -25,31 +24,24 @@ type Props = {
  * real width, and the double spaces between the parts are where it breaks.
  */
 export function PatroBsHeadline({ bs, samvatsara, gregorian, className, compact = false }: Props) {
-  const colors = useThemeColors();
-  const bsSize = compact ? 14 : 20;
-  const samSize = compact ? 14 : 20;
-  const gregSize = compact ? 12 : 16;
-  const secondary = { color: colors.secondary };
-  const muted = { color: colors.mutedForeground };
+  /* Web titleBlock: h1 `text-sm` on phones, `text-xl` from md; the AD subtitle is always `text-xs`. */
+  const size = compact ? "text-sm" : "text-xl";
 
   return (
     <Text
       numberOfLines={2}
-      className={cn("min-w-0 font-semibold text-secondary", className)}
-      style={[nepaliTextStyle(bsSize), secondary]}
+      className={cn("min-w-0 font-bold leading-tight tracking-tight text-secondary", size, className)}
+      style={nepaliTextStyle()}
     >
       {bs}
       {samvatsara ? (
-        <Text className="font-semibold text-secondary" style={[nepaliTextStyle(samSize), secondary]}>
+        <Text className={cn("font-semibold text-secondary", size)} style={nepaliTextStyle()}>
           {"  "}
           {samvatsara}
         </Text>
       ) : null}
       {gregorian ? (
-        <Text
-          className="font-semibold text-muted-foreground"
-          style={[nepaliTextStyle(gregSize), muted]}
-        >
+        <Text className="text-xs font-semibold text-muted-foreground" style={nepaliTextStyle()}>
           {"  "}
           {gregorian}
         </Text>

@@ -1,5 +1,6 @@
 import { Pressable, View } from "react-native";
 import { usePathname, useRouter } from "expo-router";
+import { space } from "@vedic-patro/design-tokens";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
@@ -75,7 +76,7 @@ export function RelatedPageLinks() {
     <View className="mt-10 border-t border-border pt-8" accessibilityLabel={t("related_pages.aria")}>
       <View className="mb-3 flex-row items-center gap-2">
         <AppNavIcon name="compass" size={16} color={colors.secondary} />
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle(14)}>
           {t("related_pages.heading")}
         </Text>
       </View>
@@ -95,16 +96,16 @@ export function RelatedPageLinks() {
               )}
             </View>
             <View className="min-w-0 flex-1">
-              <Text className="text-body font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+              <Text className="text-sm font-semibold text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
                 {card.label}
               </Text>
               {card.description ? (
-                <Text className="text-caption mt-0.5 text-muted-foreground" numberOfLines={2} style={nepaliTextStyle(12)}>
+                <Text className="mt-0.5 text-xs leading-snug text-muted-foreground" numberOfLines={2} style={nepaliTextStyle(12)}>
                   {card.description}
                 </Text>
               ) : null}
             </View>
-            <Ionicons name="arrow-forward" size={14} color={colors.mutedForeground} style={{ marginTop: 4 }} />
+            <Ionicons name="arrow-forward" size={14} color={colors.mutedForeground} style={{ marginTop: space.xs }} />
           </Pressable>
         ))}
       </View>

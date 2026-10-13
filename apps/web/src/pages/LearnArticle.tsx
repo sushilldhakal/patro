@@ -21,6 +21,7 @@ import {
   tmPageShell,
   tmWrap,
 } from "@/lib/learn-classes";
+import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 
 /**
  * Where a retired slug went.
@@ -72,11 +73,11 @@ export function LearnArticle() {
   if (!topic) {
     return (
       <PageShell>
-        <div className="flex flex-col items-center gap-4 py-16 text-center">
+        <div className={cn(learnPageClasses.notFound, "text-center")}>
           <p>{t("learn_page.topic_not_found")}</p>
           <Link
             to="/learn"
-            className="inline-flex items-center gap-1.5 text-sm text-secondary"
+            className={cn(learnPageClasses.inlineLink, "inline-flex")}
           >
             <ArrowLeft className="size-4" /> {t("learn_page.back_hub")}
           </Link>
@@ -100,12 +101,12 @@ export function LearnArticle() {
     <PageShell>
       <Link
         to="/learn"
-        className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-foreground"
+        className={cn(learnPageClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
       >
         <ArrowLeft className="size-4" /> {t("learn_page.eyebrow")}
       </Link>
 
-      <article className={cn(tmPageShell, "rounded-2xl border border-border overflow-hidden")}>
+      <article className={cn(tmPageShell, learnPageClasses.articleCard)}>
         <div className={tmWrap}>
           <header className={tmHero}>
             <div className={tmHeroEyebrow}>
@@ -131,19 +132,19 @@ export function LearnArticle() {
 
           {hasGuidedTour ? null : <Content />}
 
-          <nav className="mt-12 flex flex-col gap-3 sm:flex-row sm:justify-between">
+          <nav className={cn(learnPageClasses.navRow, "mt-12")}>
             {prev ? (
               <Link
                 to="/learn/$slug"
                 params={{ slug: prev.slug }}
-                className="group flex flex-1 items-center gap-2 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:border-secondary/60"
+                className={cn(learnPageClasses.navCard, "group flex-1 text-left transition-colors hover:border-secondary/60")}
               >
                 <ArrowLeft className="size-4 shrink-0 text-secondary" />
                 <span className="min-w-0">
-                  <span className="block text-sm uppercase tracking-wide">
+                  <span className={cn(learnPageClasses.navKicker, "block")}>
                     {t("learn_page.prev")}
                   </span>
-                  <span className="block truncate text-sm text-foreground">
+                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>
                     {bilingualText(lang, prev.titleNe, prev.titleEn)}
                   </span>
                 </span>
@@ -155,13 +156,13 @@ export function LearnArticle() {
               <Link
                 to="/learn/$slug"
                 params={{ slug: next.slug }}
-                className="group flex flex-1 items-center justify-end gap-2 rounded-xl border border-border bg-card p-3 text-right transition-colors hover:border-secondary/60"
+                className={cn(learnPageClasses.navCard, "group flex-1 justify-end text-right transition-colors hover:border-secondary/60")}
               >
                 <span className="min-w-0">
-                  <span className="block text-sm uppercase tracking-wide">
+                  <span className={cn(learnPageClasses.navKicker, "block")}>
                     {t("learn_page.next")}
                   </span>
-                  <span className="block truncate text-sm text-foreground">
+                  <span className={cn(learnPageClasses.navTitle, "block truncate")}>
                     {bilingualText(lang, next.titleNe, next.titleEn)}
                   </span>
                 </span>
@@ -175,7 +176,7 @@ export function LearnArticle() {
           <div className="mt-6 text-center">
             <Link
               to="/learn"
-              className="inline-flex items-center gap-1.5 text-sm text-secondary"
+              className={cn(learnPageClasses.inlineLink, "inline-flex")}
             >
               <BookOpen className="size-4" /> {t("learn_page.all_topics")}
             </Link>

@@ -1,6 +1,7 @@
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import type { SaitSuitability } from "@/lib/api";
 import { SUITABILITY_STYLE } from "@vedic-patro/domain/sait-suitability";
 
@@ -17,12 +18,15 @@ export function SuitabilityBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold",
-        s.pill,
+        saitClasses.badge,
+        "inline-flex",
+        saitClasses.badgeText,
+        saitClasses.suitability[suitability].box,
+        saitClasses.suitability[suitability].text,
         className,
       )}
     >
-      <span className={cn("size-1.5 rounded-full", s.dot)} aria-hidden />
+      <span className={cn(saitClasses.badgeDot, saitClasses.suitability[suitability].dot)} aria-hidden />
       {bilingualText(lang, s.ne, s.en)}
     </span>
   );
@@ -38,18 +42,18 @@ export function SuitabilityLegend({
   const { lang, digits } = useLocale();
   const order: SaitSuitability[] = ["favourable", "neutral", "avoid"];
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-      <span className="font-medium text-foreground">
+    <div className={cn(saitClasses.legend, saitClasses.legendText)}>
+      <span className={saitClasses.legendTitle}>
         {t("sait.for_your_profile")}
       </span>
       {order.map((k) => {
         const s = SUITABILITY_STYLE[k];
         return (
-          <span key={k} className="inline-flex items-center gap-1">
-            <span className={cn("size-2 rounded-full", s.dot)} aria-hidden />
+          <span key={k} className={cn(saitClasses.legendItem, "inline-flex")}>
+            <span className={cn(saitClasses.legendDot, saitClasses.suitability[k].dot)} aria-hidden />
             {bilingualText(lang, s.ne, s.en)}
             {counts ? (
-              <span className="font-num tabular-nums">· {digits(counts[k])}</span>
+              <span className={saitClasses.legendCount}>· {digits(counts[k])}</span>
             ) : null}
           </span>
         );

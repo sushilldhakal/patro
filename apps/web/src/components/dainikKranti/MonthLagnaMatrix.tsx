@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import {
   Table,
@@ -19,8 +20,8 @@ import {
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
 
-const th = "whitespace-nowrap px-2 py-2.5 text-sm font-semibold";
-const td = "whitespace-nowrap px-2 py-2 text-center font-mono text-sm tabular-nums";
+const th = cn(dainikKrantiClasses.monthTh, "whitespace-nowrap");
+const td = cn(dainikKrantiClasses.monthTd, dainikKrantiClasses.monthTdMono, "whitespace-nowrap");
 
 type Props = {
   rows: LagnaMatrixRow[];
@@ -40,7 +41,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
           <TableRow className={patroStickyHeadRow}>
             <TableHead className={cn(th, patroStickyHeadCorner, "pl-3 text-left")}>{t("dainik.date")}</TableHead>
             <TableHead className={cn(th, patroStickyHeadCell, "text-left")}>{t("dainik.day")}</TableHead>
-            <TableHead className={cn(th, patroStickyHeadCell, "text-amber-600 dark:text-amber-400")}>{t("dainik.rise")}</TableHead>
+            <TableHead className={cn(th, patroStickyHeadCell, dainikKrantiClasses.amberText)}>{t("dainik.rise")}</TableHead>
             {getRashiList("ne").map((rne, i) => (
               <TableHead key={rne} className={cn(th, patroStickyHeadCell, "min-w-[3.75rem] text-center")}>
                 <span className="flex justify-center">
@@ -54,13 +55,13 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={15} className="py-8 text-center text-sm">
+              <TableCell colSpan={15} className={dainikKrantiClasses.monthLoading}>
                 {t("dainik.loading")}
               </TableCell>
             </TableRow>
           ) : empty || rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={15} className="py-8 text-center text-sm">
+              <TableCell colSpan={15} className={dainikKrantiClasses.monthLoading}>
                 {t("dainik.no_days_found_in_this_paksha")}
               </TableCell>
             </TableRow>
@@ -70,13 +71,14 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
               return (
                 <TableRow
                   key={row.dateAd}
-                  className={cn(isToday && "bg-secondary/15 hover:bg-secondary/20")}
+                  className={cn(isToday && cn(dainikKrantiClasses.rowToday, "hover:bg-secondary/20"))}
                 >
                   <TableCell
                     className={cn(
                       td,
-                      "sticky left-0 z-10 bg-card pl-3 text-left font-semibold",
-                      isToday && "bg-secondary/15",
+                      "sticky left-0 z-10 text-left",
+                      dainikKrantiClasses.stickyDateCell,
+                      isToday && dainikKrantiClasses.rowToday,
                     )}
                   >
                     {digits(row.day)}
@@ -84,7 +86,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
                   <TableCell className={cn(td, "text-left")}>
                     {bilingualText(lang, row.weekdayNe ?? "—", row.weekdayEn ?? row.weekdayNe ?? "—")}
                   </TableCell>
-                  <TableCell className={cn(td, "text-amber-600 dark:text-amber-400")}>
+                  <TableCell className={cn(td, dainikKrantiClasses.amberText)}>
                     {row.sunrise ? digits(row.sunrise) : "—"}
                   </TableCell>
                   {getRashiList("ne").map((_, i) => {
@@ -94,7 +96,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
                     return (
                       <TableCell
                         key={num}
-                        className={cn(td, late && "text-amber-700 dark:text-amber-300")}
+                        className={cn(td, late && dainikKrantiClasses.lateText)}
                       >
                         {val ?? "—"}
                       </TableCell>

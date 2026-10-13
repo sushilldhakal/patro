@@ -22,6 +22,7 @@ import {
   useSpin,
 } from "./svg-motion";
 
+import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
 export const PAGE_LOADER_SIZE = 120;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -78,23 +79,23 @@ function LoaderSvg({ size }: { size: number }) {
     <Svg width={size} height={size} viewBox="0 0 512 512">
       <Defs>
         <LinearGradient id="vpl-g" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor="#f6da8a" />
-          <Stop offset="0.5" stopColor="#e6b94d" />
-          <Stop offset="1" stopColor="#c79126" />
+          <Stop offset="0" stopColor={illustration.amber77} />
+          <Stop offset="0.5" stopColor={illustration.amber60} />
+          <Stop offset="1" stopColor={illustration.orange46} />
         </LinearGradient>
         <RadialGradient id="vpl-sun" cx="0.38" cy="0.34" r="0.75">
-          <Stop offset="0" stopColor="#fbe9b6" />
-          <Stop offset="0.55" stopColor="#ecc25e" />
-          <Stop offset="1" stopColor="#cf9a2c" />
+          <Stop offset="0" stopColor={illustration.amber85} />
+          <Stop offset="0.55" stopColor={midnight.gold} />
+          <Stop offset="1" stopColor={illustration.orange46} />
         </RadialGradient>
         <RadialGradient id="vpl-halo" cx="0.5" cy="0.5" r="0.5">
-          <Stop offset="0" stopColor="#ffe6a0" stopOpacity={0.9} />
-          <Stop offset="0.55" stopColor="#f4c95e" stopOpacity={0.35} />
-          <Stop offset="1" stopColor="#f4c95e" stopOpacity={0} />
+          <Stop offset="0" stopColor={illustration.amber81} stopOpacity={0.9} />
+          <Stop offset="0.55" stopColor={illustration.amber66} stopOpacity={0.35} />
+          <Stop offset="1" stopColor={illustration.amber66} stopOpacity={0} />
         </RadialGradient>
         <LinearGradient id="vpl-bg" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor="#0e6a6f" />
-          <Stop offset="1" stopColor="#073f43" />
+          <Stop offset="0" stopColor={illustration.teal25} />
+          <Stop offset="1" stopColor={brand.bluePressed} />
         </LinearGradient>
       </Defs>
 
@@ -145,7 +146,7 @@ function LoaderSvg({ size }: { size: number }) {
 
         <AnimatedG animatedProps={sunProps}>
           <Circle cx={PIVOT.x} cy={PIVOT.y} r={16} fill="url(#vpl-sun)" />
-          <Circle cx={PIVOT.x} cy={PIVOT.y} r={4.4} fill="#073f43" opacity={0.8} />
+          <Circle cx={PIVOT.x} cy={PIVOT.y} r={4.4} fill={brand.bluePressed} opacity={0.8} />
         </AnimatedG>
       </G>
     </Svg>
@@ -169,7 +170,7 @@ export function VedicPatroLoader({
       <View className="overflow-hidden rounded-[22%] shadow-md" style={{ width: size, height: size }}>
         <LoaderSvg size={size} />
       </View>
-      {shown ? <Text className="text-body text-muted-foreground">{shown}</Text> : null}
+      {shown ? <Text className="text-sm">{shown}</Text> : null}
     </View>
   );
 }

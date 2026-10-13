@@ -28,6 +28,8 @@ import { PanchangaWheel } from "@/components/panchanga/PanchangaWheel";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import { LearnMoreCard } from "@/components/LearnMoreCard";
 import { SeoContentSection } from "@/components/seo/SeoContentSection";
+import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { PlanetEventsPanel } from "@/components/panchanga/PlanetEventsPanel";
 import { GocharPromoCard } from "@/components/gochar/GocharPromoCard";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
@@ -217,17 +219,23 @@ export function Panchanga() {
 
   const hadUrlTimeRef = useRef(Boolean(search.time));
   const clockSyncedKeyRef = useRef<string | null>(null);
-  const keepClockOnDateRef = useRef(false);
+  const [keepClockOnDate, setKeepClockOnDate] = useState(false);
+  const [jumpSyncKey, setJumpSyncKey] = useState<string | null>(null);
   const [trackedAdDate, setTrackedAdDate] = useState(adDateStr);
   if (adDateStr !== trackedAdDate) {
     setTrackedAdDate(adDateStr);
-    if (keepClockOnDateRef.current) {
-      keepClockOnDateRef.current = false;
-      clockSyncedKeyRef.current = `${adDateStr}|${locationCacheKey(location.params)}`;
+    if (keepClockOnDate) {
+      setKeepClockOnDate(false);
+      setJumpSyncKey(`${adDateStr}|${locationCacheKey(location.params)}`);
     } else {
       setClockUserAdjusted(false);
     }
   }
+  // A date jump that carries its own clock marks that clock as already synced.
+  // Written in an effect (not while rendering); declared before the effects that read it.
+  useEffect(() => {
+    if (jumpSyncKey) clockSyncedKeyRef.current = jumpSyncKey;
+  }, [jumpSyncKey]);
 
   const handleClockChange = useCallback(
     (next: string) => {
@@ -251,7 +259,7 @@ export function Panchanga() {
     (nextEra: Era, y: number, m: number, d: number, nextClock: string) => {
       const dateChanged =
         nextEra !== browseEra || y !== pickerYear || m !== pickerMonth || d !== pickerDay;
-      if (dateChanged) keepClockOnDateRef.current = true;
+      if (dateChanged) setKeepClockOnDate(true);
       setClockUserAdjusted(true);
       setClock(nextClock);
       if (nextEra !== browseEra) {
@@ -311,11 +319,11 @@ export function Panchanga() {
   useRouteLoading(PANCHANGA_ROUTE_LOADING);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-4 max-md:px-4 max-md:pb-16 max-md:pt-0">
+    <div className={cn(panchangaPageClasses.page.shell, "px-4 max-md:px-4 max-md:pb-16 max-md:pt-0")}>
       {/* Timeline + aside share a grid; aside sticks only through the ग्रह row,
           then releases before the wheel so everything below spans full width. */}
-      <div className="mt-2 grid grid-cols-1 items-start gap-x-5 gap-y-4 max-md:pt-3 xl:grid-cols-[1fr_330px]">
-        <div className="flex min-w-0 flex-col gap-4">
+      <div className={cn(panchangaPageClasses.page.grid, "grid grid-cols-1 items-start max-md:pt-3 xl:grid-cols-[1fr_330px]")}>
+        <div className={cn("flex flex-col", panchangaPageClasses.page.mainColumn)}>
           {/* Page-level day-boundary tab: drives the WHOLE page, not just the
               chart. दिन-रात re-reads the moving angas at midnight; date sections
               stay tied to the calendar date. Rides in the header toolbar row
@@ -377,7 +385,7 @@ export function Panchanga() {
           )}
         </div>
 
-        <aside className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-[76px] xl:self-start">
+        <aside className={cn("flex flex-col", panchangaPageClasses.page.aside, "xl:sticky xl:top-[76px] xl:self-start")}>
           <GhatiClock sunrise={sunrise} sunset={sunset} timezone={effectiveTimezone} />
           {data && <SunriseD1ChartPanel p={data} />}
           {jdUt != null && hasCivilAnchor ? (
@@ -391,7 +399,7 @@ export function Panchanga() {
         </aside>
       </div>
 
-      <div className="mt-4 flex min-w-0 flex-col gap-4">
+      <div className={cn("flex flex-col", panchangaPageClasses.page.sections)}>
         {(wheelData || showWheelSkeleton) && (
           <>
             <PanchangaWheel
@@ -423,7 +431,12 @@ export function Panchanga() {
               <Link
                 to="/panchanga/year"
                 search={currentPatroYearRangeLinkSearch(location, langEra)}
-                className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:bg-secondary/10 hover:text-secondary"
+                className={cn(
+                  "inline-flex justify-center",
+                  panchangaPageClasses.page.yearLink,
+                  panchangaPageClasses.page.yearLinkText,
+                  "transition-colors hover:bg-secondary/10 hover:text-secondary",
+                )}
               >
                 <CalendarRange className="size-4" />
                 {t("panchanga.year_link")}
@@ -433,7 +446,7 @@ export function Panchanga() {
         )}
 
         {isError && (
-          <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className={cn(panchangaPageClasses.page.errorBox, panchangaPageClasses.page.errorText)}>
             {/* Prefer the backend's own explanation — for an unreachable date
                 ("bbs year must be 1..12942", "outside the installed ephemeris
                 range") that is the only thing that tells the user what to fix. */}
@@ -444,7 +457,7 @@ export function Panchanga() {
         )}
 
         {data && (
-          <div className="flex flex-col gap-3">
+          <div className={cn("flex flex-col", panchangaPageClasses.page.sectionStack)}>
             <SunMoonSamvatSection p={data} />
             {/* तिथि/नक्षत्र/योग/करण and the rashi / balam / lagna sections read
                 from `angaData`: sunrise (udaya) in अहोरात्र mode, or the civil

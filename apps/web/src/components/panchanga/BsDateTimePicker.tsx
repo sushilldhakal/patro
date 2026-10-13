@@ -267,23 +267,23 @@ export function BsDateTimePicker({
   const stepBtn = cn(
     "flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors disabled:opacity-40",
     solidSurface
-      ? "border-[#3d5c58] bg-[#243f3c] text-[#e9f3f1] hover:bg-[#2d4f4b]"
+      ? "border-ill-teal30 bg-ill-teal19 text-ill-wheel-ink hover:bg-ill-teal24"
       : "border-border bg-card text-foreground hover:bg-surface-hover",
   );
   const gridShell = cn(
     "overflow-hidden rounded-xl border shadow-sm",
-    solidSurface ? "border-[#3d5c58] bg-[#1a3835]" : "border-border bg-card",
+    solidSurface ? "border-ill-teal30 bg-ill-teal15b" : "border-border bg-card",
   );
   const gridHead = cn(
     "grid grid-cols-7 border-b",
-    solidSurface ? "border-[#3d5c58] bg-[#152f2d]" : "border-border bg-muted/30",
+    solidSurface ? "border-ill-teal30 bg-ill-wheel-sky0" : "border-border bg-muted/30",
   );
-  const gridPad = solidSurface ? "border-[#3d5c58] bg-[#132824]" : "border-border bg-muted/10";
-  const dayHover = solidSurface ? "hover:bg-[#2d4f4b]" : "hover:bg-surface-hover";
+  const gridPad = solidSurface ? "border-ill-teal30 bg-ill-wheel-sky0" : "border-border bg-muted/10";
+  const dayHover = solidSurface ? "hover:bg-ill-teal24" : "hover:bg-surface-hover";
   const footerBtn = cn(
     "h-8 flex-1 rounded-md border text-sm font-semibold transition-colors",
     solidSurface
-      ? "border-[#3d5c58] bg-[#243f3c] text-[#e9f3f1] hover:bg-[#2d4f4b]"
+      ? "border-ill-teal30 bg-ill-teal19 text-ill-wheel-ink hover:bg-ill-teal24"
       : "border-border bg-card text-foreground hover:bg-surface-hover",
   );
 
@@ -351,7 +351,7 @@ export function BsDateTimePicker({
               key={wd}
               className={cn(
                 "flex h-6 items-center justify-center border-r text-sm font-semibold uppercase tracking-tight last:border-r-0",
-                solidSurface ? "border-[#3d5c58]" : "border-border",
+                solidSurface ? "border-ill-teal30" : "border-border",
                 (i === 0 || i === 6) && "text-danger/80",
               )}
             >
@@ -393,10 +393,10 @@ export function BsDateTimePicker({
                 aria-pressed={isSelected}
                 className={cn(
                   "font-num flex h-8 items-center justify-center border-b border-r text-sm font-semibold tabular-nums transition-colors",
-                  solidSurface ? "border-[#3d5c58]" : "border-border",
+                  solidSurface ? "border-ill-teal30" : "border-border",
                   !isSelected && dayHover,
                   !isSelected && isWeekend && "text-danger",
-                  !isSelected && !isWeekend && (solidSurface ? "text-[#e9f3f1]" : "text-foreground"),
+                  !isSelected && !isWeekend && (solidSurface ? "text-ill-wheel-ink" : "text-foreground"),
                   isToday && !isSelected && "ring-1 ring-inset ring-secondary",
                   isSelected && "bg-secondary text-secondary-foreground",
                 )}
@@ -412,8 +412,8 @@ export function BsDateTimePicker({
 
       {/* Time picker — 12 hour with AM/PM */}
       {showTime && hourAriaLabel && minuteAriaLabel ? (
-        <div className={cn("flex flex-col gap-1.5 border-t pt-2.5", solidSurface ? "border-[#3d5c58]" : "border-border")}>
-          <span className="text-sm font-semibold uppercase tracking-[0.14em]">
+        <div className={cn("flex flex-col gap-1.5 border-t pt-2.5", solidSurface ? "border-ill-teal30" : "border-border")}>
+          <span className="text-sm font-semibold uppercase tracking-eyebrow-wide">
             {t("common.time")}
           </span>
           <div className="flex items-center gap-1.5">
@@ -435,7 +435,7 @@ export function BsDateTimePicker({
             <div
               className={cn(
                 "ml-auto inline-flex overflow-hidden rounded-md border",
-                solidSurface ? "border-[#3d5c58]" : "border-border",
+                solidSurface ? "border-ill-teal30" : "border-border",
               )}
             >
               {(["AM", "PM"] as const).map((mer) => (
@@ -449,7 +449,7 @@ export function BsDateTimePicker({
                     meridiem === mer
                       ? "bg-secondary text-secondary-foreground"
                       : solidSurface
-                        ? "bg-[#243f3c] text-[#e9f3f1] hover:bg-[#2d4f4b]"
+                        ? "bg-ill-teal19 text-ill-wheel-ink hover:bg-ill-teal24"
                         : "bg-card text-foreground hover:bg-surface-hover",
                   )}
                 >
@@ -462,7 +462,7 @@ export function BsDateTimePicker({
       ) : null}
 
       {/* Footer — Today stages the draft; Done commits and refetches. */}
-      <div className={cn("flex items-center gap-2 border-t pt-2.5", solidSurface ? "border-[#3d5c58]" : "border-border")}>
+      <div className={cn("flex items-center gap-2 border-t pt-2.5", solidSurface ? "border-ill-teal30" : "border-border")}>
         <button
           type="button"
           onClick={goDraftToday}

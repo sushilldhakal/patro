@@ -4,6 +4,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { windowLabel } from "@vedic-patro/domain/muhurta-now";
 import { parseAdStr } from "@vedic-patro/domain/panchanga-year-page";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [
@@ -29,16 +30,16 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
   const instantTime = instantLabel ? (instantLabel.split(" ")[1] ?? instantLabel) : "";
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-      <div className="text-xs text-base uppercase tracking-[0.12em] mb-1">
+    <div className={panchangaPageClasses.aside.card}>
+      <div className={panchangaPageClasses.aside.muhurtaEyebrow}>
         {bilingualText(lang, "क्षणिक मुहूर्त", "Moment now")}
       </div>
       {instantLabel && (
-        <p className="text-sm mb-3 m-0">
+        <p className={panchangaPageClasses.aside.muhurtaInstant}>
           {bilingualText(lang, `${digits(instantTime)} बजेको अवस्था`, `Status at ${digits(instantTime)}`)}
         </p>
       )}
-      <ul className="space-y-2 m-0 p-0 list-none">
+      <ul className={cn("m-0 list-none p-0", panchangaPageClasses.aside.muhurtaList)}>
         {ROWS.map(({ key, label, labelEn }) => {
           const block = now[key];
           const active = block?.active;
@@ -47,20 +48,21 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
             <li
               key={key}
               className={cn(
-                "flex items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-sm",
-                active ? "bg-secondary/20 text-secondary" : "bg-muted/40"
+                "flex",
+                panchangaPageClasses.aside.muhurtaRow,
+                active ? panchangaPageClasses.aside.muhurtaRowActive : panchangaPageClasses.aside.muhurtaRowIdle
               )}
             >
               <span>
                 <span className="font-semibold">{bilingualText(lang, label, labelEn)}</span>
               </span>
-              <span className="text-right shrink-0 font-semibold">
+              <span className={panchangaPageClasses.aside.muhurtaValue}>
                 {active ? (
-                  <span className="text-xs font-bold uppercase tracking-wide text-secondary">
+                  <span className={panchangaPageClasses.aside.muhurtaActive}>
                     {bilingualText(lang, "सक्रिय", "Active")}
                   </span>
                 ) : (
-                  <span className="text-xs font-mono tabular-nums">
+                  <span className={panchangaPageClasses.aside.muhurtaRange}>
                     {range ?? "—"}
                   </span>
                 )}
@@ -82,11 +84,11 @@ export function EphemerisModeBanner({ p, clock, viewedDateAd }: Props) {
     ? formatBsDateLong(parseAdStr(viewedAd), lang, digits)
     : null;
   return (
-    <div className="rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm">
-      <p className="m-0 font-semibold text-foreground">
+    <div className={panchangaPageClasses.aside.banner}>
+      <p className={panchangaPageClasses.aside.bannerTitle}>
         {bilingualText(lang, "समय-आधारित पञ्चाङ्ग", "Time-based reading")}
       </p>
-      <p className="m-0 mt-1 text-foreground text-sm leading-relaxed">
+      <p className={panchangaPageClasses.aside.bannerBody}>
         {time ? (
           bilingualNode(lang, <>
               <span className="font-mono tabular-nums">{digits(time)}</span> बजेको वास्तविक

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useLocaleDigits } from "@/i18n/digits";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 
+import { illustration } from "@vedic-patro/design-tokens";
 /**
  * Solar-eclipse geometry: the Moon (at औंसी / new moon) passes between the
  * Sun and Earth and drops its shadow onto Earth. The umbra cone only just
@@ -283,15 +284,15 @@ export function SolarEclipseStudy() {
       <svg viewBox={`0 0 ${VB.W} ${VB.H}`} className={edSvg("sol")} role="img">
         <defs>
           <radialGradient id="sol-sun" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fff6d8" />
-            <stop offset="40%" stopColor="#ffd24a" />
-            <stop offset="80%" stopColor="#f08a1d" />
-            <stop offset="100%" stopColor="#d65b12" />
+            <stop offset="0%" stopColor={illustration.amber92} />
+            <stop offset="40%" stopColor={illustration.amber67} />
+            <stop offset="80%" stopColor={illustration.orange53} />
+            <stop offset="100%" stopColor={illustration.orange45} />
           </radialGradient>
           <radialGradient id="sol-coronaGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#fff8e6" stopOpacity={0.95} />
-            <stop offset="46%" stopColor="#fbe7b0" stopOpacity={0.55} />
-            <stop offset="100%" stopColor="#fbe7b0" stopOpacity={0} />
+            <stop offset="0%" stopColor={illustration.amber95} stopOpacity={0.95} />
+            <stop offset="46%" stopColor={illustration.amber82} stopOpacity={0.55} />
+            <stop offset="100%" stopColor={illustration.amber82} stopOpacity={0} />
           </radialGradient>
         </defs>
 

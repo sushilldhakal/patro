@@ -20,6 +20,7 @@ import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-pa
 import { displayLocationLabel, DEFAULT_PANCHANGA_LOCATION, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import {
   patroMonthChipDay,
@@ -37,6 +38,13 @@ import type { PatroDateSheetDraft } from "./PatroDateSheetDatePanel";
 import { patroEraShortLabel } from "./patro-era-labels";
 import type { PatroDateNavProps } from "./types";
 import { usePatroDateSheet } from "./use-patro-date-sheet";
+
+const LOCATION_CHIP = cn("h-[30px] w-[6.75rem] flex-row", patroDateClasses.stepBtn, "gap-1 px-2 active:bg-muted");
+const PICKER_CHIP = cn("h-[30px] max-w-[13rem] flex-row", patroDateClasses.stepBtn, "gap-1 px-2 active:bg-muted");
+const NAV_GROUP = "min-w-0 flex-1 flex-row items-center gap-1";
+const NAV_LOWER = "mt-1.5 flex-row items-center justify-between gap-2";
+const TABLET_ROW = "relative z-10 flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1.5";
+const TABLET_TOOLBAR = "shrink-0 flex-row flex-wrap items-center justify-end gap-1.5";
 
 function chipMonthLabel(month: number, lang: string, era: Era): string {
   if (isGregorianEra(era)) {
@@ -88,7 +96,8 @@ function StepBtn({
       disabled={disabled}
       onPress={onPress}
       className={cn(
-        "shrink-0 items-center justify-center rounded-lg border border-border bg-card active:bg-muted",
+        patroDateClasses.stepBtn,
+        "active:bg-muted",
         disabled && "opacity-40",
       )}
       style={{ width: size, height: size }}
@@ -117,10 +126,10 @@ function LocationChip({
          thing being measured, and it came back short — "Kathman…" inside a box
          that had room for the whole word. 108dp keeps the phone nav row inside
          360dp (25 + 104 + 25 steppers/chip + gaps + 108). */
-      className="h-[30px] w-[6.75rem] shrink-0 flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted"
+      className={LOCATION_CHIP}
     >
       <Ionicons name="location-outline" size={13} color={colors.secondary} />
-      <Text numberOfLines={1} className="text-body min-w-0 flex-1 font-medium text-foreground">
+      <Text numberOfLines={1} className={patroDateClasses.locationChipLabel}>
         {label}
       </Text>
     </Pressable>
@@ -259,7 +268,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.65}
-              className="w-full text-center font-bold tracking-wide text-secondary-foreground"
+              className={patroDateClasses.chipHeadLabel}
               style={patroMonthChipHeadLabelStyle(lang !== "en", isNarrow)}
             >
               {eraShort}
@@ -278,7 +287,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
-              className="w-full text-center font-bold tracking-wide text-secondary-foreground"
+              className={patroDateClasses.chipHeadLabel}
               style={patroMonthChipHeadLabelStyle(lang !== "en", isNarrow)}
             >
               {chipMonthLabel(month, lang, era)}
@@ -314,11 +323,12 @@ export function PatroDateNav(props: PatroDateNavProps) {
 
   /** Year + era + samvatsara + AD range — one baseline row (web `BsHeadline`). */
   const headlineMeta = (compact: boolean) => {
-    const size = compact ? 14 : 20;
-    const secondary = { color: colors.secondary };
     const bsPart = (
-      <Text className="font-semibold text-secondary" style={[nepaliTextStyle(size), secondary]}>
-        <Text className="font-num" style={secondary}>
+      <Text
+        className={cn(patroDateClasses.yearValue, compact ? "text-sm" : "text-xl")}
+        style={nepaliTextStyle()}
+      >
+        <Text className={cn(patroDateClasses.yearValue, compact ? "text-sm" : "text-xl")}>
           {digits(year)}
         </Text>
         {` ${patroEraShortLabel(headlineEra, lang)}`}
@@ -361,7 +371,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
     <Pressable
       onPress={sheet.openDate}
       style={{ minWidth: dateChipMinWidth }}
-      className="h-[30px] max-w-[13rem] shrink-0 flex-row items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted"
+      className={PICKER_CHIP}
     >
       {mode === "year-month-time" ? (
         <Ionicons name="calendar-outline" size={14} color={colors.secondary} />
@@ -370,7 +380,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.8}
-        className="text-body min-w-0 flex-1 text-center font-num font-semibold text-foreground"
+        className={patroDateClasses.pickerChipLabel}
       >
         {isCompact && mode === "year-month-time" ? dateChipLabelCompact : dateChipLabel}
       </Text>
@@ -386,7 +396,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
     mobileToolbarLower ?? (!hideNavLocation ? locationChip : null);
 
   const navControlsPhone = (
-    <View className="min-w-0 flex-1 flex-row items-center gap-1">
+    <View className={NAV_GROUP}>
       {onPrev ? <StepBtn disabled={prevDisabled} onPress={onPrev} icon="chevron-back" compact={isPhone} /> : null}
       {dateChip}
       {onNext ? <StepBtn disabled={nextDisabled} onPress={onNext} icon="chevron-forward" compact={isPhone} /> : null}
@@ -408,8 +418,8 @@ export function PatroDateNav(props: PatroDateNavProps) {
   const usesSheetPicker = mode === "year" || mode === "year-month";
 
   const navRowTablet = (
-    <View className="mt-1.5 flex-row items-center justify-between gap-2">
-      <View className="min-w-0 flex-1 flex-row items-center gap-1">
+    <View className={NAV_LOWER}>
+      <View className={NAV_GROUP}>
         {onPrev && !usesSheetPicker ? (
           <StepBtn disabled={prevDisabled} onPress={onPrev} icon="chevron-back" />
         ) : null}
@@ -459,10 +469,10 @@ export function PatroDateNav(props: PatroDateNavProps) {
             </View>
           ) : (
             <>
-              <View className="relative z-10 flex-row flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
+              <View className={TABLET_ROW}>
                 <View className="min-w-0 flex-1 shrink">{headlineTablet}</View>
                 {toolbar ? (
-                  <View className="shrink-0 flex-row flex-wrap items-center justify-end gap-1.5">
+                  <View className={TABLET_TOOLBAR}>
                     {toolbar}
                   </View>
                 ) : null}

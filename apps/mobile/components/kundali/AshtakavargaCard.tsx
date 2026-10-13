@@ -19,6 +19,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const ASHTAKAVARGA_TARGETS = [
   "lagna",
@@ -84,11 +85,13 @@ function AshtakavargaTargetHead({ target }: { target: Target }) {
   );
 }
 
+const av = kundaliDetailClasses.ashtakavarga;
+
 function numCell(value: string, bold?: boolean) {
   return (
     <View className="items-end justify-center">
       <Text
-        className={cn("font-num text-foreground", bold ? "font-semibold" : "")}
+        className={cn(av.num, "text-foreground", bold ? "font-semibold" : "")}
         style={nepaliTextStyle(CELL_FONT)}
         numberOfLines={1}
       >
@@ -138,8 +141,8 @@ function AshtakavargaMatrix({
   const colors = useThemeColors();
 
   return (
-    <View className="gap-2">
-      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+    <View>
+      <Text className={av.blockTitle} style={nepaliTextStyle(15)}>
         {title}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
@@ -177,7 +180,7 @@ function AshtakavargaMatrix({
             style={{ backgroundColor: colorWithAlpha(colors.muted, 0.35) }}
           >
             <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
-              <Text className="font-semibold text-foreground" style={nepaliTextStyle(CELL_FONT)}>
+              <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(CELL_FONT)}>
                 {kundaliLabel("sarvashtaka", lang)}
               </Text>
             </TableCell>
@@ -215,8 +218,8 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
   ];
 
   return (
-    <View className="gap-2">
-      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+    <View>
+      <Text className={av.blockTitle} style={nepaliTextStyle(15)}>
         {kundaliLabel("shodhya_pinda", lang)}
       </Text>
       <TableScrollShell stretch={TABLE_STRETCH} scroll={false} bordered rounded>
@@ -244,7 +247,7 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
                 highlight={emphasize}
               >
                 <TableCell flex={RASHI_COL.flex} minWidth={RASHI_COL.minWidth} align="left">
-                  <Text className="font-semibold text-foreground" style={nepaliTextStyle(CELL_FONT)}>
+                  <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(CELL_FONT)}>
                     {lang === "en" ? metric.en : metric.ne}
                   </Text>
                 </TableCell>
@@ -282,16 +285,13 @@ export function AshtakavargaCard({
   if (!data.raw?.length && !data.reduced?.length) return null;
 
   return (
-    <View className="gap-6">
+    <View className={av.root}>
       {!compactHeader ? (
-        <Text
-          className="text-body font-semibold uppercase tracking-wide text-foreground"
-          style={nepaliTextStyle(13)}
-        >
+        <Text className={av.heading} style={nepaliTextStyle(13)}>
           {kundaliLabel("ashtakavarga", lang)}
         </Text>
       ) : null}
-      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className={av.intro} style={nepaliTextStyle(14)}>
         {kundaliLabel("ashtakavarga_intro", lang)}
       </Text>
 

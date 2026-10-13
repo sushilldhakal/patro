@@ -1,12 +1,17 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
+import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { LocationParams, SaitMonthAllResponse } from "@/lib/api";
 import { apiKeys, fetchSaitMonthAll } from "@/lib/api";
 import { BS_MONTH_NAMES, BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { SAIT_CATEGORIES, SAIT_CATEGORY_LABELS } from "@vedic-patro/domain/sait-data";
 import { useThemeColors } from "@/lib/theme-context";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Props = {
   year: number;
@@ -23,28 +28,23 @@ function formatSaitDays(
   days: number[],
   highlightDay: number | undefined,
   digits: (v: string | number) => string,
-  accent: string,
 ) {
   if (!days.length) {
-    return <Text className="text-body text-muted-foreground">—</Text>;
+    return <Text className={homeClasses.saitDaysNone}>—</Text>;
   }
 
   return (
-    <View className="flex-row flex-wrap justify-end">
-      {days.map((day, i) => {
-        const hl = highlightDay === day;
-        return (
-          <Text
-            key={`${day}-${i}`}
-            className="text-body font-semibold text-foreground"
-            style={hl ? { color: accent, fontWeight: "800" } : undefined}
-          >
-            {i > 0 ? ", " : ""}
-            {digits(day)}
-          </Text>
-        );
-      })}
-    </View>
+    <Text className={homeClasses.saitDays}>
+      {days.map((day, i) => (
+        <Text
+          key={`${day}-${i}`}
+          className={highlightDay === day ? homeClasses.saitHighlight : undefined}
+        >
+          {i > 0 ? ", " : ""}
+          {digits(day)}
+        </Text>
+      ))}
+    </Text>
   );
 }
 
@@ -60,6 +60,7 @@ export function SaitAsidePanel({
 }: Props) {
   const { pick, digits } = useLocale();
   const colors = useThemeColors();
+  const router = useRouter();
 
   const internalQ = useQuery({
     queryKey: apiKeys.saitMonthAll(year, month, location),
@@ -82,7 +83,7 @@ export function SaitAsidePanel({
   const anyDates = cats ? Object.values(cats).some((d) => d.length > 0) : false;
 
   if (loading && !data) {
-    return <View className="h-48 rounded-md bg-muted" />;
+    return <View className={homeClasses.saitSkeleton} />;
   }
 
   if (error && !data) {
@@ -101,30 +102,30 @@ export function SaitAsidePanel({
   }
 
   return (
-    <View className="gap-2">
-      <Text className="text-caption font-semibold text-muted-foreground">{monthName}</Text>
-      <View className="gap-1">
+    <View className={homeClasses.saitStack}>
+      <Text className={homeClasses.saitMonth}>{monthName}</Text>
+      <View className={homeClasses.saitList}>
         {SAIT_CATEGORIES.map((cat) => {
           const days = cats?.[cat.id] ?? [];
           const labels = SAIT_CATEGORY_LABELS[cat.id];
           return (
-            <View
+            <Pressable
               key={cat.id}
-              className="flex-row items-center gap-2 rounded-md px-2.5 py-2"
-              style={{ backgroundColor: colors.surfaceInset }}
+              onPress={() => router.push({ pathname: "/sait/[category]", params: { category: cat.id } } as never)}
+              accessibilityRole="link"
+              className={cn(homeClasses.saitRow, "active:opacity-80")}
             >
-              <Text className="text-body w-[42%] shrink-0 font-bold text-foreground">
+              <Text className={homeClasses.saitName} style={nepaliTextStyle()}>
                 {pick(labels.ne, labels.en)}
               </Text>
-              <View className="min-w-0 flex-1">
-                {formatSaitDays(days, highlightDay, digits, colors.accent)}
-              </View>
-            </View>
+              <View className="min-w-0 flex-1">{formatSaitDays(days, highlightDay, digits)}</View>
+              <Ionicons name="chevron-forward" size={14} color={colors.mutedForeground} />
+            </Pressable>
           );
         })}
       </View>
       {!anyDates ? (
-        <Text className="text-body py-4 text-center text-muted-foreground">
+        <Text className={homeClasses.saitEmpty} style={nepaliTextStyle()}>
           {pick(
             "यस महिना कुनै साइत उपलब्ध छैन।",
             "No sait dates are available for this month.",

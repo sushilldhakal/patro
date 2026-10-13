@@ -142,7 +142,7 @@ function DrishtiPanel({
   return (
     <View className="mt-3 w-full gap-2">
       <View className="flex-row items-center justify-between gap-2">
-        <Text className="text-body flex-1 font-semibold text-foreground" style={small}>
+        <Text className="text-sm flex-1 font-semibold text-foreground" style={small}>
           {pick(`${name}को दृष्टि: ${houseList} भावमा`, `${name}'s aspect: houses ${houseList}`)}
         </Text>
         <Pressable
@@ -151,7 +151,7 @@ function DrishtiPanel({
           accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
           className="h-7 w-7 items-center justify-center rounded-full bg-muted/60"
         >
-          <Text className="text-body text-muted-foreground">✕</Text>
+          <Text className="text-sm text-muted-foreground">✕</Text>
         </Pressable>
       </View>
       <View
@@ -161,7 +161,7 @@ function DrishtiPanel({
         )}
       >
         <View className="mb-1.5 flex-row items-center justify-between gap-2">
-          <Text className="text-body font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</Text>
           <View
             className={cn(
               "rounded-full border px-2 py-0.5",
@@ -170,7 +170,7 @@ function DrishtiPanel({
           >
             <Text
               className={cn(
-                "text-body font-semibold",
+                "text-sm font-semibold",
                 info.isMalefic ? "text-destructive" : "text-emerald-700 dark:text-emerald-300",
               )}
             >
@@ -178,7 +178,7 @@ function DrishtiPanel({
             </Text>
           </View>
         </View>
-        <Text className="text-body leading-relaxed" style={small}>
+        <Text className="text-sm leading-relaxed" style={small}>
           {pick(info.summaryNe, info.summaryEn)}
         </Text>
       </View>

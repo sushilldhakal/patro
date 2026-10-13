@@ -39,6 +39,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 type Props = {
   location: PanchangaLocation;
@@ -70,7 +71,7 @@ function LocationResultsList({
   if (debouncedQuery.length < 2) {
     return (
       <View className="flex-1 items-center justify-center px-4">
-        <Text className="text-body text-center text-muted-foreground">
+        <Text className="text-sm text-center text-muted-foreground">
           {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
         </Text>
       </View>
@@ -88,7 +89,7 @@ function LocationResultsList({
   if (results.length === 0) {
     return (
       <View className="flex-1 items-center justify-center px-4">
-        <Text className="text-body text-center text-muted-foreground">
+        <Text className="text-sm text-center text-muted-foreground">
           {pick("कुनै सहर भेटिएन", "No city found")}
         </Text>
       </View>
@@ -102,7 +103,7 @@ function LocationResultsList({
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       style={{ flex: 1 }}
-      contentContainerStyle={{ paddingBottom: 16 }}
+      contentContainerClassName="pb-4"
       renderItem={({ item }) => {
         const selected = location.params.city_id === item.id;
         return (
@@ -110,11 +111,11 @@ function LocationResultsList({
             onPress={() => onPickCity(item)}
             className={cn(
               "border-b border-border px-4 py-3 active:bg-muted",
-              selected && "bg-secondary/10",
+              selected && panchangaPageClasses.location.citySelected,
             )}
           >
-            <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
-            <Text className="text-caption text-muted-foreground">
+            <Text className={cn(panchangaPageClasses.location.cityName, "text-sm text-foreground")}>{cityLabel(item)}</Text>
+            <Text className={cn(panchangaPageClasses.location.citySub, "text-muted-foreground")}>
               {item.admin1_name ? `${item.admin1_name}, ` : ""}
               {item.country}
             </Text>
@@ -222,13 +223,13 @@ export function LocationSelector({ location, onLocationChange, className, style 
         onPress={() => setOpen(true)}
         accessibilityLabel={pick("स्थान बदल्नुहोस्", "Change location")}
         className={cn(
-          "max-w-[7.5rem] shrink flex-row items-center gap-1 rounded-md border border-border bg-card px-2 active:bg-muted",
+          "max-w-[7.5rem] shrink flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted",
           className,
         )}
         style={[{ height: chipH, maxHeight: chipH }, style]}
       >
         <Ionicons name="location-outline" size={13} color={colors.secondary} />
-        <Text numberOfLines={1} className="text-caption font-medium text-foreground">
+        <Text numberOfLines={1} className="text-xs font-semibold text-foreground">
           {label}
         </Text>
       </Pressable>
@@ -243,26 +244,25 @@ export function LocationSelector({ location, onLocationChange, className, style 
           }}
         >
           <View
+            className="px-4 py-3"
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 16,
-              paddingVertical: 12,
               borderBottomWidth: 1,
               borderBottomColor: colors.border,
             }}
           >
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-              <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
+              <Text className="text-lg" style={{ color: colors.mutedForeground }}>
                 {pick("रद्द", "Cancel")}
               </Text>
             </Pressable>
             <Text
+              className="text-lg"
               style={{
                 flex: 1,
                 textAlign: "center",
-                fontSize: 18,
                 fontWeight: "600",
                 color: colors.foreground,
               }}
@@ -270,7 +270,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
               {pick("स्थान", "Location")}
             </Text>
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-              <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
+              <Text className="text-lg" style={{ fontWeight: "600", color: colors.primary }}>
                 {pick("भयो", "Done")}
               </Text>
             </Pressable>
@@ -285,7 +285,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
                 onChangeText={setQuery}
                 placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
                 placeholderTextColor={colors.mutedForeground}
-                className="text-body h-10 flex-1 text-foreground"
+                className="text-sm h-10 flex-1 text-foreground"
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="search"
@@ -303,12 +303,12 @@ export function LocationSelector({ location, onLocationChange, className, style 
               ) : (
                 <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
               )}
-              <Text className="text-body font-semibold text-secondary-foreground">
+              <Text className="text-sm font-semibold text-secondary-foreground">
                 {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
               </Text>
             </Pressable>
 
-            {geoError ? <Text className="text-body text-destructive">{geoError}</Text> : null}
+            {geoError ? <Text className={panchangaPageClasses.location.geoError}>{geoError}</Text> : null}
           </View>
 
           <LocationResultsList

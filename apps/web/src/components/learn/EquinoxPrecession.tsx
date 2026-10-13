@@ -9,6 +9,7 @@ import { useLocale } from "@/i18n/locale";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { RashiGlyph } from "./rashi-icons";
 
+import { illustration } from "@vedic-patro/design-tokens";
 /**
  * अयन चलन — how the *tropical* spring-equinox point (सायन ०°, "Point 0") slowly
  * regresses through the FIXED *sidereal* zodiac (निरयन राशि), and why that is the
@@ -151,7 +152,7 @@ export function EquinoxPrecession() {
   const dim = "var(--tm-ink-dim)";
   const faint = "var(--tm-ink-faint)";
   const card = "var(--tm-card)";
-  const red = "#e0483b";
+  const red = illustration.red56;
 
   const bandOuter = 1.30;
   const bandInner = 0.92;
@@ -176,14 +177,14 @@ export function EquinoxPrecession() {
       >
         <defs>
           <radialGradient id="ep-earth" cx="42%" cy="38%" r="65%">
-            <stop offset="0%" stopColor="#bfe3ff" />
-            <stop offset="45%" stopColor="#3f86c4" />
-            <stop offset="100%" stopColor="#123c5e" />
+            <stop offset="0%" stopColor={illustration.sky86} />
+            <stop offset="45%" stopColor={illustration.sky51} />
+            <stop offset="100%" stopColor={illustration.sky22} />
           </radialGradient>
           <radialGradient id="ep-sun" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stopColor="#fff6d8" />
-            <stop offset="55%" stopColor="#ffd24a" />
-            <stop offset="100%" stopColor="#f08a1d" />
+            <stop offset="0%" stopColor={illustration.amber92} />
+            <stop offset="55%" stopColor={illustration.amber67} />
+            <stop offset="100%" stopColor={illustration.orange53} />
           </radialGradient>
         </defs>
 
@@ -212,7 +213,7 @@ export function EquinoxPrecession() {
         {/* ── yellow ecliptic (राशि plane) ── */}
         <ellipse cx={CX} cy={CY} rx={RX} ry={RY} fill="none" stroke={gold} strokeWidth={2.4} />
         {/* ── blue celestial equator (tilted by ε) ── */}
-        <path d={model.equatorPath} fill="none" stroke="#3f86c4" strokeWidth={2.4} />
+        <path d={model.equatorPath} fill="none" stroke={illustration.sky51} strokeWidth={2.4} />
 
         {/* ── red विषुव / अयनान्त cross (rotates with precession) ── */}
         {[0, 1].map((d) => {
@@ -249,14 +250,14 @@ export function EquinoxPrecession() {
         <line x1={psX} y1={psY} x2={pnX} y2={pnY} stroke={dim} strokeWidth={1.6} />
         <text x={pnX} y={pnY - 8} fill={dim} textAnchor="middle" style={{ font: "700 11px var(--pn-font)" }}>N</text>
         <text x={psX} y={psY + 14} fill={dim} textAnchor="middle" style={{ font: "700 11px var(--pn-font)" }}>S</text>
-        <circle cx={CX} cy={CY} r={17} fill="url(#ep-earth)" stroke="#0e2e49" strokeWidth={1} />
+        <circle cx={CX} cy={CY} r={17} fill="url(#ep-earth)" stroke={illustration.sky19} strokeWidth={1} />
 
         {/* Sun glyph at the spring equinox */}
         <g transform={`translate(${sun[0].toFixed(1)} ${sun[1].toFixed(1)})`}>
           <circle r={9} fill="url(#ep-sun)" />
           {Array.from({ length: 8 }, (_, k) => {
             const a = (k / 8) * TAU;
-            return <line key={k} x1={11 * Math.cos(a)} y1={11 * Math.sin(a)} x2={15 * Math.cos(a)} y2={15 * Math.sin(a)} stroke="#f0a81d" strokeWidth={1.5} strokeLinecap="round" />;
+            return <line key={k} x1={11 * Math.cos(a)} y1={11 * Math.sin(a)} x2={15 * Math.cos(a)} y2={15 * Math.sin(a)} stroke={illustration.orange53b} strokeWidth={1.5} strokeLinecap="round" />;
           })}
         </g>
 
@@ -266,7 +267,7 @@ export function EquinoxPrecession() {
           <text x={28} y={6} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
             {t("learn.study.equinox.legend_ecliptic")}
           </text>
-          <line x1={0} y1={24} x2={22} y2={24} stroke="#3f86c4" strokeWidth={2.4} />
+          <line x1={0} y1={24} x2={22} y2={24} stroke={illustration.sky51} strokeWidth={2.4} />
           <text x={28} y={24} fill={dim} dominantBaseline="central" style={{ font: "500 11px var(--pn-font)" }}>
             {t("learn.study.equinox.legend_equator")}
           </text>

@@ -1,3 +1,6 @@
+/* Shared type, spacing, and the panchanga chart (.vp-tl) live in this file. */
+@import "../../packages/design-tokens/theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,22 +19,20 @@
     --tw-secondary-foreground: 255 255 255;
     --tw-destructive: 198 40 40;
     --tw-border: 215 201 164;
-    --tw-accent: 46 125 50;
+    --tw-accent: 212 160 23;
     --tw-surface-inset: 248 248 248;
     --tw-surface-muted: 249 249 249;
     --tw-tab-active: 217 119 6;
     --tw-glyph: 26 20 16;
+    --tw-success: 46 125 50;
+    --tw-warning: 230 126 34;
     --tw-danger: 198 40 40;
+    --tw-info: 11 86 90;
     /* tokens:light:end */
 
-    /* The only four text sizes in the app (text-caption, text-body,
-       text-title, text-display), and the plain variables the panchanga SVG
-       (timeline + wheel) reads on the web build. */
+    /* Type sizes live in packages/design-tokens/theme.css.
+       These are the plain variables the panchanga SVG reads on the web build. */
     /* tokens:css-light:start — generated from packages/design-tokens, run `npm run tokens` */
-    --text-caption: 15px;
-    --text-body: 18px;
-    --text-title: 22px;
-    --text-display: 28px;
     --background: #f8f6f2;
     --foreground: #1a1410;
     --card: #ffffff;
@@ -62,14 +63,13 @@
     --tw-surface-muted: 29 33 54;
     --tw-tab-active: 245 158 66;
     --tw-glyph: 243 239 232;
-    --tw-danger: 255 143 133;
+    --tw-success: 46 125 50;
+    --tw-warning: 230 126 34;
+    --tw-danger: 198 40 40;
+    --tw-info: 11 86 90;
     /* tokens:dark:end */
 
     /* tokens:css-dark:start — generated from packages/design-tokens, run `npm run tokens` */
-    --text-caption: 15px;
-    --text-body: 18px;
-    --text-title: 22px;
-    --text-display: 28px;
     --background: #0f1220;
     --foreground: #f3efe8;
     --card: #171c31;

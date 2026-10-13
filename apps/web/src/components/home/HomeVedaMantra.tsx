@@ -14,6 +14,7 @@ import { setMediaHandlers, setMediaMetadata, setMediaPlaybackState } from "@/lib
 import { patroCard, patroSecBand } from "@/lib/patro-classes";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";
 import { cn } from "@vedic-patro/domain/utils";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 function sourceLine(data: VedaDaily, lang: string, digits: (v: string | number) => string): string {
   const parts = data.source_parts.map((part) => {
@@ -101,7 +102,7 @@ function MantraPlayButton({
       type="button"
       onClick={onToggle}
       aria-label={playing ? label.pause : label.play}
-      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-opacity hover:opacity-90 active:scale-95"
+      className={cn("inline-flex shrink-0 text-secondary-foreground transition-opacity hover:opacity-90 active:scale-95", homeClasses.vedaPlay)}
     >
       {playing ? <Pause size={20} /> : <Play size={20} className="translate-x-px" />}
     </button>
@@ -130,7 +131,7 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
   return (
     <section className={cn(patroCard, className)} aria-label={t("home_veda.title")}>
       <div className={patroSecBand}>
-        <h2 className="min-w-0 flex-1 text-base font-bold text-secondary">{t("home_veda.title")}</h2>
+        <h2 className={homeClasses.vedaTitle}>{t("home_veda.title")}</h2>
         {shloka.audio_url ? (
           <MantraPlayButton
             playing={mantraAudio.playing}
@@ -139,13 +140,13 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
           />
         ) : null}
       </div>
-      <div className="flex flex-col gap-3 px-4 py-4">
-        <p lang="sa" className="text-xl leading-relaxed text-foreground">
+      <div className={homeClasses.vedaBody}>
+        <p lang="sa" className={homeClasses.vedaSanskrit}>
           {wordTrack.tokens.map((tok, i) =>
             i === activeToken ? (
               <span
                 key={i}
-                className="rounded bg-yellow-300/70 px-0.5 transition-colors duration-150 dark:bg-yellow-400/30"
+                className={cn(homeClasses.vedaWord, "px-0.5 transition-colors duration-150")}
               >
                 {tok}
               </span>
@@ -155,21 +156,21 @@ export function HomeVedaMantra({ dateAd, className }: { dateAd: string | undefin
           )}
         </p>
         {meaning ? (
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-bold text-muted-foreground">{t("home_veda.meaning")}</span>
-            <p className="text-sm leading-relaxed text-foreground">{meaning}</p>
+          <div className={homeClasses.vedaMeaning}>
+            <span className={homeClasses.vedaMeaningLabel}>{t("home_veda.meaning")}</span>
+            <p className={homeClasses.vedaMeaningText}>{meaning}</p>
           </div>
         ) : null}
-        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div className={homeClasses.vedaFooter}>
           <Link
             to="/documents/$slug/$chapter"
             params={{ slug: data.read_slug, chapter: String(data.read_chapter) }}
             hash={anchor}
-            className="text-sm font-semibold text-secondary no-underline hover:underline"
+            className={cn(homeClasses.vedaMore, "no-underline hover:underline")}
           >
             {pickLocale(lang, "थप पढ्नुहोस् →", "Read more →")}
           </Link>
-          <span className="ml-auto text-right text-xs text-muted-foreground">{sourceLine(data, lang, digits)}</span>
+          <span className={homeClasses.vedaSource}>{sourceLine(data, lang, digits)}</span>
         </div>
       </div>
     </section>

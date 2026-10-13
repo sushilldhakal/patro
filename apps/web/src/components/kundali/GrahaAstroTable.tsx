@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useTranslation } from "react-i18next";
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -43,8 +44,8 @@ type Row = GrahaAstroPoint &
     combust?: boolean;
   };
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm";
+const th = kundaliDetailClasses.table.th;
+const td = kundaliDetailClasses.table.td;
 
 function signedFixed(value: number | undefined, digits: (v: string) => string): string {
   if (value == null) return "—";
@@ -123,7 +124,7 @@ export function GrahaAstroTable({ planets, lagna, d1Rows, combustion }: GrahaAst
                   {name}
                   {row.retrograde && (
                     <span
-                      className="inline-flex items-center gap-0.5 text-sm font-bold normal-case text-secondary bg-secondary/15 px-1 py-0.5 rounded-full"
+                      className={cn(kundaliDetailClasses.grahaList.retroBadge, kundaliDetailClasses.grahaList.retroText, "inline-flex normal-case")}
                       title={t("kundali.retrograde")}
                     >
                       <RotateCcw className="size-2.5" aria-hidden />
@@ -132,7 +133,7 @@ export function GrahaAstroTable({ planets, lagna, d1Rows, combustion }: GrahaAst
                   )}
                   {row.combust && (
                     <span
-                      className="inline-flex items-center gap-0.5 text-sm font-bold normal-case text-destructive bg-destructive/10 px-1 py-0.5 rounded-full"
+                      className={cn(kundaliDetailClasses.grahaList.combustBadge, kundaliDetailClasses.grahaList.combustText, "inline-flex normal-case")}
                       title={t("kundali.combust")}
                     >
                       <Flame className="size-2.5" aria-hidden />
@@ -141,11 +142,11 @@ export function GrahaAstroTable({ planets, lagna, d1Rows, combustion }: GrahaAst
                   )}
                 </span>
               </TableCell>
-              <TableCell className={cn(td, "font-mono tabular-nums")}>
-                <span className="text-foreground font-semibold">
+              <TableCell className={cn(td, kundaliDetailClasses.grahaList.dms)}>
+                <span className={kundaliDetailClasses.prose.strong}>
                   {digits(String(row.dms.deg).padStart(2, "0"))}°
                 </span>{" "}
-                <span className="font-sans text-foreground">{rashiName(row.dms.rashiNum)}</span>{" "}
+                <span className={cn(kundaliDetailClasses.grahaList.dmsRashi, "font-sans")}>{rashiName(row.dms.rashiNum)}</span>{" "}
                 {digits(String(row.dms.min).padStart(2, "0"))}′{" "}
                 {digits(String(row.dms.sec).padStart(2, "0"))}″
               </TableCell>

@@ -11,17 +11,18 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const AYANAMSHA = 24;
 const R_OUT = 0.58;
 const R_MID = 0.46;
 
 const RITUS = [
-  { ne: "वसन्त", en: "Vasanta", color: "#7ec850" },
-  { ne: "ग्रीष्म", en: "Grishma", color: "#f0a020" },
-  { ne: "वर्षा", en: "Varsha", color: "#3aa0d8" },
-  { ne: "शरद्", en: "Sharad", color: "#c8a020" },
-  { ne: "हेमन्त", en: "Hemanta", color: "#8a9ab8" },
-  { ne: "शिशिर", en: "Shishira", color: "#9fb8d0" },
+  { ne: "वसन्त", en: "Vasanta", color: illustration.green55 },
+  { ne: "ग्रीष्म", en: "Grishma", color: illustration.orange53b },
+  { ne: "वर्षा", en: "Varsha", color: illustration.sky54 },
+  { ne: "शरद्", en: "Sharad", color: illustration.amber45 },
+  { ne: "हेमन्त", en: "Hemanta", color: illustration.sky65 },
+  { ne: "शिशिर", en: "Shishira", color: illustration.sky74 },
 ];
 const MONTHS_NE = ["बैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कात्तिक", "मंसिर", "पुष", "माघ", "फागुन", "चैत"];
 const MONTHS_EN = ["Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"];

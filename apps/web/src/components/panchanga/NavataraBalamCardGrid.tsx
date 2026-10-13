@@ -2,7 +2,9 @@ import type { BalamCardItem } from "@vedic-patro/domain/balam-cards";
 import { findCurrentBalamCard } from "@vedic-patro/domain/balam-cards";
 import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import { NakshatraGlyphIcon, RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
-import { PanchangaBalamCard, panchangaCardGrid } from "./PanchangaLayout";
+import { panchangaCardGrid } from "@vedic-patro/design-tokens";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { PanchangaBalamCard } from "./PanchangaLayout";
 
 export function NavataraBalamCardGrid({
   cards,
@@ -31,7 +33,7 @@ export function NavataraBalamCardGrid({
             {card.timeRange ? (
               <>
                 {" "}
-                <span className="font-mono font-semibold tabular-nums">{card.timeRange}</span>
+                <span className={panchangaPageClasses.sections.monoTabular}>{card.timeRange}</span>
               </>
             ) : null}
           </>

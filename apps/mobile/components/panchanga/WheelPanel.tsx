@@ -8,6 +8,7 @@ import { useLocale } from "@/lib/i18n";
 import { NAK_LORD_EN as LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
+import { midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
 function bsMonthEnOf(ne: string): string {
   const i = BS_MONTHS_NE.indexOf(ne);
   return i >= 0 ? BS_MONTH_NAMES[i]! : ne;
@@ -22,9 +23,9 @@ interface WheelPanelProps {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <View className="flex-row items-center justify-between gap-3 border-b border-white/10 py-2.5">
-      <Text className="text-caption text-[#c8e0e2]/65">{label}</Text>
-      <Text className="text-body max-w-[58%] text-right font-semibold text-[#c8e0e2]">{value}</Text>
+    <View className="flex-row items-center justify-between gap-3.5 border-b border-white/10 py-2.5">
+      <Text className="text-xs text-base text-ill-sky84/65">{label}</Text>
+      <Text className="max-w-[58%] text-right text-sm font-semibold text-ill-sky84">{value}</Text>
     </View>
   );
 }
@@ -46,24 +47,24 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
 
     body = (
       <>
-        <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3 pt-4">
+        <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3.5 pt-4">
           <View className="min-w-0 flex-1">
-            <Text className="text-caption font-semibold uppercase tracking-widest text-[#4ecdc4]">
+            <Text className="text-sm font-semibold uppercase tracking-widest text-ill-teal55">
               {pick("नक्षत्र", "Nakshatra")} · {num(sel.i + 1)}
             </Text>
-            <Text className="text-display mt-1 font-bold text-[#c8e0e2]">{pick(ico.ne, ico.en)}</Text>
-            {isEnglish ? <Text className="text-caption mt-1 text-[#c8e0e2]/65">{ico.en}</Text> : null}
-            <Text className="text-body mt-2 text-[#c8e0e2]/65">{ico.sym_ne}</Text>
+            <Text className="m-0 mt-0.5 text-2xl font-bold leading-tight text-ill-sky84">{pick(ico.ne, ico.en)}</Text>
+            {isEnglish ? <Text className="mt-1 text-xs text-base text-ill-sky84/65">{ico.en}</Text> : null}
+            <Text className="text-sm mt-2 text-ill-sky84/65">{ico.sym_ne}</Text>
           </View>
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
             accessibilityLabel={pick("बन्द", "Close")}
           >
-            <Text className="text-body text-[#c8e0e2]/65">✕</Text>
+            <Text className="text-sm text-ill-sky84/65">✕</Text>
           </Pressable>
         </View>
-        <ScrollView className="max-h-80 px-4 py-3">
+        <ScrollView className="max-h-80 px-4 py-3.5">
           <Row label={pick("स्वामी ग्रह", "Lord planet")} value={pick(ico.lord_ne, LORD_EN[ico.lord_ne] ?? ico.lord_ne)} />
           <Row label={pick("चिन्ह", "Symbol")} value={ico.sym_ne} />
           <Row label={pick("राशि", "Rashi")} value={rashiSpan} />
@@ -89,23 +90,23 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
 
     body = (
       <>
-        <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3 pt-4">
+        <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3.5 pt-4">
           <View className="min-w-0 flex-1">
-            <Text className="text-caption font-semibold uppercase tracking-widest text-[#4ecdc4]">
+            <Text className="text-sm font-semibold uppercase tracking-widest text-ill-teal55">
               {pick("राशि", "Rashi")} · {num(sel.i + 1)}
             </Text>
-            <Text className="text-display mt-1 font-bold text-[#c8e0e2]">{pick(rs.ne, rs.en)}</Text>
-            {isEnglish ? <Text className="text-caption mt-1 text-[#c8e0e2]/65">{rs.en}</Text> : null}
+            <Text className="m-0 mt-0.5 text-2xl font-bold leading-tight text-ill-sky84">{pick(rs.ne, rs.en)}</Text>
+            {isEnglish ? <Text className="mt-1 text-xs text-base text-ill-sky84/65">{rs.en}</Text> : null}
           </View>
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
             accessibilityLabel={pick("बन्द", "Close")}
           >
-            <Text className="text-body text-[#c8e0e2]/65">✕</Text>
+            <Text className="text-sm text-ill-sky84/65">✕</Text>
           </Pressable>
         </View>
-        <ScrollView className="max-h-80 px-4 py-3">
+        <ScrollView className="max-h-80 px-4 py-3.5">
           <Row
             label={pick("स्वामी ग्रह", "Lord planet")}
             value={pick(RASHI_LORDS[sel.i]!, LORD_EN[RASHI_LORDS[sel.i]!] ?? RASHI_LORDS[sel.i]!)}
@@ -123,9 +124,9 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
             value={pick(bsMonths[sel.i]?.ne ?? "", bsMonthEnOf(bsMonths[sel.i]?.ne ?? ""))}
           />
           <Row label={pick("पद", "Padas")} value={pick(`${num(9)} पद`, `${num(9)} padas`)} />
-          <View className="mt-3 rounded-lg bg-black/25 p-3">
-            <Text className="text-caption font-semibold text-[#c8e0e2]">{pick("नक्षत्रहरू", "Nakshatras")}</Text>
-            <Text className="text-body mt-1 leading-5 text-[#c8e0e2]/70">{nakIn.join(" · ")}</Text>
+          <View className="mt-3.5 rounded-lg bg-black/25 p-3.5">
+            <Text className="mb-0.5 text-xs font-semibold text-ill-sky84">{pick("नक्षत्रहरू", "Nakshatras")}</Text>
+            <Text className="text-sm text-base leading-normal text-ill-sky84/70">{nakIn.join(" · ")}</Text>
           </View>
         </ScrollView>
       </>
@@ -142,8 +143,8 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.1)",
-        backgroundColor: "#0b1416",
+        borderColor: withAlpha(neutral.white, 0.1),
+        backgroundColor: midnight.background,
       }}
     >
       <View onStartShouldSetResponder={() => true}>{body}</View>

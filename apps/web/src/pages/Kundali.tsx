@@ -14,6 +14,8 @@ import { PageShell } from "@/components/PageShell";
 import { preloadPanchangaRoute } from "@/lib/panchanga-route-preload";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useRouteLoading } from "@/lib/route-loading";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 export function Kundali() {
   const { t } = useTranslation();
@@ -44,16 +46,16 @@ export function Kundali() {
 
   return (
     <PageShell className="space-y-0 pb-16">
-      <div className="mb-4 mt-2 flex items-start justify-between gap-3">
+      <div className={kundaliClasses.headerRow}>
         <div>
-          <div className="text-xs text-base uppercase tracking-[0.12em] mb-1.5">
+          <div className={kundaliClasses.eyebrow}>
             {t("kundali.eyebrow")}
           </div>
-          <h1 className="text-xl font-bold leading-tight tracking-tight m-0 flex items-center gap-2.5">
+          <h1 className={cn(kundaliClasses.title, kundaliClasses.titleRow, "m-0")}>
             <Sparkles className="w-7 h-7 text-secondary shrink-0" />
             {t("kundali.title")}
           </h1>
-          <p className="text-sm mt-1">
+          <p className={kundaliClasses.subtitle}>
             {isAuthenticated ? t("kundali.subtitle_auth") : t("kundali.login_required")}
           </p>
         </div>
@@ -65,21 +67,21 @@ export function Kundali() {
       </div>
 
       {authLoading ? (
-        <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm">
+        <div className={cn(kundaliClasses.emptyBox, kundaliClasses.emptyText)}>
           {t("common.loading")}
         </div>
       ) : !isAuthenticated ? (
-        <section className="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary/15">
+        <section className={cn(kundaliClasses.loginCard, "text-center shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]")}>
+          <div className={cn(kundaliClasses.loginIcon, "mx-auto flex")}>
             <Sparkles className="h-7 w-7 text-secondary" />
           </div>
-          <h2 className="text-xl font-bold text-foreground">
+          <h2 className={kundaliClasses.loginTitle}>
             {t("kundali.login_prompt_title")}
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm">
+          <p className={cn(kundaliClasses.loginBody, "mx-auto")}>
             {t("kundali.login_prompt_body")}
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className={kundaliClasses.loginActions}>
             <Button size="lg" onClick={() => openAuth("login")}>
               <LogIn className="size-4" /> {t("kundali.login")}
             </Button>
@@ -90,7 +92,7 @@ export function Kundali() {
         </section>
       ) : (
         <div className="flex flex-col gap-4">
-          <p className="text-sm">
+          <p className={kundaliClasses.profileHint}>
             {t("kundali.profile_hint")}
           </p>
           <KundaliProfilePicker

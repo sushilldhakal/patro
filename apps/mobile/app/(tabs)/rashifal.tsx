@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useLocalSearchParams } from "expo-router";
@@ -31,11 +31,13 @@ import {
   rashifalRangeLabel,
   rashifalStepDate,
 } from "@/lib/rashifal-ui";
+import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -59,6 +61,8 @@ export default function RashifalScreen() {
 
   const { pick, lang, digits, t } = useLocale();
   const colors = useThemeColors();
+  const { width: screenWidth } = useBreakpoint();
+  const signCols = screenWidth >= 1280 ? 3 : screenWidth >= 640 ? 2 : 1;
   const { location, setLocation } = usePanchangaLocation();
   const tz = resolveTimeZone(undefined, location.params.timezone);
   const todayAd = todayAdStringInTimezone(new Date(), tz);
@@ -144,16 +148,17 @@ export default function RashifalScreen() {
       {/* AppShell already supplies the page scroller and horizontal padding —
           a second ScrollView + padding here is what made this screen inset more
           than every other page. */}
-      <View className="gap-4">
-        <PatroPageHeader
+      <View className="gap-8">
+        <PageHeader
           icon={<AppNavIcon name="sparkles" size={28} color={colors.secondary} />}
           title={t("rashifal.title")}
           subtitle={t("rashifal.subtitle")}
         />
-        <Text className="text-caption -mt-2 uppercase tracking-widest text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={rashifalClasses.eyebrow} style={nepaliTextStyle()}>
           {t("rashifal.eyebrow")}
         </Text>
 
+        <View className={rashifalClasses.navWrap}>
         <PanchangaDateNav
           date={date}
           onDateChange={setDate}
@@ -174,8 +179,9 @@ export default function RashifalScreen() {
               : undefined
           }
         />
+        </View>
 
-        <View className="flex-row rounded-xl border border-border bg-card p-1">
+        <View className={cn("flex-row", rashifalClasses.tabBar)}>
           {RASHIFAL_PERIODS.map((p) => {
             const active = p === period;
             const icon = RASHIFAL_PERIOD_ICON[p];
@@ -183,39 +189,47 @@ export default function RashifalScreen() {
               <Pressable
                 key={p}
                 onPress={() => setPeriod(p)}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
                 className={cn(
-                  "min-h-10 flex-1 flex-row items-center justify-center gap-1 rounded-lg px-1 py-2",
-                  active ? "bg-tab-active" : "",
+                  "relative min-w-0 flex-row items-center justify-center",
+                  rashifalClasses.tab,
+                  active
+                    ? cn(rashifalClasses.tabGapActive, rashifalClasses.tabActiveSurface)
+                    : rashifalClasses.tabGapIdle,
                 )}
               >
                 <Ionicons
                   name={icon}
-                  size={16}
-                  color={active ? colors.primary : colors.mutedForeground}
+                  size={20}
+                  color={active ? colors.foreground : colors.mutedForeground}
                 />
                 {active ? (
                   <Text
-                    className="text-caption font-bold text-foreground"
-                    style={nepaliTextStyle(10)}
+                    className={rashifalClasses.tabLabel}
+                    style={nepaliTextStyle()}
                     numberOfLines={1}
                   >
                     {pick(PERIOD_LABEL[p].ne, PERIOD_LABEL[p].en)}
                   </Text>
                 ) : null}
+                {active ? <View className={rashifalClasses.tabIndicator} /> : null}
               </Pressable>
             );
           })}
         </View>
 
+        <View className={rashifalClasses.profileWrap}>
         <RashifalProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={handleSelectProfile} />
         {profileError ? (
-          <Text className="text-caption text-center text-destructive">
+          <Text className={cn("text-center", rashifalClasses.profileError)} style={nepaliTextStyle()}>
             {pick("जन्म मिति र स्थान प्रोफाइलमा भर्नुहोस्।", "Add birth date and place to the profile.")}
           </Text>
         ) : null}
+        </View>
 
         {loading && !windowSource ? (
-          <View className="py-16">
+          <View className="mt-6 py-16">
             <VedicPatroLoader />
           </View>
         ) : error ? (
@@ -224,28 +238,34 @@ export default function RashifalScreen() {
             onRetry={() => (selectedProfile ? personalQ.refetch() : generalQ.refetch())}
           />
         ) : selectedProfile && personalQ.data ? (
-          <RashifalPersonalCard name={selectedProfile.full_name} personal={personalQ.data} />
+          <View className={cn("mt-6 sm:self-center", rashifalClasses.personalWrap)}>
+            <RashifalPersonalCard name={selectedProfile.full_name} personal={personalQ.data} />
+          </View>
         ) : generalQ.data?.signs?.length ? (
-          <View className="gap-4">
+          <View className={rashifalClasses.panel}>
             {period !== "daily" ? (
-              <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
                 {t(`rashifal.period_intro.${period}`)}
               </Text>
             ) : null}
             {moonRef ? (
-              <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className={rashifalClasses.intro} style={nepaliTextStyle()}>
                 {moonRef}
               </Text>
             ) : null}
-            <Text className="text-caption text-center text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className={rashifalClasses.methodNote} style={nepaliTextStyle()}>
               {t("rashifal.method_note")}
             </Text>
-            {generalQ.data.signs.map((sign) => (
-              <RashifalSignCard key={sign.id} sign={sign} period={period} />
-            ))}
+            <View className="-m-2 flex-row flex-wrap">
+              {generalQ.data.signs.map((sign) => (
+                <View key={sign.id} style={{ width: `${100 / signCols}%` }} className="p-2">
+                  <RashifalSignCard sign={sign} period={period} />
+                </View>
+              ))}
+            </View>
           </View>
         ) : (
-          <Text className="text-body py-8 text-center text-muted-foreground">
+          <Text className={cn("mt-6 py-8", rashifalClasses.intro)} style={nepaliTextStyle()}>
             {pick("यस अवधिको राशिफल उपलब्ध छैन।", "Rashifal unavailable for this period.")}
           </Text>
         )}

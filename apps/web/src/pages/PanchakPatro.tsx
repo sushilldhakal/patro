@@ -22,6 +22,7 @@ import { formatBsMonthDayPatro } from "@vedic-patro/domain/panchanga-format";
 import { useLocale } from "@/i18n/locale";
 import { isEnglishLocale } from "@vedic-patro/domain/avakahada-locale";
 import { patroNoteBox } from "@/lib/patro-classes";
+import { panchakClasses as pc } from "@vedic-patro/design-tokens/classes/panchak-classes";
 import { fmtAdShort } from "@/lib/date-format";
 import { cn } from "@vedic-patro/domain/utils";
 import { formatBrowsePatroYear } from "@vedic-patro/domain/patro-year-axis";
@@ -58,42 +59,42 @@ function PanchakPeriodCard({
   const bsEnd = formatBsMonthDayPatro(period.end.bsYear, period.end.bsMonth, period.end.bsDay);
 
   return (
-    <article className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs shadow-ring-soft">
-      <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
-        <h3 className="text-sm font-bold text-foreground m-0">
+    <article className={cn(pc.periodCard, "shadow-ring-soft")}>
+      <div className={pc.periodHead}>
+        <h3 className={cn(pc.periodTitle, "m-0")}>
           {t("panchak.period_label", { n: digits(index + 1) })}
         </h3>
         {variety ? (
-          <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-sm font-semibold text-amber-800 dark:text-amber-300">
+          <span className={cn(pc.varietyBadge, pc.varietyText)}>
             {en ? variety.labelEn : variety.labelNe}
           </span>
         ) : null}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-border/70 bg-muted/20 px-3.5 py-3">
-          <p className="text-sm font-semibold uppercase tracking-wider mb-1.5">
+        <div className={pc.boundary}>
+          <p className={pc.boundaryLabel}>
             {t("panchak.start_date")}
           </p>
-          <p className="text-sm font-semibold text-foreground leading-snug">
+          <p className={pc.boundaryValue}>
             {digits(bsStart)}, {en ? period.start.timeEn : period.start.timeNe}
           </p>
-          <p className="mono mt-1 text-xs">{fmtAdShort(period.start.ad, en ? "en" : "ne")}</p>
+          <p className={cn(pc.boundaryAd, "mono")}>{fmtAdShort(period.start.ad, en ? "en" : "ne")}</p>
         </div>
-        <div className="rounded-xl border border-border/70 bg-muted/20 px-3.5 py-3">
-          <p className="text-sm font-semibold uppercase tracking-wider mb-1.5">
+        <div className={pc.boundary}>
+          <p className={pc.boundaryLabel}>
             {t("panchak.end_date")}
           </p>
-          <p className="text-sm font-semibold text-foreground leading-snug">
+          <p className={pc.boundaryValue}>
             {digits(bsEnd)}, {en ? period.end.timeEn : period.end.timeNe}
           </p>
-          <p className="mono mt-1 text-xs">{fmtAdShort(period.end.ad, en ? "en" : "ne")}</p>
+          <p className={cn(pc.boundaryAd, "mono")}>{fmtAdShort(period.end.ad, en ? "en" : "ne")}</p>
         </div>
       </div>
 
-      <p className="mt-3 text-xs text-base">
+      <p className={pc.duration}>
         {t("panchak.duration")}:{" "}
-        <span className="text-foreground">{en ? period.durationEn : period.durationNe}</span>
+        <span className={pc.durationValue}>{en ? period.durationEn : period.durationNe}</span>
       </p>
     </article>
   );
@@ -124,11 +125,11 @@ export function PanchakPatro() {
   );
 
   return (
-    <PageShell className="pb-16 space-y-4">
+    <PageShell className={cn(pc.pageStack, "space-y-4")}>
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-xs text-base hover:text-foreground mb-2"
+          className="inline-flex items-center gap-1 text-xs hover:text-foreground mb-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t("panchak.back_home")}
@@ -152,15 +153,15 @@ export function PanchakPatro() {
         className=""
       />
 
-      <p className={cn(patroNoteBox, "text-sm leading-relaxed")}>{t("panchak.intro")}</p>
+      <p className={cn(patroNoteBox, pc.introText)}>{t("panchak.intro")}</p>
 
       <RoutePageState isLoading={query.isLoading} data={query.data}>
         {() =>
           !periods.length ? (
-            <p className="text-sm">{t("panchak.no_data", { year: yearLabel })}</p>
+            <p className={pc.noData}>{t("panchak.no_data", { year: yearLabel })}</p>
           ) : (
-            <section className="space-y-3">
-              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+            <section className={pc.windows}>
+              <h2 className={cn(pc.sectionTitle, pc.windowsHeading)}>
                 <AlertTriangle className="size-4 text-amber-600" />
                 {t("panchak.periods_title", { year: yearLabel })}
               </h2>
@@ -174,37 +175,37 @@ export function PanchakPatro() {
         }
       </RoutePageState>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="text-base font-bold text-foreground mb-3">{t("panchak.prohibited_title")}</h2>
-        <ul className="space-y-3">
+      <section className={pc.panel}>
+        <h2 className={pc.panelTitleSpaced}>{t("panchak.prohibited_title")}</h2>
+        <ul className={pc.prohibitedList}>
           {PROHIBITED_ITEMS.map(({ titleKey, descKey }) => (
-            <li key={titleKey} className="border-b border-border/60 pb-3 last:border-0 last:pb-0">
-              <p className="text-sm font-semibold text-foreground">{t(titleKey)}</p>
-              <p className="text-sm mt-0.5 leading-relaxed">{t(descKey)}</p>
+            <li key={titleKey} className={cn(pc.prohibitedItem, "last:border-0 last:pb-0")}>
+              <p className={pc.itemTitle}>{t(titleKey)}</p>
+              <p className={pc.itemDesc}>{t(descKey)}</p>
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5 space-y-5">
-        <h2 className="text-base font-bold text-foreground">{t("panchak.learn_title")}</h2>
+      <section className={pc.panelLearn}>
+        <h2 className={pc.panelTitle}>{t("panchak.learn_title")}</h2>
 
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-1">{t("panchak.what_title")}</h3>
-          <p className="text-sm leading-relaxed">{t("panchak.what_body")}</p>
+          <h3 className={pc.learnHeading}>{t("panchak.what_title")}</h3>
+          <p className={pc.learnBody}>{t("panchak.what_body")}</p>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-1">{t("panchak.rahita_title")}</h3>
-          <p className="text-sm leading-relaxed">{t("panchak.rahita_body")}</p>
+          <h3 className={pc.learnHeading}>{t("panchak.rahita_title")}</h3>
+          <p className={pc.learnBody}>{t("panchak.rahita_body")}</p>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-2">{t("panchak.types_title")}</h3>
-          <ul className="space-y-2.5">
+          <h3 className={pc.learnHeadingSpaced}>{t("panchak.types_title")}</h3>
+          <ul className={pc.typesList}>
             {PANCHAK_VARIETIES.map((v) => (
-              <li key={v.id} className="text-sm leading-relaxed">
-                <span className="font-semibold text-foreground">{en ? v.labelEn : v.labelNe}</span>
+              <li key={v.id} className={pc.typeItem}>
+                <span className={pc.typeName}>{en ? v.labelEn : v.labelNe}</span>
                 <span> — {en ? v.noteEn : v.noteNe}</span>
               </li>
             ))}

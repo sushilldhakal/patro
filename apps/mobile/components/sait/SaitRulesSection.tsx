@@ -7,9 +7,9 @@ import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 /** A rule with its catalogue keys resolved into both languages. */
 interface ResolvedRule {
@@ -73,17 +73,17 @@ export function SaitRulesSection({
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (
-    <View className="mb-4 overflow-hidden rounded-xl border border-border bg-card">
+    <View className={saitClasses.rulesCard}>
       <Pressable
         onPress={() => setOpen((v) => !v)}
-        className="flex-row items-center gap-3 px-4 py-3.5 active:opacity-80"
+        className={cn(saitClasses.rulesHead, "active:opacity-80")}
       >
         <Ionicons name="document-text-outline" size={16} color={colors.secondary} />
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(15)}>
+        <View className={saitClasses.rulesHeadText}>
+          <Text className={saitClasses.rulesTitle} style={nepaliTextStyle()}>
             {pick("यो सूची कसरी बनेको हो", "How this list is generated")}
           </Text>
-          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={saitClasses.rulesSubtitle} style={nepaliTextStyle()}>
             {offCount > 0
               ? pick(
                   `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`,
@@ -103,33 +103,30 @@ export function SaitRulesSection({
         {busy ? <ActivityIndicator size="small" color={colors.secondary} /> : null}
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
-          size={18}
+          size={20}
           color={colors.mutedForeground}
         />
       </Pressable>
 
       {open ? (
-        <View className="gap-4 border-t border-border px-4 py-4">
+        <View className={saitClasses.rulesBody}>
           {intro ? (
-            <Text
-              className="text-body leading-relaxed text-foreground"
-              style={nepaliTextStyle(14)}
-            >
+            <Text className={saitClasses.rulesIntro} style={nepaliTextStyle()}>
               {intro}
             </Text>
           ) : null}
 
           {togglingEnabled ? (
-            <View className="flex-row items-start gap-1.5">
+            <View className={saitClasses.rulesHint}>
               <Ionicons name="information-circle-outline" size={14} color={colors.mutedForeground} />
-              <Text className="text-caption flex-1 leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className={cn("flex-1", saitClasses.rulesHintText)} style={nepaliTextStyle()}>
                 {t("sait.switch_off_a_rule_your_community_doesn_t_follow_the_dat")}
               </Text>
             </View>
           ) : null}
 
           {rules && rules.length > 0 ? (
-            <View className="flex-row flex-wrap gap-3">
+            <View className={cn("flex-row flex-wrap", saitClasses.ruleList)}>
               {rules.map((r, i) => {
                 const toggleable = Boolean(r.id && togglingEnabled);
                 const enabled = r.id ? (enabledRuleIds?.has(r.id) ?? true) : true;
@@ -137,29 +134,18 @@ export function SaitRulesSection({
                 return (
                 <View
                   key={r.id ?? i}
-                  style={{
-                    width: cardWidth as never,
-                    backgroundColor: colors.surfaceInset,
-                    borderColor: colors.border,
-                    opacity: off ? 0.55 : 1,
-                  }}
-                  className="gap-2 rounded-lg border p-3.5"
+                  style={{ width: cardWidth as never }}
+                  className={cn(saitClasses.rule, off ? saitClasses.ruleOff : saitClasses.ruleOn)}
                 >
-                  <View className="flex-row items-start gap-2">
-                    <View
-                      style={{ backgroundColor: colorWithAlpha(brand.blue, 0.15) }}
-                      className="h-6 w-6 items-center justify-center rounded-md"
-                    >
-                      <Text
-                        style={{ color: colors.secondary }}
-                        className="text-caption font-num font-bold"
-                      >
+                  <View className={saitClasses.ruleHead}>
+                    <View className={saitClasses.ruleNum}>
+                      <Text className={saitClasses.ruleNumText} style={nepaliTextStyle()}>
                         {digits(i + 1)}
                       </Text>
                     </View>
                     <Text
-                      className="text-body flex-1 font-semibold text-foreground"
-                      style={nepaliTextStyle(14)}
+                      className={cn(saitClasses.ruleText, off ? saitClasses.ruleTextOff : saitClasses.ruleTextOn)}
+                      style={nepaliTextStyle()}
                     >
                       {pick(r.ne, r.en)}
                     </Text>
@@ -175,28 +161,19 @@ export function SaitRulesSection({
                   </View>
 
                   {r.shloka || r.source || r.gloss ? (
-                    <View className="gap-1.5 border-t border-border pt-2.5">
+                    <View className={cn(saitClasses.ruleDetail, off && saitClasses.ruleDetailOff)}>
                       {r.source ? (
-                        <Text
-                          className="text-caption font-semibold text-muted-foreground"
-                          style={nepaliTextStyle(11)}
-                        >
+                        <Text className={saitClasses.ruleSource} style={nepaliTextStyle()}>
                           {pick(r.source.ne, r.source.en)}
                         </Text>
                       ) : null}
                       {r.shloka ? (
-                        <Text
-                          className="text-body italic leading-relaxed text-foreground"
-                          style={nepaliTextStyle(14)}
-                        >
+                        <Text className={saitClasses.ruleShloka} style={nepaliTextStyle()}>
                           {r.shloka}
                         </Text>
                       ) : null}
                       {r.gloss ? (
-                        <Text
-                          className="text-caption leading-relaxed text-muted-foreground"
-                          style={nepaliTextStyle(12)}
-                        >
+                        <Text className={saitClasses.ruleGloss} style={nepaliTextStyle()}>
                           {pick(r.gloss.ne, r.gloss.en)}
                         </Text>
                       ) : null}
@@ -209,9 +186,9 @@ export function SaitRulesSection({
           ) : null}
 
           {engineVersion ? (
-            <View className="flex-row items-center gap-1.5 pt-2">
-              <Ionicons name="information-circle-outline" size={13} color={colors.mutedForeground} />
-              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+            <View className={saitClasses.engine}>
+              <Ionicons name="information-circle-outline" size={14} color={colors.mutedForeground} />
+              <Text className={saitClasses.engineText} style={nepaliTextStyle()}>
                 {pick("मुहूर्त इन्जिन", "Muhurta engine")} {engineVersion}
               </Text>
             </View>

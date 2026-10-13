@@ -19,6 +19,8 @@ import { DayPlayground } from "@/components/learn/playground/DayPlayground";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 function TopicNavCard({
   topic,
@@ -34,24 +36,18 @@ function TopicNavCard({
   return (
     <Pressable
       onPress={onPress}
-      className="min-w-0 flex-1 rounded-xl border border-border bg-card p-3 active:opacity-90"
+      className={cn(learnPageClasses.navCard, "w-full min-w-0 active:opacity-90 sm:flex-1")}
     >
-      <View className={`flex-row items-center gap-2 ${direction === "next" ? "justify-end" : ""}`}>
-        {direction === "prev" ? (
-          <Ionicons name="chevron-back" size={18} color={colors.secondary} />
-        ) : null}
-        <View className={`min-w-0 flex-1 ${direction === "next" ? "items-end" : ""}`}>
-          <Text className="text-caption font-bold uppercase tracking-wide text-muted-foreground">
-            {direction === "prev" ? pick("अघिल्लो", "Previous") : pick("अर्को", "Next")}
-          </Text>
-          <Text numberOfLines={2} className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
-            {pick(topic.title.ne, topic.title.en)}
-          </Text>
-        </View>
-        {direction === "next" ? (
-          <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
-        ) : null}
+      {direction === "prev" ? <Ionicons name="arrow-back" size={16} color={colors.secondary} /> : null}
+      <View className={`min-w-0 flex-1 ${direction === "next" ? "items-end" : ""}`}>
+        <Text className={cn(learnPageClasses.navKicker, "text-foreground")} style={nepaliTextStyle()}>
+          {direction === "prev" ? pick("अघिल्लो", "Previous") : pick("अर्को", "Next")}
+        </Text>
+        <Text numberOfLines={1} className={learnPageClasses.navTitle} style={nepaliTextStyle()}>
+          {pick(topic.title.ne, topic.title.en)}
+        </Text>
       </View>
+      {direction === "next" ? <Ionicons name="arrow-forward" size={16} color={colors.secondary} /> : null}
     </Pressable>
   );
 }
@@ -90,65 +86,69 @@ export function LearnArticleView({
   }
 
   return (
-    <View className="gap-4">
-      {/* Hero: category eyebrow, title, summary — as web's article header. */}
-      <View className="items-center gap-2 rounded-2xl border border-border bg-card px-5 py-10">
-        <Text
-          className="text-caption text-center font-semibold uppercase tracking-widest text-secondary"
-          style={nepaliTextStyle(12)}
-        >
-          {section ? pick(section.title.ne, section.title.en) : ""}
-        </Text>
-        <Text className="text-display text-center font-bold text-foreground" style={nepaliTextStyle(30)}>
-          {pick(topic.title.ne, topic.title.en)}
-        </Text>
-        <Text className="text-body mt-2 text-center leading-relaxed text-muted-foreground" style={nepaliTextStyle(16)}>
-          {pick(topic.summary.ne, topic.summary.en)}
-        </Text>
-      </View>
+    <View className={learnPageClasses.articleCard}>
+      <View className="gap-8 px-4 py-8 sm:px-6">
+        {/* Hero: category eyebrow, title, summary — as web's article header. */}
+        <View className="items-center pb-5 pt-12">
+          <Text
+            className="text-center text-xs font-semibold uppercase tracking-eyebrow-wide text-accent"
+            style={nepaliTextStyle()}
+          >
+            {section ? pick(section.title.ne, section.title.en) : ""}
+          </Text>
+          <Text
+            className="mt-3.5 text-center text-3xl font-bold leading-tight tracking-tight text-foreground"
+            style={nepaliTextStyle()}
+          >
+            {pick(topic.title.ne, topic.title.en)}
+          </Text>
+          <Text
+            className="mt-4 max-w-2xl text-center text-base leading-relaxed text-muted-foreground"
+            style={nepaliTextStyle()}
+          >
+            {pick(topic.summary.ne, topic.summary.en)}
+          </Text>
+        </View>
 
-      {/* Above the prose, as on web: a topic that has a playground is one you
-          can watch, and the reader should meet it before the words. */}
-      {playground ? (
-        <DayPlayground
-          key={slug}
-          config={playground}
-          title={pick(`${topic.title.ne} · आकाश`, `${topic.title.en} · sky`)}
-        />
-      ) : null}
+        {/* Above the prose, as on web: a topic that has a playground is one you
+            can watch, and the reader should meet it before the words. */}
+        {playground ? (
+          <DayPlayground
+            key={slug}
+            config={playground}
+            title={pick(`${topic.title.ne} · आकाश`, `${topic.title.en} · sky`)}
+          />
+        ) : null}
 
-      {hasGuidedTour ? null : (
-      <View className="rounded-2xl border border-border bg-card p-4">
-        {merged ? (
+        {hasGuidedTour ? null : merged ? (
           <MergedArticleBody page={merged} scrollRef={scrollRef} initialChapter={initialChapter} />
         ) : data ? (
           <ArticleBody article={data} />
         ) : null}
-      </View>
-      )}
 
-      <View className="flex-row gap-2">
-        {prev ? (
-          <TopicNavCard topic={prev} direction="prev" onPress={() => router.push(hrefForLearnSlug(prev.slug))} />
-        ) : (
-          <View className="flex-1" />
-        )}
-        {next ? (
-          <TopicNavCard topic={next} direction="next" onPress={() => router.push(hrefForLearnSlug(next.slug))} />
-        ) : (
-          <View className="flex-1" />
-        )}
-      </View>
+        <View className={cn(learnPageClasses.navRow, "mt-4")}>
+          {prev ? (
+            <TopicNavCard topic={prev} direction="prev" onPress={() => router.push(hrefForLearnSlug(prev.slug))} />
+          ) : (
+            <View className="hidden flex-1 sm:flex" />
+          )}
+          {next ? (
+            <TopicNavCard topic={next} direction="next" onPress={() => router.push(hrefForLearnSlug(next.slug))} />
+          ) : (
+            <View className="hidden flex-1 sm:flex" />
+          )}
+        </View>
 
-      <Pressable
-        onPress={() => router.push("/learn")}
-        className="flex-row items-center justify-center gap-1.5 py-3 active:opacity-80"
-      >
-        <Ionicons name="book-outline" size={16} color={colors.secondary} />
-        <Text className="text-body font-semibold text-secondary" style={nepaliTextStyle(14)}>
-          {pick("सबै विषय", "All topics")}
-        </Text>
-      </Pressable>
+        <Pressable
+          onPress={() => router.push("/learn")}
+          className={cn(learnPageClasses.inlineLink, "-mt-2 flex-row justify-center active:opacity-80")}
+        >
+          <Ionicons name="book-outline" size={16} color={colors.secondary} />
+          <Text className={learnPageClasses.inlineLinkText} style={nepaliTextStyle()}>
+            {pick("सबै विषय", "All topics")}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

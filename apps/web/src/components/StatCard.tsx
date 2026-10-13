@@ -1,4 +1,5 @@
 import { cn } from "@vedic-patro/domain/utils";
+import { spec } from "@vedic-patro/design-tokens";
 
 interface Props {
   label: string;
@@ -11,19 +12,15 @@ interface Props {
 export function StatCard({ label, value, sub, className, highlight }: Props) {
   return (
     <div
-      className={cn(
-        "bg-card border border-border rounded-xl p-4 flex flex-col gap-1",
-        highlight && "border-secondary/40 bg-secondary/5",
-        className
-      )}
+      className={cn(spec.statCard, highlight && spec.statCardHighlight, className)}
     >
-      <span className="text-sm font-semibold uppercase tracking-wider">
+      <span className={spec.label}>
         {label}
       </span>
-      <span className="text-base font-semibold text-foreground leading-snug">
+      <span className={spec.statValue}>
         {value ?? <span>—</span>}
       </span>
-      {sub && <span className="text-xs">{sub}</span>}
+      {sub && <span className={spec.caption}>{sub}</span>}
     </div>
   );
 }

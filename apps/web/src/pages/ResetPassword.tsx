@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiResetPassword, ApiError } from "@/lib/auth/client";
 import { useRouteLoading } from "@/lib/route-loading";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function ResetPassword() {
   useRouteLoading(false);
@@ -50,27 +52,27 @@ export function ResetPassword() {
 
   if (done) {
     return (
-      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 text-center">
+      <div className={cn("flex min-h-[50vh] flex-col px-4", accountClasses.panelCentered)}>
         <CheckCircle2 className="size-12 text-emerald-500" />
-        <h1 className="mt-4 text-xl font-bold text-foreground">{t("auth.reset_done_title")}</h1>
-        <p className="mt-1 text-sm">{t("auth.reset_done_body")}</p>
+        <h1 className={accountClasses.statusTitle}>{t("auth.reset_done_title")}</h1>
+        <p className={accountClasses.statusBody}>{t("auth.reset_done_body")}</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-[50vh] max-w-md flex-col justify-center px-4">
-      <h1 className="text-xl font-bold text-foreground">{t("auth.reset_page_title")}</h1>
-      <p className="mt-1 text-sm">{t("auth.reset_page_desc")}</p>
+    <div className={cn("flex min-h-[50vh] flex-col px-4", accountClasses.panel)}>
+      <h1 className={accountClasses.formTitle}>{t("auth.reset_page_title")}</h1>
+      <p className={accountClasses.statusBody}>{t("auth.reset_page_desc")}</p>
 
       {token === null ? (
-        <div className="mt-6 flex items-center gap-2 text-sm">
+        <div className={cn("flex", accountClasses.loadingRow)}>
           <Loader2 className="size-4 animate-spin" /> {t("common.loading")}
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-3">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-base text-foreground" htmlFor="new-password">
+        <form onSubmit={onSubmit} className={cn("flex flex-col", accountClasses.form)}>
+          <div className={cn("flex flex-col", accountClasses.field)}>
+            <label className={accountClasses.label} htmlFor="new-password">
               {t("auth.new_password")}
             </label>
             <Input
@@ -83,8 +85,8 @@ export function ResetPassword() {
               required
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-base text-foreground" htmlFor="confirm-password">
+          <div className={cn("flex flex-col", accountClasses.field)}>
+            <label className={accountClasses.label} htmlFor="confirm-password">
               {t("auth.confirm_password")}
             </label>
             <Input
@@ -96,11 +98,11 @@ export function ResetPassword() {
               required
             />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" size="lg" disabled={busy} className="mt-1">
+          {error && <p className={accountClasses.formError}>{error}</p>}
+          <Button type="submit" size="lg" disabled={busy} className={accountClasses.submit}>
             {busy ? t("auth.updating") : t("auth.update_password")}
           </Button>
-          <Link to="/" className="text-center text-sm hover:text-foreground">
+          <Link to="/" className={cn("hover:text-foreground", accountClasses.backLink)}>
             {t("common.back_home")}
           </Link>
         </form>

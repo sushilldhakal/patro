@@ -1,4 +1,7 @@
 import { lazy, Suspense, useMemo, useState } from "react";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -90,7 +93,7 @@ const ShantiVidhiPanel = lazy(() => import("@/components/kundali/ShantiVidhiPane
 /** Fallback for a lazy section chunk while it loads. */
 function SectionLoading() {
   return (
-    <div className="flex items-center justify-center py-16 text-sm">
+    <div className={kundaliDetailClasses.view.sectionLoading}>
       <Clock className="mr-2 h-4 w-4 animate-pulse" />
     </div>
   );
@@ -98,21 +101,21 @@ function SectionLoading() {
 
 function DetailTraitRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-baseline gap-1 min-w-[9rem] text-sm leading-snug">
+    <div className={cn(kundaliDetailClasses.birth.traitRow, kundaliDetailClasses.birth.traitText, "flex min-w-[9rem]")}>
       <span className="shrink-0">{label}</span>
       <span className="shrink-0">:</span>
-      <span className="font-semibold text-foreground">{value}</span>
+      <span className={kundaliDetailClasses.prose.strong}>{value}</span>
     </div>
   );
 }
 function StatTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-xl border border-border/80 bg-card px-3.5 py-3 min-w-0 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_5%,transparent)]">
-      <p className="text-sm font-semibold uppercase tracking-wider mb-1 truncate">
+    <div className={cn(kundaliDetailClasses.view.statTile, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_5%,transparent)]")}>
+      <p className={kundaliDetailClasses.view.statTileLabel}>
         {label}
       </p>
       <p className="text-base font-bold text-foreground leading-tight">{value}</p>
-      {sub && <p className="text-xs mt-0.5">{sub}</p>}
+      {sub && <p className={kundaliDetailClasses.prose.smallMt05}>{sub}</p>}
     </div>
   );
 }
@@ -373,7 +376,7 @@ export function KundaliView({
 
   if (isError) {
     return (
-      <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-xl p-4 text-sm">
+      <div className={cn(kundaliClasses.loadError, kundaliClasses.loadErrorText)}>
         {t("kundali.load_error")}
       </div>
     );
@@ -381,7 +384,7 @@ export function KundaliView({
 
   if (!detail || !data) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center text-sm">
+      <div className={cn(kundaliClasses.computingBox, kundaliClasses.emptyText)}>
         <Clock className="mx-auto mb-3 h-8 w-8 animate-pulse" />
         {t("kundali.computing")}
       </div>
@@ -394,20 +397,20 @@ export function KundaliView({
       {!hideBirthSummary && (
         <section className="rounded-2xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
         <div className="flex flex-col lg:flex-row lg:items-stretch lg:divide-x lg:divide-border">
-          <div className="flex-1 px-5 py-4 border-b lg:border-b-0 border-border bg-secondary/[0.09] dark:bg-secondary/20">
-            <p className="text-sm font-semibold uppercase tracking-wider mb-1.5">
+          <div className={cn(kundaliDetailClasses.view.birthCell, "lg:border-b-0")}>
+            <p className={kundaliDetailClasses.view.birthLabel}>
               {t("kundali.birth_moment")}
             </p>
-            <p className="text-2xl font-bold text-foreground font-[family-name:var(--pn-num)] leading-tight">
+            <p className={cn(kundaliDetailClasses.view.birthDate, "font-[family-name:var(--pn-num)]")}>
               {birthBsLabel}
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1 text-xs">
+              <span className={cn(kundaliDetailClasses.view.infoChip, "inline-flex")}>
                 <MapPin className="w-3.5 h-3.5 shrink-0" />
                 {locationLabel}
                 {effectiveTimezone ? ` · ${effectiveTimezone}` : ""}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-mono font-semibold text-foreground">
+              <span className={cn(kundaliDetailClasses.view.infoChip, "inline-flex font-mono font-semibold text-foreground")}>
                 <Clock className="w-3.5 h-3.5 shrink-0" />
                 {digits(birthMoment.clock)}
               </span>
@@ -415,12 +418,12 @@ export function KundaliView({
           </div>
 
           {lagna && (
-            <div className="flex-1 px-5 py-4 flex flex-col justify-center min-w-[200px]">
-              <div className="flex items-center justify-between gap-2 mb-1">
+            <div className={cn(kundaliDetailClasses.view.lagnaCell, "flex flex-col justify-center min-w-[200px]")}>
+              <div className={kundaliDetailClasses.view.lagnaHead}>
                 <p className="text-sm font-semibold uppercase tracking-wider">
                   {t("kundali.lagna")}
                 </p>
-                <span className="text-sm text-base bg-muted px-2 py-0.5 rounded-full shrink-0">
+                <span className={kundaliDetailClasses.view.lagnaBadge}>
                   {ayanamshaInfo.labelNe}
                 </span>
               </div>
@@ -440,17 +443,17 @@ export function KundaliView({
 
       {/* Unified birth panchanga + avakahada (profile view) */}
       {showSection("kundali-overview") && hideBirthSummary && (panchangSummary || lagna) && (
-        <div className="rounded-2xl border border-secondary/25 bg-gradient-to-br from-secondary/[0.08] to-card p-4 sm:p-5 shadow-[0_0_0_1px_color-mix(in_srgb,var(--secondary)_15%,transparent)]">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <p className="text-sm font-semibold uppercase tracking-wider">
+        <div className={cn(kundaliDetailClasses.birth.card, "bg-gradient-to-br from-secondary/[0.08] to-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--secondary)_15%,transparent)]")}>
+          <div className={cn(kundaliDetailClasses.birth.head, "flex")}>
+            <p className={kundaliDetailClasses.birth.title}>
               {t("kundali.birth_panchanga")}
             </p>
-            <span className="text-sm text-base bg-card border border-border px-2.5 py-1 rounded-full shrink-0">
+            <span className={cn(kundaliDetailClasses.birth.chip, kundaliDetailClasses.birth.chipText)}>
               {ayanamshaInfo.labelNe}
             </span>
           </div>
 
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
+          <div className={cn(kundaliDetailClasses.birth.traits, "flex")}>
             {panchangSummary?.tithiNe ? (
               <DetailTraitRow
                 label={t("kundali.tithi")}
@@ -540,17 +543,17 @@ export function KundaliView({
           </div>
 
           {janmaAvakahada ? (
-            <div className="mt-4 pt-4 border-t border-border/70">
-              <p className="text-sm font-semibold uppercase tracking-wider mb-2">
+            <div className={kundaliDetailClasses.birth.avakahada}>
+              <p className={kundaliDetailClasses.birth.avakahadaTitle}>
                 {t("kundali.avakahada")}
-                <span className="mx-1.5 font-normal">·</span>
-                <span className="normal-case tracking-normal font-semibold text-foreground">
+                <span className={cn(kundaliDetailClasses.birth.avakahadaDot, "mx-1.5")}>·</span>
+                <span className={kundaliDetailClasses.birth.avakahadaName}>
                   {pickBi(janmaAvakahada.nakshatra)}
                   <span className="mx-1">·</span>
                   {bilingualText(lang, `पद ${digits(janmaAvakahada.pada)}`, `Pada ${digits(janmaAvakahada.pada)}`)}
                 </span>
               </p>
-              <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <div className={cn(kundaliDetailClasses.birth.traits, "flex")}>
                 <DetailTraitRow
                   label={t("kundali.rashi_paya")}
                   value={pickBi(janmaAvakahada.rashiPaya)}
@@ -571,11 +574,11 @@ export function KundaliView({
                 <DetailTraitRow label={t("kundali.jati")} value={pickBi(janmaAvakahada.jati)} />
               </div>
               {avakahadaShloka ? (
-                <div className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
-                  <p className="mb-1 text-sm text-base uppercase tracking-wide">
+                <div className={kundaliDetailClasses.birth.shlokaBox}>
+                  <p className={kundaliDetailClasses.birth.shlokaLabel}>
                     {t("kundali.avakahada_shloka")}
                   </p>
-                  <p className="whitespace-pre-line text-sm italic leading-relaxed text-foreground">
+                  <p className={cn(kundaliDetailClasses.birth.shlokaText, "whitespace-pre-line")}>
                     {avakahadaShloka}
                   </p>
                 </div>
@@ -627,7 +630,7 @@ export function KundaliView({
               />
               {detail.upagrahas.length > 0 && (
                 <div className="border-t border-border">
-                  <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider">
+                  <p className={kundaliDetailClasses.view.upagrahaTitle}>
                     {t("kundali.upagraha")}
                   </p>
                   <UpagrahaTable upagrahas={detail.upagrahas} />
@@ -677,7 +680,7 @@ export function KundaliView({
 
       {showSection("kundali-shadbala") && (
         <div id="kundali-shadbala" className="scroll-mt-24 space-y-6">
-          <div className="rounded-2xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)] p-4 sm:p-5">
+          <div className={cn(kundaliDetailClasses.sectionCard.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]")}>
             <Suspense fallback={<SectionLoading />}>
               <KundaliSubTabs
                 items={BALA_TAB_SECTIONS}
@@ -698,7 +701,7 @@ export function KundaliView({
 
       {showSection("kundali-bhava-bala") && (
         <div id="kundali-bhava-bala" className="scroll-mt-24 space-y-6">
-          <div className="rounded-2xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)] p-4 sm:p-5">
+          <div className={cn(kundaliDetailClasses.sectionCard.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]")}>
             <Suspense fallback={<SectionLoading />}>
               <KundaliSubTabs
                 items={BALA_TAB_SECTIONS}
@@ -713,7 +716,7 @@ export function KundaliView({
                   combustion={detail.combustion}
                 />
               ) : (
-                <p className="py-8 text-center text-sm">
+                <p className={kundaliClasses.sectionUnavailable}>
                   {t("kundali.section_unavailable")}
                 </p>
               )}
@@ -730,7 +733,7 @@ export function KundaliView({
 
       {showSection("kundali-ashtakavarga") && (
         <div id="kundali-ashtakavarga" className="scroll-mt-24 space-y-6">
-          <div className="rounded-2xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)] p-4 sm:p-5">
+          <div className={cn(kundaliDetailClasses.sectionCard.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]")}>
             <Suspense fallback={<SectionLoading />}>
               <KundaliSubTabs
                 items={BALA_TAB_SECTIONS}
@@ -741,7 +744,7 @@ export function KundaliView({
               {detail.ashtakavarga ? (
                 <AshtakavargaCard data={detail.ashtakavarga} />
               ) : (
-                <p className="py-8 text-center text-sm">
+                <p className={kundaliClasses.sectionUnavailable}>
                   {t("kundali.section_unavailable")}
                 </p>
               )}
@@ -753,7 +756,7 @@ export function KundaliView({
 
       {showSection("kundali-vimshopaka") && (
         <div id="kundali-vimshopaka" className="scroll-mt-24 space-y-6">
-          <div className="rounded-2xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)] p-4 sm:p-5">
+          <div className={cn(kundaliDetailClasses.sectionCard.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]")}>
             <Suspense fallback={<SectionLoading />}>
               <KundaliSubTabs
                 items={BALA_TAB_SECTIONS}
@@ -764,7 +767,7 @@ export function KundaliView({
               {detail.vimshopaka && detail.vimshopaka.classifications.length > 0 ? (
                 <VimshopakaCard data={detail.vimshopaka} />
               ) : (
-                <p className="py-8 text-center text-sm">
+                <p className={kundaliClasses.sectionUnavailable}>
                   {t("kundali.section_unavailable")}
                 </p>
               )}
@@ -778,7 +781,7 @@ export function KundaliView({
         <div id="kundali-shanti" className="scroll-mt-24 space-y-6">
         <PanchangaSection titleNe="शान्ति विधि" titleEn="Navagraha Shanti">
           <div className="p-4">
-            <div className="mb-3 flex items-center gap-1.5 text-sm">
+            <div className={kundaliDetailClasses.view.shantiNote}>
               <Flame className="h-4 w-4 text-secondary" />
               {t("kundali.navagraha_shanti_suggested_from_this_chart_s_dasha_and_")}
             </div>
@@ -815,16 +818,16 @@ function KundaliYogaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
-        <li className="flex gap-3 text-sm">
-          <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(1)}.</span>
-          <div className="min-w-0 flex flex-col gap-1">
-            <p className="font-semibold text-foreground">{t("kundali.sources.bphs.credit")}</p>
-            <p className="text-muted-foreground">{t("kundali.sources.bphs.edition")}</p>
-            <p className="text-muted-foreground">{t("kundali.sources.bphs.used")}</p>
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
+        <li className={kundaliDetailClasses.sources.row}>
+          <span className={kundaliDetailClasses.sources.index}>{digits(1)}.</span>
+          <div className={kundaliDetailClasses.sources.body}>
+            <p className={kundaliDetailClasses.prose.strong}>{t("kundali.sources.bphs.credit")}</p>
+            <p className={kundaliDetailClasses.sources.line}>{t("kundali.sources.bphs.edition")}</p>
+            <p className={kundaliDetailClasses.sources.line}>{t("kundali.sources.bphs.used")}</p>
           </div>
         </li>
       </ol>
@@ -846,17 +849,17 @@ function ShantiSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {SHANTI_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.shanti.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.shanti.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.shanti.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.shanti.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.shanti.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.shanti.${id}.used`)}</p>
             </div>
           </li>
         ))}
@@ -871,17 +874,17 @@ function DashaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {DASHA_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.dasha.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.dasha.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.dasha.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.dasha.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.dasha.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.dasha.${id}.used`)}</p>
             </div>
           </li>
         ))}
@@ -896,17 +899,17 @@ function ShadbalaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {SHADBALA_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.shadbala.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.shadbala.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.shadbala.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.shadbala.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.shadbala.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.shadbala.${id}.used`)}</p>
             </div>
           </li>
         ))}
@@ -927,17 +930,17 @@ function BhavaBalaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {BHAVA_BALA_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.bhavabala.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.bhavabala.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.bhavabala.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.bhavabala.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.bhavabala.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.bhavabala.${id}.used`)}</p>
             </div>
           </li>
         ))}
@@ -952,17 +955,17 @@ function AshtakavargaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {ASHTAKAVARGA_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.ashtakavarga.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.ashtakavarga.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.ashtakavarga.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.ashtakavarga.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.ashtakavarga.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.ashtakavarga.${id}.used`)}</p>
             </div>
           </li>
         ))}
@@ -977,17 +980,17 @@ function VimshopakaSources() {
   const { t } = useTranslation();
   const { digits } = useLocale();
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("kundali.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("kundali.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={kundaliDetailClasses.sources.card}>
+      <h2 className={kundaliDetailClasses.prose.heading}>{t("kundali.sources.heading")}</h2>
+      <p className={kundaliDetailClasses.prose.mutedMt15}>{t("kundali.sources.blurb")}</p>
+      <ol className={kundaliDetailClasses.sources.list}>
         {VIMSHOPAKA_SOURCE_IDS.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`kundali.sources.vimshopaka.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.vimshopaka.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`kundali.sources.vimshopaka.${id}.used`)}</p>
+          <li key={id} className={kundaliDetailClasses.sources.row}>
+            <span className={kundaliDetailClasses.sources.index}>{digits(i + 1)}.</span>
+            <div className={kundaliDetailClasses.sources.body}>
+              <p className={kundaliDetailClasses.prose.strong}>{t(`kundali.sources.vimshopaka.${id}.credit`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.vimshopaka.${id}.edition`)}</p>
+              <p className={kundaliDetailClasses.sources.line}>{t(`kundali.sources.vimshopaka.${id}.used`)}</p>
             </div>
           </li>
         ))}

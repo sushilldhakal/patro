@@ -6,6 +6,9 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
+import { neutral } from "@vedic-patro/design-tokens";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
+import { cn } from "@vedic-patro/domain/utils";
 /** Panchanga footer cross-link to the full Gochar page — web `GocharPromoCard`. */
 export function GocharPromoCard() {
   const { t, pick } = useLocale();
@@ -15,17 +18,17 @@ export function GocharPromoCard() {
     <Pressable
       onPress={() => router.push("/gochar" as never)}
       accessibilityRole="button"
-      className="overflow-hidden rounded-2xl border border-border bg-card p-5 active:opacity-90"
+      className={cn(gocharClasses.promoCard, "bg-card active:opacity-90 sm:flex-row sm:items-center sm:justify-between sm:gap-3")}
     >
-      <View className="flex-row items-start gap-3">
-        <View className="h-11 w-11 items-center justify-center rounded-xl bg-secondary/15">
+      <View className="min-w-0 flex-1 flex-row items-start gap-3">
+        <View className={gocharClasses.promoIcon}>
           <Ionicons name="planet-outline" size={24} color={colors.secondary} />
         </View>
         <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className={gocharClasses.promoTitle} style={nepaliTextStyle()}>
             {t("gochar.promo_title")}
           </Text>
-          <Text className="text-body mt-1.5 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={gocharClasses.promoBody} style={nepaliTextStyle()}>
             {pick(
               "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
               "Seen the day's panchang? Now check where the planets are moving and how today's transits affect your sign.",
@@ -33,11 +36,11 @@ export function GocharPromoCard() {
           </Text>
         </View>
       </View>
-      <View className="mt-4 flex-row items-center gap-1.5 self-start rounded-xl bg-secondary px-4 py-2">
-        <Text className="text-body font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
+      <View className={cn(gocharClasses.promoCta, "mt-3 flex-row sm:mt-0")}>
+        <Text className={gocharClasses.promoCtaText} style={nepaliTextStyle()}>
           {t("gochar.promo_cta")}
         </Text>
-        <Ionicons name="arrow-forward" size={16} color="#ffffff" />
+        <Ionicons name="arrow-forward" size={16} color={neutral.white} />
       </View>
     </Pressable>
   );

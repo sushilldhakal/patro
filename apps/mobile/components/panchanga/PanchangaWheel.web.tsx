@@ -41,6 +41,7 @@ import {
   wheelHeadEyebrow,
   wheelHeadSub,
   wheelHeadTitle,
+  wheelPlayRateBadge,
   wheelIconBtn,
   wheelLegend,
   wheelLegendDot,
@@ -62,9 +63,15 @@ import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { NAK_LORD_EN } from "@vedic-patro/domain/wheel-locale";
 import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
 
-const wheelDockIcon = "h-3.5 w-3.5 max-[480px]:h-3 max-[480px]:w-3";
+import { illustration, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+const wheelDockIcon = "h-3.5 w-3.5 max-compact:h-3 max-compact:w-3";
 const wheelCornerBtn =
-  "flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(143,191,193,0.32)] bg-[rgba(11,20,22,0.96)] text-[var(--w-ink)] shadow-[0_8px_20px_rgba(0,0,0,0.4)] transition-colors hover:border-[var(--w-accent)] max-[480px]:h-8 max-[480px]:w-8";
+  "flex h-9 w-9 items-center justify-center rounded-full border border-[var(--btn-border)] text-[var(--w-ink)] transition-colors hover:border-[var(--w-accent)] max-compact:h-8 max-compact:w-8";
+const wheelCornerBtnStyle = {
+  "--btn-border": withAlpha(wheel.line, 0.32),
+  backgroundColor: withAlpha(wheel.surface, 0.96),
+  boxShadow: `0 8px 20px ${withAlpha(neutral.black, 0.4)}`,
+};
 
 export type { YearWheelScrub };
 
@@ -139,7 +146,7 @@ function WheelHead({
       <div className={wheelHeadTitle}>{title}</div>
       <div className={wheelHeadSub}>{sub}</div>
       {playRate ? (
-        <div className="text-body mt-1 font-bold tabular-nums text-[#f9c800]">{playRate}</div>
+        <div className={wheelPlayRateBadge}>{playRate}</div>
       ) : null}
     </div>
   );
@@ -605,6 +612,7 @@ function PanchangaWheelBody({
           <button
             type="button"
             className={wheelCornerBtn}
+            style={wheelCornerBtnStyle}
             title={pick("मिति र समय", "Date and time")}
             aria-label={pick("मिति र समय", "Date and time")}
             onClick={openCalendar}
@@ -614,6 +622,7 @@ function PanchangaWheelBody({
           <button
             type="button"
             className={wheelCornerBtn}
+            style={wheelCornerBtnStyle}
             title={pick("रिलोड · जुम रिसेट · सूर्योदय", "Reload · reset zoom · sunrise")}
             aria-label={pick("रिलोड", "Reload")}
             onClick={resetToSunrise}
@@ -623,6 +632,7 @@ function PanchangaWheelBody({
           <button
             type="button"
             className={wheelCornerBtn}
+            style={wheelCornerBtnStyle}
             title={
               expanded
                 ? pick("सामान्य दृश्य", "Exit full width")
@@ -679,11 +689,11 @@ function PanchangaWheelBody({
             {pick("वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
           </div>
           <div className={wheelLegendRow}>
-            <span className={wheelLegendDot} style={{ background: "#f2a81d" }} />
+            <span className={wheelLegendDot} style={{ background: illustration.orange53b }} />
             {pick("सूर्य राशि", "Sun sign")}
           </div>
           <div className={wheelLegendRow}>
-            <span className={wheelLegendDot} style={{ background: "#d3dce4" }} />
+            <span className={wheelLegendDot} style={{ background: illustration.sky84 }} />
             {pick("चन्द्र राशि", "Moon sign")}
           </div>
           <div className={cn(wheelLegendRow, "mt-0.5 opacity-70")}>
@@ -768,10 +778,10 @@ function PanchangaWheelBody({
       />
       <div className="relative z-[141] w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
-          <h2 className="text-body font-bold text-foreground">{pick("मिति र समय", "Date and time")}</h2>
+          <h2 className="text-sm font-bold text-foreground">{pick("मिति र समय", "Date and time")}</h2>
           <button
             type="button"
-            className="text-body text-muted-foreground"
+            className="text-sm text-muted-foreground"
             onClick={() => setCalendarOpen(false)}
           >
             {pick("बन्द", "Close")}

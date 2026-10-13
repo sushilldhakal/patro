@@ -17,12 +17,13 @@ import {
   RITU_SEASON_KEYS,
 } from "@/lib/ritu-display";
 import { useBreakpoint } from "@/lib/responsive";
-import { useThemeColors } from "@/lib/theme-context";
+import { useTheme } from "@/lib/theme-context";
 import {
   resolveLocationTimezone,
   type PanchangaLocation,
 } from "@/lib/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
+import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 const DAY = 86_400_000;
@@ -55,11 +56,16 @@ export function RituSeasons({
 }) {
   const router = useRouter();
   const { pick, digits, lang, t } = useLocale();
-  const colors = useThemeColors();
+  const { colors, isDark } = useTheme();
+  /* Web: `text-secondary dark:text-primary` for the current-season accents. */
+  const accent = isDark ? colors.primary : colors.secondary;
   const { width } = useBreakpoint();
   const tz = resolveLocationTimezone(location);
   const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), tz), [tz]);
-  const cardWidth = width >= 821 ? "32%" : width >= 481 ? "49%" : "100%";
+  /* Web grid: grid-cols-1 compact:grid-cols-2 md:grid-cols-3, gap-3. Percent widths leave
+     4% per gap (12px) so the last tile does not wrap. */
+  const cols = width >= 768 ? 3 : width >= 480 ? 2 : 1;
+  const cardWidth = `${((100 - 4 * (cols - 1)) / cols).toFixed(2)}%`;
 
   const seasonsQ = useQuery({
     queryKey: seasonsKeys.tropical(location.params),
@@ -114,14 +120,10 @@ export function RituSeasons({
     <Pressable
       accessibilityRole="button"
       onPress={() => router.push(hrefForLearnSlug("ritu-drift"))}
-      className="flex-row items-center gap-1 rounded-full border px-2.5 py-1 active:opacity-80"
-      style={{ borderColor: `${colors.secondary}59` }}
+      className={cn("flex-row active:opacity-80", rituClasses.whyLink)}
     >
-      <Ionicons name="help-circle-outline" size={13} color={colors.secondary} />
-      <Text
-        className="text-caption font-semibold"
-        style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
-      >
+      <Ionicons name="help-circle-outline" size={13} color={accent} />
+      <Text className={rituClasses.whyLinkText} style={[nepaliTextStyle(), { color: accent }]}>
         {pick("ऋतु किन सर्छ?", "Why do seasons shift?")}
       </Text>
     </Pressable>
@@ -137,12 +139,9 @@ export function RituSeasons({
   return (
     <View>
       {showToolbar ? (
-        <View className="mb-4 flex-row flex-wrap items-center justify-end gap-2">
+        <View className={cn("flex-row flex-wrap", rituClasses.toolbar)}>
           {south ? (
-            <Text
-              className="text-caption font-semibold"
-              style={{ color: colors.primary, ...nepaliTextStyle(12) }}
-            >
+            <Text className={rituClasses.southTag} style={nepaliTextStyle()}>
               {pick(" · दक्षिणी गोलार्ध", " · Southern hemisphere")}
             </Text>
           ) : null}
@@ -163,74 +162,67 @@ export function RituSeasons({
           return (
             <View
               key={`${item.solarSlot}-${item.startAd}-${i}`}
-              style={{
-                width: cardWidth as `${number}%`,
-                borderColor: item.isCurrent ? `${colors.secondary}61` : colors.border,
-                backgroundColor: colors.card,
-              }}
-              className={cn(
-                "gap-2 rounded-xl p-3.5",
-                item.isCurrent ? "border-[1.5px]" : "border border-border/40",
-              )}
+              style={{ width: cardWidth as `${number}%` }}
+              className={rituClasses.card}
             >
+              {item.isCurrent ? (
+                <View
+                  pointerEvents="none"
+                  className="absolute inset-0 rounded-xl border-[1.5px] border-secondary/40 dark:border-primary/40"
+                />
+              ) : null}
               <Text
-                className="text-body font-bold uppercase tracking-wider"
-                style={{
-                  color: item.isCurrent ? colors.secondary : colors.mutedForeground,
-                  ...nepaliTextStyle(13),
-                }}
+                className={rituClasses.kicker}
+                style={[nepaliTextStyle(), item.isCurrent ? { color: accent } : undefined]}
               >
                 {item.isCurrent ? pick("चालू ऋतु", "Current season") : relLabel(item.daysUntil)}
               </Text>
 
-              <View className="flex-row items-center gap-3">
-                <Text className="text-title">{RITU_SEASON_EMOJI[seasonKey]}</Text>
-                <View className="min-w-0 flex-1">
-                  <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
+              <View className={cn("flex-row", rituClasses.seasonRow)}>
+                <Text className={rituClasses.emoji}>{RITU_SEASON_EMOJI[seasonKey]}</Text>
+                <View className={rituClasses.nameWrap}>
+                  <Text className={rituClasses.name} style={nepaliTextStyle()}>
                     {t(`ritu.${seasonKey}`)}
                   </Text>
                 </View>
-                <View
-                  className="h-[46px] w-[46px] items-center justify-center gap-px rounded-lg"
-                  style={{ backgroundColor: `${colors.secondary}21` }}
-                >
-                  <Text className="text-body font-num font-bold text-accent">
+                <View className={cn("h-[46px] w-[46px] bg-secondary/[0.13]", rituClasses.dateChip)}>
+                  <Text className={rituClasses.dateDay}>
                     {digits(item.startBs.day)}
                   </Text>
-                  <Text className="text-body font-semibold text-accent" style={nepaliTextStyle(13)}>
+                  <Text className={rituClasses.dateMonth} style={nepaliTextStyle()}>
                     {monthLabel}
                   </Text>
                 </View>
               </View>
 
-              <View className="flex-row items-baseline justify-between gap-2">
-                <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+              <View className={cn("flex-row", rituClasses.metaRow)}>
+                <Text className={cn("min-w-0 flex-1", rituClasses.metaText)} style={nepaliTextStyle()}>
                   {markerKey
                     ? `${t(markerKey)} · ${pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}`
                     : pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}
                 </Text>
-                <Text className="text-caption shrink-0 font-num text-muted-foreground">
+                <Text className={cn("shrink-0", rituClasses.metaFrom)} style={nepaliTextStyle()}>
                   {fmtAd(item.startAd, lang)} {pick("देखि", "from")}
                 </Text>
               </View>
 
               {item.isCurrent && item.progress ? (
                 <>
-                  <View className="h-1.5 overflow-hidden rounded-full bg-foreground/10">
+                  <View className={rituClasses.track}>
                     <View
-                      className="h-full rounded-full"
+                      className={rituClasses.bar}
                       style={{
                         width: `${item.progress.pct}%`,
-                        backgroundColor: colors.secondary,
+                        backgroundColor: accent,
                       }}
                     />
                   </View>
-                  <View className="flex-row items-baseline justify-between gap-2">
-                    <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <View className={cn("flex-row", rituClasses.progressRow)}>
+                    <Text className={rituClasses.progressText} style={nepaliTextStyle()}>
                       {digits(item.progress.elapsed)} / {digits(item.progress.total)}{" "}
                       {pick("दिन", "days")}
                     </Text>
-                    <Text className="text-caption font-num font-semibold text-foreground">
+                    <Text className={rituClasses.progressPct} style={nepaliTextStyle()}>
                       {digits(Math.round(item.progress.pct))}%
                     </Text>
                   </View>
@@ -242,7 +234,7 @@ export function RituSeasons({
       </View>
 
       {south ? (
-        <Text className="text-body mx-0.5 mt-2.5 leading-normal text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={rituClasses.southNote} style={nepaliTextStyle()}>
           {pick(
             "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
             "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",

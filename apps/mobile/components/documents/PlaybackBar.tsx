@@ -9,7 +9,10 @@ import { floatingNavTabBarHeight } from "@/lib/mobile-nav";
 import { useBreakpoint } from "@/lib/responsive";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { cn } from "@vedic-patro/domain/utils";
 
+import { space } from "@vedic-patro/design-tokens";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 function formatTime(seconds: number): string {
   const total = Math.max(0, Math.round(seconds));
   const m = Math.floor(total / 60);
@@ -29,15 +32,12 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
   const bottom = floatingNavTabBarHeight(isTablet, insets.bottom) + 8;
   const { mode, full, verse, activeShloka } = audio;
 
-  const shell = (children: React.ReactNode) => (
+  const shell = (children: React.ReactNode, pad: string = documentsClasses.barPad) => (
     <View
       pointerEvents="box-none"
       style={{ position: "absolute", left: 12, right: 12, bottom, alignItems: "center" }}
     >
-      <View
-        className="w-full max-w-2xl rounded-2xl border border-border bg-card px-3 py-2.5"
-        style={{ elevation: 6, shadowColor: "#000", shadowOpacity: 0.18, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } }}
-      >
+      <View className={cn(documentsClasses.barShell, pad)}>
         {children}
       </View>
     </View>
@@ -49,41 +49,42 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
       <Pressable
         onPress={full.available ? audio.startFull : audio.startPlayThrough}
         accessibilityRole="button"
-        className="flex-row items-center gap-3"
+        className={documentsClasses.barRow}
       >
-        <View className="h-10 w-10 items-center justify-center rounded-full bg-secondary">
-          <Ionicons name="play" size={20} color={inkOn(colors.secondary)} style={{ marginLeft: 2 }} />
+        <View className={documentsClasses.barPlay}>
+          <Ionicons name="play" size={20} color={inkOn(colors.secondary)} style={{ marginLeft: space.hair }} />
         </View>
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-semibold" numberOfLines={1}>
+        <View className={documentsClasses.fill}>
+          <Text className={documentsClasses.barTitle} numberOfLines={1}>
             {t(full.available ? "documents.play_full_recording" : "documents.play_through")}
           </Text>
-          <Text className="text-caption text-muted-foreground" numberOfLines={1}>
+          <Text className={documentsClasses.barSubtitle} numberOfLines={1}>
             {documentTitle}
           </Text>
         </View>
-        <Ionicons name="headset-outline" size={18} color={colors.mutedForeground} />
+        <Ionicons name="headset-outline" size={16} color={colors.mutedForeground} />
       </Pressable>,
+      documentsClasses.barPadIdle,
     );
   }
 
   if (mode === "full") {
     return shell(
-      <View className="flex-row items-center gap-3">
+      <View className={documentsClasses.barRow}>
         <Pressable
           onPress={audio.toggleFull}
           accessibilityRole="button"
           accessibilityLabel={t(full.playing ? "documents.pause_verse" : "documents.play_full_recording")}
-          className="h-10 w-10 items-center justify-center rounded-full bg-secondary"
+          className={documentsClasses.barPlay}
         >
-          <Ionicons name={full.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={full.playing ? undefined : { marginLeft: 2 }} />
+          <Ionicons name={full.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={full.playing ? undefined : { marginLeft: space.hair }} />
         </Pressable>
-        <View className="min-w-0 flex-1">
-          <Text className="text-caption font-semibold text-muted-foreground" numberOfLines={1}>
+        <View className={documentsClasses.fill}>
+          <Text className={documentsClasses.barKicker} numberOfLines={1}>
             {t("documents.play_full_recording")}
           </Text>
-          <View className="flex-row items-center gap-2">
-            <Text className="text-caption w-9 text-muted-foreground">{formatTime(full.currentTime)}</Text>
+          <View className={documentsClasses.barScrubRow}>
+            <Text className={documentsClasses.barTime}>{formatTime(full.currentTime)}</Text>
             <Slider
               style={{ flex: 1, height: 28 }}
               minimumValue={0}
@@ -95,7 +96,7 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
               thumbTintColor={colors.secondary}
               accessibilityLabel={t("documents.seek")}
             />
-            <Text className="text-caption w-9 text-right text-muted-foreground">{formatTime(full.duration)}</Text>
+            <Text className={cn(documentsClasses.barTime, "text-right")}>{formatTime(full.duration)}</Text>
           </View>
         </View>
       </View>,
@@ -112,38 +113,38 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
   return shell(
     <View>
       {activeShloka.audio_url ? (
-        <View className="mb-1.5 flex-row items-center gap-2">
-          <Text className="text-caption w-9 text-right text-muted-foreground">{formatTime(verse.currentTime)}</Text>
-          <View className="h-1 flex-1 overflow-hidden rounded-full bg-border">
+        <View className={cn(documentsClasses.barScrubRow, "mt-0 mb-1.5")}>
+          <Text className={cn(documentsClasses.barTime, "text-right")}>{formatTime(verse.currentTime)}</Text>
+          <View className={documentsClasses.barTrack}>
             <View
-              className="h-full bg-secondary"
+              className={documentsClasses.barTrackFill}
               style={{ width: `${verse.duration > 0 ? Math.min(100, (verse.currentTime / verse.duration) * 100) : 0}%` }}
             />
           </View>
-          <Text className="text-caption w-9 text-muted-foreground">{formatTime(verse.duration)}</Text>
+          <Text className={documentsClasses.barTime}>{formatTime(verse.duration)}</Text>
         </View>
       ) : null}
-      <View className="flex-row items-center gap-2">
+      <View className={documentsClasses.barRow}>
         <Pressable
           onPress={audio.prevVerse}
           disabled={!audio.hasPrev}
           accessibilityRole="button"
           accessibilityLabel={t("documents.prev_verse")}
           hitSlop={6}
-          className="h-9 w-9 items-center justify-center"
+          className={documentsClasses.barSkip}
           style={{ opacity: audio.hasPrev ? 1 : 0.3 }}
         >
-          <Ionicons name="play-skip-back" size={18} color={colors.mutedForeground} />
+          <Ionicons name="play-skip-back" size={16} color={colors.mutedForeground} />
         </Pressable>
         <Pressable
           onPress={() => audio.toggleVerse(activeShloka.id)}
           disabled={!activeShloka.audio_url}
           accessibilityRole="button"
           accessibilityLabel={t(verse.playing ? "documents.pause_verse" : "documents.play_verse")}
-          className="h-10 w-10 items-center justify-center rounded-full bg-secondary"
+          className={documentsClasses.barPlay}
           style={{ opacity: activeShloka.audio_url ? 1 : 0.4 }}
         >
-          <Ionicons name={verse.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={verse.playing ? undefined : { marginLeft: 2 }} />
+          <Ionicons name={verse.playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} style={verse.playing ? undefined : { marginLeft: space.hair }} />
         </Pressable>
         <Pressable
           onPress={audio.nextVerse}
@@ -151,16 +152,16 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
           accessibilityRole="button"
           accessibilityLabel={t("documents.next_verse")}
           hitSlop={6}
-          className="h-9 w-9 items-center justify-center"
+          className={documentsClasses.barSkip}
           style={{ opacity: audio.hasNext ? 1 : 0.3 }}
         >
-          <Ionicons name="play-skip-forward" size={18} color={colors.mutedForeground} />
+          <Ionicons name="play-skip-forward" size={16} color={colors.mutedForeground} />
         </Pressable>
-        <View className="min-w-0 flex-1">
-          <Text className="text-caption font-semibold text-muted-foreground" numberOfLines={1}>
+        <View className={documentsClasses.fill}>
+          <Text className={documentsClasses.barKicker} numberOfLines={1}>
             {documentTitle}
           </Text>
-          <Text className="text-body font-semibold" numberOfLines={1}>
+          <Text className={documentsClasses.barTitle} numberOfLines={1}>
             {t("documents.now_playing", { label: activeShloka.verse_label })}
             {meaning ? ` — ${meaning}` : ""}
           </Text>
@@ -171,9 +172,9 @@ export function PlaybackBar({ audio, documentTitle }: { audio: DocumentAudio; do
             accessibilityRole="button"
             accessibilityLabel={t("documents.switch_to_full")}
             hitSlop={6}
-            className="h-9 w-9 items-center justify-center"
+            className={documentsClasses.barSkip}
           >
-            <Ionicons name="musical-notes-outline" size={18} color={colors.mutedForeground} />
+            <Ionicons name="musical-notes-outline" size={16} color={colors.mutedForeground} />
           </Pressable>
         ) : null}
       </View>

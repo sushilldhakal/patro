@@ -13,13 +13,14 @@ import { Ray } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 type Branch = { ne: string; en: string; color: string; steps: { ne: string; en: string }[]; z: number };
 
 const BRANCHES: Branch[] = [
   {
     ne: "पृथ्वी — घूर्णन",
     en: "Earth — rotation",
-    color: "#3aa0d8",
+    color: illustration.sky54,
     z: -0.36,
     steps: [{ ne: "दिन", en: "Day" }, { ne: "वार", en: "Vaara" }],
   },
@@ -37,7 +38,7 @@ const BRANCHES: Branch[] = [
   {
     ne: "चन्द्र — सूर्यसँगको कोण",
     en: "Moon — angle from Sun",
-    color: "#cbd5e1",
+    color: illustration.sky84,
     z: 0.36,
     steps: [
       { ne: "तिथि", en: "Tithi" },

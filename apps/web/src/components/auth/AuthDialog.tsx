@@ -14,11 +14,13 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { apiForgotPassword } from "@/lib/auth/client";
 import { GoogleSignInButton, googleSignInEnabled } from "./GoogleSignInButton";
 import { FacebookSignInButton, facebookSignInEnabled } from "./FacebookSignInButton";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 type Mode = "login" | "signup" | "forgot";
 
-const labelClass = "text-sm text-base text-foreground";
-const fieldWrap = "flex flex-col gap-1.5";
+const labelClass = accountClasses.label;
+const fieldWrap = cn("flex flex-col", accountClasses.field);
 
 export function AuthDialog({
   open,
@@ -134,7 +136,7 @@ export function AuthDialog({
         </DialogHeader>
 
         {mode !== "forgot" && socialEnabled && (
-          <div className="flex flex-col items-center gap-3">
+          <div className={cn("flex flex-col items-center", accountClasses.socialStack)}>
             {googleSignInEnabled && (
               <GoogleSignInButton onCredential={onGoogle} onError={setError} />
             )}
@@ -145,15 +147,15 @@ export function AuthDialog({
                 disabled={busy}
               />
             )}
-            <div className="flex w-full items-center gap-3 text-xs">
-              <span className="h-px flex-1 bg-border" />
+            <div className={cn("flex", accountClasses.socialDividerRow)}>
+              <span className={accountClasses.socialDividerLine} />
               {t("auth.or")}
-              <span className="h-px flex-1 bg-border" />
+              <span className={accountClasses.socialDividerLine} />
             </div>
           </div>
         )}
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-3">
+        <form onSubmit={onSubmit} className={cn("flex flex-col", accountClasses.dialogForm)}>
           <div className={fieldWrap}>
             <label className={labelClass} htmlFor="auth-email">
               {t("auth.email")}
@@ -205,10 +207,10 @@ export function AuthDialog({
             </div>
           )}
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          {notice && <p className="text-sm text-emerald-600 dark:text-emerald-400">{notice}</p>}
+          {error && <p className={accountClasses.formError}>{error}</p>}
+          {notice && <p className={accountClasses.formNotice}>{notice}</p>}
 
-          <Button type="submit" size="lg" disabled={busy} className="mt-1">
+          <Button type="submit" size="lg" disabled={busy} className={accountClasses.submit}>
             {busy
               ? t("auth.please_wait")
               : mode === "login"
@@ -219,7 +221,7 @@ export function AuthDialog({
           </Button>
         </form>
 
-        <div className="flex flex-col gap-1 text-center text-sm">
+        <div className={cn("flex flex-col", accountClasses.switchStack)}>
           {mode === "login" && (
             <>
               <button type="button" className="hover:text-foreground" onClick={() => reset("forgot")}>
@@ -229,7 +231,7 @@ export function AuthDialog({
                 {t("auth.new_here")}{" "}
                 <button
                   type="button"
-                  className="text-base text-secondary hover:underline"
+                  className={cn("hover:underline", accountClasses.switchLink)}
                   onClick={() => reset("signup")}
                 >
                   {t("auth.create_account")}
@@ -242,7 +244,7 @@ export function AuthDialog({
               {t("auth.already_have")}{" "}
               <button
                 type="button"
-                className="text-base text-secondary hover:underline"
+                className={cn("hover:underline", accountClasses.switchLink)}
                 onClick={() => reset("login")}
               >
                 {t("auth.sign_in")}
@@ -257,13 +259,13 @@ export function AuthDialog({
         </div>
 
         {mode !== "forgot" ? (
-          <p className="text-center text-xs text-muted-foreground">
+          <p className={accountClasses.legal}>
             {t("auth.legal_agree")}{" "}
-            <Link to="/privacy" className="text-secondary hover:underline" onClick={() => onOpenChange(false)}>
+            <Link to="/privacy" className={cn("hover:underline", accountClasses.legalLink)} onClick={() => onOpenChange(false)}>
               {t("auth.privacy")}
             </Link>
             {" · "}
-            <Link to="/terms" className="text-secondary hover:underline" onClick={() => onOpenChange(false)}>
+            <Link to="/terms" className={cn("hover:underline", accountClasses.legalLink)} onClick={() => onOpenChange(false)}>
               {t("auth.terms")}
             </Link>
           </p>

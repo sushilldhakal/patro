@@ -11,7 +11,8 @@ import {
   TableScrollShell,
 } from "@/components/ui/DataTable";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const KUTA_LABELS: Record<string, { en: string; ne: string }> = {
   varna: { en: "Varna", ne: "वर्ण" },
@@ -24,11 +25,13 @@ const KUTA_LABELS: Record<string, { en: string; ne: string }> = {
   nadi: { en: "Nadi", ne: "नाडी" },
 };
 
+const m = kundaliDetailClasses.milanResult;
+
 const RECOMMENDATION_TONE: Record<AshtakutaResult["recommendation"], string> = {
-  excellent: "#059669",
-  very_good: "#0284c7",
-  middling: brand.saffron,
-  inauspicious: brand.vermilion,
+  excellent: m.recExcellent,
+  very_good: m.recVeryGood,
+  middling: m.recMiddling,
+  inauspicious: m.recInauspicious,
 };
 
 function formatObtained(n: number): string {
@@ -45,47 +48,36 @@ function KutaDetailPanel({
   girlName: string;
 }) {
   const { lang, pick, digits } = useLocale();
-  const colors = useThemeColors();
   const label = KUTA_LABELS[kuta.id];
   const name = label ? pick(label.ne, label.en) : kuta.id;
 
   return (
-    <View
-      style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }}
-      className="mx-2 mb-2 rounded-lg border px-4 py-3"
-    >
-      <Text className="text-body mb-2 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+    <View className={cn(m.panel, "mx-2 mb-2")}>
+      <Text className={m.panelTitle} style={nepaliTextStyle(14)}>
         {name} {pick("कूट विवरण", "Kuta details")}
       </Text>
-      <Text className="text-body mb-3 text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className={m.panelPoints} style={nepaliTextStyle(13)}>
         {name} {pick("कूट अङ्क", "Kuta points")}:{" "}
-        <Text className="font-num font-semibold text-foreground">
+        <Text className={cn("font-num", m.panelPointsValue)}>
           {digits(formatObtained(kuta.obtained))}/{digits(kuta.max)}
         </Text>
       </Text>
-      <View className="mb-3 gap-2">
+      <View className={m.panelPeople}>
         {[
           { who: boyName, value: kuta.boyValue },
           { who: girlName, value: kuta.girlValue },
         ].map((r) => (
-          <View
-            key={r.who}
-            style={{ borderColor: colors.border }}
-            className="rounded-md border bg-card px-3 py-2"
-          >
-            <Text
-              className="text-caption uppercase tracking-wider text-muted-foreground"
-              style={nepaliTextStyle(10)}
-            >
+          <View key={r.who} className={m.panelPerson}>
+            <Text className={m.panelPersonName} style={nepaliTextStyle(10)}>
               {r.who}
             </Text>
-            <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
+            <Text className={m.panelPersonValue} style={nepaliTextStyle(13)}>
               {r.value}
             </Text>
           </View>
         ))}
       </View>
-      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className={m.panelInfo} style={nepaliTextStyle(13)}>
         {lang === "en" ? kuta.info : kuta.infoNe}
       </Text>
     </View>
@@ -117,71 +109,49 @@ export function KundaliMilanResult({
   ];
 
   return (
-    <View className="gap-5">
+    <View className={m.root}>
       {/* total + recommendation */}
-      <View
-        style={{ borderColor: colors.border }}
-        className="rounded-2xl border bg-card p-5"
-      >
-        <View className="flex-row flex-wrap items-center justify-between gap-4">
+      <View className={m.card}>
+        <View className={m.totalRow}>
           <View className="min-w-0 flex-1">
-            <Text
-              className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
-              style={nepaliTextStyle(11)}
-            >
+            <Text className={m.eyebrow} style={nepaliTextStyle(11)}>
               {pick("कुल गुण मिलान", "Total guna match")}
             </Text>
-            <Text style={{ color: tone, ...nepaliTextStyle(22) }} className="text-display mt-1 font-bold">
+            <Text style={nepaliTextStyle(22)} className={cn(m.recommendation, tone)}>
               {lang === "en" ? result.recommendationLabel : result.recommendationLabelNe}
             </Text>
           </View>
           <View className="items-end">
-            <Text className="text-display font-num font-bold text-foreground">
+            <Text className={m.totalValue}>
               {digits(formatObtained(result.totalObtained))}
-              <Text className="text-title text-muted-foreground"> / {digits(result.totalMax)}</Text>
+              <Text className={m.totalMax}> / {digits(result.totalMax)}</Text>
             </Text>
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={m.gunaLabel} style={nepaliTextStyle(11)}>
               {pick("गुण", "guna")}
             </Text>
           </View>
         </View>
 
-        <View className="mt-4 flex-row flex-wrap gap-3">
+        <View className={m.partners}>
           {[
             { label: pick("वर", "Groom"), name: boyName },
             { label: pick("कन्या", "Bride"), name: girlName },
           ].map((p) => (
-            <View
-              key={p.label}
-              style={{ borderColor: colors.border }}
-              className="rounded-full border px-3 py-1"
-            >
-              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+            <View key={p.label} className={m.partner}>
+              <Text className={m.partnerText} style={nepaliTextStyle(12)}>
                 {p.label}:{" "}
-                <Text className="font-semibold text-foreground">{p.name}</Text>
+                <Text className={m.partnerName}>{p.name}</Text>
               </Text>
             </View>
           ))}
         </View>
 
         {result.nadiDoshaAdvisory || result.nadiDoshaAdvisoryNe ? (
-          <View
-            style={{
-              borderColor: "rgba(245,158,11,0.4)",
-              backgroundColor: "rgba(245,158,11,0.1)",
-            }}
-            className="mt-4 rounded-xl border px-4 py-3"
-          >
-            <Text
-              style={{ color: colors.primary, ...nepaliTextStyle(11) }}
-              className="text-caption mb-1.5 font-semibold uppercase tracking-wider"
-            >
+          <View className={m.advisory}>
+            <Text className={m.advisoryTitle} style={nepaliTextStyle(11)}>
               {pick("नाडी दोष सूचना", "Nadi dosha advisory")}
             </Text>
-            <Text
-              className="text-body leading-relaxed text-foreground"
-              style={nepaliTextStyle(13)}
-            >
+            <Text className={m.advisoryText} style={nepaliTextStyle(13)}>
               {lang === "en" ? result.nadiDoshaAdvisory : result.nadiDoshaAdvisoryNe}
             </Text>
           </View>
@@ -189,35 +159,28 @@ export function KundaliMilanResult({
       </View>
 
       {/* dosha analysis */}
-      <View style={{ borderColor: colors.border }} className="rounded-2xl border bg-card p-5">
-        <Text className="text-body mb-4 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <View className={m.card}>
+        <Text className={cn(m.cardTitle, "mb-4")} style={nepaliTextStyle(14)}>
           {pick("दोष विश्लेषण", "Dosha analysis")}
         </Text>
         <View>
           {result.doshaAnalysis.map((dosha, i) => (
             <View
               key={dosha.id}
-              style={i > 0 ? { borderTopWidth: 1, borderTopColor: colors.border } : undefined}
-              className="flex-row flex-wrap items-center justify-between gap-2 py-3"
+              className={cn(m.doshaRow, i > 0 && "border-t border-border/70")}
             >
-              <Text
-                className="text-body min-w-0 flex-1 font-semibold text-foreground"
-                style={nepaliTextStyle(13)}
-              >
+              <Text className={cn(m.doshaLabel, "min-w-0 flex-1")} style={nepaliTextStyle(13)}>
                 {lang === "en" ? dosha.labelEn : dosha.labelNe}
                 {lang === "en" ? null : (
-                  <Text className="font-normal text-muted-foreground">
+                  <Text className={m.doshaLabelAlt}>
                     {" "}
                     ({dosha.labelEn.replace(" Dosha", "")})
                   </Text>
                 )}
               </Text>
               <Text
-                style={{
-                  color: dosha.present ? colors.destructive : "#059669",
-                  ...nepaliTextStyle(13),
-                }}
-                className="text-body shrink-0 font-semibold"
+                style={nepaliTextStyle(13)}
+                className={cn(m.doshaVerdict, dosha.present ? m.doshaPresent : m.doshaAbsent)}
               >
                 {dosha.present ? pick("छ", "Present") : pick("छैन", "Absent")}
               </Text>
@@ -308,7 +271,7 @@ export function KundaliMilanResult({
           );
         })}
         <Text
-          className="text-caption border-t border-border px-4 py-2 text-muted-foreground"
+          className={m.tableFootnote}
           style={nepaliTextStyle(11)}
         >
           *
@@ -320,15 +283,15 @@ export function KundaliMilanResult({
       </TableScrollShell>
 
       {/* notes */}
-      <View style={{ borderColor: colors.border }} className="rounded-2xl border bg-card p-5">
-        <Text className="text-body mb-3 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <View className={m.card}>
+        <Text className={cn(m.cardTitle, "mb-3")} style={nepaliTextStyle(14)}>
           {pick("टिप्पणी", "Notes")}
         </Text>
-        <View className="gap-2">
+        <View className={m.notesList}>
           {(lang === "en" ? result.notes : result.notesNe).map((note) => (
             <Text
               key={note.slice(0, 40)}
-              className="text-body leading-relaxed text-muted-foreground"
+              className={m.noteText}
               style={nepaliTextStyle(13)}
             >
               •  {note}

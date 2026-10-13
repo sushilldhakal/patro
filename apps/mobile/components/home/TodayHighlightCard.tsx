@@ -13,13 +13,14 @@ import {
   adToBS,
 } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
-import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
 import { daysDiffFromAd, formatNepalSambatDisplay } from "@vedic-patro/domain/panchanga-format";
 import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 
+import { useThemeColors } from "@/lib/theme-context";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 const WEEKDAY_NE = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -69,6 +70,7 @@ export function TodayHighlightCard({
   p,
 }: Props) {
   const { pick, lang, digits } = useLocale();
+  const colors = useThemeColors();
   const isToday = selectedAdDate === todayAd;
   const daysAway = isToday ? 0 : daysDiffFromAd(todayAd, selectedAdDate);
 
@@ -100,7 +102,7 @@ export function TodayHighlightCard({
     lang,
     patroHeadlineDigits(lang),
   );
-  const nsLabel = p ? formatNepalSambatDisplay(p) : undefined;
+  const nsLabel = p ? formatNepalSambatDisplay(p, lang) : undefined;
 
   const festivals = useMemo(() => {
     const fromApi = (p?.festivals ?? [])
@@ -146,66 +148,51 @@ export function TodayHighlightCard({
   const sunset = clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset);
 
   return (
-    <View nativeID="home-today-highlight" className="bg-card px-4 py-4">
-      <View className="flex-row items-start gap-3">
-        <Text className="text-display min-w-[56px] font-bold text-danger">
+    <View nativeID="home-today-highlight" className={homeClasses.highlight}>
+      <View className={homeClasses.highlightTop}>
+        <Text className={homeClasses.highlightDay}>
           {dayNumber != null ? digits(dayNumber) : "—"}
         </Text>
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <View className={homeClasses.highlightDate}>
+          <Text className={homeClasses.highlightMonth}>
             {monthName} {digits(yearNumber)}
           </Text>
-          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
-            {weekday}
-          </Text>
-          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-            {crossEraLine}
-          </Text>
+          <Text className={homeClasses.highlightWeekday}>{weekday}</Text>
+          <Text className={homeClasses.highlightCrossEra}>{crossEraLine}</Text>
           {nsLabel ? (
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
-              {nsLabel}
-            </Text>
+            <Text className={homeClasses.highlightNs}>{nsLabel}</Text>
           ) : null}
         </View>
       </View>
 
-      <View className="mt-3.5 border-t border-border pt-3">
-        <Text
-          className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
-          style={nepaliTextStyle(11)}
-        >
+      <View className={homeClasses.highlightSpecial}>
+        <Text className={homeClasses.highlightKicker}>
           {isToday ? pick("आज विशेष", "Special today") : daysAwayLabel(daysAway, lang, digits)}
         </Text>
-        <Text className="text-body mt-1 font-bold text-danger" style={nepaliTextStyle(16)}>
-          {specialTitle}
-        </Text>
+        <Text className={homeClasses.highlightTitle}>{specialTitle}</Text>
         {specialSubtitle ? (
-          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
-            {specialSubtitle}
-          </Text>
+          <Text className={homeClasses.highlightSubtitle}>{specialSubtitle}</Text>
         ) : null}
 
         {phaseLabel && tithiIndex != null ? (
-          <View className="mt-3 flex-row items-center gap-2">
+          <View className={homeClasses.highlightMoon}>
             <CalendarMoonPhaseIcon tithiIndex={tithiIndex} size={24} title={phaseLabel} />
-            <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
-              {phaseLabel}
-            </Text>
+            <Text className={homeClasses.highlightMoonText}>{phaseLabel}</Text>
           </View>
         ) : null}
 
         {sunrise || sunset ? (
-          <View className="mt-2 flex-row flex-wrap items-center gap-x-4 gap-y-1">
+          <View className={homeClasses.highlightSun}>
             {sunrise ? (
-              <View className="flex-row items-center gap-1.5">
-                <LucideNative node={SunriseNode} size={16} color="#d98a00" />
-                <Text className="text-body text-foreground">{sunrise}</Text>
+              <View className={homeClasses.highlightSunItem}>
+                <LucideNative node={SunriseNode} size={16} color={colors.warning} />
+                <Text className={homeClasses.highlightSunText}>{sunrise}</Text>
               </View>
             ) : null}
             {sunset ? (
-              <View className="flex-row items-center gap-1.5">
-                <LucideNative node={SunsetNode} size={16} color="#d98a00" />
-                <Text className="text-body text-foreground">{sunset}</Text>
+              <View className={homeClasses.highlightSunItem}>
+                <LucideNative node={SunsetNode} size={16} color={colors.warning} />
+                <Text className={homeClasses.highlightSunText}>{sunset}</Text>
               </View>
             ) : null}
           </View>

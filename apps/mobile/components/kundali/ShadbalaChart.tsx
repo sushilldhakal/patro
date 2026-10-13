@@ -16,8 +16,10 @@ import { kundaliLabel, kundaliLabelVars } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { colorWithAlpha } from "@/lib/theme";
-import { brand } from "@vedic-patro/design-tokens";
+import { brand, radius } from "@vedic-patro/design-tokens";
 import { type ShadbalaScale, yMaxFor, displayTotal, displayRequired, segmentDisplay, formatScaleValue } from "@vedic-patro/domain/kundali/shadbala-chart";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 export { type ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
 
 const SCALES: { id: ShadbalaScale; labelKey: "scale_virupas" | "scale_rupas" | "scale_absolute" | "scale_vs_required" }[] = [
@@ -36,8 +38,8 @@ function yTicks(max: number): number[] {
 function Meter({ value, max, color }: { value: number; max: number; color: string }) {
   const width = max <= 0 ? 0 : Math.min(100, Math.max(0, (Math.abs(value) / max) * 100));
   return (
-    <View className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-      <View style={{ width: `${width}%`, backgroundColor: color }} className="h-full rounded-full" />
+    <View className={cn(kundaliDetailClasses.shadbalaChart.meter, "flex-1")}>
+      <View style={{ width: `${width}%`, backgroundColor: color }} className={kundaliDetailClasses.shadbalaChart.meterFill} />
     </View>
   );
 }
@@ -67,29 +69,27 @@ export function ShadbalaChart({
   const selectedMeets = selected != null && selected.total_virupas >= selected.required;
 
   return (
-    <View className="gap-4">
-      <View className="gap-3">
+    <View className={kundaliDetailClasses.shadbalaChart.root}>
+      <View className={kundaliDetailClasses.shadbalaChart.headRow}>
         <View>
-          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className={kundaliDetailClasses.shadbalaChart.title} style={nepaliTextStyle(15)}>
             {kundaliLabel("strength_skyline", lang)}
           </Text>
-          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={kundaliDetailClasses.shadbalaChart.hint} style={nepaliTextStyle(13)}>
             {kundaliLabel("strength_skyline_hint", lang)}
           </Text>
         </View>
-        <View className="flex-row flex-wrap gap-1 self-start rounded-full border border-border bg-muted/40 p-1">
+        <View className={cn(kundaliDetailClasses.shadbalaChart.scaleBar, "self-start")}>
           {SCALES.map((item) => {
             const active = scale === item.id;
             return (
               <Pressable
                 key={item.id}
                 onPress={() => setScale(item.id)}
-                style={active ? { backgroundColor: colors.primary } : undefined}
-                className="rounded-full px-3 py-1 active:opacity-80"
+                className={cn(kundaliDetailClasses.shadbalaChart.scaleTab, "active:opacity-80", active && kundaliDetailClasses.shadbalaChart.scaleActive)}
               >
                 <Text
-                  className="text-body font-semibold"
-                  style={{ color: active ? colors.background : colors.mutedForeground }}
+                  className={cn(kundaliDetailClasses.shadbalaChart.scaleText, active ? kundaliDetailClasses.shadbalaChart.scaleActiveText : kundaliDetailClasses.shadbalaChart.scaleIdleText)}
                 >
                   {kundaliLabel(item.labelKey, lang)}
                 </Text>
@@ -99,17 +99,14 @@ export function ShadbalaChart({
         </View>
       </View>
 
-      <View
-        className="rounded-xl border border-border p-3"
-        style={{ backgroundColor: colorWithAlpha(colors.background, 0.7) }}
-      >
+      <View className={kundaliDetailClasses.shadbalaChart.panel}>
         <View className="flex-row gap-2">
-          <View style={{ width: 32, height: CHART_HEIGHT, marginTop: 24 }}>
+          <View className="mt-6" style={{ width: 32, height: CHART_HEIGHT }}>
             {ticks.map((tick) => (
               <Text
                 key={tick}
                 numberOfLines={1}
-                className="text-caption font-num absolute right-0 text-muted-foreground"
+                className={cn(kundaliDetailClasses.shadbalaChart.axisLabel, "absolute right-0")}
                 style={{ bottom: `${(tick / yMax) * 100}%`, transform: [{ translateY: 6 }] }}
               >
                 {formatScaleValue(tick, scale, digits)}
@@ -117,7 +114,7 @@ export function ShadbalaChart({
             ))}
           </View>
           <View className="flex-1">
-            <View style={{ height: CHART_HEIGHT, marginTop: 24 }} className="relative">
+            <View style={{ height: CHART_HEIGHT }} className="relative mt-6">
               {ticks.map((tick) => (
                 <View
                   key={`grid-${tick}`}
@@ -156,7 +153,7 @@ export function ShadbalaChart({
                   <GrahaPlanetIcon graha={planet.key as GrahaKey} size={16} />
                   <Text
                     numberOfLines={1}
-                    className="text-caption max-w-full font-semibold text-foreground"
+                    className={cn(kundaliDetailClasses.shadbalaChart.barLabel, "max-w-full")}
                     style={nepaliTextStyle(10)}
                   >
                     {planetLabel(planet)}
@@ -167,18 +164,18 @@ export function ShadbalaChart({
           </View>
         </View>
 
-        <View className="mt-3 flex-row flex-wrap items-center gap-x-4 gap-y-2">
+        <View className={kundaliDetailClasses.shadbalaChart.legend}>
           {BALA_STACK.map((bala) => (
-            <View key={bala.key} className="flex-row items-center gap-1.5">
-              <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: bala.color }} />
-              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
+            <View key={bala.key} className={kundaliDetailClasses.shadbalaChart.legendItem}>
+              <View className={kundaliDetailClasses.shadbalaChart.legendDot} style={{ backgroundColor: bala.color }} />
+              <Text className={kundaliDetailClasses.shadbalaChart.legendText} style={nepaliTextStyle(12)}>
                 {t(bala.label)}
               </Text>
             </View>
           ))}
-          <View className="flex-row items-center gap-1.5">
+          <View className={kundaliDetailClasses.shadbalaChart.legendItem}>
             <View style={{ width: 16, borderTopWidth: 1, borderStyle: "dashed", borderTopColor: colors.accent }} />
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={kundaliDetailClasses.shadbalaChart.legendText} style={nepaliTextStyle(12)}>
               {kundaliLabel("required_minimum", lang)}
             </Text>
           </View>
@@ -186,27 +183,25 @@ export function ShadbalaChart({
       </View>
 
       <View>
-        <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+        <Text className={kundaliDetailClasses.shadbalaChart.pickLabel} style={nepaliTextStyle(10)}>
           {kundaliLabel("select_a_planet", lang)}
         </Text>
-        <View className="flex-row flex-wrap gap-1.5">
+        <View className={kundaliDetailClasses.shadbalaChart.pickRow}>
           {planets.map((planet) => {
             const active = planet.key === selectedKey;
             return (
               <Pressable
                 key={planet.key}
                 onPress={() => onSelect(planet.key)}
-                style={
-                  active
-                    ? { borderColor: colors.primary, backgroundColor: colorWithAlpha(colors.primary, 0.1) }
-                    : { borderColor: colors.border, backgroundColor: colorWithAlpha(colors.muted, 0.3) }
-                }
-                className="flex-row items-center gap-1.5 rounded-full border px-2.5 py-1 active:opacity-80"
+                className={cn(
+                  kundaliDetailClasses.shadbalaChart.pickChip,
+                  "active:opacity-80",
+                  active ? kundaliDetailClasses.shadbalaChart.pickActive : kundaliDetailClasses.shadbalaChart.pickIdle,
+                )}
               >
                 <GrahaPlanetIcon graha={planet.key as GrahaKey} size={14} />
                 <Text
-                  className="text-body font-semibold"
-                  style={{ color: active ? colors.foreground : colors.mutedForeground }}
+                  className={cn(kundaliDetailClasses.shadbalaChart.pickChipText, active ? kundaliDetailClasses.shadbalaChart.pickActiveText : kundaliDetailClasses.shadbalaChart.pickIdleText)}
                 >
                   {planetLabel(planet)}
                 </Text>
@@ -281,7 +276,7 @@ function PlanetColumn({
           height: `${columnPct}%`,
           flexDirection: "column-reverse",
           overflow: "hidden",
-          borderRadius: 3,
+          borderRadius: radius.md,
           ...(selected ? { borderWidth: 2, borderColor: colors.primary } : null),
         }}
       >
@@ -300,7 +295,7 @@ function PlanetColumn({
         }}
       >
         <View className="flex-row items-center gap-0.5">
-          <Text numberOfLines={1} className="text-caption font-num font-semibold text-foreground">
+          <Text numberOfLines={1} className="text-caption font-mono font-semibold text-foreground">
             {labelValue}
           </Text>
           <Ionicons
@@ -341,20 +336,16 @@ function PlanetInspector({
   );
 
   return (
-    <View
-      className="gap-3 rounded-xl border border-border p-3"
-      style={{ backgroundColor: colorWithAlpha(colors.muted, 0.2) }}
-    >
-      <View className="flex-row flex-wrap items-baseline justify-between gap-2">
-        <View className="flex-row items-center gap-2">
+    <View className={kundaliDetailClasses.shadbalaChart.inspector}>
+      <View className={kundaliDetailClasses.shadbalaChart.inspectorHead}>
+        <View className={kundaliDetailClasses.shadbalaChart.inspectorTitleRow}>
           <GrahaPlanetIcon graha={planet.key as GrahaKey} size={22} />
-          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+          <Text className={kundaliDetailClasses.shadbalaChart.inspectorTitle} style={nepaliTextStyle(15)}>
             {name}
           </Text>
         </View>
         <Text
-          className="text-body font-num font-semibold"
-          style={{ color: meets ? colors.primary : colors.destructive }}
+          className={cn(kundaliDetailClasses.shadbalaChart.inspectorValue, meets ? kundaliDetailClasses.shadbalaChart.inspectorMeets : kundaliDetailClasses.shadbalaChart.inspectorBelow)}
         >
           {kundaliLabelVars("of_required", lang, {
             virupas: digits(planet.total_virupas.toFixed(1)),
@@ -363,17 +354,17 @@ function PlanetInspector({
         </Text>
       </View>
 
-      <View className="gap-2">
+      <View className={kundaliDetailClasses.shadbalaChart.breakdown}>
         {BALA_STACK.map((bala) => {
           const value = planet.breakdown[bala.breakdownKey];
           const signed = value < 0 ? `−${Math.abs(value).toFixed(1)}` : value.toFixed(1);
           return (
-            <View key={bala.key} className="flex-row items-center gap-2">
-              <Text className="text-body w-20 shrink-0 font-semibold text-foreground" style={nepaliTextStyle(12)} numberOfLines={1}>
+            <View key={bala.key} className={kundaliDetailClasses.shadbalaChart.breakdownRow}>
+              <Text className={cn(kundaliDetailClasses.shadbalaChart.breakdownLabel, "w-20 shrink-0")} style={nepaliTextStyle(12)} numberOfLines={1}>
                 {t(bala.label)}
               </Text>
               <Meter value={value} max={maxBala} color={bala.color} />
-              <Text className="text-body font-num w-14 shrink-0 text-right text-foreground">{digits(signed)}</Text>
+              <Text className={cn(kundaliDetailClasses.shadbalaChart.breakdownValue, "w-14 shrink-0")}>{digits(signed)}</Text>
             </View>
           );
         })}
@@ -427,19 +418,19 @@ function SubBalaList({
 }) {
   return (
     <View>
-      <Text className="text-caption mb-2 font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+      <Text className={kundaliDetailClasses.shadbalaChart.subTitle} style={nepaliTextStyle(10)}>
         {title}
       </Text>
-      <View className="gap-1.5">
+      <View className={kundaliDetailClasses.shadbalaChart.subRows}>
         {rows.map((row) => {
           const signed = row.value < 0 ? `−${Math.abs(row.value).toFixed(1)}` : row.value.toFixed(1);
           return (
-            <View key={row.key} className="flex-row items-center gap-2">
-              <Text className="text-body w-24 shrink-0 text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+            <View key={row.key} className={kundaliDetailClasses.shadbalaChart.breakdownRow}>
+              <Text className={cn(kundaliDetailClasses.shadbalaChart.subLabel, "w-24 shrink-0")} style={nepaliTextStyle(11)} numberOfLines={1}>
                 {row.label}
               </Text>
               <Meter value={row.value} max={max} color={color} />
-              <Text className="text-body font-num w-12 shrink-0 text-right text-muted-foreground">{digits(signed)}</Text>
+              <Text className={cn(kundaliDetailClasses.shadbalaChart.subValue, "w-12 shrink-0")}>{digits(signed)}</Text>
             </View>
           );
         })}

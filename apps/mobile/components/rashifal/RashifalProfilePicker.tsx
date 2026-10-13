@@ -10,6 +10,7 @@ import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 
 type Props = {
   selectedId: string | null;
@@ -26,9 +27,9 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
   const { data: profiles, isLoading } = useProfilesQuery(isAuthenticated);
 
   const label = (
-    <View className="flex-row items-center gap-1.5">
+    <View className={cn("flex-row", rashifalClasses.picker.label)}>
       <Ionicons name="person-outline" size={16} color={colors.secondary} />
-      <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(14)}>
+      <Text className={rashifalClasses.picker.labelText} style={nepaliTextStyle()}>
         {pick("प्रोफाइल", "Profile")}
       </Text>
     </View>
@@ -36,13 +37,13 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
 
   if (!isAuthenticated) {
     return (
-      <View className="flex-row flex-wrap items-center gap-2">
+      <View className={cn("flex-row", rashifalClasses.picker.row)}>
         {label}
         <Pressable
           onPress={() => setAuthOpen(true)}
-          className="rounded-lg border border-border bg-card px-2.5 py-1.5 active:opacity-80"
+          className={cn(rashifalClasses.picker.signInButton, "active:opacity-80")}
         >
-          <Text className="text-caption font-semibold text-primary">{pick("साइन इन", "Sign in")}</Text>
+          <Text className={rashifalClasses.picker.signInText}>{pick("साइन इन", "Sign in")}</Text>
         </Pressable>
         <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
       </View>
@@ -51,9 +52,9 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
 
   if (!isLoading && profiles?.length === 0) {
     return (
-      <View className="flex-row flex-wrap items-center gap-2">
+      <View className={cn("flex-row", rashifalClasses.picker.row)}>
         {label}
-        <Text className="text-caption text-muted-foreground">
+        <Text className={rashifalClasses.picker.empty}>
           {pick("कुण्डली प्रोफाइल थप्नुहोस्।", "Add a kundali profile.")}
         </Text>
       </View>
@@ -74,27 +75,29 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
         <Pressable
           onPress={() => setMenuOpen((v) => !v)}
           disabled={isLoading}
-          className="min-h-9 max-w-[16rem] flex-row items-center gap-1 rounded-lg border border-border bg-card px-2.5 py-1.5 active:opacity-80"
+          className={cn("flex-row items-center gap-1 active:opacity-80", rashifalClasses.picker.select)}
         >
-          <Text className="text-body flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+          <Text className={cn("flex-1", rashifalClasses.picker.selectText)} numberOfLines={1} style={nepaliTextStyle()}>
             {buttonLabel}
           </Text>
           <Ionicons name={menuOpen ? "chevron-up" : "chevron-down"} size={14} color={colors.mutedForeground} />
         </Pressable>
       </View>
       {menuOpen && profiles?.length ? (
-        <View className="w-full max-w-sm overflow-hidden rounded-lg border border-border bg-card">
+        <View className={rashifalClasses.picker.menu}>
           <Pressable
             onPress={() => {
               onSelect(null);
               setMenuOpen(false);
             }}
             className={cn(
-              "border-b border-border/60 px-3 py-2.5 active:bg-muted",
-              !selectedId && "bg-tab-active",
+              rashifalClasses.picker.menuItem,
+              rashifalClasses.picker.menuItemDivider,
+              "active:bg-muted",
+              !selectedId && rashifalClasses.picker.menuItemActive,
             )}
           >
-            <Text className="text-body font-medium text-foreground">{pick("सबै राशि", "All signs")}</Text>
+            <Text className={rashifalClasses.picker.menuText}>{pick("सबै राशि", "All signs")}</Text>
           </Pressable>
           {profiles.map((p) => (
             <Pressable
@@ -103,9 +106,13 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
                 onSelect(p);
                 setMenuOpen(false);
               }}
-              className={cn("px-3 py-2.5 active:bg-muted", p.id === selectedId && "bg-tab-active")}
+              className={cn(
+                rashifalClasses.picker.menuItem,
+                "active:bg-muted",
+                p.id === selectedId && rashifalClasses.picker.menuItemActive,
+              )}
             >
-              <Text className="text-body text-foreground">{p.full_name}</Text>
+              <Text className={rashifalClasses.picker.menuText}>{p.full_name}</Text>
             </Pressable>
           ))}
         </View>

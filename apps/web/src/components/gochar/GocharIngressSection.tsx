@@ -16,7 +16,7 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { PatroDayMonthChip } from "@/components/patro-date/PatroDayMonthChip";
-import { patroMonthNavBtn } from "@/lib/patro-classes";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
 const FILTERS: { id: IngressFilter; ne: string; en: string }[] = [
   { id: "all", ne: "सबै", en: "All" },
@@ -61,33 +61,33 @@ export function GocharIngressSection({
   const showMonthNav = Boolean(browseMonthLabel && onPrevMonth && onNextMonth);
 
   return (
-    <section className="flex max-h-[min(32rem,70vh)] min-h-[18rem] w-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-ring-soft lg:max-h-[min(36rem,75vh)]">
-      <div className="flex shrink-0 flex-col gap-2 border-b border-border px-3 py-2.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2 sm:px-4">
+    <section className={cn("flex max-h-[min(32rem,70vh)] min-h-[18rem] flex-col shadow-ring-soft lg:max-h-[min(36rem,75vh)]", gocharClasses.ingressCard)}>
+      <div className={cn("flex shrink-0 flex-col sm:flex-row sm:items-start sm:justify-between", gocharClasses.ingressHead)}>
         <div className="min-w-0">
-          <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+          <p className={cn("m-0", gocharClasses.ingressEyebrow)}>
             {bilingualText(lang, "के परिवर्तन हुँदैछ", "What's changing")}
           </p>
-          <h2 className="mt-0.5 mb-0 break-words text-base font-bold text-foreground sm:text-lg">
+          <h2 className={cn("mb-0 break-words", gocharClasses.ingressTitle)}>
             {bilingualText(lang, "आगामी गोचर घटनाहरू", "Upcoming transit events")}
           </h2>
         </div>
         {showMonthNav ? (
-          <div className="flex shrink-0 items-center justify-end gap-0.5 self-stretch sm:gap-1 sm:self-auto">
+          <div className={cn("flex justify-end self-stretch sm:self-auto", gocharClasses.navGroup)}>
             <button
               type="button"
-              className={patroMonthNavBtn}
+              className={cn("flex transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40", gocharClasses.navButton)}
               aria-label={bilingualText(lang, "अघिल्लो महिना", "Previous month")}
               disabled={prevMonthDisabled}
               onClick={onPrevMonth}
             >
               <ChevronLeft className="size-4" strokeWidth={2.25} />
             </button>
-            <span className="min-w-0 max-w-[min(100%,8.5rem)] truncate text-center text-sm font-bold text-foreground sm:max-w-none sm:min-w-[6.5rem] sm:text-base">
+            <span className={cn("min-w-0 max-w-[min(100%,8.5rem)] truncate sm:max-w-none sm:min-w-[6.5rem]", gocharClasses.navLabel)}>
               {browseMonthLabel}
             </span>
             <button
               type="button"
-              className={patroMonthNavBtn}
+              className={cn("flex transition-colors hover:bg-muted hover:text-foreground disabled:opacity-40", gocharClasses.navButton)}
               aria-label={bilingualText(lang, "अर्को महिना", "Next month")}
               disabled={nextMonthDisabled}
               onClick={onNextMonth}
@@ -98,7 +98,7 @@ export function GocharIngressSection({
         ) : null}
       </div>
 
-      <div className="flex min-w-0 max-w-full flex-wrap gap-1.5 border-b border-border px-2 py-2 sm:px-3">
+      <div className={cn("flex flex-wrap", gocharClasses.filterBar)}>
         {FILTERS.map((f) => {
           const n = counts[f.id];
           const active = filter === f.id;
@@ -108,10 +108,12 @@ export function GocharIngressSection({
               type="button"
               onClick={() => setFilter(f.id)}
               className={cn(
-                "min-w-0 max-w-full rounded-lg border px-2 py-1.5 text-xs font-bold transition-colors sm:px-2.5 sm:text-sm",
+                gocharClasses.filterChip,
+                gocharClasses.filterText,
+                "transition-colors",
                 active
-                  ? "border-secondary bg-secondary/15 text-secondary"
-                  : "border-border bg-background text-muted-foreground hover:text-foreground",
+                  ? cn(gocharClasses.filterChipActive, gocharClasses.filterTextActive)
+                  : cn(gocharClasses.filterChipIdle, gocharClasses.filterTextIdle, "hover:text-foreground"),
               )}
             >
               {bilingualText(lang, f.ne, f.en)} ({lang === "en" ? n : toNepaliDigits(n)})
@@ -120,11 +122,11 @@ export function GocharIngressSection({
         })}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-1 py-1 sm:px-2">
+      <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-y-contain", gocharClasses.ingressList)}>
         {loading ? (
-          <p className="px-2 py-6 text-sm text-muted-foreground">{bilingualText(lang, "लोड हुँदै…", "Loading…")}</p>
+          <p className={gocharClasses.ingressStatus}>{bilingualText(lang, "लोड हुँदै…", "Loading…")}</p>
         ) : visible.length === 0 ? (
-          <p className="px-2 py-6 text-sm text-muted-foreground">
+          <p className={gocharClasses.ingressStatus}>
             {bilingualText(lang, "यस महिनामा कुनै आगामी गोचर छैन।", "No upcoming transits this month.")}
           </p>
         ) : (
@@ -140,7 +142,7 @@ export function GocharIngressSection({
               return (
                 <li
                   key={`${ev.graha}-${ev.entry_time_utc ?? i}-${ev.level}`}
-                  className="flex items-center gap-2 border-b border-border/60 px-1.5 py-2 last:border-b-0 sm:gap-2.5 sm:px-2"
+                  className={cn("flex last:border-b-0", gocharClasses.ingressRow)}
                 >
                   <PatroDayMonthChip
                     month={row.monthChip.month}
@@ -150,12 +152,12 @@ export function GocharIngressSection({
 
                   <GrahaPlanetIcon graha={key} size={22} className="shrink-0" />
 
-                  <div className="min-w-0 flex-1 leading-snug">
-                    <p className="m-0 text-sm font-bold text-foreground">{grahaLabel}</p>
-                    <p className="m-0 mt-0.5 text-sm font-semibold text-foreground">{detail}</p>
+                  <div className={cn("leading-snug", gocharClasses.ingressBody)}>
+                    <p className={cn("m-0", gocharClasses.ingressName)}>{grahaLabel}</p>
+                    <p className={cn("m-0", gocharClasses.ingressDetail)}>{detail}</p>
                   </div>
 
-                  <span className="shrink-0 text-sm font-bold text-secondary">{rel}</span>
+                  <span className={gocharClasses.ingressRel}>{rel}</span>
                 </li>
               );
             })}

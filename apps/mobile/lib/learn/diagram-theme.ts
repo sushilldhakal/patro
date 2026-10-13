@@ -1,3 +1,4 @@
+import { brand, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 /**
  * Colours for the 3D learn diagrams.
  *
@@ -7,57 +8,57 @@
  * tables is fixed so a scene never comes out invisible in light mode.
  */
 
-export const DIAGRAM_CANVAS_BG = "#060b14";
+export const DIAGRAM_CANVAS_BG = midnight.popover;
 
 export const DIAGRAM_COLOR = {
-  sun: "#ffcf57",
-  sunCore: "#fff6d8",
-  sunGlow: "#f7a41d",
-  earth: "#3d8bfd",
-  earthNight: "#0b1f3a",
-  moon: "#cbd5e1",
-  moonDark: "#3b4553",
-  orbit: "#7c93b8",
-  orbitFaint: "#3d4b66",
-  arc: "#4ade80",
-  ray: "#fbbf24",
-  shadow: "#0a0f1a",
-  node: "#f472b6",
-  axis: "#93c5fd",
-  equator: "#fca5a5",
-  star: "#dbeafe",
-  grid: "#334155",
-  tropical: "#fb923c",
-  sidereal: "#22c55e",
+  sun: illustration.amber67,
+  sunCore: illustration.amber92,
+  sunGlow: illustration.orange53b,
+  earth: illustration.sky60,
+  earthNight: illustration.sky14,
+  moon: illustration.sky84,
+  moonDark: illustration.sky27,
+  orbit: illustration.sky61,
+  orbitFaint: illustration.sky32b,
+  arc: illustration.green58,
+  ray: illustration.amber56,
+  shadow: midnight.background,
+  node: illustration.pink70,
+  axis: illustration.sky75b,
+  equator: illustration.red82,
+  star: illustration.sky93,
+  grid: illustration.sky27,
+  tropical: illustration.orange61,
+  sidereal: illustration.green45,
 } as const;
 
 /** The twelve rashi wedges, in order from मेष. */
 export const RASHI_RING_COLORS = [
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#84cc16",
-  "#22c55e",
-  "#14b8a6",
-  "#06b6d4",
-  "#3b82f6",
-  "#6366f1",
-  "#a855f7",
-  "#ec4899",
-  "#f43f5e",
+  illustration.red60,
+  illustration.orange53c,
+  illustration.amber47,
+  illustration.lime44,
+  illustration.green45,
+  illustration.teal40,
+  illustration.teal43,
+  illustration.sky60,
+  illustration.blue67,
+  illustration.violet65,
+  illustration.pink60,
+  illustration.red60b,
 ] as const;
 
 /** Overlay label colours — these sit on the dark canvas, never on the card. */
 export const DIAGRAM_LABEL_COLOR = {
-  body: "#f1f5f9",
+  body: brand.offWhite,
   /* Solid hex: THREE.Color ignores CSS alpha and warns on rgba(). Overlay text
      that should read softer applies its own opacity. */
-  dim: "#e2e8f0",
+  dim: wheel.ink,
   sun: DIAGRAM_COLOR.sun,
-  earth: "#93c5fd",
-  moon: "#e2e8f0",
+  earth: illustration.sky75b,
+  moon: wheel.ink,
   arc: DIAGRAM_COLOR.arc,
   node: DIAGRAM_COLOR.node,
-  rashi: "#f4c542",
-  warn: "#fb923c",
+  rashi: illustration.amber61,
+  warn: illustration.orange61,
 } as const;

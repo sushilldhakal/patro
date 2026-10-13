@@ -1,3 +1,4 @@
+import { brand, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 export type HoraPlanetKey =
   | "shani"
   | "guru"
@@ -15,13 +16,13 @@ export interface HoraPlanet {
 }
 
 export const HORA_PLANETS: Record<HoraPlanetKey, HoraPlanet> = {
-  shani: { nep: "Shani", en: "Saturn", color: "#cda23e", text: "#1c1606" },
-  guru: { nep: "Brihaspati", en: "Jupiter", color: "#b06a2e", text: "#fff3e6" },
-  mangala: { nep: "Mangala", en: "Mars", color: "#d4582f", text: "#fff0e8" },
-  ravi: { nep: "Āditya", en: "Sun", color: "#f6a623", text: "#231304" },
-  shukra: { nep: "Shukra", en: "Venus", color: "#5fb0d6", text: "#082230" },
-  budha: { nep: "Budha", en: "Mercury", color: "#9aa0a8", text: "#1a1d22" },
-  soma: { nep: "Soma", en: "Moon", color: "#d3d8de", text: "#1a1d22" },
+  shani: { nep: "Shani", en: "Saturn", color: illustration.orange52, text: brand.ink },
+  guru: { nep: "Brihaspati", en: "Jupiter", color: illustration.orange44, text: midnight.foam },
+  mangala: { nep: "Mangala", en: "Mars", color: illustration.red51b, text: brand.offWhite },
+  ravi: { nep: "Āditya", en: "Sun", color: illustration.orange53b, text: illustration.amber5 },
+  shukra: { nep: "Shukra", en: "Venus", color: illustration.teal61, text: wheel.pada },
+  budha: { nep: "Budha", en: "Mercury", color: illustration.gray63, text: wheel.pada },
+  soma: { nep: "Soma", en: "Moon", color: illustration.sky84, text: wheel.pada },
 };
 
 export const HORA_DEVA: Record<HoraPlanetKey, string> = {

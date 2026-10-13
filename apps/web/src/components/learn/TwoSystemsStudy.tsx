@@ -57,8 +57,9 @@ import Scene, {
 } from "./TwoSystemsScene";
 import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
-const CANVAS_BG = "#050a10";
-const GOLD = "#d8c84a";
+import { effect, illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
+const CANVAS_BG = midnight.popover;
+const GOLD = illustration.amber57;
 
 /** Days of simulated time per real second, per speed rung. */
 const SPEEDS = [2, 8, 30];
@@ -215,7 +216,7 @@ export function TwoSystemsStudy() {
 
   const hud = (
     <>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 min-[620px]:grid-cols-3 min-[900px]:grid-cols-5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 sm:grid-cols-3 calendar:grid-cols-5">
         <div className={edRo}>
           <span className={edRoK}>{t("learn.study.two_systems.solar_month_gate")}</span>
           <span className={edRoV({ amber: true })}>
@@ -251,7 +252,7 @@ export function TwoSystemsStudy() {
         wraps at 360° and so can never show that the Moon needs more than one
         turn; these do not wrap.
       */}
-      <div className="mt-2.5 grid grid-cols-1 gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2.5 text-[11px] min-[620px]:grid-cols-2">
+      <div className="mt-2.5 grid grid-cols-1 gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2.5 text-xs sm:grid-cols-2">
         <div>
           <div className="font-semibold text-sky-200">
             {t("learn.study.two_systems.moon_travelled")}
@@ -260,7 +261,7 @@ export function TwoSystemsStudy() {
             {num(travelled.moon.toFixed(1))}°
             <span
               className={cn(
-                "ml-1.5 rounded px-1.5 py-0.5 text-[10px] font-bold",
+                "ml-1.5 rounded px-1.5 py-0.5 text-diagram-xs font-bold",
                 travelled.moon >= 360
                   ? "bg-emerald-400/25 text-emerald-100"
                   : "bg-white/10 text-white/60",
@@ -285,8 +286,8 @@ export function TwoSystemsStudy() {
           </div>
           <div className="mt-0.5 font-num text-base font-bold text-white">
             {num(travelled.sunThisYear.toFixed(1))}°
-            <span className="ml-1.5 text-[11px] font-normal text-white/50">/ {num(360)}°</span>
-            <span className="ml-2 text-[11px] font-normal text-sky-200/80">
+            <span className="ml-1.5 text-xs font-normal text-white/50">/ {num(360)}°</span>
+            <span className="ml-2 text-xs font-normal text-sky-200/80">
               {t("learn.study.two_systems.from_sun")} {num(distanceAu.toFixed(4))} AU
             </span>
           </div>
@@ -375,7 +376,7 @@ export function TwoSystemsStudy() {
         </div>
 
         {/* The chain the section is teaching, spelled out beside the geometry. */}
-        <div className="pointer-events-none absolute left-2 top-2 flex max-w-[42%] flex-col gap-1.5 text-[10px] leading-tight sm:left-3 sm:top-3 sm:gap-2 sm:text-[11px]">
+        <div className="pointer-events-none absolute left-2 top-2 flex max-w-[42%] flex-col gap-1.5 text-diagram-xs leading-tight sm:left-3 sm:top-3 sm:gap-2 sm:text-xs">
           {(focus === "solar" || focus === "both") && (
             <Chain
               tone="sun"
@@ -425,7 +426,7 @@ export function TwoSystemsStudy() {
           </IconButton>
         </div>
 
-        <p className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] text-white/45">
+        <p className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white/45">
           {t("learn.playground.drag_hint")}
         </p>
       </div>
@@ -449,7 +450,7 @@ export function TwoSystemsStudy() {
               className={cn(
                 "h-[30px] cursor-pointer rounded-full border px-3 text-sm font-semibold transition-colors",
                 focus === c.id
-                  ? "border-transparent bg-[var(--tm-gold,#d8c84a)] text-[#1a1500]"
+                  ? `border-transparent bg-[var(--tm-gold,${illustration.amber57})] text-ill-amber5`
                   : "border-white/20 text-white/70 hover:border-white/50 hover:text-white",
               )}
             >
@@ -515,7 +516,10 @@ export function TwoSystemsStudy() {
 
         {(!fullscreen || detailsOpen) && (
           <>
-            <div className="text-white [--tm-ink:theme(colors.white)] [--tm-ink-faint:rgb(255_255_255/0.55)]">
+            <div
+              className="text-white [--tm-ink:theme(colors.white)]"
+              style={{ ["--tm-ink-faint" as string]: withAlpha(neutral.white, 0.55) }}
+            >
               {hud}
             </div>
             <DriftLadder
@@ -622,7 +626,7 @@ function Label({ label }: { label: SceneLabel }) {
   return (
     <span
       className={cn(
-        "absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-[11px] font-semibold transition-opacity",
+        "absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap text-xs font-semibold transition-opacity",
         isRashi ? "flex flex-col items-center gap-0.5" : "text-white",
       )}
       style={{
@@ -630,7 +634,7 @@ function Label({ label }: { label: SceneLabel }) {
         top: label.y,
         color: isRashi ? GOLD : undefined,
         opacity: label.dim ? 0.42 : 1,
-        textShadow: "0 1px 3px rgba(0,0,0,0.9)",
+        textShadow: effect.labelShadowSoft,
       }}
     >
       {isRashi && label.index ? <RashiSkyGlyph index={label.index} size={14} color={GOLD} /> : null}
@@ -667,7 +671,7 @@ function DriftLadder({
 
   return (
     <div className="select-none">
-      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 text-[11px] text-white/60">
+      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 text-xs text-white/60">
         <span>{t("learn.study.two_systems.one_timeline")}</span>
         <span className="font-num">
           {t("learn.study.two_systems.ladder_summary", {
@@ -685,7 +689,7 @@ function DriftLadder({
             <div
               key={m.index}
               className={cn(
-                "flex items-center justify-center overflow-hidden border-r border-black/40 text-[10px] font-semibold text-amber-50 last:border-r-0",
+                "flex items-center justify-center overflow-hidden border-r border-black/40 text-diagram-xs font-semibold text-amber-50 last:border-r-0",
                 i % 2 ? "bg-amber-500/35" : "bg-amber-500/22",
               )}
               style={{ width: pct(m.days) }}
@@ -705,7 +709,7 @@ function DriftLadder({
               <div
                 key={m.index}
                 className={cn(
-                  "absolute top-0 flex h-full items-center justify-center border-r border-black/40 text-[10px] font-semibold text-sky-50",
+                  "absolute top-0 flex h-full items-center justify-center border-r border-black/40 text-diagram-xs font-semibold text-sky-50",
                   i % 2 ? "bg-sky-400/35" : "bg-sky-400/22",
                   i === 12 && "bg-emerald-400/45",
                 )}
@@ -726,7 +730,7 @@ function DriftLadder({
         */}
         <div className="relative mt-1 h-4 w-full overflow-hidden rounded-md bg-white/5">
           <div
-            className="absolute inset-y-0 left-0 flex items-center justify-center border-r border-black/40 bg-sky-400/30 text-[10px] font-semibold text-sky-50"
+            className="absolute inset-y-0 left-0 flex items-center justify-center border-r border-black/40 bg-sky-400/30 text-diagram-xs font-semibold text-sky-50"
             style={{ width: pct(year.twelveLunarDays) }}
           >
             <span className="truncate px-1">
@@ -737,7 +741,7 @@ function DriftLadder({
           </div>
           {shortfall > 0 && (
             <div
-              className="absolute inset-y-0 right-0 flex items-center justify-center bg-emerald-400/35 text-[10px] font-bold text-emerald-50"
+              className="absolute inset-y-0 right-0 flex items-center justify-center bg-emerald-400/35 text-diagram-xs font-bold text-emerald-50"
               style={{ width: pct(shortfall) }}
               title={t("learn.study.two_systems.adhik_maas_gap")}
             >
@@ -754,7 +758,7 @@ function DriftLadder({
         </div>
       </div>
 
-      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/55">
+      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/55">
         <span>
           <i className="mr-1 inline-block h-2 w-2 rounded-sm bg-amber-500/60 align-middle" />
           {t("learn.study.two_systems.legend_solar_months")}

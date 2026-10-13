@@ -8,10 +8,11 @@ import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliLineHeight } from "@/lib/nepali-text";
 
-const W_INK = "#eaf3f1";
-const W_DOCK_BG = "rgba(11, 20, 22, 0.96)";
-const W_DOCK_BORDER = "rgba(143, 191, 193, 0.32)";
-const W_ROW_HOT = "rgba(198, 40, 40, 0.28)";
+import { brand, midnight, nativeShadow, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+const W_INK = midnight.foam;
+const W_DOCK_BG = withAlpha(wheel.surface, 0.96);
+const W_DOCK_BORDER = withAlpha(wheel.line, 0.32);
+const W_ROW_HOT = withAlpha(brand.vermilion, 0.28);
 const MENU_W = 228;
 
 type PlanetSelectMenuProps = {
@@ -64,10 +65,10 @@ export function PlanetSelectMenu({
         accessibilityRole="button"
         accessibilityLabel={pick("ग्रह छान्नुहोस्", "Select a planet")}
         accessibilityHint={pick(selectedLabel.ne, selectedLabel.en)}
+        className="rounded-full"
         style={{
           width: compact ? 32 : 36,
           height: compact ? 32 : 36,
-          borderRadius: 999,
           borderWidth: 1,
           borderColor: W_DOCK_BORDER,
           backgroundColor: compact ? "transparent" : W_DOCK_BG,
@@ -88,28 +89,23 @@ export function PlanetSelectMenu({
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
           <View
+            className="rounded-2xl py-1.5"
             style={{
               position: "absolute",
               left,
               top,
               width: MENU_W,
               maxHeight: menuH,
-              borderRadius: 14,
               borderWidth: 1,
               borderColor: W_DOCK_BORDER,
               backgroundColor: W_DOCK_BG,
-              paddingVertical: 6,
-              shadowColor: "#000",
-              shadowOpacity: 0.45,
-              shadowRadius: 18,
-              shadowOffset: { width: 0, height: 10 },
-              elevation: 12,
+              ...nativeShadow("lg"),
             }}
           >
             {grahas.map((g, i) => {
               const key = GRAHA_DETAIL_ORDER[i] ?? "sun";
               const name = GRAHA_NAME[key];
-              const color = GRAHA_META[i]?.color ?? "#eaf3f1";
+              const color = GRAHA_META[i]?.color ?? midnight.foam;
               const active = i === selected;
               return (
                 <Pressable
@@ -117,29 +113,28 @@ export function PlanetSelectMenu({
                   onPress={() => choose(i)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: active }}
+                  className="px-3 py-2"
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
                     gap: 10,
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
                     backgroundColor: active ? W_ROW_HOT : "transparent",
                   }}
                 >
                   <GrahaPlanetIcon graha={key} size={22} />
                   <View
+                    className="rounded-full"
                     style={{
                       width: 7,
                       height: 7,
-                      borderRadius: 999,
                       backgroundColor: color,
                     }}
                   />
                   <Text
+                    className="text-lg"
                     style={{
                       flex: 1,
                       color: W_INK,
-                      fontSize: 18,
                       fontWeight: active ? "700" : "500",
                       lineHeight: nepaliLineHeight(15),
                     }}

@@ -10,7 +10,7 @@ apps/
   mobile/   Expo + React Native                  (was vedic-patro-mobile)
 packages/
   api-client/     API response types and query keys used by both apps
-  design-tokens/  colours, the mobile type scale, radii
+  design-tokens/  colours, the shared type scale, radii
   i18n/           the Nepali/English catalogue (strings.ts → ne.json / en.json)
   domain/         pure logic and reference data used by both apps
 ```

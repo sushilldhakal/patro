@@ -3,6 +3,7 @@ import { Pressable, TextInput, View, type TextInputProps } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
+import { space } from "@vedic-patro/design-tokens";
 
 /** Password field with an eye button that toggles between hidden and visible text. */
 export function PasswordInput({ style, className, ...props }: TextInputProps) {
@@ -18,7 +19,7 @@ export function PasswordInput({ style, className, ...props }: TextInputProps) {
         autoCapitalize="none"
         autoCorrect={false}
         className={className}
-        style={[style, { paddingRight: 48 }]}
+        style={[style, { paddingRight: space["5xl"] }]}
       />
       <Pressable
         onPress={() => setVisible((v) => !v)}

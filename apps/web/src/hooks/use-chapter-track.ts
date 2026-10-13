@@ -10,7 +10,7 @@
  * {@link @/lib/learn/chapter-tracks} — and drives whatever chapters are in it.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useLocale } from "@/i18n/locale";
 import { compileChapter,} from "@vedic-patro/domain/learn/chapter-player";
@@ -99,7 +99,9 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
 
   const [state, setState] = useState<ChapterSimState>(() => compiled.stateAt(0));
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useLayoutEffect(() => {
+    stateRef.current = state;
+  });
 
   const apply = useCallback(
     (ms: number, forceUi = false) => {
@@ -125,12 +127,18 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
     [compiled],
   );
 
-  useEffect(() => {
-    timeRef.current = 0;
+  // A different chapter starts from the top, paused. The state half is adjusted
+  // while rendering; the refs and the first frame (an external system) in the effect.
+  const [seenCompiled, setSeenCompiled] = useState(compiled);
+  if (compiled !== seenCompiled) {
+    setSeenCompiled(compiled);
     setTime(0);
     setEnded(false);
-    playingRef.current = false;
     setPlaying(false);
+  }
+  useEffect(() => {
+    timeRef.current = 0;
+    playingRef.current = false;
     apply(0, true);
   }, [index, apply]);
 
@@ -138,7 +146,6 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
   useEffect(() => {
     if (!trackId) return;
     const el = audioRef.current;
-    setHasAudio(false);
     if (!el) return;
     const sources = chapterAudioSources(trackId, chapter, lang, `${import.meta.env.BASE_URL}learn/audio`);
     let cancelled = false;
@@ -188,6 +195,7 @@ export function useChapterTrack(track: ChapterTrack | null): DayChapterPlayer | 
     })();
     return () => {
       cancelled = true;
+      setHasAudio(false);
       el.removeEventListener("canplaythrough", onReady);
       el.removeEventListener("error", onError);
       el.removeEventListener("ended", onEnded);

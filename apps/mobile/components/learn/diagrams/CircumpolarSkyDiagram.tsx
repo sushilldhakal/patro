@@ -14,6 +14,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const LAT = 27.7;
 const LIMIT = 90 - LAT;
 const R = 0.55;
@@ -22,9 +23,9 @@ const AXIS = new THREE.Vector3(-Math.cos(LAT * D2R), Math.sin(LAT * D2R), 0).nor
 const UP = new THREE.Vector3(0, 1, 0);
 const AXIS_QUAT = new THREE.Quaternion().setFromUnitVectors(UP, AXIS);
 
-const NEVER_SETS = "#35d05a";
-const RISES = "#8fb6d8";
-const NEVER_RISES = "#ef4444";
+const NEVER_SETS = illustration.green51;
+const RISES = illustration.sky70;
+const NEVER_RISES = illustration.red60;
 
 const TRACKS = [
   { dec: 78, kind: "never-sets" as const },

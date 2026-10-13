@@ -26,6 +26,7 @@ import { PatroLocationSearchPanel } from "./PatroLocationSearchPanel";
 import { patroEraShortLabel } from "./patro-era-labels";
 import type { PatroDateNavMode } from "./types";
 import type { PatroDateSheetController, PatroSheetTab } from "./use-patro-date-sheet";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 type Props = {
   sheet: PatroDateSheetController;
@@ -193,8 +194,8 @@ export function PatroDateSheet({
     >
             <View className="items-center border-b border-border px-4 pb-3 pt-4">
               <Text
-                className="text-body font-semibold text-foreground"
-                style={lang === "en" ? undefined : nepaliTextStyle(16)}
+                className="text-base font-semibold text-foreground"
+                style={nepaliTextStyle()}
               >
                 {headerTitle}
               </Text>
@@ -206,16 +207,15 @@ export function PatroDateSheet({
                 accessibilityRole="tab"
                 accessibilityState={{ selected: tab === "date" }}
                 className={cn(
-                  "h-12 flex-1 items-center justify-center rounded-xl border",
-                  tab === "date"
-                    ? "border-secondary bg-secondary"
-                    : "border-border bg-card active:bg-muted",
+                  patroDateClasses.tab,
+                  "flex-1 items-center justify-center",
+                  tab === "date" ? patroDateClasses.tabActive : cn(patroDateClasses.tabIdle, "active:bg-muted"),
                 )}
               >
                 <Text
                   className={cn(
-                    "text-body font-bold",
-                    tab === "date" ? "text-secondary-foreground" : "text-foreground",
+                    patroDateClasses.tabLabel,
+                    tab === "date" ? patroDateClasses.tabLabelActive : patroDateClasses.tabLabelIdle,
                   )}
                   style={nepaliTextStyle(14)}
                 >
@@ -227,16 +227,15 @@ export function PatroDateSheet({
                 accessibilityRole="tab"
                 accessibilityState={{ selected: tab === "location" }}
                 className={cn(
-                  "h-12 flex-1 items-center justify-center rounded-xl border",
-                  tab === "location"
-                    ? "border-secondary bg-secondary"
-                    : "border-border bg-card active:bg-muted",
+                  patroDateClasses.tab,
+                  "flex-1 items-center justify-center",
+                  tab === "location" ? patroDateClasses.tabActive : cn(patroDateClasses.tabIdle, "active:bg-muted"),
                 )}
               >
                 <Text
                   className={cn(
-                    "text-body font-bold",
-                    tab === "location" ? "text-secondary-foreground" : "text-foreground",
+                    patroDateClasses.tabLabel,
+                    tab === "location" ? patroDateClasses.tabLabelActive : patroDateClasses.tabLabelIdle,
                   )}
                   style={nepaliTextStyle(14)}
                 >
@@ -304,9 +303,9 @@ export function PatroDateSheet({
             <View className="border-t border-border px-4 pb-2 pt-3">
               <Pressable
                 onPress={handleDone}
-                className="h-10 w-full items-center justify-center rounded-lg bg-secondary active:opacity-90"
+                className={cn(patroDateClasses.done, "active:opacity-90")}
               >
-                <Text className="text-body font-semibold text-secondary-foreground" style={nepaliTextStyle(14)}>
+                <Text className={patroDateClasses.doneLabel} style={nepaliTextStyle(14)}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>

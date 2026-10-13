@@ -58,6 +58,17 @@ export function useCompassHeading(active: boolean): {
     needsIOSPermission() ? "prompt-required" : "unnecessary",
   );
 
+  // Turning the compass off clears the reading. Done while rendering rather
+  // than in the effect below, so the stale heading is never shown for a frame.
+  const [wasActive, setWasActive] = useState(active);
+  if (active !== wasActive) {
+    setWasActive(active);
+    if (!active) {
+      setHeading(null);
+      setAvailable(false);
+    }
+  }
+
   const listenerRef = useRef<((e: Event) => void) | null>(null);
   const prevHeading = useRef<number | null>(null);
 
@@ -101,8 +112,6 @@ export function useCompassHeading(active: boolean): {
         listenerRef.current = null;
       }
       prevHeading.current = null;
-      setHeading(null);
-      setAvailable(false);
       return;
     }
     if (!needsIOSPermission()) attach();

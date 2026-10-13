@@ -45,7 +45,8 @@ import {
   mergeEnrichedDays,
 } from "@vedic-patro/domain/local-calendar";
 import { useLocale } from "@/lib/i18n";
-import { floatingNavBottomPadding, homeContentInset } from "@/lib/mobile-nav";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
+import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/era";
 import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
@@ -324,9 +325,10 @@ export default function HomeScreen() {
   const monthFetching = monthQueries.some((q) => q.isFetching && q.data);
 
   const contentInset = homeContentInset(isPhone);
+  const cardInset = isPhone ? HOME_CARD_INSET : contentInset;
 
   const monthHeaderBlock = (
-    <View style={{ paddingHorizontal: contentInset }}>
+    <View className={isPhone ? "mt-2 pt-3" : "mt-2"} style={{ paddingHorizontal: contentInset }}>
       <BsMonthHeaderTitle
         year={year}
         month={month}
@@ -424,7 +426,7 @@ export default function HomeScreen() {
           : {
               width: "100%",
               alignSelf: "stretch",
-              paddingHorizontal: contentInset,
+              paddingHorizontal: cardInset,
             }
       }
       className="min-w-0 w-full"
@@ -454,7 +456,7 @@ export default function HomeScreen() {
     <View className={columnClass}>
       {calendarBlock}
 
-      <View className="mt-3 gap-3" style={{ paddingHorizontal: contentInset }}>
+      <View className="mt-3 gap-3" style={{ paddingHorizontal: cardInset }}>
         <AakashGocharEntryCard />
         <HomeVedaMantra dateAd={todayAd} />
         <OfflineDownloadPrompt year={year} era={browseEra} />
@@ -467,25 +469,25 @@ export default function HomeScreen() {
       <ScrollView
         ref={setPageScroller}
         className="flex-1 bg-background"
-        contentContainerClassName="mx-auto w-full max-w-[1400px]"
+        contentContainerClassName="mx-auto w-full max-w-page"
         contentContainerStyle={{
           paddingBottom: floatingNavBottomPadding(isTablet),
           paddingHorizontal: isPhone ? 0 : contentInset,
-          paddingTop: isPhone ? 12 : 16,
+          paddingTop: isPhone ? 0 : 16,
         }}
       >
-        <View className={splitAside ? "flex-row items-start gap-5" : "gap-5"}>
+        <View className={splitAside ? "flex-row items-start gap-4" : "gap-4"}>
           {leftColumn}
           {splitAside ? asideBlock : null}
         </View>
 
         {splitAside ? null : (
-          <View ref={asideRef} collapsable={false} className="mt-5">
+          <View ref={asideRef} collapsable={false} className="mt-4">
             {asideBlock}
           </View>
         )}
 
-        <View className="mt-6" style={{ paddingHorizontal: contentInset }}>
+        <View className="mt-6" style={{ paddingHorizontal: cardInset }}>
           <HomeAuspiciousTimes p={panchangaQ.data} />
         </View>
 
@@ -497,19 +499,19 @@ export default function HomeScreen() {
               <HomeRashifalSection
                 dateAd={asideAdDate}
                 location={location.params}
-                contentInset={contentInset}
+                contentInset={cardInset}
               />
             </View>
 
-            <View className="mt-8" style={{ paddingHorizontal: contentInset }}>
+            <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
               <HomeQuickLinks />
             </View>
 
-            <View className="mt-4" style={{ paddingHorizontal: contentInset }}>
+            <View className="mt-8" style={{ paddingHorizontal: cardInset }}>
               <PanchangaDirectoryMobile />
             </View>
 
-            <PatroFooterNote paddingHorizontal={contentInset} />
+            <PatroFooterNote className={homeClasses.footerNote} paddingHorizontal={cardInset} />
             <SiteFooter />
             </>
           ) : null}

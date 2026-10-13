@@ -11,6 +11,7 @@ import {
   to12h,
 } from "@/components/panchanga/use-panchanga-mode";
 import { cn } from "@vedic-patro/domain/utils";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 type Props = {
   year: number;
@@ -69,8 +70,8 @@ export function PatroSheetDayTimeFields({
 
   return (
     <View className="gap-3 pt-1">
-      <View className="flex-row items-center justify-center gap-2">
-        <Text className="text-body font-semibold text-muted-foreground">{pick("गते", "Day")}</Text>
+      <View className={patroDateClasses.dayRow}>
+        <Text className={patroDateClasses.dayLabel}>{pick("गते", "Day")}</Text>
         <BsNativeSelect
           value={day}
           options={dayOptions}
@@ -82,10 +83,10 @@ export function PatroSheetDayTimeFields({
 
       {showTime ? (
         <View className="gap-2">
-          <Text className="text-caption text-center font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <Text className={patroDateClasses.timeLabel}>
             {pick("समय", "Time")}
           </Text>
-          <View className="flex-row items-center justify-center gap-2">
+          <View className={patroDateClasses.timeRow}>
             <BsNativeSelect
               value={hour12}
               options={hour12Options}
@@ -93,7 +94,7 @@ export function PatroSheetDayTimeFields({
               onChange={(h) => setTime(h, minute, meridiem)}
               minWidth={64}
             />
-            <Text className="text-body font-num font-semibold text-muted-foreground">:</Text>
+            <Text className={patroDateClasses.timeColon}>:</Text>
             <BsNativeSelect
               value={minute}
               options={minuteOptions}

@@ -9,6 +9,7 @@ import {
   type RashyadiSegment,
 } from "@vedic-patro/domain/dainikKranti/rashyadi";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/i18n/locale";
 import { rowLabelFor } from "@vedic-patro/domain/dainikKranti/gochar-rows";
 
@@ -41,39 +42,39 @@ export function GocharRashyadiTable({
 
   if (loading) {
     return (
-      <div className={cn("flex h-full min-h-[280px] items-center justify-center rounded-xl border border-border p-4", className)}>
+      <div className={cn(dainikKrantiClasses.rashyadiLoading, "flex h-full min-h-[280px]", className)}>
         <p className="text-sm">{t("dainik.loading")}</p>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex h-full flex-col overflow-x-auto rounded-xl border border-border bg-muted/15", className)}>
-      <div className="border-b border-border bg-muted/40 px-3 py-2.5">
-        <p className="text-sm font-semibold leading-snug text-secondary">{segment.versionNe}</p>
-        <p className="mt-0.5 text-base text-base text-foreground">
+    <div className={cn(dainikKrantiClasses.rashyadiCard, "h-full overflow-x-auto", className)}>
+      <div className={dainikKrantiClasses.rashyadiHead}>
+        <p className={dainikKrantiClasses.rashyadiVersion}>{segment.versionNe}</p>
+        <p className={dainikKrantiClasses.rashyadiLabel}>
           {segment.labelNe}
           {segment.bsDay != null ? (
-            <span className="ml-1.5 text-sm">
+            <span className={dainikKrantiClasses.rashyadiDay}>
               ({digits(segment.bsDay)}{t("dainik.text")})
             </span>
           ) : null}
         </p>
         {segment.moonRashiNe ? (
-          <p className="mt-1 text-sm">
-            {t("dainik.moon")}: <span className="text-base text-foreground">{segment.moonRashiNe}</span>
+          <p className={dainikKrantiClasses.rashyadiMoon}>
+            {t("dainik.moon")}: <span className={dainikKrantiClasses.rashyadiMoonValue}>{segment.moonRashiNe}</span>
           </p>
         ) : null}
       </div>
 
       <table className="w-full flex-1 border-collapse text-sm">
         <thead>
-          <tr className="border-b border-border bg-muted/30">
+          <tr className={dainikKrantiClasses.rashyadiHeadRow}>
             <th className="w-10 px-1 py-2" />
             {RASHYADI_PLANET_KEYS.map((key) => (
               <th
                 key={key}
-                className="min-w-[2.25rem] px-1 py-2 text-center text-base font-bold text-foreground"
+                className={cn(dainikKrantiClasses.rashyadiTh, "min-w-[2.25rem]")}
               >
                 {RASHYADI_PLANET_ABBREV[key]}
               </th>
@@ -81,8 +82,8 @@ export function GocharRashyadiTable({
           </tr>
         </thead>
         <tbody>
-          <tr className="border-b border-border/60">
-            <td className="px-1 py-2 text-center text-base font-semibold">
+          <tr className={dainikKrantiClasses.rashyadiRow}>
+            <td className={dainikKrantiClasses.rashyadiTdPaksha}>
               {digits(segment.pakshaDayCount)}
             </td>
             {RASHYADI_PLANET_KEYS.map((key) => (
@@ -90,8 +91,8 @@ export function GocharRashyadiTable({
             ))}
           </tr>
           {RASHYADI_ROW_KEYS.map((rowKey) => (
-            <tr key={rowKey} className="border-b border-border/60 last:border-0">
-              <td className="whitespace-nowrap px-1 py-2 text-center text-sm font-semibold">
+            <tr key={rowKey} className={cn(dainikKrantiClasses.rashyadiRow, "last:border-0")}>
+              <td className={cn(dainikKrantiClasses.rashyadiTdLabel, "whitespace-nowrap")}>
                 {rowLabelFor(segment, rowKey)}
               </td>
               {RASHYADI_PLANET_KEYS.map((key) => {
@@ -99,7 +100,7 @@ export function GocharRashyadiTable({
                 return (
                   <td
                     key={`${segment.id}-${key}-${rowKey}`}
-                    className="px-1 py-2 text-center font-mono text-base text-base tabular-nums text-foreground"
+                    className={dainikKrantiClasses.rashyadiTdValue}
                   >
                     {row ? rashyadiCellValue(row, rowKey) : "—"}
                   </td>
@@ -109,7 +110,7 @@ export function GocharRashyadiTable({
           ))}
         </tbody>
       </table>
-      <p className="border-t border-border/60 px-3 py-1.5 text-xs">
+      <p className={dainikKrantiClasses.rashyadiFoot}>
         {t("dainik.deg_degree_ka_kala_vi_vikala_pr_prati_tatpara_tr_prati_")}
       </p>
     </div>

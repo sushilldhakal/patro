@@ -6,6 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { SaitCeremonyLayout } from "@/components/sait/SaitCeremonyLayout";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
 import { SuitabilityLegend } from "@/components/sait/SaitSuitability";
+import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { Text } from "@/components/ui/Text";
 import {
   fetchSait,
@@ -17,6 +18,7 @@ import {
 import { Ionicons } from "@/components/icons/Ionicons";
 import { SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { useThemeColors } from "@/lib/theme-context";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -26,7 +28,7 @@ import { SAIT_RULES_CONTENT } from "@vedic-patro/domain/sait-rules-content";
 import { useSaitPersonalize } from "@/lib/sait-personalize";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
-import { brand } from "@vedic-patro/design-tokens";
+import { brand, withAlpha } from "@vedic-patro/design-tokens";
 
 export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
@@ -96,7 +98,7 @@ export default function SaitCategoryScreen() {
   if (!category || !labels) {
     return (
       <AppShell title={pick("साइत", "Sait")}>
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle()}>
           {pick("यो संस्कार फेला परेन।", "That ceremony was not found.")}
         </Text>
       </AppShell>
@@ -125,9 +127,11 @@ export default function SaitCategoryScreen() {
       count={totalCount}
       notice={
         content?.requiresBirthDate ? (
-          <View className="mb-3 flex-row gap-2.5 rounded-xl border border-border border-l-2 border-l-secondary bg-card p-3.5">
-            <Ionicons name="information-circle-outline" size={16} color={colors.secondary} />
-            <Text className="text-body flex-1 text-danger" style={nepaliTextStyle(14)}>
+          <View className={saitClasses.notice}>
+            <View className={saitClasses.noticeIconWrap}>
+              <Ionicons name="information-circle-outline" size={16} color={colors.secondary} />
+            </View>
+            <Text className={cn("flex-1", saitClasses.noticeText)} style={nepaliTextStyle()}>
               {t("sait.requires_birth_date")}
             </Text>
           </View>
@@ -153,17 +157,22 @@ export default function SaitCategoryScreen() {
     >
       {!isMuhurta ? (
         datesQuery.isLoading && !datesQuery.data ? (
-          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick("लोड हुँदै…", "Loading…")}
-          </Text>
+          <View className={saitClasses.dateSkeletonList}>
+            {[0, 1, 2].map((i) => (
+              <SkeletonPulse key={i} className={saitClasses.dateSkeleton} />
+            ))}
+          </View>
         ) : datesQuery.data && datesQuery.data.months.length > 0 ? (
-          <View className="gap-2">
+          <View className={saitClasses.dateList}>
             {datesQuery.data.months.map((m) => (
-              <View key={m.month} className="gap-2 rounded-xl border border-border bg-card p-3.5">
-                <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+              <View
+                key={m.month}
+                className={saitClasses.dateRow}
+              >
+                <Text className={saitClasses.dateRowMonth} style={nepaliTextStyle()}>
                   {lang === "en" ? t("sait.month_number", { month: digits(m.month) }) : m.month_name_ne}
                 </Text>
-                <View className="flex-row flex-wrap gap-1.5">
+                <View className={saitClasses.dateRowDays}>
                   {m.days.map((d) => {
                     const verdict = personalize.suitabilityByDay?.get(`${m.month}-${d}`);
                     const style = verdict ? SUITABILITY_STYLE[verdict] : null;
@@ -173,13 +182,13 @@ export default function SaitCategoryScreen() {
                         style={
                           style
                             ? { backgroundColor: style.bg, borderColor: style.ring, borderWidth: 2 }
-                            : { backgroundColor: "rgba(46,125,50,0.12)" }
+                            : { backgroundColor: withAlpha(brand.green, 0.12) }
                         }
-                        className="h-8 min-w-8 items-center justify-center rounded-md px-2"
+                        className={saitClasses.dateChip}
                       >
                         <Text
-                          className="text-body font-num font-semibold"
-                          style={{ color: style ? style.fg : brand.green }}
+                          className={saitClasses.dateChipText}
+                          style={{ color: style ? style.fg : brand.green, ...nepaliTextStyle() }}
                         >
                           {digits(d)}
                         </Text>
@@ -191,8 +200,8 @@ export default function SaitCategoryScreen() {
             ))}
           </View>
         ) : (
-          <View className="rounded-xl border border-dashed border-border bg-card px-6 py-12">
-            <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+          <View className={saitClasses.noDates}>
+            <Text className={saitClasses.noDatesText} style={nepaliTextStyle()}>
               {t("sait.no_dates_year")}
             </Text>
           </View>

@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { listProfiles, type Profile } from "@/lib/auth/client";
 import { cn } from "@vedic-patro/domain/utils";
 import { importWithRetry } from "@/lib/lazy-route";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 
 const LazyAuthDialog = lazy(() =>
   importWithRetry(() => import("@/components/auth/AuthDialog")).then((m) => ({
@@ -45,7 +46,7 @@ export function RashifalProfilePicker({
   }, [isAuthenticated]);
 
   const label = (
-    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground">
+    <span className={cn("inline-flex", rashifalClasses.picker.label, rashifalClasses.picker.labelText)}>
       <UserRound className="size-4 text-secondary" />
       {t("rashifal.profile.label")}
     </span>
@@ -53,12 +54,16 @@ export function RashifalProfilePicker({
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={cn("flex", rashifalClasses.picker.row)}>
         {label}
         <button
           type="button"
           onClick={() => setAuthOpen(true)}
-          className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-surface-muted"
+          className={cn(
+            rashifalClasses.picker.signInButton,
+            rashifalClasses.picker.signInText,
+            "hover:bg-surface-muted",
+          )}
         >
           {t("rashifal.profile.sign_in")}
         </button>
@@ -73,15 +78,15 @@ export function RashifalProfilePicker({
 
   if (profiles !== null && profiles.length === 0) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={cn("flex", rashifalClasses.picker.row)}>
         {label}
-        <span className="text-xs text-muted-foreground">{t("rashifal.profile.no_profiles")}</span>
+        <span className={rashifalClasses.picker.empty}>{t("rashifal.profile.no_profiles")}</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={cn("flex", rashifalClasses.picker.row)}>
       {label}
       <select
         value={selectedId ?? ""}
@@ -91,8 +96,8 @@ export function RashifalProfilePicker({
           onSelect(id ? (profiles?.find((p) => p.id === id) ?? null) : null);
         }}
         className={cn(
-          "h-9 min-w-[10rem] max-w-[16rem] rounded-lg border border-border bg-card px-2.5 text-sm",
-          "text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40",
+          rashifalClasses.picker.select,
+          "focus:outline-none focus:ring-2 focus:ring-primary/40",
         )}
       >
         <option value="">

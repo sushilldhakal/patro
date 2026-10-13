@@ -12,8 +12,11 @@ import {
 import { RING_SIZE, houseBoxInRing } from "@vedic-patro/domain/vastu-ring";
 import { houseTemplate, type Rect, type TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
 import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import { cn } from "@vedic-patro/domain/utils";
 import { VastuCompassRing } from "./VastuCompassRing";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 /**
  * A rough Vāstu house sketch: the classical courtyard plan, drawn inside the
  * compass ring.
@@ -31,7 +34,7 @@ import { VastuCompassRing } from "./VastuCompassRing";
  * dashed court boundary are SVG's job anyway.
  */
 
-const DOOR_COLOR = "#C0392B";
+const DOOR_COLOR = illustration.red46;
 /** Ring-units-per-metre this layout was tuned at — label sizes scale off it. */
 const REFERENCE_SCALE = 22;
 
@@ -339,8 +342,8 @@ export function HouseSketch({
         </svg>
       </div>
 
-      <figcaption className="mx-auto mt-2 max-w-[900px] space-y-2">
-        <p className="text-center text-xs font-semibold text-foreground sm:text-sm">
+      <figcaption className={cn(vastuClasses.sketchCaption, "mx-auto max-w-[900px]")}>
+        <p className={vastuClasses.sketchSummary}>
           {t("vastu.sketch.door_pada", {
             wall: t(`vastu.dir.${facing}.name`),
             pada: t(`vastu.pada.${plan.door.pada.id}.name`),
@@ -353,29 +356,29 @@ export function HouseSketch({
           })}
         </p>
 
-        <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground sm:text-xs">
-          <li className="flex items-center gap-1.5">
+        <ul className={cn(vastuClasses.sketchLegend, vastuClasses.legendText)}>
+          <li className={vastuClasses.legendItem}>
             <span
-              className="inline-block h-2.5 w-4 rounded-[2px] border border-dashed"
+              className={cn(vastuClasses.legendSwatchCourt, "inline-block")}
               style={{ borderColor: DOOR_COLOR, backgroundColor: vastuElementTint("fire", 0.16) }}
             />
             {t("vastu.sketch.legend_court")}
           </li>
-          <li className="flex items-center gap-1.5">
+          <li className={vastuClasses.legendItem}>
             <span
-              className="inline-block h-2.5 w-4 rounded-[2px] border border-black/20"
+              className={cn(vastuClasses.legendSwatchAlindra, "inline-block")}
               style={{ backgroundColor: vastuElementTint("space", 0.16) }}
             />
             {t("vastu.sketch.legend_alindra")}
           </li>
-          <li className="flex items-center gap-1.5">
-            <span className="inline-block h-0.5 w-4 rounded-full" style={{ backgroundColor: DOOR_COLOR }} />
+          <li className={vastuClasses.legendItem}>
+            <span className={cn(vastuClasses.legendSwatchFlow, "inline-block")} style={{ backgroundColor: DOOR_COLOR }} />
             {t("vastu.sketch.legend_flow")}
           </li>
           {VASTU_ELEMENT_ORDER.map((element) => (
-            <li key={element} className="flex items-center gap-1.5">
+            <li key={element} className={vastuClasses.legendItem}>
               <span
-                className="inline-block size-2.5 rounded-[3px] border border-black/15"
+                className={cn(vastuClasses.legendSwatchElement, "inline-block")}
                 style={{ backgroundColor: vastuElementTint(element, 0.3) }}
               />
               {t(`vastu.element.${element}`)}
@@ -383,7 +386,7 @@ export function HouseSketch({
           ))}
         </ul>
 
-        <ul className="space-y-1 rounded-lg border border-border bg-background px-3 py-2 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+        <ul className={cn(vastuClasses.sketchRules, vastuClasses.sketchRuleText)}>
           <li>{t("vastu.sketch.rule_court")}</li>
           <li>{t("vastu.sketch.rule_alindra")}</li>
           <li>{t("vastu.sketch.rule_flow")}</li>

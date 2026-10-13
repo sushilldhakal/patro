@@ -37,13 +37,14 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { solarMonthStarts } from "@vedic-patro/domain/sky3d/day-mechanics";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const W = 560;
 const H = 232;
 const PAD = { l: 40, r: 12, t: 30, b: 34 };
 
-const SOLAR = "#dddd00";
-const EQUINOX = "#35d05a";
-const SOLSTICE = "#f59e0b";
+const SOLAR = illustration.amber43;
+const EQUINOX = illustration.green51;
+const SOLSTICE = illustration.orange50;
 
 /** Obliquity, degrees — the amplitude of the whole curve. */
 const EPS = 23.44;
@@ -135,7 +136,7 @@ export function SolarDeclinationYear() {
           x={(x(summerDay) + x(winterDay)) / 2}
           y={PAD.t - 16}
           textAnchor="middle"
-          className="fill-current text-[9px] font-semibold opacity-60"
+          className="fill-current text-diagram-xs font-semibold opacity-60"
         >
           {t("learn.study.declination.dakshinayana")}
         </text>
@@ -152,7 +153,7 @@ export function SolarDeclinationYear() {
             x={(a! + b!) / 2}
             y={PAD.t - 16}
             textAnchor="middle"
-            className="fill-current text-[9px] font-semibold opacity-60"
+            className="fill-current text-diagram-xs font-semibold opacity-60"
           >
             {t("learn.study.declination.uttarayana")}
           </text>
@@ -175,7 +176,7 @@ export function SolarDeclinationYear() {
               x={PAD.l - 5}
               y={y(d) + 3}
               textAnchor="end"
-              className="fill-current text-[8px] tabular-nums opacity-55"
+              className="fill-current text-diagram-2xs tabular-nums opacity-55"
             >
               {d === 0 ? num(0) : `${d > 0 ? "+" : "−"}${num(EPS)}°`}
             </text>
@@ -198,7 +199,7 @@ export function SolarDeclinationYear() {
               x={x((d + (i === 11 ? DAYS : monthStarts[i + 1]!)) / 2)}
               y={H - PAD.b + 13}
               textAnchor="middle"
-              className="fill-current text-[7.5px] opacity-50"
+              className="fill-current text-diagram-2xs opacity-50"
             >
               {monthNames[i]}
             </text>
@@ -222,7 +223,7 @@ export function SolarDeclinationYear() {
                 x={x(day) + (edge ? -6 : 6)}
                 y={y(deg) + (above ? -8 : 15)}
                 textAnchor={edge ? "end" : "start"}
-                className="text-[8.5px] font-semibold"
+                className="text-diagram-2xs font-semibold"
                 style={{ fill: colour }}
               >
                 {t(m.key)}
@@ -231,7 +232,7 @@ export function SolarDeclinationYear() {
                 x={x(day) + (edge ? -6 : 6)}
                 y={y(deg) + (above ? 0 : 23)}
                 textAnchor={edge ? "end" : "start"}
-                className="fill-current text-[7.5px] opacity-55"
+                className="fill-current text-diagram-2xs opacity-55"
               >
                 {t(m.whenKey)}
               </text>
@@ -239,7 +240,7 @@ export function SolarDeclinationYear() {
           );
         })}
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
         {t("learn.study.declination.caption")}
       </figcaption>
     </figure>

@@ -1,6 +1,8 @@
 import { useInPanchangaShell } from "@/components/panchanga/PanchangaShellLayout";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { cn } from "@vedic-patro/domain/utils";
+import { spec } from "@vedic-patro/design-tokens";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 interface Props {
   children: React.ReactNode;
@@ -27,7 +29,7 @@ export function PageShell({ children, className, showRelatedLinks = true }: Prop
   }
 
   return (
-    <main className={cn("max-w-[1400px] mx-auto px-4 sm:px-6 py-8 space-y-8", className)}>
+    <main className={cn(spec.pageShell, className)}>
       {children}
       {showRelatedLinks ? <RelatedPageLinks /> : null}
     </main>
@@ -44,11 +46,11 @@ export function PageHeader({
   subtitle?: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="mt-0.5">{icon}</div>
+    <div className={spec.pageHeaderRow}>
+      <div className={shellClasses.pageHeaderIcon}>{icon}</div>
       <div>
-        <h1 className="text-2xl font-bold">{title}</h1>
-        {subtitle && <p className="text-sm mt-0.5">{subtitle}</p>}
+        <h1 className={spec.pageTitle}>{title}</h1>
+        {subtitle && <p className={spec.pageSubtitle}>{subtitle}</p>}
       </div>
     </div>
   );

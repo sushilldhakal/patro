@@ -20,8 +20,9 @@ import {
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Row = VargaChartEntry & {
   bhava: number;
@@ -35,6 +36,8 @@ function grahaLabel(key: string, lang: "ne" | "en"): string {
   if (!meta) return key;
   return lang === "en" ? meta.en : meta.ne;
 }
+
+const g = kundaliDetailClasses.grahaList;
 
 export function GrahaDetailsList({
   division,
@@ -92,16 +95,16 @@ export function GrahaDetailsList({
         const dmsLine = (
           <View key="dms" className="flex-row items-center gap-1">
             <Text
-              className="text-caption font-num font-semibold text-foreground"
+              className={cn(g.dms, g.dmsDeg)}
               style={nepaliTextStyle(11)}
             >
               {digits(String(row.dms.deg).padStart(2, "0"))}°
             </Text>
             <RashiGlyphIcon number={row.dms.rashiNum} size={14} />
-            <Text className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+            <Text className={g.dmsRashi} style={nepaliTextStyle(11)}>
               {formatRashiByNumber(row.dms.rashiNum, lang)}
             </Text>
-            <Text className="text-caption font-num text-foreground" style={nepaliTextStyle(11)}>
+            <Text className={g.dms} style={nepaliTextStyle(11)}>
               {digits(String(row.dms.min).padStart(2, "0"))}′{digits(String(row.dms.sec).padStart(2, "0"))}″
             </Text>
           </View>
@@ -123,19 +126,13 @@ export function GrahaDetailsList({
           highlight: Boolean(row.retrograde),
           cells: [
             <GrahaInlineChildren key="g" grahaKey={row.key} size={18}>
-              <Text
-                className="text-caption font-semibold text-foreground"
-                style={nepaliTextStyle(11)}
-              >
+              <Text className={g.name} style={nepaliTextStyle(11)}>
                 {grahaLabel(row.key, lang)}
               </Text>
               {row.retrograde ? (
-                <View
-                  style={{ backgroundColor: colorWithAlpha(colors.secondary, 0.15) }}
-                  className="flex-row items-center gap-0.5 rounded-full px-1 py-px"
-                >
+                <View className={g.retroBadge}>
                   <Ionicons name="refresh" size={10} color={colors.secondary} />
-                  <Text style={{ color: colors.secondary }} className="text-caption font-bold">
+                  <Text className={g.retroText}>
                     {pick("व", "R")}
                   </Text>
                 </View>
@@ -144,7 +141,7 @@ export function GrahaDetailsList({
             dmsLine,
             <Text
               key="b"
-              className="text-caption text-center font-num font-semibold text-foreground"
+              className={cn(g.dms, g.bhava)}
               style={nepaliTextStyle(11)}
             >
               {digits(row.bhava)}

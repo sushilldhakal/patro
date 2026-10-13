@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 
+import { brand } from "@vedic-patro/design-tokens";
 export const CHANNEL_DAILY = "daily-guidance";
 export const CHANNEL_REMINDERS = "reminders";
 export const CHANNEL_RASHIFAL = "rashifal";
@@ -14,18 +15,18 @@ export function ensureNotificationChannels(): Promise<void> {
     await Notifications.setNotificationChannelAsync(CHANNEL_DAILY, {
       name: "Daily guidance",
       importance: Notifications.AndroidImportance.DEFAULT,
-      lightColor: "#073f43",
+      lightColor: brand.bluePressed,
     });
     await Notifications.setNotificationChannelAsync(CHANNEL_RASHIFAL, {
       name: "Daily rashifal",
       importance: Notifications.AndroidImportance.DEFAULT,
-      lightColor: "#073f43",
+      lightColor: brand.bluePressed,
     });
     await Notifications.setNotificationChannelAsync(CHANNEL_REMINDERS, {
       name: "Shubh / Ashubh reminders",
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 300, 200, 300],
-      lightColor: "#073f43",
+      lightColor: brand.bluePressed,
       bypassDnd: false,
     });
   })();

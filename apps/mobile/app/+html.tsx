@@ -1,9 +1,10 @@
 import { ScrollViewStyleReset } from "expo-router/html";
 import { type PropsWithChildren } from "react";
+import { brand, illustration } from "@vedic-patro/design-tokens";
 
 const BOOT_SPLASH_CSS = `
   html, body {
-    background: linear-gradient(135deg, #0e6a6f 0%, #073f43 100%);
+    background: linear-gradient(135deg, ${illustration.teal25} 0%, ${brand.bluePressed} 100%);
     margin: 0;
     min-height: 100%;
     font-family: "Noto Sans Devanagari", sans-serif;
@@ -15,7 +16,7 @@ const BOOT_SPLASH_CSS = `
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0e6a6f 0%, #073f43 100%);
+    background: linear-gradient(135deg, ${illustration.teal25} 0%, ${brand.bluePressed} 100%);
   }
   #vp-boot-splash img {
     width: 160px;

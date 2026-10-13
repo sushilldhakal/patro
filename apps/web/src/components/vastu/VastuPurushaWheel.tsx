@@ -28,6 +28,8 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { CX, CY, annulusPath } from "@vedic-patro/domain/vastu-purusha-wheel";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 /** ArcLabel/PadaCodeLabel/RingSeparators below all close over this wheel's own
  * CX/CY rather than taking them as props, so anything reusing them has to
  * share this exact centre, not merely this size. */
@@ -85,9 +87,9 @@ type GunaId = VastuGunaId;
 
 /** Door-pada +/− marks only — sector fills use the five elements. */
 const STATUS_MARK = {
-  good: "#2f6b3c",
+  good: illustration.green30,
   ok: VASTU_INK.line,
-  bad: "#8f2f28",
+  bad: illustration.red36,
 } as const;
 
 /**
@@ -783,18 +785,18 @@ export function VastuPurushaWheel({
         </g>
       ) : null}
     </svg>
-    <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+    <ul className={cn(vastuClasses.wheelLegend, vastuClasses.wheelLegendText)}>
       {VASTU_ELEMENT_ORDER.map((element) => (
-        <li key={element} className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: VASTU_ELEMENT_COLOR[element] }} aria-hidden />
+        <li key={element} className={cn(vastuClasses.wheelLegendItem, "inline-flex")}>
+          <span className={vastuClasses.wheelLegendDot} style={{ backgroundColor: VASTU_ELEMENT_COLOR[element] }} aria-hidden />
           {t(`vastu.element.${element}`)}
         </li>
       ))}
     </ul>
-    <ul className="mt-1.5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+    <ul className={cn(vastuClasses.wheelLegendTight, vastuClasses.wheelLegendText)}>
       {(["sattva", "rajas", "tamas"] as const).map((guna) => (
-        <li key={guna} className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: VASTU_GUNA_COLOR[guna] }} aria-hidden />
+        <li key={guna} className={cn(vastuClasses.wheelLegendItem, "inline-flex")}>
+          <span className={vastuClasses.wheelLegendDot} style={{ backgroundColor: VASTU_GUNA_COLOR[guna] }} aria-hidden />
           {t(`vastu.wheel.organ.${guna}`)}
         </li>
       ))}

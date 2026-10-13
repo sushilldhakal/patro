@@ -10,6 +10,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
+import { radius, space, spaceUnit, webTypeScale } from "@vedic-patro/design-tokens";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
@@ -38,12 +39,12 @@ function WebSelect({ value, options, onChange, ariaLabel, minWidth = 72 }: Selec
         height: 36,
         alignItems: "center",
         gap: 2,
-        borderRadius: 8,
+        borderRadius: radius.xl,
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.card,
-        paddingLeft: 8,
-        paddingRight: 6,
+        paddingLeft: space.sm,
+        paddingRight: spaceUnit * 1.5,
         cursor: "pointer",
       }}
     >
@@ -68,7 +69,7 @@ function WebSelect({ value, options, onChange, ariaLabel, minWidth = 72 }: Selec
       </select>
       <span
         style={{
-          fontSize: 15,
+          fontSize: webTypeScale.sm.size,
           fontWeight: 600,
           color: colors.foreground,
           pointerEvents: "none",
@@ -193,8 +194,8 @@ export function BsMonthYearNav({
         alignSelf: "center",
         width: "100%",
         maxWidth: 420,
-        marginHorizontal: 24,
-        borderRadius: 16,
+        marginHorizontal: space["2xl"],
+        borderRadius: radius["2xl"],
         overflow: "hidden",
       }
     : {
@@ -229,14 +230,14 @@ export function BsMonthYearNav({
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 16,
-                paddingVertical: 12,
+                paddingHorizontal: space.lg,
+                paddingVertical: space.md,
                 borderBottomWidth: 1,
                 borderBottomColor: colors.border,
               }}
             >
               <Pressable onPress={() => setOpen(false)} hitSlop={8} style={{ minWidth: 72 }}>
-                <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
+                <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>
                   {pick("रद्द", "Cancel")}
                 </Text>
               </Pressable>
@@ -244,7 +245,7 @@ export function BsMonthYearNav({
                 style={{
                   flex: 1,
                   textAlign: "center",
-                  fontSize: 18,
+                  fontSize: webTypeScale.lg.size,
                   fontWeight: "600",
                   color: colors.foreground,
                 }}
@@ -260,7 +261,7 @@ export function BsMonthYearNav({
                 hitSlop={8}
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
-                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
+                <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>
@@ -353,14 +354,14 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 16,
-                paddingVertical: 12,
+                paddingHorizontal: space.lg,
+                paddingVertical: space.md,
                 borderBottomWidth: 1,
                 borderBottomColor: colors.border,
               }}
             >
               <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
-                <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
+                <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>
                   {pick("रद्द", "Cancel")}
                 </Text>
               </Pressable>
@@ -368,7 +369,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 style={{
                   flex: 1,
                   textAlign: "center",
-                  fontSize: 18,
+                  fontSize: webTypeScale.lg.size,
                   fontWeight: "600",
                   color: colors.foreground,
                 }}
@@ -382,7 +383,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 }}
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
-                <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
+                <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
                   {pick("भयो", "Done")}
                 </Text>
               </Pressable>

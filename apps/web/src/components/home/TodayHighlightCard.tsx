@@ -30,6 +30,7 @@ import {
   tithiIndexFromPanchanga,
 } from "@vedic-patro/domain/tithi-wheel-data";
 import { cn } from "@vedic-patro/domain/utils";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const WEEKDAY_NE = [
   "आइतबार",
@@ -211,51 +212,51 @@ export function TodayHighlightCard({
   const sunset = clockLabel((p ? getSunset(p) : undefined) ?? selectedDay?.sunset, lang, digits);
 
   return (
-    <div id="home-today-highlight" className={cn("bg-card px-4 py-4", className)}>
-      <div className="flex items-start gap-3">
-        <div className="min-w-[3.4rem] pt-0.5 text-[2.75rem] font-bold leading-none text-danger">
+    <div id="home-today-highlight" className={cn(homeClasses.highlight, className)}>
+      <div className={homeClasses.highlightTop}>
+        <div className={cn(homeClasses.highlightDay, "min-w-[3.4rem] text-[2.75rem]")}>
           {dayNumber != null ? digits(dayNumber) : "—"}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-base font-bold leading-tight text-foreground">
+        <div className={homeClasses.highlightDate}>
+          <div className={homeClasses.highlightMonth}>
             {monthName} {digits(yearNumber)}
           </div>
-          <div className="mt-0.5 text-sm text-muted-foreground">{weekday}</div>
-          <div className="text-sm text-muted-foreground">{crossEraLine}</div>
-          {nsLabel ? <div className="mt-0.5 text-xs text-muted-foreground">{nsLabel}</div> : null}
+          <div className={homeClasses.highlightWeekday}>{weekday}</div>
+          <div className={homeClasses.highlightCrossEra}>{crossEraLine}</div>
+          {nsLabel ? <div className={homeClasses.highlightNs}>{nsLabel}</div> : null}
         </div>
       </div>
 
-      <div className="mt-3.5 border-t border-border pt-3">
-        <div className="text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className={homeClasses.highlightSpecial}>
+        <div className={cn(homeClasses.highlightKicker, "text-xs")}>
           {isToday
             ? bilingualText(lang, "आज विशेष", "Special today")
             : daysAwayLabel(daysAway, lang, digits)}
         </div>
-        <div className="mt-1 text-base font-bold leading-snug text-danger">{specialTitle}</div>
+        <div className={homeClasses.highlightTitle}>{specialTitle}</div>
         {specialSubtitle ? (
-          <div className="mt-0.5 text-sm text-muted-foreground">{specialSubtitle}</div>
+          <div className={homeClasses.highlightSubtitle}>{specialSubtitle}</div>
         ) : null}
 
         {phaseLabel && tithiIndex != null ? (
-          <div className="mt-3 flex items-center gap-2 text-sm text-foreground">
+          <div className={cn(homeClasses.highlightMoon, homeClasses.highlightMoonText)}>
             <CalendarMoonPhaseIcon tithiIndex={tithiIndex} className="size-6" title={phaseLabel} />
             <span>{phaseLabel}</span>
           </div>
         ) : null}
 
         {sunrise || sunset ? (
-          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-foreground">
+          <div className={cn(homeClasses.highlightSun, homeClasses.highlightMoonText)}>
             {sunrise ? (
-              <span className="inline-flex items-center gap-1.5">
+              <span className={homeClasses.highlightSunItem}>
                 <Sunrise className="size-4 text-warning" aria-hidden />
-                <span className="font-num">{sunrise}</span>
+                <span className={homeClasses.highlightSunText}>{sunrise}</span>
               </span>
             ) : null}
             {sunset ? (
-              <span className="inline-flex items-center gap-1.5">
+              <span className={homeClasses.highlightSunItem}>
                 <Sunset className="size-4 text-warning" aria-hidden />
-                <span className="font-num">{sunset}</span>
+                <span className={homeClasses.highlightSunText}>{sunset}</span>
               </span>
             ) : null}
           </div>

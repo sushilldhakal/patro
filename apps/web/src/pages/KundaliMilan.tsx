@@ -29,6 +29,8 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 const AYANAMSHA_KEY = "dhakalPatroAyanamshaMode";
 
@@ -132,9 +134,9 @@ function BirthDetailsTable({ role, profile, person, ayanamsha, lang }: BirthDeta
   }
 
   return (
-    <section className="rounded-2xl border border-border bg-card overflow-hidden">
-      <div className="px-4 py-3 border-b border-border bg-muted/20">
-        <h3 className="text-sm font-semibold">
+    <section className={kundaliClasses.detailsCard}>
+      <div className={kundaliClasses.detailsHeader}>
+        <h3 className={kundaliClasses.detailsHeading}>
           {role === "boy" ? t("milan.vara_details") : t("milan.kanya_details")}
         </h3>
       </div>
@@ -199,16 +201,16 @@ export function KundaliMilan() {
 
   return (
     <PageShell className="space-y-0 pb-16">
-      <div className="mb-4 mt-2 flex items-start justify-between gap-3">
+      <div className={kundaliClasses.headerRow}>
         <div>
-          <div className="text-xs text-base uppercase tracking-[0.12em] mb-1.5">
+          <div className={kundaliClasses.eyebrow}>
             {t("milan.eyebrow")}
           </div>
-          <h1 className="text-xl font-bold leading-tight tracking-tight m-0 flex items-center gap-2.5">
+          <h1 className={cn(kundaliClasses.title, kundaliClasses.titleRow, "m-0")}>
             <Heart className="w-7 h-7 text-secondary shrink-0" />
             {t("milan.title")}
           </h1>
-          <p className="text-sm mt-1 max-w-2xl">
+          <p className={cn(kundaliClasses.subtitle, "max-w-2xl")}>
             {isAuthenticated ? t("milan.subtitle_auth") : t("milan.login_required")}
           </p>
         </div>
@@ -220,19 +222,19 @@ export function KundaliMilan() {
       </div>
 
       {authLoading ? (
-        <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm">
+        <div className={cn(kundaliClasses.emptyBox, kundaliClasses.emptyText)}>
           {t("common.loading")}
         </div>
       ) : !isAuthenticated ? (
-        <section className="rounded-2xl border border-border bg-card px-6 py-12 text-center shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-secondary/15">
+        <section className={cn(kundaliClasses.loginCard, "text-center shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]")}>
+          <div className={cn(kundaliClasses.loginIcon, "mx-auto flex")}>
             <Heart className="h-7 w-7 text-secondary" />
           </div>
-          <h2 className="text-xl font-bold text-foreground">{t("milan.login_prompt_title")}</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm">
+          <h2 className={kundaliClasses.loginTitle}>{t("milan.login_prompt_title")}</h2>
+          <p className={cn(kundaliClasses.loginBody, "mx-auto")}>
             {t("milan.login_prompt_body")}
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className={kundaliClasses.loginActions}>
             <Button size="lg" onClick={() => openAuth("login")}>
               <LogIn className="size-4" /> {t("kundali.login")}
             </Button>
@@ -243,7 +245,7 @@ export function KundaliMilan() {
         </section>
       ) : (
         <div className="flex flex-col gap-6">
-          <p className="text-sm">{t("milan.profile_hint")}</p>
+          <p className={kundaliClasses.profileHint}>{t("milan.profile_hint")}</p>
 
           <MilanProfilePicker
             ref={pickerRef}
@@ -258,19 +260,19 @@ export function KundaliMilan() {
               <AyanamshaSelector mode={ayanamsha} onModeChange={setAyanamsha} />
 
               {missingBirth ? (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-8 text-center text-sm text-foreground">
+                <div className={cn(kundaliClasses.warnBox, kundaliClasses.warnText)}>
                   {t("milan.missing_birth")}
                 </div>
               ) : null}
 
               {loading ? (
-                <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm">
+                <div className={cn(kundaliClasses.emptyBox, kundaliClasses.emptyText)}>
                   {t("common.loading")}
                 </div>
               ) : null}
 
               {error ? (
-                <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-8 text-center text-sm text-destructive">
+                <div className={cn(kundaliClasses.errorBox, kundaliClasses.errorText)}>
                   {t("milan.error")}
                 </div>
               ) : null}
@@ -304,7 +306,7 @@ export function KundaliMilan() {
               ) : null}
             </>
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-8 text-center text-sm">
+            <div className={cn(kundaliClasses.emptyBoxShort, kundaliClasses.emptyText)}>
               {t("milan.need_two_profiles")}
             </div>
           )}

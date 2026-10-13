@@ -8,6 +8,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 
 function topicForSlug(slug: string): LibraryTopic | undefined {
   const topic = LEARN_LIBRARY_BY_SLUG[slug];
@@ -33,13 +34,10 @@ export function LearnMoreCard({
   if (topics.length === 0) return null;
 
   return (
-    <View
-      style={{ borderColor: colors.border }}
-      className={cn("rounded-2xl border bg-card/40 p-4 sm:p-5", className)}
-    >
-      <View className="mb-3 flex-row items-center gap-2">
+    <View className={cn(learnPageClasses.moreCard, className)}>
+      <View className={learnPageClasses.moreHead}>
         <Ionicons name="book-outline" size={16} color={colors.secondary} />
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={learnPageClasses.moreHeading} style={nepaliTextStyle(14)}>
           {resolvedHeading}
         </Text>
       </View>
@@ -49,23 +47,19 @@ export function LearnMoreCard({
             key={topic.slug}
             accessibilityRole="button"
             onPress={() => router.push(hrefForLearnSlug(topic.slug))}
-            style={{ borderColor: colors.border }}
-            className="flex-row items-center gap-2.5 rounded-xl border bg-background/40 px-3 py-2.5 active:opacity-90"
+            className={cn(learnPageClasses.moreItem, "active:opacity-90")}
           >
-            <View
-              style={{ backgroundColor: `${colors.secondary}1a` }}
-              className="h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-            >
+            <View className={learnPageClasses.moreIcon}>
               <Ionicons name={topic.icon} size={16} color={colors.secondary} />
             </View>
             <Text
               numberOfLines={1}
-              className="text-body min-w-0 flex-1 text-foreground"
+              className={learnPageClasses.moreLabel}
               style={nepaliTextStyle(14)}
             >
               {pick(topic.title.ne, topic.title.en)}
             </Text>
-            <Ionicons name="chevron-forward" size={14} color={colors.mutedForeground} />
+            <Ionicons name="arrow-forward" size={14} color={colors.mutedForeground} />
           </Pressable>
         ))}
       </View>

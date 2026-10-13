@@ -16,6 +16,7 @@ import type {
   SaitSuitability,
 } from "@/lib/api";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 interface Props {
   title: string;
@@ -132,12 +133,12 @@ export function SaitCeremonyLayout({
       />
 
       {nakshatraMode && onNakshatraModeChange ? (
-        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
-          <span className="text-sm font-medium text-foreground">
+        <div className={saitClasses.nakshatraRow}>
+          <span className={saitClasses.nakshatraLabel}>
             {t("sait.nakshatra_tradition")}
           </span>
           <div
-            className="inline-flex flex-wrap gap-1 rounded-lg border border-border bg-card p-0.5"
+            className={cn(saitClasses.nakshatraGroup, "inline-flex")}
             role="radiogroup"
             aria-label={t("sait.nakshatra_tradition")}
           >
@@ -151,10 +152,12 @@ export function SaitCeremonyLayout({
                   aria-checked={active}
                   onClick={() => onNakshatraModeChange(id)}
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors",
+                    saitClasses.nakshatraBtn,
+                    saitClasses.nakshatraBtnText,
+                    "transition-colors",
                     active
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-surface-muted hover:text-foreground",
+                      ? cn(saitClasses.nakshatraBtnActive, saitClasses.nakshatraBtnTextActive)
+                      : cn(saitClasses.nakshatraBtnTextIdle, "hover:bg-surface-muted hover:text-foreground"),
                   )}
                 >
                   {t(`sait.nakshatra_modes.${id}`)}
@@ -179,28 +182,28 @@ export function SaitCeremonyLayout({
       />
 
       {!loading && displayCount > 0 ? (
-        <p className="m-0 text-sm text-muted-foreground">
+        <p className={cn("m-0", saitClasses.countText)}>
           {countText}
         </p>
       ) : null}
 
       {profileControl ? (
-        <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface-inset p-3">
+        <div className={saitClasses.profileBox}>
           {profileControl}
         </div>
       ) : null}
 
       {notice}
 
-      <section aria-busy={loading} className="space-y-6">
+      <section aria-busy={loading} className={saitClasses.body}>
         {children ? (
           children
         ) : loading ? (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={cn("grid sm:grid-cols-2 lg:grid-cols-3", saitClasses.dayGrid)}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-40 animate-pulse rounded-xl border border-border bg-surface-muted"
+                className={cn("animate-pulse", saitClasses.skeletonCard)}
               />
             ))}
           </div>
@@ -212,16 +215,16 @@ export function SaitCeremonyLayout({
                 ? t("sait.month_number", { month: digits(month), defaultValue: `Month ${digits(month)}` })
                 : (monthNe ?? t("sait.month_number", { month: digits(month) }));
             return (
-              <div key={month} className="space-y-3">
-                <div className="flex items-end justify-between gap-3">
-                  <h2 className="m-0 text-lg font-bold text-foreground">
+              <div key={month} className={saitClasses.monthBlock}>
+                <div className={saitClasses.monthHeader}>
+                  <h2 className={cn("m-0", saitClasses.monthTitle)}>
                     {monthLabel}
                   </h2>
-                  <span className="text-sm text-muted-foreground">
+                  <span className={saitClasses.monthCount}>
                     {t("sait.days_count", { count: digits(monthDays.length) })}
                   </span>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className={cn("grid sm:grid-cols-2 lg:grid-cols-3", saitClasses.dayGrid)}>
                   {monthDays.map((d) => {
                     const i = cardIndex++;
                     return (
@@ -239,7 +242,7 @@ export function SaitCeremonyLayout({
             );
           })
         ) : (
-          <p className="m-0 py-8 text-center text-sm text-muted-foreground">
+          <p className={cn("m-0", saitClasses.emptyText)}>
             {emptyLabel ?? t("sait.empty_year")}
           </p>
         )}

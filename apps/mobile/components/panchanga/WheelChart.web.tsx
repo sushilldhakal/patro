@@ -32,6 +32,7 @@ import {
 } from "@/lib/wheel-svg-classes";
 import { planetVisualRadius, planetHitRadius } from "@vedic-patro/domain/wheel-chart-geometry";
 
+import { brand, illustration, midnight, neutral, webTypeScale, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const DEG = Math.PI / 180;
 const CX = 500;
 const CY = 500;
@@ -305,7 +306,7 @@ function WheelChartImpl({
             textAnchor="middle"
             dominantBaseline="central"
             className={wRashiGlyph}
-            style={{ fontSize: 28 }}
+            style={{ fontSize: webTypeScale["3xl"].size }}
           >
             {rs.sym}
           </text>
@@ -444,7 +445,7 @@ function WheelChartImpl({
           textAnchor="middle"
           dominantBaseline="central"
           className={wLabel}
-          style={{ fontSize: 15, fill: "#f9c800" }}
+          style={{ fontSize: webTypeScale.sm.size, fill: illustration.amber49 }}
           transform={
             normDeg(targetLon + spin) > 90 && normDeg(targetLon + spin) < 270
               ? `rotate(180 ${CX} ${CY - (R.bsOut + 5)})`
@@ -489,8 +490,8 @@ function WheelChartImpl({
         <path
           key={`yog${y}`}
           d={arcSeg(L0, L1, R_YOGA_I, R_YOGA_O)}
-          fill={isCur ? "rgba(160,125,232,0.20)" : "transparent"}
-          stroke={isCur ? "#c4a8f0" : "rgba(169,212,212,0.28)"}
+          fill={isCur ? withAlpha(illustration.violet70, 0.20) : "transparent"}
+          stroke={isCur ? illustration.violet80 : withAlpha(wheel.rim, 0.28)}
           strokeWidth={isCur ? 1.6 : 0.4}
         />
       );
@@ -522,8 +523,8 @@ function WheelChartImpl({
         <path
           key={`kar${k}`}
           d={arcSeg(L0, L1, R_KAR_I, R_KAR_O)}
-          fill={isCur ? "rgba(198,40,40,0.16)" : "transparent"}
-          stroke={isCur ? "var(--w-accent)" : "rgba(169,212,212,0.28)"}
+          fill={isCur ? withAlpha(brand.vermilion, 0.16) : "transparent"}
+          stroke={isCur ? "var(--w-accent)" : withAlpha(wheel.rim, 0.28)}
           strokeWidth={isCur ? 1.7 : 0.4}
         />
       );
@@ -555,12 +556,12 @@ function WheelChartImpl({
             d={arcSeg(L0, L1, R_TIT_I, R_TIT_O)}
             fill={
               isCur
-                ? "color-mix(in srgb, var(--w-accent) 28%, #0d2428)"
+                ? `color-mix(in srgb, var(--w-accent) 28%, ${wheel.sky0})`
                 : shukla
-                ? "color-mix(in srgb, #2d8a86 26%, #0a1a1e)"
-                : "color-mix(in srgb, #2d8a86 14%, #060e10)"
+                ? `color-mix(in srgb, ${illustration.teal36} 26%, ${midnight.background})`
+                : `color-mix(in srgb, ${illustration.teal36} 14%, ${midnight.popover})`
             }
-            stroke={isCur ? "var(--w-accent)" : "rgba(143,191,193,.18)"}
+            stroke={isCur ? "var(--w-accent)" : withAlpha(wheel.line, .18)}
             strokeWidth={isCur ? 1.7 : 0.5}
           />
           <RingLabel
@@ -585,53 +586,53 @@ function WheelChartImpl({
       <defs key="pdefs">
         {/* 0 Sun */}
         <radialGradient id="pg0" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#fff9c0"/><stop offset="35%" stopColor="#f9c800"/>
-          <stop offset="75%" stopColor="#e07000"/><stop offset="100%" stopColor="#8b3c00"/>
+          <stop offset="0%" stopColor={illustration.amber89}/><stop offset="35%" stopColor={illustration.amber49}/>
+          <stop offset="75%" stopColor={brand.saffron}/><stop offset="100%" stopColor={illustration.orange27b}/>
         </radialGradient>
         {/* 1 Moon */}
         <radialGradient id="pg1" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#f6f8fa"/><stop offset="55%" stopColor="#b8c0cc"/>
-          <stop offset="100%" stopColor="#6a7480"/>
+          <stop offset="0%" stopColor={brand.offWhite}/><stop offset="55%" stopColor={illustration.sky76b}/>
+          <stop offset="100%" stopColor={illustration.gray46}/>
         </radialGradient>
         {/* 2 Mars */}
         <radialGradient id="pg2" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#ff9870"/><stop offset="55%" stopColor="#c84830"/>
-          <stop offset="100%" stopColor="#6e1800"/>
+          <stop offset="0%" stopColor={illustration.orange72}/><stop offset="55%" stopColor={illustration.red49}/>
+          <stop offset="100%" stopColor={illustration.red22}/>
         </radialGradient>
         {/* 3 Mercury */}
         <radialGradient id="pg3" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#d8d4cc"/><stop offset="55%" stopColor="#989090"/>
-          <stop offset="100%" stopColor="#504848"/>
+          <stop offset="0%" stopColor={neutral.silverBase}/><stop offset="55%" stopColor={illustration.gray58}/>
+          <stop offset="100%" stopColor={neutral.slateInput}/>
         </radialGradient>
         {/* 4 Jupiter */}
         <radialGradient id="pg4" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#f0d898"/><stop offset="50%" stopColor="#c89840"/>
-          <stop offset="100%" stopColor="#7a5010"/>
+          <stop offset="0%" stopColor={illustration.amber77c}/><stop offset="50%" stopColor={illustration.orange52}/>
+          <stop offset="100%" stopColor={illustration.orange27}/>
         </radialGradient>
         {/* 5 Venus */}
         <radialGradient id="pg5" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#fffae0"/><stop offset="50%" stopColor="#e8d870"/>
-          <stop offset="100%" stopColor="#a09020"/>
+          <stop offset="0%" stopColor={illustration.amber92}/><stop offset="50%" stopColor={illustration.amber67b}/>
+          <stop offset="100%" stopColor={illustration.amber38}/>
         </radialGradient>
         {/* 6 Saturn */}
         <radialGradient id="pg6" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#f0e0b0"/><stop offset="50%" stopColor="#c4a060"/>
-          <stop offset="100%" stopColor="#7a5c28"/>
+          <stop offset="0%" stopColor={illustration.amber82}/><stop offset="50%" stopColor={illustration.orange57}/>
+          <stop offset="100%" stopColor={illustration.orange32}/>
         </radialGradient>
         {/* 7 Rahu */}
         <radialGradient id="pg7" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#7060c0"/><stop offset="55%" stopColor="#2a2060"/>
-          <stop offset="100%" stopColor="#080420"/>
+          <stop offset="0%" stopColor={illustration.blue56}/><stop offset="55%" stopColor={illustration.blue25}/>
+          <stop offset="100%" stopColor={midnight.popover}/>
         </radialGradient>
         {/* 8 Ketu */}
         <radialGradient id="pg8" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#b06080"/><stop offset="55%" stopColor="#601828"/>
-          <stop offset="100%" stopColor="#1c0408"/>
+          <stop offset="0%" stopColor={illustration.pink53}/><stop offset="55%" stopColor={illustration.red24}/>
+          <stop offset="100%" stopColor={illustration.red6}/>
         </radialGradient>
         {/* Earth */}
         <radialGradient id="pg-earth" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-          <stop offset="0%" stopColor="#a8f0d0"/><stop offset="45%" stopColor="#1f8f6f"/>
-          <stop offset="100%" stopColor="#0a3828"/>
+          <stop offset="0%" stopColor={illustration.green80}/><stop offset="45%" stopColor={illustration.teal34}/>
+          <stop offset="100%" stopColor={illustration.green13}/>
         </radialGradient>
       </defs>
     );
@@ -661,7 +662,7 @@ function WheelChartImpl({
           rays.push(<line key={r}
             x1={px + r1 * Math.sin(ang)} y1={py - r1 * Math.cos(ang)}
             x2={px + r2 * Math.sin(ang)} y2={py - r2 * Math.cos(ang)}
-            stroke="#f9c800" strokeWidth="2.2" strokeLinecap="round" opacity="0.9" />);
+            stroke={illustration.amber49} strokeWidth="2.2" strokeLinecap="round" opacity="0.9" />);
         }
         core.push(<g key="sun-rays" style={{ pointerEvents: "none" }}>{rays}</g>);
       }
@@ -700,7 +701,7 @@ function WheelChartImpl({
             </defs>
             {[-rad * 0.3, rad * 0.05, rad * 0.36].map((oy, bi) => (
               <rect key={bi} x={px - rad} y={py + oy - 1.8} width={rad * 2} height={3.2}
-                fill="rgba(80,42,8,0.42)" clipPath={`url(#${clipId})`} />
+                fill={withAlpha(illustration.orange17, 0.42)} clipPath={`url(#${clipId})`} />
             ))}
           </g>
         );
@@ -747,7 +748,7 @@ function WheelChartImpl({
     core.push(
       <g key="earth" style={{ pointerEvents: "none" }}>
         <circle cx={CX} cy={CY} r="13" fill="url(#pg-earth)" />
-        <circle cx={CX} cy={CY} r="13" fill="none" stroke="#9fe0c8" strokeWidth="0.8" opacity="0.5" />
+        <circle cx={CX} cy={CY} r="13" fill="none" stroke={illustration.green75} strokeWidth="0.8" opacity="0.5" />
       </g>
     );
   }

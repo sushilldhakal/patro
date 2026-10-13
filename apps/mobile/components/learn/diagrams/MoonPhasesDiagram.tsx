@@ -13,6 +13,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const SPAN = 1.2;
 const MOON_R = 0.06;
 
@@ -36,7 +37,7 @@ function MoonPhaseSphere({ x, e }: { x: number; e: number }) {
       <pointLight position={[lightR * Math.cos(angle), 0, lightR * Math.sin(angle)]} intensity={2.2} distance={0} decay={0} />
       <mesh>
         <sphereGeometry args={[MOON_R, 22, 22]} />
-        <meshStandardMaterial color={"#cbd5e1"} roughness={0.9} />
+        <meshStandardMaterial color={illustration.sky84} roughness={0.9} />
       </mesh>
     </group>
   );
@@ -79,7 +80,7 @@ export function MoonPhasesDiagram() {
       camera={{ yaw: 0, pitch: 0.25 }}
       frame={{ width: 1.5, height: 0.42 }}
       idleSpin={0}
-      legend={[{ color: "#cbd5e1", label: pick("साँचो सूर्य-कोणले उज्यालो पारिएको चन्द्र", "Moon lit from the true Sun angle") }]}
+      legend={[{ color: illustration.sky84, label: pick("साँचो सूर्य-कोणले उज्यालो पारिएको चन्द्र", "Moon lit from the true Sun angle") }]}
       readouts={[
         { k: pick("देखाइएका चरण", "Phases shown"), v: digits(PHASES.length) },
         { k: pick("एक लुनेसन", "One lunation"), v: `${digits("29.53")} ${pick("दिन", "days")}`, tone: "accent" },

@@ -59,6 +59,7 @@ import {
 } from "@/components/learn/playground/playground-labels";
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
 
+import { illustration, midnight } from "@vedic-patro/design-tokens";
 export type Focus = "solar" | "lunar" | "both";
 
 export type SceneClock = {
@@ -133,13 +134,13 @@ function orbitRadius(distanceAu: number) {
   return EARTH_ORBIT * (1 + ECCENTRICITY_GAIN * (distanceAu - 1));
 }
 
-const SUN_COLOR = "#f8b53c";
-const MOON_COLOR = "#cbd5e1";
-const EARTH_COLOR = "#5aa9e6";
-const GOLD = "#d8c84a";
-const INK = "#8fb0c8";
+const SUN_COLOR = illustration.orange60;
+const MOON_COLOR = illustration.sky84;
+const EARTH_COLOR = illustration.sky63;
+const GOLD = illustration.amber57;
+const INK = illustration.sky67b;
 /** Matches the canvas clear colour, so the trail can fade into it. */
-const CANVAS_BG = "#050a10";
+const CANVAS_BG = midnight.popover;
 
 /**
  * The Moon's trailing path through heliocentric space.
@@ -715,7 +716,7 @@ export function TwoSystemsScene({
       line.frustumCulled = false;
       return line;
     };
-    return { first: make(MOON_COLOR, 0.9, 2), overshoot: make("#7ee787", 1, 3) };
+    return { first: make(MOON_COLOR, 0.9, 2), overshoot: make(illustration.green70, 1, 3) };
   }, []);
 
   /** Earth's rotation axis, drawn through the poles. */
@@ -737,7 +738,7 @@ export function TwoSystemsScene({
     geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(2 * 3), 3));
     return new THREE.LineSegments(
       geometry,
-      new THREE.LineBasicMaterial({ color: "#f8b53c", transparent: true, opacity: 0.95 }),
+      new THREE.LineBasicMaterial({ color: illustration.orange60, transparent: true, opacity: 0.95 }),
     );
   }, []);
 
@@ -944,7 +945,7 @@ export function TwoSystemsScene({
     <group>
       <ambientLight intensity={0.5} />
       {/* At the Sun, so the Earth's terminator and the Moon's phase are real. */}
-      <pointLight position={[0, 0, 0]} intensity={90} distance={80} decay={1.4} color="#fff2d0" />
+      <pointLight position={[0, 0, 0]} intensity={90} distance={80} decay={1.4} color={illustration.amber92} />
 
       <Ring opacity={0.07} />
       <RashiSegments opacity={0.05} />
@@ -1008,7 +1009,7 @@ export function TwoSystemsScene({
 
       <mesh>
         <sphereGeometry args={[SUN_R, 32, 32]} />
-        <meshBasicMaterial map={textures.sun} color="#fff0c4" />
+        <meshBasicMaterial map={textures.sun} color={illustration.amber89} />
       </mesh>
       <mesh>
         <sphereGeometry args={[SUN_R * 1.8, 24, 24]} />

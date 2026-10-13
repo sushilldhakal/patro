@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { LEARN_DIAGRAMS, type DiagramId } from "@/lib/learn/learn-diagrams";
 import { LearnTable } from "@/components/learn/LearnTable";
@@ -20,18 +19,17 @@ export function LearnSection({
   subtitle?: string;
   children: ReactNode;
 }) {
-  const { lang } = useLocale();
   return (
     <View className="mb-8 gap-3">
       <View className="gap-1 border-b border-border pb-2">
-        <Text className="text-caption font-num font-bold uppercase tracking-wider text-secondary">
+        <Text className="text-sm font-num font-bold tracking-wide text-secondary">
           {kicker}
         </Text>
-        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className="text-[clamp(22px,3vw,30px)] font-bold leading-tight text-foreground">
           {title}
         </Text>
         {subtitle ? (
-          <Text className="text-body text-muted-foreground" style={lang === "en" ? undefined : nepaliTextStyle(14)}>
+          <Text className="text-sm uppercase tracking-eyebrow text-muted-foreground">
             {subtitle}
           </Text>
         ) : null}
@@ -42,9 +40,8 @@ export function LearnSection({
 }
 
 export function LearnLede({ children }: { children: ReactNode }) {
-  const { lang } = useLocale();
   return (
-    <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
+    <Text className="text-base leading-relaxed text-foreground">
       {children}
     </Text>
   );
@@ -53,7 +50,7 @@ export function LearnLede({ children }: { children: ReactNode }) {
 export function LearnNote({ children }: { children: ReactNode }) {
   return (
     <View className="rounded-xl border border-border bg-muted/30 px-3 py-3">
-      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-sm leading-relaxed text-muted-foreground">
         {children}
       </Text>
     </View>
@@ -65,10 +62,10 @@ export function LearnKeys({ items }: { items: { title: ReactNode; body: ReactNod
     <View className="gap-2">
       {items.map((item, i) => (
         <View key={item.key ?? i} className="rounded-lg border border-border bg-card px-3 py-2.5">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-base font-bold text-foreground">
             {item.title}
           </Text>
-          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className="mt-1 text-sm text-muted-foreground">
             {item.body}
           </Text>
         </View>
@@ -87,11 +84,11 @@ export function LearnFormulaRow({
       {items.map((item, i) => (
         <View key={item.key ?? i} className="min-w-[44%] flex-1 rounded-xl border border-border bg-card p-3">
           <View className="flex-row items-baseline gap-1">
-            <Text className="text-title font-num font-bold text-secondary">{item.value}</Text>
-            {item.unit ? <Text className="text-body font-semibold text-secondary">{item.unit}</Text> : null}
+            <Text className="text-xl font-num font-bold leading-none text-secondary">{item.value}</Text>
+            {item.unit ? <Text className="text-base font-semibold text-secondary">{item.unit}</Text> : null}
           </View>
-          <Text className="text-caption mt-1 font-bold uppercase tracking-wide text-foreground">{item.label}</Text>
-          <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className="mt-2.5 text-sm font-semibold text-foreground">{item.label}</Text>
+          <Text className="mt-1 text-sm text-muted-foreground">
             {item.desc}
           </Text>
         </View>
@@ -106,8 +103,8 @@ export function LearnList({ ordered, items }: { ordered?: boolean; items: ReactN
     <View className="gap-1.5">
       {items.map((item, i) => (
         <View key={i} className="flex-row gap-2">
-          <Text className="text-body font-num text-secondary">{ordered ? `${i + 1}.` : "·"}</Text>
-          <Text className="text-body flex-1 leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-sm font-num text-secondary">{ordered ? `${i + 1}.` : "·"}</Text>
+          <Text className="flex-1 text-sm leading-relaxed text-foreground">
             {item}
           </Text>
         </View>
@@ -122,7 +119,7 @@ export function LearnFigure({ art, caption }: { art: string; caption?: ReactNode
     <View className="gap-1.5">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="rounded-xl border border-border bg-card px-4 py-3">
-          <Text className="text-caption font-mono leading-relaxed text-foreground">{art}</Text>
+          <Text className="font-mono text-xs leading-[1.7] text-foreground sm:text-sm">{art}</Text>
         </View>
       </ScrollView>
       {caption ? (
@@ -153,7 +150,7 @@ export function LearnCalc({
       <View className="gap-3 rounded-xl border-l-[3px] border-l-primary bg-card p-4">
         <View className="gap-1">
           {rule.map((line, i) => (
-            <Text key={i} className="text-body font-num leading-relaxed text-foreground">
+            <Text key={i} className="font-num text-sm leading-relaxed text-foreground">
               {line}
             </Text>
           ))}
@@ -245,7 +242,7 @@ export function LearnLink({
       accessibilityRole="link"
       className="active:opacity-80"
     >
-      <Text className="font-semibold text-secondary underline" style={nepaliTextStyle(16)}>
+      <Text className="text-base font-semibold text-secondary underline">
         {children}
       </Text>
     </Pressable>
@@ -256,7 +253,7 @@ export function LearnAppRouteLink({ href, children }: { href: string; children: 
   const router = useRouter();
   return (
     <Pressable onPress={() => router.push(href as never)} className="mt-2 active:opacity-80">
-      <Text className="text-body font-semibold text-primary" style={nepaliTextStyle(14)}>
+      <Text className="text-sm font-semibold text-primary">
         {children} →
       </Text>
     </Pressable>

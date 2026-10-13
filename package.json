@@ -15,12 +15,26 @@
     "mobile": "npm run start -w @vedic-patro/mobile",
     "tokens": "npm run generate -w @vedic-patro/design-tokens",
     "i18n": "npm run generate -w @vedic-patro/i18n",
-    "check:shared": "node scripts/check-shared-usage.mjs"
+    "check:shared": "node scripts/check-shared-usage.mjs",
+    "check:design": "node scripts/check-design-drift.mjs",
+    "check:parity": "node scripts/design-parity/capture.mjs",
+    "check:classes": "node scripts/check-shared-classes.mjs"
   },
   "devDependencies": {
+    "@types/react": "^19.2.18",
+    "pixelmatch": "^8.0.0",
+    "playwright": "^1.64.0",
+    "pngjs": "^7.0.0",
     "turbo": "^2.5.8"
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "decode-uri-component": "^0.5.0",
+    "uuid": "^11.1.1",
+    "postcss-selector-parser": "^7.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   }
 }

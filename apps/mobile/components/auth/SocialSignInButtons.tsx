@@ -20,6 +20,9 @@ import {
   googleSignInEnabled,
 } from "@/lib/auth/oauth-config";
 
+import { illustration, space } from "@vedic-patro/design-tokens";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 WebBrowser.maybeCompleteAuthSession();
 
 type Props = {
@@ -132,9 +135,9 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
   if (!showGoogle && !showGoogleSetupHint && !facebookSignInEnabled && !showApple) return null;
 
   return (
-    <View className="gap-3">
+    <View className={accountClasses.socialStack}>
       {showGoogleSetupHint ? (
-        <Text className="text-caption leading-relaxed text-muted-foreground">
+        <Text className="text-xs leading-relaxed text-muted-foreground">
           {googleSignInSetupMessage()}
         </Text>
       ) : null}
@@ -144,7 +147,7 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
           buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
           buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
           cornerRadius={22}
-          style={{ width: "100%", height: 48 }}
+          style={{ width: "100%", height: space["4xl"] }}
           onPress={() => {
             if (disabled || busy !== null) return;
             void onApplePress();
@@ -162,15 +165,15 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
               setBusy(null);
             });
           }}
-          className="h-12 flex-row items-center justify-center gap-2.5 rounded-full border border-border bg-card active:bg-muted"
+          className={cn(accountClasses.socialButton, "w-full max-w-xs flex-row items-center justify-center self-center active:bg-muted")}
           style={disabled || !googleRequest ? { opacity: 0.5 } : undefined}
         >
           {busy === "google" ? (
             <ActivityIndicator size="small" color={colors.foreground} />
           ) : (
-            <Ionicons name="logo-google" size={18} color="#EA4335" />
+            <Ionicons name="logo-google" size={18} color={illustration.red56} />
           )}
-          <Text className="text-body font-semibold text-foreground">
+          <Text className={accountClasses.socialButtonText}>
             {pick("गुगलबाट जारी राख्नुहोस्", "Continue with Google")}
           </Text>
         </Pressable>
@@ -186,25 +189,25 @@ export function SocialSignInButtons({ onGoogle, onFacebook, onApple, onError, di
               setBusy(null);
             });
           }}
-          className="h-12 flex-row items-center justify-center gap-2.5 rounded-full border border-border bg-card active:bg-muted"
+          className={cn(accountClasses.socialButton, "w-full max-w-xs flex-row items-center justify-center self-center active:bg-muted")}
           style={disabled || !fbRequest ? { opacity: 0.5 } : undefined}
         >
           {busy === "facebook" ? (
             <ActivityIndicator size="small" color={colors.foreground} />
           ) : (
-            <Ionicons name="logo-facebook" size={18} color="#1877F2" />
+            <Ionicons name="logo-facebook" size={18} color={illustration.sky52} />
           )}
-          <Text className="text-body font-semibold text-foreground">
+          <Text className={accountClasses.socialButtonText}>
             {pick("फेसबुकबाट जारी राख्नुहोस्", "Continue with Facebook")}
           </Text>
         </Pressable>
       ) : null}
 
       {showGoogle || facebookSignInEnabled || showApple ? (
-        <View className="flex-row items-center gap-3 py-0.5">
-          <View className="h-px flex-1" style={{ backgroundColor: colors.border }} />
-          <Text className="text-caption text-muted-foreground">{pick("वा", "or")}</Text>
-          <View className="h-px flex-1" style={{ backgroundColor: colors.border }} />
+        <View className={cn("flex-row", accountClasses.socialDividerRow)}>
+          <View className={accountClasses.socialDividerLine} />
+          <Text className={accountClasses.socialDividerText}>{pick("वा", "or")}</Text>
+          <View className={accountClasses.socialDividerLine} />
         </View>
       ) : null}
     </View>

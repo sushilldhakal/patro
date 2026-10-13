@@ -1,4 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { Eclipse, MoonStar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { RoutePageState } from "@/components/common/RoutePageState";
@@ -32,20 +33,19 @@ function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }) {
   const typeLabel = lang === "en" ? ev.type_en : ev.type_ne;
   const dateLabel = renderedEclipseDate(ev);
   return (
-    <div className={cn(patroCard, "flex flex-col")}>
+    <div className={cn(patroCard, grahaClasses.eclipseCard, "flex flex-col")}>
       <div
         className={cn(
-          "flex items-baseline justify-between gap-2 border-b border-border px-3.5 py-2.5",
-          ev.visible ? "bg-success/[0.12]" : "bg-secondary/[0.09] dark:bg-secondary/20",
+          grahaClasses.eclipseHead,
+          "flex",
+          ev.visible ? grahaClasses.eclipseHeadVisible : grahaClasses.eclipseHeadHidden,
         )}
       >
-        <span className="text-base font-bold text-foreground">{typeLabel}</span>
+        <span className={grahaClasses.eclipseType}>{typeLabel}</span>
         <span
           className={cn(
-            "shrink-0 rounded-full px-2 py-0.5 text-xs font-bold",
-            ev.visible
-              ? "bg-success/20 text-success"
-              : "bg-foreground/10 text-muted-foreground",
+            grahaClasses.eclipseBadge,
+            ev.visible ? grahaClasses.eclipseBadgeVisible : grahaClasses.eclipseBadgeHidden,
           )}
         >
           {ev.visible
@@ -53,35 +53,35 @@ function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }) {
             : t("graha_pages.eclipse.not_visible_nepal")}
         </span>
       </div>
-      <div className="flex flex-col gap-1.5 p-3.5 text-sm">
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="text-muted-foreground">{t("graha_pages.eclipse.date")}</span>
-          <span className="text-right font-semibold text-foreground">
-            <span className="font-num tabular-nums">{digits(dateLabel)}</span>
+      <div className={cn(grahaClasses.eclipseBody, "flex flex-col text-sm")}>
+        <div className={cn(grahaClasses.eclipseRow, "flex")}>
+          <span className={grahaClasses.eclipseLabel}>{t("graha_pages.eclipse.date")}</span>
+          <span className={grahaClasses.eclipseDate}>
+            <span className={grahaClasses.eclipseNum}>{digits(dateLabel)}</span>
           </span>
         </div>
-        <div className="flex items-baseline justify-between gap-2">
-          <span className="text-muted-foreground">{t("graha_pages.eclipse.maximum")}</span>
-          <span className="font-num tabular-nums text-foreground">{max ? digits(max) : "—"}</span>
+        <div className={cn(grahaClasses.eclipseRow, "flex")}>
+          <span className={grahaClasses.eclipseLabel}>{t("graha_pages.eclipse.maximum")}</span>
+          <span className={grahaClasses.eclipseValue}>{max ? digits(max) : "—"}</span>
         </div>
         {ev.visible && begin ? (
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-muted-foreground">
+          <div className={cn(grahaClasses.eclipseRow, "flex")}>
+            <span className={grahaClasses.eclipseLabel}>
               {isLunar
                 ? t("graha_pages.eclipse.partial_begins")
                 : t("graha_pages.eclipse.first_contact")}
             </span>
-            <span className="font-num tabular-nums text-foreground">{digits(begin)}</span>
+            <span className={grahaClasses.eclipseValue}>{digits(begin)}</span>
           </div>
         ) : null}
         {ev.visible && end ? (
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-muted-foreground">
+          <div className={cn(grahaClasses.eclipseRow, "flex")}>
+            <span className={grahaClasses.eclipseLabel}>
               {isLunar
                 ? t("graha_pages.eclipse.partial_ends")
                 : t("graha_pages.eclipse.last_contact")}
             </span>
-            <span className="font-num tabular-nums text-foreground">{digits(end)}</span>
+            <span className={grahaClasses.eclipseValue}>{digits(end)}</span>
           </div>
         ) : null}
       </div>
@@ -136,13 +136,13 @@ function EclipseView({ kind }: { kind: "solar" | "lunar" }) {
       <RoutePageState isLoading={query.isLoading} data={query.data}>
         {(data) =>
           data.events.length ? (
-            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className={cn(grahaClasses.eclipseGrid, "grid grid-cols-1 sm:grid-cols-2")}>
               {data.events.map((ev, i) => (
                 <EclipseCard key={i} ev={ev} pageId={pageId} />
               ))}
             </div>
           ) : (
-            <p className={cn(patroCard, "mt-2 p-4 text-sm text-muted-foreground")}>
+            <p className={cn(patroCard, grahaClasses.eclipseNone, grahaClasses.eclipseNoneText)}>
               {t("graha_pages.eclipse.no_eclipses_year")}
             </p>
           )

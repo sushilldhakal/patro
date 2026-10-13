@@ -104,9 +104,10 @@ import { useDeviceOrientation } from "@/lib/sky3d/device-orientation";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
+import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const Scene = memo(AakashGocharScene);
 
-const CANVAS_BG = "#04090c";
+const CANVAS_BG = wheel.sky2;
 /** Degrees → radians, for the compass heading / device pitch → camera yaw / pitch. */
 const DEG_TO_RAD = Math.PI / 180;
 
@@ -118,24 +119,24 @@ const DEG_TO_RAD = Math.PI / 180;
  * arbitrary `text-[#…]` class, turning them black in light mode.
  */
 const LABEL_COLOR = {
-  rashi: "#f4c542",
-  nakshatra: "#6fe08a",
-  cardinal: "#ff8a8a",
-  azimuth: "#7ea9d8",
-  station: "#ffd166",
-  tilt: "#ffd166",
-  axis: "#9fc4f0",
-  poleStar: "#cfe0ff",
-  pada: "#8fd6b0",
-  asterism: "#e6efff",
-  vedicStar: "#ffe08a",
-  nebula: "#e39bff",
-  tropic: "#e2d264",
-  observer: "#ff6b6b",
-  hud: "#ffffff",
-  hudDim: "rgba(255,255,255,0.72)",
-  overlayText: "rgba(236,242,244,0.88)",
-  overlayDim: "rgba(236,242,244,0.62)",
+  rashi: illustration.amber61,
+  nakshatra: illustration.green66,
+  cardinal: midnight.vermilion,
+  azimuth: illustration.sky67,
+  station: illustration.amber70,
+  tilt: illustration.amber70,
+  axis: illustration.sky78,
+  poleStar: illustration.sky91,
+  pada: illustration.green70b,
+  asterism: illustration.sky93,
+  vedicStar: illustration.amber77,
+  nebula: illustration.violet80b,
+  tropic: illustration.amber64,
+  observer: illustration.red71,
+  hud: neutral.white,
+  hudDim: withAlpha(neutral.white, 0.72),
+  overlayText: withAlpha(wheel.ink, 0.88),
+  overlayDim: withAlpha(wheel.ink, 0.62),
 } as const;
 
 /**
@@ -1716,8 +1717,8 @@ export function AakashGocharSky({
   const focusSheet = (
     <Dropdown width={Math.min(230, panelWidth)} maxHeight={canvasHeight - overlayTop - 56} top={panelTop}>
       <Text
-        className="text-caption font-semibold uppercase tracking-[0.1em]"
-        style={[nepaliTextStyle(11, { dense: true }), { color: "rgba(255,255,255,0.55)" }]}
+        className="text-caption font-semibold uppercase tracking-eyebrow"
+        style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.55) }]}
       >
         {pick("केन्द्रविन्दु", "Focus")}
       </Text>
@@ -1753,15 +1754,15 @@ export function AakashGocharSky({
             >
               <View
                 className="h-3.5 w-3.5 items-center justify-center rounded-full border"
-                style={{ borderColor: checked ? "#ffffff" : "rgba(255,255,255,0.4)" }}
+                style={{ borderColor: checked ? neutral.white : withAlpha(neutral.white, 0.4) }}
               >
                 {checked ? (
-                  <View className="h-2 w-2 rounded-full" style={{ backgroundColor: "#ffffff" }} />
+                  <View className="h-2 w-2 rounded-full" style={{ backgroundColor: neutral.white }} />
                 ) : null}
               </View>
               <Text
                 className="text-caption font-semibold"
-                style={[nepaliTextStyle(12, { dense: true }), { color: checked ? "#ffffff" : "rgba(255,255,255,0.7)" }]}
+                style={[nepaliTextStyle(12, { dense: true }), { color: checked ? neutral.white : withAlpha(neutral.white, 0.7) }]}
               >
                 {pick(neName, en)}
               </Text>
@@ -1783,21 +1784,21 @@ export function AakashGocharSky({
         accessibilityState={{ checked: toggles.lockCenter && !!selectedKey, disabled: !selectedKey }}
       >
         <View
-          className="h-3.5 w-3.5 items-center justify-center rounded-[3px] border"
+          className="h-3.5 w-3.5 items-center justify-center rounded-md border"
           style={{
-            borderColor: selectedKey ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.25)",
-            backgroundColor: toggles.lockCenter && selectedKey ? "#ffffff" : "transparent",
+            borderColor: selectedKey ? withAlpha(neutral.white, 0.6) : withAlpha(neutral.white, 0.25),
+            backgroundColor: toggles.lockCenter && selectedKey ? neutral.white : "transparent",
           }}
         >
           {toggles.lockCenter && selectedKey ? (
-            <Ionicons name="checkmark" size={11} color="#000000" />
+            <Ionicons name="checkmark" size={11} color={neutral.black} />
           ) : null}
         </View>
         <Text
           className="text-caption font-semibold"
           style={[
             nepaliTextStyle(12, { dense: true }),
-            { color: selectedKey ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.3)" },
+            { color: selectedKey ? withAlpha(neutral.white, 0.7) : withAlpha(neutral.white, 0.3) },
           ]}
         >
           {pick("ग्रह पछ्याउनुहोस्", "Follow graha")}
@@ -1857,7 +1858,7 @@ export function AakashGocharSky({
         <Ionicons
           name={favouritedSet.has(t.id) ? "star" : "star-outline"}
           size={15}
-          color={favouritedSet.has(t.id) ? "#fcd34d" : "rgba(255,255,255,0.35)"}
+          color={favouritedSet.has(t.id) ? illustration.amber67 : withAlpha(neutral.white, 0.35)}
         />
       </Pressable>
     </View>
@@ -1875,14 +1876,14 @@ export function AakashGocharSky({
       onPress={onPress}
       className="flex-row items-center gap-2.5 rounded-lg px-2.5 py-2 active:bg-white/10"
     >
-      <Ionicons name={icon} size={16} color="rgba(255,255,255,0.6)" />
+      <Ionicons name={icon} size={16} color={withAlpha(neutral.white, 0.6)} />
       <Text className="text-body flex-1 font-semibold text-white/80" style={nepaliTextStyle(13, { dense: true })}>
         {label}
       </Text>
       {count !== null ? (
         <Text className="text-caption text-white/45">{digits(String(count))}</Text>
       ) : null}
-      <Ionicons name="chevron-forward" size={14} color="rgba(255,255,255,0.4)" />
+      <Ionicons name="chevron-forward" size={14} color={withAlpha(neutral.white, 0.4)} />
     </Pressable>
   );
 
@@ -1891,10 +1892,10 @@ export function AakashGocharSky({
       onPress={() => setSearchPane(to)}
       className="mb-1 flex-row items-center gap-1 self-start px-1 py-1"
     >
-      <Ionicons name="chevron-back" size={13} color="rgba(255,255,255,0.45)" />
+      <Ionicons name="chevron-back" size={13} color={withAlpha(neutral.white, 0.45)} />
       <Text
         className="text-caption font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(10, { dense: true }), { color: "rgba(255,255,255,0.45)" }]}
+        style={[nepaliTextStyle(10, { dense: true }), { color: withAlpha(neutral.white, 0.45) }]}
       >
         {label}
       </Text>
@@ -1931,12 +1932,12 @@ export function AakashGocharSky({
       top={panelTop}
     >
       <View className="flex-row items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5">
-        <Ionicons name="search" size={17} color="rgba(255,255,255,0.5)" />
+        <Ionicons name="search" size={17} color={withAlpha(neutral.white, 0.5)} />
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder={pick("ग्रह, तारा, नक्षत्र…", "Planet, star, constellation…")}
-          placeholderTextColor="rgba(255,255,255,0.35)"
+          placeholderTextColor={withAlpha(neutral.white, 0.35)}
           /* No `autoFocus`. Opening the panel is how you browse what is up
              there; taking focus threw a keyboard over most of the list before
              anyone had said they wanted to type. Pressing the field still
@@ -1949,7 +1950,7 @@ export function AakashGocharSky({
           accessibilityLabel={searchQuery ? pick("खाली गर्नुहोस्", "Clear") : pick("खोज बन्द गर्नुहोस्", "Close search")}
           className="h-5 w-5 items-center justify-center"
         >
-          <Ionicons name="close" size={14} color="rgba(255,255,255,0.45)" />
+          <Ionicons name="close" size={14} color={withAlpha(neutral.white, 0.45)} />
         </Pressable>
       </View>
 
@@ -2126,7 +2127,7 @@ export function AakashGocharSky({
             style={{ bottom: fovBadgeBottom, left: 0, right: 0 }}
           >
             <View className="rounded-full border border-white/15 bg-black/60 px-3 py-1">
-              <Text className="text-caption font-bold text-white" style={nepaliTextStyle(12, { dense: true })}>
+              <Text className="text-sm font-bold text-white" style={nepaliTextStyle(12, { dense: true })}>
                 {pick("दृश्य क्षेत्र", "FOV")}{" "}
                 {digits(Math.round(fovForZoom("horizon", sample.zoomDistance)))}°
               </Text>
@@ -2143,7 +2144,7 @@ export function AakashGocharSky({
             style={{ top: 0, left: 0, right: 0, bottom: 0, zIndex: 40 }}
           >
             <View className="items-center gap-3 px-6">
-              <CompassNeedle width={56} height={56} color="#f4c542" />
+              <CompassNeedle width={56} height={56} color={illustration.amber61} />
               <Text
                 className="text-display text-center font-extrabold text-white"
                 style={nepaliTextStyle(24, { dense: true })}
@@ -2248,7 +2249,7 @@ export function AakashGocharSky({
             <View className="rounded-full border border-amber-400/60 bg-amber-500/25 px-3 py-1">
               <Text
                 className="text-caption font-bold"
-                style={[nepaliTextStyle(12, { dense: true }), { color: "#fde68a", fontSize: 15 }]}
+                style={[nepaliTextStyle(12, { dense: true }), { color: illustration.amber77 }]}
               >
                 {`${pick("सङ्क्रान्ति", "Sankranti")} · ${rashiNames[sankranti]} · ${
                   monthNames[sankranti]
@@ -2277,15 +2278,15 @@ export function AakashGocharSky({
               className="rounded-full border px-3 py-1"
               style={
                 eclipse
-                  ? { borderColor: "rgba(248,113,113,0.6)", backgroundColor: "rgba(127,29,29,0.5)" }
-                  : { borderColor: "rgba(148,163,184,0.5)", backgroundColor: "rgba(15,23,42,0.6)" }
+                  ? { borderColor: withAlpha(illustration.red71c, 0.6), backgroundColor: withAlpha(illustration.red31, 0.5) }
+                  : { borderColor: withAlpha(illustration.sky65, 0.5), backgroundColor: withAlpha(illustration.sky11, 0.6) }
               }
             >
               <Text
                 className="text-caption font-bold"
                 style={[
                   nepaliTextStyle(12, { dense: true }),
-                  { color: eclipse ? "#fecaca" : "#e2e8f0", fontSize: 15 },
+                  { color: eclipse ? illustration.red89 : wheel.ink },
                 ]}
               >
                 {eclipse
@@ -2326,15 +2327,15 @@ export function AakashGocharSky({
             className="absolute right-3 items-end rounded-xl border border-white/15 px-2.5 py-1.5 active:opacity-70"
             style={{
               bottom: fullscreen ? fullscreenStripClearance : overlayBottom,
-              backgroundColor: "rgba(0,0,0,0.6)",
+              backgroundColor: withAlpha(neutral.black, 0.6),
             }}
             accessibilityRole="button"
             accessibilityLabel={pick("समय नियन्त्रण", "Time controls")}
           >
-            <Text className="text-caption font-bold" style={[nepaliTextStyle(13, { dense: true }), { color: "#ffffff" }]}>
+            <Text className="text-caption font-bold" style={[nepaliTextStyle(13, { dense: true }), { color: neutral.white }]}>
               {simStamp.short.day}
             </Text>
-            <Text className="text-caption font-semibold" style={[nepaliTextStyle(11, { dense: true }), { color: "rgba(255,255,255,0.7)" }]}>
+            <Text className="text-caption font-semibold" style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.7) }]}>
               {simStamp.short.clock}
             </Text>
           </Pressable>
@@ -2373,7 +2374,7 @@ export function AakashGocharSky({
           <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
             <View
               className="items-center justify-center rounded-full border"
-              style={{ width: 48, height: 48, borderColor: "rgba(252,211,77,0.5)" }}
+              style={{ width: 48, height: 48, borderColor: withAlpha(illustration.amber65, 0.5) }}
             >
               <Text
                 className="text-caption absolute whitespace-nowrap rounded-full border px-2 py-0.5 font-bold"
@@ -2381,9 +2382,9 @@ export function AakashGocharSky({
                   nepaliTextStyle(11, { dense: true }),
                   {
                     top: 56,
-                    color: "#fef3c7",
-                    borderColor: "rgba(252,211,77,0.4)",
-                    backgroundColor: "rgba(0,0,0,0.7)",
+                    color: illustration.amber89,
+                    borderColor: withAlpha(illustration.amber65, 0.4),
+                    backgroundColor: withAlpha(neutral.black, 0.7),
                   },
                 ]}
               >
@@ -2411,11 +2412,11 @@ export function AakashGocharSky({
           fullscreen
             ? [
                 nativeWindThemeVars("dark"),
-                { backgroundColor: "rgba(4, 9, 12, 0.62)", paddingBottom: Math.max(insets.bottom, 8) },
+                { backgroundColor: withAlpha(wheel.sky2, 0.62), paddingBottom: Math.max(insets.bottom, 8) },
               ]
             : /* In flow, below the canvas — the sky's own black so a light
                  card is never sitting right under a night sky. */
-              [nativeWindThemeVars("dark"), { backgroundColor: "rgba(4, 9, 12, 0.62)" }]
+              [nativeWindThemeVars("dark"), { backgroundColor: withAlpha(wheel.sky2, 0.62) }]
         }
       >
         <ScrollView
@@ -2556,7 +2557,7 @@ const SkyLabels = memo(function SkyLabels({
                   top: label.y - 7 * scale,
                   width: boxWidth,
                   textAlign: "center",
-                  color: "#e3d9a8",
+                  color: illustration.amber77b,
                   opacity: label.dim ? 0.45 : 1,
                 },
               ]}
@@ -2580,7 +2581,7 @@ const SkyLabels = memo(function SkyLabels({
               style={{ position: "absolute", left: label.x - boxWidth / 2, top: label.y - 12 * scale, width: boxWidth }}
               className="items-center"
             >
-              <Icon width={iconSize} height={iconSize} color="#f4c542" />
+              <Icon width={iconSize} height={iconSize} color={illustration.amber61} />
               <Text
                 className="font-bold"
                 style={[nepaliTextStyle(fontSize, { dense: true }), { color: LABEL_COLOR.rashi }]}
@@ -2633,7 +2634,6 @@ const SkyLabels = memo(function SkyLabels({
                 top: label.y - 5 * scale,
                 width: 16 * scale,
                 textAlign: "center",
-                fontSize: 15 * scale,
                 color: LABEL_COLOR.pada,
               }}
             >
@@ -2849,7 +2849,7 @@ const SkyLabels = memo(function SkyLabels({
             <Text
               key={label.id}
               style={[
-                { position: "absolute", left: label.x - 45, top: label.y + 10, width: 90, textAlign: "center", color: label.color ?? "rgba(255,255,255,0.75)", opacity: 0.85 },
+                { position: "absolute", left: label.x - 45, top: label.y + 10, width: 90, textAlign: "center", color: label.color ?? withAlpha(neutral.white, 0.75), opacity: 0.85 },
                 nepaliTextStyle(9, { dense: true }),
               ]}
               className="text-caption font-bold"
@@ -2904,12 +2904,12 @@ function Chip({
         borderColor: active
           ? "transparent"
           : overlay
-            ? "rgba(255,255,255,0.45)"
-            : "rgba(255,255,255,0.2)",
+            ? withAlpha(neutral.white, 0.45)
+            : withAlpha(neutral.white, 0.2),
         backgroundColor: active
-          ? "rgba(255,255,255,0.85)"
+          ? withAlpha(neutral.white, 0.85)
           : overlay
-            ? "rgba(0,0,0,0.88)"
+            ? withAlpha(neutral.black, 0.88)
             : "transparent",
       }}
       accessibilityRole="button"
@@ -2922,10 +2922,10 @@ function Chip({
           nepaliTextStyle(compact ? 10 : 11, { dense: true }),
           {
             color: active
-              ? "#000000"
+              ? neutral.black
               : overlay
-                ? "rgba(255,255,255,0.85)"
-                : "rgba(255,255,255,0.6)",
+                ? withAlpha(neutral.white, 0.85)
+                : withAlpha(neutral.white, 0.6),
           },
         ]}
       >
@@ -2969,7 +2969,7 @@ function Dropdown({
   return (
     <View
       className={`absolute rounded-xl border border-white/15 ${side === "left" ? "left-3" : "right-3"}`}
-      style={{ top, bottom, width, maxHeight, backgroundColor: "rgba(4, 7, 13, 0.95)" }}
+      style={{ top, bottom, width, maxHeight, backgroundColor: withAlpha(wheel.sky2, 0.95) }}
     >
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3 p-3.5">
         {children}
@@ -3002,14 +3002,14 @@ function ViewTile({
       <Ionicons
         name={icon}
         size={22}
-        color={active ? "#ffffff" : "rgba(255,255,255,0.45)"}
+        color={active ? neutral.white : withAlpha(neutral.white, 0.45)}
       />
       <Text
         numberOfLines={1}
         className="text-caption w-full text-center font-semibold"
         style={[
           nepaliTextStyle(10, { dense: true }),
-          { color: active ? "#ffffff" : "rgba(255,255,255,0.45)" },
+          { color: active ? neutral.white : withAlpha(neutral.white, 0.45) },
         ]}
       >
         {label}
@@ -3052,15 +3052,15 @@ function IconButton({
       }`}
       style={{
         borderColor: active
-          ? "rgba(255,255,255,0.6)"
+          ? withAlpha(neutral.white, 0.6)
           : overlay
-            ? "rgba(255,255,255,0.45)"
-            : "rgba(255,255,255,0.2)",
+            ? withAlpha(neutral.white, 0.45)
+            : withAlpha(neutral.white, 0.2),
         backgroundColor: active
-          ? "rgba(255,255,255,0.85)"
+          ? withAlpha(neutral.white, 0.85)
           : overlay
-            ? "rgba(0,0,0,0.88)"
-            : "rgba(0,0,0,0.4)",
+            ? withAlpha(neutral.black, 0.88)
+            : withAlpha(neutral.black, 0.4),
       }}
       accessibilityRole="button"
       accessibilityLabel={label}
@@ -3069,7 +3069,7 @@ function IconButton({
       <Ionicons
         name={name}
         size={compact ? 15 : 17}
-        color={active ? "#000000" : "rgba(255,255,255,0.8)"}
+        color={active ? neutral.black : withAlpha(neutral.white, 0.8)}
       />
     </Pressable>
   );

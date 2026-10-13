@@ -29,7 +29,7 @@
 
 Visible in the app (web is the design's source of truth; review before the release notes):
 - Colours: `muted`, `border`, `surfaceInset` and `surfaceMuted` now use the website's values in both themes (light muted #f0ebe3 → #f2e7cb, border #e8dfd0 → #d7c9a4, inset/muted surfaces are a 3% / 2.5% ink tint of the card; dark muted #141929 → #191d31). Light-theme tone tints match the website's mixes (toneBest 14% → 12%, toneGood 9% → 8%, toneBad 8% → 6%).
-- Kept on purpose (platform choices, in `mobileRoles()` / `lib/theme.ts`): the app's `accent` is the positive tone (green on light, gold on dark), native muted text stays full ink on light, dark-theme tints stay stronger, cards keep the rounder 8/12 px radii, and the four larger text sizes (15/18/22/28 px).
+- Those platform forks were removed afterwards (see the design parity section below): `accent` is the website's gold, muted text and dark tints match the website, radii are 4.8/8.8 px, and type comes from the website's scale.
 - Icons: the drawer's Documents entry is the website's book-marked icon (was file-text); the floating tab bar draws through `AppNavIcon` from the shared feature map (same Lucide artwork as before).
 - Panchanga sections: anga end times show the website's भोलि / पर्सि prefix when the anga ends on a later day.
 - Kundali copy: the app reads the shared catalogue; three labels take the website's wording (surya_nakshatra "Surya Nakshatra", loading "लोड हुँदैछ…", mahadasha_at_birth "महादशा सुरु (जन्मकालीन)").
@@ -42,3 +42,16 @@ Not visible, but behaviour:
   * Signing out (or into another account) while a refresh is in flight no longer brings the old session back: the late refresh is discarded and its new token revoked. Both apps had this race before.
   * Account errors are `ApiError`s, so React Query no longer retries 4xx account failures.
 - Language: a stored language value is parsed case-insensitively in the app too (as on the website).
+
+## Design parity with the website (October 2026)
+
+The app now matches the website's design values everywhere; the deliberate platform differences listed above are gone. Visible in the app (review before the release notes):
+- Radii: cards, chips and sheets use the website's 4.8 / 8.8 / 16 px (the app's older 8 / 12 px are gone).
+- Colour roles are the website's. `accent` is the gold highlight (not green); positive states (✓, शुभ, verified, "begins") use `success`; errors use `danger` (a deeper red on midnight than before). Light-theme muted text is the website's muted colour, not full ink. Dark-theme tinted surfaces (today, tone good/bad/best, active tab) are the website's mixes, a little fainter than before.
+- Type: sizes come only from the website's scale (the inline sizes were being stripped by `Text` and never applied, so some labels that looked 14 px will now take their nominal 18 or 20 px); diagram labels use three named sizes (8 / 10 / 12 px).
+- Shadows: cards and sheets use the website's shadow tokens (one layer on native).
+- Artwork colours: ~300 hand-typed hex and rgba colours across diagrams, wheels and the sky scene collapsed into a shared palette of ~200 colours (colours within a few RGB steps of each other merged), so some tones shift very slightly.
+- Page building blocks (Card, StatCard, PageHeader, page padding) are built from one shared spec (`spec` in design-tokens) that the website renders too.
+- Letter spacing of small uppercase labels: two shared steps (0.12 em and 0.18 em) instead of 0.08 to 0.22 em in places.
+
+Guarded by `npm run check:design` (CI): hand-typed colours, sizes, radii, spacing and shadows can only go down. See `docs/design-parity.md`.

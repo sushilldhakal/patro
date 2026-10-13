@@ -4,6 +4,7 @@ import { UserRound } from "lucide-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listProfiles, type Profile } from "@/lib/auth/client";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { importWithRetry } from "@/lib/lazy-route";
 
 const LazyAuthDialog = lazy(() =>
@@ -40,7 +41,7 @@ export function SaitProfilePicker({
   }, [isAuthenticated]);
 
   const label = (
-    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground">
+    <span className={cn(saitClasses.pickerLabel, "inline-flex", saitClasses.pickerLabelText)}>
       <UserRound className="size-4 text-secondary" />
       {t("sait.personalise")}
     </span>
@@ -48,12 +49,12 @@ export function SaitProfilePicker({
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={saitClasses.pickerRow}>
         {label}
         <button
           type="button"
           onClick={() => setAuthOpen(true)}
-          className="rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-semibold text-primary hover:bg-surface-muted"
+          className={cn(saitClasses.pickerSignIn, saitClasses.pickerSignInText, "hover:bg-surface-muted")}
         >
           {t("sait.sign_in_to_pick_your_profile")}
         </button>
@@ -68,9 +69,9 @@ export function SaitProfilePicker({
 
   if (profiles !== null && profiles.length === 0) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className={saitClasses.pickerRow}>
         {label}
-        <span className="text-xs text-muted-foreground">
+        <span className={saitClasses.pickerHint}>
           {t("sait.no_saved_profiles_add_one_in_your_account")}
         </span>
       </div>
@@ -78,7 +79,7 @@ export function SaitProfilePicker({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className={saitClasses.pickerRow}>
       {label}
       <select
         value={selectedId ?? ""}
@@ -88,8 +89,9 @@ export function SaitProfilePicker({
           onSelect(id ? (profiles?.find((p) => p.id === id) ?? null) : null);
         }}
         className={cn(
-          "h-9 min-w-[10rem] max-w-[16rem] rounded-lg border border-border bg-card px-2.5 text-sm",
-          "text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40",
+          saitClasses.pickerSelect,
+          saitClasses.pickerSelectText,
+          "focus:outline-none focus:ring-2 focus:ring-primary/40",
         )}
       >
         <option value="">

@@ -20,6 +20,7 @@ import { Text } from "@/components/ui/Text";
 import { adToBS, bsToAD, getBSMonthLength, shiftBsMonth } from "@vedic-patro/domain/bs-calendar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
+import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */
@@ -27,18 +28,18 @@ const DAY_ORIGIN_SEC = 4 * 3600;
 
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
 const DAYLIGHT_STOPS = [
-  "#f6c56a",
-  "#9bd4ff",
-  "#5eb6ff",
-  "#87c8f8",
-  "#f4a04a",
-  "#e85d2c",
-  "#6b3278",
-  "#1a2848",
-  "#8eb8dc",
-  "#0a1020",
-  "#05070f",
-  "#3a2458",
+  illustration.amber66,
+  illustration.sky80,
+  illustration.sky68,
+  illustration.sky75b,
+  midnight.saffron,
+  illustration.orange54,
+  illustration.violet33,
+  illustration.sky19,
+  illustration.sky70,
+  midnight.background,
+  wheel.sky2,
+  illustration.violet24,
 ];
 
 type Field = keyof WallParts;
@@ -182,11 +183,11 @@ export function SkyTimeSheet({
         accessibilityLabel={pick(`${label} बढाउनुहोस्`, `Increase ${label}`)}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
-        <Ionicons name="chevron-up" size={15} color="rgba(255,255,255,0.55)" />
+        <Ionicons name="chevron-up" size={15} color={withAlpha(neutral.white, 0.55)} />
       </Pressable>
       <Text
         className="text-title font-bold"
-        style={[nepaliTextStyle(20, { dense: true }), { color: "#ffffff", fontVariant: ["tabular-nums"] }]}
+        style={[nepaliTextStyle(20, { dense: true }), { color: neutral.white, fontVariant: ["tabular-nums"] }]}
       >
         {digits(plain(field))}
       </Text>
@@ -196,13 +197,13 @@ export function SkyTimeSheet({
         accessibilityLabel={pick(`${label} घटाउनुहोस्`, `Decrease ${label}`)}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
-        <Ionicons name="chevron-down" size={15} color="rgba(255,255,255,0.55)" />
+        <Ionicons name="chevron-down" size={15} color={withAlpha(neutral.white, 0.55)} />
       </Pressable>
     </View>
   );
 
   const sep = (glyph: string) => (
-    <Text className="text-title font-bold" style={{ color: "rgba(255,255,255,0.4)" }}>
+    <Text className="text-title font-bold" style={{ color: withAlpha(neutral.white, 0.4) }}>
       {glyph}
     </Text>
   );
@@ -218,11 +219,11 @@ export function SkyTimeSheet({
       accessibilityLabel={label}
       className="flex-1 items-center gap-1 rounded-xl py-2 active:opacity-60"
     >
-      <Ionicons name={icon} size={22} color="#ffffff" />
+      <Ionicons name={icon} size={22} color={neutral.white} />
       <Text
         numberOfLines={1}
         className="text-caption font-semibold"
-        style={[nepaliTextStyle(11, { dense: true }), { color: "rgba(255,255,255,0.75)" }]}
+        style={[nepaliTextStyle(11, { dense: true }), { color: withAlpha(neutral.white, 0.75) }]}
       >
         {label}
       </Text>
@@ -240,11 +241,11 @@ export function SkyTimeSheet({
         onPress={onClose}
         accessibilityRole="button"
         accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
-        style={{ position: "absolute", inset: 0, backgroundColor: "rgba(0,0,0,0.4)" }}
+        style={{ position: "absolute", inset: 0, backgroundColor: withAlpha(neutral.black, 0.4) }}
       />
       <View
         className="w-full rounded-3xl border border-white/10 px-4 pb-4 pt-2"
-        style={{ maxWidth: 512, backgroundColor: "rgba(28,28,30,0.96)" }}
+        style={{ maxWidth: 512, backgroundColor: withAlpha(illustration.gray11, 0.96) }}
       >
         <View className="mb-3 h-1 w-10 self-center rounded-full bg-white/30" />
 
@@ -267,7 +268,7 @@ export function SkyTimeSheet({
 
         <Text
           className="text-body mb-1 mt-4 text-center font-semibold"
-          style={[nepaliTextStyle(13, { dense: true }), { color: "rgba(255,255,255,0.9)" }]}
+          style={[nepaliTextStyle(13, { dense: true }), { color: withAlpha(neutral.white, 0.9) }]}
         >
           {speedLabel}
         </Text>
@@ -278,7 +279,7 @@ export function SkyTimeSheet({
             accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
-            <Ionicons name={playing ? "pause" : "play"} size={22} color="#ffffff" />
+            <Ionicons name={playing ? "pause" : "play"} size={22} color={neutral.white} />
           </Pressable>
           <Slider
             style={{ flex: 1, height: 32 }}
@@ -287,9 +288,9 @@ export function SkyTimeSheet({
             step={1}
             value={rateValue}
             onValueChange={onRate}
-            minimumTrackTintColor="rgba(255,255,255,0.75)"
-            maximumTrackTintColor="rgba(255,255,255,0.2)"
-            thumbTintColor="#ffffff"
+            minimumTrackTintColor={withAlpha(neutral.white, 0.75)}
+            maximumTrackTintColor={withAlpha(neutral.white, 0.2)}
+            thumbTintColor={neutral.white}
           />
           <Pressable
             onPress={onResetRate}
@@ -297,7 +298,7 @@ export function SkyTimeSheet({
             accessibilityLabel={pick("वास्तविक गति", "Realtime speed")}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
-            <Ionicons name="refresh" size={20} color="#ffffff" />
+            <Ionicons name="refresh" size={20} color={neutral.white} />
           </Pressable>
         </View>
 
@@ -321,7 +322,8 @@ export function SkyTimeSheet({
               colors={DAYLIGHT_STOPS as unknown as [string, string, ...string[]]}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
-              style={{ position: "absolute", left: 0, right: 0, height: 12, borderRadius: 6 }}
+              style={{ position: "absolute", left: 0, right: 0, height: 12 }}
+              className="rounded-full"
             />
             <Slider
               style={{ width: "100%", height: 32 }}
@@ -340,7 +342,7 @@ export function SkyTimeSheet({
               }}
               minimumTrackTintColor="transparent"
               maximumTrackTintColor="transparent"
-              thumbTintColor="#ffffff"
+              thumbTintColor={neutral.white}
             />
           </View>
           <View className="mt-1.5 h-4 flex-row justify-between">
@@ -351,7 +353,7 @@ export function SkyTimeSheet({
                 style={[
                   nepaliTextStyle(10, { dense: true }),
                   {
-                    color: band.id === activePeriod ? "#ffffff" : "rgba(255,255,255,0.55)",
+                    color: band.id === activePeriod ? neutral.white : withAlpha(neutral.white, 0.55),
                     fontWeight: band.id === activePeriod ? "600" : "500",
                   },
                 ]}

@@ -1,4 +1,5 @@
 import { getRouteApi } from "@tanstack/react-router";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { useMemo } from "react";
 import { RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -38,19 +39,19 @@ function EventRow({ ev }: { ev: GrahaVakriEvent }) {
   const dateLabel = renderedEntryDate(ev);
   const timeLabel = ev.entry_time_local_short ?? "";
   return (
-    <div className="flex items-center font-semibold justify-between gap-2 rounded-md px-2.5 py-1.5 text-sm odd:bg-foreground/[0.03]">
-      <span className="flex items-center gap-1.5">
-        <span className={cn(isVakri ? "text-danger" : "text-success")}>
+    <div className={cn(grahaClasses.eventRow, grahaClasses.eventText, "flex odd:bg-foreground/[0.03]")}>
+      <span className={cn(grahaClasses.eventLabel, "flex")}>
+        <span className={cn(grahaClasses.eventText, isVakri ? grahaClasses.toneRetro : grahaClasses.toneDirect)}>
           {isVakri ? "↺" : "→"}
         </span>
-        <span className={cn("font-semibold", isVakri ? "text-danger" : "text-success")}>
+        <span className={cn(grahaClasses.eventText, isVakri ? grahaClasses.toneRetro : grahaClasses.toneDirect)}>
           {t(isVakri ? "graha_pages.vakri.retrograde" : "graha_pages.vakri.direct")}
         </span>
       </span>
-      <span className="text-right">
-        <span className="font-num tabular-nums text-foreground">{digits(dateLabel)}</span>
+      <span className={grahaClasses.eventValue}>
+        <span className={grahaClasses.eventDate}>{digits(dateLabel)}</span>
         {timeLabel ? (
-          <span className="text-muted-foreground"> · {digits(timeLabel)}</span>
+          <span className={grahaClasses.eventTime}> · {digits(timeLabel)}</span>
         ) : null}
       </span>
     </div>
@@ -104,11 +105,11 @@ export function GrahaVakri() {
           <GrahaGroupedEventCards
             order={GRAHA_ORDER}
             groups={byGraha}
-            bodyClassName="flex flex-col gap-0.5 p-2"
+            bodyClassName={grahaClasses.columnBodyTight}
             renderCardHeader={(g, events) => (
               <>
-                <span className="text-base font-bold text-foreground">{grahaName(g, lang)}</span>
-                <span className="text-xs text-muted-foreground">
+                <span className={grahaClasses.columnTitle}>{grahaName(g, lang)}</span>
+                <span className={grahaClasses.columnCount}>
                   {events.length
                     ? t("graha_pages.vakri.stations", { count: events.length })
                     : t("graha_pages.vakri.no_stations")}
@@ -117,7 +118,7 @@ export function GrahaVakri() {
             )}
             renderItem={(ev) => <EventRow ev={ev} />}
             emptyInGroup={
-              <p className="px-2 py-1.5 text-sm text-muted-foreground">
+              <p className={grahaClasses.columnEmpty}>
                 {t("graha_pages.vakri.no_vakri_year")}
               </p>
             }

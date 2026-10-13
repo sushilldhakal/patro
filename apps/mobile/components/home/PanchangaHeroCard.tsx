@@ -24,6 +24,7 @@ import { patroEraShortLabel } from "@/components/patro-date/patro-era-labels";
 import { resolveSamvatsaraForPatroYear, type SamvatsaraPayload } from "@vedic-patro/domain/samvatsara";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
+import { illustration, neutral, spaceUnit, withAlpha } from "@vedic-patro/design-tokens";
 type Props = {
   month: number;
   year: number;
@@ -34,6 +35,8 @@ type Props = {
   p?: PanchangaDay;
   contextDay?: CalendarDay | null;
 };
+
+const HERO_PADDING = 5.5 * spaceUnit;
 
 export function PanchangaHeroCard({
   month,
@@ -138,10 +141,10 @@ export function PanchangaHeroCard({
         accessibilityIgnoresInvertColors
       >
         <LinearGradient
-          colors={["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"]}
+          colors={[withAlpha(neutral.black, 0.82), withAlpha(neutral.black, 0.55), withAlpha(neutral.black, 0.4)]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={{ padding: 22 }}
+          style={{ padding: HERO_PADDING }}
         >
           <View className="flex-row items-start justify-between gap-3">
             <View className="min-w-0 flex-1">
@@ -180,18 +183,18 @@ export function PanchangaHeroCard({
 function HeroPill({ label, kind }: { label: string; kind?: "public" | "festival" }) {
   const bg =
     kind === "public"
-      ? "rgba(255,90,90,0.16)"
+      ? withAlpha(illustration.red68b, 0.16)
       : kind === "festival"
-        ? "rgba(0,170,180,0.18)"
-        : "rgba(255,255,255,0.10)";
+        ? withAlpha(illustration.teal35, 0.18)
+        : withAlpha(neutral.white, 0.10);
   const border =
     kind === "public"
-      ? "rgba(255,120,120,0.35)"
+      ? withAlpha(illustration.red74, 0.35)
       : kind === "festival"
-        ? "rgba(0,200,210,0.35)"
-        : "rgba(255,255,255,0.20)";
+        ? withAlpha(illustration.teal41b, 0.35)
+        : withAlpha(neutral.white, 0.20);
   const text =
-    kind === "public" ? "#ffb4b4" : kind === "festival" ? "#8fe3e8" : "#ffffff";
+    kind === "public" ? illustration.red85 : kind === "festival" ? illustration.teal74 : neutral.white;
 
   return (
     <View

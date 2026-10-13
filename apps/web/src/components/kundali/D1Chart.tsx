@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useQuery } from "@tanstack/react-query";
 import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@vedic-patro/domain/bhava";
 import { useTranslation } from "react-i18next";
@@ -91,7 +92,7 @@ function DrishtiPanel({
   return (
     <div className="mt-3 w-full max-w-[340px] mx-auto space-y-2 text-left">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground">
+        <p className={kundaliDetailClasses.prose.heading}>
           {bilingualText(
             lang,
             `${name}को दृष्टि: ${houseList} भावमा`,
@@ -107,21 +108,22 @@ function DrishtiPanel({
           ✕
         </button>
       </div>
-      <div className="rounded-lg border border-border bg-card/40 p-3">
-        <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-foreground">
+      <div className={kundaliDetailClasses.parts.aspectCard}>
+        <div className={cn("flex", kundaliDetailClasses.parts.aspectHead)}>
+          <span className={kundaliDetailClasses.prose.heading}>
             {bilingualText(lang, "दृष्टिको फल", "Aspect effect")}
           </span>
           <span
             className={cn(
-              "inline-flex items-center rounded-full border px-2 py-0.5 text-sm font-semibold leading-none",
+              "inline-flex leading-none",
+              kundaliDetailClasses.parts.statusBadge,
               badgeCls,
             )}
           >
             {badge}
           </span>
         </div>
-        <p className="text-sm leading-relaxed">{bilingualText(lang, info.summaryNe, info.summaryEn)}</p>
+        <p className={kundaliDetailClasses.prose.body}>{bilingualText(lang, info.summaryNe, info.summaryEn)}</p>
       </div>
     </div>
   );

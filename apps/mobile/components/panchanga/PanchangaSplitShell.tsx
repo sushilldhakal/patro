@@ -9,7 +9,7 @@ import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
 
 export const PANCHANGA_SIDEBAR_RAIL_WIDTH = 224;
 
-/** Matches web `min-[992px]:block` on `PanchangaShellLayout` sidebar. */
+/** Matches web `calendar:block` on `PanchangaShellLayout` sidebar. */
 export function useShowPanchangaSidebar(): boolean {
   const { width } = useWindowDimensions();
   return width >= PANCHANGA_SIDEBAR_MIN_WIDTH;
@@ -54,7 +54,7 @@ export function PanchangaSplitShell({
         <ScrollView
           ref={pageScrollRef}
           className="flex-1 bg-background"
-          contentContainerClassName="mx-auto w-full max-w-[1600px] pt-4"
+          contentContainerClassName="mx-auto w-full max-w-page-wide pt-4"
           contentContainerStyle={mainPadding}
           showsVerticalScrollIndicator={false}
         >
@@ -63,7 +63,7 @@ export function PanchangaSplitShell({
       );
     }
     return (
-      <View className="mx-auto w-full max-w-[1600px] flex-1 bg-background pt-4" style={mainPadding}>
+      <View className="mx-auto w-full max-w-page-wide flex-1 bg-background pt-4" style={mainPadding}>
         {mainInner}
       </View>
     );
@@ -73,7 +73,7 @@ export function PanchangaSplitShell({
     <ScrollView
       ref={pageScrollRef}
       className="flex-1 bg-background"
-      contentContainerClassName="mx-auto w-full max-w-[1600px] pt-4"
+      contentContainerClassName="mx-auto w-full max-w-page-wide pt-4"
       contentContainerStyle={mainPadding}
       showsVerticalScrollIndicator={false}
     >
@@ -88,18 +88,16 @@ export function PanchangaSplitShell({
   return (
     <View className="flex-1 flex-row bg-background">
       <View
+        className="pb-3 pr-2 pt-4"
         style={{
           width: PANCHANGA_SIDEBAR_RAIL_WIDTH,
-          paddingTop: 16,
-          paddingBottom: 12,
           paddingLeft: PAGE_HORIZONTAL_PADDING,
-          paddingRight: 8,
           borderRightWidth: 1,
           borderRightColor: colors.border,
           backgroundColor: colors.background,
         }}
       >
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
           <PanchangaSidebarNav
             className="w-full border-0"
             compact={compact}

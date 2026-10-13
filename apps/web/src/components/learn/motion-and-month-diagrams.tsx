@@ -14,12 +14,13 @@ import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
+import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 const INK = "currentColor";
-const MARK = "#f59e0b";
-const WARN = "#ef4444";
-const COOL = "#0ea5e9";
-const GOOD = "#35d05a";
-const MOONLIT = "#e8eef6";
+const MARK = illustration.orange50;
+const WARN = illustration.red60;
+const COOL = illustration.teal48;
+const GOOD = illustration.green51;
+const MOONLIT = wheel.ink;
 
 const digits = (lang: Lang, v: string | number) =>
   lang === "en" ? String(v) : toNepaliDigits(String(v));
@@ -42,7 +43,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
     </figure>
   );
 }
@@ -95,7 +96,7 @@ export function RetrogradeLoop() {
     >
       {/* the backdrop of fixed stars */}
       <line x1={16} y1={skyY} x2={W - 16} y2={skyY} stroke={INK} strokeOpacity={0.22} strokeWidth={1} />
-      <text x={16} y={skyY - 8} className="fill-current text-[8px] opacity-55">
+      <text x={16} y={skyY - 8} className="fill-current text-diagram-2xs opacity-55">
         {t("learn.diagrams.retrograde_star_backdrop")}
       </text>
 
@@ -103,7 +104,7 @@ export function RetrogradeLoop() {
       {[rE, rM].map((r) => (
         <ellipse key={r} cx={sunX} cy={sunY} rx={r} ry={r * 0.42} fill="none" stroke={INK} strokeOpacity={0.18} strokeWidth={0.8} />
       ))}
-      <circle cx={sunX} cy={sunY} r={8} fill="#dddd00" opacity={0.6} />
+      <circle cx={sunX} cy={sunY} r={8} fill={illustration.amber43} opacity={0.6} />
 
       {steps.map((s) => {
         const retro = s.i >= 3 && s.i <= 5;
@@ -125,13 +126,13 @@ export function RetrogradeLoop() {
         );
       })}
 
-      <text x={sunX - rE - 8} y={sunY + 26} textAnchor="end" className="text-[8px] font-semibold" style={{ fill: COOL }}>
+      <text x={sunX - rE - 8} y={sunY + 26} textAnchor="end" className="text-diagram-2xs font-semibold" style={{ fill: COOL }}>
         {t("learn.diagrams.retrograde_earth_faster")}
       </text>
-      <text x={sunX + rM + 8} y={sunY + 26} className="text-[8px] font-semibold" style={{ fill: WARN }}>
+      <text x={sunX + rM + 8} y={sunY + 26} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {t("learn.diagrams.retrograde_mars_slower")}
       </text>
-      <text x={W / 2} y={H - 8} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: WARN }}>
+      <text x={W / 2} y={H - 8} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {t("learn.diagrams.retrograde_red_span")}
       </text>
     </Frame>
@@ -194,10 +195,10 @@ export function MandaShighra() {
     >
       {rows.map((r) => (
         <g key={r.title}>
-          <text x={L - 8} y={r.y + 2} textAnchor="end" className="fill-current text-[8px] font-semibold opacity-75">
+          <text x={L - 8} y={r.y + 2} textAnchor="end" className="fill-current text-diagram-2xs font-semibold opacity-75">
             {t(r.title)}
           </text>
-          <text x={L - 8} y={r.y + 13} textAnchor="end" className="fill-current text-[7px] opacity-45">
+          <text x={L - 8} y={r.y + 13} textAnchor="end" className="fill-current text-5xl opacity-45">
             {t(r.sub)}
           </text>
           <line x1={L} y1={r.y} x2={Rr} y2={r.y} stroke={INK} strokeOpacity={0.12} strokeWidth={0.7} strokeDasharray="3 3" />
@@ -213,7 +214,7 @@ export function MandaShighra() {
           />
         </g>
       ))}
-      <text x={Rr} y={H - 6} textAnchor="end" className="fill-current text-[7.5px] opacity-45">
+      <text x={Rr} y={H - 6} textAnchor="end" className="fill-current text-diagram-2xs opacity-45">
         {t("learn.diagrams.one_revolution_axis")}
       </text>
     </Frame>
@@ -262,7 +263,7 @@ export function PakshaStrip() {
         const cx = x(f);
         return (
           <g key={f}>
-            <circle cx={cx} cy={midY - 32} r={9} fill="#1b2430" stroke={INK} strokeOpacity={0.3} strokeWidth={0.7} />
+            <circle cx={cx} cy={midY - 32} r={9} fill={midnight.card} stroke={INK} strokeOpacity={0.3} strokeWidth={0.7} />
             {lit > 0.02 && (
               <path
                 d={
@@ -293,10 +294,10 @@ export function PakshaStrip() {
         },
       ].map((p) => (
         <g key={p.title}>
-          <text x={x(p.f)} y={midY + 26} textAnchor="middle" className="text-[9px] font-semibold" style={{ fill: p.c }}>
+          <text x={x(p.f)} y={midY + 26} textAnchor="middle" className="text-diagram-xs font-semibold" style={{ fill: p.c }}>
             {t(p.title)}
           </text>
-          <text x={x(p.f)} y={midY + 39} textAnchor="middle" className="fill-current text-[8px] opacity-60">
+          <text x={x(p.f)} y={midY + 39} textAnchor="middle" className="fill-current text-diagram-2xs opacity-60">
             {t(p.sub)}
           </text>
         </g>
@@ -309,13 +310,13 @@ export function PakshaStrip() {
       ].map((m, i) => (
         <g key={i}>
           <line x1={x(m.f)} y1={midY - 12} x2={x(m.f)} y2={midY + 10} stroke={MARK} strokeWidth={1.2} />
-          <text x={x(m.f)} y={midY + 58} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: MARK }}>
+          <text x={x(m.f)} y={midY + 58} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
             {t(m.phase)}
           </text>
         </g>
       ))}
 
-      <text x={W / 2} y={H - 6} textAnchor="middle" className="fill-current text-[7.5px] opacity-45">
+      <text x={W / 2} y={H - 6} textAnchor="middle" className="fill-current text-diagram-2xs opacity-45">
         {bilingualText(lang, `एक चान्द्र मास — ${n("29.53")} दिन`, `one lunation — ${n("29.53")} days`)}
       </text>
     </Frame>

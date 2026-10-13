@@ -5,14 +5,15 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTodayHora } from "@/lib/learn/hora-live";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const PLANET_COLOR: Record<string, string> = {
-  Sun: "#f7a41d",
-  Moon: "#cbd5e1",
-  Mars: "#ef4444",
-  Mercury: "#22c55e",
-  Jupiter: "#eab308",
-  Venus: "#38bdf8",
-  Saturn: "#a855f7",
+  Sun: illustration.orange53b,
+  Moon: illustration.sky84,
+  Mars: illustration.red60,
+  Mercury: illustration.green45,
+  Jupiter: illustration.amber47,
+  Venus: illustration.teal60,
+  Saturn: illustration.violet65,
 };
 
 /**
@@ -41,7 +42,7 @@ export function HoraTodayDiagram() {
         <View className="flex-row items-center gap-3">
           <View
             className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: PLANET_COLOR[current.planet] ?? "#94a3b8" }}
+            style={{ backgroundColor: PLANET_COLOR[current.planet] ?? illustration.sky65 }}
           />
           <View className="min-w-0 flex-1">
             <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground">
@@ -72,7 +73,7 @@ export function HoraTodayDiagram() {
               >
                 <View
                   className="h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: PLANET_COLOR[slot.planet] ?? "#94a3b8" }}
+                  style={{ backgroundColor: PLANET_COLOR[slot.planet] ?? illustration.sky65 }}
                 />
                 <Text
                   className={cn("text-caption font-semibold", active ? "text-primary" : "text-foreground")}

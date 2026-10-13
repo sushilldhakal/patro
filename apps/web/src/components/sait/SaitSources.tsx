@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
+import { cn } from "@vedic-patro/domain/utils";
 import { useLocale } from "@/i18n/locale";
 import type { SaitCategoryId } from "@vedic-patro/domain/sait-data";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 type SaitSourceId = "brihat_samhita" | "dharma_sindhu" | "muhurta_chintamani";
 
@@ -20,17 +22,17 @@ export function SaitSources({ category }: { category: SaitCategoryId }) {
   const { digits } = useLocale();
   const ids = SOURCES_BY_CATEGORY[category];
   return (
-    <section className="rounded-xl border border-border bg-muted/40 p-3.5 sm:p-5">
-      <h2 className="text-sm font-semibold text-foreground">{t("sait.sources.heading")}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{t("sait.sources.blurb")}</p>
-      <ol className="mt-4 flex flex-col gap-4">
+    <section className={saitClasses.sourcesCard}>
+      <h2 className={saitClasses.sourcesHeading}>{t("sait.sources.heading")}</h2>
+      <p className={saitClasses.sourcesBlurb}>{t("sait.sources.blurb")}</p>
+      <ol className={saitClasses.sourcesList}>
         {ids.map((id, i) => (
-          <li key={id} className="flex gap-3 text-sm">
-            <span className="w-5 shrink-0 font-semibold text-muted-foreground">{digits(i + 1)}.</span>
-            <div className="min-w-0 flex flex-col gap-1">
-              <p className="font-semibold text-foreground">{t(`sait.sources.${id}.credit`)}</p>
-              <p className="text-muted-foreground">{t(`sait.sources.${id}.edition`)}</p>
-              <p className="text-muted-foreground">{t(`sait.sources.${id}.used.${category}`)}</p>
+          <li key={id} className={cn(saitClasses.sourceItem, "flex", saitClasses.sourceText)}>
+            <span className={saitClasses.sourceNum}>{digits(i + 1)}.</span>
+            <div className={saitClasses.sourceBody}>
+              <p className={saitClasses.sourceCredit}>{t(`sait.sources.${id}.credit`)}</p>
+              <p className={saitClasses.sourceDetail}>{t(`sait.sources.${id}.edition`)}</p>
+              <p className={saitClasses.sourceDetail}>{t(`sait.sources.${id}.used.${category}`)}</p>
             </div>
           </li>
         ))}

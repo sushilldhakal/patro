@@ -24,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import { tmCardCap, tmCardPadLg } from "@/lib/learn-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { illustration } from "@vedic-patro/design-tokens";
 type Accent = "teal" | "amber" | "sky";
 
 /**
@@ -98,7 +99,7 @@ function accentVar(accent: Accent): string {
     ? "var(--tm-amber)"
     : accent === "teal"
       ? "var(--tm-teal)"
-      : "#5aa9e6";
+      : illustration.sky63;
 }
 
 /* ── shared node ──────────────────────────────────────────────────────── */
@@ -144,7 +145,7 @@ function Node({
         dominantBaseline="middle"
         className={cn(
           "fill-[var(--tm-ink)] font-bold",
-          strong ? "text-[15px]" : "text-[13.5px]",
+          strong ? "text-base" : "text-diagram-sm",
         )}
       >
         {title}
@@ -155,7 +156,7 @@ function Node({
           y={y + h / 2 + 11}
           textAnchor="middle"
           dominantBaseline="middle"
-          className="fill-[var(--tm-ink-faint)] text-[10.5px]"
+          className="fill-[var(--tm-ink-faint)] text-diagram-xs"
         >
           {sub}
         </text>
@@ -197,7 +198,7 @@ function Down({
           y={(from + to) / 2}
           textAnchor={ruleSide > 0 ? "start" : "end"}
           dominantBaseline="middle"
-          className="fill-[var(--tm-ink-faint)] text-[9.5px] font-semibold"
+          className="fill-[var(--tm-ink-faint)] text-diagram-xs font-semibold"
         >
           {rule}
         </text>
@@ -469,10 +470,10 @@ export function HierarchyDiagram() {
 
   return (
     <figure className={tmCardPadLg}>
-      <div className="hidden min-[720px]:block">
+      <div className="hidden md:block">
         <WideLayout />
       </div>
-      <div className="min-[720px]:hidden">
+      <div className="md:hidden">
         <StackedLayout />
       </div>
       <figcaption className={tmCardCap}>

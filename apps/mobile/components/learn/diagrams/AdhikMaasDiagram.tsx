@@ -14,6 +14,7 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 
+import { illustration, midnight } from "@vedic-patro/design-tokens";
 const SOLAR = 30.44;
 const SYN = 29.53;
 const DAYS = 95;
@@ -99,7 +100,7 @@ const AdhikMaasScene = memo(function AdhikMaasScene({ onLabels, lang, copy }: Sc
         return (
           <mesh key={i} position={[xOf(s.x0) + w / 2, s.isAdhik ? 0.015 : 0, LUNAR_Z]}>
             <boxGeometry args={[w - 0.01, s.isAdhik ? 0.045 : 0.025, 0.09]} />
-            <meshStandardMaterial color={s.isAdhik ? DIAGRAM_LABEL_COLOR.warn : "#cbd5e1"} transparent opacity={s.isAdhik ? 0.65 : 0.35} />
+            <meshStandardMaterial color={s.isAdhik ? DIAGRAM_LABEL_COLOR.warn : illustration.sky84} transparent opacity={s.isAdhik ? 0.65 : 0.35} />
           </mesh>
         );
       })}
@@ -112,7 +113,7 @@ const AdhikMaasScene = memo(function AdhikMaasScene({ onLabels, lang, copy }: Sc
       {AMAV.map((d, i) => (
         <mesh key={`am-${i}`} position={[xOf(d), -0.04, LUNAR_Z]}>
           <sphereGeometry args={[0.014, 12, 12]} />
-          <meshStandardMaterial color={"#1b2430"} />
+          <meshStandardMaterial color={midnight.card} />
         </mesh>
       ))}
       <mesh position={[0, -0.09, (SOLAR_Z + LUNAR_Z) / 2]}>
@@ -141,7 +142,7 @@ export function AdhikMaasDiagram() {
       idleSpin={0}
       legend={[
         { color: DIAGRAM_COLOR.sun, label: pick("सौर मास (सङ्क्रान्ति)", "Solar month (sankranti)") },
-        { color: "#cbd5e1", label: pick("चान्द्र मास (औंसी)", "Lunar month (amavasya)") },
+        { color: illustration.sky84, label: pick("चान्द्र मास (औंसी)", "Lunar month (amavasya)") },
         { color: DIAGRAM_LABEL_COLOR.warn, label: pick("सङ्क्रान्ति-रहित मास = अधिक", "Sankranti-less month = adhik") },
       ]}
       readouts={[

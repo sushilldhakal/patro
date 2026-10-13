@@ -28,16 +28,17 @@ import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const W = 520;
 const H = 330;
 const CX = 236;
 const CY = 176;
 const R = 132;
 
-const NEVER_SETS = "#35d05a";
-const RISES = "#8fb6d8";
-const NEVER_RISES = "#ef4444";
-const AXIS = "#f59e0b";
+const NEVER_SETS = illustration.green51;
+const RISES = illustration.sky70;
+const NEVER_RISES = illustration.red60;
+const AXIS = illustration.orange50;
 
 /** Kathmandu. The limits are ±(90 − φ). */
 const LAT = 27.7;
@@ -145,7 +146,7 @@ export function CircumpolarSky() {
         {/* the polar axis, and the latitude it makes with the horizon */}
         <line x1={sx1} y1={sy1} x2={px1} y2={py1} stroke={AXIS} strokeWidth={1.3} opacity={0.85} />
         <circle cx={px1} cy={py1} r={3.4} fill={AXIS} />
-        <text x={px1 - 4} y={py1 - 7} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: AXIS }}>
+        <text x={px1 - 4} y={py1 - 7} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: AXIS }}>
           {t("learn.study.circumpolar.celestial_pole")}
         </text>
         <path
@@ -159,7 +160,7 @@ export function CircumpolarSky() {
           x={CX - 60}
           y={CY - 20}
           textAnchor="middle"
-          className="text-[8.5px] font-semibold"
+          className="text-diagram-2xs font-semibold"
           style={{ fill: AXIS }}
         >
           φ = {num(LAT)}°
@@ -175,36 +176,36 @@ export function CircumpolarSky() {
           strokeOpacity={0.55}
           strokeWidth={1.2}
         />
-        <text x={CX - R - 16} y={CY + 12} className="fill-current text-[8px] opacity-55">
+        <text x={CX - R - 16} y={CY + 12} className="fill-current text-diagram-2xs opacity-55">
           {t("learn.study.circumpolar.north")}
         </text>
-        <text x={CX + R + 16} y={CY + 12} textAnchor="end" className="fill-current text-[8px] opacity-55">
+        <text x={CX + R + 16} y={CY + 12} textAnchor="end" className="fill-current text-diagram-2xs opacity-55">
           {t("learn.study.circumpolar.south")}
         </text>
-        <text x={CX} y={CY + 13} textAnchor="middle" className="fill-current text-[8px] opacity-45">
+        <text x={CX} y={CY + 13} textAnchor="middle" className="fill-current text-diagram-2xs opacity-45">
           {t("learn.study.circumpolar.horizon")}
         </text>
 
         {/* the three verdicts */}
-        <text x={W - 8} y={30} textAnchor="end" className="text-[8.5px] font-semibold" style={{ fill: NEVER_SETS }}>
+        <text x={W - 8} y={30} textAnchor="end" className="text-diagram-2xs font-semibold" style={{ fill: NEVER_SETS }}>
           {t("learn.study.circumpolar.never_sets")}
         </text>
-        <text x={W - 8} y={44} textAnchor="end" className="text-[8.5px]" style={{ fill: RISES }}>
+        <text x={W - 8} y={44} textAnchor="end" className="text-diagram-2xs" style={{ fill: RISES }}>
           {t("learn.study.circumpolar.rises_and_sets")}
         </text>
-        <text x={W - 8} y={H - 10} textAnchor="end" className="text-[8.5px] font-semibold" style={{ fill: NEVER_RISES }}>
+        <text x={W - 8} y={H - 10} textAnchor="end" className="text-diagram-2xs font-semibold" style={{ fill: NEVER_RISES }}>
           {t("learn.study.circumpolar.never_rises")}
         </text>
 
         {/* where the two famous asterisms actually fall */}
-        <text x={8} y={H - 24} className="fill-current text-[8px] opacity-70">
+        <text x={8} y={H - 24} className="fill-current text-diagram-2xs opacity-70">
           {t("learn.study.circumpolar.saptarishi_range")}
         </text>
-        <text x={8} y={H - 12} className="fill-current text-[8px] opacity-70">
+        <text x={8} y={H - 12} className="fill-current text-diagram-2xs opacity-70">
           {t("learn.study.circumpolar.crux_range")}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
         {t("learn.study.circumpolar.caption")}
       </figcaption>
     </figure>

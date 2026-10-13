@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
+import { radius, space, spaceUnit, webTypeScale } from "@vedic-patro/design-tokens";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
@@ -34,12 +35,12 @@ function WebStringSelect({ value, options, onChange, ariaLabel, minWidth = 96 }:
         height: 36,
         alignItems: "center",
         gap: 2,
-        borderRadius: 8,
+        borderRadius: radius.xl,
         borderWidth: 1,
         borderColor: colors.border,
         backgroundColor: colors.card,
-        paddingLeft: 10,
-        paddingRight: 6,
+        paddingLeft: spaceUnit * 2.5,
+        paddingRight: spaceUnit * 1.5,
         cursor: "pointer",
         width: "100%",
       }}
@@ -66,7 +67,7 @@ function WebStringSelect({ value, options, onChange, ariaLabel, minWidth = 96 }:
       <span
         style={{
           flex: 1,
-          fontSize: 15,
+          fontSize: webTypeScale.sm.size,
           color: colors.foreground,
           pointerEvents: "none",
           overflow: "hidden",
@@ -130,8 +131,8 @@ export function NativeStringSelect(props: Props) {
         alignSelf: "center",
         width: "100%",
         maxWidth: 420,
-        marginHorizontal: 24,
-        borderRadius: 16,
+        marginHorizontal: space["2xl"],
+        borderRadius: radius["2xl"],
         overflow: "hidden",
         borderWidth: 1,
         borderColor: colors.border,
@@ -173,20 +174,20 @@ export function NativeStringSelect(props: Props) {
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingHorizontal: space.lg,
+            paddingVertical: space.md,
             borderBottomWidth: 1,
             borderBottomColor: colors.border,
           }}
         >
           <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
-            <Text style={{ fontSize: 18, color: colors.mutedForeground }}>{pick("रद्द", "Cancel")}</Text>
+            <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>{pick("रद्द", "Cancel")}</Text>
           </Pressable>
           <Text
             style={{
               flex: 1,
               textAlign: "center",
-              fontSize: 18,
+              fontSize: webTypeScale.lg.size,
               fontWeight: "600",
               color: colors.foreground,
             }}
@@ -200,7 +201,7 @@ export function NativeStringSelect(props: Props) {
             }}
             style={{ minWidth: 72, alignItems: "flex-end" }}
           >
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
+            <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
               {pick("भयो", "Done")}
             </Text>
           </Pressable>

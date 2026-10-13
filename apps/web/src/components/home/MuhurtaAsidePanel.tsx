@@ -23,11 +23,9 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
-import {
-  patroEmpty,
-  patroMiniSubTab,
-  patroNavataraRow,
-} from "@/lib/patro-classes";
+import { patroNavataraRow } from "@/lib/patro-classes";
+import { cn } from "@vedic-patro/domain/utils";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type MuhurtaSubTab = "tarabal" | "chandrabal" | "choghadiya" | "hora" | "pushkara";
 
@@ -71,15 +69,15 @@ function NavataraAsideList({
   const { lang } = useLocale();
 
   if (!rows.length) {
-    return <p className={patroEmpty}>{t("muhurta_aside.unavailable")}</p>;
+    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.unavailable")}</p>;
   }
 
   return (
     <div>
       {moonLabel || moonLabelEn ? (
-        <p className="m-0 mb-2 text-sm font-semibold text-foreground">
+        <p className={cn("m-0", homeClasses.muhurtaMoonRef)}>
           {t(moonRefKey)}:{" "}
-          <strong className="text-accent">
+          <strong className={homeClasses.muhurtaMoonRefStrong}>
             {bilingualText(lang, moonLabel ?? moonLabelEn ?? "", moonLabelEn ?? moonLabel ?? "")}
           </strong>
         </p>
@@ -89,12 +87,12 @@ function NavataraAsideList({
           const isMoon = moonIdx != null && row.index === moonIdx;
           return (
             <li key={row.name} className={patroNavataraRow(row.tone, isMoon)}>
-              <span className="w-full text-center text-xs font-bold leading-tight text-foreground">
+              <span className={homeClasses.muhurtaSlotTitle}>
                 {bilingualText(lang, row.name, row.name_en ?? row.name)}
               </span>
-              <span className="w-full text-center text-xs font-semibold leading-snug">
+              <span className={homeClasses.muhurtaSlotValue}>
                 {formatNavataraTara(row.tara, lang)}
-                <span className="mx-1 opacity-55">/</span>
+                <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
                 {formatNavataraQuality(row.quality, lang)}
               </span>
             </li>
@@ -112,7 +110,7 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
   const sunriseMin = parseTimeToMinutes(getSunrise(p));
 
   if (!timeline?.choghadiya.length || sunriseMin == null) {
-    return <p className={patroEmpty}>{t("muhurta_aside.choghadiya_unavailable")}</p>;
+    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.choghadiya_unavailable")}</p>;
   }
 
   return (
@@ -124,12 +122,12 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
         const range = `${ghatiToCivilClockLabel(seg.startG, sunriseMin)} – ${ghatiToCivilClockLabel(seg.endG, sunriseMin)}`;
         return (
           <li key={`${seg.name}-${i}`} className={patroNavataraRow(tone === "good" ? "good" : tone === "bad" ? "bad" : "neutral")}>
-            <span className="w-full text-center text-xs font-bold leading-tight text-foreground">
+            <span className={homeClasses.muhurtaSlotTitle}>
               {bilingualText(lang, seg.name, choghadiyaName(seg.name, "en"))}
             </span>
-            <span className="mono w-full text-center text-xs font-semibold leading-snug">
+            <span className={homeClasses.muhurtaSlotValue}>
               {range}
-              <span className="mx-1 opacity-55">/</span>
+              <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
               {bilingualText(lang, qualityNe, qualityEn)}
             </span>
           </li>
@@ -144,7 +142,7 @@ function HoraList({ p }: { p: PanchangaDay }) {
   const slots = getHoraDaySlots(p);
 
   if (!slots.length) {
-    return <p className={patroEmpty}>{t("muhurta_aside.hora_unavailable")}</p>;
+    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.hora_unavailable")}</p>;
   }
 
   return (
@@ -164,15 +162,15 @@ function HoraSlot({ slot }: { slot: ApiHoraSlot }) {
 
   return (
     <li className={patroNavataraRow(tone)}>
-      <span className="w-full text-center text-xs font-bold leading-tight text-foreground">
+      <span className={homeClasses.muhurtaSlotTitle}>
         {bilingualText(lang, 
           slot.planet_ne,
           GRAHA_NAME[slot.planet as GrahaKey]?.en ?? slot.planet_en ?? slot.planet ?? slot.planet_ne,
         )}
       </span>
-      <span className="mono w-full text-center text-xs font-semibold leading-snug">
+      <span className={homeClasses.muhurtaSlotValue}>
         {start} – {end}
-        <span className="mx-1 opacity-55">/</span>
+        <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
         {bilingualText(lang, slot.quality_ne, slot.tone === "bad" ? "Inauspicious" : "Auspicious")}
       </span>
     </li>
@@ -185,7 +183,7 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
   const rows = getUdayaLagna(p);
 
   if (!rows?.length) {
-    return <p className={patroEmpty}>{t("muhurta_aside.pushkara_unavailable")}</p>;
+    return <p className={cn("m-0", homeClasses.muhurtaEmpty)}>{t("muhurta_aside.pushkara_unavailable")}</p>;
   }
 
   const pushkaraLabel = bilingualText(lang, "पुष्कर", "Pushkara");
@@ -215,12 +213,12 @@ function PushkaraSlot({ row, pushkaraLabel }: { row: UdayaLagnaRow; pushkaraLabe
 
   return (
     <li className={patroNavataraRow(hasPushkara ? "good" : "neutral")}>
-      <span className="w-full text-center text-xs font-bold leading-tight text-foreground">
+      <span className={homeClasses.muhurtaSlotTitle}>
         {bilingualText(lang, row.name_ne ?? row.name, row.name ?? row.name_ne)}
       </span>
-      <span className="mono w-full text-center text-xs font-semibold leading-snug">
+      <span className={homeClasses.muhurtaSlotValue}>
         {hasPushkara ? times : range}
-        <span className="mx-1 opacity-55">/</span>
+        <span className={cn("mx-1", homeClasses.muhurtaSlotSep)}>/</span>
         {hasPushkara ? pushkaraLabel : "—"}
       </span>
     </li>
@@ -239,14 +237,21 @@ export function MuhurtaAsidePanel({ p }: Props) {
   const chandra = getChandrabalamTable(p);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={homeClasses.muhurtaStack}>
       <div className="grid grid-cols-5 gap-1" role="tablist" aria-label={t("muhurta_aside.tabs_label")}>
         {SUB_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
             role="tab"
-            className={patroMiniSubTab(subTab === tab.id)}
+            className={cn(
+              "cursor-pointer transition-colors",
+              homeClasses.muhurtaSubTab,
+              homeClasses.muhurtaSubTabLabel,
+              subTab === tab.id
+                ? cn(homeClasses.muhurtaSubTabActive, homeClasses.muhurtaSubTabLabelActive)
+                : cn(homeClasses.muhurtaSubTabIdle, "hover:bg-tab-hover hover:text-foreground"),
+            )}
             aria-selected={subTab === tab.id}
             onClick={() => setSubTab(tab.id)}
           >
@@ -255,8 +260,8 @@ export function MuhurtaAsidePanel({ p }: Props) {
         ))}
       </div>
 
-      <p className="m-0 flex items-start gap-1.5 text-sm leading-snug text-base">
-        <Info size={13} strokeWidth={2} className="mt-px shrink-0 opacity-75" aria-hidden />
+      <p className={cn("m-0", homeClasses.muhurtaHint, homeClasses.muhurtaHintText)}>
+        <Info size={13} strokeWidth={2} className={homeClasses.muhurtaHintIcon} aria-hidden />
         <span>{t(SUB_TAB_HINT_KEY[subTab])}</span>
       </p>
 

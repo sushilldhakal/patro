@@ -21,6 +21,7 @@ import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroCard, patroMono, patroSecBand, patroSkel } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
@@ -165,7 +166,7 @@ export function DayCycleToggle({
   // to it on tap (and then flips to show the other one).
   const inactive = options.find((o) => o.value !== mode) ?? options[0]!;
   const padCls = size === "md" ? "px-3.5 py-1.5 text-sm" : "px-2 py-0.5 text-sm";
-  const roundCls = size === "md" ? "rounded-lg" : "rounded-md";
+  const roundCls = size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm;
   return (
     <>
       {/* Mobile (<768px): single "switch to …" toggle. */}
@@ -174,7 +175,9 @@ export function DayCycleToggle({
         onClick={() => onModeChange?.(inactive.value)}
         aria-label={bilingualText(lang, `${inactive.ne} मा बदल्नुहोस्`, `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
         className={cn(
-          "inline-flex items-center justify-center border border-border bg-card font-semibold transition-colors hover:bg-surface-hover md:hidden",
+          "inline-flex items-center justify-center transition-colors hover:bg-surface-hover md:hidden",
+          panchangaPageClasses.dayCycle.toggleSingle,
+          panchangaPageClasses.dayCycle.toggleLabel,
           padCls,
           roundCls,
         )}
@@ -185,8 +188,9 @@ export function DayCycleToggle({
       {/* Desktop (≥768px): full segmented control. */}
       <div
         className={cn(
-          "hidden overflow-hidden rounded-md border border-border md:inline-flex",
-          size === "md" && "rounded-lg",
+          "hidden md:inline-flex",
+          panchangaPageClasses.dayCycle.toggleGroup,
+          size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm,
         )}
         role="radiogroup"
         aria-label={bilingualText(lang, "दिन सीमा", "Day boundary")}
@@ -199,11 +203,12 @@ export function DayCycleToggle({
             aria-checked={mode === o.value}
             onClick={() => onModeChange?.(o.value)}
             className={cn(
-              "font-semibold transition-colors !py-1 h-7",
+              panchangaPageClasses.dayCycle.toggleLabel,
+              "transition-colors !py-1 h-7",
               padCls,
               mode === o.value
-                ? "bg-primary text-primary-foreground"
-                : "bg-card hover:bg-surface-hover",
+                ? panchangaPageClasses.dayCycle.toggleActive
+                : cn(panchangaPageClasses.dayCycle.toggleIdle, "hover:bg-surface-hover"),
             )}
           >
             {bilingualText(lang, o.ne, o.en)}
@@ -230,17 +235,17 @@ function DayTimelineBand({
       : bilingualText(lang, "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise");
   return (
     <div className={patroSecBand}>
-      <h2 className={cn("m-0", "text-sm", "font-bold")}>{bilingualText(lang, "दिन-चक्र", "Day cycle")}</h2>
-      <span className="text-sm text-base uppercase tracking-wider">
+      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{bilingualText(lang, "दिन-चक्र", "Day cycle")}</h2>
+      <span className={panchangaPageClasses.dayCycle.bandSubtitle}>
         {subtitle}
       </span>
-      <span className="ml-auto inline-flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-base normal-case tracking-normal">
-        <span className="inline-flex items-center gap-1.5">
-          <i className="inline-block h-2.5 w-2.5 rounded-[3px] bg-success/34 not-italic" />
+      <span className={cn("inline-flex", panchangaPageClasses.dayCycle.bandLegend, "normal-case tracking-normal")}>
+        <span className={cn("inline-flex", panchangaPageClasses.dayCycle.legendItem)}>
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-success/34 not-italic")} />
           {bilingualText(lang, "शुभ", "Good")}
-          <i className="inline-block h-2.5 w-2.5 rounded-[3px] bg-danger/30 not-italic" />
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-danger/30 not-italic")} />
           {bilingualText(lang, "अशुभ", "Bad")}
-          <i className="inline-block h-2.5 w-2.5 rounded-[3px] bg-secondary/22 not-italic" />
+          <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-secondary/22 not-italic")} />
           {bilingualText(lang, "रात", "Night")}
         </span>
         {showToggle && <DayCycleToggle mode={mode} onModeChange={onModeChange} />}
@@ -716,7 +721,7 @@ export function DayTimeline({
           {tracks.map((tr, ti) => (
             <span
               key={tr.key}
-              className="absolute right-1.5 -translate-y-1/2 whitespace-nowrap text-[11px] font-bold leading-none text-foreground [font-family:var(--pn-font)] sm:text-xs lg:text-sm"
+              className="absolute right-1.5 -translate-y-1/2 whitespace-nowrap text-xs font-bold leading-none text-foreground [font-family:var(--pn-font)] sm:text-xs lg:text-sm"
               style={{ top: `${((trackY(ti) + rowBandAt(ti) / 2) / H) * 100}%` }}
             >
               {bilingualText(lang, tr.ne, tr.en ?? tr.ne)}
@@ -757,7 +762,7 @@ export function DayTimeline({
               {getPlanetsAnchorLabel(p, lang)}
             </span>
           </div>
-          <div className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
             {planets.map(
               ({
                 key: planetKey,
@@ -881,32 +886,32 @@ function PeriodCards({
 }) {
   const accent = tone === "danger" ? "var(--color-danger)" : "var(--color-success)";
   return (
-    <div className="flex flex-col gap-2 border-t border-border px-4 py-3">
-      <span className="text-sm font-bold leading-tight" style={{ color: accent }}>
+    <div className={cn("flex flex-col", panchangaPageClasses.dayCycle.periodGroup)}>
+      <span className={panchangaPageClasses.dayCycle.periodTitle} style={{ color: accent }}>
         {title}
       </span>
-      <ol className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <ol className="grid grid-cols-2 gap-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {items.map((it, i) => (
           <li
             key={`${it.time}-${i}`}
-            className="flex min-w-0 flex-col gap-1.5 rounded-lg border px-2.5 py-2"
+            className={cn("flex flex-col", panchangaPageClasses.dayCycle.periodCard)}
             style={{
               borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
               background: `color-mix(in srgb, ${accent} 7%, transparent)`,
             }}
           >
-            <div className="flex min-w-0 items-start gap-1.5">
+            <div className={cn("flex", panchangaPageClasses.dayCycle.periodHead)}>
               <span
-                className="mt-px inline-flex h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1 text-sm font-bold text-white"
+                className={cn("inline-flex", panchangaPageClasses.dayCycle.periodBadge, panchangaPageClasses.dayCycle.periodBadgeText)}
                 style={{ background: accent }}
               >
                 {it.n}
               </span>
-              <span className="min-w-0 text-sm font-semibold leading-snug break-words [overflow-wrap:anywhere] [font-family:var(--pn-font)]">
+              <span className={cn(panchangaPageClasses.dayCycle.periodLabel, "break-words [overflow-wrap:anywhere] [font-family:var(--pn-font)]")}>
                 {it.label}
               </span>
             </div>
-            <span className="mt-auto text-sm font-semibold tabular-nums [font-family:var(--pn-font)]">
+            <span className={cn("mt-auto", panchangaPageClasses.dayCycle.periodTime, "[font-family:var(--pn-font)]")}>
               {it.time}
             </span>
           </li>

@@ -14,7 +14,6 @@ import {
   KundaliProfileHeader,
 } from "@/components/kundali/KundaliProfileHeader";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
 import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
@@ -29,6 +28,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { space } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 export default function KundaliDetailScreen() {
   const { profileId } = useLocalSearchParams<{ profileId: string }>();
@@ -98,14 +100,14 @@ export default function KundaliDetailScreen() {
   };
 
   const topBar = (
-    <View className="mb-4 flex-row flex-wrap items-center justify-between gap-3">
-      <Pressable onPress={() => router.back()} className="flex-row items-center gap-1.5 active:opacity-70">
+    <View className={cn(kundaliClasses.topBar, "mb-4")}>
+      <Pressable onPress={() => router.back()} className={cn(kundaliClasses.backLink, "active:opacity-70")}>
         <Ionicons name="arrow-back" size={18} color={colors.foreground} />
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={kundaliClasses.backLinkText} style={nepaliTextStyle(14)}>
           {pick("सबै कुण्डली", "All charts")}
         </Text>
       </Pressable>
-      <View className="flex-row flex-wrap gap-2">
+      <View className={kundaliClasses.topBarActions}>
         <Button
           label={pick("अर्को कुण्डली", "Other chart")}
           size="sm"
@@ -127,9 +129,9 @@ export default function KundaliDetailScreen() {
   const renderBody = () => {
     if (authLoading || (isAuthenticated && profilesLoading && !profile)) {
       return (
-        <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-16">
+        <View className={cn(kundaliClasses.emptyBoxTall, "items-center")}>
           <ActivityIndicator />
-          <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         </View>
@@ -151,14 +153,14 @@ export default function KundaliDetailScreen() {
 
     if (profilesError || (!profilesLoading && !profile)) {
       return (
-        <Card>
-          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <View className={cn(kundaliClasses.noticeBox, "items-center")}>
+          <Text className={kundaliClasses.noticeTitle} style={nepaliTextStyle(14)}>
             {pick("प्रोफाइल फेला परेन।", "Profile not found.")}
           </Text>
-          <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={kundaliClasses.noticeBody} style={nepaliTextStyle(14)}>
             {pick("प्रोफाइल मेटिएको वा लिङ्क गलत हुन सक्छ।", "The profile may have been removed or the link is wrong.")}
           </Text>
-        </Card>
+        </View>
       );
     }
 
@@ -166,12 +168,12 @@ export default function KundaliDetailScreen() {
 
     if (!canShowChart) {
       return (
-        <View className="items-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16">
+        <View className={cn(kundaliClasses.noBirthBox, "items-center")}>
           <Ionicons name="time-outline" size={40} color={colors.mutedForeground} />
-          <Text className="text-body mt-4 font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className={cn("mt-4", kundaliClasses.noBirthTitle)} style={nepaliTextStyle(16)}>
             {pick("जन्म मिति छैन", "No birth date")}
           </Text>
-          <Text className="text-body mt-2 max-w-md text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={kundaliClasses.noBirthBody} style={nepaliTextStyle(14)}>
             {pick(
               "कुण्डली बनाउन जन्म मिति, समय र स्थान थप्नुहोस्।",
               "Add birth date, time and place to generate the chart.",
@@ -186,9 +188,9 @@ export default function KundaliDetailScreen() {
 
     if (detailQuery.isLoading && !detail) {
       return (
-        <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-16">
+        <View className={cn(kundaliClasses.computingBox, "items-center")}>
           <ActivityIndicator />
-          <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
             {pick("कुण्डली गणना हुँदै…", "Computing the chart…")}
           </Text>
         </View>
@@ -197,14 +199,14 @@ export default function KundaliDetailScreen() {
 
     if (!detail) {
       return (
-        <Card>
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <View className={kundaliClasses.loadError}>
+          <Text className={kundaliClasses.loadErrorText} style={nepaliTextStyle(14)}>
             {pick(
               "कुण्डली ल्याउन सकिएन। मिति/समय/स्थान जाँचेर पुनः प्रयास गर्नुहोस्।",
               "Could not load the chart. Check the date, time and place and try again.",
             )}
           </Text>
-        </Card>
+        </View>
       );
     }
 
@@ -258,12 +260,12 @@ export default function KundaliDetailScreen() {
         >
           <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
             <Pressable onPress={() => setEditOpen(false)} hitSlop={8} className="min-w-[4.5rem] active:opacity-70">
-              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(15)}>
+              <Text className="text-sm text-foreground" style={nepaliTextStyle(15)}>
                 {pick("रद्द", "Cancel")}
               </Text>
             </Pressable>
             <Text
-              className="text-body min-w-0 flex-1 text-center font-semibold text-foreground"
+              className="min-w-0 flex-1 text-center text-lg font-semibold tracking-tight text-foreground"
               style={nepaliTextStyle(16)}
               numberOfLines={1}
             >
@@ -274,9 +276,9 @@ export default function KundaliDetailScreen() {
           <ScrollView
             keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingTop: 16,
-              paddingBottom: Math.max(insets.bottom, 16),
+              paddingHorizontal: space.lg,
+              paddingTop: space.lg,
+              paddingBottom: Math.max(insets.bottom, space.lg),
             }}
           >
             <ProfileForm

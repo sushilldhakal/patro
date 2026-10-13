@@ -22,6 +22,8 @@ import {
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
 import { useRouteLoading } from "@/lib/route-loading";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface SuktaGroup {
   /** null when this chapter's shlokas carry no sukta_number at all (most documents). */
@@ -130,7 +132,7 @@ export function DocumentChapterDetail() {
       to="/documents/$slug"
       params={{ slug: slug! }}
       search={category ? documentsListSearch(category, topic) : undefined}
-      className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-foreground"
+      className={cn(documentsClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
     >
       <ArrowLeft className="size-4" /> {t("documents.back_to_chapters")}
     </Link>
@@ -138,7 +140,7 @@ export function DocumentChapterDetail() {
     <Link
       to="/documents"
       search={documentsListSearch("all")}
-      className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-foreground"
+      className={cn(documentsClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
     >
       <ArrowLeft className="size-4" /> {t("documents.back_to_list")}
     </Link>
@@ -148,7 +150,7 @@ export function DocumentChapterDetail() {
     return (
       <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere]">
         {backToChaptersLink}
-        <p className="mt-4 text-sm text-muted-foreground">{t("documents.not_found")}</p>
+        <p className={documentsClasses.notFound}>{t("documents.not_found")}</p>
       </PageShell>
     );
   }
@@ -182,11 +184,11 @@ export function DocumentChapterDetail() {
     <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere] pb-28">
       {backToChaptersLink}
 
-      <header className="space-y-1.5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-secondary">{docTitle}</p>
+      <header className={cn(documentsClasses.header, "space-y-1.5")}>
+        <div className={documentsClasses.chapterTitleRow}>
+          <p className={documentsClasses.headerSanskrit}>{docTitle}</p>
           {chapterNumbers.length > 0 ? (
-            <p className="text-xs font-semibold text-muted-foreground">
+            <p className={documentsClasses.chapterProgress}>
               {t("documents.chapter_progress", {
                 current: num(chapterNumber),
                 total: num(chapterNumbers.length),
@@ -194,14 +196,14 @@ export function DocumentChapterDetail() {
             </p>
           ) : null}
         </div>
-        <div className="flex items-center gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary/10 text-base font-bold tabular-nums text-secondary">
+        <div className={documentsClasses.statsRow}>
+          <span className={cn(documentsClasses.chapterBubble, documentsClasses.chapterBubbleText)}>
             {num(chapterNumber)}
           </span>
-          <h1 className="min-w-0 text-2xl font-bold sm:text-3xl">
+          <h1 className={documentsClasses.chapterTitle}>
             {t("documents.chapter_label", { number: num(chapterNumber) })}
             {chapterTitle ? (
-              <span className="mt-0.5 block text-base font-semibold text-muted-foreground sm:text-lg">
+              <span className={cn(documentsClasses.chapterTitleSub, "block")}>
                 {chapterTitle}
               </span>
             ) : null}
@@ -222,11 +224,11 @@ export function DocumentChapterDetail() {
           <section key={group.suktaNumber ?? "ungrouped"} className="space-y-3">
             {group.suktaNumber != null ? (
               <div>
-                <h2 className="text-sm font-bold text-secondary">
+                <h2 className={documentsClasses.suktaLabel}>
                   {t("documents.sukta_label", { number: num(group.suktaNumber) })}
                 </h2>
                 {group.rishi || group.devata || group.chhanda ? (
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className={documentsClasses.suktaMeta}>
                     {group.rishi ? (
                       <span>
                         {t("documents.sukta_rishi")}: {suktaAttribution(lang, group.rishi)}
@@ -255,13 +257,13 @@ export function DocumentChapterDetail() {
         ))}
       </div>
 
-      <nav className="flex items-center justify-between gap-3 border-t border-border pt-4 text-sm font-semibold">
+      <nav className={cn(documentsClasses.pager, documentsClasses.pagerButtonText)}>
         {prevChapter != null ? (
           <Link
             to="/documents/$slug/$chapter"
             params={{ slug: slug!, chapter: String(prevChapter) }}
             search={category ? documentsListSearch(category, topic) : undefined}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 transition-colors hover:border-secondary/60 hover:text-secondary"
+            className={cn(documentsClasses.pagerButton, "inline-flex transition-colors hover:border-secondary/60 hover:text-secondary")}
           >
             <ChevronLeft className="size-4" /> {t("documents.prev_chapter")}
           </Link>
@@ -273,7 +275,7 @@ export function DocumentChapterDetail() {
             to="/documents/$slug/$chapter"
             params={{ slug: slug!, chapter: String(nextChapter) }}
             search={category ? documentsListSearch(category, topic) : undefined}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 transition-colors hover:border-secondary/60 hover:text-secondary"
+            className={cn(documentsClasses.pagerButton, "inline-flex transition-colors hover:border-secondary/60 hover:text-secondary")}
           >
             {t("documents.next_chapter")} <ChevronRight className="size-4" />
           </Link>

@@ -2,14 +2,13 @@
  * Everything that is not a colour: type, spacing, radii, shadows, sizes,
  * motion and breakpoints.
  *
- * Some values differ by platform on purpose, and are kept apart here rather
- * than forced equal:
- * - Type: the app reads at arm's length on a phone and uses four larger sizes
- *   (15/18/22/28 px); the website uses the Tailwind scale from 10.8 px.
- * - Radii: the app's touch cards are rounder (8/12 px) than the website's
- *   (4.8/8.8 px, from a 0.3 rem base).
- * - NativeWind on iOS/Android counts 1 rem as 14 px, so `p-4` is 14 px in the
- *   app and 16 px on the website. Use `space` (px) when a size must match.
+ * The website's values are the design; the app uses them as they are. One
+ * platform quirk remains, and is handled by using px here:
+ * - NativeWind on iOS/Android counts 1 rem as 14 px, so the app's Tailwind
+ *   config states spacing, font sizes and radii in px (generated from here)
+ *   and \`p-4\` is 16 px in both.
+ * Type does not differ. Both apps use `webTypeScale`. The app stores those
+ * sizes in px, because a rem on iOS/Android is 14 px and would come out small.
  */
 
 // ─── Typography ───────────────────────────────────────────────────────────────
@@ -39,7 +38,7 @@ export const fontWeight = {
   bold: 700,
 } as const;
 
-/** The website's text scale (px, line height px) — the only sizes it uses. */
+/** The website's text scale (px, line height px). Both apps use these sizes. */
 export const webTypeScale = {
   xs: { size: 10.8, lineHeight: 13.6 },
   sm: { size: 14, lineHeight: 20 },
@@ -51,17 +50,44 @@ export const webTypeScale = {
   "4xl": { size: 36, lineHeight: 40 },
 } as const;
 
-/** The app's only four text sizes (px), with line heights (~1.6 for Devanagari matras). */
+/**
+ * Tailwind's `text-5xl` (3rem). The website uses it for the ghati clock and
+ * the wheel glyph; it is not one of the eight steps above.
+ */
+export const text5xl = { size: 48, lineHeight: 48 } as const;
+
+/**
+ * The app's Tailwind font sizes, in px so they match the website even where
+ * 1 rem is 14 px. `caption` / `body` / `title` / `display` are the older class
+ * names, aliased to the website step they stand in for: xs, sm, lg, 2xl.
+ */
 export const mobileTypeScale = {
-  caption: { size: 15, lineHeight: 24 },
-  body: { size: 18, lineHeight: 29 },
-  title: { size: 22, lineHeight: 36 },
-  display: { size: 28, lineHeight: 45 },
+  ...webTypeScale,
+  "5xl": text5xl,
+  caption: webTypeScale.xs,
+  body: webTypeScale.sm,
+  title: webTypeScale.lg,
+  display: webTypeScale["2xl"],
+} as const;
+
+/**
+ * Label sizes for diagrams, wheels and the sky scene (px). The artwork sets
+ * text smaller than the page's smallest step (\`xs\`, 10.8), so these sit below
+ * it. Three steps replace the ad-hoc 7, 7.5, 8, 8.5, 9, 10, 12 and 13 px sizes.
+ * No line height: labels sit in SVG or in tight boxes that size themselves.
+ */
+export const diagramTypeScale = {
+  "2xs": 8,
+  xs: 10,
+  sm: 12,
 } as const;
 
 export const letterSpacing = {
   tight: "-0.01em",
+  /** Small uppercase labels (the site also sets 0.08–0.1em in places; those are this). */
   eyebrow: "0.12em",
+  /** Wider-tracked section labels (0.14–0.22em in the old code). */
+  eyebrowWide: "0.18em",
 } as const;
 
 // ─── Spacing ──────────────────────────────────────────────────────────────────
@@ -89,11 +115,13 @@ export const space = {
 /** Website radius base (rem); its sm…xl radii are offsets from it. */
 export const webRadiusBaseRem = 0.3;
 
+/** Both apps: sm/md/lg/xl = base −4/−2/0/+4 px; 2xl fixed. */
 export const radius = {
-  /** Website: sm/md/lg/xl = base −4/−2/0/+4 px; 2xl fixed. */
-  web: { sm: 0.8, md: 2.8, lg: 4.8, xl: 8.8, "2xl": 16 },
-  /** App: rounder touch cards. */
-  mobile: { lg: 8, xl: 12 },
+  sm: 0.8,
+  md: 2.8,
+  lg: 4.8,
+  xl: 8.8,
+  "2xl": 16,
   pill: 999,
 } as const;
 
@@ -155,6 +183,21 @@ export function nativeShadow(name: ShadowName, theme: "light" | "dark" = "light"
   };
 }
 
+/**
+ * Text and image effects that sit on top of artwork (labels over the sky,
+ * scrims over a running scene). CSS strings, so both apps can use them on web;
+ * native uses the same blur/offset/opacity through its own text shadow props.
+ */
+export const effect = {
+  /** Label legible over a busy night sky. */
+  labelShadow: "0 1px 4px rgba(0, 0, 0, 0.95)",
+  labelShadowSoft: "0 1px 3px rgba(0, 0, 0, 0.9)",
+  /** Upward lift under the sky time sheet. */
+  sheetLift: "0 -12px 40px rgba(0, 0, 0, 0.45)",
+  /** Ring around the daylight slider thumb. */
+  thumbRing: "0 0 0 2px rgba(0, 0, 0, 0.35)",
+} as const;
+
 // ─── Sizes ────────────────────────────────────────────────────────────────────
 
 /** Icon sizes (px). Both apps draw the same concept at the same size. */
@@ -182,6 +225,9 @@ export const size = {
   calendarCell: { phone: 52, tablet: 64, desktop: 72 },
   /** Readable text column (px). */
   proseMaxWidth: 720,
+  /** Page content column (px): `max-w-page`, and the wide variant `max-w-page-wide`. */
+  pageMax: 1400,
+  pageWide: 1600,
 } as const;
 
 // ─── Motion ───────────────────────────────────────────────────────────────────
@@ -198,6 +244,8 @@ export const motion = {
 
 /** Layout breakpoints (min width, px). Same in both apps. */
 export const breakpoints = {
+  /** Phone layouts tighten (icons, docks) below this. */
+  compact: 480,
   xs: 400,
   sm: 640,
   md: 768,

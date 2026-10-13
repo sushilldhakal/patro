@@ -35,6 +35,7 @@ import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { PatroDateSheetState } from "./use-patro-date-sheet";
 import { PatroYearPickerPopover } from "./PatroYearPickerPopover";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 /** Month picker for the sheet: 12 buttons, three to a row, no dropdown. */
 export function MonthGridPicker({
@@ -57,13 +58,15 @@ export function MonthGridPicker({
             aria-pressed={selected}
             onClick={() => onMonthChange(option.value)}
             className={cn(
-              "min-w-0 truncate rounded-lg border px-2 py-2.5 text-sm font-semibold transition-colors",
+              "truncate transition-colors",
+              patroDateClasses.monthChip,
+              patroDateClasses.monthChipLabel,
               // Selection reads in the same colour as the month chip's header
               // and the segmented toggles (bg-secondary), not the saffron
               // accent — the sheet is the chip's own picker.
               selected
-                ? "border-secondary bg-secondary text-secondary-foreground"
-                : "border-border bg-card text-foreground hover:bg-surface-hover",
+                ? cn(patroDateClasses.monthChipActive, patroDateClasses.monthChipLabelActive)
+                : cn(patroDateClasses.monthChipIdle, patroDateClasses.monthChipLabelIdle, "hover:bg-surface-hover"),
             )}
           >
             {option.label}
@@ -298,8 +301,8 @@ export function PatroMobileDateSheetDraft({
         signedBsYears={draftEra === "bbs"}
       />
       {dayAriaLabel ? (
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-sm font-semibold text-muted-foreground">{dayAriaLabel}</span>
+        <div className={patroDateClasses.dayRow}>
+          <span className={patroDateClasses.dayLabel}>{dayAriaLabel}</span>
           <BsNativeSelect
             className="w-[5rem]"
             value={draftDay}
@@ -312,10 +315,10 @@ export function PatroMobileDateSheetDraft({
       ) : null}
       {showTime && hourAriaLabel && minuteAriaLabel ? (
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className={cn("mb-2", patroDateClasses.timeLabel)}>
             {t("common.time")}
           </p>
-          <div className="flex w-full items-center justify-center gap-2">
+          <div className={patroDateClasses.timeRow}>
             <BsNativeSelect
               className="w-[4.5rem]"
               value={hour}
@@ -326,7 +329,7 @@ export function PatroMobileDateSheetDraft({
               }
               comfortable
             />
-            <span className="px-0.5 font-num text-base font-semibold">:</span>
+            <span className={patroDateClasses.timeColon}>:</span>
             <BsNativeSelect
               className="w-[4.5rem]"
               value={minute}
@@ -532,10 +535,12 @@ export function PatroDateSheet({
                   aria-controls={`patro-sheet-${id}`}
                   onClick={() => sheet.setTab(id)}
                   className={cn(
-                    "h-12 rounded-xl border text-sm font-bold transition-colors",
+                    "transition-colors",
+                    patroDateClasses.tab,
+                    patroDateClasses.tabLabel,
                     selected
-                      ? "border-secondary bg-secondary text-secondary-foreground"
-                      : "border-border bg-card text-foreground hover:bg-surface-hover",
+                      ? cn(patroDateClasses.tabActive, patroDateClasses.tabLabelActive)
+                      : cn(patroDateClasses.tabIdle, patroDateClasses.tabLabelIdle, "hover:bg-surface-hover"),
                   )}
                 >
                   {id === "date" ? dateTitle : t("location.tab")}
@@ -571,7 +576,7 @@ export function PatroDateSheet({
                   onDateCommit?.();
                 }
               }}
-              className="h-10 w-full rounded-lg bg-secondary text-sm font-semibold text-secondary-foreground"
+              className={cn(patroDateClasses.done, patroDateClasses.doneLabel)}
             >
               {t("common.done")}
             </button>

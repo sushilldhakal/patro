@@ -17,6 +17,7 @@ import {
 } from "@/lib/onboarding-storage";
 import { setCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 
+import { neutral } from "@vedic-patro/design-tokens";
 function OptionCard({
   selected,
   onPress,
@@ -140,7 +141,7 @@ function FeatureTour({ language, onDone }: { language: AppLanguage; onDone: () =
         onPress={() => (last ? onDone() : setIndex(index + 1))}
         className="items-center rounded-lg bg-primary px-5 py-3.5 active:opacity-80"
       >
-        <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
+        <Text className="text-body font-semibold" style={{ color: neutral.white }}>
           {last ? (ne ? "सुरु गर्नुहोस्" : "Start exploring") : ne ? "अर्को" : "Next"}
         </Text>
       </Pressable>
@@ -194,7 +195,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
     <ScrollView
       className="flex-1"
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: 24, paddingTop: 64, paddingBottom: 40 }}
+      contentContainerClassName="p-6 pb-10 pt-16"
     >
       <Text className="text-display font-bold text-foreground">वैदिक पात्रोमा स्वागत छ</Text>
       <Text className="text-body mt-1 text-foreground">Welcome to Vedic Patro</Text>
@@ -294,8 +295,8 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
         disabled={submitting}
         className="mt-8 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 active:opacity-80 disabled:opacity-60"
       >
-        {submitting ? <ActivityIndicator size="small" color="#ffffff" /> : null}
-        <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
+        {submitting ? <ActivityIndicator size="small" color={neutral.white} /> : null}
+        <Text className="text-body font-semibold" style={{ color: neutral.white }}>
           अगाडि बढ्नुहोस् · Get Started
         </Text>
       </Pressable>

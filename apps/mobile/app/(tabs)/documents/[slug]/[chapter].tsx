@@ -18,8 +18,9 @@ import {
 import { versesToRows } from "@/lib/documents/rows";
 import { useDocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
-import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { useThemeColors } from "@/lib/theme-context";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export default function DocumentChapterScreen() {
   const { t, lang, digits } = useLocale();
@@ -60,14 +61,14 @@ export default function DocumentChapterScreen() {
   const backHref = slug ? `/documents/${slug}` : "/documents";
   const backLabel = t("documents.back_to_chapters");
   const frame = (children: React.ReactNode) => (
-    <View className="flex-1 bg-background" style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING, paddingTop: 16 }}>
+    <View className={cn("flex-1 gap-4 bg-background", documentsClasses.frame)}>
       <DocumentBackLink href={backHref} label={backLabel} />
       {children}
     </View>
   );
 
   if (!valid || (chapterQ.isError && isNotFound(chapterQ.error))) {
-    return frame(<Text className="text-body text-muted-foreground">{t("documents.not_found")}</Text>);
+    return frame(<Text className={documentsClasses.mutedText}>{t("documents.not_found")}</Text>);
   }
   if (chapterQ.isError) {
     return frame(<ErrorState message={t("documents.load_error")} onRetry={() => void chapterQ.refetch()} />);
@@ -87,25 +88,29 @@ export default function DocumentChapterScreen() {
   const go = (n: number) => router.replace(`/documents/${slug}/${n}` as never);
 
   const header = (
-    <View className="mb-2">
+    <View className="gap-8 pb-8">
       <DocumentBackLink href={backHref} label={backLabel} />
-      <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-body flex-1 font-medium text-secondary" numberOfLines={1}>
-          {docTitle}
-        </Text>
-        {numbers.length > 0 ? (
-          <Text className="text-caption font-semibold text-muted-foreground">
-            {t("documents.chapter_progress", { current: digits(chapterNumber), total: digits(numbers.length) })}
+      <View className={documentsClasses.header}>
+        <View className={documentsClasses.chapterTitleRow}>
+          <Text className={cn(documentsClasses.headerSanskrit, "min-w-0 flex-1")} numberOfLines={1}>
+            {docTitle}
           </Text>
-        ) : null}
-      </View>
-      <View className="mb-4 mt-2 flex-row items-center gap-3">
-        <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary/10">
-          <Text className="text-body font-bold text-secondary">{digits(chapterNumber)}</Text>
+          {numbers.length > 0 ? (
+            <Text className={documentsClasses.chapterProgress}>
+              {t("documents.chapter_progress", { current: digits(chapterNumber), total: digits(numbers.length) })}
+            </Text>
+          ) : null}
         </View>
-        <View className="min-w-0 flex-1">
-          <Text className="text-display font-bold">{t("documents.chapter_label", { number: digits(chapterNumber) })}</Text>
-          {chapterTitle ? <Text className="text-body font-semibold text-muted-foreground">{chapterTitle}</Text> : null}
+        <View className={documentsClasses.statsRow}>
+          <View className={documentsClasses.chapterBubble}>
+            <Text className={documentsClasses.chapterBubbleText}>{digits(chapterNumber)}</Text>
+          </View>
+          <View className={documentsClasses.fill}>
+            <Text className={documentsClasses.chapterTitle}>{t("documents.chapter_label", { number: digits(chapterNumber) })}</Text>
+            {chapterTitle ? (
+              <Text className={documentsClasses.chapterTitleSub}>{chapterTitle}</Text>
+            ) : null}
+          </View>
         </View>
       </View>
       <DocumentJumpForm
@@ -121,15 +126,15 @@ export default function DocumentChapterScreen() {
   );
 
   const footer = (
-    <View className="mt-2 flex-row items-center justify-between gap-3 border-t border-border pt-4">
+    <View className={cn(documentsClasses.pager, "mt-8")}>
       {prev != null ? (
         <Pressable
           onPress={() => go(prev)}
           accessibilityRole="button"
-          className="flex-row items-center gap-1.5 rounded-full border border-border px-3.5 py-2"
+          className={documentsClasses.pagerButton}
         >
-          <Ionicons name="chevron-back" size={16} color={colors.secondary} />
-          <Text className="text-body font-semibold">{t("documents.prev_chapter")}</Text>
+          <Ionicons name="chevron-back" size={16} color={colors.foreground} />
+          <Text className={documentsClasses.pagerButtonText}>{t("documents.prev_chapter")}</Text>
         </Pressable>
       ) : (
         <View />
@@ -138,10 +143,10 @@ export default function DocumentChapterScreen() {
         <Pressable
           onPress={() => go(next)}
           accessibilityRole="button"
-          className="flex-row items-center gap-1.5 rounded-full border border-border px-3.5 py-2"
+          className={documentsClasses.pagerButton}
         >
-          <Text className="text-body font-semibold">{t("documents.next_chapter")}</Text>
-          <Ionicons name="chevron-forward" size={16} color={colors.secondary} />
+          <Text className={documentsClasses.pagerButtonText}>{t("documents.next_chapter")}</Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.foreground} />
         </Pressable>
       ) : (
         <View />

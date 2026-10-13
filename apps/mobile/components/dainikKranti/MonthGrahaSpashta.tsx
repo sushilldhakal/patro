@@ -8,15 +8,17 @@ import {
   type GrahaSpashtaRow,
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import {
   patroStickyHeadCell,
   patroStickySubHeadCell,
 } from "@/lib/patro-classes";
 import { PatroTableShell } from "./PatroTableShell";
 
-const th = "text-body px-2 py-2.5 font-semibold";
-const td = "text-body px-2 py-2";
+const th = dainikKrantiClasses.monthTh;
+const td = dainikKrantiClasses.monthTd;
 
 const PLANET_EN: Record<string, string> = {
   sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",
@@ -47,26 +49,26 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
     <View className="min-w-full">
       <TableHeader>
           <View className={cn(th, "min-w-[3rem] pl-3")}>
-            <Text className="text-body font-semibold">{pick("गते", "Date")}</Text>
+            <Text className="text-sm font-semibold">{pick("गते", "Date")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[3.5rem]")}>
-            <Text className="text-body font-semibold">{pick("बा.", "Day")}</Text>
+            <Text className="text-sm font-semibold">{pick("बा.", "Day")}</Text>
           </View>
           {PATRO_PLANET_KEYS.map((key) => (
             <View key={key} className={cn(th, patroStickyHeadCell, "min-w-[5.5rem] items-center")}>
-              <Text className="text-body text-center font-semibold">
+              <Text className="text-sm text-center font-semibold">
                 {pick(PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
               </Text>
             </View>
           ))}
           <View className={cn(th, patroStickyHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-body text-center font-semibold">{pick("देशान्तर", "Deshaantar")}</Text>
+            <Text className="text-sm text-center font-semibold">{pick("देशान्तर", "Deshaantar")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-body text-center font-semibold">{pick("अक्षांश", "Latitude")}</Text>
+            <Text className="text-sm text-center font-semibold">{pick("अक्षांश", "Latitude")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[4.5rem] items-center")}>
-            <Text className="text-body text-center font-semibold">
+            <Text className="text-sm text-center font-semibold">
               {pick("बेलान्तर", "Belaantar")}
             </Text>
           </View>
@@ -76,23 +78,23 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
           <View className="min-w-[6.5rem]" />
           {PATRO_PLANET_KEYS.map((key) => (
             <View key={`sub-${key}`} className={cn(th, patroStickySubHeadCell, "min-w-[5.5rem] items-center")}>
-              <Text className="text-caption text-center font-normal text-muted-foreground">
+              <Text className="text-center text-sm font-normal">
                 {pick("रा|अं|क|वि", "Ra|Deg|Ka|Vi")}
               </Text>
             </View>
           ))}
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-caption text-center font-normal text-muted-foreground">
+            <Text className="text-center text-sm font-normal">
               {pick("देशान्तर", "Long.")}
             </Text>
           </View>
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-caption text-center font-normal text-muted-foreground">
+            <Text className="text-center text-sm font-normal">
               {pick("अक्षांश", "Lat.")}
             </Text>
           </View>
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4.5rem] items-center")}>
-            <Text className="text-caption text-center font-normal text-muted-foreground">
+            <Text className="text-center text-sm font-normal">
               {pick("समय सुधार", "Time corr.")}
             </Text>
           </View>
@@ -100,13 +102,13 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
 
         {loading ? (
           <View className="py-8">
-            <Text className="text-body text-center text-muted-foreground">
+            <Text className={dainikKrantiClasses.stateText}>
               {pick("लोड हुँदैछ…", "Loading…")}
             </Text>
           </View>
         ) : empty || rows.length === 0 ? (
           <View className="py-8">
-            <Text className="text-body text-center text-muted-foreground">
+            <Text className={dainikKrantiClasses.stateText}>
               {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
             </Text>
           </View>
@@ -154,7 +156,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   );
 
   const footnote = (
-    <Text className="text-body border-t border-border px-4 py-2 leading-relaxed text-muted-foreground">
+    <Text className={dainikKrantiClasses.monthFootnote} style={nepaliTextStyle()}>
       {pick(
         `राशिहरू: ${getRashiList("ne").join(", ")}। प्रत्येक ग्रहको कोष्ठकमा राशि अंश|कला|विकला — जस्तै वृष १३|६|२९ = वृष राशि, १३ अंश ६ कला २९ विकला।`,
         `Signs: ${getRashiList("en").join(", ")}. Each planet's bracket shows sign deg|kala|vikala — e.g. Vrishabha 13|6|29 = Vrishabha sign, 13 deg 6 kala 29 vikala.`,
@@ -164,7 +166,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
 
   if (embedded) {
     return (
-      <View className="overflow-hidden rounded-lg border border-border">
+      <View className={cn(dainikKrantiClasses.accordionTable, "overflow-hidden")}>
         {/* Own horizontal scroller — see MonthLagnaMatrix; the footnote stays put. */}
         <TableScrollShell bordered={false} rounded={false} className="max-w-full">
           {table}

@@ -16,6 +16,7 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { featureIcon } from "@/lib/nav-icons";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const QUICK_LINKS = [
   { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: featureIcon("holidays") },
@@ -39,12 +40,14 @@ const NAV_DRAWER_ICON_SIZE = 28;
 const NAV_DRAWER_ICON_STROKE = 1.75;
 
 /** Phone: content-sized row chips. md+: the original square tiles. */
-export const quickLinkCardClass =
-  "group flex w-auto max-w-full shrink-0 flex-row items-center justify-start gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left no-underline shadow-sm transition-[border-color,background-color,transform] duration-200 hover:border-secondary/35 hover:bg-tab-hover active:scale-[0.98] md:aspect-square md:w-[calc((100%-3rem)/5)] md:max-w-[8rem] md:flex-col md:items-center md:justify-center md:gap-3 md:rounded-2xl md:px-2.5 md:py-3.5 md:text-center md:shadow-none lg:max-w-none lg:w-[calc((100%-5.25rem)/8)]";
+const quickLinkCardClass = cn(
+  homeClasses.quickChip,
+  "group flex w-auto shrink-0 text-left no-underline transition-[border-color,background-color,transform] duration-200 hover:border-secondary/35 hover:bg-tab-hover active:scale-[0.98] md:aspect-square md:w-[calc((100%-3rem)/5)] md:max-w-[8rem] md:flex-col md:items-center md:justify-center md:gap-3 md:rounded-2xl md:px-2.5 md:py-3.5 md:text-center md:shadow-none lg:max-w-none lg:w-[calc((100%-5.25rem)/8)]",
+);
 
 /** Flat drawer tile — 3 per row under 540px, 4 per row above. */
 export const navDrawerCardClass =
-  "group flex h-[6.25rem] w-[calc((100%-1.25rem)/3)] min-[540px]:w-[calc((100%-1.875rem)/4)] flex-col items-center justify-center gap-1.5 bg-transparent px-0.5 py-1 text-center no-underline shadow-none transition-colors duration-200 hover:text-secondary active:scale-[0.98] [&.active]:text-secondary";
+  "group flex h-[6.25rem] w-[calc((100%-1.25rem)/3)] compact:w-[calc((100%-1.875rem)/4)] flex-col items-center justify-center gap-1.5 bg-transparent px-0.5 py-1 text-center no-underline shadow-none transition-colors duration-200 hover:text-secondary active:scale-[0.98] [&.active]:text-secondary";
 
 export const quickLinkIconClass = "shrink-0 text-danger dark:text-danger";
 
@@ -73,11 +76,11 @@ export function QuickLinkCard({
             />
           ) : null)}
       </span>
-      <span className="min-w-0 px-0.5 text-sm font-bold leading-snug text-foreground line-clamp-1 md:line-clamp-2 md:w-full">
+      <span className={cn(homeClasses.quickLabel, "min-w-0 px-0.5 line-clamp-1 md:line-clamp-2 md:w-full")}>
         {label}
       </span>
       {description ? (
-        <span className="hidden w-full min-w-0 text-[0.68rem] leading-snug text-muted-foreground line-clamp-2 md:block">
+        <span className="hidden w-full min-w-0 text-xs leading-snug text-muted-foreground line-clamp-2 md:block">
           {description}
         </span>
       ) : null}
@@ -119,7 +122,7 @@ export function NavDrawerLinkCard({
             />
           ) : null)}
       </span>
-      <span className="w-full min-w-0 px-0.5 text-[0.8rem] font-bold leading-tight text-foreground line-clamp-2 group-[.active]:text-secondary">
+      <span className="w-full min-w-0 px-0.5 text-diagram-sm font-bold leading-tight text-foreground line-clamp-2 group-[.active]:text-secondary">
         {label}
       </span>
     </Link>
@@ -135,10 +138,10 @@ function LinkCategory({
 }) {
   return (
     <section>
-      <h2 className="mb-3 text-left text-base font-bold text-foreground md:text-center md:text-sm md:uppercase md:tracking-wider md:text-muted-foreground">
+      <h2 className={cn(homeClasses.quickTitle, "text-left md:text-center md:text-sm md:uppercase md:tracking-wider md:text-muted-foreground")}>
         {title}
       </h2>
-      <div className="flex flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3">{children}</div>
+      <div className={cn(homeClasses.quickRow, "gap-2 md:justify-center md:gap-3")}>{children}</div>
     </section>
   );
 }

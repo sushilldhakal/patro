@@ -11,9 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm";
+const th = kundaliDetailClasses.table.th;
+const td = kundaliDetailClasses.table.td;
 
 export type YogaListProps = {
   yogas: KundaliYoga[];
@@ -58,21 +59,22 @@ export function YogaList({ yogas }: YogaListProps) {
                   "pl-3.5 min-w-[11rem] max-w-[min(100%,28rem)] whitespace-normal align-top",
                 )}
               >
-                <span className="flex items-center gap-1.5 font-semibold text-foreground">
+                <span className={cn("flex", kundaliDetailClasses.parts.yogaName)}>
                   <Info
                     className="size-3.5 shrink-0"
                     aria-hidden
                   />
                   {name}
                 </span>
-                <span className="mt-0.5 block pl-5 text-sm leading-snug break-words">
+                <span className={cn("block break-words", kundaliDetailClasses.parts.yogaDesc)}>
                   {desc}
                 </span>
               </TableCell>
               <TableCell className={cn(td, "whitespace-nowrap align-top")}>
                 <span
                   className={cn(
-                    "inline-flex rounded-full px-2 py-0.5 text-sm font-semibold",
+                    "inline-flex",
+                    kundaliDetailClasses.parts.natureBadge,
                     yoga.nature === "auspicious"
                       ? "bg-secondary/15 text-secondary"
                       : yoga.nature === "mixed"
@@ -92,7 +94,7 @@ export function YogaList({ yogas }: YogaListProps) {
                 </span>
               </TableCell>
               <TableCell className={cn(td, "pr-3.5 whitespace-nowrap align-top")}>
-                <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                <span className={cn("inline-flex", kundaliDetailClasses.parts.presentLabel)}>
                   <Check className="size-3.5 text-secondary" aria-hidden />
                   {t("kundali.present")}
                 </span>

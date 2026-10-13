@@ -14,6 +14,7 @@ import { formatLocaleDigits } from "@/i18n/digits";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { StatCard } from "../components/StatCard";
 import { cn } from "@vedic-patro/domain/utils";
+import { converterClasses } from "@vedic-patro/design-tokens/classes/converter-classes";
 
 const WEEKDAY_NE: Record<string, string> = {
   Sunday: "आइतबार",
@@ -74,16 +75,18 @@ export function Converter() {
       />
 
       {/* Mode toggle */}
-      <div className="flex rounded-xl border border-border overflow-hidden w-fit">
+      <div className={cn("flex w-fit", converterClasses.modeToggle)}>
         {(["ad-to-bs", "bs-to-ad"] as const).map(m => (
           <button
             key={m}
             onClick={() => setMode(m)}
             className={cn(
-              "px-5 py-2.5 text-sm font-semibold transition-colors flex items-center gap-2",
+              "flex transition-colors",
+              converterClasses.modeButton,
+              converterClasses.modeLabel,
               mode === m
-                ? "bg-secondary text-secondary-foreground"
-                : "hover:bg-muted"
+                ? cn(converterClasses.modeButtonActive, converterClasses.modeLabelActive)
+                : cn(converterClasses.modeLabelIdle, "hover:bg-muted")
             )}
           >
             {m === "ad-to-bs" ? (
@@ -96,22 +99,22 @@ export function Converter() {
       </div>
 
       {/* Input form */}
-      <form onSubmit={handleSubmit} className="flex items-end gap-3 flex-wrap">
+      <form onSubmit={handleSubmit} className={cn("flex flex-wrap", converterClasses.form)}>
         {mode === "ad-to-bs" ? (
-          <div className="flex flex-col gap-1 flex-1 min-w-44">
-            <label className="text-xs font-semibold uppercase tracking-wide">
+          <div className={cn("flex flex-col", converterClasses.field)}>
+            <label className={converterClasses.label}>
               {t("converter.ad_date")}
             </label>
             <input
               type="date"
               value={adInput}
               onChange={e => setAdInput(e.target.value)}
-              className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className={cn(converterClasses.input, "focus:outline-none focus:ring-2 focus:ring-primary/40")}
             />
           </div>
         ) : (
-          <div className="flex flex-col gap-1 flex-1 min-w-44">
-            <label className="text-xs font-semibold uppercase tracking-wide">
+          <div className={cn("flex flex-col", converterClasses.field)}>
+            <label className={converterClasses.label}>
               {t("converter.bs_date")}
             </label>
             <input
@@ -119,20 +122,20 @@ export function Converter() {
               value={bsInput}
               onChange={e => setBsInput(e.target.value)}
               placeholder="2083-02-24"
-              className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              className={cn(converterClasses.input, "focus:outline-none focus:ring-2 focus:ring-primary/40")}
             />
           </div>
         )}
         <button
           type="submit"
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
+          className={cn(converterClasses.submit, converterClasses.submitLabel, "hover:bg-secondary/90 transition-colors")}
         >
           {t("converter.convert")}
         </button>
       </form>
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-xl p-4 text-sm">
+        <div className={cn(converterClasses.errorBox, converterClasses.errorText)}>
           {t("converter.error")}
         </div>
       )}
@@ -140,10 +143,10 @@ export function Converter() {
       {/* AD → BS result */}
       {mode === "ad-to-bs" && adResult && (
         <div className="space-y-4">
-          <div className="flex items-center gap-3 text-2xl font-bold text-foreground">
-            <span className="text-secondary">{adResult.ad_date}</span>
+          <div className={cn("flex", converterClasses.resultRow, converterClasses.resultText)}>
+            <span className={converterClasses.resultValue}>{adResult.ad_date}</span>
             <ArrowRight className="w-5 h-5" />
-            <span className="text-secondary">{adResult.bs_date}</span>
+            <span className={converterClasses.resultValue}>{adResult.bs_date}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             <StatCard label={t("converter.bs_date")} value={adResult.bs_date} highlight />
@@ -159,10 +162,10 @@ export function Converter() {
       {/* BS → AD result */}
       {mode === "bs-to-ad" && bsResult && (
         <div className="space-y-4">
-          <div className="flex items-center gap-3 text-2xl font-bold text-foreground">
-            <span className="text-secondary">{bsResult.bs_date}</span>
+          <div className={cn("flex", converterClasses.resultRow, converterClasses.resultText)}>
+            <span className={converterClasses.resultValue}>{bsResult.bs_date}</span>
             <ArrowRight className="w-5 h-5" />
-            <span className="text-secondary">{bsResult.ad_date}</span>
+            <span className={converterClasses.resultValue}>{bsResult.ad_date}</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             <StatCard label={t("converter.ad_date")} value={bsResult.ad_date} highlight />

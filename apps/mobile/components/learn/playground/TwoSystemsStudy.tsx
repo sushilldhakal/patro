@@ -73,7 +73,8 @@ import Scene, {
 } from "@/components/learn/playground/TwoSystemsScene";
 import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
-const CANVAS_BG = "#050a10";
+import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+const CANVAS_BG = midnight.popover;
 const CARD_HEIGHT = 320;
 
 /** Days of simulated time per real second, per speed rung. */
@@ -291,13 +292,13 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
         "rounded-full border px-2.5 py-1",
         active ? "border-transparent" : "border-white/25",
       )}
-      style={active ? { backgroundColor: "#d8c84a" } : undefined}
+      style={active ? { backgroundColor: illustration.amber57 } : undefined}
     >
       <Text
         className="text-caption font-semibold"
         style={[
           nepaliTextStyle(11),
-          { color: active ? "#1a1500" : "rgba(255,255,255,0.7)", fontSize: 15 },
+          { color: active ? illustration.amber5 : withAlpha(neutral.white, 0.7) },
         ]}
       >
         {label}
@@ -309,13 +310,13 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
     <View key={k} className="rounded-lg border border-white/15 px-2.5 py-1.5">
       <Text
         className="text-caption font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
+        style={[nepaliTextStyle(9), { color: withAlpha(neutral.white, 0.5) }]}
       >
         {k}
       </Text>
       <Text
         className="text-caption font-bold"
-        style={[nepaliTextStyle(13), { color: tone ?? "#ffffff", fontSize: 15 }]}
+        style={[nepaliTextStyle(13), { color: tone ?? neutral.white }]}
       >
         {v}
       </Text>
@@ -415,7 +416,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               <View className="rounded-full border border-amber-400/60 bg-amber-500/25 px-3 py-1">
                 <Text
                   className="text-caption font-bold"
-                  style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 15 }]}
+                  style={[nepaliTextStyle(12), { color: illustration.amber77 }]}
                 >
                   {`${pick("सङ्क्रान्ति", "Sankranti")} · ${
                     ne ? year.solar[flash.index]?.nameNe : year.solar[flash.index]?.name
@@ -470,7 +471,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               pointerEvents="none"
               className="absolute bottom-2.5 left-2.5 rounded-lg bg-black/70 px-2 py-1"
             >
-              <Text className="text-caption font-bold" style={{ color: "#f1f5f9", fontSize: 15 }}>
+              <Text className="text-caption font-bold" style={{ color: brand.offWhite }}>
                 {`${perf.fps.toFixed(0)} fps · worst ${perf.worstMs.toFixed(0)} ms`}
               </Text>
             </View>
@@ -487,11 +488,11 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
         style={
           fullscreen
             ? {
-                backgroundColor: "rgba(5, 10, 16, 0.88)",
+                backgroundColor: withAlpha(wheel.sky2, 0.88),
                 paddingBottom: Math.max(insets.bottom, 10),
                 maxHeight: windowHeight * (detailsOpen ? 0.5 : 0.22),
               }
-            : { backgroundColor: "rgba(5, 10, 16, 0.94)" }
+            : { backgroundColor: withAlpha(wheel.sky2, 0.94) }
         }
       >
         <ScrollView
@@ -511,7 +512,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
             className="h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10"
           >
-            <Ionicons name={playing ? "pause" : "play"} size={16} color="#f1f5f9" />
+            <Ionicons name={playing ? "pause" : "play"} size={16} color={brand.offWhite} />
           </Pressable>
           <Slider
             style={{ flex: 1, height: 34 }}
@@ -523,14 +524,14 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               clock.current.playing = false;
               setPlaying(false);
             }}
-            minimumTrackTintColor="#d8c84a"
-            maximumTrackTintColor="rgba(148, 163, 184, 0.45)"
-            thumbTintColor="#d8c84a"
+            minimumTrackTintColor={illustration.amber57}
+            maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
+            thumbTintColor={illustration.amber57}
             accessibilityLabel={pick("वर्षभरि सार्नुहोस्", "Scrub through the year")}
           />
           <Text
             className="text-caption"
-            style={{ color: "rgba(255,255,255,0.6)", fontSize: 15 }}
+            style={{ color: withAlpha(neutral.white, 0.6) }}
           >
             {`${num(Math.max(0, Math.floor(dayOfYear)))}/${num(Math.round(year.yearDays))}`}
           </Text>
@@ -545,7 +546,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             <Ionicons
               name={detailsOpen ? "chevron-down" : "chevron-up"}
               size={14}
-              color="rgba(255,255,255,0.75)"
+              color={withAlpha(neutral.white, 0.75)}
             />
           </Pressable>
         </View>
@@ -560,7 +561,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               {readout(
                 pick("सौर महिना · गते", "Solar month · gate"),
                 `${ne ? solar.monthNameNe : solar.monthName} ${num(solar.gate)}`,
-                "#f8b53c",
+                illustration.orange60,
               )}
               {readout(
                 pick("सूर्य राशिमा", "Sun in rashi"),
@@ -589,14 +590,14 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               <View>
                 <Text
                   className="text-caption font-semibold"
-                  style={[nepaliTextStyle(11), { color: "#bae6fd", fontSize: 15 }]}
+                  style={[nepaliTextStyle(11), { color: illustration.sky86 }]}
                 >
                   {pick("औंसीदेखि चन्द्र हिँडेको", "Moon travelled since amavasya")}
                 </Text>
                 <View className="mt-0.5 flex-row flex-wrap items-center gap-1.5">
                   <Text
-                    className="text-body font-bold"
-                    style={{ color: "#ffffff", fontSize: 18 }}
+                    className="text-lg font-bold"
+                    style={{ color: neutral.white }}
                   >
                     {`${num(travelled.moon.toFixed(1))}°`}
                   </Text>
@@ -604,7 +605,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                     className="rounded px-1.5 py-0.5"
                     style={{
                       backgroundColor:
-                        travelled.moon >= 360 ? "rgba(52,211,153,0.25)" : "rgba(255,255,255,0.1)",
+                        travelled.moon >= 360 ? withAlpha(illustration.green52, 0.25) : withAlpha(neutral.white, 0.1),
                     }}
                   >
                     <Text
@@ -612,8 +613,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                       style={[
                         nepaliTextStyle(10),
                         {
-                          color: travelled.moon >= 360 ? "#d1fae5" : "rgba(255,255,255,0.6)",
-                          fontSize: 15,
+                          color: travelled.moon >= 360 ? illustration.green90 : withAlpha(neutral.white, 0.6),
                         },
                       ]}
                     >
@@ -631,7 +631,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                 </View>
                 <Text
                   className="text-caption mt-0.5"
-                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+                  style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
                 >
                   {pick(
                     "एक फेरो — नक्षत्र मास — ठ्याक्कै ३६०°, २७.३ दिन। तर त्यतिन्जेल पृथ्वी सूर्यवरिपरि ~२९° सरिसक्छ, त्यसैले चन्द्र फेरि सूर्यको छेउमा पुग्दैन; भेट्न अझै ~२९° चाहिन्छ। त्यही हो चान्द्र मास: ~३८९°, २९.५ दिन। कक्षमा पहिलो फेरो भित्री रेखा, त्यसपछिको बढी भाग बाहिरी हरियो चापमा देखिन्छ।",
@@ -643,13 +643,13 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               <View className="border-t border-white/10 pt-2">
                 <Text
                   className="text-caption font-semibold"
-                  style={[nepaliTextStyle(11), { color: "#fde68a", fontSize: 15 }]}
+                  style={[nepaliTextStyle(11), { color: illustration.amber77 }]}
                 >
                   {pick("यो वर्षमा सूर्य हिँडेको", "Sun travelled this year")}
                 </Text>
                 <Text
-                  className="text-body mt-0.5 font-bold"
-                  style={{ color: "#ffffff", fontSize: 18 }}
+                  className="text-lg mt-0.5 font-bold"
+                  style={{ color: neutral.white }}
                 >
                   {`${num(travelled.sunThisYear.toFixed(1))}° / ${num(360)}°  ·  ${pick(
                     "सूर्यबाट",
@@ -658,7 +658,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                 </Text>
                 <Text
                   className="text-caption mt-0.5"
-                  style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+                  style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
                 >
                   {pick(
                     "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले बि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
@@ -722,8 +722,8 @@ function Chain({ tone, steps }: { tone: "sun" | "moon"; steps: string[] }) {
     <View
       className="rounded-lg border px-2 py-1.5"
       style={{
-        borderColor: sun ? "rgba(251,191,36,0.3)" : "rgba(125,211,252,0.25)",
-        backgroundColor: sun ? "rgba(245,158,11,0.14)" : "rgba(56,189,248,0.14)",
+        borderColor: sun ? withAlpha(illustration.amber56, 0.3) : withAlpha(illustration.sky75, 0.25),
+        backgroundColor: sun ? withAlpha(illustration.orange50, 0.14) : withAlpha(illustration.teal60, 0.14),
       }}
     >
       {steps.map((s, i) => (
@@ -732,7 +732,7 @@ function Chain({ tone, steps }: { tone: "sun" | "moon"; steps: string[] }) {
           className="text-caption font-semibold"
           style={[
             nepaliTextStyle(10),
-            { color: sun ? "#fde68a" : "#bae6fd", fontSize: 15, marginTop: i > 0 ? 2 : 0 },
+            { color: sun ? illustration.amber77 : illustration.sky86, marginTop: i > 0 ? 2 : 0 },
           ]}
         >
           {i > 0 ? "↓ " : ""}
@@ -775,13 +775,13 @@ function DriftLadder({
       <View className="flex-row flex-wrap items-baseline justify-between gap-x-3">
         <Text
           className="text-caption"
-          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.6)", fontSize: 15 }]}
+          style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.6) }]}
         >
           {pick("एउटै समयरेखा", "One shared timeline")}
         </Text>
         <Text
           className="text-caption"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.6)", fontSize: 15 }]}
+          style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.6) }]}
         >
           {pick(
             `सौर वर्ष ${num(span.toFixed(0))} दिन · १२ चान्द्र मास ${num(
@@ -803,15 +803,15 @@ function DriftLadder({
               className="items-center justify-center overflow-hidden"
               style={{
                 width: pct(m.days),
-                backgroundColor: i % 2 ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.22)",
+                backgroundColor: i % 2 ? withAlpha(illustration.orange50, 0.35) : withAlpha(illustration.orange50, 0.22),
                 borderRightWidth: i === 11 ? 0 : 1,
-                borderRightColor: "rgba(0,0,0,0.4)",
+                borderRightColor: withAlpha(neutral.black, 0.4),
               }}
             >
               <Text
                 numberOfLines={1}
                 className="text-caption font-semibold"
-                style={[nepaliTextStyle(9), { color: "#fffbeb", fontSize: 15 }]}
+                style={[nepaliTextStyle(9), { color: brand.offWhite }]}
               >
                 {ne ? m.nameNe : m.name}
               </Text>
@@ -833,18 +833,18 @@ function DriftLadder({
                   width: pct(Math.min(m.days, span - from)),
                   backgroundColor:
                     i === 12
-                      ? "rgba(52,211,153,0.45)"
+                      ? withAlpha(illustration.green52, 0.45)
                       : i % 2
-                        ? "rgba(56,189,248,0.35)"
-                        : "rgba(56,189,248,0.22)",
+                        ? withAlpha(illustration.teal60, 0.35)
+                        : withAlpha(illustration.teal60, 0.22),
                   borderRightWidth: 1,
-                  borderRightColor: "rgba(0,0,0,0.4)",
+                  borderRightColor: withAlpha(neutral.black, 0.4),
                 }}
               >
                 <Text
                   numberOfLines={1}
                   className="text-caption font-semibold"
-                  style={{ color: "#f0f9ff", fontSize: 15 }}
+                  style={{ color: illustration.sky96 }}
                 >
                   {num(i + 1)}
                 </Text>
@@ -865,15 +865,15 @@ function DriftLadder({
             className="absolute inset-y-0 left-0 items-center justify-center"
             style={{
               width: pct(year.twelveLunarDays),
-              backgroundColor: "rgba(56,189,248,0.3)",
+              backgroundColor: withAlpha(illustration.teal60, 0.3),
               borderRightWidth: 1,
-              borderRightColor: "rgba(0,0,0,0.4)",
+              borderRightColor: withAlpha(neutral.black, 0.4),
             }}
           >
             <Text
               numberOfLines={1}
               className="text-caption px-1 font-semibold"
-              style={[nepaliTextStyle(9), { color: "#f0f9ff", fontSize: 15 }]}
+              style={[nepaliTextStyle(9), { color: illustration.sky96 }]}
             >
               {pick(
                 `१२ चान्द्र मास = ${num(year.twelveLunarDays.toFixed(0))} दिन`,
@@ -884,9 +884,9 @@ function DriftLadder({
           {shortfall > 0 ? (
             <View
               className="absolute inset-y-0 right-0 items-center justify-center"
-              style={{ width: pct(shortfall), backgroundColor: "rgba(52,211,153,0.35)" }}
+              style={{ width: pct(shortfall), backgroundColor: withAlpha(illustration.green52, 0.35) }}
             >
-              <Text className="text-caption font-bold" style={{ color: "#ecfdf5", fontSize: 15 }}>
+              <Text className="text-caption font-bold" style={{ color: wheel.ink }}>
                 {num(shortfall.toFixed(0))}
               </Text>
             </View>
@@ -901,16 +901,16 @@ function DriftLadder({
       </View>
 
       <View className="mt-1 gap-1">
-        <LadderKey color="rgba(245,158,11,0.6)">
+        <LadderKey color={withAlpha(illustration.orange50, 0.6)}>
           {pick("सौर महिना — सङ्क्रान्तिबाट सङ्क्रान्ति", "Solar months — sankranti to sankranti")}
         </LadderKey>
-        <LadderKey color="rgba(56,189,248,0.6)">
+        <LadderKey color={withAlpha(illustration.teal60, 0.6)}>
           {pick(
             `चान्द्र मास — औंसीबाट औंसी · वर्षभित्र अहिलेसम्म ${num(lunarDone)}`,
             `Lunar months — amavasya to amavasya · ${lunarDone} begun so far this year`,
           )}
         </LadderKey>
-        <LadderKey color="rgba(52,211,153,0.7)">
+        <LadderKey color={withAlpha(illustration.green52, 0.7)}>
           {pick("बाँकी खाडल — अधिक मासले पुर्छ", "The remaining gap — what an adhik maas fills")}
         </LadderKey>
       </View>
@@ -921,10 +921,10 @@ function DriftLadder({
 function LadderKey({ color, children }: { color: string; children: React.ReactNode }) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: color }} />
+      <View className="rounded-md" style={{ width: 8, height: 8, backgroundColor: color }} />
       <Text
         className="text-caption flex-1"
-        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+        style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
       >
         {children}
       </Text>
@@ -951,12 +951,12 @@ function RoundButton({
       accessibilityState={{ selected: Boolean(active) }}
       className="h-8 w-8 items-center justify-center rounded-full"
       style={{
-        backgroundColor: active ? "rgba(255,255,255,0.85)" : "rgba(6, 11, 20, 0.55)",
+        backgroundColor: active ? withAlpha(neutral.white, 0.85) : withAlpha(illustration.sky5, 0.55),
         borderWidth: 1,
-        borderColor: active ? "rgba(255,255,255,0.7)" : "rgba(148,163,184,0.35)",
+        borderColor: active ? withAlpha(neutral.white, 0.7) : withAlpha(illustration.sky65, 0.35),
       }}
     >
-      <Ionicons name={icon} size={15} color={active ? "#04070d" : "#f1f5f9"} />
+      <Ionicons name={icon} size={15} color={active ? wheel.sky2 : brand.offWhite} />
     </Pressable>
   );
 }

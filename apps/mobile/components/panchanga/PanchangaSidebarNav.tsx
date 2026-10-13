@@ -17,6 +17,7 @@ import { useLocale } from "@/lib/i18n";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -39,7 +40,7 @@ function SidebarLink({
   return (
     <Pressable
       onPress={onPress}
-      className={cn("rounded-xl px-3 py-2", !active && "active:bg-muted")}
+      className={cn(panchangaPageClasses.sidebar.link, !active && "active:bg-muted")}
       style={
         active
           ? {
@@ -51,13 +52,13 @@ function SidebarLink({
       }
     >
       <Text
-        className={cn("text-body", active ? "font-semibold text-secondary" : "font-medium text-foreground")}
+        className={cn(panchangaPageClasses.sidebar.linkLabel, active ? panchangaPageClasses.sidebar.linkLabelActive : panchangaPageClasses.sidebar.linkLabelIdle)}
         style={nepaliTextStyle(14)}
       >
         {pick(item.labelNe, item.labelEn)}
       </Text>
       {item.blurbNe ? (
-        <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className={panchangaPageClasses.sidebar.linkBlurb} style={nepaliTextStyle(11)}>
           {pick(item.blurbNe, item.blurbEn ?? item.blurbNe)}
         </Text>
       ) : null}
@@ -91,7 +92,7 @@ function SidebarSection({
       item.id === "kundali" && kundaliProfileId != null && kundaliSectionNav != null;
 
     return (
-      <View key={item.id} className="gap-0.5">
+      <View key={item.id} className={panchangaPageClasses.sidebar.item}>
         <SidebarLink
           item={item}
           active={active}
@@ -108,17 +109,16 @@ function SidebarSection({
   };
 
   return (
-    <View className="border-b border-border/60 pb-1 last:border-b-0">
+    <View className={cn("pb-1", panchangaPageClasses.sidebar.section)}>
       <Pressable
         onPress={onToggle}
         accessibilityRole="button"
         accessibilityState={{ expanded }}
-        className="flex-row items-center gap-2 rounded-xl px-3 py-2.5"
-        style={
-          hasActiveItem && !expanded
-            ? { backgroundColor: colorWithAlpha(colors.secondary, 0.06) }
-            : undefined
-        }
+        className={cn(
+          "flex-row",
+          panchangaPageClasses.sidebar.sectionHead,
+          hasActiveItem && !expanded && "bg-secondary/5",
+        )}
       >
         <Ionicons
           name={expanded ? "chevron-down" : "chevron-forward"}
@@ -127,8 +127,8 @@ function SidebarSection({
         />
         <Text
           className={cn(
-            "text-body min-w-0 flex-1 font-bold uppercase tracking-wide",
-            hasActiveItem ? "text-secondary" : "text-muted-foreground",
+            panchangaPageClasses.sidebar.sectionTitle,
+            hasActiveItem ? panchangaPageClasses.sidebar.sectionTitleActive : panchangaPageClasses.sidebar.sectionTitleIdle,
           )}
           style={nepaliTextStyle(14)}
         >
@@ -137,9 +137,9 @@ function SidebarSection({
       </Pressable>
 
       {expanded ? (
-        <View className="gap-0.5 px-1 pb-2">{section.items.map((item) => renderItem(item))}</View>
+        <View className={panchangaPageClasses.sidebar.list}>{section.items.map((item) => renderItem(item))}</View>
       ) : hasActiveItem ? (
-        <View className="gap-0.5 px-1 pb-2">
+        <View className={panchangaPageClasses.sidebar.list}>
           {section.items.filter((item) => isPanchangaSidebarItemActive(pathname, item)).map((item) => renderItem(item, true))}
         </View>
       ) : null}
@@ -170,12 +170,12 @@ export function PanchangaSidebarNav({
   const body = (
     <>
       <Text
-        className="text-caption border-b border-border px-4 py-3 font-semibold uppercase tracking-wider text-muted-foreground"
+        className={panchangaPageClasses.sidebar.navTitle}
         style={nepaliTextStyle(12)}
       >
         {pick("पञ्चाङ्ग", "Panchanga")}
       </Text>
-      <View className={compact ? "p-1" : "max-h-[70vh] p-1"}>
+      <View className={compact ? panchangaPageClasses.sidebar.navBody : cn("max-h-[70vh]", panchangaPageClasses.sidebar.navBody)}>
         {PANCHANGA_SIDEBAR_SECTIONS.map((section) => (
           <SidebarSection
             key={section.id}
@@ -193,14 +193,14 @@ export function PanchangaSidebarNav({
 
   if (compact) {
     return (
-      <View className={cn("overflow-hidden rounded-2xl border border-border bg-card", className)}>
+      <View className={cn("overflow-hidden", panchangaPageClasses.sidebar.nav, className)}>
         {body}
       </View>
     );
   }
 
   return (
-    <View className={cn("w-full shrink-0 overflow-hidden rounded-2xl border border-border bg-card", className)}>
+    <View className={cn("w-full shrink-0 overflow-hidden", panchangaPageClasses.sidebar.nav, className)}>
       <ScrollView showsVerticalScrollIndicator={false}>{body}</ScrollView>
     </View>
   );

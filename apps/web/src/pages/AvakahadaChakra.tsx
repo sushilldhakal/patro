@@ -50,12 +50,8 @@ import {
   sanjnaTitle,
 } from "@vedic-patro/domain/avakahada-locale";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";
+import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 
-const ganaTone: Record<Gana, string> = {
-  देव: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  नर: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
-  राक्षस: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
-};
 
 interface Row {
   index: number;
@@ -73,6 +69,9 @@ interface Row {
   gana: Gana;
   nadi: string;
 }
+
+const NAK_ICON_SVG = "inline-block h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current";
+const SEARCH_ICON = "pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2";
 
 function buildRows(lang: string): Row[] {
   return AVAKAHADA.map((r) => ({
@@ -120,19 +119,19 @@ function NakshatraCell({ row, lang }: { row: Row; lang: string }) {
   const icon = findNakshatraIcon(row.en);
   const label = localizeNakshatra(row, lang);
   return (
-    <div className="flex items-center gap-2">
-      <span className="grid h-6 w-6 shrink-0 place-items-center text-secondary">
+    <div className={cn(avakahadaClasses.nakCell, "flex")}>
+      <span className={cn(avakahadaClasses.nakIcon, "grid place-items-center")}>
         {icon?.svg ? (
           <span
-            className="inline-block h-5 w-5 [&>svg]:h-full [&>svg]:w-full [&_path]:fill-current"
+            className={NAK_ICON_SVG}
             aria-hidden
             dangerouslySetInnerHTML={{ __html: icon.svg }}
           />
         ) : (
-          <span className="text-xs">{row.index}</span>
+          <span className={avakahadaClasses.nakIndex}>{row.index}</span>
         )}
       </span>
-      <span className="whitespace-nowrap text-base text-foreground">
+      <span className={cn(avakahadaClasses.nakLabel, "whitespace-nowrap")}>
         {row.index}. {label}
       </span>
     </div>
@@ -182,7 +181,7 @@ function useColumns(lang: string, t: (key: string, opts?: Record<string, string>
         accessorFn: (r) => r.aksharaText,
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex flex-wrap gap-1">
+          <div className={cn(avakahadaClasses.aksharaList, "flex")}>
             {row.original.aksharas.map((a, i) => (
               <span
                 key={i}
@@ -190,7 +189,7 @@ function useColumns(lang: string, t: (key: string, opts?: Record<string, string>
                   n: String(i + 1),
                   rashi: localizeRashi(row.original.charanRashis[i]!, lang),
                 })}
-                className="inline-flex min-w-7 items-center justify-center rounded-md border border-border bg-card px-1.5 py-0.5 text-base text-foreground"
+                className={cn(avakahadaClasses.aksharaChip, avakahadaClasses.aksharaText, "inline-flex")}
               >
                 {a}
               </span>
@@ -223,7 +222,15 @@ function useColumns(lang: string, t: (key: string, opts?: Record<string, string>
         cell: ({ getValue }) => {
           const g = getValue<Gana>();
           return (
-            <span className={cn("inline-block rounded-full px-2 py-0.5 text-xs text-base", ganaTone[g])}>
+            <span
+              className={cn(
+                avakahadaClasses.ganaBadge,
+                avakahadaClasses.ganaBadgeText,
+                avakahadaClasses.ganaBg[g],
+                avakahadaClasses.ganaFg[g],
+                "inline-block",
+              )}
+            >
               {localizeGana(g, lang)}
             </span>
           );
@@ -275,12 +282,12 @@ export function AvakahadaChakra() {
         subtitle={t("avakahada.subtitle")}
       />
 
-      <p className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm">
+      <p className={cn(avakahadaClasses.note, avakahadaClasses.noteText)}>
         {t("avakahada.abhijit_note")}
       </p>
 
-      <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+      <div className={cn(avakahadaClasses.searchWrap, "relative")}>
+        <Search className={SEARCH_ICON} />
         <Input
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
@@ -289,7 +296,7 @@ export function AvakahadaChakra() {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className={cn(avakahadaClasses.tableWrap, "overflow-x-auto")}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -302,12 +309,13 @@ export function AvakahadaChakra() {
                       key={h.id}
                       onClick={canSort ? h.column.getToggleSortingHandler() : undefined}
                       className={cn(
-                        "whitespace-nowrap font-semibold",
+                        avakahadaClasses.headLabel,
+                        "whitespace-nowrap",
                         i === 0 ? cn(stickyHead, "bg-muted/60") : cn(stickyHeadCell, "bg-muted/60"),
                         canSort && "cursor-pointer select-none hover:text-foreground",
                       )}
                     >
-                      <span className="flex items-center gap-1">
+                      <span className={cn(avakahadaClasses.headInner, "flex")}>
                         {flexRender(h.column.columnDef.header, h.getContext())}
                         {canSort &&
                           (sorted === "asc" ? (
@@ -327,7 +335,7 @@ export function AvakahadaChakra() {
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-8 text-center">
+                <TableCell colSpan={columns.length} className={cn(avakahadaClasses.emptyCell, avakahadaClasses.emptyText)}>
                   {t("avakahada.no_results")}
                 </TableCell>
               </TableRow>
@@ -351,34 +359,34 @@ export function AvakahadaChakra() {
 
       <AvakahadaWheel highlighted={globalFilter.trim() ? rows.map((r) => r.original) : undefined} />
 
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold text-foreground">{t("avakahada.bhoomadosha_title")}</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-border p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">{t("avakahada.name_groups")}</h3>
-            <ul className="space-y-1.5 text-sm">
+      <section className={cn(avakahadaClasses.notes, "flex flex-col")}>
+        <h2 className={avakahadaClasses.notesTitle}>{t("avakahada.bhoomadosha_title")}</h2>
+        <div className={cn(avakahadaClasses.notesGrid, "grid sm:grid-cols-2")}>
+          <div className={avakahadaClasses.notesCard}>
+            <h3 className={avakahadaClasses.notesCardTitle}>{t("avakahada.name_groups")}</h3>
+            <ul className={cn(avakahadaClasses.vargaList, "flex flex-col text-sm")}>
               {MANGLI_VARGAS.map((v) => (
-                <li key={v.varga} className="flex items-center gap-2">
-                  <span className="text-base text-foreground">{localizeVarga(v.varga, lang)}</span>
-                  <span className="text-xs">⚔</span>
-                  <span className="text-base text-foreground">{localizeVarga(v.shatru, lang)}</span>
+                <li key={v.varga} className={cn(avakahadaClasses.vargaRow, "flex")}>
+                  <span className={avakahadaClasses.vargaName}>{localizeVarga(v.varga, lang)}</span>
+                  <span className={avakahadaClasses.vargaVs}>⚔</span>
+                  <span className={avakahadaClasses.vargaName}>{localizeVarga(v.shatru, lang)}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-xs">{t("avakahada.bhoomadosha_note")}</p>
+            <p className={avakahadaClasses.vargaNote}>{t("avakahada.bhoomadosha_note")}</p>
           </div>
-          <div className="rounded-xl border border-border p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">{t("avakahada.shloka")}</h3>
-            <div className="space-y-3">
+          <div className={avakahadaClasses.notesCard}>
+            <h3 className={avakahadaClasses.notesCardTitle}>{t("avakahada.shloka")}</h3>
+            <div className={cn(avakahadaClasses.shlokaList, "flex flex-col")}>
               {BHAUMA_DOSHA_SHLOKAS.map((s, i) => (
-                <p key={i} className="text-sm leading-relaxed">
+                <p key={i} className={avakahadaClasses.shloka}>
                   {s}
                 </p>
               ))}
             </div>
           </div>
         </div>
-        <p className="text-xs">{t("avakahada.footnote")}</p>
+        <p className={avakahadaClasses.footnote}>{t("avakahada.footnote")}</p>
       </section>
     </PageShell>
   );

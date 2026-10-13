@@ -7,7 +7,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
   TextInput,
   View,
 } from "react-native";
@@ -19,8 +18,13 @@ import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { EmailTextInput } from "@/components/ui/EmailTextInput";
+import { Button } from "@/components/ui/Button";
+import { Text } from "@/components/ui/Text";
 import { SocialSignInButtons } from "./SocialSignInButtons";
 
+import { neutral, space } from "@vedic-patro/design-tokens";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 type Mode = "login" | "signup" | "forgot";
 
 export function AuthDialog({
@@ -188,32 +192,18 @@ export function AuthDialog({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingHorizontal: space.lg,
+            paddingVertical: space.md,
             borderBottomWidth: 1,
             borderBottomColor: colors.border,
           }}
         >
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-            <Text style={{ fontSize: 18, color: colors.mutedForeground }}>
-              {pick("रद्द", "Cancel")}
-            </Text>
+            <Text className="text-lg text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
           </Pressable>
-          <Text
-            style={{
-              flex: 1,
-              textAlign: "center",
-              fontSize: 18,
-              fontWeight: "600",
-              color: colors.foreground,
-            }}
-          >
-            {title}
-          </Text>
+          <Text className="flex-1 text-center text-lg font-semibold text-foreground">{title}</Text>
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-            <Text style={{ fontSize: 18, fontWeight: "600", color: colors.primary }}>
-              {pick("भयो", "Done")}
-            </Text>
+            <Text className="text-lg font-semibold text-primary">{pick("भयो", "Done")}</Text>
           </Pressable>
         </View>
 
@@ -224,11 +214,11 @@ export function AuthDialog({
         >
           <ScrollView
             style={{ flex: 1 }}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 32 }}
+            contentContainerStyle={{ paddingHorizontal: space.xl, paddingTop: space.lg, paddingBottom: space["3xl"] }}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
           >
-            <Text className="text-body text-muted-foreground">{desc}</Text>
+            <Text className="text-sm text-muted-foreground">{desc}</Text>
 
             {mode !== "forgot" ? (
               <View className="mt-4">
@@ -278,58 +268,57 @@ export function AuthDialog({
               />
             ) : null}
 
-            {error ? <Text className="text-body mt-3 text-danger">{error}</Text> : null}
-            {notice ? <Text className="text-body mt-3 text-accent">{notice}</Text> : null}
+            {error ? <Text className={cn("mt-3", accountClasses.formError)}>{error}</Text> : null}
+            {notice ? <Text className={cn("mt-3", accountClasses.formNotice)}>{notice}</Text> : null}
 
-            <Pressable
+            <Button
+              label={submitLabel}
+              size="lg"
               onPress={onSubmit}
               disabled={busy}
-              className="mt-5 h-12 flex-row items-center justify-center gap-2 rounded-lg bg-primary active:opacity-90"
-              style={busy ? { opacity: 0.6 } : undefined}
-            >
-              {busy ? <ActivityIndicator color="#fff" size="small" /> : null}
-              <Text className="text-body font-semibold text-primary-foreground">{submitLabel}</Text>
-            </Pressable>
+              className="mt-4"
+              icon={busy ? <ActivityIndicator color={neutral.white} size="small" /> : undefined}
+            />
 
-            <View className="mt-5 items-center gap-2 pb-4">
+            <View className={cn("mt-4 items-center pb-4", accountClasses.switchStack)}>
               {mode === "login" ? (
                 <>
                   <Pressable onPress={() => reset("forgot")}>
-                    <Text className="text-body text-muted-foreground">
+                    <Text className={accountClasses.switchText}>
                       {pick("पासवर्ड बिर्सनुभयो?", "Forgot your password?")}
                     </Text>
                   </Pressable>
-                  <Text className="text-body text-muted-foreground">
+                  <Text className={accountClasses.switchText}>
                     {pick("नयाँ हुनुहुन्छ?", "New here?")}{" "}
-                    <Text className="font-semibold text-secondary" onPress={() => reset("signup")}>
+                    <Text className={accountClasses.switchLink} onPress={() => reset("signup")}>
                       {pick("खाता खोल्नुहोस्", "Create account")}
                     </Text>
                   </Text>
                 </>
               ) : null}
               {mode === "signup" ? (
-                <Text className="text-body text-muted-foreground">
+                <Text className={accountClasses.switchText}>
                   {pick("पहिले नै खाता छ?", "Already have an account?")}{" "}
-                  <Text className="font-semibold text-secondary" onPress={() => reset("login")}>
+                  <Text className={accountClasses.switchLink} onPress={() => reset("login")}>
                     {pick("लग-इन", "Sign in")}
                   </Text>
                 </Text>
               ) : null}
               {mode === "forgot" ? (
                 <Pressable onPress={() => reset("login")}>
-                  <Text className="text-body text-muted-foreground">
+                  <Text className={accountClasses.switchText}>
                     {pick("लग-इनमा फर्कनुहोस्", "Back to sign in")}
                   </Text>
                 </Pressable>
               ) : null}
               {mode !== "forgot" ? (
-                <Text className="text-caption mt-2 px-4 text-center leading-relaxed text-muted-foreground">
+                <Text className={cn("mt-2 px-4", accountClasses.legal)}>
                   {pick(
                     "जारी राखेर तपाईं गोपनीयता नीति र प्रयोगका सर्त मान्नुहुन्छ।",
                     "By continuing you agree to the Privacy Policy and Terms of Use.",
                   )}{" "}
                   <Text
-                    className="font-semibold text-secondary"
+                    className={accountClasses.legalLink}
                     onPress={() => {
                       close();
                       router.push("/privacy" as never);
@@ -339,7 +328,7 @@ export function AuthDialog({
                   </Text>
                   {" · "}
                   <Text
-                    className="font-semibold text-secondary"
+                    className={accountClasses.legalLink}
                     onPress={() => {
                       close();
                       router.push("/terms" as never);
@@ -365,16 +354,12 @@ function Field({
   const colors = useThemeColors();
   const Input = email ? EmailTextInput : props.secureTextEntry ? PasswordInput : TextInput;
   return (
-    <View className="mt-3 gap-1.5">
-      <Text className="text-body text-foreground">{label}</Text>
+    <View className={cn("mt-3", accountClasses.field)}>
+      <Text className={accountClasses.label}>{label}</Text>
       <Input
         placeholderTextColor={colors.mutedForeground}
-        className="text-body h-12 rounded-lg border px-3 text-foreground"
-        style={{
-          backgroundColor: colors.background,
-          borderColor: colors.border,
-          ...(Platform.OS === "web" ? ({ outlineStyle: "none" } as never) : {}),
-        }}
+        className={accountClasses.input}
+        style={Platform.OS === "web" ? ({ outlineStyle: "none" } as never) : undefined}
         {...props}
       />
     </View>

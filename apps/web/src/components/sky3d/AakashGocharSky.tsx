@@ -115,9 +115,10 @@ import compassNeedle from "@/assets/compass.svg?raw";
 import { useDeviceOrientation, type OrientationSample } from "@/lib/sky3d/device-orientation";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
+import { effect, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const Scene = memo(AakashGocharScene);
 
-const CANVAS_BG = "#04070d";
+const CANVAS_BG = wheel.sky2;
 
 /**
  * The camera's far clip plane.
@@ -203,7 +204,7 @@ function HipsDebugHud() {
      everything, which is exactly what the old FOV→order table always did. */
   const mixedOrders = tilesOn && snap.minOrderPresent !== snap.maxOrderPresent;
   return (
-    <div className="pointer-events-none absolute left-3 top-3 z-20 max-h-[70vh] overflow-hidden rounded-lg border border-emerald-400/30 bg-black/70 px-2.5 py-1.5 font-mono text-[11px] leading-tight text-emerald-200 backdrop-blur">
+    <div className="pointer-events-none absolute left-3 top-3 z-20 max-h-[70vh] overflow-hidden rounded-lg border border-emerald-400/30 bg-black/70 px-2.5 py-1.5 font-mono text-xs leading-tight text-emerald-200 backdrop-blur">
       <div>
         hips fov {snap.fovDeg.toFixed(1)}° ·{" "}
         {tilesOn
@@ -236,24 +237,24 @@ function HipsDebugHud() {
  * theme foreground — light mode would otherwise turn them near-black on it.
  */
 const LABEL_COLOR = {
-  rashi: "#f4c542",
-  nakshatra: "#6fe08a",
-  month: "#e3d9a8",
-  pada: "#8fd6b0",
-  cardinal: "#ff8a8a",
-  azimuth: "#7ea9d8",
-  station: "#ffd166",
-  tilt: "#ffd166",
-  axis: "#9fc4f0",
-  poleStar: "#cfe0ff",
-  vedicStar: "#ffe08a",
-  nebula: "#e39bff",
-  asterism: "#e6efff",
-  tropic: "#e2d264",
-  observer: "#ff6b6b",
-  hud: "#ffffff",
-  hudDim: "rgba(255,255,255,0.72)",
-  overlayDim: "rgba(236,242,244,0.62)",
+  rashi: illustration.amber61,
+  nakshatra: illustration.green66,
+  month: illustration.amber77b,
+  pada: illustration.green70b,
+  cardinal: midnight.vermilion,
+  azimuth: illustration.sky67,
+  station: illustration.amber70,
+  tilt: illustration.amber70,
+  axis: illustration.sky78,
+  poleStar: illustration.sky91,
+  vedicStar: illustration.amber77,
+  nebula: illustration.violet80b,
+  asterism: illustration.sky93,
+  tropic: illustration.amber64,
+  observer: illustration.red71,
+  hud: neutral.white,
+  hudDim: withAlpha(neutral.white, 0.72),
+  overlayDim: withAlpha(wheel.ink, 0.62),
 } as const;
 
 /** Learn year-mode framing — same wheel scale, same seat above it. */
@@ -1940,7 +1941,7 @@ export function AakashGocharSky({
             off). Bottom-right, clear of the compass dial docked
             bottom-centre (see {@link CompassControl}). */}
         {mode === "horizon" && !showCamera ? (
-          <div className="pointer-events-none absolute bottom-2 right-2 z-10 max-w-[70%] text-right text-[9px] leading-tight text-white/35">
+          <div className="pointer-events-none absolute bottom-2 right-2 z-10 max-w-[70%] text-right text-diagram-xs leading-tight text-white/35">
             {HIPS_ATTRIBUTION}
           </div>
         ) : null}
@@ -1968,7 +1969,7 @@ export function AakashGocharSky({
             <div className="flex flex-col items-center gap-3 px-6 text-center">
               <span
                 aria-hidden
-                style={{ width: 56, height: 56, color: "#f4c542" }}
+                style={{ width: 56, height: 56, color: illustration.amber61 }}
                 dangerouslySetInnerHTML={{ __html: compassNeedle }}
               />
               <p className="m-0 text-2xl font-extrabold text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
@@ -2027,7 +2028,7 @@ export function AakashGocharSky({
         >
           {sunRashi != null ? (
             <>
-              <p className="m-0 text-[10px] font-semibold uppercase tracking-[0.1em] text-white/50">
+              <p className="m-0 text-diagram-xs font-semibold uppercase tracking-eyebrow text-white/50">
                 {pick("सूर्य राशि · महिना", "Sun's rashi · month")}
               </p>
               <p className="m-0 text-sm font-bold text-white">
@@ -2036,35 +2037,35 @@ export function AakashGocharSky({
             </>
           ) : null}
           {eclipse?.kind === "solar" ? (
-            <p className="m-0 mt-1 text-[11px] font-bold text-amber-200">
+            <p className="m-0 mt-1 text-xs font-bold text-amber-200">
               {pick(
                 `सूर्यग्रहण · औंसी + ${eclipse.node === "rahu" ? "राहु" : "केतु"}`,
                 `Solar eclipse · new moon + ${eclipse.node === "rahu" ? "Rāhu" : "Ketu"}`,
               )}
             </p>
           ) : eclipse?.kind === "lunar" ? (
-            <p className="m-0 mt-1 text-[11px] font-bold text-rose-200">
+            <p className="m-0 mt-1 text-xs font-bold text-rose-200">
               {pick(
                 `चन्द्रग्रहण · पूर्णिमा + ${eclipse.node === "rahu" ? "राहु" : "केतु"}`,
                 `Lunar eclipse · full moon + ${eclipse.node === "rahu" ? "Rāhu" : "Ketu"}`,
               )}
             </p>
           ) : syzygy === "amavasya" ? (
-            <p className="m-0 mt-1 text-[11px] font-bold text-slate-200">
+            <p className="m-0 mt-1 text-xs font-bold text-slate-200">
               {pick("औंसी · चन्द्र सूर्य र पृथ्वीको बीचमा", "Amavasya · Moon between Sun and Earth")}
             </p>
           ) : syzygy === "purnima" ? (
-            <p className="m-0 mt-1 text-[11px] font-bold text-amber-100">
+            <p className="m-0 mt-1 text-xs font-bold text-amber-100">
               {pick("पूर्णिमा · पृथ्वी सूर्य र चन्द्रको बीचमा", "Purnima · Earth between Sun and Moon")}
             </p>
           ) : null}
-          <p className="m-0 mt-1 text-[11px] font-bold" style={{ color: LABEL_COLOR.hud }}>
+          <p className="m-0 mt-1 text-xs font-bold" style={{ color: LABEL_COLOR.hud }}>
             {simStamp.date}
           </p>
-          <p className="m-0 text-[10px]" style={{ color: LABEL_COLOR.hudDim }}>
+          <p className="m-0 text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>
             {simStamp.time}
           </p>
-          <p className="m-0 text-[10px]" style={{ color: LABEL_COLOR.hudDim }}>
+          <p className="m-0 text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>
             {mode === "horizon"
               ? `${pick("क्षितिज", "Horizon")} · ${digits(observer.lat.toFixed(2))}°, ${digits(
                   observer.lon.toFixed(2),
@@ -2074,7 +2075,7 @@ export function AakashGocharSky({
                 : pick("अन्तरिक्षबाट", "From space")}
           </p>
           {/* The rate, since the speed buttons no longer carry a caption. */}
-          <p className="m-0 text-[10px]" style={{ color: LABEL_COLOR.hudDim }}>
+          <p className="m-0 text-diagram-xs" style={{ color: LABEL_COLOR.hudDim }}>
             {playing
               ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
               : pick("⏸ रोकिएको", "⏸ paused")}
@@ -2200,7 +2201,7 @@ export function AakashGocharSky({
                 onPress={() => setToggles((t) => ({ ...t, labels: !t.labels }))}
               />
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+            <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
               {pick("मार्गदर्शक", "Guides")}
             </span>
             {/* ग्रिड is a tile above; the rest are the finer guides, which
@@ -2245,7 +2246,7 @@ export function AakashGocharSky({
                 />
               ) : null}
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+            <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
               {pick("वलय", "Belts")}
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -2298,7 +2299,7 @@ export function AakashGocharSky({
           style={{ bottom: overlayBottom }}
         >
           <span className="text-sm font-bold text-white">{simStamp.short.day}</span>
-          <span className="text-[11px] font-semibold text-white/70">{simStamp.short.clock}</span>
+          <span className="text-xs font-semibold text-white/70">{simStamp.short.clock}</span>
         </button>
 
         {searchOpen ? (
@@ -2351,7 +2352,7 @@ export function AakashGocharSky({
                   </g>
                 </svg>
                 {live ? null : (
-                  <span className="absolute top-[calc(50%+1.9rem)] whitespace-nowrap rounded-full border border-amber-300/40 bg-black/70 px-2 py-0.5 text-[11px] font-bold text-amber-100 backdrop-blur">
+                  <span className="absolute top-[calc(50%+1.9rem)] whitespace-nowrap rounded-full border border-amber-300/40 bg-black/70 px-2 py-0.5 text-xs font-bold text-amber-100 backdrop-blur">
                     {lang === "en" ? aimed.en : aimed.ne}
                   </span>
                 )}
@@ -2366,7 +2367,7 @@ export function AakashGocharSky({
             className="absolute right-3 z-10 flex w-[min(230px,calc(100%-1.5rem))] flex-col gap-2.5 rounded-xl border border-white/15 bg-black/85 p-3.5 backdrop-blur"
             style={{ top: `calc(${overlayTop} + 2.75rem)` }}
           >
-            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+            <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
               {pick("केन्द्रविन्दु", "Focus")}
             </span>
             <div className="flex flex-col gap-1">
@@ -2707,7 +2708,7 @@ const SkyLabels = memo(function SkyLabels({
   const { lang, digits } = useLocale();
   const pick = (ne: string, en: string) => bilingualText(lang, ne, en);
   const rashiColor = LABEL_COLOR.rashi;
-  const nakColor = flatBelts ? "#8fb6d8" : LABEL_COLOR.nakshatra;
+  const nakColor = flatBelts ? illustration.sky70 : LABEL_COLOR.nakshatra;
   const monthColor = LABEL_COLOR.month;
 
   return (
@@ -2851,8 +2852,8 @@ const SkyLabels = memo(function SkyLabels({
                 pointerEvents: "auto",
                 cursor: "pointer",
                 fontSize: zoomFont(10, scale),
-                color: selected ? "#fff6c8" : LABEL_COLOR.asterism,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                color: selected ? illustration.amber89 : LABEL_COLOR.asterism,
+                textShadow: effect.labelShadow,
                 opacity: selected ? 1 : 0.85 * dim,
                 background: "transparent",
                 border: 0,
@@ -2879,8 +2880,8 @@ const SkyLabels = memo(function SkyLabels({
                 pointerEvents: "auto",
                 cursor: "pointer",
                 fontSize: zoomFont(10, scale),
-                color: selected ? "#fff6c8" : LABEL_COLOR.asterism,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                color: selected ? illustration.amber89 : LABEL_COLOR.asterism,
+                textShadow: effect.labelShadow,
                 opacity: selected ? 1 : 0.85 * dim,
                 background: "transparent",
                 border: 0,
@@ -2906,8 +2907,8 @@ const SkyLabels = memo(function SkyLabels({
                 pointerEvents: "auto",
                 cursor: "pointer",
                 fontSize: zoomFont(selected ? 11 : 9, scale),
-                color: selected ? "#fff6c8" : LABEL_COLOR.asterism,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                color: selected ? illustration.amber89 : LABEL_COLOR.asterism,
+                textShadow: effect.labelShadow,
                 background: "transparent",
                 border: 0,
                 padding: 0,
@@ -2933,7 +2934,7 @@ const SkyLabels = memo(function SkyLabels({
           return (
             <span
               key={label.id}
-              className="text-[10px] font-bold"
+              className="text-diagram-xs font-bold"
               style={{ ...labelBox(label.x, label.y, 120, -7), color: LABEL_COLOR.station }}
             >
               {st ? (lang === "en" ? st.en : st.ne) : ""}
@@ -2944,7 +2945,7 @@ const SkyLabels = memo(function SkyLabels({
           return (
             <span
               key={label.id}
-              className="text-[9px] font-bold"
+              className="text-diagram-xs font-bold"
               style={{ ...labelBox(label.x, label.y, 120, -16), color: LABEL_COLOR.axis }}
             >
               {label.text === "earth"
@@ -2957,7 +2958,7 @@ const SkyLabels = memo(function SkyLabels({
           return (
             <span
               key={label.id}
-              className="text-[11px] font-bold"
+              className="text-xs font-bold"
               style={{ ...labelBox(label.x, label.y, 90, -7), color: LABEL_COLOR.tilt }}
             >
               {`${digits((label.deg ?? 23.44).toFixed(2))}°`}
@@ -2985,13 +2986,13 @@ const SkyLabels = memo(function SkyLabels({
                 style={{
                   fontSize: zoomFont(reigning ? 11 : 9, scale),
                   color: reigning ? LABEL_COLOR.station : LABEL_COLOR.poleStar,
-                  textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                  textShadow: effect.labelShadow,
                 }}
               >
                 {lang === "en" ? star.en.replace(/\s*\(.*\)$/, "") : star.ne}
               </span>
               <span
-                className="max-w-full truncate text-[8px]"
+                className="max-w-full truncate text-diagram-2xs"
                 style={{ color: LABEL_COLOR.overlayDim }}
               >
                 {formatPoleYear(label.year, lang, digits)}
@@ -3012,8 +3013,8 @@ const SkyLabels = memo(function SkyLabels({
                 pointerEvents: "auto",
                 cursor: "pointer",
                 fontSize: zoomFont(selected ? 11 : 9, scale),
-                color: selected ? "#fff6c8" : LABEL_COLOR.vedicStar,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                color: selected ? illustration.amber89 : LABEL_COLOR.vedicStar,
+                textShadow: effect.labelShadow,
                 background: "transparent",
                 border: 0,
                 padding: 0,
@@ -3027,7 +3028,7 @@ const SkyLabels = memo(function SkyLabels({
           return (
             <span
               key={label.id}
-              className="text-[9px]"
+              className="text-diagram-xs"
               style={{ ...labelBox(label.x, label.y, 110, -7), color: LABEL_COLOR.tropic }}
             >
               {label.text === "cancer"
@@ -3040,7 +3041,7 @@ const SkyLabels = memo(function SkyLabels({
           return (
             <span
               key={label.id}
-              className="text-[9px] tabular-nums"
+              className="text-diagram-xs tabular-nums"
               style={{ ...gridDegreeBox(label.x, label.y, label.side), color: LABEL_COLOR.azimuth }}
             >
               {digits(label.text ?? "")}
@@ -3055,9 +3056,9 @@ const SkyLabels = memo(function SkyLabels({
               style={{
                 ...labelBox(label.x, label.y, 90 * scale, 10 * scale),
                 fontSize: zoomFont(9, scale),
-                color: label.color ?? "rgba(255,255,255,0.75)",
+                color: label.color ?? withAlpha(neutral.white, 0.75),
                 opacity: 0.85 * dim,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                textShadow: effect.labelShadow,
               }}
             >
               {lang === "en" ? label.text : (label.textNe ?? label.text)}
@@ -3077,8 +3078,8 @@ const SkyLabels = memo(function SkyLabels({
                 pointerEvents: "auto",
                 cursor: "pointer",
                 fontSize: zoomFont(selected ? 11 : 9, scale),
-                color: selected ? "#fff6c8" : LABEL_COLOR.nebula,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                color: selected ? illustration.amber89 : LABEL_COLOR.nebula,
+                textShadow: effect.labelShadow,
                 background: "transparent",
                 border: 0,
                 padding: 0,
@@ -3098,7 +3099,7 @@ const SkyLabels = memo(function SkyLabels({
                 fontSize: zoomFont(10, scale),
                 color: GRAHA_COLOR[label.key],
                 opacity: dim,
-                textShadow: "0 1px 4px rgba(0,0,0,0.95)",
+                textShadow: effect.labelShadow,
               }}
             >
               {lang === "en" ? GRAHA_NAME[label.key].en : GRAHA_NAME[label.key].ne}
@@ -3147,7 +3148,7 @@ function ViewTile({
       )}
     >
       <span className="size-6">{icon}</span>
-      <span className="w-full truncate text-center text-[10px] font-semibold leading-none">
+      <span className="w-full truncate text-center text-diagram-xs font-semibold leading-none">
         {label}
       </span>
     </button>

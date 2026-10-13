@@ -8,8 +8,8 @@ import {
 } from "@vedic-patro/domain/ayanamsha";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Props = {
   mode: AyanamshaMode;
@@ -18,36 +18,38 @@ type Props = {
 
 export function AyanamshaSelector({ mode, onModeChange }: Props) {
   const { pick } = useLocale();
-  const colors = useThemeColors();
   const current = getAyanamshaModeInfo(mode);
 
   return (
-    <View className="mb-4 overflow-hidden rounded-xl border border-border bg-card">
-      <View className="border-b border-border bg-secondary/10 px-3.5 py-2.5">
+    <View className={cn(kundaliDetailClasses.ayanamsha.card, "mb-4 overflow-hidden border border-border")}>
+      <View className={cn(kundaliDetailClasses.ayanamsha.header, "bg-secondary/10")}>
         <Text
-          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
+          className={kundaliDetailClasses.ayanamsha.heading}
           style={nepaliTextStyle(12)}
         >
           {pick("अयनांश", "Ayanamsha")}
         </Text>
       </View>
-      <View className="gap-2.5 px-3.5 py-3">
-        <View className="flex-row flex-wrap gap-1.5">
+      <View className={kundaliDetailClasses.ayanamsha.body}>
+        <View className={kundaliDetailClasses.ayanamsha.chips}>
           {AYANAMSHA_MODES.map((m) => {
             const active = mode === m.id;
             return (
               <Pressable
                 key={m.id}
                 onPress={() => onModeChange(m.id)}
-                style={{
-                  backgroundColor: active ? colors.secondary : colors.background,
-                  borderColor: active ? colors.secondary : colors.border,
-                }}
-                className="rounded-lg border px-3 py-2 active:opacity-80"
+                className={cn(
+                  kundaliDetailClasses.ayanamsha.chip,
+                  "active:opacity-80",
+                  active ? kundaliDetailClasses.ayanamsha.chipActive : kundaliDetailClasses.ayanamsha.chipIdle,
+                )}
               >
                 <Text
-                  style={{ color: active ? "#ffffff" : colors.foreground, ...nepaliTextStyle(13) }}
-                  className="text-body"
+                  style={nepaliTextStyle(13)}
+                  className={cn(
+                    kundaliDetailClasses.ayanamsha.chipText,
+                    active ? kundaliDetailClasses.ayanamsha.chipActiveText : kundaliDetailClasses.ayanamsha.chipIdleText,
+                  )}
                 >
                   {pick(m.labelNe, m.label)}
                   {m.id === "nepal" ? " ⭐" : ""}
@@ -56,7 +58,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
             );
           })}
         </View>
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={kundaliDetailClasses.ayanamsha.note} style={nepaliTextStyle(13)}>
           {pick(current.labelNe, current.label)} — {pick(current.taglineNe, current.tagline)}
           {!matchesPanchangaAngas(mode)
             ? pick(

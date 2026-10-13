@@ -50,7 +50,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
       ) : null}
       {faqs.length > 0 ? (
         <View className="gap-4">
-          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+          <Text className="text-lg font-bold text-foreground" style={nepaliTextStyle(18)}>
             {t("seo_faq.section_title")}
           </Text>
           {faqs.map((f) => (

@@ -1,5 +1,6 @@
 import { Platform, type TextStyle } from "react-native";
 import { NOTO_DEVANAGARI_BOLD, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
+import { space, spaceUnit } from "@vedic-patro/design-tokens";
 
 /**
  * Line-height ratio for देवनागरी on native `Text`.
@@ -67,8 +68,8 @@ export function nepaliTextStyle(
 export function tableHeaderTextStyle(_requestedSize?: number): TextStyle {
   return {
     fontFamily: NOTO_DEVANAGARI_REGULAR,
-    paddingTop: 5,
-    paddingBottom: 2,
+    paddingTop: spaceUnit * 1.5,
+    paddingBottom: space.hair,
     ...(Platform.OS === "android"
       ? { includeFontPadding: true, textAlignVertical: "center" as const }
       : {}),

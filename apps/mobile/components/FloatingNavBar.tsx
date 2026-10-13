@@ -9,7 +9,8 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { brand } from "@vedic-patro/design-tokens";
+import { brand, nativeShadow } from "@vedic-patro/design-tokens";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 export function FloatingNavBar() {
   const router = useRouter();
@@ -17,32 +18,20 @@ export function FloatingNavBar() {
   const { pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { isTablet, width } = useBreakpoint();
+  const { isTablet } = useBreakpoint();
 
-  const iconSize = isTablet ? 24 : 20;
-  const barMaxWidth = isTablet ? Math.min(width - 40, 720) : undefined;
+  /* Web MobileBottomNav: size-5 icons, max-w-lg bar, px-2 gutter at every width. */
+  const iconSize = 20;
 
   return (
     <View
       pointerEvents="box-none"
       style={{ paddingBottom: Math.max(insets.bottom, isTablet ? 10 : 6) }}
-      className={cn("absolute bottom-0 left-0 right-0", isTablet ? "px-5" : "px-3")}
+      className={cn("absolute bottom-0 left-0 right-0", shellClasses.navOuter)}
     >
       <View
-        style={{
-          maxWidth: barMaxWidth,
-          alignSelf: "center",
-          width: "100%",
-          shadowColor: brand.ink,
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.12,
-          shadowRadius: 16,
-          elevation: 12,
-        }}
-        className={cn(
-          "flex-row items-stretch gap-0.5 rounded-2xl border border-border bg-background/90",
-          "p-1",
-        )}
+        style={nativeShadow("lg")}
+        className={cn("w-full flex-row self-center", shellClasses.navBar)}
       >
         {FLOATING_NAV.map((item) => {
           const active = isNavActive(pathname, item.href);
@@ -51,8 +40,9 @@ export function FloatingNavBar() {
               key={item.href}
               onPress={() => router.push(item.href as never)}
               className={cn(
-                "min-w-0 flex-1 items-center justify-center gap-1 rounded-xl px-1 py-1.5",
-                active && "bg-secondary/10",
+                "min-w-0 justify-center",
+                shellClasses.navItem,
+                active && shellClasses.navItemActive,
               )}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
@@ -65,10 +55,11 @@ export function FloatingNavBar() {
               <Text
                 numberOfLines={1}
                 className={cn(
-                  "text-center font-medium",
-                  active ? "text-secondary" : "text-muted-foreground",
+                  "text-center",
+                  shellClasses.navLabel,
+                  active ? shellClasses.navLabelActive : shellClasses.navLabelIdle,
                 )}
-                style={[nepaliTextStyle(isTablet ? 11 : 10), { paddingTop: 0 }]}
+                style={nepaliTextStyle()}
               >
                 {pick(item.ne, item.en)}
               </Text>

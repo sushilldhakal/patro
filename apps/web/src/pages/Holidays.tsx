@@ -28,6 +28,7 @@ import { formatLocaleDigits } from "@/i18n/digits";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { formatHolidayBsDisplay } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
+import { holidaysClasses } from "@vedic-patro/design-tokens/classes/holidays-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/holidays");
 
@@ -44,19 +45,19 @@ function useHolidayColumns() {
       holidayCol.accessor(r => bilingualText(lang, r.name_ne ?? r.name_en, r.name_en ?? r.name_ne) ?? "—", {
         id: "name",
         header: t("holidays.col_name"),
-        cell: i => <span className="text-base">{i.getValue()}</span>,
+        cell: i => <span className={holidaysClasses.cellName}>{i.getValue()}</span>,
       }),
       holidayCol.accessor(
         (r) => (r.start_date ? formatHolidayBsDisplay({ ...r, start_date: r.start_date }, lang) : undefined),
         {
           id: "bs_start_date",
           header: t("holidays.col_bs_date"),
-          cell: i => <span className="font-mono text-sm">{i.getValue() ?? "—"}</span>,
+          cell: i => <span className={holidaysClasses.cellMono}>{i.getValue() ?? "—"}</span>,
         },
       ),
       holidayCol.accessor("start_date", {
         header: t("holidays.col_ad_date"),
-        cell: i => <span className="font-mono text-sm">{i.getValue()}</span>,
+        cell: i => <span className={holidaysClasses.cellMono}>{i.getValue()}</span>,
       }),
       holidayCol.accessor("duration_days", {
         header: t("holidays.col_days"),
@@ -65,7 +66,7 @@ function useHolidayColumns() {
       holidayCol.accessor("type", {
         header: t("holidays.col_type"),
         cell: i => (
-          <span className="capitalize text-xs bg-muted px-2 py-0.5 rounded-full">
+          <span className={cn(holidaysClasses.typeBadge, holidaysClasses.typeBadgeText)}>
             {i.getValue() ?? "—"}
           </span>
         ),
@@ -83,24 +84,24 @@ function useFestivalColumns() {
       festivalCol.accessor(r => bilingualText(lang, r.name_ne ?? r.name_en, r.name_en ?? r.name_ne) ?? "—", {
         id: "name",
         header: t("holidays.col_name"),
-        cell: i => <span className="text-base">{i.getValue()}</span>,
+        cell: i => <span className={holidaysClasses.cellName}>{i.getValue()}</span>,
       }),
       festivalCol.accessor(
         (r) => (r.start_date ? formatHolidayBsDisplay({ ...r, start_date: r.start_date }, lang) : undefined),
         {
           id: "bs_start_date",
           header: t("holidays.col_bs_date"),
-          cell: i => <span className="font-mono text-sm">{i.getValue() ?? "—"}</span>,
+          cell: i => <span className={holidaysClasses.cellMono}>{i.getValue() ?? "—"}</span>,
         },
       ),
       festivalCol.accessor("start_date", {
         header: t("holidays.col_ad_date"),
-        cell: i => <span className="font-mono text-sm">{i.getValue()}</span>,
+        cell: i => <span className={holidaysClasses.cellMono}>{i.getValue()}</span>,
       }),
       festivalCol.accessor("type", {
         header: t("holidays.col_type"),
         cell: i => (
-          <span className="capitalize text-xs bg-muted px-2 py-0.5 rounded-full">
+          <span className={cn(holidaysClasses.typeBadge, holidaysClasses.typeBadgeText)}>
             {i.getValue() ?? "—"}
           </span>
         ),
@@ -109,7 +110,7 @@ function useFestivalColumns() {
         header: t("holidays.col_govt"),
         cell: i =>
           i.getValue() ? (
-            <span className="text-xs text-destructive font-semibold flex items-center gap-1">
+            <span className={cn("flex", holidaysClasses.govtFlag, holidaysClasses.govtFlagText)}>
               <Flag className="w-3 h-3" /> {t("common.yes")}
             </span>
           ) : null,
@@ -144,9 +145,9 @@ function DataTable<T>({
   });
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border">
+    <div className={cn("overflow-x-auto", holidaysClasses.table)}>
       <table className="w-full text-sm">
-        <thead className="bg-muted/50 border-b border-border">
+        <thead className={holidaysClasses.tableHead}>
           {table.getHeaderGroups().map(hg => (
             <tr key={hg.id}>
               {hg.headers.map(h => (
@@ -154,7 +155,9 @@ function DataTable<T>({
                   key={h.id}
                   onClick={h.column.getToggleSortingHandler()}
                   className={cn(
-                    "text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap",
+                    "text-left whitespace-nowrap",
+                    holidaysClasses.headCell,
+                    holidaysClasses.headText,
                     h.column.getCanSort() && "cursor-pointer select-none hover:text-foreground"
                   )}
                 >
@@ -174,15 +177,15 @@ function DataTable<T>({
         <tbody>
           {table.getRowModel().rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="text-center py-8">
+              <td colSpan={columns.length} className={cn(holidaysClasses.emptyCell, holidaysClasses.emptyText)}>
                 {emptyMessage}
               </td>
             </tr>
           ) : (
             table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              <tr key={row.id} className={cn(holidaysClasses.row, "hover:bg-muted/30 transition-colors")}>
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-4 py-3 text-foreground">
+                  <td key={cell.id} className={cn(holidaysClasses.cell, "text-foreground")}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -249,7 +252,7 @@ export function Holidays() {
       />
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-border">
+      <div className={cn("flex", holidaysClasses.tabBar)}>
         {([
           { id: "holidays" as const, labelKey: "holidays.tab_holidays", icon: Flag, count: holidays.length },
           { id: "festivals" as const, labelKey: "holidays.tab_festivals", icon: PartyPopper, count: festivals.length },
@@ -258,16 +261,18 @@ export function Holidays() {
             key={tItem.id}
             onClick={() => setTab(tItem.id)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 text-sm text-base border-b-2 -mb-px transition-colors",
+              "flex transition-colors",
+              holidaysClasses.tab,
+              holidaysClasses.tabLabel,
               tab === tItem.id
-                ? "border-secondary text-secondary"
-                : "border-transparent hover:text-foreground"
+                ? cn(holidaysClasses.tabActive, holidaysClasses.tabLabelActive)
+                : cn(holidaysClasses.tabIdle, "hover:text-foreground")
             )}
           >
             <tItem.icon className="w-4 h-4" />
             {t(tItem.labelKey)}
             {tItem.count > 0 && (
-              <span className="bg-muted text-xs px-1.5 py-0.5 rounded-full">
+              <span className={cn(holidaysClasses.tabCount, holidaysClasses.tabCountText)}>
                 {formatLocaleDigits(tItem.count)}
               </span>
             )}
@@ -282,12 +287,12 @@ export function Holidays() {
           value={filter}
           onChange={e => setFilter(e.target.value)}
           placeholder={t("holidays.search_placeholder")}
-          className="w-full bg-background border border-border rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          className={cn("w-full pl-9 pr-3 focus:outline-none focus:ring-2 focus:ring-primary/40", holidaysClasses.searchBox, holidaysClasses.searchInput)}
         />
       </div>
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-xl p-4 text-sm">
+        <div className={cn(holidaysClasses.errorBox, holidaysClasses.errorText)}>
           {t("holidays.error")}
         </div>
       )}

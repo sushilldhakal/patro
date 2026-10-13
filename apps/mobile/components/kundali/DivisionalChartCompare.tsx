@@ -12,7 +12,6 @@ import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { useThemeColors } from "@/lib/theme-context";
 import {
   CHART_ANCHOR_LABELS,
   GRAHA_ANCHOR_ORDER,
@@ -21,6 +20,8 @@ import {
   type ChartAnchor,
 } from "@vedic-patro/domain/varga-display";
 
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 type PanelConfig = { anchor: ChartAnchor; division: number };
 
 function buildDivisionalHouses(
@@ -72,7 +73,6 @@ function ChartPanel({
   combustion: Record<string, boolean | null>;
 }) {
   const { pick } = useLocale();
-  const colors = useThemeColors();
   const [tab, setTab] = useState<"graha" | "bhava">("graha");
   const varga = vargaOption(panel.division);
   const anchorLabel = CHART_ANCHOR_LABELS[panel.anchor];
@@ -96,13 +96,10 @@ function ChartPanel({
   );
 
   return (
-    <View className="min-w-0 flex-1 gap-3">
-      <View className="flex-row flex-wrap items-end gap-2 rounded-xl border border-border bg-muted/30 p-3">
-        <View className="min-w-[7.5rem] flex-1 gap-1">
-          <Text
-            className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
-            style={nepaliTextStyle(11)}
-          >
+    <View className={cn(kundaliDetailClasses.compare.root, "flex-1")}>
+      <View className={kundaliDetailClasses.compare.controls}>
+        <View className={cn(kundaliDetailClasses.compare.field, "min-w-[7.5rem]")}>
+          <Text className={kundaliDetailClasses.compare.fieldLabel} style={nepaliTextStyle(11)}>
             {pick("आधार", "Anchor")}
           </Text>
           <NativeStringSelect
@@ -113,11 +110,8 @@ function ChartPanel({
             minWidth={120}
           />
         </View>
-        <View className="min-w-[9rem] flex-1 gap-1">
-          <Text
-            className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
-            style={nepaliTextStyle(11)}
-          >
+        <View className={cn(kundaliDetailClasses.compare.field, "min-w-[9rem]")}>
+          <Text className={kundaliDetailClasses.compare.fieldLabel} style={nepaliTextStyle(11)}>
             {pick("वर्ग", "Division")}
           </Text>
           <BsNativeSelect
@@ -131,41 +125,32 @@ function ChartPanel({
         </View>
       </View>
 
-      <View className="items-center gap-3 rounded-2xl border border-border bg-card p-4">
-        <Text className="text-body text-center font-bold text-foreground" style={nepaliTextStyle(14)}>
+      <View className={kundaliDetailClasses.compare.chartCard}>
+        <Text className={kundaliDetailClasses.compare.chartTitle} style={nepaliTextStyle(14)}>
           {pick(anchorLabel.labelNe, anchorLabel.labelEn)} · {varga.short} — {pick(varga.labelNe, varga.labelEn)}
         </Text>
         {houses.length > 0 ? <D1Chart houses={houses} /> : (
-          <Text className="text-body py-8 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={kundaliDetailClasses.compare.empty} style={nepaliTextStyle(14)}>
             {pick("यो चक्रका लागi पर्याप्त डेटा छैन।", "Not enough data for this chart.")}
           </Text>
         )}
       </View>
 
       {houses.length > 0 ? (
-        <View className="overflow-hidden rounded-2xl border border-border bg-card">
-          <View className="border-b border-border">
-            <View className="flex-row">
-              {(["graha", "bhava"] as const).map((t, index) => {
+        <View className={kundaliDetailClasses.compare.tableCard}>
+          <View className={kundaliDetailClasses.compare.tableHead}>
+            <View className={kundaliDetailClasses.compare.toggle}>
+              {(["graha", "bhava"] as const).map((t) => {
                 const active = tab === t;
                 return (
                   <Pressable
                     key={t}
                     onPress={() => setTab(t)}
-                    style={{
-                      flex: 1,
-                      backgroundColor: active ? colors.secondary : colors.background,
-                      borderColor: colors.border,
-                      borderRightWidth: index === 0 ? 1 : 0,
-                    }}
-                    className="items-center justify-center py-2.5 active:opacity-80"
+                    className={cn(kundaliDetailClasses.compare.toggleTab, "rounded-md active:opacity-80", active && kundaliDetailClasses.compare.toggleActive)}
                   >
                     <Text
-                      style={{
-                        color: active ? "#ffffff" : colors.foreground,
-                        ...nepaliTextStyle(13),
-                      }}
-                      className="text-body font-semibold"
+                      style={nepaliTextStyle(13)}
+                      className={cn(kundaliDetailClasses.compare.toggleText, active && kundaliDetailClasses.compare.toggleActiveText)}
                     >
                       {t === "graha" ? pick("ग्रह", "Graha") : pick("भाव", "Bhava")}
                     </Text>
@@ -173,15 +158,11 @@ function ChartPanel({
                 );
               })}
             </View>
-            <Text
-              className="text-caption border-t border-border px-3 py-1.5 text-center text-muted-foreground"
-              style={nepaliTextStyle(12)}
-              numberOfLines={1}
-            >
+            <Text className={kundaliDetailClasses.compare.caption} style={nepaliTextStyle(12)} numberOfLines={1}>
               {pick(anchorLabel.labelNe, anchorLabel.labelEn)} · {varga.short}
             </Text>
           </View>
-          <View className="px-1 pb-1 pt-1">
+          <View>
             {tab === "graha" ? (
               <GrahaDetailsList
                 division={panel.division}

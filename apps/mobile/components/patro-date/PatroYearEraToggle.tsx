@@ -5,6 +5,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { isGregorianEra, toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { patroEraShortLabel } from "./patro-era-labels";
 import { cn } from "@vedic-patro/domain/utils";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 type Props = {
   era: Era;
@@ -27,14 +28,15 @@ export function PatroYearEraToggle({ era, onEraChange, compact, className }: Pro
       onPress={() => onEraChange(targetEra)}
       accessibilityLabel={pick(`${targetLabel} मा जानुहोस्`, `Switch to ${targetLabel}`)}
       className={cn(
-        "shrink-0 items-center justify-center rounded-md border border-border bg-card active:bg-muted",
-        compact ? "h-7 px-1.5" : "px-2 py-1.5",
+        patroDateClasses.eraToggle,
+        "items-center justify-center active:bg-muted",
+        compact ? cn("h-7", patroDateClasses.eraToggleCompact) : patroDateClasses.eraToggleRegular,
         className,
       )}
     >
       <Text
         numberOfLines={1}
-        className={cn("font-semibold text-muted-foreground", compact ? "text-caption" : "text-caption")}
+        className={cn(patroDateClasses.eraToggleLabel, compact ? patroDateClasses.eraToggleLabelCompact : patroDateClasses.eraToggleLabelRegular)}
         style={nepaliTextStyle(compact ? 10 : 12)}
       >
         {targetLabel}

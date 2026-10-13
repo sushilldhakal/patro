@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/accordion";
 import { formatVedaCite, type Shloka } from "@/lib/documents-api";
 import type { ShlokaPlayerState } from "@/hooks/use-shloka-player";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
 interface Props {
   shloka: Shloka;
@@ -65,13 +66,14 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
       ref={(el) => player.registerItemRef(shloka.id, el)}
       id={shlokaDomId}
       className={cn(
-        "scroll-mt-24 min-w-0 max-w-full [overflow-wrap:anywhere] rounded-xl border p-4 transition-colors sm:p-5",
-        isActive ? "border-secondary/60 bg-secondary/5" : "border-border bg-card",
-        isClosing && !isActive && "border-secondary/35 bg-secondary/5",
-        isNote && !isActive && "border-dashed bg-muted/30",
+        documentsClasses.verse,
+        "scroll-mt-24 min-w-0 max-w-full [overflow-wrap:anywhere] transition-colors",
+        isActive ? documentsClasses.verseActive : documentsClasses.verseIdle,
+        isClosing && !isActive && documentsClasses.verseClosing,
+        isNote && !isActive && documentsClasses.verseNote,
       )}
     >
-      <div className="flex items-start gap-3">
+      <div className={documentsClasses.verseRow}>
         {canPlay ? (
           <button
             type="button"
@@ -80,10 +82,11 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
             }
             aria-label={t(isPlaying ? "documents.pause_verse" : "documents.play_verse")}
             className={cn(
-              "mt-0.5 grid size-9 shrink-0 place-items-center rounded-full border transition-colors",
+              documentsClasses.versePlay,
+              "transition-colors",
               isActive
-                ? "border-secondary bg-secondary text-secondary-foreground"
-                : "border-border text-secondary hover:border-secondary/60 hover:bg-secondary/10",
+                ? cn(documentsClasses.versePlayActive, "text-secondary-foreground")
+                : cn(documentsClasses.versePlayIdle, "text-secondary hover:border-secondary/60 hover:bg-secondary/10"),
             )}
           >
             {isPlaying ? (
@@ -95,24 +98,24 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
         ) : (
           <span
             aria-hidden="true"
-            className="mt-0.5 grid size-9 shrink-0 place-items-center text-xs font-semibold tabular-nums text-muted-foreground/50"
+            className={cn(documentsClasses.verseLabelSlot, documentsClasses.verseLabelSlotText)}
           >
             {shloka.verse_label}
           </span>
         )}
 
-        <div className="min-w-0 flex-1">
+        <div className={documentsClasses.fill}>
           {canPlay || vedaCite ? (
-            <div className="flex items-start justify-between gap-3">
+            <div className={documentsClasses.verseMetaRow}>
               {canPlay ? (
-                <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-semibold tabular-nums text-muted-foreground">
+                <span className={cn(documentsClasses.verseBadge, documentsClasses.verseBadgeText)}>
                   {shloka.verse_label}
                 </span>
               ) : (
                 <span />
               )}
               {vedaCite ? (
-                <span className="ml-auto shrink-0 pt-0.5 text-right text-xs font-medium text-muted-foreground">
+                <span className={documentsClasses.verseCite}>
                   {vedaCite}
                 </span>
               ) : null}
@@ -120,17 +123,15 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
           ) : null}
           <p
             className={cn(
-              "mt-1 leading-relaxed",
-              isNote
-                ? "whitespace-pre-line text-base text-foreground/85 sm:text-lg"
-                : "text-lg sm:text-xl",
+              isNote ? documentsClasses.verseTextNote : documentsClasses.verseText,
+              isNote && "whitespace-pre-line",
             )}
           >
             {tokens.map((tok, i) =>
               i === activeTokenIndex ? (
                 <span
                   key={i}
-                  className="rounded bg-yellow-300/70 px-0.5 transition-colors duration-150 dark:bg-yellow-400/30"
+                  className={cn(documentsClasses.verseWord, "transition-colors duration-150")}
                 >
                   {tok}
                 </span>
@@ -140,13 +141,13 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
             )}
           </p>
           {lang !== "ne" && shloka.transliteration ? (
-            <p className="mt-1.5 text-sm italic text-muted-foreground">{shloka.transliteration}</p>
+            <p className={documentsClasses.verseTranslit}>{shloka.transliteration}</p>
           ) : null}
 
           {isActive ? (
-            <div className="mt-3 h-0.5 w-full overflow-hidden rounded-full bg-border">
+            <div className={documentsClasses.verseProgress}>
               <div
-                className="h-full bg-secondary transition-[width]"
+                className={cn(documentsClasses.verseProgressFill, "transition-[width]")}
                 style={{ width: `${Math.round(player.progress * 100)}%` }}
               />
             </div>
@@ -158,13 +159,13 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
               collapsible
               value={accordionValue}
               onValueChange={() => player.toggleMeaning(shloka.id)}
-              className="mt-1"
+              className={documentsClasses.verseMeaningWrap}
             >
               <AccordionItem value="meaning" className="border-none">
-                <AccordionTrigger className="w-fit gap-1.5 py-1.5 text-xs font-semibold text-secondary hover:no-underline">
+                <AccordionTrigger className={cn(documentsClasses.verseMeaningToggle, documentsClasses.verseMeaningToggleText, "w-fit hover:no-underline")}>
                   {t("documents.meaning")}
                 </AccordionTrigger>
-                <AccordionContent className="pb-1 whitespace-pre-line text-base leading-relaxed sm:text-lg">
+                <AccordionContent className={cn(documentsClasses.verseMeaning, "whitespace-pre-line")}>
                   {meaning}
                 </AccordionContent>
               </AccordionItem>

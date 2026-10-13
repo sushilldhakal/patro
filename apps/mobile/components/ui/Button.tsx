@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Pressable, View, type PressableProps } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { cn } from "@vedic-patro/domain/utils";
+import { spec } from "@vedic-patro/design-tokens";
 
 type Props = PressableProps & {
   label: string;
@@ -27,11 +28,11 @@ export function Button({
   icon,
   ...props
 }: Props) {
-  const base = "flex-row items-center justify-center gap-2 rounded-lg border border-transparent active:opacity-80";
+  const base = cn(spec.button, "active:opacity-80");
   const sizes = {
-    sm: "h-8 px-2.5",
-    md: "h-9 px-3",
-    lg: "h-10 px-4",
+    sm: spec.buttonSm,
+    md: spec.buttonMd,
+    lg: spec.buttonLg,
   };
   const variants = {
     default: "bg-secondary",

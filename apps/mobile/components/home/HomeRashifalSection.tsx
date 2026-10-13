@@ -19,6 +19,9 @@ import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { useLocale } from "@/lib/i18n";
 import { rashifalMonthLabel } from "@/lib/rashifal-ui";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { useBreakpoint } from "@/lib/responsive";
+import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type Props = {
   dateAd: string;
@@ -29,7 +32,10 @@ type Props = {
 /** Home monthly rashifal — mirrors web {@link HomeRashifalTeaser}. */
 export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Props) {
   const router = useRouter();
-  const { pick, lang, digits } = useLocale();
+  const { lang, t } = useLocale();
+  const { width } = useBreakpoint();
+  /* Web: below md only the Sun-sign (or personal) card; md+ adds the rashi picker. */
+  const showPicker = width >= 768;
   const { isAuthenticated } = useAuth();
   const { data: profiles } = useProfilesQuery(isAuthenticated);
 
@@ -91,16 +97,16 @@ export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Prop
   if (!loading && !hasContent) return null;
 
   return (
-    <View className="gap-3" style={{ paddingHorizontal: contentInset }}>
-      <View className="items-center gap-1">
+    <View style={{ paddingHorizontal: contentInset }}>
+      <View className={homeClasses.rashifalHeader}>
         <Text
-          className="text-body font-bold uppercase tracking-wider text-muted-foreground"
-          style={nepaliTextStyle(13)}
+          className={homeClasses.rashifalTitle}
+          style={nepaliTextStyle()}
         >
-          {pick("राशिफल", "Rashifal")}
+          {t("home_rashifal.section_title")}
         </Text>
         {monthLabel ? (
-          <Text className="text-caption font-semibold text-secondary" style={nepaliTextStyle(12)}>
+          <Text className={homeClasses.rashifalMonth} style={nepaliTextStyle()}>
             {monthLabel}
           </Text>
         ) : null}
@@ -111,28 +117,32 @@ export function HomeRashifalSection({ dateAd, location, contentInset = 0 }: Prop
           <VedicPatroLoader />
         </View>
       ) : hasUsableProfile && personalQ.data && defaultProfile ? (
-        <RashifalPersonalCard name={defaultProfile.full_name} personal={personalQ.data} />
+        <View className={showPicker ? "mx-auto w-full max-w-lg" : undefined}>
+          <RashifalPersonalCard name={defaultProfile.full_name} personal={personalQ.data} />
+        </View>
       ) : generalQ.data?.signs?.length ? (
-        <HomeRashifalSignPicker
-          signs={generalQ.data.signs}
-          period="monthly"
-          defaultSignId={generalQ.data.frame?.sun_sign ?? sunSign?.id}
-          contentInset={contentInset}
-        />
+        showPicker ? (
+          <HomeRashifalSignPicker
+            signs={generalQ.data.signs}
+            period="monthly"
+            defaultSignId={generalQ.data.frame?.sun_sign ?? sunSign?.id}
+            contentInset={contentInset}
+          />
+        ) : sunSign ? (
+          <RashifalSignCard sign={sunSign} period="monthly" />
+        ) : null
       ) : null}
 
       {!loading && hasContent ? (
-        <View className="flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <View className={homeClasses.rashifalLinks}>
           <Pressable onPress={() => router.push("/jyotish/rashifal")}>
-            <Text className="text-body font-semibold text-secondary">
-              {hasUsableProfile
-                ? pick("पूरा राशिफल →", "Full rashifal →")
-                : pick("आफ्नो राशिफल →", "Your rashifal →")}
+            <Text className={homeClasses.rashifalLinkPrimary} style={nepaliTextStyle()}>
+              {hasUsableProfile ? t("home_rashifal.see_full") : t("home_rashifal.see_yours")} →
             </Text>
           </Pressable>
           <Pressable onPress={() => router.push({ pathname: "/jyotish/rashifal", params: { period: "daily" } })}>
-            <Text className="text-body font-semibold text-muted-foreground">
-              {pick("दैनिक", "Daily")}
+            <Text className={homeClasses.rashifalLinkSecondary} style={nepaliTextStyle()}>
+              {t("home_rashifal.see_daily")}
             </Text>
           </Pressable>
         </View>

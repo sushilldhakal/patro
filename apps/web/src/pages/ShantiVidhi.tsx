@@ -11,6 +11,7 @@ import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { defaultClockForTimezone } from "@/components/panchanga/use-panchanga-mode";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
+import { shantiClasses as sc } from "@vedic-patro/design-tokens/classes/shanti-classes";
 import { getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 
 function nowMoment(clock: string, pickerEra: "bs" | "ad"): InstantQuery {
@@ -57,14 +58,14 @@ export function ShantiVidhi() {
         subtitle={t("shanti_vidhi.subtitle")}
       />
 
-      <section className="rounded-2xl border border-border">
-        <header className="flex items-center gap-1.5 border-b border-border px-4 py-3">
+      <section className={sc.card}>
+        <header className={sc.header}>
           <UserSearch className="h-4 w-4 text-secondary" />
-          <h2 className="text-sm font-semibold text-foreground">{t("shanti_vidhi.birth_section")}</h2>
-          <span className="ml-auto text-sm">{t("shanti_vidhi.birth_meta")}</span>
+          <h2 className={sc.headerTitle}>{t("shanti_vidhi.birth_section")}</h2>
+          <span className={sc.headerMeta}>{t("shanti_vidhi.birth_meta")}</span>
         </header>
 
-        <div className="space-y-4 p-4">
+        <div className={sc.body}>
           <KundaliControls
             moment={moment}
             onMomentChange={setMoment}

@@ -15,6 +15,7 @@ import {
 } from "@vedic-patro/domain/kundali/shadbala-display";
 import { cn } from "@vedic-patro/domain/utils";
 import { type ShadbalaScale, yMaxFor, displayTotal, displayRequired, segmentDisplay, formatScaleValue } from "@vedic-patro/domain/kundali/shadbala-chart";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 export { type ShadbalaScale } from "@vedic-patro/domain/kundali/shadbala-chart";
 
 const SCALES: { id: ShadbalaScale; label: string }[] = [
@@ -39,8 +40,8 @@ function Meter({
 }) {
   const width = max <= 0 ? 0 : Math.min(100, Math.max(0, (Math.abs(value) / max) * 100));
   return (
-    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-      <div className="h-full rounded-full" style={{ width: `${width}%`, backgroundColor: color }} />
+    <div className={kundaliDetailClasses.shadbalaChart.meter}>
+      <div className={kundaliDetailClasses.shadbalaChart.meterFill} style={{ width: `${width}%`, backgroundColor: color }} />
     </div>
   );
 }
@@ -71,12 +72,12 @@ export function ShadbalaChart({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className={cn(kundaliDetailClasses.shadbalaChart.headRow, "flex flex-col sm:flex-row sm:items-start sm:justify-between")}>
         <div>
-          <h3 className="text-base font-semibold text-foreground">{t("kundali.strength_skyline")}</h3>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t("kundali.strength_skyline_hint")}</p>
+          <h3 className={kundaliDetailClasses.shadbalaChart.title}>{t("kundali.strength_skyline")}</h3>
+          <p className={kundaliDetailClasses.shadbalaChart.hint}>{t("kundali.strength_skyline_hint")}</p>
         </div>
-        <div className="flex flex-wrap gap-1 rounded-full border border-border bg-muted/40 p-1">
+        <div className={cn(kundaliDetailClasses.shadbalaChart.scaleBar, "flex")}>
           {SCALES.map((item) => (
             <button
               key={item.id}
@@ -84,10 +85,12 @@ export function ShadbalaChart({
               onClick={() => onScaleChange(item.id)}
               aria-pressed={scale === item.id}
               className={cn(
-                "rounded-full px-3 py-1 text-sm font-semibold transition-colors",
+                kundaliDetailClasses.shadbalaChart.scaleTab,
+                kundaliDetailClasses.shadbalaChart.scaleText,
+                "transition-colors",
                 scale === item.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? cn(kundaliDetailClasses.shadbalaChart.scaleActive, kundaliDetailClasses.shadbalaChart.scaleActiveText)
+                  : cn(kundaliDetailClasses.shadbalaChart.scaleIdleText, "hover:text-foreground"),
               )}
             >
               {t(item.label)}
@@ -96,13 +99,13 @@ export function ShadbalaChart({
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-background/70 p-3 sm:p-4">
+      <div className={kundaliDetailClasses.shadbalaChart.panel}>
         <div className="grid grid-cols-[2.5rem_minmax(0,1fr)] gap-2 sm:grid-cols-[3rem_minmax(0,1fr)]">
           <div className="relative mt-6 h-64">
             {ticks.map((tick) => (
               <span
                 key={tick}
-                className="absolute right-0 -translate-y-1/2 font-mono text-xs tabular-nums text-muted-foreground"
+                className={cn(kundaliDetailClasses.shadbalaChart.axisLabel, "absolute right-0 -translate-y-1/2")}
                 style={{ bottom: `${(tick / yMax) * 100}%` }}
               >
                 {formatScaleValue(tick, scale, digits)}
@@ -142,7 +145,7 @@ export function ShadbalaChart({
                   className="flex min-w-0 flex-col items-center gap-0.5 outline-none"
                 >
                   <GrahaPlanetIcon graha={planet.key as GrahaKey} size={18} />
-                  <span className="max-w-full truncate text-xs font-semibold text-foreground">
+                  <span className={cn(kundaliDetailClasses.shadbalaChart.barLabel, "max-w-full truncate")}>
                     {planetLabel(planet)}
                   </span>
                 </button>
@@ -151,14 +154,14 @@ export function ShadbalaChart({
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        <div className={cn(kundaliDetailClasses.shadbalaChart.legend, kundaliDetailClasses.shadbalaChart.legendText, "flex")}>
           {BALA_STACK.map((bala) => (
-            <span key={bala.key} className="inline-flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm" style={{ backgroundColor: bala.color }} aria-hidden />
+            <span key={bala.key} className={cn(kundaliDetailClasses.shadbalaChart.legendItem, "inline-flex")}>
+              <span className={kundaliDetailClasses.shadbalaChart.legendDot} style={{ backgroundColor: bala.color }} aria-hidden />
               {t(bala.label)}
             </span>
           ))}
-          <span className="inline-flex items-center gap-1.5">
+          <span className={cn(kundaliDetailClasses.shadbalaChart.legendItem, "inline-flex")}>
             <span className="w-4 border-t border-dashed border-accent" aria-hidden />
             {t("kundali.required_minimum")}
           </span>
@@ -166,10 +169,10 @@ export function ShadbalaChart({
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className={kundaliDetailClasses.shadbalaChart.pickLabel}>
           {t("kundali.select_a_planet")}
         </p>
-        <div className="flex flex-wrap gap-1.5">
+        <div className={cn(kundaliDetailClasses.shadbalaChart.pickRow, "flex")}>
           {planets.map((planet) => {
             const active = planet.key === selectedKey;
             return (
@@ -179,10 +182,12 @@ export function ShadbalaChart({
                 onClick={() => onSelect(planet.key)}
                 aria-pressed={active}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-semibold transition-colors",
+                  kundaliDetailClasses.shadbalaChart.pickChip,
+                  kundaliDetailClasses.shadbalaChart.pickChipText,
+                  "inline-flex transition-colors",
                   active
-                    ? "border-primary bg-primary/10 text-foreground"
-                    : "border-border bg-muted/30 text-muted-foreground hover:text-foreground",
+                    ? cn(kundaliDetailClasses.shadbalaChart.pickActive, kundaliDetailClasses.shadbalaChart.pickActiveText)
+                    : cn(kundaliDetailClasses.shadbalaChart.pickIdle, kundaliDetailClasses.shadbalaChart.pickIdleText, "hover:text-foreground"),
                 )}
               >
                 <GrahaPlanetIcon graha={planet.key as GrahaKey} size={16} />
@@ -319,13 +324,13 @@ function PlanetInspector({
   );
 
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-3 sm:p-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="inline-flex items-center gap-2 text-base font-semibold text-foreground">
+    <div className={cn(kundaliDetailClasses.shadbalaChart.inspector, "space-y-3")}>
+      <div className={cn(kundaliDetailClasses.shadbalaChart.inspectorHead, "flex")}>
+        <p className={cn(kundaliDetailClasses.shadbalaChart.inspectorTitleRow, kundaliDetailClasses.shadbalaChart.inspectorTitle, "inline-flex")}>
           <GrahaPlanetIcon graha={planet.key as GrahaKey} size={22} />
           {name}
         </p>
-        <p className={cn("font-mono text-sm font-semibold tabular-nums", meets ? "text-primary" : "text-destructive")}>
+        <p className={cn(kundaliDetailClasses.shadbalaChart.inspectorValue, meets ? kundaliDetailClasses.shadbalaChart.inspectorMeets : kundaliDetailClasses.shadbalaChart.inspectorBelow)}>
           {t("kundali.of_required", {
             virupas: digits(planet.total_virupas.toFixed(1)),
             percent: digits((planet.ratio * 100).toFixed(1)),
@@ -339,9 +344,9 @@ function PlanetInspector({
           const signed = value < 0 ? `−${Math.abs(value).toFixed(1)}` : value.toFixed(1);
           return (
             <div key={bala.key} className="grid grid-cols-[7.5rem_minmax(0,1fr)_4.25rem] items-center gap-2">
-              <span className="truncate text-sm font-semibold text-foreground">{t(bala.label)}</span>
+              <span className={cn(kundaliDetailClasses.shadbalaChart.breakdownLabel, "truncate")}>{t(bala.label)}</span>
               <Meter value={value} max={maxBala} color={bala.color} />
-              <span className="text-right font-mono text-sm tabular-nums text-foreground">{digits(signed)}</span>
+              <span className={kundaliDetailClasses.shadbalaChart.breakdownValue}>{digits(signed)}</span>
             </div>
           );
         })}
@@ -395,15 +400,15 @@ function SubBalaList({
 }) {
   return (
     <div>
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
+      <p className={kundaliDetailClasses.shadbalaChart.subTitle}>{title}</p>
       <div className="space-y-1.5">
         {rows.map((row) => {
           const signed = row.value < 0 ? `−${Math.abs(row.value).toFixed(1)}` : row.value.toFixed(1);
           return (
             <div key={row.key} className="grid grid-cols-[7rem_minmax(0,1fr)_3.75rem] items-center gap-2">
-              <span className="truncate text-sm text-foreground">{row.label}</span>
+              <span className={cn(kundaliDetailClasses.shadbalaChart.subLabel, "truncate")}>{row.label}</span>
               <Meter value={row.value} max={max} color={color} />
-              <span className="text-right font-mono text-sm tabular-nums text-muted-foreground">
+              <span className={kundaliDetailClasses.shadbalaChart.subValue}>
                 {digits(signed)}
               </span>
             </div>

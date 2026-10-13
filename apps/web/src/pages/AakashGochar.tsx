@@ -36,6 +36,8 @@ import {
   todayAdStringInTimezone,
   zonedWallTimeToInstant,
 } from "@vedic-patro/domain/zoned-time";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Canvas height when the page is not fullscreen. */
 const SCENE_HEIGHT = 560;
@@ -298,7 +300,7 @@ export function AakashGochar() {
       />
 
       {!hydrated || (query.isLoading && !skyShown) ? (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-border py-24">
+        <div className={cn("flex justify-center", gocharClasses.skyLoading)}>
           <VedicPatroLoader />
         </div>
       ) : (
@@ -333,7 +335,7 @@ export function AakashGochar() {
           calibration for this date rather than the view — which is worth saying
           plainly, since nothing else on screen would look wrong. */}
       {query.isError ? (
-        <p className="m-0 flex items-start gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-sm text-foreground">
+        <p className={cn("m-0 flex items-start", gocharClasses.skyNotice)}>
           <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
           <span>
             {pick(
@@ -359,38 +361,38 @@ export function AakashGochar() {
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2">
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+      <div className={cn("flex flex-col", gocharClasses.footnoteStack)}>
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
             "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
           )}
         </p>
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
             "The rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
           )}
         </p>
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "कुनै पनि ग्रह — आकाशमा वा तलको कार्डमा — छानेपछि त्यसको ४५ दिन अघि र पछिको गति रेखा देखिन्छ; मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। क्रसहेयर थिचे क्यामेरा त्यही ग्रहमा केन्द्रित रहन्छ — वा गोलामा रहेको आफ्नै स्थान छाने त्यसैमा।",
             "Pick any graha — in the sky or on a card below — to draw its trail 45 days either side of the moment on screen; when Mars or Saturn turns vakri you can watch the loop close on itself. The crosshair button then keeps the camera centred on it — or on your own place on the globe, if that is what you point it at.",
           )}
         </p>
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "तलका ग्रह विवरण माथि छानिएको मिति र स्थानका लागि सर्भरबाट आउँछन्, र आकाश पनि तिनै अंकमा जोडिएको छ — मिति वा स्थान फेर्दा दुवै सँगै फेरिन्छन्। तर «चलाउनुहोस्» थिचेर समय अघि बढाउँदा आकाश मात्र हिँड्छ; विवरण छानिएकै मितिको रहन्छ।",
             "The graha details below come from the server for the date and place chosen above, and the sky is pinned to those same numbers — change either and both follow. Pressing play moves the sky alone, though: the details stay with the chosen date.",
           )}
         </p>
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "गोलामा रातो चिन्हले तपाईंको स्थान देखाउँछ। त्यो थिचे वा क्रसहेयरबाट «तपाईंको स्थान» छाने क्यामेरा त्यसैमा अडिन्छ — पृथ्वी उसै गरी घुमिरहन्छ, तर तपाईंको ठाउँ पर्दाको बीचमै रहन्छ, ठ्याक्कै ग्रह लक गरेजस्तै।",
             "The red marker on the globe is where you are watching from. Press it — or pick “Your location” behind the crosshair — and the camera holds it in the middle of the screen. The Earth keeps turning exactly as before; your place simply stays centred as it goes round, the same way locking a graha works.",
           )}
         </p>
-        <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+        <p className={cn("m-0", gocharClasses.footnote)}>
           {pick(
             "माउसले तानेर आकाश घुमाउनुहोस्, स्क्रोल गरेर नजिक-टाढा गर्नुहोस्; टचस्क्रिनमा दुई औंलाले पनि हुन्छ।",
             "Drag to swing the sky and scroll to zoom; on a touchscreen, drag with one finger and pinch with two.",

@@ -15,9 +15,10 @@ import { adToBS, todayAdString } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { colorWithAlpha } from "@/lib/theme";
+import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { converterClasses } from "@vedic-patro/design-tokens/classes/converter-classes";
 
 const WEEKDAY_NE: Record<string, string> = {
   Sunday: "आइतबार",
@@ -79,49 +80,41 @@ export default function ConverterScreen() {
       showHeader={false}
     >
       <PatroPageHeader
+        className="mb-8"
         icon={<AppNavIcon name="arrow-left-right" size={24} color={colors.secondary} />}
         title={t("converter.title")}
         subtitle={t("converter.subtitle")}
       />
 
-      <View className="mb-4 w-fit flex-row self-start overflow-hidden rounded-xl border border-border">
+      <View className={cn("mb-8 flex-row self-start", converterClasses.modeToggle)}>
         {(["ad-to-bs", "bs-to-ad"] as const).map((m) => {
           const active = mode === m;
+          const tone = active ? converterClasses.modeLabelActive : converterClasses.modeLabelIdle;
           return (
             <Pressable
               key={m}
               onPress={() => setMode(m)}
-              style={{ backgroundColor: active ? colors.secondary : "transparent" }}
-              className="flex-row items-center gap-2 px-5 py-2.5 active:opacity-80"
+              className={cn(
+                "flex-row active:opacity-80",
+                converterClasses.modeButton,
+                active && converterClasses.modeButtonActive,
+              )}
             >
-              <Text
-                style={{ color: active ? "#ffffff" : colors.foreground }}
-                className="text-body font-semibold"
-              >
-                {m === "ad-to-bs" ? "AD" : "BS"}
-              </Text>
+              <Text className={cn(converterClasses.modeLabel, tone)}>{m === "ad-to-bs" ? "AD" : "BS"}</Text>
               <Ionicons
                 name="arrow-forward"
-                size={13}
-                color={active ? "#ffffff" : colors.mutedForeground}
+                size={14}
+                color={active ? inkOn(colors.secondary) : colors.foreground}
               />
-              <Text
-                style={{ color: active ? "#ffffff" : colors.foreground }}
-                className="text-body font-semibold"
-              >
-                {m === "ad-to-bs" ? "BS" : "AD"}
-              </Text>
+              <Text className={cn(converterClasses.modeLabel, tone)}>{m === "ad-to-bs" ? "BS" : "AD"}</Text>
             </Pressable>
           );
         })}
       </View>
 
-      <View className="mb-4 flex-row flex-wrap items-end gap-3">
-        <View className="min-w-[176px] flex-1 gap-1">
-          <Text
-            className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
-            style={nepaliTextStyle(11)}
-          >
+      <View className={cn("mb-8 flex-row flex-wrap", converterClasses.form)}>
+        <View className={converterClasses.field}>
+          <Text className={converterClasses.label} style={nepaliTextStyle()}>
             {mode === "ad-to-bs" ? t("converter.ad_date") : t("converter.bs_date")}
           </Text>
           <TextInput
@@ -132,48 +125,32 @@ export default function ConverterScreen() {
             placeholderTextColor={colors.mutedForeground}
             autoCapitalize="none"
             keyboardType="numbers-and-punctuation"
-            style={{
-              borderColor: colors.border,
-              backgroundColor: colors.background,
-              color: colors.foreground,
-              fontFamily: "FiraCode_400Regular",
-            }}
-            className="text-body rounded-lg border px-3 py-2.5"
+            className={converterClasses.input}
           />
         </View>
-        <Button label={t("converter.convert")} variant="secondary" onPress={submit} />
+        <Button
+          label={t("converter.convert")}
+          variant="secondary"
+          className={cn("h-auto", converterClasses.submit)}
+          textClassName={converterClasses.submitLabel}
+          onPress={submit}
+        />
       </View>
 
       {isError ? (
-        <View
-          style={{
-            backgroundColor: colorWithAlpha(brand.vermilion, 0.1),
-            borderColor: colorWithAlpha(brand.vermilion, 0.2),
-          }}
-          className="mb-4 rounded-xl border p-4"
-        >
-          <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <View className={cn("mb-8", converterClasses.errorBox)}>
+          <Text className={converterClasses.errorText} style={nepaliTextStyle()}>
             {t("converter.error")}
           </Text>
         </View>
       ) : null}
 
       {mode === "ad-to-bs" && adResult ? (
-        <View className="gap-4">
-          <View className="flex-row items-center gap-3">
-            <Text
-              style={{ color: colors.secondary }}
-              className="text-display font-num font-bold"
-            >
-              {adResult.ad_date}
-            </Text>
-            <Ionicons name="arrow-forward" size={18} color={colors.foreground} />
-            <Text
-              style={{ color: colors.secondary }}
-              className="text-display font-num font-bold"
-            >
-              {adResult.bs_date}
-            </Text>
+        <View className="mb-8 gap-4">
+          <View className={cn("flex-row", converterClasses.resultRow)}>
+            <Text className={converterClasses.resultValue}>{adResult.ad_date}</Text>
+            <Ionicons name="arrow-forward" size={20} color={colors.foreground} />
+            <Text className={converterClasses.resultValue}>{adResult.bs_date}</Text>
           </View>
           <View className="flex-row flex-wrap gap-3">
             <StatCard width={tileWidth} highlight label={t("converter.bs_date")} value={adResult.bs_date} />
@@ -195,15 +172,11 @@ export default function ConverterScreen() {
       ) : null}
 
       {mode === "bs-to-ad" && bsResult ? (
-        <View className="gap-4">
-          <View className="flex-row items-center gap-3">
-            <Text style={{ color: colors.secondary }} className="text-display font-num font-bold">
-              {bsResult.bs_date}
-            </Text>
-            <Ionicons name="arrow-forward" size={18} color={colors.foreground} />
-            <Text style={{ color: colors.secondary }} className="text-display font-num font-bold">
-              {bsResult.ad_date}
-            </Text>
+        <View className="mb-8 gap-4">
+          <View className={cn("flex-row", converterClasses.resultRow)}>
+            <Text className={converterClasses.resultValue}>{bsResult.bs_date}</Text>
+            <Ionicons name="arrow-forward" size={20} color={colors.foreground} />
+            <Text className={converterClasses.resultValue}>{bsResult.ad_date}</Text>
           </View>
           <View className="flex-row flex-wrap gap-3">
             <StatCard width={tileWidth} highlight label={t("converter.ad_date")} value={bsResult.ad_date} />

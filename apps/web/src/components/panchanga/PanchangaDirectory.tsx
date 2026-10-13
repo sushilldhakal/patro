@@ -1,3 +1,4 @@
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import {
   CalendarClock,
   HeartHandshake,
@@ -19,7 +20,7 @@ function SectionTitle({ titleKey, className }: { titleKey: string; className?: s
   return (
     <h2
       className={cn(
-        "mb-3 mt-8 text-left text-base font-bold text-foreground md:text-center md:text-sm md:uppercase md:tracking-wider md:text-muted-foreground",
+        panchangaPageClasses.directory.sectionTitle,
         className,
       )}
     >
@@ -75,7 +76,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
   return (
     <div className={className}>
       <SectionTitle titleKey="sidebar_nav.sections.spans.title" />
-      <div className="flex flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3">
+      <div className={cn("flex", panchangaPageClasses.directory.cardRow)}>
         {spans.map((e) => (
           <QuickLinkCard
             key={e.id}
@@ -90,7 +91,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
       </div>
 
       <SectionTitle titleKey="sidebar_nav.sections.graha.title" />
-      <div className="flex flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3">
+      <div className={cn("flex", panchangaPageClasses.directory.cardRow)}>
         {GRAHA_PAGES.map((g) => (
           <QuickLinkCard
             key={g.to}
@@ -104,7 +105,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
       </div>
 
       <SectionTitle titleKey="sidebar_nav.sections.tables.title" />
-      <div className="flex flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3">
+      <div className={cn("flex", panchangaPageClasses.directory.cardRow)}>
         {tables.map((e) => (
           <QuickLinkCard
             key={e.id}
@@ -120,7 +121,7 @@ export function PanchangaDirectory({ className }: { className?: string }) {
 
       <div id="home-sait-links" className="scroll-mt-20">
       <SectionTitle titleKey="sidebar_nav.sections.sait.title" />
-      <div className="flex flex-wrap items-stretch justify-start gap-2 md:justify-center md:gap-3">
+      <div className={cn("flex", panchangaPageClasses.directory.cardRow)}>
         {CEREMONY_META.map((c) => (
           <DirectoryCard
             key={c.id}

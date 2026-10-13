@@ -1,3 +1,4 @@
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { cn } from "@vedic-patro/domain/utils";
@@ -19,12 +20,12 @@ export function PanchangaDetailsBackLink({
   return (
     <p
       className={cn(
-        "text-sm",
-        variant === "footer" && "mt-6",
+        panchangaPageClasses.directory.backLink,
+        variant === "footer" && panchangaPageClasses.directory.backLinkFooter,
         className,
       )}
     >
-      <Link to="/panchanga/details" className="text-primary underline">
+      <Link to="/panchanga/details" className={panchangaPageClasses.directory.backLinkText}>
         {t(labelKey)}
       </Link>
     </p>

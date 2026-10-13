@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColors } from "@/lib/theme-context";
 
+import { neutral, radius, space, withAlpha } from "@vedic-patro/design-tokens";
 const OPEN_MS = 280;
 const CLOSE_MS = 220;
 
@@ -153,20 +154,20 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   backdrop: {
-    backgroundColor: "rgba(0,0,0,0.45)",
+    backgroundColor: withAlpha(neutral.black, 0.45),
   },
   sheet: {
     width: "100%",
   },
   rootCenter: {
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: space["2xl"],
   },
   sheetCenter: {
     width: "100%",
     maxWidth: 420,
     alignSelf: "center",
-    borderRadius: 16,
+    borderRadius: radius["2xl"],
     overflow: "hidden",
   },
 });

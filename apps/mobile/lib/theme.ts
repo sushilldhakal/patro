@@ -76,6 +76,9 @@ export type ThemeColors = {
   /** Colour of the single-colour राशि / नक्षत्र glyphs. */
   glyph: string;
   accent: string;
+  success: string;
+  warning: string;
+  info: string;
   toneBest: string;
   toneGood: string;
   toneNeutral: string;
@@ -91,11 +94,10 @@ export const lightTheme: ThemeColors = {
   background: light.background,
   foreground: light.foreground,
   text: light.foreground,
-  textMuted: light.foreground,
+  textMuted: light.mutedForeground,
   card: light.card,
   muted: light.muted,
-  // Native muted text stays full ink for contrast on small Devanagari type.
-  mutedForeground: light.foreground,
+  mutedForeground: light.mutedForeground,
   primary: light.primary,
   secondary: light.secondary,
   destructive: light.destructive,
@@ -108,6 +110,9 @@ export const lightTheme: ThemeColors = {
   tabActive: tintRgba("tabActive"),
   glyph: light.glyph,
   accent: light.accent,
+  success: light.success,
+  warning: light.warning,
+  info: light.info,
   toneBest: tintRgba("toneBest"),
   toneGood: tintRgba("toneGood"),
   toneNeutral: light.surfaceInset,
@@ -115,13 +120,12 @@ export const lightTheme: ThemeColors = {
   heroOverlay: ["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"],
 };
 
-// On midnight the app lays its tints on a little stronger than the website's
-// mixes so they still read on a phone screen outdoors.
+// The website's midnight tints, unchanged.
 export const darkTheme: ThemeColors = {
   background: dark.background,
   foreground: dark.foreground,
   text: dark.foreground,
-  textMuted: withAlpha(dark.foreground, 0.88),
+  textMuted: dark.mutedForeground,
   card: dark.card,
   muted: dark.muted,
   mutedForeground: dark.mutedForeground,
@@ -132,15 +136,18 @@ export const darkTheme: ThemeColors = {
   border: dark.border,
   surfaceInset: dark.surfaceInset,
   surfaceMuted: dark.surfaceMuted,
-  surfaceToday: withAlpha(brand.vermilion, 0.22),
-  surfaceTintDanger: withAlpha(brand.vermilion, 0.12),
-  tabActive: withAlpha(dark.tabActive, 0.16),
+  surfaceToday: tintRgba("surfaceToday", "dark"),
+  surfaceTintDanger: tintRgba("surfaceTintDanger", "dark"),
+  tabActive: tintRgba("tabActive", "dark"),
   glyph: dark.glyph,
   accent: dark.accent,
-  toneBest: withAlpha(dark.accent, 0.18),
-  toneGood: withAlpha(brand.green, 0.14),
+  success: dark.success,
+  warning: dark.warning,
+  info: dark.info,
+  toneBest: tintRgba("toneBest", "dark"),
+  toneGood: tintRgba("toneGood", "dark"),
   toneNeutral: dark.surfaceInset,
-  toneBad: withAlpha(brand.vermilion, 0.14),
+  toneBad: tintRgba("toneBad", "dark"),
   heroOverlay: ["rgba(0,0,0,0.82)", "rgba(0,0,0,0.55)", "rgba(0,0,0,0.4)"],
 };
 

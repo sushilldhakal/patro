@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, Clock } from "lucide-react";
 import { cn } from "@vedic-patro/domain/utils";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { useLocale } from "@/i18n/locale";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
@@ -25,11 +26,11 @@ type Props = {
 
 function StarMeter({ stars, tone }: { stars: number; tone: RashifalPersonal["tone"] }) {
   return (
-    <span className="inline-flex gap-0.5" aria-hidden="true">
+    <span className={cn("inline-flex", rashifalClasses.stars)} aria-hidden="true">
       {[1, 2, 3, 4, 5].map((n) => (
         <span
           key={n}
-          className={cn("size-1.5 rounded-full", n <= stars ? rashifalToneBar(tone) : "bg-border")}
+          className={cn(rashifalClasses.star, n <= stars ? rashifalToneBar(tone) : rashifalClasses.starOff)}
         />
       ))}
     </span>
@@ -46,10 +47,10 @@ function LuckyCell({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-1.5" title={label}>
+    <div className={cn("flex", rashifalClasses.luckyCell)} title={label}>
       <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
       <span className="sr-only">{label}: </span>
-      <span className="truncate text-xs font-semibold text-foreground">{value}</span>
+      <span className={cn("truncate", rashifalClasses.luckyValue)}>{value}</span>
     </div>
   );
 }
@@ -103,7 +104,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
   return (
     <article
       className={cn(
-        "flex min-w-0 flex-col overflow-hidden rounded-xl border border-secondary/40 bg-card",
+        rashifalClasses.cardPersonal,
         "shadow-[0_0_0_1px_color-mix(in_srgb,var(--secondary)_18%,transparent)]",
       )}
     >
@@ -111,32 +112,32 @@ export function RashifalPersonalCard({ name, personal }: Props) {
           Lagna named explicitly alongside rather than standing in for it. The
           engine's own scoring is Lagna-anchored (see rashifal_personal.py);
           only the *display* order changes here. */}
-      <header className="flex items-start gap-3 border-b border-border bg-secondary/[0.08] px-4 py-3 dark:bg-secondary/15">
+      <header className={rashifalClasses.header}>
         <RashiGlyphIcon
           name={getRashiName(personal.moon_sign, lang)}
           number={personal.moon_sign}
           size={36}
           className="shrink-0"
         />
-        <div className="min-w-0 flex-1">
-          <h3 className="m-0 text-base font-bold leading-snug text-foreground">{name}</h3>
-          <p className="m-0 mt-1 text-xs leading-relaxed text-muted-foreground">
+        <div className={rashifalClasses.headerBody}>
+          <h3 className={rashifalClasses.name}>{name}</h3>
+          <p className={rashifalClasses.nameSub}>
             {t("rashifal.personal.lagna_line", { lagna: lagnaLabel, moon: moonLabel, sun: sunLabel })}
           </p>
         </div>
       </header>
 
-      <div className="flex items-center gap-2.5 border-b border-border/60 px-4 py-2.5">
+      <div className={rashifalClasses.meter}>
         <StarMeter stars={personal.stars} tone={personal.tone} />
-        <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className={rashifalClasses.meterTrack}>
           <div
-            className={cn("h-full rounded-full transition-[width]", rashifalToneBar(personal.tone))}
+            className={cn(rashifalClasses.meterFill, "transition-[width]", rashifalToneBar(personal.tone))}
             style={{ width: `${personal.percent}%` }}
           />
         </div>
         <span
           className={cn(
-            "shrink-0 font-num tabular-nums text-xs font-bold",
+            rashifalClasses.percent,
             rashifalToneText(personal.tone),
           )}
         >
@@ -146,9 +147,9 @@ export function RashifalPersonalCard({ name, personal }: Props) {
       </div>
 
       {/* Running dasha — the layer only a birth chart can give. */}
-      <div className="flex items-center gap-1.5 border-b border-border/60 bg-muted/20 px-4 py-2">
+      <div className={rashifalClasses.dashaRow}>
         <Clock className="size-3.5 shrink-0 text-secondary" aria-hidden="true" />
-        <span className="truncate text-xs font-semibold text-foreground">
+        <span className={cn("truncate", rashifalClasses.dashaText)}>
           {t("rashifal.personal.dasha_line", {
             maha: ne ? dasha.mahadasha.lord_ne : dasha.mahadasha.lord_en,
             antar: ne ? dasha.antardasha.lord_ne : dasha.antardasha.lord_en,
@@ -157,24 +158,24 @@ export function RashifalPersonalCard({ name, personal }: Props) {
       </div>
 
       {personal.domains?.length ? (
-        <ul className="m-0 grid list-none grid-cols-3 gap-x-3 gap-y-2 border-b border-border/60 px-4 py-3">
+        <ul className={cn("m-0 grid list-none grid-cols-3 gap-x-3 gap-y-2", rashifalClasses.domains)}>
           {personal.domains.map((domain) => {
             const Icon = RASHIFAL_DOMAIN_ICON[domain.key];
             const label = ne ? domain.label_ne : domain.label_en;
             return (
-              <li key={domain.key} className="m-0 min-w-0" title={`${label} · ${domain.percent}%`}>
-                <div className="flex items-center gap-1">
+              <li key={domain.key} className={rashifalClasses.domain} title={`${label} · ${domain.percent}%`}>
+                <div className={rashifalClasses.domainHead}>
                   <Icon
                     className={cn("size-3.5 shrink-0", rashifalToneText(domain.tone))}
                     aria-hidden="true"
                   />
-                  <span className="truncate text-[0.65rem] font-semibold text-muted-foreground">
+                  <span className={cn("truncate", rashifalClasses.domainLabel)}>
                     {label}
                   </span>
                 </div>
-                <div className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
+                <div className={rashifalClasses.domainTrack}>
                   <div
-                    className={cn("h-full rounded-full", rashifalToneBar(domain.tone))}
+                    className={cn(rashifalClasses.domainFill, rashifalToneBar(domain.tone))}
                     style={{ width: `${domain.percent}%` }}
                   />
                 </div>
@@ -184,11 +185,11 @@ export function RashifalPersonalCard({ name, personal }: Props) {
         </ul>
       ) : null}
 
-      <p className="m-0 flex-1 px-4 py-3.5 text-sm leading-relaxed text-foreground/90">
+      <p className={cn("m-0 flex-1", rashifalClasses.prediction)}>
         {prediction}
       </p>
 
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-border bg-muted/25 px-4 py-2.5 sm:grid-cols-3">
+      <div className={cn("grid grid-cols-2 sm:grid-cols-3", rashifalClasses.lucky)}>
         <LuckyCell icon={RASHIFAL_LUCKY_ICON.color} label={t("rashifal.lucky_color")} value={luckyColor} />
         <LuckyCell
           icon={RASHIFAL_LUCKY_ICON.number}
@@ -204,7 +205,12 @@ export function RashifalPersonalCard({ name, personal }: Props) {
 
       <button
         type="button"
-        className="flex min-h-10 w-full items-center justify-between gap-2 border-t border-border px-4 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+        className={cn(
+          "flex",
+          rashifalClasses.whyButton,
+          rashifalClasses.whyLabel,
+          "transition-colors hover:bg-muted/40 hover:text-foreground",
+        )}
         aria-expanded={open}
         aria-controls={detailsId}
         onClick={() => setOpen((v) => !v)}
@@ -214,22 +220,19 @@ export function RashifalPersonalCard({ name, personal }: Props) {
       </button>
 
       {open ? (
-        <div id={detailsId} className="border-t border-border bg-surface-muted px-4 py-3">
+        <div id={detailsId} className={rashifalClasses.details}>
           {personal.components?.length ? (
-            <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+            <ul className={cn("m-0 flex list-none flex-col p-0", rashifalClasses.componentList)}>
               {personal.components.map((component) => (
-                <li key={component.key} className="m-0 flex items-baseline gap-2 text-xs">
-                  <span className="w-24 shrink-0 font-semibold text-foreground">
+                <li key={component.key} className={cn("m-0 flex", rashifalClasses.componentRow)}>
+                  <span className={rashifalClasses.componentLabel}>
                     {ne ? component.label_ne : component.label_en}
                   </span>
-                  <span className="min-w-0 flex-1 text-muted-foreground">
+                  <span className={rashifalClasses.componentNote}>
                     {ne ? component.note_ne : component.note_en}
                   </span>
                   <span
-                    className={cn(
-                      "shrink-0 font-num tabular-nums font-bold",
-                      rashifalToneText(component.tone),
-                    )}
+                    className={cn(rashifalClasses.componentValue, rashifalToneText(component.tone))}
                   >
                     {toNepaliDigits(component.percent, lang)}
                   </span>
@@ -243,7 +246,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
           ) : null}
 
           {lord ? (
-            <p className="m-0 mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+            <p className={rashifalClasses.lordLine}>
               {t("rashifal.personal.lord_line", {
                 lord: ne ? lord.lord_ne : lord.lord_en,
                 house: toNepaliDigits(lord.house, lang),
@@ -253,7 +256,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
             </p>
           ) : null}
 
-          <p className="m-0 mt-2 text-xs text-muted-foreground">
+          <p className={rashifalClasses.footNote}>
             {t("rashifal.personal.dasha_range", {
               maha: ne ? dasha.mahadasha.lord_ne : dasha.mahadasha.lord_en,
               mahaEnd: formatDasha(dasha.mahadasha.end, lang, (n) => toNepaliDigits(n, lang)),

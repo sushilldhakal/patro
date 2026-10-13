@@ -16,27 +16,34 @@ import {
   breakpoints,
   cssShadow,
   dark,
+  diagramTypeScale,
   fontFamily,
+  illustration,
   letterSpacing,
   light,
   midnight,
   mobileRoles,
   mobileTypeScale,
   motion,
+  neutral,
   radius,
   rgbChannels,
   shadow,
+  shadowInk,
+  size,
+  tintColorMix,
   tintRgba,
   tints,
   webExtras,
   webRadiusBaseRem,
   webTypeScale,
+  text5xl,
+  spaceUnit,
   wheel,
   withAlpha,
   type MobileRoles,
   type ShadowName,
   type ThemeRoles,
-  type TintBase,
 } from "../src/index";
 
 const pkg = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -44,6 +51,7 @@ const repo = resolve(pkg, "../..");
 const check = process.argv.includes("--check");
 
 const kebab = (s: string) => s.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`).replace(/(\d+)/g, "-$1");
+const camelKebab = (s: string) => s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 const rem = (px: number) => `${+(px / 16).toFixed(4)}rem`;
 
 // ─── Website ──────────────────────────────────────────────────────────────────
@@ -113,6 +121,7 @@ function webTheme(theme: "light" | "dark", indent: string): string[] {
       `${indent}--font-mono: ${fontFamily.web.mono};`,
       `${indent}--tracking-tight: ${letterSpacing.tight};`,
       `${indent}--tracking-eyebrow: ${letterSpacing.eyebrow};`,
+      `${indent}--tracking-eyebrow-wide: ${letterSpacing.eyebrowWide};`,
       `${indent}--radius-base: ${webRadiusBaseRem}rem;`,
       `${indent}--radius-pill: ${radius.pill}px;`,
       `${indent}--motion-fast: ${motion.duration.fast}ms;`,
@@ -133,35 +142,54 @@ function webTheme(theme: "light" | "dark", indent: string): string[] {
   return out;
 }
 
-const TINT_VAR: Record<TintBase, string> = {
-  saffron: "var(--brand-saffron)",
-  vermilion: "var(--brand-vermilion)",
-  gold: "var(--brand-gold)",
-  green: "var(--brand-green)",
-  danger: "var(--color-danger)",
-  warning: "var(--color-warning)",
-  foreground: "var(--foreground)",
-};
-
 /** Tailwind @theme: breakpoints, text scale, radii and the tinted surfaces. */
+/**
+ * Tailwind colour names for artwork: \`bg-ill-amber40\`, \`fill-ill-brand-saffron\`.
+ * The illustration palette plus the raw brand / midnight / neutral / wheel colours.
+ */
+function illustrationColors(): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [name, hex] of Object.entries(illustration)) out[`ill-${name}`] = hex;
+  for (const [ns, group] of Object.entries({ brand, midnight, neutral, wheel }))
+    for (const [key, hex] of Object.entries(group)) out[`ill-${ns}-${camelKebab(key)}`] = hex;
+  return out;
+}
+
+/** Chrome of the controls floating over the wheel: \`border-wheel-control-border bg-wheel-control\`. */
+function wheelControlColors(): Record<string, string> {
+  return {
+    "wheel-control": withAlpha(wheel.surface, 0.96),
+    "wheel-control-border": withAlpha(wheel.line, 0.32),
+  };
+}
+
 function webTailwindTheme(indent: string): string[] {
-  const out: string[] = [`${indent}--breakpoint-xs: ${rem(breakpoints.xs)};`];
-  for (const [name, t] of Object.entries(webTypeScale)) {
+  const out: string[] = [
+    `${indent}--breakpoint-xs: ${rem(breakpoints.xs)};`,
+    `${indent}--breakpoint-compact: ${rem(breakpoints.compact)};`,
+    `${indent}--breakpoint-calendar: ${rem(breakpoints.calendarWide)};`,
+    `${indent}--container-page: ${rem(size.pageMax)};`,
+    `${indent}--container-page-wide: ${rem(size.pageWide)};`,
+  ];
+  for (const name of [...Object.keys(webTypeScale), "5xl"]) {
     out.push(
-      `${indent}--text-${name}: ${rem(t.size)}; /* ${t.size}px */`,
-      `${indent}--text-${name}--line-height: ${+(t.lineHeight / t.size).toFixed(4)};`,
+      `${indent}--text-${name}: var(--vp-text-${name});`,
+      `${indent}--text-${name}--line-height: var(--vp-text-${name}-line);`,
     );
   }
+  for (const [name, size] of Object.entries(diagramTypeScale)) out.push(`${indent}--text-diagram-${name}: ${size}px;`);
   out.push(
     `${indent}--radius-sm: calc(var(--radius-base) - 4px);`,
     `${indent}--radius-md: calc(var(--radius-base) - 2px);`,
     `${indent}--radius-lg: var(--radius-base);`,
     `${indent}--radius-xl: calc(var(--radius-base) + 4px);`,
-    `${indent}--radius-2xl: ${radius.web["2xl"]}px;`,
+    `${indent}--radius-2xl: ${radius["2xl"]}px;`,
   );
-  for (const [name, t] of Object.entries(tints)) {
-    out.push(`${indent}--color-${kebab(name)}: color-mix(in srgb, ${TINT_VAR[t.base]} ${t.percent}%, var(--card));`);
+  for (const name of Object.keys(tints)) {
+    out.push(`${indent}--color-${kebab(name)}: ${tintColorMix(name as keyof typeof tints)};`);
   }
+  for (const [name, hex] of Object.entries(illustrationColors())) out.push(`${indent}--color-${name}: ${hex};`);
+  for (const [name, value] of Object.entries(wheelControlColors())) out.push(`${indent}--color-${name}: ${value};`);
   return out;
 }
 
@@ -205,7 +233,6 @@ function mobileChannels(roles: MobileRoles, indent: string): string[] {
 function mobileCssVars(theme: "light" | "dark", indent: string): string[] {
   const roles = theme === "light" ? light : dark;
   const out: string[] = [];
-  for (const [name, t] of Object.entries(mobileTypeScale)) out.push(`${indent}--text-${name}: ${t.size}px;`);
   out.push(
     `${indent}--background: ${roles.background};`,
     `${indent}--foreground: ${roles.foreground};`,
@@ -234,15 +261,67 @@ function mobilePalette(indent: string): string[] {
   ];
 }
 
+/**
+ * Tailwind's spacing scale in px (step × 4, `px` = 1). Same pixels as the
+ * website, where 1rem is 16px.
+ */
+function tailwindSpacing(): Record<string, string> {
+  const steps = [0, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 3.5, 3.75, 4, 5, 5.5, 6, 7.5, 7, 8, 9, 10, 11, 12, 14, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 72, 80, 96];
+  const out: Record<string, string> = { px: "1px" };
+  for (const step of steps) out[String(step)] = `${step * spaceUnit}px`;
+  return out;
+}
+
+/** The one stylesheet both apps import for type size and page padding. */
+function themeCss(): string {
+  const lines = [
+    "/* Generated from packages/design-tokens. Imported by apps/web and apps/mobile. */",
+    ":root {",
+  ];
+  const scale = { ...webTypeScale, "5xl": text5xl };
+  for (const [name, t] of Object.entries(scale)) {
+    lines.push(
+      `  --vp-text-${name}: ${rem(t.size)}; /* ${t.size}px */`,
+      `  --vp-text-${name}-line: ${+(t.lineHeight / t.size).toFixed(4)};`,
+    );
+  }
+  lines.push(
+    `  --vp-space: ${spaceUnit}px;`,
+    "  --vp-page-px: 16px; /* px-4 */",
+    "  --vp-page-px-wide: 24px; /* sm:px-6 */",
+    "  --vp-page-py: 32px; /* py-8 */",
+    "  --vp-home-card-px: 10px; /* max-sm:mx-2.5 / px-2.5 */",
+    "}",
+    "",
+  );
+  return lines.join("\n");
+}
+
 /** Everything apps/mobile/tailwind.config.js needs (it is CommonJS and cannot import TS). */
 function mobileTailwind() {
   const px = (n: number) => `${n}px`;
   return {
-    fontSize: Object.fromEntries(
-      Object.entries(mobileTypeScale).map(([k, v]) => [k, [px(v.size), { lineHeight: px(v.lineHeight) }]]),
+    fontSize: Object.fromEntries([
+      ...Object.entries(mobileTypeScale).map(([k, v]) => [k, [px(v.size), { lineHeight: px(v.lineHeight) }]] as const),
+      ...Object.entries(diagramTypeScale).map(([k, size]) => [`diagram-${k}`, [px(size), { lineHeight: px(Math.round(size * 1.3)) }]] as const),
+    ]),
+    letterSpacing: { eyebrow: letterSpacing.eyebrow, "eyebrow-wide": letterSpacing.eyebrowWide, tight: letterSpacing.tight },
+    /**
+     * Native draws one shadow layer, so each size takes the website's deepest
+     * layer, in the light theme's ink (shadows are faint on midnight anyway).
+     */
+    boxShadow: Object.fromEntries(
+      Object.entries(shadow).map(([name, layers]) => {
+        const l = layers[layers.length - 1];
+        return [name, `0px ${l.y}px ${l.blur}px ${l.spread}px ${withAlpha(shadowInk.light.hex, l.opacity)}`];
+      }),
     ),
+    maxWidth: { page: px(size.pageMax), "page-wide": px(size.pageWide) },
+    maxWidth: { page: px(size.pageMax), "page-wide": px(size.pageWide) },
     screens: {
       xs: px(breakpoints.xs),
+      compact: px(breakpoints.compact),
+      calendar: px(breakpoints.calendarWide),
       sm: px(breakpoints.sm),
       md: px(breakpoints.md),
       lg: px(breakpoints.lg),
@@ -257,15 +336,28 @@ function mobileTailwind() {
       num: [fontFamily.native.regular],
       "num-bold": [fontFamily.native.bold],
     },
-    borderRadius: { lg: px(radius.mobile.lg), xl: px(radius.mobile.xl) },
-    /** Fixed colours (not theme channels). */
+    borderRadius: { sm: px(radius.sm), md: px(radius.md), lg: px(radius.lg), xl: px(radius.xl), "2xl": px(radius["2xl"]) },
+    /**
+     * Padding, margin and gap in px. NativeWind otherwise treats 1rem as 14px,
+     * so `p-4` was 14px in the app and 16px on the website.
+     */
+    spacing: tailwindSpacing(),
+    /** Fixed colours (not theme channels). Tints use the website's color-mix. */
     colors: {
       gold: brand.gold,
+      ...illustrationColors(),
+      ...wheelControlColors(),
+      success: "var(--color-success)",
       "surface-today": tintRgba("surfaceToday"),
       "surface-today-hover": tintRgba("surfaceTodayHover"),
       "surface-hover": tintRgba("surfaceHover"),
       "surface-tint-danger": tintRgba("surfaceTintDanger"),
       "fest-today": withAlpha(brand.vermilion, 0.08),
+      ...Object.fromEntries(
+        Object.entries(tints)
+          .filter(([name]) => !["surfaceToday", "surfaceTodayHover", "surfaceHover", "surfaceTintDanger"].includes(name))
+          .map(([name]) => [kebab(name), tintColorMix(name as keyof typeof tints)]),
+      ),
     },
   };
 }
@@ -322,6 +414,17 @@ fill("apps/mobile/global.css", {
   palette: mobilePalette,
   wheel: wheelBlock,
 });
+
+{
+  const path = resolve(pkg, "theme.css");
+  let current = "";
+  try {
+    current = readFileSync(path, "utf8");
+  } catch {
+    /* first run */
+  }
+  write(path, themeCss(), current);
+}
 
 {
   const path = resolve(pkg, "generated/mobile-tailwind.json");

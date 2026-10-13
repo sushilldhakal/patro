@@ -3,7 +3,9 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { TableScrollShell } from "@/components/ui/DataTable";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 
 type Props = {
   titleNe: string;
@@ -17,12 +19,12 @@ type Props = {
 export function PatroTableShell({ titleNe, titleEn, subtitle, subtitleEn, children, className }: Props) {
   const { lang, pick } = useLocale();
   return (
-    <View className={cn("overflow-hidden rounded-xl border border-border", className)}>
-      <View className="border-b border-border px-4 py-3">
-        <Text className="text-body font-semibold text-foreground">{pick(titleNe, titleEn ?? titleNe)}</Text>
-        {titleEn && lang === "ne" ? <Text className="text-body mt-0.5 text-muted-foreground">{titleEn}</Text> : null}
+    <View className={cn(dainikKrantiClasses.shell, "overflow-hidden", className)}>
+      <View className={dainikKrantiClasses.shellHead}>
+        <Text className={dainikKrantiClasses.shellTitle} style={nepaliTextStyle()}>{pick(titleNe, titleEn ?? titleNe)}</Text>
+        {titleEn && lang === "ne" ? <Text className={dainikKrantiClasses.shellTitleEn} style={nepaliTextStyle()}>{titleEn}</Text> : null}
         {subtitle ? (
-          <Text className="text-body mt-1 leading-relaxed text-muted-foreground">
+          <Text className={dainikKrantiClasses.shellSubtitle} style={nepaliTextStyle()}>
             {pick(subtitle, subtitleEn ?? subtitle)}
           </Text>
         ) : null}

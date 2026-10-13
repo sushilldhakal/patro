@@ -28,7 +28,10 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
 import { useBreakpoint } from "@/lib/responsive";
-import { brand } from "@vedic-patro/design-tokens";
+import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
+import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
+import { cn } from "@vedic-patro/domain/utils";
+import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { CX, CY, R, ATTR_RINGS, type AttrRingId, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
 
@@ -47,38 +50,33 @@ const RING_GUIDE_DEG = 17 * NAK_STEP;
 // ── Resolved `.pn-wheel` / `.av-wheel` theme values ─────────────────────────
 // The wheel is always dark (as on web), so these are literal rather than
 // theme-driven — same technique as WheelChart.
-const W_RIM = "rgba(169,212,212,0.5)";
-const W_SEP = "rgba(143,191,193,0.42)";
-const W_SEP_SOFT = "rgba(143,191,193,0.16)";
-const W_INK = "#eaf3f1";
-const W_INK_DIM = "#a7c4c3";
-const W_INK_FAINT = "#84a3a2";
+const W_RIM = withAlpha(wheel.rim, 0.5);
+const W_SEP = withAlpha(wheel.line, 0.42);
+const W_SEP_SOFT = withAlpha(wheel.line, 0.16);
+const W_INK = midnight.foam;
+const W_INK_DIM = wheel.inkDim;
+const W_INK_FAINT = wheel.inkFaint;
 const W_ACCENT = brand.vermilion;
-const W_PADA = "#0d2024";
-const W_PADA_ALT = "#112a2f";
-const W_SURFACE_BORDER = "rgba(143,191,193,0.28)";
-const HUB_CENTER = "#0f2224";
-const HUB_EDGE = "#091315";
-/** color-mix(in srgb, var(--brand-teal) 14% / 22%, #0a1518 / #0b181a) */
-const ATTR_FILL = "#0f241c";
-const ATTR_FILL_ALT = "#132e1f";
-const GANA_VALUE_INK = "#b8e8d8";
-const NADI_VALUE_INK = "#c4d4f0";
+const W_PADA = wheel.sky0;
+const W_PADA_ALT = wheel.sky0;
+const W_SURFACE_BORDER = withAlpha(wheel.line, 0.28);
+const HUB_CENTER = wheel.sky0;
+const HUB_EDGE = midnight.background;
+/** color-mix(in srgb, var(--brand-teal) 14% / 22%, wheel.sky0 / wheel.sky1) */
+const ATTR_FILL = wheel.sky1;
+const ATTR_FILL_ALT = wheel.sky0;
+const GANA_VALUE_INK = illustration.teal82;
+const NADI_VALUE_INK = illustration.sky85;
 
 const FONT = NOTO_DEVANAGARI_CHART;
 const NUM_FONT = NOTO_DEVANAGARI_REGULAR;
 
 const GANA_FILL: Record<Gana, string> = {
-  देव: "#183e23",
-  नर: "#0b2c2e",
-  राक्षस: "#3f1c1e",
+  देव: illustration.green17,
+  नर: wheel.sky0,
+  राक्षस: illustration.red18,
 };
 
-const GANA_PILL: Record<Gana, { bg: string; fg: string }> = {
-  देव: { bg: "rgba(16,185,129,0.25)", fg: "#6ee7b7" },
-  नर: { bg: "rgba(14,165,233,0.25)", fg: "#7dd3fc" },
-  राक्षस: { bg: "rgba(244,63,94,0.25)", fg: "#fda4af" },
-};
 type HubRing = AttrRingId | "nakshatra" | "pada";
 
 type HubFocus = {
@@ -149,36 +147,36 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
   if (ring === "nakshatra") {
     return (
       <ScrollView
-        contentContainerStyle={{ alignItems: "center", paddingVertical: 4 }}
+        contentContainerClassName={avakahadaClasses.hubStack}
         showsVerticalScrollIndicator={false}
       >
         <Text
           style={{ color: W_INK, ...nepaliTextStyle(12) }}
-          className="text-caption text-center font-bold"
+          className={cn(avakahadaClasses.hubNakTitle, "text-xs text-center")}
         >
           {row.index}. {row.nakshatraLabel}
         </Text>
-        <View className="mt-1 w-full">
+        <View className={avakahadaClasses.hubAttrList}>
           {ATTR_RINGS.map((attr) => (
             <View
               key={attr.id}
-              className="flex-row justify-between gap-1 border-b py-0.5"
+              className={cn("flex-row justify-between", avakahadaClasses.hubAttrRow)}
               style={{ borderBottomColor: W_SEP_SOFT }}
             >
-              <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption">
+              <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className={cn(avakahadaClasses.hubAttrName, "text-xs")}>
                 {pick(RING_LABELS[attr.id].ne, RING_LABELS[attr.id].en)}
               </Text>
               <Text
                 numberOfLines={1}
                 style={{ color: W_INK, ...nepaliTextStyle(9) }}
-                className="text-caption shrink font-semibold"
+                className={cn(avakahadaClasses.hubAttrValue, "text-xs shrink")}
               >
                 {attrValue(attr.id, row, lang)}
               </Text>
             </View>
           ))}
         </View>
-        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption mt-1">
+        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className={cn(avakahadaClasses.hubSub, "text-xs")}>
           {vairiLine}
         </Text>
       </ScrollView>
@@ -193,29 +191,24 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       : attrValue(ring, row, lang);
 
   return (
-    <View className="items-center px-1 py-1">
+    <View className={avakahadaClasses.hubStack}>
       <Text
         style={{ color: W_ACCENT, ...nepaliTextStyle(10) }}
-        className="text-caption text-center font-bold uppercase tracking-wide"
+        className={cn(avakahadaClasses.hubLabel, "text-xs text-center")}
       >
         {label}
       </Text>
       {ring === "gana" ? (
-        <View
-          style={{ backgroundColor: GANA_PILL[row.gana].bg }}
-          className="mt-0.5 rounded-full px-1.5 py-0.5"
+        <Text
+          style={nepaliTextStyle(13)}
+          className={cn(avakahadaClasses.hubGanaPill, "text-xs", GANA_PILL_CLASS[row.gana])}
         >
-          <Text
-            style={{ color: GANA_PILL[row.gana].fg, ...nepaliTextStyle(13) }}
-            className="text-caption font-bold"
-          >
-            {value}
-          </Text>
-        </View>
+          {value}
+        </Text>
       ) : (
         <Text
           style={{ color: W_INK, ...nepaliTextStyle(15) }}
-          className="text-body mt-0.5 text-center font-bold"
+          className={cn(avakahadaClasses.hubValue, "text-sm text-center")}
         >
           {value}
         </Text>
@@ -223,7 +216,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       {ring === "pada" && padaIndex != null ? (
         <Text
           style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
-          className="text-caption mt-1 text-center"
+          className={cn(avakahadaClasses.hubSub, "text-xs text-center")}
         >
           {pick(
             `चरण ${padaIndex + 1} · ${localizeRashi(row.charanRashis[padaIndex]!, lang)}`,
@@ -233,13 +226,13 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       ) : null}
       <Text
         style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
-        className="text-caption mt-1 text-center"
+        className={cn(avakahadaClasses.hubSub, "text-xs text-center")}
         numberOfLines={2}
       >
         {row.index}. {row.nakshatraLabel}
       </Text>
       {ring === "yoni" ? (
-        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className="text-caption">
+        <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className={cn(avakahadaClasses.hubVairi, "text-xs")}>
           {vairiLine}
         </Text>
       ) : null}
@@ -446,12 +439,12 @@ export function AvakahadaWheel({ highlighted }: Props) {
   const hubBox = R.hub * 2 - 20;
 
   return (
-    <View className="mt-2 overflow-hidden rounded-2xl border border-border bg-card">
-      <View className="px-4 pt-4">
-        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+    <View className={avakahadaClasses.wheelSection}>
+      <View className={avakahadaClasses.wheelHead}>
+        <Text className={avakahadaClasses.wheelTitle} style={nepaliTextStyle(18)}>
           {pick("अवकहडा चक्र — चक्र दृश्य", "Avakahada Chakra — wheel view")}
         </Text>
-        <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={avakahadaClasses.wheelSubtitle} style={nepaliTextStyle(13)}>
           {pick(
             "बाहिरबाट भित्र: नक्षत्र → नामाक्षर (१०८ चरण) → राशि → स्वामी → वर्ण → वश्य → योनि → गण → नाडी",
             "Outside to inside: nakshatra → name syllable (108 charans) → rashi → lord → varna → vashya → yoni → gana → nadi",
@@ -460,10 +453,10 @@ export function AvakahadaWheel({ highlighted }: Props) {
       </View>
 
       <View
-        className="m-3 overflow-hidden rounded-2xl p-2"
-        style={{ backgroundColor: "#0a1a1b", borderWidth: 1, borderColor: W_SURFACE_BORDER }}
+        className={cn("m-3 overflow-hidden", avakahadaClasses.wheelStage)}
+        style={{ backgroundColor: midnight.background, borderWidth: 1, borderColor: W_SURFACE_BORDER }}
       >
-        <View className="mb-2 flex-row items-center justify-end gap-1.5">
+        <View className={cn("flex-row", avakahadaClasses.wheelToolbar)}>
           <ZoomBtn icon="add" onPress={() => handleZoom(zoom * ZOOM_STEP)} />
           <ZoomBtn
             icon="remove"
@@ -474,16 +467,16 @@ export function AvakahadaWheel({ highlighted }: Props) {
             <Pressable
               onPress={resetView}
               style={{ borderColor: W_SURFACE_BORDER }}
-              className="rounded-md border px-2 py-1 active:opacity-70"
+              className={cn(avakahadaClasses.zoomReset, "active:opacity-70")}
             >
-              <Text style={{ color: W_INK_DIM }} className="text-caption font-semibold">
+              <Text style={{ color: W_INK_DIM }} className="text-xs font-semibold">
                 1:1
               </Text>
             </Pressable>
           ) : null}
           <Text
             style={{ color: W_INK_DIM, fontFamily: NUM_FONT }}
-            className="text-caption min-w-[42px] text-center font-semibold"
+            className={avakahadaClasses.zoomPercent}
           >
             {digits(Math.round(zoom * 100))}%
           </Text>
@@ -586,13 +579,13 @@ export function AvakahadaWheel({ highlighted }: Props) {
                 <View className="items-center px-1">
                   <Text
                     style={{ color: W_ACCENT, ...nepaliTextStyle(16) }}
-                    className="text-body font-bold"
+                    className={cn(avakahadaClasses.hubIdleTitle, "text-sm")}
                   >
                     {pick("अवकहडा", "Avakahada")}
                   </Text>
                   <Text
                     style={{ color: W_INK, ...nepaliTextStyle(10) }}
-                    className="text-caption mt-1 text-center font-semibold"
+                    className={cn(avakahadaClasses.hubIdleHint, "text-xs text-center")}
                   >
                     {pick(
                       "वलय छुनुहोस् — नक्षत्र, अक्षर, राशि, वर्ण, वश्य, योनि, गण, नाडी",
@@ -606,32 +599,32 @@ export function AvakahadaWheel({ highlighted }: Props) {
         </View>
       </View>
 
-      <View className="flex-row flex-wrap items-center gap-x-3.5 gap-y-2 px-4 pb-4">
-        <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+      <View className={cn("flex-row", avakahadaClasses.legend)}>
+        <Text className={avakahadaClasses.legendLabel} style={nepaliTextStyle(12)}>
           {pick("गण रङ:", "Gana colors:")}
         </Text>
         {ganas.map((g) => (
-          <View key={g} className="flex-row items-center gap-1.5">
+          <View key={g} className={cn("flex-row", avakahadaClasses.legendItem)}>
             <View
               style={{ backgroundColor: GANA_FILL[g] }}
-              className="h-3 w-3 rounded-[3px] border border-border"
+              className={avakahadaClasses.legendSwatch}
             />
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
               {localizeGana(g, lang)}
             </Text>
           </View>
         ))}
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
           {pick(
             "· भित्री ७ वलय: राशि, स्वामी, वर्ण, वश्य, योनि, गण, नाडी",
             "· 7 inner rings: rashi, lord, varna, vashya, yoni, gana, nadi",
           )}
         </Text>
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
           {pick("· जुम गरेपछि तानेर सार्न सकिन्छ", "· Drag to pan when zoomed")}
         </Text>
         {hasFilter ? (
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
             {pick(
               `· खोजमा ${digits(highlightSet.size)} नक्षत्र`,
               `· ${highlightSet.size} nakshatras in search`,
@@ -657,7 +650,7 @@ function ZoomBtn({
       onPress={onPress}
       disabled={disabled}
       style={{ borderColor: W_SURFACE_BORDER, opacity: disabled ? 0.4 : 1 }}
-      className="h-7 w-7 items-center justify-center rounded-md border active:opacity-70"
+      className={cn(avakahadaClasses.zoomButton, "active:opacity-70")}
     >
       <Ionicons name={icon} size={15} color={W_INK_DIM} />
     </Pressable>

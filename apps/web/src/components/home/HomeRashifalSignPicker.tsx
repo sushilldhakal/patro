@@ -14,6 +14,7 @@ import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";
 import type { RashifalSignBlock } from "@/lib/api";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type Props = {
   signs: RashifalSignBlock[];
@@ -87,7 +88,7 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
   return (
     <div className="grid items-start gap-3 md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] md:gap-4">
       <nav
-        className="w-full min-w-0 max-w-[22rem] shrink-0 justify-self-start rounded-xl border border-border bg-card/80 p-2.5 shadow-sm md:sticky md:top-20"
+        className={cn("w-full min-w-0 max-w-[22rem] shrink-0 justify-self-start md:sticky md:top-20", homeClasses.pickerGrid)}
         aria-label={lang === "ne" ? "राशि छान्नुहोस्" : "Choose rashi"}
       >
         <ul className="m-0 grid list-none grid-cols-3 gap-2.5 p-0">
@@ -101,10 +102,11 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
                   type="button"
                   onClick={() => goToSign(index)}
                   className={cn(
-                    "flex w-full min-w-0 flex-col gap-1.5 rounded-lg border px-2 py-2.5 text-left transition-colors",
+                    "flex w-full flex-col text-left transition-colors",
+                    homeClasses.pickerThumb,
                     active
-                      ? "border-secondary bg-secondary/15 text-foreground ring-1 ring-secondary/25"
-                      : "border-border/50 bg-muted/25 text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground",
+                      ? cn(homeClasses.pickerThumbActive, "text-foreground ring-1 ring-secondary/25")
+                      : cn(homeClasses.pickerThumbIdle, "text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground"),
                   )}
                   aria-current={active ? "true" : undefined}
                 >
@@ -115,19 +117,20 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
                       size={32}
                     />
                   </span>
-                  <span className="w-full truncate text-center text-xs font-semibold leading-tight">
+                  <span className={cn("w-full truncate", homeClasses.pickerName)}>
                     {name}
                   </span>
-                  <span className="flex items-center gap-0.5 px-0.5">
-                    <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+                  <span className={homeClasses.pickerBarRow}>
+                    <span className={homeClasses.pickerBar}>
                       <span
-                        className={cn("block h-full rounded-full", rashifalToneBar(sign.tone))}
+                        className={cn("block", homeClasses.pickerBarFill, rashifalToneBar(sign.tone))}
                         style={{ width: `${pct}%` }}
                       />
                     </span>
                     <span
                       className={cn(
-                        "shrink-0 font-num text-[0.65rem] font-bold tabular-nums leading-none",
+                        homeClasses.pickerPercent,
+                        "text-diagram-xs tabular-nums",
                         rashifalToneText(sign.tone),
                       )}
                     >
@@ -145,7 +148,7 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
         <Carousel
           setApi={setApi}
           opts={{ align: "start", loop: true }}
-          className="relative px-9 md:px-10"
+          className={cn(homeClasses.pickerCarousel, "md:px-10")}
         >
           <CarouselContent className="-ml-3 md:-ml-4">
             {signs.map((sign) => (
@@ -157,8 +160,8 @@ export function HomeRashifalSignPicker({ signs, defaultSignId }: Props) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-0 size-8 border-border bg-card shadow-sm disabled:opacity-30" />
-          <CarouselNext className="right-0 size-8 border-border bg-card shadow-sm disabled:opacity-30" />
+          <CarouselPrevious className={cn("left-0 disabled:opacity-30", homeClasses.pickerArrow)} />
+          <CarouselNext className={cn("right-0 disabled:opacity-30", homeClasses.pickerArrow)} />
         </Carousel>
       </div>
     </div>

@@ -6,6 +6,7 @@ import {
 } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { Sparkles } from "lucide-react";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -38,20 +39,20 @@ export function GocharKundaliChart({
   const dateLabel = formatGocharBsLabel(dateBs, dateAd);
 
   return (
-    <div className={cn("rounded-xl border border-border p-4", className)}>
-      <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+    <div className={cn(dainikKrantiClasses.chartCard, className)}>
+      <h3 className={cn(dainikKrantiClasses.chartTitle, dainikKrantiClasses.chartTitleText)}>
         <Sparkles className="h-4 w-4 text-secondary" /> {t("dainik.transit_chart")}
       </h3>
 
-      <div className="mb-3 space-y-2">
-        <div className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-          <p className="font-mono text-base text-base leading-relaxed text-foreground">
+      <div className={cn(dainikKrantiClasses.chartLines, "space-y-2")}>
+        <div className={dainikKrantiClasses.chartLine}>
+          <p className={dainikKrantiClasses.chartLineText}>
             {papanshaLine || t("dainik.papashah")}
           </p>
         </div>
         {gapanshaLine ? (
-          <div className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-            <p className="font-mono text-base text-base leading-relaxed text-foreground">
+          <div className={dainikKrantiClasses.chartLine}>
+            <p className={dainikKrantiClasses.chartLineText}>
               {gapanshaLine}
             </p>
           </div>
@@ -59,9 +60,9 @@ export function GocharKundaliChart({
       </div>
 
       {loading ? (
-        <p className="py-8 text-center text-sm">{t("dainik.loading")}</p>
+        <p className={dainikKrantiClasses.chartState}>{t("dainik.loading")}</p>
       ) : grahas.length === 0 ? (
-        <p className="py-8 text-center text-sm">{t("dainik.no_details_available")}</p>
+        <p className={dainikKrantiClasses.chartState}>{t("dainik.no_details_available")}</p>
       ) : (
         <D1Chart houses={buildGocharBhavaHouses(grahas)} />
       )}
@@ -71,7 +72,7 @@ export function GocharKundaliChart({
       ) : null}
 
       {dateLabel ? (
-        <p className="mt-2 text-center text-sm">{bilingualText(lang, `${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}</p>
+        <p className={dainikKrantiClasses.chartDate}>{bilingualText(lang, `${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}</p>
       ) : null}
     </div>
   );

@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { BilingualValue, KundaliDetailResponse } from "@/lib/api";
@@ -28,16 +30,15 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
-import { useThemeColors } from "@/lib/theme-context";
 
 function TraitRow({ label, value }: { label: string; value: string }) {
   return (
-    <View className="min-w-[9rem] flex-row flex-wrap items-baseline gap-1">
-      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+    <View className={cn(kundaliDetailClasses.birth.traitRow, "min-w-[9rem] flex-wrap")}>
+      <Text className={kundaliDetailClasses.birth.traitText} style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <Text className="text-body text-muted-foreground">:</Text>
-      <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
+      <Text className={kundaliDetailClasses.birth.traitText}>:</Text>
+      <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(13)}>
         {value}
       </Text>
     </View>
@@ -56,7 +57,6 @@ type Props = {
 
 export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
   const { lang, digits, pick } = useLocale();
-  const colors = useThemeColors();
   const t = (key: KundaliI18nKey) => kundaliLabel(key, lang);
   const ayanamshaInfo = getAyanamshaModeInfo(ayanamshaMode);
   const data = normalizeEphemerisDay(detail.panchanga);
@@ -156,25 +156,22 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
   }, [sunRow, lang, digits]);
 
   return (
-    <View
-      style={{ borderColor: `${colors.secondary}40` }}
-      className="mb-4 rounded-2xl border bg-card p-4 sm:p-5"
-    >
-      <View className="mb-3 flex-row flex-wrap items-center justify-between gap-2">
+    <View className={cn(kundaliDetailClasses.birth.card, "mb-4 bg-card")}>
+      <View className={kundaliDetailClasses.birth.head}>
         <Text
-          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
+          className={kundaliDetailClasses.birth.title}
           style={nepaliTextStyle(12)}
         >
           {t("birth_panchanga")}
         </Text>
-        <View className="rounded-full border border-border bg-card px-2.5 py-1">
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+        <View className={kundaliDetailClasses.birth.chip}>
+          <Text className={kundaliDetailClasses.birth.chipText} style={nepaliTextStyle(11)}>
             {lang === "en" ? ayanamshaInfo.label : ayanamshaInfo.labelNe}
           </Text>
         </View>
       </View>
 
-      <View className="flex-row flex-wrap gap-x-4 gap-y-2">
+      <View className={kundaliDetailClasses.birth.traits}>
         {tithiNe ? (
           <TraitRow
             label={t("tithi")}
@@ -240,22 +237,22 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
       </View>
 
       {avakahada ? (
-        <View className="mt-4 border-t border-border/70 pt-4">
-          <Text className="text-body mb-2" style={nepaliTextStyle(14)}>
+        <View className={kundaliDetailClasses.birth.avakahada}>
+          <Text className={kundaliDetailClasses.prose.plainMb2} style={nepaliTextStyle(14)}>
             <Text
-              className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
+              className={kundaliDetailClasses.birth.avakahadaTitle}
               style={nepaliTextStyle(12)}
             >
               {t("avakahada")}
             </Text>
-            <Text className="text-muted-foreground"> · </Text>
-            <Text className="font-semibold text-foreground">{pickBi(lang, avakahada.nakshatra)}</Text>
-            <Text className="text-muted-foreground"> · </Text>
-            <Text className="font-semibold text-foreground">
+            <Text className="text-foreground"> · </Text>
+            <Text className={kundaliDetailClasses.prose.strong}>{pickBi(lang, avakahada.nakshatra)}</Text>
+            <Text className="text-foreground"> · </Text>
+            <Text className={kundaliDetailClasses.prose.strong}>
               {t("pada")} {digits(avakahada.pada)}
             </Text>
           </Text>
-          <View className="flex-row flex-wrap gap-x-4 gap-y-2">
+          <View className={kundaliDetailClasses.birth.traits}>
             <TraitRow label={t("rashi_paya")} value={pickBi(lang, avakahada.rashiPaya)} />
             <TraitRow label={t("nakshatra_paya")} value={pickBi(lang, avakahada.nakshatraPaya)} />
             <TraitRow label={t("tattva")} value={pickBi(lang, avakahada.tattva)} />
@@ -270,14 +267,14 @@ export function KundaliBirthPanchangaCard({ detail, ayanamshaMode }: Props) {
             <TraitRow label={t("jati")} value={pickBi(lang, avakahada.jati)} />
           </View>
           {avakahadaShloka ? (
-            <View className="mt-3 rounded-lg border border-border bg-muted/30 p-3">
+            <View className={kundaliDetailClasses.birth.shlokaBox}>
               <Text
-                className="text-caption mb-1 uppercase tracking-wide text-muted-foreground"
+                className={kundaliDetailClasses.birth.shlokaLabel}
                 style={nepaliTextStyle(12)}
               >
                 {pick("अवकहडा श्लोक", "Avakahada Shloka")}
               </Text>
-              <Text className="text-body italic leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={kundaliDetailClasses.birth.shlokaText} style={nepaliTextStyle(14)}>
                 {avakahadaShloka}
               </Text>
             </View>

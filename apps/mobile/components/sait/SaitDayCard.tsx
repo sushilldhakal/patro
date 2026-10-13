@@ -7,11 +7,11 @@ import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { SHUDDHI_TONE_STYLE, SUITABILITY_STYLE } from "@/lib/sait-suitability-style";
+import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { colorWithAlpha } from "@/lib/theme";
+import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
 
 /**
  * One qualifying muhūrta day: the representative clean window plus the
@@ -33,6 +33,7 @@ export function SaitDayCard({
 }) {
   const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
+  const { width: screenWidth } = useBreakpoint();
 
   const shuddhi = personalize?.shuddhi ?? null;
   const kumbha = personalize?.kumbha ?? null;
@@ -62,64 +63,60 @@ export function SaitDayCard({
     },
   ];
 
-  const ring = suitability ? SUITABILITY_STYLE[suitability].ring : colors.border;
-
   return (
     <View
-      style={{ width: width as never, borderColor: ring, borderWidth: suitability ? 2 : 1 }}
-      className="rounded-xl bg-card p-4"
+      style={{ width: width as never }}
+      className={cn(saitClasses.card, suitability ? saitClasses.suitability[suitability].frame : null)}
     >
       {suitability ? (
-        <View className="flex-row justify-end pb-1.5">
+        <View className={saitClasses.cardBadgeRow}>
           <SuitabilityBadge suitability={suitability} />
         </View>
       ) : null}
 
-      <View className="flex-row items-stretch gap-3 pb-3">
-        <View
-          style={{ backgroundColor: colors.surfaceInset, minWidth: 68 }}
-          className="items-center justify-center rounded-lg px-2 py-2.5"
-        >
-          <Text
-            style={{ color: colors.secondary, ...nepaliTextStyle(10) }}
-            className="text-caption font-semibold uppercase tracking-wider"
-          >
+      <View className={saitClasses.cardHead}>
+        <View className={saitClasses.dateBox}>
+          <Text className={saitClasses.dateMonth} style={nepaliTextStyle()}>
             {monthLabel}
           </Text>
-          <Text className="text-display font-num font-bold text-foreground">{digits(d.bs_day)}</Text>
+          <Text className={saitClasses.dateDay} style={nepaliTextStyle()}>
+            {digits(d.bs_day)}
+          </Text>
         </View>
 
-        <View className="min-w-0 flex-1 justify-center gap-1.5">
-          <View className="flex-row flex-wrap items-baseline gap-x-2">
-            <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <View className={saitClasses.headBody}>
+          <View className={saitClasses.titleRow}>
+            <Text className={saitClasses.weekday} style={nepaliTextStyle()}>
               {pick(d.weekday_ne, d.weekday_en)}
             </Text>
-            <Text className="text-caption font-num text-muted-foreground">{d.gregorian}</Text>
+            <Text className={saitClasses.gregorian}>{d.gregorian}</Text>
           </View>
 
-          <View
-            style={{ backgroundColor: colorWithAlpha(brand.blue, 0.12) }}
-            className="flex-row items-center gap-1.5 self-start rounded-md px-2 py-1"
-          >
-            <Ionicons name="time-outline" size={13} color={colors.secondary} />
-            <Text style={{ color: colors.secondary }} className="text-caption font-num font-semibold">
+          <View className={cn(saitClasses.windowChip, "self-start")}>
+            <Ionicons name="time-outline" size={14} color={colors.secondary} style={{ opacity: 0.8 }} />
+            <Text className={cn(saitClasses.windowText, saitClasses.windowTime)} style={nepaliTextStyle()}>
               {digits(d.window_start)} – {digits(d.window_end)}
-              {overnight ? pick(" (भोलि)", " (next day)") : ""}
+              {overnight ? ` (${t("sait.1")})` : ""}
             </Text>
+            {screenWidth >= 640 ? (
+              <Text className={saitClasses.windowNote} style={nepaliTextStyle()}>
+                {t("sait.lagna_window")}
+              </Text>
+            ) : null}
           </View>
         </View>
       </View>
 
-      <View className="flex-row flex-wrap border-t border-border pt-3">
+      <View className={cn("flex-row flex-wrap", saitClasses.facts)}>
         {rows.map((r) => (
-          <View key={r.label} style={{ width: "50%" }} className="gap-0.5 pb-2 pr-3">
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+          <View key={r.label} style={{ width: screenWidth >= 640 ? "33.333%" : "50%" }} className={cn(saitClasses.factItem, "pb-2 pr-4")}>
+            <Text className={saitClasses.factLabel} style={nepaliTextStyle()}>
               {r.label}
             </Text>
             <Text
               numberOfLines={1}
-              className="text-body font-semibold text-foreground"
-              style={nepaliTextStyle(13)}
+              className={saitClasses.factValue}
+              style={nepaliTextStyle()}
             >
               {r.value}
             </Text>
@@ -128,30 +125,25 @@ export function SaitDayCard({
       </View>
 
       {shuddhi && shuddhi.planets.length > 0 ? (
-        <View className="mt-3 border-t border-border pt-2.5">
-          <View className="flex-row flex-wrap items-center gap-1.5">
-            <Text
-              className="text-caption font-semibold text-muted-foreground"
-              style={nepaliTextStyle(11)}
-            >
+        <View className={saitClasses.block}>
+          <View className={saitClasses.blockRow}>
+            <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
               {pick("ग्रह शुद्धि", "Graha Śuddhi")}
             </Text>
             {shuddhi.planets.map((p) => {
-              const tone = SHUDDHI_TONE_STYLE[p.tone];
               const name = GRAHA_NAME[(SHUDDHI_PLANET_TO_GRAHA[p.planet] ?? p.planet) as GrahaKey];
               return (
                 <View
                   key={p.planet}
-                  style={{ backgroundColor: tone.bg }}
-                  className="flex-row items-center gap-1 rounded-md px-1.5 py-0.5"
+                  className={cn(saitClasses.chip, saitClasses.chipGap, saitClasses.toneChip[p.tone])}
                 >
                   <Text
-                    style={{ color: tone.fg, ...nepaliTextStyle(11) }}
-                    className="text-caption font-semibold"
+                    style={nepaliTextStyle()}
+                    className={cn(saitClasses.chipText, saitClasses.toneChipText[p.tone])}
                   >
                     {pick(name?.ne ?? p.planet, name?.en ?? p.planet)}
                   </Text>
-                  <Text style={{ color: tone.fg }} className="text-caption font-num font-semibold">
+                  <Text className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[p.tone])}>
                     {digits(p.house)}
                   </Text>
                 </View>
@@ -159,11 +151,11 @@ export function SaitDayCard({
             })}
           </View>
           <Text
-            style={{ color: SHUDDHI_TONE_STYLE[shuddhi.tone].fg, ...nepaliTextStyle(11) }}
-            className="text-caption mt-1.5 font-semibold"
+            style={nepaliTextStyle()}
+            className={cn(saitClasses.summary, saitClasses.toneText[shuddhi.tone])}
           >
             {t(`sait.x.shuddhi_${shuddhi.tone}`)}
-            <Text className="font-normal text-muted-foreground">
+            <Text className={saitClasses.summaryNote}>
               {" "}
               {pick("(जन्म राशिबाट भाव)", "(house from janma rāśi)")}
             </Text>
@@ -172,35 +164,29 @@ export function SaitDayCard({
       ) : null}
 
       {kumbha ? (
-        <View className="mt-3 border-t border-border pt-2.5">
-          <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-1">
-            <View className="flex-row items-center gap-1">
+        <View className={saitClasses.block}>
+          <View className={saitClasses.blockRowLoose}>
+            <View className={saitClasses.blockIconLabel}>
               <Ionicons name="compass-outline" size={13} color={colors.mutedForeground} />
-              <Text
-                className="text-caption font-semibold text-muted-foreground"
-                style={nepaliTextStyle(11)}
-              >
+              <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
                 {pick("कुम्भ चक्र", "Kumbha Chakra")}
               </Text>
             </View>
-            <View
-              style={{ backgroundColor: SHUDDHI_TONE_STYLE[kumbha.tone].bg }}
-              className="rounded-md px-1.5 py-0.5"
-            >
+            <View className={cn(saitClasses.chip, saitClasses.toneChip[kumbha.tone])}>
               <Text
-                style={{ color: SHUDDHI_TONE_STYLE[kumbha.tone].fg, ...nepaliTextStyle(11) }}
-                className="text-caption font-semibold"
+                style={nepaliTextStyle()}
+                className={cn(saitClasses.chipText, saitClasses.toneChipText[kumbha.tone])}
               >
                 {pick(kumbha.zone_ne, kumbha.zone_en)}
               </Text>
             </View>
           </View>
           <Text
-            style={{ color: SHUDDHI_TONE_STYLE[kumbha.tone].fg, ...nepaliTextStyle(11) }}
-            className="text-caption mt-1.5 font-semibold"
+            style={nepaliTextStyle()}
+            className={cn(saitClasses.summary, saitClasses.toneText[kumbha.tone])}
           >
             {pick(kumbha.effect_ne, kumbha.effect_en)}
-            <Text className="font-normal text-muted-foreground">
+            <Text className={saitClasses.summaryNote}>
               {" "}
               {pick("(सूर्यबाट गनिएको)", "(counted from the Sun)")}
             </Text>
@@ -209,24 +195,17 @@ export function SaitDayCard({
       ) : null}
 
       {annaMonth ? (
-        <View className="mt-3 border-t border-border pt-2.5">
-          <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-1">
-            <View className="flex-row items-center gap-1">
+        <View className={saitClasses.block}>
+          <View className={saitClasses.blockRowLoose}>
+            <View className={saitClasses.blockIconLabel}>
               <Ionicons name="happy-outline" size={13} color={colors.mutedForeground} />
-              <Text
-                className="text-caption font-semibold text-muted-foreground"
-                style={nepaliTextStyle(11)}
-              >
+              <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
                 {pick("अन्नप्राशन उमेर महिना", "Annaprāśana age month")}
               </Text>
             </View>
-            <View
-              style={{ backgroundColor: SHUDDHI_TONE_STYLE[annaMonth.tone].bg }}
-              className="rounded-md px-1.5 py-0.5"
-            >
+            <View className={cn(saitClasses.chip, saitClasses.toneChip[annaMonth.tone])}>
               <Text
-                style={{ color: SHUDDHI_TONE_STYLE[annaMonth.tone].fg }}
-                className="text-caption font-num font-semibold"
+                className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[annaMonth.tone])}
               >
                 {pick(
                   `${digits(annaMonth.ordinal_month)} औँ महिना`,
@@ -236,8 +215,8 @@ export function SaitDayCard({
             </View>
           </View>
           <Text
-            style={{ color: SHUDDHI_TONE_STYLE[annaMonth.tone].fg, ...nepaliTextStyle(11) }}
-            className="text-caption mt-1.5 font-semibold"
+            style={nepaliTextStyle()}
+            className={cn(saitClasses.summary, saitClasses.toneText[annaMonth.tone])}
           >
             {annaMonth.matches
               ? pick("बच्चाको सही उमेर महिना", "The child's right age month")

@@ -15,12 +15,13 @@ import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const INK = "currentColor";
-const TROPICAL = "#35d05a";
-const SIDEREAL = "#f59e0b";
-const ECLIPTIC = "#dddd00";
-const EQUATOR = "#0ea5e9";
-const WARN = "#ef4444";
+const TROPICAL = illustration.green51;
+const SIDEREAL = illustration.orange50;
+const ECLIPTIC = illustration.amber43;
+const EQUATOR = illustration.teal48;
+const WARN = illustration.red60;
 
 const digits = (lang: Lang, v: string | number) =>
   lang === "en" ? String(v) : toNepaliDigits(String(v));
@@ -43,7 +44,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
     </figure>
   );
 }
@@ -87,12 +88,12 @@ export function TwoZeroPoints() {
       {[0, 90, 180, 270, 360].map((d) => (
         <g key={`t${d}`}>
           <line x1={x(d)} y1={52} x2={x(d)} y2={64} stroke={TROPICAL} strokeWidth={1} opacity={0.8} />
-          <text x={x(d)} y={46} textAnchor="middle" className="text-[7.5px]" style={{ fill: TROPICAL }}>
+          <text x={x(d)} y={46} textAnchor="middle" className="text-diagram-2xs" style={{ fill: TROPICAL }}>
             {n(d)}°
           </text>
         </g>
       ))}
-      <text x={L} y={32} className="text-[8.5px] font-semibold" style={{ fill: TROPICAL }}>
+      <text x={L} y={32} className="text-diagram-2xs font-semibold" style={{ fill: TROPICAL }}>
         {t("learn.diagrams.tropical_scale_zero")}
       </text>
 
@@ -102,15 +103,15 @@ export function TwoZeroPoints() {
       {[0, 90, 180, 270].map((d) => (
         <g key={`s${d}`}>
           <line x1={x(d + AYAN)} y1={106} x2={x(d + AYAN)} y2={118} stroke={SIDEREAL} strokeWidth={1} opacity={0.8} />
-          <text x={x(d + AYAN)} y={130} textAnchor="middle" className="text-[7.5px]" style={{ fill: SIDEREAL }}>
+          <text x={x(d + AYAN)} y={130} textAnchor="middle" className="text-diagram-2xs" style={{ fill: SIDEREAL }}>
             {n(d)}°
           </text>
-          <text x={x(d + AYAN)} y={142} textAnchor="middle" className="fill-current text-[7px] opacity-55">
+          <text x={x(d + AYAN)} y={142} textAnchor="middle" className="fill-current text-5xl opacity-55">
             {monthNames[(d / 30) % 12]}
           </text>
         </g>
       ))}
-      <text x={L} y={166} className="text-[8.5px] font-semibold" style={{ fill: SIDEREAL }}>
+      <text x={L} y={166} className="text-diagram-2xs font-semibold" style={{ fill: SIDEREAL }}>
         {t("learn.diagrams.sidereal_scale_zero")}
       </text>
 
@@ -118,7 +119,7 @@ export function TwoZeroPoints() {
       <rect x={x(0)} y={58} width={x(AYAN) - x(0)} height={54} fill={WARN} opacity={0.16} />
       <line x1={x(0)} y1={58} x2={x(0)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
       <line x1={x(AYAN)} y1={58} x2={x(AYAN)} y2={112} stroke={WARN} strokeWidth={1.1} strokeDasharray="3 3" />
-      <text x={x(AYAN) + 8} y={88} className="text-[8.5px] font-semibold" style={{ fill: WARN }}>
+      <text x={x(AYAN) + 8} y={88} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {bilingualText(lang, `अयनांश ~${n(AYAN)}° ≈ ~${n(24)} दिन`, `ayanamsha ~${n(AYAN)}° ≈ ~${n(24)} days`)}
       </text>
     </Frame>
@@ -153,8 +154,8 @@ export function ZodiacBeltWidth() {
 
   const bodies = [
     { lat: 0, body: "grahas.sun", c: ECLIPTIC, note: "learn.diagrams.belt_latitude_sun" },
-    { lat: 5.1, body: "grahas.moon", c: "#cbd5e1", note: "learn.diagrams.belt_latitude_moon" },
-    { lat: 7.0, body: "grahas.mercury", c: "#10b981", note: "learn.diagrams.belt_latitude_mercury" },
+    { lat: 5.1, body: "grahas.moon", c: illustration.sky84, note: "learn.diagrams.belt_latitude_moon" },
+    { lat: 7.0, body: "grahas.mercury", c: illustration.teal39, note: "learn.diagrams.belt_latitude_mercury" },
   ];
 
   return (
@@ -168,7 +169,7 @@ export function ZodiacBeltWidth() {
       {[9, -9].map((d) => (
         <g key={d}>
           <line x1={L} y1={y(d)} x2={Rr} y2={y(d)} stroke={SIDEREAL} strokeWidth={1.1} opacity={0.7} />
-          <text x={Rr + 6} y={y(d) + 3} className="text-[7.5px] font-semibold" style={{ fill: SIDEREAL }}>
+          <text x={Rr + 6} y={y(d) + 3} className="text-diagram-2xs font-semibold" style={{ fill: SIDEREAL }}>
             {d > 0 ? "+" : "−"}
             {n(9)}°
           </text>
@@ -192,19 +193,19 @@ export function ZodiacBeltWidth() {
               />
             ),
           )}
-          <text x={L - 8} y={y(b.lat) + 3} textAnchor="end" className="fill-current text-[8px] opacity-70">
+          <text x={L - 8} y={y(b.lat) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-70">
             {t(b.body)}
           </text>
-          <text x={L - 8} y={y(b.lat) + 13} textAnchor="end" className="fill-current text-[7px] opacity-45">
+          <text x={L - 8} y={y(b.lat) + 13} textAnchor="end" className="fill-current text-5xl opacity-45">
             {t(b.note)}
           </text>
         </g>
       ))}
 
-      <text x={(L + Rr) / 2} y={y(0) - 7} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: ECLIPTIC }}>
+      <text x={(L + Rr) / 2} y={y(0) - 7} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: ECLIPTIC }}>
         {t("learn.diagrams.ecliptic_latitude_zero")}
       </text>
-      <text x={(L + Rr) / 2} y={H - 8} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: SIDEREAL }}>
+      <text x={(L + Rr) / 2} y={H - 8} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: SIDEREAL }}>
         {t("learn.diagrams.belt_total_width")}
       </text>
     </Frame>
@@ -260,14 +261,14 @@ export function EclipticEquatorCross() {
     >
       {/* the equator: declination zero by definition */}
       <line x1={L} y1={y(0)} x2={Rr} y2={y(0)} stroke={EQUATOR} strokeWidth={1.7} opacity={0.85} />
-      <text x={Rr} y={y(0) - 6} textAnchor="end" className="text-[8px] font-semibold" style={{ fill: EQUATOR }}>
+      <text x={Rr} y={y(0) - 6} textAnchor="end" className="text-diagram-2xs font-semibold" style={{ fill: EQUATOR }}>
         {t("learn.diagrams.celestial_equator")}
       </text>
 
       {[23.44, -23.44].map((d) => (
         <g key={d}>
           <line x1={L} y1={y(d)} x2={Rr} y2={y(d)} stroke={INK} strokeOpacity={0.14} strokeWidth={0.7} strokeDasharray="3 3" />
-          <text x={L - 5} y={y(d) + 3} textAnchor="end" className="fill-current text-[7.5px] opacity-50">
+          <text x={L - 5} y={y(d) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-50">
             {d > 0 ? "+" : "−"}
             {n("23.44")}°
           </text>
@@ -275,7 +276,7 @@ export function EclipticEquatorCross() {
       ))}
 
       <path d={path} fill="none" stroke={ECLIPTIC} strokeWidth={1.9} />
-      <text x={x(45)} y={y(20) - 8} className="text-[8px] font-semibold" style={{ fill: ECLIPTIC }}>
+      <text x={x(45)} y={y(20) - 8} className="text-diagram-2xs font-semibold" style={{ fill: ECLIPTIC }}>
         {t("learn.diagrams.ecliptic_curve")}
       </text>
 
@@ -290,7 +291,7 @@ export function EclipticEquatorCross() {
               x={x(m.lon) + (m.lon > 300 ? -6 : 6)}
               y={y(dec) + (up ? -9 : 16)}
               textAnchor={m.lon > 300 ? "end" : "start"}
-              className="text-[7.5px] font-semibold"
+              className="text-diagram-2xs font-semibold"
               style={{ fill: c }}
             >
               {t(m.key)}
@@ -299,7 +300,7 @@ export function EclipticEquatorCross() {
         );
       })}
 
-      <text x={L} y={H - 8} className="fill-current text-[7.5px] opacity-50">
+      <text x={L} y={H - 8} className="fill-current text-diagram-2xs opacity-50">
         {t("learn.diagrams.ecliptic_longitude_axis")}
       </text>
     </Frame>

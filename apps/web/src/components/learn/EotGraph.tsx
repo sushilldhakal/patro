@@ -30,13 +30,14 @@ import {
 } from "@vedic-patro/domain/sky3d/day-mechanics";
 import { type Pt, withZeroCrossings, formatDuration } from "@vedic-patro/domain/learn/eot-graph";
 
+import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 const W = 336;
 const H = 400;
 const PAD = { l: 54, r: 10, t: 8, b: 28 };
 
 const PI2 = Math.PI * 2;
-const NOW = "#2888e4";
-const GRID = "#1a4a7c";
+const NOW = illustration.sky53;
+const GRID = illustration.sky29;
 const LATE = "hsla(3, 80%, 55%, 0.5)";
 const EARLY = "hsla(60, 100%, 43%, 0.5)";
 
@@ -141,10 +142,10 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
 
   return (
     <figure className="m-0 w-full">
-      <ul className="mb-1.5 flex list-none flex-wrap items-center justify-center gap-x-3 gap-y-1 p-0 text-[10px] text-white/80">
+      <ul className="mb-1.5 flex list-none flex-wrap items-center justify-center gap-x-3 gap-y-1 p-0 text-diagram-xs text-white/80">
         {legend.map((item) => (
           <li key={item.label} className="inline-flex items-center gap-1.5">
-            <span className="size-2.5 shrink-0 rounded-[2px]" style={{ background: item.color }} />
+            <span className="size-2.5 shrink-0 rounded-md" style={{ background: item.color }} />
             {item.label}
           </li>
         ))}
@@ -174,7 +175,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
                 x={px}
                 y={H - 8}
                 textAnchor="middle"
-                className="fill-current font-num text-[8px] tabular-nums opacity-55"
+                className="fill-current font-num text-diagram-2xs tabular-nums opacity-55"
               >
                 {formatDuration(tick.sec, num)}
               </text>
@@ -202,7 +203,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
                 x={plotL - 6}
                 y={py + 3}
                 textAnchor="end"
-                className="fill-current text-[8px]"
+                className="fill-current text-diagram-2xs"
                 style={{ opacity: active ? 0.95 : 0.5 }}
                 fontWeight={active ? 700 : 400}
               >
@@ -221,12 +222,12 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
           x2={plotR}
           y1={y(markerT)}
           y2={y(markerT)}
-          stroke="rgba(255,255,255,0.4)"
+          stroke={withAlpha(neutral.white, 0.4)}
           strokeWidth={1}
         />
         <circle cx={x(markerMin)} cy={y(markerT)} r={5} fill={NOW} />
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
         {t("learn.study.eot.caption")}
       </figcaption>
     </figure>

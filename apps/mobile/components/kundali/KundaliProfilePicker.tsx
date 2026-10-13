@@ -23,11 +23,14 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { BREAKPOINTS, useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { space } from "@vedic-patro/design-tokens";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const PROFILE_GRID_GUTTER = 6;
 
 function profileGridColumns(width: number): number {
-  if (width >= BREAKPOINTS.md) return 3;
+  if (width >= BREAKPOINTS.lg) return 3;
+  if (width >= BREAKPOINTS.sm) return 2;
   return 1;
 }
 
@@ -52,9 +55,9 @@ export const KundaliProfilePicker = forwardRef<
 
   if (isLoading && !profiles) {
     return (
-      <View className="flex-row items-center gap-2 rounded-xl border border-border bg-card px-4 py-6">
+      <View className={kundaliDetailClasses.milanPicker.loadingBox}>
         <ActivityIndicator />
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={kundaliDetailClasses.prose.muted} style={nepaliTextStyle(14)}>
           {pick("प्रोफाइल लोड हुँदै…", "Loading profiles…")}
         </Text>
       </View>
@@ -63,7 +66,7 @@ export const KundaliProfilePicker = forwardRef<
 
   if (isError) {
     return (
-      <Text className="text-body rounded-xl border border-border bg-card px-4 py-4 text-destructive">
+      <Text className={cn(kundaliDetailClasses.milanPicker.errorBox, kundaliDetailClasses.milanPicker.errorText)}>
         {pick("प्रोफाइल लोड गर्न सकिएन", "Could not load profiles")}
       </Text>
     );
@@ -74,11 +77,11 @@ export const KundaliProfilePicker = forwardRef<
   return (
     <>
       {list.length === 0 ? (
-        <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10">
-          <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
+        <View className={cn(kundaliDetailClasses.milanPicker.emptyBox, "items-center")}>
+          <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
             {pick("अहिले कुनै प्रोफाइल छैन", "No profiles yet")}
           </Text>
-          <Text className="text-body mt-1 max-w-md text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="mt-1 max-w-md text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick(
               "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
               "Save birth details once, then generate kundali quickly.",
@@ -102,7 +105,7 @@ export const KundaliProfilePicker = forwardRef<
               style={{
                 width: `${100 / profileCols}%`,
                 paddingHorizontal: PROFILE_GRID_GUTTER,
-                marginBottom: 12,
+                marginBottom: space.md,
               }}
             >
               <ProfileCard
@@ -178,12 +181,12 @@ function ProfileCard({
 
   return (
     <Card
-      className={cn("w-full gap-2.5 p-3", active ? "border-secondary bg-secondary/5" : undefined)}
+      className={cn("w-full gap-3", active ? kundaliDetailClasses.profilePicker.cardActive : undefined)}
     >
-      <View className="flex-row items-start justify-between gap-2">
+      <View className={kundaliDetailClasses.profilePicker.head}>
         <View className="min-w-0 flex-1">
-          <View className="flex-row items-center gap-1.5">
-            <Text className="font-semibold text-foreground" style={nepaliTextStyle(16)} numberOfLines={1}>
+          <View className={kundaliDetailClasses.profilePicker.nameRow}>
+            <Text className={cn("text-base", kundaliDetailClasses.profilePicker.nameText)} style={nepaliTextStyle(16)} numberOfLines={1}>
               {p.full_name}
             </Text>
             {p.is_default ? (
@@ -191,7 +194,7 @@ function ProfileCard({
             ) : null}
           </View>
           {genderLabel ? (
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={kundaliDetailClasses.profilePicker.gender} style={nepaliTextStyle(12)}>
               {genderLabel}
             </Text>
           ) : null}
@@ -201,7 +204,7 @@ function ProfileCard({
         </Pressable>
       </View>
 
-      <View className="gap-1.5">
+      <View className={kundaliDetailClasses.profilePicker.rows}>
         <DetailRow
           icon="time-outline"
           label={pick("जन्म मिति", "DOB")}
@@ -234,12 +237,12 @@ function DetailRow({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="flex-row items-start gap-1.5">
-      <Ionicons name={icon} size={14} color={colors.mutedForeground} style={{ marginTop: 2 }} />
-      <Text className="text-caption shrink-0 text-muted-foreground" style={nepaliTextStyle(12)}>
+    <View className={kundaliDetailClasses.profilePicker.row}>
+      <Ionicons name={icon} size={14} color={colors.mutedForeground} style={{ marginTop: space.hair }} />
+      <Text className={kundaliDetailClasses.profilePicker.rowLabel} style={nepaliTextStyle(12)}>
         {label}:
       </Text>
-      <Text className="text-caption min-w-0 flex-1 text-foreground" style={nepaliTextStyle(12)}>
+      <Text className={cn(kundaliDetailClasses.profilePicker.rowValue, "flex-1")} style={nepaliTextStyle(12)}>
         {value}
       </Text>
     </View>
@@ -267,13 +270,13 @@ export function ProfileFormModal({
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
           <Pressable onPress={onClose} hitSlop={8}>
-            <Text className="text-body text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+            <Text className="text-sm text-foreground">{pick("रद्द", "Cancel")}</Text>
           </Pressable>
           <View className="min-w-0 flex-1 px-3">
-            <Text className="text-body text-center font-semibold text-foreground" style={nepaliTextStyle(16)}>
+            <Text className="text-center text-lg font-semibold tracking-tight text-foreground" style={nepaliTextStyle(16)}>
               {title}
             </Text>
-            <Text className="text-caption text-center text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className="text-center text-sm text-foreground" style={nepaliTextStyle(12)}>
               {subtitle}
             </Text>
           </View>
@@ -281,8 +284,8 @@ export function ProfileFormModal({
         </View>
         <ScrollView
           contentContainerStyle={{
-            padding: 16,
-            paddingBottom: Math.max(insets.bottom, 16),
+            padding: space.lg,
+            paddingBottom: Math.max(insets.bottom, space.lg),
           }}
           keyboardShouldPersistTaps="handled"
         >

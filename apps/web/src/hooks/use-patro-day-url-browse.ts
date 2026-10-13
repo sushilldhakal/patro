@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { NavigateOptions } from "@tanstack/react-router";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePanchangaClock } from "@/components/panchanga/use-panchanga-mode";
@@ -223,7 +223,9 @@ export function usePatroPanchangaUrlBrowse(
    *  jumps must write `?time=` in the same navigate or the URL mirror puts
    *  the old clock (or the old date) back. */
   const clockRef = useRef(clock);
-  clockRef.current = clock;
+  useLayoutEffect(() => {
+    clockRef.current = clock;
+  });
   const setClock = useCallback((next: string) => {
     clockRef.current = next;
     setClockState(next);

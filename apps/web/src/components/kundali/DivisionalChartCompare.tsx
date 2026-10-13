@@ -16,6 +16,7 @@ import {
 } from "@vedic-patro/domain/varga-display";
 import { GRAHA_NAME } from "@vedic-patro/domain/graha-details";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type PanelConfig = {
   anchor: ChartAnchor;
@@ -80,19 +81,20 @@ function ChartSlot({
   const [tab, setTab] = useState<"graha" | "bhava">("graha");
 
   return (
-    <div className="flex flex-col gap-3 min-w-0">
+    <div className={cn(kundaliDetailClasses.compare.root, "flex")}>
       <div
         className={cn(
-          "flex flex-wrap items-end gap-2 rounded-xl border border-border bg-muted/30 p-3",
+          kundaliDetailClasses.compare.controls,
+          "flex",
           side === "right" && "sm:justify-end",
         )}
       >
-        <label className="flex flex-col gap-1 min-w-[7.5rem] flex-1">
-          <span className="text-sm font-semibold uppercase tracking-wider">
+        <label className={cn(kundaliDetailClasses.compare.field, "flex min-w-[7.5rem]")}>
+          <span className={kundaliDetailClasses.compare.fieldLabel}>
             {t("kundali.anchor")}
           </span>
           <select
-            className="h-9 rounded-lg border border-border bg-card px-2.5 text-sm text-base text-foreground"
+            className={kundaliDetailClasses.parts.selectControl}
             value={panel.anchor}
             onChange={(e) =>
               onPanelChange({ ...panel, anchor: e.target.value as ChartAnchor })
@@ -108,12 +110,12 @@ function ChartSlot({
             })}
           </select>
         </label>
-        <label className="flex flex-col gap-1 min-w-[9rem] flex-1">
-          <span className="text-sm font-semibold uppercase tracking-wider">
+        <label className={cn(kundaliDetailClasses.compare.field, "flex min-w-[9rem]")}>
+          <span className={kundaliDetailClasses.compare.fieldLabel}>
             {t("kundali.chart")}
           </span>
           <select
-            className="h-9 rounded-lg border border-border bg-card px-2.5 text-sm text-base text-foreground"
+            className={kundaliDetailClasses.parts.selectControl}
             value={panel.division}
             onChange={(e) =>
               onPanelChange({ ...panel, division: Number(e.target.value) })
@@ -128,13 +130,13 @@ function ChartSlot({
         </label>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-4 flex flex-col items-center gap-3 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]">
-        <div className="text-center w-full border-b border-border/60 pb-2">
-          <p className="text-sm font-bold text-foreground">
+      <div className={cn(kundaliDetailClasses.compare.chartCard, "flex shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]")}>
+        <div className={cn(kundaliDetailClasses.compare.chartTitleWrap, "text-center")}>
+          <p className={kundaliDetailClasses.compare.chartTitle}>
             {bilingualText(lang, anchorLabel.labelNe, anchorLabel.labelEn)}
-            <span className="font-normal mx-1.5">·</span>
+            <span className={kundaliDetailClasses.compare.chartSep}>·</span>
             {varga.short}
-            <span className="font-normal mx-1">—</span>
+            <span className="mx-1 font-normal">—</span>
             {bilingualText(lang, varga.labelNe, varga.labelEn)}
           </p>
         </div>
@@ -146,23 +148,25 @@ function ChartSlot({
             )}
           </>
         ) : (
-          <p className="text-sm py-8">
+          <p className={kundaliDetailClasses.compare.empty}>
             {t("kundali.not_enough_data_for_this_chart")}
           </p>
         )}
       </div>
 
       {hasAnchor && houses.length > 0 && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 px-3.5 py-2.5">
-            <div className="inline-flex rounded-lg border border-border bg-muted/30 p-0.5">
+        <div className={cn(kundaliDetailClasses.compare.tableCard, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]")}>
+          <div className={cn(kundaliDetailClasses.compare.tableHead, "flex")}>
+            <div className={cn(kundaliDetailClasses.compare.toggle, "inline-flex")}>
               <button
                 type="button"
                 onClick={() => setTab("graha")}
                 className={cn(
-                  "px-3 py-1 rounded-[calc(var(--radius-lg)-2px)] text-sm font-semibold transition-colors",
+                  kundaliDetailClasses.compare.toggleTab,
+                  kundaliDetailClasses.compare.toggleText,
+                  "rounded-[calc(var(--radius-lg)-2px)] transition-colors",
                   tab === "graha"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? cn(kundaliDetailClasses.compare.toggleActive, kundaliDetailClasses.compare.toggleActiveText, "shadow-sm")
                     : "hover:text-foreground",
                 )}
               >
@@ -172,16 +176,18 @@ function ChartSlot({
                 type="button"
                 onClick={() => setTab("bhava")}
                 className={cn(
-                  "px-3 py-1 rounded-[calc(var(--radius-lg)-2px)] text-sm font-semibold transition-colors",
+                  kundaliDetailClasses.compare.toggleTab,
+                  kundaliDetailClasses.compare.toggleText,
+                  "rounded-[calc(var(--radius-lg)-2px)] transition-colors",
                   tab === "bhava"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? cn(kundaliDetailClasses.compare.toggleActive, kundaliDetailClasses.compare.toggleActiveText, "shadow-sm")
                     : "hover:text-foreground",
                 )}
               >
                 {t("kundali.bhava_19")}
               </button>
             </div>
-            <p className="text-sm">
+            <p className={kundaliDetailClasses.compare.caption}>
               {bilingualText(lang, anchorLabel.labelNe, anchorLabel.labelEn)}
               <span className="mx-1">·</span>
               {varga.short}

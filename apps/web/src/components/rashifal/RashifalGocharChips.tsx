@@ -3,6 +3,7 @@ import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { RASHIFAL_FLAG_ICON, toNepaliDigits } from "@/lib/rashifal-ui";
 import type { RashifalGocharRow } from "@/lib/api";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 
 /**
  * The nine-graha gochar strip inside "why this reading?" — one chip per graha
@@ -37,8 +38,8 @@ export function RashifalGocharChips({
   const anyCombust = rows.some((row) => row.combust);
 
   return (
-    <div className={cn("border-t border-border/60 pt-3", className)}>
-      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+    <div className={cn(rashifalClasses.gochar.wrap, className)}>
+      <ul className={cn("m-0 flex list-none flex-wrap p-0", rashifalClasses.gochar.list)}>
         {rows.map((row) => {
           const grahaName = ne ? row.graha_ne : row.graha_en;
           const vedhaName = (ne ? row.vedha_by_ne : row.vedha_by) ?? row.vedha_by;
@@ -49,8 +50,14 @@ export function RashifalGocharChips({
             <li
               key={row.graha}
               className={cn(
-                "m-0 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[0.65rem] font-semibold",
-                row.vedha_by ? "bg-tone-neutral" : row.favourable ? "bg-tone-good" : "bg-tone-bad",
+                "m-0 inline-flex",
+                rashifalClasses.gochar.chip,
+                rashifalClasses.gochar.chipText,
+                row.vedha_by
+                  ? rashifalClasses.gochar.toneVedha
+                  : row.favourable
+                    ? rashifalClasses.gochar.toneGood
+                    : rashifalClasses.gochar.toneBad,
               )}
               title={t("rashifal.gochar_hint", {
                 graha: grahaName,
@@ -59,7 +66,7 @@ export function RashifalGocharChips({
               })}
             >
               <span>{grahaName}</span>
-              <span className="font-num tabular-nums opacity-80">
+              <span className={rashifalClasses.gochar.house}>
                 {toNepaliDigits(row.house, lang)}
               </span>
               {row.vedha_by ? (
@@ -91,21 +98,21 @@ export function RashifalGocharChips({
       </ul>
 
       {anyVedha || anyRetro || anyCombust ? (
-        <p className="m-0 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.65rem] text-muted-foreground">
+        <p className={cn("m-0 flex flex-wrap items-center", rashifalClasses.gochar.legend, rashifalClasses.gochar.legendText)}>
           {anyVedha ? (
-            <span className="inline-flex items-center gap-1">
+            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
               <Vedha className="size-3 text-muted-foreground" aria-hidden="true" />
               {t("rashifal.flags.vedha")}
             </span>
           ) : null}
           {anyRetro ? (
-            <span className="inline-flex items-center gap-1">
+            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
               <Retro className="size-3 text-secondary" aria-hidden="true" />
               {t("rashifal.flags.retrograde")}
             </span>
           ) : null}
           {anyCombust ? (
-            <span className="inline-flex items-center gap-1">
+            <span className={cn("inline-flex", rashifalClasses.gochar.legendItem)}>
               <Combust className="size-3 text-destructive" aria-hidden="true" />
               {t("rashifal.flags.combust")}
             </span>

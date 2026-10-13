@@ -27,7 +27,7 @@ import { bsMonthsForWheel, GRAHA_META, GREG_NE, normDeg, PADA_AKSHAR, type Wheel
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { nepaliSvgTextCenter } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART } from "@/lib/fonts";
-import { brand } from "@vedic-patro/design-tokens";
+import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { DEG, CX, CY, ORBIT_SCALE, planetHitRadius, planetSvgPosition } from "@vedic-patro/domain/wheel-chart-geometry";
 
 const R_YOGA_I = 140;
@@ -41,31 +41,31 @@ const R_TIT_O = 303;
 // cannot read CSS vars, so the exact computed values are inlined here — keep them
 // in step with the `.pn-wheel` block in global.css / the web's index.css.
 /** var(--w-rim) — color-mix(#a9d4d4 50%, transparent) */
-const W_RIM = "rgba(169,212,212,0.5)";
+const W_RIM = withAlpha(wheel.rim, 0.5);
 /** var(--w-sep) — color-mix(#8fbfc1 42%, transparent) */
-const W_SEP = "rgba(143,191,193,0.42)";
+const W_SEP = withAlpha(wheel.line, 0.42);
 /** var(--w-sep-soft) — color-mix(#8fbfc1 16%, transparent) */
-const W_SEP_SOFT = "rgba(143,191,193,0.16)";
+const W_SEP_SOFT = withAlpha(wheel.line, 0.16);
 /** var(--w-accent) — var(--brand-vermilion) */
 const W_ACCENT = brand.vermilion;
 /** var(--w-ink) */
-const W_INK = "#eaf3f1";
+const W_INK = midnight.foam;
 /** var(--w-ink-dim) */
-const W_INK_DIM = "#a7c4c3";
+const W_INK_DIM = wheel.inkDim;
 /** var(--w-ink-faint) */
-const W_INK_FAINT = "#84a3a2";
+const W_INK_FAINT = wheel.inkFaint;
 /** var(--w-band) — color-mix(brand-green 30%, #0a1618) */
-const W_BAND = "#153520";
+const W_BAND = illustration.green13;
 /** var(--w-band-alt) — color-mix(brand-green 44%, #0b181a) */
-const W_BAND_ALT = "#1a4425";
+const W_BAND_ALT = illustration.green17;
 /** var(--w-rashi) — color-mix(brand-green 22%, #091315) */
-const W_RASHI = "#112a1b";
+const W_RASHI = illustration.green12;
 /** var(--w-rashi-alt) — color-mix(brand-green 34%, #0a1518) */
-const W_RASHI_ALT = "#163821";
+const W_RASHI_ALT = illustration.green13;
 /** var(--w-pada) */
-const W_PADA = "#0d2024";
+const W_PADA = wheel.sky0;
 /** var(--w-pada-alt) */
-const W_PADA_ALT = "#112a2f";
+const W_PADA_ALT = wheel.sky0;
 
 const FONT = NOTO_DEVANAGARI_CHART;
 
@@ -79,23 +79,23 @@ const RASHI_GLYPH_SIZE = 30;
 const NAK_GLYPH_SIZE = 26;
 
 /** color-mix(in srgb, var(--w-accent) 26%, var(--w-band-alt)) */
-const SEG_HOT = "#473d26";
+const SEG_HOT = illustration.orange22;
 /** color-mix(in srgb, var(--w-accent) 40%, var(--w-band-alt)) */
-const SEG_SEL = "#5f3926";
+const SEG_SEL = illustration.orange26;
 /** color-mix(in srgb, var(--w-accent) 18%, transparent) */
-const SEG_NOW_FILL = "rgba(198,40,40,0.18)";
+const SEG_NOW_FILL = withAlpha(brand.vermilion, 0.18);
 /** color-mix(in srgb, #8fbfc1 14%, transparent) */
-const ORBIT_STROKE = "rgba(143,191,193,0.14)";
+const ORBIT_STROKE = withAlpha(wheel.line, 0.14);
 /** Current yoga — faint tint only; solid fills drowned the labels on native. */
-const YOGA_CUR = "rgba(160,125,232,0.20)";
+const YOGA_CUR = withAlpha(illustration.violet70, 0.20);
 /** Current karana — same idea: highlight without covering the name. */
-const KARANA_CUR = "rgba(198,40,40,0.16)";
+const KARANA_CUR = withAlpha(brand.vermilion, 0.16);
 /** color-mix(in srgb, var(--w-accent) 28%, #0d2428) */
-const TITHI_CUR = "#412528";
+const TITHI_CUR = illustration.red18;
 /** color-mix(in srgb, #2d8a86 26%, #0a1a1e) */
-const TITHI_SHUKLA = "#133739";
+const TITHI_SHUKLA = illustration.teal15b;
 /** color-mix(in srgb, #2d8a86 14%, #060e10) */
-const TITHI_KRISHNA = "#0b1f21";
+const TITHI_KRISHNA = midnight.background;
 
 const R = {
   rimOuter: 497,
@@ -400,7 +400,7 @@ function RingLabel({
               <TSpan
                 key={`${row}-${i}`}
                 x={CX}
-                dy={i === 0 ? -0.55 * (stack.length - 1) * fontSize : 15 * fontSize}
+                dy={i > 0 ? 15 * fontSize : -0.55 * (stack.length - 1) * fontSize}
               >
                 {row}
               </TSpan>
@@ -945,7 +945,7 @@ function WheelChartImpl({
           y1={CY}
           x2={lx}
           y2={ly}
-          stroke="#f9c800"
+          stroke={illustration.amber49}
           strokeWidth={1.4}
           strokeDasharray="3 4"
           opacity={0.9}
@@ -953,13 +953,13 @@ function WheelChartImpl({
       );
       markerNodes.push(
         <G key="target-cap" transform={`rotate(${-(targetLon + spin)} ${CX} ${CY})`}>
-          <Circle cx={CX} cy={CY - (R.bsOut - 2)} r={3.4} fill="#f9c800" />
+          <Circle cx={CX} cy={CY - (R.bsOut - 2)} r={3.4} fill={illustration.amber49} />
           <SvgText
             x={CX}
             y={CY - (R.bsOut + 5)}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill="#f9c800"
+            fill={illustration.amber49}
             fontSize={15}
             fontFamily={FONT}
             {...(normDeg(targetLon + spin) > 90 && normDeg(targetLon + spin) < 270
@@ -998,7 +998,7 @@ function WheelChartImpl({
             key={`yog${y}`}
             d={arcSeg(L0, L1, R_YOGA_I, R_YOGA_O)}
             fill={isCur ? YOGA_CUR : "transparent"}
-            stroke={isCur ? "#c4a8f0" : "rgba(169,212,212,0.28)"}
+            stroke={isCur ? illustration.violet80 : withAlpha(wheel.rim, 0.28)}
             strokeWidth={isCur ? 1.6 : 0.4}
           />,
         );
@@ -1009,7 +1009,7 @@ function WheelChartImpl({
             r={(R_YOGA_I + R_YOGA_O) / 2}
             spin={spin}
             size={isCur ? 8 : 7}
-            fill="#ffffff"
+            fill={neutral.white}
           >
             {yName.length > 4 ? yName.slice(0, 4) : yName}
           </RingLabel>,
@@ -1028,7 +1028,7 @@ function WheelChartImpl({
             key={`kar${k}`}
             d={arcSeg(L0, L1, R_KAR_I, R_KAR_O)}
             fill={isCur ? KARANA_CUR : "transparent"}
-            stroke={isCur ? W_ACCENT : "rgba(169,212,212,0.28)"}
+            stroke={isCur ? W_ACCENT : withAlpha(wheel.rim, 0.28)}
             strokeWidth={isCur ? 1.7 : 0.4}
           />,
         );
@@ -1039,7 +1039,7 @@ function WheelChartImpl({
             r={(R_KAR_I + R_KAR_O) / 2}
             spin={spin}
             size={isCur ? 9 : 7.5}
-            fill="#ffffff"
+            fill={neutral.white}
           >
             {kName.length > 4 ? kName.slice(0, 4) : kName}
           </RingLabel>,
@@ -1058,7 +1058,7 @@ function WheelChartImpl({
             <Path
               d={arcSeg(L0, L1, R_TIT_I, R_TIT_O)}
               fill={isCur ? TITHI_CUR : shukla ? TITHI_SHUKLA : TITHI_KRISHNA}
-              stroke={isCur ? W_ACCENT : "rgba(143,191,193,0.18)"}
+              stroke={isCur ? W_ACCENT : withAlpha(wheel.line, 0.18)}
               strokeWidth={isCur ? 1.7 : 0.5}
             />
             <RingLabel
@@ -1067,7 +1067,7 @@ function WheelChartImpl({
               spin={spin}
               size={isCur ? 12 : 9.5}
               fill={isCur ? W_ACCENT : W_INK}
-              stroke={isCur ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.55)"}
+              stroke={isCur ? withAlpha(neutral.black, 0.7) : withAlpha(neutral.black, 0.55)}
             >
               {tName.length > 6 ? tName.slice(0, 6) : tName}
             </RingLabel>
@@ -1082,55 +1082,55 @@ function WheelChartImpl({
         // @ts-expect-error react-native-svg Defs children typing
         <Defs key="pdefs">
           <RadialGradient id="pg0" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#fff9c0" />
-            <Stop offset="35%" stopColor="#f9c800" />
-            <Stop offset="75%" stopColor="#e07000" />
-            <Stop offset="100%" stopColor="#8b3c00" />
+            <Stop offset="0%" stopColor={illustration.amber89} />
+            <Stop offset="35%" stopColor={illustration.amber49} />
+            <Stop offset="75%" stopColor={brand.saffron} />
+            <Stop offset="100%" stopColor={illustration.orange27b} />
           </RadialGradient>
           <RadialGradient id="pg1" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#f6f8fa" />
-            <Stop offset="55%" stopColor="#b8c0cc" />
-            <Stop offset="100%" stopColor="#6a7480" />
+            <Stop offset="0%" stopColor={brand.offWhite} />
+            <Stop offset="55%" stopColor={illustration.sky76b} />
+            <Stop offset="100%" stopColor={illustration.gray46} />
           </RadialGradient>
           <RadialGradient id="pg2" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#ff9870" />
-            <Stop offset="55%" stopColor="#c84830" />
-            <Stop offset="100%" stopColor="#6e1800" />
+            <Stop offset="0%" stopColor={illustration.orange72} />
+            <Stop offset="55%" stopColor={illustration.red49} />
+            <Stop offset="100%" stopColor={illustration.red22} />
           </RadialGradient>
           <RadialGradient id="pg3" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#d8d4cc" />
-            <Stop offset="55%" stopColor="#989090" />
-            <Stop offset="100%" stopColor="#504848" />
+            <Stop offset="0%" stopColor={neutral.silverBase} />
+            <Stop offset="55%" stopColor={illustration.gray58} />
+            <Stop offset="100%" stopColor={neutral.slateInput} />
           </RadialGradient>
           <RadialGradient id="pg4" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#f0d898" />
-            <Stop offset="50%" stopColor="#c89840" />
-            <Stop offset="100%" stopColor="#7a5010" />
+            <Stop offset="0%" stopColor={illustration.amber77c} />
+            <Stop offset="50%" stopColor={illustration.orange52} />
+            <Stop offset="100%" stopColor={illustration.orange27} />
           </RadialGradient>
           <RadialGradient id="pg5" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#fffae0" />
-            <Stop offset="50%" stopColor="#e8d870" />
-            <Stop offset="100%" stopColor="#a09020" />
+            <Stop offset="0%" stopColor={illustration.amber92} />
+            <Stop offset="50%" stopColor={illustration.amber67b} />
+            <Stop offset="100%" stopColor={illustration.amber38} />
           </RadialGradient>
           <RadialGradient id="pg6" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#f0e0b0" />
-            <Stop offset="50%" stopColor="#c4a060" />
-            <Stop offset="100%" stopColor="#7a5c28" />
+            <Stop offset="0%" stopColor={illustration.amber82} />
+            <Stop offset="50%" stopColor={illustration.orange57} />
+            <Stop offset="100%" stopColor={illustration.orange32} />
           </RadialGradient>
           <RadialGradient id="pg7" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#7060c0" />
-            <Stop offset="55%" stopColor="#2a2060" />
-            <Stop offset="100%" stopColor="#080420" />
+            <Stop offset="0%" stopColor={illustration.blue56} />
+            <Stop offset="55%" stopColor={illustration.blue25} />
+            <Stop offset="100%" stopColor={midnight.popover} />
           </RadialGradient>
           <RadialGradient id="pg8" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#b06080" />
-            <Stop offset="55%" stopColor="#601828" />
-            <Stop offset="100%" stopColor="#1c0408" />
+            <Stop offset="0%" stopColor={illustration.pink53} />
+            <Stop offset="55%" stopColor={illustration.red24} />
+            <Stop offset="100%" stopColor={illustration.red6} />
           </RadialGradient>
           <RadialGradient id="pg-earth" cx="38%" cy="32%" r="68%" gradientUnits="objectBoundingBox">
-            <Stop offset="0%" stopColor="#a8f0d0" />
-            <Stop offset="45%" stopColor="#1f8f6f" />
-            <Stop offset="100%" stopColor="#0a3828" />
+            <Stop offset="0%" stopColor={illustration.green80} />
+            <Stop offset="45%" stopColor={illustration.teal34} />
+            <Stop offset="100%" stopColor={illustration.green13} />
           </RadialGradient>
         </Defs>,
       );
@@ -1162,7 +1162,7 @@ function WheelChartImpl({
                 y1={py - r1 * Math.cos(ang)}
                 x2={px + r2 * Math.sin(ang)}
                 y2={py - r2 * Math.cos(ang)}
-                stroke="#f9c800"
+                stroke={illustration.amber49}
                 strokeWidth={2.2}
                 strokeLinecap="round"
                 opacity={0.9}
@@ -1218,7 +1218,7 @@ function WheelChartImpl({
                   y={py + oy - 1.8}
                   width={planetR * 2}
                   height={3.2}
-                  fill="rgba(80,42,8,0.42)"
+                  fill={withAlpha(illustration.orange17, 0.42)}
                   clipPath={`url(#${clipId})`}
                 />
               ))}
@@ -1236,7 +1236,7 @@ function WheelChartImpl({
       core.push(
         <G key="earth" pointerEvents="none">
           <Circle cx={CX} cy={CY} r={13} fill="url(#pg-earth)" />
-          <Circle cx={CX} cy={CY} r={13} fill="none" stroke="#9fe0c8" strokeWidth={0.8} opacity={0.5} />
+          <Circle cx={CX} cy={CY} r={13} fill="none" stroke={illustration.green75} strokeWidth={0.8} opacity={0.5} />
         </G>,
       );
     }

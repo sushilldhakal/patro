@@ -27,6 +27,7 @@ import {
   patroMonthNavShell,
   patroMobileStepBtn,
 } from "@/lib/patro-classes";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
 import {
@@ -37,6 +38,14 @@ import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
 import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { usePatroYearHeadlineSubtitle } from "./use-patro-year-headline-subtitle";
+
+const NAV_ROOT = "w-full flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-3";
+const HEAD_ROW = "flex min-w-0 items-start gap-1.5 sm:gap-3";
+const MOBILE_GRID = "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-0.5 md:hidden";
+const MOBILE_NAV_CELL = "col-start-1 row-start-2 min-w-0 flex flex-col gap-1";
+const MOBILE_LOCATION_CELL = "col-start-2 row-start-2 flex shrink-0 items-end justify-end self-start";
+const DESKTOP_COLUMN = "hidden min-w-0 flex-col gap-0.5 sm:gap-1 md:flex";
+const DESKTOP_LOCATION = "hidden shrink-0 md:flex md:w-auto md:flex-col md:items-end md:pt-0.5";
 
 export type PatroYearNavProps = {
   era: Era;
@@ -156,13 +165,13 @@ export function PatroYearNav({
       bs={
         isGregorianEra ? (
           <>
-            <span className="font-num font-semibold text-secondary dark:text-secondary">
+            <span className={patroDateClasses.yearValue}>
               {digits(year)}
             </span>{" "}
             <span>{chipEra}</span>
           </>
         ) : (
-          <span className="font-num font-semibold text-secondary dark:text-secondary">
+          <span className={patroDateClasses.yearValue}>
             {vikramHeadline}
           </span>
         )
@@ -248,7 +257,7 @@ export function PatroYearNav({
       title={t("calendar.today_btn")}
     >
       <div className={patroMonthChipHead}>{chipEra}</div>
-      <div className={cn(patroMonthChipDay, "font-num px-0.5 text-[11px] sm:text-sm")}>
+      <div className={cn(patroMonthChipDay, "font-num px-0.5 text-xs sm:text-sm")}>
         {digits(chipYear)}
       </div>
     </button>
@@ -257,22 +266,22 @@ export function PatroYearNav({
   return (
     <div
       className={cn(
-        "w-full flex flex-col gap-2 md:flex-row md:items-start md:justify-between md:gap-3",
+        NAV_ROOT,
         className,
       )}
     >
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-start gap-1.5 sm:gap-3">
+        <div className={HEAD_ROW}>
           {yearChip}
 
           <div className="@container/month-head min-w-0 flex-1">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-0.5 md:hidden">
+            <div className={MOBILE_GRID}>
               <div className="col-start-1 row-start-1 min-w-0">{titleBlock("text-sm")}</div>
-              <div className="col-start-1 row-start-2 min-w-0 flex flex-col gap-1">
+              <div className={MOBILE_NAV_CELL}>
                 {yearChipMobile}
               </div>
               {locationMobile ? (
-                <div className="col-start-2 row-start-2 flex shrink-0 items-end justify-end self-start">
+                <div className={MOBILE_LOCATION_CELL}>
                   {locationMobile}
                 </div>
               ) : null}
@@ -295,20 +304,20 @@ export function PatroYearNav({
               />
             </PatroDateSheet>
 
-            <div className="hidden min-w-0 flex-col gap-0.5 sm:gap-1 md:flex">
-              {titleBlock("text-xl text-base")}
+            <div className={DESKTOP_COLUMN}>
+              {titleBlock("text-xl")}
               {navRow}
             </div>
           </div>
         </div>
         {yearError ? (
-          <p className="mt-1 text-xs font-medium text-danger" role="alert">
+          <p className={patroDateClasses.navError} role="alert">
             {yearError}
           </p>
         ) : null}
       </div>
       {locationDesktop ? (
-        <div className="hidden shrink-0 md:flex md:w-auto md:flex-col md:items-end md:pt-0.5">
+        <div className={DESKTOP_LOCATION}>
           {locationDesktop}
         </div>
       ) : null}

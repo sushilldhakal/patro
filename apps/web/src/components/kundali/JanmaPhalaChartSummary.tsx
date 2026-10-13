@@ -1,4 +1,5 @@
 import type { JanmaPhalaHintPart } from "@vedic-patro/domain/janma-phala-tables";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
 export function JanmaPhalaChartSummary({
@@ -13,14 +14,14 @@ export function JanmaPhalaChartSummary({
   return (
     <div
       className={cn(
-        "rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5",
+        kundaliDetailClasses.parts.chartSummary,
         className,
       )}
     >
-      <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3 text-xs leading-snug text-muted-foreground">
+      <ul className={cn("grid gap-2 sm:grid-cols-2 xl:grid-cols-3", kundaliDetailClasses.parts.chartSummaryText)}>
         {parts.map((p) => (
           <li key={p.grahaKey} className="min-w-0">
-            <span className="font-semibold text-foreground">{p.grahaLabel}</span>
+            <span className={kundaliDetailClasses.prose.strong}>{p.grahaLabel}</span>
             <span className="text-muted-foreground"> · </span>
             {p.houseLabel}{" "}
             <span className="text-muted-foreground">({p.bhavaTag})</span>

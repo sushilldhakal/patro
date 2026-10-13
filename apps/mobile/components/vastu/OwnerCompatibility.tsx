@@ -31,6 +31,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
 const TONE_LABEL_KEY: Record<NavataraTone, string> = {
   best: "vastu.plot.tone.best",
@@ -136,16 +137,16 @@ export function OwnerCompatibility() {
   }));
 
   return (
-    <View className="rounded-xl border border-border bg-card p-3.5">
-      <View className="flex-row flex-wrap items-center gap-1.5">
+    <View className={vastuClasses.ownerCard}>
+      <View className={vastuClasses.ownerHeader}>
         <Ionicons name="calendar-outline" size={16} color={colors.secondary} />
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={vastuClasses.ownerHeading} style={nepaliTextStyle(14)}>
           {t("vastu.plot.owner_heading")}
         </Text>
       </View>
 
-      <View className="mt-3 gap-4">
-        <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
+      <View className={vastuClasses.ownerBody}>
+        <Text className={cn(vastuClasses.planBlurb, "text-foreground")} style={nepaliTextStyle(13)}>
           {t("vastu.plot.owner_blurb")}
         </Text>
 
@@ -156,7 +157,7 @@ export function OwnerCompatibility() {
             <View className="gap-3">
               <View>
                 <Text
-                  className="text-caption mb-1 font-semibold text-muted-foreground"
+                  className={vastuClasses.fieldLabel}
                   style={nepaliTextStyle(12)}
                 >
                   {t("vastu.plot.construction_date_label")}
@@ -190,7 +191,7 @@ export function OwnerCompatibility() {
               </View>
               <View>
                 <Text
-                  className="text-caption mb-1 font-semibold text-muted-foreground"
+                  className={vastuClasses.fieldLabel}
                   style={nepaliTextStyle(12)}
                 >
                   {t("vastu.plot.construction_place_label")}
@@ -200,25 +201,25 @@ export function OwnerCompatibility() {
             </View>
 
             {isLoading && (
-              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className={vastuClasses.mutedNote} style={nepaliTextStyle(13)}>
                 {t("vastu.plot.owner_loading")}
               </Text>
             )}
             {isError && (
-              <Text className="text-body text-danger" style={nepaliTextStyle(13)}>
+              <Text className={vastuClasses.destructiveText} style={nepaliTextStyle(13)}>
                 {t("vastu.plot.owner_error")}
               </Text>
             )}
 
             {row && (
-              <View className={cn("rounded-xl border border-border p-3.5", patroNavataraToneBg(row.tone))}>
-                <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(13)}>
+              <View className={cn(vastuClasses.ownerResult, patroNavataraToneBg(row.tone))}>
+                <Text className={vastuClasses.ownerResultTitle} style={nepaliTextStyle(13)}>
                   {t("vastu.plot.owner_nakshatra_label")}: {pick(row.name, row.name_en ?? row.name)}
                 </Text>
-                <Text className="text-body mt-1 font-semibold text-foreground" style={nepaliTextStyle(13)}>
+                <Text className={cn(vastuClasses.ownerResultVerdict, "text-foreground")} style={nepaliTextStyle(13)}>
                   {t("vastu.plot.construction_result", { tone: t(TONE_LABEL_KEY[row.tone]) })}
                 </Text>
-                <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(13)}>
+                <Text className={vastuClasses.infoDisclaimer} style={nepaliTextStyle(13)}>
                   {t("vastu.plot.construction_disclaimer")}
                 </Text>
               </View>

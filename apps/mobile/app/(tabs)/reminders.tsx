@@ -42,6 +42,7 @@ import { isCurrentlyOnline } from "@/lib/offline/network-status";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
 const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -77,9 +78,9 @@ function SectionTitle({ children }: { children: string }) {
 
 function GuidanceLines({ day, lang }: { day: GuidanceDay; lang: "ne" | "en" }) {
   const rows: { label: string; lines: string[]; tone: string }[] = [
-    { label: lang === "ne" ? "गर्नुहोस्" : "Do", lines: lang === "ne" ? day.do_ne : day.do_en, tone: "#2e8b57" },
-    { label: lang === "ne" ? "नगर्नुहोस्" : "Don't", lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: "#c0392b" },
-    { label: lang === "ne" ? "सावधानी" : "Careful", lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: "#d68910" },
+    { label: lang === "ne" ? "गर्नुहोस्" : "Do", lines: lang === "ne" ? day.do_ne : day.do_en, tone: illustration.green36 },
+    { label: lang === "ne" ? "नगर्नुहोस्" : "Don't", lines: lang === "ne" ? day.dont_ne : day.dont_en, tone: illustration.red46 },
+    { label: lang === "ne" ? "सावधानी" : "Careful", lines: lang === "ne" ? day.careful_ne : day.careful_en, tone: illustration.orange45b },
   ];
   return (
     <View className="gap-2">
@@ -411,7 +412,7 @@ export default function RemindersScreen() {
                 {rules.map((rule) => (
                   <Card key={rule.id} className="flex-row items-center gap-3">
                     <View
-                      style={{ backgroundColor: rule.window_kind === "shubh" ? "#2e8b57" : "#c0392b" }}
+                      style={{ backgroundColor: rule.window_kind === "shubh" ? illustration.green36 : illustration.red46 }}
                       className="h-9 w-1.5 rounded-full"
                     />
                     <View className="min-w-0 flex-1">

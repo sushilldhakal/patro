@@ -61,6 +61,8 @@ import {
   type VastuSelectionId,
 } from "@vedic-patro/domain/vastu";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 /**
  * `react-native-svg` types `onPress` as an unsatisfiable intersection; it works
  * fine at runtime. Same shim `WheelChart` and the Avakahada wheel use.
@@ -124,9 +126,9 @@ type GunaId = VastuGunaId;
 
 /** Door-pada +/− marks only — sector fills use the five elements. */
 const STATUS_MARK = {
-  good: "#2f6b3c",
+  good: illustration.green30,
   ok: VASTU_INK.line,
-  bad: "#8f2f28",
+  bad: illustration.red36,
 } as const;
 
 /**
@@ -831,27 +833,27 @@ export function VastuPurushaWheel({
         ) : null}
       </Svg>
 
-      <View className="mt-3 flex-row flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
+      <View className={vastuClasses.wheelLegend}>
         {VASTU_ELEMENT_ORDER.map((element) => (
-          <View key={element} className="flex-row items-center gap-1.5">
+          <View key={element} className={vastuClasses.wheelLegendItem}>
             <View
-              className="h-2.5 w-2.5 rounded-full"
+              className={vastuClasses.wheelLegendDot}
               style={{ backgroundColor: VASTU_ELEMENT_COLOR[element] }}
             />
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={vastuClasses.wheelLegendText} style={nepaliTextStyle(12)}>
               {t(`vastu.element.${element}`)}
             </Text>
           </View>
         ))}
       </View>
-      <View className="mt-1.5 flex-row flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <View className={vastuClasses.wheelLegendTight}>
         {(["sattva", "rajas", "tamas"] as const).map((guna) => (
-          <View key={guna} className="flex-row items-center gap-1.5">
+          <View key={guna} className={vastuClasses.wheelLegendItem}>
             <View
-              className="h-2.5 w-2.5 rounded-full"
+              className={vastuClasses.wheelLegendDot}
               style={{ backgroundColor: VASTU_GUNA_COLOR[guna] }}
             />
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={vastuClasses.wheelLegendText} style={nepaliTextStyle(12)}>
               {t(`vastu.wheel.organ.${guna}`)}
             </Text>
           </View>

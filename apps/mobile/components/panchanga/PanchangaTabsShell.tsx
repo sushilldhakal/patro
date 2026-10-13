@@ -15,6 +15,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { PanchangaSidebarNav } from "./PanchangaSidebarNav";
 import { PANCHANGA_SIDEBAR_RAIL_WIDTH, useShowPanchangaSidebar } from "./PanchangaSplitShell";
 import { useThemeColors } from "@/lib/theme-context";
+import { space } from "@vedic-patro/design-tokens";
 
 /** Matches web `PanchangaShellLayout` `gap-6` between sidebar and main column. */
 const SHELL_SIDEBAR_GAP = 24;
@@ -106,13 +107,12 @@ export function PanchangaTabsShell({
       <PanchangaTabsShellContext.Provider value={showRail}>
         <PanchangaTabsShellScrollContext.Provider value={false}>
           <View
-            className="min-h-0 flex-1"
+            className={showRail ? "min-h-0 flex-1 pt-4" : "min-h-0 flex-1"}
             style={
               showRail
                 ? {
                     backgroundColor: colors.background,
                     paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-                    paddingTop: 16,
                   }
                 : undefined
             }
@@ -121,16 +121,15 @@ export function PanchangaTabsShell({
               {showRail ? (
                 <View
                   key="rail"
-                  className="min-h-0"
+                  className="min-h-0 pb-3"
                   style={{
                     width: PANCHANGA_SIDEBAR_RAIL_WIDTH,
-                    paddingBottom: 12,
                     borderRightWidth: 1,
                     borderRightColor: colors.border,
                     backgroundColor: colors.background,
                   }}
                 >
-                  <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
+                  <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
                     <PanchangaSidebarNav className="w-full border-0" />
                   </ScrollView>
                 </View>
@@ -162,7 +161,7 @@ export function PanchangaTabsShell({
           <ShellMainScroll
             contentContainerStyle={{
               paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-              paddingTop: 12,
+              paddingTop: space.md,
               paddingBottom: scrollBottom,
             }}
           >
@@ -177,24 +176,22 @@ export function PanchangaTabsShell({
     <PanchangaTabsShellContext.Provider value={true}>
       <PanchangaTabsShellScrollContext.Provider value={true}>
         <View
-          className="min-h-0 flex-1 bg-background"
+          className="min-h-0 flex-1 bg-background pt-4"
           style={{
             paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-            paddingTop: 16,
           }}
         >
           <View className="min-h-0 flex-1 flex-row" style={{ gap: SHELL_SIDEBAR_GAP }}>
             <View
-              className="min-h-0"
+              className="min-h-0 pb-3"
               style={{
                 width: PANCHANGA_SIDEBAR_RAIL_WIDTH,
-                paddingBottom: 12,
                 borderRightWidth: 1,
                 borderRightColor: colors.border,
                 backgroundColor: colors.background,
               }}
             >
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 16 }}>
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-4">
                 <PanchangaSidebarNav className="w-full border-0" />
               </ScrollView>
             </View>

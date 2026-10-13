@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronDown, Info, Loader2, ScrollText } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { Switch } from "@/components/ui/switch";
 
 export interface SaitRule {
@@ -59,19 +60,19 @@ export function SaitRulesSection({
     : 0;
 
   return (
-    <section className="overflow-hidden rounded-xl border border-border bg-card">
+    <section className={saitClasses.rulesCard}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-hover"
+        className={cn(saitClasses.rulesHead, "w-full text-left transition-colors hover:bg-surface-hover")}
       >
         <ScrollText className="size-4 shrink-0 text-secondary" aria-hidden />
-        <span className="min-w-0 flex-1">
-          <span className="block text-base font-bold text-foreground">
+        <span className={saitClasses.rulesHeadText}>
+          <span className={cn("block", saitClasses.rulesTitle)}>
             {t("sait.how_this_list_is_generated")}
           </span>
-          <span className="mt-0.5 block text-sm text-muted-foreground">
+          <span className={cn("block", saitClasses.rulesSubtitle)}>
             {offCount > 0
               ? bilingualText(lang, `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`, `${digits(offCount)} of ${digits(ruleCount)} rules switched off`)
               : togglingEnabled
@@ -98,22 +99,22 @@ export function SaitRulesSection({
         )}
       >
         <div className="overflow-hidden">
-          <div className="space-y-4 border-t border-border px-4 py-4">
+          <div className={saitClasses.rulesBody}>
             {intro ? (
-              <p className="m-0 max-w-4xl text-sm leading-relaxed text-foreground/90">
+              <p className={cn("m-0", saitClasses.rulesIntro)}>
                 {intro}
               </p>
             ) : null}
 
             {togglingEnabled ? (
-              <p className="m-0 flex items-start gap-1.5 text-xs leading-relaxed text-muted-foreground">
+              <p className={cn("m-0", saitClasses.rulesHint, saitClasses.rulesHintText)}>
                 <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                 {t("sait.switch_off_a_rule_your_community_doesn_t_follow_the_dat")}
               </p>
             ) : null}
 
             {rules && rules.length > 0 ? (
-              <ol className="m-0 grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <ol className={cn("m-0 grid list-none grid-cols-1 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", saitClasses.ruleList)}>
                 {rules.map((r, i) => {
                   const toggleable = Boolean(r.id && togglingEnabled);
                   const enabled = r.id ? (enabledRuleIds?.has(r.id) ?? true) : true;
@@ -122,20 +123,20 @@ export function SaitRulesSection({
                     <li
                       key={r.id ?? i}
                       className={cn(
-                        "flex h-full flex-col gap-2 rounded-lg border p-3.5 transition-colors",
-                        off
-                          ? "border-dashed border-border bg-surface-inset/40"
-                          : "border-border bg-surface-inset",
+                        saitClasses.rule,
+                        "h-full transition-colors",
+                        off ? saitClasses.ruleOff : saitClasses.ruleOn,
                       )}
                     >
-                      <div className="flex items-start gap-2">
-                        <span className="font-num flex size-6 shrink-0 items-center justify-center rounded-md bg-secondary/15 text-xs font-bold text-secondary">
+                      <div className={saitClasses.ruleHead}>
+                        <span className={cn(saitClasses.ruleNum, saitClasses.ruleNumText)}>
                           {digits(i + 1)}
                         </span>
                         <p
                           className={cn(
-                            "m-0 flex-1 text-sm font-semibold leading-snug",
-                            off ? "text-muted-foreground" : "text-foreground",
+                            "m-0",
+                            saitClasses.ruleText,
+                            off ? saitClasses.ruleTextOff : saitClasses.ruleTextOn,
                           )}
                         >
                           {t(r.text)}
@@ -154,25 +155,26 @@ export function SaitRulesSection({
                       {r.shloka || r.source || r.gloss ? (
                         <div
                           className={cn(
-                            "mt-auto flex flex-col gap-1.5 border-t border-border pt-2.5",
-                            off && "opacity-60",
+                            "mt-auto",
+                            saitClasses.ruleDetail,
+                            off && saitClasses.ruleDetailOff,
                           )}
                         >
                           {r.source ? (
-                            <p className="m-0 text-sm font-semibold text-muted-foreground">
+                            <p className={cn("m-0", saitClasses.ruleSource)}>
                               {t(r.source)}
                             </p>
                           ) : null}
                           {r.shloka ? (
                             <p
                               lang="sa"
-                              className="m-0 text-base italic leading-relaxed text-foreground"
+                              className={cn("m-0", saitClasses.ruleShloka)}
                             >
                               {r.shloka}
                             </p>
                           ) : null}
                           {r.gloss ? (
-                            <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+                            <p className={cn("m-0", saitClasses.ruleGloss)}>
                               {t(r.gloss)}
                             </p>
                           ) : null}
@@ -185,7 +187,7 @@ export function SaitRulesSection({
             ) : null}
 
             {engineVersion ? (
-              <p className="m-0 flex items-center gap-1.5 text-xs pt-4 text-muted-foreground">
+              <p className={cn("m-0", saitClasses.engine, saitClasses.engineText)}>
                 <Info className="size-3.5" aria-hidden />
                 {t("sait.muh_rta_engine")} {engineVersion}
               </p>

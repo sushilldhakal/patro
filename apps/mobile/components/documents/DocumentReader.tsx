@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { FlatList, View } from "react-native";
+import { spaceUnit } from "@vedic-patro/design-tokens";
 import { Text } from "@/components/ui/Text";
 import { PlaybackBar } from "@/components/documents/PlaybackBar";
 import { ShlokaCard } from "@/components/documents/ShlokaCard";
@@ -8,8 +9,11 @@ import { suktaAttribution } from "@vedic-patro/domain/sukta-attribution";
 import type { ReaderRow } from "@/lib/documents/rows";
 import type { DocumentAudio } from "@/lib/documents/use-document-audio";
 import { useLocale } from "@/lib/i18n";
-import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
+
+const LIST_BOTTOM_INSET = 48 * spaceUnit;
 
 interface Props {
   rows: ReaderRow[];
@@ -92,13 +96,13 @@ export function DocumentReader({
         const n = item.chapter.number!;
         const title = lang === "ne" ? item.chapter.title_ne || item.chapter.title_en : item.chapter.title_en || item.chapter.title_ne;
         return (
-          <View className="mb-3 mt-5 flex-row items-center gap-3">
-            <View className="h-11 w-11 items-center justify-center rounded-full bg-secondary/10">
-              <Text className="text-body font-bold text-secondary">{digits(n)}</Text>
+          <View className={cn(documentsClasses.statsRow, "mb-3 mt-10")}>
+            <View className={documentsClasses.chapterBubble}>
+              <Text className={documentsClasses.chapterBubbleText}>{digits(n)}</Text>
             </View>
-            <View className="min-w-0 flex-1">
-              <Text className="text-title font-bold">{t("documents.chapter_label", { number: digits(n) })}</Text>
-              {title ? <Text className="text-body text-muted-foreground">{title}</Text> : null}
+            <View className={documentsClasses.fill}>
+              <Text className={documentsClasses.chapterHeading}>{t("documents.chapter_label", { number: digits(n) })}</Text>
+              {title ? <Text className={documentsClasses.chapterHeadingSub}>{title}</Text> : null}
             </View>
           </View>
         );
@@ -110,12 +114,12 @@ export function DocumentReader({
           item.chhanda ? `${t("documents.sukta_chhanda")}: ${suktaAttribution(lang, item.chhanda)}` : null,
         ].filter(Boolean);
         return (
-          <View className="mb-2 mt-3">
-            <Text className="text-body font-bold text-secondary" style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
+          <View className="mb-3 mt-3">
+            <Text className={documentsClasses.suktaLabel} style={lang === "ne" ? nepaliTextStyle(14) : undefined}>
               {t("documents.sukta_label", { number: digits(item.number) })}
             </Text>
             {parts.length ? (
-              <Text className="text-caption mt-0.5 text-muted-foreground" style={lang === "ne" ? nepaliTextStyle(13) : undefined}>
+              <Text className={documentsClasses.suktaMeta} style={lang === "ne" ? nepaliTextStyle(13) : undefined}>
                 {parts.join(" · ")}
               </Text>
             ) : null}
@@ -149,11 +153,8 @@ export function DocumentReader({
         renderItem={renderItem}
         ListHeaderComponent={<View>{header}</View>}
         ListFooterComponent={<View>{footer}</View>}
-        contentContainerStyle={{
-          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-          paddingTop: 16,
-          paddingBottom: 190,
-        }}
+        contentContainerClassName="mx-auto w-full max-w-page px-4 pt-8 sm:px-6"
+        contentContainerStyle={{ paddingBottom: LIST_BOTTOM_INSET }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         initialNumToRender={12}

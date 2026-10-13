@@ -23,6 +23,7 @@ import {
   type GrahaAstaPeriod,
 } from "@/lib/api";
 import { getRouteApi } from "@tanstack/react-router";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/panchanga/graha-asta");
 
@@ -63,18 +64,23 @@ function StampLine({
   const { t } = useTranslation();
   const dateLabel = renderedStampDate(stamp, lang);
   return (
-    <div className="flex items-start justify-between gap-2">
-      <span className={cn("font-semibold", tone === "asta" ? "text-danger" : "text-success")}>
+    <div className={cn(grahaClasses.stampRow, "flex")}>
+      <span
+        className={cn(
+          grahaClasses.stampLabel,
+          tone === "asta" ? grahaClasses.toneAsta : grahaClasses.toneUdaya,
+        )}
+      >
         {label}
       </span>
-      <span className="text-right font-num tabular-nums text-foreground font-semibold">
+      <span className={grahaClasses.stampValue}>
         {stamp ? (
           <span className="block">
             {digits(dateLabel)}
-            <span className="text-muted-foreground"> · {digits(stamp.time_short)}</span>
+            <span className={grahaClasses.stampTime}> · {digits(stamp.time_short)}</span>
           </span>
         ) : (
-          <span className="text-muted-foreground">{t("graha_pages.asta.outside_year")}</span>
+          <span className={grahaClasses.stampOutside}>{t("graha_pages.asta.outside_year")}</span>
         )}
       </span>
     </div>
@@ -91,10 +97,10 @@ function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
         ? t("graha_pages.asta.west_evening")
         : null;
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-border/70 bg-foreground/[0.02] p-2.5 text-sm">
+    <div className={cn(grahaClasses.periodCard, "flex flex-col text-sm")}>
       <StampLine label={t("graha_pages.asta.asta_begins")} stamp={period.start} tone="asta" />
       <StampLine label={t("graha_pages.asta.udaya_ends")} stamp={period.end} tone="udaya" />
-      <div className="flex items-baseline justify-between gap-2 border-t border-border/60 pt-1 text-xs text-muted-foreground">
+      <div className={cn(grahaClasses.periodFoot, grahaClasses.periodFootText, "flex")}>
         <span>{hemi}</span>
         {period.duration_days != null ? (
           <span>{t("graha_pages.asta.duration_days", { count: digits(period.duration_days) })}</span>
@@ -155,15 +161,15 @@ export function GrahaAsta() {
               const isMoon = g === "moon";
               return (
                 <>
-                  <span className="text-base font-bold text-foreground">
+                  <span className={grahaClasses.columnTitle}>
                     {grahaName(g, lang)}
                     {isMoon ? (
-                      <span className="ml-1 text-xs font-normal text-muted-foreground">
+                      <span className={grahaClasses.columnNote}>
                         {t("graha_pages.asta.tara_asta")}
                       </span>
                     ) : null}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className={grahaClasses.columnCount}>
                     {periods.length
                       ? t("graha_pages.asta.times", { count: periods.length })
                       : t("graha_pages.asta.none")}
@@ -173,7 +179,7 @@ export function GrahaAsta() {
             }}
             renderItem={(p) => <PeriodCard period={p} />}
             emptyInGroup={
-              <p className="px-2 py-1.5 text-sm text-muted-foreground">
+              <p className={grahaClasses.columnEmpty}>
                 {t("graha_pages.asta.no_asta_year")}
               </p>
             }

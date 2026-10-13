@@ -11,6 +11,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 /* Successive moonrises are ~24h50m apart — always more than a civil day, so a
    day can miss out entirely but two can never land inside one. */
 const DAYS = [
@@ -63,7 +64,7 @@ const MoonriseSlipScene = memo(function MoonriseSlipScene({ onLabels, copy }: Sc
             {row.rises.map((h) => (
               <mesh key={h} position={[xOf(h), 0.03, z]}>
                 <sphereGeometry args={[0.028, 14, 14]} />
-                <meshStandardMaterial color={"#cbd5e1"} />
+                <meshStandardMaterial color={illustration.sky84} />
               </mesh>
             ))}
           </group>
@@ -85,7 +86,7 @@ export function MoonriseSlipDiagram() {
       frame={{ width: 1.4, height: 0.7 }}
       idleSpin={0}
       legend={[
-        { color: "#cbd5e1", label: pick("चन्द्रोदयको समय", "Moonrise time") },
+        { color: illustration.sky84, label: pick("चन्द्रोदयको समय", "Moonrise time") },
         { color: DIAGRAM_LABEL_COLOR.warn, label: pick("चन्द्रोदय नभएको दिन", "Day with no moonrise") },
       ]}
       readouts={[

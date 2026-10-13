@@ -7,6 +7,7 @@ import {
 } from "@vedic-patro/domain/ayanamsha";
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 interface Props {
   mode: AyanamshaMode;
@@ -19,15 +20,15 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
   const current = getAyanamshaModeInfo(mode);
 
   return (
-    <div className="w-full rounded-xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]">
-      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 px-3.5 py-2.5 border-b border-border bg-secondary/[0.09] dark:bg-secondary/20">
-        <span className="text-sm font-semibold uppercase tracking-wider">
+    <div className={cn(kundaliDetailClasses.ayanamsha.card, "w-full overflow-hidden shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]")}>
+      <div className={cn(kundaliDetailClasses.ayanamsha.header, "flex flex-wrap items-baseline gap-x-2.5 gap-y-1 bg-secondary/[0.09] dark:bg-secondary/20")}>
+        <span className={kundaliDetailClasses.ayanamsha.heading}>
           {t("kundali.ayanamsha")}
         </span>
       </div>
 
-      <div className="px-3.5 py-3 space-y-2.5">
-        <div className="flex flex-wrap gap-1.5">
+      <div className={kundaliDetailClasses.ayanamsha.body}>
+        <div className={kundaliDetailClasses.ayanamsha.chips}>
           {AYANAMSHA_MODES.map((m) => (
             <button
               key={m.id}
@@ -35,10 +36,12 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
               title={bilingualText(lang, m.taglineNe, m.tagline)}
               onClick={() => onModeChange(m.id)}
               className={cn(
-                "h-8 px-3 rounded-lg border text-sm text-base transition-colors",
+                kundaliDetailClasses.ayanamsha.chip,
+                kundaliDetailClasses.ayanamsha.chipText,
+                "inline-flex items-center transition-colors",
                 mode === m.id
-                  ? "border-secondary bg-secondary text-secondary-foreground"
-                  : "border-border bg-background/40 dark:bg-background/20 text-foreground hover:bg-muted"
+                  ? cn(kundaliDetailClasses.ayanamsha.chipActive, kundaliDetailClasses.ayanamsha.chipActiveText)
+                  : cn(kundaliDetailClasses.ayanamsha.chipIdle, kundaliDetailClasses.ayanamsha.chipIdleText, "hover:bg-muted")
               )}
             >
               {m.id === "nepal" ? `${bilingualText(lang, m.labelNe, m.label)} ⭐` : bilingualText(lang, m.labelNe, m.label)}
@@ -46,7 +49,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
           ))}
         </div>
 
-        <p className="text-sm leading-snug">
+        <p className={kundaliDetailClasses.ayanamsha.note}>
           {bilingualText(lang, current.labelNe, current.label)} — {bilingualText(lang, current.taglineNe, current.tagline)}
           {!matchesPanchangaAngas(mode) &&
             t("kundali.grahas_lagna_and_nakshatra_are_computed_in_this_ayanams")}

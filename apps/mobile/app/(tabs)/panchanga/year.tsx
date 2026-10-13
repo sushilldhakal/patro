@@ -37,6 +37,8 @@ import { formatWheelPlaybackRate } from "@vedic-patro/domain/wheel-year-playback
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
+import { cn } from "@vedic-patro/domain/utils";
+import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 
 /** Slowest tick; the scrub's speed multiplier divides into it. */
 const PLAY_BASE_MS = 900;
@@ -370,7 +372,7 @@ export default function PanchangaYearScreen() {
       </View>
 
       <View
-        className="min-h-0 flex-1 gap-3"
+        className={cn(panchangaYearClasses.body, "min-h-0 flex-1")}
         onLayout={(e) => setBodyHeight(e.nativeEvent.layout.height)}
       >
         <PanchangaWheel
@@ -424,17 +426,17 @@ export default function PanchangaYearScreen() {
         />
 
         {windowError ? (
-          <View className="rounded-xl border border-destructive/20 bg-destructive/10 p-4">
-            <Text className="text-body text-destructive" style={nepaliTextStyle(13)}>
+          <View className={panchangaYearClasses.errorBox}>
+            <Text className={panchangaYearClasses.errorText} style={nepaliTextStyle(13)}>
               {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load the panchanga.")}
             </Text>
           </View>
         ) : windowFetching ? (
-          <Text className="text-caption px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className={panchangaYearClasses.status} style={nepaliTextStyle(11)}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         ) : total ? (
-          <Text className="text-caption px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className={panchangaYearClasses.status} style={nepaliTextStyle(11)}>
             {windowLabel} · {pick(`${digits(total)} दिन`, `${total} days`)}
           </Text>
         ) : null}

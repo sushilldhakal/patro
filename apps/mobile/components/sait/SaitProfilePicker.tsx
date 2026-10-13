@@ -11,9 +11,9 @@ import { useLocale } from "@/lib/i18n";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 
 /**
  * Lets a signed-in user pick one of their saved profiles so the sait dates get
@@ -40,8 +40,8 @@ export function SaitProfilePicker({
 
   const label = (
     <View className="flex-row items-center gap-1.5">
-      <Ionicons name="person-outline" size={15} color={colors.secondary} />
-      <Text className="text-body font-medium text-foreground" style={nepaliTextStyle(13)}>
+      <Ionicons name="person-outline" size={16} color={colors.secondary} />
+      <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle()}>
         {pick("आफ्नो प्रोफाइलअनुसार", "Personalise")}
       </Text>
     </View>
@@ -50,16 +50,13 @@ export function SaitProfilePicker({
   if (!isAuthenticated) {
     return (
       <>
-        <View className="flex-row flex-wrap items-center gap-2">
+        <View className={saitClasses.pickerRow}>
           {label}
           <Pressable
             onPress={() => setAuthOpen(true)}
             className="rounded-lg border border-border bg-card px-2.5 py-1.5 active:opacity-80"
           >
-            <Text
-              style={{ color: colors.primary, ...nepaliTextStyle(12) }}
-              className="text-caption font-semibold"
-            >
+            <Text className="text-xs font-semibold text-primary" style={nepaliTextStyle()}>
               {pick("प्रोफाइल छान्न लग-इन गर्नुहोस्", "Sign in to pick your profile")}
             </Text>
           </Pressable>
@@ -71,9 +68,9 @@ export function SaitProfilePicker({
 
   if (profiles && profiles.length === 0) {
     return (
-      <View className="flex-row flex-wrap items-center gap-2">
+      <View className={saitClasses.pickerRow}>
         {label}
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className="text-xs text-muted-foreground" style={nepaliTextStyle()}>
           {pick(
             "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
             "No saved profiles — add one in your account.",
@@ -96,7 +93,7 @@ export function SaitProfilePicker({
   const sheet = (
     <View>
       <View className="border-b border-border px-4 py-3">
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(15)}>
+        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle()}>
           {pick("प्रोफाइल छान्नुहोस्", "Choose a profile")}
         </Text>
       </View>
@@ -110,16 +107,15 @@ export function SaitProfilePicker({
                 onSelect(opt.id ? (profiles?.find((p) => p.id === opt.id) ?? null) : null);
                 setSheetOpen(false);
               }}
-              style={active ? { backgroundColor: colorWithAlpha(brand.blue, 0.1) } : undefined}
-              className="flex-row items-center justify-between gap-3 border-b border-border px-4 py-3.5 active:opacity-80"
+              className={cn(
+                "flex-row items-center justify-between gap-3 border-b border-border px-4 py-3.5 active:opacity-80",
+                active && "bg-secondary/10",
+              )}
             >
               <Text
                 numberOfLines={1}
-                style={{
-                  color: active ? colors.secondary : colors.foreground,
-                  ...nepaliTextStyle(14),
-                }}
-                className="text-body shrink"
+                style={nepaliTextStyle()}
+                className={cn("shrink text-sm", active ? "text-secondary" : "text-foreground")}
               >
                 {opt.name}
               </Text>
@@ -135,18 +131,18 @@ export function SaitProfilePicker({
 
   return (
     <>
-      <View className="flex-row flex-wrap items-center gap-2">
+      <View className={saitClasses.pickerRow}>
         {label}
         <Pressable
           disabled={isLoading}
           onPress={() => setSheetOpen(true)}
-          style={{ minWidth: 160, maxWidth: 256, opacity: isLoading ? 0.6 : 1 }}
-          className="h-9 flex-row items-center justify-between gap-2 rounded-lg border border-border bg-card px-2.5 active:bg-muted"
+          style={{ opacity: isLoading ? 0.6 : 1 }}
+          className="h-9 min-w-[10rem] max-w-[16rem] flex-row items-center justify-between gap-2 rounded-lg border border-border bg-card px-2.5 active:bg-muted"
         >
           <Text
             numberOfLines={1}
-            className="text-body shrink text-foreground"
-            style={nepaliTextStyle(13)}
+            className="shrink text-sm text-foreground"
+            style={nepaliTextStyle()}
           >
             {buttonLabel}
           </Text>

@@ -10,6 +10,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { featureIcon } from "@/lib/nav-icons";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 type Tab = {
   to: string;
@@ -73,9 +74,9 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label={bilingualText(lang, "मुख्य नेभिगेसन", "Primary navigation")}
-      className="fixed inset-x-0 bottom-0 z-50 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pointer-events-none lg:hidden"
+      className={cn(shellClasses.navOuter, "fixed inset-x-0 bottom-0 z-50 pb-[max(0.5rem,env(safe-area-inset-bottom))] pointer-events-none lg:hidden")}
     >
-      <div className="pointer-events-auto mx-auto flex max-w-lg items-stretch justify-around gap-0.5 rounded-2xl border border-border bg-background/90 p-1 shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md">
+      <div className={cn("pointer-events-auto mx-auto flex shadow-[0_6px_24px_-8px_rgba(0,0,0,0.35)] backdrop-blur-md", shellClasses.navBar)}>
         {TABS.map(({ to, icon: Icon, ne, en, match }) => {
           const active = match(pathname);
           return (
@@ -84,10 +85,12 @@ export function MobileBottomNav() {
               to={to}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 rounded-xl px-1 py-1.5 text-[0.62rem] font-medium transition-colors",
+                "flex flex-col transition-colors",
+                shellClasses.navItem,
+                shellClasses.navLabel,
                 active
-                  ? "bg-secondary/10 text-secondary"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? cn(shellClasses.navItemActive, shellClasses.navLabelActive)
+                  : cn(shellClasses.navLabelIdle, "hover:text-foreground"),
               )}
             >
               <Icon className="size-5 shrink-0" />

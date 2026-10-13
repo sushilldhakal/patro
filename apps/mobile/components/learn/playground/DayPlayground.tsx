@@ -103,7 +103,8 @@ import Scene, {
   type SimToggles,
 } from "@/components/learn/playground/DaySimScene";
 
-const CANVAS_BG = "#04070d";
+import { brand, illustration, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+const CANVAS_BG = wheel.sky2;
 const PI2 = Math.PI * 2;
 const DEG = Math.PI / 180;
 
@@ -730,7 +731,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         className="text-caption font-semibold"
         style={[
           nepaliTextStyle(11),
-          { color: active ? "#04070d" : "rgba(255,255,255,0.65)", fontSize: 15 },
+          { color: active ? wheel.sky2 : withAlpha(neutral.white, 0.65) },
         ]}
       >
         {label}
@@ -746,7 +747,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
     <View className="gap-1.5" key={heading}>
       <Text
         className="text-caption font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+        style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
       >
         {heading}
       </Text>
@@ -778,13 +779,13 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       <View className="flex-row items-baseline justify-between gap-2">
         <Text
           className="text-caption font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+          style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
         >
           {label}
         </Text>
         <Text
           className="text-caption font-semibold"
-          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.9)", fontSize: 15 }]}
+          style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.9) }]}
         >
           {display}
         </Text>
@@ -796,9 +797,9 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         maximumValue={max}
         step={step}
         onValueChange={onChange}
-        minimumTrackTintColor="#f4c542"
-        maximumTrackTintColor="rgba(148, 163, 184, 0.45)"
-        thumbTintColor="#f4c542"
+        minimumTrackTintColor={illustration.amber61}
+        maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
+        thumbTintColor={illustration.amber61}
       />
     </View>
   );
@@ -844,7 +845,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       <View className="gap-1.5">
         <Text
           className="text-caption font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+          style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
         >
           {pick("ग्रह", "Planet")}
         </Text>
@@ -925,7 +926,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
       <View className="gap-1.5 border-t border-white/10 pt-2.5">
         <Text
           className="text-caption font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+          style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
         >
           {pick("मापन", "Measure")}
         </Text>
@@ -1077,12 +1078,12 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
             pointerEvents="none"
             className="absolute bottom-2.5 left-2.5 rounded-lg bg-black/70 px-2 py-1"
           >
-            <Text className="text-caption font-bold" style={{ color: perfTone(perf), fontSize: 15 }}>
+            <Text className="text-caption font-bold" style={{ color: perfTone(perf) }}>
               {`${perf.fps.toFixed(0)} fps · worst ${perf.worstMs.toFixed(0)} ms`}
             </Text>
             <Text
               className="text-caption"
-              style={{ color: "rgba(255,255,255,0.55)", fontSize: 15 }}
+              style={{ color: withAlpha(neutral.white, 0.55) }}
             >
               {`${perf.drawCalls} draws · ${(perf.triangles / 1000).toFixed(1)}k tris`}
             </Text>
@@ -1099,19 +1100,19 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
           >
             <Text
               className="text-caption font-bold uppercase tracking-wide"
-              style={[nepaliTextStyle(9), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
+              style={[nepaliTextStyle(9), { color: withAlpha(neutral.white, 0.5) }]}
             >
               {pick("सूर्य राशि · महिना", "Sun's rashi · month")}
             </Text>
             <Text
               className="text-caption font-bold"
-              style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 15 }]}
+              style={[nepaliTextStyle(13), { color: neutral.white }]}
             >
               {`${rashiNames[rashi]} · ${monthNames[rashi]}`}
             </Text>
             <Text
               className="text-caption font-bold"
-              style={[nepaliTextStyle(13), { color: TONE.solar, fontSize: 15 }]}
+              style={[nepaliTextStyle(13), { color: TONE.solar }]}
             >
               {`${eotMinutes >= 0 ? "+" : "−"}${num(Math.abs(eotMinutes).toFixed(1))} ${pick(
                 "मिनेट",
@@ -1130,7 +1131,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
             <View className="rounded-full border border-amber-400/60 bg-amber-500/25 px-3 py-1">
               <Text
                 className="text-caption font-bold"
-                style={[nepaliTextStyle(12), { color: "#fde68a", fontSize: 15 }]}
+                style={[nepaliTextStyle(12), { color: illustration.amber77 }]}
               >
                 {`${pick("सङ्क्रान्ति", "Sankranti")} · ${rashiNames[flash]} · ${
                   monthNames[flash]
@@ -1219,10 +1220,10 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
         style={
           fullscreen
             ? {
-                backgroundColor: "rgba(4, 7, 13, 0.86)",
+                backgroundColor: withAlpha(wheel.sky2, 0.86),
                 paddingBottom: Math.max(insets.bottom, 10),
               }
-            : { backgroundColor: "rgba(4, 7, 13, 0.92)" }
+            : { backgroundColor: withAlpha(wheel.sky2, 0.92) }
         }
       >
         {tour ? (
@@ -1253,7 +1254,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
                 accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
                 className="h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10"
               >
-                <Ionicons name={playing ? "pause" : "play"} size={16} color="#f1f5f9" />
+                <Ionicons name={playing ? "pause" : "play"} size={16} color={brand.offWhite} />
               </Pressable>
             )}
             <Slider
@@ -1265,9 +1266,9 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
                 clock.current.day = v;
                 setPlaying(false);
               }}
-              minimumTrackTintColor="#f4c542"
-              maximumTrackTintColor="rgba(148, 163, 184, 0.45)"
-              thumbTintColor="#f4c542"
+              minimumTrackTintColor={illustration.amber61}
+              maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
+              thumbTintColor={illustration.amber61}
               accessibilityLabel={pick("वर्षभरि सार्नुहोस्", "Scrub through the year")}
             />
             <Pressable
@@ -1281,7 +1282,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
               <Ionicons
                 name={detailsOpen ? "chevron-down" : "chevron-up"}
                 size={14}
-                color="rgba(255,255,255,0.75)"
+                color={withAlpha(neutral.white, 0.75)}
               />
             </Pressable>
           </View>
@@ -1340,13 +1341,13 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
               <View key={tone} className="gap-0.5 rounded-lg border border-white/15 px-2.5 py-1.5">
                 <Text
                   className="text-caption font-bold uppercase tracking-wide"
-                  style={[nepaliTextStyle(9), { color: TONE[tone], fontSize: 15 }]}
+                  style={[nepaliTextStyle(9), { color: TONE[tone] }]}
                 >
                   {label}
                 </Text>
                 <Text
                   className="text-caption font-bold"
-                  style={[nepaliTextStyle(13), { color: "#ffffff", fontSize: 15 }]}
+                  style={[nepaliTextStyle(13), { color: neutral.white }]}
                 >
                   {num(time)}
                 </Text>
@@ -1354,7 +1355,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
                   className="text-caption"
                   style={[
                     nepaliTextStyle(10),
-                    { color: "rgba(255,255,255,0.45)", fontSize: 15 },
+                    { color: withAlpha(neutral.white, 0.45) },
                   ]}
                 >
                   {`${unit} ${num(count)}${gap ? ` · ${gap}` : ""}`}
@@ -1364,7 +1365,7 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
                     against, so leaving it as prose said nothing. */}
                 <Text
                   className="text-caption font-semibold"
-                  style={[nepaliTextStyle(10), { color: TONE[tone], fontSize: 15 }]}
+                  style={[nepaliTextStyle(10), { color: TONE[tone] }]}
                 >
                   {`${pick("लम्बाइ", "lasts")} ${lengthLabel(length)}`}
                 </Text>
@@ -1416,9 +1417,9 @@ export function DayPlayground({ config, title }: DayPlaygroundProps) {
  * label pass would make.
  */
 function perfTone(p: PerfSample): string {
-  if (p.worstMs > 40) return "#f0736a";
-  if (p.worstMs > 20 || p.fps < 45) return "#e6b34a";
-  return "#6ee7a8";
+  if (p.worstMs > 40) return illustration.red68;
+  if (p.worstMs > 20 || p.fps < 45) return illustration.amber60;
+  return illustration.green67b;
 }
 
 /** Mounts once the scene's textures have resolved — drops the loader. */
@@ -1451,12 +1452,12 @@ function RoundButton({
       accessibilityState={{ selected: Boolean(active) }}
       className="h-8 w-8 items-center justify-center rounded-full"
       style={{
-        backgroundColor: active ? "rgba(255,255,255,0.85)" : "rgba(6, 11, 20, 0.55)",
+        backgroundColor: active ? withAlpha(neutral.white, 0.85) : withAlpha(illustration.sky5, 0.55),
         borderWidth: 1,
-        borderColor: active ? "rgba(255,255,255,0.7)" : "rgba(148,163,184,0.35)",
+        borderColor: active ? withAlpha(neutral.white, 0.7) : withAlpha(illustration.sky65, 0.35),
       }}
     >
-      <Ionicons name={icon} size={15} color={active ? "#04070d" : "#f1f5f9"} />
+      <Ionicons name={icon} size={15} color={active ? wheel.sky2 : brand.offWhite} />
     </Pressable>
   );
 }

@@ -11,6 +11,7 @@ import {
   type DashaLord,
 } from "@vedic-patro/domain/dasha";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type DashaTab = {
   id: DashaSystem;
@@ -72,9 +73,9 @@ export function DashaSystemPanel({
   if (!vimshottari && !tribhagi && !yogini) return null;
 
   return (
-    <div className="space-y-4">
+    <div className={kundaliDetailClasses.dashaSystem.root}>
       <div
-        className="flex flex-wrap gap-1 rounded-xl border border-border/70 bg-muted/20 p-1"
+        className={kundaliDetailClasses.subTabs.tabsBar}
         role="tablist"
         aria-label={t("kundali.dasha_system")}
       >
@@ -86,9 +87,11 @@ export function DashaSystemPanel({
             aria-selected={active === tab.id}
             onClick={() => setActive(tab.id)}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+              kundaliDetailClasses.subTabs.tab,
+              kundaliDetailClasses.subTabs.tabText,
+              "transition-colors",
               active === tab.id
-                ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+                ? cn(kundaliDetailClasses.subTabs.tabActive, kundaliDetailClasses.subTabs.tabActiveText, "shadow-sm ring-1 ring-border/60")
                 : "hover:text-foreground",
             )}
           >
@@ -99,8 +102,8 @@ export function DashaSystemPanel({
 
       {dasha ? (
         <div className="grid sm:grid-cols-2 gap-3">
-          <div className="rounded-xl border border-border/80 bg-card px-3.5 py-3 min-w-0 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_5%,transparent)]">
-            <p className="text-sm font-semibold uppercase tracking-wider mb-1 truncate">
+          <div className={cn(kundaliDetailClasses.dashaSystem.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_5%,transparent)]")}>
+            <p className={cn(kundaliDetailClasses.dashaSystem.cardLabel, "truncate")}>
               {t("kundali.mahadasha_at_birth")}
             </p>
             {(() => {
@@ -115,13 +118,13 @@ export function DashaSystemPanel({
                     );
               return (
                 <>
-                  <p className="text-base font-bold text-foreground leading-tight">
-                    <span className="inline-flex items-center gap-2">
+                  <p className={kundaliDetailClasses.dashaSystem.lord}>
+                    <span className={cn(kundaliDetailClasses.dashaSystem.lordRow, "inline-flex")}>
                       {grahaKey ? <GrahaPlanetIcon graha={grahaKey} size={28} /> : null}
                       {lordLabel}
                     </span>
                   </p>
-                  <p className="text-xs mt-0.5">
+                  <p className={kundaliDetailClasses.dashaSystem.balance}>
                     {bilingualText(lang, `बाँकी अवधि: ${dasha.balance_label}`, `Balance: ${dasha.balance_label}`)}
                   </p>
                 </>
@@ -140,7 +143,7 @@ export function DashaSystemPanel({
           cycleYears={current.id === "yogini" ? yogini?.cycle_years : undefined}
         />
       ) : (
-        <p className="text-sm">
+        <p className={kundaliDetailClasses.dashaSystem.empty}>
           {t("kundali.dasha_details_are_not_available")}
         </p>
       )}

@@ -3,8 +3,10 @@ import { ScrollView, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { PatroTableShell } from "./PatroTableShell";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { TableHeader, TableRow } from "@/components/ui/DataTable";
 
@@ -57,22 +59,21 @@ function KindBadge({ kind }: { kind: CalcNote["kind"] }) {
   return (
     <View
       className={cn(
-        "rounded px-1.5 py-0.5",
-        kind === "late_night" && "bg-amber-500/15",
-        kind === "ingress" && "bg-indigo-500/15",
-        kind === "paksha_boundary" && "bg-muted",
-        kind === "udayast" && "bg-emerald-500/15",
-        kind === "motion" && "bg-rose-500/15",
+        dainikKrantiClasses.kindBadge,
+        kind === "late_night" && dainikKrantiClasses.kindLate,
+        kind === "ingress" && dainikKrantiClasses.kindIngress,
+        kind === "paksha_boundary" && dainikKrantiClasses.kindPaksha,
+        kind === "udayast" && dainikKrantiClasses.kindUdayast,
+        kind === "motion" && dainikKrantiClasses.kindMotion,
       )}
     >
       <Text
         className={cn(
-          "text-caption font-semibold",
-          kind === "late_night" && "text-amber-700 dark:text-amber-300",
-          kind === "ingress" && "text-indigo-700 dark:text-indigo-300",
-          kind === "udayast" && "text-emerald-700 dark:text-emerald-300",
-          kind === "motion" && "text-rose-700 dark:text-rose-300",
-          kind === "paksha_boundary" && "text-muted-foreground",
+          dainikKrantiClasses.kindBadgeText,
+          kind === "late_night" && dainikKrantiClasses.kindLateText,
+          kind === "ingress" && dainikKrantiClasses.kindIngressText,
+          kind === "udayast" && dainikKrantiClasses.kindUdayastText,
+          kind === "motion" && dainikKrantiClasses.kindMotionText,
         )}
       >
         {pick(KIND_LABEL[kind], KIND_LABEL_EN[kind])}
@@ -105,11 +106,11 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   }, [notes]);
 
   const notesTable = loading ? (
-    <Text className="text-body px-4 py-8 text-center text-muted-foreground">
+    <Text className={dainikKrantiClasses.calcEmpty} style={nepaliTextStyle()}>
       {pick("लोड हुँदैछ…", "Loading…")}
     </Text>
   ) : groups.length === 0 ? (
-    <Text className="text-body px-4 py-8 text-center text-muted-foreground">
+    <Text className={dainikKrantiClasses.calcEmpty} style={nepaliTextStyle()}>
       {pick("यस महिनामा विशेष गणना सूचना छैन।", "No special calculation notes this month.")}
     </Text>
   ) : (
@@ -117,10 +118,10 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
       <View className="min-w-full">
         <TableHeader>
           <View className={cn("w-14 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-caption font-semibold">{pick("गते", "Date")}</Text>
+            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{pick("गते", "Date")}</Text>
           </View>
           <View className={cn("flex-1 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-caption font-semibold">{pick("सूचना", "Notes")}</Text>
+            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{pick("सूचना", "Notes")}</Text>
           </View>
         </TableHeader>
         {groups.map((group, groupIndex) => (
@@ -131,14 +132,14 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
             className="border-b border-border/60"
           >
             <View className="w-14 px-2.5 py-2">
-              <Text className="font-num font-bold tabular-nums text-secondary">{digits(group.day)}</Text>
+              <Text className={cn("font-num", dainikKrantiClasses.cellText, dainikKrantiClasses.calcDay)} style={nepaliTextStyle()}>{digits(group.day)}</Text>
             </View>
             <View className="flex-1 flex-row flex-wrap items-center gap-x-2 gap-y-1 px-2.5 py-2">
               {group.notes.map((note, i) => (
                 <View key={`${note.kind}-${note.text}`} className="flex-row flex-wrap items-center gap-1">
-                  {i > 0 ? <Text className="text-muted-foreground">·</Text> : null}
+                  {i > 0 ? <Text className="text-sm">·</Text> : null}
                   <KindBadge kind={note.kind} />
-                  <Text className="text-body text-foreground">
+                  <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.legendMeaning)} style={nepaliTextStyle()}>
                     {pick(note.text, note.textEn ?? note.text)}
                   </Text>
                 </View>
@@ -151,27 +152,27 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   );
 
   const legend = (
-    <View className={cn(!embedded && "rounded-xl border border-border p-4", embedded && "mt-4 border-t border-border pt-4")}>
-      <Text className="text-body mb-2 font-semibold uppercase tracking-wide text-foreground">
+    <View className={cn(!embedded && dainikKrantiClasses.calcLegend, embedded && dainikKrantiClasses.calcLegendEmbedded)}>
+      <Text className={dainikKrantiClasses.legendHeading} style={nepaliTextStyle()}>
         {pick("ग्रह उदयास्त सङ्केत", "Planet rise-set symbols")}
       </Text>
       <View className="gap-1.5">
         {UDAYAST_LEGEND.map((it) => (
-          <View key={it.code} className="flex-row gap-2">
-            <View className="w-24 shrink-0">
-              <View className="rounded bg-muted px-1.5 py-0.5">
-                <Text className="text-caption font-semibold text-secondary">{it.code}</Text>
+          <View key={it.code} className={dainikKrantiClasses.legendRow}>
+            <View className={cn("w-24 items-start", dainikKrantiClasses.legendCodeCol)}>
+              <View className={dainikKrantiClasses.legendCodeChip}>
+                <Text className={cn(dainikKrantiClasses.legendCodeText, "sm:text-sm")} style={nepaliTextStyle()}>{it.code}</Text>
               </View>
             </View>
-            <Text className="text-body flex-1 text-foreground">
-              <Text className="font-medium">{pick(it.full, it.fullEn)}</Text>
+            <Text className="flex-1 text-sm" style={nepaliTextStyle()}>
+              <Text className={cn(dainikKrantiClasses.legendPlanetText, dainikKrantiClasses.legendMeaning)}>{pick(it.full, it.fullEn)}</Text>
               {" — "}
               {pick(it.meaning, it.meaningEn)}
             </Text>
           </View>
         ))}
       </View>
-      <Text className="text-body mt-4 leading-relaxed text-muted-foreground">
+      <Text className={dainikKrantiClasses.calcLegendNote} style={nepaliTextStyle()}>
         {pick(
           "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन्।",
           "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",

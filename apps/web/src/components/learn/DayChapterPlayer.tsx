@@ -44,7 +44,7 @@ export function DayChapterWelcome({
        `rgba(0,0,0,0.5)` scrim over the running scene, not a frosted one. */
     <div className="pointer-events-auto absolute inset-0 z-20 flex items-center justify-center bg-black/55 px-4 transition-opacity">
       <div className="flex max-w-md flex-col items-center text-center text-white">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
+        <p className="text-xs font-semibold uppercase tracking-eyebrow-wide text-white/55">
           {t("learn.chapters.eyebrow")}
         </p>
         {/* Sans throughout, matching the original — it declares no serif
@@ -65,7 +65,7 @@ export function DayChapterWelcome({
         >
           <Play size={40} fill="currentColor" strokeWidth={0} className="ml-1.5" />
         </button>
-        <p className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
+        <p className="mt-3 text-xs font-semibold uppercase tracking-eyebrow-wide text-white/70">
           {t("learn.chapters.begin")}
         </p>
         {/* The original's second way in: "or … go to playground". Only when
@@ -74,7 +74,7 @@ export function DayChapterWelcome({
           <button
             type="button"
             onClick={() => player.goTo(lastIndex)}
-            className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-white/60 underline-offset-4 hover:text-white hover:underline"
+            className="mt-4 text-xs font-semibold uppercase tracking-eyebrow-wide text-white/60 underline-offset-4 hover:text-white hover:underline"
           >
             {t("learn.chapters.playground")}
           </button>
@@ -131,7 +131,7 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
             onChange={(e) => player.seek(Number(e.target.value))}
             aria-label={t("learn.chapters.scrub")}
           />
-          <div className="mt-1 flex items-start justify-between font-num text-[11px] tabular-nums text-white/45">
+          <div className="mt-1 flex items-start justify-between font-num text-xs tabular-nums text-white/45">
             <span>{num(formatChapterClock(player.time))}</span>
             <span>{num(formatChapterClock(player.duration))}</span>
           </div>
@@ -191,7 +191,7 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
                   {parts.map((part, pi) => (
                     <div key={part.partKey ?? `p-${pi}`}>
                       {part.partKey ? (
-                        <div className="px-4 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                        <div className="px-4 pb-1 pt-3 text-diagram-xs font-semibold uppercase tracking-eyebrow-wide text-white/35">
                           {t(part.partKey)}
                         </div>
                       ) : null}
@@ -259,7 +259,7 @@ export function DayChapterBar({ player }: { player: DayChapterPlayer }) {
             ) : playing ? (
               <Pause size={28} fill="currentColor" strokeWidth={0} />
             ) : (
-              <Play size={28} fill="currentColor" strokeWidth={0} className="ml-[3px]" />
+              <Play size={28} fill="currentColor" strokeWidth={0} className="ml-0.75" />
             )}
           </button>
           <button

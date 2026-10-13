@@ -8,6 +8,8 @@ import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Props = {
   /** 162-ids present in this chart — hidden here so they are not shown twice. */
@@ -78,16 +80,16 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
       filtered.map((e) => ({
         key: e.yogaId,
         cells: [
-          <Text key="id" className="text-caption font-num text-muted-foreground">
+          <Text key="id" className={kundaliDetailClasses.yogaCatalog.idText}>
             {e.yogaId}
           </Text>,
-          <Text key="n" className="text-caption font-semibold text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="n" className={kundaliDetailClasses.yogaCatalog.nameText} style={nepaliTextStyle(11)}>
             {entryName(e, lang)}
           </Text>,
-          <Text key="d" className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="d" className={kundaliDetailClasses.yogaCatalog.cellText} style={nepaliTextStyle(11)}>
             {entryDefinition(e, lang)}
           </Text>,
-          <Text key="r" className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="r" className={kundaliDetailClasses.yogaCatalog.cellText} style={nepaliTextStyle(11)}>
             {entryResult(e, lang)}
           </Text>,
         ],
@@ -96,18 +98,18 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
   );
 
   return (
-    <View className="mt-4 overflow-hidden rounded-xl border border-border">
+    <View className={cn(kundaliDetailClasses.yogaCatalog.root, "overflow-hidden")}>
       <Pressable
         onPress={() => setOpen((v) => !v)}
-        className="flex-row items-center justify-between gap-2 px-3.5 py-3 active:opacity-80"
+        className={cn(kundaliDetailClasses.yogaCatalog.toggle, "active:opacity-80")}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
       >
         <View className="min-w-0 flex-1">
-          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className={kundaliDetailClasses.yogaCatalog.title} style={nepaliTextStyle(14)}>
             {kundaliLabel("yoga_reference_catalog", lang)}
           </Text>
-          <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className={kundaliDetailClasses.yogaCatalog.source} style={nepaliTextStyle(11)}>
             {pick(
               "बी. वी. रमनको “Three Hundred Important Combinations”, भाग I",
               'B. V. Raman\'s "Three Hundred Important Combinations", Part I',
@@ -122,28 +124,28 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
       </Pressable>
 
       {open ? (
-        <View className="border-t border-border p-3">
+        <View className={kundaliDetailClasses.yogaCatalog.body}>
           {error ? (
-            <Text className="text-body py-6 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliDetailClasses.yogaCatalog.message} style={nepaliTextStyle(14)}>
               {kundaliLabel("yoga_reference_load_error", lang)}
             </Text>
           ) : !entries ? (
-            <View className="flex-row items-center justify-center gap-2 py-6">
+            <View className={kundaliDetailClasses.yogaCatalog.loadingRow}>
               <ActivityIndicator color={colors.secondary} />
-              <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+              <Text className={kundaliDetailClasses.yogaCatalog.loadingText} style={nepaliTextStyle(14)}>
                 {kundaliLabel("loading", lang)}
               </Text>
             </View>
           ) : (
             <>
-              <View className="mb-3 flex-row items-center gap-2 rounded-lg border border-border bg-muted/30 px-2.5 py-2">
+              <View className={kundaliDetailClasses.yogaCatalog.search}>
                 <Ionicons name="search" size={16} color={colors.mutedForeground} />
                 <TextInput
                   value={query}
                   onChangeText={setQuery}
                   placeholder={pick("नाम, नियम वा फलले खोज्नुहोस्…", "Search by name, rule or result…")}
                   placeholderTextColor={colors.mutedForeground}
-                  className="text-body min-w-0 flex-1 text-foreground"
+                  className={cn(kundaliDetailClasses.yogaCatalog.searchInput, "min-w-0 flex-1 text-foreground")}
                   style={nepaliTextStyle(14)}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -152,14 +154,14 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
               </View>
 
               {filtered.length === 0 ? (
-                <Text className="text-body py-6 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+                <Text className={kundaliDetailClasses.yogaCatalog.message} style={nepaliTextStyle(14)}>
                   {kundaliLabel("yoga_reference_no_match", lang)}
                 </Text>
               ) : (
                 <DataTable compact columns={columns} rows={tableRows} />
               )}
 
-              <Text className="text-caption mt-2 px-1 text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className={kundaliDetailClasses.yogaCatalog.note} style={nepaliTextStyle(11)}>
                 {kundaliLabel("yoga_reference_grouped_ids_note", lang)}
               </Text>
             </>

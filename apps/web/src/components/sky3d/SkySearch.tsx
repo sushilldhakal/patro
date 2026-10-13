@@ -133,7 +133,7 @@ export function SkySearch({
     <button
       type="button"
       onClick={() => setPane(to)}
-      className="mb-1 flex items-center gap-1 px-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/45 transition-colors hover:text-white"
+      className="mb-1 flex items-center gap-1 px-1 text-xs font-semibold uppercase tracking-eyebrow text-white/45 transition-colors hover:text-white"
     >
       <ChevronLeft className="size-3.5" />
       {label}

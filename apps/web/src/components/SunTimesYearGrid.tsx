@@ -36,15 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
-import {
-  patroAyanaNorth,
-  patroAyanaSouth,
-  patroSkel,
-  patroStickyHeadCell,
-  patroStickyHeadRow,
-  patroSunRise,
-  patroSunSet,
-} from "@/lib/patro-classes";
+import { patroSkel, patroStickyHeadCell, patroStickyHeadRow } from "@/lib/patro-classes";
+import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
+
 
 /** Display-only month headings for Gregorian-era grids (not calendar conversion). */
 const GREGORIAN_MONTH_SHORT_EN = [
@@ -80,14 +74,27 @@ const GREGORIAN_MONTH_SHORT_NE = [
 /** Fixed column widths so month headers line up with body cells (table-layout: fixed). */
 const SUN_MATRIX_DAY_COL = "3rem"; // 48px
 const SUN_MATRIX_MONTH_COL = "5.25rem"; // 84px — rise/set + ayana mark in Nepali digits
-const sunMatrixMonthTh =
-  "overflow-hidden border-r border-b border-border bg-card px-1 py-2.5 text-center text-xs font-bold";
-const sunMatrixMonthTd =
-  "overflow-hidden border-r border-b border-border/50 px-1 py-1.5 text-center align-middle leading-snug";
-const sunMatrixDayCorner =
-  "sticky left-0 z-[4] border-r border-b border-border bg-card px-2 py-2 text-center text-sm font-bold";
-const sunMatrixDayRowHead =
-  "sticky left-0 z-[2] border-r border-b border-border/70 bg-card px-2 py-2 text-center text-sm font-bold";
+const sunMatrixMonthTh = cn(
+  "overflow-hidden",
+  sunTimesClasses.matrixMonthHead,
+  sunTimesClasses.matrixMonthHeadText,
+);
+const sunMatrixMonthTd = cn(
+  "overflow-hidden text-center align-middle leading-snug",
+  sunTimesClasses.matrixCell,
+);
+const sunMatrixDayCorner = cn(
+  "sticky left-0 z-[4]",
+  sunTimesClasses.matrixDayHead,
+  sunTimesClasses.matrixDayHeadText,
+);
+const sunMatrixDayRowHead = cn(
+  "sticky left-0 z-[2]",
+  sunTimesClasses.matrixDayRowHead,
+  sunTimesClasses.matrixDayRowText,
+);
+const ayanaNorthClass = cn("mb-0.5 inline-block", sunTimesClasses.ayanaNorth);
+const ayanaSouthClass = cn("mb-0.5 inline-block", sunTimesClasses.ayanaSouth);
 
 export type SunDayRow = {
   day: number;
@@ -292,7 +299,7 @@ function useMonthTableColumns() {
       monthCol.accessor("day", {
         header: t("sun_times.col_day"),
         cell: (info) => (
-          <span className="font-semibold tabular-nums">{digits(info.getValue())}</span>
+          <span className={cn("tabular-nums", sunTimesClasses.monthDayText)}>{digits(info.getValue())}</span>
         ),
       }),
       monthCol.accessor("ayanaMark", {
@@ -300,11 +307,11 @@ function useMonthTableColumns() {
         cell: (info) => {
           const mark = info.getValue();
           const ayanaNe = info.row.original.ayanaNe;
-          if (!mark) return <span>—</span>;
+          if (!mark) return <span className={sunTimesClasses.monthPlainText}>—</span>;
           return (
             <span
               className={cn(
-                isAyanaNorthMark(mark) ? patroAyanaNorth : patroAyanaSouth,
+                isAyanaNorthMark(mark) ? ayanaNorthClass : ayanaSouthClass,
               )}
               title={ayanaNe}
             >
@@ -321,7 +328,7 @@ function useMonthTableColumns() {
           </span>
         ),
         cell: (info) => (
-          <span className="font-mono text-base tabular-nums text-primary dark:text-accent">
+          <span className={cn("font-mono tabular-nums", sunTimesClasses.monthRiseText)}>
             {info.getValue() ?? "—"}
           </span>
         ),
@@ -334,7 +341,7 @@ function useMonthTableColumns() {
           </span>
         ),
         cell: (info) => (
-          <span className="font-mono text-base tabular-nums text-destructive/90">
+          <span className={cn("font-mono tabular-nums", sunTimesClasses.monthSetText)}>
             {info.getValue() ?? "—"}
           </span>
         ),
@@ -362,9 +369,9 @@ function MonthSunDataTable({
     <Table className="text-base">
       <TableHeader className="bg-muted">
         {table.getHeaderGroups().map((hg) => (
-          <TableRow key={hg.id} className={cn(patroStickyHeadRow, "hover:bg-muted")}>
+          <TableRow key={hg.id} className={cn(patroStickyHeadRow, sunTimesClasses.monthHeadRow, "hover:bg-muted")}>
             {hg.headers.map((h) => (
-              <TableHead key={h.id} className={cn(patroStickyHeadCell, "px-3 py-3 text-sm font-semibold")}>
+              <TableHead key={h.id} className={cn(patroStickyHeadCell, sunTimesClasses.monthHeadCell, sunTimesClasses.monthHeadText)}>
                 {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
               </TableHead>
             ))}
@@ -378,7 +385,7 @@ function MonthSunDataTable({
               {columns.map((col, colIdx) => (
                 <TableCell
                   key={col.id ?? ("accessorKey" in col ? String(col.accessorKey) : colIdx)}
-                  className="px-3 py-3"
+                  className={sunTimesClasses.monthCellSkeleton}
                 >
                   <span className={cn(patroSkel, "h-5")} />
                 </TableCell>
@@ -389,7 +396,7 @@ function MonthSunDataTable({
           table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="px-3 py-2.5">
+                <TableCell key={cell.id} className={sunTimesClasses.monthCell}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
@@ -413,30 +420,30 @@ function SunTimesLegend({
   const { t } = useTranslation();
   const { lang, digits } = useLocale();
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 pt-3.5 pb-2.5">
+    <div className={cn("flex flex-wrap", sunTimesClasses.legend)}>
       {!hideHeader ? (
         <div>
-          <h3 className="m-0 text-base font-bold">{t("sun_times.grid_title")}</h3>
-          <span className="mt-0.5 block text-sm text-base">
+          <h3 className={cn("m-0", sunTimesClasses.legendTitle)}>{t("sun_times.grid_title")}</h3>
+          <span className={cn("block", sunTimesClasses.legendSub)}>
             {t("sun_times.subtitle", { year: digits(year) })} · {locationLabel}
           </span>
         </div>
       ) : null}
-      <div className="flex shrink-0 gap-3">
-        <span className="inline-flex items-center gap-1 text-sm text-base">
+      <div className={cn("flex", sunTimesClasses.legendItems)}>
+        <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
           <Sunrise className="size-4" strokeWidth={1.8} />
           {t("sun_times.col_sunrise")}
         </span>
-        <span className="inline-flex items-center gap-1 text-sm text-base">
+        <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
           <Sunset className="size-4" strokeWidth={1.8} />
           {t("sun_times.col_sunset")}
         </span>
-        <span className="inline-flex items-center gap-1 text-sm text-base">
-          <span className={patroAyanaNorth}>{bilingualText(lang, "उ", "N")}</span>
+        <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
+          <span className={ayanaNorthClass}>{bilingualText(lang, "उ", "N")}</span>
           {t("sun_times.north_ayana")}
         </span>
-        <span className="inline-flex items-center gap-1 text-sm text-base">
-          <span className={patroAyanaSouth}>{bilingualText(lang, "द", "S")}</span>
+        <span className={cn("inline-flex", sunTimesClasses.legendItem, sunTimesClasses.legendLabel)}>
+          <span className={ayanaSouthClass}>{bilingualText(lang, "द", "S")}</span>
           {t("sun_times.south_ayana")}
         </span>
       </div>
@@ -513,7 +520,7 @@ function SunTimesYearMatrix({
                         key={month}
                         className={cn(
                           sunMatrixMonthTd,
-                          "min-h-10 bg-surface-muted opacity-45",
+                          sunTimesClasses.matrixCellBlank,
                         )}
                         aria-hidden
                       />
@@ -531,8 +538,7 @@ function SunTimesYearMatrix({
                       key={month}
                       className={cn(
                         sunMatrixMonthTd,
-                        "min-h-10",
-                        isLoading && !cell && "bg-surface-inset",
+                        isLoading && !cell && sunTimesClasses.matrixCellLoading,
                       )}
                       title={title}
                     >
@@ -540,7 +546,7 @@ function SunTimesYearMatrix({
                         <span className={patroSkel} />
                       ) : cell?.sunrise || cell?.sunset ? (
                         <>
-                          <span className={cn(patroSunRise, "truncate")}>
+                          <span className={cn("block truncate", sunTimesClasses.matrixRise)}>
                             {cell.sunriseDisplay ?? "—"}
                             {cell.ayanaMark ? (
                               <>
@@ -548,9 +554,9 @@ function SunTimesYearMatrix({
                                 <span
                                   className={cn(
                                     isAyanaNorthMark(cell.ayanaMark)
-                                      ? patroAyanaNorth
-                                      : patroAyanaSouth,
-                                    "mb-0 text-[11px] align-baseline",
+                                      ? ayanaNorthClass
+                                      : ayanaSouthClass,
+                                    "mb-0 text-xs align-baseline",
                                   )}
                                   title={cell.ayanaNe}
                                 >
@@ -559,7 +565,7 @@ function SunTimesYearMatrix({
                               </>
                             ) : null}
                           </span>
-                          <span className={cn(patroSunSet, "truncate")}>
+                          <span className={cn("block truncate", sunTimesClasses.matrixSet)}>
                             {cell.sunsetDisplay ?? "—"}
                           </span>
                         </>
@@ -595,23 +601,23 @@ function SunTimesYearAccordion({
       type="single"
       collapsible
       defaultValue={isLoading ? undefined : defaultMonth}
-      className="px-3 pb-3"
+      className={sunTimesClasses.accordion}
     >
       {monthLabels.map((name, idx) => {
         const month = idx + 1;
         const monthLen = getMonthLength(month);
         const rows = buildMonthRows(month, monthLen, grid);
         return (
-          <AccordionItem key={`month-${month}`} value={`month-${month}`} className="border-border">
-            <AccordionTrigger className="px-1 text-base font-semibold hover:no-underline">
+          <AccordionItem key={`month-${month}`} value={`month-${month}`} className={sunTimesClasses.accordionItem}>
+            <AccordionTrigger className={cn(sunTimesClasses.accordionTrigger, sunTimesClasses.accordionTriggerText, "hover:no-underline")}>
               <span>
                 {name}
-                <span className="ml-2 text-sm font-normal">
+                <span className={cn("ml-2", sunTimesClasses.accordionDays)}>
                   {t("sun_times.days_count", { count: digits(monthLen) })}
                 </span>
               </span>
             </AccordionTrigger>
-            <AccordionContent className="px-0">
+            <AccordionContent className={sunTimesClasses.accordionContent}>
               <MonthSunDataTable rows={rows} isLoading={isLoading} />
             </AccordionContent>
           </AccordionItem>
@@ -676,8 +682,8 @@ export function SunTimesYearGrid({
 
   if (isError) {
     return (
-      <div className="mt-5 max-w-full overflow-hidden rounded-xl bg-card shadow-xs shadow-ring-soft">
-        <p className="m-0 px-4 py-3.5 text-xs text-base">
+      <div className={cn("max-w-full shadow-ring-soft", sunTimesClasses.card, sunTimesClasses.cardClip)}>
+        <p className={cn("m-0", sunTimesClasses.loadError)}>
           {t("sun_times.load_error")}
         </p>
       </div>
@@ -685,7 +691,7 @@ export function SunTimesYearGrid({
   }
 
   return (
-    <div className="mt-5 max-w-full overflow-hidden rounded-xl bg-card shadow-xs shadow-ring-soft">
+    <div className={cn("max-w-full shadow-ring-soft", sunTimesClasses.card, sunTimesClasses.cardClip)}>
       <SunTimesLegend
         hideHeader={hideHeader}
         locationLabel={locationLabel}

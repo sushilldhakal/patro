@@ -8,9 +8,9 @@ import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
 import { bilingualText } from "@vedic-patro/domain/locale";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** Page banner — icon tile plus title and blurb, as on the web graha pages (`GrahaBanner`). */
 export function GrahaBanner({
@@ -24,31 +24,16 @@ export function GrahaBanner({
 }) {
   const colors = useThemeColors();
   return (
-    <View
-      style={{
-        backgroundColor: colors.card,
-        borderColor: colors.border,
-      }}
-      className="mb-4 overflow-hidden rounded-2xl border px-5 py-5"
-    >
-      <View className="flex-row items-start gap-4">
-        <View
-          style={{ backgroundColor: colorWithAlpha(brand.blue, 0.15) }}
-          className="h-11 w-11 shrink-0 items-center justify-center rounded-xl"
-        >
+    <View className={cn("mb-4", grahaClasses.banner)}>
+      <View className={cn("flex-row", grahaClasses.bannerRow)}>
+        <View className={grahaClasses.bannerIcon}>
           <Ionicons name={icon} size={24} color={colors.secondary} />
         </View>
-        <View className="min-w-0 flex-1">
-          <Text
-            className="text-title font-bold text-foreground"
-            style={nepaliTextStyle(20)}
-          >
+        <View className={cn("flex-1", grahaClasses.bannerText)}>
+          <Text className={grahaClasses.bannerTitle} style={nepaliTextStyle(20)}>
             {title}
           </Text>
-          <Text
-            className="text-body mt-1 leading-relaxed text-muted-foreground"
-            style={nepaliTextStyle(14)}
-          >
+          <Text className={grahaClasses.bannerBlurb} style={nepaliTextStyle(14)}>
             {blurb}
           </Text>
         </View>
@@ -60,7 +45,6 @@ export function GrahaBanner({
 /** "About" block — what / how / meaning, keyed by graha page id. */
 export function GrahaDescription({ pageId }: { pageId: string }) {
   const { lang, pick, t } = useLocale();
-  const colors = useThemeColors();
   const desc = GRAHA_PAGE_DESCRIPTIONS[pageId];
   const blocks = desc
     ? (["what", "how", "meaning"] as const).map((section) => ({
@@ -71,26 +55,22 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
   if (!blocks.length) return null;
 
   return (
-    <Card className="mt-6 gap-4 p-4">
-      <Text
-        style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
-        className="text-caption font-bold uppercase tracking-wider"
-      >
+    <Card className={grahaClasses.aboutCard}>
+      <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
         {pick("परिचय", "About")}
       </Text>
-      {blocks.map((b) => (
-        <View key={b.section} className="gap-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
-            {t(`element_page.section_${b.section}`)}
-          </Text>
-          <Text
-            className="text-body leading-relaxed text-muted-foreground"
-            style={nepaliTextStyle(14)}
-          >
-            {b.body}
-          </Text>
-        </View>
-      ))}
+      <View className={grahaClasses.aboutBody}>
+        {blocks.map((b) => (
+          <View key={b.section} className={grahaClasses.aboutBlock}>
+            <Text className={grahaClasses.aboutBlockTitle} style={nepaliTextStyle(14)}>
+              {t(`element_page.section_${b.section}`)}
+            </Text>
+            <Text className={grahaClasses.aboutBlockText} style={nepaliTextStyle(14)}>
+              {b.body}
+            </Text>
+          </View>
+        ))}
+      </View>
     </Card>
   );
 }
@@ -98,31 +78,26 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
 /** Element page "About" block — same content as web `ElementDescription`. */
 export function ElementDescription({ elementId }: { elementId: string }) {
   const { lang, pick, t } = useLocale();
-  const colors = useThemeColors();
   const blocks = elementDescriptionBlocks(elementId, lang);
   if (!blocks.length) return null;
 
   return (
-    <Card className="mt-6 gap-4 p-4">
-      <Text
-        style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
-        className="text-caption font-bold uppercase tracking-wider"
-      >
+    <Card className={grahaClasses.aboutCard}>
+      <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
         {pick("परिचय", "About")}
       </Text>
-      {blocks.map((b) => (
-        <View key={b.section} className="gap-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
-            {t(`element_page.section_${b.section}`)}
-          </Text>
-          <Text
-            className="text-body leading-relaxed text-muted-foreground"
-            style={nepaliTextStyle(14)}
-          >
-            {b.body}
-          </Text>
-        </View>
-      ))}
+      <View className={grahaClasses.aboutBody}>
+        {blocks.map((b) => (
+          <View key={b.section} className={grahaClasses.aboutBlock}>
+            <Text className={grahaClasses.aboutBlockTitle} style={nepaliTextStyle(14)}>
+              {t(`element_page.section_${b.section}`)}
+            </Text>
+            <Text className={grahaClasses.aboutBlockText} style={nepaliTextStyle(14)}>
+              {b.body}
+            </Text>
+          </View>
+        ))}
+      </View>
     </Card>
   );
 }
@@ -135,10 +110,10 @@ export function AllElementsLink() {
   return (
     <Pressable
       onPress={() => router.push("/panchanga/details" as never)}
-      className="mt-6 flex-row items-center gap-1.5 self-start"
+      className={cn(grahaClasses.detailsLink, "flex-row")}
     >
       <Ionicons name="grid-outline" size={14} color={colors.primary} />
-      <Text style={{ color: colors.primary }} className="text-body underline">
+      <Text style={{ color: colors.primary }} className="text-sm underline">
         {pick("सबै पञ्चाङ्ग तत्त्वहरू", "All panchanga elements")}
       </Text>
     </Pressable>
@@ -152,34 +127,31 @@ export function GrahaColumnCard({
   count,
   children,
   width,
+  tight,
 }: {
   name: string;
   note?: string;
   count: string;
   children: React.ReactNode;
   width: string;
+  /** Dense body for the vakri rows. */
+  tight?: boolean;
 }) {
-  const colors = useThemeColors();
   return (
     <View
-      style={{ width: width as never, borderColor: colors.border }}
-      className="mb-3 overflow-hidden rounded-xl border bg-card"
+      style={{ width: width as never }}
+      className={cn("border border-border", grahaClasses.columnCard)}
     >
-      <View
-        style={{ backgroundColor: colorWithAlpha(brand.blue, 0.09) }}
-        className="flex-row items-baseline justify-between gap-2 border-b border-border px-3 py-2"
-      >
-        <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+      <View className={cn("flex-row", grahaClasses.columnHead)}>
+        <Text className={grahaClasses.columnTitle} style={nepaliTextStyle(16)}>
           {name}
-          {note ? (
-            <Text className="text-caption font-normal text-muted-foreground"> {note}</Text>
-          ) : null}
+          {note ? <Text className={grahaClasses.columnNote}> {note}</Text> : null}
         </Text>
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className={grahaClasses.columnCount} style={nepaliTextStyle(11)}>
           {count}
         </Text>
       </View>
-      <View className="gap-2 p-2">{children}</View>
+      <View className={tight ? grahaClasses.columnBodyTight : grahaClasses.columnBody}>{children}</View>
     </View>
   );
 }

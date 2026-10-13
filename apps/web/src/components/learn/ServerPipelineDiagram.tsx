@@ -73,7 +73,7 @@ function Box({
           y={y + h / 2 + (i - (lines.length - 1) / 2) * 13}
           textAnchor="middle"
           dominantBaseline="middle"
-          className="fill-[var(--tm-ink)] text-[11px] font-semibold"
+          className="fill-[var(--tm-ink)] text-xs font-semibold"
         >
           {line}
         </text>
@@ -100,7 +100,7 @@ function GroupLabel({ x, y, text }: { x: number; y: number; text: string }) {
     <text
       x={x}
       y={y}
-      className="fill-[var(--tm-amber)] text-[12px] font-bold uppercase tracking-wide"
+      className="fill-[var(--tm-amber)] text-diagram-sm font-bold uppercase tracking-wide"
     >
       {text}
     </text>
@@ -136,10 +136,10 @@ export function ServerPipelineDiagram() {
         </defs>
 
         <image href={earthUrl} x="24" y="36" width="48" height="48" opacity={0.92} />
-        <text x="80" y="58" className="fill-[var(--tm-ink-dim)] text-[11px]">
+        <text x="80" y="58" className="fill-[var(--tm-ink-dim)] text-xs">
           {t("learn.study.pipeline.api_name")}
         </text>
-        <text x="80" y="74" className="fill-[var(--tm-teal)] text-[11px] font-semibold">
+        <text x="80" y="74" className="fill-[var(--tm-teal)] text-xs font-semibold">
           {t("learn.study.pipeline.api_transport")}
         </text>
 
@@ -184,7 +184,7 @@ export function ServerPipelineDiagram() {
               />
             ),
           )}
-          <text x={0} y={118} className="fill-[var(--tm-ink-faint)] text-[10px]">
+          <text x={0} y={118} className="fill-[var(--tm-ink-faint)] text-diagram-xs">
             {t("learn.study.pipeline.grahas_note")}
           </text>
         </g>

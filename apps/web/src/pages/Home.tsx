@@ -22,7 +22,7 @@ import {
 import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { adToBS, bsToAdOrNull, getCurrentBs } from "@vedic-patro/domain/bs-calendar";
 import { cn } from "@vedic-patro/domain/utils";
-import { patroAsideLink, patroAsideTab } from "@/lib/patro-classes";
+import { patroAsideTab } from "@/lib/patro-classes";
 import { canonicalCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { getLanguageForEra } from "@vedic-patro/domain/era";
 import {
@@ -46,6 +46,7 @@ import { usePatroMonthUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { currentPatroDayLinkSearch } from "@/lib/url-state";
 import { smoothScrollToElement } from "@/lib/scroll";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 const PANCHANGA_SCROLL_OFFSET = 72; // sticky header (h-16) + small gap
@@ -144,16 +145,16 @@ const PanchangaAside = forwardRef(function PanchangaAside(
     <aside
       ref={ref}
       id="home-panchanga-aside"
-      className="scroll-mt-[4.5rem] flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card"
+      className={cn("scroll-mt-[4.5rem] flex flex-col", homeClasses.asideShell)}
     >
-      <div className="flex items-baseline gap-2.5 border-b border-border px-4 py-3.5">
-        <h2 className="m-0 flex-1 text-lg font-bold">
+      <div className={homeClasses.asideHeader}>
+        <h2 className={cn("m-0", homeClasses.asideTitle)}>
           {isSelectedToday ? t("panchanga.today_title") : t("panchanga.title")}
         </h2>
         <Link
           to="/panchanga"
           search={currentPatroDayLinkSearch(location, selectedAdDate)}
-          className={patroAsideLink}
+          className={cn(homeClasses.asideLink, "no-underline whitespace-nowrap hover:underline")}
         >
           {t("panchanga.full_detail")} →
         </Link>
@@ -167,10 +168,10 @@ const PanchangaAside = forwardRef(function PanchangaAside(
         p={activeP}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-card">
+      <div className={cn("flex min-w-0 flex-1 flex-col", homeClasses.asideBody)}>
 
             <div
-              className="grid shrink-0 grid-cols-3 border-b border-border bg-surface-muted"
+              className={cn("grid shrink-0 grid-cols-3", homeClasses.asideTabBar)}
               role="tablist"
               aria-label={t("panchanga.tabs_label")}
             >
@@ -190,7 +191,7 @@ const PanchangaAside = forwardRef(function PanchangaAside(
             </div>
 
             <div
-              className="min-h-[12rem] flex-1 to-card p-3 max-md:p-3"
+              className={cn("flex-1 to-card max-md:p-3", homeClasses.asidePanel)}
               role="tabpanel"
             >
               {error && !activeP ? (
@@ -420,7 +421,7 @@ export function Home() {
   useRouteLoading(asideInitialLoading);
 
   return (
-    <main className="mx-auto max-w-[1400px] px-4 pb-12 pt-4 max-md:px-0 max-md:pb-16 max-md:pt-0">
+    <main className="mx-auto max-w-page px-4 pb-12 pt-4 max-md:px-0 max-md:pb-16 max-md:pt-0">
       {/* `main` drops its padding below md, so the card brings its own there —
           otherwise it alone would run edge to edge above the calendar. */}
      
@@ -437,7 +438,7 @@ export function Home() {
         onMonthContextChange={handleMonthContextChange}
         belowPatro={
           <>
-            <AakashGocharEntryCard className="mt-3 max-sm:mx-2.5 border-secondary/40 bg-secondary/[0.07] shadow-sm" />
+            <AakashGocharEntryCard className={cn("mt-3 max-sm:mx-2.5", homeClasses.aakashCardTone)} />
             <HomeVedaMantra dateAd={todayAd} className="mt-3 max-sm:mx-2.5" />
           </>
         }
@@ -465,7 +466,7 @@ export function Home() {
           </section>
         }
       />
-      <p className="mt-7 text-center text-sm max-sm:px-2.5">{t("footer_note")}</p>
+      <p className={cn(homeClasses.footerNote, "max-sm:px-2.5")}>{t("footer_note")}</p>
     </main>
   );
 }

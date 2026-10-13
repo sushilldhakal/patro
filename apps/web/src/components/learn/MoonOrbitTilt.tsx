@@ -6,6 +6,7 @@ import { Pause, Play } from "lucide-react";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 
+import { brand, illustration, midnight, neutral } from "@vedic-patro/design-tokens";
 /**
  * 3-D perspective of the Moon's tilted orbit (~5°, drawn larger) over the flat
  * ecliptic plane. A Sun–Earth–shadow line runs through Earth's centre; the Sun
@@ -213,7 +214,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
           cx={0}
           cy={0}
           r={MOON_R}
-          fill={status === "lunar" ? "#c0392b" : status === "solar" ? "#33373d" : "url(#mot-moon)"}
+          fill={status === "lunar" ? illustration.red46 : status === "solar" ? illustration.gray22 : "url(#mot-moon)"}
           className={motMoon}
         />
         <text y={-MOON_R - 9} className={motMoonLabel} textAnchor="middle">
@@ -227,31 +228,31 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
     <svg viewBox={`0 0 ${VB.W} ${VB.H}`} className={edSvg("mot")} role="img">
       <defs>
         <radialGradient id="mot-panel" cx="50%" cy="38%" r="78%">
-          <stop offset="0%" stopColor="#15315c" />
-          <stop offset="58%" stopColor="#0c1d3a" />
-          <stop offset="100%" stopColor="#060d1e" />
+          <stop offset="0%" stopColor={illustration.sky22} />
+          <stop offset="58%" stopColor={illustration.sky14} />
+          <stop offset="100%" stopColor={midnight.background} />
         </radialGradient>
         <linearGradient id="mot-plane-far" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2a5cc0" stopOpacity={0.18} />
-          <stop offset="100%" stopColor="#3070d6" stopOpacity={0.34} />
+          <stop offset="0%" stopColor={illustration.sky46} stopOpacity={0.18} />
+          <stop offset="100%" stopColor={illustration.sky50} stopOpacity={0.34} />
         </linearGradient>
         <linearGradient id="mot-plane-near" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2f6bd0" stopOpacity={0.30} />
-          <stop offset="100%" stopColor="#4a90ee" stopOpacity={0.55} />
+          <stop offset="0%" stopColor={illustration.sky50} stopOpacity={0.30} />
+          <stop offset="100%" stopColor={illustration.sky61b} stopOpacity={0.55} />
         </linearGradient>
         <radialGradient id="mot-moon" cx="36%" cy="32%" r="74%">
-          <stop offset="0%" stopColor="#eef1f4" />
-          <stop offset="55%" stopColor="#aab2bb" />
-          <stop offset="100%" stopColor="#5f6770" />
+          <stop offset="0%" stopColor={brand.offWhite} />
+          <stop offset="55%" stopColor={midnight.mutedForeground} />
+          <stop offset="100%" stopColor={illustration.teal41} />
         </radialGradient>
         <radialGradient id="mot-sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff6d8" />
-          <stop offset="44%" stopColor="#ffd24a" />
-          <stop offset="100%" stopColor="#ef8a1d" />
+          <stop offset="0%" stopColor={illustration.amber92} />
+          <stop offset="44%" stopColor={illustration.amber67} />
+          <stop offset="100%" stopColor={illustration.orange53} />
         </radialGradient>
         <radialGradient id="mot-sunglow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffcf57" stopOpacity={0.5} />
-          <stop offset="100%" stopColor="#ffcf57" stopOpacity={0} />
+          <stop offset="0%" stopColor={illustration.amber67} stopOpacity={0.5} />
+          <stop offset="100%" stopColor={illustration.amber67} stopOpacity={0} />
         </radialGradient>
         <clipPath id="mot-clip">
           <rect x={2} y={2} width={VB.W - 4} height={VB.H - 4} rx={20} />
@@ -262,7 +263,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         {/* space backdrop */}
         <rect x={0} y={0} width={VB.W} height={VB.H} fill="url(#mot-panel)" />
         {STARS.map((s, i) => (
-          <circle key={`s${i}`} cx={s.x} cy={s.y} r={s.r} fill="#ffffff" opacity={s.o} />
+          <circle key={`s${i}`} cx={s.x} cy={s.y} r={s.r} fill={neutral.white} opacity={s.o} />
         ))}
 
         {/* legend */}

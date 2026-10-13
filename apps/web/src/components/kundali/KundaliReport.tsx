@@ -21,8 +21,11 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { PanchangaSection } from "@/components/panchanga/PanchangaLayout";
 import { cn } from "@vedic-patro/domain/utils";
 import { localizeItemLabel } from "@vedic-patro/domain/kundali/report-labels";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Status = "idle" | "streaming" | "done" | "error";
+
+const r = kundaliDetailClasses.report;
 
 function useConfidenceLabels(): Record<
   ReportConfidence,
@@ -32,19 +35,19 @@ function useConfidenceLabels(): Record<
   return {
     strong: {
       label: t("kundali.report.confidence_strong"),
-      cls: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+      cls: cn(r.strongBox, r.strongText),
     },
     moderate: {
       label: t("kundali.report.confidence_moderate"),
-      cls: "bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30",
+      cls: cn(r.moderateBox, r.moderateText),
     },
     mixed: {
       label: t("kundali.report.confidence_mixed"),
-      cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
+      cls: cn(r.mixedBox, r.mixedText),
     },
     tentative: {
       label: t("kundali.report.confidence_tentative"),
-      cls: "bg-muted border-border",
+      cls: r.tentativeBox,
     },
   };
 }
@@ -62,7 +65,9 @@ function ConfidenceBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm font-semibold leading-none",
+        r.badge,
+        r.badgeText,
+        "inline-flex",
         s.cls,
         className
       )}
@@ -83,11 +88,11 @@ function FactorList({ factors }: { factors?: string[] }) {
   if (!factors || factors.length === 0) return null;
   const count = factors.length;
   return (
-    <div className="mt-2">
+    <div className={r.factorWrap}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 text-sm text-base hover:text-foreground transition-colors"
+        className={cn(r.factorToggle, r.factorToggleText, "inline-flex hover:text-foreground transition-colors")}
       >
         <Info className="h-3 w-3" />
         {t(count === 1 ? "kundali.report.factors_based" : "kundali.report.factors_based_plural", {
@@ -98,9 +103,9 @@ function FactorList({ factors }: { factors?: string[] }) {
         />
       </button>
       {open && (
-        <ul className="mt-1.5 space-y-1 border-l-2 border-border pl-3">
+        <ul className={cn(r.factorList, "space-y-1")}>
           {factors.map((f, i) => (
-            <li key={i} className="text-sm leading-snug">
+            <li key={i} className={r.factorItem}>
               {f}
             </li>
           ))}
@@ -113,14 +118,14 @@ function FactorList({ factors }: { factors?: string[] }) {
 function ItemCard({ item }: { item: ReportItem }) {
   const { isEnglish } = useLocale();
   return (
-    <div className="rounded-lg border border-border bg-background/40 dark:bg-background/20 p-3">
-      <div className="mb-1 flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground">
+    <div className={r.itemCard}>
+      <div className={cn(r.itemHead, "flex")}>
+        <p className={r.itemLabel}>
           {localizeItemLabel(item.label, isEnglish)}
         </p>
         <ConfidenceBadge level={item.confidence} />
       </div>
-      <p className="text-sm leading-relaxed">{item.text}</p>
+      <p className={r.itemText}>{item.text}</p>
       <FactorList factors={item.factors} />
     </div>
   );
@@ -136,14 +141,14 @@ function SectionCard({ section }: { section: ReportSection }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card/60 p-4",
+        r.sectionCard,
         section.optional && "border-dashed"
       )}
     >
-      <div className="mb-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-        <h3 className="text-base font-bold text-foreground">{title}</h3>
+      <div className={cn(r.sectionHead, "flex")}>
+        <h3 className={r.sectionTitle}>{title}</h3>
         {isEnglish && (
-          <span className="text-sm text-base uppercase tracking-wider">
+          <span className={r.sectionTitleEn}>
             {section.title_en}
           </span>
         )}
@@ -155,7 +160,7 @@ function SectionCard({ section }: { section: ReportSection }) {
       {section.body.length > 0 && (
         <div className="space-y-2">
           {section.body.map((p, i) => (
-            <p key={i} className="text-sm leading-relaxed">
+            <p key={i} className={r.sectionParagraph}>
               {p}
             </p>
           ))}
@@ -224,13 +229,13 @@ function MetaStrip({ meta }: { meta: ReportMeta }) {
       {cells.map((c) => (
         <div
           key={c.label}
-          className="rounded-lg border border-border bg-background/50 px-3 py-2"
+          className={r.metaCell}
         >
-          <p className="mb-0.5 text-sm font-semibold uppercase tracking-wide">
+          <p className={r.metaLabel}>
             {c.label}
           </p>
-          <p className="text-sm font-bold leading-tight text-foreground">{c.value}</p>
-          {c.sub && <p className="mt-0.5 text-sm">{c.sub}</p>}
+          <p className={r.metaValue}>{c.value}</p>
+          {c.sub && <p className={r.metaSub}>{c.sub}</p>}
         </div>
       ))}
     </div>
@@ -327,7 +332,7 @@ export function KundaliReport({
     <PanchangaSection titleKey="kundali.report.title">
       <div className="space-y-4 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="max-w-2xl text-sm leading-relaxed">
+          <p className={cn(r.intro, "max-w-2xl")}>
             <Trans
               i18nKey="kundali.report.intro"
               components={{
@@ -342,20 +347,20 @@ export function KundaliReport({
                 type="button"
                 onClick={() => generate(true)}
                 disabled={disabled}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm text-base text-foreground transition-colors hover:bg-muted disabled:opacity-50"
+                className={cn(r.statusPill, r.statusText, "inline-flex text-foreground transition-colors hover:bg-muted disabled:opacity-50")}
               >
                 <RefreshCw className="h-4 w-4" />
                 {t("kundali.report.regenerate")}
               </button>
             )}
             {status === "idle" && !disabled && (
-              <span className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm">
+              <span className={cn(r.statusPill, r.statusText, "inline-flex")}>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 {t("kundali.report.streaming_reading")}
               </span>
             )}
             {streaming && (
-              <span className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-sm">
+              <span className={cn(r.statusPill, r.statusText, "inline-flex")}>
                 <Loader2 className="h-4 w-4 animate-spin" />
                 {progress.total
                   ? t("kundali.report.streaming_progress", {
@@ -369,8 +374,8 @@ export function KundaliReport({
         </div>
 
         {(streaming || status === "done") && (
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-base">{t("kundali.report.confidence_label")}</span>
+          <div className={cn(r.confidenceRow, "flex text-sm")}>
+            <span className={r.confidenceLabel}>{t("kundali.report.confidence_label")}</span>
             {(["strong", "moderate", "mixed", "tentative"] as ReportConfidence[]).map(
               (lvl) => (
                 <ConfidenceBadge key={lvl} level={lvl} />
@@ -380,7 +385,7 @@ export function KundaliReport({
         )}
 
         {error && (
-          <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className={cn(r.errorBox, r.errorText, "flex")}>
             <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -397,20 +402,20 @@ export function KundaliReport({
         )}
 
         {fromCache && status === "done" && (
-          <p className="text-sm text-base">
+          <p className={r.cacheNote}>
             {t("kundali.report.loaded_from_cache")}
           </p>
         )}
 
         {status === "idle" && disabled && (
-          <div className="flex items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-6 text-sm">
+          <div className={cn(r.idleBox, r.idleText, "flex")}>
             <ScrollText className="h-5 w-5 shrink-0" />
             {t("kundali.report.idle_hint")}
           </div>
         )}
 
         {meta && (status === "done" || streaming) && (
-          <p className="border-t border-border pt-3 text-sm leading-relaxed">
+          <p className={r.disclaimer}>
             {meta.disclaimer} · {meta.method}.
           </p>
         )}

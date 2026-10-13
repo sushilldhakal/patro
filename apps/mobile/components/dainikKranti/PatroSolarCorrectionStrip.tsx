@@ -2,8 +2,10 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 
 type Props = {
   deshaantar?: string;
@@ -41,35 +43,32 @@ export function PatroSolarCorrectionStrip({ deshaantar, akshamsha, belaantar, cl
   if (visible.length === 0) return null;
 
   return (
-    <View className={cn("w-full flex-row flex-wrap gap-2", className)}>
+    <View className={cn(dainikKrantiClasses.solarStrip, className)}>
       {visible.map((item) => (
         <View
           key={item.key}
           className={cn(
-            "min-w-[30%] flex-1 rounded-md border px-2.5 py-2",
-            item.key === "belaantar"
-              ? "border-amber-500/30 bg-amber-500/5"
-              : "border-border/80 bg-background/80",
+            dainikKrantiClasses.solarItem,
+            item.key === "belaantar" ? dainikKrantiClasses.solarItemBela : dainikKrantiClasses.solarItemPlain,
           )}
           style={{ maxWidth: "48%" }}
         >
-          <View className="flex-row items-center gap-1.5">
+          <View className={dainikKrantiClasses.solarLabel}>
             <Ionicons
               name={item.icon}
               size={14}
               color={item.key === "belaantar" ? colors.secondary : colors.mutedForeground}
             />
-            <Text className="text-caption font-semibold text-foreground">
+            <Text className={dainikKrantiClasses.solarLabelText} style={nepaliTextStyle()}>
               {pick(item.ne, item.en)}
             </Text>
           </View>
           <Text
             className={cn(
-              "text-body mt-1 font-num tabular-nums",
-              item.key === "belaantar"
-                ? "text-amber-800 dark:text-amber-200"
-                : "text-foreground",
+              dainikKrantiClasses.solarValue,
+              item.key === "belaantar" ? dainikKrantiClasses.solarValueBela : dainikKrantiClasses.solarValuePlain,
             )}
+            style={nepaliTextStyle()}
           >
             {values[item.key]}
           </Text>

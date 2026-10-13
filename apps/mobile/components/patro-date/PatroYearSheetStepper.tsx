@@ -18,6 +18,7 @@ import { clampBrowseYear, maxBrowseYearForEraOrDefault as maxBrowseYearForEra } 
 import { isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
 import { useThemeColors } from "@/lib/theme-context";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroEraShortLabel } from "./patro-era-labels";
 
@@ -171,20 +172,20 @@ export function PatroYearSheetStepper({
 
   const manualPin = (
     <View
-      className="border-b border-border bg-card"
+      className={patroDateClasses.stepperPin}
       style={{ height: YEAR_MANUAL_PIN_HEIGHT, flexShrink: 0 }}
     >
       <Pressable
         onPress={startManual}
-        className="mx-2 mt-2 flex-row items-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2.5 active:bg-muted"
+        className={cn("flex-row", patroDateClasses.stepperManual, "active:bg-muted")}
       >
         <Ionicons name="keypad-outline" size={18} color={colors.secondary} />
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={patroDateClasses.stepperManualLabel} style={nepaliTextStyle(14)}>
           {manualLabel}
         </Text>
       </Pressable>
       <Text
-        className="text-caption mt-1.5 px-4 text-center text-muted-foreground"
+        className={patroDateClasses.stepperHint}
         numberOfLines={1}
         style={nepaliTextStyle(11)}
       >
@@ -198,11 +199,11 @@ export function PatroYearSheetStepper({
       {Platform.OS === "ios" ? (
         <InputAccessoryView nativeID={YEAR_MANUAL_INPUT_ACCESSORY_ID}>
           <View
-            className="flex-row items-center justify-end border-t border-border bg-card px-4"
+            className={cn("flex-row", patroDateClasses.stepperAccessory)}
             style={{ height: 44 }}
           >
             <Pressable onPress={commitManual} hitSlop={8}>
-              <Text className="text-body font-semibold text-primary" style={nepaliTextStyle(16)}>
+              <Text className={patroDateClasses.stepperDone} style={nepaliTextStyle(16)}>
                 {pick("भयो", "Done")}
               </Text>
             </Pressable>
@@ -211,9 +212,9 @@ export function PatroYearSheetStepper({
       ) : null}
       <Pressable
         onPress={switchEra}
-        className="flex-row items-center justify-center rounded-md border border-border bg-card px-3 py-2.5 active:bg-muted"
+        className={cn("flex-row", patroDateClasses.stepperSwitch, "active:bg-muted")}
       >
-        <Text className="text-caption font-semibold text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={patroDateClasses.stepperSwitchLabel} style={nepaliTextStyle(12)}>
           {pick(`${targetLabel} मा जानुहोस्`, `Switch to ${targetLabel}`)}
         </Text>
       </Pressable>
@@ -223,7 +224,8 @@ export function PatroYearSheetStepper({
           onPress={() => stepYear(-1)}
           disabled={clamped <= yearMin}
           className={cn(
-            "h-9 w-9 items-center justify-center rounded-lg border border-border bg-card active:bg-muted",
+            patroDateClasses.stepperStep,
+            "active:bg-muted",
             clamped <= yearMin && "opacity-40",
           )}
         >
@@ -233,12 +235,12 @@ export function PatroYearSheetStepper({
         <Pressable
           onPress={openPicker}
           accessibilityLabel={pick("वर्ष छान्नुहोस्", "Choose year")}
-          className="h-9 min-w-[7.5rem] flex-1 flex-row items-center justify-center gap-1 rounded-md border border-border bg-card px-2 active:bg-muted"
+          className={cn("flex-row", patroDateClasses.stepperValue, "active:bg-muted")}
         >
-          <Text className="text-body font-num font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className={patroDateClasses.stepperValueText} style={nepaliTextStyle(16)}>
             {digits(clamped)}
           </Text>
-          <Text className="text-caption font-medium text-muted-foreground">{eraShort}</Text>
+          <Text className={patroDateClasses.stepperEra}>{eraShort}</Text>
           <Ionicons name="chevron-down" size={14} color={colors.mutedForeground} />
         </Pressable>
 
@@ -246,7 +248,8 @@ export function PatroYearSheetStepper({
           onPress={() => stepYear(1)}
           disabled={clamped >= yearMax}
           className={cn(
-            "h-9 w-9 items-center justify-center rounded-lg border border-border bg-card active:bg-muted",
+            patroDateClasses.stepperStep,
+            "active:bg-muted",
             clamped >= yearMax && "opacity-40",
           )}
         >
@@ -265,26 +268,26 @@ export function PatroYearSheetStepper({
           borderTopRightRadius: 16,
         }}
       >
-            <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
+            <View className={cn("flex-row", patroDateClasses.sheetHead)}>
               <Pressable onPress={() => setPickerOpen(false)} hitSlop={8}>
-                <Text className="text-body text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+                <Text className={patroDateClasses.sheetCancel}>{pick("रद्द", "Cancel")}</Text>
               </Pressable>
-              <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(16)}>
+              <Text className={patroDateClasses.sheetTitle} style={nepaliTextStyle(16)}>
                 {pick("वर्ष", "Year")}
               </Text>
               <Pressable
                 onPress={manualMode ? commitManual : () => setPickerOpen(false)}
                 hitSlop={8}
               >
-                <Text className="text-body font-semibold text-primary">
+                <Text className={patroDateClasses.stepperDone}>
                   {manualMode ? pick("भयो", "Done") : " "}
                 </Text>
               </Pressable>
             </View>
 
             {manualMode ? (
-              <View className="gap-3 px-4 py-4">
-                <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+              <View className={patroDateClasses.manualBody}>
+                <Text className={patroDateClasses.manualHint} style={nepaliTextStyle(14)}>
                   {pick("वर्ष नम्बर टाइप गर्नुहोस्", "Type the year number")}
                 </Text>
                 <TextInput
@@ -300,7 +303,7 @@ export function PatroYearSheetStepper({
                     Platform.OS === "ios" ? YEAR_MANUAL_INPUT_ACCESSORY_ID : undefined
                   }
                   onSubmitEditing={commitManual}
-                  className="text-title h-12 rounded-md border border-border bg-card px-3 text-center font-num font-bold text-foreground"
+                  className={patroDateClasses.manualInput}
                   style={[
                     { color: colors.foreground, borderColor: colors.border },
                     nepaliTextStyle(20),
@@ -318,7 +321,7 @@ export function PatroYearSheetStepper({
                   keyExtractor={(item) => String(item.value)}
                   keyboardShouldPersistTaps="handled"
                   style={{ height: YEAR_LIST_SCROLL_HEIGHT, flexGrow: 0 }}
-                  contentContainerStyle={{ paddingBottom: 16 }}
+                  contentContainerClassName="pb-4"
                   initialNumToRender={24}
                   maxToRenderPerBatch={32}
                   windowSize={11}
@@ -341,14 +344,14 @@ export function PatroYearSheetStepper({
                         onPress={() => pickYear(item.value)}
                         style={{ height: YEAR_ROW_HEIGHT }}
                         className={cn(
-                          "mx-2 justify-center rounded-lg px-3",
-                          selected ? "bg-secondary" : "active:bg-muted",
+                          patroDateClasses.yearRow,
+                          selected ? patroDateClasses.yearRowActive : "active:bg-muted",
                         )}
                       >
                         <Text
                           className={cn(
-                            "text-body text-center font-num font-semibold",
-                            selected ? "text-secondary-foreground" : "text-foreground",
+                            patroDateClasses.yearRowText,
+                            selected ? patroDateClasses.yearRowTextActive : patroDateClasses.yearRowTextIdle,
                           )}
                         >
                           {item.label}

@@ -20,13 +20,14 @@ import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const W = 560;
 const H = 226;
 const PAD = { l: 74, r: 54, t: 30, b: 30 };
 
-const LUNAR = "#cbd5e1";
-const SOLAR = "#dddd00";
-const GAP = "#ef4444";
+const LUNAR = illustration.sky84;
+const SOLAR = illustration.amber43;
+const GAP = illustration.red60;
 
 /** Mean synodic month, days. */
 const SYNODIC = 29.5306;
@@ -73,7 +74,7 @@ export function LunarSolarGap() {
                 x={PAD.l - 8}
                 y={top + rowH / 2 - 2}
                 textAnchor="end"
-                className="fill-current text-[8.5px] opacity-60"
+                className="fill-current text-diagram-2xs opacity-60"
               >
                 {t("learn.study.lunar_gap.after_years", { years: num(i + 1) })}
               </text>
@@ -124,7 +125,7 @@ export function LunarSolarGap() {
               <text
                 x={x(solarEnd) + 5}
                 y={top + barH + 6}
-                className="text-[8.5px] font-semibold"
+                className="text-diagram-2xs font-semibold"
                 style={{ fill: GAP }}
               >
                 {num(gap.toFixed(1))}
@@ -136,15 +137,15 @@ export function LunarSolarGap() {
         {/* legend */}
         <g>
           <rect x={PAD.l} y={10} width={9} height={7} fill={SOLAR} opacity={0.45} rx={1} />
-          <text x={PAD.l + 13} y={16.5} className="fill-current text-[8px] opacity-65">
+          <text x={PAD.l + 13} y={16.5} className="fill-current text-diagram-2xs opacity-65">
             {t("learn.study.lunar_gap.legend_solar_year")}
           </text>
           <rect x={PAD.l + 132} y={10} width={9} height={7} fill={LUNAR} opacity={0.5} rx={1} />
-          <text x={PAD.l + 145} y={16.5} className="fill-current text-[8px] opacity-65">
+          <text x={PAD.l + 145} y={16.5} className="fill-current text-diagram-2xs opacity-65">
             {t("learn.study.lunar_gap.legend_lunar_months")}
           </text>
           <rect x={PAD.l + 290} y={10} width={9} height={7} fill={GAP} opacity={0.35} rx={1} />
-          <text x={PAD.l + 303} y={16.5} className="fill-current text-[8px] opacity-65">
+          <text x={PAD.l + 303} y={16.5} className="fill-current text-diagram-2xs opacity-65">
             {t("learn.study.lunar_gap.legend_drift", { days: num(DRIFT.toFixed(2)) })}
           </text>
         </g>
@@ -153,13 +154,13 @@ export function LunarSolarGap() {
           x={W - PAD.r}
           y={H - 10}
           textAnchor="end"
-          className="text-[8.5px] font-semibold"
+          className="text-diagram-2xs font-semibold"
           style={{ fill: GAP }}
         >
           {t("learn.study.lunar_gap.three_year_total", { days: num((DRIFT * 3).toFixed(1)) })}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
         {t("learn.study.lunar_gap.caption")}
       </figcaption>
     </figure>

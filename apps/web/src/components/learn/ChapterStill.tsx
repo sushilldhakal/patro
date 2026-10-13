@@ -65,7 +65,7 @@ export function ChapterStill({
         className="block w-full object-contain"
       />
       {captionKey ? (
-        <figcaption className="px-2 py-1.5 text-[11px] leading-snug text-white/70">
+        <figcaption className="px-2 py-1.5 text-xs leading-snug text-white/70">
           {t(captionKey)}
         </figcaption>
       ) : null}

@@ -7,6 +7,7 @@ import {
 import { elementDescriptionBlocks } from "@vedic-patro/domain/panchanga-i18n";
 import { patroCard } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 export function GrahaBanner({
   icon,
@@ -22,21 +23,25 @@ export function GrahaBanner({
     <header
       className={cn(
         patroCard,
-        "rounded-2xl border border-border/80 bg-gradient-to-br from-secondary/10 via-card to-card px-5 py-5 dark:from-secondary/12",
+        grahaClasses.banner,
+        "bg-gradient-to-br from-secondary/10 via-card to-card dark:from-secondary/12",
       )}
     >
-      <div className="flex items-start gap-4">
+      <div className={cn(grahaClasses.bannerRow, "flex")}>
         <div
-          className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary/15 text-secondary ring-1 ring-secondary/20 [&_svg]:size-6"
+          className={cn(
+            grahaClasses.bannerIcon,
+            "flex text-secondary ring-1 ring-secondary/20 [&_svg]:size-6",
+          )}
           aria-hidden
         >
           {icon}
         </div>
-        <div className="min-w-0">
-          <h1 className="text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
+        <div className={grahaClasses.bannerText}>
+          <h1 className={grahaClasses.bannerTitle}>
             {t(titleKey)}
           </h1>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t(blurbKey)}</p>
+          <p className={grahaClasses.bannerBlurb}>{t(blurbKey)}</p>
         </div>
       </div>
     </header>
@@ -57,17 +62,17 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
   ];
 
   return (
-    <section className={cn(patroCard, "mt-6 p-4")} aria-label={t("common.about")}>
-      <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-secondary">
+    <section className={cn(patroCard, grahaClasses.aboutCard)} aria-label={t("common.about")}>
+      <h2 className={grahaClasses.aboutTitle}>
         {t("common.about")}
       </h2>
-      <div className="flex flex-col gap-4">
+      <div className={cn(grahaClasses.aboutBody, "flex flex-col")}>
         {blocks.map((b) => (
-          <div key={b.section} className="flex flex-col gap-1">
-            <h3 className="text-sm font-bold text-foreground">
+          <div key={b.section} className={cn(grahaClasses.aboutBlock, "flex flex-col")}>
+            <h3 className={grahaClasses.aboutBlockTitle}>
               {t(`element_page.section_${b.section}`)}
             </h3>
-            <p className="m-0 text-sm leading-relaxed text-muted-foreground">
+            <p className={grahaClasses.aboutBlockText}>
               {bilingualText(lang, b.body.ne, b.body.en)}
             </p>
           </div>
@@ -85,17 +90,17 @@ export function ElementDescription({ elementId }: { elementId: string }) {
   if (!blocks.some((b) => b.body)) return null;
 
   return (
-    <section className={cn(patroCard, "mt-6 p-4")} aria-label={t("common.about")}>
-      <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-secondary">
+    <section className={cn(patroCard, grahaClasses.aboutCard)} aria-label={t("common.about")}>
+      <h2 className={grahaClasses.aboutTitle}>
         {t("common.about")}
       </h2>
-      <div className="flex flex-col gap-4">
+      <div className={cn(grahaClasses.aboutBody, "flex flex-col")}>
         {blocks.map((b) => (
-          <div key={b.section} className="flex flex-col gap-1">
-            <h3 className="text-sm font-bold text-foreground">
+          <div key={b.section} className={cn(grahaClasses.aboutBlock, "flex flex-col")}>
+            <h3 className={grahaClasses.aboutBlockTitle}>
               {t(`element_page.section_${b.section}`)}
             </h3>
-            <p className="m-0 text-sm leading-relaxed text-muted-foreground">{b.body}</p>
+            <p className={grahaClasses.aboutBlockText}>{b.body}</p>
           </div>
         ))}
       </div>

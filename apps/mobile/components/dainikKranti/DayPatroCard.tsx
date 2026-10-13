@@ -6,7 +6,9 @@ import type { CalendarDay } from "@/lib/api";
 import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
 import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import { parseCivilIso } from "@vedic-patro/domain/patro-day";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useThemeColors } from "@/lib/theme-context";
@@ -78,10 +80,10 @@ function CardField({
   wide?: boolean;
 }) {
   return (
-    <View className="min-w-0" style={{ width: wide ? "100%" : "48%" }}>
-      <Text className="text-caption text-muted-foreground">{label}</Text>
-      <View>{typeof value === "string" ? <Text className="text-body text-foreground">{value}</Text> : value}</View>
-      {sub ? <Text className="text-caption text-muted-foreground">{sub}</Text> : null}
+    <View className={dainikKrantiClasses.field} style={{ width: wide ? "100%" : "48%" }}>
+      <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>{label}</Text>
+      <View>{typeof value === "string" ? <Text className={dainikKrantiClasses.fieldValue} style={nepaliTextStyle()}>{value}</Text> : value}</View>
+      {sub ? <Text className={dainikKrantiClasses.fieldSub} style={nepaliTextStyle()}>{sub}</Text> : null}
     </View>
   );
 }
@@ -119,41 +121,41 @@ export function DayPatroCard({
   return (
     <View
       className={cn(
-        "rounded-xl border bg-card p-3.5",
+        dainikKrantiClasses.dayCard,
         isToday
-          ? "border-secondary/60 bg-secondary/10"
+          ? dainikKrantiClasses.dayCardToday
           : hasFestival
-            ? "border-rose-500/30 bg-rose-500/5"
-            : "border-border",
+            ? dainikKrantiClasses.dayCardFestival
+            : dainikKrantiClasses.dayCardPlain,
       )}
     >
-      <View className="flex-row items-start justify-between gap-3">
-        <View className="flex-row items-baseline gap-2">
-          <Text className={cn("text-display font-num font-bold", dayColor)}>
-            {digits(day.day)}
-          </Text>
-          <View>
-            <Text
-              className={cn(
-                "text-body font-semibold",
-                isSaturday && "text-rose-600 dark:text-rose-400",
-              )}
-            >
-              {pick(day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday)}
+      <View className={dainikKrantiClasses.cardHead}>
+        <View>
+          <View className="flex-row items-baseline gap-1">
+            <Text className={cn(dainikKrantiClasses.dayNumBs, dayColor)} style={nepaliTextStyle()}>
+              {digits(day.day)}
             </Text>
-            <Text className="text-caption text-muted-foreground">{digits(fmtAd(day.date_ad))}</Text>
+            <Text className={cn(dainikKrantiClasses.dayNumAdSmall, "leading-none")} style={nepaliTextStyle()}>
+              {digits(fmtAd(day.date_ad))}
+            </Text>
           </View>
+          <Text
+            className={cn(dainikKrantiClasses.weekday, "leading-tight", isSaturday && dainikKrantiClasses.saturday)}
+            style={nepaliTextStyle()}
+          >
+            {pick(day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday)}
+          </Text>
         </View>
         {isToday ? (
-          <View className="rounded-full bg-secondary px-2 py-0.5">
-            <Text className="text-caption font-semibold text-secondary-foreground">
+          <View className={dainikKrantiClasses.todayBadge}>
+            <Text className={dainikKrantiClasses.todayBadgeText} style={nepaliTextStyle()}>
               {t("dainik.today")}
             </Text>
           </View>
         ) : null}
       </View>
 
-      <View className="mt-3 flex-row flex-wrap gap-x-3 gap-y-2.5">
+      <View className={cn(dainikKrantiClasses.fieldGrid, "flex-row flex-wrap")}>
         <CardField
           label={t("dainik.tithi")}
           value={`${pakshaShort(day, isEn)} ${pick(day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) ?? "—"}`}
@@ -176,16 +178,16 @@ export function DayPatroCard({
         />
       </View>
 
-      <View className="mt-3 flex-row flex-wrap gap-x-3 gap-y-2.5 rounded-lg bg-muted/40 p-2.5">
+      <View className={cn(dainikKrantiClasses.fieldGridMuted, "flex-row flex-wrap")}>
         <CardField
           wide
           label={t("dainik.sun_rise_set_sign")}
           value={
-            <View className="min-w-0">
-              <Text className="text-body font-num text-foreground">
+            <View className={dainikKrantiClasses.field}>
+              <Text className={cn(dainikKrantiClasses.sunRiseSetTimes, "font-num leading-snug")} style={nepaliTextStyle()}>
                 {`${day.sunrise ? digits(formatTimeShort(day.sunrise) ?? day.sunrise) : "—"}/${day.sunset ? digits(formatTimeShort(day.sunset) ?? day.sunset) : "—"}`}
               </Text>
-              <Text className="text-caption text-muted-foreground">
+              <Text className={dainikKrantiClasses.subLine} style={nepaliTextStyle()}>
                 {sunRashi ? `${sunRashi}${det?.ayana_mark ? ` ${det.ayana_mark}` : ""}` : "—"}
               </Text>
             </View>
@@ -195,16 +197,16 @@ export function DayPatroCard({
       </View>
 
       {(transits?.length ?? 0) > 0 ? (
-        <View className="mt-3">
-          <Text className="text-caption text-muted-foreground">
+        <View className={dainikKrantiClasses.transitsBlock}>
+          <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>
             {t("dainik.transits_rise_set")}
           </Text>
-          <View className="mt-1 gap-0.5">
+          <View className={cn(dainikKrantiClasses.transitsList, "gap-0.5")}>
             {transits!.map((ev, i) => (
-              <Text key={i} className="text-body">
-                <Text className="text-foreground">{pick(ev.labelNe, ev.labelEn)} </Text>
-                <Text className="text-secondary">{pick(ev.planetNe, ev.planetEn)}</Text>
-                {ev.time ? <Text> {digits(ev.time)}</Text> : null}
+              <Text key={i} className={dainikKrantiClasses.transitRow} style={nepaliTextStyle()}>
+                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitName)}>{pick(ev.labelNe, ev.labelEn)} </Text>
+                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitPlanet)}>{pick(ev.planetNe, ev.planetEn)}</Text>
+                {ev.time ? <Text className={dainikKrantiClasses.cellText}> {digits(ev.time)}</Text> : null}
               </Text>
             ))}
           </View>
@@ -212,9 +214,9 @@ export function DayPatroCard({
       ) : null}
 
       {hasFestival ? (
-        <View className="mt-3 rounded-lg bg-rose-500/5 px-2.5 py-2">
-          <Text className="text-caption text-muted-foreground">{t("dainik.festival")}</Text>
-          <Text className="text-body text-rose-600 dark:text-rose-300">
+        <View className={dainikKrantiClasses.festivalBox}>
+          <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>{t("dainik.festival")}</Text>
+          <Text numberOfLines={2} className={dainikKrantiClasses.festivalText} style={nepaliTextStyle()}>
             {day.festivals.join(" · ")}
           </Text>
         </View>
@@ -226,21 +228,21 @@ export function DayPatroCard({
             onPress={onToggle}
             accessibilityRole="button"
             accessibilityState={{ expanded: isExpanded }}
-            className="mt-3 flex-row items-center justify-center gap-1.5 rounded-lg border border-border bg-background/60 py-2 active:bg-muted"
+            className={cn(dainikKrantiClasses.expandBtn, "flex-row active:bg-muted")}
           >
             <Ionicons
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={16}
               color={colors.secondary}
             />
-            <Text className="text-body font-semibold text-secondary">
+            <Text className={dainikKrantiClasses.expandBtnText} style={nepaliTextStyle()}>
               {isExpanded
                 ? pick("विवरण लुकाउनुहोस्", "Hide details")
                 : pick("लग्न · ग्रहस्पष्ट · थप विवरण", "Lagna · planets & more")}
             </Text>
           </Pressable>
           {isExpanded ? (
-            <View className="mt-1 border-t border-border pt-2">
+            <View className={dainikKrantiClasses.expandBody}>
               <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
             </View>
           ) : null}

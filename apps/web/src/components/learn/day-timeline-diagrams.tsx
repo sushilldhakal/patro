@@ -18,12 +18,13 @@ import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const INK = "currentColor";
-const SUN = "#dddd00";
-const MOON = "#cbd5e1";
-const MARK = "#f59e0b";
-const ALT = "#0ea5e9";
-const WARN = "#ef4444";
+const SUN = illustration.amber43;
+const MOON = illustration.sky84;
+const MARK = illustration.orange50;
+const ALT = illustration.teal48;
+const WARN = illustration.red60;
 
 const digits = (lang: Lang, v: string | number) =>
   lang === "en" ? String(v) : toNepaliDigits(String(v));
@@ -47,7 +48,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
     </figure>
   );
 }
@@ -96,7 +97,7 @@ export function SiderealSolarDay() {
       label={t("learn.diagrams.sidereal_day_label")}
       caption={t("learn.diagrams.sidereal_day_caption")}
     >
-      <text x={W / 2} y={18} textAnchor="middle" className="fill-current text-[8.5px] opacity-60">
+      <text x={W / 2} y={18} textAnchor="middle" className="fill-current text-diagram-2xs opacity-60">
         ★ {t("learn.diagrams.sidereal_star_direction")}
       </text>
 
@@ -130,7 +131,7 @@ export function SiderealSolarDay() {
           />
           <circle cx={pt(p.cx, p.sun, r + 30)[0]} cy={pt(p.cx, p.sun, r + 30)[1]} r={7} fill={SUN} opacity={0.6} />
 
-          <text x={p.cx} y={cy + r + 26} textAnchor="middle" className="fill-current text-[8px] opacity-65">
+          <text x={p.cx} y={cy + r + 26} textAnchor="middle" className="fill-current text-diagram-2xs opacity-65">
             {t(p.caption)}
           </text>
         </g>
@@ -143,14 +144,14 @@ export function SiderealSolarDay() {
         stroke={MARK}
         strokeWidth={1.3}
       />
-      <text x={panels[1]!.cx + 54} y={cy - 46} className="text-[8.5px] font-semibold" style={{ fill: MARK }}>
+      <text x={panels[1]!.cx + 54} y={cy - 46} className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
         {bilingualText(lang, `अझै ~${n(1)}° बाँकी`, `~${n(1)}° still to go`)}
       </text>
 
-      <text x={W / 2} y={H - 26} textAnchor="middle" className="text-[9px] font-semibold" style={{ fill: MARK }}>
+      <text x={W / 2} y={H - 26} textAnchor="middle" className="text-diagram-xs font-semibold" style={{ fill: MARK }}>
         {bilingualText(lang, `त्यो ~${n(1)}° = ~${n(4)} मिनेट थप घुर्णन`, `that ~${n(1)}° = ~${n(4)} more minutes of spin`)}
       </text>
-      <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-current text-[9px] font-semibold opacity-80">
+      <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-80">
         {t("learn.diagrams.sidereal_day_total")}
       </text>
     </Frame>
@@ -196,13 +197,13 @@ export function DayLengthHourAngle() {
       caption={t("learn.diagrams.day_length_caption")}
     >
       <line x1={noon} y1={34} x2={noon} y2={H - 34} stroke={MARK} strokeWidth={1.2} strokeDasharray="3 3" opacity={0.8} />
-      <text x={noon} y={26} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: MARK }}>
+      <text x={noon} y={26} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
         {t("learn.diagrams.local_noon")}
       </text>
 
       {rows.map((r) => (
         <g key={r.key}>
-          <text x={L - 10} y={r.y + 3} textAnchor="end" className="fill-current text-[8px] opacity-60">
+          <text x={L - 10} y={r.y + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-60">
             {t(r.key)}
           </text>
           <line
@@ -218,22 +219,22 @@ export function DayLengthHourAngle() {
           {[-1, 1].map((s) => (
             <circle key={s} cx={noon + s * px(r.h)} cy={r.y} r={3.4} fill={r.c} />
           ))}
-          <text x={noon - px(r.h) - 6} y={r.y + 3} textAnchor="end" className="fill-current text-[7.5px] opacity-65">
+          <text x={noon - px(r.h) - 6} y={r.y + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-65">
             {t("panchanga.wheel.sunrise")}
           </text>
-          <text x={noon + px(r.h) + 6} y={r.y + 3} className="fill-current text-[7.5px] opacity-65">
+          <text x={noon + px(r.h) + 6} y={r.y + 3} className="fill-current text-diagram-2xs opacity-65">
             {t("learn.diagrams.sunset")}
           </text>
-          <text x={noon} y={r.y + 17} textAnchor="middle" className="fill-current text-[7.5px] opacity-55">
+          <text x={noon} y={r.y + 17} textAnchor="middle" className="fill-current text-diagram-2xs opacity-55">
             {bilingualText(lang, `२H = ${n(r.len)}`, `2H = ${r.len}`)}
           </text>
         </g>
       ))}
 
-      <text x={noon - px(3.5)} y={H - 12} textAnchor="middle" className="fill-current text-[8px] opacity-60">
+      <text x={noon - px(3.5)} y={H - 12} textAnchor="middle" className="fill-current text-diagram-2xs opacity-60">
         ◄── H ──►
       </text>
-      <text x={noon + px(3.5)} y={H - 12} textAnchor="middle" className="fill-current text-[8px] opacity-60">
+      <text x={noon + px(3.5)} y={H - 12} textAnchor="middle" className="fill-current text-diagram-2xs opacity-60">
         ◄── H ──►
       </text>
     </Frame>
@@ -288,7 +289,7 @@ export function MoonriseSlip() {
       {[0, 6, 12, 18, 24].map((h) => (
         <g key={h}>
           <line x1={x(h)} y1={36} x2={x(h)} y2={H - 42} stroke={INK} strokeOpacity={0.12} strokeWidth={0.7} />
-          <text x={x(h)} y={30} textAnchor="middle" className="fill-current text-[7.5px] opacity-50">
+          <text x={x(h)} y={30} textAnchor="middle" className="fill-current text-diagram-2xs opacity-50">
             {n(String(h).padStart(2, "0"))}:{n("00")}
           </text>
         </g>
@@ -296,7 +297,7 @@ export function MoonriseSlip() {
 
       {days.map((row, i) => (
         <g key={row.d}>
-          <text x={L - 8} y={rowY(i) + 3} textAnchor="end" className="fill-current text-[8px] opacity-60">
+          <text x={L - 8} y={rowY(i) + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-60">
             {bilingualText(lang, `दिन ${n(row.d)}`, `day ${row.d}`)}
           </text>
           <line x1={L} y1={rowY(i)} x2={Rr} y2={rowY(i)} stroke={INK} strokeOpacity={0.16} strokeWidth={0.8} />
@@ -304,7 +305,7 @@ export function MoonriseSlip() {
             <circle key={h} cx={x(h)} cy={rowY(i)} r={4} fill={MOON} opacity={0.95} />
           ))}
           {row.rises.length === 0 && (
-            <text x={(L + Rr) / 2} y={rowY(i) + 3} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: WARN }}>
+            <text x={(L + Rr) / 2} y={rowY(i) + 3} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
               {t("learn.diagrams.moonrise_none")}
             </text>
           )}
@@ -315,7 +316,7 @@ export function MoonriseSlip() {
               x={x(row.rises[0]!) + (row.rises[0]! > 20 ? -9 : 9)}
               y={rowY(i) + 3}
               textAnchor={row.rises[0]! > 20 ? "end" : "start"}
-              className="fill-current text-[7px] opacity-45"
+              className="fill-current text-5xl opacity-45"
             >
               +{n(50)}m
             </text>
@@ -323,7 +324,7 @@ export function MoonriseSlip() {
         </g>
       ))}
 
-      <text x={L} y={H - 12} className="fill-current text-[8.5px] font-semibold opacity-70">
+      <text x={L} y={H - 12} className="fill-current text-diagram-2xs font-semibold opacity-70">
         {bilingualText(lang, `हरेक दिन ~${n(50)} मिनेट ढिलो →`, `~${n(50)} minutes later each day →`)}
       </text>
     </Frame>
@@ -382,31 +383,31 @@ export function SunriseSamplesTithi() {
             x={(x(seg.a) + x(seg.b)) / 2}
             y={barY + 17}
             textAnchor="middle"
-            className="fill-current text-[8.5px] opacity-75"
+            className="fill-current text-diagram-2xs opacity-75"
           >
             {t(seg.key)}
           </text>
         </g>
       ))}
       <line x1={x(4.5)} y1={barY - 6} x2={x(4.5)} y2={barY + 32} stroke={WARN} strokeWidth={1.3} />
-      <text x={x(4.5)} y={barY - 12} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: WARN }}>
+      <text x={x(4.5)} y={barY - 12} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {bilingualText(lang, `तिथि बदलियो ०४:३०`, `tithi changes ${n("04:30")}`)}
       </text>
 
       {/* the sampling instant */}
       <line x1={x(6.17)} y1={barY + 34} x2={x(6.17)} y2={barY + 56} stroke={MARK} strokeWidth={1.4} />
       <circle cx={x(6.17)} cy={barY + 34} r={3.6} fill={MARK} />
-      <text x={x(6.17)} y={barY + 70} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: MARK }}>
+      <text x={x(6.17)} y={barY + 70} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
         {bilingualText(lang, `सूर्योदय ०५:४५ — यहाँ नमुना लिइन्छ`, `sunrise ${n("05:45")} — sampled here`)}
       </text>
 
-      <text x={L} y={30} className="fill-current text-[8px] opacity-55">
+      <text x={L} y={30} className="fill-current text-diagram-2xs opacity-55">
         {n("00:00")}
       </text>
-      <text x={Rr} y={30} textAnchor="end" className="fill-current text-[8px] opacity-55">
+      <text x={Rr} y={30} textAnchor="end" className="fill-current text-diagram-2xs opacity-55">
         {n("24:00")}
       </text>
-      <text x={(L + Rr) / 2} y={30} textAnchor="middle" className="fill-current text-[8.5px] font-semibold opacity-70">
+      <text x={(L + Rr) / 2} y={30} textAnchor="middle" className="fill-current text-diagram-2xs font-semibold opacity-70">
         {t("learn.diagrams.one_civil_day")}
       </text>
     </Frame>
@@ -448,7 +449,7 @@ export function TithiAcrossZones() {
       label={t("learn.diagrams.tithi_zones_label")}
       caption={t("learn.diagrams.tithi_zones_caption")}
     >
-      <text x={W / 2} y={20} textAnchor="middle" className="fill-current text-[9px] font-semibold opacity-75">
+      <text x={W / 2} y={20} textAnchor="middle" className="fill-current text-diagram-xs font-semibold opacity-75">
         {bilingualText(lang, `तिथि सकिने क्षण — ${n("22:00")} UTC`, `tithi ends — ${n("22:00")} UTC`)}
       </text>
 
@@ -456,23 +457,23 @@ export function TithiAcrossZones() {
         const y = 62 + i * 76;
         return (
           <g key={p.key}>
-            <text x={L - 10} y={y - 2} textAnchor="end" className="fill-current text-[8.5px] font-semibold opacity-75">
+            <text x={L - 10} y={y - 2} textAnchor="end" className="fill-current text-diagram-2xs font-semibold opacity-75">
               {t(p.key)}
             </text>
-            <text x={L - 10} y={y + 10} textAnchor="end" className="fill-current text-[7.5px] opacity-50">
+            <text x={L - 10} y={y + 10} textAnchor="end" className="fill-current text-diagram-2xs opacity-50">
               {p.tz}
             </text>
             <line x1={L} y1={y} x2={Rr} y2={y} stroke={INK} strokeOpacity={0.18} strokeWidth={0.9} />
 
             {/* sunrise */}
             <circle cx={x(p.rise)} cy={y} r={3.8} fill={MARK} />
-            <text x={x(p.rise)} y={y - 8} textAnchor="middle" className="text-[7.5px]" style={{ fill: MARK }}>
+            <text x={x(p.rise)} y={y - 8} textAnchor="middle" className="text-diagram-2xs" style={{ fill: MARK }}>
               {t("panchanga.wheel.sunrise")}
             </text>
 
             {/* the boundary */}
             <line x1={x(p.end)} y1={y - 14} x2={x(p.end)} y2={y + 14} stroke={WARN} strokeWidth={1.4} />
-            <text x={x(p.end)} y={y - 20} textAnchor="middle" className="text-[7.5px] font-semibold" style={{ fill: WARN }}>
+            <text x={x(p.end)} y={y - 20} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
               {n(p.before ? "03:45" : "09:00")}
             </text>
 
@@ -480,7 +481,7 @@ export function TithiAcrossZones() {
               x={Rr}
               y={y + 25}
               textAnchor="end"
-              className="text-[8px] font-semibold"
+              className="text-diagram-2xs font-semibold"
               style={{ fill: p.before ? WARN : MARK }}
             >
               {p.before

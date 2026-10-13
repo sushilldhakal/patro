@@ -20,6 +20,7 @@ import {
 } from "@/lib/use-panchanga-location";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 
 export const EMPTY_PROFILE: ProfileInput = {
   full_name: "",
@@ -77,7 +78,7 @@ function pickLabel(form: ProfileInput): string {
 
 function FieldLabel({ children }: { children: string }) {
   return (
-    <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
+    <Text className={accountClasses.label} style={nepaliTextStyle(14)}>
       {children}
     </Text>
   );
@@ -105,7 +106,7 @@ function FieldInput({
       placeholderTextColor={colors.mutedForeground}
       keyboardType={keyboardType}
       maxLength={maxLength}
-      className="text-body rounded-lg border border-border bg-card px-3 py-2.5 text-foreground"
+      className={accountClasses.input}
       style={nepaliTextStyle(14)}
     />
   );
@@ -124,12 +125,12 @@ function OptionChip({
     <Pressable
       onPress={onPress}
       className={cn(
-        "rounded-lg border px-3 py-2",
-        active ? "border-secondary bg-secondary/10" : "border-border bg-card",
+        "h-8 items-center justify-center rounded-lg border px-2.5",
+        active ? "border-secondary bg-secondary/10" : "border-border",
       )}
     >
       <Text
-        className={cn("text-body", active ? "font-semibold text-secondary" : "text-foreground")}
+        className={cn("text-sm", active ? "font-semibold text-secondary" : "text-foreground")}
         style={nepaliTextStyle(14)}
       >
         {label}
@@ -199,13 +200,13 @@ export function ProfileForm({
   }
 
   return (
-    <View className="gap-4">
-      <View className="gap-4 sm:flex-row">
-        <View className="min-w-0 flex-1 gap-1.5">
+    <View className={accountClasses.profileForm}>
+      <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("पूरा नाम", "Full name")}</FieldLabel>
           <FieldInput value={form.full_name} onChangeText={(v) => set("full_name", v)} />
         </View>
-        <View className="min-w-0 flex-1 gap-1.5">
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("फोन", "Phone")}</FieldLabel>
           <FieldInput
             value={form.phone ?? ""}
@@ -216,19 +217,19 @@ export function ProfileForm({
         </View>
       </View>
 
-      <View className="gap-4 sm:flex-row">
-        <View className="min-w-0 flex-1 gap-1.5">
+      <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("इमेल", "Email")}</FieldLabel>
           <EmailTextInput
             value={form.email ?? ""}
             onChangeText={(v) => set("email", v)}
             placeholder="you@example.com"
             placeholderTextColor={colors.mutedForeground}
-            className="text-body rounded-lg border border-border bg-card px-3 py-2.5 text-foreground"
+            className={accountClasses.input}
             style={nepaliTextStyle(14)}
           />
         </View>
-        <View className="min-w-0 flex-1 gap-1.5">
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("लिङ्ग", "Gender")}</FieldLabel>
           <View className="flex-row flex-wrap gap-2">
             <OptionChip
@@ -250,19 +251,19 @@ export function ProfileForm({
         </View>
       </View>
 
-      <View className="gap-1.5">
+      <View className={accountClasses.field}>
         <FieldLabel>{pick("जन्म स्थान", "Birth place")}</FieldLabel>
         <LocationSelector location={birthLocation} onLocationChange={onLocationChange} />
         {form.country ? (
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className={accountClasses.hint} style={nepaliTextStyle()}>
             {form.country}
             {form.timezone ? ` · ${form.timezone}` : ""}
           </Text>
         ) : null}
       </View>
 
-      <View className="gap-4 sm:flex-row">
-        <View className="min-w-0 flex-1 gap-1.5">
+      <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("जन्म मिति", "Birth date")}</FieldLabel>
           <FieldInput
             value={form.birth_date ?? ""}
@@ -272,7 +273,7 @@ export function ProfileForm({
             maxLength={10}
           />
         </View>
-        <View className="min-w-0 flex-1 gap-1.5">
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("जन्म समय", "Birth time")}</FieldLabel>
           <FieldInput
             value={form.birth_time ?? ""}
@@ -282,7 +283,7 @@ export function ProfileForm({
             maxLength={5}
           />
         </View>
-        <View className="min-w-0 flex-1 gap-1.5">
+        <View className={cn("min-w-0 flex-1", accountClasses.field)}>
           <FieldLabel>{pick("पात्रो", "Calendar")}</FieldLabel>
           <View className="flex-row gap-2">
             <OptionChip
@@ -299,20 +300,20 @@ export function ProfileForm({
         </View>
       </View>
 
-      <View className="flex-row items-center gap-2">
+      <View className={cn("flex-row", accountClasses.checkRow)}>
         <Switch value={!!form.is_default} onValueChange={(v) => set("is_default", v)} />
-        <Text className="text-body text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={accountClasses.checkText} style={nepaliTextStyle()}>
           {pick("पूर्वनिर्धारित प्रोफाइल", "Set as default profile")}
         </Text>
       </View>
 
       {error ? (
-        <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
+        <Text className={accountClasses.formError} style={nepaliTextStyle(14)}>
           {error}
         </Text>
       ) : null}
 
-      <View className="flex-row justify-end gap-2">
+      <View className={cn("flex-row", accountClasses.formActions)}>
         <Button label={pick("रद्द", "Cancel")} variant="ghost" onPress={onCancel} disabled={busy} />
         <Button
           label={

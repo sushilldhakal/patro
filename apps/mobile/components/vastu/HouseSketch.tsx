@@ -38,7 +38,9 @@ import { houseTemplate, type Rect, type TemplateRoom } from "@vedic-patro/domain
 import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
 import { VastuCompassRing } from "./VastuCompassRing";
 
-const DOOR_COLOR = "#C0392B";
+import { illustration } from "@vedic-patro/design-tokens";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
+const DOOR_COLOR = illustration.red46;
 /** Ring-units-per-metre this layout was tuned at — label sizes scale off it. */
 const REFERENCE_SCALE = 22;
 
@@ -122,9 +124,9 @@ function FlowArrow({
 /** One swatch + caption in the legend under the sketch. */
 function LegendItem({ swatch, label }: { swatch: React.ReactNode; label: string }) {
   return (
-    <View className="flex-row items-center gap-1.5">
+    <View className={vastuClasses.legendItem}>
       {swatch}
-      <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11, { dense: true })}>
+      <Text className={vastuClasses.legendText} style={nepaliTextStyle(11, { dense: true })}>
         {label}
       </Text>
     </View>
@@ -367,9 +369,9 @@ export function HouseSketch({
         </View>
       </View>
 
-      <View className="mt-2 gap-2">
+      <View className={vastuClasses.sketchCaption}>
         <Text
-          className="text-body text-center font-semibold text-foreground"
+          className={vastuClasses.sketchSummary}
           style={nepaliTextStyle(13)}
         >
           {t("vastu.sketch.door_pada", {
@@ -384,11 +386,11 @@ export function HouseSketch({
           })}
         </Text>
 
-        <View className="flex-row flex-wrap items-center justify-center gap-x-3 gap-y-1">
+        <View className={vastuClasses.sketchLegend}>
           <LegendItem
             swatch={
               <View
-                className="h-2.5 w-4 rounded-[2px] border border-dashed"
+                className={vastuClasses.legendSwatchCourt}
                 style={{ borderColor: DOOR_COLOR, backgroundColor: vastuElementTint("fire", 0.16) }}
               />
             }
@@ -397,7 +399,7 @@ export function HouseSketch({
           <LegendItem
             swatch={
               <View
-                className="h-2.5 w-4 rounded-[2px] border border-black/20"
+                className={vastuClasses.legendSwatchAlindra}
                 style={{ backgroundColor: vastuElementTint("space", 0.16) }}
               />
             }
@@ -405,7 +407,7 @@ export function HouseSketch({
           />
           <LegendItem
             swatch={
-              <View className="h-0.5 w-4 rounded-full" style={{ backgroundColor: DOOR_COLOR }} />
+              <View className={vastuClasses.legendSwatchFlow} style={{ backgroundColor: DOOR_COLOR }} />
             }
             label={t("vastu.sketch.legend_flow")}
           />
@@ -414,7 +416,7 @@ export function HouseSketch({
               key={element}
               swatch={
                 <View
-                  className="h-2.5 w-2.5 rounded-[3px] border border-black/15"
+                  className={vastuClasses.legendSwatchElement}
                   style={{ backgroundColor: vastuElementTint(element, 0.3) }}
                 />
               }
@@ -423,11 +425,11 @@ export function HouseSketch({
           ))}
         </View>
 
-        <View className="gap-1 rounded-lg border border-border bg-background px-3 py-2">
+        <View className={vastuClasses.sketchRules}>
           {(["rule_court", "rule_alindra", "rule_flow", "rule_door"] as const).map((rule) => (
             <Text
               key={rule}
-              className="text-caption text-muted-foreground"
+              className={vastuClasses.sketchRuleText}
               style={nepaliTextStyle(11, { dense: true })}
             >
               {t(`vastu.sketch.${rule}`)}

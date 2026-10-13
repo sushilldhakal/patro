@@ -24,6 +24,9 @@ import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-quer
 import { KundaliMilanResult } from "@/components/kundali/KundaliMilanResult";
 import { fetchKundaliMilan, milanKeys, type MilanPersonQuery } from "@/lib/api";
 import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
+import { space } from "@vedic-patro/design-tokens";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export default function KundaliMilanScreen() {
   const { lang, pick, t } = useLocale();
@@ -74,7 +77,7 @@ export default function KundaliMilanScreen() {
         }
       >
         {authLoading ? (
-          <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12">
+          <View className={cn(kundaliClasses.emptyBox, "items-center")}>
             <ActivityIndicator />
           </View>
         ) : !isAuthenticated ? (
@@ -88,12 +91,12 @@ export default function KundaliMilanScreen() {
             onSignup={() => openAuth("signup")}
           />
         ) : (
-          <View className="gap-4">
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+          <View className="gap-6">
+            <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
               {pick("वर र कन्याका प्रोफाइल छान्नुहोस्।", "Select profiles for groom and bride.")}
             </Text>
 
-            <View className="gap-3 md:flex-row">
+            <View className="gap-3 sm:flex-row">
               <MilanSlot
                 role="boy"
                 label={pick("वर", "Groom")}
@@ -112,18 +115,18 @@ export default function KundaliMilanScreen() {
 
             {boyProfile && girlProfile ? (
               !boyQuery || !girlQuery ? (
-                <Card className="gap-2">
-                  <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+                <View className={cn(kundaliClasses.warnBox, "items-center")}>
+                  <Text className={kundaliClasses.warnText} style={nepaliTextStyle(14)}>
                     {pick(
                       "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
                       "Both profiles need a birth date — add one in your account.",
                     )}
                   </Text>
-                </Card>
+                </View>
               ) : milanQuery.isLoading && !milanQuery.data ? (
-                <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12">
+                <View className={cn(kundaliClasses.emptyBox, "items-center")}>
                   <ActivityIndicator />
-                  <Text className="text-body mt-3 text-muted-foreground" style={nepaliTextStyle(14)}>
+                  <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
                     {pick("मिलान गणना हुँदै…", "Matching the charts…")}
                   </Text>
                 </View>
@@ -134,14 +137,14 @@ export default function KundaliMilanScreen() {
                   result={milanQuery.data.result}
                 />
               ) : (
-                <Card>
-                  <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
+                <View className={cn(kundaliClasses.errorBox, "items-center")}>
+                  <Text className={kundaliClasses.errorText} style={nepaliTextStyle(14)}>
                     {pick(
                       "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
                       "Could not load the match. Please try again shortly.",
                     )}
                   </Text>
-                </Card>
+                </View>
               )
             ) : null}
           </View>
@@ -202,7 +205,7 @@ function MilanSlot({
   const colors = useThemeColors();
 
   return (
-    <Card className="min-w-[280px] flex-1 gap-3">
+    <Card className="min-w-[280px] flex-1 gap-3 rounded-2xl">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Ionicons
@@ -210,7 +213,7 @@ function MilanSlot({
             size={20}
             color={colors.secondary}
           />
-          <Text className="font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className={kundaliDetailClasses.milanPicker.slotLabel} style={nepaliTextStyle(16)}>
             {label}
           </Text>
         </View>
@@ -223,14 +226,14 @@ function MilanSlot({
 
       {profile ? (
         <Pressable onPress={onPress} className="gap-1 active:opacity-80">
-          <Text className="font-medium text-foreground" style={nepaliTextStyle(15)}>
+          <Text className={kundaliDetailClasses.milanPicker.slotName} style={nepaliTextStyle(15)}>
             {profile.full_name}
           </Text>
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className={kundaliDetailClasses.milanPicker.slotMeta} style={nepaliTextStyle(12)}>
             {profile.birth_date || "—"}
             {profile.birth_time ? ` · ${profile.birth_time}` : ""}
           </Text>
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className={kundaliDetailClasses.milanPicker.slotMeta} style={nepaliTextStyle(12)}>
             {profile.location_label || profile.city || "—"}
           </Text>
         </Pressable>
@@ -269,15 +272,15 @@ function ProfilePickModal({
           <Pressable onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={24} color={colors.foreground} />
           </Pressable>
-          <Text className="text-body ml-3 font-semibold text-foreground" style={nepaliTextStyle(16)}>
+          <Text className="ml-3 text-base font-semibold text-foreground" style={nepaliTextStyle(16)}>
             {title}
           </Text>
         </View>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: Math.max(insets.bottom, 16) }}>
+        <ScrollView contentContainerStyle={{ padding: space.lg, paddingBottom: Math.max(insets.bottom, space.lg) }}>
           {isLoading ? (
             <ActivityIndicator />
           ) : (profiles ?? []).length === 0 ? (
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
               {pick("कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।", "No profiles — add one first.")}
             </Text>
           ) : (
@@ -288,10 +291,10 @@ function ProfilePickModal({
                   onPress={() => onPick(p)}
                   className={cn("rounded-xl border border-border bg-card p-4 active:bg-muted")}
                 >
-                  <Text className="font-semibold text-foreground" style={nepaliTextStyle(16)}>
+                  <Text className={kundaliDetailClasses.milanPicker.pickName} style={nepaliTextStyle(16)}>
                     {p.full_name}
                   </Text>
-                  <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+                  <Text className={kundaliDetailClasses.milanPicker.pickMeta} style={nepaliTextStyle(12)}>
                     {p.birth_date || "—"}
                   </Text>
                 </Pressable>

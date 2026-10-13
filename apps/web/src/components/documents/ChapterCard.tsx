@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { documentsListSearch, type DocumentCategoryTab, type DocumentChapter } from "@/lib/documents-api";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   slug: string;
@@ -26,18 +28,18 @@ export function ChapterCard({ slug, chapter, category, topic }: Props) {
       to="/documents/$slug/$chapter"
       params={{ slug, chapter: String(chapter.number) }}
       search={category ? documentsListSearch(category, topic) : undefined}
-      className="group flex items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3.5 transition-colors hover:border-secondary/60 hover:bg-secondary/5"
+      className={cn(documentsClasses.chapterRow, "group transition-colors hover:border-secondary/60 hover:bg-secondary/5")}
     >
-      <div className="grid size-10 shrink-0 place-items-center rounded-full bg-secondary/10 text-sm font-bold tabular-nums text-secondary">
+      <div className={cn(documentsClasses.chapterRowNumber, documentsClasses.chapterRowNumberText)}>
         {num(chapter.number)}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold">
+      <div className={documentsClasses.fill}>
+        <p className={cn(documentsClasses.chapterRowTitle, "truncate")}>
           {t("documents.chapter_label", { number: num(chapter.number) })}
         </p>
-        {title ? <p className="truncate text-sm text-muted-foreground">{title}</p> : null}
+        {title ? <p className={cn(documentsClasses.chapterRowSub, "truncate")}>{title}</p> : null}
         {chapter.shloka_count != null ? (
-          <p className="mt-0.5 text-xs text-muted-foreground/80">
+          <p className={documentsClasses.chapterRowCount}>
             {t("documents.shlokas_count", { count: num(chapter.shloka_count) })}
           </p>
         ) : null}

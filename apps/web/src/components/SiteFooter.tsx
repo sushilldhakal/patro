@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function SiteFooter() {
   const { t } = useTranslation();
   return (
-    <footer className="mt-12 border-t border-border">
-      <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-6 text-sm text-muted-foreground">
+    <footer className={shellClasses.footer}>
+      <div className={cn("flex flex-wrap", shellClasses.footerRow, shellClasses.footerLink)}>
         <Link to="/privacy" className="hover:text-foreground">
           {t("footer.privacy")}
         </Link>

@@ -7,6 +7,7 @@ import {
   normElongation,
 } from "@vedic-patro/domain/moon-phase-svg";
 
+import { brand, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 interface MoonPhaseDiscProps {
   /** Moon–sun elongation in degrees (0° औंसी, 180° पूर्णिमा). */
   elongation: number;
@@ -32,18 +33,18 @@ export const MoonPhaseDisc = memo(function MoonPhaseDisc({
     <g>
       <defs>
         <radialGradient id={baseId} cx="38%" cy="32%" r="72%">
-          <stop offset="0%" stopColor="#8a939d" />
-          <stop offset="55%" stopColor="#4f5862" />
-          <stop offset="100%" stopColor="#252c33" />
+          <stop offset="0%" stopColor={illustration.gray58b} />
+          <stop offset="55%" stopColor={illustration.teal33} />
+          <stop offset="100%" stopColor={illustration.teal15} />
         </radialGradient>
         <radialGradient id={litId} cx="32%" cy="28%" r="78%">
-          <stop offset="0%" stopColor="#fafcfe" />
-          <stop offset="45%" stopColor="#e4ecf4" />
-          <stop offset="100%" stopColor="#b8c4d0" />
+          <stop offset="0%" stopColor={brand.offWhite} />
+          <stop offset="45%" stopColor={wheel.ink} />
+          <stop offset="100%" stopColor={illustration.sky76b} />
         </radialGradient>
         <radialGradient id={darkId} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1a2228" />
-          <stop offset="100%" stopColor="#0a0e12" />
+          <stop offset="0%" stopColor={midnight.card} />
+          <stop offset="100%" stopColor={midnight.popover} />
         </radialGradient>
         <clipPath id={clipId}>
           <circle cx={0} cy={0} r={r} />
@@ -60,10 +61,10 @@ export const MoonPhaseDisc = memo(function MoonPhaseDisc({
 
       {!isNew && (
         <g clipPath={`url(#${clipId})`} opacity={0.45}>
-          <circle cx={-r * 0.28} cy={-r * 0.22} r={r * 0.2} fill="#3d4650" />
-          <circle cx={r * 0.34} cy={r * 0.12} r={r * 0.16} fill="#323a44" />
-          <circle cx={-r * 0.08} cy={r * 0.34} r={r * 0.11} fill="#2e353d" />
-          <circle cx={r * 0.12} cy={-r * 0.38} r={r * 0.08} fill="#404952" />
+          <circle cx={-r * 0.28} cy={-r * 0.22} r={r * 0.2} fill={illustration.sky27} />
+          <circle cx={r * 0.34} cy={r * 0.12} r={r * 0.16} fill={illustration.gray22} />
+          <circle cx={-r * 0.08} cy={r * 0.34} r={r * 0.11} fill={illustration.gray22} />
+          <circle cx={r * 0.12} cy={-r * 0.38} r={r * 0.08} fill={illustration.sky29b} />
         </g>
       )}
 

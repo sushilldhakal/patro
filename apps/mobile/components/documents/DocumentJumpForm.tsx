@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
+import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   /** Every valid chapter number, for validating the typed chapter. */
@@ -33,18 +36,12 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
     setNotFound(!onJump(chapter, verseInput.trim()));
   };
 
-  const inputStyle = {
-    color: colors.foreground,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
-  };
-
   return (
-    <View className="mb-4">
-      <View className="flex-row items-end gap-2">
+    <View>
+      <View className={documentsClasses.jumpForm}>
         {currentChapter == null ? (
-          <View>
-            <Text className="text-caption mb-1 font-semibold text-muted-foreground">{t("documents.jump_chapter_label")}</Text>
+          <View className={documentsClasses.jumpField}>
+            <Text className={documentsClasses.jumpLabel}>{t("documents.jump_chapter_label")}</Text>
             <TextInput
               value={chapterInput}
               onChangeText={(v) => {
@@ -55,13 +52,12 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
               returnKeyType="go"
               onSubmitEditing={submit}
               accessibilityLabel={t("documents.jump_chapter_label")}
-              className="text-body h-11 w-20 rounded-lg border px-3"
-              style={inputStyle}
+              className={cn(documentsClasses.jumpInput, documentsClasses.jumpChapterInput)}
             />
           </View>
         ) : null}
-        <View>
-          <Text className="text-caption mb-1 font-semibold text-muted-foreground">{t("documents.jump_verse_label")}</Text>
+        <View className={documentsClasses.jumpField}>
+          <Text className={documentsClasses.jumpLabel}>{t("documents.jump_verse_label")}</Text>
           <TextInput
             value={verseInput}
             onChangeText={(v) => {
@@ -75,20 +71,19 @@ export function DocumentJumpForm({ chapterNumbers, currentChapter, onJump }: Pro
             returnKeyType="go"
             onSubmitEditing={submit}
             accessibilityLabel={t("documents.jump_verse_label")}
-            className="text-body h-11 w-32 rounded-lg border px-3"
-            style={inputStyle}
+            className={cn(documentsClasses.jumpInput, documentsClasses.jumpVerseInput)}
           />
         </View>
-        <Pressable
+        <Button
+          size="sm"
+          variant="secondary"
+          label={t("documents.jump_button")}
           onPress={submit}
-          accessibilityRole="button"
-          className="h-11 flex-row items-center gap-1.5 rounded-lg bg-secondary px-4"
-        >
-          <Ionicons name="search" size={15} color={inkOn(colors.secondary)} />
-          <Text className="text-body font-semibold text-secondary-foreground">{t("documents.jump_button")}</Text>
-        </Pressable>
+          className="gap-1.5"
+          icon={<Ionicons name="search" size={14} color={inkOn(colors.secondary)} />}
+        />
       </View>
-      {notFound ? <Text className="text-caption mt-2 text-destructive">{t("documents.jump_not_found")}</Text> : null}
+      {notFound ? <Text className={cn("mt-2", documentsClasses.jumpError)}>{t("documents.jump_not_found")}</Text> : null}
     </View>
   );
 }

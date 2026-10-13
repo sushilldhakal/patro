@@ -30,6 +30,9 @@ import { NAVAGRAHA_SHANTI, getGrahaShanti } from "@vedic-patro/domain/shanti/nav
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+
+const sh = kundaliDetailClasses.shanti;
 
 const th = "whitespace-nowrap text-xs font-semibold";
 
@@ -43,22 +46,22 @@ function InfoTile({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-2.5 rounded-lg border border-border bg-card/40 p-3">
+    <div className={cn(sh.tile, "flex")}>
       <div className="mt-0.5 text-secondary">{icon}</div>
       <div className="min-w-0">
-        <div className="text-sm text-base uppercase tracking-wide">{label}</div>
-        <div className="text-sm font-semibold text-foreground">{value}</div>
+        <div className={sh.tileLabel}>{label}</div>
+        <div className={sh.tileValue}>{value}</div>
       </div>
     </div>
   );
 }
 
 const REMEDY_BADGE_CLASS: Record<GrahaShantiFinding["remedy"], string> = {
-  shanti: "border-secondary bg-secondary/10 text-secondary",
-  strengthen: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  pacify: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  pacify_transit: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  soothe: "border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  shanti: cn(sh.remedyShanti, sh.remedyShantiText),
+  strengthen: cn(sh.remedyStrengthen, sh.remedyStrengthenText),
+  pacify: cn(sh.remedyPacify, sh.remedyPacifyText),
+  pacify_transit: cn(sh.remedyPacify, sh.remedyPacifyText),
+  soothe: cn(sh.remedySoothe, sh.remedySootheText),
 };
 
 /**
@@ -78,29 +81,30 @@ function ShantiFindingCard({
   const nameNe = graha?.nameNe ?? finding.grahaNe;
   const nameEn = graha?.nameEn ?? finding.graha;
   return (
-    <div className="rounded-xl border border-border bg-card/40 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm text-base uppercase tracking-wide">
+    <div className={sh.finding}>
+      <div className={cn(sh.findingHead, "flex")}>
+        <span className={sh.findingStep}>
           {bilingualText(lang, finding.stepTitleNe, finding.stepTitleEn)}
         </span>
         <span
           className={cn(
-            "rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+            sh.remedyBadge,
+            sh.remedyBadgeText,
             REMEDY_BADGE_CLASS[finding.remedy],
           )}
         >
           {t(`kundali.x.shanti_remedy_${finding.remedy}`)}
         </span>
       </div>
-      <div className="mt-1.5 flex items-center gap-2">
+      <div className={cn(sh.findingGraha, "flex")}>
         <GrahaPlanetIcon graha={finding.graha as GrahaKey} size={28} />
-        <span className="text-lg font-bold text-foreground">{bilingualText(lang, nameNe, nameEn)}</span>
+        <span className={sh.findingName}>{bilingualText(lang, nameNe, nameEn)}</span>
       </div>
-      <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, finding.reasonNe, finding.reasonEn)}</p>
+      <p className={sh.findingReason}>{bilingualText(lang, finding.reasonNe, finding.reasonEn)}</p>
       <button
         type="button"
         onClick={() => onSelect(finding.graha)}
-        className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-secondary bg-secondary/10 px-3 py-1.5 text-sm text-base text-secondary transition-colors hover:bg-secondary/20"
+        className={cn(sh.findingButton, sh.findingButtonText, "inline-flex transition-colors hover:bg-secondary/20")}
       >
         <ArrowDownToLine className="h-3.5 w-3.5" /> {bilingualText(lang, `${nameNe} शान्ति हेर्नुहोस्`, `View ${nameEn} shanti`)}
       </button>
@@ -132,7 +136,7 @@ function ShantiFindingsGroup({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card/30 px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+        className={cn(sh.groupToggle, sh.groupToggleText, "flex w-full transition-colors hover:bg-muted")}
       >
         <span>{title} ({digits(findings.length)})</span>
         {open ? <ChevronUp className="h-4 w-4 shrink-0" /> : <ChevronDown className="h-4 w-4 shrink-0" />}
@@ -182,10 +186,10 @@ export function ShantiVidhiPanel({
   };
 
   return (
-    <div className="space-y-4">
+    <div className={sh.root}>
       {/* recommendations from this chart — server-computed 4-step decision */}
       {isError ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <div className={cn(sh.errorBox, sh.errorText)}>
           {t("kundali.x.shanti_load_error")}
         </div>
       ) : findings.length > 0 ? (
@@ -204,11 +208,11 @@ export function ShantiVidhiPanel({
           />
         </div>
       ) : (
-        <div className="rounded-lg border border-border bg-card/30 p-3 text-sm">
+        <div className={cn(sh.emptyBox, sh.emptyText)}>
           {t("kundali.x.shanti_findings_empty")}
         </div>
       )}
-      <p className="text-sm leading-relaxed">
+      <p className={sh.basisNote}>
         {t("kundali.x.shanti_basis_note")}
       </p>
 
@@ -222,23 +226,24 @@ export function ShantiVidhiPanel({
               type="button"
               onClick={() => setSelectedKey(g.key)}
               className={cn(
-                "flex flex-col items-center gap-1 rounded-xl border p-3 transition-colors",
+                sh.selector,
+                "flex flex-col transition-colors",
                 active
-                  ? "border-secondary bg-secondary/10 text-secondary"
-                  : "border-border bg-card/30 text-foreground hover:bg-muted",
+                  ? cn(sh.selectorActive, sh.selectorTextActive)
+                  : cn(sh.selectorIdle, sh.selectorTextIdle, "hover:bg-muted"),
               )}
             >
               <GrahaPlanetIcon graha={g.key as GrahaKey} size={28} />
-              <span className="text-xs font-semibold">{bilingualText(lang, g.nameNe, g.nameEn)}</span>
+              <span className={sh.selectorText}>{bilingualText(lang, g.nameNe, g.nameEn)}</span>
             </button>
           );
         })}
       </div>
 
       {/* selected graha detail */}
-      <section ref={detailRef} className="scroll-mt-20 overflow-hidden rounded-2xl border border-border">
+      <section ref={detailRef} className={cn(sh.detail, "scroll-mt-20")}>
         <header
-          className="flex flex-wrap items-center gap-3 border-b border-border p-5"
+          className={cn(sh.detailHead, "flex")}
           style={{ background: `linear-gradient(90deg, ${graha.colorHex}1f, transparent)` }}
         >
           <span
@@ -248,58 +253,58 @@ export function ShantiVidhiPanel({
           />
           <GrahaPlanetIcon graha={graha.key as GrahaKey} size={40} className="shrink-0" />
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-foreground">{bilingualText(lang, `${graha.nameNe} शान्ति`, `${graha.nameEn} Shanti`)}</h2>
-            <p className="text-xs">{bilingualText(lang, graha.nameEn, graha.nameNe)}</p>
+            <h2 className={sh.detailTitle}>{bilingualText(lang, `${graha.nameNe} शान्ति`, `${graha.nameEn} Shanti`)}</h2>
+            <p className={sh.detailSubtitle}>{bilingualText(lang, graha.nameEn, graha.nameNe)}</p>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1">
+          <div className={cn(sh.pills, "flex", sh.pillText)}>
+            <span className={cn(sh.pill, "inline-flex")}>
               <CalendarDays className="h-3.5 w-3.5" /> {bilingualText(lang, graha.vaaraNe, graha.vaaraEn)}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1">
+            <span className={cn(sh.pill, "inline-flex")}>
               <Clock className="h-3.5 w-3.5" /> {bilingualText(lang, graha.shubhSamayaNe, graha.shubhSamayaEn)}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: graha.colorHex }} />
+            <span className={cn(sh.pill, "inline-flex gap-1.5")}>
+              <span className={sh.colorDot} style={{ backgroundColor: graha.colorHex }} />
               {bilingualText(lang, graha.colorNe, graha.colorEn)}
             </span>
           </div>
         </header>
 
-        <div className="space-y-5 p-5">
+        <div className={cn(sh.detailBody, "space-y-5")}>
           {/* mantra + japa */}
-          <div className="rounded-xl border border-border bg-muted/30 p-4">
-            <div className="mb-1 text-sm text-base uppercase tracking-wide">{t("kundali.x.shanti_beeja_mantra_heading")}</div>
-            <p className="text-lg font-semibold leading-relaxed text-foreground">{graha.beejMantra}</p>
-            <p className="mt-1.5 text-sm">
-              {bilingualNode(lang, <>जप संख्या: <span className="font-semibold text-foreground">{digits(graha.japa)}</span> पटक ({t("kundali.x.shanti_kaliyuga_japa")}: <span className="font-semibold text-foreground">{digits(graha.japa * 4)}</span> पटक)</>,
-                <>Japa count: <span className="font-semibold text-foreground">{digits(graha.japa)}</span> times ({t("kundali.x.shanti_kaliyuga_japa")}: <span className="font-semibold text-foreground">{digits(graha.japa * 4)}</span> times)</>,
+          <div className={sh.mantraBox}>
+            <div className={sh.mantraLabel}>{t("kundali.x.shanti_beeja_mantra_heading")}</div>
+            <p className={sh.mantraBig}>{graha.beejMantra}</p>
+            <p className={sh.japa}>
+              {bilingualNode(lang, <>जप संख्या: <span className={sh.japaValue}>{digits(graha.japa)}</span> पटक ({t("kundali.x.shanti_kaliyuga_japa")}: <span className={sh.japaValue}>{digits(graha.japa * 4)}</span> पटक)</>,
+                <>Japa count: <span className={sh.japaValue}>{digits(graha.japa)}</span> times ({t("kundali.x.shanti_kaliyuga_japa")}: <span className={sh.japaValue}>{digits(graha.japa * 4)}</span> times)</>,
               )}
             </p>
-            <div className="mt-3 border-t border-border pt-3">
-              <div className="mb-1 text-sm text-base uppercase tracking-wide">{t("kundali.x.shanti_vedic_mantra_heading")}</div>
-              <p className="text-sm leading-relaxed text-foreground">{graha.vedicMantra}</p>
+            <div className={sh.mantraSection}>
+              <div className={sh.mantraLabel}>{t("kundali.x.shanti_vedic_mantra_heading")}</div>
+              <p className={sh.vedic}>{graha.vedicMantra}</p>
             </div>
-            <div className="mt-3 border-t border-border pt-3">
-              <div className="mb-1 text-sm text-base uppercase tracking-wide">{t("kundali.x.shanti_tantrik_mantra_heading")}</div>
-              <p className="text-lg font-semibold leading-relaxed text-foreground">{graha.tantrikMantra}</p>
+            <div className={sh.mantraSection}>
+              <div className={sh.mantraLabel}>{t("kundali.x.shanti_tantrik_mantra_heading")}</div>
+              <p className={sh.mantraBig}>{graha.tantrikMantra}</p>
             </div>
           </div>
 
           {/* stotram + yantra */}
           <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-            <div className="rounded-xl border border-border bg-card/30 p-4">
-              <div className="mb-1 flex items-center gap-1.5 text-sm text-base uppercase tracking-wide">
+            <div className={sh.stotramBox}>
+              <div className={cn(sh.stotramHead, sh.tileLabel, "flex")}>
                 <BookOpenText className="h-4 w-4 text-secondary" /> {t("kundali.x.shanti_stotram_heading")}
               </div>
-              <p className="text-base italic leading-relaxed text-foreground">{graha.stotram}</p>
+              <p className={sh.stotram}>{graha.stotram}</p>
             </div>
-            <div className="rounded-xl border border-border bg-card/30 p-4">
-              <div className="mb-2 text-center text-sm text-base uppercase tracking-wide">{t("kundali.x.shanti_yantra_heading")}</div>
+            <div className={sh.stotramBox}>
+              <div className={sh.yantraLabel}>{t("kundali.x.shanti_yantra_heading")}</div>
               <div className="mx-auto grid w-32 grid-cols-3 gap-1">
                 {graha.yantraGrid.map((n, i) => (
                   <div
                     key={i}
-                    className="flex aspect-square items-center justify-center rounded border border-border bg-background text-sm font-semibold text-foreground"
+                    className={cn(sh.yantraCell, sh.yantraText, "flex aspect-square")}
                   >
                     {digits(n)}
                   </div>
@@ -320,35 +325,35 @@ export function ShantiVidhiPanel({
           </div>
 
           {/* gem-wearing method */}
-          <p className="rounded-lg border border-border bg-card/30 p-3 text-sm leading-relaxed">
-            <span className="font-semibold text-foreground">{t("kundali.x.shanti_gem_detail_label")}</span>{" "}
+          <p className={cn(sh.noteBox, sh.noteText)}>
+            <span className={sh.noteLabel}>{t("kundali.x.shanti_gem_detail_label")}</span>{" "}
             {bilingualText(lang, graha.gemDetailNe, graha.gemDetailEn)}
           </p>
 
           {/* daan */}
           <div>
-            <div className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+            <div className={cn(sh.donationHead, sh.donationTitle, "flex")}>
               <HandCoins className="h-4 w-4 text-secondary" /> {t("kundali.x.shanti_donation_items")}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className={cn(sh.donationList, "flex")}>
               {(lang === "en" ? graha.daanEn ?? graha.daan : graha.daan).map((item, idx) => (
-                <span key={`${item}-${idx}`} className="rounded-full border border-border bg-card/40 px-3 py-1 text-sm text-foreground">
+                <span key={`${item}-${idx}`} className={cn(sh.donationChip, sh.donationChipText)}>
                   {item}
                 </span>
               ))}
             </div>
           </div>
 
-          <p className="rounded-lg border border-border bg-card/30 p-3 text-sm leading-relaxed">
-            <span className="font-semibold text-foreground">{t("kundali.x.shanti_use_label")}</span> {bilingualText(lang, graha.remedyNe, graha.remedyEn)}
+          <p className={cn(sh.noteBox, sh.noteText)}>
+            <span className={sh.noteLabel}>{t("kundali.x.shanti_use_label")}</span> {bilingualText(lang, graha.remedyNe, graha.remedyEn)}
           </p>
         </div>
       </section>
 
       {/* full reference table */}
       <div>
-        <h3 className="mb-3 text-base font-bold text-foreground">{t("kundali.x.shanti_reference_table")}</h3>
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <h3 className={sh.refTitle}>{t("kundali.x.shanti_reference_table")}</h3>
+        <div className={sh.refTable}>
           <Table>
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
@@ -382,14 +387,14 @@ export function ShantiVidhiPanel({
                   <TableCell className="whitespace-nowrap">{bilingualText(lang, g.gemNe, g.gemEn)}</TableCell>
                   <TableCell className="whitespace-nowrap">{bilingualText(lang, g.metalNe, g.metalEn)}</TableCell>
                   <TableCell className="max-w-56">
-                    <span className="text-xs">{bilingualText(lang, Array.isArray(g.daan) ? g.daan.join(", ") : g.daan, Array.isArray(g.daanEn) ? g.daanEn.join(", ") : g.daanEn)}</span>
+                    <span className={kundaliDetailClasses.prose.small}>{bilingualText(lang, Array.isArray(g.daan) ? g.daan.join(", ") : g.daan, Array.isArray(g.daanEn) ? g.daanEn.join(", ") : g.daanEn)}</span>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
-        <p className="mt-2 text-sm leading-relaxed">
+        <p className={sh.refNote}>
           {t("kundali.x.shanti_disclaimer")}
         </p>
       </div>

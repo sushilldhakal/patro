@@ -350,13 +350,13 @@ export function PanchangaMonthGrid({
                     <span
                       className={cn(
                         "font-num font-semibold tabular-nums text-muted-foreground",
-                        secondary.monthLabel ? "text-[0.625rem]" : "text-xs",
+                        secondary.monthLabel ? "text-diagram-xs" : "text-xs",
                       )}
                     >
                       {secondaryLabelShort}
                     </span>
                   </span>
-                  <div className="flex w-full flex-col items-start gap-px text-[0.6875rem] font-semibold leading-tight">
+                  <div className="flex w-full flex-col items-start gap-px text-xs font-semibold leading-tight">
                     <span className="w-full [overflow-wrap:anywhere] whitespace-normal text-foreground">{tithiLabel}</span>
                     <span
                       className="w-full [overflow-wrap:anywhere] whitespace-normal text-panchang dark:text-accent"
@@ -368,7 +368,7 @@ export function PanchangaMonthGrid({
                     <span className="w-full [overflow-wrap:anywhere] whitespace-normal text-foreground">{yogaLabel}</span>
                     <span className="w-full [overflow-wrap:anywhere] whitespace-normal text-foreground">{karanaLabel}</span>
                   </div>
-                  <span className="font-num text-[0.625rem] font-bold leading-none tabular-nums text-muted-foreground">
+                  <span className="font-num text-diagram-xs font-bold leading-none tabular-nums text-muted-foreground">
                     {sunTimesLabel}
                   </span>
                 </div>
@@ -404,7 +404,7 @@ export function PanchangaMonthGrid({
                     <span
                       className={cn(
                         "font-num font-semibold leading-none text-muted-foreground",
-                        secondary.monthLabel ? "text-[0.625rem]" : "text-xs",
+                        secondary.monthLabel ? "text-diagram-xs" : "text-xs",
                       )}
                     >
                       {secondaryLabel}

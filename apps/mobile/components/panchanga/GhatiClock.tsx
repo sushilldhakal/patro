@@ -7,12 +7,13 @@ import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { parseTimeToMinutes } from "@vedic-patro/domain/ghati-clock";
 
-const PANEL_BG = "#07080d";
-const INK = "#f5f5f1";
-const INK_MUTED = "rgba(245,245,241,0.55)";
-const INK_DIM = "rgba(245,245,241,0.50)";
-const INK_SOFT = "rgba(245,245,241,0.65)";
-const INK_BODY = "rgba(245,245,241,0.80)";
+import { brand, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+const PANEL_BG = wheel.sky2;
+const INK = brand.offWhite;
+const INK_MUTED = withAlpha(brand.offWhite, 0.55);
+const INK_DIM = withAlpha(brand.offWhite, 0.50);
+const INK_SOFT = withAlpha(brand.offWhite, 0.65);
+const INK_BODY = withAlpha(brand.offWhite, 0.80);
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -59,43 +60,43 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
       style={{ backgroundColor: PANEL_BG }}
     >
       <Text
-        className="text-body text-center font-semibold tracking-[0.16em]"
+        className="text-sm text-center font-semibold tracking-eyebrow-wide"
         style={{ color: INK_MUTED }}
       >
         {pick("वैदिक समय", "Vedic time")}
       </Text>
       <Text
-        className="text-display mt-3.5 text-center font-mono font-bold tracking-tight"
+        className="text-5xl mt-3.5 text-center font-mono font-bold leading-none tracking-tight"
         style={{ color: INK }}
       >
         {digits(pad2(gh))}
-        <Text style={{ color: "rgba(245,245,241,0.40)" }}>:</Text>
+        <Text style={{ color: withAlpha(brand.offWhite, 0.40) }}>:</Text>
         {digits(pad2(pa))}
-        <Text style={{ color: "rgba(245,245,241,0.40)" }}>:</Text>
-        <Text className="text-body" style={{ color: INK_SOFT }}>
+        <Text style={{ color: withAlpha(brand.offWhite, 0.40) }}>:</Text>
+        <Text className="text-sm" style={{ color: INK_SOFT }}>
           {digits(pad2(vi))}
         </Text>
       </Text>
       <Text
-        className="text-body mt-2 text-center font-semibold tracking-wide"
+        className="text-sm mt-2 text-center font-semibold tracking-wide"
         style={{ color: panchangAccent }}
       >
         {pick("घडी : पला : विपला", "Ghati : Pala : Vipala")}
       </Text>
 
-      <View className="mx-5 my-3.5 h-px" style={{ backgroundColor: "rgba(255,255,255,0.12)" }} />
+      <View className="mx-5 my-3.5 h-px" style={{ backgroundColor: withAlpha(neutral.white, 0.12) }} />
 
       <Text
-        className="text-title text-center font-mono font-bold"
+        className="text-xl text-center font-mono font-bold leading-none"
         style={{ color: INK }}
       >
         {digits(pad2(hh))}:{digits(pad2(mm))}
-        <Text className="text-body" style={{ color: INK_SOFT }}>
+        <Text className="text-sm" style={{ color: INK_SOFT }}>
           :{digits(pad2(ss))}
         </Text>
       </Text>
       <Text
-        className="text-body mt-2 text-center font-semibold tracking-wide"
+        className="text-sm mt-2 text-center font-semibold tracking-wide"
         style={{ color: INK_DIM }}
       >
         {pick("घण्टा : मिनेट", "Hour : Minute")}
@@ -105,7 +106,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         {sunrise ? (
           <View className="flex-row items-center gap-1.5">
             <Ionicons name="sunny-outline" size={14} color={INK_BODY} />
-            <Text className="text-body text-center font-mono" style={{ color: INK_BODY }}>
+            <Text className="text-sm text-center font-mono" style={{ color: INK_BODY }}>
               {sunrise}
             </Text>
           </View>
@@ -113,7 +114,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         {sunset ? (
           <View className="flex-row items-center gap-1.5">
             <Ionicons name="moon-outline" size={14} color={INK_BODY} />
-            <Text className="text-body text-center font-mono" style={{ color: INK_BODY }}>
+            <Text className="text-sm text-center font-mono" style={{ color: INK_BODY }}>
               {sunset}
             </Text>
           </View>

@@ -7,6 +7,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { useTranslation } from "react-i18next";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroCard } from "@/lib/patro-classes";
+import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { useRouteLoading } from "@/lib/route-loading";
 import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { CEREMONY_META } from "@vedic-patro/domain/panchanga-elements";
@@ -205,9 +206,9 @@ export function SaitPage() {
         personalizeByDay,
         loading: activeQuery.isLoading && !activeQuery.data,
         notice: content.requiresBirthDate ? (
-          <div className={cn(patroCard, "flex gap-2.5 border-l-2 border-secondary p-3.5")}>
+          <div className={cn(patroCard, saitClasses.notice)}>
             <Info className="mt-0.5 size-4 shrink-0 text-secondary" />
-            <p className="m-0 text-sm text-danger">{t("sait.requires_birth_date")}</p>
+            <p className={cn("m-0", saitClasses.noticeText)}>{t("sait.requires_birth_date")}</p>
           </div>
         ) : null,
         emptyLabel: t("sait.empty_year"),
@@ -220,25 +221,25 @@ export function SaitPage() {
     >
       {!isMuhurta ? (
         datesQuery.isLoading && !datesQuery.data ? (
-          <div className="grid gap-2">
+          <div className={cn("grid", saitClasses.dateSkeletonList)}>
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-14 animate-pulse rounded-xl bg-surface-muted" />
+              <div key={i} className={cn("animate-pulse", saitClasses.dateSkeleton)} />
             ))}
           </div>
         ) : datesQuery.data && datesQuery.data.months.length > 0 ? (
-          <div className="flex flex-col gap-2">
+          <div className={saitClasses.dateList}>
             {datesQuery.data.months.map((m) => (
               <div
                 key={m.month}
                 className={cn(
                   patroCard,
-                  "flex flex-col gap-2 p-3.5 sm:flex-row sm:items-center sm:gap-4",
+                  saitClasses.dateRow,
                 )}
               >
-                <span className="w-28 shrink-0 text-sm font-bold text-foreground">
+                <span className={saitClasses.dateRowMonth}>
                   {lang === "en" ? `Month ${digits(m.month)}` : m.month_name_ne}
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className={saitClasses.dateRowDays}>
                   {m.days.map((d) => {
                     const verdict = suitabilityByDay.get(`${m.month}-${d}`);
                     const style = verdict ? SUITABILITY_STYLE[verdict] : null;
@@ -251,10 +252,16 @@ export function SaitPage() {
                             : undefined
                         }
                         className={cn(
-                          "font-num inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-semibold tabular-nums",
-                          style
-                            ? cn(style.pill, style.ring)
-                            : "bg-success/12 text-success-foreground dark:text-success",
+                          saitClasses.dateChip,
+                          "inline-flex",
+                          saitClasses.dateChipText,
+                          verdict
+                            ? cn(
+                                saitClasses.suitability[verdict].box,
+                                saitClasses.suitability[verdict].text,
+                                style?.ring,
+                              )
+                            : cn(saitClasses.toneChip.good, saitClasses.toneChipText.good),
                         )}
                       >
                         {digits(d)}
@@ -266,8 +273,8 @@ export function SaitPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-border bg-surface-inset px-6 py-12 text-center">
-            <p className="m-0 text-sm text-muted-foreground">
+          <div className={cn(saitClasses.noDates, "text-center")}>
+            <p className={cn("m-0", saitClasses.noDatesText)}>
               {t("sait.no_dates_year")}
             </p>
           </div>

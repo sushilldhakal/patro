@@ -20,6 +20,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { chapterLabel } from "@/lib/learn/chapter-labels";
 
+import { neutral, withAlpha } from "@vedic-patro/design-tokens";
 /**
  * Mount this with `key={src}` — the "did it load" flag has to start false
  * again for each new picture, and a fresh mount is how that is said without
@@ -51,7 +52,7 @@ export function ChapterStill({
         accessibilityLabel={lang === "en" ? "Close" : "बन्द गर्नुहोस्"}
         className="absolute right-1 top-1 z-10 h-6 w-6 items-center justify-center rounded-full bg-black/60 active:opacity-70"
       >
-        <Ionicons name="close" size={12} color="rgba(255,255,255,0.8)" />
+        <Ionicons name="close" size={12} color={withAlpha(neutral.white, 0.8)} />
       </Pressable>
       <Image
         source={{ uri: `${LEGAL_SITE}/${src}` }}

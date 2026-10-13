@@ -5,53 +5,39 @@ import {
   NOTO_DEVANAGARI_REGULAR,
   NOTO_DEVANAGARI_SEMIBOLD,
 } from "@/lib/fonts";
-import { useThemeColors } from "@/lib/theme-context";
-import { inkOn, relativeLuminance, type ThemeColors } from "@/lib/theme";
 import { cn } from "@vedic-patro/domain/utils";
-import { brand } from "@vedic-patro/design-tokens";
+import { spec } from "@vedic-patro/design-tokens";
 
-type Props = RNTextProps & { className?: string };
+/** Text styles from the shared spec. Colour stays a class, never a JS override. */
+const TEXT_VARIANTS = [
+  "pageTitle",
+  "pageSubtitle",
+  "sectionTitle",
+  "cardTitle",
+  "label",
+  "eyebrow",
+  "body",
+  "caption",
+  "statValue",
+] as const;
 
-/** Tailwind palette utilities — leave to NativeWind when vars work. */
-const PALETTE_COLOR_CLASS =
-  /\btext-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-/;
+export type TextVariant = (typeof TEXT_VARIANTS)[number];
 
-function themedTextColor(className: string | undefined, colors: ThemeColors): string | undefined {
-  if (!className) return colors.foreground;
-  if (PALETTE_COLOR_CLASS.test(className)) return undefined;
-  if (/\btext-\[#/.test(className)) return undefined;
-  /* Arbitrary *colours* (`text-[var(--x)]`, `text-[color:...]`) stay with NativeWind.
-     Arbitrary *sizes* (`text-caption`, `text-caption`, `text-[length:...]`) are not
-     colours — returning here for them left the text with no colour at all, which
-     rendered black on dark surfaces. */
-  const arbitrary = className.match(/\btext-\[([^\]]*)\]/);
-  if (arbitrary && !/^(?:length:)?-?\d*\.?\d+(?:px|rem|em|%|vw|vh|pt)?$/.test(arbitrary[1])) {
-    return undefined;
-  }
-  if (/\btext-muted-foreground\b/.test(className)) return colors.mutedForeground;
-  if (/\btext-secondary-foreground\b/.test(className)) return inkOn(colors.secondary);
-  if (/\btext-secondary\b/.test(className)) return colors.secondary;
-  /* Check this before `text-primary`. `\btext-primary\b` also matches
-     `text-primary-foreground`, which would paint the label the same orange
-     as a `bg-primary` button. */
-  /* Dark-mode primary is a light orange. White type on it is hard to read. */
-  if (/\btext-primary-foreground\b/.test(className)) {
-    return relativeLuminance(colors.background) < 0.2 && relativeLuminance(colors.primary) > 0.2
-      ? brand.ink
-      : "#ffffff";
-  }
-  if (/\btext-primary\b/.test(className)) return colors.primary;
-  if (/\btext-destructive\b/.test(className)) return colors.destructive;
-  /* Without this, `text-danger` fell through to the foreground default below
-     and the class did nothing — the style prop this returns wins over the
-     compiled className. */
-  if (/\btext-danger\b/.test(className)) return colors.danger;
-  if (/\btext-accent\b/.test(className)) return colors.accent;
-  if (/\btext-success\b/.test(className)) return colors.accent;
-  if (/\btext-white\b/.test(className)) return "#ffffff";
-  if (/\btext-black\b/.test(className)) return "#000000";
-  if (/\btext-foreground/.test(className)) return colors.foreground;
-  return colors.foreground;
+type Props = RNTextProps & { className?: string; variant?: TextVariant };
+
+/**
+ * Size, alignment and wrapping utilities. Anything else that starts with
+ * `text-` is a colour (`text-danger`, `text-ill-sky84`, `text-[var(--x)]`),
+ * and a default foreground must not be stacked on top of it: two colour
+ * utilities have the same specificity, so the stylesheet order would win.
+ */
+const TEXT_NOT_COLOR =
+  /\btext-(?:left|center|right|justify|start|end|ellipsis|clip|wrap|nowrap|balance|pretty|caption|body|title|display|diagram-2xs|diagram-xs|diagram-sm|xs|sm|base|lg|xl|2xl|3xl|4xl|5xl)\b/g;
+const TEXT_LENGTH = /\btext-\[(?:length:)?-?\d*\.?\d+(?:px|rem|em|%|vw|vh|pt)\]/g;
+
+function hasTextColor(className: string): boolean {
+  const rest = className.replace(TEXT_NOT_COLOR, "").replace(TEXT_LENGTH, "");
+  return /\btext-/.test(rest);
 }
 
 /**
@@ -85,9 +71,10 @@ function weightFamily(weight: string | number | undefined, className?: string): 
   return undefined;
 }
 
-const TYPE_SCALE = /\btext-(?:caption|body|title|display)\b/;
+const TYPE_SCALE =
+  /\btext-(?:caption|body|title|display|xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|\[[^\]]+\])\b/;
 
-/** Drop inline fontSize / lineHeight so only the four global classes set type. */
+/** Drop inline fontSize / lineHeight so only the shared type scale sets type. */
 function withoutInlineType(style: RNTextProps["style"]): RNTextProps["style"] {
   if (style == null) return style;
   const flat = StyleSheet.flatten(style);
@@ -96,22 +83,22 @@ function withoutInlineType(style: RNTextProps["style"]): RNTextProps["style"] {
   return rest;
 }
 
-/** Default Text — always applies theme foreground unless a palette utility is used. */
-export function Text({ className, style, ...props }: Props) {
-  const colors = useThemeColors();
-  const sized = TYPE_SCALE.test(className ?? "") ? className : cn("text-body", className);
-  const color = themedTextColor(sized, colors);
+/** Default Text. Size comes from `variant` or a type class; colour comes from the class only. */
+export function Text({ className, style, variant, ...props }: Props) {
+  const merged = cn(variant ? spec[variant] : undefined, className);
+  const sized = TYPE_SCALE.test(merged) ? merged : cn("text-body", merged);
+  const colored = hasTextColor(sized) ? sized : cn("text-foreground", sized);
   const typeStyle = withoutInlineType(style);
   const flat = StyleSheet.flatten(typeStyle) as { fontFamily?: string; fontWeight?: string | number } | undefined;
   const family = !flat?.fontFamily || NOTO_FAMILIES.has(flat.fontFamily)
-    ? weightFamily(flat?.fontWeight, sized)
+    ? weightFamily(flat?.fontWeight, colored)
     : undefined;
 
   return (
     <RNText
       {...props}
-      className={cn("font-sans", sized)}
-      style={[color ? { color } : undefined, typeStyle, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
+      className={cn("font-sans", colored)}
+      style={[typeStyle, family ? { fontFamily: family, fontWeight: "normal" } : undefined]}
     />
   );
 }

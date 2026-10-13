@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
 type Props = {
@@ -14,14 +15,14 @@ type Props = {
 export function PatroTableShell({ titleNe, titleEn, subtitle, subtitleEn, children, className }: Props) {
   const { lang } = useLocale();
   return (
-    <section className={cn("rounded-xl border border-border", className)}>
-      <header className="border-b border-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">{bilingualText(lang, titleNe, titleEn ?? titleNe)}</h3>
+    <section className={cn(dainikKrantiClasses.shell, className)}>
+      <header className={dainikKrantiClasses.shellHead}>
+        <h3 className={dainikKrantiClasses.shellTitle}>{bilingualText(lang, titleNe, titleEn ?? titleNe)}</h3>
         {titleEn && lang === "ne" ? (
-          <p className="mt-0.5 text-sm">{titleEn}</p>
+          <p className={dainikKrantiClasses.shellTitleEn}>{titleEn}</p>
         ) : null}
         {subtitle ? (
-          <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, subtitle, subtitleEn ?? subtitle)}</p>
+          <p className={dainikKrantiClasses.shellSubtitle}>{bilingualText(lang, subtitle, subtitleEn ?? subtitle)}</p>
         ) : null}
       </header>
       <div className="overflow-x-auto">{children}</div>

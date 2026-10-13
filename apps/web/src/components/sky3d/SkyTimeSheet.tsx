@@ -32,6 +32,7 @@ import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slide
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
+import { effect, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */
@@ -40,18 +41,18 @@ const DAY_ORIGIN_SEC = 4 * 3600;
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
 const DAYLIGHT_GRADIENT =
   "linear-gradient(90deg," +
-  "#f6c56a 0%," +
-  "#9bd4ff 14%," +
-  "#5eb6ff 28%," +
-  "#87c8f8 40%," +
-  "#f4a04a 50%," +
-  "#e85d2c 58%," +
-  "#6b3278 66%," +
-  "#1a2848 74%," +
-  "#8eb8dc 80%," +
-  "#0a1020 88%," +
-  "#05070f 96%," +
-  "#3a2458 100%)";
+  `${illustration.amber66} 0%,` +
+  `${illustration.sky80} 14%,` +
+  `${illustration.sky68} 28%,` +
+  `${illustration.sky75b} 40%,` +
+  `${midnight.saffron} 50%,` +
+  `${illustration.orange54} 58%,` +
+  `${illustration.violet33} 66%,` +
+  `${illustration.sky19} 74%,` +
+  `${illustration.sky70} 80%,` +
+  `${midnight.background} 88%,` +
+  `${wheel.sky2} 96%,` +
+  `${illustration.violet24} 100%)`;
 
 function daySecToSlider(daySec: number): number {
   return (daySec - DAY_ORIGIN_SEC + 86_400) % 86_400;
@@ -381,7 +382,8 @@ export function SkyTimeSheet({
       />
       <div
         data-sky-controls
-        className="relative mx-auto w-full max-w-lg rounded-t-3xl border border-white/12 bg-[#1c1c1e]/88 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-white shadow-[0_-12px_40px_rgba(0,0,0,0.45)] backdrop-blur-md"
+        className="relative mx-auto w-full max-w-lg rounded-t-3xl border border-white/12 bg-ill-gray11/88 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-white backdrop-blur-md"
+        style={{ boxShadow: effect.sheetLift }}
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/30" />
@@ -498,7 +500,7 @@ export function SkyTimeSheet({
                 <span
                   key={band.id}
                   className={cn(
-                    "absolute top-0 text-[10px] leading-none whitespace-nowrap",
+                    "absolute top-0 text-diagram-xs leading-none whitespace-nowrap",
                     active ? "font-semibold text-white" : "font-medium text-white/55",
                     edge === "left" && "left-0",
                     edge === "right" && "right-0",
@@ -529,11 +531,11 @@ export function SkyTimeSheet({
           }
           .sky-time-slider--day::-webkit-slider-thumb {
             margin-top: -2px;
-            background: #fff6e0;
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.35);
+            background: ${illustration.amber92};
+            box-shadow: ${effect.thumbRing};
           }
           .sky-time-slider--day::-moz-range-thumb {
-            background: #fff6e0;
+            background: ${illustration.amber92};
           }
         `}</style>
       </div>
@@ -688,7 +690,7 @@ function NavAction({
       className="flex flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-white hover:bg-white/8"
     >
       {icon}
-      <span className="text-center text-[11px] font-medium leading-tight text-white/90">{label}</span>
+      <span className="text-center text-xs font-medium leading-tight text-white/90">{label}</span>
     </button>
   );
 }

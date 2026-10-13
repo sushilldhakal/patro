@@ -6,6 +6,7 @@ import { PatroMonthYearNav } from "@/components/patro-date/PatroMonthYearNav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { patroSegBtn } from "@/lib/patro-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
@@ -50,7 +51,8 @@ function PakshaSegToggle({
   return (
     <View
       className={cn(
-        "h-[30px] shrink-0 flex-row gap-0.5 rounded-lg border border-border bg-card p-0.5",
+        "h-[30px] shrink-0 flex-row",
+        dainikKrantiClasses.segToggle,
         className,
       )}
       accessibilityRole="radiogroup"
@@ -66,10 +68,10 @@ function PakshaSegToggle({
         >
           <Text
             className={cn(
-              "text-caption font-semibold",
-              value === opt ? "text-secondary-foreground" : "text-muted-foreground",
+              "text-xs font-semibold",
+              value === opt ? "text-secondary-foreground" : "text-foreground",
             )}
-            style={nepaliTextStyle(12)}
+            style={nepaliTextStyle()}
           >
             {label}
           </Text>
@@ -146,7 +148,7 @@ export function DainikKrantiHeader({
   );
 
   return (
-    <View className="mb-4">
+    <View>
       <PatroMonthYearNav
         era="bs"
         onEraChange={() => {}}

@@ -7,8 +7,8 @@ import { PageHeader, PageShell } from "@/components/PageShell";
 import {
   DocumentCategorySection,
   DocumentCategoryTabs,
-  documentsInGroup,
 } from "@/components/documents/DocumentCategoryTabs";
+import { documentsInGroup } from "@/components/documents/documents-in-group";
 import { DOCUMENT_CATEGORY_GROUPS, type DocumentCategoryId } from "@vedic-patro/domain/document-categories";
 import {
   documentsKeys,
@@ -16,6 +16,7 @@ import {
   type DocumentCategoryTab,
 } from "@/lib/documents-api";
 import { useRouteLoading } from "@/lib/route-loading";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
 const routeApi = getRouteApi("/documents");
 
@@ -36,7 +37,8 @@ export function Documents() {
 
   useRouteLoading(docsQ.isLoading);
 
-  const documents = docsQ.data?.documents ?? [];
+  const loadedDocuments = docsQ.data?.documents;
+  const documents = useMemo(() => loadedDocuments ?? [], [loadedDocuments]);
   const counts = useMemo(() => {
     const next = {} as Record<DocumentCategoryId, number>;
     for (const group of DOCUMENT_CATEGORY_GROUPS) {
@@ -59,9 +61,9 @@ export function Documents() {
       />
 
       {docsQ.isError ? (
-        <p className="text-sm text-destructive">{t("documents.load_error")}</p>
+        <p className={documentsClasses.errorText}>{t("documents.load_error")}</p>
       ) : !docsQ.isLoading && documents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("documents.empty")}</p>
+        <p className={documentsClasses.mutedText}>{t("documents.empty")}</p>
       ) : (
         <>
           <DocumentCategoryTabs activeId={activeCategory} counts={counts} onSelect={setFilter} />

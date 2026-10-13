@@ -26,7 +26,7 @@ export function GrahaInline({
   return (
     <View className="flex-row items-center gap-1.5">
       {isGrahaKey(grahaKey) ? <GrahaPlanetIcon graha={grahaKey} size={size} /> : null}
-      <Text className="text-foreground" style={nepaliTextStyle(textSize)} numberOfLines={1}>
+      <Text className="text-sm text-foreground" style={nepaliTextStyle(textSize)} numberOfLines={1}>
         {label}
       </Text>
     </View>
@@ -65,7 +65,7 @@ export function GrahaKeysRow({
 }) {
   if (keys.length === 0) {
     return (
-      <Text className="text-foreground" style={nepaliTextStyle(textSize)}>
+      <Text className="text-sm text-foreground" style={nepaliTextStyle(textSize)}>
         —
       </Text>
     );
@@ -75,7 +75,7 @@ export function GrahaKeysRow({
       {keys.map((key, i) => (
         <View key={`${key}-${i}`} className="flex-row items-center gap-1">
           {isGrahaKey(key) ? <GrahaPlanetIcon graha={key} size={size} /> : null}
-          <Text className="text-foreground" style={nepaliTextStyle(textSize)}>
+          <Text className="text-sm text-foreground" style={nepaliTextStyle(textSize)}>
             {nameForKey(key)}
           </Text>
         </View>
@@ -101,7 +101,7 @@ export function RashiInline({
   return (
     <View className="flex-row items-center gap-1.5">
       <RashiGlyphIcon name={nameNe} number={rashiNum} size={size} />
-      <Text className="text-foreground" style={nepaliTextStyle(textSize)}>
+      <Text className="text-sm text-foreground" style={nepaliTextStyle(textSize)}>
         {label}
       </Text>
     </View>
@@ -128,7 +128,7 @@ export function NakshatraInline({
   return (
     <View className="flex-row items-center gap-1.5">
       <NakshatraGlyphIcon name={icon?.ne} number={index + 1} size={size} />
-      <Text className="text-foreground" style={nepaliTextStyle(textSize)} numberOfLines={1}>
+      <Text className="text-sm text-foreground" style={nepaliTextStyle(textSize)} numberOfLines={1}>
         {name}
         {pada != null ? ` · ${digits(pada)}` : ""}
       </Text>

@@ -12,6 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+
+const m = kundaliDetailClasses.milanResult;
 
 const KUTA_LABELS: Record<KutaRow["id"], { en: string; ne: string }> = {
   varna: { en: "Varna", ne: "वर्ण" },
@@ -41,27 +44,27 @@ function KutaDetailPanel({
 }) {
   const label = KUTA_LABELS[kuta.id];
   return (
-    <div className="rounded-lg border border-border/70 bg-muted/20 px-4 py-3 text-sm">
-      <p className="font-semibold text-foreground mb-2">
+    <div className={m.panel}>
+      <p className={m.panelTitle}>
         {label ? (en ? label.en : label.ne) : kuta.id} {en ? "Kuta Details" : "कूट विवरण"}
       </p>
-      <p className="mb-3">
+      <p className={m.panelPoints}>
         {en ? label?.en : label?.ne} {en ? "Kuta Points" : "कूट अङ्क"}:{" "}
-        <span className="font-semibold text-foreground">
+        <span className={m.panelPointsValue}>
           {formatObtained(kuta.obtained)}/{kuta.max}
         </span>
       </p>
-      <div className="grid gap-2 sm:grid-cols-2 mb-3">
-        <div className="rounded-md bg-card px-3 py-2 border border-border/60">
-          <p className="text-sm uppercase tracking-wider">{boyName}</p>
-          <p className="font-semibold">{kuta.boyValue}</p>
+      <div className={cn(m.panelPeople, "grid sm:grid-cols-2")}>
+        <div className={m.panelPerson}>
+          <p className={m.panelPersonName}>{boyName}</p>
+          <p className={m.panelPersonValue}>{kuta.boyValue}</p>
         </div>
-        <div className="rounded-md bg-card px-3 py-2 border border-border/60">
-          <p className="text-sm uppercase tracking-wider">{girlName}</p>
-          <p className="font-semibold">{kuta.girlValue}</p>
+        <div className={m.panelPerson}>
+          <p className={m.panelPersonName}>{girlName}</p>
+          <p className={m.panelPersonValue}>{kuta.girlValue}</p>
         </div>
       </div>
-      <p className="leading-relaxed">{en ? kuta.info : kuta.infoNe}</p>
+      <p className={m.panelInfo}>{en ? kuta.info : kuta.infoNe}</p>
     </div>
   );
 }
@@ -80,49 +83,49 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
 
   const recClass =
     result.recommendation === "excellent"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? m.recExcellent
       : result.recommendation === "very_good"
-        ? "text-sky-600 dark:text-sky-400"
+        ? m.recVeryGood
         : result.recommendation === "middling"
-          ? "text-amber-600 dark:text-amber-400"
-          : "text-destructive";
+          ? m.recMiddling
+          : m.recInauspicious;
 
   return (
-    <div className="flex flex-col gap-5">
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className={m.root}>
+      <section className={cn(m.card, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]")}>
+        <div className={m.totalRow}>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider">
+            <p className={m.eyebrow}>
               {t("milan.total_guna")}
             </p>
-            <p className={cn("text-2xl font-bold mt-1", recClass)}>
+            <p className={cn(m.recommendation, recClass)}>
               {en ? result.recommendationLabel : result.recommendationLabelNe}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-4xl font-bold tabular-nums text-foreground">
+            <p className={m.totalValue}>
               {formatObtained(result.totalObtained)}
-              <span className="text-lg text-base"> / {result.totalMax}</span>
+              <span className={m.totalMax}> / {result.totalMax}</span>
             </p>
-            <p className="text-xs mt-0.5">{t("milan.guna")}</p>
+            <p className={m.gunaLabel}>{t("milan.guna")}</p>
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm">
-          <span className="rounded-full border border-border px-3 py-1">
+        <div className={cn(m.partners, m.partnerText)}>
+          <span className={m.partner}>
             <span>{t("milan.boy")}:</span>{" "}
-            <span className="font-semibold">{boyName}</span>
+            <span className={m.partnerName}>{boyName}</span>
           </span>
-          <span className="rounded-full border border-border px-3 py-1">
+          <span className={m.partner}>
             <span>{t("milan.girl")}:</span>{" "}
-            <span className="font-semibold">{girlName}</span>
+            <span className={m.partnerName}>{girlName}</span>
           </span>
         </div>
         {(result.nadiDoshaAdvisory || result.nadiDoshaAdvisoryNe) ? (
           <div
-            className="mt-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm leading-relaxed text-foreground"
+            className={cn(m.advisory, m.advisoryText)}
             role="note"
           >
-            <p className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1.5">
+            <p className={m.advisoryTitle}>
               {t("milan.nadi_dosha_advisory_title")}
             </p>
             <p>{en ? result.nadiDoshaAdvisory : result.nadiDoshaAdvisoryNe}</p>
@@ -130,21 +133,21 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
         ) : null}
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-4">{t("milan.dosha_analysis_title")}</h3>
+      <section className={m.card}>
+        <h3 className={cn(m.cardTitle, "mb-4")}>{t("milan.dosha_analysis_title")}</h3>
         <ul className="divide-y divide-border/70">
           {result.doshaAnalysis.map((dosha) => (
             <li
               key={dosha.id}
-              className="flex flex-wrap items-center justify-between gap-2 py-3 first:pt-0 last:pb-0"
+              className={cn(m.doshaRow, "first:pt-0 last:pb-0")}
             >
-              <span className="text-sm text-base text-foreground">
+              <span className={m.doshaLabel}>
                 {en ? (
                   dosha.labelEn
                 ) : (
                   <>
                     {dosha.labelNe}{" "}
-                    <span className="font-normal">
+                    <span className={m.doshaLabelAlt}>
                       ({dosha.labelEn.replace(" Dosha", "")})
                     </span>
                   </>
@@ -152,10 +155,8 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
               </span>
               <span
                 className={cn(
-                  "text-sm font-semibold shrink-0",
-                  dosha.present
-                    ? "text-destructive"
-                    : "text-emerald-600 dark:text-emerald-400",
+                  m.doshaVerdict,
+                  dosha.present ? m.doshaPresent : m.doshaAbsent,
                 )}
               >
                 {dosha.present ? t("milan.dosha_present") : t("milan.dosha_absent")}
@@ -165,7 +166,7 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
         </ul>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card overflow-hidden">
+      <section className={m.tableCard}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -216,14 +217,14 @@ export function KundaliMilanResult({ boyName, girlName, result, lang }: Props) {
             })}
           </TableBody>
         </Table>
-        <p className="px-4 py-2 text-sm border-t border-border">
+        <p className={m.tableFootnote}>
           *{en ? "Max — Maximum Point · Obt — Obtained Point" : "अधिकतम — अधिकतम अङ्क · प्राप्त — प्राप्त अङ्क"}
         </p>
       </section>
 
-      <section className="rounded-2xl border border-border bg-card p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-3">{t("milan.notes_title")}</h3>
-        <ul className="space-y-2 text-sm leading-relaxed list-disc pl-5">
+      <section className={m.card}>
+        <h3 className={cn(m.cardTitle, "mb-3")}>{t("milan.notes_title")}</h3>
+        <ul className={cn("space-y-2", m.noteText, "list-disc pl-5")}>
           {(en ? result.notes : result.notesNe).map((note) => (
             <li key={note.slice(0, 40)}>{note}</li>
           ))}

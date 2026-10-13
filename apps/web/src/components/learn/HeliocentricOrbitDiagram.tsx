@@ -15,6 +15,7 @@ import {
   orbitFromMeanAnomaly,
 } from "./orbit-math";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const TILT = EARTH_AXIAL_TILT;
 const HO = { W: 1200, H: 880, sunR: 70, earthR: 60, axisLen: 128 };
 
@@ -187,14 +188,14 @@ export function HeliocentricOrbitDiagram({
     >
       <defs>
         <radialGradient id="ho-sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff6d8" />
-          <stop offset="38%" stopColor="#ffd24a" />
-          <stop offset="78%" stopColor="#f08a1d" />
-          <stop offset="100%" stopColor="#d65b12" />
+          <stop offset="0%" stopColor={illustration.amber92} />
+          <stop offset="38%" stopColor={illustration.amber67} />
+          <stop offset="78%" stopColor={illustration.orange53} />
+          <stop offset="100%" stopColor={illustration.orange45} />
         </radialGradient>
         <radialGradient id="ho-sunglow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffcf57" stopOpacity={0.45} />
-          <stop offset="100%" stopColor="#ffcf57" stopOpacity={0} />
+          <stop offset="0%" stopColor={illustration.amber67} stopOpacity={0.45} />
+          <stop offset="100%" stopColor={illustration.amber67} stopOpacity={0} />
         </radialGradient>
       </defs>
 

@@ -9,6 +9,8 @@ import { LEARN_LIBRARY_BY_SLUG } from "@/lib/learn/learn-library";
 import { RETIRED_SLUG_REDIRECTS } from "@/lib/learn/merged-pages";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
+import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 function resolveSlug(raw: string | string[] | undefined): string | undefined {
   if (typeof raw === "string") return raw;
@@ -44,20 +46,21 @@ export default function LearnArticleScreen() {
       <Pressable
         onPress={() => router.push("/learn")}
         accessibilityRole="button"
-        className="mb-3 flex-row items-center gap-1.5 self-start py-1 active:opacity-70"
+        className={cn(learnPageClasses.backLink, "mb-8 flex-row self-start active:opacity-70")}
       >
-        <Ionicons name="arrow-back" size={16} color={colors.mutedForeground} />
-        <Text className="text-body text-muted-foreground">{pick("सिकाइ", "Learn")}</Text>
+        <Ionicons name="arrow-back" size={16} color={colors.foreground} />
+        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{pick("सिकाइ", "Learn")}</Text>
       </Pressable>
       {valid && slug ? (
         <LearnArticleView slug={slug} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (
-        <View className="items-center justify-center py-12">
-          <Text className="text-body text-center text-muted-foreground">
+        <View className={cn(learnPageClasses.notFound, "justify-center")}>
+          <Text className="text-center text-sm text-foreground">
             {pick("लेख फेला परेन।", "Article not found.")}
           </Text>
-          <Pressable onPress={() => router.replace("/learn")} className="mt-4 active:opacity-80">
-            <Text className="text-body font-semibold text-primary">{pick("सिकाइमा फर्कनुहोस्", "Back to Learn")}</Text>
+          <Pressable onPress={() => router.replace("/learn")} className={cn(learnPageClasses.inlineLink, "flex-row active:opacity-80")}>
+            <Ionicons name="arrow-back" size={16} color={colors.secondary} />
+            <Text className={learnPageClasses.inlineLinkText}>{pick("सिकाइमा फर्कनुहोस्", "Back to Learn")}</Text>
           </Pressable>
         </View>
       )}

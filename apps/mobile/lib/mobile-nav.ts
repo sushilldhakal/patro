@@ -38,11 +38,17 @@ export function floatingNavBottomPadding(isTablet: boolean): number {
   return isTablet ? FLOATING_NAV_BOTTOM_PADDING_TABLET : FLOATING_NAV_BOTTOM_PADDING;
 }
 
-/** Standard left/right inset for page scroll content and headers. */
-export const PAGE_HORIZONTAL_PADDING = 15;
+/** Page inset. Matches the website: `px-4` (16) and `sm:px-6` (24). */
+export const PAGE_HORIZONTAL_PADDING = 16;
+export const PAGE_HORIZONTAL_PADDING_WIDE = 24;
+/** Website `PageShell` / page top: `py-8`. */
+export const PAGE_PADDING_Y = 32;
 
-/** Home header/aside inset on phone — matches web `max-md` rail (`calc(100% - 2rem)`). */
+/** Home month rail on a phone — website `calc(100% - 2rem)`. */
 export const HOME_PHONE_INSET = 16;
+
+/** Home cards and the panchanga aside on a phone — website `max-sm:mx-2.5`. */
+export const HOME_CARD_INSET = 10;
 
 export function homeContentInset(isPhone: boolean): number {
   return isPhone ? HOME_PHONE_INSET : PAGE_HORIZONTAL_PADDING;

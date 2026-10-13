@@ -4,6 +4,8 @@ import { Text } from "@/components/ui/Text";
 import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 /** The links row that closes every page on web (`SiteFooter`): Privacy · Terms · Support · site. */
 export function SiteFooter() {
@@ -11,14 +13,14 @@ export function SiteFooter() {
   const router = useRouter();
   const link = (label: string, onPress: () => void) => (
     <Pressable onPress={onPress} accessibilityRole="link" hitSlop={6} className="active:opacity-70">
-      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className={shellClasses.footerLink} style={nepaliTextStyle()}>
         {label}
       </Text>
     </Pressable>
   );
   return (
-    <View className="mt-12 border-t border-border">
-      <View className="flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 py-6">
+    <View className={shellClasses.footer}>
+      <View className={cn("w-full flex-row flex-wrap", shellClasses.footerRow)}>
         {link(t("footer.privacy"), () => router.push("/privacy" as never))}
         {link(t("footer.terms"), () => router.push("/terms" as never))}
         {link(t("footer.support"), () => void Linking.openURL(`mailto:${LEGAL_CONTACT_EMAIL}`))}

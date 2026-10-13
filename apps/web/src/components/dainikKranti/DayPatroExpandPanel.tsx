@@ -12,6 +12,7 @@ import { PatroSolarCorrectionStrip } from "@/components/dainikKranti/PatroSolarC
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -36,7 +37,7 @@ const GRAHA_GRID =
 
 function SectionHeading({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
-    <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:text-sm">
+    <div className={cn(dainikKrantiClasses.sectionHead, dainikKrantiClasses.sectionHeadText)}>
       <span className="text-secondary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
       {children}
     </div>
@@ -48,7 +49,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
   const { lang } = useLocale();
   const isEn = lang === "en";
   return (
-    <div className="w-full min-w-0 max-w-full space-y-4 py-2">
+    <div className={cn(dainikKrantiClasses.expandRoot, "space-y-4")}>
       {lagna ? (
         <div className="w-full min-w-0">
           <SectionHeading icon={<LayoutGrid />}>{t("dainik.daily_lagna_start")}</SectionHeading>
@@ -61,18 +62,19 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
               return (
                 <div
                   key={rne}
-                  className="min-w-0 rounded-md border border-border/80 bg-background/80 px-1.5 py-1.5 text-center sm:px-2"
+                  className={cn(dainikKrantiClasses.cellBox, dainikKrantiClasses.lagnaCell, "text-center")}
                 >
                   <div className="flex justify-center">
                     <RashiGlyphIcon name={rne} number={num} size={22} />
                   </div>
-                  <div className="text-xs leading-tight sm:text-sm">
+                  <div className={dainikKrantiClasses.lagnaName}>
                     {bilingualText(lang, rne, getRashiList("en")[i])}
                   </div>
                   <div
                     className={cn(
-                      "mt-1 break-all font-mono text-xs tabular-nums sm:text-sm",
-                      late ? "text-amber-700 dark:text-amber-300" : "text-foreground",
+                      dainikKrantiClasses.lagnaTime,
+                      "break-all",
+                      late ? dainikKrantiClasses.lateText : "text-foreground",
                     )}
                   >
                     {val ?? "—"}
@@ -94,9 +96,9 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
               return (
                 <div
                   key={key}
-                  className="min-w-0 rounded-md border border-border/80 bg-background/80 px-2.5 py-2"
+                  className={cn(dainikKrantiClasses.cellBox, dainikKrantiClasses.grahaCell)}
                 >
-                  <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                  <div className={cn(dainikKrantiClasses.grahaNameRow, dainikKrantiClasses.grahaNameText)}>
                     <GrahaPlanetIcon graha={key as GrahaKey} size={20} />
                     {bilingualText(lang, PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
                     <GrahaStatusBadges
@@ -106,8 +108,8 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
                       size={12}
                     />
                   </div>
-                  <div className="mt-0.5 break-words font-mono text-xs tabular-nums sm:text-sm">
-                    <span className="text-foreground">{isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe}</span>{" "}
+                  <div className={cn(dainikKrantiClasses.grahaCoords, "break-words")}>
+                    <span className={dainikKrantiClasses.grahaRashi}>{isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe}</span>{" "}
                     {cell.coords}
                   </div>
                 </div>
@@ -126,7 +128,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
         <ul className="w-full min-w-0 space-y-1.5 text-sm">
           {notes.map((n) => (
             <li key={`${n.kind}-${n.text}`} className="break-words">
-              <span className="text-base text-foreground">{bilingualText(lang, n.text, n.textEn ?? n.text)}</span>
+              <span className={dainikKrantiClasses.noteText}>{bilingualText(lang, n.text, n.textEn ?? n.text)}</span>
             </li>
           ))}
         </ul>

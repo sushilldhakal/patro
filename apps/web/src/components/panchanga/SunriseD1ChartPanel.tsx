@@ -6,6 +6,8 @@ import { buildPanchangaD1Houses } from "@vedic-patro/domain/panchanga-sunrise-d1
 import { getPlanetsAnchorLabel } from "@vedic-patro/domain/panchanga-format";
 import { useLocale, bilingualText } from "@/i18n/locale";
 
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+
 type Props = {
   p: PanchangaDay;
 };
@@ -18,12 +20,12 @@ export function SunriseD1ChartPanel({ p }: Props) {
   if (!houses) return null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <div className={panchangaPageClasses.aside.card}>
+      <div className={panchangaPageClasses.aside.eyebrow}>
         {bilingualText(lang, "D1 चक्र", "D1 chart")}
       </div>
-      <p className="mt-1 mb-0 text-sm text-muted-foreground">{anchor}</p>
-      <div className="mt-2">
+      <p className={panchangaPageClasses.aside.anchor}>{anchor}</p>
+      <div className={panchangaPageClasses.aside.body}>
         <D1Chart houses={houses} />
         {houses.some((h) => h.planets.some((pl) => pl.isRetrograde || pl.isCombust)) && (
           <GrahaStatusLegend className="mt-1" />

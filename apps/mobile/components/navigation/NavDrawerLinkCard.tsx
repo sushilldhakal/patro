@@ -32,14 +32,13 @@ export function NavDrawerLinkCard({
       className="shrink-0 flex-col items-center justify-center gap-1.5 overflow-hidden bg-transparent px-0.5 py-1 active:opacity-70"
     >
       <View
-        className="size-12 items-center justify-center rounded-full"
-        style={{ backgroundColor: active ? colors.tabActive : colors.muted }}
+        className={cn("size-12 items-center justify-center rounded-full", active ? "bg-secondary/15" : "bg-muted/80")}
       >
-        <AppNavIcon name={icon} size={26} color={active ? colors.secondary : colors.danger} />
+        <AppNavIcon name={icon} size={28} color={active ? colors.secondary : colors.danger} />
       </View>
       <Text
         className={cn(
-          "text-caption w-full text-center font-bold text-foreground",
+          "w-full px-0.5 text-center text-xs font-bold leading-tight text-foreground",
           active && "text-secondary",
         )}
         numberOfLines={2}
@@ -61,22 +60,18 @@ export function DrawerNavSection({
   first?: boolean;
 }) {
   const { lang } = useLocale();
-  const colors = useThemeColors();
   return (
     <View
       className={cn("px-3 pb-5", first ? "pt-1" : "border-t border-border/50 pt-4")}
     >
       <View className="mb-3">
         <Text
-          className="text-caption font-semibold tracking-wide text-foreground"
+          className="text-sm font-semibold tracking-wide text-foreground"
           style={lang === "en" ? undefined : nepaliTextStyle(14)}
         >
           {title}
         </Text>
-        <View
-          className="mt-1.5 h-0.5 w-7 rounded-full"
-          style={{ backgroundColor: colors.primary }}
-        />
+        <View className="mt-1.5 h-0.5 w-7 rounded-full bg-primary" />
       </View>
       <View className="flex-row flex-wrap gap-2.5">{children}</View>
     </View>

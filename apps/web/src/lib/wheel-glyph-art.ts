@@ -63,7 +63,7 @@ function parseGlyph(raw: string): GlyphArt {
     .replace(/<\/svg>\s*$/i, "")
     .replace(/<(\/?)default:/g, "<$1")
     .replace(/\sxmlns:default\s*=\s*"[^"]*"/g, "")
-    .replace(/\sfill\s*=\s*"(#000000|#000|black)"/gi, "");
+    .replace(/\sfill\s*=\s*"(#000000|#000|black)"/gi, ""); // design-ok: strips black fills authored in the SVG files
 
   inner = inner.trim();
   return { inner, vb };

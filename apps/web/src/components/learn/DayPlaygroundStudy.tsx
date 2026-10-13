@@ -18,7 +18,7 @@
  * and the HUD and labels are drawn from that and nothing else.
  */
 
-import { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Canvas } from "@react-three/fiber";
@@ -82,8 +82,8 @@ import { DayChapterBar, DayChapterWelcome } from "./DayChapterPlayer";
 import { ChapterOverlay } from "./ChapterOverlay";
 import { ChapterStill, ChapterTip } from "./ChapterStill";
 import EotGraph from "./EotGraph";
+import { labelPinCss } from "./scene-label-pin";
 import Scene, {
-  labelPinCss,
   type CameraState,
   type CameraTarget,
   type PlaygroundGlobe,
@@ -94,7 +94,8 @@ import Scene, {
   type SimToggles,
 } from "./DaySimScene";
 
-const CANVAS_BG = "#04070d";
+import { effect, illustration, neutral, wheel } from "@vedic-patro/design-tokens";
+const CANVAS_BG = wheel.sky2;
 const PI2 = Math.PI * 2;
 const DEG = Math.PI / 180;
 
@@ -102,12 +103,12 @@ const DEG = Math.PI / 180;
 const DEFAULT_SPEED_RUNG = SPEED_MULTIPLIERS.indexOf(1);
 
 const TONE = {
-  sidereal: "#6cb6f5",
-  solar: "#e6e34a",
-  mean: "#f0736a",
+  sidereal: illustration.sky69,
+  solar: illustration.amber60b,
+  mean: illustration.red68,
 } as const;
 
-const GOLD = "#d8c84a";
+const GOLD = illustration.amber57;
 
 function clampPitch(p: number) {
   return Math.max(-1.45, Math.min(1.45, p));
@@ -237,7 +238,9 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
     preset?: string;
   }>({});
   const speedRef = useRef(speed);
-  speedRef.current = speed;
+  useLayoutEffect(() => {
+    speedRef.current = speed;
+  });
 
   const { active: fullscreen, ref: overlayRef, toggle: toggleFullscreen } = useFullscreen();
 
@@ -265,7 +268,9 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
     ? (initial.speed * (solarDaysPerYear + 1)) / initial.params.daysPerYear
     : initial.speed;
   const basePaceRef = useRef(basePace);
-  basePaceRef.current = basePace;
+  useLayoutEffect(() => {
+    basePaceRef.current = basePace;
+  });
 
   useEffect(() => {
     if (config.guided && !freePlay) return;
@@ -274,9 +279,18 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
 
   /* Guided tour: camera + orbit every frame, layers on the React tick. */
   const setTourFrame = tour?.setOnFrame;
-  const tourWelcomeRef = useRef(true);
-  const tourFreeRef = useRef(false);
-  const playingStateRef = useRef(false);
+  const tourWelcomeRef = useRef(Boolean(tour?.showWelcome));
+  useLayoutEffect(() => {
+    tourWelcomeRef.current = Boolean(tour?.showWelcome);
+  });
+  const tourFreeRef = useRef(freePlay);
+  useLayoutEffect(() => {
+    tourFreeRef.current = freePlay;
+  });
+  const playingStateRef = useRef(playing);
+  useLayoutEffect(() => {
+    playingStateRef.current = playing;
+  });
   const handsOffOffset = useRef(0);
   const wasHandsOff = useRef(false);
   /**
@@ -292,9 +306,6 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
    * of a keyframe. Cleared when the chapter changes or narration resumes.
    */
   const userDriving = useRef(false);
-  tourWelcomeRef.current = Boolean(tour?.showWelcome);
-  tourFreeRef.current = freePlay;
-  playingStateRef.current = playing;
   useEffect(() => {
     if (!setTourFrame) return;
     setTourFrame((s: ChapterSimState) => {
@@ -360,17 +371,22 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
      is what gives the script the clock back after {@link userDriving} took
      it. Without this the reader's orbit toggle stayed stuck on, silently
      fighting the keyframes the moment narration started moving again. */
+  const [seenTourPlaying, setSeenTourPlaying] = useState(tourPlaying);
+  if (tourPlaying !== seenTourPlaying) {
+    setSeenTourPlaying(tourPlaying);
+    if (tourPlaying) setPlaying(false);
+  }
   useEffect(() => {
-    if (!tourPlaying) return;
-    userDriving.current = false;
-    setPlaying(false);
+    if (tourPlaying) userDriving.current = false;
   }, [tourPlaying]);
   const tourChapterId = tour?.chapter.id;
   /* The chapter object itself, for the reset below. Held in a ref so the reset
      stays keyed on the *id* — it must run when the chapter changes and not on
      every sampled frame. */
-  const tourChapterRef = useRef<Chapter | null>(null);
-  tourChapterRef.current = tour?.chapter ?? null;
+  const tourChapterRef = useRef<Chapter | null>(tour?.chapter ?? null);
+  useLayoutEffect(() => {
+    tourChapterRef.current = tour?.chapter ?? null;
+  });
   useEffect(() => {
     cameraMeddle.current = null;
     earthMeddle.current = null;
@@ -423,9 +439,10 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
    * hand-back" — see {@link firstActiveAt}. `null` means every `handsOff` this
    * chapter samples is the real thing (it never has a driven middle).
    */
+  const tourChapter = tour?.chapter;
   const chapterActiveAt = useMemo(
-    () => (tour ? firstActiveAt(tour.chapter) : null),
-    [tour?.chapter],
+    () => (tourChapter ? firstActiveAt(tourChapter) : null),
+    [tourChapter],
   );
   /**
    * `handsOff`, but only once the chapter has actually reached that point.
@@ -459,14 +476,16 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
   const showHud = (!lesson && !freePlay) || Boolean(tourState?.hud);
   const showReadings = (!lesson && !freePlay) || Boolean(tourState?.readings);
   const showTransport = !lesson && !freePlay;
-  const wasTourHandsOff = useRef(false);
-  useEffect(() => {
-    const on = Boolean(lesson && tourHandsOff);
-    if (on && !wasTourHandsOff.current) setPlaying(true);
-    wasTourHandsOff.current = on;
-  }, [lesson, tourHandsOff]);
-  useEffect(() => {
-    if (!highlightControl) return;
+  const [wasTourHandsOff, setWasTourHandsOff] = useState(false);
+  const tourHandsOffNow = Boolean(lesson && tourHandsOff);
+  if (tourHandsOffNow !== wasTourHandsOff) {
+    setWasTourHandsOff(tourHandsOffNow);
+    if (tourHandsOffNow) setPlaying(true);
+  }
+  // Starts empty so a chapter that opens with a highlighted control applies it on mount too.
+  const [appliedHighlight, setAppliedHighlight] = useState("");
+  if (highlightControl !== appliedHighlight) {
+    setAppliedHighlight(highlightControl);
     if (highlightControl === "settings") {
       setControlsOpen(true);
       setFocusOpen(false);
@@ -478,7 +497,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
       setFocusOpen(true);
       setControlsOpen(false);
     }
-  }, [highlightControl]);
+  }
 
   /* The free sim stops too. A WebGL canvas in a hidden tab still burns the
      frame budget it is given, and an orbit that ran on for two minutes out of
@@ -809,7 +828,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
   ) => (
     <div className="flex flex-col gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] p-2">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+        <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
           {title}
         </span>
         {chip(groupOn(g), t("learn.playground.all"), () => pressGroup(g), `all-${g}`, g === "moon" && !hasMoon)}
@@ -829,40 +848,6 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
     </div>
   );
 
-  const slider = (
-    label: string,
-    value: number,
-    display: string,
-    min: number,
-    max: number,
-    step: number,
-    onChange: (v: number) => void,
-    /* A plain block, not a flex column. `edScrub` carries `flex-1`, and a flex
-       item in a column gets `min-height: auto` — the automatic minimum size,
-       which pins a range input to its intrinsic 17px thumb and overrides the
-       5px height outright. With no flex container there is no such minimum. */
-  ) => (
-    <label className="block">
-      <span className="mb-1.5 flex items-baseline justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
-        {label}
-        <span className="font-num text-xs normal-case tracking-normal tabular-nums text-white/85">
-          {display}
-        </span>
-      </span>
-      <input
-        type="range"
-        className={cn(edScrub, "ed-scrub-dark")}
-        /* Without `--fill` the track's gradient sits at its CSS default and
-           never follows the thumb — the contract every scrub in the app has. */
-        style={{ "--fill": `${((value - min) / (max - min)) * 100}%` } as React.CSSProperties}
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </label>
-  );
 
   const navButton = (dir: "prev" | "next") => {
     const topic = dir === "prev" ? prev : next;
@@ -1065,7 +1050,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
 
         {showHud ? (
           <div className="pointer-events-none absolute left-2 top-2 rounded-lg border border-white/15 bg-black/45 px-2.5 py-1.5 backdrop-blur sm:left-3 sm:top-3">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-white/50">
+            <div className="text-diagram-xs font-semibold uppercase tracking-eyebrow text-white/50">
               {t("learn.playground.sun_rashi_month")}
             </div>
             <div className="text-sm font-bold text-white">
@@ -1074,7 +1059,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
             <div className="mt-1 font-num text-sm font-bold tabular-nums" style={{ color: TONE.solar }}>
               {eotMinutes >= 0 ? "+" : "−"}
               {num(Math.abs(eotMinutes).toFixed(1))}
-              <span className="ml-1 text-[10px] font-semibold text-white/50">
+              <span className="ml-1 text-diagram-xs font-semibold text-white/50">
                 {t("common.minutes")}
               </span>
             </div>
@@ -1177,7 +1162,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
                 to the OS's own sheet — nothing here to fight the drawer's
                 scroll the way a custom dropdown would. */}
             <div>
-              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+              <span className="mb-1.5 block text-xs font-semibold uppercase tracking-eyebrow text-white/55">
                 {t("learn.playground.planet")}
               </span>
               <div className="flex items-center gap-2">
@@ -1207,47 +1192,47 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
                   It is two sentences and it is the difference between the
                   presets teaching something and quietly lying, so it sits
                   under the picker rather than behind another click. */}
-              <p className="mt-1.5 text-[10px] leading-snug text-white/45">
+              <p className="mt-1.5 text-diagram-xs leading-snug text-white/45">
                 {t("learn.playground.preset_caveat")}
               </p>
             </div>
 
-            {slider(
-              t("learn.playground.solar_days_per_year"),
-              solarDaysPerYear,
-              num(solarDaysPerYear),
-              1,
-              365,
-              1,
-              (v) => {
+            <EdSlider
+              label={t("learn.playground.solar_days_per_year")}
+              value={solarDaysPerYear}
+              display={num(solarDaysPerYear)}
+              min={1}
+              max={365}
+              step={1}
+              onChange={(v) => {
                 controlOverride.current.solarDaysPerYear = v;
                 setSolarDaysPerYear(v);
-              },
-            )}
-            {slider(
-              t("learn.playground.eccentricity"),
-              eccentricity,
-              num(eccentricity.toFixed(3)),
-              0,
-              0.4,
-              0.001,
-              (v) => {
+              }}
+            />
+            <EdSlider
+              label={t("learn.playground.eccentricity")}
+              value={eccentricity}
+              display={num(eccentricity.toFixed(3))}
+              min={0}
+              max={0.4}
+              step={0.001}
+              onChange={(v) => {
                 controlOverride.current.eccentricity = v;
                 setEccentricity(v);
-              },
-            )}
-            {slider(
-              t("learn.playground.axial_tilt"),
-              tiltDeg,
-              `${num(tiltDeg.toFixed(1))}°`,
-              0,
-              90,
-              0.1,
-              (v) => {
+              }}
+            />
+            <EdSlider
+              label={t("learn.playground.axial_tilt")}
+              value={tiltDeg}
+              display={`${num(tiltDeg.toFixed(1))}°`}
+              min={0}
+              max={90}
+              step={0.1}
+              onChange={(v) => {
                 controlOverride.current.tiltDeg = v;
                 setTiltDeg(v);
-              },
-            )}
+              }}
+            />
 
             {/* Five cards, one per action — everything that turns the year on,
                 everything that turns the Sun on, and so on. Each card's own
@@ -1305,7 +1290,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
             data-ui-panel
             className="absolute right-3 top-14 z-10 flex w-[min(230px,calc(100%-1.5rem))] touch-auto flex-col gap-2.5 rounded-xl border border-white/15 bg-black/85 p-3.5 backdrop-blur"
           >
-            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/55">
+            <span className="text-xs font-semibold uppercase tracking-eyebrow text-white/55">
               {t("learn.playground.focus")}
             </span>
             <div className="flex flex-col gap-1">
@@ -1367,15 +1352,15 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
                 highlightControl === "orbit-speed" && "animate-pulse",
               )}
             >
-              {slider(
-                t("learn.playground.orbit_speed"),
-                speed,
-                `${num(SPEED_MULTIPLIERS[speed]!)}×`,
-                0,
-                SPEED_MULTIPLIERS.length - 1,
-                1,
-                (v) => setSpeed(Math.round(v)),
-              )}
+              <EdSlider
+                label={t("learn.playground.orbit_speed")}
+                value={speed}
+                display={`${num(SPEED_MULTIPLIERS[speed]!)}×`}
+                min={0}
+                max={SPEED_MULTIPLIERS.length - 1}
+                step={1}
+                onChange={(v) => setSpeed(Math.round(v))}
+              />
             </div>
           </div>
         )}
@@ -1425,7 +1410,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
         ) : null}
 
         {lesson || fullscreen ? null : (
-          <p className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] text-white/45">
+          <p className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-white/45">
             {t("learn.playground.drag_hint")}
           </p>
         )}
@@ -1463,7 +1448,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
                   {playing ? (
                     <Pause size={18} fill="currentColor" strokeWidth={0} />
                   ) : (
-                    <Play size={18} fill="currentColor" strokeWidth={0} className="ml-[2px]" />
+                    <Play size={18} fill="currentColor" strokeWidth={0} className="ml-0.5" />
                   )}
                 </button>
               )}
@@ -1556,7 +1541,7 @@ export function DayPlaygroundStudy({ slug, config }: DayPlaygroundStudyProps) {
                     className="font-num text-xs font-semibold tabular-nums"
                     style={{ color: TONE[tone] }}
                   >
-                    <span className="mr-1 font-sans text-[10px] font-semibold uppercase tracking-[0.08em] text-white/40">
+                    <span className="mr-1 font-sans text-diagram-xs font-semibold uppercase tracking-eyebrow text-white/40">
                       {t("learn.playground.lasts")}{" "}
                     </span>
                     {num(lengthLabel(length))}
@@ -1668,14 +1653,14 @@ const Label = memo(function Label({
       : isRashi
         ? GOLD
         : label.kind === "nakshatra"
-          ? "#8fb6d8"
+          ? illustration.sky70
           : label.kind === "month"
-            ? "#e3d9a8"
+            ? illustration.amber77b
             : label.id === "b-rahu"
-              ? "#c4b5fd"
+              ? illustration.blue85
               : label.id === "b-ketu"
-                ? "#fb7185"
-                : "#ffffff";
+                ? illustration.red71b
+                : neutral.white;
   return (
     <span
       ref={(el) => {
@@ -1686,10 +1671,10 @@ const Label = memo(function Label({
         /* No `transition`: the scene rewrites the transform every frame, and
            easing between frames would smear the text behind the bodies. */
         "absolute left-0 top-0 whitespace-nowrap font-semibold will-change-transform",
-        isRashi ? "flex flex-col items-center gap-0.5 text-[11px]" : "",
-        label.kind === "clock" ? "font-num text-[11px] tabular-nums" : "",
-        isNak ? "flex flex-col items-center gap-0.5 text-[14px] leading-none" : "",
-        label.kind === "month" || (label.kind === "body" && label.id !== "c-deg") ? "text-[11px]" : "",
+        isRashi ? "flex flex-col items-center gap-0.5 text-xs" : "",
+        label.kind === "clock" ? "font-num text-xs tabular-nums" : "",
+        isNak ? "flex flex-col items-center gap-0.5 text-sm leading-none" : "",
+        label.kind === "month" || (label.kind === "body" && label.id !== "c-deg") ? "text-xs" : "",
         label.id === "c-deg" ? "font-num text-base font-bold tabular-nums" : "",
         /* The chapter is pointing at this reading. A ring rather than a colour
            change, because the colour is what says *which* clock it is. */
@@ -1701,7 +1686,7 @@ const Label = memo(function Label({
         transform: labelPinCss(label.x, label.y, label.pin),
         color,
         opacity: label.dim ? 0.4 : 1,
-        textShadow: "0 1px 3px rgba(0,0,0,0.95)",
+        textShadow: effect.labelShadow,
         fontSize: label.hot ? "13px" : undefined,
       }}
     >
@@ -1719,3 +1704,48 @@ const Label = memo(function Label({
 });
 
 export default DayPlaygroundStudy;
+
+/* A plain block, not a flex column. `edScrub` carries `flex-1`, and a flex
+   item in a column gets `min-height: auto` — the automatic minimum size,
+   which pins a range input to its intrinsic 17px thumb and overrides the
+   5px height outright. With no flex container there is no such minimum. */
+function EdSlider({
+  label,
+  value,
+  display,
+  min,
+  max,
+  step,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 flex items-baseline justify-between gap-2 text-xs font-semibold uppercase tracking-eyebrow text-white/55">
+        {label}
+        <span className="font-num text-xs normal-case tracking-normal tabular-nums text-white/85">
+          {display}
+        </span>
+      </span>
+      <input
+        type="range"
+        className={cn(edScrub, "ed-scrub-dark")}
+        /* Without `--fill` the track's gradient sits at its CSS default and
+           never follows the thumb — the contract every scrub in the app has. */
+        style={{ "--fill": `${((value - min) / (max - min)) * 100}%` } as React.CSSProperties}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
+    </label>
+  );
+}

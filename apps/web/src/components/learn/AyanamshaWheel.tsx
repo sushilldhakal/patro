@@ -8,6 +8,7 @@ import { useLocaleDigits } from "@/i18n/digits";
 import { useLocale } from "@/i18n/locale";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 /**
  * Ayanāṁśa (अयनांश) study — why the *sāyana* (tropical) and *nirayana*
  * (sidereal) zodiacs disagree, and by how much.
@@ -159,9 +160,9 @@ export function AyanamshaWheel() {
       >
         <defs>
           <radialGradient id="ay-sun" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stopColor="#fff6d8" />
-            <stop offset="55%" stopColor="#ffd24a" />
-            <stop offset="100%" stopColor="#f08a1d" />
+            <stop offset="0%" stopColor={illustration.amber92} />
+            <stop offset="55%" stopColor={illustration.amber67} />
+            <stop offset="100%" stopColor={illustration.orange53} />
           </radialGradient>
           <marker id="ay-arrow" markerWidth="9" markerHeight="9" refX="6.5" refY="3" orient="auto">
             <path d="M0,0 L7,3 L0,6 Z" fill={amber} />
@@ -239,7 +240,7 @@ export function AyanamshaWheel() {
                 y1={13 * Math.sin(a)}
                 x2={17 * Math.cos(a)}
                 y2={17 * Math.sin(a)}
-                stroke="#f0a81d"
+                stroke={illustration.orange53b}
                 strokeWidth={1.6}
                 strokeLinecap="round"
               />

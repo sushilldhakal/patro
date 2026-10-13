@@ -10,12 +10,13 @@ import {
   getMonthDayNakshatraShort,
   getMonthDayYoga,
 } from "@/lib/panchanga-month";
-import { useThemeColors } from "@/lib/theme-context";
+import { useTheme, useThemeColors } from "@/lib/theme-context";
 import { nepaliDayNumberStyle, nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { getSecondaryCellDate } from "@vedic-patro/domain/local-calendar";
 import { cn } from "@vedic-patro/domain/utils";
+import { brand } from "@vedic-patro/design-tokens";
 import { VerticalEdgeLabel } from "@/components/home/VerticalEdgeLabel";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import {
@@ -45,31 +46,6 @@ function timeShort(v?: string): string {
   return v.slice(0, 5);
 }
 
-type PanchangaFieldTone = "secondary" | "body" | "muted";
-
-type PanchangaFieldSegment = { text: string; tone: PanchangaFieldTone };
-
-/** Fixed order: nakshatra → karana → rashi → yoga → sunrise/sunset (pair last). */
-function orderedPanchangaFieldSegments(
-  nakshatra: string,
-  karana: string,
-  rashi: string,
-  yoga: string,
-  sunLine: string | null,
-): PanchangaFieldSegment[] {
-  const out: PanchangaFieldSegment[] = [];
-  const add = (text: string, tone: PanchangaFieldTone) => {
-    const t = text.trim();
-    if (t && t !== "—") out.push({ text: t, tone });
-  };
-  add(nakshatra, "secondary");
-  add(karana, "body");
-  add(rashi, "secondary");
-  add(yoga, "body");
-  if (sunLine) add(sunLine, "muted");
-  return out;
-}
-
 type Props = {
   days: CalendarDay[];
   year: number;
@@ -88,78 +64,49 @@ export function PanchangaMonthGrid({
   selectedAd,
   loading,
   onPickDay,
-  edgeToEdge = false,
 }: Props) {
   const theme = useThemeColors();
+  const { isDark } = useTheme();
   const { pick, digits, lang } = useLocale();
-  const { isTablet, isCompact, isCalendarWide } = useBreakpoint();
+  const { isCompact, width } = useBreakpoint();
   const { onLayout, colWidth } = useCalendarGridWidth();
   const col = (extra?: object) => calendarColStyle(colWidth, extra);
-  const metaSize = isCalendarWide ? 12 : isTablet ? 12 : 11;
-  const bottomSize = isCalendarWide ? 12 : isTablet ? 11 : 10;
-  const adDateSize = isCalendarWide ? 12 : 10;
-  const weekdaySize = isCalendarWide ? 14 : isTablet ? 14 : 12;
-  const dayNumSize = isCalendarWide ? 18 : isTablet ? 24 : 20;
-  const wideDayNumSize = 18;
-  const dayNumStyle =
-    lang === "en"
-      ? { fontSize: dayNumSize, lineHeight: dayNumSize + 4 }
-      : nepaliDayNumberStyle(dayNumSize);
-  const wideDayNumStyle =
-    lang === "en"
-      ? { fontSize: wideDayNumSize, lineHeight: wideDayNumSize + 4 }
-      : nepaliDayNumberStyle(wideDayNumSize);
-  const metaTextStyle = lang === "en" ? undefined : nepaliTextStyle(metaSize);
-  const bottomTextStyle = lang === "en" ? undefined : nepaliTextStyle(bottomSize);
-  const adDateTextStyle =
-    lang === "en"
-      ? { fontSize: adDateSize, lineHeight: adDateSize + 2 }
-      : nepaliTextStyle(adDateSize);
-  const weekdayTextStyle = lang === "en" ? undefined : nepaliTextStyle(weekdaySize);
-  const metaNumStyle = (size: number) =>
-    lang === "en" ? { fontSize: size, lineHeight: size + 2 } : nepaliDayNumberStyle(size);
   const isEn = lang === "en";
+  /* Web `text-panchang dark:text-accent`: brand green on light, gold on dark. */
+  const panchangColor = isDark ? theme.accent : brand.green;
+  /* Web moon icon: size-3.5 sm:size-4; right/top 0 below md, 4px from md. */
+  const moonSize = width >= 640 ? 16 : 14;
+  const moonInset = isCompact ? 0 : 4;
+  const numFont = (bold: boolean) =>
+    isEn ? (bold ? "font-num-bold" : "font-num") : undefined;
 
   const rows = chunk(days, 7);
-  const narrowMoonSize = 14;
-  const moonSize = isCalendarWide ? 16 : narrowMoonSize;
-  const cellMinH = isCalendarWide ? 118 : 96;
 
   return (
     <View
       onLayout={onLayout}
-      className={cn(
-        "relative border border-border",
-        isCalendarWide ? "overflow-visible" : "overflow-hidden",
-        edgeToEdge ? "rounded-none border-x-0 shadow-none" : "rounded-xl shadow-sm",
-      )}
+      className="relative overflow-hidden rounded-xl border border-border shadow-sm"
       style={{ backgroundColor: theme.border, gap: CALENDAR_GRID_GAP }}
     >
       {loading ? (
-        <View className="absolute inset-0 z-10 items-center justify-center bg-background/75">
+        <View className="absolute inset-0 z-10 items-center justify-center bg-background/70">
           <VedicPatroLoader size={88} />
         </View>
       ) : null}
 
-      <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
-        {(isCalendarWide ? WEEKDAYS_NE : WEEKDAYS_SHORT_NE).map((ne, i) => {
+      <View style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }} className="border-b border-border">
+        {(isCompact ? WEEKDAYS_SHORT_NE : WEEKDAYS_NE).map((ne, i) => {
           const weekend = i === 0 || i === 6;
           return (
             <View
               key={`${ne}-${i}`}
-              style={col({ backgroundColor: theme.background })}
-              className={cn(
-                "justify-center py-2",
-                isCalendarWide ? "items-center px-0.5" : "px-1",
-              )}
+              style={col()}
+              className="min-h-10 items-center justify-center bg-background px-1 py-1.5"
             >
               <Text
                 numberOfLines={1}
-                className={cn("w-full font-bold", isCalendarWide ? "text-center" : "text-left")}
-                style={[
-                  { color: weekend ? theme.danger : theme.text, fontSize: weekdaySize },
-                  weekdayTextStyle,
-                ]}
+                className={cn("text-center text-sm font-semibold leading-tight", weekend && "text-danger")}
+                style={nepaliTextStyle()}
               >
                 {pick(ne, WEEKDAYS_EN[i])}
               </Text>
@@ -169,246 +116,173 @@ export function PanchangaMonthGrid({
       </View>
 
       {rows.map((row, rowIndex) => (
-        <View
-          key={`row-${rowIndex}`}
-          style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP, overflow: isCalendarWide ? "visible" : "hidden" }}
-        >
+        <View key={`row-${rowIndex}`} style={{ flexDirection: "row", gap: CALENDAR_GRID_GAP }}>
           {row.map((day, colIndex) => {
             const cellIndex = rowIndex * 7 + colIndex;
             const isOutside = day.outsideMonth === true;
-            const ad = new Date(`${day.date_ad}T12:00:00`);
             const phase = getPakshaPhase(day);
+            const isKrishna = phase === "krishna";
             const isToday = day.date_ad === todayAd;
-            const isSel = day.date_ad === selectedAd && !isToday;
-            const chandraRashi = getMonthDayChandraRashi(day, lang) ?? "—";
+            const isSel = day.date_ad === selectedAd;
+            const rashiLabel = getMonthDayChandraRashi(day, lang) ?? "—";
             const yogaLabel = getMonthDayYoga(day, lang);
             const karanaLabel = getMonthDayKarana(day, lang);
-            const nakshatra = isCalendarWide
-              ? (getMonthDayNakshatra(day, lang) ?? "—")
-              : isCompact
-                ? (getMonthDayNakshatraShort(day, lang) ?? "—")
-                : (getMonthDayNakshatra(day, lang) ?? "—");
+            const nakshatraFull = getMonthDayNakshatra(day, lang) ?? "—";
+            const nakshatraLabel = isCompact ? (getMonthDayNakshatraShort(day, lang) ?? nakshatraFull) : nakshatraFull;
             const secondary = getSecondaryCellDate(day, "bs", lang, cellIndex === 0);
             const secondaryLabel = secondary.monthLabel
               ? `${secondary.monthLabel} ${digits(secondary.day)}`
               : digits(secondary.day);
+            const secondaryLabelShort = secondary.monthLabelShort
+              ? `${secondary.monthLabelShort} ${digits(secondary.day)}`
+              : digits(secondary.day);
             const sunRise = digits(timeShort(day.sunrise));
             const sunSet = digits(timeShort(day.sunset));
             const hasSunTimes = Boolean(day.sunrise || day.sunset);
-            const sunLine = hasSunTimes
-              ? [day.sunrise ? sunRise : "", day.sunset ? sunSet : ""].filter(Boolean).join(" ")
-              : null;
-            const panchangaFields = orderedPanchangaFieldSegments(
-              nakshatra,
-              karanaLabel,
-              chandraRashi,
-              yogaLabel,
-              sunLine,
-            );
+            const sunTimesLabel = [day.sunrise ? sunRise : "—", day.sunset ? sunSet : "—"].join(" ");
             const tithiLabel = formatTithiLabel(day, isEn);
-            const muted = isOutside ? 0.65 : 1;
             const tithiIdx = tithiIndexFromCalendarDay(day);
             const moonTitle = moonPhaseTitle(phase, isEn);
 
-            let bg: string = theme.card;
-            if (isOutside) bg = theme.surfaceMuted;
-            if (isToday) bg = theme.surfaceToday;
+            /* Web cellClass: outside surface-muted/70, krishna background, shukla white. */
+            let bg = "bg-white dark:bg-background";
+            if (isOutside) bg = "bg-surface-muted/70";
+            else if (isKrishna) bg = "bg-background";
+            if (isToday && !isOutside) bg = "bg-surface-today";
 
             return (
               <Pressable
                 key={day.date_ad}
                 onPress={() => onPickDay(day)}
-                style={col({
-                  minHeight: cellMinH,
-                  backgroundColor: bg,
-                  overflow: isCalendarWide ? "visible" : "hidden",
-                })}
+                style={col()}
                 className={cn(
-                  "relative flex-col active:opacity-90",
-                  isCalendarWide ? "items-center justify-between gap-0.5 p-1" : "items-start justify-start gap-0.5 p-1",
-                  isCalendarWide && hasSunTimes && "px-3.5",
+                  "relative active:opacity-90",
+                  isCompact ? "p-1" : "min-h-[118px] p-1.5",
+                  !isCompact && hasSunTimes && "px-3.5",
+                  bg,
                 )}
               >
                 {isSel ? <View style={selectionRingStyle(theme.primary)} /> : null}
-
-                {tithiIdx != null && isCalendarWide ? (
+                {isToday && !isOutside && isKrishna && !isSel ? (
                   <View
-                    style={{
-                      position: "absolute",
-                      top: isCalendarWide ? 4 : 2,
-                      right: isCalendarWide ? 4 : 2,
-                      zIndex: 2,
-                      pointerEvents: "none",
-                    }}
+                    pointerEvents="none"
+                    className="absolute inset-0 border-2 border-danger/30"
+                  />
+                ) : null}
+
+                {tithiIdx != null ? (
+                  <View
+                    pointerEvents="none"
+                    style={{ position: "absolute", top: moonInset, right: moonInset, zIndex: 2 }}
                   >
                     <CalendarMoonPhaseIcon tithiIndex={tithiIdx} size={moonSize} title={moonTitle} />
                   </View>
                 ) : null}
 
-                {isCalendarWide && hasSunTimes ? (
-                  <>
-                    {day.sunrise ? (
-                      <VerticalEdgeLabel
-                        text={sunRise}
-                        side="left"
-                        color={theme.textMuted}
-                        className="font-normal"
-                      />
-                    ) : null}
-                    {day.sunset ? (
-                      <VerticalEdgeLabel
-                        text={sunSet}
-                        side="right"
-                        color={theme.textMuted}
-                        className="font-normal"
-                      />
-                    ) : null}
-                  </>
-                ) : null}
-
-                {isCalendarWide ? (
-                  <View className="min-w-0 w-full flex-1 items-center">
-                    <Text
-                      numberOfLines={2}
-                      className="w-full text-center font-bold"
-                      style={[
-                        { color: theme.text, fontSize: metaSize, opacity: muted },
-                        metaTextStyle,
-                      ]}
-                    >
-                      {formatTithiLabel(day, isEn)}
-                    </Text>
-                    <Text
-                      numberOfLines={2}
-                      className="w-full text-center font-bold"
-                      style={[
-                        { color: theme.secondary, fontSize: metaSize, opacity: muted },
-                        metaTextStyle,
-                      ]}
-                    >
-                      {nakshatra}
-                    </Text>
-                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1 py-0.5">
+                {isCompact ? (
+                  <View className="w-full items-start gap-px">
+                    <View className="flex-row flex-wrap items-baseline gap-x-1">
                       <Text
-                        className={lang === "en" ? "font-num-bold font-bold" : "font-bold"}
-                        style={[{ color: theme.text, opacity: muted }, wideDayNumStyle]}
+                        className={cn("text-sm font-bold leading-none", numFont(true))}
+                        style={isEn ? undefined : nepaliDayNumberStyle()}
                       >
                         {digits(day.day)}
                       </Text>
                       <Text
-                        className={lang === "en" ? "font-num font-semibold" : "font-semibold"}
-                        style={[
-                          { color: theme.textMuted, opacity: muted },
-                          metaNumStyle(secondary.monthLabel ? 10 : metaSize),
-                        ]}
+                        className={cn(
+                          "font-semibold text-muted-foreground",
+                          secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                          numFont(false),
+                        )}
+                        style={isEn ? undefined : nepaliTextStyle()}
                       >
-                        {secondaryLabel}
+                        {secondaryLabelShort}
                       </Text>
                     </View>
-                    <View className="w-full flex-row gap-0.5">
-                      <Text
-                        numberOfLines={2}
-                        className="min-w-0 flex-1 text-center font-bold"
-                        style={[
-                          { color: theme.secondary, fontSize: bottomSize, opacity: muted },
-                          bottomTextStyle,
-                        ]}
-                      >
-                        {chandraRashi}
+                    <View className="w-full items-start gap-px">
+                      <Text className="w-full text-xs font-semibold leading-tight" style={nepaliTextStyle()}>
+                        {tithiLabel}
                       </Text>
                       <Text
-                        numberOfLines={2}
-                        className="min-w-0 flex-1 text-center font-bold"
-                        style={[
-                          { color: theme.text, fontSize: bottomSize, opacity: muted },
-                          bottomTextStyle,
-                        ]}
+                        className="w-full text-xs font-semibold leading-tight"
+                        style={[nepaliTextStyle(), { color: panchangColor }]}
                       >
+                        {nakshatraLabel}
+                      </Text>
+                      <Text
+                        className="w-full text-xs font-semibold leading-tight"
+                        style={[nepaliTextStyle(), { color: panchangColor }]}
+                      >
+                        {rashiLabel}
+                      </Text>
+                      <Text className="w-full text-xs font-semibold leading-tight" style={nepaliTextStyle()}>
+                        {yogaLabel}
+                      </Text>
+                      <Text className="w-full text-xs font-semibold leading-tight" style={nepaliTextStyle()}>
                         {karanaLabel}
                       </Text>
                     </View>
                     <Text
-                      numberOfLines={2}
-                      className="w-full text-center font-bold"
-                      style={[
-                        { color: theme.text, fontSize: bottomSize, opacity: muted },
-                        bottomTextStyle,
-                      ]}
+                      className="text-diagram-xs font-num font-bold leading-none text-muted-foreground"
+                      style={nepaliTextStyle()}
                     >
-                      {yogaLabel}
+                      {sunTimesLabel}
                     </Text>
                   </View>
                 ) : (
-                  <View className="min-w-0 w-full items-start gap-0.5">
-                    <View className="w-full min-w-0 flex-row items-center gap-1">
-                      <Text
-                        numberOfLines={1}
-                        className="min-w-0 flex-1 shrink text-left font-bold"
-                        style={[
-                          { color: theme.text, fontSize: metaSize, opacity: muted },
-                          metaTextStyle,
-                        ]}
-                      >
-                        {tithiLabel}
-                      </Text>
-                      {tithiIdx != null ? (
-                        <View className="shrink-0" style={{ pointerEvents: "none" }}>
-                          <CalendarMoonPhaseIcon
-                            tithiIndex={tithiIdx}
-                            size={narrowMoonSize}
-                            title={moonTitle}
-                          />
-                        </View>
-                      ) : null}
-                    </View>
+                  <View className="w-full gap-0.5">
+                    {day.sunrise ? (
+                      <VerticalEdgeLabel text={sunRise} side="left" color={theme.textMuted} className="font-normal" />
+                    ) : null}
+                    {day.sunset ? (
+                      <VerticalEdgeLabel text={sunSet} side="right" color={theme.textMuted} className="font-normal" />
+                    ) : null}
 
-                    <View className="flex-row items-baseline gap-1">
+                    <Text className="w-full text-center text-xs font-semibold leading-snug" style={nepaliTextStyle()}>
+                      {tithiLabel}
+                    </Text>
+                    <Text
+                      className="w-full text-center text-xs font-semibold leading-tight"
+                      style={[nepaliTextStyle(), { color: panchangColor }]}
+                    >
+                      {nakshatraLabel}
+                    </Text>
+
+                    <View className="flex-row flex-wrap items-baseline justify-center gap-x-1 px-0.5 py-0.5">
                       <Text
-                        className={lang === "en" ? "font-num-bold font-bold" : "font-bold"}
-                        style={[{ color: theme.text, opacity: muted }, dayNumStyle]}
+                        className={cn("text-lg font-bold leading-none", numFont(true))}
+                        style={isEn ? undefined : nepaliDayNumberStyle()}
                       >
                         {digits(day.day)}
                       </Text>
                       <Text
-                        className={lang === "en" ? "font-num font-semibold" : "font-semibold"}
-                        style={[
-                          { color: theme.textMuted, opacity: muted },
-                          adDateTextStyle,
-                        ]}
+                        className={cn(
+                          "font-semibold leading-none text-muted-foreground",
+                          secondary.monthLabel ? "text-diagram-xs" : "text-xs",
+                          numFont(false),
+                        )}
+                        style={isEn ? undefined : nepaliTextStyle()}
                       >
-                        {digits(ad.getDate())}
+                        {secondaryLabel}
                       </Text>
                     </View>
 
-                    {panchangaFields.length > 0 ? (
-                      <View className="w-full flex-row flex-wrap items-baseline gap-x-1 gap-y-0.5">
-                        {panchangaFields.map((field, i) => (
-                          <Text
-                            key={`${field.text}-${i}`}
-                            numberOfLines={isCompact ? 2 : 1}
-                            className={cn(
-                              "max-w-full shrink font-bold",
-                              field.tone === "muted" && lang === "en" ? "font-num-bold" : "",
-                            )}
-                            style={[
-                              {
-                                color:
-                                  field.tone === "secondary"
-                                    ? theme.secondary
-                                    : field.tone === "muted"
-                                      ? theme.textMuted
-                                      : theme.text,
-                                fontSize: bottomSize,
-                                opacity: muted,
-                              },
-                              bottomTextStyle,
-                            ]}
-                          >
-                            {field.text}
-                          </Text>
-                        ))}
+                    <View className="w-full gap-0.5">
+                      <View className="w-full flex-row gap-0.5">
+                        <Text
+                          className="min-w-0 flex-1 text-center text-xs font-bold leading-tight"
+                          style={[nepaliTextStyle(), { color: panchangColor }]}
+                        >
+                          {rashiLabel}
+                        </Text>
+                        <Text className="min-w-0 flex-1 text-center text-xs font-bold leading-tight" style={nepaliTextStyle()}>
+                          {karanaLabel}
+                        </Text>
                       </View>
-                    ) : null}
+                      <Text className="w-full text-center text-xs font-bold leading-tight" style={nepaliTextStyle()}>
+                        {yogaLabel}
+                      </Text>
+                    </View>
                   </View>
                 )}
               </Pressable>

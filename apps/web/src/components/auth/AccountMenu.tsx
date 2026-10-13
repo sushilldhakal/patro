@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { importWithRetry } from "@/lib/lazy-route";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 const LazyAuthDialog = lazy(() =>
   importWithRetry(() => import("./AuthDialog")).then((m) => ({ default: m.AuthDialog })),
@@ -18,7 +20,7 @@ export function AccountMenu() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) {
-    return <div className="size-8 animate-pulse rounded-full bg-muted" aria-hidden />;
+    return <div className={cn("animate-pulse", accountClasses.avatarSkeleton)} aria-hidden />;
   }
 
   if (!user) {
@@ -44,7 +46,7 @@ export function AccountMenu() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="flex size-8 items-center justify-center rounded-full bg-secondary/15 text-sm font-semibold text-secondary transition-colors hover:bg-secondary/25"
+          className={cn("flex transition-colors hover:bg-secondary/25", accountClasses.avatar, accountClasses.avatarText)}
           aria-label={t("account_page.menu_aria")}
         >
           {initial}
@@ -56,8 +58,8 @@ export function AccountMenu() {
             <UserCircle className="size-5" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm text-base text-foreground">{user.email}</p>
-            <p className="flex items-center gap-1 text-xs">
+            <p className={cn("truncate", accountClasses.menuEmail)}>{user.email}</p>
+            <p className={cn("flex items-center gap-1", accountClasses.menuStatus)}>
               {user.is_verified ? (
                 <>
                   <BadgeCheck className="size-3 text-emerald-500" /> {t("account_page.verified")}
@@ -72,7 +74,7 @@ export function AccountMenu() {
         <Link
           to="/account"
           onClick={() => setMenuOpen(false)}
-          className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground"
+          className={cn("flex transition-colors hover:bg-muted hover:text-foreground", accountClasses.menuItem)}
         >
           <UserCircle className="size-4" />
           {t("account_page.my_profiles")}
@@ -83,7 +85,7 @@ export function AccountMenu() {
             setMenuOpen(false);
             void logout();
           }}
-          className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground"
+          className={cn("flex w-full transition-colors hover:bg-muted hover:text-foreground", accountClasses.menuItem)}
         >
           <LogOut className="size-4" />
           {t("account_page.sign_out")}

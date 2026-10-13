@@ -15,7 +15,10 @@ import {
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
+import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
 const PLANET_EN: Record<string, string> = {
@@ -38,9 +41,9 @@ function SectionHeading({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="mb-2 flex-row items-center gap-2">
+    <View className={dainikKrantiClasses.sectionHead}>
       <Ionicons name={icon} size={16} color={colors.secondary} />
-      <Text className="text-body font-semibold uppercase tracking-wide text-muted-foreground">
+      <Text className={dainikKrantiClasses.sectionHeadText} style={nepaliTextStyle()}>
         {children}
       </Text>
     </View>
@@ -50,40 +53,43 @@ function SectionHeading({
 export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
   const { lang, pick } = useLocale();
   const isEn = lang === "en";
+  const { width } = useBreakpoint();
+  const lagnaCols = width >= 1280 ? 12 : width >= 768 ? 6 : width >= 640 ? 4 : 3;
+  const grahaCols = width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
   return (
-    <View className="w-full min-w-0 gap-4 py-2">
+    <View className={cn(dainikKrantiClasses.expandRoot, "gap-4")}>
       {lagna ? (
         <View className="w-full min-w-0">
           <SectionHeading icon="grid-outline">
             {pick("दैनिक लग्न आरम्भ (बजे)", "Daily lagna start")}
           </SectionHeading>
-          <View className="flex-row flex-wrap gap-2">
+          <View className="-m-1 flex-row flex-wrap">
             {getRashiList("ne").map((rne, i) => {
               const num = i + 1;
               const val = lagna.times[num];
               const late =
                 val?.includes("२५") || val?.includes("२६") || val?.includes("२७");
               return (
-                <View
-                  key={rne}
-                  className="min-w-[4.5rem] flex-1 rounded-md border border-border/80 bg-background/80 px-1.5 py-1.5"
-                  style={{ maxWidth: "31%" }}
-                >
-                  <View className="items-center">
-                    <RashiGlyphIcon name={rne} number={num} size={22} />
+                <View key={rne} style={{ width: `${100 / lagnaCols}%` }} className="p-1">
+                  <View className={cn(dainikKrantiClasses.cellBox, dainikKrantiClasses.lagnaCell)}>
+                    <View className="items-center">
+                      <RashiGlyphIcon name={rne} number={num} size={22} />
+                    </View>
+                    <Text className={cn(dainikKrantiClasses.lagnaName, "text-center")} style={nepaliTextStyle()}>
+                      {pick(rne, getRashiList("en")[i])}
+                    </Text>
+                    <Text
+                      className={cn(
+                        dainikKrantiClasses.lagnaTime,
+                        "text-center",
+                        late ? dainikKrantiClasses.lateText : "text-foreground",
+                      )}
+                      style={nepaliTextStyle()}
+                    >
+                      {val ?? "—"}
+                    </Text>
                   </View>
-                  <Text className="text-caption text-center text-muted-foreground">
-                    {pick(rne, getRashiList("en")[i])}
-                  </Text>
-                  <Text
-                    className={cn(
-                      "text-body mt-1 text-center font-num tabular-nums",
-                      late ? "text-amber-700 dark:text-amber-300" : "text-foreground",
-                    )}
-                  >
-                    {val ?? "—"}
-                  </Text>
                 </View>
               );
             })}
@@ -96,35 +102,33 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
           <SectionHeading icon="planet-outline">
             {pick("उदयकालिक ग्रहस्पष्ट (सूर्योदय)", "Planetary positions at sunrise")}
           </SectionHeading>
-          <View className="flex-row flex-wrap gap-2">
+          <View className="-m-1 flex-row flex-wrap">
             {PATRO_PLANET_KEYS.map((key) => {
               const cell = graha.planets[key];
               if (!cell) return null;
               const grahaKey = key as GrahaKey;
               return (
-                <View
-                  key={key}
-                  className="min-w-[45%] flex-1 rounded-md border border-border/80 bg-background/80 px-2.5 py-2"
-                  style={{ maxWidth: "48%" }}
-                >
-                  <View className="flex-row items-center gap-1.5">
-                    <GrahaPlanetIcon graha={grahaKey} size={20} />
-                    <Text className="text-body font-semibold text-foreground">
-                      {pick(PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
+                <View key={key} style={{ width: `${100 / grahaCols}%` }} className="p-1">
+                  <View className={cn(dainikKrantiClasses.cellBox, dainikKrantiClasses.grahaCell)}>
+                    <View className={dainikKrantiClasses.grahaNameRow}>
+                      <GrahaPlanetIcon graha={grahaKey} size={20} />
+                      <Text className={dainikKrantiClasses.grahaNameText} style={nepaliTextStyle()}>
+                        {pick(PATRO_PLANET_NE[key], PLANET_EN[key] ?? PATRO_PLANET_NE[key])}
+                      </Text>
+                      <GrahaStatusBadges
+                        planetKey={key}
+                        isRetrograde={cell.isRetrograde}
+                        isCombust={cell.isCombust}
+                        size={12}
+                      />
+                    </View>
+                    <Text className={dainikKrantiClasses.grahaCoords} style={nepaliTextStyle()}>
+                      <Text className={cn(dainikKrantiClasses.grahaCoords, dainikKrantiClasses.grahaRashi, "mt-0")}>
+                        {isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe}
+                      </Text>{" "}
+                      {cell.coords}
                     </Text>
-                    <GrahaStatusBadges
-                      planetKey={key}
-                      isRetrograde={cell.isRetrograde}
-                      isCombust={cell.isCombust}
-                      size={11}
-                    />
                   </View>
-                  <Text className="text-body mt-0.5 font-num tabular-nums">
-                    <Text className="text-foreground">
-                      {isEn ? (cell.rashiEn ?? cell.rashiNe) : cell.rashiNe}
-                    </Text>{" "}
-                    {cell.coords}
-                  </Text>
                 </View>
               );
             })}
@@ -140,7 +144,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       {notes.length > 0 ? (
         <View className="w-full min-w-0 gap-1.5">
           {notes.map((n) => (
-            <Text key={`${n.kind}-${n.text}`} className="text-body text-foreground">
+            <Text key={`${n.kind}-${n.text}`} className={dainikKrantiClasses.noteText} style={nepaliTextStyle()}>
               {pick(n.text, n.textEn ?? n.text)}
             </Text>
           ))}

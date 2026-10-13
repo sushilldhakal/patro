@@ -18,10 +18,10 @@ import {
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { colorWithAlpha } from "@/lib/theme";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
 /** ~15 calendar-day rows visible; additional events scroll inside the panel. */
 const INGRESS_VISIBLE_DAY_ROWS = 15;
@@ -65,30 +65,24 @@ export function GocharIngressSection({
   const showMonthNav = Boolean(browseMonthLabel && onPrevMonth && onNextMonth);
 
   return (
-    <View className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-card">
-      <View className="gap-2 border-b border-border px-3 py-2.5">
+    <View className={gocharClasses.ingressCard}>
+      <View className={gocharClasses.ingressHead}>
         <View className="flex-row items-start justify-between gap-2">
           <View className="min-w-0 flex-1">
-            <Text
-              style={{ letterSpacing: 1.2, ...nepaliTextStyle(11) }}
-              className="text-caption font-bold uppercase text-muted-foreground"
-            >
+            <Text className={gocharClasses.ingressEyebrow} style={nepaliTextStyle()}>
               {pick("के परिवर्तन हुँदैछ", "What's changing")}
             </Text>
-            <Text
-              className="text-body mt-0.5 font-bold text-foreground"
-              style={nepaliTextStyle(16)}
-            >
+            <Text className={gocharClasses.ingressTitle} style={nepaliTextStyle()}>
               {pick("आगामी गोचर घटनाहरू", "Upcoming transit events")}
             </Text>
           </View>
           {showMonthNav ? (
-            <View className="shrink-0 flex-row items-center gap-1">
+            <View className={cn("flex-row", gocharClasses.navGroup)}>
               <NavBtn icon="chevron-back" onPress={onPrevMonth!} />
               <Text
                 numberOfLines={1}
-                className="text-body min-w-[86px] text-center font-bold text-foreground"
-                style={nepaliTextStyle(13)}
+                className={cn("min-w-[6.5rem]", gocharClasses.navLabel)}
+                style={nepaliTextStyle()}
               >
                 {browseMonthLabel}
               </Text>
@@ -98,27 +92,22 @@ export function GocharIngressSection({
         </View>
       </View>
 
-      <View className="flex-row flex-wrap gap-1.5 border-b border-border px-2 py-2">
+      <View className={cn("flex-row flex-wrap", gocharClasses.filterBar)}>
         {FILTERS.map((f) => {
           const active = filter === f.id;
           return (
             <Pressable
               key={f.id}
               onPress={() => setFilter(f.id)}
-              style={{
-                borderColor: active ? colors.secondary : colors.border,
-                backgroundColor: active
-                  ? colorWithAlpha(brand.blue, 0.15)
-                  : colors.background,
-              }}
-              className="rounded-lg border px-2 py-1.5 active:opacity-80"
+              className={cn(
+                gocharClasses.filterChip,
+                "active:opacity-80",
+                active ? gocharClasses.filterChipActive : gocharClasses.filterChipIdle,
+              )}
             >
               <Text
-                style={{
-                  color: active ? colors.secondary : colors.mutedForeground,
-                  ...nepaliTextStyle(12),
-                }}
-                className="text-caption font-bold"
+                className={cn(gocharClasses.filterText, active ? gocharClasses.filterTextActive : gocharClasses.filterTextIdle)}
+                style={nepaliTextStyle()}
               >
                 {pick(f.ne, f.en)} ({digits(counts[f.id])})
               </Text>
@@ -131,14 +120,14 @@ export function GocharIngressSection({
         style={{ maxHeight: listMaxHeight }}
         nestedScrollEnabled
         showsVerticalScrollIndicator
-        contentContainerStyle={{ paddingVertical: 4 }}
+        contentContainerClassName={gocharClasses.ingressList}
       >
         {loading ? (
-          <Text className="text-body px-2 py-6 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={gocharClasses.ingressStatus} style={nepaliTextStyle()}>
             {pick("लोड हुँदै…", "Loading…")}
           </Text>
         ) : visible.length === 0 ? (
-          <Text className="text-body px-2 py-6 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={gocharClasses.ingressStatus} style={nepaliTextStyle()}>
             {pick("यस महिनामा कुनै आगामी गोचर छैन।", "No upcoming transits this month.")}
           </Text>
         ) : (
@@ -150,42 +139,39 @@ export function GocharIngressSection({
             return (
               <View
                 key={`${ev.graha}-${ev.entry_time_utc ?? i}-${ev.level}`}
-                className="flex-row items-center gap-2.5 border-b border-border px-2 py-2"
+                className={cn("flex-row", gocharClasses.ingressRow)}
                 style={{ minHeight: INGRESS_EVENT_ROW_HEIGHT }}
               >
                 <View className="w-11 shrink-0 overflow-hidden rounded-lg border border-border">
                   <View className="bg-secondary px-1 py-0.5">
                     <Text
                       numberOfLines={1}
-                      className="text-caption text-center font-bold text-secondary-foreground"
-                      style={nepaliTextStyle(10)}
+                      className="text-center text-xs font-bold text-secondary-foreground"
+                      style={nepaliTextStyle()}
                     >
                       {chip.month}
                     </Text>
                   </View>
-                  <Text className="text-body py-0.5 text-center font-num font-bold text-foreground">
+                  <Text className="py-0.5 text-center font-num text-sm font-bold text-foreground" style={nepaliTextStyle()}>
                     {chip.day}
                   </Text>
                 </View>
 
                 <GrahaPlanetIcon graha={ev.graha as GrahaKey} size={22} />
 
-                <View className="min-w-0 flex-1">
-                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+                <View className={gocharClasses.ingressBody}>
+                  <Text className={gocharClasses.ingressName} style={nepaliTextStyle()}>
                     {ingressGrahaLabel(ev, lang)}
                   </Text>
                   <Text
-                    className="text-body mt-0.5 font-semibold text-foreground"
-                    style={nepaliTextStyle(13)}
+                    className={gocharClasses.ingressDetail}
+                    style={nepaliTextStyle()}
                   >
                     {ingressEventDetail(ev, lang)}
                   </Text>
                 </View>
 
-                <Text
-                  style={{ color: colors.secondary, ...nepaliTextStyle(12) }}
-                  className="text-caption shrink-0 font-bold"
-                >
+                <Text className={gocharClasses.ingressRel} style={nepaliTextStyle()}>
                   {rel}
                 </Text>
               </View>
@@ -208,9 +194,9 @@ function NavBtn({
   return (
     <Pressable
       onPress={onPress}
-      className="h-7 w-7 items-center justify-center rounded-lg border border-border bg-background active:bg-muted"
+      className={cn(gocharClasses.navButton, "active:bg-muted")}
     >
-      <Ionicons name={icon} size={15} color={colors.foreground} />
+      <Ionicons name={icon} size={16} color={colors.foreground} />
     </Pressable>
   );
 }

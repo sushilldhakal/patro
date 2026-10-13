@@ -11,9 +11,11 @@ import {
   type Profile,
   type ProfileInput,
 } from "@/lib/auth/client";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
-const labelClass = "text-sm text-base text-foreground";
-const fieldWrap = "flex flex-col gap-1.5";
+const labelClass = accountClasses.label;
+const fieldWrap = cn("flex flex-col", accountClasses.field);
 
 /** Blank profile, used when adding a new one. */
 export const EMPTY_PROFILE: ProfileInput = {
@@ -100,8 +102,8 @@ export function ProfileForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className={cn("flex flex-col", accountClasses.profileForm)}>
+      <div className={cn("grid sm:grid-cols-2", accountClasses.fieldRow)}>
         <div className={fieldWrap}>
           <label className={labelClass}>{t("profile.full_name")}</label>
           <Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} required />
@@ -127,7 +129,7 @@ export function ProfileForm({
           <select
             value={form.gender ?? ""}
             onChange={(e) => set("gender", e.target.value)}
-            className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            className={cn(accountClasses.select, "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50")}
           >
             <option value="">—</option>
             <option value="male">{t("profile.male")}</option>
@@ -154,14 +156,14 @@ export function ProfileForm({
           }
         />
         {form.country && (
-          <p className="text-xs">
+          <p className={accountClasses.hint}>
             {form.country}
             {form.timezone ? ` · ${form.timezone}` : ""}
           </p>
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className={cn("grid sm:grid-cols-3", accountClasses.fieldRow)}>
         <div className={fieldWrap}>
           <label className={labelClass}>{t("profile.birth_date")}</label>
           <Input
@@ -187,7 +189,7 @@ export function ProfileForm({
           <select
             value={form.birth_era ?? "bs"}
             onChange={(e) => set("birth_era", e.target.value)}
-            className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            className={cn(accountClasses.select, "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50")}
           >
             <option value="bs">{t("profile.calendar_bs")}</option>
             <option value="ad">{t("profile.calendar_ad")}</option>
@@ -195,7 +197,7 @@ export function ProfileForm({
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-foreground">
+      <label className={cn("flex", accountClasses.checkRow, accountClasses.checkText)}>
         <input
           type="checkbox"
           checked={!!form.is_default}
@@ -205,9 +207,9 @@ export function ProfileForm({
         {t("profile.set_default")}
       </label>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {error && <p className={accountClasses.formError}>{error}</p>}
 
-      <div className="flex justify-end gap-2">
+      <div className={cn("flex", accountClasses.formActions)}>
         <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
           {t("common.cancel")}
         </Button>

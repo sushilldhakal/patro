@@ -4,6 +4,7 @@ import type { SelectOption } from "@/components/ui/BsNativeSelect";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 type Props = {
   month: number;
@@ -24,16 +25,17 @@ export function PatroSheetMonthGrid({ month, monthOptions, onMonthChange }: Prop
             key={option.value}
             onPress={() => onMonthChange(option.value)}
             className={cn(
-              "min-w-[30%] flex-1 items-center rounded-lg border px-2 py-2.5",
-              selected ? "border-secondary bg-secondary" : "border-border bg-card active:bg-muted",
+              patroDateClasses.monthChip,
+              "min-w-[30%] flex-1 items-center",
+              selected ? patroDateClasses.monthChipActive : cn(patroDateClasses.monthChipIdle, "active:bg-muted"),
             )}
             style={{ maxWidth: "32%" }}
           >
             <Text
               numberOfLines={1}
               className={cn(
-                "text-body font-semibold",
-                selected ? "text-secondary-foreground" : "text-foreground",
+                patroDateClasses.monthChipLabel,
+                selected ? patroDateClasses.monthChipLabelActive : patroDateClasses.monthChipLabelIdle,
               )}
               style={[
                 { textAlign: "center", width: "100%" },

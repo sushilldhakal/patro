@@ -109,6 +109,7 @@ import { __iconNode as WrenchNode } from "lucide-react/dist/esm/icons/wrench";
 import { __iconNode as XNode } from "lucide-react/dist/esm/icons/x";
 import { __iconNode as ZapNode } from "lucide-react/dist/esm/icons/zap";
 
+import { neutral } from "@vedic-patro/design-tokens";
 /**
  * Drop-in for `@expo/vector-icons`' `Ionicons` that draws the Lucide icon the
  * website uses for the same meaning (web renders Lucide everywhere), so native
@@ -230,7 +231,7 @@ const NODES: Record<IoniconLucideName, LucideIconNode> = {
 type Props = ComponentProps<typeof RealIonicons>;
 
 function IoniconsImpl(props: Props) {
-  const { name, size = 24, color = "#000", style } = props;
+  const { name, size = 24, color = neutral.black, style } = props;
   const lucide = lucideForIonicon(name as string);
   const node = lucide ? NODES[lucide] : undefined;
   if (!node) return <RealIonicons {...props} />;

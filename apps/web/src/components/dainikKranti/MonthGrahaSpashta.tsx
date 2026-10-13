@@ -6,6 +6,7 @@ import {
 } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import {
@@ -25,8 +26,8 @@ import {
   patroStickySubHeadCorner,
 } from "@/lib/patro-classes";
 
-const th = "whitespace-nowrap px-2 py-2.5 text-sm font-semibold";
-const td = "whitespace-nowrap px-2 py-2 text-sm";
+const th = cn(dainikKrantiClasses.monthTh, "whitespace-nowrap");
+const td = cn(dainikKrantiClasses.monthTd, "whitespace-nowrap");
 
 const PLANET_EN: Record<string, string> = {
   sun: "Sun", moon: "Moon", mars: "Mars", mercury: "Mercury", jupiter: "Jupiter",
@@ -88,13 +89,13 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={13} className="py-8 text-center text-sm">
+              <TableCell colSpan={13} className={dainikKrantiClasses.monthLoading}>
                 {t("dainik.loading")}
               </TableCell>
             </TableRow>
           ) : empty || rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={13} className="py-8 text-center text-sm">
+              <TableCell colSpan={13} className={dainikKrantiClasses.monthLoading}>
                 {t("dainik.no_days_found_in_this_paksha")}
               </TableCell>
             </TableRow>
@@ -105,13 +106,14 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
               return (
                 <TableRow
                   key={row.dateAd}
-                  className={cn(isToday && "bg-secondary/15 hover:bg-secondary/20")}
+                  className={cn(isToday && cn(dainikKrantiClasses.rowToday, "hover:bg-secondary/20"))}
                 >
                   <TableCell
                     className={cn(
                       td,
-                      "sticky left-0 z-10 bg-card pl-3 font-semibold",
-                      isToday && "bg-secondary/15",
+                      "sticky left-0 z-10",
+                      dainikKrantiClasses.stickyDateCell,
+                      isToday && dainikKrantiClasses.rowToday,
                     )}
                   >
                     {digits(row.day)}
@@ -124,7 +126,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
                     return (
                       <TableCell
                         key={key}
-                        className={cn(td, "text-center font-mono tabular-nums")}
+                        className={cn(td, dainikKrantiClasses.monthTdMono)}
                       >
                         <span className="inline-flex items-center justify-center gap-1">
                           {formatPlanetCell(cell, isEn)}
@@ -138,13 +140,13 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
                       </TableCell>
                     );
                   })}
-                  <TableCell className={cn(td, "text-center font-mono tabular-nums")}>
+                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
                     {row.deshaantar ?? "—"}
                   </TableCell>
-                  <TableCell className={cn(td, "text-center font-mono tabular-nums")}>
+                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
                     {row.akshamsha ?? "—"}
                   </TableCell>
-                  <TableCell className={cn(td, "text-center font-mono tabular-nums")}>
+                  <TableCell className={cn(td, dainikKrantiClasses.monthTdMono)}>
                     {row.belaantar ?? (hasPlanets ? "—" : "—")}
                   </TableCell>
                 </TableRow>
@@ -156,7 +158,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   );
 
   const footnote = (
-    <p className="border-t border-border px-4 py-2 text-sm leading-relaxed">
+    <p className={dainikKrantiClasses.monthFootnote}>
       {bilingualNode(lang, 
         <>
           राशिहरू: {getRashiList("ne").join(", ")}। प्रत्येक ग्रहको कोष्ठकमा{" "}

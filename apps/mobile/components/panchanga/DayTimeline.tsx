@@ -2,6 +2,9 @@ import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { cn } from "@vedic-patro/domain/utils";
+import { patroSecBand } from "@/lib/patro-classes";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { ScrollView, View, type LayoutChangeEvent } from "react-native"
 import { Text } from "@/components/ui/Text"
 import Svg, { G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
@@ -34,6 +37,7 @@ import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_CHART_SM } from "@/lib/fonts";
 import { useTheme } from "@/lib/theme-context";
 
+import { brand, illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 const W = 1000;
 /**
  * The width the scrolling chart is drawn at — its own coordinate width, so
@@ -121,18 +125,18 @@ const TRACK_CLS: Record<string, string> = {
 };
 
 const C_BASE = {
-  sun: "#f2a81d",
-  danger: "#e74c3c",
-  arrow: "#4ecdc4",
-  tithi: ["#e6d4a840", "#e6d4a824"],
-  nak: ["#2d8a8640", "#2d8a8624"],
-  yoga: ["#9c4e1f40", "#9c4e1f24"],
-  karana: ["#1c5d8040", "#1c5d8024"],
-  lagnaActive: "#2d8a8648",
-  choGood: "rgba(46,160,120,0.13)",
-  choBad: "rgba(231,76,60,0.13)",
-  ashubha: "rgba(231,76,60,0.22)",
-  shubha: "rgba(46,160,120,0.22)",
+  sun: illustration.orange53b,
+  danger: illustration.red60,
+  arrow: illustration.teal55,
+  tithi: [withAlpha(illustration.amber78, 0.25), withAlpha(illustration.amber78, 0.14)],
+  nak: [withAlpha(illustration.teal36, 0.25), withAlpha(illustration.teal36, 0.14)],
+  yoga: [withAlpha(illustration.orange36, 0.25), withAlpha(illustration.orange36, 0.14)],
+  karana: [withAlpha(illustration.sky31, 0.25), withAlpha(illustration.sky31, 0.14)],
+  lagnaActive: withAlpha(illustration.teal36, 0.28),
+  choGood: withAlpha(illustration.green40, 0.13),
+  choBad: withAlpha(illustration.red57, 0.13),
+  ashubha: withAlpha(illustration.red57, 0.22),
+  shubha: withAlpha(illustration.green40, 0.22),
 } as const;
 
 function useTimelineColors() {
@@ -141,16 +145,16 @@ function useTimelineColors() {
     ...C_BASE,
     fg: colors.foreground,
     muted: colors.mutedForeground,
-    axis: isDark ? "rgba(255,255,255,0.45)" : "rgba(26,20,16,0.45)",
-    tick: isDark ? "rgba(255,255,255,0.4)" : "rgba(26,20,16,0.35)",
-    night: isDark ? "rgba(255,255,255,0.06)" : "rgba(11,86,90,0.06)",
+    axis: isDark ? withAlpha(neutral.white, 0.45) : withAlpha(brand.ink, 0.45),
+    tick: isDark ? withAlpha(neutral.white, 0.4) : withAlpha(brand.ink, 0.35),
+    night: isDark ? withAlpha(neutral.white, 0.06) : withAlpha(brand.blue, 0.06),
     sunLine: colors.border,
-    moonLine: isDark ? "rgba(255,255,255,0.25)" : "rgba(26,20,16,0.2)",
-    hair: "rgba(242,168,29,0.55)",
-    grid: isDark ? "rgba(255,255,255,0.12)" : "rgba(26,20,16,0.08)",
+    moonLine: isDark ? withAlpha(neutral.white, 0.25) : withAlpha(brand.ink, 0.2),
+    hair: withAlpha(illustration.orange53b, 0.55),
+    grid: isDark ? withAlpha(neutral.white, 0.12) : withAlpha(brand.ink, 0.08),
     now: colors.danger,
-    segStroke: isDark ? "rgba(255,255,255,0.1)" : "rgba(26,20,16,0.08)",
-    lagna: [isDark ? "rgba(255,255,255,0.07)" : "rgba(26,20,16,0.06)", isDark ? "rgba(255,255,255,0.03)" : "rgba(26,20,16,0.03)"],
+    segStroke: isDark ? withAlpha(neutral.white, 0.1) : withAlpha(brand.ink, 0.08),
+    lagna: [isDark ? withAlpha(neutral.white, 0.07) : withAlpha(brand.ink, 0.06), isDark ? withAlpha(neutral.white, 0.03) : withAlpha(brand.ink, 0.03)],
   };
 }
 
@@ -376,9 +380,9 @@ export function DayTimeline({
   if (busy) {
     return (
       <Card className="w-full overflow-hidden p-0">
-        <View className="border-b border-border px-4 py-2.5">
-          <Text className="text-body font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
-          <Text className="text-caption text-muted-foreground">
+        <View className={cn("flex-row", patroSecBand)}>
+          <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{pick("दिन-चक्र", "Day cycle")}</Text>
+          <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
             {isCivil
               ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
               : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
@@ -593,7 +597,7 @@ export function DayTimeline({
                       <SvgText
                         x={clampX((x + x2) / 2, 8)}
                         y={labelY}
-                        fill={tr.cls === "shubha" ? "#2ea078" : C.danger}
+                        fill={tr.cls === "shubha" ? illustration.green40 : C.danger}
                         fontSize={15}
                         fontFamily={FONT}
                         textAnchor="middle"
@@ -661,7 +665,7 @@ export function DayTimeline({
         <G>
           <Line x1={gx(nowG)} y1={RULER_H - 6} x2={gx(nowG)} y2={H - 4} stroke={C.now} strokeWidth={1.4} />
           <Rect x={clampX(gx(nowG), 30) - 48} y={RULER_H - 22} width={100} height={17} rx={9} fill={C.now} />
-          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill="#fff" fontSize={15} fontFamily={FONT} textAnchor="middle">
+          <SvgText x={clampX(gx(nowG), 30)} y={RULER_H - 10} fill={neutral.white} fontSize={15} fontFamily={FONT} textAnchor="middle">
             {nowLabel} {tLabel(nowG)}
           </SvgText>
         </G>
@@ -677,17 +681,17 @@ export function DayTimeline({
         if (w > 0) setContainerWidth(w);
       }}
     >
-      <View className="border-b border-border px-4 py-2.5">
-        <Text className="text-body font-bold text-foreground">{pick("दिन-चक्र", "Day cycle")}</Text>
-        <Text className="text-caption text-muted-foreground">
+      <View className={cn("flex-row", patroSecBand)}>
+        <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{pick("दिन-चक्र", "Day cycle")}</Text>
+        <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
           {isCivil
               ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
               : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
         </Text>
-        <View className="mt-1.5 flex-row flex-wrap items-center gap-3">
-          <LegendDot color="rgba(46,160,120,0.55)" label={pick("शुभ", "Good")} />
-          <LegendDot color="rgba(231,76,60,0.55)" label={pick("अशुभ", "Bad")} />
-          <LegendDot color="rgba(255,255,255,0.2)" label={pick("रात", "Night")} />
+        <View className={panchangaPageClasses.dayCycle.bandLegend}>
+          <LegendDot color={withAlpha(illustration.green40, 0.55)} label={pick("शुभ", "Good")} />
+          <LegendDot color={withAlpha(illustration.red57, 0.55)} label={pick("अशुभ", "Bad")} />
+          <LegendDot color={withAlpha(neutral.white, 0.2)} label={pick("रात", "Night")} />
         </View>
       </View>
 
@@ -753,8 +757,8 @@ export function DayTimeline({
       {p && planets.length > 0 ? (
         <View className="gap-2 border-t border-border px-4 py-3">
           <View className="gap-0.5">
-            <Text className="text-body font-bold text-foreground">{pick("ग्रह", "Planets")}</Text>
-            <Text className="text-body text-muted-foreground">{getPlanetsAnchorLabel(p, lang)}</Text>
+            <Text className="text-sm font-bold text-foreground">{pick("ग्रह", "Planets")}</Text>
+            <Text className="text-sm text-muted-foreground">{getPlanetsAnchorLabel(p, lang)}</Text>
           </View>
           <View className="flex-row flex-wrap" style={{ gap: PLANET_CARD_GAP }}>
             {planets.map(
@@ -811,11 +815,11 @@ export function DayTimeline({
                 return (
                   <View
                     key={planetKey}
-                    className="gap-0.5 rounded-lg border border-border/60 px-2 py-1.5"
-                    style={{
-                      width: planetCardW,
-                      backgroundColor: isLagna ? "rgba(11,86,90,0.12)" : "rgba(26,20,16,0.04)",
-                    }}
+                    className={cn(
+                      "gap-0.5 rounded-lg border border-border/60 px-2 py-1.5",
+                      isLagna ? "bg-secondary/12" : "bg-foreground/5",
+                    )}
+                    style={{ width: planetCardW }}
                   >
                     <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-0.5">
                       <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-1">
@@ -823,7 +827,7 @@ export function DayTimeline({
                           <GrahaPlanetIcon graha={planetKey} size={18} />
                         ) : null}
                         <Text
-                          className="text-body shrink-0 font-bold text-foreground"
+                          className="shrink-0 text-sm font-bold leading-tight text-foreground"
                           numberOfLines={1}
                           style={nepaliTextStyle(14)}
                         >
@@ -836,17 +840,17 @@ export function DayTimeline({
                           size={13}
                         />
                       </View>
-                      <Text className="text-body min-w-0 font-semibold text-foreground" numberOfLines={1}>
+                      <Text className="min-w-0 font-mono text-sm leading-tight tabular-nums text-foreground" numberOfLines={1}>
                         {coordText}
                       </Text>
                     </View>
                     {(nakWithPada || lordText) && (
                       <View className="flex-row items-baseline justify-between gap-1.5">
-                        <Text className="text-body min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
+                        <Text className="text-sm min-w-0 flex-1 text-foreground" numberOfLines={1} style={nepaliTextStyle(14)}>
                           {nakWithPada}
                         </Text>
                         {lordText ? (
-                          <Text className="text-body shrink-0 font-semibold text-secondary" numberOfLines={1}>
+                          <Text className="text-sm shrink-0 font-semibold text-secondary" numberOfLines={1}>
                             {lordText}
                           </Text>
                         ) : null}
@@ -874,34 +878,34 @@ function PeriodCards({
   items: { n: string; label: string; time: string }[];
   cardWidth: number;
 }) {
-  const accent = tone === "danger" ? "#e74c3c" : "#2ea078";
-  const borderColor = tone === "danger" ? "rgba(231,76,60,0.28)" : "rgba(46,160,120,0.28)";
-  const backgroundColor = tone === "danger" ? "rgba(231,76,60,0.07)" : "rgba(46,160,120,0.07)";
+  const accent = tone === "danger" ? illustration.red60 : illustration.green40;
+  const borderColor = tone === "danger" ? withAlpha(illustration.red57, 0.28) : withAlpha(illustration.green40, 0.28);
+  const backgroundColor = tone === "danger" ? withAlpha(illustration.red57, 0.07) : withAlpha(illustration.green40, 0.07);
 
   return (
-    <View className="gap-2 border-t border-border px-4 py-3">
-      <Text className="text-body font-bold" style={{ color: accent }}>
+    <View className={panchangaPageClasses.dayCycle.periodGroup}>
+      <Text className={panchangaPageClasses.dayCycle.periodTitle} style={{ color: accent }}>
         {title}
       </Text>
       <View className="flex-row flex-wrap" style={{ gap: PERIOD_CARD_GAP }}>
         {items.map((it, i) => (
           <View
             key={`${it.time}-${i}`}
-            className="min-w-0 gap-1.5 rounded-lg border px-2.5 py-2"
+            className={panchangaPageClasses.dayCycle.periodCard}
             style={{ width: cardWidth, borderColor, backgroundColor }}
           >
-            <View className="min-w-0 flex-row items-start gap-1.5">
+            <View className={cn("flex-row", panchangaPageClasses.dayCycle.periodHead)}>
               <View
-                className="mt-px h-[17px] min-w-[17px] shrink-0 items-center justify-center rounded-full px-1"
+                className={panchangaPageClasses.dayCycle.periodBadge}
                 style={{ backgroundColor: accent }}
               >
-                <Text className="text-caption font-bold text-white">{it.n}</Text>
+                <Text className={panchangaPageClasses.dayCycle.periodBadgeText}>{it.n}</Text>
               </View>
-              <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={cn("flex-1 text-foreground", panchangaPageClasses.dayCycle.periodLabel)} style={nepaliTextStyle(14)}>
                 {it.label}
               </Text>
             </View>
-            <Text className="text-body font-semibold text-foreground">{it.time}</Text>
+            <Text className={cn(panchangaPageClasses.dayCycle.periodTime, "text-foreground")}>{it.time}</Text>
           </View>
         ))}
       </View>
@@ -911,9 +915,9 @@ function PeriodCards({
 
 function LegendDot({ color, label }: { color: string; label: string }) {
   return (
-    <View className="flex-row items-center gap-1">
-      <View className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: color }} />
-      <Text className="text-caption text-muted-foreground">{label}</Text>
+    <View className={cn("flex-row", panchangaPageClasses.dayCycle.legendItem)}>
+      <View className={panchangaPageClasses.dayCycle.legendSwatch} style={{ backgroundColor: color }} />
+      <Text className={cn(panchangaPageClasses.dayCycle.legendLabel, "text-muted-foreground")}>{label}</Text>
     </View>
   );
 }

@@ -9,7 +9,9 @@ import { usePatroYearDataPage } from "@/hooks/use-patro-year-data-page";
 import { useRouteLoading } from "@/lib/route-loading";
 import { displayLocationLabel } from "@/components/panchanga/use-panchanga-location";
 import { useLocale } from "@/i18n/locale";
-import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";
+import { cn } from "@vedic-patro/domain/utils";
+import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-classes";
+
 
 const routeApi = getRouteApi("/panchanga-shell/suryakranti");
 
@@ -32,15 +34,15 @@ export function SunTimesYear() {
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-xs text-base hover:text-foreground mb-1.5"
+          className={cn("inline-flex hover:text-foreground", sunTimesClasses.backLink, sunTimesClasses.backLinkText)}
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t("common.back_home")}
         </Link>
-        <h1 className="text-xl font-bold leading-tight tracking-tight m-0">
+        <h1 className={cn("m-0", sunTimesClasses.title)}>
           {t("sun_times.title")}
         </h1>
-        <p className="text-sm mt-1 m-0">{pageSubtitle}</p>
+        <p className={cn("m-0", sunTimesClasses.subtitle)}>{pageSubtitle}</p>
       </div>
 
       <PatroYearNavBlock
@@ -62,22 +64,22 @@ export function SunTimesYear() {
         onLoadingChange={setGridLoading}
       />
 
-      <section className="rounded-2xl border border-border bg-card p-4 sm:p-5 text-sm leading-relaxed space-y-3">
-        <h2 className="text-base font-bold m-0 flex items-center gap-2">
+      <section className={cn(sunTimesClasses.ayanaCard, sunTimesClasses.ayanaCardText, "space-y-3")}>
+        <h2 className={cn("m-0 flex", sunTimesClasses.ayanaTitleRow, sunTimesClasses.ayanaTitle)}>
           <CalendarRange className="h-4 w-4 text-secondary shrink-0 dark:text-primary" />
           {t("sun_times.ayana_title")}
         </h2>
-        <p className="m-0 text-base">
+        <p className={cn("m-0", sunTimesClasses.ayanaBody)}>
           <Trans
             i18nKey="sun_times.ayana_body"
             components={{
-              north: <span className={patroAyanaNorth} />,
-              south: <span className={patroAyanaSouth} />,
+              north: <span className={cn("mb-0.5 inline-block", sunTimesClasses.ayanaNorth)} />,
+              south: <span className={cn("mb-0.5 inline-block", sunTimesClasses.ayanaSouth)} />,
             }}
           />
         </p>
         {locationLabel ? (
-          <p className="m-0 text-xs text-base">
+          <p className={cn("m-0", sunTimesClasses.ayanaLocation)}>
             {t("location.label")}: {locationLabel}
           </p>
         ) : null}

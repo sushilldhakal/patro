@@ -1,6 +1,7 @@
 import { Flame, RotateCcw } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 
 type Props = {
@@ -27,7 +28,7 @@ export function GrahaStatusBadges({ planetKey, isRetrograde, isCombust, classNam
   const px = `${size}px`;
 
   return (
-    <span className={cn("inline-flex items-center gap-1", className)}>
+    <span className={cn(grahaClasses.statusRow, "inline-flex", className)}>
       {vakri && (
         <span className="inline-flex" title={bilingualText(lang, "वक्री", "Retrograde")} aria-label={bilingualText(lang, "वक्री", "Retrograde")}>
           <RotateCcw className="text-secondary" style={{ width: px, height: px }} strokeWidth={2.5} aria-hidden />
@@ -100,15 +101,17 @@ export function GrahaStatusLegend({ className }: { className?: string }) {
   return (
     <p
       className={cn(
-        "flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground",
+        grahaClasses.statusLegend,
+        grahaClasses.statusLegendText,
+        "flex",
         className,
       )}
     >
-      <span className="inline-flex items-center gap-1">
+      <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <RotateCcw className="size-3.5 text-secondary" aria-hidden />
         {bilingualText(lang, "वक्री", "Retrograde")}
       </span>
-      <span className="inline-flex items-center gap-1">
+      <span className={cn(grahaClasses.statusLegendItem, "inline-flex")}>
         <Flame className="size-3.5 text-destructive" aria-hidden />
         {bilingualText(lang, "अस्त", "Combust")}
       </span>

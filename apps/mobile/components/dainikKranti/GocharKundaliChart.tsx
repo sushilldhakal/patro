@@ -4,7 +4,11 @@ import type { GocharGraha } from "@/lib/api";
 import { buildGocharBhavaHouses, formatGocharBsLabel } from "@vedic-patro/domain/dainikKranti/gochar-display";
 import { D1Chart } from "@/components/panchanga/D1Chart";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/lib/i18n";
+import { nepaliTextStyle } from "@/lib/nepali-text";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { useThemeColors } from "@/lib/theme-context";
 
 type GrahaRow = GocharGraha & { key: string };
 
@@ -31,37 +35,39 @@ export function GocharKundaliChart({
   hideTitle,
 }: Props) {
   const { pick } = useLocale();
+  const colors = useThemeColors();
   const dateLabel = formatGocharBsLabel(dateBs, dateAd);
 
   return (
-    <View className={cn("rounded-xl border border-border p-4", className)}>
+    <View className={cn(dainikKrantiClasses.chartCard, className)}>
       {!hideTitle ? (
-        <View className="mb-2 flex-row items-center gap-1.5">
-          <Text className="text-body font-semibold text-foreground">
-            ✦ {pick("गोचर कुण्डली", "Transit Chart")}
+        <View className={dainikKrantiClasses.chartTitle}>
+          <Ionicons name="sparkles-outline" size={16} color={colors.secondary} />
+          <Text className={dainikKrantiClasses.chartTitleText} style={nepaliTextStyle()}>
+            {pick("गोचर कुण्डली", "Transit Chart")}
           </Text>
         </View>
       ) : null}
 
-      <View className={cn("gap-2", hideTitle ? undefined : "mb-3")}>
-        <View className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-          <Text className="text-body font-num leading-relaxed text-foreground">
+      <View className={cn("gap-2", hideTitle ? undefined : dainikKrantiClasses.chartLines)}>
+        <View className={dainikKrantiClasses.chartLine}>
+          <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>
             {papanshaLine || pick("पापाशाः—", "Papashah —")}
           </Text>
         </View>
         {gapanshaLine ? (
-          <View className="rounded-lg border border-border/70 bg-muted/25 px-3 py-2.5">
-            <Text className="text-body font-num leading-relaxed text-foreground">{gapanshaLine}</Text>
+          <View className={dainikKrantiClasses.chartLine}>
+            <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>{gapanshaLine}</Text>
           </View>
         ) : null}
       </View>
 
       {loading ? (
-        <Text className="text-body py-8 text-center text-muted-foreground">
+        <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
           {pick("लोड हुँदैछ…", "Loading…")}
         </Text>
       ) : grahas.length === 0 ? (
-        <Text className="text-body py-8 text-center text-muted-foreground">
+        <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
           {pick("विवरण उपलब्ध छैन।", "No details available.")}
         </Text>
       ) : (
@@ -69,7 +75,7 @@ export function GocharKundaliChart({
       )}
 
       {dateLabel ? (
-        <Text className="text-body mt-2 text-center text-muted-foreground">
+        <Text className={dainikKrantiClasses.chartDate} style={nepaliTextStyle()}>
           {pick(`${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}
         </Text>
       ) : null}

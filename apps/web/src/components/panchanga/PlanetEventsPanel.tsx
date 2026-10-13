@@ -14,6 +14,7 @@ import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-loc
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
 import { patroCard } from "@/lib/patro-classes";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { civilIsoDatePart, civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 const GRAHA_ORDER = [
@@ -106,14 +107,14 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
   }, [data, refDate]);
 
   return (
-    <div className={patroCard + " p-3.5 px-4"}>
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="m-0 text-base font-bold">{bilingualText(lang, "आगामी ग्रह-गोचर", "Planetary events")}</h2>
+    <div className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
+      <div className={`flex ${panchangaPageClasses.aside.eventsHead}`}>
+        <h2 className={panchangaPageClasses.aside.eventsTitle}>{bilingualText(lang, "आगामी ग्रह-गोचर", "Planetary events")}</h2>
         {browseLocation ? (
           <Link
             to="/gochar"
             search={patroRouteLinkSearch("/gochar", browseLocation, era) as Record<string, unknown>}
-            className="shrink-0 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-semibold text-secondary transition-colors hover:border-secondary/40 hover:bg-secondary/10"
+            className={`${panchangaPageClasses.aside.eventsLink} ${panchangaPageClasses.aside.eventsLinkText} transition-colors hover:border-secondary/40 hover:bg-secondary/10`}
           >
             {t("gochar.view_more")}
           </Link>
@@ -121,35 +122,35 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
       </div>
 
       {isLoading && (
-        <div className="px-4 py-6 text-sm">{bilingualText(lang, "लोड हुँदै…", "Loading…")}</div>
+        <div className={panchangaPageClasses.aside.eventsStatus}>{bilingualText(lang, "लोड हुँदै…", "Loading…")}</div>
       )}
 
       {isError && (
-        <div className="px-4 py-6 text-sm">
+        <div className={panchangaPageClasses.aside.eventsStatus}>
           {bilingualText(lang, "ग्रह-गोचर लोड गर्न सकिएन।", "Could not load planetary events.")}
         </div>
       )}
 
       {!isLoading && !isError && events.length === 0 && (
-        <div className="px-4 py-6 text-sm">
+        <div className={panchangaPageClasses.aside.eventsStatus}>
           {bilingualText(lang, "कुनै आगामी गोचर छैन।", "No upcoming transits.")}
         </div>
       )}
 
       {!isLoading && !isError && events.length > 0 && (
-        <div className="flex flex-col">
+        <div className={`flex ${panchangaPageClasses.aside.eventsList}`}>
           {events.map((e) => (
             <div
               key={e.key}
-              className="flex items-center gap-2.5 border-b border-border py-2 last:border-b-0"
+              className={`flex ${panchangaPageClasses.aside.eventsRow}`}
             >
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="text-sm font-semibold">{bilingualText(lang, e.ne, e.en)}</span>
-                <span className="text-sm font-semibold">
+              <span className={`flex ${panchangaPageClasses.aside.eventsBody}`}>
+                <span className={panchangaPageClasses.aside.eventsName}>{bilingualText(lang, e.ne, e.en)}</span>
+                <span className={panchangaPageClasses.aside.eventsName}>
                   <span className="font-mono">{e.time}</span>
                 </span>
               </span>
-              <span className="whitespace-nowrap font-mono text-sm font-semibold">
+              <span className={panchangaPageClasses.aside.eventsRel}>
                 {e.rel === 0
                   ? bilingualText(lang, "आज", "Today")
                   : bilingualText(lang, `${digits(e.rel)} दिन`, `${digits(e.rel)}d`)}

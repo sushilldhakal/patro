@@ -15,6 +15,8 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 const CONFIG = {
   solar: {
@@ -75,7 +77,7 @@ export function EclipseYearView({ kind }: { kind: "solar" | "lunar" }) {
       ) : !query.data?.events?.length ? (
         <EmptyHint ne="यो वर्षमा ग्रहण छैन" en="No eclipses this year" />
       ) : (
-        <View className="mt-2 flex-row flex-wrap gap-3">
+        <View className={cn("flex-row flex-wrap", grahaClasses.eclipseGrid)}>
           {query.data.events.map((ev, i) => (
             <View key={`${ev.date_ad ?? ev.date_jd_date ?? i}-${i}`} style={{ width: cols === 2 ? "48%" : "100%" }}>
               <EclipseCard ev={ev} pageId={cfg.pageId} />

@@ -2,26 +2,34 @@ import type { ReactNode } from "react";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { cn } from "@vedic-patro/domain/utils";
+import { spec } from "@vedic-patro/design-tokens";
 
-/** Web `PageHeader` — icon, title, optional subtitle. */
+/**
+ * Web `PageHeader` — icon, title, optional subtitle. Same spec classes as the
+ * website; the web page stack spaces sections with `space-y-8`, so callers pass
+ * `className="mb-8"` (default `mb-4` is the older tight spacing).
+ */
 export function PatroPageHeader({
   icon,
   title,
   subtitle,
+  className,
 }: {
   icon: ReactNode;
   title: string;
   subtitle?: string;
+  className?: string;
 }) {
   return (
-    <View className="mb-4 flex-row items-start gap-3">
+    <View className={cn("mb-4", spec.pageHeaderRow, className)}>
       <View className="mt-0.5 shrink-0">{icon}</View>
       <View className="min-w-0 flex-1">
-        <Text className="text-display font-bold text-foreground" style={nepaliTextStyle(24)}>
+        <Text className={spec.pageTitle} style={nepaliTextStyle()}>
           {title}
         </Text>
         {subtitle ? (
-          <Text className="text-body mt-0.5 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={spec.pageSubtitle} style={nepaliTextStyle()}>
             {subtitle}
           </Text>
         ) : null}

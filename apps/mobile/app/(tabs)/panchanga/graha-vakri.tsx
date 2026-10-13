@@ -19,6 +19,8 @@ import { useBreakpoint } from "@/lib/responsive";
 import { TableRow } from "@/components/ui/DataTable";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 const GRAHA_ORDER: GrahaKey[] = ["mercury", "venus", "mars", "jupiter", "saturn"];
 
@@ -26,24 +28,24 @@ function EventRow({ ev, index }: { ev: GrahaVakriEvent; index: number }) {
   const { pick, digits } = useLocale();
   const colors = useThemeColors();
   const isVakri = ev.is_retrograde === true || ev.motion === "Vakri";
-  const tone = isVakri ? colors.danger : colors.accent;
+  const tone = isVakri ? colors.danger : colors.success;
   const dateLabel = ev.entry_jd_date?.trim() ?? ev.entry_time_local?.slice(0, 10) ?? "";
   const timeLabel = ev.entry_time_local_short ?? "";
 
   return (
-    <TableRow rowIndex={index} className="items-center justify-between gap-2 rounded-md px-2.5 py-1.5">
-      <View className="flex-row items-center gap-1.5">
-        <Text style={{ color: tone }} className="text-body font-semibold">
+    <TableRow rowIndex={index} className={grahaClasses.eventRow}>
+      <View className={cn("flex-row", grahaClasses.eventLabel)}>
+        <Text style={{ color: tone }} className={grahaClasses.eventText}>
           {isVakri ? "↺" : "→"}
         </Text>
-        <Text style={{ color: tone, ...nepaliTextStyle(13) }} className="text-body font-semibold">
+        <Text style={{ color: tone, ...nepaliTextStyle(13) }} className={grahaClasses.eventText}>
           {isVakri ? pick("वक्री", "Retrograde") : pick("मार्गी", "Direct")}
         </Text>
       </View>
-      <Text className="text-body text-right">
-        <Text className="font-num font-semibold text-foreground">{digits(dateLabel)}</Text>
+      <Text className={grahaClasses.eventValue}>
+        <Text className={grahaClasses.eventDate}>{digits(dateLabel)}</Text>
         {timeLabel ? (
-          <Text className="font-num text-muted-foreground"> · {digits(timeLabel)}</Text>
+          <Text className={grahaClasses.eventTime}> · {digits(timeLabel)}</Text>
         ) : null}
       </Text>
     </TableRow>
@@ -96,16 +98,17 @@ export default function GrahaVakriScreen() {
       />
 
       {query.isLoading && !query.data ? (
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : query.data ? (
-        <View className="mt-2 flex-row flex-wrap">
+        <View className={cn("flex-row flex-wrap", grahaClasses.columns)}>
           {GRAHA_ORDER.map((g) => {
             const events = byGraha.get(g) ?? [];
             return (
               <GrahaColumnCard
                 key={g}
+                tight
                 width={cardWidth}
                 name={pick(GRAHA_NAME[g].ne, GRAHA_NAME[g].en)}
                 count={
@@ -118,7 +121,7 @@ export default function GrahaVakriScreen() {
                   events.map((ev, i) => <EventRow key={i} ev={ev} index={i} />)
                 ) : (
                   <Text
-                    className="text-body px-2 py-1.5 text-muted-foreground"
+                    className={grahaClasses.columnEmpty}
                     style={nepaliTextStyle(14)}
                   >
                     {pick("यस वर्ष वक्री हुँदैन।", "No retrograde this year.")}
@@ -129,7 +132,7 @@ export default function GrahaVakriScreen() {
           })}
         </View>
       ) : (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
           {pick("ल्याउन सकिएन।", "Could not load.")}
         </Text>
       )}

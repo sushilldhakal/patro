@@ -31,13 +31,14 @@ import {
   getBSMonthLength,
 } from "@vedic-patro/domain/bs-calendar";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const W = 560;
 const H = 210;
 const PAD = { l: 30, r: 12, t: 26, b: 40 };
 
-const LONG = "#f59e0b";
-const SHORT = "#0ea5e9";
-const MID = "#8fb6d8";
+const LONG = illustration.orange50;
+const SHORT = illustration.teal48;
+const MID = illustration.sky70;
 
 /** Months sampled per bar — enough that the fractional mean is stable. */
 const SAMPLE_YEARS = 10;
@@ -102,7 +103,7 @@ export function SolarMonthLengths() {
               x={PAD.l - 5}
               y={y(d) + 3}
               textAnchor="end"
-              className="fill-current text-[8px] tabular-nums opacity-55"
+              className="fill-current text-diagram-2xs tabular-nums opacity-55"
             >
               {num(d)}
             </text>
@@ -127,7 +128,7 @@ export function SolarMonthLengths() {
                 x={x(i)}
                 y={y(d) - 4}
                 textAnchor="middle"
-                className="fill-current text-[7.5px] tabular-nums"
+                className="fill-current text-diagram-2xs tabular-nums"
                 style={{ opacity: strong ? 0.9 : 0.5 }}
               >
                 {num(d.toFixed(1))}
@@ -136,7 +137,7 @@ export function SolarMonthLengths() {
                 x={x(i)}
                 y={H - PAD.b + 12}
                 textAnchor="middle"
-                className="fill-current text-[7.5px]"
+                className="fill-current text-diagram-2xs"
                 style={{ opacity: strong ? 0.95 : 0.5 }}
                 fontWeight={strong ? 700 : 400}
               >
@@ -150,7 +151,7 @@ export function SolarMonthLengths() {
           x={x(shortest)}
           y={H - PAD.b + 25}
           textAnchor="middle"
-          className="text-[7.5px] font-semibold"
+          className="text-diagram-2xs font-semibold"
           style={{ fill: SHORT }}
         >
           {t("learn.study.month_lengths.perihelion")}
@@ -159,13 +160,13 @@ export function SolarMonthLengths() {
           x={x(longest)}
           y={H - PAD.b + 25}
           textAnchor="middle"
-          className="text-[7.5px] font-semibold"
+          className="text-diagram-2xs font-semibold"
           style={{ fill: LONG }}
         >
           {t("learn.study.month_lengths.aphelion")}
         </text>
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">
         {t("learn.study.month_lengths.caption")}
       </figcaption>
     </figure>

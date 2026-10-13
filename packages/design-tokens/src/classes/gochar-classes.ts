@@ -1,0 +1,99 @@
+/**
+ * Gochar (transits) page, shared by the website and the app. The website is
+ * the source of truth; each element's layout (grid vs stack, flex-row on
+ * React Native) is added next to it in the page file.
+ */
+export const gocharClasses = {
+  // ── Page ──────────────────────────────────────────────────────────────────
+  columns: "gap-6",
+  errorText: "text-sm text-destructive",
+  mutedText: "text-sm text-muted-foreground",
+  footnote: "text-sm leading-relaxed text-muted-foreground",
+  footnoteStack: "gap-2",
+
+  // ── 3D sky page ───────────────────────────────────────────────────────────
+  skyLoading: "items-center rounded-2xl border border-dashed border-border py-24",
+  skyNotice:
+    "gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 text-sm text-foreground",
+
+  // ── Sky at a glance ───────────────────────────────────────────────────────
+  skyCard: "min-w-0 max-w-full overflow-hidden rounded-xl bg-card",
+  skyHead: "border-b border-border bg-muted/30 px-4 py-4 sm:px-5 sm:py-5",
+  skyEyebrow: "text-xs font-bold uppercase tracking-eyebrow text-secondary",
+  skyTitle: "mt-1.5 text-lg font-bold leading-snug text-foreground sm:text-xl",
+  skyDate: "mt-1 text-sm font-semibold text-muted-foreground",
+  skyGrid: "gap-2.5 p-3 sm:gap-3 sm:p-4",
+  planetCard: "min-w-0 overflow-hidden rounded-xl bg-background",
+  planetStripe: "absolute inset-y-0 left-0 z-[1] w-1",
+  planetHead: "items-center gap-2.5 border-b border-border/70 bg-muted/25 py-2.5 pl-4 pr-3",
+  planetTitle: "text-sm font-bold leading-snug text-foreground",
+  planetTitleWrap: "flex-wrap items-center gap-x-1.5 gap-y-0.5",
+  planetBody: "gap-1 py-2.5 pl-4 pr-3",
+  planetFooter: "border-t border-border/70 bg-muted/15 py-2 pl-4 pr-3",
+  planetFooterText: "text-sm leading-snug text-muted-foreground",
+  metaRow: "text-sm leading-snug",
+  metaLabel: "text-sm text-muted-foreground",
+  metaValue: "text-sm font-semibold text-foreground",
+  exaltedBadge: "shrink-0 rounded-md bg-amber-500/12 px-1.5 py-0.5",
+  exaltedBadgeText: "text-diagram-xs font-bold text-amber-900 dark:text-amber-100",
+
+  // ── Upcoming ingress list ─────────────────────────────────────────────────
+  ingressCard: "w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-border bg-card",
+  ingressHead: "gap-2 border-b border-border px-3 py-2.5 sm:px-4",
+  ingressEyebrow: "text-xs font-bold uppercase tracking-eyebrow text-muted-foreground",
+  ingressTitle: "mt-0.5 text-base font-bold text-foreground sm:text-lg",
+  navGroup: "shrink-0 items-center gap-0.5 sm:gap-1",
+  navButton: "h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card",
+  navLabel: "text-center text-sm font-bold text-foreground sm:text-base",
+  filterBar: "min-w-0 max-w-full gap-1.5 border-b border-border px-2 py-2 sm:px-3",
+  filterChip: "min-w-0 max-w-full rounded-lg border px-2 py-1.5 sm:px-2.5",
+  filterChipActive: "border-secondary bg-secondary/15",
+  filterChipIdle: "border-border bg-background",
+  filterText: "text-xs font-bold sm:text-sm",
+  filterTextActive: "text-secondary",
+  filterTextIdle: "text-muted-foreground",
+  ingressList: "px-1 py-1 sm:px-2",
+  ingressStatus: "px-2 py-6 text-sm text-muted-foreground",
+  ingressRow: "items-center gap-2 border-b border-border/60 px-1.5 py-2 sm:gap-2.5 sm:px-2",
+  ingressBody: "min-w-0 flex-1",
+  ingressName: "text-sm font-bold leading-snug text-foreground",
+  ingressDetail: "mt-0.5 text-sm font-semibold leading-snug text-foreground",
+  ingressRel: "shrink-0 text-sm font-bold text-secondary",
+
+  // ── Planet deep dive ──────────────────────────────────────────────────────
+  deepCard: "min-w-0 max-w-full overflow-hidden rounded-2xl border border-border bg-card",
+  deepHead: "border-b border-border px-4 py-4 sm:px-5",
+  deepEyebrow: "text-xs font-bold uppercase tracking-eyebrow-wide text-muted-foreground",
+  deepTitle: "mt-1 text-lg font-bold text-foreground",
+  deepSubtitle: "mt-1 text-sm text-muted-foreground",
+  pickerGrid: "gap-2 px-4 py-3 sm:px-5",
+  pickerButton: "min-w-0 items-center gap-1 rounded-xl border px-1.5 py-2 sm:px-3",
+  pickerActive: "border-secondary bg-secondary/15",
+  pickerIdle: "border-border bg-surface-inset",
+  pickerLabel: "text-center text-diagram-xs font-bold leading-tight",
+  pickerLabelActive: "text-secondary",
+  pickerLabelIdle: "text-foreground",
+  detail: "min-w-0 border-t border-border px-4 py-4 sm:px-5",
+  detailTitleRow: "min-w-0 items-center gap-2",
+  detailTitle: "text-xl font-bold text-foreground",
+  detailVedic: "text-sm font-normal text-muted-foreground",
+  detailBadge: "rounded-md bg-amber-500/15 px-2 py-0.5",
+  detailBadgeText: "text-xs font-bold text-amber-800 dark:text-amber-200",
+  factGrid: "mt-4 gap-3",
+  fact: "rounded-lg border border-border/60 bg-background/50 px-3 py-2.5",
+  factLabel: "text-diagram-xs font-bold uppercase tracking-wide text-muted-foreground",
+  factValue: "mt-1 text-sm font-semibold text-foreground",
+  windowsBox: "mt-4 rounded-xl bg-surface-inset p-3.5",
+  windowsTitle: "text-xs font-bold uppercase tracking-wide text-muted-foreground",
+  windowsList: "mt-2",
+  windowsItem: "text-sm text-foreground",
+
+  // ── Promo card (panchanga footer) ─────────────────────────────────────────
+  promoCard: "overflow-hidden rounded-2xl border border-border p-5",
+  promoIcon: "h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary/15 text-secondary",
+  promoTitle: "text-base font-bold text-foreground sm:text-lg",
+  promoBody: "mt-1.5 text-sm leading-relaxed text-muted-foreground",
+  promoCta:
+    "shrink-0 items-center gap-1.5 self-start rounded-xl bg-secondary px-4 py-2 sm:self-center",
+  promoCtaText: "text-sm font-semibold text-secondary-foreground",
+} as const;

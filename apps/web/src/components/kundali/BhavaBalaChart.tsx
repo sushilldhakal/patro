@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -37,9 +38,9 @@ function scoreFillClass(band: StrengthBand): string {
 }
 
 function scoreTextClass(band: StrengthBand): string {
-  if (band === "strong") return "text-primary";
-  if (band === "weak") return "text-destructive";
-  return "text-muted-foreground";
+  if (band === "strong") return kundaliDetailClasses.bhavaChart.scoreStrong;
+  if (band === "weak") return kundaliDetailClasses.bhavaChart.scoreWeak;
+  return kundaliDetailClasses.bhavaChart.scoreAvg;
 }
 
 function buildD1Houses(
@@ -75,8 +76,8 @@ function Meter({
 }) {
   const width = clampPct(Math.abs(value), max);
   return (
-    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-      <div className={cn("h-full rounded-full", className)} style={{ width: `${width}%` }} />
+    <div className={kundaliDetailClasses.bhavaChart.meter}>
+      <div className={cn(kundaliDetailClasses.bhavaChart.meterFill, className)} style={{ width: `${width}%` }} />
     </div>
   );
 }
@@ -97,12 +98,12 @@ function ComponentTile({
   const abs = Math.abs(value).toFixed(1);
   const signed = value < 0 ? `−${abs}` : abs;
   return (
-    <div className="rounded-xl border border-border bg-muted/30 px-3 py-2.5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 font-mono text-sm font-semibold tabular-nums text-foreground">
+    <div className={kundaliDetailClasses.bhavaChart.tile}>
+      <p className={kundaliDetailClasses.bhavaChart.tileLabel}>{label}</p>
+      <p className={kundaliDetailClasses.bhavaChart.tileValue}>
         {digits(signed)}
       </p>
-      <div className="mt-2">
+      <div className={kundaliDetailClasses.bhavaChart.tileMeter}>
         <Meter value={value} max={max} className={barClass} />
       </div>
     </div>
@@ -127,12 +128,14 @@ function StrengthBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-sm font-semibold",
+        kundaliDetailClasses.bhavaChart.badge,
+        kundaliDetailClasses.bhavaChart.badgeText,
+        "inline-flex",
         isStrongest || band === "strong"
-          ? "border-primary/30 bg-primary/10 text-primary"
+          ? cn(kundaliDetailClasses.bhavaChart.badgeGood, kundaliDetailClasses.bhavaChart.badgeGoodText)
           : band === "weak"
-            ? "border-destructive/30 bg-destructive/10 text-destructive"
-            : "border-border bg-muted text-muted-foreground",
+            ? cn(kundaliDetailClasses.bhavaChart.badgeWeak, kundaliDetailClasses.bhavaChart.badgeWeakText)
+            : cn(kundaliDetailClasses.bhavaChart.badgeAvg, kundaliDetailClasses.bhavaChart.badgeAvgText),
       )}
     >
       {label}
@@ -142,7 +145,7 @@ function StrengthBadge({
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-border bg-muted/40 px-2.5 py-1 text-sm text-foreground">
+    <span className={cn(kundaliDetailClasses.bhavaChart.chip, kundaliDetailClasses.bhavaChart.chipText, "inline-flex")}>
       {children}
     </span>
   );
@@ -197,8 +200,8 @@ export function BhavaBalaChart({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-semibold text-foreground">{t("kundali.explore_houses")}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{t("kundali.explore_houses_hint")}</p>
+        <h3 className={kundaliDetailClasses.bhavaChart.title}>{t("kundali.explore_houses")}</h3>
+        <p className={kundaliDetailClasses.prose.mutedMt1}>{t("kundali.explore_houses_hint")}</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
@@ -224,20 +227,20 @@ export function BhavaBalaChart({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-        <LegendSwatch className="bg-primary" label={t("kundali.report.confidence_strong")} />
+      <div className={cn(kundaliDetailClasses.bhavaChart.legend, kundaliDetailClasses.bhavaChart.legendText, "flex")}>
+        <LegendSwatch className={kundaliDetailClasses.bhavaChart.barPrimary} label={t("kundali.report.confidence_strong")} />
         <LegendSwatch className="bg-muted-foreground" label={t("kundali.average_strength")} />
         <LegendSwatch className="bg-destructive" label={t("kundali.x.status_weak")} />
       </div>
-      <p className="text-sm text-muted-foreground">{t("kundali.explore_houses_legend")}</p>
+      <p className={kundaliDetailClasses.prose.muted}>{t("kundali.explore_houses_legend")}</p>
     </div>
   );
 }
 
 function LegendSwatch({ className, label }: { className: string; label: string }) {
   return (
-    <span className="inline-flex items-center gap-2">
-      <span className={cn("size-2.5 rounded-full", className)} aria-hidden />
+    <span className={cn(kundaliDetailClasses.bhavaChart.swatch, "inline-flex")}>
+      <span className={cn(kundaliDetailClasses.bhavaChart.swatchDot, className)} aria-hidden />
       {label}
     </span>
   );
@@ -257,7 +260,7 @@ function BhavaDiamond({
   const byHouse = useMemo(() => new Map(houses.map((house) => [house.house, house])), [houses]);
 
   return (
-    <div className="rounded-xl border border-border bg-background/70 p-3 sm:p-4">
+    <div className={kundaliDetailClasses.bhavaChart.panel}>
       <svg
         viewBox="0 0 300 300"
         className="mx-auto h-auto w-full max-w-[420px]"
@@ -327,7 +330,7 @@ function BhavaDiamond({
                 y={ny}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="fill-muted-foreground text-[9px] font-semibold"
+                className="fill-muted-foreground text-diagram-xs font-semibold"
                 style={{ pointerEvents: "none" }}
               >
                 {digits(houseNum)}
@@ -336,7 +339,7 @@ function BhavaDiamond({
                 x={cx}
                 y={cy + 3}
                 textAnchor="middle"
-                className={cn("text-[15px] font-bold tabular-nums", scoreFillClass(band))}
+                className={cn("text-base font-bold tabular-nums", scoreFillClass(band))}
                 style={{ pointerEvents: "none" }}
               >
                 {digits(Math.round(house.totalPinda))}
@@ -397,22 +400,22 @@ function HouseInspector({
   const classical = reference?.houseClassicalName[house.house];
 
   return (
-    <div className="min-w-0 space-y-4">
-      <div className="flex items-start justify-between gap-3">
+    <div className={cn(kundaliDetailClasses.bhavaChart.inspector, "space-y-4")}>
+      <div className={cn(kundaliDetailClasses.bhavaChart.inspectorHead, "flex")}>
         <div>
-          <p className="text-xl font-semibold text-foreground">
-            <span className="mr-2 inline-flex size-7 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+          <p className={kundaliDetailClasses.bhavaChart.houseTitle}>
+            <span className={cn(kundaliDetailClasses.bhavaChart.houseNum, kundaliDetailClasses.bhavaChart.houseNumText, "mr-2 inline-flex")}>
               {digits(house.house)}
             </span>
             {formatRashiByNumber(rashi, lang)}
             {classical ? (
-              <span className="ml-1.5 text-base font-normal text-muted-foreground">
+              <span className={kundaliDetailClasses.bhavaChart.classical}>
                 · {bilingualText(lang, classical.ne, classical.en)}
               </span>
             ) : null}
           </p>
         </div>
-        <div className="flex shrink-0 gap-1">
+        <div className={cn(kundaliDetailClasses.bhavaChart.navRow, "flex")}>
           <Button type="button" variant="outline" size="icon-sm" onClick={onPrev} aria-label={t("kundali.previous_house")}>
             <ChevronLeft />
           </Button>
@@ -422,11 +425,11 @@ function HouseInspector({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-muted-foreground">
+      <div className={cn(kundaliDetailClasses.bhavaChart.metaRow, kundaliDetailClasses.bhavaChart.metaText, "flex")}>
         <span className="inline-flex items-center gap-1.5">
           {t("kundali.ruled_by")}
           <GrahaPlanetIcon graha={lordKey} size={18} />
-          <span className="font-semibold text-foreground">{lordName}</span>
+          <span className={kundaliDetailClasses.prose.strong}>{lordName}</span>
         </span>
         {classes.length > 0 ? (
           <>
@@ -440,17 +443,17 @@ function HouseInspector({
       </div>
 
       <div>
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="text-sm font-semibold text-foreground">{t("kundali.nav_bhava_bala")}</p>
-          <p className={cn("font-mono text-sm font-semibold tabular-nums", scoreTextClass(band))}>
+        <div className={cn(kundaliDetailClasses.bhavaChart.scoreHead, "flex")}>
+          <p className={kundaliDetailClasses.prose.heading}>{t("kundali.nav_bhava_bala")}</p>
+          <p className={cn(kundaliDetailClasses.bhavaChart.score, scoreTextClass(band))}>
             {t("kundali.virupas_rupas", {
               virupas: digits(house.totalPinda.toFixed(1)),
               rupas: digits(house.rupas.toFixed(2)),
             })}
           </p>
         </div>
-        <div className="mt-2">
-          <Meter value={house.totalPinda} max={totalScale} className="bg-primary" />
+        <div className={kundaliDetailClasses.bhavaChart.tileMeter}>
+          <Meter value={house.totalPinda} max={totalScale} className={kundaliDetailClasses.bhavaChart.barPrimary} />
         </div>
       </div>
 
@@ -459,44 +462,44 @@ function HouseInspector({
           label={t("kundali.bhavadhipati")}
           value={house.bhavadhipati}
           max={maxBhavadhipati}
-          barClass="bg-primary"
+          barClass={kundaliDetailClasses.bhavaChart.barPrimary}
           digits={digits}
         />
         <ComponentTile
           label={t("kundali.bhava_disha")}
           value={house.disha}
           max={60}
-          barClass="bg-secondary"
+          barClass={kundaliDetailClasses.bhavaChart.barSecondary}
           digits={digits}
         />
         <ComponentTile
           label={t("kundali.bhava_drishti")}
           value={house.drishti}
           max={maxDrishti}
-          barClass="bg-accent"
+          barClass={kundaliDetailClasses.bhavaChart.barAccent}
           digits={digits}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>
             {t("kundali.signifies")}
           </p>
-          <div className="flex flex-wrap gap-1.5">
+          <div className={cn(kundaliDetailClasses.bhavaChart.chips, "flex")}>
             {signifies.length > 0 ? (
               signifies.map((item) => <Chip key={item}>{item}</Chip>)
             ) : (
-              <p className="text-sm text-muted-foreground">—</p>
+              <p className={kundaliDetailClasses.prose.muted}>—</p>
             )}
           </div>
         </div>
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className={kundaliDetailClasses.bhavaChart.groupLabel}>
             {t("kundali.occupants")}
           </p>
           {occupants.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
+            <div className={cn(kundaliDetailClasses.bhavaChart.chips, "flex")}>
               {occupants.map((planet) => {
                 const key = planet.key as GrahaKey;
                 return (
@@ -510,7 +513,7 @@ function HouseInspector({
               })}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">{t("kundali.no_occupants")}</p>
+            <p className={kundaliDetailClasses.prose.muted}>{t("kundali.no_occupants")}</p>
           )}
         </div>
       </div>

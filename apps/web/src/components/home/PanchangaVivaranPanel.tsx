@@ -27,6 +27,7 @@ import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroAyanaNorth, patroAyanaSouth } from "@/lib/patro-classes";
 import { Button } from "@/components/ui/button";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type AngaBlock = {
   name_ne?: string;
@@ -62,11 +63,11 @@ function AsideFooter({
   const isEn = lang === "en";
 
   return (
-    <div className="mt-2.5 border-t border-foreground/10 pt-2.5">
+    <div className={homeClasses.vivaranFooter}>
       {abhijit ? (
-        <p className="m-0 text-sm leading-snug text-foreground">
-          <span className="font-semibold">{t("abhijit.title")}</span>{" "}
-          <span className="font-num font-semibold">
+        <p className={cn("m-0", homeClasses.vivaranFooterText)}>
+          <span className={homeClasses.vivaranFooterStrong}>{t("abhijit.title")}</span>{" "}
+          <span className={homeClasses.vivaranFooterNum}>
             {abhijit.rangeDisplay}
             {abhijit.noonDisplay
               ? isEn
@@ -102,12 +103,12 @@ function angaName(anga: AngaBlock | null | undefined, lang: string): string | un
 
 function VivaranCell({ label, value, hint, wide, mono }: DetailCell) {
   return (
-    <div className={cn("min-w-0 rounded-lg bg-surface-inset p-2.5 shadow-ring-soft", wide && "col-span-2")}>
-      <div className="text-sm text-base tracking-[0.12em] uppercase">{label}</div>
-      <div className={cn("mt-1 text-base leading-snug font-semibold text-foreground", mono && "mono text-sm")}>
+    <div className={cn(homeClasses.vivaranTile, "shadow-ring-soft", wide && "col-span-2")}>
+      <div className={homeClasses.vivaranLabel}>{label}</div>
+      <div className={cn(homeClasses.vivaranValue, mono && homeClasses.vivaranValueMono)}>
         {value ?? "—"}
       </div>
-      {hint ? <div className="mt-0.5 text-sm leading-snug text-base break-words">{hint}</div> : null}
+      {hint ? <div className={cn(homeClasses.vivaranHint, "break-words")}>{hint}</div> : null}
     </div>
   );
 }
@@ -183,9 +184,9 @@ function buildPanchangaDetailCells(
 
 function SolarCorrectionAsideCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 rounded-[5px] bg-surface-inset p-2.5 shadow-ring-soft">
-      <span className="text-sm leading-tight font-semibold text-foreground">{label}</span>
-      <span className="mono text-sm font-semibold leading-tight tabular-nums text-foreground">{value}</span>
+    <div className={cn("flex flex-col", homeClasses.vivaranTile, homeClasses.gocharTile, "shadow-ring-soft")}>
+      <span className={homeClasses.gocharName}>{label}</span>
+      <span className={cn(homeClasses.solarValue, "tabular-nums")}>{value}</span>
     </div>
   );
 }
@@ -197,10 +198,10 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAdDate, location
   if (loading || !p) {
     return (
       <section className="rounded-lg bg-card shadow-ring-soft">
-        <div className="mb-2.5 grid grid-cols-2 gap-2">
+        <div className={cn("grid grid-cols-2 gap-2", homeClasses.vivaranCells)}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="min-w-0 rounded-lg bg-surface-inset p-2.5 shadow-ring-soft">
-              <div className="text-sm text-base tracking-[0.12em] uppercase">…</div>
+            <div key={i} className={cn(homeClasses.vivaranTile, "shadow-ring-soft")}>
+              <div className={homeClasses.vivaranLabel}>…</div>
               <div className="mt-1.5 h-[18px] animate-pulse rounded-full bg-muted-foreground/20" />
             </div>
           ))}
@@ -230,22 +231,22 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAdDate, location
 
   return (
     <section className="min-h-full rounded-lg bg-card">
-      <div className="mb-2.5 grid grid-cols-2 gap-2">
+      <div className={cn("grid grid-cols-2 gap-2", homeClasses.vivaranCells)}>
         {cells.map((cell) => (
           <VivaranCell key={cell.label} {...cell} />
         ))}
       </div>
 
       {planets.length > 0 ? (
-        <div className="mt-2.5 border-t border-foreground/10">
-          <div className="mb-1.5 text-sm font-bold text-foreground">{t("aside.gochar")}</div>
+        <div className={homeClasses.gocharSection}>
+          <div className={homeClasses.gocharTitle}>{t("aside.gochar")}</div>
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
             {planets.map(({ key, label, rashi, degree, isRetrograde, isCombust }) => (
               <div
                 key={key}
-                className="flex min-w-0 flex-col gap-0.5 rounded-[5px] bg-surface-inset p-2.5 shadow-ring-soft"
+                className={cn("flex flex-col", homeClasses.vivaranTile, homeClasses.gocharTile, "shadow-ring-soft")}
               >
-                <span className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-sm leading-tight font-semibold text-foreground">
+                <span className={cn("flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5", homeClasses.gocharName)}>
                   <span className="min-w-0 break-words">
                     {label}
                     {rashi ? (
@@ -262,7 +263,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAdDate, location
                     size={12}
                   />
                 </span>
-                <span className="font-num text-sm font-semibold leading-tight tabular-nums text-foreground">
+                <span className={cn(homeClasses.gocharDegree, "tabular-nums")}>
                   {degree}
                 </span>
               </div>
@@ -273,10 +274,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAdDate, location
 
       {solarCards.length > 0 ? (
         <div
-          className={cn(
-            "border-t border-foreground/10 pt-2",
-            planets.length > 0 ? "mt-1.5" : "mt-2.5",
-          )}
+          className={planets.length > 0 ? homeClasses.solarWithPlanets : homeClasses.solarAlone}
         >
           <div className="grid grid-cols-3 gap-1.5">
             {solarCards.map(({ label, value }) => (

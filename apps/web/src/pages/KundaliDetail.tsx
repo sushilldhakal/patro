@@ -39,6 +39,7 @@ import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@v
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 const AYANAMSHA_KEY = "dhakalPatroAyanamshaMode";
 
@@ -61,15 +62,15 @@ function MetaItem({
   mono?: boolean;
 }) {
   return (
-    <div className="flex min-w-[6.75rem] flex-col justify-center gap-0 px-2.5 py-2 sm:min-w-[7.25rem] sm:px-3">
-      <div className="flex items-center gap-1 text-sm font-semibold uppercase tracking-wider">
+    <div className={cn(kundaliClasses.metaItem, "flex min-w-[6.75rem] sm:min-w-[7.25rem]")}>
+      <div className={cn(kundaliClasses.metaLabelRow, kundaliClasses.metaLabel)}>
         <Icon className="size-2.5 shrink-0 opacity-70" />
         {label}
       </div>
-      <p className={cn("text-sm font-semibold text-foreground leading-tight break-words", mono && "font-mono text-xs")}>
+      <p className={cn(mono ? kundaliClasses.metaValueMono : kundaliClasses.metaValue, "break-words")}>
         {value}
       </p>
-      {sub ? <p className="text-sm leading-tight mt-0.5">{sub}</p> : null}
+      {sub ? <p className={kundaliClasses.metaSub}>{sub}</p> : null}
     </div>
   );
 }
@@ -137,7 +138,7 @@ export function KundaliDetail() {
   const backLink = (
     <Link
       to="/kundali"
-      className="inline-flex items-center gap-1.5 text-sm text-base transition-colors hover:text-foreground"
+      className={cn(kundaliClasses.backLink, kundaliClasses.backLinkText, "inline-flex transition-colors hover:text-foreground")}
     >
       <ArrowLeft className="size-4" /> {t("kundali.back_all")}
     </Link>
@@ -146,7 +147,7 @@ export function KundaliDetail() {
   if (authLoading || profilesPending) {
     return (
       <PageShell className="pb-16">
-        <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-16 text-center text-sm">
+        <div className={cn(kundaliClasses.emptyBoxTall, kundaliClasses.emptyText)}>
           {t("common.loading")}
         </div>
       </PageShell>
@@ -157,7 +158,7 @@ export function KundaliDetail() {
     return (
       <PageShell className="space-y-4 pb-16">
         {backLink}
-        <div className="rounded-xl border border-border bg-card px-5 py-12 text-center text-sm">
+        <div className={cn(kundaliClasses.noticeBox, kundaliClasses.emptyText)}>
           {t("kundali.login_required")}
         </div>
       </PageShell>
@@ -168,9 +169,9 @@ export function KundaliDetail() {
     return (
       <PageShell className="space-y-4 pb-16">
         {backLink}
-        <div className="rounded-xl border border-border bg-card px-5 py-12 text-center">
-          <p className="text-sm text-base text-foreground">{t("kundali.not_found")}</p>
-          <p className="mx-auto mt-1 max-w-md text-sm">
+        <div className={cn(kundaliClasses.noticeBox, "text-center")}>
+          <p className={kundaliClasses.noticeTitle}>{t("kundali.not_found")}</p>
+          <p className={cn(kundaliClasses.noticeBody, "mx-auto")}>
             {t("kundali.not_found_body")}
           </p>
         </div>
@@ -187,12 +188,12 @@ export function KundaliDetail() {
   return (
     <PageShell className="space-y-6 pb-20">
       {/* Top bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={kundaliClasses.topBar}>
         {backLink}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className={kundaliClasses.topBarActions}>
           <Link
             to="/kundali"
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm text-base transition-colors hover:bg-muted hover:text-foreground"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm transition-colors hover:bg-muted hover:text-foreground"
           >
             <Sparkles className="size-4" /> {t("kundali.other_kundali")}
           </Link>
@@ -203,24 +204,24 @@ export function KundaliDetail() {
       </div>
 
       {/* Page title + birth facts on one row */}
-      <header className="rounded-xl border border-border bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)] overflow-hidden">
+      <header className={cn(kundaliClasses.profileHeader, "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]")}>
         <div className="flex flex-col lg:flex-row lg:items-stretch lg:divide-x lg:divide-border">
-          <div className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2.5 sm:px-4">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary/15 ring-1 ring-secondary/25 sm:size-10">
+          <div className={cn(kundaliClasses.profileIdentity, "flex flex-1")}>
+            <div className={cn(kundaliClasses.profileAvatar, "flex ring-1 ring-secondary/25")}>
               <User className="size-4 text-secondary sm:size-[1.125rem]" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold uppercase tracking-[0.1em] mb-0.5">
+              <p className={kundaliClasses.profileEyebrow}>
                 {t("kundali.title")}
               </p>
-              <h1 className="text-lg sm:text-xl font-bold leading-tight tracking-tight text-foreground m-0 flex flex-wrap items-center gap-1.5">
+              <h1 className={cn(kundaliClasses.profileName, kundaliClasses.profileNameRow, "m-0")}>
                 {profile.full_name}
                 {profile.is_default && (
                   <Star className="size-3.5 text-secondary fill-secondary/30 sm:size-4" aria-hidden />
                 )}
               </h1>
               {profile.gender ? (
-                <p className="text-sm mt-0.5 capitalize">{profile.gender}</p>
+                <p className={kundaliClasses.profileGender}>{profile.gender}</p>
               ) : null}
             </div>
           </div>
@@ -250,7 +251,7 @@ export function KundaliDetail() {
         <>
           <AyanamshaSelector mode={ayanamshaMode} onModeChange={setAyanamshaMode} />
           <KundaliSectionNav
-            className="min-[992px]:hidden"
+            className="calendar:hidden"
             activeId={section}
             onNavigate={navigateSection}
             variant="horizontal"
@@ -265,10 +266,10 @@ export function KundaliDetail() {
           />
         </>
       ) : (
-        <div className="rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
+        <div className={cn(kundaliClasses.noBirthBox, "text-center")}>
           <Clock className="mx-auto mb-4 size-10" />
-          <p className="text-base font-semibold text-foreground">{t("kundali.no_birth_title")}</p>
-          <p className="mx-auto mt-2 max-w-md text-sm">
+          <p className={kundaliClasses.noBirthTitle}>{t("kundali.no_birth_title")}</p>
+          <p className={cn(kundaliClasses.noBirthBody, "mx-auto")}>
             {t("kundali.no_birth_body")}
           </p>
           <Button className="mt-6 gap-1.5" onClick={() => setEditOpen(true)}>

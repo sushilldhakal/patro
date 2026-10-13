@@ -1,5 +1,5 @@
 import { memo, useMemo } from "react";
-import { Pressable, Text as RNText, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { formatVedaCite, type Shloka } from "@/lib/documents/api";
@@ -9,6 +9,8 @@ import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { illustration, space, withAlpha } from "@vedic-patro/design-tokens";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 interface Props {
   shloka: Shloka;
   isActive: boolean;
@@ -69,13 +71,14 @@ function ShlokaCardImpl({
   return (
     <View
       className={cn(
-        "mb-3 rounded-xl border p-4",
-        isActive ? "border-secondary bg-secondary/10" : "border-border bg-card",
-        isClosing && !isActive && "border-secondary/40",
-        isNote && !isActive && "border-dashed",
+        documentsClasses.verse,
+        "mb-3",
+        isActive ? documentsClasses.verseActive : documentsClasses.verseIdle,
+        isClosing && !isActive && documentsClasses.verseClosing,
+        isNote && !isActive && documentsClasses.verseNote,
       )}
     >
-      <View className="flex-row items-start gap-3">
+      <View className={documentsClasses.verseRow}>
         {canPlay ? (
           <Pressable
             onPress={() => onPlay(shloka)}
@@ -83,90 +86,85 @@ function ShlokaCardImpl({
             accessibilityLabel={t(isPlaying ? "documents.pause_verse" : "documents.play_verse")}
             hitSlop={6}
             className={cn(
-              "mt-0.5 h-10 w-10 items-center justify-center rounded-full border",
-              isActive ? "border-secondary bg-secondary" : "border-border",
+              documentsClasses.versePlay,
+              isActive ? documentsClasses.versePlayActive : documentsClasses.versePlayIdle,
             )}
           >
             <Ionicons
               name={isPlaying ? "pause" : "play"}
-              size={18}
+              size={16}
               color={isActive ? inkOn(colors.secondary) : colors.secondary}
-              style={isPlaying ? undefined : { marginLeft: 2 }}
+              style={isPlaying ? undefined : { marginLeft: space.hair }}
             />
           </Pressable>
         ) : (
-          <View className="mt-0.5 h-10 w-10 items-center justify-center">
-            <Text className="text-caption font-semibold text-muted-foreground">{shloka.verse_label}</Text>
+          <View className={documentsClasses.verseLabelSlot}>
+            <Text className={documentsClasses.verseLabelSlotText}>{shloka.verse_label}</Text>
           </View>
         )}
 
-        <View className="min-w-0 flex-1">
+        <View className={documentsClasses.verseBody}>
           {canPlay || vedaCite ? (
-            <View className="flex-row items-start justify-between gap-3">
+            <View className={documentsClasses.verseMetaRow}>
               {canPlay ? (
-                <View className="self-start rounded-md bg-muted px-1.5 py-0.5">
-                  <Text className="text-caption font-semibold text-muted-foreground">{shloka.verse_label}</Text>
+                <View className={cn(documentsClasses.verseBadge, "self-start")}>
+                  <Text className={documentsClasses.verseBadgeText}>{shloka.verse_label}</Text>
                 </View>
               ) : (
                 <View />
               )}
               {vedaCite ? (
-                <Text className="ml-auto shrink text-right text-caption text-muted-foreground">{vedaCite}</Text>
+                <Text className={documentsClasses.verseCite}>{vedaCite}</Text>
               ) : null}
             </View>
           ) : null}
-          <RNText
+          <Text
             selectable
-            style={[
-              nepaliTextStyle(isNote ? 17 : 20),
-              { color: colors.foreground, marginTop: 4 },
-            ]}
+            className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "text-foreground")}
+            style={nepaliTextStyle()}
           >
             {tokens.map((tok, i) =>
               i === activeToken ? (
-                <RNText key={i} style={{ backgroundColor: "rgba(250,204,21,0.45)" }}>
+                <Text
+                  key={i}
+                  className={cn(isNote ? documentsClasses.verseTextNote : documentsClasses.verseText, "mt-0 text-foreground")}
+                  style={{ backgroundColor: withAlpha(illustration.amber53, 0.45) }}
+                >
                   {tok}
-                </RNText>
+                </Text>
               ) : (
                 tok
               ),
             )}
-          </RNText>
+          </Text>
           {lang !== "ne" && shloka.transliteration ? (
-            <Text className="text-body mt-1.5 italic text-muted-foreground">{shloka.transliteration}</Text>
+            <Text className={documentsClasses.verseTranslit}>{shloka.transliteration}</Text>
           ) : null}
 
           {isActive ? (
-            <View className="mt-3 h-0.5 w-full overflow-hidden rounded-full bg-border">
+            <View className={documentsClasses.verseProgress}>
               <View
-                className="h-full bg-secondary"
+                className={documentsClasses.verseProgressFill}
                 style={{ width: `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%` }}
               />
             </View>
           ) : null}
 
           {meaning ? (
-            <View className="mt-1">
+            <View className={documentsClasses.verseMeaningWrap}>
               <Pressable
                 onPress={() => onToggleMeaning(shloka.id)}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: meaningOpen }}
-                className="flex-row items-center gap-1 self-start py-2"
+                className={cn(documentsClasses.verseMeaningToggle, "flex-row items-center self-start")}
               >
-                <Text className="text-caption font-semibold text-secondary">{t("documents.meaning")}</Text>
-                <Ionicons name={meaningOpen ? "chevron-up" : "chevron-down"} size={14} color={colors.secondary} />
+                <Text className={documentsClasses.verseMeaningToggleText}>{t("documents.meaning")}</Text>
+                <Ionicons name={meaningOpen ? "chevron-up" : "chevron-down"} size={16} color={colors.secondary} />
               </Pressable>
               {meaningOpen ? (
-                <RNText
-                  selectable
-                  style={
-                    lang === "ne"
-                      ? [nepaliTextStyle(16), { color: colors.foreground }]
-                      : { color: colors.foreground, fontSize: 18, lineHeight: 24 }
-                  }
-                >
+                <Text selectable className={documentsClasses.verseMeaning} style={lang === "ne" ? nepaliTextStyle() : undefined}>
                   {meaning}
-                </RNText>
+                </Text>
               ) : null}
             </View>
           ) : null}

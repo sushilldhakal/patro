@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CalendarRange,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { DashaSystem } from "@/lib/api";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export const KUNDALI_SECTIONS = [
   { id: "kundali-overview", labelKey: "kundali.nav_overview", icon: "overview" as const },
@@ -198,9 +199,13 @@ export function KundaliSectionNav({
   const activeGroup = navGroupIdForSection(activeId);
   const [expandedId, setExpandedId] = useState<string | null>(activeGroup);
 
-  useEffect(() => {
+  // Opening a section expands its group. Adjusting state while rendering (not in
+  // an effect) means the group is already open on the render that shows the section.
+  const [seenActiveGroup, setSeenActiveGroup] = useState(activeGroup);
+  if (activeGroup !== seenActiveGroup) {
+    setSeenActiveGroup(activeGroup);
     if (activeGroup) setExpandedId(activeGroup);
-  }, [activeGroup]);
+  }
 
   const toggleGroup = (groupId: string) => {
     const defaultChild = defaultChildForGroup(groupId);
@@ -240,10 +245,12 @@ export function KundaliSectionNav({
                     aria-expanded={hasChildren ? expanded : undefined}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs whitespace-nowrap",
+                      kundaliDetailClasses.sectionNav.pill,
+                      kundaliDetailClasses.sectionNav.pillText,
+                      "inline-flex whitespace-nowrap",
                       active
-                        ? "border-secondary/40 bg-secondary/12 text-secondary"
-                        : "border-border bg-card hover:bg-muted hover:text-foreground",
+                        ? cn(kundaliDetailClasses.sectionNav.pillActive, kundaliDetailClasses.sectionNav.pillActiveText)
+                        : cn(kundaliDetailClasses.sectionNav.pillIdle, "hover:bg-muted hover:text-foreground"),
                     )}
                   >
                     <Icon className="size-3.5 shrink-0" />
@@ -272,10 +279,12 @@ export function KundaliSectionNav({
                       onClick={() => onNavigate(child.id)}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "inline-flex items-center rounded-full border px-3 py-1.5 text-xs whitespace-nowrap",
+                        kundaliDetailClasses.sectionNav.pill,
+                        kundaliDetailClasses.sectionNav.pillText,
+                        "inline-flex gap-0 whitespace-nowrap",
                         active
-                          ? "border-primary/40 bg-primary/10 text-primary"
-                          : "border-dashed border-border bg-card hover:bg-muted hover:text-foreground",
+                          ? cn(kundaliDetailClasses.sectionNav.childPillActive, kundaliDetailClasses.sectionNav.childPillActiveText)
+                          : cn(kundaliDetailClasses.sectionNav.childPillIdle, "hover:bg-muted hover:text-foreground"),
                       )}
                     >
                       {t(child.labelKey)}
@@ -293,15 +302,16 @@ export function KundaliSectionNav({
   return (
     <nav
       className={cn(
-        "rounded-2xl border border-border bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
+        kundaliDetailClasses.sectionNav.sideCard,
+        "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
         className,
       )}
       aria-label={t("kundali.jump_to")}
     >
-      <p className="border-b border-border px-4 py-3 text-sm font-semibold uppercase tracking-wider">
+      <p className={kundaliDetailClasses.sectionNav.sideTitle}>
         {t("kundali.submenu_title")}
       </p>
-      <ul className="flex flex-col gap-1 p-2">
+      <ul className={cn(kundaliDetailClasses.sectionNav.sideList, "flex flex-col")}>
         {KUNDALI_NAV_GROUPS.map((group) => {
           const Icon = ICONS[group.icon];
           const hasChildren = "children" in group;
@@ -319,9 +329,11 @@ export function KundaliSectionNav({
                 aria-expanded={hasChildren ? expanded : undefined}
                 aria-current={!hasChildren && active ? "page" : undefined}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition-colors",
+                  kundaliDetailClasses.sectionNav.sideItem,
+                  kundaliDetailClasses.sectionNav.sideItemText,
+                  "flex w-full items-center gap-2.5 text-left transition-colors",
                   active
-                    ? "bg-secondary/12 text-secondary ring-1 ring-secondary/25"
+                    ? cn(kundaliDetailClasses.sectionNav.sideItemActive, kundaliDetailClasses.sectionNav.sideItemActiveText, "ring-1 ring-secondary/25")
                     : "hover:bg-muted hover:text-foreground",
                 )}
               >
@@ -335,7 +347,7 @@ export function KundaliSectionNav({
                 ) : null}
               </button>
               {hasChildren && expanded ? (
-                <ul className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-border/70 pl-2">
+                <ul className={cn(kundaliDetailClasses.sectionNav.sideChildList, "flex flex-col")}>
                   {children.map((child) => {
                     const childActive = isChildActive(child.id, activeId);
                     return (
@@ -345,10 +357,12 @@ export function KundaliSectionNav({
                           onClick={() => onNavigate(child.id)}
                           aria-current={childActive ? "page" : undefined}
                           className={cn(
-                            "w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors",
+                            kundaliDetailClasses.sectionNav.sideChild,
+                            kundaliDetailClasses.sectionNav.sideChildText,
+                            "w-full text-left transition-colors",
                             childActive
-                              ? "bg-primary/10 text-primary"
-                              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                              ? cn(kundaliDetailClasses.sectionNav.sideChildActive, kundaliDetailClasses.sectionNav.sideChildActiveText)
+                              : cn(kundaliDetailClasses.sectionNav.sideChildIdleText, "hover:bg-muted hover:text-foreground"),
                           )}
                         >
                           {t(child.labelKey)}

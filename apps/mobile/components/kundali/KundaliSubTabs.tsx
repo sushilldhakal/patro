@@ -7,8 +7,8 @@
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export function KundaliSubTabs<T extends string>({
   items,
@@ -19,20 +19,22 @@ export function KundaliSubTabs<T extends string>({
   activeId: T;
   onSelect: (id: T) => void;
 }) {
-  const colors = useThemeColors();
   return (
-    <View className="mb-3 flex-row flex-wrap gap-1 self-start rounded-xl border border-border/70 bg-muted/20 p-1">
+    <View className={cn(kundaliDetailClasses.subTabs.root, "self-start")}>
       {items.map((item) => {
         const active = item.id === activeId;
         return (
           <Pressable
             key={item.id}
             onPress={() => onSelect(item.id)}
-            style={active ? { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 } : undefined}
-            className="rounded-lg px-3 py-1.5 active:opacity-80"
+            className={cn(
+              kundaliDetailClasses.subTabs.tab,
+              "border active:opacity-80",
+              active ? cn(kundaliDetailClasses.subTabs.tabActive, "border-border/60") : "border-transparent",
+            )}
           >
             <Text
-              className={cn("text-body", active ? "font-semibold text-foreground" : "text-muted-foreground")}
+              className={cn(kundaliDetailClasses.subTabs.tabText, kundaliDetailClasses.subTabs.tabActiveText)}
               style={nepaliTextStyle(13)}
             >
               {item.label}

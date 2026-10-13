@@ -13,6 +13,7 @@ import { OFFLINE_STORE_SUPPORTED } from "@/lib/offline/offline-db";
 import { clampToSupportedBsRange } from "@/lib/offline/offline-range";
 import { PACK_GROUPS, type PackGroupId, type PackSizeEstimate } from "@/lib/offline/offline-pack";
 
+import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 MB";
   const mb = bytes / (1024 * 1024);
@@ -235,7 +236,7 @@ export default function OfflineDataScreen() {
     >
       {!isOnline ? (
         <View
-          style={{ borderColor: "rgba(245,158,11,0.5)", backgroundColor: "rgba(245,158,11,0.12)" }}
+          style={{ borderColor: withAlpha(illustration.orange50, 0.5), backgroundColor: withAlpha(illustration.orange50, 0.12) }}
           className="mb-5 flex-row items-center gap-2.5 rounded-lg border p-3"
         >
           <Ionicons name="cloud-offline-outline" size={16} color={colors.primary} />
@@ -376,8 +377,8 @@ export default function OfflineDataScreen() {
             onPress={() => void onDownload()}
             className="mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50"
           >
-            {running ? <ActivityIndicator size="small" color="#ffffff" /> : <Ionicons name="download-outline" size={18} color="#ffffff" />}
-            <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
+            {running ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="download-outline" size={18} color={neutral.white} />}
+            <Text className="text-body font-semibold" style={{ color: neutral.white }}>
               {pick(`ठीक छ, ${formatBytes(est.totalBytes)} डाउनलोड गर्नुहोस्`, `OK — download ${formatBytes(est.totalBytes)}`)}
             </Text>
           </Pressable>
@@ -387,8 +388,8 @@ export default function OfflineDataScreen() {
             onPress={() => void onMeasure()}
             className="mt-4 flex-row items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 active:opacity-80 disabled:opacity-50"
           >
-            {measuring ? <ActivityIndicator size="small" color="#ffffff" /> : <Ionicons name="speedometer-outline" size={18} color="#ffffff" />}
-            <Text className="text-body font-semibold" style={{ color: "#ffffff" }}>
+            {measuring ? <ActivityIndicator size="small" color={neutral.white} /> : <Ionicons name="speedometer-outline" size={18} color={neutral.white} />}
+            <Text className="text-body font-semibold" style={{ color: neutral.white }}>
               {measuring
                 ? pick("आकार नापिँदैछ…", "Measuring size…")
                 : pick("डाउनलोडको आकार हेर्नुहोस्", "Check download size")}

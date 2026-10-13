@@ -25,6 +25,7 @@ import {
   yearAngleFromDay,
 } from "@/components/learn/sun-earth-moon-math";
 
+import { brand, illustration, midnight } from "@vedic-patro/design-tokens";
 interface Props {
   day: number;
   onDay?: (v: number) => void;
@@ -123,19 +124,19 @@ export function SunEarthMoonOrbit({ day, onDay, showEclipticGrid = true }: Props
     >
       <defs>
         <radialGradient id="sem-sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff6d8" />
-          <stop offset="38%" stopColor="#ffd24a" />
-          <stop offset="78%" stopColor="#f08a1d" />
-          <stop offset="100%" stopColor="#d65b12" />
+          <stop offset="0%" stopColor={illustration.amber92} />
+          <stop offset="38%" stopColor={illustration.amber67} />
+          <stop offset="78%" stopColor={illustration.orange53} />
+          <stop offset="100%" stopColor={illustration.orange45} />
         </radialGradient>
         <radialGradient id="sem-sunglow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffcf57" stopOpacity={0.45} />
-          <stop offset="100%" stopColor="#ffcf57" stopOpacity={0} />
+          <stop offset="0%" stopColor={illustration.amber67} stopOpacity={0.45} />
+          <stop offset="100%" stopColor={illustration.amber67} stopOpacity={0} />
         </radialGradient>
         <radialGradient id="sem-moon" cx="36%" cy="32%" r="74%">
-          <stop offset="0%" stopColor="#eef1f4" />
-          <stop offset="55%" stopColor="#aab2bb" />
-          <stop offset="100%" stopColor="#666e79" />
+          <stop offset="0%" stopColor={brand.offWhite} />
+          <stop offset="55%" stopColor={midnight.mutedForeground} />
+          <stop offset="100%" stopColor={illustration.gray46} />
         </radialGradient>
       </defs>
 

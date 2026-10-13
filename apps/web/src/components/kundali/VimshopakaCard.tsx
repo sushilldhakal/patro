@@ -12,14 +12,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const PLANET_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"];
 
+const v = kundaliDetailClasses.vimshopaka;
+
 const GRADE_STYLES: Record<VimshopakaGrade, string> = {
-  full: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-  mediocre: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
-  little: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
-  incapable: "bg-destructive/15 text-destructive",
+  full: cn(v.gradeFullBg, v.gradeFullText),
+  mediocre: cn(v.gradeMediocreBg, v.gradeMediocreText),
+  little: cn(v.gradeLittleBg, v.gradeLittleText),
+  incapable: cn(v.gradeIncapableBg, v.gradeIncapableText),
 };
 
 const GRADE_LABEL: Record<VimshopakaGrade, string> = {
@@ -39,17 +42,17 @@ export function VimshopakaCard({ data }: { data: VimshopakaData }) {
   ).filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={v.root}>
       <div>
-        <h3 className="text-base font-bold text-foreground">
+        <h3 className={v.title}>
           {t("kundali.vimshopaka_bala")}
         </h3>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className={v.intro}>
           {bilingualText(lang, `वर्गीय बल — २० अंकको मापन (${digits(data.max_score)} पूर्ण)। ग्रहले आफ्ना फल दिने क्षमता।`, `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`)}
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className={v.tableWrap}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -85,7 +88,9 @@ export function VimshopakaCard({ data }: { data: VimshopakaData }) {
                       <TableCell key={c.key} className="text-center">
                         <span
                           className={cn(
-                            "inline-flex min-w-[3.25rem] items-center justify-center gap-1 rounded-md px-2 py-0.5 font-num tabular-nums",
+                            v.badge,
+                            v.badgeText,
+                            "inline-flex min-w-[3.25rem] font-num",
                             GRADE_STYLES[s.grade],
                           )}
                           title={t(GRADE_LABEL[s.grade])}
@@ -103,12 +108,12 @@ export function VimshopakaCard({ data }: { data: VimshopakaData }) {
       </div>
 
       {/* Grade legend */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+      <div className={cn(v.legend, v.legendText)}>
         {(["full", "mediocre", "little", "incapable"] as VimshopakaGrade[]).map((g) => (
-          <span key={g} className="inline-flex items-center gap-1.5">
-            <span className={cn("h-2.5 w-2.5 rounded-sm", GRADE_STYLES[g])} />
+          <span key={g} className={cn(v.legendItem, "inline-flex")}>
+            <span className={cn(v.legendDot, GRADE_STYLES[g])} />
             {t(GRADE_LABEL[g])}
-            <span className="text-xs">
+            <span className={v.legendRange}>
               {g === "full"
                 ? "15–20"
                 : g === "mediocre"

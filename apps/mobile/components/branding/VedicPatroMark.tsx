@@ -20,6 +20,7 @@ import {
   useSpin,
 } from "./svg-motion";
 
+import { brand, illustration, midnight, neutral } from "@vedic-patro/design-tokens";
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
@@ -73,28 +74,28 @@ export function VedicPatroMark({ size = 42 }: { size?: number }) {
     <Svg width={size} height={size} viewBox="0 0 512 512" accessibilityLabel="Vedic Patro">
       <Defs>
         <LinearGradient id="vpm-g" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor="#f6da8a" />
-          <Stop offset="0.5" stopColor="#e6b94d" />
-          <Stop offset="1" stopColor="#c79126" />
+          <Stop offset="0" stopColor={illustration.amber77} />
+          <Stop offset="0.5" stopColor={illustration.amber60} />
+          <Stop offset="1" stopColor={illustration.orange46} />
         </LinearGradient>
         <RadialGradient id="vpm-sun" cx="0.38" cy="0.34" r="0.75">
-          <Stop offset="0" stopColor="#fbe9b6" />
-          <Stop offset="0.55" stopColor="#ecc25e" />
-          <Stop offset="1" stopColor="#cf9a2c" />
+          <Stop offset="0" stopColor={illustration.amber85} />
+          <Stop offset="0.55" stopColor={midnight.gold} />
+          <Stop offset="1" stopColor={illustration.orange46} />
         </RadialGradient>
         <RadialGradient id="vpm-halo" cx="0.5" cy="0.5" r="0.5">
-          <Stop offset="0" stopColor="#ffe6a0" stopOpacity={0.9} />
-          <Stop offset="0.55" stopColor="#f4c95e" stopOpacity={0.35} />
-          <Stop offset="1" stopColor="#f4c95e" stopOpacity={0} />
+          <Stop offset="0" stopColor={illustration.amber81} stopOpacity={0.9} />
+          <Stop offset="0.55" stopColor={illustration.amber66} stopOpacity={0.35} />
+          <Stop offset="1" stopColor={illustration.amber66} stopOpacity={0} />
         </RadialGradient>
         <LinearGradient id="vpm-bg" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0" stopColor="#0e6a6f" />
-          <Stop offset="1" stopColor="#073f43" />
+          <Stop offset="0" stopColor={illustration.teal25} />
+          <Stop offset="1" stopColor={brand.bluePressed} />
         </LinearGradient>
         <Mask id="vpm-cres">
-          <Rect width={100} height={100} fill="#000" />
-          <Circle cx={46.3} cy={50} r={41.5} fill="#fff" />
-          <Circle cx={68.3} cy={50} r={36.6} fill="#000" />
+          <Rect width={100} height={100} fill={neutral.black} />
+          <Circle cx={46.3} cy={50} r={41.5} fill={neutral.white} />
+          <Circle cx={68.3} cy={50} r={36.6} fill={neutral.black} />
         </Mask>
       </Defs>
 
@@ -126,7 +127,7 @@ export function VedicPatroMark({ size = 42 }: { size?: number }) {
             cy={PIVOT.y}
             r={17.7}
             fill="none"
-            stroke="#073f43"
+            stroke={brand.bluePressed}
             strokeWidth={1.2}
             opacity={0.18}
           />

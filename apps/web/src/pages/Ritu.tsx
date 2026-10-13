@@ -12,6 +12,8 @@ import {
 import { usePatroLocationUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useLocale } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
+import { cn } from "@vedic-patro/domain/utils";
+import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
 const routeApi = getRouteApi("/panchanga-shell/ritu");
 
@@ -30,7 +32,7 @@ export function Ritu() {
 
   return (
     <PageShell>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className={cn("flex flex-wrap", rituClasses.headerRow)}>
         <PageHeader
           icon={<Sprout className="size-7 text-secondary dark:text-primary" strokeWidth={1.8} />}
           title={t("ritu.title")}

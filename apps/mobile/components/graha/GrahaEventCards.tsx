@@ -8,6 +8,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { renderedEclipseDate } from "@vedic-patro/domain/eclipse-date";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 function eclipseMaxTime(ev: EclipseEvent): string | null {
   return localTimeShortFromIso(ev.max_local) ?? ev.maximum_time_local_short ?? null;
@@ -31,26 +32,27 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
   const max = eclipseMaxTime(ev);
 
   return (
-    <Card className="overflow-hidden p-0">
+    <Card className={cn(grahaClasses.eclipseCard, "p-0")}>
       <View
         className={cn(
-          "flex-row items-baseline justify-between gap-2 border-b border-border px-3.5 py-2.5",
-          visible ? "bg-emerald-500/10" : "bg-muted/30",
+          "flex-row",
+          grahaClasses.eclipseHead,
+          visible ? grahaClasses.eclipseHeadVisible : grahaClasses.eclipseHeadHidden,
         )}
       >
-        <Text className="text-body min-w-0 flex-1 font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <Text className={cn("min-w-0 flex-1", grahaClasses.eclipseType)} style={nepaliTextStyle(16)}>
           {typeLabel}
         </Text>
         <View
           className={cn(
-            "shrink-0 rounded-full px-2 py-0.5",
-            visible ? "bg-emerald-500/20" : "bg-foreground/10",
+            grahaClasses.eclipseBadge,
+            visible ? grahaClasses.eclipseBadgeVisible : grahaClasses.eclipseBadgeHidden,
           )}
         >
           <Text
-            className="text-caption font-bold"
+            className={grahaClasses.eclipseBadgeText}
             style={{
-              color: visible ? colors.secondary : colors.mutedForeground,
+              color: visible ? colors.success : colors.mutedForeground,
               ...nepaliTextStyle(11),
             }}
           >
@@ -60,8 +62,8 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
           </Text>
         </View>
       </View>
-      <View className="gap-1.5 p-3.5">
-        <EclipseDetailRow label={pick("मिति", "Date")} value={digits(dateLabel)} />
+      <View className={grahaClasses.eclipseBody}>
+        <EclipseDetailRow label={pick("मिति", "Date")} value={digits(dateLabel)} strong />
         <EclipseDetailRow label={pick("चरम", "Maximum")} value={max ? digits(max) : "—"} />
         {visible && begin ? (
           <EclipseDetailRow
@@ -86,13 +88,13 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
   );
 }
 
-function EclipseDetailRow({ label, value }: { label: string; value: string }) {
+function EclipseDetailRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <View className="flex-row items-baseline justify-between gap-2">
-      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+    <View className={cn("flex-row", grahaClasses.eclipseRow)}>
+      <Text className={grahaClasses.eclipseLabel} style={nepaliTextStyle(13)}>
         {label}
       </Text>
-      <Text className="text-body font-num font-semibold text-foreground">{value}</Text>
+      <Text className={strong ? cn(grahaClasses.eclipseValue, "font-semibold") : grahaClasses.eclipseValue}>{value}</Text>
     </View>
   );
 }
@@ -107,14 +109,14 @@ export function StampLine({
   const { digits } = useLocale();
   if (!stamp) {
     return (
-      <Text className="text-caption text-muted-foreground">
+      <Text className="text-xs text-muted-foreground">
         {label}: —
       </Text>
     );
   }
   const date = stamp.date_bs ?? stamp.date_ad ?? stamp.date ?? "";
   return (
-    <Text className="text-body text-foreground">
+    <Text className="text-sm text-foreground">
       <Text className="font-semibold">{label}: </Text>
       {digits(date)} · {digits(stamp.time_short)}
     </Text>
@@ -142,15 +144,15 @@ export function GrahaPeriodCard({
   return (
     <Card className="mb-2 gap-1 p-3">
       {titleNe ? (
-        <Text className="text-caption font-bold uppercase text-muted-foreground">
+        <Text className="text-xs font-bold uppercase text-muted-foreground">
           {pick(titleNe, titleEn ?? titleNe)}
         </Text>
       ) : null}
-      <Text className="text-body font-semibold text-foreground">{grahaNe}</Text>
+      <Text className="text-sm font-semibold text-foreground">{grahaNe}</Text>
       <StampLine label={pick("सुरु", "Start")} stamp={start} />
       <StampLine label={pick("अन्त", "End")} stamp={end} />
       {extraNe ? (
-        <Text className="text-caption text-muted-foreground">{pick(extraNe, extraEn ?? extraNe)}</Text>
+        <Text className="text-xs text-muted-foreground">{pick(extraNe, extraEn ?? extraNe)}</Text>
       ) : null}
     </Card>
   );
@@ -167,9 +169,9 @@ export function SimpleEventCard({
 }) {
   return (
     <Card className="mb-2 gap-1 p-3">
-      <Text className="text-body font-semibold text-foreground">{title}</Text>
-      {subtitle ? <Text className="text-body text-muted-foreground">{subtitle}</Text> : null}
-      {body ? <Text className="text-body text-foreground">{body}</Text> : null}
+      <Text className="text-sm font-semibold text-foreground">{title}</Text>
+      {subtitle ? <Text className="text-sm text-muted-foreground">{subtitle}</Text> : null}
+      {body ? <Text className="text-sm text-foreground">{body}</Text> : null}
     </Card>
   );
 }
@@ -177,8 +179,8 @@ export function SimpleEventCard({
 export function EmptyHint({ ne, en }: { ne: string; en: string }) {
   const { pick } = useLocale();
   return (
-    <View className="py-8">
-      <Text className="text-body text-center text-muted-foreground">{pick(ne, en)}</Text>
+    <View className={grahaClasses.emptyHint}>
+      <Text className={grahaClasses.emptyHintText}>{pick(ne, en)}</Text>
     </View>
   );
 }

@@ -11,9 +11,8 @@ import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { colorWithAlpha } from "@/lib/theme";
-import { useTheme } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const PLANET_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 
@@ -31,19 +30,14 @@ const GRADE_RANGE: Record<VimshopakaGrade, string> = {
   incapable: "<5",
 };
 
-/** Match web VimshopakaCard badge colors (emerald / sky / amber / destructive). */
-function gradeColors(grade: VimshopakaGrade, dark: boolean): { bg: string; fg: string } {
-  switch (grade) {
-    case "full":
-      return { bg: colorWithAlpha(dark ? "#34d399" : "#10b981", 0.15), fg: dark ? "#34d399" : "#059669" };
-    case "mediocre":
-      return { bg: colorWithAlpha(dark ? "#38bdf8" : "#0ea5e9", 0.15), fg: dark ? "#38bdf8" : "#0284c7" };
-    case "little":
-      return { bg: colorWithAlpha(dark ? "#fbbf24" : "#f59e0b", 0.15), fg: dark ? "#fbbf24" : brand.saffron };
-    case "incapable":
-      return { bg: colorWithAlpha(dark ? "#f87171" : "#ef4444", 0.15), fg: dark ? "#f87171" : "#dc2626" };
-  }
-}
+const v = kundaliDetailClasses.vimshopaka;
+
+const GRADE_CLASSES: Record<VimshopakaGrade, { bg: string; text: string }> = {
+  full: { bg: v.gradeFullBg, text: v.gradeFullText },
+  mediocre: { bg: v.gradeMediocreBg, text: v.gradeMediocreText },
+  little: { bg: v.gradeLittleBg, text: v.gradeLittleText },
+  incapable: { bg: v.gradeIncapableBg, text: v.gradeIncapableText },
+};
 
 function ScoreBadge({
   score,
@@ -56,17 +50,16 @@ function ScoreBadge({
   digits: (v: string | number) => string;
   lang: "ne" | "en";
 }) {
-  const { isDark } = useTheme();
-  const colors = gradeColors(grade, isDark);
+  const gradeClasses = GRADE_CLASSES[grade];
   const gradeName = lang === "en" ? GRADE_LABEL[grade].en : GRADE_LABEL[grade].ne;
 
   return (
     <View
       accessibilityLabel={`${gradeName}, ${digits(score.toFixed(2))}`}
-      style={{ backgroundColor: colors.bg, minWidth: 52 }}
-      className="items-center justify-center rounded-md px-2 py-1"
+      style={{ minWidth: 52 }}
+      className={cn(v.badge, gradeClasses.bg)}
     >
-      <Text className="font-num font-semibold tabular-nums" style={[nepaliTextStyle(13), { color: colors.fg }]}>
+      <Text className={cn(v.badgeText, "font-mono", gradeClasses.text)} style={nepaliTextStyle(13)}>
         {digits(score.toFixed(2))}
       </Text>
     </View>
@@ -74,21 +67,19 @@ function ScoreBadge({
 }
 
 function GradeLegend({ lang }: { lang: "ne" | "en" }) {
-  const { isDark } = useTheme();
   const grades: VimshopakaGrade[] = ["full", "mediocre", "little", "incapable"];
 
   return (
-    <View className="flex-row flex-wrap gap-x-4 gap-y-2">
+    <View className={v.legend}>
       {grades.map((g) => {
-        const colors = gradeColors(g, isDark);
         const label = lang === "en" ? GRADE_LABEL[g].en : GRADE_LABEL[g].ne;
         return (
-          <View key={g} className="flex-row items-center gap-1.5">
-            <View style={{ backgroundColor: colors.bg }} className="h-2.5 w-2.5 rounded-sm" />
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+          <View key={g} className={v.legendItem}>
+            <View className={cn(v.legendDot, GRADE_CLASSES[g].bg)} />
+            <Text className={v.legendText} style={nepaliTextStyle(13)}>
               {label}
             </Text>
-            <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={v.legendRange} style={nepaliTextStyle(11)}>
               {GRADE_RANGE[g]}
             </Text>
           </View>
@@ -134,14 +125,14 @@ export function VimshopakaCard({
   const introEn = `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`;
 
   return (
-    <View className="gap-3">
+    <View className={v.root}>
       {!compactHeader ? (
-        <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <Text className={v.title} style={nepaliTextStyle(16)}>
           {kundaliLabel("vimshopaka_bala", lang)}
         </Text>
       ) : null}
       <View className="px-4">
-        <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={v.intro} style={nepaliTextStyle(14)}>
           {pick(introNe, introEn)}
         </Text>
       </View>

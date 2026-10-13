@@ -12,8 +12,9 @@ import {
 } from "@/lib/kundali/kundali-section-nav";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { space } from "@vedic-patro/design-tokens";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Props = {
   activeId: KundaliSectionId;
@@ -29,7 +30,6 @@ export function KundaliSectionNav({
   className,
 }: Props) {
   const { lang, pick } = useLocale();
-  const colors = useThemeColors();
   const activeGroup = navGroupIdForSection(activeId);
   const [expandedId, setExpandedId] = useState<string | null>(activeGroup);
 
@@ -51,14 +51,14 @@ export function KundaliSectionNav({
 
   if (variant === "sidebar") {
     return (
-      <View className={cn("overflow-hidden rounded-2xl border border-border bg-card", className)}>
+      <View className={cn(kundaliDetailClasses.sectionNav.sideCard, "overflow-hidden", className)}>
         <Text
-          className="text-caption border-b border-border px-4 py-3 font-semibold uppercase tracking-wider text-muted-foreground"
+          className={kundaliDetailClasses.sectionNav.sideTitle}
           style={nepaliTextStyle(12)}
         >
           {pick("कुण्डली खण्ड", "Chart sections")}
         </Text>
-        <View className="gap-1 p-2">
+        <View className={kundaliDetailClasses.sectionNav.sideList}>
           {KUNDALI_NAV_GROUPS.map((group) => {
             const hasChildren = "children" in group;
             const active = isGroupActive(group.id, activeId);
@@ -71,35 +71,34 @@ export function KundaliSectionNav({
                     if (hasChildren) toggleGroup(group.id);
                     else onNavigate(group.id as KundaliSectionId);
                   }}
-                  className={cn("rounded-xl px-3 py-2.5", active ? "bg-secondary/12" : "active:bg-muted")}
-                  style={active ? { borderWidth: 1, borderColor: `${colors.secondary}40` } : undefined}
+                  className={cn(
+                    kundaliDetailClasses.sectionNav.sideItem,
+                    "border",
+                    active ? cn(kundaliDetailClasses.sectionNav.sideItemActive, "border-secondary/25") : "border-transparent active:bg-muted",
+                  )}
                 >
                   <Text
-                    className={cn("text-body", active ? "font-semibold text-secondary" : "text-foreground")}
+                    className={cn(kundaliDetailClasses.sectionNav.sideItemText, active ? kundaliDetailClasses.sectionNav.sideItemActiveText : kundaliDetailClasses.sectionNav.pillIdleText)}
                     style={nepaliTextStyle(14)}
                   >
                     {kundaliSectionLabel(group, lang)}
                     {hasChildren ? (expanded ? " ▾" : " ▸") : ""}
                   </Text>
                 </Pressable>
-                {hasChildren && expanded
-                  ? children.map((child) => {
+                {hasChildren && expanded ? (
+                  <View className={kundaliDetailClasses.sectionNav.sideChildList}>
+                  {children.map((child) => {
                       const childActive = isChildActive(child.id, activeId);
                       return (
                         <Pressable
                           key={child.id}
                           onPress={() => onNavigate(child.id)}
-                          className="ml-4 rounded-lg py-2 pl-3 pr-2"
-                          style={
-                            childActive
-                              ? { backgroundColor: `${colors.primary}18` }
-                              : undefined
-                          }
+                          className={cn(kundaliDetailClasses.sectionNav.sideChild, childActive && kundaliDetailClasses.sectionNav.sideChildActive)}
                         >
                           <Text
                             className={cn(
-                              "text-body",
-                              childActive ? "font-semibold text-primary" : "text-muted-foreground",
+                              kundaliDetailClasses.sectionNav.sideChildText,
+                              childActive ? kundaliDetailClasses.sectionNav.sideChildActiveText : kundaliDetailClasses.sectionNav.sideChildIdleText,
                             )}
                             style={nepaliTextStyle(13)}
                           >
@@ -107,8 +106,9 @@ export function KundaliSectionNav({
                           </Text>
                         </Pressable>
                       );
-                    })
-                  : null}
+                    })}
+                  </View>
+                ) : null}
               </View>
             );
           })}
@@ -127,7 +127,7 @@ export function KundaliSectionNav({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 8, paddingBottom: 4 }}
+        contentContainerStyle={{ gap: space.sm, paddingBottom: space.xs }}
       >
         {KUNDALI_NAV_GROUPS.map((group) => {
           const hasChildren = "children" in group;
@@ -140,14 +140,14 @@ export function KundaliSectionNav({
                 if (hasChildren) toggleGroup(group.id);
                 else onNavigate(group.id as KundaliSectionId);
               }}
-              style={{
-                backgroundColor: active ? `${colors.secondary}18` : colors.card,
-                borderColor: active ? `${colors.secondary}66` : colors.border,
-              }}
-              className="rounded-full border px-3 py-1.5 active:opacity-80"
+              className={cn(
+                kundaliDetailClasses.sectionNav.pill,
+                "active:opacity-80",
+                active ? kundaliDetailClasses.sectionNav.pillActive : kundaliDetailClasses.sectionNav.pillIdle,
+              )}
             >
               <Text
-                className={cn("text-caption whitespace-nowrap", active ? "font-semibold text-secondary" : "text-foreground")}
+                className={cn(kundaliDetailClasses.sectionNav.pillText, active ? kundaliDetailClasses.sectionNav.pillActiveText : kundaliDetailClasses.sectionNav.pillIdleText)}
                 style={nepaliTextStyle(12)}
               >
                 {kundaliSectionLabel(group, lang)}
@@ -161,7 +161,7 @@ export function KundaliSectionNav({
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingBottom: 4 }}
+          contentContainerStyle={{ gap: space.sm, paddingBottom: space.xs }}
         >
           {children.map((child) => {
             const active = isChildActive(child.id, activeId);
@@ -169,14 +169,14 @@ export function KundaliSectionNav({
               <Pressable
                 key={child.id}
                 onPress={() => onNavigate(child.id)}
-                style={{
-                  backgroundColor: active ? `${colors.primary}18` : colors.card,
-                  borderColor: active ? `${colors.primary}66` : colors.border,
-                }}
-                className="rounded-full border border-dashed px-3 py-1.5 active:opacity-80"
+                className={cn(
+                  kundaliDetailClasses.sectionNav.pill,
+                  "active:opacity-80",
+                  active ? kundaliDetailClasses.sectionNav.childPillActive : kundaliDetailClasses.sectionNav.childPillIdle,
+                )}
               >
                 <Text
-                  className={cn("text-caption whitespace-nowrap", active ? "font-semibold text-primary" : "text-foreground")}
+                  className={cn(kundaliDetailClasses.sectionNav.pillText, active ? kundaliDetailClasses.sectionNav.childPillActiveText : kundaliDetailClasses.sectionNav.pillIdleText)}
                   style={nepaliTextStyle(12)}
                 >
                   {kundaliSectionLabel(child, lang)}

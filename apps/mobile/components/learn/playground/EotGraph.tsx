@@ -32,16 +32,17 @@ import {
 } from "@vedic-patro/domain/sky3d/day-mechanics";
 import { type Pt, withZeroCrossings, formatDuration } from "@vedic-patro/domain/learn/eot-graph";
 
+import { illustration, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 const W = 336;
 const H = 400;
 const PAD = { l: 54, r: 10, t: 8, b: 28 };
 
 const PI2 = Math.PI * 2;
-const NOW = "#2888e4";
-const GRID = "#1a4a7c";
+const NOW = illustration.sky53;
+const GRID = illustration.sky29;
 const LATE = "hsla(3, 80%, 55%, 0.5)";
 const EARLY = "hsla(60, 100%, 43%, 0.5)";
-const INK = "#e2e8f0";
+const INK = wheel.ink;
 
 function eotYearCurve(e: number, tilt: number): Pt[] {
   return eotCurve(e, tilt).map((p) => ({ t: p.day / 365, minutes: p.minutes }));
@@ -141,16 +142,16 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
         {legend.map((item) => (
           <View key={item.label} className="flex-row items-center gap-1.5">
             <View
+              className="rounded-md"
               style={{
                 width: 10,
                 height: 10,
-                borderRadius: 2,
                 backgroundColor: item.color,
               }}
             />
             <Text
               className="text-caption"
-              style={[nepaliTextStyle(10), { color: "rgba(226,232,240,0.8)", fontSize: 15 }]}
+              style={[nepaliTextStyle(10), { color: withAlpha(illustration.sky91b, 0.8) }]}
             >
               {item.label}
             </Text>
@@ -235,7 +236,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
             x2={plotR}
             y1={y(markerT)}
             y2={y(markerT)}
-            stroke="rgba(255,255,255,0.4)"
+            stroke={withAlpha(neutral.white, 0.4)}
             strokeWidth={1}
           />
           <Circle cx={x(markerMin)} cy={y(markerT)} r={5} fill={NOW} />
@@ -243,7 +244,7 @@ export function EotGraph({ eccentricity, tilt, dayOfYear, daysPerYear }: EotGrap
       </View>
       <Text
         className="text-caption mt-1.5"
-        style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.5)", fontSize: 15 }]}
+        style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.5) }]}
       >
         {pick(
           "घडीभन्दा घामको समय कति अगाडि/पछाडि छ। उत्केन्द्रता शून्य पार्नुहोस् — एउटा लहर बाँकी रहन्छ; अक्ष झुकाव शून्य पार्नुहोस् — अर्को।",

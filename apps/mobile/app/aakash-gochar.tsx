@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useThemeColors } from "@/lib/theme-context";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -21,6 +21,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { KATHMANDU, type Observer } from "@vedic-patro/domain/sky3d/horizon";
 import { displayLocationLabel, usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
 /** Roughly what the date chrome above the scene occupies. */
 const DATE_NAV_HEIGHT = 132;
@@ -104,7 +105,8 @@ export default function AakashGocharScreen() {
     <View className="flex-1 bg-background">
       <AppHeader />
       <AppShell title={pick("३D आकाश गोचर", "3D Aakash Gochar")} showHeader={false}>
-        <PatroPageHeader
+        <View className="gap-8">
+        <PageHeader
           icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
           title={pick("३D आकाश गोचर", "3D Aakash Gochar")}
           subtitle={`${pick(
@@ -124,7 +126,7 @@ export default function AakashGocharScreen() {
         />
 
         {query.isLoading ? (
-          <View className="items-center rounded-2xl border border-dashed border-border py-16">
+          <View className={gocharClasses.skyLoading}>
             <VedicPatroLoader />
           </View>
         ) : (
@@ -145,20 +147,20 @@ export default function AakashGocharScreen() {
           />
         )}
 
-        <View className="mt-3 gap-2">
-          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+        <View className={gocharClasses.footnoteStack}>
+          <Text className={gocharClasses.footnote} style={nepaliTextStyle()}>
             {pick(
               "पृथ्वी केन्द्रमा छ र क्यामेरा त्यसैको वरिपरि घुम्छ — यही भूकेन्द्रित दृष्टिकोणबाट वैदिक गोचर हेरिन्छ। प्रत्येक ग्रह आफ्नो निरयन देशान्तर र शरमा राखिएको छ, र चन्द्रदेखि शनिसम्मको परम्परागत क्रममा आफ्नो कक्षमा हिँड्छ।",
               "Earth sits at the centre and the camera orbits it — the geocentric standpoint Vedic gochar is read from. Each graha is placed at its true sidereal longitude and shara, riding a shell in the classical Moon-to-Saturn order.",
             )}
           </Text>
-          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={gocharClasses.footnote} style={nepaliTextStyle()}>
             {pick(
               "«यहाँबाट आकाश» दृश्यमा माथिको स्थान र मिति-समय अनुसार क्षितिज बन्छ — राशि वलय अक्षांश अनुसार ढल्किन्छ र घण्टै पिच्छे घुम्छ, त्यसैले यो पृथ्वीको कक्षसँग समानान्तर देखिँदैन। पहेँलो रेखा खगोलीय विषुवत् हो; त्यससँगको २३.४४° को झुकाव यहीँ प्रस्ट देखिन्छ।",
               "In “Sky from here” the horizon is built from the location and date-time above — the rashi belt tips with your latitude and swings with the hour, which is why it does not sit parallel to anything. The gold line is the celestial equator; the 23.44° tilt between the two is visible right there.",
             )}
           </Text>
-          <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={gocharClasses.footnote} style={nepaliTextStyle()}>
             {pick(
               "गति रेखाले ४५ दिन अघि र पछिको बाटो देखाउँछ — मंगल वा शनि वक्री हुँदा त्यही रेखामा पछाडि फर्किएको पासो देखिन्छ। कुनै पनि ग्रह छोएर नजिक पुग्न सकिन्छ; «पूरा दृश्य» ले फेरि सिङ्गो सौर्यमण्डल देखाउँछ।",
               "The trail draws 45 days either side of the moment on screen — when Mars or Saturn turns vakri you can watch the loop close on itself. Tap any graha to fly in close to it; “Zoom out” pulls back to the whole system.",
@@ -167,6 +169,7 @@ export default function AakashGocharScreen() {
           </View>
 
         <PatroFooterNote locationLabel={displayLocationLabel(location, undefined, lang)} />
+        </View>
       </AppShell>
       <FloatingNavBar />
     </View>

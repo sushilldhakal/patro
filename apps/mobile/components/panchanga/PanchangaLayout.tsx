@@ -5,17 +5,42 @@ import { useTranslation } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useLocale } from "@/lib/i18n";
-import { useTheme } from "@/lib/theme-context";
-import {
-  PANCHANGA_FIELD_CARD_BG,
-  PANCHANGA_FIELD_CARD_BG_DARK,
-  PANCHANGA_TONE_BG,
-  PANCHANGA_TONE_BG_DARK,
-  PANCHANGA_TIMING_HIGHLIGHT_BG,
-  PANCHANGA_TIMING_HIGHLIGHT_BORDER,
-} from "@/lib/panchanga-card-colors";
+import { useThemeColors } from "@/lib/theme-context";
+import { tintColorMix, type TintName } from "@vedic-patro/design-tokens";
+import { patroNavataraToneBg } from "@/lib/patro-classes";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { TableHeader, TableRow } from "@/components/ui/DataTable";
 import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
+import {
+  panchangaCardBase,
+  panchangaCardGrid,
+  panchangaCardSubtitle,
+  panchangaCardTitle,
+  panchangaFieldLabel,
+  panchangaFieldValue,
+  panchangaFieldValueNowrap,
+  panchangaGroupLabel,
+  panchangaSection,
+  panchangaSectionHeader,
+  panchangaSectionNote,
+  panchangaSectionTitle,
+} from "@vedic-patro/design-tokens";
+
+const TONE_TINT = {
+  best: "toneBest",
+  good: "toneGood",
+  neutral: "toneNeutral",
+  bad: "toneBad",
+  worst: "toneWorst",
+} as const satisfies Record<string, TintName>;
+
+/** Website current-card ring is `accent`. RN does not paint `ring-*`, so the border carries it. */
+function currentCardStyle(accent: string, on: boolean | undefined) {
+  if (!on) return undefined;
+  return { borderWidth: 2, borderColor: accent };
+}
+
+export { panchangaCardBase, panchangaCardGrid, panchangaSectionNote };
 
 /** Paired label|value columns — always on native (phones fit compact 2×2 rows). */
 export function usePanchangaLayoutWide(): boolean {
@@ -51,14 +76,9 @@ export function PanchangaSection({
     : pick(titleNe ?? titleEn ?? "", titleEn ?? titleNe ?? "");
 
   return (
-    <View
-      className={cn(
-        "rounded-xl overflow-hidden bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_10%,transparent)]",
-        className,
-      )}
-    >
-      <View className="flex flex-row items-baseline justify-center gap-2.5 border-b border-border bg-secondary/[0.09] px-3 py-2 dark:bg-secondary/20">
-        <Text className="text-body m-0 font-bold text-foreground">{title}</Text>
+    <View className={cn(panchangaSection, className)}>
+      <View className={panchangaSectionHeader}>
+        <Text className={panchangaSectionTitle}>{title}</Text>
       </View>
       {children}
     </View>
@@ -67,7 +87,7 @@ export function PanchangaSection({
 
 function QuadLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <Text className={cn("text-body pt-0.5 font-semibold", className)} style={nepaliTextStyle(12)}>
+    <Text className={cn(panchangaFieldLabel, className)}>
       {children}
     </Text>
   );
@@ -85,30 +105,13 @@ function QuadValue({
   return (
     <View
       className={cn(
-        "text-body min-w-0 flex flex-row items-baseline gap-x-1.5 gap-y-0.5",
-        nowrap ? "flex-nowrap" : "flex-wrap",
+        nowrap ? panchangaFieldValueNowrap : panchangaFieldValue,
         className,
       )}
     >
       {children}
     </View>
   );
-}
-
-/** Flex wrap — content-sized cards, multiple per row, each row centered. */
-export const panchangaCardGrid =
-  "flex w-full flex-row flex-wrap justify-center gap-2 p-4";
-
-/** Content-sized card shell — bg via inline style for native reliability. */
-export const panchangaCardShellClass =
-  "shrink-0 grow-0 flex-col gap-1 self-start rounded-xl border border-border/80 px-3.5 py-2.5";
-
-function usePanchangaCardBg(tone?: keyof typeof PANCHANGA_TONE_BG) {
-  const { isDark } = useTheme();
-  if (tone) {
-    return isDark ? PANCHANGA_TONE_BG_DARK[tone] : PANCHANGA_TONE_BG[tone];
-  }
-  return isDark ? PANCHANGA_FIELD_CARD_BG_DARK : PANCHANGA_FIELD_CARD_BG;
 }
 
 /** Full-width subgroup label inside a card grid (forces a new row). */
@@ -122,10 +125,9 @@ export function PanchangaGroupLabel({
   return (
     <Text
       className={cn(
-        "text-body m-0 w-full basis-full pt-1 text-center font-semibold text-muted-foreground first:pt-0",
+        panchangaGroupLabel,
         className,
       )}
-      style={nepaliTextStyle(14)}
     >
       {children}
     </Text>
@@ -148,23 +150,24 @@ export function PanchangaBalamCard({
   className?: string;
   icon?: React.ReactNode;
 }) {
-  const bg = usePanchangaCardBg(tone);
+  const colors = useThemeColors();
   return (
     <View
       className={cn(
-        panchangaCardShellClass,
-        "min-w-[8.5rem] gap-1 border-transparent",
+        panchangaCardBase,
+        panchangaPageClasses.layout.balamCard,
+        patroNavataraToneBg(tone),
         isCurrent && "border-2 border-accent",
         className,
       )}
-      style={{ backgroundColor: bg }}
+      style={{ backgroundColor: tintColorMix(TONE_TINT[tone]), ...currentCardStyle(colors.accent, isCurrent) }}
     >
       <View className="flex-row items-start gap-2">
         {icon ? <View className="shrink-0 pt-0.5">{icon}</View> : null}
         <View className="min-w-0 flex-1 gap-1">
-          <Text className="text-body font-bold text-foreground">{titleLine}</Text>
+          <Text className={panchangaCardTitle}>{titleLine}</Text>
           {subtitleLine ? (
-            <Text className="text-caption font-semibold text-muted-foreground">{subtitleLine}</Text>
+            <Text className={panchangaCardSubtitle}>{subtitleLine}</Text>
           ) : null}
         </View>
       </View>
@@ -184,20 +187,21 @@ export function PanchangaLagnaCard({
   isCurrent?: boolean;
   className?: string;
 }) {
-  const bg = usePanchangaCardBg("neutral");
+  const colors = useThemeColors();
   return (
     <View
       className={cn(
-        panchangaCardShellClass,
-        "min-w-[8.5rem] gap-1",
+        panchangaCardBase,
+        panchangaPageClasses.layout.lagnaCard,
+        patroNavataraToneBg("neutral"),
         isCurrent && "border-2 border-accent",
         className,
       )}
-      style={{ backgroundColor: bg }}
+      style={{ backgroundColor: tintColorMix("toneNeutral"), ...currentCardStyle(colors.accent, isCurrent) }}
     >
-      <Text className="text-body font-bold text-foreground">{titleLine}</Text>
+      <Text className={panchangaCardTitle}>{titleLine}</Text>
       {footerLine ? (
-        <Text className="text-caption font-semibold text-muted-foreground">{footerLine}</Text>
+        <Text className={panchangaCardSubtitle}>{footerLine}</Text>
       ) : null}
     </View>
   );
@@ -217,28 +221,38 @@ export function PanchangaTimingCard({
   highlight?: boolean;
   className?: string;
 }) {
-  const bg = usePanchangaCardBg(highlight ? undefined : "neutral");
   return (
     <View
-      className={cn(panchangaCardShellClass, "gap-1.5", className)}
-      style={{
-        backgroundColor: highlight ? PANCHANGA_TIMING_HIGHLIGHT_BG : bg,
-        borderColor: highlight ? PANCHANGA_TIMING_HIGHLIGHT_BORDER : undefined,
-      }}
+      className={cn(
+        panchangaCardBase,
+        panchangaPageClasses.layout.timingCard,
+        highlight && panchangaPageClasses.layout.timingHighlight,
+        className,
+      )}
+      style={
+        highlight
+          ? {
+              borderColor: "color-mix(in srgb, var(--color-success) 45%, transparent)",
+              backgroundColor: "color-mix(in srgb, var(--color-success) 6%, transparent)",
+            }
+          : undefined
+      }
     >
       <Text
         className={cn(
-          "text-body font-semibold",
-          highlight ? "text-success" : "text-muted-foreground",
+          panchangaPageClasses.layout.timingLabel,
+          highlight
+            ? panchangaPageClasses.layout.timingLabelGood
+            : panchangaPageClasses.layout.timingLabelIdle,
         )}
       >
         {label}
       </Text>
       {time ? (
-        <Text className="text-body font-mono font-semibold tabular-nums text-foreground">{time}</Text>
+        <Text className={cn(panchangaPageClasses.layout.timingTime, "text-foreground")}>{time}</Text>
       ) : null}
       {note ? (
-        <Text className="text-caption font-mono text-muted-foreground">{note}</Text>
+        <Text className={panchangaPageClasses.layout.timingNote}>{note}</Text>
       ) : null}
     </View>
   );
@@ -259,10 +273,9 @@ export function PanchangaFieldCell({
   nowrap?: boolean;
 }) {
   const { t } = useTranslation();
-  const bg = usePanchangaCardBg();
 
   return (
-    <View className={cn(panchangaCardShellClass, className)} style={{ backgroundColor: bg }}>
+    <View className={cn(panchangaCardBase, className)}>
       <QuadLabel className="shrink-0 text-muted-foreground">
         {rowLabel(labelKey, label, t)}
       </QuadLabel>
@@ -365,7 +378,7 @@ export function UptoValue({
   sym,
   endTime,
   badge,
-  compact = true,
+  compact = false,
 }: {
   name?: string;
   sym?: string;
@@ -378,23 +391,22 @@ export function UptoValue({
   return (
     <View
       className={cn(
-        "min-w-0 flex-row items-baseline gap-1.5",
-        compact ? "justify-between gap-2" : "flex-wrap",
+        "flex-row",
+        panchangaPageClasses.layout.uptoRow,
+        compact ? panchangaPageClasses.layout.uptoRowCompact : panchangaPageClasses.layout.uptoRowWrap,
       )}
     >
-      <Text className="min-w-0 shrink flex-row flex-wrap items-baseline gap-1">
-        {sym ? <Text className="text-body shrink-0 text-foreground">{sym}</Text> : null}
-        <Text className="font-semibold" style={nepaliTextStyle(14)}>
-          {name}
-        </Text>
+      <View className={cn("flex-row flex-wrap", panchangaPageClasses.layout.uptoName)}>
+        {sym ? <Text className={cn(panchangaPageClasses.layout.uptoSymbol, "text-foreground")}>{sym}</Text> : null}
+        <Text className={panchangaPageClasses.layout.uptoText}>{name}</Text>
         {badge ? (
-          <Text className="text-caption rounded-full bg-secondary/15 px-1.5 py-0.5 font-semibold text-secondary dark:text-accent">
+          <Text className={panchangaPageClasses.layout.uptoBadge}>
             {badge}
           </Text>
         ) : null}
-      </Text>
+      </View>
       {endTime ? (
-        <Text className="text-caption shrink-0 font-mono font-semibold text-foreground">
+        <Text className={panchangaPageClasses.layout.uptoEnd}>
           {endTime} {t("sections.until")}
         </Text>
       ) : null}
@@ -414,7 +426,7 @@ export function TimingRange({
   const { t } = useTranslation();
   if (!start || !end) {
     return (
-      <Text className="text-caption text-muted-foreground">
+      <Text className={panchangaPageClasses.layout.rangeNa}>
         {t("sections.dash")} {t("sections.not_available")}
       </Text>
     );
@@ -422,10 +434,10 @@ export function TimingRange({
   return (
     <Text
       className={cn(
-        "text-body font-mono font-semibold",
-        variant === "good" && "text-[var(--color-success)]",
-        variant === "bad" && "text-destructive",
-        variant === "neutral" && "text-foreground",
+        panchangaPageClasses.layout.range,
+        variant === "good" && panchangaPageClasses.layout.rangeGood,
+        variant === "bad" && panchangaPageClasses.layout.rangeBad,
+        variant === "neutral" && panchangaPageClasses.layout.rangeNeutral,
       )}
     >
       {start} → {end}
@@ -442,7 +454,7 @@ export function DenseListTable({
   className?: string;
 }) {
   return (
-    <View className={cn("divide-y divide-border/80 rounded-md border border-border/80", className)}>
+    <View className={cn(panchangaPageClasses.layout.denseTable, className)}>
       {children}
     </View>
   );
@@ -464,19 +476,19 @@ export function DenseListRow({
   return (
     <View
       className={cn(
-        "text-body px-2 py-1",
-        highlight && "font-semibold text-success",
+        panchangaPageClasses.layout.denseRow,
+        highlight && panchangaPageClasses.layout.denseRowHighlight,
         className,
       )}
     >
       <View className="flex-row items-baseline justify-between gap-x-2">
-        <Text className="min-w-0 flex-1 text-foreground">{label}</Text>
-        <Text className="text-body shrink-0 font-mono font-semibold tabular-nums text-foreground">
+        <Text className="min-w-0 flex-1 text-sm leading-snug text-foreground">{label}</Text>
+        <Text className={panchangaPageClasses.layout.denseTime}>
           {time ?? "—"}
         </Text>
       </View>
       {note ? (
-        <Text className="text-caption mt-0.5 text-foreground/90">{note}</Text>
+        <Text className={panchangaPageClasses.layout.denseNote}>{note}</Text>
       ) : null}
     </View>
   );
@@ -493,8 +505,8 @@ export function PanchangaSubBlock({
   className?: string;
 }) {
   return (
-    <View className={cn("border-b border-border px-3 py-1.5 last:border-b-0", className)}>
-      <Text className="text-body m-0 mb-1 font-semibold text-foreground">{title}</Text>
+    <View className={cn(panchangaPageClasses.layout.subBlock, className)}>
+      <Text className={cn(panchangaPageClasses.layout.subBlockTitle, "text-foreground")}>{title}</Text>
       {children}
     </View>
   );
@@ -515,15 +527,15 @@ export function PairedTimingTable({
 }) {
   return (
     <View>
-      <TableHeader className="px-2 py-1">
-        <Text className="text-body min-w-0 flex-1 font-semibold text-foreground">{leftTitle}</Text>
-        <Text className="text-body min-w-0 flex-1 border-l border-border/60 pl-2 font-semibold text-foreground">
+      <TableHeader className="px-3 py-1.5">
+        <Text className={cn("min-w-0 flex-1 text-foreground", panchangaPageClasses.layout.pairedTitle)}>{leftTitle}</Text>
+        <Text className={cn("min-w-0 flex-1 text-foreground", panchangaPageClasses.layout.pairedBorder, panchangaPageClasses.layout.pairedTitle)}>
           {rightTitle}
         </Text>
       </TableHeader>
       <View className="divide-y divide-border/80">
         {rows.map((row, i) => (
-          <TableRow key={i} rowIndex={i} highlight={row.left?.highlight} borderTop={false} className="items-start px-2 py-1">
+          <TableRow key={i} rowIndex={i} highlight={row.left?.highlight} borderTop={false} className="items-start px-3 py-1.5">
             <PairedTimingCell
               label={row.left?.label}
               time={row.left?.time}
@@ -557,27 +569,28 @@ function PairedTimingCell({
   bordered?: boolean;
 }) {
   if (!label && !time && !note) {
-    return <View className={cn("min-w-0 flex-1", bordered && "border-l border-border/60 pl-2")} />;
+    return <View className={cn("min-w-0 flex-1", bordered && panchangaPageClasses.layout.pairedBorder)} />;
   }
 
   return (
-    <View className={cn("min-w-0 flex-1", bordered && "border-l border-border/60 pl-2")}>
+    <View className={cn("min-w-0 flex-1", bordered && panchangaPageClasses.layout.pairedBorder)}>
       <View className="flex-row items-start justify-between gap-1">
         <Text
           className={cn(
-            "text-body min-w-0 flex-1 text-foreground",
-            highlight && "font-semibold text-success",
+            "flex-1 text-foreground",
+            panchangaPageClasses.layout.pairedLabel,
+            highlight && panchangaPageClasses.layout.pairedLabelHighlight,
           )}
           numberOfLines={2}
         >
           {label}
         </Text>
-        <Text className="text-caption shrink-0 font-mono font-semibold tabular-nums text-foreground">
+        <Text className={cn("shrink-0", panchangaPageClasses.layout.pairedTime)}>
           {time}
         </Text>
       </View>
       {note ? (
-        <Text className="text-caption mt-0.5 text-foreground/90" numberOfLines={2}>
+        <Text className={panchangaPageClasses.layout.pairedNote} numberOfLines={2}>
           {note}
         </Text>
       ) : null}

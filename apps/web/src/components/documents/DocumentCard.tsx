@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { documentsListSearch, type DocumentCategoryTab, type DocumentSummary } from "@/lib/documents-api";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 interface Props {
   doc: DocumentSummary;
@@ -26,22 +28,22 @@ export function DocumentCard({ doc, category, topic }: Props) {
       to="/documents/$slug"
       params={{ slug: doc.slug }}
       search={category && category !== "all" ? documentsListSearch(category, topic) : undefined}
-      className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-secondary/60"
+      className={cn(documentsClasses.card, "group transition-colors hover:border-secondary/60")}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary/10 text-secondary">
+      <div className={documentsClasses.cardTop}>
+        <div className={cn(documentsClasses.cardIcon, "text-secondary")}>
           <BookOpen className="size-5" />
         </div>
         <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </div>
       <div>
-        <h2 className="text-lg font-semibold">{title}</h2>
-        {subtitle ? <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p> : null}
+        <h2 className={documentsClasses.cardTitle}>{title}</h2>
+        {subtitle ? <p className={documentsClasses.cardSubtitle}>{subtitle}</p> : null}
       </div>
       {description ? (
-        <p className="line-clamp-2 text-sm text-muted-foreground">{description}</p>
+        <p className={cn(documentsClasses.cardDescription, "line-clamp-2")}>{description}</p>
       ) : null}
-      <div className="mt-auto flex items-center gap-3 pt-1 text-xs font-semibold text-muted-foreground">
+      <div className={cn(documentsClasses.cardMeta, documentsClasses.cardMetaText, "mt-auto")}>
         {doc.has_chapters ? (
           <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
         ) : null}

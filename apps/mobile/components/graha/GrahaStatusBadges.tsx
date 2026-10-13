@@ -4,6 +4,7 @@ import { useLocale } from "@/lib/i18n";
 import { showAsta, showVakri } from "@vedic-patro/domain/graha-status";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 type Props = {
   planetKey?: string;
@@ -28,7 +29,7 @@ export function GrahaStatusBadges({
   if (!vakri && !asta) return null;
 
   return (
-    <View className={cn("flex-row items-center gap-1", className)}>
+    <View className={cn("flex-row", grahaClasses.statusRow, className)}>
       {vakri ? (
         <Ionicons
           name="refresh"

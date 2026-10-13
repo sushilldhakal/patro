@@ -128,7 +128,7 @@ export function FacebookSignInButton({
       onClick={onClick}
       className={cn(socialSignInButtonClass, disabled && "pointer-events-none opacity-50")}
     >
-      <FacebookIcon className="size-4 text-[#1877F2]" />
+      <FacebookIcon className="size-4 text-ill-sky52" />
       {checking ? t("auth.facebook_checking") : t("auth.continue_with_facebook")}
     </Button>
   );

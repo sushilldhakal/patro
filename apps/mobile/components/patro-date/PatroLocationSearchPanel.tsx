@@ -23,6 +23,7 @@ import {
 import { cityToLocation, type PanchangaLocation } from "@/lib/use-panchanga-location";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
 function cityLabel(city: City): string {
@@ -112,8 +113,8 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
   };
 
   const searchHeader = (
-    <View className="gap-3 border-b border-border px-4 py-3">
-      <View className="flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
+    <View className={patroDateClasses.locationHead}>
+      <View className={cn("flex-row", patroDateClasses.locationSearch)}>
         <Ionicons name="search-outline" size={16} color={colors.mutedForeground} />
         <TextInput
           ref={inputRef}
@@ -121,7 +122,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           onChangeText={setQuery}
           placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
           placeholderTextColor={colors.mutedForeground}
-          className="text-body h-10 flex-1 text-foreground"
+          className={patroDateClasses.locationInput}
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="search"
@@ -132,24 +133,24 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
       <Pressable
         onPress={useCurrentLocation}
         disabled={geoLoading}
-        className="h-10 flex-row items-center justify-center gap-2 rounded-lg bg-secondary active:opacity-90"
+        className={cn("flex-row", patroDateClasses.locationGeo, "active:opacity-90")}
       >
         {geoLoading ? (
           <ActivityIndicator color={inkOn(colors.secondary)} size="small" />
         ) : (
           <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
         )}
-        <Text className="text-body font-semibold text-secondary-foreground">
+        <Text className={patroDateClasses.locationGeoLabel}>
           {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
         </Text>
       </Pressable>
 
-      {geoError ? <Text className="text-body text-destructive">{geoError}</Text> : null}
+      {geoError ? <Text className={patroDateClasses.locationError}>{geoError}</Text> : null}
     </View>
   );
 
   const listFooter = (
-    <Text className="text-caption px-4 py-2 text-center text-muted-foreground">
+    <Text className={patroDateClasses.locationHint}>
       {pick("स्थान परिवर्तन तुरुन्त लागू हुन्छ।", "Location changes apply immediately.")}
     </Text>
   );
@@ -176,7 +177,7 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
             <>
               {searchHeader}
               {debouncedQuery.length >= 2 && isSearching ? (
-                <View className="items-center justify-center py-8">
+                <View className={patroDateClasses.locationLoading}>
                   <ActivityIndicator color={colors.secondary} />
                 </View>
               ) : null}
@@ -184,8 +185,8 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
           }
           ListEmptyComponent={
             emptyMessage ? (
-              <View className="items-center justify-center px-4 py-8">
-                <Text className="text-body text-center text-muted-foreground">{emptyMessage}</Text>
+              <View className={patroDateClasses.locationEmpty}>
+                <Text className={patroDateClasses.locationEmptyText}>{emptyMessage}</Text>
               </View>
             ) : null
           }
@@ -196,12 +197,13 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
               <Pressable
                 onPress={() => pickCity(item)}
                 className={cn(
-                  "border-b border-border px-4 py-3 active:bg-muted",
-                  selected && "bg-secondary/10",
+                  patroDateClasses.locationItem,
+                  "active:bg-muted",
+                  selected && patroDateClasses.locationItemActive,
                 )}
               >
-                <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
-                <Text className="text-caption text-muted-foreground">
+                <Text className={patroDateClasses.locationName}>{cityLabel(item)}</Text>
+                <Text className={patroDateClasses.locationSub}>
                   {item.admin1_name ? `${item.admin1_name}, ` : ""}
                   {item.country}
                 </Text>
@@ -215,18 +217,18 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
 
   const listBody =
     debouncedQuery.length < 2 ? (
-      <View className="items-center justify-center px-4 py-8">
-        <Text className="text-body text-center text-muted-foreground">
+      <View className={patroDateClasses.locationEmpty}>
+        <Text className={patroDateClasses.locationEmptyText}>
           {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
         </Text>
       </View>
     ) : isSearching ? (
-      <View className="items-center justify-center py-8">
+      <View className={patroDateClasses.locationLoading}>
         <ActivityIndicator color={colors.secondary} />
       </View>
     ) : results.length === 0 ? (
-      <View className="items-center justify-center px-4 py-8">
-        <Text className="text-body text-center text-muted-foreground">
+      <View className={patroDateClasses.locationEmpty}>
+        <Text className={patroDateClasses.locationEmptyText}>
           {pick("कुनै सहर भेटिएन", "No city found")}
         </Text>
       </View>
@@ -236,19 +238,20 @@ export function PatroLocationSearchPanel({ location, onLocationChange, embedded,
         keyExtractor={(item) => String(item.id)}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerClassName="pb-4"
         renderItem={({ item }) => {
           const selected = location.params.city_id === item.id;
           return (
             <Pressable
               onPress={() => pickCity(item)}
               className={cn(
-                "border-b border-border px-4 py-3 active:bg-muted",
-                selected && "bg-secondary/10",
+                patroDateClasses.locationItem,
+                "active:bg-muted",
+                selected && patroDateClasses.locationItemActive,
               )}
             >
-              <Text className="text-body font-semibold text-foreground">{cityLabel(item)}</Text>
-              <Text className="text-caption text-muted-foreground">
+              <Text className={patroDateClasses.locationName}>{cityLabel(item)}</Text>
+              <Text className={patroDateClasses.locationSub}>
                 {item.admin1_name ? `${item.admin1_name}, ` : ""}
                 {item.country}
               </Text>

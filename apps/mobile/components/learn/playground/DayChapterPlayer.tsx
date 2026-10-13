@@ -20,7 +20,10 @@ import type { DayChapterPlayer } from "@/lib/learn/use-chapter-track";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
-const GOLD = "#f4c542";
+import { brand, illustration, neutral, spaceUnit, withAlpha } from "@vedic-patro/design-tokens";
+const GOLD = illustration.amber61;
+
+const PLAY_NUDGE = 0.75 * spaceUnit;
 
 export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
   const { lang, pick } = useLocale();
@@ -29,13 +32,13 @@ export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
     <View className="absolute inset-0 z-20 items-center justify-center bg-black/55 px-6">
       <View className="max-w-md items-center">
         <Text
-          className="text-caption font-semibold uppercase tracking-[2px] text-white/55"
+          className="text-caption font-semibold uppercase tracking-eyebrow-wide text-white/55"
           style={nepaliTextStyle(11)}
         >
           {chapterLabel("eyebrow", lang)}
         </Text>
         <Text
-          className="text-display mt-2 text-center font-semibold tracking-tight text-white"
+          className="text-3xl mt-2 text-center font-semibold tracking-tight text-white"
           style={nepaliTextStyle(28)}
         >
           {chapterLabel(player.track.titleKey, lang)}
@@ -49,10 +52,10 @@ export function DayChapterWelcome({ player }: { player: DayChapterPlayer }) {
           accessibilityLabel={chapterLabel("begin", lang)}
           className="mt-6 h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white active:opacity-80"
         >
-          <Ionicons name="play" size={28} color="#000" style={{ marginLeft: 3 }} />
+          <Ionicons name="play" size={28} color={neutral.black} style={{ marginLeft: PLAY_NUDGE }} />
         </Pressable>
         <Text
-          className="text-caption mt-3 font-semibold uppercase tracking-[1.5px] text-white/70"
+          className="text-caption mt-3 font-semibold uppercase tracking-eyebrow text-white/70"
           style={nepaliTextStyle(11)}
         >
           {chapterLabel("begin", lang)}
@@ -94,7 +97,7 @@ export function DayChapterBar({
             step={50}
             onValueChange={player.seek}
             minimumTrackTintColor={GOLD}
-            maximumTrackTintColor="rgba(255,255,255,0.25)"
+            maximumTrackTintColor={withAlpha(neutral.white, 0.25)}
             thumbTintColor={GOLD}
           />
           <View className="-mt-1 flex-row items-center justify-between">
@@ -112,7 +115,7 @@ export function DayChapterBar({
           <Text className="text-body max-w-[220px] font-semibold text-white/90" numberOfLines={1} style={nepaliTextStyle(13)}>
             {chapterLabel("chapter", lang)} {digits(player.index + 1)}: {chapterLabel(player.chapter.titleKey, lang)}
           </Text>
-          <Ionicons name="chevron-up" size={14} color="rgba(255,255,255,0.5)" />
+          <Ionicons name="chevron-up" size={14} color={withAlpha(neutral.white, 0.5)} />
         </Pressable>
       </View>
 
@@ -125,7 +128,7 @@ export function DayChapterBar({
           className="h-10 w-10 items-center justify-center active:opacity-70"
           style={isFirst ? { opacity: 0.3 } : undefined}
         >
-          <Ionicons name="play-skip-back" size={22} color="#fff" />
+          <Ionicons name="play-skip-back" size={22} color={neutral.white} />
         </Pressable>
         <Pressable
           onPress={free ? onOrbitToggle : ended ? () => { player.seek(0); player.play(); } : player.toggle}
@@ -138,8 +141,8 @@ export function DayChapterBar({
           <Ionicons
             name={ended ? "refresh" : playing ? "pause" : "play"}
             size={ended ? 26 : 28}
-            color="#fff"
-            style={!ended && !playing ? { marginLeft: 3 } : undefined}
+            color={neutral.white}
+            style={!ended && !playing ? { marginLeft: PLAY_NUDGE } : undefined}
           />
         </Pressable>
         <Pressable
@@ -150,7 +153,7 @@ export function DayChapterBar({
           className="h-10 w-10 items-center justify-center active:opacity-70"
           style={isLast ? { opacity: 0.3 } : undefined}
         >
-          <Ionicons name="play-skip-forward" size={22} color={player.ended && !isLast ? "#fde68a" : "#fff"} />
+          <Ionicons name="play-skip-forward" size={22} color={player.ended && !isLast ? illustration.amber77 : neutral.white} />
         </Pressable>
         {/* Live in every chapter, not only once the script hands off: a reader
             who pauses mid-narration and wants to nudge the animation themselves
@@ -169,7 +172,7 @@ export function DayChapterBar({
             <Ionicons
               name={orbitPlaying ? "planet" : "planet-outline"}
               size={22}
-              color={orbitPlaying ? "#fde68a" : "#fff"}
+              color={orbitPlaying ? illustration.amber77 : neutral.white}
             />
           </Pressable>
         )}
@@ -180,18 +183,18 @@ export function DayChapterBar({
         onClose={() => setTocOpen(false)}
         variant="bottom"
         maxHeight="70%"
-        sheetStyle={{ backgroundColor: "#151515", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+        sheetStyle={{ backgroundColor: brand.ink, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
       >
         <View className="max-h-full">
           <View className="border-b border-white/10 px-4 py-3">
-            <Text className="text-body font-semibold text-white">{chapterLabel("chapter", lang)}</Text>
+            <Text className="text-sm font-semibold text-white">{chapterLabel("chapter", lang)}</Text>
           </View>
-          <ScrollView style={{ maxHeight: 420 }} contentContainerStyle={{ paddingVertical: 4 }}>
+          <ScrollView style={{ maxHeight: 420 }} contentContainerClassName="py-1">
             {parts.map((part, pi) => (
               <View key={part.partKey ?? `p-${pi}`}>
                 {part.partKey ? (
                   <Text
-                    className="text-caption px-4 pb-0.5 pt-2.5 font-semibold uppercase tracking-[1.2px] text-white/35"
+                    className="text-caption px-4 pb-0.5 pt-2.5 font-semibold uppercase tracking-eyebrow text-white/35"
                     style={nepaliTextStyle(10)}
                   >
                     {chapterLabel(part.partKey, lang)}
@@ -205,12 +208,12 @@ export function DayChapterBar({
                       setTocOpen(false);
                     }}
                     className="flex-row items-center gap-2 px-4 py-2 active:opacity-70"
-                    style={index === player.index ? { backgroundColor: "rgba(255,255,255,0.12)" } : undefined}
+                    style={index === player.index ? { backgroundColor: withAlpha(neutral.white, 0.12) } : undefined}
                   >
                     <Text className="text-caption font-num w-6 shrink-0 text-white/40">{digits(index + 1)}</Text>
                     <Text
                       className="text-body flex-1 font-semibold"
-                      style={{ color: index === player.index ? "#fff" : "rgba(255,255,255,0.7)", ...nepaliTextStyle(13) }}
+                      style={{ color: index === player.index ? neutral.white : withAlpha(neutral.white, 0.7), ...nepaliTextStyle(13) }}
                       numberOfLines={1}
                     >
                       {chapterLabel(chapter.titleKey, lang)}

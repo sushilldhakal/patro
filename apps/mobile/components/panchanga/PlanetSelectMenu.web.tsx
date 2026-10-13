@@ -5,6 +5,7 @@ import { GRAHA_DETAIL_ORDER, GRAHA_NAME } from "@vedic-patro/domain/graha-detail
 import { GRAHA_META, type WheelGraha } from "@vedic-patro/domain/wheel-data";
 import { useLocale } from "@/lib/i18n";
 
+import { brand, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 type Props = {
   grahas: WheelGraha[];
   selected: number;
@@ -66,7 +67,16 @@ export function PlanetSelectMenu({
         title={`${pick("ग्रह छान्नुहोस्", "Select a planet")} · ${pick(selectedLabel.ne, selectedLabel.en)}`}
         className={
           className ??
-          "flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(143,191,193,0.32)] bg-[rgba(11,20,22,0.96)] shadow-[0_8px_20px_rgba(0,0,0,0.4)]"
+          "flex h-9 w-9 items-center justify-center rounded-full border"
+        }
+        style={
+          className
+            ? undefined
+            : {
+                borderColor: withAlpha(wheel.line, 0.32),
+                backgroundColor: withAlpha(wheel.surface, 0.96),
+                boxShadow: `0 8px 20px ${withAlpha(neutral.black, 0.4)}`,
+              }
         }
       >
         <GrahaPlanetIcon graha={selectedKey} size={resolvedIconSize} />
@@ -83,13 +93,20 @@ export function PlanetSelectMenu({
               />
               <ul
                 role="listbox"
-                className="fixed z-[81] w-[228px] overflow-hidden rounded-[14px] border border-[rgba(143,191,193,0.32)] bg-[rgba(11,20,22,0.96)] py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-                style={{ top: anchor.top, bottom: anchor.bottom, right: anchor.right }}
+                className="fixed z-[81] w-[228px] overflow-hidden rounded-2xl border py-1.5"
+                style={{
+                  top: anchor.top,
+                  bottom: anchor.bottom,
+                  right: anchor.right,
+                  borderColor: withAlpha(wheel.line, 0.32),
+                  backgroundColor: withAlpha(wheel.surface, 0.96),
+                  boxShadow: `0 10px 30px ${withAlpha(neutral.black, 0.5)}`,
+                }}
               >
                 {grahas.map((g, i) => {
                   const key = GRAHA_DETAIL_ORDER[i] ?? "sun";
                   const name = GRAHA_NAME[key];
-                  const color = GRAHA_META[i]?.color ?? "#eaf3f1";
+                  const color = GRAHA_META[i]?.color ?? midnight.foam;
                   const active = i === selected;
                   return (
                     <li key={key}>
@@ -101,9 +118,9 @@ export function PlanetSelectMenu({
                           onSelect(i);
                           setOpen(false);
                         }}
-                        className="text-body flex w-full items-center gap-2.5 px-3 py-2 text-left text-[#eaf3f1]"
+                        className="text-sm flex w-full items-center gap-2.5 px-3 py-2 text-left text-ill-midnight-foam"
                         style={{
-                          background: active ? "rgba(198,40,40,0.28)" : "transparent",
+                          background: active ? withAlpha(brand.vermilion, 0.28) : "transparent",
                           fontWeight: active ? 700 : 500,
                         }}
                       >

@@ -4,6 +4,7 @@ import { Text } from "@/components/ui/Text";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale } from "@/lib/i18n";
 import { patroStickyHeadCell } from "@/lib/patro-classes";
 import { TableHeader, TableHeaderCell, TableRow, TableScrollShell } from "@/components/ui/DataTable";
@@ -17,8 +18,8 @@ type Props = {
   embedded?: boolean;
 };
 
-const th = "text-body font-semibold";
-const td = "text-body px-2 py-2 text-center font-num tabular-nums";
+const th = "text-sm font-semibold";
+const td = cn(dainikKrantiClasses.monthTd, dainikKrantiClasses.monthTdMono);
 
 export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: Props) {
   const { pick, digits } = useLocale();
@@ -27,20 +28,20 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
     <View className="min-w-full">
       <TableHeader>
         <TableHeaderCell minWidth={48} className={cn(th, "pl-3")}>
-          <Text className="text-body font-semibold text-foreground">{pick("गते", "Date")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{pick("गते", "Date")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
-          <Text className="text-body font-semibold text-foreground">{pick("बा.", "Day")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{pick("बा.", "Day")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
-          <Text className="text-body font-semibold text-amber-600 dark:text-amber-400">
+          <Text className={cn(dainikKrantiClasses.th, dainikKrantiClasses.amberText)}>
             {pick("सु.उ.", "Rise")}
           </Text>
         </TableHeaderCell>
         {getRashiList("ne").map((rne, i) => (
           <TableHeaderCell key={rne} minWidth={60} className={cn(th, patroStickyHeadCell, "items-center")}>
             <RashiGlyphIcon name={rne} number={i + 1} size={20} />
-            <Text className="text-body text-center font-semibold text-foreground">
+            <Text className="text-sm text-center font-semibold text-foreground">
               {pick(rne, getRashiList("en")[i])}
             </Text>
           </TableHeaderCell>
@@ -49,13 +50,13 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
 
       {loading ? (
         <View className="py-8">
-          <Text className="text-body text-center text-muted-foreground">
+          <Text className={dainikKrantiClasses.stateText}>
             {pick("लोड हुँदैछ…", "Loading…")}
           </Text>
         </View>
       ) : empty || rows.length === 0 ? (
         <View className="py-8">
-          <Text className="text-body text-center text-muted-foreground">
+          <Text className={dainikKrantiClasses.stateText}>
             {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
           </Text>
         </View>
@@ -76,7 +77,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
               <View className={cn(td, "min-w-[3.5rem] text-left")}>
                 <Text>{pick(row.weekdayNe ?? "—", row.weekdayEn ?? row.weekdayNe ?? "—")}</Text>
               </View>
-              <View className={cn(td, "min-w-[3.5rem] text-amber-600 dark:text-amber-400")}>
+              <View className={cn(td, "min-w-[3.5rem]", dainikKrantiClasses.amberText)}>
                 <Text>{row.sunrise ? digits(row.sunrise) : "—"}</Text>
               </View>
               {getRashiList("ne").map((_, i) => {
@@ -86,7 +87,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
                 return (
                   <View key={num} className={cn(td, "min-w-[3.75rem]")}>
                     <Text
-                      className={cn(late ? "text-amber-700 dark:text-amber-300" : "text-foreground")}
+                      className={cn(late ? dainikKrantiClasses.lateText : "text-foreground")}
                     >
                       {val ?? "—"}
                     </Text>

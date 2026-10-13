@@ -28,14 +28,15 @@ import {
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { PlaygroundLabel } from "@/components/learn/playground/playground-labels";
 
+import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 /** The three day-clocks' colours, and the belts'. */
 export const LABEL_TONE = {
-  sidereal: "#6cb6f5",
-  solar: "#e6e34a",
-  mean: "#f0736a",
+  sidereal: illustration.sky69,
+  solar: illustration.amber60b,
+  mean: illustration.red68,
 } as const;
 
-export const LABEL_GOLD = "#d8c84a";
+export const LABEL_GOLD = illustration.amber57;
 
 function labelColor(label: PlaygroundLabel): string {
   if (label.tone) return LABEL_TONE[label.tone];
@@ -43,13 +44,13 @@ function labelColor(label: PlaygroundLabel): string {
     case "rashi":
       return LABEL_GOLD;
     case "nakshatra":
-      return "#8fb6d8";
+      return illustration.sky70;
     case "month":
-      return "#e3d9a8";
+      return illustration.amber77b;
     default:
       /* Bodies are white, except the two shadow grahas, which carry the colours
          they are drawn in so a name and its marker match. */
-      return label.id === "b-rahu" ? "#c4b5fd" : label.id === "b-ketu" ? "#fb7185" : "#ffffff";
+      return label.id === "b-rahu" ? illustration.blue85 : label.id === "b-ketu" ? illustration.red71b : neutral.white;
   }
 }
 
@@ -88,9 +89,8 @@ export const PlaygroundLabelText = memo(function PlaygroundLabelText({
           nepaliTextStyle(10),
           {
             color: labelColor(label),
-            fontSize: 15,
             textAlign: "center",
-            textShadowColor: "rgba(0,0,0,0.95)",
+            textShadowColor: withAlpha(neutral.black, 0.95),
             textShadowRadius: 3,
           },
         ]}

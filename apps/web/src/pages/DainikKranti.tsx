@@ -50,6 +50,7 @@ import {
   patroStickyHeadRow,
 } from "@/lib/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { useLocale, bilingualText, bilingualNode } from "@/i18n/locale";
 import {
   Accordion,
@@ -119,7 +120,8 @@ function PakshaSegToggle({
   return (
     <div
       className={cn(
-        "inline-flex shrink-0 gap-0.5 rounded-lg border border-border bg-card p-0.5",
+        "inline-flex shrink-0",
+        dainikKrantiClasses.segToggle,
         className,
       )}
       role="radiogroup"
@@ -215,7 +217,7 @@ function DayLabel({
   const d = new Date(`${day.date_ad}T00:00:00`);
   if (Number.isNaN(d.getTime())) {
     return (
-      <span className={cn("font-num text-base font-bold tabular-nums", accentClass)}>
+      <span className={cn(dainikKrantiClasses.dayNum, accentClass)}>
         {dg(day.day)}
       </span>
     );
@@ -224,7 +226,7 @@ function DayLabel({
 
   if (isEn && adBrowse) {
     return (
-      <span className={cn("font-num text-sm font-semibold tabular-nums", accentClass)}>
+      <span className={cn(dainikKrantiClasses.dayNumAd, accentClass)}>
         {dg(adDay)}
       </span>
     );
@@ -232,10 +234,10 @@ function DayLabel({
 
   return (
     <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
-      <span className={cn("font-num text-base font-bold tabular-nums leading-none", accentClass)}>
+      <span className={cn(dainikKrantiClasses.dayNumBs, accentClass)}>
         {dg(day.day)}
       </span>
-      <span className="font-num text-xs tabular-nums font-normal text-muted-foreground">
+      <span className={dainikKrantiClasses.dayNumAdSmall}>
         {dg(adDay)}
       </span>
     </span>
@@ -269,8 +271,8 @@ function SunRiseSetSignValue({
 }) {
   const { times, sign } = sunRiseSetSignParts(day, sunRashi, ayanaMark, dg);
   return (
-    <div className="min-w-0 font-mono tabular-nums leading-snug">
-      <div className="whitespace-nowrap text-sm">{times}</div>
+    <div className={dainikKrantiClasses.sunRiseSetValue}>
+      <div className={cn(dainikKrantiClasses.sunRiseSetTimes, "whitespace-nowrap")}>{times}</div>
       <div className={cn(subLine, "break-words")}>{sign}</div>
     </div>
   );
@@ -304,9 +306,9 @@ const KARTAVYA: Record<Phase, { ne: string; en: string }> = {
   },
 };
 
-const th = "whitespace-nowrap text-sm font-semibold align-middle";
-const thWrap = "h-auto min-h-10 whitespace-normal py-2 text-sm font-semibold align-middle leading-tight";
-const subLine = "text-xs leading-tight";
+const th = cn(dainikKrantiClasses.th, "whitespace-nowrap align-middle");
+const thWrap = cn(dainikKrantiClasses.thWrap, "h-auto min-h-10 whitespace-normal align-middle");
+const subLine = dainikKrantiClasses.subLine;
 const sunColW = "w-[7.25rem] min-w-[7.25rem] max-w-[7.25rem] whitespace-normal";
 const moonColW = "w-[5.5rem] min-w-[5.5rem] max-w-[5.5rem] whitespace-normal break-words leading-snug";
 /** Festival column — wide enough for two wrapped lines of names. */
@@ -408,10 +410,10 @@ function CardField({
   sub?: string | null;
 }) {
   return (
-    <div className="min-w-0">
-      <div className="text-xs text-base">{label}</div>
-      <div className="text-sm text-foreground">{value}</div>
-      {sub ? <div className="text-xs leading-tight text-base">{sub}</div> : null}
+    <div className={dainikKrantiClasses.field}>
+      <div className={dainikKrantiClasses.fieldLabel}>{label}</div>
+      <div className={dainikKrantiClasses.fieldValue}>{value}</div>
+      {sub ? <div className={dainikKrantiClasses.fieldSub}>{sub}</div> : null}
     </div>
   );
 }
@@ -460,29 +462,29 @@ function DayPatroCard({
   return (
     <div
       className={cn(
-        "rounded-xl border bg-card p-3.5 shadow-xs",
+        dainikKrantiClasses.dayCard,
         isToday
-          ? "border-secondary/60 bg-secondary/10"
+          ? dainikKrantiClasses.dayCardToday
           : hasFestival
-          ? "border-rose-500/30 bg-rose-500/5"
-          : "border-border",
+          ? dainikKrantiClasses.dayCardFestival
+          : dainikKrantiClasses.dayCardPlain,
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex flex-col leading-tight">
+      <div className={dainikKrantiClasses.cardHead}>
+        <div className={dainikKrantiClasses.cardDateCol}>
           <DayLabel day={day} isEn={isEn} dg={dg} adBrowse={adBrowse} accentClass={dayColor} />
-          <span className={cn("text-xs text-base", isSaturday && "text-rose-600 dark:text-rose-400")}>
+          <span className={cn(dainikKrantiClasses.weekday, isSaturday && dainikKrantiClasses.saturday)}>
             {weekdayLabel(day, isEn)}
           </span>
         </div>
         {isToday ? (
-          <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">
+          <span className={cn(dainikKrantiClasses.todayBadge, dainikKrantiClasses.todayBadgeText)}>
             {t("dainik.today")}
           </span>
         ) : null}
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5">
+      <div className={cn(dainikKrantiClasses.fieldGrid, "grid grid-cols-2")}>
         <CardField
           label={t("dainik.tithi")}
           value={
@@ -509,7 +511,7 @@ function DayPatroCard({
         />
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2.5 rounded-lg bg-muted/40 p-2.5">
+      <div className={cn(dainikKrantiClasses.fieldGridMuted, "grid grid-cols-2")}>
         <div className="col-span-2">
           <CardField
             label={t("dainik.sun_rise_set_sign")}
@@ -525,13 +527,13 @@ function DayPatroCard({
       </div>
 
       {(transits?.length ?? 0) > 0 ? (
-        <div className="mt-3">
-          <div className="text-xs text-base">{t("dainik.transits_rise_set")}</div>
-          <div className="mt-1 space-y-0.5">
+        <div className={dainikKrantiClasses.transitsBlock}>
+          <div className={dainikKrantiClasses.fieldLabel}>{t("dainik.transits_rise_set")}</div>
+          <div className={cn(dainikKrantiClasses.transitsList, "space-y-0.5")}>
             {transits!.map((ev, i) => (
-              <div key={i} className="text-sm leading-tight">
-                <span className="text-foreground">{bilingualText(lang, ev.labelNe, ev.labelEn)}</span>{" "}
-                <span className="text-secondary">{bilingualText(lang, ev.planetNe, ev.planetEn)}</span>
+              <div key={i} className={dainikKrantiClasses.transitRow}>
+                <span className={dainikKrantiClasses.transitName}>{bilingualText(lang, ev.labelNe, ev.labelEn)}</span>{" "}
+                <span className={dainikKrantiClasses.transitPlanet}>{bilingualText(lang, ev.planetNe, ev.planetEn)}</span>
                 {ev.time ? <span> {dg(ev.time)}</span> : null}
               </div>
             ))}
@@ -540,9 +542,9 @@ function DayPatroCard({
       ) : null}
 
       {hasFestival ? (
-        <div className="mt-3 rounded-lg bg-rose-500/5 px-2.5 py-2">
-          <div className="text-xs text-base">{t("dainik.festival")}</div>
-          <div className="line-clamp-2 text-sm leading-snug text-rose-600 dark:text-rose-300">{day.festivals.join(" · ")}</div>
+        <div className={dainikKrantiClasses.festivalBox}>
+          <div className={dainikKrantiClasses.fieldLabel}>{t("dainik.festival")}</div>
+          <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-2")}>{day.festivals.join(" · ")}</div>
         </div>
       ) : null}
 
@@ -552,7 +554,7 @@ function DayPatroCard({
             type="button"
             onClick={onToggle}
             aria-expanded={isExpanded}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-background/60 py-2 text-sm font-semibold text-secondary transition-colors hover:bg-muted"
+            className={cn(dainikKrantiClasses.expandBtn, dainikKrantiClasses.expandBtnText, "flex transition-colors hover:bg-muted")}
           >
             <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
             {isExpanded
@@ -560,7 +562,7 @@ function DayPatroCard({
               : t("dainik.lagna_planets_more")}
           </button>
           {isExpanded ? (
-            <div className="mt-1 border-t border-border">
+            <div className={dainikKrantiClasses.expandBody}>
               <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
             </div>
           ) : null}
@@ -962,47 +964,47 @@ export function DainikKranti() {
         }
       />
 
-      <div className="space-y-1">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h2 className="text-lg font-bold text-foreground">
+      <div className={dainikKrantiClasses.monthHead}>
+        <div className={dainikKrantiClasses.monthTitleRow}>
+          <h2 className={dainikKrantiClasses.monthTitle}>
             {monthLabel} {dg(monthBrowse.year)} · {pakshaLabel}
           </h2>
           {monthQ.data?.year_bs ? (
-            <span className="text-sm">{dg(monthQ.data.year_bs)} {t("dainik.bs")}</span>
+            <span className={dainikKrantiClasses.metaText}>{dg(monthQ.data.year_bs)} {t("dainik.bs")}</span>
           ) : null}
-          {ritu ? <span className="text-sm">· {t("dainik.season")}: {ritu}</span> : null}
+          {ritu ? <span className={dainikKrantiClasses.metaText}>· {t("dainik.season")}: {ritu}</span> : null}
           {allDays.length ? (
-            <span className="text-xs">· {dg(days.length)} {t("dainik.days")}</span>
+            <span className={dainikKrantiClasses.metaSmall}>· {dg(days.length)} {t("dainik.days")}</span>
           ) : null}
         </div>
-        <p className="text-sm">
+        <p className={dainikKrantiClasses.metaText}>
           {bilingualText(lang, "पक्ष अनुसार दैनिक पञ्चाङ्ग — तिथि, नक्षत्र, योग, करण, सूर्योदय/अस्त, पर्व र ग्रह गोचर।", "Daily panchanga by paksha — tithi, nakshatra, yoga, karana, sunrise/sunset, festivals and planetary transits.",)}
         </p>
       </div>
 
       {monthHasAdhik && adhik?.month_name ? (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+        <div className={cn(dainikKrantiClasses.adhikBox, dainikKrantiClasses.adhikText)}>
           {bilingualNode(lang, <>
-              <span className="font-semibold">अधिक मास:</span> यस वर्ष <span className="font-semibold">अधिक {lunarMonthNe(adhik.month_name)}</span> मास परेको छ — त्यसैले यो महिनामा अधिक र शुद्ध पक्षहरू छुट्टाछुट्टै देखाइएका छन्। (अधिक मास = मलमास / पुरुषोत्तम मास; यसमा सङ्क्रान्ति पर्दैन।)
+              <span className={dainikKrantiClasses.adhikStrong}>अधिक मास:</span> यस वर्ष <span className={dainikKrantiClasses.adhikStrong}>अधिक {lunarMonthNe(adhik.month_name)}</span> मास परेको छ — त्यसैले यो महिनामा अधिक र शुद्ध पक्षहरू छुट्टाछुट्टै देखाइएका छन्। (अधिक मास = मलमास / पुरुषोत्तम मास; यसमा सङ्क्रान्ति पर्दैन।)
             </>, <>
-              <span className="font-semibold">Adhik Maas:</span> this year has an{" "}
-              <span className="font-semibold">Adhik {lunarMonthNe(adhik.month_name, true)}</span> month — so the adhik and shuddha pakshas are shown separately for this month. (Adhik Maas = Malamas / Purushottam Maas; it contains no sankranti.)
+              <span className={dainikKrantiClasses.adhikStrong}>Adhik Maas:</span> this year has an{" "}
+              <span className={dainikKrantiClasses.adhikStrong}>Adhik {lunarMonthNe(adhik.month_name, true)}</span> month — so the adhik and shuddha pakshas are shown separately for this month. (Adhik Maas = Malamas / Purushottam Maas; it contains no sankranti.)
             </>,)}
         </div>
       ) : null}
 
-      <div className="flex w-full flex-col gap-8">
+      <div className={cn(dainikKrantiClasses.pageBody, "w-full")}>
         <div className="w-full min-w-0 space-y-4">
         {/* mobile (<md): one card per day, wide table replaced to avoid horizontal scroll */}
         <div className="space-y-3 md:hidden">
           {monthQ.isError ? (
-            <div className="rounded-xl border border-border py-8 text-center text-sm">
+            <div className={cn(dainikKrantiClasses.stateBox, dainikKrantiClasses.stateText)}>
               {t("dainik.could_not_load_details_please_try_again")}
             </div>
           ) : monthQ.isLoading ? (
             <DainikKrantiMobileLoading />
           ) : days.length === 0 ? (
-            <div className="rounded-xl border border-border py-8 text-center text-sm">
+            <div className={cn(dainikKrantiClasses.stateBox, dainikKrantiClasses.stateText)}>
               {t("dainik.no_days_found_in_this_paksha")}
             </div>
           ) : (
@@ -1011,7 +1013,7 @@ export function DainikKranti() {
               return (
                 <Fragment key={d.date_ad}>
                   {segLabel ? (
-                    <h3 className="px-0.5 pt-2 text-sm font-bold text-secondary">{segLabel}</h3>
+                    <h3 className={dainikKrantiClasses.segLabel}>{segLabel}</h3>
                   ) : null}
                   <DayPatroCard
                     day={d}
@@ -1031,7 +1033,7 @@ export function DainikKranti() {
         </div>
 
         {/* desktop (md+): full daily table */}
-        <div className="hidden w-full overflow-x-auto rounded-xl border border-border md:block">
+        <div className={cn(dainikKrantiClasses.tableWrap, "hidden overflow-x-auto md:block")}>
           <Table className="w-full min-w-max text-sm">
             <TableHeader>
               <TableRow className={patroStickyHeadRow}>
@@ -1077,8 +1079,8 @@ export function DainikKranti() {
                   return (
                     <Fragment key={d.date_ad}>
                     {segLabel ? (
-                      <TableRow className="bg-muted/70 hover:bg-muted/70">
-                        <TableCell colSpan={COL_SPAN} className="py-2.5 text-sm font-bold text-secondary">
+                      <TableRow className={cn(dainikKrantiClasses.segRow, "hover:bg-muted/70")}>
+                        <TableCell colSpan={COL_SPAN} className={dainikKrantiClasses.segRowText}>
                           {segLabel}
                         </TableCell>
                       </TableRow>
@@ -1086,8 +1088,8 @@ export function DainikKranti() {
                     <TableRow
                       className={cn(
                         "cursor-pointer",
-                        isToday && "bg-secondary/15 hover:bg-secondary/20",
-                        !isToday && hasFestival && "bg-rose-500/5",
+                        isToday && cn(dainikKrantiClasses.rowToday, "hover:bg-secondary/20"),
+                        !isToday && hasFestival && dainikKrantiClasses.rowFestival,
                         isExpanded && "border-b-0",
                       )}
                       role="button"
@@ -1112,9 +1114,9 @@ export function DainikKranti() {
                           />
                         </span>
                       </TableCell>
-                      <TableCell className={cn("align-top", isSaturday && "text-rose-600 dark:text-rose-400")}>
-                        <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                          {isToday ? <span className="h-1.5 w-1.5 rounded-full bg-secondary" aria-hidden /> : null}
+                      <TableCell className={cn("align-top", isSaturday && dainikKrantiClasses.saturday)}>
+                        <div className={cn(dainikKrantiClasses.dateCell, "inline-flex items-center whitespace-nowrap")}>
+                          {isToday ? <span className={dainikKrantiClasses.todayDot} aria-hidden /> : null}
                           <DayLabel
                             day={d}
                             isEn={isEn}
@@ -1127,7 +1129,7 @@ export function DainikKranti() {
                             }
                           />
                         </div>
-                        <div className={cn(subLine, isSaturday && "text-rose-600 dark:text-rose-400")}>
+                        <div className={cn(subLine, isSaturday && dainikKrantiClasses.saturday)}>
                           {weekdayLabel(d, isEn)}
                         </div>
                       </TableCell>
@@ -1147,19 +1149,19 @@ export function DainikKranti() {
                         <div>{bilingualText(lang, d.karana_ne ?? d.karana, d.karana ?? d.karana_ne) ?? "—"}</div>
                         {karanaEnd ? <div className={subLine}>{bilingualText(lang, `${karanaEnd} सम्म`, `until ${karanaEnd}`)}</div> : null}
                       </TableCell>
-                      <TableCell className={cn(sunColW, "align-top text-sm")}>
+                      <TableCell className={cn(sunColW, "align-top", dainikKrantiClasses.cellText)}>
                         <SunRiseSetSignValue day={d} sunRashi={sunRashi} ayanaMark={det?.ayana_mark} dg={dg} />
                       </TableCell>
-                      <TableCell className={cn(moonColW, "align-top text-sm")}>
+                      <TableCell className={cn(moonColW, "align-top", dainikKrantiClasses.cellText)}>
                         <MoonRashiValue day={d} det={det} lang={lang} dg={dg} isEn={isEn} />
                       </TableCell>
                       <TableCell className="align-top">
                         {(transitsByBsDay[d.day]?.length ?? 0) > 0 ? (
                           <div className="space-y-0.5">
                             {transitsByBsDay[d.day]!.map((ev, i) => (
-                              <div key={i} className="whitespace-nowrap text-sm leading-tight">
-                                <span className="text-foreground">{bilingualText(lang, ev.labelNe, ev.labelEn)}</span>{" "}
-                                <span className="text-secondary">{bilingualText(lang, ev.planetNe, ev.planetEn)}</span>
+                              <div key={i} className={cn(dainikKrantiClasses.transitRow, "whitespace-nowrap")}>
+                                <span className={dainikKrantiClasses.transitName}>{bilingualText(lang, ev.labelNe, ev.labelEn)}</span>{" "}
+                                <span className={dainikKrantiClasses.transitPlanet}>{bilingualText(lang, ev.planetNe, ev.planetEn)}</span>
                                 {ev.time ? (
                                   <span> {dg(ev.time)}</span>
                                 ) : null}
@@ -1172,7 +1174,7 @@ export function DainikKranti() {
                       </TableCell>
                       <TableCell className={cn(festivalColW, "align-top")}>
                         {hasFestival ? (
-                          <div className="line-clamp-2 text-sm leading-snug text-rose-600 dark:text-rose-300">
+                          <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-2")}>
                             {d.festivals.join(" · ")}
                           </div>
                         ) : (
@@ -1181,7 +1183,7 @@ export function DainikKranti() {
                       </TableCell>
                     </TableRow>
                     {isExpanded ? (
-                      <TableRow className="bg-muted/25 hover:bg-muted/25">
+                      <TableRow className={cn(dainikKrantiClasses.expandRow, "hover:bg-muted/25")}>
                         <TableCell
                           colSpan={COL_SPAN}
                           className="max-w-0 whitespace-normal px-2 py-2 sm:px-4"
@@ -1202,16 +1204,16 @@ export function DainikKranti() {
           </Table>
         </div>
 
-        <Accordion type="multiple" className="rounded-xl border border-border px-4">
+        <Accordion type="multiple" className={dainikKrantiClasses.accordion}>
           <AccordionItem value="lagna-month">
-            <AccordionTrigger className="py-3 text-base font-semibold text-foreground hover:no-underline">
+            <AccordionTrigger className={cn(dainikKrantiClasses.accordionTrigger, "hover:no-underline")}>
               {t("dainik.daily_lagna_start_timetable_full_month")}
             </AccordionTrigger>
-            <AccordionContent className="pb-4">
-              <p className="mb-3 text-sm leading-relaxed">
+            <AccordionContent className={dainikKrantiClasses.accordionBody}>
+              <p className={dainikKrantiClasses.accordionIntro}>
                 {bilingualText(lang, "प्रत्येक गते सूर्योदयदेखि अर्को सूर्योदयसम्म कुन राशि कहिले लग्नमा आउँछ।", "For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise.",)}
               </p>
-              <div className="overflow-x-auto rounded-lg border border-border">
+              <div className={cn(dainikKrantiClasses.accordionTable, "overflow-x-auto")}>
                 <MonthLagnaMatrix
                   embedded
                   rows={lagnaMatrix}
@@ -1223,11 +1225,11 @@ export function DainikKranti() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="graha-month">
-            <AccordionTrigger className="py-3 text-base font-semibold text-foreground hover:no-underline">
+            <AccordionTrigger className={cn(dainikKrantiClasses.accordionTrigger, "hover:no-underline")}>
               {t("dainik.planetary_positions_at_sunrise_full_month")}
             </AccordionTrigger>
-            <AccordionContent className="pb-4">
-              <p className="mb-3 text-sm leading-relaxed">
+            <AccordionContent className={dainikKrantiClasses.accordionBody}>
+              <p className={dainikKrantiClasses.accordionIntro}>
                 {bilingualText(lang, "सूर्योदयको क्षणमा ग्रहहरूको राश्यादि स्थिति र दैनिक बेलान्तर।", "The planets' rashi positions at the moment of sunrise, and the daily time-difference.",)}
               </p>
               <MonthGrahaSpashta
@@ -1240,10 +1242,10 @@ export function DainikKranti() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="calc-notes">
-            <AccordionTrigger className="py-3 text-base font-semibold text-foreground hover:no-underline">
+            <AccordionTrigger className={cn(dainikKrantiClasses.accordionTrigger, "hover:no-underline")}>
               {t("dainik.calculation_notes_special_days")}
             </AccordionTrigger>
-            <AccordionContent className="pb-4">
+            <AccordionContent className={dainikKrantiClasses.accordionBody}>
               <MonthCalcNotes
                 embedded
                 notes={calcNotes}
@@ -1262,18 +1264,18 @@ export function DainikKranti() {
             if (!ref) return null;
             return (
               <div className="grid grid-cols-2 gap-3 md:col-span-2 xl:col-span-4">
-                <div className="flex items-center gap-2 rounded-xl border border-border p-3">
+                <div className={dainikKrantiClasses.sunBox}>
                   <Sunrise className="h-5 w-5 text-amber-500" />
-                  <div className="text-sm">
-                    <div className="text-sm">{t("dainik.sunrise")}</div>
-                    <div className="font-semibold text-foreground">{ref.sunrise ? dg(formatTimeShort(ref.sunrise) ?? ref.sunrise) : "—"}</div>
+                  <div className={dainikKrantiClasses.panelText}>
+                    <div className={dainikKrantiClasses.sunLabel}>{t("dainik.sunrise")}</div>
+                    <div className={dainikKrantiClasses.sunValue}>{ref.sunrise ? dg(formatTimeShort(ref.sunrise) ?? ref.sunrise) : "—"}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl border border-border p-3">
+                <div className={dainikKrantiClasses.sunBox}>
                   <Sunset className="h-5 w-5 text-indigo-500" />
-                  <div className="text-sm">
-                    <div className="text-sm">{t("dainik.sunset")}</div>
-                    <div className="font-semibold text-foreground">{ref.sunset ? dg(formatTimeShort(ref.sunset) ?? ref.sunset) : "—"}</div>
+                  <div className={dainikKrantiClasses.panelText}>
+                    <div className={dainikKrantiClasses.sunLabel}>{t("dainik.sunset")}</div>
+                    <div className={dainikKrantiClasses.sunValue}>{ref.sunset ? dg(formatTimeShort(ref.sunset) ?? ref.sunset) : "—"}</div>
                   </div>
                 </div>
               </div>
@@ -1308,26 +1310,26 @@ export function DainikKranti() {
           </div>
 
           {/* graha gochar / udayast */}
-          <div className="rounded-xl border border-border p-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">{t("dainik.planetary_transits_next_sankranti")}</h3>
+          <div className={dainikKrantiClasses.panel}>
+            <h3 className={dainikKrantiClasses.panelTitle}>{t("dainik.planetary_transits_next_sankranti")}</h3>
             {grahas.length === 0 ? (
-              <p className="text-sm">{gocharQ.isLoading ? t("dainik.loading") : t("dainik.no_details_available")}</p>
+              <p className={dainikKrantiClasses.panelText}>{gocharQ.isLoading ? t("dainik.loading") : t("dainik.no_details_available")}</p>
             ) : (
               <ul className="space-y-1.5 text-sm">
                 {grahas.map((g) => (
-                  <li key={g.key} className="flex items-baseline justify-between gap-2">
-                    <span className="text-foreground">
+                  <li key={g.key} className={dainikKrantiClasses.gocharRow}>
+                    <span className={dainikKrantiClasses.gocharName}>
                       {bilingualText(lang, g.name_ne, grahaTableEn(g.key, g.name_vedic ?? g.name_ne))}
-                      <span className="ml-1">{resolveRashiDisplay(g.rashi_ne ?? grahaRashiNe(g), g.rashi, lang) ?? ""}</span>
+                      <span className={dainikKrantiClasses.gocharRashi}>{resolveRashiDisplay(g.rashi_ne ?? grahaRashiNe(g), g.rashi, lang) ?? ""}</span>
                     </span>
                     {g.next_pada_entry ? (
-                      <span className="shrink-0 text-right text-sm">
+                      <span className={dainikKrantiClasses.gocharNext}>
                         {bilingualText(lang, g.next_pada_entry.label_ne, g.next_pada_entry.to_rashi ?? g.next_pada_entry.label_ne)}
                         <br />
                         {dg(g.next_pada_entry.entry_time_local_short ?? g.next_pada_entry.entry_time_local ?? "")}
                       </span>
                     ) : g.next_rashi_entry ? (
-                      <span className="shrink-0 text-right text-sm">
+                      <span className={dainikKrantiClasses.gocharNext}>
                         → {resolveRashiDisplay(g.next_rashi_entry.to_rashi_ne, g.next_rashi_entry.to_rashi, lang) ?? "—"}
                         <br />
                         {dg(g.next_rashi_entry.entry_time_local)}
@@ -1340,11 +1342,11 @@ export function DainikKranti() {
           </div>
 
           {/* kartavya */}
-          <div className="rounded-xl border border-border bg-muted/30 p-4 md:col-span-2 xl:col-span-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">
+          <div className={cn(dainikKrantiClasses.panelMuted, "md:col-span-2 xl:col-span-4")}>
+            <h3 className={dainikKrantiClasses.panelTitle}>
               {pakshaLabel} {t("dainik.duties")}
             </h3>
-            <div className="space-y-2 text-sm leading-relaxed">
+            <div className={cn(dainikKrantiClasses.kartavyaText, "space-y-2")}>
               {effectivePaksha === "all" ? (
                 <>
                   <p>{bilingualText(lang, KARTAVYA.krishna.ne, KARTAVYA.krishna.en)}</p>
@@ -1358,38 +1360,38 @@ export function DainikKranti() {
         </aside>
       </div>
 
-      <section className="rounded-xl border border-border">
-        <header className="flex items-center gap-1.5 border-b border-border px-4 py-3">
+      <section className={dainikKrantiClasses.legendCard}>
+        <header className={dainikKrantiClasses.legendHead}>
           <Sparkles className="h-4 w-4 text-secondary" />
-          <h3 className="text-sm font-semibold text-foreground">{t("dainik.planet_positions_rise_set_transit_legend")}</h3>
+          <h3 className={dainikKrantiClasses.legendTitle}>{t("dainik.planet_positions_rise_set_transit_legend")}</h3>
           {gocharQ.data?.date_ad ? (
-            <span className="ml-auto text-sm">
+            <span className={dainikKrantiClasses.legendDate}>
               {bilingualText(lang, `${formatGocharBsLabel(gocharQ.data.date_bs, gocharQ.data.date_ad) ?? fmtAd(gocharQ.data.date_ad, false)} को स्थिति`, `Position on ${formatGocharBsLabel(gocharQ.data.date_bs, gocharQ.data.date_ad) ?? fmtAd(gocharQ.data.date_ad, true)}`,)}
             </span>
           ) : null}
         </header>
 
-        <div className="grid gap-x-8 gap-y-6 p-4 md:grid-cols-2">
+        <div className={cn(dainikKrantiClasses.legendBody, "grid md:grid-cols-2")}>
           {/* live graha spashta (degree · kala · vikala) + motion */}
           <div className="md:col-span-2">
-            <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+            <h4 className={dainikKrantiClasses.legendHeading}>
               {t("dainik.planet_positions_deg_kala_vikala")}
             </h4>
             {grahas.length === 0 ? (
-              <p className="text-sm">{gocharQ.isLoading ? t("dainik.loading") : t("dainik.no_details_available")}</p>
+              <p className={dainikKrantiClasses.panelText}>{gocharQ.isLoading ? t("dainik.loading") : t("dainik.no_details_available")}</p>
             ) : (
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3 lg:grid-cols-4">
                 {grahas.map((g) => {
                   const m = motionNe(g);
                   return (
-                    <div key={g.key} className="flex items-baseline gap-1.5 text-sm">
-                      <span className="text-foreground">{bilingualText(lang, g.name_ne, grahaTableEn(g.key, g.name_vedic ?? g.name_ne))}</span>
+                    <div key={g.key} className={dainikKrantiClasses.legendPlanetRow}>
+                      <span className={dainikKrantiClasses.legendMeaning}>{bilingualText(lang, g.name_ne, grahaTableEn(g.key, g.name_vedic ?? g.name_ne))}</span>
                       <span>{resolveRashiDisplay(g.rashi_ne ?? grahaRashiNe(g), g.rashi, lang) ?? ""}</span>
-                      {g.dms_in_rashi ? <span className="text-foreground">{dg(g.dms_in_rashi)}</span> : null}
+                      {g.dms_in_rashi ? <span className={dainikKrantiClasses.legendMeaning}>{dg(g.dms_in_rashi)}</span> : null}
                       <span
                         className={cn(
-                          "ml-auto shrink-0 rounded px-1.5 text-xs",
-                          m.vakri ? "bg-rose-500/15 text-rose-600 dark:text-rose-300" : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
+                          dainikKrantiClasses.motionPill,
+                          m.vakri ? dainikKrantiClasses.motionVakri : dainikKrantiClasses.motionMargi,
                         )}
                       >
                         {bilingualText(lang, m.label, m.labelEn)}
@@ -1399,7 +1401,7 @@ export function DainikKranti() {
                 })}
               </div>
             )}
-            <p className="mt-2 text-sm leading-relaxed">
+            <p className={cn(dainikKrantiClasses.legendNote, "mt-2")}>
               {bilingualNode(lang, 
                 <>प्रत्येक पक्षको आरम्भमा ग्रहहरूको स्पष्ट स्थान अंश°, कला′, विकला″ (र प्रति-विकला) मा दिइन्छ — जस्तै “१३ ६ २९ ४०” = १३ अंश ६ कला २९ विकला ४० प्रति-विकला। <span className="text-rose-600 dark:text-rose-300">वक्री</span> = उल्टो गति, <span className="text-emerald-600 dark:text-emerald-300">मार्गी</span> = सुल्टो गति।</>,
                 <>At the start of each paksha, each planet's exact position is given in degrees°, kala′, vikala″ (and prati-vikala) — e.g. “13 6 29 40” = 13 deg 6 kala 29 vikala 40 prati-vikala. <span className="text-rose-600 dark:text-rose-300">Vakri</span> = retrograde (backward) motion, <span className="text-emerald-600 dark:text-emerald-300">Margi</span> = direct (forward) motion.</>,
@@ -1409,17 +1411,17 @@ export function DainikKranti() {
 
           {/* udayast symbol legend */}
           <div>
-            <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+            <h4 className={dainikKrantiClasses.legendHeading}>
               {t("dainik.planet_rise_set_symbols")}
             </h4>
             <dl className="space-y-1.5">
               {UDAYAST_LEGEND.map((it) => (
-                <div key={it.code} className="flex gap-2 text-sm">
-                  <dt className="w-24 shrink-0">
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary">{it.code}</span>
+                <div key={it.code} className={dainikKrantiClasses.legendRow}>
+                  <dt className={cn("w-24", dainikKrantiClasses.legendCodeCol)}>
+                    <span className={cn(dainikKrantiClasses.legendCodeChip, dainikKrantiClasses.legendCodeText)}>{it.code}</span>
                   </dt>
                   <dd>
-                    <span className="text-foreground">{bilingualText(lang, it.full, it.fullEn)}</span> — {bilingualText(lang, it.meaning, it.meaningEn)}
+                    <span className={dainikKrantiClasses.legendMeaning}>{bilingualText(lang, it.full, it.fullEn)}</span> — {bilingualText(lang, it.meaning, it.meaningEn)}
                   </dd>
                 </div>
               ))}
@@ -1428,21 +1430,21 @@ export function DainikKranti() {
 
           {/* gochar / papashanti house legend */}
           <div>
-            <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+            <h4 className={dainikKrantiClasses.legendHeading}>
               {t("dainik.transit_papashanti_house_symbols")}
             </h4>
             <dl className="space-y-1.5">
               {GOCHAR_LEGEND.map((it) => (
-                <div key={it.code} className="flex gap-2 text-sm">
-                  <dt className="w-20 shrink-0">
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary">{it.code}</span>
+                <div key={it.code} className={dainikKrantiClasses.legendRow}>
+                  <dt className={cn("w-20", dainikKrantiClasses.legendCodeCol)}>
+                    <span className={cn(dainikKrantiClasses.legendCodeChip, dainikKrantiClasses.legendCodeText)}>{it.code}</span>
                   </dt>
                   <dd>{bilingualText(lang, it.meaning, it.meaningEn)}</dd>
                 </div>
               ))}
             </dl>
-            <p className="mt-3 text-sm leading-relaxed">
-              {bilingualNode(lang, <><span className="font-semibold text-foreground">दशा कोष्ठक:</span> जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। <span className="font-semibold text-foreground">समय सुधार:</span> मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ।</>, <><span className="font-semibold text-foreground">Dasha bracket:</span> the years/months/days of Vimshottari dasha remaining at birth. <span className="font-semibold text-foreground">Time correction:</span> in print, symbols like “u” or “0” indicate zero degrees/kala.</>,)}
+            <p className={cn(dainikKrantiClasses.legendNote, "mt-3")}>
+              {bilingualNode(lang, <><span className={dainikKrantiClasses.legendStrong}>दशा कोष्ठक:</span> जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। <span className="font-semibold text-foreground">समय सुधार:</span> मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ।</>, <><span className="font-semibold text-foreground">Dasha bracket:</span> the years/months/days of Vimshottari dasha remaining at birth. <span className="font-semibold text-foreground">Time correction:</span> in print, symbols like “u” or “0” indicate zero degrees/kala.</>,)}
             </p>
           </div>
         </div>

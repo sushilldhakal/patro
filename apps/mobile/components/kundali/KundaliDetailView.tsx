@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { KundaliBirthPanchangaCard } from "@/components/kundali/KundaliBirthPanchangaCard";
@@ -31,10 +32,10 @@ import {
 } from "@/lib/kundali/kundali-section-nav";
 import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
-import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { buildPresentYogaRefIds } from "@vedic-patro/domain/kundali/yoga-reference-map";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 type Props = {
   detail: KundaliDetailResponse;
@@ -61,30 +62,24 @@ export function KundaliDetailView({
   onNavigate,
 }: Props) {
   const { lang, pick } = useLocale();
-  const colors = useThemeColors();
   const d1Rows = detail.vargaCharts.entries["1"] ?? [];
   const go = onSectionChange ?? onNavigate;
   const show = (id: KundaliContentSectionId) => contentSectionId(section) === id;
   const dashaSystem = dashaSystemFromSection(section) ?? "vimshottari";
   const balaTabs = (
-    <View className="mb-3 flex-row flex-wrap gap-1 rounded-xl border border-border/70 bg-muted/20 p-1">
+    <View className={cn(kundaliDetailClasses.subTabs.root, "self-start")}>
       {BALA_TAB_SECTIONS.map((tab) => {
         const selected = section === tab.id;
         return (
           <Pressable
             key={tab.id}
             onPress={() => go?.(tab.id)}
-            className={cn("rounded-lg px-3 py-1.5")}
-            style={{
-              backgroundColor: selected ? colors.card : "transparent",
-              borderWidth: selected ? 1 : 0,
-              borderColor: selected ? colors.border : "transparent",
-            }}
+            className={cn(
+              "rounded-lg border px-3 py-1.5",
+              selected ? "border-border/60 bg-card" : "border-transparent",
+            )}
           >
-            <Text
-              className={cn("text-body font-semibold", selected ? "text-foreground" : "text-muted-foreground")}
-              style={nepaliTextStyle(13)}
-            >
+            <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(13)}>
               {kundaliLabel(tab.i18nKey, lang)}
             </Text>
           </Pressable>
@@ -119,9 +114,9 @@ export function KundaliDetailView({
             combustion={detail.combustion}
           />
           {detail.upagrahas?.length ? (
-            <View className="mt-3 border-t border-border px-3 pt-3">
+            <View className="border-t border-border">
               <Text
-                className="text-caption mb-2 font-semibold uppercase tracking-wider text-muted-foreground"
+                className={cn(kundaliDetailClasses.view.upagrahaTitle, "text-foreground")}
                 style={nepaliTextStyle(11)}
               >
                 {pick("उपग्रह", "Upagrahas")}
@@ -141,7 +136,7 @@ export function KundaliDetailView({
           {hasPresentYogas ? (
             <YogaList yogas={detail.yogas} />
           ) : (
-            <Text className="text-body mb-1 text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className="mb-1 text-sm text-foreground" style={nepaliTextStyle(14)}>
               {pick("यस कुण्डलीमा कुनै प्रमुख योग भेटिएन।", "No major yogas found in this chart.")}
             </Text>
           )}
@@ -196,7 +191,7 @@ export function KundaliDetailView({
               combustion={detail.combustion}
             />
           ) : (
-            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}
@@ -211,7 +206,7 @@ export function KundaliDetailView({
           {detail.ashtakavarga ? (
             <AshtakavargaCard data={detail.ashtakavarga} compactHeader />
           ) : (
-            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}
@@ -230,7 +225,7 @@ export function KundaliDetailView({
           {detail.vimshopaka && detail.vimshopaka.classifications.length > 0 ? (
             <VimshopakaCard data={detail.vimshopaka} compactHeader />
           ) : (
-            <Text className="text-body py-8 text-center text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
               {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
             </Text>
           )}

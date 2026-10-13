@@ -5,6 +5,8 @@ import { PanchangaSplitShell, useShowPanchangaSidebar } from "@/components/panch
 import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 type SectionNavProps = {
   activeId: KundaliSectionId;
@@ -38,7 +40,7 @@ export function KundaliPageShell({
   const isDetail = variant === "detail";
 
   const mainColumn = (
-    <View className="gap-4">
+    <View className={isDetail ? "gap-4" : "gap-0"}>
       {!showSidebar && isDetail && sectionNav ? (
         <KundaliSectionNav
           variant="horizontal"
@@ -48,29 +50,29 @@ export function KundaliPageShell({
       ) : null}
 
       {!isDetail && title ? (
-        <View className="flex-row items-start justify-between gap-3">
+        <View className={kundaliClasses.headerRow}>
           <View className="min-w-0 flex-1">
             {eyebrow ? (
               <Text
-                className="text-caption mb-1.5 uppercase tracking-[0.12em] text-muted-foreground"
-                style={[nepaliTextStyle(12), { paddingTop: 2 }]}
+                className={cn(kundaliClasses.eyebrow, "pt-0.5")}
+                style={nepaliTextStyle(12)}
               >
                 {eyebrow}
               </Text>
             ) : null}
-            <View className="flex-row items-center gap-2.5">
+            <View className={kundaliClasses.titleRow}>
               {icon}
               <Text
-                className="text-title shrink font-bold text-foreground"
-                style={[nepaliTextStyle(20), { paddingTop: 2, paddingBottom: 2 }]}
+                className={cn(kundaliClasses.title, "shrink py-0.5")}
+                style={nepaliTextStyle(20)}
               >
                 {title}
               </Text>
             </View>
             {subtitle ? (
               <Text
-                className="text-body mt-1 text-muted-foreground"
-                style={[nepaliTextStyle(14), { paddingTop: 1 }]}
+                className={cn(kundaliClasses.subtitle, "pt-0.5")}
+                style={nepaliTextStyle(14)}
               >
                 {subtitle}
               </Text>

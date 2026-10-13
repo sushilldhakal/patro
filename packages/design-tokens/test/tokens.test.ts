@@ -30,10 +30,14 @@ test("roles keep the website's values", () => {
   assert.equal(light.destructive, brand.vermilion);
 });
 
-test("the app's accent is the positive tone", () => {
-  assert.equal(mobileRoles("light").accent, brand.green);
-  assert.equal(mobileRoles("dark").accent, dark.accent);
-  assert.equal(mobileRoles("dark").danger, dark.destructive);
+test("the app reads the website's roles unchanged", () => {
+  for (const name of ["light", "dark"] as const) {
+    const web = name === "light" ? light : dark;
+    const app = mobileRoles(name);
+    for (const [role, value] of Object.entries(app)) assert.equal(value, (web as Record<string, string>)[role], `${name}.${role} differs from the website`);
+  }
+  assert.equal(mobileRoles("light").accent, brand.gold);
+  assert.equal(mobileRoles("light").success, brand.green);
 });
 
 test("channel and alpha helpers", () => {
@@ -51,4 +55,19 @@ test("shadows render for both platforms", () => {
 
 test("breakpoint media queries", () => {
   assert.equal(minWidthQuery("xl"), "(min-width: 1280px)");
+});
+
+import { illustration, brand as brandColors, midnight as midnightColors, neutral as neutralColors, wheel as wheelColors } from "../src/index";
+
+test("illustration palette: valid, unique, and not a repeat of a named token", () => {
+  const named = new Set(
+    [brandColors, midnightColors, neutralColors, wheelColors].flatMap((g) => Object.values(g).map((v) => String(v).toLowerCase())),
+  );
+  const seen = new Map<string, string>();
+  for (const [name, hex] of Object.entries(illustration)) {
+    assert.match(hex, /^#[0-9a-f]{6}$/, `${name} is not a lowercase #rrggbb`);
+    assert.ok(!seen.has(hex), `${name} repeats ${seen.get(hex)}`);
+    assert.ok(!named.has(hex), `${name} (${hex}) is already a brand, midnight, neutral or wheel token`);
+    seen.set(hex, name);
+  }
 });

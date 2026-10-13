@@ -17,6 +17,7 @@ import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseI
 import { tithiIndexFromCalendarDay } from "@vedic-patro/domain/tithi-wheel-data";
 import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { moonPhaseTitle, getPakshaPhase } from "@vedic-patro/domain/month-grid-moon";
+import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
 const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -68,7 +69,7 @@ function FestivalListDialog({
           {festivals.map((name, i) => (
             <li
               key={`${name}-${i}`}
-              className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm font-medium leading-snug"
+              className={cn(calendarClasses.festivalItem, calendarClasses.festivalItemText)}
             >
               {name}
             </li>
@@ -113,24 +114,25 @@ export function BsCalendarGrid({
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-border shadow-sm shadow-ring-soft max-md:rounded-none max-md:shadow-none">
+    <div className={cn(calendarClasses.grid, calendarClasses.gridWide, "shadow-ring-soft max-md:rounded-none max-md:shadow-none")}>
       <div className="grid grid-cols-7 gap-px">
         {WEEKDAYS_NE.map((ne, i) => {
           const weekend = i === 0 || i === 6;
           return (
             <div
               key={ne}
-              className="flex min-w-0 flex-col gap-px bg-surface-inset px-3 py-2 max-md:items-center max-md:px-0 max-md:py-1"
+              className={cn("flex flex-col gap-px max-md:items-center max-md:px-0 max-md:py-1", calendarClasses.weekdayCell, calendarClasses.weekdayCellWide)}
             >
               {lang === "en" ? (
-                <span className="text-xs text-md font-semibold uppercase tracking-widest">{WEEKDAYS_EN[i]}</span>
+                <span className={calendarClasses.weekdayEn}>{WEEKDAYS_EN[i]}</span>
               ) : (
                 <>
-                  <span className={cn("text-md font-semibold max-md:hidden", weekend && "text-danger")}>{ne}</span>
+                  <span className={cn(calendarClasses.weekdayNe, "max-md:hidden", weekend && calendarClasses.weekdayWeekend)}>{ne}</span>
                   <span
                     className={cn(
-                      "hidden text-center text-md font-bold leading-tight tracking-tight max-md:block",
-                      weekend && "text-danger",
+                      "hidden max-md:block",
+                      calendarClasses.weekdayNeShort,
+                      weekend && calendarClasses.weekdayWeekend,
                     )}
                   >
                     {WEEKDAYS_SHORT[i]}
@@ -146,7 +148,7 @@ export function BsCalendarGrid({
             return (
               <div
                 key={`empty-${i}`}
-                className="min-h-[104px] cursor-default bg-surface-muted max-md:min-h-12"
+                className={cn("min-h-[104px] cursor-default max-md:min-h-12", calendarClasses.emptyCell)}
                 aria-hidden
               />
             );
@@ -190,13 +192,16 @@ export function BsCalendarGrid({
             <div
               key={day.date_ad}
               className={cn(
-                "relative flex min-h-[104px] min-w-0 flex-col overflow-hidden bg-card p-2 text-foreground",
+                "flex min-h-[104px] flex-col",
+                calendarClasses.cell,
+                calendarClasses.cellWide,
+                calendarClasses.cellText,
                 "max-md:min-h-[5rem] max-md:p-1",
                 (leftFest || rightFest) && "md:px-3.5",
-                isOutside && "bg-surface-muted/70 text-foreground/70",
-                isToday && "bg-surface-today",
+                isOutside && cn(calendarClasses.cellOutside, calendarClasses.cellTextOutside),
+                isToday && calendarClasses.cellToday,
                 isSelected && "shadow-[inset_0_0_0_2px_var(--ring)]",
-                isPublicHoliday && "bg-surface-tint-danger",
+                isPublicHoliday && calendarClasses.cellHoliday,
               )}
             >
               <button
@@ -244,12 +249,12 @@ export function BsCalendarGrid({
               {/* Top row: tithi (full width) */}
               <span className="flex w-full items-start leading-none">
                 {tithi ? (
-                  <span className="min-w-0 w-full truncate text-center text-xs font-semibold md:text-sm pt-1">
+                  <span className={cn("w-full truncate md:text-sm", calendarClasses.tithi, calendarClasses.tithiPhone)}>
                     {tithi}
                   </span>
                 ) : isEnriching && !isOutside ? (
                   <span
-                    className="inline-block h-1.5 w-6 animate-pulse rounded-full bg-muted-foreground/25"
+                    className={cn("inline-block animate-pulse", calendarClasses.tithiPending)}
                     aria-hidden
                   />
                 ) : (
@@ -260,15 +265,18 @@ export function BsCalendarGrid({
               {/* Center: primary day (large) + secondary day (small) */}
               <span className="flex flex-1 flex-col items-center justify-center gap-0.5">
                 {isToday && (
-                  <span className="rounded-full bg-secondary px-1.5 py-0.5 text-xs font-bold leading-none tracking-wide text-secondary-foreground max-md:px-1">
+                  <span className={cn(calendarClasses.todayBadge, calendarClasses.todayBadgeText, "max-md:px-1")}>
                     {t("calendar.today_badge")}
                   </span>
                 )}
                 <span className="flex flex-wrap items-baseline justify-center gap-x-1 leading-none">
                   <span
                     className={cn(
-                      "font-num text-3xl font-semibold tracking-tight max-md:text-2xl",
-                      !isOutside && (isWeekend || isPublicHoliday) && "text-danger",
+                      "font-num",
+                      calendarClasses.dayNumber,
+                      calendarClasses.dayNumberWide,
+                      "max-md:text-2xl",
+                      !isOutside && (isWeekend || isPublicHoliday) && calendarClasses.dayNumberDanger,
                     )}
                   >
                     {monoDigits(primaryDayNum)}
@@ -279,8 +287,9 @@ export function BsCalendarGrid({
                       only ~50px wide, so it also drops a size there. */}
                   <span
                     className={cn(
-                      "font-num whitespace-nowrap font-semibold text-muted-foreground md:text-sm",
-                      secondary.monthLabel ? "text-[0.625rem]" : "text-xs",
+                      "font-num whitespace-nowrap md:text-sm",
+                      calendarClasses.secondaryDate,
+                      secondary.monthLabel ? calendarClasses.secondaryDateNamed : calendarClasses.secondaryDatePlain,
                     )}
                   >
                     <span className="md:hidden">{secondaryLabelShort}</span>
@@ -292,9 +301,11 @@ export function BsCalendarGrid({
                       title={festivals.join(" · ")}
                       aria-label={t("calendar.festivals_more", { count: extraFestCount })}
                       className={cn(
-                        "pointer-events-auto font-num shrink-0 rounded-full border-none bg-secondary px-1 py-px text-[10px] font-bold leading-none text-secondary-foreground",
+                        "pointer-events-auto shrink-0 border-none",
+                        calendarClasses.countBadge,
+                        calendarClasses.countBadgeText,
                         "ring-offset-background transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                        "max-md:text-[9px] max-md:px-0.5",
+                        "max-md:px-0.5",
                       )}
                       onClick={openFestivalDialog}
                     >
@@ -310,7 +321,9 @@ export function BsCalendarGrid({
                   title={festivals.join(" · ")}
                   aria-label={t("calendar.festivals_more", { count: festCount })}
                   className={cn(
-                    "pointer-events-auto mx-auto mt-auto font-num shrink-0 rounded-full border-none bg-secondary px-1.5 py-0.5 text-[10px] font-bold leading-none text-secondary-foreground md:hidden",
+                    "pointer-events-auto mx-auto mt-auto shrink-0 border-none md:hidden",
+                    calendarClasses.countBadgeCompact,
+                    calendarClasses.countBadgeText,
                     "ring-offset-background transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
                   )}
                   onClick={openFestivalDialog}
@@ -323,8 +336,9 @@ export function BsCalendarGrid({
               {mainFest ? (
                 <span
                   className={cn(
-                    "flex w-full min-w-0 flex-col gap-px text-center text-xs font-semibold leading-tight",
-                    isPublicHoliday ? "text-danger" : "text-foreground",
+                    "flex w-full min-w-0 flex-col gap-px",
+                    calendarClasses.festival,
+                    isPublicHoliday ? calendarClasses.festivalHoliday : calendarClasses.festivalNormal,
                     primaryDate === "bs" && "max-md:hidden",
                   )}
                 >
@@ -336,7 +350,7 @@ export function BsCalendarGrid({
                       {festivals.slice(1, 3).map((name, fi) => (
                         <span
                           key={`${name}-${fi}`}
-                          className="truncate text-[10px] font-medium leading-tight opacity-90"
+                          className={cn("truncate", calendarClasses.festivalExtra)}
                         >
                           {name}
                         </span>

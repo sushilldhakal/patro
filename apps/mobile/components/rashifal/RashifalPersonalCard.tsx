@@ -6,6 +6,7 @@ import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon"
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import type { RashifalPersonal } from "@/lib/api";
 import {
   RASHIFAL_DOMAIN_ICON,
@@ -43,13 +44,25 @@ function formatDasha(
 
 function StarMeter({ stars, tone }: { stars: number; tone: RashifalPersonal["tone"] }) {
   return (
-    <View className="flex-row gap-0.5">
+    <View className={cn("flex-row", rashifalClasses.stars)}>
       {[1, 2, 3, 4, 5].map((n) => (
         <View
           key={n}
-          className={cn("size-1.5 rounded-full", n <= stars ? rashifalToneBar(tone) : "bg-border")}
+          className={cn(rashifalClasses.star, n <= stars ? rashifalToneBar(tone) : rashifalClasses.starOff)}
         />
       ))}
+    </View>
+  );
+}
+
+function LuckyCell({ icon, value }: { icon: keyof typeof Ionicons.glyphMap; value: string }) {
+  const colors = useThemeColors();
+  return (
+    <View className={cn("w-[48%] flex-row sm:w-[32%]", rashifalClasses.luckyCell)}>
+      <Ionicons name={icon} size={14} color={colors.mutedForeground} />
+      <Text className={cn("min-w-0 flex-1", rashifalClasses.luckyValue)} numberOfLines={1} style={nepaliTextStyle()}>
+        {value}
+      </Text>
     </View>
   );
 }
@@ -69,18 +82,18 @@ export function RashifalPersonalCard({ name, personal }: Props) {
   const pct = personal.percent ?? 50;
 
   return (
-    <View className="overflow-hidden rounded-xl border border-secondary/40 bg-card">
-      <View className="flex-row items-start gap-3 border-b border-border bg-secondary/10 px-4 py-3">
+    <View className={rashifalClasses.cardPersonal}>
+      <View className={cn("flex-row", rashifalClasses.header)}>
         <RashiGlyphIcon name={getRashiName(personal.moon_sign, lang)} number={personal.moon_sign} size={36} />
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <View className={rashifalClasses.headerBody}>
+          <Text className={rashifalClasses.name} style={nepaliTextStyle()}>
             {name}
           </Text>
           {/* Leads with the Rashi (Moon sign) — "राशि" in everyday usage — with
               the Lagna named explicitly alongside rather than standing in for
               it. The engine's scoring is Lagna-anchored; only display order
               changes here. Mirrors web `rashifal.personal.lagna_line`. */}
-          <Text className="text-caption mt-1 leading-relaxed text-muted-foreground">
+          <Text className={rashifalClasses.nameSub} style={nepaliTextStyle()}>
             {pick(
               `राशि ${personal.moon_sign_ne} · लग्न ${personal.lagna_sign_ne} · सूर्य ${personal.sun_sign_ne}`,
               `Rashi ${personal.moon_sign_en} · Lagna ${personal.lagna_sign_en} · Sun ${personal.sun_sign_en}`,
@@ -89,24 +102,24 @@ export function RashifalPersonalCard({ name, personal }: Props) {
         </View>
       </View>
 
-      <View className="flex-row items-center gap-2.5 border-b border-border/60 px-4 py-2.5">
+      <View className={cn("flex-row", rashifalClasses.meter)}>
         <StarMeter stars={personal.stars ?? 3} tone={personal.tone} />
-        <View className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
-          <View className={cn("h-full rounded-full", rashifalToneBar(personal.tone))} style={{ width: `${pct}%` }} />
+        <View className={rashifalClasses.meterTrack}>
+          <View className={cn(rashifalClasses.meterFill, rashifalToneBar(personal.tone))} style={{ width: `${pct}%` }} />
         </View>
-        <Text className={cn("text-caption font-bold tabular-nums", rashifalToneText(personal.tone))}>
+        <Text className={cn(rashifalClasses.percent, rashifalToneText(personal.tone))} style={nepaliTextStyle()}>
           {digits(pct)}%
         </Text>
       </View>
 
       {/* Running dasha — the layer only a birth chart can give. */}
       {dasha ? (
-        <View className="flex-row items-center gap-1.5 border-b border-border/60 bg-muted/20 px-4 py-2">
+        <View className={cn("flex-row", rashifalClasses.dashaRow)}>
           <Ionicons name="time-outline" size={14} color={colors.secondary} />
           <Text
             numberOfLines={1}
-            className="text-caption flex-1 font-semibold text-foreground"
-            style={nepaliTextStyle(12)}
+            className={cn("flex-1", rashifalClasses.dashaText)}
+            style={nepaliTextStyle()}
           >
             {pick(
               `${dasha.mahadasha.lord_ne} महादशा, ${dasha.antardasha.lord_ne} अन्तर्दशा चलिरहेको`,
@@ -117,21 +130,21 @@ export function RashifalPersonalCard({ name, personal }: Props) {
       ) : null}
 
       {personal.domains?.length ? (
-        <View className="flex-row flex-wrap border-b border-border/60 px-4 py-3">
+        <View className={cn("flex-row flex-wrap", rashifalClasses.domains)}>
           {personal.domains.map((domain) => {
             const icon = RASHIFAL_DOMAIN_ICON[domain.key];
             const label = ne ? domain.label_ne : domain.label_en;
             return (
-              <View key={domain.key} className="mb-2 w-1/3 min-w-0 px-1">
-                <View className="flex-row items-center gap-1">
+              <View key={domain.key} className={cn("mb-2 w-1/3 px-1", rashifalClasses.domain)}>
+                <View className={cn("flex-row", rashifalClasses.domainHead)}>
                   <Ionicons name={icon} size={14} color={colors.mutedForeground} />
-                  <Text className="text-caption flex-1 font-semibold text-muted-foreground" numberOfLines={1}>
+                  <Text className={cn("flex-1", rashifalClasses.domainLabel)} numberOfLines={1} style={nepaliTextStyle()}>
                     {label}
                   </Text>
                 </View>
-                <View className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
+                <View className={rashifalClasses.domainTrack}>
                   <View
-                    className={cn("h-full rounded-full", rashifalToneBar(domain.tone))}
+                    className={cn(rashifalClasses.meterFill, rashifalToneBar(domain.tone))}
                     style={{ width: `${domain.percent}%` }}
                   />
                 </View>
@@ -141,50 +154,49 @@ export function RashifalPersonalCard({ name, personal }: Props) {
         </View>
       ) : null}
 
-      <Text className="text-body px-4 py-3.5 leading-relaxed text-foreground/90" style={nepaliTextStyle(14)}>
+      <Text className={rashifalClasses.prediction} style={nepaliTextStyle()}>
         {prediction}
       </Text>
 
-      <View className="gap-1 border-t border-border bg-muted/25 px-4 py-2.5">
-        <Text className="text-caption text-muted-foreground">
-          {pick("शुभ रङ", "Lucky color")}: {luckyColor} · {pick("अंक", "Number")}: {luckyNumber}
-        </Text>
-        {luckyDirection ? (
-          <Text className="text-caption text-muted-foreground">
-            {pick("दिशा", "Direction")}: {luckyDirection}
-          </Text>
-        ) : null}
+      <View className={cn("flex-row flex-wrap justify-between", rashifalClasses.lucky)}>
+        <LuckyCell icon="color-palette-outline" value={luckyColor} />
+        <LuckyCell icon="keypad-outline" value={luckyNumber} />
+        {luckyDirection ? <LuckyCell icon="compass-outline" value={luckyDirection} /> : null}
       </View>
 
       <Pressable
         onPress={() => setOpen((v) => !v)}
-        className="flex-row items-center justify-between border-t border-border px-4 py-2.5 active:opacity-80"
+        className={cn("flex-row active:opacity-80", rashifalClasses.whyButton)}
       >
-        <Text className="text-caption font-semibold text-muted-foreground">
+        <Text className={rashifalClasses.whyLabel} style={nepaliTextStyle()}>
           {pick("विवरण", "Details")}
         </Text>
         <Ionicons name={open ? "chevron-up" : "chevron-down"} size={16} color={colors.mutedForeground} />
       </Pressable>
 
       {open ? (
-        <View className="border-t border-border bg-surface-muted px-4 py-3">
-          {personal.components?.map((component) => (
-            <View key={component.key} className="mb-1.5 flex-row items-baseline gap-2">
-              <Text className="text-caption w-24 shrink-0 font-semibold text-foreground">
+        <View className={rashifalClasses.details}>
+          {personal.components?.length ? (
+            <View className={rashifalClasses.componentList}>
+              {personal.components.map((component) => (
+            <View key={component.key} className={cn("flex-row", rashifalClasses.componentRow)}>
+              <Text className={rashifalClasses.componentLabel} style={nepaliTextStyle()}>
                 {ne ? component.label_ne : component.label_en}
               </Text>
-              <Text className="text-caption min-w-0 flex-1 text-muted-foreground">
+              <Text className={rashifalClasses.componentNote} style={nepaliTextStyle()}>
                 {ne ? component.note_ne : component.note_en}
               </Text>
-              <Text className={cn("text-caption shrink-0 font-bold", rashifalToneText(component.tone))}>
+              <Text className={cn(rashifalClasses.componentValue, rashifalToneText(component.tone))} style={nepaliTextStyle()}>
                 {toNepaliDigits(component.percent, lang)}
               </Text>
             </View>
           ))}
+            </View>
+          ) : null}
           {personal.gochar?.length ? <RashifalGocharChips rows={personal.gochar} /> : null}
 
           {lord ? (
-            <Text className="text-caption mt-3 border-t border-border/60 pt-3 text-muted-foreground">
+            <Text className={rashifalClasses.lordLine} style={nepaliTextStyle()}>
               {pick(
                 `${lord.lord_ne} ${lord.house} भावमा, ${lord.sign_ne} राशिमा — ${lord.dignity_ne}`,
                 `${lord.lord_en} in house ${lord.house}, ${lord.sign_en} — ${lord.dignity_en}`,
@@ -193,7 +205,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
           ) : null}
 
           {dasha ? (
-            <Text className="text-caption mt-2 text-muted-foreground">
+            <Text className={rashifalClasses.footNote} style={nepaliTextStyle()}>
               {pick(
                 `${dasha.mahadasha.lord_ne} महादशा ${formatDasha(dasha.mahadasha.end, lang, digits)}सम्म। ${dasha.antardasha.lord_ne} अन्तर्दशा ${formatDasha(dasha.antardasha.end, lang, digits)}सम्म।`,
                 `${dasha.mahadasha.lord_en} Mahadasha until ${formatDasha(dasha.mahadasha.end, lang, digits)}. ${dasha.antardasha.lord_en} Antardasha until ${formatDasha(dasha.antardasha.end, lang, digits)}.`,

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
+import { space } from "@vedic-patro/design-tokens";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { useLocale } from "@/lib/i18n";
@@ -61,7 +62,7 @@ export function OfflineDownloadPrompt({ year, era }: { year: number; era: MonthB
         style={{ borderColor: colors.border, backgroundColor: colors.card }}
         className="flex-row items-start gap-2.5 rounded-xl border px-3 py-2.5"
       >
-        <Ionicons name="cloud-offline-outline" size={18} color={colors.mutedForeground} style={{ marginTop: 1 }} />
+        <Ionicons name="cloud-offline-outline" size={18} color={colors.mutedForeground} style={{ marginTop: space.hair / 2 }} />
         <Text className="text-caption flex-1 text-muted-foreground" style={nepaliTextStyle(12)}>
           {pick(
             "तपाईं अफलाइन हुनुहुन्छ र यो वर्षको पात्रो पहिले डाउनलोड गरिएको छैन। इन्टरनेटमा जोडिनुहोस्, वा अनलाइन हुँदा भविष्यको लागि डाउनलोड गर्नुहोस्।",

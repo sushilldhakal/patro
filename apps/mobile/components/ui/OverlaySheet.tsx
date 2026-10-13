@@ -20,6 +20,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
+import { neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 export function OverlaySheet({
   title,
   onClose,
@@ -35,12 +36,12 @@ export function OverlaySheet({
   return (
     <View
       className="absolute inset-x-0 bottom-0 border-t border-white/15"
-      style={{ backgroundColor: "rgba(4, 7, 13, 0.95)", maxHeight }}
+      style={{ backgroundColor: withAlpha(wheel.sky2, 0.95), maxHeight }}
     >
       <View className="flex-row items-center justify-between px-3 pb-1 pt-2.5">
         <Text
           className="text-caption font-bold uppercase tracking-wide"
-          style={[nepaliTextStyle(11), { color: "rgba(255,255,255,0.75)", fontSize: 15 }]}
+          style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.75) }]}
         >
           {title}
         </Text>
@@ -49,7 +50,7 @@ export function OverlaySheet({
           accessibilityRole="button"
           className="h-7 w-7 items-center justify-center rounded-full border border-white/20"
         >
-          <Ionicons name="close" size={14} color="rgba(255,255,255,0.75)" />
+          <Ionicons name="close" size={14} color={withAlpha(neutral.white, 0.75)} />
         </Pressable>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3 px-3 pb-3.5">
@@ -71,7 +72,7 @@ export function SheetSection({
     <View className="gap-1.5">
       <Text
         className="text-caption font-bold uppercase tracking-wide"
-        style={[nepaliTextStyle(10), { color: "rgba(255,255,255,0.55)", fontSize: 15 }]}
+        style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.55) }]}
       >
         {heading}
       </Text>

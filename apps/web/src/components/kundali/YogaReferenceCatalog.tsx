@@ -15,9 +15,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm align-top";
+const y = kundaliDetailClasses.yogaCatalog;
+const th = kundaliDetailClasses.table.th;
+const td = cn(kundaliDetailClasses.table.td, "align-top");
 
 export type YogaReferenceCatalogProps = {
   /** 162-ids present in this chart, hidden here so they aren't shown twice. */
@@ -67,18 +69,18 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
   }, [available, query]);
 
   return (
-    <div className="mt-4 rounded-xl border border-border/60">
+    <div className={y.root}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-2 px-3.5 py-3 text-left"
+        className={cn(y.toggle, "flex w-full text-left")}
         aria-expanded={open}
       >
         <span className="flex flex-col">
-          <span className="text-sm font-semibold text-foreground">
+          <span className={y.title}>
             {t("kundali.yoga_reference_catalog_162_combinations")}
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className={y.source}>
             {t("kundali.x.yoga_catalog_source")}
           </span>
         </span>
@@ -89,26 +91,26 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
       </button>
 
       {open && (
-        <div className="border-t border-border/60 p-3">
+        <div className={y.body}>
           {error ? (
-            <p className="px-1 py-6 text-center text-sm text-muted-foreground">
+            <p className={y.message}>
               {t("kundali.could_not_load_the_reference_catalog")}
             </p>
           ) : !entries ? (
-            <p className="flex items-center justify-center gap-2 px-1 py-6 text-sm text-muted-foreground">
+            <p className={cn(y.loadingRow, y.loadingText, "flex")}>
               <Loader2 className="size-4 animate-spin" aria-hidden />
               {t("kundali.loading")}
             </p>
           ) : (
             <>
-              <label className="mb-3 flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-2.5 py-1.5">
+              <label className={cn(y.search, "flex")}>
                 <Search className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 <input
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t("kundali.x.yoga_catalog_search_placeholder")}
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className={cn(y.searchInput, "w-full bg-transparent outline-none placeholder:text-muted-foreground")}
                 />
               </label>
 
@@ -128,10 +130,10 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
                         key={e.yogaId}
                         className={cn(i % 2 === 1 && "bg-muted/20")}
                       >
-                        <TableCell className={cn(td, "pl-3.5 whitespace-nowrap font-mono text-xs text-muted-foreground")}>
+                        <TableCell className={cn(td, y.idText, "pl-3.5 whitespace-nowrap")}>
                           {e.yogaId}
                         </TableCell>
-                        <TableCell className={cn(td, "whitespace-nowrap font-semibold text-foreground")}>
+                        <TableCell className={cn(td, y.nameText, "whitespace-nowrap")}>
                           {bilingualText(lang, e.nameNe?.trim() ? e.nameNe : e.name, e.name)}
                         </TableCell>
                         <TableCell className={cn(td, "min-w-[14rem] whitespace-normal leading-snug")}>
@@ -146,7 +148,7 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
                       <TableRow>
                         <TableCell
                           colSpan={4}
-                          className="px-3.5 py-6 text-center text-sm text-muted-foreground"
+                          className={cn(y.message, "px-3.5")}
                         >
                           {t("kundali.no_matching_combination")}
                         </TableCell>
@@ -155,7 +157,7 @@ export function YogaReferenceCatalog({ excludeIds }: YogaReferenceCatalogProps =
                   </TableBody>
                 </Table>
               </div>
-              <p className="mt-2 px-1 text-xs text-muted-foreground">
+              <p className={y.note}>
                 {t("kundali.grouped_ids_e_g_33_44_75_106_are_kept_as_in_the_source_")}
               </p>
             </>

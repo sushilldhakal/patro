@@ -28,6 +28,7 @@ import { MobileNavMenu } from "@/components/MobileNavMenu";
 import { isJyotishRoute, isPanchangaRoute } from "@/lib/app-routes";
 import { useLocale } from "@/i18n/locale";
 import { featureIcon } from "@/lib/nav-icons";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 
 const PANCHANGA_LINKS = [
   { to: "/panchanga" as const, labelKey: "nav.surya_panchanga", icon: featureIcon("panchanga") },
@@ -50,11 +51,15 @@ const NAV = [
   { to: "/documents" as const, labelKey: "nav.documents", icon: featureIcon("documents") },
 ] as const;
 
-const desktopLinkClass =
-  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors hover:text-foreground hover:bg-muted [&.active]:text-secondary [&.active]:bg-secondary/10";
+const desktopLinkClass = cn(
+  "flex transition-colors hover:text-foreground hover:bg-muted [&.active]:text-secondary [&.active]:bg-secondary/10",
+  shellClasses.navLink,
+);
 
-const desktopSubLinkClass =
-  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-muted hover:text-foreground [&.active]:bg-secondary/10 [&.active]:text-secondary";
+const desktopSubLinkClass = cn(
+  "flex hover:bg-muted hover:text-foreground [&.active]:bg-secondary/10 [&.active]:text-secondary",
+  shellClasses.navSubLink,
+);
 
 function JyotishNavDropdown() {
   const { t } = useTranslation();
@@ -153,13 +158,13 @@ function BrandMark({ className }: { className?: string }) {
   const { t } = useTranslation();
 
   return (
-    <Link to="/" className={cn("flex items-center gap-2.5 group min-w-0", className)}>
+    <Link to="/" className={cn("flex group", shellClasses.brand, className)}>
       <BrandLogo
         size={42}
       />
-      <span className="font-bold text-base tracking-tight truncate">
-        <span className="text-secondary dark:text-primary">{t("brand_vedic")}</span>
-        <span className="text-foreground"> {t("brand_patro")}</span>
+      <span className={cn("truncate", shellClasses.brandName)}>
+        <span className={shellClasses.brandVedic}>{t("brand_vedic")}</span>
+        <span className={shellClasses.brandPatro}> {t("brand_patro")}</span>
       </span>
     </Link>
   );
@@ -212,13 +217,13 @@ function DrawerBrandHeader() {
   const { t } = useTranslation();
 
   return (
-    <DrawerHeader className="border-b border-border text-left">
-      <div className="flex items-center gap-2.5">
+    <DrawerHeader className={cn("text-left", shellClasses.drawerHeader)}>
+      <div className={cn("flex", shellClasses.drawerBrandRow)}>
         <BrandLogo size={36} className="rounded-[22%] shadow" />
         <div>
-          <DrawerTitle className="text-base">
-            <span className="text-secondary">{t("brand_vedic")}</span>
-            <span className="text-foreground"> {t("brand_patro")}</span>
+          <DrawerTitle className={shellClasses.drawerTitle}>
+            <span className={shellClasses.drawerTitleVedic}>{t("brand_vedic")}</span>
+            <span className={shellClasses.drawerTitlePatro}> {t("brand_patro")}</span>
           </DrawerTitle>
           <DrawerDescription>{t("tagline")}</DrawerDescription>
         </div>
@@ -236,9 +241,9 @@ export function Header() {
   return (
     <header
       lang={lang}
-      className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md"
+      className={cn("sticky top-0 z-50 backdrop-blur-md", shellClasses.header)}
     >
-      <div className="max-w-[1400px] py-4 mx-auto px-4 h-16 flex items-center gap-3">
+      <div className={cn("py-4 h-16 flex gap-3", shellClasses.headerInner)}>
         {/* Desktop — brand left, nav center, theme right */}
         <BrandMark className="hidden lg:flex" />
 

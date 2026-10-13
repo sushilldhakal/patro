@@ -18,6 +18,7 @@ import type { RashifalPeriod, RashifalSignBlock } from "@/lib/api";
 import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";
 import { useBreakpoint } from "@/lib/responsive";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type Props = {
   signs: RashifalSignBlock[];
@@ -69,7 +70,7 @@ export function HomeRashifalSignPicker({
   const selectedId = signs[index]?.id;
 
   const thumbGrid = (
-    <View className="rounded-xl border border-border bg-card/80 p-2.5">
+    <View className={homeClasses.pickerGrid}>
       <View className="flex-row flex-wrap gap-2.5">
         {signs.map((sign, i) => {
           const name = lang === "ne" ? sign.name : sign.title_en;
@@ -80,27 +81,28 @@ export function HomeRashifalSignPicker({
               key={sign.id}
               onPress={() => goToIndex(i)}
               className={cn(
-                "min-w-0 flex-col gap-1.5 rounded-lg border px-2 py-2.5",
-                active
-                  ? "border-secondary bg-secondary/15"
-                  : "border-border/50 bg-muted/25",
+                homeClasses.pickerThumb,
+                active ? homeClasses.pickerThumbActive : homeClasses.pickerThumbIdle,
               )}
               style={{ width: "31%" }}
             >
               <View className="items-center">
                 <RashiGlyphIcon name={getRashiName(sign.id, lang)} number={sign.id} size={32} />
               </View>
-              <Text className="text-caption text-center font-semibold text-foreground" numberOfLines={1}>
+              <Text
+                className={cn(homeClasses.pickerName, active ? homeClasses.pickerNameActive : homeClasses.pickerNameIdle)}
+                numberOfLines={1}
+              >
                 {name}
               </Text>
-              <View className="flex-row items-center gap-0.5 px-0.5">
-                <View className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+              <View className={homeClasses.pickerBarRow}>
+                <View className={homeClasses.pickerBar}>
                   <View
-                    className={cn("h-full rounded-full", rashifalToneBar(sign.tone))}
+                    className={cn(homeClasses.pickerBarFill, rashifalToneBar(sign.tone))}
                     style={{ width: `${pct}%` }}
                   />
                 </View>
-                <Text className={cn("text-caption shrink-0 font-bold tabular-nums", rashifalToneText(sign.tone))}>
+                <Text className={cn(homeClasses.pickerPercent, rashifalToneText(sign.tone))}>
                   {toNepaliDigits(pct, lang)}
                 </Text>
               </View>
@@ -112,7 +114,7 @@ export function HomeRashifalSignPicker({
   );
 
   const carousel = (
-    <View className="relative px-9">
+    <View className={homeClasses.pickerCarousel}>
       <FlatList
         ref={listRef}
         data={signs}
@@ -137,14 +139,14 @@ export function HomeRashifalSignPicker({
       />
       <Pressable
         onPress={() => goToIndex(index - 1)}
-        className="absolute left-0 top-[45%] size-8 items-center justify-center rounded-full border border-border bg-card active:opacity-80"
+        className={cn(homeClasses.pickerArrow, "absolute left-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
         accessibilityLabel={pick("अघिल्लो", "Previous")}
       >
         <Ionicons name="chevron-back" size={18} color={colors.foreground} />
       </Pressable>
       <Pressable
         onPress={() => goToIndex(index + 1)}
-        className="absolute right-0 top-[45%] size-8 items-center justify-center rounded-full border border-border bg-card active:opacity-80"
+        className={cn(homeClasses.pickerArrow, "absolute right-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
         accessibilityLabel={pick("अर्को", "Next")}
       >
         <Ionicons name="chevron-forward" size={18} color={colors.foreground} />

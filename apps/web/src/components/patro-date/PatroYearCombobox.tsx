@@ -11,6 +11,7 @@ import {
   ComboboxTrigger,
 } from "@/components/ui/combobox";
 import type { Era, Language } from "@vedic-patro/domain/era";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
@@ -138,10 +139,9 @@ export function PatroYearCombobox(props: PatroYearComboboxProps) {
         type="button"
         aria-label={props.ariaLabel}
         className={cn(
-          "inline-flex min-w-0 shrink-0 cursor-pointer items-center justify-between gap-0.5 rounded-md border border-border bg-card font-num text-foreground",
-          props.comfortable
-            ? "h-9 gap-1 px-2 text-sm"
-            : "h-6 gap-0.5 px-1 text-sm sm:h-7 sm:gap-1 sm:px-1.5 sm:text-xs",
+          "inline-flex cursor-pointer gap-0.5",
+          patroDateClasses.yearTrigger,
+          props.comfortable ? patroDateClasses.yearTriggerComfortable : patroDateClasses.yearTriggerCompact,
           props.className,
         )}
       >

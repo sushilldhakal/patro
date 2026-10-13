@@ -14,9 +14,8 @@ import { GRAHA_DETAIL_ORDER, GRAHA_NAME, type GrahaKey } from "@vedic-patro/doma
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { colorWithAlpha } from "@/lib/theme";
-import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
 function windowLine(
   labelNe: string,
@@ -39,7 +38,6 @@ export function GocharPlanetDeepDive({
   onSelect: (key: GrahaKey) => void;
 }) {
   const { lang, pick, digits } = useLocale();
-  const colors = useThemeColors();
   const { width } = useBreakpoint();
 
   const g = gochar[selected];
@@ -78,23 +76,20 @@ export function GocharPlanetDeepDive({
   ].filter(Boolean) as string[];
 
   return (
-    <View className="flex-1 overflow-hidden rounded-2xl border border-border bg-card">
-      <View className="border-b border-border px-4 py-4">
-        <Text
-          style={{ letterSpacing: 1.4, ...nepaliTextStyle(11) }}
-          className="text-caption font-bold uppercase text-muted-foreground"
-        >
+    <View className={cn("flex-1", gocharClasses.deepCard)}>
+      <View className={gocharClasses.deepHead}>
+        <Text className={gocharClasses.deepEyebrow} style={nepaliTextStyle()}>
           {pick("विस्तृत अध्ययन", "Deep dive")}
         </Text>
-        <Text className="text-title mt-1 font-bold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className={gocharClasses.deepTitle} style={nepaliTextStyle()}>
           {pick("ग्रह छान्नुहोस्", "Pick a planet")}
         </Text>
-        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={gocharClasses.deepSubtitle} style={nepaliTextStyle()}>
           {pick("वर्तमान स्थिति, सीमा र वक्री", "Current position, windows & retrograde")}
         </Text>
       </View>
 
-      <View className="flex-row flex-wrap gap-2 px-4 py-3">
+      <View className={cn("flex-row flex-wrap", gocharClasses.pickerGrid)}>
         {GRAHA_DETAIL_ORDER.map((key) => {
           if (!gochar[key]) return null;
           const active = key === selected;
@@ -102,23 +97,21 @@ export function GocharPlanetDeepDive({
             <Pressable
               key={key}
               onPress={() => onSelect(key)}
-              style={{
-                width: pickerWidth as never,
-                borderColor: active ? colors.secondary : colors.border,
-                backgroundColor: active
-                  ? colorWithAlpha(brand.blue, 0.15)
-                  : colors.surfaceInset,
-              }}
-              className="items-center gap-1 rounded-xl border px-1.5 py-2 active:opacity-80"
+              style={{ width: pickerWidth as never }}
+              className={cn(
+                gocharClasses.pickerButton,
+                "active:opacity-80",
+                active ? gocharClasses.pickerActive : gocharClasses.pickerIdle,
+              )}
             >
               <GrahaPlanetIcon graha={key} size={28} />
               <Text
-                numberOfLines={1}
-                style={{
-                  color: active ? colors.secondary : colors.foreground,
-                  ...nepaliTextStyle(10),
-                }}
-                className="text-caption font-bold"
+                className={cn(
+                  "w-full",
+                  gocharClasses.pickerLabel,
+                  active ? gocharClasses.pickerLabelActive : gocharClasses.pickerLabelIdle,
+                )}
+                style={nepaliTextStyle()}
               >
                 {pick(GRAHA_NAME[key].ne, GRAHA_NAME[key].en)}
               </Text>
@@ -127,25 +120,22 @@ export function GocharPlanetDeepDive({
         })}
       </View>
 
-      <View className="border-t border-border px-4 py-4">
-        <View className="flex-row flex-wrap items-center gap-2">
+      <View className={gocharClasses.detail}>
+        <View className={cn("flex-row flex-wrap", gocharClasses.detailTitleRow)}>
           <GrahaPlanetIcon graha={selected} size={36} />
-          <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
+          <Text className={gocharClasses.detailTitle} style={nepaliTextStyle()}>
             {name}
           </Text>
           {g.name_vedic ? (
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className={cn("ml-2", gocharClasses.detailVedic)} style={nepaliTextStyle()}>
               ({g.name_vedic})
             </Text>
           ) : null}
           {grahaExalted(selected, g) ? (
-            <View
-              style={{ backgroundColor: "rgba(245,158,11,0.15)" }}
-              className="rounded-md px-2 py-0.5"
-            >
+            <View className={gocharClasses.detailBadge}>
               <Text
-                style={{ color: colors.primary, ...nepaliTextStyle(11) }}
-                className="text-caption font-bold"
+                className={gocharClasses.detailBadgeText}
+                style={nepaliTextStyle()}
               >
                 {pick("उच्च", "Exalted")}
               </Text>
@@ -153,7 +143,7 @@ export function GocharPlanetDeepDive({
           ) : null}
         </View>
 
-        <View className="mt-4 flex-row flex-wrap gap-3">
+        <View className={cn("flex-row flex-wrap", gocharClasses.factGrid)}>
           <Detail width={detailWidth} label={pick("राशि", "Sign")} value={`${rashi} ${deg}`} />
           <Detail
             width={detailWidth}
@@ -165,19 +155,16 @@ export function GocharPlanetDeepDive({
         </View>
 
         {windows.length > 0 ? (
-          <View
-            style={{ backgroundColor: colors.surfaceInset }}
-            className="mt-4 rounded-xl p-3.5"
-          >
+          <View className={gocharClasses.windowsBox}>
             <Text
-              className="text-caption font-bold uppercase tracking-wide text-muted-foreground"
-              style={nepaliTextStyle(11)}
+              className={gocharClasses.windowsTitle}
+              style={nepaliTextStyle()}
             >
               {pick("हालका सीमाहरू", "Current windows")}
             </Text>
-            <View className="mt-2 gap-1">
+            <View className={cn("gap-1", gocharClasses.windowsList)}>
               {windows.map((w) => (
-                <Text key={w} className="text-body text-foreground" style={nepaliTextStyle(14)}>
+                <Text key={w} className={gocharClasses.windowsItem} style={nepaliTextStyle()}>
                   •  {w}
                 </Text>
               ))}
@@ -193,15 +180,15 @@ function Detail({ width, label, value }: { width: string; label: string; value: 
   return (
     <View
       style={{ width: width as never }}
-      className="rounded-lg border border-border bg-background px-3 py-2.5"
+      className={gocharClasses.fact}
     >
       <Text
-        className="text-caption font-bold uppercase tracking-wide text-muted-foreground"
-        style={nepaliTextStyle(10)}
+        className={gocharClasses.factLabel}
+        style={nepaliTextStyle()}
       >
         {label}
       </Text>
-      <Text className="text-body mt-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+      <Text className={gocharClasses.factValue} style={nepaliTextStyle()}>
         {value}
       </Text>
     </View>

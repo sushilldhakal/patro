@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useRouteLoading } from "@/lib/route-loading";
 import { apiVerifyEmail } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function VerifyEmail() {
   const { t } = useTranslation();
@@ -37,14 +39,14 @@ export function VerifyEmail() {
   useRouteLoading(status === "loading");
 
   return (
-    <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center px-4 text-center">
+    <div className={cn("flex min-h-[50vh] flex-col px-4", accountClasses.panelCentered)}>
       {status === "loading" && null}
       {status === "ok" && (
         <>
           <CheckCircle2 className="size-12 text-emerald-500" />
-          <h1 className="mt-4 text-xl font-bold text-foreground">{t("auth.verify_ok_title")}</h1>
-          <p className="mt-1 text-sm">{t("auth.verify_ok_body")}</p>
-          <Button asChild className="mt-6">
+          <h1 className={accountClasses.statusTitle}>{t("auth.verify_ok_title")}</h1>
+          <p className={accountClasses.statusBody}>{t("auth.verify_ok_body")}</p>
+          <Button asChild className={accountClasses.statusAction}>
             <Link to="/account">{t("auth.go_to_account")}</Link>
           </Button>
         </>
@@ -52,9 +54,9 @@ export function VerifyEmail() {
       {status === "error" && (
         <>
           <XCircle className="size-12 text-destructive" />
-          <h1 className="mt-4 text-xl font-bold text-foreground">{t("auth.verify_fail_title")}</h1>
-          <p className="mt-1 text-sm">{message}</p>
-          <Button asChild variant="outline" className="mt-6">
+          <h1 className={accountClasses.statusTitle}>{t("auth.verify_fail_title")}</h1>
+          <p className={accountClasses.statusBody}>{message}</p>
+          <Button asChild variant="outline" className={accountClasses.statusAction}>
             <Link to="/account">{t("auth.back_to_account")}</Link>
           </Button>
         </>

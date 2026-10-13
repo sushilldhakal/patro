@@ -16,6 +16,8 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { type Profile } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export default function KundaliScreen() {
   const { pick, t } = useLocale();
@@ -53,9 +55,9 @@ export default function KundaliScreen() {
         }
       >
         {authLoading ? (
-          <View className="items-center rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12">
+          <View className={cn(kundaliClasses.emptyBox, "items-center")}>
             <ActivityIndicator />
-            <Text className="text-body mt-2 text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={cn("mt-2", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
               {pick("लोड हुँदै…", "Loading…")}
             </Text>
           </View>
@@ -70,7 +72,7 @@ export default function KundaliScreen() {
           />
         ) : (
           <View className="gap-4">
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
               {pick(
                 "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
                 "Select a profile or add a new one.",

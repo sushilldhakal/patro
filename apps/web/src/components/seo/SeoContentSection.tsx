@@ -19,7 +19,7 @@ export function SeoContentSection({ route }: { route: SeoRoute }) {
   if (paragraphs.length === 0 && faqs.length === 0) return null;
 
   return (
-    <section className="space-y-6 border-t border-border pt-8 text-[15px] leading-relaxed">
+    <section className="space-y-6 border-t border-border pt-8 text-base leading-relaxed">
       {paragraphs.length > 0 && (
         <div className="space-y-3 text-muted-foreground">
           {paragraphs.map((p, i) => (

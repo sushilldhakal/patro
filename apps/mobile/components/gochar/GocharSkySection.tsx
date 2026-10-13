@@ -1,6 +1,7 @@
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
+import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { Text } from "@/components/ui/Text";
 import type { GocharGraha } from "@/lib/api";
 import { grahaRashiNe } from "@vedic-patro/domain/dainikKranti/gochar-display";
@@ -16,24 +17,27 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
+import { cn } from "@vedic-patro/domain/utils";
 /** Left stripe colour per graha — matches the web PLANET_STRIPE palette. */
 const PLANET_STRIPE: Record<GrahaKey, string> = {
-  sun: "#f59e0b",
-  moon: "#94a3b8",
-  mars: "#ef4444",
-  mercury: "#10b981",
-  jupiter: "#f97316",
-  venus: "#0ea5e9",
-  saturn: "#6366f1",
-  rahu: "#8b5cf6",
-  ketu: "#e11d48",
+  sun: illustration.orange50,
+  moon: illustration.sky65,
+  mars: illustration.red60,
+  mercury: illustration.teal39,
+  jupiter: illustration.orange53c,
+  venus: illustration.teal48,
+  saturn: illustration.blue67,
+  rahu: illustration.violet66,
+  ketu: illustration.red50,
 };
 
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
-    <Text className="text-body" style={nepaliTextStyle(13)}>
-      <Text className="text-muted-foreground">{label}</Text>{" "}
-      <Text className="font-semibold text-foreground">{value}</Text>
+    <Text className={gocharClasses.metaRow} style={nepaliTextStyle()}>
+      <Text className={gocharClasses.metaLabel}>{label}</Text>{" "}
+      <Text className={gocharClasses.metaValue}>{value}</Text>
     </Text>
   );
 }
@@ -54,26 +58,20 @@ export function GocharSkySection({
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (
-    <View className="overflow-hidden rounded-2xl border border-border bg-card">
-      <View className="border-b border-border bg-muted/30 px-4 py-4">
-        <Text
-          style={{ color: colors.secondary, letterSpacing: 1.2, ...nepaliTextStyle(11) }}
-          className="text-caption font-bold uppercase"
-        >
+    <View className={cn(gocharClasses.skyCard, "border border-border")}>
+      <View className={gocharClasses.skyHead}>
+        <Text className={gocharClasses.skyEyebrow} style={nepaliTextStyle()}>
           {pick("आकाश एक नजरमा", "The sky at a glance")}
         </Text>
-        <Text
-          className="text-title mt-1.5 font-bold text-foreground"
-          style={nepaliTextStyle(18)}
-        >
+        <Text className={gocharClasses.skyTitle} style={nepaliTextStyle()}>
           {pick("प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
         </Text>
-        <Text className="text-body mt-1 font-semibold text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={gocharClasses.skyDate} style={nepaliTextStyle()}>
           {dateLabel}
         </Text>
       </View>
 
-      <View className="flex-row flex-wrap gap-2.5 p-3">
+      <View className={cn("flex-row flex-wrap", gocharClasses.skyGrid)}>
         {GRAHA_DETAIL_ORDER.map((key) => {
           const g = gochar[key];
           if (!g) return null;
@@ -88,38 +86,36 @@ export function GocharSkySection({
             <Pressable
               key={key}
               onPress={() => onSelectPlanet?.(key)}
-              style={{ width: cardWidth as never, borderColor: colors.border }}
-              className="overflow-hidden rounded-xl border bg-background active:opacity-90"
+              style={{ width: cardWidth as never }}
+              className={cn(gocharClasses.planetCard, "border border-border active:opacity-90")}
             >
               <View
                 style={{ backgroundColor: PLANET_STRIPE[key] }}
-                className="absolute bottom-0 left-0 top-0 z-10 w-1"
+                className={gocharClasses.planetStripe}
               />
 
-              <View className="flex-row items-center gap-2.5 border-b border-border bg-muted/25 py-2.5 pl-4 pr-3">
+              <View className={cn("flex-row", gocharClasses.planetHead)}>
                 <GrahaPlanetIcon graha={key} size={32} />
-                <View className="min-w-0 flex-1 flex-row flex-wrap items-center gap-x-1.5">
-                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+                <View className={cn("min-w-0 flex-1 flex-row", gocharClasses.planetTitleWrap)}>
+                  <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>
                     {name}
                   </Text>
-                  <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+                  <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>
                     {rashi}
                   </Text>
-                  <Text className="text-body font-num text-foreground">{deg}</Text>
-                  {g.is_retrograde ? (
-                    <Text style={{ color: colors.danger }} className="text-caption font-bold">
-                      ℞
-                    </Text>
-                  ) : null}
+                  <Text className={cn("font-num", gocharClasses.planetTitle)} style={nepaliTextStyle()}>{deg}</Text>
+                  <GrahaStatusBadges
+                    planetKey={key}
+                    isRetrograde={g.is_retrograde}
+                    isCombust={g.is_combust}
+                    size={13}
+                  />
                 </View>
                 {exalted ? (
-                  <View
-                    style={{ backgroundColor: "rgba(245,158,11,0.12)" }}
-                    className="shrink-0 rounded-md px-1.5 py-0.5"
-                  >
+                  <View className={gocharClasses.exaltedBadge}>
                     <Text
-                      style={{ color: colors.primary, ...nepaliTextStyle(10) }}
-                      className="text-caption font-bold"
+                      className={gocharClasses.exaltedBadgeText}
+                      style={nepaliTextStyle()}
                     >
                       {pick("उच्च", "Exalted")}
                     </Text>
@@ -127,7 +123,7 @@ export function GocharSkySection({
                 ) : null}
               </View>
 
-              <View className="gap-1 py-2.5 pl-4 pr-3">
+              <View className={gocharClasses.planetBody}>
                 <MetaRow
                   label={pick("नक्षत्र", "Nakshatra")}
                   value={grahaNakshatraLine(g, lang, digits)}
@@ -136,11 +132,8 @@ export function GocharSkySection({
               </View>
 
               {untilAd ? (
-                <View className="border-t border-border bg-muted/15 py-2 pl-4 pr-3">
-                  <Text
-                    className="text-body text-muted-foreground"
-                    style={nepaliTextStyle(12)}
-                  >
+                <View className={gocharClasses.planetFooter}>
+                  <Text className={gocharClasses.planetFooterText} style={nepaliTextStyle()}>
                     {lang === "en"
                       ? `In ${rashi} until ${formatGocharPatroDate(untilAd, lang)}`
                       : `${rashi} मा ${formatGocharPatroDate(untilAd, lang)} सम्म`}

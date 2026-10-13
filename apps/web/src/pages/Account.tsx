@@ -18,6 +18,8 @@ import {
   EMPTY_PROFILE,
   profileToInput,
 } from "@/components/auth/ProfileForm";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function Account() {
   const { t } = useTranslation();
@@ -61,23 +63,23 @@ export function Account() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{t("account_page.title")}</h1>
-        <p className="text-sm">{user.email}</p>
+    <div className={cn("px-4 py-8", accountClasses.column)}>
+      <header className={accountClasses.header}>
+        <h1 className={accountClasses.title}>{t("account_page.title")}</h1>
+        <p className={accountClasses.subtitle}>{user.email}</p>
       </header>
 
       {!user.is_verified && (
-        <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-300/50 bg-amber-50 p-3 text-sm dark:border-amber-500/30 dark:bg-amber-500/10">
-          <MailWarning className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <div className={cn("flex", accountClasses.banner)}>
+          <MailWarning className={cn("size-4 text-amber-600 dark:text-amber-400", accountClasses.bannerIcon)} />
           <div className="flex-1">
-            <p className="text-amber-800 dark:text-amber-200">
+            <p className={accountClasses.bannerText}>
               {t("account_page.verify_email")}
             </p>
             <button
               type="button"
               disabled={resent}
-              className="mt-1 text-base text-amber-700 hover:underline disabled:opacity-60 dark:text-amber-300"
+              className={cn("hover:underline disabled:opacity-60", accountClasses.bannerAction)}
               onClick={async () => {
                 await apiResendVerification();
                 setResent(true);
@@ -89,8 +91,8 @@ export function Account() {
         </div>
       )}
 
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">{t("account_page.profiles_title")}</h2>
+      <div className={cn("flex", accountClasses.sectionRow)}>
+        <h2 className={accountClasses.sectionTitle}>{t("account_page.profiles_title")}</h2>
         {editing === null && (
           <Button size="sm" onClick={() => setEditing("new")}>
             <Plus className="size-3.5" />
@@ -99,7 +101,7 @@ export function Account() {
         )}
       </div>
 
-      {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
+      {error && <p className={accountClasses.errorText}>{error}</p>}
 
       {editing !== null ? (
         <ProfileForm
@@ -113,36 +115,36 @@ export function Account() {
           existing={editing === "new" ? undefined : editing}
         />
       ) : loading ? (
-        <div className="flex justify-center py-10">
+        <div className={cn("flex justify-center", accountClasses.loadingBox)}>
           <Loader2 className="size-5 animate-spin" />
         </div>
       ) : profiles.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border py-10 text-center text-sm">
+        <div className={cn(accountClasses.emptyBox, accountClasses.emptyText)}>
           {t("account_page.no_profiles")}
         </div>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className={cn("flex flex-col", accountClasses.profileList)}>
           {profiles.map((p) => (
             <li
               key={p.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4"
+              className={cn("flex", accountClasses.profileRow)}
             >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="truncate text-base text-foreground">{p.full_name}</p>
+              <div className={accountClasses.profileBody}>
+                <div className={cn("flex", accountClasses.profileNameRow)}>
+                  <p className={cn("truncate", accountClasses.profileName)}>{p.full_name}</p>
                   {p.is_default && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-secondary/15 px-2 py-0.5 text-xs text-base text-secondary">
+                    <span className={cn("inline-flex", accountClasses.defaultBadge, accountClasses.defaultBadgeText)}>
                       <Star className="size-3" /> {t("account_page.default")}
                     </span>
                   )}
                 </div>
-                <p className="truncate text-sm">
+                <p className={cn("truncate", accountClasses.profileMeta)}>
                   {[p.location_label || p.city, p.birth_date && `${p.birth_date}${p.birth_time ? " " + p.birth_time : ""}`]
                     .filter(Boolean)
                     .join(" · ") || t("account_page.no_birth_details")}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+              <div className={cn("flex", accountClasses.profileActions)}>
                 {!p.is_default && (
                   <Button variant="ghost" size="icon-sm" title={t("account_page.make_default")} onClick={() => onMakeDefault(p)}>
                     <Star className="size-4" />
@@ -160,13 +162,13 @@ export function Account() {
         </ul>
       )}
 
-      <div className="mt-10 border-t border-border pt-6">
-        <h2 className="text-lg font-semibold text-destructive">{t("account_page.delete_account")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("account_page.delete_account_confirm")}</p>
+      <div className={accountClasses.dangerZone}>
+        <h2 className={accountClasses.dangerTitle}>{t("account_page.delete_account")}</h2>
+        <p className={accountClasses.dangerBody}>{t("account_page.delete_account_confirm")}</p>
         <Button
           variant="outline"
           size="sm"
-          className="mt-3 border-destructive text-destructive hover:bg-destructive/10"
+          className={cn("hover:bg-destructive/10", accountClasses.dangerButton, accountClasses.dangerButtonText)}
           onClick={async () => {
             if (!confirm(t("account_page.delete_account_confirm"))) return;
             try {

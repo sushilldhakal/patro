@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
 const td = "px-2.5 py-1.5 text-sm";
@@ -28,8 +29,8 @@ function GlanceTile({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <p className="text-sm font-semibold uppercase tracking-wide mb-1.5">
+    <div className={kundaliDetailClasses.glance.card}>
+      <p className={kundaliDetailClasses.glance.label}>
         {label}
       </p>
       {children}
@@ -92,8 +93,8 @@ export function BhavaBalaTable({
 
   const houseSummary = (h: BhavaBalaHouse) => (
     <>
-      <p className="text-lg font-bold text-foreground">{houseLabel(h.house)}</p>
-      <p className="text-xs mt-0.5">
+      <p className={kundaliDetailClasses.glance.name}>{houseLabel(h.house)}</p>
+      <p className={kundaliDetailClasses.glance.subTight}>
         {t("kundali.lord")} {lordLabel(h.lordKey as GrahaKey)}
         <span className="mx-1">·</span>
         {digits(h.percent.toFixed(1))}%
@@ -104,10 +105,10 @@ export function BhavaBalaTable({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wide mb-1">
+        <h3 className={kundaliDetailClasses.glance.heading}>
           {t("kundali.bhava_bala_house_strength_virupas")}
         </h3>
-        <p className="text-xs">
+        <p className={kundaliDetailClasses.glance.intro}>
           {bilingualText(lang, `भावाधिपति (स्वामीको षड्बल) + भाव दिशा + भाव दृष्टि। समपूर्ण राशि भाव; ${digits(data.referenceVirupas)} विरुप = १००%।`, `Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; ${data.referenceVirupas} virupas = 100%.`)}
         </p>
       </div>
@@ -121,7 +122,7 @@ export function BhavaBalaTable({
         </GlanceTile>
       </div>
 
-      <div className="rounded-xl border border-border overflow-x-auto">
+      <div className={kundaliDetailClasses.glance.tableWrap}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">

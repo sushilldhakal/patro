@@ -22,6 +22,8 @@ import {
 } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 function chapterAnchor(number: number) {
   return `chapter-${number}`;
@@ -81,7 +83,7 @@ export function DocumentDetail() {
     <Link
       to="/documents"
       search={documentsListSearch(category ?? "all", topic)}
-      className="inline-flex items-center gap-1.5 text-sm transition-colors hover:text-foreground"
+      className={cn(documentsClasses.backLink, "inline-flex transition-colors hover:text-foreground")}
     >
       <ArrowLeft className="size-4" /> {t("documents.back_to_list")}
     </Link>
@@ -91,7 +93,7 @@ export function DocumentDetail() {
     return (
       <PageShell showRelatedLinks={false} className="min-w-0 max-w-full [overflow-wrap:anywhere]">
         {backLink}
-        <p className="mt-4 text-sm text-muted-foreground">{t("documents.not_found")}</p>
+        <p className={documentsClasses.notFound}>{t("documents.not_found")}</p>
       </PageShell>
     );
   }
@@ -110,13 +112,13 @@ export function DocumentDetail() {
   const source = bilingualText(lang, doc.source_ne, doc.source_en);
 
   const header = (
-    <header className="space-y-1.5">
-      <p className="text-sm font-medium text-secondary">{doc.title_sa}</p>
-      <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-      {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
-      {description ? <p className="max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
+    <header className={cn(documentsClasses.header, "space-y-1.5")}>
+      <p className={documentsClasses.headerSanskrit}>{doc.title_sa}</p>
+      <h1 className={documentsClasses.headerTitle}>{title}</h1>
+      {subtitle ? <p className={documentsClasses.headerSubtitle}>{subtitle}</p> : null}
+      {description ? <p className={documentsClasses.headerDescription}>{description}</p> : null}
       {source ? (
-        <p className="text-xs text-muted-foreground">
+        <p className={documentsClasses.headerSource}>
           {t("documents.source")}: {source}
         </p>
       ) : null}
@@ -166,7 +168,7 @@ export function DocumentDetail() {
       <PageShell showRelatedLinks={false} className={`min-w-0 max-w-full [overflow-wrap:anywhere] ${hasFullRecording ? "pb-28" : ""}`}>
         {backLink}
         {header}
-        <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
+        <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
           <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
           <span aria-hidden="true">·</span>
           <span>{t("documents.shlokas_count", { count: num(doc.shloka_count) })}</span>
@@ -220,7 +222,7 @@ export function DocumentDetail() {
       {header}
 
       {doc.has_chapters ? (
-        <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
+        <div className={cn(documentsClasses.statsRow, documentsClasses.statsText)}>
           <span>{t("documents.chapters_count", { count: num(doc.chapter_count) })}</span>
           <span aria-hidden="true">·</span>
           <span>{t("documents.shlokas_count", { count: num(doc.shloka_count) })}</span>
@@ -234,7 +236,7 @@ export function DocumentDetail() {
               <a
                 key={chapter.number}
                 href={`#${chapterAnchor(chapter.number)}`}
-                className="grid size-9 shrink-0 place-items-center rounded-full border border-border text-sm font-bold tabular-nums text-muted-foreground transition-colors hover:border-secondary/60 hover:text-secondary"
+                className={cn(documentsClasses.chapterPill, documentsClasses.chapterPillText, "transition-colors hover:border-secondary/60 hover:text-secondary")}
               >
                 {num(chapter.number)}
               </a>
@@ -295,15 +297,15 @@ function InlineChapterSection({
       className="scroll-mt-24 space-y-3"
     >
       {chapter.number != null ? (
-        <header className="flex items-center gap-3">
-          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-secondary/10 text-base font-bold tabular-nums text-secondary">
+        <header className={documentsClasses.statsRow}>
+          <span className={cn(documentsClasses.chapterBubble, documentsClasses.chapterBubbleText)}>
             {num(chapter.number)}
           </span>
           <div className="min-w-0">
-            <h2 className="text-lg font-bold sm:text-xl">
+            <h2 className={documentsClasses.chapterHeading}>
               {t("documents.chapter_label", { number: num(chapter.number) })}
             </h2>
-            {title ? <p className="text-sm text-muted-foreground">{title}</p> : null}
+            {title ? <p className={documentsClasses.chapterHeadingSub}>{title}</p> : null}
           </div>
         </header>
       ) : null}

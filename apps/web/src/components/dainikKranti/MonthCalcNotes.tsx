@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { CalcNote } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
 import { cn } from "@vedic-patro/domain/utils";
+import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { PatroTableShell } from "./PatroTableShell";
 import {
   Table,
@@ -66,12 +67,13 @@ function KindBadge({ kind }: { kind: CalcNote["kind"] }) {
   return (
     <span
       className={cn(
-        "shrink-0 rounded px-1.5 py-0.5 text-sm font-semibold leading-none sm:text-sm",
-        kind === "late_night" && "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-        kind === "ingress" && "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300",
-        kind === "paksha_boundary" && "bg-muted",
-        kind === "udayast" && "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-        kind === "motion" && "bg-rose-500/15 text-rose-700 dark:text-rose-300",
+        dainikKrantiClasses.kindBadge,
+        dainikKrantiClasses.kindBadgeText,
+        kind === "late_night" && cn(dainikKrantiClasses.kindLate, dainikKrantiClasses.kindLateText),
+        kind === "ingress" && cn(dainikKrantiClasses.kindIngress, dainikKrantiClasses.kindIngressText),
+        kind === "paksha_boundary" && dainikKrantiClasses.kindPaksha,
+        kind === "udayast" && cn(dainikKrantiClasses.kindUdayast, dainikKrantiClasses.kindUdayastText),
+        kind === "motion" && cn(dainikKrantiClasses.kindMotion, dainikKrantiClasses.kindMotionText),
       )}
     >
       {bilingualText(lang, KIND_LABEL[kind], KIND_LABEL_EN[kind])}
@@ -79,8 +81,8 @@ function KindBadge({ kind }: { kind: CalcNote["kind"] }) {
   );
 }
 
-const th = "h-9 whitespace-nowrap px-2.5 text-left text-xs font-semibold";
-const td = "px-2.5 py-2 align-top text-sm";
+const th = cn(dainikKrantiClasses.calcTh, "h-9 whitespace-nowrap");
+const td = cn(dainikKrantiClasses.calcTd, "align-top");
 
 export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   const { t } = useTranslation();
@@ -111,9 +113,9 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   }, [notes]);
 
   const notesTable = loading ? (
-    <p className="px-4 py-8 text-center text-sm">{t("dainik.loading")}</p>
+    <p className={dainikKrantiClasses.calcEmpty}>{t("dainik.loading")}</p>
   ) : groups.length === 0 ? (
-    <p className="px-4 py-8 text-center text-sm">
+    <p className={dainikKrantiClasses.calcEmpty}>
       {t("dainik.no_special_calculation_notes_this_month")}
     </p>
   ) : (
@@ -132,7 +134,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
         <TableBody>
           {groups.map((group) => (
             <TableRow key={group.dateAd}>
-              <TableCell className={cn(td, "w-14 font-bold tabular-nums text-secondary")}>
+              <TableCell className={cn(td, "w-14", dainikKrantiClasses.calcDay)}>
                 {digits(group.day)}
               </TableCell>
               <TableCell className={td}>
@@ -163,35 +165,35 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   );
 
   const legend = (
-    <section className={cn(!embedded && "rounded-xl border border-border p-4", embedded && "mt-4 border-t border-border pt-4")}>
-      <h4 className="mb-2 text-sm font-semibold uppercase tracking-wide">
+    <section className={cn(!embedded && dainikKrantiClasses.calcLegend, embedded && dainikKrantiClasses.calcLegendEmbedded)}>
+      <h4 className={dainikKrantiClasses.legendHeading}>
         {t("dainik.planet_rise_set_symbols")}
       </h4>
       <dl className="space-y-1.5">
         {UDAYAST_LEGEND.map((it) => (
-          <div key={it.code} className="flex gap-2 text-sm">
-            <dt className="w-24 shrink-0">
-              <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-semibold text-secondary sm:text-sm">
+          <div key={it.code} className={dainikKrantiClasses.legendRow}>
+            <dt className={cn("w-24", dainikKrantiClasses.legendCodeCol)}>
+              <span className={cn(dainikKrantiClasses.legendCodeChip, dainikKrantiClasses.legendCodeText, "sm:text-sm")}>
                 {it.code}
               </span>
             </dt>
             <dd>
-              <span className="text-foreground">{bilingualText(lang, it.full, it.fullEn)}</span> — {bilingualText(lang, it.meaning, it.meaningEn)}
+              <span className={dainikKrantiClasses.legendMeaning}>{bilingualText(lang, it.full, it.fullEn)}</span> — {bilingualText(lang, it.meaning, it.meaningEn)}
             </dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 text-sm leading-relaxed">
+      <p className={dainikKrantiClasses.calcLegendNote}>
         {bilingualNode(lang, <>
-            <span className="font-semibold text-foreground">दशा कोष्ठक:</span> जन्म-समयमा बाँकी
+            <span className={dainikKrantiClasses.legendStrong}>दशा कोष्ठक:</span> जन्म-समयमा बाँकी
             विंशोत्तरी दशाको वर्ष/महिना/दिन।{" "}
-            <span className="font-semibold text-foreground">समय सुधार:</span> मुद्रणमा “उ” वा “०”
+            <span className={dainikKrantiClasses.legendStrong}>समय सुधार:</span> मुद्रणमा “उ” वा “०”
             जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा देशान्तर समायोजित छ;
             बेलान्तर सन्दर्भका लागि मात्र देखाइन्छ।
           </>, <>
-            <span className="font-semibold text-foreground">Dasha bracket:</span> the years/months/days
+            <span className={dainikKrantiClasses.legendStrong}>Dasha bracket:</span> the years/months/days
             of Vimshottari dasha remaining at birth.{" "}
-            <span className="font-semibold text-foreground">Time correction:</span> in print, symbols like
+            <span className={dainikKrantiClasses.legendStrong}>Time correction:</span> in print, symbols like
             “u” or “0” indicate zero degrees/kala. Listed sunrise already includes Deshaantar;
             Belaantar is shown for reference only.
           </>,)}

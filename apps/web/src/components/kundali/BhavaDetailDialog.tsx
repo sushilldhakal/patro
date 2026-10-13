@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
@@ -53,11 +54,11 @@ function Block({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-muted/20 p-3">
-      <div className="mb-1.5 flex items-baseline gap-2">
+    <div className={kundaliDetailClasses.bhavaDialog.block}>
+      <div className={cn(kundaliDetailClasses.bhavaDialog.blockHead, "flex")}>
         <span aria-hidden>{icon}</span>
-        <span className="text-sm font-bold text-foreground">{title}</span>
-        {right && <span className="ml-auto shrink-0 text-sm font-normal text-muted-foreground">{right}</span>}
+        <span className={kundaliDetailClasses.prose.headingBold}>{title}</span>
+        {right && <span className={kundaliDetailClasses.bhavaDialog.blockRight}>{right}</span>}
       </div>
       {children}
     </div>
@@ -87,9 +88,9 @@ function ShlokaCard({
   shloka: string;
 }) {
   return (
-    <div className="rounded-lg border border-secondary/25 bg-secondary/[0.06] p-2.5">
-      <div className="mb-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-        {label && <span className="text-sm font-semibold text-foreground">📜 {label}</span>}
+    <div className={kundaliDetailClasses.bhavaDialog.citationBox}>
+      <div className={cn(kundaliDetailClasses.bhavaDialog.citationRow, "flex")}>
+        {label && <span className={kundaliDetailClasses.prose.heading}>📜 {label}</span>}
         <span className="rounded-full bg-secondary/15 px-2 py-0.5 text-sm font-medium leading-none text-secondary">
           {label ? source : `📜 ${source}`}
         </span>
@@ -118,7 +119,7 @@ function GrahaKarakatvaCard({
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-bold text-foreground">
+      <p className={kundaliDetailClasses.prose.headingBold}>
         {GRAHA_ICON[grahaKey as GrahaKey] ?? "🪐"} {grahaName(grahaKey, lang)}
       </p>
 
@@ -129,18 +130,18 @@ function GrahaKarakatvaCard({
       />
 
       <div>
-        <p className="text-sm font-semibold text-foreground">📋 {bilingualText(lang, "कारकत्व विषयहरू", "Karakatva subjects")}</p>
-        <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, k.subjectsNe, k.subjectsEn)}।</p>
+        <p className={kundaliDetailClasses.prose.heading}>📋 {bilingualText(lang, "कारकत्व विषयहरू", "Karakatva subjects")}</p>
+        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.subjectsNe, k.subjectsEn)}।</p>
       </div>
 
       <div>
-        <p className="text-sm font-semibold text-foreground">💡 {bilingualText(lang, "ग्रहको महत्व", "Significance")}</p>
-        <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, k.significanceNe, k.significanceEn)}</p>
+        <p className={kundaliDetailClasses.prose.heading}>💡 {bilingualText(lang, "ग्रहको महत्व", "Significance")}</p>
+        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.significanceNe, k.significanceEn)}</p>
       </div>
 
-      <div className="border-l-2 border-secondary/40 pl-3">
+      <div className={kundaliDetailClasses.prose.quote}>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-foreground">
+          <p className={kundaliDetailClasses.prose.heading}>
             ⬡{" "}
             {bilingualText(
               lang,
@@ -151,7 +152,7 @@ function GrahaKarakatvaCard({
           {saravali && (
             <span
               className={cn(
-                "shrink-0 rounded-full border px-2 py-0.5 text-sm font-semibold leading-none",
+                kundaliDetailClasses.bhavaDialog.pill, "text-sm font-semibold leading-none",
                 ratingBadgeCls[saravali.rating],
               )}
             >
@@ -174,12 +175,12 @@ function GrahaKarakatvaCard({
                 shloka={citation.shloka}
               />
             ))}
-            <p className="border-t border-border/50 pt-2 text-sm leading-relaxed">
+            <p className={kundaliDetailClasses.bhavaDialog.summary}>
               💡 {bilingualText(lang, saravali.summaryNe, saravali.summaryEn)}
             </p>
           </div>
         ) : (
-          <p className="mt-1.5 text-sm text-muted-foreground">
+          <p className={kundaliDetailClasses.prose.mutedMt15}>
             {bilingualText(
               lang,
               "यो भाव-ग्रह संयोजनको लागि शास्त्रीय श्लोक अहिले उपलब्ध छैन।",
@@ -335,35 +336,37 @@ function BhavaDetailBody({
 
   return (
     <>
-      <HeaderWrap className="gap-1 border-b border-border px-4 py-3.5 text-left">
+      <HeaderWrap className={cn(kundaliDetailClasses.bhavaDialog.header, "text-left")}>
         <TitleWrap className="flex items-center gap-2 text-lg">
-          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary/15 text-sm font-bold text-secondary">
+          <span className={cn(kundaliDetailClasses.bhavaDialog.headerBadge, kundaliDetailClasses.bhavaDialog.headerBadgeText, "flex")}>
             {digits(house.house)}
           </span>
           {ordinal} {bilingualText(lang, "भाव", "house")}
           {classicalName && (
-            <span className="font-normal text-muted-foreground">
+            <span className={kundaliDetailClasses.prose.quiet}>
               · {bilingualText(lang, classicalName.ne, classicalName.en)}
             </span>
           )}
         </TitleWrap>
-        <p className="text-sm text-muted-foreground">{themes.join(" · ")}</p>
+        <p className={kundaliDetailClasses.prose.muted}>{themes.join(" · ")}</p>
       </HeaderWrap>
 
       {/* Tabs replace the old single long stacked-accordion list — only one
           group is on screen at a time, so reading the dialog no longer means
           scrolling past 7-8 sections to reach the one you want. */}
-      <div className="flex shrink-0 gap-1 overflow-x-auto border-b border-border bg-card px-3 py-2">
+      <div className={cn(kundaliDetailClasses.bhavaDialog.tabBar, "flex shrink-0 gap-1 overflow-x-auto px-3 py-2")}>
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
             className={cn(
-              "shrink-0 whitespace-nowrap rounded-full border px-2.5 py-1 text-sm font-semibold transition-colors",
+              kundaliDetailClasses.bhavaDialog.tab,
+              kundaliDetailClasses.bhavaDialog.tabText,
+              "whitespace-nowrap transition-colors",
               tab === t.id
-                ? "border-secondary/40 bg-secondary/12 text-secondary"
-                : "border-border bg-transparent text-muted-foreground hover:text-foreground",
+                ? cn(kundaliDetailClasses.bhavaDialog.tabActive, kundaliDetailClasses.bhavaDialog.tabActiveText)
+                : cn(kundaliDetailClasses.bhavaDialog.tabIdle, kundaliDetailClasses.bhavaDialog.tabIdleText, "hover:text-foreground"),
             )}
           >
             <span aria-hidden className="mr-1">{t.icon}</span>
@@ -385,7 +388,7 @@ function BhavaDetailBody({
               >
                 <div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
                   <span>
-                    <span className="font-semibold text-foreground">
+                    <span className={kundaliDetailClasses.prose.strong}>
                       {digits(house.rashi)} {formatRashiByNumber(house.rashi, lang)}
                     </span>{" "}
                     {bilingualText(lang, "राशि", "sign")}
@@ -393,7 +396,7 @@ function BhavaDetailBody({
                   <span className="text-border">·</span>
                   <span>
                     {bilingualText(lang, "स्वामी", "Lord")}{" "}
-                    <span className="font-semibold text-secondary">{grahaName(lordKey, lang)}</span>
+                    <span className={kundaliDetailClasses.prose.accent}>{grahaName(lordKey, lang)}</span>
                   </span>
                   {badge && (
                     <>
@@ -411,14 +414,14 @@ function BhavaDetailBody({
                         : "";
                       return (
                         <div key={p.key}>
-                          <p className="text-sm font-semibold text-foreground">{grahaName(p.key, lang)}</p>
-                          {subjects && <p className="text-sm text-muted-foreground">{subjects}</p>}
+                          <p className={kundaliDetailClasses.prose.heading}>{grahaName(p.key, lang)}</p>
+                          {subjects && <p className={kundaliDetailClasses.prose.muted}>{subjects}</p>}
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.bodyMuted}>
                     {bilingualText(
                       lang,
                       `कुनै ग्रह छैन — राशि स्वामी ${grahaName(lordKey, lang)}को स्थिति हेर्नुहोस्।`,
@@ -436,7 +439,7 @@ function BhavaDetailBody({
                 right={
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm font-semibold leading-none",
+                      kundaliDetailClasses.bhavaDialog.pillInline, "inline-flex text-sm font-semibold leading-none",
                       verdictCls,
                     )}
                   >
@@ -444,19 +447,19 @@ function BhavaDetailBody({
                   </span>
                 }
               >
-                <p className="text-sm leading-relaxed">
-                  <span className="font-semibold text-foreground">
+                <p className={kundaliDetailClasses.prose.body}>
+                  <span className={kundaliDetailClasses.prose.strong}>
                     {bilingualText(lang, "अंग:", "Parts:")}
                   </span>{" "}
                   {bilingualText(lang, info.medicalNe, info.medicalEn)}
                 </p>
                 {bodyPart && (
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.mutedMt1}>
                     {bilingualText(lang, bodyPart.ne, bodyPart.en)}
                   </p>
                 )}
                 {!maleficPresent && !beneficPresent && (
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.mutedMt1}>
                     {bilingualText(
                       lang,
                       "यस भावमा कुनै ग्रहको दृष्टि वा उपस्थिति छैन।",
@@ -476,24 +479,24 @@ function BhavaDetailBody({
                 icon="📖"
                 title={bilingualText(lang, "भावको स्थायी जानकारी", "General house reference")}
               >
-                <p className="text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.muted}>
                   {bilingualText(lang, houseDetail.titlesNe, houseDetail.titlesEn)}
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                   <span>
                     {bilingualText(lang, "स्वाभाविक कारक", "Natural significator")}:{" "}
-                    <span className="font-semibold text-foreground">
+                    <span className={kundaliDetailClasses.prose.strong}>
                       {bilingualText(lang, houseDetail.naturalNe, houseDetail.naturalEn)}
                     </span>
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed">
+                <p className={kundaliDetailClasses.prose.bodyMt2}>
                   {bilingualText(lang, houseDetail.descriptionNe, houseDetail.descriptionEn)}
                 </p>
                 {/* कालपुरुष कुण्डली अनुसार — यो सधैं मेष लग्न मानेर गणना गरिएको आदर्श/सैद्धान्तिक
                     राशि-स्वामी हो, यस जातकको वास्तविक राशि/स्वामी होइन (त्यो माथि हेडरमा
                     देखिन्छ)। दुवैलाई एउटै लेबलमा नराखिएकाले यहाँ छुट्टै र स्पष्ट चिनो दिइएको छ। */}
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.mutedMt2}>
                   {bilingualText(
                     lang,
                     `कालपुरुष कुण्डली अनुसार यो भाव ${houseDetail.signNe} राशिसँग मेल खान्छ (राशि स्वामी ${houseDetail.lordNe}) — यो यस जातकको वास्तविक राशि होइन, माथिको भावको वास्तविक राशि/स्वामी हेर्नुहोस्।`,
@@ -507,21 +510,21 @@ function BhavaDetailBody({
                     shloka={houseDetail.shloka}
                   />
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.mutedMt2}>
                   {bilingualText(
                     lang,
                     "ग्रहको वास्तविक प्रभाव यसको भावेशत्व, बल, दृष्टि, संयोजन, अस्त/वक्री जस्ता अवस्थामा भर पर्छ — तल दिइएको सामान्य शुभ/पाप वर्गीकरण एउटा आधारभूत सिद्धान्त मात्र हो, अनिवार्य नियम होइन।",
                     "A graha's actual effect depends on its lordship, strength, aspects, conjunctions, combustion/retrogression and more — the general benefic/malefic classification below is only a baseline classical principle, not an unconditional rule.",
                   )}
                 </p>
-                <p className="mt-1.5 text-sm leading-relaxed">
+                <p className={kundaliDetailClasses.prose.bodyMt15}>
                   <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                     {bilingualText(lang, "शुभ ग्रह", "Benefic grahas")} (
                     {bilingualText(lang, houseDetail.beneficGrahasNe, houseDetail.beneficGrahasEn)}):
                   </span>{" "}
                   {bilingualText(lang, houseDetail.beneficEffectNe, houseDetail.beneficEffectEn)}
                 </p>
-                <p className="mt-1 text-sm leading-relaxed">
+                <p className={kundaliDetailClasses.prose.bodyMt1}>
                   <span className="font-semibold text-destructive">
                     {bilingualText(lang, "पापग्रह", "Malefic grahas")} (
                     {bilingualText(lang, houseDetail.maleficGrahasNe, houseDetail.maleficGrahasEn)}):
@@ -557,7 +560,7 @@ function BhavaDetailBody({
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.muted}>
                   {bilingualText(
                     lang,
                     "यस भावमा कुनै ग्रह नभएकाले ग्रह फलादेश छैन।",
@@ -580,13 +583,13 @@ function BhavaDetailBody({
               }
             >
               {lordHouse != null ? (
-                <p className="text-sm">
-                  <span className="font-semibold text-foreground">{lordTitle}</span>{" "}
-                  <span className="font-semibold text-secondary">{grahaName(lordKey, lang)}</span> →{" "}
+                <p className={kundaliDetailClasses.prose.plain}>
+                  <span className={kundaliDetailClasses.prose.strong}>{lordTitle}</span>{" "}
+                  <span className={kundaliDetailClasses.prose.accent}>{grahaName(lordKey, lang)}</span> →{" "}
                   {bilingualText(lang, `${digits(lordHouse)}औँ भाव`, `house ${digits(lordHouse)}`)}
                 </p>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.muted}>
                   {bilingualText(
                     lang,
                     `राशि स्वामी ${grahaName(lordKey, lang)} यो D1 चार्टमा फेला परेन।`,
@@ -600,8 +603,8 @@ function BhavaDetailBody({
                     {bhaveshEntry.shloka && (
                       <ShlokaCard source={bilingualText(lang, "बृ.पा.हो.शा. (भावेशफलाध्याय)", "BPHS (ch. 13)")} shloka={bhaveshEntry.shloka} />
                     )}
-                    <p className="text-sm leading-relaxed">{bilingualText(lang, bhaveshEntry.ne, bhaveshEntry.en)}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className={kundaliDetailClasses.prose.body}>{bilingualText(lang, bhaveshEntry.ne, bhaveshEntry.en)}</p>
+                    <p className={kundaliDetailClasses.prose.muted}>
                       {bilingualText(
                         lang,
                         `स्रोत: ${reference.bhaveshPhalaSource}`,
@@ -610,7 +613,7 @@ function BhavaDetailBody({
                     </p>
                   </div>
                 ) : (
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>
                     🚧 {bilingualText(lang, "चाँडै आउँदैछ", "Coming soon")}
                   </p>
                 ))}
@@ -621,32 +624,32 @@ function BhavaDetailBody({
               <Block icon="👥" title={bilingualText(lang, "ग्रह युति फल", "Graha conjunction (yuti) result")}>
                 <div className="space-y-3">
                   {yuti2Entry && (
-                    <div className="border-l-2 border-secondary/40 pl-3">
-                      <p className="text-sm font-semibold text-foreground">
+                    <div className={kundaliDetailClasses.prose.quote}>
+                      <p className={kundaliDetailClasses.prose.heading}>
                         {joinNames(occupantKeys, lang)}
                         {yuti2Entry.yogaNameNe && (
-                          <span className="font-normal text-muted-foreground">
+                          <span className={kundaliDetailClasses.prose.quiet}>
                             {" "}
                             ({bilingualText(lang, yuti2Entry.yogaNameNe, yuti2Entry.yogaNameEn ?? yuti2Entry.yogaNameNe)})
                           </span>
                         )}
                       </p>
-                      <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, yuti2Entry.textNe, yuti2Entry.textEn)}</p>
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, yuti2Entry.textNe, yuti2Entry.textEn)}</p>
                     </div>
                   )}
                   {yuti3Entries.map((entry) => (
-                    <div key={yutiKey(entry.grahas)} className="border-l-2 border-secondary/40 pl-3">
-                      <p className="text-sm font-semibold text-foreground">{joinNames(entry.grahas, lang)}</p>
-                      <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, entry.textNe, entry.textEn)}</p>
+                    <div key={yutiKey(entry.grahas)} className={kundaliDetailClasses.prose.quote}>
+                      <p className={kundaliDetailClasses.prose.heading}>{joinNames(entry.grahas, lang)}</p>
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, entry.textNe, entry.textEn)}</p>
                     </div>
                   ))}
                   {occupantKeys.length >= 3 && (
-                    <p className="text-sm leading-relaxed text-muted-foreground">
+                    <p className={kundaliDetailClasses.prose.bodyMuted}>
                       {bilingualText(lang, reference.grahaYutiGeneralRule.ne, reference.grahaYutiGeneralRule.en)}
                     </p>
                   )}
                   {!yuti2Entry && yuti3Entries.length === 0 && occupantKeys.length < 3 && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className={kundaliDetailClasses.prose.muted}>
                       {bilingualText(
                         lang,
                         "यो विशेष ग्रह-युतिको लागि सन्दर्भ अहिले उपलब्ध छैन।",
@@ -668,8 +671,8 @@ function BhavaDetailBody({
                 {occupants.map((p) => {
                   const targets = drishtiTargetHouses(p.key, house.house);
                   return (
-                    <p key={p.key} className="text-sm">
-                      <span className="font-semibold text-foreground">{grahaName(p.key, lang)}</span>
+                    <p key={p.key} className={kundaliDetailClasses.prose.plain}>
+                      <span className={kundaliDetailClasses.prose.strong}>{grahaName(p.key, lang)}</span>
                       {" → "}
                       {targets.map((t) => bilingualText(lang, `${digits(t)}औँ`, digits(t))).join(" · ")}{" "}
                       {bilingualText(lang, "भाव", "house")}
@@ -678,7 +681,7 @@ function BhavaDetailBody({
                 })}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className={kundaliDetailClasses.prose.muted}>
                 {bilingualText(
                   lang,
                   "यस भावमा कुनै ग्रह नभएकाले यहाँबाट बाहिर दृष्टि पर्दैन।",
@@ -686,22 +689,22 @@ function BhavaDetailBody({
                 )}
               </p>
             )}
-            <div className="mt-3 border-t border-border/60 pt-3">
-              <p className="mb-1.5 text-sm font-semibold text-foreground">
+            <div className={kundaliDetailClasses.prose.divider}>
+              <p className={kundaliDetailClasses.prose.headingMb15}>
                 {bilingualText(lang, "सबै दृष्टि", "All aspects")}
               </p>
               {aspectedBy.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className={kundaliDetailClasses.prose.heading}>
                     {bilingualText(lang, "यस भावमा दृष्टि गर्ने ग्रहहरू:", "Grahas aspecting this house:")}
                   </p>
                   {aspectedBy.map((k) => {
                     const d = reference.grahaDrishti[k];
                     return (
                       <div key={k}>
-                        <p className="text-sm font-semibold text-foreground">{grahaName(k, lang)}</p>
+                        <p className={kundaliDetailClasses.prose.heading}>{grahaName(k, lang)}</p>
                         {d && (
-                          <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+                          <p className={kundaliDetailClasses.prose.bodyMutedMt05}>
                             {bilingualText(lang, d.summaryNe, d.summaryEn)}
                           </p>
                         )}
@@ -710,7 +713,7 @@ function BhavaDetailBody({
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className={kundaliDetailClasses.prose.muted}>
                   {bilingualText(lang, "यस भावमा कुनै ग्रहको दृष्टि पर्दैन।", "No graha aspects this house.")}
                 </p>
               )}
@@ -731,17 +734,17 @@ function BhavaDetailBody({
                   {applicableSutras.length > 0 ? (
                     <div className="space-y-3">
                       {applicableSutras.map((s) => (
-                        <div key={s.number} className="border-l-2 border-secondary/40 pl-3">
-                          <p className="text-sm font-semibold text-foreground">
+                        <div key={s.number} className={kundaliDetailClasses.prose.quote}>
+                          <p className={kundaliDetailClasses.prose.heading}>
                             {bilingualText(lang, `सूत्र ${digits(s.number)} — ${s.titleNe}`, `Sutra ${digits(s.number)} — ${s.titleEn}`)}
                           </p>
-                          <p className="text-sm text-muted-foreground">{bilingualText(lang, s.categoryNe, s.categoryEn)}</p>
-                          <p className="mt-1 text-sm leading-relaxed">{bilingualText(lang, s.bodyNe, s.bodyEn)}</p>
+                          <p className={kundaliDetailClasses.prose.muted}>{bilingualText(lang, s.categoryNe, s.categoryEn)}</p>
+                          <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, s.bodyNe, s.bodyEn)}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">
+                    <p className={kundaliDetailClasses.prose.muted}>
                       {bilingualText(
                         lang,
                         "यस भावमा कुनै ग्रह नभएकाले लागू हुने भृगु नाडी सूत्र देखिएका छैनन्।",
@@ -749,7 +752,7 @@ function BhavaDetailBody({
                       )}
                     </p>
                   )}
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>
                     {bilingualText(lang, `स्रोत: ${reference.naadiSutraSource}`, `Source: ${reference.naadiSutraSource}`)}
                   </p>
                 </AccordionContent>
@@ -766,13 +769,13 @@ function BhavaDetailBody({
                         const tip = reference.lalKitabSafetyTips[key];
                         return (
                           <div key={key}>
-                            <p className="text-sm font-semibold text-foreground">
+                            <p className={kundaliDetailClasses.prose.heading}>
                               {GRAHA_ICON[key as GrahaKey] ?? "🪐"} {grahaName(key, lang)} —{" "}
                               {bilingualText(lang, `भाव ${digits(house.house)}`, `house ${digits(house.house)}`)}
                             </p>
-                            <p className="mt-0.5 text-sm leading-relaxed">{bilingualText(lang, entry.ne, entry.en)}</p>
+                            <p className={kundaliDetailClasses.prose.bodyMt05}>{bilingualText(lang, entry.ne, entry.en)}</p>
                             {tip && (
-                              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                              <p className={kundaliDetailClasses.prose.bodyMutedMt1}>
                                 {bilingualText(lang, "सुरक्षित व्यवहार:", "Safe practice:")} {bilingualText(lang, tip.ne, tip.en)}
                               </p>
                             )}
@@ -781,7 +784,7 @@ function BhavaDetailBody({
                       })}
                     </div>
                   ) : (
-                    <p className="text-sm leading-relaxed text-muted-foreground">
+                    <p className={kundaliDetailClasses.prose.bodyMuted}>
                       {bilingualText(
                         lang,
                         `यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी ${joinNames(lalKitabFixedLord, lang)}को स्थिति हेर्नुहोस्।`,
@@ -790,16 +793,16 @@ function BhavaDetailBody({
                     </p>
                   )}
                   {lalKitabYutiMatch && (
-                    <div className="mt-3 border-l-2 border-secondary/40 pl-3">
-                      <p className="text-sm font-semibold text-foreground">
+                    <div className={kundaliDetailClasses.prose.quoteTop}>
+                      <p className={kundaliDetailClasses.prose.heading}>
                         {bilingualText(lang, "👥 ग्रह युति —", "👥 Graha yuti —")} {joinNames(lalKitabYutiMatch.grahas, lang)}
                       </p>
-                      <p className="mt-1 text-sm leading-relaxed">
+                      <p className={kundaliDetailClasses.prose.bodyMt1}>
                         {bilingualText(lang, lalKitabYutiMatch.textNe, lalKitabYutiMatch.textEn)}
                       </p>
                     </div>
                   )}
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <p className={kundaliDetailClasses.prose.mutedMt2}>
                     {bilingualText(lang, "स्रोत: लाल किताब — भाग २–११", "Source: Lal Kitab, parts 2–11")}
                   </p>
                   <Accordion type="single" collapsible className="mt-2">
@@ -814,12 +817,12 @@ function BhavaDetailBody({
                       <AccordionContent>
                         <div className="space-y-1.5">
                           {reference.lalKitabSusthaDustha.map((rule, i) => (
-                            <p key={i} className="text-sm leading-relaxed">
+                            <p key={i} className={kundaliDetailClasses.prose.body}>
                               {bilingualText(lang, rule.ne, rule.en)}
                             </p>
                           ))}
                         </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
+                        <p className={kundaliDetailClasses.prose.mutedMt2}>
                           {bilingualText(
                             lang,
                             `स्रोत: ${reference.lalKitabRevisionSource}`,
@@ -836,7 +839,7 @@ function BhavaDetailBody({
         )}
       </div>
 
-      <div className="flex justify-end border-t border-border px-4 py-3">
+      <div className={cn(kundaliDetailClasses.bhavaDialog.footer, "flex justify-end")}>
         <Button variant="outline" onClick={onClose}>
           {bilingualText(lang, "बन्द गर्नुहोस्", "Close")}
         </Button>

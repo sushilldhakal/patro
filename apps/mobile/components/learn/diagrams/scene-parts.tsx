@@ -12,6 +12,7 @@ import * as THREE from "three";
 import { DIAGRAM_COLOR, RASHI_RING_COLORS } from "@/lib/learn/diagram-theme";
 import { RAD } from "@/lib/learn/sun-earth-moon-math";
 
+import { neutral } from "@vedic-patro/design-tokens";
 type Vec3 = readonly [number, number, number];
 
 /* ── background ───────────────────────────────────────────────────────── */
@@ -78,7 +79,7 @@ export function SunBody({
     <group>
       <mesh>
         <sphereGeometry args={[radius, 32, 32]} />
-        <meshBasicMaterial map={map} color={map ? "#ffffff" : DIAGRAM_COLOR.sunCore} />
+        <meshBasicMaterial map={map} color={map ? neutral.white : DIAGRAM_COLOR.sunCore} />
       </mesh>
       {/* Additive, or the shells darken the sky they sit on instead of
           lighting it — a corona has to add light, never subtract it. Four
@@ -118,7 +119,7 @@ export const Globe = forwardRef<
     equator?: boolean;
     children?: React.ReactNode;
   }
->(function Globe({ radius, map, color = "#ffffff", tiltDeg = 0, axis, equator, children }, ref) {
+>(function Globe({ radius, map, color = neutral.white, tiltDeg = 0, axis, equator, children }, ref) {
   return (
     <group ref={ref}>
       <group rotation={[0, 0, -tiltDeg * RAD]}>
@@ -126,7 +127,7 @@ export const Globe = forwardRef<
           <sphereGeometry args={[radius, 32, 32]} />
           <meshStandardMaterial
             map={map}
-            color={map ? "#ffffff" : color}
+            color={map ? neutral.white : color}
             roughness={0.85}
             metalness={0}
           />

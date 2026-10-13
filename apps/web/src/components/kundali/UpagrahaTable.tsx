@@ -1,4 +1,5 @@
 import { useLocale, bilingualText } from "@/i18n/locale";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useTranslation } from "react-i18next";
 import type { UpagrahaDetailRow } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
@@ -14,8 +15,8 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm";
+const th = kundaliDetailClasses.table.th;
+const td = kundaliDetailClasses.table.td;
 
 export type UpagrahaTableProps = {
   upagrahas: UpagrahaDetailRow[];
@@ -54,11 +55,11 @@ export function UpagrahaTable({ upagrahas }: UpagrahaTableProps) {
               <TableCell className={cn(td, "pl-3.5 font-semibold text-foreground")}>
                 {name}
               </TableCell>
-              <TableCell className={cn(td, "font-mono tabular-nums")}>
-                <span className="text-foreground font-semibold">
+              <TableCell className={cn(td, kundaliDetailClasses.grahaList.dms)}>
+                <span className={kundaliDetailClasses.prose.strong}>
                   {digits(String(row.dms.deg).padStart(2, "0"))}°
                 </span>{" "}
-                <span className="font-sans text-foreground">{rashiName(row.dms.rashiNum)}</span>{" "}
+                <span className={cn(kundaliDetailClasses.grahaList.dmsRashi, "font-sans")}>{rashiName(row.dms.rashiNum)}</span>{" "}
                 {digits(String(row.dms.min).padStart(2, "0"))}′{" "}
                 {digits(String(row.dms.sec).padStart(2, "0"))}″
               </TableCell>

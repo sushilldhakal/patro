@@ -59,6 +59,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { buildWheelDetail } from "@vedic-patro/domain/wheel-data";
 import { PlanetIcon } from "./hora/PlanetIcon";
 
+import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 const LS_KEY = "dhakalHoraRing.v1";
 const PROG_STEPS = 10_000;
 
@@ -126,7 +127,7 @@ function CompassMarker({ deg, nep, en }: { deg: number; nep: string; en: string 
         y1={ny0}
         x2={nx1}
         y2={ny1}
-        stroke="rgba(255,255,255,.3)"
+        stroke={withAlpha(neutral.white, .3)}
         strokeWidth="1.4"
       />
     </g>
@@ -340,14 +341,14 @@ export function HoraRing({ p, isToday, timezone }: Props) {
       <svg viewBox="0 0 960 900" className="block h-full w-full" preserveAspectRatio="xMidYMid meet">
         <defs>
           <radialGradient id="hora-hubSun" cx="42%" cy="38%" r="68%">
-            <stop offset="0%" stopColor="#ffe79a" />
-            <stop offset="55%" stopColor="#f8b133" />
-            <stop offset="100%" stopColor="#e07d12" />
+            <stop offset="0%" stopColor={illustration.amber81} />
+            <stop offset="55%" stopColor={illustration.orange60} />
+            <stop offset="100%" stopColor={illustration.orange47} />
           </radialGradient>
           <radialGradient id="hora-hubHalo" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(246,166,35,.5)" />
-            <stop offset="55%" stopColor="rgba(246,166,35,.12)" />
-            <stop offset="100%" stopColor="rgba(246,166,35,0)" />
+            <stop offset="0%" stopColor={withAlpha(illustration.orange55, .5)} />
+            <stop offset="55%" stopColor={withAlpha(illustration.orange55, .12)} />
+            <stop offset="100%" stopColor={withAlpha(illustration.orange55, 0)} />
           </radialGradient>
           <filter id="hora-markGlow" x="-150%" y="-150%" width="400%" height="400%">
             <feGaussianBlur stdDeviation="7" />
@@ -362,7 +363,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
           y1={dy0}
           x2={dx1}
           y2={dy1}
-          stroke="rgba(255,215,10,.32)"
+          stroke={withAlpha(illustration.amber52, .32)}
           strokeWidth="1.2"
           strokeDasharray="3 4"
         />
@@ -380,7 +381,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
                 style={{
                   opacity: passed ? 1 : 0.07,
                   filter: active
-                    ? "brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,.22))"
+                    ? `brightness(1.2) drop-shadow(0 0 10px ${withAlpha(neutral.white, 0.22)})`
                     : undefined,
                 }}
               />
@@ -419,7 +420,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
 
         <g>
           <circle cx={HORA_CX} cy={HORA_CY - 30} r={98} fill="url(#hora-hubHalo)" />
-          <g stroke="#f6a623" strokeWidth="2.4" strokeLinecap="round" opacity="0.85">
+          <g stroke={illustration.orange53b} strokeWidth="2.4" strokeLinecap="round" opacity="0.85">
             {Array.from({ length: 12 }, (_, i) => {
               const a = (i * 30 * Math.PI) / 180;
               const sunR = 27;
@@ -461,7 +462,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
 
         <circle cx={mx} cy={my} r={15} fill="var(--brand-gold)" opacity={0.5} filter="url(#hora-markGlow)" />
         <circle cx={mx} cy={my} r={10} fill="none" stroke="var(--brand-gold)" strokeWidth="2.4" />
-        <circle cx={mx} cy={my} r={6} fill="#fff" />
+        <circle cx={mx} cy={my} r={6} fill={neutral.white} />
       </svg>
     </div>
   );
@@ -558,7 +559,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
           <div className="flex min-w-0 flex-1 flex-col items-center gap-6 overflow-y-auto px-4 py-6 text-center max-sm:gap-4 max-sm:px-3 max-sm:py-4">
             {!expanded ? (
               <div className="w-full max-w-[640px]">
-                <div className="flex items-center justify-center gap-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-secondary before:h-px before:w-[22px] before:bg-secondary/70 before:content-[''] dark:text-[var(--hora-yellow)] dark:before:bg-[var(--hora-yellow)]/70">
+                <div className="flex items-center justify-center gap-2.5 text-xs font-semibold uppercase tracking-eyebrow-wide text-secondary before:h-px before:w-[22px] before:bg-secondary/70 before:content-[''] dark:text-[var(--hora-yellow)] dark:before:bg-[var(--hora-yellow)]/70">
                   {bilingualText(lang, "होरा · ग्रहीय होरा", "Hora · Planetary Hours")}
                 </div>
                 <h2 className="mt-3.5 text-[clamp(28px,4vw,40px)] font-bold leading-tight tracking-tight text-foreground dark:text-[var(--hora-ink)]">
@@ -589,7 +590,7 @@ export function HoraRing({ p, isToday, timezone }: Props) {
             {ringNode}
 
             <div className="w-full max-w-[440px] text-left">
-              <div className="mb-2.5 text-center text-sm font-semibold uppercase tracking-[0.18em] dark:text-[var(--hora-ink-faint)]">
+              <div className="mb-2.5 text-center text-sm font-semibold uppercase tracking-eyebrow-wide dark:text-[var(--hora-ink-faint)]">
                 {bilingualText(lang, "सात दिन · भित्र → बाहिर", "Seven days · inner → outer")}
               </div>
               {HORA_WEEK.map((w, i) => {

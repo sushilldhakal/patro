@@ -18,6 +18,7 @@ import { EclipticPlane, OrbitPath, Ray, orientRay } from "@/components/learn/dia
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration, neutral } from "@vedic-patro/design-tokens";
 const D2R = Math.PI / 180;
 const SIDEREAL_MONTH = 27.32166;
 const YEAR_DAYS = 365.2422;
@@ -100,8 +101,8 @@ const MoonOrbitTiltScene = memo(function MoonOrbitTiltScene({ clock, precT, onSa
 
     if (moonRef.current) {
       const mat = moonRef.current.material as THREE.MeshStandardMaterial;
-      mat.color.set(status === "lunar" ? DIAGRAM_LABEL_COLOR.warn : status === "solar" ? "#33373d" : "#cbd5e1");
-      mat.emissive?.set(status === "lunar" ? DIAGRAM_LABEL_COLOR.warn : "#000000");
+      mat.color.set(status === "lunar" ? DIAGRAM_LABEL_COLOR.warn : status === "solar" ? illustration.gray22 : illustration.sky84);
+      mat.emissive?.set(status === "lunar" ? DIAGRAM_LABEL_COLOR.warn : neutral.black);
       mat.emissiveIntensity = status === "lunar" ? 0.5 : 0;
     }
 
@@ -144,7 +145,7 @@ const MoonOrbitTiltScene = memo(function MoonOrbitTiltScene({ clock, precT, onSa
       </mesh>
       <mesh ref={moonRef}>
         <sphereGeometry args={[0.026, 16, 16]} />
-        <meshStandardMaterial color={"#cbd5e1"} roughness={0.9} />
+        <meshStandardMaterial color={illustration.sky84} roughness={0.9} />
       </mesh>
       <mesh ref={dropRef}>
         <cylinderGeometry args={[0.0018, 0.0018, 1, 6]} />

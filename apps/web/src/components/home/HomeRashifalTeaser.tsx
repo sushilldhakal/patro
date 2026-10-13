@@ -19,6 +19,8 @@ import {
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
 import { RashifalPersonalCard } from "@/components/rashifal/RashifalPersonalCard";
 import { HomeRashifalSignPicker } from "@/components/home/HomeRashifalSignPicker";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 /**
  * Monthly rashifal on Home — same API and card components as /jyotish/rashifal
@@ -101,12 +103,12 @@ export function HomeRashifalTeaser({
 
   return (
     <section>
-      <div className="mb-3 flex flex-col items-center gap-1 text-center">
-        <h2 className="m-0 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+      <div className={cn("text-center", homeClasses.rashifalHeader)}>
+        <h2 className={cn("m-0", homeClasses.rashifalTitle)}>
           {t("home_rashifal.section_title")}
         </h2>
         {monthLabel ? (
-          <p className="m-0 text-xs font-semibold text-secondary">{monthLabel}</p>
+          <p className={cn("m-0", homeClasses.rashifalMonth)}>{monthLabel}</p>
         ) : null}
       </div>
 
@@ -138,18 +140,18 @@ export function HomeRashifalTeaser({
       ) : null}
 
       {!loading && hasContent ? (
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
+        <div className={homeClasses.rashifalLinks}>
           <Link
             to="/jyotish/rashifal"
             search={linkSearch}
-            className="font-semibold text-secondary no-underline hover:underline"
+            className={cn(homeClasses.rashifalLinkPrimary, "no-underline hover:underline")}
           >
             {hasUsableProfile ? t("home_rashifal.see_full") : t("home_rashifal.see_yours")} →
           </Link>
           <Link
             to="/jyotish/rashifal"
             search={linkSearch}
-            className="font-semibold text-muted-foreground no-underline hover:text-secondary hover:underline"
+            className={cn(homeClasses.rashifalLinkSecondary, "no-underline hover:text-secondary hover:underline")}
           >
             {t("home_rashifal.see_daily")}
           </Link>

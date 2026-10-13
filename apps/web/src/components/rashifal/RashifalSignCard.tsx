@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@vedic-patro/domain/utils";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { useLocale } from "@/i18n/locale";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
@@ -32,13 +33,13 @@ type Props = {
 /** Five-star strength read straight from the server's tone band. */
 function StarMeter({ stars, tone }: { stars: number; tone?: NavataraTone }) {
   return (
-    <span className="inline-flex gap-0.5" aria-hidden="true">
+    <span className={cn("inline-flex", rashifalClasses.stars)} aria-hidden="true">
       {[1, 2, 3, 4, 5].map((n) => (
         <span
           key={n}
           className={cn(
-            "size-1.5 rounded-full",
-            n <= stars ? rashifalToneBar(tone) : "bg-border",
+            rashifalClasses.star,
+            n <= stars ? rashifalToneBar(tone) : rashifalClasses.starOff,
           )}
         />
       ))}
@@ -56,10 +57,10 @@ function LuckyCell({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-1.5" title={label}>
+    <div className={cn("flex", rashifalClasses.luckyCell)} title={label}>
       <Icon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
       <span className="sr-only">{label}: </span>
-      <span className="truncate text-xs font-semibold text-foreground">{value}</span>
+      <span className={cn("truncate", rashifalClasses.luckyValue)}>{value}</span>
     </div>
   );
 }
@@ -98,27 +99,27 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
   return (
     <article
       className={cn(
-        "flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card",
+        rashifalClasses.card,
         "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
       )}
     >
-      <header className="flex items-start gap-3 border-b border-border bg-secondary/[0.08] px-4 py-3 dark:bg-secondary/15">
+      <header className={rashifalClasses.header}>
         <RashiGlyphIcon
           name={getRashiName(sign.id, lang)}
           number={sign.id}
           size={36}
           className="shrink-0"
         />
-        <div className="min-w-0 flex-1">
-          <h3 className="m-0 text-base font-bold leading-snug text-foreground">{displayName}</h3>
-          <p className="m-0 mt-1 text-xs leading-relaxed text-muted-foreground">
+        <div className={rashifalClasses.headerBody}>
+          <h3 className={rashifalClasses.name}>{displayName}</h3>
+          <p className={rashifalClasses.nameSub}>
             {sign.syllables_ne}
           </p>
         </div>
         {taraLine && tone ? (
           <span
             className={cn(
-              "shrink-0 rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide",
+              rashifalClasses.taraBadge,
               patroNavataraToneBg(tone),
             )}
           >
@@ -128,17 +129,17 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
       </header>
 
       {/* Overall strength — the one number that summarises every server layer. */}
-      <div className="flex items-center gap-2.5 border-b border-border/60 px-4 py-2.5">
+      <div className={rashifalClasses.meter}>
         <StarMeter stars={sign.stars ?? 3} tone={sign.tone} />
-        <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className={rashifalClasses.meterTrack}>
           <div
-            className={cn("h-full rounded-full transition-[width]", rashifalToneBar(sign.tone))}
+            className={cn(rashifalClasses.meterFill, "transition-[width]", rashifalToneBar(sign.tone))}
             style={{ width: `${sign.percent ?? 50}%` }}
           />
         </div>
         <span
           className={cn(
-            "shrink-0 font-num tabular-nums text-xs font-bold",
+            rashifalClasses.percent,
             rashifalToneText(sign.tone),
           )}
         >
@@ -148,31 +149,31 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
       </div>
 
       {grade ? (
-        <p className="m-0 border-b border-border/60 px-4 pb-2 text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className={rashifalClasses.grade}>
           {grade}
         </p>
       ) : null}
 
       {/* Six life areas, icon-led so the row scans without reading a word. */}
       {sign.domains?.length ? (
-        <ul className="m-0 grid list-none grid-cols-3 gap-x-3 gap-y-2 border-b border-border/60 px-4 py-3">
+        <ul className={cn("m-0 grid list-none grid-cols-3 gap-x-3 gap-y-2", rashifalClasses.domains)}>
           {sign.domains.map((domain) => {
             const Icon = RASHIFAL_DOMAIN_ICON[domain.key];
             const label = ne ? domain.label_ne : domain.label_en;
             return (
-              <li key={domain.key} className="m-0 min-w-0" title={`${label} · ${domain.percent}%`}>
-                <div className="flex items-center gap-1">
+              <li key={domain.key} className={rashifalClasses.domain} title={`${label} · ${domain.percent}%`}>
+                <div className={rashifalClasses.domainHead}>
                   <Icon
                     className={cn("size-3.5 shrink-0", rashifalToneText(domain.tone))}
                     aria-hidden="true"
                   />
-                  <span className="truncate text-[0.65rem] font-semibold text-muted-foreground">
+                  <span className={cn("truncate", rashifalClasses.domainLabel)}>
                     {label}
                   </span>
                 </div>
-                <div className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
+                <div className={rashifalClasses.domainTrack}>
                   <div
-                    className={cn("h-full rounded-full", rashifalToneBar(domain.tone))}
+                    className={cn(rashifalClasses.domainFill, rashifalToneBar(domain.tone))}
                     style={{ width: `${domain.percent}%` }}
                   />
                 </div>
@@ -182,12 +183,12 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
         </ul>
       ) : null}
 
-      <p className="m-0 flex-1 px-4 py-3.5 text-sm leading-relaxed text-foreground/90">
+      <p className={cn("m-0 flex-1", rashifalClasses.prediction)}>
         {prediction}
       </p>
 
       {/* Lucky row — colour, number, direction and (daily only) the sign lord's hora. */}
-      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-border bg-muted/25 px-4 py-2.5">
+      <div className={cn("grid grid-cols-2", rashifalClasses.lucky)}>
         <LuckyCell
           icon={RASHIFAL_LUCKY_ICON.color}
           label={t("rashifal.lucky_color")}
@@ -216,7 +217,12 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
 
       <button
         type="button"
-        className="flex min-h-10 w-full items-center justify-between gap-2 border-t border-border px-4 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+        className={cn(
+          "flex",
+          rashifalClasses.whyButton,
+          rashifalClasses.whyLabel,
+          "transition-colors hover:bg-muted/40 hover:text-foreground",
+        )}
         aria-expanded={open}
         aria-controls={detailsId}
         onClick={() => setOpen((v) => !v)}
@@ -229,22 +235,19 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
       </button>
 
       {open ? (
-        <div id={detailsId} className="border-t border-border bg-surface-muted px-4 py-3">
+        <div id={detailsId} className={rashifalClasses.details}>
           {sign.components?.length ? (
-            <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+            <ul className={cn("m-0 flex list-none flex-col p-0", rashifalClasses.componentList)}>
               {sign.components.map((component) => (
-                <li key={component.key} className="m-0 flex items-baseline gap-2 text-xs">
-                  <span className="w-24 shrink-0 font-semibold text-foreground">
+                <li key={component.key} className={cn("m-0 flex", rashifalClasses.componentRow)}>
+                  <span className={rashifalClasses.componentLabel}>
                     {ne ? component.label_ne : component.label_en}
                   </span>
-                  <span className="min-w-0 flex-1 text-muted-foreground">
+                  <span className={rashifalClasses.componentNote}>
                     {ne ? component.note_ne : component.note_en}
                   </span>
                   <span
-                    className={cn(
-                      "shrink-0 font-num tabular-nums font-bold",
-                      rashifalToneText(component.tone),
-                    )}
+                    className={cn(rashifalClasses.componentValue, rashifalToneText(component.tone))}
                   >
                     {toNepaliDigits(component.percent, lang)}
                   </span>
@@ -258,7 +261,7 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
           ) : null}
 
           {lord ? (
-            <p className="m-0 mt-3 border-t border-border/60 pt-3 text-xs text-muted-foreground">
+            <p className={rashifalClasses.lordLine}>
               {t("rashifal.lord_line", {
                 lord: ne ? lord.lord_ne : lord.lord_en,
                 house: toNepaliDigits(lord.house, lang),
@@ -269,7 +272,7 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
           ) : null}
 
           {period !== "daily" && sign.best_day && sign.weak_day ? (
-            <p className="m-0 mt-2 text-xs text-muted-foreground">
+            <p className={rashifalClasses.footNote}>
               {t("rashifal.window_days", {
                 best: dayMarkerLabel(sign.best_day, lang),
                 weak: dayMarkerLabel(sign.weak_day, lang),
@@ -278,7 +281,7 @@ export function RashifalSignCard({ sign, period, taraLine, tone }: Props) {
           ) : null}
 
           {remedy ? (
-            <p className="m-0 mt-2 text-xs font-medium text-foreground/80">
+            <p className={rashifalClasses.remedy}>
               {t("rashifal.remedy")}: {remedy}
             </p>
           ) : null}

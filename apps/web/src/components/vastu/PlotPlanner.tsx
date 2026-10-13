@@ -14,11 +14,13 @@ import {
   type HousePlan,
   type StoreyId,
 } from "@vedic-patro/domain/vastu-plan";
-import { HouseRequirementsForm, readPlan } from "./HouseRequirementsForm";
+import { HouseRequirementsForm } from "./HouseRequirementsForm";
+import { readPlan } from "./house-plan-storage";
 import { HouseSketch } from "./HouseSketch";
 import { OwnerCompatibility } from "./OwnerCompatibility";
 import { cn } from "@vedic-patro/domain/utils";
 import { parseDimension } from "@vedic-patro/domain/vastu-plot-input";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
 const HOUSE_KEY = "vp.vastu.house";
 
@@ -84,8 +86,7 @@ function readPlot(): PlotState {
   }
 }
 
-const selectClass =
-  "h-9 min-w-0 rounded-lg border border-border bg-card px-2 text-sm text-foreground cursor-pointer";
+const selectClass = cn(vastuClasses.selectControl, "cursor-pointer");
 
 function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);
@@ -143,19 +144,19 @@ export function PlotPlanner() {
   const preferredCorner = sketch?.entrance.preferred_corner;
 
   return (
-    <section className="rounded-2xl border border-border">
-      <header className="flex flex-wrap items-center gap-1.5 border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold text-foreground">{t("vastu.plot.heading")}</h2>
+    <section className={vastuClasses.section}>
+      <header className={vastuClasses.sectionHeader}>
+        <h2 className={vastuClasses.sectionHeading}>{t("vastu.plot.heading")}</h2>
       </header>
 
-      <div className="space-y-4 p-4">
-        <p className="text-sm">{t("vastu.plot.blurb")}</p>
+      <div className={vastuClasses.plotBody}>
+        <p className={vastuClasses.planBlurb}>{t("vastu.plot.blurb")}</p>
 
         <OwnerCompatibility />
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="plot-length" className="mb-1 block text-xs font-semibold text-muted-foreground">
+            <label htmlFor="plot-length" className={cn(vastuClasses.fieldLabel, "block")}>
               {t("vastu.plot.length_label")}
             </label>
             <Input
@@ -168,7 +169,7 @@ export function PlotPlanner() {
             />
           </div>
           <div>
-            <label htmlFor="plot-breadth" className="mb-1 block text-xs font-semibold text-muted-foreground">
+            <label htmlFor="plot-breadth" className={cn(vastuClasses.fieldLabel, "block")}>
               {t("vastu.plot.breadth_label")}
             </label>
             <Input
@@ -183,7 +184,7 @@ export function PlotPlanner() {
         </div>
 
         <div>
-          <label htmlFor="plot-facing" className="mb-1 block text-xs font-semibold text-muted-foreground">
+          <label htmlFor="plot-facing" className={cn(vastuClasses.fieldLabel, "block")}>
             {t("vastu.plot.facing_label")}
           </label>
           <select
@@ -201,26 +202,26 @@ export function PlotPlanner() {
         </div>
 
         {hasError && (
-          <p className="text-sm text-destructive">
+          <p className={vastuClasses.destructiveText}>
             {t("vastu.plot.range_error", { min: digits(MIN_M), max: digits(MAX_M) })}
           </p>
         )}
 
         <HouseRequirementsForm plan={house} onChange={updateHouse} />
 
-        <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
-          <h3 className="text-base font-semibold text-foreground">{t("vastu.plan.layout_heading")}</h3>
-          <p className="mt-1 mb-4 text-sm text-muted-foreground">{t("vastu.plan.layout_blurb")}</p>
+        <div className={vastuClasses.layoutCard}>
+          <h3 className={vastuClasses.layoutHeading}>{t("vastu.plan.layout_heading")}</h3>
+          <p className={vastuClasses.layoutBlurb}>{t("vastu.plan.layout_blurb")}</p>
           {!sketch && (
-            <p className="mb-4 text-sm text-muted-foreground" role="status">
+            <p className={vastuClasses.layoutStatus} role="status">
               {sketchQuery.isError ? t("vastu.plan.sketch_error") : t("vastu.plan.sketch_loading")}
             </p>
           )}
           {leftover.length > 0 && (
-            <div className="mb-4 rounded-lg border border-border bg-background px-3 py-2.5">
-              <p className="text-sm font-semibold text-foreground">{t("vastu.plan.cannot_fit_heading")}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{t("vastu.plan.cannot_fit_blurb")}</p>
-              <ul className="mt-2 flex flex-wrap gap-1.5">
+            <div className={vastuClasses.cannotFit}>
+              <p className={vastuClasses.cannotFitHeading}>{t("vastu.plan.cannot_fit_heading")}</p>
+              <p className={vastuClasses.cannotFitBlurb}>{t("vastu.plan.cannot_fit_blurb")}</p>
+              <ul className={vastuClasses.cannotFitList}>
                 {leftover.map((row) => {
                   const many = (counts.get(row.kind) ?? 0) > 1 && row.kind !== "staircase";
                   const name =
@@ -230,7 +231,7 @@ export function PlotPlanner() {
                   return (
                     <li
                       key={row.id}
-                      className="rounded-md border border-border px-2 py-0.5 text-xs font-semibold text-foreground"
+                      className={cn(vastuClasses.cannotFitItem, vastuClasses.cannotFitItemText)}
                     >
                       {name}
                     </li>
@@ -239,11 +240,11 @@ export function PlotPlanner() {
               </ul>
             </div>
           )}
-          <div className="flex flex-col gap-8">
+          <div className={vastuClasses.storeyList}>
             {Array.from({ length: storeys }, (_, i) => i as StoreyId).map((storey) => (
               <div key={storey} className="min-w-0">
                 {storeys > 1 && (
-                  <h4 className="mb-2 text-sm font-semibold text-foreground">
+                  <h4 className={vastuClasses.storeyTitle}>
                     {t(`vastu.plan.floor.${storeyPref(storey)}`)}
                   </h4>
                 )}
@@ -255,63 +256,63 @@ export function PlotPlanner() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">{t("vastu.sketch.disclaimer")}</p>
-          <p className="mt-4 text-sm text-muted-foreground">{t("vastu.plot.buffer_note")}</p>
-          <p className="text-sm text-muted-foreground">{t("vastu.plot.marma_note")}</p>
+          <p className={vastuClasses.mutedNoteTop}>{t("vastu.sketch.disclaimer")}</p>
+          <p className={vastuClasses.mutedNoteTop}>{t("vastu.plot.buffer_note")}</p>
+          <p className={vastuClasses.mutedNote}>{t("vastu.plot.marma_note")}</p>
         </div>
 
         {footprint && ayadi && (
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-card p-3.5">
-              <h3 className="text-sm font-semibold text-foreground">{t("vastu.plot.ayadi_heading")}</h3>
-              <dl className="mt-2 space-y-1.5 text-sm">
-                <div className="flex justify-between gap-2">
-                  <dt className="text-muted-foreground">{t("vastu.plot.footprint_length_label")}</dt>
+            <div className={vastuClasses.infoCard}>
+              <h3 className={vastuClasses.infoHeading}>{t("vastu.plot.ayadi_heading")}</h3>
+              <dl className={cn(vastuClasses.infoRows, "text-sm")}>
+                <div className={vastuClasses.infoRow}>
+                  <dt className={vastuClasses.infoLabel}>{t("vastu.plot.footprint_length_label")}</dt>
                   <dd>
                     {digits(footprint.height.toFixed(1))} {t("vastu.plot.unit_m")} ·{" "}
                     {digits(ayadi.length_hasta.toFixed(1))} {t("vastu.plot.unit_hasta")}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-2">
-                  <dt className="text-muted-foreground">{t("vastu.plot.footprint_width_label")}</dt>
+                <div className={vastuClasses.infoRow}>
+                  <dt className={vastuClasses.infoLabel}>{t("vastu.plot.footprint_width_label")}</dt>
                   <dd>
                     {digits(footprint.width.toFixed(1))} {t("vastu.plot.unit_m")} ·{" "}
                     {digits(ayadi.width_hasta.toFixed(1))} {t("vastu.plot.unit_hasta")}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-2">
-                  <dt className="text-muted-foreground">{t("vastu.plot.ayadi_remainder_label")}</dt>
+                <div className={vastuClasses.infoRow}>
+                  <dt className={vastuClasses.infoLabel}>{t("vastu.plot.ayadi_remainder_label")}</dt>
                   <dd className="font-semibold">{digits(ayadi.remainder)}</dd>
                 </div>
               </dl>
               <p
                 className={cn(
-                  "mt-2 text-sm font-semibold",
-                  ayadi.auspicious ? "text-emerald-600 dark:text-emerald-400" : "text-destructive",
+                  vastuClasses.ayadiVerdict,
+                  ayadi.auspicious ? vastuClasses.ayadiGood : vastuClasses.ayadiBad,
                 )}
               >
                 {t(ayadi.auspicious ? "vastu.plot.ayadi_auspicious" : "vastu.plot.ayadi_inauspicious")}
               </p>
               {ayadi.suggested_hasta !== null && ayadi.suggested_meters !== null && (
-                <p className="mt-1 text-sm">
+                <p className={vastuClasses.infoParagraphTight}>
                   {t("vastu.plot.ayadi_suggestion", {
                     hasta: digits(ayadi.suggested_hasta),
                     meters: digits(ayadi.suggested_meters.toFixed(1)),
                   })}
                 </p>
               )}
-              <p className="mt-2 text-sm text-muted-foreground">{t("vastu.plot.ayadi_disclaimer")}</p>
+              <p className={vastuClasses.infoDisclaimer}>{t("vastu.plot.ayadi_disclaimer")}</p>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-3.5">
-              <h3 className="text-sm font-semibold text-foreground">{t("vastu.plot.entrance_heading")}</h3>
-              <p className="mt-2 text-sm">
+            <div className={vastuClasses.infoCard}>
+              <h3 className={vastuClasses.infoHeading}>{t("vastu.plot.entrance_heading")}</h3>
+              <p className={vastuClasses.infoParagraph}>
                 {t("vastu.plot.entrance_note", {
                   wall: t(`vastu.dir.${plot.facing}.name`),
                   corner: t(`vastu.dir.${preferredCorner}.name`),
                 })}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">{t("vastu.plot.entrance_disclaimer")}</p>
+              <p className={vastuClasses.infoDisclaimer}>{t("vastu.plot.entrance_disclaimer")}</p>
             </div>
           </div>
         )}

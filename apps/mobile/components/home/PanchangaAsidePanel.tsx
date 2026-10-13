@@ -12,6 +12,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { ErrorState, LoadingState } from "@/components/ui/States";
 import { panchangaMatchesAside } from "@/lib/panchanga-aside-match";
 import { type Era, isGregorianEra } from "@vedic-patro/domain/era";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 const TABS = ["panchanga", "sait", "muhurta"] as const;
 type TabId = (typeof TABS)[number];
@@ -72,13 +73,13 @@ export function PanchangaAsidePanel({
     : undefined;
 
   return (
-    <View className="overflow-hidden rounded-2xl border border-border bg-card">
-      <View className="flex-row items-baseline gap-2.5 border-b border-border px-4 py-3.5">
-        <Text className="text-title flex-1 font-bold text-foreground">
+    <View className={homeClasses.asideShell}>
+      <View className={homeClasses.asideHeader}>
+        <Text className={homeClasses.asideTitle}>
           {isSelectedToday ? pick("आजको पञ्चाङ्ग", "Today's Panchanga") : pick("पञ्चाङ्ग", "Panchanga")}
         </Text>
         <Pressable onPress={() => router.push({ pathname: "/panchanga", params: { date: selectedAd } })}>
-          <Text className="text-caption text-secondary">{pick("पूरा विवरण →", "Full detail →")}</Text>
+          <Text className={homeClasses.asideLink}>{pick("पूरा विवरण →", "Full detail →")}</Text>
         </Pressable>
       </View>
 
@@ -92,30 +93,34 @@ export function PanchangaAsidePanel({
         p={activeP}
       />
 
-      <View className="overflow-hidden bg-card">
-        <View className="flex-row border-b border-border bg-surface-muted">
+      <View className={homeClasses.asideBody}>
+        <View className={cn("flex-row", homeClasses.asideTabBar)}>
           {TABS.map((id) => (
             <Pressable
               key={id}
               onPress={() => setTab(id)}
               className={cn(
-                "min-h-10 flex-1 items-center justify-center border-b-2 px-1 py-2.5",
-                tab === id ? "border-secondary bg-tab-active/70" : "border-transparent",
+                homeClasses.asideTab,
+                "items-center justify-center",
+                tab === id && homeClasses.asideTabActive,
               )}
             >
               <Text
                 className={cn(
-                  "text-caption text-center font-semibold",
-                  tab === id ? "font-bold text-foreground" : "text-muted-foreground",
+                  homeClasses.asideTabLabel,
+                  tab === id ? homeClasses.asideTabLabelActive : homeClasses.asideTabLabelIdle,
                 )}
               >
                 {t(`panchanga.tabs.${id}`)}
               </Text>
+              {tab === id ? (
+                <View className={homeClasses.asideTabIndicator} />
+              ) : null}
             </Pressable>
           ))}
         </View>
 
-        <View className="min-h-[12rem] p-3">
+        <View className={homeClasses.asidePanel}>
           {error && !p && tab !== "sait" ? (
             <ErrorState
               message={pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}

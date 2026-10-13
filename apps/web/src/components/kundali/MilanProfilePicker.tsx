@@ -26,6 +26,7 @@ import {
 import { ProfileForm, EMPTY_PROFILE, profileToInput } from "@/components/auth/ProfileForm";
 import { listProfiles, type Profile } from "@/lib/auth/client";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export interface MilanProfilePickerHandle {
   openAdd: () => void;
@@ -73,7 +74,7 @@ export const MilanProfilePicker = forwardRef<MilanProfilePickerHandle, Props>(
 
     if (profiles === null) {
       return (
-        <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-6 text-sm">
+        <div className={cn(kundaliDetailClasses.milanPicker.loadingBox, kundaliDetailClasses.milanPicker.loadingText, "flex")}>
           <Loader2 className="size-4 animate-spin" /> {t("common.loading")}
         </div>
       );
@@ -81,7 +82,7 @@ export const MilanProfilePicker = forwardRef<MilanProfilePickerHandle, Props>(
 
     if (error) {
       return (
-        <p className="rounded-xl border border-border bg-card px-4 py-4 text-sm text-destructive">
+        <p className={cn(kundaliDetailClasses.milanPicker.errorBox, kundaliDetailClasses.milanPicker.errorText)}>
           {error}
         </p>
       );
@@ -90,9 +91,9 @@ export const MilanProfilePicker = forwardRef<MilanProfilePickerHandle, Props>(
     if (profiles.length === 0) {
       return (
         <>
-          <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10 text-center">
-            <p className="text-sm text-base text-foreground">{t("milan.no_profiles_title")}</p>
-            <p className="mx-auto mt-1 max-w-md text-sm">
+          <div className={cn(kundaliDetailClasses.milanPicker.emptyBox, "text-center")}>
+            <p className={kundaliDetailClasses.milanPicker.emptyTitle}>{t("milan.no_profiles_title")}</p>
+            <p className={cn(kundaliDetailClasses.milanPicker.emptyBody, "mx-auto")}>
               {t("milan.no_profiles_body")}
             </p>
             <Button className="mt-4" onClick={() => setFormDialog({ mode: "add" })}>
@@ -181,8 +182,8 @@ function RoleSlot({
         )}
       >
         <UserRound className="size-8" />
-        <span className="text-sm font-semibold text-foreground">{label}</span>
-        <span className="text-xs">{emptyLabel}</span>
+        <span className={kundaliDetailClasses.prose.heading}>{label}</span>
+        <span className={kundaliDetailClasses.prose.small}>{emptyLabel}</span>
         <ChevronRight className="size-4" aria-hidden />
       </button>
     );
@@ -195,10 +196,10 @@ function RoleSlot({
 
   return (
     <div className={cn("rounded-2xl border p-4 shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]", accent)}>
-      <div className="mb-2 flex items-start justify-between gap-2">
+      <div className={cn(kundaliDetailClasses.milanPicker.slotHead, "flex")}>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide">{label}</p>
-          <p className="mt-0.5 flex items-center gap-1.5 text-base font-bold text-foreground">
+          <p className={kundaliDetailClasses.milanPicker.slotLabel}>{label}</p>
+          <p className={cn(kundaliDetailClasses.milanPicker.slotName, "mt-0.5 flex items-center gap-1.5")}>
             <span className="truncate">{profile.full_name}</span>
             {profile.is_default ? <Star className="size-3.5 shrink-0 text-secondary" /> : null}
           </p>
@@ -209,7 +210,7 @@ function RoleSlot({
           </Button>
         ) : null}
       </div>
-      <div className="space-y-1 text-xs">
+      <div className={cn(kundaliDetailClasses.milanPicker.slotMeta, "space-y-1")}>
         <p className="flex items-center gap-1.5">
           <Clock className="size-3 shrink-0" />
           {dob}
@@ -270,11 +271,11 @@ function RolePickerDialog({
               <li key={p.id} className="border-b border-border/50 last:border-0">
                 <div className="flex items-center gap-2 rounded-lg p-2">
                   <div className="min-w-0 flex-1">
-                    <p className="flex items-center gap-1 font-semibold text-sm text-foreground">
+                    <p className={cn(kundaliDetailClasses.milanPicker.pickName, "flex items-center gap-1")}>
                       <span className="truncate">{p.full_name}</span>
                       {p.is_default ? <Star className="size-3 shrink-0 text-secondary" /> : null}
                     </p>
-                    <p className="mt-0.5 truncate text-xs">
+                    <p className={cn(kundaliDetailClasses.milanPicker.pickMeta, "truncate")}>
                       {dob}
                       {p.birth_time ? ` · ${p.birth_time}` : ""} · {place}
                     </p>

@@ -17,6 +17,7 @@ import { useLocale } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroAsideTab } from "@/lib/patro-classes";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import type { Profile } from "@/lib/auth/client";
 import {
@@ -158,11 +159,11 @@ export function Rashifal() {
         subtitle={t("rashifal.subtitle")}
       />
 
-      <p className="m-0 mt-1 text-xs uppercase tracking-[0.12em] text-muted-foreground">
+      <p className={rashifalClasses.eyebrow}>
         {t("rashifal.eyebrow")}
       </p>
 
-      <div className="mt-4">
+      <div className={rashifalClasses.navWrap}>
         <PatroDayTimeNav
           era={dayState.display.era}
           date={date}
@@ -192,7 +193,7 @@ export function Rashifal() {
       {/* Period switch — active tab carries its label, the rest stay icon-only
           so four tabs read at a glance without four labels competing. */}
       <div
-        className="mt-4 flex flex-wrap border border-border bg-surface-muted sm:max-w-md sm:rounded-lg sm:overflow-hidden"
+        className={rashifalClasses.tabBar}
         role="tablist"
         aria-label={t("rashifal.tabs_label")}
       >
@@ -209,8 +210,9 @@ export function Rashifal() {
               size="sm"
               className={cn(
                 patroAsideTab(active),
-                "h-auto min-h-11 flex-1 rounded-none px-2 py-2.5",
-                active ? "gap-1.5" : "gap-0",
+                "h-auto",
+                rashifalClasses.tab,
+                active ? rashifalClasses.tabGapActive : rashifalClasses.tabGapIdle,
               )}
               aria-selected={active}
               aria-label={label}
@@ -225,13 +227,13 @@ export function Rashifal() {
       </div>
 
       {/* Signed-in users can narrow the grid to their own saved profile. */}
-      <div className="mt-3 flex flex-col items-center gap-1.5">
+      <div className={rashifalClasses.profileWrap}>
         <RashifalProfilePicker
           selectedId={selectedProfile?.id ?? null}
           onSelect={handleSelectProfile}
         />
         {profileError ? (
-          <p className="m-0 text-xs text-destructive">{t("rashifal.profile.missing_birth_data")}</p>
+          <p className={rashifalClasses.profileError}>{t("rashifal.profile.missing_birth_data")}</p>
         ) : null}
       </div>
 
@@ -240,29 +242,29 @@ export function Rashifal() {
         // the general twelve-sign sweep. This is a genuinely different
         // computation (natal Lagna, natal Ashtakavarga, running dasha), not a
         // filtered view of the cards above, so the two are not shown together.
-        <div className="mt-6 flex flex-col gap-4" role="tabpanel">
-          <div className="flex items-center justify-center gap-1.5 text-sm text-secondary">
+        <div className={rashifalClasses.panel} role="tabpanel">
+          <div className={rashifalClasses.selectedBar}>
             <Users className="size-4" aria-hidden="true" />
             <span>{t("rashifal.profile.showing_for", { name: selectedProfile.full_name })}</span>
             <button
               type="button"
-              className="font-semibold underline underline-offset-2 hover:no-underline"
+              className={cn(rashifalClasses.selectedLink, "hover:no-underline")}
               onClick={() => setSelectedProfile(null)}
             >
               {t("rashifal.profile.show_all")}
             </button>
           </div>
-          <p className="m-0 text-center text-xs text-muted-foreground">
+          <p className={rashifalClasses.methodNote}>
             {t("rashifal.personal.method_note")}
           </p>
           {personalQ.isError ? (
             <DataUnavailablePanel message={t("rashifal.error")} className="mt-2" />
           ) : personalQ.isLoading || !personalQ.data ? (
-            <div className="mt-2 rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm">
+            <div className={cn("mt-2", rashifalClasses.statusBox)}>
               {t("rashifal.profile.resolving")}
             </div>
           ) : (
-            <div className="mx-auto w-full sm:max-w-md">
+            <div className={rashifalClasses.personalWrap}>
               <RashifalPersonalCard name={selectedProfile.full_name} personal={personalQ.data} />
             </div>
           )}
@@ -270,25 +272,25 @@ export function Rashifal() {
       ) : error ? (
         <DataUnavailablePanel message={t("rashifal.error")} className="mt-6" />
       ) : loading ? (
-        <div className="mt-6 rounded-xl border border-dashed border-border bg-muted/20 px-5 py-12 text-center text-sm">
+        <div className={cn("mt-6", rashifalClasses.statusBox)}>
           {t("common.loading")}
         </div>
       ) : !rashifal?.signs?.length ? (
         <DataUnavailablePanel message={t("common.no_data")} className="mt-6" />
       ) : (
-        <div className="mt-6 flex flex-col gap-4" role="tabpanel">
+        <div className={rashifalClasses.panel} role="tabpanel">
           {period !== "daily" ? (
-            <p className="m-0 text-center text-sm text-muted-foreground">
+            <p className={rashifalClasses.intro}>
               {t(`rashifal.period_intro.${period}`)}
             </p>
           ) : null}
           {moonRef ? (
-            <p className="m-0 text-center text-sm text-muted-foreground">{moonRef}</p>
+            <p className={rashifalClasses.intro}>{moonRef}</p>
           ) : null}
-          <p className="m-0 text-center text-xs text-muted-foreground">
+          <p className={rashifalClasses.methodNote}>
             {t("rashifal.method_note")}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className={rashifalClasses.signGrid}>
             {rashifal.signs.map((sign) => {
               // Chandrabala is a 2¼-day reading. It belongs on a day or a week;
               // over a month or a year the server all but drops the layer, so

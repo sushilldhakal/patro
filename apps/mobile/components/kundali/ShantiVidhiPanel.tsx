@@ -17,11 +17,11 @@ import {
   TableRow,
   TableScrollShell,
 } from "@/components/ui/DataTable";
-import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { scrollViewIntoView } from "@/lib/page-scroll";
-import { brand } from "@vedic-patro/design-tokens";
+import { space } from "@vedic-patro/design-tokens";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 function InfoTile({
   icon,
@@ -38,17 +38,14 @@ function InfoTile({
   return (
     <View
       style={{ width: width as never }}
-      className="flex-row items-start gap-2.5 rounded-lg border border-border bg-card p-3"
+      className={sh.tile}
     >
-      <Ionicons name={icon} size={16} color={colors.secondary} style={{ marginTop: 2 }} />
+      <Ionicons name={icon} size={16} color={colors.secondary} style={{ marginTop: space.hair }} />
       <View className="min-w-0 flex-1">
-        <Text
-          className="text-caption uppercase tracking-wide text-muted-foreground"
-          style={nepaliTextStyle(11)}
-        >
+        <Text className={sh.tileLabel} style={nepaliTextStyle(11)}>
           {label}
         </Text>
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={sh.tileValue} style={nepaliTextStyle(14)}>
           {value}
         </Text>
       </View>
@@ -56,12 +53,14 @@ function InfoTile({
   );
 }
 
-const REMEDY_BADGE: Record<GrahaShantiFinding["remedy"], { border: string; bg: string; text: string }> = {
-  shanti: { border: brand.blue, bg: "#0b565a1a", text: brand.blue },
-  strengthen: { border: "#10b98166", bg: "#10b9811a", text: "#059669" },
-  pacify: { border: "#f59e0b66", bg: "#f59e0b1a", text: brand.saffron },
-  pacify_transit: { border: "#f59e0b66", bg: "#f59e0b1a", text: brand.saffron },
-  soothe: { border: "#0ea5e966", bg: "#0ea5e91a", text: "#0284c7" },
+const sh = kundaliDetailClasses.shanti;
+
+const REMEDY_BADGE: Record<GrahaShantiFinding["remedy"], { box: string; text: string }> = {
+  shanti: { box: sh.remedyShanti, text: sh.remedyShantiText },
+  strengthen: { box: sh.remedyStrengthen, text: sh.remedyStrengthenText },
+  pacify: { box: sh.remedyPacify, text: sh.remedyPacifyText },
+  pacify_transit: { box: sh.remedyPacify, text: sh.remedyPacifyText },
+  soothe: { box: sh.remedySoothe, text: sh.remedySootheText },
 };
 
 /**
@@ -85,39 +84,35 @@ function ShantiFindingCard({
   const badge = REMEDY_BADGE[finding.remedy];
 
   return (
-    <View style={{ width: width as never }} className="rounded-xl border border-border bg-card p-4">
-      <View className="flex-row flex-wrap items-center justify-between gap-2">
+    <View style={{ width: width as never }} className={sh.finding}>
+      <View className={sh.findingHead}>
         <Text
-          className="text-caption shrink uppercase tracking-wide text-muted-foreground"
+          className={cn(sh.findingStep, "shrink")}
           style={nepaliTextStyle(11)}
         >
           {pick(finding.stepTitleNe, finding.stepTitleEn)}
         </Text>
-        <View
-          style={{ borderColor: badge.border, backgroundColor: badge.bg }}
-          className="rounded-full border px-2.5 py-0.5"
-        >
-          <Text className="text-caption font-semibold" style={[nepaliTextStyle(12), { color: badge.text }]}>
+        <View className={cn(sh.remedyBadge, badge.box)}>
+          <Text className={cn(sh.remedyBadgeText, badge.text)} style={nepaliTextStyle(12)}>
             {t(`kundali.x.shanti_remedy_${finding.remedy}`)}
           </Text>
         </View>
       </View>
-      <View className="mt-1.5 flex-row items-center gap-2">
+      <View className={sh.findingGraha}>
         <GrahaPlanetIcon graha={finding.graha as GrahaKey} size={28} />
-        <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+        <Text className={sh.findingName} style={nepaliTextStyle(18)}>
           {pick(nameNe, nameEn)}
         </Text>
       </View>
-      <Text className="text-body mt-1 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className={sh.findingReason} style={nepaliTextStyle(14)}>
         {pick(finding.reasonNe, finding.reasonEn)}
       </Text>
       <Pressable
         onPress={() => onSelect(finding.graha)}
-        style={{ backgroundColor: colorWithAlpha(brand.blue, 0.1) }}
-        className="mt-3 flex-row items-center gap-1.5 self-start rounded-lg border border-secondary px-3 py-1.5 active:opacity-80"
+        className={cn(sh.findingButton, "self-start active:opacity-80")}
       >
         <Ionicons name="arrow-down-circle-outline" size={14} color={colors.secondary} />
-        <Text className="text-body text-secondary" style={nepaliTextStyle(13)}>
+        <Text className={sh.findingButtonText} style={nepaliTextStyle(13)}>
           {pick(`${nameNe} शान्ति हेर्नुहोस्`, `View ${nameEn} shanti`)}
         </Text>
       </Pressable>
@@ -153,9 +148,9 @@ function ShantiFindingsGroup({
         onPress={() => setOpen((o) => !o)}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
-        className="flex-row items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 active:opacity-80"
+        className={cn(sh.groupToggle, "active:opacity-80")}
       >
-        <Text className="text-body flex-1 font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={cn(sh.groupToggleText, "flex-1")} style={nepaliTextStyle(14)}>
           {title} ({digits(findings.length)})
         </Text>
         <Ionicons name={open ? "chevron-up" : "chevron-down"} size={16} color={colors.mutedForeground} />
@@ -218,19 +213,16 @@ export function ShantiVidhiPanel({
   const daanItems = lang === "en" ? graha.daanEn ?? graha.daan : graha.daan;
 
   return (
-    <View className="gap-4">
+    <View className={sh.root}>
       {/* recommendations from this chart — server-computed 4-step decision */}
       {isError ? (
-        <View
-          style={{ backgroundColor: colorWithAlpha(brand.vermilion, 0.1) }}
-          className="rounded-lg border border-destructive/30 p-3"
-        >
-          <Text className="text-body text-destructive" style={nepaliTextStyle(14)}>
+        <View className={sh.errorBox}>
+          <Text className={sh.errorText} style={nepaliTextStyle(14)}>
             {t("kundali.x.shanti_load_error")}
           </Text>
         </View>
       ) : findings.length > 0 ? (
-        <View className="gap-3">
+        <View className={sh.findingsList}>
           <ShantiFindingsGroup
             title={t("kundali.x.shanti_tier_critical")}
             findings={criticalFindings}
@@ -247,13 +239,13 @@ export function ShantiVidhiPanel({
           />
         </View>
       ) : (
-        <View className="rounded-lg border border-border bg-card p-3">
-          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <View className={sh.emptyBox}>
+          <Text className={sh.emptyText} style={nepaliTextStyle(14)}>
             {t("kundali.x.shanti_findings_empty")}
           </Text>
         </View>
       )}
-      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className={sh.basisNote} style={nepaliTextStyle(14)}>
         {t("kundali.x.shanti_basis_note")}
       </Text>
 
@@ -265,19 +257,19 @@ export function ShantiVidhiPanel({
             <Pressable
               key={g.key}
               onPress={() => setSelectedKey(g.key)}
-              style={{
-                width: selectorWidth as never,
-                backgroundColor: active ? colorWithAlpha(brand.blue, 0.1) : colors.card,
-                borderColor: active ? colors.secondary : colors.border,
-              }}
-              className="items-center gap-1 rounded-xl border p-3 active:opacity-80"
+              style={{ width: selectorWidth as never }}
+              className={cn(
+                sh.selector,
+                "active:opacity-80",
+                active ? sh.selectorActive : sh.selectorIdle,
+              )}
             >
               <GrahaPlanetIcon graha={g.key as GrahaKey} size={28} />
               <Text
                 numberOfLines={1}
                 className={cn(
-                  "text-caption font-semibold",
-                  active ? "text-secondary" : "text-foreground",
+                  sh.selectorText,
+                  active ? sh.selectorTextActive : sh.selectorTextIdle,
                 )}
                 style={nepaliTextStyle(12)}
               >
@@ -289,45 +281,45 @@ export function ShantiVidhiPanel({
       </View>
 
       {/* selected graha detail */}
-      <View ref={detailRef} collapsable={false} className="overflow-hidden rounded-2xl border border-border">
+      <View ref={detailRef} collapsable={false} className={sh.detail}>
         <LinearGradient
           colors={[`${graha.colorHex}1f`, "transparent"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <View className="flex-row flex-wrap items-center gap-3 border-b border-border p-5">
+          <View className={sh.detailHead}>
             <View
               style={{ backgroundColor: graha.colorHex }}
               className="h-10 w-1.5 self-stretch rounded-full"
             />
             <GrahaPlanetIcon graha={graha.key as GrahaKey} size={40} />
             <View className="min-w-0 flex-1">
-              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+              <Text className={sh.detailTitle} style={nepaliTextStyle(18)}>
                 {pick(`${graha.nameNe} शान्ति`, `${graha.nameEn} Shanti`)}
               </Text>
-              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+              <Text className={sh.detailSubtitle} style={nepaliTextStyle(12)}>
                 {pick(graha.nameEn, graha.nameNe)}
               </Text>
             </View>
-            <View className="flex-row flex-wrap gap-2">
-              <View className="flex-row items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1">
+            <View className={sh.pills}>
+              <View className={sh.pill}>
                 <Ionicons name="calendar-outline" size={12} color={colors.mutedForeground} />
-                <Text className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+                <Text className="text-xs text-foreground" style={nepaliTextStyle(11)}>
                   {pick(graha.vaaraNe, graha.vaaraEn)}
                 </Text>
               </View>
-              <View className="flex-row items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1">
+              <View className={sh.pill}>
                 <Ionicons name="time-outline" size={12} color={colors.mutedForeground} />
-                <Text className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+                <Text className="text-xs text-foreground" style={nepaliTextStyle(11)}>
                   {pick(graha.shubhSamayaNe, graha.shubhSamayaEn)}
                 </Text>
               </View>
-              <View className="flex-row items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
+              <View className={cn(sh.pill, "gap-1.5")}>
                 <View
                   style={{ backgroundColor: graha.colorHex }}
-                  className="h-2.5 w-2.5 rounded-full"
+                  className={sh.colorDot}
                 />
-                <Text className="text-caption text-foreground" style={nepaliTextStyle(11)}>
+                <Text className="text-xs text-foreground" style={nepaliTextStyle(11)}>
                   {pick(graha.colorNe, graha.colorEn)}
                 </Text>
               </View>
@@ -335,47 +327,47 @@ export function ShantiVidhiPanel({
           </View>
         </LinearGradient>
 
-        <View className="gap-5 p-5">
+        <View className={sh.detailBody}>
           {/* mantra + japa */}
-          <View className="rounded-xl border border-border bg-muted/30 p-4">
+          <View className={sh.mantraBox}>
             <Text
-              className="text-caption mb-1 uppercase tracking-wide text-muted-foreground"
+              className={sh.mantraLabel}
               style={nepaliTextStyle(11)}
             >
               {t("kundali.x.shanti_beeja_mantra_heading")}
             </Text>
             <Text
-              className="text-title font-semibold leading-relaxed text-foreground"
+              className={sh.mantraBig}
               style={nepaliTextStyle(18)}
             >
               {graha.beejMantra}
             </Text>
-            <Text className="text-body mt-1.5 text-muted-foreground" style={nepaliTextStyle(14)}>
+            <Text className={sh.japa} style={nepaliTextStyle(14)}>
               {pick(
                 `जप संख्या: ${digits(graha.japa)} पटक (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} पटक)`,
                 `Japa count: ${digits(graha.japa)} times (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} times)`,
               )}
             </Text>
-            <View className="mt-3 border-t border-border pt-3">
+            <View className={sh.mantraSection}>
               <Text
-                className="text-caption mb-1 uppercase tracking-wide text-muted-foreground"
+                className={sh.mantraLabel}
                 style={nepaliTextStyle(11)}
               >
                 {t("kundali.x.shanti_vedic_mantra_heading")}
               </Text>
-              <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={sh.vedic} style={nepaliTextStyle(14)}>
                 {graha.vedicMantra}
               </Text>
             </View>
-            <View className="mt-3 border-t border-border pt-3">
+            <View className={sh.mantraSection}>
               <Text
-                className="text-caption mb-1 uppercase tracking-wide text-muted-foreground"
+                className={sh.mantraLabel}
                 style={nepaliTextStyle(11)}
               >
                 {t("kundali.x.shanti_tantrik_mantra_heading")}
               </Text>
               <Text
-                className="text-title font-semibold leading-relaxed text-foreground"
+                className={sh.mantraBig}
                 style={nepaliTextStyle(18)}
               >
                 {graha.tantrikMantra}
@@ -385,23 +377,23 @@ export function ShantiVidhiPanel({
 
           {/* stotram + yantra */}
           <View className="gap-3">
-            <View className="rounded-xl border border-border bg-card p-4">
-              <View className="mb-1 flex-row items-center gap-1.5">
+            <View className={sh.stotramBox}>
+              <View className={sh.stotramHead}>
                 <Ionicons name="book-outline" size={16} color={colors.secondary} />
                 <Text
-                  className="text-caption uppercase tracking-wide text-muted-foreground"
+                  className={sh.tileLabel}
                   style={nepaliTextStyle(11)}
                 >
                   {t("kundali.x.shanti_stotram_heading")}
                 </Text>
               </View>
-              <Text className="text-body italic leading-relaxed text-foreground" style={nepaliTextStyle(16)}>
+              <Text className={sh.stotram} style={nepaliTextStyle(16)}>
                 {graha.stotram}
               </Text>
             </View>
-            <View className="rounded-xl border border-border bg-card p-4">
+            <View className={sh.stotramBox}>
               <Text
-                className="text-caption mb-2 text-center uppercase tracking-wide text-muted-foreground"
+                className={sh.yantraLabel}
                 style={nepaliTextStyle(11)}
               >
                 {t("kundali.x.shanti_yantra_heading")}
@@ -411,9 +403,9 @@ export function ShantiVidhiPanel({
                   <View
                     key={i}
                     style={{ width: "31%", aspectRatio: 1 }}
-                    className="items-center justify-center rounded border border-border bg-background"
+                    className={sh.yantraCell}
                   >
-                    <Text className="text-body font-semibold text-foreground">{digits(n)}</Text>
+                    <Text className={sh.yantraText}>{digits(n)}</Text>
                   </View>
                 ))}
               </View>
@@ -467,28 +459,28 @@ export function ShantiVidhiPanel({
           </View>
 
           {/* gem-wearing method */}
-          <View className="rounded-lg border border-border bg-card p-3">
-            <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-              <Text className="font-semibold text-foreground">{t("kundali.x.shanti_gem_detail_label")}</Text>{" "}
+          <View className={sh.noteBox}>
+            <Text className={sh.noteText} style={nepaliTextStyle(14)}>
+              <Text className={sh.noteLabel}>{t("kundali.x.shanti_gem_detail_label")}</Text>{" "}
               {pick(graha.gemDetailNe, graha.gemDetailEn)}
             </Text>
           </View>
 
           {/* daan */}
           <View>
-            <View className="mb-2 flex-row items-center gap-1.5">
+            <View className={sh.donationHead}>
               <Ionicons name="gift-outline" size={16} color={colors.secondary} />
-              <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={sh.donationTitle} style={nepaliTextStyle(14)}>
                 {t("kundali.x.shanti_donation_items")}
               </Text>
             </View>
-            <View className="flex-row flex-wrap gap-2">
+            <View className={sh.donationList}>
               {daanItems.map((item, idx) => (
                 <View
                   key={`${item}-${idx}`}
-                  className="rounded-full border border-border bg-card px-3 py-1"
+                  className={sh.donationChip}
                 >
-                  <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
+                  <Text className={sh.donationChipText} style={nepaliTextStyle(13)}>
                     {item}
                   </Text>
                 </View>
@@ -496,9 +488,9 @@ export function ShantiVidhiPanel({
             </View>
           </View>
 
-          <View className="rounded-lg border border-border bg-card p-3">
-            <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
-              <Text className="font-semibold text-foreground">{t("kundali.x.shanti_use_label")}</Text>{" "}
+          <View className={sh.noteBox}>
+            <Text className={sh.noteText} style={nepaliTextStyle(14)}>
+              <Text className={sh.noteLabel}>{t("kundali.x.shanti_use_label")}</Text>{" "}
               {pick(graha.remedyNe, graha.remedyEn)}
             </Text>
           </View>
@@ -507,7 +499,7 @@ export function ShantiVidhiPanel({
 
       {/* full reference table */}
       <View>
-        <Text className="text-body mb-3 font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <Text className={sh.refTitle} style={nepaliTextStyle(16)}>
           {t("kundali.x.shanti_reference_table")}
         </Text>
         <TableScrollShell>
@@ -530,7 +522,7 @@ export function ShantiVidhiPanel({
                     <Cell width={SHANTI_COLUMNS[0].width} bold>
                       <View className="flex-row items-center gap-1.5">
                         <GrahaPlanetIcon graha={g.key as GrahaKey} size={22} />
-                        <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+                        <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(12)}>
                           {pick(g.nameNe, g.nameEn)}
                         </Text>
                       </View>
@@ -548,7 +540,7 @@ export function ShantiVidhiPanel({
             );
           })}
         </TableScrollShell>
-        <Text className="text-body mt-2 leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={sh.refNote} style={nepaliTextStyle(14)}>
           {t("kundali.x.shanti_disclaimer")}
         </Text>
       </View>
@@ -581,8 +573,8 @@ function Cell({
       <Text
         style={{ width, ...nepaliTextStyle(12) }}
         className={cn(
-          "text-caption px-2.5 py-2",
-          bold ? "font-semibold text-foreground" : "text-muted-foreground",
+          "px-2.5 py-2 text-sm",
+          bold ? "font-semibold text-foreground" : "text-foreground",
         )}
       >
         {children}

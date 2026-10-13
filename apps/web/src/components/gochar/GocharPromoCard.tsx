@@ -6,6 +6,7 @@ import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
 
 type Props = {
   location: PanchangaLocation;
@@ -24,7 +25,8 @@ export function GocharPromoCard({ location, className, compact }: Props) {
       to="/gochar"
       search={patroRouteLinkSearch("/gochar", location, era) as Record<string, unknown>}
       className={cn(
-        "group relative block overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-secondary/[0.08] p-5 shadow-ring-soft transition-[border-color,box-shadow] hover:border-secondary/40 hover:shadow-md",
+        "group relative block bg-gradient-to-br from-card via-card to-secondary/[0.08] shadow-ring-soft transition-[border-color,box-shadow] hover:border-secondary/40 hover:shadow-md",
+        gocharClasses.promoCard,
         className,
       )}
     >
@@ -34,15 +36,15 @@ export function GocharPromoCard({ location, className, compact }: Props) {
       />
       <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
+          <span className={cn("flex", gocharClasses.promoIcon)}>
             <Orbit className="size-6" strokeWidth={1.75} aria-hidden />
           </span>
           <div className="min-w-0">
-            <h2 className="m-0 text-base font-bold text-foreground sm:text-lg">
+            <h2 className={cn("m-0", gocharClasses.promoTitle)}>
               {t("gochar.promo_title")}
             </h2>
             {!compact ? (
-              <p className="mt-1.5 mb-0 text-sm leading-relaxed text-muted-foreground">
+              <p className={cn("mb-0", gocharClasses.promoBody)}>
                 {bilingualText(
                   lang,
                   "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
@@ -52,7 +54,7 @@ export function GocharPromoCard({ location, className, compact }: Props) {
             ) : null}
           </div>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-xl bg-secondary px-4 py-2 text-sm font-semibold text-secondary-foreground transition-colors group-hover:bg-secondary/90 sm:self-center">
+        <span className={cn("inline-flex transition-colors group-hover:bg-secondary/90", gocharClasses.promoCta, gocharClasses.promoCtaText)}>
           {t("gochar.promo_cta")}
           <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </span>

@@ -7,6 +7,9 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
+import { neutral } from "@vedic-patro/design-tokens";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { cn } from "@vedic-patro/domain/utils";
 type Props = {
   icon?: keyof typeof Ionicons.glyphMap;
   titleNe: string;
@@ -30,25 +33,25 @@ export function KundaliLoginPrompt({
   const colors = useThemeColors();
 
   return (
-    <View className="items-center rounded-2xl border border-border bg-card px-6 py-12">
-      <View className="mb-4 h-14 w-14 items-center justify-center rounded-full bg-secondary/15">
+    <View className={cn(kundaliClasses.loginCard, "items-center")}>
+      <View className={kundaliClasses.loginIcon}>
         <Ionicons name={icon} size={28} color={colors.secondary} />
       </View>
-      <Text className="text-title text-center font-bold text-foreground" style={nepaliTextStyle(20)}>
+      <Text className={kundaliClasses.loginTitle} style={nepaliTextStyle(20)}>
         {pick(titleNe, titleEn)}
       </Text>
       <Text
-        className="text-body mt-2 max-w-md text-center text-muted-foreground"
+        className={kundaliClasses.loginBody}
         style={nepaliTextStyle(14)}
       >
         {pick(bodyNe, bodyEn)}
       </Text>
-      <View className="mt-6 flex-row flex-wrap items-center justify-center gap-3">
+      <View className={kundaliClasses.loginActions}>
         <Button
           label={t("kundali.login")}
           size="lg"
           onPress={onLogin}
-          icon={<AppNavIcon name="log-in" size={16} color="#ffffff" />}
+          icon={<AppNavIcon name="log-in" size={16} color={neutral.white} />}
         />
         <Button
           label={t("kundali.signup")}

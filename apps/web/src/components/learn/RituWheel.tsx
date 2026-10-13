@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useLocale } from "@/i18n/locale";
 import { BS_MONTHS_NE, BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 
+import { illustration } from "@vedic-patro/design-tokens";
 /* The viewBox is wider than the wheel on purpose: the four marker labels sit
    outside the month ring, and at a square viewBox the two side ones ran off
    the edge and were clipped mid-word. */
@@ -35,8 +36,8 @@ const R_MONTH_IN = 120;
 const R_RITU_OUT = 116;
 const R_RITU_IN = 74;
 
-const EQUINOX = "#35d05a";
-const SOLSTICE = "#f59e0b";
+const EQUINOX = illustration.green51;
+const SOLSTICE = illustration.orange50;
 
 /** Ayanamsha, degrees — how far the सायन markers sit from बैशाख १. */
 const AYANAMSHA = 24;
@@ -49,12 +50,12 @@ interface Ritu {
 
 /** Six ऋतु, starting at बैशाख — वसन्त straddles चैत–बैशाख, so it opens here. */
 const RITUS: Ritu[] = [
-  { key: "learn.study.ritu.vasanta", colour: "#7ec850" },
-  { key: "learn.study.ritu.grishma", colour: "#f0a020" },
-  { key: "learn.study.ritu.varsha", colour: "#3aa0d8" },
-  { key: "learn.study.ritu.sharad", colour: "#c8a020" },
-  { key: "learn.study.ritu.hemanta", colour: "#8a9ab8" },
-  { key: "learn.study.ritu.shishira", colour: "#9fb8d0" },
+  { key: "learn.study.ritu.vasanta", colour: illustration.green55 },
+  { key: "learn.study.ritu.grishma", colour: illustration.orange53b },
+  { key: "learn.study.ritu.varsha", colour: illustration.sky54 },
+  { key: "learn.study.ritu.sharad", colour: illustration.amber45 },
+  { key: "learn.study.ritu.hemanta", colour: illustration.sky65 },
+  { key: "learn.study.ritu.shishira", colour: illustration.sky74 },
 ];
 
 const MARKERS = [
@@ -109,7 +110,7 @@ export function RituWheel() {
               x={at(i * 60 + 30, (R_RITU_OUT + R_RITU_IN) / 2)[0]}
               y={at(i * 60 + 30, (R_RITU_OUT + R_RITU_IN) / 2)[1] + 3.5}
               textAnchor="middle"
-              className="fill-current text-[10px] font-semibold opacity-85"
+              className="fill-current text-diagram-xs font-semibold opacity-85"
             >
               {t(r.key)}
             </text>
@@ -137,7 +138,7 @@ export function RituWheel() {
               x={at(i * 30 + 15, (R_MONTH_OUT + R_MONTH_IN) / 2)[0]}
               y={at(i * 30 + 15, (R_MONTH_OUT + R_MONTH_IN) / 2)[1] + 3}
               textAnchor="middle"
-              className="fill-current text-[8.5px] opacity-70"
+              className="fill-current text-diagram-2xs opacity-70"
             >
               {m}
             </text>
@@ -161,7 +162,7 @@ export function RituWheel() {
                 x={lx}
                 y={ly + 3}
                 textAnchor={flat ? "middle" : right ? "start" : "end"}
-                className="text-[8px] font-semibold"
+                className="text-diagram-2xs font-semibold"
                 style={{ fill: colour }}
               >
                 {t(k.key)}
@@ -174,15 +175,15 @@ export function RituWheel() {
           x={CX}
           y={CY - 5}
           textAnchor="middle"
-          className="fill-current text-[10px] font-semibold opacity-75"
+          className="fill-current text-diagram-xs font-semibold opacity-75"
         >
           {t("learn.study.ritu.six_ritus")}
         </text>
-        <text x={CX} y={CY + 9} textAnchor="middle" className="fill-current text-[8px] opacity-50">
+        <text x={CX} y={CY + 9} textAnchor="middle" className="fill-current text-diagram-2xs opacity-50">
           {t("learn.study.ritu.two_months_each")}
         </text>
       </svg>
-      <figcaption className="mt-2 text-[11px] leading-snug text-white/45">
+      <figcaption className="mt-2 text-xs leading-snug text-white/45">
         {t("learn.study.ritu.caption")}
       </figcaption>
     </figure>

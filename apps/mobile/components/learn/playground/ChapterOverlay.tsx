@@ -42,7 +42,7 @@ export function ChapterOverlay({ id, onClose }: { id: string; onClose: () => voi
       </Pressable>
       {/* The diagrams bring their own scrubbers and controls, and several are
           taller than this panel — so it scrolls rather than clipping them. */}
-      <ScrollView className="min-h-0" contentContainerStyle={{ padding: 10 }}>
+      <ScrollView className="min-h-0" contentContainerClassName="p-2.5">
         <Diagram />
       </ScrollView>
     </View>

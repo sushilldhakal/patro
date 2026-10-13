@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 type Row = VargaChartEntry & {
   bhava: number;
@@ -29,8 +30,9 @@ type Row = VargaChartEntry & {
   rulesBhavas: number[];
 };
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm";
+const g = kundaliDetailClasses.grahaList;
+const th = kundaliDetailClasses.table.th;
+const td = kundaliDetailClasses.table.td;
 
 export type GrahaDetailsListProps = {
   division: number;
@@ -114,7 +116,8 @@ export function GrahaDetailsList({
               <TableCell
                 className={cn(
                   td,
-                  "sticky left-0 z-10 bg-card pl-3.5 font-semibold text-foreground",
+                  "sticky left-0 z-10 bg-card pl-3.5",
+                  g.name,
                   zebra && "bg-[color-mix(in_srgb,var(--muted)_20%,var(--card))]",
                   row.retrograde &&
                     "bg-[color-mix(in_srgb,var(--secondary)_6%,var(--card))] dark:bg-[color-mix(in_srgb,var(--secondary)_10%,var(--card))]",
@@ -127,7 +130,7 @@ export function GrahaDetailsList({
                   {name}
                   {row.retrograde && (
                     <span
-                      className="inline-flex items-center gap-0.5 text-sm font-bold normal-case text-secondary bg-secondary/15 px-1 py-0.5 rounded-full"
+                      className={cn(g.retroBadge, g.retroText, "inline-flex normal-case")}
                       title={t("kundali.retrograde")}
                     >
                       <RotateCcw className="size-2.5" aria-hidden />
@@ -136,15 +139,15 @@ export function GrahaDetailsList({
                   )}
                 </span>
               </TableCell>
-              <TableCell className={cn(td, "font-mono tabular-nums")}>
-                <span className="text-foreground font-semibold">
+              <TableCell className={cn(td, g.dms)}>
+                <span className={g.dmsDeg}>
                   {digits(String(row.dms.deg).padStart(2, "0"))}°
                 </span>{" "}
-                <span className="font-sans text-foreground">{rashiName(row.dms.rashiNum)}</span>{" "}
+                <span className={cn(g.dmsRashi, "font-sans")}>{rashiName(row.dms.rashiNum)}</span>{" "}
                 {digits(String(row.dms.min).padStart(2, "0"))}′{" "}
                 {digits(String(row.dms.sec).padStart(2, "0"))}″
               </TableCell>
-              <TableCell className={cn(td, "text-center font-semibold text-foreground")}>
+              <TableCell className={cn(td, g.bhava)}>
                 {digits(row.bhava)}
               </TableCell>
               <TableCell className={td}>

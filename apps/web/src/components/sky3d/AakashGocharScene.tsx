@@ -166,6 +166,7 @@ import earthToonUrl from "@/assets/graha/earth-orig.png";
 import milkyWayUrl from "@/assets/milkyway.png";
 import kathmanduUrl from "@/assets/kathmandu.jpeg?url";
 import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeUmbra, placeUmbra, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
+import { illustration, neutral, wheel } from "@vedic-patro/design-tokens";
 export { type ScreenLabel } from "@vedic-patro/domain/sky3d/scene-builders";
 
 /** Same wheel as Learn — radii come from {@link EclipticWheel}. */
@@ -241,8 +242,8 @@ function vedicStarSize(mag: number): number {
  * painted grass reads; a dim warm grey after dark so the hills are still there
  * without glowing.
  */
-const GROUND_NIGHT = new THREE.Color("#3a3834");
-const GROUND_DAY = new THREE.Color("#ffffff");
+const GROUND_NIGHT = new THREE.Color(illustration.gray22);
+const GROUND_DAY = new THREE.Color(neutral.white);
 /**
  * Sun altitudes the ground crosses from night colour to day colour, degrees.
  *
@@ -267,16 +268,16 @@ const OBSERVER_R = GLOBE_R * 1.006;
 /** Bodies are tuned for the 100-unit dome; bring them down to the ring's scale. */
 const GLOBE_BODY_SCALE = 0.55;
 
-const INK_DIM = "#a7c4c3";
-const RETRO = "#ef4444";
-const ZODIAC = "#d8c84a";
-const NAKSHATRA = "#35d05a";
+const INK_DIM = wheel.inkDim;
+const RETRO = illustration.red60;
+const ZODIAC = illustration.amber57;
+const NAKSHATRA = illustration.green51;
 /**
  * The globe's own graticule. Lighter than {@link GRID}, which was picked to sit
  * on a black sky: the same blue over ocean and forest is a line you have to go
  * looking for.
  */
-const GLOBE_GRID = "#a8ccf0";
+const GLOBE_GRID = illustration.sky78;
 const EARTH_RADIUS = 1;
 
 /** Bodies that get a photographic texture; the nodes are not bodies at all. */
@@ -321,9 +322,9 @@ const OUTER_PLANET_NAME: Record<OuterPlanetKey, { ne: string; en: string }> = {
   pluto: { ne: "यम", en: "Pluto" },
 };
 const OUTER_PLANET_COLOR: Record<OuterPlanetKey, string> = {
-  uranus: "#9fe8e6",
-  neptune: "#4d6fe0",
-  pluto: "#c9a27a",
+  uranus: illustration.teal77,
+  neptune: illustration.blue59,
+  pluto: illustration.orange63,
 };
 /** Same table {@link DOME_RADIUS} is, scaled the same way by
     {@link horizonBodyScale} — smaller than बुध, since none of the three has
@@ -554,7 +555,7 @@ function ringTexture(): THREE.CanvasTexture {
   canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (ctx) {
-    ctx.strokeStyle = "#ffffff";
+    ctx.strokeStyle = neutral.white;
     ctx.lineWidth = size * 0.035;
     ctx.beginPath();
     ctx.arc(size / 2, size / 2, size * 0.42, 0, Math.PI * 2);
@@ -860,12 +861,12 @@ function MoonEclipseFx({
     <>
       <mesh ref={veilRef} visible={false} renderOrder={7}>
         <sphereGeometry args={[radius * 1.04, 32, 24]} />
-        <meshBasicMaterial color="#7a1c12" transparent depthWrite={false} />
+        <meshBasicMaterial color={illustration.red27} transparent depthWrite={false} />
       </mesh>
       <mesh ref={coronaRef} visible={false} renderOrder={8}>
         <ringGeometry args={[radius * 1.08, radius * 1.7, 48]} />
         <meshBasicMaterial
-          color="#ffe08a"
+          color={illustration.amber77}
           transparent
           depthWrite={false}
           side={THREE.DoubleSide}
@@ -936,7 +937,7 @@ function GrahaBody({
           ) : (
             <meshStandardMaterial
               map={textures[texKey]}
-              emissive="#ffffff"
+              emissive={neutral.white}
               emissiveMap={textures[texKey]}
               /* A little self-lighting keeps outer grahas legible where the
                  Sun's falloff would otherwise leave them nearly black. */
@@ -980,7 +981,7 @@ function GrahaBody({
       {selected ? (
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[radius * 2.4, radius * 2.65, 40]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.75} side={THREE.DoubleSide} />
+          <meshBasicMaterial color={neutral.white} transparent opacity={0.75} side={THREE.DoubleSide} />
         </mesh>
       ) : null}
     </group>
@@ -1272,7 +1273,7 @@ export function AakashGocharScene({
          loading — the whole point of a marker. */
       const markerMaterial = new THREE.SpriteMaterial({
         map: nebulaMarkerTex,
-        color: "#7fd4ff",
+        color: illustration.sky75,
         transparent: true,
         depthWrite: false,
         depthTest: false,
@@ -1421,7 +1422,7 @@ export function AakashGocharScene({
     if (!hipsDebugOn) clearHipsDebugSnapshot();
     return () => clearHipsDebugSnapshot();
   }, [hipsDebugOn]);
-  const horizonGlow = useMemo(() => makeHorizonGlow(399, "#4a3626", 0.16), []);
+  const horizonGlow = useMemo(() => makeHorizonGlow(399, illustration.orange22, 0.16), []);
   const milkyWayMatRef = useRef<THREE.MeshBasicMaterial | null>(null);
   useEffect(() => {
     if (milkyWayMatRef.current) injectMilkyWayExtinction(milkyWayMatRef.current);
@@ -1455,7 +1456,7 @@ export function AakashGocharScene({
   const umbraFrom = useRef(new THREE.Vector3());
   const umbraTo = useRef(new THREE.Vector3());
   /** Body → the ecliptic plane below or above it: the शर, drawn. */
-  const sharaLine = useMemo(() => makeDynamicLine(2, "#ffffff", 0.55), []);
+  const sharaLine = useMemo(() => makeDynamicLine(2, neutral.white, 0.55), []);
   const lunarUmbra = useMemo(() => makeUmbra(0x5a140e, 0.32), []);
   const solarUmbra = useMemo(() => makeUmbra(0x000000, 0.78, 0.72, 1.05), []);
   useEffect(
@@ -1601,7 +1602,7 @@ export function AakashGocharScene({
     return {
       parallels: GLOBE_PARALLELS.map((p) => asLine(p, GLOBE_GRID, 0.5)),
       meridians: GLOBE_MERIDIANS.map((m) => asLine(m, GLOBE_GRID, 0.5)),
-      equator: asLine(GLOBE_EQUATOR, "#7fd4ff", 0.95),
+      equator: asLine(GLOBE_EQUATOR, illustration.sky75, 0.95),
       tropics: GLOBE_TROPICS.map((t) => ({ ...asLine(t.points, ZODIAC, 0.85), id: t.id, lat: t.lat })),
     };
   }, []);
@@ -1633,9 +1634,9 @@ export function AakashGocharScene({
       else byNakshatra.set(s.nakshatra, [i]);
     });
     const sizeOpts = { faintest: 5.5, brightest: -1.5, minPx: 1.4, maxPx: 5 };
-    const junctionPoints = makeStarPoints(junction.length, "#ffd98a", 5, 0.95);
-    const brightPoints = makeStarPoints(bright.length, "#eaf2ff", 4, 0.82);
-    const faintPoints = makeStarPoints(faint.length, "#c8d8ee", 2.6, 0.58);
+    const junctionPoints = makeStarPoints(junction.length, illustration.amber77, 5, 0.95);
+    const brightPoints = makeStarPoints(bright.length, illustration.sky96, 4, 0.82);
+    const faintPoints = makeStarPoints(faint.length, illustration.sky84, 2.6, 0.58);
     sizeStarsByMagnitude(junctionPoints, junction.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(brightPoints, bright.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(faintPoints, faint.map((i) => stars[i].mag), sizeOpts);
@@ -1648,7 +1649,7 @@ export function AakashGocharScene({
         { indices: bright, object: brightPoints },
         { indices: faint, object: faintPoints },
       ],
-      lines: makeDynamicSegments(links.length * 2, "#9db9dd", 0.5),
+      lines: makeDynamicSegments(links.length * 2, illustration.sky74, 0.5),
     };
   }, []);
 
@@ -1670,9 +1671,9 @@ export function AakashGocharScene({
       else faint.push(i);
     });
     const sizeOpts = { faintest: 5.5, brightest: -1.5, minPx: 1.2, maxPx: 4.4 };
-    const namedPoints = makeStarPoints(named.length, "#ffd98a", 4.4, 0.9);
-    const brightPoints = makeStarPoints(bright.length, "#dfe8fb", 3.4, 0.7);
-    const faintPoints = makeStarPoints(faint.length, "#aebfdd", 2, 0.45);
+    const namedPoints = makeStarPoints(named.length, illustration.amber77, 4.4, 0.9);
+    const brightPoints = makeStarPoints(bright.length, illustration.sky93, 3.4, 0.7);
+    const faintPoints = makeStarPoints(faint.length, illustration.sky77, 2, 0.45);
     sizeStarsByMagnitude(namedPoints, named.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(brightPoints, bright.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(faintPoints, faint.map((i) => stars[i].mag), sizeOpts);
@@ -1685,7 +1686,7 @@ export function AakashGocharScene({
         { indices: bright, object: brightPoints },
         { indices: faint, object: faintPoints },
       ],
-      lines: makeDynamicSegments(links.length * 2, "#7d93b8", 0.4),
+      lines: makeDynamicSegments(links.length * 2, illustration.sky61, 0.4),
     };
   }, []);
 
@@ -1718,9 +1719,9 @@ export function AakashGocharScene({
        and about 25,500 stars, dense enough for the plane to look like the
        plane rather than a scatter of named dots on an empty background. */
     const sizeOpts = { faintest: 7.5, brightest: -1.5, minPx: 1, maxPx: 3 };
-    const brightPoints = makeStarPoints(bright.length, "#eef4ff", 2.6, 0.8);
-    const midPoints = makeStarPoints(mid.length, "#d7e2f5", 1.6, 0.5);
-    const faintPoints = makeStarPoints(faint.length, "#aebedb", 0.9, 0.22);
+    const brightPoints = makeStarPoints(bright.length, illustration.sky96, 2.6, 0.8);
+    const midPoints = makeStarPoints(mid.length, illustration.sky91, 1.6, 0.5);
+    const faintPoints = makeStarPoints(faint.length, illustration.sky77, 0.9, 0.22);
     sizeStarsByMagnitude(brightPoints, bright.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(midPoints, mid.map((i) => stars[i].mag), sizeOpts);
     sizeStarsByMagnitude(faintPoints, faint.map((i) => stars[i].mag), sizeOpts);
@@ -1786,10 +1787,10 @@ export function AakashGocharScene({
     return {
       stars,
       track: poleTrackPoints(23.4392911),
-      trackLine: makeDynamicLine(181, "#8ab4f8", 0.62),
-      points: makeStarPoints(stars.length, "#dceaff", 3, 1),
+      trackLine: makeDynamicLine(181, illustration.sky76, 0.62),
+      points: makeStarPoints(stars.length, illustration.sky93, 3, 1),
       /* The reigning one is drawn on top of its own dot, larger and gold. */
-      crown: makeStarPoints(1, "#ffd166", 4.6, 1),
+      crown: makeStarPoints(1, illustration.amber70, 4.6, 1),
     };
   }, []);
 
@@ -1805,10 +1806,10 @@ export function AakashGocharScene({
    * server's star layer failed soft.
    */
   const vedicField = useMemo(() => {
-    const points = makeStarPoints(VEDIC_STAR_CAPACITY, "#ffe08a", 4.6, 1);
+    const points = makeStarPoints(VEDIC_STAR_CAPACITY, illustration.amber77, 4.6, 1);
     points.geometry.setDrawRange(0, 0);
     points.renderOrder = 4;
-    const crown = makeStarPoints(1, "#fff6c8", 6.4, 1);
+    const crown = makeStarPoints(1, illustration.amber89, 6.4, 1);
     crown.renderOrder = 5;
     crown.visible = false;
     return { points, crown };
@@ -1823,7 +1824,7 @@ export function AakashGocharScene({
    */
   const vedicConstLines = useMemo(() => {
     const total = VEDIC_CONSTELLATION_LINKS.reduce((n, g) => n + g.links.length, 0);
-    const lines = makeDynamicSegments(total * 2, "#e8c179", 0.45);
+    const lines = makeDynamicSegments(total * 2, illustration.orange69, 0.45);
     lines.geometry.setDrawRange(0, 0);
     lines.renderOrder = 3;
     return lines;
@@ -1870,17 +1871,17 @@ export function AakashGocharScene({
   const tiltMarks = useMemo(
     () => ({
       /** The perpendicular to the orbit: where the axis would point untilted. */
-      eclipticAxis: makeDynamicLine(2, "#8ab4f8", 0.55),
-      arc: makeDynamicLine(TILT_ARC_STEPS + 1, "#ffd166", 0.9),
+      eclipticAxis: makeDynamicLine(2, illustration.sky76, 0.55),
+      arc: makeDynamicLine(TILT_ARC_STEPS + 1, illustration.amber70, 0.9),
     }),
     [],
   );
 
   /** Earth centre → Sun, and where that ray lands on the globe. */
-  const sunRay = useMemo(() => makeDynamicLine(2, "#ffd166", 0.75), []);
+  const sunRay = useMemo(() => makeDynamicLine(2, illustration.amber70, 0.75), []);
 
   /** The celestial equator — the reference the ecliptic is visibly tilted against. */
-  const equatorLine = useMemo(() => makeDynamicLine(ecliptic_STEPS + 1, "#5aa9e6", 0.45), []);
+  const equatorLine = useMemo(() => makeDynamicLine(ecliptic_STEPS + 1, illustration.sky63, 0.45), []);
 
   /**
    * Almucantars and verticals, one tier per zoom band — and each tier is built
@@ -1931,7 +1932,7 @@ export function AakashGocharScene({
   }, []);
 
   const horizonRing = useMemo(() => {
-    const line = makeLine(circlePoints(DOME * 0.999, 180), "#c8ff7a", 0.9);
+    const line = makeLine(circlePoints(DOME * 0.999, 180), illustration.lime74, 0.9);
     line.renderOrder = 5;
     const mat = line.material as THREE.LineBasicMaterial;
     mat.depthTest = false;
@@ -4609,7 +4610,7 @@ export function AakashGocharScene({
   return (
     <group>
       <ambientLight ref={ambientRef} intensity={0.28} />
-      <pointLight ref={sunLightRef} intensity={520} distance={0} decay={2} color="#fff6e0" />
+      <pointLight ref={sunLightRef} intensity={520} distance={0} decay={2} color={illustration.amber92} />
       {/* A hint of fill so the night side is shape rather than a hole.
           Space turns this off so Earth shows a real terminator, like Learn. */}
       <directionalLight ref={fillLightRef} position={[0, 12, 0]} intensity={0.1} />
@@ -4718,7 +4719,7 @@ export function AakashGocharScene({
               opacity={0.5}
               alphaTest={0.12}
               depthWrite={false}
-              color="#ffffff"
+              color={neutral.white}
             />
           </mesh>
         </group>
@@ -4750,7 +4751,7 @@ export function AakashGocharScene({
                 to black. */}
             <meshStandardMaterial
               map={textures.earth}
-              emissive="#ffffff"
+              emissive={neutral.white}
               emissiveMap={textures.earth}
               emissiveIntensity={0.4}
               roughness={0.9}
@@ -4792,12 +4793,12 @@ export function AakashGocharScene({
                 finger needs, which the dot no longer is. */}
             <mesh onClick={onSelectObserver}>
               <sphereGeometry args={[GLOBE_R * 0.018, 16, 16]} />
-              <meshBasicMaterial color={lockObserver ? "#ffd166" : "#ff6b6b"} />
+              <meshBasicMaterial color={lockObserver ? illustration.amber70 : illustration.red71} />
             </mesh>
             <mesh onClick={onSelectObserver}>
               <sphereGeometry args={[GLOBE_R * 0.036, 16, 16]} />
               <meshBasicMaterial
-                color={lockObserver ? "#ffd166" : "#ff6b6b"}
+                color={lockObserver ? illustration.amber70 : illustration.red71}
                 transparent
                 opacity={lockObserver ? 0.45 : 0.3}
                 depthWrite={false}
@@ -4819,12 +4820,12 @@ export function AakashGocharScene({
             on the map, and at any size worth noticing it stops being one. */}
         <mesh ref={subsolarRef}>
           <sphereGeometry args={[GLOBE_R * 0.014, 12, 12]} />
-          <meshBasicMaterial color="#ffd166" />
+          <meshBasicMaterial color={illustration.amber70} />
         </mesh>
         {/* The same mark for whichever graha is selected — see {@link subGrahaRef}. */}
         <mesh ref={subGrahaRef} visible={false}>
           <sphereGeometry args={[GLOBE_R * 0.014, 12, 12]} />
-          <meshBasicMaterial color="#ffffff" />
+          <meshBasicMaterial color={neutral.white} />
         </mesh>
 
         {/* Earth's axis, drawn out past the poles. */}
@@ -4866,7 +4867,7 @@ export function AakashGocharScene({
         <mesh ref={sharaFootRef} visible={false}>
           <circleGeometry args={[0.13, 20]} />
           <meshBasicMaterial
-            color={selectedKey ? GRAHA_COLOR[selectedKey] : "#ffffff"}
+            color={selectedKey ? GRAHA_COLOR[selectedKey] : neutral.white}
             transparent
             opacity={0.7}
             side={THREE.DoubleSide}

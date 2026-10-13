@@ -33,7 +33,7 @@ type TabId = "male" | "female";
 function PhalaCell({ text }: { text: string }) {
   const [a, b] = splitJanmaPhala(text);
   return (
-    <span className="block text-[0.8125rem] leading-snug text-foreground">
+    <span className="block text-diagram-sm leading-snug text-foreground">
       {a}
       {b ? (
         <>

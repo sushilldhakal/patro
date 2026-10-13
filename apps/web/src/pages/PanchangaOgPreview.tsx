@@ -1,3 +1,4 @@
+// design-ok-file: a fixed-size share-image canvas (pixel geometry for the OG screenshot), not page layout.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
@@ -20,6 +21,7 @@ import {
   toNepaliDigits,
 } from "@vedic-patro/domain/panchanga-format";
 
+import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
 /**
  * Headless render target for the Open Graph share image. The backend points
  * Playwright at this route and screenshots the #og-capture element to produce
@@ -161,26 +163,26 @@ export function PanchangaOgPreview() {
   const header = (
     <div className="flex items-end justify-between" style={{ height: 46, flex: "0 0 auto" }}>
       <div className="flex items-baseline gap-3">
-        <span className="text-[28px] font-extrabold tracking-tight text-[#0b565a]">
+        <span className="text-3xl font-extrabold tracking-tight text-ill-brand-blue">
           वैदिक पात्रो
         </span>
-        <span className="text-[18px] font-bold text-[#d97706]">{placeLabel}</span>
+        <span className="text-lg font-bold text-ill-brand-saffron">{placeLabel}</span>
       </div>
       <div className="text-right leading-tight">
-        <div className="text-[20px] font-bold text-[#202a2c]">
+        <div className="text-xl font-bold text-ill-teal15">
           {[weekday, bsLine].filter(Boolean).join(" · ")}
         </div>
-        <div className="text-[15px] text-[#6e7878]">{adLine} · vedicpatro.com</div>
+        <div className="text-base text-ill-gray46">{adLine} · vedicpatro.com</div>
       </div>
     </div>
   );
 
   if (full) {
     return (
-      <div style={{ width: OG_W + 32, padding: 16, background: "#F7F3EA" }}>
+      <div style={{ width: OG_W + 32, padding: 16, background: brand.offWhite }}>
         <div
           id="og-capture"
-          style={{ width: OG_W, background: "#F7F3EA", borderRadius: 16, padding: "18px 20px 20px" }}
+          style={{ width: OG_W, background: brand.offWhite, borderRadius: 16, padding: "18px 20px 20px" }}
         >
           <div className="mb-3">{header}</div>
           {timeline}
@@ -190,13 +192,13 @@ export function PanchangaOgPreview() {
   }
 
   return (
-    <div style={{ width: OG_W + 32, padding: 16, background: "#F7F3EA" }}>
+    <div style={{ width: OG_W + 32, padding: 16, background: brand.offWhite }}>
       <div
         id="og-capture"
         style={{
           width: OG_W,
           height: OG_H,
-          background: "#F7F3EA",
+          background: brand.offWhite,
           borderRadius: 16,
           padding: "18px 0 20px",
           display: "flex",
@@ -275,8 +277,8 @@ function SummaryPanel({ p }: { p: PanchangaDay | undefined }) {
         justifyContent: "center",
         gap: 2,
         borderRadius: 14,
-        border: "1px solid #e2dccb",
-        background: "#FFFDF7",
+        border: `1px solid ${neutral.silverBase}`,
+        background: brand.offWhite,
         padding: "10px 16px",
       }}
     >
@@ -286,14 +288,14 @@ function SummaryPanel({ p }: { p: PanchangaDay | undefined }) {
           className="flex items-baseline justify-between gap-3"
           style={{
             padding: "9px 0",
-            borderTop: i === 0 ? "none" : "1px solid #ece6d8",
+            borderTop: i === 0 ? "none" : `1px solid ${illustration.amber89b}`,
           }}
         >
-          <span className="text-[17px] font-semibold text-[#6e7878]">{row.label}</span>
+          <span className="text-lg font-semibold text-ill-gray46">{row.label}</span>
           <span className="text-right leading-tight">
-            <span className="text-[21px] font-bold text-[#202a2c]">{row.value}</span>
+            <span className="text-xl font-bold text-ill-teal15">{row.value}</span>
             {row.upto ? (
-              <span className="block text-[14px] font-medium text-[#8a9494]">{row.upto}</span>
+              <span className="block text-sm font-medium text-ill-gray58b">{row.upto}</span>
             ) : null}
           </span>
         </div>

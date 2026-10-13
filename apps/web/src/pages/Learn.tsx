@@ -22,6 +22,7 @@ import {
   type LearnTopic,
 } from "@/lib/learn/learn-topics";
 import { LEARN_SECTIONS_BY_ID, plannedInSection } from "@/lib/learn/learn-library";
+import { learnPageClasses } from "@vedic-patro/design-tokens/classes/learn-page-classes";
 
 interface LearnModule {
   id: string;
@@ -88,67 +89,24 @@ const LEARN_MODULES: LearnModule[] = [
 ];
 
 /**
- * Accent colours per library section. Icons come from the library itself, so
- * adding a section there only needs a palette entry here — and falls back to
- * neutral styling if it does not get one.
+ * Hover ring per library section (web only). The badge colours are the shared
+ * `learnPageClasses.sectionChip`; icons come from the library itself.
  */
-const SECTION_STYLE: Record<string, { chip: string; ring: string }> = {
-  start: {
-    chip: "bg-emerald-500/10 text-emerald-900 border-emerald-500/25 dark:text-emerald-200",
-    ring: "group-hover:ring-emerald-500/25",
-  },
-  foundation: {
-    chip: "bg-emerald-500/10 text-emerald-900 border-emerald-500/25 dark:text-emerald-200",
-    ring: "group-hover:ring-emerald-500/25",
-  },
-  sun: {
-    chip: "bg-amber-500/10 text-amber-900 border-amber-500/25 dark:text-amber-200",
-    ring: "group-hover:ring-amber-500/25",
-  },
-  moon: {
-    chip: "bg-sky-500/10 text-sky-800 border-sky-500/25 dark:text-sky-200",
-    ring: "group-hover:ring-sky-500/25",
-  },
-  "five-limbs": {
-    chip: "bg-teal-500/10 text-teal-900 border-teal-500/25 dark:text-teal-200",
-    ring: "group-hover:ring-teal-500/25",
-  },
-  "earth-sky": {
-    chip: "bg-lime-500/10 text-lime-900 border-lime-500/25 dark:text-lime-200",
-    ring: "group-hover:ring-lime-500/25",
-  },
-  zodiac: {
-    chip: "bg-indigo-500/10 text-indigo-900 border-indigo-500/25 dark:text-indigo-200",
-    ring: "group-hover:ring-indigo-500/25",
-  },
-  "vedic-time": {
-    chip: "bg-slate-500/10 text-slate-900 border-slate-500/25 dark:text-slate-200",
-    ring: "group-hover:ring-slate-500/25",
-  },
-  panchanga: {
-    chip: "bg-teal-500/10 text-teal-900 border-teal-500/25 dark:text-teal-200",
-    ring: "group-hover:ring-teal-500/25",
-  },
-  "bs-construction": {
-    chip: "bg-red-500/10 text-red-900 border-red-500/25 dark:text-red-200",
-    ring: "group-hover:ring-red-500/25",
-  },
-  eclipses: {
-    chip: "bg-violet-500/10 text-violet-900 border-violet-500/25 dark:text-violet-200",
-    ring: "group-hover:ring-violet-500/25",
-  },
-  calculation: {
-    chip: "bg-cyan-500/10 text-cyan-900 border-cyan-500/25 dark:text-cyan-200",
-    ring: "group-hover:ring-cyan-500/25",
-  },
-  comparison: {
-    chip: "bg-orange-500/10 text-orange-950 border-orange-500/25 dark:text-orange-200",
-    ring: "group-hover:ring-orange-500/25",
-  },
-  deeper: {
-    chip: "bg-rose-500/10 text-rose-900 border-rose-500/25 dark:text-rose-200",
-    ring: "group-hover:ring-rose-500/25",
-  },
+const SECTION_RING: Record<string, string> = {
+  start: "group-hover:ring-emerald-500/25",
+  foundation: "group-hover:ring-emerald-500/25",
+  sun: "group-hover:ring-amber-500/25",
+  moon: "group-hover:ring-sky-500/25",
+  "five-limbs": "group-hover:ring-teal-500/25",
+  "earth-sky": "group-hover:ring-lime-500/25",
+  zodiac: "group-hover:ring-indigo-500/25",
+  "vedic-time": "group-hover:ring-slate-500/25",
+  panchanga: "group-hover:ring-teal-500/25",
+  "bs-construction": "group-hover:ring-red-500/25",
+  eclipses: "group-hover:ring-violet-500/25",
+  calculation: "group-hover:ring-cyan-500/25",
+  comparison: "group-hover:ring-orange-500/25",
+  deeper: "group-hover:ring-rose-500/25",
 };
 
 function sectionIcon(sectionId: string) {
@@ -203,44 +161,43 @@ function TopicCard({ topic }: { topic: LearnTopic }) {
   const { lang } = useLocale();
   const Icon = topic.icon;
   const category = categoryForTopic(topic);
-  const meta = SECTION_STYLE[topic.category];
+  const ring = SECTION_RING[topic.category];
+  const chip = learnPageClasses.sectionChip[topic.category];
 
   return (
     <LearnTopicLink
       topic={topic}
       className={cn(
-        "group relative flex h-full flex-col rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-secondary/45 hover:shadow-md",
-        meta?.ring && `hover:ring-2 ${meta.ring}`,
+        learnPageClasses.topicCard,
+        "group relative h-full transition-all hover:-translate-y-0.5 hover:border-secondary/45 hover:shadow-md",
+        ring && `hover:ring-2 ${ring}`,
       )}
     >
       {/* Icon, title and category read as one line, so the card opens with its identity. */}
-      <div className="flex items-start gap-3 px-5 pt-5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/10 text-secondary transition-colors group-hover:bg-secondary/15">
+      <div className={learnPageClasses.topicHead}>
+        <span className={cn(learnPageClasses.topicIcon, "text-secondary transition-colors group-hover:bg-secondary/15")}>
           <Icon className="h-5 w-5" />
         </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-bold leading-snug text-foreground">
+        <div className={learnPageClasses.topicTitleWrap}>
+          <h3 className={learnPageClasses.topicTitle}>
             {bilingualText(lang, topic.titleNe, topic.titleEn)}
           </h3>
         </div>
-        {category && meta && (
+        {category && chip && (
           <span
-            className={cn(
-              "shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
-              meta.chip,
-            )}
+            className={cn(learnPageClasses.topicBadge, learnPageClasses.topicBadgeText, chip)}
           >
             {bilingualText(lang, category.ne, category.en)}
           </span>
         )}
       </div>
 
-      <p className="flex-1 px-5 pt-3 text-sm leading-relaxed text-foreground/80">
+      <p className={cn(learnPageClasses.topicSummary, "flex-1")}>
         {bilingualText(lang, topic.summary, topic.summaryEn)}
       </p>
 
-      <div className="mt-4 flex items-center justify-between border-t border-border/70 px-5 py-3">
-        <span className="text-sm font-semibold text-secondary">{t("learn_page.read_detail")}</span>
+      <div className={learnPageClasses.topicFooter}>
+        <span className={learnPageClasses.topicFooterText}>{t("learn_page.read_detail")}</span>
         <ArrowRight className="h-4 w-4 text-secondary transition-transform group-hover:translate-x-0.5" />
       </div>
     </LearnTopicLink>
@@ -282,18 +239,18 @@ export function Learn() {
       <section className={learnHero}>
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-secondary/25 bg-secondary/8 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-secondary">
+            <div className={cn(learnPageClasses.eyebrow, learnPageClasses.eyebrowText, "inline-flex")}>
               <BookOpen className="h-4 w-4" />
               {t("learn_page.eyebrow")}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h1 className={learnPageClasses.title}>
               {t("learn_page.title")}
-              <span className="block text-secondary">{t("learn_page.title_accent")}</span>
+              <span className={cn(learnPageClasses.titleAccent, "block")}>{t("learn_page.title_accent")}</span>
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-foreground/80 sm:text-lg">
+            <p className={learnPageClasses.subtitle}>
               {t("learn_page.subtitle")}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className={learnPageClasses.stats}>
               <div className={learnStatPill}>
                 <GraduationCap className="h-4 w-4 text-secondary" />
                 <span>{t("learn_page.learning_paths_count", { count: liveModuleCount })}</span>
@@ -305,7 +262,7 @@ export function Learn() {
             </div>
           </div>
 
-          <div className="w-full max-w-md shrink-0">
+          <div className={cn(learnPageClasses.searchWrap, "shrink-0")}>
             <label htmlFor="learn-search" className="sr-only">
               {t("learn_page.search_label")}
             </label>
@@ -316,13 +273,13 @@ export function Learn() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("learn_page.search_placeholder")}
-                className="h-12 pl-11 pr-11 text-base"
+                className={cn(learnPageClasses.searchInput, "pl-11 pr-11")}
               />
               {query && (
                 <button
                   type="button"
                   onClick={() => setQuery("")}
-                  className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md transition-colors hover:bg-muted/40 hover:text-foreground"
+                  className={cn(learnPageClasses.searchClear, "absolute right-2 top-1/2 -translate-y-1/2 transition-colors hover:bg-muted/40 hover:text-foreground")}
                   aria-label={t("common.clear_search")}
                 >
                   <X className="h-4 w-4" />
@@ -339,10 +296,12 @@ export function Learn() {
             type="button"
             onClick={() => setActiveCategory("all")}
             className={cn(
-              "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+              learnPageClasses.chip,
+              learnPageClasses.chipText,
+              "transition-colors",
               activeCategory === "all"
-                ? "border-secondary bg-secondary text-secondary-foreground"
-                : "border-border bg-card hover:border-secondary/40 hover:text-foreground",
+                ? cn(learnPageClasses.chipActive, learnPageClasses.chipActiveText)
+                : cn(learnPageClasses.chipIdle, "hover:border-secondary/40 hover:text-foreground"),
             )}
           >
             {t("common.all")}
@@ -359,30 +318,32 @@ export function Learn() {
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+                  learnPageClasses.chip,
+                  learnPageClasses.chipText,
+                  "inline-flex items-center transition-colors",
                   activeCategory === cat.id
-                    ? "border-secondary bg-secondary text-secondary-foreground"
-                    : "border-border bg-card hover:border-secondary/40 hover:text-foreground",
+                    ? cn(learnPageClasses.chipActive, learnPageClasses.chipActiveText)
+                    : cn(learnPageClasses.chipIdle, "hover:border-secondary/40 hover:text-foreground"),
                 )}
               >
                 <MetaIcon className="h-3.5 w-3.5" />
                 {bilingualText(lang, cat.ne, cat.en)}
-                <span className="opacity-70">({count})</span>
+                <span className={learnPageClasses.chipCount}>({count})</span>
               </button>
             );
           })}
         </div>
         {isFiltering && (
-          <p className="text-base">
+          <p className={learnPageClasses.resultsText}>
             {t("learn_page.results_count", { count: filteredTopics.length })}
           </p>
         )}
       </div>
 
       {filteredTopics.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-14 text-center">
-          <p className="text-base text-base text-foreground">{t("learn_page.no_topics")}</p>
-          <p className="mt-1 text-sm">
+        <div className={cn(learnPageClasses.emptyState, "text-center")}>
+          <p className={learnPageClasses.emptyTitle}>{t("learn_page.no_topics")}</p>
+          <p className={learnPageClasses.emptyHint}>
             {t("learn_page.no_topics_hint")}
           </p>
           <button
@@ -391,7 +352,7 @@ export function Learn() {
               setQuery("");
               setActiveCategory("all");
             }}
-            className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-secondary hover:underline"
+            className={cn(learnPageClasses.clearFilters, "inline-flex items-center gap-1 hover:underline")}
           >
             {t("learn_page.clear_filters")}
           </button>
@@ -421,20 +382,20 @@ export function Learn() {
 
             return (
               <section key={module.id} id={`learn-${module.id}`}>
-                <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
-                  <div className="flex items-start gap-3">
-                    <span className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
+                <div className={cn(learnPageClasses.moduleHeader, "flex flex-wrap items-end justify-between gap-3")}>
+                  <div className={learnPageClasses.moduleHeaderRow}>
+                    <span className={cn(learnPageClasses.moduleIcon, "text-secondary")}>
                       <ModuleIcon className="h-5 w-5" />
                     </span>
                     <div>
-                      <h2 className="text-2xl font-bold text-foreground">
+                      <h2 className={learnPageClasses.moduleTitle}>
                         {bilingualText(lang, module.title.ne, module.title.en)}
                       </h2>
-                      <p className="max-w-2xl text-sm">
+                      <p className={learnPageClasses.moduleBlurb}>
                         {bilingualText(lang, module.blurb.ne, module.blurb.en)} ·{" "}
                         {t("learn_page.articles_count", { count: moduleTopics.length })}
                         {upcoming > 0 && (
-                          <span className="opacity-70">
+                          <span className={learnPageClasses.moduleMore}>
                             {" · "}
                             {t("learn_page.more_coming", { count: upcoming })}
                           </span>
@@ -451,18 +412,18 @@ export function Learn() {
                     return (
                       <div key={cat.id}>
                         {moduleCategories.length > 1 && (
-                          <div className="mb-3 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+                          <div className={learnPageClasses.catHeader}>
+                            <div className={cn(learnPageClasses.catTitle, learnPageClasses.catTitleText)}>
                               <CatIcon className="h-4 w-4 text-secondary" />
                               {bilingualText(lang, cat.ne, cat.en)}
-                              <span className="font-medium text-muted-foreground">
+                              <span className={learnPageClasses.catCount}>
                                 {t("learn_page.articles_count", { count: topics.length })}
                               </span>
                             </div>
                             <button
                               type="button"
                               onClick={() => setActiveCategory(cat.id)}
-                              className="text-sm font-semibold text-secondary hover:underline"
+                              className={cn(learnPageClasses.catLink, "hover:underline")}
                             >
                               {t("learn_page.view_category")}
                             </button>

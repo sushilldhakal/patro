@@ -554,7 +554,7 @@ function ChipRow({
     <View className="gap-1">
       <Text
         className="text-caption uppercase tracking-wide text-muted-foreground"
-        style={[nepaliTextStyle(10), { fontSize: 15 }]}
+        style={nepaliTextStyle(10)}
       >
         {label}
       </Text>
@@ -576,7 +576,7 @@ function ChipRow({
                   "text-caption font-semibold",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
-                style={[nepaliTextStyle(10), { fontSize: 15 }]}
+                style={nepaliTextStyle(10)}
               >
                 {option.label}
               </Text>

@@ -29,6 +29,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 import { COMPASS_POINTS } from "@vedic-patro/domain/sky3d/sky-geometry";
 
+import { illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
 export const DIAL_SIZE = 64;
 const RADIUS = DIAL_SIZE / 2;
 /** The centre glyph sits fixed — this is its own box, not the dial's. */
@@ -155,7 +156,7 @@ export function CompassControl({
 
   if (!visible) return null;
 
-  const glyphColor = cameraOn ? "#4ade80" : gyroMode ? "#f4c542" : "rgba(255,255,255,0.8)";
+  const glyphColor = cameraOn ? illustration.green58 : gyroMode ? illustration.amber61 : withAlpha(neutral.white, 0.8);
 
   return (
     <View
@@ -180,7 +181,7 @@ export function CompassControl({
           borderBottomWidth: 7,
           borderLeftColor: "transparent",
           borderRightColor: "transparent",
-          borderBottomColor: sensorActive ? "#f4c542" : "rgba(255,255,255,0.75)",
+          borderBottomColor: sensorActive ? illustration.amber61 : withAlpha(neutral.white, 0.75),
         }}
       />
 
@@ -239,7 +240,7 @@ export function CompassControl({
               className="text-caption font-bold"
               style={[
                 nepaliTextStyle(13, { dense: true }),
-                { color: p.az === 0 ? "#ff8a8a" : "rgba(255,255,255,0.85)" },
+                { color: p.az === 0 ? midnight.vermilion : withAlpha(neutral.white, 0.85) },
               ]}
             >
               {pick(p.ne, p.en)}

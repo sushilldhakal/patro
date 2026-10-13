@@ -6,6 +6,8 @@ import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
+import { space } from "@vedic-patro/design-tokens";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 export type DayCycleMode = "Day-Night" | "Calendar Day";
 
@@ -24,8 +26,8 @@ function toggleLabelStyle(metrics: ReturnType<typeof dayCycleToggleMetrics>): Te
     fontFamily: NOTO_DEVANAGARI_REGULAR,
     fontSize: metrics.fontSize,
     lineHeight: metrics.lineHeight,
-    paddingTop: 0,
-    paddingVertical: 0,
+    paddingTop: space.none,
+    paddingVertical: space.none,
   };
 }
 
@@ -51,10 +53,10 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
       <Pressable
         onPress={() => onModeChange?.(inactive.value)}
         accessibilityLabel={pick(`${inactive.ne} मा बदल्नुहोस्`, `Switch to ${inactive.en}`)}
-        className="items-center justify-center rounded-md border border-border bg-card active:bg-muted"
+        className={cn("items-center justify-center active:bg-muted", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleSingle)}
         style={[shell, { paddingHorizontal: padX }]}
       >
-        <Text className="font-semibold text-foreground" style={labelStyle}>
+        <Text className={cn(panchangaPageClasses.dayCycle.toggleLabel, "text-foreground")} style={labelStyle}>
           {pick(inactive.ne, inactive.en)}
         </Text>
       </Pressable>
@@ -63,7 +65,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
 
   return (
     <View
-      className="flex-row overflow-hidden rounded-md border border-border"
+      className={cn("flex-row", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleGroup)}
       style={{ ...shell, borderColor: colors.border }}
     >
       {OPTIONS.map((o) => {
@@ -74,12 +76,12 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
             onPress={() => onModeChange?.(o.value)}
             className={cn(
               "items-center justify-center",
-              active ? "bg-primary" : "bg-card active:bg-muted",
+              active ? "bg-primary" : cn("bg-card", "active:bg-muted"),
             )}
             style={{ height, maxHeight: height, paddingHorizontal: padX }}
           >
             <Text
-              className={cn("font-semibold", active ? "text-primary-foreground" : "text-foreground")}
+              className={cn(panchangaPageClasses.dayCycle.toggleLabel, active ? "text-primary-foreground" : "text-foreground")}
               style={labelStyle}
             >
               {pick(o.ne, o.en)}

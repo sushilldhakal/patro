@@ -14,6 +14,7 @@ import {
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { useTranslation } from "react-i18next";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";
 import { samvatsaraName } from "@/lib/samvatsara-i18n";
@@ -58,6 +59,16 @@ import {
   patroMobilePickerBtn,
   patroMobileStepBtn,
 } from "@/lib/patro-classes";
+
+const PICKER_ICON = "hidden size-3.5 shrink-0 text-secondary md:block";
+const TIME_ROW = "flex w-full items-center justify-center gap-2";
+const HEAD_ROW = "flex min-w-0 items-start gap-1.5 sm:gap-3";
+const MOBILE_GRID = "grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-1.5 md:hidden";
+const MOBILE_TITLE_CELL = "col-start-1 row-start-1 flex min-h-[30px] min-w-0 items-end";
+const MOBILE_TOOLBAR_CELL = "col-start-2 row-start-1 flex h-[30px] shrink-0 items-center justify-end [&>*]:h-full";
+const MOBILE_NAV_CELL = "col-start-1 row-start-2 flex min-w-0 flex-col gap-1";
+const MOBILE_LOCATION_CELL = "col-start-2 row-start-2 flex shrink-0 items-end justify-end self-start";
+const DESKTOP_COLUMN = "hidden min-w-0 flex-col gap-0.5 sm:gap-1 md:flex";
 
 export type PatroDateNavCoreProps = {
   era: Era;
@@ -531,7 +542,7 @@ export function PatroDateNavCore({
                 : t("patro_date.change_date")
             }
           >
-            <CalendarClock className="hidden size-3.5 shrink-0 text-secondary md:block" strokeWidth={2} />
+            <CalendarClock className={PICKER_ICON} strokeWidth={2} />
             <span className="min-w-0 font-num md:hidden">{mobilePickerLabelCompact}</span>
             <span className="hidden min-w-0 font-num md:inline">{mobilePickerLabel}</span>
             <ChevronDown className="size-3.5 shrink-0 opacity-50" strokeWidth={2} />
@@ -584,11 +595,11 @@ export function PatroDateNavCore({
   // Year in the headline — month name lives on the left chip only (avoids
   // repeating e.g. साउन + साउन वि.सं. २०८३).
   const yearHeadline = isGregorian ? (
-    <span className="font-num font-semibold text-secondary dark:text-secondary">
+    <span className={patroDateClasses.yearValue}>
       {digits(year)}
     </span>
   ) : (
-    <span className="font-num font-semibold text-secondary dark:text-secondary">
+    <span className={patroDateClasses.yearValue}>
       {digits(year)} {patroEraShortLabel(headlineEra)}
     </span>
   );
@@ -607,7 +618,7 @@ export function PatroDateNavCore({
 
   const titleBlock = (
     <BsHeadline
-      className="text-xl text-base"
+      className="text-xl"
       bs={yearHeadline}
       bsClassName="min-w-0"
       samvatsara={samvatsaraLabel}
@@ -748,7 +759,7 @@ export function PatroDateNavCore({
             />
             {dayOptions && onDayChange && dayAriaLabel ? (
               <div className="flex items-center justify-center gap-2">
-                <span className="text-sm font-semibold text-muted-foreground">{dayAriaLabel}</span>
+                <span className={patroDateClasses.dayLabel}>{dayAriaLabel}</span>
                 <BsNativeSelect
                   className="w-[5rem]"
                   value={day ?? dayOptions[0]?.value ?? 1}
@@ -761,10 +772,10 @@ export function PatroDateNavCore({
             ) : null}
             {showTime && hourAriaLabel && minuteAriaLabel ? (
               <div>
-                <p className="mb-2 text-xs text-center font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <p className={patroDateClasses.timeHeading}>
                   {t("common.time")}
                 </p>
-                <div className="flex w-full items-center justify-center gap-2">
+                <div className={TIME_ROW}>
                   <BsNativeSelect
                     className="w-[4.5rem]"
                     value={hour}
@@ -773,7 +784,7 @@ export function PatroDateNavCore({
                     onChange={(nextHour) => setClockPart(nextHour, minute)}
                     comfortable
                   />
-                  <span className="px-0.5 font-num text-base font-semibold">:</span>
+                  <span className={patroDateClasses.timeColon}>:</span>
                   <BsNativeSelect
                     className="w-[4.5rem]"
                     value={minute}
@@ -791,7 +802,7 @@ export function PatroDateNavCore({
     ) : null;
 
   return (
-    <div className="flex min-w-0 items-start gap-1.5 sm:gap-3">
+    <div className={HEAD_ROW}>
       {sheetBlock}
       <button
         type="button"
@@ -812,21 +823,21 @@ export function PatroDateNavCore({
 
       <div className="@container/month-head min-w-0 flex-1">
         {/* Mobile only (<768px): row1 title|toolbar, row2 picker|toolbarLower */}
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-2 gap-y-1.5 md:hidden">
+        <div className={MOBILE_GRID}>
           {/* Each row is at least one 30px control tall and centres its cells, so the
               toolbar's height never decides where the date row sits (this used to
               be hidden with a negative margin on the date row). */}
-          <div className="col-start-1 row-start-1 flex min-h-[30px] min-w-0 items-end"><div className="-mb-1 min-w-0">{mobileTitleBlock}</div></div>
+          <div className={MOBILE_TITLE_CELL}><div className="-mb-1 min-w-0">{mobileTitleBlock}</div></div>
           {mobileToolbar ? (
             // Every phone toolbar is pinned to the same 30px as the date,
             // location and step chips — each page passes its own control
             // (mode toggle, day cycle, paksha), and left to themselves they
             // came out 30/32/34px, so the top row never lined up.
-            <div className="col-start-2 row-start-1 flex h-[30px] shrink-0 items-center justify-end [&>*]:h-full">
+            <div className={MOBILE_TOOLBAR_CELL}>
               {mobileToolbar}
             </div>
           ) : null}
-          <div className="col-start-1 row-start-2 flex min-w-0 flex-col gap-1">
+          <div className={MOBILE_NAV_CELL}>
             {mobileDateTimeDrawer ? (
               // Below md every nav opens the same sheet, day views included —
               // the calendar popover stays for md+ only. Prev/next arrows flank
@@ -860,18 +871,18 @@ export function PatroDateNavCore({
               </div>
             )}
             {panchangaSubtitle ? (
-              <p className="m-0 text-sm text-base leading-none">{panchangaSubtitle}</p>
+              <p className={patroDateClasses.panchangaSubtitle}>{panchangaSubtitle}</p>
             ) : null}
           </div>
           {resolvedToolbarLower ? (
-            <div className="col-start-2 row-start-2 flex shrink-0 items-end justify-end self-start">
+            <div className={MOBILE_LOCATION_CELL}>
               {resolvedToolbarLower}
             </div>
           ) : null}
         </div>
 
         {/* Desktop (md+): title, then nav row — same as before mobile drawer work */}
-        <div className="hidden min-w-0 flex-col gap-0.5 sm:gap-1 md:flex">
+        <div className={DESKTOP_COLUMN}>
           {titleBlock}
           {useCalendarPicker ? (
             <div className={patroMonthNavShell}>{calendarControl(patroMonthRangeCompactBtn)}</div>
@@ -881,7 +892,7 @@ export function PatroDateNavCore({
             </div>
           )}
           {panchangaSubtitle ? (
-            <p className="m-0 text-sm text-base leading-none">{panchangaSubtitle}</p>
+            <p className={patroDateClasses.panchangaSubtitle}>{panchangaSubtitle}</p>
           ) : null}
         </div>
       </div>

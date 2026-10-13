@@ -53,13 +53,12 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useBreakpoint } from "@/lib/responsive";
-import { colorWithAlpha } from "@/lib/theme";
+import { cn } from "@vedic-patro/domain/utils";
 import { useThemeColors } from "@/lib/theme-context";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
-import { brand } from "@vedic-patro/design-tokens";
 
 function clockFromGhati(sunriseMin: number | null, g: number): string | null {
   if (sunriseMin == null) return null;
@@ -127,23 +126,25 @@ function SpanBoundary({
 }) {
   const { lang, digits } = useLocale();
   const colors = useThemeColors();
-  const accent = tone === "begin" ? colors.accent : colors.danger;
+  const accent = tone === "begin" ? colors.success : colors.danger;
 
   return (
     <View
-      style={{ backgroundColor: colorWithAlpha(tone === "begin" ? brand.green : brand.vermilion, 0.1) }}
-      className="gap-0.5 rounded-md px-2 py-1.5"
+      className={cn(
+        "gap-0.5 rounded-md px-2 py-1.5",
+        tone === "begin" ? "bg-success/10" : "bg-danger/10",
+      )}
     >
       <View className="flex-row items-center justify-between gap-2">
-        <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
+        <Text style={{ color: accent, ...nepaliTextStyle(11) }} className="text-xs font-semibold">
           {label}
         </Text>
-        <Text className="text-body font-num text-foreground" style={nepaliTextStyle(14)}>
+        <Text className="font-num text-xs tabular-nums text-foreground" style={nepaliTextStyle(14)}>
           {digits(stamp.time_label)}
         </Text>
       </View>
       <Text
-        className="text-body font-semibold text-foreground"
+        className="m-0 font-num text-sm font-semibold leading-snug text-foreground md:text-base"
         style={nepaliTextStyle(14)}
       >
         {formatElementStampDisplay(stamp, lang)}
@@ -164,11 +165,11 @@ function SpanList({ spans, elementId }: { spans: ElementSpan[]; elementId: strin
             <ElementSpanIcon elementId={elementId} span={s} size={34} />
             <View className="min-w-0 flex-1">
               <View className="flex-row items-baseline justify-between gap-2">
-                <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+                <Text className="text-base font-bold text-foreground" style={nepaliTextStyle(16)}>
                   {lang === "en" ? s.name : s.name_ne}
                 </Text>
                 {s.paksha ? (
-                  <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+                  <Text className="text-xs text-muted-foreground" style={nepaliTextStyle(11)}>
                     {s.paksha === "shukla" ? t("common.paksha_shukla") : t("common.paksha_krishna")}
                   </Text>
                 ) : null}
@@ -206,31 +207,30 @@ function ToneRow({
 }) {
   const colors = useThemeColors();
   const tone = bad
-    ? { bg: colorWithAlpha(brand.vermilion, 0.1), fg: colors.danger }
+    ? { bg: undefined, cls: "bg-danger/10", fg: colors.danger }
     : good
-      ? { bg: colorWithAlpha(brand.green, 0.12), fg: colors.accent }
-      : { bg: colors.surfaceInset, fg: colors.foreground };
+      ? { bg: undefined, cls: "bg-success/12", fg: colors.success }
+      : { bg: colors.surfaceInset, cls: "", fg: colors.foreground };
 
   return (
     <View
       style={{ width: width as never, backgroundColor: tone.bg }}
-      className="flex-row items-center justify-between gap-2 rounded-lg px-3 py-2"
+      className={cn("flex-row items-center justify-between gap-2 rounded-lg px-3 py-2", tone.cls)}
     >
       <View className="min-w-0 flex-1 flex-row items-center gap-2">
         {leading}
         <Text
           numberOfLines={2}
           style={{ color: tone.fg, ...nepaliTextStyle(14) }}
-          className="text-body shrink font-semibold"
+          className="text-sm shrink font-semibold"
         >
           {label}
         </Text>
         {badge ? (
           <View
-            style={{ backgroundColor: colorWithAlpha(brand.blue, 0.2) }}
-            className="rounded-full px-1.5 py-px"
+            className="rounded-full bg-secondary/20 px-1.5 py-px"
           >
-            <Text style={{ color: colors.secondary, ...nepaliTextStyle(12) }} className="text-body font-bold">
+            <Text style={{ color: colors.secondary, ...nepaliTextStyle(12) }} className="text-sm font-bold">
               {badge}
             </Text>
           </View>
@@ -239,7 +239,7 @@ function ToneRow({
       {trailing ? (
         <Text
           style={{ color: tone.fg, ...nepaliTextStyle(14) }}
-          className="text-body shrink-0 font-num opacity-90"
+          className="text-sm shrink-0 font-num opacity-90"
         >
           {trailing}
         </Text>
@@ -256,7 +256,7 @@ function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: stri
 
   if (data.length === 0) {
     return (
-      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
         {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
       </Text>
     );
@@ -269,7 +269,7 @@ function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: stri
           <Text
             key={key}
             style={{ width: legendColWidth as never, ...nepaliTextStyle(14) }}
-            className="text-body text-muted-foreground"
+            className="text-sm text-muted-foreground"
           >
             {choghadiyaLegendMarker(TONE_BY_KEY[key])} {choghadiyaLegendLabel(key, lang)}
           </Text>
@@ -321,7 +321,7 @@ function TableView({
     return (
       <View className="gap-2">
         {anchor ? (
-          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
             {pick("चन्द्र राशि", "Moon sign")}:{" "}
             <Text className="font-bold text-foreground">{anchor}</Text>
           </Text>
@@ -364,7 +364,7 @@ function TableView({
     }
     if (rows.length === 0) {
       return (
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
           {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
         </Text>
       );
@@ -399,7 +399,7 @@ function TableView({
   }
 
   return (
-    <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+    <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
       {pick("डाटा उपलब्ध छैन।", "No data available.")}
     </Text>
   );
@@ -441,7 +441,7 @@ function NavataraBalamElementView({
 
   if (!cards.length) {
     return (
-      <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
         {pick("डाटा उपलब्ध छैन।", "No data available.")}
       </Text>
     );
@@ -450,7 +450,7 @@ function NavataraBalamElementView({
   return (
     <View className="gap-2">
       {moonRef ? (
-        <Text className="text-body text-center text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className="text-sm text-center text-muted-foreground" style={nepaliTextStyle(13)}>
           {moonRef}
         </Text>
       ) : null}
@@ -530,7 +530,7 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
     return (
       <AppShell title={pick("अज्ञात तत्त्व", "Unknown element")}>
         <Pressable onPress={() => router.push("/panchanga/details" as never)}>
-          <Text style={{ color: colors.primary }} className="text-body underline">
+          <Text style={{ color: colors.primary }} className="text-sm underline">
             {pick("पञ्चाङ्ग विवरणमा फर्कनुहोस्", "Back to panchanga details")}
           </Text>
         </Pressable>

@@ -102,8 +102,8 @@ export function GocharRashyadiBlock({
         {startVersion ? (
           <View style={colStyle}>
             <Text
-              className="text-body font-semibold text-secondary"
-              style={nepaliTextStyle(14)}
+              className="text-sm font-semibold text-secondary"
+              style={nepaliTextStyle()}
             >
               {startVersion}
             </Text>
@@ -113,10 +113,10 @@ export function GocharRashyadiBlock({
         <View style={colStyle}>
           <Text
             className={cn(
-              "text-body font-semibold text-foreground",
+              "text-sm font-semibold text-foreground",
               layout === "three" && "text-center",
             )}
-            style={nepaliTextStyle(14)}
+            style={nepaliTextStyle()}
           >
             ✦ {kundaliTitle}
           </Text>
@@ -126,10 +126,10 @@ export function GocharRashyadiBlock({
           <View style={colStyle}>
             <Text
               className={cn(
-                "text-body font-semibold text-secondary",
+                "text-sm font-semibold text-secondary",
                 layout !== "one" && "text-right",
               )}
-              style={nepaliTextStyle(14)}
+              style={nepaliTextStyle()}
             >
               {endVersion}
             </Text>

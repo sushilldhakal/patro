@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@vedic-patro/domain/utils";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 import { documentsListSearch, type DocumentCategoryTab } from "@/lib/documents-api";
 
 /** Same id convention ShlokaCard gives every verse's <section>. */
@@ -78,10 +79,10 @@ export function DocumentJumpForm({ slug, category, topic, chapterNumbers, curren
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-2">
+    <form onSubmit={handleSubmit} className={documentsClasses.jumpForm}>
       {currentChapter == null ? (
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-muted-foreground">
+        <label className={documentsClasses.jumpField}>
+          <span className={documentsClasses.jumpLabel}>
             {t("documents.jump_chapter_label")}
           </span>
           <Input
@@ -91,13 +92,13 @@ export function DocumentJumpForm({ slug, category, topic, chapterNumbers, curren
               setChapterInput(e.target.value);
               setNotFound(false);
             }}
-            className="w-20"
+            className={documentsClasses.jumpChapterInput}
             aria-label={t("documents.jump_chapter_label")}
           />
         </label>
       ) : null}
-      <label className="flex flex-col gap-1">
-        <span className="text-xs font-semibold text-muted-foreground">
+      <label className={documentsClasses.jumpField}>
+        <span className={documentsClasses.jumpLabel}>
           {t("documents.jump_verse_label")}
         </span>
         <Input
@@ -107,7 +108,7 @@ export function DocumentJumpForm({ slug, category, topic, chapterNumbers, curren
             setNotFound(false);
           }}
           placeholder={t("documents.jump_verse_placeholder")}
-          className="w-28"
+          className={documentsClasses.jumpVerseInput}
           aria-label={t("documents.jump_verse_label")}
         />
       </label>
@@ -116,7 +117,7 @@ export function DocumentJumpForm({ slug, category, topic, chapterNumbers, curren
         {t("documents.jump_button")}
       </Button>
       {notFound ? (
-        <p className={cn("basis-full text-xs text-destructive")}>
+        <p className={cn("basis-full", documentsClasses.jumpError)}>
           {t("documents.jump_not_found")}
         </p>
       ) : null}

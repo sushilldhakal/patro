@@ -24,6 +24,8 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 const GRAHA_ORDER: GrahaKey[] = ["mercury", "venus", "moon", "mars", "jupiter", "saturn"];
 
@@ -56,22 +58,22 @@ function StampLine({
   const { lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   return (
-    <View className="flex-row items-start justify-between gap-2">
+    <View className={cn("flex-row", grahaClasses.stampRow)}>
       <Text
-        style={{ color: tone === "asta" ? colors.danger : colors.accent, ...nepaliTextStyle(13) }}
-        className="text-body font-semibold"
+        style={{ color: tone === "asta" ? colors.danger : colors.success, ...nepaliTextStyle(13) }}
+        className={grahaClasses.stampLabel}
       >
         {label}
       </Text>
       {stamp ? (
-        <Text className="text-body text-right">
-          <Text className="font-num font-semibold text-foreground">
+        <Text className={grahaClasses.stampValue}>
+          <Text>
             {digits(stampDate(stamp, lang))}
           </Text>
-          <Text className="font-num text-muted-foreground"> · {digits(stamp.time_short)}</Text>
+          <Text className={grahaClasses.stampTime}> · {digits(stamp.time_short)}</Text>
         </Text>
       ) : (
-        <Text className="text-body text-right text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={cn(grahaClasses.stampValue, grahaClasses.stampOutside)} style={nepaliTextStyle(13)}>
           {pick("वर्ष बाहिर", "outside year")}
         </Text>
       )}
@@ -92,16 +94,16 @@ function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
   return (
     <View
       style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }}
-      className="gap-1.5 rounded-lg border p-2.5"
+      className={cn("border", grahaClasses.periodCard)}
     >
       <StampLine label={pick("अस्त आरम्भ", "Asta begins")} stamp={period.start} tone="asta" />
       <StampLine label={pick("उदय (अन्त्य)", "Udaya (ends)")} stamp={period.end} tone="udaya" />
-      <View className="flex-row items-baseline justify-between gap-2 border-t border-border pt-1">
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+      <View className={cn("flex-row", grahaClasses.periodFoot)}>
+        <Text className={grahaClasses.periodFootText} style={nepaliTextStyle(11)}>
           {hemi}
         </Text>
         {period.duration_days != null ? (
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className={grahaClasses.periodFootText} style={nepaliTextStyle(11)}>
             {pick(`${digits(period.duration_days)} दिन`, `${period.duration_days} days`)}
           </Text>
         ) : null}
@@ -156,11 +158,11 @@ export default function GrahaAstaScreen() {
       />
 
       {query.isLoading && !query.data ? (
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       ) : query.data ? (
-        <View className="mt-2 flex-row flex-wrap">
+        <View className={cn("flex-row flex-wrap", grahaClasses.columns)}>
           {GRAHA_ORDER.map((g) => {
             const periods = byGraha.get(g) ?? [];
             return (
@@ -179,7 +181,7 @@ export default function GrahaAstaScreen() {
                   periods.map((p, i) => <PeriodCard key={i} period={p} />)
                 ) : (
                   <Text
-                    className="text-body px-2 py-1.5 text-muted-foreground"
+                    className={grahaClasses.columnEmpty}
                     style={nepaliTextStyle(14)}
                   >
                     {pick("यस वर्ष अस्त छैन।", "No asta this year.")}
@@ -190,7 +192,7 @@ export default function GrahaAstaScreen() {
           })}
         </View>
       ) : (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
           {pick("ल्याउन सकिएन।", "Could not load.")}
         </Text>
       )}

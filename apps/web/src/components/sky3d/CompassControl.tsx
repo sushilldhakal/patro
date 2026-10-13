@@ -25,6 +25,7 @@ import { useLocale, bilingualText } from "@/i18n/locale";
 import { COMPASS_POINTS } from "@vedic-patro/domain/sky3d/sky-geometry";
 import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 
+import { illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
 const DIAL_SIZE = 64;
 const RADIUS = DIAL_SIZE / 2;
 /** The centre glyph sits fixed — this is its own box, not the dial's. */
@@ -155,7 +156,7 @@ export function CompassControl({
       {/* The lubber line: fixed, names whichever cardinal is currently faced. */}
       <div
         className="pointer-events-none absolute -top-1 left-1/2 h-0 w-0 -translate-x-1/2 border-x-[5px] border-b-[7px] border-x-transparent"
-        style={{ borderBottomColor: sensorActive ? "#f4c542" : "rgba(255,255,255,0.75)" }}
+        style={{ borderBottomColor: sensorActive ? illustration.amber61 : withAlpha(neutral.white, 0.75) }}
       />
 
       {/* The centre glyph: it names nothing itself, so it never turns — only
@@ -167,7 +168,7 @@ export function CompassControl({
         style={{
           width: ICON_SIZE,
           height: ICON_SIZE,
-          color: cameraOn ? "#4ade80" : gyroMode ? "#f4c542" : "rgba(255,255,255,0.8)",
+          color: cameraOn ? illustration.green58 : gyroMode ? illustration.amber61 : withAlpha(neutral.white, 0.8),
         }}
         dangerouslySetInnerHTML={{ __html: gyroMode ? cameraGlyph : compassNeedle }}
       />
@@ -197,8 +198,8 @@ export function CompassControl({
         return (
           <span
             key={p.az}
-            className="pointer-events-none absolute flex h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-[13px] font-bold"
-            style={{ left: x, top: y, color: p.az === 0 ? "#ff8a8a" : "rgba(255,255,255,0.85)" }}
+            className="pointer-events-none absolute flex h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-diagram-sm font-bold"
+            style={{ left: x, top: y, color: p.az === 0 ? midnight.vermilion : withAlpha(neutral.white, 0.85) }}
           >
             {pick(p.ne, p.en)}
           </span>

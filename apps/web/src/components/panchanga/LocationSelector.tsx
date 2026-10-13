@@ -13,6 +13,7 @@ import {
   ComboboxTrigger,
 } from "@/components/ui/combobox";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { cityItemLabel, cityLabel } from "./city-labels";
 import { useCitySearch } from "./use-city-search";
 import { useLocale } from "@/i18n/locale";
@@ -72,7 +73,7 @@ function LocationPickerPanel({
       </div>
 
       {geoError && (
-        <p className="text-sm text-destructive px-2 pb-1" role="alert">
+        <p className={panchangaPageClasses.location.geoErrorPanel} role="alert">
           {geoError}
         </p>
       )}
@@ -94,10 +95,10 @@ function LocationPickerPanel({
               key={city.id}
               value={city}
               onClick={() => onPickCity(city)}
-              className={cn(selected && "bg-secondary/20")}
+              className={cn(selected && panchangaPageClasses.location.citySelected)}
             >
-              <span className="font-semibold block">{name}</span>
-              <span className="text-sm">
+              <span className={cn("block", panchangaPageClasses.location.cityName)}>{name}</span>
+              <span className={panchangaPageClasses.location.citySub}>
                 {cityItemLabel(city, lang)}
               </span>
             </ComboboxItem>
@@ -191,7 +192,7 @@ export function LocationSelector({
             <MapPin className="size-3.5 shrink-0" />
             {/* Smaller text on mobile so the full city name fits instead of
                 truncating to "Kat…"; desktop keeps the standard size. */}
-            <span className="truncate text-[11px] leading-none md:text-sm">{labelMain}</span>
+            <span className="truncate text-xs leading-none md:text-sm">{labelMain}</span>
           </span>
         </ComboboxTrigger>
         <ComboboxContent
@@ -242,7 +243,7 @@ export function LocationSelector({
       </Combobox>
 
       {geoError && (
-        <p className="text-xs text-destructive" role="alert">
+        <p className={panchangaPageClasses.location.geoError} role="alert">
           {geoError}
         </p>
       )}

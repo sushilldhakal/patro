@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AppNavIcon } from "@/components/icons/AppNavIcon";
-import { PatroPageHeader } from "@/components/patro-date/PatroPageHeader";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { View } from "react-native";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/AppShell";
@@ -23,6 +23,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 function toAdStr(d: Date): string {
   const y = d.getFullYear();
@@ -105,7 +107,8 @@ export default function GocharScreen() {
 
   return (
     <AppShell title={pick("गोचर", "Gochar")} showHeader={false}>
-      <PatroPageHeader
+      <View className="gap-8">
+      <PageHeader
         icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
         title={t("gochar.page_title")}
         subtitle={t("gochar.page_subtitle")}
@@ -129,7 +132,7 @@ export default function GocharScreen() {
             onSelectPlanet={setSelectedPlanet}
           />
 
-          <View className={width >= 1024 ? "flex-row items-start gap-6" : "gap-6"}>
+          <View className={cn(gocharClasses.columns, width >= 1024 && "flex-row items-start")}>
             <View className={width >= 1024 ? "min-w-0 flex-1" : "w-full"}>
               <GocharIngressSection
                 events={ingressQ.data?.events ?? []}
@@ -150,21 +153,22 @@ export default function GocharScreen() {
           </View>
         </View>
       ) : gocharQ.isError ? (
-        <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className="text-body">
+        <Text className={gocharClasses.errorText} style={nepaliTextStyle()}>
           {pick("गोचर ल्याउन सकिएन।", "Could not load transits.")}
         </Text>
       ) : (
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
+        <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>
           {pick("लोड हुँदै…", "Loading…")}
         </Text>
       )}
 
-      <Text className="text-body mt-4 text-muted-foreground" style={nepaliTextStyle(13)}>
+      <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>
         {pick(
           "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",
           "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",
         )}
       </Text>
+      </View>
     </AppShell>
   );
 }

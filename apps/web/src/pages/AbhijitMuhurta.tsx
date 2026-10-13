@@ -25,11 +25,8 @@ import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import {
   searchToLocation,
 } from "@/lib/url-state";
-import {
-  patroEmpty,
-  patroErrorBox,
-  patroSkel,
-} from "@/lib/patro-classes";
+import { patroSkel } from "@/lib/patro-classes";
+import { abhijitClasses as ac } from "@vedic-patro/design-tokens/classes/abhijit-classes";
 import { cn } from "@vedic-patro/domain/utils";
 
 const routeApi = getRouteApi("/panchanga-shell/abhijit-muhurta");
@@ -67,39 +64,40 @@ function AbhijitDayCard({
   return (
     <article
       className={cn(
-        "group flex min-h-[132px] flex-col rounded-xl border bg-card p-2.5 shadow-xs transition-colors sm:min-h-[140px] sm:p-3",
+        ac.dayCard,
+        "group transition-colors",
         isToday
-          ? "border-secondary/50 bg-secondary/10 ring-2 ring-secondary/30 dark:border-primary/40 dark:bg-primary/10 dark:ring-primary/25"
-          : "border-border hover:border-secondary/30 hover:bg-muted/20 dark:hover:border-primary/30",
+          ? cn(ac.dayCardToday, "ring-2 ring-secondary/30 dark:ring-primary/25")
+          : cn(ac.dayCardIdle, "hover:border-secondary/30 hover:bg-muted/20 dark:hover:border-primary/30"),
       )}
     >
-      <div className="mb-1 flex items-center justify-between gap-1">
-        <span className="truncate text-sm font-semibold sm:text-sm">
+      <div className={ac.dayHead}>
+        <span className={cn(ac.dayWeekday, "truncate")}>
           {weekday}
         </span>
         {isToday ? (
-          <span className="shrink-0 rounded-full bg-secondary/20 px-1.5 py-px text-sm font-bold uppercase text-secondary dark:bg-primary/20 dark:text-primary">
+          <span className={cn(ac.todayBadge, ac.todayBadgeText, "shrink-0")}>
             {t("abhijit.jump_today")}
           </span>
         ) : null}
       </div>
 
-      <div className="mb-2 flex items-baseline justify-center gap-1.5">
-        <span className="font-num text-lg font-bold leading-none tabular-nums sm:text-2xl">
+      <div className={ac.dayNumRow}>
+        <span className={ac.dayNum}>
           {digits(day.day)}
         </span>
-        <span className="font-num text-sm tabular-nums">/{digits(adDay)}</span>
+        <span className={ac.dayNumAd}>/{digits(adDay)}</span>
       </div>
 
-      <div className="mt-auto space-y-1.5">
-        <p className="mono m-0 text-center text-sm font-bold leading-tight text-secondary sm:text-xs dark:text-primary">
+      <div className={ac.dayBody}>
+        <p className={cn(ac.dayRange, "mono m-0")}>
           {abhijit.rangeDisplay}
         </p>
-        <p className="m-0 text-center text-sm sm:text-sm">
+        <p className={cn(ac.dayNoon, "m-0")}>
           {t("abhijit.col_noon")}{" "}
-          <span className="mono text-base text-foreground">{abhijit.noonDisplay ?? "—"}</span>
+          <span className={cn(ac.dayNoonValue, "mono")}>{abhijit.noonDisplay ?? "—"}</span>
         </p>
-        <p className="mono m-0 truncate text-center text-sm sm:text-sm">
+        <p className={cn(ac.daySun, "mono m-0 truncate")}>
           ↑{sunrise} · ↓{sunset}
         </p>
       </div>
@@ -189,16 +187,16 @@ export function AbhijitMuhurta() {
       <div>
         <Link
           to="/"
-          className="inline-flex items-center gap-1 text-xs text-base hover:text-foreground mb-2"
+          className="inline-flex items-center gap-1 text-xs hover:text-foreground mb-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           {t("abhijit.back_home")}
         </Link>
-        <h1 className="text-[clamp(1.75rem,4vw,2.125rem)] font-bold leading-tight tracking-tight m-0 flex items-center gap-2.5">
+        <h1 className={cn(ac.titleRow, ac.title, "text-[clamp(1.75rem,4vw,2.125rem)] m-0")}>
           <Sparkles className="w-7 h-7 text-secondary shrink-0 dark:text-primary" />
           {t("abhijit.title")}
         </h1>
-        <p className="text-sm mt-1.5 max-w-xl leading-relaxed">
+        <p className={ac.subtitle}>
           {t("abhijit.subtitle")}
         </p>
       </div>
@@ -219,14 +217,14 @@ export function AbhijitMuhurta() {
       />
 
       {todayRow ? (
-        <section className="relative overflow-hidden rounded-2xl border border-secondary/30 bg-linear-to-br from-secondary/15 via-card to-card p-5 sm:p-6 shadow-xs dark:border-primary/30 dark:from-primary/15">
+        <section className={cn(ac.hero, "relative bg-linear-to-br from-secondary/15 via-card to-card dark:from-primary/15")}>
           <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-secondary/10 blur-2xl dark:bg-primary/10" />
           <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.08em] text-secondary dark:text-primary mb-1">
+              <p className={ac.heroEyebrow}>
                 {t("abhijit.today_hero")}
               </p>
-              <p className="text-sm mb-2">
+              <p className={ac.heroDate}>
                 {digits(todayRow.day.day)}
                 {" · "}
                 {bilingualText(
@@ -235,19 +233,19 @@ export function AbhijitMuhurta() {
                   todayRow.day.weekday_en ?? todayRow.day.weekday,
                 )}
                 {" · "}
-                <span className="font-num tabular-nums">{todayRow.day.date_ad}</span>
+                <span className={ac.heroDateAd}>{todayRow.day.date_ad}</span>
               </p>
-              <p className="mono text-[clamp(1.5rem,5vw,2rem)] font-bold text-foreground leading-tight">
+              <p className={cn(ac.heroRange, "mono text-[clamp(1.5rem,5vw,2rem)]")}>
                 {todayRow.abhijit.rangeDisplay}
               </p>
-              <p className="mt-2 text-sm">
+              <p className={ac.heroNoon}>
                 {t("abhijit.col_noon")}:{" "}
-                <span className="mono font-semibold text-foreground">
+                <span className={cn(ac.heroNoonValue, "mono")}>
                   {todayRow.abhijit.noonDisplay ?? "—"}
                 </span>
               </p>
             </div>
-            <div className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/60 px-4 py-3 text-sm backdrop-blur-sm">
+            <div className={cn(ac.sunPanel, "backdrop-blur-sm")}>
               <div className="flex items-center gap-2">
                 <Sun className="w-4 h-4 shrink-0 text-amber-500" />
                 <span>
@@ -259,38 +257,38 @@ export function AbhijitMuhurta() {
                   })}
                 </span>
               </div>
-              <p className="mono text-xs font-num tabular-nums">{todayRow.day.date_ad}</p>
+              <p className={cn(ac.sunDate, "mono")}>{todayRow.day.date_ad}</p>
             </div>
           </div>
         </section>
       ) : null}
 
-      <div className="rounded-xl border border-border bg-muted/20 px-4 py-3.5 text-sm leading-relaxed">
-        <div className="flex gap-2.5">
+      <div className={cn(ac.noteBox, ac.noteText)}>
+        <div className={ac.noteRow}>
           <Sparkles className="w-4 h-4 shrink-0 mt-0.5 text-secondary dark:text-primary" />
           <p className="m-0">{t("abhijit.note")}</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-bold text-foreground m-0">
+      <div className={ac.headingRow}>
+        <h2 className={cn(ac.heading, "m-0")}>
           {t("abhijit.month_heading")} — {monthLabel} {digits(monthBrowse.year)}
         </h2>
         {!monthQ.isLoading && rows.length > 0 ? (
-          <span className="rounded-full border border-border bg-card px-2.5 py-0.5 text-sm font-semibold">
+          <span className={cn(ac.countPill, ac.countText)}>
             {t("abhijit.days_count", { count: rows.length })}
           </span>
         ) : null}
       </div>
 
       {monthQ.isError ? (
-        <div className={patroErrorBox}>{t("abhijit.error")}</div>
+        <div className={cn(ac.errorBox, ac.errorText)}>{t("abhijit.error")}</div>
       ) : monthQ.isLoading ? (
-        <div className={cn(patroSkel, "h-60 w-full rounded-2xl")} />
+        <div className={cn(patroSkel, ac.skeleton)} />
       ) : rows.length === 0 ? (
-        <p className={patroEmpty}>{t("abhijit.none")}</p>
+        <p className={cn(ac.empty, "m-0")}>{t("abhijit.none")}</p>
       ) : (
-        <div className="rounded-2xl border border-border bg-muted/15 p-3 sm:p-4">
+        <div className={ac.gridWrap}>
           <AbhijitMonthGrid rows={rows} todayAd={todayAd} />
         </div>
       )}

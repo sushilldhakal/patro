@@ -1,32 +1,121 @@
 {
   "fontSize": {
-    "caption": [
-      "15px",
+    "xs": [
+      "10.8px",
+      {
+        "lineHeight": "13.6px"
+      }
+    ],
+    "sm": [
+      "14px",
+      {
+        "lineHeight": "20px"
+      }
+    ],
+    "base": [
+      "16px",
       {
         "lineHeight": "24px"
       }
     ],
-    "body": [
+    "lg": [
       "18px",
       {
-        "lineHeight": "29px"
+        "lineHeight": "28px"
       }
     ],
-    "title": [
-      "22px",
+    "xl": [
+      "20px",
+      {
+        "lineHeight": "28px"
+      }
+    ],
+    "2xl": [
+      "24px",
+      {
+        "lineHeight": "32px"
+      }
+    ],
+    "3xl": [
+      "30px",
       {
         "lineHeight": "36px"
       }
     ],
-    "display": [
-      "28px",
+    "4xl": [
+      "36px",
       {
-        "lineHeight": "45px"
+        "lineHeight": "40px"
+      }
+    ],
+    "5xl": [
+      "48px",
+      {
+        "lineHeight": "48px"
+      }
+    ],
+    "caption": [
+      "10.8px",
+      {
+        "lineHeight": "13.6px"
+      }
+    ],
+    "body": [
+      "14px",
+      {
+        "lineHeight": "20px"
+      }
+    ],
+    "title": [
+      "18px",
+      {
+        "lineHeight": "28px"
+      }
+    ],
+    "display": [
+      "24px",
+      {
+        "lineHeight": "32px"
+      }
+    ],
+    "diagram-2xs": [
+      "8px",
+      {
+        "lineHeight": "10px"
+      }
+    ],
+    "diagram-xs": [
+      "10px",
+      {
+        "lineHeight": "13px"
+      }
+    ],
+    "diagram-sm": [
+      "12px",
+      {
+        "lineHeight": "16px"
       }
     ]
   },
+  "letterSpacing": {
+    "eyebrow": "0.12em",
+    "eyebrow-wide": "0.18em",
+    "tight": "-0.01em"
+  },
+  "boxShadow": {
+    "xs": "0px 2px 3px 0px rgba(80, 63, 48, 0.09)",
+    "sm": "0px 1px 2px -1px rgba(80, 63, 48, 0.18)",
+    "md": "0px 2px 4px -1px rgba(80, 63, 48, 0.18)",
+    "lg": "0px 4px 6px -1px rgba(80, 63, 48, 0.18)"
+  },
+  "maxWidth": {
+    "page": "1400px",
+    "page-wide": "1600px"
+  },
   "screens": {
     "xs": "400px",
+    "compact": "480px",
+    "calendar": "992px",
     "sm": "640px",
     "md": "768px",
     "lg": "1024px",
@@ -56,15 +145,328 @@
     ]
   },
   "borderRadius": {
-    "lg": "8px",
-    "xl": "12px"
+    "sm": "0.8px",
+    "md": "2.8px",
+    "lg": "4.8px",
+    "xl": "8.8px",
+    "2xl": "16px"
+  },
+  "spacing": {
+    "0": "0px",
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "7": "28px",
+    "8": "32px",
+    "9": "36px",
+    "10": "40px",
+    "11": "44px",
+    "12": "48px",
+    "14": "56px",
+    "16": "64px",
+    "20": "80px",
+    "24": "96px",
+    "28": "112px",
+    "32": "128px",
+    "36": "144px",
+    "40": "160px",
+    "44": "176px",
+    "48": "192px",
+    "52": "208px",
+    "56": "224px",
+    "60": "240px",
+    "64": "256px",
+    "72": "288px",
+    "80": "320px",
+    "96": "384px",
+    "px": "1px",
+    "0.5": "2px",
+    "0.75": "3px",
+    "1.5": "6px",
+    "2.5": "10px",
+    "3.5": "14px",
+    "3.75": "15px",
+    "5.5": "22px",
+    "7.5": "30px"
   },
   "colors": {
     "gold": "#d4a017",
+    "ill-amber5": "#1a1500",
+    "ill-amber38": "#a09020",
+    "ill-amber40": "#ca8a04",
+    "ill-amber43": "#dddd00",
+    "ill-amber45": "#c8a020",
+    "ill-amber47": "#eab308",
+    "ill-amber49": "#f9c800",
+    "ill-amber52": "#ffd70a",
+    "ill-amber53": "#facc15",
+    "ill-amber56": "#fbbf24",
+    "ill-amber57": "#d8c84a",
+    "ill-amber60": "#e6b94d",
+    "ill-amber60b": "#e6e34a",
+    "ill-amber61": "#f4c542",
+    "ill-amber64": "#e2d264",
+    "ill-amber65": "#fcd34d",
+    "ill-amber66": "#f4c95e",
+    "ill-amber67": "#ffcf57",
+    "ill-amber67b": "#e8d870",
+    "ill-amber70": "#ffd166",
+    "ill-amber77": "#fde68a",
+    "ill-amber77b": "#e3d9a8",
+    "ill-amber77c": "#f0d898",
+    "ill-amber78": "#e6d4a8",
+    "ill-amber81": "#ffe6a0",
+    "ill-amber82": "#f0e0b0",
+    "ill-amber85": "#fbe9b6",
+    "ill-amber89": "#fff6c8",
+    "ill-amber89b": "#ece6d8",
+    "ill-amber92": "#fff6d8",
+    "ill-amber95": "#fff8e6",
+    "ill-blue25": "#2a2060",
+    "ill-blue56": "#7060c0",
+    "ill-blue59": "#4d6fe0",
+    "ill-blue67": "#6366f1",
+    "ill-blue85": "#c4b5fd",
+    "ill-gray11": "#1c1c1e",
+    "ill-gray22": "#33373d",
+    "ill-gray45": "#737373",
+    "ill-gray46": "#6a7480",
+    "ill-gray47": "#787878",
+    "ill-gray53": "#888888",
+    "ill-gray58": "#989090",
+    "ill-gray58b": "#8a939d",
+    "ill-gray63": "#9aa0a8",
+    "ill-green12": "#112a1b",
+    "ill-green13": "#0a3828",
+    "ill-green17": "#183e23",
+    "ill-green30": "#2f6b3c",
+    "ill-green36": "#2e8b57",
+    "ill-green40": "#2ea078",
+    "ill-green43": "#34a853",
+    "ill-green45": "#22c55e",
+    "ill-green51": "#35d05a",
+    "ill-green52": "#34d399",
+    "ill-green55": "#7ec850",
+    "ill-green58": "#4ade80",
+    "ill-green66": "#6fe08a",
+    "ill-green67": "#6ee7b7",
+    "ill-green67b": "#6ee7a8",
+    "ill-green70": "#7ee787",
+    "ill-green70b": "#8fd6b0",
+    "ill-green75": "#9fe0c8",
+    "ill-green80": "#a8f0d0",
+    "ill-green90": "#d1fae5",
+    "ill-lime44": "#84cc16",
+    "ill-lime74": "#c8ff7a",
+    "ill-orange17": "#502a08",
+    "ill-orange22": "#4a3626",
+    "ill-orange26": "#5f3926",
+    "ill-orange27": "#7a5010",
+    "ill-orange27b": "#8b3c00",
+    "ill-orange31": "#92400e",
+    "ill-orange32": "#7a5c28",
+    "ill-orange36": "#9c4e1f",
+    "ill-orange43": "#d98a00",
+    "ill-orange44": "#b06a2e",
+    "ill-orange45": "#d65b12",
+    "ill-orange45b": "#d68910",
+    "ill-orange46": "#c79126",
+    "ill-orange47": "#e07d12",
+    "ill-orange48": "#ea580c",
+    "ill-orange50": "#f59e0b",
+    "ill-orange52": "#c89840",
+    "ill-orange53": "#f08a1d",
+    "ill-orange53b": "#f2a81d",
+    "ill-orange53c": "#f97316",
+    "ill-orange54": "#e85d2c",
+    "ill-orange55": "#f6a623",
+    "ill-orange57": "#c4a060",
+    "ill-orange60": "#f8b53c",
+    "ill-orange61": "#fb923c",
+    "ill-orange63": "#c9a27a",
+    "ill-orange69": "#e8c179",
+    "ill-orange72": "#ff9870",
+    "ill-pink53": "#b06080",
+    "ill-pink60": "#ec4899",
+    "ill-pink70": "#f472b6",
+    "ill-red6": "#1c0408",
+    "ill-red18": "#3f1c1e",
+    "ill-red22": "#6e1800",
+    "ill-red24": "#601828",
+    "ill-red27": "#7a1c12",
+    "ill-red31": "#7f1d1d",
+    "ill-red36": "#8f2f28",
+    "ill-red41": "#be123c",
+    "ill-red46": "#c0392b",
+    "ill-red49": "#c84830",
+    "ill-red50": "#e11d48",
+    "ill-red51": "#dc2626",
+    "ill-red51b": "#d4582f",
+    "ill-red56": "#ea4335",
+    "ill-red57": "#e74c3c",
+    "ill-red60": "#ef4444",
+    "ill-red60b": "#f43f5e",
+    "ill-red68": "#f0736a",
+    "ill-red68b": "#ff5a5a",
+    "ill-red71": "#ff6b6b",
+    "ill-red71b": "#fb7185",
+    "ill-red71c": "#f87171",
+    "ill-red74": "#ff7878",
+    "ill-red82": "#fda4af",
+    "ill-red85": "#ffb4b4",
+    "ill-red89": "#fecaca",
+    "ill-sky5": "#060b14",
+    "ill-sky11": "#0f172a",
+    "ill-sky14": "#0b1f3a",
+    "ill-sky19": "#1a2848",
+    "ill-sky22": "#123c5e",
+    "ill-sky27": "#334155",
+    "ill-sky29": "#1a4a7c",
+    "ill-sky29b": "#404952",
+    "ill-sky31": "#1c5d80",
+    "ill-sky32": "#0369a1",
+    "ill-sky32b": "#3d4b66",
+    "ill-sky39": "#0284c7",
+    "ill-sky46": "#2a5cc0",
+    "ill-sky50": "#2f6bd0",
+    "ill-sky51": "#3f86c4",
+    "ill-sky52": "#1877f2",
+    "ill-sky53": "#2888e4",
+    "ill-sky54": "#3aa0d8",
+    "ill-sky60": "#3b82f6",
+    "ill-sky61": "#7d93b8",
+    "ill-sky61b": "#4a90ee",
+    "ill-sky63": "#5aa9e6",
+    "ill-sky65": "#94a3b8",
+    "ill-sky67": "#7ea9d8",
+    "ill-sky67b": "#8fb0c8",
+    "ill-sky68": "#5eb6ff",
+    "ill-sky68b": "#60a5fa",
+    "ill-sky69": "#6cb6f5",
+    "ill-sky70": "#8fb6d8",
+    "ill-sky74": "#9db9dd",
+    "ill-sky75": "#7fd4ff",
+    "ill-sky75b": "#87c8f8",
+    "ill-sky76": "#8ab4f8",
+    "ill-sky76b": "#b8c0cc",
+    "ill-sky77": "#aebedb",
+    "ill-sky78": "#9fc4f0",
+    "ill-sky80": "#9bd4ff",
+    "ill-sky84": "#cbd5e1",
+    "ill-sky85": "#c4d4f0",
+    "ill-sky86": "#bae6fd",
+    "ill-sky91": "#cfe0ff",
+    "ill-sky91b": "#e2e8f0",
+    "ill-sky93": "#dceaff",
+    "ill-sky96": "#eaf2ff",
+    "ill-teal15": "#202a2c",
+    "ill-teal15b": "#133739",
+    "ill-teal15c": "#0b3d40",
+    "ill-teal19": "#243f3c",
+    "ill-teal24": "#2d4f4b",
+    "ill-teal24b": "#047857",
+    "ill-teal25": "#0e6a6f",
+    "ill-teal30": "#3d5c58",
+    "ill-teal30b": "#059669",
+    "ill-teal33": "#4a5a60",
+    "ill-teal34": "#1f8f6f",
+    "ill-teal35": "#00aab4",
+    "ill-teal36": "#2d8a86",
+    "ill-teal39": "#10b981",
+    "ill-teal40": "#14b8a6",
+    "ill-teal41": "#5b6f76",
+    "ill-teal41b": "#00c8d2",
+    "ill-teal43": "#06b6d4",
+    "ill-teal48": "#0ea5e9",
+    "ill-teal55": "#4ecdc4",
+    "ill-teal60": "#38bdf8",
+    "ill-teal61": "#5fb0d6",
+    "ill-teal74": "#8fe3e8",
+    "ill-teal77": "#9fe8e6",
+    "ill-teal82": "#b8e8d8",
+    "ill-violet24": "#3a2458",
+    "ill-violet33": "#6b3278",
+    "ill-violet65": "#a855f7",
+    "ill-violet66": "#8b5cf6",
+    "ill-violet70": "#a07de8",
+    "ill-violet80": "#c4a8f0",
+    "ill-violet80b": "#e39bff",
+    "ill-brand-saffron": "#d97706",
+    "ill-brand-saffron-bright": "#e67e22",
+    "ill-brand-saffron-pressed": "#b45309",
+    "ill-brand-vermilion": "#c62828",
+    "ill-brand-vermilion-pressed": "#9e1f1f",
+    "ill-brand-gold": "#d4a017",
+    "ill-brand-gold-pressed": "#b8860b",
+    "ill-brand-green": "#2e7d32",
+    "ill-brand-green-pressed": "#1b5e20",
+    "ill-brand-blue": "#0b565a",
+    "ill-brand-blue-pressed": "#084548",
+    "ill-brand-off-white": "#f8f6f2",
+    "ill-brand-ink": "#1a1410",
+    "ill-brand-ink-muted": "#5c4a3a",
+    "ill-midnight-background": "#0f1220",
+    "ill-midnight-card": "#171c31",
+    "ill-midnight-popover": "#0b0e1a",
+    "ill-midnight-line": "#272e4a",
+    "ill-midnight-foam": "#f3efe8",
+    "ill-midnight-muted-foreground": "#a6abc0",
+    "ill-midnight-saffron": "#f59e42",
+    "ill-midnight-gold": "#e8c36a",
+    "ill-midnight-vermilion": "#ff8f85",
+    "ill-neutral-white": "#ffffff",
+    "ill-neutral-black": "#000000",
+    "ill-neutral-silver-base": "#d8d4cc",
+    "ill-neutral-slate-input": "#4a4540",
+    "ill-wheel-sky0": "#112c2a",
+    "ill-wheel-sky1": "#0a1a1b",
+    "ill-wheel-sky2": "#050c0d",
+    "ill-wheel-surface": "#0b1416",
+    "ill-wheel-pada": "#0d2024",
+    "ill-wheel-pada-alt": "#112a2f",
+    "ill-wheel-ink": "#eaf3f1",
+    "ill-wheel-ink-dim": "#a7c4c3",
+    "ill-wheel-ink-faint": "#84a3a2",
+    "ill-wheel-line": "#8fbfc1",
+    "ill-wheel-rim": "#a9d4d4",
+    "ill-wheel-band-base": "#0a1618",
+    "ill-wheel-band-alt-base": "#0b181a",
+    "ill-wheel-rashi-base": "#091315",
+    "ill-wheel-rashi-alt-base": "#0a1518",
+    "wheel-control": "rgba(11, 20, 22, 0.96)",
+    "wheel-control-border": "rgba(143, 191, 193, 0.32)",
+    "success": "var(--color-success)",
     "surface-today": "rgba(198, 40, 40, 0.14)",
     "surface-today-hover": "rgba(198, 40, 40, 0.22)",
     "surface-hover": "rgba(217, 119, 6, 0.07)",
     "surface-tint-danger": "rgba(198, 40, 40, 0.07)",
-    "fest-today": "rgba(198, 40, 40, 0.08)"
+    "fest-today": "rgba(198, 40, 40, 0.08)",
+    "surface-inset": "color-mix(in srgb, var(--foreground) 3%, var(--card))",
+    "surface-muted": "color-mix(in srgb, var(--foreground) 2.5%, var(--card))",
+    "surface-tint-teal": "color-mix(in srgb, var(--brand-green) 9%, var(--card))",
+    "chip-public": "color-mix(in srgb, var(--color-danger) 12%, var(--card))",
+    "chip-festival": "color-mix(in srgb, var(--brand-green) 14%, var(--card))",
+    "tab-active": "color-mix(in srgb, var(--brand-saffron) 12%, var(--card))",
+    "tab-hover": "color-mix(in srgb, var(--brand-saffron) 6%, var(--card))",
+    "warning-surface": "color-mix(in srgb, var(--color-warning) 10%, var(--card))",
+    "error-surface": "color-mix(in srgb, var(--color-danger) 10%, var(--card))",
+    "gochar-chip": "color-mix(in srgb, var(--brand-gold) 28%, var(--card))",
+    "hol-tile-public": "color-mix(in srgb, var(--color-danger) 11%, var(--card))",
+    "hol-tile-festival": "color-mix(in srgb, var(--brand-green) 13%, var(--card))",
+    "tone-best": "color-mix(in srgb, var(--brand-green) 12%, var(--card))",
+    "tone-good": "color-mix(in srgb, var(--brand-green) 8%, var(--card))",
+    "tone-neutral": "color-mix(in srgb, var(--foreground) 4%, var(--card))",
+    "tone-bad": "color-mix(in srgb, var(--color-danger) 6%, var(--card))",
+    "tone-worst": "color-mix(in srgb, var(--color-danger) 10%, var(--card))",
+    "slot-good": "color-mix(in srgb, var(--brand-green) 10%, var(--card))",
+    "slot-bad": "color-mix(in srgb, var(--color-danger) 8%, var(--card))",
+    "slot-neutral": "color-mix(in srgb, var(--foreground) 4%, var(--card))",
+    "badge-good": "color-mix(in srgb, var(--brand-green) 16%, var(--card))",
+    "badge-bad": "color-mix(in srgb, var(--color-danger) 12%, var(--card))",
+    "badge-neutral": "color-mix(in srgb, var(--foreground) 8%, var(--card))",
+    "pushkara-hit": "color-mix(in srgb, var(--brand-green) 10%, var(--card))"
   }
 }

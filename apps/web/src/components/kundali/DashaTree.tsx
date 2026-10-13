@@ -17,6 +17,7 @@ import {
 } from "@vedic-patro/domain/dasha";
 import { cn } from "@vedic-patro/domain/utils";
 import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 /** Catalogue keys, outermost dasha level first. */
 const LEVEL_LABELS: string[] = [
@@ -101,11 +102,11 @@ function formatMoment(
 
 function MomentLine({ label, value }: { label: string; value: string }) {
   return (
-    <p className="text-sm leading-snug">
-      <span className="inline-block w-14 shrink-0 font-semibold uppercase tracking-wide text-sm">
+    <p className={kundaliDetailClasses.prose.bodyTight}>
+      <span className={cn(kundaliDetailClasses.dashaTree.momentLabel, "inline-block")}>
         {label}
       </span>
-      <span className="text-base text-foreground/80">{value}</span>
+      <span className={kundaliDetailClasses.dashaTree.momentValue}>{value}</span>
     </p>
   );
 }
@@ -140,9 +141,9 @@ function SpanProgress({ start, end, now }: { start: Date; end: Date; now: number
   const total = end.getTime() - start.getTime();
   const pct = total > 0 ? Math.min(100, Math.max(0, ((now - start.getTime()) / total) * 100)) : 0;
   return (
-    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted/60">
+    <div className={kundaliDetailClasses.dashaTree.progressTrack}>
       <div
-        className="h-full rounded-full bg-secondary transition-[width] duration-500"
+        className={cn(kundaliDetailClasses.dashaTree.progressFill, "transition-[width] duration-500")}
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -183,7 +184,7 @@ function DashaDurationGrid({
             {DURATION_COLS.map((col) => (
               <th
                 key={col}
-                className="border border-border/50 bg-muted/30 px-1.5 py-1 text-left font-semibold text-sm uppercase tracking-wide"
+                className={cn(kundaliDetailClasses.dashaTree.durationHeadCell, "border text-left")}
               >
                 {t(col)}
               </th>
@@ -195,7 +196,7 @@ function DashaDurationGrid({
             {values.map((value, i) => (
               <td
                 key={DURATION_COLS[i]}
-                className="border border-border/50 px-1.5 py-1 text-base tabular-nums text-foreground/90"
+                className={cn(kundaliDetailClasses.dashaTree.durationCell, kundaliDetailClasses.dashaTree.durationValue, "border")}
               >
                 {digits(value)}
               </td>
@@ -323,26 +324,26 @@ function DashaNode({
             expandable && "hover:bg-black/[0.03] dark:hover:bg-white/[0.04]",
           )}
         >
-          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className={cn(kundaliDetailClasses.dashaTree.spanHead, "flex")}>
             {expandable ? (
               <ChevronRight className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-90")} aria-hidden />
             ) : (
               <span className="w-3.5 shrink-0" aria-hidden />
             )}
-            <span className="text-sm font-bold text-foreground">{displayLordName(span, lang, system)}</span>
-            <span className="text-sm">
+            <span className={kundaliDetailClasses.dashaTree.spanLord}>{displayLordName(span, lang, system)}</span>
+            <span className={kundaliDetailClasses.dashaTree.spanMeta}>
               {levelLabel}
               <span className="mx-1">·</span>
               {digits(duration)}
             </span>
             {running && (
-              <span className="rounded-full bg-secondary/15 px-2 py-0.5 text-sm font-bold text-secondary">
+              <span className={cn(kundaliDetailClasses.dashaTree.runningBadge, kundaliDetailClasses.dashaTree.runningBadgeText)}>
                 {t("kundali.running")}
               </span>
             )}
           </span>
 
-          <span className="mt-2 block space-y-0.5 pl-[22px]">
+          <span className="mt-2 block space-y-0.5 pl-5.5">
             <MomentLine label={t("kundali.begin")} value={formatMoment(span.start, lang, timeZone, digits)} />
             <MomentLine label={t("kundali.end")} value={formatMoment(span.end, lang, timeZone, digits)} />
           </span>
@@ -351,7 +352,7 @@ function DashaNode({
         </button>
 
         {children && (
-          <div className="border-t border-border/50 bg-card/40 px-2 pb-2 pt-1">
+          <div className={kundaliDetailClasses.dashaTree.childrenBox}>
             <ul className="relative ml-3 flex flex-col gap-0">
               {children.map((child, i) => (
                 <DashaNode
@@ -397,44 +398,44 @@ function ChainStackRow({
   const running = isRunning(span, now);
 
   return (
-    <div className="px-4 py-3">
-      <p className="flex items-center gap-2">
+    <div className={kundaliDetailClasses.dashaTree.detail}>
+      <p className={cn(kundaliDetailClasses.dashaTree.detailHead, "flex")}>
         {grahaKey ? <GrahaPlanetIcon graha={grahaKey} size={26} /> : null}
-        <span className="text-base font-bold text-foreground">
+        <span className={kundaliDetailClasses.dashaTree.detailTitle}>
           {displayLordName(span, lang, system)}
-          <span className="font-normal text-muted-foreground"> — {t(LEVEL_LABELS[level]!)}</span>
+          <span className={kundaliDetailClasses.dashaTree.detailLevel}> — {t(LEVEL_LABELS[level]!)}</span>
         </span>
         {running && (
-          <span className="ml-auto shrink-0 rounded-full bg-secondary/15 px-2 py-0.5 text-sm font-bold text-secondary">
+          <span className={cn(kundaliDetailClasses.dashaTree.runningBadge, kundaliDetailClasses.dashaTree.runningBadgeText, "ml-auto shrink-0")}>
             {t("kundali.running")}
           </span>
         )}
       </p>
-      <div className="mt-1.5 space-y-1 pl-1">
-        <p className="flex items-center gap-1.5 text-sm">
+      <div className={cn(kundaliDetailClasses.dashaTree.detailFlow, "space-y-1")}>
+        <p className={cn(kundaliDetailClasses.dashaTree.detailFlowRow, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
           <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-          <span className="text-base text-foreground/80">
+          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>
             {formatMoment(span.start, lang, timeZone, digits)}
           </span>
         </p>
-        <p className="flex items-center gap-1.5 text-sm">
+        <p className={cn(kundaliDetailClasses.dashaTree.detailFlowRow, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
           <ArrowRight className="size-3.5 shrink-0 text-foreground" aria-hidden />
-          <span className="text-base text-foreground/80">
+          <span className={kundaliDetailClasses.dashaTree.detailFlowText}>
             {formatMoment(span.end, lang, timeZone, digits)}
           </span>
         </p>
       </div>
-      <div className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1 pl-1 text-sm">
+      <div className={cn(kundaliDetailClasses.dashaTree.detailTotals, kundaliDetailClasses.dashaTree.detailTotalText, "flex")}>
         <p>
           <span>{t("kundali.total")} — </span>
-          <span className="font-semibold text-foreground">
+          <span className={kundaliDetailClasses.dashaTree.detailStrong}>
             {digits(formatDashaDuration(span.end.getTime() - span.start.getTime(), lang))}
           </span>
         </p>
         {running && (
           <p>
             <span>{t("kundali.left")} — </span>
-            <span className="font-semibold text-foreground">
+            <span className={kundaliDetailClasses.dashaTree.detailStrong}>
               {digits(formatDashaDuration(span.end.getTime() - now, lang))}
             </span>
           </p>
@@ -470,7 +471,7 @@ function ChainStack({
 }) {
   if (path.length === 0) return null;
   return (
-    <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/40 divide-y divide-border/50">
+    <div className={cn(kundaliDetailClasses.dashaTree.pathBox, "divide-y divide-border/50")}>
       {path.map((span, i) => (
         <div key={`${span.lord}-${i}`}>
           {i > 0 && (
@@ -547,12 +548,12 @@ export function DashaTree({
     <div className="space-y-5">
       {knownPath.length > 0 && (
         <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-sm font-bold uppercase tracking-wide text-secondary">
+          <div className={cn(kundaliDetailClasses.dashaTree.runningHead, "flex")}>
+            <p className={kundaliDetailClasses.dashaTree.runningTitle}>
               {t("kundali.running_dasha")}
             </p>
             {yoginiCycle ? (
-              <span className="rounded-full border border-border/60 bg-card px-2 py-0.5 text-sm font-semibold">
+              <span className={cn(kundaliDetailClasses.dashaTree.cycleChip, kundaliDetailClasses.dashaTree.cycleChipText)}>
                 {bilingualText(lang, `चक्र: ${digits(yoginiCycle)}`, `Cycle: ${digits(yoginiCycle)}`)}
               </span>
             ) : null}
@@ -569,17 +570,17 @@ export function DashaTree({
       )}
 
       {timelineStart && timelineEnd && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm">
+        <div className={cn(kundaliDetailClasses.dashaTree.range, kundaliDetailClasses.dashaTree.rangeText, "flex")}>
           <span>
-            <span className="font-semibold uppercase tracking-wide text-sm">{t("kundali.from")}</span>{" "}
-            <span className="text-base text-foreground/80">
+            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{t("kundali.from")}</span>{" "}
+            <span className={kundaliDetailClasses.dashaTree.rangeValue}>
               {formatMoment(timelineStart, lang, timeZone, digits)}
             </span>
           </span>
           <span className="hidden sm:inline">→</span>
           <span>
-            <span className="font-semibold uppercase tracking-wide text-sm">{t("kundali.to")}</span>{" "}
-            <span className="text-base text-foreground/80">
+            <span className={kundaliDetailClasses.dashaTree.rangeLabel}>{t("kundali.to")}</span>{" "}
+            <span className={kundaliDetailClasses.dashaTree.rangeValue}>
               {formatMoment(timelineEnd, lang, timeZone, digits)}
             </span>
           </span>
@@ -587,7 +588,7 @@ export function DashaTree({
       )}
 
       <div>
-        <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className={kundaliDetailClasses.dashaTree.timelineLabel}>
           {t("kundali.x.dasha_full_timeline")}
         </p>
         <ol className="relative m-0 list-none pl-3">

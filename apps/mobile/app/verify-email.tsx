@@ -10,6 +10,8 @@ import { apiVerifyEmail } from "@/lib/auth/client";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export default function VerifyEmailScreen() {
   const { pick } = useLocale();
@@ -46,20 +48,17 @@ export default function VerifyEmailScreen() {
   }, [refreshUser, token, pick]);
 
   return (
-    <AppShell title={pick("इमेल प्रमाणीकरण", "Verify email")}>
-      <View className="items-center gap-3 py-12">
+    <AppShell title={pick("इमेल प्रमाणीकरण", "Verify email")} showHeader={false}>
+      <View className={cn("w-full py-12", accountClasses.panelCentered)}>
         {status === "loading" ? (
           <ActivityIndicator />
         ) : status === "ok" ? (
           <>
-            <Ionicons name="checkmark-circle" size={48} color={colors.accent} />
-            <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
+            <Ionicons name="checkmark-circle" size={48} color={colors.success} />
+            <Text className={cn("text-center", accountClasses.statusTitle)} style={nepaliTextStyle()}>
               {pick("इमेल प्रमाणित भयो", "Email verified")}
             </Text>
-            <Text
-              className="text-body text-center text-muted-foreground"
-              style={nepaliTextStyle(14)}
-            >
+            <Text className={cn("text-center", accountClasses.statusBody)} style={nepaliTextStyle()}>
               {pick(
                 "धन्यवाद — तपाईंको खाता अब पूर्ण रूपमा सक्रिय छ।",
                 "Thanks — your account is now fully active.",
@@ -67,26 +66,23 @@ export default function VerifyEmailScreen() {
             </Text>
             <Button
               label={pick("खातामा जानुहोस्", "Go to account")}
-              className="mt-4"
+              className={accountClasses.statusAction}
               onPress={() => router.replace("/account" as never)}
             />
           </>
         ) : (
           <>
             <Ionicons name="close-circle" size={48} color={colors.destructive} />
-            <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(20)}>
+            <Text className={cn("text-center", accountClasses.statusTitle)} style={nepaliTextStyle()}>
               {pick("प्रमाणीकरण असफल", "Verification failed")}
             </Text>
-            <Text
-              className="text-body text-center text-muted-foreground"
-              style={nepaliTextStyle(14)}
-            >
+            <Text className={cn("text-center", accountClasses.statusBody)} style={nepaliTextStyle()}>
               {message}
             </Text>
             <Button
               label={pick("खातामा फर्कनुहोस्", "Back to account")}
               variant="outline"
-              className="mt-4"
+              className={accountClasses.statusAction}
               onPress={() => router.replace("/account" as never)}
             />
           </>

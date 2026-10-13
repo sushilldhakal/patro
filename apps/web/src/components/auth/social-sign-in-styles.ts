@@ -1,7 +1,10 @@
 import { cn } from "@vedic-patro/domain/utils";
+import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
 
 /** Shared pill button — follows app background/border in light and dark. */
 export const socialSignInButtonClass = cn(
-  "h-10 w-[300px] max-w-full gap-2 rounded-full border border-border bg-background text-base text-foreground shadow-none",
+  accountClasses.socialButton,
+  accountClasses.socialButtonText,
+  "w-[300px] shadow-none",
   "hover:bg-muted/60",
 );

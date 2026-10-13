@@ -1,11 +1,14 @@
 import { useMemo } from "react";
-import { View } from "react-native"
-import { Text } from "@/components/ui/Text"
+import { Pressable, View } from "react-native";
+import { useRouter } from "expo-router";
+import { Text } from "@/components/ui/Text";
 import { useQuery } from "@tanstack/react-query";
 import { fetchGochar, gocharKeys, type LocationParams } from "@/lib/api";
 import { formatClockNepali } from "@vedic-patro/domain/panchanga-format";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
+import { patroCard } from "@/lib/patro-classes";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 const GRAHA_ORDER = [
   "sun",
@@ -59,7 +62,8 @@ type Props = {
 };
 
 export function PlanetEventsPanel({ dateAd, location }: Props) {
-  const { pick, digits } = useLocale();
+  const { pick, digits, t } = useLocale();
+  const router = useRouter();
   const refDate = useMemo(() => new Date(`${dateAd}T12:00:00`), [dateAd]);
 
   const { data, isLoading, isError } = useQuery({
@@ -93,46 +97,47 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
   }, [data, refDate]);
 
   return (
-    <View className="rounded-xl border border-border bg-card p-4 shadow-sm">
-      <Text className="text-body mb-2 font-bold text-foreground">
-        {pick("आगामी ग्रह-गोचर", "Planetary events")}
-      </Text>
+    <View className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
+      <View className={`flex-row ${panchangaPageClasses.aside.eventsHead}`}>
+        <Text className={`${panchangaPageClasses.aside.eventsTitle} text-foreground`}>
+          {pick("आगामी ग्रह-गोचर", "Planetary events")}
+        </Text>
+        <Pressable
+          onPress={() => router.push("/gochar" as never)}
+          className={`${panchangaPageClasses.aside.eventsLink} active:opacity-80`}
+        >
+          <Text className={panchangaPageClasses.aside.eventsLinkText}>{t("gochar.view_more")}</Text>
+        </Pressable>
+      </View>
 
       {isLoading ? (
-        <Text className="text-body py-4 text-muted-foreground">{pick("लोड हुँदै…", "Loading…")}</Text>
+        <Text className={panchangaPageClasses.aside.eventsStatus}>{pick("लोड हुँदै…", "Loading…")}</Text>
       ) : null}
 
       {isError ? (
-        <Text className="text-body py-4 text-muted-foreground">
+        <Text className={panchangaPageClasses.aside.eventsStatus}>
           {pick("ग्रह-गोचर लोड गर्न सकिएन।", "Could not load planetary events.")}
         </Text>
       ) : null}
 
       {!isLoading && !isError && events.length === 0 ? (
-        <Text className="text-body py-4 text-muted-foreground">
+        <Text className={panchangaPageClasses.aside.eventsStatus}>
           {pick("कुनै आगामी गोचर छैन।", "No upcoming transits.")}
         </Text>
       ) : null}
 
       {!isLoading && !isError && events.length > 0 ? (
-        <View>
+        <View className={panchangaPageClasses.aside.eventsList}>
           {events.map((e) => (
             <View
               key={e.key}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                borderBottomWidth: 1,
-                borderBottomColor: "rgba(128,128,128,0.2)",
-                paddingVertical: 8,
-              }}
+              className={panchangaPageClasses.aside.eventsRow}
             >
-              <View style={{ flex: 1, minWidth: 0, gap: 2 }}>
-                <Text className="text-body font-semibold text-foreground">{pick(e.ne, e.en)}</Text>
-                <Text className="text-body font-mono font-semibold text-foreground">{e.time}</Text>
+              <View className={panchangaPageClasses.aside.eventsBody}>
+                <Text className={panchangaPageClasses.aside.eventsName}>{pick(e.ne, e.en)}</Text>
+                <Text className={panchangaPageClasses.aside.eventsTime}>{e.time}</Text>
               </View>
-              <Text className="text-body shrink-0 font-mono font-semibold text-foreground">
+              <Text className={panchangaPageClasses.aside.eventsRel}>
                 {e.rel <= 0
                   ? pick("आज", "Today")
                   : pick(`${digits(e.rel)} दिन`, `${digits(e.rel)}d`)}

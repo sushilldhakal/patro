@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 import { SUNRISE_ICON_PATH, SUNRISE_ICON_VIEWBOX } from "@vedic-patro/domain/sunrise-icon-art";
 
+import { illustration } from "@vedic-patro/design-tokens";
 export type SunHorizonVariant = "rise" | "set";
 
 type Props = {
@@ -18,7 +19,7 @@ type Props = {
 export function SunriseSunsetIcon({
   variant,
   size = 22,
-  color = "#f59e0b",
+  color = illustration.orange50,
   style,
   accessibilityLabel,
 }: Props) {

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import type { Column } from "@/components/ui/DataTable";
@@ -32,7 +33,13 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import {
+  brand,
+  panchangaSection,
+  panchangaSectionHeader,
+  panchangaSectionTitle,
+} from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function grahaName(key: string, lang: "ne" | "en"): string {
   const meta = GRAHA_NAME[key as GrahaKey];
@@ -45,7 +52,6 @@ export function grahaName(key: string, lang: "ne" | "en"): string {
 export function KundaliSection({
   title,
   subtitle,
-  icon,
   children,
   edgeToEdgeContent = false,
 }: {
@@ -56,23 +62,19 @@ export function KundaliSection({
   /** Tables flush to card horizontal edges (no side padding). */
   edgeToEdgeContent?: boolean;
 }) {
-  const colors = useThemeColors();
   return (
-    <View className="mb-4 overflow-hidden rounded-2xl border border-border bg-card">
-      <View className="flex-row items-center gap-2 border-b border-border px-4 py-3">
-        {icon ? <Ionicons name={icon} size={16} color={colors.secondary} /> : null}
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
-            {title}
+    <View className={cn(panchangaSection, "mb-4")}>
+      <View className={panchangaSectionHeader}>
+        <Text className={panchangaSectionTitle} style={nepaliTextStyle(14)}>
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text className={kundaliDetailClasses.prose.smallMuted} style={nepaliTextStyle(11)}>
+            {subtitle}
           </Text>
-          {subtitle ? (
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
-              {subtitle}
-            </Text>
-          ) : null}
-        </View>
+        ) : null}
       </View>
-      <View className={edgeToEdgeContent ? "pb-3 pt-1" : "p-3"}>{children}</View>
+      <View className={edgeToEdgeContent ? undefined : "p-4"}>{children}</View>
     </View>
   );
 }
@@ -121,21 +123,20 @@ export function GrahaAstroTable({
       cells: [
         <GrahaInlineChildren grahaKey={e.key} size={20}>
           <Text
-            className="text-caption font-semibold text-foreground"
+            className={kundaliDetailClasses.prose.heading}
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >
             {grahaName(e.key, lang)}
           </Text>
           {e.retrograde ? (
-            <Text style={{ color: colors.danger }} className="text-caption font-bold">
-              ↺
+            <Text style={{ color: colors.danger }} className="text-sm font-bold">↺
             </Text>
           ) : null}
           {combust ? <Text className="text-caption">🔥</Text> : null}
         </GrahaInlineChildren>,
         <RashiInline key="r" rashiNum={e.vargaRashi} lang={lang} size={18} textSize={12} />,
-        <Text key="d" className="text-caption font-num text-foreground">
+        <Text key="d" className="font-mono text-sm text-foreground">
           {dms}
         </Text>,
         <NakshatraInline index={e.nakshatraIndex} lang={lang} pada={e.pada} digits={digits} size={16} textSize={11} />,
@@ -144,7 +145,7 @@ export function GrahaAstroTable({
           <Text style={nepaliTextStyle(11)}>/</Text>
           <GrahaInline grahaKey={e.subLord} label={grahaName(e.subLord, lang)} size={14} textSize={11} />
         </View>,
-        <Text key="l" className="text-caption font-num text-foreground">
+        <Text key="l" className="font-mono text-sm text-foreground">
           {point?.longitude != null ? digits(point.longitude.toFixed(2)) : "—"}
         </Text>,
       ],
@@ -199,13 +200,12 @@ export function BhavaTable({
 
   return (
     <DataTable
-      compact
       columns={columns}
       rows={rows.map((r) => ({
         key: String(r.house),
         highlight: r.house === 1,
         cells: [
-          <Text key="h" className="text-caption font-num font-semibold text-foreground" style={nepaliTextStyle(11)}>
+          <Text key="h" className="font-mono text-sm font-semibold text-foreground" style={nepaliTextStyle(11)}>
             {digits(r.house)}
             {r.badge ? (
               <Text className="text-muted-foreground"> ({formatHouseBadge(r.badge, lang)})</Text>
@@ -267,7 +267,7 @@ export function UpagrahaTable({ rows }: { rows: UpagrahaDetailRow[] }) {
         cells: [
           lang === "en" ? (r.name ?? r.key) : (r.name_ne ?? r.name ?? r.key),
           <RashiInline key="rash" rashiNum={r.dms.rashiNum} lang={lang} size={16} textSize={11} />,
-          <Text key="d" className="text-caption font-num text-foreground">
+          <Text key="d" className="font-mono text-sm text-foreground">
             {digits(r.dms.deg)}° {digits(r.dms.min)}′ {digits(r.dms.sec)}″
           </Text>,
           <NakshatraInline index={r.nakshatraIndex} lang={lang} pada={r.pada} digits={digits} size={16} />,
@@ -310,7 +310,7 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
             className="rounded-lg border border-border bg-background p-3"
           >
             <View className="flex-row flex-wrap items-center gap-2">
-              <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+              <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(14)}>
                 {lang === "en" ? y.nameEn : y.nameNe}
               </Text>
               <View
@@ -319,14 +319,14 @@ export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
               >
                 <Text
                   style={{ color: nature.tone, ...nepaliTextStyle(10) }}
-                  className="text-caption font-bold"
+                  className="text-sm font-semibold"
                 >
                   {pick(nature.ne, nature.en)}
                 </Text>
               </View>
             </View>
             <Text
-              className="text-body mt-1 leading-relaxed text-muted-foreground"
+              className="mt-1 text-sm leading-snug text-muted-foreground"
               style={nepaliTextStyle(13)}
             >
               {lang === "en" ? y.descEn : y.descNe}

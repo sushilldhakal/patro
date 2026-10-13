@@ -56,6 +56,8 @@ import {
   type PanchangaSearch,
 } from "@/lib/url-state";
 import { parseAdStr, shiftAnchorMonths } from "@vedic-patro/domain/panchanga-year-page";
+import { cn } from "@vedic-patro/domain/utils";
+import { panchangaYearClasses } from "@vedic-patro/design-tokens/classes/panchanga-year-classes";
 
 const PLAY_BASE_MS = WHEEL_PLAY_BASE_MS;
 const MAX_PLAY_SPEED = WHEEL_MAX_PLAY_SPEED;
@@ -110,7 +112,7 @@ export function PanchangaYear() {
   const [monthsFwd, setMonthsFwd] = useState(1);
   const scrubbingRef = useRef(false);
   const [lastWheelData, setLastWheelData] = useState<PanchangaDay | undefined>(undefined);
-  const lastGoodRowRef = useRef<YearWheelDay | undefined>(undefined);
+  const [lastGoodRow, setLastGoodRow] = useState<YearWheelDay | undefined>(undefined);
   const prevPlayDirRef = useRef(play.dir);
 
   useEffect(() => {
@@ -199,8 +201,8 @@ export function PanchangaYear() {
      Falling back to `days[0]` used to flash the window-start day's planets
      — the moon jumping forward, then snapping back. Repeat the last row
      that resolved instead. */
-  const current = foundIndex !== null ? foundRow : lastGoodRowRef.current;
-  if (current) lastGoodRowRef.current = current;
+  const current = foundIndex !== null ? foundRow : lastGoodRow;
+  if (current && current !== lastGoodRow) setLastGoodRow(current);
   const clamped = foundIndex ?? (current ? yearWheelIndexOfAdDate(days, current.dateAd) : null) ?? 1;
   const wheelData = current?.p;
   if (wheelData && wheelData !== lastWheelData) {
@@ -234,6 +236,9 @@ export function PanchangaYear() {
     if (play.dir === 0 || !total) return;
     if (foundIndex === null) {
       if (play.dir === 1 && !atLimit.end) {
+        // Playback outran the loaded window: widen it (derived state driving a
+        // data fetch, not a mirrored prop). See the note on the edge case below.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (monthsFwd < MAX_MONTHS_EACH) setMonthsFwd((m) => m + 1);
         else setAnchor((a) => shiftAnchorMonths(a, 1));
       }
@@ -249,7 +254,6 @@ export function PanchangaYear() {
       // back through `bounds`/`queryYears` to fetch the next year-wheel data.
       // A data fetch triggered from derived state, not a prop mirrored into
       // state — see react.dev's "Update external systems" case for effects.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (monthsFwd < MAX_MONTHS_EACH) setMonthsFwd((m) => m + 1);
       else setAnchor((a) => shiftAnchorMonths(a, 1));
     }
@@ -385,17 +389,17 @@ export function PanchangaYear() {
   useRouteLoading(YEAR_ROUTE_LOADING);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-4 max-md:px-0 max-md:pb-16 max-md:pt-0">
-      <div className="mb-3 mt-2">
+    <div className={cn(panchangaYearClasses.shell, "max-md:px-0 max-md:pb-16 max-md:pt-0")}>
+      <div className={panchangaYearClasses.header}>
         <Link
           to="/panchanga"
           search={currentPatroDayLinkSearch(location, { era: langEra })}
-          className="mb-1.5 inline-flex items-center gap-1 text-xs text-base hover:text-foreground"
+          className={cn(panchangaYearClasses.backLink, "inline-flex hover:text-foreground")}
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           {t("panchanga_year.back")}
         </Link>
-        <h1 className="m-0 text-xl font-bold leading-tight tracking-tight">
+        <h1 className={panchangaYearClasses.title}>
           {t("panchanga_year.title")}
         </h1>
       </div>
@@ -431,7 +435,7 @@ export function PanchangaYear() {
         mobileToolbar={false}
       />
 
-      <div className="mt-4 flex flex-col gap-4">
+      <div className={cn(panchangaYearClasses.body, "flex flex-col")}>
         <PanchangaWheel
           p={displayWheelData}
           loading={!displayWheelData && windowLoading}
@@ -483,15 +487,15 @@ export function PanchangaYear() {
         />
 
         {windowError ? (
-          <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className={cn(panchangaYearClasses.errorBox, panchangaYearClasses.errorText)}>
             {t("panchanga_year.error")}
           </div>
         ) : windowFetching ? (
-          <p className="m-0 px-1 text-xs text-base">
+          <p className={panchangaYearClasses.status}>
             {bilingualText(lang, "लोड हुँदै…", "Loading…")}
           </p>
         ) : total ? (
-          <p className="m-0 px-1 text-xs text-base">
+          <p className={panchangaYearClasses.status}>
             {windowLabel} · {bilingualText(lang, `${toNepaliDigits(total)} दिन`, `${total} days`)}
           </p>
         ) : null}

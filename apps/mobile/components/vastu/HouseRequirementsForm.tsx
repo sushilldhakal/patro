@@ -29,6 +29,7 @@ import {
   type VastuMode,
 } from "@vedic-patro/domain/vastu-plan";
 import { cn } from "@vedic-patro/domain/utils";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
 function Field({
   label,
@@ -44,7 +45,7 @@ function Field({
   return (
     <View className="min-w-0 flex-1 basis-[45%]">
       <Text
-        className="text-caption mb-1 font-semibold text-muted-foreground"
+        className={vastuClasses.fieldLabel}
         style={nepaliTextStyle(12)}
       >
         {label}
@@ -74,15 +75,12 @@ function SpaceChip({
       accessibilityRole="button"
       accessibilityState={{ selected: on }}
       onPress={onPress}
-      className={cn(
-        "rounded-md border px-2 py-1",
-        on ? "border-transparent bg-secondary" : "border-border",
-      )}
+      className={cn(vastuClasses.spaceChip, on ? vastuClasses.spaceChipOn : vastuClasses.spaceChipOff)}
     >
       <Text
         className={cn(
-          "text-caption font-semibold",
-          on ? "text-secondary-foreground" : "text-muted-foreground",
+          vastuClasses.spaceChipText,
+          on ? vastuClasses.spaceChipTextOn : vastuClasses.spaceChipTextOff,
         )}
         style={nepaliTextStyle(12)}
       >
@@ -146,10 +144,10 @@ export function HouseRequirementsForm({
   return (
     <View className="gap-4">
       <View>
-        <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+        <Text className={vastuClasses.requirementsHeading} style={nepaliTextStyle(14)}>
           {t("vastu.plan.requirements_heading")}
         </Text>
-        <Text className="text-body mt-1 text-muted-foreground" style={nepaliTextStyle(13)}>
+        <Text className={vastuClasses.requirementsBlurb} style={nepaliTextStyle(13)}>
           {t("vastu.plan.requirements_blurb")}
         </Text>
       </View>
@@ -210,12 +208,12 @@ export function HouseRequirementsForm({
 
       <View>
         <Text
-          className="text-caption mb-2 font-semibold text-muted-foreground"
+          className={vastuClasses.groupLabel}
           style={nepaliTextStyle(12)}
         >
           {t("vastu.plan.essential")}
         </Text>
-        <View className="flex-row flex-wrap gap-1.5">
+        <View className={vastuClasses.chipRow}>
           {ESSENTIAL_SPACES.map((id) => (
             <SpaceChip
               key={id}
@@ -230,7 +228,7 @@ export function HouseRequirementsForm({
           accessibilityRole="checkbox"
           accessibilityState={{ checked: combineKitchenDining }}
           onPress={toggleKitchenDining}
-          className="mt-3 flex-row items-start gap-2 rounded-lg border border-border p-2.5"
+          className={vastuClasses.checkboxRow}
         >
           <Ionicons
             name={combineKitchenDining ? "checkbox" : "square-outline"}
@@ -238,22 +236,22 @@ export function HouseRequirementsForm({
             color={combineKitchenDining ? colors.secondary : colors.mutedForeground}
           />
           <View className="min-w-0 flex-1">
-            <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+            <Text className={vastuClasses.checkboxTitle} style={nepaliTextStyle(12)}>
               {t("vastu.plan.combine_kitchen_dining")}
             </Text>
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(12)}>
+            <Text className={vastuClasses.checkboxNote} style={nepaliTextStyle(12)}>
               {t("vastu.plan.combine_kitchen_dining_note")}
             </Text>
           </View>
         </Pressable>
 
         <Text
-          className="text-caption mb-2 mt-3 font-semibold text-muted-foreground"
+          className={cn(vastuClasses.groupLabel, "mt-3")}
           style={nepaliTextStyle(12)}
         >
           {t("vastu.plan.optional")}
         </Text>
-        <View className="flex-row flex-wrap gap-1.5">
+        <View className={vastuClasses.chipRow}>
           {OPTIONAL_SPACES.map((id) => (
             <SpaceChip
               key={id}

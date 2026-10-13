@@ -30,6 +30,7 @@ import { locationSearchFingerprint, locationToSearch, patroRouteLinkSearch, same
 import type { CalendarEra } from "@/lib/patro-era";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 const YEAR_SCOPED_PATHS = new Set([
   "/holidays",
@@ -134,16 +135,17 @@ function SidebarLink({
       onMouseEnter={onPrefetch}
       onFocus={onPrefetch}
       className={cn(
-        "block rounded-xl px-3 py-2 text-left transition-colors",
+        "block text-left transition-colors",
+        panchangaPageClasses.sidebar.link,
         active
           ? "bg-secondary/12 text-secondary ring-1 ring-secondary/25"
           : "text-foreground hover:bg-muted",
       )}
       aria-current={active ? "page" : undefined}
     >
-      <span className="block text-sm font-medium leading-snug">{label}</span>
+      <span className={cn("block font-medium", panchangaPageClasses.sidebar.linkLabel)}>{label}</span>
       {blurb ? (
-        <span className="mt-0.5 block text-[0.68rem] leading-snug text-muted-foreground">
+        <span className={cn("block", panchangaPageClasses.sidebar.linkBlurb)}>
           {blurb}
         </span>
       ) : null}
@@ -193,7 +195,7 @@ function SidebarSection({
     const showKundaliSections = item.id === "kundali" && kundaliProfileId != null;
 
     return (
-      <li key={item.id} className="flex flex-col gap-0.5">
+      <li key={item.id} className={cn("flex flex-col", panchangaPageClasses.sidebar.item)}>
         <SidebarLink
           item={item}
           active={active}
@@ -214,13 +216,14 @@ function SidebarSection({
   };
 
   return (
-    <section className="border-b border-border/60 last:border-b-0">
+    <section className={panchangaPageClasses.sidebar.section}>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={expanded}
         className={cn(
-          "flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left transition-colors",
+          "flex text-left transition-colors",
+          panchangaPageClasses.sidebar.sectionHead,
           expanded || hasActiveItem
             ? "text-foreground"
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -235,17 +238,17 @@ function SidebarSection({
           )}
           aria-hidden
         />
-        <span className="min-w-0 flex-1 text-sm font-bold uppercase leading-snug tracking-wide">
+        <span className={panchangaPageClasses.sidebar.sectionTitle}>
           {title}
         </span>
       </button>
 
       {expanded ? (
-        <ul className="flex flex-col gap-0.5 px-1 pb-2">
+        <ul className={cn("flex flex-col", panchangaPageClasses.sidebar.list)}>
           {section.items.map((item) => renderItem(item))}
         </ul>
       ) : hasActiveItem ? (
-        <ul className="flex flex-col gap-0.5 px-1 pb-2">
+        <ul className={cn("flex flex-col", panchangaPageClasses.sidebar.list)}>
           {section.items
             .filter((item) => isSidebarItemActive(pathname, item))
             .map((item) => renderItem(item, true))}
@@ -311,15 +314,16 @@ export function PanchangaSidebarNav({ className }: { className?: string }) {
   return (
     <nav
       className={cn(
-        "rounded-2xl border border-border bg-card shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
+        panchangaPageClasses.sidebar.nav,
+        "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
         className,
       )}
       aria-label={t("sidebar_nav.nav_aria")}
     >
-      <p className="border-b border-border px-4 py-3 text-md font-semibold uppercase tracking-wider text-muted-foreground">
+      <p className={panchangaPageClasses.sidebar.navTitle}>
         {t("sidebar_nav.nav_title")}
       </p>
-      <div className="flex max-h-[calc(100vh-6.5rem)] flex-col overflow-y-auto p-1">
+      <div className={cn("flex max-h-[calc(100vh-6.5rem)] flex-col overflow-y-auto", panchangaPageClasses.sidebar.navBody)}>
         {sections.map((section) => (
           <SidebarSection
             key={section.id}

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
@@ -64,7 +65,8 @@ function StatusBadge({ status }: { status: ShadbalaStatus }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-sm font-semibold",
+        "inline-flex",
+        kundaliDetailClasses.parts.statusBadge,
         STATUS_STYLES[status]
       )}
     >
@@ -81,8 +83,8 @@ function GlanceTile({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <p className="text-sm font-semibold uppercase tracking-wide mb-1.5">
+    <div className={kundaliDetailClasses.glance.card}>
+      <p className={kundaliDetailClasses.glance.label}>
         {label}
       </p>
       {children}
@@ -185,71 +187,73 @@ export function ShadbalaCard({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wide mb-1">
+        <h3 className={kundaliDetailClasses.glance.heading}>
           {t("kundali.shadbala_planetary_strength_virupas")}
         </h3>
-        <p className="text-xs mb-3">
+        <p className={kundaliDetailClasses.glance.introSpaced}>
           {bilingualText(lang, "पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", data.method)}
         </p>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <GlanceTile label={t("kundali.strongest_planet")}>
-            <p className="text-lg font-bold text-foreground">
-              <span className="inline-flex items-center gap-2">
+            <p className={kundaliDetailClasses.glance.name}>
+              <span className={cn(kundaliDetailClasses.glance.nameRow, "inline-flex")}>
                 <GrahaPlanetIcon graha={summary.strongest.key as GrahaKey} size={28} />
                 {grahaName(summary.strongest.key)}
               </span>
             </p>
-            <div className="mt-1 flex items-center gap-2">
+            <div className={cn(kundaliDetailClasses.glance.badgeRow, "flex")}>
               <StatusBadge status={summary.strongest.status} />
-              <span className="text-xs">
+              <span className={kundaliDetailClasses.glance.sub}>
                 {bilingualText(lang, `${digits(summary.strongest.ratio.toFixed(2))}× आवश्यक`, `${summary.strongest.ratio.toFixed(2)}x required`)}
               </span>
             </div>
           </GlanceTile>
 
           <GlanceTile label={t("kundali.weakest_planet")}>
-            <p className="text-lg font-bold text-foreground">
-              <span className="inline-flex items-center gap-2">
+            <p className={kundaliDetailClasses.glance.name}>
+              <span className={cn(kundaliDetailClasses.glance.nameRow, "inline-flex")}>
                 <GrahaPlanetIcon graha={summary.weakest.key as GrahaKey} size={28} />
                 {grahaName(summary.weakest.key)}
               </span>
             </p>
-            <div className="mt-1 flex items-center gap-2">
+            <div className={cn(kundaliDetailClasses.glance.badgeRow, "flex")}>
               <StatusBadge status={summary.weakest.status} />
-              <span className="text-xs">
+              <span className={kundaliDetailClasses.glance.sub}>
                 {bilingualText(lang, `${digits(summary.weakest.ratio.toFixed(2))}× आवश्यक`, `${summary.weakest.ratio.toFixed(2)}x required`)}
               </span>
             </div>
           </GlanceTile>
 
           <GlanceTile label={t("kundali.average_rupas")}>
-            <p className="text-2xl font-bold text-foreground tabular-nums">
+            <p className={kundaliDetailClasses.glance.big}>
               {digits(summary.average_rupas.toFixed(2))}
             </p>
-            <p className="text-xs mt-0.5">
+            <p className={kundaliDetailClasses.glance.subTight}>
               {digits(summary.average_virupas.toFixed(2))}{" "}
               {t("kundali.virupas")}
             </p>
           </GlanceTile>
 
           <GlanceTile label={t("kundali.planets_meeting_threshold")}>
-            <p className="text-2xl font-bold text-foreground tabular-nums">
+            <p className={kundaliDetailClasses.glance.big}>
               {digits(summary.meeting_threshold)}
-              <span className="text-sm text-base">
+              <span className={kundaliDetailClasses.glance.bigOf}>
                 {" "}
                 / {digits(summary.total_planets)}
               </span>
             </p>
-            <p className="text-xs mt-0.5">
+            <p className={kundaliDetailClasses.glance.subTight}>
               {t("kundali.adequate_or_stronger")}
             </p>
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <div className={cn(kundaliDetailClasses.glance.chips, "flex")}>
               {STATUS_ORDER.map((s) => (
                 <span
                   key={s}
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-sm text-base",
+                    kundaliDetailClasses.glance.chip,
+                    kundaliDetailClasses.glance.chipText,
+                    "inline-flex",
                     summary.counts[s] > 0
                       ? STATUS_STYLES[s]
                       : "border-border"
@@ -274,10 +278,10 @@ export function ShadbalaCard({
       />
 
       <div>
-        <h4 className="text-sm font-semibold text-foreground mb-2">
+        <h4 className={kundaliDetailClasses.glance.tableTitle}>
           {t("kundali.shadbala_table")}
         </h4>
-        <div className="rounded-xl border border-border overflow-x-auto">
+        <div className={kundaliDetailClasses.glance.tableWrap}>
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -453,7 +457,7 @@ export function ShadbalaCard({
             </TableBody>
           </Table>
         </div>
-        <p className="text-xs mt-2">
+        <p className={kundaliDetailClasses.glance.tableNote}>
           {t("kundali.virupas_per_bala_expand_sthana_and_kala_for_component_s")}
           {bhavaBala && (
             <>
@@ -463,7 +467,7 @@ export function ShadbalaCard({
           )}
         </p>
         {hasYuddhaActivity && yuddha && (
-          <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+          <p className={kundaliDetailClasses.glance.warn}>
             {t("kundali.graha_yuddha_detected")}{" "}
             {yuddha.wars
               .map((w) =>

@@ -23,6 +23,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { authenticateBiometric, biometricLabel, getBiometricInfo, type BiometricInfo } from "@/lib/auth/biometrics";
 import { deviceStore } from "@/lib/device-store";
 import { useLocale } from "@/lib/i18n";
+import { space } from "@vedic-patro/design-tokens";
 import { inkOn } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1000,
-    elevation: 1000,
-    paddingHorizontal: 24,
+    elevation: 1000, // design-ok: stacking order, paired with zIndex above
+    paddingHorizontal: space["2xl"],
   },
 });

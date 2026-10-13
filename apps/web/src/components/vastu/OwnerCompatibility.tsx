@@ -16,6 +16,7 @@ import { patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
 function todayIso(): string {
   const n = new Date();
@@ -68,14 +69,14 @@ export function OwnerCompatibility() {
   const isError = chartParams != null && (janmaQ.isError || dayQ.isError);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-3.5">
-      <div className="flex flex-wrap items-center gap-1.5">
+    <div className={vastuClasses.ownerCard}>
+      <div className={vastuClasses.ownerHeader}>
         <CalendarClock className="h-4 w-4 shrink-0 text-secondary" />
-        <h3 className="text-sm font-semibold text-foreground">{t("vastu.plot.owner_heading")}</h3>
+        <h3 className={vastuClasses.ownerHeading}>{t("vastu.plot.owner_heading")}</h3>
       </div>
 
-      <div className="mt-3 space-y-4">
-        <p className="text-sm">{t("vastu.plot.owner_blurb")}</p>
+      <div className={vastuClasses.ownerBody}>
+        <p className={vastuClasses.planBlurb}>{t("vastu.plot.owner_blurb")}</p>
 
         <SaitProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={setSelectedProfile} />
 
@@ -85,7 +86,7 @@ export function OwnerCompatibility() {
               <div>
                 <label
                   htmlFor="vastu-construction-date"
-                  className="mb-1 block text-xs font-semibold text-muted-foreground"
+                  className={cn(vastuClasses.fieldLabel, "block")}
                 >
                   {t("vastu.plot.construction_date_label")}
                 </label>
@@ -94,31 +95,31 @@ export function OwnerCompatibility() {
                   type="date"
                   value={candidateDate}
                   onChange={(e) => setCandidateDate(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-border bg-card px-2.5 text-sm text-foreground"
+                  className={vastuClasses.dateControl}
                 />
               </div>
               <div>
-                <p className="mb-1 text-xs font-semibold text-muted-foreground">
+                <p className={vastuClasses.fieldLabel}>
                   {t("vastu.plot.construction_place_label")}
                 </p>
                 <LocationSelector compact location={plotLocation} onLocationChange={setPlotLocation} />
               </div>
             </div>
 
-            {isLoading && <p className="text-sm text-muted-foreground">{t("vastu.plot.owner_loading")}</p>}
-            {isError && <p className="text-sm text-destructive">{t("vastu.plot.owner_error")}</p>}
+            {isLoading && <p className={vastuClasses.mutedNote}>{t("vastu.plot.owner_loading")}</p>}
+            {isError && <p className={vastuClasses.destructiveText}>{t("vastu.plot.owner_error")}</p>}
 
             {row && (
-              <div className={cn("rounded-xl border border-border p-3.5", patroNavataraToneBg(row.tone))}>
-                <p className="text-sm font-semibold text-foreground">
+              <div className={cn(vastuClasses.ownerResult, patroNavataraToneBg(row.tone))}>
+                <p className={vastuClasses.ownerResultTitle}>
                   {t("vastu.plot.owner_nakshatra_label")}: {bilingualText(lang, row.name, row.name_en ?? row.name)}
                 </p>
-                <p className="mt-1 text-sm font-semibold">
+                <p className={vastuClasses.ownerResultVerdict}>
                   {t("vastu.plot.construction_result", {
                     tone: t(TONE_LABEL_KEY[row.tone]),
                   })}
                 </p>
-                <p className="mt-2 text-sm text-muted-foreground">{t("vastu.plot.construction_disclaimer")}</p>
+                <p className={vastuClasses.infoDisclaimer}>{t("vastu.plot.construction_disclaimer")}</p>
               </div>
             )}
           </>

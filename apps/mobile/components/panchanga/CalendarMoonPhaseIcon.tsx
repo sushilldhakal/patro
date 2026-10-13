@@ -2,6 +2,7 @@ import { Circle, G, Path, Svg } from "react-native-svg";
 import { useTheme } from "@/lib/theme-context";
 import { elongationFromTithiIndex, moonPhaseLitPath } from "@vedic-patro/domain/moon-phase-svg";
 
+import { illustration, midnight } from "@vedic-patro/design-tokens";
 type Props = {
   /** Wheel tithi index 0–29 (0 = शुक्ल प्रतिपदा … 14 = पूर्णिमा … 29 = औंसी). */
   tithiIndex: number;
@@ -15,10 +16,10 @@ const R_FULL = 10;
 /** Match web CalendarMoonPhaseIcon — yellow lit side, slate shadow (not theme foreground). */
 function moonColors(isDark: boolean) {
   return {
-    darkFill: isDark ? "#1e293b" : "#0f172a",
-    darkStroke: isDark ? "#475569" : "#334155",
-    yellowFill: isDark ? "#fef9c3" : "#fef08a",
-    yellowStroke: isDark ? "#eab308" : "#ca8a04",
+    darkFill: isDark ? illustration.sky19 : midnight.background,
+    darkStroke: isDark ? illustration.teal33 : illustration.sky27,
+    yellowFill: isDark ? illustration.amber89 : illustration.amber77,
+    yellowStroke: isDark ? illustration.amber47 : illustration.amber40,
   };
 }
 

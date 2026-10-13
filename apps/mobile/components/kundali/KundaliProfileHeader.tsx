@@ -6,6 +6,8 @@ import { useLocale } from "@/lib/i18n";
 import { formatProfileBirthLabel } from "@vedic-patro/domain/kundali/profile-chart";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
+import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 function MetaItem({
   icon,
@@ -20,18 +22,18 @@ function MetaItem({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="min-w-[6.75rem] justify-center px-2.5 py-2 sm:px-3">
-      <View className="mb-0.5 flex-row items-center gap-1">
+    <View className={cn(kundaliClasses.metaItem, "min-w-[6.75rem] sm:min-w-[7.25rem]")}>
+      <View className={cn(kundaliClasses.metaLabelRow, "mb-0.5")}>
         <Ionicons name={icon} size={10} color={colors.mutedForeground} />
         <Text
-          className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
+          className={kundaliClasses.metaLabel}
           style={nepaliTextStyle(10)}
         >
           {label}
         </Text>
       </View>
       <Text
-        className={mono ? "text-caption font-num font-semibold text-foreground" : "text-body font-semibold text-foreground"}
+        className={mono ? kundaliClasses.metaValueMono : kundaliClasses.metaValue}
         style={nepaliTextStyle(mono ? 12 : 14)}
       >
         {value}
@@ -52,24 +54,21 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
   const colors = useThemeColors();
 
   return (
-    <View className="mb-4 overflow-hidden rounded-xl border border-border bg-card">
+    <View className={cn(kundaliClasses.profileHeader, "mb-4")}>
       <View className="flex-col lg:flex-row">
-        <View className="flex-row items-center gap-2.5 border-b border-border px-3 py-2.5 sm:px-4 lg:flex-1 lg:border-b-0 lg:border-r">
-          <View
-            style={{ backgroundColor: `${colors.secondary}26` }}
-            className="size-9 shrink-0 items-center justify-center rounded-xl sm:size-10"
-          >
+        <View className={cn(kundaliClasses.profileIdentity, "border-b border-border lg:flex-1 lg:border-b-0 lg:border-r")}>
+          <View className={kundaliClasses.profileAvatar}>
             <Ionicons name="person-outline" size={18} color={colors.secondary} />
           </View>
           <View className="min-w-0 flex-1">
             <Text
-              className="text-caption mb-0.5 font-semibold uppercase tracking-wider text-muted-foreground"
+              className={kundaliClasses.profileEyebrow}
               style={nepaliTextStyle(12)}
             >
               {pick("जन्मकुण्डली", "Birth chart")}
             </Text>
-            <View className="flex-row flex-wrap items-center gap-1.5">
-              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(18)}>
+            <View className={kundaliClasses.profileNameRow}>
+              <Text className={kundaliClasses.profileName} style={nepaliTextStyle(18)}>
                 {profile.full_name}
               </Text>
               {profile.is_default ? (
@@ -77,7 +76,7 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
               ) : null}
             </View>
             {profile.gender ? (
-              <Text className="text-body mt-0.5 capitalize text-muted-foreground" style={nepaliTextStyle(13)}>
+              <Text className={kundaliClasses.profileGender} style={nepaliTextStyle(13)}>
                 {profile.gender}
               </Text>
             ) : null}

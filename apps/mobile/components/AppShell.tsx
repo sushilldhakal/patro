@@ -5,9 +5,17 @@ import { useScrollToTopOnRouteChange } from "@/lib/page-scroll";
 import { SiteFooter } from "@/components/branding/SiteFooter";
 import { RelatedPageLinks } from "@/components/related/RelatedPageLinks";
 import { useInPanchangaTabsShell, usePanchangaTabsShellScrollHost } from "@/components/panchanga/PanchangaTabsShell";
-import { floatingNavBottomPadding, PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
+import {
+  floatingNavBottomPadding,
+  PAGE_HORIZONTAL_PADDING,
+  PAGE_HORIZONTAL_PADDING_WIDE,
+  PAGE_PADDING_Y,
+} from "@/lib/mobile-nav";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
+import { spec } from "@vedic-patro/design-tokens";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 export function AppShell({
   title,
@@ -30,26 +38,20 @@ export function AppShell({
   /** @deprecated Sidebar comes from `PanchangaTabsShell` for shell routes. */
   panchangaSidebar?: boolean;
 }) {
-  const { isTablet } = useBreakpoint();
+  const { isTablet, isNarrow } = useBreakpoint();
   const pageScrollRef = useScrollToTopOnRouteChange();
   const inShell = useInPanchangaTabsShell();
   const shellScrollHost = usePanchangaTabsShellScrollHost();
-  const pagePadH = inShell ? 0 : PAGE_HORIZONTAL_PADDING;
-  const pagePadTop = inShell ? 0 : 16;
+  const pagePadH = inShell ? 0 : isNarrow ? PAGE_HORIZONTAL_PADDING : PAGE_HORIZONTAL_PADDING_WIDE;
+  const pagePadTop = inShell ? 0 : PAGE_PADDING_Y;
   const header = showHeader ? (
-    <View className="mb-4 flex-row items-start justify-between gap-3 py-1">
+    <View className={cn("flex-row", shellClasses.pageHeaderRow)}>
       <View className="min-w-0 flex-1">
-        <Text
-          className="text-display font-bold text-foreground"
-          style={[nepaliTextStyle(24), { paddingTop: 2, paddingBottom: 2 }]}
-        >
+        <Text className={spec.pageTitle} style={nepaliTextStyle()}>
           {title}
         </Text>
         {subtitle ? (
-          <Text
-            className="text-body mt-1 text-muted-foreground"
-            style={[nepaliTextStyle(14), { paddingTop: 1 }]}
-          >
+          <Text className={spec.pageSubtitle} style={nepaliTextStyle()}>
             {subtitle}
           </Text>
         ) : null}
@@ -70,7 +72,7 @@ export function AppShell({
   if (!scroll) {
     return (
       <View
-        className="mx-auto w-full max-w-[1400px] flex-1 bg-background"
+        className="mx-auto w-full max-w-page flex-1 bg-background"
         style={{
           paddingBottom: floatingNavBottomPadding(isTablet),
           paddingHorizontal: pagePadH,
@@ -90,7 +92,7 @@ export function AppShell({
         pageScrollRef(node);
       }}
       className="flex-1 bg-background"
-      contentContainerClassName="mx-auto w-full max-w-[1400px]"
+      contentContainerClassName="mx-auto w-full max-w-page"
       contentContainerStyle={{
         paddingBottom: floatingNavBottomPadding(isTablet),
         paddingHorizontal: pagePadH,

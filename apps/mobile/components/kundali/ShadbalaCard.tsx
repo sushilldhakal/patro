@@ -30,6 +30,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
   "Strong",
@@ -47,11 +49,11 @@ const STATUS_LABEL: Record<ShadbalaStatus, { ne: string; en: string }> = {
 };
 
 const STATUS_COLORS: Record<ShadbalaStatus, string> = {
-  Exceptional: "#10b981",
-  Strong: "#0ea5e9",
-  Adequate: "#f59e0b",
-  Borderline: "#f97316",
-  Weak: "#dc2626",
+  Exceptional: illustration.teal39,
+  Strong: illustration.teal48,
+  Adequate: illustration.orange50,
+  Borderline: illustration.orange53c,
+  Weak: illustration.red51,
 };
 
 const LABEL_COL = 132;
@@ -86,7 +88,7 @@ function StatusBadge({ status }: { status: ShadbalaStatus }) {
         backgroundColor: colorWithAlpha(color, 0.15),
         borderColor: colorWithAlpha(color, 0.35),
       }}
-      className="self-end rounded-full border px-2 py-0.5"
+      className={cn(kundaliDetailClasses.parts.pill, "self-end")}
     >
       <Text style={{ color, ...nepaliTextStyle(11) }} className="text-caption font-semibold">
         {pick(STATUS_LABEL[status].ne, STATUS_LABEL[status].en)}
@@ -104,16 +106,9 @@ function GlanceTile({
   children: ReactNode;
   layout: ViewStyle;
 }) {
-  const colors = useThemeColors();
   return (
-    <View
-      style={[{ borderColor: colors.border }, layout]}
-      className="rounded-xl border bg-card p-3"
-    >
-      <Text
-        className="text-caption mb-1.5 font-semibold uppercase tracking-wide text-muted-foreground"
-        style={nepaliTextStyle(11)}
-      >
+    <View style={layout} className={kundaliDetailClasses.glance.card}>
+      <Text className={kundaliDetailClasses.glance.label} style={nepaliTextStyle(11)}>
         {label}
       </Text>
       {children}
@@ -150,11 +145,9 @@ function MatrixRow({
     <View
       style={{
         ...tableColumnLayout(TABLE_STRETCH, LABEL_COL),
-        paddingHorizontal: sub ? 20 : 10,
-        paddingVertical: 6,
         backgroundColor: sub ? colorWithAlpha(colors.muted, 0.35) : undefined,
       }}
-      className="justify-center"
+      className={sub ? "justify-center px-5 py-1.5" : "justify-center px-2.5 py-1.5"}
     >
       {expandable ? (
         <Pressable onPress={onToggle} className="flex-row items-center gap-1 active:opacity-70">
@@ -164,7 +157,7 @@ function MatrixRow({
             color={colors.foreground}
           />
           <Text
-            className={cn("text-foreground", bold || expandable ? "font-semibold" : "")}
+            className={cn("text-sm text-foreground", bold || expandable ? "font-semibold" : "")}
             style={nepaliTextStyle(11)}
             numberOfLines={2}
           >
@@ -173,7 +166,7 @@ function MatrixRow({
         </Pressable>
       ) : (
         <Text
-          className={cn("text-foreground", sub ? "" : "font-semibold")}
+          className={cn("text-sm text-foreground", sub ? "" : "font-semibold")}
           style={nepaliTextStyle(11)}
           numberOfLines={2}
         >
@@ -191,15 +184,13 @@ function MatrixRow({
           key={p.key}
           style={{
             ...tableColumnLayout(TABLE_STRETCH, PLANET_COL),
-            paddingHorizontal: 6,
-            paddingVertical: 6,
             backgroundColor: selectedKey === p.key ? colorWithAlpha(colors.primary, 0.1) : undefined,
           }}
-          className="items-end justify-center"
+          className="items-end justify-center px-1.5 py-1.5"
         >
           {typeof value(p) === "string" || typeof value(p) === "number" ? (
             <Text
-              className={cn("font-num text-foreground", bold ? "font-semibold" : "text-foreground/90")}
+              className={cn("font-mono text-sm text-foreground", bold ? "font-semibold" : "text-foreground/90")}
               style={nepaliTextStyle(11)}
               numberOfLines={1}
             >
@@ -278,28 +269,25 @@ export function ShadbalaCard({
     >
       <View>
         {!compactHeader ? (
-          <Text
-            className="text-body mb-1 font-semibold uppercase tracking-wide text-foreground"
-            style={nepaliTextStyle(13)}
-          >
+          <Text className={kundaliDetailClasses.glance.heading} style={nepaliTextStyle(13)}>
             {kundaliLabel("shadbala_planetary_strength_virupas", lang)}
           </Text>
         ) : null}
-        <Text className="text-caption mb-3 text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={kundaliDetailClasses.glance.introSpaced} style={nepaliTextStyle(12)}>
           {pick("पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", data.method)}
         </Text>
 
         <View className="flex-row flex-wrap" style={{ gap: GLANCE_GAP }}>
           <GlanceTile layout={tileLayout} label={kundaliLabel("strongest_planet", lang)}>
-            <View className="flex-row flex-wrap items-center gap-2">
+            <View className={cn(kundaliDetailClasses.glance.nameRow, "flex-wrap")}>
               <GrahaPlanetIcon graha={summary.strongest.key as GrahaKey} size={28} />
-              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
+              <Text className={kundaliDetailClasses.glance.name} style={nepaliTextStyle(17)}>
                 {lang === "en" ? summary.strongest.name : summary.strongest.name_ne}
               </Text>
             </View>
-            <View className="mt-1 flex-row flex-wrap items-center gap-2">
+            <View className={cn(kundaliDetailClasses.glance.badgeRow, "flex-wrap")}>
               <StatusBadge status={summary.strongest.status} />
-              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className={kundaliDetailClasses.glance.sub} style={nepaliTextStyle(11)}>
                 {pick(
                   `${digits(summary.strongest.ratio.toFixed(2))}× आवश्यक`,
                   `${summary.strongest.ratio.toFixed(2)}x required`,
@@ -309,15 +297,15 @@ export function ShadbalaCard({
           </GlanceTile>
 
           <GlanceTile layout={tileLayout} label={kundaliLabel("weakest_planet", lang)}>
-            <View className="flex-row flex-wrap items-center gap-2">
+            <View className={cn(kundaliDetailClasses.glance.nameRow, "flex-wrap")}>
               <GrahaPlanetIcon graha={summary.weakest.key as GrahaKey} size={28} />
-              <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
+              <Text className={kundaliDetailClasses.glance.name} style={nepaliTextStyle(17)}>
                 {lang === "en" ? summary.weakest.name : summary.weakest.name_ne}
               </Text>
             </View>
-            <View className="mt-1 flex-row flex-wrap items-center gap-2">
+            <View className={cn(kundaliDetailClasses.glance.badgeRow, "flex-wrap")}>
               <StatusBadge status={summary.weakest.status} />
-              <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+              <Text className={kundaliDetailClasses.glance.sub} style={nepaliTextStyle(11)}>
                 {pick(
                   `${digits(summary.weakest.ratio.toFixed(2))}× आवश्यक`,
                   `${summary.weakest.ratio.toFixed(2)}x required`,
@@ -327,23 +315,23 @@ export function ShadbalaCard({
           </GlanceTile>
 
           <GlanceTile layout={tileLayout} label={kundaliLabel("average_rupas", lang)}>
-            <Text className="text-display font-num font-bold text-foreground" style={nepaliTextStyle(22)}>
+            <Text className={cn(kundaliDetailClasses.glance.big, "font-num")} style={nepaliTextStyle(22)}>
               {digits(summary.average_rupas.toFixed(2))}
             </Text>
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={kundaliDetailClasses.glance.subTight} style={nepaliTextStyle(11)}>
               {digits(summary.average_virupas.toFixed(2))} {kundaliLabel("virupas", lang)}
             </Text>
           </GlanceTile>
 
           <GlanceTile layout={tileLayout} label={kundaliLabel("planets_meeting_threshold", lang)}>
-            <Text className="text-display font-num font-bold text-foreground" style={nepaliTextStyle(22)}>
+            <Text className={cn(kundaliDetailClasses.glance.big, "font-num")} style={nepaliTextStyle(22)}>
               {digits(summary.meeting_threshold)}
-              <Text className="text-body text-muted-foreground"> / {digits(summary.total_planets)}</Text>
+              <Text className={kundaliDetailClasses.glance.bigOf}> / {digits(summary.total_planets)}</Text>
             </Text>
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={kundaliDetailClasses.glance.subTight} style={nepaliTextStyle(11)}>
               {kundaliLabel("adequate_or_stronger", lang)}
             </Text>
-            <View className="mt-2 flex-row flex-wrap gap-1.5">
+            <View className={kundaliDetailClasses.glance.chips}>
               {STATUS_ORDER.map((s) => {
                 const color = STATUS_COLORS[s];
                 const active = summary.counts[s] > 0;
@@ -354,7 +342,7 @@ export function ShadbalaCard({
                       backgroundColor: active ? colorWithAlpha(color, 0.12) : colors.card,
                       borderColor: active ? colorWithAlpha(color, 0.35) : colors.border,
                     }}
-                    className="flex-row items-center gap-1 rounded-full border px-1.5 py-0.5"
+                    className={kundaliDetailClasses.glance.chip}
                   >
                     <Text
                       style={{ color: active ? color : colors.mutedForeground, ...nepaliTextStyle(10) }}
@@ -373,7 +361,7 @@ export function ShadbalaCard({
       <ShadbalaChart planets={ordered} selectedKey={selectedKey} onSelect={setSelectedKey} yuddha={yuddha} />
 
       <View>
-        <Text className="text-body mb-2 font-semibold text-foreground" style={nepaliTextStyle(13)}>
+        <Text className={kundaliDetailClasses.glance.tableTitle} style={nepaliTextStyle(13)}>
           {kundaliLabel("shadbala_table", lang)}
         </Text>
 
@@ -559,12 +547,10 @@ export function ShadbalaCard({
               <View
                 style={{
                   ...tableColumnLayout(TABLE_STRETCH, LABEL_COL),
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
                 }}
-                className="justify-center"
+                className="justify-center px-2.5 py-1.5"
               >
-                <Text className="font-semibold text-foreground" style={nepaliTextStyle(11)}>
+                <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(11)}>
                   {kundaliLabel("status", lang)}
                 </Text>
               </View>
@@ -573,11 +559,9 @@ export function ShadbalaCard({
                   key={p.key}
                   style={{
                     ...tableColumnLayout(TABLE_STRETCH, PLANET_COL),
-                    paddingHorizontal: 6,
-                    paddingVertical: 6,
                     backgroundColor: p.key === selectedKey ? colorWithAlpha(colors.primary, 0.1) : undefined,
                   }}
-                  className="items-end justify-center"
+                  className="items-end justify-center px-1.5 py-1.5"
                 >
                   <StatusBadge status={p.status} />
                 </View>
@@ -586,13 +570,13 @@ export function ShadbalaCard({
           </View>
         </TableScrollShell>
 
-        <Text className="text-caption mt-2 leading-relaxed text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text className={kundaliDetailClasses.glance.tableNote} style={nepaliTextStyle(11)}>
           {kundaliLabel("virupas_per_bala_note", lang)}
           {bhavaBala ? ` ${kundaliLabel("bhava_pct_row_note", lang)}` : null}
         </Text>
 
         {hasYuddhaActivity && yuddha ? (
-          <Text className="text-caption mt-1 text-amber-600" style={nepaliTextStyle(11)}>
+          <Text className={kundaliDetailClasses.glance.warn} style={nepaliTextStyle(11)}>
             {kundaliLabel("graha_yuddha_detected", lang)}{" "}
             {yuddha.wars
               .map((w) =>

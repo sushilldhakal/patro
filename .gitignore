@@ -6,3 +6,6 @@ node_modules/
 .venv/
 .env
 .deploy/
+
+# design-parity screenshots
+scripts/design-parity/out/

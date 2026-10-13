@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export function KundaliSubTabs<T extends string>({
   items,
@@ -15,7 +16,7 @@ export function KundaliSubTabs<T extends string>({
   const { t } = useTranslation();
   return (
     <div
-      className="mb-4 flex flex-wrap gap-1 rounded-xl border border-border/70 bg-muted/20 p-1"
+      className={kundaliDetailClasses.subTabs.root}
       role="tablist"
       aria-label={ariaLabel}
     >
@@ -27,9 +28,11 @@ export function KundaliSubTabs<T extends string>({
           aria-selected={activeId === item.id}
           onClick={() => onSelect(item.id)}
           className={cn(
-            "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+            kundaliDetailClasses.subTabs.tab,
+            kundaliDetailClasses.subTabs.tabText,
+            "transition-colors",
             activeId === item.id
-              ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
+              ? cn(kundaliDetailClasses.subTabs.tabActive, kundaliDetailClasses.subTabs.tabActiveText, "shadow-sm ring-1 ring-border/60")
               : "hover:text-foreground",
           )}
         >

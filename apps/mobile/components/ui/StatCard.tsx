@@ -1,11 +1,10 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { colorWithAlpha } from "@/lib/theme";
-import { useThemeColors } from "@/lib/theme-context";
-import { brand } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { spec } from "@vedic-patro/design-tokens";
 
-/** Label + value tile — mirrors the web StatCard. */
+/** Label + value tile. Same spec as the website's StatCard. */
 export function StatCard({
   label,
   value,
@@ -19,30 +18,19 @@ export function StatCard({
   highlight?: boolean;
   width?: string;
 }) {
-  const colors = useThemeColors();
   return (
     <View
-      style={{
-        ...(width ? { width: width as never } : {}),
-        borderColor: highlight ? colorWithAlpha(brand.blue, 0.4) : colors.border,
-        backgroundColor: highlight ? colorWithAlpha(brand.blue, 0.05) : colors.card,
-      }}
-      className="gap-1 rounded-xl border p-4"
+      style={width ? { width: width as never } : undefined}
+      className={cn(spec.statCard, highlight && spec.statCardHighlight)}
     >
-      <Text
-        className="text-caption font-semibold uppercase tracking-wider text-muted-foreground"
-        style={nepaliTextStyle(11)}
-      >
+      <Text variant="label" style={nepaliTextStyle()}>
         {label}
       </Text>
-      <Text
-        className="text-body font-semibold text-foreground"
-        style={nepaliTextStyle(16)}
-      >
+      <Text variant="statValue" style={nepaliTextStyle()}>
         {value ?? "—"}
       </Text>
       {sub ? (
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
+        <Text variant="caption" style={nepaliTextStyle()}>
           {sub}
         </Text>
       ) : null}

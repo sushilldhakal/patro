@@ -9,6 +9,7 @@ import type { DocumentCategoryTab, DocumentSummary } from "@/lib/documents-api";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { cn } from "@vedic-patro/domain/utils";
 import { DocumentCard } from "@/components/documents/DocumentCard";
+import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";
 
 export type { DocumentCategoryTab };
 
@@ -30,7 +31,7 @@ export function DocumentCategoryTabs({
   const { lang } = useLocale();
   return (
     <div
-      className="mb-6 flex flex-wrap gap-1 rounded-xl border border-border/70 bg-muted/20 p-1"
+      className={documentsClasses.tabsBar}
       role="tablist"
       aria-label={t("documents.category_tabs_label")}
     >
@@ -73,20 +74,18 @@ function CategoryTab({
       aria-selected={selected}
       onClick={onSelect}
       className={cn(
-        "rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors",
+        documentsClasses.tab,
+        documentsClasses.tabLabel,
+        "transition-colors",
         selected
-          ? "bg-card text-foreground shadow-sm ring-1 ring-border/60"
-          : "text-muted-foreground hover:text-foreground",
+          ? cn(documentsClasses.tabSelected, documentsClasses.tabLabelSelected, "ring-1 ring-border/60")
+          : cn(documentsClasses.tabLabelIdle, "hover:text-foreground"),
       )}
     >
       {label}
-      {count ? <span className="ml-1.5 tabular-nums text-xs font-medium text-muted-foreground">{count}</span> : null}
+      {count ? <span className={documentsClasses.tabCount}>{count}</span> : null}
     </button>
   );
-}
-
-export function documentsInGroup(documents: DocumentSummary[], groupId: DocumentCategoryId) {
-  return documents.filter((doc) => doc.category === groupId);
 }
 
 export function DocumentCategorySection({
@@ -108,14 +107,14 @@ export function DocumentCategorySection({
 
   return (
     <section className="space-y-3" aria-labelledby={`documents-cat-${group.id}`}>
-      <div className="flex items-end justify-between gap-3 border-b border-border/70 pb-2">
-        <h2 id={`documents-cat-${group.id}`} className="text-lg font-bold">
+      <div className={documentsClasses.sectionHeader}>
+        <h2 id={`documents-cat-${group.id}`} className={documentsClasses.sectionTitle}>
           <button
             type="button"
             onClick={() => onSelectGroup(group.id)}
             className="text-left transition-colors hover:text-secondary"
           >
-            <span className="mr-2 tabular-nums text-muted-foreground">{indexLabel}.</span>
+            <span className={cn(documentsClasses.sectionIndex, "mr-2")}>{indexLabel}.</span>
             <span className="mr-1.5" aria-hidden="true">
               {group.emoji}
             </span>
@@ -123,14 +122,14 @@ export function DocumentCategorySection({
           </button>
         </h2>
         {documents.length > 0 ? (
-          <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
+          <span className={documentsClasses.sectionCount}>
             {formatCount(lang, documents.length)}
           </span>
         ) : null}
       </div>
 
       {documents.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("documents.empty_category")}</p>
+        <p className={documentsClasses.mutedText}>{t("documents.empty_category")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => (

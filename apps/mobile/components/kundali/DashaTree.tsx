@@ -28,6 +28,9 @@ import { colorWithAlpha } from "@/lib/theme";
 import { useThemeColors } from "@/lib/theme-context";
 import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha-tree";
 
+import { illustration, nativeShadow, space } from "@vedic-patro/design-tokens";
+import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 const LEVEL_LABELS: { ne: string; en: string }[] = [
   { ne: "महादशा", en: "Maha Dasha" },
   { ne: "अन्तर्दशा", en: "Antar Dasha" },
@@ -39,26 +42,26 @@ const LEVEL_LABELS: { ne: string; en: string }[] = [
 const MAX_LEVEL = LEVEL_LABELS.length - 1;
 
 const LORD_BORDER: Record<DashaLord, string> = {
-  sun: "#f59e0b",
-  moon: "#94a3b8",
-  mars: "#ef4444",
-  mercury: "#10b981",
-  jupiter: "#ca8a04",
-  venus: "#ec4899",
-  saturn: "#8b5cf6",
-  rahu: "#737373",
-  ketu: "#ea580c",
+  sun: illustration.orange50,
+  moon: illustration.sky65,
+  mars: illustration.red60,
+  mercury: illustration.teal39,
+  jupiter: illustration.amber40,
+  venus: illustration.pink60,
+  saturn: illustration.violet66,
+  rahu: illustration.gray45,
+  ketu: illustration.orange48,
 };
 
 const YOGINI_BORDER: Record<string, string> = {
-  mangala: "#f43f5e",
-  pingala: "#f97316",
-  dhanya: "#f59e0b",
-  bhramari: "#ca8a04",
-  bhadrika: "#84cc16",
-  ulka: "#06b6d4",
-  siddha: "#0ea5e9",
-  sankata: "#8b5cf6",
+  mangala: illustration.red60b,
+  pingala: illustration.orange53c,
+  dhanya: illustration.orange50,
+  bhramari: illustration.amber40,
+  bhadrika: illustration.lime44,
+  ulka: illustration.teal43,
+  siddha: illustration.teal48,
+  sankata: illustration.violet66,
 };
 
 const DURATION_COLS = [
@@ -70,7 +73,7 @@ const DURATION_COLS = [
 ] as const;
 
 function lordBorderColor(lord: string, system: DashaSystem): string {
-  if (system === "yogini") return YOGINI_BORDER[lord] ?? "#737373";
+  if (system === "yogini") return YOGINI_BORDER[lord] ?? illustration.gray45;
   return LORD_BORDER[(lord as DashaLord) in LORD_BORDER ? (lord as DashaLord) : "ketu"];
 }
 
@@ -135,12 +138,12 @@ function MomentLine({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row flex-wrap gap-x-2">
       <Text
-        className="text-caption w-14 shrink-0 font-semibold uppercase tracking-wide text-muted-foreground"
+        className={kundaliDetailClasses.dashaTree.momentLabel}
         style={nepaliTextStyle(11)}
       >
         {label}
       </Text>
-      <Text className="text-body min-w-0 flex-1 text-foreground/90" style={nepaliTextStyle(13)}>
+      <Text className={cn(kundaliDetailClasses.dashaTree.momentValue, "min-w-0 flex-1")} style={nepaliTextStyle(13)}>
         {value}
       </Text>
     </View>
@@ -152,22 +155,20 @@ function SpanProgress({
   end,
   now,
   running,
-  secondary,
 }: {
   start: Date;
   end: Date;
   now: number;
   running: boolean;
-  secondary: string;
 }) {
   if (!running) return null;
   const total = end.getTime() - start.getTime();
   const pct = total > 0 ? Math.min(100, Math.max(0, ((now - start.getTime()) / total) * 100)) : 0;
   return (
-    <View className="mt-2 h-1 overflow-hidden rounded-full bg-muted/60">
+    <View className={kundaliDetailClasses.dashaTree.progressTrack}>
       <View
-        style={{ width: `${pct}%`, backgroundColor: secondary }}
-        className="h-full rounded-full"
+        style={{ width: `${pct}%` }}
+        className={kundaliDetailClasses.dashaTree.progressFill}
       />
     </View>
   );
@@ -190,14 +191,14 @@ function DashaDurationGrid({
   const values = [avadhi, parts.years, parts.months, parts.days, parts.yogas] as const;
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator className="mt-2 pl-[22px]">
+    <ScrollView horizontal showsHorizontalScrollIndicator className="mt-2 pl-5.5">
       <View className="min-w-[280px] overflow-hidden rounded-md border border-border/50">
         <View className="flex-row border-b border-border/50 bg-muted/30">
           {DURATION_COLS.map((col) => (
-            <View key={col.ne} className="min-w-[56px] flex-1 border-r border-border/50 px-1.5 py-1 last:border-r-0">
+            <View key={col.ne} className={cn(kundaliDetailClasses.dashaTree.durationCell, "min-w-[56px] flex-1 border-r last:border-r-0")}>
               <Text
                 numberOfLines={2}
-                className="text-caption font-semibold uppercase tracking-wide text-muted-foreground"
+                className={kundaliDetailClasses.dashaTree.durationLabel}
                 style={nepaliTextStyle(10)}
               >
                 {lang === "en" ? col.en : col.ne}
@@ -207,8 +208,8 @@ function DashaDurationGrid({
         </View>
         <View className="flex-row">
           {values.map((value, i) => (
-            <View key={DURATION_COLS[i]!.ne} className="min-w-[56px] flex-1 border-r border-border/50 px-1.5 py-1 last:border-r-0">
-              <Text className="text-body font-num text-foreground/90">{digits(value)}</Text>
+            <View key={DURATION_COLS[i]!.ne} className={cn(kundaliDetailClasses.dashaTree.durationCell, "min-w-[56px] flex-1 border-r last:border-r-0")}>
+              <Text className={kundaliDetailClasses.dashaTree.durationValue}>{digits(value)}</Text>
             </View>
           ))}
         </View>
@@ -233,22 +234,32 @@ function TimelineDot({
   const size = level === 0 ? 14 : level === 1 ? 10 : 8;
   const left = level === 0 ? -7 : level === 1 ? -5 : -4;
   return (
-    <View
-      style={{
-        position: "absolute",
-        top: 18,
-        left,
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        borderWidth: 2,
-        borderColor: colors.background,
-        backgroundColor: running ? colors.secondary : lordDotColor(lord, system),
-        ...(running
-          ? { shadowColor: colors.secondary, shadowOpacity: 0.35, shadowRadius: 2 }
-          : {}),
-      }}
-    />
+    <View style={{ position: "absolute", top: 18, left, width: size, height: size }}>
+      {running ? (
+        <View
+          style={{
+            position: "absolute",
+            top: -2,
+            left: -2,
+            width: size + 4,
+            height: size + 4,
+            borderRadius: (size + 4) / 2,
+            backgroundColor: colorWithAlpha(colors.secondary, 0.35),
+          }}
+        />
+      ) : null}
+      <View
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          borderWidth: 2,
+          borderColor: colors.background,
+          backgroundColor: running ? colors.secondary : lordDotColor(lord, system),
+          ...nativeShadow("sm"),
+        }}
+      />
+    </View>
   );
 }
 
@@ -297,7 +308,7 @@ function DashaNode({
   const border = lordBorderColor(span.lord, system);
 
   return (
-    <View className={level === 0 ? "pb-4" : "pb-2"} style={level > 0 ? { marginLeft: 4 } : undefined}>
+    <View className={level === 0 ? "pb-4" : "pb-2"} style={level > 0 ? { marginLeft: space.xs } : undefined}>
       <View
         style={{
           position: "absolute",
@@ -323,7 +334,7 @@ function DashaNode({
           onPress={() => expandable && setOpen((v) => !v)}
           className="px-3 py-2.5 active:opacity-90"
         >
-          <View className="flex-row flex-wrap items-center gap-x-2 gap-y-1">
+          <View className={kundaliDetailClasses.dashaTree.spanHead}>
             {expandable ? (
               <Ionicons
                 name={open ? "chevron-down" : "chevron-forward"}
@@ -334,25 +345,22 @@ function DashaNode({
               <View style={{ width: 14 }} />
             )}
             <DashaLordIcon lord={span.lord} system={system} size={18} />
-            <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+            <Text className={kundaliDetailClasses.dashaTree.spanLord} style={nepaliTextStyle(14)}>
               {displayLordName(span, lang, system)}
             </Text>
-            <Text className="text-body text-foreground" style={nepaliTextStyle(13)}>
+            <Text className={kundaliDetailClasses.dashaTree.spanMeta} style={nepaliTextStyle(13)}>
               {levelLabel} · {digits(duration)}
             </Text>
             {running ? (
-              <View
-                style={{ backgroundColor: colorWithAlpha(colors.secondary, 0.15) }}
-                className="rounded-full px-2 py-0.5"
-              >
-                <Text style={{ color: colors.secondary }} className="text-caption font-bold">
+              <View className={kundaliDetailClasses.dashaTree.runningBadge}>
+                <Text className={kundaliDetailClasses.dashaTree.runningBadgeText}>
                   {kundaliLabel("dasha_running", lang)}
                 </Text>
               </View>
             ) : null}
           </View>
 
-          <View className="mt-2 gap-0.5 pl-[22px]">
+          <View className="mt-2 gap-0.5 pl-5.5">
             <MomentLine
               label={kundaliLabel("dasha_begin", lang)}
               value={formatDashaMoment(span.start, lang, timeZone, digits)}
@@ -369,7 +377,6 @@ function DashaNode({
             end={span.end}
             now={now}
             running={running}
-            secondary={colors.secondary}
           />
         </Pressable>
 
@@ -380,7 +387,7 @@ function DashaNode({
         ) : null}
 
         {children ? (
-          <View className="border-t border-border/50 bg-card/40 px-2 pb-2 pt-1">
+          <View className={kundaliDetailClasses.dashaTree.childrenBox}>
             {children.map((child, i) => (
               <DashaNode
                 key={`${child.lord}-${child.start.getTime()}-${i}`}
@@ -426,55 +433,52 @@ function ChainStackRow({
   const running = isRunning(span, now);
 
   return (
-    <View className="px-4 py-3">
-      <View className="flex-row flex-wrap items-center gap-2">
+    <View className={kundaliDetailClasses.dashaTree.detail}>
+      <View className={cn(kundaliDetailClasses.dashaTree.detailHead, "flex-wrap")}>
         <DashaLordIcon lord={span.lord} system={system} size={26} />
-        <Text className="text-body flex-1 font-bold text-foreground" style={nepaliTextStyle(15)}>
+        <Text className={cn(kundaliDetailClasses.dashaTree.detailTitle, "flex-1")} style={nepaliTextStyle(15)}>
           {displayLordName(span, lang, system)}
-          <Text className="font-normal text-muted-foreground"> — {pick(LEVEL_LABELS[level]!.ne, LEVEL_LABELS[level]!.en)}</Text>
+          <Text className={kundaliDetailClasses.dashaTree.detailLevel}> — {pick(LEVEL_LABELS[level]!.ne, LEVEL_LABELS[level]!.en)}</Text>
         </Text>
         {running && (
-          <View
-            style={{ backgroundColor: colorWithAlpha(colors.secondary, 0.15) }}
-            className="shrink-0 rounded-full px-2 py-0.5"
-          >
-            <Text style={{ color: colors.secondary }} className="text-caption font-bold">
+          <View className={cn(kundaliDetailClasses.dashaTree.runningBadge, "shrink-0")}>
+            <Text className={kundaliDetailClasses.dashaTree.runningBadgeText}>
               {pick("चलिरहेको", "Running")}
             </Text>
           </View>
         )}
       </View>
-      <View className="mt-1.5 gap-1 pl-1">
-        <View className="flex-row items-center gap-1.5">
+      <View className={kundaliDetailClasses.dashaTree.detailFlow}>
+        <View className={kundaliDetailClasses.dashaTree.detailFlowRow}>
           <Ionicons name="arrow-forward" size={14} color={colors.mutedForeground} />
-          <Text className="text-body text-foreground/80" style={nepaliTextStyle(13)}>
+          <Text className={kundaliDetailClasses.dashaTree.detailFlowText} style={nepaliTextStyle(13)}>
             {formatDashaMoment(span.start, lang, timeZone, digits)}
           </Text>
         </View>
-        <View className="flex-row items-center gap-1.5">
+        <View className={kundaliDetailClasses.dashaTree.detailFlowRow}>
           <Ionicons name="arrow-forward" size={14} color={colors.foreground} />
-          <Text className="text-body text-foreground/80" style={nepaliTextStyle(13)}>
+          <Text className={kundaliDetailClasses.dashaTree.detailFlowText} style={nepaliTextStyle(13)}>
             {formatDashaMoment(span.end, lang, timeZone, digits)}
           </Text>
         </View>
       </View>
-      <View className="mt-1.5 flex-row flex-wrap gap-x-5 gap-y-1 pl-1">
-        <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+      <View className={kundaliDetailClasses.dashaTree.detailTotals}>
+        <Text className={kundaliDetailClasses.dashaTree.detailTotalText} style={nepaliTextStyle(13)}>
           {pick("कुल", "Total")} —{" "}
-          <Text className="font-semibold text-foreground">
+          <Text className={kundaliDetailClasses.dashaTree.detailStrong}>
             {digits(formatDashaDuration(span.end.getTime() - span.start.getTime(), lang))}
           </Text>
         </Text>
         {running && (
-          <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+          <Text className={kundaliDetailClasses.dashaTree.detailTotalText} style={nepaliTextStyle(13)}>
             {pick("बाँकी", "Left")} —{" "}
-            <Text className="font-semibold text-foreground">
+            <Text className={kundaliDetailClasses.dashaTree.detailStrong}>
               {digits(formatDashaDuration(span.end.getTime() - now, lang))}
             </Text>
           </Text>
         )}
       </View>
-      <SpanProgress start={span.start} end={span.end} now={now} running={running} secondary={colors.secondary} />
+      <SpanProgress start={span.start} end={span.end} now={now} running={running} />
       {isLast ? <DashaDurationGrid start={span.start} end={span.end} lang={lang} digits={digits} /> : null}
     </View>
   );
@@ -580,16 +584,16 @@ export function DashaTree({
       : null;
 
   return (
-    <View className="gap-5">
+    <View className={kundaliDetailClasses.dashaTree.root}>
       {knownPath.length > 0 && (
-        <View className="gap-2">
-          <View className="flex-row flex-wrap items-center justify-between gap-2">
-            <Text className="text-body font-bold uppercase tracking-wide text-secondary" style={nepaliTextStyle(13)}>
+        <View className={kundaliDetailClasses.dashaTree.runningGroup}>
+          <View className={kundaliDetailClasses.dashaTree.runningHead}>
+            <Text className={kundaliDetailClasses.dashaTree.runningTitle} style={nepaliTextStyle(13)}>
               {kundaliLabel("dasha_running_now", lang)}
             </Text>
             {yoginiCycle ? (
-              <View className="rounded-full border border-border/60 bg-card px-2 py-0.5">
-                <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(12)}>
+              <View className={kundaliDetailClasses.dashaTree.cycleChip}>
+                <Text className={kundaliDetailClasses.dashaTree.cycleChipText} style={nepaliTextStyle(12)}>
                   {pick(`चक्र: ${digits(yoginiCycle)}`, `Cycle: ${digits(yoginiCycle)}`)}
                 </Text>
               </View>
@@ -609,20 +613,20 @@ export function DashaTree({
       )}
 
       {timelineStart && timelineEnd ? (
-        <View className="flex-row flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+        <View className={kundaliDetailClasses.dashaTree.range}>
           <View className="flex-row flex-wrap items-center gap-x-1">
-            <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={kundaliDetailClasses.dashaTree.rangeLabel} style={nepaliTextStyle(11)}>
               {kundaliLabel("dasha_from", lang)}
             </Text>
-            <Text className="text-body text-foreground/90" style={nepaliTextStyle(13)}>
+            <Text className={kundaliDetailClasses.dashaTree.rangeValue} style={nepaliTextStyle(13)}>
               {formatDashaMoment(timelineStart, lang, timeZone, digits)}
             </Text>
           </View>
           <View className="flex-row flex-wrap items-center gap-x-1">
-            <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={kundaliDetailClasses.dashaTree.rangeLabel} style={nepaliTextStyle(11)}>
               {kundaliLabel("dasha_to", lang)}
             </Text>
-            <Text className="text-body text-foreground/90" style={nepaliTextStyle(13)}>
+            <Text className={kundaliDetailClasses.dashaTree.rangeValue} style={nepaliTextStyle(13)}>
               {formatDashaMoment(timelineEnd, lang, timeZone, digits)}
             </Text>
           </View>
@@ -630,10 +634,7 @@ export function DashaTree({
       ) : null}
 
       <View>
-        <Text
-          className="text-body mb-2 font-semibold uppercase tracking-wide text-muted-foreground"
-          style={nepaliTextStyle(12)}
-        >
+        <Text className={kundaliDetailClasses.dashaTree.timelineLabel} style={nepaliTextStyle(12)}>
           {kundaliLabel("dasha_full_timeline", lang)}
         </Text>
         <View className="pl-3">

@@ -15,12 +15,13 @@ import { useTranslation } from "react-i18next";
 import { bilingualText, useLocale, type Lang } from "@/i18n/locale";
 import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 
+import { illustration, midnight, wheel } from "@vedic-patro/design-tokens";
 const INK = "currentColor";
-const MARK = "#f59e0b";
-const WARN = "#ef4444";
-const COOL = "#0ea5e9";
-const GOOD = "#35d05a";
-const SUN = "#dddd00";
+const MARK = illustration.orange50;
+const WARN = illustration.red60;
+const COOL = illustration.teal48;
+const GOOD = illustration.green51;
+const SUN = illustration.amber43;
 
 const digits = (lang: Lang, v: string | number) =>
   lang === "en" ? String(v) : toNepaliDigits(String(v));
@@ -43,7 +44,7 @@ function Frame({
       <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" role="img" aria-label={label}>
         {children}
       </svg>
-      <figcaption className="mt-1.5 text-[11px] leading-snug text-white/45">{caption}</figcaption>
+      <figcaption className="mt-1.5 text-xs leading-snug text-white/45">{caption}</figcaption>
     </figure>
   );
 }
@@ -118,14 +119,14 @@ export function HoraWeekdayCycle() {
           <g key={key}>
             <circle cx={x} cy={y} r={15} fill={INK} opacity={0.07} />
             <circle cx={x} cy={y} r={15} fill="none" stroke={MARK} strokeOpacity={0.45} strokeWidth={0.9} />
-            <text x={x} y={y + 3} textAnchor="middle" className="fill-current text-[8px] font-semibold opacity-85">
+            <text x={x} y={y + 3} textAnchor="middle" className="fill-current text-diagram-2xs font-semibold opacity-85">
               {t(key)}
             </text>
             <text
               x={at(i, R + 25)[0]}
               y={at(i, R + 25)[1] + 3}
               textAnchor="middle"
-              className="text-[8px] font-semibold"
+              className="text-diagram-2xs font-semibold"
               style={{ fill: MARK }}
             >
               {n(order)}
@@ -134,10 +135,10 @@ export function HoraWeekdayCycle() {
         );
       })}
 
-      <text x={C} y={C - 6} textAnchor="middle" className="fill-current text-[8.5px] font-semibold opacity-75">
+      <text x={C} y={C - 6} textAnchor="middle" className="fill-current text-diagram-2xs font-semibold opacity-75">
         {t("learn.diagrams.hora_cycle_remainder")}
       </text>
-      <text x={C} y={C + 8} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: MARK }}>
+      <text x={C} y={C + 8} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
         {t("learn.diagrams.hora_cycle_step")}
       </text>
     </Frame>
@@ -183,7 +184,7 @@ export function YearLengthLadder() {
       caption={t("learn.diagrams.year_length_caption")}
     >
       <line x1={zero} y1={30} x2={zero} y2={H - 46} stroke={INK} strokeOpacity={0.35} strokeWidth={1} />
-      <text x={zero} y={24} textAnchor="middle" className="fill-current text-[7.5px] opacity-55">
+      <text x={zero} y={24} textAnchor="middle" className="fill-current text-diagram-2xs opacity-55">
         {t("learn.diagrams.year_length_zero_error")}
       </text>
 
@@ -192,15 +193,15 @@ export function YearLengthLadder() {
         const w = r.excess * scale;
         return (
           <g key={r.key}>
-            <text x={L - 6} y={y + 3} textAnchor="end" className="fill-current text-[8px] opacity-65">
+            <text x={L - 6} y={y + 3} textAnchor="end" className="fill-current text-diagram-2xs opacity-65">
               {t(r.key)}
             </text>
-            <text x={L + 2} y={y + 3} className="fill-current text-[8px] tabular-nums opacity-80">
+            <text x={L + 2} y={y + 3} className="fill-current text-diagram-2xs tabular-nums opacity-80">
               {n(r.len)}
             </text>
             {w > 0 && <rect x={zero} y={y - 6} width={w} height={12} fill={r.c} opacity={0.45} rx={1.5} />}
             {w > 0 && (
-              <text x={zero + w + 6} y={y + 3} className="text-[7.5px] font-semibold" style={{ fill: r.c }}>
+              <text x={zero + w + 6} y={y + 3} className="text-diagram-2xs font-semibold" style={{ fill: r.c }}>
                 +{n(r.excess.toFixed(4))} {t("learn.diagrams.year_length_excess_unit")}
               </text>
             )}
@@ -208,10 +209,10 @@ export function YearLengthLadder() {
         );
       })}
 
-      <text x={zero} y={H - 26} className="text-[8px] font-semibold" style={{ fill: WARN }}>
+      <text x={zero} y={H - 26} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {bilingualText(lang, `जुलियन: ~१ दिन प्रति ${n(128)} वर्ष → ${n(1582)} सम्ममा १० दिन`, `Julian: ~1 day per ${n(128)} years → ten days by ${n(1582)}`)}
       </text>
-      <text x={zero} y={H - 10} className="text-[8px] font-semibold" style={{ fill: GOOD }}>
+      <text x={zero} y={H - 10} className="text-diagram-2xs font-semibold" style={{ fill: GOOD }}>
         {t("learn.diagrams.year_length_gregorian_drift")}
       </text>
     </Frame>
@@ -257,7 +258,7 @@ export function GregorianJump() {
       label={t("learn.diagrams.gregorian_jump_label")}
       caption={t("learn.diagrams.gregorian_jump_caption")}
     >
-      <text x={startX} y={22} className="fill-current text-[8.5px] font-semibold opacity-75">
+      <text x={startX} y={22} className="fill-current text-diagram-2xs font-semibold opacity-75">
         {t("learn.diagrams.gregorian_jump_month")}
       </text>
 
@@ -267,7 +268,7 @@ export function GregorianJump() {
         return (
           <g key={d}>
             <rect x={x} y={34} width={cell - 4} height={cell - 4} fill={INK} opacity={0.08} rx={2.5} />
-            <text x={x + (cell - 4) / 2} y={34 + (cell - 4) / 2 + 3.5} textAnchor="middle" className="fill-current text-[8.5px] tabular-nums opacity-80">
+            <text x={x + (cell - 4) / 2} y={34 + (cell - 4) / 2 + 3.5} textAnchor="middle" className="fill-current text-diagram-2xs tabular-nums opacity-80">
               {n(d)}
             </text>
           </g>
@@ -283,7 +284,7 @@ export function GregorianJump() {
         stroke={WARN}
         strokeWidth={2}
       />
-      <text x={startX + before.length * cell + 14} y={34 + cell + 16} className="text-[8px] font-semibold" style={{ fill: WARN }}>
+      <text x={startX + before.length * cell + 14} y={34 + cell + 16} className="text-diagram-2xs font-semibold" style={{ fill: WARN }}>
         {t("learn.diagrams.gregorian_jump_lost_days")}
       </text>
 
@@ -292,11 +293,11 @@ export function GregorianJump() {
         const y = 112 + i * 20;
         return (
           <g key={a.y}>
-            <text x={startX} y={y} className="fill-current text-[8px] tabular-nums opacity-70">
+            <text x={startX} y={y} className="fill-current text-diagram-2xs tabular-nums opacity-70">
               {n(a.y)}
             </text>
             <rect x={startX + 40} y={y - 7} width={a.days * 7} height={9} fill={WARN} opacity={0.34} rx={1.5} />
-            <text x={startX + 40 + a.days * 7 + 6} y={y} className="fill-current text-[8px] opacity-65">
+            <text x={startX + 40 + a.days * 7 + 6} y={y} className="fill-current text-diagram-2xs opacity-65">
               {n(a.days)} {t("common.days")} · {t(a.key)}
             </text>
           </g>
@@ -338,7 +339,7 @@ export function EclipseSeasonWindow() {
       caption={t("learn.diagrams.eclipse_season_caption")}
     >
       <rect x={L} y={54} width={Rr - L} height={30} fill={MARK} opacity={0.16} rx={3} />
-      <text x={(L + Rr) / 2} y={44} textAnchor="middle" className="text-[8.5px] font-semibold" style={{ fill: MARK }}>
+      <text x={(L + Rr) / 2} y={44} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
         {bilingualText(lang, `ग्रहण ऋतु — ~${n(34)} दिन`, `eclipse season — ~${n(34)} days`)}
       </text>
       {[L, Rr].map((v) => (
@@ -348,23 +349,23 @@ export function EclipseSeasonWindow() {
       {[
         {
           d: 9,
-          fill: "#1b2430",
+          fill: midnight.card,
           phase: "learn.diagrams.eclipse_phase_new_moon",
           event: "learn.diagrams.eclipse_event_solar",
         },
         {
           d: 23,
-          fill: "#e8eef6",
+          fill: wheel.ink,
           phase: "learn.diagrams.eclipse_phase_full_moon",
           event: "learn.diagrams.eclipse_event_lunar",
         },
       ].map((m) => (
         <g key={m.phase}>
           <circle cx={x(m.d)} cy={69} r={8} fill={m.fill} stroke={INK} strokeOpacity={0.4} strokeWidth={0.8} />
-          <text x={x(m.d)} y={104} textAnchor="middle" className="fill-current text-[8px] font-semibold opacity-75">
+          <text x={x(m.d)} y={104} textAnchor="middle" className="fill-current text-diagram-2xs font-semibold opacity-75">
             {t(m.phase)}
           </text>
-          <text x={x(m.d)} y={117} textAnchor="middle" className="text-[7.5px]" style={{ fill: COOL }}>
+          <text x={x(m.d)} y={117} textAnchor="middle" className="text-diagram-2xs" style={{ fill: COOL }}>
             {t(m.event)}
           </text>
         </g>
@@ -374,7 +375,7 @@ export function EclipseSeasonWindow() {
       {[9, 23].map((d) => (
         <line key={d} x1={x(d)} y1={130} x2={x(d)} y2={138} stroke={COOL} strokeWidth={1} opacity={0.7} />
       ))}
-      <text x={(x(9) + x(23)) / 2} y={150} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: COOL }}>
+      <text x={(x(9) + x(23)) / 2} y={150} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: COOL }}>
         {bilingualText(lang, `~${n(14)} दिन`, `~${n(14)} days`)}
       </text>
     </Frame>
@@ -444,7 +445,7 @@ export function SunRayAngle() {
         },
       ].map((p) => (
         <g key={p.angle}>
-          <text x={p.cx} y={20} textAnchor="middle" className="fill-current text-[8.5px] font-semibold opacity-75">
+          <text x={p.cx} y={20} textAnchor="middle" className="fill-current text-diagram-2xs font-semibold opacity-75">
             {t(p.angle)}
           </text>
           {p.b.rays.map((r, i) => (
@@ -452,12 +453,12 @@ export function SunRayAngle() {
           ))}
           {/* the footprint the beam actually lands on */}
           <line x1={p.b.x1} y1={ground} x2={p.b.x2} y2={ground} stroke={MARK} strokeWidth={5} opacity={0.85} strokeLinecap="round" />
-          <text x={p.cx} y={ground + 20} textAnchor="middle" className="text-[8px] font-semibold" style={{ fill: MARK }}>
+          <text x={p.cx} y={ground + 20} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
             {lang === "en"
               ? `footprint ×${(p.b.foot / 74).toFixed(1)}`
               : `क्षेत्रफल ×${digits(lang, (p.b.foot / 74).toFixed(1))}`}
           </text>
-          <text x={p.cx} y={ground + 36} textAnchor="middle" className="fill-current text-[8px] opacity-70">
+          <text x={p.cx} y={ground + 36} textAnchor="middle" className="fill-current text-diagram-2xs opacity-70">
             {t(p.result)}
           </text>
         </g>

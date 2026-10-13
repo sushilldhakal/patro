@@ -1,3 +1,4 @@
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { createContext, useContext } from "react";
 import { Outlet } from "@tanstack/react-router";
 import { PanchangaSidebarNav } from "@/components/panchanga/PanchangaSidebarNav";
@@ -10,16 +11,16 @@ export function useInPanchangaShell() {
 }
 
 const SIDEBAR_CLASS =
-  "hidden min-[992px]:sticky min-[992px]:top-20 min-[992px]:block w-56 shrink-0 self-start";
+  "hidden calendar:sticky calendar:top-20 calendar:block w-56 shrink-0 self-start";
 
 /** Persistent sidebar shell — survives client navigations between panchanga pages. */
 export function PanchangaShellLayout() {
   return (
     <PanchangaShellContext.Provider value={true}>
-      <main className="mx-auto max-w-[1600px] px-4 py-8">
-        <div className="flex items-start gap-6">
+      <main className={panchangaPageClasses.directory.shellMain}>
+        <div className={cn("flex", panchangaPageClasses.directory.shellRow)}>
           <PanchangaSidebarNav className={SIDEBAR_CLASS} />
-          <div className={cn("min-w-0 flex-1 overflow-x-hidden")}>
+          <div className={panchangaPageClasses.directory.shellContent}>
             <Outlet />
           </div>
         </div>

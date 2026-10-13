@@ -6,6 +6,7 @@ import { useLocale } from "@/lib/i18n";
 import { toNepaliDigits } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 
 /**
  * The nine-graha gochar strip inside "why this reading?" — one chip per graha
@@ -28,8 +29,8 @@ export function RashifalGocharChips({ rows }: { rows: RashifalGocharRow[] }) {
   );
 
   return (
-    <View className="mt-3 border-t border-border/60 pt-3">
-      <View className="flex-row flex-wrap gap-1.5">
+    <View className={cn("mt-3", rashifalClasses.gochar.wrap)}>
+      <View className={cn("flex-row flex-wrap", rashifalClasses.gochar.list)}>
         {rows.map((row) => {
           const vedhaName = (ne ? row.vedha_by_ne : row.vedha_by) ?? row.vedha_by;
           return (
@@ -41,12 +42,17 @@ export function RashifalGocharChips({ rows }: { rows: RashifalGocharRow[] }) {
                 sign: ne ? row.sign_ne : row.sign_en,
               })}
               className={cn(
-                "flex-row items-center gap-1 rounded-md px-1.5 py-0.5",
-                row.vedha_by ? "bg-tone-neutral" : row.favourable ? "bg-tone-good" : "bg-tone-bad",
+                "flex-row",
+                rashifalClasses.gochar.chip,
+                row.vedha_by
+                  ? rashifalClasses.gochar.toneVedha
+                  : row.favourable
+                    ? rashifalClasses.gochar.toneGood
+                    : rashifalClasses.gochar.toneBad,
               )}
             >
-              <Text className="text-caption font-semibold">{ne ? row.graha_ne : row.graha_en}</Text>
-              <Text className="text-caption font-semibold opacity-80">{toNepaliDigits(row.house, lang)}</Text>
+              <Text className={rashifalClasses.gochar.chipText}>{ne ? row.graha_ne : row.graha_en}</Text>
+              <Text className={cn(rashifalClasses.gochar.chipText, rashifalClasses.gochar.house)}>{toNepaliDigits(row.house, lang)}</Text>
               {row.vedha_by ? (
                 <View accessibilityLabel={vedhaName ? t("rashifal.flags.vedha_by", { graha: vedhaName }) : t("rashifal.flags.vedha")}>
                   {flag("shield-outline", colors.mutedForeground)}
@@ -64,23 +70,23 @@ export function RashifalGocharChips({ rows }: { rows: RashifalGocharRow[] }) {
       </View>
 
       {anyVedha || anyRetro || anyCombust ? (
-        <View className="mt-2 flex-row flex-wrap items-center gap-x-3 gap-y-1">
+        <View className={cn("flex-row flex-wrap items-center", rashifalClasses.gochar.legend)}>
           {anyVedha ? (
-            <View className="flex-row items-center gap-1">
+            <View className={cn("flex-row", rashifalClasses.gochar.legendItem)}>
               {flag("shield-outline", colors.mutedForeground)}
-              <Text className="text-caption text-muted-foreground">{t("rashifal.flags.vedha")}</Text>
+              <Text className={rashifalClasses.gochar.legendText}>{t("rashifal.flags.vedha")}</Text>
             </View>
           ) : null}
           {anyRetro ? (
-            <View className="flex-row items-center gap-1">
+            <View className={cn("flex-row", rashifalClasses.gochar.legendItem)}>
               {flag("refresh-outline", colors.secondary)}
-              <Text className="text-caption text-muted-foreground">{t("rashifal.flags.retrograde")}</Text>
+              <Text className={rashifalClasses.gochar.legendText}>{t("rashifal.flags.retrograde")}</Text>
             </View>
           ) : null}
           {anyCombust ? (
-            <View className="flex-row items-center gap-1">
+            <View className={cn("flex-row", rashifalClasses.gochar.legendItem)}>
               {flag("flame-outline", colors.destructive)}
-              <Text className="text-caption text-muted-foreground">{t("rashifal.flags.combust")}</Text>
+              <Text className={rashifalClasses.gochar.legendText}>{t("rashifal.flags.combust")}</Text>
             </View>
           ) : null}
         </View>

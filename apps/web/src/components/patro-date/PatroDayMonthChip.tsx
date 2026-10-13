@@ -1,3 +1,4 @@
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import {
   patroMonthChipDay,
@@ -25,9 +26,8 @@ export function PatroDayMonthChip({ month, day, className, size = "default" }: P
       className={cn(
         patroMonthChipShell,
         "shrink-0",
-        size === "prominent" && "w-[3rem] sm:w-[3.75rem] sm:rounded-[10px]",
-        size === "compact" &&
-          "mt-0 w-[1.85rem] rounded-[6px] sm:w-[2.15rem] sm:rounded-[8px]",
+        size === "prominent" && patroDateClasses.chipProminent,
+        size === "compact" && patroDateClasses.chipCompact,
         className,
       )}
       aria-hidden
@@ -35,7 +35,7 @@ export function PatroDayMonthChip({ month, day, className, size = "default" }: P
       <div
         className={cn(
           patroMonthChipHead,
-          size === "compact" && "px-0 py-0.5 text-[10px] sm:px-0.5 sm:py-1 sm:text-xs",
+          size === "compact" && patroDateClasses.chipHeadCompact,
         )}
       >
         {month}
@@ -43,9 +43,8 @@ export function PatroDayMonthChip({ month, day, className, size = "default" }: P
       <div
         className={cn(
           patroMonthChipDay,
-          size === "prominent" && "text-base sm:min-h-[2.25rem] sm:text-lg",
-          size === "compact" &&
-            "min-h-0 py-0.5 text-xs sm:min-h-[1.35rem] sm:pb-0.5 sm:pt-0.5 sm:text-sm",
+          size === "prominent" && patroDateClasses.chipDayProminent,
+          size === "compact" && patroDateClasses.chipDayCompact,
         )}
       >
         {day}

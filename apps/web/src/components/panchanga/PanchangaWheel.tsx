@@ -77,7 +77,8 @@ import {
 } from "@/components/ui/dialog";
 import { bsMonthEnOf } from "@vedic-patro/domain/panchanga-wheel";
 
-const wheelDockIcon = "h-3.5 w-3.5 max-[480px]:h-3 max-[480px]:w-3";
+import { illustration } from "@vedic-patro/design-tokens";
+const wheelDockIcon = "h-3.5 w-3.5 max-compact:h-3 max-compact:w-3";
 
 function gFromClock(clock: string, sunriseMin: number): number {
   const { hour, minute } = parseClockParts(clock);
@@ -86,7 +87,7 @@ function gFromClock(clock: string, sunriseMin: number): number {
   return Math.max(0, Math.min(60, g));
 }
 const wheelCornerBtn =
-  "flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(143,191,193,0.32)] bg-[rgba(11,20,22,0.96)] text-[var(--w-ink)] shadow-[0_8px_20px_rgba(0,0,0,0.4)] transition-colors hover:border-[var(--w-accent)] max-[480px]:h-8 max-[480px]:w-8";
+  "flex h-9 w-9 items-center justify-center rounded-full border border-wheel-control-border bg-wheel-control text-[var(--w-ink)] shadow-[0_8px_20px_rgba(0,0,0,0.4)] transition-colors hover:border-[var(--w-accent)] max-compact:h-8 max-compact:w-8";
 
 export type YearWheelCalendarPick = {
   era: Era;
@@ -342,7 +343,7 @@ function PanchangaWheelBody({
     if (!clock) return null;
     return gFromClock(clock, det.sunriseMin);
   }, [clock, det.sunriseMin]);
-  const pendingJumpClockRef = useRef<string | null>(null);
+  const [pendingJumpClock, setPendingJumpClock] = useState<string | null>(null);
 
   const [scrubG, setScrubG] = useState(() => (isToday ? nowG : 0));
   const [debouncedScrubG, setDebouncedScrubG] = useState(scrubG);
@@ -462,7 +463,7 @@ function PanchangaWheelBody({
 
   const commitCalendarJump = useCallback(
     (nextEra: Era, y: number, m: number, d: number, nextClock: string) => {
-      pendingJumpClockRef.current = nextClock;
+      setPendingJumpClock(nextClock);
       setScrubPinned(true);
       setScrubG(gFromClock(nextClock, det.sunriseMin));
       activeCalendar?.onCommit(nextEra, y, m, d, nextClock);
@@ -497,11 +498,10 @@ function PanchangaWheelBody({
   if (dayKey !== trackedDayKey) {
     setTrackedDayKey(dayKey);
     setSpin(0);
-    const jumpClock = pendingJumpClockRef.current;
-    pendingJumpClockRef.current = null;
-    if (jumpClock) {
+    setPendingJumpClock(null);
+    if (pendingJumpClock) {
       setScrubPinned(true);
-      setScrubG(gFromClock(jumpClock, det.sunriseMin));
+      setScrubG(gFromClock(pendingJumpClock, det.sunriseMin));
     } else {
       setScrubPinned(false);
       setScrubG(isToday ? nowG : 0);
@@ -694,11 +694,11 @@ function PanchangaWheelBody({
             {bilingualText(lang, "वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
           </div>
           <div className={wheelLegendRow}>
-            <span className={wheelLegendDot} style={{ background: "#f2a81d" }} />
+            <span className={wheelLegendDot} style={{ background: illustration.orange53b }} />
             {bilingualText(lang, "सूर्य राशि", "Sun sign")}
           </div>
           <div className={wheelLegendRow}>
-            <span className={wheelLegendDot} style={{ background: "#d3dce4" }} />
+            <span className={wheelLegendDot} style={{ background: illustration.sky84 }} />
             {bilingualText(lang, "चन्द्र राशि", "Moon sign")}
           </div>
           <div className={cn(wheelLegendRow, "mt-0.5 opacity-70")}>
@@ -766,7 +766,7 @@ function PanchangaWheelBody({
         <Dialog open={calendarOpen} onOpenChange={setCalendarOpen}>
           <DialogContent
             overlayClassName="z-[125] bg-black/70"
-            className="z-[130] max-w-[22rem] border-[#3d5c58] bg-[#0d2428] p-4 text-[#e9f3f1] shadow-2xl"
+            className="z-[130] max-w-[22rem] border-ill-teal30 bg-ill-wheel-sky0 p-4 text-ill-wheel-ink shadow-2xl"
             onCloseAutoFocus={(e) => e.preventDefault()}
             onPointerDownOutside={(e) => {
               const t = e.target as HTMLElement | null;
@@ -782,7 +782,7 @@ function PanchangaWheelBody({
             }}
           >
             <DialogHeader>
-              <DialogTitle className="text-[#e9f3f1]">
+              <DialogTitle className="text-ill-wheel-ink">
                 {bilingualText(lang, "मिति र समय", "Date and time")}
               </DialogTitle>
             </DialogHeader>

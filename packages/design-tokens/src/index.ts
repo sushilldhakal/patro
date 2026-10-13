@@ -13,3 +13,6 @@
  */
 export * from "./color";
 export * from "./scale";
+export * from "./illustration";
+export * from "./specs";
+export * from "./panchanga-classes";

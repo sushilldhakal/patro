@@ -31,6 +31,8 @@ import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { localizeItemLabel } from "@vedic-patro/domain/kundali/report-labels";
 
+import { illustration } from "@vedic-patro/design-tokens";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 type Status = "idle" | "streaming" | "done" | "error";
 
 const CONFIDENCE_KEYS: Record<ReportConfidence, KundaliI18nKey> = {
@@ -40,18 +42,20 @@ const CONFIDENCE_KEYS: Record<ReportConfidence, KundaliI18nKey> = {
   tentative: "report_confidence_tentative",
 };
 
-const CONFIDENCE_TONE: Record<ReportConfidence, string> = {
-  strong: "border-emerald-500/30 bg-emerald-500/15",
-  moderate: "border-sky-500/30 bg-sky-500/15",
-  mixed: "border-amber-500/30 bg-amber-500/15",
-  tentative: "border-border bg-muted/40",
+const r = kundaliDetailClasses.report;
+
+const CONFIDENCE_TONE: Record<ReportConfidence, { box: string; text?: string }> = {
+  strong: { box: r.strongBox, text: r.strongText },
+  moderate: { box: r.moderateBox, text: r.moderateText },
+  mixed: { box: r.mixedBox, text: r.mixedText },
+  tentative: { box: r.tentativeBox },
 };
 
 function ConfidenceBadge({ level }: { level: ReportConfidence }) {
   const { lang } = useLocale();
   return (
-    <View className={cn("rounded-full border px-2 py-0.5", CONFIDENCE_TONE[level])}>
-      <Text className="text-caption font-semibold text-foreground" style={nepaliTextStyle(11)}>
+    <View className={cn(r.badge, CONFIDENCE_TONE[level].box)}>
+      <Text className={cn(r.badgeText, CONFIDENCE_TONE[level].text)} style={nepaliTextStyle(11)}>
         {kundaliLabel(CONFIDENCE_KEYS[level], lang)}
       </Text>
     </View>
@@ -63,22 +67,22 @@ function FactorList({ factors }: { factors?: string[] }) {
   const [open, setOpen] = useState(false);
   if (!factors?.length) return null;
   return (
-    <View className="mt-2">
-      <Pressable onPress={() => setOpen((v) => !v)} className="flex-row items-center gap-1 active:opacity-70">
-        <Ionicons name="information-circle-outline" size={14} color="#888" />
-        <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+    <View className={r.factorWrap}>
+      <Pressable onPress={() => setOpen((v) => !v)} className={cn(r.factorToggle, "active:opacity-70")}>
+        <Ionicons name="information-circle-outline" size={14} color={illustration.gray53} />
+        <Text className={r.factorToggleText} style={nepaliTextStyle(12)}>
           {kundaliLabelVars("report_factors_based", lang, { count: factors.length })}
         </Text>
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
           size={14}
-          color="#888"
+          color={illustration.gray53}
         />
       </Pressable>
       {open ? (
-        <View className="mt-1.5 border-l-2 border-border pl-3">
+        <View className={r.factorList}>
           {factors.map((f, i) => (
-            <Text key={i} className="text-caption text-foreground" style={nepaliTextStyle(12)}>
+            <Text key={i} className={r.factorItem} style={nepaliTextStyle(12)}>
               {f}
             </Text>
           ))}
@@ -92,18 +96,18 @@ function ItemCard({ item }: { item: ReportItem }) {
   const { lang } = useLocale();
   const isEnglish = lang === "en";
   return (
-    <Card className="gap-2 p-3">
-      <View className="flex-row items-start justify-between gap-2">
-        <Text className="text-body min-w-0 flex-1 font-semibold text-foreground" style={nepaliTextStyle(13)}>
+    <View className={r.itemCard}>
+      <View className={r.itemHead}>
+        <Text className={cn(r.itemLabel, "min-w-0 flex-1")} style={nepaliTextStyle(13)}>
           {localizeItemLabel(item.label, isEnglish)}
         </Text>
         <ConfidenceBadge level={item.confidence} />
       </View>
-      <Text className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
+      <Text className={r.itemText} style={nepaliTextStyle(14)}>
         {item.text}
       </Text>
       <FactorList factors={item.factors} />
-    </Card>
+    </View>
   );
 }
 
@@ -121,13 +125,13 @@ function SectionCard({ section }: { section: ReportSection }) {
       : 1;
 
   return (
-    <Card className={cn("gap-3 p-4", section.optional ? "border-dashed" : undefined)}>
-      <View className="flex-row flex-wrap items-center gap-2">
-        <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+    <Card className={cn(r.sectionCard, section.optional ? "border-dashed" : undefined)}>
+      <View className={r.sectionHead}>
+        <Text className={r.sectionTitle} style={nepaliTextStyle(16)}>
           {title}
         </Text>
         {isEnglish ? (
-          <Text className="text-caption uppercase tracking-wider text-muted-foreground" style={nepaliTextStyle(11)}>
+          <Text className={r.sectionTitleEn} style={nepaliTextStyle(11)}>
             {section.title_en}
           </Text>
         ) : null}
@@ -138,16 +142,20 @@ function SectionCard({ section }: { section: ReportSection }) {
         ) : null}
       </View>
 
-      {section.body.map((p, i) => (
-        <Text key={i} className="text-body leading-relaxed text-foreground" style={nepaliTextStyle(14)}>
-          {p}
-        </Text>
-      ))}
+      {section.body.length > 0 ? (
+        <View className={r.sectionBody}>
+          {section.body.map((p, i) => (
+            <Text key={i} className={r.sectionParagraph} style={nepaliTextStyle(14)}>
+              {p}
+            </Text>
+          ))}
+        </View>
+      ) : null}
 
       {section.confidence ? <FactorList factors={section.factors} /> : null}
 
       {section.items && section.items.length > 0 ? (
-        <View className="flex-row flex-wrap gap-2.5">
+        <View className="mt-3 flex-row flex-wrap gap-2.5">
           {section.items.map((it, i) => (
             <View
               key={i}
@@ -209,15 +217,15 @@ function MetaStrip({ meta }: { meta: ReportMeta }) {
   return (
     <View className="flex-row flex-wrap gap-2">
       {cells.map((c) => (
-        <View key={c.label} className="min-w-[46%] flex-1 rounded-lg border border-border bg-muted/20 px-3 py-2">
-          <Text className="text-caption font-semibold uppercase tracking-wide text-muted-foreground" style={nepaliTextStyle(10)}>
+        <View key={c.label} className={cn(r.metaCell, "min-w-[46%] flex-1")}>
+          <Text className={r.metaLabel} style={nepaliTextStyle(10)}>
             {c.label}
           </Text>
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className={r.metaValue} style={nepaliTextStyle(14)}>
             {c.value}
           </Text>
           {c.sub ? (
-            <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+            <Text className={r.metaSub} style={nepaliTextStyle(11)}>
               {c.sub}
             </Text>
           ) : null}
@@ -312,11 +320,11 @@ export function KundaliReport({
       title={kundaliLabel("report_title", lang)}
       icon="document-text-outline"
     >
-      <Text className="text-body leading-relaxed text-muted-foreground" style={nepaliTextStyle(14)}>
+      <Text className={r.intro} style={nepaliTextStyle(14)}>
         {kundaliLabel("report_intro", lang)}
       </Text>
 
-      <View className="mt-3 flex-row flex-wrap items-center gap-2">
+      <View className="mt-4 flex-row flex-wrap items-center gap-2">
         {(status === "done" || status === "error") && (
           <Button
             label={kundaliLabel("report_regenerate", lang)}
@@ -327,9 +335,9 @@ export function KundaliReport({
           />
         )}
         {(status === "idle" || streaming) && !disabled ? (
-          <View className="flex-row items-center gap-2 rounded-lg border border-border px-3 py-2">
+          <View className={r.statusPill}>
             <ActivityIndicator size="small" color={colors.secondary} />
-            <Text className="text-body text-muted-foreground" style={nepaliTextStyle(13)}>
+            <Text className={r.statusText} style={nepaliTextStyle(13)}>
               {streaming && progress.total
                 ? kundaliLabelVars("report_streaming_progress", lang, {
                     done: progress.done,
@@ -342,8 +350,8 @@ export function KundaliReport({
       </View>
 
       {(streaming || status === "done") && (
-        <View className="mt-3 flex-row flex-wrap items-center gap-2">
-          <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(12)}>
+        <View className={cn("mt-4", r.confidenceRow)}>
+          <Text className={r.confidenceLabel} style={nepaliTextStyle(12)}>
             {kundaliLabel("report_confidence_label", lang)}
           </Text>
           {(["strong", "moderate", "mixed", "tentative"] as ReportConfidence[]).map((lvl) => (
@@ -353,18 +361,18 @@ export function KundaliReport({
       )}
 
       {error ? (
-        <View className="mt-3 flex-row items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+        <View className={cn("mt-4", r.errorBox)}>
           <Ionicons name="alert-circle-outline" size={18} color={colors.destructive} />
-          <Text className="text-body flex-1 text-destructive" style={nepaliTextStyle(14)}>
+          <Text className={cn(r.errorText, "flex-1")} style={nepaliTextStyle(14)}>
             {error}
           </Text>
         </View>
       ) : null}
 
-      {meta ? <View className="mt-3"><MetaStrip meta={meta} /></View> : null}
+      {meta ? <View className="mt-4"><MetaStrip meta={meta} /></View> : null}
 
       {sections.length > 0 ? (
-        <View className="mt-3 gap-3">
+        <View className="mt-4 gap-3">
           {sections.map((s) => (
             <SectionCard key={s.id} section={s} />
           ))}
@@ -372,22 +380,22 @@ export function KundaliReport({
       ) : null}
 
       {fromCache && status === "done" ? (
-        <Text className="text-caption mt-3 text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={cn("mt-4", r.cacheNote)} style={nepaliTextStyle(12)}>
           {kundaliLabel("report_loaded_from_cache", lang)}
         </Text>
       ) : null}
 
       {status === "idle" && disabled ? (
-        <View className="mt-3 flex-row items-center gap-2 rounded-lg border border-dashed border-border bg-muted/20 px-4 py-6">
+        <View className={cn("mt-4", r.idleBox)}>
           <Ionicons name="document-text-outline" size={22} color={colors.mutedForeground} />
-          <Text className="text-body flex-1 text-muted-foreground" style={nepaliTextStyle(14)}>
+          <Text className={cn(r.idleText, "flex-1")} style={nepaliTextStyle(14)}>
             {kundaliLabel("report_idle_hint", lang)}
           </Text>
         </View>
       ) : null}
 
       {meta && (status === "done" || streaming) ? (
-        <Text className="text-caption mt-4 border-t border-border pt-3 leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+        <Text className={cn("mt-4", r.disclaimer)} style={nepaliTextStyle(12)}>
           {meta.disclaimer} · {meta.method}.
         </Text>
       ) : null}

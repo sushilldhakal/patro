@@ -10,8 +10,8 @@ import { useLocale } from "@/lib/i18n";
 import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import { useThemeColors } from "@/lib/theme-context";
 import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 const GLANCE_GAP = 8;
 
@@ -31,13 +31,9 @@ function GlanceTile({
   children: ReactNode;
   layout: ViewStyle;
 }) {
-  const colors = useThemeColors();
   return (
-    <View style={[{ borderColor: colors.border }, layout]} className="rounded-xl border bg-card p-3">
-      <Text
-        className="text-caption mb-1.5 font-semibold uppercase tracking-wide text-muted-foreground"
-        style={nepaliTextStyle(11)}
-      >
+    <View style={layout} className={kundaliDetailClasses.glance.card}>
+      <Text className={kundaliDetailClasses.glance.label} style={nepaliTextStyle(11)}>
         {label}
       </Text>
       {children}
@@ -53,10 +49,10 @@ function HouseSummary({ house, lang, digits }: { house: BhavaBalaHouse; lang: "n
 
   return (
     <>
-      <Text className="text-title font-bold text-foreground" style={nepaliTextStyle(17)}>
+      <Text className={kundaliDetailClasses.glance.name} style={nepaliTextStyle(17)}>
         {houseLabel}
       </Text>
-      <Text className="text-caption mt-0.5 text-muted-foreground" style={nepaliTextStyle(11)}>
+      <Text className={kundaliDetailClasses.glance.subTight} style={nepaliTextStyle(11)}>
         {kundaliLabel("lord", lang)} {lordName} · {digits(house.percent.toFixed(1))}%
       </Text>
     </>
@@ -107,7 +103,7 @@ export function BhavaBalaCard({
 
   const numCell = (value: string) => (
     <View className="items-end">
-      <Text className="font-num text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+      <Text className="font-mono text-sm text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
         {value}
       </Text>
     </View>
@@ -118,7 +114,7 @@ export function BhavaBalaCard({
     highlight: selectedHouse === h.house,
     cells: [
       <Pressable key="h" onPress={() => setSelectedHouse(h.house)} className="active:opacity-70">
-        <Text className="font-semibold text-foreground" style={nepaliTextStyle(11)} numberOfLines={1}>
+        <Text className={kundaliDetailClasses.prose.heading} style={nepaliTextStyle(11)} numberOfLines={1}>
           {houseLabel(h.house)}
         </Text>
       </Pressable>,
@@ -162,11 +158,11 @@ export function BhavaBalaCard({
       />
 
       {!compactHeader ? (
-        <Text className="text-body font-semibold uppercase tracking-wide text-foreground" style={nepaliTextStyle(13)}>
+        <Text className={kundaliDetailClasses.glance.heading} style={nepaliTextStyle(13)}>
           {kundaliLabel("bhava_bala_house_strength_virupas", lang)}
         </Text>
       ) : null}
-      <Text className="text-caption leading-relaxed text-muted-foreground" style={nepaliTextStyle(12)}>
+      <Text className={kundaliDetailClasses.glance.intro} style={nepaliTextStyle(12)}>
         {intro}
       </Text>
 

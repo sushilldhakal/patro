@@ -14,6 +14,8 @@ import { instantFromCivilIso } from "@vedic-patro/domain/instant-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
+import { shantiClasses as sc } from "@vedic-patro/design-tokens/classes/shanti-classes";
+import { cn } from "@vedic-patro/domain/utils";
 import { resolveTimeZone, todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 
 function toAdStr(d: Date): string {
@@ -53,14 +55,14 @@ export default function ShantiVidhiScreen() {
         subtitle={t("shanti_vidhi.subtitle")}
       />
 
-      <View className="overflow-hidden rounded-2xl border border-border">
-        <View className="flex-row items-center gap-1.5 border-b border-border px-4 py-3">
+      <View className={cn(sc.card, "overflow-hidden")}>
+        <View className={sc.header}>
           <Ionicons name="person-outline" size={16} color={colors.secondary} />
-          <Text className="text-body font-semibold text-foreground" style={nepaliTextStyle(14)}>
+          <Text className={sc.headerTitle} style={nepaliTextStyle(14)}>
             {t("shanti_vidhi.birth_section")}
           </Text>
           <Text
-            className="text-caption ml-auto text-muted-foreground"
+            className={sc.headerMeta}
             style={nepaliTextStyle(12)}
             numberOfLines={1}
           >
@@ -68,7 +70,7 @@ export default function ShantiVidhiScreen() {
           </Text>
         </View>
 
-        <View className="gap-4 p-4">
+        <View className={sc.body}>
           <PanchangaDateNav
             date={date}
             onDateChange={setDate}

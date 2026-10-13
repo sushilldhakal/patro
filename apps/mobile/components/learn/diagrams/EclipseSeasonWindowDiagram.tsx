@@ -10,6 +10,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { midnight, wheel } from "@vedic-patro/design-tokens";
 const WINDOW_DAYS = 34;
 const NEW_MOON_DAY = 9;
 const FULL_MOON_DAY = 23;
@@ -48,12 +49,12 @@ const EclipseSeasonWindowScene = memo(function EclipseSeasonWindowScene({ onLabe
       {/* new moon (dark) */}
       <mesh position={[xOf(NEW_MOON_DAY), 0.06, 0]}>
         <sphereGeometry args={[0.032, 16, 16]} />
-        <meshStandardMaterial color={"#1b2430"} />
+        <meshStandardMaterial color={midnight.card} />
       </mesh>
       {/* full moon (lit) */}
       <mesh position={[xOf(FULL_MOON_DAY), 0.06, 0]}>
         <sphereGeometry args={[0.032, 16, 16]} />
-        <meshStandardMaterial color={"#e8eef6"} emissive={"#e8eef6"} emissiveIntensity={0.3} />
+        <meshStandardMaterial color={wheel.ink} emissive={wheel.ink} emissiveIntensity={0.3} />
       </mesh>
     </>
   );
@@ -77,8 +78,8 @@ export function EclipseSeasonWindowDiagram() {
       frame={{ width: 1.4, height: 0.4 }}
       idleSpin={0}
       legend={[
-        { color: "#1b2430", label: pick("औंसी → सूर्यग्रहणको सम्भावना", "New moon → possible solar eclipse") },
-        { color: "#e8eef6", label: pick("पूर्णिमा → चन्द्रग्रहणको सम्भावना", "Full moon → possible lunar eclipse") },
+        { color: midnight.card, label: pick("औंसी → सूर्यग्रहणको सम्भावना", "New moon → possible solar eclipse") },
+        { color: wheel.ink, label: pick("पूर्णिमा → चन्द्रग्रहणको सम्भावना", "Full moon → possible lunar eclipse") },
       ]}
       readouts={[
         { k: pick("झ्यालको लम्बाइ", "Window length"), v: `~${digits(34)} ${pick("दिन", "days")}`, tone: "accent" },

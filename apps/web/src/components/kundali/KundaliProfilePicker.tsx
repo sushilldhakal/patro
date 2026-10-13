@@ -15,6 +15,7 @@ import { type Profile } from "@/lib/auth/client";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { preloadPanchangaRoute } from "@/lib/panchanga-route-preload";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 export interface KundaliProfilePickerHandle {
   openAdd: () => void;
@@ -40,7 +41,7 @@ export const KundaliProfilePicker = forwardRef<
 
   if (isLoading && !profiles) {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-6 text-sm">
+      <div className={cn(kundaliDetailClasses.milanPicker.loadingBox, "flex text-sm")}>
         <Loader2 className="size-4 animate-spin" /> {t("kundali.loading_profiles")}
       </div>
     );
@@ -48,7 +49,7 @@ export const KundaliProfilePicker = forwardRef<
 
   if (isError) {
     return (
-      <p className="rounded-xl border border-border bg-card px-4 py-4 text-sm text-destructive">
+      <p className={cn(kundaliDetailClasses.milanPicker.errorBox, kundaliDetailClasses.milanPicker.errorText)}>
         {t("account_page.load_error")}
       </p>
     );
@@ -59,7 +60,7 @@ export const KundaliProfilePicker = forwardRef<
   return (
     <>
       {list.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-muted/20 px-5 py-10 text-center">
+        <div className={kundaliDetailClasses.milanPicker.emptyBoxCentered}>
           <p className="text-sm text-base text-foreground">{t("kundali.no_profiles_yet")}</p>
           <p className="mx-auto mt-1 max-w-md text-sm">{t("kundali.no_profiles_hint")}</p>
           <Button className="mt-4" onClick={() => setDialog({ mode: "add" })}>
@@ -141,26 +142,29 @@ function ProfileCard({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 rounded-xl border p-4 transition-colors",
-        active ? "border-secondary bg-secondary/5 ring-1 ring-secondary/40" : "border-border bg-card"
+        kundaliDetailClasses.profilePicker.card,
+        "transition-colors",
+        active
+          ? cn(kundaliDetailClasses.profilePicker.cardActive, "ring-1 ring-secondary/40")
+          : kundaliDetailClasses.profilePicker.cardIdle
       )}
       onMouseEnter={onPrefetch}
       onFocus={onPrefetch}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className={kundaliDetailClasses.profilePicker.head}>
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5 font-semibold text-foreground">
+          <div className={cn(kundaliDetailClasses.profilePicker.nameRow, kundaliDetailClasses.profilePicker.nameText, "flex")}>
             <span className="truncate">{p.full_name}</span>
             {p.is_default && <Star className="size-3.5 shrink-0 text-secondary" />}
           </div>
-          {genderLabel && <span className="text-xs">{genderLabel}</span>}
+          {genderLabel && <span className={kundaliDetailClasses.profilePicker.gender}>{genderLabel}</span>}
         </div>
         <Button variant="ghost" size="icon-sm" title={t("kundali.edit_profile")} onClick={onEdit}>
           <Pencil className="size-4" />
         </Button>
       </div>
 
-      <div className="flex flex-col gap-1.5 text-xs">
+      <div className={cn(kundaliDetailClasses.profilePicker.rows, "text-xs")}>
         <Row icon={Clock} label={t("kundali.dob")}>
           {dob}
           {p.birth_time ? ` · ${p.birth_time}` : ""}
@@ -199,10 +203,10 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-1.5">
+    <div className={cn(kundaliDetailClasses.profilePicker.row, "flex")}>
       <Icon className="mt-0.5 size-3.5 shrink-0 opacity-70" />
-      <span className="shrink-0 text-base text-foreground/70">{label}:</span>
-      <span className="min-w-0 break-words text-foreground">{children}</span>
+      <span className={kundaliDetailClasses.profilePicker.rowLabel}>{label}:</span>
+      <span className={cn(kundaliDetailClasses.profilePicker.rowValue, "break-words")}>{children}</span>
     </div>
   );
 }

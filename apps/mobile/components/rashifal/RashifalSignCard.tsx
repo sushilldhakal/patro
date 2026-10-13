@@ -6,6 +6,7 @@ import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon"
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
+import { rashifalClasses } from "@vedic-patro/design-tokens/classes/rashifal-classes";
 import type { NavataraTone, RashifalPeriod, RashifalSignBlock } from "@/lib/api";
 import {
   RASHIFAL_DOMAIN_ICON,
@@ -24,11 +25,11 @@ type Props = {
 
 function StarMeter({ stars, tone }: { stars: number; tone?: NavataraTone }) {
   return (
-    <View className="flex-row gap-0.5">
+    <View className={cn("flex-row", rashifalClasses.stars)}>
       {[1, 2, 3, 4, 5].map((n) => (
         <View
           key={n}
-          className={cn("size-1.5 rounded-full", n <= stars ? rashifalToneBar(tone) : "bg-border")}
+          className={cn(rashifalClasses.star, n <= stars ? rashifalToneBar(tone) : rashifalClasses.starOff)}
         />
       ))}
     </View>
@@ -46,9 +47,9 @@ function LuckyRow({
 }) {
   const colors = useThemeColors();
   return (
-    <View className="min-w-0 flex-1 flex-row items-center gap-1.5">
+    <View className={cn("w-[48%] flex-row", rashifalClasses.luckyCell)}>
       <Ionicons name={icon} size={14} color={colors.mutedForeground} />
-      <Text className="text-caption min-w-0 flex-1 font-semibold text-foreground" numberOfLines={1}>
+      <Text className={cn("min-w-0 flex-1", rashifalClasses.luckyValue)} numberOfLines={1} style={nepaliTextStyle()}>
         {value}
       </Text>
     </View>
@@ -73,51 +74,51 @@ export function RashifalSignCard({ sign, period }: Props) {
   const pct = sign.percent ?? 50;
 
   return (
-    <View className="overflow-hidden rounded-xl border border-border bg-card">
-      <View className="flex-row items-start gap-3 border-b border-border bg-secondary/10 px-4 py-3">
+    <View className={rashifalClasses.card}>
+      <View className={cn("flex-row", rashifalClasses.header)}>
         <RashiGlyphIcon name={getRashiName(sign.id, lang)} number={sign.id} size={36} />
-        <View className="min-w-0 flex-1">
-          <Text className="text-body font-bold text-foreground" style={nepaliTextStyle(16)}>
+        <View className={rashifalClasses.headerBody}>
+          <Text className={rashifalClasses.name} style={nepaliTextStyle()}>
             {displayName}
           </Text>
-          <Text className="text-caption mt-1 text-muted-foreground" style={nepaliTextStyle(12)}>
+          <Text className={rashifalClasses.nameSub} style={nepaliTextStyle()}>
             {sign.syllables_ne}
           </Text>
         </View>
       </View>
 
-      <View className="flex-row items-center gap-2.5 border-b border-border/60 px-4 py-2.5">
+      <View className={cn("flex-row", rashifalClasses.meter)}>
         <StarMeter stars={sign.stars ?? 3} tone={sign.tone} />
-        <View className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted">
-          <View className={cn("h-full rounded-full", rashifalToneBar(sign.tone))} style={{ width: `${pct}%` }} />
+        <View className={rashifalClasses.meterTrack}>
+          <View className={cn(rashifalClasses.meterFill, rashifalToneBar(sign.tone))} style={{ width: `${pct}%` }} />
         </View>
-        <Text className={cn("text-caption font-bold tabular-nums", rashifalToneText(sign.tone))}>
+        <Text className={cn(rashifalClasses.percent, rashifalToneText(sign.tone))} style={nepaliTextStyle()}>
           {digits(pct)}%
         </Text>
       </View>
 
       {grade ? (
-        <Text className="text-caption border-b border-border/60 px-4 pb-2 font-semibold uppercase tracking-wide text-muted-foreground">
+        <Text className={rashifalClasses.grade} style={nepaliTextStyle()}>
           {grade}
         </Text>
       ) : null}
 
       {sign.domains?.length ? (
-        <View className="flex-row flex-wrap border-b border-border/60 px-4 py-3">
+        <View className={cn("flex-row flex-wrap", rashifalClasses.domains)}>
           {sign.domains.map((domain) => {
             const icon = RASHIFAL_DOMAIN_ICON[domain.key];
             const label = ne ? domain.label_ne : domain.label_en;
             return (
-              <View key={domain.key} className="mb-2 w-1/3 min-w-0 px-1">
-                <View className="flex-row items-center gap-1">
+              <View key={domain.key} className={cn("mb-2 w-1/3 px-1", rashifalClasses.domain)}>
+                <View className={cn("flex-row", rashifalClasses.domainHead)}>
                   <Ionicons name={icon} size={14} color={colors.mutedForeground} />
-                  <Text className="text-caption flex-1 font-semibold text-muted-foreground" numberOfLines={1}>
+                  <Text className={cn("flex-1", rashifalClasses.domainLabel)} numberOfLines={1} style={nepaliTextStyle()}>
                     {label}
                   </Text>
                 </View>
-                <View className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
+                <View className={rashifalClasses.domainTrack}>
                   <View
-                    className={cn("h-full rounded-full", rashifalToneBar(domain.tone))}
+                    className={cn(rashifalClasses.meterFill, rashifalToneBar(domain.tone))}
                     style={{ width: `${domain.percent}%` }}
                   />
                 </View>
@@ -127,11 +128,11 @@ export function RashifalSignCard({ sign, period }: Props) {
         </View>
       ) : null}
 
-      <Text className="text-body px-4 py-3.5 leading-relaxed text-foreground/90" style={nepaliTextStyle(14)}>
+      <Text className={rashifalClasses.prediction} style={nepaliTextStyle()}>
         {prediction}
       </Text>
 
-      <View className="flex-row flex-wrap gap-x-3 gap-y-2 border-t border-border bg-muted/25 px-4 py-2.5">
+      <View className={cn("flex-row flex-wrap justify-between", rashifalClasses.lucky)}>
         <LuckyRow icon="color-palette-outline" label="" value={luckyColor} />
         <LuckyRow icon="keypad-outline" label="" value={luckyNumber} />
         {luckyDirection ? <LuckyRow icon="compass-outline" label="" value={luckyDirection} /> : null}
@@ -146,9 +147,9 @@ export function RashifalSignCard({ sign, period }: Props) {
 
       <Pressable
         onPress={() => setOpen((v) => !v)}
-        className="flex-row items-center justify-between border-t border-border px-4 py-2.5 active:opacity-80"
+        className={cn("flex-row active:opacity-80", rashifalClasses.whyButton)}
       >
-        <Text className="text-caption font-semibold text-muted-foreground">
+        <Text className={rashifalClasses.whyLabel} style={nepaliTextStyle()}>
           {pick("किन यस्तो?", "Why this reading?")}
         </Text>
         <Ionicons
@@ -159,25 +160,29 @@ export function RashifalSignCard({ sign, period }: Props) {
       </Pressable>
 
       {open ? (
-        <View className="border-t border-border bg-surface-muted px-4 py-3">
-          {sign.components?.map((component) => (
-            <View key={component.key} className="mb-1.5 flex-row items-baseline gap-2">
-              <Text className="text-caption w-24 shrink-0 font-semibold text-foreground">
+        <View className={rashifalClasses.details}>
+          {sign.components?.length ? (
+            <View className={rashifalClasses.componentList}>
+              {sign.components.map((component) => (
+            <View key={component.key} className={cn("flex-row", rashifalClasses.componentRow)}>
+              <Text className={rashifalClasses.componentLabel}>
                 {ne ? component.label_ne : component.label_en}
               </Text>
-              <Text className="text-caption min-w-0 flex-1 text-muted-foreground">
+              <Text className={rashifalClasses.componentNote}>
                 {ne ? component.note_ne : component.note_en}
               </Text>
-              <Text className={cn("text-caption shrink-0 font-bold tabular-nums", rashifalToneText(component.tone))}>
+              <Text className={cn(rashifalClasses.componentValue, rashifalToneText(component.tone))}>
                 {toNepaliDigits(component.percent, lang)}
               </Text>
             </View>
           ))}
+            </View>
+          ) : null}
 
           {sign.gochar?.length ? <RashifalGocharChips rows={sign.gochar} /> : null}
 
           {lord ? (
-            <Text className="text-caption mt-3 border-t border-border/60 pt-3 text-muted-foreground">
+            <Text className={rashifalClasses.lordLine}>
               {pick(
                 `${lord.lord_ne} · ${lord.house} · ${lord.sign_ne}`,
                 `${lord.lord_en} · house ${lord.house} · ${lord.sign_en}`,
@@ -186,7 +191,7 @@ export function RashifalSignCard({ sign, period }: Props) {
           ) : null}
 
           {period !== "daily" && sign.best_day && sign.weak_day ? (
-            <Text className="text-caption mt-2 text-muted-foreground">
+            <Text className={rashifalClasses.footNote}>
               {pick(
                 `उत्तम: ${sign.best_day.date_bs ?? sign.best_day.date_ad} · कमजोर: ${sign.weak_day.date_bs ?? sign.weak_day.date_ad}`,
                 `Best: ${sign.best_day.date_ad} · Weak: ${sign.weak_day.date_ad}`,
@@ -195,7 +200,7 @@ export function RashifalSignCard({ sign, period }: Props) {
           ) : null}
 
           {remedy ? (
-            <Text className="text-caption mt-2 font-medium text-foreground/80">
+            <Text className={rashifalClasses.remedy}>
               {pick("उपाय", "Remedy")}: {remedy}
             </Text>
           ) : null}

@@ -3,6 +3,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Era, Language } from "@vedic-patro/domain/era";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import { lazyBrowseYearListItems } from "@/lib/patro-browse-year-items";
@@ -10,6 +11,10 @@ import { buildPatroBrowseYearOptions } from "@/lib/patro-date-options";
 import { formatBrowsePatroYearPicker, isValidBrowseYear } from "@vedic-patro/domain/patro-year-axis";
 import { parsePatroYearSearchQuery } from "@/lib/patro-year-search-query";
 import { PatroYearEraToggle } from "./PatroYearEraToggle";
+
+const POPOVER = "pointer-events-auto z-[140] w-[min(calc(100vw-2rem),14rem)] gap-0 p-0";
+const NATIVE_SELECT = "patro-native-select h-9 w-full rounded-md border border-input/30 bg-input/30 px-2 text-base font-num outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50";
+const YEAR_LIST = "max-h-60 min-h-32 overflow-y-auto overscroll-contain p-1 font-num";
 
 export type PatroYearPickerPopoverProps = {
   era: Era;
@@ -120,10 +125,9 @@ export function PatroYearPickerPopover({
           data-vaul-no-drag
           aria-label={ariaLabel}
           className={cn(
-            "inline-flex min-w-0 shrink-0 cursor-pointer items-center justify-between gap-0.5 rounded-md border border-border bg-card font-num text-foreground",
-            comfortable
-              ? "h-9 gap-1 px-2 text-sm"
-              : "h-6 gap-0.5 px-1 text-sm sm:h-7 sm:gap-1 sm:px-1.5 sm:text-xs",
+            "inline-flex cursor-pointer gap-0.5",
+            patroDateClasses.yearTrigger,
+            comfortable ? patroDateClasses.yearTriggerComfortable : patroDateClasses.yearTriggerCompact,
             className,
           )}
         >
@@ -137,7 +141,7 @@ export function PatroYearPickerPopover({
         collisionPadding={{ top: 8, bottom: 88, left: 8, right: 8 }}
         data-vaul-no-drag
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="pointer-events-auto z-[140] w-[min(calc(100vw-2rem),14rem)] gap-0 p-0"
+        className={POPOVER}
       >
         {onBrowseCommit ? (
           <PatroYearEraToggle
@@ -148,7 +152,7 @@ export function PatroYearPickerPopover({
         ) : onEraChange ? (
           <PatroYearEraToggle era={era} onEraChange={onEraChange} variant="dropdown" />
         ) : null}
-        <div className="border-b border-border px-2 py-1.5">
+        <div className={patroDateClasses.yearPickerSearch}>
           <input
             type="text"
             inputMode="numeric"
@@ -163,18 +167,18 @@ export function PatroYearPickerPopover({
             }}
             placeholder={t("patro_date.year_search_placeholder")}
             enterKeyHint="search"
-            className="patro-native-select h-9 w-full rounded-md border border-input/30 bg-input/30 px-2 text-base font-num outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
+            className={NATIVE_SELECT}
           />
         </div>
         <ul
           ref={listRef}
           data-year-list
-          className="max-h-60 min-h-32 overflow-y-auto overscroll-contain p-1 font-num"
+          className={YEAR_LIST}
           role="listbox"
           aria-label={ariaLabel}
         >
           {listItems.length === 0 ? (
-            <li className="px-2 py-2 text-center text-xs text-muted-foreground">
+            <li className={patroDateClasses.yearPickerEmpty}>
               {t("patro_date.year_search_empty")}
             </li>
           ) : (
@@ -193,9 +197,10 @@ export function PatroYearPickerPopover({
                     data-vaul-no-drag
                     aria-selected={selected}
                     className={cn(
-                      "flex w-full cursor-pointer rounded-md px-2 py-1.5 text-left text-sm transition-colors",
+                      "flex cursor-pointer transition-colors",
+                      patroDateClasses.yearOption,
                       selected
-                        ? "bg-secondary text-secondary-foreground"
+                        ? patroDateClasses.yearOptionActive
                         : "hover:bg-accent hover:text-accent-foreground",
                     )}
                     onClick={() => pickYear(item.value)}

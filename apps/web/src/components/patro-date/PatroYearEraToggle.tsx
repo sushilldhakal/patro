@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { isPatroBrowseEraPair, togglePatroBrowseEra, type Era } from "@vedic-patro/domain/era";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
+import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
 /**
  * Keep the press from reaching the combobox popup, which dismisses on an
@@ -86,14 +87,19 @@ export function PatroYearEraToggle({
     <button
       type="button"
       className={cn(
-        "relative z-10 shrink-0 truncate rounded-md border border-border bg-card font-semibold text-muted-foreground transition-colors",
+        "relative z-10 truncate transition-colors",
+        patroDateClasses.eraToggle,
+        patroDateClasses.eraToggleLabel,
         "pointer-events-auto hover:bg-muted hover:text-foreground",
         compact
           ? cn(
-              "inline-flex items-center justify-center px-1.5",
-              comfortable ? "h-9 text-xs" : "h-6 text-[10px] sm:h-7 sm:px-2 sm:text-xs",
+              "inline-flex items-center justify-center",
+              patroDateClasses.eraToggleCompact,
+              comfortable
+                ? cn("h-9", patroDateClasses.eraToggleLabelRegular)
+                : cn("h-6 sm:h-7 sm:px-2 sm:text-xs", patroDateClasses.eraToggleLabelCompact),
             )
-          : "px-2 py-1.5 text-xs",
+          : cn(patroDateClasses.eraToggleRegular, patroDateClasses.eraToggleLabelRegular),
         className,
       )}
       aria-label={t("patro_date.switch_to_era", { era: targetLabel, defaultValue: `Switch to ${targetLabel}` })}

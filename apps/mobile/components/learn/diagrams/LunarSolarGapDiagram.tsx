@@ -11,6 +11,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const SYNODIC = 29.5306;
 const LUNAR_YEAR = SYNODIC * 12;
 const SOLAR_YEAR = 365.2422;
@@ -55,7 +56,7 @@ const LunarSolarGapScene = memo(function LunarSolarGapScene({ onLabels, copy }: 
             </mesh>
             <mesh position={[-0.55 + lunarW / 2, -0.01, z]}>
               <boxGeometry args={[lunarW, 0.03, 0.05]} />
-              <meshStandardMaterial color={"#cbd5e1"} transparent opacity={0.45} />
+              <meshStandardMaterial color={illustration.sky84} transparent opacity={0.45} />
             </mesh>
             <mesh position={[-0.55 + (lunarW + solarW) / 2, 0.005, z]}>
               <boxGeometry args={[solarW - lunarW, 0.06, 0.06]} />
@@ -81,7 +82,7 @@ export function LunarSolarGapDiagram() {
       idleSpin={0}
       legend={[
         { color: DIAGRAM_COLOR.sun, label: pick("सौर वर्ष", "Solar year") },
-        { color: "#cbd5e1", label: pick("१२ चान्द्र मास", "12 lunar months") },
+        { color: illustration.sky84, label: pick("१२ चान्द्र मास", "12 lunar months") },
         { color: DIAGRAM_LABEL_COLOR.warn, label: pick("जम्मा भएको खाडल", "Accumulated gap") },
       ]}
       readouts={[

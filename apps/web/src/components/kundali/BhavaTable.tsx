@@ -19,9 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
-const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
-const td = "px-2.5 py-2 text-sm";
+const th = kundaliDetailClasses.table.th;
+const td = kundaliDetailClasses.table.td;
 
 export type BhavaTableProps = {
   division: number;

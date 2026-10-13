@@ -53,6 +53,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { patroMdRail, patroSegBtn } from "@/lib/patro-classes";
 import { ArrowLeftRight } from "lucide-react";
 import { minWidthQuery } from "@vedic-patro/design-tokens";
+import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 const ASIDE_SIDEBAR_MQ = minWidthQuery("xl");
 
@@ -529,7 +530,7 @@ export function CalendarView({
   const patroModeMobileBtn = enablePatroToggle ? (
     <button
       type="button"
-      className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-border bg-card px-2 text-sm font-semibold transition-colors hover:text-foreground active:bg-muted"
+      className={cn("inline-flex cursor-pointer transition-colors hover:text-foreground active:bg-muted", calendarClasses.viewSwap, calendarClasses.viewSwapText)}
       onClick={() => switchPatroView(nextPatroView)}
       aria-label={t("calendar.patro_mode_switch")}
     >
@@ -540,7 +541,7 @@ export function CalendarView({
 
   const patroModeDesktop = enablePatroToggle ? (
     <div
-      className="hidden shrink-0 gap-0.5 rounded-lg border border-border bg-card p-0.5 md:inline-flex"
+      className={cn("hidden md:inline-flex", calendarClasses.viewSegGroup)}
       role="radiogroup"
       aria-label={t("calendar.patro_mode_aria")}
     >
@@ -564,7 +565,7 @@ export function CalendarView({
       </button>
     </div>
   ) : (
-    <div className="hidden text-xs text-base uppercase tracking-[0.12em] md:block md:text-right">
+    <div className="hidden text-xs text-base uppercase tracking-eyebrow md:block md:text-right">
       {t("calendar.eyebrow")}
     </div>
   );
@@ -652,7 +653,7 @@ export function CalendarView({
 
   if (aside || holidays) {
     return (
-      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] xl:items-stretch xl:gap-[15px] max-sm:gap-4">
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] xl:items-stretch xl:gap-3.75 max-sm:gap-4">
         <div className="min-w-0">
           {monthHeader}
           {calendarBlock}

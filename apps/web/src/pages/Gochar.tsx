@@ -39,6 +39,8 @@ import {
   pickBrowseVikramDate,
   stepBrowseVikramMonth,
 } from "@/lib/patro-date-options";
+import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes";
+import { cn } from "@vedic-patro/domain/utils";
 
 const routeApi = getRouteApi("/panchanga-shell/gochar");
 
@@ -308,7 +310,7 @@ export function Gochar() {
             onSelectPlanet={setSelectedPlanet}
           />
 
-          <div className="grid min-w-0 max-w-full gap-6 lg:grid-cols-2 [&>*]:min-w-0">
+          <div className={cn("grid min-w-0 max-w-full lg:grid-cols-2 [&>*]:min-w-0", gocharClasses.columns)}>
             <GocharIngressSection
               rows={ingressRows}
               refDateAd={refDateAd}
@@ -325,12 +327,12 @@ export function Gochar() {
           </div>
         </div>
       ) : dayQ.isError || gocharQ.isError ? (
-        <p className="text-sm text-destructive">{t("gochar.load_error")}</p>
+        <p className={gocharClasses.errorText}>{t("gochar.load_error")}</p>
       ) : (
-        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+        <p className={gocharClasses.mutedText}>{t("common.loading")}</p>
       )}
 
-      <p className="text-sm text-muted-foreground">
+      <p className={gocharClasses.mutedText}>
         {bilingualText(
           lang,
           "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",

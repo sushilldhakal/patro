@@ -10,21 +10,22 @@ import { MenuPreferences } from "@/components/navigation/MenuPreferences";
 import { MobileNavMenu } from "@/components/navigation/MobileNavMenu";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
-import { PAGE_HORIZONTAL_PADDING } from "@/lib/mobile-nav";
 import { cn } from "@vedic-patro/domain/utils";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 
+import { neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 function BrandMark({ onPress, centered }: { onPress: () => void; centered?: boolean }) {
   const { pick } = useLocale();
   return (
     <Pressable
       onPress={onPress}
-      className={cn("min-w-0 flex-row items-center gap-2.5 active:opacity-80", centered && "justify-center")}
+      className={cn(shellClasses.brand, "flex-row active:opacity-80", centered && "justify-center")}
     >
       <VedicPatroMark size={42} />
-      <Text className="text-body font-bold" numberOfLines={1} style={[nepaliTextStyle(16), { paddingVertical: 2 }]}>
-        <Text className="text-secondary">{pick("वैदिक", "Vedic")}</Text>
-        <Text className="text-foreground"> {pick("पात्रो", "Patro")}</Text>
+      <Text className={cn("py-0.5", shellClasses.brandName)} numberOfLines={1} style={nepaliTextStyle()}>
+        <Text className={cn(shellClasses.brandName, shellClasses.brandVedic)}>{pick("वैदिक", "Vedic")}</Text>
+        <Text className={cn(shellClasses.brandName, shellClasses.brandPatro)}> {pick("पात्रो", "Patro")}</Text>
       </Text>
     </Pressable>
   );
@@ -45,24 +46,16 @@ export function AppHeader() {
   return (
     <View
       style={{ paddingTop: insets.top }}
-      className="border-b border-border bg-background/95"
+      className={shellClasses.header}
     >
-      <View
-        style={{
-          maxWidth: 1400,
-          width: "100%",
-          alignSelf: "center",
-          paddingHorizontal: PAGE_HORIZONTAL_PADDING,
-        }}
-        className="min-h-16 flex-row items-center py-2"
-      >
+      <View className={cn("min-h-16 w-full flex-row py-2", shellClasses.headerInner)}>
         <View className="flex-1 flex-row justify-start">
           <Pressable
             onPress={() => setMenuOpen(true)}
-            className="h-10 w-10 items-center justify-center rounded-lg active:bg-muted"
+            className="h-9 w-9 items-center justify-center rounded-lg active:bg-muted"
             accessibilityLabel={pick("मेनु खोल्नुहोस्", "Open menu")}
           >
-            <Ionicons name="menu-outline" size={24} color={colors.foreground} />
+            <Ionicons name="menu-outline" size={20} color={colors.foreground} />
           </Pressable>
         </View>
 
@@ -129,7 +122,7 @@ function NavDrawer({
 
   return (
     <Modal visible transparent animationType="none" onRequestClose={onClose}>
-      <Animated.View style={{ flex: 1, opacity: slide, backgroundColor: "rgba(0,0,0,0.4)" }}>
+      <Animated.View style={{ flex: 1, opacity: slide, backgroundColor: withAlpha(neutral.black, 0.4) }}>
         <Pressable className="flex-1" onPress={onClose} />
       </Animated.View>
       <Animated.View
@@ -146,17 +139,14 @@ function NavDrawer({
         }}
         className="border-r border-border"
       >
-        <View
-          className="flex-row items-center gap-2.5 border-b border-border py-4"
-          style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}
-        >
-          <VedicPatroMark size={40} />
-          <View className="min-w-0 flex-1">
-            <Text className="text-body font-bold">
-              <Text className="text-secondary">{pick("वैदिक", "Vedic")}</Text>
-              <Text className="text-foreground"> {pick("पात्रो", "Patro")}</Text>
+        <View className={cn("flex-row p-4", shellClasses.drawerBrandRow, shellClasses.drawerHeader)}>
+          <VedicPatroMark size={36} />
+          <View className="min-w-0 flex-1 gap-1.5">
+            <Text className={shellClasses.drawerTitle}>
+              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitleVedic)}>{pick("वैदिक", "Vedic")}</Text>
+              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitlePatro)}> {pick("पात्रो", "Patro")}</Text>
             </Text>
-            <Text className="text-caption text-muted-foreground">
+            <Text className="text-sm text-muted-foreground">
               {pick("नेपाली पात्रो र पञ्चाङ्ग", "Nepali calendar and Panchanga")}
             </Text>
           </View>
@@ -164,10 +154,7 @@ function NavDrawer({
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <MobileNavMenu onNavigate={onNavigate} />
-          <View
-            className="border-t border-border py-4"
-            style={{ paddingHorizontal: PAGE_HORIZONTAL_PADDING }}
-          >
+          <View className="border-t border-border p-4">
             <MenuPreferences onNavigate={onNavigate} />
           </View>
         </ScrollView>

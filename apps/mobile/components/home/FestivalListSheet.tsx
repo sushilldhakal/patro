@@ -7,6 +7,7 @@ import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { useThemeColors } from "@/lib/theme-context";
+import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 type Props = {
   visible: boolean;
@@ -42,9 +43,8 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
       }}
     >
       <View
+        className="px-4 py-3.5"
         style={{
-          paddingHorizontal: 16,
-          paddingVertical: 14,
           borderBottomWidth: 1,
           borderBottomColor: colors.border,
         }}
@@ -59,15 +59,15 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
           {weekday} · {pick("वि.सं.", "BS")} {digits(day.day)} · {adDate}
         </Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: 16, gap: 8 }}>
+      <ScrollView contentContainerClassName="gap-2 p-4">
         {festivals.map((name, i) => (
           <View
             key={`${name}-${i}`}
-            className="rounded-lg border border-border bg-muted/40 px-3 py-2.5"
+            className={calendarClasses.festivalItem}
           >
             <Text
-              className="text-body font-semibold text-foreground"
-              style={lang === "en" ? undefined : nepaliTextStyle(14)}
+              className={calendarClasses.festivalItemText}
+              style={nepaliTextStyle()}
             >
               {name}
             </Text>

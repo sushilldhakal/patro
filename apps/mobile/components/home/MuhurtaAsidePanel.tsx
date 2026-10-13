@@ -14,11 +14,7 @@ import {
 } from "@/lib/day-timeline-aside";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
-import {
-  formatNavataraQuality,
-  formatNavataraTara,
-  navataraSlotTone,
-} from "@vedic-patro/domain/navatara-bala";
+import { formatNavataraQuality, formatNavataraTara } from "@vedic-patro/domain/navatara-bala";
 import {
   formatClockNepali,
   formatTimeRangeShort,
@@ -27,18 +23,21 @@ import {
   getTarabalaTable,
   getUdayaLagna,
 } from "@vedic-patro/domain/panchanga-format";
+import { Ionicons } from "@/components/icons/Ionicons";
+import { patroNavataraRow, type patroNavataraToneBg } from "@/lib/patro-classes";
+import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
-import type { ThemeColors } from "@/lib/theme";
 import { cn } from "@vedic-patro/domain/utils";
+import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
 type MuhurtaSubTab = "tarabal" | "chandrabal" | "choghadiya" | "hora" | "pushkara";
 
-const SUB_TABS: { id: MuhurtaSubTab; ne: string; en: string }[] = [
-  { id: "tarabal", ne: "ताराबल", en: "Tarabal" },
-  { id: "chandrabal", ne: "चन्द्रबल", en: "Chandrabala" },
-  { id: "choghadiya", ne: "चौघडी", en: "Choghadiya" },
-  { id: "hora", ne: "होरा", en: "Hora" },
-  { id: "pushkara", ne: "पुष्कर", en: "Pushkara" },
+const SUB_TABS: { id: MuhurtaSubTab; labelKey: string }[] = [
+  { id: "tarabal", labelKey: "muhurta_aside.tarabal" },
+  { id: "chandrabal", labelKey: "muhurta_aside.chandrabal" },
+  { id: "choghadiya", labelKey: "muhurta_aside.choghadiya" },
+  { id: "hora", labelKey: "muhurta_aside.hora" },
+  { id: "pushkara", labelKey: "muhurta_aside.pushkara" },
 ];
 
 /** Sub-tab → its full page under /panchanga/element/. */
@@ -50,46 +49,41 @@ const ELEMENT_ID: Record<MuhurtaSubTab, string> = {
   pushkara: "pushkara",
 };
 
-const HINTS: Record<MuhurtaSubTab, { ne: string; en: string }> = {
-  tarabal: { ne: "कामको प्रतिफल र सफलता हेर्न।", en: "See outcome and success of work." },
-  chandrabal: { ne: "यात्रा र कार्यको सफलता हेर्न।", en: "See success of travel and tasks." },
-  choghadiya: { ne: "दिन र रातका चौघडिया खण्ड।", en: "Day and night choghadiya segments." },
-  hora: { ne: "सूर्योदयदेखि सूर्यास्तसम्मका ग्रह होरा।", en: "Planetary hora from sunrise to sunset." },
-  pushkara: {
-    ne: "प्रत्येक लग्नभित्रका शुभ नवांश — संकल्प वा कार्य सुरु गर्न उपयुक्त समय।",
-    en: "Auspicious navamsha within each lagna — suitable times to begin work.",
-  },
+const SUB_TAB_HINT_KEY: Record<MuhurtaSubTab, string> = {
+  tarabal: "muhurta_aside.hint_tarabal",
+  chandrabal: "muhurta_aside.hint_chandrabal",
+  choghadiya: "muhurta_aside.hint_choghadiya",
+  hora: "muhurta_aside.hint_hora",
+  pushkara: "muhurta_aside.hint_pushkara",
 };
 
-function toneBg(colors: ThemeColors, tone: "good" | "bad" | "neutral", best?: boolean) {
-  if (best) return colors.toneBest;
-  if (tone === "good") return colors.toneGood;
-  if (tone === "bad") return colors.toneBad;
-  return colors.toneNeutral;
-}
+/* The tile itself is the shared `patroNavataraRow`; the app wraps three to a line. */
+const SLOT = "min-w-[31%] flex-1";
+const SLOT_TITLE = homeClasses.muhurtaSlotTitle;
+const SLOT_VALUE = homeClasses.muhurtaSlotValue;
+const EMPTY = homeClasses.muhurtaEmpty;
+
+type Tone = Parameters<typeof patroNavataraToneBg>[0];
 
 function NavataraAsideList({
   moonLabel,
   moonLabelEn,
   moonIdx,
-  moonRefNe,
-  moonRefEn,
+  moonRefKey,
   rows,
 }: {
   moonLabel: string | null;
   moonLabelEn?: string | null;
   moonIdx: number | null;
-  moonRefNe: string;
-  moonRefEn: string;
+  moonRefKey: string;
   rows: NavataraRow[];
 }) {
-  const { pick, lang } = useLocale();
-  const colors = useThemeColors();
+  const { pick, lang, t } = useLocale();
 
   if (!rows.length) {
     return (
-      <Text className="text-body py-6 text-center text-muted-foreground">
-        {pick("विवरण उपलब्ध छैन।", "Details unavailable.")}
+      <Text className={EMPTY} style={nepaliTextStyle()}>
+        {t("muhurta_aside.unavailable")}
       </Text>
     );
   }
@@ -97,9 +91,9 @@ function NavataraAsideList({
   return (
     <View>
       {moonLabel || moonLabelEn ? (
-        <Text className="text-body mb-2 font-semibold text-foreground">
-          {pick(moonRefNe, moonRefEn)}:{" "}
-          <Text style={{ color: colors.accent }} className="font-bold">
+        <Text className={homeClasses.muhurtaMoonRef} style={nepaliTextStyle()}>
+          {t(moonRefKey)}:{" "}
+          <Text className={homeClasses.muhurtaMoonRefStrong}>
             {pick(moonLabel ?? moonLabelEn ?? "", moonLabelEn ?? moonLabel ?? "")}
           </Text>
         </Text>
@@ -107,25 +101,20 @@ function NavataraAsideList({
       <View className="flex-row flex-wrap gap-1">
         {rows.map((row) => {
           const isMoon = moonIdx != null && row.index === moonIdx;
-          const slotTone = navataraSlotTone(row.tone);
           return (
-            <View
-              key={row.name}
-              className={cn(
-                "min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5",
-                isMoon && "border border-accent",
-              )}
-              style={{
-                backgroundColor: toneBg(colors, slotTone, row.tone === "best"),
-                borderColor: isMoon ? colors.accent : undefined,
-              }}
-            >
-              <Text className="text-caption w-full text-center font-bold text-foreground">
+            <View key={row.name} className={cn(patroNavataraRow(row.tone as Tone), SLOT)}>
+              {isMoon ? (
+                <View
+                  pointerEvents="none"
+                  className="absolute inset-0 rounded-md border-[1.5px] border-accent/45"
+                />
+              ) : null}
+              <Text className={SLOT_TITLE} style={nepaliTextStyle()}>
                 {pick(row.name, row.name_en ?? row.name)}
               </Text>
-              <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
+              <Text className={SLOT_VALUE} style={nepaliTextStyle()}>
                 {formatNavataraTara(row.tara, lang)}
-                <Text className="opacity-55"> / </Text>
+                <Text className={homeClasses.muhurtaSlotSep}> / </Text>
                 {formatNavataraQuality(row.quality, lang)}
               </Text>
             </View>
@@ -137,15 +126,14 @@ function NavataraAsideList({
 }
 
 function ChoghadiyaList({ p }: { p: PanchangaDay }) {
-  const { pick } = useLocale();
-  const colors = useThemeColors();
+  const { pick, t } = useLocale();
   const segments = getChoghadiyaSegments(p);
   const sunriseMin = getSunriseMinutes(p);
 
   if (!segments.length || sunriseMin == null) {
     return (
-      <Text className="text-body py-6 text-center text-muted-foreground">
-        {pick("चौघडिया उपलब्ध छैन।", "Choghadiya unavailable.")}
+      <Text className={EMPTY} style={nepaliTextStyle()}>
+        {t("muhurta_aside.choghadiya_unavailable")}
       </Text>
     );
   }
@@ -160,15 +148,14 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
         return (
           <View
             key={`${seg.name}-${i}`}
-            className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
-            style={{ backgroundColor: toneBg(colors, tone === "good" ? "good" : tone === "bad" ? "bad" : "neutral") }}
+            className={cn(patroNavataraRow(tone === "good" ? "good" : tone === "bad" ? "bad" : "neutral"), SLOT)}
           >
-            <Text className="text-caption w-full text-center font-bold text-foreground">
+            <Text className={SLOT_TITLE} style={nepaliTextStyle()}>
               {pick(seg.name, CHOGHADIYA_EN[seg.name] ?? seg.name)}
             </Text>
-            <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
+            <Text className={SLOT_VALUE} style={nepaliTextStyle()}>
               {range}
-              <Text className="opacity-55"> / </Text>
+              <Text className={homeClasses.muhurtaSlotSep}> / </Text>
               {pick(qualityNe, qualityEn)}
             </Text>
           </View>
@@ -179,14 +166,13 @@ function ChoghadiyaList({ p }: { p: PanchangaDay }) {
 }
 
 function HoraList({ p }: { p: PanchangaDay }) {
-  const { pick, lang } = useLocale();
-  const colors = useThemeColors();
+  const { t } = useLocale();
   const slots = getHoraDaySlots(p);
 
   if (!slots.length) {
     return (
-      <Text className="text-body py-6 text-center text-muted-foreground">
-        {pick("होरा उपलब्ध छैन।", "Hora unavailable.")}
+      <Text className={EMPTY} style={nepaliTextStyle()}>
+        {t("muhurta_aside.hora_unavailable")}
       </Text>
     );
   }
@@ -194,32 +180,29 @@ function HoraList({ p }: { p: PanchangaDay }) {
   return (
     <View className="flex-row flex-wrap gap-1">
       {slots.map((slot, i) => (
-        <HoraSlot key={`${slot.phase}-${slot.index}-${i}`} slot={slot} colors={colors} />
+        <HoraSlot key={`${slot.phase}-${slot.index}-${i}`} slot={slot} />
       ))}
     </View>
   );
 }
 
-function HoraSlot({ slot, colors }: { slot: ApiHoraSlot; colors: ThemeColors }) {
+function HoraSlot({ slot }: { slot: ApiHoraSlot }) {
   const { pick, lang } = useLocale();
   const start = formatClockNepali(slot.start_local_time_short, lang) ?? slot.start_local_time_short;
   const end = formatClockNepali(slot.end_local_time_short, lang) ?? slot.end_local_time_short;
   const tone = slot.tone === "bad" ? "bad" : "good";
 
   return (
-    <View
-      className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
-      style={{ backgroundColor: toneBg(colors, tone) }}
-    >
-      <Text className="text-caption w-full text-center font-bold text-foreground">
+    <View className={cn(patroNavataraRow(tone), SLOT)}>
+      <Text className={SLOT_TITLE} style={nepaliTextStyle()}>
         {pick(
           slot.planet_ne,
           GRAHA_NAME[slot.planet as GrahaKey]?.en ?? slot.planet_en ?? slot.planet ?? slot.planet_ne,
         )}
       </Text>
-      <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
+      <Text className={SLOT_VALUE} style={nepaliTextStyle()}>
         {start} – {end}
-        <Text className="opacity-55"> / </Text>
+        <Text className={homeClasses.muhurtaSlotSep}> / </Text>
         {pick(slot.quality_ne, slot.tone === "bad" ? "Inauspicious" : "Auspicious")}
       </Text>
     </View>
@@ -227,14 +210,13 @@ function HoraSlot({ slot, colors }: { slot: ApiHoraSlot; colors: ThemeColors }) 
 }
 
 function PushkaraList({ p }: { p: PanchangaDay }) {
-  const { pick, lang } = useLocale();
-  const colors = useThemeColors();
+  const { pick, lang, t } = useLocale();
   const rows = getUdayaLagna(p);
 
   if (!rows?.length) {
     return (
-      <Text className="text-body py-6 text-center text-muted-foreground">
-        {pick("पुष्कर नवांश उपलब्ध छैन।", "Pushkara navamsha unavailable.")}
+      <Text className={EMPTY} style={nepaliTextStyle()}>
+        {t("muhurta_aside.pushkara_unavailable")}
       </Text>
     );
   }
@@ -244,7 +226,7 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
   return (
     <View className="flex-row flex-wrap gap-1">
       {rows.map((row, i) => (
-        <PushkaraSlot key={`${row.name}-${i}`} row={row} pushkaraLabel={pushkaraLabel} colors={colors} lang={lang} />
+        <PushkaraSlot key={`${row.name}-${i}`} row={row} pushkaraLabel={pushkaraLabel} lang={lang} />
       ))}
     </View>
   );
@@ -253,12 +235,10 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
 function PushkaraSlot({
   row,
   pushkaraLabel,
-  colors,
   lang,
 }: {
   row: UdayaLagnaRow;
   pushkaraLabel: string;
-  colors: ThemeColors;
   lang: string;
 }) {
   const { pick } = useLocale();
@@ -276,16 +256,13 @@ function PushkaraSlot({
   const hasPushkara = hits.length > 0;
 
   return (
-    <View
-      className="min-w-[31%] flex-1 items-center gap-0.5 rounded-md p-1.5"
-      style={{ backgroundColor: toneBg(colors, hasPushkara ? "good" : "neutral") }}
-    >
-      <Text className="text-caption w-full text-center font-bold text-foreground">
+    <View className={cn(patroNavataraRow(hasPushkara ? "good" : "neutral"), SLOT)}>
+      <Text className={SLOT_TITLE} style={nepaliTextStyle()}>
         {pick(row.name_ne ?? row.name ?? "—", row.name ?? row.name_ne ?? "—")}
       </Text>
-      <Text className="text-caption w-full text-center font-num font-semibold text-foreground">
+      <Text className={SLOT_VALUE} style={nepaliTextStyle()}>
         {hasPushkara ? times : range}
-        <Text className="opacity-55"> / </Text>
+        <Text className={homeClasses.muhurtaSlotSep}> / </Text>
         {hasPushkara ? pushkaraLabel : "—"}
       </Text>
     </View>
@@ -297,13 +274,12 @@ type Props = {
 };
 
 export function MuhurtaAsidePanel({ p }: Props) {
-  const { pick } = useLocale();
+  const { pick, t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const [subTab, setSubTab] = useState<MuhurtaSubTab>("tarabal");
   const tara = getTarabalaTable(p);
   const chandra = getChandrabalamTable(p);
-  const hint = HINTS[subTab];
 
   return (
     <View className="gap-2">
@@ -313,34 +289,39 @@ export function MuhurtaAsidePanel({ p }: Props) {
             key={tab.id}
             onPress={() => setSubTab(tab.id)}
             className={cn(
-              "min-h-8 flex-1 items-center justify-center rounded-md px-0.5 py-1.5",
-              subTab === tab.id ? "border border-primary" : "border border-transparent",
+              "flex-1 items-center justify-center",
+              homeClasses.muhurtaSubTab,
+              subTab === tab.id ? homeClasses.muhurtaSubTabActive : homeClasses.muhurtaSubTabIdle,
             )}
-            style={{
-              backgroundColor: subTab === tab.id ? colors.tabActive : colors.surfaceInset,
-            }}
           >
             <Text
               className={cn(
-                "text-caption text-center font-semibold",
-                subTab === tab.id ? "font-bold text-foreground" : "text-muted-foreground",
+                homeClasses.muhurtaSubTabLabel,
+                subTab === tab.id && homeClasses.muhurtaSubTabLabelActive,
               )}
+              style={nepaliTextStyle()}
             >
-              {pick(tab.ne, tab.en)}
+              {t(tab.labelKey)}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      <Text className="text-body text-muted-foreground">{pick(hint.ne, hint.en)}</Text>
+      <View className={homeClasses.muhurtaHint}>
+        <View className="mt-px opacity-75">
+          <Ionicons name="information-circle-outline" size={13} color={colors.foreground} />
+        </View>
+        <Text className={cn("flex-1", homeClasses.muhurtaHintText)} style={nepaliTextStyle()}>
+          {t(SUB_TAB_HINT_KEY[subTab])}
+        </Text>
+      </View>
 
       {subTab === "tarabal" ? (
         <NavataraAsideList
           moonLabel={tara?.moon_label ?? null}
           moonLabelEn={tara?.moon_label_en ?? null}
           moonIdx={tara?.moon_index ?? null}
-          moonRefNe="आजको चन्द्र नक्षत्र"
-          moonRefEn="Today's moon nakshatra"
+          moonRefKey="muhurta_aside.moon_ref_tarabal"
           rows={tara?.rows ?? []}
         />
       ) : null}
@@ -349,8 +330,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
           moonLabel={chandra?.moon_label ?? null}
           moonLabelEn={chandra?.moon_label_en ?? null}
           moonIdx={chandra?.moon_index ?? null}
-          moonRefNe="आजको चन्द्र राशि"
-          moonRefEn="Today's moon rashi"
+          moonRefKey="muhurta_aside.moon_ref_chandrabal"
           rows={chandra?.rows ?? []}
         />
       ) : null}
@@ -363,7 +343,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
         accessibilityRole="link"
         className="items-center rounded-lg border border-border py-2.5 active:opacity-80"
       >
-        <Text className="text-body font-semibold text-foreground">
+        <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle()}>
           {pick("पूरा तालिका हेर्नुहोस् →", "View full table →")}
         </Text>
       </Pressable>

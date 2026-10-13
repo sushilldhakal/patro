@@ -18,6 +18,7 @@ import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon"
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import { grahaName } from "@/lib/graha-i18n";
+import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 
 /** Matrix column order + labels (display only — scores come from the API). */
 const ASHTAKAVARGA_TARGETS = [
@@ -26,8 +27,9 @@ const ASHTAKAVARGA_TARGETS = [
 
 const th = "h-auto py-2 px-2 text-sm font-semibold tracking-wide whitespace-nowrap";
 const thGraha = cn(th, "text-right min-w-[4.75rem] normal-case align-bottom");
-const td = "px-2 py-1.5 text-sm";
-const num = "text-right font-mono tabular-nums";
+const av = kundaliDetailClasses.ashtakavarga;
+const td = av.td;
+const num = av.num;
 
 function ashtakavargaTargetLabel(
   target: (typeof ASHTAKAVARGA_TARGETS)[number],
@@ -47,11 +49,11 @@ function AshtakavargaTargetHead({
     return (
       <span className="inline-flex flex-col items-end gap-1">
         <GrahaPlanetIcon graha={target as GrahaKey} size={18} />
-        <span className="text-xs font-semibold leading-tight">{label}</span>
+        <span className={av.targetLabel}>{label}</span>
       </span>
     );
   }
-  return <span className="text-xs font-semibold leading-tight">{label}</span>;
+  return <span className={av.targetLabel}>{label}</span>;
 }
 
 function AshtakavargaMatrix({
@@ -68,8 +70,8 @@ function AshtakavargaMatrix({
 
   return (
     <div>
-      <h4 className="text-sm font-semibold text-foreground mb-2">{title}</h4>
-      <div className="rounded-xl border border-border overflow-x-auto">
+      <h4 className={av.blockTitle}>{title}</h4>
+      <div className={av.tableWrap}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -146,10 +148,10 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
 
   return (
     <div>
-      <h4 className="text-sm font-semibold text-foreground mb-2">
+      <h4 className={av.blockTitle}>
         {t("kundali.shodhya_pinda")}
       </h4>
-      <div className="rounded-xl border border-border overflow-x-auto">
+      <div className={av.tableWrap}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
@@ -192,12 +194,12 @@ export function AshtakavargaCard({ data }: { data: AshtakavargaData }) {
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-8">
+    <div className={av.root}>
       <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wide mb-1">
+        <h3 className={av.heading}>
           {t("kundali.ashtakavarga")}
         </h3>
-        <p className="text-xs">
+        <p className={av.intro}>
           {t("kundali.parashari_bindu_tables_per_rashi_sarv_sums_the_seven_gr")}
         </p>
       </div>

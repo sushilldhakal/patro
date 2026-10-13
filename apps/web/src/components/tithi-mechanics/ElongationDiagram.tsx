@@ -11,6 +11,7 @@ import {
 } from "@vedic-patro/domain/tithi-wheel-data";
 import { MoonPhaseDisc } from "./MoonPhaseDisc";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const RAD = Math.PI / 180;
 
 const ED = {
@@ -332,14 +333,14 @@ export function ElongationDiagram({
           <path d="M0,0 L7,3.5 L0,7 Z" className={edEarthOrbitArrow} />
         </marker>
         <radialGradient id="ed-sun" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff6d8" />
-          <stop offset="38%" stopColor="#ffd24a" />
-          <stop offset="78%" stopColor="#f08a1d" />
-          <stop offset="100%" stopColor="#d65b12" />
+          <stop offset="0%" stopColor={illustration.amber92} />
+          <stop offset="38%" stopColor={illustration.amber67} />
+          <stop offset="78%" stopColor={illustration.orange53} />
+          <stop offset="100%" stopColor={illustration.orange45} />
         </radialGradient>
         <radialGradient id="ed-sunglow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ffcf57" stopOpacity={0.5} />
-          <stop offset="100%" stopColor="#ffcf57" stopOpacity={0} />
+          <stop offset="0%" stopColor={illustration.amber67} stopOpacity={0.5} />
+          <stop offset="100%" stopColor={illustration.amber67} stopOpacity={0} />
         </radialGradient>
       </defs>
 

@@ -2,6 +2,7 @@ import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
+import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
 export type DayCycleMode = "Day-Night" | "Calendar Day";
 
@@ -23,7 +24,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
   const inactive = OPTIONS.find((o) => o.value !== mode) ?? OPTIONS[0]!;
   const shellStyle = { height, maxHeight: height, fontSize, lineHeight };
   const btnClass =
-    "inline-flex items-center justify-center px-2.5 font-semibold transition-colors";
+    "inline-flex items-center justify-center px-2.5 transition-colors";
 
   if (isCompact) {
     return (
@@ -31,7 +32,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
         aria-label={pick(`${inactive.ne} मा बदल्नुहोस्`, `Switch to ${inactive.en}`)}
-        className={cn(btnClass, "rounded-md border border-border bg-card text-foreground hover:bg-muted")}
+        className={cn(btnClass, panchangaPageClasses.dayCycle.toggleLabel, panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleSingle, "text-foreground hover:bg-muted")}
         style={shellStyle}
       >
         {pick(inactive.ne, inactive.en)}
@@ -41,7 +42,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
 
   return (
     <div
-      className="inline-flex overflow-hidden rounded-md border border-border"
+      className={cn("inline-flex", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleGroup)}
       role="radiogroup"
       aria-label={pick("दिन सीमा", "Day boundary")}
       style={{ height, maxHeight: height }}
@@ -57,7 +58,8 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
             onClick={() => onModeChange?.(o.value)}
             className={cn(
               btnClass,
-              active ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-muted",
+              panchangaPageClasses.dayCycle.toggleLabel,
+              active ? panchangaPageClasses.dayCycle.toggleActive : cn(panchangaPageClasses.dayCycle.toggleIdle, "hover:bg-muted"),
             )}
             style={shellStyle}
           >

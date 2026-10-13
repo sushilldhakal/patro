@@ -1,0 +1,47 @@
+EAAPW5DvQW4cBSFbZBfpZCa3wZAKrCVZBQKch2AB39J8yBstyNNg4R6FC2AcLY3z1BymmbZCkh8MHhnKw51Q1r5b9eTKhZC72FrlDPKLFZAbkthD9nRzJSpQfS5uCfqiDBjA89wGeEYfN8xJ8gxpQ7Chnzv8WWJIhdTm4OMdPIoRhZBkW0yTrzrKtQFN0viHdnzoAgb6SUutxGeptp5aXpN8w0ObuV9ymYVg9DYsbHZAoxq0mprbazRkKjaTtoZAQK3QkXXtXnlCRY2sBWuECOMQo4n2PxwsAJ01u1WfAZDZD
+
+FACEBOOK_APP_ID=1080700674530183
+FACEBOOK_APP_SECRET=59d5d6a7f7321b1a036bc8dd118afd93
+
+
+
+https://graph.facebook.com/v25.0/oauth/access_token?grant_type=fb_exchange_token&client_id=1080700674530183&client_secret=59d5d6a7f7321b1a036bc8dd118afd93&fb_exchange_token=EAAPW5DvQW4cBSFbZBfpZCa3wZAKrCVZBQKch2AB39J8yBstyNNg4R6FC2AcLY3z1BymmbZCkh8MHhnKw51Q1r5b9eTKhZC72FrlDPKLFZAbkthD9nRzJSpQfS5uCfqiDBjA89wGeEYfN8xJ8gxpQ7Chnzv8WWJIhdTm4OMdPIoRhZBkW0yTrzrKtQFN0viHdnzoAgb6SUutxGeptp5aXpN8w0ObuV9ymYVg9DYsbHZAoxq0mprbazRkKjaTtoZAQK3QkXXtXnlCRY2sBWuECOMQo4n2PxwsAJ01u1WfAZDZD
+
+
+{"access_token":"EAAPW5DvQW4cBSJOSxUCn9oueK52roTj0CKrWih8ZCu5QtUBmkRZCIeL1ZBxB6pGUjrrFSObq0NtSLLbxJaQSyaa7umwu8dZAgnDZClM6IgHWzmZBdUnDcxVOLtg0FBskzEfwpxt7hl31EZAChtDjovjkBoZCRmbzic1iD8lrhZBXq1l6Lj9bgzg9ZAZBrh0O2JWUN42pLBndRupkGtA","token_type":"bearer","expires_in":5183685}
+
+
+
+https://graph.facebook.com/v25.0/me/accounts?access_token=EAAPW5DvQW4cBSJOSxUCn9oueK52roTj0CKrWih8ZCu5QtUBmkRZCIeL1ZBxB6pGUjrrFSObq0NtSLLbxJaQSyaa7umwu8dZAgnDZClM6IgHWzmZBdUnDcxVOLtg0FBskzEfwpxt7hl31EZAChtDjovjkBoZCRmbzic1iD8lrhZBXq1l6Lj9bgzg9ZAZBrh0O2JWUN42pLBndRupkGtA
+
+
+{
+   "data": [
+      {
+         "access_token": "EAAPW5DvQW4cBSNPORZBGVXSKSRJ6FGtICjzBr63t1MXF1z46KdTWo6ufnivXTZCIMeqOakzUdZAN8U6m1ZABoQKc49plzEzIHe37sUYjreiL7wBo9wjeAiodxRYz0iySEMZC26S4cmiY2pWIUFW5xZBmF7CGU8ST3H1cz47U7lRNQtaXVKmKr7oSJ58ZBEXfpVhA37Dyc9Jr6iBZCxhEMAfs",
+         "category": "Education",
+         "category_list": [
+            {
+               "id": "2250",
+               "name": "Education"
+            }
+         ],
+         "name": "Vedic Patro",
+         "id": "1155276424342331",
+         "tasks": [
+            "MODERATE",
+            "MESSAGING",
+            "ANALYZE",
+            "ADVERTISE",
+            "CREATE_CONTENT",
+            "MANAGE"
+         ]
+      }
+   ],
+   "paging": {
+      "cursors": {
+         "before": "QVFIU21EbDBLd20zUzYtdS16N2QwWnI4M3M3Qy1iLVRRWEVkSXV0aTVOZAGJrUjFobjNVSjRsREZABdXVvcUVPRFB5bC1WbGo1TXVQdHFsUlFyVGxua3cyXzJR",
+         "after": "QVFIU21EbDBLd20zUzYtdS16N2QwWnI4M3M3Qy1iLVRRWEVkSXV0aTVOZAGJrUjFobjNVSjRsREZABdXVvcUVPRFB5bC1WbGo1TXVQdHFsUlFyVGxua3cyXzJR"
+      }
+   }
+}

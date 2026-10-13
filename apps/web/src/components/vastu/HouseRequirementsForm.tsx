@@ -1,79 +1,20 @@
 import { useTranslation } from "react-i18next";
-import { getLocalStorageItem } from "@/lib/browser";
 import { useLocale } from "@/i18n/locale";
 import {
-  DEFAULT_HOUSE_PLAN,
   ESSENTIAL_SPACES,
   FLOOR_SPACES,
   OPTIONAL_SPACES,
   clampStoreys,
-  isExtraSpace,
-  parseFloorPref,
   type FloorPref,
   type HousePlan,
   type SpaceKind,
   type VastuMode,
 } from "@vedic-patro/domain/vastu-plan";
 import { cn } from "@vedic-patro/domain/utils";
+import { normalizeExtras } from "./house-plan-storage";
+import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
-const PLAN_KEY = "vp.vastu.house";
-
-const selectClass =
-  "h-9 w-full min-w-0 rounded-lg border border-border bg-card px-2 text-sm text-foreground cursor-pointer";
-
-/**
- * `kitchen_dining` is the *combined* room, so it can never coexist with a
- * separate `kitchen` or `dining` — asking for both makes the engine dutifully
- * build a kitchen, a dining room AND a kitchen+dining room (three cooking/
- * eating spaces nobody asked for). The dedicated checkbox always swapped
- * correctly, but the Essential-spaces "Kitchen"/"Dining room" buttons went
- * through `toggleExtra`, which just appended — so turning either back on
- * while combined was ticked produced exactly that. Enforced here, at the one
- * place every extras change passes through, rather than per toggle.
- *
- * The separate rooms win: the only way to reach the invalid state is by
- * turning `kitchen`/`dining` on, so honouring that most recent action is
- * what the person actually asked for (and matches DEFAULT_HOUSE_PLAN, where
- * combining is the opt-in, not the default).
- */
-function normalizeExtras(extras: SpaceKind[]): SpaceKind[] {
-  if (!extras.includes("kitchen_dining")) return extras;
-  if (!extras.includes("kitchen") && !extras.includes("dining")) return extras;
-  return extras.filter((x) => x !== "kitchen_dining");
-}
-
-function readPlan(): HousePlan {
-  const raw = getLocalStorageItem(PLAN_KEY);
-  if (!raw) return DEFAULT_HOUSE_PLAN;
-  try {
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return DEFAULT_HOUSE_PLAN;
-    const p = parsed as Partial<HousePlan>;
-    const extras = Array.isArray(p.extras)
-      ? normalizeExtras(p.extras.filter((id): id is SpaceKind => typeof id === "string" && isExtraSpace(id)))
-      : DEFAULT_HOUSE_PLAN.extras;
-    const floors: HousePlan["floors"] = {};
-    if (p.floors && typeof p.floors === "object") {
-      for (const key of FLOOR_SPACES) {
-        const parsed = parseFloorPref(p.floors[key]);
-        if (parsed) floors[key] = parsed;
-      }
-    }
-    return {
-      bedrooms: Number(p.bedrooms) || DEFAULT_HOUSE_PLAN.bedrooms,
-      toilets: Number(p.toilets) || DEFAULT_HOUSE_PLAN.toilets,
-      bathrooms: Number(p.bathrooms) || DEFAULT_HOUSE_PLAN.bathrooms,
-      combined: Number.isFinite(Number(p.combined)) ? Number(p.combined) : DEFAULT_HOUSE_PLAN.combined,
-      masterBedroom: Number(p.masterBedroom) || DEFAULT_HOUSE_PLAN.masterBedroom,
-      extras,
-      mode: p.mode === "strict" ? "strict" : "flexible",
-      storeys: clampStoreys(Number(p.storeys) || DEFAULT_HOUSE_PLAN.storeys),
-      floors,
-    };
-  } catch {
-    return DEFAULT_HOUSE_PLAN;
-  }
-}
+const selectClass = cn(vastuClasses.selectControl, "w-full cursor-pointer");
 
 function Field({
   id,
@@ -90,7 +31,7 @@ function Field({
 }) {
   return (
     <div className="min-w-0">
-      <label htmlFor={id} className="mb-1 block text-xs font-semibold text-muted-foreground">
+      <label htmlFor={id} className={cn(vastuClasses.fieldLabel, "block")}>
         {label}
       </label>
       <select
@@ -159,8 +100,8 @@ export function HouseRequirementsForm({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-foreground">{t("vastu.plan.requirements_heading")}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{t("vastu.plan.requirements_blurb")}</p>
+        <h3 className={vastuClasses.requirementsHeading}>{t("vastu.plan.requirements_heading")}</h3>
+        <p className={vastuClasses.requirementsBlurb}>{t("vastu.plan.requirements_blurb")}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -225,8 +166,8 @@ export function HouseRequirementsForm({
       </div>
 
       <div>
-        <p className="mb-2 text-xs font-semibold text-muted-foreground">{t("vastu.plan.essential")}</p>
-        <div className="flex flex-wrap gap-1.5">
+        <p className={vastuClasses.groupLabel}>{t("vastu.plan.essential")}</p>
+        <div className={vastuClasses.chipRow}>
           {ESSENTIAL_SPACES.map((id) => {
             const on = plan.extras.includes(id);
             return (
@@ -236,10 +177,11 @@ export function HouseRequirementsForm({
                 aria-pressed={on}
                 onClick={() => toggleExtra(id)}
                 className={cn(
-                  "rounded-md border px-2 py-1 text-xs font-semibold",
+                  vastuClasses.spaceChip,
+                  vastuClasses.spaceChipText,
                   on
-                    ? "border-transparent bg-secondary text-secondary-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground",
+                    ? cn(vastuClasses.spaceChipOn, vastuClasses.spaceChipTextOn)
+                    : cn(vastuClasses.spaceChipOff, vastuClasses.spaceChipTextOff, "hover:text-foreground"),
                 )}
               >
                 {t(`vastu.plan.space.${id}`)}
@@ -248,7 +190,7 @@ export function HouseRequirementsForm({
           })}
         </div>
 
-        <label className="mt-3 flex items-start gap-2 rounded-lg border border-border p-2.5 text-xs">
+        <label className={cn(vastuClasses.checkboxRow, "text-xs")}>
           <input
             type="checkbox"
             className="mt-0.5"
@@ -256,13 +198,13 @@ export function HouseRequirementsForm({
             onChange={toggleKitchenDining}
           />
           <span>
-            <span className="block font-semibold text-foreground">{t("vastu.plan.combine_kitchen_dining")}</span>
-            <span className="mt-0.5 block text-muted-foreground">{t("vastu.plan.combine_kitchen_dining_note")}</span>
+            <span className={cn(vastuClasses.checkboxTitle, "block")}>{t("vastu.plan.combine_kitchen_dining")}</span>
+            <span className={cn(vastuClasses.checkboxNote, "block")}>{t("vastu.plan.combine_kitchen_dining_note")}</span>
           </span>
         </label>
 
-        <p className="mb-2 mt-3 text-xs font-semibold text-muted-foreground">{t("vastu.plan.optional")}</p>
-        <div className="flex flex-wrap gap-1.5">
+        <p className={cn(vastuClasses.groupLabel, "mt-3")}>{t("vastu.plan.optional")}</p>
+        <div className={vastuClasses.chipRow}>
           {OPTIONAL_SPACES.map((id) => {
             const on = plan.extras.includes(id);
             return (
@@ -272,10 +214,11 @@ export function HouseRequirementsForm({
                 aria-pressed={on}
                 onClick={() => toggleExtra(id)}
                 className={cn(
-                  "rounded-md border px-2 py-1 text-xs font-semibold",
+                  vastuClasses.spaceChip,
+                  vastuClasses.spaceChipText,
                   on
-                    ? "border-transparent bg-secondary text-secondary-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground",
+                    ? cn(vastuClasses.spaceChipOn, vastuClasses.spaceChipTextOn)
+                    : cn(vastuClasses.spaceChipOff, vastuClasses.spaceChipTextOff, "hover:text-foreground"),
                 )}
               >
                 {t(`vastu.plan.space.${id}`)}
@@ -309,7 +252,5 @@ export function HouseRequirementsForm({
     </div>
   );
 }
-
-export { readPlan };
 
 export default HouseRequirementsForm;

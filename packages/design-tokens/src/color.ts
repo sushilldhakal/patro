@@ -275,6 +275,26 @@ export function tintRgba(name: TintName, theme: ThemeName = "light"): string {
   return withAlpha(tintBaseColor(t.base, theme), t.percent / 100);
 }
 
+/** CSS variables the tint mixes read. Same names on the website and in the app. */
+const TINT_CSS_VAR: Record<TintBase, string> = {
+  saffron: "var(--brand-saffron)",
+  vermilion: "var(--brand-vermilion)",
+  gold: "var(--brand-gold)",
+  green: "var(--brand-green)",
+  danger: "var(--color-danger)",
+  warning: "var(--color-warning)",
+  foreground: "var(--foreground)",
+};
+
+/**
+ * The website's `--color-<tint>` value. Mobile Tailwind and any inline fill
+ * call this so a percent change here updates both apps.
+ */
+export function tintColorMix(name: TintName): string {
+  const t = tints[name];
+  return `color-mix(in srgb, ${TINT_CSS_VAR[t.base]} ${t.percent}%, var(--card))`;
+}
+
 // ─── Panchanga wheel ──────────────────────────────────────────────────────────
 
 /**
@@ -319,6 +339,11 @@ export const monthHero: Record<number, string> = {
 // ─── The app's role set ───────────────────────────────────────────────────────
 
 /** The colour channels the app's NativeWind classes (`bg-card`, `text-accent`, …) read. */
+/**
+ * The roles the app reads. They are the website's roles, unchanged: `accent`
+ * is the gold highlight and `danger` the status red, in both apps. Positive
+ * states (✓, शुभ) use `success`, as on the website.
+ */
 export interface MobileRoles {
   background: string;
   foreground: string;
@@ -331,18 +356,15 @@ export interface MobileRoles {
   secondaryForeground: string;
   destructive: string;
   border: string;
-  /**
-   * The app's `accent` is the positive tone (✓, शुभ, "begins"): green on
-   * parchment, gold on midnight where green lacks contrast. The website's
-   * `accent` is the gold highlight; the app has no use for that one.
-   */
   accent: string;
   surfaceInset: string;
   surfaceMuted: string;
   tabActive: string;
   glyph: string;
-  /** The app draws errors in the theme's destructive colour. */
+  success: string;
+  warning: string;
   danger: string;
+  info: string;
 }
 
 export function mobileRoles(theme: ThemeName): MobileRoles {
@@ -359,11 +381,14 @@ export function mobileRoles(theme: ThemeName): MobileRoles {
     secondaryForeground: r.secondaryForeground,
     destructive: r.destructive,
     border: r.border,
-    accent: theme === "light" ? r.success : r.accent,
+    accent: r.accent,
     surfaceInset: r.surfaceInset,
     surfaceMuted: r.surfaceMuted,
     tabActive: r.tabActive,
     glyph: r.glyph,
-    danger: r.destructive,
+    success: r.success,
+    warning: r.warning,
+    danger: r.danger,
+    info: r.info,
   };
 }

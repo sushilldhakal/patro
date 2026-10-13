@@ -92,6 +92,8 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
   // cross-correlating its own clip against the full recording — see
   // data/documents_source/README.md) and drive the same highlight/auto-scroll
   // the per-verse player uses.
+  // `player` is a fresh object every render (see below); its setter is stable.
+  const { setDisplayOverride } = player;
   useEffect(() => {
     if (mode !== "full" || !fullAudio.playing) return;
     let active: { id: number; progress: number } | null = null;
@@ -104,13 +106,13 @@ export function useDocumentPlayback(shlokas: Shloka[], fullAudioUrl: string | nu
         progress: dur > 0 ? Math.min(1, Math.max(0, (fullAudio.currentTime - s.full_audio_start) / dur)) : 0,
       };
     }
-    if (active) player.setDisplayOverride(active);
+    if (active) setDisplayOverride(active);
     // `player.setDisplayOverride`, not `player` itself: useShlokaPlayer
     // returns a fresh object every render, so depending on the whole object
     // re-ran this effect on every render — including the one this effect's
     // own setState just caused — an infinite render loop. setDisplayOverride
     // is a plain useState setter, stable for the component's lifetime.
-  }, [mode, fullAudio.playing, fullAudio.currentTime, shlokas, player.setDisplayOverride]);
+  }, [mode, fullAudio.playing, fullAudio.currentTime, shlokas, setDisplayOverride]);
 
   return {
     player,

@@ -35,8 +35,8 @@ export default function TabsLayout() {
           height: tabBarHeight,
           backgroundColor: "transparent",
           borderTopWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
+          elevation: 0, // design-ok: hide the stock tab bar; the floating bar draws its own shadow
+          shadowOpacity: 0, // design-ok: hide the stock tab bar; the floating bar draws its own shadow
         },
       }}
     />

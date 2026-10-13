@@ -29,7 +29,7 @@ export function TmNewMoon({ x, y, r = 9 }: { x: number; y: number; r?: number })
         cy={y}
         r={r}
         fill="none"
-        stroke="#5b6f76"
+        stroke={illustration.teal41}
         strokeWidth={1}
         strokeDasharray="2 2"
       />
@@ -45,3 +45,5 @@ export function TmLegendDot({ kind }: { kind: "sun" | "moon" }) {
   );
 }
 import { tmNewmoon, tmSundot, tmSunray } from "@/lib/diagram-classes";
+
+import { illustration } from "@vedic-patro/design-tokens";

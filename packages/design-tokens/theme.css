@@ -1,0 +1,26 @@
+/* Generated from packages/design-tokens. Imported by apps/web and apps/mobile. */
+:root {
+  --vp-text-xs: 0.675rem; /* 10.8px */
+  --vp-text-xs-line: 1.2593;
+  --vp-text-sm: 0.875rem; /* 14px */
+  --vp-text-sm-line: 1.4286;
+  --vp-text-base: 1rem; /* 16px */
+  --vp-text-base-line: 1.5;
+  --vp-text-lg: 1.125rem; /* 18px */
+  --vp-text-lg-line: 1.5556;
+  --vp-text-xl: 1.25rem; /* 20px */
+  --vp-text-xl-line: 1.4;
+  --vp-text-2xl: 1.5rem; /* 24px */
+  --vp-text-2xl-line: 1.3333;
+  --vp-text-3xl: 1.875rem; /* 30px */
+  --vp-text-3xl-line: 1.2;
+  --vp-text-4xl: 2.25rem; /* 36px */
+  --vp-text-4xl-line: 1.1111;
+  --vp-text-5xl: 3rem; /* 48px */
+  --vp-text-5xl-line: 1;
+  --vp-space: 4px;
+  --vp-page-px: 16px; /* px-4 */
+  --vp-page-px-wide: 24px; /* sm:px-6 */
+  --vp-page-py: 32px; /* py-8 */
+  --vp-home-card-px: 10px; /* max-sm:mx-2.5 / px-2.5 */
+}

@@ -10,8 +10,9 @@ import { WINDOW_OPTIONS } from "@/lib/notifications/types";
 import { getMuhurtaRows } from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 
-const GOOD = "#2e8b57";
-const BAD = "#c0392b";
+import { illustration } from "@vedic-patro/design-tokens";
+const GOOD = illustration.green36;
+const BAD = illustration.red46;
 
 function TimesCard({
   title,

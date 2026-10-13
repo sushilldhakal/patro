@@ -29,6 +29,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useTheme } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 
+import { illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
 export type DiagramReadout = { k: string; v: string; tone?: "accent" | "warn" };
 export type DiagramLegendItem = { color: string; label: string };
 export type DiagramPreset = { label: string; value: number };
@@ -204,7 +205,7 @@ export function LearnDiagram3D({
                   transform: [{ translateX: -40 }, { translateY: -7 }],
                   width: 80,
                   textAlign: "center",
-                  textShadowColor: "rgba(0,0,0,0.85)",
+                  textShadowColor: withAlpha(neutral.black, 0.85),
                   textShadowRadius: 3,
                 },
               ]}
@@ -228,7 +229,7 @@ export function LearnDiagram3D({
           >
             <Text
               className="text-caption font-bold"
-              style={[nepaliTextStyle(11), { color: DIAGRAM_LABEL_COLOR.rashi, fontSize: 15 }]}
+              style={[nepaliTextStyle(11), { color: DIAGRAM_LABEL_COLOR.rashi }]}
             >
               {title}
             </Text>
@@ -244,13 +245,14 @@ export function LearnDiagram3D({
             {legend.map((item) => (
               <View key={item.label} className="flex-row items-center gap-1 rounded-full bg-black/45 px-2 py-0.5">
                 <View
-                  style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: item.color }}
+                  className="rounded-full"
+                  style={{ width: 7, height: 7, backgroundColor: item.color }}
                 />
                 <Text
                   className="text-caption"
                   style={[
                     nepaliTextStyle(9),
-                    { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 15, opacity: 0.68 },
+                    { color: DIAGRAM_LABEL_COLOR.dim, opacity: 0.68 },
                   ]}
                 >
                   {item.label}
@@ -290,7 +292,7 @@ export function LearnDiagram3D({
                 className="text-caption"
                 style={[
                   nepaliTextStyle(10),
-                  { color: DIAGRAM_LABEL_COLOR.dim, fontSize: 15, opacity: 0.68 },
+                  { color: DIAGRAM_LABEL_COLOR.dim, opacity: 0.68 },
                 ]}
               >
                 {pick(
@@ -314,7 +316,7 @@ export function LearnDiagram3D({
             ? [
                 nativeWindThemeVars("dark"),
                 {
-                  backgroundColor: "rgba(6, 11, 20, 0.72)",
+                  backgroundColor: withAlpha(illustration.sky5, 0.72),
                   paddingBottom: Math.max(insets.bottom, 10),
                 },
               ]
@@ -334,7 +336,7 @@ export function LearnDiagram3D({
               >
                 <Text
                   className="text-caption uppercase tracking-wide text-muted-foreground"
-                  style={[nepaliTextStyle(9), { fontSize: 15 }]}
+                  style={nepaliTextStyle(9)}
                 >
                   {r.k}
                 </Text>
@@ -383,9 +385,9 @@ export function LearnDiagram3D({
                 maximumValue={slider.max}
                 step={slider.step ?? 0}
                 onValueChange={slider.onChange}
-                minimumTrackTintColor="#f4c542"
-                maximumTrackTintColor="rgba(148, 163, 184, 0.45)"
-                thumbTintColor="#f4c542"
+                minimumTrackTintColor={illustration.amber61}
+                maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
+                thumbTintColor={illustration.amber61}
               />
             </View>
           </View>
@@ -415,7 +417,7 @@ export function LearnDiagram3D({
                       "text-caption font-semibold",
                       active ? "text-secondary" : "text-muted-foreground",
                     )}
-                    style={[nepaliTextStyle(10), { fontSize: 15 }]}
+                    style={nepaliTextStyle(10)}
                   >
                     {p.label}
                   </Text>
@@ -486,7 +488,7 @@ function RoundButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       className="h-8 w-8 items-center justify-center rounded-full"
-      style={{ backgroundColor: "rgba(6, 11, 20, 0.55)", borderWidth: 1, borderColor: "rgba(148,163,184,0.35)" }}
+      style={{ backgroundColor: withAlpha(illustration.sky5, 0.55), borderWidth: 1, borderColor: withAlpha(illustration.sky65, 0.35) }}
     >
       <Ionicons name={icon} size={15} color={DIAGRAM_LABEL_COLOR.body} />
     </Pressable>

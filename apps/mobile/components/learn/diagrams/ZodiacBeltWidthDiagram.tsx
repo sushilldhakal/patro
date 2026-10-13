@@ -12,11 +12,12 @@ import { EclipticPlane, OrbitPath, ellipsePoints } from "@/components/learn/diag
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
+import { illustration } from "@vedic-patro/design-tokens";
 const R = 0.55;
 const BODIES = [
   { lat: 0, ne: "सूर्य", en: "Sun", color: DIAGRAM_COLOR.sun },
-  { lat: 5.1, ne: "चन्द्र", en: "Moon", color: "#cbd5e1" },
-  { lat: 7.0, ne: "बुध", en: "Mercury", color: "#10b981" },
+  { lat: 5.1, ne: "चन्द्र", en: "Moon", color: illustration.sky84 },
+  { lat: 7.0, ne: "बुध", en: "Mercury", color: illustration.teal39 },
 ];
 type SceneProps = { onLabels?: (labels: DiagramLabel[]) => void };
 
