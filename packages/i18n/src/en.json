@@ -4181,9 +4181,6 @@
       "theme": "Theme",
       "rest_and_last": "{{rest}} and {{last}}"
     },
-    "converter": {
-      "date_converter": "Date Converter"
-    },
     "dainik_kranti": {
       "dasha_bracket_the_years_months_days": "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",
       "day": "Day",
@@ -4754,8 +4751,6 @@
       "full_panchanga_day_chart": "Full panchanga day chart",
       "full_panchanga_timeline_midnight_to_midnight": "Full panchanga timeline · midnight to midnight",
       "full_panchanga_timeline_sunrise_to_sunrise": "Full panchanga timeline · sunrise to sunrise",
-      "graha_asta": "Graha Asta",
-      "graha_vakri": "Graha Vakri",
       "moon_nakshatra_at_sunrise_moonlabel": "Moon nakshatra at sunrise: {{moonLabel}}",
       "moon_sign_at_sunrise_moonlabel": "Moon sign at sunrise: {{moonLabel}}",
       "muhurta_now": "Muhurta now",
@@ -4770,12 +4765,10 @@
       "rel_d": "{{rel}}d",
       "reload": "Reload",
       "reload_reset_zoom_sunrise": "Reload · reset zoom · sunrise",
-      "retrograde_and_direct_stations_for_mercury": "Retrograde and direct stations for Mercury, Venus, Mars, Jupiter and Saturn.",
       "status_at_instanttime": "Status at {{instantTime}}",
       "this_time_is_before_today_s": " This time is before today's sunrise, so the previous Vedic day's panchanga is shown.",
       "tithi_nakshatra_yoga_and_karana_from": "Tithi, nakshatra, yoga and karana from the actual planetary positions at {{time}}. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
       "value_padas": "{{value}} padas",
-      "windows_where_each_graha_is_combust": "Windows where each graha is combust near the Sun and when it rises again.",
       "drag_to_rotate_scroll_to_zoom": "Drag to rotate · scroll to zoom",
       "pick_date_and_time": "Pick date and time",
       "this_time_is_before_sunrise_on": " This time is before sunrise on {{viewedDateLabel}}, so {{viewedDateLabel2}}'s Vedic day almanac is shown."

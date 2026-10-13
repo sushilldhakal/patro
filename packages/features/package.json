@@ -17,7 +17,7 @@
     "@vedic-patro/i18n": "*"
   },
   "peerDependencies": {
-    "@tanstack/react-query": "^5",
+    "@tanstack/react-query": "^5.101.0",
     "react": "*"
   },
   "devDependencies": {

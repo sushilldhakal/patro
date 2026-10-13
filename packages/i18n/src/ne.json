@@ -4181,9 +4181,6 @@
       "theme": "थिम",
       "rest_and_last": "{{rest}} र {{last}}"
     },
-    "converter": {
-      "date_converter": "मिति रूपान्तर"
-    },
     "dainik_kranti": {
       "dasha_bracket_the_years_months_days": "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन्।",
       "day": "बा.",
@@ -4754,8 +4751,6 @@
       "full_panchanga_day_chart": "पूर्ण दिन पञ्चाङ्ग चित्र",
       "full_panchanga_timeline_midnight_to_midnight": "पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात",
       "full_panchanga_timeline_sunrise_to_sunrise": "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
-      "graha_asta": "ग्रह अस्त",
-      "graha_vakri": "ग्रह वक्री",
       "moon_nakshatra_at_sunrise_moonlabel": "सूर्योदयमा चन्द्र नक्षत्र: {{moonLabel}}",
       "moon_sign_at_sunrise_moonlabel": "सूर्योदयमा चन्द्र राशि: {{moonLabel}}",
       "muhurta_now": "क्षणिक मुहूर्त",
@@ -4770,12 +4765,10 @@
       "rel_d": "{{rel}} दिन",
       "reload": "रिलोड",
       "reload_reset_zoom_sunrise": "रिलोड · जुम रिसेट · सूर्योदय",
-      "retrograde_and_direct_stations_for_mercury": "बुध, शुक्र, मङ्गल, बृहस्पति र शनिका वक्री–मार्गी क्षणहरू।",
       "status_at_instanttime": "{{instantTime}} बजेको अवस्था",
       "this_time_is_before_today_s": " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
       "tithi_nakshatra_yoga_and_karana_from": "{{time}} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
       "value_padas": "{{value}} पद",
-      "windows_where_each_graha_is_combust": "ग्रहहरू सूर्यको नजिक परेर अस्त हुने र पुनः उदय हुने अवधिहरू।",
       "drag_to_rotate_scroll_to_zoom": "घुमाउन तान्नुहोस् · स्क्रोल गरेर जुम गर्नुहोस्",
       "pick_date_and_time": "मिति र समय छान्नुहोस्",
       "this_time_is_before_sunrise_on": " यो समय {{viewedDateLabel}} को सूर्योदय अघि भएकाले {{viewedDateLabel2}} को वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।"

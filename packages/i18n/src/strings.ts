@@ -6758,8 +6758,6 @@ export const strings = {
   "ui.common.start": { ne: "सुरु", en: "Start" },
   "ui.common.theme": { ne: "थिम", en: "Theme" },
 
-  /* ── ui.converter ───────────────────────────────────────────────────────── */
-  "ui.converter.date_converter": { ne: "मिति रूपान्तर", en: "Date Converter" },
 
   /* ── ui.dainik_kranti ───────────────────────────────────────────────────── */
   "ui.dainik_kranti.dasha_bracket_the_years_months_days": {
@@ -7638,8 +7636,6 @@ export const strings = {
     ne: "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
     en: "Full panchanga timeline · sunrise to sunrise",
   },
-  "ui.panchanga.graha_asta": { ne: "ग्रह अस्त", en: "Graha Asta" },
-  "ui.panchanga.graha_vakri": { ne: "ग्रह वक्री", en: "Graha Vakri" },
   "ui.panchanga.moon_nakshatra_at_sunrise_moonlabel": {
     ne: "सूर्योदयमा चन्द्र नक्षत्र: {{moonLabel}}",
     en: "Moon nakshatra at sunrise: {{moonLabel}}",
@@ -7663,10 +7659,6 @@ export const strings = {
   "ui.panchanga.rel_d": { ne: "{{rel}} दिन", en: "{{rel}}d" },
   "ui.panchanga.reload": { ne: "रिलोड", en: "Reload" },
   "ui.panchanga.reload_reset_zoom_sunrise": { ne: "रिलोड · जुम रिसेट · सूर्योदय", en: "Reload · reset zoom · sunrise" },
-  "ui.panchanga.retrograde_and_direct_stations_for_mercury": {
-    ne: "बुध, शुक्र, मङ्गल, बृहस्पति र शनिका वक्री–मार्गी क्षणहरू।",
-    en: "Retrograde and direct stations for Mercury, Venus, Mars, Jupiter and Saturn.",
-  },
   "ui.panchanga.status_at_instanttime": { ne: "{{instantTime}} बजेको अवस्था", en: "Status at {{instantTime}}" },
   "ui.panchanga.this_time_is_before_today_s": {
     ne: " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
@@ -7677,10 +7669,6 @@ export const strings = {
     en: "Tithi, nakshatra, yoga and karana from the actual planetary positions at {{time}}. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
   },
   "ui.panchanga.value_padas": { ne: "{{value}} पद", en: "{{value}} padas" },
-  "ui.panchanga.windows_where_each_graha_is_combust": {
-    ne: "ग्रहहरू सूर्यको नजिक परेर अस्त हुने र पुनः उदय हुने अवधिहरू।",
-    en: "Windows where each graha is combust near the Sun and when it rises again.",
-  },
 
   /* ── ui.patro_date ──────────────────────────────────────────────────────── */
   "ui.patro_date.choose_year": { ne: "वर्ष छान्नुहोस्", en: "Choose year" },
