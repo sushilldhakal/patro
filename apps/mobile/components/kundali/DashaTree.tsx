@@ -556,7 +556,7 @@ export function DashaTree({
   maxLevel = MAX_LEVEL,
   cycleYears,
 }: DashaTreeProps) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const [now] = useState(() => Date.now());
   const mahadashas = useMemo(() => tree.map(toSpan), [tree]);
@@ -594,7 +594,7 @@ export function DashaTree({
             {yoginiCycle ? (
               <View className={kundaliDetailClasses.dashaTree.cycleChip}>
                 <Text className={kundaliDetailClasses.dashaTree.cycleChipText} style={nepaliTextStyle(12)}>
-                  {pick(`चक्र: ${digits(yoginiCycle)}`, `Cycle: ${digits(yoginiCycle)}`)}
+                  {t("ui.kundali.cycle_yoginicycle", { yoginiCycle: digits(yoginiCycle) })}
                 </Text>
               </View>
             ) : null}

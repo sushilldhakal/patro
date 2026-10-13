@@ -74,7 +74,7 @@ function DrishtiPanel({
   reference: BhavaReferencePayload;
   onClose: () => void;
 }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const grahaKey = selected.key as GrahaKey;
   const info = reference.grahaDrishti[grahaKey];
   if (!info) return null;
@@ -95,12 +95,12 @@ function DrishtiPanel({
     <div className="mt-3 w-full max-w-[340px] mx-auto space-y-2 text-left">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-semibold text-foreground">
-          {pick(`${name}को दृष्टि: ${houseList} भावमा`, `${name}'s aspect: houses ${houseList}`)}
+          {t("ui.panchanga.name_s_aspect_houses_houselist", { name, houseList })}
         </p>
         <button
           type="button"
           onClick={onClose}
-          aria-label={pick("बन्द गर्नुहोस्", "Close")}
+          aria-label={t("ui.common.close")}
           className="text-sm shrink-0 text-muted-foreground hover:text-foreground"
         >
           ✕
@@ -108,7 +108,7 @@ function DrishtiPanel({
       </div>
       <div className="rounded-lg border border-border bg-card/40 p-3">
         <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="text-sm font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</span>
+          <span className="text-sm font-semibold text-foreground">{t("ui.panchanga.aspect_effect")}</span>
           <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-sm font-semibold leading-none ${badgeCls}`}>
             {badge}
           </span>
@@ -120,7 +120,7 @@ function DrishtiPanel({
 }
 
 export function D1Chart({ houses }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const byHouse = useMemo(() => new Map(houses.map((h) => [h.house, h])), [houses]);
   const showLegend = useMemo(() => bhavaHousesHaveStatusMarks(houses), [houses]);
   const [selected, setSelected] = useState<Selected | null>(null);
@@ -148,7 +148,7 @@ export function D1Chart({ houses }: Props) {
         viewBox="0 0 300 300"
         className="mx-auto h-auto w-full max-w-[340px]"
         role="img"
-        aria-label={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}
+        aria-label={t("ui.panchanga.north_indian_d1_chart")}
       >
         <defs>
           <marker id="d1DrishtiArrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto" markerUnits="strokeWidth">

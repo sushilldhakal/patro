@@ -19,7 +19,7 @@ type Props = {
 export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
 
   if (!day) return null;
 
@@ -53,10 +53,10 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
           className="text-body font-bold text-foreground"
           style={lang === "en" ? undefined : nepaliTextStyle(16)}
         >
-          {pick("चाडपर्व", "Festivals")}
+          {t("panchanga.tabs.festivals")}
         </Text>
         <Text className="text-body mt-1 text-muted-foreground" style={lang === "en" ? undefined : nepaliTextStyle(14)}>
-          {weekday} · {pick("वि.सं.", "BS")} {digits(day.day)} · {adDate}
+          {weekday} · {t("patro_date.era_bs")} {digits(day.day)} · {adDate}
         </Text>
       </View>
       <ScrollView contentContainerClassName="gap-2 p-4">

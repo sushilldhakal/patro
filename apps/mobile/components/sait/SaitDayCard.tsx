@@ -47,18 +47,18 @@ export function SaitDayCard({
   );
 
   const rows: { label: string; value: string }[] = [
-    { label: pick("तिथि", "Tithi"), value: `${paksha} ${pick(d.tithi_ne, d.tithi_en)}`.trim() },
-    { label: pick("नक्षत्र", "Nakshatra"), value: pick(d.nakshatra_ne, d.nakshatra_en) },
-    { label: pick("योग", "Yoga"), value: pick(d.yoga_ne ?? "—", d.yoga_en ?? "—") },
-    { label: pick("करण", "Karana"), value: pick(d.karana_ne ?? "—", d.karana_en ?? "—") },
+    { label: t("tithi"), value: `${paksha} ${pick(d.tithi_ne, d.tithi_en)}`.trim() },
+    { label: t("nakshatra"), value: pick(d.nakshatra_ne, d.nakshatra_en) },
+    { label: t("kundali.yoga"), value: pick(d.yoga_ne ?? "—", d.yoga_en ?? "—") },
+    { label: t("kundali.karana"), value: pick(d.karana_ne ?? "—", d.karana_en ?? "—") },
     {
-      label: pick("लग्न", "Lagna"),
+      label: t("kundali.report.meta_lagna"),
       value:
         formatRashiDisplay(d.lagna_ne, d.lagna_en, lang) ??
         pick(d.lagna_ne ?? "—", d.lagna_en ?? "—"),
     },
     {
-      label: pick("चान्द्र मास", "Lunar month"),
+      label: t("learn.diagrams.hierarchy_step_lunar_month"),
       value: pick(d.lunar_month_ne ?? "—", d.lunar_month_en ?? "—"),
     },
   ];
@@ -128,7 +128,7 @@ export function SaitDayCard({
         <View className={saitClasses.block}>
           <View className={saitClasses.blockRow}>
             <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-              {pick("ग्रह शुद्धि", "Graha Śuddhi")}
+              {t("sait.graha_uddhi")}
             </Text>
             {shuddhi.planets.map((p) => {
               const name = GRAHA_NAME[(SHUDDHI_PLANET_TO_GRAHA[p.planet] ?? p.planet) as GrahaKey];
@@ -157,7 +157,7 @@ export function SaitDayCard({
             {t(`sait.x.shuddhi_${shuddhi.tone}`)}
             <Text className={saitClasses.summaryNote}>
               {" "}
-              {pick("(जन्म राशिबाट भाव)", "(house from janma rāśi)")}
+              {t("ui.sait.house_from_janma_r_i")}
             </Text>
           </Text>
         </View>
@@ -169,7 +169,7 @@ export function SaitDayCard({
             <View className={saitClasses.blockIconLabel}>
               <Ionicons name="compass-outline" size={13} color={colors.mutedForeground} />
               <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-                {pick("कुम्भ चक्र", "Kumbha Chakra")}
+                {t("sections.kumbha_chakra")}
               </Text>
             </View>
             <View className={cn(saitClasses.chip, saitClasses.toneChip[kumbha.tone])}>
@@ -188,7 +188,7 @@ export function SaitDayCard({
             {pick(kumbha.effect_ne, kumbha.effect_en)}
             <Text className={saitClasses.summaryNote}>
               {" "}
-              {pick("(सूर्यबाट गनिएको)", "(counted from the Sun)")}
+              {t("ui.sait.counted_from_the_sun")}
             </Text>
           </Text>
         </View>
@@ -200,7 +200,7 @@ export function SaitDayCard({
             <View className={saitClasses.blockIconLabel}>
               <Ionicons name="happy-outline" size={13} color={colors.mutedForeground} />
               <Text className={saitClasses.blockLabel} style={nepaliTextStyle()}>
-                {pick("अन्नप्राशन उमेर महिना", "Annaprāśana age month")}
+                {t("ui.sait.annapr_ana_age_month")}
               </Text>
             </View>
             <View className={cn(saitClasses.chip, saitClasses.toneChip[annaMonth.tone])}>
@@ -219,8 +219,8 @@ export function SaitDayCard({
             className={cn(saitClasses.summary, saitClasses.toneText[annaMonth.tone])}
           >
             {annaMonth.matches
-              ? pick("बच्चाको सही उमेर महिना", "The child's right age month")
-              : pick("यो बच्चाको उमेर महिना होइन", "Not this child's age month")}
+              ? t("ui.sait.the_child_s_right_age_month")
+              : t("ui.sait.not_this_child_s_age_month")}
           </Text>
         </View>
       ) : null}

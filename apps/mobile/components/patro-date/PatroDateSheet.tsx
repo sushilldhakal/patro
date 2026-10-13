@@ -61,7 +61,7 @@ export function PatroDateSheet({
 }: Props) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   const scrollRef = useRef<ScrollView>(null);
   const [tab, setTab] = useState<PatroSheetTab>("date");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -110,14 +110,14 @@ export function PatroDateSheet({
 
   const dateTitle =
     mode === "year"
-      ? pick("वर्ष", "Year")
+      ? t("common.year")
       : mode === "year-month"
-        ? pick("महिना / वर्ष", "Month / year")
+        ? t("ui.patro_date.month_year")
         : showTime
-          ? pick("मिति र समय", "Date & time")
-          : pick("मिति", "Date");
+          ? t("patro_date.date_time")
+          : t("graha_pages.eclipse.date");
 
-  const headerTitle = tab === "date" ? dateTitle : pick("स्थान छान्नुहोस्", "Choose location");
+  const headerTitle = tab === "date" ? dateTitle : t("location.choose_location");
 
   const patchDraft = (patch: Partial<PatroDateSheetDraft>) => {
     setDraft((d) => {
@@ -239,7 +239,7 @@ export function PatroDateSheet({
                   )}
                   style={nepaliTextStyle(14)}
                 >
-                  {pick("स्थान", "Location")}
+                  {t("location.label")}
                 </Text>
               </Pressable>
             </View>
@@ -280,16 +280,13 @@ export function PatroDateSheet({
               <View
                 className="border-t border-border bg-muted/80 px-4 py-3"
                 accessibilityLiveRegion="polite"
-                accessibilityLabel={pick(
-                  `टाइप गरिएको वर्ष ${previewDisplay} ${previewEraLabel}`,
-                  `Typed year ${previewDisplay} ${previewEraLabel}`,
-                )}
+                accessibilityLabel={t("ui.patro_date.typed_year_previewdisplay_previeweralabel", { previewDisplay, previewEraLabel })}
               >
                 <Text
                   className="text-caption text-center font-medium text-muted-foreground"
                   style={nepaliTextStyle(12)}
                 >
-                  {pick("वर्ष", "Year")}
+                  {t("common.year")}
                 </Text>
                 <Text
                   className="text-display text-center font-num font-bold text-foreground"
@@ -306,7 +303,7 @@ export function PatroDateSheet({
                 className={cn(patroDateClasses.done, "active:opacity-90")}
               >
                 <Text className={patroDateClasses.doneLabel} style={nepaliTextStyle(14)}>
-                  {pick("भयो", "Done")}
+                  {t("common.done")}
                 </Text>
               </Pressable>
             </View>

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { LEGAL_CONTACT_EMAIL, LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 import { cn } from "@vedic-patro/domain/utils";

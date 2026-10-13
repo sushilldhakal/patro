@@ -26,7 +26,7 @@ function toAdStr(d: Date): string {
 }
 
 export default function ShantiVidhiScreen() {
-  const { pick, t, digits } = useLocale();
+  const { t, digits } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const timezone = resolveTimeZone(undefined, location.params.timezone);
@@ -48,7 +48,7 @@ export default function ShantiVidhiScreen() {
   });
 
   return (
-    <AppShell title={pick("शान्ति विधि", "Shanti Vidhi")} showHeader={false}>
+    <AppShell title={t("nav.shanti_vidhi")} showHeader={false}>
       <PatroPageHeader
         icon={<Ionicons name="flame-outline" size={28} color={colors.secondary} />}
         title={t("shanti_vidhi.title")}

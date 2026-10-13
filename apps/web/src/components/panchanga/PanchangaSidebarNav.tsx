@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale } from "@/i18n/locale";
 import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";

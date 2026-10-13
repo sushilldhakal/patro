@@ -22,20 +22,20 @@ const th = "text-sm font-semibold";
 const td = cn(dainikKrantiClasses.monthTd, dainikKrantiClasses.monthTdMono);
 
 export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
 
   const table = (
     <View className="min-w-full">
       <TableHeader>
         <TableHeaderCell minWidth={48} className={cn(th, "pl-3")}>
-          <Text className="text-sm font-semibold text-foreground">{pick("गते", "Date")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{t("dainik.date")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
-          <Text className="text-sm font-semibold text-foreground">{pick("बा.", "Day")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{t("ui.dainik_kranti.day")}</Text>
         </TableHeaderCell>
         <TableHeaderCell minWidth={56} className={cn(th, patroStickyHeadCell)}>
           <Text className={cn(dainikKrantiClasses.th, dainikKrantiClasses.amberText)}>
-            {pick("सु.उ.", "Rise")}
+            {t("dainik.rise")}
           </Text>
         </TableHeaderCell>
         {getRashiList("ne").map((rne, i) => (
@@ -51,13 +51,13 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
       {loading ? (
         <View className="py-8">
           <Text className={dainikKrantiClasses.stateText}>
-            {pick("लोड हुँदैछ…", "Loading…")}
+            {t("rashifal.profile.loading")}
           </Text>
         </View>
       ) : empty || rows.length === 0 ? (
         <View className="py-8">
           <Text className={dainikKrantiClasses.stateText}>
-            {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
+            {t("dainik.no_days_found_in_this_paksha")}
           </Text>
         </View>
       ) : (

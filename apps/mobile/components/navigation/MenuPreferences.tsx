@@ -8,7 +8,7 @@ import { useThemeColors } from "@/lib/theme-context";
 
 /** Offline download, language, and theme — last block of the sidebar scroll. */
 export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => void }) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   return (
     <View className="gap-3">
@@ -19,16 +19,16 @@ export function MenuPreferences({ onNavigate }: { onNavigate: (href: string) => 
       >
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
           <Ionicons name="cloud-download-outline" size={18} color={colors.foreground} />
-          <Text className="text-sm text-foreground">{pick("अफलाइन डाउनलोड", "Offline download")}</Text>
+          <Text className="text-sm text-foreground">{t("ui.navigation.offline_download")}</Text>
         </View>
         <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
       </Pressable>
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{pick("भाषा", "Language")}</Text>
+        <Text className="text-sm text-foreground">{t("language")}</Text>
         <LanguageSwitcher />
       </View>
       <View className="flex-row items-center justify-between gap-3">
-        <Text className="text-sm text-foreground">{pick("थिम", "Theme")}</Text>
+        <Text className="text-sm text-foreground">{t("ui.common.theme")}</Text>
         <ThemeSwitcher showLabel />
       </View>
     </View>

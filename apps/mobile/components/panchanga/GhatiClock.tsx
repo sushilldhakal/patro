@@ -26,7 +26,7 @@ type Props = {
 };
 
 export function GhatiClock({ sunrise, sunset, timezone }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const colors = useThemeColors();
   const [now, setNow] = useState(() => new Date());
   const timeZone = timezone || "Asia/Kathmandu";
@@ -63,7 +63,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         className="text-sm text-center font-semibold tracking-eyebrow-wide"
         style={{ color: INK_MUTED }}
       >
-        {pick("वैदिक समय", "Vedic time")}
+        {t("panchanga.vedic_time")}
       </Text>
       <Text
         className="text-5xl mt-3.5 text-center font-mono font-bold leading-none tracking-tight"
@@ -81,7 +81,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         className="text-sm mt-2 text-center font-semibold tracking-wide"
         style={{ color: panchangAccent }}
       >
-        {pick("घडी : पला : विपला", "Ghati : Pala : Vipala")}
+        {t("panchanga.ghati_pala_vipala")}
       </Text>
 
       <View className="mx-5 my-3.5 h-px" style={{ backgroundColor: withAlpha(neutral.white, 0.12) }} />
@@ -99,7 +99,7 @@ export function GhatiClock({ sunrise, sunset, timezone }: Props) {
         className="text-sm mt-2 text-center font-semibold tracking-wide"
         style={{ color: INK_DIM }}
       >
-        {pick("घण्टा : मिनेट", "Hour : Minute")}
+        {t("panchanga.hour_minute")}
       </Text>
 
       <View className="mt-3.5 flex-row flex-wrap items-center justify-center gap-4">

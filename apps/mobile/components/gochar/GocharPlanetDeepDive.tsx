@@ -37,7 +37,7 @@ export function GocharPlanetDeepDive({
   selected: GrahaKey;
   onSelect: (key: GrahaKey) => void;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const { width } = useBreakpoint();
 
   const g = gochar[selected];
@@ -79,13 +79,13 @@ export function GocharPlanetDeepDive({
     <View className={cn("flex-1", gocharClasses.deepCard)}>
       <View className={gocharClasses.deepHead}>
         <Text className={gocharClasses.deepEyebrow} style={nepaliTextStyle()}>
-          {pick("विस्तृत अध्ययन", "Deep dive")}
+          {t("ui.gochar.deep_dive")}
         </Text>
         <Text className={gocharClasses.deepTitle} style={nepaliTextStyle()}>
-          {pick("ग्रह छान्नुहोस्", "Pick a planet")}
+          {t("ui.gochar.pick_a_planet")}
         </Text>
         <Text className={gocharClasses.deepSubtitle} style={nepaliTextStyle()}>
-          {pick("वर्तमान स्थिति, सीमा र वक्री", "Current position, windows & retrograde")}
+          {t("ui.gochar.current_position_windows_retrograde")}
         </Text>
       </View>
 
@@ -137,21 +137,21 @@ export function GocharPlanetDeepDive({
                 className={gocharClasses.detailBadgeText}
                 style={nepaliTextStyle()}
               >
-                {pick("उच्च", "Exalted")}
+                {t("ui.gochar.exalted")}
               </Text>
             </View>
           ) : null}
         </View>
 
         <View className={cn("flex-row flex-wrap", gocharClasses.factGrid)}>
-          <Detail width={detailWidth} label={pick("राशि", "Sign")} value={`${rashi} ${deg}`} />
+          <Detail width={detailWidth} label={t("ui.gochar.sign")} value={`${rashi} ${deg}`} />
           <Detail
             width={detailWidth}
-            label={pick("नक्षत्र", "Nakshatra")}
+            label={t("nakshatra")}
             value={grahaNakshatraLine(g, lang, digits)}
           />
-          <Detail width={detailWidth} label={pick("गति", "Motion")} value={motionLabel(g, lang)} />
-          <Detail width={detailWidth} label={pick("वेग", "Speed")} value={speedTone(g, lang)} />
+          <Detail width={detailWidth} label={t("ui.gochar.motion")} value={motionLabel(g, lang)} />
+          <Detail width={detailWidth} label={t("ui.gochar.speed")} value={speedTone(g, lang)} />
         </View>
 
         {windows.length > 0 ? (
@@ -160,7 +160,7 @@ export function GocharPlanetDeepDive({
               className={gocharClasses.windowsTitle}
               style={nepaliTextStyle()}
             >
-              {pick("हालका सीमाहरू", "Current windows")}
+              {t("ui.gochar.current_windows")}
             </Text>
             <View className={cn("gap-1", gocharClasses.windowsList)}>
               {windows.map((w) => (

@@ -224,7 +224,7 @@ function buildMonthRows(month: number, monthLen: number, grid: Map<string, SunCe
 }
 
 function SunTimesLegend() {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   return (
     <View className={cn("flex-row flex-wrap", sunTimesClasses.legend)}>
@@ -232,25 +232,25 @@ function SunTimesLegend() {
         <View className={cn("flex-row", sunTimesClasses.legendItem)}>
           <LucideNative node={SunriseNode} size={16} color={colors.foreground} />
           <Text className={sunTimesClasses.legendLabel} style={nepaliTextStyle()}>
-            {pick("सूर्योदय", "Sunrise")}
+            {t("kundali.sunrise")}
           </Text>
         </View>
         <View className={cn("flex-row", sunTimesClasses.legendItem)}>
           <LucideNative node={SunsetNode} size={16} color={colors.foreground} />
           <Text className={sunTimesClasses.legendLabel} style={nepaliTextStyle()}>
-            {pick("सूर्यास्त", "Sunset")}
+            {t("kundali.sunset")}
           </Text>
         </View>
         <View className={cn("flex-row", sunTimesClasses.legendItem)}>
-          <Text className={sunTimesClasses.ayanaNorth}>{pick("उ", "N")}</Text>
+          <Text className={sunTimesClasses.ayanaNorth}>{t("ui.suryakranti.n")}</Text>
           <Text className={sunTimesClasses.legendLabel} style={nepaliTextStyle()}>
-            {pick("उत्तरायण", "Uttarayana")}
+            {t("learn.study.declination.uttarayana")}
           </Text>
         </View>
         <View className={cn("flex-row", sunTimesClasses.legendItem)}>
-          <Text className={sunTimesClasses.ayanaSouth}>{pick("द", "S")}</Text>
+          <Text className={sunTimesClasses.ayanaSouth}>{t("ui.suryakranti.s")}</Text>
           <Text className={sunTimesClasses.legendLabel} style={nepaliTextStyle()}>
-            {pick("दक्षिणायन", "Dakshinayana")}
+            {t("learn.study.declination.dakshinayana")}
           </Text>
         </View>
       </View>
@@ -265,7 +265,7 @@ function SunTimesYearMatrix({
   layout: CalendarLayout;
   grid: Map<string, SunCell>;
 }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { monthLabels, getMonthLength, maxDay } = layout;
 
   return (
@@ -277,7 +277,7 @@ function SunTimesYearMatrix({
             className={cn("items-center justify-center", sunTimesClasses.matrixDayHead)}
           >
             <Text className={sunTimesClasses.matrixDayHeadText} style={nepaliTextStyle()}>
-              {pick("दिन", "Day")}
+              {t("panchanga.view_day")}
             </Text>
           </View>
           {monthLabels.map((name, idx) => (
@@ -374,13 +374,13 @@ const MONTH_COLS = [
 ] as const;
 
 function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { colors, isDark } = useTheme();
   const riseColor = isDark ? colors.accent : colors.primary;
 
   const head = (key: (typeof MONTH_COLS)[number]["key"]) => {
-    if (key === "day") return pick("दिन", "Day");
-    if (key === "ayana") return pick("अयन", "Ayana");
+    if (key === "day") return t("panchanga.view_day");
+    if (key === "ayana") return t("kundali.ayana");
     const rise = key === "sunrise";
     return (
       <View className="flex-row items-center gap-1.5">
@@ -390,7 +390,7 @@ function MonthSunDataTable({ rows }: { rows: SunCell[] }) {
           color={rise ? colors.primary : illustration.sky60}
         />
         <Text className={sunTimesClasses.monthHeadText} style={nepaliTextStyle()}>
-          {rise ? pick("सूर्योदय", "Sunrise") : pick("सूर्यास्त", "Sunset")}
+          {rise ? t("kundali.sunrise") : t("kundali.sunset")}
         </Text>
       </View>
     );
@@ -521,7 +521,7 @@ type Props = {
 
 /** Year sun matrix (≥992px) or per-month accordion — matches web `SunTimesYearGrid`. */
 export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props) {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const { width } = useBreakpoint();
   const showMatrix = width >= BREAKPOINTS.lg;
   const isEnglish = lang === "en";
@@ -554,7 +554,7 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
     return (
       <View className={sunTimesClasses.card}>
         <Text className={sunTimesClasses.loadError} style={nepaliTextStyle()}>
-          {pick("ल्याउन सकिएन।", "Could not load.")}
+          {t("ui.common.could_not_load")}
         </Text>
       </View>
     );
@@ -567,7 +567,7 @@ export function SunTimesYearGrid({ era, year, locationParams, timeZone }: Props)
 
         {query.isLoading && !query.data ? (
           <Text className="px-4 py-8 text-sm" style={nepaliTextStyle()}>
-            {pick("लोड हुँदै…", "Loading…")}
+            {t("common.loading")}
           </Text>
         ) : showMatrix ? (
           <SunTimesYearMatrix layout={layout} grid={grid} />

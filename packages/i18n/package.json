@@ -2,19 +2,29 @@
   "name": "@vedic-patro/i18n",
   "version": "0.0.0",
   "private": true,
-  "description": "Nepali and English copy for the website and the mobile app \u2014 one catalogue (src/strings.ts) expanded into ne.json / en.json.",
+  "description": "Nepali and English copy for the website and the mobile app — one catalogue (src/strings.ts) expanded into ne.json / en.json — and the one translator both apps use (runtime, React hooks, <Trans>).",
   "type": "module",
   "exports": {
     "./strings": "./src/strings.ts",
+    "./runtime": "./src/runtime.ts",
+    "./react": "./src/react.tsx",
+    "./setup": "./src/setup.ts",
     "./ne.json": "./src/ne.json",
     "./en.json": "./src/en.json"
   },
   "scripts": {
     "generate": "tsx scripts/generate.ts",
     "lint": "tsx scripts/generate.ts --check",
-    "report": "tsx scripts/generate.ts --report"
+    "report": "tsx scripts/generate.ts --report",
+    "test": "node --import tsx --test test/*.test.ts"
   },
   "devDependencies": {
     "tsx": "^4.23.8"
+  },
+  "dependencies": {
+    "@vedic-patro/domain": "*"
+  },
+  "peerDependencies": {
+    "react": "*"
   }
 }

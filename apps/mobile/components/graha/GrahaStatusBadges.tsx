@@ -22,7 +22,7 @@ export function GrahaStatusBadges({
   className,
   size = 14,
 }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const vakri = showVakri(planetKey, isRetrograde);
   const asta = showAsta(planetKey, isCombust);
@@ -35,7 +35,7 @@ export function GrahaStatusBadges({
           name="refresh"
           size={size}
           color={colors.secondary}
-          accessibilityLabel={pick("वक्री", "Retrograde")}
+          accessibilityLabel={t("common.retrograde")}
         />
       ) : null}
       {asta ? (
@@ -43,7 +43,7 @@ export function GrahaStatusBadges({
           name="flame"
           size={size}
           color={colors.danger}
-          accessibilityLabel={pick("अस्त", "Combust")}
+          accessibilityLabel={t("common.combust")}
         />
       ) : null}
     </View>

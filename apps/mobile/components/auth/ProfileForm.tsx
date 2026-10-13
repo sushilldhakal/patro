@@ -150,7 +150,7 @@ export function ProfileForm({
   onCancel: () => void;
   onSaved: (saved: Profile) => void;
 }) {
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   const colors = useThemeColors();
   const [form, setForm] = useState<ProfileInput>(initial);
   const [birthLocation, setBirthLocation] = useState<PanchangaLocation>(() => inputToLocation(initial));
@@ -177,7 +177,7 @@ export function ProfileForm({
 
   async function onSubmit() {
     if (!form.full_name.trim()) {
-      setError(pick("नाम अनिवार्य छ", "Name is required"));
+      setError(t("ui.auth.name_is_required"));
       return;
     }
     setBusy(true);
@@ -193,7 +193,7 @@ export function ProfileForm({
       void afterProfileSaved(lang === "en" ? "en" : "ne", !existing);
       onSaved(saved);
     } catch {
-      setError(pick("प्रोफाइल सेभ गर्न सकिएन", "Could not save profile"));
+      setError(t("ui.auth.could_not_save_profile"));
     } finally {
       setBusy(false);
     }
@@ -203,11 +203,11 @@ export function ProfileForm({
     <View className={accountClasses.profileForm}>
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("पूरा नाम", "Full name")}</FieldLabel>
+          <FieldLabel>{t("ui.auth.full_name")}</FieldLabel>
           <FieldInput value={form.full_name} onChangeText={(v) => set("full_name", v)} />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("फोन", "Phone")}</FieldLabel>
+          <FieldLabel>{t("profile.phone")}</FieldLabel>
           <FieldInput
             value={form.phone ?? ""}
             onChangeText={(v) => set("phone", v)}
@@ -219,7 +219,7 @@ export function ProfileForm({
 
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("इमेल", "Email")}</FieldLabel>
+          <FieldLabel>{t("auth.email")}</FieldLabel>
           <EmailTextInput
             value={form.email ?? ""}
             onChangeText={(v) => set("email", v)}
@@ -230,20 +230,20 @@ export function ProfileForm({
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("लिङ्ग", "Gender")}</FieldLabel>
+          <FieldLabel>{t("profile.gender")}</FieldLabel>
           <View className="flex-row flex-wrap gap-2">
             <OptionChip
-              label={pick("पुरुष", "Male")}
+              label={t("profile.male")}
               active={form.gender === "male"}
               onPress={() => set("gender", "male")}
             />
             <OptionChip
-              label={pick("महिला", "Female")}
+              label={t("profile.female")}
               active={form.gender === "female"}
               onPress={() => set("gender", "female")}
             />
             <OptionChip
-              label={pick("अन्य", "Other")}
+              label={t("profile.other")}
               active={form.gender === "other"}
               onPress={() => set("gender", "other")}
             />
@@ -252,7 +252,7 @@ export function ProfileForm({
       </View>
 
       <View className={accountClasses.field}>
-        <FieldLabel>{pick("जन्म स्थान", "Birth place")}</FieldLabel>
+        <FieldLabel>{t("ui.auth.birth_place")}</FieldLabel>
         <LocationSelector location={birthLocation} onLocationChange={onLocationChange} />
         {form.country ? (
           <Text className={accountClasses.hint} style={nepaliTextStyle()}>
@@ -264,35 +264,35 @@ export function ProfileForm({
 
       <View className={cn("sm:flex-row", accountClasses.fieldRow)}>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("जन्म मिति", "Birth date")}</FieldLabel>
+          <FieldLabel>{t("kundali.birth_date")}</FieldLabel>
           <FieldInput
             value={form.birth_date ?? ""}
             onChangeText={(v) => set("birth_date", formatDateInput(v))}
-            placeholder={pick("वर्ष-महिना-दिन", "YYYY-MM-DD")}
+            placeholder={t("ui.auth.yyyy_mm_dd")}
             keyboardType="numeric"
             maxLength={10}
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("जन्म समय", "Birth time")}</FieldLabel>
+          <FieldLabel>{t("kundali.birth_time")}</FieldLabel>
           <FieldInput
             value={form.birth_time ?? ""}
             onChangeText={(v) => set("birth_time", formatTimeInput(v))}
-            placeholder={pick("घण्टा:मिनेट", "HH:MM")}
+            placeholder={t("ui.auth.hh_mm")}
             keyboardType="numeric"
             maxLength={5}
           />
         </View>
         <View className={cn("min-w-0 flex-1", accountClasses.field)}>
-          <FieldLabel>{pick("पात्रो", "Calendar")}</FieldLabel>
+          <FieldLabel>{t("profile.calendar")}</FieldLabel>
           <View className="flex-row gap-2">
             <OptionChip
-              label={pick("वि.सं.", "BS")}
+              label={t("patro_date.era_bs")}
               active={(form.birth_era ?? "bs") === "bs"}
               onPress={() => set("birth_era", "bs")}
             />
             <OptionChip
-              label={pick("ई.सं.", "AD")}
+              label={t("patro_date.era_ad")}
               active={form.birth_era === "ad"}
               onPress={() => set("birth_era", "ad")}
             />
@@ -303,7 +303,7 @@ export function ProfileForm({
       <View className={cn("flex-row", accountClasses.checkRow)}>
         <Switch value={!!form.is_default} onValueChange={(v) => set("is_default", v)} />
         <Text className={accountClasses.checkText} style={nepaliTextStyle()}>
-          {pick("पूर्वनिर्धारित प्रोफाइल", "Set as default profile")}
+          {t("ui.auth.set_as_default_profile")}
         </Text>
       </View>
 
@@ -314,14 +314,14 @@ export function ProfileForm({
       ) : null}
 
       <View className={cn("flex-row", accountClasses.formActions)}>
-        <Button label={pick("रद्द", "Cancel")} variant="ghost" onPress={onCancel} disabled={busy} />
+        <Button label={t("common.cancel")} variant="ghost" onPress={onCancel} disabled={busy} />
         <Button
           label={
             busy
-              ? pick("सेभ हुँदै…", "Saving…")
+              ? t("ui.common.saving")
               : existing
-                ? pick("परिवर्तन सेभ", "Save changes")
-                : pick("प्रोफाइल बनाउनुहोस्", "Create profile")
+                ? t("ui.auth.save_changes")
+                : t("profile.create_profile")
           }
           onPress={onSubmit}
           disabled={busy}

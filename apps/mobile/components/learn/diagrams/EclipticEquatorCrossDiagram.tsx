@@ -72,30 +72,27 @@ const EclipticEquatorCrossScene = memo(function EclipticEquatorCrossScene({ onLa
 });
 
 export function EclipticEquatorCrossDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const labels = [{ ne: "खगोलीय विषुवत् रेखा", en: "Celestial equator" }];
 
   return (
     <LearnDiagram3D
-      title={pick("३D — क्रान्तिवृत्त र विषुवत् रेखाको काट", "3D — where the ecliptic crosses the equator")}
+      title={t("ui.learn.n3d_where_the_ecliptic_crosses_the")}
       height={250}
       camera={{ yaw: 0.5, pitch: 0.6 }}
       frame={{ width: 1.3, height: 0.75 }}
       idleSpin={0.04}
       legend={[
-        { color: DIAGRAM_COLOR.equator, label: pick("खगोलीय विषुवत् रेखा", "Celestial equator") },
-        { color: DIAGRAM_COLOR.tropical, label: pick("क्रान्तिवृत्त", "Ecliptic") },
-        { color: DIAGRAM_COLOR.sidereal, label: pick("अयनान्त", "Solstices") },
+        { color: DIAGRAM_COLOR.equator, label: t("ui.learn.celestial_equator") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.ecliptic") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.solstices") },
       ]}
       readouts={[
-        { k: pick("तिर्यकता", "Obliquity"), v: `${digits(OBLIQUITY)}°`, tone: "accent" },
-        { k: pick("विषुव", "Equinoxes"), v: `${digits(2)}` },
-        { k: pick("अयनान्त", "Solstices"), v: `${digits(2)}` },
+        { k: t("ui.learn.obliquity"), v: `${digits(OBLIQUITY)}°`, tone: "accent" },
+        { k: t("ui.learn.equinoxes"), v: `${digits(2)}` },
+        { k: t("ui.learn.solstices"), v: `${digits(2)}` },
       ]}
-      caption={pick(
-        "क्रान्तिवृत्त र खगोलीय विषुवत् रेखा एउटै गोलामा दुई ठूला वृत्त हुन्, र दुई ठूला वृत्त सधैँ दुई ठाउँमा काटिन्छन् — ठ्याक्कै २३.४४° (तिर्यकता) को कोणमा। ती दुई काटछाँट नै विषुव हुन्; दुई वृत्त सबैभन्दा टाढा भएका बिन्दु अयनान्त हुन्। यसरी चार ऋतु-चिह्न चार छुट्टै तथ्य होइनन् — यी त दुई वृत्तको ज्यामितिबाट आउने एउटै कथाका दुई पाटा हुन्।",
-        "The ecliptic and the celestial equator are two great circles on the same sphere, and two great circles always cross at two points — exactly at the 23.44° obliquity angle. Those two crossings are the equinoxes; the points where the two circles are farthest apart are the solstices. So the four seasonal markers aren't four separate facts — they're two sides of one geometric story.",
-      )}
+      caption={t("ui.learn.the_ecliptic_and_the_celestial_equator")}
     >
       {({ onLabels }) => <EclipticEquatorCrossScene onLabels={onLabels} labels={labels} />}
     </LearnDiagram3D>

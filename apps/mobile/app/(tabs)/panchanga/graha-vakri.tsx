@@ -25,7 +25,7 @@ import { cn } from "@vedic-patro/domain/utils";
 const GRAHA_ORDER: GrahaKey[] = ["mercury", "venus", "mars", "jupiter", "saturn"];
 
 function EventRow({ ev, index }: { ev: GrahaVakriEvent; index: number }) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const colors = useThemeColors();
   const isVakri = ev.is_retrograde === true || ev.motion === "Vakri";
   const tone = isVakri ? colors.danger : colors.success;
@@ -39,7 +39,7 @@ function EventRow({ ev, index }: { ev: GrahaVakriEvent; index: number }) {
           {isVakri ? "↺" : "→"}
         </Text>
         <Text style={{ color: tone, ...nepaliTextStyle(13) }} className={grahaClasses.eventText}>
-          {isVakri ? pick("वक्री", "Retrograde") : pick("मार्गी", "Direct")}
+          {isVakri ? t("common.retrograde") : t("graha_pages.vakri.direct")}
         </Text>
       </View>
       <Text className={grahaClasses.eventValue}>
@@ -53,7 +53,7 @@ function EventRow({ ev, index }: { ev: GrahaVakriEvent; index: number }) {
 }
 
 export default function GrahaVakriScreen() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -77,14 +77,11 @@ export default function GrahaVakriScreen() {
   }
 
   return (
-    <AppShell title={pick("ग्रह वक्री", "Graha Vakri")} showHeader={false}>
+    <AppShell title={t("ui.panchanga.graha_vakri")} showHeader={false}>
       <GrahaBanner
         icon="refresh-outline"
-        title={pick("ग्रह वक्री", "Graha Vakri")}
-        blurb={pick(
-          "बुध, शुक्र, मङ्गल, बृहस्पति र शनिका वक्री–मार्गी क्षणहरू।",
-          "Retrograde and direct stations for Mercury, Venus, Mars, Jupiter and Saturn.",
-        )}
+        title={t("ui.panchanga.graha_vakri")}
+        blurb={t("ui.panchanga.retrograde_and_direct_stations_for_mercury")}
       />
 
       <PatroYearNavBlock
@@ -99,7 +96,7 @@ export default function GrahaVakriScreen() {
 
       {query.isLoading && !query.data ? (
         <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
-          {pick("लोड हुँदै…", "Loading…")}
+          {t("common.loading")}
         </Text>
       ) : query.data ? (
         <View className={cn("flex-row flex-wrap", grahaClasses.columns)}>
@@ -114,7 +111,7 @@ export default function GrahaVakriScreen() {
                 count={
                   events.length
                     ? pick(`${digits(events.length)} स्थिति`, `${events.length} stations`)
-                    : pick("कुनै स्थिति छैन", "no stations")
+                    : t("graha_pages.vakri.no_stations")
                 }
               >
                 {events.length ? (
@@ -124,7 +121,7 @@ export default function GrahaVakriScreen() {
                     className={grahaClasses.columnEmpty}
                     style={nepaliTextStyle(14)}
                   >
-                    {pick("यस वर्ष वक्री हुँदैन।", "No retrograde this year.")}
+                    {t("graha_pages.vakri.no_vakri_year")}
                   </Text>
                 )}
               </GrahaColumnCard>
@@ -133,7 +130,7 @@ export default function GrahaVakriScreen() {
         </View>
       ) : (
         <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
-          {pick("ल्याउन सकिएन।", "Could not load.")}
+          {t("ui.common.could_not_load")}
         </Text>
       )}
 

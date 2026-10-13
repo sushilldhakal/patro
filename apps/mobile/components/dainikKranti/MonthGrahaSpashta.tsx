@@ -42,17 +42,17 @@ function formatPlanetCell(
 }
 
 export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: Props) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const isEn = lang === "en";
 
   const table = (
     <View className="min-w-full">
       <TableHeader>
           <View className={cn(th, "min-w-[3rem] pl-3")}>
-            <Text className="text-sm font-semibold">{pick("गते", "Date")}</Text>
+            <Text className="text-sm font-semibold">{t("dainik.date")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[3.5rem]")}>
-            <Text className="text-sm font-semibold">{pick("बा.", "Day")}</Text>
+            <Text className="text-sm font-semibold">{t("ui.dainik_kranti.day")}</Text>
           </View>
           {PATRO_PLANET_KEYS.map((key) => (
             <View key={key} className={cn(th, patroStickyHeadCell, "min-w-[5.5rem] items-center")}>
@@ -62,14 +62,14 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
             </View>
           ))}
           <View className={cn(th, patroStickyHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-sm text-center font-semibold">{pick("देशान्तर", "Deshaantar")}</Text>
+            <Text className="text-sm text-center font-semibold">{t("aside.deshaantar")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[4rem] items-center")}>
-            <Text className="text-sm text-center font-semibold">{pick("अक्षांश", "Latitude")}</Text>
+            <Text className="text-sm text-center font-semibold">{t("milan.latitude")}</Text>
           </View>
           <View className={cn(th, patroStickyHeadCell, "min-w-[4.5rem] items-center")}>
             <Text className="text-sm text-center font-semibold">
-              {pick("बेलान्तर", "Belaantar")}
+              {t("aside.belaantar")}
             </Text>
           </View>
       </TableHeader>
@@ -79,23 +79,23 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
           {PATRO_PLANET_KEYS.map((key) => (
             <View key={`sub-${key}`} className={cn(th, patroStickySubHeadCell, "min-w-[5.5rem] items-center")}>
               <Text className="text-center text-sm font-normal">
-                {pick("रा|अं|क|वि", "Ra|Deg|Ka|Vi")}
+                {t("dainik.ra_deg_ka_vi")}
               </Text>
             </View>
           ))}
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4rem] items-center")}>
             <Text className="text-center text-sm font-normal">
-              {pick("देशान्तर", "Long.")}
+              {t("ui.dainik_kranti.long")}
             </Text>
           </View>
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4rem] items-center")}>
             <Text className="text-center text-sm font-normal">
-              {pick("अक्षांश", "Lat.")}
+              {t("ui.dainik_kranti.lat")}
             </Text>
           </View>
           <View className={cn(th, patroStickySubHeadCell, "min-w-[4.5rem] items-center")}>
             <Text className="text-center text-sm font-normal">
-              {pick("समय सुधार", "Time corr.")}
+              {t("dainik.time_corr")}
             </Text>
           </View>
       </TableHeader>
@@ -103,13 +103,13 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
         {loading ? (
           <View className="py-8">
             <Text className={dainikKrantiClasses.stateText}>
-              {pick("लोड हुँदैछ…", "Loading…")}
+              {t("rashifal.profile.loading")}
             </Text>
           </View>
         ) : empty || rows.length === 0 ? (
           <View className="py-8">
             <Text className={dainikKrantiClasses.stateText}>
-              {pick("यो पक्षमा कुनै दिन भेटिएन।", "No days found in this paksha.")}
+              {t("dainik.no_days_found_in_this_paksha")}
             </Text>
           </View>
         ) : (

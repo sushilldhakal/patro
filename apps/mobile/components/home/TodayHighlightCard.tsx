@@ -69,7 +69,7 @@ export function TodayHighlightCard({
   month,
   p,
 }: Props) {
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   const colors = useThemeColors();
   const isToday = selectedAdDate === todayAd;
   const daysAway = isToday ? 0 : daysDiffFromAd(todayAd, selectedAdDate);
@@ -124,7 +124,7 @@ export function TodayHighlightCard({
 
   const specialTitle = festivals.length
     ? festivals.join(" / ")
-    : tithi || pick("यस दिनको पञ्चाङ्ग", "This day's panchanga");
+    : tithi || t("ui.home.this_day_s_panchanga");
   const pakshaShort = (() => {
     const stripped = paksha.replace(/\s*पक्ष/g, "").replace(/\s*paksha/gi, "").trim();
     return monthName && stripped.toLowerCase().startsWith(monthName.toLowerCase())
@@ -167,7 +167,7 @@ export function TodayHighlightCard({
 
       <View className={homeClasses.highlightSpecial}>
         <Text className={homeClasses.highlightKicker}>
-          {isToday ? pick("आज विशेष", "Special today") : daysAwayLabel(daysAway, lang, digits)}
+          {isToday ? t("ui.home.special_today") : daysAwayLabel(daysAway, lang, digits)}
         </Text>
         <Text className={homeClasses.highlightTitle}>{specialTitle}</Text>
         {specialSubtitle ? (

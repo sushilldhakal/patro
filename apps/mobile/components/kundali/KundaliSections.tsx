@@ -288,13 +288,13 @@ const YOGA_NATURE: Record<KundaliYoga["nature"], { ne: string; en: string; tone:
 };
 
 export function YogaList({ yogas }: { yogas: KundaliYoga[] }) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const present = yogas.filter((y) => y.present);
 
   if (!present.length) {
     return (
       <Text className="text-body text-muted-foreground" style={nepaliTextStyle(14)}>
-        {pick("यस कुण्डलीमा कुनै प्रमुख योग भेटिएन।", "No major yogas found in this chart.")}
+        {t("ui.kundali.no_major_yogas_found_in_this")}
       </Text>
     );
   }

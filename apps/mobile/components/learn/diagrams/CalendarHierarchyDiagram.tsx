@@ -103,25 +103,22 @@ const CalendarHierarchyScene = memo(function CalendarHierarchyScene({ onLabels, 
 });
 
 export function CalendarHierarchyDiagram() {
-  const { pick, lang } = useLocale();
-  const copy = { panchanga: pick("पञ्चाङ्ग", "Panchanga"), date: pick("बि.सं. मिति", "BS date") };
+  const { t, pick, lang } = useLocale();
+  const copy = { panchanga: t("learn.diagrams.hierarchy_converge"), date: t("ui.learn.bs_date") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — तीन गति, एउटा मिति", "3D — three motions, one date")}
+      title={t("ui.learn.n3d_three_motions_one_date")}
       height={260}
       camera={{ yaw: 0.15, pitch: 0.55 }}
       frame={{ width: 1.9, height: 0.85 }}
       idleSpin={0}
       legend={BRANCHES.map((b) => ({ color: b.color, label: pick(b.ne, b.en) }))}
       readouts={[
-        { k: pick("स्रोत गति", "Source motions"), v: `${3}`, tone: "accent" },
-        { k: pick("अभिसरण", "Converges on"), v: pick("पञ्चाङ्ग", "Panchanga") },
+        { k: t("ui.learn.source_motions"), v: `${3}`, tone: "accent" },
+        { k: t("ui.learn.converges_on"), v: t("learn.diagrams.hierarchy_converge") },
       ]}
-      caption={pick(
-        "पृथ्वीको घूर्णनले दिन र वार दिन्छ; सूर्यको राशि-गतिले राशि, सङ्क्रान्ति र सौर महिना दिन्छ; चन्द्र र सूर्यबीचको कोणले तिथि, पक्ष र चान्द्र महिना दिन्छ। तीनै धारा पञ्चाङ्गमा मिसिन्छन्, र त्यहाँबाट एउटै बि.सं. मिति बन्छ।",
-        "Earth's rotation gives the day and the vaara; the Sun's motion through the rashis gives rashi, sankranti and the solar month; the angle between Moon and Sun gives tithi, paksha and the lunar month. All three streams converge on the panchanga, and from there, a single BS date.",
-      )}
+      caption={t("ui.learn.earth_s_rotation_gives_the_day")}
     >
       {({ onLabels }) => <CalendarHierarchyScene onLabels={onLabels} lang={lang} copy={copy} />}
     </LearnDiagram3D>

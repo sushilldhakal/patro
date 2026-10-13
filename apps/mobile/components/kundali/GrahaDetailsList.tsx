@@ -48,7 +48,7 @@ export function GrahaDetailsList({
   anchorKey: string;
   vargaCharts: VargaCharts;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
 
   const rows = useMemo<Row[]>(() => {
@@ -133,7 +133,7 @@ export function GrahaDetailsList({
                 <View className={g.retroBadge}>
                   <Ionicons name="refresh" size={10} color={colors.secondary} />
                   <Text className={g.retroText}>
-                    {pick("व", "R")}
+                    {t("ui.kundali.r")}
                   </Text>
                 </View>
               ) : null}

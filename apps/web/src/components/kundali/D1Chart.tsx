@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useQuery } from "@tanstack/react-query";
 import { aspectHousesFor, drishtiTargetHouses, type BhavaHouse } from "@vedic-patro/domain/bhava";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   NI_HOUSE_POLYGONS,
   planetGridLayout,

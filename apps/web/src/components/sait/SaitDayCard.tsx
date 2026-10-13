@@ -1,5 +1,5 @@
 import { Baby, Clock3, Compass } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { BS_MONTH_NAMES } from "@vedic-patro/domain/bs-calendar";
 import { formatRashiDisplay } from "@vedic-patro/domain/rashi-i18n";

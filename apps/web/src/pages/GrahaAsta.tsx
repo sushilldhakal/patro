@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Sunrise } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { GrahaGroupedEventCards } from "@/components/graha/GrahaGroupedEventCards";

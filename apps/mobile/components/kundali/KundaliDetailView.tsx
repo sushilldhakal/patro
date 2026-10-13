@@ -61,7 +61,7 @@ export function KundaliDetailView({
   reportDisabled,
   onNavigate,
 }: Props) {
-  const { lang, pick } = useLocale();
+  const { t, lang } = useLocale();
   const d1Rows = detail.vargaCharts.entries["1"] ?? [];
   const go = onSectionChange ?? onNavigate;
   const show = (id: KundaliContentSectionId) => contentSectionId(section) === id;
@@ -104,8 +104,8 @@ export function KundaliDetailView({
       {show("kundali-graha") && d1Rows.length > 0 ? (
         <KundaliSection
           edgeToEdgeContent
-          title={pick("ग्रह विवरण", "Graha details")}
-          subtitle={pick("जन्म क्षणको स्पष्ट स्थिति", "Positions at the birth instant")}
+          title={t("ui.kundali.graha_details")}
+          subtitle={t("ui.kundali.positions_at_the_birth_instant")}
           icon="planet-outline"
         >
           <GrahaAstroTable
@@ -119,7 +119,7 @@ export function KundaliDetailView({
                 className={cn(kundaliDetailClasses.view.upagrahaTitle, "text-foreground")}
                 style={nepaliTextStyle(11)}
               >
-                {pick("उपग्रह", "Upagrahas")}
+                {t("ui.kundali.upagrahas")}
               </Text>
               <UpagrahaTable rows={detail.upagrahas} />
             </View>
@@ -129,15 +129,15 @@ export function KundaliDetailView({
 
       {show("kundali-yoga") ? (
         <KundaliSection
-          title={pick("कुण्डली योग", "Kundali yogas")}
-          subtitle={pick("यस कुण्डलीमा बनेका योग", "Combinations formed in this chart")}
+          title={t("ui.kundali.kundali_yogas")}
+          subtitle={t("ui.kundali.combinations_formed_in_this_chart")}
           icon="sparkles-outline"
         >
           {hasPresentYogas ? (
             <YogaList yogas={detail.yogas} />
           ) : (
             <Text className="mb-1 text-sm text-foreground" style={nepaliTextStyle(14)}>
-              {pick("यस कुण्डलीमा कुनै प्रमुख योग भेटिएन।", "No major yogas found in this chart.")}
+              {t("ui.kundali.no_major_yogas_found_in_this")}
             </Text>
           )}
           <YogaReferenceCatalog excludeIds={presentRefIds} />
@@ -148,7 +148,7 @@ export function KundaliDetailView({
 
       {show("kundali-dasha") &&
       (detail.dasha || detail.tribhagiDasha || detail.yoginiDasha) ? (
-        <KundaliSection title={pick("दशा", "Dasha")} subtitle={pick("दशा प्रणाली", "Dasha systems")} icon="time-outline">
+        <KundaliSection title={t("kundali.nav_dasha")} subtitle={t("ui.kundali.dasha_systems")} icon="time-outline">
           <DashaSystemPanel
             vimshottari={detail.dasha}
             tribhagi={detail.tribhagiDasha}
@@ -164,8 +164,8 @@ export function KundaliDetailView({
 
       {show("kundali-shadbala") ? (
         <KundaliSection
-          title={pick("षड्बल", "Shadbala")}
-          subtitle={pick("ग्रह बल — रूपमा", "Planetary strength in rupas")}
+          title={t("kundali.nav_shadbala")}
+          subtitle={t("ui.kundali.planetary_strength_in_rupas")}
           icon="barbell-outline"
         >
           {balaTabs}
@@ -181,7 +181,7 @@ export function KundaliDetailView({
       {show("kundali-shadbala") ? <KundaliSources kind="shadbala" /> : null}
 
       {show("kundali-bhava-bala") ? (
-        <KundaliSection title={pick("भाव बल", "Bhava bala")} icon="stats-chart-outline">
+        <KundaliSection title={t("ui.kundali.bhava_bala")} icon="stats-chart-outline">
           {balaTabs}
           {detail.bhavaBala ? (
             <BhavaBalaCard
@@ -192,7 +192,7 @@ export function KundaliDetailView({
             />
           ) : (
             <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
-              {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
+              {t("ui.kundali.this_section_is_not_available")}
             </Text>
           )}
         </KundaliSection>
@@ -201,13 +201,13 @@ export function KundaliDetailView({
       {show("kundali-bhava-bala") ? <KundaliSources kind="bhavabala" /> : null}
 
       {show("kundali-ashtakavarga") ? (
-        <KundaliSection title={pick("अष्टकवर्ग", "Ashtakavarga")} icon="apps-outline">
+        <KundaliSection title={t("kundali.nav_ashtakavarga")} icon="apps-outline">
           {balaTabs}
           {detail.ashtakavarga ? (
             <AshtakavargaCard data={detail.ashtakavarga} compactHeader />
           ) : (
             <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
-              {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
+              {t("ui.kundali.this_section_is_not_available")}
             </Text>
           )}
         </KundaliSection>
@@ -217,7 +217,7 @@ export function KundaliDetailView({
 
       {show("kundali-vimshopaka") ? (
         <KundaliSection
-          title={pick("विंशोपक बल", "Vimshopaka Bala")}
+          title={t("kundali.nav_vimshopaka")}
           icon="grid-outline"
           edgeToEdgeContent
         >
@@ -226,7 +226,7 @@ export function KundaliDetailView({
             <VimshopakaCard data={detail.vimshopaka} compactHeader />
           ) : (
             <Text className={kundaliClasses.sectionUnavailable} style={nepaliTextStyle(14)}>
-              {pick("यो खण्ड उपलब्ध छैन।", "This section is not available.")}
+              {t("ui.kundali.this_section_is_not_available")}
             </Text>
           )}
         </KundaliSection>
@@ -236,8 +236,8 @@ export function KundaliDetailView({
 
       {show("kundali-shanti") ? (
         <KundaliSection
-          title={pick("शान्ति विधि", "Shanti vidhi")}
-          subtitle={pick("नवग्रह शान्ति उपाय", "Navagraha remedial measures")}
+          title={t("ui.kundali.shanti_vidhi")}
+          subtitle={t("ui.kundali.navagraha_remedial_measures")}
           icon="flame-outline"
         >
           <ShantiVidhiPanel grahaShanti={detail.grahaShanti} />

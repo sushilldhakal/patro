@@ -1,5 +1,5 @@
 import { EarthGlobeImage } from "./EarthGlobeImage";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ssRotArrowHead, ssRotAxis, ssRotCurve, ssRotDir, ssRotGlow, ssRotLabel, ssRotPole } from "@/lib/diagram-classes";
 import { ssRotSvg } from "@/lib/learn-classes";
 import { useLocale } from "@/i18n/locale";

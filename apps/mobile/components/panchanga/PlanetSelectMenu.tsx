@@ -29,7 +29,7 @@ export function PlanetSelectMenu({
   onSelect,
   compact = false,
 }: PlanetSelectMenuProps) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { width: sw, height: sh } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState({ x: 0, y: 0, w: 36, h: 36 });
@@ -63,7 +63,7 @@ export function PlanetSelectMenu({
         ref={btnRef}
         onPress={openMenu}
         accessibilityRole="button"
-        accessibilityLabel={pick("ग्रह छान्नुहोस्", "Select a planet")}
+        accessibilityLabel={t("kundali.select_a_planet")}
         accessibilityHint={pick(selectedLabel.ne, selectedLabel.en)}
         className="rounded-full"
         style={{

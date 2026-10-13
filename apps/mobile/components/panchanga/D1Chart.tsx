@@ -124,7 +124,7 @@ function DrishtiPanel({
   reference: BhavaReferencePayload;
   onClose: () => void;
 }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const small = lang === "en" ? undefined : nepaliTextStyle(12);
   const grahaKey = selected.key as GrahaKey;
   const info = reference.grahaDrishti[grahaKey];
@@ -143,12 +143,12 @@ function DrishtiPanel({
     <View className="mt-3 w-full gap-2">
       <View className="flex-row items-center justify-between gap-2">
         <Text className="text-sm flex-1 font-semibold text-foreground" style={small}>
-          {pick(`${name}को दृष्टि: ${houseList} भावमा`, `${name}'s aspect: houses ${houseList}`)}
+          {t("ui.panchanga.name_s_aspect_houses_houselist", { name, houseList })}
         </Text>
         <Pressable
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+          accessibilityLabel={t("ui.common.close")}
           className="h-7 w-7 items-center justify-center rounded-full bg-muted/60"
         >
           <Text className="text-sm text-muted-foreground">✕</Text>
@@ -161,7 +161,7 @@ function DrishtiPanel({
         )}
       >
         <View className="mb-1.5 flex-row items-center justify-between gap-2">
-          <Text className="text-sm font-semibold text-foreground">{pick("दृष्टिको फल", "Aspect effect")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{t("ui.panchanga.aspect_effect")}</Text>
           <View
             className={cn(
               "rounded-full border px-2 py-0.5",
@@ -187,7 +187,7 @@ function DrishtiPanel({
 }
 
 export function D1Chart({ houses }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { isTablet } = useBreakpoint();
   const colors = useThemeColors();
   const byHouse = useMemo(() => new Map(houses.map((h) => [h.house, h])), [houses]);
@@ -296,7 +296,7 @@ export function D1Chart({ houses }: Props) {
       accessibilityRole="button"
       style={{ width: isTablet ? "90%" : "100%", aspectRatio: 1 }}
     >
-      <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={pick("उत्तर भारतीय D1 चक्र", "North Indian D1 chart")}>
+      <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={t("ui.panchanga.north_indian_d1_chart")}>
         <Rect x={0} y={0} width={300} height={300} rx={4} fill={colors.card} stroke={colors.border} strokeWidth={1.5} />
         <Line x1={0} y1={0} x2={300} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
         <Line x1={300} y1={0} x2={0} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />

@@ -70,29 +70,26 @@ const LunarSolarGapScene = memo(function LunarSolarGapScene({ onLabels, copy }: 
 });
 
 export function LunarSolarGapDiagram() {
-  const { pick, digits } = useLocale();
-  const copy = { year: (n: number) => pick(`${digits(n)} वर्षपछि`, `after ${digits(n)} years`) };
+  const { t, digits } = useLocale();
+  const copy = { year: (n: number) => t("ui.learn.after_n_years", { n: digits(n) }) };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — चान्द्र र सौर वर्षको खाडल", "3D — the lunar–solar year gap")}
+      title={t("ui.learn.n3d_the_lunar_solar_year_gap")}
       height={220}
       camera={{ yaw: 0.1, pitch: 0.65 }}
       frame={{ width: 1.5, height: 0.5 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सौर वर्ष", "Solar year") },
-        { color: illustration.sky84, label: pick("१२ चान्द्र मास", "12 lunar months") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("जम्मा भएको खाडल", "Accumulated gap") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.solar_year") },
+        { color: illustration.sky84, label: t("ui.learn.n12_lunar_months") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.accumulated_gap") },
       ]}
       readouts={[
-        { k: pick("वार्षिक खाडल", "Yearly shortfall"), v: `${digits(DRIFT.toFixed(2))} ${pick("दिन", "days")}`, tone: "warn" },
-        { k: pick("३ वर्षमा जम्मा", "After 3 years"), v: `${digits((DRIFT * 3).toFixed(1))} ${pick("दिन", "days")}`, tone: "accent" },
+        { k: t("ui.learn.yearly_shortfall"), v: `${digits(DRIFT.toFixed(2))} ${t("common.days")}`, tone: "warn" },
+        { k: t("ui.learn.after_3_years"), v: `${digits((DRIFT * 3).toFixed(1))} ${t("common.days")}`, tone: "accent" },
       ]}
-      caption={pick(
-        "बाह्र चान्द्र मास ३५४.४ दिनको हुन्छ; सौर वर्ष ३६५.२४ दिनको। खाडल वर्षको ~१०.९ दिन हो, र यो जम्मा हुँदै जान्छ — तीन वर्षमा ~३२.६ दिन, जुन एक चान्द्र मासभन्दा लामो। यही ऋणले एक थप महिना (अधिक मास) थपेर तिरिन्छ, र दुई चक्र फेरि मिल्छन्।",
-        "Twelve lunar months come to 354.4 days; the solar year is 365.24. The shortfall is ~10.9 days a year, and it compounds — ~32.6 days after three years, longer than a lunar month. That debt is paid back by inserting an extra month (adhik maas), bringing the two cycles back into step.",
-      )}
+      caption={t("ui.learn.twelve_lunar_months_come_to_354")}
     >
       {({ onLabels }) => <LunarSolarGapScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

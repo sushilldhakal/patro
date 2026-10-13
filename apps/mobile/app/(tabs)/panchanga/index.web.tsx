@@ -55,7 +55,7 @@ function toAdStr(d: Date): string {
 }
 
 export default function PanchangaScreen() {
-  const { pick, t, lang } = useLocale();
+  const { t, lang } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width, isTablet, isCompact } = useBreakpoint();
@@ -276,7 +276,7 @@ export default function PanchangaScreen() {
         {isError ? (
           <View className={panchangaPageClasses.page.errorBox}>
             <Text className={panchangaPageClasses.page.errorText}>
-              {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
+              {t("ui.common.could_not_load_panchanga")}
             </Text>
           </View>
         ) : null}

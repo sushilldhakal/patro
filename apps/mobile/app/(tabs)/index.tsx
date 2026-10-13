@@ -84,7 +84,7 @@ function mergeMonthFromApi(
 
 export default function HomeScreen() {
   const belowFoldReady = useDeferredMount();
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const { width, isTablet, isPhone } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
   const {
@@ -378,11 +378,8 @@ export default function HomeScreen() {
           <ErrorState
             message={
               currentQ.error instanceof OfflineUnavailableError
-                ? pick(
-                    "तपाईं अफलाइन हुनुहुन्छ र यो पात्रो अझै डाउनलोड गरिएको छैन।",
-                    "You're offline and this calendar hasn't been downloaded yet.",
-                  )
-                : pick("पात्रो लोड गर्न सकिएन।", "Could not load calendar.")
+                ? t("ui.home.you_re_offline_and_this_calendar")
+                : t("ui.home.could_not_load_calendar")
             }
             onRetry={() => currentQ.refetch()}
           />

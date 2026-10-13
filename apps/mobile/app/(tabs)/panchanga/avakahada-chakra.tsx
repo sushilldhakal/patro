@@ -139,7 +139,7 @@ const COLUMNS: {
 const TABLE_MIN_WIDTH = COLUMNS.reduce((sum, c) => sum + c.width, 0);
 
 export default function AvakahadaScreen() {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { width, isTablet } = useBreakpoint();
   const [query, setQuery] = useState("");
@@ -168,19 +168,13 @@ export default function AvakahadaScreen() {
 
   return (
     <AppShell
-      title={pick("अवकहडा चक्र", "Avakahada Chakra")}
-      subtitle={pick(
-        "२७ नक्षत्रका १० वटै स्तम्भ — स्वामी, जात, संज्ञा/मुख, नामाक्षर, राशि / स्वामी, राशि वर्ण/वश्य, योनि / वैरी योनि, गण र नाडी।",
-        "All 10 columns for the 27 nakshatras — swami, jati, sanjna/mukha, name syllables, rashi / lord, rashi varna/vashya, yoni / enemy yoni, gana and nadi.",
-      )}
+      title={t("nav.avakahada_chakra")}
+      subtitle={t("avakahada.subtitle")}
       headerRight={<Ionicons name="grid-outline" size={26} color={colors.secondary} />}
     >
       <View className={cn("mb-4", avakahadaClasses.note)}>
         <Text className={avakahadaClasses.noteText} style={nepaliTextStyle(14)}>
-          {pick(
-            "अभिजित् — उत्तराषाढाको चौथो पाउ र श्रवणको सुरुको १५ भागमध्ये १ भाग मिलेर बन्ने अन्तरकालीन (२८औँ) नक्षत्र हो; नामाक्षर: जु, जे, जो, ख।",
-            "Abhijit — the intercalary 28th nakshatra formed by the last quarter of Uttara Ashadha and the first 15th of Shravana; name syllables: Ju, Je, Jo, Kha.",
-          )}
+          {t("avakahada.abhijit_note")}
         </Text>
       </View>
 
@@ -195,10 +189,7 @@ export default function AvakahadaScreen() {
           className="flex-1 py-2.5"
           value={query}
           onChangeText={setQuery}
-          placeholder={pick(
-            "नक्षत्र, नामाक्षर, राशि, योनि… खोज्नुहोस्",
-            "Search nakshatra, syllable, rashi, yoni…",
-          )}
+          placeholder={t("avakahada.search_placeholder")}
           placeholderTextColor={colors.mutedForeground}
           style={{ color: colors.foreground, fontSize: webTypeScale.sm.size }}
         />
@@ -241,7 +232,7 @@ export default function AvakahadaScreen() {
           {rows.length === 0 ? (
             <View className={cn("px-4", avakahadaClasses.emptyCell)}>
               <Text className={avakahadaClasses.emptyText} style={nepaliTextStyle(14)}>
-                {pick("कुनै नतिजा भेटिएन।", "No results found.")}
+                {t("avakahada.no_results")}
               </Text>
             </View>
           ) : (
@@ -299,12 +290,12 @@ export default function AvakahadaScreen() {
 
       <View className={cn("mt-8", avakahadaClasses.notes)}>
         <Text className={avakahadaClasses.notesTitle} style={nepaliTextStyle(20)}>
-          {pick("भौमदोष (मङ्गली) विचार", "Bhoomadosha (Mangal) considerations")}
+          {t("avakahada.bhoomadosha_title")}
         </Text>
         <View className={cn(width >= 640 && "flex-row", avakahadaClasses.notesGrid)}>
           <View className={cn("flex-1", avakahadaClasses.notesCard)}>
             <Text className={avakahadaClasses.notesCardTitle} style={nepaliTextStyle(14)}>
-              {pick("नामाक्षर वर्ग र शत्रु वर्ग", "Name-syllable groups and enemy groups")}
+              {t("avakahada.name_groups")}
             </Text>
             <View className={avakahadaClasses.vargaList}>
               {MANGLI_VARGAS.map((v) => (
@@ -320,15 +311,12 @@ export default function AvakahadaScreen() {
               ))}
             </View>
             <Text className={avakahadaClasses.vargaNote} style={nepaliTextStyle(12)}>
-              {pick(
-                "वर र वधूको नामाक्षर वर्ग परस्पर शत्रु परेमा भौमदोष (मङ्गली) मानिन्छ।",
-                "Bhoomadosha (Mangal) is considered when bride and groom name-syllable groups are mutual enemies.",
-              )}
+              {t("avakahada.bhoomadosha_note")}
             </Text>
           </View>
           <View className={cn("flex-1", avakahadaClasses.notesCard)}>
             <Text className={avakahadaClasses.notesCardTitle} style={nepaliTextStyle(14)}>
-              {pick("श्लोक", "Shloka")}
+              {t("avakahada.shloka")}
             </Text>
             <View className={avakahadaClasses.shlokaList}>
               {BHAUMA_DOSHA_SHLOKAS.map((s, i) => (
@@ -344,10 +332,7 @@ export default function AvakahadaScreen() {
           </View>
         </View>
         <Text className={avakahadaClasses.footnote} style={nepaliTextStyle(12)}>
-          {pick(
-            "टिप्पणी: मङ्गल लग्न, ४, ७, ८ वा १२ भावमा परेमा भौमदोष लाग्छ; शनि दृष्टि, गुरु/शुक्र/चन्द्रको स्थिति, केन्द्रगत राहु आदिले दोष परिहार हुन सक्छ (माथिका श्लोक हेर्नुहोस्)।",
-            "Note: Mangal in lagna, 4th, 7th, 8th or 12th causes bhoomadosha; Saturn's aspect, Jupiter/Venus/Moon placement, kendragata Rahu etc. can cancel it (see shloka above).",
-          )}
+          {t("avakahada.footnote")}
         </Text>
       </View>
     </AppShell>

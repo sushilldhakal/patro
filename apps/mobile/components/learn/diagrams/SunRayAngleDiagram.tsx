@@ -119,7 +119,7 @@ function ShallowBeam({ clock }: { clock: DiagramClockRef }) {
 }
 
 export function SunRayAngleDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const { clock, value: deg, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 62,
     min: 15,
@@ -127,49 +127,46 @@ export function SunRayAngleDiagram() {
     speed: 8,
   });
 
-  const copy = { steep: pick(`~१२°`, `~12°`), shallow: pick("शंकु — तपाईंले चलाउनुभएको", "your angle") };
+  const copy = { steep: t("ui.learn.n12"), shallow: t("ui.learn.your_angle") };
   const foot = footprint(deg);
   const intensity = Math.round(Math.cos(deg * RAD) * 100);
   const steepIntensity = Math.round(Math.cos(STEEP_DEG * RAD) * 100);
 
   return (
     <LearnDiagram3D
-      title={pick("३D — सूर्यको किरण कोण", "3D — angle of sunlight")}
+      title={t("ui.learn.n3d_angle_of_sunlight")}
       height={250}
       camera={{ yaw: 0, pitch: 0.5 }}
       frame={{ width: 1.5, height: 0.6 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("~१२° — ठाडो किरण", "~12° — steep beam") },
-        { color: DIAGRAM_COLOR.sunGlow, label: pick("चलाउनुभएको कोण", "your angle") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.n12_steep_beam") },
+        { color: DIAGRAM_COLOR.sunGlow, label: t("ui.learn.your_angle_2") },
       ]}
       readouts={[
-        { k: pick("कोण", "Angle"), v: `${digits(Math.round(deg))}°`, tone: "accent" },
-        { k: pick("जमिनको चौडाइ", "Ground footprint"), v: `${digits(foot.toFixed(2))}×`, tone: "warn" },
-        { k: pick("सापेक्ष तीव्रता (चलाउनु)", "Relative intensity (yours)"), v: `${digits(intensity)}%` },
-        { k: pick("सापेक्ष तीव्रता (~१२°)", "Relative intensity (~12°)"), v: `${digits(steepIntensity)}%` },
+        { k: t("ui.learn.angle"), v: `${digits(Math.round(deg))}°`, tone: "accent" },
+        { k: t("ui.learn.ground_footprint"), v: `${digits(foot.toFixed(2))}×`, tone: "warn" },
+        { k: t("ui.learn.relative_intensity_yours"), v: `${digits(intensity)}%` },
+        { k: t("ui.learn.relative_intensity_12"), v: `${digits(steepIntensity)}%` },
       ]}
       slider={{
         value: deg,
         min: 15,
         max: 85,
-        label: pick(`कोण ${digits(Math.round(deg))}°`, `Angle ${digits(Math.round(deg))}°`),
+        label: t("ui.learn.angle_deg", { deg: digits(Math.round(deg)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("झन्डै ठाडो", "Nearly overhead"), value: 20 },
-        { label: pick("मध्य", "Midday-ish"), value: 45 },
-        { label: pick("छड्के", "Grazing"), value: 75 },
+        { label: t("ui.learn.nearly_overhead"), value: 20 },
+        { label: t("ui.learn.midday_ish"), value: 45 },
+        { label: t("ui.learn.grazing"), value: 75 },
       ]}
       onPreset={scrubTo}
       presetValue={deg}
       presetTolerance={2}
-      caption={pick(
-        "उही चौडाइको किरण बन्डल ठाडो पर्दा साँघुरो ठाउँमा पर्छ — त्यहाँ ताप बढी घनीभूत हुन्छ। छड्के कोणमा उही किरणले फराकिलो ठाउँ ढाक्छ, त्यसैले प्रति एकाइ क्षेत्रफल ताप घट्छ — यही कारण दिउँसो घाम बढी तातो र बिहान–साँझ कम।",
-        "The same-width beam bundle lands on a narrow patch when it arrives steep — the heat there is concentrated. At a grazing angle the same beam covers a wide patch, so heat per unit area drops — this is why midday sun feels hotter than morning or evening sun.",
-      )}
+      caption={t("ui.learn.the_same_width_beam_bundle_lands")}
     >
       {({ onLabels }) => <SunRayAngleScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

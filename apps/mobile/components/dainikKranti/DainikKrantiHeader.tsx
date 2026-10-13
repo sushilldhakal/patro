@@ -47,7 +47,7 @@ function PakshaSegToggle({
   className?: string;
   buttonClassName?: string;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   return (
     <View
       className={cn(
@@ -56,7 +56,7 @@ function PakshaSegToggle({
         className,
       )}
       accessibilityRole="radiogroup"
-      accessibilityLabel={pick("पक्ष छान्नुहोस्", "Select paksha")}
+      accessibilityLabel={t("ui.dainik_kranti.select_paksha")}
     >
       {options.map(([opt, label]) => (
         <Pressable
@@ -99,7 +99,7 @@ export function DainikKrantiHeader({
   onLocationChange,
   samvatsara,
 }: Props) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { isCompact } = useBreakpoint();
 
   const crossEraSubtitle = useMemo(
@@ -108,14 +108,14 @@ export function DainikKrantiHeader({
   );
 
   const pakshaOptionsAll: readonly (readonly [PakshaFilter, string])[] = [
-    ["all", pick("सबै", "All")],
-    ["krishna", pick("कृष्ण", "Krishna")],
-    ["shukla", pick("शुक्ल", "Shukla")],
+    ["all", t("common.all")],
+    ["krishna", t("common.paksha_krishna")],
+    ["shukla", t("common.paksha_shukla")],
   ];
 
   const pakshaOptionsMobile: readonly (readonly [PakshaFilter, string])[] = [
-    ["krishna", pick("कृष्ण", "Krishna")],
-    ["shukla", pick("शुक्ल", "Shukla")],
+    ["krishna", t("common.paksha_krishna")],
+    ["shukla", t("common.paksha_shukla")],
   ];
 
   const pakshaToggleDesktop = (

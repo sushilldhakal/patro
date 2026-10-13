@@ -55,7 +55,7 @@ export function RituSeasons({
   showToolbar?: boolean;
 }) {
   const router = useRouter();
-  const { pick, digits, lang, t } = useLocale();
+  const { digits, lang, t } = useLocale();
   const { colors, isDark } = useTheme();
   /* Web: `text-secondary dark:text-primary` for the current-season accents. */
   const accent = isDark ? colors.primary : colors.secondary;
@@ -112,8 +112,8 @@ export function RituSeasons({
 
   const relLabel = (days: number) => {
     if (days <= 0) return "";
-    if (days === 1) return pick("भोलि", "Tomorrow");
-    return pick(`${digits(days)} दिनपछि`, `${digits(days)} days later`);
+    if (days === 1) return t("rel.tomorrow");
+    return t("ritu.days_after", { days: digits(days) });
   };
 
   const whyLink = (
@@ -124,7 +124,7 @@ export function RituSeasons({
     >
       <Ionicons name="help-circle-outline" size={13} color={accent} />
       <Text className={rituClasses.whyLinkText} style={[nepaliTextStyle(), { color: accent }]}>
-        {pick("ऋतु किन सर्छ?", "Why do seasons shift?")}
+        {t("ritu.why_link")}
       </Text>
     </Pressable>
   );
@@ -142,7 +142,7 @@ export function RituSeasons({
         <View className={cn("flex-row flex-wrap", rituClasses.toolbar)}>
           {south ? (
             <Text className={rituClasses.southTag} style={nepaliTextStyle()}>
-              {pick(" · दक्षिणी गोलार्ध", " · Southern hemisphere")}
+              {t("ritu.southern")}
             </Text>
           ) : null}
           {whyLink}
@@ -175,7 +175,7 @@ export function RituSeasons({
                 className={rituClasses.kicker}
                 style={[nepaliTextStyle(), item.isCurrent ? { color: accent } : undefined]}
               >
-                {item.isCurrent ? pick("चालू ऋतु", "Current season") : relLabel(item.daysUntil)}
+                {item.isCurrent ? t("ritu.current") : relLabel(item.daysUntil)}
               </Text>
 
               <View className={cn("flex-row", rituClasses.seasonRow)}>
@@ -198,11 +198,11 @@ export function RituSeasons({
               <View className={cn("flex-row", rituClasses.metaRow)}>
                 <Text className={cn("min-w-0 flex-1", rituClasses.metaText)} style={nepaliTextStyle()}>
                   {markerKey
-                    ? `${t(markerKey)} · ${pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}`
-                    : pick(`सूर्य ${digits(item.angle)}°`, `Sun ${digits(item.angle)}°`)}
+                    ? `${t(markerKey)} · ${t("ui.ritu_seasons.sun_angle", { angle: digits(item.angle) })}`
+                    : t("ui.ritu_seasons.sun_angle", { angle: digits(item.angle) })}
                 </Text>
                 <Text className={cn("shrink-0", rituClasses.metaFrom)} style={nepaliTextStyle()}>
-                  {fmtAd(item.startAd, lang)} {pick("देखि", "from")}
+                  {fmtAd(item.startAd, lang)} {t("common.from")}
                 </Text>
               </View>
 
@@ -220,7 +220,7 @@ export function RituSeasons({
                   <View className={cn("flex-row", rituClasses.progressRow)}>
                     <Text className={rituClasses.progressText} style={nepaliTextStyle()}>
                       {digits(item.progress.elapsed)} / {digits(item.progress.total)}{" "}
-                      {pick("दिन", "days")}
+                      {t("common.days")}
                     </Text>
                     <Text className={rituClasses.progressPct} style={nepaliTextStyle()}>
                       {digits(Math.round(item.progress.pct))}%
@@ -235,10 +235,7 @@ export function RituSeasons({
 
       {south ? (
         <Text className={rituClasses.southNote} style={nepaliTextStyle()}>
-          {pick(
-            "दक्षिणी गोलार्धमा ऋतु ६ महिना उल्टो हुन्छ — माथिका नाम तपाईंको स्थानको वास्तविक ऋतु अनुसार मिलाइएका छन् (विषुव/अयनान्तका मिति उही नै हुन्)।",
-            "In the southern hemisphere the seasons are reversed by 6 months — the names above are matched to your location's actual season (the equinox/solstice dates stay the same).",
-          )}
+          {t("ritu.southern_hemisphere_note")}
         </Text>
       ) : null}
     </View>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import type { BhavaBalaData, BhavaBalaHouse, VargaCharts } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";

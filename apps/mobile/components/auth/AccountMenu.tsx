@@ -15,7 +15,7 @@ import { cn } from "@vedic-patro/domain/utils";
 /** Signed-out → लग-इन button; signed-in → avatar + account sheet. Mirrors web AccountMenu. */
 export function AccountMenu() {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
@@ -31,7 +31,7 @@ export function AccountMenu() {
         <Button
           variant="outline"
           size="sm"
-          label={pick("लग-इन", "Sign in")}
+          label={t("kundali.login")}
           onPress={() => setAuthOpen(true)}
           className="gap-1.5"
           icon={<Ionicons name="person-outline" size={14} color={colors.foreground} />}
@@ -48,7 +48,7 @@ export function AccountMenu() {
       <Pressable
         onPress={() => setMenuOpen(true)}
         className={cn(accountClasses.avatar, "active:opacity-80")}
-        accessibilityLabel={pick("खाता मेनु", "Account menu")}
+        accessibilityLabel={t("account_page.menu_aria")}
       >
         <Text className={accountClasses.avatarText}>{initial}</Text>
       </Pressable>
@@ -80,8 +80,8 @@ export function AccountMenu() {
                 ) : null}
                 <Text className={accountClasses.menuStatus}>
                   {user.is_verified
-                    ? pick("प्रमाणित", "Verified")
-                    : pick("इमेल प्रमाणित भएको छैन", "Email not verified")}
+                    ? t("account_page.verified")
+                    : t("account_page.email_unverified")}
                 </Text>
               </View>
             </View>
@@ -96,7 +96,7 @@ export function AccountMenu() {
           >
             <Ionicons name="person-outline" size={16} color={colors.foreground} />
             <Text className={accountClasses.menuItemText}>
-              {pick("खाता र प्रोफाइल", "Account & profiles")}
+              {t("ui.auth.account_profiles")}
             </Text>
           </Pressable>
           <Pressable
@@ -107,7 +107,7 @@ export function AccountMenu() {
             className={cn(accountClasses.menuItem, "mx-2 flex-row py-3 active:bg-muted")}
           >
             <Ionicons name="log-out-outline" size={16} color={colors.foreground} />
-            <Text className={accountClasses.menuItemText}>{pick("लग-आउट", "Sign out")}</Text>
+            <Text className={accountClasses.menuItemText}>{t("account_page.sign_out")}</Text>
           </Pressable>
         </View>
       </Modal>

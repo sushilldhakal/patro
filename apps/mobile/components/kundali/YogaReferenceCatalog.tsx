@@ -32,7 +32,7 @@ function entryResult(entry: YogaReferenceEntry, lang: "ne" | "en"): string {
 }
 
 export function YogaReferenceCatalog({ excludeIds }: Props) {
-  const { lang, pick } = useLocale();
+  const { t, lang } = useLocale();
   const colors = useThemeColors();
   const [entries, setEntries] = useState<YogaReferenceEntry[] | null>(null);
   const [error, setError] = useState(false);
@@ -110,10 +110,7 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
             {kundaliLabel("yoga_reference_catalog", lang)}
           </Text>
           <Text className={kundaliDetailClasses.yogaCatalog.source} style={nepaliTextStyle(11)}>
-            {pick(
-              "बी. वी. रमनको “Three Hundred Important Combinations”, भाग I",
-              'B. V. Raman\'s "Three Hundred Important Combinations", Part I',
-            )}
+            {t("ui.kundali.b_v_raman_s_three_hundred")}
           </Text>
         </View>
         <Ionicons
@@ -143,7 +140,7 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
                 <TextInput
                   value={query}
                   onChangeText={setQuery}
-                  placeholder={pick("नाम, नियम वा फलले खोज्नुहोस्…", "Search by name, rule or result…")}
+                  placeholder={t("kundali.x.yoga_catalog_search_placeholder")}
                   placeholderTextColor={colors.mutedForeground}
                   className={cn(kundaliDetailClasses.yogaCatalog.searchInput, "min-w-0 flex-1 text-foreground")}
                   style={nepaliTextStyle(14)}

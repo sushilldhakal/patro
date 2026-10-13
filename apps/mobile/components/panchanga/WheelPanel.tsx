@@ -31,7 +31,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
-  const { pick, isEnglish } = useLocale();
+  const { t, pick, isEnglish } = useLocale();
   let body: React.ReactNode = null;
 
   if (sel?.type === "nak") {
@@ -50,7 +50,7 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
         <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3.5 pt-4">
           <View className="min-w-0 flex-1">
             <Text className="text-sm font-semibold uppercase tracking-widest text-ill-teal55">
-              {pick("नक्षत्र", "Nakshatra")} · {num(sel.i + 1)}
+              {t("nakshatra")} · {num(sel.i + 1)}
             </Text>
             <Text className="m-0 mt-0.5 text-2xl font-bold leading-tight text-ill-sky84">{pick(ico.ne, ico.en)}</Text>
             {isEnglish ? <Text className="mt-1 text-xs text-base text-ill-sky84/65">{ico.en}</Text> : null}
@@ -59,20 +59,20 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
-            accessibilityLabel={pick("बन्द", "Close")}
+            accessibilityLabel={t("common.close")}
           >
             <Text className="text-sm text-ill-sky84/65">✕</Text>
           </Pressable>
         </View>
         <ScrollView className="max-h-80 px-4 py-3.5">
-          <Row label={pick("स्वामी ग्रह", "Lord planet")} value={pick(ico.lord_ne, LORD_EN[ico.lord_ne] ?? ico.lord_ne)} />
-          <Row label={pick("चिन्ह", "Symbol")} value={ico.sym_ne} />
-          <Row label={pick("राशि", "Rashi")} value={rashiSpan} />
+          <Row label={t("panchanga.wheel_panel.lord_planet")} value={pick(ico.lord_ne, LORD_EN[ico.lord_ne] ?? ico.lord_ne)} />
+          <Row label={t("panchanga.wheel_panel.symbol")} value={ico.sym_ne} />
+          <Row label={t("panchanga.wheel.rashi")} value={rashiSpan} />
           <Row
-            label={pick("देशान्तर", "Longitude")}
+            label={t("panchanga.wheel_panel.longitude")}
             value={`${num(L0.toFixed(1))}°–${num(L1.toFixed(1))}°`}
           />
-          <Row label={pick("पद अक्षर", "Pada syllables")} value={PADA_AKSHAR[sel.i]!.join(" · ")} />
+          <Row label={t("panchanga.wheel_panel.pada_syllables")} value={PADA_AKSHAR[sel.i]!.join(" · ")} />
         </ScrollView>
       </>
     );
@@ -93,7 +93,7 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
         <View className="flex-row items-start gap-3 border-b border-white/10 px-4 pb-3.5 pt-4">
           <View className="min-w-0 flex-1">
             <Text className="text-sm font-semibold uppercase tracking-widest text-ill-teal55">
-              {pick("राशि", "Rashi")} · {num(sel.i + 1)}
+              {t("panchanga.wheel.rashi")} · {num(sel.i + 1)}
             </Text>
             <Text className="m-0 mt-0.5 text-2xl font-bold leading-tight text-ill-sky84">{pick(rs.ne, rs.en)}</Text>
             {isEnglish ? <Text className="mt-1 text-xs text-base text-ill-sky84/65">{rs.en}</Text> : null}
@@ -101,31 +101,31 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
           <Pressable
             onPress={onClose}
             className="h-8 w-8 items-center justify-center rounded-lg border border-white/10"
-            accessibilityLabel={pick("बन्द", "Close")}
+            accessibilityLabel={t("common.close")}
           >
             <Text className="text-sm text-ill-sky84/65">✕</Text>
           </Pressable>
         </View>
         <ScrollView className="max-h-80 px-4 py-3.5">
           <Row
-            label={pick("स्वामी ग्रह", "Lord planet")}
+            label={t("panchanga.wheel_panel.lord_planet")}
             value={pick(RASHI_LORDS[sel.i]!, LORD_EN[RASHI_LORDS[sel.i]!] ?? RASHI_LORDS[sel.i]!)}
           />
           <Row
-            label={pick("तत्त्व", "Element")}
+            label={t("panchanga.wheel_panel.element")}
             value={pick(RASHI_ELEM[sel.i]!, TATTVA_EN[RASHI_ELEM[sel.i]!] ?? RASHI_ELEM[sel.i]!)}
           />
           <Row
-            label={pick("देशान्तर", "Longitude")}
+            label={t("panchanga.wheel_panel.longitude")}
             value={`${num(sel.i * 30)}°–${num((sel.i + 1) * 30)}°`}
           />
           <Row
-            label={pick("नेपाली महिना", "Nepali month")}
+            label={t("panchanga.wheel_panel.nepali_month")}
             value={pick(bsMonths[sel.i]?.ne ?? "", bsMonthEnOf(bsMonths[sel.i]?.ne ?? ""))}
           />
-          <Row label={pick("पद", "Padas")} value={pick(`${num(9)} पद`, `${num(9)} padas`)} />
+          <Row label={t("ui.panchanga.padas")} value={t("ui.panchanga.value_padas", { value: num(9) })} />
           <View className="mt-3.5 rounded-lg bg-black/25 p-3.5">
-            <Text className="mb-0.5 text-xs font-semibold text-ill-sky84">{pick("नक्षत्रहरू", "Nakshatras")}</Text>
+            <Text className="mb-0.5 text-xs font-semibold text-ill-sky84">{t("panchanga.wheel_panel.nakshatras")}</Text>
             <Text className="text-sm text-base leading-normal text-ill-sky84/70">{nakIn.join(" · ")}</Text>
           </View>
         </ScrollView>

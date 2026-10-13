@@ -34,7 +34,7 @@ export function GocharKundaliChart({
   className,
   hideTitle,
 }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const dateLabel = formatGocharBsLabel(dateBs, dateAd);
 
@@ -44,7 +44,7 @@ export function GocharKundaliChart({
         <View className={dainikKrantiClasses.chartTitle}>
           <Ionicons name="sparkles-outline" size={16} color={colors.secondary} />
           <Text className={dainikKrantiClasses.chartTitleText} style={nepaliTextStyle()}>
-            {pick("गोचर कुण्डली", "Transit Chart")}
+            {t("dainik.transit_chart")}
           </Text>
         </View>
       ) : null}
@@ -52,7 +52,7 @@ export function GocharKundaliChart({
       <View className={cn("gap-2", hideTitle ? undefined : dainikKrantiClasses.chartLines)}>
         <View className={dainikKrantiClasses.chartLine}>
           <Text className={dainikKrantiClasses.chartLineText} style={nepaliTextStyle()}>
-            {papanshaLine || pick("पापाशाः—", "Papashah —")}
+            {papanshaLine || t("dainik.papashah")}
           </Text>
         </View>
         {gapanshaLine ? (
@@ -64,11 +64,11 @@ export function GocharKundaliChart({
 
       {loading ? (
         <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
-          {pick("लोड हुँदैछ…", "Loading…")}
+          {t("rashifal.profile.loading")}
         </Text>
       ) : grahas.length === 0 ? (
         <Text className={dainikKrantiClasses.chartState} style={nepaliTextStyle()}>
-          {pick("विवरण उपलब्ध छैन।", "No details available.")}
+          {t("dainik.no_details_available")}
         </Text>
       ) : (
         <D1Chart houses={buildGocharBhavaHouses(grahas)} />
@@ -76,7 +76,7 @@ export function GocharKundaliChart({
 
       {dateLabel ? (
         <Text className={dainikKrantiClasses.chartDate} style={nepaliTextStyle()}>
-          {pick(`${dateLabel} को स्थिति`, `Position on ${dateLabel}`)}
+          {t("ui.dainik_kranti.position_on_datelabel", { dateLabel })}
         </Text>
       ) : null}
     </View>

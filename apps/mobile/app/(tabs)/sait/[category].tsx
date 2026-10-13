@@ -32,7 +32,7 @@ import { brand, withAlpha } from "@vedic-patro/design-tokens";
 
 export default function SaitCategoryScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
-  const { pick, digits, lang, t } = useLocale();
+  const { digits, lang, t } = useLocale();
   const colors = useThemeColors();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -97,9 +97,9 @@ export default function SaitCategoryScreen() {
 
   if (!category || !labels) {
     return (
-      <AppShell title={pick("साइत", "Sait")}>
+      <AppShell title={t("panchanga.tabs.sait")}>
         <Text className="text-sm text-muted-foreground" style={nepaliTextStyle()}>
-          {pick("यो संस्कार फेला परेन।", "That ceremony was not found.")}
+          {t("ui.sait.that_ceremony_was_not_found")}
         </Text>
       </AppShell>
     );

@@ -9,7 +9,7 @@ import { toWesternRashi } from "@vedic-patro/domain/rashi-i18n";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
 import { patroRouteLinkSearch } from "@/lib/url-state";

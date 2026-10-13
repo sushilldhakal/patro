@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, getRouteApi } from "@tanstack/react-router";
-import { Trans, useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "@vedic-patro/i18n/react";
 import { ArrowLeft, CalendarRange } from "lucide-react";
 import { SunTimesYearGrid } from "@/components/SunTimesYearGrid";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";

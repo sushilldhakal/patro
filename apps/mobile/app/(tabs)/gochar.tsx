@@ -106,7 +106,7 @@ export default function GocharScreen() {
   const gochar = gocharQ.data?.gochar;
 
   return (
-    <AppShell title={pick("गोचर", "Gochar")} showHeader={false}>
+    <AppShell title={t("ui.gochar.gochar")} showHeader={false}>
       <View className="gap-8">
       <PageHeader
         icon={<AppNavIcon name="orbit" size={28} color={colors.secondary} />}
@@ -154,19 +154,16 @@ export default function GocharScreen() {
         </View>
       ) : gocharQ.isError ? (
         <Text className={gocharClasses.errorText} style={nepaliTextStyle()}>
-          {pick("गोचर ल्याउन सकिएन।", "Could not load transits.")}
+          {t("ui.gochar.could_not_load_transits")}
         </Text>
       ) : (
         <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>
-          {pick("लोड हुँदै…", "Loading…")}
+          {t("common.loading")}
         </Text>
       )}
 
       <Text className={gocharClasses.mutedText} style={nepaliTextStyle()}>
-        {pick(
-          "स्थितिहरू स्थानीय सूर्योदय (उदय) मा गणना गरिएका छन् — लाहिरी निरयन।",
-          "Positions are computed at local sunrise (udaya) — Lahiri sidereal.",
-        )}
+        {t("ui.gochar.positions_are_computed_at_local_sunrise")}
       </Text>
       </View>
     </AppShell>

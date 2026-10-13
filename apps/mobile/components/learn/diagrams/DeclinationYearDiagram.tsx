@@ -84,29 +84,26 @@ const DeclinationYearScene = memo(function DeclinationYearScene({ onLabels }: Sc
 });
 
 export function DeclinationYearDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — वर्षभरि सूर्यको क्रान्ति", "3D — the Sun's declination across the year")}
+      title={t("ui.learn.n3d_the_sun_s_declination_across")}
       height={240}
       camera={{ yaw: 0.15, pitch: 0.55 }}
       frame={{ width: 1.5, height: 0.6 }}
       idleSpin={0.02}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्यको क्रान्ति", "Sun's declination") },
-        { color: DIAGRAM_COLOR.tropical, label: pick("विषुव — शून्य काट्ने ठाउँ", "Equinox — zero crossing") },
-        { color: DIAGRAM_COLOR.sidereal, label: pick("अयनान्त — घुम्ने ठाउँ", "Solstice — turning point") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.sun_s_declination") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.equinox_zero_crossing") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.solstice_turning_point") },
       ]}
       readouts={[
-        { k: pick("तिर्यकता", "Obliquity"), v: `±${digits(EPS)}°`, tone: "accent" },
-        { k: pick("विषुव", "Equinoxes"), v: digits(2) },
-        { k: pick("अयनान्त", "Solstices"), v: digits(2) },
+        { k: t("ui.learn.obliquity"), v: `±${digits(EPS)}°`, tone: "accent" },
+        { k: t("ui.learn.equinoxes"), v: digits(2) },
+        { k: t("ui.learn.solstices"), v: digits(2) },
       ]}
-      caption={pick(
-        "विषुव र अयनान्त एउटै वक्रका फरक बिन्दु हुन्, अदलाबदली गर्न मिल्दैनन्। विषुव भनेको वक्रले शून्य काट्ने ठाउँ हो — सूर्य खगोलीय विषुवत् रेखामा हुन्छ, गति सबैभन्दा छिटो। अयनान्त भनेको वक्र घुम्ने ठाउँ हो — सूर्यको उत्तर–दक्षिण गति ±२३.४४° मा रोकिन्छ र उल्टिन्छ।",
-        "Equinoxes and solstices are different points on the same curve, not interchangeable. An equinox is where the curve crosses zero — the Sun is on the celestial equator, moving fastest north-south. A solstice is where the curve turns — the Sun's north-south motion halts at ±23.44° and reverses.",
-      )}
+      caption={t("ui.learn.equinoxes_and_solstices_are_different_points")}
     >
       {({ onLabels }) => <DeclinationYearScene onLabels={onLabels} />}
     </LearnDiagram3D>

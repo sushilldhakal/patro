@@ -157,7 +157,7 @@ export function PanchangaSidebarNav({
   /** When on `/kundali/:profileId`, nested section tabs under birth-chart link. */
   kundaliSectionNav?: KundaliSectionNavProps;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const pathname = normalizeMobilePathname(usePathname());
   const kundaliProfileId = parseKundaliProfileId(pathname);
   const activeSectionId = findActivePanchangaSidebarSection(pathname);
@@ -173,7 +173,7 @@ export function PanchangaSidebarNav({
         className={panchangaPageClasses.sidebar.navTitle}
         style={nepaliTextStyle(12)}
       >
-        {pick("पञ्चाङ्ग", "Panchanga")}
+        {t("learn.diagrams.hierarchy_converge")}
       </Text>
       <View className={compact ? panchangaPageClasses.sidebar.navBody : cn("max-h-[70vh]", panchangaPageClasses.sidebar.navBody)}>
         {PANCHANGA_SIDEBAR_SECTIONS.map((section) => (

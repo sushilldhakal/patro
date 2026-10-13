@@ -7,7 +7,7 @@
  * once properly, most of them serve several articles.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* TwoZeroPoints still calls bilingualText for the one label built around a
    formatted number; everything else now comes from the catalogue. */

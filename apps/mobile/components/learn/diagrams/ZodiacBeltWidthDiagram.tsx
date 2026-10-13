@@ -57,26 +57,23 @@ const ZodiacBeltWidthScene = memo(function ZodiacBeltWidthScene({ onLabels }: Sc
 });
 
 export function ZodiacBeltWidthDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — राशि पट्टीको चौडाइ", "3D — why the zodiac has width")}
+      title={t("ui.learn.n3d_why_the_zodiac_has_width")}
       height={250}
       camera={{ yaw: 0.6, pitch: 0.65 }}
       frame={{ width: 1.3, height: 0.75 }}
       idleSpin={0.04}
       legend={BODIES.map((b) => ({ color: b.color, label: pick(b.ne, b.en) }))}
       readouts={[
-        { k: pick("सूर्यको अक्षांश", "Sun's latitude"), v: "0°", tone: "accent" },
-        { k: pick("चन्द्रको अक्षांश", "Moon's latitude"), v: `±${digits("5.1")}°` },
-        { k: pick("बुधको अक्षांश", "Mercury's latitude"), v: `±${digits(7)}°`, tone: "warn" },
-        { k: pick("राशि पट्टीको चौडाइ", "Belt width needed"), v: `±${digits(9)}°` },
+        { k: t("ui.learn.sun_s_latitude"), v: "0°", tone: "accent" },
+        { k: t("ui.learn.moon_s_latitude"), v: `±${digits("5.1")}°` },
+        { k: t("ui.learn.mercury_s_latitude"), v: `±${digits(7)}°`, tone: "warn" },
+        { k: t("ui.learn.belt_width_needed"), v: `±${digits(9)}°` },
       ]}
-      caption={pick(
-        "सूर्य परिभाषाले नै क्रान्तिवृत्तको ठ्याक्कै ०° अक्षांशमा हुन्छ — त्यो रेखाले नै क्रान्तिवृत्त तय गर्छ। चन्द्र त्यो रेखाबाट ±५.१° सम्म तर्किन्छ, र दृश्य ग्रहहरू केहीले ±७° सम्म। सबैलाई अटाउन राशि पट्टी क्रान्तिवृत्तको दुवैतर्फ लगभग ९° चौडा हुनुपर्छ।",
-        "The Sun sits by definition exactly at 0° latitude — that line is the ecliptic. The Moon wanders up to ±5.1° from it, and some visible grahas up to ±7°. To hold all of them, the rashi belt has to run about 9° wide on either side of the ecliptic.",
-      )}
+      caption={t("ui.learn.the_sun_sits_by_definition_exactly")}
     >
       {({ onLabels }) => <ZodiacBeltWidthScene onLabels={onLabels} />}
     </LearnDiagram3D>

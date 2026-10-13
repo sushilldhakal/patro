@@ -57,7 +57,7 @@ function LuckyRow({
 }
 
 export function RashifalSignCard({ sign, period }: Props) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
 
@@ -150,7 +150,7 @@ export function RashifalSignCard({ sign, period }: Props) {
         className={cn("flex-row active:opacity-80", rashifalClasses.whyButton)}
       >
         <Text className={rashifalClasses.whyLabel} style={nepaliTextStyle()}>
-          {pick("किन यस्तो?", "Why this reading?")}
+          {t("ui.rashifal.why_this_reading")}
         </Text>
         <Ionicons
           name={open ? "chevron-up" : "chevron-down"}
@@ -201,7 +201,7 @@ export function RashifalSignCard({ sign, period }: Props) {
 
           {remedy ? (
             <Text className={rashifalClasses.remedy}>
-              {pick("उपाय", "Remedy")}: {remedy}
+              {t("rashifal.remedy")}: {remedy}
             </Text>
           ) : null}
         </View>

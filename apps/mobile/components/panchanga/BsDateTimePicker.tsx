@@ -66,7 +66,7 @@ export function BsDateTimePicker({
 }: Props) {
   const pushDraft = live || embeddedInSheet;
   const colors = useThemeColors();
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, digits } = useLocale();
   const { isTablet, width: windowWidth } = useBreakpoint();
   const calendarMaxWidth = Math.min(windowWidth - 32, isTablet ? 320 : 380);
   const dayRowHeight = isTablet ? 34 : 36;
@@ -164,7 +164,7 @@ export function BsDateTimePicker({
         <Pressable
           disabled={prevDisabled}
           onPress={() => stepMonth(-1)}
-          accessibilityLabel={pick("अघिल्लो महिना", "Previous month")}
+          accessibilityLabel={t("calendar.prev_month")}
           className={cn(
             "h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-card active:bg-muted",
             prevDisabled && "opacity-40",
@@ -193,7 +193,7 @@ export function BsDateTimePicker({
         <Pressable
           disabled={nextDisabled}
           onPress={() => stepMonth(1)}
-          accessibilityLabel={pick("अर्को महिना", "Next month")}
+          accessibilityLabel={t("calendar.next_month")}
           className={cn(
             "h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-card active:bg-muted",
             nextDisabled && "opacity-40",
@@ -284,7 +284,7 @@ export function BsDateTimePicker({
       {showTime && hourAriaLabel && minuteAriaLabel ? (
         <View className="gap-1.5 border-t border-border pt-2.5">
           <Text className="text-xs text-center font-semibold uppercase tracking-widest text-muted-foreground">
-            {pick("समय", "Time")}
+            {t("common.time")}
           </Text>
           <View className="flex-row items-center justify-center gap-1.5">
             <BsNativeSelect
@@ -336,14 +336,14 @@ export function BsDateTimePicker({
             live ? "min-w-[8rem] flex-1" : "flex-1",
           )}
         >
-          <Text className="text-sm font-semibold text-foreground">{pick("आज", "Today")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{t("today")}</Text>
         </Pressable>
         {!live ? (
           <Pressable
             onPress={commit}
             className="h-9 flex-1 items-center justify-center rounded-md bg-secondary active:opacity-90"
           >
-            <Text className="text-sm font-semibold text-secondary-foreground">{pick("भयो", "Done")}</Text>
+            <Text className="text-sm font-semibold text-secondary-foreground">{t("common.done")}</Text>
           </Pressable>
         ) : null}
       </View>

@@ -102,7 +102,7 @@ const HoraWeekdayCycleScene = memo(function HoraWeekdayCycleScene({ clock, onSam
 });
 
 export function HoraWeekdayCycleDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const { clock, value: step, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 6,
     min: 0,
@@ -118,41 +118,38 @@ export function HoraWeekdayCycleDiagram() {
 
   return (
     <LearnDiagram3D
-      title={pick("३D — होरा चक्रबाट वारको क्रम", "3D — the weekday order from the hora cycle")}
+      title={t("ui.learn.n3d_the_weekday_order_from_the")}
       height={270}
       camera={{ yaw: 0.3, pitch: 0.75 }}
       frame={{ width: 1.5, height: 0.75 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.arc, label: pick("३ पाइला जम्प (चरण)", "3-step jump (chord)") },
-        { color: DIAGRAM_COLOR.sunGlow, label: pick("अहिलेको वार", "Current weekday") },
+        { color: DIAGRAM_COLOR.arc, label: t("ui.learn.n3_step_jump_chord") },
+        { color: DIAGRAM_COLOR.sunGlow, label: t("ui.learn.current_weekday") },
       ]}
       readouts={[
-        { k: pick("चरण", "Step"), v: `${digits(Math.min(7, Math.round(step) + 1))} / ${digits(7)}`, tone: "accent" },
-        { k: pick("ग्रह", "Graha"), v: ringLabels[landedIdx]! },
-        { k: pick("वार", "Weekday"), v: dayNames[Math.min(6, Math.round(step))]!, tone: "warn" },
+        { k: t("ui.learn.step"), v: `${digits(Math.min(7, Math.round(step) + 1))} / ${digits(7)}`, tone: "accent" },
+        { k: t("kundali.graha"), v: ringLabels[landedIdx]! },
+        { k: t("kundali.weekday"), v: dayNames[Math.min(6, Math.round(step))]!, tone: "warn" },
       ]}
       slider={{
         value: step,
         min: 0,
         max: 6,
         step: 1,
-        label: pick(`चरण ${digits(Math.round(step) + 1)}`, `Step ${digits(Math.round(step) + 1)}`),
+        label: t("ui.learn.step_value", { value: digits(Math.round(step) + 1) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("सुरु", "Start"), value: 0 },
-        { label: pick("पूरा", "Complete"), value: 6 },
+        { label: t("ui.common.start"), value: 0 },
+        { label: t("ui.learn.complete"), value: 6 },
       ]}
       onPreset={scrubTo}
       presetValue={step}
       presetTolerance={0.4}
-      caption={pick(
-        "बाहिरी वृत्तमा सात ग्रह गति अनुसार क्रमबद्ध छन् — सबैभन्दा ढिलो (शनि) देखि सबैभन्दा छिटो (चन्द्र)। दिनका २४ होरा सातवटा ग्रहमा बाँड्दा ३ पूरा फेरो पछि ३ बाँकी रहन्छ — त्यसैले हरेक दिनको पहिलो होराको स्वामी अघिल्लो दिनको स्वामीभन्दा ३ स्थान पर पर्छ। सूर्यबाट सुरु गरी ३–३ पाइला उफ्रँदै जाँदा ठ्याक्कै हप्ताको क्रम बन्छ — आइत, सोम, मंगल, बुध, बिही, शुक्र, शनि।",
-        "The outer ring orders the seven grahas by speed — slowest (Saturn) to fastest (Moon). Splitting the day's 24 horas across seven grahas leaves a remainder of 3 after full turns, so each day's first hora lord sits 3 places past the previous day's. Starting from the Sun and jumping 3 places each time produces the week exactly — Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday.",
-      )}
+      caption={t("ui.learn.the_outer_ring_orders_the_seven")}
     >
       {({ onLabels }) => (
         <HoraWeekdayCycleScene clock={clock} onSample={onSample} onLabels={onLabels} ringLabels={ringLabels} />

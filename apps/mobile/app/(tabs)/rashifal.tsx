@@ -144,7 +144,7 @@ export default function RashifalScreen() {
   }, [generalQ.data, lang, t]);
 
   return (
-    <AppShell title={pick("राशिफल", "Rashifal")} showHeader={false}>
+    <AppShell title={t("nav.jyotish_rashifal")} showHeader={false}>
       {/* AppShell already supplies the page scroller and horizontal padding —
           a second ScrollView + padding here is what made this screen inset more
           than every other page. */}
@@ -223,7 +223,7 @@ export default function RashifalScreen() {
         <RashifalProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={handleSelectProfile} />
         {profileError ? (
           <Text className={cn("text-center", rashifalClasses.profileError)} style={nepaliTextStyle()}>
-            {pick("जन्म मिति र स्थान प्रोफाइलमा भर्नुहोस्।", "Add birth date and place to the profile.")}
+            {t("ui.rashifal.add_birth_date_and_place_to")}
           </Text>
         ) : null}
         </View>
@@ -234,7 +234,7 @@ export default function RashifalScreen() {
           </View>
         ) : error ? (
           <ErrorState
-            message={pick("राशिफल लोड गर्न सकिएन।", "Could not load rashifal.")}
+            message={t("ui.rashifal.could_not_load_rashifal")}
             onRetry={() => (selectedProfile ? personalQ.refetch() : generalQ.refetch())}
           />
         ) : selectedProfile && personalQ.data ? (
@@ -266,7 +266,7 @@ export default function RashifalScreen() {
           </View>
         ) : (
           <Text className={cn("mt-6 py-8", rashifalClasses.intro)} style={nepaliTextStyle()}>
-            {pick("यस अवधिको राशिफल उपलब्ध छैन।", "Rashifal unavailable for this period.")}
+            {t("ui.rashifal.rashifal_unavailable_for_this_period")}
           </Text>
         )}
       </View>

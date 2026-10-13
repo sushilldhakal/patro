@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { LayoutGrid, Sunrise } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   PATRO_PLANET_KEYS,
   PATRO_PLANET_NE,

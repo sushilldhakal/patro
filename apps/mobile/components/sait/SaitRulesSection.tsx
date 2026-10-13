@@ -81,7 +81,7 @@ export function SaitRulesSection({
         <Ionicons name="document-text-outline" size={16} color={colors.secondary} />
         <View className={saitClasses.rulesHeadText}>
           <Text className={saitClasses.rulesTitle} style={nepaliTextStyle()}>
-            {pick("यो सूची कसरी बनेको हो", "How this list is generated")}
+            {t("ui.sait.how_this_list_is_generated")}
           </Text>
           <Text className={saitClasses.rulesSubtitle} style={nepaliTextStyle()}>
             {offCount > 0
@@ -189,7 +189,7 @@ export function SaitRulesSection({
             <View className={saitClasses.engine}>
               <Ionicons name="information-circle-outline" size={14} color={colors.mutedForeground} />
               <Text className={saitClasses.engineText} style={nepaliTextStyle()}>
-                {pick("मुहूर्त इन्जिन", "Muhurta engine")} {engineVersion}
+                {t("ui.sait.muhurta_engine")} {engineVersion}
               </Text>
             </View>
           ) : null}

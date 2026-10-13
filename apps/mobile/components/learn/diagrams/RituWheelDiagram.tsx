@@ -124,29 +124,26 @@ const RituWheelScene = memo(function RituWheelScene({ onLabels, monthNames, ritu
 });
 
 export function RituWheelDiagram() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const monthNames = lang === "en" ? MONTHS_EN : MONTHS_NE;
   const rituNames = RITUS.map((r) => pick(r.ne, r.en));
 
   return (
     <LearnDiagram3D
-      title={pick("३D — छ ऋतु चक्र", "3D — the six-ṛtu wheel")}
+      title={t("ui.learn.n3d_the_six_tu_wheel")}
       height={280}
       camera={{ yaw: 0.2, pitch: 0.95 }}
       frame={{ width: 1.5, height: 0.75 }}
       idleSpin={0.02}
       legend={[
-        { color: DIAGRAM_COLOR.tropical, label: pick("विषुव (सायन)", "Equinox (tropical)") },
-        { color: DIAGRAM_COLOR.sidereal, label: pick("अयनान्त (सायन)", "Solstice (tropical)") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.equinox_tropical") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.solstice_tropical") },
       ]}
       readouts={[
-        { k: pick("ऋतु", "Ṛtu"), v: `${6} (${pick("२ महिना हरेक", "2 months each")})` },
-        { k: pick("अयनांश", "Ayanamsha"), v: `${AYANAMSHA}°`, tone: "accent" },
+        { k: t("ui.learn.tu"), v: `${6} (${t("ui.learn.n2_months_each")})` },
+        { k: t("kundali.ayanamsha"), v: `${AYANAMSHA}°`, tone: "accent" },
       ]}
-      caption={pick(
-        "बाहिरी घेरामा १२ निरयन बि.सं. महिना, भित्री घेरामा ६ ऋतु (दुई–दुई महिना)। चार सायन बिन्दु (विषुव/अयनान्त) जानाजान महिनाको सीमामा पर्दैनन् — ग्रीष्म अयनान्त असारभित्रै पर्छ, जेठ–असारको जोर्नीमा होइन — किनकि एउटा नाप ताराको सापेक्ष हो, अर्को विषुवको। अयन चलनका कारण यी बिन्दु हरेक ७२ वर्षमा ~१° अनुसार घेराभित्र सर्दै जान्छन्, जुन नै \"ऋतु सर्नु\" हो।",
-        "The outer ring is the 12 sidereal BS months, the inner ring the 6 ṛtus (two months each). The four tropical markers (equinox/solstice) deliberately don't land on month boundaries — the summer solstice falls inside Asar, not at the Jestha–Asar seam — because one ruler is tied to the stars and the other to the equinox. Precession creeps these markers around the ring by ~1° every 72 years, which is what \"ṛtu drift\" means.",
-      )}
+      caption={t("ui.learn.the_outer_ring_is_the_12")}
     >
       {({ onLabels }) => <RituWheelScene onLabels={onLabels} monthNames={monthNames} rituNames={rituNames} />}
     </LearnDiagram3D>

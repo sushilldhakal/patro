@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { LEARN_TOPICS_BY_SLUG } from "@/lib/learn/learn-topics-meta";
 import { useLocale, bilingualText } from "@/i18n/locale";

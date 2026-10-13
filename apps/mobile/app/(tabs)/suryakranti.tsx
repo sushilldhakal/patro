@@ -15,7 +15,7 @@ import { sunTimesClasses } from "@vedic-patro/design-tokens/classes/sun-times-cl
 import { displayLocationLabel, resolveLocationTimezone, usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 export default function SuryakrantiScreen() {
-  const { pick, t, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const { colors, isDark } = useTheme();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
@@ -27,7 +27,7 @@ export default function SuryakrantiScreen() {
   const locationLabel = displayLocationLabel(location, undefined, lang);
 
   return (
-    <AppShell title={pick("सूर्य क्रान्ति", "Sun Revolution")} showHeader={false}>
+    <AppShell title={t("sun_times.title")} showHeader={false}>
       <View className="mb-4">
         <Link href="/" asChild>
           <Pressable accessibilityRole="link" className={cn("flex-row self-start", sunTimesClasses.backLink)}>

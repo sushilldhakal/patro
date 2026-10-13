@@ -61,27 +61,24 @@ const PakshaStripScene = memo(function PakshaStripScene({ onLabels: _onLabels }:
 });
 
 export function PakshaStripDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — पक्ष र चन्द्र कला", "3D — the pakshas and the Moon's phases")}
+      title={t("ui.learn.n3d_the_pakshas_and_the_moon")}
       height={210}
       camera={{ yaw: 0, pitch: 0.3 }}
       frame={{ width: 1.5, height: 0.4 }}
       idleSpin={0}
       legend={[
-        { color: illustration.green58, label: pick("शुक्ल पक्ष — तिथि १–१५", "Shukla paksha — tithi 1–15") },
-        { color: illustration.sky68b, label: pick("कृष्ण पक्ष — तिथि १६–३०", "Krishna paksha — tithi 16–30") },
+        { color: illustration.green58, label: t("ui.learn.shukla_paksha_tithi_1_15") },
+        { color: illustration.sky68b, label: t("ui.learn.krishna_paksha_tithi_16_30") },
       ]}
       readouts={[
-        { k: pick("देखाइएका चरण", "Phases shown"), v: digits(N) },
-        { k: pick("एक लुनेसन", "One lunation"), v: `${digits("29.5")} ${pick("दिन", "days")}`, tone: "accent" },
+        { k: t("ui.learn.phases_shown"), v: digits(N) },
+        { k: t("ui.learn.one_lunation"), v: `${digits("29.5")} ${t("common.days")}`, tone: "accent" },
       ]}
-      caption={pick(
-        "प्रत्येक चन्द्रलाई साँचो सूर्य-कोणबाट उज्यालो पारिएको छ — औंसीदेखि (अन्धकार) पूर्णिमासम्म (पूर्ण उज्यालो) उज्यालो भाग बढ्दै जाने आधा शुक्ल पक्ष हो; पूर्णिमादेखि फेरि औंसीसम्म घट्दै जाने आधा कृष्ण पक्ष। प्रत्येक तिथि यही १२° कोणको एक खण्ड हो।",
-        "Each Moon is lit from the true Sun-elongation angle — the growing-light half from new moon (dark) to full moon (fully lit) is Shukla paksha; the shrinking half from full moon back to new moon is Krishna paksha. Each tithi is one 12° slice of this same angle.",
-      )}
+      caption={t("ui.learn.each_moon_is_lit_from_the")}
     >
       {({ onLabels }) => <PakshaStripScene onLabels={onLabels} />}
     </LearnDiagram3D>

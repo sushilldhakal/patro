@@ -2,7 +2,7 @@ import { getRouteApi } from "@tanstack/react-router";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { useMemo } from "react";
 import { RotateCcw } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { GrahaGroupedEventCards } from "@/components/graha/GrahaGroupedEventCards";

@@ -71,34 +71,31 @@ const SiderealSolarDayScene = memo(function SiderealSolarDayScene({ onLabels, co
 });
 
 export function SiderealSolarDayDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const copy = {
-    start: pick("सुरु", "Start"),
-    after: pick("१ नाक्षत्र घूर्णन पछि", "After 1 sidereal rotation"),
-    sun: pick("सूर्य", "Sun"),
-    leftover: pick("~१° बाँकी", "~1° still to go"),
+    start: t("ui.common.start"),
+    after: t("ui.learn.after_1_sidereal_rotation"),
+    sun: t("kundali.report.meta_sun"),
+    leftover: t("ui.learn.n1_still_to_go"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — नाक्षत्र दिन बनाम सौर दिन", "3D — sidereal day vs solar day")}
+      title={t("ui.learn.n3d_sidereal_day_vs_solar_day")}
       height={250}
       camera={{ yaw: 0.5, pitch: 0.6 }}
       frame={{ width: 1.2, height: 0.75 }}
       idleSpin={0.03}
       legend={[
-        { color: DIAGRAM_COLOR.earth, label: pick("पृथ्वीका दुई अवस्था", "Earth at two positions") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("बाँकी कोण (बढाइचढाइ गरेर देखाइएको)", "Leftover angle (exaggerated)") },
+        { color: DIAGRAM_COLOR.earth, label: t("ui.learn.earth_at_two_positions") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.leftover_angle_exaggerated") },
       ]}
       readouts={[
-        { k: pick("नाक्षत्र दिन", "Sidereal day"), v: "23h 56m 4s" },
-        { k: pick("सौर दिन", "Solar day"), v: "24h 00m", tone: "accent" },
-        { k: pick("अतिरिक्त घूर्णन", "Extra rotation"), v: `~1° ≈ ~${digits(4)} ${pick("मिनेट", "min")}`, tone: "warn" },
+        { k: t("learn.playground.sidereal_day"), v: "23h 56m 4s" },
+        { k: t("ui.learn.solar_day"), v: "24h 00m", tone: "accent" },
+        { k: t("ui.learn.extra_rotation"), v: `~1° ≈ ~${digits(4)} ${t("common.minutes")}`, tone: "warn" },
       ]}
-      caption={pick(
-        "पृथ्वी आफ्नो अक्षमा एक पूरा फेरो घुम्न २३ घण्टा ५६ मिनेट लिन्छ — यो ताराको सापेक्ष हो, जुन असीम टाढा भएकाले दिशा कहिल्यै बदलिँदैन। तर त्यति बेलासम्म पृथ्वी आफ्नो कक्षमा ~१° अघि बढिसकेको हुन्छ, त्यसैले सूर्यलाई फेरि ठीक उही ठाउँमा ल्याउन थप ~१° घुम्नुपर्छ — त्यही ~४ मिनेटले सौर दिन २४ घण्टाको बनाउँछ।",
-        "Earth turns once on its axis in 23h56m — measured against a star so distant its direction never changes. But by then Earth has also moved ~1° along its orbit, so it must turn that extra ~1° to bring the Sun back overhead — those ~4 minutes are what make the solar day 24 hours.",
-      )}
+      caption={t("ui.learn.earth_turns_once_on_its_axis")}
     >
       {({ onLabels }) => <SiderealSolarDayScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

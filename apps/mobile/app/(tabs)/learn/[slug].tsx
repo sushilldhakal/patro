@@ -24,7 +24,7 @@ export default function LearnArticleScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const params = useLocalSearchParams<{ slug: string | string[]; chapter?: string }>();
   const slug = resolveSlug(params.slug);
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
 
   const retiredTo = slug ? RETIRED_SLUG_REDIRECTS[slug] : undefined;
   if (retiredTo) {
@@ -40,7 +40,7 @@ export default function LearnArticleScreen() {
       scroll
       scrollRef={scrollRef}
       showHeader={false}
-      title={topic ? pick(topic.title.ne, topic.title.en) : pick("सिकाइ", "Learn")}
+      title={topic ? pick(topic.title.ne, topic.title.en) : t("nav.learn")}
     >
       {/* Web's "← Learn" link above the article. */}
       <Pressable
@@ -49,18 +49,18 @@ export default function LearnArticleScreen() {
         className={cn(learnPageClasses.backLink, "mb-8 flex-row self-start active:opacity-70")}
       >
         <Ionicons name="arrow-back" size={16} color={colors.foreground} />
-        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{pick("सिकाइ", "Learn")}</Text>
+        <Text className={cn(learnPageClasses.backLinkText, "text-foreground")}>{t("nav.learn")}</Text>
       </Pressable>
       {valid && slug ? (
         <LearnArticleView slug={slug} scrollRef={scrollRef} initialChapter={params.chapter} />
       ) : (
         <View className={cn(learnPageClasses.notFound, "justify-center")}>
           <Text className="text-center text-sm text-foreground">
-            {pick("लेख फेला परेन।", "Article not found.")}
+            {t("ui.learn.article_not_found")}
           </Text>
           <Pressable onPress={() => router.replace("/learn")} className={cn(learnPageClasses.inlineLink, "flex-row active:opacity-80")}>
             <Ionicons name="arrow-back" size={16} color={colors.secondary} />
-            <Text className={learnPageClasses.inlineLinkText}>{pick("सिकाइमा फर्कनुहोस्", "Back to Learn")}</Text>
+            <Text className={learnPageClasses.inlineLinkText}>{t("ui.learn.back_to_learn")}</Text>
           </Pressable>
         </View>
       )}

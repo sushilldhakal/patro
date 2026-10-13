@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { cityKeys, fetchNearestCity, searchCities, type City } from "@/lib/api";
 import {
   NEPAL_NEAREST_MAX_KM,

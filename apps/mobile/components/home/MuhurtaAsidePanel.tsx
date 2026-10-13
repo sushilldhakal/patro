@@ -221,7 +221,7 @@ function PushkaraList({ p }: { p: PanchangaDay }) {
     );
   }
 
-  const pushkaraLabel = pick("पुष्कर", "Pushkara");
+  const pushkaraLabel = t("common.pushkara");
 
   return (
     <View className="flex-row flex-wrap gap-1">
@@ -344,7 +344,7 @@ export function MuhurtaAsidePanel({ p }: Props) {
         className="items-center rounded-lg border border-border py-2.5 active:opacity-80"
       >
         <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle()}>
-          {pick("पूरा तालिका हेर्नुहोस् →", "View full table →")}
+          {t("ui.home.view_full_table")}
         </Text>
       </Pressable>
     </View>

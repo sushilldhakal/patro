@@ -8,7 +8,7 @@
  * just a number; drawn to scale it becomes an argument.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* The figures that still call bilingualText are the ones whose text is built
    around a formatted number, so they are not single catalogue strings. */

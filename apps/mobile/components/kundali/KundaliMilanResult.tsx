@@ -47,17 +47,17 @@ function KutaDetailPanel({
   boyName: string;
   girlName: string;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const label = KUTA_LABELS[kuta.id];
   const name = label ? pick(label.ne, label.en) : kuta.id;
 
   return (
     <View className={cn(m.panel, "mx-2 mb-2")}>
       <Text className={m.panelTitle} style={nepaliTextStyle(14)}>
-        {name} {pick("कूट विवरण", "Kuta details")}
+        {name} {t("ui.kundali.kuta_details")}
       </Text>
       <Text className={m.panelPoints} style={nepaliTextStyle(13)}>
-        {name} {pick("कूट अङ्क", "Kuta points")}:{" "}
+        {name} {t("ui.kundali.kuta_points")}:{" "}
         <Text className={cn("font-num", m.panelPointsValue)}>
           {digits(formatObtained(kuta.obtained))}/{digits(kuta.max)}
         </Text>
@@ -93,7 +93,7 @@ export function KundaliMilanResult({
   girlName: string;
   result: AshtakutaResult;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -115,7 +115,7 @@ export function KundaliMilanResult({
         <View className={m.totalRow}>
           <View className="min-w-0 flex-1">
             <Text className={m.eyebrow} style={nepaliTextStyle(11)}>
-              {pick("कुल गुण मिलान", "Total guna match")}
+              {t("ui.kundali.total_guna_match")}
             </Text>
             <Text style={nepaliTextStyle(22)} className={cn(m.recommendation, tone)}>
               {lang === "en" ? result.recommendationLabel : result.recommendationLabelNe}
@@ -127,15 +127,15 @@ export function KundaliMilanResult({
               <Text className={m.totalMax}> / {digits(result.totalMax)}</Text>
             </Text>
             <Text className={m.gunaLabel} style={nepaliTextStyle(11)}>
-              {pick("गुण", "guna")}
+              {t("ui.kundali.guna")}
             </Text>
           </View>
         </View>
 
         <View className={m.partners}>
           {[
-            { label: pick("वर", "Groom"), name: boyName },
-            { label: pick("कन्या", "Bride"), name: girlName },
+            { label: t("ui.common.groom"), name: boyName },
+            { label: t("ui.common.bride"), name: girlName },
           ].map((p) => (
             <View key={p.label} className={m.partner}>
               <Text className={m.partnerText} style={nepaliTextStyle(12)}>
@@ -149,7 +149,7 @@ export function KundaliMilanResult({
         {result.nadiDoshaAdvisory || result.nadiDoshaAdvisoryNe ? (
           <View className={m.advisory}>
             <Text className={m.advisoryTitle} style={nepaliTextStyle(11)}>
-              {pick("नाडी दोष सूचना", "Nadi dosha advisory")}
+              {t("ui.kundali.nadi_dosha_advisory")}
             </Text>
             <Text className={m.advisoryText} style={nepaliTextStyle(13)}>
               {lang === "en" ? result.nadiDoshaAdvisory : result.nadiDoshaAdvisoryNe}
@@ -161,7 +161,7 @@ export function KundaliMilanResult({
       {/* dosha analysis */}
       <View className={m.card}>
         <Text className={cn(m.cardTitle, "mb-4")} style={nepaliTextStyle(14)}>
-          {pick("दोष विश्लेषण", "Dosha analysis")}
+          {t("milan.dosha_analysis_title")}
         </Text>
         <View>
           {result.doshaAnalysis.map((dosha, i) => (
@@ -182,7 +182,7 @@ export function KundaliMilanResult({
                 style={nepaliTextStyle(13)}
                 className={cn(m.doshaVerdict, dosha.present ? m.doshaPresent : m.doshaAbsent)}
               >
-                {dosha.present ? pick("छ", "Present") : pick("छैन", "Absent")}
+                {dosha.present ? t("kundali.present") : t("ui.kundali.absent")}
               </Text>
             </View>
           ))}
@@ -275,17 +275,14 @@ export function KundaliMilanResult({
           style={nepaliTextStyle(11)}
         >
           *
-          {pick(
-            "अधिकतम — अधिकतम अङ्क · प्राप्त — प्राप्त अङ्क",
-            "Max — maximum point · Obt — obtained point",
-          )}
+          {t("ui.kundali.max_maximum_point_obt_obtained_point")}
         </Text>
       </TableScrollShell>
 
       {/* notes */}
       <View className={m.card}>
         <Text className={cn(m.cardTitle, "mb-3")} style={nepaliTextStyle(14)}>
-          {pick("टिप्पणी", "Notes")}
+          {t("ui.common.notes")}
         </Text>
         <View className={m.notesList}>
           {(lang === "en" ? result.notes : result.notesNe).map((note) => (

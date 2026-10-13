@@ -33,7 +33,7 @@ export function HomeRashifalSignPicker({
   defaultSignId,
   contentInset = 0,
 }: Props) {
-  const { lang, pick } = useLocale();
+  const { t, lang } = useLocale();
   const colors = useThemeColors();
   const { width } = useWindowDimensions();
   const { isTablet } = useBreakpoint();
@@ -140,14 +140,14 @@ export function HomeRashifalSignPicker({
       <Pressable
         onPress={() => goToIndex(index - 1)}
         className={cn(homeClasses.pickerArrow, "absolute left-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
-        accessibilityLabel={pick("अघिल्लो", "Previous")}
+        accessibilityLabel={t("learn_page.prev")}
       >
         <Ionicons name="chevron-back" size={18} color={colors.foreground} />
       </Pressable>
       <Pressable
         onPress={() => goToIndex(index + 1)}
         className={cn(homeClasses.pickerArrow, "absolute right-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
-        accessibilityLabel={pick("अर्को", "Next")}
+        accessibilityLabel={t("learn_page.next")}
       >
         <Ionicons name="chevron-forward" size={18} color={colors.foreground} />
       </Pressable>

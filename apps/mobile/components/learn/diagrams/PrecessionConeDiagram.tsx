@@ -156,7 +156,7 @@ const PrecessionConeScene = memo(function PrecessionConeScene({ clock, onSample,
 });
 
 export function PrecessionConeDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const { clock, value: year, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 0,
     min: -CYCLE / 2,
@@ -168,30 +168,30 @@ export function PrecessionConeDiagram() {
   const phiNorm = ((phi % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
   const near = nearestStar(phiNorm);
   const eqIdx = ((-Math.round(phi / (30 * D2R)) % 12) + 12) % 12;
-  const copy = { northPole: pick("उत्तरी ध्रुव", "North pole"), equinox: pick("वसन्त विषुव", "Spring equinox") };
+  const copy = { northPole: t("ui.learn.north_pole"), equinox: t("learn.study.spring_equinox") };
 
   const fmtYear = (y: number) => {
     const r = Math.round(y);
-    return r < 0 ? pick(`वि.सं. ${digits(Math.abs(r))} अघि`, `${digits(Math.abs(r))} yr before now`) : pick(`वि.सं. +${digits(r)}`, `+${digits(r)} yr from now`);
+    return r < 0 ? t("ui.learn.r_yr_before_now", { r: digits(Math.abs(r)) }) : t("ui.learn.r_yr_from_now", { r: digits(r) });
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — विषुवको अयन-शङ्कु", "3D — the precession cone")}
+      title={t("ui.learn.n3d_the_precession_cone")}
       height={300}
       camera={{ yaw: 0.4, pitch: 0.85 }}
       frame={{ width: 1.3, height: 0.95 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("ध्रुवको मार्ग (शङ्कु)", "Pole's path (cone)") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.pole_s_path_cone") },
         { color: DIAGRAM_LABEL_COLOR.warn, label: copy.equinox },
-        { color: DIAGRAM_LABEL_COLOR.body, label: pick("घूर्णन अक्ष", "Spin axis") },
+        { color: DIAGRAM_LABEL_COLOR.body, label: t("ui.learn.spin_axis") },
       ]}
       readouts={[
-        { k: pick("समय", "Time"), v: fmtYear(year), tone: "accent" },
-        { k: pick("अहिलेको ध्रुवतारा", "Current pole star"), v: lang === "en" ? near.en : near.ne, tone: "warn" },
-        { k: pick("विषुव अहिले", "Equinox now in"), v: getRashiName(eqIdx + 1, lang) },
-        { k: pick("अक्षीय झुकाव", "Axial tilt"), v: `${digits("23.5")}°` },
+        { k: t("common.time"), v: fmtYear(year), tone: "accent" },
+        { k: t("ui.learn.current_pole_star"), v: lang === "en" ? near.en : near.ne, tone: "warn" },
+        { k: t("ui.learn.equinox_now_in"), v: getRashiName(eqIdx + 1, lang) },
+        { k: t("ui.learn.axial_tilt"), v: `${digits("23.5")}°` },
       ]}
       slider={{
         value: year,
@@ -206,10 +206,7 @@ export function PrecessionConeDiagram() {
       onPreset={scrubTo}
       presetValue={year}
       presetTolerance={400}
-      caption={pick(
-        "पृथ्वीको घूर्णन अक्ष क्रान्तिवृत्तको ध्रुवबाट ~२३.५° तेर्सिएको छ, तर यो झुकाव कायम राखेरै बिस्तारै एउटा शङ्कु कोर्छ — ठ्याक्कै घुम्ने लट्टुझैं। उत्तरी ध्रुवले तारापुञ्जबीच एउटा वृत्त कोर्छ, फरक-फरक 'ध्रुवतारा' छोएर — पूरा फेरो ~२५,७७२ वर्षमा। यसैबीच वसन्त विषुव बिन्दु स्थिर निरयन राशिचक्रको सापेक्षमा उल्टो दिशामा घुम्छ — यही सर्ने चालले अयनांश बढाउँछ।",
-        "Earth's spin axis stays tilted ~23.5° from the ecliptic pole but slowly sweeps a real cone around it, keeping that tilt fixed — exactly like a spinning top. The north pole traces a circle among the stars, touching different 'pole stars' along the way — one full loop takes ~25,772 years. Meanwhile the spring equinox point rotates the opposite way relative to the fixed sidereal zodiac — that drift is what grows the ayanamsha.",
-      )}
+      caption={t("ui.learn.earth_s_spin_axis_stays_tilted")}
     >
       {({ onLabels }) => <PrecessionConeScene clock={clock} onSample={onSample} onLabels={onLabels} lang={lang} copy={copy} />}
     </LearnDiagram3D>

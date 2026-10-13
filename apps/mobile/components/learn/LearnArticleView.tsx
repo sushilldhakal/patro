@@ -31,7 +31,7 @@ function TopicNavCard({
   direction: "prev" | "next";
   onPress: () => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   return (
     <Pressable
@@ -41,7 +41,7 @@ function TopicNavCard({
       {direction === "prev" ? <Ionicons name="arrow-back" size={16} color={colors.secondary} /> : null}
       <View className={`min-w-0 flex-1 ${direction === "next" ? "items-end" : ""}`}>
         <Text className={cn(learnPageClasses.navKicker, "text-foreground")} style={nepaliTextStyle()}>
-          {direction === "prev" ? pick("अघिल्लो", "Previous") : pick("अर्को", "Next")}
+          {direction === "prev" ? t("learn_page.prev") : t("learn_page.next")}
         </Text>
         <Text numberOfLines={1} className={learnPageClasses.navTitle} style={nepaliTextStyle()}>
           {pick(topic.title.ne, topic.title.en)}
@@ -62,7 +62,7 @@ export function LearnArticleView({
   initialChapter?: string;
 }) {
   const router = useRouter();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const topic = LEARN_LIBRARY_BY_SLUG[slug];
   const section = topic ? LEARN_SECTIONS_BY_ID[topic.section] : undefined;
@@ -80,7 +80,7 @@ export function LearnArticleView({
   if (!topic || (!merged && !data)) {
     return (
       <View className="items-center justify-center py-12">
-        <Text className="text-center text-muted-foreground">{pick("लेख फेला परेन।", "Article not found.")}</Text>
+        <Text className="text-center text-muted-foreground">{t("ui.learn.article_not_found")}</Text>
       </View>
     );
   }
@@ -145,7 +145,7 @@ export function LearnArticleView({
         >
           <Ionicons name="book-outline" size={16} color={colors.secondary} />
           <Text className={learnPageClasses.inlineLinkText} style={nepaliTextStyle()}>
-            {pick("सबै विषय", "All topics")}
+            {t("ui.learn.all_topics")}
           </Text>
         </Pressable>
       </View>

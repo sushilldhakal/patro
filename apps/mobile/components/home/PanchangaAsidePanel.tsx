@@ -54,7 +54,7 @@ export function PanchangaAsidePanel({
   location,
   browseEra = "bs",
 }: Props) {
-  const { pick, t } = useLocale();
+  const { t } = useLocale();
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("panchanga");
 
@@ -76,10 +76,10 @@ export function PanchangaAsidePanel({
     <View className={homeClasses.asideShell}>
       <View className={homeClasses.asideHeader}>
         <Text className={homeClasses.asideTitle}>
-          {isSelectedToday ? pick("आजको पञ्चाङ्ग", "Today's Panchanga") : pick("पञ्चाङ्ग", "Panchanga")}
+          {isSelectedToday ? t("ui.home.today_s_panchanga") : t("learn.diagrams.hierarchy_converge")}
         </Text>
         <Pressable onPress={() => router.push({ pathname: "/panchanga", params: { date: selectedAd } })}>
-          <Text className={homeClasses.asideLink}>{pick("पूरा विवरण →", "Full detail →")}</Text>
+          <Text className={homeClasses.asideLink}>{t("ui.home.full_detail")}</Text>
         </Pressable>
       </View>
 
@@ -123,7 +123,7 @@ export function PanchangaAsidePanel({
         <View className={homeClasses.asidePanel}>
           {error && !p && tab !== "sait" ? (
             <ErrorState
-              message={pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load panchanga.")}
+              message={t("ui.common.could_not_load_panchanga")}
               onRetry={onRetry}
             />
           ) : loading && !p && tab !== "sait" ? (
@@ -140,7 +140,7 @@ export function PanchangaAsidePanel({
               <MuhurtaAsidePanel p={activeP} />
             ) : (
               <Text className="text-body py-6 text-center text-muted-foreground">
-                {pick("मुहूर्त विवरण उपलब्ध छैन।", "Muhurta details unavailable.")}
+                {t("ui.home.muhurta_details_unavailable")}
               </Text>
             )
           ) : (

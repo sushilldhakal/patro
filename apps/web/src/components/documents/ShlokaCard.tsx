@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Pause, Play } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { activeTokenAt, buildWordTrack } from "@vedic-patro/domain/word-tracking";

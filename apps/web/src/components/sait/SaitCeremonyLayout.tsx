@@ -1,6 +1,6 @@
 import { HeartHandshake } from "lucide-react";
 import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import type { Era } from "@vedic-patro/domain/era";

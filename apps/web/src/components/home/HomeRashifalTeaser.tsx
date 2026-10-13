@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";

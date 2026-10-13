@@ -54,33 +54,30 @@ const TwoZeroPointsScene = memo(function TwoZeroPointsScene({ onLabels, copy }: 
 });
 
 export function TwoZeroPointsDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const copy = {
-    tropical: pick("सायन शून्य (विषुव)", "Tropical zero (equinox)"),
-    sidereal: pick("निरयन शून्य (मेष तारा)", "Sidereal zero (Mesha star)"),
-    gap: pick("अयनांश", "Ayanamsha"),
+    tropical: t("ui.learn.tropical_zero_equinox"),
+    sidereal: t("ui.learn.sidereal_zero_mesha_star"),
+    gap: t("kundali.ayanamsha"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — दुई शून्य बिन्दु", "3D — two zero points")}
+      title={t("ui.learn.n3d_two_zero_points")}
       height={250}
       camera={{ yaw: 0.3, pitch: 0.85 }}
       frame={{ width: 1.3, height: 0.75 }}
       idleSpin={0.04}
       legend={[
-        { color: DIAGRAM_COLOR.tropical, label: pick("सायन (ऋतु-आधारित)", "Tropical (season-based)") },
-        { color: DIAGRAM_COLOR.sidereal, label: pick("निरयन (तारा-आधारित)", "Sidereal (star-based)") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("अयनांश खाडल", "Ayanamsha gap") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.tropical_season_based") },
+        { color: DIAGRAM_COLOR.sidereal, label: t("ui.learn.sidereal_star_based") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.ayanamsha_gap") },
       ]}
       readouts={[
-        { k: pick("अयनांश", "Ayanamsha"), v: `${digits(AYAN)}°`, tone: "warn" },
-        { k: pick("दिनमा", "In days"), v: `~${digits(24)}` },
+        { k: t("kundali.ayanamsha"), v: `${digits(AYAN)}°`, tone: "warn" },
+        { k: t("ui.learn.in_days"), v: `~${digits(24)}` },
       ]}
-      caption={pick(
-        "बाहिरी हरियो रेखा सायन (ऋतु-आधारित) मापन हो, जसको शून्य वसन्त-विषुवमा टाँसिएको छ। भित्री राशि-चक्र निरयन (तारा-आधारित) हो, जसको शून्य आकाशको साँचो मेष तारापुञ्जमा टाँसिएको छ। दुई शून्यबीचको कोणीय फरक नै अयनांश हो — आज लगभग २४°।",
-        "The outer green line is the tropical (season-based) scale, whose zero is pinned to the vernal equinox. The inner zodiac ring is sidereal (star-based), whose zero is pinned to the true Mesha star-cluster. The angular gap between the two zeros is the ayanamsha — today about 24°.",
-      )}
+      caption={t("ui.learn.the_outer_green_line_is_the")}
     >
       {({ onLabels }) => <TwoZeroPointsScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

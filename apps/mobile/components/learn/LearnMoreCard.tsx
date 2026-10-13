@@ -26,9 +26,9 @@ export function LearnMoreCard({
   className?: string;
 }) {
   const router = useRouter();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
-  const resolvedHeading = heading ?? pick("थप जान्नुहोस्", "Learn more");
+  const resolvedHeading = heading ?? t("learn_more.default_heading");
   const topics = slugs.map(topicForSlug).filter((t): t is LibraryTopic => Boolean(t));
 
   if (topics.length === 0) return null;

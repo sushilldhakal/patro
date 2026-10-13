@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link, getRouteApi } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ArrowLeft, Sparkles, Sun } from "lucide-react";
 import {
   fetchMonthCalendar,

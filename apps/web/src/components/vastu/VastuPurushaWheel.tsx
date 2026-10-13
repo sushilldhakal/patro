@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { WHEEL_SIZE } from "@vedic-patro/domain/vastu";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale } from "@/i18n/locale";
 import {
   VASTU_DIR16,

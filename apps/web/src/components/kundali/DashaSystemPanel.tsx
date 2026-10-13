@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { DashaSystem, DashaTreeResponse } from "@/lib/api";
 import { DashaTree } from "@/components/kundali/DashaTree";

@@ -134,25 +134,25 @@ function DayTimelineBand({
   onModeChange?: (mode: DayCycleMode) => void;
   showToggle?: boolean;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const subtitle =
     mode === "Calendar Day"
-      ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
-      : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise");
+      ? t("ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
+      : t("ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise");
   return (
     <div className={patroSecBand}>
-      <h2 className={cn("m-0", "text-sm", "font-bold")}>{pick("दिन-चक्र", "Day cycle")}</h2>
+      <h2 className={cn("m-0", "text-sm", "font-bold")}>{t("panchanga.day_cycle.title")}</h2>
       <span className="text-sm uppercase tracking-wider">
         {subtitle}
       </span>
       <span className="ml-auto inline-flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm normal-case tracking-normal">
         <span className="inline-flex items-center gap-1.5">
           <i className="inline-block h-2.5 w-2.5 rounded-md bg-success/34 not-italic" />
-          {pick("शुभ", "Good")}
+          {t("panchanga.day_cycle.good")}
           <i className="inline-block h-2.5 w-2.5 rounded-md bg-danger/30 not-italic" />
-          {pick("अशुभ", "Bad")}
+          {t("panchanga.day_cycle.bad")}
           <i className="inline-block h-2.5 w-2.5 rounded-md bg-secondary/22 not-italic" />
-          {pick("रात", "Night")}
+          {t("panchanga.day_cycle.night")}
         </span>
         {showToggle ? <DayCycleToggle mode={mode} onModeChange={onModeChange} /> : null}
       </span>
@@ -174,7 +174,7 @@ export function DayTimeline({
   civilLoading = false,
   showToggle = true,
 }: Props) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const isCivil = mode === "Calendar Day";
   const data = useMemo(() => {
     if (isCivil) return civil ? buildCivilTimelineData(civil, p) : null;
@@ -262,7 +262,7 @@ export function DayTimeline({
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
   let nowG: number | null = null;
-  let nowLabel = pick("अहिले", "Now");
+  let nowLabel = t("panchanga.day_cycle.now");
   const anchorAd = p?.panchanga_date_ad ?? p?.date_ad ?? dateAd;
   const chartMins = minutesOnVedicChart(p?.query_instant_local, anchorAd ?? "", needleClock);
 
@@ -279,7 +279,7 @@ export function DayTimeline({
       mins = minutesSinceMidnightInTimezone(now, timeZone);
     } else if (showNeedle && chartMins != null) {
       mins = chartMins % (24 * 60);
-      nowLabel = pick("छानिएको समय", "Chosen time");
+      nowLabel = t("panchanga.day_cycle.chosen_time");
     }
     if (mins != null) nowG = Math.max(0, Math.min(60, mins / 24));
   } else if (showNeedle && needleClock && chartMins != null) {
@@ -297,7 +297,7 @@ export function DayTimeline({
   } else if (showNeedle && chartMins != null) {
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
     if (nowG != null) {
-      nowLabel = pick("छानिएको समय", "Chosen time");
+      nowLabel = t("panchanga.day_cycle.chosen_time");
     }
   }
 
@@ -337,7 +337,7 @@ export function DayTimeline({
           className={cn("block", "h-auto", "w-full", "min-w-[768px]")}
           preserveAspectRatio="xMinYMid meet"
           role="img"
-          aria-label={pick("पूर्ण दिन पञ्चाङ्ग चित्र", "Full panchanga day chart")}
+          aria-label={t("ui.panchanga.full_panchanga_day_chart")}
         >
           {nightBands.map(([a, b], i) => (
             <rect
@@ -351,11 +351,11 @@ export function DayTimeline({
           ))}
 
           <text x={X0 - 10} y={isCivil ? 34 : 20} className={pgxScaleLabelDim()} textAnchor="end">
-            {pick("घण्टा", "Hour")}
+            {t("panchanga.hour_aria")}
           </text>
           {!isCivil && (
             <text x={X0 - 10} y={47} className={pgxScaleLabelDim(true)} textAnchor="end">
-              {pick("घडी", "Ghati")}
+              {t("panchanga.day_cycle.ghati")}
             </text>
           )}
           <line x1={X0} y1={30} x2={X1} y2={30} className={pgTlAxis} />
@@ -611,7 +611,7 @@ export function DayTimeline({
       {data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
-          title={pick("अशुभ समय", "Inauspicious periods")}
+          title={t("panchanga.day_cycle.inauspicious_periods")}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
             label: pick(a.detailNe, a.detailEn),
@@ -623,7 +623,7 @@ export function DayTimeline({
       {data.shubha.length > 0 && (
         <PeriodCards
           tone="success"
-          title={pick("शुभ समय", "Auspicious periods")}
+          title={t("panchanga.day_cycle.auspicious_periods")}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
             label: pick(s.name, s.nameEn),
@@ -635,7 +635,7 @@ export function DayTimeline({
       {p && planets.length > 0 && (
         <div className="flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5">
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-sm font-bold leading-tight">{pick("ग्रह", "Planets")}</span>
+            <span className="text-sm font-bold leading-tight">{t("panchanga.day_cycle.planets")}</span>
             <span className="min-w-0 text-sm leading-snug break-words [overflow-wrap:anywhere]">{getPlanetsAnchorLabel(p, lang)}</span>
           </div>
           <div className="grid grid-cols-2 xs:grid-cols-3 gap-1.5 sm:grid-cols-3 md:grid-cols-4">
@@ -700,7 +700,7 @@ export function DayTimeline({
                       labelL,
                       coordText,
                       nakWithPada,
-                      lordText && `${pick("नक्षत्रेश / उप", "Lord / Sub")} ${lordText}`,
+                      lordText && `${t("panchanga.day_cycle.lord_sub")} ${lordText}`,
                     ]
                       .filter(Boolean)
                       .join(" · ")}
@@ -729,7 +729,7 @@ export function DayTimeline({
                         {lordText ? (
                           <span
                             className="min-w-0 break-words font-semibold text-secondary [overflow-wrap:anywhere]"
-                            title={pick("नक्षत्रेश / उप स्वामी", "Nakshatra lord / sub-lord")}
+                            title={t("panchanga.day_cycle.lord_sub_title")}
                           >
                             {lordText}
                           </span>

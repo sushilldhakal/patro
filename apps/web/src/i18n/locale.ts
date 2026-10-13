@@ -1,29 +1,10 @@
-import { useCallback, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
-import i18n from "./index";
-import { formatLocaleDigits } from "./digits";
-import { getStoredLanguage } from "@/lib/user-preferences";
-import { isBrowser } from "@/lib/browser";
+import type { ReactNode } from "react";
 
 export { normalizeLang, pickLocale, bilingualText, type Lang } from "@vedic-patro/domain/locale";
 import { normalizeLang, type Lang } from "@vedic-patro/domain/locale";
 
-/**
- * Active UI language — prefers resolvedLanguage and stored preference on client.
- *
- * English copy is code-split and loaded on demand, so `lng` can be "en" while
- * the bundle is still in flight. Reporting "en" during that window makes
- * `t()`/`bilingualText` hand back the Nepali fallback under an English label,
- * and any value memoized in that render stays Nepali for good. Until the
- * bundle is actually present the UI genuinely is Nepali, so say so.
- */
-export function resolveActiveLang(i18nLang?: string, resolvedLang?: string): Lang {
-  const wantsEnglish =
-    normalizeLang(resolvedLang ?? i18nLang) === "en" ||
-    (isBrowser && getStoredLanguage() === "en");
-  if (!wantsEnglish) return "ne";
-  return i18n.hasResourceBundle("en", "translation") ? "en" : "ne";
-}
+/** The shared hook (@vedic-patro/i18n/react) — the same one the app uses. */
+export { useLocale } from "@vedic-patro/i18n/react";
 
 /** Bilingual JSX — picks ne or en React tree based on lang. */
 export function bilingualNode(
@@ -32,27 +13,4 @@ export function bilingualNode(
   en: ReactNode,
 ): ReactNode {
   return normalizeLang(lang) === "en" ? en : ne;
-}
-
-/**
- * Hook returning the current UI language plus helpers to select localized text
- * and digits. Keeps components from hardcoding `.ne` everywhere.
- */
-export function useLocale() {
-  const { i18n: inst } = useTranslation();
-  const lang = resolveActiveLang(inst.language, inst.resolvedLanguage);
-
-  const digits = useCallback(
-    (value: string | number | null | undefined): string =>
-      value == null ? "" : formatLocaleDigits(value, lang),
-    [lang],
-  );
-
-  const monoDigits = useCallback(
-    (value: string | number | null | undefined): string =>
-      value == null ? "" : formatLocaleDigits(value, lang),
-    [lang],
-  );
-
-  return { lang, isEnglish: lang === "en", digits, monoDigits };
 }

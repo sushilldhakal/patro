@@ -1,6 +1,6 @@
 import type { PanchangaDay } from "@/lib/api";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   formatAayanLabel,
   formatDurationFull,

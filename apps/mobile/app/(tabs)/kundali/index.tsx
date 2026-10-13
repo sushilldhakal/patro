@@ -20,7 +20,7 @@ import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-class
 import { cn } from "@vedic-patro/domain/utils";
 
 export default function KundaliScreen() {
-  const { pick, t } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -58,7 +58,7 @@ export default function KundaliScreen() {
           <View className={cn(kundaliClasses.emptyBox, "items-center")}>
             <ActivityIndicator />
             <Text className={cn("mt-2", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-              {pick("लोड हुँदै…", "Loading…")}
+              {t("common.loading")}
             </Text>
           </View>
         ) : !isAuthenticated ? (
@@ -73,10 +73,7 @@ export default function KundaliScreen() {
         ) : (
           <View className="gap-4">
             <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
-              {pick(
-                "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
-                "Select a profile or add a new one.",
-              )}
+              {t("ui.kundali.select_a_profile_or_add_a")}
             </Text>
             <KundaliProfilePicker ref={pickerRef} selectedId={null} onSelect={onSelectProfile} />
           </View>

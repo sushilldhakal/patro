@@ -1,5 +1,5 @@
 import { Link, Navigate, useParams } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { DayPlaygroundDiagram } from "@/components/learn/DayPlaygroundDiagram";

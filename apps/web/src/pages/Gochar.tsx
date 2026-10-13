@@ -10,7 +10,7 @@ import { GocharPlanetDeepDive } from "@/components/gochar/GocharPlanetDeepDive";
 import { usePanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { usePatroDayUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useRouteLoading } from "@/lib/route-loading";
 import { todayAdStringInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";

@@ -50,7 +50,7 @@ type Props = {
 };
 
 export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -65,7 +65,7 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
               className={kundaliClasses.profileEyebrow}
               style={nepaliTextStyle(12)}
             >
-              {pick("जन्मकुण्डली", "Birth chart")}
+              {t("ui.kundali.birth_chart")}
             </Text>
             <View className={kundaliClasses.profileNameRow}>
               <Text className={kundaliClasses.profileName} style={nepaliTextStyle(18)}>
@@ -87,23 +87,23 @@ export function KundaliProfileHeader({ profile, birthDateLabel, birthTime, place
           items={[
             {
               icon: "calendar-outline" as const,
-              label: pick("जन्म मिति", "Birth date"),
+              label: t("kundali.birth_date"),
               value: birthDateLabel,
             },
             {
               icon: "time-outline" as const,
-              label: pick("समय", "Time"),
+              label: t("common.time"),
               value: birthTime,
               mono: true,
             },
             {
               icon: "location-outline" as const,
-              label: pick("स्थान", "Place"),
+              label: t("kundali.place"),
               value: place,
             },
             {
               icon: "globe-outline" as const,
-              label: pick("समय क्षेत्र", "Timezone"),
+              label: t("kundali.timezone"),
               value: profile.timezone || "—",
               mono: true,
             },

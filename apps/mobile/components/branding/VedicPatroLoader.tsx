@@ -162,8 +162,8 @@ export function VedicPatroLoader({
   size?: number;
   className?: string;
 }) {
-  const { pick } = useLocale();
-  const shown = label === undefined ? pick("लोड हुँदैछ…", "Loading…") : label;
+  const { t } = useLocale();
+  const shown = label === undefined ? t("rashifal.profile.loading") : label;
 
   return (
     <View className={`items-center justify-center gap-4 ${className ?? ""}`}>

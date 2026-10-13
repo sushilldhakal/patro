@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Link } from "@tanstack/react-router";
 import { User, LogOut, UserCircle, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";

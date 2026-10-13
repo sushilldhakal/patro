@@ -22,7 +22,7 @@
  * chapter's own `overlay` decides afresh.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { X } from "lucide-react";
 
 import { LEARN_DIAGRAMS } from "@/lib/learn/learn-diagrams";

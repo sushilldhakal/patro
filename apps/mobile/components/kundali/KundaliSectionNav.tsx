@@ -29,7 +29,7 @@ export function KundaliSectionNav({
   variant = "horizontal",
   className,
 }: Props) {
-  const { lang, pick } = useLocale();
+  const { t, lang } = useLocale();
   const activeGroup = navGroupIdForSection(activeId);
   const [expandedId, setExpandedId] = useState<string | null>(activeGroup);
 
@@ -56,7 +56,7 @@ export function KundaliSectionNav({
           className={kundaliDetailClasses.sectionNav.sideTitle}
           style={nepaliTextStyle(12)}
         >
-          {pick("कुण्डली खण्ड", "Chart sections")}
+          {t("ui.kundali.chart_sections")}
         </Text>
         <View className={kundaliDetailClasses.sectionNav.sideList}>
           {KUNDALI_NAV_GROUPS.map((group) => {

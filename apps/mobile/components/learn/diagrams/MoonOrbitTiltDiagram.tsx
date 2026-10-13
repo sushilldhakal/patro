@@ -160,7 +160,7 @@ const MoonOrbitTiltScene = memo(function MoonOrbitTiltScene({ clock, precT, onSa
 });
 
 export function MoonOrbitTiltDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const [precT, setPrecT] = useState(0);
   const { clock, value: day, playing, setPlaying, scrubTo, onSample } = useDiagramClock({
     initial: 0,
@@ -177,64 +177,61 @@ export function MoonOrbitTiltDiagram() {
   const atNode = Math.abs(Math.sin(u * D2R)) < Math.sin(11 * D2R);
   const status: Status = atNode && angDiff(E, 180) < 15 ? "lunar" : atNode && angDiff(E, 0) < 15 ? "solar" : "none";
   const season = angDiff(omega, sunLon) < 13 || angDiff(omega, sunLon + 180) < 13;
-  const phase = angDiff(E, 180) < 12 ? pick("पूर्णिमा", "Purnima") : angDiff(E, 0) < 12 ? pick("औंसी", "Aunsi") : E < 180 ? pick("शुक्ल पक्ष", "Shukla paksha") : pick("कृष्ण पक्ष", "Krishna paksha");
+  const phase = angDiff(E, 180) < 12 ? t("learn.purnima") : angDiff(E, 0) < 12 ? t("learn.aunsi") : E < 180 ? t("learn.diagrams.paksha_shukla") : t("learn.diagrams.paksha_krishna");
   const statusText =
     status === "lunar"
-      ? pick("चन्द्रग्रहण", "Lunar eclipse")
+      ? t("ui.learn.lunar_eclipse")
       : status === "solar"
-        ? pick("सूर्यग्रहण", "Solar eclipse")
+        ? t("learn.study.eclipse.status_solar")
         : season
-          ? pick("ग्रहण ऋतु", "Eclipse season")
-          : pick("ग्रहण छैन", "No eclipse");
+          ? t("ui.learn.eclipse_season")
+          : t("learn.study.eclipse.status_none");
 
   const copy = {
-    sun: pick("सूर्य", "Sun"),
-    moon: pick("चन्द्र", "Moon"),
-    asc: pick("राहु", "Rahu"),
-    desc: pick("केतु", "Ketu"),
+    sun: t("kundali.report.meta_sun"),
+    moon: t("kundali.graha_name_moon"),
+    asc: t("grahas.rahu"),
+    desc: t("grahas.ketu"),
     eclipse: statusText,
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — चन्द्र-कक्षको झुकाव र ग्रहण", "3D — the Moon's tilted orbit and eclipses")}
+      title={t("ui.learn.n3d_the_moon_s_tilted_orbit")}
       height={300}
       camera={{ yaw: 0.35, pitch: 0.8 }}
       frame={{ width: 1.4, height: 0.9 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.tropical, label: pick("चन्द्र-कक्ष (झुकेको)", "Moon's orbit (tilted)") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("सूर्य–पृथ्वी–छायाँ रेखा", "Sun–Earth–shadow line") },
-        { color: DIAGRAM_COLOR.tropical, label: pick("राहु / केतु — पात बिन्दु", "Rahu / Ketu — the nodes") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.moon_s_orbit_tilted") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.sun_earth_shadow_line") },
+        { color: DIAGRAM_COLOR.tropical, label: t("ui.learn.rahu_ketu_the_nodes") },
       ]}
       readouts={[
-        { k: pick("कक्ष झुकाव", "Orbital tilt"), v: `~${digits(REAL_TILT.toFixed(1))}°` },
-        { k: pick("चन्द्र चरण", "Moon phase"), v: phase },
-        { k: pick("पात-चक्र", "Nodal cycle"), v: `${digits(precT.toFixed(1))} / ${digits(NODAL_YEARS)} ${pick("वर्ष", "yr")}` },
-        { k: pick("अवस्था", "Status"), v: statusText, tone: status !== "none" ? "warn" : undefined },
+        { k: t("ui.learn.orbital_tilt"), v: `~${digits(REAL_TILT.toFixed(1))}°` },
+        { k: t("learn.study.eclipse.moon_phase"), v: phase },
+        { k: t("ui.learn.nodal_cycle"), v: `${digits(precT.toFixed(1))} / ${digits(NODAL_YEARS)} ${t("ui.learn.yr")}` },
+        { k: t("ui.learn.status"), v: statusText, tone: status !== "none" ? "warn" : undefined },
       ]}
       slider={{
         value: day,
         min: 0,
         max: YEAR_RANGE,
-        label: pick(`दिन ${digits(Math.round(day))} — सूर्य रेखा घुम्छ`, `Day ${digits(Math.round(day))} — the Sun line turns`),
+        label: t("ui.learn.day_day_the_sun_line_turns", { day: digits(Math.round(day)) }),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       presets={[
-        { label: pick("पात रेखा: ०%", "Nodes: 0%"), value: 0 },
-        { label: pick("पात रेखा: २५%", "Nodes: 25%"), value: NODAL_YEARS * 0.25 },
-        { label: pick("पात रेखा: ५०%", "Nodes: 50%"), value: NODAL_YEARS * 0.5 },
-        { label: pick("पात रेखा: ७५%", "Nodes: 75%"), value: NODAL_YEARS * 0.75 },
+        { label: t("ui.learn.nodes_0"), value: 0 },
+        { label: t("ui.learn.nodes_25"), value: NODAL_YEARS * 0.25 },
+        { label: t("ui.learn.nodes_50"), value: NODAL_YEARS * 0.5 },
+        { label: t("ui.learn.nodes_75"), value: NODAL_YEARS * 0.75 },
       ]}
       onPreset={setPrecT}
       presetValue={precT}
       presetTolerance={0.3}
-      caption={pick(
-        "पृथ्वीको बीचबाट गएको सूर्य–पृथ्वी (ग्रहण) रेखा सूर्यसँगै वर्षमा एक फेरो घुम्छ। चन्द्रको कक्ष ~५.१° झुकेको छ (यहाँ स्पष्टताका लागि ठूलो देखाइएको), त्यसैले धेरैजसो पूर्णिमामा चन्द्र यो रेखाभन्दा माथि वा तल हुन्छ — ग्रहण हुँदैन। ग्रहण त्यतिबेला मात्र हुन्छ जब यो रेखा राहु वा केतुमा पुग्छ र त्यहीँ पूर्णिमा/औंसी पर्छ। माथिको प्रिसेटले पात रेखालाई १८.६ वर्षे चक्रमा घुमाउँछ — त्यसैले ग्रहण ऋतु हरेक वर्ष सर्दै जान्छ।",
-        "The Sun–Earth (eclipse) line through Earth's centre turns once a year with the Sun. The Moon's orbit is tilted ~5.1° (shown larger here for clarity), so at most full moons the Moon passes above or below this line — no eclipse. An eclipse happens only when this line reaches Rahu or Ketu and a full/new moon lands there too. The presets above rotate the line of nodes through its 18.6-year cycle — which is why eclipse season drifts year to year.",
-      )}
+      caption={t("ui.learn.the_sun_earth_eclipse_line_through")}
     >
       {({ onLabels }) => <MoonOrbitTiltScene clock={clock} precT={precT} onSample={onSample} onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

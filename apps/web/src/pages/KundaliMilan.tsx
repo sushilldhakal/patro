@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Heart, LogIn, Plus, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";

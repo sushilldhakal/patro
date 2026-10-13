@@ -127,7 +127,7 @@ export default function HolidaysScreen() {
   ];
 
   return (
-    <AppShell title={pick("बिदा तथा पर्व", "Holidays")} showHeader={false}>
+    <AppShell title={t("nav.holidays")} showHeader={false}>
       <PatroPageHeader
         className="mb-8"
         icon={<AppNavIcon name="party-popper" size={24} color={colors.secondary} />}
@@ -185,7 +185,7 @@ export default function HolidaysScreen() {
           className={cn("flex-1", holidaysClasses.searchInput)}
           value={filter}
           onChangeText={setFilter}
-          placeholder={pick("पर्व खोज्नुहोस्…", "Search festivals…")}
+          placeholder={t("ui.holidays.search_festivals")}
           placeholderTextColor={colors.mutedForeground}
         />
         {filter ? (
@@ -198,15 +198,12 @@ export default function HolidaysScreen() {
       {isError ? (
         <View className={cn("mb-8", holidaysClasses.errorBox)}>
           <Text className={holidaysClasses.errorText} style={nepaliTextStyle()}>
-            {pick(
-              "डाटा लोड गर्न सकिएन। API लाई केही बेर लाग्न सक्छ।",
-              "Failed to load data. The API may need a moment to warm up.",
-            )}
+            {t("holidays.error")}
           </Text>
         </View>
       ) : loading ? (
         <Text className="mb-8 text-sm text-muted-foreground" style={nepaliTextStyle()}>
-          {pick("लोड हुँदै…", "Loading…")}
+          {t("common.loading")}
         </Text>
       ) : (
         <View className="mb-8">
@@ -237,7 +234,7 @@ export default function HolidaysScreen() {
             {rows.length === 0 ? (
               <View className={holidaysClasses.emptyCell}>
                 <Text className={holidaysClasses.emptyText} style={nepaliTextStyle()}>
-                  {pick("कुनै नतिजा भेटिएन।", "No results found.")}
+                  {t("avakahada.no_results")}
                 </Text>
               </View>
             ) : (
@@ -262,7 +259,7 @@ export default function HolidaysScreen() {
                             <View className={holidaysClasses.govtFlag}>
                               <Ionicons name="flag-outline" size={12} color={colors.destructive} />
                               <Text className={holidaysClasses.govtFlagText} style={nepaliTextStyle()}>
-                                {pick("हो", "Yes")}
+                                {t("common.yes")}
                               </Text>
                             </View>
                           ) : null}

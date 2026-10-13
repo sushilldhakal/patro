@@ -13,22 +13,22 @@ import { cn } from "@vedic-patro/domain/utils";
 export function AakashGocharEntryCard() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t } = useLocale();
   return (
     <Pressable
       onPress={() => router.push("/aakash-gochar")}
       className={cn(homeClasses.aakashCard, "active:opacity-80")}
       accessibilityRole="button"
-      accessibilityLabel={pick("३D आकाश गोचर", "3D Aakash Gochar")}
+      accessibilityLabel={t("sidebar_nav.items.aakash-gochar.label")}
     >
       <AppNavIcon name="orbit" size={20} color={colors.secondary} />
       <View className="min-w-0 flex-1">
         <Text numberOfLines={1} className="text-sm font-medium text-foreground" style={nepaliTextStyle()}>
-          {pick("३D आकाश गोचर", "3D Aakash Gochar")}
+          {t("sidebar_nav.items.aakash-gochar.label")}
         </Text>
       </View>
       <Text className="shrink-0 text-xs text-muted-foreground" style={nepaliTextStyle()}>
-        {pick("भूकेन्द्रित", "Geocentric")}
+        {t("ui.home.geocentric")}
       </Text>
       <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
     </Pressable>

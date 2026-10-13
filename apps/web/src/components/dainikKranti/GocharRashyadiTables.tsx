@@ -1,5 +1,5 @@
 import type { GocharGraha } from "@/lib/api";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import {
   mergeKundaliRashi,
   RASHYADI_PLANET_ABBREV,

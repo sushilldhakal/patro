@@ -18,7 +18,7 @@ type Props = {
 };
 
 export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const { isAuthenticated } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
@@ -30,7 +30,7 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
     <View className={cn("flex-row", rashifalClasses.picker.label)}>
       <Ionicons name="person-outline" size={16} color={colors.secondary} />
       <Text className={rashifalClasses.picker.labelText} style={nepaliTextStyle()}>
-        {pick("प्रोफाइल", "Profile")}
+        {t("ui.rashifal.profile")}
       </Text>
     </View>
   );
@@ -43,7 +43,7 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
           onPress={() => setAuthOpen(true)}
           className={cn(rashifalClasses.picker.signInButton, "active:opacity-80")}
         >
-          <Text className={rashifalClasses.picker.signInText}>{pick("साइन इन", "Sign in")}</Text>
+          <Text className={rashifalClasses.picker.signInText}>{t("ui.rashifal.sign_in")}</Text>
         </Pressable>
         <AuthDialog open={authOpen} onOpenChange={setAuthOpen} initialMode="login" />
       </View>
@@ -55,7 +55,7 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
       <View className={cn("flex-row", rashifalClasses.picker.row)}>
         {label}
         <Text className={rashifalClasses.picker.empty}>
-          {pick("कुण्डली प्रोफाइल थप्नुहोस्।", "Add a kundali profile.")}
+          {t("ui.rashifal.add_a_kundali_profile")}
         </Text>
       </View>
     );
@@ -65,8 +65,8 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
   const buttonLabel = selected
     ? selected.full_name
     : isLoading
-      ? pick("लोड…", "Loading…")
-      : pick("सबै राशि", "All signs");
+      ? t("ui.rashifal.loading")
+      : t("rashifal.profile.all_signs");
 
   return (
     <View className="items-center gap-1">
@@ -97,7 +97,7 @@ export function RashifalProfilePicker({ selectedId, onSelect }: Props) {
               !selectedId && rashifalClasses.picker.menuItemActive,
             )}
           >
-            <Text className={rashifalClasses.picker.menuText}>{pick("सबै राशि", "All signs")}</Text>
+            <Text className={rashifalClasses.picker.menuText}>{t("rashifal.profile.all_signs")}</Text>
           </Pressable>
           {profiles.map((p) => (
             <Pressable

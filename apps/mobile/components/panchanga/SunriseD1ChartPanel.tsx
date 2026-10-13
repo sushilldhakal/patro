@@ -14,7 +14,7 @@ type Props = {
 };
 
 export function SunriseD1ChartPanel({ p }: Props) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const houses = useMemo(() => buildPanchangaD1Houses(p), [p]);
   const anchor = getPlanetsAnchorLabel(p);
 
@@ -23,7 +23,7 @@ export function SunriseD1ChartPanel({ p }: Props) {
   return (
     <View className={panchangaPageClasses.aside.card}>
       <Text className={panchangaPageClasses.aside.eyebrow}>
-        {pick("D1 चक्र", "D1 chart")}
+        {t("panchanga.d1_chart")}
       </Text>
       <Text className={panchangaPageClasses.aside.anchor}>{anchor}</Text>
       <View className={panchangaPageClasses.aside.body}>

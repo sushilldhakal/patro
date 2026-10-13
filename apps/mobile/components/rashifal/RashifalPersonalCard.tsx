@@ -68,7 +68,7 @@ function LuckyCell({ icon, value }: { icon: keyof typeof Ionicons.glyphMap; valu
 }
 
 export function RashifalPersonalCard({ name, personal }: Props) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
 
@@ -169,7 +169,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
         className={cn("flex-row active:opacity-80", rashifalClasses.whyButton)}
       >
         <Text className={rashifalClasses.whyLabel} style={nepaliTextStyle()}>
-          {pick("विवरण", "Details")}
+          {t("ui.rashifal.details")}
         </Text>
         <Ionicons name={open ? "chevron-up" : "chevron-down"} size={16} color={colors.mutedForeground} />
       </Pressable>

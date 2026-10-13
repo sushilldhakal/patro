@@ -14,7 +14,7 @@ import { accountClasses } from "@vedic-patro/design-tokens/classes/account-class
 import { cn } from "@vedic-patro/domain/utils";
 
 export default function ResetPasswordScreen() {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { token } = useLocalSearchParams<{ token?: string }>();
@@ -28,15 +28,15 @@ export default function ResetPasswordScreen() {
   const submit = async () => {
     setError(null);
     if (password.length < 8) {
-      setError(pick("पासवर्ड कम्तीमा ८ अक्षरको हुनुपर्छ।", "Password must be at least 8 characters."));
+      setError(t("ui.reset_password.password_must_be_at_least_8"));
       return;
     }
     if (password !== confirm) {
-      setError(pick("पासवर्ड मिलेन।", "Passwords do not match."));
+      setError(t("ui.reset_password.passwords_do_not_match"));
       return;
     }
     if (!token) {
-      setError(pick("रिसेट लिंक अवैध छ।", "That reset link is not valid."));
+      setError(t("ui.reset_password.that_reset_link_is_not_valid"));
       return;
     }
     setBusy(true);
@@ -46,10 +46,7 @@ export default function ResetPasswordScreen() {
       setTimeout(() => router.replace("/" as never), 2000);
     } catch {
       setError(
-        pick(
-          "पासवर्ड परिवर्तन गर्न सकिएन। लिंक अवधि सकिएको हुन सक्छ।",
-          "Could not update the password. The link may have expired.",
-        ),
+        t("ui.reset_password.could_not_update_the_password_the"),
       );
     } finally {
       setBusy(false);
@@ -58,14 +55,14 @@ export default function ResetPasswordScreen() {
 
   if (done) {
     return (
-      <AppShell title={pick("पासवर्ड रिसेट", "Reset password")} showHeader={false}>
+      <AppShell title={t("auth.reset_password")} showHeader={false}>
         <View className={cn("w-full py-12", accountClasses.panelCentered)}>
           <Ionicons name="checkmark-circle" size={48} color={colors.success} />
           <Text className={cn("text-center", accountClasses.statusTitle)} style={nepaliTextStyle()}>
-            {pick("पासवर्ड परिवर्तन भयो", "Password updated")}
+            {t("ui.reset_password.password_updated")}
           </Text>
           <Text className={cn("text-center", accountClasses.statusBody)} style={nepaliTextStyle()}>
-            {pick("अब नयाँ पासवर्डले लगइन गर्न सक्नुहुन्छ।", "You can now log in with the new password.")}
+            {t("ui.reset_password.you_can_now_log_in_with")}
           </Text>
         </View>
       </AppShell>
@@ -94,21 +91,18 @@ export default function ResetPasswordScreen() {
   );
 
   return (
-    <AppShell title={pick("नयाँ पासवर्ड राख्नुहोस्", "Set a new password")} showHeader={false}>
+    <AppShell title={t("ui.reset_password.set_a_new_password")} showHeader={false}>
       <View className={cn("w-full py-12", accountClasses.panel)}>
         <Text className={accountClasses.formTitle} style={nepaliTextStyle()}>
-          {pick("नयाँ पासवर्ड राख्नुहोस्", "Set a new password")}
+          {t("ui.reset_password.set_a_new_password")}
         </Text>
         <Text className={accountClasses.statusBody} style={nepaliTextStyle()}>
-          {pick(
-            "तलको फारम भरेर आफ्नो पासवर्ड परिवर्तन गर्नुहोस्।",
-            "Fill in the form below to change your password.",
-          )}
+          {t("ui.reset_password.fill_in_the_form_below_to")}
         </Text>
 
         <View className={accountClasses.form}>
-          {field(pick("नयाँ पासवर्ड", "New password"), password, setPassword, pick("कम्तीमा ८ अक्षर", "At least 8 characters"))}
-          {field(pick("पासवर्ड दोहोर्‍याउनुहोस्", "Confirm password"), confirm, setConfirm)}
+          {field(t("auth.new_password"), password, setPassword, t("auth.password_hint"))}
+          {field(t("ui.reset_password.confirm_password"), confirm, setConfirm)}
 
           {error ? (
             <Text className={accountClasses.formError} style={nepaliTextStyle()}>
@@ -117,7 +111,7 @@ export default function ResetPasswordScreen() {
           ) : null}
 
           <Button
-            label={busy ? pick("अद्यावधिक हुँदै…", "Updating…") : pick("पासवर्ड परिवर्तन", "Update password")}
+            label={busy ? t("ui.reset_password.updating") : t("ui.reset_password.update_password")}
             size="lg"
             disabled={busy}
             className={accountClasses.submit}
@@ -125,7 +119,7 @@ export default function ResetPasswordScreen() {
           />
           <Pressable onPress={() => router.replace("/" as never)} accessibilityRole="button" className="items-center">
             <Text className={accountClasses.backLink} style={nepaliTextStyle()}>
-              {pick("गृहपृष्ठ", "Back home")}
+              {t("ui.reset_password.back_home")}
             </Text>
           </Pressable>
         </View>

@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/domain/utils";
 import { getRouteFaqs, seoYearVars } from "@/lib/seo";
 import { seoClasses } from "@vedic-patro/design-tokens/classes/seo-classes";

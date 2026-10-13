@@ -48,7 +48,7 @@ export function useBiometricLock(): BiometricLockValue {
 }
 
 export function BiometricLockProvider({ children }: { children: ReactNode }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const { isAuthenticated, loading: authLoading, logout } = useAuth();
 
@@ -84,8 +84,8 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
     prompting.current = true;
     try {
       const ok = await authenticateBiometric(
-        pick(`${label} प्रयोग गरी वैदिक पात्रो खोल्नुहोस्`, `Use ${label} to open Vedic Patro`),
-        pick("रद्द", "Cancel"),
+        t("ui.auth.use_label_to_open_vedic_patro", { label }),
+        t("common.cancel"),
       );
       if (ok) setLocked(false);
     } finally {
@@ -129,8 +129,8 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
       if (on) {
         if (!info.available) return false;
         const ok = await authenticateBiometric(
-          pick(`${label} चालु गर्न पुष्टि गर्नुहोस्`, `Confirm to turn on ${label}`),
-          pick("रद्द", "Cancel"),
+          t("ui.auth.confirm_to_turn_on_label", { label }),
+          t("common.cancel"),
         );
         if (!ok) return false;
       }
@@ -151,14 +151,11 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
       if (await deviceStore.get<boolean>(PROMPTED_KEY)) return;
       await deviceStore.set(PROMPTED_KEY, true);
       Alert.alert(
-        pick(`${label} प्रयोग गर्ने?`, `Use ${label}?`),
-        pick(
-          `तपाईं साइन इन नै रहनुहुनेछ। अर्को पटकदेखि ${label} ले एप खोल्नुहोस्।`,
-          `You'll stay signed in. Next time, open the app with ${label}.`,
-        ),
+        t("ui.auth.use_label", { label }),
+        t("ui.auth.you_ll_stay_signed_in_next", { label }),
         [
-          { text: pick("अहिले होइन", "Not now"), style: "cancel" },
-          { text: pick("चालु गर्नुहोस्", "Turn on"), onPress: () => void setEnabled(true) },
+          { text: t("ui.auth.not_now"), style: "cancel" },
+          { text: t("ui.auth.turn_on"), onPress: () => void setEnabled(true) },
         ],
       );
     })();
@@ -185,7 +182,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
             <>
               <Ionicons name="lock-closed-outline" size={44} color={colors.secondary} />
               <Text className="text-title mt-4 font-bold text-foreground">
-                {pick("वैदिक पात्रो लक गरिएको छ", "Vedic Patro is locked")}
+                {t("ui.auth.vedic_patro_is_locked")}
               </Text>
               <Pressable
                 onPress={() => void unlock()}
@@ -194,7 +191,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
               >
                 <Ionicons name={info.kind === "fingerprint" ? "finger-print" : "scan-outline"} size={18} color={inkOn(colors.secondary)} />
                 <Text className="text-body font-semibold text-secondary-foreground">
-                  {pick(`${label} प्रयोग गर्नुहोस्`, `Unlock with ${label}`)}
+                  {t("ui.auth.unlock_with_label", { label })}
                 </Text>
               </Pressable>
               <Pressable
@@ -205,7 +202,7 @@ export function BiometricLockProvider({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 className="mt-5 py-2 active:opacity-70"
               >
-                <Text className="text-body text-muted-foreground">{pick("साइन आउट", "Sign out")}</Text>
+                <Text className="text-body text-muted-foreground">{t("ui.auth.sign_out")}</Text>
               </Pressable>
             </>
           ) : null}

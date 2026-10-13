@@ -51,7 +51,7 @@ export function GocharSkySection({
   dateLabel: string;
   onSelectPlanet?: (key: GrahaKey) => void;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const cols = width >= 1024 ? 3 : width >= 640 ? 2 : 1;
@@ -61,10 +61,10 @@ export function GocharSkySection({
     <View className={cn(gocharClasses.skyCard, "border border-border")}>
       <View className={gocharClasses.skyHead}>
         <Text className={gocharClasses.skyEyebrow} style={nepaliTextStyle()}>
-          {pick("आकाश एक नजरमा", "The sky at a glance")}
+          {t("ui.gochar.the_sky_at_a_glance")}
         </Text>
         <Text className={gocharClasses.skyTitle} style={nepaliTextStyle()}>
-          {pick("प्रत्यक्ष ग्रह स्थिति", "Live graha positions")}
+          {t("ui.gochar.live_graha_positions")}
         </Text>
         <Text className={gocharClasses.skyDate} style={nepaliTextStyle()}>
           {dateLabel}
@@ -117,7 +117,7 @@ export function GocharSkySection({
                       className={gocharClasses.exaltedBadgeText}
                       style={nepaliTextStyle()}
                     >
-                      {pick("उच्च", "Exalted")}
+                      {t("ui.gochar.exalted")}
                     </Text>
                   </View>
                 ) : null}
@@ -125,10 +125,10 @@ export function GocharSkySection({
 
               <View className={gocharClasses.planetBody}>
                 <MetaRow
-                  label={pick("नक्षत्र", "Nakshatra")}
+                  label={t("nakshatra")}
                   value={grahaNakshatraLine(g, lang, digits)}
                 />
-                <MetaRow label={pick("गति", "Motion")} value={motionLabel(g, lang)} />
+                <MetaRow label={t("ui.gochar.motion")} value={motionLabel(g, lang)} />
               </View>
 
               {untilAd ? (

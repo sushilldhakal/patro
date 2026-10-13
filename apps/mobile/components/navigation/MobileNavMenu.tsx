@@ -16,7 +16,7 @@ export function MobileNavMenu({
 }: {
   onNavigate: (href: string) => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const pathname = usePathname();
   const sections = getMobileDrawerSections();
 
@@ -32,7 +32,7 @@ export function MobileNavMenu({
 
   return (
     <View className="gap-1 pb-2 pt-2">
-      <DrawerNavSection first title={pick("मुख्य", "Main")}>
+      <DrawerNavSection first title={t("ui.navigation.main")}>
         {DRAWER_MAIN_LINKS.map(renderItem)}
       </DrawerNavSection>
       {sections.map((section) => (

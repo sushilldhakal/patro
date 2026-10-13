@@ -12,7 +12,7 @@ import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 import { usePatroYearBrowse } from "@/lib/use-patro-year-browse";
 
 export default function VivahSaitScreen() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { location, setLocation } = usePanchangaLocation();
   const { era, setEra, year, setYear } = usePatroYearBrowse();
   const content = SAIT_RULES_CONTENT.vivah;
@@ -27,11 +27,8 @@ export default function VivahSaitScreen() {
 
   return (
     <SaitCeremonyLayout
-      title={pick("विवाह साइत", "Marriage Sait")}
-      subtitle={pick(
-        "शास्त्रीय नियमबाट गणना गरिएका विवाहका शुभ मुहूर्त",
-        "Auspicious marriage windows computed from the classical rules",
-      )}
+      title={t("ui.vivah_sait.marriage_sait")}
+      subtitle={t("ui.vivah_sait.auspicious_marriage_windows_computed_from_the")}
       era={era}
       onEraChange={setEra}
       year={year}
@@ -57,10 +54,7 @@ export default function VivahSaitScreen() {
       personalizeByDay={personalize.personalizeByDay}
       loading={detailQuery.isLoading && !detailQuery.data}
       footer={<SaitSources category="vivah" />}
-      emptyLabel={pick(
-        "यस वर्ष विवाहको साइत भेटिएन।",
-        "No marriage muhurta found for this year.",
-      )}
+      emptyLabel={t("ui.vivah_sait.no_marriage_muhurta_found_for_this")}
       countLabel={(count, y) =>
         isGregorianEra(era)
           ? pick(

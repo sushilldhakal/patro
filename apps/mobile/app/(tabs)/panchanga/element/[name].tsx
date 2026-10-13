@@ -249,7 +249,7 @@ function ToneRow({
 }
 
 function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: string }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const legendColWidth = useGridWidth(1, 2, 2);
   const width = useGridWidth(1, 2, 3);
   const sunriseMin = parseHHMM(sunrise);
@@ -257,7 +257,7 @@ function ChoghadiyaTableView({ data, sunrise }: { data: AnyRow[]; sunrise?: stri
   if (data.length === 0) {
     return (
       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-        {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
+        {t("ui.panchanga.no_entries_for_this_day")}
       </Text>
     );
   }
@@ -305,7 +305,7 @@ function TableView({
   sunrise?: string;
   elementId?: string;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const gridWidth = useGridWidth(1, 2, 3);
   const balaWidth = useGridWidth(1, 2, 4);
   const sunriseMin = parseHHMM(sunrise);
@@ -322,7 +322,7 @@ function TableView({
       <View className="gap-2">
         {anchor ? (
           <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick("चन्द्र राशि", "Moon sign")}:{" "}
+            {t("common.moon_sign")}:{" "}
             <Text className="font-bold text-foreground">{anchor}</Text>
           </Text>
         ) : null}
@@ -365,7 +365,7 @@ function TableView({
     if (rows.length === 0) {
       return (
         <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-          {pick("यो दिनका लागि प्रविष्टि छैन।", "No entries for this day.")}
+          {t("ui.panchanga.no_entries_for_this_day")}
         </Text>
       );
     }
@@ -389,7 +389,7 @@ function TableView({
               trailing={time}
               good={good}
               bad={bad}
-              badge={hasPushkara ? pick("पुष्कर", "Pushkara") : undefined}
+              badge={hasPushkara ? t("common.pushkara") : undefined}
               leading={<ElementDayRowIcon elementId={elementId} row={it} size={24} />}
             />
           );
@@ -400,7 +400,7 @@ function TableView({
 
   return (
     <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-      {pick("डाटा उपलब्ध छैन।", "No data available.")}
+      {t("ui.panchanga.no_data_available")}
     </Text>
   );
 }
@@ -414,7 +414,7 @@ function NavataraBalamElementView({
   p: PanchangaDay;
   clock?: string;
 }) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const isChandra = elementId === "chandrabala";
   const cards = isChandra ? getChandraBalamCards(p) : getTaraBalamCards(p);
   const table = isChandra ? getChandrabalamTable(p) : getTarabalaTable(p);
@@ -428,8 +428,8 @@ function NavataraBalamElementView({
   const moonRef =
     table?.moon_label && moonLabel
       ? isChandra
-        ? pick(`सूर्योदयमा चन्द्र राशि: ${moonLabel}`, `Moon sign at sunrise: ${moonLabel}`)
-        : pick(`सूर्योदयमा चन्द्र नक्षत्र: ${moonLabel}`, `Moon nakshatra at sunrise: ${moonLabel}`)
+        ? t("ui.panchanga.moon_sign_at_sunrise_moonlabel", { moonLabel })
+        : t("ui.panchanga.moon_nakshatra_at_sunrise_moonlabel", { moonLabel })
       : undefined;
 
   const formatName = isChandra
@@ -442,7 +442,7 @@ function NavataraBalamElementView({
   if (!cards.length) {
     return (
       <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-        {pick("डाटा उपलब्ध छैन।", "No data available.")}
+        {t("ui.panchanga.no_data_available")}
       </Text>
     );
   }
@@ -528,10 +528,10 @@ export function ElementScreenView({ name }: { name: string | undefined }) {
 
   if (!meta || !name) {
     return (
-      <AppShell title={pick("अज्ञात तत्त्व", "Unknown element")}>
+      <AppShell title={t("element_page.unknown_element")}>
         <Pressable onPress={() => router.push("/panchanga/details" as never)}>
           <Text style={{ color: colors.primary }} className="text-sm underline">
-            {pick("पञ्चाङ्ग विवरणमा फर्कनुहोस्", "Back to panchanga details")}
+            {t("ui.panchanga.back_to_panchanga_details")}
           </Text>
         </Pressable>
       </AppShell>

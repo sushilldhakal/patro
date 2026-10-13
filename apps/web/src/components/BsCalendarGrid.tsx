@@ -1,5 +1,5 @@
 import { useState, type MouseEvent } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import type { CalendarDay } from "@/lib/api";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

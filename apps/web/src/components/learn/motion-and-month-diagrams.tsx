@@ -7,7 +7,7 @@
  * really about proportion, which box characters cannot hold.
  */
 
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /* PakshaStrip still calls bilingualText for its one caption built around a
    formatted number; everything else now comes from the catalogue. */

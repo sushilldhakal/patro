@@ -88,29 +88,26 @@ const CircumpolarSkyScene = memo(function CircumpolarSkyScene({ onLabels, copy }
 });
 
 export function CircumpolarSkyDiagram() {
-  const { pick, digits } = useLocale();
-  const copy = { pole: pick("आकाशीय ध्रुव", "Celestial pole"), horizon: pick("क्षितिज", "Horizon") };
+  const { t, digits } = useLocale();
+  const copy = { pole: t("ui.learn.celestial_pole"), horizon: t("ui.common.horizon") };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — परिध्रुवीय तारा", "3D — circumpolar stars")}
+      title={t("ui.learn.n3d_circumpolar_stars")}
       height={280}
       camera={{ yaw: 0.6, pitch: 0.6 }}
       frame={{ width: 1.5, height: 0.85 }}
       idleSpin={0.03}
       legend={[
-        { color: NEVER_SETS, label: pick("कहिल्यै अस्ताउँदैन (परिध्रुवीय)", "Never sets (circumpolar)") },
-        { color: RISES, label: pick("उदाउँछ र अस्ताउँछ", "Rises and sets") },
-        { color: NEVER_RISES, label: pick("कहिल्यै उदाउँदैन", "Never rises") },
+        { color: NEVER_SETS, label: t("ui.learn.never_sets_circumpolar") },
+        { color: RISES, label: t("ui.learn.rises_and_sets") },
+        { color: NEVER_RISES, label: t("ui.learn.never_rises") },
       ]}
       readouts={[
-        { k: pick("अक्षांश (काठमाडौँ)", "Latitude (Kathmandu)"), v: `${digits("27.7")}°N`, tone: "accent" },
-        { k: pick("परिध्रुवीय सीमा", "Circumpolar limit"), v: `±${digits("62.3")}°` },
+        { k: t("ui.learn.latitude_kathmandu"), v: `${digits("27.7")}°N`, tone: "accent" },
+        { k: t("ui.learn.circumpolar_limit"), v: `±${digits("62.3")}°` },
       ]}
-      caption={pick(
-        "आकाशीय ध्रुव क्षितिजबाट ठ्याक्कै अवलोककको अक्षांश (काठमाडौँमा २७.७°) माथि उठ्छ, र हरेक तारा त्यही अक्षको वरिपरि दैनिक वृत्तमा घुमेको देखिन्छ। पूरै क्षितिजभन्दा माथि पर्ने वृत्त कहिल्यै अस्त्दैन (परिध्रुवीय); पूरै तल पर्ने कहिल्यै उदाउँदैन; बीचमा काट्ने उदाउँछ र अस्ताउँछ। काठमाडौँको सीमा ±६२.३° हो — सप्तर्षि यसभित्र पर्छ, क्रक्स पर्दैन।",
-        "The celestial pole rises above the horizon by exactly the observer's latitude — 27.7° at Kathmandu — and every star circles that axis on its own diurnal circle. A circle entirely above the horizon never sets (circumpolar); entirely below, it never rises; crossing it, the star rises and sets. Kathmandu's limit is ±62.3° — the Saptarishi falls inside it, Crux does not.",
-      )}
+      caption={t("ui.learn.the_celestial_pole_rises_above_the")}
     >
       {({ onLabels }) => <CircumpolarSkyScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

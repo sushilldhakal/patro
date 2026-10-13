@@ -18,7 +18,6 @@ function manualChunkId(id: string): string | undefined {
   if (id.includes("@tanstack/react-router")) return "router"
   if (id.includes("@tanstack/react-query")) return "query"
   if (id.includes("lucide-react")) return "icons"
-  if (id.includes("i18next")) return "i18n-runtime"
   if (
     id.includes("@base-ui") ||
     id.includes("radix-ui") ||
@@ -140,8 +139,6 @@ export default defineConfig(({ mode, isSsrBuild }) => {
         "@tanstack/react-router",
         "@tanstack/react-query",
         "@tanstack/history",
-        "react-i18next",
-        "i18next",
         // Workspace packages ship TypeScript source, so SSR must bundle them.
         /^@vedic-patro\//,
       ],

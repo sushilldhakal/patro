@@ -14,7 +14,7 @@ import { accountClasses } from "@vedic-patro/design-tokens/classes/account-class
 import { cn } from "@vedic-patro/domain/utils";
 
 export default function VerifyEmailScreen() {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { refreshUser } = useAuth();
@@ -24,7 +24,7 @@ export default function VerifyEmailScreen() {
     token ? "loading" : "error",
   );
   const [message, setMessage] = useState(() =>
-    token ? "" : pick("प्रमाणीकरण लिंक अपूर्ण छ।", "The verification link is incomplete."),
+    token ? "" : t("ui.verify_email.the_verification_link_is_incomplete"),
   );
 
   useEffect(() => {
@@ -39,16 +39,13 @@ export default function VerifyEmailScreen() {
       .catch(() => {
         setStatus("error");
         setMessage(
-          pick(
-            "प्रमाणीकरण असफल भयो। लिंक अवधि सकिएको हुन सक्छ।",
-            "Verification failed. The link may have expired.",
-          ),
+          t("ui.verify_email.verification_failed_the_link_may_have"),
         );
       });
   }, [refreshUser, token, pick]);
 
   return (
-    <AppShell title={pick("इमेल प्रमाणीकरण", "Verify email")} showHeader={false}>
+    <AppShell title={t("ui.verify_email.verify_email")} showHeader={false}>
       <View className={cn("w-full py-12", accountClasses.panelCentered)}>
         {status === "loading" ? (
           <ActivityIndicator />
@@ -56,16 +53,13 @@ export default function VerifyEmailScreen() {
           <>
             <Ionicons name="checkmark-circle" size={48} color={colors.success} />
             <Text className={cn("text-center", accountClasses.statusTitle)} style={nepaliTextStyle()}>
-              {pick("इमेल प्रमाणित भयो", "Email verified")}
+              {t("auth.verify_ok_title")}
             </Text>
             <Text className={cn("text-center", accountClasses.statusBody)} style={nepaliTextStyle()}>
-              {pick(
-                "धन्यवाद — तपाईंको खाता अब पूर्ण रूपमा सक्रिय छ।",
-                "Thanks — your account is now fully active.",
-              )}
+              {t("ui.verify_email.thanks_your_account_is_now_fully")}
             </Text>
             <Button
-              label={pick("खातामा जानुहोस्", "Go to account")}
+              label={t("ui.verify_email.go_to_account")}
               className={accountClasses.statusAction}
               onPress={() => router.replace("/account" as never)}
             />
@@ -74,13 +68,13 @@ export default function VerifyEmailScreen() {
           <>
             <Ionicons name="close-circle" size={48} color={colors.destructive} />
             <Text className={cn("text-center", accountClasses.statusTitle)} style={nepaliTextStyle()}>
-              {pick("प्रमाणीकरण असफल", "Verification failed")}
+              {t("auth.verify_fail_title")}
             </Text>
             <Text className={cn("text-center", accountClasses.statusBody)} style={nepaliTextStyle()}>
               {message}
             </Text>
             <Button
-              label={pick("खातामा फर्कनुहोस्", "Back to account")}
+              label={t("auth.back_to_account")}
               variant="outline"
               className={accountClasses.statusAction}
               onPress={() => router.replace("/account" as never)}

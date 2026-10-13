@@ -28,7 +28,7 @@ import { cn } from "@vedic-patro/domain/utils";
 const ACCOUNT_PROFILES_KEY = ["account-profiles"] as const;
 
 export default function AccountScreen() {
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   const colors = useThemeColors();
   const { isDark } = useTheme();
   const router = useRouter();
@@ -51,15 +51,12 @@ export default function AccountScreen() {
 
   const onDelete = (p: Profile) => {
     Alert.alert(
-      pick("प्रोफाइल मेट्ने?", "Delete profile?"),
-      pick(
-        `"${p.full_name}" स्थायी रूपमा मेटिनेछ।`,
-        `"${p.full_name}" will be permanently removed.`,
-      ),
+      t("ui.account.delete_profile"),
+      t("ui.account.full_name_will_be_permanently_removed", { full_name: p.full_name }),
       [
-        { text: pick("रद्द", "Cancel"), style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: pick("मेट्नुहोस्", "Delete"),
+          text: t("ui.account.delete"),
           style: "destructive",
           onPress: async () => {
             await deleteProfile(p.id);
@@ -78,7 +75,7 @@ export default function AccountScreen() {
 
   if (authLoading) {
     return (
-      <AppShell title={pick("खाता", "Account")}>
+      <AppShell title={t("ui.common.account")}>
         <View className="items-center py-12">
           <ActivityIndicator />
         </View>
@@ -88,14 +85,14 @@ export default function AccountScreen() {
 
   if (!user) {
     return (
-      <AppShell title={pick("खाता", "Account")}>
+      <AppShell title={t("ui.common.account")}>
         <View className="items-center gap-3 rounded-xl border border-dashed border-border px-5 py-12">
           <Ionicons name="person-circle-outline" size={40} color={colors.mutedForeground} />
           <Text className="text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick("खाता हेर्न लगइन गर्नुहोस्।", "Log in to view your account.")}
+            {t("ui.account.log_in_to_view_your_account")}
           </Text>
           <Button
-            label={pick("गृहपृष्ठ", "Go home")}
+            label={t("ui.account.go_home")}
             variant="outline"
             size="sm"
             onPress={() => router.replace("/" as never)}
@@ -110,13 +107,10 @@ export default function AccountScreen() {
             <Ionicons name="download-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
-                {pick("अफलाइन डाटा", "Offline Data")}
+                {t("ui.account.offline_data")}
               </Text>
               <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
-                {pick(
-                  "लगइन बिना पनि पात्रो अफलाइन डाटा व्यवस्थापन गर्न सकिन्छ।",
-                  "Offline calendar data can be managed without logging in.",
-                )}
+                {t("ui.account.offline_calendar_data_can_be_managed")}
               </Text>
             </View>
           </View>
@@ -127,11 +121,11 @@ export default function AccountScreen() {
   }
 
   return (
-    <AppShell title={pick("खाता", "Account")} showHeader={false}>
+    <AppShell title={t("ui.common.account")} showHeader={false}>
       <View className={cn("w-full", accountClasses.column)}>
       <View className={accountClasses.header}>
         <Text className={accountClasses.title} style={nepaliTextStyle()}>
-          {pick("खाता", "Account")}
+          {t("ui.common.account")}
         </Text>
         <Text className={accountClasses.subtitle} style={nepaliTextStyle()}>
           {user.email}
@@ -149,10 +143,7 @@ export default function AccountScreen() {
           </View>
           <View className="flex-1">
             <Text className={accountClasses.bannerText} style={nepaliTextStyle()}>
-              {pick(
-                "इमेल प्रमाणित गर्न बाँकी छ। तपाईंको इनबक्स जाँच्नुहोस्।",
-                "Your email is not verified yet. Check your inbox.",
-              )}
+              {t("ui.account.your_email_is_not_verified_yet")}
             </Text>
             <Pressable
               disabled={resent}
@@ -164,8 +155,8 @@ export default function AccountScreen() {
             >
               <Text className={accountClasses.bannerAction} style={nepaliTextStyle()}>
                 {resent
-                  ? pick("पुनः पठाइयो", "Verification email sent")
-                  : pick("पुनः पठाउनुहोस्", "Resend verification email")}
+                  ? t("ui.account.verification_email_sent")
+                  : t("ui.account.resend_verification_email")}
               </Text>
             </Pressable>
           </View>
@@ -174,11 +165,11 @@ export default function AccountScreen() {
 
       <View className={cn("flex-row", accountClasses.sectionRow)}>
         <Text className={accountClasses.sectionTitle} style={nepaliTextStyle()}>
-          {pick("प्रोफाइलहरू", "Profiles")}
+          {t("ui.account.profiles")}
         </Text>
         {editing === null ? (
           <Button
-            label={pick("प्रोफाइल थप", "Add profile")}
+            label={t("ui.account.add_profile")}
             size="sm"
             onPress={() => setEditing("new")}
             icon={<Ionicons name="add" size={14} color={inkOn(colors.secondary)} />}
@@ -188,7 +179,7 @@ export default function AccountScreen() {
 
       {profilesQuery.isError ? (
         <Text className={accountClasses.errorText} style={nepaliTextStyle()}>
-          {pick("प्रोफाइल लोड गर्न सकिएन।", "Could not load your profiles.")}
+          {t("ui.account.could_not_load_your_profiles")}
         </Text>
       ) : null}
 
@@ -210,7 +201,7 @@ export default function AccountScreen() {
       ) : profiles.length === 0 ? (
         <View className={accountClasses.emptyBox}>
           <Text className={accountClasses.emptyText} style={nepaliTextStyle()}>
-            {pick("अझै कुनै प्रोफाइल छैन।", "No profiles yet.")}
+            {t("ui.account.no_profiles_yet")}
           </Text>
         </View>
       ) : (
@@ -229,7 +220,7 @@ export default function AccountScreen() {
                     <View className={cn("flex-row", accountClasses.defaultBadge)}>
                       <Ionicons name="star" size={12} color={colors.secondary} />
                       <Text className={accountClasses.defaultBadgeText} style={nepaliTextStyle()}>
-                        {pick("पूर्वनिर्धारित", "Default")}
+                        {t("account_page.default")}
                       </Text>
                     </View>
                   ) : null}
@@ -240,7 +231,7 @@ export default function AccountScreen() {
                     p.birth_date && `${p.birth_date}${p.birth_time ? ` ${p.birth_time}` : ""}`,
                   ]
                     .filter(Boolean)
-                    .join(" · ") || pick("जन्म विवरण छैन", "No birth details")}
+                    .join(" · ") || t("account_page.no_birth_details")}
                 </Text>
               </View>
               <View className={cn("flex-row", accountClasses.profileActions)}>
@@ -261,13 +252,10 @@ export default function AccountScreen() {
             <Ionicons name="finger-print-outline" size={18} color={colors.secondary} />
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
-                {pick(`${biometric.label} ले खोल्नुहोस्`, `Unlock with ${biometric.label}`)}
+                {t("ui.account.unlock_with_label", { label: biometric.label })}
               </Text>
               <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
-                {pick(
-                  "तपाईं साइन इन नै रहनुहुन्छ; एप खोल्दा बायोमेट्रिक सोधिन्छ।",
-                  "You stay signed in; the app asks for biometrics when opened.",
-                )}
+                {t("ui.account.you_stay_signed_in_the_app")}
               </Text>
             </View>
           </View>
@@ -275,7 +263,7 @@ export default function AccountScreen() {
             value={biometric.enabled}
             onValueChange={(on) => void biometric.setEnabled(on)}
             trackColor={{ true: colors.secondary }}
-            accessibilityLabel={pick("बायोमेट्रिक लक", "Biometric lock")}
+            accessibilityLabel={t("ui.account.biometric_lock")}
           />
         </View>
       ) : null}
@@ -288,13 +276,10 @@ export default function AccountScreen() {
           <Ionicons name="download-outline" size={18} color={colors.secondary} />
           <View className="flex-1">
             <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle(14)}>
-              {pick("अफलाइन डाटा", "Offline Data")}
+              {t("ui.account.offline_data")}
             </Text>
             <Text className="mt-0.5 text-xs text-muted-foreground" style={nepaliTextStyle(12)}>
-              {pick(
-                "इन्टरनेट बिना पात्रो हेर्न वर्षहरू व्यवस्थापन गर्नुहोस्।",
-                "Manage the calendar years downloaded for offline use.",
-              )}
+              {t("ui.account.manage_the_calendar_years_downloaded_for")}
             </Text>
           </View>
         </View>
@@ -303,26 +288,20 @@ export default function AccountScreen() {
 
       <View className={accountClasses.dangerZone}>
         <Text className={accountClasses.dangerTitle} style={nepaliTextStyle()}>
-          {pick("खाता मेटाउनुहोस्", "Delete account")}
+          {t("account_page.delete_account")}
         </Text>
         <Text className={accountClasses.dangerBody} style={nepaliTextStyle()}>
-          {pick(
-            "खाता र सबै कुण्डली प्रोफाइल स्थायी रूपमा मेटिनेछन्। यो फिर्ता हुँदैन।",
-            "Your account and all kundali profiles will be permanently deleted. This cannot be undone.",
-          )}
+          {t("account_page.delete_account_confirm")}
         </Text>
         <Pressable
           onPress={() => {
             Alert.alert(
-              pick("खाता मेटाउने?", "Delete account?"),
-              pick(
-                "खाता र सबै कुण्डली प्रोफाइल स्थायी रूपमा मेटिनेछन्। यो फिर्ता हुँदैन।",
-                "Your account and all kundali profiles will be permanently deleted. This cannot be undone.",
-              ),
+              t("ui.account.delete_account"),
+              t("account_page.delete_account_confirm"),
               [
-                { text: pick("रद्द", "Cancel"), style: "cancel" },
+                { text: t("common.cancel"), style: "cancel" },
                 {
-                  text: pick("मेट्नुहोस्", "Delete"),
+                  text: t("ui.account.delete"),
                   style: "destructive",
                   onPress: async () => {
                     try {
@@ -330,8 +309,8 @@ export default function AccountScreen() {
                       router.replace("/" as never);
                     } catch {
                       Alert.alert(
-                        pick("खाता मेटाउन सकिएन", "Could not delete account"),
-                        pick("पुनः प्रयास गर्नुहोस्।", "Please try again."),
+                        t("ui.account.could_not_delete_account"),
+                        t("ui.account.please_try_again"),
                       );
                     }
                   },
@@ -342,7 +321,7 @@ export default function AccountScreen() {
           className={cn(accountClasses.dangerButton, "h-8 items-center justify-center self-start rounded-lg px-2.5 active:bg-destructive/10")}
         >
           <Text className={cn("text-sm", accountClasses.dangerButtonText)} style={nepaliTextStyle()}>
-            {pick("खाता मेटाउनुहोस्", "Delete account")}
+            {t("account_page.delete_account")}
           </Text>
         </Pressable>
       </View>

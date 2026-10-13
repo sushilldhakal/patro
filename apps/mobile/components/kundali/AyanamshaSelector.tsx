@@ -17,7 +17,7 @@ type Props = {
 };
 
 export function AyanamshaSelector({ mode, onModeChange }: Props) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const current = getAyanamshaModeInfo(mode);
 
   return (
@@ -27,7 +27,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
           className={kundaliDetailClasses.ayanamsha.heading}
           style={nepaliTextStyle(12)}
         >
-          {pick("अयनांश", "Ayanamsha")}
+          {t("kundali.ayanamsha")}
         </Text>
       </View>
       <View className={kundaliDetailClasses.ayanamsha.body}>
@@ -61,10 +61,7 @@ export function AyanamshaSelector({ mode, onModeChange }: Props) {
         <Text className={kundaliDetailClasses.ayanamsha.note} style={nepaliTextStyle(13)}>
           {pick(current.labelNe, current.label)} — {pick(current.taglineNe, current.tagline)}
           {!matchesPanchangaAngas(mode)
-            ? pick(
-                " यस अयनांशमा ग्रह, लग्न र नक्षत्र पुनः गणना हुन्छ।",
-                " Grahas, lagna and nakshatra are recomputed in this ayanamsha.",
-              )
+            ? t("ui.kundali.grahas_lagna_and_nakshatra_are_recomputed")
             : ""}
         </Text>
       </View>

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type { BhavaBalaData, BhavaBalaHouse, BhavaReferencePayload, VargaCharts } from "@/lib/api";

@@ -52,7 +52,7 @@ export function BsCalendarGrid({
   primaryDate = "bs",
 }: Props) {
   const theme = useThemeColors();
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const isEn = lang === "en";
   const { isCompact, isPhone, isTablet, width } = useBreakpoint();
   const { onLayout, colWidth } = useCalendarGridWidth();
@@ -224,7 +224,7 @@ export function BsCalendarGrid({
                     {isToday ? (
                       <View className={cn(calendarClasses.todayBadge, isCompact && calendarClasses.todayBadgePhone)}>
                         <Text className={calendarClasses.todayBadgeText}>
-                          {pick("आज", "Today")}
+                          {t("today")}
                         </Text>
                       </View>
                     ) : null}

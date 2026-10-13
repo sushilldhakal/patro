@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useState } from "react";
 import { ChevronDown, Info, Loader2, ScrollText } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";

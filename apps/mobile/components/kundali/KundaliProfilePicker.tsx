@@ -44,7 +44,7 @@ export const KundaliProfilePicker = forwardRef<
   KundaliProfilePickerHandle,
   { selectedId?: string | null; onSelect: (profile: Profile) => void }
 >(function KundaliProfilePicker({ selectedId, onSelect }, ref) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { width } = useBreakpoint();
   const queryClient = useQueryClient();
   const { data: profiles, isLoading, isError } = useProfilesQuery();
@@ -58,7 +58,7 @@ export const KundaliProfilePicker = forwardRef<
       <View className={kundaliDetailClasses.milanPicker.loadingBox}>
         <ActivityIndicator />
         <Text className={kundaliDetailClasses.prose.muted} style={nepaliTextStyle(14)}>
-          {pick("प्रोफाइल लोड हुँदै…", "Loading profiles…")}
+          {t("ui.kundali.loading_profiles")}
         </Text>
       </View>
     );
@@ -67,7 +67,7 @@ export const KundaliProfilePicker = forwardRef<
   if (isError) {
     return (
       <Text className={cn(kundaliDetailClasses.milanPicker.errorBox, kundaliDetailClasses.milanPicker.errorText)}>
-        {pick("प्रोफाइल लोड गर्न सकिएन", "Could not load profiles")}
+        {t("ui.kundali.could_not_load_profiles")}
       </Text>
     );
   }
@@ -79,17 +79,14 @@ export const KundaliProfilePicker = forwardRef<
       {list.length === 0 ? (
         <View className={cn(kundaliDetailClasses.milanPicker.emptyBox, "items-center")}>
           <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
-            {pick("अहिले कुनै प्रोफाइल छैन", "No profiles yet")}
+            {t("ui.kundali.no_profiles_yet")}
           </Text>
           <Text className="mt-1 max-w-md text-center text-sm text-muted-foreground" style={nepaliTextStyle(14)}>
-            {pick(
-              "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
-              "Save birth details once, then generate kundali quickly.",
-            )}
+            {t("ui.kundali.save_birth_details_once_then_generate")}
           </Text>
           <View className="mt-4">
             <Button
-              label={pick("पहिलो प्रोफाइल थप्नुहोस्", "Add first profile")}
+              label={t("ui.kundali.add_first_profile")}
               onPress={() => setDialog({ mode: "add" })}
             />
           </View>
@@ -123,13 +120,10 @@ export const KundaliProfilePicker = forwardRef<
         open={dialog !== null}
         title={
           dialog?.mode === "edit"
-            ? pick("प्रोफाइल सम्पादन", "Edit profile")
-            : pick("प्रोफाइल थप्नुहोस्", "Add profile")
+            ? t("ui.kundali.edit_profile")
+            : t("kundali.add_profile")
         }
-        subtitle={pick(
-          "जन्म मिति, समय र स्थान सही राख्नुहोस्।",
-          "Enter accurate birth date, time, and place.",
-        )}
+        subtitle={t("ui.common.enter_accurate_birth_date_time_and")}
         onClose={() => setDialog(null)}
       >
         {dialog ? (
@@ -162,7 +156,7 @@ function ProfileCard({
   onView: () => void;
   onEdit: () => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const place = p.location_label || p.city || "—";
   const dob = p.birth_date ? `${p.birth_date} ${(p.birth_era ?? "bs").toUpperCase()}` : "—";
@@ -172,11 +166,11 @@ function ProfileCard({
       : "—";
   const genderLabel =
     p.gender === "male"
-      ? pick("पुरुष", "Male")
+      ? t("profile.male")
       : p.gender === "female"
-        ? pick("महिला", "Female")
+        ? t("profile.female")
         : p.gender === "other"
-          ? pick("अन्य", "Other")
+          ? t("profile.other")
           : null;
 
   return (
@@ -207,16 +201,16 @@ function ProfileCard({
       <View className={kundaliDetailClasses.profilePicker.rows}>
         <DetailRow
           icon="time-outline"
-          label={pick("जन्म मिति", "DOB")}
+          label={t("kundali.dob")}
           value={`${dob}${p.birth_time ? ` · ${p.birth_time}` : ""}`}
         />
-        <DetailRow icon="location-outline" label={pick("स्थान", "Place")} value={place} />
-        <DetailRow icon="navigate-outline" label={pick("अक्षांश/देशान्तर", "Lat/Lon")} value={latLon} />
-        <DetailRow icon="globe-outline" label={pick("समय क्षेत्र", "Timezone")} value={p.timezone || "—"} />
+        <DetailRow icon="location-outline" label={t("kundali.place")} value={place} />
+        <DetailRow icon="navigate-outline" label={t("ui.kundali.lat_lon")} value={latLon} />
+        <DetailRow icon="globe-outline" label={t("kundali.timezone")} value={p.timezone || "—"} />
       </View>
 
       <Button
-        label={active ? pick("हेर्दै", "Viewing") : pick("कुण्डली हेर्नुहोस्", "View kundali")}
+        label={active ? t("ui.kundali.viewing") : t("kundali.view_kundali")}
         variant={active ? "default" : "outline"}
         size="sm"
         onPress={onView}
@@ -263,14 +257,14 @@ export function ProfileFormModal({
   children: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
 
   return (
     <Modal visible={open} animationType="slide" onRequestClose={onClose}>
       <View className="flex-1 bg-background" style={{ paddingTop: insets.top }}>
         <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
           <Pressable onPress={onClose} hitSlop={8}>
-            <Text className="text-sm text-foreground">{pick("रद्द", "Cancel")}</Text>
+            <Text className="text-sm text-foreground">{t("common.cancel")}</Text>
           </Pressable>
           <View className="min-w-0 flex-1 px-3">
             <Text className="text-center text-lg font-semibold tracking-tight text-foreground" style={nepaliTextStyle(16)}>

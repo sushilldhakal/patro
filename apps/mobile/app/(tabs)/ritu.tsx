@@ -12,11 +12,11 @@ import { cn } from "@vedic-patro/domain/utils";
 import { rituClasses } from "@vedic-patro/design-tokens/classes/ritu-classes";
 
 export default function RituScreen() {
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   const { colors, isDark } = useTheme();
   const { location, setLocation } = usePanchangaLocation();
   const locationLabel = displayLocationLabel(location, undefined, lang);
-  const subtitle = `${pick("सायन ऋतु · विषुव–अयनान्त", "Tropical seasons · equinox–solstice")}${
+  const subtitle = `${t("ritu.subtitle")}${
     locationLabel ? ` · ${locationLabel}` : ""
   }`;
 
@@ -27,7 +27,7 @@ export default function RituScreen() {
         <PatroPageHeader
           className="mb-0"
           icon={<AppNavIcon name="sprout" size={28} color={isDark ? colors.primary : colors.secondary} />}
-          title={pick("ऋतु", "Season")}
+          title={t("sections.ritu")}
           subtitle={subtitle}
         />
         <LocationSelector location={location} onLocationChange={setLocation} />

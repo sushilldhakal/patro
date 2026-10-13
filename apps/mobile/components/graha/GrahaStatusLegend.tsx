@@ -8,7 +8,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 
 export function GrahaStatusLegend({ className }: { className?: string }) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -16,13 +16,13 @@ export function GrahaStatusLegend({ className }: { className?: string }) {
       <View className={cn("flex-row", grahaClasses.statusLegendItem)}>
         <Ionicons name="refresh" size={14} color={colors.secondary} />
         <Text className={grahaClasses.statusLegendText} style={nepaliTextStyle(13)}>
-          {pick("वक्री", "Retrograde")}
+          {t("common.retrograde")}
         </Text>
       </View>
       <View className={cn("flex-row", grahaClasses.statusLegendItem)}>
         <Ionicons name="flame" size={14} color={colors.danger} />
         <Text className={grahaClasses.statusLegendText} style={nepaliTextStyle(13)}>
-          {pick("अस्त", "Combust")}
+          {t("common.combust")}
         </Text>
       </View>
     </View>

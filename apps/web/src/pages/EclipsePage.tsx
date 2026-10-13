@@ -1,7 +1,7 @@
 import { getRouteApi } from "@tanstack/react-router";
 import { grahaClasses } from "@vedic-patro/design-tokens/classes/graha-classes";
 import { Eclipse, MoonStar } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { GrahaDetailPageFrame } from "@/components/graha/GrahaDetailPageFrame";
 import { PatroYearNavBlock } from "@/components/patro-page/PatroYearNavBlock";

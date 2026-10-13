@@ -343,10 +343,7 @@ export function ShantiVidhiPanel({
               {graha.beejMantra}
             </Text>
             <Text className={sh.japa} style={nepaliTextStyle(14)}>
-              {pick(
-                `जप संख्या: ${digits(graha.japa)} पटक (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} पटक)`,
-                `Japa count: ${digits(graha.japa)} times (${t("kundali.x.shanti_kaliyuga_japa")}: ${digits(graha.japa * 4)} times)`,
-              )}
+              {t("ui.kundali.japa_count_japa_times_value_value2", { japa: digits(graha.japa), value: t("kundali.x.shanti_kaliyuga_japa"), value2: digits(graha.japa * 4) })}
             </Text>
             <View className={sh.mantraSection}>
               <Text

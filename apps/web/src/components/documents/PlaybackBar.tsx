@@ -1,5 +1,5 @@
 import { Headphones, ListMusic, Pause, Play, SkipBack, SkipForward } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { bilingualText, useLocale } from "@/i18n/locale";
 import type { Shloka } from "@/lib/documents-api";
 import { documentsClasses } from "@vedic-patro/design-tokens/classes/documents-classes";

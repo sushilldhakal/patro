@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useCallback, useLayoutEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { CalendarClock, ChevronDown, MapPin, Minus, Plus } from "lucide-react";
 import type { BsNativeSelectOption } from "@/components/BsNativeSelect";
 import { LocationSearchPanel } from "@/components/panchanga/LocationSearchPanel";

@@ -43,12 +43,12 @@ function TableCaption({ children }: { children: string }) {
 }
 
 export function RashiReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("१२ राशि — प्रत्येक ३०° (जम्मा ३६०°)", "12 Rashis — each 30° (360° total)")}</TableCaption>
+      <TableCaption>{t("learn.12_rashis_each_30_360_total")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("राशि", "Rashi"), "°", pick("स्वामी", "Lord"), pick("तत्त्व", "Element")]}
+        headers={[pick("#", "#"), t("panchanga.wheel.rashi"), "°", t("panchanga.wheel.lord"), t("panchanga.wheel_panel.element")]}
         rows={getWheelRashis().map((r, i) => [
           digits(i + 1),
           pick(r.ne, r.en),
@@ -62,12 +62,12 @@ export function RashiReferenceTable() {
 }
 
 export function GrahaReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("नव ग्रह (९) — पञ्चाङ्ग र कुण्डलीमा प्रयोग", "Nava Graha (9) — used in almanac and kundali")}</TableCaption>
+      <TableCaption>{t("learn.nava_graha_9_used_in_panchanga_and_kundali")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("ग्रह", "Graha"), pick("संक्षिप्त अर्थ", "Brief meaning")]}
+        headers={[pick("#", "#"), t("kundali.graha"), t("learn.brief_meaning")]}
         rows={GRAHA_ROWS.map((g, i) => [digits(i + 1), pick(g.ne, g.en), pick(g.meaningNe, g.meaningEn)])}
       />
     </View>
@@ -89,23 +89,23 @@ export function ComputationReferenceDiagram() {
 }
 
 export function NakshatraReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
       <TableCaption>
-        {pick("२७ नक्षत्र — प्रत्येक १३°२०′, चार पद (३°२०′ प्रति पद)", "27 Nakshatras — each 13°20′, four padas (3°20′ per pada)")}
+        {t("learn.27_nakshatras_each_13_20_four_padas_3_20_per_pada")}
       </TableCaption>
       <LearnTable
         headers={[
           pick("#", "#"),
-          pick("नक्षत्र", "Nakshatra"),
+          t("nakshatra"),
           "°",
-          pick("स्वामी", "Lord"),
-          pick("चिह्न", "Symbol"),
-          pick("पद १", "Pada 1"),
-          pick("पद २", "Pada 2"),
-          pick("पद ३", "Pada 3"),
-          pick("पद ४", "Pada 4"),
+          t("panchanga.wheel.lord"),
+          t("learn.symbol"),
+          t("learn.pada_1"),
+          t("learn.pada_2"),
+          t("learn.pada_3"),
+          t("learn.pada_4"),
         ]}
         rows={NAKSHATRA_ICONS.map((nak, i) => {
           const padas = PADA_AKSHAR[i]!;
@@ -125,12 +125,12 @@ export function NakshatraReferenceTable() {
 }
 
 export function TithiReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("३० तिथि — चन्द्र–सूर्यको १२° कोणीय दूरी", "30 Tithis — the 12° angular gap between Moon and Sun")}</TableCaption>
+      <TableCaption>{t("learn.30_tithis_the_12_angular_gap_between_moon_and_sun")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("तिथि", "Tithi"), pick("पक्ष", "Paksha"), pick("कोण (≈)", "Angle (≈)")]}
+        headers={[pick("#", "#"), t("tithi"), t("sections.paksha"), t("learn.angle")]}
         rows={WHEEL_TITHIS.map((row, i) => [
           digits(i + 1),
           pick(row.ne, row.en),
@@ -143,12 +143,12 @@ export function TithiReferenceTable() {
 }
 
 export function YogaReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("२७ योग — सूर्य + चन्द्रको देशान्तर जोड (प्रत्येक १३°२०′)", "27 Yogas — sum of Sun + Moon longitude (each 13°20′)")}</TableCaption>
+      <TableCaption>{t("learn.27_yogas_sum_of_sun_moon_longitude_each_13_20")}</TableCaption>
       <LearnTable
-        headers={[pick("#", "#"), pick("योग", "Yoga"), pick("° (≈)", "° (≈)")]}
+        headers={[pick("#", "#"), t("kundali.yoga"), pick("° (≈)", "° (≈)")]}
         rows={WHEEL_YOGAS.map((y, i) => [
           digits(i + 1),
           pick(y, YOGA_EN[i] ?? y),
@@ -160,7 +160,7 @@ export function YogaReferenceTable() {
 }
 
 export function KaranaReferenceTable() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const charRows = KAR_MOV.map((ne) => ({ ne, typeNe: "चर (७)", typeEn: "Movable (7)" }));
   const sthiraRows = KAR_FIX_NAMES.slice(1).map((ne) => ({ ne, typeNe: "स्थिर (४)", typeEn: "Fixed (4)" }));
 
@@ -168,35 +168,29 @@ export function KaranaReferenceTable() {
     [
       digits(1),
       `${pick("किंस्तुघ्न", KARANA_EN["किंस्तुघ्न"] ?? "Kimstughna")}`,
-      pick("स्थिर", "Fixed"),
-      pick("शुक्ल प्रतिपदाको पहिलो आधा — वर्षमा एक पटक", "First half of Shukla Pratipada — once a year"),
+      t("learn.fixed"),
+      t("learn.first_half_of_shukla_pratipada_once_a_year"),
     ],
     ...charRows.map((k, i) => [
       digits(i + 2),
-      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === "विष्टि" ? pick(" (भद्रा)", " (Bhadra)") : ""}`,
+      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === "विष्टि" ? t("learn.bhadra") : ""}`,
       pick(k.typeNe, k.typeEn),
-      pick("महिनाभरि बारम्बार दोहोरिन्छ", "Repeats throughout the month"),
+      t("learn.repeats_throughout_the_month"),
     ]),
     ...sthiraRows.map((k, i) => [
       digits(i + 9),
       pick(k.ne, KARANA_EN[k.ne] ?? k.ne),
       pick(k.typeNe, k.typeEn),
-      pick(
-        "महिनामा एक–एक पटक — कृष्ण चतुर्दशी, औंसी, शुक्ल प्रतिपदा, पूर्णिमा",
-        "Once each per month — Krishna Chaturdashi, Aaushi, Shukla Pratipada, Purnima",
-      ),
+      t("learn.once_each_per_month_krishna_chaturdashi_aaushi_shukla_p"),
     ]),
   ];
 
   return (
     <View className="gap-1.5">
-      <TableCaption>{pick("११ करण — तिथिको आधा (६° कोण); महिनामा ६० करण", "11 Karanas — half a tithi (6° angle); 60 karanas per month")}</TableCaption>
-      <LearnTable headers={[pick("#", "#"), pick("करण", "Karana"), pick("प्रकार", "Type"), pick("टिप्पणी", "Note")]} rows={rows} />
+      <TableCaption>{t("learn.11_karanas_half_a_tithi_6_angle_60_karanas_per_month")}</TableCaption>
+      <LearnTable headers={[pick("#", "#"), t("kundali.karana"), t("holidays.col_type"), t("learn.note")]} rows={rows} />
       <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(11)}>
-        {pick(
-          "क्रम: किंस्तुघ्न → (बव…विष्टि)×८ → शकुनि → चतुष्पद → नाग → किंस्तुघ्न — जम्मा ६० करण/महिना।",
-          "Order: Kimstughna → (Bava…Vishti)×8 → Shakuni → Chatushpada → Naga → Kimstughna — 60 karanas/month in all.",
-        )}
+        {t("learn.order_kimstughna_bava_vishti_8_shakuni_chatushpada_naga")}
       </Text>
     </View>
   );

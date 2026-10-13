@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { learnHero, learnStatPill } from "@/lib/learn-classes";
 import { Link } from "@tanstack/react-router";

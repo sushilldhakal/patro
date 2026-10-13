@@ -100,7 +100,7 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
     <View className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
       <View className={`flex-row ${panchangaPageClasses.aside.eventsHead}`}>
         <Text className={`${panchangaPageClasses.aside.eventsTitle} text-foreground`}>
-          {pick("आगामी ग्रह-गोचर", "Planetary events")}
+          {t("panchanga.planet_events.title")}
         </Text>
         <Pressable
           onPress={() => router.push("/gochar" as never)}
@@ -111,18 +111,18 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
       </View>
 
       {isLoading ? (
-        <Text className={panchangaPageClasses.aside.eventsStatus}>{pick("लोड हुँदै…", "Loading…")}</Text>
+        <Text className={panchangaPageClasses.aside.eventsStatus}>{t("common.loading")}</Text>
       ) : null}
 
       {isError ? (
         <Text className={panchangaPageClasses.aside.eventsStatus}>
-          {pick("ग्रह-गोचर लोड गर्न सकिएन।", "Could not load planetary events.")}
+          {t("panchanga.planet_events.load_error")}
         </Text>
       ) : null}
 
       {!isLoading && !isError && events.length === 0 ? (
         <Text className={panchangaPageClasses.aside.eventsStatus}>
-          {pick("कुनै आगामी गोचर छैन।", "No upcoming transits.")}
+          {t("panchanga.planet_events.no_upcoming")}
         </Text>
       ) : null}
 
@@ -139,8 +139,8 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
               </View>
               <Text className={panchangaPageClasses.aside.eventsRel}>
                 {e.rel <= 0
-                  ? pick("आज", "Today")
-                  : pick(`${digits(e.rel)} दिन`, `${digits(e.rel)}d`)}
+                  ? t("today")
+                  : t("ui.panchanga.rel_d", { rel: digits(e.rel) })}
               </Text>
             </View>
           ))}

@@ -373,7 +373,7 @@ function PlanetInspector({
       {planet.sub_balas ? (
         <View className="gap-4">
           <SubBalaList
-            title={pick("स्थान", "Sthana")}
+            title={t("kundali.x.bala_sthana")}
             rows={STHANA_SUBS.map((row) => ({
               key: row.key,
               label: t(row.label),
@@ -384,7 +384,7 @@ function PlanetInspector({
             digits={digits}
           />
           <SubBalaList
-            title={pick("काल", "Kala")}
+            title={t("kundali.x.bala_kala")}
             rows={KALA_SUBS.map((row) => ({
               key: row.key,
               label: t(row.label),

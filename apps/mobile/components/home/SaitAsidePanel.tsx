@@ -58,7 +58,7 @@ export function SaitAsidePanel({
   error: errorProp,
   onRetry,
 }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
 
@@ -90,11 +90,11 @@ export function SaitAsidePanel({
     return (
       <View className="gap-2 py-4">
         <Text className="text-body text-center text-muted-foreground">
-          {pick("साइत डाटा लोड गर्न सकिएन।", "Could not load sait data.")}
+          {t("ui.home.could_not_load_sait_data")}
         </Text>
         <Pressable onPress={retry} className="self-center rounded-md bg-secondary px-3 py-1.5">
           <Text className="text-body font-semibold text-secondary-foreground">
-            {pick("पुनः प्रयास", "Retry")}
+            {t("ui.common.retry")}
           </Text>
         </Pressable>
       </View>
@@ -126,10 +126,7 @@ export function SaitAsidePanel({
       </View>
       {!anyDates ? (
         <Text className={homeClasses.saitEmpty} style={nepaliTextStyle()}>
-          {pick(
-            "यस महिना कुनै साइत उपलब्ध छैन।",
-            "No sait dates are available for this month.",
-          )}
+          {t("ui.home.no_sait_dates_are_available_for")}
         </Text>
       ) : null}
     </View>

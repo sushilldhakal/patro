@@ -31,13 +31,13 @@ function PlayButton({
   playing: boolean;
   onToggle: () => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   return (
     <Pressable
       onPress={onToggle}
       accessibilityRole="button"
-      accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("सुन्नुहोस्", "Play")}
+      accessibilityLabel={playing ? t("panchanga.hora.pause") : t("home_veda.play")}
       className={cn(homeClasses.vedaPlay, "active:opacity-80")}
     >
       <Ionicons name={playing ? "pause" : "play"} size={20} color={inkOn(colors.secondary)} />
@@ -47,7 +47,7 @@ function PlayButton({
 
 /** Today's Veda mantra — Sanskrit, meaning when there is one, audio, and a link to where it comes from. */
 export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
-  const { pick, lang, digits } = useLocale();
+  const { t, pick, lang, digits } = useLocale();
   const router = useRouter();
   const { data } = useVedaDaily(dateAd);
   const audioUrl = data?.shloka.audio_url ?? null;
@@ -97,7 +97,7 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
     <View className="overflow-hidden rounded-xl border border-foreground/10 bg-card">
       <View className={cn(patroSecBand, "flex-row items-center")}>
         <Text className={homeClasses.vedaTitle}>
-          {pick("आजको वेद मन्त्र", "Today's Veda mantra")}
+          {t("home_veda.title")}
         </Text>
         {shloka.audio_url ? <PlayButton playing={status.playing} onToggle={toggleAudio} /> : null}
       </View>
@@ -117,7 +117,7 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
 
         {meaning ? (
           <View className={homeClasses.vedaMeaning}>
-            <Text className={homeClasses.vedaMeaningLabel}>{pick("अर्थ", "Meaning")}</Text>
+            <Text className={homeClasses.vedaMeaningLabel}>{t("home_veda.meaning")}</Text>
             <Text className={homeClasses.vedaMeaningText}>{meaning}</Text>
           </View>
         ) : null}
@@ -125,7 +125,7 @@ export function HomeVedaMantra({ dateAd }: { dateAd: string | undefined }) {
         <View className={homeClasses.vedaFooter}>
           <Pressable onPress={openSource} accessibilityRole="link" hitSlop={8} className="active:opacity-70">
             <Text className={homeClasses.vedaMore}>
-              {pick("थप पढ्नुहोस् →", "Read more →")}
+              {t("ui.home.read_more")}
             </Text>
           </Pressable>
           <Text className={homeClasses.vedaSource}>

@@ -2,7 +2,7 @@ import { cn } from "@vedic-patro/domain/utils";
 import { tmCardPadLg, tmCardCap, tmDiagramSvg } from "@/lib/learn-classes";
 import earthUrl from "@/assets/earth.svg?url";
 import { GRAHA_PLANET_ICON_URL } from "@/lib/graha-planet-icons";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 /** Box labels, in the order they are laid out. `\n` splits a box onto two lines. */
 const NODE = {

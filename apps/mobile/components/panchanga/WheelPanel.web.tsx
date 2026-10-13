@@ -31,7 +31,7 @@ interface WheelPanelProps {
 }
 
 export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
-  const { pick, isEnglish } = useLocale();
+  const { t, pick, isEnglish } = useLocale();
   let body: React.ReactNode = null;
 
   if (sel?.type === "nak") {
@@ -60,38 +60,38 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
             />
           </div>
           <div>
-            <div className={wheelPanelKind}>{pick("नक्षत्र", "Nakshatra")} · {num(sel.i + 1)}</div>
+            <div className={wheelPanelKind}>{t("nakshatra")} · {num(sel.i + 1)}</div>
             <h2 className={wheelPanelTitle}>{pick(ico.ne, ico.en)}</h2>
             {isEnglish ? <div className={wheelPanelSub}>{ico.en}</div> : null}
           </div>
-          <button type="button" className={wheelPanelClose} onClick={onClose} aria-label={pick("बन्द", "Close")}>
+          <button type="button" className={wheelPanelClose} onClick={onClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
         <div className={wheelPanelBody}>
           <div className={wheelDl}>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("स्वामी ग्रह", "Lord planet")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.lord_planet")}</span>
               <span className={wheelDlV}>
                 {pick(ico.lord_ne, LORD_EN[ico.lord_ne] ?? ico.lord_ne)}
               </span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("चिन्ह", "Symbol")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.symbol")}</span>
               <span className={wheelDlV}>{ico.sym_ne}</span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("राशि", "Rashi")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel.rashi")}</span>
               <span className={wheelDlV}>{rashiSpan}</span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("देशान्तर", "Longitude")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.longitude")}</span>
               <span className={wheelDlVMono}>
                 {num(L0.toFixed(1))}°–{num(L1.toFixed(1))}°
               </span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("पद अक्षर", "Pada syllables")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.pada_syllables")}</span>
               <span className={wheelDlV}>{PADA_AKSHAR[sel.i]!.join(" · ")}</span>
             </div>
           </div>
@@ -114,42 +114,42 @@ export function WheelPanel({ sel, open, num, onClose }: WheelPanelProps) {
       <>
         <div className={wheelPanelHead}>
           <div>
-            <div className={wheelPanelKind}>{pick("राशि", "Rashi")} · {num(sel.i + 1)}</div>
+            <div className={wheelPanelKind}>{t("panchanga.wheel.rashi")} · {num(sel.i + 1)}</div>
             <h2 className={wheelPanelTitle}>{pick(rs.ne, rs.en)}</h2>
             {isEnglish ? <div className={wheelPanelSub}>{rs.en}</div> : null}
           </div>
-          <button type="button" className={wheelPanelClose} onClick={onClose} aria-label={pick("बन्द", "Close")}>
+          <button type="button" className={wheelPanelClose} onClick={onClose} aria-label={t("common.close")}>
             ✕
           </button>
         </div>
         <div className={wheelPanelBody}>
           <div className={wheelDl}>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("स्वामी ग्रह", "Lord planet")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.lord_planet")}</span>
               <span className={wheelDlV}>{pick(RASHI_LORDS[sel.i], LORD_EN[RASHI_LORDS[sel.i]] ?? RASHI_LORDS[sel.i])}</span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("तत्त्व", "Element")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.element")}</span>
               <span className={wheelDlV}>{pick(RASHI_ELEM[sel.i], TATTVA_EN[RASHI_ELEM[sel.i]] ?? RASHI_ELEM[sel.i])}</span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("देशान्तर", "Longitude")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.longitude")}</span>
               <span className={wheelDlVMono}>
                 {num(sel.i * 30)}°–{num((sel.i + 1) * 30)}°
               </span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("नेपाली महिना", "Nepali month")}</span>
+              <span className={wheelDlK}>{t("panchanga.wheel_panel.nepali_month")}</span>
               <span className={wheelDlV}>{pick(bsMonths[sel.i]?.ne ?? "", bsMonthEnOf(bsMonths[sel.i]?.ne ?? ""))}</span>
             </div>
             <div className={wheelDlRow}>
-              <span className={wheelDlK}>{pick("पद", "Padas")}</span>
-              <span className={wheelDlVMono}>{pick(`${num(9)} पद`, `${num(9)} padas`)}</span>
+              <span className={wheelDlK}>{t("ui.panchanga.padas")}</span>
+              <span className={wheelDlVMono}>{t("ui.panchanga.value_padas", { value: num(9) })}</span>
             </div>
           </div>
           <div className={wheelPanelCons}>
             <div className={wheelPanelConsTxt}>
-              <b>{pick("नक्षत्रहरू", "Nakshatras")}</b>
+              <b>{t("panchanga.wheel_panel.nakshatras")}</b>
               {nakIn.join(" · ")}
             </div>
           </div>

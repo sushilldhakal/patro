@@ -64,35 +64,32 @@ const SunriseSamplesTithiScene = memo(function SunriseSamplesTithiScene({ onLabe
 });
 
 export function SunriseSamplesTithiDiagram() {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const copy = {
-    tritiya: pick("तृतीया", "Tritiya"),
-    chaturthi: pick("चतुर्थी", "Chaturthi"),
-    changed: pick("तिथि बदलियो ०४:३०", "Tithi changes 04:30"),
-    sunrise: pick("सूर्योदय ०५:४५", "Sunrise 05:45"),
+    tritiya: t("learn.diagrams.tithi_tritiya"),
+    chaturthi: t("learn.diagrams.tithi_chaturthi"),
+    changed: t("ui.learn.tithi_changes_04_30"),
+    sunrise: t("ui.learn.sunrise_05_45"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — सूर्योदयमै तिथि नमुना", "3D — the panchanga samples tithi at sunrise")}
+      title={t("ui.learn.n3d_the_panchanga_samples_tithi_at")}
       height={220}
       camera={{ yaw: 0, pitch: 0.55 }}
       frame={{ width: 1.4, height: 0.45 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.orbit, label: pick("अघिल्लो तिथि", "Earlier tithi") },
-        { color: DIAGRAM_COLOR.arc, label: pick("पछिल्लो तिथि", "Later tithi") },
-        { color: DIAGRAM_COLOR.sun, label: pick("सूर्योदय — नमुना लिने क्षण", "Sunrise — the sampling instant") },
+        { color: DIAGRAM_COLOR.orbit, label: t("ui.learn.earlier_tithi") },
+        { color: DIAGRAM_COLOR.arc, label: t("ui.learn.later_tithi") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.sunrise_the_sampling_instant") },
       ]}
       readouts={[
-        { k: pick("तिथि परिवर्तन", "Tithi boundary"), v: digits("04:30") },
-        { k: pick("सूर्योदय", "Sunrise"), v: digits("05:45"), tone: "accent" },
-        { k: pick("त्यो दिनको तिथि", "That day's tithi"), v: pick("चतुर्थी", "Chaturthi"), tone: "warn" },
+        { k: t("ui.learn.tithi_boundary"), v: digits("04:30") },
+        { k: t("kundali.sunrise"), v: digits("05:45"), tone: "accent" },
+        { k: t("ui.learn.that_day_s_tithi"), v: t("learn.diagrams.tithi_chaturthi"), tone: "warn" },
       ]}
-      caption={pick(
-        "तिथि दिनको जुनसुकै समयमा सुरु वा सकिन सक्छ, तर पात्रोले दिनको एउटै लेबल चाहिन्छ। यहाँ तिथि ०४:३० मा बद्लिन्छ — सूर्योदयभन्दा (०५:४५) अघि — त्यसैले सूर्योदयमा चलिरहेको तिथि चतुर्थी नै त्यो दिनको तिथि हुन्छ, तृतीया एक क्षण पनि दिन पाउँदैन।",
-        "A tithi can begin and end at any hour, but the calendar needs one label per day. Here the tithi changes at 04:30 — before sunrise (05:45) — so the tithi running at sunrise, Chaturthi, is the one that day gets; Tritiya never gets a day of its own.",
-      )}
+      caption={t("ui.learn.a_tithi_can_begin_and_end")}
     >
       {({ onLabels }) => <SunriseSamplesTithiScene onLabels={onLabels} copy={copy} />}
     </LearnDiagram3D>

@@ -829,7 +829,7 @@ export function PlanetsPanel({ p }: { p: PanchangaDay }) {
         {lagna && (
           <View className={cn("flex", panchangaPageClasses.sections.lagnaRow)}>
             <Text className={cn("flex", panchangaPageClasses.sections.lagnaBadge)}>
-              {pick("लग्न", "ASC")}
+              {t("panchanga.asc")}
             </Text>
             <View className={panchangaPageClasses.sections.lagnaBody}>
               <Text className={panchangaPageClasses.sections.lagnaTitle}>{t("sections.lagna")}</Text>

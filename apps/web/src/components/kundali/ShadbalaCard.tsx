@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ChevronRight } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import type {

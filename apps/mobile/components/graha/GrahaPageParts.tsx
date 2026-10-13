@@ -57,7 +57,7 @@ export function GrahaDescription({ pageId }: { pageId: string }) {
   return (
     <Card className={grahaClasses.aboutCard}>
       <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
-        {pick("परिचय", "About")}
+        {t("ui.graha.about")}
       </Text>
       <View className={grahaClasses.aboutBody}>
         {blocks.map((b) => (
@@ -84,7 +84,7 @@ export function ElementDescription({ elementId }: { elementId: string }) {
   return (
     <Card className={grahaClasses.aboutCard}>
       <Text className={grahaClasses.aboutTitle} style={nepaliTextStyle(12)}>
-        {pick("परिचय", "About")}
+        {t("ui.graha.about")}
       </Text>
       <View className={grahaClasses.aboutBody}>
         {blocks.map((b) => (
@@ -104,7 +104,7 @@ export function ElementDescription({ elementId }: { elementId: string }) {
 
 /** Trailing "← all panchanga elements" link shared by the graha pages. */
 export function AllElementsLink() {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   return (
@@ -114,7 +114,7 @@ export function AllElementsLink() {
     >
       <Ionicons name="grid-outline" size={14} color={colors.primary} />
       <Text style={{ color: colors.primary }} className="text-sm underline">
-        {pick("सबै पञ्चाङ्ग तत्त्वहरू", "All panchanga elements")}
+        {t("ui.graha.all_panchanga_elements")}
       </Text>
     </Pressable>
   );

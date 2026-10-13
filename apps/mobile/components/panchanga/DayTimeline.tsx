@@ -351,7 +351,7 @@ export function DayTimeline({
   civil,
   civilLoading = false,
 }: Props) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { width: windowWidth } = useBreakpoint();
   const [containerWidth, setContainerWidth] = useState(0);
   const C = useTimelineColors();
@@ -381,11 +381,11 @@ export function DayTimeline({
     return (
       <Card className="w-full overflow-hidden p-0">
         <View className={cn("flex-row", patroSecBand)}>
-          <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{pick("दिन-चक्र", "Day cycle")}</Text>
+          <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{t("panchanga.day_cycle.title")}</Text>
           <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
             {isCivil
-              ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
-              : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
+              ? t("ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
+              : t("ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise")}
           </Text>
         </View>
         <SkeletonPulse className="mx-3 my-3 h-[320px] rounded-lg bg-muted/40" />
@@ -453,7 +453,7 @@ export function DayTimeline({
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
   let nowG: number | null = null;
-  let nowLabel = pick("अहिले", "Now");
+  let nowLabel = t("panchanga.day_cycle.now");
   const anchorAd = p?.panchanga_date_ad ?? p?.date_ad ?? dateAd;
   const chartMins = minutesOnVedicChart(p?.query_instant_local, anchorAd ?? "", needleClock);
 
@@ -464,7 +464,7 @@ export function DayTimeline({
     nowG = needleGhatiOnVedicChart(minutesSinceMidnightInTimezone(now, timeZone), data.sunriseMin);
   } else if (showNeedle && chartMins != null) {
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) nowLabel = pick("छानिएको समय", "Chosen time");
+    if (nowG != null) nowLabel = t("panchanga.day_cycle.chosen_time");
   }
 
   const trackY = (i: number) => T0 + i * TRACK;
@@ -482,13 +482,13 @@ export function DayTimeline({
       ))}
 
       <SvgText x={X0 - 10} y={isCivil ? 34 : 20} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end">
-        {pick("घण्टा", "Hour")}
+        {t("panchanga.hour_aria")}
       </SvgText>
       {/* घडी counts from sunrise, so it means nothing on a midnight-anchored
           chart — web drops the row there and so does this. */}
       {!isCivil && (
         <SvgText x={X0 - 10} y={47} fill={C.muted} fontSize={15} fontFamily={FONT} textAnchor="end" opacity={0.75}>
-          {pick("घडी", "Ghati")}
+          {t("panchanga.day_cycle.ghati")}
         </SvgText>
       )}
       <Line x1={X0} y1={30} x2={X1} y2={30} stroke={C.axis} strokeWidth={1.2} />
@@ -682,16 +682,16 @@ export function DayTimeline({
       }}
     >
       <View className={cn("flex-row", patroSecBand)}>
-        <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{pick("दिन-चक्र", "Day cycle")}</Text>
+        <Text className={cn(panchangaPageClasses.dayCycle.bandTitle, "text-foreground")}>{t("panchanga.day_cycle.title")}</Text>
         <Text className={cn(panchangaPageClasses.dayCycle.bandSubtitle, "text-muted-foreground")}>
           {isCivil
-              ? pick("पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात", "Full panchanga timeline · midnight to midnight")
-              : pick("पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय", "Full panchanga timeline · sunrise to sunrise")}
+              ? t("ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
+              : t("ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise")}
         </Text>
         <View className={panchangaPageClasses.dayCycle.bandLegend}>
-          <LegendDot color={withAlpha(illustration.green40, 0.55)} label={pick("शुभ", "Good")} />
-          <LegendDot color={withAlpha(illustration.red57, 0.55)} label={pick("अशुभ", "Bad")} />
-          <LegendDot color={withAlpha(neutral.white, 0.2)} label={pick("रात", "Night")} />
+          <LegendDot color={withAlpha(illustration.green40, 0.55)} label={t("panchanga.day_cycle.good")} />
+          <LegendDot color={withAlpha(illustration.red57, 0.55)} label={t("panchanga.day_cycle.bad")} />
+          <LegendDot color={withAlpha(neutral.white, 0.2)} label={t("panchanga.day_cycle.night")} />
         </View>
       </View>
 
@@ -731,7 +731,7 @@ export function DayTimeline({
       {data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
-          title={pick("अशुभ समय", "Inauspicious periods")}
+          title={t("panchanga.day_cycle.inauspicious_periods")}
           cardWidth={periodCardW}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
@@ -744,7 +744,7 @@ export function DayTimeline({
       {data.shubha.length > 0 && (
         <PeriodCards
           tone="success"
-          title={pick("शुभ समय", "Auspicious periods")}
+          title={t("panchanga.day_cycle.auspicious_periods")}
           cardWidth={periodCardW}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
@@ -757,7 +757,7 @@ export function DayTimeline({
       {p && planets.length > 0 ? (
         <View className="gap-2 border-t border-border px-4 py-3">
           <View className="gap-0.5">
-            <Text className="text-sm font-bold text-foreground">{pick("ग्रह", "Planets")}</Text>
+            <Text className="text-sm font-bold text-foreground">{t("panchanga.day_cycle.planets")}</Text>
             <Text className="text-sm text-muted-foreground">{getPlanetsAnchorLabel(p, lang)}</Text>
           </View>
           <View className="flex-row flex-wrap" style={{ gap: PLANET_CARD_GAP }}>

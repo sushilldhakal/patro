@@ -128,7 +128,7 @@ function LocationResultsList({
 
 export function LocationSelector({ location, onLocationChange, className, style }: Props) {
   const colors = useThemeColors();
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const { isCompact } = useBreakpoint();
   const chipH = dayCycleToggleMetrics(isCompact).height;
   const insets = useSafeAreaInsets();
@@ -180,7 +180,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setGeoError(pick("अनुमति अस्वीकृत — सहर खोज्नुहोस्", "Permission denied — search for a city"));
+        setGeoError(t("location.permission_denied"));
         return;
       }
       const pos = await Location.getCurrentPositionAsync({
@@ -203,7 +203,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
       setDebouncedQuery("");
       setOpen(false);
     } catch {
-      setGeoError(pick("स्थान पत्ता लागेन", "Location not found"));
+      setGeoError(t("location.not_found"));
     } finally {
       setGeoLoading(false);
     }
@@ -221,7 +221,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        accessibilityLabel={pick("स्थान बदल्नुहोस्", "Change location")}
+        accessibilityLabel={t("ui.common.change_location")}
         className={cn(
           "max-w-[7.5rem] shrink flex-row items-center gap-1 rounded-lg border border-border bg-card px-2 active:bg-muted",
           className,
@@ -255,7 +255,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
           >
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
               <Text className="text-lg" style={{ color: colors.mutedForeground }}>
-                {pick("रद्द", "Cancel")}
+                {t("common.cancel")}
               </Text>
             </Pressable>
             <Text
@@ -267,11 +267,11 @@ export function LocationSelector({ location, onLocationChange, className, style 
                 color: colors.foreground,
               }}
             >
-              {pick("स्थान", "Location")}
+              {t("location.label")}
             </Text>
             <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
               <Text className="text-lg" style={{ fontWeight: "600", color: colors.primary }}>
-                {pick("भयो", "Done")}
+                {t("common.done")}
               </Text>
             </Pressable>
           </View>
@@ -283,7 +283,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
                 ref={inputRef}
                 value={query}
                 onChangeText={setQuery}
-                placeholder={pick("सहर खोज्नुहोस्", "Search a city")}
+                placeholder={t("location.search_city")}
                 placeholderTextColor={colors.mutedForeground}
                 className="text-sm h-10 flex-1 text-foreground"
                 autoCapitalize="none"
@@ -304,7 +304,7 @@ export function LocationSelector({ location, onLocationChange, className, style 
                 <Ionicons name="locate-outline" size={16} color={inkOn(colors.secondary)} />
               )}
               <Text className="text-sm font-semibold text-secondary-foreground">
-                {pick("मेरो स्थान प्रयोग गर्नुहोस्", "Use my location")}
+                {t("location.use_my_location")}
               </Text>
             </Pressable>
 

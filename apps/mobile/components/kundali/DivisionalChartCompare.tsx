@@ -72,7 +72,7 @@ function ChartPanel({
   vargaCharts: VargaCharts;
   combustion: Record<string, boolean | null>;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const [tab, setTab] = useState<"graha" | "bhava">("graha");
   const varga = vargaOption(panel.division);
   const anchorLabel = CHART_ANCHOR_LABELS[panel.anchor];
@@ -100,25 +100,25 @@ function ChartPanel({
       <View className={kundaliDetailClasses.compare.controls}>
         <View className={cn(kundaliDetailClasses.compare.field, "min-w-[7.5rem]")}>
           <Text className={kundaliDetailClasses.compare.fieldLabel} style={nepaliTextStyle(11)}>
-            {pick("आधार", "Anchor")}
+            {t("kundali.anchor")}
           </Text>
           <NativeStringSelect
             value={panel.anchor}
             options={anchorSelectOptions}
             onChange={(anchor) => onPanelChange({ ...panel, anchor: anchor as ChartAnchor })}
-            ariaLabel={pick("आधार", "Anchor")}
+            ariaLabel={t("kundali.anchor")}
             minWidth={120}
           />
         </View>
         <View className={cn(kundaliDetailClasses.compare.field, "min-w-[9rem]")}>
           <Text className={kundaliDetailClasses.compare.fieldLabel} style={nepaliTextStyle(11)}>
-            {pick("वर्ग", "Division")}
+            {t("ui.kundali.division")}
           </Text>
           <BsNativeSelect
             value={panel.division}
             options={divisionSelectOptions}
             onChange={(division) => onPanelChange({ ...panel, division })}
-            ariaLabel={pick("वर्ग", "Division")}
+            ariaLabel={t("ui.kundali.division")}
             minWidth={140}
             className="h-9 px-2.5"
           />
@@ -131,7 +131,7 @@ function ChartPanel({
         </Text>
         {houses.length > 0 ? <D1Chart houses={houses} /> : (
           <Text className={kundaliDetailClasses.compare.empty} style={nepaliTextStyle(14)}>
-            {pick("यो चक्रका लागi पर्याप्त डेटा छैन।", "Not enough data for this chart.")}
+            {t("ui.kundali.not_enough_data_for_this_chart")}
           </Text>
         )}
       </View>
@@ -192,7 +192,7 @@ export function DivisionalChartCompare({
   defaultLeft = { anchor: "lagna", division: 1 },
   defaultRight = { anchor: "moon", division: 9 },
 }: DivisionalChartCompareProps) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { width } = useBreakpoint();
   const twoCol = width >= 768;
   const anchorOptions = useAnchorOptions(vargaCharts);
@@ -224,8 +224,8 @@ export function DivisionalChartCompare({
 
   return (
     <KundaliSection
-      title={pick("कुण्डली चक्र", "Divisional charts")}
-      subtitle={pick("दुई चक्र तुलना — D1, D9 आदि", "Compare two charts — D1, D9, etc.")}
+      title={t("ui.kundali.divisional_charts")}
+      subtitle={t("ui.kundali.compare_two_charts_d1_d9_etc")}
       icon="grid-outline"
     >
       <View className={twoCol ? "flex-row gap-4" : "gap-6"}>

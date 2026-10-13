@@ -50,7 +50,7 @@ export function GocharIngressSection({
   onPrevMonth?: () => void;
   onNextMonth?: () => void;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { height: windowHeight } = useBreakpoint();
   const [filter, setFilter] = useState<IngressFilter>("all");
@@ -70,10 +70,10 @@ export function GocharIngressSection({
         <View className="flex-row items-start justify-between gap-2">
           <View className="min-w-0 flex-1">
             <Text className={gocharClasses.ingressEyebrow} style={nepaliTextStyle()}>
-              {pick("के परिवर्तन हुँदैछ", "What's changing")}
+              {t("ui.gochar.what_s_changing")}
             </Text>
             <Text className={gocharClasses.ingressTitle} style={nepaliTextStyle()}>
-              {pick("आगामी गोचर घटनाहरू", "Upcoming transit events")}
+              {t("ui.gochar.upcoming_transit_events")}
             </Text>
           </View>
           {showMonthNav ? (
@@ -124,11 +124,11 @@ export function GocharIngressSection({
       >
         {loading ? (
           <Text className={gocharClasses.ingressStatus} style={nepaliTextStyle()}>
-            {pick("लोड हुँदै…", "Loading…")}
+            {t("common.loading")}
           </Text>
         ) : visible.length === 0 ? (
           <Text className={gocharClasses.ingressStatus} style={nepaliTextStyle()}>
-            {pick("यस महिनामा कुनै आगामी गोचर छैन।", "No upcoming transits this month.")}
+            {t("ui.gochar.no_upcoming_transits_this_month")}
           </Text>
         ) : (
           visible.map((ev, i) => {

@@ -47,7 +47,7 @@ function AbhijitDayCard({
   isToday: boolean;
   width: string;
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const { day, abhijit } = row;
   const adDay = civilIsoDayOfMonth(day.date_ad);
   const sunrise = formatClockNepali(day.sunrise) ?? day.sunrise ?? "—";
@@ -67,7 +67,7 @@ function AbhijitDayCard({
         {isToday ? (
           <View className={cn(ac.todayBadge, "shrink-0")}>
             <Text className={ac.todayBadgeText} style={nepaliTextStyle()}>
-              {pick("आज", "Today")}
+              {t("today")}
             </Text>
           </View>
         ) : null}
@@ -90,7 +90,7 @@ function AbhijitDayCard({
           {abhijit.rangeDisplay}
         </Text>
         <Text className={ac.dayNoon} style={nepaliTextStyle()}>
-          {pick("मध्यान्ह", "Solar noon")}{" "}
+          {t("abhijit.col_noon")}{" "}
           <Text className={ac.dayNoonValue} style={nepaliTextStyle()}>
             {abhijit.noonDisplay ?? "—"}
           </Text>
@@ -142,7 +142,7 @@ export default function AbhijitMuhurtaScreen() {
   const cardWidth = `${(100 / cols - 1.5).toFixed(2)}%`;
 
   return (
-    <AppShell title={pick("अभिजित् मुहूर्त", "Abhijit Moment")} showHeader={false}>
+    <AppShell title={t("nav.abhijit_muhurta")} showHeader={false}>
       <View className="mb-6">
         <View className={ac.titleRow}>
           <AppNavIcon name="sparkles" size={28} color={colors.secondary} />
@@ -174,7 +174,7 @@ export default function AbhijitMuhurtaScreen() {
         <View className={cn(ac.hero, "mt-6 gap-4 bg-secondary/10")}>
           <View>
             <Text className={ac.heroEyebrow} style={nepaliTextStyle()}>
-              {pick("आजको अभिजित् मुहूर्त", "Today's Abhijit Moment")}
+              {t("abhijit.today_hero")}
             </Text>
             <Text className={ac.heroDate} style={nepaliTextStyle()}>
               {digits(todayRow.day.day)} ·{" "}
@@ -187,7 +187,7 @@ export default function AbhijitMuhurtaScreen() {
               {todayRow.abhijit.rangeDisplay}
             </Text>
             <Text className={ac.heroNoon} style={nepaliTextStyle()}>
-              {pick("मध्यान्ह", "Solar noon")}:{" "}
+              {t("abhijit.col_noon")}:{" "}
               <Text className={ac.heroNoonValue} style={nepaliTextStyle()}>
                 {todayRow.abhijit.noonDisplay ?? "—"}
               </Text>
@@ -218,16 +218,13 @@ export default function AbhijitMuhurtaScreen() {
       <View className={cn(ac.noteBox, ac.noteRow, "mt-6")}>
         <Ionicons name="sparkles-outline" size={16} color={colors.secondary} style={{ marginTop: space.hair }} />
         <Text className={cn(ac.noteText, "flex-1")} style={nepaliTextStyle()}>
-          {pick(
-            "अभिजित् दिनको आठौँ मुहूर्त हो — सूर्योदय र सूर्यास्त बीचको सर्वश्रेष्ठ शुभ समय, स्थानीय मध्यान्हमा केन्द्रित।",
-            "Abhijit is the 8th daytime moment — the most auspicious window, centred on local solar noon between sunrise and sunset.",
-          )}
+          {t("abhijit.note")}
         </Text>
       </View>
 
       <View className={cn(ac.headingRow, "mt-6")}>
         <Text className={ac.heading} style={nepaliTextStyle()}>
-          {pick("मासिक सूची", "Month at a glance")} — {monthLabel} {digits(year)}
+          {t("abhijit.month_heading")} — {monthLabel} {digits(year)}
         </Text>
         {!monthQ.isLoading && rows.length > 0 ? (
           <View className={ac.countPill}>
@@ -241,20 +238,14 @@ export default function AbhijitMuhurtaScreen() {
       {monthQ.isError ? (
         <View className={cn(ac.errorBox, "mt-6")}>
           <Text className={ac.errorText} style={nepaliTextStyle()}>
-            {pick(
-              "पात्रो लोड गर्न सकिएन। केही बेरपछि पुनः प्रयास गर्नुहोस्।",
-              "Could not load the calendar. Try again shortly.",
-            )}
+            {t("abhijit.error")}
           </Text>
         </View>
       ) : monthQ.isLoading ? (
         <SkeletonPulse className={cn(ac.skeleton, "mt-6 bg-foreground/5")} />
       ) : rows.length === 0 ? (
         <Text className={ac.empty} style={nepaliTextStyle()}>
-          {pick(
-            "यस महिनाका लागि अभिजित् समय उपलब्ध छैन।",
-            "No Abhijit timings for this month.",
-          )}
+          {t("abhijit.none")}
         </Text>
       ) : (
         <View className={cn(ac.gridWrap, "mt-6")}>

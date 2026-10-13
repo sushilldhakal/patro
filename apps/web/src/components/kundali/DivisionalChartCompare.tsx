@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { D1Chart } from "@/components/kundali/D1Chart";
 import { GrahaStatusLegend } from "@/components/graha/GrahaStatusBadges";

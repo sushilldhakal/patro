@@ -495,7 +495,7 @@ function WheelBody({
   fullscreenOverlay,
   stageHeight,
 }: Omit<PanchangaWheelProps, "loading" | "p"> & { p: PanchangaDay }) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const { width: screenW, height: screenH, isTablet, isLandscape } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [containerWidth, setContainerWidth] = useState(0);
@@ -762,11 +762,11 @@ function WheelBody({
         }}
       >
         {!compactHead ? (
-          <Text className="text-sm font-semibold uppercase" style={eyebrow}>{pick("पञ्चाङ्ग चक्र", "Nepali Patro · Panchanga Wheel")}</Text>
+          <Text className="text-sm font-semibold uppercase" style={eyebrow}>{t("ui.panchanga.nepali_patro_panchanga_wheel")}</Text>
         ) : null}
         <Text className={compactHead ? "mt-1.5 text-lg font-bold leading-tight" : "mt-1.5 text-xl font-bold leading-tight"} style={title}>
-          {isToday && !scrubPinned ? `${pick("आजको", "Today's")} ` : ""}
-          {pick("ग्रह–नक्षत्र · तिथि–करण चक्र", "Graha–Nakshatra · Tithi–Karana wheel")}
+          {isToday && !scrubPinned ? `${t("panchanga.wheel.today_prefix")} ` : ""}
+          {t("panchanga.wheel.title")}
         </Text>
         <Text className="mt-1.5 text-base" style={sub} numberOfLines={compactHead ? 2 : 3}>
           {pick(bsMonthNe, bsMonthEnOf(bsMonthNe))} {digits(bsDay)}, {digits(bsYear)} · {digits(pickerClock)}
@@ -858,23 +858,23 @@ function WheelBody({
         <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
           <View className={wheelLegendDot} style={{ backgroundColor: W_ACCENT }} />
           <Text className="text-sm" style={{ color: W_INK_DIM }}>
-            {pick("वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
+            {t("ui.panchanga.current_nakshatra_tithi")}
           </Text>
         </View>
         {!isTablet && !fullscreen ? (
           <Text className="text-sm" style={{ color: W_INK_FAINT }}>
-            {pick("घुमाउन तान्नुहोस् · जुम गर्नुहोस् · दुई औंलाले सार्नुहोस्", "Drag to rotate · pinch to zoom · two fingers to pan")}
+            {t("ui.panchanga.drag_to_rotate_pinch_to_zoom")}
           </Text>
         ) : null}
         {isTablet || fullscreen ? (
           <>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: illustration.orange53b }} />
-              <Text className="text-sm" style={{ color: W_INK_DIM }}>{pick("सूर्य राशि", "Sun sign")}</Text>
+              <Text className="text-sm" style={{ color: W_INK_DIM }}>{t("panchanga.wheel.sun_sign")}</Text>
             </View>
             <View className={`${wheelLegendRow} flex-row items-center gap-1.5`}>
               <View className={wheelLegendDot} style={{ backgroundColor: illustration.sky84 }} />
-              <Text className="text-sm" style={{ color: W_INK_DIM }}>{pick("चन्द्र राशि", "Moon sign")}</Text>
+              <Text className="text-sm" style={{ color: W_INK_DIM }}>{t("common.moon_sign")}</Text>
             </View>
           </>
         ) : null}
@@ -968,8 +968,8 @@ function WheelSkeleton({
   bsDay,
   locationLabel,
 }: Pick<PanchangaWheelProps, "bsYear" | "bsMonthNe" | "bsDay" | "locationLabel">) {
-  const { pick, digits } = useLocale();
-  const locLabel = locationLabel ?? pick("काठमाडौं", "Kathmandu");
+  const { t, pick, digits } = useLocale();
+  const locLabel = locationLabel ?? t("panchanga.wheel.default_location");
 
   return (
     <Card className="overflow-hidden p-0" style={{ backgroundColor: W_BG }}>

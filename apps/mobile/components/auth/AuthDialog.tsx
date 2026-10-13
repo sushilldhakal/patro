@@ -38,7 +38,7 @@ export function AuthDialog({
 }) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const router = useRouter();
   const { login, signup, loginWithGoogle, loginWithFacebook, loginWithApple } = useAuth();
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -73,11 +73,11 @@ export function AuthDialog({
     setNotice(null);
 
     if (mode === "signup" && password !== confirm) {
-      setError(pick("पासवर्ड मिलेन", "Passwords do not match"));
+      setError(t("auth.passwords_mismatch"));
       return;
     }
     if (mode === "signup" && password.length < 8) {
-      setError(pick("पासवर्ड कम्तीमा ८ अक्षर हुनुपर्छ", "Password must be at least 8 characters"));
+      setError(t("auth.password_min"));
       return;
     }
 
@@ -89,23 +89,17 @@ export function AuthDialog({
       } else if (mode === "signup") {
         await signup(email.trim(), password);
         setNotice(
-          pick(
-            "खाता बनियो! इमेल प्रमाणीकरणको लागि इनबक्स हेर्नुहोस्।",
-            "Account created! Check your email to verify your address.",
-          ),
+          t("auth.signup_notice"),
         );
         setTimeout(close, 1400);
       } else {
         await apiForgotPassword(email.trim());
         setNotice(
-          pick(
-            "यदि त्यो इमेल छ भने, रिसेट लिङ्क पठाइएको छ",
-            "If that email exists, a reset link has been sent",
-          ),
+          t("auth.forgot_notice"),
         );
       }
     } catch {
-      setError(pick("केही गडबड भयो। पुनः प्रयास गर्नुहोस्।", "Something went wrong. Try again."));
+      setError(t("auth.generic_error"));
     } finally {
       setBusy(false);
     }
@@ -119,7 +113,7 @@ export function AuthDialog({
       close();
     } catch (err) {
       const detail = err instanceof Error ? err.message : "";
-      setError(detail || pick("गुगल लग-इन असफल", "Google sign-in failed"));
+      setError(detail || t("auth.google_error"));
     } finally {
       setBusy(false);
     }
@@ -132,7 +126,7 @@ export function AuthDialog({
       await loginWithFacebook(accessToken);
       close();
     } catch {
-      setError(pick("फेसबुक लग-इन असफल", "Facebook sign-in failed"));
+      setError(t("auth.facebook_error"));
     } finally {
       setBusy(false);
     }
@@ -145,7 +139,7 @@ export function AuthDialog({
       await loginWithApple(identityToken, email);
       close();
     } catch {
-      setError(pick("एपल लग-इन असफल", "Apple sign-in failed"));
+      setError(t("ui.auth.apple_sign_in_failed"));
     } finally {
       setBusy(false);
     }
@@ -153,29 +147,23 @@ export function AuthDialog({
 
   const title =
     mode === "login"
-      ? pick("लग-इन", "Sign in")
+      ? t("kundali.login")
       : mode === "signup"
-        ? pick("खाता खोल्नुहोस्", "Create account")
-        : pick("पासवर्ड रिसेट", "Reset password");
+        ? t("kundali.signup")
+        : t("auth.reset_password");
   const desc =
     mode === "login"
-      ? pick("वैदिक पात्रोमा फेरि स्वागत छ।", "Welcome back to Vedic Patro.")
+      ? t("auth.sign_in_desc")
       : mode === "signup"
-        ? pick(
-            "आफ्ना कुण्डली प्रोफाइलहरू उपकरणहरूमा सुरक्षित राख्नुहोस्।",
-            "Save your kundali profiles across devices.",
-          )
-        : pick(
-            "हामी तपाईंलाई नयाँ पासवर्ड सेट गर्न लिङ्क इमेल गर्छौं।",
-            "We'll email you a link to set a new password.",
-          );
+        ? t("auth.signup_desc")
+        : t("auth.forgot_desc");
   const submitLabel = busy
-    ? pick("कृपया पर्खनुहोस्…", "Please wait…")
+    ? t("auth.please_wait")
     : mode === "login"
-      ? pick("लग-इन", "Sign in")
+      ? t("kundali.login")
       : mode === "signup"
-        ? pick("खाता खोल्नुहोस्", "Create account")
-        : pick("रिसेट लिङ्क पठाउनुहोस्", "Send reset link");
+        ? t("kundali.signup")
+        : t("auth.send_reset");
 
   return (
     <Modal visible={open} animationType="slide" onRequestClose={close}>
@@ -199,11 +187,11 @@ export function AuthDialog({
           }}
         >
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72 }}>
-            <Text className="text-lg text-muted-foreground">{pick("रद्द", "Cancel")}</Text>
+            <Text className="text-lg text-muted-foreground">{t("common.cancel")}</Text>
           </Pressable>
           <Text className="flex-1 text-center text-lg font-semibold text-foreground">{title}</Text>
           <Pressable onPress={close} hitSlop={8} style={{ minWidth: 72, alignItems: "flex-end" }}>
-            <Text className="text-lg font-semibold text-primary">{pick("भयो", "Done")}</Text>
+            <Text className="text-lg font-semibold text-primary">{t("common.done")}</Text>
           </Pressable>
         </View>
 
@@ -234,7 +222,7 @@ export function AuthDialog({
 
             <Field
               email
-              label={pick("इमेल", "Email")}
+              label={t("auth.email")}
               value={email}
               onChangeText={setEmail}
               placeholder="you@example.com"
@@ -242,11 +230,11 @@ export function AuthDialog({
 
             {mode !== "forgot" ? (
               <Field
-                label={pick("पासवर्ड", "Password")}
+                label={t("auth.password")}
                 value={password}
                 onChangeText={setPassword}
                 placeholder={
-                  mode === "signup" ? pick("कम्तीमा ८ अक्षर", "At least 8 characters") : "••••••••"
+                  mode === "signup" ? t("auth.password_hint") : "••••••••"
                 }
                 secureTextEntry
                 autoCapitalize="none"
@@ -257,7 +245,7 @@ export function AuthDialog({
 
             {mode === "signup" ? (
               <Field
-                label={pick("पासवर्ड पुष्टि", "Confirm password")}
+                label={t("auth.confirm_password")}
                 value={confirm}
                 onChangeText={setConfirm}
                 placeholder="••••••••"
@@ -285,38 +273,35 @@ export function AuthDialog({
                 <>
                   <Pressable onPress={() => reset("forgot")}>
                     <Text className={accountClasses.switchText}>
-                      {pick("पासवर्ड बिर्सनुभयो?", "Forgot your password?")}
+                      {t("auth.forgot_password")}
                     </Text>
                   </Pressable>
                   <Text className={accountClasses.switchText}>
-                    {pick("नयाँ हुनुहुन्छ?", "New here?")}{" "}
+                    {t("auth.new_here")}{" "}
                     <Text className={accountClasses.switchLink} onPress={() => reset("signup")}>
-                      {pick("खाता खोल्नुहोस्", "Create account")}
+                      {t("kundali.signup")}
                     </Text>
                   </Text>
                 </>
               ) : null}
               {mode === "signup" ? (
                 <Text className={accountClasses.switchText}>
-                  {pick("पहिले नै खाता छ?", "Already have an account?")}{" "}
+                  {t("auth.already_have")}{" "}
                   <Text className={accountClasses.switchLink} onPress={() => reset("login")}>
-                    {pick("लग-इन", "Sign in")}
+                    {t("kundali.login")}
                   </Text>
                 </Text>
               ) : null}
               {mode === "forgot" ? (
                 <Pressable onPress={() => reset("login")}>
                   <Text className={accountClasses.switchText}>
-                    {pick("लग-इनमा फर्कनुहोस्", "Back to sign in")}
+                    {t("auth.back_to_sign_in")}
                   </Text>
                 </Pressable>
               ) : null}
               {mode !== "forgot" ? (
                 <Text className={cn("mt-2 px-4", accountClasses.legal)}>
-                  {pick(
-                    "जारी राखेर तपाईं गोपनीयता नीति र प्रयोगका सर्त मान्नुहुन्छ।",
-                    "By continuing you agree to the Privacy Policy and Terms of Use.",
-                  )}{" "}
+                  {t("auth.legal_agree")}{" "}
                   <Text
                     className={accountClasses.legalLink}
                     onPress={() => {
@@ -324,7 +309,7 @@ export function AuthDialog({
                       router.push("/privacy" as never);
                     }}
                   >
-                    {pick("गोपनीयता", "Privacy")}
+                    {t("footer.privacy")}
                   </Text>
                   {" · "}
                   <Text
@@ -334,7 +319,7 @@ export function AuthDialog({
                       router.push("/terms" as never);
                     }}
                   >
-                    {pick("सर्त", "Terms")}
+                    {t("footer.terms")}
                   </Text>
                 </Text>
               ) : null}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "@vedic-patro/i18n/react";
 import {
   ChevronDown,
   CircleAlert,

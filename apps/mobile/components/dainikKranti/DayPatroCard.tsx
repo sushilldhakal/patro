@@ -168,22 +168,22 @@ export function DayPatroCard({
         <CardField
           label={t("dainik.tithi")}
           value={`${pakshaShort(day, isEn)} ${pick(day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) ?? "—"}`}
-          sub={tithiEnd ? pick(`${tithiEnd} सम्म`, `until ${tithiEnd}`) : null}
+          sub={tithiEnd ? t("ui.dainik_kranti.until_tithiend", { tithiEnd }) : null}
         />
         <CardField
           label={t("dainik.nakshatra")}
           value={pick(day.nakshatra_ne ?? day.nakshatra ?? "—", day.nakshatra ?? day.nakshatra_ne ?? "—")}
-          sub={nakEnd ? pick(`${nakEnd} सम्म`, `until ${nakEnd}`) : null}
+          sub={nakEnd ? t("ui.dainik_kranti.until_nakend", { nakEnd }) : null}
         />
         <CardField
           label={t("dainik.yoga")}
           value={pick(day.yoga_ne ?? day.yoga ?? "—", day.yoga ?? day.yoga_ne ?? "—")}
-          sub={yogaEnd ? pick(`${yogaEnd} सम्म`, `until ${yogaEnd}`) : null}
+          sub={yogaEnd ? t("ui.dainik_kranti.until_yogaend", { yogaEnd }) : null}
         />
         <CardField
           label={t("dainik.karana")}
           value={pick(day.karana_ne ?? day.karana ?? "—", day.karana ?? day.karana_ne ?? "—")}
-          sub={karanaEnd ? pick(`${karanaEnd} सम्म`, `until ${karanaEnd}`) : null}
+          sub={karanaEnd ? t("ui.dainik_kranti.until_karanaend", { karanaEnd }) : null}
         />
       </View>
 
@@ -232,8 +232,8 @@ export function DayPatroCard({
           >
             <Text className={dainikKrantiClasses.expandBtnText} style={nepaliTextStyle()}>
               {isExpanded
-                ? pick("विवरण लुकाउनुहोस्", "Hide details")
-                : pick("लग्न · ग्रहस्पष्ट · थप विवरण", "Lagna · planets & more")}
+                ? t("dainik.hide_details")
+                : t("dainik.lagna_planets_more")}
             </Text>
             <Ionicons
               name={isExpanded ? "chevron-up" : "chevron-down"}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Input } from "@/components/ui/input";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
 import { useLocaleDigits } from "@/i18n/digits";

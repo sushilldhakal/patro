@@ -91,9 +91,9 @@ function WheelYearPlayback({ scrub }: { scrub: YearWheelScrub }) {
         type="button"
         className={cn(wheelIconBtn, direction === -1 && wheelYearScrubBtnActive)}
         onClick={onBackward}
-        aria-label={pick("पछाडि", "Rewind")}
+        aria-label={t("panchanga.wheel.rewind")}
         aria-pressed={direction === -1}
-        title={speedTitle(pick("पछाडि चलाउनुहोस्", "Play backward"))}
+        title={speedTitle(t("panchanga.wheel.play_backward"))}
       >
         <Rewind className={wheelDockIcon} strokeWidth={2} aria-hidden />
       </button>
@@ -116,9 +116,9 @@ function WheelYearPlayback({ scrub }: { scrub: YearWheelScrub }) {
         type="button"
         className={cn(wheelIconBtn, direction === 1 && wheelYearScrubBtnActive)}
         onClick={onForward}
-        aria-label={pick("अगाडि", "Fast forward")}
+        aria-label={t("panchanga.wheel.fast_forward")}
         aria-pressed={direction === 1}
-        title={speedTitle(pick("अगाडि चलाउनुहोस्", "Play forward"))}
+        title={speedTitle(t("panchanga.wheel.play_forward"))}
       >
         <FastForward className={wheelDockIcon} strokeWidth={2} aria-hidden />
       </button>
@@ -193,18 +193,18 @@ function PanchangaWheelSkeleton({
   bsDay,
   locationLabel,
 }: Pick<Props, "bsYear" | "bsMonthNe" | "bsDay" | "locationLabel">) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const num = (n: number | string) => digits(n);
-  const locLabel = locationLabel ?? pick("काठमाडौं", "Kathmandu");
+  const locLabel = locationLabel ?? t("panchanga.wheel.default_location");
 
   return (
     <div className={cn("pn-wheel", patroWheelShell)} aria-busy="true">
       <div className={wheelStage}>
         <WheelHead
-          eyebrow={pick("पञ्चाङ्ग चक्र", "Nepali Patro · Panchanga Wheel")}
+          eyebrow={t("ui.panchanga.nepali_patro_panchanga_wheel")}
           title={
             <>
-              {pick("ग्रह–नक्षत्र · तिथि–करण चक्र", "Graha–Nakshatra · Tithi–Karana wheel")}{" "}
+              {t("panchanga.wheel.title")}{" "}
               <span className="yr">{num(bsYear)}</span>
             </>
           }
@@ -478,7 +478,7 @@ function PanchangaWheelBody({
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const stageRef = useRef<HTMLDivElement>(null);
   const num = (n: number | string) => digits(n);
   const scrubClock = gClock(effectiveG, det.sunriseMin);
@@ -488,7 +488,7 @@ function PanchangaWheelBody({
     : undefined;
   const tithiNe = scrubTithi?.name_ne ?? det.tithi2[0]?.ne ?? "—";
   const tithiEn = scrubTithi?.name ?? det.tithi2[0]?.en ?? tithiNe;
-  const locLabel = locationLabel ?? p.location?.name ?? pick("काठमाडौं", "Kathmandu");
+  const locLabel = locationLabel ?? p.location?.name ?? t("panchanga.wheel.default_location");
   const pickerYear = calendarPick?.year ?? bsYear;
   const pickerMonth = calendarPick?.month ?? (BS_MONTHS_NE.indexOf(bsMonthNe) + 1 || 1);
   const pickerDay = calendarPick?.day ?? bsDay;
@@ -543,10 +543,10 @@ function PanchangaWheelBody({
       const ic = NAKSHATRA_ICONS[hover.i]!;
       tipNode = (
         <div className={wheelTip(true)} style={{ left: tip.x, top: tip.y }}>
-          <div className={wheelTipKind}>{pick("नक्षत्र", "Nakshatra")} · {num(hover.i + 1)}</div>
+          <div className={wheelTipKind}>{t("nakshatra")} · {num(hover.i + 1)}</div>
           <div className={wheelTipTitle}>{pick(ic.ne, ic.en)}</div>
           <div className={wheelTipRow}>
-            <span>{pick("स्वामी", "Lord")}</span>
+            <span>{t("panchanga.wheel.lord")}</span>
             <b>{pick(ic.lord_ne, NAK_LORD_EN[ic.lord_ne] ?? ic.lord_ne)}</b>
           </div>
           <div className={wheelTipSym}>{ic.sym_ne}</div>
@@ -556,12 +556,12 @@ function PanchangaWheelBody({
       const rs = getWheelRashis()[hover.i]!;
       tipNode = (
         <div className={wheelTip(true)} style={{ left: tip.x, top: tip.y }}>
-          <div className={wheelTipKind}>{pick("राशि", "Rashi")} · {num(hover.i + 1)}</div>
+          <div className={wheelTipKind}>{t("panchanga.wheel.rashi")} · {num(hover.i + 1)}</div>
           <div className={wheelTipTitle}>
             {pick(rs.ne, rs.en)}
           </div>
           <div className={wheelTipRow}>
-            <span>{pick("महिना", "Month")}</span>
+            <span>{t("common.month")}</span>
             <b>{pick(bsMonthNe, bsMonthEnOf(bsMonthNe))}</b>
           </div>
         </div>
@@ -582,11 +582,11 @@ function PanchangaWheelBody({
         onMouseMove={onStageMove}
       >
         <WheelHead
-          eyebrow={pick("पञ्चाङ्ग चक्र", "Nepali Patro · Panchanga Wheel")}
+          eyebrow={t("ui.panchanga.nepali_patro_panchanga_wheel")}
           title={
             <>
-              {isToday && !scrubPinned ? pick("आजको", "Today's") : ""}{" "}
-              {pick("ग्रह–नक्षत्र · तिथि–करण चक्र", "Graha–Nakshatra · Tithi–Karana wheel")}
+              {isToday && !scrubPinned ? t("panchanga.wheel.today_prefix") : ""}{" "}
+              {t("panchanga.wheel.title")}
             </>
           }
           sub={
@@ -613,8 +613,8 @@ function PanchangaWheelBody({
             type="button"
             className={wheelCornerBtn}
             style={wheelCornerBtnStyle}
-            title={pick("मिति र समय", "Date and time")}
-            aria-label={pick("मिति र समय", "Date and time")}
+            title={t("ui.panchanga.date_and_time")}
+            aria-label={t("ui.panchanga.date_and_time")}
             onClick={openCalendar}
           >
             <CalendarDays className="h-4 w-4" strokeWidth={2} aria-hidden />
@@ -623,8 +623,8 @@ function PanchangaWheelBody({
             type="button"
             className={wheelCornerBtn}
             style={wheelCornerBtnStyle}
-            title={pick("रिलोड · जुम रिसेट · सूर्योदय", "Reload · reset zoom · sunrise")}
-            aria-label={pick("रिलोड", "Reload")}
+            title={t("ui.panchanga.reload_reset_zoom_sunrise")}
+            aria-label={t("ui.panchanga.reload")}
             onClick={resetToSunrise}
           >
             <RotateCcw className="h-4 w-4" strokeWidth={2} aria-hidden />
@@ -635,13 +635,13 @@ function PanchangaWheelBody({
             style={wheelCornerBtnStyle}
             title={
               expanded
-                ? pick("सामान्य दृश्य", "Exit full width")
-                : pick("पूर्ण चौडाइ", "Full width view")
+                ? t("panchanga.wheel.exit_full_width")
+                : t("panchanga.wheel.full_width")
             }
             aria-label={
               expanded
-                ? pick("सामान्य दृश्य", "Exit full width")
-                : pick("पूर्ण चौडाइ", "Full width view")
+                ? t("panchanga.wheel.exit_full_width")
+                : t("panchanga.wheel.full_width")
             }
             aria-pressed={expanded}
             onClick={toggleExpanded}
@@ -686,18 +686,18 @@ function PanchangaWheelBody({
         <div className={wheelLegend}>
           <div className={wheelLegendRow}>
             <span className={wheelLegendDot} style={{ background: "var(--w-accent)" }} />
-            {pick("वर्तमान नक्षत्र · तिथि", "Current nakshatra · tithi")}
+            {t("ui.panchanga.current_nakshatra_tithi")}
           </div>
           <div className={wheelLegendRow}>
             <span className={wheelLegendDot} style={{ background: illustration.orange53b }} />
-            {pick("सूर्य राशि", "Sun sign")}
+            {t("panchanga.wheel.sun_sign")}
           </div>
           <div className={wheelLegendRow}>
             <span className={wheelLegendDot} style={{ background: illustration.sky84 }} />
-            {pick("चन्द्र राशि", "Moon sign")}
+            {t("common.moon_sign")}
           </div>
           <div className={cn(wheelLegendRow, "mt-0.5 opacity-70")}>
-            {pick("घुमाउन तान्नुहोस् · जुम गर्नुहोस् · दुई औंलाले सार्नुहोस्", "Drag to rotate · pinch to zoom · two fingers to pan")}
+            {t("ui.panchanga.drag_to_rotate_pinch_to_zoom")}
           </div>
         </div>
 
@@ -728,7 +728,7 @@ function PanchangaWheelBody({
           ) : (
             <>
               <div className={wheelDockTimeGrp}>
-                <span className={wheelDockLabel}>{pick("समय", "Time")}</span>
+                <span className={wheelDockLabel}>{t("common.time")}</span>
                 <input
                   className={wheelScrub}
                   type="range"
@@ -747,10 +747,10 @@ function PanchangaWheelBody({
                   <button
                     type="button"
                     className={wheelDockTodayBtn}
-                    title={pick("अहिलेको समय", "Current time")}
+                    title={t("panchanga.wheel.current_time")}
                     onClick={snapToNow}
                   >
-                    {pick("आज", "Now")}
+                    {t("ui.panchanga.now")}
                   </button>
                 )}
                 <PlanetSelectMenu
@@ -773,18 +773,18 @@ function PanchangaWheelBody({
       <button
         type="button"
         className="absolute inset-0 cursor-default"
-        aria-label={pick("बन्द गर्नुहोस्", "Close")}
+        aria-label={t("ui.common.close")}
         onClick={() => setCalendarOpen(false)}
       />
       <div className="relative z-[141] w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex items-center justify-between px-4 pt-3.5 pb-1">
-          <h2 className="text-sm font-bold text-foreground">{pick("मिति र समय", "Date and time")}</h2>
+          <h2 className="text-sm font-bold text-foreground">{t("ui.panchanga.date_and_time")}</h2>
           <button
             type="button"
             className="text-sm text-muted-foreground"
             onClick={() => setCalendarOpen(false)}
           >
-            {pick("बन्द", "Close")}
+            {t("common.close")}
           </button>
         </div>
         <BsDateTimePicker
@@ -796,14 +796,14 @@ function PanchangaWheelBody({
           onSelectDate={(y, m, d) => {
             calendarDraftRef.current = { ...calendarDraftRef.current, year: y, month: m, day: d };
           }}
-          monthAriaLabel={pick("महिना", "Month")}
-          yearAriaLabel={pick("वर्ष", "Year")}
+          monthAriaLabel={t("common.month")}
+          yearAriaLabel={t("common.year")}
           clock={pickerClock}
           onClockChange={(next) => {
             calendarDraftRef.current = { ...calendarDraftRef.current, clock: next };
           }}
-          hourAriaLabel={pick("घण्टा", "Hour")}
-          minuteAriaLabel={pick("मिनेट", "Minute")}
+          hourAriaLabel={t("panchanga.hour_aria")}
+          minuteAriaLabel={t("panchanga.minute_aria")}
           showTime
           onDone={() => {
             const next = calendarDraftRef.current;

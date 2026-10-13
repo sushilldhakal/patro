@@ -93,20 +93,20 @@ export default function KundaliMilanScreen() {
         ) : (
           <View className="gap-6">
             <Text className={kundaliClasses.profileHint} style={nepaliTextStyle(14)}>
-              {pick("वर र कन्याका प्रोफाइल छान्नुहोस्।", "Select profiles for groom and bride.")}
+              {t("ui.kundali_milan.select_profiles_for_groom_and_bride")}
             </Text>
 
             <View className="gap-3 sm:flex-row">
               <MilanSlot
                 role="boy"
-                label={pick("वर", "Groom")}
+                label={t("ui.common.groom")}
                 profile={boyProfile}
                 onPress={() => setPickRole("boy")}
                 onClear={() => setBoyProfile(null)}
               />
               <MilanSlot
                 role="girl"
-                label={pick("कन्या", "Bride")}
+                label={t("ui.common.bride")}
                 profile={girlProfile}
                 onPress={() => setPickRole("girl")}
                 onClear={() => setGirlProfile(null)}
@@ -117,17 +117,14 @@ export default function KundaliMilanScreen() {
               !boyQuery || !girlQuery ? (
                 <View className={cn(kundaliClasses.warnBox, "items-center")}>
                   <Text className={kundaliClasses.warnText} style={nepaliTextStyle(14)}>
-                    {pick(
-                      "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
-                      "Both profiles need a birth date — add one in your account.",
-                    )}
+                    {t("ui.kundali_milan.both_profiles_need_a_birth_date")}
                   </Text>
                 </View>
               ) : milanQuery.isLoading && !milanQuery.data ? (
                 <View className={cn(kundaliClasses.emptyBox, "items-center")}>
                   <ActivityIndicator />
                   <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-                    {pick("मिलान गणना हुँदै…", "Matching the charts…")}
+                    {t("ui.kundali_milan.matching_the_charts")}
                   </Text>
                 </View>
               ) : milanQuery.data ? (
@@ -139,10 +136,7 @@ export default function KundaliMilanScreen() {
               ) : (
                 <View className={cn(kundaliClasses.errorBox, "items-center")}>
                   <Text className={kundaliClasses.errorText} style={nepaliTextStyle(14)}>
-                    {pick(
-                      "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
-                      "Could not load the match. Please try again shortly.",
-                    )}
+                    {t("ui.kundali_milan.could_not_load_the_match_please")}
                   </Text>
                 </View>
               )
@@ -164,8 +158,8 @@ export default function KundaliMilanScreen() {
 
       <ProfileFormModal
         open={addOpen}
-        title={pick("प्रोफाइल थप्नुहोस्", "Add profile")}
-        subtitle={pick("जन्म मिति, समय र स्थान सही राख्नुहोस्।", "Enter accurate birth date, time, and place.")}
+        title={t("kundali.add_profile")}
+        subtitle={t("ui.common.enter_accurate_birth_date_time_and")}
         onClose={() => setAddOpen(false)}
       >
         <ProfileForm
@@ -201,7 +195,7 @@ function MilanSlot({
   onPress: () => void;
   onClear: () => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -238,7 +232,7 @@ function MilanSlot({
           </Text>
         </Pressable>
       ) : (
-        <Button label={pick("प्रोफाइल छान्नुहोस्", "Choose profile")} variant="outline" onPress={onPress} />
+        <Button label={t("ui.kundali_milan.choose_profile")} variant="outline" onPress={onPress} />
       )}
     </Card>
   );
@@ -256,14 +250,14 @@ function ProfilePickModal({
   onPick: (profile: Profile) => void;
 }) {
   const insets = useSafeAreaInsets();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { data: profiles, isLoading } = useProfilesQuery(open);
   const colors = useThemeColors();
 
   const title =
     role === "boy"
-      ? pick("वरको प्रोफाइल", "Groom profile")
-      : pick("कन्याको प्रोफाइल", "Bride profile");
+      ? t("ui.kundali_milan.groom_profile")
+      : t("ui.kundali_milan.bride_profile");
 
   return (
     <Modal visible={open} animationType="slide" onRequestClose={onClose}>
@@ -281,7 +275,7 @@ function ProfilePickModal({
             <ActivityIndicator />
           ) : (profiles ?? []).length === 0 ? (
             <Text className="text-sm text-foreground" style={nepaliTextStyle(14)}>
-              {pick("कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।", "No profiles — add one first.")}
+              {t("ui.kundali_milan.no_profiles_add_one_first")}
             </Text>
           ) : (
             <View className="gap-2">

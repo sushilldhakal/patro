@@ -144,7 +144,7 @@ function useYearLadders(): Ladders | null {
 }
 
 export function TwoSystemsStudy({ title }: { title?: string }) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const { isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
@@ -336,10 +336,10 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             className="text-caption flex-1 font-bold uppercase tracking-wide text-secondary"
             style={nepaliTextStyle(11)}
           >
-            {title ?? pick("सौरमान र चान्द्रमान", "Sauramāna and Chāndramāna")}
+            {title ?? t("ui.learn.sauram_na_and_ch_ndram_na")}
           </Text>
           <Text className="text-caption text-muted-foreground" style={nepaliTextStyle(10)}>
-            {pick("घुमाउन तान्नुहोस्", "Drag to rotate")}
+            {t("ui.learn.drag_to_rotate")}
           </Text>
         </View>
       ) : null}
@@ -387,10 +387,10 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               <Chain
                 tone="sun"
                 steps={[
-                  pick("☀️ सूर्य", "☀️ Sun"),
-                  pick("राशिमा प्रवेश", "enters a rashi"),
-                  pick("सङ्क्रान्ति", "sankranti"),
-                  pick("नयाँ सौर महिना", "new solar month"),
+                  t("learn.study.two_systems.chain_sun"),
+                  t("learn.study.two_systems.chain_enters_rashi"),
+                  t("learn.study.two_systems.chain_sankranti"),
+                  t("learn.study.two_systems.chain_new_solar_month"),
                 ]}
               />
             ) : null}
@@ -398,10 +398,10 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               <Chain
                 tone="moon"
                 steps={[
-                  pick("☀️🌙 कोणीय दूरी", "☀️🌙 angular gap"),
+                  t("learn.study.two_systems.chain_angular_gap"),
                   pick(`हरेक ${num(TITHI_ARC)}° = १ तिथि`, `every ${TITHI_ARC}° = 1 tithi`),
-                  pick("शुक्ल / कृष्ण पक्ष", "shukla / krishna paksha"),
-                  pick("चान्द्र मास", "lunar month"),
+                  t("learn.study.two_systems.chain_paksha"),
+                  t("learn.study.two_systems.chain_lunar_month"),
                 ]}
               />
             ) : null}
@@ -418,7 +418,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   className="text-caption font-bold"
                   style={[nepaliTextStyle(12), { color: illustration.amber77 }]}
                 >
-                  {`${pick("सङ्क्रान्ति", "Sankranti")} · ${
+                  {`${t("learn.playground.sankranti")} · ${
                     ne ? year.solar[flash.index]?.nameNe : year.solar[flash.index]?.name
                   } ${num(1)}`}
                 </Text>
@@ -429,7 +429,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
           <View className="absolute right-2.5 gap-2" style={{ top: overlayTop }}>
             <RoundButton
               icon="refresh"
-              label={pick("वर्षारम्भमा फर्कनुहोस्", "Back to year start")}
+              label={t("learn.study.two_systems.back_to_year_start")}
               onPress={() => {
                 clock.current.dt = year.yearStartDt;
                 setPlaying(false);
@@ -437,21 +437,21 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             />
             <RoundButton
               icon="add"
-              label={pick("नजिक", "Zoom in")}
+              label={t("ui.learn.zoom_in")}
               onPress={() => {
                 camera.current.distance = clampDistance(camera.current.distance * 0.85);
               }}
             />
             <RoundButton
               icon="remove"
-              label={pick("टाढा", "Zoom out")}
+              label={t("ui.learn.zoom_out")}
               onPress={() => {
                 camera.current.distance = clampDistance(camera.current.distance * 1.18);
               }}
             />
             <RoundButton
               icon="speedometer"
-              label={pick("फ्रेम दर", "Frame rate")}
+              label={t("ui.learn.frame_rate")}
               active={perfOpen}
               onPress={() => setPerfOpen((v) => !v)}
             />
@@ -459,8 +459,8 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               icon={fullscreen ? "close" : "expand"}
               label={
                 fullscreen
-                  ? pick("बन्द गर्नुहोस्", "Exit fullscreen")
-                  : pick("पूरा स्क्रिन", "Fullscreen")
+                  ? t("ui.learn.exit_fullscreen")
+                  : t("ui.learn.fullscreen")
               }
               onPress={() => setFullscreen((f) => !f)}
             />
@@ -509,7 +509,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
           <Pressable
             onPress={() => setPlaying((p) => !p)}
             accessibilityRole="button"
-            accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+            accessibilityLabel={playing ? t("panchanga.hora.pause") : t("panchanga.hora.play")}
             className="h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10"
           >
             <Ionicons name={playing ? "pause" : "play"} size={16} color={brand.offWhite} />
@@ -527,7 +527,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             minimumTrackTintColor={illustration.amber57}
             maximumTrackTintColor={withAlpha(illustration.sky65, 0.45)}
             thumbTintColor={illustration.amber57}
-            accessibilityLabel={pick("वर्षभरि सार्नुहोस्", "Scrub through the year")}
+            accessibilityLabel={t("learn.playground.scrub_year")}
           />
           <Text
             className="text-caption"
@@ -539,7 +539,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
             onPress={() => setDetailsOpen((v) => !v)}
             accessibilityRole="button"
             accessibilityLabel={
-              detailsOpen ? pick("लुकाउनुहोस्", "Hide readings") : pick("देखाउनुहोस्", "Show readings")
+              detailsOpen ? t("learn.playground.hide_readings") : t("learn.playground.show_readings")
             }
             className="h-8 w-8 items-center justify-center rounded-full border border-white/20"
           >
@@ -559,26 +559,26 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
               contentContainerClassName="items-stretch gap-2"
             >
               {readout(
-                pick("सौर महिना · गते", "Solar month · gate"),
+                t("learn.diagrams.hierarchy_step_solar_month"),
                 `${ne ? solar.monthNameNe : solar.monthName} ${num(solar.gate)}`,
                 illustration.orange60,
               )}
               {readout(
-                pick("सूर्य राशिमा", "Sun in rashi"),
+                t("learn.study.two_systems.sun_in_rashi"),
                 `${num(Math.floor(solar.longitude))}° · ${num(solar.rashiIndex + 1)}`,
               )}
               {readout(
-                pick("चन्द्र राशिमा", "Moon in rashi"),
+                t("learn.study.two_systems.moon_in_rashi"),
                 `${RASHI_NE[moonRashi]} · ${num(Math.floor(moonLongitude))}°`,
               )}
               {readout(
-                pick("चन्द्र–सूर्य कोण", "Moon–Sun angle"),
+                t("learn.study.two_systems.moon_sun_angle"),
                 `${num(lunar.elongation.toFixed(1))}°`,
               )}
               {readout(
-                pick("तिथि · पक्ष", "Tithi · paksha"),
+                t("learn.study.two_systems.tithi_paksha"),
                 `${tithiName(lunar)} · ${
-                  lunar.shukla ? pick("शुक्ल", "Shukla") : pick("कृष्ण", "Krishna")
+                  lunar.shukla ? t("common.paksha_shukla") : t("common.paksha_krishna")
                 }`,
               )}
             </ScrollView>
@@ -592,7 +592,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   className="text-caption font-semibold"
                   style={[nepaliTextStyle(11), { color: illustration.sky86 }]}
                 >
-                  {pick("औंसीदेखि चन्द्र हिँडेको", "Moon travelled since amavasya")}
+                  {t("learn.study.two_systems.moon_travelled")}
                 </Text>
                 <View className="mt-0.5 flex-row flex-wrap items-center gap-1.5">
                   <Text
@@ -633,10 +633,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   className="text-caption mt-0.5"
                   style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
                 >
-                  {pick(
-                    "एक फेरो — नक्षत्र मास — ठ्याक्कै ३६०°, २७.३ दिन। तर त्यतिन्जेल पृथ्वी सूर्यवरिपरि ~२९° सरिसक्छ, त्यसैले चन्द्र फेरि सूर्यको छेउमा पुग्दैन; भेट्न अझै ~२९° चाहिन्छ। त्यही हो चान्द्र मास: ~३८९°, २९.५ दिन। कक्षमा पहिलो फेरो भित्री रेखा, त्यसपछिको बढी भाग बाहिरी हरियो चापमा देखिन्छ।",
-                    "One lap — the sidereal month — is exactly 360° in 27.3 days. By then Earth has moved ~29° around the Sun, so the Moon is not beside the Sun again; it needs ~29° more to catch up. That is the synodic month: ~389° in 29.5 days. On the orbit, the first lap is the inner line and the overshoot is the outer green arc.",
-                  )}
+                  {t("learn.study.two_systems.sidereal_vs_synodic")}
                 </Text>
               </View>
 
@@ -645,25 +642,19 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                   className="text-caption font-semibold"
                   style={[nepaliTextStyle(11), { color: illustration.amber77 }]}
                 >
-                  {pick("यो वर्षमा सूर्य हिँडेको", "Sun travelled this year")}
+                  {t("learn.study.two_systems.sun_travelled")}
                 </Text>
                 <Text
                   className="text-lg mt-0.5 font-bold"
                   style={{ color: neutral.white }}
                 >
-                  {`${num(travelled.sunThisYear.toFixed(1))}° / ${num(360)}°  ·  ${pick(
-                    "सूर्यबाट",
-                    "from Sun",
-                  )} ${num(distanceAu.toFixed(4))} AU`}
+                  {`${num(travelled.sunThisYear.toFixed(1))}° / ${num(360)}°  ·  ${t("learn.study.two_systems.from_sun")} ${num(distanceAu.toFixed(4))} AU`}
                 </Text>
                 <Text
                   className="text-caption mt-0.5"
                   style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.55) }]}
                 >
-                  {pick(
-                    "राशि पट्टी ताराहरूमा गाडिएको छ, त्यसैले बि.सं.को वर्ष ठ्याक्कै ३६०° — ३६५.२६ दिनको नाक्षत्र वर्ष। कक्ष वृत्त होइन, दीर्घवृत्त हो: दूरी ०.९८३–१.०१७ AU (३.४%), र नजिक हुँदा सूर्य छिटो हिँड्छ — त्यसैले सौर महिना २९ देखि ३२ दिनसम्मको हुन्छ। दृश्यमा यो अन्तर ६ गुणा बढाइएको छ, नत्र आँखाले देख्दैन।",
-                    "The rashi belt is pinned to the stars, so a BS year is exactly 360° — the 365.26-day sidereal year. The orbit is an ellipse, not a circle: 0.983–1.017 AU (3.4%), and the Sun moves fastest when nearest — which is why a solar month runs 29 to 32 days. The scene exaggerates that gap 6× so the eye can see it.",
-                  )}
+                  {t("learn.study.two_systems.belt_pinned_to_stars")}
                 </Text>
               </View>
             </View>
@@ -690,10 +681,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
           className="text-caption text-muted-foreground"
           style={nepaliTextStyle(12)}
         >
-          {pick(
-            "यी अङ्क यही दृश्यको खगोलीय मोडेलबाट आउँछन् — सङ्क्रान्ति र तिथिको कोण सही, तर कुन तिथि कुन दिनको भन्ने सूर्योदय नियम यहाँ लागू हुँदैन। दैनिक पञ्चाङ्ग नै आधिकारिक हो।",
-            "These readings come from this view's own astronomical model — the sankranti and the tithi angle are right, but the sunrise rule that assigns a tithi to a civil day is not applied here. The daily panchanga remains authoritative.",
-          )}
+          {t("learn.study.two_systems.model_caveat")}
         </Text>
       </View>
     );

@@ -33,7 +33,7 @@ export function PatroSheetDayTimeFields({
   onDayChange,
   onClockChange,
 }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
 
   const dayOptions = useMemo(() => {
     const len = getBSMonthLength(year, month);
@@ -71,11 +71,11 @@ export function PatroSheetDayTimeFields({
   return (
     <View className="gap-3 pt-1">
       <View className={patroDateClasses.dayRow}>
-        <Text className={patroDateClasses.dayLabel}>{pick("गते", "Day")}</Text>
+        <Text className={patroDateClasses.dayLabel}>{t("calendar.day_aria")}</Text>
         <BsNativeSelect
           value={day}
           options={dayOptions}
-          ariaLabel={pick("गते", "Day")}
+          ariaLabel={t("calendar.day_aria")}
           onChange={onDayChange}
           minWidth={80}
         />
@@ -84,13 +84,13 @@ export function PatroSheetDayTimeFields({
       {showTime ? (
         <View className="gap-2">
           <Text className={patroDateClasses.timeLabel}>
-            {pick("समय", "Time")}
+            {t("common.time")}
           </Text>
           <View className={patroDateClasses.timeRow}>
             <BsNativeSelect
               value={hour12}
               options={hour12Options}
-              ariaLabel={pick("घण्टा", "Hour")}
+              ariaLabel={t("panchanga.hour_aria")}
               onChange={(h) => setTime(h, minute, meridiem)}
               minWidth={64}
             />
@@ -98,7 +98,7 @@ export function PatroSheetDayTimeFields({
             <BsNativeSelect
               value={minute}
               options={minuteOptions}
-              ariaLabel={pick("मिनेट", "Minute")}
+              ariaLabel={t("panchanga.minute_aria")}
               onChange={(m) => setTime(hour12, m, meridiem)}
               minWidth={64}
             />

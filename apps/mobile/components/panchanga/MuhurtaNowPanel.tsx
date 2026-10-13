@@ -21,7 +21,7 @@ type Props = {
 };
 
 export function MuhurtaNowPanel({ p, clock }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const now = p.muhurta_now;
   if (!now) return null;
 
@@ -31,11 +31,11 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
   return (
     <View className={panchangaPageClasses.aside.card}>
       <Text className={panchangaPageClasses.aside.muhurtaEyebrow}>
-        {pick("क्षणिक मुहूर्त", "Muhurta now")}
+        {t("ui.panchanga.muhurta_now")}
       </Text>
       {instantLabel ? (
         <Text className={panchangaPageClasses.aside.muhurtaInstant}>
-          {pick(`${digits(instantTime)} बजेको अवस्था`, `Status at ${digits(instantTime)}`)}
+          {t("ui.panchanga.status_at_instanttime", { instantTime: digits(instantTime) })}
         </Text>
       ) : null}
       <View className={panchangaPageClasses.aside.muhurtaList}>
@@ -56,7 +56,7 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
               <Text className={panchangaPageClasses.aside.muhurtaValue}>
                 {active ? (
                   <Text className={panchangaPageClasses.aside.muhurtaActive}>
-                    {pick("सक्रिय", "Active")}
+                    {t("panchanga.muhurta_now.active")}
                   </Text>
                 ) : (
                   <Text className={panchangaPageClasses.aside.muhurtaRange}>{range ?? "—"}</Text>
@@ -71,29 +71,20 @@ export function MuhurtaNowPanel({ p, clock }: Props) {
 }
 
 export function EphemerisModeBanner({ p, clock }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const time = p.query_instant_local?.split(" ")[1] ?? clock;
   const civil = p.before_sunrise_of_civil_day;
   return (
     <View className={panchangaPageClasses.aside.banner}>
       <Text className={panchangaPageClasses.aside.bannerTitle}>
-        {pick("समय-आधारित पञ्चाङ्ग", "Time-based reading")}
+        {t("panchanga.muhurta_now.time_based_reading")}
       </Text>
       <Text className={panchangaPageClasses.aside.bannerBody}>
         {time
-          ? pick(
-              `${digits(time)} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।`,
-              `Tithi, nakshatra, yoga and karana from the actual planetary positions at ${digits(time)}. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.`,
-            )
-          : pick(
-              "तोकिएको समयको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
-              "Tithi, nakshatra, yoga and karana from the actual planetary positions at the chosen time. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
-            )}
+          ? t("ui.panchanga.tithi_nakshatra_yoga_and_karana_from", { time: digits(time) })
+          : t("panchanga.muhurta_now.ephemeris_no_time")}
         {civil
-          ? pick(
-              " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
-              " This time is before today's sunrise, so the previous Vedic day's panchanga is shown.",
-            )
+          ? t("ui.panchanga.this_time_is_before_today_s")
           : null}
       </Text>
     </View>

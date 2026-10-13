@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { getRouteApi } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Sparkles, Users } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Button } from "@/components/ui/button";
 import { PageShell, PageHeader } from "@/components/PageShell";
 import { PatroDayTimeNav } from "@/components/patro-date";

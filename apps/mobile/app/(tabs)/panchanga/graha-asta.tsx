@@ -55,7 +55,7 @@ function StampLine({
   stamp: AstaStamp | null;
   tone: "asta" | "udaya";
 }) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   return (
     <View className={cn("flex-row", grahaClasses.stampRow)}>
@@ -74,7 +74,7 @@ function StampLine({
         </Text>
       ) : (
         <Text className={cn(grahaClasses.stampValue, grahaClasses.stampOutside)} style={nepaliTextStyle(13)}>
-          {pick("वर्ष बाहिर", "outside year")}
+          {t("graha_pages.asta.outside_year")}
         </Text>
       )}
     </View>
@@ -82,13 +82,13 @@ function StampLine({
 }
 
 function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const colors = useThemeColors();
   const hemi =
     period.hemisphere === "east"
-      ? pick("पूर्वमा (बिहान)", "East (morning)")
+      ? t("graha_pages.asta.east_morning")
       : period.hemisphere === "west"
-        ? pick("पश्चिममा (साँझ)", "West (evening)")
+        ? t("graha_pages.asta.west_evening")
         : "";
 
   return (
@@ -96,8 +96,8 @@ function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
       style={{ backgroundColor: colors.surfaceInset, borderColor: colors.border }}
       className={cn("border", grahaClasses.periodCard)}
     >
-      <StampLine label={pick("अस्त आरम्भ", "Asta begins")} stamp={period.start} tone="asta" />
-      <StampLine label={pick("उदय (अन्त्य)", "Udaya (ends)")} stamp={period.end} tone="udaya" />
+      <StampLine label={t("graha_pages.asta.asta_begins")} stamp={period.start} tone="asta" />
+      <StampLine label={t("graha_pages.asta.udaya_ends")} stamp={period.end} tone="udaya" />
       <View className={cn("flex-row", grahaClasses.periodFoot)}>
         <Text className={grahaClasses.periodFootText} style={nepaliTextStyle(11)}>
           {hemi}
@@ -113,7 +113,7 @@ function PeriodCard({ period }: { period: GrahaAstaPeriod }) {
 }
 
 export default function GrahaAstaScreen() {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   const colors = useThemeColors();
   const { width } = useBreakpoint();
   const { location, setLocation } = usePanchangaLocation();
@@ -137,14 +137,11 @@ export default function GrahaAstaScreen() {
   }
 
   return (
-    <AppShell title={pick("ग्रह अस्त", "Graha Asta")} showHeader={false}>
+    <AppShell title={t("ui.panchanga.graha_asta")} showHeader={false}>
       <GrahaBanner
         icon="sunny-outline"
-        title={pick("ग्रह अस्त", "Graha Asta")}
-        blurb={pick(
-          "ग्रहहरू सूर्यको नजिक परेर अस्त हुने र पुनः उदय हुने अवधिहरू।",
-          "Windows where each graha is combust near the Sun and when it rises again.",
-        )}
+        title={t("ui.panchanga.graha_asta")}
+        blurb={t("ui.panchanga.windows_where_each_graha_is_combust")}
       />
 
       <PatroYearNavBlock
@@ -159,7 +156,7 @@ export default function GrahaAstaScreen() {
 
       {query.isLoading && !query.data ? (
         <Text className={grahaClasses.stateText} style={nepaliTextStyle(14)}>
-          {pick("लोड हुँदै…", "Loading…")}
+          {t("common.loading")}
         </Text>
       ) : query.data ? (
         <View className={cn("flex-row flex-wrap", grahaClasses.columns)}>
@@ -170,11 +167,11 @@ export default function GrahaAstaScreen() {
                 key={g}
                 width={cardWidth}
                 name={pick(GRAHA_NAME[g].ne, GRAHA_NAME[g].en)}
-                note={g === "moon" ? pick("(तारा अस्त)", "(Tara Asta)") : undefined}
+                note={g === "moon" ? t("graha_pages.asta.tara_asta") : undefined}
                 count={
                   periods.length
                     ? pick(`${digits(periods.length)} पटक`, `${periods.length}×`)
-                    : pick("छैन", "none")
+                    : t("graha_pages.asta.none")
                 }
               >
                 {periods.length ? (
@@ -184,7 +181,7 @@ export default function GrahaAstaScreen() {
                     className={grahaClasses.columnEmpty}
                     style={nepaliTextStyle(14)}
                   >
-                    {pick("यस वर्ष अस्त छैन।", "No asta this year.")}
+                    {t("graha_pages.asta.no_asta_year")}
                   </Text>
                 )}
               </GrahaColumnCard>
@@ -193,7 +190,7 @@ export default function GrahaAstaScreen() {
         </View>
       ) : (
         <Text style={{ color: colors.destructive, ...nepaliTextStyle(14) }} className={grahaClasses.stateText}>
-          {pick("ल्याउन सकिएन।", "Could not load.")}
+          {t("ui.common.could_not_load")}
         </Text>
       )}
 

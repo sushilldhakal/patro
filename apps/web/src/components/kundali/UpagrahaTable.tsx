@@ -1,6 +1,6 @@
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import type { UpagrahaDetailRow } from "@/lib/api";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";

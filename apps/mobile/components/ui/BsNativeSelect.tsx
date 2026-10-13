@@ -130,7 +130,7 @@ export function BsMonthYearNav({
   yearMinWidth = 72,
 }: MonthYearProps) {
   const colors = useThemeColors();
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
@@ -151,14 +151,14 @@ export function BsMonthYearNav({
           value={month}
           options={monthOptions}
           onChange={onMonthChange}
-          ariaLabel={pick("महिना", "Month")}
+          ariaLabel={t("common.month")}
           minWidth={monthMinWidth}
         />
         <WebSelect
           value={year}
           options={yearOptions}
           onChange={onYearChange}
-          ariaLabel={pick("वर्ष", "Year")}
+          ariaLabel={t("common.year")}
           minWidth={yearMinWidth}
         />
       </View>
@@ -172,14 +172,14 @@ export function BsMonthYearNav({
           value={month}
           options={monthOptions}
           onChange={onMonthChange}
-          ariaLabel={pick("महिना", "Month")}
+          ariaLabel={t("common.month")}
           minWidth={monthMinWidth}
         />
         <AndroidSelect
           value={year}
           options={yearOptions}
           onChange={onYearChange}
-          ariaLabel={pick("वर्ष", "Year")}
+          ariaLabel={t("common.year")}
           minWidth={yearMinWidth}
         />
       </View>
@@ -208,7 +208,7 @@ export function BsMonthYearNav({
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        accessibilityLabel={pick("मिति बदल्नुहोस्", "Change date")}
+        accessibilityLabel={t("patro_date.change_date")}
         className="h-[30px] flex-row items-center gap-1 rounded-lg border border-border bg-card px-2.5 active:bg-muted"
       >
         <Text numberOfLines={1} className="text-sm text-foreground">
@@ -238,7 +238,7 @@ export function BsMonthYearNav({
             >
               <Pressable onPress={() => setOpen(false)} hitSlop={8} style={{ minWidth: 72 }}>
                 <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>
-                  {pick("रद्द", "Cancel")}
+                  {t("common.cancel")}
                 </Text>
               </Pressable>
               <Text
@@ -250,7 +250,7 @@ export function BsMonthYearNav({
                   color: colors.foreground,
                 }}
               >
-                {pick("मिति", "Date")}
+                {t("graha_pages.eclipse.date")}
               </Text>
               <Pressable
                 onPress={() => {
@@ -262,7 +262,7 @@ export function BsMonthYearNav({
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
                 <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
-                  {pick("भयो", "Done")}
+                  {t("common.done")}
                 </Text>
               </Pressable>
             </View>
@@ -298,7 +298,7 @@ export function BsMonthYearNav({
 export function BsNativeSelect(props: SelectProps & { className?: string }) {
   const colors = useThemeColors();
   const { className, ...rest } = props;
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { isTablet } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
@@ -362,7 +362,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
             >
               <Pressable onPress={() => setOpen(false)} style={{ minWidth: 72 }}>
                 <Text style={{ fontSize: webTypeScale.lg.size, color: colors.mutedForeground }}>
-                  {pick("रद्द", "Cancel")}
+                  {t("common.cancel")}
                 </Text>
               </Pressable>
               <Text
@@ -384,7 +384,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
                 style={{ minWidth: 72, alignItems: "flex-end" }}
               >
                 <Text style={{ fontSize: webTypeScale.lg.size, fontWeight: "600", color: colors.primary }}>
-                  {pick("भयो", "Done")}
+                  {t("common.done")}
                 </Text>
               </Pressable>
             </View>

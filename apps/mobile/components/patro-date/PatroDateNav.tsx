@@ -115,13 +115,13 @@ function LocationChip({
   onPress: () => void;
 }) {
   const colors = useThemeColors();
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const safeLocation = location ?? DEFAULT_PANCHANGA_LOCATION;
   const label = displayLocationLabel(safeLocation, undefined, lang);
   return (
     <Pressable
       onPress={onPress}
-      accessibilityLabel={pick("स्थान बदल्नुहोस्", "Change location")}
+      accessibilityLabel={t("ui.common.change_location")}
       /* Fixed width, not a max: as a content-sized chip the city name was the
          thing being measured, and it came back short — "Kathman…" inside a box
          that had room for the whole word. 108dp keeps the phone nav row inside
@@ -166,7 +166,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
   } = props;
 
   const colors = useThemeColors();
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { isCompact, isPhone, isNarrow } = useBreakpoint();
   const sheet = usePatroDateSheet();
 
@@ -254,7 +254,7 @@ export function PatroDateNav(props: PatroDateNavProps) {
   const todayChip = (
     <Pressable
       onPress={onToday}
-      accessibilityLabel={pick("आज", "Today")}
+      accessibilityLabel={t("today")}
       className={cn(
         patroMonthChipShell,
         "shrink-0 overflow-hidden active:opacity-90",

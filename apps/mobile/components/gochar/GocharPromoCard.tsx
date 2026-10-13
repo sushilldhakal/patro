@@ -11,7 +11,7 @@ import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes
 import { cn } from "@vedic-patro/domain/utils";
 /** Panchanga footer cross-link to the full Gochar page — web `GocharPromoCard`. */
 export function GocharPromoCard() {
-  const { t, pick } = useLocale();
+  const { t } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();
   return (
@@ -29,10 +29,7 @@ export function GocharPromoCard() {
             {t("gochar.promo_title")}
           </Text>
           <Text className={gocharClasses.promoBody} style={nepaliTextStyle()}>
-            {pick(
-              "आजको पञ्चाङ्ग हेर्नुभयो? अब ग्रहहरू कहाँ गति गर्दैछन् र आजको गोचरले तपाईंको राशिमा कस्तो असर पार्छ हेर्नुहोस्।",
-              "Seen the day's panchang? Now check where the planets are moving and how today's transits affect your sign.",
-            )}
+            {t("ui.gochar.seen_the_day_s_panchang_now")}
           </Text>
         </View>
       </View>

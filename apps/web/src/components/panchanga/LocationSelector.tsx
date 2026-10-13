@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Crosshair, Loader2, MapPin } from "lucide-react";
 import { type City } from "@/lib/api";
 import { Button } from "@/components/ui/button";

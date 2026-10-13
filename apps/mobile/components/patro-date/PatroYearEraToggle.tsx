@@ -16,7 +16,7 @@ type Props = {
 
 /** BS↔BBS / AD↔BC — matches web {@link PatroYearEraToggle} inline variant. */
 export function PatroYearEraToggle({ era, onEraChange, compact, className }: Props) {
-  const { pick, lang } = useLocale();
+  const { t, lang } = useLocale();
   if (isGregorianEra(era) && lang !== "en") return null;
   if (!isGregorianEra(era) && lang === "en") return null;
 
@@ -26,7 +26,7 @@ export function PatroYearEraToggle({ era, onEraChange, compact, className }: Pro
   return (
     <Pressable
       onPress={() => onEraChange(targetEra)}
-      accessibilityLabel={pick(`${targetLabel} मा जानुहोस्`, `Switch to ${targetLabel}`)}
+      accessibilityLabel={t("ui.patro_date.switch_to_targetlabel", { targetLabel })}
       className={cn(
         patroDateClasses.eraToggle,
         "items-center justify-center active:bg-muted",

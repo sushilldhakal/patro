@@ -1,5 +1,5 @@
 import { FileText, Shield } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { PageHeader, PageShell } from "@/components/PageShell";
 import { useLocale } from "@/i18n/locale";
 import { legalClasses } from "@vedic-patro/design-tokens/classes/legal-classes";

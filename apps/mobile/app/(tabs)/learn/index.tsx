@@ -224,7 +224,7 @@ export default function LearnScreen() {
   const resultsLine = isFiltering ? t("learn_page.results_count", { count: filteredTopics.length }) : null;
 
   return (
-    <AppShell showHeader={false} title={pick("सिकाइ", "Learn")}>
+    <AppShell showHeader={false} title={t("nav.learn")}>
       <View className="gap-8">
         <View className={cn(learnHero, "gap-8")}>
           <View>

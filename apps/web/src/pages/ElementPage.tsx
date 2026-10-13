@@ -6,7 +6,7 @@ import { GrahaBanner, ElementDescription } from "@/components/graha/GrahaPagePar
 import { RoutePageState } from "@/components/common/RoutePageState";
 import { PanchangaDetailsBackLink } from "@/components/panchanga/PanchangaDetailsBackLink";
 import { useLocale, bilingualText } from "@/i18n/locale";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useElementPageUrlBrowse } from "@/hooks/use-patro-url-browse";
 import { useResolvedPatroDayQuery } from "@/hooks/use-resolved-patro-day-query";
 import { cn } from "@vedic-patro/domain/utils";

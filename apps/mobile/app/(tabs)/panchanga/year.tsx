@@ -63,7 +63,7 @@ function toAdStr(d: Date): string {
  * nakshatras is something you watch rather than infer.
  */
 export default function PanchangaYearScreen() {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const { isCompact, isTablet, height: screenH } = useBreakpoint();
   const insets = useSafeAreaInsets();
   const [dateNavHeight, setDateNavHeight] = useState(88);
@@ -428,12 +428,12 @@ export default function PanchangaYearScreen() {
         {windowError ? (
           <View className={panchangaYearClasses.errorBox}>
             <Text className={panchangaYearClasses.errorText} style={nepaliTextStyle(13)}>
-              {pick("पञ्चाङ्ग लोड गर्न सकिएन।", "Could not load the panchanga.")}
+              {t("ui.panchanga.could_not_load_the_panchanga")}
             </Text>
           </View>
         ) : windowFetching ? (
           <Text className={panchangaYearClasses.status} style={nepaliTextStyle(11)}>
-            {pick("लोड हुँदै…", "Loading…")}
+            {t("common.loading")}
           </Text>
         ) : total ? (
           <Text className={panchangaYearClasses.status} style={nepaliTextStyle(11)}>

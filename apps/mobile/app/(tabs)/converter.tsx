@@ -76,7 +76,7 @@ export default function ConverterScreen() {
 
   return (
     <AppShell
-      title={pick("मिति रूपान्तर", "Date Converter")}
+      title={t("ui.converter.date_converter")}
       showHeader={false}
     >
       <PatroPageHeader

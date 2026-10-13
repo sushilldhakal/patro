@@ -38,7 +38,7 @@ export function GocharRashyadiTable({
   className,
   hideVersionHeader,
 }: TableProps) {
-  const { pick, digits } = useLocale();
+  const { t, digits } = useLocale();
   const planets =
     kundaliGrahas &&
     kundaliDateAd &&
@@ -56,7 +56,7 @@ export function GocharRashyadiTable({
           className,
         )}
       >
-        <Text className="text-sm" style={nepaliTextStyle()}>{pick("लोड हुँदैछ…", "Loading…")}</Text>
+        <Text className="text-sm" style={nepaliTextStyle()}>{t("rashifal.profile.loading")}</Text>
       </View>
     );
   }
@@ -75,13 +75,13 @@ export function GocharRashyadiTable({
             <Text className={dainikKrantiClasses.rashyadiDay} style={nepaliTextStyle()}>
               {" "}
               ({digits(segment.bsDay)}
-              {pick(" गते", "")})
+              {t("dainik.text")})
             </Text>
           ) : null}
         </Text>
         {segment.moonRashiNe ? (
           <Text className={dainikKrantiClasses.rashyadiMoon} style={nepaliTextStyle()}>
-            {pick("च.रा.", "Moon")}:{" "}
+            {t("ui.dainik_kranti.moon")}:{" "}
             <Text className={dainikKrantiClasses.rashyadiMoonValue}>{segment.moonRashiNe}</Text>
           </Text>
         ) : null}
@@ -137,10 +137,7 @@ export function GocharRashyadiTable({
       </TableScrollShell>
 
       <Text className={dainikKrantiClasses.rashyadiFoot} style={nepaliTextStyle()}>
-        {pick(
-          "अं=अंश · ग=कला · वि=विकला · प्र=तटपरा · त्र=प्रतितत्परा",
-          "Deg=degree · Ka=kala · Vi=vikala · Pr=prati-tatpara · Tr=prati-vikala",
-        )}
+        {t("dainik.deg_degree_ka_kala_vi_vikala_pr_prati_tatpara_tr_prati_")}
       </Text>
     </View>
   );

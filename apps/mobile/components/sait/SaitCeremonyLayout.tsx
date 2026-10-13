@@ -242,7 +242,7 @@ export function SaitCeremonyLayout({
             })
           ) : (
             <Text className={saitClasses.emptyText} style={nepaliTextStyle()}>
-              {emptyLabel ?? pick("यस वर्ष कुनै शुभ दिन भेटिएन।", "No auspicious days found this year.")}
+              {emptyLabel ?? t("ui.sait.no_auspicious_days_found_this_year")}
             </Text>
           )}
         </View>

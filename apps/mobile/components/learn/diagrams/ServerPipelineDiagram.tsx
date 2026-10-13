@@ -118,21 +118,18 @@ const ServerPipelineScene = memo(function ServerPipelineScene({ onLabels, lang }
 });
 
 export function ServerPipelineDiagram() {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
 
   return (
     <LearnDiagram3D
-      title={pick("३D — गणना पाइपलाइन", "3D — the computation pipeline")}
+      title={t("ui.learn.n3d_the_computation_pipeline")}
       height={240}
       camera={{ yaw: 0.1, pitch: 0.5 }}
       frame={{ width: 1.9, height: 0.6 }}
       idleSpin={0}
       legend={STAGES.map((s) => ({ color: s.color, label: pick(s.ne, s.en) }))}
       readouts={STAGES.map((s) => ({ k: pick(s.ne, s.en), v: s.items.map((it) => pick(it.ne, it.en)).join(" · ") }))}
-      caption={pick(
-        "अवलोककको स्थान, समय र स्विस एफेमेरिस मिलेर एकपटक गणना चल्छ — त्यसबाट उदय/अस्त, निरयन देशान्तर र लग्न निस्किन्छ। यिनैबाट पञ्चाङ्गका पाँच अङ्ग र तिनका समाप्ति समय बन्छन्, जसले दैनिक पञ्चाङ्ग तयार पार्छ। त्यही एउटा दैनिक पञ्चाङ्गबाट पात्रो, पर्व, साइत, गोचर, ग्रहण र कुण्डली — सबै एपले लेबल मात्र देखाउँछन्, फेरि गणना गर्दैनन्।",
-        "The observer's place, the clock, and Swiss Ephemeris run once — that single pass yields rise/set, sidereal longitudes, and the lagna. Those feed the five panchanga limbs and their end times, which assemble the daily panchanga. That one daily panchanga then feeds patro, festivals, sait, gochar, eclipses, and kundali — every app just formats the labels, none of them recompute.",
-      )}
+      caption={t("ui.learn.the_observer_s_place_the_clock")}
     >
       {({ onLabels }) => <ServerPipelineScene onLabels={onLabels} lang={lang} />}
     </LearnDiagram3D>

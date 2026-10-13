@@ -5,7 +5,7 @@ import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-pat
 
 /** Shortcut tiles under the calendar — same two groups and order as the web home. */
 export function HomeQuickLinks() {
-  const { t, pick, digits } = useLocale();
+  const { t, digits } = useLocale();
 
   const patro: QuickLink[] = [
     { href: "/holidays", label: t("nav.holidays"), icon: "party-popper" },
@@ -26,8 +26,8 @@ export function HomeQuickLinks() {
 
   return (
     <View className="gap-8">
-      <QuickLinkSection title={pick("पात्रो तथा मिति", "Patro & dates")} links={patro} />
-      <QuickLinkSection title={pick("ज्योतिष तथा मुहूर्त", "Jyotish & moment")} links={jyotish} />
+      <QuickLinkSection title={t("sidebar_nav.sections.patro.title")} links={patro} />
+      <QuickLinkSection title={t("sidebar_nav.sections.jyotish.title")} links={jyotish} />
     </View>
   );
 }

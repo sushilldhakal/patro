@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { AVAKAHADA, type Gana,} from "@vedic-patro/domain/avakahada-data";
 import {

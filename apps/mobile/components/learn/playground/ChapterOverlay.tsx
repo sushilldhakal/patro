@@ -22,7 +22,7 @@ import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 
 export function ChapterOverlay({ id, onClose }: { id: string; onClose: () => void }) {
-  const { pick } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const Diagram = LEARN_DIAGRAMS[id];
   if (!Diagram) return null;
@@ -34,7 +34,7 @@ export function ChapterOverlay({ id, onClose }: { id: string; onClose: () => voi
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+        accessibilityLabel={t("ui.common.close")}
         className="absolute right-1.5 top-1.5 z-10 h-7 w-7 items-center justify-center rounded-full border active:opacity-70"
         style={{ borderColor: colors.border, backgroundColor: colors.card }}
       >

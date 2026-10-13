@@ -5,7 +5,7 @@ import {
   Sprout,
   type LucideIcon,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { DrawerClose } from "@/components/ui/drawer";
 import { NavDrawerLinkCard } from "@/components/home/HomeQuickLinks";
 import { useCalendarEra } from "@/hooks/use-calendar-era";

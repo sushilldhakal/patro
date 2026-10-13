@@ -13,7 +13,7 @@ import {
 } from "@vedic-patro/domain/patro-month-labels";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { resolveSamvatsaraForPatroYear } from "@vedic-patro/domain/samvatsara";

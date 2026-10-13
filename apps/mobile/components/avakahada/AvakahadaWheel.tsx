@@ -135,14 +135,11 @@ function RadialText({
 }
 
 function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow }) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const { ring, padaIndex } = focus;
   const label = pick(RING_LABELS[ring].ne, RING_LABELS[ring].en);
 
-  const vairiLine = pick(
-    `वैरि योनि: ${row.vairiYoni}`,
-    `Enemy yoni: ${row.vairiYoni}`,
-  );
+  const vairiLine = t("ui.avakahada.enemy_yoni_vairiyoni", { vairiYoni: row.vairiYoni });
 
   if (ring === "nakshatra") {
     return (
@@ -218,10 +215,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
           style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
           className={cn(avakahadaClasses.hubSub, "text-xs text-center")}
         >
-          {pick(
-            `चरण ${padaIndex + 1} · ${localizeRashi(row.charanRashis[padaIndex]!, lang)}`,
-            `Charan ${padaIndex + 1} · ${localizeRashi(row.charanRashis[padaIndex]!, lang)}`,
-          )}
+          {t("ui.avakahada.charan_value_lang", { value: padaIndex + 1, lang: localizeRashi(row.charanRashis[padaIndex]!, lang) })}
         </Text>
       ) : null}
       <Text
@@ -249,7 +243,7 @@ type Props = {
 };
 
 export function AvakahadaWheel({ highlighted }: Props) {
-  const { lang, pick, digits } = useLocale();
+  const { t, lang, pick, digits } = useLocale();
   const { width } = useBreakpoint();
   const [selected, setSelected] = useState<HubFocus | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -442,13 +436,10 @@ export function AvakahadaWheel({ highlighted }: Props) {
     <View className={avakahadaClasses.wheelSection}>
       <View className={avakahadaClasses.wheelHead}>
         <Text className={avakahadaClasses.wheelTitle} style={nepaliTextStyle(18)}>
-          {pick("अवकहडा चक्र — चक्र दृश्य", "Avakahada Chakra — wheel view")}
+          {t("avakahada.wheel_title")}
         </Text>
         <Text className={avakahadaClasses.wheelSubtitle} style={nepaliTextStyle(13)}>
-          {pick(
-            "बाहिरबाट भित्र: नक्षत्र → नामाक्षर (१०८ चरण) → राशि → स्वामी → वर्ण → वश्य → योनि → गण → नाडी",
-            "Outside to inside: nakshatra → name syllable (108 charans) → rashi → lord → varna → vashya → yoni → gana → nadi",
-          )}
+          {t("avakahada.wheel_subtitle")}
         </Text>
       </View>
 
@@ -581,16 +572,13 @@ export function AvakahadaWheel({ highlighted }: Props) {
                     style={{ color: W_ACCENT, ...nepaliTextStyle(16) }}
                     className={cn(avakahadaClasses.hubIdleTitle, "text-sm")}
                   >
-                    {pick("अवकहडा", "Avakahada")}
+                    {t("kundali.avakahada")}
                   </Text>
                   <Text
                     style={{ color: W_INK, ...nepaliTextStyle(10) }}
                     className={cn(avakahadaClasses.hubIdleHint, "text-xs text-center")}
                   >
-                    {pick(
-                      "वलय छुनुहोस् — नक्षत्र, अक्षर, राशि, वर्ण, वश्य, योनि, गण, नाडी",
-                      "Tap a ring — nakshatra, syllable, rashi, varna, vashya, yoni, gana, nadi",
-                    )}
+                    {t("avakahada.wheel_hub_hint")}
                   </Text>
                 </View>
               )}
@@ -601,7 +589,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
 
       <View className={cn("flex-row", avakahadaClasses.legend)}>
         <Text className={avakahadaClasses.legendLabel} style={nepaliTextStyle(12)}>
-          {pick("गण रङ:", "Gana colors:")}
+          {t("avakahada.wheel_legend_gana")}
         </Text>
         {ganas.map((g) => (
           <View key={g} className={cn("flex-row", avakahadaClasses.legendItem)}>
@@ -615,13 +603,10 @@ export function AvakahadaWheel({ highlighted }: Props) {
           </View>
         ))}
         <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-          {pick(
-            "· भित्री ७ वलय: राशि, स्वामी, वर्ण, वश्य, योनि, गण, नाडी",
-            "· 7 inner rings: rashi, lord, varna, vashya, yoni, gana, nadi",
-          )}
+          {t("avakahada.wheel_legend_rings")}
         </Text>
         <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-          {pick("· जुम गरेपछि तानेर सार्न सकिन्छ", "· Drag to pan when zoomed")}
+          {t("ui.avakahada.drag_to_pan_when_zoomed")}
         </Text>
         {hasFilter ? (
           <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>

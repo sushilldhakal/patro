@@ -125,35 +125,32 @@ const AdhikMaasScene = memo(function AdhikMaasScene({ onLabels, lang, copy }: Sc
 });
 
 export function AdhikMaasDiagram() {
-  const { pick, digits, lang } = useLocale();
+  const { t, digits, lang } = useLocale();
   const adhikLabel = labelFor(ADHIK, lang);
   const copy = {
-    adhikNote: pick("↓ अधिक मास", "↓ Adhik month"),
-    solarRow: pick("सौर मास · सङ्क्रान्ति (~३०.४ दिन)", "Solar months · sankranti (~30.4 days)"),
-    lunarRow: pick("चान्द्र मास · औंसी (~२९.५ दिन)", "Lunar months · amavasya (~29.5 days)"),
+    adhikNote: t("ui.learn.adhik_month"),
+    solarRow: t("ui.learn.solar_months_sankranti_30_4_days"),
+    lunarRow: t("ui.learn.lunar_months_amavasya_29_5_days"),
   };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — अधिक मास कसरी बन्छ", "3D — how an adhik maas forms")}
+      title={t("ui.learn.n3d_how_an_adhik_maas_forms")}
       height={260}
       camera={{ yaw: 0.15, pitch: 0.6 }}
       frame={{ width: 1.7, height: 0.65 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.sun, label: pick("सौर मास (सङ्क्रान्ति)", "Solar month (sankranti)") },
-        { color: illustration.sky84, label: pick("चान्द्र मास (औंसी)", "Lunar month (amavasya)") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("सङ्क्रान्ति-रहित मास = अधिक", "Sankranti-less month = adhik") },
+        { color: DIAGRAM_COLOR.sun, label: t("ui.learn.solar_month_sankranti") },
+        { color: illustration.sky84, label: t("ui.learn.lunar_month_amavasya") },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: t("ui.learn.sankranti_less_month_adhik") },
       ]}
       readouts={[
-        { k: pick("सौर मास लम्बाइ", "Solar month length"), v: `~${digits(SOLAR.toFixed(1))} ${pick("दिन", "days")}` },
-        { k: pick("चान्द्र मास लम्बाइ", "Lunar month length"), v: `~${digits(SYN.toFixed(2))} ${pick("दिन", "days")}` },
-        { k: pick("यो चक्रको अधिक मास", "Adhik month here"), v: adhikLabel, tone: "warn" },
+        { k: t("ui.learn.solar_month_length"), v: `~${digits(SOLAR.toFixed(1))} ${t("common.days")}` },
+        { k: t("ui.learn.lunar_month_length"), v: `~${digits(SYN.toFixed(2))} ${t("common.days")}` },
+        { k: t("ui.learn.adhik_month_here"), v: adhikLabel, tone: "warn" },
       ]}
-      caption={pick(
-        "सौर मास (सङ्क्रान्तिदेखि सङ्क्रान्तिसम्म) ~३०.४ दिनको हुन्छ, चान्द्र मास (औंसीदेखि औंसीसम्म) ~२९.५ दिनको — हरेक चक्रमा चान्द्र मास छोटो हुँदै जान्छ। समय बित्दै जाँदा कुनै एउटा चान्द्र महिनाभित्र कुनै सङ्क्रान्ति नै पर्दैन — त्यो महिनाको आफ्नै सौर महिना हुँदैन, त्यसैले त्यसले पछिको महिनाको नाम लिन्छ, अगाडि 'अधिक' जोडेर।",
-        "A solar month (sankranti to sankranti) runs ~30.4 days; a lunar month (amavasya to amavasya) runs ~29.5 days — the lunar month keeps landing slightly earlier each cycle. Eventually one lunar month contains no sankranti at all — it has no solar month of its own, so it borrows the name of the one after it, with 'adhik' (extra) in front.",
-      )}
+      caption={t("ui.learn.a_solar_month_sankranti_to_sankranti")}
     >
       {({ onLabels }) => <AdhikMaasScene onLabels={onLabels} lang={lang} copy={copy} />}
     </LearnDiagram3D>

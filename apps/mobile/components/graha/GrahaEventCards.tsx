@@ -21,7 +21,7 @@ function eclipseVisible(ev: EclipseEvent): boolean {
 }
 
 export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }) {
-  const { pick, digits, lang } = useLocale();
+  const { t, pick, digits, lang } = useLocale();
   const colors = useThemeColors();
   const isLunar = pageId === "chandra-grahan";
   const typeLabel = lang === "en" ? ev.type_en ?? ev.type ?? "" : ev.type_ne ?? ev.type ?? "";
@@ -57,20 +57,20 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
             }}
           >
             {visible
-              ? pick("नेपालबाट देखिन्छ", "Visible from Nepal")
-              : pick("नेपालबाट देखिँदैन", "Not visible from Nepal")}
+              ? t("ui.graha.visible_from_nepal")
+              : t("ui.graha.not_visible_from_nepal")}
           </Text>
         </View>
       </View>
       <View className={grahaClasses.eclipseBody}>
-        <EclipseDetailRow label={pick("मिति", "Date")} value={digits(dateLabel)} strong />
-        <EclipseDetailRow label={pick("चरम", "Maximum")} value={max ? digits(max) : "—"} />
+        <EclipseDetailRow label={t("graha_pages.eclipse.date")} value={digits(dateLabel)} strong />
+        <EclipseDetailRow label={t("ui.graha.maximum")} value={max ? digits(max) : "—"} />
         {visible && begin ? (
           <EclipseDetailRow
             label={
               isLunar
-                ? pick("आंशिक आरम्भ", "Partial begins")
-                : pick("पहिलो स्पर्श", "First contact")
+                ? t("graha_pages.eclipse.partial_begins")
+                : t("ui.graha.first_contact")
             }
             value={digits(begin)}
           />
@@ -78,7 +78,7 @@ export function EclipseCard({ ev, pageId }: { ev: EclipseEvent; pageId: string }
         {visible && end ? (
           <EclipseDetailRow
             label={
-              isLunar ? pick("आंशिक अन्त", "Partial ends") : pick("अन्तिम स्पर्श", "Last contact")
+              isLunar ? t("ui.graha.partial_ends") : t("ui.graha.last_contact")
             }
             value={digits(end)}
           />
@@ -140,7 +140,7 @@ export function GrahaPeriodCard({
   extraNe?: string;
   extraEn?: string;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   return (
     <Card className="mb-2 gap-1 p-3">
       {titleNe ? (
@@ -149,8 +149,8 @@ export function GrahaPeriodCard({
         </Text>
       ) : null}
       <Text className="text-sm font-semibold text-foreground">{grahaNe}</Text>
-      <StampLine label={pick("सुरु", "Start")} stamp={start} />
-      <StampLine label={pick("अन्त", "End")} stamp={end} />
+      <StampLine label={t("ui.common.start")} stamp={start} />
+      <StampLine label={t("kundali.dasha_end")} stamp={end} />
       {extraNe ? (
         <Text className="text-xs text-muted-foreground">{pick(extraNe, extraEn ?? extraNe)}</Text>
       ) : null}

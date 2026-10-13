@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";

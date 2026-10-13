@@ -176,7 +176,7 @@ function AsideFooter({ p, selectedAd }: { p: PanchangaDay; selectedAd?: string }
 }
 
 export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: Props) {
-  const { pick, lang } = useLocale();
+  const { t, pick, lang } = useLocale();
   const colors = useThemeColors();
   const { width: windowWidth } = useBreakpoint();
   const [vivaranWrapWidth, setVivaranWrapWidth] = useState(0);
@@ -213,12 +213,12 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
   }
 
   const cells = buildPanchangaDetailCells(p, lang, selectedDay, {
-    sunriseSunset: pick("सूर्योदय / सूर्यास्त", "Sunrise / Sunset"),
-    moonrise: pick("चन्द्रोदय", "Moonrise"),
-    ritu: pick("ऋतु", "Season"),
-    nakshatra: pick("नक्षत्र", "Nakshatra"),
-    yoga: pick("योग", "Yoga"),
-    karana: pick("करण", "Karana"),
+    sunriseSunset: t("aside.sunrise_sunset"),
+    moonrise: t("sections.moonrise"),
+    ritu: t("sections.ritu"),
+    nakshatra: t("nakshatra"),
+    yoga: t("kundali.yoga"),
+    karana: t("kundali.karana"),
     dash: pick("—", "—"),
   });
   const planets = getPlanetGocharLines(p, lang);
@@ -228,9 +228,9 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
   const solarCards = hasSolar
     ? (
         [
-          [pick("देशान्तर", "Deshaantar"), solar?.deshaantar] as const,
-          [pick("अक्षांश", "Akshamsha"), solar?.akshamsha] as const,
-          [pick("बेलान्तर", "Belaantar"), solar?.belaantar] as const,
+          [t("aside.deshaantar"), solar?.deshaantar] as const,
+          [t("aside.akshamsha"), solar?.akshamsha] as const,
+          [t("aside.belaantar"), solar?.belaantar] as const,
         ] as const
       )
         .filter(([, block]) => block != null)
@@ -268,7 +268,7 @@ export function PanchangaVivaranPanel({ p, selectedDay, selectedAd, loading }: P
       {planets.length > 0 ? (
         <View className={homeClasses.gocharSection}>
           <Text className={homeClasses.gocharTitle} style={nepaliTextStyle()}>
-            {pick("ग्रह गोचर", "Planet positions")}
+            {t("ui.home.planet_positions")}
           </Text>
           <View
             className="flex-row flex-wrap"

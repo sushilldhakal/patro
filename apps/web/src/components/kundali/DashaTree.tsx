@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowRight, ChevronRight } from "lucide-react";
 import { useLocale, bilingualText } from "@/i18n/locale";

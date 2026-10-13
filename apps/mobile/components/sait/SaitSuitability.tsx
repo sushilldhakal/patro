@@ -28,11 +28,11 @@ export function SuitabilityLegend({
 }: {
   counts?: { favourable: number; neutral: number; avoid: number } | null;
 }) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
   return (
     <View className={saitClasses.legend}>
       <Text className={cn(saitClasses.legendText, saitClasses.legendTitle)} style={nepaliTextStyle()}>
-        {pick("तपाईंको प्रोफाइलअनुसार", "For your profile")}
+        {t("sait.for_your_profile")}
       </Text>
       {SUITABILITY_ORDER.map((k) => {
         const s = SUITABILITY_STYLE[k];

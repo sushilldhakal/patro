@@ -83,7 +83,7 @@ function KindBadge({ kind }: { kind: CalcNote["kind"] }) {
 }
 
 export function MonthCalcNotes({ notes, loading, embedded }: Props) {
-  const { pick, digits } = useLocale();
+  const { t, pick, digits } = useLocale();
 
   const groups = useMemo(() => {
     const byDate = new Map<string, DayGroup>();
@@ -107,21 +107,21 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
 
   const notesTable = loading ? (
     <Text className={dainikKrantiClasses.calcEmpty} style={nepaliTextStyle()}>
-      {pick("लोड हुँदैछ…", "Loading…")}
+      {t("rashifal.profile.loading")}
     </Text>
   ) : groups.length === 0 ? (
     <Text className={dainikKrantiClasses.calcEmpty} style={nepaliTextStyle()}>
-      {pick("यस महिनामा विशेष गणना सूचना छैन।", "No special calculation notes this month.")}
+      {t("dainik.no_special_calculation_notes_this_month")}
     </Text>
   ) : (
     <ScrollView horizontal showsHorizontalScrollIndicator>
       <View className="min-w-full">
         <TableHeader>
           <View className={cn("w-14 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{pick("गते", "Date")}</Text>
+            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{t("dainik.date")}</Text>
           </View>
           <View className={cn("flex-1 px-2.5 py-2", patroStickyHeadCell)}>
-            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{pick("सूचना", "Notes")}</Text>
+            <Text className="text-xs font-semibold" style={nepaliTextStyle()}>{t("dainik.notes")}</Text>
           </View>
         </TableHeader>
         {groups.map((group, groupIndex) => (
@@ -154,7 +154,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
   const legend = (
     <View className={cn(!embedded && dainikKrantiClasses.calcLegend, embedded && dainikKrantiClasses.calcLegendEmbedded)}>
       <Text className={dainikKrantiClasses.legendHeading} style={nepaliTextStyle()}>
-        {pick("ग्रह उदयास्त सङ्केत", "Planet rise-set symbols")}
+        {t("dainik.planet_rise_set_symbols")}
       </Text>
       <View className="gap-1.5">
         {UDAYAST_LEGEND.map((it) => (
@@ -173,10 +173,7 @@ export function MonthCalcNotes({ notes, loading, embedded }: Props) {
         ))}
       </View>
       <Text className={dainikKrantiClasses.calcLegendNote} style={nepaliTextStyle()}>
-        {pick(
-          "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन्।",
-          "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",
-        )}
+        {t("ui.dainik_kranti.dasha_bracket_the_years_months_days")}
       </Text>
     </View>
   );

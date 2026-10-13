@@ -52,16 +52,16 @@ function SectionHeading({
 }
 
 export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
-  const { lang, pick } = useLocale();
+  const { t, lang, pick } = useLocale();
   const isEn = lang === "en";
   const { width } = useBreakpoint();
   const lagnaCols = width >= 1280 ? 12 : width >= 768 ? 6 : 4;
   const grahaCols = width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 
   const tabs = [
-    lagna && { id: "lagna", label: pick("लग्न", "Lagna") },
-    graha && { id: "graha", label: pick("ग्रह", "Planets") },
-    notes.length > 0 && { id: "notes", label: pick("टिप्पणी", "Notes") },
+    lagna && { id: "lagna", label: t("kundali.report.meta_lagna") },
+    graha && { id: "graha", label: t("panchanga.day_cycle.planets") },
+    notes.length > 0 && { id: "notes", label: t("ui.common.notes") },
   ].filter(Boolean) as { id: string; label: string }[];
   const [picked, setPicked] = useState(tabs[0]?.id);
   const tab = tabs.some((x) => x.id === picked) ? picked : tabs[0]?.id;
@@ -100,7 +100,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       {lagna && show("lagna") ? (
         <View className="w-full min-w-0">
           {tabbed ? null : <SectionHeading icon="grid-outline">
-            {pick("दैनिक लग्न आरम्भ (बजे)", "Daily lagna start")}
+            {t("dainik.daily_lagna_start")}
           </SectionHeading>}
           <View className="-m-1 flex-row flex-wrap">
             {getRashiList("ne").map((rne, i) => {
@@ -138,7 +138,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       {graha && show("graha") ? (
         <View className="w-full min-w-0 gap-3">
           {tabbed ? null : <SectionHeading icon="planet-outline">
-            {pick("उदयकालिक ग्रहस्पष्ट (सूर्योदय)", "Planetary positions at sunrise")}
+            {t("dainik.planetary_positions_at_sunrise")}
           </SectionHeading>}
           <View className="-m-1 flex-row flex-wrap">
             {PATRO_PLANET_KEYS.map((key) => {

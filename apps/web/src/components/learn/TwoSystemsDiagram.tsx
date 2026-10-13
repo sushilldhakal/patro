@@ -13,7 +13,7 @@
  */
 
 import { lazy, Suspense, useSyncExternalStore } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 
 import { importWithRetry } from "@/lib/lazy-route";
 

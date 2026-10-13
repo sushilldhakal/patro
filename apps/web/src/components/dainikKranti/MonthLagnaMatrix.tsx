@@ -1,5 +1,5 @@
 import type { LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { cn } from "@vedic-patro/domain/utils";

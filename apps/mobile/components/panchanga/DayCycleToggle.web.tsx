@@ -18,7 +18,7 @@ const OPTIONS: Array<{ value: DayCycleMode; ne: string; en: string }> = [
 
 /** Phone: 22px. Tablet (≥768): 31px. */
 export function DayCycleToggle({ mode, onModeChange }: Props) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const { isCompact } = useBreakpoint();
   const { height, fontSize, lineHeight } = dayCycleToggleMetrics(isCompact);
   const inactive = OPTIONS.find((o) => o.value !== mode) ?? OPTIONS[0]!;
@@ -44,7 +44,7 @@ export function DayCycleToggle({ mode, onModeChange }: Props) {
     <div
       className={cn("inline-flex", panchangaPageClasses.dayCycle.toggleRadiusMd, panchangaPageClasses.dayCycle.toggleGroup)}
       role="radiogroup"
-      aria-label={pick("दिन सीमा", "Day boundary")}
+      aria-label={t("panchanga.day_cycle.day_boundary")}
       style={{ height, maxHeight: height }}
     >
       {OPTIONS.map((o) => {

@@ -29,7 +29,7 @@ export function SaitProfilePicker({
   selectedId: string | null;
   onSelect: (profile: Profile | null) => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { isTablet } = useBreakpoint();
@@ -42,7 +42,7 @@ export function SaitProfilePicker({
     <View className="flex-row items-center gap-1.5">
       <Ionicons name="person-outline" size={16} color={colors.secondary} />
       <Text className="text-sm font-medium text-foreground" style={nepaliTextStyle()}>
-        {pick("आफ्नो प्रोफाइलअनुसार", "Personalise")}
+        {t("ui.sait.personalise")}
       </Text>
     </View>
   );
@@ -57,7 +57,7 @@ export function SaitProfilePicker({
             className="rounded-lg border border-border bg-card px-2.5 py-1.5 active:opacity-80"
           >
             <Text className="text-xs font-semibold text-primary" style={nepaliTextStyle()}>
-              {pick("प्रोफाइल छान्न लग-इन गर्नुहोस्", "Sign in to pick your profile")}
+              {t("ui.sait.sign_in_to_pick_your_profile")}
             </Text>
           </Pressable>
         </View>
@@ -71,10 +71,7 @@ export function SaitProfilePicker({
       <View className={saitClasses.pickerRow}>
         {label}
         <Text className="text-xs text-muted-foreground" style={nepaliTextStyle()}>
-          {pick(
-            "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
-            "No saved profiles — add one in your account.",
-          )}
+          {t("ui.sait.no_saved_profiles_add_one_in")}
         </Text>
       </View>
     );
@@ -82,11 +79,11 @@ export function SaitProfilePicker({
 
   const selected = profiles?.find((p) => p.id === selectedId) ?? null;
   const buttonLabel = isLoading
-    ? pick("लोड हुँदै…", "Loading…")
-    : (selected?.full_name ?? pick("सामान्य (प्रोफाइल बिना)", "General (no profile)"));
+    ? t("common.loading")
+    : (selected?.full_name ?? t("ui.sait.general_no_profile"));
 
   const options: { id: string | null; name: string }[] = [
-    { id: null, name: pick("सामान्य (प्रोफाइल बिना)", "General (no profile)") },
+    { id: null, name: t("ui.sait.general_no_profile") },
     ...(profiles ?? []).map((p) => ({ id: p.id, name: p.full_name })),
   ];
 
@@ -94,7 +91,7 @@ export function SaitProfilePicker({
     <View>
       <View className="border-b border-border px-4 py-3">
         <Text className="text-sm font-semibold text-foreground" style={nepaliTextStyle()}>
-          {pick("प्रोफाइल छान्नुहोस्", "Choose a profile")}
+          {t("ui.sait.choose_a_profile")}
         </Text>
       </View>
       <ScrollView>

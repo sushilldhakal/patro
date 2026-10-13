@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import { UserRound } from "lucide-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listProfiles, type Profile } from "@/lib/auth/client";

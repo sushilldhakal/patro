@@ -16,7 +16,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { neutral, withAlpha } from "@vedic-patro/design-tokens";
 import { shellClasses } from "@vedic-patro/design-tokens/classes/shell-classes";
 function BrandMark({ onPress, centered }: { onPress: () => void; centered?: boolean }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   return (
     <Pressable
       onPress={onPress}
@@ -24,15 +24,15 @@ function BrandMark({ onPress, centered }: { onPress: () => void; centered?: bool
     >
       <VedicPatroMark size={42} />
       <Text className={cn("py-0.5", shellClasses.brandName)} numberOfLines={1} style={nepaliTextStyle()}>
-        <Text className={cn(shellClasses.brandName, shellClasses.brandVedic)}>{pick("वैदिक", "Vedic")}</Text>
-        <Text className={cn(shellClasses.brandName, shellClasses.brandPatro)}> {pick("पात्रो", "Patro")}</Text>
+        <Text className={cn(shellClasses.brandName, shellClasses.brandVedic)}>{t("brand_vedic")}</Text>
+        <Text className={cn(shellClasses.brandName, shellClasses.brandPatro)}> {t("brand_patro")}</Text>
       </Text>
     </Pressable>
   );
 }
 
 export function AppHeader() {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -53,7 +53,7 @@ export function AppHeader() {
           <Pressable
             onPress={() => setMenuOpen(true)}
             className="h-9 w-9 items-center justify-center rounded-lg active:bg-muted"
-            accessibilityLabel={pick("मेनु खोल्नुहोस्", "Open menu")}
+            accessibilityLabel={t("menu_open")}
           >
             <Ionicons name="menu-outline" size={20} color={colors.foreground} />
           </Pressable>
@@ -86,7 +86,7 @@ function NavDrawer({
   onClose: () => void;
   onNavigate: (href: string) => void;
 }) {
-  const { pick } = useLocale();
+  const { t, pick } = useLocale();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
@@ -143,11 +143,11 @@ function NavDrawer({
           <VedicPatroMark size={36} />
           <View className="min-w-0 flex-1 gap-1.5">
             <Text className={shellClasses.drawerTitle}>
-              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitleVedic)}>{pick("वैदिक", "Vedic")}</Text>
-              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitlePatro)}> {pick("पात्रो", "Patro")}</Text>
+              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitleVedic)}>{t("brand_vedic")}</Text>
+              <Text className={cn(shellClasses.drawerTitle, shellClasses.drawerTitlePatro)}> {t("brand_patro")}</Text>
             </Text>
             <Text className="text-sm text-muted-foreground">
-              {pick("नेपाली पात्रो र पञ्चाङ्ग", "Nepali calendar and Panchanga")}
+              {t("ui.app_header.nepali_calendar_and_panchanga")}
             </Text>
           </View>
         </View>

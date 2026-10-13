@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import type { TFunction } from "i18next";
+import type { TFunction } from "@vedic-patro/i18n/react";
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@vedic-patro/i18n/react";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { currentPatroDayLinkSearch } from "@/lib/url-state";
