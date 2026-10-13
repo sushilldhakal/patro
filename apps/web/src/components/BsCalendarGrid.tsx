@@ -19,9 +19,9 @@ import { civilIsoDayOfMonth, parseCivilIsoToDate } from "@vedic-patro/domain/pat
 import { moonPhaseTitle, getPakshaPhase } from "@vedic-patro/domain/month-grid-moon";
 import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const WEEKDAYS_SHORT = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
+import { WEEKDAYS_NE, WEEKDAYS_SHORT as WEEKDAYS_SHORT_EN, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+const WEEKDAYS_EN = WEEKDAYS_SHORT_EN;
+const WEEKDAYS_SHORT = WEEKDAYS_SHORT_NE;
 
 const TODAY_AD = new Date().toISOString().split("T")[0];
 

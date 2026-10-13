@@ -27,9 +27,8 @@ import {
 } from "./calendar-grid-layout";
 import { getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
 
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_SHORT_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import { WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+const WEEKDAYS_EN = WEEKDAYS_SHORT;
 
 function chunk<T>(items: T[], size: number): T[][] {
   const rows: T[][] = [];

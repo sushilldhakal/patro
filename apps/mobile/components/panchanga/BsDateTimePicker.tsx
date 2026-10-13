@@ -2,13 +2,7 @@ import { useState, useEffect } from "react";
 import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
-import {
-  BS_MONTH_NAMES,
-  adToBS,
-  bsMonthLabel,
-  bsToAD,
-  getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+import { BS_MONTH_NAMES, WEEKDAYS_MIN, WEEKDAYS_SHORT_NE, adToBS, bsMonthLabel, bsToAD, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
@@ -18,8 +12,8 @@ import { PatroYearEraToggle } from "@/components/patro-date/PatroYearEraToggle";
 import { type Era } from "@vedic-patro/domain/era";
 import { formatClockParts, from12h, parseClockParts, to12h } from "@/components/panchanga/use-panchanga-mode";
 
-const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
+const WEEKDAYS_EN = WEEKDAYS_MIN;
 
 type Props = {
   year: number;

@@ -1,8 +1,9 @@
 import type { CalendarDay, MonthCalendar, YearWheelCalendar, YearWheelCalendarDay } from "@/lib/api";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
-const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"] as const;
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
+const WEEKDAYS_EN = WEEKDAYS_SHORT;
 
 function addDays(iso: string, days: number): string {
   const d = parseCivilIsoToDate(iso);

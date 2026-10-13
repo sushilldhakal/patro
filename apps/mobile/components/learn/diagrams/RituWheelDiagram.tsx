@@ -12,6 +12,7 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
 const AYANAMSHA = 24;
 const R_OUT = 0.58;
 const R_MID = 0.46;
@@ -24,7 +25,7 @@ const RITUS = [
   { ne: "हेमन्त", en: "Hemanta", color: illustration.sky65 },
   { ne: "शिशिर", en: "Shishira", color: illustration.sky74 },
 ];
-const MONTHS_NE = ["बैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कात्तिक", "मंसिर", "पुष", "माघ", "फागुन", "चैत"];
+const MONTHS_NE = BS_MONTHS_NE;
 const MONTHS_EN = ["Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"];
 const MARKERS = [
   { lambda: 90, ne: "ग्रीष्म अयनान्त", en: "Summer solstice", eq: false },

@@ -44,9 +44,10 @@ import { cn } from "@vedic-patro/domain/utils";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { tFor } from "@vedic-patro/i18n/runtime";
+import { WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
 const BRIEFING_TIMES = ["05:00", "06:00", "07:00", "08:00"] as const;
-const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिहि", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
+const WEEKDAYS_EN = WEEKDAYS_SHORT;
 
 function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (

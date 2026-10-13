@@ -2,13 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  AD_MONTH_NAMES,
-  BS_MONTH_NAMES,
-  adToBS,
-  bsMonthLabel,
-  getBSMonthLength,
-} from "@vedic-patro/domain/bs-calendar";
+import { AD_MONTH_NAMES, BS_MONTH_NAMES, WEEKDAYS_MIN, WEEKDAYS_SHORT_NE, adToBS, bsMonthLabel, getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import {
   bsMonthGridOffline,
   bsMonthHasOfflineTable,
@@ -26,8 +20,8 @@ import { PopoverClose } from "@/components/ui/popover";
 import { formatClockParts, parseClockParts } from "@/components/panchanga/use-panchanga-mode";
 import type { Era } from "@vedic-patro/domain/era";
 
-const WEEKDAYS_NE = ["आइत", "सोम", "मंगल", "बुध", "बिही", "शुक्र", "शनि"];
-const WEEKDAYS_EN = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const WEEKDAYS_NE = WEEKDAYS_SHORT_NE;
+const WEEKDAYS_EN = WEEKDAYS_MIN;
 
 interface Props {
   year: number;

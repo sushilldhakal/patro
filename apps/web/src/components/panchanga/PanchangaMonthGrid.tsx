@@ -11,7 +11,7 @@ import {
   BBS_URL_YEAR_MIN,
 } from "@vedic-patro/domain/patro-year-axis";
 import type { Era } from "@vedic-patro/domain/era";
-import { adToBS, BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_SHORT_NE } from "@vedic-patro/domain/bs-calendar";
+import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR, WEEKDAYS_EN, WEEKDAYS_NE, WEEKDAYS_SHORT, WEEKDAYS_SHORT_NE, adToBS } from "@vedic-patro/domain/bs-calendar";
 import {
   buildAdCalendarGridDays,
   buildCalendarGridDays,
@@ -33,9 +33,7 @@ import { VerticalEdgeLabel } from "@/components/VerticalEdgeLabel";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { type PakshaPhase, getPakshaPhase, moonPhaseTitle } from "@vedic-patro/domain/month-grid-moon";
 
-const WEEKDAYS_NE = ["आइतवार", "सोमवार", "मंगलवार", "बुधवार", "बिहीवार", "शुक्रवार", "शनिवार"];
-const WEEKDAYS_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const WEEKDAYS_EN_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAYS_EN_SHORT = WEEKDAYS_SHORT;
 
 function formatTithiLabel(day: CalendarDay, isEn: boolean): string {
   return isEn ? (day.tithi ?? day.tithi_ne ?? "—") : (day.tithi_ne ?? day.tithi ?? "—");

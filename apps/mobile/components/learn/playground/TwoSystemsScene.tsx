@@ -60,6 +60,7 @@ import {
 import { usePlaygroundTextures } from "@/components/learn/playground/playground-textures";
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
+import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
 export type Focus = "solar" | "lunar" | "both";
 
 export type SceneClock = {
@@ -153,20 +154,6 @@ const CANVAS_BG = midnight.popover;
 const TRAIL_DAYS = SYNODIC_MONTH * 2;
 const TRAIL_STEPS = 260;
 
-const RASHI_NE = [
-  "मेष",
-  "वृष",
-  "मिथुन",
-  "कर्कट",
-  "सिंह",
-  "कन्या",
-  "तुला",
-  "वृश्चिक",
-  "धनु",
-  "मकर",
-  "कुम्भ",
-  "मीन",
-];
 
 function vec(lon: number, lat: number, r: number) {
   return new THREE.Vector3(...eclipticToVec3(lon, lat, r));

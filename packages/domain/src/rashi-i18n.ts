@@ -4,6 +4,15 @@ export { normalizeLang, type Lang };
 
 export const RASHI_COUNT = 12;
 
+/**
+ * Rashi names in Nepali, मेष first — for drawings that label all twelve at
+ * load time (the catalogue's `rashis.N` is the same text, for components).
+ */
+export const RASHI_NAMES_NE = [
+  "मेष", "वृष", "मिथुन", "कर्कट", "सिंह", "कन्या",
+  "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन",
+] as const;
+
 /** API / legacy spellings → canonical index 1–12 (not display copy). */
 const ALIAS_TO_NUM: Record<string, number> = {
   "1": 1,

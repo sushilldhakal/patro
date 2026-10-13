@@ -74,27 +74,13 @@ import Scene, {
 import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
 const CANVAS_BG = midnight.popover;
 const CARD_HEIGHT = 320;
 
 /** Days of simulated time per real second, per speed rung. */
 const SPEEDS = [2, 8, 30];
 
-/** Rashi names, indexed from मेष — matching the belt labels in the scene. */
-const RASHI_NE = [
-  "मेष",
-  "वृष",
-  "मिथुन",
-  "कर्कट",
-  "सिंह",
-  "कन्या",
-  "तुला",
-  "वृश्चिक",
-  "धनु",
-  "मकर",
-  "कुम्भ",
-  "मीन",
-];
 
 const FOCUS_CHIPS: { id: Focus; ne: string; en: string }[] = [
   { id: "solar", ne: "☀️ सौरमान", en: "☀️ Sauramāna" },
