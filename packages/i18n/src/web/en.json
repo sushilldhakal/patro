@@ -3424,7 +3424,91 @@
     "duties": "duties",
     "planet_positions_rise_set_transit_legend": "Planet positions, rise-set & transit legend",
     "planet_positions_deg_kala_vikala": "Planet positions (deg° kala′ vikala″)",
-    "transit_papashanti_house_symbols": "Transit / Papashanti house symbols"
+    "transit_papashanti_house_symbols": "Transit / Papashanti house symbols",
+    "kartavya": {
+      "krishna": "During Krishna Paksha the Moon gradually wanes. Shraddha, tarpana and ancestral rites, moderate diet, japa and charity are considered auspicious. Ekadashi fasting and ancestral tarpana on Aaushi are observed; new auspicious ceremonies are usually moved to Shukla Paksha.",
+      "shukla": "During Shukla Paksha the Moon gradually waxes. Auspicious ceremonies such as weddings, sacred-thread rites, house-warming, travel and new beginnings are considered favourable. Ekadashi fasting and Satyanarayan puja/fasting on the full moon are observed."
+    },
+    "paksha_title": {
+      "krishna": "Krishna Paksha",
+      "shukla": "Shukla Paksha",
+      "all": "Full month"
+    },
+    "col_gate": "Day",
+    "at_time": "{{time}}",
+    "transit_into_rashi": "→ {{name}}",
+    "transit_into_nakshatra": "{{nakshatra}} pada {{pada}}",
+    "motion": {
+      "vakri": "Retrograde",
+      "margi": "Direct"
+    },
+    "graha": {
+      "sun": "Sun",
+      "moon": "Moon",
+      "mars": "Mars",
+      "mercury": "Mercury",
+      "jupiter": "Jupiter",
+      "venus": "Venus",
+      "saturn": "Saturn",
+      "rahu": "Rahu",
+      "ketu": "Ketu"
+    },
+    "adhik_notice": "<b>Adhik Maas:</b> this year has an <b>Adhik {{month}}</b> month — so the adhik and shuddha pakshas are shown separately for this month. (Adhik Maas = Malamas / Purushottam Maas; it contains no sankranti.)",
+    "legend_note_positions": "At the start of each paksha, each planet's exact position is given in degrees°, kala′, vikala″ (and prati-vikala) — e.g. “13 6 29 40” = 13 deg 6 kala 29 vikala 40 prati-vikala. <vakri>Vakri</vakri> = retrograde (backward) motion, <margi>Margi</margi> = direct (forward) motion.",
+    "legend_note_dasha": "<b>Dasha bracket:</b> the years/months/days of Vimshottari dasha remaining at birth. <b>Time correction:</b> in print, symbols like “u” or “0” indicate zero degrees/kala.",
+    "udayast_legend": {
+      "1": {
+        "code": "व.उ.",
+        "full": "Retrograde rising",
+        "meaning": "The planet rises while retrograde (moving backward)."
+      },
+      "2": {
+        "code": "बु.मा.उ.",
+        "full": "Mercury direct rising",
+        "meaning": "Mercury rises while direct (moving forward)."
+      },
+      "3": {
+        "code": "वृ.व.उ.",
+        "full": "Jupiter retrograde rising",
+        "meaning": "Jupiter rises while retrograde."
+      },
+      "4": {
+        "code": "शु.मा.उ.",
+        "full": "Venus direct rising",
+        "meaning": "Venus rises while direct."
+      },
+      "5": {
+        "code": "श.मा.उ. ७अ.",
+        "full": "Saturn direct rising, sets on the 7th",
+        "meaning": "Saturn rises while direct and sets on the 7th."
+      }
+    },
+    "gochar_legend": {
+      "1": {
+        "code": "पापाशाः",
+        "meaning": "Papashanti — position of the malefic (papa) planets in the chart."
+      },
+      "2": {
+        "code": "सू२",
+        "meaning": "The Sun is in the second house (bhava)."
+      },
+      "3": {
+        "code": "२७सू३",
+        "meaning": "The Sun enters the third house on the 27th."
+      },
+      "4": {
+        "code": "म.१",
+        "meaning": "Mars is in the first house."
+      },
+      "5": {
+        "code": "श.९",
+        "meaning": "Saturn is in the ninth house."
+      },
+      "6": {
+        "code": "रा.५ के.११",
+        "meaning": "Rahu is in the fifth and Ketu in the eleventh house."
+      }
+    }
   },
   "learn": {
     "west": "West",

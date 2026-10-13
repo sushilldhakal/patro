@@ -2,70 +2,14 @@ import { type ReactNode } from "react";
 import { Pressable, View } from "react-native"
 import { Text } from "@/components/ui/Text"
 import { Ionicons } from "@/components/icons/Ionicons";
-import type { CalendarDay } from "@/lib/api";
-import { formatTimeShort } from "@vedic-patro/domain/panchanga-format";
-import type { CalcNote, GrahaSpashtaRow, LagnaMatrixRow } from "@vedic-patro/domain/dainikKranti/month-patro-tables";
+import type { DainikDayRow, useDainikKrantiPage } from "@vedic-patro/features/dainik-kranti";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { parseCivilIso } from "@vedic-patro/domain/patro-day";
-import { resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { DayPatroExpandPanel } from "./DayPatroExpandPanel";
-import { dowOf } from "@vedic-patro/domain/dainikKranti/day-helpers";
 
-export type TransitEvent = {
-  planetNe: string;
-  planetEn: string;
-  labelNe: string;
-  labelEn: string;
-  time?: string;
-  sortKey: string;
-};
-
-type Props = {
-  day: CalendarDay;
-  isToday: boolean;
-  isExpanded: boolean;
-  onToggle: () => void;
-  transits: TransitEvent[] | undefined;
-  lagna?: LagnaMatrixRow;
-  graha?: GrahaSpashtaRow;
-  notes?: CalcNote[];
-};
-
-function fmtAd(dateAd: string): string {
-  try {
-    return String(parseCivilIso(dateAd).day);
-  } catch {
-    const d = new Date(`${dateAd}T00:00:00`);
-    if (Number.isNaN(d.getTime())) return dateAd;
-    return String(d.getDate());
-  }
-}
-
-function phaseOf(day: CalendarDay): "krishna" | "shukla" | undefined {
-  if (day.paksha === "shukla" || day.paksha_ne?.includes("शुक्ल")) return "shukla";
-  if (day.paksha === "krishna" || day.paksha_ne?.includes("कृष्ण")) return "krishna";
-  return undefined;
-}
-
-function pakshaShort(day: CalendarDay, isEn = false): string {
-  const p = phaseOf(day);
-  if (isEn) return p === "shukla" ? "Shukla" : p === "krishna" ? "Krishna" : "";
-  return p === "shukla" ? "शुक्ल" : p === "krishna" ? "कृष्ण" : "";
-}
-
-function angaEnd(
-  end?: string,
-  d: (v: string | number) => string = String,
-  isEn = false,
-): string | null {
-  const t = formatTimeShort(end);
-  if (!t) return null;
-  return isEn ? d(t) : `${d(t)} बजे`;
-}
+type PageCopy = ReturnType<typeof useDainikKrantiPage>["copy"];
 
 function CardField({
   label,
@@ -88,43 +32,18 @@ function CardField({
   );
 }
 
-export function DayPatroCard({
-  day,
-  isToday,
-  isExpanded,
-  onToggle,
-  transits,
-  lagna,
-  graha,
-  notes,
-}: Props) {
+/** One day of the dainik kranti month as a card (compact layouts). */
+export function DayPatroCard({ row, copy }: { row: DainikDayRow; copy: PageCopy }) {
   const colors = useThemeColors();
-  const { pick, digits, lang, t } = useLocale();
-  const isEn = lang === "en";
-  const det = day.panchanga;
-  const tithiEnd = angaEnd(det?.tithi?.end ?? det?.tithi?.end_local_time, digits, isEn);
-  const nakEnd = angaEnd(det?.nakshatra?.end ?? det?.nakshatra?.end_local_time, digits, isEn);
-  const yogaEnd = angaEnd(det?.yoga?.end ?? det?.yoga?.end_local_time, digits, isEn);
-  const karanaEnd = angaEnd(det?.karana?.end ?? det?.karana?.end_local_time, digits, isEn);
-  const sunRashi =
-    resolveRashiDisplay(det?.surya_rashi_ne, det?.surya_rashi, lang) ??
-    pick(det?.surya_rashi_ne ?? "", det?.surya_rashi ?? "");
-  const moonRashi =
-    resolveRashiDisplay(det?.chandra_rashi_ne ?? day.chandra_rashi_ne, det?.chandra_rashi ?? day.chandra_rashi, lang) ??
-    pick(det?.chandra_rashi_ne ?? "", det?.chandra_rashi ?? "");
-  const isSaturday = dowOf(day.date_ad) === 6;
-  const hasFestival = (day.festivals?.length ?? 0) > 0;
-  const hasExtra = Boolean(lagna || graha || (notes?.length ?? 0) > 0);
-  const dayColor =
-    isSaturday || hasFestival ? "text-rose-600 dark:text-rose-400" : "text-foreground";
+  const dayColor = row.holiday ? "text-rose-600 dark:text-rose-400" : "text-foreground";
 
   return (
     <View
       className={cn(
         dainikKrantiClasses.dayCard,
-        isToday
+        row.isToday
           ? dainikKrantiClasses.dayCardToday
-          : hasFestival
+          : row.hasFestival
             ? dainikKrantiClasses.dayCardFestival
             : dainikKrantiClasses.dayCardPlain,
       )}
@@ -133,117 +52,101 @@ export function DayPatroCard({
         <View>
           <View className="flex-row items-baseline gap-1">
             <Text className={cn(dainikKrantiClasses.dayNumBs, dayColor)} style={nepaliTextStyle()}>
-              {digits(day.day)}
+              {row.dayNumber}
             </Text>
-            <Text className={cn(dainikKrantiClasses.dayNumAdSmall, "leading-none")} style={nepaliTextStyle()}>
-              {digits(fmtAd(day.date_ad))}
-            </Text>
+            {row.adDay != null ? (
+              <Text className={cn(dainikKrantiClasses.dayNumAdSmall, "leading-none")} style={nepaliTextStyle()}>
+                {row.adDay}
+              </Text>
+            ) : null}
           </View>
           <Text
-            className={cn(dainikKrantiClasses.weekday, "leading-tight", isSaturday && dainikKrantiClasses.saturday)}
+            className={cn(dainikKrantiClasses.weekday, "leading-tight", row.isSaturday && dainikKrantiClasses.saturday)}
             style={nepaliTextStyle()}
           >
-            {pick(day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday)}
+            {row.weekday}
           </Text>
         </View>
-        {isToday ? (
+        {row.isToday ? (
           <View className={dainikKrantiClasses.todayBadge}>
             <Text className={dainikKrantiClasses.todayBadgeText} style={nepaliTextStyle()}>
-              {t("dainik.today")}
+              {copy.today}
             </Text>
           </View>
         ) : null}
       </View>
 
-      {hasFestival ? (
+      {row.festivals ? (
         <View className={cn(dainikKrantiClasses.festivalBox, "flex-row items-start gap-2")}>
           <View className={dainikKrantiClasses.festivalDot} />
           <Text numberOfLines={3} className={cn(dainikKrantiClasses.festivalText, "flex-1")} style={nepaliTextStyle()}>
-            {day.festivals.join(" · ")}
+            {row.festivals}
           </Text>
         </View>
       ) : null}
 
       <View className={cn(dainikKrantiClasses.fieldGrid, "flex-row flex-wrap")}>
-        <CardField
-          label={t("dainik.tithi")}
-          value={`${pakshaShort(day, isEn)} ${pick(day.tithi_ne ?? day.tithi, day.tithi ?? day.tithi_ne) ?? "—"}`}
-          sub={tithiEnd ? t("ui.dainik_kranti.until_tithiend", { tithiEnd }) : null}
-        />
-        <CardField
-          label={t("dainik.nakshatra")}
-          value={pick(day.nakshatra_ne ?? day.nakshatra ?? "—", day.nakshatra ?? day.nakshatra_ne ?? "—")}
-          sub={nakEnd ? t("ui.dainik_kranti.until_nakend", { nakEnd }) : null}
-        />
-        <CardField
-          label={t("dainik.yoga")}
-          value={pick(day.yoga_ne ?? day.yoga ?? "—", day.yoga ?? day.yoga_ne ?? "—")}
-          sub={yogaEnd ? t("ui.dainik_kranti.until_yogaend", { yogaEnd }) : null}
-        />
-        <CardField
-          label={t("dainik.karana")}
-          value={pick(day.karana_ne ?? day.karana ?? "—", day.karana ?? day.karana_ne ?? "—")}
-          sub={karanaEnd ? t("ui.dainik_kranti.until_karanaend", { karanaEnd }) : null}
-        />
+        <CardField label={copy.tithi} value={row.tithi.value} sub={row.tithi.until} />
+        <CardField label={copy.nakshatra} value={row.nakshatra.value} sub={row.nakshatra.until} />
+        <CardField label={copy.yoga} value={row.yoga.value} sub={row.yoga.until} />
+        <CardField label={copy.karana} value={row.karana.value} sub={row.karana.until} />
       </View>
 
       <View className={cn(dainikKrantiClasses.fieldGridMuted, "flex-row flex-wrap")}>
         <CardField
           wide
-          label={t("dainik.sun_rise_set_sign")}
+          label={copy.sunRiseSetSign}
           value={
             <View className={dainikKrantiClasses.field}>
               <Text className={cn(dainikKrantiClasses.sunRiseSetTimes, "font-num leading-snug")} style={nepaliTextStyle()}>
-                {`${day.sunrise ? digits(formatTimeShort(day.sunrise) ?? day.sunrise) : "—"}/${day.sunset ? digits(formatTimeShort(day.sunset) ?? day.sunset) : "—"}`}
+                {row.sun.times}
               </Text>
               <Text className={dainikKrantiClasses.subLine} style={nepaliTextStyle()}>
-                {sunRashi ? `${sunRashi}${det?.ayana_mark ? ` ${det.ayana_mark}` : ""}` : "—"}
+                {row.sun.sign}
               </Text>
             </View>
           }
         />
-        <CardField label={t("dainik.moon_sign")} value={moonRashi || "—"} />
+        <CardField label={copy.moonSign} value={row.moon.value} sub={row.moon.until} />
       </View>
 
-      {(transits?.length ?? 0) > 0 ? (
+      {row.transits.length > 0 ? (
         <View className={dainikKrantiClasses.transitsBlock}>
           <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>
-            {t("dainik.transits_rise_set")}
+            {copy.transits}
           </Text>
           <View className={cn(dainikKrantiClasses.transitsList, "gap-0.5")}>
-            {transits!.map((ev, i) => (
+            {row.transits.map((ev, i) => (
               <Text key={i} className={dainikKrantiClasses.transitRow} style={nepaliTextStyle()}>
-                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitName)}>{pick(ev.labelNe, ev.labelEn)} </Text>
-                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitPlanet)}>{pick(ev.planetNe, ev.planetEn)}</Text>
-                {ev.time ? <Text className={dainikKrantiClasses.cellText}> {digits(ev.time)}</Text> : null}
+                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitName)}>{ev.label} </Text>
+                <Text className={cn(dainikKrantiClasses.cellText, dainikKrantiClasses.transitPlanet)}>{ev.planet}</Text>
+                {ev.time ? <Text className={dainikKrantiClasses.cellText}> {ev.time}</Text> : null}
               </Text>
             ))}
           </View>
         </View>
       ) : null}
 
-      {hasExtra ? (
+      {row.hasExtra ? (
         <View className={dainikKrantiClasses.expandWrap}>
           <Pressable
-            onPress={onToggle}
+            onPress={row.toggle}
             accessibilityRole="button"
-            accessibilityState={{ expanded: isExpanded }}
+            accessibilityState={{ expanded: row.expanded }}
             className={cn(dainikKrantiClasses.expandBtn, "flex-row active:bg-muted/60")}
           >
             <Text className={dainikKrantiClasses.expandBtnText} style={nepaliTextStyle()}>
-              {isExpanded
-                ? t("dainik.hide_details")
-                : t("dainik.lagna_planets_more")}
+              {row.expanded ? copy.hideDetails : copy.showDetails}
             </Text>
             <Ionicons
-              name={isExpanded ? "chevron-up" : "chevron-down"}
+              name={row.expanded ? "chevron-up" : "chevron-down"}
               size={16}
               color={colors.secondary}
             />
           </Pressable>
-          {isExpanded ? (
+          {row.expanded ? (
             <View className={dainikKrantiClasses.expandBody}>
-              <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
+              <DayPatroExpandPanel lagna={row.lagna} graha={row.graha} notes={row.notes} />
             </View>
           ) : null}
         </View>

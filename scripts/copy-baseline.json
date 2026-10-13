@@ -1,10 +1,8 @@
 {
   "apps/mobile/app/_layout.tsx": 2,
-  "apps/mobile/app/(tabs)/dainikkranti.tsx": 81,
   "apps/mobile/app/(tabs)/more.tsx": 6,
   "apps/mobile/components/auth/ProfileForm.tsx": 1,
   "apps/mobile/components/avakahada/AvakahadaWheel.tsx": 14,
-  "apps/mobile/components/dainikKranti/DayPatroCard.tsx": 5,
   "apps/mobile/components/dainikKranti/DayPatroExpandPanel.tsx": 3,
   "apps/mobile/components/dainikKranti/MonthCalcNotes.tsx": 22,
   "apps/mobile/components/dainikKranti/MonthGrahaSpashta.tsx": 4,
@@ -130,7 +128,6 @@
   "apps/web/src/lib/learn/learn-topics.tsx": 10,
   "apps/web/src/lib/patro-year-search-query.ts": 13,
   "apps/web/src/lib/seo.ts": 11,
-  "apps/web/src/pages/DainikKranti.tsx": 62,
   "apps/web/src/pages/PanchangaOgPreview.tsx": 13,
   "apps/web/src/router.tsx": 4
 }
