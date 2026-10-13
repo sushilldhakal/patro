@@ -1,0 +1,36 @@
+{
+  "name": "@vedic-patro/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "UI kit shared by the website and the mobile app: Box, Text, Pressable, Card, Button, Icon, Table, Sheet — one props contract, drawn with HTML + Tailwind on the website and React Native + NativeWind in the app.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "react-native": "./src/native/index.ts",
+      "default": "./src/web/index.ts"
+    },
+    "./web": "./src/web/index.ts",
+    "./native": "./src/native/index.ts",
+    "./contract": "./src/contract.ts",
+    "./classes": "./src/classes.ts"
+  },
+  "scripts": {
+    "lint": "node scripts/check-platforms.mjs"
+  },
+  "dependencies": {
+    "@vedic-patro/design-tokens": "*",
+    "@vedic-patro/domain": "*",
+    "@vedic-patro/icons": "*"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-svg": "*",
+    "nativewind": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native": { "optional": true },
+    "react-native-svg": { "optional": true },
+    "nativewind": { "optional": true }
+  }
+}

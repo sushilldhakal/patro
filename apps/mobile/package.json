@@ -90,7 +90,9 @@
     "@vedic-patro/i18n": "*",
     "@vedic-patro/design-tokens": "*",
     "@vedic-patro/api-client": "*",
-    "@vedic-patro/icons": "*"
+    "@vedic-patro/icons": "*",
+    "@vedic-patro/features": "*",
+    "@vedic-patro/ui": "*"
   },
   "expo": {
     "autolinking": {

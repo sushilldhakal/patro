@@ -62,9 +62,15 @@ config.server = {
 
 const finalConfig = withNativeWind(config, { input: "./global.css" });
 const defaultResolveRequest = finalConfig.resolver.resolveRequest;
+/** The app draws with the native half of the UI kit on every platform, Expo web included. */
+const UI_NATIVE_ENTRY = path.resolve(__dirname, "../../packages/ui/src/native/index.ts");
+
 finalConfig.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === "three") {
     return { type: "sourceFile", filePath: THREE_ENTRY };
+  }
+  if (moduleName === "@vedic-patro/ui") {
+    return { type: "sourceFile", filePath: UI_NATIVE_ENTRY };
   }
   if (defaultResolveRequest) {
     return defaultResolveRequest(context, moduleName, platform);

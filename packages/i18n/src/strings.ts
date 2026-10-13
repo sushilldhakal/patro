@@ -6855,9 +6855,6 @@ export const strings = {
   "ui.graha.partial_ends": { ne: "आंशिक अन्त", en: "Partial ends" },
   "ui.graha.visible_from_nepal": { ne: "नेपालबाट देखिन्छ", en: "Visible from Nepal" },
 
-  /* ── ui.holidays ────────────────────────────────────────────────────────── */
-  "ui.holidays.search_festivals": { ne: "पर्व खोज्नुहोस्…", en: "Search festivals…" },
-
   /* ── ui.home ────────────────────────────────────────────────────────────── */
   "ui.home.ashubh_times": { ne: "अशुभ समय", en: "Ashubh times" },
   "ui.home.could_not_load_calendar": { ne: "पात्रो लोड गर्न सकिएन।", en: "Could not load calendar." },

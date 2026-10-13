@@ -1,6 +1,6 @@
 import { setupI18n } from "@vedic-patro/i18n/setup";
 import { i18n, type Lang } from "@vedic-patro/i18n/react";
-import ne from "@vedic-patro/i18n/ne.json";
+import ne from "@vedic-patro/i18n/web/ne.json";
 import { getStoredLanguage } from "@/lib/user-preferences";
 
 function clientInitialLng(): Lang {
@@ -14,7 +14,7 @@ function clientInitialLng(): Lang {
 setupI18n({
   bundles: { ne },
   language: clientInitialLng(),
-  loadBundle: async () => (await import("@vedic-patro/i18n/en.json")).default,
+  loadBundle: async () => (await import("@vedic-patro/i18n/web/en.json")).default,
 });
 
 export function ensureEnglishBundle(): Promise<void> {

@@ -1,7 +1,7 @@
 import { setupI18n } from "@vedic-patro/i18n/setup";
 import { i18n } from "@vedic-patro/i18n/react";
-import ne from "@vedic-patro/i18n/ne.json";
-import en from "@vedic-patro/i18n/en.json";
+import ne from "@vedic-patro/i18n/web/ne.json";
+import en from "@vedic-patro/i18n/web/en.json";
 
 let initialized = false;
 

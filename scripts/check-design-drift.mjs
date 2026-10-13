@@ -56,6 +56,9 @@ function walk(dir, out = []) {
 const files = [
   ...walk(join(root, "apps/web/src")),
   ...["app", "components", "lib"].flatMap((d) => walk(join(root, "apps/mobile", d))),
+  // The shared UI kit and page logic start at zero like any new file.
+  ...walk(join(root, "packages/ui/src")),
+  ...walk(join(root, "packages/features/src")),
 ];
 
 /** { "apps/mobile/components/x.tsx": { hex: 3, fontSize: 1 } }, zero counts left out. */

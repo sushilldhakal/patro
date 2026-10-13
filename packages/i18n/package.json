@@ -10,7 +10,9 @@
     "./react": "./src/react.tsx",
     "./setup": "./src/setup.ts",
     "./ne.json": "./src/ne.json",
-    "./en.json": "./src/en.json"
+    "./en.json": "./src/en.json",
+    "./web/ne.json": "./src/web/ne.json",
+    "./web/en.json": "./src/web/en.json"
   },
   "scripts": {
     "generate": "tsx scripts/generate.ts",

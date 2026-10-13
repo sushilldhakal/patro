@@ -19,6 +19,10 @@ How the tokens got there (`scripts/monorepo-tools/`): `palette.mts` clustered th
 
 CI also runs `npx turbo run lint` for both apps (the website's ESLint, the app's typecheck). `@expo/vector-icons` stays: unmapped icon names and the font load still use it, and everything mapped goes through `@vedic-patro/icons`. Visual parity between the website and the app is checked by eye; there is no automated screenshot comparison.
 
+## Shared pages and UI kit (the next layer)
+
+Class maps make the two copies of a page *look* the same; they do not stop the copies *behaving* differently. Pages now move to `packages/features` (one hook per page: data, state, rows, copy) and are drawn with `packages/ui` (one props contract, an HTML half and a React Native half). Holidays is the first; moving it fixed three ways the app had drifted from the website (it fetched BS years even with the AD era selected, sorted by date before any column was chosen, and searched fewer columns). See `packages/features/README.md` for the steps per page.
+
 ## Shared class maps (the page design itself)
 
 Tokens share the values; the **class maps** share the page design. Each page has `packages/design-tokens/src/classes/<page>-classes.ts`, keyed by element role, and both the website and the app read it (`cn(holidaysClasses.title, "web-only extras")`). Conventions are in `packages/design-tokens/src/classes/README.md`.

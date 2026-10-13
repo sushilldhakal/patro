@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Fails if either frontend stops using the shared packages for the things the
- * monorepo shares: API communication, design tokens and icon identity.
+ * monorepo shares: API communication, design tokens, icon identity, copy (one
+ * translator) and page logic (packages/features).
  *
  *   npm run check:shared
  *
@@ -90,9 +91,28 @@ for (const f of [
 ])
   if (!read(join(root, f)).includes("@vedic-patro/icons")) fail(`${f}: must read @vedic-patro/icons`);
 
+// ── Copy ─────────────────────────────────────────────────────────────────────
+
+// One translator: neither app may bring its own i18n runtime back.
+for (const [app, files] of Object.entries(apps))
+  for (const f of files) {
+    const m = read(f).match(/from\s+["'](i18next|react-i18next|i18n-js|expo-localization)["']/);
+    if (m) fail(`${rel(f)}: imports ${m[1]} — use the shared translator (@vedic-patro/i18n/react)`);
+  }
+
+// ── Page logic ───────────────────────────────────────────────────────────────
+
+// A page hook only one app reads shares nothing: each feature must be used by both.
+const FEATURES = join(root, "packages/features/src");
+for (const feature of readdirSync(FEATURES).filter((n) => statSync(join(FEATURES, n)).isDirectory())) {
+  const spec = `@vedic-patro/features/${feature}`;
+  for (const [app, files] of Object.entries(apps))
+    if (!files.some((f) => read(f).includes(`"${spec}"`))) fail(`packages/features/src/${feature}: not used by the ${app} app — both apps draw a shared page`);
+}
+
 if (failures.length) {
   console.error(failures.join("\n"));
   console.error(`\n${failures.length} shared-package check(s) failed.`);
   process.exit(1);
 }
-console.log("both apps use the shared API client, design tokens and icon identity");
+console.log("both apps use the shared API client, design tokens, icon identity, translator and page logic");

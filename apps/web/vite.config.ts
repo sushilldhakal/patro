@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process"
 function manualChunkId(id: string): string | undefined {
   if (id.includes("samvatsara-table.json")) return "samvatsara-data"
   if (id.includes("bs-calendar-data.json")) return "bs-calendar-data"
-  if (id.includes("/packages/i18n/src/ne.json")) return "i18n-ne"
+  if (id.includes("/packages/i18n/src/web/ne.json")) return "i18n-ne"
 
   if (!id.includes("node_modules")) return
 
