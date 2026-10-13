@@ -30,16 +30,30 @@ Build numbers (iOS `buildNumber`, Android `versionCode`) are raised automaticall
 
 ```bash
 cd apps/mobile
-npm run release:check     # read-only checklist: git clean, API up, types, EAS login, build numbers
-npm run release           # build + submit iOS and Android
+npm run release                # asks: patch / minor / major / none, shows the plan, asks to confirm
+npm run release -- minor       # or name the bump: patch, minor, major, none, or an exact 1.4.0
+npm run release -- patch --dry-run   # show the plan, change nothing
 ```
 
-Or one platform: `npm run release:ios` / `npm run release:android`. Watch progress at
-<https://expo.dev> (builds queue; a build takes ~10–20 min).
+`release` does the whole thing in order:
+1. runs the **preflight** (`npm run release:check`: git clean, API up, types, EAS login) and stops on a ✗;
+2. shows the plan and asks you to confirm, e.g.
+   `version 1.1.0 → 1.2.0 · iOS build 3 → 4 · Android code 13 → 14`;
+3. writes the new **version** into `app.json` (and `apps/mobile/package.json` + the lockfile entry, so they never drift),
+   commits it as `release: mobile v1.2.0` and tags `mobile-v1.2.0`;
+4. builds **iOS and Android** on EAS and submits them (iOS → TestFlight, Android → internal track, draft);
+5. pushes the commit and tag so git matches what shipped (`--no-push` to skip).
 
-**Before pressing release:** commit and push (EAS packs your local files, so uncommitted changes would ship),
-and make sure the production API is the version the app expects (the app calls
-`https://www.vedicpatro.com/api/v1`).
+**Version vs build number.** The *version* (1.2.0) is what users see; you choose the bump. The *build number* (iOS `buildNumber`,
+Android `versionCode`) is raised by EAS automatically on every build and never goes backwards — it is not stored in the repo.
+Use `none` to rebuild the same version (e.g. after a failed submit); the build number still goes up.
+
+One platform: `npm run release:ios` / `npm run release:android` (same prompts). Builds queue on EAS and take ~10–20 min:
+<https://expo.dev>.
+
+**Before pressing release:** commit your work (EAS packs your local files, so uncommitted changes would ship — the preflight
+refuses to continue), and make sure the production API is the version the app expects
+(`https://www.vedicpatro.com/api/v1`).
 
 ## After the builds finish
 
@@ -54,7 +68,7 @@ and make sure the production API is the version the app expects (the app calls
 ```bash
 npm run release:android:production-track
 ```
-This still creates a **draft** on the Production track (profile `production-track` in `eas.json`); it only goes live after you
+(It asks for the version bump like any release.) This still creates a **draft** on the Production track (profile `production-track` in `eas.json`); it only goes live after you
 send it for review/roll it out in Play Console. To make it fully automatic, set `releaseStatus` to `"completed"`
 in that profile — only do that deliberately.
 
@@ -62,4 +76,5 @@ in that profile — only do that deliberately.
 - **Build passed, submit failed** (usually credentials): fix them, then resubmit the finished build without rebuilding:
   `npx eas submit -p android --latest --profile production` (or `-p ios`).
 - **Android versionCode already used:** raise it once — `npx eas build:version:set -p android -e production`.
+- **Build failed after the version commit:** the commit stays; the script prints the exact undo command (`git reset --hard HEAD~1 && git tag -d mobile-vX.Y.Z`), or just fix the cause and rerun with `none`.
 - **Rolling back:** stores never auto-update users to a draft/TestFlight build, so an unwanted build is simply not promoted.

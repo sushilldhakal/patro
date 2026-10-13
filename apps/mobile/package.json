@@ -20,10 +20,10 @@
     "submit:android": "eas submit --platform android --profile production",
     "submit:ios": "eas submit --platform ios --profile production",
     "release:check": "node scripts/release-check.mjs",
-    "release": "eas build --platform all --profile production --auto-submit",
-    "release:ios": "eas build --platform ios --profile production --auto-submit",
-    "release:android": "eas build --platform android --profile production --auto-submit",
-    "release:android:production-track": "eas build --platform android --profile production --auto-submit-with-profile=production-track",
+    "release": "node scripts/release.mjs",
+    "release:ios": "node scripts/release.mjs --platform ios",
+    "release:android": "node scripts/release.mjs --platform android",
+    "release:android:production-track": "node scripts/release.mjs --platform android --submit-profile production-track",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
