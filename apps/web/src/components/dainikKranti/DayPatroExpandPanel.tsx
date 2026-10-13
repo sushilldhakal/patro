@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { LayoutGrid, Sunrise } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -30,14 +30,14 @@ type Props = {
 };
 
 const LAGNA_GRID =
-  "grid w-full min-w-0 grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-12";
+  "grid w-full min-w-0 grid-cols-4 gap-1.5 sm:gap-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-12";
 
 const GRAHA_GRID =
   "grid w-full min-w-0 grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4";
 
 function SectionHeading({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
-    <div className={cn(dainikKrantiClasses.sectionHead, dainikKrantiClasses.sectionHeadText)}>
+    <div className={cn(dainikKrantiClasses.sectionHead, dainikKrantiClasses.sectionHeadText, "hidden md:flex")}>
       <span className="text-secondary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
       {children}
     </div>
@@ -48,10 +48,38 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
   const { t } = useTranslation();
   const { lang } = useLocale();
   const isEn = lang === "en";
+  const tabs = [
+    lagna && { id: "lagna", label: bilingualText(lang, "लग्न", "Lagna") },
+    graha && { id: "graha", label: bilingualText(lang, "ग्रह", "Planets") },
+    notes.length > 0 && { id: "notes", label: bilingualText(lang, "टिप्पणी", "Notes") },
+  ].filter(Boolean) as { id: string; label: string }[];
+  const [picked, setPicked] = useState(tabs[0]?.id);
+  const tab = tabs.some((x) => x.id === picked) ? picked : tabs[0]?.id;
+  // <md: one section at a time behind tabs; md+: all stacked as before.
+  const pane = (id: string) => (tab === id ? "block" : "hidden md:block");
   return (
     <div className={cn(dainikKrantiClasses.expandRoot, "space-y-4")}>
+      {tabs.length > 1 ? (
+        <div role="tablist" className={cn(dainikKrantiClasses.expandTabs, "md:hidden")}>
+          {tabs.map((x) => (
+            <button
+              key={x.id}
+              type="button"
+              role="tab"
+              aria-selected={tab === x.id}
+              onClick={() => setPicked(x.id)}
+              className={cn(
+                dainikKrantiClasses.expandTab,
+                tab === x.id ? dainikKrantiClasses.expandTabOn : dainikKrantiClasses.expandTabOff,
+              )}
+            >
+              {x.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
       {lagna ? (
-        <div className="w-full min-w-0">
+        <div className={cn("w-full min-w-0", pane("lagna"))}>
           <SectionHeading icon={<LayoutGrid />}>{t("dainik.daily_lagna_start")}</SectionHeading>
           <div className={LAGNA_GRID}>
             {getRashiList("ne").map((rne, i) => {
@@ -87,7 +115,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       ) : null}
 
       {graha ? (
-        <div className="w-full min-w-0 space-y-3">
+        <div className={cn("w-full min-w-0 space-y-3", pane("graha"))}>
           <SectionHeading icon={<Sunrise />}>{t("dainik.planetary_positions_at_sunrise")}</SectionHeading>
           <div className={GRAHA_GRID}>
             {PATRO_PLANET_KEYS.map((key) => {
@@ -125,7 +153,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
       ) : null}
 
       {notes.length > 0 ? (
-        <ul className="w-full min-w-0 space-y-1.5 text-sm">
+        <ul className={cn("w-full min-w-0 space-y-1.5 text-sm", pane("notes"))}>
           {notes.map((n) => (
             <li key={`${n.kind}-${n.text}`} className="break-words">
               <span className={dainikKrantiClasses.noteText}>{bilingualText(lang, n.text, n.textEn ?? n.text)}</span>

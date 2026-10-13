@@ -155,6 +155,15 @@ export function DayPatroCard({
         ) : null}
       </View>
 
+      {hasFestival ? (
+        <View className={cn(dainikKrantiClasses.festivalBox, "flex-row items-start gap-2")}>
+          <View className="mt-1.5 size-1.5 rounded-full bg-rose-500" />
+          <Text numberOfLines={3} className={cn(dainikKrantiClasses.festivalText, "flex-1")} style={nepaliTextStyle()}>
+            {day.festivals.join(" · ")}
+          </Text>
+        </View>
+      ) : null}
+
       <View className={cn(dainikKrantiClasses.fieldGrid, "flex-row flex-wrap")}>
         <CardField
           label={t("dainik.tithi")}
@@ -213,40 +222,31 @@ export function DayPatroCard({
         </View>
       ) : null}
 
-      {hasFestival ? (
-        <View className={dainikKrantiClasses.festivalBox}>
-          <Text className={dainikKrantiClasses.fieldLabel} style={nepaliTextStyle()}>{t("dainik.festival")}</Text>
-          <Text numberOfLines={2} className={dainikKrantiClasses.festivalText} style={nepaliTextStyle()}>
-            {day.festivals.join(" · ")}
-          </Text>
-        </View>
-      ) : null}
-
       {hasExtra ? (
-        <>
+        <View className={dainikKrantiClasses.expandWrap}>
           <Pressable
             onPress={onToggle}
             accessibilityRole="button"
             accessibilityState={{ expanded: isExpanded }}
-            className={cn(dainikKrantiClasses.expandBtn, "flex-row active:bg-muted")}
+            className={cn(dainikKrantiClasses.expandBtn, "flex-row active:bg-muted/60")}
           >
-            <Ionicons
-              name={isExpanded ? "chevron-up" : "chevron-down"}
-              size={16}
-              color={colors.secondary}
-            />
             <Text className={dainikKrantiClasses.expandBtnText} style={nepaliTextStyle()}>
               {isExpanded
                 ? pick("विवरण लुकाउनुहोस्", "Hide details")
                 : pick("लग्न · ग्रहस्पष्ट · थप विवरण", "Lagna · planets & more")}
             </Text>
+            <Ionicons
+              name={isExpanded ? "chevron-up" : "chevron-down"}
+              size={16}
+              color={colors.secondary}
+            />
           </Pressable>
           {isExpanded ? (
             <View className={dainikKrantiClasses.expandBody}>
               <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
             </View>
           ) : null}
-        </>
+        </View>
       ) : null}
     </View>
   );

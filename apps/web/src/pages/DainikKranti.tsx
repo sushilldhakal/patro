@@ -484,6 +484,13 @@ function DayPatroCard({
         ) : null}
       </div>
 
+      {hasFestival ? (
+        <div className={cn(dainikKrantiClasses.festivalBox, "flex items-start gap-2")}>
+          <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-rose-500" />
+          <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-3")}>{day.festivals.join(" · ")}</div>
+        </div>
+      ) : null}
+
       <div className={cn(dainikKrantiClasses.fieldGrid, "grid grid-cols-2")}>
         <CardField
           label={t("dainik.tithi")}
@@ -541,32 +548,36 @@ function DayPatroCard({
         </div>
       ) : null}
 
-      {hasFestival ? (
-        <div className={dainikKrantiClasses.festivalBox}>
-          <div className={dainikKrantiClasses.fieldLabel}>{t("dainik.festival")}</div>
-          <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-2")}>{day.festivals.join(" · ")}</div>
-        </div>
-      ) : null}
-
       {hasExtra ? (
-        <>
+        <div className={dainikKrantiClasses.expandWrap}>
           <button
             type="button"
             onClick={onToggle}
             aria-expanded={isExpanded}
-            className={cn(dainikKrantiClasses.expandBtn, dainikKrantiClasses.expandBtnText, "flex transition-colors hover:bg-muted")}
+            className={cn(
+              dainikKrantiClasses.expandBtn,
+              dainikKrantiClasses.expandBtnText,
+              "flex w-full active:bg-muted/60",
+            )}
           >
-            <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
-            {isExpanded
-              ? t("dainik.hide_details")
-              : t("dainik.lagna_planets_more")}
+            <span>{isExpanded ? t("dainik.hide_details") : t("dainik.lagna_planets_more")}</span>
+            <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform duration-200", isExpanded && "rotate-180")} />
           </button>
-          {isExpanded ? (
-            <div className={dainikKrantiClasses.expandBody}>
-              <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
+          <div
+            className={cn(
+              "grid transition-[grid-template-rows] duration-200 ease-out",
+              isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+            )}
+          >
+            <div className="min-h-0 overflow-hidden">
+              {isExpanded ? (
+                <div className={dainikKrantiClasses.expandBody}>
+                  <DayPatroExpandPanel lagna={lagna} graha={graha} notes={notes} />
+                </div>
+              ) : null}
             </div>
-          ) : null}
-        </>
+          </div>
+        </div>
       ) : null}
     </div>
   );

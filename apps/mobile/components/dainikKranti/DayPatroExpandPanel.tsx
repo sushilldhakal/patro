@@ -1,5 +1,6 @@
 import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
-import { View } from "react-native";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
@@ -54,16 +55,53 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
   const { lang, pick } = useLocale();
   const isEn = lang === "en";
   const { width } = useBreakpoint();
-  const lagnaCols = width >= 1280 ? 12 : width >= 768 ? 6 : width >= 640 ? 4 : 3;
+  const lagnaCols = width >= 1280 ? 12 : width >= 768 ? 6 : 4;
   const grahaCols = width >= 1024 ? 4 : width >= 768 ? 3 : 2;
+
+  const tabs = [
+    lagna && { id: "lagna", label: pick("लग्न", "Lagna") },
+    graha && { id: "graha", label: pick("ग्रह", "Planets") },
+    notes.length > 0 && { id: "notes", label: pick("टिप्पणी", "Notes") },
+  ].filter(Boolean) as { id: string; label: string }[];
+  const [picked, setPicked] = useState(tabs[0]?.id);
+  const tab = tabs.some((x) => x.id === picked) ? picked : tabs[0]?.id;
+  // <md: one section at a time behind tabs; md+: all stacked.
+  const tabbed = width < 768 && tabs.length > 1;
+  const show = (id: string) => !tabbed || tab === id;
 
   return (
     <View className={cn(dainikKrantiClasses.expandRoot, "gap-4")}>
-      {lagna ? (
+      {tabbed ? (
+        <View accessibilityRole="tablist" className={dainikKrantiClasses.expandTabs}>
+          {tabs.map((x) => (
+            <Pressable
+              key={x.id}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: tab === x.id }}
+              onPress={() => setPicked(x.id)}
+              className={cn(
+                dainikKrantiClasses.expandTab,
+                tab === x.id ? dainikKrantiClasses.expandTabOn : dainikKrantiClasses.expandTabOff,
+              )}
+            >
+              <Text
+                className={cn(
+                  "text-center text-sm font-semibold",
+                  tab === x.id ? "text-secondary" : "text-muted-foreground",
+                )}
+                style={nepaliTextStyle()}
+              >
+                {x.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+      {lagna && show("lagna") ? (
         <View className="w-full min-w-0">
-          <SectionHeading icon="grid-outline">
+          {tabbed ? null : <SectionHeading icon="grid-outline">
             {pick("दैनिक लग्न आरम्भ (बजे)", "Daily lagna start")}
-          </SectionHeading>
+          </SectionHeading>}
           <View className="-m-1 flex-row flex-wrap">
             {getRashiList("ne").map((rne, i) => {
               const num = i + 1;
@@ -97,11 +135,11 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
         </View>
       ) : null}
 
-      {graha ? (
+      {graha && show("graha") ? (
         <View className="w-full min-w-0 gap-3">
-          <SectionHeading icon="planet-outline">
+          {tabbed ? null : <SectionHeading icon="planet-outline">
             {pick("उदयकालिक ग्रहस्पष्ट (सूर्योदय)", "Planetary positions at sunrise")}
-          </SectionHeading>
+          </SectionHeading>}
           <View className="-m-1 flex-row flex-wrap">
             {PATRO_PLANET_KEYS.map((key) => {
               const cell = graha.planets[key];
@@ -141,7 +179,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
         </View>
       ) : null}
 
-      {notes.length > 0 ? (
+      {notes.length > 0 && show("notes") ? (
         <View className="w-full min-w-0 gap-1.5">
           {notes.map((n) => (
             <Text key={`${n.kind}-${n.text}`} className={dainikKrantiClasses.noteText} style={nepaliTextStyle()}>
