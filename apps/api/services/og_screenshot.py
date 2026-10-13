@@ -52,7 +52,7 @@ def screenshot_available() -> bool:
 
 # Bump when the preview page's layout changes so a redeploy stops serving the
 # previous card from the on-disk cache.
-_RENDER_VERSION = "3"  # 3: added the periods / d1 cards (card= query param)
+_RENDER_VERSION = "4"  # 4: D1 card legend fits; 3: added the periods / d1 cards (card= query param)
 
 
 def _cache_path(query: str) -> Path:

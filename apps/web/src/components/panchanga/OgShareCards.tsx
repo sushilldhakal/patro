@@ -142,7 +142,7 @@ export function D1Card({ p, appLink }: { p: PanchangaDay | undefined; appLink: s
             {getPlanetsAnchorLabel(p, lang)}
           </div>
           <div style={{ flex: "1 1 auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <D1Chart houses={houses} size={430} />
+            <D1Chart houses={houses} size={385} />
           </div>
           {retro ? <GrahaStatusLegend className="mt-1" /> : null}
         </Panel>

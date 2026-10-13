@@ -162,7 +162,7 @@ def share_panchanga(
     # without an extra nginx rule for a bare /og-image. `v` busts the CDN /
     # scraper caches when the card layout changes — keep it in step with
     # CHART_OG_IMAGE_URL on the front-end.
-    image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=3"
+    image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=4"
 
     # Nepali (Bikram Sambat) date everywhere a human reads it — the Gregorian
     # date belongs in the URL, not in the share title.
