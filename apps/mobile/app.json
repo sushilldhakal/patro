@@ -208,6 +208,7 @@
     "plugins": [
       "expo-router",
       "expo-dev-client",
+      "./plugins/with-react-native-dir.js",
       [
         "expo-build-properties",
         {
