@@ -101,7 +101,30 @@ export default function RootLayout() {
     };
   }, []);
 
-  const ready = loaded && onboarded !== null;
+  // Web: the Google Noto stylesheet styles html/body and any text that doesn't
+  // pin a family. Hold the splash until it's loaded too, so text never swaps
+  // from the fallback face (a visible size jump) after first paint.
+  const [webFontReady, setWebFontReady] = useState(Platform.OS !== "web");
+  useEffect(() => {
+    if (Platform.OS !== "web" || typeof document === "undefined" || !document.fonts) {
+      setWebFontReady(true);
+      return;
+    }
+    let active = true;
+    const done = () => active && setWebFontReady(true);
+    const timeout = setTimeout(done, 3000);
+    Promise.all([
+      document.fonts.load('400 16px "Noto Sans Devanagari"', "अआक"),
+      document.fonts.load('700 16px "Noto Sans Devanagari"', "अआक"),
+    ])
+      .then(done, done);
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  const ready = loaded && onboarded !== null && webFontReady;
 
   useEffect(() => {
     if (!ready) return;

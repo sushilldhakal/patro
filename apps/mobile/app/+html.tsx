@@ -50,7 +50,7 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wdth,wght@87.5,100..900&family=Fira+Code:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wdth,wght@87.5,100..900&family=Fira+Code:wght@400;600&display=block"
         />
         <script dangerouslySetInnerHTML={{ __html: BOOT_SPLASH_SCRIPT }} />
       </head>
