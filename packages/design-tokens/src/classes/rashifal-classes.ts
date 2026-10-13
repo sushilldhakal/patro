@@ -40,6 +40,8 @@ export const rashifalClasses = {
   name: "m-0 text-base font-bold leading-snug text-foreground",
   nameSub: "m-0 mt-1 text-xs leading-relaxed text-muted-foreground",
   taraBadge: "shrink-0 rounded-md px-2 py-0.5 text-diagram-xs font-bold uppercase tracking-wide",
+  /** The badge's text in the app (React Native text does not inherit from the View). */
+  taraBadgeText: "text-diagram-xs font-bold uppercase tracking-wide text-foreground",
 
   // ── Strength meter ────────────────────────────────────────────────────────
   meter: "flex items-center gap-2.5 border-b border-border/60 px-4 py-2.5",

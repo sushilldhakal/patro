@@ -16,11 +16,14 @@ import {
 } from "@/lib/rashifal-ui";
 import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { nepaliTextStyle } from "@/lib/nepali-text";
+import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
 
 type Props = {
   sign: RashifalSignBlock;
   period: RashifalPeriod;
+  /** Today's tara / its quality (daily and weekly only), as on the website. */
+  taraLine?: string;
 };
 
 function StarMeter({ stars, tone }: { stars: number; tone?: NavataraTone }) {
@@ -56,7 +59,7 @@ function LuckyRow({
   );
 }
 
-export function RashifalSignCard({ sign, period }: Props) {
+export function RashifalSignCard({ sign, period, taraLine }: Props) {
   const { t, lang, pick, digits } = useLocale();
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
@@ -85,6 +88,13 @@ export function RashifalSignCard({ sign, period }: Props) {
             {sign.syllables_ne}
           </Text>
         </View>
+        {taraLine && sign.tone ? (
+          <View className={cn(rashifalClasses.taraBadge, patroNavataraToneBg(sign.tone))}>
+            <Text className={rashifalClasses.taraBadgeText} style={nepaliTextStyle()}>
+              {taraLine}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <View className={cn("flex-row", rashifalClasses.meter)}>

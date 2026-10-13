@@ -4779,12 +4779,9 @@
     },
     "rashifal": {
       "add_a_kundali_profile": "Add a kundali profile.",
-      "add_birth_date_and_place_to": "Add birth date and place to the profile.",
-      "could_not_load_rashifal": "Could not load rashifal.",
       "details": "Details",
       "loading": "Loading…",
       "profile": "Profile",
-      "rashifal_unavailable_for_this_period": "Rashifal unavailable for this period.",
       "sign_in": "Sign in",
       "why_this_reading": "Why this reading?"
     },

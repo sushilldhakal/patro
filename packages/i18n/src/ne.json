@@ -4779,12 +4779,9 @@
     },
     "rashifal": {
       "add_a_kundali_profile": "कुण्डली प्रोफाइल थप्नुहोस्।",
-      "add_birth_date_and_place_to": "जन्म मिति र स्थान प्रोफाइलमा भर्नुहोस्।",
-      "could_not_load_rashifal": "राशिफल लोड गर्न सकिएन।",
       "details": "विवरण",
       "loading": "लोड…",
       "profile": "प्रोफाइल",
-      "rashifal_unavailable_for_this_period": "यस अवधिको राशिफल उपलब्ध छैन।",
       "sign_in": "साइन इन",
       "why_this_reading": "किन यस्तो?"
     },

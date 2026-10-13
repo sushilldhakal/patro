@@ -1,330 +1,134 @@
-import { useMemo, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
+import { useAvakahadaPage, type AvakahadaRow, type AvakahadaColumnKey } from "@vedic-patro/features/avakahada";
+import { webTypeScale } from "@vedic-patro/design-tokens";
+import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
+import { cn } from "@vedic-patro/domain/utils";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { AppShell } from "@/components/AppShell";
 import { AvakahadaWheel } from "@/components/avakahada/AvakahadaWheel";
 import { Text } from "@/components/ui/Text";
-import {
-  AVAKAHADA,
-  BHAUMA_DOSHA_SHLOKAS,
-  MANGLI_VARGAS,
-  type Gana,
-} from "@vedic-patro/domain/avakahada-data";
-import {
-  formatRashiSwami,
-  formatSanjnaMukha,
-  formatVarnaVashya,
-  formatYoniPair,
-  localizeGana,
-  localizeJati,
-  localizeLord,
-  localizeNadi,
-  localizeNakshatra,
-  localizeVarga,
-} from "@vedic-patro/domain/avakahada-locale";
+import { TableCell, TableHeader, TableHeaderCell, TableHeaderLabel, TableRow, TableScrollShell } from "@/components/ui/DataTable";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useBreakpoint } from "@/lib/responsive";
-import {
-  TableCell,
-  TableHeader,
-  TableHeaderCell,
-  TableHeaderLabel,
-  TableRow,
-  TableScrollShell,
-} from "@/components/ui/DataTable";
 import { useThemeColors } from "@/lib/theme-context";
-import { cn } from "@vedic-patro/domain/utils";
-import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-classes";
 
-
-import { webTypeScale } from "@vedic-patro/design-tokens";
-interface Row {
-  index: number;
-  ne: string;
-  en: string;
-  label: string;
-  aksharas: string[];
-  charanRashis: string[];
-  aksharaText: string;
-  swami: string;
-  jati: string;
-  sanjnaMukha: string;
-  rashiSwami: string;
-  varnaVashya: string;
-  yoniVairi: string;
-  gana: Gana;
-  nadi: string;
-}
-
-function buildRows(lang: string): Row[] {
-  return AVAKAHADA.map((r) => ({
-    index: r.index,
-    ne: r.ne,
-    en: r.en,
-    label: localizeNakshatra(r, lang),
-    aksharas: r.aksharas,
-    charanRashis: r.charanRashis,
-    aksharaText: r.aksharas.join(" "),
-    swami: localizeLord(r.swami, lang),
-    jati: localizeJati(r.jati, lang),
-    sanjnaMukha: formatSanjnaMukha(r.sanjna, r.mukha, lang),
-    rashiSwami: formatRashiSwami(r.charanRashis, lang),
-    varnaVashya: formatVarnaVashya(r.charanRashis, lang),
-    yoniVairi: formatYoniPair(r.yoni, r.vairiYoni, lang),
-    gana: r.gana,
-    nadi: localizeNadi(r.nadi, lang),
-  }));
-}
-
-function matches(row: Row, query: string): boolean {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return [
-    row.ne,
-    row.en,
-    row.label,
-    row.swami,
-    row.jati,
-    row.sanjnaMukha,
-    row.aksharaText,
-    row.rashiSwami,
-    row.varnaVashya,
-    row.yoniVairi,
-    row.gana,
-    localizeGana(row.gana, "en"),
-    row.nadi,
-  ]
-    .join(" ")
-    .toLowerCase()
-    .includes(q);
-}
-
-type SortKey =
-  | "index"
-  | "swami"
-  | "jati"
-  | "sanjnaMukha"
-  | "rashiSwami"
-  | "varnaVashya"
-  | "yoniVairi"
-  | "gana"
-  | "nadi";
-
-const COLUMNS: {
-  key: SortKey | "akshara";
-  ne: string;
-  en: string;
-  width: number;
-  sortable: boolean;
-}[] = [
-  { key: "index", ne: "नक्षत्र", en: "Nakshatra", width: 168, sortable: true },
-  { key: "swami", ne: "स्वामी", en: "Swami", width: 84, sortable: true },
-  { key: "jati", ne: "जात", en: "Jati", width: 96, sortable: true },
-  { key: "sanjnaMukha", ne: "संज्ञा/मुख", en: "Sanjna / Mukha", width: 132, sortable: true },
-  {
-    key: "akshara",
-    ne: "नामाक्षर (चरण १–४)",
-    en: "Name syllable (charan 1–4)",
-    width: 168,
-    sortable: false,
-  },
-  { key: "rashiSwami", ne: "राशि / स्वामी", en: "Rashi / Lord", width: 196, sortable: true },
-  { key: "varnaVashya", ne: "राशि वर्ण/वश्य", en: "Rashi varna / vashya", width: 196, sortable: true },
-  { key: "yoniVairi", ne: "योनि / वैरी योनि", en: "Yoni / Enemy yoni", width: 148, sortable: true },
-  { key: "gana", ne: "गण", en: "Gana", width: 84, sortable: true },
-  { key: "nadi", ne: "नाडी", en: "Nadi", width: 84, sortable: true },
-];
-
-const TABLE_MIN_WIDTH = COLUMNS.reduce((sum, c) => sum + c.width, 0);
-
+/** Avakahada chakra — the app's drawing of `useAvakahadaPage` (@vedic-patro/features). */
 export default function AvakahadaScreen() {
-  const { t, lang, pick, digits } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
   const { width, isTablet } = useBreakpoint();
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({
-    key: "index",
-    dir: "asc",
-  });
-
-  const data = useMemo(() => buildRows(lang), [lang]);
-
-  const rows = useMemo(() => {
-    const filtered = data.filter((r) => matches(r, query));
-    const dir = sort.dir === "asc" ? 1 : -1;
-    return [...filtered].sort((a, b) => {
-      const av = a[sort.key];
-      const bv = b[sort.key];
-      if (typeof av === "number" && typeof bv === "number") return (av - bv) * dir;
-      return String(av).localeCompare(String(bv)) * dir;
-    });
-  }, [data, query, sort]);
-
-  const toggleSort = (key: SortKey) =>
-    setSort((s) =>
-      s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" },
-    );
+  const page = useAvakahadaPage();
+  const tableMinWidth = page.columns.reduce((sum, c) => sum + c.width, 0);
 
   return (
     <AppShell
       title={t("nav.avakahada_chakra")}
-      subtitle={t("avakahada.subtitle")}
+      subtitle={page.copy.subtitle}
       headerRight={<Ionicons name="grid-outline" size={26} color={colors.secondary} />}
     >
       <View className={cn("mb-4", avakahadaClasses.note)}>
         <Text className={avakahadaClasses.noteText} style={nepaliTextStyle(14)}>
-          {t("avakahada.abhijit_note")}
+          {page.copy.note}
         </Text>
       </View>
 
-      <View
-        className={cn(
-          "flex-row", avakahadaClasses.searchBox,
-          isTablet && avakahadaClasses.searchWrap,
-        )}
-      >
+      <View className={cn("flex-row", avakahadaClasses.searchBox, isTablet && avakahadaClasses.searchWrap)}>
         <Ionicons name="search" size={16} color={colors.mutedForeground} />
         <TextInput
           className="flex-1 py-2.5"
-          value={query}
-          onChangeText={setQuery}
-          placeholder={t("avakahada.search_placeholder")}
+          value={page.search}
+          onChangeText={page.setSearch}
+          placeholder={page.copy.searchPlaceholder}
           placeholderTextColor={colors.mutedForeground}
           style={{ color: colors.foreground, fontSize: webTypeScale.sm.size }}
         />
-        {query ? (
-          <Pressable onPress={() => setQuery("")} hitSlop={8}>
+        {page.search ? (
+          <Pressable onPress={() => page.setSearch("")} hitSlop={8}>
             <Ionicons name="close-circle" size={16} color={colors.mutedForeground} />
           </Pressable>
         ) : null}
       </View>
 
       <TableScrollShell stretch={false}>
-        <View style={{ minWidth: TABLE_MIN_WIDTH }}>
+        <View style={{ minWidth: tableMinWidth }}>
           <TableHeader>
-            {COLUMNS.map((col) => {
-              const active = col.sortable && sort.key === col.key;
-              return (
-                <TableHeaderCell
-                  key={col.key}
-                  width={col.width}
-                  disabled={!col.sortable}
-                  onPress={col.sortable ? () => toggleSort(col.key as SortKey) : undefined}
-                >
-                  <TableHeaderLabel uppercase={false} numberOfLines={2} className={avakahadaClasses.headLabel}>
-                    {pick(col.ne, col.en)}
-                  </TableHeaderLabel>
-                  {col.sortable ? (
-                    <Ionicons
-                      name={
-                        active ? (sort.dir === "asc" ? "chevron-up" : "chevron-down") : "swap-vertical"
-                      }
-                      size={11}
-                      color={active ? colors.foreground : colors.mutedForeground}
-                    />
-                  ) : null}
-                </TableHeaderCell>
-              );
-            })}
+            {page.columns.map((col) => (
+              <TableHeaderCell
+                key={col.key}
+                width={col.width}
+                disabled={!col.sortable}
+                onPress={col.sortable ? () => page.toggleSort(col.key) : undefined}
+              >
+                <TableHeaderLabel uppercase={false} numberOfLines={2} className={avakahadaClasses.headLabel}>
+                  {col.label}
+                </TableHeaderLabel>
+                {col.sortable ? (
+                  <Ionicons
+                    name={col.sorted ? (col.sorted === "asc" ? "chevron-up" : "chevron-down") : "swap-vertical"}
+                    size={11}
+                    color={col.sorted ? colors.foreground : colors.mutedForeground}
+                  />
+                ) : null}
+              </TableHeaderCell>
+            ))}
           </TableHeader>
 
-          {rows.length === 0 ? (
+          {page.rows.length === 0 ? (
             <View className={cn("px-4", avakahadaClasses.emptyCell)}>
               <Text className={avakahadaClasses.emptyText} style={nepaliTextStyle(14)}>
-                {t("avakahada.no_results")}
+                {page.copy.noResults}
               </Text>
             </View>
           ) : (
-            rows.map((row, rowIndex) => (
+            page.rows.map((row, rowIndex) => (
               <TableRow key={row.index} rowIndex={rowIndex}>
-                <TableCell width={COLUMNS[0].width}>
-                  <Text className={avakahadaClasses.nakLabel} style={nepaliTextStyle(13)}>
-                    {digits(row.index)}. {row.label}
-                  </Text>
-                </TableCell>
-                <TableCell width={COLUMNS[1].width}>{row.swami}</TableCell>
-                <TableCell width={COLUMNS[2].width}>{row.jati}</TableCell>
-                <TableCell width={COLUMNS[3].width}>{row.sanjnaMukha}</TableCell>
-                <TableCell width={COLUMNS[4].width}>
-                  <View className={cn("flex-row", avakahadaClasses.aksharaList)}>
-                    {row.aksharas.map((a, i) => (
-                      <View
-                        key={`${row.index}-${i}`}
-                        className={avakahadaClasses.aksharaChip}
-                      >
-                        <Text className={avakahadaClasses.aksharaText} style={nepaliTextStyle(13)}>
-                          {a}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                </TableCell>
-                <TableCell width={COLUMNS[5].width}>{row.rashiSwami}</TableCell>
-                <TableCell width={COLUMNS[6].width}>{row.varnaVashya}</TableCell>
-                <TableCell width={COLUMNS[7].width}>{row.yoniVairi}</TableCell>
-                <TableCell width={COLUMNS[8].width}>
-                  <View
-                    className={cn(
-                      "self-start",
-                      avakahadaClasses.ganaBadge,
-                      avakahadaClasses.ganaBg[row.gana],
-                    )}
-                  >
-                    <Text
-                      style={nepaliTextStyle(12)}
-                      className={cn(avakahadaClasses.ganaBadgeText, avakahadaClasses.ganaFg[row.gana])}
-                    >
-                      {localizeGana(row.gana, lang)}
-                    </Text>
-                  </View>
-                </TableCell>
-                <TableCell width={COLUMNS[9].width}>{row.nadi}</TableCell>
+                {page.columns.map((col) => (
+                  <TableCell key={col.key} width={col.width}>
+                    <Cell row={row} column={col.key} />
+                  </TableCell>
+                ))}
               </TableRow>
             ))
           )}
         </View>
       </TableScrollShell>
 
-      <AvakahadaWheel highlighted={query.trim() ? rows : undefined} />
+      <AvakahadaWheel highlighted={page.highlighted} />
 
       <View className={cn("mt-8", avakahadaClasses.notes)}>
         <Text className={avakahadaClasses.notesTitle} style={nepaliTextStyle(20)}>
-          {t("avakahada.bhoomadosha_title")}
+          {page.copy.bhoomadoshaTitle}
         </Text>
         <View className={cn(width >= 640 && "flex-row", avakahadaClasses.notesGrid)}>
           <View className={cn("flex-1", avakahadaClasses.notesCard)}>
             <Text className={avakahadaClasses.notesCardTitle} style={nepaliTextStyle(14)}>
-              {t("avakahada.name_groups")}
+              {page.copy.nameGroups}
             </Text>
             <View className={avakahadaClasses.vargaList}>
-              {MANGLI_VARGAS.map((v) => (
-                <View key={v.varga} className={cn("flex-row", avakahadaClasses.vargaRow)}>
+              {page.vargas.map((v) => (
+                <View key={v.key} className={cn("flex-row", avakahadaClasses.vargaRow)}>
                   <Text className={avakahadaClasses.vargaName} style={nepaliTextStyle(14)}>
-                    {localizeVarga(v.varga, lang)}
+                    {v.varga}
                   </Text>
                   <Text className={avakahadaClasses.vargaVs}>⚔</Text>
                   <Text className={avakahadaClasses.vargaName} style={nepaliTextStyle(14)}>
-                    {localizeVarga(v.shatru, lang)}
+                    {v.shatru}
                   </Text>
                 </View>
               ))}
             </View>
             <Text className={avakahadaClasses.vargaNote} style={nepaliTextStyle(12)}>
-              {t("avakahada.bhoomadosha_note")}
+              {page.copy.bhoomadoshaNote}
             </Text>
           </View>
           <View className={cn("flex-1", avakahadaClasses.notesCard)}>
             <Text className={avakahadaClasses.notesCardTitle} style={nepaliTextStyle(14)}>
-              {t("avakahada.shloka")}
+              {page.copy.shloka}
             </Text>
             <View className={avakahadaClasses.shlokaList}>
-              {BHAUMA_DOSHA_SHLOKAS.map((s, i) => (
-                <Text
-                  key={i}
-                  className={avakahadaClasses.shloka}
-                  style={nepaliTextStyle(14)}
-                >
+              {page.shlokas.map((s, i) => (
+                <Text key={i} className={avakahadaClasses.shloka} style={nepaliTextStyle(14)}>
                   {s}
                 </Text>
               ))}
@@ -332,9 +136,43 @@ export default function AvakahadaScreen() {
           </View>
         </View>
         <Text className={avakahadaClasses.footnote} style={nepaliTextStyle(12)}>
-          {t("avakahada.footnote")}
+          {page.copy.footnote}
         </Text>
       </View>
     </AppShell>
   );
+}
+
+function Cell({ row, column }: { row: AvakahadaRow; column: AvakahadaColumnKey }) {
+  const { digits } = useLocale();
+  switch (column) {
+    case "nakshatra":
+      return (
+        <Text className={avakahadaClasses.nakLabel} style={nepaliTextStyle(13)}>
+          {digits(row.index)}. {row.label}
+        </Text>
+      );
+    case "akshara":
+      return (
+        <View className={cn("flex-row", avakahadaClasses.aksharaList)}>
+          {row.aksharas.map((a, i) => (
+            <View key={`${row.index}-${i}`} className={avakahadaClasses.aksharaChip}>
+              <Text className={avakahadaClasses.aksharaText} style={nepaliTextStyle(13)}>
+                {a}
+              </Text>
+            </View>
+          ))}
+        </View>
+      );
+    case "gana":
+      return (
+        <View className={cn("self-start", avakahadaClasses.ganaBadge, avakahadaClasses.ganaBg[row.gana])}>
+          <Text style={nepaliTextStyle(12)} className={cn(avakahadaClasses.ganaBadgeText, avakahadaClasses.ganaFg[row.gana])}>
+            {row.ganaLabel}
+          </Text>
+        </View>
+      );
+    default:
+      return <Text>{row[column]}</Text>;
+  }
 }

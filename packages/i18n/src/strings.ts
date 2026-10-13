@@ -7674,18 +7674,9 @@ export const strings = {
 
   /* ── ui.rashifal ────────────────────────────────────────────────────────── */
   "ui.rashifal.add_a_kundali_profile": { ne: "कुण्डली प्रोफाइल थप्नुहोस्।", en: "Add a kundali profile." },
-  "ui.rashifal.add_birth_date_and_place_to": {
-    ne: "जन्म मिति र स्थान प्रोफाइलमा भर्नुहोस्।",
-    en: "Add birth date and place to the profile.",
-  },
-  "ui.rashifal.could_not_load_rashifal": { ne: "राशिफल लोड गर्न सकिएन।", en: "Could not load rashifal." },
   "ui.rashifal.details": { ne: "विवरण", en: "Details" },
   "ui.rashifal.loading": { ne: "लोड…", en: "Loading…" },
   "ui.rashifal.profile": { ne: "प्रोफाइल", en: "Profile" },
-  "ui.rashifal.rashifal_unavailable_for_this_period": {
-    ne: "यस अवधिको राशिफल उपलब्ध छैन।",
-    en: "Rashifal unavailable for this period.",
-  },
   "ui.rashifal.sign_in": { ne: "साइन इन", en: "Sign in" },
   "ui.rashifal.why_this_reading": { ne: "किन यस्तो?", en: "Why this reading?" },
 
