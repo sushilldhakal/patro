@@ -51,3 +51,6 @@ TypeScript source; there is no build step.
   npm workspaces; it uploads the repo and installs from the root lockfile.
 - **CI** (`.github/workflows/ci.yml`) type-checks both apps and lints the
   shared packages on every push and pull request.
+
+## Releasing the mobile app
+See [docs/RELEASING.md](docs/RELEASING.md): `npm run release:check`, then `npm run release` builds and submits iOS (TestFlight) and Android (internal, draft) — nothing goes public until you promote it.

@@ -48,8 +48,14 @@
         "companyName": "Vedic Patro"
       },
       "android": {
-        "serviceAccountKeyPath": "./store/secrets/play-service-account.json",
         "track": "internal",
+        "releaseStatus": "draft",
+        "changesNotSentForReview": true
+      }
+    },
+    "production-track": {
+      "android": {
+        "track": "production",
         "releaseStatus": "draft",
         "changesNotSentForReview": true
       }
