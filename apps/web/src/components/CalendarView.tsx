@@ -1,24 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "@vedic-patro/i18n/react";
-import { useQueries } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  fetchMonthCalendar,
-  fetchFestivals,
-  panchangaKeys,
-  holidayKeys,
-  type CalendarDay,
-  type Festival,
-} from "@/lib/api";
-import {
-  BBS_URL_YEAR_MAX,
-  BBS_URL_YEAR_MIN,
-  BS_FESTIVAL_STACK_MIN_YEAR,
-  getPatroLimits,
-  maxBrowseYearForEra,
-} from "@vedic-patro/domain/patro-year-axis";
+import { useHomeMonth, type CalendarMonthContext } from "@vedic-patro/features/home";
+import { fetchMonthCalendar, type CalendarDay } from "@/lib/api";
 import { applyMonthLimits } from "@/hooks/use-patro-capabilities";
-import { civilIsoFromDate, parseCivilIso, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
+import { civilIsoFromDate, parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
@@ -30,16 +16,6 @@ import {
   patroDayFetchFromApiDateAd,
 } from "@/lib/patro-day-url";
 import { getLocalStorageItem, setLocalStorageItem } from "@/lib/browser";
-import {
-  applyHolidaysToDays,
-  buildAdCalendarGridDays,
-  buildCalendarGridDays,
-  buildLocalAdMonthDays,
-  mergeEnrichedDays,
-  shiftAdMonth,
-  uniqueBsMonths,
-} from "@vedic-patro/domain/local-calendar";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { PatroMonthYearNav } from "@/components/patro-date";
 import { patroEraShortLabel } from "@vedic-patro/domain/patro-era-label";
 import { isGregorianEraBrowse } from "@vedic-patro/domain/patro-month-labels";
@@ -82,17 +58,7 @@ export function loadHomePatroView(): HomePatroView {
   return saved === "panchanga" ? "panchanga" : "calendar";
 }
 
-export type CalendarMonthContext = {
-  year: number;
-  month: number;
-  days: CalendarDay[];
-  /** Gregorian month the grid is showing — an AD month spans two BS months, so
-   *  `year`/`month` above only name the one the 1st falls in. */
-  adYear: number;
-  adMonth: number;
-  /** True when the grid is laid out as a Gregorian month, not a BS one. */
-  isAdCalendar: boolean;
-};
+export type { CalendarMonthContext };
 
 interface Props {
   onDaySelect?: (day: CalendarDay | null) => void;
@@ -142,6 +108,7 @@ export function CalendarView({
     enablePatroToggle ? loadHomePatroView() : "calendar",
   );
   const lastMonthContextKey = useRef("");
+  const lastMonthDays = useRef<CalendarDay[] | null>(null);
   const patroView = patroViewProp ?? internalPatroView;
   const isPanchangaPatro = enablePatroToggle && patroView === "panchanga";
   const asideInSidebar = useMediaQuery(ASIDE_SIDEBAR_MQ);
@@ -154,265 +121,27 @@ export function CalendarView({
     onDaySelect?.(null);
   };
 
-  const localDays = useMemo(() => {
-    if (isGregorian && !isPanchangaPatro) return buildLocalAdMonthDays(year, month);
-    return [];
-  }, [isGregorian, isPanchangaPatro, year, month]);
-
-  const prevBs = useMemo(
-    () => shiftPatroBrowseMonth(era, year, month, -1),
-    [era, year, month],
-  );
-  const nextBs = useMemo(
-    () => shiftPatroBrowseMonth(era, year, month, 1),
-    [era, year, month],
-  );
-
-  const canFetchPrev =
-    era === "bbs"
-      ? !(month === 1 && year >= BBS_URL_YEAR_MAX)
-      : era === "bs"
-        ? !(month === 1 && year <= 1)
-        : true;
-  const canFetchNext =
-    era === "bbs"
-      ? !(month === 12 && year <= BBS_URL_YEAR_MIN)
-      : era === "bs"
-        ? !(month === 12 && year >= (maxBrowseYearForEra("bs") ?? 1))
-        : true;
-
-  const prevAd = useMemo(() => shiftAdMonth(year, month, -1), [year, month]);
-  const nextAd = useMemo(() => shiftAdMonth(year, month, 1), [year, month]);
-
-  const requiredBsMonths = useMemo(() => {
-    if (isPanchangaPatro) return [{ year, month }];
-    if (isGregorian) {
-      const months = [{ year, month }, prevAd, nextAd];
-      return uniqueBsMonths(months, era);
-    }
-    const months = [{ year, month }];
-    if (canFetchPrev) months.push(prevBs);
-    if (canFetchNext) months.push(nextBs);
-    return uniqueBsMonths(months, era);
-  }, [
-    isPanchangaPatro,
-    isGregorian,
+  const homeMonth = useHomeMonth({
+    era,
     year,
     month,
-    prevBs,
-    nextBs,
-    prevAd,
-    nextAd,
-    canFetchPrev,
-    canFetchNext,
-    era,
-  ]);
-
-  const monthFetchEra = era;
-
-  const monthQueries = useQueries({
-    queries: requiredBsMonths.map(({ year: bsYear, month: bsMonth }) => ({
-      queryKey: panchangaKeys.month(
-        bsYear,
-        bsMonth,
-        location?.params,
-        false,
-        false,
-        monthFetchEra,
-      ),
-      queryFn: () =>
-        fetchMonthCalendar(bsYear, bsMonth, location?.params, {
-          full: false,
-          era: monthFetchEra,
-        }),
-      staleTime: 1000 * 60 * 60,
-      enabled: !isPanchangaPatro && bsYear !== 0,
-    })),
+    location: location?.params,
+    fetchMonth: fetchMonthCalendar,
+    panchangaView: isPanchangaPatro,
+    onLimits: applyMonthLimits,
   });
-
-  const monthQueriesTick = monthQueries
-    .map((q) => `${q.dataUpdatedAt ?? 0}:${q.status}`)
-    .join("|");
-
-  const enrichedCalendarDays = useMemo(() => {
-    const byDate = new Map<string, CalendarDay>();
-    for (const query of monthQueries) {
-      for (const day of query.data?.calendar ?? []) {
-        byDate.set(day.date_ad, day);
-      }
-    }
-    return [...byDate.values()];
-    // monthQueriesTick intentionally tracks query freshness without the unstable queries array reference.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monthQueriesTick]);
-
-  const monthFetchError = monthQueries.some((q) => q.isError);
-
-  const currentMonthQ = monthQueries.find(
-    (_q, i) =>
-      requiredBsMonths[i]?.year === year && requiredBsMonths[i]?.month === month,
-  );
-
-  useEffect(() => {
-    applyMonthLimits(currentMonthQ?.data?.limits);
-  }, [currentMonthQ?.data?.limits]);
-
-  const prevMonthQ = !isGregorian
-    ? monthQueries.find(
-        (_q, i) =>
-          requiredBsMonths[i]?.year === prevBs.year &&
-          requiredBsMonths[i]?.month === prevBs.month,
-      )
-    : undefined;
-
-  const nextMonthQ = !isGregorian
-    ? monthQueries.find(
-        (_q, i) =>
-          requiredBsMonths[i]?.year === nextBs.year &&
-          requiredBsMonths[i]?.month === nextBs.month,
-      )
-    : undefined;
-
-  const festivalYears = useMemo(
-    () =>
-      [...new Set(requiredBsMonths.map((m) => m.year))]
-        .filter((y) => y >= BS_FESTIVAL_STACK_MIN_YEAR)
-        .sort((a, b) => a - b),
-    [requiredBsMonths],
-  );
-
-  const festivalQueries = useQueries({
-    queries: festivalYears.map((bsYear) => ({
-      queryKey: holidayKeys.festivals(bsYear),
-      queryFn: () => fetchFestivals(bsYear),
-      staleTime: 1000 * 60 * 60,
-    })),
-  });
-
-  /** Stable tick — `useQueries` returns a new array ref every render. */
-  const festivalDataTick = festivalQueries
-    .map((q) => `${q.dataUpdatedAt ?? 0}:${q.status}`)
-    .join("|");
-
-  const yearFestivals = useMemo(() => {
-    const byKey = new Map<string, Festival>();
-    for (const query of festivalQueries) {
-      for (const festival of query.data?.festivals ?? []) {
-        if (!festival.start_date) continue;
-        byKey.set(`${festival.id}:${festival.start_date}`, festival);
-      }
-    }
-    return [...byKey.values()];
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- festivalQueries ref is unstable; festivalDataTick tracks data
-  }, [festivalDataTick]);
-
-  const currentMonthCalendar = useMemo(() => {
-    const idx = requiredBsMonths.findIndex(
-      (m) => m.year === year && m.month === month,
-    );
-    if (idx < 0) return [];
-    return monthQueries[idx]?.data?.calendar ?? [];
-    // monthQueriesTick tracks freshness without unstable query array refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monthQueriesTick, year, month, requiredBsMonths]);
-
-  const monthDays = useMemo(() => {
-    let result = localDays;
-    if (result.length && currentMonthCalendar.length) {
-      result = mergeEnrichedDays(result, currentMonthCalendar);
-    } else if (!result.length) {
-      result = currentMonthCalendar;
-    }
-    if (yearFestivals.length) {
-      result = applyHolidaysToDays(result, yearFestivals, lang);
-    }
-    return result;
-  }, [localDays, currentMonthCalendar, yearFestivals, lang]);
-
-  const gridDays = useMemo(() => {
-    if (isPanchangaPatro) return monthDays;
-    if (isGregorian) {
-      let grid = buildAdCalendarGridDays(year, month, enrichedCalendarDays);
-      if (yearFestivals.length) {
-        grid = applyHolidaysToDays(grid, yearFestivals, lang);
-      }
-      return grid;
-    }
-    let grid = buildCalendarGridDays(
-      year,
-      month,
-      {
-        prev: prevMonthQ?.data?.calendar,
-        current: monthDays,
-        next: nextMonthQ?.data?.calendar,
-      },
-      era,
-    );
-    if (yearFestivals.length) {
-      grid = applyHolidaysToDays(grid, yearFestivals, lang);
-    }
-    return grid;
-  }, [
-    isPanchangaPatro,
-    isGregorian,
-    year,
-    month,
-    monthDays,
-    enrichedCalendarDays,
-    prevMonthQ?.data?.calendar,
-    nextMonthQ?.data?.calendar,
-    yearFestivals,
-    lang,
-    era,
-  ]);
+  const { monthDays, gridDays, publicHolidayDates, context: monthContext } = homeMonth;
+  const monthFetchError = homeMonth.error;
+  const isEnriching = homeMonth.enriching;
 
   useEffect(() => {
     if (!onMonthContextChange) return;
-    const first = monthDays[0]?.date_ad ?? "";
-    const last = monthDays.at(-1)?.date_ad ?? "";
-    const contextAd = first ? parseCivilIso(first) : null;
-    const contextYear = isGregorian ? year : year;
-    const contextMonth = isGregorian ? month : month;
-    const ctxAdYear = isGregorian ? year : (contextAd?.year ?? 0);
-    const ctxAdMonth = isGregorian ? month : (contextAd?.month ?? 0);
-    const key = `${contextYear}|${contextMonth}|${ctxAdYear}|${ctxAdMonth}|${isGregorian}|${monthDays.length}|${first}|${last}|${festivalDataTick}|${monthQueriesTick}`;
-    if (lastMonthContextKey.current === key) return;
+    const key = `${monthContext.year}|${monthContext.month}|${monthContext.adYear}|${monthContext.adMonth}|${monthContext.isAdCalendar}|${monthDays.length}`;
+    if (lastMonthContextKey.current === key && lastMonthDays.current === monthDays) return;
     lastMonthContextKey.current = key;
-    onMonthContextChange({
-      year: contextYear,
-      month: contextMonth,
-      days: monthDays,
-      adYear: ctxAdYear,
-      adMonth: ctxAdMonth,
-      isAdCalendar: isGregorian,
-    });
-  }, [
-    isGregorian,
-    adYear,
-    adMonth,
-    year,
-    month,
-    monthDays,
-    festivalDataTick,
-    monthQueriesTick,
-    onMonthContextChange,
-  ]);
-
-  const publicHolidayDates = useMemo(
-    () =>
-      new Set<string>(
-        yearFestivals
-          .filter((f) => f.is_public_holiday && f.start_date)
-          .map((f) => f.start_date as string),
-      ),
-    [yearFestivals],
-  );
-
-  const monthEnriching = localDays.length
-    ? Boolean(currentMonthQ?.isFetching && !currentMonthQ?.data)
-    : monthQueries.some((q) => q.isFetching && !q.data);
-
-  const isEnriching = monthEnriching && !isPanchangaPatro;
+    lastMonthDays.current = monthDays;
+    onMonthContextChange(monthContext);
+  }, [monthContext, monthDays, onMonthContextChange]);
 
   const panchangaGridDate = useMemo(
     () => anchorDateForBrowseMonth(year, month, monthDays, todayAd, isGregorian),
@@ -601,28 +330,8 @@ export function CalendarView({
     monthBrowse.setYearMonth(nextYearValue, monthBrowse.month);
   }
 
-  const limits = getPatroLimits();
-  const headerPrevDisabled =
-    monthBrowse.month > 1
-      ? false
-      : isGregorianEraBrowse(era)
-        ? era === "bc"
-          ? year <= limits.bcBrowseYearMin
-          : year <= limits.adBrowseYearMin
-        : era === "bbs"
-          ? year <= BBS_URL_YEAR_MIN
-          : year <= 1;
-
-  const gregorianMax = maxBrowseYearForEra(era) ?? limits.adBrowseYearMin;
-  const headerNextDisabled =
-    monthBrowse.month < 12
-      ? false
-      : isGregorianEraBrowse(era)
-        ? year >= gregorianMax
-        : era === "bbs"
-          ? year >= limits.bbsUrlYearMax
-          : year >= limits.ephemerisSignedMax;
-
+  const headerPrevDisabled = homeMonth.prevDisabled;
+  const headerNextDisabled = homeMonth.nextDisabled;
 
   const monthHeader = showMonthHeader ? (
     <div className={cn(patroMdRail, "mb-4 mt-2 max-md:pt-3 md:pt-0")}>

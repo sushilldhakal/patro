@@ -989,6 +989,19 @@ export const fetchPanchanga = (date: string, era: "bs" | "ad" = "bs", location?:
     ),
   );
 
+/**
+ * The same day with its moving angas (tithi, nakshatra, yoga, karana, rashi,
+ * lagna, balam, panchaka) read at local midnight — the दिन-रात (Calendar Day)
+ * view. Date properties stay tied to the date.
+ */
+export const fetchPanchangaAtMidnight = (date: string, era: "bs" | "ad" = "ad", location?: LocationParams) =>
+  get<PanchangaDay>(
+    appendLocation(
+      withPanchangaCacheVersion(`/panchanga/${date}?era=${era}&festivals=true&detail=true&reference=midnight`),
+      location,
+    ),
+  );
+
 export function timeShort(v: PanchangaDay["sunrise"]): string {
   if (!v) return "—";
   if (typeof v === "string") return v.slice(0, 5);

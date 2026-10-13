@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
-import { Text } from "@/components/ui/Text";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { BsCalendarGrid } from "@/components/home/BsCalendarGrid";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
@@ -18,69 +17,28 @@ import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
-import {
-  apiKeys,
-  fetchFestivals,
-  fetchPanchanga,
-  fetchSaitMonthAll,
-  type CalendarDay,
-  type Festival,
-  type MonthBrowseEra,
-} from "@/lib/api";
+import { apiKeys, fetchPanchanga, fetchSaitMonthAll, type CalendarDay } from "@/lib/api";
+import { useHomeAside, useHomeMonth } from "@vedic-patro/features/home";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
 import { OfflineDownloadPrompt } from "@/components/offline/OfflineDownloadPrompt";
-import {
-  adToBS,
-  todayAdString,
-} from "@vedic-patro/domain/bs-calendar";
-import { BS_SUPPORTED_END_YEAR, BS_SUPPORTED_START_YEAR } from "@/lib/bs-range";
-import {
-  applyHolidaysToDays,
-  buildAdCalendarGridDays,
-  buildCalendarGridDays,
-  buildLocalAdMonthDays,
-  buildLocalMonthDays,
-  getBsMonthsOverlappingAdMonth,
-  mergeEnrichedDays,
-} from "@vedic-patro/domain/local-calendar";
+import { applyPatroApiLimits } from "@/lib/patro-browse-years";
+import { resolveLocationTimezone } from "@vedic-patro/domain/panchanga-location";
+import { todayAdStringInTimezone } from "@vedic-patro/domain/zoned-time";
 import { useLocale } from "@/lib/i18n";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 import { floatingNavBottomPadding, HOME_CARD_INSET, homeContentInset } from "@/lib/mobile-nav";
 import { formatPatroMonthCrossEraSubtitle } from "@vedic-patro/domain/patro-headline-subtitle";
 import { ERAS, isGregorianEra, type Era } from "@vedic-patro/domain/era";
-import { shiftPatroBrowseMonth } from "@vedic-patro/domain/patro-year-browse-step";
 import { usePatroMonthBrowse } from "@/lib/use-patro-month-browse";
 import { useBreakpoint } from "@/lib/responsive";
 import { useDeferredMount } from "@/lib/use-deferred-mount";
-import { nepaliTextStyle } from "@/lib/nepali-text";
 import { scrollViewIntoView, setPageScroller } from "@/lib/page-scroll";
 import { usePanchangaLocation } from "@/lib/use-panchanga-location";
 
 const ASIDE_SIDEBAR_SPLIT = 1280;
 const ASIDE_WIDTH = 360;
 const ASIDE_MAX_WIDTH = 400;
-
-function monthStartAd(ctx: { year: number; month: number; days: CalendarDay[] }): string {
-  const first = ctx.days.find((d) => d.day === 1) ?? ctx.days[0];
-  return first?.date_ad ?? todayAdString();
-}
-
-function mergeMonthFromApi(
-  era: MonthBrowseEra,
-  year: number,
-  month: number,
-  calendar: CalendarDay[] | undefined,
-  lang: string,
-  festivals: Festival[] | undefined,
-) {
-  const local = isGregorianEra(era)
-    ? buildLocalAdMonthDays(year, month)
-    : buildLocalMonthDays(year, month);
-  let merged = calendar?.length ? mergeEnrichedDays(local, calendar) : local;
-  if (festivals?.length) merged = applyHolidaysToDays(merged, festivals, lang);
-  return merged;
-}
 
 export default function HomeScreen() {
   const belowFoldReady = useDeferredMount();
@@ -97,11 +55,10 @@ export default function HomeScreen() {
     stepMonth,
     goToday: goTodayBrowse,
   } = usePatroMonthBrowse();
-  const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const asideRef = useRef<View>(null);
   const scrollToAsideRef = useRef(false);
   const [patroView, setPatroView] = useState<HomePatroView>("calendar");
-  const todayAd = todayAdString();
+  const todayAd = useMemo(() => todayAdStringInTimezone(new Date(), resolveLocationTimezone(location)), [location]);
   const splitAside = width >= ASIDE_SIDEBAR_SPLIT;
 
   // The browsed era/year/month lives in the address (?era=&year=&month=), like the
@@ -150,32 +107,40 @@ export default function HomeScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navReady, browseEra, year, month]);
 
-  const prevBm = useMemo(
-    () => shiftPatroBrowseMonth(browseEra, year, month, -1),
-    [browseEra, year, month],
-  );
-  const nextBm = useMemo(
-    () => shiftPatroBrowseMonth(browseEra, year, month, 1),
-    [browseEra, year, month],
-  );
-  const canFetchPrev = isGregorianEra(browseEra)
-    ? !(year === 1 && month === 1)
-    : !(month === 1 && year <= BS_SUPPORTED_START_YEAR);
-  const canFetchNext = isGregorianEra(browseEra)
-    ? true
-    : !(month === 12 && year >= BS_SUPPORTED_END_YEAR);
+  const homeMonth = useHomeMonth({
+    era: browseEra,
+    year,
+    month,
+    location: location.params,
+    fetchMonth: fetchMonthCalendarOffline,
+    panchangaView: patroView === "panchanga",
+    onLimits: applyPatroApiLimits,
+  });
+  const { gridDays, publicHolidayDates } = homeMonth;
+  const aside = useHomeAside({
+    context: homeMonth.context,
+    todayAd,
+    source: (dayAd) => ({
+      queryKey: apiKeys.panchanga(dayAd, "ad", location.params),
+      queryFn: () => fetchPanchanga(dayAd, "ad", location.params),
+    }),
+  });
+  const { selectedDay, selectDay } = aside;
 
-  // Tapping a day opens its detail window (as on the website). On a wide split
-  // layout the side panel already shows it, so only the selection changes.
+  const crossEraSubtitle = useMemo(
+    () => formatPatroMonthCrossEraSubtitle(browseEra, year, month, lang, digits),
+    [browseEra, year, month, lang, digits],
+  );
+
+  // Below the wide split the panchanga sits under the calendar (as on the
+  // website), so a tapped day scrolls it into view.
   const handleSelectDay = useCallback(
     (day: CalendarDay) => {
       if (day.outsideMonth) return;
-      setSelectedDay(day);
-      /* Below the wide split the panchanga sits under the calendar (web puts it
-         there too), so bring it into view instead of opening a sheet. */
+      selectDay(day);
       if (!splitAside) scrollToAsideRef.current = true;
     },
-    [splitAside],
+    [splitAside, selectDay],
   );
 
   useEffect(() => {
@@ -184,114 +149,6 @@ export default function HomeScreen() {
     requestAnimationFrame(() => scrollViewIntoView(asideRef.current, 72));
   }, [selectedDay]);
 
-  const monthQueries = useQueries({
-    queries: [
-      {
-        queryKey: apiKeys.month(prevBm.year, prevBm.month, location.params, browseEra),
-        queryFn: () => fetchMonthCalendarOffline(prevBm.year, prevBm.month, location.params, { era: browseEra }),
-        staleTime: 1000 * 60 * 60,
-        enabled: canFetchPrev,
-      },
-      {
-        queryKey: apiKeys.month(year, month, location.params, browseEra),
-        queryFn: () => fetchMonthCalendarOffline(year, month, location.params, { era: browseEra }),
-        staleTime: 1000 * 60 * 60,
-      },
-      {
-        queryKey: apiKeys.month(nextBm.year, nextBm.month, location.params, browseEra),
-        queryFn: () => fetchMonthCalendarOffline(nextBm.year, nextBm.month, location.params, { era: browseEra }),
-        staleTime: 1000 * 60 * 60,
-        enabled: canFetchNext,
-      },
-    ],
-  });
-
-  const [prevQ, currentQ, nextQ] = monthQueries;
-
-  const festivalYears = useMemo(() => {
-    if (isGregorianEra(browseEra)) {
-      const overlapping = getBsMonthsOverlappingAdMonth(year, month);
-      const years = new Set(overlapping.map((m) => m.year));
-      years.add(adToBS(new Date(`${todayAd}T12:00:00`)).year);
-      return [...years].filter((y) => y >= 60 && y <= BS_SUPPORTED_END_YEAR);
-    }
-    const years = new Set<number>([year, prevBm.year, nextBm.year]);
-    return [...years].filter((y) => y >= 60 && y <= BS_SUPPORTED_END_YEAR);
-  }, [browseEra, year, month, prevBm.year, nextBm.year, todayAd]);
-
-  const festivalQueries = useQuery({
-    queryKey: ["festivals-home", ...festivalYears, lang],
-    queryFn: async () => {
-      const lists = await Promise.all(festivalYears.map((y) => fetchFestivals(y, { language: lang === "en" ? "en" : "ne" })));
-      const byKey = new Map<string, (typeof lists)[0]["festivals"][0]>();
-      for (const res of lists) {
-        for (const f of res.festivals ?? []) {
-          if (f.start_date) byKey.set(`${f.id}:${f.start_date}`, f);
-        }
-      }
-      return [...byKey.values()];
-    },
-    staleTime: 1000 * 60 * 60,
-  });
-
-  const yearFestivals = festivalQueries.data;
-
-  const crossEraSubtitle = useMemo(
-    () => formatPatroMonthCrossEraSubtitle(browseEra, year, month, lang, digits),
-    [browseEra, year, month, lang, digits],
-  );
-
-  const monthDays = useMemo(
-    () =>
-      mergeMonthFromApi(browseEra, year, month, currentQ.data?.calendar, lang, yearFestivals),
-    [browseEra, year, month, currentQ.data?.calendar, lang, yearFestivals],
-  );
-
-  const gridDays = useMemo(() => {
-    const enriched = {
-      prev: prevQ.data?.calendar,
-      current: currentQ.data?.calendar,
-      next: nextQ.data?.calendar,
-    };
-    if (isGregorianEra(browseEra)) {
-      let grid = buildAdCalendarGridDays(year, month, [...(enriched.prev ?? []), ...(enriched.current ?? []), ...(enriched.next ?? [])]);
-      if (yearFestivals?.length) grid = applyHolidaysToDays(grid, yearFestivals, lang);
-      return grid;
-    }
-    let grid = buildCalendarGridDays(year, month, enriched);
-    if (yearFestivals?.length) grid = applyHolidaysToDays(grid, yearFestivals, lang);
-    return grid;
-  }, [
-    browseEra,
-    year,
-    month,
-    prevQ.data?.calendar,
-    currentQ.data?.calendar,
-    nextQ.data?.calendar,
-    yearFestivals,
-    lang,
-  ]);
-
-  const viewingCurrentMonth = useMemo(() => {
-    if (isGregorianEra(browseEra)) {
-      const d = new Date(`${todayAd}T12:00:00`);
-      return year === d.getFullYear() && month === d.getMonth() + 1;
-    }
-    const todayBs = adToBS(new Date(`${todayAd}T12:00:00`));
-    return year === todayBs.year && month === todayBs.month;
-  }, [browseEra, year, month, todayAd]);
-
-  const asideAdDate = useMemo(() => {
-    if (selectedDay?.date_ad) return selectedDay.date_ad;
-    if (viewingCurrentMonth) return todayAd;
-    return monthStartAd({ year, month, days: monthDays });
-  }, [selectedDay, viewingCurrentMonth, todayAd, year, month, monthDays]);
-
-  const panchangaQ = useQuery({
-    queryKey: apiKeys.panchanga(asideAdDate, "ad", location.params),
-    queryFn: () => fetchPanchanga(asideAdDate, "ad", location.params),
-  });
-
   const saitQ = useQuery({
     queryKey: apiKeys.saitMonthAll(year, month, location.params),
     queryFn: () => fetchSaitMonthAll(year, month, location.params),
@@ -299,30 +156,22 @@ export default function HomeScreen() {
     retry: 2,
   });
 
-  const publicHolidayDates = useMemo(() => {
-    const set = new Set<string>();
-    for (const d of monthDays) {
-      if (d.is_public_holiday) set.add(d.date_ad);
-    }
-    return set;
-  }, [monthDays]);
-
   const goMonth = useCallback(
     (delta: number) => {
       stepMonth(delta);
-      setSelectedDay(null);
+      selectDay(null);
     },
     [stepMonth],
   );
 
   const goToday = () => {
     goTodayBrowse(todayAd);
-    setSelectedDay(null);
+    selectDay(null);
   };
 
-  const monthLoading = currentQ.isLoading && !currentQ.data;
-  const monthError = currentQ.isError;
-  const monthFetching = monthQueries.some((q) => q.isFetching && q.data);
+  const monthLoading = homeMonth.loading;
+  const monthError = Boolean(homeMonth.currentError);
+  const monthFetching = homeMonth.enriching;
 
   const contentInset = homeContentInset(isPhone);
   const cardInset = isPhone ? HOME_CARD_INSET : contentInset;
@@ -340,18 +189,18 @@ export default function HomeScreen() {
         crossEraSubtitle={crossEraSubtitle}
         onMonthChange={(m) => {
           setMonth(m);
-          setSelectedDay(null);
+          selectDay(null);
         }}
         onYearChange={(y) => {
           setYear(y);
-          setSelectedDay(null);
+          selectDay(null);
         }}
-        prevDisabled={!canFetchPrev}
-        nextDisabled={!canFetchNext}
+        prevDisabled={homeMonth.prevDisabled}
+        nextDisabled={homeMonth.nextDisabled}
         patroView={patroView}
         onPatroViewChange={(v) => {
           setPatroView(v);
-          setSelectedDay(null);
+          selectDay(null);
         }}
         location={location}
         onLocationChange={setLocation}
@@ -377,11 +226,11 @@ export default function HomeScreen() {
         <View style={{ paddingHorizontal: contentInset }}>
           <ErrorState
             message={
-              currentQ.error instanceof OfflineUnavailableError
+              homeMonth.currentError instanceof OfflineUnavailableError
                 ? t("ui.home.you_re_offline_and_this_calendar")
                 : t("ui.home.could_not_load_calendar")
             }
-            onRetry={() => currentQ.refetch()}
+            onRetry={homeMonth.retry}
           />
         </View>
       ) : patroView === "panchanga" ? (
@@ -390,7 +239,7 @@ export default function HomeScreen() {
           year={year}
           month={month}
           todayAd={todayAd}
-          selectedAd={selectedDay?.date_ad ?? (viewingCurrentMonth ? todayAd : undefined)}
+          selectedAd={aside.highlightAd}
           loading={monthFetching}
           onPickDay={handleSelectDay}
           edgeToEdge={isPhone}
@@ -398,7 +247,7 @@ export default function HomeScreen() {
       ) : (
         <BsCalendarGrid
           days={gridDays}
-          selectedAd={selectedDay?.date_ad ?? (viewingCurrentMonth ? todayAd : undefined)}
+          selectedAd={aside.highlightAd}
           todayAd={todayAd}
           publicHolidayDates={publicHolidayDates}
           onSelectDay={handleSelectDay}
@@ -431,14 +280,14 @@ export default function HomeScreen() {
       <PanchangaAsidePanel
         month={month}
         year={year}
-        selectedAd={asideAdDate}
+        selectedAd={aside.dayAd}
         todayAd={todayAd}
         selectedDay={selectedDay}
-        contextDays={monthDays}
-        p={panchangaQ.data}
-        loading={panchangaQ.isLoading}
-        error={panchangaQ.isError}
-        onRetry={() => panchangaQ.refetch()}
+        contextDays={homeMonth.monthDays}
+        p={aside.p}
+        loading={aside.initialLoading}
+        error={aside.error}
+        onRetry={aside.retry}
         saitData={saitQ.data}
         saitLoading={saitQ.isPending}
         saitError={saitQ.isError}
@@ -485,7 +334,7 @@ export default function HomeScreen() {
         )}
 
         <View className="mt-6" style={{ paddingHorizontal: cardInset }}>
-          <HomeAuspiciousTimes p={panchangaQ.data} />
+          <HomeAuspiciousTimes p={aside.p} />
         </View>
 
         {/* Below the fold: drawn after the first screen, so the calendar and
@@ -494,7 +343,7 @@ export default function HomeScreen() {
           <>
             <View className="mt-6">
               <HomeRashifalSection
-                dateAd={asideAdDate}
+                dateAd={aside.dayAd}
                 location={location.params}
                 contentInset={cardInset}
               />
