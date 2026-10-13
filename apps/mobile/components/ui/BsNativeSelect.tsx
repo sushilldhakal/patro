@@ -211,10 +211,10 @@ export function BsMonthYearNav({
         accessibilityLabel={pick("मिति बदल्नुहोस्", "Change date")}
         className="h-[30px] flex-row items-center gap-1 rounded-lg border border-border bg-card px-2.5 active:bg-muted"
       >
-        <Text numberOfLines={1} className="text-body font-semibold text-foreground">
+        <Text numberOfLines={1} className="text-sm text-foreground">
           {monthLabel}
         </Text>
-        <Text className="text-body font-num font-semibold text-foreground">{yearLabel}</Text>
+        <Text className="text-sm font-num text-foreground">{yearLabel}</Text>
         <Ionicons name="chevron-down" size={12} color={colors.mutedForeground} />
       </Pressable>
 
@@ -331,7 +331,7 @@ export function BsNativeSelect(props: SelectProps & { className?: string }) {
         )}
         style={{ minWidth: rest.minWidth ?? 72 }}
       >
-        <Text numberOfLines={1} className="text-body min-w-0 flex-1 font-semibold text-foreground">
+        <Text numberOfLines={1} className="min-w-0 flex-1 text-sm text-foreground">
           {selected?.label ?? "—"}
         </Text>
         <Ionicons name="chevron-down" size={12} color={colors.mutedForeground} />

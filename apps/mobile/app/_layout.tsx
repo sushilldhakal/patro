@@ -10,13 +10,7 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useFonts,
-  NotoSansDevanagari_400Regular,
-  NotoSansDevanagari_500Medium,
-  NotoSansDevanagari_600SemiBold,
-  NotoSansDevanagari_700Bold,
-} from "@expo-google-fonts/noto-sans-devanagari";
+import { useFonts } from "expo-font";
 import { FiraCode_400Regular, FiraCode_700Bold } from "@expo-google-fonts/fira-code";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
@@ -81,10 +75,11 @@ function ThemedStatusBar() {
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    NotoSansDevanagari_400Regular,
-    NotoSansDevanagari_500Medium,
-    NotoSansDevanagari_600SemiBold,
-    NotoSansDevanagari_700Bold,
+    /* Semi-condensed (width 87.5%), the width the website loads. See assets/fonts/README.md. */
+    NotoSansDevanagari_400Regular: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-400.ttf"),
+    NotoSansDevanagari_500Medium: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-500.ttf"),
+    NotoSansDevanagari_600SemiBold: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-600.ttf"),
+    NotoSansDevanagari_700Bold: require("../assets/fonts/NotoSansDevanagari-SemiCondensed-700.ttf"),
     FiraCode_400Regular,
     FiraCode_700Bold,
     ...Ionicons.font,

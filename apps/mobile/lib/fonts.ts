@@ -1,6 +1,6 @@
 /**
  * Typography — matches web `dhakal-patro` (`Noto Sans Devanagari` for UI + numerals).
- * Loaded in `app/_layout.tsx` via `@expo-google-fonts/noto-sans-devanagari`.
+ * Loaded in `app/_layout.tsx` from assets/fonts (semi-condensed, width 87.5%, as the website loads it).
  */
 export const NOTO_DEVANAGARI_REGULAR = "NotoSansDevanagari_400Regular";
 export const NOTO_DEVANAGARI_MEDIUM = "NotoSansDevanagari_500Medium";

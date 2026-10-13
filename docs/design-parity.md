@@ -29,6 +29,12 @@ Stage 1 and 2 (done): every page of both apps except the ones listed below. Page
 
 Not converted: the diagram and playground internals of learn, sky3d, the SVG charts and wheels (they use the older diagram, wheel and timeline maps), history (app redirect), the mobile-only screens (more, offline, reminders, day/[ad], onboarding), and the remaining panchanga helper screens with no web page.
 
+### Font width (the cause of most layout drift)
+
+The website loads Noto Sans Devanagari at semi-condensed width (`index.html`: `wdth@87.5`). The app used the normal-width `@expo-google-fonts` files, which are about 9% wider, so every line wrapped and sized differently (on dainik kranti 183 of 353 texts sat at a different position or width). The app now bundles four static semi-condensed instances (`apps/mobile/assets/fonts/`, built from the Google Fonts variable file, SIL OFL; see the README there) under the same family names. After the change 38 of 353 differ; on home 8 of 150. The `@expo-google-fonts/noto-sans-devanagari` package is no longer imported and can be removed from `apps/mobile/package.json`.
+
+Position check (same method as below, comparing each text's left edge, width and height at 375 px, tolerance 3 to 4 px) is the way to catch layout drift; the style probe catches type, weight and colour.
+
 ### Measured parity (phone width, light theme)
 
 Method: for each route, the website and the app's web build were loaded at 375 px, every visible text was matched by its string, and its computed font size, weight, colour, line height and letter spacing were compared (the website's values were carried across in `window.name`, so no screenshots are needed). Only text is compared: layout, spacing, borders and SVG drawing are not. Colours written as `oklch(...)` on the website and `rgb(...)` in the app are the same colour and are counted as differences here, so these figures understate the match.

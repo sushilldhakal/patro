@@ -55,7 +55,7 @@ export const patroDateClasses = {
   chipDayCompact: "min-h-0 py-0.5 text-xs sm:min-h-[1.35rem] sm:pb-0.5 sm:pt-0.5 sm:text-sm",
 
   // ── App year stepper and location search (bottom sheet) ───────────────────
-  chipHeadLabel: "w-full text-center font-bold tracking-wide text-secondary-foreground",
+  chipHeadLabel: "w-full text-center text-diagram-xs font-bold tracking-wide text-secondary-foreground sm:text-xs",
   locationChipLabel: "min-w-0 flex-1 text-base text-foreground",
   pickerChipLabel: "min-w-0 flex-1 text-center font-num text-sm font-semibold text-foreground",
   stepBtn: "shrink-0 items-center justify-center rounded-lg border border-border bg-card",

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { ScrollView, View } from "react-native";
-import { KundaliSectionNav } from "@/components/kundali/KundaliSectionNav";
 import { PanchangaSplitShell, useShowPanchangaSidebar } from "@/components/panchanga/PanchangaSplitShell";
 import type { KundaliSectionId } from "@/lib/kundali/kundali-section-nav";
 import { Text } from "@/components/ui/Text";
@@ -25,7 +24,10 @@ type Props = {
   sectionNav?: SectionNavProps;
 };
 
-/** Kundali pages — panchanga sidebar rail at ≥992px (web parity). */
+/**
+ * Kundali pages — panchanga sidebar rail at ≥992px (web parity). Below that the
+ * horizontal section bar is the page's own, placed after the ayanamsha card.
+ */
 export function KundaliPageShell({
   eyebrow,
   icon,
@@ -41,14 +43,6 @@ export function KundaliPageShell({
 
   const mainColumn = (
     <View className={isDetail ? "gap-4" : "gap-0"}>
-      {!showSidebar && isDetail && sectionNav ? (
-        <KundaliSectionNav
-          variant="horizontal"
-          activeId={sectionNav.activeId}
-          onNavigate={sectionNav.onNavigate}
-        />
-      ) : null}
-
       {!isDetail && title ? (
         <View className={kundaliClasses.headerRow}>
           <View className="min-w-0 flex-1">

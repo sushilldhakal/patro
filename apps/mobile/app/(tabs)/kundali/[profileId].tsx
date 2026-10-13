@@ -7,6 +7,8 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { ProfileForm, profileToInput } from "@/components/auth/ProfileForm";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
+import { KundaliSectionNav } from "@/components/kundali/KundaliSectionNav";
+import { useShowPanchangaSidebar } from "@/components/panchanga/PanchangaSplitShell";
 import { KundaliDetailView } from "@/components/kundali/KundaliDetailView";
 import { KundaliLoginPrompt } from "@/components/kundali/KundaliLoginPrompt";
 import { KundaliPageShell } from "@/components/kundali/KundaliPageShell";
@@ -93,6 +95,7 @@ export default function KundaliDetailScreen() {
     : "—";
   const birthTime = profile?.birth_time ? digits(profile.birth_time) : "—";
   const place = profile?.location_label || profile?.city || "—";
+  const showSidebar = useShowPanchangaSidebar();
 
   const openAuth = (mode: "login" | "signup") => {
     setAuthMode(mode);
@@ -110,15 +113,17 @@ export default function KundaliDetailScreen() {
       <View className={kundaliClasses.topBarActions}>
         <Button
           label={pick("अर्को कुण्डली", "Other chart")}
-          size="sm"
+          size="md"
           variant="outline"
+          icon={<Ionicons name="sparkles-outline" size={16} color={colors.foreground} />}
           onPress={() => router.push("/kundali" as never)}
         />
         {profile ? (
           <Button
-            label={pick("सम्पादन", "Edit profile")}
-            size="sm"
+            label={pick("प्रोफाइल सम्पादन गर्नुहोस्", "Edit profile")}
+            size="md"
             variant="outline"
+            icon={<Ionicons name="pencil-outline" size={14} color={colors.foreground} />}
             onPress={() => setEditOpen(true)}
           />
         ) : null}
@@ -219,6 +224,9 @@ export default function KundaliDetailScreen() {
           place={place}
         />
         <AyanamshaSelector mode={ayanamshaMode} onModeChange={setAyanamshaMode} />
+        {!showSidebar ? (
+          <KundaliSectionNav variant="horizontal" activeId={section} onNavigate={setSection} />
+        ) : null}
         <KundaliDetailView
           detail={detail}
           section={section}
