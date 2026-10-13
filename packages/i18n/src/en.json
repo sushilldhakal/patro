@@ -4238,13 +4238,7 @@
     },
     "graha": {
       "about": "About",
-      "all_panchanga_elements": "All panchanga elements",
-      "first_contact": "First contact",
-      "last_contact": "Last contact",
-      "maximum": "Maximum",
-      "not_visible_from_nepal": "Not visible from Nepal",
-      "partial_ends": "Partial ends",
-      "visible_from_nepal": "Visible from Nepal"
+      "all_panchanga_elements": "All panchanga elements"
     },
     "home": {
       "ashubh_times": "Ashubh times",
@@ -4836,20 +4830,6 @@
       "do": "Do",
       "don_t": "Don't"
     },
-    "reset_password": {
-      "back_home": "Back home",
-      "confirm_password": "Confirm password",
-      "could_not_update_the_password_the": "Could not update the password. The link may have expired.",
-      "fill_in_the_form_below_to": "Fill in the form below to change your password.",
-      "password_must_be_at_least_8": "Password must be at least 8 characters.",
-      "password_updated": "Password updated",
-      "passwords_do_not_match": "Passwords do not match.",
-      "set_a_new_password": "Set a new password",
-      "that_reset_link_is_not_valid": "That reset link is not valid.",
-      "update_password": "Update password",
-      "updating": "Updating…",
-      "you_can_now_log_in_with": "You can now log in with the new password."
-    },
     "sait": {
       "annapr_ana_age_month": "Annaprāśana age month",
       "choose_a_profile": "Choose a profile",
@@ -4941,13 +4921,6 @@
     },
     "ui": {
       "could_not_load_data": "Could not load data."
-    },
-    "verify_email": {
-      "go_to_account": "Go to account",
-      "thanks_your_account_is_now_fully": "Thanks — your account is now fully active.",
-      "the_verification_link_is_incomplete": "The verification link is incomplete.",
-      "verification_failed_the_link_may_have": "Verification failed. The link may have expired.",
-      "verify_email": "Verify email"
     },
     "vivah_sait": {
       "auspicious_marriage_windows_computed_from_the": "Auspicious marriage windows computed from the classical rules",

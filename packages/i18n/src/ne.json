@@ -4238,13 +4238,7 @@
     },
     "graha": {
       "about": "परिचय",
-      "all_panchanga_elements": "सबै पञ्चाङ्ग तत्त्वहरू",
-      "first_contact": "पहिलो स्पर्श",
-      "last_contact": "अन्तिम स्पर्श",
-      "maximum": "चरम",
-      "not_visible_from_nepal": "नेपालबाट देखिँदैन",
-      "partial_ends": "आंशिक अन्त",
-      "visible_from_nepal": "नेपालबाट देखिन्छ"
+      "all_panchanga_elements": "सबै पञ्चाङ्ग तत्त्वहरू"
     },
     "home": {
       "ashubh_times": "अशुभ समय",
@@ -4836,20 +4830,6 @@
       "do": "गर्नुहोस्",
       "don_t": "नगर्नुहोस्"
     },
-    "reset_password": {
-      "back_home": "गृहपृष्ठ",
-      "confirm_password": "पासवर्ड दोहोर्‍याउनुहोस्",
-      "could_not_update_the_password_the": "पासवर्ड परिवर्तन गर्न सकिएन। लिंक अवधि सकिएको हुन सक्छ।",
-      "fill_in_the_form_below_to": "तलको फारम भरेर आफ्नो पासवर्ड परिवर्तन गर्नुहोस्।",
-      "password_must_be_at_least_8": "पासवर्ड कम्तीमा ८ अक्षरको हुनुपर्छ।",
-      "password_updated": "पासवर्ड परिवर्तन भयो",
-      "passwords_do_not_match": "पासवर्ड मिलेन।",
-      "set_a_new_password": "नयाँ पासवर्ड राख्नुहोस्",
-      "that_reset_link_is_not_valid": "रिसेट लिंक अवैध छ।",
-      "update_password": "पासवर्ड परिवर्तन",
-      "updating": "अद्यावधिक हुँदै…",
-      "you_can_now_log_in_with": "अब नयाँ पासवर्डले लगइन गर्न सक्नुहुन्छ।"
-    },
     "sait": {
       "annapr_ana_age_month": "अन्नप्राशन उमेर महिना",
       "choose_a_profile": "प्रोफाइल छान्नुहोस्",
@@ -4941,13 +4921,6 @@
     },
     "ui": {
       "could_not_load_data": "डाटा लोड गर्न सकिएन।"
-    },
-    "verify_email": {
-      "go_to_account": "खातामा जानुहोस्",
-      "thanks_your_account_is_now_fully": "धन्यवाद — तपाईंको खाता अब पूर्ण रूपमा सक्रिय छ।",
-      "the_verification_link_is_incomplete": "प्रमाणीकरण लिंक अपूर्ण छ।",
-      "verification_failed_the_link_may_have": "प्रमाणीकरण असफल भयो। लिंक अवधि सकिएको हुन सक्छ।",
-      "verify_email": "इमेल प्रमाणीकरण"
     },
     "vivah_sait": {
       "auspicious_marriage_windows_computed_from_the": "शास्त्रीय नियमबाट गणना गरिएका विवाहका शुभ मुहूर्त",

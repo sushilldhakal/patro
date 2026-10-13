@@ -6846,12 +6846,6 @@ export const strings = {
   /* ── ui.graha ───────────────────────────────────────────────────────────── */
   "ui.graha.about": { ne: "परिचय", en: "About" },
   "ui.graha.all_panchanga_elements": { ne: "सबै पञ्चाङ्ग तत्त्वहरू", en: "All panchanga elements" },
-  "ui.graha.first_contact": { ne: "पहिलो स्पर्श", en: "First contact" },
-  "ui.graha.last_contact": { ne: "अन्तिम स्पर्श", en: "Last contact" },
-  "ui.graha.maximum": { ne: "चरम", en: "Maximum" },
-  "ui.graha.not_visible_from_nepal": { ne: "नेपालबाट देखिँदैन", en: "Not visible from Nepal" },
-  "ui.graha.partial_ends": { ne: "आंशिक अन्त", en: "Partial ends" },
-  "ui.graha.visible_from_nepal": { ne: "नेपालबाट देखिन्छ", en: "Visible from Nepal" },
 
   /* ── ui.home ────────────────────────────────────────────────────────────── */
   "ui.home.ashubh_times": { ne: "अशुभ समय", en: "Ashubh times" },
@@ -7755,31 +7749,6 @@ export const strings = {
     en: "Today's rashifal every day at 7 am",
   },
 
-  /* ── ui.reset_password ──────────────────────────────────────────────────── */
-  "ui.reset_password.back_home": { ne: "गृहपृष्ठ", en: "Back home" },
-  "ui.reset_password.confirm_password": { ne: "पासवर्ड दोहोर्‍याउनुहोस्", en: "Confirm password" },
-  "ui.reset_password.could_not_update_the_password_the": {
-    ne: "पासवर्ड परिवर्तन गर्न सकिएन। लिंक अवधि सकिएको हुन सक्छ।",
-    en: "Could not update the password. The link may have expired.",
-  },
-  "ui.reset_password.fill_in_the_form_below_to": {
-    ne: "तलको फारम भरेर आफ्नो पासवर्ड परिवर्तन गर्नुहोस्।",
-    en: "Fill in the form below to change your password.",
-  },
-  "ui.reset_password.password_must_be_at_least_8": {
-    ne: "पासवर्ड कम्तीमा ८ अक्षरको हुनुपर्छ।",
-    en: "Password must be at least 8 characters.",
-  },
-  "ui.reset_password.password_updated": { ne: "पासवर्ड परिवर्तन भयो", en: "Password updated" },
-  "ui.reset_password.passwords_do_not_match": { ne: "पासवर्ड मिलेन।", en: "Passwords do not match." },
-  "ui.reset_password.set_a_new_password": { ne: "नयाँ पासवर्ड राख्नुहोस्", en: "Set a new password" },
-  "ui.reset_password.that_reset_link_is_not_valid": { ne: "रिसेट लिंक अवैध छ।", en: "That reset link is not valid." },
-  "ui.reset_password.update_password": { ne: "पासवर्ड परिवर्तन", en: "Update password" },
-  "ui.reset_password.updating": { ne: "अद्यावधिक हुँदै…", en: "Updating…" },
-  "ui.reset_password.you_can_now_log_in_with": {
-    ne: "अब नयाँ पासवर्डले लगइन गर्न सक्नुहुन्छ।",
-    en: "You can now log in with the new password.",
-  },
 
 
   /* ── ui.sait ────────────────────────────────────────────────────────────── */
@@ -7873,21 +7842,6 @@ export const strings = {
   /* ── ui.ui ──────────────────────────────────────────────────────────────── */
   "ui.ui.could_not_load_data": { ne: "डाटा लोड गर्न सकिएन।", en: "Could not load data." },
 
-  /* ── ui.verify_email ────────────────────────────────────────────────────── */
-  "ui.verify_email.go_to_account": { ne: "खातामा जानुहोस्", en: "Go to account" },
-  "ui.verify_email.thanks_your_account_is_now_fully": {
-    ne: "धन्यवाद — तपाईंको खाता अब पूर्ण रूपमा सक्रिय छ।",
-    en: "Thanks — your account is now fully active.",
-  },
-  "ui.verify_email.the_verification_link_is_incomplete": {
-    ne: "प्रमाणीकरण लिंक अपूर्ण छ।",
-    en: "The verification link is incomplete.",
-  },
-  "ui.verify_email.verification_failed_the_link_may_have": {
-    ne: "प्रमाणीकरण असफल भयो। लिंक अवधि सकिएको हुन सक्छ।",
-    en: "Verification failed. The link may have expired.",
-  },
-  "ui.verify_email.verify_email": { ne: "इमेल प्रमाणीकरण", en: "Verify email" },
 
   /* ── ui.vivah_sait ──────────────────────────────────────────────────────── */
   "ui.vivah_sait.auspicious_marriage_windows_computed_from_the": {

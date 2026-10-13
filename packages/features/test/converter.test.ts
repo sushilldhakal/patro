@@ -37,3 +37,12 @@ test("inputs start at today in both calendars", () => {
   assert.match(ad, /^\d{4}-\d{2}-\d{2}$/);
   assert.match(bs, /^20\d{2}-\d{2}-\d{2}$/);
 });
+
+import { resetPasswordProblem } from "../src/account/use-account-email-pages";
+
+test("a new password must be long enough, match, and come with a link token", () => {
+  assert.equal(resetPasswordProblem("short", "short", "tok"), "auth.password_min");
+  assert.equal(resetPasswordProblem("longenough", "different1", "tok"), "auth.passwords_mismatch");
+  assert.equal(resetPasswordProblem("longenough", "longenough", null), "auth.reset_invalid_link");
+  assert.equal(resetPasswordProblem("longenough", "longenough", "tok"), null);
+});
