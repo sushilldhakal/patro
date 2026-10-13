@@ -1254,6 +1254,8 @@
     "sun_sign": "Sun sign",
     "sun_nakshatra": "Sun's nakshatra",
     "pada_unit": "pada",
+    "moon_rashi_at_sunrise": "Moon sign at sunrise: {{name}}",
+    "moon_nakshatra_at_sunrise": "Moon nakshatra at sunrise: {{name}}",
     "pada_transitions": "transitions",
     "pada_detail": "Nakshatra pada detail",
     "balam": "Moon strength & Star strength",

@@ -2097,6 +2097,8 @@ export const strings = {
   "sections.sun_sign": { ne: "सूर्य राशि", en: "Sun sign" },
   "sections.sun_nakshatra": { ne: "सूर्य नक्षत्र", en: "Sun's nakshatra" },
   "sections.pada_unit": { ne: "पद", en: "pada" },
+  "sections.moon_rashi_at_sunrise": { ne: "सूर्योदयको चन्द्र राशि: {{name}}", en: "Moon sign at sunrise: {{name}}" },
+  "sections.moon_nakshatra_at_sunrise": { ne: "सूर्योदयको चन्द्र नक्षत्र: {{name}}", en: "Moon nakshatra at sunrise: {{name}}" },
   "sections.pada_transitions": { ne: "परिवर्तन", en: "transitions" },
   "sections.pada_detail": { ne: "नक्षत्र पद विवरण", en: "Nakshatra pada detail" },
   "sections.balam": { ne: "चन्द्रबलम् र ताराबलम्", en: "Moon strength & Star strength" },
