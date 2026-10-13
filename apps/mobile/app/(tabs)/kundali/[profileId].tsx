@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useKundaliChart, useKundaliDetailPage } from "@vedic-patro/features/kundali";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { ProfileForm, profileToInput } from "@/components/auth/ProfileForm";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
@@ -18,101 +17,48 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Text } from "@/components/ui/Text";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
-import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
-import { type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useLocale } from "@/lib/i18n";
 import { getStoredAyanamshaMode, setStoredAyanamshaMode } from "@/lib/kundali/ayanamsha-storage";
 import { useKundaliSection } from "@/lib/kundali/use-kundali-section";
-import { formatProfileBirthLabel, profileChartParams, profileLocation } from "@vedic-patro/domain/kundali/profile-chart";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useThemeColors } from "@/lib/theme-context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { space } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
+const ayanamshaStorage = { load: getStoredAyanamshaMode, save: setStoredAyanamshaMode };
+
 export default function KundaliDetailScreen() {
   const { profileId } = useLocalSearchParams<{ profileId: string }>();
-  const { t, lang, digits } = useLocale();
   const router = useRouter();
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const { isAuthenticated, loading: authLoading } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const [editOpen, setEditOpen] = useState(false);
-  const [ayanamshaMode, setAyanamshaModeState] = useState<AyanamshaMode>("nepal");
+  const auth = useAuth();
   const { section, setSection } = useKundaliSection();
-
-  useEffect(() => {
-    void getStoredAyanamshaMode().then((saved) => {
-      if (saved) setAyanamshaModeState(saved);
-    });
-  }, []);
-
-  const setAyanamshaMode = (next: AyanamshaMode) => {
-    setAyanamshaModeState(next);
-    void setStoredAyanamshaMode(next);
-  };
-
-  const { data: profiles, isLoading: profilesLoading, isError: profilesError } = useProfilesQuery(
-    isAuthenticated,
+  const profiles = useProfilesQuery(auth.isAuthenticated);
+  const page = useKundaliDetailPage({ profileId, auth, profiles, ayanamshaStorage });
+  const { status, profile, moment, location, copy, authDialog } = page;
+  const { detail, status: chartStatus } = useKundaliChart(
+    status === "ready" ? moment : null,
+    location?.params,
+    page.ayanamshaMode,
   );
-
-  const profile = useMemo(
-    () => profiles?.find((p) => p.id === profileId) ?? null,
-    [profiles, profileId],
-  );
-  const location = useMemo(() => (profile ? profileLocation(profile) : null), [profile]);
-  const chart = profile ? profileChartParams(profile) : null;
-  const moment = chart?.moment ?? null;
-
-  const detailQueryKey = useMemo(
-    () =>
-      moment && chart
-        ? kundaliDetailKeys.atTime(moment, chart.location.params, ayanamshaMode)
-        : (["kundali", "detail", "idle", profileId ?? ""] as const),
-    [moment, chart, profileId, ayanamshaMode],
-  );
-
-  const detailQuery = useQuery({
-    queryKey: detailQueryKey,
-    queryFn: () => fetchKundaliDetail(moment!, chart!.location.params, { ayanamsha: ayanamshaMode }),
-    enabled: Boolean(moment && chart),
-    staleTime: 1000 * 60 * 10,
-    placeholderData: keepPreviousData,
-  });
-
-  const detail = detailQuery.data;
-  const canShowChart = Boolean(moment && location && chart);
-
-  const birthDateLabel = profile
-    ? formatProfileBirthLabel(profile, lang, lang === "en" ? digits : toNepaliDigits)
-    : "—";
-  const birthTime = profile?.birth_time ? digits(profile.birth_time) : "—";
-  const place = profile?.location_label || profile?.city || "—";
   const showSidebar = useShowPanchangaSidebar();
-
-  const openAuth = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setAuthOpen(true);
-  };
 
   const topBar = (
     <View className={cn(kundaliClasses.topBar, "mb-4")}>
       <Pressable onPress={() => router.back()} className={cn(kundaliClasses.backLink, "active:opacity-70")}>
         <Ionicons name="arrow-back" size={18} color={colors.foreground} />
         <Text className={kundaliClasses.backLinkText} style={nepaliTextStyle(14)}>
-          {t("ui.kundali.all_charts")}
+          {copy.backAll}
         </Text>
       </Pressable>
       <View className={kundaliClasses.topBarActions}>
         <Button
-          label={t("ui.kundali.other_chart")}
+          label={copy.otherKundali}
           size="md"
           variant="outline"
           icon={<Ionicons name="sparkles-outline" size={16} color={colors.foreground} />}
@@ -120,11 +66,11 @@ export default function KundaliDetailScreen() {
         />
         {profile ? (
           <Button
-            label={t("kundali.edit_profile")}
+            label={copy.editProfile}
             size="md"
             variant="outline"
             icon={<Ionicons name="pencil-outline" size={14} color={colors.foreground} />}
-            onPress={() => setEditOpen(true)}
+            onPress={() => page.edit.setOpen(true)}
           />
         ) : null}
       </View>
@@ -132,68 +78,64 @@ export default function KundaliDetailScreen() {
   );
 
   const renderBody = () => {
-    if (authLoading || (isAuthenticated && profilesLoading && !profile)) {
+    if (status === "loading") {
       return (
         <View className={cn(kundaliClasses.emptyBoxTall, "items-center")}>
           <ActivityIndicator />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-            {t("common.loading")}
+            {copy.loading}
           </Text>
         </View>
       );
     }
 
-    if (!isAuthenticated) {
+    if (status === "login") {
       return (
         <KundaliLoginPrompt
-          titleNe="कुण्डली हेर्न लगइन"
-          titleEn="Log in to view kundali"
-          bodyNe="यो कुण्डली हेर्न साइन इन गर्नुहोस्।"
-          bodyEn="Sign in to view this birth chart."
-          onLogin={() => openAuth("login")}
-          onSignup={() => openAuth("signup")}
+          title={copy.loginTitle}
+          body={copy.loginRequired}
+          onLogin={authDialog.openLogin}
+          onSignup={authDialog.openSignup}
         />
       );
     }
 
-    if (profilesError || (!profilesLoading && !profile)) {
+    if (status === "not-found" || !profile) {
       return (
         <View className={cn(kundaliClasses.noticeBox, "items-center")}>
           <Text className={kundaliClasses.noticeTitle} style={nepaliTextStyle(14)}>
-            {t("ui.kundali.profile_not_found")}
+            {copy.notFound}
           </Text>
           <Text className={kundaliClasses.noticeBody} style={nepaliTextStyle(14)}>
-            {t("ui.kundali.the_profile_may_have_been_removed")}
+            {copy.notFoundBody}
           </Text>
         </View>
       );
     }
 
-    if (!profile) return null;
-
-    if (!canShowChart) {
+    if (status === "no-birth") {
       return (
         <View className={cn(kundaliClasses.noBirthBox, "items-center")}>
           <Ionicons name="time-outline" size={40} color={colors.mutedForeground} />
           <Text className={cn("mt-4", kundaliClasses.noBirthTitle)} style={nepaliTextStyle(16)}>
-            {t("ui.kundali.no_birth_date")}
+            {copy.noBirthTitle}
           </Text>
           <Text className={kundaliClasses.noBirthBody} style={nepaliTextStyle(14)}>
-            {t("ui.kundali.add_birth_date_time_and_place")}
+            {copy.noBirthBody}
           </Text>
           <View className="mt-6">
-            <Button label={t("ui.kundali.edit_profile")} onPress={() => setEditOpen(true)} />
+            <Button label={copy.editProfile} onPress={() => page.edit.setOpen(true)} />
           </View>
         </View>
       );
     }
 
-    if (detailQuery.isLoading && !detail) {
+    if (chartStatus === "loading") {
       return (
         <View className={cn(kundaliClasses.computingBox, "items-center")}>
           <ActivityIndicator />
           <Text className={cn("mt-3", kundaliClasses.emptyText)} style={nepaliTextStyle(14)}>
-            {t("ui.kundali.computing_the_chart")}
+            {copy.computing}
           </Text>
         </View>
       );
@@ -203,7 +145,7 @@ export default function KundaliDetailScreen() {
       return (
         <View className={kundaliClasses.loadError}>
           <Text className={kundaliClasses.loadErrorText} style={nepaliTextStyle(14)}>
-            {t("ui.kundali.could_not_load_the_chart_check")}
+            {copy.loadError}
           </Text>
         </View>
       );
@@ -211,13 +153,8 @@ export default function KundaliDetailScreen() {
 
     return (
       <View>
-        <KundaliProfileHeader
-          profile={profile}
-          birthDateLabel={birthDateLabel}
-          birthTime={birthTime}
-          place={place}
-        />
-        <AyanamshaSelector mode={ayanamshaMode} onModeChange={setAyanamshaMode} />
+        <KundaliProfileHeader profile={profile} eyebrow={copy.eyebrow} meta={page.meta} />
+        <AyanamshaSelector mode={page.ayanamshaMode} onModeChange={page.setAyanamshaMode} />
         {!showSidebar ? (
           <KundaliSectionNav variant="horizontal" activeId={section} onNavigate={setSection} />
         ) : null}
@@ -225,10 +162,10 @@ export default function KundaliDetailScreen() {
           detail={detail}
           section={section}
           onSectionChange={setSection}
-          ayanamshaMode={ayanamshaMode}
-          timeZone={profile?.timezone ?? undefined}
+          ayanamshaMode={page.ayanamshaMode}
+          timeZone={profile.timezone ?? undefined}
           birthMoment={moment}
-          birthLocation={chart?.location.params}
+          birthLocation={location?.params}
           reportDisabled={false}
           onNavigate={setSection}
         />
@@ -247,23 +184,23 @@ export default function KundaliDetailScreen() {
       </KundaliPageShell>
 
       <AuthDialog
-        key={authMode}
-        open={authOpen}
-        onOpenChange={setAuthOpen}
-        initialMode={authMode}
+        key={authDialog.mode}
+        open={authDialog.open}
+        onOpenChange={authDialog.setOpen}
+        initialMode={authDialog.mode}
       />
 
       {profile ? (
         <BottomSheetModal
-          visible={editOpen}
-          onClose={() => setEditOpen(false)}
+          visible={page.edit.open}
+          onClose={() => page.edit.setOpen(false)}
           keyboardAvoiding
           maxHeight="92%"
         >
           <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
-            <Pressable onPress={() => setEditOpen(false)} hitSlop={8} className="min-w-[4.5rem] active:opacity-70">
+            <Pressable onPress={() => page.edit.setOpen(false)} hitSlop={8} className="min-w-[4.5rem] active:opacity-70">
               <Text className="text-sm text-foreground" style={nepaliTextStyle(15)}>
-                {t("common.cancel")}
+                {copy.cancel}
               </Text>
             </Pressable>
             <Text
@@ -271,7 +208,7 @@ export default function KundaliDetailScreen() {
               style={nepaliTextStyle(16)}
               numberOfLines={1}
             >
-              {t("ui.kundali.edit_profile")}
+              {copy.editProfile}
             </Text>
             <View className="min-w-[4.5rem]" />
           </View>
@@ -286,9 +223,9 @@ export default function KundaliDetailScreen() {
             <ProfileForm
               initial={profileToInput(profile)}
               existing={profile}
-              onCancel={() => setEditOpen(false)}
+              onCancel={() => page.edit.setOpen(false)}
               onSaved={async () => {
-                setEditOpen(false);
+                page.edit.setOpen(false);
                 await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
               }}
             />

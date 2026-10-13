@@ -1,5 +1,9 @@
 {
   "app_name": "Dhakal Patro",
+  "reminders": {
+    "login_prompt_title": "Sign in for reminders",
+    "login_prompt_body": "Sign in to set reminders and daily guidance notifications."
+  },
   "seo": {
     "site_keywords": "Nepali calendar, Panchanga, Kundali, Tithi, Nakshatra, Vedic astrology, BS AD converter",
     "default_description": "Nepali calendar, daily Almanac, Tithi, Nakshatra, holidays and Kundali — Vedic Patro.",
@@ -471,6 +475,7 @@
     "profile_hint": "Select a profile to view kundali. Each includes graha, dasha and shanti vidhi.",
     "back_all": "All profiles",
     "login_required": "Sign in to view this kundali.",
+    "login_view_title": "Sign in to view kundali",
     "not_found": "Profile not found",
     "not_found_body": "This kundali profile does not exist or was removed.",
     "other_kundali": "Another kundali",
@@ -4269,15 +4274,12 @@
     "kundali": {
       "a_graha_s_actual_effect_depends": "A graha's actual effect depends on its lordship, strength, aspects, conjunctions, combustion/retrogression and more — the general benefic/malefic classification below is only a baseline classical principle, not an unconditional rule.",
       "absent": "Absent",
-      "add_birth_date_time_and_place": "Add birth date, time and place to generate the chart.",
       "add_first_profile": "Add first profile",
       "all_aspects": "All aspects",
-      "all_charts": "All charts",
       "aspects": "Aspects",
       "b_v_raman_s_three_hundred": "B. V. Raman's \"Three Hundred Important Combinations\", Part I",
       "benefic_grahas": "Benefic grahas",
       "bhava_bala": "Bhava bala",
-      "birth_chart": "Birth chart",
       "bphs_ch_13": "BPHS (ch. 13)",
       "brighu_naadi_sutras": "Brighu Naadi sutras",
       "chart_sections": "Chart sections",
@@ -4285,9 +4287,7 @@
       "combinations_formed_in_this_chart": "Combinations formed in this chart",
       "coming_soon": "Coming soon",
       "compare_two_charts_d1_d9_etc": "Compare two charts — D1, D9, etc.",
-      "computing_the_chart": "Computing the chart…",
       "could_not_load_profiles": "Could not load profiles",
-      "could_not_load_the_chart_check": "Could not load the chart. Check the date, time and place and try again.",
       "cycle_yoginicycle": "Cycle: {{yoginiCycle}}",
       "dasha_systems": "Dasha systems",
       "division": "Division",
@@ -4322,7 +4322,6 @@
       "natural_significator": "Natural significator",
       "navagraha_remedial_measures": "Navagraha remedial measures",
       "needs_attention": "⚠️ Needs attention",
-      "no_birth_date": "No birth date",
       "no_brighu_naadi_sutras_apply_since": "No Brighu Naadi sutras apply, since no graha occupies this house.",
       "no_graha_aspects_this_house": "No graha aspects this house.",
       "no_graha_here_see_the_placement": "No graha here — see the placement of {{pick}}, this house's ruling graha.",
@@ -4334,17 +4333,14 @@
       "no_reference_is_available_for_this": "No reference is available for this specific graha combination yet.",
       "not_enough_data_for_this_chart": "Not enough data for this chart.",
       "occupants": "Occupants",
-      "other_chart": "Other chart",
       "parts": "Parts:",
       "planetary_strength_in_rupas": "Planetary strength in rupas",
       "positions_at_the_birth_instant": "Positions at the birth instant",
-      "profile_not_found": "Profile not found.",
       "r": "R",
       "related_rules": "Related rules",
       "rules": "Rules",
       "safe_practice": "Safe practice:",
       "save_birth_details_once_then_generate": "Save birth details once, then generate kundali quickly.",
-      "select_a_profile_or_add_a": "Select a profile or add a new one.",
       "shanti_vidhi": "Shanti vidhi",
       "sign_lord_pick_wasn_t_found": "Sign lord {{pick}} wasn't found placed in this D1 chart.",
       "source_bhaveshphalasource": "Source: {{bhaveshPhalaSource}}",
@@ -4352,7 +4348,6 @@
       "source_lalkitabrevisionsource": "Source: {{lalKitabRevisionSource}}",
       "source_naadisutrasource": "Source: {{naadiSutraSource}}",
       "summary": "Summary",
-      "the_profile_may_have_been_removed": "The profile may have been removed or the link is wrong.",
       "this_house_has_no_occupying_graha": "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{pick}}, this house's fixed (pakka ghar) lord.",
       "this_section_is_not_available": "This section is not available.",
       "total_guna_match": "Total guna match",
@@ -4375,17 +4370,6 @@
       "sign_lord_lang_wasn_t_found": "Sign lord {{lang}} wasn't found placed in this D1 chart.",
       "significance": "Significance",
       "this_house_has_no_occupying_graha_2": "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{lang}}, this house's fixed (pakka ghar) lord."
-    },
-    "kundali_milan": {
-      "both_profiles_need_a_birth_date": "Both profiles need a birth date — add one in your account.",
-      "bride_profile": "Bride profile",
-      "choose_profile": "Choose profile",
-      "could_not_load_the_match_please": "Could not load the match. Please try again shortly.",
-      "groom_profile": "Groom profile",
-      "matching_the_charts": "Matching the charts…",
-      "no_profiles_add_one_first": "No profiles — add one first.",
-      "select_profiles_for_groom_and_bride": "Select profiles for groom and bride.",
-      "lang_chitrapaksha": "{{lang}} / Chitrapaksha"
     },
     "learn": {
       "a_solar_month_is_not_a": "A solar month is not a count of days — it is 30° of the Sun's travel along the rashi belt. Because Earth's orbit is elliptical, the Sun's apparent motion is fastest near perihelion (Poush–Magh), so that 30° passes quickly — a short month. Near aphelion (Asar) it crawls — a long month. This data comes from the same table the patro itself uses.",
@@ -4921,6 +4905,9 @@
       "moon_sign": "Moon sign",
       "see_full_panchanga": "See full panchanga →",
       "yog": "Yog"
+    },
+    "kundali_milan": {
+      "lang_chitrapaksha": "{{lang}} / Chitrapaksha"
     },
     "mobile_bottom_nav": {
       "primary_navigation": "Primary navigation"

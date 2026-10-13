@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useKundaliHubPage } from "@vedic-patro/features/kundali";
 import { LogIn, Plus, Sparkles, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,15 +18,9 @@ import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
 export function Kundali() {
-  const { t } = useTranslation();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
-  const openAuth = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setAuthOpen(true);
-  };
+  const { status, authDialog, canAddProfile, copy } = useKundaliHubPage({ isAuthenticated, authLoading });
 
   const pickerRef = useRef<KundaliProfilePickerHandle>(null);
 
@@ -49,51 +43,51 @@ export function Kundali() {
       <div className={kundaliClasses.headerRow}>
         <div>
           <div className={kundaliClasses.eyebrow}>
-            {t("kundali.eyebrow")}
+            {copy.eyebrow}
           </div>
           <h1 className={cn(kundaliClasses.title, kundaliClasses.titleRow, "m-0")}>
             <Sparkles className="w-7 h-7 text-secondary shrink-0" />
-            {t("kundali.title")}
+            {copy.title}
           </h1>
           <p className={kundaliClasses.subtitle}>
-            {isAuthenticated ? t("kundali.subtitle_auth") : t("kundali.login_required")}
+            {copy.subtitle}
           </p>
         </div>
-        {isAuthenticated && (
+        {canAddProfile && (
           <Button className="shrink-0" onClick={() => pickerRef.current?.openAdd()}>
-            <Plus className="size-4" /> {t("kundali.add_profile")}
+            <Plus className="size-4" /> {copy.addProfile}
           </Button>
         )}
       </div>
 
-      {authLoading ? (
+      {status === "loading" ? (
         <div className={cn(kundaliClasses.emptyBox, kundaliClasses.emptyText)}>
-          {t("common.loading")}
+          {copy.loading}
         </div>
-      ) : !isAuthenticated ? (
+      ) : status === "login" ? (
         <section className={cn(kundaliClasses.loginCard, "text-center shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_8%,transparent)]")}>
           <div className={cn(kundaliClasses.loginIcon, "mx-auto flex")}>
             <Sparkles className="h-7 w-7 text-secondary" />
           </div>
           <h2 className={kundaliClasses.loginTitle}>
-            {t("kundali.login_prompt_title")}
+            {copy.loginTitle}
           </h2>
           <p className={cn(kundaliClasses.loginBody, "mx-auto")}>
-            {t("kundali.login_prompt_body")}
+            {copy.loginBody}
           </p>
           <div className={kundaliClasses.loginActions}>
-            <Button size="lg" onClick={() => openAuth("login")}>
-              <LogIn className="size-4" /> {t("kundali.login")}
+            <Button size="lg" onClick={authDialog.openLogin}>
+              <LogIn className="size-4" /> {copy.login}
             </Button>
-            <Button size="lg" variant="outline" onClick={() => openAuth("signup")}>
-              <UserPlus className="size-4" /> {t("kundali.signup")}
+            <Button size="lg" variant="outline" onClick={authDialog.openSignup}>
+              <UserPlus className="size-4" /> {copy.signup}
             </Button>
           </div>
         </section>
       ) : (
         <div className="flex flex-col gap-4">
           <p className={kundaliClasses.profileHint}>
-            {t("kundali.profile_hint")}
+            {copy.profileHint}
           </p>
           <KundaliProfilePicker
             ref={pickerRef}
@@ -107,10 +101,10 @@ export function Kundali() {
       )}
 
       <AuthDialog
-        key={authMode}
-        open={authOpen}
-        onOpenChange={setAuthOpen}
-        initialMode={authMode}
+        key={authDialog.mode}
+        open={authDialog.open}
+        onOpenChange={authDialog.setOpen}
+        initialMode={authDialog.mode}
       />
     </PageShell>
   );

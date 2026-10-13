@@ -335,10 +335,8 @@ export default function RemindersScreen() {
       {authLoading ? null : !isAuthenticated ? (
         <>
           <KundaliLoginPrompt
-            titleNe="रिमाइन्डरका लागि लगइन"
-            titleEn="Log in for reminders"
-            bodyNe="रिमाइन्डर र दैनिक सूचना सेट गर्न साइन इन गर्नुहोस्।"
-            bodyEn="Sign in to set reminders and daily guidance notifications."
+            title={t("reminders.login_prompt_title")}
+            body={t("reminders.login_prompt_body")}
             onLogin={() => setAuthOpen(true)}
             onSignup={() => setAuthOpen(true)}
           />

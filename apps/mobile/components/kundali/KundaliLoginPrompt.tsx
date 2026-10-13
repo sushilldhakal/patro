@@ -12,24 +12,20 @@ import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-class
 import { cn } from "@vedic-patro/domain/utils";
 type Props = {
   icon?: keyof typeof Ionicons.glyphMap;
-  titleNe: string;
-  titleEn: string;
-  bodyNe: string;
-  bodyEn: string;
+  title: string;
+  body: string;
   onLogin: () => void;
   onSignup: () => void;
 };
 
 export function KundaliLoginPrompt({
   icon = "sparkles-outline",
-  titleNe,
-  titleEn,
-  bodyNe,
-  bodyEn,
+  title,
+  body,
   onLogin,
   onSignup,
 }: Props) {
-  const { pick, t } = useLocale();
+  const { t } = useLocale();
   const colors = useThemeColors();
 
   return (
@@ -38,13 +34,13 @@ export function KundaliLoginPrompt({
         <Ionicons name={icon} size={28} color={colors.secondary} />
       </View>
       <Text className={kundaliClasses.loginTitle} style={nepaliTextStyle(20)}>
-        {pick(titleNe, titleEn)}
+        {title}
       </Text>
       <Text
         className={kundaliClasses.loginBody}
         style={nepaliTextStyle(14)}
       >
-        {pick(bodyNe, bodyEn)}
+        {body}
       </Text>
       <View className={kundaliClasses.loginActions}>
         <Button

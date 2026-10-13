@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { useKundaliDetailPage, AYANAMSHA_STORAGE_KEY, parseAyanamshaMode, type KundaliMetaItem } from "@vedic-patro/features/kundali";
 import {
   ArrowLeft,
   Calendar,
@@ -13,10 +13,10 @@ import {
   Star,
   User,
 } from "lucide-react";
-import { hasStoredSession, type Profile } from "@/lib/auth/client";
+import { hasStoredSession } from "@/lib/auth/client";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { PROFILES_QUERY_KEY, useProfilesQuery } from "@/lib/kundali/profiles-query";
-import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
 import { AyanamshaSelector } from "@/components/kundali/AyanamshaSelector";
 import { KundaliView } from "@/components/kundali/KundaliView";
 import {
@@ -35,30 +35,31 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { formatProfileBirthLabel, profileBirthMoment, profileLocation } from "@vedic-patro/domain/kundali/profile-chart";
-import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { useRouteLoading } from "@/lib/route-loading";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 
-const AYANAMSHA_KEY = "dhakalPatroAyanamshaMode";
+const ayanamshaStorage = {
+  load: () => parseAyanamshaMode(localStorage.getItem(AYANAMSHA_STORAGE_KEY)),
+  save: (mode: AyanamshaMode) => localStorage.setItem(AYANAMSHA_STORAGE_KEY, mode),
+};
 
-function loadSavedAyanamshaMode(): AyanamshaMode {
-  const saved = localStorage.getItem(AYANAMSHA_KEY);
-  return AYANAMSHA_MODES.some((m) => m.id === saved) ? (saved as AyanamshaMode) : "nepal";
-}
+const META_ICONS: Record<KundaliMetaItem["key"], React.ComponentType<{ className?: string }>> = {
+  birthDate: Calendar,
+  time: Clock,
+  place: MapPin,
+  timezone: Globe,
+};
 
 function MetaItem({
   icon: Icon,
   label,
   value,
-  sub,
   mono,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
-  sub?: string;
   mono?: boolean;
 }) {
   return (
@@ -70,23 +71,14 @@ function MetaItem({
       <p className={cn(mono ? kundaliClasses.metaValueMono : kundaliClasses.metaValue, "break-words")}>
         {value}
       </p>
-      {sub ? <p className={kundaliClasses.metaSub}>{sub}</p> : null}
     </div>
   );
 }
 
 export function KundaliDetail() {
-  const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const auth = useAuth();
   const { profileId } = useParams({ strict: false }) as { profileId?: string };
-  const [editOpen, setEditOpen] = useState(false);
-
-  const [ayanamshaMode, setAyanamshaModeState] = useState<AyanamshaMode>(loadSavedAyanamshaMode);
-  const setAyanamshaMode = (next: AyanamshaMode) => {
-    setAyanamshaModeState(next);
-    localStorage.setItem(AYANAMSHA_KEY, next);
-  };
 
   // Drive the active section from the router's hash so every navigation source
   // stays in sync: the desktop sidebar's <Link hash>, the mobile tab nav, deep
@@ -112,78 +104,55 @@ export function KundaliDetail() {
   // fires in parallel with AuthContext's apiMe() call instead of waiting for it
   // — collapsing what was a 3-hop waterfall (auth check -> profiles -> chart)
   // into 2 parallel round trips followed by the chart fetch.
-  const {
-    data: profiles,
-    isLoading,
-    isError,
-  } = useProfilesQuery(hasStoredSession());
+  const profiles = useProfilesQuery(hasStoredSession());
+  const page = useKundaliDetailPage({ profileId, auth, profiles, ayanamshaStorage });
+  const { status, profile, copy } = page;
 
-  const profile = useMemo<Profile | undefined>(
-    () => profiles?.find((p) => p.id === profileId),
-    [profiles, profileId],
-  );
-
-  const birthMoment = useMemo(() => (profile ? profileBirthMoment(profile) : null), [profile]);
-  const location = useMemo(() => (profile ? profileLocation(profile) : null), [profile]);
-
-  const birthDateMeta = useMemo(() => {
-    if (!profile?.birth_date) return { value: "—", sub: undefined as string | undefined };
-    return { value: formatProfileBirthLabel(profile, "ne", toNepaliDigits), sub: undefined };
-  }, [profile]);
-
-  useRouteLoading(authLoading);
-
-  const profilesPending = isAuthenticated && isLoading && !profiles;
+  useRouteLoading(auth.loading);
 
   const backLink = (
     <Link
       to="/kundali"
       className={cn(kundaliClasses.backLink, kundaliClasses.backLinkText, "inline-flex transition-colors hover:text-foreground")}
     >
-      <ArrowLeft className="size-4" /> {t("kundali.back_all")}
+      <ArrowLeft className="size-4" /> {copy.backAll}
     </Link>
   );
 
-  if (authLoading || profilesPending) {
+  if (status === "loading") {
     return (
       <PageShell className="pb-16">
         <div className={cn(kundaliClasses.emptyBoxTall, kundaliClasses.emptyText)}>
-          {t("common.loading")}
+          {copy.loading}
         </div>
       </PageShell>
     );
   }
 
-  if (!isAuthenticated) {
+  if (status === "login") {
     return (
       <PageShell className="space-y-4 pb-16">
         {backLink}
         <div className={cn(kundaliClasses.noticeBox, kundaliClasses.emptyText)}>
-          {t("kundali.login_required")}
+          {copy.loginRequired}
         </div>
       </PageShell>
     );
   }
 
-  if (isError || (!isLoading && !profile)) {
+  if (status === "not-found" || !profile) {
     return (
       <PageShell className="space-y-4 pb-16">
         {backLink}
         <div className={cn(kundaliClasses.noticeBox, "text-center")}>
-          <p className={kundaliClasses.noticeTitle}>{t("kundali.not_found")}</p>
+          <p className={kundaliClasses.noticeTitle}>{copy.notFound}</p>
           <p className={cn(kundaliClasses.noticeBody, "mx-auto")}>
-            {t("kundali.not_found_body")}
+            {copy.notFoundBody}
           </p>
         </div>
       </PageShell>
     );
   }
-
-  if (!profile) return null;
-
-  const place = profile.location_label || profile.city || "—";
-  const birthTime = profile.birth_time ? toNepaliDigits(profile.birth_time) : "—";
-  const canShowChart = Boolean(birthMoment && location);
 
   return (
     <PageShell className="space-y-6 pb-20">
@@ -195,10 +164,10 @@ export function KundaliDetail() {
             to="/kundali"
             className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm transition-colors hover:bg-muted hover:text-foreground"
           >
-            <Sparkles className="size-4" /> {t("kundali.other_kundali")}
+            <Sparkles className="size-4" /> {copy.otherKundali}
           </Link>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => setEditOpen(true)}>
-            <Pencil className="size-3.5" /> {t("kundali.edit_profile")}
+          <Button variant="outline" size="sm" className="h-9 gap-1.5" onClick={() => page.edit.setOpen(true)}>
+            <Pencil className="size-3.5" /> {copy.editProfile}
           </Button>
         </div>
       </div>
@@ -212,7 +181,7 @@ export function KundaliDetail() {
             </div>
             <div className="min-w-0">
               <p className={kundaliClasses.profileEyebrow}>
-                {t("kundali.title")}
+                {copy.eyebrow}
               </p>
               <h1 className={cn(kundaliClasses.profileName, kundaliClasses.profileNameRow, "m-0")}>
                 {profile.full_name}
@@ -228,28 +197,17 @@ export function KundaliDetail() {
 
           <div className="flex min-w-0 flex-1 items-stretch overflow-x-auto border-t border-border lg:border-t-0">
             <div className="flex min-w-max divide-x divide-border">
-              <MetaItem
-                icon={Calendar}
-                label={t("kundali.birth_date")}
-                value={birthDateMeta.value}
-                sub={birthDateMeta.sub}
-              />
-              <MetaItem icon={Clock} label={t("kundali.time")} value={birthTime} mono />
-              <MetaItem icon={MapPin} label={t("kundali.place")} value={place} />
-              <MetaItem
-                icon={Globe}
-                label={t("kundali.timezone")}
-                value={profile.timezone || "—"}
-                mono
-              />
+              {page.meta.map((item) => (
+                <MetaItem key={item.key} icon={META_ICONS[item.key]} label={item.label} value={item.value} mono={item.mono} />
+              ))}
             </div>
           </div>
         </div>
       </header>
 
-      {canShowChart ? (
+      {status === "ready" && page.moment && page.location ? (
         <>
-          <AyanamshaSelector mode={ayanamshaMode} onModeChange={setAyanamshaMode} />
+          <AyanamshaSelector mode={page.ayanamshaMode} onModeChange={page.setAyanamshaMode} />
           <KundaliSectionNav
             className="calendar:hidden"
             activeId={section}
@@ -257,10 +215,10 @@ export function KundaliDetail() {
             variant="horizontal"
           />
           <KundaliView
-            moment={birthMoment!}
-            locationParams={location!.params}
-            locationLabel={location!.label}
-            ayanamshaMode={ayanamshaMode}
+            moment={page.moment}
+            locationParams={page.location.params}
+            locationLabel={page.location.label}
+            ayanamshaMode={page.ayanamshaMode}
             hideBirthSummary
             section={section}
           />
@@ -268,28 +226,28 @@ export function KundaliDetail() {
       ) : (
         <div className={cn(kundaliClasses.noBirthBox, "text-center")}>
           <Clock className="mx-auto mb-4 size-10" />
-          <p className={kundaliClasses.noBirthTitle}>{t("kundali.no_birth_title")}</p>
+          <p className={kundaliClasses.noBirthTitle}>{copy.noBirthTitle}</p>
           <p className={cn(kundaliClasses.noBirthBody, "mx-auto")}>
-            {t("kundali.no_birth_body")}
+            {copy.noBirthBody}
           </p>
-          <Button className="mt-6 gap-1.5" onClick={() => setEditOpen(true)}>
-            <Pencil className="size-4" /> {t("kundali.edit_profile")}
+          <Button className="mt-6 gap-1.5" onClick={() => page.edit.setOpen(true)}>
+            <Pencil className="size-4" /> {copy.editProfile}
           </Button>
         </div>
       )}
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+      <Dialog open={page.edit.open} onOpenChange={page.edit.setOpen}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>{t("kundali.edit_profile")}</DialogTitle>
-            <DialogDescription>{t("kundali.generate_hint")}</DialogDescription>
+            <DialogTitle>{copy.editProfile}</DialogTitle>
+            <DialogDescription>{copy.editHint}</DialogDescription>
           </DialogHeader>
           <ProfileForm
             initial={profileToInput(profile)}
             existing={profile}
-            onCancel={() => setEditOpen(false)}
+            onCancel={() => page.edit.setOpen(false)}
             onSaved={async () => {
-              setEditOpen(false);
+              page.edit.setOpen(false);
               await queryClient.invalidateQueries({ queryKey: PROFILES_QUERY_KEY });
             }}
           />

@@ -1,5 +1,9 @@
 {
   "app_name": "वैदिक पात्रो",
+  "reminders": {
+    "login_prompt_title": "रिमाइन्डरका लागि लग-इन",
+    "login_prompt_body": "रिमाइन्डर र दैनिक सूचना सेट गर्न लग-इन गर्नुहोस्।"
+  },
   "seo": {
     "site_keywords": "नेपाली पात्रो, पञ्चाङ्ग, कुण्डली, तिथि, नक्षत्र, वैदिक ज्योतिष, बि.सं. मिति",
     "default_description": "नेपाली पात्रो, सूर्य पञ्चाङ्ग, तिथि, नक्षत्र, कुण्डली, बिदा र मिति रूपान्तरण — वैदिक पात्रो।",
@@ -471,6 +475,7 @@
     "profile_hint": "कुण्डली हेर्न प्रोफाइल छान्नुहोस्। हरेक कुण्डलीमा ग्रह, दशा र शान्ति विधि समावेश छ।",
     "back_all": "सबै कुण्डली",
     "login_required": "यो कुण्डली हेर्न लग-इन गर्नुहोस्।",
+    "login_view_title": "कुण्डली हेर्न लग-इन",
     "not_found": "प्रोफाइल भेटिएन",
     "not_found_body": "यो कुण्डली प्रोफाइल अवस्थित छैन वा हटाइएको छ।",
     "other_kundali": "अर्को कुण्डली",
@@ -4269,15 +4274,12 @@
     "kundali": {
       "a_graha_s_actual_effect_depends": "ग्रहको वास्तविक प्रभाव यसको भावेशत्व, बल, दृष्टि, संयोजन, अस्त/वक्री जस्ता अवस्थामा भर पर्छ — तल दिइएको सामान्य शुभ/पाप वर्गीकरण एउटा आधारभूत सिद्धान्त मात्र हो, अनिवार्य नियम होइन।",
       "absent": "छैन",
-      "add_birth_date_time_and_place": "कुण्डली बनाउन जन्म मिति, समय र स्थान थप्नुहोस्।",
       "add_first_profile": "पहिलो प्रोफाइल थप्नुहोस्",
       "all_aspects": "सबै दृष्टि",
-      "all_charts": "सबै कुण्डली",
       "aspects": "दृष्टि",
       "b_v_raman_s_three_hundred": "बी. वी. रमनको “Three Hundred Important Combinations”, भाग I",
       "benefic_grahas": "शुभ ग्रह",
       "bhava_bala": "भाव बल",
-      "birth_chart": "जन्मकुण्डली",
       "bphs_ch_13": "बृ.पा.हो.शा. (भावेशफलाध्याय)",
       "brighu_naadi_sutras": "भृगु नाडी सूत्र",
       "chart_sections": "कुण्डली खण्ड",
@@ -4285,9 +4287,7 @@
       "combinations_formed_in_this_chart": "यस कुण्डलीमा बनेका योग",
       "coming_soon": "चाँडै आउँदैछ",
       "compare_two_charts_d1_d9_etc": "दुई चक्र तुलना — D1, D9 आदि",
-      "computing_the_chart": "कुण्डली गणना हुँदै…",
       "could_not_load_profiles": "प्रोफाइल लोड गर्न सकिएन",
-      "could_not_load_the_chart_check": "कुण्डली ल्याउन सकिएन। मिति/समय/स्थान जाँचेर पुनः प्रयास गर्नुहोस्।",
       "cycle_yoginicycle": "चक्र: {{yoginiCycle}}",
       "dasha_systems": "दशा प्रणाली",
       "division": "वर्ग",
@@ -4322,7 +4322,6 @@
       "natural_significator": "स्वाभाविक कारक",
       "navagraha_remedial_measures": "नवग्रह शान्ति उपाय",
       "needs_attention": "⚠️ ध्यान दिनुपर्ने",
-      "no_birth_date": "जन्म मिति छैन",
       "no_brighu_naadi_sutras_apply_since": "यस भावमा कुनै ग्रह नभएकाले लागू हुने भृगु नाडी सूत्र देखिएका छैनन्।",
       "no_graha_aspects_this_house": "यस भावमा कुनै ग्रहको दृष्टि पर्दैन।",
       "no_graha_here_see_the_placement": "कुनै ग्रह छैन — राशि स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
@@ -4334,17 +4333,14 @@
       "no_reference_is_available_for_this": "यो विशेष ग्रह-युतिको लागि सन्दर्भ अहिले उपलब्ध छैन।",
       "not_enough_data_for_this_chart": "यो चक्रका लागi पर्याप्त डेटा छैन।",
       "occupants": "यस भावमा",
-      "other_chart": "अर्को कुण्डली",
       "parts": "अंग:",
       "planetary_strength_in_rupas": "ग्रह बल — रूपमा",
       "positions_at_the_birth_instant": "जन्म क्षणको स्पष्ट स्थिति",
-      "profile_not_found": "प्रोफाइल फेला परेन।",
       "r": "व",
       "related_rules": "सम्बन्धित नियम",
       "rules": "नियम",
       "safe_practice": "सुरक्षित व्यवहार:",
       "save_birth_details_once_then_generate": "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
-      "select_a_profile_or_add_a": "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
       "shanti_vidhi": "शान्ति विधि",
       "sign_lord_pick_wasn_t_found": "राशि स्वामी {{pick}} यो D1 चार्टमा फेला परेन।",
       "source_bhaveshphalasource": "स्रोत: {{bhaveshPhalaSource}}",
@@ -4352,7 +4348,6 @@
       "source_lalkitabrevisionsource": "स्रोत: {{lalKitabRevisionSource}}",
       "source_naadisutrasource": "स्रोत: {{naadiSutraSource}}",
       "summary": "सारांश",
-      "the_profile_may_have_been_removed": "प्रोफाइल मेटिएको वा लिङ्क गलत हुन सक्छ।",
       "this_house_has_no_occupying_graha": "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
       "this_section_is_not_available": "यो खण्ड उपलब्ध छैन।",
       "total_guna_match": "कुल गुण मिलान",
@@ -4375,17 +4370,6 @@
       "sign_lord_lang_wasn_t_found": "राशि स्वामी {{lang}} यो D1 चार्टमा फेला परेन।",
       "significance": "ग्रहको महत्व",
       "this_house_has_no_occupying_graha_2": "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{lang}}को स्थिति हेर्नुहोस्।"
-    },
-    "kundali_milan": {
-      "both_profiles_need_a_birth_date": "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
-      "bride_profile": "कन्याको प्रोफाइल",
-      "choose_profile": "प्रोफाइल छान्नुहोस्",
-      "could_not_load_the_match_please": "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
-      "groom_profile": "वरको प्रोफाइल",
-      "matching_the_charts": "मिलान गणना हुँदै…",
-      "no_profiles_add_one_first": "कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।",
-      "select_profiles_for_groom_and_bride": "वर र कन्याका प्रोफाइल छान्नुहोस्।",
-      "lang_chitrapaksha": "{{lang}} / चित्रपक्ष"
     },
     "learn": {
       "a_solar_month_is_not_a": "सौर महिना दिनको गन्ती होइन — यो राशि पट्टीमा सूर्यको ३०° यात्रा हो। पृथ्वीको कक्ष अण्डाकार भएकाले उपसौर (पुष–माघ) नजिक सूर्यको देखिने गति छिटो हुन्छ, त्यसैले त्यो ३०° छिटो पार हुन्छ — छोटो महिना। अपसौर (असार) नजिक गति सुस्त हुन्छ — लामो महिना। यो तथ्याङ्क पात्रोले नै प्रयोग गर्ने तालिकाबाटै आएको हो।",
@@ -4921,6 +4905,9 @@
       "moon_sign": "चन्द्रराशि",
       "see_full_panchanga": "पूर्ण पञ्चाङ्ग हेर्नुहोस् →",
       "yog": "योग"
+    },
+    "kundali_milan": {
+      "lang_chitrapaksha": "{{lang}} / चित्रपक्ष"
     },
     "mobile_bottom_nav": {
       "primary_navigation": "मुख्य नेभिगेसन"

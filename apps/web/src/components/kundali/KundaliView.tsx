@@ -3,16 +3,13 @@ import { cn } from "@vedic-patro/domain/utils";
 import { kundaliClasses } from "@vedic-patro/design-tokens/classes/kundali-classes";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
 import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useKundaliChart } from "@vedic-patro/features/kundali";
 import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { Clock, Flame, MapPin } from "lucide-react";
 import {
-  fetchKundaliDetail,
-  kundaliDetailKeys,
   locationCacheKey,
   type BilingualValue,
-  type KundaliDetailResponse,
   type LocationParams,
   type PanchangaDay,
   type PlanetInfo,
@@ -187,16 +184,9 @@ export function KundaliView({
   const { lang, digits } = useLocale();
   const [janmaPhalaTab, setJanmaPhalaTab] = useState<"male" | "female">("male");
 
-  const detailQ = useQuery({
-    queryKey: kundaliDetailKeys.atTime(birthMoment, locationParams, ayanamshaMode),
-    queryFn: () =>
-      fetchKundaliDetail(birthMoment, locationParams, { ayanamsha: ayanamshaMode }),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const detail: KundaliDetailResponse | undefined = detailQ.data;
-  const isLoading = detailQ.isLoading;
-  const isError = detailQ.isError;
+  const { detail, status: chartStatus } = useKundaliChart(birthMoment, locationParams, ayanamshaMode);
+  const isLoading = chartStatus === "loading";
+  const isError = chartStatus === "error";
 
   const data = useMemo(
     () => (detail?.panchanga ? normalizeEphemerisDay(detail.panchanga) : undefined),

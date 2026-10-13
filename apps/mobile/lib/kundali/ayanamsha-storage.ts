@@ -1,13 +1,9 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { AYANAMSHA_MODES, type AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import type { AyanamshaMode } from "@vedic-patro/domain/ayanamsha";
+import { AYANAMSHA_STORAGE_KEY, parseAyanamshaMode as parseMode } from "@vedic-patro/features/kundali";
 
-export const AYANAMSHA_STORAGE_KEY = "dhakalPatroAyanamshaMode";
-
-function parseMode(raw: string | null): AyanamshaMode | null {
-  if (!raw) return null;
-  return AYANAMSHA_MODES.some((m) => m.id === raw) ? (raw as AyanamshaMode) : null;
-}
+export { AYANAMSHA_STORAGE_KEY };
 
 export async function getStoredAyanamshaMode(): Promise<AyanamshaMode | null> {
   try {

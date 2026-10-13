@@ -25,6 +25,13 @@ export const strings = {
   /* ── app_name ────────────────────────────────────────────────────────── */
   "app_name": { ne: "वैदिक पात्रो", en: "Dhakal Patro" },
 
+  /* ── reminders ───────────────────────────────────────────────────────── */
+  "reminders.login_prompt_title": { ne: "रिमाइन्डरका लागि लग-इन", en: "Sign in for reminders" },
+  "reminders.login_prompt_body": {
+    ne: "रिमाइन्डर र दैनिक सूचना सेट गर्न लग-इन गर्नुहोस्।",
+    en: "Sign in to set reminders and daily guidance notifications.",
+  },
+
   /* ── seo ─────────────────────────────────────────────────────────────── */
   "seo.site_keywords": {
     ne: "नेपाली पात्रो, पञ्चाङ्ग, कुण्डली, तिथि, नक्षत्र, वैदिक ज्योतिष, बि.सं. मिति",
@@ -780,6 +787,7 @@ export const strings = {
   },
   "kundali.back_all": { ne: "सबै कुण्डली", en: "All profiles" },
   "kundali.login_required": { ne: "यो कुण्डली हेर्न लग-इन गर्नुहोस्।", en: "Sign in to view this kundali." },
+  "kundali.login_view_title": { ne: "कुण्डली हेर्न लग-इन", en: "Sign in to view kundali" },
   "kundali.not_found": { ne: "प्रोफाइल भेटिएन", en: "Profile not found" },
   "kundali.not_found_body": {
     ne: "यो कुण्डली प्रोफाइल अवस्थित छैन वा हटाइएको छ।",
@@ -6874,13 +6882,8 @@ export const strings = {
     en: "A graha's actual effect depends on its lordship, strength, aspects, conjunctions, combustion/retrogression and more — the general benefic/malefic classification below is only a baseline classical principle, not an unconditional rule.",
   },
   "ui.kundali.absent": { ne: "छैन", en: "Absent" },
-  "ui.kundali.add_birth_date_time_and_place": {
-    ne: "कुण्डली बनाउन जन्म मिति, समय र स्थान थप्नुहोस्।",
-    en: "Add birth date, time and place to generate the chart.",
-  },
   "ui.kundali.add_first_profile": { ne: "पहिलो प्रोफाइल थप्नुहोस्", en: "Add first profile" },
   "ui.kundali.all_aspects": { ne: "सबै दृष्टि", en: "All aspects" },
-  "ui.kundali.all_charts": { ne: "सबै कुण्डली", en: "All charts" },
   "ui.kundali.aspects": { ne: "दृष्टि", en: "Aspects" },
   "ui.kundali.b_v_raman_s_three_hundred": {
     ne: "बी. वी. रमनको “Three Hundred Important Combinations”, भाग I",
@@ -6888,7 +6891,6 @@ export const strings = {
   },
   "ui.kundali.benefic_grahas": { ne: "शुभ ग्रह", en: "Benefic grahas" },
   "ui.kundali.bhava_bala": { ne: "भाव बल", en: "Bhava bala" },
-  "ui.kundali.birth_chart": { ne: "जन्मकुण्डली", en: "Birth chart" },
   "ui.kundali.bphs_ch_13": { ne: "बृ.पा.हो.शा. (भावेशफलाध्याय)", en: "BPHS (ch. 13)" },
   "ui.kundali.brighu_naadi_sutras": { ne: "भृगु नाडी सूत्र", en: "Brighu Naadi sutras" },
   "ui.kundali.chart_sections": { ne: "कुण्डली खण्ड", en: "Chart sections" },
@@ -6902,12 +6904,7 @@ export const strings = {
     ne: "दुई चक्र तुलना — D1, D9 आदि",
     en: "Compare two charts — D1, D9, etc.",
   },
-  "ui.kundali.computing_the_chart": { ne: "कुण्डली गणना हुँदै…", en: "Computing the chart…" },
   "ui.kundali.could_not_load_profiles": { ne: "प्रोफाइल लोड गर्न सकिएन", en: "Could not load profiles" },
-  "ui.kundali.could_not_load_the_chart_check": {
-    ne: "कुण्डली ल्याउन सकिएन। मिति/समय/स्थान जाँचेर पुनः प्रयास गर्नुहोस्।",
-    en: "Could not load the chart. Check the date, time and place and try again.",
-  },
   "ui.kundali.cycle_yoginicycle": { ne: "चक्र: {{yoginiCycle}}", en: "Cycle: {{yoginiCycle}}" },
   "ui.kundali.dasha_systems": { ne: "दशा प्रणाली", en: "Dasha systems" },
   "ui.kundali.division": { ne: "वर्ग", en: "Division" },
@@ -6954,7 +6951,6 @@ export const strings = {
   "ui.kundali.natural_significator": { ne: "स्वाभाविक कारक", en: "Natural significator" },
   "ui.kundali.navagraha_remedial_measures": { ne: "नवग्रह शान्ति उपाय", en: "Navagraha remedial measures" },
   "ui.kundali.needs_attention": { ne: "⚠️ ध्यान दिनुपर्ने", en: "⚠️ Needs attention" },
-  "ui.kundali.no_birth_date": { ne: "जन्म मिति छैन", en: "No birth date" },
   "ui.kundali.no_brighu_naadi_sutras_apply_since": {
     ne: "यस भावमा कुनै ग्रह नभएकाले लागू हुने भृगु नाडी सूत्र देखिएका छैनन्।",
     en: "No Brighu Naadi sutras apply, since no graha occupies this house.",
@@ -6993,14 +6989,12 @@ export const strings = {
     en: "Not enough data for this chart.",
   },
   "ui.kundali.occupants": { ne: "यस भावमा", en: "Occupants" },
-  "ui.kundali.other_chart": { ne: "अर्को कुण्डली", en: "Other chart" },
   "ui.kundali.parts": { ne: "अंग:", en: "Parts:" },
   "ui.kundali.planetary_strength_in_rupas": { ne: "ग्रह बल — रूपमा", en: "Planetary strength in rupas" },
   "ui.kundali.positions_at_the_birth_instant": {
     ne: "जन्म क्षणको स्पष्ट स्थिति",
     en: "Positions at the birth instant",
   },
-  "ui.kundali.profile_not_found": { ne: "प्रोफाइल फेला परेन।", en: "Profile not found." },
   "ui.kundali.r": { ne: "व", en: "R" },
   "ui.kundali.related_rules": { ne: "सम्बन्धित नियम", en: "Related rules" },
   "ui.kundali.rules": { ne: "नियम", en: "Rules" },
@@ -7008,10 +7002,6 @@ export const strings = {
   "ui.kundali.save_birth_details_once_then_generate": {
     ne: "जन्म विवरण सेभ गर्नुहोस् — पछि कुण्डली छिटो बनाउन सकिन्छ।",
     en: "Save birth details once, then generate kundali quickly.",
-  },
-  "ui.kundali.select_a_profile_or_add_a": {
-    ne: "प्रोफाइल छान्नुहोस् वा नयाँ थप्नुहोस्।",
-    en: "Select a profile or add a new one.",
   },
   "ui.kundali.shanti_vidhi": { ne: "शान्ति विधि", en: "Shanti vidhi" },
   "ui.kundali.sign_lord_pick_wasn_t_found": {
@@ -7026,10 +7016,6 @@ export const strings = {
   },
   "ui.kundali.source_naadisutrasource": { ne: "स्रोत: {{naadiSutraSource}}", en: "Source: {{naadiSutraSource}}" },
   "ui.kundali.summary": { ne: "सारांश", en: "Summary" },
-  "ui.kundali.the_profile_may_have_been_removed": {
-    ne: "प्रोफाइल मेटिएको वा लिङ्क गलत हुन सक्छ।",
-    en: "The profile may have been removed or the link is wrong.",
-  },
   "ui.kundali.this_house_has_no_occupying_graha": {
     ne: "यस भावमा कुनै ग्रह नभएकाले प्रत्यक्ष लाल किताब सङ्केत छैन। यस भावको पक्का घर स्वामी {{pick}}को स्थिति हेर्नुहोस्।",
     en: "This house has no occupying graha, so there's no direct Lal Kitab signal. See the placement of {{pick}}, this house's fixed (pakka ghar) lord.",
@@ -7043,27 +7029,6 @@ export const strings = {
     en: "What is Lal Kitab's sustha/dustha rule?",
   },
 
-  /* ── ui.kundali_milan ───────────────────────────────────────────────────── */
-  "ui.kundali_milan.both_profiles_need_a_birth_date": {
-    ne: "दुवै प्रोफाइलमा जन्म मिति चाहिन्छ — खातामा गएर थप्नुहोस्।",
-    en: "Both profiles need a birth date — add one in your account.",
-  },
-  "ui.kundali_milan.bride_profile": { ne: "कन्याको प्रोफाइल", en: "Bride profile" },
-  "ui.kundali_milan.choose_profile": { ne: "प्रोफाइल छान्नुहोस्", en: "Choose profile" },
-  "ui.kundali_milan.could_not_load_the_match_please": {
-    ne: "मिलान ल्याउन सकिएन। पछि पुनः प्रयास गर्नुहोस्।",
-    en: "Could not load the match. Please try again shortly.",
-  },
-  "ui.kundali_milan.groom_profile": { ne: "वरको प्रोफाइल", en: "Groom profile" },
-  "ui.kundali_milan.matching_the_charts": { ne: "मिलान गणना हुँदै…", en: "Matching the charts…" },
-  "ui.kundali_milan.no_profiles_add_one_first": {
-    ne: "कुनै प्रोफाइल छैन — पहिले प्रोफाइल थप्नुहोस्।",
-    en: "No profiles — add one first.",
-  },
-  "ui.kundali_milan.select_profiles_for_groom_and_bride": {
-    ne: "वर र कन्याका प्रोफाइल छान्नुहोस्।",
-    en: "Select profiles for groom and bride.",
-  },
 
   /* ── ui.learn ───────────────────────────────────────────────────────────── */
   "ui.learn.a_solar_month_is_not_a": {

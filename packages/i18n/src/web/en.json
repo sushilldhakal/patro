@@ -1,5 +1,9 @@
 {
   "app_name": "Dhakal Patro",
+  "reminders": {
+    "login_prompt_title": "Sign in for reminders",
+    "login_prompt_body": "Sign in to set reminders and daily guidance notifications."
+  },
   "seo": {
     "site_keywords": "Nepali calendar, Panchanga, Kundali, Tithi, Nakshatra, Vedic astrology, BS AD converter",
     "default_description": "Nepali calendar, daily Almanac, Tithi, Nakshatra, holidays and Kundali — Vedic Patro.",
@@ -471,6 +475,7 @@
     "profile_hint": "Select a profile to view kundali. Each includes graha, dasha and shanti vidhi.",
     "back_all": "All profiles",
     "login_required": "Sign in to view this kundali.",
+    "login_view_title": "Sign in to view kundali",
     "not_found": "Profile not found",
     "not_found_body": "This kundali profile does not exist or was removed.",
     "other_kundali": "Another kundali",
