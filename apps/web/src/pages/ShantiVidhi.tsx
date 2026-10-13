@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useShantiPage } from "@vedic-patro/features/shanti";
 import { Flame, UserSearch } from "lucide-react";
 import { PageShell, PageHeader } from "../components/PageShell";
 import { useRouteLoading } from "@/lib/route-loading";
-import { fetchKundaliDetail, kundaliDetailKeys } from "@/lib/api";
 import type { InstantQuery } from "@vedic-patro/domain/instant-query";
 import { KundaliControls } from "@/components/kundali/KundaliControls";
 import { ShantiVidhiPanel } from "@/components/kundali/ShantiVidhiPanel";
@@ -30,7 +28,6 @@ function nowMoment(clock: string, pickerEra: "bs" | "ad"): InstantQuery {
 }
 
 export function ShantiVidhi() {
-  const { t } = useTranslation();
   const { location, setLocation } = usePanchangaLocation();
   const calendarEra = useCalendarEra();
   const pickerEra: "bs" | "ad" =
@@ -40,29 +37,23 @@ export function ShantiVidhi() {
     nowMoment(defaultClockForTimezone(timezone), pickerEra),
   );
 
-  const birthMoment = useMemo(() => moment, [moment]);
+  const page = useShantiPage(moment, location.params);
 
-  const detailQ = useQuery({
-    queryKey: kundaliDetailKeys.atTime(birthMoment, location.params),
-    queryFn: () => fetchKundaliDetail(birthMoment, location.params),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  useRouteLoading(detailQ.isLoading);
+  useRouteLoading(page.status === "loading");
 
   return (
     <PageShell>
       <PageHeader
         icon={<Flame className="h-7 w-7 text-secondary" />}
-        title={t("shanti_vidhi.title")}
-        subtitle={t("shanti_vidhi.subtitle")}
+        title={page.copy.title}
+        subtitle={page.copy.subtitle}
       />
 
       <section className={sc.card}>
         <header className={sc.header}>
           <UserSearch className="h-4 w-4 text-secondary" />
-          <h2 className={sc.headerTitle}>{t("shanti_vidhi.birth_section")}</h2>
-          <span className={sc.headerMeta}>{t("shanti_vidhi.birth_meta")}</span>
+          <h2 className={sc.headerTitle}>{page.copy.birthSection}</h2>
+          <span className={sc.headerMeta}>{page.copy.birthMeta}</span>
         </header>
 
         <div className={sc.body}>
@@ -74,8 +65,8 @@ export function ShantiVidhi() {
           />
 
           <ShantiVidhiPanel
-            grahaShanti={detailQ.data?.grahaShanti}
-            isError={detailQ.isError}
+            grahaShanti={page.grahaShanti}
+            isError={page.isError}
           />
         </div>
       </section>

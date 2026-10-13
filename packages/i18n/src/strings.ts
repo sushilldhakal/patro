@@ -7790,8 +7790,6 @@ export const strings = {
     en: "You can now log in with the new password.",
   },
 
-  /* ── ui.ritu_seasons ────────────────────────────────────────────────────── */
-  "ui.ritu_seasons.sun_angle": { ne: "सूर्य {{angle}}°", en: "Sun {{angle}}°" },
 
   /* ── ui.sait ────────────────────────────────────────────────────────────── */
   "ui.sait.annapr_ana_age_month": { ne: "अन्नप्राशन उमेर महिना", en: "Annaprāśana age month" },
