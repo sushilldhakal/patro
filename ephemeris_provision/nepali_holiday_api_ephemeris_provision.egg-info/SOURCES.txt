@@ -1,7 +1,0 @@
-pyproject.toml
-setup.py
-nepali_holiday_api_ephemeris_provision.egg-info/PKG-INFO
-nepali_holiday_api_ephemeris_provision.egg-info/SOURCES.txt
-nepali_holiday_api_ephemeris_provision.egg-info/dependency_links.txt
-nepali_holiday_api_ephemeris_provision.egg-info/requires.txt
-nepali_holiday_api_ephemeris_provision.egg-info/top_level.txt

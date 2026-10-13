@@ -1,5 +1,0 @@
-Metadata-Version: 2.4
-Name: nepali-holiday-api-ephemeris-provision
-Version: 1.0.0
-Summary: Post-install hook: download Swiss Ephemeris .se1 files into data/ephemeris/
-Requires-Dist: pyswisseph>=2.10.0

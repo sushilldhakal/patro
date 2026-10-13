@@ -13,3 +13,9 @@ scripts/design-parity/out/
 # Generated runtime data (large; not in git)
 /data/
 /cache/
+
+# Python build residue and local env overrides
+__pycache__/
+*.pyc
+*.egg-info/
+.env.local
