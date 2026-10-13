@@ -22,6 +22,7 @@ from engine.astronomy.location import (
     resolve_location,
     resolve_location_from_query,
 )
+from services.fb_post_content import periods_summary, planets_summary
 from services.og_image import og_fields, render_panchanga_og
 from services.panchanga_api import build_daily_state
 
@@ -161,17 +162,26 @@ def share_panchanga(
     # without an extra nginx rule for a bare /og-image. `v` busts the CDN /
     # scraper caches when the card layout changes — keep it in step with
     # CHART_OG_IMAGE_URL on the front-end.
-    image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=2"
+    image_url = f"{base}/api/og-image{suffix}{'&' if qs else '?'}v=3"
 
     # Nepali (Bikram Sambat) date everywhere a human reads it — the Gregorian
     # date belongs in the URL, not in the share title.
     date_ne = f["bs_line"] or f["ad_line"]
     date_line = " · ".join(x for x in (f["weekday"], date_ne) if x)
-    title = f"{f['paksha']} {f['tithi']} · {label} · {date_ne} — पञ्चाङ्ग | Vedic Patro"
-    description = (
-        f"{label}, {date_line}। तिथि {f['tithi']}, नक्षत्र {f['nakshatra']}, "
-        f"योग {f['yoga']}, करण {f['karana']}। सूर्योदय {f['sunrise']}, सूर्यास्त {f['sunset']}।"
-    )
+    card = request.query_params.get("card")
+    if card == "periods":
+        # The daily शुभ / अशुभ समय post — same URL contract, different image + copy.
+        title = f"आजका शुभ र अशुभ समय · {label} · {date_ne} | Vedic Patro"
+        description = f"{label}, {date_line}। {periods_summary(payload)}।"
+    elif card == "d1":
+        title = f"आजको ग्रहस्थिति · D1 चक्र · {label} · {date_ne} | Vedic Patro"
+        description = f"{label}, {date_line}। उदयकालिक स्पष्टग्रह: {planets_summary(payload)}।"
+    else:
+        title = f"{f['paksha']} {f['tithi']} · {label} · {date_ne} — पञ्चाङ्ग | Vedic Patro"
+        description = (
+            f"{label}, {date_line}। तिथि {f['tithi']}, नक्षत्र {f['nakshatra']}, "
+            f"योग {f['yoga']}, करण {f['karana']}। सूर्योदय {f['sunrise']}, सूर्यास्त {f['sunset']}।"
+        )
 
     return HTMLResponse(
         content=_share_html(title=title, description=description, page_url=page_url, image_url=image_url),

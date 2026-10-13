@@ -7,6 +7,8 @@ import { parsePatroDayUrl } from "@/lib/patro-day-url";
 import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { searchToLocation } from "@/lib/url-state";
 import { DayTimeline } from "@/components/panchanga/DayTimeline";
+import { D1Card, PeriodsCard } from "@/components/panchanga/OgShareCards";
+import { ogAppLinkFromUrl, ogCardFromUrl } from "@/lib/og-card";
 import { resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import { useRouteLoading } from "@/lib/route-loading";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -77,6 +79,9 @@ export function PanchangaOgPreview() {
   const location = searchToLocation(search) ?? KATHMANDU;
   const dayState = parsePatroDayUrl(search as Record<string, unknown>, lang === "en" ? "en" : "ne");
   const [full] = useState(isFullMode);
+  const [card] = useState(ogCardFromUrl);
+  const [appLink] = useState(ogAppLinkFromUrl);
+  const isTimeline = card === "timeline";
 
   const q = useQuery({
     queryKey: panchangaKeys.daySelection(dayState, location.params),
@@ -100,7 +105,7 @@ export function PanchangaOgPreview() {
   const [scale, setScale] = useState<number | null>(null);
 
   useLayoutEffect(() => {
-    if (full) return;
+    if (full || !isTimeline) return;
     const chart = chartRef.current;
     const body = bodyRef.current;
     if (!chart || !body) return;
@@ -110,10 +115,10 @@ export function PanchangaOgPreview() {
     const maxScale = (OG_W - 40 - COL_GAP - PANEL_MIN_W) / CHART_NATURAL_W;
     const next = Math.min(maxScale, avail / natural);
     if (scale == null || Math.abs(next - scale) > 0.002) setScale(next);
-  }, [full, p, scale]);
+  }, [full, isTimeline, p, scale]);
 
   // Signal the screenshotter that fonts have loaded and the chart has painted.
-  const ready = (Boolean(p) || q.isError) && (full || scale != null);
+  const ready = (Boolean(p) || q.isError) && (full || !isTimeline || scale != null);
   useEffect(() => {
     if (!ready) return;
     let raf = 0;
@@ -176,6 +181,29 @@ export function PanchangaOgPreview() {
       </div>
     </div>
   );
+
+  if (!isTimeline) {
+    return (
+      <div style={{ width: OG_W + 32, padding: 16, background: brand.offWhite }}>
+        <div
+          id="og-capture"
+          style={{
+            width: OG_W,
+            height: OG_H,
+            background: brand.offWhite,
+            borderRadius: 16,
+            padding: "18px 20px 14px",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          {header}
+          {card === "periods" ? <PeriodsCard p={p} appLink={appLink} /> : <D1Card p={p} appLink={appLink} />}
+        </div>
+      </div>
+    );
+  }
 
   if (full) {
     return (

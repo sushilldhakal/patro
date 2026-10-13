@@ -46,6 +46,109 @@ def page_url() -> str:
     return f"{config.frontend_url()}/panchanga"
 
 
+def card_page_url(card: str, day: date) -> str:
+    """Link for an extra daily post (``periods`` / ``d1``). The ``card`` param picks
+    the share image (see services.og_screenshot / the web og-preview page); ``date``
+    makes the URL unique per day so Facebook's link-preview cache can't serve
+    yesterday's card. ``app`` (only when APP_LINK is set) fills the image's
+    reserved mobile-app slot."""
+    query = {"card": card, "date": day.isoformat()}
+    app = config.app_link()
+    if app:
+        query["app"] = _strip_scheme(app)
+    return f"{config.frontend_url()}/panchanga?{urlencode(query)}"
+
+
+def _strip_scheme(url: str) -> str:
+    return url.removeprefix("https://").removeprefix("http://").rstrip("/")
+
+
+def app_caption_line() -> str:
+    """Caption tail pointing at the mobile app, or "" until APP_LINK is configured."""
+    app = config.app_link()
+    return f"\n\nमोबाइल एप: {app}" if app else ""
+
+
+def dated_header(fields: dict[str, Any]) -> str:
+    """``मंगलवार · असोज २७, २०८३ (१३ अक्टोबर २०२६) · सूर्योदय ०६:०२ · सूर्यास्त १७:३७``."""
+    date_bit = fields["bs_line"] or fields["ad_line"]
+    if fields["bs_line"] and fields["ad_line"]:
+        date_bit = f"{fields['bs_line']} ({fields['ad_line']})"
+    header = " · ".join(x for x in (fields["weekday"], date_bit) if x)
+    return header + f" · सूर्योदय {ne_digits(fields['sunrise'])} · सूर्यास्त {ne_digits(fields['sunset'])}"
+
+
+def _span(block: dict[str, Any] | None) -> str | None:
+    if not block or not block.get("start_time") or not block.get("end_time"):
+        return None
+    return ne_digits(f"{block['start_time']}–{block['end_time']}")
+
+
+def periods_summary(payload: dict[str, Any]) -> str:
+    """One line of headline windows, e.g. ``अभिजित् मुहूर्त ११:२६–१२:१२ · राहु काल १४:४३–१६:१०``."""
+    m = payload.get("muhurta") or {}
+    items = [
+        (n, _span(m.get(k)))
+        for n, k in (("अभिजित् मुहूर्त", "abhijit"), ("राहु काल", "rahu_kalam"), ("यमगण्ड", "yamaganda"), ("गुलिक काल", "gulika"))
+    ]
+    return " · ".join(f"{n} {t}" for n, t in items if t)
+
+
+def planets_summary(payload: dict[str, Any]) -> str:
+    """``सूर्य कन्या · चन्द्र तुला · …`` — each graha's rashi at the payload's anchor."""
+    planets = payload.get("planets") or {}
+    return " · ".join(
+        f"{label} {planets[key].get('rashi_ne') or planets[key].get('rashi_name')}"
+        for key, label in _PLANET_NE
+        if planets.get(key) and (planets[key].get("rashi_ne") or planets[key].get("rashi_name"))
+    )
+
+
+def periods_caption(fields: dict[str, Any], payload: dict[str, Any], link: str) -> str:
+    """शुभ / अशुभ समय post — the headline windows; the image carries the full lists."""
+    m = payload.get("muhurta") or {}
+    good = [(n, _span(m.get(k))) for n, k in (("अभिजित् मुहूर्त", "abhijit"),)]
+    bad = [
+        (n, _span(m.get(k)))
+        for n, k in (("राहु काल", "rahu_kalam"), ("यमगण्ड", "yamaganda"), ("गुलिक काल", "gulika"))
+    ]
+    lines = []
+    if any(t for _, t in good):
+        lines.append("शुभ: " + " · ".join(f"{n} {t}" for n, t in good if t))
+    if any(t for _, t in bad):
+        lines.append("अशुभ: " + " · ".join(f"{n} {t}" for n, t in bad if t))
+    body = "\n".join(lines)
+    return (
+        f"आजका शुभ र अशुभ समय — काठमाडौँ\n{dated_header(fields)}\n\n"
+        + (f"{body}\n\n" if body else "")
+        + f"सबै शुभ र अशुभ समय: {link}"
+        + app_caption_line()
+    )
+
+
+_PLANET_NE = [
+    ("sun", "सूर्य"), ("moon", "चन्द्र"), ("mars", "मंगल"), ("mercury", "बुध"),
+    ("jupiter", "बृहस्पति"), ("venus", "शुक्र"), ("saturn", "शनि"), ("rahu", "राहु"), ("ketu", "केतु"),
+]
+
+
+def d1_caption(fields: dict[str, Any], payload: dict[str, Any], link: str) -> str:
+    """D1 चक्र / उदयकालिक स्पष्टग्रह post — each graha's rashi at sunrise."""
+    planets = payload.get("planets") or {}
+    parts = [
+        f"{label} {planets[key].get('rashi_ne') or planets[key].get('rashi_name')}"
+        for key, label in _PLANET_NE
+        if planets.get(key) and (planets[key].get("rashi_ne") or planets[key].get("rashi_name"))
+    ]
+    return (
+        f"आजको ग्रहस्थिति (D1 चक्र) — काठमाडौँ\n{dated_header(fields)}\n\n"
+        f"उदयकालिक स्पष्टग्रह (सूर्योदय {ne_digits(fields['sunrise'])}):\n"
+        + " · ".join(parts)
+        + f"\n\nपूर्ण चक्र: {link}"
+        + app_caption_line()
+    )
+
+
 def sunrise_datetime(payload: dict[str, Any], day: date) -> datetime | None:
     """Kathmandu sunrise (HH:MM in the payload) as an aware datetime on `day`."""
     sunrise = (payload.get("sun") or {}).get("sunrise")

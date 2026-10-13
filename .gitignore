@@ -16,3 +16,6 @@ __pycache__/
 *.pyc
 *.egg-info/
 .env.local
+
+# Vite dev cache
+**/.vite/

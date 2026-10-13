@@ -200,6 +200,20 @@ def facebook_app_secret() -> str | None:
 
 # ─── Facebook Page daily post ───────────────────────────────────────────────────
 
+def app_link() -> str | None:
+    """Mobile-app link shown on the extra Facebook posts (caption + the image's
+    reserved slot). Unset until the app is published — the slot stays blank."""
+    return (os.getenv("APP_LINK") or "").strip() or None
+
+
+def fb_post_kinds() -> list[str]:
+    """Which daily posts to publish: ``main`` (दिन-चक्र), ``periods`` (शुभ/अशुभ समय),
+    ``d1`` (D1 चक्र + ग्रह). ``FB_POST_KINDS=main,periods,d1`` (default: all three)."""
+    raw = os.getenv("FB_POST_KINDS", "main,periods,d1")
+    kinds = [k.strip() for k in raw.split(",") if k.strip() in {"main", "periods", "d1"}]
+    return kinds or ["main"]
+
+
 def fb_page_id() -> str | None:
     """Target Facebook Page numeric id for the daily panchanga post. Unset ⇒ the
     poster stays dormant."""

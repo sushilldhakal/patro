@@ -1,5 +1,33 @@
 # Daily Kathmandu panchanga → Facebook Page
 
+**Three posts every morning at Kathmandu sunrise**, one run of the same timer:
+
+| Kind | Link | Card image |
+|---|---|---|
+| `main` | `/panchanga` | दिन-चक्र chart + anga changes (original post) |
+| `periods` | `/panchanga?card=periods&date=YYYY-MM-DD` | अशुभ समय \| शुभ समय lists |
+| `d1` | `/panchanga?card=d1&date=YYYY-MM-DD` | D1 चक्र + उदयकालिक स्पष्टग्रह (planet positions at sunrise) |
+
+Each kind has its own once-a-day guard file, so a failure in one never blocks or
+duplicates the others. The `date` in the extra links makes each day's URL unique
+(Facebook caches link previews by URL). Settings (all optional, in `.env`):
+
+```ini
+FB_POST_KINDS=main,periods,d1   # which posts to publish; drop a name to stop that post
+APP_LINK=                       # mobile-app link — empty until the app is published
+```
+
+**Mobile-app link slot:** the two extra cards reserve a blank slot at the bottom right
+of the image, and their captions gain a `मोबाइल एप: <link>` line, as soon as
+`APP_LINK` is set — no code change, nothing shifts. Until then the slot stays empty.
+
+Preview a card without Facebook: open
+`/panchanga/og-preview?card=periods` (or `card=d1`, optionally `&app=text`) on the site,
+or `python scripts/post_daily_panchanga.py --dry-run` for the links and captions. Post one
+kind now with `--only periods --force`.
+
+Details below describe the original `main` post; the extra kinds work the same way.
+
 Posts to a Facebook Page once every morning at **Kathmandu sunrise**, as a
 **link post** to `/panchanga` (not an uploaded photo) — Facebook crawls that
 URL itself and renders the whole card, including the chart image, as one

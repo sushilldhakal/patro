@@ -38,6 +38,8 @@ const PLANET_ABBR_KEY: Record<string, string> = {
 
 interface Props {
   houses: BhavaHouse[];
+  /** Max rendered width in px (default 340). The share-image card draws it larger. */
+  size?: number;
 }
 
 type Selected = { key: string; house: number };
@@ -129,7 +131,7 @@ function DrishtiPanel({
   );
 }
 
-export function D1Chart({ houses }: Props) {
+export function D1Chart({ houses, size }: Props) {
   const { t } = useTranslation();
   const { digits, lang } = useLocale();
   const byHouse = new Map(houses.map((h) => [h.house, h]));
@@ -157,6 +159,7 @@ export function D1Chart({ houses }: Props) {
       <svg
         viewBox="0 0 300 300"
         className="w-full h-auto max-w-[340px] mx-auto"
+        style={size ? { maxWidth: size } : undefined}
         role="img"
         aria-label={t("kundali.north_indian_kundali_chart")}
       >
