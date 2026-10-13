@@ -157,7 +157,7 @@ export function DayPatroCard({
 
       {hasFestival ? (
         <View className={cn(dainikKrantiClasses.festivalBox, "flex-row items-start gap-2")}>
-          <View className="mt-1.5 size-1.5 rounded-full bg-rose-500" />
+          <View className={dainikKrantiClasses.festivalDot} />
           <Text numberOfLines={3} className={cn(dainikKrantiClasses.festivalText, "flex-1")} style={nepaliTextStyle()}>
             {day.festivals.join(" · ")}
           </Text>

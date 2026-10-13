@@ -486,7 +486,7 @@ function DayPatroCard({
 
       {hasFestival ? (
         <div className={cn(dainikKrantiClasses.festivalBox, "flex items-start gap-2")}>
-          <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-rose-500" />
+          <span aria-hidden className={dainikKrantiClasses.festivalDot} />
           <div className={cn(dainikKrantiClasses.festivalText, "line-clamp-3")}>{day.festivals.join(" · ")}</div>
         </div>
       ) : null}
@@ -561,7 +561,7 @@ function DayPatroCard({
             )}
           >
             <span>{isExpanded ? t("dainik.hide_details") : t("dainik.lagna_planets_more")}</span>
-            <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform duration-200", isExpanded && "rotate-180")} />
+            <ChevronDown className={cn(dainikKrantiClasses.expandChevron, isExpanded && "rotate-180")} />
           </button>
           <div
             className={cn(
