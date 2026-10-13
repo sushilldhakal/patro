@@ -9,3 +9,7 @@ node_modules/
 
 # design-parity screenshots
 scripts/design-parity/out/
+
+# Generated runtime data (large; not in git)
+/data/
+/cache/
