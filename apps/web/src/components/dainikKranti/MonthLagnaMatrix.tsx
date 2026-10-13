@@ -113,12 +113,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
   if (embedded) return table;
 
   return (
-    <PatroTableShell
-      titleNe="दैनिक लग्न आरम्भ समयतालिका"
-      titleEn="Daily Lagna (Ascendant) Start Time Table"
-      subtitle="प्रत्येक गते सूर्योदयदेखि अर्को सूर्योदयसम्म कुन राशि कहिले लग्नमा आउँछ — समय सूर्योदयभन्दा अगाडि भए २४ घण्टा थपिएको देखाइन्छ।"
-      subtitleEn="For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise — times before sunrise are shown with 24 hours added."
-    >
+    <PatroTableShell titleKey="dainik.shell.lagna_matrix.title" subtitleKey="dainik.shell.lagna_matrix.subtitle">
       {table}
     </PatroTableShell>
   );

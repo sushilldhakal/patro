@@ -3432,6 +3432,28 @@
     "planet_positions_rise_set_transit_legend": "Planet positions, rise-set & transit legend",
     "planet_positions_deg_kala_vikala": "Planet positions (deg° kala′ vikala″)",
     "transit_papashanti_house_symbols": "Transit / Papashanti house symbols",
+    "shell": {
+      "graha_spashta": {
+        "title": "Sunrise Planetary Positions (Graha Spashta)",
+        "subtitle": "Planetary rashi at sunrise (sign, deg|kala|vikala), plus deshaantar, akshamsha, and daily belaantar."
+      },
+      "lagna_matrix": {
+        "title": "Daily Lagna (Ascendant) Start Time Table",
+        "subtitle": "For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise — times before sunrise are shown with 24 hours added."
+      },
+      "calc_notes": {
+        "title": "Special Calculation Notes",
+        "subtitle": "Planetary sankrantis, post-24:00 lagna/transits, and adhik/shuddha paksha boundaries — days to note for birth-chart and ritual timing."
+      }
+    },
+    "calc_kind": {
+      "ingress": "Transit",
+      "udayast": "Rise/Set",
+      "motion": "Retro/Direct",
+      "late_night": "Late night",
+      "paksha_boundary": "Paksha boundary"
+    },
+    "calc_legend_note": "<b>Dasha bracket:</b> the years/months/days of Vimshottari dasha remaining at birth. <b>Time correction:</b> in print, symbols like “u” or “0” indicate zero degrees/kala. Listed sunrise already includes Deshaantar; Belaantar is shown for reference only.",
     "kartavya": {
       "krishna": "During Krishna Paksha the Moon gradually wanes. Shraddha, tarpana and ancestral rites, moderate diet, japa and charity are considered auspicious. Ekadashi fasting and ancestral tarpana on Aaushi are observed; new auspicious ceremonies are usually moved to Shukla Paksha.",
       "shukla": "During Shukla Paksha the Moon gradually waxes. Auspicious ceremonies such as weddings, sacred-thread rites, house-warming, travel and new beginnings are considered favourable. Ekadashi fasting and Satyanarayan puja/fasting on the full moon are observed."
@@ -4295,7 +4317,6 @@
       "rest_and_last": "{{rest}} and {{last}}"
     },
     "dainik_kranti": {
-      "dasha_bracket_the_years_months_days": "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",
       "day": "Day",
       "lat": "Lat.",
       "long": "Long.",

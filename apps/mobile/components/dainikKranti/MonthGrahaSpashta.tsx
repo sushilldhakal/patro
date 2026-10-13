@@ -177,12 +177,7 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
   }
 
   return (
-    <PatroTableShell
-      titleNe="उदयकालिक सूर्यादिग्रहस्पष्ट"
-      titleEn="Sunrise Planetary Positions (Graha Spashta)"
-      subtitle="सूर्योदयको क्षणमा ग्रहहरूको राश्यादि स्थिति (राशि, अंश|कला|विकला), देशान्तर, अक्षांश र दैनिक बेलान्तर।"
-      subtitleEn="Planetary rashi at sunrise (sign, deg|kala|vikala), plus deshaantar, akshamsha, and daily belaantar."
-    >
+    <PatroTableShell titleKey="dainik.shell.graha_spashta.title" subtitleKey="dainik.shell.graha_spashta.subtitle">
       {table}
       {footnote}
     </PatroTableShell>

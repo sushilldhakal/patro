@@ -5519,6 +5519,30 @@ export const strings = {
     ne: "गोचर / पापशान्ति घर-सङ्केत",
     en: "Transit / Papashanti house symbols",
   },
+  "dainik.shell.graha_spashta.title": { ne: "उदयकालिक सूर्यादिग्रहस्पष्ट", en: "Sunrise Planetary Positions (Graha Spashta)" },
+  "dainik.shell.graha_spashta.subtitle": {
+    ne: "सूर्योदयको क्षणमा ग्रहहरूको राश्यादि स्थिति (राशि, अंश|कला|विकला), देशान्तर, अक्षांश र दैनिक बेलान्तर।",
+    en: "Planetary rashi at sunrise (sign, deg|kala|vikala), plus deshaantar, akshamsha, and daily belaantar.",
+  },
+  "dainik.shell.lagna_matrix.title": { ne: "दैनिक लग्न आरम्भ समयतालिका", en: "Daily Lagna (Ascendant) Start Time Table" },
+  "dainik.shell.lagna_matrix.subtitle": {
+    ne: "प्रत्येक गते सूर्योदयदेखि अर्को सूर्योदयसम्म कुन राशि कहिले लग्नमा आउँछ — समय सूर्योदयभन्दा अगाडि भए २४ घण्टा थपिएको देखाइन्छ।",
+    en: "For each day, which rashi rises as the lagna and when, from sunrise to the next sunrise — times before sunrise are shown with 24 hours added.",
+  },
+  "dainik.shell.calc_notes.title": { ne: "गणना सूचना र विशेष दिनहरू", en: "Special Calculation Notes" },
+  "dainik.shell.calc_notes.subtitle": {
+    ne: "ग्रह सङ्क्रान्ति, २४:०० पछिको लग्न/ग्रहचार, र अधिक/शुद्ध पक्ष सीमाहरू — जन्मकुण्डली र विधि समयका लागि ध्यान दिनुपर्ने दिनहरू।",
+    en: "Planetary sankrantis, post-24:00 lagna/transits, and adhik/shuddha paksha boundaries — days to note for birth-chart and ritual timing.",
+  },
+  "dainik.calc_kind.ingress": { ne: "ग्रहचार", en: "Transit" },
+  "dainik.calc_kind.udayast": { ne: "उदयास्त", en: "Rise/Set" },
+  "dainik.calc_kind.motion": { ne: "वक्री/मार्गी", en: "Retro/Direct" },
+  "dainik.calc_kind.late_night": { ne: "रात्रिकालीन", en: "Late night" },
+  "dainik.calc_kind.paksha_boundary": { ne: "पक्ष सीमा", en: "Paksha boundary" },
+  "dainik.calc_legend_note": {
+    ne: "<b>दशा कोष्ठक:</b> जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। <b>समय सुधार:</b> मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा देशान्तर समायोजित छ; बेलान्तर सन्दर्भका लागि मात्र देखाइन्छ।",
+    en: "<b>Dasha bracket:</b> the years/months/days of Vimshottari dasha remaining at birth. <b>Time correction:</b> in print, symbols like “u” or “0” indicate zero degrees/kala. Listed sunrise already includes Deshaantar; Belaantar is shown for reference only.",
+  },
   "dainik.kartavya.krishna": {
     ne: "कृष्ण पक्षमा चन्द्रमा क्रमशः क्षीण हुँदै जान्छ। श्राद्ध, तर्पण र पितृकार्य, संयमित आहार, जप र दान शुभ मानिन्छ। एकादशीमा व्रत र औंसीमा पितृ-तर्पण गरिन्छ; नयाँ मांगलिक कार्य प्रायः शुक्ल पक्षमा सारिन्छ।",
     en: "During Krishna Paksha the Moon gradually wanes. Shraddha, tarpana and ancestral rites, moderate diet, japa and charity are considered auspicious. Ekadashi fasting and ancestral tarpana on Aaushi are observed; new auspicious ceremonies are usually moved to Shukla Paksha.",
@@ -6862,10 +6886,6 @@ export const strings = {
 
 
   /* ── ui.dainik_kranti ───────────────────────────────────────────────────── */
-  "ui.dainik_kranti.dasha_bracket_the_years_months_days": {
-    ne: "दशा कोष्ठक: जन्म-समयमा बाँकी विंशोत्तरी दशाको वर्ष/महिना/दिन। समय सुधार: मुद्रणमा “उ” वा “०” जस्ता सङ्केतले शून्य अंश/कला जनाउँछ। सूचीबद्ध सूर्योदयमा बेलान्तर र देशान्तर पहिल्यै समायोजित छन्।",
-    en: "Dasha bracket: the years/months/days of Vimshottari dasha remaining at birth. Time correction: in print, symbols like “u” or “0” indicate zero degrees/kala. The listed sunrise already has belaantar and deshaantar corrections applied.",
-  },
   "ui.dainik_kranti.day": { ne: "बा.", en: "Day" },
   "ui.dainik_kranti.lat": { ne: "अक्षांश", en: "Lat." },
   "ui.dainik_kranti.long": { ne: "देशान्तर", en: "Long." },
