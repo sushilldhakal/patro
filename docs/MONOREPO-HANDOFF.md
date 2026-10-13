@@ -1,6 +1,6 @@
 # Monorepo handoff — read this first in a new session
 
-Branch: `monorepo` (do NOT merge to `main`: the iOS app is in App Store review; this ships with the next mobile release). Keep pushing to `monorepo`.
+Branch: `monorepo` was merged to `main` on 2026-10-13 and `main` is now the production branch (the old standalone `dhakal-patro` site is retired). Every push to `main` deploys via GitHub Actions → `scripts/deploy.sh`. See `docs/PRODUCTION-PLAN.md` for the server, Redis cache and rollback.
 
 Rule the owner set: **web is the source of truth.** Where the website and the app differ, the web version wins and the app adopts it. One copy of anything shared, in `packages/`.
 
