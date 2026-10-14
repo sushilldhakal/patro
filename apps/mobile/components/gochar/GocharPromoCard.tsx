@@ -2,7 +2,7 @@ import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
+import { useGocharPromoCard } from "@vedic-patro/features/gochar";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 
@@ -11,7 +11,7 @@ import { gocharClasses } from "@vedic-patro/design-tokens/classes/gochar-classes
 import { cn } from "@vedic-patro/domain/utils";
 /** Panchanga footer cross-link to the full Gochar page — web `GocharPromoCard`. */
 export function GocharPromoCard() {
-  const { t } = useLocale();
+  const copy = useGocharPromoCard();
   const router = useRouter();
   const colors = useThemeColors();
   return (
@@ -26,16 +26,16 @@ export function GocharPromoCard() {
         </View>
         <View className="min-w-0 flex-1">
           <Text className={gocharClasses.promoTitle} style={nepaliTextStyle()}>
-            {t("gochar.promo_title")}
+            {copy.title}
           </Text>
           <Text className={gocharClasses.promoBody} style={nepaliTextStyle()}>
-            {t("ui.gochar.seen_the_day_s_panchang_now")}
+            {copy.body}
           </Text>
         </View>
       </View>
       <View className={cn(gocharClasses.promoCta, "mt-3 flex-row sm:mt-0")}>
         <Text className={gocharClasses.promoCtaText} style={nepaliTextStyle()}>
-          {t("gochar.promo_cta")}
+          {copy.cta}
         </Text>
         <Ionicons name="arrow-forward" size={16} color={neutral.white} />
       </View>
