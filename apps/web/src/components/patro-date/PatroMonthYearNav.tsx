@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import type { Era, Language } from "@vedic-patro/domain/era";
 import { cn } from "@vedic-patro/domain/utils";
 import { PatroDateNavCore } from "./PatroDateNavCore";
-import { usePatroMonthHeadlineSubtitle } from "./use-patro-month-headline-subtitle";
+import { usePatroMonthYearNav } from "@vedic-patro/features/patro-date";
 
 export type PatroMonthYearNavProps = {
   era: Era;
@@ -21,7 +20,7 @@ export type PatroMonthYearNavProps = {
   todayAd?: string;
   prevDisabled?: boolean;
   nextDisabled?: boolean;
-  /** Optional override; default comes from {@link usePatroMonthHeadlineSubtitle}. */
+  /** Optional override; default comes from `usePatroMonthYearNav`. */
   crossEraSubtitle?: string | null;
   /** URL `language` — Nepali digits when `ne`. */
   displayLanguage?: Language;
@@ -61,8 +60,6 @@ export function PatroMonthYearNav({
   desktopToolbar,
   className,
 }: PatroMonthYearNavProps) {
-  const { t } = useTranslation();
-
   const defaultPrevDisabled = prevDisabled ?? false;
   const defaultNextDisabled = nextDisabled ?? false;
 
@@ -79,14 +76,7 @@ export function PatroMonthYearNav({
 
   const resolvedMobileToolbar = mobileToolbar;
 
-  const headlineCrossEra = usePatroMonthHeadlineSubtitle(
-    era,
-    year,
-    month,
-    location,
-    crossEraSubtitle,
-    displayLanguage,
-  );
+  const nav = usePatroMonthYearNav({ era, year, month, location, crossEraSubtitle, displayLanguage });
 
   return (
     <div
@@ -100,22 +90,22 @@ export function PatroMonthYearNav({
           era={era}
           year={year}
           month={month}
-          crossEraSubtitle={headlineCrossEra}
+          crossEraSubtitle={nav.crossEraSubtitle}
           displayLanguage={displayLanguage}
           todayAd={todayAd}
           onToday={onToday}
-          todayAriaLabel={t("calendar.today_btn")}
+          todayAriaLabel={nav.labels.today}
           onMonthChange={onMonthChange}
           onYearChange={onYearChange}
           onBrowseCommit={onBrowseCommit}
-          monthAriaLabel={t("calendar.month_aria")}
-          yearAriaLabel={t("calendar.year_aria")}
+          monthAriaLabel={nav.labels.month}
+          yearAriaLabel={nav.labels.year}
           onPrev={onPrev}
           onNext={onNext}
           prevDisabled={defaultPrevDisabled}
           nextDisabled={defaultNextDisabled}
-          prevAriaLabel={t("calendar.prev_month")}
-          nextAriaLabel={t("calendar.next_month")}
+          prevAriaLabel={nav.labels.prev}
+          nextAriaLabel={nav.labels.next}
           panchangaSubtitle={subtitle}
           mobileDateTimeDrawer
           mobileToolbar={resolvedMobileToolbar}
