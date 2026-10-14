@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import {
   FlatList,
   NativeScrollEvent,
@@ -11,11 +11,10 @@ import {
 import { Ionicons } from "@/components/icons/Ionicons";
 import { RashiGlyphIcon } from "@/components/panchanga/element/ElementGlyphIcon";
 import { RashifalSignCard } from "@/components/rashifal/RashifalSignCard";
-import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
-import { useLocale } from "@/lib/i18n";
+import { useHomeRashifalSignPicker } from "@vedic-patro/features/home";
 import { cn } from "@vedic-patro/domain/utils";
 import type { RashifalPeriod, RashifalSignBlock } from "@/lib/api";
-import { rashifalToneBar, rashifalToneText, toNepaliDigits } from "@/lib/rashifal-ui";
+import { rashifalToneBar, rashifalToneText } from "@/lib/rashifal-ui";
 import { useThemeColors } from "@/lib/theme-context";
 import { useBreakpoint } from "@/lib/responsive";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
@@ -33,17 +32,13 @@ export function HomeRashifalSignPicker({
   defaultSignId,
   contentInset = 0,
 }: Props) {
-  const { t, lang } = useLocale();
+  const picker = useHomeRashifalSignPicker(signs, defaultSignId);
+  const { selectIndex, selectedIndex: index } = picker;
   const colors = useThemeColors();
   const { width } = useWindowDimensions();
   const { isTablet } = useBreakpoint();
   const listRef = useRef<FlatList<RashifalSignBlock>>(null);
 
-  const initialIndex = Math.max(
-    0,
-    signs.findIndex((s) => s.id === (defaultSignId ?? signs[0]?.id)),
-  );
-  const [index, setIndex] = useState(initialIndex >= 0 ? initialIndex : 0);
 
   const carouselOuter = width - contentInset * 2;
   const slideWidth = isTablet && width >= 900 ? Math.min(carouselOuter * 0.55, 440) : carouselOuter - 72;
@@ -51,35 +46,31 @@ export function HomeRashifalSignPicker({
   const goToIndex = useCallback(
     (i: number) => {
       const next = ((i % signs.length) + signs.length) % signs.length;
-      setIndex(next);
+      selectIndex(next);
       listRef.current?.scrollToIndex({ index: next, animated: true });
     },
-    [signs.length],
+    [signs.length, selectIndex],
   );
 
   const onMomentumScrollEnd = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
       const i = Math.round(e.nativeEvent.contentOffset.x / slideWidth);
-      if (i >= 0 && i < signs.length) setIndex(i);
+      if (i >= 0 && i < signs.length) selectIndex(i);
     },
-    [slideWidth, signs.length],
+    [slideWidth, signs.length, selectIndex],
   );
 
   if (!signs.length) return null;
 
-  const selectedId = signs[index]?.id;
-
   const thumbGrid = (
     <View className={homeClasses.pickerGrid}>
       <View className="flex-row flex-wrap gap-2.5">
-        {signs.map((sign, i) => {
-          const name = lang === "ne" ? sign.name : sign.title_en;
-          const active = sign.id === selectedId;
-          const pct = sign.percent ?? 50;
+        {picker.thumbs.map((sign) => {
+          const { active } = sign;
           return (
             <Pressable
               key={sign.id}
-              onPress={() => goToIndex(i)}
+              onPress={() => goToIndex(sign.index)}
               className={cn(
                 homeClasses.pickerThumb,
                 active ? homeClasses.pickerThumbActive : homeClasses.pickerThumbIdle,
@@ -87,23 +78,23 @@ export function HomeRashifalSignPicker({
               style={{ width: "31%" }}
             >
               <View className="items-center">
-                <RashiGlyphIcon name={getRashiName(sign.id, lang)} number={sign.id} size={32} />
+                <RashiGlyphIcon name={sign.glyphName} number={sign.id} size={32} />
               </View>
               <Text
                 className={cn(homeClasses.pickerName, active ? homeClasses.pickerNameActive : homeClasses.pickerNameIdle)}
                 numberOfLines={1}
               >
-                {name}
+                {sign.name}
               </Text>
               <View className={homeClasses.pickerBarRow}>
                 <View className={homeClasses.pickerBar}>
                   <View
                     className={cn(homeClasses.pickerBarFill, rashifalToneBar(sign.tone))}
-                    style={{ width: `${pct}%` }}
+                    style={{ width: `${sign.percent}%` }}
                   />
                 </View>
                 <Text className={cn(homeClasses.pickerPercent, rashifalToneText(sign.tone))}>
-                  {toNepaliDigits(pct, lang)}
+                  {sign.percentLabel}
                 </Text>
               </View>
             </Pressable>
@@ -140,14 +131,14 @@ export function HomeRashifalSignPicker({
       <Pressable
         onPress={() => goToIndex(index - 1)}
         className={cn(homeClasses.pickerArrow, "absolute left-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
-        accessibilityLabel={t("learn_page.prev")}
+        accessibilityLabel={picker.copy.prev}
       >
         <Ionicons name="chevron-back" size={18} color={colors.foreground} />
       </Pressable>
       <Pressable
         onPress={() => goToIndex(index + 1)}
         className={cn(homeClasses.pickerArrow, "absolute right-0 top-[45%] items-center justify-center rounded-full active:opacity-80")}
-        accessibilityLabel={t("learn_page.next")}
+        accessibilityLabel={picker.copy.next}
       >
         <Ionicons name="chevron-forward" size={18} color={colors.foreground} />
       </Pressable>

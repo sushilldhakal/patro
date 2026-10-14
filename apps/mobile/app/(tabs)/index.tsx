@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { useLocalSearchParams, useRootNavigationState, useRouter } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
 import { BsMonthHeaderTitle } from "@/components/home/BsMonthHeaderTitle";
 import { BsCalendarGrid } from "@/components/home/BsCalendarGrid";
 import { HomeVedaMantra } from "@/components/home/HomeVedaMantra";
@@ -17,7 +16,7 @@ import { HomeQuickLinks } from "@/components/home/HomeQuickLinks";
 import { PanchangaDirectoryMobile } from "@/components/panchanga/PanchangaDirectoryMobile";
 import { VedicPatroLoader } from "@/components/branding/VedicPatroLoader";
 import { ErrorState } from "@/components/ui/States";
-import { apiKeys, fetchPanchanga, fetchSaitMonthAll, type CalendarDay } from "@/lib/api";
+import { apiKeys, fetchPanchanga, type CalendarDay } from "@/lib/api";
 import { useHomeAside, useHomeMonth } from "@vedic-patro/features/home";
 import { fetchMonthCalendarOffline } from "@/lib/offline/offline-month";
 import { OfflineUnavailableError } from "@/lib/offline/offline-store";
@@ -148,13 +147,6 @@ export default function HomeScreen() {
     scrollToAsideRef.current = false;
     requestAnimationFrame(() => scrollViewIntoView(asideRef.current, 72));
   }, [selectedDay]);
-
-  const saitQ = useQuery({
-    queryKey: apiKeys.saitMonthAll(year, month, location.params),
-    queryFn: () => fetchSaitMonthAll(year, month, location.params),
-    staleTime: 1000 * 60 * 60,
-    retry: 2,
-  });
 
   const goMonth = useCallback(
     (delta: number) => {
@@ -288,10 +280,6 @@ export default function HomeScreen() {
         loading={aside.initialLoading}
         error={aside.error}
         onRetry={aside.retry}
-        saitData={saitQ.data}
-        saitLoading={saitQ.isPending}
-        saitError={saitQ.isError}
-        onSaitRetry={() => saitQ.refetch()}
         location={location.params}
         browseEra={browseEra}
       />

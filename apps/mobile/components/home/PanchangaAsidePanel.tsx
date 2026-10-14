@@ -6,7 +6,7 @@ import { TodayHighlightCard } from "./TodayHighlightCard";
 import { PanchangaVivaranPanel } from "./PanchangaVivaranPanel";
 import { MuhurtaAsidePanel } from "./MuhurtaAsidePanel";
 import { SaitAsidePanel } from "./SaitAsidePanel";
-import type { CalendarDay, LocationParams, PanchangaDay, SaitMonthAllResponse } from "@/lib/api";
+import type { CalendarDay, LocationParams, PanchangaDay } from "@/lib/api";
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
 import { ErrorState, LoadingState } from "@/components/ui/States";
@@ -28,10 +28,6 @@ type Props = {
   loading: boolean;
   error: boolean;
   onRetry?: () => void;
-  saitData?: SaitMonthAllResponse;
-  saitLoading?: boolean;
-  saitError?: boolean;
-  onSaitRetry?: () => void;
   location?: LocationParams;
   browseEra?: Era;
 };
@@ -47,10 +43,6 @@ export function PanchangaAsidePanel({
   loading,
   error,
   onRetry,
-  saitData,
-  saitLoading,
-  saitError,
-  onSaitRetry,
   location,
   browseEra = "bs",
 }: Props) {
@@ -149,10 +141,6 @@ export function PanchangaAsidePanel({
               month={month}
               highlightDay={highlightDay}
               location={location}
-              data={saitData}
-              loading={saitLoading}
-              error={saitError}
-              onRetry={onSaitRetry}
             />
           )}
         </View>

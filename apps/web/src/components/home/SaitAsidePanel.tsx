@@ -1,19 +1,6 @@
-import { useMemo } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { fetchSaitMonthAll, saitMonthAllKey } from "@/lib/api";
-import { SAIT_CATEGORIES } from "@vedic-patro/domain/sait-data";
-import {
-  AD_MONTH_NAMES,
-  AD_MONTH_NAMES_NE,
-  BS_MONTH_NAMES,
-  BS_MONTHS_NE,
-  bsToAD,
-} from "@vedic-patro/domain/bs-calendar";
-import { getBsMonthsOverlappingAdMonth } from "@vedic-patro/domain/local-calendar";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import { useSaitAside } from "@vedic-patro/features/home";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { patroYearLinkSearch } from "@/lib/url-state";
 import { cn } from "@vedic-patro/domain/utils";
@@ -51,121 +38,47 @@ export function SaitAsidePanel({
   adYear,
   adMonth,
 }: Props) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-
-  const isAd = adYear != null && adMonth != null;
-
-  // A Gregorian month straddles two BS months, and the API only computes saait
-  // a BS month at a time, so fetch every BS month it touches.
-  const bsMonths = useMemo(
-    () =>
-      isAd
-        ? getBsMonthsOverlappingAdMonth(adYear, adMonth)
-        : [{ year, month }],
-    [isAd, adYear, adMonth, year, month],
-  );
-
-  const saitQueries = useQueries({
-    queries: bsMonths.map((m) => ({
-      queryKey: saitMonthAllKey(m.year, m.month),
-      queryFn: () => fetchSaitMonthAll(m.year, m.month),
-      staleTime: 1000 * 60 * 60,
-      placeholderData: keepPreviousData,
-      retry: 1,
-    })),
-  });
-
-  const isLoading = saitQueries.some((q) => q.isLoading) && !saitQueries.some((q) => q.data);
-  const isError = saitQueries.every((q) => q.isError);
-  const queriesTick = saitQueries.map((q) => `${q.dataUpdatedAt ?? 0}:${q.status}`).join("|");
-
-  /** Category id → day numbers, in the era the panel is displaying. */
-  const cats = useMemo(() => {
-    const out: Record<string, number[]> = {};
-    saitQueries.forEach((q, i) => {
-      const source = q.data?.categories;
-      const bs = bsMonths[i];
-      if (!source || !bs) return;
-      for (const [id, days] of Object.entries(source)) {
-        for (const day of days) {
-          if (!isAd) {
-            (out[id] ??= []).push(day);
-            continue;
-          }
-          // Keep only the BS days that actually land inside the Gregorian month.
-          const ad = bsToAD(bs.year, bs.month, day);
-          if (ad.getFullYear() === adYear && ad.getMonth() + 1 === adMonth) {
-            (out[id] ??= []).push(ad.getDate());
-          }
-        }
-      }
-    });
-    for (const days of Object.values(out)) days.sort((a, b) => a - b);
-    return out;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queriesTick, bsMonths, isAd, adYear, adMonth]);
-
-  const monthName = isAd
-    ? bilingualText(lang, AD_MONTH_NAMES_NE[adMonth - 1], AD_MONTH_NAMES[adMonth - 1])
-    : bilingualText(lang, BS_MONTHS_NE[month - 1], BS_MONTH_NAMES[month - 1]);
-  const anyDates = Object.values(cats).some((d) => d.length > 0);
+  const sait = useSaitAside({ year, month, adYear, adMonth, highlightDay });
 
   return (
     <div className={homeClasses.saitStack}>
-      <p className={homeClasses.saitMonth}>{monthName}</p>
+      <p className={homeClasses.saitMonth}>{sait.monthName}</p>
 
-      {isLoading ? (
+      {sait.status === "loading" ? (
         <div className={cn("animate-pulse", homeClasses.saitSkeleton)} />
-      ) : isError ? (
-        <p className={cn("m-0", homeClasses.saitEmpty)}>{t("sait.no_data")}</p>
+      ) : sait.status === "error" ? (
+        <p className={cn("m-0", homeClasses.saitEmpty)}>{sait.copy.error}</p>
       ) : (
         <>
           <ul className={cn("m-0 list-none p-0", homeClasses.saitList)}>
-            {SAIT_CATEGORIES.map((cat) => {
-              const days = cats[cat.id] ?? [];
-              return (
-                <li key={cat.id}>
-                  <Link
-                    to="/sait/$category"
-                    params={{ category: cat.id }}
-                    search={patroYearLinkSearch(location, year, "bs")}
-                    className={cn(homeClasses.saitRow, "text-sm leading-snug transition-colors hover:bg-surface-hover")}
-                  >
-                    <span className={homeClasses.saitName}>
-                      {t(`sait.categories.${cat.id}`)}
-                    </span>
-                    <span className={cn("min-w-0 flex-1", homeClasses.saitDays)}>
-                      {days.length ? (
-                        days.map((day, i) => {
-                          const hl = highlightDay === day;
-                          return (
-                            <span key={day}>
-                              {i > 0 ? ", " : ""}
-                              <span
-                                className={cn(
-                                  hl && cn(homeClasses.saitHighlight, "underline-offset-2"),
-                                )}
-                              >
-                                {digits(day)}
-                              </span>
-                            </span>
-                          );
-                        })
-                      ) : (
-                        <span className={homeClasses.saitDaysNone}>—</span>
-                      )}
-                    </span>
-                    <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-                  </Link>
-                </li>
-              );
-            })}
+            {sait.rows.map((row) => (
+              <li key={row.id}>
+                <Link
+                  to="/sait/$category"
+                  params={{ category: row.id }}
+                  search={patroYearLinkSearch(location, year, "bs")}
+                  className={cn(homeClasses.saitRow, "text-sm leading-snug transition-colors hover:bg-surface-hover")}
+                >
+                  <span className={homeClasses.saitName}>{row.name}</span>
+                  <span className={cn("min-w-0 flex-1", homeClasses.saitDays)}>
+                    {row.days.length ? (
+                      row.days.map((d, i) => (
+                        <span key={d.day}>
+                          {i > 0 ? ", " : ""}
+                          <span className={cn(d.highlighted && cn(homeClasses.saitHighlight, "underline-offset-2"))}>{d.label}</span>
+                        </span>
+                      ))
+                    ) : (
+                      <span className={homeClasses.saitDaysNone}>{sait.copy.none}</span>
+                    )}
+                  </span>
+                  <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+                </Link>
+              </li>
+            ))}
           </ul>
 
-          {!anyDates ? (
-            <p className={cn("m-0", homeClasses.saitEmpty)}>{t("sait.no_month_dates")}</p>
-          ) : null}
+          {sait.empty ? <p className={cn("m-0", homeClasses.saitEmpty)}>{sait.empty}</p> : null}
         </>
       )}
     </div>

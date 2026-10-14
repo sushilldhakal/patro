@@ -1,39 +1,14 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import {
-  BookMarked,
-  CalendarClock,
-  Moon,
-  Sprout,
-  type LucideIcon,
-} from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
+import { Sprout, type LucideIcon } from "lucide-react";
+import { useHomeQuickLinks, type HomeQuickLink } from "@vedic-patro/features/home";
 import { type ReactNode } from "react";
 import { useCurrentRitu } from "@/lib/ritu-display";
 import { currentPatroMonthLinkSearch, currentPatroYearLinkSearch, patroRouteLinkSearch } from "@/lib/url-state";
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import type { PanchangaLocation } from "@/components/panchanga/use-panchanga-location";
 import { useCalendarEra } from "@/hooks/use-calendar-era";
-import { useLocale } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
 import { featureIcon } from "@/lib/nav-icons";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-
-import { tFor } from "@vedic-patro/i18n/runtime";
-const QUICK_LINKS = [
-  { group: "patro", to: "/holidays" as const, labelKey: "nav.holidays", icon: featureIcon("holidays") },
-  { group: "patro", to: "/converter" as const, labelKey: "nav.converter", icon: featureIcon("converter") },
-  { group: "patro", to: "/suryakranti" as const, labelKey: "nav.suryakranti", icon: featureIcon("suryakranti") },
-  { group: "patro", to: "/panchanga/year" as const, labelKey: "panchanga_year.title", icon: featureIcon("panchanga-year") },
-  { group: "jyotish", to: "/panchanga/avakahada-chakra" as const, labelKey: "nav.avakahada_chakra", icon: featureIcon("avakahada") },
-  { group: "jyotish", to: "/abhijit-muhurta" as const, labelKey: "nav.abhijit_muhurta", icon: featureIcon("abhijit") },
-  { group: "jyotish", to: "/kundali" as const, labelKey: "home_quick.kundali_build_title", icon: featureIcon("kundali") },
-  { group: "jyotish", to: "/jyotish/kundali-milan" as const, labelKey: "home_quick.kundali_milan_title", icon: featureIcon("kundali-milan") },
-] as const satisfies {
-  group: "patro" | "jyotish";
-  to: string;
-  labelKey: string;
-  icon: LucideIcon;
-}[];
 
 const QUICK_LINK_ICON_SIZE = 28;
 const QUICK_LINK_ICON_STROKE = 1.75;
@@ -147,44 +122,15 @@ function LinkCategory({
   );
 }
 
-function PanchakPatroQuickLink({ location, era }: { location: PanchangaLocation; era: ReturnType<typeof useCalendarEra> }) {
-  const { t } = useTranslation();
-  const { digits } = useLocale();
-  const year = defaultPanchakPatroYear();
-
-  return (
-    <QuickLinkCard
-      to="/panchak-patro"
-      search={currentPatroYearLinkSearch(location, era)}
-      icon={CalendarClock}
-      label={t("panchak.title", { year: digits(year) })}
-    />
-  );
-}
-
-function ChandrKrantiQuickLink({ location, era }: { location: PanchangaLocation; era: ReturnType<typeof useCalendarEra> }) {
-  const { t } = useTranslation();
-
-  return (
-    <QuickLinkCard
-      to="/dainikkranti"
-      search={currentPatroMonthLinkSearch(location, era)}
-      icon={Moon}
-      label={t("nav.dainikkranti")}
-    />
-  );
-}
-
-function RituQuickLink({ location }: { location: PanchangaLocation }) {
-  const { t } = useTranslation();
+function RituQuickLink({ link, location }: { link: HomeQuickLink; location: PanchangaLocation }) {
   const era = useCalendarEra();
   const { current, loading } = useCurrentRitu(location);
 
   return (
     <QuickLinkCard
       to="/ritu"
-      search={patroRouteLinkSearch("/ritu", location, era)}
-      label={t("ritu.title")}
+      search={patroRouteLinkSearch(link.to, location, era)}
+      label={link.label}
       iconNode={
         loading ? (
           <Sprout size={QUICK_LINK_ICON_SIZE} strokeWidth={QUICK_LINK_ICON_STROKE} className={quickLinkIconClass} aria-hidden />
@@ -207,45 +153,37 @@ export function HomeQuickLinks({
   location: PanchangaLocation;
   className?: string;
 }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
   const era = useCalendarEra();
+  const { groups } = useHomeQuickLinks();
+
+  const searchFor = (link: HomeQuickLink) =>
+    link.search === "month"
+      ? currentPatroMonthLinkSearch(location, era)
+      : link.search === "year"
+        ? currentPatroYearLinkSearch(location, era)
+        : link.search === "route"
+          ? patroRouteLinkSearch(link.to, location, era)
+          : undefined;
 
   return (
-    <div
-      className={cn(
-        "space-y-8",
-        className,
-      )}
-    >
-      <LinkCategory title={tFor(lang, "sidebar_nav.sections.patro.title")}>
-        {QUICK_LINKS.filter(({ group }) => group === "patro").map(({ to, labelKey, icon }) => (
-          <QuickLinkCard
-            key={to}
-            to={to}
-            search={patroRouteLinkSearch(to, location, era)}
-            icon={icon}
-            label={t(labelKey)}
-          />
-        ))}
-        <ChandrKrantiQuickLink location={location} era={era} />
-        <PanchakPatroQuickLink location={location} era={era} />
-        <RituQuickLink location={location} />
-      </LinkCategory>
-
-      <LinkCategory title={tFor(lang, "sidebar_nav.sections.jyotish.title")}>
-        {QUICK_LINKS.filter(({ group }) => group === "jyotish").map(({ to, labelKey, icon }) => (
-          <QuickLinkCard
-            key={to}
-            to={to}
-            search={patroRouteLinkSearch(to, location, era)}
-            icon={icon}
-            label={t(labelKey)}
-          />
-        ))}
-        {/* Not a patro/era route — no location or year search params to carry. */}
-        <QuickLinkCard to="/documents" icon={BookMarked} label={t("nav.documents")} />
-      </LinkCategory>
+    <div className={cn("space-y-8", className)}>
+      {groups.map((group) => (
+        <LinkCategory key={group.id} title={group.title}>
+          {group.links.map((link) =>
+            link.feature === "ritu" ? (
+              <RituQuickLink key={link.to} link={link} location={location} />
+            ) : (
+              <QuickLinkCard
+                key={link.to}
+                to={link.to as LinkProps["to"]}
+                search={searchFor(link) as LinkProps["search"]}
+                icon={featureIcon(link.feature)}
+                label={link.label}
+              />
+            ),
+          )}
+        </LinkCategory>
+      ))}
     </div>
   );
 }
