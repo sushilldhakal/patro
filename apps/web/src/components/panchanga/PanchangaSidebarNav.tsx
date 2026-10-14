@@ -1,20 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown } from "lucide-react";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { useLocale } from "@/i18n/locale";
-import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
-import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";
 import {
   preloadAllPanchangaRoutes,
   preloadPanchangaRoute,
   resolveSidebarLinkPath,
 } from "@/lib/panchanga-route-preload";
 import {
-  getPanchangaSidebarSections,
+  usePanchangaSidebarNav,
   type PanchangaSidebarItem,
-  type PanchangaSidebarSection,
-} from "@/lib/panchanga-sidebar-nav";
+} from "@vedic-patro/features/panchanga";
 import {
   KundaliSidebarSubnav,
   parseKundaliSectionFromHash,
@@ -82,31 +78,6 @@ function itemSearch(
   });
 }
 
-export function isSidebarItemActive(pathname: string, item: PanchangaSidebarItem): boolean {
-  if (item.id === "kundali") {
-    return isKundaliRoute(pathname);
-  }
-  if (item.to === "/panchanga/element/$name" && item.params?.name) {
-    return pathname === `/panchanga/element/${item.params.name}`;
-  }
-  if (item.to === "/sait/$category" && item.params?.category) {
-    return pathname === `/sait/${item.params.category}`;
-  }
-  return pathname === item.to;
-}
-
-function findActiveSectionId(
-  pathname: string,
-  sections: PanchangaSidebarSection[],
-): string | null {
-  for (const section of sections) {
-    if (section.items.some((item) => isSidebarItemActive(pathname, item))) {
-      return section.id;
-    }
-  }
-  return null;
-}
-
 function SidebarLink({
   item,
   active,
@@ -155,103 +126,66 @@ function SidebarLink({
   return asListItem ? <li>{link}</li> : link;
 }
 
+type SidebarSectionData = ReturnType<typeof usePanchangaSidebarNav>["sections"][number];
+
 function SidebarSection({
   section,
-  expanded,
-  onToggle,
-  pathname,
   location,
-  panchakYear,
-  digits,
-  t,
   kundaliProfileId,
   kundaliSectionId,
   activeEraSelection,
 }: {
-  section: PanchangaSidebarSection;
-  expanded: boolean;
-  onToggle: () => void;
-  pathname: string;
+  section: SidebarSectionData;
   location: ReturnType<typeof usePanchangaLocation>["location"];
-  panchakYear: number;
-  digits: (v: number | string) => string;
-  t: ReturnType<typeof useTranslation>["t"];
   kundaliProfileId: string | null;
   kundaliSectionId: ReturnType<typeof parseKundaliSectionFromHash>;
   activeEraSelection: EraSelection;
 }) {
-  const title = t(section.titleKey);
-  const hasActiveItem = section.items.some((item) => isSidebarItemActive(pathname, item));
-
-  const renderItem = (item: PanchangaSidebarItem, forceActive?: boolean) => {
-    let label = t(item.labelKey);
-    if (item.id === "panchak-patro") {
-      label = t("panchak.title", { year: digits(panchakYear) });
-    }
-    const blurb = item.blurbKey ? t(item.blurbKey) : undefined;
-    const search = itemSearch(item, location, activeEraSelection);
-    const active = forceActive ?? isSidebarItemActive(pathname, item);
-    const prefetch = () => preloadPanchangaRoute(resolveSidebarLinkPath(item.to, item.params));
-    const showKundaliSections = item.id === "kundali" && kundaliProfileId != null;
-
-    return (
-      <li key={item.id} className={cn("flex flex-col", panchangaPageClasses.sidebar.item)}>
-        <SidebarLink
-          item={item}
-          active={active}
-          label={label}
-          blurb={blurb}
-          search={search}
-          onPrefetch={prefetch}
-          asListItem={false}
-        />
-        {showKundaliSections ? (
-          <KundaliSidebarSubnav
-            profileId={kundaliProfileId}
-            activeSectionId={kundaliSectionId}
-          />
-        ) : null}
-      </li>
-    );
-  };
-
+  const { expanded, hasActive } = section;
   return (
     <section className={panchangaPageClasses.sidebar.section}>
       <button
         type="button"
-        onClick={onToggle}
+        onClick={section.toggle}
         aria-expanded={expanded}
         className={cn(
           "flex text-left transition-colors",
           panchangaPageClasses.sidebar.sectionHead,
-          expanded || hasActiveItem
+          expanded || hasActive
             ? "text-foreground"
             : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          hasActiveItem && !expanded && "bg-secondary/6 text-secondary",
+          hasActive && !expanded && "bg-secondary/6 text-secondary",
         )}
       >
         <ChevronDown
           className={cn(
             "size-4 shrink-0 transition-transform duration-200",
             expanded ? "rotate-0" : "-rotate-90",
-            hasActiveItem ? "text-secondary" : "text-muted-foreground",
+            hasActive ? "text-secondary" : "text-muted-foreground",
           )}
           aria-hidden
         />
-        <span className={panchangaPageClasses.sidebar.sectionTitle}>
-          {title}
-        </span>
+        <span className={panchangaPageClasses.sidebar.sectionTitle}>{section.title}</span>
       </button>
 
-      {expanded ? (
+      {section.items.length > 0 ? (
         <ul className={cn("flex flex-col", panchangaPageClasses.sidebar.list)}>
-          {section.items.map((item) => renderItem(item))}
-        </ul>
-      ) : hasActiveItem ? (
-        <ul className={cn("flex flex-col", panchangaPageClasses.sidebar.list)}>
-          {section.items
-            .filter((item) => isSidebarItemActive(pathname, item))
-            .map((item) => renderItem(item, true))}
+          {section.items.map(({ item, label, blurb, active }) => (
+            <li key={item.id} className={cn("flex flex-col", panchangaPageClasses.sidebar.item)}>
+              <SidebarLink
+                item={item}
+                active={active}
+                label={label}
+                blurb={blurb}
+                search={itemSearch(item, location, activeEraSelection)}
+                onPrefetch={() => preloadPanchangaRoute(resolveSidebarLinkPath(item.to, item.params))}
+                asListItem={false}
+              />
+              {item.id === "kundali" && kundaliProfileId != null ? (
+                <KundaliSidebarSubnav profileId={kundaliProfileId} activeSectionId={kundaliSectionId} />
+              ) : null}
+            </li>
+          ))}
         </ul>
       ) : null}
     </section>
@@ -259,8 +193,7 @@ function SidebarSection({
 }
 
 export function PanchangaSidebarNav({ className }: { className?: string }) {
-  const { digits, lang } = useLocale();
-  const { t } = useTranslation();
+  const { lang } = useLocale();
   const { location, setLocation } = usePanchangaLocation();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const rawSearch = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
@@ -288,18 +221,9 @@ export function PanchangaSidebarNav({ className }: { className?: string }) {
   const hash = useRouterState({ select: (s) => s.location.hash });
   const fallbackLang = lang === "en" ? "en" : "ne";
   const activeEraSelection = parseEraFromUrl(rawSearch, fallbackLang);
-  const sections = getPanchangaSidebarSections();
-  const panchakYear = defaultPanchakPatroYear();
+  const nav = usePanchangaSidebarNav({ pathname });
   const kundaliProfileId = parseKundaliProfileId(pathname);
   const kundaliSectionId = parseKundaliSectionFromHash(hash);
-
-  const activeSectionId = findActiveSectionId(pathname, sections);
-  const [expandedId, setExpandedId] = useState<string | null>(activeSectionId);
-  const [trackedActiveSectionId, setTrackedActiveSectionId] = useState(activeSectionId);
-  if (activeSectionId && activeSectionId !== trackedActiveSectionId) {
-    setTrackedActiveSectionId(activeSectionId);
-    setExpandedId(activeSectionId);
-  }
 
   useEffect(() => {
     const run = () => preloadAllPanchangaRoutes();
@@ -318,25 +242,17 @@ export function PanchangaSidebarNav({ className }: { className?: string }) {
         "shadow-[0_0_0_1px_color-mix(in_srgb,var(--foreground)_6%,transparent)]",
         className,
       )}
-      aria-label={t("sidebar_nav.nav_aria")}
+      aria-label={nav.navAria}
     >
       <p className={panchangaPageClasses.sidebar.navTitle}>
-        {t("sidebar_nav.nav_title")}
+        {nav.navTitle}
       </p>
       <div className={cn("flex max-h-[calc(100vh-6.5rem)] flex-col overflow-y-auto", panchangaPageClasses.sidebar.navBody)}>
-        {sections.map((section) => (
+        {nav.sections.map((section) => (
           <SidebarSection
             key={section.id}
             section={section}
-            expanded={expandedId === section.id}
-            onToggle={() =>
-              setExpandedId((current) => (current === section.id ? null : section.id))
-            }
-            pathname={pathname}
             location={locationForLinks}
-            panchakYear={panchakYear}
-            digits={digits}
-            t={t}
             kundaliProfileId={kundaliProfileId}
             kundaliSectionId={kundaliSectionId}
             activeEraSelection={activeEraSelection}

@@ -49,26 +49,6 @@ function stepSignedAcrossVikramYear(signed: number, monthDelta: number): number 
     : stepPatroSignedYear(signed, -1);
 }
 
-export function stepBrowseVikramMonth(
-  browseEra: Era,
-  browseYear: number,
-  month: number,
-  delta: number,
-): { year: number; month: number } {
-  let signed = signedPatroYearFromBrowse(browseEra, browseYear);
-  let m = month + delta;
-  while (m < 1) {
-    m += 12;
-    signed = stepSignedAcrossVikramYear(signed, -1);
-  }
-  while (m > 12) {
-    m -= 12;
-    signed = stepSignedAcrossVikramYear(signed, 1);
-  }
-  const year = browseEra === "bbs" ? bbsFromSigned(signed) : signed;
-  return { year, month: m };
-}
-
 export function stepBrowseVikramDay(
   browseEra: Era,
   browseYear: number,

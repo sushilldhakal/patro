@@ -4316,10 +4316,6 @@
       "rest_and_last": "{{rest}} र {{last}}"
     },
     "dainik_kranti": {
-      "day": "बा.",
-      "lat": "अक्षांश",
-      "long": "देशान्तर",
-      "moon": "च.रा.",
       "position_on_datelabel": "{{dateLabel}} को स्थिति",
       "until_karanaend": "{{karanaEnd}} सम्म",
       "until_nakend": "{{nakEnd}} सम्म",
@@ -4332,8 +4328,7 @@
       "x_536ecbd5": "राशि अंश|कला|विकला",
       "x_e59e68b7": " — जस्तै",
       "x_9846f458": "वृष १३|६|२९",
-      "x_6d4da8be": " = वृष राशि, १३ अंश ६ कला २९ विकला।",
-      "x_9c4c2ea7": "राशिहरू: {{v0}}। प्रत्येक ग्रहको कोष्ठकमा राशि अंश|कला|विकला — जस्तै वृष १३|६|२९ = वृष राशि, १३ अंश ६ कला २९ विकला।"
+      "x_6d4da8be": " = वृष राशि, १३ अंश ६ कला २९ विकला।"
     },
     "dainikkranti": {
       "daily_panchanga_by_paksha_tithi_nakshatra": "पक्ष अनुसार दैनिक पञ्चाङ्ग — तिथि, नक्षत्र, योग, करण, सूर्योदय/अस्त, पर्व र ग्रह गोचर।",
@@ -5001,7 +4996,6 @@
       "full_panchanga_day_chart": "पूर्ण दिन पञ्चाङ्ग चित्र",
       "full_panchanga_timeline_midnight_to_midnight": "पूर्ण पञ्चाङ्ग रेखा · मध्यरातदेखि मध्यरात",
       "full_panchanga_timeline_sunrise_to_sunrise": "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
-      "muhurta_now": "क्षणिक मुहूर्त",
       "name_s_aspect_houses_houselist": "{{name}}को दृष्टि: {{houseList}} भावमा",
       "nepali_patro_panchanga_wheel": "पञ्चाङ्ग चक्र",
       "north_indian_d1_chart": "उत्तर भारतीय D1 चक्र",
@@ -5012,8 +5006,6 @@
       "reload": "रिलोड",
       "reload_reset_zoom_sunrise": "रिलोड · जुम रिसेट · सूर्योदय",
       "status_at_instanttime": "{{instantTime}} बजेको अवस्था",
-      "this_time_is_before_today_s": " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
-      "tithi_nakshatra_yoga_and_karana_from": "{{time}} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
       "value_padas": "{{value}} पद",
       "drag_to_rotate_scroll_to_zoom": "घुमाउन तान्नुहोस् · स्क्रोल गरेर जुम गर्नुहोस्",
       "pick_date_and_time": "मिति र समय छान्नुहोस्",
@@ -5040,9 +5032,6 @@
       "x_c068f043": "{{v0}} बजे",
       "exit_full_screen": "सामान्य दृश्य",
       "full_screen": "पूर्ण स्क्रिन",
-      "annual_panchanga_wheel": "वार्षिक पञ्चाङ्ग चक्र",
-      "abhijit_muhurta": "अभिजित् मुहूर्त",
-      "transits_ingress": "ग्रह गोचर र प्रवेश",
       "reload_reset_zoom": "रिलोड · जुम रिसेट · {{mode}}"
     },
     "patro_date": {

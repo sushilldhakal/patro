@@ -6884,10 +6884,6 @@ export const strings = {
 
 
   /* ── ui.dainik_kranti ───────────────────────────────────────────────────── */
-  "ui.dainik_kranti.day": { ne: "बा.", en: "Day" },
-  "ui.dainik_kranti.lat": { ne: "अक्षांश", en: "Lat." },
-  "ui.dainik_kranti.long": { ne: "देशान्तर", en: "Long." },
-  "ui.dainik_kranti.moon": { ne: "च.रा.", en: "Moon" },
   "ui.dainik_kranti.position_on_datelabel": { ne: "{{dateLabel}} को स्थिति", en: "Position on {{dateLabel}}" },
   "ui.dainik_kranti.until_karanaend": { ne: "{{karanaEnd}} सम्म", en: "until {{karanaEnd}}" },
   "ui.dainik_kranti.until_nakend": { ne: "{{nakEnd}} सम्म", en: "until {{nakEnd}}" },
@@ -7634,7 +7630,6 @@ export const strings = {
     ne: "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
     en: "Full panchanga timeline · sunrise to sunrise",
   },
-  "ui.panchanga.muhurta_now": { ne: "क्षणिक मुहूर्त", en: "Muhurta now" },
   "ui.panchanga.name_s_aspect_houses_houselist": {
     ne: "{{name}}को दृष्टि: {{houseList}} भावमा",
     en: "{{name}}'s aspect: houses {{houseList}}",
@@ -7648,14 +7643,6 @@ export const strings = {
   "ui.panchanga.reload": { ne: "रिलोड", en: "Reload" },
   "ui.panchanga.reload_reset_zoom_sunrise": { ne: "रिलोड · जुम रिसेट · सूर्योदय", en: "Reload · reset zoom · sunrise" },
   "ui.panchanga.status_at_instanttime": { ne: "{{instantTime}} बजेको अवस्था", en: "Status at {{instantTime}}" },
-  "ui.panchanga.this_time_is_before_today_s": {
-    ne: " यो समय आजको सूर्योदय अघि भएकाले हिजोको वैदिक दिनको पञ्चाङ्ग देखाइँदैछ।",
-    en: " This time is before today's sunrise, so the previous Vedic day's panchanga is shown.",
-  },
-  "ui.panchanga.tithi_nakshatra_yoga_and_karana_from": {
-    ne: "{{time}} बजेको वास्तविक ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।",
-    en: "Tithi, nakshatra, yoga and karana from the actual planetary positions at {{time}}. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
-  },
   "ui.panchanga.value_padas": { ne: "{{value}} पद", en: "{{value}} padas" },
 
   /* ── ui.patro_date ──────────────────────────────────────────────────────── */
@@ -8243,7 +8230,6 @@ export const strings = {
   "ui.panchanga_detail_card.rahu_kaal": { ne: "राहु काल", en: "Rahu Kaal" },
   "ui.panchanga_detail_card.festivals_holidays": { ne: "पर्व / बिदा", en: "Festivals / Holidays" },
   "ui.avakahada.x_91fdc25d": { ne: "· खोजमा {{v0}} नक्षत्र", en: "· {{v0}} nakshatras in search" },
-  "ui.dainik_kranti.x_9c4c2ea7": { ne: "राशिहरू: {{v0}}। प्रत्येक ग्रहको कोष्ठकमा राशि अंश|कला|विकला — जस्तै वृष १३|६|२९ = वृष राशि, १३ अंश ६ कला २९ विकला।", en: "Rashis: {{v0}}. Each planet's bracket shows rashi deg|kala|vikala — e.g. Vrisha 13|6|29 = Vrisha rashi, 13 deg 6 kala 29 vikala." },
   "ui.kundali.x_cf56ff65": { ne: " (लग्न)", en: " (Lagna)" },
   "ui.kundali.rashi_long": { ne: "राशि / स्पष्ट", en: "Rashi / Long." },
   "ui.kundali.nak_pada": { ne: "नक्षत्र (पद)", en: "Nak (pada)" },
@@ -8374,9 +8360,6 @@ export const strings = {
   "ui.notifications.brahma_muhurta": { ne: "ब्रह्म मुहूर्त", en: "Brahma Muhurta" },
   "ui.notifications.pratah_sandhya": { ne: "प्रातः सन्ध्या", en: "Pratah Sandhya" },
   "ui.notifications.sarvartha_siddhi_yoga": { ne: "सर्वार्थ सिद्धि योग", en: "Sarvartha Siddhi Yoga" },
-  "ui.panchanga.annual_panchanga_wheel": { ne: "वार्षिक पञ्चाङ्ग चक्र", en: "Annual panchanga wheel" },
-  "ui.panchanga.abhijit_muhurta": { ne: "अभिजित् मुहूर्त", en: "Abhijit muhurta" },
-  "ui.panchanga.transits_ingress": { ne: "ग्रह गोचर र प्रवेश", en: "Transits & ingress" },
   "ui.sitemap_routes.year_wheel": { ne: "वार्षिक चक्र", en: "Year wheel" },
   "ui.sitemap_routes.holidays": { ne: "बिदा", en: "Holidays" },
   "ui.sitemap_routes.rashifal_jyotish": { ne: "राशिफल (ज्योतिष)", en: "Rashifal (Jyotish)" },

@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { Crosshair, Loader2, MapPin } from "lucide-react";
 import { type City } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -14,10 +12,9 @@ import {
 } from "@/components/ui/combobox";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { cityItemLabel, cityLabel } from "./city-labels";
-import { useCitySearch } from "./use-city-search";
-import { useLocale } from "@/i18n/locale";
-import { displayLocationLabel, type PanchangaLocation } from "./use-panchanga-location";
+import { useLocationSelector } from "@vedic-patro/features/panchanga";
+import { locateDevice } from "./locate-device";
+import type { PanchangaLocation } from "./use-panchanga-location";
 
 interface Props {
   location: PanchangaLocation;
@@ -26,31 +23,14 @@ interface Props {
   compact?: boolean;
 }
 
-function LocationPickerPanel({
-  debouncedQuery,
-  isSearching,
-  location,
-  geoLoading,
-  geoError,
-  onPickCity,
-  onUseCurrentLocation,
-}: {
-  debouncedQuery: string;
-  isSearching: boolean;
-  results: City[];
-  location: PanchangaLocation;
-  geoLoading: boolean;
-  geoError: string | null;
-  onPickCity: (city: City) => void;
-  onUseCurrentLocation: () => void;
-}) {
-  const { lang } = useLocale();
-  const { t } = useTranslation();
+type Picker = ReturnType<typeof useLocationSelector>;
+
+function LocationPickerPanel({ picker }: { picker: Picker }) {
   return (
     <>
       <ComboboxInput
         showTrigger={false}
-        placeholder={t("location.search_city")}
+        placeholder={picker.copy.search}
         className="w-full"
       />
 
@@ -59,51 +39,39 @@ function LocationPickerPanel({
           type="button"
           variant="secondary"
           size="sm"
-          onClick={onUseCurrentLocation}
-          disabled={geoLoading}
+          onClick={() => void picker.useCurrentLocation()}
+          disabled={picker.geoLoading}
           className="w-full"
         >
-          {geoLoading ? (
+          {picker.geoLoading ? (
             <Loader2 className="animate-spin" data-icon="inline-start" />
           ) : (
             <Crosshair data-icon="inline-start" />
           )}
-          {t("location.use_my_location")}
+          {picker.copy.useMyLocation}
         </Button>
       </div>
 
-      {geoError && (
+      {picker.geoError && (
         <p className={panchangaPageClasses.location.geoErrorPanel} role="alert">
-          {geoError}
+          {picker.geoError}
         </p>
       )}
 
-      <ComboboxEmpty className="py-3 text-xs">
-        {debouncedQuery.length < 2
-          ? t("location.type_min_chars")
-          : isSearching
-            ? t("location.searching")
-            : t("location.no_city_found")}
-      </ComboboxEmpty>
+      <ComboboxEmpty className="py-3 text-xs">{picker.emptyText}</ComboboxEmpty>
 
       <ComboboxList className="max-h-60">
-        {(city) => {
-          const name = cityLabel(city);
-          const selected = location.params.city_id === city.id;
-          return (
-            <ComboboxItem
-              key={city.id}
-              value={city}
-              onClick={() => onPickCity(city)}
-              className={cn(selected && panchangaPageClasses.location.citySelected)}
-            >
-              <span className={cn("block", panchangaPageClasses.location.cityName)}>{name}</span>
-              <span className={panchangaPageClasses.location.citySub}>
-                {cityItemLabel(city, lang)}
-              </span>
-            </ComboboxItem>
-          );
-        }}
+        {(city: City) => (
+          <ComboboxItem
+            key={city.id}
+            value={city}
+            onClick={() => picker.pickCity(city)}
+            className={cn(picker.isSelected(city) && panchangaPageClasses.location.citySelected)}
+          >
+            <span className={cn("block", panchangaPageClasses.location.cityName)}>{picker.cityName(city)}</span>
+            <span className={panchangaPageClasses.location.citySub}>{picker.citySub(city)}</span>
+          </ComboboxItem>
+        )}
       </ComboboxList>
     </>
   );
@@ -115,63 +83,26 @@ export function LocationSelector({
   className,
   compact = false,
 }: Props) {
-  const { lang } = useLocale();
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const localizedLabel = displayLocationLabel(location, undefined, lang);
-  const labelMain = localizedLabel.split(",")[0]?.trim() ?? localizedLabel;
-  const {
-    query,
-    setQuery,
-    debouncedQuery,
-    isSearching,
-    results,
-    geoLoading,
-    geoError,
-    pickCity: pickCityAndReset,
-    useCurrentLocation,
-    reset,
-  } = useCitySearch({ onLocationChange, enabled: open });
-
-  const pickCity = (city: City) => {
-    pickCityAndReset(city);
-    setOpen(false);
-  };
-
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) reset();
-  };
+  const picker = useLocationSelector({ location, onLocationChange, locate: locateDevice });
 
   const comboboxSearchProps = {
-    inputValue: query,
-    onInputValueChange: setQuery,
+    inputValue: picker.query,
+    onInputValueChange: picker.setQuery,
   };
 
-  const pickerPanel = (
-    <LocationPickerPanel
-      debouncedQuery={debouncedQuery}
-      isSearching={isSearching}
-      results={results}
-      location={location}
-      geoLoading={geoLoading}
-      geoError={geoError}
-      onPickCity={pickCity}
-      onUseCurrentLocation={useCurrentLocation}
-    />
-  );
+  const pickerPanel = <LocationPickerPanel picker={picker} />;
 
   if (compact) {
     return (
       <Combobox
-        open={open}
-        onOpenChange={handleOpenChange}
-        items={results}
+        open={picker.open}
+        onOpenChange={picker.setOpen}
+        items={picker.results}
         filter={null}
         onValueChange={(city) => {
-          if (city) pickCity(city);
+          if (city) picker.pickCity(city);
         }}
-        itemToStringValue={(city: City) => cityItemLabel(city, lang)}
+        itemToStringValue={(city: City) => picker.citySub(city)}
         isItemEqualToValue={(a, b) => a.id === b.id}
         {...comboboxSearchProps}
       >
@@ -184,7 +115,7 @@ export function LocationSelector({
                 "w-full max-w-[12.5rem] justify-between gap-1 font-semibold",
                 className
               )}
-              title={t("location.choose_location")}
+              title={picker.copy.choose}
             />
           }
         >
@@ -192,7 +123,7 @@ export function LocationSelector({
             <MapPin className="size-3.5 shrink-0" />
             {/* Smaller text on mobile so the full city name fits instead of
                 truncating to "Kat…"; desktop keeps the standard size. */}
-            <span className="truncate text-xs leading-none md:text-sm">{labelMain}</span>
+            <span className="truncate text-xs leading-none md:text-sm">{picker.labelMain}</span>
           </span>
         </ComboboxTrigger>
         <ComboboxContent
@@ -210,14 +141,14 @@ export function LocationSelector({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <Combobox
-        open={open}
-        onOpenChange={handleOpenChange}
-        items={results}
+        open={picker.open}
+        onOpenChange={picker.setOpen}
+        items={picker.results}
         filter={null}
         onValueChange={(city) => {
-          if (city) pickCity(city);
+          if (city) picker.pickCity(city);
         }}
-        itemToStringValue={(city: City) => cityItemLabel(city, lang)}
+        itemToStringValue={(city: City) => picker.citySub(city)}
         isItemEqualToValue={(a, b) => a.id === b.id}
         {...comboboxSearchProps}
       >
@@ -231,7 +162,7 @@ export function LocationSelector({
         >
           <span className="inline-flex items-center gap-2 min-w-0">
             <MapPin className="size-4 shrink-0" />
-            <span className="truncate">{localizedLabel}</span>
+            <span className="truncate">{picker.label}</span>
           </span>
         </ComboboxTrigger>
         <ComboboxContent
@@ -242,9 +173,9 @@ export function LocationSelector({
         </ComboboxContent>
       </Combobox>
 
-      {geoError && (
+      {picker.geoError && (
         <p className={panchangaPageClasses.location.geoError} role="alert">
-          {geoError}
+          {picker.geoError}
         </p>
       )}
     </div>

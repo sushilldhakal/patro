@@ -1,4 +1,16 @@
+/**
+ * The panchanga sidebar, shared by the website's and the app's
+ * `components/panchanga/PanchangaSidebarNav.tsx` (and the website's mobile
+ * nav menu): the sections and items as catalogue keys, which item is active,
+ * the expanded section (the active one opens by itself), each section's
+ * visible items (all when open, only the active one when closed), labels,
+ * blurbs, and copy. Each app turns an item into its own link.
+ */
+import { useState } from "react";
+import { isKundaliRoute } from "@vedic-patro/domain/kundali/kundali-routes";
+import { defaultPanchakPatroYear } from "@vedic-patro/domain/panchak/panchak-patro-data";
 import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
+import { useLocale } from "@vedic-patro/i18n/react";
 
 export interface PanchangaSidebarItem {
   id: string;
@@ -91,4 +103,79 @@ export function getPanchangaSidebarSections(): PanchangaSidebarSection[] {
       items: ceremonyItems(),
     },
   ];
+}
+
+export function isPanchangaSidebarItemActive(pathname: string, item: PanchangaSidebarItem): boolean {
+  if (item.id === "kundali") return isKundaliRoute(pathname);
+  if (item.to === "/panchanga/element/$name" && item.params?.name) {
+    return pathname === `/panchanga/element/${item.params.name}`;
+  }
+  if (item.to === "/sait/$category" && item.params?.category) {
+    return pathname === `/sait/${item.params.category}`;
+  }
+  return pathname === item.to;
+}
+
+export type PanchangaSidebarEntry = {
+  item: PanchangaSidebarItem;
+  label: string;
+  blurb?: string;
+  active: boolean;
+};
+
+export function usePanchangaSidebarNav({
+  pathname,
+  isActive = (item) => isPanchangaSidebarItemActive(pathname, item),
+  withReminders = false,
+}: {
+  pathname: string;
+  /** How the platform matches an item to the current route (defaults to the website's paths). */
+  isActive?: (item: PanchangaSidebarItem) => boolean;
+  /** The app also lists its reminders screen under the patro section. */
+  withReminders?: boolean;
+}) {
+  const { t, digits } = useLocale();
+  const sections = getPanchangaSidebarSections().map((section) =>
+    withReminders && section.id === "patro"
+      ? { ...section, items: [...section.items, { id: "reminders", to: "/reminders", labelKey: "" }] }
+      : section,
+  );
+  const labelFor = (item: PanchangaSidebarItem) =>
+    item.id === "panchak-patro"
+      ? t("panchak.title", { year: digits(defaultPanchakPatroYear()) })
+      : item.id === "reminders"
+        ? t("ui.reminders.reminders")
+        : t(item.labelKey);
+
+  const activeSectionId = sections.find((s) => s.items.some(isActive))?.id ?? null;
+  const [expandedId, setExpandedId] = useState<string | null>(activeSectionId);
+  const [trackedActiveSectionId, setTrackedActiveSectionId] = useState(activeSectionId);
+  if (activeSectionId && activeSectionId !== trackedActiveSectionId) {
+    setTrackedActiveSectionId(activeSectionId);
+    setExpandedId(activeSectionId);
+  }
+
+  return {
+    navTitle: t("sidebar_nav.nav_title"),
+    navAria: t("sidebar_nav.nav_aria"),
+    sections: sections.map((section) => {
+      const expanded = expandedId === section.id;
+      const entries: PanchangaSidebarEntry[] = section.items.map((item) => ({
+        item,
+        label: labelFor(item),
+        blurb: item.blurbKey ? t(item.blurbKey) : undefined,
+        active: isActive(item),
+      }));
+      const hasActive = entries.some((e) => e.active);
+      return {
+        id: section.id,
+        title: t(section.titleKey),
+        expanded,
+        hasActive,
+        toggle: () => setExpandedId((current) => (current === section.id ? null : section.id)),
+        /** All items while open; only the active one while closed. */
+        items: expanded ? entries : entries.filter((e) => e.active),
+      };
+    }),
+  };
 }

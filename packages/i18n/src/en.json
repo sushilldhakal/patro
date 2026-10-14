@@ -4316,10 +4316,6 @@
       "rest_and_last": "{{rest}} and {{last}}"
     },
     "dainik_kranti": {
-      "day": "Day",
-      "lat": "Lat.",
-      "long": "Long.",
-      "moon": "Moon",
       "position_on_datelabel": "Position on {{dateLabel}}",
       "until_karanaend": "until {{karanaEnd}}",
       "until_nakend": "until {{nakEnd}}",
@@ -4332,8 +4328,7 @@
       "x_536ecbd5": "rashi deg|kala|vikala",
       "x_e59e68b7": " — e.g.",
       "x_9846f458": "Vrisha 13|6|29",
-      "x_6d4da8be": " = Vrisha rashi, 13 deg 6 kala 29 vikala.",
-      "x_9c4c2ea7": "Rashis: {{v0}}. Each planet's bracket shows rashi deg|kala|vikala — e.g. Vrisha 13|6|29 = Vrisha rashi, 13 deg 6 kala 29 vikala."
+      "x_6d4da8be": " = Vrisha rashi, 13 deg 6 kala 29 vikala."
     },
     "dainikkranti": {
       "daily_panchanga_by_paksha_tithi_nakshatra": "Daily panchanga by paksha — tithi, nakshatra, yoga, karana, sunrise/sunset, festivals and planetary transits.",
@@ -5001,7 +4996,6 @@
       "full_panchanga_day_chart": "Full panchanga day chart",
       "full_panchanga_timeline_midnight_to_midnight": "Full panchanga timeline · midnight to midnight",
       "full_panchanga_timeline_sunrise_to_sunrise": "Full panchanga timeline · sunrise to sunrise",
-      "muhurta_now": "Muhurta now",
       "name_s_aspect_houses_houselist": "{{name}}'s aspect: houses {{houseList}}",
       "nepali_patro_panchanga_wheel": "Nepali Patro · Panchanga Wheel",
       "north_indian_d1_chart": "North Indian D1 chart",
@@ -5012,8 +5006,6 @@
       "reload": "Reload",
       "reload_reset_zoom_sunrise": "Reload · reset zoom · sunrise",
       "status_at_instanttime": "Status at {{instantTime}}",
-      "this_time_is_before_today_s": " This time is before today's sunrise, so the previous Vedic day's panchanga is shown.",
-      "tithi_nakshatra_yoga_and_karana_from": "Tithi, nakshatra, yoga and karana from the actual planetary positions at {{time}}. Based on precise sky calculations, so it may differ slightly from printed theoretical patros.",
       "value_padas": "{{value}} padas",
       "drag_to_rotate_scroll_to_zoom": "Drag to rotate · scroll to zoom",
       "pick_date_and_time": "Pick date and time",
@@ -5040,9 +5032,6 @@
       "x_c068f043": "{{v0}}",
       "exit_full_screen": "Exit full screen",
       "full_screen": "Full screen",
-      "annual_panchanga_wheel": "Annual panchanga wheel",
-      "abhijit_muhurta": "Abhijit muhurta",
-      "transits_ingress": "Transits & ingress",
       "reload_reset_zoom": "Reload · reset zoom · {{mode}}"
     },
     "patro_date": {

@@ -18,7 +18,7 @@ import { resolveSidebarLinkPath } from "@/lib/panchanga-route-preload";
 import {
   getPanchangaSidebarSections,
   type PanchangaSidebarItem,
-} from "@/lib/panchanga-sidebar-nav";
+} from "@vedic-patro/features/panchanga";
 import {
   currentPatroYearLinkSearch,
   patroRouteLinkSearch,
