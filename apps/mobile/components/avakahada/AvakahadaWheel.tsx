@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode } from "react";
 import { PanResponder, Pressable, ScrollView, View } from "react-native";
 import Svg, {
   Circle,
@@ -12,18 +12,7 @@ import Svg, {
 } from "react-native-svg";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import { AVAKAHADA, type Gana, type NakshatraRow } from "@vedic-patro/domain/avakahada-data";
-import {
-  localizeGana,
-  localizeLord,
-  localizeNadi,
-  localizeNakshatra,
-  localizeRashi,
-  localizeVarna,
-  localizeVashya,
-  localizeYoni,
-  rowMetaFromCharans,
-} from "@vedic-patro/domain/avakahada-locale";
+import { AVAKAHADA, type Gana } from "@vedic-patro/domain/avakahada-data";
 import { useLocale } from "@/lib/i18n";
 import { nepaliSvgTextCenter, nepaliTextStyle } from "@/lib/nepali-text";
 import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_REGULAR } from "@/lib/fonts";
@@ -32,8 +21,8 @@ import { avakahadaClasses } from "@vedic-patro/design-tokens/classes/avakahada-c
 import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
-import { CX, CY, R, ATTR_RINGS, type AttrRingId, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { CX, CY, R, ATTR_RINGS, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { sameAvakahadaFocus, useAvakahadaWheel, type AvakahadaHubFocus } from "@vedic-patro/features/avakahada";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
 
 /**
@@ -78,25 +67,7 @@ const GANA_FILL: Record<Gana, string> = {
   राक्षस: illustration.red18,
 };
 
-type HubRing = AttrRingId | "nakshatra" | "pada";
-
-type HubFocus = {
-  index: number;
-  ring: HubRing;
-  padaIndex?: number;
-};
-
-const RING_LABELS: Record<HubRing, { ne: string; en: string }> = {
-  nakshatra: { get ne() { return tFor("ne", "nakshatra"); }, get en() { return tFor("en", "nakshatra"); } },
-  pada: { get ne() { return tFor("ne", "avakahada.col_akshara"); }, get en() { return tFor("en", "avakahada.col_akshara"); } },
-  rashi: { get ne() { return tFor("ne", "panchanga.wheel.rashi"); }, get en() { return tFor("en", "panchanga.wheel.rashi"); } },
-  lord: { get ne() { return tFor("ne", "avakahada.col_rashi_lord"); }, get en() { return tFor("en", "avakahada.col_rashi_lord"); } },
-  varna: { get ne() { return tFor("ne", "avakahada.col_varna"); }, get en() { return tFor("en", "avakahada.col_varna"); } },
-  vashya: { get ne() { return tFor("ne", "kundali.vashya"); }, get en() { return tFor("en", "kundali.vashya"); } },
-  yoni: { get ne() { return tFor("ne", "avakahada.col_yoni"); }, get en() { return tFor("en", "avakahada.col_yoni"); } },
-  gana: { get ne() { return tFor("ne", "kundali.gana"); }, get en() { return tFor("en", "kundali.gana"); } },
-  nadi: { get ne() { return tFor("ne", "kundali.nadi"); }, get en() { return tFor("en", "kundali.nadi"); } },
-};
+type HubFocus = AvakahadaHubFocus;
 
 function RadialText({
   deg,
@@ -135,12 +106,9 @@ function RadialText({
   );
 }
 
-function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow }) {
-  const { t, lang, pick } = useLocale();
-  const { ring, padaIndex } = focus;
-  const label = pick(RING_LABELS[ring].ne, RING_LABELS[ring].en);
-
-  const vairiLine = t("ui.avakahada.enemy_yoni_vairiyoni", { vairiYoni: row.vairiYoni });
+function HubContent({ hub, row }: { hub: ReturnType<ReturnType<typeof useAvakahadaWheel>["hub"]>; row: AvakahadaWheelRow }) {
+  const { ring, label, value } = hub;
+  const vairiLine = hub.vairi;
 
   if (ring === "nakshatra") {
     return (
@@ -152,24 +120,24 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
           style={{ color: W_INK, ...nepaliTextStyle(12) }}
           className={cn(avakahadaClasses.hubNakTitle, "text-xs text-center")}
         >
-          {row.index}. {row.nakshatraLabel}
+          {hub.nakTitle}
         </Text>
         <View className={avakahadaClasses.hubAttrList}>
-          {ATTR_RINGS.map((attr) => (
+          {hub.attrs.map((attr) => (
             <View
               key={attr.id}
               className={cn("flex-row justify-between", avakahadaClasses.hubAttrRow)}
               style={{ borderBottomColor: W_SEP_SOFT }}
             >
               <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className={cn(avakahadaClasses.hubAttrName, "text-xs")}>
-                {pick(RING_LABELS[attr.id].ne, RING_LABELS[attr.id].en)}
+                {attr.label}
               </Text>
               <Text
                 numberOfLines={1}
                 style={{ color: W_INK, ...nepaliTextStyle(9) }}
                 className={cn(avakahadaClasses.hubAttrValue, "text-xs shrink")}
               >
-                {attrValue(attr.id, row, lang)}
+                {attr.value}
               </Text>
             </View>
           ))}
@@ -180,13 +148,6 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
       </ScrollView>
     );
   }
-
-  const value =
-    ring === "pada"
-      ? padaIndex != null
-        ? (row.aksharas[padaIndex] ?? "")
-        : ""
-      : attrValue(ring, row, lang);
 
   return (
     <View className={avakahadaClasses.hubStack}>
@@ -211,12 +172,12 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
           {value}
         </Text>
       )}
-      {ring === "pada" && padaIndex != null ? (
+      {hub.charan ? (
         <Text
           style={{ color: W_INK_FAINT, ...nepaliTextStyle(10) }}
           className={cn(avakahadaClasses.hubSub, "text-xs text-center")}
         >
-          {t("ui.avakahada.charan_value_lang", { value: padaIndex + 1, lang: localizeRashi(row.charanRashis[padaIndex]!, lang) })}
+          {hub.charan}
         </Text>
       ) : null}
       <Text
@@ -224,7 +185,7 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
         className={cn(avakahadaClasses.hubSub, "text-xs text-center")}
         numberOfLines={2}
       >
-        {row.index}. {row.nakshatraLabel}
+        {hub.nakTitle}
       </Text>
       {ring === "yoni" ? (
         <Text style={{ color: W_INK_FAINT, ...nepaliTextStyle(9) }} className={cn(avakahadaClasses.hubVairi, "text-xs")}>
@@ -235,37 +196,23 @@ function HubContent({ focus, row }: { focus: HubFocus; row: AvakahadaWheelRow })
   );
 }
 
-const ZOOM_MIN = 0.6;
-const ZOOM_MAX = 3.5;
-const ZOOM_STEP = 1.35;
 
 type Props = {
   highlighted?: Pick<AvakahadaWheelRow, "index">[];
 };
 
 export function AvakahadaWheel({ highlighted }: Props) {
-  const { t, lang, pick, digits } = useLocale();
+  const v = useAvakahadaWheel({ highlighted });
+  const { lang } = useLocale();
   const { width } = useBreakpoint();
-  const [selected, setSelected] = useState<HubFocus | null>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const { zoom, pan, setPan, allRows, highlightSet, hasFilter, selected, activeRow, selectFocus, resetView, copy } = v;
+  const isSameFocus = sameAvakahadaFocus;
   const panStart = useRef({ x: 0, y: 0 });
   const zoomRef = useRef(1);
   zoomRef.current = zoom;
 
   const size = Math.min(width - 32, 660);
   const scale = size / 620;
-
-  const handleZoom = useCallback((z: number) => {
-    const next = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
-    setZoom(next);
-    if (next <= 1) setPan({ x: 0, y: 0 });
-  }, []);
-
-  const resetView = useCallback(() => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
 
   const responder = useMemo(
     () =>
@@ -280,32 +227,8 @@ export function AvakahadaWheel({ highlighted }: Props) {
           setPan({ x: panStart.current.x + g.dx, y: panStart.current.y + g.dy });
         },
       }),
-    [pan],
+    [pan, setPan],
   );
-
-  const allRows = useMemo(() => AVAKAHADA.map((r) => toWheelRow(r, lang)), [lang]);
-
-  const highlightSet = useMemo(
-    () => new Set((highlighted ?? allRows).map((r) => r.index)),
-    [highlighted, allRows],
-  );
-  const hasFilter = highlighted !== undefined && highlighted.length < allRows.length;
-
-  const activeRow = useMemo(
-    () => (selected != null ? allRows.find((r) => r.index === selected.index) : undefined),
-    [selected, allRows],
-  );
-
-  const selectFocus = useCallback((focus: HubFocus) => {
-    setSelected((s) =>
-      s?.index === focus.index && s?.ring === focus.ring && s?.padaIndex === focus.padaIndex
-        ? null
-        : focus,
-    );
-  }, []);
-
-  const isSameFocus = (a: HubFocus | null | undefined, b: HubFocus) =>
-    a?.index === b.index && a?.ring === b.ring && a?.padaIndex === b.padaIndex;
 
   const layers = useMemo(() => {
     const segs: ReactNode[] = [];
@@ -430,17 +353,16 @@ export function AvakahadaWheel({ highlighted }: Props) {
     );
   }, [hasFilter, highlightSet, selected, selectFocus]);
 
-  const ganas: Gana[] = [/* copy-ok */ "देव", /* copy-ok */ "नर", /* copy-ok */ "राक्षस"];
   const hubBox = R.hub * 2 - 20;
 
   return (
     <View className={avakahadaClasses.wheelSection}>
       <View className={avakahadaClasses.wheelHead}>
         <Text className={avakahadaClasses.wheelTitle} style={nepaliTextStyle(18)}>
-          {t("avakahada.wheel_title")}
+          {copy.title}
         </Text>
         <Text className={avakahadaClasses.wheelSubtitle} style={nepaliTextStyle(13)}>
-          {t("avakahada.wheel_subtitle")}
+          {copy.subtitle}
         </Text>
       </View>
 
@@ -449,11 +371,11 @@ export function AvakahadaWheel({ highlighted }: Props) {
         style={{ backgroundColor: midnight.background, borderWidth: 1, borderColor: W_SURFACE_BORDER }}
       >
         <View className={cn("flex-row", avakahadaClasses.wheelToolbar)}>
-          <ZoomBtn icon="add" onPress={() => handleZoom(zoom * ZOOM_STEP)} />
+          <ZoomBtn icon="add" onPress={v.zoomIn} />
           <ZoomBtn
             icon="remove"
-            disabled={zoom <= ZOOM_MIN}
-            onPress={() => handleZoom(zoom / ZOOM_STEP)}
+            disabled={!v.canZoomOut}
+            onPress={v.zoomOut}
           />
           {zoom !== 1 ? (
             <Pressable
@@ -470,7 +392,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
             style={{ color: W_INK_DIM, fontFamily: NUM_FONT }}
             className={avakahadaClasses.zoomPercent}
           >
-            {digits(Math.round(zoom * 100))}%
+            {v.zoomLabel}
           </Text>
         </View>
 
@@ -510,7 +432,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
               {padaSegs}
               {layers.segs}
 
-              {ATTR_RINGS.map((ring) => (
+              {v.attrRings.map((ring) => (
                 <RadialText
                   key={`guide-${ring.id}`}
                   deg={RING_GUIDE_DEG}
@@ -519,7 +441,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
                   bold
                   fill={W_ACCENT}
                 >
-                  {pick(RING_LABELS[ring.id].ne, RING_LABELS[ring.id].en)}
+                  {ring.label}
                 </RadialText>
               ))}
 
@@ -566,20 +488,20 @@ export function AvakahadaWheel({ highlighted }: Props) {
               }}
             >
               {activeRow && selected ? (
-                <HubContent focus={selected} row={activeRow} />
+                <HubContent hub={v.hub(selected, activeRow)} row={activeRow} />
               ) : (
                 <View className="items-center px-1">
                   <Text
                     style={{ color: W_ACCENT, ...nepaliTextStyle(16) }}
                     className={cn(avakahadaClasses.hubIdleTitle, "text-sm")}
                   >
-                    {t("kundali.avakahada")}
+                    {copy.hubTitle}
                   </Text>
                   <Text
                     style={{ color: W_INK, ...nepaliTextStyle(10) }}
                     className={cn(avakahadaClasses.hubIdleHint, "text-xs text-center")}
                   >
-                    {t("avakahada.wheel_hub_hint")}
+                    {copy.hubHint}
                   </Text>
                 </View>
               )}
@@ -590,31 +512,28 @@ export function AvakahadaWheel({ highlighted }: Props) {
 
       <View className={cn("flex-row", avakahadaClasses.legend)}>
         <Text className={avakahadaClasses.legendLabel} style={nepaliTextStyle(12)}>
-          {t("avakahada.wheel_legend_gana")}
+          {copy.legendGana}
         </Text>
-        {ganas.map((g) => (
+        {v.ganas.map(({ gana: g, label }) => (
           <View key={g} className={cn("flex-row", avakahadaClasses.legendItem)}>
             <View
               style={{ backgroundColor: GANA_FILL[g] }}
               className={avakahadaClasses.legendSwatch}
             />
             <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-              {localizeGana(g, lang)}
+              {label}
             </Text>
           </View>
         ))}
         <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-          {t("avakahada.wheel_legend_rings")}
+          {copy.legendRings}
         </Text>
         <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-          {t("ui.avakahada.drag_to_pan_when_zoomed")}
+          {`· ${copy.panHint}`}
         </Text>
-        {hasFilter ? (
+        {copy.filter ? (
           <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
-            {pick(
-              tFor(undefined, "ui.avakahada.x_91fdc25d", { v0: digits(highlightSet.size) }),
-              `· ${highlightSet.size} nakshatras in search`,
-            )}
+            {copy.filter}
           </Text>
         ) : null}
       </View>
