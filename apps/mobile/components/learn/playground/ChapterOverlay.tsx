@@ -16,13 +16,12 @@
 
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
-import { Text } from "@/components/ui/Text";
 import { LEARN_DIAGRAMS } from "@/lib/learn/learn-diagrams";
-import { useLocale } from "@/lib/i18n";
+import { useChapterOverlay } from "@vedic-patro/features/learn";
 import { useThemeColors } from "@/lib/theme-context";
 
 export function ChapterOverlay({ id, onClose }: { id: string; onClose: () => void }) {
-  const { t } = useLocale();
+  const { closeLabel } = useChapterOverlay();
   const colors = useThemeColors();
   const Diagram = LEARN_DIAGRAMS[id];
   if (!Diagram) return null;
@@ -34,7 +33,7 @@ export function ChapterOverlay({ id, onClose }: { id: string; onClose: () => voi
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={t("ui.common.close")}
+        accessibilityLabel={closeLabel}
         className="absolute right-1.5 top-1.5 z-10 h-7 w-7 items-center justify-center rounded-full border active:opacity-70"
         style={{ borderColor: colors.border, backgroundColor: colors.card }}
       >

@@ -4401,6 +4401,8 @@
       "eclipse_season_value_days": "eclipse season — ~{{value}} days",
       "julian_1_day_per_value_years": "Julian: ~1 day per {{value}} years → ten days by {{value2}}",
       "one_lunation_value_days": "one lunation — {{value}} days",
+      "pause_orbit": "Pause orbit",
+      "run_orbit": "Run orbit",
       "that_value_value2_more_minutes_of": "that ~{{value}}° = ~{{value2}} more minutes of spin",
       "tithi_ends_value_utc": "tithi ends — {{value}} UTC",
       "value_days": "~{{value}} days",

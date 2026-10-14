@@ -4401,6 +4401,8 @@
       "eclipse_season_value_days": "ग्रहण ऋतु — ~{{value}} दिन",
       "julian_1_day_per_value_years": "जुलियन: ~१ दिन प्रति {{value}} वर्ष → {{value2}} सम्ममा १० दिन",
       "one_lunation_value_days": "एक चान्द्र मास — {{value}} दिन",
+      "pause_orbit": "कक्ष रोक्नुहोस्",
+      "run_orbit": "कक्ष चलाउनुहोस्",
       "that_value_value2_more_minutes_of": "त्यो ~{{value}}° = ~{{value2}} मिनेट थप घुर्णन",
       "tithi_ends_value_utc": "तिथि सकिने क्षण — {{value}} UTC",
       "value_days": "~{{value}} दिन",
