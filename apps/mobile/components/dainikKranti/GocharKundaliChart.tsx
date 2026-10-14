@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useGocharKundaliChart, type GocharGrahaRow } from "@vedic-patro/features/dainik-kranti";
 import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
 import { nepaliTextStyle } from "@/lib/nepali-text";
@@ -52,6 +53,8 @@ export function GocharKundaliChart({ className, hideTitle, ...props }: Props) {
           {chart.stateText}
         </Text>
       )}
+
+      {chart.showStatusLegend ? <GrahaStatusLegend className="mt-2" /> : null}
 
       {chart.dateLine ? (
         <Text className={dainikKrantiClasses.chartDate} style={nepaliTextStyle()}>

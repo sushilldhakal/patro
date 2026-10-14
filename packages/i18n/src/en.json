@@ -883,6 +883,7 @@
     "result": "Result",
     "no_matching_combination": "No matching combination.",
     "grouped_ids_e_g_33_44_75_106_are_kept_as_in_the_source_": "Grouped IDs (e.g. 33-44, 75-106) are kept as in the source. Part II (163–300) will be added later.",
+    "drishti_benefic": "Benefic",
     "sources": {
       "heading": "Classical sources",
       "blurb": "Calculations follow each treatise's traditional author and the Bikram Sambat year of the original text. The second line is the translator and editor's printed edition in BS.",
@@ -4964,7 +4965,6 @@
       "full_panchanga_timeline_sunrise_to_sunrise": "Full panchanga timeline · sunrise to sunrise",
       "name_s_aspect_houses_houselist": "{{name}}'s aspect: houses {{houseList}}",
       "nepali_patro_panchanga_wheel": "Nepali Patro · Panchanga Wheel",
-      "north_indian_d1_chart": "North Indian D1 chart",
       "now": "Now",
       "padas": "Padas",
       "panchanga_details": "Panchanga details",

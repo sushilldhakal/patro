@@ -37,7 +37,7 @@ import {
 } from "@vedic-patro/domain/bs-calendar";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
-import { useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
+import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
@@ -81,12 +81,7 @@ import {
   type SkyTarget,
   type SkyTargetKind,
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
-import {
-  pushRecent,
-  putFavourites,
-  recents as readRecents,
-  syncFavourites,
-} from "@/lib/sky3d/sky-bookmarks";
+import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import {
   AakashGocharScene,
   type SceneToggles,
@@ -492,8 +487,6 @@ export function AakashGocharSky({
   useEffect(() => {
     glRef.current?.setClearColor(CANVAS_BG, showCamera ? 0 : 1);
   }, [showCamera]);
-  const [favourites, setFavourites] = useState<string[]>([]);
-  const [recentIds, setRecentIds] = useState<string[]>([]);
   /**
    * Where the camera has been asked to look, for anything that is not a graha.
    *
@@ -526,34 +519,10 @@ export function AakashGocharSky({
   const [aimedCentered, setAimedCentered] = useState(false);
   const { user } = useAuth();
   const signedIn = !!user;
-
-  /* Load the on-device lists once, then pull the account's favourites down and
-     fold this device's in — same order the web signs in and merges. */
-  useEffect(() => {
-    let alive = true;
-    void readRecents().then((ids) => {
-      if (alive) setRecentIds(ids);
-    });
-    void syncFavourites(signedIn).then((ids) => {
-      if (alive) setFavourites(ids);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [signedIn]);
-
-  const toggleFavourite = useCallback(
-    (id: string) => {
-      setFavourites((current) => {
-        const next = current.includes(id)
-          ? current.filter((v) => v !== id)
-          : [...current, id];
-        void putFavourites(next, signedIn);
-        return next;
-      });
-    },
-    [signedIn],
-  );
+  const { favourites, recentIds, toggleFavourite, pushRecent } = useSkyBookmarks({
+    signedIn,
+    storage: skyBookmarkStorage,
+  });
 
   const catalogStars = useMemo(() => displayVedicStars(vedicStars ?? []), [vedicStars]);
   const namedStars = useMemo(() => vedicStarTargets(catalogStars), [catalogStars]);
@@ -576,7 +545,7 @@ export function AakashGocharSky({
    */
   const pickTarget = useCallback((target: SkyTarget) => {
     setAimed(target);
-    void pushRecent(target.id).then(setRecentIds);
+    pushRecent(target.id);
     if (target.at === "graha") {
       setSelectedKey(target.graha);
       setToggles((t) => ({ ...t, lockCenter: true }));
@@ -584,7 +553,7 @@ export function AakashGocharSky({
       setSkyAim({ lon: target.lon, lat: target.lat, nonce: Date.now() });
     }
     setSheet(null);
-  }, []);
+  }, [pushRecent]);
 
   /** What the scene reports for a press on anything that is not a graha. */
   type SkyHit = {

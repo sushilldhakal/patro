@@ -1,63 +1,20 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Pressable, View, type GestureResponderEvent } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import Svg, { Circle, G, Line, Polygon, Rect, Text as SvgText } from "react-native-svg";
 import { GrahaStatusMarksSvg } from "@/components/graha/GrahaStatusMarksSvg";
-import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { Text } from "@/components/ui/Text";
 import type { BhavaHouse } from "@vedic-patro/domain/bhava";
-import { aspectHousesFor, drishtiTargetHouses } from "@vedic-patro/domain/bhava";
-import { bhavaHousesHaveStatusMarks } from "@vedic-patro/domain/graha-status";
-import {
-  NI_HOUSE_POLYGONS,
-  planetGridLayout,
-  pointsToSvg,
-  polygonCentroid,
-} from "@vedic-patro/domain/kundali/north-indian-layout";
+import { useD1Chart, type D1DrishtiPanel } from "@vedic-patro/features/kundali";
 import { useLocale } from "@/lib/i18n";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
-import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
-import { bhavaReferenceKeys, fetchBhavaReference, type BhavaReferencePayload } from "@/lib/api";
 import { BhavaDetailDialog } from "@/components/kundali/BhavaDetailDialog";
-
-import { tFor } from "@vedic-patro/i18n/runtime";
-const PLANET_ABBR_NE: Record<string, string> = {
-  get sun() { return tFor(undefined, "kundali.x.abbr_sun"); },
-  get moon() { return tFor(undefined, "kundali.x.abbr_moon"); },
-  get mars() { return tFor(undefined, "kundali.x.abbr_mars"); },
-  get mercury() { return tFor(undefined, "kundali.x.abbr_mercury"); },
-  get jupiter() { return tFor(undefined, "kundali.x.abbr_jupiter"); },
-  get venus() { return tFor(undefined, "kundali.x.abbr_venus"); },
-  get saturn() { return tFor(undefined, "kundali.x.abbr_saturn"); },
-  get rahu() { return tFor(undefined, "kundali.x.abbr_rahu"); },
-  get ketu() { return tFor(undefined, "kundali.x.abbr_ketu"); },
-};
-
-const PLANET_ABBR_EN: Record<string, string> = {
-  sun: "Su",
-  moon: "Mo",
-  mars: "Ma",
-  mercury: "Me",
-  jupiter: "Ju",
-  venus: "Ve",
-  saturn: "Sa",
-  rahu: "Ra",
-  ketu: "Ke",
-};
-
-const RASHI_EN = [
-  "Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
-  "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena",
-];
 
 type Props = {
   houses: BhavaHouse[];
 };
-
-type Selected = { key: string; house: number };
 
 /**
  * Under plain `tsc` this project's `moduleSuffixes` (".web" first) resolves
@@ -95,61 +52,20 @@ function pointInPolygon(x: number, y: number, pts: ReadonlyArray<readonly [numbe
   return inside;
 }
 
-function formatHouseList(houses: number[], lang: "ne" | "en", digits: (v: number) => string): string {
-  const parts = houses.map((h) => digits(h));
-  if (parts.length <= 1) return parts.join("");
-  const last = parts[parts.length - 1];
-  const rest = parts.slice(0, -1).join(", ");
-  return tFor(lang, "ui.common.rest_and_last", { rest, last });
-}
-
-/** "क्रूर (छाया) दृष्टि" / "Malefic (Shadow) Aspect" — pure display logic over
- * the fetched isMalefic/isChaya flags, not itself interpretive content. */
-function drishtiBadgeText(grahaKey: string, ref: BhavaReferencePayload, lang: "ne" | "en"): string {
-  const info = ref.grahaDrishti[grahaKey];
-  if (!info) return "";
-  if (lang === "en") {
-    const nature = info.isMalefic ? "Malefic" : "Benefic";
-    return info.isChaya ? `${nature} (Shadow) Aspect` : `${nature} Aspect`;
-  }
-  const nature = info.isMalefic ? tFor(undefined, "ui.kundali.x_49c16645") : tFor(undefined, "samvatsara_names.saumya");
-  return info.isChaya ? tFor(undefined, "ui.kundali.x_dd187864", { v0: nature }) : tFor(undefined, "ui.kundali.x_7e22a3b0", { v0: nature });
-}
-
-function DrishtiPanel({
-  selected,
-  reference,
-  onClose,
-}: {
-  selected: Selected;
-  reference: BhavaReferencePayload;
-  onClose: () => void;
-}) {
-  const { t, pick, digits, lang } = useLocale();
+function DrishtiPanel({ panel, onClose }: { panel: D1DrishtiPanel; onClose: () => void }) {
+  const { lang } = useLocale();
   const small = lang === "en" ? undefined : nepaliTextStyle(12);
-  const grahaKey = selected.key as GrahaKey;
-  const info = reference.grahaDrishti[grahaKey];
-  if (!info) return null;
-
-  // The panel names the aspect by its classical offset (Jupiter is always
-  // "described" as casting its 5th/7th/9th aspect, regardless of which
-  // absolute house that lands on in this chart) — the arrows below still
-  // point at the resolved absolute houses via drishtiTargetHouses.
-  const offsets = aspectHousesFor(selected.key);
-  const houseList = formatHouseList(offsets, lang, digits);
-  const name = GRAHA_NAME[grahaKey] ? pick(GRAHA_NAME[grahaKey].ne, GRAHA_NAME[grahaKey].en) : grahaKey;
-  const badge = drishtiBadgeText(grahaKey, reference, lang);
 
   return (
     <View className="mt-3 w-full gap-2">
       <View className="flex-row items-center justify-between gap-2">
         <Text className="text-sm flex-1 font-semibold text-foreground" style={small}>
-          {t("ui.panchanga.name_s_aspect_houses_houselist", { name, houseList })}
+          {panel.title}
         </Text>
         <Pressable
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel={t("ui.common.close")}
+          accessibilityLabel={panel.closeLabel}
           className="h-7 w-7 items-center justify-center rounded-full bg-muted/60"
         >
           <Text className="text-sm text-muted-foreground">✕</Text>
@@ -158,29 +74,29 @@ function DrishtiPanel({
       <View
         className={cn(
           "rounded-lg border p-3",
-          info.isMalefic ? "border-destructive/20 bg-destructive/10" : "border-emerald-500/20 bg-emerald-500/10",
+          panel.isMalefic ? "border-destructive/20 bg-destructive/10" : "border-emerald-500/20 bg-emerald-500/10",
         )}
       >
         <View className="mb-1.5 flex-row items-center justify-between gap-2">
-          <Text className="text-sm font-semibold text-foreground">{t("ui.panchanga.aspect_effect")}</Text>
+          <Text className="text-sm font-semibold text-foreground">{panel.effectLabel}</Text>
           <View
             className={cn(
               "rounded-full border px-2 py-0.5",
-              info.isMalefic ? "border-destructive/30 bg-destructive/10" : "border-emerald-500/30 bg-emerald-500/15",
+              panel.isMalefic ? "border-destructive/30 bg-destructive/10" : "border-emerald-500/30 bg-emerald-500/15",
             )}
           >
             <Text
               className={cn(
                 "text-sm font-semibold",
-                info.isMalefic ? "text-destructive" : "text-emerald-700 dark:text-emerald-300",
+                panel.isMalefic ? "text-destructive" : "text-emerald-700 dark:text-emerald-300",
               )}
             >
-              {badge}
+              {panel.badge}
             </Text>
           </View>
         </View>
         <Text className="text-sm leading-relaxed" style={small}>
-          {pick(info.summaryNe, info.summaryEn)}
+          {panel.summary}
         </Text>
       </View>
     </View>
@@ -188,58 +104,10 @@ function DrishtiPanel({
 }
 
 export function D1Chart({ houses }: Props) {
-  const { t, pick, digits } = useLocale();
   const { isTablet } = useBreakpoint();
   const colors = useThemeColors();
-  const byHouse = useMemo(() => new Map(houses.map((h) => [h.house, h])), [houses]);
-  const showLegend = useMemo(() => bhavaHousesHaveStatusMarks(houses), [houses]);
-  const [selected, setSelected] = useState<Selected | null>(null);
-  const [openHouse, setOpenHouse] = useState<number | null>(null);
-
-  const referenceQ = useQuery({
-    queryKey: bhavaReferenceKeys.all,
-    queryFn: fetchBhavaReference,
-    staleTime: Infinity,
-  });
-  const reference = referenceQ.data;
-
-  const targetHouses = useMemo(
-    () => (selected ? new Set(drishtiTargetHouses(selected.key, selected.house)) : null),
-    [selected],
-  );
-
-  const togglePlanet = (key: string, house: number) => {
-    setSelected((prev) => (prev && prev.key === key && prev.house === house ? null : { key, house }));
-  };
-
-  /* Where every graha glyph sits, in viewBox units — the same arithmetic the
-     render loop uses, kept here so taps can be resolved without depending on
-     react-native-svg's own hit testing. */
-  const planetSlots = useMemo(() => {
-    const out: { key: string; house: number; x: number; y: number; r: number }[] = [];
-    for (const [houseStr, points] of Object.entries(NI_HOUSE_POLYGONS)) {
-      const houseNum = Number(houseStr);
-      const planets = byHouse.get(houseNum)?.planets ?? [];
-      if (planets.length === 0) continue;
-      const [cx, cy] = polygonCentroid(points);
-      const layout = planetGridLayout(points, planets.length);
-      planets.forEach((planet, i) => {
-        const row = Math.floor(i / layout.columns);
-        const rowStart = row * layout.columns;
-        const itemsInRow = Math.min(layout.columns, planets.length - rowStart);
-        const col = i - rowStart;
-        out.push({
-          key: planet.key,
-          house: houseNum,
-          x: cx + (col - (itemsInRow - 1) / 2) * layout.colGap,
-          y: cy + row * layout.rowGap - layout.fontSize * 0.3,
-          r: Math.max(layout.fontSize * 0.9, 12),
-        });
-      });
-    }
-    return out;
-  }, [byHouse]);
-
+  const chart = useD1Chart(houses);
+  const { cells, togglePlanet, setOpenHouse } = chart;
   const [chartSize, setChartSize] = useState(0);
 
   /* One tap handler for the whole चक्र: a graha glyph under the finger opens
@@ -252,28 +120,29 @@ export function D1Chart({ houses }: Props) {
       const x = e.nativeEvent.locationX * scale;
       const y = e.nativeEvent.locationY * scale;
 
-      let best: (typeof planetSlots)[number] | undefined;
+      let best: { key: string; house: number; isClickable: boolean } | undefined;
       let bestD = Infinity;
-      for (const slot of planetSlots) {
-        const d = Math.hypot(slot.x - x, slot.y - y);
-        if (d <= slot.r && d < bestD) {
-          best = slot;
-          bestD = d;
+      for (const cell of cells) {
+        for (const planet of cell.planets) {
+          const d = Math.hypot(planet.x - x, planet.haloY - y);
+          if (d <= Math.max(planet.fontSize * 0.9, 12) && d < bestD) {
+            best = { key: planet.key, house: cell.house, isClickable: planet.isClickable };
+            bestD = d;
+          }
         }
       }
-      if (best && reference?.grahaDrishti[best.key]) {
+      if (best?.isClickable) {
         togglePlanet(best.key, best.house);
         return;
       }
-      for (const [houseStr, points] of Object.entries(NI_HOUSE_POLYGONS)) {
-        const houseNum = Number(houseStr);
-        if (byHouse.has(houseNum) && pointInPolygon(x, y, points)) {
-          setOpenHouse(houseNum);
+      for (const cell of cells) {
+        if (cell.hasData && pointInPolygon(x, y, cell.points)) {
+          setOpenHouse(cell.house);
           return;
         }
       }
     },
-    [chartSize, planetSlots, reference, byHouse],
+    [chartSize, cells, togglePlanet, setOpenHouse],
   );
 
   /* On a wide column (iPad) the viewBox is scaled up, and the text with it —
@@ -297,133 +166,99 @@ export function D1Chart({ houses }: Props) {
       accessibilityRole="button"
       style={{ width: isTablet ? "90%" : "100%", aspectRatio: 1 }}
     >
-      <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={t("ui.panchanga.north_indian_d1_chart")}>
+      <Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 300 300" accessibilityLabel={chart.ariaLabel}>
         <Rect x={0} y={0} width={300} height={300} rx={4} fill={colors.card} stroke={colors.border} strokeWidth={1.5} />
         <Line x1={0} y1={0} x2={300} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
         <Line x1={300} y1={0} x2={0} y2={300} stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
         <Polygon points="150,0 300,150 150,300 0,150" fill="none" stroke={colors.border} strokeWidth={1.25} opacity={0.8} />
 
-        {Object.entries(NI_HOUSE_POLYGONS).map(([houseStr, points]) => {
-          const houseNum = Number(houseStr);
-          const house = byHouse.get(houseNum);
-          const [cx, cy] = polygonCentroid(points);
-          const planetLines = house?.planets ?? [];
-          const hasPlanets = planetLines.length > 0;
-          const layout = planetGridLayout(points, planetLines.length);
-          const isAspected = Boolean(targetHouses?.has(houseNum));
+        {cells.map((cell) => (
+          <G key={cell.house}>
+            {/* Leaf-level touch target for the whole house. Deliberately
+                not relying on G-level press bubbling or stopPropagation —
+                both are flaky on react-native-svg. Planets render on top
+                with their own onPress and win the touch at their exact
+                pixels via normal topmost-shape hit testing. */}
+            <Polygon
+              points={cell.svgPoints}
+              fill="transparent"
+              onPress={svgOnPress(cell.hasData ? () => setOpenHouse(cell.house) : undefined)}
+            />
+            {cell.isLagna ? (
+              <Polygon points={cell.svgPoints} fill={colors.secondary} opacity={0.15} />
+            ) : null}
+            {cell.isAspected ? (
+              <Polygon points={cell.svgPoints} fill={colors.secondary} opacity={0.08} />
+            ) : null}
+            {cell.label ? (
+              <SvgText
+                x={cell.cx}
+                y={cell.labelY}
+                fill={cell.isLagna ? colors.secondary : colors.mutedForeground}
+                fontSize={houseLabelSize}
+                fontWeight="600"
+                textAnchor="middle"
+                onPress={svgOnPress(() => setOpenHouse(cell.house))}
+              >
+                {cell.label}
+              </SvgText>
+            ) : null}
+            {cell.planets.map((planet) => {
+              const onPlanetPress = planet.isClickable ? () => togglePlanet(planet.key, cell.house) : undefined;
+              return (
+                <G key={planet.key}>
+                  {/* Generous invisible touch target sized to the glyph —
+                      a leaf shape so it wins the touch over the house
+                      polygon underneath via z-order, no propagation needed. */}
+                  <Circle
+                    cx={planet.x}
+                    cy={planet.haloY}
+                    r={planet.fontSize * 0.9}
+                    fill={planet.isSelected ? colors.secondary : "transparent"}
+                    opacity={planet.isSelected ? 0.2 : 1}
+                    onPress={svgOnPress(onPlanetPress)}
+                  />
+                  <SvgText
+                    x={planet.x}
+                    y={planet.y}
+                    fill={planet.isSelected ? colors.secondary : colors.foreground}
+                    fontSize={Math.min(planet.fontSize, glyphCap)}
+                    fontWeight={planet.isSelected ? "700" : "400"}
+                    textAnchor="middle"
+                    onPress={svgOnPress(onPlanetPress)}
+                  >
+                    {planet.abbr}
+                  </SvgText>
+                  <GrahaStatusMarksSvg
+                    planetKey={planet.key}
+                    isRetrograde={planet.isRetrograde}
+                    isCombust={planet.isCombust}
+                    x={planet.markX}
+                    y={planet.markY}
+                    size={planet.markSize}
+                    vakriColor={colors.secondary}
+                    astaColor={colors.danger}
+                  />
+                </G>
+              );
+            })}
+          </G>
+        ))}
 
-          return (
-            <G key={houseNum}>
-              {/* Leaf-level touch target for the whole house. Deliberately
-                  not relying on G-level press bubbling or stopPropagation —
-                  both are flaky on react-native-svg. Planets render on top
-                  with their own onPress and win the touch at their exact
-                  pixels via normal topmost-shape hit testing. */}
-              <Polygon
-                points={pointsToSvg(points)}
-                fill="transparent"
-                onPress={svgOnPress(house ? () => setOpenHouse(houseNum) : undefined)}
-              />
-              {house?.isLagna ? (
-                <Polygon points={pointsToSvg(points)} fill={colors.secondary} opacity={0.15} />
-              ) : null}
-              {isAspected && !house?.isLagna ? (
-                <Polygon points={pointsToSvg(points)} fill={colors.secondary} opacity={0.08} />
-              ) : null}
-              {house ? (
-                <SvgText
-                  x={cx}
-                  y={cy - (hasPlanets ? 12 : 0)}
-                  fill={house.isLagna ? colors.secondary : colors.mutedForeground}
-                  fontSize={houseLabelSize}
-                  fontWeight="600"
-                  textAnchor="middle"
-                  onPress={svgOnPress(() => setOpenHouse(houseNum))}
-                >
-                  {`${digits(house.rashi)} ${pick(house.rashiNe, RASHI_EN[house.rashi - 1] ?? house.rashiNe)}`}
-                </SvgText>
-              ) : null}
-              {planetLines.map((planet, i) => {
-                const row = Math.floor(i / layout.columns);
-                const rowStart = row * layout.columns;
-                const itemsInRow = Math.min(layout.columns, planetLines.length - rowStart);
-                const col = i - rowStart;
-                const x = cx + (col - (itemsInRow - 1) / 2) * layout.colGap;
-                const y = cy + row * layout.rowGap;
-                const markSize = layout.fontSize * 0.5;
-                const isSelected = selected?.key === planet.key && selected.house === houseNum;
-                const isClickable = Boolean(reference?.grahaDrishti[planet.key]);
-                const onPlanetPress = isClickable ? () => togglePlanet(planet.key, houseNum) : undefined;
-                return (
-                  <G key={planet.key}>
-                    {/* Generous invisible touch target sized to the glyph —
-                        a leaf shape so it wins the touch over the house
-                        polygon underneath via z-order, no propagation needed. */}
-                    <Circle
-                      cx={x}
-                      cy={y - layout.fontSize * 0.3}
-                      r={layout.fontSize * 0.9}
-                      fill={isSelected ? colors.secondary : "transparent"}
-                      opacity={isSelected ? 0.2 : 1}
-                      onPress={svgOnPress(onPlanetPress)}
-                    />
-                    <SvgText
-                      x={x}
-                      y={y}
-                      fill={isSelected ? colors.secondary : colors.foreground}
-                      fontSize={Math.min(layout.fontSize, glyphCap)}
-                      fontWeight={isSelected ? "700" : "400"}
-                      textAnchor="middle"
-                      onPress={svgOnPress(onPlanetPress)}
-                    >
-                      {pick(
-                        PLANET_ABBR_NE[planet.key] ?? planet.labelNe.slice(0, 2),
-                        PLANET_ABBR_EN[planet.key] ?? planet.labelNe.slice(0, 2),
-                      )}
-                    </SvgText>
-                    <GrahaStatusMarksSvg
-                      planetKey={planet.key}
-                      isRetrograde={planet.isRetrograde}
-                      isCombust={planet.isCombust}
-                      x={x + layout.fontSize * 0.42}
-                      y={y - markSize - layout.fontSize * 0.05}
-                      size={markSize}
-                      vakriColor={colors.secondary}
-                      astaColor={colors.danger}
-                    />
-                  </G>
-                );
-              })}
-            </G>
-          );
-        })}
-
-        {selected &&
-          Array.from(targetHouses ?? []).map((targetHouse) => {
-            if (targetHouse === selected.house) return null;
-            const fromPoints = NI_HOUSE_POLYGONS[selected.house];
-            const toPoints = NI_HOUSE_POLYGONS[targetHouse];
-            if (!fromPoints || !toPoints) return null;
-            const [x1, y1] = polygonCentroid(fromPoints);
-            const [x2, y2] = polygonCentroid(toPoints);
-            return (
-              <G key={targetHouse}>
-                <Line x1={x1} y1={y1} x2={x2} y2={y2} stroke={colors.secondary} strokeWidth={1.5} opacity={0.85} />
-                <Polygon points={arrowHeadPoints(x1, y1, x2, y2)} fill={colors.secondary} opacity={0.85} />
-              </G>
-            );
-          })}
+        {chart.arrows.map((a) => (
+          <G key={a.key}>
+            <Line x1={a.x1} y1={a.y1} x2={a.x2} y2={a.y2} stroke={colors.secondary} strokeWidth={1.5} opacity={0.85} />
+            <Polygon points={arrowHeadPoints(a.x1, a.y1, a.x2, a.y2)} fill={colors.secondary} opacity={0.85} />
+          </G>
+        ))}
       </Svg>
     </Pressable>
-      {showLegend ? <GrahaStatusLegend className="mt-2 w-full" /> : null}
-      {selected && reference && (
-        <DrishtiPanel selected={selected} reference={reference} onClose={() => setSelected(null)} />
-      )}
+      {chart.drishti ? <DrishtiPanel panel={chart.drishti} onClose={chart.clearSelected} /> : null}
       <BhavaDetailDialog
         houses={houses}
-        houseNumber={openHouse}
-        reference={reference}
-        onClose={() => setOpenHouse(null)}
+        houseNumber={chart.openHouse}
+        reference={chart.reference}
+        onClose={chart.closeHouse}
       />
     </View>
   );

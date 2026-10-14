@@ -14,6 +14,8 @@ type Props = {
   /** Civil `date_ad` the planet events count days from. */
   refDateAd?: string;
   location: LocationParams;
+  /** Route for the planet events' "view more" link; no link without it. */
+  planetEventsHref?: string;
 };
 
 export function PanchangaAsidePanels({
@@ -24,12 +26,15 @@ export function PanchangaAsidePanels({
   jdUt,
   refDateAd,
   location,
+  planetEventsHref,
 }: Props) {
   return (
     <View className="gap-4">
       <GhatiClock sunrise={sunrise} sunset={sunset} timezone={timezone} />
       {chartData ? <SunriseD1ChartPanel p={chartData} /> : null}
-      {jdUt != null && refDateAd ? <PlanetEventsPanel jdUt={jdUt} refDateAd={refDateAd} location={location} /> : null}
+      {jdUt != null && refDateAd ? (
+        <PlanetEventsPanel jdUt={jdUt} refDateAd={refDateAd} location={location} viewMoreHref={planetEventsHref} />
+      ) : null}
     </View>
   );
 }
