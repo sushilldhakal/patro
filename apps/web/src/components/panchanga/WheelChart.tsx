@@ -5,8 +5,6 @@ import { getBSMonthLength } from "@vedic-patro/domain/bs-calendar";
 import {
   bsMonthsForWheel,
   GRAHA_META,
-  GREG_EN,
-  GREG_NE,
   getWheelRashis,
   normDeg,
   PADA_AKSHAR,
@@ -14,7 +12,15 @@ import {
   type WheelMarkers,
   type WheelTweaks,
 } from "@vedic-patro/domain/wheel-data";
-import { useLocale, bilingualText } from "@/i18n/locale";
+import {
+  WHEEL_CHART_INNER_R,
+  WHEEL_CHART_R,
+  WHEEL_NAK_GLYPH_SIZE,
+  WHEEL_RASHI_GLYPH_SIZE,
+  useWheelChartLabels,
+  wheelLabelRows,
+  type WheelHover,
+} from "@vedic-patro/features/panchanga-drawing";
 import { KARANA_SEQ, WHEEL_TITHIS, WHEEL_YOGAS } from "@vedic-patro/domain/tithi-wheel-data";
 import { wheelSvg, wheelSvgWrap } from "@/lib/wheel-classes";
 import { cn } from "@vedic-patro/domain/utils";
@@ -53,35 +59,9 @@ import { brand, illustration, midnight, neutral, webTypeScale, wheel, withAlpha 
  * The yoga ring's inner edge is pinned just clear of the outermost planet orbit
  * (216 × ORBIT_SCALE ≈ 125, plus the widest planet body) rather than to a ring.
  */
-const R_YOGA_I = 140;
-const R_YOGA_O = 178; // shared boundary with rashi inner / core
-const R_KAR_I  = 303;
-const R_KAR_O  = 327; // shared boundary with pada inner
-const R_TIT_I  = 263; // shared boundary with rashi outer
-const R_TIT_O  = 303; // shared boundary with karana inner
+const { yogaIn: R_YOGA_I, yogaOut: R_YOGA_O, karanaIn: R_KAR_I, karanaOut: R_KAR_O, tithiIn: R_TIT_I, tithiOut: R_TIT_O } = WHEEL_CHART_INNER_R;
 
-const R = {
-  rimOuter: 497,
-  tickIn: 481,
-  gregOut: 481,
-  gregMid: 467,
-  gregIn: 453,
-  bsOut: 453,
-  bsMid: 438,
-  bsIn: 424,
-  nakOut: 423,
-  nakIcon: 403,
-  nakName: 372,
-  nakIn: 345,
-  padaOut: 345,
-  padaNum: 336,
-  padaIn: 327,
-  rashiOut: 263,
-  rashiGlyph: 246,
-  rashiName: 222,
-  rashiIn: 178,
-  core: 178,
-} as const;
+const R = WHEEL_CHART_R;
 
 /**
  * Glyph box sizes. Both are "contain" fits, so these are the longer side of the
@@ -89,15 +69,12 @@ const R = {
  * room to spare than the nakshatra band, whose glyph shares 345–423 with a name
  * that runs to two stacked rows in English.
  */
-const RASHI_GLYPH_SIZE = 30;
-const NAK_GLYPH_SIZE = 26;
+const RASHI_GLYPH_SIZE = WHEEL_RASHI_GLYPH_SIZE;
+const NAK_GLYPH_SIZE = WHEEL_NAK_GLYPH_SIZE;
 
-export type WheelHover = { type: "nak"; i: number } | { type: "rashi"; i: number };
+export type { WheelHover };
 
-/** Split a ring label on whitespace so each word gets its own radial row. */
-function labelRows(label: string): string[] {
-  return label.trim().split(/\s+/).filter(Boolean);
-}
+const labelRows = wheelLabelRows;
 
 interface RingLabelProps {
   L: number;
@@ -215,7 +192,7 @@ function WheelChartImpl({
     },
     [lineTargetProp, onLineTargetChange],
   );
-  const { lang } = useLocale();
+  const { pick, gregMonths } = useWheelChartLabels();
   const markersRef = useRef(markers);
   useLayoutEffect(() => {
     markersRef.current = markers;
@@ -309,14 +286,14 @@ function WheelChartImpl({
             cx={nx}
             cy={ny}
             className={wNakName(isHot)}
-            title={bilingualText(lang, ico.ne, ico.en)}
+            title={pick(ico.ne, ico.en)}
           />
           <RingLabel
             L={Lm}
             r={R.nakName}
             cls={wNakName(isHot)}
             spin={spin}
-            rows={labelRows(bilingualText(lang, ico.ne, ico.en))}
+            rows={labelRows(pick(ico.ne, ico.en))}
           />
         </g>
       );
@@ -350,10 +327,10 @@ function WheelChartImpl({
             cx={gx}
             cy={gy}
             className={wRashiName(isHot)}
-            title={bilingualText(lang, rs.ne, rs.en)}
+            title={pick(rs.ne, rs.en)}
           />
           <RingLabel L={Lm} r={R.rashiName} cls={wRashiName(isHot)} spin={spin}>
-            {bilingualText(lang, rs.ne, rs.en)}
+            {pick(rs.ne, rs.en)}
           </RingLabel>
         </g>
       );
@@ -440,15 +417,15 @@ function WheelChartImpl({
     }
 
     const gregLabels: React.ReactNode[] = tw.show_greg
-      ? GREG_NE.map((m, i) => (
+      ? gregMonths.map((label, i) => (
           <RingLabel key={`g${i}`} L={(i - 3) * 30 + 5} r={R.gregMid} cls={wMonthGreg} spin={spin}>
-            {bilingualText(lang, m, GREG_EN[i]!)}
+            {label}
           </RingLabel>
         ))
       : [];
 
     return { nakSegs, nakDecor, rashiSegs, rashiDecor, padaCells, dayTicks, hits, rashiRays, gregLabels };
-  }, [spin, hover, bsYear, tw, pol, arcSeg, onHover, onLeave, lang]);
+  }, [spin, hover, bsYear, tw, pol, arcSeg, onHover, onLeave, pick, gregMonths]);
 
   // The data layers — current-time markers, the inner tithi/karana/yoga rings
   // and the planet core — are the only parts that depend on the panchanga data
@@ -566,7 +543,7 @@ function WheelChartImpl({
       const Lm = sunL + k * 6 + 3;
       const kd = KARANA_SEQ[k]!;
       const isCur = k === curKarIdx;
-      const kName = bilingualText(lang, kd.ne, kd.en);
+      const kName = pick(kd.ne, kd.en);
       innerRings.push(
         <path
           key={`kar${k}`}
@@ -597,7 +574,7 @@ function WheelChartImpl({
       const Lm = sunL + i * 12 + 6;
       const isCur = i === curTithiIdx;
       const shukla = i < 15;
-      const tName = bilingualText(lang, WHEEL_TITHIS[i]!.ne, WHEEL_TITHIS[i]!.en);
+      const tName = pick(WHEEL_TITHIS[i]!.ne, WHEEL_TITHIS[i]!.en);
       innerRings.push(
         <g key={`tit${i}`}>
           <path
@@ -759,7 +736,7 @@ function WheelChartImpl({
       core.push(
         <text key={`pn${i}`} x={px} y={py + rad + 9} textAnchor="middle"
           className={wPlanetName} style={{ pointerEvents: "none" }}>
-          {bilingualText(lang, g.ne, g.en)}
+          {pick(g.ne, g.en)}
         </text>
       );
 
@@ -787,7 +764,7 @@ function WheelChartImpl({
             setLineTarget(i);
           }}
         >
-          <title>{bilingualText(lang, g.ne, g.en)}</title>
+          <title>{pick(g.ne, g.en)}</title>
         </circle>
       );
     });
@@ -810,13 +787,13 @@ function WheelChartImpl({
             cls={wMonthNe(tw.show_today && i === sunRashiIdx)}
             spin={spin}
           >
-            {bilingualText(lang, m.ne, m.en)}
+            {pick(m.ne, m.en)}
           </RingLabel>
         ))
       : [];
 
     return { markerNodes, innerRings, core, bsLabels };
-  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, setLineTarget, pol, arcSeg, lang]);
+  }, [markers, det, spin, tw, moonLon, sunLon, planetLons, lineTarget, setLineTarget, pol, arcSeg, pick]);
 
   const angleAt = (e: React.PointerEvent) => {
     const r = wrapRef.current!.getBoundingClientRect();
