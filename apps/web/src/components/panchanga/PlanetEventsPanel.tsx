@@ -19,13 +19,13 @@ interface Props {
 
 export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }: Props) {
   const era = useCalendarEra();
-  const panel = usePlanetEvents({ jdUt, refDateAd, location });
+  const panel = usePlanetEvents({ jdUt, refDateAd, location, showViewMore: Boolean(browseLocation) });
 
   return (
     <div className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
       <div className={`flex ${panchangaPageClasses.aside.eventsHead}`}>
         <h2 className={panchangaPageClasses.aside.eventsTitle}>{panel.title}</h2>
-        {browseLocation ? (
+        {browseLocation && panel.viewMore ? (
           <Link
             to="/gochar"
             search={patroRouteLinkSearch("/gochar", browseLocation, era) as Record<string, unknown>}

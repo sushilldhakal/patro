@@ -142,6 +142,7 @@ export default function PanchangaScreen() {
             jdUt={page.jdUt}
             refDateAd={page.civilAnchor}
             location={location.params}
+            planetEventsHref="/gochar"
           />
         </View>
       </View>

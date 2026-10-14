@@ -20,3 +20,4 @@ export * from "./use-ayanamsha-selector";
 export * from "./use-kundali-section-nav";
 export * from "./use-shadbala-chart";
 export * from "./use-bhava-bala-chart";
+export * from "./use-d1-chart";

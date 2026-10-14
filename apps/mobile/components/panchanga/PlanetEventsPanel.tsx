@@ -12,22 +12,26 @@ type Props = {
   /** Civil `date_ad` from panchanga (for relative day math). */
   refDateAd?: string;
   location: LocationParams;
+  /** Route for the "view more" link (the gochar page); no link without it. */
+  viewMoreHref?: string;
 };
 
-export function PlanetEventsPanel({ jdUt, refDateAd, location }: Props) {
+export function PlanetEventsPanel({ jdUt, refDateAd, location, viewMoreHref }: Props) {
   const router = useRouter();
-  const panel = usePlanetEvents({ jdUt, refDateAd, location });
+  const panel = usePlanetEvents({ jdUt, refDateAd, location, showViewMore: Boolean(viewMoreHref) });
 
   return (
     <View className={`${patroCard} ${panchangaPageClasses.aside.eventsCard}`}>
       <View className={`flex-row ${panchangaPageClasses.aside.eventsHead}`}>
         <Text className={`${panchangaPageClasses.aside.eventsTitle} text-foreground`}>{panel.title}</Text>
-        <Pressable
-          onPress={() => router.push("/gochar" as never)}
-          className={`${panchangaPageClasses.aside.eventsLink} active:opacity-80`}
-        >
-          <Text className={panchangaPageClasses.aside.eventsLinkText}>{panel.viewMore}</Text>
-        </Pressable>
+        {viewMoreHref && panel.viewMore ? (
+          <Pressable
+            onPress={() => router.push(viewMoreHref as never)}
+            className={`${panchangaPageClasses.aside.eventsLink} active:opacity-80`}
+          >
+            <Text className={panchangaPageClasses.aside.eventsLinkText}>{panel.viewMore}</Text>
+          </Pressable>
+        ) : null}
       </View>
 
       {panel.stateText ? <Text className={panchangaPageClasses.aside.eventsStatus}>{panel.stateText}</Text> : null}

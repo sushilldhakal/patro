@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import type { PanchangaDay } from "@/lib/api";
 import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { useSunriseD1Chart } from "@vedic-patro/features/panchanga";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 
@@ -19,6 +20,7 @@ export function SunriseD1ChartPanel({ p }: Props) {
       <Text className={panchangaPageClasses.aside.anchor}>{chart.anchor}</Text>
       <View className={panchangaPageClasses.aside.body}>
         <D1Chart houses={chart.houses} />
+        {chart.showStatusLegend ? <GrahaStatusLegend className="mt-1" /> : null}
       </View>
     </View>
   );

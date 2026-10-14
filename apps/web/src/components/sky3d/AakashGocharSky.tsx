@@ -69,15 +69,9 @@ import { SkyTimeSheet } from "@/components/sky3d/SkyTimeSheet";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
 import { SkySearch } from "@/components/sky3d/SkySearch";
 import { displayVedicStars, vedicStarTargets, type SkyTarget } from "@vedic-patro/domain/sky3d/sky-catalogue";
-import {
-  localFavourites,
-  pushRecent,
-  putFavourites,
-  recents as readRecents,
-  syncFavourites,
-} from "@/lib/sky3d/sky-bookmarks";
+import { skyBookmarkStorage } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
+import { useSkyBookmarks, useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -786,8 +780,6 @@ export function AakashGocharSky({
      "focus this" has to be an event rather than a state — on a paused sky the
      state alone would centre nothing. */
   const [searchOpen, setSearchOpen] = useState(false);
-  const [favourites, setFavourites] = useState<string[]>(() => localFavourites());
-  const [recentIds, setRecentIds] = useState<string[]>(() => readRecents());
   /**
    * Where the camera has been asked to look, for anything that is not a graha.
    *
@@ -815,30 +807,11 @@ export function AakashGocharSky({
   const [aimedCentered, setAimedCentered] = useState(false);
   const { user } = useAuth();
   const signedIn = !!user;
-
   /* Signing in pulls the account's list down and folds this browser's into it. */
-  useEffect(() => {
-    let alive = true;
-    void syncFavourites(signedIn).then((ids) => {
-      if (alive) setFavourites(ids);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [signedIn]);
-
-  const toggleFavourite = useCallback(
-    (id: string) => {
-      setFavourites((current) => {
-        const next = current.includes(id)
-          ? current.filter((v) => v !== id)
-          : [...current, id];
-        void putFavourites(next, signedIn);
-        return next;
-      });
-    },
-    [signedIn],
-  );
+  const { favourites, recentIds, toggleFavourite, pushRecent } = useSkyBookmarks({
+    signedIn,
+    storage: skyBookmarkStorage,
+  });
 
   const [focusNonce, setFocusNonce] = useState(0);
   const askFocus = useCallback(() => setFocusNonce((n) => n + 1), []);
@@ -1270,7 +1243,7 @@ export function AakashGocharSky({
     (target: SkyTarget) => {
       setAimed(target);
       setAimedCentered(true);
-      setRecentIds(pushRecent(target.id));
+      pushRecent(target.id);
       if (target.at === "graha") {
         setSelected(target.graha);
         askFocus();
@@ -1285,7 +1258,7 @@ export function AakashGocharSky({
       }
       setSearchOpen(false);
     },
-    [askFocus, setSelected],
+    [askFocus, setSelected, pushRecent],
   );
 
   /**
@@ -1299,8 +1272,8 @@ export function AakashGocharSky({
   const selectTarget = useCallback((target: SkyTarget) => {
     setAimed(target);
     setAimedCentered(false);
-    setRecentIds(pushRecent(target.id));
-  }, []);
+    pushRecent(target.id);
+  }, [pushRecent]);
 
   const catalogStars = useMemo(() => displayVedicStars(vedicStars ?? []), [vedicStars]);
   const namedStars = useMemo(() => vedicStarTargets(catalogStars), [catalogStars]);

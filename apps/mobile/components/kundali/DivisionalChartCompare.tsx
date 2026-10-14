@@ -3,6 +3,7 @@ import { Text } from "@/components/ui/Text";
 import { BsNativeSelect } from "@/components/ui/BsNativeSelect";
 import { NativeStringSelect } from "@/components/ui/NativeStringSelect";
 import { D1Chart } from "@/components/panchanga/D1Chart";
+import { GrahaStatusLegend } from "@/components/graha/GrahaStatusLegend";
 import { GrahaDetailsList } from "@/components/kundali/GrahaDetailsList";
 import { BhavaTable, KundaliSection } from "@/components/kundali/KundaliSections";
 import type { VargaCharts } from "@/lib/api";
@@ -67,7 +68,12 @@ function ChartPanel({
         <Text className={kundaliDetailClasses.compare.chartTitle} style={nepaliTextStyle(14)}>
           {slot.chartTitle}
         </Text>
-        {houses.length > 0 ? <D1Chart houses={houses} /> : (
+        {houses.length > 0 ? (
+          <>
+            <D1Chart houses={houses} />
+            {slot.showStatusLegend ? <GrahaStatusLegend /> : null}
+          </>
+        ) : (
           <Text className={kundaliDetailClasses.compare.empty} style={nepaliTextStyle(14)}>
             {compare.empty}
           </Text>

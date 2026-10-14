@@ -52,12 +52,16 @@ export function usePlanetEvents({
   jdUt,
   refDateAd,
   location,
+  showViewMore = false,
 }: {
   /** Civil-day Julian identity from panchanga (`jd_ut`). */
   jdUt: number;
   /** Civil `date_ad` from panchanga (for relative day math). */
   refDateAd?: string;
   location: LocationParams;
+  /** The page can link to the gochar page for the viewed day (the website's
+   * `browseLocation`); without it the panel has no "view more" link. */
+  showViewMore?: boolean;
 }) {
   const { t, lang, digits } = useLocale();
   const refIso = refDateAd?.trim() ?? "";
@@ -105,7 +109,8 @@ export function usePlanetEvents({
 
   return {
     title: t("panchanga.planet_events.title"),
-    viewMore: t("gochar.view_more"),
+    /** "View more" link text, or null when the panel shows no link. */
+    viewMore: showViewMore ? t("gochar.view_more") : null,
     status,
     stateText:
       status === "loading"

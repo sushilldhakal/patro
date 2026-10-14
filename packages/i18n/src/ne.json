@@ -883,6 +883,7 @@
     "result": "फल",
     "no_matching_combination": "कुनै मिल्दो योग भेटिएन।",
     "grouped_ids_e_g_33_44_75_106_are_kept_as_in_the_source_": "समूहबद्ध ID (जस्तै 33-44, 75-106) स्रोतमा जस्तै राखिएको। भाग II (163–300) पछि थपिनेछ।",
+    "drishti_benefic": "सौम्य",
     "sources": {
       "heading": "शास्त्रीय स्रोत",
       "blurb": "गणना र चक्र यी ग्रन्थका मूल कर्ताको नाम र मूल पाठको वि.सं. वर्षमा आधारित छन्। दोस्रो हरफमा अनुवादक र सम्पादकको मुद्रित संस्करणको वि.सं. छ।",
@@ -4964,7 +4965,6 @@
       "full_panchanga_timeline_sunrise_to_sunrise": "पूर्ण पञ्चाङ्ग रेखा · सूर्योदयदेखि सूर्योदय",
       "name_s_aspect_houses_houselist": "{{name}}को दृष्टि: {{houseList}} भावमा",
       "nepali_patro_panchanga_wheel": "पञ्चाङ्ग चक्र",
-      "north_indian_d1_chart": "उत्तर भारतीय D1 चक्र",
       "now": "आज",
       "padas": "पद",
       "panchanga_details": "पञ्चाङ्ग विवरण",
