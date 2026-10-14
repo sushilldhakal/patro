@@ -16,6 +16,8 @@ const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string | und
 export const googleWebClientId = extra.googleWebClientId || undefined;
 export const googleIosClientId = extra.googleIosClientId || undefined;
 export const googleAndroidClientId = extra.googleAndroidClientId || undefined;
+/** Web client in the same Google Cloud project as the Android client (native Android sign-in). */
+export const googleNativeServerClientId = extra.googleNativeServerClientId || undefined;
 export const facebookAppId = extra.facebookAppId || undefined;
 
 export const googleSignInEnabled = Boolean(
