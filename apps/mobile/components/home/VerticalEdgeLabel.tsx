@@ -1,5 +1,6 @@
 import { Platform, View, type TextStyle } from "react-native";
 import { Text } from "@/components/ui/Text";
+import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
 
 /** Web `w-[1.375rem]` — sun/festival edge column. */
 export const CALENDAR_EDGE_STRIP_WIDTH = 22;
@@ -11,19 +12,11 @@ type Props = {
   className?: string;
 };
 
-function edgeFontSize(label: string): number {
-  if (label.length > 20) return 8;
-  if (label.length > 16) return 9;
-  if (label.length > 12) return 10;
-  return 11;
-}
-
 /** Patro-style upright label along a cell edge — mirrors web {@link VerticalEdgeLabel}. */
 export function VerticalEdgeLabel({ text, side, color, className }: Props) {
   if (!text || text === "—") return null;
 
-  const label = text.replace(/\s+/g, "\u2009");
-  const fontSize = edgeFontSize(label);
+  const { label, fontSize } = verticalEdgeLabel(text);
 
   const verticalWebStyle: TextStyle =
     Platform.OS === "web"

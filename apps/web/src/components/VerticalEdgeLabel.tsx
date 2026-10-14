@@ -1,4 +1,5 @@
 import { cn } from "@vedic-patro/domain/utils";
+import { verticalEdgeLabel } from "@vedic-patro/domain/vertical-edge-label";
 
 /** Patro-style upright vertical text along a cell edge (md+ layouts). */
 export function VerticalEdgeLabel({
@@ -13,9 +14,7 @@ export function VerticalEdgeLabel({
   /** Tailwind inset override, e.g. `inset-y-2` for taller header/footer cells. */
   insetClass?: string;
 }) {
-  // Spaces in vertical-rl create extra columns; keep one vertical run.
-  const label = text.replace(/\s+/g, "\u2009");
-  const fontSize = label.length > 20 ? 8 : label.length > 16 ? 9 : label.length > 12 ? 10 : 11;
+  const { label, fontSize } = verticalEdgeLabel(text);
 
   const textEl = (
     <span

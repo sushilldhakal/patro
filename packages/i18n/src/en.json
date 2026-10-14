@@ -5376,14 +5376,8 @@
     },
     "mobile_drawer_nav": {
       "sun_times": "Sun times",
-      "panchak": "Panchak",
       "avakahada": "Avakahada",
-      "abhijit": "Abhijit",
-      "n_3_d_sky_gochar": "3D sky gochar",
-      "jyotish_muhurta": "Jyotish & muhurta",
-      "transition_elements": "Transition elements",
-      "auspicious_muhurta": "Auspicious muhurta",
-      "panchanga": "Panchanga"
+      "n_3_d_sky_gochar": "3D sky gochar"
     },
     "mobile_nav": {
       "transit": "Transit"

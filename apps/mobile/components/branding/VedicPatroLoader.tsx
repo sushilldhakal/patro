@@ -10,7 +10,7 @@ import Svg, {
   Rect,
   Stop,
 } from "react-native-svg";
-import { useLocale } from "@/lib/i18n";
+import { useVedicPatroLoader } from "@vedic-patro/features/common";
 import { Defs } from "@/lib/svg-defs";
 import {
   AnimatedG,
@@ -162,8 +162,7 @@ export function VedicPatroLoader({
   size?: number;
   className?: string;
 }) {
-  const { t } = useLocale();
-  const shown = label === undefined ? t("rashifal.profile.loading") : label;
+  const shown = useVedicPatroLoader(label);
 
   return (
     <View className={`items-center justify-center gap-4 ${className ?? ""}`}>
