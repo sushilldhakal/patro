@@ -254,7 +254,7 @@ export function useRituSection(p: PanchangaDay) {
 
 /* ── muhurta timings ── */
 /** "until" in Nepali — a value carrying it is a phrase, not a plain range. */
-const UNTIL_NE = "\u0938\u092e\u094d\u092e";
+const UNTIL_NE = "\u0938\u092e\u094d\u092e"; // copy-ok: matches the API text
 
 /** One timing: a plain start–end range, or the lines to print as they are. */
 export type MuhurtaTiming = { label: string; range?: { start: string; end?: string }; lines: string[] };

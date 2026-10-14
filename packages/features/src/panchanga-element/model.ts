@@ -20,8 +20,8 @@ type AnyRow = Record<string, unknown>;
 type Text = { t: TFunction; lang: string; digits: (v: string | number) => string };
 
 /** Auspicious / inauspicious, as the API writes a row's quality (Nepali). */
-const SHUBHA = "\u0936\u0941\u092d";
-const ASHUBHA = "\u0905\u0936\u0941\u092d";
+const SHUBHA = "\u0936\u0941\u092d"; // copy-ok: API value
+const ASHUBHA = "\u0905\u0936\u0941\u092d"; // copy-ok: API value
 
 const pick = (lang: string, ne: unknown, en: unknown) => String((lang === "en" ? en : ne) ?? "");
 
