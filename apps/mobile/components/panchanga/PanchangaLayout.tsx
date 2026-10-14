@@ -1,16 +1,13 @@
 import type { ReactNode } from "react";
 import { View } from "react-native"
 import { Text } from "@/components/ui/Text"
-import { useTranslation } from "@/lib/i18n";
 import { cn } from "@vedic-patro/domain/utils";
-import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { tintColorMix, type TintName } from "@vedic-patro/design-tokens";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { TableHeader, TableRow } from "@/components/ui/DataTable";
-import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
+import { usePanchangaLayoutCopy } from "@vedic-patro/features/panchanga-drawing";
 import {
   panchangaCardBase,
   panchangaCardGrid,
@@ -69,11 +66,7 @@ export function PanchangaSection({
   children: React.ReactNode;
   className?: string;
 }) {
-  const { t } = useTranslation();
-  const { pick } = useLocale();
-  const title = titleKey
-    ? t(titleKey)
-    : pick(titleNe ?? titleEn ?? "", titleEn ?? titleNe ?? "");
+  const title = usePanchangaLayoutCopy().sectionTitle(titleKey, titleNe, titleEn);
 
   return (
     <View className={cn(panchangaSection, className)}>
@@ -272,12 +265,12 @@ export function PanchangaFieldCell({
   className?: string;
   nowrap?: boolean;
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
 
   return (
     <View className={cn(panchangaCardBase, className)}>
       <QuadLabel className="shrink-0 text-muted-foreground">
-        {rowLabel(labelKey, label, t)}
+        {copy.fieldLabel(labelKey, label)}
       </QuadLabel>
       <QuadValue nowrap={nowrap}>{children}</QuadValue>
     </View>
@@ -386,7 +379,7 @@ export function UptoValue({
   badge?: string;
   compact?: boolean;
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
   if (!name) return null;
   return (
     <View
@@ -407,7 +400,7 @@ export function UptoValue({
       </View>
       {endTime ? (
         <Text className={panchangaPageClasses.layout.uptoEnd}>
-          {endTime} {t("sections.until")}
+          {copy.until(endTime)}
         </Text>
       ) : null}
     </View>
@@ -423,11 +416,11 @@ export function TimingRange({
   end?: string;
   variant?: "good" | "bad" | "neutral";
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
   if (!start || !end) {
     return (
       <Text className={panchangaPageClasses.layout.rangeNa}>
-        {t("sections.dash")} {t("sections.not_available")}
+        {copy.notAvailable}
       </Text>
     );
   }
@@ -440,7 +433,7 @@ export function TimingRange({
         variant === "neutral" && panchangaPageClasses.layout.rangeNeutral,
       )}
     >
-      {start} → {end}
+      {copy.range(start, end)}
     </Text>
   );
 }
