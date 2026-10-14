@@ -1,34 +1,25 @@
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@/components/ui/BottomSheetModal";
-import type { CalendarDay } from "@/lib/api";
+import type { BsCalendarFestivalDialog } from "@vedic-patro/features/home";
 import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
 import { useThemeColors } from "@/lib/theme-context";
 import { calendarClasses } from "@vedic-patro/design-tokens/classes/calendar-classes";
 
 type Props = {
   visible: boolean;
-  day: CalendarDay | null;
-  festivals: string[];
+  dialog: BsCalendarFestivalDialog | null;
   onClose: () => void;
 };
 
-export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
+export function FestivalListSheet({ visible, dialog, onClose }: Props) {
   const colors = useThemeColors();
   const insets = useSafeAreaInsets();
-  const { t, pick, digits, lang } = useLocale();
+  const { lang } = useLocale();
 
-  if (!day) return null;
-
-  const weekday = pick(day.weekday_ne ?? day.weekday, day.weekday_en ?? day.weekday);
-  const adDate = parseCivilIsoToDate(day.date_ad).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  if (!dialog) return null;
 
   return (
     <BottomSheetModal
@@ -53,14 +44,14 @@ export function FestivalListSheet({ visible, day, festivals, onClose }: Props) {
           className="text-body font-bold text-foreground"
           style={lang === "en" ? undefined : nepaliTextStyle(16)}
         >
-          {t("panchanga.tabs.festivals")}
+          {dialog.title}
         </Text>
         <Text className="text-body mt-1 text-muted-foreground" style={lang === "en" ? undefined : nepaliTextStyle(14)}>
-          {weekday} · {t("patro_date.era_bs")} {digits(day.day)} · {adDate}
+          {dialog.description}
         </Text>
       </View>
       <ScrollView contentContainerClassName="gap-2 p-4">
-        {festivals.map((name, i) => (
+        {dialog.festivals.map((name, i) => (
           <View
             key={`${name}-${i}`}
             className={calendarClasses.festivalItem}
