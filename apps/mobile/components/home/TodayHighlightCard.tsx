@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { View } from "react-native";
 import { LucideNative } from "@/components/icons/LucideNative";
 import { __iconNode as SunriseNode } from "lucide-react/dist/esm/icons/sunrise";
@@ -6,44 +5,9 @@ import { __iconNode as SunsetNode } from "lucide-react/dist/esm/icons/sunset";
 import { CalendarMoonPhaseIcon } from "@/components/panchanga/CalendarMoonPhaseIcon";
 import { Text } from "@/components/ui/Text";
 import type { CalendarDay, PanchangaDay } from "@/lib/api";
-import {
-  AD_MONTH_NAMES,
-  BS_MONTH_NAMES,
-  BS_MONTHS_NE,
-  adToBS,
-} from "@vedic-patro/domain/bs-calendar";
-import { useLocale } from "@/lib/i18n";
-import { formatClockNepali, formatPakshaLabel, getSunrise, getSunset } from "@vedic-patro/domain/panchanga-format";
-import { daysDiffFromAd, formatNepalSambatDisplay } from "@vedic-patro/domain/panchanga-format";
-import { formatPatroDayCrossEraSubtitle, patroHeadlineDigits } from "@vedic-patro/domain/patro-headline-subtitle";
-import { parseCivilIsoToDate } from "@vedic-patro/domain/patro-day";
-import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro/domain/tithi-wheel-data";
-
+import { useTodayHighlight } from "@vedic-patro/features/home";
 import { useThemeColors } from "@/lib/theme-context";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
-const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
-const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-function moonPhasePhrase(index: number, pick: (ne: string, en: string) => string): string {
-  if (index === 14) return pick(tFor(undefined, "ui.learn.full_moon"), tFor("en", "ui.learn.full_moon"));
-  if (index === 29) return pick(tFor(undefined, "ui.learn.new_moon"), tFor("en", "ui.learn.new_moon"));
-  if (index >= 6 && index <= 8) return pick(tFor(undefined, "ui.home.waxing_half_moon"), tFor("en", "ui.home.waxing_half_moon"));
-  if (index >= 21 && index <= 23) return pick(tFor(undefined, "ui.home.waning_half_moon"), tFor("en", "ui.home.waning_half_moon"));
-  if (index < 14) return pick(tFor(undefined, "ui.home.waxing_moon"), tFor("en", "ui.home.waxing_moon"));
-  return pick(tFor(undefined, "ui.home.waning_moon"), tFor("en", "ui.home.waning_moon"));
-}
-
-function daysAwayLabel(days: number, lang: string, digits: (v: string | number) => string): string {
-  const count = digits(Math.abs(days));
-  const english = lang.slice(0, 2) === "en";
-  if (days > 0) {
-    if (english) return days === 1 ? "After 1 day" : `After ${count} days`;
-    return tFor(undefined, "ui.home.x_261cd2ac", { v0: count });
-  }
-  if (english) return days === -1 ? "1 day ago" : `${count} days ago`;
-  return tFor(undefined, "ui.home.x_796f4d7b", { v0: count });
-}
 
 type Props = {
   selectedDay: CalendarDay | null;
@@ -58,142 +22,48 @@ type Props = {
 
 /**
  * The selected day's date, festival, moon, sunrise and sunset. Rendered once,
- * inside the आजको पञ्चाङ्ग card, on every screen size — mirrors web's
- * `TodayHighlightCard`.
+ * inside today's panchanga card, on every screen size.
  */
-export function TodayHighlightCard({
-  selectedDay,
-  selectedAdDate,
-  todayAd,
-  isAdCalendar,
-  year,
-  month,
-  p,
-}: Props) {
-  const { t, pick, lang, digits } = useLocale();
+export function TodayHighlightCard(props: Props) {
   const colors = useThemeColors();
-  const isToday = selectedAdDate === todayAd;
-  const daysAway = isToday ? 0 : daysDiffFromAd(todayAd, selectedAdDate);
-
-  const bs = useMemo(() => {
-    const v = p?.date_parts?.vikram;
-    if (p?.bs_date && typeof p.bs_date === "object") return p.bs_date;
-    if (v?.year && v.month && v.day) return { year: v.year, month: v.month, day: v.day };
-    try {
-      return adToBS(parseCivilIsoToDate(selectedAdDate));
-    } catch {
-      return null;
-    }
-  }, [p, selectedAdDate]);
-
-  const adDate = useMemo(() => new Date(`${selectedAdDate}T12:00:00`), [selectedAdDate]);
-  const dayNumber = isAdCalendar ? adDate.getDate() : (bs?.day ?? selectedDay?.day);
-  const monthName = isAdCalendar
-    ? AD_MONTH_NAMES[adDate.getMonth()]!
-    : pick(BS_MONTHS_NE[(bs?.month ?? month) - 1] ?? "", BS_MONTH_NAMES[(bs?.month ?? month) - 1] ?? "");
-  const yearNumber = isAdCalendar ? adDate.getFullYear() : (bs?.year ?? year);
-  const weekdayIndex = adDate.getDay();
-  const weekday = pick(
-    selectedDay?.weekday_ne ?? WEEKDAY_NE[weekdayIndex]!,
-    selectedDay?.weekday_en ?? WEEKDAY_EN[weekdayIndex]!,
-  );
-  const crossEraLine = formatPatroDayCrossEraSubtitle(
-    p?.date_ad ?? selectedAdDate,
-    isAdCalendar ? "ad" : "bs",
-    lang,
-    patroHeadlineDigits(lang),
-  );
-  const nsLabel = p ? formatNepalSambatDisplay(p, lang) : undefined;
-
-  const festivals = useMemo(() => {
-    const fromApi = (p?.festivals ?? [])
-      .map((f) => pick(f.name_ne ?? f.name ?? "", f.name_en ?? f.name ?? f.name_ne ?? "").trim())
-      .filter(Boolean);
-    if (fromApi.length) return fromApi.slice(0, 3);
-    return (selectedDay?.festivals ?? []).map((n) => n.trim()).filter(Boolean).slice(0, 3);
-  }, [p?.festivals, selectedDay?.festivals, pick]);
-
-  const tithi = pick(
-    p?.tithi?.name_ne ?? selectedDay?.tithi_ne ?? selectedDay?.tithi ?? "",
-    p?.tithi?.name ?? selectedDay?.tithi ?? selectedDay?.tithi_ne ?? "",
-  );
-  const paksha = formatPakshaLabel(p, lang, selectedDay?.paksha_ne, selectedDay?.paksha) ?? "";
-  const nakshatra = pick(
-    p?.nakshatra?.name_ne ?? selectedDay?.nakshatra_ne ?? "",
-    p?.nakshatra?.name ?? selectedDay?.nakshatra ?? "",
-  );
-
-  const specialTitle = festivals.length
-    ? festivals.join(" / ")
-    : tithi || t("ui.home.this_day_s_panchanga");
-  const pakshaShort = (() => {
-    const stripped = paksha.replace(/\s*पक्ष/g, "").replace(/\s*paksha/gi, "").trim();
-    return monthName && stripped.toLowerCase().startsWith(monthName.toLowerCase())
-      ? stripped.slice(monthName.length).trim()
-      : stripped;
-  })();
-  const specialSubtitle = [monthName, pakshaShort, festivals.length ? tithi : nakshatra]
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .join(" · ");
-
-  const tithiIndex = p ? tithiIndexFromPanchanga(p) : selectedDay ? tithiIndexFromCalendarDay(selectedDay) : undefined;
-  const phaseLabel = tithiIndex != null ? moonPhasePhrase(tithiIndex, pick) : undefined;
-
-  const clock = (raw?: string) => {
-    if (!raw) return undefined;
-    const short = raw.match(/(\d{1,2}):(\d{2})/)?.[0] ?? raw;
-    return lang === "en" ? short : (formatClockNepali(short) ?? digits(short));
-  };
-  const sunrise = clock((p ? getSunrise(p) : undefined) ?? selectedDay?.sunrise);
-  const sunset = clock((p ? getSunset(p) : undefined) ?? selectedDay?.sunset);
+  const h = useTodayHighlight(props);
 
   return (
     <View nativeID="home-today-highlight" className={homeClasses.highlight}>
       <View className={homeClasses.highlightTop}>
-        <Text className={homeClasses.highlightDay}>
-          {dayNumber != null ? digits(dayNumber) : "—"}
-        </Text>
+        <Text className={homeClasses.highlightDay}>{h.day}</Text>
         <View className={homeClasses.highlightDate}>
-          <Text className={homeClasses.highlightMonth}>
-            {monthName} {digits(yearNumber)}
-          </Text>
-          <Text className={homeClasses.highlightWeekday}>{weekday}</Text>
-          <Text className={homeClasses.highlightCrossEra}>{crossEraLine}</Text>
-          {nsLabel ? (
-            <Text className={homeClasses.highlightNs}>{nsLabel}</Text>
-          ) : null}
+          <Text className={homeClasses.highlightMonth}>{h.month}</Text>
+          <Text className={homeClasses.highlightWeekday}>{h.weekday}</Text>
+          <Text className={homeClasses.highlightCrossEra}>{h.crossEra}</Text>
+          {h.nepalSambat ? <Text className={homeClasses.highlightNs}>{h.nepalSambat}</Text> : null}
         </View>
       </View>
 
       <View className={homeClasses.highlightSpecial}>
-        <Text className={homeClasses.highlightKicker}>
-          {isToday ? t("ui.home.special_today") : daysAwayLabel(daysAway, lang, digits)}
-        </Text>
-        <Text className={homeClasses.highlightTitle}>{specialTitle}</Text>
-        {specialSubtitle ? (
-          <Text className={homeClasses.highlightSubtitle}>{specialSubtitle}</Text>
-        ) : null}
+        <Text className={homeClasses.highlightKicker}>{h.kicker}</Text>
+        <Text className={homeClasses.highlightTitle}>{h.title}</Text>
+        {h.subtitle ? <Text className={homeClasses.highlightSubtitle}>{h.subtitle}</Text> : null}
 
-        {phaseLabel && tithiIndex != null ? (
+        {h.phase && h.tithiIndex != null ? (
           <View className={homeClasses.highlightMoon}>
-            <CalendarMoonPhaseIcon tithiIndex={tithiIndex} size={24} title={phaseLabel} />
-            <Text className={homeClasses.highlightMoonText}>{phaseLabel}</Text>
+            <CalendarMoonPhaseIcon tithiIndex={h.tithiIndex} size={24} title={h.phase} />
+            <Text className={homeClasses.highlightMoonText}>{h.phase}</Text>
           </View>
         ) : null}
 
-        {sunrise || sunset ? (
+        {h.sunrise || h.sunset ? (
           <View className={homeClasses.highlightSun}>
-            {sunrise ? (
+            {h.sunrise ? (
               <View className={homeClasses.highlightSunItem}>
                 <LucideNative node={SunriseNode} size={16} color={colors.warning} />
-                <Text className={homeClasses.highlightSunText}>{sunrise}</Text>
+                <Text className={homeClasses.highlightSunText}>{h.sunrise}</Text>
               </View>
             ) : null}
-            {sunset ? (
+            {h.sunset ? (
               <View className={homeClasses.highlightSunItem}>
                 <LucideNative node={SunsetNode} size={16} color={colors.warning} />
-                <Text className={homeClasses.highlightSunText}>{sunset}</Text>
+                <Text className={homeClasses.highlightSunText}>{h.sunset}</Text>
               </View>
             ) : null}
           </View>

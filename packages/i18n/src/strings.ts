@@ -6956,7 +6956,6 @@ export const strings = {
     ne: "यस महिना कुनै साइत उपलब्ध छैन।",
     en: "No sait dates are available for this month.",
   },
-  "ui.home.planet_positions": { ne: "ग्रह गोचर", en: "Planet positions" },
   "ui.home.read_more": { ne: "थप पढ्नुहोस् →", en: "Read more →" },
   "ui.home.set_a_reminder": { ne: "रिमाइन्डर राख्नुहोस्", en: "Set a reminder" },
   "ui.home.shubh_times": { ne: "शुभ समय", en: "Shubh times" },
