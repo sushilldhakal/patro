@@ -10,18 +10,14 @@
  * load, just doesn't show.
  */
 
-import { useEffect, useState } from "react";
 import { Image, Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { useThemeColors } from "@/lib/theme-context";
 import { LEGAL_SITE } from "@vedic-patro/domain/legal-copy";
-import { chapterLabel } from "@/lib/learn/chapter-labels";
+import { useChapterStill, useChapterTip } from "@vedic-patro/features/learn";
 
 import { neutral, withAlpha } from "@vedic-patro/design-tokens";
-import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * Mount this with `key={src}` — the "did it load" flag has to start false
  * again for each new picture, and a fresh mount is how that is said without
@@ -37,12 +33,9 @@ export function ChapterStill({
   captionKey?: string;
   onClose: () => void;
 }) {
-  const { lang } = useLocale();
-  const colors = useThemeColors();
-  const [broken, setBroken] = useState(false);
+  const still = useChapterStill(src, captionKey);
 
-  if (!src || broken) return null;
-  const caption = captionKey ? chapterLabel(captionKey, lang) : "";
+  if (!still.visible) return null;
   return (
     <View
       className="absolute left-3 top-[5.25rem] z-10 w-[min(240px,45%)] overflow-hidden rounded-xl border border-white/20 bg-black/80"
@@ -50,20 +43,20 @@ export function ChapterStill({
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={tFor(lang, "ui.common.close")}
+        accessibilityLabel={still.closeLabel}
         className="absolute right-1 top-1 z-10 h-6 w-6 items-center justify-center rounded-full bg-black/60 active:opacity-70"
       >
         <Ionicons name="close" size={12} color={withAlpha(neutral.white, 0.8)} />
       </Pressable>
       <Image
         source={{ uri: `${LEGAL_SITE}/${src}` }}
-        onError={() => setBroken(true)}
+        onError={still.onError}
         resizeMode="contain"
         style={{ width: "100%", aspectRatio: 1 }}
       />
-      {caption ? (
+      {still.caption ? (
         <Text className="text-caption px-2 py-1.5 text-white/70" style={nepaliTextStyle(11)}>
-          {caption}
+          {still.caption}
         </Text>
       ) : null}
     </View>
@@ -78,22 +71,16 @@ export function ChapterStill({
  * rest of a chapter reads as a warning instead.
  */
 export function ChapterTip({ tipKey }: { tipKey: string }) {
-  const { lang } = useLocale();
-  const [done, setDone] = useState(false);
+  const tip = useChapterTip(tipKey);
 
-  useEffect(() => {
-    const id = setTimeout(() => setDone(true), 6000);
-    return () => clearTimeout(id);
-  }, []);
-
-  if (!tipKey || done) return null;
+  if (!tip) return null;
   return (
     <View
       pointerEvents="none"
       className="absolute bottom-14 left-1/2 z-10 -translate-x-1/2 rounded-full border border-white/20 bg-black/75 px-3.5 py-1.5"
     >
       <Text className="text-caption font-semibold text-white/85" style={nepaliTextStyle(11)}>
-        {chapterLabel(tipKey, lang)}
+        {tip}
       </Text>
     </View>
   );
