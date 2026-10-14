@@ -5118,28 +5118,15 @@
       "don_t": "नगर्नुहोस्"
     },
     "sait": {
-      "annapr_ana_age_month": "अन्नप्राशन उमेर महिना",
       "choose_a_profile": "प्रोफाइल छान्नुहोस्",
-      "counted_from_the_sun": "(सूर्यबाट गनिएको)",
       "general_no_profile": "सामान्य (प्रोफाइल बिना)",
-      "house_from_janma_r_i": "(जन्म राशिबाट भाव)",
-      "how_this_list_is_generated": "यो सूची कसरी बनेको हो",
-      "muhurta_engine": "मुहूर्त इन्जिन",
-      "no_auspicious_days_found_this_year": "यस वर्ष कुनै शुभ दिन भेटिएन।",
       "no_saved_profiles_add_one_in": "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
-      "not_this_child_s_age_month": "यो बच्चाको उमेर महिना होइन",
       "personalise": "आफ्नो प्रोफाइलअनुसार",
       "sign_in_to_pick_your_profile": "प्रोफाइल छान्न लग-इन गर्नुहोस्",
-      "the_child_s_right_age_month": "बच्चाको सही उमेर महिना",
       "month_ordinal_month": "{{ordinal_month}} औँ महिना",
       "offcount_of_rulecount_rules_switched_off": "{{ruleCount}} मध्ये {{offCount}} नियम हटाइएको",
       "rulecount_classical_rules_switch_off_any": "{{ruleCount}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
-      "rulecount_classical_rules_with_sources": "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित",
-      "x_63f5f4fd": "{{v0}} मा {{v1}} शुभ दिन",
-      "x_92984250": "{{v0}} औँ महिना",
-      "x_ddd39103": "{{v0}} मध्ये {{v1}} नियम हटाइएको",
-      "x_c4bd9ee6": "{{v0}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने",
-      "x_881055f9": "{{v0}} शास्त्रीय नियम · स्रोतसहित"
+      "rulecount_classical_rules_with_sources": "{{ruleCount}} शास्त्रीय नियम · स्रोतसहित"
     },
     "sky3d": {
       "amavasya_moon_between_sun_and_earth": "औंसी · चन्द्र सूर्य–पृथ्वीको बीचमा",

@@ -1,24 +1,11 @@
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useState } from "react";
 import { ChevronDown, Info, Loader2, ScrollText } from "lucide-react";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
+import type { SaitRuleEntry } from "@vedic-patro/domain/sait-rules-content";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
+import { useSaitRules } from "@vedic-patro/features/sait";
 import { Switch } from "@/components/ui/switch";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
-export interface SaitRule {
-  /** Stable id matching the engine's toggleable rules; when set the rule can be switched off. */
-  id?: string;
-  /** Catalogue key for the plain-language rule. */
-  text: string;
-  /** Catalogue key for the short citation. */
-  source?: string;
-  /** Sanskrit verse (Devanāgarī) the rule derives from — not translated. */
-  shloka?: string;
-  /** Catalogue key for the translation of `shloka`. */
-  gloss?: string;
-}
+export type SaitRule = SaitRuleEntry;
 
 /**
  * Classical method + rules for a ceremony. Collapsed by default so the date
@@ -30,13 +17,8 @@ export interface SaitRule {
  * community that keeps only a handpicked subset still gets a matching list.
  */
 export function SaitRulesSection({
-  method,
-  rules,
-  engineVersion,
-  defaultOpen = false,
-  enabledRuleIds,
-  onToggleRule,
   busy = false,
+  ...props
 }: {
   method?: { ne?: string; en?: string } | null;
   rules?: SaitRule[] | null;
@@ -48,149 +30,79 @@ export function SaitRulesSection({
   /** Show a recomputing indicator while a custom-rule fetch is in flight. */
   busy?: boolean;
 }) {
-  const { t } = useTranslation();
-  const { lang, digits } = useLocale();
-  const [open, setOpen] = useState(defaultOpen);
-  const intro = method ? bilingualText(lang, method.ne ?? "", method.en ?? "") : "";
-  if (!intro && (!rules || rules.length === 0)) return null;
-
-  const ruleCount = rules?.length ?? 0;
-  const togglingEnabled = Boolean(onToggleRule);
-  const offCount = togglingEnabled
-    ? (rules ?? []).filter((r) => r.id && !(enabledRuleIds?.has(r.id) ?? true)).length
-    : 0;
+  const view = useSaitRules(props);
+  if (!view) return null;
 
   return (
     <section className={saitClasses.rulesCard}>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
+        onClick={view.toggle}
+        aria-expanded={view.open}
         className={cn(saitClasses.rulesHead, "w-full text-left transition-colors hover:bg-surface-hover")}
       >
         <ScrollText className="size-4 shrink-0 text-secondary" aria-hidden />
         <span className={saitClasses.rulesHeadText}>
-          <span className={cn("block", saitClasses.rulesTitle)}>
-            {t("sait.how_this_list_is_generated")}
-          </span>
-          <span className={cn("block", saitClasses.rulesSubtitle)}>
-            {offCount > 0
-              ? tFor(lang, "ui.sait.offcount_of_rulecount_rules_switched_off", { ruleCount: digits(ruleCount), offCount: digits(offCount) })
-              : togglingEnabled
-                ? tFor(lang, "ui.sait.rulecount_classical_rules_switch_off_any", { ruleCount: digits(ruleCount) })
-                : tFor(lang, "ui.sait.rulecount_classical_rules_with_sources", { ruleCount: digits(ruleCount) })}
-          </span>
+          <span className={cn("block", saitClasses.rulesTitle)}>{view.title}</span>
+          <span className={cn("block", saitClasses.rulesSubtitle)}>{view.subtitle}</span>
         </span>
-        {busy ? (
-          <Loader2 className="size-4 shrink-0 animate-spin text-secondary" aria-hidden />
-        ) : null}
+        {busy ? <Loader2 className="size-4 shrink-0 animate-spin text-secondary" aria-hidden /> : null}
         <ChevronDown
-          className={cn(
-            "size-5 shrink-0 text-muted-foreground transition-transform duration-200",
-            open && "rotate-180",
-          )}
+          className={cn("size-5 shrink-0 text-muted-foreground transition-transform duration-200", view.open && "rotate-180")}
           aria-hidden
         />
       </button>
 
-      <div
-        className={cn(
-          "grid transition-[grid-template-rows] duration-300 ease-out",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        )}
-      >
+      <div className={cn("grid transition-[grid-template-rows] duration-300 ease-out", view.open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
         <div className="overflow-hidden">
           <div className={saitClasses.rulesBody}>
-            {intro ? (
-              <p className={cn("m-0", saitClasses.rulesIntro)}>
-                {intro}
-              </p>
-            ) : null}
+            {view.intro ? <p className={cn("m-0", saitClasses.rulesIntro)}>{view.intro}</p> : null}
 
-            {togglingEnabled ? (
+            {view.hint ? (
               <p className={cn("m-0", saitClasses.rulesHint, saitClasses.rulesHintText)}>
                 <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-                {t("sait.switch_off_a_rule_your_community_doesn_t_follow_the_dat")}
+                {view.hint}
               </p>
             ) : null}
 
-            {rules && rules.length > 0 ? (
+            {view.rules.length > 0 ? (
               <ol className={cn("m-0 grid list-none grid-cols-1 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", saitClasses.ruleList)}>
-                {rules.map((r, i) => {
-                  const toggleable = Boolean(r.id && togglingEnabled);
-                  const enabled = r.id ? (enabledRuleIds?.has(r.id) ?? true) : true;
-                  const off = toggleable && !enabled;
-                  return (
-                    <li
-                      key={r.id ?? i}
-                      className={cn(
-                        saitClasses.rule,
-                        "h-full transition-colors",
-                        off ? saitClasses.ruleOff : saitClasses.ruleOn,
-                      )}
-                    >
-                      <div className={saitClasses.ruleHead}>
-                        <span className={cn(saitClasses.ruleNum, saitClasses.ruleNumText)}>
-                          {digits(i + 1)}
-                        </span>
-                        <p
-                          className={cn(
-                            "m-0",
-                            saitClasses.ruleText,
-                            off ? saitClasses.ruleTextOff : saitClasses.ruleTextOn,
-                          )}
-                        >
-                          {t(r.text)}
-                        </p>
-                        {toggleable ? (
-                          <Switch
-                            size="sm"
-                            checked={enabled}
-                            onCheckedChange={(v) => r.id && onToggleRule?.(r.id, v)}
-                            aria-label={t("sait.apply_this_rule")}
-                            className="mt-0.5 shrink-0"
-                          />
-                        ) : null}
-                      </div>
-
-                      {r.shloka || r.source || r.gloss ? (
-                        <div
-                          className={cn(
-                            "mt-auto",
-                            saitClasses.ruleDetail,
-                            off && saitClasses.ruleDetailOff,
-                          )}
-                        >
-                          {r.source ? (
-                            <p className={cn("m-0", saitClasses.ruleSource)}>
-                              {t(r.source)}
-                            </p>
-                          ) : null}
-                          {r.shloka ? (
-                            <p
-                              lang="sa"
-                              className={cn("m-0", saitClasses.ruleShloka)}
-                            >
-                              {r.shloka}
-                            </p>
-                          ) : null}
-                          {r.gloss ? (
-                            <p className={cn("m-0", saitClasses.ruleGloss)}>
-                              {t(r.gloss)}
-                            </p>
-                          ) : null}
-                        </div>
+                {view.rules.map((r) => (
+                  <li key={r.key} className={cn(saitClasses.rule, "h-full transition-colors", r.off ? saitClasses.ruleOff : saitClasses.ruleOn)}>
+                    <div className={saitClasses.ruleHead}>
+                      <span className={cn(saitClasses.ruleNum, saitClasses.ruleNumText)}>{r.num}</span>
+                      <p className={cn("m-0", saitClasses.ruleText, r.off ? saitClasses.ruleTextOff : saitClasses.ruleTextOn)}>{r.text}</p>
+                      {r.toggleable ? (
+                        <Switch
+                          size="sm"
+                          checked={r.enabled}
+                          onCheckedChange={r.setEnabled}
+                          aria-label={view.switchLabel}
+                          className="mt-0.5 shrink-0"
+                        />
                       ) : null}
-                    </li>
-                  );
-                })}
+                    </div>
+
+                    {r.shloka || r.source || r.gloss ? (
+                      <div className={cn("mt-auto", saitClasses.ruleDetail, r.off && saitClasses.ruleDetailOff)}>
+                        {r.source ? <p className={cn("m-0", saitClasses.ruleSource)}>{r.source}</p> : null}
+                        {r.shloka ? (
+                          <p lang="sa" className={cn("m-0", saitClasses.ruleShloka)}>
+                            {r.shloka}
+                          </p>
+                        ) : null}
+                        {r.gloss ? <p className={cn("m-0", saitClasses.ruleGloss)}>{r.gloss}</p> : null}
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
               </ol>
             ) : null}
 
-            {engineVersion ? (
+            {view.engine ? (
               <p className={cn("m-0", saitClasses.engine, saitClasses.engineText)}>
                 <Info className="size-3.5" aria-hidden />
-                {t("sait.muh_rta_engine")} {engineVersion}
+                {view.engine}
               </p>
             ) : null}
           </div>

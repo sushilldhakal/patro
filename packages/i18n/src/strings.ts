@@ -7757,25 +7757,14 @@ export const strings = {
 
 
   /* ── ui.sait ────────────────────────────────────────────────────────────── */
-  "ui.sait.annapr_ana_age_month": { ne: "अन्नप्राशन उमेर महिना", en: "Annaprāśana age month" },
   "ui.sait.choose_a_profile": { ne: "प्रोफाइल छान्नुहोस्", en: "Choose a profile" },
-  "ui.sait.counted_from_the_sun": { ne: "(सूर्यबाट गनिएको)", en: "(counted from the Sun)" },
   "ui.sait.general_no_profile": { ne: "सामान्य (प्रोफाइल बिना)", en: "General (no profile)" },
-  "ui.sait.house_from_janma_r_i": { ne: "(जन्म राशिबाट भाव)", en: "(house from janma rāśi)" },
-  "ui.sait.how_this_list_is_generated": { ne: "यो सूची कसरी बनेको हो", en: "How this list is generated" },
-  "ui.sait.muhurta_engine": { ne: "मुहूर्त इन्जिन", en: "Muhurta engine" },
-  "ui.sait.no_auspicious_days_found_this_year": {
-    ne: "यस वर्ष कुनै शुभ दिन भेटिएन।",
-    en: "No auspicious days found this year.",
-  },
   "ui.sait.no_saved_profiles_add_one_in": {
     ne: "सेभ गरिएको प्रोफाइल छैन — खातामा थप्नुहोस्।",
     en: "No saved profiles — add one in your account.",
   },
-  "ui.sait.not_this_child_s_age_month": { ne: "यो बच्चाको उमेर महिना होइन", en: "Not this child's age month" },
   "ui.sait.personalise": { ne: "आफ्नो प्रोफाइलअनुसार", en: "Personalise" },
   "ui.sait.sign_in_to_pick_your_profile": { ne: "प्रोफाइल छान्न लग-इन गर्नुहोस्", en: "Sign in to pick your profile" },
-  "ui.sait.the_child_s_right_age_month": { ne: "बच्चाको सही उमेर महिना", en: "The child's right age month" },
 
   /* ── ui.sky3d ───────────────────────────────────────────────────────────── */
   "ui.sky3d.amavasya_moon_between_sun_and_earth": {
@@ -8346,11 +8335,6 @@ export const strings = {
   "ui.patro_date.a_d_year": { ne: "ई.सं. वर्ष", en: "A.D. year" },
   "ui.patro_date.b_c_year": { ne: "ई.पू. वर्ष", en: "B.C. year" },
   "ui.patro_date.b_b_s_year": { ne: "पू.वि.सं. वर्ष", en: "B.B.S. year" },
-  "ui.sait.x_63f5f4fd": { ne: "{{v0}} मा {{v1}} शुभ दिन", en: "{{v1}} auspicious days in {{v0}}" },
-  "ui.sait.x_92984250": { ne: "{{v0}} औँ महिना", en: "Month {{v0}}" },
-  "ui.sait.x_ddd39103": { ne: "{{v0}} मध्ये {{v1}} नियम हटाइएको", en: "{{v1}} of {{v0}} rules turned off" },
-  "ui.sait.x_c4bd9ee6": { ne: "{{v0}} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने", en: "{{v0}} classical rules · can be turned off to suit your tradition" },
-  "ui.sait.x_881055f9": { ne: "{{v0}} शास्त्रीय नियम · स्रोतसहित", en: "{{v0}} classical rules · with sources" },
   "ui.sky3d.increase": { ne: "{{v0}} बढाउनुहोस्", en: "Increase {{v0}}" },
   "ui.sky3d.decrease": { ne: "{{v0}} घटाउनुहोस्", en: "Decrease {{v0}}" },
   "ui.sky3d.year": { ne: "वर्ष", en: "year" },

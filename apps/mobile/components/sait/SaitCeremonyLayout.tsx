@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Pressable, View } from "react-native";
 import { Ionicons } from "@/components/icons/Ionicons";
 import { useRouter } from "expo-router";
@@ -19,13 +18,12 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { SkeletonPulse } from "@/components/ui/SkeletonPulse";
 import { cn } from "@vedic-patro/domain/utils";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
-import { useLocale } from "@/lib/i18n";
+import { saitDayKey, useSaitCeremonyList } from "@vedic-patro/features/sait";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { type Era } from "@vedic-patro/domain/era";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
-import { tFor } from "@vedic-patro/i18n/runtime";
 
 /**
  * Shared ceremonial sāit layout — page header, rules, year/location bar, then
@@ -97,31 +95,13 @@ export function SaitCeremonyLayout({
   /** Rendered after the day list (the classical sources card). */
   footer?: React.ReactNode;
 }) {
-  const { lang, pick, digits, t } = useLocale();
   const colors = useThemeColors();
   const router = useRouter();
   const { width } = useBreakpoint();
-
-  const byMonth = useMemo(() => {
-    const map = new Map<number, SaitDetailDay[]>();
-    for (const d of days) {
-      const list = map.get(d.bs_month) ?? [];
-      list.push(d);
-      map.set(d.bs_month, list);
-    }
-    return [...map.entries()].sort(([a], [b]) => a - b);
-  }, [days]);
+  const list = useSaitCeremonyList({ days, count, year, emptyLabel, countLabel });
 
   const cols = width >= 1024 ? 3 : width >= 640 ? 2 : 1;
   const cardWidth = cols === 1 ? "100%" : `${(100 / cols - 1.5).toFixed(2)}%`;
-
-  const displayCount = count ?? days.length;
-  const countText = countLabel
-    ? countLabel(displayCount, year)
-    : pick(
-        tFor(undefined, "ui.sait.x_63f5f4fd", { v0: digits(year), v1: digits(displayCount) }),
-        `${displayCount} auspicious days in ${year}`,
-      );
 
   return (
     <AppShell title={title} showHeader={false}>
@@ -144,10 +124,10 @@ export function SaitCeremonyLayout({
         {nakshatraMode && onNakshatraModeChange ? (
           <View className={saitClasses.nakshatraRow}>
             <Text className={saitClasses.nakshatraLabel} style={nepaliTextStyle()}>
-              {t("sait.nakshatra_tradition")}
+              {list.nakshatra.label}
             </Text>
             <View className={cn(saitClasses.nakshatraGroup, "self-start")}>
-              {(["classical", "nepali", "liberal"] as const).map((id) => {
+              {list.nakshatra.modes.map(({ id, label }) => {
                 const active = nakshatraMode === id;
                 return (
                   <Pressable
@@ -164,7 +144,7 @@ export function SaitCeremonyLayout({
                       )}
                       style={nepaliTextStyle()}
                     >
-                      {t(`sait.nakshatra_modes.${id}`)}
+                      {label}
                     </Text>
                   </Pressable>
                 );
@@ -183,9 +163,9 @@ export function SaitCeremonyLayout({
           className=""
         />
 
-        {!loading && displayCount > 0 ? (
+        {!loading && list.displayCount > 0 ? (
           <Text className={saitClasses.countText} style={nepaliTextStyle()}>
-            {countText}
+            {list.countText}
           </Text>
         ) : null}
 
@@ -209,41 +189,32 @@ export function SaitCeremonyLayout({
               ))}
             </View>
           ) : days.length > 0 ? (
-            byMonth.map(([month, monthDays]) => {
-              const monthLabel =
-                lang === "en"
-                  ? t("sait.month_number", { month: digits(month) })
-                  : (monthDays[0]?.bs_month_name_ne ?? t("sait.month_number", { month: digits(month) }));
-              return (
-                <View key={month} className={saitClasses.monthBlock}>
-                  <View className={saitClasses.monthHeader}>
-                    <Text className={saitClasses.monthTitle} style={nepaliTextStyle()}>
-                      {monthLabel}
-                    </Text>
-                    <Text className={saitClasses.monthCount} style={nepaliTextStyle()}>
-                      {t("sait.days_count", { count: digits(monthDays.length) })}
-                    </Text>
-                  </View>
-                  <View className="flex-row flex-wrap gap-3">
-                    {monthDays.map((d) => {
-                      const key = `${d.bs_month}-${d.bs_day}`;
-                      return (
-                        <SaitDayCard
-                          key={`${key}-${d.window_start}`}
-                          d={d}
-                          width={cardWidth}
-                          suitability={suitabilityByDay?.get(key)}
-                          personalize={personalizeByDay?.get(key)}
-                        />
-                      );
-                    })}
-                  </View>
+            list.months.map((m) => (
+              <View key={m.month} className={saitClasses.monthBlock}>
+                <View className={saitClasses.monthHeader}>
+                  <Text className={saitClasses.monthTitle} style={nepaliTextStyle()}>
+                    {m.label}
+                  </Text>
+                  <Text className={saitClasses.monthCount} style={nepaliTextStyle()}>
+                    {m.count}
+                  </Text>
                 </View>
-              );
-            })
+                <View className="flex-row flex-wrap gap-3">
+                  {m.days.map((d) => (
+                    <SaitDayCard
+                      key={`${saitDayKey(d)}-${d.window_start}`}
+                      d={d}
+                      width={cardWidth}
+                      suitability={suitabilityByDay?.get(saitDayKey(d))}
+                      personalize={personalizeByDay?.get(saitDayKey(d))}
+                    />
+                  ))}
+                </View>
+              </View>
+            ))
           ) : (
             <Text className={saitClasses.emptyText} style={nepaliTextStyle()}>
-              {emptyLabel ?? t("ui.sait.no_auspicious_days_found_this_year")}
+              {list.empty}
             </Text>
           )}
         </View>
@@ -256,7 +227,7 @@ export function SaitCeremonyLayout({
         >
           <Ionicons name="grid-outline" size={14} color={colors.primary} />
           <Text className="text-sm text-primary underline" style={nepaliTextStyle()}>
-            {t("sait.all_ceremonies")}
+            {list.allCeremonies}
           </Text>
         </Pressable>
       </View>

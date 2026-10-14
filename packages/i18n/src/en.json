@@ -5118,28 +5118,15 @@
       "don_t": "Don't"
     },
     "sait": {
-      "annapr_ana_age_month": "Annaprāśana age month",
       "choose_a_profile": "Choose a profile",
-      "counted_from_the_sun": "(counted from the Sun)",
       "general_no_profile": "General (no profile)",
-      "house_from_janma_r_i": "(house from janma rāśi)",
-      "how_this_list_is_generated": "How this list is generated",
-      "muhurta_engine": "Muhurta engine",
-      "no_auspicious_days_found_this_year": "No auspicious days found this year.",
       "no_saved_profiles_add_one_in": "No saved profiles — add one in your account.",
-      "not_this_child_s_age_month": "Not this child's age month",
       "personalise": "Personalise",
       "sign_in_to_pick_your_profile": "Sign in to pick your profile",
-      "the_child_s_right_age_month": "The child's right age month",
       "month_ordinal_month": "month {{ordinal_month}}",
       "offcount_of_rulecount_rules_switched_off": "{{offCount}} of {{ruleCount}} rules switched off",
       "rulecount_classical_rules_switch_off_any": "{{ruleCount}} classical rules · switch off any your tradition skips",
-      "rulecount_classical_rules_with_sources": "{{ruleCount}} classical rules · with sources",
-      "x_63f5f4fd": "{{v1}} auspicious days in {{v0}}",
-      "x_92984250": "Month {{v0}}",
-      "x_ddd39103": "{{v1}} of {{v0}} rules turned off",
-      "x_c4bd9ee6": "{{v0}} classical rules · can be turned off to suit your tradition",
-      "x_881055f9": "{{v0}} classical rules · with sources"
+      "rulecount_classical_rules_with_sources": "{{ruleCount}} classical rules · with sources"
     },
     "sky3d": {
       "amavasya_moon_between_sun_and_earth": "Amavasya · Moon between Sun and Earth",
