@@ -9,10 +9,11 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const PLACES = [
-  { ne: "काठमाडौँ", en: "Kathmandu", tz: "UTC+05:45", end: 3.75, rise: 6.17, before: true },
-  { ne: "सिड्नी", en: "Sydney", tz: "UTC+11:00", end: 9.0, rise: 6.5, before: false },
+  { get ne() { return tFor("ne", "learn.diagrams.city_kathmandu"); }, get en() { return tFor("en", "learn.diagrams.city_kathmandu"); }, tz: "UTC+05:45", end: 3.75, rise: 6.17, before: true },
+  { get ne() { return tFor("ne", "learn.diagrams.city_sydney"); }, get en() { return tFor("en", "learn.diagrams.city_sydney"); }, tz: "UTC+11:00", end: 9.0, rise: 6.5, before: false },
 ];
 const L = -0.55;
 const Rr = 0.55;

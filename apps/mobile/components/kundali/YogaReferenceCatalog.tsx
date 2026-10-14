@@ -10,6 +10,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Props = {
   /** 162-ids present in this chart — hidden here so they are not shown twice. */
@@ -68,9 +69,9 @@ export function YogaReferenceCatalog({ excludeIds }: Props) {
   const columns: Column[] = useMemo(
     () => [
       { key: "id", ne: "ID", en: "ID", width: 48 },
-      { key: "name", ne: "योग", en: "Yoga", width: 100 },
-      { key: "rule", ne: "नियम", en: "Rule", width: 220 },
-      { key: "result", ne: "फल", en: "Result", width: 200 },
+      { key: "name", ne: tFor("ne", "kundali.yoga"), en: tFor("en", "kundali.yoga"), width: 100 },
+      { key: "rule", ne: tFor("ne", "kundali.rule"), en: tFor("en", "kundali.rule"), width: 220 },
+      { key: "result", ne: tFor("ne", "kundali.result"), en: tFor("en", "kundali.result"), width: 200 },
     ],
     [],
   );

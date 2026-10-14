@@ -18,6 +18,7 @@ import { EclipticPlane, OrbitPath, RashiRing, ellipsePoints, orientRay } from "@
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 import { getRashiName } from "@vedic-patro/domain/rashi-i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const D2R = Math.PI / 180;
 const CYCLE = 25772;
@@ -28,13 +29,13 @@ const LA = 0.42;
 const R_DISK = 0.5;
 
 const POLE_STARS = [
-  { ne: "थुबन", en: "Thuban", bs: -2730 },
-  { ne: "कोचाब", en: "Kochab", bs: -943 },
-  { ne: "ध्रुवतारा", en: "Polaris", bs: 2159 },
-  { ne: "एर्राई", en: "Errai", bs: 4057 },
-  { ne: "अल्डेरामिन", en: "Alderamin", bs: 7557 },
-  { ne: "डेनेब", en: "Deneb", bs: 9857 },
-  { ne: "अभिजित (वेगा)", en: "Vega", bs: 13784 },
+  { get ne() { return tFor("ne", "learn.study.precession.star_thuban"); }, get en() { return tFor("en", "learn.study.precession.star_thuban"); }, bs: -2730 },
+  { get ne() { return tFor("ne", "learn.study.precession.star_kochab"); }, get en() { return tFor("en", "learn.study.precession.star_kochab"); }, bs: -943 },
+  { get ne() { return tFor("ne", "ui.learn.polaris"); }, get en() { return tFor("en", "ui.learn.polaris"); }, bs: 2159 },
+  { get ne() { return tFor("ne", "learn.study.precession.star_errai"); }, get en() { return tFor("en", "learn.study.precession.star_errai"); }, bs: 4057 },
+  { get ne() { return tFor("ne", "learn.study.precession.star_alderamin"); }, get en() { return tFor("en", "learn.study.precession.star_alderamin"); }, bs: 7557 },
+  { get ne() { return tFor("ne", "learn.study.precession.star_deneb"); }, get en() { return tFor("en", "learn.study.precession.star_deneb"); }, bs: 9857 },
+  { get ne() { return tFor("ne", "ui.learn.vega"); }, get en() { return tFor("en", "ui.learn.vega"); }, bs: 13784 },
 ].map((s) => ({ ...s, phi: ((((s.bs / CYCLE) % 1) + 1) % 1) * Math.PI * 2 }));
 
 function axisDir(phi: number): [number, number, number] {

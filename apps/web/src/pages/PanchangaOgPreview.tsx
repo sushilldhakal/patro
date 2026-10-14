@@ -24,7 +24,7 @@ import {
 } from "@vedic-patro/domain/panchanga-format";
 
 import { brand, illustration, neutral } from "@vedic-patro/design-tokens";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 /**
  * Headless render target for the Open Graph share image. The backend points
  * Playwright at this route and screenshots the #og-capture element to produce
@@ -53,10 +53,7 @@ const CHART_NATURAL_W = 1000;
 const PANEL_MIN_W = 330;
 const COL_GAP = 18;
 
-const AD_MONTHS_NE = [
-  "जनवरी", "फेब्रुअरी", "मार्च", "अप्रिल", "मे", "जुन",
-  "जुलाई", "अगस्ट", "सेप्टेम्बर", "अक्टोबर", "नोभेम्बर", "डिसेम्बर",
-];
+const AD_MONTHS_NE = lazyList("ne", "ui.panchanga_og_preview.x_483e5df7");
 
 type AngaLike = { name?: string; name_ne?: string; end_local_time?: string } | undefined;
 
@@ -170,7 +167,7 @@ export function PanchangaOgPreview() {
     <div className="flex items-end justify-between" style={{ height: 46, flex: "0 0 auto" }}>
       <div className="flex items-baseline gap-3">
         <span className="text-3xl font-extrabold tracking-tight text-ill-brand-blue">
-          वैदिक पात्रो
+          {tFor("ne", "app_name")}
         </span>
         <span className="text-lg font-bold text-ill-brand-saffron">{placeLabel}</span>
       </div>

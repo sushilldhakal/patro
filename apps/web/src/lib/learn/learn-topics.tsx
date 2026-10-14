@@ -12,7 +12,7 @@ import {
   type LearnTopicMeta,
 } from "./learn-topics-meta";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 export type { LearnCategory, LearnTopicMeta };
 export { LEARN_CATEGORIES, LEARN_TOPIC_METAS };
 
@@ -107,7 +107,7 @@ function MergedBody({ page }: { page: MergedPage }) {
   );
 }
 
-const NE_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+const NE_DIGITS = lazyList("ne", "ui.learn.x_d8148326");
 const toNepaliIndex = (lang: string, n: number) =>
   lang === "en" ? String(n) : String(n).replace(/\d/g, (d) => NE_DIGITS[Number(d)]!);
 

@@ -6,13 +6,14 @@ import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
 import { useLocale } from "@/lib/i18n";
 import { windowLabel } from "@vedic-patro/domain/muhurta-now";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [
-    { key: "rahu_kalam", label: "राहु काल", labelEn: "Rahu Kalam" },
-    { key: "yamaganda", label: "यमगण्ड", labelEn: "Yamaganda" },
-    { key: "gulika", label: "गुलिक", labelEn: "Gulika" },
-    { key: "abhijit", label: "अभिजित", labelEn: "Abhijit" },
+    { key: "rahu_kalam", get label() { return tFor("ne", "ui.panchanga.rahu_kalam"); }, get labelEn() { return tFor("en", "ui.panchanga.rahu_kalam"); } },
+    { key: "yamaganda", get label() { return tFor("ne", "ui.panchanga.yamaganda"); }, get labelEn() { return tFor("en", "ui.panchanga.yamaganda"); } },
+    { key: "gulika", get label() { return tFor("ne", "kundali.x.graha_gulika"); }, get labelEn() { return tFor("en", "kundali.x.graha_gulika"); } },
+    { key: "abhijit", get label() { return tFor("ne", "ui.panchanga.abhijit"); }, get labelEn() { return tFor("en", "ui.panchanga.abhijit"); } },
   ];
 
 type Props = {

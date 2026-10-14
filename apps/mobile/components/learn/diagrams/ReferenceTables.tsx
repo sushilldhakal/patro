@@ -14,6 +14,7 @@ import { getWheelRashis, RASHI_LORDS, RASHI_ELEM, PADA_AKSHAR } from "@vedic-pat
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { WHEEL_TITHIS, WHEEL_YOGAS, KAR_MOV, KAR_FIX_NAMES, KARANA_EN } from "@vedic-patro/domain/tithi-wheel-data";
 import { NAK_LORD_EN, TATTVA_EN } from "@vedic-patro/domain/wheel-locale";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const YOGA_EN = [
   "Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda",
@@ -23,15 +24,15 @@ const YOGA_EN = [
 ];
 
 const GRAHA_ROWS = [
-  { ne: "सूर्य", en: "Sun", meaningNe: "आत्मा, पिता, अधिकार — राशि र सङ्क्रान्तिको माप", meaningEn: "Soul, father, authority — measures rashi and sankranti" },
-  { ne: "चन्द्र", en: "Moon", meaningNe: "मन, माता — तिथि, नक्षत्र, पक्ष", meaningEn: "Mind, mother — tithi, nakshatra, paksha" },
-  { ne: "मंगल", en: "Mars", meaningNe: "साहस, भाइ — मङ्गलवार, होरा", meaningEn: "Courage, siblings — Tuesday, hora" },
-  { ne: "बुध", en: "Mercury", meaningNe: "बुद्धि, वाणी — बुधवार", meaningEn: "Intellect, speech — Wednesday" },
-  { ne: "बृहस्पति", en: "Jupiter", meaningNe: "गुरु, ज्ञान — बिहीवार", meaningEn: "Teacher, knowledge — Thursday" },
-  { ne: "शुक्र", en: "Venus", meaningNe: "प्रेम, सौन्दर्य — शुक्रवार", meaningEn: "Love, beauty — Friday" },
-  { ne: "शनि", en: "Saturn", meaningNe: "कर्म, धैर्य — शनिवार", meaningEn: "Karma, patience — Saturday" },
-  { ne: "राहु", en: "Rahu", meaningNe: "छाया ग्रह — ग्रहण, अप्रत्याशित परिवर्तन", meaningEn: "Shadow planet — eclipses, sudden change" },
-  { ne: "केतु", en: "Ketu", meaningNe: "छाया ग्रह — मोक्ष, आध्यात्म", meaningEn: "Shadow planet — moksha, spirituality" },
+  { get ne() { return tFor("ne", "kundali.report.meta_sun"); }, get en() { return tFor("en", "kundali.report.meta_sun"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_sun"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_sun"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_moon"); }, get en() { return tFor("en", "kundali.graha_name_moon"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_moon"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_moon"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_mars"); }, get en() { return tFor("en", "kundali.graha_name_mars"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_mars"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_mars"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_mercury"); }, get en() { return tFor("en", "kundali.graha_name_mercury"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_mercury"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_mercury"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_jupiter"); }, get en() { return tFor("en", "kundali.graha_name_jupiter"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_jupiter"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_jupiter"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_venus"); }, get en() { return tFor("en", "kundali.graha_name_venus"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_venus"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_venus"); } },
+  { get ne() { return tFor("ne", "kundali.graha_name_saturn"); }, get en() { return tFor("en", "kundali.graha_name_saturn"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_saturn"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_saturn"); } },
+  { get ne() { return tFor("ne", "grahas.rahu"); }, get en() { return tFor("en", "grahas.rahu"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_rahu"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_rahu"); } },
+  { get ne() { return tFor("ne", "grahas.ketu"); }, get en() { return tFor("en", "grahas.ketu"); }, get meaningNe() { return tFor("ne", "learn.diagrams.graha_meaning_ketu"); }, get meaningEn() { return tFor("en", "learn.diagrams.graha_meaning_ketu"); } },
 ];
 
 function TableCaption({ children }: { children: string }) {
@@ -161,19 +162,19 @@ export function YogaReferenceTable() {
 
 export function KaranaReferenceTable() {
   const { t, pick, digits } = useLocale();
-  const charRows = KAR_MOV.map((ne) => ({ ne, typeNe: "चर (७)", typeEn: "Movable (7)" }));
-  const sthiraRows = KAR_FIX_NAMES.slice(1).map((ne) => ({ ne, typeNe: "स्थिर (४)", typeEn: "Fixed (4)" }));
+  const charRows = KAR_MOV.map((ne) => ({ ne, typeNe: tFor("ne", "learn.movable_7"), typeEn: tFor("en", "learn.movable_7") }));
+  const sthiraRows = KAR_FIX_NAMES.slice(1).map((ne) => ({ ne, typeNe: tFor("ne", "learn.fixed_4"), typeEn: tFor("en", "learn.fixed_4") }));
 
   const rows: string[][] = [
     [
       digits(1),
-      `${pick("किंस्तुघ्न", KARANA_EN["किंस्तुघ्न"] ?? "Kimstughna")}`,
+      `${pick(tFor("ne", "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}`,
       t("learn.fixed"),
       t("learn.first_half_of_shukla_pratipada_once_a_year"),
     ],
     ...charRows.map((k, i) => [
       digits(i + 2),
-      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === "विष्टि" ? t("learn.bhadra") : ""}`,
+      `${pick(k.ne, KARANA_EN[k.ne] ?? k.ne)}${k.ne === /* copy-ok */ "विष्टि" ? t("learn.bhadra") : ""}`,
       pick(k.typeNe, k.typeEn),
       t("learn.repeats_throughout_the_month"),
     ]),

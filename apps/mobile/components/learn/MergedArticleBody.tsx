@@ -16,8 +16,9 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import type { MergedPage } from "@/lib/learn/merged-pages";
 import { DATA_ARTICLES } from "@/lib/learn/articles";
 import { ArticleBody } from "@/components/learn/article-render";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 
-const NE_DIGITS = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
+const NE_DIGITS = lazyList("ne", "ui.learn.x_d8148326");
 const toNepaliIndex = (lang: string, n: number) =>
   lang === "en" ? String(n) : String(n).replace(/\d/g, (d) => NE_DIGITS[Number(d)]!);
 

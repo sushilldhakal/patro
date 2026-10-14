@@ -38,6 +38,7 @@ import { NOTO_DEVANAGARI_CHART, NOTO_DEVANAGARI_CHART_SM } from "@/lib/fonts";
 import { useTheme } from "@/lib/theme-context";
 
 import { brand, illustration, neutral, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const W = 1000;
 /**
  * The width the scrolling chart is drawn at — its own coordinate width, so
@@ -459,7 +460,7 @@ export function DayTimeline({
 
   if (showNeedle && needleClock && chartMins != null) {
     nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) nowLabel = pick(`${digits(needleClock)} बजे`, digits(needleClock));
+    if (nowG != null) nowLabel = pick(tFor("ne", "ui.panchanga.x_c068f043", { v0: digits(needleClock) }), digits(needleClock));
   } else if (showNeedle && isToday) {
     nowG = needleGhatiOnVedicChart(minutesSinceMidnightInTimezone(now, timeZone), data.sunriseMin);
   } else if (showNeedle && chartMins != null) {

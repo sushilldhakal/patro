@@ -95,7 +95,7 @@ export function PlanetEventsPanel({ jdUt, refDateAd, location, browseLocation }:
       return {
         key,
         symbol: g.symbol,
-        ne: `${g.name_ne} ${rashi}मा प्रवेश`,
+        ne: tFor("ne", "ui.panchanga.x_be9a266a", { v0: g.name_ne, v1: rashi }),
         en: `${enName} enters ${toWesternRashi(entry.to_rashi) ?? entry.to_rashi}`,
         time,
         rel,

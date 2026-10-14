@@ -32,16 +32,8 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
-const WEEKDAY_NE = [
-  "आइतबार",
-  "सोमबार",
-  "मङ्गलबार",
-  "बुधबार",
-  "बिहीबार",
-  "शुक्रबार",
-  "शनिबार",
-] as const;
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
+const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
 
 const WEEKDAY_EN = [
   "Sunday",
@@ -80,10 +72,10 @@ function daysAwayLabel(
   const english = lang.slice(0, 2) === "en";
   if (days > 0) {
     if (english) return days === 1 ? "After 1 day" : `After ${count} days`;
-    return `${count} दिनपछि`;
+    return tFor("ne", "ui.home.x_261cd2ac", { v0: count });
   }
   if (english) return days === -1 ? "1 day ago" : `${count} days ago`;
-  return `${count} दिन अघि`;
+  return tFor("ne", "ui.home.x_796f4d7b", { v0: count });
 }
 
 function clockLabel(

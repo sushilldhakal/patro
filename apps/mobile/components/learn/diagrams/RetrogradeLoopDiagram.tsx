@@ -17,6 +17,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { EclipticPlane, OrbitPath, Ray, ellipsePoints } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const EARTH_PERIOD = 365.25;
 const MARS_PERIOD = 686.98;
@@ -125,36 +126,36 @@ export function RetrogradeLoopDiagram() {
   });
 
   const day = t * 3;
-  const copy = { earth: pick("पृथ्वी (छिटो)", "Earth (faster)"), mars: pick("मंगल (सुस्त)", "Mars (slower)"), loop: pick("आकाशमा देखिने बाटो", "Path seen against the sky") };
+  const copy = { earth: pick(tFor("ne", "ui.learn.earth_faster"), tFor("en", "ui.learn.earth_faster")), mars: pick(tFor("ne", "ui.learn.mars_slower"), tFor("en", "ui.learn.mars_slower")), loop: pick(tFor("ne", "ui.learn.path_seen_against_the_sky"), tFor("en", "ui.learn.path_seen_against_the_sky")) };
 
   return (
     <LearnDiagram3D
-      title={pick("३D — मंगलको वक्री गति", "3D — Mars's retrograde loop")}
+      title={pick(tFor("ne", "ui.learn.n_3_d_mars_s_retrograde_loop"), tFor("en", "ui.learn.n_3_d_mars_s_retrograde_loop"))}
       height={280}
       camera={{ yaw: 0.4, pitch: 0.95 }}
       frame={{ width: 1.5, height: 0.85 }}
       idleSpin={0}
       legend={[
-        { color: DIAGRAM_COLOR.earth, label: pick("पृथ्वी", "Earth") },
-        { color: DIAGRAM_LABEL_COLOR.warn, label: pick("मंगल", "Mars") },
-        { color: DIAGRAM_LABEL_COLOR.rashi, label: pick("तारा-पृष्ठभूमिमा देखिने बिन्दु (लिक)", "Point seen against the stars (trail)") },
+        { color: DIAGRAM_COLOR.earth, label: pick(tFor("ne", "vastu.element.earth"), tFor("en", "vastu.element.earth")) },
+        { color: DIAGRAM_LABEL_COLOR.warn, label: pick(tFor("ne", "kundali.graha_name_mars"), tFor("en", "kundali.graha_name_mars")) },
+        { color: DIAGRAM_LABEL_COLOR.rashi, label: pick(tFor("ne", "ui.learn.point_seen_against_the_stars_trail"), tFor("en", "ui.learn.point_seen_against_the_stars_trail")) },
       ]}
       readouts={[
-        { k: pick("दिन", "Day"), v: digits(Math.round(day)), tone: "accent" },
-        { k: pick("सिनोडिक अवधि", "Synodic period"), v: `~${digits(Math.round(SYNODIC))} ${pick("दिन", "days")}` },
+        { k: pick(tFor("ne", "panchanga.view_day"), tFor("en", "panchanga.view_day")), v: digits(Math.round(day)), tone: "accent" },
+        { k: pick(tFor("ne", "ui.learn.synodic_period"), tFor("en", "ui.learn.synodic_period")), v: `~${digits(Math.round(SYNODIC))} ${pick(tFor("ne", "common.days"), tFor("en", "common.days"))}` },
       ]}
       slider={{
         value: t,
         min: 0,
         max: SYNODIC / 3,
-        label: pick(`दिन ${digits(Math.round(day))}`, `Day ${digits(Math.round(day))}`),
+        label: pick(tFor("ne", "ui.learn.day", { v0: digits(Math.round(day)) }), tFor("en", "ui.learn.day", { v0: digits(Math.round(day)) })),
         onChange: scrubTo,
       }}
       playing={playing}
       onPlayToggle={() => setPlaying(!playing)}
       caption={pick(
-        "भित्री कक्षमा पृथ्वी बाहिरी कक्षको मंगलभन्दा छिटो घुम्छ। पृथ्वीबाट मंगलतर्फको दृष्टिरेखा तारा-पृष्ठभूमिमा कहाँ पर्छ भनेर हेर्दा — प्रायः यो अगाडि सर्छ, तर पृथ्वीले मंगललाई उछिन्ने बेला केही समयका लागि यो पछाडि सर्छ (वक्री), अनि फेरि अगाडि। यो लूप कतै मंगल वा पृथ्वी गएको ठाउँ होइन — यो दृष्टिरेखाको दिशा मात्र हो।",
-        "On the inner orbit, Earth moves faster than Mars on the outer one. Watching where the sightline from Earth to Mars points against the star backdrop, it usually drifts forward — but while Earth overtakes Mars, it drifts backward for a while (retrograde), then resumes forward. This loop is not anywhere either planet actually went — it's only the direction of the sightline.",
+        tFor("ne", "ui.learn.on_the_inner_orbit_earth_moves"),
+        tFor("en", "ui.learn.on_the_inner_orbit_earth_moves"),
       )}
     >
       {({ onLabels }) => <RetrogradeLoopScene clock={clock} onSample={onSample} onLabels={onLabels} copy={copy} />}

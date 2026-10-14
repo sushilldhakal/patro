@@ -21,6 +21,7 @@ import { useThemeColors } from "@/lib/theme-context";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroEraShortLabel } from "./patro-era-labels";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const YEAR_ROW_HEIGHT = 44;
 /** Max height for manual pin + scrollable years (below modal title bar). */
@@ -166,7 +167,7 @@ export function PatroYearSheetStepper({
   const manualLabel = t("ui.patro_date.enter_manually");
   const eraShort = patroEraShortLabel(era, lang);
   const rangeHint = pick(
-    `${digits(yearWindowStart)}–${digits(yearWindowEnd)} (${digits(clamped)} छानिएको)`,
+    tFor("ne", "ui.patro_date.x_855271e0", { v0: digits(yearWindowStart), v1: digits(yearWindowEnd), v2: digits(clamped) }),
     `${yearWindowStart}–${yearWindowEnd} (${clamped} selected)`,
   );
 

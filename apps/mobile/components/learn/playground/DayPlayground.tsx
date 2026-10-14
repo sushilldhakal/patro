@@ -104,6 +104,7 @@ import Scene, {
 } from "@/components/learn/playground/DaySimScene";
 
 import { brand, illustration, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { lazyPair } from "@vedic-patro/i18n/runtime";
 const CANVAS_BG = wheel.sky2;
 const PI2 = Math.PI * 2;
 const DEG = Math.PI / 180;
@@ -146,12 +147,12 @@ type GroupKey = keyof typeof GROUPS;
 
 /** Earth plus the five graha the eye can see. No Uranus, no Neptune. */
 const PLANET_NAMES: Record<string, [string, string]> = {
-  earth: ["पृथ्वी", "Earth"],
-  mars: ["मङ्गल", "Mars"],
-  mercury: ["बुध", "Mercury"],
-  jupiter: ["बृहस्पति", "Jupiter"],
-  venus: ["शुक्र", "Venus"],
-  saturn: ["शनि", "Saturn"],
+  earth: lazyPair("vastu.element.earth"),
+  mars: lazyPair("grahas.mars"),
+  mercury: lazyPair("kundali.graha_name_mercury"),
+  jupiter: lazyPair("kundali.graha_name_jupiter"),
+  venus: lazyPair("kundali.graha_name_venus"),
+  saturn: lazyPair("kundali.graha_name_saturn"),
 };
 
 export interface DayPlaygroundProps {

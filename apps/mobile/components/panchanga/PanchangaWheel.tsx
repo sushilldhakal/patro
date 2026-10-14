@@ -36,6 +36,7 @@ import {
 } from "@/lib/wheel-classes";
 import type { YearWheelScrub } from "@/lib/wheel-year-scrub";
 import { brand, illustration, midnight, nativeShadow, neutral, radius, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export type { YearWheelScrub };
 
@@ -200,9 +201,9 @@ function WheelCalendarModal({
               lineHeight: nepaliLineHeight(16),
             }}
           >
-            {pick("मिति र समय", "Date and time")}
+            {pick(tFor("ne", "ui.panchanga.date_and_time"), tFor("en", "ui.panchanga.date_and_time"))}
           </Text>
-          <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}>
+          <Pressable onPress={onClose} hitSlop={10} accessibilityLabel={pick(tFor("ne", "ui.common.close"), tFor("en", "ui.common.close"))}>
             <Ionicons name="close" size={20} color={colors.foreground} />
           </Pressable>
         </View>
@@ -216,14 +217,14 @@ function WheelCalendarModal({
           onSelectDate={(y, m, d) => {
             draftRef.current = { ...draftRef.current, year: y, month: m, day: d };
           }}
-          monthAriaLabel={pick("महिना", "Month")}
-          yearAriaLabel={pick("वर्ष", "Year")}
+          monthAriaLabel={pick(tFor("ne", "common.month"), tFor("en", "common.month"))}
+          yearAriaLabel={pick(tFor("ne", "common.year"), tFor("en", "common.year"))}
           clock={clock}
           onClockChange={(next) => {
             draftRef.current = { ...draftRef.current, clock: next };
           }}
-          hourAriaLabel={pick("घण्टा", "Hour")}
-          minuteAriaLabel={pick("मिनेट", "Minute")}
+          hourAriaLabel={pick(tFor("ne", "panchanga.hour_aria"), tFor("en", "panchanga.hour_aria"))}
+          minuteAriaLabel={pick(tFor("ne", "panchanga.minute_aria"), tFor("en", "panchanga.minute_aria"))}
           showTime
           onDone={() => {
             const next = draftRef.current;
@@ -267,14 +268,14 @@ function WheelChrome({
       <Pressable
         onPress={onOpenDatePicker}
         style={wheelCornerBtnStyle}
-        accessibilityLabel={pick("मिति र समय", "Date and time")}
+        accessibilityLabel={pick(tFor("ne", "ui.panchanga.date_and_time"), tFor("en", "ui.panchanga.date_and_time"))}
       >
         <Ionicons name="calendar-outline" size={16} color={W_INK} />
       </Pressable>
       <Pressable
         onPress={onReset}
         style={wheelCornerBtnStyle}
-        accessibilityLabel={pick("रिलोड · जुम रिसेट · सूर्योदय", "Reload · reset zoom · sunrise")}
+        accessibilityLabel={pick(tFor("ne", "ui.panchanga.reload_reset_zoom_sunrise"), tFor("en", "ui.panchanga.reload_reset_zoom_sunrise"))}
       >
         <Ionicons name="refresh-outline" size={16} color={W_INK} />
       </Pressable>
@@ -282,7 +283,7 @@ function WheelChrome({
         onPress={onToggleFullscreen}
         style={wheelCornerBtnStyle}
         accessibilityLabel={
-          expanded ? pick("सामान्य दृश्य", "Exit full screen") : pick("पूर्ण स्क्रिन", "Full screen")
+          expanded ? pick(tFor("ne", "ui.panchanga.exit_full_screen"), tFor("en", "ui.panchanga.exit_full_screen")) : pick(tFor("ne", "ui.panchanga.full_screen"), tFor("en", "ui.panchanga.full_screen"))
         }
       >
         <Ionicons name={expanded ? "contract-outline" : "expand-outline"} size={16} color={W_INK} />
@@ -345,14 +346,14 @@ function WheelRangeDock({
             wheelDockIconStyle,
             scrub.direction === -1 ? { backgroundColor: W_ACCENT } : null,
           ]}
-          accessibilityLabel={pick("पछाडि चलाउनुहोस्", "Play backward")}
+          accessibilityLabel={pick(tFor("ne", "panchanga.wheel.play_backward"), tFor("en", "panchanga.wheel.play_backward"))}
         >
           <Ionicons name="play-back" size={15} color={W_INK} />
         </Pressable>
         <Pressable
           onPress={playing ? scrub.onPause : scrub.onForward}
           style={wheelDockIconStyle}
-          accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+          accessibilityLabel={playing ? pick(tFor("ne", "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor("ne", "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
         >
           <Ionicons name={playing ? "pause" : "play"} size={15} color={W_INK} />
         </Pressable>
@@ -362,7 +363,7 @@ function WheelRangeDock({
             wheelDockIconStyle,
             scrub.direction === 1 ? { backgroundColor: W_ACCENT } : null,
           ]}
-          accessibilityLabel={pick("अगाडि चलाउनुहोस्", "Play forward")}
+          accessibilityLabel={pick(tFor("ne", "panchanga.wheel.play_forward"), tFor("en", "panchanga.wheel.play_forward"))}
         >
           <Ionicons name="play-forward" size={15} color={W_INK} />
         </Pressable>
@@ -442,7 +443,7 @@ function WheelDock({
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexShrink: 1, minWidth: 0 }}>
-          <Text className="text-sm" style={{ color: W_INK_DIM, flexShrink: 0 }}>{pick("समय", "Time")}</Text>
+          <Text className="text-sm" style={{ color: W_INK_DIM, flexShrink: 0 }}>{pick(tFor("ne", "common.time"), tFor("en", "common.time"))}</Text>
           <GhatiScrubber value={scrubG} onChange={onScrubChange} trackWidth={scrubTrackWidth} />
           <Text className="text-sm" style={{ color: W_INK, minWidth: 52, textAlign: "center", fontWeight: "600" }}>
             {digits(scrubClock)}
@@ -462,9 +463,9 @@ function WheelDock({
                 backgroundColor: W_ACCENT,
                 justifyContent: "center",
               }}
-              accessibilityLabel={pick("अहिलेको समय", "Current time")}
+              accessibilityLabel={pick(tFor("ne", "panchanga.wheel.current_time"), tFor("en", "panchanga.wheel.current_time"))}
             >
-              <Text className="text-sm" style={{ fontWeight: "700", color: neutral.white }}>{pick("आज", "Now")}</Text>
+              <Text className="text-sm" style={{ fontWeight: "700", color: neutral.white }}>{pick(tFor("ne", "ui.panchanga.now"), tFor("en", "ui.panchanga.now"))}</Text>
             </Pressable>
           ) : null}
           <PlanetSelectMenu

@@ -77,15 +77,15 @@ export function GrahaDetailsList({
   if (rows.length === 0) return null;
 
   const columns: Column[] = [
-    { key: "graha", ne: "ग्रह", en: "Graha", width: 116 },
-    { key: "rashi_lon", ne: "राशि / स्पष्ट", en: "Rashi / Long.", width: 196 },
-    { key: "bhava", ne: "भाव", en: "Bhava", width: 64 },
-    { key: "nak", ne: "नक्षत्र (पद)", en: "Nak (pada)", width: 168 },
-    { key: "lord_sub", ne: "नक्षत्रेश / उप", en: "Lord / Sub", width: 164 },
-    { key: "owner", ne: "स्वामी", en: "Owner", width: 132 },
-    { key: "rel", ne: "सम्बन्ध", en: "Relation", width: 96 },
-    { key: "dignity", ne: "स्थिति", en: "Dignity", width: 96 },
-    { key: "rules", ne: "स्वामित्व", en: "Rules", width: 88 },
+    { key: "graha", ne: tFor("ne", "kundali.graha"), en: tFor("en", "kundali.graha"), width: 116 },
+    { key: "rashi_lon", ne: tFor("ne", "ui.kundali.rashi_long"), en: tFor("en", "ui.kundali.rashi_long"), width: 196 },
+    { key: "bhava", ne: tFor("ne", "kundali.bhava_19"), en: tFor("en", "kundali.bhava_19"), width: 64 },
+    { key: "nak", ne: tFor("ne", "ui.kundali.nak_pada"), en: tFor("en", "ui.kundali.nak_pada"), width: 168 },
+    { key: "lord_sub", ne: tFor("ne", "panchanga.day_cycle.lord_sub"), en: tFor("en", "panchanga.day_cycle.lord_sub"), width: 164 },
+    { key: "owner", ne: tFor("ne", "kundali.owner"), en: tFor("en", "kundali.owner"), width: 132 },
+    { key: "rel", ne: tFor("ne", "ui.kundali.relation"), en: tFor("en", "ui.kundali.relation"), width: 96 },
+    { key: "dignity", ne: tFor("ne", "kundali.dignity"), en: tFor("en", "kundali.dignity"), width: 96 },
+    { key: "rules", ne: tFor("ne", "kundali.rules"), en: tFor("en", "kundali.rules"), width: 88 },
   ];
 
   return (

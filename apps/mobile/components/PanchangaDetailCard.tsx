@@ -4,6 +4,7 @@ import { useLocale } from "@/lib/i18n";
 import type { PanchangaDay } from "@/lib/api";
 import { timeShort } from "@/lib/api";
 import { Card } from "./ui/Card";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -37,33 +38,33 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
         ) : null}
       </View>
       <View className="px-4 pb-2">
-        <Row label={pick("तिथि", "Tithi")} value={t(data.tithi?.name_ne, data.tithi?.name)} />
-        <Row label={pick("नक्षत्र", "Nakshatra")} value={t(data.nakshatra?.name_ne, data.nakshatra?.name)} />
-        <Row label={pick("योग", "Yoga")} value={t(data.yoga?.name_ne, data.yoga?.name)} />
-        <Row label={pick("करण", "Karana")} value={t(data.karana?.name_ne, data.karana?.name)} />
+        <Row label={pick(tFor("ne", "tithi"), tFor("en", "tithi"))} value={t(data.tithi?.name_ne, data.tithi?.name)} />
+        <Row label={pick(tFor("ne", "nakshatra"), tFor("en", "nakshatra"))} value={t(data.nakshatra?.name_ne, data.nakshatra?.name)} />
+        <Row label={pick(tFor("ne", "kundali.yoga"), tFor("en", "kundali.yoga"))} value={t(data.yoga?.name_ne, data.yoga?.name)} />
+        <Row label={pick(tFor("ne", "kundali.karana"), tFor("en", "kundali.karana"))} value={t(data.karana?.name_ne, data.karana?.name)} />
         <Row
-          label={pick("पक्ष", "Paksha")}
+          label={pick(tFor("ne", "sections.paksha"), tFor("en", "sections.paksha"))}
           value={t(data.paksha?.label_ne, data.paksha?.label_en)}
         />
-        <Row label={pick("सूर्योदय", "Sunrise")} value={timeShort(data.sunrise)} />
-        <Row label={pick("सूर्यास्त", "Sunset")} value={timeShort(data.sunset)} />
-        <Row label={pick("चन्द्रोदय", "Moonrise")} value={timeShort(data.moonrise)} />
-        <Row label={pick("चन्द्रास्त", "Moonset")} value={timeShort(data.moonset)} />
+        <Row label={pick(tFor("ne", "kundali.sunrise"), tFor("en", "kundali.sunrise"))} value={timeShort(data.sunrise)} />
+        <Row label={pick(tFor("ne", "kundali.sunset"), tFor("en", "kundali.sunset"))} value={timeShort(data.sunset)} />
+        <Row label={pick(tFor("ne", "sections.moonrise"), tFor("en", "sections.moonrise"))} value={timeShort(data.moonrise)} />
+        <Row label={pick(tFor("ne", "sections.moonset"), tFor("en", "sections.moonset"))} value={timeShort(data.moonset)} />
       </View>
       {data.muhurta ? (
         <View className="border-t border-border/60 px-4 py-2">
           <Text className="text-body mb-1 font-semibold text-foreground">
-            {pick("मुहूर्त", "Muhurta")}
+            {pick(tFor("ne", "ui.panchanga_detail_card.muhurta"), tFor("en", "ui.panchanga_detail_card.muhurta"))}
           </Text>
           {data.muhurta.rahu_kalam ? (
             <Row
-              label={pick("राहु काल", "Rahu Kaal")}
+              label={pick(tFor("ne", "ui.panchanga_detail_card.rahu_kaal"), tFor("en", "ui.panchanga_detail_card.rahu_kaal"))}
               value={`${data.muhurta.rahu_kalam.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.rahu_kalam.end_time?.slice(0, 5) ?? "—"}`}
             />
           ) : null}
           {data.muhurta.abhijit ? (
             <Row
-              label={pick("अभिजित", "Abhijit")}
+              label={pick(tFor("ne", "ui.panchanga.abhijit"), tFor("en", "ui.panchanga.abhijit"))}
               value={`${data.muhurta.abhijit.start_time?.slice(0, 5) ?? "—"} – ${data.muhurta.abhijit.end_time?.slice(0, 5) ?? "—"}`}
             />
           ) : null}
@@ -72,7 +73,7 @@ export function PanchangaDetailCard({ data }: { data: PanchangaDay }) {
       {data.festivals?.length ? (
         <View className="border-t border-border/60 px-4 py-3">
           <Text className="text-body mb-2 font-semibold text-foreground">
-            {pick("पर्व / बिदा", "Festivals / Holidays")}
+            {pick(tFor("ne", "ui.panchanga_detail_card.festivals_holidays"), tFor("en", "ui.panchanga_detail_card.festivals_holidays"))}
           </Text>
           {data.festivals.map((f, i) => (
             <Text key={`${f.name}-${i}`} className="text-body py-0.5 text-foreground">

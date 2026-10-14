@@ -129,6 +129,7 @@ import type {
   YearCalendar,
   CalendarDay,
 } from "@vedic-patro/api-client";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type {
   LocationParams,
   JanmaRashi,
@@ -576,15 +577,15 @@ export const fetchPanchangaAtTimeForDay = (
 function parsePakshaName(label?: string): string | undefined {
   if (!label) return undefined;
   const lower = label.toLowerCase();
-  if (lower.includes("shukla") || label.includes("शुक्ल")) return "shukla";
-  if (lower.includes("krishna") || label.includes("कृष्ण")) return "krishna";
+  if (lower.includes("shukla") || label.includes(/* copy-ok */ "शुक्ल")) return "shukla";
+  if (lower.includes("krishna") || label.includes(/* copy-ok */ "कृष्ण")) return "krishna";
   return undefined;
 }
 
 function parsePakshaNeShort(label?: string): string | undefined {
   if (!label) return undefined;
-  if (label.includes("शुक्ल")) return "शुक्ल";
-  if (label.includes("कृष्ण")) return "कृष्ण";
+  if (label.includes(/* copy-ok */ "शुक्ल")) return tFor("ne", "common.paksha_shukla");
+  if (label.includes(/* copy-ok */ "कृष्ण")) return tFor("ne", "common.paksha_krishna");
   return undefined;
 }
 

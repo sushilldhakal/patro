@@ -1,3 +1,4 @@
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type WindowKind = "shubh" | "ashubh";
 
 export interface GuidanceWindow {
@@ -105,29 +106,29 @@ export interface RashifalCache {
  * सर्वार्थ सिद्धि) — a reminder for one simply fires on the days it exists.
  */
 export const WINDOW_OPTIONS: { kind: WindowKind; key: string; ne: string; en: string }[] = [
-  { kind: "ashubh", key: "varjyam", ne: "वर्ज्यम्", en: "Varjyam" },
-  { kind: "ashubh", key: "bhadra", ne: "भद्रा", en: "Bhadra" },
-  { kind: "ashubh", key: "aadal_yoga", ne: "आडाल योग", en: "Aadal Yoga" },
-  { kind: "ashubh", key: "vidaal_yoga", ne: "विडाल योग", en: "Vidaal Yoga" },
-  { kind: "ashubh", key: "tithi", ne: "तिथि", en: "Tithi" },
-  { kind: "ashubh", key: "gulika", ne: "गुलिक काल", en: "Gulika Kaal" },
-  { kind: "ashubh", key: "dur_muhurtam", ne: "दुर्मुहूर्तम्", en: "Dur Muhurtam" },
-  { kind: "ashubh", key: "rahu_kalam", ne: "राहु काल", en: "Rahu Kaal" },
-  { kind: "ashubh", key: "yamaganda", ne: "यमगण्ड", en: "Yamaganda" },
-  { kind: "ashubh", key: "tithi_randhra", ne: "तिथि रन्ध्र", en: "Tithi Randhra" },
-  { kind: "ashubh", key: "visha_tithi", ne: "तिथि विष", en: "Tithi Visha" },
-  { kind: "ashubh", key: "visha_yoga", ne: "योग विष", en: "Yoga Visha" },
-  { kind: "ashubh", key: "ganda_moola", ne: "गण्ड मूल", en: "Ganda Moola" },
-  { kind: "ashubh", key: "baana", ne: "बाण", en: "Baana" },
-  { kind: "shubh", key: "abhijit", ne: "अभिजित् मुहूर्त", en: "Abhijit Muhurta" },
-  { kind: "shubh", key: "vijaya_muhurta", ne: "विजय मुहूर्त", en: "Vijaya Muhurta" },
-  { kind: "shubh", key: "amrit_kalam", ne: "अमृत काल", en: "Amrit Kalam" },
-  { kind: "shubh", key: "godhuli_muhurta", ne: "गोधूलि मुहूर्त", en: "Godhuli Muhurta" },
-  { kind: "shubh", key: "sayahna_sandhya", ne: "सायं सन्ध्या", en: "Sayahna Sandhya" },
-  { kind: "shubh", key: "nishita_muhurta", ne: "निशिता मुहूर्त", en: "Nishita Muhurta" },
-  { kind: "shubh", key: "brahma_muhurta", ne: "ब्रह्म मुहूर्त", en: "Brahma Muhurta" },
-  { kind: "shubh", key: "pratah_sandhya", ne: "प्रातः सन्ध्या", en: "Pratah Sandhya" },
-  { kind: "shubh", key: "sarvartha_siddhi", ne: "सर्वार्थ सिद्धि योग", en: "Sarvartha Siddhi Yoga" },
+  { kind: "ashubh", key: "varjyam", get ne() { return tFor("ne", "ui.notifications.varjyam"); }, get en() { return tFor("en", "ui.notifications.varjyam"); } },
+  { kind: "ashubh", key: "bhadra", get ne() { return tFor("ne", "ui.notifications.bhadra"); }, get en() { return tFor("en", "ui.notifications.bhadra"); } },
+  { kind: "ashubh", key: "aadal_yoga", get ne() { return tFor("ne", "ui.notifications.aadal_yoga"); }, get en() { return tFor("en", "ui.notifications.aadal_yoga"); } },
+  { kind: "ashubh", key: "vidaal_yoga", get ne() { return tFor("ne", "ui.notifications.vidaal_yoga"); }, get en() { return tFor("en", "ui.notifications.vidaal_yoga"); } },
+  { kind: "ashubh", key: "tithi", get ne() { return tFor("ne", "tithi"); }, get en() { return tFor("en", "tithi"); } },
+  { kind: "ashubh", key: "gulika", get ne() { return tFor("ne", "ui.notifications.gulika_kaal"); }, get en() { return tFor("en", "ui.notifications.gulika_kaal"); } },
+  { kind: "ashubh", key: "dur_muhurtam", get ne() { return tFor("ne", "ui.notifications.dur_muhurtam"); }, get en() { return tFor("en", "ui.notifications.dur_muhurtam"); } },
+  { kind: "ashubh", key: "rahu_kalam", get ne() { return tFor("ne", "ui.panchanga_detail_card.rahu_kaal"); }, get en() { return tFor("en", "ui.panchanga_detail_card.rahu_kaal"); } },
+  { kind: "ashubh", key: "yamaganda", get ne() { return tFor("ne", "ui.panchanga.yamaganda"); }, get en() { return tFor("en", "ui.panchanga.yamaganda"); } },
+  { kind: "ashubh", key: "tithi_randhra", get ne() { return tFor("ne", "ui.notifications.tithi_randhra"); }, get en() { return tFor("en", "ui.notifications.tithi_randhra"); } },
+  { kind: "ashubh", key: "visha_tithi", get ne() { return tFor("ne", "ui.notifications.tithi_visha"); }, get en() { return tFor("en", "ui.notifications.tithi_visha"); } },
+  { kind: "ashubh", key: "visha_yoga", get ne() { return tFor("ne", "ui.notifications.yoga_visha"); }, get en() { return tFor("en", "ui.notifications.yoga_visha"); } },
+  { kind: "ashubh", key: "ganda_moola", get ne() { return tFor("ne", "ui.notifications.ganda_moola"); }, get en() { return tFor("en", "ui.notifications.ganda_moola"); } },
+  { kind: "ashubh", key: "baana", get ne() { return tFor("ne", "ui.notifications.baana"); }, get en() { return tFor("en", "ui.notifications.baana"); } },
+  { kind: "shubh", key: "abhijit", get ne() { return tFor("ne", "ui.notifications.abhijit_muhurta"); }, get en() { return tFor("en", "ui.notifications.abhijit_muhurta"); } },
+  { kind: "shubh", key: "vijaya_muhurta", get ne() { return tFor("ne", "ui.notifications.vijaya_muhurta"); }, get en() { return tFor("en", "ui.notifications.vijaya_muhurta"); } },
+  { kind: "shubh", key: "amrit_kalam", get ne() { return tFor("ne", "ui.notifications.amrit_kalam"); }, get en() { return tFor("en", "ui.notifications.amrit_kalam"); } },
+  { kind: "shubh", key: "godhuli_muhurta", get ne() { return tFor("ne", "ui.notifications.godhuli_muhurta"); }, get en() { return tFor("en", "ui.notifications.godhuli_muhurta"); } },
+  { kind: "shubh", key: "sayahna_sandhya", get ne() { return tFor("ne", "ui.notifications.sayahna_sandhya"); }, get en() { return tFor("en", "ui.notifications.sayahna_sandhya"); } },
+  { kind: "shubh", key: "nishita_muhurta", get ne() { return tFor("ne", "ui.notifications.nishita_muhurta"); }, get en() { return tFor("en", "ui.notifications.nishita_muhurta"); } },
+  { kind: "shubh", key: "brahma_muhurta", get ne() { return tFor("ne", "ui.notifications.brahma_muhurta"); }, get en() { return tFor("en", "ui.notifications.brahma_muhurta"); } },
+  { kind: "shubh", key: "pratah_sandhya", get ne() { return tFor("ne", "ui.notifications.pratah_sandhya"); }, get en() { return tFor("en", "ui.notifications.pratah_sandhya"); } },
+  { kind: "shubh", key: "sarvartha_siddhi", get ne() { return tFor("ne", "ui.notifications.sarvartha_siddhi_yoga"); }, get en() { return tFor("en", "ui.notifications.sarvartha_siddhi_yoga"); } },
 ];
 
 export const LEAD_MINUTE_OPTIONS = [0, 5, 10, 15, 30, 60] as const;

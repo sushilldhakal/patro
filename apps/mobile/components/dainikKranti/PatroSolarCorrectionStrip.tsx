@@ -6,6 +6,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { dainikKrantiClasses } from "@vedic-patro/design-tokens/classes/dainik-kranti-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Props = {
   deshaantar?: string;
@@ -17,20 +18,20 @@ type Props = {
 const SOLAR_ITEMS = [
   {
     key: "deshaantar" as const,
-    ne: "देशान्तर",
-    en: "Deshaantar",
+    get ne() { return tFor("ne", "aside.deshaantar"); },
+    get en() { return tFor("en", "aside.deshaantar"); },
     icon: "globe-outline" as const,
   },
   {
     key: "akshamsha" as const,
-    ne: "अक्षांश",
-    en: "Latitude",
+    get ne() { return tFor("ne", "milan.latitude"); },
+    get en() { return tFor("en", "milan.latitude"); },
     icon: "navigate-outline" as const,
   },
   {
     key: "belaantar" as const,
-    ne: "बेलान्तर",
-    en: "Belaantar",
+    get ne() { return tFor("ne", "aside.belaantar"); },
+    get en() { return tFor("en", "aside.belaantar"); },
     icon: "time-outline" as const,
   },
 ];

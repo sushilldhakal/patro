@@ -17,6 +17,7 @@ import { useBreakpoint } from "@/lib/responsive";
 
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 type DashaTab = {
   id: DashaSystem;
   labelNe: string;
@@ -46,9 +47,9 @@ export function DashaSystemPanel({
   const { lang, pick, digits } = useLocale();
   const { isTablet } = useBreakpoint();
   const tabs: DashaTab[] = [
-    { id: "vimshottari", labelNe: "विंशोत्तरी", labelEn: "Vimshottari", data: vimshottari, maxLevel: 4 },
-    { id: "tribhagi", labelNe: "त्रिभागि", labelEn: "Tribhagi", data: tribhagi, maxLevel: 4 },
-    { id: "yogini", labelNe: "योगिनी", labelEn: "Yogini", data: yogini, maxLevel: 1 },
+    { id: "vimshottari", labelNe: tFor("ne", "kundali.x.dasha_system_vimshottari"), labelEn: tFor("en", "kundali.x.dasha_system_vimshottari"), data: vimshottari, maxLevel: 4 },
+    { id: "tribhagi", labelNe: tFor("ne", "kundali.x.dasha_system_tribhagi"), labelEn: tFor("en", "kundali.x.dasha_system_tribhagi"), data: tribhagi, maxLevel: 4 },
+    { id: "yogini", labelNe: tFor("ne", "kundali.x.dasha_system_yogini"), labelEn: tFor("en", "kundali.x.dasha_system_yogini"), data: yogini, maxLevel: 1 },
   ];
   const [uncontrolled, setUncontrolled] = useState<DashaSystem>("vimshottari");
   const active = activeProp ?? uncontrolled;

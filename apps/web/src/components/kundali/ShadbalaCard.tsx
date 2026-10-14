@@ -31,6 +31,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
@@ -191,7 +192,7 @@ export function ShadbalaCard({
           {t("kundali.shadbala_planetary_strength_virupas")}
         </h3>
         <p className={kundaliDetailClasses.glance.introSpaced}>
-          {bilingualText(lang, "पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", data.method)}
+          {bilingualText(lang, tFor("ne", "ui.kundali.x_4836cfed"), data.method)}
         </p>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -205,7 +206,7 @@ export function ShadbalaCard({
             <div className={cn(kundaliDetailClasses.glance.badgeRow, "flex")}>
               <StatusBadge status={summary.strongest.status} />
               <span className={kundaliDetailClasses.glance.sub}>
-                {bilingualText(lang, `${digits(summary.strongest.ratio.toFixed(2))}× आवश्यक`, `${summary.strongest.ratio.toFixed(2)}x required`)}
+                {bilingualText(lang, tFor("ne", "ui.kundali.x_bab6a0ed", { v0: digits(summary.strongest.ratio.toFixed(2)) }), `${summary.strongest.ratio.toFixed(2)}x required`)}
               </span>
             </div>
           </GlanceTile>
@@ -220,7 +221,7 @@ export function ShadbalaCard({
             <div className={cn(kundaliDetailClasses.glance.badgeRow, "flex")}>
               <StatusBadge status={summary.weakest.status} />
               <span className={kundaliDetailClasses.glance.sub}>
-                {bilingualText(lang, `${digits(summary.weakest.ratio.toFixed(2))}× आवश्यक`, `${summary.weakest.ratio.toFixed(2)}x required`)}
+                {bilingualText(lang, tFor("ne", "ui.kundali.x_bab6a0ed", { v0: digits(summary.weakest.ratio.toFixed(2)) }), `${summary.weakest.ratio.toFixed(2)}x required`)}
               </span>
             </div>
           </GlanceTile>
@@ -471,7 +472,7 @@ export function ShadbalaCard({
             {t("kundali.graha_yuddha_detected")}{" "}
             {yuddha.wars
               .map((w) =>
-                bilingualText(lang, `${grahaName(w.winner)} ले ${grahaName(w.loser)} लाई पराजित (${fmt(w.yuddhaVirupas, digits)} विरुप, ${digits(w.separationDeg.toFixed(2))}° को दूरी)`, `${grahaName(w.winner)} defeats ${grahaName(w.loser)} (${fmt(w.yuddhaVirupas, digits)} virupas, ${w.separationDeg.toFixed(2)}° apart)`),
+                bilingualText(lang, tFor("ne", "ui.kundali.x_b48812f0", { v0: grahaName(w.winner), v1: grahaName(w.loser), v2: fmt(w.yuddhaVirupas, digits), v3: digits(w.separationDeg.toFixed(2)) }), `${grahaName(w.winner)} defeats ${grahaName(w.loser)} (${fmt(w.yuddhaVirupas, digits)} virupas, ${w.separationDeg.toFixed(2)}° apart)`),
               )
               .join("; ")}
             .

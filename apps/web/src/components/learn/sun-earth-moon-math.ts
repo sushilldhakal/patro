@@ -1,4 +1,5 @@
 import { eccentricAnomaly } from "@vedic-patro/domain/learn/kepler";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 /**
  * Simplified Sun–Earth–Moon system (Keplerian elliptical orbits) used to compare
  * the ~365-day solar year (12 solar months) against the ~12.37 lunar months
@@ -31,20 +32,7 @@ export const SYNODIC_MONTH = 29.530588;
 export const SIDEREAL_MONTH = 27.321661;
 export const TROPICAL_YEAR = 365.2422;
 
-export const BS_MONTHS = [
-  "बैशाख",
-  "जेठ",
-  "असार",
-  "श्रावण",
-  "भदौ",
-  "आश्विन",
-  "कार्तिक",
-  "मंसिर",
-  "पुष",
-  "माघ",
-  "फागुन",
-  "चैत्र",
-] as const;
+export const BS_MONTHS = lazyList("ne", "ui.learn.x_8c005ca1");
 
 function trueAnomalyFromE(E: number, e: number): number {
   return 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));

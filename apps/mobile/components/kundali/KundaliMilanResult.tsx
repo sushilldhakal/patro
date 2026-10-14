@@ -13,16 +13,17 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const KUTA_LABELS: Record<string, { en: string; ne: string }> = {
-  varna: { en: "Varna", ne: "वर्ण" },
-  vashya: { en: "Vashya", ne: "वश्य" },
-  tara: { en: "Tara", ne: "तारा" },
-  yoni: { en: "Yoni", ne: "योनि" },
-  maitri: { en: "Maitri", ne: "मैत्री" },
-  gana: { en: "Gana", ne: "गण" },
-  bhakuta: { en: "Bhakuta", ne: "भकूट" },
-  nadi: { en: "Nadi", ne: "नाडी" },
+  varna: { get en() { return tFor("en", "avakahada.col_varna"); }, get ne() { return tFor("ne", "avakahada.col_varna"); } },
+  vashya: { get en() { return tFor("en", "kundali.vashya"); }, get ne() { return tFor("ne", "kundali.vashya"); } },
+  tara: { get en() { return tFor("en", "kundali.tara"); }, get ne() { return tFor("ne", "kundali.tara"); } },
+  yoni: { get en() { return tFor("en", "avakahada.col_yoni"); }, get ne() { return tFor("ne", "avakahada.col_yoni"); } },
+  maitri: { get en() { return tFor("en", "kundali.x.kuta_maitri"); }, get ne() { return tFor("ne", "kundali.x.kuta_maitri"); } },
+  gana: { get en() { return tFor("en", "kundali.gana"); }, get ne() { return tFor("ne", "kundali.gana"); } },
+  bhakuta: { get en() { return tFor("en", "kundali.x.kuta_bhakuta"); }, get ne() { return tFor("ne", "kundali.x.kuta_bhakuta"); } },
+  nadi: { get en() { return tFor("en", "kundali.nadi"); }, get ne() { return tFor("ne", "kundali.nadi"); } },
 };
 
 const m = kundaliDetailClasses.milanResult;
@@ -100,12 +101,12 @@ export function KundaliMilanResult({
   const tone = RECOMMENDATION_TONE[result.recommendation];
 
   const columns = [
-    { key: "guna", ne: "गुण", en: "Guna", width: 104 },
-    { key: "max", ne: "अधिकतम", en: "Max", width: 72 },
-    { key: "obt", ne: "प्राप्त", en: "Obt", width: 72 },
+    { key: "guna", ne: tFor("ne", "milan.guna"), en: tFor("en", "milan.guna"), width: 104 },
+    { key: "max", ne: tFor("ne", "kundali.x.milan_col_max"), en: tFor("en", "kundali.x.milan_col_max"), width: 72 },
+    { key: "obt", ne: tFor("ne", "kundali.x.milan_col_obtained"), en: tFor("en", "kundali.x.milan_col_obtained"), width: 72 },
     { key: "boy", ne: boyName, en: boyName, width: 118 },
     { key: "girl", ne: girlName, en: girlName, width: 118 },
-    { key: "area", ne: "जीवन क्षेत्र", en: "Area of life", width: 150 },
+    { key: "area", ne: tFor("ne", "ui.kundali.area_of_life"), en: tFor("en", "ui.kundali.area_of_life"), width: 150 },
   ];
 
   return (

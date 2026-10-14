@@ -25,6 +25,7 @@ import { type Era } from "@vedic-patro/domain/era";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import type { PanchangaLocation } from "@/lib/use-panchanga-location";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /**
  * Shared ceremonial sāit layout — page header, rules, year/location bar, then
@@ -118,7 +119,7 @@ export function SaitCeremonyLayout({
   const countText = countLabel
     ? countLabel(displayCount, year)
     : pick(
-        `${digits(year)} मा ${digits(displayCount)} शुभ दिन`,
+        tFor("ne", "ui.sait.x_63f5f4fd", { v0: digits(year), v1: digits(displayCount) }),
         `${displayCount} auspicious days in ${year}`,
       );
 

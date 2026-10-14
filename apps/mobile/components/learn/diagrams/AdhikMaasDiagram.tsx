@@ -35,9 +35,9 @@ function findAdhik(): number {
 const ADHIK = findAdhik();
 
 const LUNAR_NAME = [
-  { ne: "वैशाख", en: "Baisakh" },
-  { ne: "जेठ", en: "Jestha" },
-  { ne: "असार", en: "Ashadh" },
+  { get ne() { return tFor("ne", "ui.learn.baisakh"); }, get en() { return tFor("en", "ui.learn.baisakh"); } },
+  { get ne() { return tFor("ne", "ui.learn.jestha"); }, get en() { return tFor("en", "ui.learn.jestha"); } },
+  { get ne() { return tFor("ne", "learn.ashadh"); }, get en() { return tFor("en", "learn.ashadh"); } },
 ];
 
 function labelFor(i: number, lang: "ne" | "en") {

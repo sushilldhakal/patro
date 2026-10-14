@@ -40,6 +40,7 @@ import { dayCycleToggleMetrics } from "@/lib/day-cycle-toggle-metrics";
 import { useBreakpoint } from "@/lib/responsive";
 import { cn } from "@vedic-patro/domain/utils";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Props = {
   location: PanchangaLocation;
@@ -72,7 +73,7 @@ function LocationResultsList({
     return (
       <View className="flex-1 items-center justify-center px-4">
         <Text className="text-sm text-center text-muted-foreground">
-          {pick("कम्तीमा २ अक्षर टाइप गर्नुहोस्", "Type at least 2 characters")}
+          {pick(tFor("ne", "location.type_min_chars"), tFor("en", "location.type_min_chars"))}
         </Text>
       </View>
     );
@@ -90,7 +91,7 @@ function LocationResultsList({
     return (
       <View className="flex-1 items-center justify-center px-4">
         <Text className="text-sm text-center text-muted-foreground">
-          {pick("कुनै सहर भेटिएन", "No city found")}
+          {pick(tFor("ne", "location.no_city_found"), tFor("en", "location.no_city_found"))}
         </Text>
       </View>
     );

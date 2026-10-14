@@ -31,12 +31,13 @@ import { type SpanWithChildren, toSpan } from "@vedic-patro/domain/kundali/dasha
 import { illustration, nativeShadow, space } from "@vedic-patro/design-tokens";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const LEVEL_LABELS: { ne: string; en: string }[] = [
-  { ne: "महादशा", en: "Maha Dasha" },
-  { ne: "अन्तर्दशा", en: "Antar Dasha" },
-  { ne: "प्रत्यन्तर्दशा", en: "Pratyantar Dasha" },
-  { ne: "सूक्ष्म दशा", en: "Sukshma Dasha" },
-  { ne: "प्राण दशा", en: "Prana Dasha" },
+  { get ne() { return tFor("ne", "kundali.maha_dasha"); }, get en() { return tFor("en", "kundali.maha_dasha"); } },
+  { get ne() { return tFor("ne", "kundali.x.dasha_level_antar"); }, get en() { return tFor("en", "kundali.x.dasha_level_antar"); } },
+  { get ne() { return tFor("ne", "kundali.x.dasha_level_pratyantar"); }, get en() { return tFor("en", "kundali.x.dasha_level_pratyantar"); } },
+  { get ne() { return tFor("ne", "kundali.x.dasha_level_sukshma"); }, get en() { return tFor("en", "kundali.x.dasha_level_sukshma"); } },
+  { get ne() { return tFor("ne", "kundali.x.dasha_level_prana"); }, get en() { return tFor("en", "kundali.x.dasha_level_prana"); } },
 ];
 
 const MAX_LEVEL = LEVEL_LABELS.length - 1;
@@ -65,11 +66,11 @@ const YOGINI_BORDER: Record<string, string> = {
 };
 
 const DURATION_COLS = [
-  { ne: "अवधि (BS)", en: "Duration (BS)" },
-  { ne: "वर्ष", en: "Years" },
-  { ne: "मास", en: "Months" },
-  { ne: "दिन", en: "Days" },
-  { ne: "योग", en: "Yoga" },
+  { get ne() { return tFor("ne", "kundali.x.duration_bs"); }, get en() { return tFor("en", "kundali.x.duration_bs"); } },
+  { get ne() { return tFor("ne", "kundali.x.duration_years"); }, get en() { return tFor("en", "kundali.x.duration_years"); } },
+  { get ne() { return tFor("ne", "kundali.x.duration_months"); }, get en() { return tFor("en", "kundali.x.duration_months"); } },
+  { get ne() { return tFor("ne", "holidays.col_days"); }, get en() { return tFor("en", "holidays.col_days"); } },
+  { get ne() { return tFor("ne", "kundali.yoga"); }, get en() { return tFor("en", "kundali.yoga"); } },
 ] as const;
 
 function lordBorderColor(lord: string, system: DashaSystem): string {
@@ -443,7 +444,7 @@ function ChainStackRow({
         {running && (
           <View className={cn(kundaliDetailClasses.dashaTree.runningBadge, "shrink-0")}>
             <Text className={kundaliDetailClasses.dashaTree.runningBadgeText}>
-              {pick("चलिरहेको", "Running")}
+              {pick(tFor("ne", "kundali.dasha_running"), tFor("en", "kundali.dasha_running"))}
             </Text>
           </View>
         )}
@@ -464,14 +465,14 @@ function ChainStackRow({
       </View>
       <View className={kundaliDetailClasses.dashaTree.detailTotals}>
         <Text className={kundaliDetailClasses.dashaTree.detailTotalText} style={nepaliTextStyle(13)}>
-          {pick("कुल", "Total")} —{" "}
+          {pick(tFor("ne", "kundali.total"), tFor("en", "kundali.total"))} —{" "}
           <Text className={kundaliDetailClasses.dashaTree.detailStrong}>
             {digits(formatDashaDuration(span.end.getTime() - span.start.getTime(), lang))}
           </Text>
         </Text>
         {running && (
           <Text className={kundaliDetailClasses.dashaTree.detailTotalText} style={nepaliTextStyle(13)}>
-            {pick("बाँकी", "Left")} —{" "}
+            {pick(tFor("ne", "kundali.left"), tFor("en", "kundali.left"))} —{" "}
             <Text className={kundaliDetailClasses.dashaTree.detailStrong}>
               {digits(formatDashaDuration(span.end.getTime() - now, lang))}
             </Text>

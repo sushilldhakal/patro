@@ -635,11 +635,9 @@ function PanchangaWheelBody({
           <button
             type="button"
             className={wheelCornerBtn}
-            title={bilingualText(
-              lang,
-              `रिलोड · जुम रिसेट · ${civil ? "मध्यरात" : "सूर्योदय"}`,
-              `Reload · reset zoom · ${civil ? "midnight" : "sunrise"}`,
-            )}
+            title={tFor(lang, "ui.panchanga.reload_reset_zoom", {
+              mode: tFor(lang, civil ? "panchanga.wheel.midnight" : "panchanga.wheel.sunrise"),
+            })}
             aria-label={tFor(lang, "ui.panchanga.reload")}
             onClick={resetToSunrise}
           >

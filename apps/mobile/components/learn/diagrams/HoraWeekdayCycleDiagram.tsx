@@ -13,8 +13,9 @@ import type { DiagramClockRef } from "@/components/learn/diagrams/diagram-clock"
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR, RASHI_RING_COLORS } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 
-const RING_NE = ["शनि", "बृहस्पति", "मंगल", "सूर्य", "शुक्र", "बुध", "चन्द्र"];
+const RING_NE = lazyList("ne", "ui.learn.x_de339e2a");
 const RING_EN = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"];
 /* Start at सूर्य (index 3), step 3 each time (24 mod 7 = 3): produces
    Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn — the week, exactly. */
@@ -114,7 +115,7 @@ export function HoraWeekdayCycleDiagram() {
   const landedIdx = WEEK[Math.round(Math.min(6, Math.max(0, step)))]!;
   const dayNames = lang === "en"
     ? ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    : ["आइतबार", "सोमबार", "मंगलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
+    : [tFor("ne", "ui.panchanga.x_296abb3f"), tFor("ne", "ui.panchanga.x_de395c78"), tFor("ne", "ui.learn.x_f99d3173"), tFor("ne", "ui.hora_data.x_d8cdfd5c"), tFor("ne", "ui.hora_data.x_d1899f97"), tFor("ne", "ui.hora_data.x_7967d87e"), tFor("ne", "ui.hora_data.x_3ceeaf93")];
 
   return (
     <LearnDiagram3D

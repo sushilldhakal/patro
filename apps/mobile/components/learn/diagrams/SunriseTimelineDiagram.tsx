@@ -11,11 +11,9 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { AngleArc, Marker } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 
-const TITHI_NE = [
-  "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी",
-  "अष्टमी", "नवमी", "दशमी",
-];
+const TITHI_NE = lazyList("ne", "ui.learn.x_24460e12");
 const TITHI_EN = [
   "Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami",
   "Ashtami", "Navami", "Dashami",

@@ -18,6 +18,7 @@ import { RashifalGocharChips } from "@/components/rashifal/RashifalGocharChips";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { patroNavataraToneBg } from "@vedic-patro/design-tokens/classes/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Props = {
   sign: RashifalSignBlock;
@@ -203,7 +204,7 @@ export function RashifalSignCard({ sign, period, taraLine }: Props) {
           {period !== "daily" && sign.best_day && sign.weak_day ? (
             <Text className={rashifalClasses.footNote}>
               {pick(
-                `उत्तम: ${sign.best_day.date_bs ?? sign.best_day.date_ad} · कमजोर: ${sign.weak_day.date_bs ?? sign.weak_day.date_ad}`,
+                tFor("ne", "ui.rashifal.x_eb406d86", { v0: sign.best_day.date_bs ?? sign.best_day.date_ad, v1: sign.weak_day.date_bs ?? sign.weak_day.date_ad }),
                 `Best: ${sign.best_day.date_ad} · Weak: ${sign.weak_day.date_ad}`,
               )}
             </Text>

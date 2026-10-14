@@ -24,6 +24,7 @@ import {
 import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { subsetsOf3 } from "@vedic-patro/domain/kundali/bhava-detail";
 import { space, spaceUnit } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function grahaName(key: string, pick: (ne: string, en: string) => string): string {
   const entry = GRAHA_NAME[key as GrahaKey];
@@ -31,7 +32,7 @@ function grahaName(key: string, pick: (ne: string, en: string) => string): strin
 }
 
 function joinNames(keys: string[], pick: (ne: string, en: string) => string): string {
-  if (keys.length === 0) return pick("कोही छैन", "None");
+  if (keys.length === 0) return pick(tFor("ne", "ui.kundali.none"), tFor("en", "ui.kundali.none"));
   return keys.map((k) => grahaName(k, pick)).join(", ");
 }
 
@@ -171,21 +172,21 @@ function GrahaKarakatvaCard({
       </Text>
 
       <ShlokaCard
-        label={pick("कारकत्व श्लोक", "Karakatva shloka")}
+        label={pick(tFor("ne", "ui.kundali.karakatva_shloka"), tFor("en", "ui.kundali.karakatva_shloka"))}
         source={pick(k.shlokaSourceNe, k.shlokaSourceEn)}
         shloka={k.shloka}
         small={small}
       />
 
       <View>
-        <Text className={kundaliDetailClasses.prose.heading}>📋 {pick("कारकत्व विषयहरू", "Karakatva subjects")}</Text>
+        <Text className={kundaliDetailClasses.prose.heading}>📋 {pick(tFor("ne", "ui.kundali.karakatva_subjects"), tFor("en", "ui.kundali.karakatva_subjects"))}</Text>
         <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
-          {pick(k.subjectsNe, k.subjectsEn)}।
+          {pick(k.subjectsNe, k.subjectsEn)}{tFor("ne", "ui.kundali.x_d617dd33")}
         </Text>
       </View>
 
       <View>
-        <Text className={kundaliDetailClasses.prose.heading}>💡 {pick("ग्रहको महत्व", "Significance")}</Text>
+        <Text className={kundaliDetailClasses.prose.heading}>💡 {pick(tFor("ne", "ui.kundali.significance"), tFor("en", "ui.kundali.significance"))}</Text>
         <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>
           {pick(k.significanceNe, k.significanceEn)}
         </Text>
@@ -195,7 +196,11 @@ function GrahaKarakatvaCard({
         <View className="flex-row items-center justify-between gap-2">
           <Text className="text-body flex-1 font-semibold text-foreground" style={small}>
             ⬡ {pick(
-              `भाव ${digits(house)}${house === 1 ? " (लग्न)" : ""} मा ${grahaName(grahaKey, pick)}को फल`,
+              tFor("ne", "ui.kundali.graha_in_house_phala", {
+                house: digits(house),
+                lagna: house === 1 ? tFor("ne", "ui.kundali.x_cf56ff65") : "",
+                graha: grahaName(grahaKey, pick),
+              }),
               `${grahaName(grahaKey, pick)} in house ${digits(house)}${house === 1 ? " (Lagna)" : ""}`,
             )}
           </Text>
@@ -230,8 +235,8 @@ function GrahaKarakatvaCard({
         ) : (
           <Text className={kundaliDetailClasses.prose.mutedMt15} style={small}>
             {pick(
-              "यो भाव-ग्रह संयोजनको लागि शास्त्रीय श्लोक अहिले उपलब्ध छैन।",
-              "No classical shloka is available for this house-graha combination yet.",
+              tFor("ne", "ui.kundali.no_classical_shloka_is_available_for"),
+              tFor("en", "ui.kundali.no_classical_shloka_is_available_for"),
             )}
           </Text>
         )}
@@ -518,7 +523,7 @@ function BhavaDetailBody({
                     देखिन्छ)। दुवैलाई एउटै लेबलमा नराखिएकाले यहाँ छुट्टै र स्पष्ट चिनो दिइएको छ। */}
                 <Text className={kundaliDetailClasses.prose.mutedMt2} style={small}>
                   {pick(
-                    `कालपुरुष कुण्डली अनुसार यो भाव ${houseDetail.signNe} राशिसँग मेल खान्छ (राशि स्वामी ${houseDetail.lordNe}) — यो यस जातकको वास्तविक राशि होइन, माथिको भावको वास्तविक राशि/स्वामी हेर्नुहोस्।`,
+                    tFor("ne", "ui.kundali.x_759ec7db", { v0: houseDetail.signNe, v1: houseDetail.lordNe }),
                     `In the Kalapurusha (natural zodiac) chart this house corresponds to ${houseDetail.signEn} (ruled by ${houseDetail.lordEn}) — that's not this native's actual sign; see the real sign/lord for this house above.`,
                   )}
                 </Text>
@@ -672,7 +677,7 @@ function BhavaDetailBody({
                     <Text key={p.key} className="text-body" style={small}>
                       <Text className={kundaliDetailClasses.prose.heading}>{grahaName(p.key, pick)}</Text>
                       {" → "}
-                      {targets.map((t) => pick(`${digits(t)}औँ`, digits(t))).join(" · ")} {t("ui.kundali.house")}
+                      {targets.map((t) => pick(tFor("ne", "ui.kundali.x_b908d7d7", { v0: digits(t) }), digits(t))).join(" · ")} {t("ui.kundali.house")}
                     </Text>
                   );
                 })}
@@ -722,7 +727,7 @@ function BhavaDetailBody({
                   {applicableSutras.map((s) => (
                     <View key={s.number} className={kundaliDetailClasses.prose.quote}>
                       <Text className={kundaliDetailClasses.prose.heading} style={small}>
-                        {pick(`सूत्र ${digits(s.number)} — ${s.titleNe}`, `Sutra ${digits(s.number)} — ${s.titleEn}`)}
+                        {pick(tFor("ne", "ui.kundali.x_b54eae14", { v0: digits(s.number), v1: s.titleNe }), `Sutra ${digits(s.number)} — ${s.titleEn}`)}
                       </Text>
                       <Text className={kundaliDetailClasses.prose.muted} style={small}>{pick(s.categoryNe, s.categoryEn)}</Text>
                       <Text className={kundaliDetailClasses.prose.bodyMt1} style={small}>{pick(s.bodyNe, s.bodyEn)}</Text>

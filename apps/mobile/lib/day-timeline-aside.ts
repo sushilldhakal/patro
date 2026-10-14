@@ -43,15 +43,15 @@ export function getChoghadiyaSegments(p: PanchangaDay): ChoghadiyaSegment[] {
 
 export function choghadiyaTone(name: string, bad?: boolean): "bad" | "good" | "neutral" {
   if (bad) return "bad";
-  if (name === "लाभ" || name === "अमृत" || name === "शुभ") return "good";
+  if (name === /* copy-ok */ "लाभ" || name === /* copy-ok */ "अमृत" || name === /* copy-ok */ "शुभ") return "good";
   return "neutral";
 }
 
-export function choghadiyaQuality(name: string, bad?: boolean): "शुभ" | "अशुभ" | "सामान्य" {
+export function choghadiyaQuality(name: string, bad?: boolean): /* copy-ok */ "शुभ" | /* copy-ok */ "अशुभ" | /* copy-ok */ "सामान्य" {
   const tone = choghadiyaTone(name, bad);
-  if (tone === "good") return "शुभ";
-  if (tone === "bad") return "अशुभ";
-  return "सामान्य";
+  if (tone === "good") return /* copy-ok */ "शुभ";
+  if (tone === "bad") return /* copy-ok */ "अशुभ";
+  return /* copy-ok */ "सामान्य";
 }
 
 export function ghatiToCivilClockLabel(g: number, sunriseMin: number): string {

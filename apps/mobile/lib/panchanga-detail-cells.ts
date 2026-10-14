@@ -12,6 +12,7 @@ import {
   getSunsetDisplay,
 } from "@vedic-patro/domain/panchanga-format";
 import { pickLocale } from "@vedic-patro/domain/locale";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export type PanchangaDetailCell = {
   label: string;
@@ -54,12 +55,12 @@ export function buildPanchangaDetailCells(
     (selectedDay ? formatMonthMoonEventDisplay(selectedDay, "moonrise", lang) : undefined);
 
   const L = labels ?? {
-    sunriseSunset: "सूर्योदय / सूर्यास्त",
-    moonrise: "चन्द्रोदय",
-    ritu: "ऋतु",
-    nakshatra: "नक्षत्र",
-    yoga: "योग",
-    karana: "करण",
+    sunriseSunset: tFor("ne", "aside.sunrise_sunset"),
+    moonrise: tFor("ne", "sections.moonrise"),
+    ritu: tFor("ne", "sections.ritu"),
+    nakshatra: tFor("ne", "nakshatra"),
+    yoga: tFor("ne", "kundali.yoga"),
+    karana: tFor("ne", "kundali.karana"),
     dash: "—",
   };
 

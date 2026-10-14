@@ -1,4 +1,5 @@
 import { brand, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type HoraPlanetKey =
   | "shani"
   | "guru"
@@ -26,13 +27,13 @@ export const HORA_PLANETS: Record<HoraPlanetKey, HoraPlanet> = {
 };
 
 export const HORA_DEVA: Record<HoraPlanetKey, string> = {
-  shani: "शनि",
-  guru: "बृहस्पति",
-  mangala: "मङ्गल",
-  ravi: "आदित्य",
-  shukra: "शुक्र",
-  budha: "बुध",
-  soma: "सोम",
+  get shani() { return tFor("ne", "kundali.graha_name_saturn"); },
+  get guru() { return tFor("ne", "kundali.graha_name_jupiter"); },
+  get mangala() { return tFor("ne", "grahas.mars"); },
+  get ravi() { return tFor("ne", "ui.hora_data.x_f8f0bc57"); },
+  get shukra() { return tFor("ne", "kundali.graha_name_venus"); },
+  get budha() { return tFor("ne", "kundali.graha_name_mercury"); },
+  get soma() { return tFor("ne", "vastu.pada.soma.name"); },
 };
 
 export const HORA_CYCLE: HoraPlanetKey[] = [
@@ -53,13 +54,13 @@ export interface HoraWeekDay {
 }
 
 export const HORA_WEEK: HoraWeekDay[] = [
-  { ruler: "ravi", day: "आइतबार", rom: "Āitabār", en: "Sunday" },
-  { ruler: "soma", day: "सोमबार", rom: "Sombār", en: "Monday" },
-  { ruler: "mangala", day: "मङ्गलबार", rom: "Maṅgalbār", en: "Tuesday" },
-  { ruler: "budha", day: "बुधबार", rom: "Budhabār", en: "Wednesday" },
-  { ruler: "guru", day: "बिहीबार", rom: "Bihībār", en: "Thursday" },
-  { ruler: "shukra", day: "शुक्रबार", rom: "Śukrabār", en: "Friday" },
-  { ruler: "shani", day: "शनिबार", rom: "Śanibār", en: "Saturday" },
+  { ruler: "ravi", get day() { return tFor("ne", "ui.panchanga.x_296abb3f"); }, rom: "Āitabār", en: "Sunday" },
+  { ruler: "soma", get day() { return tFor("ne", "ui.panchanga.x_de395c78"); }, rom: "Sombār", en: "Monday" },
+  { ruler: "mangala", get day() { return tFor("ne", "ui.hora_data.x_40728421"); }, rom: "Maṅgalbār", en: "Tuesday" },
+  { ruler: "budha", get day() { return tFor("ne", "ui.hora_data.x_d8cdfd5c"); }, rom: "Budhabār", en: "Wednesday" },
+  { ruler: "guru", get day() { return tFor("ne", "ui.hora_data.x_d1899f97"); }, rom: "Bihībār", en: "Thursday" },
+  { ruler: "shukra", get day() { return tFor("ne", "ui.hora_data.x_7967d87e"); }, rom: "Śukrabār", en: "Friday" },
+  { ruler: "shani", get day() { return tFor("ne", "ui.hora_data.x_3ceeaf93"); }, rom: "Śanibār", en: "Saturday" },
 ];
 
 export const HORA_CX = 470;

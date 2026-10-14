@@ -34,6 +34,7 @@ import {
   resolveElementDrawerIcon,
   type DrawerIconName,
 } from "@/lib/drawer-icons";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function ActionRow({
   onPress,
@@ -82,12 +83,12 @@ function RouteRow({
 }
 
 const GROUP_TITLE: Record<SitemapRoute["group"], { ne: string; en: string }> = {
-  main: { ne: "मुख्य", en: "Main" },
-  panchanga: { ne: "पञ्चाङ्ग", en: "Panchanga" },
-  jyotish: { ne: "ज्योतिष", en: "Jyotish" },
-  learn: { ne: "सिकाइ", en: "Learn" },
-  sait: { ne: "शुभ साइत", en: "Ceremony muhurta" },
-  tools: { ne: "उपकरण", en: "Tools" },
+  main: { get ne() { return tFor("ne", "ui.navigation.main"); }, get en() { return tFor("en", "ui.navigation.main"); } },
+  panchanga: { get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); }, get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); } },
+  jyotish: { get ne() { return tFor("ne", "nav.jyotish"); }, get en() { return tFor("en", "nav.jyotish"); } },
+  learn: { get ne() { return tFor("ne", "nav.learn"); }, get en() { return tFor("en", "nav.learn"); } },
+  sait: { get ne() { return tFor("ne", "ui.more.ceremony_muhurta"); }, get en() { return tFor("en", "ui.more.ceremony_muhurta"); } },
+  tools: { get ne() { return tFor("ne", "ui.more.tools"); }, get en() { return tFor("en", "ui.more.tools"); } },
 };
 
 function routesByGroup(group: SitemapRoute["group"]) {

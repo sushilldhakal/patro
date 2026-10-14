@@ -19,6 +19,7 @@ import { nepaliTextStyle } from "@/lib/nepali-text";
 import { civilIsoFromDate } from "@vedic-patro/domain/patro-day";
 import { formatPatroCivilDayLabel } from "@vedic-patro/domain/patro-headline-subtitle";
 import { useThemeColors } from "@/lib/theme-context";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Props = {
   name: string;
@@ -95,7 +96,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
               changes here. Mirrors web `rashifal.personal.lagna_line`. */}
           <Text className={rashifalClasses.nameSub} style={nepaliTextStyle()}>
             {pick(
-              `राशि ${personal.moon_sign_ne} · लग्न ${personal.lagna_sign_ne} · सूर्य ${personal.sun_sign_ne}`,
+              tFor("ne", "ui.rashifal.x_762ddce2", { v0: personal.moon_sign_ne, v1: personal.lagna_sign_ne, v2: personal.sun_sign_ne }),
               `Rashi ${personal.moon_sign_en} · Lagna ${personal.lagna_sign_en} · Sun ${personal.sun_sign_en}`,
             )}
           </Text>
@@ -122,7 +123,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
             style={nepaliTextStyle()}
           >
             {pick(
-              `${dasha.mahadasha.lord_ne} महादशा, ${dasha.antardasha.lord_ne} अन्तर्दशा चलिरहेको`,
+              tFor("ne", "ui.rashifal.x_388669f2", { v0: dasha.mahadasha.lord_ne, v1: dasha.antardasha.lord_ne }),
               `Running ${dasha.mahadasha.lord_en} Mahadasha, ${dasha.antardasha.lord_en} Antardasha`,
             )}
           </Text>
@@ -198,7 +199,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
           {lord ? (
             <Text className={rashifalClasses.lordLine} style={nepaliTextStyle()}>
               {pick(
-                `${lord.lord_ne} ${lord.house} भावमा, ${lord.sign_ne} राशिमा — ${lord.dignity_ne}`,
+                tFor("ne", "ui.rashifal.x_5a098681", { v0: lord.lord_ne, v1: lord.house, v2: lord.sign_ne, v3: lord.dignity_ne }),
                 `${lord.lord_en} in house ${lord.house}, ${lord.sign_en} — ${lord.dignity_en}`,
               )}
             </Text>
@@ -207,7 +208,7 @@ export function RashifalPersonalCard({ name, personal }: Props) {
           {dasha ? (
             <Text className={rashifalClasses.footNote} style={nepaliTextStyle()}>
               {pick(
-                `${dasha.mahadasha.lord_ne} महादशा ${formatDasha(dasha.mahadasha.end, lang, digits)}सम्म। ${dasha.antardasha.lord_ne} अन्तर्दशा ${formatDasha(dasha.antardasha.end, lang, digits)}सम्म।`,
+                tFor("ne", "ui.rashifal.x_c9d4bf4e", { v0: dasha.mahadasha.lord_ne, v1: formatDasha(dasha.mahadasha.end, lang, digits), v2: dasha.antardasha.lord_ne, v3: formatDasha(dasha.antardasha.end, lang, digits) }),
                 `${dasha.mahadasha.lord_en} Mahadasha until ${formatDasha(dasha.mahadasha.end, lang, digits)}. ${dasha.antardasha.lord_en} Antardasha until ${formatDasha(dasha.antardasha.end, lang, digits)}.`,
               )}
             </Text>

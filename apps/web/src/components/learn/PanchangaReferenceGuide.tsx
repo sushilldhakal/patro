@@ -23,6 +23,7 @@ import {
   tmCardCap,
 } from "@/lib/learn-classes";
 import { cn } from "@vedic-patro/domain/utils";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /* Catalogue keys, not text: this table is built at module level, above any hook. */
 const GRAHA_ROWS = [
@@ -241,14 +242,14 @@ export function KaranaReferenceTable() {
         <tbody>
           <tr className={learnRefHighlightRow}>
             <td className={patroMono}>{N(1)}</td>
-            <td>{bilingualText(lang, "किंस्तुघ्न", KARANA_EN["किंस्तुघ्न"] ?? "Kimstughna")}</td>
+            <td>{bilingualText(lang, tFor("ne", "ui.learn.x_91824d34"), KARANA_EN[/* copy-ok */ "किंस्तुघ्न"] ?? "Kimstughna")}</td>
             <td>{t("learn.fixed")}</td>
             <td>{t("learn.first_half_of_shukla_pratipada_once_a_year")}</td>
           </tr>
           {charRows.map((k, i) => (
             <tr key={k.ne}>
               <td className={patroMono}>{N(i + 2)}</td>
-              <td>{bilingualText(lang, k.ne, KARANA_EN[k.ne] ?? k.ne)}{k.ne === "विष्टि" ? t("learn.bhadra") : ""}</td>
+              <td>{bilingualText(lang, k.ne, KARANA_EN[k.ne] ?? k.ne)}{k.ne === /* copy-ok */ "विष्टि" ? t("learn.bhadra") : ""}</td>
               <td>{k.type}</td>
               <td>{t("learn.repeats_throughout_the_month")}</td>
             </tr>

@@ -13,11 +13,12 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const R = 0.55;
 const BODIES = [
-  { lat: 0, ne: "सूर्य", en: "Sun", color: DIAGRAM_COLOR.sun },
-  { lat: 5.1, ne: "चन्द्र", en: "Moon", color: illustration.sky84 },
-  { lat: 7.0, ne: "बुध", en: "Mercury", color: illustration.teal39 },
+  { lat: 0, get ne() { return tFor("ne", "kundali.report.meta_sun"); }, get en() { return tFor("en", "kundali.report.meta_sun"); }, color: DIAGRAM_COLOR.sun },
+  { lat: 5.1, get ne() { return tFor("ne", "kundali.graha_name_moon"); }, get en() { return tFor("en", "kundali.graha_name_moon"); }, color: illustration.sky84 },
+  { lat: 7.0, get ne() { return tFor("ne", "kundali.graha_name_mercury"); }, get en() { return tFor("en", "kundali.graha_name_mercury"); }, color: illustration.teal39 },
 ];
 type SceneProps = { onLabels?: (labels: DiagramLabel[]) => void };
 
@@ -28,7 +29,7 @@ const ZodiacBeltWidthScene = memo(function ZodiacBeltWidthScene({ onLabels }: Sc
     if (!projector.begin()) return;
     BODIES.forEach((b, i) => {
       const y = (b.lat / 9) * 0.22;
-      projector.push({ id: `b-${i}`, text: `${b.ne === "सूर्य" ? "" : "±"}${b.lat}° ${b.ne}`, color: DIAGRAM_LABEL_COLOR.body, size: 9 }, [R + 0.12, y, 0]);
+      projector.push({ id: `b-${i}`, text: `${b.ne === /* copy-ok */ "सूर्य" ? "" : "±"}${b.lat}° ${b.ne}`, color: DIAGRAM_LABEL_COLOR.body, size: 9 }, [R + 0.12, y, 0]);
     });
     projector.push({ id: "belt", text: "±9°", color: DIAGRAM_LABEL_COLOR.rashi, size: 9 }, [0, 0.26, R + 0.05]);
     projector.end();

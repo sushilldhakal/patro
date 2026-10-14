@@ -12,6 +12,7 @@ import {
 import { MoonPhaseDisc } from "./MoonPhaseDisc";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const RAD = Math.PI / 180;
 
 const ED = {
@@ -145,12 +146,12 @@ export function ElongationDiagram({
   earthPathMonths = 1,
   onE,
   compact,
-  month = "असार",
+  month = tFor("ne", "learn.ashadh"),
 }: Props) {
   const fmt = (n: number) => toNepaliDigits(n);
   const elapsedDay = lunarDay ?? (EProp / 360) * SYNODIC_MONTH;
   const E = lunarDay != null ? ((elapsedDay % SYNODIC_MONTH) / SYNODIC_MONTH) * 360 : EProp;
-  const curPaksha = (((E % 360) + 360) % 360) < 180 ? "शुक्ल" : "कृष्ण";
+  const curPaksha = (((E % 360) + 360) % 360) < 180 ? tFor("ne", "common.paksha_shukla") : tFor("ne", "common.paksha_krishna");
   const idx = tithiIndexFromElongation(E);
   const [earthX, earthY] = earthPosFromLunarDay(elapsedDay);
   const earthArc = earthOrbitDegFromLunarDay(elapsedDay);
@@ -361,7 +362,7 @@ export function ElongationDiagram({
           className={edEarthOrbitLabel}
           textAnchor="middle"
         >
-          पृथ्वी ~{fmt(Math.round(earthArcSpan))}° / {fmt(earthPathMonths)} चान्द्र मास
+          {tFor("ne", "ui.tithi_mechanics.x_1535357f")}{fmt(Math.round(earthArcSpan))}° / {fmt(earthPathMonths)}{tFor("ne", "ui.tithi_mechanics.x_5ee8838b")}
         </text>
       )}
 
@@ -372,7 +373,7 @@ export function ElongationDiagram({
 
       <path d={orbitDirPath} className={edOrbitDir} fill="none" markerEnd="url(#ed-orbit-arrow)" />
       <text x={earthX} y={earthY - ED.R - 18} className={edOrbitDirLabel} textAnchor="middle">
-        ↺ वामावर्त · चन्द्र
+        {tFor("ne", "ui.tithi_mechanics.x_6925b398")}
       </text>
 
       {!compact && degTicks}
@@ -382,20 +383,20 @@ export function ElongationDiagram({
         <text
           x={shuklaX}
           y={shuklaY}
-          className={edPakshaOn(curPaksha === "शुक्ल")}
+          className={edPakshaOn(curPaksha === /* copy-ok */ "शुक्ल")}
           textAnchor="middle"
         >
-          {month} शुक्ल पक्ष
+          {month}{tFor("ne", "ui.tithi_mechanics.x_9f3dfb72")}
         </text>
       )}
       {!compact && (
         <text
           x={krishnaX}
           y={krishnaY}
-          className={edPakshaOn(curPaksha === "कृष्ण")}
+          className={edPakshaOn(curPaksha === /* copy-ok */ "कृष्ण")}
           textAnchor="middle"
         >
-          {month} कृष्ण पक्ष
+          {month}{tFor("ne", "ui.tithi_mechanics.x_c856afad")}
         </text>
       )}
 
@@ -428,7 +429,7 @@ export function ElongationDiagram({
       ))}
       <circle cx={ED.sunX} cy={ED.sunY} r={ED.sunR} fill="url(#ed-sun)" />
       <text x={ED.sunX} y={ED.sunY + ED.sunR + 30} className={edBodyLabel} textAnchor="middle">
-        सूर्य
+        {tFor("ne", "kundali.report.meta_sun")}
       </text>
 
       <g className={hoEarthGroup} transform={`translate(${earthX - ED.earthX0} ${earthY - ED.earthY0})`}>
@@ -454,10 +455,10 @@ export function ElongationDiagram({
         />
         <circle cx={ED.earthX0 + axUx * ED.earthR} cy={ED.earthY0 + axUy * ED.earthR} r={4} className={edTiltCap} />
         <text x={ED.earthX0 + axUx * ED.earthR * 1.5 + 8} y={ED.earthY0 + axUy * ED.earthR * 1.5 - 2} textAnchor="start" className={edTiltLabel}>
-          अक्ष {fmt(EARTH_AXIAL_TILT)}°
+          {tFor("ne", "ui.tithi_mechanics.x_cb1f3f30")}{fmt(EARTH_AXIAL_TILT)}°
         </text>
         <text x={ED.earthX0} y={ED.earthY0 + ED.earthR + 22} className={edBodyLabel} textAnchor="middle">
-          पृथ्वी
+          {tFor("ne", "vastu.element.earth")}
         </text>
       </g>
 
@@ -466,16 +467,16 @@ export function ElongationDiagram({
       </g>
 
       <text x={amX - 14} y={amY - 30} className={edEndNe()} textAnchor="middle">
-        औंसी
+        {tFor("ne", "learn.aunsi")}
       </text>
       <text x={amX - 14} y={amY - 12} className={edEndEn()} textAnchor="middle">
-        ०°
+        {tFor("ne", "ui.tithi_mechanics.x_913f369e")}
       </text>
       <text x={puX + 16} y={puY - 30} className={edEndNe()} textAnchor="middle">
-        पूर्णिमा
+        {tFor("ne", "learn.purnima")}
       </text>
       <text x={puX + 16} y={puY - 12} className={edEndEn()} textAnchor="middle">
-        १८०°
+        {tFor("ne", "ui.tithi_mechanics.x_0df195b8")}
       </text>
     </svg>
   );

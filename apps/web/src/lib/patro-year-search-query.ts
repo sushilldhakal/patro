@@ -2,16 +2,16 @@ import { ERA_CODES, type Era } from "@vedic-patro/domain/era";
 import { getPatroLimits } from "@vedic-patro/domain/patro-year-axis";
 
 const DEVANAGARI_TO_ASCII: Record<string, string> = {
-  "०": "0",
-  "१": "1",
-  "२": "2",
-  "३": "3",
-  "४": "4",
-  "५": "5",
-  "६": "6",
-  "७": "7",
-  "८": "8",
-  "९": "9",
+  /* copy-ok */ "०": "0",
+  /* copy-ok */ "१": "1",
+  /* copy-ok */ "२": "2",
+  /* copy-ok */ "३": "3",
+  /* copy-ok */ "४": "4",
+  /* copy-ok */ "५": "5",
+  /* copy-ok */ "६": "6",
+  /* copy-ok */ "७": "7",
+  /* copy-ok */ "८": "8",
+  /* copy-ok */ "९": "9",
 };
 
 function asciiDigitsFromQuery(q: string): string {
@@ -41,9 +41,9 @@ export function parsePatroYearSearchQuery(
   }
   if (era === "any" || era === activeEra) {
     const hasBbs =
-      q.includes("पू. वि.सं") || q.includes("पूर्व") || q.includes("purba") || /\bbbs\b/.test(q);
+      q.includes(/* copy-ok */ "पू. वि.सं") || q.includes(/* copy-ok */ "पूर्व") || q.includes("purba") || /\bbbs\b/.test(q);
     const hasBs =
-      !hasBbs && (/\bbs\b/.test(q) || /\bvi\.?\s*san\b/.test(q) || q.includes("वि.सं"));
+      !hasBbs && (/\bbs\b/.test(q) || /\bvi\.?\s*san\b/.test(q) || q.includes(/* copy-ok */ "वि.सं"));
     const hasBc = /\bbc\b/.test(q) || q.includes("bce");
     const hasAd = /\bad\b/.test(q) || q.includes("ce");
     if (hasBbs) era = "bbs";

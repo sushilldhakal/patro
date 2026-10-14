@@ -13,25 +13,26 @@ import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { BS_MONTHS_NE } from "@vedic-patro/domain/bs-calendar";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const AYANAMSHA = 24;
 const R_OUT = 0.58;
 const R_MID = 0.46;
 
 const RITUS = [
-  { ne: "वसन्त", en: "Vasanta", color: illustration.green55 },
-  { ne: "ग्रीष्म", en: "Grishma", color: illustration.orange53b },
-  { ne: "वर्षा", en: "Varsha", color: illustration.sky54 },
-  { ne: "शरद्", en: "Sharad", color: illustration.amber45 },
-  { ne: "हेमन्त", en: "Hemanta", color: illustration.sky65 },
-  { ne: "शिशिर", en: "Shishira", color: illustration.sky74 },
+  { get ne() { return tFor("ne", "learn.study.ritu.vasanta"); }, get en() { return tFor("en", "learn.study.ritu.vasanta"); }, color: illustration.green55 },
+  { get ne() { return tFor("ne", "ui.learn.grishma"); }, get en() { return tFor("en", "ui.learn.grishma"); }, color: illustration.orange53b },
+  { get ne() { return tFor("ne", "ui.learn.varsha"); }, get en() { return tFor("en", "ui.learn.varsha"); }, color: illustration.sky54 },
+  { get ne() { return tFor("ne", "ui.learn.sharad"); }, get en() { return tFor("en", "ui.learn.sharad"); }, color: illustration.amber45 },
+  { get ne() { return tFor("ne", "learn.study.ritu.hemanta"); }, get en() { return tFor("en", "learn.study.ritu.hemanta"); }, color: illustration.sky65 },
+  { get ne() { return tFor("ne", "ui.learn.shishira"); }, get en() { return tFor("en", "ui.learn.shishira"); }, color: illustration.sky74 },
 ];
 const MONTHS_NE = BS_MONTHS_NE;
 const MONTHS_EN = ["Baisakh", "Jestha", "Asar", "Shrawan", "Bhadra", "Ashwin", "Kartik", "Mangsir", "Poush", "Magh", "Falgun", "Chaitra"];
 const MARKERS = [
-  { lambda: 90, ne: "ग्रीष्म अयनान्त", en: "Summer solstice", eq: false },
-  { lambda: 180, ne: "शरद् विषुव", en: "Autumn equinox", eq: true },
-  { lambda: 270, ne: "शीत अयनान्त", en: "Winter solstice", eq: false },
-  { lambda: 0, ne: "वसन्त विषुव", en: "Spring equinox", eq: true },
+  { lambda: 90, get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, eq: false },
+  { lambda: 180, get ne() { return tFor("ne", "learn.study.autumn_equinox"); }, get en() { return tFor("en", "learn.study.autumn_equinox"); }, eq: true },
+  { lambda: 270, get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, eq: false },
+  { lambda: 0, get ne() { return tFor("ne", "learn.study.spring_equinox"); }, get en() { return tFor("en", "learn.study.spring_equinox"); }, eq: true },
 ];
 
 /* बैशाख १ at angle 0, running clockwise (screen +x, +z). */

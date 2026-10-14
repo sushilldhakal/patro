@@ -21,6 +21,7 @@ import {
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { accountClasses } from "@vedic-patro/design-tokens/classes/account-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export const EMPTY_PROFILE: ProfileInput = {
   full_name: "",
@@ -73,7 +74,7 @@ function inputToLocation(form: ProfileInput): PanchangaLocation {
 }
 
 function pickLabel(form: ProfileInput): string {
-  return form.location_label || form.city || "जन्म स्थान";
+  return form.location_label || form.city || tFor("ne", "ui.auth.birth_place");
 }
 
 function FieldLabel({ children }: { children: string }) {

@@ -13,14 +13,15 @@ import { kundaliLabel } from "@/lib/kundali/kundali-i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const PLANET_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"] as const;
 
 const GRADE_LABEL: Record<VimshopakaGrade, { ne: string; en: string }> = {
-  full: { ne: "पूर्ण", en: "Full" },
-  mediocre: { ne: "मध्यम", en: "Mediocre" },
-  little: { ne: "अल्प", en: "Little" },
-  incapable: { ne: "असमर्थ", en: "Incapable" },
+  full: { get ne() { return tFor("ne", "kundali.x.grade_full"); }, get en() { return tFor("en", "kundali.x.grade_full"); } },
+  mediocre: { get ne() { return tFor("ne", "kundali.x.grade_mediocre"); }, get en() { return tFor("en", "kundali.x.grade_mediocre"); } },
+  little: { get ne() { return tFor("ne", "kundali.x.grade_little"); }, get en() { return tFor("en", "kundali.x.grade_little"); } },
+  incapable: { get ne() { return tFor("ne", "kundali.x.grade_incapable"); }, get en() { return tFor("en", "kundali.x.grade_incapable"); } },
 };
 
 const GRADE_RANGE: Record<VimshopakaGrade, string> = {
@@ -105,7 +106,7 @@ export function VimshopakaCard({
 
   const classColWidth = 88;
   const columns: TableColumn[] = [
-    { key: "graha", ne: "ग्रह", en: "Graha", width: 128 },
+    { key: "graha", ne: tFor("ne", "kundali.graha"), en: tFor("en", "kundali.graha"), width: 128 },
     ...classes.map((c) => ({
       key: c.key,
       ne: c.label_ne,
@@ -121,7 +122,7 @@ export function VimshopakaCard({
     })),
   ];
 
-  const introNe = `वर्गीय बल — २० अंकको मापन (${digits(data.max_score)} पूर्ण)। ग्रहले आफ्ना फल दिने क्षमता।`;
+  const introNe = tFor("ne", "ui.kundali.x_0d730df7", { v0: digits(data.max_score) });
   const introEn = `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`;
 
   return (

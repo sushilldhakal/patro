@@ -21,6 +21,7 @@ import { adToBS, bsToAD, getBSMonthLength, shiftBsMonth } from "@vedic-patro/dom
 import { nepaliTextStyle } from "@/lib/nepali-text";
 import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
 
 /** Starts at बिहान (~04:00) so the labels read left → right as named. */
@@ -180,7 +181,7 @@ export function SkyTimeSheet({
       <Pressable
         onPress={() => step(field, 1)}
         accessibilityRole="button"
-        accessibilityLabel={pick(`${label} बढाउनुहोस्`, `Increase ${label}`)}
+        accessibilityLabel={pick(tFor("ne", "ui.sky3d.increase", { v0: label }), tFor("en", "ui.sky3d.increase", { v0: label }))}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
         <Ionicons name="chevron-up" size={15} color={withAlpha(neutral.white, 0.55)} />
@@ -194,7 +195,7 @@ export function SkyTimeSheet({
       <Pressable
         onPress={() => step(field, -1)}
         accessibilityRole="button"
-        accessibilityLabel={pick(`${label} घटाउनुहोस्`, `Decrease ${label}`)}
+        accessibilityLabel={pick(tFor("ne", "ui.sky3d.decrease", { v0: label }), tFor("en", "ui.sky3d.decrease", { v0: label }))}
         className="h-6 w-full items-center justify-center active:opacity-60"
       >
         <Ionicons name="chevron-down" size={15} color={withAlpha(neutral.white, 0.55)} />
@@ -240,7 +241,7 @@ export function SkyTimeSheet({
       <Pressable
         onPress={onClose}
         accessibilityRole="button"
-        accessibilityLabel={pick("बन्द गर्नुहोस्", "Close")}
+        accessibilityLabel={pick(tFor("ne", "ui.common.close"), tFor("en", "ui.common.close"))}
         style={{ position: "absolute", inset: 0, backgroundColor: withAlpha(neutral.black, 0.4) }}
       />
       <View
@@ -251,18 +252,18 @@ export function SkyTimeSheet({
 
         <View className="flex-row items-center justify-center gap-3">
           <View className="flex-row items-center">
-            {stepper("year", pick("वर्ष", "year"), true)}
+            {stepper("year", pick(tFor("ne", "ui.sky3d.year"), tFor("en", "ui.sky3d.year")), true)}
             {sep("/")}
-            {stepper("month", pick("महिना", "month"))}
+            {stepper("month", pick(tFor("ne", "ui.sky3d.month"), tFor("en", "ui.sky3d.month")))}
             {sep("/")}
-            {stepper("day", pick("दिन", "day"))}
+            {stepper("day", pick(tFor("ne", "common.day"), tFor("en", "common.day")))}
           </View>
           <View className="flex-row items-center">
-            {stepper("hour", pick("घण्टा", "hour"))}
+            {stepper("hour", pick(tFor("ne", "ui.sky3d.hour"), tFor("en", "ui.sky3d.hour")))}
             {sep(":")}
-            {stepper("minute", pick("मिनेट", "minute"))}
+            {stepper("minute", pick(tFor("ne", "ui.sky3d.minute"), tFor("en", "ui.sky3d.minute")))}
             {sep(":")}
-            {stepper("second", pick("सेकेन्ड", "second"))}
+            {stepper("second", pick(tFor("ne", "ui.sky3d.second"), tFor("en", "ui.sky3d.second")))}
           </View>
         </View>
 
@@ -276,7 +277,7 @@ export function SkyTimeSheet({
           <Pressable
             onPress={onTogglePlay}
             accessibilityRole="button"
-            accessibilityLabel={playing ? pick("रोक्नुहोस्", "Pause") : pick("चलाउनुहोस्", "Play")}
+            accessibilityLabel={playing ? pick(tFor("ne", "panchanga.hora.pause"), tFor("en", "panchanga.hora.pause")) : pick(tFor("ne", "panchanga.hora.play"), tFor("en", "panchanga.hora.play"))}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
             <Ionicons name={playing ? "pause" : "play"} size={22} color={neutral.white} />
@@ -295,7 +296,7 @@ export function SkyTimeSheet({
           <Pressable
             onPress={onResetRate}
             accessibilityRole="button"
-            accessibilityLabel={pick("वास्तविक गति", "Realtime speed")}
+            accessibilityLabel={pick(tFor("ne", "ui.sky3d.realtime_speed"), tFor("en", "ui.sky3d.realtime_speed"))}
             className="h-10 w-10 items-center justify-center rounded-full active:opacity-60"
           >
             <Ionicons name="refresh" size={20} color={neutral.white} />
@@ -303,13 +304,13 @@ export function SkyTimeSheet({
         </View>
 
         <View className="mt-3 flex-row">
-          {navAction("play-skip-back", pick("अघिल्लो रात", "Previous night"), () =>
+          {navAction("play-skip-back", pick(tFor("ne", "ui.sky3d.previous_night"), tFor("en", "ui.sky3d.previous_night")), () =>
             onApplyMs(timeMs - 86_400_000),
           )}
-          {navAction("time-outline", pick("अहिलेको समय", "Set time to now"), () =>
+          {navAction("time-outline", pick(tFor("ne", "ui.sky3d.set_time_to_now"), tFor("en", "ui.sky3d.set_time_to_now")), () =>
             onApplyMs(Date.now()),
           )}
-          {navAction("play-skip-forward", pick("अर्को रात", "Next night"), () =>
+          {navAction("play-skip-forward", pick(tFor("ne", "ui.sky3d.next_night"), tFor("en", "ui.sky3d.next_night")), () =>
             onApplyMs(timeMs + 86_400_000),
           )}
         </View>

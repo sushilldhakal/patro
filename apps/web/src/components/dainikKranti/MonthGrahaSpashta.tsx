@@ -25,6 +25,7 @@ import {
   patroStickySubHeadCell,
   patroStickySubHeadCorner,
 } from "@/lib/patro-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const th = cn(dainikKrantiClasses.monthTh, "whitespace-nowrap");
 const td = cn(dainikKrantiClasses.monthTd, "whitespace-nowrap");
@@ -161,9 +162,9 @@ export function MonthGrahaSpashta({ rows, todayKey, loading, empty, embedded }: 
     <p className={dainikKrantiClasses.monthFootnote}>
       {bilingualNode(lang, 
         <>
-          राशिहरू: {getRashiList("ne").join(", ")}। प्रत्येक ग्रहको कोष्ठकमा{" "}
-          <span className="font-mono">राशि अंश|कला|विकला</span> — जस्तै{" "}
-          <span className="font-mono text-foreground">वृष १३|६|२९</span> = वृष राशि, १३ अंश ६ कला २९ विकला।
+          {tFor("ne", "ui.dainik_kranti.x_9f5629ff")}{getRashiList("ne").join(", ")}{tFor("ne", "ui.dainik_kranti.x_3fa0c883")}{" "}
+          <span className="font-mono">{tFor("ne", "ui.dainik_kranti.x_536ecbd5")}</span>{tFor("ne", "ui.dainik_kranti.x_e59e68b7")}{" "}
+          <span className="font-mono text-foreground">{tFor("ne", "ui.dainik_kranti.x_9846f458")}</span>{tFor("ne", "ui.dainik_kranti.x_6d4da8be")}
         </>,
         <>
           Signs: {getRashiList("en").join(", ")}. Each planet's bracket shows{" "}

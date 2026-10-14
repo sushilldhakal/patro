@@ -11,6 +11,7 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { OrbitPath } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const EPS = 23.44;
 const AYANAMSHA = 24;
@@ -26,10 +27,10 @@ const xOf = (day: number) => -W / 2 + (day / DAYS) * W;
 const yOf = (deg: number) => deg * HSCALE;
 
 const MARKERS = [
-  { lambda: 90, ne: "ग्रीष्म अयनान्त", en: "Summer solstice", eq: false },
-  { lambda: 180, ne: "शरद् विषुव", en: "Autumn equinox", eq: true },
-  { lambda: 270, ne: "शीत अयनान्त", en: "Winter solstice", eq: false },
-  { lambda: 0, ne: "वसन्त विषुव", en: "Spring equinox", eq: true },
+  { lambda: 90, get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, eq: false },
+  { lambda: 180, get ne() { return tFor("ne", "learn.study.autumn_equinox"); }, get en() { return tFor("en", "learn.study.autumn_equinox"); }, eq: true },
+  { lambda: 270, get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, eq: false },
+  { lambda: 0, get ne() { return tFor("ne", "learn.study.spring_equinox"); }, get en() { return tFor("en", "learn.study.spring_equinox"); }, eq: true },
 ];
 
 type SceneProps = { onLabels?: (labels: DiagramLabel[]) => void };

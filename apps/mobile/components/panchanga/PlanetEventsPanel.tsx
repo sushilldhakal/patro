@@ -9,6 +9,7 @@ import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useLocale } from "@/lib/i18n";
 import { patroCard } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const GRAHA_ORDER = [
   "sun",
@@ -23,19 +24,19 @@ const GRAHA_ORDER = [
 ] as const satisfies readonly GrahaKey[];
 
 const RASHI_EN_NE: Record<string, string> = {
-  Mesha: "मेष",
-  Vrishabha: "वृष",
-  Mithuna: "मिथुन",
-  Karka: "कर्कट",
-  Karkata: "कर्कट",
-  Simha: "सिंह",
-  Kanya: "कन्या",
-  Tula: "तुला",
-  Vrishchika: "वृश्चिक",
-  Dhanu: "धनु",
-  Makara: "मकर",
-  Kumbha: "कुम्भ",
-  Meena: "मीन",
+  get Mesha() { return tFor("ne", "rashis.1"); },
+  get Vrishabha() { return tFor("ne", "rashis.2"); },
+  get Mithuna() { return tFor("ne", "rashis.3"); },
+  get Karka() { return tFor("ne", "rashis.4"); },
+  get Karkata() { return tFor("ne", "rashis.4"); },
+  get Simha() { return tFor("ne", "rashis.5"); },
+  get Kanya() { return tFor("ne", "rashis.6"); },
+  get Tula() { return tFor("ne", "rashis.7"); },
+  get Vrishchika() { return tFor("ne", "rashis.8"); },
+  get Dhanu() { return tFor("ne", "rashis.9"); },
+  get Makara() { return tFor("ne", "rashis.10"); },
+  get Kumbha() { return tFor("ne", "rashis.11"); },
+  get Meena() { return tFor("ne", "rashis.12"); },
 };
 
 function rashiNe(english?: string): string {
@@ -84,7 +85,7 @@ export function PlanetEventsPanel({ dateAd, location }: Props) {
       const enName = GRAHA_NAME[key].en;
       return {
         key,
-        ne: `${g.name_ne} ${rashi}मा प्रवेश`,
+        ne: tFor("ne", "ui.panchanga.x_be9a266a", { v0: g.name_ne, v1: rashi }),
         en: `${enName} enters ${entry.to_rashi}`,
         time,
         rel,

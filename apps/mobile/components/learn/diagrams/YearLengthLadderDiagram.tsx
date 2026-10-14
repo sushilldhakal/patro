@@ -8,11 +8,12 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { useLocale } from "@/lib/i18n";
 import { memo, useEffect } from "react";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const ROWS = [
-  { ne: "जुलियन वर्ष", en: "Julian year", len: "365.2500", excess: 0.0078, color: DIAGRAM_LABEL_COLOR.warn },
-  { ne: "ग्रेगोरियन वर्ष", en: "Gregorian year", len: "365.2425", excess: 0.0003, color: DIAGRAM_COLOR.arc },
-  { ne: "साँचो (उष्णकटिबन्धीय) वर्ष", en: "True (tropical) year", len: "365.2422", excess: 0, color: DIAGRAM_LABEL_COLOR.body },
+  { get ne() { return tFor("ne", "ui.learn.julian_year"); }, get en() { return tFor("en", "ui.learn.julian_year"); }, len: "365.2500", excess: 0.0078, color: DIAGRAM_LABEL_COLOR.warn },
+  { get ne() { return tFor("ne", "ui.learn.gregorian_year"); }, get en() { return tFor("en", "ui.learn.gregorian_year"); }, len: "365.2425", excess: 0.0003, color: DIAGRAM_COLOR.arc },
+  { get ne() { return tFor("ne", "ui.learn.true_tropical_year"); }, get en() { return tFor("en", "ui.learn.true_tropical_year"); }, len: "365.2422", excess: 0, color: DIAGRAM_LABEL_COLOR.body },
 ];
 
 const BAR_SCALE = 40;

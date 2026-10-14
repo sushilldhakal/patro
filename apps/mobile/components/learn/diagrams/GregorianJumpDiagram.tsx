@@ -8,14 +8,15 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const BEFORE = [1, 2, 3, 4];
 const AFTER = [15, 16, 17, 18];
 const ADOPTERS = [
-  { ne: "इटाली · स्पेन · पोर्तुगाल", en: "Italy · Spain · Portugal", year: 1582, days: 10 },
-  { ne: "बेलायत", en: "Britain", year: 1752, days: 11 },
-  { ne: "रुस", en: "Russia", year: 1918, days: 13 },
-  { ne: "ग्रीस", en: "Greece", year: 1923, days: 13 },
+  { get ne() { return tFor("ne", "ui.learn.italy_spain_portugal"); }, get en() { return tFor("en", "ui.learn.italy_spain_portugal"); }, year: 1582, days: 10 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_britain"); }, get en() { return tFor("en", "learn.diagrams.country_britain"); }, year: 1752, days: 11 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_russia"); }, get en() { return tFor("en", "learn.diagrams.country_russia"); }, year: 1918, days: 13 },
+  { get ne() { return tFor("ne", "learn.diagrams.country_greece"); }, get en() { return tFor("en", "learn.diagrams.country_greece"); }, year: 1923, days: 13 },
 ];
 
 const TILE = 0.16;

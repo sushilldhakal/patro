@@ -174,6 +174,44 @@ export function translateList<T>(lang: Lang, key: string): T[] {
 }
 
 /**
+ * A catalogue list read when it is used, not when the module loads — for
+ * module-level tables (weekday names, labels) in files that are evaluated
+ * before the bundles are registered (the website's prerender sets them up at
+ * render time). Behaves as a read-only array.
+ */
+export function lazyList<T extends string[] = string[]>(lang: Lang, key: string): T {
+  const list = () => translateList<string>(lang, key);
+  return new Proxy([] as unknown as T, {
+    get(_target, prop) {
+      const value = Reflect.get(list(), prop);
+      return typeof value === "function" ? value.bind(list()) : value;
+    },
+    has: (_target, prop) => Reflect.has(list(), prop),
+    ownKeys: () => Reflect.ownKeys(list()),
+    getOwnPropertyDescriptor(_target, prop) {
+      const d = Reflect.getOwnPropertyDescriptor(list(), prop);
+      return d && prop !== "length" ? { ...d, configurable: true } : d;
+    },
+  });
+}
+
+/** A `[nepali, english]` pair from one catalogue key, read when it is used (see `lazyList`). */
+export function lazyPair(key: string): [string, string] {
+  return new Proxy(["", ""] as [string, string], {
+    get(target, prop) {
+      if (prop === "0") return tFor("ne", key);
+      if (prop === "1") return tFor("en", key);
+      if (prop === Symbol.iterator) return function* () { yield tFor("ne", key); yield tFor("en", key); };
+      if (prop === "map" || prop === "join" || prop === "slice" || prop === "forEach") {
+        const pair = [tFor("ne", key), tFor("en", key)];
+        return (pair[prop as "map"] as (...a: unknown[]) => unknown).bind(pair);
+      }
+      return Reflect.get(target, prop);
+    },
+  });
+}
+
+/**
  * Catalogue lookup in a language the caller names — a component told to show
  * English by its props or URL. If that language's bundle is not loaded yet it
  * is fetched (hooks re-render when it lands) and Nepali shows meanwhile.

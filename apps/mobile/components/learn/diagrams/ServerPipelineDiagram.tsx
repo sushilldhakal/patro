@@ -15,60 +15,61 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { Ray } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 type Stage = { ne: string; en: string; items: { ne: string; en: string }[]; color: string };
 
 const STAGES: Stage[] = [
   {
-    ne: "आधार",
-    en: "Foundation",
+    get ne() { return tFor("ne", "learn.study.pipeline.group_foundation"); },
+    get en() { return tFor("en", "learn.study.pipeline.group_foundation"); },
     color: DIAGRAM_COLOR.earth,
     items: [
-      { ne: "अवलोककको स्थान", en: "Observer's place" },
-      { ne: "जुलियन दिन", en: "Julian Day" },
-      { ne: "स्विस एफेमेरिस", en: "Swiss Ephemeris" },
+      { get ne() { return tFor("ne", "ui.learn.observer_s_place"); }, get en() { return tFor("en", "ui.learn.observer_s_place"); } },
+      { get ne() { return tFor("ne", "ui.learn.julian_day"); }, get en() { return tFor("en", "ui.learn.julian_day"); } },
+      { get ne() { return tFor("ne", "ui.learn.swiss_ephemeris"); }, get en() { return tFor("en", "ui.learn.swiss_ephemeris"); } },
     ],
   },
   {
-    ne: "कच्चा गणना",
-    en: "Raw output",
+    get ne() { return tFor("ne", "ui.learn.raw_output"); },
+    get en() { return tFor("en", "ui.learn.raw_output"); },
     color: DIAGRAM_COLOR.tropical,
     items: [
-      { ne: "उदय/अस्त", en: "Rise / set" },
-      { ne: "निरयन देशान्तर", en: "Sidereal longitudes" },
-      { ne: "लग्न", en: "Lagna" },
+      { get ne() { return tFor("ne", "ui.learn.rise_set"); }, get en() { return tFor("en", "ui.learn.rise_set"); } },
+      { get ne() { return tFor("ne", "learn.study.pipeline.node_longitudes"); }, get en() { return tFor("en", "learn.study.pipeline.node_longitudes"); } },
+      { get ne() { return tFor("ne", "kundali.report.meta_lagna"); }, get en() { return tFor("en", "kundali.report.meta_lagna"); } },
     ],
   },
   {
-    ne: "पञ्चाङ्गका अङ्ग",
-    en: "Panchanga limbs",
+    get ne() { return tFor("ne", "ui.learn.panchanga_limbs"); },
+    get en() { return tFor("en", "ui.learn.panchanga_limbs"); },
     color: DIAGRAM_LABEL_COLOR.warn,
     items: [
-      { ne: "तिथि, नक्षत्र, योग, करण", en: "Tithi, nakshatra, yoga, karana" },
-      { ne: "अङ्ग समाप्ति समय", en: "Limb end times" },
+      { get ne() { return tFor("ne", "ui.learn.tithi_nakshatra_yoga_karana"); }, get en() { return tFor("en", "ui.learn.tithi_nakshatra_yoga_karana"); } },
+      { get ne() { return tFor("ne", "ui.learn.limb_end_times"); }, get en() { return tFor("en", "ui.learn.limb_end_times"); } },
     ],
   },
   {
-    ne: "दैनिक पञ्चाङ्ग",
-    en: "Daily panchanga",
+    get ne() { return tFor("ne", "ui.learn.daily_panchanga"); },
+    get en() { return tFor("en", "ui.learn.daily_panchanga"); },
     color: DIAGRAM_LABEL_COLOR.rashi,
     items: [
-      { ne: "उदय-आधारित दिन", en: "Sunrise-anchored day" },
-      { ne: "नागरिक समयरेखा", en: "Civil timeline" },
-      { ne: "कुनै क्षणको झलक", en: "At-time snapshot" },
+      { get ne() { return tFor("ne", "ui.learn.sunrise_anchored_day"); }, get en() { return tFor("en", "ui.learn.sunrise_anchored_day"); } },
+      { get ne() { return tFor("ne", "learn.study.pipeline.node_civil_timeline"); }, get en() { return tFor("en", "learn.study.pipeline.node_civil_timeline"); } },
+      { get ne() { return tFor("ne", "ui.learn.at_time_snapshot"); }, get en() { return tFor("en", "ui.learn.at_time_snapshot"); } },
     ],
   },
   {
-    ne: "एपहरू",
-    en: "Apps",
+    get ne() { return tFor("ne", "ui.learn.apps"); },
+    get en() { return tFor("en", "ui.learn.apps"); },
     color: DIAGRAM_LABEL_COLOR.dim,
     items: [
-      { ne: "पात्रो", en: "Patro" },
-      { ne: "पर्व", en: "Festivals" },
-      { ne: "साइत", en: "Sait" },
-      { ne: "गोचर", en: "Gochar" },
-      { ne: "ग्रहण", en: "Eclipses" },
-      { ne: "कुण्डली", en: "Kundali" },
+      { get ne() { return tFor("ne", "brand_patro"); }, get en() { return tFor("en", "brand_patro"); } },
+      { get ne() { return tFor("ne", "ui.learn.festivals"); }, get en() { return tFor("en", "ui.learn.festivals"); } },
+      { get ne() { return tFor("ne", "panchanga.tabs.sait"); }, get en() { return tFor("en", "panchanga.tabs.sait"); } },
+      { get ne() { return tFor("ne", "ui.gochar.gochar"); }, get en() { return tFor("en", "ui.gochar.gochar"); } },
+      { get ne() { return tFor("ne", "learn.study.pipeline.node_eclipses"); }, get en() { return tFor("en", "learn.study.pipeline.node_eclipses"); } },
+      { get ne() { return tFor("ne", "nav.jyotish_kundali"); }, get en() { return tFor("en", "nav.jyotish_kundali"); } },
     ],
   },
 ];

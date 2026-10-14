@@ -132,7 +132,7 @@ function GrahaKarakatvaCard({
 
       <div>
         <p className={kundaliDetailClasses.prose.heading}>📋 {tFor(lang, "ui.kundali.karakatva_subjects")}</p>
-        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.subjectsNe, k.subjectsEn)}।</p>
+        <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, k.subjectsNe, k.subjectsEn)}{tFor("ne", "ui.kundali.x_d617dd33")}</p>
       </div>
 
       <div>
@@ -484,7 +484,7 @@ function BhavaDetailBody({
                 <p className={kundaliDetailClasses.prose.mutedMt2}>
                   {bilingualText(
                     lang,
-                    `कालपुरुष कुण्डली अनुसार यो भाव ${houseDetail.signNe} राशिसँग मेल खान्छ (राशि स्वामी ${houseDetail.lordNe}) — यो यस जातकको वास्तविक राशि होइन, माथिको भावको वास्तविक राशि/स्वामी हेर्नुहोस्।`,
+                    tFor("ne", "ui.kundali.x_759ec7db", { v0: houseDetail.signNe, v1: houseDetail.lordNe }),
                     `In the Kalapurusha (natural zodiac) chart this house corresponds to ${houseDetail.signEn} (ruled by ${houseDetail.lordEn}) — that's not this native's actual sign; see the real sign/lord for this house above.`,
                   )}
                 </p>
@@ -639,7 +639,7 @@ function BhavaDetailBody({
                     <p key={p.key} className={kundaliDetailClasses.prose.plain}>
                       <span className={kundaliDetailClasses.prose.strong}>{grahaName(p.key, lang)}</span>
                       {" → "}
-                      {targets.map((t) => bilingualText(lang, `${digits(t)}औँ`, digits(t))).join(" · ")}{" "}
+                      {targets.map((t) => bilingualText(lang, tFor("ne", "ui.kundali.x_b908d7d7", { v0: digits(t) }), digits(t))).join(" · ")}{" "}
                       {tFor(lang, "ui.kundali.house")}
                     </p>
                   );
@@ -697,7 +697,7 @@ function BhavaDetailBody({
                       {applicableSutras.map((s) => (
                         <div key={s.number} className={kundaliDetailClasses.prose.quote}>
                           <p className={kundaliDetailClasses.prose.heading}>
-                            {bilingualText(lang, `सूत्र ${digits(s.number)} — ${s.titleNe}`, `Sutra ${digits(s.number)} — ${s.titleEn}`)}
+                            {bilingualText(lang, tFor("ne", "ui.kundali.x_b54eae14", { v0: digits(s.number), v1: s.titleNe }), `Sutra ${digits(s.number)} — ${s.titleEn}`)}
                           </p>
                           <p className={kundaliDetailClasses.prose.muted}>{bilingualText(lang, s.categoryNe, s.categoryEn)}</p>
                           <p className={kundaliDetailClasses.prose.bodyMt1}>{bilingualText(lang, s.bodyNe, s.bodyEn)}</p>

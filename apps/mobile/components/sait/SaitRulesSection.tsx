@@ -10,6 +10,7 @@ import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /** A rule with its catalogue keys resolved into both languages. */
 interface ResolvedRule {
@@ -86,16 +87,16 @@ export function SaitRulesSection({
           <Text className={saitClasses.rulesSubtitle} style={nepaliTextStyle()}>
             {offCount > 0
               ? pick(
-                  `${digits(ruleCount)} मध्ये ${digits(offCount)} नियम हटाइएको`,
+                  tFor("ne", "ui.sait.x_ddd39103", { v0: digits(ruleCount), v1: digits(offCount) }),
                   `${offCount} of ${ruleCount} rules switched off`,
                 )
               : togglingEnabled
                 ? pick(
-                    `${digits(ruleCount)} शास्त्रीय नियम · आफ्नो परम्परा अनुसार अफ गर्न मिल्ने`,
+                    tFor("ne", "ui.sait.x_c4bd9ee6", { v0: digits(ruleCount) }),
                     `${ruleCount} classical rules · switch off any your tradition skips`,
                   )
                 : pick(
-                    `${digits(ruleCount)} शास्त्रीय नियम · स्रोतसहित`,
+                    tFor("ne", "ui.sait.x_881055f9", { v0: digits(ruleCount) }),
                     `${ruleCount} classical rules · with sources`,
                   )}
           </Text>

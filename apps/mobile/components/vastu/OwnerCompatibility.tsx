@@ -32,6 +32,7 @@ import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { useThemeColors } from "@/lib/theme-context";
 import { cn } from "@vedic-patro/domain/utils";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
+import { lazyList } from "@vedic-patro/i18n/runtime";
 
 const TONE_LABEL_KEY: Record<NavataraTone, string> = {
   best: "vastu.plot.tone.best",
@@ -56,20 +57,7 @@ const AD_MONTHS_EN = [
   "December",
 ];
 
-const AD_MONTHS_NE = [
-  "जनवरी",
-  "फेब्रुअरी",
-  "मार्च",
-  "अप्रिल",
-  "मे",
-  "जुन",
-  "जुलाई",
-  "अगस्ट",
-  "सेप्टेम्बर",
-  "अक्टोबर",
-  "नोभेम्बर",
-  "डिसेम्बर",
-];
+const AD_MONTHS_NE = lazyList("ne", "ui.panchanga_og_preview.x_483e5df7");
 
 /** Days in an AD month, leap years included. */
 function daysInMonth(year: number, month: number): number {

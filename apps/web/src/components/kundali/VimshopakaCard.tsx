@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const PLANET_ORDER = ["sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn"];
 
@@ -48,7 +49,7 @@ export function VimshopakaCard({ data }: { data: VimshopakaData }) {
           {t("kundali.vimshopaka_bala")}
         </h3>
         <p className={v.intro}>
-          {bilingualText(lang, `वर्गीय बल — २० अंकको मापन (${digits(data.max_score)} पूर्ण)। ग्रहले आफ्ना फल दिने क्षमता।`, `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`)}
+          {bilingualText(lang, tFor("ne", "ui.kundali.x_0d730df7", { v0: digits(data.max_score) }), `Divisional strength on a 20-point scale (${data.max_score} = full) — a planet's capacity to deliver its results.`)}
         </p>
       </div>
 

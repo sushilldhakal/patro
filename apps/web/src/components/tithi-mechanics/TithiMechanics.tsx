@@ -10,12 +10,13 @@ import { edScrub } from "@/lib/diagram-classes";
 import { AdhikMassDiagram, SunriseTimeline } from "./tithi-mechanics-diagrams";
 import { useLocale, bilingualText } from "@/i18n/locale";
 import { tmCardCap, tmCardPadLg, tmFcard, tmFormula, tmHero, tmHeroEyebrow, tmHeroSub, tmHeroTitle, tmKey, tmKeys, tmLede, tmNote, tmPageShell, tmSecEn, tmSecHead, tmSecKicker, tmSecTitle, tmSection, tmWrap, edControls, edPlayBtn, edPresets, edPreset, edReadout, edRo, edRoK, edRoV, edScrubWrap } from "@/lib/learn-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const PRESETS = [
-  { ne: "औंसी", en: "Aaushi", day: 0 },
-  { ne: "शुक्ल अष्टमी", en: "Shukla Ashtami", day: (90 / 360) * SYNODIC_MONTH },
-  { ne: "पूर्णिमा", en: "Purnima", day: (174 / 360) * SYNODIC_MONTH },
-  { ne: "कृष्ण अष्टमी", en: "Krishna Ashtami", day: (270 / 360) * SYNODIC_MONTH },
+  { get ne() { return tFor("ne", "ui.tithi_mechanics.aaushi"); }, get en() { return tFor("en", "ui.tithi_mechanics.aaushi"); }, day: 0 },
+  { get ne() { return tFor("ne", "ui.tithi_mechanics.shukla_ashtami"); }, get en() { return tFor("en", "ui.tithi_mechanics.shukla_ashtami"); }, day: (90 / 360) * SYNODIC_MONTH },
+  { get ne() { return tFor("ne", "learn.purnima"); }, get en() { return tFor("en", "learn.purnima"); }, day: (174 / 360) * SYNODIC_MONTH },
+  { get ne() { return tFor("ne", "ui.tithi_mechanics.krishna_ashtami"); }, get en() { return tFor("en", "ui.tithi_mechanics.krishna_ashtami"); }, day: (270 / 360) * SYNODIC_MONTH },
 ];
 
 /** One simulated day per second — full two-month run ~60 s. */
@@ -203,27 +204,23 @@ export function TithiMechanics() {
     <div className={cn(tmPageShell, "rounded-2xl border border-border overflow-hidden")}>
       <div className={tmWrap}>
         <header className={tmHero}>
-          <div className={tmHeroEyebrow}>पञ्चाङ्ग · तिथिको गणित</div>
+          <div className={tmHeroEyebrow}>{tFor("ne", "ui.tithi_mechanics.x_f88f5709")}</div>
           <h2 className={tmHeroTitle}>
-            तिथि कसरी बन्छ — र किन कहिले <b>दोहोरिन्छ वा हराउँछ</b>
+            {tFor("ne", "ui.tithi_mechanics.x_f4c576c6")}<b>{tFor("ne", "ui.tithi_mechanics.x_6942a040")}</b>
           </h2>
           <p className={tmHeroSub}>
-            एक तिथि भनेको चन्द्र र सूर्यबीचको <b>१२° कोणीय दूरी</b> हो। यो कोण फरक–फरक गतिमा
-            बढ्ने हुनाले कहिलेकाहीँ एउटै तिथि दुई दिन पर्छ, कहिले एउटा तिथि नै छुट्छ, अनि चान्द्र
-            र सौर मासको भिन्नताले अधिक मास जन्मन्छ।
+            {tFor("ne", "ui.tithi_mechanics.x_6ea902dd")}<b>{tFor("ne", "ui.tithi_mechanics.x_acf8fcc7")}</b>{tFor("ne", "ui.tithi_mechanics.x_88b1e63b")}
           </p>
         </header>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>०१</span>
-            <h3 className={tmSecTitle}>सूर्य · पृथ्वी · चन्द्र — तिथिको आधार</h3>
+            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_bcb9ab5e")}</span>
+            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_68b80d92")}</h3>
           </div>
           <p className={tmLede}>
-            पृथ्वीबाट हेर्दा चन्द्रमा सूर्यभन्दा जति <span className={cn("hl")}>कोणले अगाडि</span> पुग्छ,
-            त्यही कोणले तिथि निर्धारण गर्छ। <b>०°</b> मा दुवै एकै दिशामा हुन्छन् —{" "}
-            <span className={cn("hl-amber")}>औंसी</span>। कोण बढ्दै <b>१८०°</b> पुग्दा चन्द्र ठ्याक्क
-            विपरीत — <span className={cn("hl-amber")}>पूर्णिमा</span>। तल मुनको गोलो तानेर वा चलाउनुहोस्।
+            {tFor("ne", "ui.tithi_mechanics.x_2f2bb5c1")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_5d278368")}</span>{tFor("ne", "ui.tithi_mechanics.x_80aa8f40")}<b>{tFor("ne", "ui.tithi_mechanics.x_913f369e")}</b>{tFor("ne", "ui.tithi_mechanics.x_45cbe500")}{" "}
+            <span className={cn("hl-amber")}>{tFor("ne", "learn.aunsi")}</span>{tFor("ne", "ui.tithi_mechanics.x_67f222da")}<b>{tFor("ne", "ui.tithi_mechanics.x_0df195b8")}</b>{tFor("ne", "ui.tithi_mechanics.x_73a2e4c1")}<span className={cn("hl-amber")}>{tFor("ne", "learn.purnima")}</span>{tFor("ne", "ui.tithi_mechanics.x_804e4a49")}
           </p>
           <ElongationStudy animMonths={1} />
 
@@ -233,25 +230,24 @@ export function TithiMechanics() {
                 {toNepaliDigits(12)}
                 <span className={cn("u")}>°</span>
               </div>
-              <div className={cn("lbl")}>= १ तिथि</div>
-              <div className={cn("desc")}>३६०° ÷ ३० तिथि। हरेक १२° कोण पार गर्दा नयाँ तिथि सुरु हुन्छ।</div>
+              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_417c5e77")}</div>
+              <div className={cn("desc")}>{tFor("ne", "ui.tithi_mechanics.x_15793647")}</div>
             </div>
             <div className={tmFcard}>
               <div className={cn("big")}>
                 ~{toNepaliDigits(12)}
-                <span className={cn("u")}>°/दिन</span>
+                <span className={cn("u")}>{tFor("ne", "ui.tithi_mechanics.x_82929384")}</span>
               </div>
-              <div className={cn("lbl")}>चन्द्रको औसत गति</div>
+              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_eb231874")}</div>
               <div className={cn("desc")}>
-                तर वास्तवमा १०.७°–१४.३° सम्म घटबढ हुन्छ — चन्द्र कक्षको आकारका कारण।
+                {tFor("ne", "ui.tithi_mechanics.x_bddc9020")}
               </div>
             </div>
             <div className={tmFcard}>
-              <div className={cn("big")}>सूर्योदय</div>
-              <div className={cn("lbl")}>तिथि कहिले गनिन्छ?</div>
+              <div className={cn("big")}>{tFor("ne", "panchanga.wheel.sunrise")}</div>
+              <div className={cn("lbl")}>{tFor("ne", "ui.tithi_mechanics.x_984f4787")}</div>
               <div className={cn("desc")}>
-                जुन तिथि <b>सूर्योदयमा</b> चलिरहेको हुन्छ, त्यही दिनको तिथि मानिन्छ — यही नियमले
-                वृद्धि र क्षय जन्माउँछ।
+                {tFor("ne", "ui.tithi_mechanics.x_d06e2c1f")}<b>{tFor("ne", "ui.tithi_mechanics.x_e855eb08")}</b>{tFor("ne", "ui.tithi_mechanics.x_c5a15ced")}
               </div>
             </div>
           </div>
@@ -259,91 +255,78 @@ export function TithiMechanics() {
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>०२</span>
-            <h3 className={tmSecTitle}>तिथि वृद्धि — एउटै तिथि दुई दिन</h3>
+            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_9fa3c929")}</span>
+            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_6ae40563")}</h3>
             <span className={tmSecEn}>Repeated tithi</span>
           </div>
           <p className={tmLede}>
-            जब चन्द्र <span className={cn("hl")}>मन्द गतिमा</span> (~१०.७°/दिन) हिँड्छ, एउटै १२° को
-            तिथि–खण्डले <b>लगातार दुई सूर्योदय</b> समेट्छ। दुवै बिहान त्यही तिथि चलिरहेकाले
-            पात्रोमा त्यो तिथि <span className={cn("hl-amber")}>दुई दिन</span> देखिन्छ।
+            {tFor("ne", "ui.tithi_mechanics.x_85d930d7")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_ff5562b2")}</span>{tFor("ne", "ui.tithi_mechanics.x_57bf6775")}<b>{tFor("ne", "ui.tithi_mechanics.x_bae2d920")}</b>{tFor("ne", "ui.tithi_mechanics.x_f7724611")}<span className={cn("hl-amber")}>{tFor("ne", "ui.tithi_mechanics.x_2d985120")}</span>{tFor("ne", "ui.tithi_mechanics.x_416a4fb5")}
           </p>
           <div className={tmCardPadLg}>
             <SunriseTimeline mode="vriddhi" />
             <div className={tmCardCap}>
-              तृतीया खण्ड यति फराकिलो छ कि १० र ११ गते — दुवै सूर्योदय यसैभित्र परे। त्यसैले
-              तृतीया दोहोरियो।
+              {tFor("ne", "ui.tithi_mechanics.x_9776509b")}
             </div>
           </div>
         </section>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>०३</span>
-            <h3 className={tmSecTitle}>तिथि क्षय — हराएको तिथि</h3>
+            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_cfd118d4")}</span>
+            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_0a3f3885")}</h3>
             <span className={tmSecEn}>Skipped tithi</span>
           </div>
           <p className={tmLede}>
-            उल्टो, जब चन्द्र <span className={cn("hl")}>द्रुत गतिमा</span> (~१४.३°/दिन) हिँड्छ, कुनै १२° को
-            तिथि–खण्ड <b>दुई सूर्योदयको बीचमै</b> पूरै सकिन्छ। कुनै पनि सूर्योदयमा त्यो तिथि
-            नभेटिएकाले त्यो <span className={cn("hl-amber")}>क्षय</span> भई पात्रोबाट हराउँछ।
+            {tFor("ne", "ui.tithi_mechanics.x_8a8cc924")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_3e037cb2")}</span>{tFor("ne", "ui.tithi_mechanics.x_dcc53455")}<b>{tFor("ne", "ui.tithi_mechanics.x_3cca62ad")}</b>{tFor("ne", "ui.tithi_mechanics.x_82cbe54f")}<span className={cn("hl-amber")}>{tFor("ne", "ui.tithi_mechanics.x_71db6576")}</span>{tFor("ne", "ui.tithi_mechanics.x_b52ab797")}
           </p>
           <div className={tmCardPadLg}>
             <SunriseTimeline mode="kshaya" />
             <div className={tmCardCap}>
-              अष्टमी खण्ड साँघुरो भएर एक सूर्योदयदेखि अर्कोको बीचमै सकियो — कुनै बिहान अष्टमी परेन,
-              त्यसैले त्यो क्षय भयो।
+              {tFor("ne", "ui.tithi_mechanics.x_d46d2ef1")}
             </div>
           </div>
         </section>
 
         <section className={tmSection}>
           <div className={tmSecHead}>
-            <span className={tmSecKicker}>०४</span>
-            <h3 className={tmSecTitle}>अधिक मास — थपिने महिना</h3>
+            <span className={tmSecKicker}>{tFor("ne", "ui.tithi_mechanics.x_0c9dbd72")}</span>
+            <h3 className={tmSecTitle}>{tFor("ne", "ui.tithi_mechanics.x_6b282619")}</h3>
             <span className={tmSecEn}>Extra month</span>
           </div>
           <p className={tmLede}>
-            एक <b>चान्द्र मास</b> (औंसीदेखि औंसी) ~२९.५ दिनको हुन्छ; एक <b>सौर मास</b> (सूर्य
-            एक राशिमा रहने अवधि) ~३०.४ दिनको। चान्द्र मास छोटो भएकाले बेलाबेला एउटा चान्द्र
-            मासभित्र <span className={cn("hl")}>कुनै सङ्क्रान्ति पर्दैन</span> — त्यही महिना{" "}
-            <span className={cn("hl-amber")}>अधिक मास</span> कहलिन्छ र अघिल्लो महिनाको नाम दोहोरिन्छ।
+            {tFor("ne", "ui.tithi_mechanics.x_0cbb14c4")}<b>{tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}</b>{tFor("ne", "ui.tithi_mechanics.x_1a013320")}<b>{tFor("ne", "ui.tithi_mechanics.x_32ec504d")}</b>{tFor("ne", "ui.tithi_mechanics.x_d13b4791")}<span className={cn("hl")}>{tFor("ne", "ui.tithi_mechanics.x_fd0282e1")}</span>{tFor("ne", "ui.tithi_mechanics.x_2d6d0b83")}{" "}
+            <span className={cn("hl-amber")}>{tFor("ne", "learn.study.sem.caption_adhika_masa")}</span>{tFor("ne", "ui.tithi_mechanics.x_2983b24f")}
           </p>
           <div className={tmCardPadLg}>
             <AdhikMassDiagram />
             <div className={tmCardCap}>
-              यहाँ मेष सौर मासभित्रै दुई औंसी परे — बीचको चान्द्र मासमा कुनै सङ्क्रान्ति
-              नपरेकाले त्यो “अधिक वैशाख” बन्यो; त्यसपछिको नियमित महिना “निज वैशाख”।
+              {tFor("ne", "ui.tithi_mechanics.x_9e5a2850")}
             </div>
           </div>
           <div className={tmKeys}>
             <div className={tmKey}>
-              <h4>~३२.५ महिनामा एकपटक</h4>
+              <h4>{tFor("ne", "ui.tithi_mechanics.x_ea92eee6")}</h4>
               <p>
-                यसरी जोडिँदै गएको फरक झन्डै हरेक तीन वर्षमा एक अधिक मास बनाउँछ, जसले चान्द्र र सौर
-                वर्षलाई मिलाउँछ।
+                {tFor("ne", "ui.tithi_mechanics.x_ca6c88cd")}
               </p>
             </div>
             <div className={tmKey}>
-              <h4>अधिक र निज</h4>
+              <h4>{tFor("ne", "ui.tithi_mechanics.x_35718df5")}</h4>
               <p>
-                सङ्क्रान्ति बिनाको महिना “अधिक”, र त्यसपछि सङ्क्रान्ति परेको महिना “निज” (साँचो)
-                भनिन्छ — जस्तै अधिक जेठ अनि निज जेठ।
+                {tFor("ne", "ui.tithi_mechanics.x_bf0a0109")}
               </p>
             </div>
             <div className={tmKey}>
-              <h4>क्षय मास</h4>
+              <h4>{tFor("ne", "ui.tithi_mechanics.x_5e66ef8c")}</h4>
               <p>
-                विरलै, एउटै चान्द्र मासमा दुई सङ्क्रान्ति परे त्यो महिना क्षय हुन्छ — अधिक मासको
-                ठीक विपरीत।
+                {tFor("ne", "ui.tithi_mechanics.x_b471c637")}
               </p>
             </div>
           </div>
         </section>
 
         <p className={tmNote}>
-          टिप्पणी: माथिका अङ्क र गति अवधारणा बुझाउन सरलीकृत गरिएका हुन्। वास्तविक पात्रोमा
-          चन्द्र–सूर्यको खास स्थिति गणना गर्न पञ्चाङ्ग इन्जिन प्रयोग गरिन्छ।
+          {tFor("ne", "ui.tithi_mechanics.x_2c6a9775")}
         </p>
       </div>
     </div>

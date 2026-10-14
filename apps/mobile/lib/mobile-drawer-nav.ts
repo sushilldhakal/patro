@@ -3,6 +3,7 @@ import { translateKey } from "@vedic-patro/domain/locale";
 import { CEREMONY_META, ELEMENT_META } from "@vedic-patro/domain/panchanga-elements";
 import { elementHref } from "@/lib/element-routes";
 import { resolveDrawerIcon, type DrawerIconName } from "@/lib/drawer-icons";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export type DrawerNavItem = {
   id: string;
@@ -20,26 +21,26 @@ export type DrawerNavSection = {
 };
 
 const patroItems: DrawerNavItem[] = [
-  { id: "holidays", href: "/holidays", labelNe: "बिदा तथा पर्व", labelEn: "Holidays", icon: resolveDrawerIcon("patro", "holidays") },
-  { id: "converter", href: "/converter", labelNe: "रूपान्तरण", labelEn: "Converter", icon: resolveDrawerIcon("patro", "converter") },
-  { id: "suryakranti", href: "/suryakranti", labelNe: "सूर्यक्रान्ति", labelEn: "Sun times", icon: resolveDrawerIcon("patro", "suryakranti") },
-  { id: "panchak-patro", href: "/panchak-patro", labelNe: "पञ्चक पात्रो", labelEn: "Panchak", icon: resolveDrawerIcon("patro", "panchak-patro") },
-  { id: "ritu", href: "/ritu", labelNe: "ऋतु", labelEn: "Seasons", icon: resolveDrawerIcon("patro", "ritu") },
-  { id: "reminders", href: "/reminders", labelNe: "रिमाइन्डर", labelEn: "Reminders", icon: "calendar-clock" },
+  { id: "holidays", href: "/holidays", get labelNe() { return tFor("ne", "nav.holidays"); }, get labelEn() { return tFor("en", "nav.holidays"); }, icon: resolveDrawerIcon("patro", "holidays") },
+  { id: "converter", href: "/converter", get labelNe() { return tFor("ne", "nav.converter"); }, get labelEn() { return tFor("en", "nav.converter"); }, icon: resolveDrawerIcon("patro", "converter") },
+  { id: "suryakranti", href: "/suryakranti", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.sun_times"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.sun_times"); }, icon: resolveDrawerIcon("patro", "suryakranti") },
+  { id: "panchak-patro", href: "/panchak-patro", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.panchak"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.panchak"); }, icon: resolveDrawerIcon("patro", "panchak-patro") },
+  { id: "ritu", href: "/ritu", get labelNe() { return tFor("ne", "sidebar_nav.items.ritu.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.ritu.label"); }, icon: resolveDrawerIcon("patro", "ritu") },
+  { id: "reminders", href: "/reminders", get labelNe() { return tFor("ne", "ui.reminders.reminders"); }, get labelEn() { return tFor("en", "ui.reminders.reminders"); }, icon: "calendar-clock" },
 ];
 
 const jyotishItems: DrawerNavItem[] = [
-  { id: "avakahada", href: "/panchanga/avakahada-chakra", labelNe: "अवकहडा चक्र", labelEn: "Avakahada", icon: resolveDrawerIcon("jyotish", "avakahada") },
-  { id: "abhijit", href: "/abhijit-muhurta", labelNe: "अभिजित् मुहूर्त", labelEn: "Abhijit", icon: resolveDrawerIcon("jyotish", "abhijit") },
+  { id: "avakahada", href: "/panchanga/avakahada-chakra", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.avakahada"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.avakahada"); }, icon: resolveDrawerIcon("jyotish", "avakahada") },
+  { id: "abhijit", href: "/abhijit-muhurta", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.abhijit"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.abhijit"); }, icon: resolveDrawerIcon("jyotish", "abhijit") },
 ];
 
 const grahaItems: DrawerNavItem[] = [
-  { id: "aakash-gochar", href: "/aakash-gochar", labelNe: "३D आकाश गोचर", labelEn: "3D sky gochar", icon: resolveDrawerIcon("graha", "aakash-gochar") },
-  { id: "gochar", href: "/gochar", labelNe: "गोचर", labelEn: "Gochar", icon: resolveDrawerIcon("graha", "gochar") },
-  { id: "graha-asta", href: "/panchanga/graha-asta", labelNe: "ग्रह अस्त", labelEn: "Heliacal set", icon: resolveDrawerIcon("graha", "graha-asta") },
-  { id: "graha-vakri", href: "/panchanga/graha-vakri", labelNe: "ग्रह वक्री", labelEn: "Retrograde", icon: resolveDrawerIcon("graha", "graha-vakri") },
-  { id: "chandra-grahan", href: "/panchanga/chandra-grahan", labelNe: "चन्द्र ग्रहण", labelEn: "Lunar eclipse", icon: resolveDrawerIcon("graha", "chandra-grahan") },
-  { id: "surya-grahan", href: "/panchanga/surya-grahan", labelNe: "सूर्य ग्रहण", labelEn: "Solar eclipse", icon: resolveDrawerIcon("graha", "surya-grahan") },
+  { id: "aakash-gochar", href: "/aakash-gochar", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.n_3_d_sky_gochar"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.n_3_d_sky_gochar"); }, icon: resolveDrawerIcon("graha", "aakash-gochar") },
+  { id: "gochar", href: "/gochar", get labelNe() { return tFor("ne", "ui.gochar.gochar"); }, get labelEn() { return tFor("en", "ui.gochar.gochar"); }, icon: resolveDrawerIcon("graha", "gochar") },
+  { id: "graha-asta", href: "/panchanga/graha-asta", get labelNe() { return tFor("ne", "sidebar_nav.items.graha-asta.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.graha-asta.label"); }, icon: resolveDrawerIcon("graha", "graha-asta") },
+  { id: "graha-vakri", href: "/panchanga/graha-vakri", get labelNe() { return tFor("ne", "sidebar_nav.items.graha-vakri.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.graha-vakri.label"); }, icon: resolveDrawerIcon("graha", "graha-vakri") },
+  { id: "chandra-grahan", href: "/panchanga/chandra-grahan", get labelNe() { return tFor("ne", "graha_pages.eclipse_lunar.title"); }, get labelEn() { return tFor("en", "graha_pages.eclipse_lunar.title"); }, icon: resolveDrawerIcon("graha", "chandra-grahan") },
+  { id: "surya-grahan", href: "/panchanga/surya-grahan", get labelNe() { return tFor("ne", "graha_pages.eclipse_solar.title"); }, get labelEn() { return tFor("en", "graha_pages.eclipse_solar.title"); }, icon: resolveDrawerIcon("graha", "surya-grahan") },
 ];
 
 function elementItems(kind: "span" | "table"): DrawerNavItem[] {
@@ -66,26 +67,26 @@ function saitItems(): DrawerNavItem[] {
 /** Drawer sections — mirrors web `MobileNavMenu` + sidebar sections. */
 export function getMobileDrawerSections(): DrawerNavSection[] {
   return [
-    { id: "patro", titleNe: "पात्रो तथा मिति", titleEn: "Patro & dates", items: patroItems },
-    { id: "jyotish", titleNe: "ज्योतिष तथा मुहूर्त", titleEn: "Jyotish & muhurta", items: jyotishItems },
-    { id: "spans", titleNe: "संक्रमण तत्त्व", titleEn: "Transition elements", items: elementItems("span") },
-    { id: "graha", titleNe: "ग्रह विवरण", titleEn: "Planet details", items: grahaItems },
-    { id: "tables", titleNe: "दैनिक तालिका", titleEn: "Daily tables", items: elementItems("table") },
-    { id: "sait", titleNe: "शुभ मुहूर्त", titleEn: "Auspicious muhurta", items: saitItems() },
+    { id: "patro", titleNe: tFor("ne", "sidebar_nav.sections.patro.title"), titleEn: tFor("en", "sidebar_nav.sections.patro.title"), items: patroItems },
+    { id: "jyotish", titleNe: tFor("ne", "ui.mobile_drawer_nav.jyotish_muhurta"), titleEn: tFor("en", "ui.mobile_drawer_nav.jyotish_muhurta"), items: jyotishItems },
+    { id: "spans", titleNe: tFor("ne", "ui.mobile_drawer_nav.transition_elements"), titleEn: tFor("en", "ui.mobile_drawer_nav.transition_elements"), items: elementItems("span") },
+    { id: "graha", titleNe: tFor("ne", "sidebar_nav.sections.graha.title"), titleEn: tFor("en", "sidebar_nav.sections.graha.title"), items: grahaItems },
+    { id: "tables", titleNe: tFor("ne", "sidebar_nav.sections.tables.title"), titleEn: tFor("en", "sidebar_nav.sections.tables.title"), items: elementItems("table") },
+    { id: "sait", titleNe: tFor("ne", "ui.mobile_drawer_nav.auspicious_muhurta"), titleEn: tFor("en", "ui.mobile_drawer_nav.auspicious_muhurta"), items: saitItems() },
   ];
 }
 
 export const DRAWER_MAIN_LINKS: DrawerNavItem[] = [
-  { id: "home", href: "/", labelNe: "गृह", labelEn: "Home", icon: resolveDrawerIcon("main", "home") },
-  { id: "panchanga", href: "/panchanga", labelNe: "सूर्य पञ्चाङ्ग", labelEn: "Panchanga", icon: resolveDrawerIcon("main", "panchanga") },
-  { id: "kundali", href: "/kundali", labelNe: "जन्मकुण्डली निर्माण", labelEn: "Birth chart builder", icon: resolveDrawerIcon("jyotish", "kundali") },
-  { id: "dainikkranti", href: "/dainikkranti", labelNe: "दैनिक क्रान्ति", labelEn: "Daily transit", icon: resolveDrawerIcon("patro", "dainikkranti") },
-  { id: "kundali-milan", href: "/jyotish/kundali-milan", labelNe: "कुण्डली मिलान", labelEn: "Chart matching", icon: resolveDrawerIcon("jyotish", "kundali-milan") },
-  { id: "rashifal", href: "/rashifal", labelNe: "राशिफल", labelEn: "Rashifal", icon: resolveDrawerIcon("jyotish", "rashifal") },
-  { id: "panchanga-year", href: "/panchanga/year", labelNe: "वार्षिक पञ्चाङ्ग चक्र", labelEn: "Annual almanac wheel", icon: resolveDrawerIcon("patro", "panchanga-year") },
-  { id: "vastu", href: "/vastu", labelNe: "वास्तु", labelEn: "Vastu", icon: resolveDrawerIcon("main", "vastu") },
-  { id: "learn", href: "/learn", labelNe: "सिकाइ", labelEn: "Learn", icon: resolveDrawerIcon("main", "learn") },
-  { id: "documents", href: "/documents", labelNe: "ई-पाठ", labelEn: "Documents", icon: resolveDrawerIcon("main", "documents") },
-  { id: "shanti", href: "/shanti-vidhi", labelNe: "शान्ति विधि", labelEn: "Shanti vidhi", icon: resolveDrawerIcon("main", "shanti") },
-  { id: "more", href: "/more", labelNe: "थप", labelEn: "More", icon: resolveDrawerIcon("main", "more") },
+  { id: "home", href: "/", get labelNe() { return tFor("ne", "ui.mobile_bottom_nav.home"); }, get labelEn() { return tFor("en", "ui.mobile_bottom_nav.home"); }, icon: resolveDrawerIcon("main", "home") },
+  { id: "panchanga", href: "/panchanga", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.panchanga"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.panchanga"); }, icon: resolveDrawerIcon("main", "panchanga") },
+  { id: "kundali", href: "/kundali", get labelNe() { return tFor("ne", "sidebar_nav.items.kundali.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.kundali.label"); }, icon: resolveDrawerIcon("jyotish", "kundali") },
+  { id: "dainikkranti", href: "/dainikkranti", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.daily_transit"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.daily_transit"); }, icon: resolveDrawerIcon("patro", "dainikkranti") },
+  { id: "kundali-milan", href: "/jyotish/kundali-milan", get labelNe() { return tFor("ne", "sidebar_nav.items.kundali-milan.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.kundali-milan.label"); }, icon: resolveDrawerIcon("jyotish", "kundali-milan") },
+  { id: "rashifal", href: "/rashifal", get labelNe() { return tFor("ne", "nav.jyotish_rashifal"); }, get labelEn() { return tFor("en", "nav.jyotish_rashifal"); }, icon: resolveDrawerIcon("jyotish", "rashifal") },
+  { id: "panchanga-year", href: "/panchanga/year", get labelNe() { return tFor("ne", "sidebar_nav.items.panchanga-year.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.panchanga-year.label"); }, icon: resolveDrawerIcon("patro", "panchanga-year") },
+  { id: "vastu", href: "/vastu", get labelNe() { return tFor("ne", "nav.vastu"); }, get labelEn() { return tFor("en", "nav.vastu"); }, icon: resolveDrawerIcon("main", "vastu") },
+  { id: "learn", href: "/learn", get labelNe() { return tFor("ne", "nav.learn"); }, get labelEn() { return tFor("en", "nav.learn"); }, icon: resolveDrawerIcon("main", "learn") },
+  { id: "documents", href: "/documents", get labelNe() { return tFor("ne", "nav.documents"); }, get labelEn() { return tFor("en", "nav.documents"); }, icon: resolveDrawerIcon("main", "documents") },
+  { id: "shanti", href: "/shanti-vidhi", get labelNe() { return tFor("ne", "ui.kundali.shanti_vidhi"); }, get labelEn() { return tFor("en", "ui.kundali.shanti_vidhi"); }, icon: resolveDrawerIcon("main", "shanti") },
+  { id: "more", href: "/more", get labelNe() { return tFor("ne", "ui.more.more"); }, get labelEn() { return tFor("en", "ui.more.more"); }, icon: resolveDrawerIcon("main", "more") },
 ];

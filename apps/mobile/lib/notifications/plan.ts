@@ -59,7 +59,7 @@ function pickLines(day: GuidanceDay, lang: "ne" | "en", field: "do" | "dont" | "
 export function briefingBody(day: GuidanceDay, lang: "ne" | "en"): string {
   const labels =
     lang === "ne"
-      ? { do: "गर्नुहोस्", dont: "नगर्नुहोस्", careful: "सावधानी" }
+      ? { do: tFor("ne", "ui.reminders.do"), dont: tFor("ne", "ui.reminders.don_t"), careful: tFor("ne", "kundali.caution") }
       : { do: "Do", dont: "Don't", careful: "Careful" };
   const parts: string[] = [];
   for (const field of ["do", "dont", "careful"] as const) {

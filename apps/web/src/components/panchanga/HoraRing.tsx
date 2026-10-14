@@ -571,11 +571,9 @@ export function HoraRing({ p, isToday, timezone }: Props) {
                   </span>
                 </h2>
                 {bilingualNode(lang, <p className="mx-auto mt-3.5 max-w-[600px] text-sm leading-relaxed dark:text-[var(--hora-ink-dim)] [&_em]:italic [&_em]:text-foreground dark:[&_em]:text-[var(--hora-ink)] [&_span]:font-semibold [&_span]:text-foreground dark:[&_span]:text-[var(--hora-ink)]">
-                    हरेक वलय एउटै दिन हो — सात ग्रहले पालो–पालोमा शासन गर्ने चौबीस{" "}
-                    <em>होरा</em>। सूर्योदयपछिको <em>पहिलो</em> होराको ग्रहले दिनको नाम दिन्छ। गणना
-                    कहिल्यै रोकिँदैन: <span>आइतबार</span>को अन्तिम होरा <span>सोम</span>मा गुड्छ र{" "}
-                    <span>सोमबार</span> खोल्छ। केन्द्रबाट बाहिरतिर — <span>आदित्य → शनि</span> —
-                    हप्ताभरि सर्पिल अनुसरण गर्नुहोस्।
+                    {tFor("ne", "ui.panchanga.x_e273a0b5")}{" "}
+                    <em>{tFor("ne", "panchanga.hora.hora")}</em>{tFor("ne", "ui.panchanga.x_5fb306d7")}<em>{tFor("ne", "ui.panchanga.x_61c1a547")}</em>{tFor("ne", "ui.panchanga.x_acab7efc")}<span>{tFor("ne", "ui.panchanga.x_296abb3f")}</span>{tFor("ne", "ui.panchanga.x_416a0c97")}<span>{tFor("ne", "vastu.pada.soma.name")}</span>{tFor("ne", "ui.panchanga.x_c138525e")}{" "}
+                    <span>{tFor("ne", "ui.panchanga.x_de395c78")}</span>{tFor("ne", "ui.panchanga.x_f11e3a10")}<span>{tFor("ne", "ui.panchanga.x_c56a6d02")}</span>{tFor("ne", "ui.panchanga.x_fd5b5d8b")}
                   </p>,
                   <p className="mx-auto mt-3.5 max-w-[600px] text-sm leading-relaxed dark:text-[var(--hora-ink-dim)] [&_em]:italic [&_em]:text-foreground dark:[&_em]:text-[var(--hora-ink)] [&_span]:font-semibold [&_span]:text-foreground dark:[&_span]:text-[var(--hora-ink)]">
                     Each ring is one day — twenty-four <em>horas</em> ruled in turn by the seven

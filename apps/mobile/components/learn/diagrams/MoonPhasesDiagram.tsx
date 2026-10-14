@@ -14,17 +14,18 @@ import { DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const SPAN = 1.2;
 const MOON_R = 0.06;
 
 const PHASES = [
-  { ne: "औंसी", en: "Amavasya", E: 0 },
-  { ne: "शुक्ल चन्द्र", en: "Shukla Moon", E: 45 },
-  { ne: "प्रथम त्रैमासिक", en: "First Quarter", E: 90 },
-  { ne: "पूर्णिमा", en: "Purnima", E: 180 },
-  { ne: "कृष्ण चन्द्र", en: "Krishna Moon", E: 225 },
-  { ne: "अन्तिम त्रैमासिक", en: "Last Quarter", E: 270 },
-  { ne: "अर्को औंसी", en: "Next Amavasya", E: 354 },
+  { get ne() { return tFor("ne", "ui.learn.amavasya"); }, get en() { return tFor("en", "ui.learn.amavasya"); }, E: 0 },
+  { get ne() { return tFor("ne", "ui.learn.shukla_moon"); }, get en() { return tFor("en", "ui.learn.shukla_moon"); }, E: 45 },
+  { get ne() { return tFor("ne", "ui.learn.first_quarter_2"); }, get en() { return tFor("en", "ui.learn.first_quarter_2"); }, E: 90 },
+  { get ne() { return tFor("ne", "learn.purnima"); }, get en() { return tFor("en", "learn.purnima"); }, E: 180 },
+  { get ne() { return tFor("ne", "ui.learn.krishna_moon"); }, get en() { return tFor("en", "ui.learn.krishna_moon"); }, E: 225 },
+  { get ne() { return tFor("ne", "ui.learn.last_quarter_2"); }, get en() { return tFor("en", "ui.learn.last_quarter_2"); }, E: 270 },
+  { get ne() { return tFor("ne", "ui.learn.next_amavasya"); }, get en() { return tFor("en", "ui.learn.next_amavasya"); }, E: 354 },
 ] as const;
 
 const xOf = (i: number) => -SPAN / 2 + (i / (PHASES.length - 1)) * SPAN;

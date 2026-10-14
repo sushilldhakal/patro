@@ -159,8 +159,8 @@ export function DayCycleToggle({
 }) {
   const { lang } = useLocale();
   const options: Array<{ value: DayCycleMode; ne: string; en: string }> = [
-    { value: "Day-Night", ne: "अहोरात्र", en: "Day-Night" },
-    { value: "Calendar Day", ne: "दिन-रात", en: "Calendar Day" },
+    { value: "Day-Night", ne: tFor("ne", "ui.panchanga.day_night"), en: tFor("en", "ui.panchanga.day_night") },
+    { value: "Calendar Day", ne: tFor("ne", "ui.panchanga.calendar_day"), en: tFor("en", "ui.panchanga.calendar_day") },
   ];
   // Under 768px there isn't room for both; mirror the language / calendar
   // toggles — show only the *inactive* mode as a single button that switches
@@ -174,7 +174,7 @@ export function DayCycleToggle({
       <button
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
-        aria-label={bilingualText(lang, `${inactive.ne} मा बदल्नुहोस्`, `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
+        aria-label={bilingualText(lang, tFor("ne", "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
         className={cn(
           "inline-flex items-center justify-center transition-colors hover:bg-surface-hover md:hidden",
           panchangaPageClasses.dayCycle.toggleSingle,

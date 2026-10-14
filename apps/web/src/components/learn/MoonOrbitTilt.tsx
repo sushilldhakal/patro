@@ -7,6 +7,7 @@ import { toNepaliDigits } from "@vedic-patro/domain/panchanga-format";
 import { EarthGlobeImage } from "./EarthGlobeImage";
 
 import { brand, illustration, midnight, neutral } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 /**
  * 3-D perspective of the Moon's tilted orbit (~5°, drawn larger) over the flat
  * ecliptic plane. A Sun–Earth–shadow line runs through Earth's centre; the Sun
@@ -218,7 +219,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
           className={motMoon}
         />
         <text y={-MOON_R - 9} className={motMoonLabel} textAnchor="middle">
-          चन्द्र
+          {tFor("ne", "kundali.graha_name_moon")}
         </text>
       </g>
     </g>
@@ -269,11 +270,11 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         {/* legend */}
         <g>
           <line x1={34} y1={32} x2={70} y2={32} className={cn(motOrbit, "above")} />
-          <text x={78} y={37} className={motLegendLabel}>कक्ष — समतलभन्दा माथि (उज्यालो)</text>
+          <text x={78} y={37} className={motLegendLabel}>{tFor("ne", "ui.learn.x_c9de59a6")}</text>
           <line x1={34} y1={58} x2={70} y2={58} className={cn(motOrbit, "below")} />
-          <text x={78} y={63} className={motLegendLabel}>समतलभन्दा तल (छायाँमा)</text>
+          <text x={78} y={63} className={motLegendLabel}>{tFor("ne", "ui.learn.x_e1130c48")}</text>
           <circle cx={52} cy={84} r={8} className={motNode} />
-          <text x={78} y={89} className={motLegendLabel}>राहु / केतु — पात बिन्दु</text>
+          <text x={78} y={89} className={motLegendLabel}>{tFor("ne", "ui.learn.rahu_ketu_the_nodes")}</text>
         </g>
 
         {/* ── ecliptic plane: FAR half (behind Earth) ───────────────── */}
@@ -301,10 +302,10 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <path d={DISC.near} fill="url(#mot-plane-near)" className={motPlaneFace} />
         <ellipse cx={CX} cy={CY} rx={RD} ry={RD * SE} className={motPlaneRim} fill="none" />
         <text x={CX} y={CY + RD * SE + 34} className={motPlaneLabel} textAnchor="middle">
-          क्रान्तिवृत्त तल — सूर्यपथको समतल
+          {tFor("ne", "ui.learn.x_db15df7a")}
         </text>
         <text x={CX} y={CY + EARTH_R + 28} className={cn(edBodyLabel, motEarthLabel)} textAnchor="middle">
-          पृथ्वी
+          {tFor("ne", "vastu.element.earth")}
         </text>
 
         {/* orbit half ABOVE the plane — bright, on top of the plane */}
@@ -315,13 +316,13 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <line x1={tiltWedge.p0.x} y1={tiltWedge.p0.y} x2={tiltWedge.pPlane.x} y2={tiltWedge.pPlane.y} className={motTiltRef()} />
         <line x1={tiltWedge.p0.x} y1={tiltWedge.p0.y} x2={tiltWedge.pOrbit.x} y2={tiltWedge.pOrbit.y} className={motTiltRef(true)} />
         <text x={tiltWedge.p0.x + 12} y={tiltWedge.p0.y - 42} className={motTiltLabel} textAnchor="start">
-          ~{fmt(5)}° झुकाव
+          ~{fmt(5)}{tFor("ne", "ui.learn.x_05e90463")}
         </text>
 
         {/* nodes — the two points where the tilted orbit pierces the plane */}
         {[
-          { p: asc, ne: "राहु", dy: -20 },
-          { p: desc, ne: "केतु", dy: 32 },
+          { p: asc, ne: tFor("ne", "grahas.rahu"), dy: -20 },
+          { p: desc, ne: tFor("ne", "grahas.ketu"), dy: 32 },
         ].map((n) => (
           <g key={n.ne}>
             <circle cx={n.p.x} cy={n.p.y} r={11} className={motNode} />
@@ -339,7 +340,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
         <circle cx={sun.x} cy={sun.y} r={40} fill="url(#mot-sunglow)" />
         <circle cx={sun.x} cy={sun.y} r={24} fill="url(#mot-sun)" />
         <text x={sun.x} y={sun.y + 42} className={motSunLabel} textAnchor="middle">
-          सूर्य
+          {tFor("ne", "kundali.report.meta_sun")}
         </text>
 
         {/* Sun–Earth–shadow axis — crimson, drawn last so nothing occludes it */}
@@ -349,7 +350,7 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
           <line x1={sun.x} y1={sun.y} x2={shadow.x} y2={shadow.y} className={motSunLineAligned(!!season)} />
           <circle cx={shadow.x} cy={shadow.y} r={11} className={motShadowDot} />
           <text x={shadow.x} y={shadow.y - 18} className={motShadowLabel} textAnchor="middle">
-            छायाँ
+            {tFor("ne", "ui.learn.umbra")}
           </text>
         </g>
 
@@ -361,12 +362,12 @@ function MoonOrbitDiagram({ omega, moonU, sunLon, status, season }: DiagramProps
             className={motEclipseBannerType(status === "lunar" ? "lunar" : "solar")}
             textAnchor="middle"
           >
-            {status === "lunar" ? "● चन्द्रग्रहण — चन्द्र पृथ्वीको छायाँमा" : "● सूर्यग्रहण — चन्द्र सूर्य–पृथ्वी बीचमा"}
+            {status === "lunar" ? tFor("ne", "ui.learn.x_54a0d2df") : tFor("ne", "ui.learn.x_b02336b2")}
           </text>
         )}
         {!eclipsing && season && (
           <text x={CX} y={48} className={motSeasonBanner} textAnchor="middle">
-            ग्रहण ऋतु — पात रेखा सूर्यसँग मिल्यो (पूर्णिमा/औंसी कुर्नुहोस्)
+            {tFor("ne", "ui.learn.x_cd04e8e6")}
           </text>
         )}
       </g>
@@ -406,7 +407,7 @@ export function MoonOrbitTiltStudy() {
     else if (atNode && angDiff(E, 0) < 15) status = "solar";
     const season = angDiff(omega, sunLon) < 13 || angDiff(omega, sunLon + 180) < 13;
     const phase =
-      angDiff(E, 180) < 12 ? "पूर्णिमा" : angDiff(E, 0) < 12 ? "औंसी" : E < 180 ? "शुक्ल पक्ष" : "कृष्ण पक्ष";
+      angDiff(E, 180) < 12 ? tFor("ne", "learn.purnima") : angDiff(E, 0) < 12 ? tFor("ne", "learn.aunsi") : E < 180 ? tFor("ne", "learn.diagrams.paksha_shukla") : tFor("ne", "learn.diagrams.paksha_krishna");
     return { sunLon, omega, u, status, season, phase };
   }, [dayT, precT]);
 
@@ -429,12 +430,12 @@ export function MoonOrbitTiltStudy() {
 
   const statusText =
     model.status === "lunar"
-      ? "चन्द्रग्रहण"
+      ? tFor("ne", "learn.diagrams.eclipse_event_lunar")
       : model.status === "solar"
-        ? "सूर्यग्रहण"
+        ? tFor("ne", "learn.diagrams.eclipse_event_solar")
         : model.season
-          ? "ग्रहण ऋतु"
-          : "ग्रहण छैन";
+          ? tFor("ne", "ui.learn.eclipse_season")
+          : tFor("ne", "learn.study.eclipse.status_none");
 
   return (
     <div className={tmCardPadLg}>
@@ -448,32 +449,32 @@ export function MoonOrbitTiltStudy() {
       <div className={edControls}>
         <div className={edReadout}>
           <div className={edRo}>
-            <span className={edRoK}>कक्ष झुकाव</span>
+            <span className={edRoK}>{tFor("ne", "ui.learn.orbital_tilt")}</span>
             <span className={edRoV({ mono: true })}>~{fmt(REAL_TILT.toFixed(1))}°</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>चन्द्र चरण</span>
+            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.moon_phase")}</span>
             <span className={edRoV()}>{model.phase}</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>पात-चक्र</span>
-            <span className={edRoV({ mono: true })}>{fmt(precT.toFixed(1))} / {fmt(NODAL_YEARS)} वर्ष</span>
+            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.node_cycle")}</span>
+            <span className={edRoV({ mono: true })}>{fmt(precT.toFixed(1))} / {fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_66430b7c")}</span>
           </div>
           <div className={edRo}>
-            <span className={edRoK}>अवस्था</span>
+            <span className={edRoK}>{tFor("ne", "learn.study.eclipse.state")}</span>
             <span className={edRoV({ amber: model.status !== "none" })}>{statusText}</span>
           </div>
         </div>
 
         <div className={motSliderRow}>
-          <span className={motSliderLabel}>वर्ष — सूर्य रेखा घुम्छ</span>
+          <span className={motSliderLabel}>{tFor("ne", "ui.learn.x_74bf8cc5")}</span>
           <div className={edScrubWrap}>
             <button
               type="button"
               className={edPlayBtn}
               onClick={() => setPlaying((p) => !p)}
-              title={playing ? "रोक्नुहोस्" : "चलाउनुहोस्"}
-              aria-label={playing ? "रोक्नुहोस्" : "चलाउनुहोस्"}
+              title={playing ? tFor("ne", "panchanga.hora.pause") : tFor("ne", "panchanga.hora.play")}
+              aria-label={playing ? tFor("ne", "panchanga.hora.pause") : tFor("ne", "panchanga.hora.play")}
             >
               {playing ? <Pause size={16} /> : <Play size={16} />}
             </button>
@@ -494,7 +495,7 @@ export function MoonOrbitTiltStudy() {
         </div>
 
         <div className={motSliderRow}>
-          <span className={motSliderLabel}>पात-चक्र — {fmt(NODAL_YEARS)} वर्षे precession</span>
+          <span className={motSliderLabel}>{tFor("ne", "ui.learn.x_844b4d3b")}{fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_f90332cc")}</span>
           <input
             className={edScrub}
             type="range"
@@ -509,24 +510,20 @@ export function MoonOrbitTiltStudy() {
 
         <div className={edPresets}>
           <button type="button" className={edPreset()} onClick={jumpNextEclipse}>
-            अर्को ग्रहण →
+            {tFor("ne", "ui.learn.x_937693d0")}
           </button>
           <button
             type="button"
             className={edPreset()}
             onClick={() => setPrecT((p) => (p + NODAL_YEARS / 4) % NODAL_YEARS)}
           >
-            पात रेखा घुमाउनुहोस्
+            {tFor("ne", "ui.learn.x_fa553da9")}
           </button>
         </div>
       </div>
       <p className={tmCardCap}>
-        पृथ्वीको बीचबाट गएको <span className={cn("hl-amber")}>सूर्य–पृथ्वी (ग्रहण) रेखा</span> सूर्यसँगै वर्षमा
-        एक फेरो घुम्छ। चन्द्रको कक्ष <b>~{fmt(5)}°</b> झुकेकाले धेरैजसो पूर्णिमामा चन्द्र यो रेखाभन्दा
-        माथि/तल हुन्छ — ग्रहण <b>हुँदैन</b>। ग्रहण त्यतिबेला मात्र हुन्छ जब यो रेखा{" "}
-        <span className={cn("hl")}>राहु वा केतु</span> मा पुग्छ र त्यहीँ चन्द्र (पूर्णिमा/औंसी) पर्छ।
-        तल्लो स्लाइडरले पात रेखालाई <b>{fmt(NODAL_YEARS)} वर्षे</b> चक्रमा घुमाउँछ — त्यसैले ग्रहण ऋतु
-        हरेक वर्ष सर्दै जान्छ।
+        {tFor("ne", "ui.learn.x_a88a1493")}<span className={cn("hl-amber")}>{tFor("ne", "ui.learn.x_60e8fbbd")}</span>{tFor("ne", "ui.learn.x_91630415")}<b>~{fmt(5)}°</b>{tFor("ne", "ui.learn.x_b67a0a51")}<b>{tFor("ne", "ui.learn.x_09b86982")}</b>{tFor("ne", "ui.learn.x_3fe90601")}{" "}
+        <span className={cn("hl")}>{tFor("ne", "ui.learn.x_ab1d2347")}</span>{tFor("ne", "ui.learn.x_53350eeb")}<b>{fmt(NODAL_YEARS)}{tFor("ne", "ui.learn.x_fc380af1")}</b>{tFor("ne", "ui.learn.x_12331c28")}
       </p>
     </div>
   );

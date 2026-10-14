@@ -31,6 +31,7 @@ import {
   validateHolidaysSearch,
 } from "./lib/url-state";
 import { validateDocumentDetailSearch, validateDocumentsListSearch } from "./lib/documents-api";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const Panchanga = lazyRoute(() => import("./pages/Panchanga"), "Panchanga");
 const PanchangaOgPreview = lazyRoute(() => import("./pages/PanchangaOgPreview"), "PanchangaOgPreview");
@@ -159,7 +160,7 @@ const chandraKrantiLegacyRoute = createRoute({
 });
 const dainikKrantiNeLegacyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/दैनिकक्रान्ति",
+  get path() { return tFor("ne", "ui.app_routes.x_d4820713"); },
   validateSearch: validateDainikKrantiSearch,
   component: function DainikKrantiNeLegacyRedirect() {
     const search = dainikKrantiNeLegacyRoute.useSearch();
@@ -378,15 +379,15 @@ const basepath = import.meta.env.BASE_URL.replace(/\/$/, "");
 function RouteErrorFallback() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-      <p className="text-lg font-semibold text-foreground">केही गडबड भयो</p>
-      <p className="text-sm">केही गडबड भयो। पुनः लोड गर्दा प्रायः ठीक हुन्छ।</p>
+      <p className="text-lg font-semibold text-foreground">{tFor("ne", "ui.router.x_3f682f0a")}</p>
+      <p className="text-sm">{tFor("ne", "common.route_error_body")}</p>
       <p className="text-sm text-muted-foreground">Something went wrong. Reloading usually fixes this.</p>
       <button
         type="button"
         onClick={() => window.location.reload()}
         className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
       >
-        फेरि लोड गर्नुहोस् / Reload
+        {tFor("ne", "ui.router.x_367f4805")}
       </button>
     </div>
   );

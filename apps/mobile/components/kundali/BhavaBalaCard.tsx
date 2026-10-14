@@ -92,14 +92,14 @@ export function BhavaBalaCard({
     tFor(lang, "ui.kundali.house_house_2", { house: digits(house) });
 
   const columns: Column[] = [
-    { key: "house", ne: "भाव", en: "House", width: 72 },
-    { key: "lord", ne: "स्वामी", en: "Lord", width: 108 },
-    { key: "bhavadhipati", ne: "भावाधिपति", en: "Bhavadhipati", width: 88 },
-    { key: "disha", ne: "दिशा", en: "Disha", width: 64 },
-    { key: "drishti", ne: "दृष्टि", en: "Drishti", width: 64 },
-    { key: "total_pinda", ne: "कुल पिण्ड", en: "Total Pinda", width: 80 },
-    { key: "rupas", ne: "रूप", en: "Rupas", width: 64 },
-    { key: "bhava_pct", ne: "भाव (%)", en: "Bhava (%)", width: 72 },
+    { key: "house", ne: tFor("ne", "kundali.house"), en: tFor("en", "kundali.house"), width: 72 },
+    { key: "lord", ne: tFor("ne", "panchanga.wheel.lord"), en: tFor("en", "panchanga.wheel.lord"), width: 108 },
+    { key: "bhavadhipati", ne: tFor("ne", "kundali.bhavadhipati"), en: tFor("en", "kundali.bhavadhipati"), width: 88 },
+    { key: "disha", ne: tFor("ne", "kundali.disha"), en: tFor("en", "kundali.disha"), width: 64 },
+    { key: "drishti", ne: tFor("ne", "kundali.drishti"), en: tFor("en", "kundali.drishti"), width: 64 },
+    { key: "total_pinda", ne: tFor("ne", "kundali.total_pinda"), en: tFor("en", "kundali.total_pinda"), width: 80 },
+    { key: "rupas", ne: tFor("ne", "kundali.rupas"), en: tFor("en", "kundali.rupas"), width: 64 },
+    { key: "bhava_pct", ne: tFor("ne", "kundali.bhava"), en: tFor("en", "kundali.bhava"), width: 72 },
   ];
 
   const numCell = (value: string) => (

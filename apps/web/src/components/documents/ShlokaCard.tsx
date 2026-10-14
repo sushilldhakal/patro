@@ -42,7 +42,7 @@ export function ShlokaCard({ shloka, player, fullRecording }: Props) {
   const meaning = bilingualText(lang, shloka.meaning_ne, shloka.meaning_en, "");
   const accordionValue = meaningOpen ? "meaning" : "";
   const isClosing =
-    shloka.verse_label.startsWith("इति") || shloka.verse_label === "ध्यानम्";
+    shloka.verse_label.startsWith(/* copy-ok */ "इति") || shloka.verse_label === /* copy-ok */ "ध्यानम्";
   // Procedure text (Nepali टीका / सामग्री lists) rather than a mantra — e.g. the
   // Agni Sthapana Vidhi. Rendered as readable instructions, not as a verse.
   const isNote = /^(टीका|सामग्री)/.test(shloka.verse_label);

@@ -26,6 +26,7 @@ import { getRashiList } from "@vedic-patro/domain/rashi-i18n";
 import { WHEEL_TITHIS, tithiNum } from "@vedic-patro/domain/tithi-wheel-data";
 import { tmAmLegend, tmCal, tmCalCellDup, tmCalGap, tmCalGate, tmCalNo, tmCalTithi, tmDiagramSvg, tmLegAdhik } from "@/lib/learn-classes";
 import { TmLegendDot, TmNewMoon, TmSun } from "./diagram-glyphs";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 function tName(band: number) {
   return WHEEL_TITHIS[((band % 30) + 30) % 30]!;
@@ -111,10 +112,10 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
         <line x1={x} y1={trackTop - 22} x2={x} y2={trackTop + trackH + 10} className={tmSunline} />
         <TmSun x={x} y={trackTop - 34} r={10} />
         <text x={x} y={trackTop + trackH + 30} className={tmDate} textAnchor="middle">
-          {fmt(startGate + i)} गते
+          {fmt(startGate + i)}{tFor("ne", "dainik.text")}
         </text>
         <text x={x} y={trackTop + trackH + 46} className={tmDateSub} textAnchor="middle">
-          सूर्योदय
+          {tFor("ne", "panchanga.wheel.sunrise")}
         </text>
       </g>
     );
@@ -135,7 +136,7 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
         {bands}
         {marks}
         <text x={padL - 2} y={36} className={tmTlCap}>
-          चन्द्रको कोणीय यात्रा — {fmt(rate)}°/दिन ({isVri ? "मन्द" : "द्रुत"})
+          {tFor("ne", "ui.tithi_mechanics.x_0b057b2f")}{fmt(rate)}{tFor("ne", "ui.tithi_mechanics.x_6a013502")}{isVri ? tFor("ne", "ui.tithi_mechanics.x_dd1238ac") : tFor("ne", "ui.tithi_mechanics.x_d3495442")})
         </text>
         <line x1={padL} y1={52} x2={W - padR} y2={52} className={tmTravel} />
         <polygon
@@ -156,11 +157,11 @@ export function SunriseTimeline({ mode }: { mode: "vriddhi" | "kshaya" }) {
                   <span>
                     {fmt(tNo(skipBand))} {tName(skipBand).ne}
                   </span>
-                  <em>क्षय · लोप</em>
+                  <em>{tFor("ne", "ui.tithi_mechanics.x_3ff78e11")}</em>
                 </div>
               )}
               <div className={tmCalCellDup(dup)}>
-                <div className={tmCalGate}>{fmt(c.gate)} गते</div>
+                <div className={tmCalGate}>{fmt(c.gate)}{tFor("ne", "dainik.text")}</div>
                 <div className={tmCalTithi}>{tName(c.band).ne}</div>
                 <div className={tmCalNo}>
                   {tName(c.band).paksha.split(" ")[0]} {fmt(tNo(c.band))}
@@ -202,11 +203,11 @@ export function AdhikMassDiagram() {
     }
   }
 
-  const lunarName = ["वैशाख", "जेठ", "असार"];
+  const lunarName = [tFor("ne", "ui.tithi_mechanics.x_f6a94d89"), tFor("ne", "ui.tithi_mechanics.x_a6766ae7"), tFor("ne", "learn.ashadh")];
   const labelFor = (i: number) => {
-    if (i < adhik) return { ne: lunarName[i]!, tag: "निज" };
-    if (i === adhik) return { ne: "अधिक " + lunarName[i], tag: "अधिक" };
-    return { ne: lunarName[i - 1] || "असार", tag: "निज" };
+    if (i < adhik) return { ne: lunarName[i]!, tag: tFor("ne", "ui.tithi_mechanics.x_80a6b6b6") };
+    if (i === adhik) return { ne: tFor("ne", "ui.learn.adhik") + lunarName[i], tag: tFor("ne", "ui.tithi_mechanics.x_b82964bb") };
+    return { ne: lunarName[i - 1] || tFor("ne", "learn.ashadh"), tag: tFor("ne", "ui.tithi_mechanics.x_80a6b6b6") };
   };
 
   const solarSegs = [];
@@ -220,7 +221,7 @@ export function AdhikMassDiagram() {
           {rashiSym[i]}
         </text>
         <text x={(x0 + x1) / 2} y={solarY + 40} className={tmSegName()} textAnchor="middle">
-          {rashi[i]} सौर मास
+          {rashi[i]}{tFor("ne", "ui.tithi_mechanics.x_af2b54e2")}
         </text>
       </g>
     );
@@ -256,7 +257,7 @@ export function AdhikMassDiagram() {
           className={tmSegTag(isAdhik)}
           textAnchor="middle"
         >
-          {isAdhik ? "सङ्क्रान्ति रहित" : "चान्द्र मास"}
+          {isAdhik ? tFor("ne", "ui.tithi_mechanics.x_c37746af") : tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}
         </text>
       </g>
     );
@@ -281,7 +282,7 @@ export function AdhikMassDiagram() {
     callout = (
       <g>
         <text x={(cx0 + cx1) / 2} y={lunarY - 12} className={tmAdhikNote} textAnchor="middle">
-          ↓ अधिक मास
+          {tFor("ne", "ui.learn.adhik_month")}
         </text>
         <rect
           x={cx0}
@@ -299,8 +300,8 @@ export function AdhikMassDiagram() {
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} className={tmDiagramSvg}>
         <text x={padL} y={34} className={tmTrackLabel}>
-          सौर मास{" "}
-          <tspan className={tmTrackSub}>· सूर्यको राशि प्रवेश (सङ्क्रान्ति) — हरेक ~३०.४ दिन</tspan>
+          {tFor("ne", "ui.tithi_mechanics.x_32ec504d")}{" "}
+          <tspan className={tmTrackSub}>{tFor("ne", "ui.tithi_mechanics.x_6134bad2")}</tspan>
         </text>
         {solarSegs}
         {sankrMarks}
@@ -308,19 +309,19 @@ export function AdhikMassDiagram() {
         {lunarSegs}
         {amavMarks}
         <text x={padL} y={lunarY + bandH + 56} className={tmTrackLabel}>
-          चान्द्र मास{" "}
-          <tspan className={tmTrackSub}>· औंसीदेखि औंसी — हरेक ~२९.५ दिन</tspan>
+          {tFor("ne", "learn.diagrams.hierarchy_step_lunar_month")}{" "}
+          <tspan className={tmTrackSub}>{tFor("ne", "ui.tithi_mechanics.x_734e679e")}</tspan>
         </text>
       </svg>
       <div className={tmAmLegend}>
         <span>
-          <TmLegendDot kind="sun" /> सङ्क्रान्ति (सूर्य नयाँ राशिमा)
+          <TmLegendDot kind="sun" />{tFor("ne", "ui.tithi_mechanics.x_a2e095ec")}
         </span>
         <span>
-          <TmLegendDot kind="moon" /> औंसी (चान्द्र मासको आरम्भ)
+          <TmLegendDot kind="moon" />{tFor("ne", "ui.tithi_mechanics.x_11561c52")}
         </span>
         <span>
-          <i className={tmLegAdhik} /> सङ्क्रान्ति बिनाको चान्द्र मास = अधिक मास
+          <i className={tmLegAdhik} />{tFor("ne", "ui.tithi_mechanics.x_2ca8db9e")}
         </span>
       </div>
     </div>

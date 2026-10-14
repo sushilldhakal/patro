@@ -3,6 +3,7 @@ import { translateKey } from "@vedic-patro/domain/locale";
 import { ELEMENT_META, CEREMONY_META } from "@vedic-patro/domain/panchanga-elements";
 import { elementHref } from "@/lib/element-routes";
 import { normalizeMobilePathname } from "@/lib/mobile-nav";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 export type PanchangaSidebarItem = {
   id: string;
@@ -44,65 +45,65 @@ function ceremonyItems(): PanchangaSidebarItem[] {
 export const PANCHANGA_SIDEBAR_SECTIONS: PanchangaSidebarSection[] = [
   {
     id: "patro",
-    titleNe: "पात्रो तथा मिति",
-    titleEn: "Patro & dates",
+    get titleNe() { return tFor("ne", "sidebar_nav.sections.patro.title"); },
+    get titleEn() { return tFor("en", "sidebar_nav.sections.patro.title"); },
     items: [
-      { id: "holidays", href: "/holidays", labelNe: "बिदा तथा पर्व", labelEn: "Holidays" },
-      { id: "converter", href: "/converter", labelNe: "रूपान्तरण", labelEn: "Converter" },
-      { id: "suryakranti", href: "/suryakranti", labelNe: "सूर्यक्रान्ति", labelEn: "Sun times" },
-      { id: "panchanga-year", href: "/panchanga/year", labelNe: "वार्षिक पञ्चाङ्ग चक्र", labelEn: "Annual panchanga wheel" },
-      { id: "dainikkranti", href: "/dainikkranti", labelNe: "दैनिक क्रान्ति", labelEn: "Daily transits" },
-      { id: "panchak-patro", href: "/panchak-patro", labelNe: "पञ्चक पात्रो", labelEn: "Panchak calendar" },
-      { id: "ritu", href: "/ritu", labelNe: "ऋतु", labelEn: "Seasons" },
-      { id: "reminders", href: "/reminders", labelNe: "रिमाइन्डर", labelEn: "Reminders" },
+      { id: "holidays", href: "/holidays", get labelNe() { return tFor("ne", "nav.holidays"); }, get labelEn() { return tFor("en", "nav.holidays"); } },
+      { id: "converter", href: "/converter", get labelNe() { return tFor("ne", "nav.converter"); }, get labelEn() { return tFor("en", "nav.converter"); } },
+      { id: "suryakranti", href: "/suryakranti", get labelNe() { return tFor("ne", "ui.mobile_drawer_nav.sun_times"); }, get labelEn() { return tFor("en", "ui.mobile_drawer_nav.sun_times"); } },
+      { id: "panchanga-year", href: "/panchanga/year", get labelNe() { return tFor("ne", "ui.panchanga.annual_panchanga_wheel"); }, get labelEn() { return tFor("en", "ui.panchanga.annual_panchanga_wheel"); } },
+      { id: "dainikkranti", href: "/dainikkranti", get labelNe() { return tFor("ne", "sidebar_nav.items.dainikkranti.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.dainikkranti.label"); } },
+      { id: "panchak-patro", href: "/panchak-patro", get labelNe() { return tFor("ne", "sidebar_nav.items.panchak-patro.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.panchak-patro.label"); } },
+      { id: "ritu", href: "/ritu", get labelNe() { return tFor("ne", "sidebar_nav.items.ritu.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.ritu.label"); } },
+      { id: "reminders", href: "/reminders", get labelNe() { return tFor("ne", "ui.reminders.reminders"); }, get labelEn() { return tFor("en", "ui.reminders.reminders"); } },
     ],
   },
   {
     id: "jyotish",
-    titleNe: "ज्योतिष तथा मुहूर्त",
-    titleEn: "Jyotish & muhurta",
+    get titleNe() { return tFor("ne", "ui.mobile_drawer_nav.jyotish_muhurta"); },
+    get titleEn() { return tFor("en", "ui.mobile_drawer_nav.jyotish_muhurta"); },
     items: [
-      { id: "avakahada", href: "/panchanga/avakahada-chakra", labelNe: "अवकहडा चक्र", labelEn: "Avakahada chakra" },
-      { id: "abhijit", href: "/abhijit-muhurta", labelNe: "अभिजित् मुहूर्त", labelEn: "Abhijit muhurta" },
-      { id: "kundali", href: "/kundali", labelNe: "जन्मकुण्डली निर्माण", labelEn: "Birth chart builder" },
-      { id: "kundali-milan", href: "/jyotish/kundali-milan", labelNe: "कुण्डली मिलान", labelEn: "Chart matching" },
+      { id: "avakahada", href: "/panchanga/avakahada-chakra", get labelNe() { return tFor("ne", "sidebar_nav.items.avakahada.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.avakahada.label"); } },
+      { id: "abhijit", href: "/abhijit-muhurta", get labelNe() { return tFor("ne", "ui.panchanga.abhijit_muhurta"); }, get labelEn() { return tFor("en", "ui.panchanga.abhijit_muhurta"); } },
+      { id: "kundali", href: "/kundali", get labelNe() { return tFor("ne", "sidebar_nav.items.kundali.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.kundali.label"); } },
+      { id: "kundali-milan", href: "/jyotish/kundali-milan", get labelNe() { return tFor("ne", "sidebar_nav.items.kundali-milan.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.kundali-milan.label"); } },
     ],
   },
   {
     id: "spans",
-    titleNe: "संक्रमण तत्त्व",
-    titleEn: "Transition elements",
+    get titleNe() { return tFor("ne", "ui.mobile_drawer_nav.transition_elements"); },
+    get titleEn() { return tFor("en", "ui.mobile_drawer_nav.transition_elements"); },
     items: elementItems("span"),
   },
   {
     id: "graha",
-    titleNe: "ग्रह विवरण",
-    titleEn: "Planet details",
+    get titleNe() { return tFor("ne", "sidebar_nav.sections.graha.title"); },
+    get titleEn() { return tFor("en", "sidebar_nav.sections.graha.title"); },
     items: [
       {
         id: "gochar",
         href: "/gochar",
-        labelNe: "गोचर",
-        labelEn: "Gochar",
-        blurbNe: "ग्रह गोचर र प्रवेश",
-        blurbEn: "Transits & ingress",
+        get labelNe() { return tFor("ne", "ui.gochar.gochar"); },
+        get labelEn() { return tFor("en", "ui.gochar.gochar"); },
+        get blurbNe() { return tFor("ne", "ui.panchanga.transits_ingress"); },
+        get blurbEn() { return tFor("en", "ui.panchanga.transits_ingress"); },
       },
-      { id: "graha-asta", href: "/panchanga/graha-asta", labelNe: "ग्रह अस्त", labelEn: "Heliacal set" },
-      { id: "graha-vakri", href: "/panchanga/graha-vakri", labelNe: "ग्रह वक्री", labelEn: "Retrograde" },
-      { id: "chandra-grahan", href: "/panchanga/chandra-grahan", labelNe: "चन्द्र ग्रहण", labelEn: "Lunar eclipse" },
-      { id: "surya-grahan", href: "/panchanga/surya-grahan", labelNe: "सूर्य ग्रहण", labelEn: "Solar eclipse" },
+      { id: "graha-asta", href: "/panchanga/graha-asta", get labelNe() { return tFor("ne", "sidebar_nav.items.graha-asta.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.graha-asta.label"); } },
+      { id: "graha-vakri", href: "/panchanga/graha-vakri", get labelNe() { return tFor("ne", "sidebar_nav.items.graha-vakri.label"); }, get labelEn() { return tFor("en", "sidebar_nav.items.graha-vakri.label"); } },
+      { id: "chandra-grahan", href: "/panchanga/chandra-grahan", get labelNe() { return tFor("ne", "graha_pages.eclipse_lunar.title"); }, get labelEn() { return tFor("en", "graha_pages.eclipse_lunar.title"); } },
+      { id: "surya-grahan", href: "/panchanga/surya-grahan", get labelNe() { return tFor("ne", "graha_pages.eclipse_solar.title"); }, get labelEn() { return tFor("en", "graha_pages.eclipse_solar.title"); } },
     ],
   },
   {
     id: "tables",
-    titleNe: "दैनिक तालिका",
-    titleEn: "Daily tables",
+    get titleNe() { return tFor("ne", "sidebar_nav.sections.tables.title"); },
+    get titleEn() { return tFor("en", "sidebar_nav.sections.tables.title"); },
     items: elementItems("table"),
   },
   {
     id: "sait",
-    titleNe: "शुभ मुहूर्त",
-    titleEn: "Auspicious muhurta",
+    get titleNe() { return tFor("ne", "ui.mobile_drawer_nav.auspicious_muhurta"); },
+    get titleEn() { return tFor("en", "ui.mobile_drawer_nav.auspicious_muhurta"); },
     items: ceremonyItems(),
   },
 ];

@@ -18,7 +18,7 @@ import {
 import { setCachedCalendarEraPreference } from "@/lib/patro-era-preference";
 
 import { neutral } from "@vedic-patro/design-tokens";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
 function OptionCard({
   selected,
   onPress,
@@ -76,23 +76,23 @@ const TOUR_STEPS: {
 }[] = [
   {
     icon: "calendar-outline",
-    ne: ["आजको पञ्चाङ्ग", "बि.सं. र ई.सं. मिति, तिथि, नक्षत्र, योग, करण र सूर्योदय–सूर्यास्त एकै ठाउँमा।"],
-    en: ["Daily panchanga", "BS and AD dates, tithi, nakshatra, yoga, karana and sunrise–sunset in one place."],
+    ne: lazyList("ne", "ui.onboarding.daily_panchanga_bs_and_ad_dates"),
+    en: lazyList("en", "ui.onboarding.daily_panchanga_bs_and_ad_dates"),
   },
   {
     icon: "gift-outline",
-    ne: ["चाडपर्व र बिदा", "महिना ग्रिडमा चाडपर्व र सार्वजनिक बिदा हेर्नुहोस्।"],
-    en: ["Festivals & holidays", "Browse festivals and public holidays on the month grid."],
+    ne: lazyList("ne", "ui.onboarding.festivals_holidays_browse_festivals_and_public"),
+    en: lazyList("en", "ui.onboarding.festivals_holidays_browse_festivals_and_public"),
   },
   {
     icon: "planet-outline",
-    ne: ["ग्रह स्थिति र आकाश", "ग्रहहरूको स्थिति र ३D आकाश दृश्य हेर्नुहोस्।"],
-    en: ["Planets & sky view", "See planetary positions and explore the 3D sky."],
+    ne: lazyList("ne", "ui.onboarding.planets_sky_view_see_planetary_positions"),
+    en: lazyList("en", "ui.onboarding.planets_sky_view_see_planetary_positions"),
   },
   {
     icon: "menu-outline",
-    ne: ["थप मेनु", "कुण्डली, साइत, राशिफल, रूपान्तरण र सेटिङ तलको 'थप' बाट पुग्न सकिन्छ।"],
-    en: ["The More tab", "Kundali, sait, rashifal, converter and settings live under 'More' at the bottom."],
+    ne: lazyList("ne", "ui.onboarding.the_more_tab_kundali_sait_rashifal"),
+    en: lazyList("en", "ui.onboarding.the_more_tab_kundali_sait_rashifal"),
   },
 ];
 
@@ -198,41 +198,41 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       style={{ backgroundColor: colors.background }}
       contentContainerClassName="p-6 pb-10 pt-16"
     >
-      <Text className="text-display font-bold text-foreground">वैदिक पात्रोमा स्वागत छ</Text>
+      <Text className="text-display font-bold text-foreground">{tFor("ne", "ui.onboarding.x_0822b526")}</Text>
       <Text className="text-body mt-1 text-foreground">Welcome to Vedic Patro</Text>
       <Text className="text-body mt-2 text-muted-foreground">
-        सुरु गर्नु अघि केही रोजाइहरू मिलाऔं। पछि सेटिङबाट यी सबै परिवर्तन गर्न सकिन्छ।
+        {tFor("ne", "ui.onboarding.x_f8221375")}
       </Text>
       <Text className="text-body mt-1 text-muted-foreground">
         Let's set a few preferences before you start — you can change all of these later in
         Settings.
       </Text>
 
-      <Section label="थिम · Theme">
+      <Section label={tFor("ne", "ui.onboarding.x_d90a78d6")}>
         <OptionCard
           icon="phone-portrait-outline"
-          title="सिस्टम · System"
+          title={tFor("ne", "ui.onboarding.x_db713fc4")}
           selected={theme === "system"}
           onPress={() => chooseTheme("system")}
         />
         <OptionCard
           icon="sunny-outline"
-          title="उज्यालो · Light"
+          title={tFor("ne", "ui.onboarding.x_41f208d0")}
           selected={theme === "light"}
           onPress={() => chooseTheme("light")}
         />
         <OptionCard
           icon="moon-outline"
-          title="अँध्यारो · Dark"
+          title={tFor("ne", "ui.onboarding.x_90d38a50")}
           selected={theme === "dark"}
           onPress={() => chooseTheme("dark")}
         />
       </Section>
 
-      <Section label="भाषा · Language">
+      <Section label={tFor("ne", "ui.onboarding.x_b87583dc")}>
         <OptionCard
           icon="language-outline"
-          title="नेपाली"
+          title={tFor("ne", "switch_to_nepali")}
           selected={language === "ne"}
           onPress={() => setLanguage("ne")}
         />
@@ -244,35 +244,35 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
         />
       </Section>
 
-      <Section label="पात्रो · Calendar">
+      <Section label={tFor("ne", "ui.onboarding.x_360302e9")}>
         <OptionCard
           icon="calendar-outline"
-          title="वि.सं. · BS"
+          title={tFor("ne", "ui.onboarding.x_a2762b40")}
           subtitle="Bikram Sambat"
           selected={era === "bs"}
           onPress={() => setEra("bs")}
         />
         <OptionCard
           icon="calendar-outline"
-          title="ई.सं. · AD"
+          title={tFor("ne", "ui.onboarding.x_514b3c9d")}
           subtitle="Gregorian"
           selected={era === "ad"}
           onPress={() => setEra("ad")}
         />
       </Section>
 
-      <Section label="डाटा · Data">
+      <Section label={tFor("ne", "ui.onboarding.x_856487a7")}>
         <OptionCard
           icon="download-outline"
-          title="अफलाइन · Offline"
-          subtitle="डाउनलोड गर्नुहोस् · Download data"
+          title={tFor("ne", "ui.onboarding.x_3cf0da1c")}
+          subtitle={tFor("ne", "ui.onboarding.x_444fe4eb")}
           selected={dataMode === "offline"}
           onPress={() => setDataMode("offline")}
         />
         <OptionCard
           icon="cloud-outline"
-          title="अनलाइन · Online"
-          subtitle="डाउनलोड नगर्नुहोस् · Don't download"
+          title={tFor("ne", "ui.onboarding.x_5ac38b38")}
+          subtitle={tFor("ne", "ui.onboarding.x_3eb17acd")}
           selected={dataMode === "online"}
           onPress={() => setDataMode("online")}
         />
@@ -281,13 +281,12 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       {dataMode === "offline" ? (
         <Text className="text-caption mt-3 text-muted-foreground">
           {isOnline
-            ? "अर्को स्क्रिनमा कुन वर्षदेखि कुन वर्षसम्म चाहिने छान्नुहोस् (बढीमा ९० वर्षको अन्तर)। डाउनलोड सुरु गर्नु अघि कति डाटा लाग्छ देखाइनेछ। · Next, choose which years you need (at most a 90-year span). You'll see how much data it takes before anything downloads."
-            : "इन्टरनेट जोडिएपछि वर्ष छान्न सकिनेछ। · You can pick your years once you're connected to the internet."}
+            ? tFor("ne", "ui.onboarding.x_3c35ba8e")
+            : tFor("ne", "ui.onboarding.x_e00d1329")}
         </Text>
       ) : (
         <Text className="text-caption mt-3 text-muted-foreground">
-          पछि जुनसुकै बेला सेटिङबाट वर्ष छानेर डाउनलोड गर्न सकिनेछ। · You can still choose years to
-          download later from Offline Data in settings.
+          {tFor("ne", "ui.onboarding.x_5f81991c")}
         </Text>
       )}
 
@@ -298,7 +297,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: () => void }) {
       >
         {submitting ? <ActivityIndicator size="small" color={neutral.white} /> : null}
         <Text className="text-body font-semibold" style={{ color: neutral.white }}>
-          अगाडि बढ्नुहोस् · Get Started
+          {tFor("ne", "ui.onboarding.x_5158dc32")}
         </Text>
       </Pressable>
     </ScrollView>

@@ -32,6 +32,7 @@ import { fmt } from "@vedic-patro/domain/kundali/shadbala-chart";
 
 import { illustration } from "@vedic-patro/design-tokens";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const STATUS_ORDER: ShadbalaStatus[] = [
   "Exceptional",
   "Strong",
@@ -41,11 +42,11 @@ const STATUS_ORDER: ShadbalaStatus[] = [
 ];
 
 const STATUS_LABEL: Record<ShadbalaStatus, { ne: string; en: string }> = {
-  Exceptional: { ne: "उत्कृष्ट", en: "Exceptional" },
-  Strong: { ne: "बलियो", en: "Strong" },
-  Adequate: { ne: "पर्याप्त", en: "Adequate" },
-  Borderline: { ne: "सीमान्त", en: "Borderline" },
-  Weak: { ne: "कमजोर", en: "Weak" },
+  Exceptional: { get ne() { return tFor("ne", "kundali.x.status_exceptional"); }, get en() { return tFor("en", "kundali.x.status_exceptional"); } },
+  Strong: { get ne() { return tFor("ne", "kundali.report.confidence_strong"); }, get en() { return tFor("en", "kundali.report.confidence_strong"); } },
+  Adequate: { get ne() { return tFor("ne", "kundali.x.status_adequate"); }, get en() { return tFor("en", "kundali.x.status_adequate"); } },
+  Borderline: { get ne() { return tFor("ne", "kundali.x.status_borderline"); }, get en() { return tFor("en", "kundali.x.status_borderline"); } },
+  Weak: { get ne() { return tFor("ne", "kundali.x.status_weak"); }, get en() { return tFor("en", "kundali.x.status_weak"); } },
 };
 
 const STATUS_COLORS: Record<ShadbalaStatus, string> = {
@@ -274,7 +275,7 @@ export function ShadbalaCard({
           </Text>
         ) : null}
         <Text className={kundaliDetailClasses.glance.introSpaced} style={nepaliTextStyle(12)}>
-          {pick("पाराशरी षड्बल (लाहिरी निरयण, जेपीएल)", data.method)}
+          {pick(tFor("ne", "ui.kundali.x_4836cfed"), data.method)}
         </Text>
 
         <View className="flex-row flex-wrap" style={{ gap: GLANCE_GAP }}>
@@ -289,7 +290,7 @@ export function ShadbalaCard({
               <StatusBadge status={summary.strongest.status} />
               <Text className={kundaliDetailClasses.glance.sub} style={nepaliTextStyle(11)}>
                 {pick(
-                  `${digits(summary.strongest.ratio.toFixed(2))}× आवश्यक`,
+                  tFor("ne", "ui.kundali.x_bab6a0ed", { v0: digits(summary.strongest.ratio.toFixed(2)) }),
                   `${summary.strongest.ratio.toFixed(2)}x required`,
                 )}
               </Text>
@@ -307,7 +308,7 @@ export function ShadbalaCard({
               <StatusBadge status={summary.weakest.status} />
               <Text className={kundaliDetailClasses.glance.sub} style={nepaliTextStyle(11)}>
                 {pick(
-                  `${digits(summary.weakest.ratio.toFixed(2))}× आवश्यक`,
+                  tFor("ne", "ui.kundali.x_bab6a0ed", { v0: digits(summary.weakest.ratio.toFixed(2)) }),
                   `${summary.weakest.ratio.toFixed(2)}x required`,
                 )}
               </Text>
@@ -398,7 +399,7 @@ export function ShadbalaCard({
 
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("सापेक्ष क्रम", "Relative Rank")}
+              label={rowLabel(tFor("ne", "kundali.x.relative_rank"), tFor("en", "kundali.x.relative_rank"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => digits(String(rankByKey.get(p.key) ?? "—"))}
@@ -406,7 +407,7 @@ export function ShadbalaCard({
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("स्थान", "Sthana")}
+              label={rowLabel(tFor("ne", "kundali.x.bala_sthana"), tFor("en", "kundali.x.bala_sthana"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.sthana, digits)}
@@ -429,14 +430,14 @@ export function ShadbalaCard({
               : null}
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("दिशा", "Disha")}
+              label={rowLabel(tFor("ne", "kundali.disha"), tFor("en", "kundali.disha"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.dig, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("काल", "Kala")}
+              label={rowLabel(tFor("ne", "kundali.x.bala_kala"), tFor("en", "kundali.x.bala_kala"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.kala, digits)}
@@ -463,28 +464,28 @@ export function ShadbalaCard({
               : null}
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("चेष्टा", "Chesta")}
+              label={rowLabel(tFor("ne", "kundali.x.bala_chesta"), tFor("en", "kundali.x.bala_chesta"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.cheshta, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("नैसर्गिक", "Naisargika")}
+              label={rowLabel(tFor("ne", "kundali.x.bala_naisargika"), tFor("en", "kundali.x.bala_naisargika"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.naisargika, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("दृष्टि", "Drishti")}
+              label={rowLabel(tFor("ne", "kundali.drishti"), tFor("en", "kundali.drishti"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.breakdown.drik, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("कुल पिण्ड", "Total Pinda")}
+              label={rowLabel(tFor("ne", "kundali.total_pinda"), tFor("en", "kundali.total_pinda"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.total_virupas, digits)}
@@ -492,21 +493,21 @@ export function ShadbalaCard({
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("रूप", "Rupas")}
+              label={rowLabel(tFor("ne", "kundali.rupas"), tFor("en", "kundali.rupas"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.rupas, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("न्यूनतम आवश्यक", "Min. Require")}
+              label={rowLabel(tFor("ne", "kundali.x.min_required"), tFor("en", "kundali.x.min_required"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.required / 60, digits)}
             />
             <MatrixRow
               rowIndex={matrixRowIndex++}
-              label={rowLabel("शक्ति अनुपात", "Strength Ratio")}
+              label={rowLabel(tFor("ne", "kundali.x.strength_ratio"), tFor("en", "kundali.x.strength_ratio"))}
               planets={ordered}
               selectedKey={selectedKey}
               value={(p) => fmt(p.ratio, digits, 4)}
@@ -515,7 +516,7 @@ export function ShadbalaCard({
             {bhavaBala ? (
               <MatrixRow
                 rowIndex={matrixRowIndex++}
-                label={rowLabel("भाव (% मा)", "Bhava (in %)")}
+                label={rowLabel(tFor("ne", "kundali.x.bhava_percent"), tFor("en", "kundali.x.bhava_percent"))}
                 planets={ordered}
                 selectedKey={selectedKey}
                 value={(p) => {
@@ -529,14 +530,14 @@ export function ShadbalaCard({
               <>
                 <MatrixRow
                   rowIndex={matrixRowIndex++}
-                  label={rowLabel("इष्ट फल", "Ishta Phala")}
+                  label={rowLabel(tFor("ne", "kundali.x.ishta_phala"), tFor("en", "kundali.x.ishta_phala"))}
                   planets={ordered}
                   selectedKey={selectedKey}
                   value={(p) => fmt(p.ishta_phala, digits)}
                 />
                 <MatrixRow
                   rowIndex={matrixRowIndex++}
-                  label={rowLabel("कष्ट फल", "Kashta Phala")}
+                  label={rowLabel(tFor("ne", "kundali.x.kashta_phala"), tFor("en", "kundali.x.kashta_phala"))}
                   planets={ordered}
                   selectedKey={selectedKey}
                   value={(p) => fmt(p.kashta_phala, digits)}
@@ -581,7 +582,7 @@ export function ShadbalaCard({
             {yuddha.wars
               .map((w) =>
                 pick(
-                  `${grahaName(w.winner)} ले ${grahaName(w.loser)} लाई पराजित (${fmt(w.yuddhaVirupas, digits)} विरुप, ${digits(w.separationDeg.toFixed(2))}° को दूरी)`,
+                  tFor("ne", "ui.kundali.x_b48812f0", { v0: grahaName(w.winner), v1: grahaName(w.loser), v2: fmt(w.yuddhaVirupas, digits), v3: digits(w.separationDeg.toFixed(2)) }),
                   `${grahaName(w.winner)} defeats ${grahaName(w.loser)} (${fmt(w.yuddhaVirupas, digits)} virupas, ${w.separationDeg.toFixed(2)}° apart)`,
                 ),
               )

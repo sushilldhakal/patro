@@ -75,6 +75,7 @@ import { clampPitch } from "@vedic-patro/domain/learn/two-systems";
 
 import { brand, illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const CANVAS_BG = midnight.popover;
 const CARD_HEIGHT = 320;
 
@@ -83,9 +84,9 @@ const SPEEDS = [2, 8, 30];
 
 
 const FOCUS_CHIPS: { id: Focus; ne: string; en: string }[] = [
-  { id: "solar", ne: "☀️ सौरमान", en: "☀️ Sauramāna" },
-  { id: "lunar", ne: "🌙 चान्द्रमान", en: "🌙 Chāndramāna" },
-  { id: "both", ne: "☀️🌙 दुवै", en: "☀️🌙 Both" },
+  { id: "solar", get ne() { return tFor("ne", "learn.study.two_systems.focus_solar"); }, get en() { return tFor("en", "learn.study.two_systems.focus_solar"); } },
+  { id: "lunar", get ne() { return tFor("ne", "learn.study.two_systems.focus_lunar"); }, get en() { return tFor("en", "learn.study.two_systems.focus_lunar"); } },
+  { id: "both", get ne() { return tFor("ne", "learn.study.two_systems.focus_both"); }, get en() { return tFor("en", "learn.study.two_systems.focus_both"); } },
 ];
 
 const MIN_DISTANCE = 9;
@@ -385,7 +386,7 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                 tone="moon"
                 steps={[
                   t("learn.study.two_systems.chain_angular_gap"),
-                  pick(`हरेक ${num(TITHI_ARC)}° = १ तिथि`, `every ${TITHI_ARC}° = 1 tithi`),
+                  pick(tFor("ne", "ui.learn.x_d321b519", { v0: num(TITHI_ARC) }), `every ${TITHI_ARC}° = 1 tithi`),
                   t("learn.study.two_systems.chain_paksha"),
                   t("learn.study.two_systems.chain_lunar_month"),
                 ]}
@@ -605,11 +606,11 @@ export function TwoSystemsStudy({ title }: { title?: string }) {
                     >
                       {travelled.moon >= 360
                         ? pick(
-                            `नक्षत्र मास पूरा +${num((travelled.moon - 360).toFixed(1))}°`,
+                            tFor("ne", "ui.learn.x_c4114654", { v0: num((travelled.moon - 360).toFixed(1)) }),
                             `sidereal lap done +${(travelled.moon - 360).toFixed(1)}°`,
                           )
                         : pick(
-                            `३६०° सम्म ${num((360 - travelled.moon).toFixed(1))}° बाँकी`,
+                            tFor("ne", "ui.learn.x_be4a9c80", { v0: num((360 - travelled.moon).toFixed(1)) }),
                             `${(360 - travelled.moon).toFixed(1)}° to the 360° lap`,
                           )}
                     </Text>
@@ -751,16 +752,16 @@ function DriftLadder({
           className="text-caption"
           style={[nepaliTextStyle(11), { color: withAlpha(neutral.white, 0.6) }]}
         >
-          {pick("एउटै समयरेखा", "One shared timeline")}
+          {pick(tFor("ne", "learn.study.two_systems.one_timeline"), tFor("en", "learn.study.two_systems.one_timeline"))}
         </Text>
         <Text
           className="text-caption"
           style={[nepaliTextStyle(10), { color: withAlpha(neutral.white, 0.6) }]}
         >
           {pick(
-            `सौर वर्ष ${num(span.toFixed(0))} दिन · १२ चान्द्र मास ${num(
+            tFor("ne", "ui.learn.x_e83f4e4a", { v0: num(span.toFixed(0)), v1: num(
               year.twelveLunarDays.toFixed(0),
-            )} दिन → ~${num(shortfall.toFixed(0))} दिनको खाडल`,
+            ), v2: num(shortfall.toFixed(0)) }),
             `Solar year ${span.toFixed(0)} d · 12 lunar months ${year.twelveLunarDays.toFixed(
               0,
             )} d → a ~${shortfall.toFixed(0)} day gap`,
@@ -850,7 +851,7 @@ function DriftLadder({
               style={[nepaliTextStyle(9), { color: illustration.sky96 }]}
             >
               {pick(
-                `१२ चान्द्र मास = ${num(year.twelveLunarDays.toFixed(0))} दिन`,
+                tFor("ne", "ui.learn.x_efb4e824", { v0: num(year.twelveLunarDays.toFixed(0)) }),
                 `12 lunar months = ${year.twelveLunarDays.toFixed(0)} d`,
               )}
             </Text>
@@ -876,16 +877,16 @@ function DriftLadder({
 
       <View className="mt-1 gap-1">
         <LadderKey color={withAlpha(illustration.orange50, 0.6)}>
-          {pick("सौर महिना — सङ्क्रान्तिबाट सङ्क्रान्ति", "Solar months — sankranti to sankranti")}
+          {pick(tFor("ne", "learn.study.two_systems.legend_solar_months"), tFor("en", "learn.study.two_systems.legend_solar_months"))}
         </LadderKey>
         <LadderKey color={withAlpha(illustration.teal60, 0.6)}>
           {pick(
-            `चान्द्र मास — औंसीबाट औंसी · वर्षभित्र अहिलेसम्म ${num(lunarDone)}`,
+            tFor("ne", "ui.learn.x_d723f1f1", { v0: num(lunarDone) }),
             `Lunar months — amavasya to amavasya · ${lunarDone} begun so far this year`,
           )}
         </LadderKey>
         <LadderKey color={withAlpha(illustration.green52, 0.7)}>
-          {pick("बाँकी खाडल — अधिक मासले पुर्छ", "The remaining gap — what an adhik maas fills")}
+          {pick(tFor("ne", "learn.study.two_systems.legend_remaining_gap"), tFor("en", "learn.study.two_systems.legend_remaining_gap"))}
         </LadderKey>
       </View>
     </View>

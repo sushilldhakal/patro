@@ -457,7 +457,7 @@ export function SunRayAngle() {
           <text x={p.cx} y={ground + 20} textAnchor="middle" className="text-diagram-2xs font-semibold" style={{ fill: MARK }}>
             {lang === "en"
               ? `footprint ×${(p.b.foot / 74).toFixed(1)}`
-              : `क्षेत्रफल ×${digits(lang, (p.b.foot / 74).toFixed(1))}`}
+              : tFor("ne", "ui.learn.x_89e72363", { v0: digits(lang, (p.b.foot / 74).toFixed(1)) })}
           </text>
           <text x={p.cx} y={ground + 36} textAnchor="middle" className="fill-current text-diagram-2xs opacity-70">
             {t(p.result)}

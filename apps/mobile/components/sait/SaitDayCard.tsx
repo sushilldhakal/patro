@@ -12,6 +12,7 @@ import { saitClasses } from "@vedic-patro/design-tokens/classes/sait-classes";
 import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import { useBreakpoint } from "@/lib/responsive";
 import { useThemeColors } from "@/lib/theme-context";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /**
  * One qualifying muhūrta day: the representative clean window plus the
@@ -208,7 +209,7 @@ export function SaitDayCard({
                 className={cn(saitClasses.chipText, saitClasses.chipNum, saitClasses.toneChipText[annaMonth.tone])}
               >
                 {pick(
-                  `${digits(annaMonth.ordinal_month)} औँ महिना`,
+                  tFor("ne", "ui.sait.x_92984250", { v0: digits(annaMonth.ordinal_month) }),
                   `month ${annaMonth.ordinal_month}`,
                 )}
               </Text>

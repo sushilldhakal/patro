@@ -41,6 +41,7 @@ import {
 
 import { illustration, midnight } from "@vedic-patro/design-tokens";
 import { RASHI_NAMES_NE as RASHI_NE } from "@vedic-patro/domain/rashi-i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export type Focus = "solar" | "lunar" | "both";
 
 export type SceneClock = {
@@ -890,12 +891,12 @@ export function TwoSystemsScene({
         i + 1,
       );
     }
-    project("b-sun", "body", "सूर्य", new THREE.Vector3(0, SUN_R * 2.1, 0), false);
-    project("b-earth", "body", "पृथ्वी", earthPos.clone().setY(EARTH_R * 3.4), false);
+    project("b-sun", "body", tFor("ne", "kundali.report.meta_sun"), new THREE.Vector3(0, SUN_R * 2.1, 0), false);
+    project("b-earth", "body", tFor("ne", "vastu.element.earth"), earthPos.clone().setY(EARTH_R * 3.4), false);
     project(
       "b-moon",
       "body",
-      "चन्द्र",
+      tFor("ne", "kundali.graha_name_moon"),
       moonAt(sLon, dAu, mLon, mLat).setY(MOON_R * 4.5),
       lunarW.current < 0.5,
     );

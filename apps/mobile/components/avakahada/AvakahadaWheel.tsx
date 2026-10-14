@@ -33,6 +33,7 @@ import { GANA_PILL_CLASS } from "@vedic-patro/design-tokens/classes/patro-classe
 import { cn } from "@vedic-patro/domain/utils";
 import { brand, illustration, midnight, wheel, withAlpha } from "@vedic-patro/design-tokens";
 import { CX, CY, R, ATTR_RINGS, type AttrRingId, type AvakahadaWheelRow, toWheelRow, polar, sectorPath, attrValue } from "@vedic-patro/domain/avakahada-wheel";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export { type AvakahadaWheelRow, toWheelRow } from "@vedic-patro/domain/avakahada-wheel";
 
 /**
@@ -86,15 +87,15 @@ type HubFocus = {
 };
 
 const RING_LABELS: Record<HubRing, { ne: string; en: string }> = {
-  nakshatra: { ne: "नक्षत्र", en: "Nakshatra" },
-  pada: { ne: "नामाक्षर (चरण १–४)", en: "Name syllable (charan 1–4)" },
-  rashi: { ne: "राशि", en: "Rashi" },
-  lord: { ne: "राशि स्वामी", en: "Rashi lord" },
-  varna: { ne: "वर्ण", en: "Varna" },
-  vashya: { ne: "वश्य", en: "Vashya" },
-  yoni: { ne: "योनि", en: "Yoni" },
-  gana: { ne: "गण", en: "Gana" },
-  nadi: { ne: "नाडी", en: "Nadi" },
+  nakshatra: { get ne() { return tFor("ne", "nakshatra"); }, get en() { return tFor("en", "nakshatra"); } },
+  pada: { get ne() { return tFor("ne", "avakahada.col_akshara"); }, get en() { return tFor("en", "avakahada.col_akshara"); } },
+  rashi: { get ne() { return tFor("ne", "panchanga.wheel.rashi"); }, get en() { return tFor("en", "panchanga.wheel.rashi"); } },
+  lord: { get ne() { return tFor("ne", "avakahada.col_rashi_lord"); }, get en() { return tFor("en", "avakahada.col_rashi_lord"); } },
+  varna: { get ne() { return tFor("ne", "avakahada.col_varna"); }, get en() { return tFor("en", "avakahada.col_varna"); } },
+  vashya: { get ne() { return tFor("ne", "kundali.vashya"); }, get en() { return tFor("en", "kundali.vashya"); } },
+  yoni: { get ne() { return tFor("ne", "avakahada.col_yoni"); }, get en() { return tFor("en", "avakahada.col_yoni"); } },
+  gana: { get ne() { return tFor("ne", "kundali.gana"); }, get en() { return tFor("en", "kundali.gana"); } },
+  nadi: { get ne() { return tFor("ne", "kundali.nadi"); }, get en() { return tFor("en", "kundali.nadi"); } },
 };
 
 function RadialText({
@@ -429,7 +430,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
     );
   }, [hasFilter, highlightSet, selected, selectFocus]);
 
-  const ganas: Gana[] = ["देव", "नर", "राक्षस"];
+  const ganas: Gana[] = [/* copy-ok */ "देव", /* copy-ok */ "नर", /* copy-ok */ "राक्षस"];
   const hubBox = R.hub * 2 - 20;
 
   return (
@@ -611,7 +612,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
         {hasFilter ? (
           <Text className={avakahadaClasses.legendText} style={nepaliTextStyle(12)}>
             {pick(
-              `· खोजमा ${digits(highlightSet.size)} नक्षत्र`,
+              tFor("ne", "ui.avakahada.x_91fdc25d", { v0: digits(highlightSet.size) }),
               `· ${highlightSet.size} nakshatras in search`,
             )}
           </Text>

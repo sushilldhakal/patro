@@ -41,7 +41,7 @@ function ShlokaCardImpl({
   const colors = useThemeColors();
   const canPlay = Boolean(shloka.audio_url) || playsFromFull;
   const meaning = (lang === "ne" ? shloka.meaning_ne || shloka.meaning_en : shloka.meaning_en || shloka.meaning_ne) ?? "";
-  const isClosing = shloka.verse_label.startsWith("इति") || shloka.verse_label === "ध्यानम्";
+  const isClosing = shloka.verse_label.startsWith(/* copy-ok */ "इति") || shloka.verse_label === /* copy-ok */ "ध्यानम्";
   // Procedure text (टीका / सामग्री) is instructions, not a mantra.
   const isNote = /^(टीका|सामग्री)/.test(shloka.verse_label);
   const vedaCite = formatVedaCite(shloka.veda_cite, lang);

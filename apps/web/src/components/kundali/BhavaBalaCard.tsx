@@ -16,6 +16,7 @@ import {
 import { cn } from "@vedic-patro/domain/utils";
 import { fmtNum } from "@vedic-patro/domain/kundali/bhava-bala-chart";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const th = "h-9 px-2.5 text-sm font-semibold uppercase tracking-wide";
 const td = "px-2.5 py-1.5 text-sm";
@@ -76,7 +77,7 @@ export function BhavaBalaTable({
   const { lang, digits } = useLocale();
 
   const houseLabel = (house: number) =>
-    bilingualText(lang, `भाव ${digits(house)}`, `House ${house}`);
+    bilingualText(lang, tFor("ne", "ui.kundali.x_f08204a5", { v0: digits(house) }), `House ${house}`);
 
   const lordLabel = (key: GrahaKey) =>
     bilingualText(lang, GRAHA_NAME[key].ne, GRAHA_NAME[key].en);
@@ -109,7 +110,7 @@ export function BhavaBalaTable({
           {t("kundali.bhava_bala_house_strength_virupas")}
         </h3>
         <p className={kundaliDetailClasses.glance.intro}>
-          {bilingualText(lang, `भावाधिपति (स्वामीको षड्बल) + भाव दिशा + भाव दृष्टि। समपूर्ण राशि भाव; ${digits(data.referenceVirupas)} विरुप = १००%।`, `Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; ${data.referenceVirupas} virupas = 100%.`)}
+          {bilingualText(lang, tFor("ne", "ui.kundali.x_cf46d965", { v0: digits(data.referenceVirupas) }), `Bhavadhipati (lord's Shadbala) + Bhava Disha + Bhava Drishti. Whole-sign houses; ${data.referenceVirupas} virupas = 100%.`)}
         </p>
       </div>
 

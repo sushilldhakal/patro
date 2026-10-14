@@ -92,7 +92,7 @@ export function MonthLagnaMatrix({ rows, todayKey, loading, empty, embedded }: P
                   {getRashiList("ne").map((_, i) => {
                     const num = i + 1;
                     const val = row.times[num];
-                    const late = val?.includes("२५") || val?.includes("२६") || val?.includes("२७");
+                    const late = val?.includes(/* copy-ok */ "२५") || val?.includes(/* copy-ok */ "२६") || val?.includes(/* copy-ok */ "२७");
                     return (
                       <TableCell
                         key={num}

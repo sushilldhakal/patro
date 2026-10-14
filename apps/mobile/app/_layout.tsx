@@ -114,8 +114,8 @@ export default function RootLayout() {
     const done = () => active && setWebFontReady(true);
     const timeout = setTimeout(done, 3000);
     Promise.all([
-      document.fonts.load('400 16px "Noto Sans Devanagari"', "अआक"),
-      document.fonts.load('700 16px "Noto Sans Devanagari"', "अआक"),
+      document.fonts.load('400 16px "Noto Sans Devanagari"', /* copy-ok */ "अआक"),
+      document.fonts.load('700 16px "Noto Sans Devanagari"', /* copy-ok */ "अआक"),
     ])
       .then(done, done);
     return () => {

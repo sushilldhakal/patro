@@ -21,16 +21,17 @@ import { tithiIndexFromCalendarDay, tithiIndexFromPanchanga } from "@vedic-patro
 
 import { useThemeColors } from "@/lib/theme-context";
 import { homeClasses } from "@vedic-patro/design-tokens/classes/home-classes";
-const WEEKDAY_NE = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
+import { tFor, lazyList } from "@vedic-patro/i18n/runtime";
+const WEEKDAY_NE = lazyList("ne", "ui.home.x_3d1c9c30");
 const WEEKDAY_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function moonPhasePhrase(index: number, pick: (ne: string, en: string) => string): string {
-  if (index === 14) return pick("पूर्णिमा", "Full moon");
-  if (index === 29) return pick("औंसी", "New moon");
-  if (index >= 6 && index <= 8) return pick("बढ्दो अर्धचन्द्र", "Waxing half moon");
-  if (index >= 21 && index <= 23) return pick("घट्दो अर्धचन्द्र", "Waning half moon");
-  if (index < 14) return pick("बढ्दो चन्द्र", "Waxing moon");
-  return pick("घट्दो चन्द्र", "Waning moon");
+  if (index === 14) return pick(tFor("ne", "ui.learn.full_moon"), tFor("en", "ui.learn.full_moon"));
+  if (index === 29) return pick(tFor("ne", "ui.learn.new_moon"), tFor("en", "ui.learn.new_moon"));
+  if (index >= 6 && index <= 8) return pick(tFor("ne", "ui.home.waxing_half_moon"), tFor("en", "ui.home.waxing_half_moon"));
+  if (index >= 21 && index <= 23) return pick(tFor("ne", "ui.home.waning_half_moon"), tFor("en", "ui.home.waning_half_moon"));
+  if (index < 14) return pick(tFor("ne", "ui.home.waxing_moon"), tFor("en", "ui.home.waxing_moon"));
+  return pick(tFor("ne", "ui.home.waning_moon"), tFor("en", "ui.home.waning_moon"));
 }
 
 function daysAwayLabel(days: number, lang: string, digits: (v: string | number) => string): string {
@@ -38,10 +39,10 @@ function daysAwayLabel(days: number, lang: string, digits: (v: string | number) 
   const english = lang.slice(0, 2) === "en";
   if (days > 0) {
     if (english) return days === 1 ? "After 1 day" : `After ${count} days`;
-    return `${count} दिनपछि`;
+    return tFor("ne", "ui.home.x_261cd2ac", { v0: count });
   }
   if (english) return days === -1 ? "1 day ago" : `${count} days ago`;
-  return `${count} दिन अघि`;
+  return tFor("ne", "ui.home.x_796f4d7b", { v0: count });
 }
 
 type Props = {

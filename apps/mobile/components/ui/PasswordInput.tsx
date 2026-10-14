@@ -4,6 +4,7 @@ import { Ionicons } from "@/components/icons/Ionicons";
 import { useLocale } from "@/lib/i18n";
 import { useThemeColors } from "@/lib/theme-context";
 import { space } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 /** Password field with an eye button that toggles between hidden and visible text. */
 export function PasswordInput({ style, className, ...props }: TextInputProps) {
@@ -27,7 +28,7 @@ export function PasswordInput({ style, className, ...props }: TextInputProps) {
         className="absolute right-1 h-10 w-10 items-center justify-center rounded-full active:bg-muted"
         accessibilityRole="button"
         accessibilityLabel={pick(
-          visible ? "पासवर्ड लुकाउनुहोस्" : "पासवर्ड देखाउनुहोस्",
+          visible ? tFor("ne", "ui.ui.x_41ccbc34") : tFor("ne", "ui.ui.x_5abec41f"),
           visible ? "Hide password" : "Show password",
         )}
         accessibilityState={{ selected: visible }}

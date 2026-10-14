@@ -442,7 +442,7 @@ export function AvakahadaWheel({ highlighted }: Props) {
     [],
   );
 
-  const ganas: Gana[] = ["देव", "नर", "राक्षस"];
+  const ganas: Gana[] = [/* copy-ok */ "देव", /* copy-ok */ "नर", /* copy-ok */ "राक्षस"];
 
   return (
     <section className={cn(avWheelTheme, "pn-wheel", avakahadaClasses.wheelSection)} aria-label={t("avakahada.wheel_aria")}>

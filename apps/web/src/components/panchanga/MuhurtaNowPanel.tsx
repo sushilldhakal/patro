@@ -9,10 +9,10 @@ import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchan
 import { tFor } from "@vedic-patro/i18n/runtime";
 const ROWS: { key: keyof NonNullable<PanchangaDay["muhurta_now"]>; label: string; labelEn: string }[] =
   [
-    { key: "rahu_kalam", label: "राहु काल", labelEn: "Rahu Kalam" },
-    { key: "yamaganda", label: "यमगण्ड", labelEn: "Yamaganda" },
-    { key: "gulika", label: "गुलिक", labelEn: "Gulika" },
-    { key: "abhijit", label: "अभिजित", labelEn: "Abhijit" },
+    { key: "rahu_kalam", get label() { return tFor("ne", "ui.panchanga.rahu_kalam"); }, get labelEn() { return tFor("en", "ui.panchanga.rahu_kalam"); } },
+    { key: "yamaganda", get label() { return tFor("ne", "ui.panchanga.yamaganda"); }, get labelEn() { return tFor("en", "ui.panchanga.yamaganda"); } },
+    { key: "gulika", get label() { return tFor("ne", "kundali.x.graha_gulika"); }, get labelEn() { return tFor("en", "kundali.x.graha_gulika"); } },
+    { key: "abhijit", get label() { return tFor("ne", "ui.panchanga.abhijit"); }, get labelEn() { return tFor("en", "ui.panchanga.abhijit"); } },
   ];
 
 interface Props {
@@ -92,9 +92,7 @@ export function EphemerisModeBanner({ p, clock, viewedDateAd }: Props) {
       <p className={panchangaPageClasses.aside.bannerBody}>
         {time ? (
           bilingualNode(lang, <>
-              <span className="font-mono tabular-nums">{digits(time)}</span> बजेको वास्तविक
-              ग्रहस्थितिअनुसार तिथि, नक्षत्र, योग र करण। आकाशगङ्गाका ग्रहहरूको सटीक गणनामा
-              आधारित भएकाले मुद्रित सिद्धान्तिक पात्रोसँग केही मात्रामा नमिल्न सक्छ।
+              <span className="font-mono tabular-nums">{digits(time)}</span>{tFor("ne", "ui.panchanga.x_324ebf10")}
             </>,
             <>
               Tithi, nakshatra, yoga and karana from the actual planetary positions at{" "}

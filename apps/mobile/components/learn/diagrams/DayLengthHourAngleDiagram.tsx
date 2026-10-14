@@ -9,10 +9,11 @@ import { LearnDiagram3D } from "@/components/learn/diagrams/LearnDiagram3D";
 import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagrams/diagram-labels";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const ROWS = [
-  { ne: "ग्रीष्म अयनान्त", en: "Summer solstice", h: 6.92, len: "~13h 50m", color: DIAGRAM_COLOR.sun, z: -0.18 },
-  { ne: "शीत अयनान्त", en: "Winter solstice", h: 5.21, len: "~10h 25m", color: DIAGRAM_COLOR.equator, z: 0.18 },
+  { get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, h: 6.92, len: "~13h 50m", color: DIAGRAM_COLOR.sun, z: -0.18 },
+  { get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, h: 5.21, len: "~10h 25m", color: DIAGRAM_COLOR.equator, z: 0.18 },
 ];
 const PX_PER_HOUR = 0.09;
 

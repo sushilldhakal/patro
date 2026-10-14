@@ -14,36 +14,37 @@ import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
 
 import { illustration } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 type Branch = { ne: string; en: string; color: string; steps: { ne: string; en: string }[]; z: number };
 
 const BRANCHES: Branch[] = [
   {
-    ne: "पृथ्वी — घूर्णन",
-    en: "Earth — rotation",
+    get ne() { return tFor("ne", "ui.learn.earth_rotation"); },
+    get en() { return tFor("en", "ui.learn.earth_rotation"); },
     color: illustration.sky54,
     z: -0.36,
-    steps: [{ ne: "दिन", en: "Day" }, { ne: "वार", en: "Vaara" }],
+    steps: [{ get ne() { return tFor("ne", "panchanga.view_day"); }, get en() { return tFor("en", "panchanga.view_day"); } }, { get ne() { return tFor("ne", "ui.learn.vaara"); }, get en() { return tFor("en", "ui.learn.vaara"); } }],
   },
   {
-    ne: "सूर्य — राशि गति",
-    en: "Sun — rashi motion",
+    get ne() { return tFor("ne", "ui.learn.sun_rashi_motion"); },
+    get en() { return tFor("en", "ui.learn.sun_rashi_motion"); },
     color: DIAGRAM_LABEL_COLOR.warn,
     z: 0,
     steps: [
-      { ne: "राशि", en: "Rashi" },
-      { ne: "सङ्क्रान्ति", en: "Sankranti" },
-      { ne: "सौर महिना", en: "Solar month" },
+      { get ne() { return tFor("ne", "panchanga.wheel.rashi"); }, get en() { return tFor("en", "panchanga.wheel.rashi"); } },
+      { get ne() { return tFor("ne", "learn.playground.sankranti"); }, get en() { return tFor("en", "learn.playground.sankranti"); } },
+      { get ne() { return tFor("ne", "learn.solar_month"); }, get en() { return tFor("en", "learn.solar_month"); } },
     ],
   },
   {
-    ne: "चन्द्र — सूर्यसँगको कोण",
-    en: "Moon — angle from Sun",
+    get ne() { return tFor("ne", "ui.learn.moon_angle_from_sun"); },
+    get en() { return tFor("en", "ui.learn.moon_angle_from_sun"); },
     color: illustration.sky84,
     z: 0.36,
     steps: [
-      { ne: "तिथि", en: "Tithi" },
-      { ne: "पक्ष", en: "Paksha" },
-      { ne: "चान्द्र महिना", en: "Lunar month" },
+      { get ne() { return tFor("ne", "tithi"); }, get en() { return tFor("en", "tithi"); } },
+      { get ne() { return tFor("ne", "sections.paksha"); }, get en() { return tFor("en", "sections.paksha"); } },
+      { get ne() { return tFor("ne", "ui.learn.lunar_month"); }, get en() { return tFor("en", "ui.learn.lunar_month"); } },
     ],
   },
 ];

@@ -25,40 +25,40 @@ type Tab = {
 // Home · Panchanga · Kundali · Dainik Kranti · Vastu · Learn — primary
 // destinations. Kept in sync with the hamburger nav in Header.tsx.
 const TABS: Tab[] = [
-  { to: "/", icon: featureIcon("home"), ne: "गृह", en: "Home", match: (p) => p === "/" },
+  { to: "/", icon: featureIcon("home"), get ne() { return tFor("ne", "ui.mobile_bottom_nav.home"); }, get en() { return tFor("en", "ui.mobile_bottom_nav.home"); }, match: (p) => p === "/" },
   {
     to: "/panchanga",
     icon: featureIcon("panchanga"),
-    ne: "पञ्चाङ्ग",
-    en: "Panchanga",
+    get ne() { return tFor("ne", "learn.diagrams.hierarchy_converge"); },
+    get en() { return tFor("en", "learn.diagrams.hierarchy_converge"); },
     match: isPanchangaTabRoute,
   },
   {
     to: "/kundali",
     icon: featureIcon("kundali"),
-    ne: "कुण्डली",
-    en: "Kundali",
+    get ne() { return tFor("ne", "nav.jyotish_kundali"); },
+    get en() { return tFor("en", "nav.jyotish_kundali"); },
     match: isJyotishRoute,
   },
   {
     to: "/dainikkranti",
     icon: featureIcon("dainikkranti"),
-    ne: "दैनिक",
-    en: "Daily",
+    get ne() { return tFor("ne", "rashifal.tabs.daily"); },
+    get en() { return tFor("en", "rashifal.tabs.daily"); },
     match: isDainikkrantiTabRoute,
   },
   {
     to: "/vastu",
     icon: featureIcon("vastu"),
-    ne: "वास्तु",
-    en: "Vastu",
+    get ne() { return tFor("ne", "nav.vastu"); },
+    get en() { return tFor("en", "nav.vastu"); },
     match: isVastuRoute,
   },
   {
     to: "/learn",
     icon: featureIcon("learn"),
-    ne: "सिकाइ",
-    en: "Learn",
+    get ne() { return tFor("ne", "nav.learn"); },
+    get en() { return tFor("en", "nav.learn"); },
     match: isLearnRoute,
   },
 ];

@@ -105,6 +105,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { formatPoleYear } from "@vedic-patro/domain/sky3d/pole-year";
 
 import { illustration, midnight, neutral, wheel, withAlpha } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const Scene = memo(AakashGocharScene);
 
 const CANVAS_BG = wheel.sky2;
@@ -153,15 +154,15 @@ const LABEL_COLOR = {
  */
 /** The focus list, in the web's own order — पृथ्वी second, the two छाया ग्रह last. */
 const FOCUS_TARGETS: { key: GrahaKey; ne: string; en: string }[] = [
-  { key: "sun", ne: "सूर्य", en: "Sun" },
-  { key: "moon", ne: "चन्द्र", en: "Moon" },
-  { key: "mercury", ne: "बुध", en: "Mercury" },
-  { key: "venus", ne: "शुक्र", en: "Venus" },
-  { key: "jupiter", ne: "बृहस्पति", en: "Jupiter" },
-  { key: "saturn", ne: "शनि", en: "Saturn" },
-  { key: "mars", ne: "मंगल", en: "Mars" },
-  { key: "rahu", ne: "राहु", en: "Rahu" },
-  { key: "ketu", ne: "केतु", en: "Ketu" },
+  { key: "sun", get ne() { return tFor("ne", "kundali.report.meta_sun"); }, get en() { return tFor("en", "kundali.report.meta_sun"); } },
+  { key: "moon", get ne() { return tFor("ne", "kundali.graha_name_moon"); }, get en() { return tFor("en", "kundali.graha_name_moon"); } },
+  { key: "mercury", get ne() { return tFor("ne", "kundali.graha_name_mercury"); }, get en() { return tFor("en", "kundali.graha_name_mercury"); } },
+  { key: "venus", get ne() { return tFor("ne", "kundali.graha_name_venus"); }, get en() { return tFor("en", "kundali.graha_name_venus"); } },
+  { key: "jupiter", get ne() { return tFor("ne", "kundali.graha_name_jupiter"); }, get en() { return tFor("en", "kundali.graha_name_jupiter"); } },
+  { key: "saturn", get ne() { return tFor("ne", "kundali.graha_name_saturn"); }, get en() { return tFor("en", "kundali.graha_name_saturn"); } },
+  { key: "mars", get ne() { return tFor("ne", "kundali.graha_name_mars"); }, get en() { return tFor("en", "kundali.graha_name_mars"); } },
+  { key: "rahu", get ne() { return tFor("ne", "grahas.rahu"); }, get en() { return tFor("en", "grahas.rahu"); } },
+  { key: "ketu", get ne() { return tFor("ne", "grahas.ketu"); }, get en() { return tFor("en", "grahas.ketu"); } },
 ];
 
 /**
@@ -1444,7 +1445,7 @@ export function AakashGocharSky({
     const h24 = local.getUTCHours();
     const minute = String(local.getUTCMinutes()).padStart(2, "0");
     const h12 = h24 % 12 || 12;
-    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? "पूर्वाह्न" : "अपराह्न";
+    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor("ne", "ui.sky3d.x_97797b0d") : tFor("ne", "ui.sky3d.x_1842d5be");
     const short = {
       day: `${bsMonthLabel(bsShort.month, lang)} ${digits(bsShort.day)}`,
       clock: `${digits(h12)}:${digits(minute)} ${half}`,
@@ -1454,7 +1455,7 @@ export function AakashGocharSky({
       return { date: `${adYear}-${mo}-${d}`, time: `${clock} · ${place}`, short };
     }
 
-    const adYearNe = y > 0 ? `${digits(y)} ई.` : `${digits(1 - y)} ई.पू.`;
+    const adYearNe = y > 0 ? tFor("ne", "ui.sky3d.x_87454780", { v0: digits(y) }) : tFor("ne", "ui.sky3d.x_775bec8c", { v0: digits(1 - y) });
 
     /* Past बि.सं. २२०० the compiled table has nothing, so the Sun becomes the
        calendar it always was — see [[bikram-solar]]. Marked with ≈ so it never
@@ -1463,9 +1464,7 @@ export function AakashGocharSky({
     const mark = bs.approximate ? "≈" : "";
     return {
       short,
-      date: `${mark}${digits(bs.year)} ${bsMonthLabel(bs.month, "ne")} ${digits(bs.day)}, ${
-        WEEKDAYS_SHORT_NE[weekday]
-      }बार`,
+      date: tFor("ne", "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
       // Out past the table the AD year rides along, so the reading can be
       // checked against a calendar the reader already knows.
       time: `${digits(clock)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
@@ -1730,8 +1729,8 @@ export function AakashGocharSky({
       <View className="gap-0.5">
         {(
           [
-            { key: "sun" as const, ne: "सूर्य", en: "Sun" },
-            { key: "earth" as const, ne: "पृथ्वी", en: "Earth" },
+            { key: "sun" as const, ne: tFor("ne", "kundali.report.meta_sun"), en: tFor("en", "kundali.report.meta_sun") },
+            { key: "earth" as const, ne: tFor("ne", "vastu.element.earth"), en: tFor("en", "vastu.element.earth") },
             ...FOCUS_TARGETS.filter((t) => t.key !== "sun"),
           ]
         ).map(({ key, ne: neName, en }) => {
@@ -1852,7 +1851,7 @@ export function AakashGocharSky({
       </Pressable>
       <Pressable
         onPress={() => toggleFavourite(t.id)}
-        accessibilityLabel={pick("पसन्दमा राख्नुहोस्", "Favourite")}
+        accessibilityLabel={pick(tFor("ne", "ui.sky3d.favourite"), tFor("en", "ui.sky3d.favourite"))}
         className="h-7 w-7 items-center justify-center rounded-lg active:bg-white/10"
       >
         <Ionicons

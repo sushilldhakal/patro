@@ -6,8 +6,6 @@ import {
   tintRgba,
   withAlpha,
 } from "@vedic-patro/design-tokens";
-export const APP_NAME_NE = "वैदिक पात्रो";
-export const APP_NAME_EN = "Vedic Patro";
 
 function channelLinear(channel: number): number {
   const c = channel / 255;

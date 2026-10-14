@@ -467,9 +467,9 @@ export function KundaliView({
               <DetailTraitRow
                 label={t("kundali.choghadiya")}
                 value={bilingualText(lang, `${choghadiyaAtBirth.nameNe} (${choghadiyaAtBirth.quality})`, `${choghadiyaAtBirth.nameEn ?? choghadiyaAtBirth.nameNe} (${
-                    choghadiyaAtBirth.quality === "शुभ"
+                    choghadiyaAtBirth.quality === /* copy-ok */ "शुभ"
                       ? "auspicious"
-                      : choghadiyaAtBirth.quality === "अशुभ"
+                      : choghadiyaAtBirth.quality === /* copy-ok */ "अशुभ"
                         ? "inauspicious"
                         : "neutral"
                   })`)}
@@ -528,7 +528,7 @@ export function KundaliView({
             {suryaMeta?.nakshatra ? (
               <DetailTraitRow
                 label={t("kundali.surya_nakshatra")}
-                value={bilingualText(lang, `${suryaMeta.nakshatra.ne} · पद ${digits(suryaMeta.nakshatra.pada)}`, `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
+                value={bilingualText(lang, tFor("ne", "ui.kundali.x_b8d3d3cc", { v0: suryaMeta.nakshatra.ne, v1: digits(suryaMeta.nakshatra.pada) }), `${suryaMeta.nakshatra.en ?? suryaMeta.nakshatra.ne} · Pada ${digits(suryaMeta.nakshatra.pada)}`)}
               />
             ) : null}
           </div>
@@ -599,7 +599,7 @@ export function KundaliView({
 
       {showSection("kundali-overview") && d1Rows.length > 0 && (
         <div id="kundali-charts" className="scroll-mt-24">
-          <PanchangaSection titleNe="कुण्डली चक्र" titleEn="Divisional Charts">
+          <PanchangaSection titleNe={tFor("ne", "ui.kundali.divisional_charts_2")} titleEn={tFor("en", "ui.kundali.divisional_charts_2")}>
             <DivisionalChartCompare
               vargaCharts={detail.vargaCharts}
               combustion={detail.combustion}
@@ -611,7 +611,7 @@ export function KundaliView({
       {/* Graha details — astronomical readout for the birth instant (D1), with upagraha (shadow points) as a separate table in the same section */}
       {showSection("kundali-graha") && d1Rows.length > 0 && (
         <div id="kundali-graha" className="scroll-mt-24">
-          <PanchangaSection titleNe="ग्रह विवरण" titleEn="Graha Details">
+          <PanchangaSection titleNe={tFor("ne", "kundali.nav_graha_details")} titleEn={tFor("en", "kundali.nav_graha_details")}>
             <Suspense fallback={<SectionLoading />}>
               <GrahaAstroTable
                 planets={astroPlanets}
@@ -637,7 +637,7 @@ export function KundaliView({
           so no combination appears twice. */}
       {showSection("kundali-yoga") && (
         <div id="kundali-yoga" className="scroll-mt-24 space-y-6">
-          <PanchangaSection titleNe="कुण्डली योग" titleEn="Kundali Yoga">
+          <PanchangaSection titleNe={tFor("ne", "kundali.nav_yoga")} titleEn={tFor("en", "kundali.nav_yoga")}>
             <Suspense fallback={<SectionLoading />}>
               {detail.yogas.some((y) => y.present) && <YogaList yogas={detail.yogas} />}
               <div className="px-3.5 pb-3.5">
@@ -651,7 +651,7 @@ export function KundaliView({
 
       {showSection("kundali-dasha") && (dasha || tribhagiDasha || yoginiDasha) && (
         <div id="kundali-dasha" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe="दशा" titleEn="Dasha">
+        <PanchangaSection titleNe={tFor("ne", "kundali.nav_dasha")} titleEn={tFor("en", "kundali.nav_dasha")}>
           <div className="p-4">
             <Suspense fallback={<SectionLoading />}>
               <DashaSystemPanel
@@ -770,7 +770,7 @@ export function KundaliView({
 
       {showSection("kundali-shanti") && showShanti && (
         <div id="kundali-shanti" className="scroll-mt-24 space-y-6">
-        <PanchangaSection titleNe="शान्ति विधि" titleEn="Navagraha Shanti">
+        <PanchangaSection titleNe={tFor("ne", "ui.kundali.navagraha_shanti")} titleEn={tFor("en", "ui.kundali.navagraha_shanti")}>
           <div className="p-4">
             <div className={kundaliDetailClasses.view.shantiNote}>
               <Flame className="h-4 w-4 text-secondary" />

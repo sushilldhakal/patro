@@ -24,6 +24,7 @@ import { formatRashiByNumber } from "@vedic-patro/domain/rashi-i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@vedic-patro/domain/utils";
 import { type StrengthBand, strengthBand, houseNumberPos, rashiFromMadhya, clampPct } from "@vedic-patro/domain/kundali/bhava-bala-chart";
+import { tFor } from "@vedic-patro/i18n/runtime";
 const HOUSE_CLASS_LABEL: Record<HouseClass, string> = {
   kendra: "kundali.kendra",
   trikona: "kundali.trikona",
@@ -300,7 +301,7 @@ function BhavaDiamond({
               aria-pressed={selected}
               aria-label={bilingualText(
                 lang,
-                `भाव ${digits(houseNum)}, ${digits(Math.round(house.totalPinda))} विरुप`,
+                tFor("ne", "ui.kundali.x_dc5617a3", { v0: digits(houseNum), v1: digits(Math.round(house.totalPinda)) }),
                 `House ${houseNum}, ${Math.round(house.totalPinda)} virupas`,
               )}
               className="cursor-pointer outline-none"

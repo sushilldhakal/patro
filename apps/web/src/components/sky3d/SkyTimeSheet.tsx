@@ -115,7 +115,7 @@ function bsDisplayYear(signed: number): string {
   return signed > 0 ? String(signed) : `-${-signed}`;
 }
 
-const NE_DIGIT = "०१२३४५६७८९";
+const NE_DIGIT = "०१२३४५६७८९"; // copy-ok: digit table
 
 function parseTyped(raw: string, allowMinus: boolean): { abs: number; neg: boolean } | null {
   let s = raw.trim().replace(/[०-९]/g, (ch) => String(NE_DIGIT.indexOf(ch)));

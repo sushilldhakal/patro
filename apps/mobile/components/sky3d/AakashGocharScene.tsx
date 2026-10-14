@@ -169,6 +169,7 @@ import {
 import { DOME, labelClearPx, GRID, horizonBodyScale, type ScreenLabel, geoToVec3, circlePoints, makeLine, makePrimeMeridian, makeDynamicLine, makeDynamicSegments, GRID_R, dressGrid, bakeHorizonGrid, setPoint, flushLine, makeStarPoints, makeHorizonGlow, makeMilkyWayGeometry, equatorialToHorizonMatrix, sizeStarsByMagnitude, companionMagLimit, nebulaReveal, nebulaMarkerReveal, injectMilkyWayExtinction, nebulaInView, setVertex, makeUmbra, placeUmbra, labelsMoved, cullOverlappingNames } from "@vedic-patro/domain/sky3d/scene-builders";
 import { smoothstep } from "@vedic-patro/domain/sky3d/terrain";
 import { illustration, neutral, wheel } from "@vedic-patro/design-tokens";
+import { tFor } from "@vedic-patro/i18n/runtime";
 export { type ScreenLabel } from "@vedic-patro/domain/sky3d/scene-builders";
 
 /** Same wheel as Learn — radii come from {@link EclipticWheel}. */
@@ -319,9 +320,9 @@ const DOME_RADIUS: Record<GrahaKey, number> = {
  */
 const OUTER_PLANET_ORDER: OuterPlanetKey[] = ["uranus", "neptune", "pluto"];
 const OUTER_PLANET_NAME: Record<OuterPlanetKey, { ne: string; en: string }> = {
-  uranus: { ne: "अरुण", en: "Uranus" },
-  neptune: { ne: "वरुण", en: "Neptune" },
-  pluto: { ne: "यम", en: "Pluto" },
+  uranus: { get ne() { return tFor("ne", "ui.sky3d.uranus"); }, get en() { return tFor("en", "ui.sky3d.uranus"); } },
+  neptune: { get ne() { return tFor("ne", "ui.sky3d.neptune"); }, get en() { return tFor("en", "ui.sky3d.neptune"); } },
+  pluto: { get ne() { return tFor("ne", "ui.sky3d.pluto"); }, get en() { return tFor("en", "ui.sky3d.pluto"); } },
 };
 const OUTER_PLANET_COLOR: Record<OuterPlanetKey, string> = {
   uranus: illustration.teal77,

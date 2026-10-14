@@ -22,6 +22,7 @@ import {
 
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 type PanelConfig = { anchor: ChartAnchor; division: number };
 
 function buildDivisionalHouses(
@@ -152,7 +153,7 @@ function ChartPanel({
                       style={nepaliTextStyle(13)}
                       className={cn(kundaliDetailClasses.compare.toggleText, active && kundaliDetailClasses.compare.toggleActiveText)}
                     >
-                      {t === "graha" ? pick("ग्रह", "Graha") : pick("भाव", "Bhava")}
+                      {t === "graha" ? pick(tFor("ne", "kundali.graha"), tFor("en", "kundali.graha")) : pick(tFor("ne", "kundali.bhava_19"), tFor("en", "kundali.bhava_19"))}
                     </Text>
                   </Pressable>
                 );

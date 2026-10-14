@@ -213,9 +213,9 @@ function ShodhyaPindaTable({ rows }: { rows: ShodhyaPindaRow[] }) {
     ne: string;
     en: string;
   }[] = [
-    { key: "rashiPinda", ne: "राशि", en: "Rashi" },
-    { key: "grahaPinda", ne: "ग्रह", en: "Graha" },
-    { key: "shodhyaPinda", ne: "शोध्य", en: "Shodhya" },
+    { key: "rashiPinda", ne: tFor("ne", "panchanga.wheel.rashi"), en: tFor("en", "panchanga.wheel.rashi") },
+    { key: "grahaPinda", ne: tFor("ne", "kundali.graha"), en: tFor("en", "kundali.graha") },
+    { key: "shodhyaPinda", ne: tFor("ne", "kundali.x.pinda_shodhya"), en: tFor("en", "kundali.x.pinda_shodhya") },
   ];
 
   return (

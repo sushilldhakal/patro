@@ -10,15 +10,16 @@ import { useLabelProjector, type DiagramLabel } from "@/components/learn/diagram
 import { OrbitPath, ellipsePoints } from "@/components/learn/diagrams/scene-parts";
 import { DIAGRAM_COLOR, DIAGRAM_LABEL_COLOR } from "@/lib/learn/diagram-theme";
 import { useLocale } from "@/lib/i18n";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const OBLIQUITY = 23.44;
 const R = 0.55;
 
 const MARKS = [
-  { lon: 0, ne: "वसन्त विषुव", en: "Spring equinox", eq: true },
-  { lon: 90, ne: "ग्रीष्म अयनान्त", en: "Summer solstice", eq: false },
-  { lon: 180, ne: "शरद् विषुव", en: "Autumn equinox", eq: true },
-  { lon: 270, ne: "शीत अयनान्त", en: "Winter solstice", eq: false },
+  { lon: 0, get ne() { return tFor("ne", "learn.study.spring_equinox"); }, get en() { return tFor("en", "learn.study.spring_equinox"); }, eq: true },
+  { lon: 90, get ne() { return tFor("ne", "learn.study.summer_solstice"); }, get en() { return tFor("en", "learn.study.summer_solstice"); }, eq: false },
+  { lon: 180, get ne() { return tFor("ne", "learn.study.autumn_equinox"); }, get en() { return tFor("en", "learn.study.autumn_equinox"); }, eq: true },
+  { lon: 270, get ne() { return tFor("ne", "learn.study.winter_solstice"); }, get en() { return tFor("en", "learn.study.winter_solstice"); }, eq: false },
 ];
 
 function pointOn(ring: readonly (readonly [number, number, number])[], lon: number) {
@@ -73,7 +74,7 @@ const EclipticEquatorCrossScene = memo(function EclipticEquatorCrossScene({ onLa
 
 export function EclipticEquatorCrossDiagram() {
   const { t, digits } = useLocale();
-  const labels = [{ ne: "खगोलीय विषुवत् रेखा", en: "Celestial equator" }];
+  const labels = [{ ne: tFor("ne", "ui.learn.celestial_equator"), en: tFor("en", "ui.learn.celestial_equator") }];
 
   return (
     <LearnDiagram3D

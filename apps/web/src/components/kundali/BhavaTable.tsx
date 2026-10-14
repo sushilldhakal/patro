@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@vedic-patro/domain/utils";
 import { kundaliDetailClasses } from "@vedic-patro/design-tokens/classes/kundali-detail-classes";
+import { tFor } from "@vedic-patro/i18n/runtime";
 
 const th = kundaliDetailClasses.table.th;
 const td = kundaliDetailClasses.table.td;
@@ -97,7 +98,7 @@ export function BhavaTable({ division, anchorKey, vargaCharts }: BhavaTableProps
                     className="ml-1 text-sm font-semibold"
                     title={bilingualText(
                       lang,
-                      row.badge === "Q" ? "\u0915\u0947\u0928\u094d\u0926\u094d\u0930" : "\u0924\u094d\u0930\u093f\u0915\u094b\u0923",
+                      row.badge === "Q" ? tFor("ne", "kundali.kendra") : tFor("ne", "kundali.trikona"),
                       row.badge === "Q" ? "Kendra" : "Trikona",
                     )}
                   >

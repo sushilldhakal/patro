@@ -87,7 +87,7 @@ export function DayPatroExpandPanel({ lagna, graha, notes = [] }: Props) {
               const num = i + 1;
               const val = lagna.times[num];
               const late =
-                val?.includes("२५") || val?.includes("२६") || val?.includes("२७");
+                val?.includes(/* copy-ok */ "२५") || val?.includes(/* copy-ok */ "२६") || val?.includes(/* copy-ok */ "२७");
               return (
                 <div
                   key={rne}
