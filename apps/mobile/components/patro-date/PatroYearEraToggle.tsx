@@ -1,9 +1,8 @@
 import { Pressable } from "react-native";
 import { Text } from "@/components/ui/Text";
-import { useLocale } from "@/lib/i18n";
 import { nepaliTextStyle } from "@/lib/nepali-text";
-import { isGregorianEra, toggleEraForLanguage, type Era } from "@vedic-patro/domain/era";
-import { patroEraShortLabel } from "./patro-era-labels";
+import type { Era } from "@vedic-patro/domain/era";
+import { usePatroYearEraToggle } from "@vedic-patro/features/patro-date";
 import { cn } from "@vedic-patro/domain/utils";
 import { patroDateClasses } from "@vedic-patro/design-tokens/classes/patro-date-classes";
 
@@ -16,17 +15,14 @@ type Props = {
 
 /** BS↔BBS / AD↔BC — matches web {@link PatroYearEraToggle} inline variant. */
 export function PatroYearEraToggle({ era, onEraChange, compact, className }: Props) {
-  const { t, lang } = useLocale();
-  if (isGregorianEra(era) && lang !== "en") return null;
-  if (!isGregorianEra(era) && lang === "en") return null;
-
-  const targetEra = toggleEraForLanguage(era, lang);
-  const targetLabel = patroEraShortLabel(targetEra, lang);
+  const toggle = usePatroYearEraToggle(era);
+  if (!toggle) return null;
+  const { targetEra, label: targetLabel, ariaLabel } = toggle;
 
   return (
     <Pressable
       onPress={() => onEraChange(targetEra)}
-      accessibilityLabel={t("ui.patro_date.switch_to_targetlabel", { targetLabel })}
+      accessibilityLabel={ariaLabel}
       className={cn(
         patroDateClasses.eraToggle,
         "items-center justify-center active:bg-muted",

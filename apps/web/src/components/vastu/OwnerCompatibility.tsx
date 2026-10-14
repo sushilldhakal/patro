@@ -1,125 +1,60 @@
-import { useState } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useQuery } from "@tanstack/react-query";
 import { CalendarClock } from "lucide-react";
 import { SaitProfilePicker } from "@/components/sait/SaitProfilePicker";
-import type { Profile } from "@/lib/auth/client";
-import { profileChartParams } from "@vedic-patro/domain/kundali/profile-chart";
 import { LocationSelector } from "@/components/panchanga/LocationSelector";
-import {
-  DEFAULT_PANCHANGA_LOCATION,
-  resolveLocationTimezone,
-  type PanchangaLocation,
-} from "@/components/panchanga/use-panchanga-location";
-import { fetchJanmaRashi, fetchPanchangaDay, type NavataraTone } from "@/lib/api";
+import { fetchPanchangaDay } from "@/lib/api";
 import { patroDayFetchFromApiDateAd } from "@/lib/patro-day-url";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
-import { bilingualText, useLocale } from "@/i18n/locale";
+import { useOwnerCompatibility, type FetchCivilDay } from "@vedic-patro/features/vastu";
 import { cn } from "@vedic-patro/domain/utils";
 import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
 
-function todayIso(): string {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
-}
-
-const TONE_LABEL_KEY: Record<NavataraTone, string> = {
-  best: "vastu.plot.tone.best",
-  good: "vastu.plot.tone.good",
-  neutral: "vastu.plot.tone.neutral",
-  bad: "vastu.plot.tone.bad",
-  worst: "vastu.plot.tone.worst",
-};
+const fetchDay: FetchCivilDay = (dateAd, location, language) =>
+  fetchPanchangaDay(patroDayFetchFromApiDateAd(dateAd, { era: "ad", language }), location);
 
 export function OwnerCompatibility() {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
-  const chartParams = selectedProfile ? profileChartParams(selectedProfile) : null;
-
-  // Independent from the app's shared site-wide location —
-  // usePanchangaLocation() persists to a single global localStorage key with
-  // no scoping, so using it here would silently overwrite the location the
-  // rest of the app (panchanga, etc.) shows.
-  const [plotLocation, setPlotLocation] = useState<PanchangaLocation>(DEFAULT_PANCHANGA_LOCATION);
-  const [candidateDate, setCandidateDate] = useState(() => todayIso());
-
-  const janmaQ = useQuery({
-    queryKey: ["vastu-owner-nakshatra", chartParams?.moment, chartParams?.location.params],
-    queryFn: () => fetchJanmaRashi(chartParams!.moment, resolveLocationTimezone(chartParams!.location)),
-    enabled: !!chartParams,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const dayQ = useQuery({
-    queryKey: ["vastu-construction-day", candidateDate, plotLocation.params, lang],
-    queryFn: () =>
-      fetchPanchangaDay(patroDayFetchFromApiDateAd(candidateDate, { era: "ad", language: lang }), plotLocation.params),
-    enabled: !!chartParams,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // janma_nakshatra is 1..27; NavataraRow.index is 0-based — convert once, here.
-  const ownerIndex = janmaQ.data ? janmaQ.data.janma_nakshatra - 1 : null;
-  const row =
-    ownerIndex !== null ? (dayQ.data?.tarabala_table?.rows.find((r) => r.index === ownerIndex) ?? null) : null;
-
-  const isLoading = chartParams != null && (janmaQ.isLoading || dayQ.isLoading);
-  const isError = chartParams != null && (janmaQ.isError || dayQ.isError);
+  const v = useOwnerCompatibility({ fetchDay });
 
   return (
     <div className={vastuClasses.ownerCard}>
       <div className={vastuClasses.ownerHeader}>
         <CalendarClock className="h-4 w-4 shrink-0 text-secondary" />
-        <h3 className={vastuClasses.ownerHeading}>{t("vastu.plot.owner_heading")}</h3>
+        <h3 className={vastuClasses.ownerHeading}>{v.copy.heading}</h3>
       </div>
 
       <div className={vastuClasses.ownerBody}>
-        <p className={vastuClasses.planBlurb}>{t("vastu.plot.owner_blurb")}</p>
+        <p className={vastuClasses.planBlurb}>{v.copy.blurb}</p>
 
-        <SaitProfilePicker selectedId={selectedProfile?.id ?? null} onSelect={setSelectedProfile} />
+        <SaitProfilePicker selectedId={v.selectedProfile?.id ?? null} onSelect={v.setSelectedProfile} />
 
-        {chartParams && (
+        {v.hasProfile && (
           <>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label
-                  htmlFor="vastu-construction-date"
-                  className={cn(vastuClasses.fieldLabel, "block")}
-                >
-                  {t("vastu.plot.construction_date_label")}
+                <label htmlFor="vastu-construction-date" className={cn(vastuClasses.fieldLabel, "block")}>
+                  {v.copy.dateLabel}
                 </label>
                 <input
                   id="vastu-construction-date"
                   type="date"
-                  value={candidateDate}
-                  onChange={(e) => setCandidateDate(e.target.value)}
+                  value={v.candidateDate}
+                  onChange={(e) => v.setCandidateDate(e.target.value)}
                   className={vastuClasses.dateControl}
                 />
               </div>
               <div>
-                <p className={vastuClasses.fieldLabel}>
-                  {t("vastu.plot.construction_place_label")}
-                </p>
-                <LocationSelector compact location={plotLocation} onLocationChange={setPlotLocation} />
+                <p className={vastuClasses.fieldLabel}>{v.copy.placeLabel}</p>
+                <LocationSelector compact location={v.plotLocation} onLocationChange={v.setPlotLocation} />
               </div>
             </div>
 
-            {isLoading && <p className={vastuClasses.mutedNote}>{t("vastu.plot.owner_loading")}</p>}
-            {isError && <p className={vastuClasses.destructiveText}>{t("vastu.plot.owner_error")}</p>}
+            {v.status && <p className={vastuClasses.mutedNote}>{v.status}</p>}
+            {v.error && <p className={vastuClasses.destructiveText}>{v.error}</p>}
 
-            {row && (
-              <div className={cn(vastuClasses.ownerResult, patroNavataraToneBg(row.tone))}>
-                <p className={vastuClasses.ownerResultTitle}>
-                  {t("vastu.plot.owner_nakshatra_label")}: {bilingualText(lang, row.name, row.name_en ?? row.name)}
-                </p>
-                <p className={vastuClasses.ownerResultVerdict}>
-                  {t("vastu.plot.construction_result", {
-                    tone: t(TONE_LABEL_KEY[row.tone]),
-                  })}
-                </p>
-                <p className={vastuClasses.infoDisclaimer}>{t("vastu.plot.construction_disclaimer")}</p>
+            {v.result && (
+              <div className={cn(vastuClasses.ownerResult, patroNavataraToneBg(v.result.tone))}>
+                <p className={vastuClasses.ownerResultTitle}>{v.result.title}</p>
+                <p className={vastuClasses.ownerResultVerdict}>{v.result.verdict}</p>
+                <p className={vastuClasses.infoDisclaimer}>{v.result.disclaimer}</p>
               </div>
             )}
           </>

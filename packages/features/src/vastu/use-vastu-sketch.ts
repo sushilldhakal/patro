@@ -1,7 +1,13 @@
+/**
+ * The plot sketch — zone per room, Āyādi check, entrance corner — as computed
+ * by the server (`POST /vastu/sketch`), for both apps' plot planners. Nothing
+ * is worked out here; while a newer answer is in flight the previous one stays
+ * on screen. The app passes `offline` so the planner still works without a
+ * connection (a 4xx answer or a cancelled request is surfaced as-is).
+ */
 import { useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { fetchVastuSketch, type VastuSketchRequest } from "@/lib/api";
-import { localVastuSketch } from "@/lib/vastu-offline";
+import { fetchVastuSketch, type VastuSketchRequest, type VastuSketchResponse } from "@vedic-patro/api-client";
 import type { CardinalWall } from "@vedic-patro/domain/vastu";
 import type { HousePlan } from "@vedic-patro/domain/vastu-plan";
 
@@ -17,15 +23,12 @@ function useDebounced<T>(value: T, ms: number): T {
   return settled;
 }
 
-/**
- * The plot sketch — zone per room, Āyādi check, entrance corner — as computed
- * by the server (`POST /vastu/sketch`). Nothing is worked out here; while a
- * newer answer is in flight the previous one stays on screen.
- */
+export type VastuSketchOffline = (request: VastuSketchRequest) => VastuSketchResponse;
+
 export function useVastuSketch(
   plot: { widthM: number; depthM: number; facing: CardinalWall },
   house: HousePlan,
-  enabled = true,
+  { enabled = true, offline }: { enabled?: boolean; offline?: VastuSketchOffline } = {},
 ) {
   const request = useMemo<VastuSketchRequest>(
     () => ({
@@ -54,12 +57,10 @@ export function useVastuSketch(
       try {
         return await fetchVastuSketch(settled, signal);
       } catch (err) {
-        // A real answer from the server (bad input) or a cancelled request is
-        // surfaced as-is; no connection means the planner still works from the
-        // on-device copy, which is the point of offline mode.
+        if (!offline) throw err;
         const message = err instanceof Error ? err.message : "";
         if (message.startsWith("API 4") || (err instanceof Error && err.name === "AbortError")) throw err;
-        return localVastuSketch(settled);
+        return offline(settled);
       }
     },
     enabled,

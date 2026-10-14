@@ -1,9 +1,7 @@
-import { useTranslation } from "@vedic-patro/i18n/react";
 import { cn } from "@vedic-patro/domain/utils";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { patroNavataraToneBg } from "@/lib/patro-classes";
 import { panchangaPageClasses } from "@vedic-patro/design-tokens/classes/panchanga-page-classes";
-import { rowLabel } from "@vedic-patro/domain/panchanga-layout";
+import { usePanchangaLayoutCopy } from "@vedic-patro/features/panchanga-drawing";
 import {
   panchangaCardBase,
   panchangaCardGrid,
@@ -31,11 +29,7 @@ export function PanchangaSection({
   children: React.ReactNode;
   className?: string;
 }) {
-  const { t } = useTranslation();
-  const { lang } = useLocale();
-  const title = titleKey
-    ? t(titleKey)
-    : bilingualText(lang, titleNe ?? titleEn ?? "", titleEn ?? titleNe ?? "");
+  const title = usePanchangaLayoutCopy().sectionTitle(titleKey, titleNe, titleEn);
 
   return (
     <section className={cn(panchangaSection, className)}>
@@ -266,12 +260,12 @@ export function PanchangaFieldCell({
   className?: string;
   nowrap?: boolean;
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
 
   return (
     <div className={cn(panchangaCardBase, className)}>
       <QuadLabel>
-        {rowLabel(labelKey, label, t)}
+        {copy.fieldLabel(labelKey, label)}
       </QuadLabel>
       <QuadValue nowrap={nowrap}>{children}</QuadValue>
     </div>
@@ -320,7 +314,7 @@ export function UptoValue({
   badge?: string;
   compact?: boolean;
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
   if (!name) return null;
   return (
     <div
@@ -347,7 +341,7 @@ export function UptoValue({
         // Wrappable at its spaces ("tomorrow 20:21 until" is wider than a
         // half-width card); the clock itself has none, so it never splits.
         <span className={panchangaPageClasses.layout.uptoEnd}>
-          {endTime} {t("sections.until")}
+          {copy.until(endTime)}
         </span>
       )}
     </div>
@@ -363,11 +357,11 @@ export function TimingRange({
   end?: string;
   variant?: "good" | "bad" | "neutral";
 }) {
-  const { t } = useTranslation();
+  const copy = usePanchangaLayoutCopy();
   if (!start || !end) {
     return (
       <span className={panchangaPageClasses.layout.rangeNa}>
-        {t("sections.dash")} {t("sections.not_available")}
+        {copy.notAvailable}
       </span>
     );
   }
@@ -380,7 +374,7 @@ export function TimingRange({
         variant === "neutral" && panchangaPageClasses.layout.rangeNeutral,
       )}
     >
-      {start} → {end}
+      {copy.range(start, end)}
     </span>
   );
 }

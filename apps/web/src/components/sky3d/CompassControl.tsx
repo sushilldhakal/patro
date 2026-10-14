@@ -21,26 +21,17 @@
 import { useRef, type PointerEvent as ReactPointerEvent } from "react";
 import compassNeedle from "@/assets/compass.svg?raw";
 import cameraGlyph from "@/assets/camera.svg?raw";
-import { useLocale, bilingualText } from "@/i18n/locale";
-import { COMPASS_POINTS } from "@vedic-patro/domain/sky3d/sky-geometry";
+import { COMPASS_DIAL_SIZE, useCompassDial } from "@vedic-patro/features/sky3d";
 import { normalizeDeg } from "@vedic-patro/domain/sky3d/geocentric-model";
 
 import { illustration, midnight, neutral, withAlpha } from "@vedic-patro/design-tokens";
-const DIAL_SIZE = 64;
+const DIAL_SIZE = COMPASS_DIAL_SIZE;
 const RADIUS = DIAL_SIZE / 2;
 /** The centre glyph sits fixed — this is its own box, not the dial's. */
 const ICON_SIZE = 20;
-/** N/E/S/W and the dots between them share one ring, close enough to the
-    centre glyph to read as one dial but never touching it. Pulled in
-    tighter than the dial's own edge so the (now bigger) letters still clear
-    both the glyph and the rim. */
-const RING_RADIUS = RADIUS - 12;
 /** A drag shorter than this, released quickly, reads as a tap rather than a spin. */
 const TAP_SLOP_PX = 6;
 
-const POINTS = COMPASS_POINTS.filter((p) => p.major);
-/** NE/SE/SW/NW carry no label here — just the dot that separates two cardinals. */
-const DOTS = COMPASS_POINTS.filter((p) => !p.major);
 
 export function CompassControl({
   heading,
@@ -66,8 +57,7 @@ export function CompassControl({
   /** Hidden outside the horizon view — there is no "facing direction" from space or the globe. */
   visible?: boolean;
 }) {
-  const { lang } = useLocale();
-  const pick = (ne: string, en: string) => bilingualText(lang, ne, en);
+  const dial = useCompassDial(heading);
   const sensorActive = gyroMode || cameraOn;
 
   const gesture = useRef({
@@ -179,10 +169,8 @@ export function CompassControl({
           with it and put "N" on its side at a 90° heading; walking each one
           around the circle individually is what lets the position turn while
           the letter itself stays upright. */}
-      {DOTS.map((p) => {
-        const a = ((p.az - heading) * Math.PI) / 180;
-        const x = RADIUS + RING_RADIUS * Math.sin(a);
-        const y = RADIUS - RING_RADIUS * Math.cos(a);
+      {dial.dots.map((p) => {
+        const { x, y } = p;
         return (
           <span
             key={p.az}
@@ -191,17 +179,15 @@ export function CompassControl({
           />
         );
       })}
-      {POINTS.map((p) => {
-        const a = ((p.az - heading) * Math.PI) / 180;
-        const x = RADIUS + RING_RADIUS * Math.sin(a);
-        const y = RADIUS - RING_RADIUS * Math.cos(a);
+      {dial.points.map((p) => {
+        const { x, y } = p;
         return (
           <span
             key={p.az}
             className="pointer-events-none absolute flex h-[18px] w-[18px] -translate-x-1/2 -translate-y-1/2 items-center justify-center text-diagram-sm font-bold"
-            style={{ left: x, top: y, color: p.az === 0 ? midnight.vermilion : withAlpha(neutral.white, 0.85) }}
+            style={{ left: x, top: y, color: p.north ? midnight.vermilion : withAlpha(neutral.white, 0.85) }}
           >
-            {pick(p.ne, p.en)}
+            {p.label}
           </span>
         );
       })}

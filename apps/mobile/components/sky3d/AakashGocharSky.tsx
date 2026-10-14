@@ -34,11 +34,10 @@ import {
   bsToAD,
   BS_MONTHS_NE,
   BS_MONTH_NAMES,
-  WEEKDAYS_SHORT_NE,
 } from "@vedic-patro/domain/bs-calendar";
 import { BsDateTimePicker } from "@/components/panchanga/BsDateTimePicker";
 import { windowedBrowseYears } from "@/lib/patro-browse-years";
-import { bikramFromSun } from "@vedic-patro/domain/sky3d/bikram-solar";
+import { useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { useLocale } from "@/lib/i18n";
@@ -83,7 +82,6 @@ import {
   type SkyTargetKind,
 } from "@vedic-patro/domain/sky3d/sky-catalogue";
 import {
-  localFavourites,
   pushRecent,
   putFavourites,
   recents as readRecents,
@@ -144,27 +142,6 @@ const LABEL_COLOR = {
  * The speed ladder, in simulated seconds per real second. Pressing a fast
  * button repeatedly climbs it; pause drops back to the first rung.
  */
-/**
- * What the camera can be hung on, besides पृथ्वी.
- *
- * The seven the eye can see plus the Sun and Moon — the same nine a पञ्चाङ्ग
- * tables. राहु and केतु are left out on purpose: they are the crossings of the
- * Moon's plane, not places, so centring on one puts the camera on a point that
- * is only defined by two other things.
- */
-/** The focus list, in the web's own order — पृथ्वी second, the two छाया ग्रह last. */
-const FOCUS_TARGETS: { key: GrahaKey; ne: string; en: string }[] = [
-  { key: "sun", get ne() { return tFor("ne", "kundali.report.meta_sun"); }, get en() { return tFor("en", "kundali.report.meta_sun"); } },
-  { key: "moon", get ne() { return tFor("ne", "kundali.graha_name_moon"); }, get en() { return tFor("en", "kundali.graha_name_moon"); } },
-  { key: "mercury", get ne() { return tFor("ne", "kundali.graha_name_mercury"); }, get en() { return tFor("en", "kundali.graha_name_mercury"); } },
-  { key: "venus", get ne() { return tFor("ne", "kundali.graha_name_venus"); }, get en() { return tFor("en", "kundali.graha_name_venus"); } },
-  { key: "jupiter", get ne() { return tFor("ne", "kundali.graha_name_jupiter"); }, get en() { return tFor("en", "kundali.graha_name_jupiter"); } },
-  { key: "saturn", get ne() { return tFor("ne", "kundali.graha_name_saturn"); }, get en() { return tFor("en", "kundali.graha_name_saturn"); } },
-  { key: "mars", get ne() { return tFor("ne", "kundali.graha_name_mars"); }, get en() { return tFor("en", "kundali.graha_name_mars"); } },
-  { key: "rahu", get ne() { return tFor("ne", "grahas.rahu"); }, get en() { return tFor("en", "grahas.rahu"); } },
-  { key: "ketu", get ne() { return tFor("ne", "grahas.ketu"); }, get en() { return tFor("en", "grahas.ketu"); } },
-];
-
 /**
  * Where the fast buttons pick the ladder up from a standstill: a minute a
  * second. {@link DEFAULT_STEP_INDEX} is real time, which is the right thing
@@ -1420,56 +1397,8 @@ export function AakashGocharSky({
    * 2830. Hence UTC getters on a shifted instant, and a weekday counted in
    * days from the epoch.
    */
-  const simStamp = useMemo(() => {
-    const local = new Date(simDate.getTime() + zoneOffsetMs);
-    const y = local.getUTCFullYear();
-    const mo = String(local.getUTCMonth() + 1).padStart(2, "0");
-    const d = String(local.getUTCDate()).padStart(2, "0");
-    const clock = `${String(local.getUTCHours()).padStart(2, "0")}:${String(
-      local.getUTCMinutes(),
-    ).padStart(2, "0")}`;
-    // 1 Jan 1970 was a Thursday, and 0 is Sunday.
-    const dayIndex = Math.floor((simDate.getTime() + zoneOffsetMs) / 86400000);
-    const weekday = (((dayIndex + 4) % 7) + 7) % 7;
-    const place = timeZone.split("/").pop()?.replace(/_/g, " ") ?? timeZone;
-    // Proleptic Gregorian throughout, as everywhere else in the app; year 0 is
-    // 1 BC, so anything at or below it reads with the era spelled out.
-    const adYear = y > 0 ? `${y}` : `${1 - y} BC`;
-
-    /* The corner pill's own readout: the day in बिक्रम and the clock as a
-       clock is read — twelve hours and a half-of-day word, not the 24-hour
-       stamp the HUD keeps. Built for both languages, as on the web: an English
-       reader of a Nepali almanac still wants "Bhadau 10" there, and the HUD
-       above is already carrying the Gregorian date. */
-    const bsShort = bikramFromSun(simDate, sunLongitude ?? 0, sunSpeed);
-    const h24 = local.getUTCHours();
-    const minute = String(local.getUTCMinutes()).padStart(2, "0");
-    const h12 = h24 % 12 || 12;
-    const half = lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor(undefined, "ui.sky3d.x_97797b0d") : tFor(undefined, "ui.sky3d.x_1842d5be");
-    const short = {
-      day: `${bsMonthLabel(bsShort.month, lang)} ${digits(bsShort.day)}`,
-      clock: `${digits(h12)}:${digits(minute)} ${half}`,
-    };
-
-    if (lang === "en") {
-      return { date: `${adYear}-${mo}-${d}`, time: `${clock} · ${place}`, short };
-    }
-
-    const adYearNe = y > 0 ? tFor("ne", "ui.sky3d.x_87454780", { v0: digits(y) }) : tFor("ne", "ui.sky3d.x_775bec8c", { v0: digits(1 - y) });
-
-    /* Past बि.सं. २२०० the compiled table has nothing, so the Sun becomes the
-       calendar it always was — see [[bikram-solar]]. Marked with ≈ so it never
-       passes for the almanac. */
-    const bs = bikramFromSun(simDate, sunLongitude ?? 0, sunSpeed);
-    const mark = bs.approximate ? "≈" : "";
-    return {
-      short,
-      date: tFor(undefined, "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
-      // Out past the table the AD year rides along, so the reading can be
-      // checked against a calendar the reader already knows.
-      time: `${digits(clock)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
-    };
-  }, [simDate, zoneOffsetMs, timeZone, lang, digits, sunLongitude, sunSpeed]);
+  const simStamp = useSkyStamp({ simDate, zoneOffsetMs, timeZone, sunLongitude, sunSpeed });
+  const focusTargets = useSkyFocusTargets();
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
 
@@ -1595,15 +1524,6 @@ export function AakashGocharSky({
     <SkyTimeSheet
       timeMs={simDate.getTime()}
       zoneOffsetMs={zoneOffsetMs}
-      nepaliCal={lang !== "en"}
-      digits={digits}
-      pick={pick}
-      speedLabel={
-        playing
-          ? `${reverse ? "◀◀" : "▶▶"} ${pick(speed.ne, speed.en)}`
-          : t("ui.sky3d.paused")
-      }
-      playing={playing}
       /* The ladder, read as one bipolar rung: 0 is a stopped clock, the sign
          is the direction, and the magnitude is how far up the ladder it is. */
       rateValue={playing ? (reverse ? -(speedIndex + 1) : speedIndex + 1) : 0}
@@ -1727,13 +1647,7 @@ export function AakashGocharSky({
           web uses, and choosing anything turns the follow on in the same press:
           picking here is only ever asked for because you want to ride it. */}
       <View className="gap-0.5">
-        {(
-          [
-            { key: "sun" as const, ne: tFor("ne", "kundali.report.meta_sun"), en: tFor("en", "kundali.report.meta_sun") },
-            { key: "earth" as const, ne: tFor("ne", "vastu.element.earth"), en: tFor("en", "vastu.element.earth") },
-            ...FOCUS_TARGETS.filter((t) => t.key !== "sun"),
-          ]
-        ).map(({ key, ne: neName, en }) => {
+        {focusTargets.map(({ key, label }) => {
           const checked = key === "earth" ? !selectedKey : selectedKey === key;
           return (
             <Pressable
@@ -1763,7 +1677,7 @@ export function AakashGocharSky({
                 className="text-caption font-semibold"
                 style={[nepaliTextStyle(12, { dense: true }), { color: checked ? neutral.white : withAlpha(neutral.white, 0.7) }]}
               >
-                {pick(neName, en)}
+                {label}
               </Text>
             </Pressable>
           );

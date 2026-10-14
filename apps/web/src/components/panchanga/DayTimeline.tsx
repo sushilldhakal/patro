@@ -1,21 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
 import type { CivilTimeline, PanchangaDay } from "@/lib/api";
 import { GrahaStatusBadges } from "@/components/graha/GrahaStatusBadges";
 import { GrahaPlanetIcon } from "@/components/graha/GrahaPlanetIcon";
 import type { GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   formatDegreeInRashi,
-  getPlanetRows,
   getPlanetsAnchorLabel,
-  getSunriseLagnaRow,
 } from "@vedic-patro/domain/panchanga-format";
 import { formatRashiDisplay, resolveRashiDisplay } from "@vedic-patro/domain/rashi-i18n";
-import { minutesSinceMidnightInTimezone, resolveTimeZone } from "@vedic-patro/domain/zoned-time";
 import {
-  buildCivilTimelineData,
-  buildDayTimelineData,
   dualTimeAtGhati,
-  needleGhatiOnVedicChart,
 } from "@vedic-patro/domain/day-timeline-data";
 import { choghadiyaName } from "@vedic-patro/domain/choghadiya-display";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -53,9 +46,9 @@ import {
   pgxSunline,
   pgxTimeLagna,
 } from "@/lib/timeline-classes";
-import { type ChartSegment, assignLanes, segmentsFromRow, minutesOnVedicChart } from "@vedic-patro/domain/day-timeline-layout";
+import { type ChartSegment, assignLanes, segmentsFromRow } from "@vedic-patro/domain/day-timeline-layout";
 
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { useDayCycleToggle, useDayTimeline } from "@vedic-patro/features/panchanga-drawing";
 const GRAHA_KEYS = new Set<string>([
   "sun", "moon", "mars", "mercury", "jupiter", "venus", "saturn", "rahu", "ketu",
 ]);
@@ -157,15 +150,7 @@ export function DayCycleToggle({
   /** "sm" = compact chart toolbar toggle; "md" = prominent page-level tab. */
   size?: "sm" | "md";
 }) {
-  const { lang } = useLocale();
-  const options: Array<{ value: DayCycleMode; ne: string; en: string }> = [
-    { value: "Day-Night", ne: tFor("ne", "ui.panchanga.day_night"), en: tFor("en", "ui.panchanga.day_night") },
-    { value: "Calendar Day", ne: tFor("ne", "ui.panchanga.calendar_day"), en: tFor("en", "ui.panchanga.calendar_day") },
-  ];
-  // Under 768px there isn't room for both; mirror the language / calendar
-  // toggles — show only the *inactive* mode as a single button that switches
-  // to it on tap (and then flips to show the other one).
-  const inactive = options.find((o) => o.value !== mode) ?? options[0]!;
+  const { options, inactive, switchLabel, groupLabel } = useDayCycleToggle(mode);
   const padCls = size === "md" ? "px-3.5 py-1.5 text-sm" : "px-2 py-0.5 text-sm";
   const roundCls = size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm;
   return (
@@ -174,7 +159,7 @@ export function DayCycleToggle({
       <button
         type="button"
         onClick={() => onModeChange?.(inactive.value)}
-        aria-label={bilingualText(lang, tFor(undefined, "ui.panchanga.x_3dc91e42", { v0: inactive.ne }), `Switch to ${bilingualText(lang, inactive.ne, inactive.en)}`)}
+        aria-label={switchLabel}
         className={cn(
           "inline-flex items-center justify-center transition-colors hover:bg-surface-hover md:hidden",
           panchangaPageClasses.dayCycle.toggleSingle,
@@ -183,7 +168,7 @@ export function DayCycleToggle({
           roundCls,
         )}
       >
-        {bilingualText(lang, inactive.ne, inactive.en)}
+        {inactive.label}
       </button>
 
       {/* Desktop (≥768px): full segmented control. */}
@@ -194,7 +179,7 @@ export function DayCycleToggle({
           size === "md" ? panchangaPageClasses.dayCycle.toggleRadiusMd : panchangaPageClasses.dayCycle.toggleRadiusSm,
         )}
         role="radiogroup"
-        aria-label={tFor(lang, "panchanga.day_cycle.day_boundary")}
+        aria-label={groupLabel}
       >
         {options.map((o) => (
           <button
@@ -212,7 +197,7 @@ export function DayCycleToggle({
                 : cn(panchangaPageClasses.dayCycle.toggleIdle, "hover:bg-surface-hover"),
             )}
           >
-            {bilingualText(lang, o.ne, o.en)}
+            {o.label}
           </button>
         ))}
       </div>
@@ -229,25 +214,22 @@ function DayTimelineBand({
   onModeChange?: (mode: DayCycleMode) => void;
   showToggle?: boolean;
 }) {
-  const { lang } = useLocale();
-  const subtitle =
-    mode === "Calendar Day"
-      ? tFor(lang, "ui.panchanga.full_panchanga_timeline_midnight_to_midnight")
-      : tFor(lang, "ui.panchanga.full_panchanga_timeline_sunrise_to_sunrise");
+  const { copy } = useDayTimeline({ mode });
+  const subtitle = copy.subtitle;
   return (
     <div className={patroSecBand}>
-      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{tFor(lang, "panchanga.day_cycle.title")}</h2>
+      <h2 className={panchangaPageClasses.dayCycle.bandTitle}>{copy.title}</h2>
       <span className={panchangaPageClasses.dayCycle.bandSubtitle}>
         {subtitle}
       </span>
       <span className={cn("inline-flex", panchangaPageClasses.dayCycle.bandLegend, "normal-case tracking-normal")}>
         <span className={cn("inline-flex", panchangaPageClasses.dayCycle.legendItem)}>
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-success/34 not-italic")} />
-          {tFor(lang, "panchanga.day_cycle.good")}
+          {copy.good}
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-danger/30 not-italic")} />
-          {tFor(lang, "panchanga.day_cycle.bad")}
+          {copy.bad}
           <i className={cn("inline-block", panchangaPageClasses.dayCycle.legendSwatch, "bg-secondary/22 not-italic")} />
-          {tFor(lang, "panchanga.day_cycle.night")}
+          {copy.night}
         </span>
         {showToggle && <DayCycleToggle mode={mode} onModeChange={onModeChange} />}
       </span>
@@ -271,29 +253,10 @@ export function DayTimeline({
   chartOnly = false,
 }: Props) {
   const { digits, lang } = useLocale();
-  const isCivil = mode === "Calendar Day";
-  const data = useMemo(() => {
-    if (isCivil) return civil ? buildCivilTimelineData(civil, p) : null;
-    return p ? buildDayTimelineData(p) : null;
-  }, [isCivil, civil, p]);
-  const planets = useMemo(() => {
-    if (!p) return [];
-    const rows = getPlanetRows(p);
-    const lagna = getSunriseLagnaRow(p);
-    return lagna ? [lagna, ...rows] : rows;
-  }, [p]);
-  const timeZone = resolveTimeZone(p?.location?.timezone, timezone);
+  const tl = useDayTimeline({ p, dateAd, isToday, timezone, needleClock, showNeedle, loading, mode, civil, civilLoading });
+  const { isCivil, data, planets, busy, nowG, nowLabel, copy } = tl;
   const tithiIdx = p ? tithiIndexFromPanchanga(p) : null;
-
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    if (!isToday) return;
-    const id = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(id);
-  }, [isToday]);
-
-  const busy = loading || (isCivil ? civilLoading || !civil : !p) || !data;
-  if (busy) {
+  if (busy || !data) {
     return (
       <div className={cn(patroCard, "w-full")} aria-busy={busy}>
         <DayTimelineBand mode={mode} onModeChange={onModeChange} showToggle={showToggle} />
@@ -380,50 +343,6 @@ export function DayTimeline({
   const rowBandAt = (i: number) => rowBands[i] ?? BAND;
   const tLabel = (g: number) => dualTimeAtGhati(g, data.sunriseMin).clock;
 
-  let nowG: number | null = null;
-  let nowLabel = tFor(lang, "panchanga.day_cycle.now");
-  const anchorAd = p?.panchanga_date_ad ?? p?.date_ad ?? dateAd;
-  const chartMins = minutesOnVedicChart(p?.query_instant_local, anchorAd ?? "", needleClock);
-
-  if (isCivil) {
-    // Civil axis: position = minutes-from-midnight / 24 (no sunrise offset).
-    let mins: number | null = null;
-    if (showNeedle && needleClock) {
-      const [hh, mm] = needleClock.split(":").map(Number);
-      if (!Number.isNaN(hh) && !Number.isNaN(mm)) {
-        mins = hh * 60 + mm;
-        // The pill already prints the clock via tLabel(nowG); keep the label
-        // empty so a chosen time reads "१६:२३", not "१६:२३ बजे १६:२३".
-        nowLabel = "";
-      }
-    } else if (showNeedle && isToday) {
-      mins = minutesSinceMidnightInTimezone(now, timeZone);
-    } else if (showNeedle && chartMins != null) {
-      mins = chartMins % (24 * 60);
-      nowLabel = tFor(lang, "panchanga.day_cycle.chosen_time");
-    }
-    if (mins != null) nowG = Math.max(0, Math.min(60, mins / 24));
-  } else if (showNeedle && needleClock && chartMins != null) {
-    // The needle overlays a marker on the civil date's udaya (sunrise-to-sunrise)
-    // day so it stays aligned with the wheel. Priority: an explicitly chosen
-    // clock pins the needle; otherwise on today it tracks the live current time
-    // ("अहिले"); otherwise it falls back to the ephemeris query instant.
-    nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) {
-      // Label stays empty; tLabel(nowG) in the pill prints the chosen clock,
-      // so this avoids the doubled "१६:२३ बजे १६:२३".
-      nowLabel = "";
-    }
-  } else if (showNeedle && isToday) {
-    const minsNow = minutesSinceMidnightInTimezone(now, timeZone);
-    nowG = needleGhatiOnVedicChart(minsNow, data.sunriseMin);
-  } else if (showNeedle && chartMins != null) {
-    nowG = needleGhatiOnVedicChart(chartMins, data.sunriseMin);
-    if (nowG != null) {
-      nowLabel = tFor(lang, "panchanga.day_cycle.chosen_time");
-    }
-  }
-
   const nightBands = data.nightBands ?? [[data.dayG, 60]];
   const sunriseG = isCivil ? data.sunriseG ?? 0 : 0;
   const sunsetG = isCivil ? data.sunsetG ?? data.dayG : data.dayG;
@@ -440,7 +359,7 @@ export function DayTimeline({
           className={cn("block", "h-auto", "w-full", "min-w-[768px]")}
           preserveAspectRatio="xMinYMid meet"
           role="img"
-          aria-label={tFor(lang, "ui.panchanga.full_panchanga_day_chart")}
+          aria-label={copy.chartAria}
         >
           {nightBands.map(([a, b], i) => (
             <rect
@@ -454,11 +373,11 @@ export function DayTimeline({
           ))}
 
           <text x={X0 - 10} y={isCivil ? 34 : 20} className={pgxScaleLabelDim()} textAnchor="end">
-            {tFor(lang, "panchanga.hour_aria")}
+            {copy.hour}
           </text>
           {!isCivil && (
             <text x={X0 - 10} y={47} className={pgxScaleLabelDim(true)} textAnchor="end">
-              {tFor(lang, "panchanga.day_cycle.ghati")}
+              {copy.ghati}
             </text>
           )}
           <line x1={X0} y1={30} x2={X1} y2={30} className={pgTlAxis} />
@@ -734,7 +653,7 @@ export function DayTimeline({
       {!chartOnly && data.ashubhaAll.length > 0 && (
         <PeriodCards
           tone="danger"
-          title={tFor(lang, "panchanga.day_cycle.inauspicious_periods")}
+          title={copy.inauspicious}
           items={data.ashubhaAll.map((a, i) => ({
             n: digits(i + 1),
             label: bilingualText(lang, a.detailNe, a.detailEn),
@@ -746,7 +665,7 @@ export function DayTimeline({
       {!chartOnly && data.shubha.length > 0 && (
         <PeriodCards
           tone="success"
-          title={tFor(lang, "panchanga.day_cycle.auspicious_periods")}
+          title={copy.auspicious}
           items={data.shubha.map((s, i) => ({
             n: digits(i + 1),
             label: bilingualText(lang, s.name, s.nameEn),
@@ -758,7 +677,7 @@ export function DayTimeline({
       {!chartOnly && p && planets.length > 0 && (
         <div className={cn("flex flex-col gap-2.5 border-t border-border px-4 py-3 pb-3.5")}>
           <div className="flex min-w-0 flex-col gap-0.5">
-            <span className="text-sm font-bold leading-tight">{tFor(lang, "panchanga.day_cycle.planets")}</span>
+            <span className="text-sm font-bold leading-tight">{copy.planets}</span>
             <span className="min-w-0 text-sm leading-snug break-words [overflow-wrap:anywhere]">
               {getPlanetsAnchorLabel(p, lang)}
             </span>
@@ -817,7 +736,7 @@ export function DayTimeline({
                   labelL,
                   coordText,
                   nakWithPada,
-                  lordText && `${tFor(lang, "panchanga.day_cycle.lord_sub")} ${lordText}`,
+                  lordText && `${copy.lordSub} ${lordText}`,
                 ]
                   .filter(Boolean)
                   .join(" · ")}
@@ -853,7 +772,7 @@ export function DayTimeline({
                       {lordText ? (
                         <span
                           className="min-w-0 break-words font-semibold text-secondary [overflow-wrap:anywhere]"
-                          title={tFor(lang, "panchanga.day_cycle.lord_sub_title")}
+                          title={copy.lordSubTitle}
                         >
                           {lordText}
                         </span>

@@ -52,8 +52,6 @@ import { GRAHA_NAME, type GrahaKey } from "@vedic-patro/domain/graha-details";
 import {
   BS_MONTH_NAMES,
   BS_MONTHS_NE,
-  bsMonthLabel,
-  WEEKDAYS_SHORT_NE,
 } from "@vedic-patro/domain/bs-calendar";
 import {
   dragScaleForZoom,
@@ -79,7 +77,7 @@ import {
   syncFavourites,
 } from "@/lib/sky3d/sky-bookmarks";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { bikramFromSun } from "@vedic-patro/domain/sky3d/bikram-solar";
+import { useSkyFocusTargets, useSkyStamp } from "@vedic-patro/features/sky3d";
 import { NAKSHATRA_ICONS } from "@vedic-patro/domain/nakshatra-icons";
 import { NAKSHATRA_SHORT } from "@vedic-patro/domain/sky3d/nakshatra-stars";
 import { useLocale, bilingualText } from "@/i18n/locale";
@@ -389,22 +387,6 @@ function clampPitch(p: number, max: number = ORBIT_PITCH_MAX) {
  * out at the far end the names hold their own size instead of swelling.
  */
 const LABEL_WIDE_TRIM = 3;
-
-/**
- * A zone-shifted instant → the UTC midnight of the day it lands on.
- *
- * `adToBS` reads a mid-day instant off the device's own calendar and a UTC one
- * off UTC, so anything shown against the observed place has to arrive already
- * flattened to its day — otherwise an evening in Kathmandu reads as tomorrow to
- * anyone further east. Built through the UTC setters because `new Date(y, …)`
- * folds years 0–99 into the 1900s, and this clock runs to both ends of history.
- */
-const zoneMidnight = (shifted: Date) => {
-  const midnight = new Date(0);
-  midnight.setUTCFullYear(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
-  midnight.setUTCHours(0, 0, 0, 0);
-  return midnight;
-};
 
 /**
  * A नक्षत्र's figure, drawn in the overlay's own colour.
@@ -1689,60 +1671,8 @@ export function AakashGocharSky({
    * 2830. Hence UTC getters on a shifted instant, and a weekday counted in
    * days from the epoch.
    */
-  const simStamp = useMemo(() => {
-    const local = new Date(simDate.getTime() + zoneOffsetMs);
-    const y = local.getUTCFullYear();
-    const mo = String(local.getUTCMonth() + 1).padStart(2, "0");
-    const d = String(local.getUTCDate()).padStart(2, "0");
-    const wall = `${String(local.getUTCHours()).padStart(2, "0")}:${String(
-      local.getUTCMinutes(),
-    ).padStart(2, "0")}`;
-    // 1 Jan 1970 was a Thursday, and 0 is Sunday.
-    const dayIndex = Math.floor((simDate.getTime() + zoneOffsetMs) / 86400000);
-    const weekday = (((dayIndex + 4) % 7) + 7) % 7;
-    const place = timeZone.split("/").pop()?.replace(/_/g, " ") ?? timeZone;
-    // Proleptic Gregorian throughout, as everywhere else in the app; year 0 is
-    // 1 BC, so anything at or below it reads with the era spelled out.
-    const adYear = y > 0 ? `${y}` : `${1 - y} BC`;
-
-    /* Past बि.सं. २२०० the compiled table has nothing, so the Sun becomes the
-       calendar it always was — see [[bikram-solar]]. Marked with ≈ so it never
-       passes for the almanac. The civil day goes with it, so the table is asked
-       about the place's day rather than the device's.
-
-       Computed for both languages, not just नेपाली: the corner readout names
-       the day in बिक्रम whichever language the page is in — an English reader
-       of a Nepali almanac still wants "Asar 10", not the Gregorian date the HUD
-       already carries. */
-    const bs = bikramFromSun(simDate, sunLongitude ?? 0, sunSpeed, zoneMidnight(local));
-
-    /* The corner readout: the day, and the clock as a clock is read — twelve
-       hours and a half-of-day word, not the 24-hour stamp the HUD keeps. */
-    const h24 = local.getUTCHours();
-    const minute = String(local.getUTCMinutes()).padStart(2, "0");
-    const h12 = h24 % 12 || 12;
-    const half =
-      lang === "en" ? (h24 < 12 ? "AM" : "PM") : h24 < 12 ? tFor(undefined, "ui.sky3d.x_97797b0d") : tFor(undefined, "ui.sky3d.x_1842d5be");
-    const short = {
-      day: `${bsMonthLabel(bs.month, lang)} ${digits(bs.day)}`,
-      clock: `${digits(h12)}:${digits(minute)} ${half}`,
-    };
-
-    if (lang === "en") {
-      return { date: `${adYear}-${mo}-${d}`, time: `${wall} · ${place}`, short };
-    }
-
-    const adYearNe = y > 0 ? tFor("ne", "ui.sky3d.x_87454780", { v0: digits(y) }) : tFor("ne", "ui.sky3d.x_775bec8c", { v0: digits(1 - y) });
-
-    const mark = bs.approximate ? "≈" : "";
-    return {
-      short,
-      date: tFor(undefined, "ui.sky3d.x_5616de2b", { v0: mark, v1: digits(bs.year), v2: bsMonthLabel(bs.month, "ne"), v3: digits(bs.day), v4: WEEKDAYS_SHORT_NE[weekday] }),
-      // Out past the table the AD year rides along, so the reading can be
-      // checked against a calendar the reader already knows.
-      time: `${digits(wall)} · ${place}${bs.approximate ? ` · ${adYearNe}` : ""}`,
-    };
-  }, [simDate, zoneOffsetMs, timeZone, lang, digits, sunLongitude, sunSpeed]);
+  const simStamp = useSkyStamp({ simDate, zoneOffsetMs, timeZone, sunLongitude, sunSpeed });
+  const focusTargets = useSkyFocusTargets();
 
   const isDay = mode === "horizon" && (sample?.sunAltitude ?? -90) > -0.5;
 
@@ -2370,20 +2300,7 @@ export function AakashGocharSky({
               {pick(tFor(undefined, "learn.playground.focus"), tFor("en", "learn.playground.focus"))}
             </span>
             <div className="flex flex-col gap-1">
-              {(
-                [
-                  ["sun", pick(tFor(undefined, "kundali.report.meta_sun"), tFor("en", "kundali.report.meta_sun"))],
-                  ["earth", pick(tFor(undefined, "vastu.element.earth"), tFor("en", "vastu.element.earth"))],
-                  ["moon", pick(tFor(undefined, "kundali.graha_name_moon"), tFor("en", "kundali.graha_name_moon"))],
-                  ["mercury", pick(tFor(undefined, "kundali.graha_name_mercury"), tFor("en", "kundali.graha_name_mercury"))],
-                  ["venus", pick(tFor(undefined, "kundali.graha_name_venus"), tFor("en", "kundali.graha_name_venus"))],
-                  ["jupiter", pick(tFor(undefined, "kundali.graha_name_jupiter"), tFor("en", "kundali.graha_name_jupiter"))],
-                  ["saturn", pick(tFor(undefined, "kundali.graha_name_saturn"), tFor("en", "kundali.graha_name_saturn"))],
-                  ["mars", pick(tFor(undefined, "kundali.graha_name_mars"), tFor("en", "kundali.graha_name_mars"))],
-                  ["rahu", pick(tFor(undefined, "grahas.rahu"), tFor("en", "grahas.rahu"))],
-                  ["ketu", pick(tFor(undefined, "grahas.ketu"), tFor("en", "grahas.ketu"))],
-                ] as const
-              ).map(([key, label]) => {
+              {focusTargets.map(({ key, label }) => {
                 const checked = key === "earth" ? !selectedKey : selectedKey === key;
                 return (
                   <label

@@ -8,7 +8,7 @@
  * Nepali UI steps विक्रम संवत् year / month / day. English UI keeps Gregorian.
  */
 
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -19,25 +19,11 @@ import {
   SkipBack,
   SkipForward,
 } from "lucide-react";
-import {
-  adToBS,
-  bsToAdOrNull,
-  getBSMonthLength,
-  shiftBsMonth,
-} from "@vedic-patro/domain/bs-calendar";
-import { civilGregorianToUtcMs } from "@vedic-patro/domain/patro-day";
-import { PATRO_SIGNED_YEAR_MAX, PATRO_SIGNED_YEAR_MIN } from "@vedic-patro/domain/patro-year-axis";
-import { nearestStepIndex, TIME_STEPS } from "@vedic-patro/domain/sky3d/time-steps";
 import { RATE_NOTCHES, rateToSlider, sliderToRate } from "@/lib/sky3d/rate-slider";
-import { useLocale, bilingualText } from "@/i18n/locale";
 import { cn } from "@vedic-patro/domain/utils";
-import { DAY_PERIODS, type WallParts, wallPartsFromMs, wallCivilUtc, periodIdAtHour } from "@vedic-patro/domain/sky3d/sky-time";
 import { effect, illustration, midnight, wheel } from "@vedic-patro/design-tokens";
-import { tFor } from "@vedic-patro/i18n/runtime";
+import { SKY_TIME_FIELDS, useSkyTimeSheet, type SkyTimeField, type SkyTimeFieldView } from "@vedic-patro/features/sky3d";
 export { type WallParts } from "@vedic-patro/domain/sky3d/sky-time";
-
-/** Starts at बिहान (~04:00) so the labels read left → right as named. */
-const DAY_ORIGIN_SEC = 4 * 3600;
 
 /** बिहान → दिउँसो → सन्ध्या → जूनकिरण → मध्यरात. */
 const DAYLIGHT_GRADIENT =
@@ -55,150 +41,11 @@ const DAYLIGHT_GRADIENT =
   `${wheel.sky2} 96%,` +
   `${illustration.violet24} 100%)`;
 
-function daySecToSlider(daySec: number): number {
-  return (daySec - DAY_ORIGIN_SEC + 86_400) % 86_400;
-}
-
-function sliderToDaySec(slider: number): number {
-  return (slider + DAY_ORIGIN_SEC) % 86_400;
-}
-
-function utcMsFromWall(p: WallParts): number {
-  return (
-    civilGregorianToUtcMs(p.year, p.month, p.day) +
-    p.hour * 3_600_000 +
-    p.minute * 60_000 +
-    p.second * 1000
-  );
-}
-
-function instantFromWall(p: WallParts, zoneOffsetMs: number): number {
-  return utcMsFromWall(p) - zoneOffsetMs;
-}
-
-function applyBsYmd(p: WallParts, signedYear: number, month: number, day: number): WallParts | null {
-  if (signedYear === 0) return null;
-  if (signedYear < PATRO_SIGNED_YEAR_MIN || signedYear > PATRO_SIGNED_YEAR_MAX) return null;
-  const m = ((month - 1 + 12) % 12) + 1;
-  const length = getBSMonthLength(signedYear, m) || 30;
-  const d = Math.min(Math.max(1, day), length);
-  const ad = bsToAdOrNull(signedYear, m, d);
-  if (ad) {
-    return {
-      ...p,
-      year: ad.getUTCFullYear(),
-      month: ad.getUTCMonth() + 1,
-      day: ad.getUTCDate(),
-    };
-  }
-  const gMonthRaw = m + 3;
-  const yearDelta = gMonthRaw > 12 ? 1 : 0;
-  const gMonth = ((gMonthRaw - 1) % 12) + 1;
-  return { ...p, year: signedYear - 57 + yearDelta, month: gMonth, day: Math.min(d, 28) };
-}
-
-function nepaliYmd(p: WallParts): { year: number; month: number; day: number } {
-  if (p.year >= 1643 && p.year <= 2144) {
-    const bs = adToBS(wallCivilUtc(p));
-    return { year: bs.year, month: bs.month, day: bs.day };
-  }
-  const signed = p.year + (p.month < 4 ? 56 : 57);
-  const bsMonth = ((p.month - 4 + 12) % 12) + 1;
-  return { year: signed === 0 ? -1 : signed, month: bsMonth, day: Math.min(Math.max(1, p.day), 32) };
-}
-
-function gregDisplayYear(astro: number): string {
-  return astro > 0 ? String(astro) : `-${1 - astro}`;
-}
-
-function bsDisplayYear(signed: number): string {
-  return signed > 0 ? String(signed) : `-${-signed}`;
-}
-
-const NE_DIGIT = "०१२३४५६७८९"; // copy-ok: digit table
-
-function parseTyped(raw: string, allowMinus: boolean): { abs: number; neg: boolean } | null {
-  let s = raw.trim().replace(/[०-९]/g, (ch) => String(NE_DIGIT.indexOf(ch)));
-  if (allowMinus) {
-    const neg = s.startsWith("-");
-    s = s.replace(/-/g, "");
-    if (!s) return null;
-    const n = Number(s);
-    if (!Number.isFinite(n) || n < 0) return null;
-    return { abs: Math.trunc(n), neg };
-  }
-  s = s.replace(/\D/g, "");
-  if (!s) return null;
-  const n = Number(s);
-  if (!Number.isFinite(n) || n < 0) return null;
-  return { abs: Math.trunc(n), neg: false };
-}
-
-function filterDraft(raw: string, allowMinus: boolean): string {
-  let s = raw.replace(/[०-९]/g, (ch) => String(NE_DIGIT.indexOf(ch)));
-  if (allowMinus) {
-    const neg = s.startsWith("-") || s.startsWith("−");
-    s = s.replace(/[-−]/g, "").replace(/\D/g, "");
-    return (neg ? "-" : "") + s.slice(0, 6);
-  }
-  return s.replace(/\D/g, "").slice(0, 2);
-}
-
-type Field = keyof WallParts;
-
-const FIELD_ORDER: Field[] = ["year", "month", "day", "hour", "minute", "second"];
-
-function stepBsField(p: WallParts, field: "year" | "month" | "day", delta: number): WallParts | null {
-  const bs = nepaliYmd(p);
-  if (field === "year") {
-    let next = bs.year + delta;
-    if (next === 0) next = delta < 0 ? -1 : 1;
-    return applyBsYmd(p, next, bs.month, bs.day);
-  }
-  if (field === "month") {
-    const next = shiftBsMonth(bs.year, bs.month, delta);
-    const year = next.year === 0 ? (delta < 0 ? -1 : 1) : next.year;
-    return applyBsYmd(p, year, next.month, bs.day);
-  }
-  let day = bs.day + delta;
-  let { year, month } = bs;
-  for (let i = 0; i < 24 && day > getBSMonthLength(year, month); i += 1) {
-    day -= getBSMonthLength(year, month);
-    const next = shiftBsMonth(year, month, 1);
-    year = next.year;
-    month = next.month;
-  }
-  for (let i = 0; i < 24 && day < 1; i += 1) {
-    const prev = shiftBsMonth(year, month, -1);
-    year = prev.year;
-    month = prev.month;
-    day += getBSMonthLength(year, month);
-  }
-  return applyBsYmd(p, year === 0 ? (delta < 0 ? -1 : 1) : year, month, day);
-}
-
-function addField(p: WallParts, field: Field, delta: number): WallParts {
-  const d = new Date(utcMsFromWall(p));
-  if (p.year >= 0 && p.year <= 99) d.setUTCFullYear(p.year);
-  if (field === "year") d.setUTCFullYear(d.getUTCFullYear() + delta);
-  else if (field === "month") d.setUTCMonth(d.getUTCMonth() + delta);
-  else if (field === "day") d.setUTCDate(d.getUTCDate() + delta);
-  else if (field === "hour") d.setUTCHours(d.getUTCHours() + delta);
-  else if (field === "minute") d.setUTCMinutes(d.getUTCMinutes() + delta);
-  else d.setUTCSeconds(d.getUTCSeconds() + delta);
-  return {
-    year: d.getUTCFullYear(),
-    month: d.getUTCMonth() + 1,
-    day: d.getUTCDate(),
-    hour: d.getUTCHours(),
-    minute: d.getUTCMinutes(),
-    second: d.getUTCSeconds(),
-  };
-}
-
-function pad2(n: number): string {
-  return String(Math.trunc(n)).padStart(2, "0");
-}
+const JUMP_ICONS: Record<"prev" | "now" | "next", ReactNode> = {
+  prev: <SkipBack className="size-6" />,
+  now: <History className="size-6" />,
+  next: <SkipForward className="size-6" />,
+};
 
 type Props = {
   timeMs: number;
@@ -221,163 +68,66 @@ export function SkyTimeSheet({
   onTogglePlay,
   onResetRate,
 }: Props) {
-  const { lang, digits } = useLocale();
-  const pick = (ne: string, en: string) => bilingualText(lang, ne, en);
-  const nepaliCal = lang !== "en";
-  const parts = wallPartsFromMs(timeMs, zoneOffsetMs);
-  const ne = nepaliCal ? nepaliYmd(parts) : null;
-  const paused = timeRate === 0;
-  const playing = !paused;
-  const daySec = parts.hour * 3600 + parts.minute * 60 + parts.second;
-  const activePeriod = periodIdAtHour(parts.hour);
-  const [edit, setEdit] = useState<Field | null>(null);
-  const [draft, setDraft] = useState("");
-  const editRef = useRef<Field | null>(null);
-  const inputRefs = useRef<Partial<Record<Field, HTMLInputElement | null>>>({});
+  const v = useSkyTimeSheet({ timeMs, zoneOffsetMs, timeRate, onApplyMs });
+  const inputRefs = useRef<Partial<Record<SkyTimeField, HTMLInputElement | null>>>({});
 
-  const apply = (next: WallParts) => onApplyMs(instantFromWall(next, zoneOffsetMs));
-  const step = (field: Field, delta: number) => {
-    editRef.current = null;
-    setEdit(null);
-    if (nepaliCal && (field === "year" || field === "month" || field === "day")) {
-      const next = stepBsField(parts, field, delta);
-      if (next) apply(next);
-      return;
-    }
-    apply(addField(parts, field, delta));
-  };
-
-  const plain = (field: Field): string => {
-    if (field === "year") return ne ? bsDisplayYear(ne.year) : gregDisplayYear(parts.year);
-    if (field === "month") return pad2(ne ? ne.month : parts.month);
-    if (field === "day") return pad2(ne ? ne.day : parts.day);
-    if (field === "hour") return pad2(parts.hour);
-    if (field === "minute") return pad2(parts.minute);
-    return pad2(parts.second);
-  };
-
-  const commitField = (field: Field, raw: string) => {
-    const parsed = parseTyped(raw, field === "year");
-    if (!parsed) {
-      if (editRef.current === field) {
-        editRef.current = null;
-        setEdit(null);
-      }
-      return;
-    }
-    if (field === "year") {
-      if (nepaliCal) {
-        const signed = parsed.neg ? -parsed.abs : parsed.abs;
-        const next = applyBsYmd(parts, signed, ne?.month ?? parts.month, ne?.day ?? parts.day);
-        if (next) apply(next);
-      } else {
-        const astro = parsed.neg ? 1 - Math.max(1, parsed.abs) : Math.max(1, parsed.abs);
-        apply({ ...parts, year: astro });
-      }
-    } else if (field === "month") {
-      const month = Math.min(12, Math.max(1, parsed.abs));
-      if (nepaliCal) {
-        const next = applyBsYmd(parts, ne?.year ?? 1, month, ne?.day ?? 1);
-        if (next) apply(next);
-      } else apply({ ...parts, month });
-    } else if (field === "day") {
-      const day = Math.max(1, parsed.abs);
-      if (nepaliCal) {
-        const next = applyBsYmd(parts, ne?.year ?? 1, ne?.month ?? 1, day);
-        if (next) apply(next);
-      } else {
-        const nextMonth = parts.month === 12 ? 1 : parts.month + 1;
-        const nextYear = parts.month === 12 ? parts.year + 1 : parts.year;
-        const dim =
-          (civilGregorianToUtcMs(nextYear, nextMonth, 1) -
-            civilGregorianToUtcMs(parts.year, parts.month, 1)) /
-          86_400_000;
-        apply({ ...parts, day: Math.min(day, dim) });
-      }
-    } else if (field === "hour") apply({ ...parts, hour: Math.min(23, parsed.abs) });
-    else if (field === "minute") apply({ ...parts, minute: Math.min(59, parsed.abs) });
-    else apply({ ...parts, second: Math.min(59, parsed.abs) });
-    if (editRef.current === field) {
-      editRef.current = null;
-      setEdit(null);
-    }
-  };
-
-  const focusField = (field: Field) => {
-    editRef.current = field;
-    setEdit(field);
-    setDraft(plain(field));
+  const focusField = (field: SkyTimeField) => {
+    v.startEdit(field);
     requestAnimationFrame(() => inputRefs.current[field]?.select());
   };
 
-  const onFieldKey = (field: Field, e: KeyboardEvent<HTMLInputElement>) => {
+  const onFieldKey = (field: SkyTimeField, e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      commitField(field, draft);
+      v.commitField(field, v.draft);
       return;
     }
     if (e.key === "Escape") {
       e.preventDefault();
-      setEdit(null);
+      v.endEdit();
       return;
     }
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      step(field, 1);
+      v.step(field, 1);
       return;
     }
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      step(field, -1);
+      v.step(field, -1);
       return;
     }
     if (e.key === "Tab") {
       e.preventDefault();
-      commitField(field, draft);
-      const i = FIELD_ORDER.indexOf(field);
-      const next = FIELD_ORDER[i + (e.shiftKey ? -1 : 1)];
+      v.commitField(field, v.draft);
+      const i = SKY_TIME_FIELDS.indexOf(field);
+      const next = SKY_TIME_FIELDS[i + (e.shiftKey ? -1 : 1)];
       if (next) focusField(next);
     }
   };
 
-  /* Named in the units the step is actually in — "१ दिन/से", not "×86400". */
-  const activeStep = TIME_STEPS[nearestStepIndex(timeRate)];
-  const speedLabel = paused
-    ? tFor(lang, "ui.sky3d.paused")
-    : `${timeRate < 0 ? "◀◀ " : "▶▶ "}${pick(activeStep.ne, activeStep.en)}`;
-
-  const stepper = (
-    field: Field,
-    upLabel: string,
-    downLabel: string,
-    wide?: boolean,
-  ) => (
+  const stepper = (f: SkyTimeFieldView) => (
     <Stepper
-      field={field}
-      display={digits(plain(field))}
-      editing={edit === field}
-      draft={edit === field ? draft : digits(plain(field))}
-      allowMinus={field === "year"}
-      wide={wide}
+      key={f.field}
+      f={f}
       inputRef={(el) => {
-        inputRefs.current[field] = el;
+        inputRefs.current[f.field] = el;
       }}
-      onUp={() => step(field, 1)}
-      onDown={() => step(field, -1)}
-      upLabel={upLabel}
-      downLabel={downLabel}
-      onStartEdit={() => focusField(field)}
-      onDraft={(v) => setDraft(filterDraft(v, field === "year"))}
-      onCommit={(v) => commitField(field, v)}
+      onStartEdit={() => focusField(f.field)}
+      onDraft={(raw) => v.setDraft(f.field, raw)}
+      onCommit={(raw) => v.commitField(f.field, raw)}
       onKey={onFieldKey}
     />
   );
+
+  const withSeps = (fields: SkyTimeFieldView[], glyph: string) =>
+    fields.flatMap((f, i) => (i === 0 ? [stepper(f)] : [<Sep key={`sep-${f.field}`}>{glyph}</Sep>, stepper(f)]));
 
   return (
     <div className="absolute inset-0 z-50 flex flex-col justify-end">
       <button
         type="button"
-        aria-label={tFor(lang, "ui.common.close")}
+        aria-label={v.labels.close}
         className="absolute inset-0 cursor-default bg-black/40"
         onClick={onClose}
       />
@@ -390,56 +140,19 @@ export function SkyTimeSheet({
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-white/30" />
 
         <div className="flex items-center justify-center gap-3">
-          <div className="flex items-center gap-0.5">
-            {stepper(
-              "year",
-              tFor(lang, "ui.sky3d.increase_year"),
-              tFor(lang, "ui.sky3d.decrease_year"),
-              true,
-            )}
-            <Sep>/</Sep>
-            {stepper(
-              "month",
-              tFor(lang, "ui.sky3d.increase_month"),
-              tFor(lang, "ui.sky3d.decrease_month"),
-            )}
-            <Sep>/</Sep>
-            {stepper(
-              "day",
-              tFor(lang, "ui.sky3d.increase_day"),
-              tFor(lang, "ui.sky3d.decrease_day"),
-            )}
-          </div>
-          <div className="flex items-center gap-0.5">
-            {stepper(
-              "hour",
-              tFor(lang, "ui.sky3d.increase_hour"),
-              tFor(lang, "ui.sky3d.decrease_hour"),
-            )}
-            <Sep>:</Sep>
-            {stepper(
-              "minute",
-              tFor(lang, "ui.sky3d.increase_minute"),
-              tFor(lang, "ui.sky3d.decrease_minute"),
-            )}
-            <Sep>:</Sep>
-            {stepper(
-              "second",
-              tFor(lang, "ui.sky3d.increase_second"),
-              tFor(lang, "ui.sky3d.decrease_second"),
-            )}
-          </div>
+          <div className="flex items-center gap-0.5">{withSeps(v.dateFields, "/")}</div>
+          <div className="flex items-center gap-0.5">{withSeps(v.clockFields, ":")}</div>
         </div>
 
         <p className="mt-4 mb-1 text-center text-sm font-semibold tracking-wide text-white/90">
-          {speedLabel}
+          {v.speedLabel}
         </p>
         <div className="flex items-center gap-2">
           <IconRound
-            label={playing ? tFor(lang, "panchanga.hora.pause") : tFor(lang, "panchanga.hora.play")}
+            label={v.playing ? v.labels.pause : v.labels.play}
             onPress={onTogglePlay}
           >
-            {playing ? <Pause className="size-5 fill-white" /> : <Play className="size-5 fill-white" />}
+            {v.playing ? <Pause className="size-5 fill-white" /> : <Play className="size-5 fill-white" />}
           </IconRound>
           <input
             type="range"
@@ -447,31 +160,19 @@ export function SkyTimeSheet({
             max={RATE_NOTCHES}
             step={1}
             value={Math.round(rateToSlider(timeRate))}
-            aria-label={tFor(lang, "learn.diagrams.orbit_speed")}
+            aria-label={v.labels.rate}
             className="sky-time-slider sky-time-slider--thin min-w-0 flex-1"
             onChange={(e) => onTimeRate(sliderToRate(Number(e.target.value)))}
           />
-          <IconRound label={tFor(lang, "ui.sky3d.realtime_speed")} onPress={onResetRate}>
+          <IconRound label={v.labels.realtime} onPress={onResetRate}>
             <RotateCcw className="size-5" />
           </IconRound>
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <NavAction
-            icon={<SkipBack className="size-6" />}
-            label={tFor(lang, "ui.sky3d.previous_night")}
-            onPress={() => onApplyMs(timeMs - 86_400_000)}
-          />
-          <NavAction
-            icon={<History className="size-6" />}
-            label={tFor(lang, "ui.sky3d.set_time_to_now")}
-            onPress={() => onApplyMs(Date.now())}
-          />
-          <NavAction
-            icon={<SkipForward className="size-6" />}
-            label={tFor(lang, "ui.sky3d.next_night")}
-            onPress={() => onApplyMs(timeMs + 86_400_000)}
-          />
+          {v.jumps.map((jump) => (
+            <NavAction key={jump.id} icon={JUMP_ICONS[jump.id]} label={jump.label} onPress={jump.run} />
+          ))}
         </div>
 
         <div className="mt-4">
@@ -480,22 +181,14 @@ export function SkyTimeSheet({
             min={0}
             max={86_399}
             step={1}
-            value={daySecToSlider(daySec)}
-            aria-label={tFor(lang, "ui.sky3d.daylight")}
+            value={v.daySlider}
+            aria-label={v.labels.daylight}
             className="sky-time-slider sky-time-slider--day w-full"
-            onChange={(e) => {
-              const sec = sliderToDaySec(Number(e.target.value));
-              apply({
-                ...parts,
-                hour: Math.floor(sec / 3600),
-                minute: Math.floor((sec % 3600) / 60),
-                second: sec % 60,
-              });
-            }}
+            onChange={(e) => v.setDaySlider(Number(e.target.value))}
           />
           <div className="relative mt-1.5 h-4">
-            {DAY_PERIODS.map((band) => {
-              const active = band.id === activePeriod;
+            {v.dayPeriods.map((band) => {
+              const active = band.active;
               const edge = band.at <= 8 ? "left" : band.at >= 88 ? "right" : "center";
               return (
                 <span
@@ -509,7 +202,7 @@ export function SkyTimeSheet({
                   )}
                   style={edge === "center" ? { left: `${band.at}%` } : undefined}
                 >
-                  {pick(band.ne, band.en)}
+                  {band.label}
                 </span>
               );
             })}
@@ -553,57 +246,39 @@ function Sep({ children }: { children: string }) {
 }
 
 function Stepper({
-  field,
-  display,
-  editing,
-  draft,
-  allowMinus,
-  wide,
+  f,
   inputRef,
-  onUp,
-  onDown,
-  upLabel,
-  downLabel,
   onStartEdit,
   onDraft,
   onCommit,
   onKey,
 }: {
-  field: Field;
-  display: string;
-  editing: boolean;
-  draft: string;
-  allowMinus: boolean;
-  wide?: boolean;
+  f: SkyTimeFieldView;
   inputRef: (el: HTMLInputElement | null) => void;
-  onUp: () => void;
-  onDown: () => void;
-  upLabel: string;
-  downLabel: string;
   onStartEdit: () => void;
   onDraft: (v: string) => void;
   onCommit: (value: string) => void;
-  onKey: (field: Field, e: KeyboardEvent<HTMLInputElement>) => void;
+  onKey: (field: SkyTimeField, e: KeyboardEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <div className={cn("flex flex-col items-center", wide ? "w-12" : "w-8")}>
-      <HoldButton label={upLabel} onStep={onUp}>
+    <div className={cn("flex flex-col items-center", f.wide ? "w-12" : "w-8")}>
+      <HoldButton label={f.upLabel} onStep={f.up}>
         <ChevronUp className="size-4 text-white" strokeWidth={2.5} />
       </HoldButton>
       <input
         ref={inputRef}
-        value={editing ? draft : display}
-        inputMode={allowMinus ? "text" : "numeric"}
+        value={f.value}
+        inputMode={f.allowMinus ? "text" : "numeric"}
         enterKeyHint="next"
         autoComplete="off"
-        aria-label={upLabel.replace(/बढाउनुहोस्|Increase /, "")}
+        aria-label={f.label}
         className="w-full bg-transparent p-0 text-center text-lg font-semibold tabular-nums leading-none text-white outline-none xs:text-xl caret-white"
         onFocus={onStartEdit}
         onChange={(e) => onDraft(e.target.value)}
         onBlur={(e) => onCommit(e.currentTarget.value)}
-        onKeyDown={(e) => onKey(field, e)}
+        onKeyDown={(e) => onKey(f.field, e)}
       />
-      <HoldButton label={downLabel} onStep={onDown}>
+      <HoldButton label={f.downLabel} onStep={f.down}>
         <ChevronDown className="size-4 text-white" strokeWidth={2.5} />
       </HoldButton>
     </div>

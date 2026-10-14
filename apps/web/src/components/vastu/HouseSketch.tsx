@@ -1,17 +1,15 @@
 import { useId } from "react";
-import { useTranslation } from "@vedic-patro/i18n/react";
-import { useLocale } from "@/i18n/locale";
 import {
   VASTU_ELEMENT_COLOR,
-  VASTU_ELEMENT_ORDER,
   VASTU_INK,
   vastuDirection,
   vastuElementTint,
   type CardinalWall,
 } from "@vedic-patro/domain/vastu";
-import { RING_SIZE, houseBoxInRing } from "@vedic-patro/domain/vastu-ring";
-import { houseTemplate, type Rect, type TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
-import { kindCounts, type PlotSize, type SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
+import { RING_SIZE } from "@vedic-patro/domain/vastu-ring";
+import { useHouseSketch } from "@vedic-patro/features/vastu";
+import type { Rect, TemplateRoom } from "@vedic-patro/domain/vastu-house-template";
+import type { PlotSize, SpaceAssignment } from "@vedic-patro/domain/vastu-plan";
 import { cn } from "@vedic-patro/domain/utils";
 import { VastuCompassRing } from "./VastuCompassRing";
 
@@ -35,8 +33,6 @@ import { vastuClasses } from "@vedic-patro/design-tokens/classes/vastu-classes";
  */
 
 const DOOR_COLOR = illustration.red46;
-/** Ring-units-per-metre this layout was tuned at — label sizes scale off it. */
-const REFERENCE_SCALE = 22;
 
 type PxFn = (n: number) => number;
 
@@ -124,46 +120,30 @@ export function HouseSketch({
   facing: CardinalWall;
   assignments: SpaceAssignment[];
 }) {
-  const { t } = useTranslation();
-  const { digits } = useLocale();
   const hatchId = `vastu-court-${useId().replace(/:/g, "")}`;
-
-  const plan = houseTemplate(plot, facing, assignments);
-  const counts = kindCounts(assignments);
-
-  // The same inscribed box the ring's geometry defines, back in ring units so
-  // the plan is drawn *in* the ring's SVG rather than layered over it.
-  const box = houseBoxInRing(plot.width, plot.height);
-  const boxW = (box.widthPct / 100) * RING_SIZE;
-  const boxH = (box.heightPct / 100) * RING_SIZE;
-  const originX = (RING_SIZE - boxW) / 2;
-  const originY = (RING_SIZE - boxH) / 2;
-  const scale = boxW / plot.width;
-  const px: PxFn = (n) => n * scale;
-  const fs = Math.min(1.35, Math.max(0.7, scale / REFERENCE_SCALE));
-
-  const label = (row: SpaceAssignment) => {
-    const many = (counts.get(row.kind) ?? 0) > 1 && row.kind !== "staircase";
-    return many && row.index != null
-      ? t(`vastu.plan.space.${row.kind}_n`, { n: digits(row.index) })
-      : t(`vastu.plan.space.${row.kind}`);
-  };
-  const size = (r: Rect) =>
-    t("vastu.plan.room_size", { w: digits(r.w.toFixed(1)), h: digits(r.h.toFixed(1)) });
-
+  const sketch = useHouseSketch({ plot, facing, assignments });
+  const {
+    plan,
+    originX,
+    originY,
+    px,
+    fs,
+    courtCx,
+    courtCy,
+    galleryMidX,
+    galleryMidY,
+    galleryTopY,
+    galleryBottomY,
+    galleryLeftX,
+    galleryRightX,
+    arrowLen,
+    alongWall,
+    doorHalf,
+    roomLabel: label,
+    roomSize,
+  } = sketch;
   const court = plan.court;
   const outer = plan.alindraOuter;
-  const courtCx = px(court.x + court.w / 2);
-  const courtCy = px(court.y + court.h / 2);
-  const galleryMidX = px(outer.x + outer.w / 2);
-  const galleryMidY = px(outer.y + outer.h / 2);
-  const galleryTopY = px((outer.y + court.y) / 2);
-  const galleryBottomY = px((outer.y + outer.h + court.y + court.h) / 2);
-  const galleryLeftX = px((outer.x + court.x) / 2);
-  const galleryRightX = px((outer.x + outer.w + court.x + court.w) / 2);
-  const arrowLen = px(Math.min(plot.width, plot.height) / 4);
-  const alongWall = plan.door.wall === "north" || plan.door.wall === "south";
-  const doorHalf = px(0.55);
 
   return (
     <figure className="m-0">
@@ -175,7 +155,7 @@ export function HouseSketch({
           className="absolute inset-0 h-full w-full"
           overflow="visible"
           role="img"
-          aria-label={t("vastu.sketch.aria")}
+          aria-label={sketch.labels.aria}
         >
           <defs>
             <pattern
@@ -275,7 +255,7 @@ export function HouseSketch({
                       fillOpacity={0.7}
                       fontSize={7.5 * fs}
                     >
-                      {size(room.rect)}
+                      {roomSize(room.rect)}
                     </text>
                   )}
                 </g>
@@ -292,7 +272,7 @@ export function HouseSketch({
                 fontSize={10 * fs}
                 fontWeight={700}
               >
-                {t("vastu.sketch.brahmasthan")}
+                {sketch.labels.brahmasthan}
               </text>
               <text
                 x={courtCx}
@@ -302,7 +282,7 @@ export function HouseSketch({
                 fillOpacity={0.75}
                 fontSize={8 * fs}
               >
-                {size(court)}
+                {roomSize(court)}
               </text>
               <text
                 x={courtCx}
@@ -312,7 +292,7 @@ export function HouseSketch({
                 fontSize={8 * fs}
                 fontWeight={600}
               >
-                {t("vastu.sketch.open_to_sky")}
+                {sketch.labels.openToSky}
               </text>
             </g>
 
@@ -344,16 +324,7 @@ export function HouseSketch({
 
       <figcaption className={cn(vastuClasses.sketchCaption, "mx-auto max-w-[900px]")}>
         <p className={vastuClasses.sketchSummary}>
-          {t("vastu.sketch.door_pada", {
-            wall: t(`vastu.dir.${facing}.name`),
-            pada: t(`vastu.pada.${plan.door.pada.id}.name`),
-            n: digits(plan.door.pada.index),
-          })}
-          {" · "}
-          {t("vastu.plan.room_size", {
-            w: digits(plot.width.toFixed(1)),
-            h: digits(plot.height.toFixed(1)),
-          })}
+          {sketch.summary}
         </p>
 
         <ul className={cn(vastuClasses.sketchLegend, vastuClasses.legendText)}>
@@ -362,35 +333,34 @@ export function HouseSketch({
               className={cn(vastuClasses.legendSwatchCourt, "inline-block")}
               style={{ borderColor: DOOR_COLOR, backgroundColor: vastuElementTint("fire", 0.16) }}
             />
-            {t("vastu.sketch.legend_court")}
+            {sketch.legend[0]!.label}
           </li>
           <li className={vastuClasses.legendItem}>
             <span
               className={cn(vastuClasses.legendSwatchAlindra, "inline-block")}
               style={{ backgroundColor: vastuElementTint("space", 0.16) }}
             />
-            {t("vastu.sketch.legend_alindra")}
+            {sketch.legend[1]!.label}
           </li>
           <li className={vastuClasses.legendItem}>
             <span className={cn(vastuClasses.legendSwatchFlow, "inline-block")} style={{ backgroundColor: DOOR_COLOR }} />
-            {t("vastu.sketch.legend_flow")}
+            {sketch.legend[2]!.label}
           </li>
-          {VASTU_ELEMENT_ORDER.map((element) => (
+          {sketch.legend.flatMap((item) => ("element" in item ? [item.element] : [])).map((element, i) => (
             <li key={element} className={vastuClasses.legendItem}>
               <span
                 className={cn(vastuClasses.legendSwatchElement, "inline-block")}
                 style={{ backgroundColor: vastuElementTint(element, 0.3) }}
               />
-              {t(`vastu.element.${element}`)}
+              {sketch.legend[3 + i]!.label}
             </li>
           ))}
         </ul>
 
         <ul className={cn(vastuClasses.sketchRules, vastuClasses.sketchRuleText)}>
-          <li>{t("vastu.sketch.rule_court")}</li>
-          <li>{t("vastu.sketch.rule_alindra")}</li>
-          <li>{t("vastu.sketch.rule_flow")}</li>
-          <li>{t("vastu.sketch.rule_door")}</li>
+          {sketch.rules.map((rule) => (
+            <li key={rule}>{rule}</li>
+          ))}
         </ul>
       </figcaption>
     </figure>

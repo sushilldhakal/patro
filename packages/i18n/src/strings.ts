@@ -6844,10 +6844,6 @@ export const strings = {
   },
   "ui.auth.yyyy_mm_dd": { ne: "वर्ष-महिना-दिन", en: "YYYY-MM-DD" },
 
-  /* ── ui.avakahada ───────────────────────────────────────────────────────── */
-  "ui.avakahada.charan_value_lang": { ne: "चरण {{value}} · {{lang}}", en: "Charan {{value}} · {{lang}}" },
-  "ui.avakahada.drag_to_pan_when_zoomed": { ne: "· जुम गरेपछि तानेर सार्न सकिन्छ", en: "· Drag to pan when zoomed" },
-  "ui.avakahada.enemy_yoni_vairiyoni": { ne: "वैरि योनि: {{vairiYoni}}", en: "Enemy yoni: {{vairiYoni}}" },
 
   /* ── ui.branding ────────────────────────────────────────────────────────── */
   "ui.branding.powered_by_vedic_patro_nepal_panchanga": {
@@ -7611,7 +7607,6 @@ export const strings = {
     ne: "स्थान परिवर्तन तुरुन्त लागू हुन्छ।",
     en: "Location changes apply immediately.",
   },
-  "ui.patro_date.month_year": { ne: "महिना / वर्ष", en: "Month / year" },
   "ui.patro_date.switch_to_targetlabel": { ne: "{{targetLabel}} मा जानुहोस्", en: "Switch to {{targetLabel}}" },
   "ui.patro_date.type_the_year_number": { ne: "वर्ष नम्बर टाइप गर्नुहोस्", en: "Type the year number" },
   "ui.patro_date.typed_year_previewdisplay_previeweralabel": {
@@ -8174,7 +8169,6 @@ export const strings = {
   "ui.panchanga_detail_card.muhurta": { ne: "मुहूर्त", en: "Muhurta" },
   "ui.panchanga_detail_card.rahu_kaal": { ne: "राहु काल", en: "Rahu Kaal" },
   "ui.panchanga_detail_card.festivals_holidays": { ne: "पर्व / बिदा", en: "Festivals / Holidays" },
-  "ui.avakahada.x_91fdc25d": { ne: "· खोजमा {{v0}} नक्षत्र", en: "· {{v0}} nakshatras in search" },
   "ui.kundali.x_cf56ff65": { ne: " (लग्न)", en: " (Lagna)" },
   "ui.kundali.degree": { ne: "अंश", en: "Degree" },
   "ui.kundali.lord_sub": { ne: "स्वामी / उप", en: "Lord / Sub" },
@@ -8255,16 +8249,12 @@ export const strings = {
   "ui.onboarding.x_5f81991c": { ne: "पछि जुनसुकै बेला सेटिङबाट वर्ष छानेर डाउनलोड गर्न सकिनेछ। · You can still choose years to download later from Offline Data in settings.", en: "You can still choose years to download later from Offline Data in settings." },
   "ui.onboarding.x_5158dc32": { ne: "अगाडि बढ्नुहोस् · Get Started", en: "Get Started" },
   "ui.panchanga.x_c068f043": { ne: "{{v0}} बजे", en: "{{v0}}" },
-  "ui.panchanga.exit_full_screen": { ne: "सामान्य दृश्य", en: "Exit full screen" },
-  "ui.panchanga.full_screen": { ne: "पूर्ण स्क्रिन", en: "Full screen" },
   "ui.patro_date.x_855271e0": { ne: "{{v0}}–{{v1}} ({{v2}} छानिएको)", en: "{{v0}}–{{v1}} ({{v2}} selected)" },
   "ui.patro_date.switch_to_b_b_s": { ne: "पू.वि.सं. मा जानुहोस्", en: "Switch to B.B.S." },
   "ui.patro_date.switch_to_b_s": { ne: "वि.सं. मा जानुहोस्", en: "Switch to B.S." },
   "ui.patro_date.a_d_year": { ne: "ई.सं. वर्ष", en: "A.D. year" },
   "ui.patro_date.b_c_year": { ne: "ई.पू. वर्ष", en: "B.C. year" },
   "ui.patro_date.b_b_s_year": { ne: "पू.वि.सं. वर्ष", en: "B.B.S. year" },
-  "ui.sky3d.increase": { ne: "{{v0}} बढाउनुहोस्", en: "Increase {{v0}}" },
-  "ui.sky3d.decrease": { ne: "{{v0}} घटाउनुहोस्", en: "Decrease {{v0}}" },
   "ui.sky3d.year": { ne: "वर्ष", en: "year" },
   "ui.sky3d.month": { ne: "महिना", en: "month" },
   "ui.sky3d.hour": { ne: "घण्टा", en: "hour" },

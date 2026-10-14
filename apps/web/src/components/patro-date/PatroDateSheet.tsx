@@ -30,7 +30,7 @@ import {
   stepPatroSignedYear,
 } from "@vedic-patro/domain/patro-year-axis";
 import { cn } from "@vedic-patro/domain/utils";
-import { sameLocationParams } from "@/lib/url-state";
+import { usePatroDateSheetView } from "@vedic-patro/features/patro-date";
 import { usePatroDisplayLocale } from "@/hooks/use-patro-display-locale";
 import type { PatroDateSheetState } from "./use-patro-date-sheet";
 import { PatroYearPickerPopover } from "./PatroYearPickerPopover";
@@ -481,31 +481,15 @@ export function PatroDateSheet({
   /** Fired when the user taps Done on the location tab (before the drawer closes). */
   onLocationCommit?: () => void;
 }) {
-  const { t } = useTranslation();
-  const hasLocation = Boolean(location && onLocationChange);
-  const onLocationTab = hasLocation && sheet.tab === "location";
-  const deferSheetCommits = Boolean(onDateCommit || onLocationCommit);
-  const [draftLocation, setDraftLocation] = useState(location);
-
-  // Same re-seed-on-open pattern as PatroDateSheetContent above.
-  const [prevSync, setPrevSync] = useState({ open: sheet.open, location });
-  if (prevSync.open !== sheet.open || prevSync.location !== location) {
-    setPrevSync({ open: sheet.open, location });
-    if (sheet.open && location) setDraftLocation(location);
-  }
-
-  const applyLocationDraft = () => {
-    if (!onLocationChange || !draftLocation || !location) return;
-    if (sameLocationParams(draftLocation.params, location.params)) return;
-    onLocationChange(draftLocation);
-  };
-
-  const locationPanelLocation = deferSheetCommits
-    ? (draftLocation ?? location!)
-    : location!;
-  const locationPanelOnChange = deferSheetCommits
-    ? (next: PanchangaLocation) => setDraftLocation(next)
-    : onLocationChange!;
+  const view = usePatroDateSheetView({
+    open: sheet.open,
+    tab: sheet.tab,
+    dateTitle,
+    location,
+    onLocationChange,
+    deferLocation: Boolean(onDateCommit || onLocationCommit),
+  });
+  const onLocationTab = view.onLocationTab;
 
   return (
     <Drawer
@@ -516,16 +500,15 @@ export function PatroDateSheet({
       <DrawerContent>
         <DrawerHeader className="pb-2 text-center">
           <DrawerTitle className="text-base text-center">
-            {onLocationTab ? t("location.choose_location") : dateTitle}
+            {view.headerTitle}
           </DrawerTitle>
         </DrawerHeader>
 
-        {hasLocation ? (
+        {view.hasLocation ? (
           // Half each, and tall — the location tab is the only way into the
           // picker on a phone, so it has to be obvious rather than discovered.
           <div className="grid grid-cols-2 gap-2 px-4 pb-3" role="tablist">
-            {(["date", "location"] as const).map((id) => {
-              const selected = sheet.tab === id;
+            {view.tabs.map(({ id, label, selected }) => {
               return (
                 <button
                   key={id}
@@ -543,7 +526,7 @@ export function PatroDateSheet({
                       : cn(patroDateClasses.tabIdle, patroDateClasses.tabLabelIdle, "hover:bg-surface-hover"),
                   )}
                 >
-                  {id === "date" ? dateTitle : t("location.tab")}
+                  {label}
                 </button>
               );
             })}
@@ -553,8 +536,8 @@ export function PatroDateSheet({
         {onLocationTab ? (
           <div id="patro-sheet-location" role="tabpanel" className="px-4 pb-2">
             <LocationSearchPanel
-              location={locationPanelLocation}
-              onLocationChange={locationPanelOnChange}
+              location={view.panelLocation!}
+              onLocationChange={view.onPanelLocationChange!}
               active={sheet.open}
             />
           </div>
@@ -570,7 +553,7 @@ export function PatroDateSheet({
               type="button"
               onClick={() => {
                 if (onLocationTab) {
-                  applyLocationDraft();
+                  view.applyLocationDraft();
                   onLocationCommit?.();
                 } else {
                   onDateCommit?.();
@@ -578,7 +561,7 @@ export function PatroDateSheet({
               }}
               className={cn(patroDateClasses.done, patroDateClasses.doneLabel)}
             >
-              {t("common.done")}
+              {view.labels.done}
             </button>
           </DrawerClose>
         </DrawerFooter>
